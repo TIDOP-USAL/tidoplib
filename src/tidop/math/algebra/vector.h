@@ -60,6 +60,9 @@ constexpr auto DynamicVector = std::numeric_limits<size_t>::max();
 template<typename T, size_t _size>
 class VectorBase;
 
+/*!
+ * \brief Static VectorBase
+ */
 template<typename T, size_t _size>
 class VectorBase
 {
@@ -337,7 +340,9 @@ bool VectorBase<T, _size>::operator >= (const VectorBase<T, _size> &vector) cons
 
 
 
-
+/*!
+ * \brief Dynamic VectorBase
+ */
 template<typename T>
 class VectorBase<T, DynamicVector>
 {
@@ -611,145 +616,10 @@ public:
   void normalize();
   double dotProduct(const Vector<T, _size> &vector) const;
 
-  Vector &operator+=(const Vector &vector)
-  {
-    TL_ASSERT(this->size() == vector.size(), "")
-
-#ifndef TL_HAVE_SIMD_INTRINSICS
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] += vector[i];
-    }
-#else
-    using namespace simd;
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-
-    constexpr size_t packed_size = packed_a.size();
-
-    size_t max_vector = (this->size() / packed_size) * packed_size;
-    for (size_t i = 0; i < max_vector; i += packed_size) {
-
-      packed_a.loadAligned(&(*this)[i]);
-      packed_b.loadAligned(&vector[i]);
-
-      packed_a += packed_b;
-      packed_a.storeAligned(&(*this)[i]);
-
-    }
-
-    for (size_t i = max_vector; i < this->size(); ++i) {
-      (*this)[i] += vector[i];
-    }
-#endif
-
-    return *this;
-  }
-
-  Vector &operator-=(const Vector &vector)
-  {
-    TL_ASSERT(this->size() == vector.size(), "")
-
-#ifndef TL_HAVE_SIMD_INTRINSICS
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] -= vector[i];
-    }
-#else
-    using namespace simd;
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-
-    constexpr size_t packed_size = packed_a.size();
-
-    size_t max_vector = (this->size() / packed_size) * packed_size;
-    for (size_t i = 0; i < max_vector; i += packed_size) {
-
-      packed_a.loadAligned(&(*this)[i]);
-      packed_b.loadAligned(&vector[i]);
-
-      packed_a -= packed_b;
-      packed_a.storeAligned(&(*this)[i]);
-
-    }
-
-    for (size_t i = max_vector; i < this->size(); ++i) {
-      (*this)[i] -= vector[i];
-    }
-#endif
-
-    return *this;
-  }
-
-  Vector &operator*=(const Vector &vector)
-  {
-    TL_ASSERT(this->size() == vector.size(), "")
-
-#ifndef TL_HAVE_SIMD_INTRINSICS
-      for (size_t i = 0; i < this->size(); ++i) {
-        (*this)[i] *= vector[i];
-      }
-#else
-    using namespace simd;
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-
-    constexpr size_t packed_size = packed_a.size();
-
-    size_t max_vector = (this->size() / packed_size) * packed_size;
-    for (size_t i = 0; i < max_vector; i += packed_size) {
-
-      packed_a.loadAligned(&(*this)[i]);
-      packed_b.loadAligned(&vector[i]);
-
-      packed_a *= packed_b;
-      packed_a.storeAligned(&(*this)[i]);
-
-    }
-
-    for (size_t i = max_vector; i < this->size(); ++i) {
-      (*this)[i] *= vector[i];
-    }
-#endif
-
-    return *this;
-  }
-
-  Vector &operator/=(const Vector &vector)
-  {
-    TL_ASSERT(this->size() == vector.size(), "")
-
-#ifndef TL_HAVE_SIMD_INTRINSICS
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] /= vector[i];
-    }
-#else
-    using namespace simd;
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-
-    constexpr size_t packed_size = packed_a.size();
-
-    size_t max_vector = (this->size() / packed_size) * packed_size;
-    for (size_t i = 0; i < max_vector; i += packed_size) {
-
-      packed_a.loadAligned(&(*this)[i]);
-      packed_b.loadAligned(&vector[i]);
-
-      packed_a /= packed_b;
-      packed_a.storeAligned(&(*this)[i]);
-
-    }
-
-    for (size_t i = max_vector; i < this->size(); ++i) {
-      (*this)[i] /= vector[i];
-    }
-#endif
-
-    return *this;
-  }
+  Vector &operator+=(const Vector &vector);
+  Vector &operator-=(const Vector &vector);
+  Vector &operator*=(const Vector &vector);
+  Vector &operator/=(const Vector &vector);
 
   static Vector zero();
   static Vector zero(size_t size);
@@ -849,6 +719,154 @@ double Vector<T, _size>::dotProduct(const Vector<T, _size> &vector) const
     dot += static_cast<double>(vector[i]) * static_cast<double>(vector[i]);
   }
   return dot;
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> &Vector<T, _size>::operator+=(const Vector<T, _size> &vector)
+{
+  TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef TL_HAVE_SIMD_INTRINSICS
+
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] += vector[i];
+    }
+
+#else
+
+  using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = (this->size() / packed_size) * packed_size;
+  
+  for (size_t i = 0; i < max_vector; i += packed_size) {
+
+    packed_a.loadUnaligned(&(*this)[i]);
+    packed_b.loadUnaligned(&vector[i]);
+
+    packed_a += packed_b;
+    packed_a.storeUnaligned(&(*this)[i]);
+
+  }
+
+  for (size_t i = max_vector; i < this->size(); ++i) {
+    (*this)[i] += vector[i];
+  }
+
+#endif
+
+  return *this;
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> &Vector<T, _size>::operator-=(const Vector<T, _size> &vector)
+{
+  TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef TL_HAVE_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] -= vector[i];
+    }
+#else
+    using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+
+  constexpr size_t packed_size = packed_a.size();
+
+  size_t max_vector = (this->size() / packed_size) * packed_size;
+  for (size_t i = 0; i < max_vector; i += packed_size) {
+
+    packed_a.loadUnaligned(&(*this)[i]);
+    packed_b.loadUnaligned(&vector[i]);
+
+    packed_a -= packed_b;
+    packed_a.storeUnaligned(&(*this)[i]);
+
+  }
+
+  for (size_t i = max_vector; i < this->size(); ++i) {
+    (*this)[i] -= vector[i];
+  }
+#endif
+
+  return *this;
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> &Vector<T, _size>::operator*=(const Vector<T, _size> &vector)
+{
+  TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef TL_HAVE_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] *= vector[i];
+    }
+#else
+    using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+
+  constexpr size_t packed_size = packed_a.size();
+
+  size_t max_vector = (this->size() / packed_size) * packed_size;
+  for (size_t i = 0; i < max_vector; i += packed_size) {
+
+    packed_a.loadUnaligned(&(*this)[i]);
+    packed_b.loadUnaligned(&vector[i]);
+
+    packed_a *= packed_b;
+    packed_a.storeUnaligned(&(*this)[i]);
+
+  }
+
+  for (size_t i = max_vector; i < this->size(); ++i) {
+    (*this)[i] *= vector[i];
+  }
+#endif
+
+  return *this;
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> &Vector<T, _size>::operator/=(const Vector<T, _size> &vector)
+{
+  TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef TL_HAVE_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] /= vector[i];
+    }
+#else
+    using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+
+  constexpr size_t packed_size = packed_a.size();
+
+  size_t max_vector = (this->size() / packed_size) * packed_size;
+  for (size_t i = 0; i < max_vector; i += packed_size) {
+
+    packed_a.loadUnaligned(&(*this)[i]);
+    packed_b.loadUnaligned(&vector[i]);
+
+    packed_a /= packed_b;
+    packed_a.storeUnaligned(&(*this)[i]);
+
+  }
+
+  for (size_t i = max_vector; i < this->size(); ++i) {
+    (*this)[i] /= vector[i];
+  }
+#endif
+
+  return *this;
 }
 
 template<typename T, size_t _size> inline
@@ -986,11 +1004,11 @@ Vector<T, _size> operator * (const Vector<T, _size> &v0,
 
   for (size_t i = 0; i < max_vector; i += packed_size) {
 
-    packed_a.loadAligned(&result[i]);
-    packed_b.loadAligned(&v1[i]);
+    packed_a.loadUnaligned(&result[i]);
+    packed_b.loadUnaligned(&v1[i]);
 
     packed_a *= packed_b;
-    packed_a.storeAligned(&result[i]);
+    packed_a.storeUnaligned(&result[i]);
   }
 
   for (size_t i = max_vector; i < v0.size(); ++i) {

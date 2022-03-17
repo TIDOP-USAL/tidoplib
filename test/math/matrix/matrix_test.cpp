@@ -200,6 +200,30 @@ struct MatrixTest
     mat_singular[2][0] = 7;
     mat_singular[2][1] = 8;
     mat_singular[2][2] = 9;
+
+    std::array<double, 10*10> a1 = {0.81, 7.45, 1.17, 3.44, 4.13, 5.67, 4.57, 2.03, 5.53, 5.25,
+                                    6.69, 7.87, 1.70, 4.32, 6.33, 0.67, 8.99, 7.63, 7.08, 7.24,
+                                    6.39, 3.54, 6.47, 7.15, 0.37, 5.52, 3.21, 8.52, 3.20, 5.83,
+                                    7.86, 5.01, 5.82, 0.94, 8.94, 6.53, 2.04, 5.91, 5.94, 5.18,
+                                    0.11, 3.99, 1.09, 2.89, 5.71, 6.51, 6.84, 4.33, 3.46, 8.86,
+                                    0.78, 2.50, 2.20, 5.76, 4.13, 2.64, 6.41, 4.38, 3.75, 8.01,
+                                    4.52, 0.05, 1.16, 2.97, 2.71, 1.97, 8.81, 3.89, 2.37, 3.86,
+                                    6.65, 2.05, 8.86, 3.24, 0.83, 7.56, 8.70, 6.93, 0.93, 0.79,
+                                    2.09, 4.23, 6.07, 8.07, 7.64, 0.80, 7.43, 0.15, 0.07, 7.02,
+                                    2.24, 3.95, 5.79, 3.45, 3.43, 4.62, 5.88, 2.01, 3.04, 3.06};
+    matrix1 = Matrix<double>(a1.data(), 10, 10);
+
+    std::array<double, 10 * 10> a2 = {1.48, 1.19, 1.71, 7.35, 2.66, 8.25, 8.28, 3.86, 1.82, 2.69,
+                                      2.19, 5.53, 2.06, 6.51, 6.39, 1.18, 8.83, 3.41, 6.19, 5.41,
+                                      8.52, 4.30, 0.60, 0.11, 7.88, 2.41, 3.63, 7.20, 5.96, 5.61,
+                                      6.35, 0.27, 5.50, 4.55, 2.46, 3.81, 3.20, 6.69, 5.08, 3.68,
+                                      8.14, 1.13, 5.17, 0.64, 4.79, 6.49, 4.00, 1.22, 6.89, 0.20,
+                                      2.10, 6.48, 5.23, 1.51, 2.13, 2.42, 7.35, 7.44, 0.24, 3.89,
+                                      6.93, 8.66, 0.94, 3.01, 3.90, 7.55, 0.08, 8.03, 3.37, 7.25,
+                                      2.42, 6.20, 3.22, 8.21, 7.63, 2.82, 0.79, 7.68, 7.07, 3.24,
+                                      2.89, 3.61, 5.30, 2.00, 4.53, 2.41, 7.54, 0.27, 3.02, 4.24,
+                                      0.58, 0.69, 5.86, 3.62, 5.66, 7.92, 2.53, 3.01, 6.05, 0.82};
+    matrix2 = Matrix<double>(a2.data(), 10, 10);
   }
  
   void teardown()
@@ -239,6 +263,9 @@ struct MatrixTest
   Matrix<double> mat_dyn_identity;
 
   Matrix<int,3,3> mat_singular;
+
+  Matrix<double> matrix1;
+  Matrix<double> matrix2;
 };
 
 
@@ -977,6 +1004,15 @@ BOOST_FIXTURE_TEST_CASE(plus, MatrixTest)
       BOOST_CHECK_EQUAL(mat2.at(r,c), _mat_dyn_3x3_d->at(r, c));
     }
   }
+
+  /// R Value move
+  Matrix<int, 3, 3> mat3 = +Matrix<int, 3, 3>::ones();
+  for (size_t r = 0; r < mat3.rows(); r++) {
+    for (size_t c = 0; c < mat3.cols(); c++) {
+      BOOST_CHECK_EQUAL(mat3.at(r, c), 1);
+    }
+  }
+
 }
 
 BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
@@ -992,6 +1028,14 @@ BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
   for (size_t r = 0; r < mat2.rows(); r++){
     for (size_t c = 0; c < mat2.cols(); c++){
       BOOST_CHECK_EQUAL(-mat2.at(r,c), _mat_dyn_3x3_d->at(r, c));
+    }
+  }
+
+  /// R Value move
+  Matrix<int, 3, 3> mat3 = -Matrix<int, 3, 3>::ones();
+  for (size_t r = 0; r < mat3.rows(); r++) {
+    for (size_t c = 0; c < mat3.cols(); c++) {
+      BOOST_CHECK_EQUAL(mat3.at(r, c), -1);
     }
   }
 
@@ -1055,6 +1099,109 @@ BOOST_FIXTURE_TEST_CASE(addition, MatrixTest)
   BOOST_CHECK_EQUAL(2.3, mat_dyn_ones[2][0]);
   BOOST_CHECK_EQUAL(3.6, mat_dyn_ones[2][1]);
   BOOST_CHECK_EQUAL(1.3, mat_dyn_ones[2][2]);
+
+  Matrix<double> mat3 = matrix1 + matrix2;
+
+  BOOST_CHECK_CLOSE(mat3[0][0], 2.29, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][1], 8.64, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][2], 2.88, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][3], 10.79, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][4], 6.79, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][5], 13.92, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][6], 12.85, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][7], 5.89, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][8], 7.35, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][9], 7.94, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][0], 8.88, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][1], 13.4, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][2], 3.76, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][3], 10.83, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][4], 12.72, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][5], 1.85, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][6], 17.82, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][7], 11.04, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][8], 13.27, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][9], 12.65, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][0], 14.91, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][1], 7.84, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][2], 7.07, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][3], 7.26, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][4], 8.25, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][5], 7.93, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][6], 6.84, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][7], 15.72, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][8], 9.16, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][9], 11.44, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][0], 14.21, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][1], 5.28, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][2], 11.32, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][3], 5.49, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][4], 11.4, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][5], 10.34, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][6], 5.24, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][7], 12.6, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][8], 11.02, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][9], 8.86, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][0], 8.25, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][1], 5.12, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][2], 6.26, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][3], 3.53, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][4], 10.5, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][5], 13, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][6], 10.84, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][7], 5.55, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][8], 10.35, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][9], 9.06, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][0], 2.88, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][1], 8.98, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][2], 7.43, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][3], 7.27, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][4], 6.26, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][5], 5.06, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][6], 13.76, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][7], 11.82, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][8], 3.99, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][9], 11.9, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][0], 11.45, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][1], 8.71, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][2], 2.1, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][3], 5.98, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][4], 6.61, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][5], 9.52, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][6], 8.89, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][7], 11.92, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][8], 5.74, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][9], 11.11, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][0], 9.07, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][1], 8.25, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][2], 12.08, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][3], 11.45, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][4], 8.46, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][5], 10.38, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][6], 9.49, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][7], 14.61, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][8], 8, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][9], 4.03, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][0], 4.98, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][1], 7.84, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][2], 11.37, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][3], 10.07, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][4], 12.17, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][5], 3.21, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][6], 14.97, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][7], 0.42, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][8], 3.09, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][9], 11.26, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][0], 2.82, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][1], 4.64, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][2], 11.65, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][3], 7.07, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][4], 9.09, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][5], 12.54, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][6], 8.41, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][7], 5.02, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][8], 9.09, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][9], 3.88, 0.01);
 }
 
 /// Resta de matrices
@@ -1109,9 +1256,262 @@ BOOST_FIXTURE_TEST_CASE(subtraction, MatrixTest)
   BOOST_CHECK_EQUAL(-1.3, mat_dyn_identity[2][0]);
   BOOST_CHECK_EQUAL(-2.6, mat_dyn_identity[2][1]);
   BOOST_CHECK_EQUAL( 0.7, mat_dyn_identity[2][2]);
+
+
+  Matrix<double> mat3 = matrix1 - matrix2;
+
+  BOOST_CHECK_CLOSE(mat3[0][0], -0.67, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][1], 6.26, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][2], -0.54, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][3], -3.91, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][4], 1.47, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][5], -2.58, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][6], -3.71, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][7], -1.83, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][8], 3.71, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][9], 2.56, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][0], 4.5, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][1], 2.34, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][2], -0.36, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][3], -2.19, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][4], -0.06, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][5], -0.51, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][6], 0.16, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][7], 4.22, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][8], 0.89, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][9], 1.83, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][0], -2.13, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][1], -0.76, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][2], 5.87, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][3], 7.04, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][4], -7.51, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][5], 3.11, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][6], -0.42, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][7], 1.32, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][8], -2.76, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][9], 0.22, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][0], 1.51, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][1], 4.74, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][2], 0.32, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][3], -3.61, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][4], 6.48, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][5], 2.72, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][6], -1.16, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][7], -0.78, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][8], 0.86, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][9], 1.5, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][0], -8.03, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][1], 2.86, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][2], -4.08, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][3], 2.25, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][4], 0.92, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][5], 0.02, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][6], 2.84, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][7], 3.11, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][8], -3.43, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][9], 8.66, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][0], -1.32, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][1], -3.98, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][2], -3.03, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][3], 4.25, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][4], 2, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][5], 0.22, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][6], -0.94, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][7], -3.06, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][8], 3.51, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][9], 4.12, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][0], -2.41, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][1], -8.61, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][2], 0.22, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][3], -0.04, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][4], -1.19, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][5], -5.58, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][6], 8.73, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][7], -4.14, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][8], -1, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][9], -3.39, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][0], 4.23, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][1], -4.15, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][2], 5.64, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][3], -4.97, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][4], -6.8, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][5], 4.74, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][6], 7.91, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][7], -0.75, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][8], -6.14, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][9], -2.45, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][0], -0.8, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][1], 0.62, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][2], 0.77, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][3], 6.07, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][4], 3.11, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][5], -1.61, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][6], -0.11, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][7], -0.12, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][8], -2.95, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][9], 2.78, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][0], 1.66, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][1], 3.26, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][2], -0.07, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][3], -0.17, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][4], -2.23, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][5], -3.3, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][6], 3.35, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][7], -1, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][8], -3.01, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][9], 2.24, 0.01);
+  
 }
 
 /// Multiplicación de matrices
+
+template<typename T> inline
+Matrix<T> mulmat3(const Matrix<T> &matrix1,
+                  const Matrix<T> &matrix2)
+{
+
+  size_t rows = matrix1.rows();
+  size_t dim1 = matrix1.cols();
+  size_t cols = matrix2.cols();
+  size_t dim2 = matrix2.rows();
+
+  TL_ASSERT(dim1 == dim2, "A columns != B rows")
+
+    Matrix<T> matrix = Matrix<T>::zero(rows, cols);
+
+  static const size_t num_unroll_r = 5;
+  static const size_t num_unroll_k = 5;
+
+  const size_t r_max_for_unrolled_loop = matrix1.rows() / num_unroll_r * num_unroll_r;
+
+  const size_t j_max = matrix2.cols();
+  const size_t k_max_for_unrolled_loop = matrix2.rows() / num_unroll_k * num_unroll_k;
+  const size_t k_max = matrix2.rows();
+
+  for (size_t r = 0; r < r_max_for_unrolled_loop; r += num_unroll_r) {
+
+    auto a_row0 = matrix1[r];
+    auto a_row1 = matrix1[r + 1];
+    auto a_row2 = matrix1[r + 2];
+    auto a_row3 = matrix1[r + 3];
+    auto a_row4 = matrix1[r + 4];
+
+    for (size_t k = 0; k < k_max_for_unrolled_loop; k += num_unroll_k) {
+
+      T a00 = a_row0[k];
+      T a01 = a_row0[k + 1];
+      T a02 = a_row0[k + 2];
+      T a03 = a_row0[k + 3];
+      T a04 = a_row0[k + 4];
+      T a10 = a_row1[k];
+      T a11 = a_row1[k + 1];
+      T a12 = a_row1[k + 2];
+      T a13 = a_row1[k + 3];
+      T a14 = a_row1[k + 4];
+      T a20 = a_row2[k];
+      T a21 = a_row2[k + 1];
+      T a22 = a_row2[k + 2];
+      T a23 = a_row2[k + 3];
+      T a24 = a_row2[k + 4];
+      T a30 = a_row3[k];
+      T a31 = a_row3[k + 1];
+      T a32 = a_row3[k + 2];
+      T a33 = a_row3[k + 3];
+      T a34 = a_row3[k + 4];
+      T a40 = a_row4[k];
+      T a41 = a_row4[k + 1];
+      T a42 = a_row4[k + 2];
+      T a43 = a_row4[k + 3];
+      T a44 = a_row4[k + 4];
+
+      for (int c = 0; c < cols; ++c) {
+        T b0 = matrix2[k][c];
+        T b1 = matrix2[k + 1][c];
+        T b2 = matrix2[k + 2][c];
+        T b3 = matrix2[k + 3][c];
+        T b4 = matrix2[k + 4][c];
+
+        T sum0;
+        sum0 = a00 * b0;
+        sum0 += a01 * b1;
+        sum0 += a02 * b2;
+        sum0 += a03 * b3;
+        sum0 += a04 * b4;
+        matrix[r][c] += sum0;
+        T sum1 = a10 * b0;
+        sum1 += a11 * b1;
+        sum1 += a12 * b2;
+        sum1 += a13 * b3;
+        sum1 += a14 * b4;
+        matrix[r + 1][c] += sum1;
+        T sum2 = a20 * b0;
+        sum2 += a21 * b1;
+        sum2 += a22 * b2;
+        sum2 += a23 * b3;
+        sum2 += a24 * b4;
+        matrix[r + 2][c] += sum2;
+        T sum3 = a30 * b0;
+        sum3 += a31 * b1;
+        sum3 += a32 * b2;
+        sum3 += a33 * b3;
+        sum3 += a34 * b4;
+        matrix[r + 3][c] += sum3;
+        T sum4 = a40 * b0;
+        sum4 += a41 * b1;
+        sum4 += a42 * b2;
+        sum4 += a43 * b3;
+        sum4 += a44 * b4;
+        matrix[r + 4][c] += sum4;
+      }
+    }
+    for (size_t k = k_max_for_unrolled_loop; k < k_max; ++k) {
+      //const T a = matrix1[r][k];
+      for (size_t c = 0; c < cols; ++c) {
+        matrix[r][c] += a_row0[k] * matrix2[k][c];
+        matrix[r + 1][c] += a_row1[k] * matrix2[k][c];
+        matrix[r + 2][c] += a_row2[k] * matrix2[k][c];
+        matrix[r + 3][c] += a_row3[k] * matrix2[k][c];
+        matrix[r + 4][c] += a_row4[k] * matrix2[k][c];
+      }
+    }
+  }
+
+  for (size_t r = r_max_for_unrolled_loop; r < rows; ++r) {
+    auto a_row = matrix1[r];
+    for (size_t k = 0; k < k_max_for_unrolled_loop; k += num_unroll_k) {
+
+      T a00 = a_row[k];
+      T a01 = a_row[k + 1];
+      T a02 = a_row[k + 2];
+      T a03 = a_row[k + 3];
+      T a04 = a_row[k + 4];
+
+      for (int c = 0; c < cols; ++c) {
+
+        T b0 = matrix2[k][c];
+        T b1 = matrix2[k + 1][c];
+        T b2 = matrix2[k + 2][c];
+        T b3 = matrix2[k + 3][c];
+        T b4 = matrix2[k + 4][c];
+
+        T sum;
+        sum = a00 * b0;
+        sum += a01 * b1;
+        sum += a02 * b2;
+        sum += a03 * b3;
+        sum += a04 * b4;
+        matrix[r][c] += sum;
+      }
+    }
+    for (size_t k = k_max_for_unrolled_loop; k < k_max; ++k) {
+      const T a = matrix1[r][k];
+      for (size_t c = 0; c < cols; ++c) {
+        matrix[r][c] += a * matrix2[k][c];
+      }
+    }
+  }
+  return matrix;
+}
 
 BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
 {
@@ -1133,7 +1533,108 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
   BOOST_CHECK_EQUAL(42, mat2[1][1]);
   BOOST_CHECK_EQUAL(69, mat2[1][2]);
 
-
+  //Matrix<double> mat3 = mulmat3(matrix1, matrix2);
+  Matrix<double> mat3 = matrix1 * matrix2;
+  BOOST_CHECK_CLOSE(mat3[0][0], 150.46129999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][1], 165.27870000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][2], 158.26670000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][3], 141.92560000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][4], 187.37970000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][5], 167.06009999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][6], 202.88790000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][7], 176.77520000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][8], 180.07070000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[0][9], 152.05050000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][0], 227.41139999999996, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][1], 227.16690000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][2], 201.63189999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][3], 255.38209999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][4], 290.18440000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][5], 291.53309999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][6], 253.57210000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][7], 261.00040000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][8], 286.16719999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[1][9], 215.73440000000005, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][0], 187.83359999999996, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][1], 189.31679999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][2], 173.78440000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][3], 218.94399999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][4], 246.74090000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][5], 217.63609999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][6], 218.45099999999994, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][7], 282.29669999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][8], 228.28930000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[2][9], 189.72190000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][0], 213.25510000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][1], 194.08109999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][2], 195.57950000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][3], 196.17829999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][4], 267.10329999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][5], 249.59680000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][6], 279.93429999999995, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][7], 234.07190000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][8], 245.87960000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat3[3][9], 174.91820000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][0], 169.70760000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][1], 180.98440000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][2], 179.15429999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][3], 148.66820000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][4], 208.23980000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][5], 214.42800000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][6], 172.50779999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][7], 212.39560000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][8], 204.69629999999995, 0.01);
+  BOOST_CHECK_CLOSE(mat3[4][9], 150.65260000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][0], 171.61580000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][1], 149.27350000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][2], 161.58570000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][3], 146.83769999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][4], 195.70380000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][5], 203.04889999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][6], 143.38870000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][7], 200.82369999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][8], 200.71049999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[5][9], 143.38950000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][0], 141.29339999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][1], 138.90479999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][2], 105.16480000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][3], 129.06590000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][4], 142.59010000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][5], 187.58380000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][6], 108.31489999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][7], 176.67999999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][8], 137.38419999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[6][9], 127.76190000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][0], 213.23240000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][1], 230.35989999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][2], 122.61140000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][3], 177.68850000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][4], 224.14439999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][5], 208.38609999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][6], 189.76090000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][7], 301.09850000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][8], 187.49260000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat3[7][9], 210.30039999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][0], 235.31420000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][1], 138.34640000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][2], 152.97290000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][3], 135.53080000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][4], 208.74430000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][5], 231.41550000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][6], 157.95550000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][7], 217.42079999999996, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][8], 228.77390000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[8][9], 157.30339999999995, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][0], 176.99920000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][1], 160.61970000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][2], 122.35509999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][3], 119.04239999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][4], 180.94049999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][5], 165.30430000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][6], 165.88210000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][7], 198.12640000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][8], 167.02330000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat3[9][9], 155.77199999999999, 0.01);
 
 }
 
@@ -1177,6 +1678,17 @@ BOOST_FIXTURE_TEST_CASE(matrix_scalar, MatrixTest)
   BOOST_CHECK_EQUAL(60, _mat_dyn_2x3_i->at(1, 1));
   BOOST_CHECK_EQUAL(20, _mat_dyn_2x3_i->at(1, 2));
 
+  Matrix<int, 2, 2> mat3 = Matrix<int, 2, 2>::ones() * 10;
+  BOOST_CHECK_EQUAL(10, mat3[0][0]);
+  BOOST_CHECK_EQUAL(10, mat3[0][1]);
+  BOOST_CHECK_EQUAL(10, mat3[1][0]);
+  BOOST_CHECK_EQUAL(10, mat3[1][1]);
+
+  Matrix<int> mat4 = Matrix<int>::ones(2, 2) * 20;
+  BOOST_CHECK_EQUAL(20, mat4[0][0]);
+  BOOST_CHECK_EQUAL(20, mat4[0][1]);
+  BOOST_CHECK_EQUAL(20, mat4[1][0]);
+  BOOST_CHECK_EQUAL(20, mat4[1][1]);
 }
 
 /// Multiplicación de un escalar por una matriz
@@ -1200,6 +1712,18 @@ BOOST_FIXTURE_TEST_CASE(scalar_matrix, MatrixTest)
   BOOST_CHECK_EQUAL(90, mat2[1][0]);
   BOOST_CHECK_EQUAL(60, mat2[1][1]);
   BOOST_CHECK_EQUAL(20, mat2[1][2]);
+
+  Matrix<int, 2, 2> mat3 = 10 * Matrix<int, 2, 2>::ones();
+  BOOST_CHECK_EQUAL(10, mat3[0][0]);
+  BOOST_CHECK_EQUAL(10, mat3[0][1]);
+  BOOST_CHECK_EQUAL(10, mat3[1][0]);
+  BOOST_CHECK_EQUAL(10, mat3[1][1]);
+
+  Matrix<int> mat4 = 20 * Matrix<int>::ones(2, 2);
+  BOOST_CHECK_EQUAL(20, mat4[0][0]);
+  BOOST_CHECK_EQUAL(20, mat4[0][1]);
+  BOOST_CHECK_EQUAL(20, mat4[1][0]);
+  BOOST_CHECK_EQUAL(20, mat4[1][1]);
 }
 
 /// Multiplicación de un vector por una matriz
