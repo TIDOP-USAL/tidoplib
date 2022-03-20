@@ -63,15 +63,15 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param[in] entity Objeto Entities2D que se copia
+   * \param[in] entities Objeto Entities2D que se copia
    */
-  Entities2D(const Entities2D &entity);
+  Entities2D(const Entities2D &entities);
 
   /*!
    * \brief Constructor de movimiento
-   * \param[in] entity Objeto Entities2D que se copia
+   * \param[in] entities Objeto Entities2D que se copia
    */
-  Entities2D(Entities2D &&entity) TL_NOEXCEPT;
+  Entities2D(Entities2D &&entities) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor
@@ -85,6 +85,8 @@ public:
    */
   Entities2D(std::initializer_list<Entity_t> entities);
 
+  ~Entities2D() override = default;
+
   /*!
    * \brief Devuelve las entidades que están dentro de una ventana
    * \param[in] window Ventana
@@ -96,12 +98,12 @@ public:
   /*!
    * \brief Asignación de copia
    */
-  Entities2D<Entity_t>& operator=(const Entities2D<Entity_t> &entity);
+  Entities2D<Entity_t>& operator=(const Entities2D<Entity_t> &entities);
 
   /*!
    * \brief Asignación de movimiento
    */
-  Entities2D<Entity_t>& operator=(Entities2D<Entity_t> &&entity) TL_NOEXCEPT;
+  Entities2D<Entity_t>& operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT;
 
 };
 
@@ -119,8 +121,8 @@ Entities2D<Entity_t>::Entities2D(typename Entities2D<Entity_t>::size_type size)
 }
 
 template<typename Entity_t> inline
-Entities2D<Entity_t>::Entities2D(const Entities2D &entities) 
-  : EntityContainer<Entity_t>(entities) 
+Entities2D<Entity_t>::Entities2D(const Entities2D &entities)
+  : EntityContainer<Entity_t>(entities)
 {
 }
 
@@ -158,19 +160,19 @@ std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &win
 }
 
 template<typename Entity_t> inline
-Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t> &entity)
+Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t> &entities)
 {
-  if (this != &entity) {
-    EntityContainer<Entity_t>::operator=(entity);
+  if (this != &entities) {
+    EntityContainer<Entity_t>::operator=(entities);
   }
   return (*this);
 }
 
 template<typename Entity_t> inline
-Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&entity) TL_NOEXCEPT
+Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT
 {
-  if (this != &entity) {
-    EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entity));
+  if (this != &entities) {
+    EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));
   }
   return (*this);
 }

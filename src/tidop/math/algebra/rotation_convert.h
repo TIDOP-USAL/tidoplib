@@ -60,7 +60,7 @@ class RotationConverter
 
 private:
 
-  RotationConverter() {}
+  RotationConverter() = default;
 
 public:
 

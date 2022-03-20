@@ -102,7 +102,7 @@ public:
 
 private:
 
-  VectorWriterFactory() {}
+  VectorWriterFactory() = default;
 
 public:
 

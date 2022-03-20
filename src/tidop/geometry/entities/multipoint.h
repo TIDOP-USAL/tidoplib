@@ -192,18 +192,18 @@ template<typename Point_t> inline
 Window<Point_t> MultiPoint<Point_t>::window() const
 {
   Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+  for (size_t i = 0; i < this->size(); i++) {
+    if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
+    if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
+    if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
+    if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
   }
   return w;
 }
 
-typedef MultiPoint<Point<int>> MultiPointI;
-typedef MultiPoint<Point<double>> MultiPointD;
-typedef MultiPoint<Point<float>> MultiPointF;
+using MultiPointI = MultiPoint<Point<int> >;
+using MultiPointD = MultiPoint<Point<double> >;
+using MultiPointF = MultiPoint<Point<float> >;
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -353,20 +353,20 @@ template<typename Point_t> inline
 BoundingBox<Point_t> MultiPoint3D<Point_t>::boundingBox() const
 {
   BoundingBox<Point_t> bounding_box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
-    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
-    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
-    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
-    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
-    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
+  for (size_t i = 0; i < this->size(); i++) {
+    if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
+    if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
+    if (bounding_box.pt1.z > this->at(i).z) bounding_box.pt1.z = this->at(i).z;
+    if (bounding_box.pt2.x < this->at(i).x) bounding_box.pt2.x = this->at(i).x;
+    if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
+    if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
   }
   return bounding_box;
 }
 
-typedef MultiPoint3D<Point3<int>> MultiPoint3dI;
-typedef MultiPoint3D<Point3<double>> MultiPoint3dD;
-typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
+using MultiPoint3dI = MultiPoint3D<Point3<int> >;
+using MultiPoint3dD = MultiPoint3D<Point3<double> >;
+using MultiPoint3dF = MultiPoint3D<Point3<float> >;
 
 /* ---------------------------------------------------------------------------------- */
 

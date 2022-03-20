@@ -25,8 +25,6 @@
 #ifndef TL_MATH_MATRIX_H
 #define TL_MATH_MATRIX_H
 
-#define MATRIX_STD_VALARRAY 1
-
 #include "config_tl.h"
 
 #include <vector>
@@ -3065,7 +3063,7 @@ public:
       mRow(matrixRow.mRow),
       mCols(matrixRow.mCols)
   {}
-  ~MatrixRow(){}
+  ~MatrixRow()= default;
 
   const_reference operator[](size_t column) const
   {
@@ -3197,7 +3195,7 @@ public:
       mRows(rows),
       mCols(cols)
   { }
-  ~MatrixCol(){ }
+  ~MatrixCol()= default;
 
   const_reference operator[](size_t row) const
   {
@@ -3585,7 +3583,7 @@ public:
       mIniCol(iniCol),
       mEndCol(endCol)
   { }
-  ~MatrixBlock(){ }
+  ~MatrixBlock()= default;
 
   MatrixBlock &operator = (const MatrixBlock &block)
   {

@@ -48,7 +48,7 @@ class Rect
 
 public:
 
-  typedef T value_type;
+  using value_type = T;
 
 public:
 
@@ -262,17 +262,22 @@ inline void tl::Rect<T>::normalized()
 template<typename T> template<typename T2> inline 
 Rect<T>::operator Rect<T2>() const
 {
+  Rect<T2> rect{};
+
   if (std::is_integral<T2>::value) {
-    return Rect<T2>(roundToInteger(this->x),
+    rect = Rect<T2>(roundToInteger(this->x),
                     roundToInteger(this->y),
                     roundToInteger(this->width),
                     roundToInteger(this->height));
   } else {
-    return Rect<T2>(static_cast<T2>(this->x),
+
+    rect = Rect<T2>(static_cast<T2>(this->x),
                     static_cast<T2>(this->y),
                     static_cast<T2>(this->width),
                     static_cast<T2>(this->height));
   }
+
+  return rect;
 }
 
 
@@ -302,6 +307,7 @@ Rect<T> intersect(const Rect<T> &rect1,
                   const Rect<T> &rect2)
 {
   Rect<T> rect;
+
   rect.x = std::max(rect1.x, rect2.x);
   rect.y = std::max(rect1.y, rect2.y);
   Point<T> bottomRight1 = rect1.bottomRight();

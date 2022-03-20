@@ -97,7 +97,7 @@ public:
 
   Type rotationType() const override;
 
-protected:
+private:
 
   Type mRotationType;
 

@@ -239,7 +239,7 @@ public:
    * \brief  Assignment operator
    * Assign from intrinsic type
    */
-  T &operator=(const simd_type &packed);
+  PackedBase<T> &operator=(const simd_type &packed);
 
   /*!
    * \brief Type cast operator to convert to intrinsic type
@@ -480,23 +480,32 @@ typename std::enable_if<
   std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
 set(T data)
 {
+  Packed<T> r;
+
 #ifdef TL_HAVE_AVX
-  return _mm256_set1_ps(data);
+  r = _mm256_set1_ps(data);
 #elif defined TL_HAVE_SSE
-  return _mm_set1_ps(data);
+  r = _mm_set1_ps(data);
 #endif
+
+  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 set(T data)
 {
+  Packed<T> r;
+
 #ifdef TL_HAVE_AVX
-  return _mm256_set1_pd(data);
+  r = _mm256_set1_pd(data);
 #elif defined TL_HAVE_SSE2
-  return _mm_set1_pd(data);
+  r = _mm_set1_pd(data);
 #endif
+
+  return r;
 }
 
 template<typename T> inline
@@ -1057,7 +1066,7 @@ void PackedBase<T>::setScalar(value_type value)
 }
 
 template<typename T> inline
-T &PackedBase<T>::operator=(const typename PackedBase<T>::simd_type &packed)
+PackedBase<T> &PackedBase<T>::operator=(const typename PackedBase<T>::simd_type &packed)
 {
   mValue = packed;
   return *this;

@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -93,7 +93,7 @@ protected:
 
 
 /*!
- * \brief Factoría de clases para la lectura de formatos vectoriales
+ * \brief FactorÃ­a de clases para la lectura de formatos vectoriales
  */
 class TL_EXPORT VectorReaderFactory
 {

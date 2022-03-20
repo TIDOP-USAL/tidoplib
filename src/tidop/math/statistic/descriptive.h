@@ -636,7 +636,7 @@ double DescriptiveStatistics<T>::medianAbsoluteDeviation()
     *x_it++ = std::abs(static_cast<double>(data) - _median);
   }
 
-  return ::median(x.begin(), x.end());
+  return tl::math::median(x.begin(), x.end());
 }
 
 template<typename T> inline
@@ -763,8 +763,8 @@ double DescriptiveStatistics<T>::biweightMidvariance()
   size_t n = this->size();
   if(n <= 2) return consts::zero<double>;
 
-  double median = this->median(first, last);
-  double mad = this->medianAbsoluteDeviation(first, last);
+  double median = this->median();
+  double mad = this->medianAbsoluteDeviation();
 
   double num{};
   double den{};
@@ -781,7 +781,7 @@ double DescriptiveStatistics<T>::biweightMidvariance()
   }
 
   if(den == consts::zero<double>)
-    return consts::zero<doubleT>;
+    return consts::zero<double>;
 
   return n * num / (den * den);
 }

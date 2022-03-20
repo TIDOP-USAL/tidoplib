@@ -146,10 +146,10 @@ BOOST_FIXTURE_TEST_CASE(min, DescriptiveStatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(max, DescriptiveStatisticsTest)
 {
-  BOOST_CHECK_EQUAL(9.0, stat_1.max(), 0.1);
+  BOOST_CHECK_EQUAL(9.0, stat_1.max());
   BOOST_CHECK_EQUAL(3, stat_2.max());
-  BOOST_CHECK_EQUAL(23, stat_3.max(), 0.1);
-  BOOST_CHECK_EQUAL(9.0, stat_1_population.max(), 0.1);
+  BOOST_CHECK_EQUAL(23, stat_3.max());
+  BOOST_CHECK_EQUAL(9.0, stat_1_population.max());
 }
 
 BOOST_FIXTURE_TEST_CASE(size, DescriptiveStatisticsTest)

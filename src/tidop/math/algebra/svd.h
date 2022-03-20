@@ -159,7 +159,7 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
   eps = std::numeric_limits<T>::epsilon();
   this->decompose();
   this->reorder();
-  tsh = consts::half<T> * sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
+  tsh = consts::half<T> * std::sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
 #endif // TL_HAVE_OPENBLAS
 
 }

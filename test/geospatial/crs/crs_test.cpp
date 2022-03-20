@@ -31,7 +31,7 @@ using namespace tl::geospatial;
 
 /* CrsTest */
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 BOOST_AUTO_TEST_SUITE(CrsTestSuite)
 

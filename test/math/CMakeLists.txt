@@ -25,6 +25,7 @@
 # Math tests
 
 if(TL_HAVE_MATH)
+add_subdirectory(utils)
 add_subdirectory(matrix)
 add_subdirectory(quaternion)
 add_subdirectory(vector)

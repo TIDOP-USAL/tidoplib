@@ -796,8 +796,8 @@ template<typename T> inline
 int Degrees<T>::minutes() const
 {
   int seconds = static_cast<int>(std::round(this->value() * consts::degrees_to_seconds));
-  seconds = std::abs(seconds % 3600);
-  return seconds / 60;
+  seconds = std::abs(seconds % consts::degrees_to_seconds);
+  return seconds / consts::minutes_to_seconds;
 }
 
 template<typename T> inline

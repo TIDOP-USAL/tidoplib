@@ -42,6 +42,7 @@ namespace tl
  * \{
  */
 
+constexpr auto ProgressBarSize = 50;
 
 class TL_EXPORT Progress
 {
@@ -139,6 +140,7 @@ private:
 
 
 
+
 /*!
  * \brief Barra de progreso de consola
  */
@@ -174,7 +176,7 @@ private:
 
 private:
 
-  int mProgressBarSize{ 50 };
+  int mProgressBarSize{ ProgressBarSize };
 
 };
 
@@ -222,7 +224,7 @@ private:
 
 private:
 
-  int mProgressBarSize{ 50 };
+  int mProgressBarSize{ ProgressBarSize };
   Console::Color mCompleteColor{Console::Color::green};
   Console::Color mRemainigColor{Console::Color::yellow};
 };

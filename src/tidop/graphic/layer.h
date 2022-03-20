@@ -59,52 +59,52 @@ public:
   /*!
    * \brief Allocator
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::allocator_type allocator_type;
+  using allocator_type = std::list<std::shared_ptr<GraphicEntity> >::allocator_type;
 
   /*!
    * \brief value_type
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::value_type value_type;
+  using value_type = std::list<std::shared_ptr<GraphicEntity> >::value_type;
 
   /*!
    * \brief Tipo entero sin signo (por lo general size_t) 
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::size_type size_type;
+  using size_type = std::list<std::shared_ptr<GraphicEntity> >::size_type;
 
   /*!
    * \brief Tipo entero con signo (por lo general ptrdiff_t)
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::difference_type difference_type;
+  using difference_type = std::list<std::shared_ptr<GraphicEntity> >::difference_type;
 
   /*!
    * \brief std::allocator_traits<Allocator>::pointer
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::pointer pointer;
+  using pointer = std::list<std::shared_ptr<GraphicEntity> >::pointer;
 
   /*!
    * \brief std::allocator_traits<Allocator>::const_pointer 
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::const_pointer const_pointer;
+  using const_pointer = std::list<std::shared_ptr<GraphicEntity> >::const_pointer;
 
   /*!
    * \brief value_type&
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::reference reference;
+  using reference = std::list<std::shared_ptr<GraphicEntity> >::reference;
 
   /*!
    * \brief const value_type&
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::const_reference const_reference;
+  using const_reference = std::list<std::shared_ptr<GraphicEntity> >::const_reference;
 
   /*!
    * \brief Iterador de acceso aleatorio
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::iterator iterator;
+  using iterator = std::list<std::shared_ptr<GraphicEntity> >::iterator;
 
   /*!
    * \brief Iterador constante de acceso aleatorio
    */
-  typedef std::list<std::shared_ptr<GraphicEntity>>::const_iterator const_iterator;
+  using const_iterator = std::list<std::shared_ptr<GraphicEntity> >::const_iterator;
 
 public:
 
@@ -135,7 +135,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~GLayer() {}
+  ~GLayer() = default;
 
   /*!
    * \brief Devuelve un iterador al inicio de la capa
