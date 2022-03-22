@@ -185,44 +185,46 @@ ProcessBase &ProcessBase::operator=(ProcessBase &&process) TL_NOEXCEPT
 void ProcessBase::run(Progress *progressBar)
 {
 
-  if (mStatus == Status::finalized) return;
+  //if (mStatus == Status::finalized) return;
 
-  try {
+  //try {
 
-    mStatus = Status::running;
-    eventTriggered(Event::Type::process_running);
+  //  setStatus(Status::running);
 
-    mThread = std::move(std::thread(&ProcessBase::execute, this, progressBar));
-    mThread.join();
+  //  mThread = std::move(std::thread(&ProcessBase::execute, this, progressBar));
+  //  mThread.join();
 
-    mStatus = Status::finalized;
-    eventTriggered(Event::Type::process_finalized);
+  //  setStatus(Status::finalized);
 
-  } catch (const std::exception &e) {
-    mStatus = Status::error;
-    mProcessErrorEvent->setErrorMessage(e.what());
-    eventTriggered(Event::Type::process_error);
-  }
+  //} catch (const std::exception &e) {
+  //  mProcessErrorEvent->setErrorMessage(e.what());
+  //  setStatus(Status::error);
+  //}
+
+  mThread = std::move(std::thread(&ProcessBase::executeTask, this, progressBar));
+  mThread.join();
 }
 
 void ProcessBase::runAsync(Progress *progressBar)
 {
-  if (mStatus == Status::finalized) return;
+  //if (mStatus == Status::finalized) return;
 
-  mStatus = Status::running;
-  eventTriggered(Event::Type::process_running);
+  //setStatus(Status::running);
 
-  mThread = std::thread(&ProcessBase::execute, this, progressBar);
+  //mThread = std::thread(&ProcessBase::execute, this, progressBar);
+  //mThread.detach();
+
+  //TL_TODO("Hay que activar Status::finalized
+
+  mThread = std::thread(&ProcessBase::executeTask, this, progressBar);
   mThread.detach();
-
-  TL_TODO("Hay que activar Status::finalized")
 }
 
 void ProcessBase::pause()
 {
   if (mStatus == Status::running) {
-    mStatus = Status::pausing;
-    eventTriggered(Event::Type::process_pausing);
+
+    setStatus(Status::pausing);
 
     TL_TODO("Revisar")
     //while (mStatus != Status::paused || mStatus != Status::finalized || mStatus != Status::error);
@@ -249,8 +251,7 @@ void ProcessBase::resume()
   eventTriggered(Event::Type::process_resumed);
 
   if (mStatus == Status::paused || mStatus == Status::pausing) {
-    mStatus = Status::running;
-    eventTriggered(Event::Type::process_running);
+    setStatus(Status::running);
   }
 }
 
@@ -260,8 +261,7 @@ void ProcessBase::stop()
       mStatus == Status::paused ||
       mStatus == Status::pausing) {
 
-    mStatus = Status::stopping;
-    eventTriggered(Event::Type::process_stopping);
+    setStatus(Status::stopping);
 
     TL_TODO("Revisar")
     //while (mStatus != Status::stopped || mStatus != Status::finalized || mStatus != Status::error);
@@ -356,6 +356,42 @@ void ProcessBase::subscribe(const ProcessStoppedEventHandler &eventHandler)
 void ProcessBase::subscribe(const ProcessStoppingEventHandler &eventHandler)
 {
   mProcessStoppingEventHandler.push_back(eventHandler);
+}
+
+Process::Status ProcessBase::status() const
+{
+  return mStatus;
+}
+
+void ProcessBase::setStatus(Status status)
+{
+  mStatus = status;
+
+  switch(mStatus) {
+    case tl::Process::Status::running:
+      eventTriggered(Event::Type::process_running);
+      break;
+    case tl::Process::Status::pausing:
+      eventTriggered(Event::Type::process_pausing);
+      break;
+    case tl::Process::Status::paused:
+      eventTriggered(Event::Type::process_paused);
+      break;
+    case tl::Process::Status::stopping:
+      eventTriggered(Event::Type::process_stopping);
+      break;
+    case tl::Process::Status::stopped:
+      eventTriggered(Event::Type::process_stopped);
+      break;
+    case tl::Process::Status::finalized:
+      eventTriggered(Event::Type::process_finalized);
+      break;
+    case tl::Process::Status::error:
+      eventTriggered(Event::Type::process_error);
+      break;
+    default:
+      break;
+  }
 }
 
 void ProcessBase::eventTriggered(Event::Type type)
@@ -493,6 +529,24 @@ ProcessStoppedEvent *ProcessBase::stoppedEvent()
 ProcessStoppingEvent *ProcessBase::stoppingEvent()
 {
   return mProcessStoppingEvent.get();
+}
+
+void ProcessBase::executeTask(Progress *progressBar) TL_NOEXCEPT
+{
+  if(mStatus == Status::finalized) return;
+
+  try { 
+    
+    setStatus(Status::running);
+
+    execute(progressBar);
+
+    setStatus(Status::finalized);
+
+  } catch(const std::exception &e) {
+    mProcessErrorEvent->setErrorMessage(e.what());
+    setStatus(Status::error);
+  }
 }
 
 

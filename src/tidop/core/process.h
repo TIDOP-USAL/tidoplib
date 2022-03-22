@@ -130,6 +130,7 @@ public:
   virtual void subscribe(const ProcessStoppedEventHandler &eventHandler) = 0;
   virtual void subscribe(const ProcessStoppingEventHandler &eventHandler) = 0;
 
+  virtual Status status() const = 0;
 };
 
 
@@ -177,8 +178,12 @@ public:
   void subscribe(const ProcessRunningEventHandler &eventHandler) override;
   void subscribe(const ProcessStoppedEventHandler &eventHandler) override;
   void subscribe(const ProcessStoppingEventHandler &eventHandler) override;
+ 
+  Status status() const override;
 
 protected:
+
+  void setStatus(Status status);
 
   void eventTriggered(Event::Type type);
   void eventProcessErrorTriggered();
@@ -198,6 +203,10 @@ protected:
   ProcessRunningEvent *runningEvent();
   ProcessStoppedEvent *stoppedEvent();
   ProcessStoppingEvent *stoppingEvent();
+
+private:
+
+  void executeTask(Progress *progressBar) TL_NOEXCEPT;
 
 private:
 

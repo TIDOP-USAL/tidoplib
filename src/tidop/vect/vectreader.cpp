@@ -644,7 +644,13 @@ std::shared_ptr<GMultiPoint> VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogr
   multiPoint->resize(n);
 
   for (size_t i = 0; i < n; i++) {
+
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPoint *ogrPoint = ogrMultiPoint->getGeometryRef(static_cast<int>(i));
+#else
+    OGRPoint *ogrPoint = dynamic_cast<OGRPoint *>(ogrMultiPoint->getGeometryRef(static_cast<int>(i)));
+#endif
+
     (*multiPoint)[i].x = ogrPoint->getX();
     (*multiPoint)[i].y = ogrPoint->getY();
   }
@@ -659,7 +665,13 @@ std::shared_ptr<GMultiPoint3D> VectorReaderGdal::readMultiPoint3D(OGRMultiPoint 
   multiPoint->resize(n);
 
   for (size_t i = 0; i < n; i++) {
+
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPoint *ogrPoint = ogrMultiPoint->getGeometryRef(static_cast<int>(i));
+#else
+    OGRPoint *ogrPoint = dynamic_cast<OGRPoint *>(ogrMultiPoint->getGeometryRef(static_cast<int>(i)));
+#endif
+
     (*multiPoint)[i].x = ogrPoint->getX();
     (*multiPoint)[i].y = ogrPoint->getY();
     (*multiPoint)[i].z = ogrPoint->getZ();
@@ -676,7 +688,12 @@ std::shared_ptr<graph::GMultiLineString> VectorReaderGdal::readMultiLineString(O
 
   for (size_t i = 0; i < n; i++) {
 
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRLineString *ogrLineString = ogrMultiLineString->getGeometryRef(static_cast<int>(i));
+#else
+    OGRLineString *ogrLineString = dynamic_cast<OGRLineString *>(ogrMultiLineString->getGeometryRef(static_cast<int>(i)));
+#endif
+
     auto np = static_cast<size_t>(ogrLineString->getNumPoints());
     (*multiLineString)[i].resize(np);
 
@@ -697,7 +714,12 @@ std::shared_ptr<graph::GMultiLineString3D> VectorReaderGdal::readMultiLineString
 
   for (size_t i = 0; i < n; i++) {
 
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRLineString *ogrLineString = ogrMultiLineString->getGeometryRef(static_cast<int>(i));
+#else
+    OGRLineString *ogrLineString = dynamic_cast<OGRLineString *>(ogrMultiLineString->getGeometryRef(static_cast<int>(i)));
+#endif
+
     auto np = static_cast<size_t>(ogrLineString->getNumPoints());
     (*multiLineString)[i].resize(np);
 
@@ -719,7 +741,12 @@ std::shared_ptr<graph::GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMult
 
   for (size_t i = 0; i < n; i++) {
 
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPolygon *ogrPolygon = ogrMultiPolygon->getGeometryRef(static_cast<int>(i));
+#else
+    OGRPolygon *ogrPolygon = dynamic_cast<OGRPolygon *>(ogrMultiPolygon->getGeometryRef(static_cast<int>(i)));
+#endif
+
     OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
     auto np = static_cast<size_t>(ogrLinearRing->getNumPoints());
     (*multiPolygon)[i].resize(np);
@@ -743,7 +770,12 @@ std::shared_ptr<graph::GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGR
 
   for (size_t i = 0; i < n; i++) {
 
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPolygon *ogrPolygon = ogrMultiPolygon->getGeometryRef(static_cast<int>(i));
+#else
+    OGRPolygon *ogrPolygon = dynamic_cast<OGRPolygon *>(ogrMultiPolygon->getGeometryRef(static_cast<int>(i)));
+#endif
+
     OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
     auto np = static_cast<size_t>(ogrLinearRing->getNumPoints());
     (*multiPolygon)[i].resize(np);
@@ -756,12 +788,14 @@ std::shared_ptr<graph::GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGR
     int nir = ogrPolygon->getNumInteriorRings();
 
   }
+
   return multiPolygon;
 }
 
 void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<GraphicEntity>  &gStyle)
 {
   OGRStyleTool *ogrStyleTool = nullptr;
+
   for (int i = 0; i < ogrStyle->GetPartCount(); i++) {
     if ((ogrStyleTool = ogrStyle->GetPart(i)) != nullptr) {
       OGRSTClassId ogrStyleType = ogrStyleTool->GetType();

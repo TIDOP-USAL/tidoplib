@@ -28,6 +28,8 @@
 #include <unistd.h>
 #endif
 
+#include <array>
+
 namespace tl
 {
 
