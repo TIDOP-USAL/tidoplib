@@ -156,7 +156,9 @@ public:
   {
 
   public:
-    
+
+    //Message();
+
     /*!
      * \brief Constructora
      *
@@ -186,81 +188,6 @@ public:
     std::string date() const;
 
     /*!
-     * \brief file
-     * \return
-     */
-    std::string file() const;
-
-    /*!
-     * \brief function
-     * \return
-     */
-    std::string function() const;
-    
-    /*!
-     * \brief Nivel del mensaje
-     * \return Devuelve el nivel de mensaje establecido
-     */
-    MessageLevel level() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-     
-    /*!
-     * \brief Devuelve la fecha y hora del mensaje
-     * \return Fecha y hora del mensaje
-     * \deprecated Use 'MessageManager::Message::date()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::date()", "2.0")
-    const char *getDate() const;
-
-    /*!
-     * \brief getFile
-     * \return
-     * \deprecated Use 'MessageManager::Message::file()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::file()", "2.0")
-    const char *getFile() const;
-
-    /*!
-     * \brief getFunction
-     * \return
-     * \deprecated Use 'MessageManager::Message::function()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::function()", "2.0")
-    const char *getFunction() const;
-    /*!
-     * \brief Nivel del mensaje
-     * \return Devuelve el nivel de mensaje establecido
-     * \deprecated Use 'MessageManager::Message::level()' en su lugar
-     */
-    TL_DEPRECATED("MessageManager::Message::level()", "2.0")
-      MessageLevel getLevel() const;
-
-    /*!
-     * \brief getLine
-     * \return
-     * \deprecated Use 'MessageManager::Message::line()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::line()", "2.0")
-    int getLine() const;
-
-    /*!
-     * \brief Devuelve el mensaje como cadena de texto
-     * \return Mensaje
-     * \deprecated Use 'MessageManager::Message::message()' en su lugar
-     */
-    TL_DEPRECATED("MessageManager::Message::message()", "2.0")
-      const char *getMessage() const;
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-    
-    /*!
-     * \brief getLine
-     * \return
-     */
-    int line() const;
-
-    /*!
      * \brief Devuelve el mensaje como cadena de texto
      * \return Mensaje
      */
@@ -275,21 +202,6 @@ public:
      */
     static void setTimeLogFormat(const std::string &timeTemplate);
 
-    void setMessageLevel(const MessageLevel &level);
-
-    /*!
-     * \brief Añade la localización del mensaje (fichero, número de línea
-     * y función) y el nivel de información de los mensajes
-     * \param[in] level Nivel de información del mensaje
-     * \param[in] file Nombre del fichero desde el cual se lanza el mensaje
-     * \param[in] line Número de línea del mensaje
-     * \param[in] function Nombre de la función desde la que se lanza el mensaje
-     */
-    void setMessageProperties(const MessageLevel &level, 
-                              const std::string &file, 
-                              int line, 
-                              const std::string &function);
-    
   private:
 
     /*!
@@ -301,26 +213,6 @@ public:
      * \brief Fecha y hora en la que se emitio el mensaje
      */
     std::string mDate;
-
-    /*!
-     * \brief Nivel del mensaje
-     */
-    MessageLevel mLevel;
-
-    /*!
-     * \brief Fichero en el cual se genera el mensaje
-     */
-    std::string mFile;
-
-    /*!
-     * \brief Número de línea donde se ha generado el mensaje
-     */
-    int mLine;
-
-    /*!
-     * \brief Nombre de la función donde se genera el mensaje
-     */
-    std::string mFunction;
 
     /*!
      * \brief Plantilla para el formateo de fecha y hora de los mensajes.
@@ -388,12 +280,6 @@ public:
                       const std::string &file = std::string(), 
                       int line = -1, 
                       const std::string &function = std::string());
-
-  /*!
-   * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
-   * \param[in] message Mensaje que se lanza
-   */
-  static void release(const Message &message);
 
   /*!
    * \brief Quita un escuchador de mensajes

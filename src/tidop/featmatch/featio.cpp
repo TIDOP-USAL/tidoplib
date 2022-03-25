@@ -139,7 +139,7 @@ void FeaturesReaderBinary::read()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -148,7 +148,7 @@ void FeaturesReaderBinary::open()
   try {
     mFile = std::fopen(mFilePath.toString().c_str(), "rb");
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -171,7 +171,7 @@ void FeaturesReaderBinary::readHeader()
     std::fread(&extra_head[0], sizeof(char), extra_head.size(), mFile);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -197,7 +197,7 @@ void FeaturesReaderBinary::readKeypoints()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -211,7 +211,7 @@ void FeaturesReaderBinary::readDescriptors()
     aux.release();
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -274,7 +274,7 @@ void FeaturesWriterBinary::write()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -283,7 +283,7 @@ void FeaturesWriterBinary::open()
   try {
     mFile = std::fopen(mFilePath.toString().c_str(), "rb");
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -309,7 +309,7 @@ void FeaturesWriterBinary::writeHeader()
     std::fwrite(extra_head.data(), sizeof(char), extra_head.size(), mFile);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -332,7 +332,7 @@ void FeaturesWriterBinary::writeBody()
     std::fwrite(mDescriptors.data, sizeof(float), rows * cols, mFile);
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -400,7 +400,7 @@ void FeaturesReaderOpenCV::read()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -411,7 +411,7 @@ void FeaturesReaderOpenCV::open()
     mFileStorage = new cv::FileStorage(mFilePath.toString(), cv::FileStorage::READ);
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -431,7 +431,7 @@ void FeaturesReaderOpenCV::readkeypoints()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -445,7 +445,7 @@ void FeaturesReaderOpenCV::readDescriptor()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -514,7 +514,7 @@ void FeaturesWriterOpenCV::write()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -525,7 +525,7 @@ void FeaturesWriterOpenCV::open()
     mFileStorage = cv::FileStorage(mFilePath.toString(), mMode);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -542,7 +542,7 @@ void FeaturesWriterOpenCV::writeKeypoints()
       cv::write(mFileStorage, "keypoints", mKeyPoints);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -554,7 +554,7 @@ void FeaturesWriterOpenCV::writeDescriptors()
       cv::write(mFileStorage, "descriptors", mDescriptors);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -619,7 +619,7 @@ void FeaturesReaderTxt::read()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -630,7 +630,7 @@ void FeaturesReaderTxt::open()
     ifs = std::ifstream(mFilePath.toString());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -649,7 +649,7 @@ void FeaturesReaderTxt::readHeader()
     stream >> mType >> mSize >> mCols;
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -700,7 +700,7 @@ void FeaturesReaderTxt::readBody()
       r++;
     }
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -761,7 +761,7 @@ void FeaturesWriterTxt::write()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -772,7 +772,7 @@ void FeaturesWriterTxt::open()
     ofs = std::ofstream(mFilePath.toString(), std::ofstream::trunc);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -788,7 +788,7 @@ void FeaturesWriterTxt::writeHeader()
     ofs << mKeyPoints.size() << " " << mDescriptors.cols << " " << mDescriptors.type() << std::endl;
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -835,7 +835,7 @@ void FeaturesWriterTxt::writeBody()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -869,7 +869,7 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Pa
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return features_reader;
@@ -901,7 +901,7 @@ std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Pa
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return features_writer;
@@ -925,7 +925,7 @@ void FeaturesIOHandler::read(const tl::Path &file)
     mReader->read();
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -937,7 +937,7 @@ void FeaturesIOHandler::write(const tl::Path &file)
     mWriter->write();
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 

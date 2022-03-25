@@ -246,7 +246,7 @@ cv::Mat VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &ke
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return descriptors;

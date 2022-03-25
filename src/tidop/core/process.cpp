@@ -25,6 +25,7 @@
 
 #include "tidop/core/process.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/progress.h"
 
 #if defined WIN32
 #include <windows.h>
@@ -300,9 +301,8 @@ void ProcessBase::subscribe(Event::Type eventType,
     case Event::Type::process_finalized:
       mProcessFinalizedEventHandler.emplace_back(eventHandler);
       break;
-    default:
-      break;
   }
+
 
 }
 
@@ -783,6 +783,49 @@ bool ExternalProcess::createPipe()
 }
 
 #endif
+
+
+
+/* Batch Process */
+
+BatchProcess::BatchProcess()
+  : ProcessBase(),
+    mProcesses(0)
+{
+}
+
+BatchProcess::BatchProcess(const BatchProcess &batchProcess)
+  : ProcessBase(),
+    mProcesses(batchProcess.mProcesses)
+{
+}
+
+BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> processes)
+  : ProcessBase(),
+    mProcesses(processes)
+{
+}
+
+BatchProcess::~BatchProcess()
+{
+}
+
+void BatchProcess::push_back(const std::shared_ptr<Process> &process)
+{
+  mProcesses.push_back(process);
+}
+
+void BatchProcess::execute(Progress *progressBar)
+{
+  for(const auto &process : mProcesses) {
+
+    process->run();
+
+    if(progressBar) (*progressBar)();
+
+  }
+}
+
 
 
 

@@ -303,7 +303,7 @@ public:
   * \deprecated Use 'instance()'  en su lugar
   */
   TL_DEPRECATED("Console::instance", "2.0")
-    static Console &getInstance();
+  static Console &getInstance();
 
   /*!
   * \brief Niveles de mensaje activados
@@ -312,7 +312,7 @@ public:
   * \deprecated Use 'messageLevel()'  en su lugar
   */
   TL_DEPRECATED("Console::messageLevel", "2.0")
-    EnumFlags<MessageLevel> getMessageLevel() const;
+  EnumFlags<MessageLevel> getMessageLevel() const;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 

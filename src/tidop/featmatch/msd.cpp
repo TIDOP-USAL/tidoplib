@@ -371,7 +371,7 @@ std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
 #endif
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return keyPoints;

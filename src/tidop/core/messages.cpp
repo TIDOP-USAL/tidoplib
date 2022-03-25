@@ -143,15 +143,6 @@ void MessageManager::release(const std::string &message,
   }
 }
 
-void MessageManager::release(const Message &message)
-{
-  MessageManager::release(message.message(),
-                          message.level(),
-                          message.file(),
-                          message.line(),
-                          message.function());
-}
-
 void MessageManager::removeListener(Listener *listener)
 {
   if (!mListeners.empty()) {
@@ -247,12 +238,12 @@ MessageManager::Listener::~Listener()
 
 /* ---------------------------------------------------------------------------------- */
 
+//MessageManager::Message::Message()
+//{
+//  MessageManager::Message("");
+//}
 
 MessageManager::Message::Message(const char *message, ...)
-  : mLevel(MessageLevel::msg_error),
-    mFile(""), 
-    mLine(-1),
-    mFunction("")
 {
   TL_TODO("revisar")
   try {
@@ -284,26 +275,6 @@ std::string MessageManager::Message::date() const
   return mDate;
 }
 
-std::string MessageManager::Message::file() const
-{
-  return mFile;
-}
-
-std::string MessageManager::Message::function() const
-{
-  return mFunction;
-}
-
-MessageLevel MessageManager::Message::level() const
-{
-  return mLevel;
-}
-
-int MessageManager::Message::line() const
-{
-  return mLine;
-}
-
 std::string MessageManager::Message::message() const
 {
   return mMessage;
@@ -314,66 +285,6 @@ void MessageManager::Message::setTimeLogFormat(const std::string &timeTemplate)
   sTimeLogFormat = timeTemplate;
 }
 
-void MessageManager::Message::setMessageLevel(const MessageLevel &level)
-{
-  mLevel = level;
-}
-    
-void MessageManager::Message::setMessageProperties(const MessageLevel &level, 
-                                                   const std::string &file, 
-                                                   int line, 
-                                                   const std::string &function)
-{
-  mLevel = level;
-  mLine = line;
-  mFile = file;
-  mFunction = function;
-}
-
 #endif  // TL_MESSAGE_HANDLER
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-MessageManager &MessageManager::getInstance()
-{
-  if (sObjMessage.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-    if (sObjMessage.get() == nullptr) {
-      sObjMessage.reset(new MessageManager());
-    }
-  }
-  return *sObjMessage;
-}
-
-const char *MessageManager::Message::getDate() const
-{
-  return mDate.c_str();
-}
-
-const char *MessageManager::Message::getFile() const
-{
-  return mFile.c_str();
-}
-
-const char *MessageManager::Message::getFunction() const
-{
-  return mFunction.c_str();
-}
-
-MessageLevel MessageManager::Message::getLevel() const
-{
-  return mLevel;
-}
-
-int MessageManager::Message::getLine() const
-{
-  return mLine;
-}
-
-const char *MessageManager::Message::getMessage() const
-{
-  return mMessage.c_str();
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 } // End mamespace tl

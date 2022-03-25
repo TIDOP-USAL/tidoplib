@@ -119,9 +119,9 @@ void printException(const std::exception &e, int level)
   if (level == 0) {
     std::string err = std::string(level, ' ') + "exception: " + e.what();
     tl::MessageManager::release(err, tl::MessageLevel::msg_error);
-    tl::MessageManager::release("Trace:", tl::MessageLevel::msg_error);
+    tl::MessageManager::release("Exception trace:", tl::MessageLevel::msg_error);
   } else {
-    std::string err = ">>" + std::string(level, ' ') + "" + e.what();
+    std::string err = ">>" + std::string(level, ' ') + " " + e.what();
     tl::MessageManager::release(err, tl::MessageLevel::msg_error);
   }
 

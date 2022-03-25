@@ -142,7 +142,7 @@ void VectorWriterGdal::open()
     TL_ASSERT(isOpen(), "Vector file open fail. Driver not valid")
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
   
@@ -175,7 +175,7 @@ void VectorWriterGdal::create()
     TL_ASSERT(mDataset != nullptr, "Creation of output file failed")
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -304,7 +304,7 @@ void VectorWriterGdal::write(const GLayer &layer)
     OGRFeature::DestroyFeature(ogrFeature);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -397,7 +397,7 @@ OGRLayer *VectorWriterGdal::createLayer(const std::string &layerName)
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return layer;
@@ -417,7 +417,7 @@ void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -436,7 +436,7 @@ void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -457,7 +457,7 @@ void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
 }
@@ -478,7 +478,7 @@ void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -512,7 +512,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -546,7 +546,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -569,7 +569,7 @@ void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -596,7 +596,7 @@ void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -623,7 +623,7 @@ void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -649,7 +649,7 @@ void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -694,7 +694,7 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -740,7 +740,7 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -782,7 +782,7 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file
     }
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return vector_writer;

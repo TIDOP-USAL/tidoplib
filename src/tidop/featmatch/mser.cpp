@@ -226,7 +226,7 @@ std::vector<cv::KeyPoint> MserDetector::detect(const cv::Mat &img, cv::InputArra
     mMSER->detect(img, keyPoints, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return keyPoints;

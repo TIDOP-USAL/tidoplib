@@ -159,7 +159,7 @@ std::vector<cv::KeyPoint> FastDetector::detect(const cv::Mat &img, cv::InputArra
     mFast->detect(img, keyPoints, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return keyPoints;
@@ -259,7 +259,7 @@ std::vector<cv::KeyPoint> FastDetectorCuda::detect(const cv::Mat &img, cv::Input
 #endif // HAVE_OPENCV_CUDAFEATURES2D
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }  
   
   return keyPoints;

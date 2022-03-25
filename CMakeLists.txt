@@ -132,8 +132,6 @@ endif()
 
 
 
-
-
 unset(TL_HAVE_SSE CACHE)
 unset(TL_HAVE_SSE2 CACHE)
 unset(TL_HAVE_SSE3 CACHE)
@@ -143,59 +141,6 @@ unset(TL_HAVE_AVX CACHE)
 unset(TL_HAVE_AVX2 CACHE)
 unset(TL_HAVE_SIMD_INTRINSICS CACHE)
 
-OPTION(BUILD_WITH_SIMD_INTRINSICS "Use SIMD intrinsics" ON )
-
-if (BUILD_WITH_SIMD_INTRINSICS)
-
-    set(SIMD "SSE3" CACHE STRING "")
-    set_property(CACHE SIMD PROPERTY STRINGS SSE SSE2 SSE3 SSE4_1 SSE4_2 AVX AVX2)
-
-    set(TL_HAVE_SIMD_INTRINSICS TRUE)
-
-    message(STATUS "Build with SIMD intrinsics [${SIMD}]")
-
-    if(${SIMD} STREQUAL "AVX2")
-      set(TL_HAVE_AVX2 TRUE)
-      set(TL_HAVE_AVX TRUE)
-      set(TL_HAVE_SSE4_2 TRUE)
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "AVX")
-      set(TL_HAVE_AVX TRUE)
-      set(TL_HAVE_SSE4_2 TRUE)
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE4_2")
-      set(TL_HAVE_SSE4_2 TRUE)
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE4_1")
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE3")
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE2")
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE")
-      set(TL_HAVE_SSE TRUE)
-    else()
-      set(TL_HAVE_SIMD_INTRINSICS FALSE)
-    endif()
-
-else()
-    unset(SIMD CACHE)
-endif(BUILD_WITH_SIMD_INTRINSICS)
 
 
 if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
@@ -262,6 +207,7 @@ endif()
 #------------------------------------------------------------------------#
 #                                                                        #
 # Activación/desactivación de los diferentes modulos de la libreria      #
+# Configuración de la librería                                           #
 #                                                                        #
 ##########################################################################
 
@@ -282,18 +228,72 @@ cmake_dependent_option(BUILD_TL_EXPERIMENTAL "Include experimental module in Tid
 
 # Activación/desactivación de otros componentes de la libreria
 
-OPTION (BUILD_APPS            "APPS"                  ON)
-OPTION (BUILD_TEST            "Include test"          OFF)
-OPTION (BUILD_DOC             "Build documentation"   OFF)
+OPTION (BUILD_APPS                     "APPS"                  ON )
+OPTION (BUILD_TEST                     "Include test"          OFF)
+OPTION (BUILD_DOC                      "Build documentation"   OFF)
 
-# Activa el gestor de mensajes. Si se desactiva no se mostrarán los mensajes del la librería
-# por consola ni se escribirán en el log
-OPTION (BUILD_MESSAGE_HANDLER "Active message handle" ON)
+# Configuración de la librería
 
-# Si se activa esta opción se pueden utilizar los métodos marcados como obsoletos (deprecated)
-OPTION (BUILD_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
+OPTION (TIDOPLIB_USE_SIMD_INTRINSICS    "Use SIMD intrinsics"               ON )
+OPTION (TIDOPLIB_MESSAGE_HANDLER        "Active message handle"             ON )
+OPTION (TIDOPLIB_DEPRECATED_METHODS     "Use deprecated methods and class"  OFF)
 
-if(BUILD_MESSAGE_HANDLER)
+OPTION (TIDOPLIB_WARNING_DEPRECATED_METHODS     "Active deprecated method warning"  OFF)
+OPTION (TIDOPLIB_WARNING_TODO                   "Active TODO warning"               OFF)
+
+if (TIDOPLIB_USE_SIMD_INTRINSICS)
+
+    set(SIMD "SSE3" CACHE STRING "")
+    set_property(CACHE SIMD PROPERTY STRINGS SSE SSE2 SSE3 SSE4_1 SSE4_2 AVX AVX2)
+
+    set(TL_HAVE_SIMD_INTRINSICS TRUE)
+
+    message(STATUS "Build with SIMD intrinsics [${SIMD}]")
+
+    if(${SIMD} STREQUAL "AVX2")
+      set(TL_HAVE_AVX2 TRUE)
+      set(TL_HAVE_AVX TRUE)
+      set(TL_HAVE_SSE4_2 TRUE)
+      set(TL_HAVE_SSE4_1 TRUE)
+      set(TL_HAVE_SSE3 TRUE)
+      set(TL_HAVE_SSE2 TRUE)
+      set(TL_HAVE_SSE TRUE)
+    elseif(${SIMD} STREQUAL "AVX")
+      set(TL_HAVE_AVX TRUE)
+      set(TL_HAVE_SSE4_2 TRUE)
+      set(TL_HAVE_SSE4_1 TRUE)
+      set(TL_HAVE_SSE3 TRUE)
+      set(TL_HAVE_SSE2 TRUE)
+      set(TL_HAVE_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE4_2")
+      set(TL_HAVE_SSE4_2 TRUE)
+      set(TL_HAVE_SSE4_1 TRUE)
+      set(TL_HAVE_SSE3 TRUE)
+      set(TL_HAVE_SSE2 TRUE)
+      set(TL_HAVE_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE4_1")
+      set(TL_HAVE_SSE4_1 TRUE)
+      set(TL_HAVE_SSE3 TRUE)
+      set(TL_HAVE_SSE2 TRUE)
+      set(TL_HAVE_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE3")
+      set(TL_HAVE_SSE3 TRUE)
+      set(TL_HAVE_SSE2 TRUE)
+      set(TL_HAVE_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE2")
+      set(TL_HAVE_SSE2 TRUE)
+      set(TL_HAVE_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE")
+      set(TL_HAVE_SSE TRUE)
+    else()
+      set(TL_HAVE_SIMD_INTRINSICS FALSE)
+    endif()
+
+else(TIDOPLIB_USE_SIMD_INTRINSICS)
+    unset(SIMD CACHE)
+endif(TIDOPLIB_USE_SIMD_INTRINSICS)
+
+if(TIDOPLIB_MESSAGE_HANDLER)
   set(TL_MESSAGE_HANDLER YES)
   message(STATUS "  [TidopLib] Message manager enabled")
 else()
@@ -301,12 +301,28 @@ else()
   message(STATUS "  [TidopLib] Message manager disabled")
 endif()
 
-if(BUILD_DEPRECATED_METHODS)
+if(TIDOPLIB_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
-  message(WARNING "  [TidopLib] Enable deprecated methods and class")
+  message(STATUS "  [TidopLib] Enable deprecated methods and class")
 else()
   set(TL_ENABLE_DEPRECATED_METHODS NO)
   message(STATUS "  [TidopLib] Disable deprecated methods and class")
+endif()
+
+if(TIDOPLIB_WARNING_DEPRECATED_METHODS)
+  set(TL_WARNING_DEPRECATED_METHOD YES)
+  message(STATUS "  [TidopLib] Enable deprecated method Warning")
+else()
+  set(TL_WARNING_DEPRECATED_METHOD NO)
+  message(STATUS "  [TidopLib] Disable deprecated method Warning")
+endif()
+
+if(TIDOPLIB_WARNING_TODO)
+  set(TL_WARNING_TODO YES)
+  message(STATUS "  [TidopLib] Enable TODO Warning")
+else()
+  set(TL_WARNING_TODO NO)
+  message(STATUS "  [TidopLib] Disable TODO Warning")
 endif()
 
 if(BUILD_APPS)

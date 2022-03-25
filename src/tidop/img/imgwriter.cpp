@@ -137,7 +137,7 @@ public:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
   }
 
@@ -240,7 +240,7 @@ public:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
   }
 
@@ -323,7 +323,7 @@ public:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
   }
 
@@ -336,7 +336,7 @@ public:
       write(image, rect);
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
   }
 
@@ -382,7 +382,7 @@ public:
       rows = mDataset->GetRasterYSize();
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return rows;
@@ -399,7 +399,7 @@ public:
       cols = mDataset->GetRasterXSize();
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return cols;
@@ -416,7 +416,7 @@ public:
       channels = mDataset->GetRasterCount();
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return channels;
@@ -437,7 +437,7 @@ public:
       depth = GDALGetDataTypeSizeBits(gdal_data_type);
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return depth;
@@ -624,7 +624,7 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
     }
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return image_writer;

@@ -87,7 +87,7 @@ public:
   /*!
    * \brief Start the process
    */
-  virtual void run(Progress *progressBar) = 0;
+  virtual void run(Progress *progressBar = nullptr) = 0;
 
   /*!
    * \brief Starts the process asynchronously
@@ -96,7 +96,7 @@ public:
    * mProcessErrorEvent->setErrorMessage(e.what());
    * eventTriggered(Event::Type::process_error);
    */
-  virtual void runAsync(Progress *progressBar) = 0;
+  virtual void runAsync(Progress *progressBar = nullptr) = 0;
 
   /*!
    * \brief Pause the process
@@ -293,6 +293,47 @@ private:
   HANDLE mThreadHandle;
 #endif
   
+};
+
+
+
+class TL_EXPORT BatchProcess
+  : public ProcessBase
+{
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  BatchProcess();
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] batchProcess Proceso que se copia
+   */
+  BatchProcess(const BatchProcess &batchProcess);
+
+  /*!
+   * \brief Constructor de lista
+   * \param[in] processes Listado de procesos
+   */
+  BatchProcess(std::initializer_list<std::shared_ptr<Process>> processes);
+
+  ~BatchProcess() override;
+
+  void push_back(const std::shared_ptr<Process> &process);
+
+private:
+
+// ProcessBase interface
+
+  virtual void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+  std::list<std::shared_ptr<Process>> mProcesses;
+
 };
 
 

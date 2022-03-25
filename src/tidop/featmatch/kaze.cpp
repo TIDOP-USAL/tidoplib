@@ -223,7 +223,7 @@ std::vector<cv::KeyPoint> KazeDetectorDescriptor::detect(const cv::Mat &img,
     mKaze->detect(img, keyPoints, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return keyPoints;
@@ -239,7 +239,7 @@ cv::Mat KazeDetectorDescriptor::extract(const cv::Mat &img,
     mKaze->compute(img, keyPoints, descriptors);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return descriptors;

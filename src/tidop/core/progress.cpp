@@ -78,10 +78,20 @@ void ProgressBase::setRange(size_t min, size_t max)
   updateScale();
 }
 
+size_t ProgressBase::minimun() const
+{
+  return mMinimun;
+}
+
 void ProgressBase::setMinimun(size_t min)
 {
   mMinimun = min;
   updateScale();
+}
+
+size_t ProgressBase::maximun() const
+{
+  return mMaximun;
 }
 
 void ProgressBase::setMaximun(size_t max)
@@ -95,6 +105,15 @@ void ProgressBase::setText(const std::string &text)
   mMessage = text;
 }
 
+void ProgressBase::reset()
+{
+  mMinimun = 0;
+  mMaximun = 0;
+  mMessage = "";
+  mProgress = 0.;
+  mPercent = -1;
+}
+
 void ProgressBase::initialize()
 {
   std::cout << mMessage << "\n";
@@ -103,7 +122,8 @@ void ProgressBase::initialize()
 
 void ProgressBase::updateScale()
 {
-  mScale = 100. / static_cast<double>(mMaximun - mMinimun);
+  if (mMinimun == mMaximun) mScale = 1.;
+  else mScale = 100. / static_cast<double>(mMaximun - mMinimun);
 }
 
 int ProgressBase::percent()

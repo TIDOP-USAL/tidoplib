@@ -91,7 +91,7 @@ public:
                                             nullptr/*options->getOptions()*/, 
                                             nullptr ));
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
   }
 
@@ -133,7 +133,7 @@ public:
       layer = this->read(ogrLayer);
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return layer;
@@ -153,7 +153,7 @@ public:
       this->read(ogrLayer);
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return layer;
@@ -187,7 +187,7 @@ public:
 #endif
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return crs_wkt;
@@ -212,7 +212,7 @@ public:
 //#endif
 //    
 //    } catch (...) {
-//      TL_THROW_EXCEPTION_WITH_NESTED("");
+//      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
 //    }
 //
 //    return crs;
@@ -1350,7 +1350,7 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return vector_reader;

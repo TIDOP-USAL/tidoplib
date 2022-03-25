@@ -477,7 +477,8 @@ storePackedUnaligned(T *data, U &result)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 set(T data)
 {
   Packed<T> r;
@@ -542,7 +543,8 @@ set(T data)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -558,7 +560,8 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -574,7 +577,8 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_integral<typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_integral<typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -606,7 +610,8 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -622,7 +627,8 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -638,7 +644,8 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_integral<typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_integral<typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -702,7 +709,8 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   //Packed<T> r;
@@ -718,7 +726,8 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -734,7 +743,8 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_integral<typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_integral<typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -827,7 +837,8 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
 #ifdef TL_HAVE_AVX
@@ -839,7 +850,8 @@ div(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
   div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
 #ifdef TL_HAVE_AVX
