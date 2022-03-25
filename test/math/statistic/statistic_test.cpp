@@ -28,6 +28,7 @@
 #include <tidop/math/statistic/descriptive.h>
 #include <tidop/math/statistic/series.h>
 #include <tidop/math/statistic/confmat.h>
+#include <tidop/math/statistic/covariance.h>
 
 using namespace tl::math;
 
@@ -122,6 +123,9 @@ struct DescriptiveStatisticsTest
     config.skewness_method = SkewnessMethod::fisher_pearson;
     config.sample = false;
     stat_1_population = DescriptiveStatistics<double>(s_1, config);
+
+    x = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
+    y = {92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
   }
 
   void teardown()
@@ -134,6 +138,9 @@ struct DescriptiveStatisticsTest
   DescriptiveStatistics<float> stat_4;
 
   DescriptiveStatistics<double> stat_1_population;
+
+  Series<double> x;
+  Series<double> y;
 };
 
 BOOST_FIXTURE_TEST_CASE(min, DescriptiveStatisticsTest)
@@ -338,6 +345,13 @@ BOOST_FIXTURE_TEST_CASE(quartileDeviation, DescriptiveStatisticsTest)
   //BOOST_CHECK_CLOSE(0.8125, tl::math::quartileDeviation(vd.begin(), vd.end()), 0.1);
   //BOOST_CHECK_CLOSE(1, tl::math::quartileDeviation(vi.begin(), vi.end()), 0.1);
   //BOOST_CHECK_CLOSE(5, tl::math::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(covariance, DescriptiveStatisticsTest)
+{
+  tl::math::Covariance<double> covariance;
+  
+  BOOST_CHECK_CLOSE(-33.06, covariance.eval(x, y), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

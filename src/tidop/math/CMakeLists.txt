@@ -40,6 +40,7 @@ if(BUILD_TL_MATH)
         statistic/series.h
         statistic/descriptive.h
         statistic/confmat.h
+		statistic/covariance.h
         statistic/tukeyfences.h
         algebra/quaternion.h
         algebra/euler_angles.h

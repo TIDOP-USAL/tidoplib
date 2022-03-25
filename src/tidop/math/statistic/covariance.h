@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_STATISTIC_TUKEY_H
-#define TL_MATH_STATISTIC_TUKEY_H
+#ifndef TL_MATH_STATISTIC_COVARIANCE_H
+#define TL_MATH_STATISTIC_COVARIANCE_H
 
 #include <tidop/core/defs.h>
 #include <tidop/core/messages.h>
@@ -34,7 +34,7 @@ namespace tl
 
 namespace math
 {
-  
+	
 /*! \addtogroup math
  *  \{
  */
@@ -45,25 +45,20 @@ namespace math
  */
  
 /*!
- * /brief Tukey's fences
+ * /brief Covariance
  *  
  */
 template<typename T>
-class TukeyFences
+class Covariance
 {
-
-  enum class K
-  {
-    outlier, /* k = 1.5 */
-    far_out  /* k = 3   */
-  };
 
 public:
 
-  TukeyFences();
-  ~TukeyFences();
+  Covariance();
+  ~Covariance();
 
-  std::vector<bool> eval(const Series<T> &data, K k = K::outlier);
+  double eval(const Series<T> &data1, 
+              const Series<T> &data2);
 
 };
 
@@ -71,42 +66,41 @@ public:
 /* Implementation */
 
 template<typename T>
-TukeyFences<T>::TukeyFences()
+Covariance<T>::Covariance()
 {
 }
 
 template<typename T>
-TukeyFences<T>::~TukeyFences()
+Covariance<T>::~Covariance()
 {
 }
 
 template<typename T> inline
-std::vector<bool> TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k)
+double Covariance<T>::eval(const Series<T> &series1, 
+                           const Series<T> &series2)
 {
-  DescriptiveStatistics<T> stat(series);
+  DescriptiveStatistics<T> stat1(series1);
+  DescriptiveStatistics<T> stat2(series2);
 
-  double _k{};
+  auto n_x = stat1.size();
+  auto n_y = stat2.size();
+  if (n_x != n_y || n_x <= 1) return consts::zero<double>;
 
-  switch(k) {
-    case tl::math::tukey_k::outlier:
-      _k = 1.5;
-      break;
-    case tl::math::tukey_k::far_out:
-      _k = 3.;
-      break;
+  double mean_x = stat1.mean();
+  double mean_y = stat2.mean();
+  double sum{};
+  double x{};
+  double y{};
+
+  auto it1 = series1.begin();
+  auto it2 = series2.begin();
+  while (it1 != series1.end()) {
+    x = static_cast<double>(*it1++) - mean_x;
+    y = static_cast<double>(*it2++) - mean_y;
+    sum += x*y;
   }
 
-  T el1 = stat.firstQuartile() - stat.interquartileRange() * _k;
-  T el2 = stat.thirdQuartile() + stat.interquartileRange() * _k;
-
-  std::vector<bool> inliers(stat.size(), false);
-
-  auto out = inliers.begin();
-  for(const auto &data : series) {
-    *out++ = el1 < data && data > el2;
-  }
-
-  return inliers;
+  return sum / n_x;
 }
 
 
@@ -118,6 +112,6 @@ std::vector<bool> TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::
 
 } // End namespace tl
 
-#endif TL_MATH_STATISTIC_TUKEY_H
+#endif TL_MATH_STATISTIC_COVARIANCE_H
 
 

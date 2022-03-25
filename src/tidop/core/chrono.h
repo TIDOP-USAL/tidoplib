@@ -62,8 +62,31 @@ TL_EXPORT uint64_t tickCount();
 
 /*!
  * \brief Clase para medir tiempos.
- *
- * Su uso esta pensado para medir tiempos en depuración
+ * 
+ * <b>Ejemplo</b>
+ * 
+ * <h3>Medición de tiempos con mensaje</h3>
+ * 
+ * 
+ * \code
+ *   Chrono chrono("Translation");
+ *   chrono.run();
+ * 
+ *   /// ....
+ *   
+ *   chrono.stop(); // Print time in console
+ * \endcode
+ * 
+ * <h3>Medición de tiempos</h3>
+ * 
+ * \code
+ *   Chrono chrono;
+ *   chrono.run();
+ * 
+ *   /// ....
+ *   
+ *   double time = chrono.stop(); // Tiempo en segundos
+ * \endcode
  */
 class TL_EXPORT Chrono
 {
