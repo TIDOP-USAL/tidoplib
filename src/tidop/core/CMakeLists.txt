@@ -43,8 +43,8 @@ if(BUILD_TL_CORE)
                 log.h
                 utils.cpp
                 utils.h
-                process.cpp
-                process.h
+                task.cpp
+                task.h
                 progress.cpp
                 progress.h
                 event.cpp

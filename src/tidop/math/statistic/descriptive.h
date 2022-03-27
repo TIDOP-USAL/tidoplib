@@ -511,9 +511,21 @@ T DescriptiveStatistics<T>::sum()
 {
   T summation{};
 
+//#ifdef TL_HAVE_OPENMP
+//
+//  T aux{};
+
+  TL_TODO("Hacer prueba de rendimiento")
+//#pragma omp parallel for reduction(+:summation) private(aux) 
+//  for (long long i = 0; i < static_cast<long long>(size()); i++) {
+//    aux = mData[static_cast<size_t>(i)];
+//    summation += aux;
+//  }
+//#else
   for (const auto &data : mData) {
     summation += data;
   }
+//#endif
 
   return summation;
 }
@@ -662,29 +674,6 @@ double DescriptiveStatistics<T>::rootMeanSquare()
 template<typename T> inline
 double DescriptiveStatistics<T>::skewness()
 {
-  //size_t n = size();
-  //
-  //if (n <= 1) return consts::zero<double>;
-
-  //double _mean = mean();
-  //double dif{};
-  //double skew{};
-
-  //for(const auto &data : mData) {
-  //  dif = static_cast<double>(data) - _mean;
-  //  skew += dif * dif * dif;
-  //}
-
-  //double _variance = variance();
-
-  //if(_variance == consts::zero<double>) return consts::zero<double>;
-
-  //if(mConfig.sample) {
-  //  return skew * n / ((n-1)*(n-2) * _variance * standarDeviation());
-  //} else {
-  //  return skew / (n * _variance * standarDeviation());
-  //}
-
   return mSkewnessMethod->eval(this);
 }
 

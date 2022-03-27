@@ -41,109 +41,109 @@ EventBase::Type EventBase::type() const
 }
 
 
-/* Process Running Event */
+/* Task Running Event */
 
-ProcessRunningEvent::ProcessRunningEvent()
-  : EventBase(Event::Type::process_running)
+TaskRunningEvent::TaskRunningEvent()
+  : EventBase(Event::Type::task_running)
 {
 }
 
-void ProcessRunningEvent::clear()
-{
-}
-
-
-/* Process Pausing Event */
-
-ProcessPausingEvent::ProcessPausingEvent()
-  : EventBase(Event::Type::process_pausing)
-{
-}
-
-void ProcessPausingEvent::clear()
+void TaskRunningEvent::clear()
 {
 }
 
 
-/* Process Pause Event */
+/* Task Pausing Event */
 
-ProcessPauseEvent::ProcessPauseEvent()
-  : EventBase(Event::Type::process_paused)
+TaskPausingEvent::TaskPausingEvent()
+  : EventBase(Event::Type::task_pausing)
 {
 }
 
-void ProcessPauseEvent::clear()
-{
-}
-
-
-/* Process Resumed Event */
-
-ProcessResumedEvent::ProcessResumedEvent()
-  : EventBase(Event::Type::process_resumed)
-{
-}
-
-void ProcessResumedEvent::clear()
+void TaskPausingEvent::clear()
 {
 }
 
 
-/* Process Stopping Event */
+/* Task Pause Event */
 
-ProcessStoppingEvent::ProcessStoppingEvent()
-  : EventBase(Event::Type::process_stopping)
+TaskPauseEvent::TaskPauseEvent()
+  : EventBase(Event::Type::task_paused)
 {
 }
 
-void ProcessStoppingEvent::clear()
-{
-}
-
-
-/* Process Stopped Event */
-
-ProcessStoppedEvent::ProcessStoppedEvent()
-  : EventBase(Event::Type::process_stopped)
-{
-}
-
-void ProcessStoppedEvent::clear()
+void TaskPauseEvent::clear()
 {
 }
 
 
-/* Process Finalized Event */
+/* Task Resumed Event */
 
-ProcessFinalizedEvent::ProcessFinalizedEvent()
-  : EventBase(Event::Type::process_finalized)
+TaskResumedEvent::TaskResumedEvent()
+  : EventBase(Event::Type::task_resumed)
 {
 }
 
-void ProcessFinalizedEvent::clear()
+void TaskResumedEvent::clear()
 {
 }
 
 
-/* Process Error Event */
+/* Task Stopping Event */
 
-ProcessErrorEvent::ProcessErrorEvent()
-  : EventBase(Event::Type::process_error),
+TaskStoppingEvent::TaskStoppingEvent()
+  : EventBase(Event::Type::task_stopping)
+{
+}
+
+void TaskStoppingEvent::clear()
+{
+}
+
+
+/* Task Stopped Event */
+
+TaskStoppedEvent::TaskStoppedEvent()
+  : EventBase(Event::Type::task_stopped)
+{
+}
+
+void TaskStoppedEvent::clear()
+{
+}
+
+
+/* Task Finalized Event */
+
+TaskFinalizedEvent::TaskFinalizedEvent()
+  : EventBase(Event::Type::task_finalized)
+{
+}
+
+void TaskFinalizedEvent::clear()
+{
+}
+
+
+/* Task Error Event */
+
+TaskErrorEvent::TaskErrorEvent()
+  : EventBase(Event::Type::task_error),
     mErrorMessage("")
 {
 }
 
-std::string ProcessErrorEvent::errorMessage() const
+std::string TaskErrorEvent::errorMessage() const
 {
   return mErrorMessage;
 }
 
-void ProcessErrorEvent::setErrorMessage(const std::string &error)
+void TaskErrorEvent::setErrorMessage(const std::string &error)
 {
   mErrorMessage = error;
 }
 
-void ProcessErrorEvent::clear()
+void TaskErrorEvent::clear()
 {
   mErrorMessage.clear();
 }
@@ -153,7 +153,7 @@ void ProcessErrorEvent::clear()
 /* Image Change Event */
 
 ImageChangeEvent::ImageChangeEvent()
-  : EventBase(Event::Type::process_error),
+  : EventBase(Event::Type::task_error),
     mImage("")
 {
 }

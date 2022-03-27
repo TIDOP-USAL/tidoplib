@@ -250,19 +250,6 @@ private:
 };
 
 
-
-
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief número optimo de hilos
- * \deprecated Usar en su lugar optimalNumberOfThreads()
- */
-TL_DEPRECATED("optimalNumberOfThreads()", "2.0")
-TL_EXPORT uint32_t getOptimalNumberOfThreads();
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-
 /*! \} */ // end of concurrency
 
 /*! \} */ // end of core

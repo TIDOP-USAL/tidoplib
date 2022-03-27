@@ -47,7 +47,7 @@ class Progress;
  */
 
 
-class TL_EXPORT Process
+class TL_EXPORT Task
 {
 
 public:
@@ -65,24 +65,24 @@ public:
   };
 
   using EventHandler = typename std::function<void (Event *)>;
-  using ProcessErrorEventHandler = typename std::function<void (ProcessErrorEvent *)>;
-  using ProcessFinalizedEventHandler = typename std::function<void (ProcessFinalizedEvent *)>;
-  using ProcessPauseEventHandler = typename std::function<void (ProcessPauseEvent *)>;
-  using ProcessPausingEventHandler = typename std::function<void (ProcessPausingEvent *)>;
-  using ProcessResumedEventHandler = typename std::function<void (ProcessResumedEvent *)>;
-  using ProcessRunningEventHandler = typename std::function<void (ProcessRunningEvent *)>;
-  using ProcessStoppedEventHandler = typename std::function<void (ProcessStoppedEvent *)>;
-  using ProcessStoppingEventHandler = typename std::function<void (ProcessStoppingEvent *)>;
+  using TaskErrorEventHandler = typename std::function<void (TaskErrorEvent *)>;
+  using TaskFinalizedEventHandler = typename std::function<void (TaskFinalizedEvent *)>;
+  using TaskPauseEventHandler = typename std::function<void (TaskPauseEvent *)>;
+  using TaskPausingEventHandler = typename std::function<void (TaskPausingEvent *)>;
+  using TaskResumedEventHandler = typename std::function<void (TaskResumedEvent *)>;
+  using TaskRunningEventHandler = typename std::function<void (TaskRunningEvent *)>;
+  using TaskStoppedEventHandler = typename std::function<void (TaskStoppedEvent *)>;
+  using TaskStoppingEventHandler = typename std::function<void (TaskStoppingEvent *)>;
 
 public:
 
-  Process();
-  virtual ~Process();
+  Task();
+  virtual ~Task();
 
-  Process(const Process &) = delete;
-  Process(Process &&) = delete;
-  void operator=(const Process &) = delete;
-  void operator=(Process &&) = delete;
+  Task(const Task &) = delete;
+  Task(Task &&) = delete;
+  void operator=(const Task &) = delete;
+  void operator=(Task &&) = delete;
 
   /*!
    * \brief Start the process
@@ -91,10 +91,6 @@ public:
 
   /*!
    * \brief Starts the process asynchronously
-   * Se tiene que realizar el control de excepciones desde execute y
-   * establecer el mensaje de error:
-   * mProcessErrorEvent->setErrorMessage(e.what());
-   * eventTriggered(Event::Type::process_error);
    */
   virtual void runAsync(Progress *progressBar = nullptr) = 0;
 
@@ -121,33 +117,33 @@ public:
   virtual void subscribe(Event::Type eventType,
                          const EventHandler &eventHandler) = 0;
   virtual void subscribe(const EventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessErrorEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessFinalizedEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessPauseEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessPausingEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessResumedEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessRunningEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessStoppedEventHandler &eventHandler) = 0;
-  virtual void subscribe(const ProcessStoppingEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskErrorEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskFinalizedEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskPauseEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskPausingEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskResumedEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskRunningEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskStoppedEventHandler &eventHandler) = 0;
+  virtual void subscribe(const TaskStoppingEventHandler &eventHandler) = 0;
 
   virtual Status status() const = 0;
 };
 
 
 
-class TL_EXPORT ProcessBase
-  : public Process
+class TL_EXPORT TaskBase
+  : public Task
 {
 
 public:
 
-  ProcessBase();
-  ProcessBase(const ProcessBase &process);
-  ProcessBase(ProcessBase &&process) TL_NOEXCEPT;
-  ~ProcessBase() override;
+  TaskBase();
+  TaskBase(const TaskBase &process);
+  TaskBase(TaskBase &&process) TL_NOEXCEPT;
+  ~TaskBase() override;
 
-  ProcessBase &operator=(const ProcessBase &process);
-  ProcessBase &operator=(ProcessBase &&process) TL_NOEXCEPT;
+  TaskBase &operator=(const TaskBase &process);
+  TaskBase &operator=(TaskBase &&process) TL_NOEXCEPT;
 
 protected:
 
@@ -156,7 +152,7 @@ protected:
    */
   virtual void execute(Progress *progressBar = nullptr) = 0;
 
-  // Process interface
+  // Task interface
 
 public:
 
@@ -170,14 +166,14 @@ public:
   void subscribe(Event::Type eventType,
                  const EventHandler &eventHandler) override;
   void subscribe(const EventHandler &eventHandler) override;
-  void subscribe(const ProcessErrorEventHandler &eventHandler) override;
-  void subscribe(const ProcessFinalizedEventHandler &eventHandler) override;
-  void subscribe(const ProcessPauseEventHandler &eventHandler) override;
-  void subscribe(const ProcessPausingEventHandler &eventHandler) override;
-  void subscribe(const ProcessResumedEventHandler &eventHandler) override;
-  void subscribe(const ProcessRunningEventHandler &eventHandler) override;
-  void subscribe(const ProcessStoppedEventHandler &eventHandler) override;
-  void subscribe(const ProcessStoppingEventHandler &eventHandler) override;
+  void subscribe(const TaskErrorEventHandler &eventHandler) override;
+  void subscribe(const TaskFinalizedEventHandler &eventHandler) override;
+  void subscribe(const TaskPauseEventHandler &eventHandler) override;
+  void subscribe(const TaskPausingEventHandler &eventHandler) override;
+  void subscribe(const TaskResumedEventHandler &eventHandler) override;
+  void subscribe(const TaskRunningEventHandler &eventHandler) override;
+  void subscribe(const TaskStoppedEventHandler &eventHandler) override;
+  void subscribe(const TaskStoppingEventHandler &eventHandler) override;
  
   Status status() const override;
 
@@ -186,23 +182,23 @@ protected:
   void setStatus(Status status);
 
   void eventTriggered(Event::Type type);
-  void eventProcessErrorTriggered();
-  void eventProcessFinalizedTriggered();
-  void eventProcessPauseTriggered();
-  void eventProcessPausingTriggered();
-  void eventProcessResumedTriggered();
-  void eventProcessRunningTriggered();
-  void eventProcessStoppedTriggered();
-  void eventProcessStoppingTriggered();
+  void eventTaskErrorTriggered();
+  void eventTaskFinalizedTriggered();
+  void eventTaskPauseTriggered();
+  void eventTaskPausingTriggered();
+  void eventTaskResumedTriggered();
+  void eventTaskRunningTriggered();
+  void eventTaskStoppedTriggered();
+  void eventTaskStoppingTriggered();
 
-  ProcessErrorEvent *errorEvent();
-  ProcessFinalizedEvent *finalizedEvent();
-  ProcessPauseEvent *pauseEvent();
-  ProcessPausingEvent *pausingEvent();
-  ProcessResumedEvent *resumedEvent();
-  ProcessRunningEvent *runningEvent();
-  ProcessStoppedEvent *stoppedEvent();
-  ProcessStoppingEvent *stoppingEvent();
+  TaskErrorEvent *errorEvent();
+  TaskFinalizedEvent *finalizedEvent();
+  TaskPauseEvent *pauseEvent();
+  TaskPausingEvent *pausingEvent();
+  TaskResumedEvent *resumedEvent();
+  TaskRunningEvent *runningEvent();
+  TaskStoppedEvent *stoppedEvent();
+  TaskStoppingEvent *stoppingEvent();
 
 private:
 
@@ -214,29 +210,29 @@ private:
   Status mStatus{Status::start};
   std::thread mThread;
   std::mutex mMutex;
-  std::unique_ptr<ProcessErrorEvent> mProcessErrorEvent;
-  std::unique_ptr<ProcessFinalizedEvent> mProcessFinalizedEvent;
-  std::unique_ptr<ProcessPauseEvent> mProcessPauseEvent;
-  std::unique_ptr<ProcessPausingEvent> mProcessPausingEvent;
-  std::unique_ptr<ProcessResumedEvent> mProcessResumedEvent;
-  std::unique_ptr<ProcessRunningEvent> mProcessRunningEvent;
-  std::unique_ptr<ProcessStoppedEvent> mProcessStoppedEvent;
-  std::unique_ptr<ProcessStoppingEvent> mProcessStoppingEvent;
-  std::list<ProcessErrorEventHandler> mProcessErrorEventHandler;
-  std::list<ProcessFinalizedEventHandler> mProcessFinalizedEventHandler;
-  std::list<ProcessPauseEventHandler> mProcessPauseEventHandler;
-  std::list<ProcessPausingEventHandler> mProcessPausingEventHandler;
-  std::list<ProcessResumedEventHandler> mProcessResumedEventHandler;
-  std::list<ProcessRunningEventHandler> mProcessRunningEventHandler;
-  std::list<ProcessStoppedEventHandler> mProcessStoppedEventHandler;
-  std::list<ProcessStoppingEventHandler> mProcessStoppingEventHandler;
+  std::unique_ptr<TaskErrorEvent> mTaskErrorEvent;
+  std::unique_ptr<TaskFinalizedEvent> mTaskFinalizedEvent;
+  std::unique_ptr<TaskPauseEvent> mTaskPauseEvent;
+  std::unique_ptr<TaskPausingEvent> mTaskPausingEvent;
+  std::unique_ptr<TaskResumedEvent> mTaskResumedEvent;
+  std::unique_ptr<TaskRunningEvent> mTaskRunningEvent;
+  std::unique_ptr<TaskStoppedEvent> mTaskStoppedEvent;
+  std::unique_ptr<TaskStoppingEvent> mTaskStoppingEvent;
+  std::list<TaskErrorEventHandler> mTaskErrorEventHandler;
+  std::list<TaskFinalizedEventHandler> mTaskFinalizedEventHandler;
+  std::list<TaskPauseEventHandler> mTaskPauseEventHandler;
+  std::list<TaskPausingEventHandler> mTaskPausingEventHandler;
+  std::list<TaskResumedEventHandler> mTaskResumedEventHandler;
+  std::list<TaskRunningEventHandler> mTaskRunningEventHandler;
+  std::list<TaskStoppedEventHandler> mTaskStoppedEventHandler;
+  std::list<TaskStoppingEventHandler> mTaskStoppingEventHandler;
 };
 
 
 
 
-class TL_EXPORT ExternalProcess
-  : public ProcessBase
+class TL_EXPORT Process
+  : public TaskBase
 {
 
 public:
@@ -257,9 +253,9 @@ public:
 
 public:
 
-  ExternalProcess(std::string commandText/*,
-                  Priority priority = Priority::normal*/);
-  ~ExternalProcess() override;
+  Process(std::string commandText/*,
+          Priority priority = Priority::normal*/);
+  ~Process() override;
 
 #ifdef WIN32
   Priority priority() const;
@@ -278,7 +274,7 @@ private:
 
 private:
 
-// ProcessBase
+// TaskBase
   
   void execute(Progress *progressBar = nullptr) override;
 
@@ -296,9 +292,11 @@ private:
 };
 
 
-
-class TL_EXPORT BatchProcess
-  : public ProcessBase
+/*!
+ * \brief Lista de tareas
+ */
+class TL_EXPORT TaskList
+  : public TaskBase
 {
 
 public:
@@ -306,23 +304,23 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  BatchProcess();
+  TaskList();
 
   /*!
    * \brief Constructor de copia
-   * \param[in] batchProcess Proceso que se copia
+   * \param[in] taskList Lista de tareas que se copia
    */
-  BatchProcess(const BatchProcess &batchProcess);
+  TaskList(const TaskList &taskList);
 
   /*!
    * \brief Constructor de lista
-   * \param[in] processes Listado de procesos
+   * \param[in] tasks Listado de tareas
    */
-  BatchProcess(std::initializer_list<std::shared_ptr<Process>> processes);
+  TaskList(std::initializer_list<std::shared_ptr<Task>> tasks);
 
-  ~BatchProcess() override;
+  ~TaskList() override;
 
-  void push_back(const std::shared_ptr<Process> &process);
+  void push_back(const std::shared_ptr<Task> &task);
 
 private:
 
@@ -332,7 +330,7 @@ private:
 
 private:
 
-  std::list<std::shared_ptr<Process>> mProcesses;
+  std::list<std::shared_ptr<Task>> mTasks;
 
 };
 

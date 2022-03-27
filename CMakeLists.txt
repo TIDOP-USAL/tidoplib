@@ -676,3 +676,6 @@ install(
     NAMESPACE "${TIDOP_NAMESPACE}"
     DESTINATION "${TIDOP_CONFIG_CMAKE_INSTALL_DIR}"
 )
+
+
+#include(cmake/CMakeCPack.cmake)

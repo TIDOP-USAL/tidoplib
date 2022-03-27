@@ -46,16 +46,16 @@ public:
 
   enum class Type
   {
-    /* Process events*/
+    /* Task events*/
 
-    process_running,
-    process_pausing,
-    process_paused,
-    process_resumed,
-    process_stopping,
-    process_stopped,
-    process_finalized,
-    process_error,
+    task_running,
+    task_pausing,
+    task_paused,
+    task_resumed,
+    task_stopping,
+    task_stopped,
+    task_finalized,
+    task_error,
 
     /* Image events */
 
@@ -90,113 +90,113 @@ private:
 
 
 
-/* Process Running Event */
+/* Task Running Event */
 
-class TL_EXPORT ProcessRunningEvent
+class TL_EXPORT TaskRunningEvent
   : public EventBase
 {
 
 public:
 
-  ProcessRunningEvent();
+  TaskRunningEvent();
 
   void clear() override;
 };
 
 
-/* Process Pausing Event */
+/* Task Pausing Event */
 
-class TL_EXPORT ProcessPausingEvent
+class TL_EXPORT TaskPausingEvent
   : public EventBase
 {
 
 public:
 
-  ProcessPausingEvent();
+  TaskPausingEvent();
 
   void clear() override;
 };
 
 
-/* Process Pause Event */
+/* Task Pause Event */
 
-class TL_EXPORT ProcessPauseEvent
+class TL_EXPORT TaskPauseEvent
   : public EventBase
 {
 
 public:
 
-  ProcessPauseEvent();
+  TaskPauseEvent();
 
   void clear() override;
 };
 
 
-/* Process Resumed Event */
+/* Task Resumed Event */
 
-class TL_EXPORT ProcessResumedEvent
+class TL_EXPORT TaskResumedEvent
   : public EventBase
 {
 
 public:
 
-  ProcessResumedEvent();
+  TaskResumedEvent();
 
   void clear() override;
 };
 
 
-/* Process Stopping Event */
+/* Task Stopping Event */
 
-class TL_EXPORT ProcessStoppingEvent
+class TL_EXPORT TaskStoppingEvent
   : public EventBase
 {
 
 public:
 
-  ProcessStoppingEvent();
+  TaskStoppingEvent();
 
   void clear() override;
 };
 
 
-/* Process Stopped Event */
+/* Task Stopped Event */
 
-class TL_EXPORT ProcessStoppedEvent
+class TL_EXPORT TaskStoppedEvent
   : public EventBase
 {
 
 public:
 
-  ProcessStoppedEvent();
+  TaskStoppedEvent();
 
   void clear() override;
 };
 
 
-/* Process Finalized Event */
+/* Task Finalized Event */
 
-class TL_EXPORT ProcessFinalizedEvent
+class TL_EXPORT TaskFinalizedEvent
   : public EventBase
 {
 
 public:
 
-  ProcessFinalizedEvent();
+  TaskFinalizedEvent();
 
   void clear() override;
 };
 
 
-/* Process Error Event */
+/* Task Error Event */
 
-class TL_EXPORT ProcessErrorEvent
+class TL_EXPORT TaskErrorEvent
   : public EventBase
 {
 
 public:
 
-  ProcessErrorEvent();
+  TaskErrorEvent();
 
   std::string errorMessage() const;
   void setErrorMessage(const std::string &error);

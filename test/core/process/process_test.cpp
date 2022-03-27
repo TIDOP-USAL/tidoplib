@@ -22,25 +22,25 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop process test
+#define BOOST_TEST_MODULE Tidop task test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/process.h>
+#include <tidop/core/task.h>
 #include <tidop/core/console.h>
 
 using namespace tl;
 
-class Process1
-  : public ProcessBase
+class Task1
+  : public TaskBase
 {
 
 public:
 
-  Process1()
-    : ProcessBase()
+  Task1()
+    : TaskBase()
   {
   }
 
-  ~Process1()
+  ~Task1()
   {
   }
 
@@ -49,7 +49,7 @@ public:
     return _count;
   }
 
-// Heredado vía ProcessBase
+// Heredado vía TaskBase
 
 protected:
 
@@ -62,11 +62,11 @@ protected:
       for (size_t i = 0; i < 100; i++) {
         _count++;
       }
-      eventTriggered(Event::Type::process_finalized);
+      eventTriggered(Event::Type::task_finalized);
 
     } catch (std::exception &e) {
-      ProcessBase::errorEvent()->setErrorMessage(e.what());
-      eventTriggered(Event::Type::process_error);
+      TaskBase::errorEvent()->setErrorMessage(e.what());
+      eventTriggered(Event::Type::task_error);
     }
   }
 
@@ -78,15 +78,15 @@ private:
 };
 
 
-BOOST_AUTO_TEST_SUITE(ProcessTestSuite)
+BOOST_AUTO_TEST_SUITE(TaskTestSuite)
 
-struct ProcessTest
+struct TaskTest
 {
-  ProcessTest()
+  TaskTest()
   {
   }
 
-  ~ProcessTest()
+  ~TaskTest()
   {
   }
 
@@ -98,18 +98,18 @@ struct ProcessTest
   {
   }
 
-  Process1 process1;
+  Task1 task1;
 }; 
 
-BOOST_FIXTURE_TEST_CASE(DefaultConstructor, ProcessTest)
+BOOST_FIXTURE_TEST_CASE(DefaultConstructor, TaskTest)
 {
-  BOOST_CHECK_EQUAL(0, process1.count());
+  BOOST_CHECK_EQUAL(0, task1.count());
 }
 
-BOOST_FIXTURE_TEST_CASE(run, ProcessTest)
+BOOST_FIXTURE_TEST_CASE(run, TaskTest)
 {
-  process1.run();
-  BOOST_CHECK_EQUAL(100, process1.count());
+  task1.run();
+  BOOST_CHECK_EQUAL(100, task1.count());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

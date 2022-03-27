@@ -43,14 +43,14 @@ namespace tl
 
 uint32_t optimalNumberOfThreads()
 {
-#ifdef TL_HAVE_OPENMP
-  return omp_get_max_threads();
-#elif defined TL_MSVS_CONCURRENCY
-  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
-#else
+//#ifdef TL_HAVE_OPENMP
+//  return omp_get_max_threads();
+//#elif defined TL_MSVS_CONCURRENCY
+//  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
+//#else
   uint32_t n_threads = std::thread::hardware_concurrency();
   return n_threads == 0 ? 1 : n_threads;
-#endif
+//#endif
 }
 
 void parallel_for(size_t ini, 
@@ -91,25 +91,5 @@ void parallel_for(size_t ini,
 #endif
 
 }
-
-
-
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-uint32_t getOptimalNumberOfThreads()
-{
-#ifdef TL_HAVE_OPENMP
-  //TODO: Sin probar
-  return omp_get_max_threads();
-#elif defined TL_MSVS_CONCURRENCY
-  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
-#else
-  uint32_t n_threads = std::thread::hardware_concurrency();
-  return n_threads == 0 ? 1 : n_threads;
-#endif
-}
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 } // End namespace tl
