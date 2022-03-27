@@ -133,10 +133,12 @@ void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon)
 
 }
 
+#ifdef TL_HAVE_OPENCV
 void Painter::drawPicture(const cv::Mat &bmp)
 {
   ///mCanvas->
 }
+#endif // TL_HAVE_OPENCV
 
 void Painter::drawText(const PointD &point, const std::string &text)
 {

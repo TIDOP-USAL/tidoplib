@@ -26,12 +26,12 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geospatial/crs.h>
 
+#ifdef TL_HAVE_GDAL
+
 using namespace tl;
 using namespace tl::geospatial;
 
 /* CrsTest */
-
-#ifdef TL_HAVE_GDAL
 
 BOOST_AUTO_TEST_SUITE(CrsTestSuite)
 

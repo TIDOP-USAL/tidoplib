@@ -45,9 +45,16 @@ BOOST_AUTO_TEST_CASE(scalar_is_zero)
   BOOST_CHECK_EQUAL(true,  math::isZero(0.000000000000000000000000000000000000000000001f));
   BOOST_CHECK_EQUAL(false, math::isZero(0.00000000000000000000000000000000000000000001f));
 
-
-
 }
 
+BOOST_AUTO_TEST_CASE(tl_math_clamp)
+{
+  BOOST_CHECK_EQUAL(10, math::clamp(10, 1, 20));
+  BOOST_CHECK_EQUAL(1, math::clamp(0, 1, 20));
+  BOOST_CHECK_EQUAL(10, math::clamp(10, 10, 20));
+  BOOST_CHECK_EQUAL(11, math::clamp(10, 11, 20));
+  BOOST_CHECK_EQUAL(20, math::clamp(20, 11, 20));
+  BOOST_CHECK_EQUAL(20, math::clamp(21, 11, 20));
+}
 
 

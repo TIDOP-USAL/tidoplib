@@ -200,7 +200,7 @@ inline size_t QueueMPMC<T>::size() const
 
 
 /*!
- * \brief Interface Producer
+ * \brief Producer Interface
  */
 template<typename T>
 class Producer
@@ -226,7 +226,7 @@ private:
 
 
 /*!
- * \brief Interface Consumer
+ * \brief Consumer Interface
  */
 template<typename T>
 class Consumer

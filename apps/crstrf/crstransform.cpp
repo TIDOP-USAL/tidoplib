@@ -34,12 +34,14 @@
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/crstransf.h>
 
+
+
 using namespace tl;
 using namespace geospatial;
 
 int main(int argc, char** argv)
 {
-
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   Path app_path(argv[0]);
   std::string cmd_name = app_path.baseName().toString();
 
@@ -140,6 +142,7 @@ int main(int argc, char** argv)
   } catch (const std::exception &e) {
     msgError(e.what());
   } 
-
+#endif
   return 0;
 }
+

@@ -134,9 +134,13 @@ constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type gra
   * \param[int] max
   */
 template<typename T> inline
-T clamp(const T &value, const T &min, const T &max)
+constexpr T clamp(const T &value, const T &min, const T &max)
 {
+#if (__cplusplus >= 201703L)
+  return std::clamp(value, min, max);
+#else
   return std::max(min, std::min(max, value));
+#endif
 }
 
 /*!

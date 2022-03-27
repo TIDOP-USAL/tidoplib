@@ -50,7 +50,30 @@ endif()
 
 # C++ standar
 
-set(CMAKE_CXX_STANDARD 14)
+list(APPEND cxx_standard_values C++11 C++14)
+    
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8)
+list (APPEND cxx_standard_values C++17)
+endif()
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12)
+list (APPEND cxx_standard_values C++20)
+endif()
+
+set(TIDOPLIB_CXX_STANDARD "C++14" CACHE STRING "")
+set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
+
+if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++11")
+  set(CMAKE_CXX_STANDARD 11)
+elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++17")
+  set(CMAKE_CXX_STANDARD 17)
+elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
+  set(CMAKE_CXX_STANDARD 20)
+elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++23")
+  set(CMAKE_CXX_STANDARD 23)
+else()
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -243,14 +266,21 @@ OPTION (TIDOPLIB_WARNING_TODO                   "Active TODO warning"           
 
 if (TIDOPLIB_USE_SIMD_INTRINSICS)
 
-    set(SIMD "SSE3" CACHE STRING "")
-    set_property(CACHE SIMD PROPERTY STRINGS SSE SSE2 SSE3 SSE4_1 SSE4_2 AVX AVX2)
+    set(TIDOPLIB_SIMD "SSE3" CACHE STRING "")
+    set_property(CACHE TIDOPLIB_SIMD PROPERTY STRINGS
+                 SSE 
+                 SSE2
+                 SSE3 
+                 SSE4_1 
+                 SSE4_2 
+                 AVX
+                 AVX2)
 
     set(TL_HAVE_SIMD_INTRINSICS TRUE)
 
     message(STATUS "Build with SIMD intrinsics [${SIMD}]")
 
-    if(${SIMD} STREQUAL "AVX2")
+    if(${TIDOPLIB_SIMD} STREQUAL "AVX2")
       set(TL_HAVE_AVX2 TRUE)
       set(TL_HAVE_AVX TRUE)
       set(TL_HAVE_SSE4_2 TRUE)
@@ -258,39 +288,39 @@ if (TIDOPLIB_USE_SIMD_INTRINSICS)
       set(TL_HAVE_SSE3 TRUE)
       set(TL_HAVE_SSE2 TRUE)
       set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "AVX")
+    elseif(${TIDOPLIB_SIMD} STREQUAL "AVX")
       set(TL_HAVE_AVX TRUE)
       set(TL_HAVE_SSE4_2 TRUE)
       set(TL_HAVE_SSE4_1 TRUE)
       set(TL_HAVE_SSE3 TRUE)
       set(TL_HAVE_SSE2 TRUE)
       set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE4_2")
+    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE4_2")
       set(TL_HAVE_SSE4_2 TRUE)
       set(TL_HAVE_SSE4_1 TRUE)
       set(TL_HAVE_SSE3 TRUE)
       set(TL_HAVE_SSE2 TRUE)
       set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE4_1")
+    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE4_1")
       set(TL_HAVE_SSE4_1 TRUE)
       set(TL_HAVE_SSE3 TRUE)
       set(TL_HAVE_SSE2 TRUE)
       set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE3")
+    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE3")
       set(TL_HAVE_SSE3 TRUE)
       set(TL_HAVE_SSE2 TRUE)
       set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE2")
+    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE2")
       set(TL_HAVE_SSE2 TRUE)
       set(TL_HAVE_SSE TRUE)
-    elseif(${SIMD} STREQUAL "SSE")
+    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE")
       set(TL_HAVE_SSE TRUE)
     else()
       set(TL_HAVE_SIMD_INTRINSICS FALSE)
     endif()
 
 else(TIDOPLIB_USE_SIMD_INTRINSICS)
-    unset(SIMD CACHE)
+    unset(TIDOPLIB_SIMD CACHE)
 endif(TIDOPLIB_USE_SIMD_INTRINSICS)
 
 if(TIDOPLIB_MESSAGE_HANDLER)
@@ -354,15 +384,17 @@ endif()
 #   variarán.                                                            #
 ##########################################################################
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+
 OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
 OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
 OPTION (WITH_PROJ4  "Include PROJ4 Support"                   OFF)
-OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
-OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
+cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
+cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
-OPTION (WITH_OpenBLAS "Include OpenBLAS"                      OFF)
+cmake_dependent_option(WITH_OpenBLAS "Include OpenBLAS" OFF "BUILD_TL_MATH" OFF)
 OPTION (WITH_OPENMP   "Include OpenMP"                        OFF)
 
 
@@ -505,7 +537,8 @@ if(WITH_EDSDK)
 endif()
 
 
-if(BUILD_TL_MATH)
+#if(BUILD_TL_MATH)
+
 
 ##########################################################################
 # OpenBLAS (optional)                                                    #
@@ -524,13 +557,12 @@ if(WITH_OpenBLAS)
   
 endif(WITH_OpenBLAS)
   
-endif(BUILD_TL_MATH)
+#endif(BUILD_TL_MATH)
 
 
 ##########################################################################
 # OpenMP (optional)                                                      #
 ##########################################################################
-
 
 if(WITH_OPENMP)
 
@@ -545,6 +577,22 @@ if(WITH_OPENMP)
   
 endif()
 
+
+##########################################################################
+# Visual Leak Detector (optional)                                        #
+##########################################################################
+
+if(WITH_VLD)
+
+    find_package(VLD)
+
+    if(NOT VLD_FOUND)
+        set(HAVE_VLD NO)
+    else()
+        set(HAVE_VLD YES)
+    endif()
+
+endif(WITH_VLD)
 
 ##########################################################################
 

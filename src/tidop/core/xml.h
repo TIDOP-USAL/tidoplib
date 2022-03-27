@@ -27,6 +27,8 @@
 
 #include "config_tl.h"
 
+#ifdef TL_HAVE_GDAL
+
 #include "tidop/core/defs.h"
 
 #include <memory>
@@ -126,5 +128,6 @@ public:
 
 } // End namespace tl
 
+#endif //TL_HAVE_GDAL
 
 #endif // TL_CORE_UTILS_GDAL_H
