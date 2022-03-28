@@ -78,21 +78,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-# Se activa el uso de carpetas para una mejor organización en Visual Studio
-set_property(GLOBAL
-             PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
 # Establece un sufijo para las librerias de debug. De esta forma se pueden
 # instalar en el mismo directorio
 set(CMAKE_DEBUG_POSTFIX d)
-
-# Tipos de configuración de compilación disponibles
-#set(CMAKE_CONFIGURATION_TYPES Release;Debug)
-
-#if(NOT CMAKE_BUILD_TYPE)
-#  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-#endif()
 
 # Macro para depuración
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
@@ -411,13 +402,6 @@ unset(TL_HAVE_GEOSPATIAL CACHE)
 unset(TL_HAVE_VECT CACHE)
 unset(TL_HAVE_EXPERIMENTAL CACHE)
 
-# if(BUILD_TL_CORE)
-    # set(TL_HAVE_CORE YES)
-	# if(BUILD_TL_MATH)
-	    # set(TL_HAVE_MATH YES)
-	# endif(BUILD_TL_MATH)
-	# #completar y ver que modulos se activan/desactivan en función de la activación de otros
-# endif(BUILD_TL_CORE)
 
 message(STATUS "\nDependency loading:\n")
 
@@ -491,8 +475,6 @@ if(WITH_PROJ4)
     set(TL_HAVE_PROJ4 YES)
     include_directories(${PROJ4_INCLUDE_DIRS})
     message(STATUS "  PROJ version: ${PROJ4_VERSION}")
-    #message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
-    #message(STATUS "  Library : ${PROJ4_LIBRARIES}")
   endif()
 endif(WITH_PROJ4)
 
@@ -615,13 +597,8 @@ set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(TidopLib_LIBRARIES)
 
 add_subdirectory(third_party)
-
-# Directorio con el código fuente de los diferentes modulos
 add_subdirectory(src)
-
 add_subdirectory(apps)
-
-# Se incluye el directorio con los test
 add_subdirectory(test)
 
 message("\n")
@@ -643,7 +620,6 @@ install(FILES ${PROJECT_BINARY_DIR}/config_tl.h
 
 
 
-#set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${TL_INSTALL_BINARIES_PREFIX}/lib/cmake/${PROJECT_NAME}")
 set(TIDOP_CONFIG_VERSION_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
 set(TIDOP_CONFIG_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}/TidopLibConfig.cmake")

@@ -120,20 +120,11 @@ void Console::setMessageLevel(MessageLevel level)
   sLevel = level;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-void Console::setLogLevel(MessageLevel level)
-{
-  sLevel = level;
-}
-#endif
-
 void Console::printMessage(const std::string &message)
 {
   // Por si esta corriendo la barra de progreso
-  //std::cout << "\r";
   if (Progress::isRunning()) {
     std::cout << "\r" << std::string(50, ' ') << "\r";
-    //std::cout << "\r" << std::string(50, ' ');
   }
 
   std::string aux(message);
@@ -145,7 +136,6 @@ void Console::printErrorMessage(const std::string &message)
 {
   setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
                             messageProperties(MessageLevel::msg_error).intensity);
-  //printMessage(message);
 
   // Por si esta corriendo la barra de progreso
   if (Progress::isRunning())
@@ -410,24 +400,6 @@ void Console::update()
 #endif
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-Console &Console::getInstance()
-{
-  if (sObjConsole.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(Console::mtx);
-    if (sObjConsole.get() == nullptr) {
-      sObjConsole.reset(new Console());
-    }
-  }
-  return *sObjConsole;
-}
-
-EnumFlags<MessageLevel> Console::getMessageLevel() const
-{
-  return sLevel;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -673,7 +645,6 @@ Command::Status Command::parse(int argc, char **argv)
 
   }
 
-  //std::map<std::string, std::string>::iterator it;
   if (cmd_in.find("h") != cmd_in.end() || cmd_in.find("help") != cmd_in.end()){
     showHelp();
     return Command::Status::show_help;

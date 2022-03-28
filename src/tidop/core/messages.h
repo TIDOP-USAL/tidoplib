@@ -59,14 +59,6 @@ enum class MessageLevel : int8_t {
   msg_warning = 1 << 2,                               /*!< Warnings */
   msg_info    = 1 << 3,                               /*!< Otra información. */
   msg_verbose = msg_error | msg_warning | msg_info    /*!< Todos los mensajes. */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  ,
-  MSG_DEBUG   = msg_debug,                            /*!< Información extra para depuración. */
-  MSG_ERROR   = msg_error,                            /*!< Sólo errores. */
-  MSG_WARNING = msg_warning,                          /*!< Warnings */
-  MSG_INFO    = msg_info,                             /*!< Otra información. */
-  MSG_VERBOSE = msg_verbose                           /*!< Todos los mensajes. */
-#endif
 };
 
 /// Se permiten operaciones a nivel de bit para el enum MessageOutput
@@ -302,18 +294,6 @@ protected:
 private:
 
   static _msgProperties messageProperties(MessageLevel msgLevel);
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-public:
-
-  /*!
-   * \brief Singleton para obtener una referencia
-   * \deprecated Use 'instance()'  en su lugar
-   */
-  TL_DEPRECATED("MessageManager::instance", "2.0")
-    static MessageManager &getInstance();
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 private:
 

@@ -54,7 +54,6 @@ App &App::instance()
 
 tl::Path App::path() const
 {
-  //static char runfile[TL_MAX_PATH];
   static std::array<char, TL_MAX_PATH> runfile;
 
 #ifdef WIN32

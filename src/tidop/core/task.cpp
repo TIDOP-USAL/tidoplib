@@ -241,8 +241,8 @@ void TaskBase::stop()
     TL_TODO("Revisar")
     //while (mStatus != Status::stopped || mStatus != Status::finalized || mStatus != Status::error);
 
-    if (mStatus == Status::stopped)
-      eventTriggered(Event::Type::task_stopped);
+    //if (mStatus == Status::stopped)
+    //  eventTriggered(Event::Type::task_stopped);
 
   }
 }
@@ -515,7 +515,10 @@ void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
 
     execute(progressBar);
 
-    setStatus(Status::finalized);
+    if (mStatus == Status::stopping)
+      setStatus(Status::stopped);
+    else
+      setStatus(Status::finalized);
 
   } catch(const std::exception &e) {
     mTaskErrorEvent->setErrorMessage(e.what());

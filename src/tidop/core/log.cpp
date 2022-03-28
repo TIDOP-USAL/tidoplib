@@ -169,22 +169,5 @@ void Log::_write(const std::string &message,
 
 #endif // TL_MESSAGE_HANDLER
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-Log &Log::getInstance()
-{
-  if (sObjLog.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    if (sObjLog.get() == nullptr) {
-      sObjLog.reset(new Log());
-    }
-  }
-  return *sObjLog;
-}
-
-EnumFlags<MessageLevel> Log::getLogLevel() const
-{
-  return sLevel;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 } // End mamespace tl
