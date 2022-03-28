@@ -54,7 +54,7 @@ public:
 
   PolygonHole();
   PolygonHole(typename PolygonHole<Point_t>::size_type size);
-  ~PolygonHole() override {}
+  ~PolygonHole() override = default;
 
 };
 
@@ -237,9 +237,9 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
   if (w.containsPoint(point) == false) return false;
 
   // Se comprueba si el punto es uno de los vertices
-  for (int i = 0; i < this->mEntities.size(); i++) {
+  for (int i = 0; i < this->size(); i++) {
     // Por ahora se devuelve true. Lo suyo sería indicar que es un vertice.
-    if (this->mEntities[i] == point) return true;
+    if (this->at(i) == point) return true;
   }
 
   Segment<Point_t> sPointH(point, Point_t(w.pt2.x, point.y));
@@ -254,11 +254,11 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
   bool bVertex = false;
   std::vector<int> vertex_id;
 
-  for (size_t i = 0, j = 1; i < this->mEntities.size(); i++, j++) {
-    if (j == this->mEntities.size()) j = 0;
+  for (size_t i = 0, j = 1; i < this->size(); i++, j++) {
+    if (j == this->size()) j = 0;
 
 
-    Segment<Point_t> segment(this->mEntities[i], this->mEntities[j]);
+    Segment<Point_t> segment(this->at(i), this->at(j));
     
     // El punto es colineal con el segmento y esta dentro del mismo.
     if (distPointToSegment(point, segment) == 0) return true;
@@ -284,31 +284,31 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
 
   // hay vertices
   // Si hay vertices hay que estudiar mas en detalle si el punto esta dentro o fuera
-  if (bVertex == true) {
+  if (bVertex) {
     std::vector<int> order;
     int vertex_prev = 0;
     int vertex_next = 0;
     for (size_t i = 0; i < vertex_id.size(); i++) {
       // Se comprueban los puntos anterior y siguiente
-      if (vertex_id[i] == 0) vertex_prev = static_cast<int>(this->mEntities.size()) - 1;
+      if (vertex_id[i] == 0) vertex_prev = static_cast<int>(this->size()) - 1;
       else vertex_prev = vertex_id[i] - 1;
 
-      if (vertex_id[i] == this->mEntities.size() - 1) vertex_next = 0;
+      if (vertex_id[i] == this->size() - 1) vertex_next = 0;
       else vertex_next = vertex_id[i] + 1;
 
-      if (this->mEntities[vertex_prev].y == sPointH.pt1.y) {
+      if (this->at(vertex_prev).y == sPointH.pt1.y) {
         continue;
       } else {
-        if (this->mEntities[vertex_next].y == sPointH.pt1.y) {
-          int prev = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_prev]);
-          if (vertex_next == this->mEntities.size() - 1) vertex_next = 0;
+        if (this->at(vertex_next).y == sPointH.pt1.y) {
+          int prev = isLeft(sPointH.pt1, sPointH.pt2, this->at(vertex_prev));
+          if (vertex_next == this->size() - 1) vertex_next = 0;
           else vertex_next = vertex_next + 1;
-          int next = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_next]);
+          int next = isLeft(sPointH.pt1, sPointH.pt2, this->at(vertex_next));
           if (prev == next) nIntersection -= 2;
           else nIntersection--;
         } else {
-          int prev = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_prev]);
-          int next = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_next]);
+          int prev = isLeft(sPointH.pt1, sPointH.pt2, this->at(vertex_prev));
+          int next = isLeft(sPointH.pt1, sPointH.pt2, this->at(vertex_next));
           if (prev == next) nIntersection -= 2;
           else nIntersection--;
         }
@@ -323,8 +323,8 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
 
   //// Probar con OpenCV
   //std::vector<cv::Point2f> points;
-  //for (int i = 0; i < mEntities.size(); i++) {
-  //  points.push_back(cv::Point2f(mEntities[i].x, mEntities[i].y));
+  //for (int i = 0; i < size(); i++) {
+  //  points.push_back(cv::Point2f(at(i).x, at(i).y));
   //}
   //double i_pol_test = cv::pointPolygonTest(mEntities, cv::Point2f(point.x, point.y), false);
   //if (i_pol_test == -1) return false;
@@ -336,8 +336,8 @@ template<typename Point_t> inline
 double Polygon<Point_t>::length()  const
 {
   double perimeter = 0.;
-  for (size_t i = 1; i < this->mEntities.size(); i++) {
-    perimeter += distance(this->mEntities[i-1], this->mEntities[i]);
+  for (size_t i = 1; i < this->size(); i++) {
+    perimeter += distance(this->at(i-1), this->at(i));
   }
   return perimeter;
 }
@@ -345,13 +345,13 @@ double Polygon<Point_t>::length()  const
 template<typename Point_t> inline
 double Polygon<Point_t>::area() const
 {
-  TL_TODO("Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo");
+  TL_TODO("Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo")
   double area = 0.;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (i == this->mEntities.size()-1)
-      area += crossProduct(this->mEntities[i], this->mEntities[0]);
+  for (size_t i = 0; i < this->size(); i++) {
+    if (i == this->size()-1)
+      area += crossProduct(this->at(i), this->at(0));
     else
-      area += crossProduct(this->mEntities[i], this->mEntities[i+1]);
+      area += crossProduct(this->at(i), this->at(i+1));
   }
 
   return std::abs(area / 2.);
@@ -383,11 +383,11 @@ template<typename Point_t> inline
 Window<Point_t> Polygon<Point_t>::window() const
 {
   Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+  for (size_t i = 0; i < this->size(); i++) {
+    if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
+    if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
+    if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
+    if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
   }
   return w;
 }
@@ -411,9 +411,9 @@ void Polygon<Point_t>::addHole(const PolygonHole<Point_t> &polygonHole)
 }
 
 
-typedef Polygon<Point<int>> PolygonI;
-typedef Polygon<Point<double>> PolygonD;
-typedef Polygon<Point<float>> PolygonF;
+using PolygonI = Polygon<Point<int>>;
+using PolygonD = Polygon<Point<double>>;
+using PolygonF = Polygon<Point<float>>;
 
 
 
@@ -429,7 +429,7 @@ public:
 
   Polygon3DHole();
   Polygon3DHole(typename Polygon3DHole<Point3_t>::size_type size);
-  ~Polygon3DHole() override {}
+  ~Polygon3DHole() override = default;
 
 };
 
@@ -586,8 +586,8 @@ template<typename Point3_t> inline
 double Polygon3D<Point3_t>::length()  const
 {
   double perimeter = 0.;
-  for (size_t i = 1; i < this->mEntities.size(); i++) {
-    perimeter += distance(this->mEntities[i-1], this->mEntities[i]);
+  for (size_t i = 1; i < this->size(); i++) {
+    perimeter += distance(this->at(i-1), this->at(i));
   }
   return perimeter;
 }
@@ -618,13 +618,13 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> Polygon3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
-    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
-    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
-    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
-    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
-    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
+  for (size_t i = 0; i < this->size(); i++) {
+    if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
+    if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
+    if (bounding_box.pt1.z > this->at(i).z) bounding_box.pt1.z = this->at(i).z;
+    if (bounding_box.pt2.x < this->at(i).x) bounding_box.pt2.x = this->at(i).x;
+    if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
+    if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
   }
   return bounding_box;
 }
@@ -648,9 +648,9 @@ void Polygon3D<Point3_t>::addHole(const Polygon3DHole<Point3_t> &polygonHole)
 }
 
 
-typedef Polygon3D<Point3<int>> Polygon3dI;
-typedef Polygon3D<Point3<double>> Polygon3dD;
-typedef Polygon3D<Point3<float>> Polygon3dF;
+using Polygon3dI = Polygon3D<Point3<int>>;
+using Polygon3dD = Polygon3D<Point3<double>>;
+using Polygon3dF = Polygon3D<Point3<float>>;
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -688,7 +688,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiPolygon() {}
+  ~MultiPolygon() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -757,8 +757,8 @@ template<typename Point_t> inline
 Window<Point_t> MultiPolygon<Point_t>::window() const
 {
   Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    w = joinWindow(w, this->mEntities[i].window());
+  for (size_t i = 0; i < this->size(); i++) {
+    w = joinWindow(w, this->at(i).window());
   }
   return w;
 }
@@ -798,7 +798,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiPolygon3D() {}
+  ~MultiPolygon3D() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -872,8 +872,8 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> MultiPolygon3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    bounding_box = joinBoundingBoxes(bounding_box, this->mEntities[i].boundingBox());
+  for (size_t i = 0; i < this->size(); i++) {
+    bounding_box = joinBoundingBoxes(bounding_box, this->at(i).boundingBox());
   }
   return bounding_box;
 }

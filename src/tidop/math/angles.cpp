@@ -54,9 +54,9 @@ void decimalDegreesToDegrees(double decimalDegrees, int &degrees, int &minutes, 
   int s = static_cast<int>(seconds);
   seconds -= s;
   degrees = s / consts::degrees_to_seconds;
-  s = std::abs(s % 3600);
+  s = std::abs(s % consts::degrees_to_seconds);
   minutes = s / consts::minutes_to_seconds;
-  s %= 60;
+  s %= consts::minutes_to_seconds;
   seconds += s;
 }
 

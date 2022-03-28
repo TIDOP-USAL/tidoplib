@@ -79,7 +79,6 @@ public:
    */
   ~Log() override;
 
-  /// Se invalida la copia y la asignación
   Log(const Log &) = delete;
   Log(Log &&) = delete;
   void operator=(const Log &) = delete;
@@ -175,28 +174,6 @@ protected:
 
 #endif // TL_MESSAGE_HANDLER
 
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-public:
-
-  /*!
-   * \brief Singleton para obtener una referencia única
-   * \deprecated Use 'instance' en su lugar
-   */
-  TL_DEPRECATED("instance", "2.0")
-  static Log &getInstance();
-
-  /*!
-  * \brief Niveles de log activados
-  * \return Flag con los niveles de mensajes aceptados por el log
-  * \see EnumFlags
-  * \deprecated Use 'logLevel' en su lugar
-  */
-  TL_DEPRECATED("logLevel", "2.0")
-  EnumFlags<MessageLevel> getLogLevel() const;
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 private:
 

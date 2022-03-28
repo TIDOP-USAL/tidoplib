@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -22,94 +22,96 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECTOR_READER_H
-#define TL_VECTOR_READER_H
+#ifndef TL_MATH_STATISTIC_COVARIANCE_H
+#define TL_MATH_STATISTIC_COVARIANCE_H
 
-#include "config_tl.h"
-
-#include <memory>
-#include <list>
-#include <string>
-
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
+#include <tidop/core/defs.h>
+#include <tidop/core/messages.h>
+#include <tidop/math/statistic/descriptive.h>
 
 namespace tl
 {
 
-namespace graph
+namespace math
 {
-class GLayer;
+	
+/*! \addtogroup math
+ *  \{
+ */
+
+
+/*! \defgroup statistics Statistics
+ *  \{
+ */
+ 
+/*!
+ * /brief Covariance
+ *  
+ */
+template<typename T>
+class Covariance
+{
+
+public:
+
+  Covariance();
+  ~Covariance();
+
+  double eval(const Series<T> &data1, 
+              const Series<T> &data2);
+
+};
+
+
+/* Implementation */
+
+template<typename T>
+Covariance<T>::Covariance()
+{
+}
+
+template<typename T>
+Covariance<T>::~Covariance()
+{
+}
+
+template<typename T> inline
+double Covariance<T>::eval(const Series<T> &series1, 
+                           const Series<T> &series2)
+{
+  DescriptiveStatistics<T> stat1(series1);
+  DescriptiveStatistics<T> stat2(series2);
+
+  auto n_x = stat1.size();
+  auto n_y = stat2.size();
+  if (n_x != n_y || n_x <= 1) return consts::zero<double>;
+
+  double mean_x = stat1.mean();
+  double mean_y = stat2.mean();
+  double sum{};
+  double x{};
+  double y{};
+
+  auto it1 = series1.begin();
+  auto it2 = series2.begin();
+  while (it1 != series1.end()) {
+    x = static_cast<double>(*it1++) - mean_x;
+    y = static_cast<double>(*it2++) - mean_y;
+    sum += x*y;
+  }
+
+  return sum / n_x;
 }
 
 
-class TL_EXPORT VectorReader
-{
+/*! \} */ // end of statistic
 
-public:
+/*! \} */ // end of math
 
-	VectorReader(Path file);
-	virtual ~VectorReader() = default;
-
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
-
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
-
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
-
-  virtual int layersCount() const = 0;
-  virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
-  virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
-
-  /*!
-   * \brief Sistema de referencia en formato WKT
-   */
-  virtual std::string crsWkt() const = 0;
-
-//#if defined TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Sistema de referencia
-//   */
-//  virtual geospatial::Crs crs() const = 0;
-//#endif
-
-protected:
-
-  Path mFile;
-
-};
-
-
-/*!
- * \brief Factoría de clases para la lectura de formatos vectoriales
- */
-class TL_EXPORT VectorReaderFactory
-{
-
-private:
-
-  VectorReaderFactory() = default;
-
-public:
-
-  static std::unique_ptr<VectorReader> createReader(const Path &file);
-};
-
-
+} // End namespace math
 
 } // End namespace tl
 
+#endif TL_MATH_STATISTIC_COVARIANCE_H
 
-#endif // TL_VECTOR_READER_H
+

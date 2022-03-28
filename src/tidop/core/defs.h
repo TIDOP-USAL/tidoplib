@@ -158,18 +158,22 @@
  * TL_DEPRECATED("void newFunc(T a, T b)", "2.0")
  * void oldFunc(T a, T b);
  */
-//#if __cplusplus >= 201402L // c++ 14
-//#  define TL_DEPRECATED(msg)  [[deprecated("Use " msg " instead")]]
-//#else
-#  ifdef __GNUC__
-#    define TL_DEPRECATED(msg, version) __attribute__((deprecated(version " Use " msg " instead")))
-#  elif defined _MSC_VER
-#    define TL_DEPRECATED(msg, version) __declspec(deprecated("Deprecated in version " version ": use " msg " instead"))
+#ifdef TL_WARNING_DEPRECATED_METHOD 
+#  if __cplusplus >= 201402L // c++ 14
+#    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " version ": Use " msg " instead")]]
 #  else
-#    pragma message("WARNING: You need to implement DEPRECATED for this compiler")
-#    define TL_DEPRECATED(msg, version)
+#    ifdef __GNUC__
+#      define TL_DEPRECATED(msg, version) __attribute__((deprecated(version " Use " msg " instead")))
+#    elif defined _MSC_VER
+#      define TL_DEPRECATED(msg, version) __declspec(deprecated("Deprecated in version " version ": use " msg " instead"))
+#    else
+#      pragma message("WARNING: You need to implement TL_DEPRECATED for this compiler")
+#      define TL_DEPRECATED(msg, version)
+#    endif
 #  endif
-//#endif
+#else
+#  define TL_DEPRECATED(msg, version)
+#endif
 
 
 
@@ -321,19 +325,17 @@
 
 #define TL_UNUSED_PARAMETER(param)
 
-/*-------------------------------------------------u----------------------------------*/
-/*                                       MACROS                                      */
-/*-----------------------------------------------------------------------------------*/
 
-
-
-#ifndef _MSC_VER
-#  define DO_PRAGMA(x) _Pragma (#x)
-#  define TL_TODO(x) DO_PRAGMA(message ("TODO: " #x))
+#ifdef TL_WARNING_TODO
+#  ifndef _MSC_VER
+#    define DO_PRAGMA(x) _Pragma (#x)
+#    define TL_TODO(x) DO_PRAGMA(message ("TODO: " #x))
+#  else
+#    define TL_TODO(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#  endif
 #else
-#  define TL_TODO(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#  define TL_TODO(msg)
 #endif
-
 
 namespace tl
 {
@@ -348,6 +350,19 @@ template<typename T>
 constexpr auto roundToInteger(T n) {
   return static_cast<int>(round(n));
 }
+
+template<typename ...Args>
+constexpr size_t args_size(Args&&...)
+{
+  return sizeof...(Args);
+}
+
+template<typename ...Args>
+constexpr size_t args_empty(Args&&...)
+{
+  return sizeof...(Args) == 0;
+}
+
 
 }
 

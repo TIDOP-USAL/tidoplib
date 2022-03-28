@@ -28,6 +28,8 @@
 #include <unistd.h>
 #endif
 
+#include <array>
+
 namespace tl
 {
 
@@ -52,19 +54,20 @@ App &App::instance()
 
 tl::Path App::path() const
 {
-  static char runfile[TL_MAX_PATH];
+  static std::array<char, TL_MAX_PATH> runfile;
 
 #ifdef WIN32
-  ::GetModuleFileNameA(NULL, runfile, TL_MAX_PATH);
+  ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
+  return tl::Path(std::string(runfile.data()));
 #else
-  char szTmp[32];
-  sprintf(runfile, "/proc/%d/exe", getpid());
-  int len = readlink(szTmp, runfile, TL_MAX_PATH);
+  std::array<char, 32> _path{};
+  sprintf(_path.data(), "/proc/%d/exe", getpid());
+  long len = readlink(_path.data(), runfile.data(), runfile.size());
   if (len >= 0)
-    runfile[len] = '\0';
-#endif
+    runfile.at(static_cast<size_t>(len)) = '\0';
 
-  return tl::Path(runfile);
+  return tl::Path(std::string(runfile.data()));
+#endif
 }
 
 std::string App::version() const

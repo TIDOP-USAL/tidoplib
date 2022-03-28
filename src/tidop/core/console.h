@@ -85,11 +85,6 @@ public:
   {
     normal,            /*!< Normal */
     bright             /*!< Brillante */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    NORMAL = normal,
-    BRIGHT = bright
-#endif // TL_ENABLE_DEPRECATED_METHODS
   };
 
   /*!
@@ -105,17 +100,6 @@ public:
     magenta,  /*!< Magenta */
     cyan,     /*!< Cian */
     white     /*!< Blanco */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    BLACK   = black,    /*!< Negro */
-    RED     = red,      /*!< Rojo */
-    GREEN   = green,    /*!< Verde */
-    YELLOW  = yellow,   /*!< Amarillo */
-    BLUE    = blue,     /*!< Azul */
-    MAGENTA = magenta,  /*!< Magenta */
-    CYAN    = cyan,     /*!< Cian */
-    WHITE   = white     /*!< Blanco */
-#endif
   };
 
   /*!
@@ -126,12 +110,6 @@ public:
     input,          /*!< Consola en modo entrada */
     output,         /*!< Consola en modo salida */
     output_error    /*!< Consola en modo salida de errores */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    INPUT        = input,          /*!< Consola en modo entrada */
-    OUTPUT       = output,         /*!< Consola en modo salida */
-    OUTPUT_ERROR = output_error    /*!< Consola en modo salida de errores */
-#endif
   };
 
 private:
@@ -171,9 +149,6 @@ public:
    * \see MessageLevel
    */
   static void setMessageLevel(MessageLevel level);
-  #ifdef TL_ENABLE_DEPRECATED_METHODS
-  static void setLogLevel(MessageLevel level);
-  #endif
 
   /*!
    * \brief Imprime un mensaje en la consola
@@ -293,28 +268,6 @@ private:
    * \brief Actualiza la consola
    */
   void update();
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-public:
-
-  /*!
-  * \brief Singleton que devuelve una referencia unica de un objeto Console
-  * \deprecated Use 'instance()'  en su lugar
-  */
-  TL_DEPRECATED("Console::instance", "2.0")
-    static Console &getInstance();
-
-  /*!
-  * \brief Niveles de mensaje activados
-  * \return Flag con los niveles de mensajes aceptados por la consola
-  * \see EnumFlags
-  * \deprecated Use 'messageLevel()'  en su lugar
-  */
-  TL_DEPRECATED("Console::messageLevel", "2.0")
-    EnumFlags<MessageLevel> getMessageLevel() const;
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 private:
 
@@ -1084,14 +1037,6 @@ public:
     show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
     show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
     show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR   = parse_error,    /*!< Ocurrio un error al ejecutar el comando */
-    SHOW_HELP     = show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    SHOW_VERSION  = show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    SHOW_LICENCE  = show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
-#endif
   };
 
   /*!
@@ -1373,14 +1318,6 @@ public:
     show_help,      /*!< Se pasa como parámetro: help. Muestra la ayuda del programa */
     show_version,   /*!< Se pasa como parámetro: version. Se muestra la versión del programa */
     show_licence    /*!< Se pasa como parámetro: licence. Se muestra la información de licencia */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR = parse_error,    /*!< Ocurrio un error al ejecutar el comando */
-    SHOW_HELP = show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    SHOW_VERSION = show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    SHOW_LICENCE = show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
-#endif
   };
 
   /*!

@@ -97,7 +97,7 @@ std::vector<cv::KeyPoint> KeyPointsFilterNBest::filter(const std::vector<cv::Key
     msgInfo("Filtered retaining %i best keypoints", static_cast<int>(filteredKeypoints.size()));
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return filteredKeypoints;
@@ -193,7 +193,7 @@ std::vector<cv::KeyPoint> KeyPointsFilterBySize::filter(const std::vector<cv::Ke
     msgInfo("Filtered keypoints by size (min=%f,max=%f): %i", min_size, max_size, size - new_size);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return filteredKeypoints;
@@ -247,7 +247,7 @@ std::vector<cv::KeyPoint> KeyPointsFilterRemoveDuplicated::filter(const std::vec
     msgInfo("Remove duplicated keypoints: %i", size - new_size);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return filteredKeypoints;

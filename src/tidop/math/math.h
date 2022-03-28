@@ -134,9 +134,13 @@ constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type gra
   * \param[int] max
   */
 template<typename T> inline
-T clamp(const T &value, const T &min, const T &max)
+constexpr T clamp(const T &value, const T &min, const T &max)
 {
+#if (__cplusplus >= 201703L)
+  return std::clamp(value, min, max);
+#else
   return std::max(min, std::min(max, value));
+#endif
 }
 
 /*!
@@ -162,7 +166,27 @@ module(T a, T b)
 {
   auto result = std::minmax(abs(a), abs(b));
   T div = static_cast<T>(result.first) / static_cast<T>(result.second);
-  return result.second * sqrt(static_cast<T>(1) + div * div);
+  return result.second * std::sqrt(static_cast<T>(1) + div * div);
+}
+
+
+template<typename T> inline
+typename std::enable_if<
+    std::is_integral<T>::value,
+    double>::type
+isZero(T value)
+{
+  return value == consts::zero<T>;
+}
+
+template<typename T> inline
+typename std::enable_if<
+    std::is_floating_point<T>::value,T>::type
+isZero(T value)
+{
+  T up = std::nextafter(consts::zero<T>, consts::one<T>);
+  T down = std::nextafter(consts::zero<T>, -consts::one<T>);
+  return (down <= value && value <= up);
 }
 
 /*! \} */ // end of math

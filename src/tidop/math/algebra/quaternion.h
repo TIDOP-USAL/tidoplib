@@ -92,6 +92,12 @@ public:
   Quaternion(const Quaternion<T> &quaternion);
 
   /*!
+   * \brief Constructor de movimiento
+   * \param[in] quaternion Objeto Quaternion que se mueve
+   */
+  Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT;
+
+  /*!
    * \brief destructora
    */
   ~Quaternion() override;
@@ -101,6 +107,12 @@ public:
    * \param[in] quaternion Objeto que se copia
    */
   Quaternion &operator = (const Quaternion<T> &quaternion);
+
+  /*!
+   * \brief Operador de movimiento
+   * \param[in] quaternion Objeto Quaternion que se mueve
+   */
+  Quaternion &operator = (Quaternion<T> &&quaternion) TL_NOEXCEPT;
 
   /*!
    * \brief Conjugado de un cuaternión
@@ -207,16 +219,43 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 }
 
 template<typename T>
+Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT
+  : RotationBase<T>(Rotation::Type::quaternion),
+    x(std::move(quaternion.x)),
+    y(std::move(quaternion.y)),
+    z(std::move(quaternion.z)),
+    w(std::move(quaternion.w))
+{
+}
+
+template<typename T>
 Quaternion<T>::~Quaternion()
 {}
 
 template<typename T>
-Quaternion<T>& Quaternion<T>::operator = (const Quaternion &quaternion)
+Quaternion<T> &Quaternion<T>::operator = (const Quaternion &quaternion)
 {
-  this->x = quaternion.x;
-  this->y = quaternion.y;
-  this->z = quaternion.z;
-  this->w = quaternion.w;
+  if (this != &quaternion){
+    this->x = quaternion.x;
+    this->y = quaternion.y;
+    this->z = quaternion.z;
+    this->w = quaternion.w;
+  }
+
+  return *this;
+}
+
+template<typename T>
+Quaternion<T>& Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT
+{
+  if (this != &quaternion){
+    RotationBase<T>::operator=(std::forward<RotationBase<T>>(quaternion));
+    this->x = std::move(quaternion.x);
+    this->y = std::move(quaternion.y);
+    this->z = std::move(quaternion.z);
+    this->w = std::move(quaternion.w);
+  }
+
   return *this;
 }
 

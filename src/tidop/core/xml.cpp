@@ -24,21 +24,20 @@
 
 #include "tidop/core/xml.h"
 
+#ifdef TL_HAVE_GDAL
+
 #include "tidop/core/messages.h"
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+
 
 
 namespace tl
 {
-
-//#ifdef TL_HAVE_GDAL
 
 namespace internal
 {
@@ -49,7 +48,7 @@ class XmlNode
 public:
 
 	CPLXMLNode *mCplXmlNode;
-	friend class XmlNode;
+	friend class tl::XmlNode;
 };
 
 }
@@ -145,6 +144,6 @@ XMLWriter::XMLWriter(const std::string &file)
 
 
 
-
 } // End namespace tl
 
+#endif //TL_HAVE_GDAL

@@ -57,19 +57,19 @@ namespace math
  *  \{
  */
 
-// <xmmintrin.h> : SSE, operations on 4 single precision floating point numbers (float).
-// <emmintrin.h> : SSE 2, operations on integers and on 2 double precision floating point numbers (double).
-// <pmmintrin.h> : SSE 3, horizontal operations on SIMD registers.
-// <tmmintrin.h> : SSSE 3, additional instructions.
-// <smmintrin.h> : SSE 4.1, dot product and many operations on integers
-// <nmmintrin.h> : SSE 4.2, additional instructions.
-// <immintrin.h> : AVX, operations on integers, 8 float or 4 double.
+ // <xmmintrin.h> : SSE, operations on 4 single precision floating point numbers (float).
+ // <emmintrin.h> : SSE 2, operations on integers and on 2 double precision floating point numbers (double).
+ // <pmmintrin.h> : SSE 3, horizontal operations on SIMD registers.
+ // <tmmintrin.h> : SSSE 3, additional instructions.
+ // <smmintrin.h> : SSE 4.1, dot product and many operations on integers
+ // <nmmintrin.h> : SSE 4.2, additional instructions.
+ // <immintrin.h> : AVX, operations on integers, 8 float or 4 double.
 
 
-/// Visual Studio X86 
-/// /arch:[IA32|SSE|SSE2|AVX|AVX2|AVX512]
-/// Visual Studio X64 
-/// /arch:[AVX|AVX2|AVX512]
+ /// Visual Studio X86 
+ /// /arch:[IA32|SSE|SSE2|AVX|AVX2|AVX512]
+ /// Visual Studio X64 
+ /// /arch:[AVX|AVX2|AVX512]
 
 
 namespace simd
@@ -226,17 +226,20 @@ public:
 
   PackedBase() = default;
   PackedBase(const simd_type &packed);
+  PackedBase(value_type scalar);
 
   simd_type &loadAligned(const value_type *src);
   simd_type &loadUnaligned(const value_type *src);
   void storeAligned(value_type *dst) const;
   void storeUnaligned(value_type *dst) const;
 
+  void setScalar(value_type value);
+
   /*!
    * \brief  Assignment operator
    * Assign from intrinsic type
    */
-  T &operator=(const simd_type &packed);
+  PackedBase<T> &operator=(const simd_type &packed);
 
   /*!
    * \brief Type cast operator to convert to intrinsic type
@@ -474,26 +477,36 @@ storePackedUnaligned(T *data, U &result)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 set(T data)
 {
+  Packed<T> r;
+
 #ifdef TL_HAVE_AVX
-  return _mm256_set1_ps(data);
+  r = _mm256_set1_ps(data);
 #elif defined TL_HAVE_SSE
-  return _mm_set1_ps(data);
+  r = _mm_set1_ps(data);
 #endif
+
+  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 set(T data)
 {
+  Packed<T> r;
+
 #ifdef TL_HAVE_AVX
-  return _mm256_set1_pd(data);
+  r = _mm256_set1_pd(data);
 #elif defined TL_HAVE_SSE2
-  return _mm_set1_pd(data);
+  r = _mm_set1_pd(data);
 #endif
+
+  return r;
 }
 
 template<typename T> inline
@@ -530,7 +543,8 @@ set(T data)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -546,7 +560,8 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -562,7 +577,8 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_integral<typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_integral<typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -594,7 +610,8 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -610,7 +627,8 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -626,7 +644,8 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_integral<typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_integral<typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -690,7 +709,8 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   //Packed<T> r;
@@ -706,7 +726,8 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<double, typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -722,7 +743,8 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_integral<typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_integral<typename std::remove_cv<T>::type>::value,
+  Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   Packed<T> r;
@@ -815,7 +837,8 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
+  std::is_same<float, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
 div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
 #ifdef TL_HAVE_AVX
@@ -827,8 +850,9 @@ div(const Packed<T> &packed1, const Packed<T> &packed2)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
-div(const Packed<T> &packed1, const Packed<T> &packed2)
+  std::is_same<double, typename std::remove_cv<T>::type>::value, 
+  Packed<T>>::type
+  div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
 #ifdef TL_HAVE_AVX
   return _mm256_div_pd(packed1, packed2);
@@ -849,7 +873,7 @@ horizontal_sum(const Packed<T> &packed)
   /// https://github.com/vectorclass/version2/blob/master/vectorf256.h
   /// (c) Copyright 2012-2021 Agner Fog.
   /// Apache License version 2.0 or later.
-  
+
 #ifdef TL_HAVE_AVX
   __m128 sum1 = _mm_add_ps(_mm256_castps256_ps128(packed), _mm256_extractf128_ps(packed, 1));
   __m128 t1 = _mm_hadd_ps(sum1, sum1);
@@ -879,7 +903,7 @@ horizontal_sum(const Packed<T> &packed)
   /// https://github.com/vectorclass/version2/blob/master/vectorf256.h
   /// (c) Copyright 2012-2021 Agner Fog.
   /// Apache License version 2.0 or later.
-  
+
 #ifdef TL_HAVE_AVX
   __m128d sum1 = _mm_add_pd(_mm256_castpd256_pd128(packed), _mm256_extractf128_pd(packed, 1));
   __m128d t1 = _mm_unpackhi_pd(sum1, sum1);
@@ -900,7 +924,7 @@ horizontal_sum(const Packed<T> &packed)
 template<typename T> inline
 typename std::enable_if<
   std::is_integral<typename std::remove_cv<T>::type>::value, T>::type
-  horizontal_sum(const Packed<T> &packed)
+horizontal_sum(const Packed<T> &packed)
 {
   T sum{};
 
@@ -1015,6 +1039,12 @@ PackedBase<T>::PackedBase(const typename PackedBase<T>::simd_type &packed)
 {
 }
 
+template<typename T>
+PackedBase<T>::PackedBase(typename PackedBase<T>::value_type scalar)
+  : mValue(set(scalar))
+{
+}
+
 template<typename T> inline
 typename PackedBase<T>::simd_type &PackedBase<T>::loadAligned(const value_type *src)
 {
@@ -1042,7 +1072,13 @@ void PackedBase<T>::storeUnaligned(value_type *dst) const
 }
 
 template<typename T> inline
-T &PackedBase<T>::operator=(const typename PackedBase<T>::simd_type &packed)
+void PackedBase<T>::setScalar(value_type value)
+{
+  mValue = set(value);
+}
+
+template<typename T> inline
+PackedBase<T> &PackedBase<T>::operator=(const typename PackedBase<T>::simd_type &packed)
 {
   mValue = packed;
   return *this;
@@ -1086,7 +1122,7 @@ PackedBase<T>::operator simd_type() const
 template<typename T> inline
 typename std::enable_if<
   std::is_same<float, typename std::remove_cv<T>::type>::value, Packed<T>>::type
-operator - (const Packed<T> &packet)
+  operator - (const Packed<T> &packet)
 {
   return _mm_xor_ps(packet, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)));
 }
@@ -1094,13 +1130,13 @@ operator - (const Packed<T> &packet)
 template<typename T> inline
 typename std::enable_if<
   std::is_same<double, typename std::remove_cv<T>::type>::value, Packed<T>>::type
-operator - (const Packed<T> &packet)
+  operator - (const Packed<T> &packet)
 {
   return _mm_xor_pd(packet, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
 }
 
 template<typename T> inline
-Packed<T> operator+(const Packed<T> &packed1, 
+Packed<T> operator+(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
   return add(packed1, packed2);
@@ -1119,7 +1155,7 @@ Packed<T> operator+(T scalar, const Packed<T> &packed)
 }
 
 template<typename T> inline
-Packed<T> operator-(const Packed<T> &packed1, 
+Packed<T> operator-(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
   return sub(packed1, packed2);
@@ -1138,7 +1174,7 @@ Packed<T> operator-(T scalar, const Packed<T> &packed)
 }
 
 template<typename T> inline
-Packed<T> operator*(const Packed<T> &packed1, 
+Packed<T> operator*(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
   return mul(packed1, packed2);
@@ -1188,7 +1224,7 @@ Packed<T>::Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
 
 template<typename T> inline
 Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
-  : PackedBase<Packed<T>>(set(scalar))
+  : PackedBase<Packed<T>>(scalar)
 {
 }
 

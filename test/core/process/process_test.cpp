@@ -22,139 +22,25 @@
  *                                                                        *
  **************************************************************************/
  
-//#include "config_tl.h"
-//
-//#include <gtest/gtest.h>
-//#ifdef HAVE_GMOCK
-//#include <gmock/gmock.h>
-//using ::testing::_;
-//#endif
-//
-//#include <tidop/core/process.h>
-//
-//using namespace tl;
-//
-//#ifndef TL_OLD_PROCESS
-//
-//#else
-//
-//class FakeProcess
-//  : public Process
-//{
-//
-//public:
-//
-//  FakeProcess()
-//    : Process(nullptr)
-//  {
-//    this->mProcessName = "Fake process";
-//  }
-//
-//  // Process interface
-//public:
-//  Status run(Progress *progressBar) override
-//  {
-//    return Process::run(progressBar);
-//  }
-//};
-//
-//
-//TEST(Process, Constructor)
-//{
-//  FakeProcess process;
-//  EXPECT_EQ(FakeProcess::Status::start, process.status());
-//  EXPECT_EQ(1, process.id());
-//  EXPECT_EQ("Fake process", process.name());
-//}
-//
-//TEST(Process, control)
-//{
-//  FakeProcess process;
-//  process.run(nullptr);
-//  EXPECT_EQ(FakeProcess::Status::running, process.status());
-//
-//  process.pause();
-//  EXPECT_EQ(FakeProcess::Status::pausing, process.status());
-//
-//  process.resume();
-//  EXPECT_EQ(FakeProcess::Status::running, process.status());
-//
-//  process.stop();
-//  EXPECT_EQ(FakeProcess::Status::stopped, process.status());
-//
-//}
-//
-//TEST(Process, reset)
-//{
-//  FakeProcess process;
-//  process.run(nullptr);
-//  process.reset();
-//  EXPECT_EQ(FakeProcess::Status::start, process.status());
-//}
-//
-//
-//
-//#ifdef HAVE_GMOCK
-//
-//class MockProcess : public Process
-//{
-//public:
-//
-//  MockProcess()
-//    : Process()
-//  {
-//    this->mProcessName = "Mock Process";
-//  }
-//
-//  MOCK_METHOD0(pause, void());
-//  MOCK_METHOD0(reset, void());
-//  MOCK_METHOD0(resume, void());
-//  MOCK_METHOD1(run, Status(Progress *progressBar));
-//  MOCK_METHOD0(stop, void());
-//
-//};
-//
-//TEST(BatchProcess, Constructor)
-//{
-//  BatchProcess batch;
-//  EXPECT_FALSE(batch.isRunning());
-//}
-//
-//TEST(BatchProcess, add)
-//{
-//  BatchProcess batch;
-//  std::shared_ptr<MockProcess> mock_process(new MockProcess);
-//  batch.add(mock_process);
-//  EXPECT_FALSE(batch.isRunning());
-//  batch.run(nullptr, nullptr);
-//
-////  EXPECT_CALL(mock_process, run(_))
-////            .Times(1);
-//}
-//
-//#endif
-//
-//#endif
-
-#define BOOST_TEST_MODULE Tidop process test
+#define BOOST_TEST_MODULE Tidop task test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/process.h>
+#include <tidop/core/task.h>
 #include <tidop/core/console.h>
 
 using namespace tl;
 
-class Process1
-  : public ProcessBase
+class Task1
+  : public TaskBase
 {
 
 public:
 
-  Process1()
-    : ProcessBase()
+  Task1()
+    : TaskBase()
   {
   }
 
-  ~Process1()
+  ~Task1()
   {
   }
 
@@ -163,7 +49,7 @@ public:
     return _count;
   }
 
-// Heredado vía ProcessBase
+// Heredado vía TaskBase
 
 protected:
 
@@ -176,11 +62,11 @@ protected:
       for (size_t i = 0; i < 100; i++) {
         _count++;
       }
-      eventTriggered(Event::Type::process_finalized);
+      eventTriggered(Event::Type::task_finalized);
 
     } catch (std::exception &e) {
-      ProcessBase::errorEvent()->setErrorMessage(e.what());
-      eventTriggered(Event::Type::process_error);
+      TaskBase::errorEvent()->setErrorMessage(e.what());
+      eventTriggered(Event::Type::task_error);
     }
   }
 
@@ -192,15 +78,15 @@ private:
 };
 
 
-BOOST_AUTO_TEST_SUITE(ProcessTestSuite)
+BOOST_AUTO_TEST_SUITE(TaskTestSuite)
 
-struct ProcessTest
+struct TaskTest
 {
-  ProcessTest()
+  TaskTest()
   {
   }
 
-  ~ProcessTest()
+  ~TaskTest()
   {
   }
 
@@ -212,18 +98,18 @@ struct ProcessTest
   {
   }
 
-  Process1 process1;
+  Task1 task1;
 }; 
 
-BOOST_FIXTURE_TEST_CASE(DefaultConstructor, ProcessTest)
+BOOST_FIXTURE_TEST_CASE(DefaultConstructor, TaskTest)
 {
-  BOOST_CHECK_EQUAL(0, process1.count());
+  BOOST_CHECK_EQUAL(0, task1.count());
 }
 
-BOOST_FIXTURE_TEST_CASE(run, ProcessTest)
+BOOST_FIXTURE_TEST_CASE(run, TaskTest)
 {
-  process1.run();
-  BOOST_CHECK_EQUAL(100, process1.count());
+  task1.run();
+  BOOST_CHECK_EQUAL(100, task1.count());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

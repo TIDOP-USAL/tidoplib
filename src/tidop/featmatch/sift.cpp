@@ -171,7 +171,7 @@ std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv:
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return keyPoints;
@@ -191,7 +191,7 @@ cv::Mat SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyP
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return descriptors;

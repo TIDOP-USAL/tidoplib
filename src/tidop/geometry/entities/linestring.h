@@ -170,8 +170,8 @@ template<typename Point_t> inline
 double LineString<Point_t>::length()  const
 {
   double length = 0.;
-  for (size_t i = 1; i < this->mEntities.size(); i++) {
-    length += distance(this->mEntities[i - 1], this->mEntities[i]);
+  for (size_t i = 1; i < this->size(); i++) {
+    length += distance(this->at(i - 1), this->at(i));
   }
   return length;
 }
@@ -200,19 +200,21 @@ template<typename Point_t> inline
 Window<Point_t> LineString<Point_t>::window() const
 {
   Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+
+  for (size_t i = 0; i < this->size(); i++) {
+    if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
+    if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
+    if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
+    if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
   }
+
   return w;
 }
 
 
-typedef LineString<Point<int>> LineStringI;
-typedef LineString<Point<float>> LineStringF;
-typedef LineString<Point<double>> LineStringD;
+using LineStringI = LineString<Point<int> >;
+using LineStringF = LineString<Point<float> >;
+using LineStringD = LineString<Point<double> >;
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -342,8 +344,8 @@ template<typename Point3_t> inline
 double LineString3D<Point3_t>::length()  const
 {
   double length = 0.;
-  for (size_t i = 1; i < this->mEntities.size(); i++) {
-    length += distance(this->mEntities[i - 1], this->mEntities[i]);
+  for (size_t i = 1; i < this->size(); i++) {
+    length += distance(this->at(i - 1), this->at(i));
   }
   return length;
 }
@@ -372,21 +374,21 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> LineString3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
-    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
-    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
-    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
-    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
-    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
+  for (size_t i = 0; i < this->size(); i++) {
+    if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
+    if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
+    if (bounding_box.pt1.z > this->at(i).z) bounding_box.pt1.z = this->at(i).z;
+    if (bounding_box.pt2.x < this->at(i).x) bounding_box.pt2.x = this->at(i).x;
+    if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
+    if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
   }
   return bounding_box;
 }
 
 
-typedef LineString3D<Point3<int>> LineString3dI;
-typedef LineString3D<Point3<double>> LineString3dD;
-typedef LineString3D<Point3<float>> LineString3dF;
+using LineString3dI = LineString3D<Point3<int>>;
+using LineString3dD = LineString3D<Point3<double>>;
+using LineString3dF = LineString3D<Point3<float>>;
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -423,7 +425,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiLineString() {}
+  ~MultiLineString() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -540,7 +542,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiLineString3D() {}
+  ~MultiLineString3D() override = default;
 
   /*!
    * \brief Operador de asignación

@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -22,94 +22,102 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECTOR_READER_H
-#define TL_VECTOR_READER_H
+#ifndef TL_MATH_STATISTIC_TUKEY_H
+#define TL_MATH_STATISTIC_TUKEY_H
 
-#include "config_tl.h"
-
-#include <memory>
-#include <list>
-#include <string>
-
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
+#include <tidop/core/defs.h>
+#include <tidop/core/messages.h>
+#include <tidop/math/statistic/descriptive.h>
 
 namespace tl
 {
 
-namespace graph
+namespace math
 {
-class GLayer;
+  
+/*! \addtogroup math
+ *  \{
+ */
+
+
+/*! \defgroup statistics Statistics
+ *  \{
+ */
+ 
+/*!
+ * /brief Tukey's fences
+ *  
+ */
+template<typename T>
+class TukeyFences
+{
+
+  enum class K
+  {
+    outlier, /* k = 1.5 */
+    far_out  /* k = 3   */
+  };
+
+public:
+
+  TukeyFences();
+  ~TukeyFences();
+
+  std::vector<bool> eval(const Series<T> &data, K k = K::outlier);
+
+};
+
+
+/* Implementation */
+
+template<typename T>
+TukeyFences<T>::TukeyFences()
+{
+}
+
+template<typename T>
+TukeyFences<T>::~TukeyFences()
+{
+}
+
+template<typename T> inline
+std::vector<bool> TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k)
+{
+  DescriptiveStatistics<T> stat(series);
+
+  double _k{};
+
+  switch(k) {
+    case tl::math::tukey_k::outlier:
+      _k = 1.5;
+      break;
+    case tl::math::tukey_k::far_out:
+      _k = 3.;
+      break;
+  }
+
+  T el1 = stat.firstQuartile() - stat.interquartileRange() * _k;
+  T el2 = stat.thirdQuartile() + stat.interquartileRange() * _k;
+
+  std::vector<bool> inliers(stat.size(), false);
+
+  auto out = inliers.begin();
+  for(const auto &data : series) {
+    *out++ = el1 < data && data > el2;
+  }
+
+  return inliers;
 }
 
 
-class TL_EXPORT VectorReader
-{
+/*! \} */ // end of statistic
 
-public:
+/*! \} */ // end of math
 
-	VectorReader(Path file);
-	virtual ~VectorReader() = default;
-
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
-
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
-
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
-
-  virtual int layersCount() const = 0;
-  virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
-  virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
-
-  /*!
-   * \brief Sistema de referencia en formato WKT
-   */
-  virtual std::string crsWkt() const = 0;
-
-//#if defined TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Sistema de referencia
-//   */
-//  virtual geospatial::Crs crs() const = 0;
-//#endif
-
-protected:
-
-  Path mFile;
-
-};
-
-
-/*!
- * \brief Factoría de clases para la lectura de formatos vectoriales
- */
-class TL_EXPORT VectorReaderFactory
-{
-
-private:
-
-  VectorReaderFactory() = default;
-
-public:
-
-  static std::unique_ptr<VectorReader> createReader(const Path &file);
-};
-
-
+} // End namespace math
 
 } // End namespace tl
 
+#endif TL_MATH_STATISTIC_TUKEY_H
 
-#endif // TL_VECTOR_READER_H
+

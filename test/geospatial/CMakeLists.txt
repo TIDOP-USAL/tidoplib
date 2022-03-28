@@ -24,6 +24,6 @@
 
 if(TL_HAVE_GEOSPATIAL)
 add_subdirectory(crs)
-add_subdirectory(crs_transform)
+#add_subdirectory(crs_transform)
 add_subdirectory(util)
 endif()

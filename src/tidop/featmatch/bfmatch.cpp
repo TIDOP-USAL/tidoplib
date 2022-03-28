@@ -84,7 +84,7 @@ void BruteForceMatcherImp::update()
   try {
     mBFMatcher = cv::BFMatcher::create(norm);
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -98,7 +98,7 @@ void BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
     mBFMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -112,7 +112,7 @@ void BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
     mBFMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -164,7 +164,7 @@ void BruteForceMatcherCuda::update()
     mBFMatcher = cv::cuda::DescriptorMatcher::createBFMatcher(norm);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -182,7 +182,7 @@ void BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
     mBFMatcher->match(gQueryDescriptors, gTrainDescriptors, matches, gMask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -200,7 +200,7 @@ void BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
     mBFMatcher->knnMatch(gQueryDescriptors, gTrainDescriptors, matches, 2, gMask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 

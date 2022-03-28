@@ -30,6 +30,7 @@
 #include "tidop/core/flags.h"
 
 #include <vector>
+#include <map>
 
 #ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS

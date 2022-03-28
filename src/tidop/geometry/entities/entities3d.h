@@ -65,17 +65,17 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param[in] entity Entidad que se copia
+   * \param[in] entities Entidad que se copia
    * \see entity_type
    */
-  Entities3D(const Entities3D &entity);
+  Entities3D(const Entities3D &entities);
   
   /*!
    * \brief Constructor de movimiento
-   * \param[in] entity Entidad que se copia
+   * \param[in] entities Entidad que se copia
    * \see entity_type
    */
-  Entities3D(Entities3D &&entity) TL_NOEXCEPT;
+  Entities3D(Entities3D &&entities) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor a partir de un vector de entidades
@@ -107,12 +107,12 @@ public:
   /*!
    * \brief Asignación de copia
    */
-  Entities3D<Entity_t>& operator=(const Entities3D<Entity_t> &entity);
+  Entities3D<Entity_t>& operator=(const Entities3D<Entity_t> &entities);
 
   /*!
    * \brief Asignación de movimiento
    */
-  Entities3D<Entity_t>& operator=(Entities3D<Entity_t> &&entity) TL_NOEXCEPT;
+  Entities3D<Entity_t>& operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT;
 
 };
 
@@ -184,19 +184,19 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 //}
 
 template<typename Entity_t> inline
-Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t> &entity)
+Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t> &entities)
 {
-  if (this != &entity) {
-    EntityContainer<Entity_t>::operator=(entity);
+  if (this != &entities) {
+    EntityContainer<Entity_t>::operator=(entities);
   }
   return (*this);
 }
 
 template<typename Entity_t> inline
-Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&entity) TL_NOEXCEPT
+Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT
 {
-  if (this != &entity) {
-    EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entity));
+  if (this != &entities) {
+    EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));
   }
   return (*this);
 }

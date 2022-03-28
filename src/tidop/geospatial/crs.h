@@ -27,6 +27,8 @@
 
 #include "tidop/core/defs.h"
 
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+
 #include <string>
 
 class OGRSpatialReference;
@@ -84,11 +86,8 @@ public:
 
 protected:
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   OGRSpatialReference *getOGRSpatialReference( );
-#endif
-
-  /*template<typename Point_t> */friend class CrsTransform;
+  friend class CrsTransform;
 
 private:
 
@@ -119,9 +118,7 @@ private:
   /*!
    * \brief Objeto OGRSpatialReference de Gdal
    */
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   OGRSpatialReference *mCrs;
-#endif
 };
 
 
@@ -137,5 +134,6 @@ private:
 
 } // End namespace tl
 
+#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
 #endif // TL_GEOSPATIAL_CRS_H

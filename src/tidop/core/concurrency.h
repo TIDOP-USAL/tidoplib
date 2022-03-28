@@ -200,7 +200,7 @@ inline size_t QueueMPMC<T>::size() const
 
 
 /*!
- * \brief Interface Producer
+ * \brief Producer Interface
  */
 template<typename T>
 class Producer
@@ -226,7 +226,7 @@ private:
 
 
 /*!
- * \brief Interface Consumer
+ * \brief Consumer Interface
  */
 template<typename T>
 class Consumer
@@ -248,19 +248,6 @@ private:
   QueueMPMC<T> *mQueue;
 
 };
-
-
-
-
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief número optimo de hilos
- * \deprecated Usar en su lugar optimalNumberOfThreads()
- */
-TL_DEPRECATED("optimalNumberOfThreads()", "2.0")
-TL_EXPORT uint32_t getOptimalNumberOfThreads();
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /*! \} */ // end of concurrency

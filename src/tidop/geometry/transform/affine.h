@@ -264,15 +264,15 @@ public:
    * \param[in] b Coeficiente b
    * \param[in] c Coeficiente c
    * \param[in] d Coeficiente d
-   * \param[in] x0 Traslación en x
-   * \param[in] y0 Traslación en y
+   * \param[in] tx Traslación en x
+   * \param[in] ty Traslación en y
    */
   void setParameters(double a, 
                      double b, 
                      double c, 
                      double d, 
-                     double x0, 
-                     double y0);
+                     double tx,
+                     double ty);
 
   /*!
    * \brief Establece los parámetros a partir de una matriz con los coeficientes

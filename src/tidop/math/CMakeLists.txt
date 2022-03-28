@@ -22,34 +22,58 @@
 #                                                                        #
 ##########################################################################
 
-#Modulo Math de la librería TIDOP
+
+##########################################################################
+#  TidopLib math module                                                  #
+##########################################################################
 
 if(BUILD_TL_MATH)
 
     project(tl_math)
     
+    set(TL_MATH_SOURCES
+        angles.cpp)
+                
+    set(TL_MATH_HEADERS
+        math.h
+        angles.h
+        statistics.h
+        mathutils.h
+        simd.h
+        statistic/series.h
+        statistic/descriptive.h
+        statistic/confmat.h
+		statistic/covariance.h
+        statistic/tukeyfences.h
+        algebra/quaternion.h
+        algebra/euler_angles.h
+        algebra/rotations.h
+        algebra/rotation_matrix.h
+        algebra/rotation_convert.h
+        algebra/axis_angle.h
+        algebra/matrix.h
+        algebra/vector.h
+        algebra/svd.h
+        algebra/lu.h
+        algebra/qr.h
+        algebra/cholesky.h)
+                
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                math.h
-                angles.cpp
-                angles.h
-                statistics.h
-                mathutils.h
-                simd.h
-                statistic/series.h
-                statistic/descriptive.h
-                algebra/quaternion.h
-                algebra/euler_angles.h
-                algebra/rotations.h
-                algebra/rotation_matrix.h
-                algebra/rotation_convert.h
-                algebra/axis_angle.h
-                algebra/matrix.h
-                algebra/vector.h
-                algebra/svd.h
-                algebra/lu.h
-                algebra/qr.h
-                algebra/cholesky.h)
+                ${TL_MATH_SOURCES}
+                ${TL_MATH_HEADERS})
 
+    foreach(_source IN ITEMS ${TL_MATH_SOURCES})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "/" "\\" _group_path "${_source_path}")
+        source_group("Source Files\\${_group_path}" FILES "${_source}")
+    endforeach()
+    
+    foreach(_source IN ITEMS ${TL_MATH_HEADERS})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "/" "\\" _group_path "${_source_path}")
+        source_group("Header Files\\${_group_path}" FILES "${_source}")
+    endforeach()
+    
     if(MSVC)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
     endif(MSVC)

@@ -127,7 +127,9 @@ template<typename Point_t> inline
 double module(const Point_t &v)
 {
   TL_TODO("cambiar por math::module para evitar desbordes")
-    return sqrt(dotProduct(v, v));
+  return sqrt(dotProduct(v, v));
+
+  //return std::hypot(v.x, v.y);
 }
 
 /*!

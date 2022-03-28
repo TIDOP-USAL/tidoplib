@@ -108,7 +108,7 @@ Point3<double> DifferentialRectification::forwardProjection(const Point<double> 
                mRotationMatrix.at(2, 1) * mFocal) / div;
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return point;
@@ -136,7 +136,7 @@ Point<double> DifferentialRectification::backwardProjection(const Point3<double>
                                      mRotationMatrix.at(1, 2) * dz) / div;
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return photo_coordinates;

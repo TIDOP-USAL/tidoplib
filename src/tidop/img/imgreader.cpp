@@ -123,7 +123,7 @@ public:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
   }
 
@@ -196,7 +196,7 @@ public:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return image;
@@ -252,7 +252,7 @@ public:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return image;
@@ -274,7 +274,7 @@ public:
     try {
       image = this->read(scaleX, scaleY, rect, trf);
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return image;
@@ -297,7 +297,7 @@ public:
     try{
       image = read(wRead, scaleX, scaleY, trf);
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return image;
@@ -314,7 +314,7 @@ public:
       rows = mDataset->GetRasterYSize();
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return rows;
@@ -331,7 +331,7 @@ public:
       cols = mDataset->GetRasterXSize();
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return cols;
@@ -348,7 +348,7 @@ public:
       channels = mDataset->GetRasterCount();
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return channels;
@@ -364,7 +364,7 @@ public:
       data_type = gdalConvertDataType(gdal_data_type);
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
       
     return data_type;
@@ -380,7 +380,7 @@ public:
       depth = GDALGetDataTypeSizeBits(gdal_data_type);
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return depth; 
@@ -560,7 +560,7 @@ public:
       //}
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return metadata;
@@ -578,7 +578,7 @@ public:
       georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return georeferenced;
@@ -610,7 +610,7 @@ public:
 #endif
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return crs_wkt;
@@ -636,7 +636,7 @@ public:
 //      crs.fromWktFormat(mDataset->GetProjectionRef());
 //#endif
 //    } catch (...) {
-//      TL_THROW_EXCEPTION_WITH_NESTED("");
+//      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
 //    }
 //
 //    return crs;
@@ -665,7 +665,7 @@ public:
       if (exist) *exist = (success == 1);
     
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return nodata;
@@ -686,7 +686,7 @@ protected:
       }
 
     } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
     return dataType;
@@ -926,7 +926,7 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
     }
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return image_reader;

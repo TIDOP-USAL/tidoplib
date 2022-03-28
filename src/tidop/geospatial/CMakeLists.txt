@@ -22,7 +22,10 @@
 #                                                                        #
 ##########################################################################
 
-#Modulo geospatial de la librería
+
+##########################################################################
+#  TidopLib geospatial module                                            #
+##########################################################################
 
 
 if (BUILD_TL_GEOSPATIAL)
@@ -38,15 +41,8 @@ if (BUILD_TL_GEOSPATIAL)
                 crstransf.h
                 util.cpp
                 util.h
-                #ortho.cpp
-                #ortho.h
                 diffrect.cpp
-                diffrect.h
-                #camera.cpp
-                #camera.h
-                #photo.cpp
-                #photo.h
-				)
+                diffrect.h)
 
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     

@@ -23,44 +23,65 @@
 ##########################################################################
 
 
-# Geometry module
+##########################################################################
+#  TidopLib Geometry module                                              #
+##########################################################################
+
 
 if(BUILD_TL_GEOMETRY)
 
     project(tl_geom)
   
+    set(TL_GEOMETRY_SOURCES
+        entities/segment.cpp)
+    
+    set(TL_GEOMETRY_HEADERS
+        transform/transform.h
+        transform/affine.h
+        transform/helmert2d.h
+        transform/helmert3d.h
+        transform/polynomial.h
+        transform/projective.h
+        transform/rotation.h
+        transform/scale.h
+        transform/translation.h
+        rect.h
+        size.h
+        entities/bbox.h
+        entities/entity.h
+        entities/entities2d.h
+        entities/entities3d.h
+        entities/linestring.h
+        entities/point.h
+        entities/polygon.h
+        entities/multipoint.h
+        entities/segment.h
+        entities/window.h
+        entities/shapes.h
+        algorithms.h
+        algorithms/vector.h
+        algorithms/distance.h
+        algorithms/angle.h
+        algorithms/projection.h
+        algorithms/buffer.h
+        algorithms/intersect.h)
+        
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                transform/transform.h
-                transform/affine.h
-                transform/helmert2d.h
-                transform/helmert3d.h
-                transform/polynomial.h
-                transform/projective.h
-                transform/rotation.h
-                transform/scale.h
-                transform/translation.h
-                rect.h
-                size.h
-                entities/bbox.h
-                entities/entity.h
-                entities/entities2d.h
-                entities/entities3d.h
-                entities/linestring.h
-                entities/point.h
-                entities/polygon.h
-                entities/multipoint.h
-                entities/segment.cpp
-                entities/segment.h
-                entities/window.h
-                entities/shapes.h
-                algorithms.h
-                algorithms/vector.h
-                algorithms/distance.h
-                algorithms/angle.h
-                algorithms/projection.h
-                algorithms/buffer.h
-                algorithms/intersect.h)
+                ${TL_GEOMETRY_SOURCES}
+                ${TL_GEOMETRY_HEADERS})
    
+    foreach(_source IN ITEMS ${TL_GEOMETRY_SOURCES})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "/" "\\" _group_path "${_source_path}")
+        source_group("Source Files\\${_group_path}" FILES "${_source}")
+    endforeach()
+
+    foreach(_source IN ITEMS ${TL_GEOMETRY_HEADERS})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "/" "\\" _group_path "${_source_path}")
+        source_group("Header Files\\${_group_path}" FILES "${_source}")
+    endforeach()
+    
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)

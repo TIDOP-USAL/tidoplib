@@ -295,7 +295,7 @@ public:
    * \brief Constructor
    * \param[in] entities
    */
-  EntityContainer(const std::vector<Entity_t> &entities);
+  EntityContainer(std::vector<Entity_t> entities);
 
   /*!
    * \brief Constructora de lista
@@ -430,7 +430,7 @@ public:
 
   //TODO: insert (para insertar nuevos valores en una posición)
 
-protected:
+private:
 
   /*!
    * \brief Conjunto de puntos
@@ -466,8 +466,8 @@ EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity) TL_NOEXCEPT
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t>::EntityContainer(const std::vector<Entity_t> &entities)
-  : mEntities(entities)
+EntityContainer<Entity_t>::EntityContainer(std::vector<Entity_t> entities)
+  : mEntities(std::move(entities))
 {
 }
 

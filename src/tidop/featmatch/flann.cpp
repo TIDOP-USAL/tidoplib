@@ -95,7 +95,7 @@ void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
     mFlannBasedMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -109,7 +109,7 @@ void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
     mFlannBasedMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 

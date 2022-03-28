@@ -132,7 +132,7 @@ void MatchesReaderBinary::read()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -141,7 +141,7 @@ void MatchesReaderBinary::open()
   try {
     mFile = std::fopen(mFilePath.toString().c_str(), "rb");
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -162,7 +162,7 @@ void MatchesReaderBinary::readHeader()
     std::fread(&extraHead, sizeof(char), 100, mFile);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -178,7 +178,7 @@ void MatchesReaderBinary::readMatches(std::vector<cv::DMatch> *matches)
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -190,7 +190,7 @@ void MatchesReaderBinary::readGoodMatches()
     readMatches(&mGoodMatches);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -202,7 +202,7 @@ void MatchesReaderBinary::readWrongMatches()
     readMatches(&mWrongMatches);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -272,7 +272,7 @@ void MatchesReaderOpenCV::read()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -283,7 +283,7 @@ void MatchesReaderOpenCV::open()
     mFileStorage = new cv::FileStorage(mFilePath.toString().c_str(), cv::FileStorage::READ);
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -301,7 +301,7 @@ void MatchesReaderOpenCV::readGoodMatches()
     (*mFileStorage)["matches"] >> mGoodMatches;
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -313,7 +313,7 @@ void MatchesReaderOpenCV::readWrongMatches()
     (*mFileStorage)["wrong_matches"] >> mWrongMatches;
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -377,7 +377,7 @@ void MatchesWriterBinary::write()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -388,7 +388,7 @@ void MatchesWriterBinary::open()
     mFile = std::fopen(mFilePath.toString().c_str(), "wb");
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -410,7 +410,7 @@ void MatchesWriterBinary::writeHeader() const
     std::fwrite(&extraHead, sizeof(char), 100, mFile);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -421,7 +421,7 @@ void MatchesWriterBinary::writeGoodMatches() const
     writeMatches(mGoodMatches);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -432,7 +432,7 @@ void MatchesWriterBinary::writeWrongMatches() const
     writeMatches(mWrongMatches);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -448,7 +448,7 @@ void MatchesWriterBinary::writeMatches(const std::vector<cv::DMatch> &matches) c
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -524,7 +524,7 @@ void MatchesWriterOpenCV::write()
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -533,7 +533,7 @@ void MatchesWriterOpenCV::open()
   try {
     mFileStorage = new cv::FileStorage(mFilePath.toString(), mMode);
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -551,7 +551,7 @@ void MatchesWriterOpenCV::writeGoodMatches()
       cv::write(*mFileStorage, "matches", mGoodMatches);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -563,7 +563,7 @@ void MatchesWriterOpenCV::writeWrongMatches()
     cv::write(*mFileStorage, "wrong_matches", mWrongMatches);
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -598,7 +598,7 @@ std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return matches_reader;
@@ -627,7 +627,7 @@ std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return matches_writer;

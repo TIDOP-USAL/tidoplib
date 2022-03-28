@@ -42,6 +42,7 @@ namespace tl
  * \{
  */
 
+constexpr auto ProgressBarSize = 50;
 
 class TL_EXPORT Progress
 {
@@ -58,9 +59,13 @@ public:
   virtual bool operator() (size_t increment = 1.) = 0;
   
   virtual void setRange(size_t min, size_t max) = 0;
+  virtual size_t minimun() const = 0;
   virtual void setMinimun(size_t min) = 0;
+  virtual size_t maximun() const = 0;
   virtual void setMaximun(size_t max) = 0;
   virtual void setText(const std::string &text) = 0;
+
+  virtual void reset() = 0;
 
   static bool isRunning();
 
@@ -90,13 +95,16 @@ public:
 
   bool operator()(size_t increment = 1) override;
   void setRange(size_t min, size_t max) override;
+  size_t minimun() const override;
   void setMinimun(size_t min) override;
+  size_t maximun() const override;
   void setMaximun(size_t max) override;
   void setText(const std::string &text) override;
+  void reset() override;
 
 protected:
 
-  void initialize();
+  virtual void initialize();
   void updateScale();
   int percent();
   virtual void updateProgress() = 0;
@@ -122,7 +130,7 @@ private:
   /*!
    * \brief Valor actual
    */
-  double mProgress{};
+  double mProgress{0};
 
   /*!
    * \brief Valor actual en tanto por ciento
@@ -136,6 +144,7 @@ private:
 
 
 /* ---------------------------------------------------------------------------------- */
+
 
 
 
@@ -174,7 +183,7 @@ private:
 
 private:
 
-  int mProgressBarSize{ 50 };
+  int mProgressBarSize{ ProgressBarSize };
 
 };
 
@@ -222,7 +231,7 @@ private:
 
 private:
 
-  int mProgressBarSize{ 50 };
+  int mProgressBarSize{ ProgressBarSize };
   Console::Color mCompleteColor{Console::Color::green};
   Console::Color mRemainigColor{Console::Color::yellow};
 };

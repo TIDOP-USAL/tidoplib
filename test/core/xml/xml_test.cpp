@@ -27,6 +27,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/xml.h>
 
+#ifdef TL_HAVE_GDAL
 
 using namespace tl;
 
@@ -69,3 +70,5 @@ BOOST_FIXTURE_TEST_CASE(next, XmlTest)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif

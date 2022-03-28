@@ -229,7 +229,7 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
     else source1.copyTo(output);
   
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 }
 
@@ -252,7 +252,7 @@ cv::Mat HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &ke
     }
 
   } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
 
   return descriptors;

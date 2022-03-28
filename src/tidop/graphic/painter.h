@@ -120,7 +120,9 @@ public:
    */
   void drawMultiPolygon(const GMultiPolygon &multiPolygon);
 
+#ifdef TL_HAVE_OPENCV
   void drawPicture(const cv::Mat &bmp);
+#endif // TL_HAVE_OPENCV
 
   void drawText(const PointD &point, const std::string &text);
 
@@ -165,7 +167,7 @@ public:
 
 protected:
 
-  Transform/*<PointF>*/ *mTrf;
+  Transform *mTrf;
   Canvas *mCanvas;
   GraphicStyle *mGraphicStyle;
 
