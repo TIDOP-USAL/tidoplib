@@ -29,15 +29,11 @@
 
 #include <algorithm>
 
-#ifdef TL_HAVE_OPENBLAS
-#include <lapacke.h>
-#endif // TL_HAVE_OPENBLAS
-
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
-
+#include "tidop/math/lapack.h"
 
 
 namespace tl
@@ -53,48 +49,6 @@ namespace math
 /*! \addtogroup algebra
  *  \{
  */
-
-
-#ifdef TL_HAVE_OPENBLAS
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-lapackeGETRF(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
-{
-  lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
-  return info;
-}
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-lapackeGETRF(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
-{
-  lapack_int info = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
-  return info;
-}
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-lapackeGETRS(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
-{
-  lapack_int info = LAPACKE_sgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
-  return info;
-}
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-lapackeGETRS(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
-{
-  lapack_int info = LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
-  return info;
-}
-
-#endif // TL_HAVE_OPENBLAS
-
 
 
 /*!
@@ -203,7 +157,7 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
   lapack_int lda = mRows;
   lapack_int ldb = 1;
 
-  lapack_int info = lapackeGETRS(mRows, nrhs, LU.data(), lda, mPivotIndex, x.data(), ldb);
+  lapack_int info = lapack::getrs(mRows, nrhs, LU.data(), lda, mPivotIndex, x.data(), ldb);
 
 #else
 
@@ -260,7 +214,7 @@ Matrix<T> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T> &b) 
   lapack_int lda = mRows;
   lapack_int ldb = b.cols();
 
-  info = lapackeGETRS(mRows, nrhs, LU.data(), lda, mPivotIndex, x.data(), ldb);
+  info = lapack::getrs(mRows, nrhs, LU.data(), lda, mPivotIndex, x.data(), ldb);
 
 #else
 
@@ -375,7 +329,7 @@ inline void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
   lapack_int info;
   lapack_int lda = mRows;
   
-  info = lapackeGETRF(mRows, mRows, LU.data(), lda, mPivotIndex);
+  info = lapack::getrf(mRows, mRows, LU.data(), lda, mPivotIndex);
 
   TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.")
 

@@ -29,14 +29,11 @@
 
 #include <algorithm>
 
-#ifdef TL_HAVE_OPENBLAS
-#include <lapacke.h>
-#endif // TL_HAVE_OPENBLAS
-
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
+#include "tidop/math/lapack.h"
 
 namespace tl
 {
@@ -52,27 +49,6 @@ namespace math
  *  \{
  */
 
-#ifdef TL_HAVE_OPENBLAS
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
-{
-  lapack_int info = LAPACKE_sgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-  return info;
-}
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
-{
-  lapack_int info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-  return info;
-}
-
-#endif // TL_HAVE_OPENBLAS
 
 /*!
  * \brief SVD (Singular value decomposition)
@@ -481,11 +457,6 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
     if (s > (mRows + mCols) / 2) {
       U.col(c) = -U.col(c);
       V.col(c) = -V.col(c);
-      //for (size_t r = 0; r < mRows; r++) 
-      //  U[r][c] = -U[r][c];
-
-      //for (size_t r = 0; r < mCols; r++)
-      //  V[r][c] = -V[r][c];
     }
   }
 }
@@ -504,7 +475,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecomp
   lapack_int ldvt = mCols;
   T *superb = new T[std::min(mRows,mCols)-1];
 
-  info = lapackeGESVD(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
+  info = lapack::gesvd(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
   V = V.transpose();
 
   delete[] superb;

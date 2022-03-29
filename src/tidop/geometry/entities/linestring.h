@@ -494,6 +494,7 @@ MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (MultiLineString 
     Entity::operator = (std::forward<Entity>(multiLineString));
     Entities2D<LineString<Point_t>>::operator = (std::forward<Entities2D<LineString<Point_t>>>(multiLineString));
   }
+
   return *this;
 }
 
@@ -501,9 +502,11 @@ template<typename Point_t> inline
 Window<Point_t> MultiLineString<Point_t>::window() const
 {
   Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    w = joinWindow(w, this->mEntities[i].window());
+
+  for (size_t i = 0; i < this->size(); i++) {
+    w = joinWindow(w, this->at(i).window());
   }
+
   return w;
 }
 
@@ -610,6 +613,7 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineS
     Entity::operator = (std::forward<Entity>(multiLineString));
     Entities3D<LineString3D<Point3_t>>::operator = (std::forward<Entities3D<LineString3D<Point3_t>>>(multiLineString));
   }
+
   return *this;
 }
 
@@ -617,9 +621,11 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> MultiLineString3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    bounding_box = joinBoundingBoxes(bounding_box, this->mEntities[i].boundingBox());
+
+  for (size_t i = 0; i < this->size(); i++) {
+    bounding_box = joinBoundingBoxes(bounding_box, this->at(i).boundingBox());
   }
+
   return bounding_box;
 }
 

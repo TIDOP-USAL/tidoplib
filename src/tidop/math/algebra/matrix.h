@@ -40,6 +40,8 @@
 #include "tidop/core/utils.h"
 #include "tidop/math/simd.h"
 
+// http://www.netlib.org/lapack/explore-html/d1/d54/group__double__blas__level3_gaeda3cbd99c8fb834a60a6412878226e1.html
+
 namespace tl
 {
 

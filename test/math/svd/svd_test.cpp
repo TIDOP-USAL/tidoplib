@@ -124,98 +124,48 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, SvdTest)
   Matrix<float> u = svd->u();
   Matrix<float> v = svd->v();
   Vector<float> w = svd->w();
-  
-  /// Si se usa BLAS cambian los signos de una fila.
 
   BOOST_CHECK_CLOSE(-0.254378, u[0][0], 0.1);
   BOOST_CHECK_CLOSE(-0.513984, u[0][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.819215, u[0][2], 0.1);
-#else 
   BOOST_CHECK_CLOSE(-0.819215, u[0][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.94641, u[1][0], 0.1);
   BOOST_CHECK_CLOSE(0.0419982, u[1][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.320224, u[1][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.320224, u[1][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.198995, u[2][0], 0.1);
   BOOST_CHECK_CLOSE(-0.856771, u[2][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(-0.475756, u[2][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(0.475756, u[2][2], 0.1);
-#endif
   
   BOOST_CHECK_CLOSE(0.00960263, v[0][0], 0.1);
   BOOST_CHECK_CLOSE(-0.0757445, v[0][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.997081, v[0][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.997081, v[0][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.922508, v[1][0], 0.1);
   BOOST_CHECK_CLOSE(0.38544, v[1][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.020396, v[1][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.020396, v[1][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(-0.38586, v[2][0], 0.1);
   BOOST_CHECK_CLOSE(0.919619, v[2][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.0735761, v[2][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.0735761, v[2][2], 0.1);
-#endif
 
   Matrix<double> u2 = svd2->u();
   Matrix<double> v2 = svd2->v();
   Vector<double> w2 = svd2->w();
 
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.209337, u2[0][0], 0.1); 
-#else
   BOOST_CHECK_CLOSE(-0.209337, u2[0][0], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.964385, u2[0][1], 0.1); 
   BOOST_CHECK_CLOSE(0.161676, u2[0][2], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.503849, u2[1][0], 0.1); 
-#else
   BOOST_CHECK_CLOSE(-0.503849, u2[1][0], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.0353216, u2[1][1], 0.1);
   BOOST_CHECK_CLOSE(-0.863069, u2[1][2], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.838042, u2[2][0], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.838042, u2[2][0], 0.1);
-#endif
   BOOST_CHECK_CLOSE(-0.262133, u2[2][1], 0.1);
   BOOST_CHECK_CLOSE(0.47851, u2[2][2], 0.1);
 
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.464668, v2[0][0], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.464668, v2[0][0], 0.1);
-#endif
   BOOST_CHECK_CLOSE(-0.833287, v2[0][1], 0.1);
   BOOST_CHECK_CLOSE(0.299528, v2[0][2], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.553755, v2[1][0], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.553755, v2[1][0], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.00950048, v2[1][1], 0.1);
   BOOST_CHECK_CLOSE(-0.832626, v2[1][2], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.69097, v2[2][0], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.69097, v2[2][0], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.552759, v2[2][1], 0.1);
   BOOST_CHECK_CLOSE(0.465851, v2[2][2], 0.1);
 
@@ -225,47 +175,23 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, SvdTest)
 
   BOOST_CHECK_CLOSE(-0.254378, u3[0][0], 0.1);
   BOOST_CHECK_CLOSE(-0.513984, u3[0][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.819215, u3[0][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.819215, u3[0][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.94641, u3[1][0], 0.1);
   BOOST_CHECK_CLOSE(0.0419982, u3[1][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.320224, u3[1][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.320224, u3[1][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.198995, u3[2][0], 0.1);
   BOOST_CHECK_CLOSE(-0.856771, u3[2][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(-0.475756, u3[2][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(0.475756, u3[2][2], 0.1);
-#endif
 
   BOOST_CHECK_CLOSE(0.00960263, v3[0][0], 0.1);
   BOOST_CHECK_CLOSE(-0.0757445, v3[0][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.997081, v3[0][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.997081, v3[0][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(0.922508, v3[1][0], 0.1);
   BOOST_CHECK_CLOSE(0.38544, v3[1][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.020396, v3[1][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.020396, v3[1][2], 0.1);
-#endif
   BOOST_CHECK_CLOSE(-0.38586, v3[2][0], 0.1);
   BOOST_CHECK_CLOSE(0.919619, v3[2][1], 0.1);
-#ifndef HAVE_OPENBLAS
-  BOOST_CHECK_CLOSE(0.0735761, v3[2][2], 0.1);
-#else
   BOOST_CHECK_CLOSE(-0.0735761, v3[2][2], 0.1);
-#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(solve, SvdTest)

@@ -29,23 +29,17 @@
 
 #include <algorithm>
 
-//#ifdef TL_HAVE_OPENBLAS
-//#include <lapacke.h>
-//#endif // TL_HAVE_OPENBLAS
-
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
+#include "tidop/math/lapack.h"
 
 namespace tl
 {
 
 namespace math
 {
-
-//template<typename T, size_t _rows, size_t _cols>
-//class Matrix;
 
 /*! \addtogroup math
  *  \{
@@ -57,31 +51,6 @@ namespace math
  */
 
 //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
-
-//#ifdef TL_HAVE_OPENBLAS
-//
-//template<typename T> inline
-//  typename std::enable_if<
-//  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-//  lapackeGEQRF(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *superb)
-//{
-//  lapack_int info = LAPACKE_sgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, superb);
-//  return info;
-//}
-//
-//template<typename T> inline
-//  typename std::enable_if<
-//  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-//  lapackeGEQRF(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *superb)
-//{
-//  lapack_int info = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, superb);
-//  return info;
-//}
-//
-//
-//#endif // TL_HAVE_OPENBLAS
-
-
 //https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
 
 /*!
@@ -318,7 +287,7 @@ inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() c
 //  lapack_int info;
 //  lapack_int lda = QR.cols();
 //  T *superb = new T[std::min(QR.rows(), QR.cols()) - 1];
-//  info = lapackeGEQRF(QR.rows(), QR.cols(), QR.data(), lda, superb);
+//  info = lapack::lapackeGEQRF(QR.rows(), QR.cols(), QR.data(), lda, superb);
 //
 //  //std::cout << QR << std::endl;
 //  //for (size_t r = 1; r < QR.rows(); r++) {

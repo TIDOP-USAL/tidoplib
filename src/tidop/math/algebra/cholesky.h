@@ -27,14 +27,11 @@
 
 #include <algorithm>
 
-#ifdef TL_HAVE_OPENBLAS
-#include <lapacke.h>
-#endif // TL_HAVE_OPENBLAS
-
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
+#include "tidop/math/lapack.h"
 
 namespace tl
 {
@@ -52,29 +49,6 @@ namespace math
  *  \{
  */
 
-
-
-#ifdef TL_HAVE_OPENBLAS
-
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-  lapackePOTRF(lapack_int rows, T *a, lapack_int lda)
-{
-  lapack_int info = LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
-  return info;
-}
-
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-  lapackePOTRF(lapack_int rows, T *a, lapack_int lda)
-{
-  lapack_int info = LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
-  return info;
-}
-
-#endif // TL_HAVE_OPENBLAS
 
 /*!
  * \brief Factorización Cholesky
@@ -220,7 +194,7 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 {
   lapack_int info;
 
-  info = lapackePOTRF(L.rows(), L.data(), L.cols());
+  info = lapack::potrf(L.rows(), L.data(), L.cols());
 
   TL_ASSERT(info >= 0, "Cholesky Decomposition failed");
 
