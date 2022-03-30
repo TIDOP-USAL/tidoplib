@@ -124,17 +124,20 @@ TaskBase::TaskBase(TaskBase &&task) TL_NOEXCEPT
 
 TaskBase::~TaskBase()
 {
-  if (mStatus == Status::running ||
-      mStatus == Status::paused ||
-      mStatus == Status::pausing) {
-    stop();
-  }
+  if((mStatus != Status::start) || 
+     mStatus != Status::finalized ||
+     mStatus != Status::stopped) {
+    if(mStatus == Status::running ||
+        mStatus == Status::paused ||
+        mStatus == Status::pausing) {
+      stop();
+    }
 
-  if (mStatus != Status::finalized) {
-    mStatus = Status::finalized;
-    eventTriggered(Event::Type::task_finalized);
+    //if(mStatus != Status::finalized) {
+    //  mStatus = Status::finalized;
+    //  eventTriggered(Event::Type::task_finalized);
+    //}
   }
-
 }
 
 TaskBase &TaskBase::operator=(const TaskBase &task)
@@ -507,7 +510,7 @@ TaskStoppingEvent *TaskBase::stoppingEvent()
 
 void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
 {
-  if(mStatus == Status::finalized) return;
+  if(mStatus != Status::start) return;
 
   try { 
     
@@ -524,6 +527,8 @@ void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
     mTaskErrorEvent->setErrorMessage(e.what());
     setStatus(Status::error);
   }
+
+  //mStatus = Status::start;
 }
 
 
