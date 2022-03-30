@@ -241,12 +241,6 @@ void TaskBase::stop()
 
     setStatus(Status::stopping);
 
-    TL_TODO("Revisar")
-    //while (mStatus != Status::stopped || mStatus != Status::finalized || mStatus != Status::error);
-
-    //if (mStatus == Status::stopped)
-    //  eventTriggered(Event::Type::task_stopped);
-
   }
 }
 
@@ -797,9 +791,22 @@ void TaskList::push_back(const std::shared_ptr<Task> &task)
   mTasks.push_back(task);
 }
 
+void TaskList::stop()
+{
+  TaskBase::stop();
+
+  if (status() == Status::stopping) {
+    for (const auto &task : mTasks) {
+      task->stop();
+    }
+  }
+}
+
 void TaskList::execute(Progress *progressBar)
 {
   for(const auto &task : mTasks) {
+
+    if (status() == Status::stopping) return;
 
     task->run();
 
@@ -810,6 +817,29 @@ void TaskList::execute(Progress *progressBar)
 
 
 
+/* Task Tree */
+
+TaskTree::TaskTree()
+{
+}
+
+TaskTree::~TaskTree()
+{
+}
+
+void TaskTree::addTask(const std::shared_ptr<Task> &task,
+                       const std::list<std::shared_ptr<Task>> &parentTasks)
+{
+
+}
+
+void TaskTree::stop()
+{
+}
+
+void TaskTree::execute(Progress *progressBar)
+{
+}
 
 } // End namespace tl
 

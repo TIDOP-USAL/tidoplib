@@ -322,9 +322,15 @@ public:
 
   void push_back(const std::shared_ptr<Task> &task);
 
-private:
+// Task interface
 
-// ProcessBase interface
+public:
+
+  void stop() override;
+
+// TaskBase interface
+
+private:
 
   virtual void execute(Progress *progressBar = nullptr) override;
 
@@ -335,11 +341,42 @@ private:
 };
 
 
+
+/* Task Tree */
+
+class TL_EXPORT TaskTree
+  : public TaskBase
+{
+
+public:
+
+  TaskTree();
+  ~TaskTree();
+
+  void addTask(const std::shared_ptr<Task> &task, 
+               const std::list<std::shared_ptr<Task>> &parentTasks);
+ 
+  // Task interface
+
+public:
+
+  void stop() override;
+
+// TaskBase interface
+
+private:
+
+  virtual void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+};
+
+
+
+
+
 /*! \} */ // end of core
-
-
-
-/* ---------------------------------------------------------------------------------- */
 
 } // End namespace tl
 
