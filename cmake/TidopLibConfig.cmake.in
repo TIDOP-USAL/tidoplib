@@ -24,7 +24,7 @@
 
 @PACKAGE_INIT@
 
-
+include(CMakeFindDependencyMacro)
 
 set(TidopLib_INCLUDE_DIRS "@INCLUDE_DIRS_TIDOP@")
 
@@ -37,56 +37,68 @@ set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 
-#find_dependency(Boost COMPONENTS filesystem system)
-find_package(Boost COMPONENTS filesystem system)
-#append(${TidopLib_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+find_dependency(Boost REQUIRED)
+#find_package(Boost COMPONENTS filesystem system REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 
 if(@TL_HAVE_GDAL@)
-  find_package(GDAL QUIET)
+  find_dependency(GDAL QUIET)
 
-  if(NOT GDAL_FOUND)
-    set(TL_HAVE_GDAL NO)
-  else()
-    set(TL_HAVE_GDAL YES)
+  #if(NOT GDAL_FOUND)
+  #  set(TL_HAVE_GDAL NO)
+  #else()
+  #  set(TL_HAVE_GDAL YES)
     include_directories(${GDAL_INCLUDE_DIR})
-  endif()
+  #endif()
 endif()
 
 if(@TL_HAVE_PROJ4@)
-  find_package(PROJ4 QUIET)
+  find_dependency(PROJ4 QUIET)
   
-  if(NOT PROJ4_FOUND)
-    set(TL_HAVE_PROJ4 NO)
-  else()
-    set(TL_HAVE_PROJ4 YES)
+  #if(NOT PROJ4_FOUND)
+  #  set(TL_HAVE_PROJ4 NO)
+  #else()
+  #  set(TL_HAVE_PROJ4 YES)
     include_directories(${PROJ4_INCLUDE})
-	message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
-    message(STATUS "  Library : ${PROJ4_LIBRARIES}")
-  endif()
+	#message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
+  #  message(STATUS "  Library : ${PROJ4_LIBRARIES}")
+  #endif()
 endif()
 
 if(@TL_HAVE_OPENCV@)
-  find_package(OpenCV QUIET)
+  find_dependency(OpenCV QUIET)
   
-  if(NOT OPENCV_FOUND)
-    set(TL_HAVE_OPENCV NO)
-  else()
-    set(TL_HAVE_OPENCV YES)
-	message(STATUS "  OpenCV version: ${OpenCV_VERSION}")
-  endif()
+  #if(NOT OPENCV_FOUND)
+  #  set(TL_HAVE_OPENCV NO)
+  #else()
+  #  set(TL_HAVE_OPENCV YES)
+	#message(STATUS "  OpenCV version: ${OpenCV_VERSION}")
+  #endif()
 endif()
 	
 if(@TL_HAVE_OPENBLAS@)
-  find_package(OpenBLAS QUIET)
+  find_dependency(OpenBLAS QUIET)
   
-  if(NOT OpenBLAS_FOUND)
-    set(TL_HAVE_OPENBLAS NO)
-  else()
-    set(TL_HAVE_OPENBLAS YES)
+  #if(NOT OpenBLAS_FOUND)
+  #  set(TL_HAVE_OPENBLAS NO)
+  #else()
+  #  set(TL_HAVE_OPENBLAS YES)
     include_directories(${OpenBLAS_INCLUDE_DIRS})
-  endif()
+  #endif()
+endif()
+
+if(@TL_HAVE_OPENMP@)
+
+  find_dependency(OpenMP QUIET)
+  
+  #if(OpenMP_FOUND)
+  #  set(TL_HAVE_OPENMP YES)
+  #  message(STATUS "  OpenMP enable")
+  #else()
+  #  set(TL_HAVE_OPENMP NO)
+  #endif()
+  
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
