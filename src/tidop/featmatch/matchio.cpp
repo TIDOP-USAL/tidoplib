@@ -49,6 +49,21 @@ std::vector<cv::DMatch> MatchesReader::wrongMatches() const
   return mWrongMatches;
 }
 
+const Path &MatchesReader::filePath() const
+{
+  return mFilePath;
+}
+
+std::vector<cv::DMatch> &MatchesReader::goodMatches()
+{
+  return mGoodMatches;
+}
+
+std::vector<cv::DMatch> &MatchesReader::wrongMatches()
+{
+  return mWrongMatches;
+}
+
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -69,6 +84,21 @@ void MatchesWriter::setGoodMatches(const std::vector<cv::DMatch> &goodMatches)
 void MatchesWriter::setWrongMatches(const std::vector<cv::DMatch> &wrongMatches)
 {
   mWrongMatches = wrongMatches;
+}
+
+const tl::Path &MatchesWriter::filePath() const
+{
+  return mFilePath;
+}
+
+const std::vector<cv::DMatch> &MatchesWriter::goodMatches() const
+{
+  return mGoodMatches;
+}
+
+const std::vector<cv::DMatch> &MatchesWriter::wrongMatches() const
+{
+  return mWrongMatches;
 }
 
 
@@ -139,7 +169,7 @@ void MatchesReaderBinary::read()
 void MatchesReaderBinary::open()
 {
   try {
-    mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+    mFile = std::fopen(filePath().toString().c_str(), "rb");
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
@@ -186,8 +216,8 @@ void MatchesReaderBinary::readGoodMatches()
 {
   try {
 
-    mGoodMatches.resize(static_cast<size_t>(mSizeGoodMatches));
-    readMatches(&mGoodMatches);
+    goodMatches().resize(static_cast<size_t>(mSizeGoodMatches));
+    readMatches(&goodMatches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -198,8 +228,8 @@ void MatchesReaderBinary::readWrongMatches()
 {
   try {
 
-    mWrongMatches.resize(static_cast<size_t>(mSizeWrongMatches));
-    readMatches(&mWrongMatches);
+    wrongMatches().resize(static_cast<size_t>(mSizeWrongMatches));
+    readMatches(&wrongMatches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -280,7 +310,7 @@ void MatchesReaderOpenCV::open()
 {
   try {
 
-    mFileStorage = new cv::FileStorage(mFilePath.toString().c_str(), cv::FileStorage::READ);
+    mFileStorage = new cv::FileStorage(filePath().toString().c_str(), cv::FileStorage::READ);
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -297,8 +327,8 @@ void MatchesReaderOpenCV::readGoodMatches()
 {
   try {
 
-    mGoodMatches.resize(0);
-    (*mFileStorage)["matches"] >> mGoodMatches;
+    goodMatches().resize(0);
+    (*mFileStorage)["matches"] >> goodMatches();
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -309,8 +339,8 @@ void MatchesReaderOpenCV::readWrongMatches()
 {
   try {
 
-    mWrongMatches.resize(0);
-    (*mFileStorage)["wrong_matches"] >> mWrongMatches;
+    wrongMatches().resize(0);
+    (*mFileStorage)["wrong_matches"] >> wrongMatches();
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -385,7 +415,7 @@ void MatchesWriterBinary::open()
 {
   try {
 
-    mFile = std::fopen(mFilePath.toString().c_str(), "wb");
+    mFile = std::fopen(filePath().toString().c_str(), "wb");
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -401,8 +431,8 @@ void MatchesWriterBinary::writeHeader() const
 {
   try {
 
-    uint64_t size = mGoodMatches.size();
-    uint64_t size_wm = mWrongMatches.size();
+    uint64_t size = goodMatches().size();
+    uint64_t size_wm = wrongMatches().size();
     std::fwrite("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"), 1, mFile);
     std::fwrite(&size, sizeof(uint64_t), 1, mFile);
     std::fwrite(&size_wm, sizeof(uint64_t), 1, mFile);
@@ -418,7 +448,7 @@ void MatchesWriterBinary::writeGoodMatches() const
 {
   try {
   
-    writeMatches(mGoodMatches);
+    writeMatches(goodMatches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -429,7 +459,7 @@ void MatchesWriterBinary::writeWrongMatches() const
 {
   try {
 
-    writeMatches(mWrongMatches);
+    writeMatches(wrongMatches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -487,7 +517,6 @@ private:
 
 private:
 
-  int mMode;
   cv::FileStorage *mFileStorage;
 
 };
@@ -496,12 +525,6 @@ MatchesWriterOpenCV::MatchesWriterOpenCV(Path file)
   : MatchesWriter(std::move(file)),
     mFileStorage(nullptr)
 {
-  std::string ext = file.extension().toString();
-  if (compareInsensitiveCase(ext, ".xml")) {
-    mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
-  } else if (compareInsensitiveCase(ext, ".yml")) {
-    mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
-  }
 }
 
 MatchesWriterOpenCV::~MatchesWriterOpenCV()
@@ -531,7 +554,17 @@ void MatchesWriterOpenCV::write()
 void MatchesWriterOpenCV::open()
 {
   try {
-    mFileStorage = new cv::FileStorage(mFilePath.toString(), mMode);
+
+    int mode{};
+    std::string ext = filePath().extension().toString();
+    if (compareInsensitiveCase(ext, ".xml")) {
+      mode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
+    } else if (compareInsensitiveCase(ext, ".yml")) {
+      mode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
+    }
+
+    mFileStorage = new cv::FileStorage(filePath().toString(), mode);
+
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
@@ -548,7 +581,7 @@ void MatchesWriterOpenCV::writeGoodMatches()
   try {
 
     if (mFileStorage)
-      cv::write(*mFileStorage, "matches", mGoodMatches);
+      cv::write(*mFileStorage, "matches", goodMatches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -560,7 +593,7 @@ void MatchesWriterOpenCV::writeWrongMatches()
   try {
     
     if (mFileStorage)
-    cv::write(*mFileStorage, "wrong_matches", mWrongMatches);
+    cv::write(*mFileStorage, "wrong_matches", wrongMatches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
