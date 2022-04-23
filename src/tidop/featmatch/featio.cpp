@@ -50,6 +50,21 @@ void FeaturesWriter::setDescriptors(const cv::Mat &descriptors)
   mDescriptors = descriptors;
 }
 
+const tl::Path &FeaturesWriter::filePath() const
+{
+  return mFilePath;
+}
+
+const std::vector<cv::KeyPoint> &FeaturesWriter::keyPoints() const
+{
+  return mKeyPoints;
+}
+
+const cv::Mat &FeaturesWriter::descriptors() const
+{
+  return mDescriptors;
+}
+
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -281,7 +296,7 @@ void FeaturesWriterBinary::write()
 void FeaturesWriterBinary::open()
 {
   try {
-    mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+    mFile = std::fopen(filePath().toString().c_str(), "rb");
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
@@ -296,10 +311,10 @@ void FeaturesWriterBinary::writeHeader()
 {
   try {
 
-    int32_t size = static_cast<int32_t>(mKeyPoints.size());
-    int32_t rows = static_cast<int32_t>(mDescriptors.rows);
-    int32_t cols = static_cast<int32_t>(mDescriptors.cols);
-    int32_t type = mDescriptors.type();
+    int32_t size = static_cast<int32_t>(keyPoints().size());
+    int32_t rows = static_cast<int32_t>(descriptors().rows);
+    int32_t cols = static_cast<int32_t>(descriptors().cols);
+    int32_t type = descriptors().type();
     std::fwrite("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"), 1, mFile);
     std::fwrite(&size, sizeof(int32_t), 1, mFile);
     std::fwrite(&rows, sizeof(int32_t), 1, mFile);
@@ -317,7 +332,7 @@ void FeaturesWriterBinary::writeBody()
 {
   try {
 
-    for (auto &keyPoint : mKeyPoints) {
+    for (auto &keyPoint : keyPoints()) {
       std::fwrite(&keyPoint.pt.x, sizeof(float), 1, mFile);
       std::fwrite(&keyPoint.pt.y, sizeof(float), 1, mFile);
       std::fwrite(&keyPoint.size, sizeof(float), 1, mFile);
@@ -327,9 +342,9 @@ void FeaturesWriterBinary::writeBody()
       std::fwrite(&keyPoint.class_id, sizeof(float), 1, mFile);
     }
 
-    size_t rows = static_cast<size_t>(mDescriptors.rows);
-    size_t cols = static_cast<size_t>(mDescriptors.cols);
-    std::fwrite(mDescriptors.data, sizeof(float), rows * cols, mFile);
+    size_t rows = static_cast<size_t>(descriptors().rows);
+    size_t cols = static_cast<size_t>(descriptors().cols);
+    std::fwrite(descriptors().data, sizeof(float), rows * cols, mFile);
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -486,7 +501,6 @@ private:
 
 private:
 
-  int mMode{};
   cv::FileStorage mFileStorage;
 };
 
@@ -494,12 +508,6 @@ private:
 FeaturesWriterOpenCV::FeaturesWriterOpenCV(tl::Path file)
   : FeaturesWriter(std::move(file))
 { 
-  std::string ext = file.extension().toString();
-  if (compareInsensitiveCase(ext, ".xml")) {
-    mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
-  } else if (compareInsensitiveCase(ext, ".yml")) {
-    mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
-  }
 }
 
 void FeaturesWriterOpenCV::write()
@@ -521,8 +529,17 @@ void FeaturesWriterOpenCV::write()
 void FeaturesWriterOpenCV::open()
 {
   try {
+    int mode{};
+    std::string ext = filePath().extension().toString();
+    if (compareInsensitiveCase(ext, ".xml")) {
+      mode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
+    } else if (compareInsensitiveCase(ext, ".yml")) {
+      mode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
+    } else {
+      TL_THROW_EXCEPTION("Unsupported format");
+    }
 
-    mFileStorage = cv::FileStorage(mFilePath.toString(), mMode);
+    mFileStorage = cv::FileStorage(filePath().toString(), mode);
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -538,8 +555,8 @@ void FeaturesWriterOpenCV::writeKeypoints()
 {
   try {
 
-    if (!mKeyPoints.empty())
-      cv::write(mFileStorage, "keypoints", mKeyPoints);
+    if (!keyPoints().empty())
+      cv::write(mFileStorage, "keypoints", keyPoints());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -550,8 +567,8 @@ void FeaturesWriterOpenCV::writeDescriptors()
 {
   try {
 
-    if (!mDescriptors.empty())
-      cv::write(mFileStorage, "descriptors", mDescriptors);
+    if (!descriptors().empty())
+      cv::write(mFileStorage, "descriptors", descriptors());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -657,7 +674,7 @@ void FeaturesReaderTxt::readBody()
 {
   try {
 
-    mKeyPoints.resize(static_cast<size_t>(mSize));
+    keyPoints().resize(static_cast<size_t>(mSize));
     mDescriptors = cv::Mat(mSize, mCols, mType);
 
     int r = 0;
@@ -665,10 +682,10 @@ void FeaturesReaderTxt::readBody()
     while (std::getline(ifs, line)) {
 
       std::vector<std::string> list = split(line, " ");
-      mKeyPoints[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
-      mKeyPoints[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
-      mKeyPoints[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
-      mKeyPoints[static_cast<size_t>(r)].angle = stringToNumber<float>(list[3]);
+      keyPoints()[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
+      keyPoints()[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
+      keyPoints()[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
+      keyPoints()[static_cast<size_t>(r)].angle = stringToNumber<float>(list[3]);
 
       for (int c = 0; c < mCols; c++) {
         switch (mType) {
@@ -769,7 +786,7 @@ void FeaturesWriterTxt::open()
 {
   try {
 
-    ofs = std::ofstream(mFilePath.toString(), std::ofstream::trunc);
+    ofs = std::ofstream(filePath().toString(), std::ofstream::trunc);
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -785,7 +802,7 @@ void FeaturesWriterTxt::writeHeader()
 {
   try {
 
-    ofs << mKeyPoints.size() << " " << mDescriptors.cols << " " << mDescriptors.type() << std::endl;
+    ofs << keyPoints().size() << " " << descriptors().cols << " " << descriptors().type() << std::endl;
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -796,35 +813,35 @@ void FeaturesWriterTxt::writeBody()
 {
   try {
 
-    int size = static_cast<int>(mKeyPoints.size());
-    int type = mDescriptors.type();
+    int size = static_cast<int>(keyPoints().size());
+    int type = descriptors().type();
 
     for (int r = 0; r < size; r++) {
-      cv::KeyPoint kp = mKeyPoints[static_cast<size_t>(r)];
+      cv::KeyPoint kp = keyPoints()[static_cast<size_t>(r)];
       ofs << kp.pt.x << " " << kp.pt.y << " " << kp.size << " " << kp.angle;
-      for (int c = 0; c < mDescriptors.cols; c++) {
+      for (int c = 0; c < descriptors().cols; c++) {
 
         switch (type) {
           case CV_8U:
-            ofs << " " << static_cast<int>(mDescriptors.at<uchar>(r, c));
+            ofs << " " << static_cast<int>(descriptors().at<uchar>(r, c));
             break;
           case CV_8S:
-            ofs << " " << static_cast<int>(mDescriptors.at<schar>(r, c));
+            ofs << " " << static_cast<int>(descriptors().at<schar>(r, c));
             break;
           case CV_16U:
-            ofs << " " << static_cast<int>(mDescriptors.at<ushort>(r, c));
+            ofs << " " << static_cast<int>(descriptors().at<ushort>(r, c));
             break;
           case CV_16S:
-            ofs << " " << static_cast<int>(mDescriptors.at<short>(r, c));
+            ofs << " " << static_cast<int>(descriptors().at<short>(r, c));
             break;
           case CV_32S:
-            ofs << " " << mDescriptors.at<int>(r, c);
+            ofs << " " << descriptors().at<int>(r, c);
             break;
           case CV_32F:
-            ofs << " " << mDescriptors.at<float>(r, c);
+            ofs << " " << descriptors().at<float>(r, c);
             break;
           case CV_64F:
-            ofs << " " << mDescriptors.at<double>(r, c);
+            ofs << " " << descriptors().at<double>(r, c);
             break;
           default:
             ofs << " " << -1;
