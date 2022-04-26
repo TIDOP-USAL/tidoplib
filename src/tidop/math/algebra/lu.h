@@ -275,7 +275,8 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
     mPivotIndex[k] = pivot_row;
 
-    if (LU[k][k] == consts::zero<T>) 
+    //if (LU[k][k] == consts::zero<T>)
+    if (isNearlyZero(LU[k][k]))
       LU[k][k] = std::numeric_limits<T>().min();
     
     T llkk = LU[k][k];

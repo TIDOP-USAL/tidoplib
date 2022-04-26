@@ -172,8 +172,26 @@ module(T a, T b)
 
 template<typename T> inline
 typename std::enable_if<
-    std::is_integral<T>::value,
-    double>::type
+  std::is_floating_point<T>::value, 
+  bool>::type
+isNearlyEqual(T a, T b)
+{
+  if (a == b) return true;
+
+  T diff = std::abs(a-b);
+  if (diff >= consts::one<T>) return false;
+
+  T epsilon = std::numeric_limits<T>::epsilon() * T{128};
+  T norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
+  
+  return diff < std::max(std::numeric_limits<T>::min(), epsilon * norm);
+}
+
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_integral<T>::value,
+  bool>::type
 isZero(T value)
 {
   return value == consts::zero<T>;
@@ -181,12 +199,22 @@ isZero(T value)
 
 template<typename T> inline
 typename std::enable_if<
-    std::is_floating_point<T>::value,T>::type
+  std::is_floating_point<T>::value,
+  bool>::type
 isZero(T value)
 {
   T up = std::nextafter(consts::zero<T>, consts::one<T>);
   T down = std::nextafter(consts::zero<T>, -consts::one<T>);
   return (down <= value && value <= up);
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_floating_point<T>::value,
+  bool>::type
+isNearlyZero(T value)
+{
+  return isNearlyEqual(value, consts::zero<T>);
 }
 
 /*! \} */ // end of math

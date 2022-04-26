@@ -62,6 +62,12 @@ public:
 
 protected:
 
+  const tl::Path &filePath() const;
+  std::vector<cv::DMatch> &goodMatches();
+  std::vector<cv::DMatch> &wrongMatches();
+
+private:
+
   tl::Path mFilePath;
   std::vector<cv::DMatch> mGoodMatches;
   std::vector<cv::DMatch> mWrongMatches;
@@ -87,6 +93,12 @@ public:
   void setWrongMatches(const std::vector<cv::DMatch> &wrongMatches);
 
 protected:
+
+  const tl::Path &filePath() const;
+  const std::vector<cv::DMatch> &goodMatches() const;
+  const std::vector<cv::DMatch> &wrongMatches() const;
+
+private:
 
   tl::Path mFilePath;
   std::vector<cv::DMatch> mGoodMatches;

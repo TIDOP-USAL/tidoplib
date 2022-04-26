@@ -61,6 +61,12 @@ public:
 
 protected:
 
+  const tl::Path &filePath() const;
+  const std::vector<cv::KeyPoint> &keyPoints() const;
+  const cv::Mat &descriptors() const;
+
+private:
+
   tl::Path mFilePath;
   std::vector<cv::KeyPoint> mKeyPoints;
   cv::Mat mDescriptors;

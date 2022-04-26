@@ -57,7 +57,8 @@ if(BUILD_TL_MATH)
         algebra/lu.h
         algebra/qr.h
         algebra/cholesky.h
-        lapack.h)
+        lapack.h
+        blas.h)
                 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${TL_MATH_SOURCES}

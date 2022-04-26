@@ -30,17 +30,11 @@
 #include <vector>
 #include <array>
 
-#ifdef TL_HAVE_OPENBLAS
-#include <lapacke.h>
-#endif // TL_HAVE_OPENBLAS
-
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 #include "tidop/math/simd.h"
-
-// http://www.netlib.org/lapack/explore-html/d1/d54/group__double__blas__level3_gaeda3cbd99c8fb834a60a6412878226e1.html
 
 namespace tl
 {
