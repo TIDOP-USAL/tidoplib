@@ -245,7 +245,7 @@ void TaskBase::stop()
 }
 
 void TaskBase::subscribe(Event::Type eventType,
-                            const EventHandler &eventHandler)
+                         const EventHandler &eventHandler)
 {
   switch (eventType) {
     case Event::Type::task_error:

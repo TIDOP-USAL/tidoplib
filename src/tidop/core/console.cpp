@@ -1039,6 +1039,10 @@ CommandList::Status CommandList::parse(int argc, char **argv)
     }
   }
 
+  if(!mCommand) {
+    msgError("Unknow command : %s", arg_cmd_name.c_str());
+  }
+
   return Status::parse_error;
 }
 
