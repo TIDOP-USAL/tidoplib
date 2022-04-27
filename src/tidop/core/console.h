@@ -415,7 +415,7 @@ public:
    * \brief Devuelve la descripción del argumento
    * \return Descripción del argumento
    */
-  std::string description() const;
+  virtual std::string description() const;
 
   /*!
    * \brief Establece la descripción del argumento
@@ -780,7 +780,8 @@ public:
    */
   ArgumentList_(const std::string &name,
                 const std::string &description,
-                std::vector<T> &values, size_t *idx);
+                std::vector<T> &values, 
+                size_t *idx);
 
   /*!
    * \brief Constructor argumento lista de opciones
@@ -820,8 +821,8 @@ public:
   ArgumentList_ &operator = (ArgumentList_ &&) = delete;
 
   void fromString(const std::string &value) override;
-
   void setValue(const T &value) override;
+  std::string description() const override;
 
 private:
 
@@ -841,16 +842,6 @@ using ArgumentListFloatOptional = ArgumentList_<float, false>;
 using ArgumentListStringRequired = ArgumentList_<std::string, true>;
 using ArgumentListStringOptional = ArgumentList_<std::string, false>;
 
-/* Macros para la creación de los argumentos */
-
-# define CreateArgumentListIntegerRequired(...) std::make_shared<ArgumentListIntegerRequired>(__VA_ARGS__)
-# define CreateArgumentListIntegerOptional(...) std::make_shared<ArgumentListIntegerOptional>(__VA_ARGS__)
-# define CreateArgumentListDoubleRequired(...) std::make_shared<ArgumentListDoubleRequired>(__VA_ARGS__)
-# define CreateArgumentListDoubleOptional(...) std::make_shared<ArgumentListDoubleOptional>(__VA_ARGS__)
-# define CreateArgumentListFloatRequired(...) std::make_shared<ArgumentListFloatRequired>(__VA_ARGS__)
-# define CreateArgumentListFloatOptional(...) std::make_shared<ArgumentListFloatOptional>(__VA_ARGS__)
-# define CreateArgumentListStringRequired(...) std::make_shared<ArgumentListStringRequired>(__VA_ARGS__)
-# define CreateArgumentListStringOptional(...) std::make_shared<ArgumentListStringOptional>(__VA_ARGS__)
 
 
 /* Implementación */
@@ -934,6 +925,20 @@ void ArgumentList_<T, required>::setValue(const T &value)
   }
 }
 
+template<typename T, bool required> inline
+std::string ArgumentList_<T, required>::description() const
+{
+  std::string _description = Argument::description();
+  _description.append(" [Values:");
+  for (const T &value : mValues) {
+    std::ostringstream os;
+    os << " " << value;
+    _description.append(os.str());
+  }
+  _description.append("]");
+
+  return _description;
+}
 
 //class ArgumentValidator
 //{
@@ -1608,6 +1613,14 @@ private:
 # define CreateArgumentStringOptional(...) std::make_shared<tl::ArgumentStringOptional>(__VA_ARGS__)
 # define CreateArgumentPathRequired(...) std::make_shared<tl::ArgumentPathRequired>(__VA_ARGS__)
 # define CreateArgumentPathOptional(...) std::make_shared<tl::ArgumentPathOptional>(__VA_ARGS__)
+# define CreateArgumentListIntegerRequired(...) std::make_shared<tl::ArgumentListIntegerRequired>(__VA_ARGS__)
+# define CreateArgumentListIntegerOptional(...) std::make_shared<tl::ArgumentListIntegerOptional>(__VA_ARGS__)
+# define CreateArgumentListDoubleRequired(...) std::make_shared<tl::ArgumentListDoubleRequired>(__VA_ARGS__)
+# define CreateArgumentListDoubleOptional(...) std::make_shared<tl::ArgumentListDoubleOptional>(__VA_ARGS__)
+# define CreateArgumentListFloatRequired(...) std::make_shared<tl::ArgumentListFloatRequired>(__VA_ARGS__)
+# define CreateArgumentListFloatOptional(...) std::make_shared<tl::ArgumentListFloatOptional>(__VA_ARGS__)
+# define CreateArgumentListStringRequired(...) std::make_shared<tl::ArgumentListStringRequired>(__VA_ARGS__)
+# define CreateArgumentListStringOptional(...) std::make_shared<tl::ArgumentListStringOptional>(__VA_ARGS__)
 
 /*! \} */ // end of Console
 

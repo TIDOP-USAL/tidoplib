@@ -54,12 +54,12 @@ const Path &MatchesReader::filePath() const
   return mFilePath;
 }
 
-std::vector<cv::DMatch> &MatchesReader::goodMatches()
+std::vector<cv::DMatch> &MatchesReader::good_matches()
 {
   return mGoodMatches;
 }
 
-std::vector<cv::DMatch> &MatchesReader::wrongMatches()
+std::vector<cv::DMatch> &MatchesReader::wrong_matches()
 {
   return mWrongMatches;
 }
@@ -216,8 +216,8 @@ void MatchesReaderBinary::readGoodMatches()
 {
   try {
 
-    goodMatches().resize(static_cast<size_t>(mSizeGoodMatches));
-    readMatches(&goodMatches());
+    good_matches().resize(static_cast<size_t>(mSizeGoodMatches));
+    readMatches(&good_matches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -228,8 +228,8 @@ void MatchesReaderBinary::readWrongMatches()
 {
   try {
 
-    wrongMatches().resize(static_cast<size_t>(mSizeWrongMatches));
-    readMatches(&wrongMatches());
+    wrong_matches().resize(static_cast<size_t>(mSizeWrongMatches));
+    readMatches(&wrong_matches());
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -327,8 +327,8 @@ void MatchesReaderOpenCV::readGoodMatches()
 {
   try {
 
-    goodMatches().resize(0);
-    (*mFileStorage)["matches"] >> goodMatches();
+    good_matches().resize(0);
+    (*mFileStorage)["matches"] >> good_matches();
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -339,8 +339,8 @@ void MatchesReaderOpenCV::readWrongMatches()
 {
   try {
 
-    wrongMatches().resize(0);
-    (*mFileStorage)["wrong_matches"] >> wrongMatches();
+    wrong_matches().resize(0);
+    (*mFileStorage)["wrong_matches"] >> wrong_matches();
   
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -614,6 +614,11 @@ void MatchesWriterOpenCV::close()
 
 std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path &file)
 {
+  return MatchesReaderFactory::create(file);
+}
+
+std::unique_ptr<MatchesReader> MatchesReaderFactory::create(const tl::Path &file)
+{
   std::unique_ptr<MatchesReader> matches_reader;
 
   try {
@@ -643,6 +648,11 @@ std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path
 
 std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path &file)
 {
+  return MatchesWriterFactory::create(file);
+}
+
+std::unique_ptr<MatchesWriter> MatchesWriterFactory::create(const tl::Path &file)
+{
   std::unique_ptr<MatchesWriter> matches_writer;
 
   try {
@@ -651,7 +661,7 @@ std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path
 
     if (compareInsensitiveCase(ext, ".bin")) {
       matches_writer = std::make_unique<MatchesWriterBinary>(file);
-    } else if (compareInsensitiveCase(ext, ".xml")){
+    } else if (compareInsensitiveCase(ext, ".xml")) {
       matches_writer = std::make_unique<MatchesWriterOpenCV>(file);
     } else if (compareInsensitiveCase(ext, ".yml")) {
       matches_writer = std::make_unique<MatchesWriterOpenCV>(file);

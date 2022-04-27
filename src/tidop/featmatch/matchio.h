@@ -63,8 +63,8 @@ public:
 protected:
 
   const tl::Path &filePath() const;
-  std::vector<cv::DMatch> &goodMatches();
-  std::vector<cv::DMatch> &wrongMatches();
+  std::vector<cv::DMatch> &good_matches();
+  std::vector<cv::DMatch> &wrong_matches();
 
 private:
 
@@ -120,7 +120,9 @@ private:
 
 public:
 
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<MatchesReader> createReader(const tl::Path &file);
+  static std::unique_ptr<MatchesReader> create(const tl::Path &file);
 };
 
 
@@ -139,7 +141,9 @@ private:
 
 public:
 
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<MatchesWriter> createWriter(const tl::Path &file);
+  static std::unique_ptr<MatchesWriter> create(const tl::Path &file);
 };
 
 
