@@ -101,6 +101,7 @@ public:
   Path &append(const Path&text);
 
   int compare(const Path &path) const;
+  bool equivalent(const Path &path) const;
   bool createDirectory() const;
   bool createDirectories() const;
   void removeDirectory() const;
@@ -121,6 +122,7 @@ public:
   static void removeDirectory(const Path &directory);
   static void removeDirectory(const std::string &directory);
   static void removeDirectory(const std::wstring &directory);
+  static std::size_t hash(const Path &path);
 
   /* Override operators */
 

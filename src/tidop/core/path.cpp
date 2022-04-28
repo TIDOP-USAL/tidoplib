@@ -31,8 +31,10 @@
 // filesystem
 #if (__cplusplus >= 201703L)
 #include <filesystem>
+#include <functional> 
 #else
 #include <boost/filesystem.hpp>
+#include <boost/functional/hash.hpp> 
 #endif
 
 #include <ostream>
@@ -410,6 +412,11 @@ int Path::compare(const Path &path) const
   return mPath->ref().compare(path.toString());
 }
 
+bool tl::Path::equivalent(const Path &path) const
+{
+  return fs::equivalent(mPath->ref(), path.toWString());
+}
+
 bool Path::createDirectory(const Path &directory)
 {
   return fs::create_directory(directory.toWString());
@@ -453,6 +460,11 @@ void Path::removeDirectory(const std::string &directory)
 void Path::removeDirectory(const std::wstring &directory)
 {
   fs::remove_all(directory);
+}
+
+std::size_t tl::Path::hash(const Path &path)
+{
+  return fs::hash_value(path.mPath->ref());
 }
 
 /* Override operators */
