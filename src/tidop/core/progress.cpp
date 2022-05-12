@@ -46,8 +46,8 @@ ProgressBase::ProgressBase()
 }
 
 ProgressBase::ProgressBase(size_t min, size_t max)
-  : mMinimun(min),
-    mMaximun(max),
+  : mMinimum(min),
+    mMaximum(max),
     mMessage("")
 {
   updateScale();
@@ -66,37 +66,37 @@ bool ProgressBase::operator()(size_t increment)
     updateProgress();
   }
 
-  if (mProgress == mMaximun) terminate();
+  if (mProgress == mMaximum) terminate();
 
   return true;
 }
 
 void ProgressBase::setRange(size_t min, size_t max)
 {
-  mMinimun = min;
-  mMaximun = max;
+  mMinimum = min;
+  mMaximum = max;
   updateScale();
 }
 
-size_t ProgressBase::minimun() const
+size_t ProgressBase::minimum() const
 {
-  return mMinimun;
+  return mMinimum;
 }
 
-void ProgressBase::setMinimun(size_t min)
+void ProgressBase::setMinimum(size_t min)
 {
-  mMinimun = min;
+  mMinimum = min;
   updateScale();
 }
 
-size_t ProgressBase::maximun() const
+size_t ProgressBase::maximum() const
 {
-  return mMaximun;
+  return mMaximum;
 }
 
-void ProgressBase::setMaximun(size_t max)
+void ProgressBase::setMaximum(size_t max)
 {
-  mMaximun = max;
+  mMaximum = max;
   updateScale();
 }
 
@@ -107,8 +107,8 @@ void ProgressBase::setText(const std::string &text)
 
 void ProgressBase::reset()
 {
-  mMinimun = 0;
-  mMaximun = 0;
+  mMinimum = 0;
+  mMaximum = 0;
   mMessage = "";
   mProgress = 0.;
   mPercent = -1;
@@ -122,8 +122,8 @@ void ProgressBase::initialize()
 
 void ProgressBase::updateScale()
 {
-  if (mMinimun == mMaximun) mScale = 1.;
-  else mScale = 100. / static_cast<double>(mMaximun - mMinimun);
+  if (mMinimum == mMaximum) mScale = 1.;
+  else mScale = 100. / static_cast<double>(mMaximum - mMinimum);
 }
 
 int ProgressBase::percent()

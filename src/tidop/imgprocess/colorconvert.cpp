@@ -36,7 +36,7 @@ void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk)
 {
   try {
 
-    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels");
 
     cv::Mat _cmyk(rgb.size(), CV_32FC4);
 
@@ -79,7 +79,7 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat &rgb)
 {
   try {
 
-    TL_ASSERT(cmyk.channels() == 4, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(cmyk.channels() == 4, "Invalid image type. Incorrect number of channels");
 
     cv::Mat _rgb(cmyk.size(), CV_8UC3);
 
@@ -120,7 +120,7 @@ void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl)
 {
   try {
 
-    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels");
 
     cv::Mat _hsl(rgb.size(), CV_32FC3);
 
@@ -160,7 +160,7 @@ void hslToRgb(const cv::Mat &hsl, cv::Mat &rgb)
 {
   try {
 
-    TL_ASSERT(hsl.channels() == 3, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(hsl.channels() == 3, "Invalid image type. Incorrect number of channels");
 
     cv::Mat _rgb(hsl.size(), CV_8UC3);
 
@@ -200,7 +200,7 @@ void rgbToHSV(const cv::Mat &rgb, cv::Mat &hsv)
 {
   try{
 
-    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels");
 
     //cv::Mat _hsv(rgb.size(), CV_32FC3);
 
@@ -242,7 +242,7 @@ void hsvToRgb(const cv::Mat &hsv, cv::Mat &rgb)
 {
   try{
 
-    TL_ASSERT(hsv.channels() == 3, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(hsv.channels() == 3, "Invalid image type. Incorrect number of channels");
 
     //cv::Mat _rgb(hsv.size(), CV_8UC3);
 
@@ -296,7 +296,7 @@ void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord)
 {
   try {
 
-    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels");
 
     cv::Mat chroma_coord(rgb.size(), CV_32FC3);
 

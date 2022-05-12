@@ -48,7 +48,7 @@ void Thinning::run(const cv::Mat &matIn,
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     matIn.copyTo(matOut);
 

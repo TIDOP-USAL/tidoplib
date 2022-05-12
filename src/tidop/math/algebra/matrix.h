@@ -1385,7 +1385,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjugate() const
   static_assert(_rows == _cols, "Non-Square Matrix");
   size_t rows = this->rows();
   size_t cols = this->cols();
-  TL_ASSERT(rows == cols, "Non-Square Matrix")
+  TL_ASSERT(rows == cols, "Non-Square Matrix");
 
   Matrix<T, _rows, _cols> matrix(*this);
 
@@ -1512,7 +1512,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
   size_t rows = this->rows();
   size_t cols = this->cols();
 
-  TL_ASSERT(rows == cols, "Non-Square Matrix")
+  TL_ASSERT(rows == cols, "Non-Square Matrix");
 
   Matrix<T, _rows, _cols> matrix(*this);
   for (size_t r = 0; r < rows; r++) {
@@ -1806,7 +1806,7 @@ T Matrix<T, _rows, _cols>::trace() const
   size_t rows = this->rows();
   size_t cols = this->cols();
   
-  TL_ASSERT(rows == cols, "Non-Square Matrix")
+  TL_ASSERT(rows == cols, "Non-Square Matrix");
 
   T trace = consts::zero<T>;
   for (size_t r = 0; r < rows; r++) {
@@ -1846,7 +1846,7 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
   size_t rows = this->rows();
   size_t cols = this->cols();
   
-  TL_ASSERT(rows == cols, "Non-Square Matrix")
+  TL_ASSERT(rows == cols, "Non-Square Matrix");
 
   T determinant = consts::zero<T>;
 
@@ -2009,7 +2009,7 @@ Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator +=(const Matrix<T, _r
   size_t rows2 = matrix.rows();
   size_t cols2 = matrix.cols();
 
-  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size")
+  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size");
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
 
@@ -2057,7 +2057,7 @@ Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator -=(const Matrix<T, _r
   size_t rows2 = matrix.rows();
   size_t cols2 = matrix.cols();
 
-  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size")
+  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size");
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
 
@@ -2485,7 +2485,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
   size_t cols = matrix2.cols();
   size_t dim2 = matrix2.rows();
 
-  TL_ASSERT(dim1 == dim2, "A columns != B rows")
+  TL_ASSERT(dim1 == dim2, "A columns != B rows");
 
   Matrix<T> matrix = Matrix<T>::zero(rows, cols);
 
@@ -2888,7 +2888,7 @@ static Vector<T> operator * (const Matrix<T> &matrix,
   size_t dim1 = matrix.cols();
   size_t dim2 = vector.size();
 
-  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
+  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
 
   Vector<T> vect = Vector<T>::zero(rows);
 
@@ -3093,7 +3093,7 @@ public:
 
   MatrixRow<T> &operator += (const MatrixRow<T> &matrixRow)
   {
-    TL_ASSERT(this->size() == matrixRow.size(), "")
+    TL_ASSERT(this->size() == matrixRow.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] += matrixRow[i];
@@ -3104,7 +3104,7 @@ public:
 
   MatrixRow<T> &operator -= (const MatrixRow<T> &matrixRow)
   {
-    TL_ASSERT(this->size() == matrixRow.size(), "")
+    TL_ASSERT(this->size() == matrixRow.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] -= matrixRow[i];
@@ -3115,7 +3115,7 @@ public:
 
   MatrixRow<T> &operator *= (const MatrixRow<T> &matrixRow)
   {
-    TL_ASSERT(this->size() == matrixRow.size(), "")
+    TL_ASSERT(this->size() == matrixRow.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] *= matrixRow[i];
@@ -3126,7 +3126,7 @@ public:
 
   MatrixRow<T> &operator /= (const MatrixRow<T> &matrixRow)
   {
-    TL_ASSERT(this->size() == matrixRow.size(), "")
+    TL_ASSERT(this->size() == matrixRow.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] /= matrixRow[i];
@@ -3225,7 +3225,7 @@ public:
 
   MatrixCol<T> &operator += (const MatrixCol<T> &matrixCol)
   {
-    TL_ASSERT(this->size() == matrixCol.size(), "")
+    TL_ASSERT(this->size() == matrixCol.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] += matrixCol[i];
@@ -3236,7 +3236,7 @@ public:
 
   MatrixCol<T> &operator -= (const MatrixCol<T> &matrixCol)
   {
-    TL_ASSERT(this->size() == matrixCol.size(), "")
+    TL_ASSERT(this->size() == matrixCol.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] -= matrixCol[i];
@@ -3247,7 +3247,7 @@ public:
 
   MatrixCol<T> &operator *= (const MatrixCol<T> &matrixCol)
   {
-    TL_ASSERT(this->size() == matrixCol.size(), "")
+    TL_ASSERT(this->size() == matrixCol.size(), "");
 
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] *= matrixCol[i];
@@ -3258,11 +3258,11 @@ public:
 
   MatrixCol<T> &operator /= (const MatrixCol<T> &matrixCol)
   {
-    TL_ASSERT(this->size() == matrixCol.size(), "")
+    TL_ASSERT(this->size() == matrixCol.size(), "");
 
-      for (size_t i = 0; i < this->size(); i++) {
-        (*this)[i] /= matrixCol[i];
-      }
+    for (size_t i = 0; i < this->size(); i++) {
+      (*this)[i] /= matrixCol[i];
+    }
 
     return *this;
   }
@@ -3272,6 +3272,7 @@ public:
     for (size_t i = 0; i < this->size(); i++) {
       (*this)[i] *= scalar;
     }
+
     return *this;
   }
 
@@ -3286,6 +3287,7 @@ public:
         (*this)[i] = static_cast<T>(0);
       }
     }
+
     return *this;
   }
 

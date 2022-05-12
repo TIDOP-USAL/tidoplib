@@ -36,8 +36,6 @@
 #include "tidop/core/defs.h"
 
 
-
-
 namespace tl
 {
 
@@ -122,7 +120,8 @@ public:
   static void removeDirectory(const Path &directory);
   static void removeDirectory(const std::string &directory);
   static void removeDirectory(const std::wstring &directory);
-  static std::size_t hash(const Path &path);
+  static void removeFile(const Path &file);
+  static size_t hash(const Path &path);
 
   /* Override operators */
 

@@ -148,7 +148,7 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
       //TL_ASSERT(rect.isValid(), "Image Rect to read invalid")
 
       RectI rect_to_read;
@@ -178,7 +178,7 @@ public:
 
       image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
 
-      TL_ASSERT(!image.empty(), "Image empty")
+      TL_ASSERT(!image.empty(), "Image empty");
 
       uchar *buff = image.ptr();
       int nPixelSpace = static_cast<int>(image.elemSize());
@@ -211,7 +211,7 @@ public:
 
     try{
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       RectI rect_to_read;
       PointI offset;
@@ -234,7 +234,7 @@ public:
       
       image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
       //if (image.empty()) throw std::runtime_error("");
-      TL_ASSERT(!image.empty(), "Image empty")
+      TL_ASSERT(!image.empty(), "Image empty");
       
       uchar *buff = image.ptr();
       int nPixelSpace = static_cast<int>(image.elemSize());
@@ -309,7 +309,7 @@ public:
 
     try {
     
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       rows = mDataset->GetRasterYSize();
 
@@ -326,7 +326,7 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       cols = mDataset->GetRasterXSize();
 
@@ -343,7 +343,7 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       channels = mDataset->GetRasterCount();
 
@@ -392,7 +392,7 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       std::string driver_name = mDataset->GetDriverName();
       metadata = ImageMetadataFactory::create(driver_name);
@@ -572,7 +572,7 @@ public:
     
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       std::array<double, 6> geotransform{};
       georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
@@ -595,7 +595,7 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
 #if GDAL_VERSION_MAJOR >= 3
       const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef();
@@ -658,7 +658,7 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       int success{};
       nodata = mDataset->GetRasterBand(1)->GetNoDataValue(&success);
@@ -679,7 +679,7 @@ protected:
     
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       if (GDALRasterBand *rasterBand = mDataset->GetRasterBand(1)) {
         dataType = rasterBand->GetRasterDataType();

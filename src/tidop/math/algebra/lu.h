@@ -147,7 +147,7 @@ template<
 >
 Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
-  TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes")
+  TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
 
   Vector<T, _rows> x(b);
 
@@ -204,11 +204,12 @@ template<
 >
 Matrix<T> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T> &b) ///Por ahora solo funciona con matrizes dinamicas
 {
-  TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes")
+  TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
   
   Matrix<T> x(b);
 
 #ifdef TL_HAVE_OPENBLAS    
+
   lapack_int info;
   lapack_int nrhs = b.cols();
   lapack_int lda = mRows;
@@ -311,7 +312,7 @@ tl::math::Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxEl
       }
     }
 
-    TL_ASSERT(max != consts::zero<T>, "Singular matrix")
+    TL_ASSERT(max != consts::zero<T>, "Singular matrix");
 
     max_elements[r] = max;
   }
@@ -332,7 +333,7 @@ inline void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
   
   info = lapack::getrf(mRows, mRows, LU.data(), lda, mPivotIndex);
 
-  TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.")
+  TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.");
 
 }
 

@@ -518,6 +518,7 @@ void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
       setStatus(Status::finalized);
 
   } catch(const std::exception &e) {
+    printException(e);
     mTaskErrorEvent->setErrorMessage(e.what());
     setStatus(Status::error);
   }
@@ -593,113 +594,112 @@ Process::~Process()
 
 void Process::execute(Progress *)
 {
+  try {
+
 #ifdef WIN32
 
-  //if (!createPipe()) return;
+    //if (!createPipe()) return;
 
-  unsigned long priority = static_cast<unsigned long>(mPriority);
+    unsigned long priority = static_cast<unsigned long>(mPriority);
 
-  if (!CreateProcess(nullptr,
-                     toWCHAR(mCommandText.c_str()),
-                     nullptr,
-                     nullptr,
-                     false, //true,
-                     CREATE_NO_WINDOW | priority,
-                     nullptr,
-                     nullptr,
-                     &mStartUpInfo,
-                     &mProcessInformation)) {
-    msgError("CreateProcess failed (%d) %s", 
-             GetLastError(), 
-             formatErrorMsg(GetLastError()).c_str());
-    eventTriggered(Event::Type::task_error);
-    return;
-  }
+    if (!CreateProcess(nullptr,
+                       toWCHAR(mCommandText.c_str()),
+                       nullptr,
+                       nullptr,
+                       false, //true,
+                       CREATE_NO_WINDOW | priority,
+                       nullptr,
+                       nullptr,
+                       &mStartUpInfo,
+                       &mProcessInformation)) {
 
-  //mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
-
-  DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
-  if (ret == WAIT_OBJECT_0) {
-
-    //msgInfo("Command executed: %s", mCommandText.c_str());
-
-    unsigned long exitCode;
-    if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode) == 0) {
-      msgError("Error (%d: %s) when executing the command: %s",
-               GetLastError(),
-               formatErrorMsg(GetLastError()).c_str(),
-               mCommandText.c_str());
-      eventTriggered(Event::Type::task_error);
-    } else {
-      if (exitCode == 0) 
-        eventTriggered(Event::Type::task_finalized);
-      else 
-        eventTriggered(Event::Type::task_error);
+      TL_THROW_EXCEPTION("CreateProcess failed (%d) %s",
+                         GetLastError(),
+                         formatErrorMsg(GetLastError()).c_str());
     }
 
-  } else if (ret == WAIT_FAILED) {
+    //mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
 
-    msgError("Error (%d: %s) when executing the command: %s",
-             GetLastError(),
-             formatErrorMsg(GetLastError()).c_str(),
-             mCommandText.c_str());
-    eventTriggered(Event::Type::task_error);
+    DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
+    if (ret == WAIT_OBJECT_0) {
 
-  } else if (ret == WAIT_ABANDONED) {
+      unsigned long exitCode;
+      if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode) == 0) {
+        TL_THROW_EXCEPTION("Error (%d: %s) when executing the command: %s",
+                           GetLastError(),
+                           formatErrorMsg(GetLastError()).c_str(),
+                           mCommandText.c_str());
+      } else {
+        if (exitCode == 0)
+          eventTriggered(Event::Type::task_finalized);
+        else
+          eventTriggered(Event::Type::task_error);
+      }
 
-    msgError("Error (%d: %s) when executing the command: %s", 
-             GetLastError(), 
-             formatErrorMsg(GetLastError()).c_str(), 
-             mCommandText.c_str());
-    eventTriggered(Event::Type::task_error);
+    } else if (ret == WAIT_FAILED) {
 
-  } else if (ret == WAIT_TIMEOUT) {
+      TL_THROW_EXCEPTION("Error (%d: %s) when executing the command: %s",
+                         GetLastError(),
+                         formatErrorMsg(GetLastError()).c_str(),
+                         mCommandText.c_str());
 
-    msgError("Error (%d: %s) when executing the command: %s", 
-             GetLastError(), 
-             formatErrorMsg(GetLastError()).c_str(), 
-             mCommandText.c_str());
-    eventTriggered(Event::Type::task_error);
+    } else if (ret == WAIT_ABANDONED) {
 
-  } /*else {
-    
-  }*/
+      TL_THROW_EXCEPTION("Error (%d: %s) when executing the command: %s",
+                         GetLastError(),
+                         formatErrorMsg(GetLastError()).c_str(),
+                         mCommandText.c_str());
 
-  CloseHandle(mProcessInformation.hProcess);
-  CloseHandle(mProcessInformation.hThread);
-  //CloseHandle(mThreadHandle);
-  //CloseHandle(pipeWriteHandle);
-  //CloseHandle(pipeReadHandle);
+    } else if (ret == WAIT_TIMEOUT) {
+
+      TL_THROW_EXCEPTION("Error (%d: %s) when executing the command: %s",
+                         GetLastError(),
+                         formatErrorMsg(GetLastError()).c_str(),
+                         mCommandText.c_str());
+
+    } /*else {
+
+    }*/
+
+    CloseHandle(mProcessInformation.hProcess);
+    CloseHandle(mProcessInformation.hThread);
+    //CloseHandle(mThreadHandle);
+    //CloseHandle(pipeWriteHandle);
+    //CloseHandle(pipeReadHandle);
 
 #else
-  pid_t pid;
-  char *cmd = nullptr;
-  strcpy(cmd, mCommandText.c_str());
-  char *argv[] = { "sh", "-c", cmd, nullptr };
-  int status;
-  //printf("Run command: %s\n", cmd);
-  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
-  if (status == 0) {
-    //printf("Child pid: %i\n", pid);
-    if (waitpid(pid, &status, 0) != -1) {
-      //printf("Child exited with status %i\n", status);
-      return;
-    }     else {
+    pid_t pid;
+    char *cmd = nullptr;
+    strcpy(cmd, mCommandText.c_str());
+    char *argv[] = {"sh", "-c", cmd, nullptr};
+    int status;
+    //printf("Run command: %s\n", cmd);
+    status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
+    if (status == 0) {
+      //printf("Child pid: %i\n", pid);
+      if (waitpid(pid, &status, 0) != -1) {
+        //printf("Child exited with status %i\n", status);
+        return;
+      } else {
+        return; //Process::Status::error;
+      }
+    } else {
+      printf("posix_spawn: %s\n", strerror(status));
+      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCommandText.c_str());
       return; //Process::Status::error;
     }
-  }   else {
-    printf("posix_spawn: %s\n", strerror(status));
-    msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCommandText.c_str());
-    return; //Process::Status::error;
-  }
-  //  int posix_spawn(pid_t *pid, const char *path,
-  //                  const posix_spawn_file_actions_t *file_actions,
-  //                  const posix_spawnattr_t *attrp,
-  //                  char *const argv[], char *const envp[]);
-    /// Para escribir en un log la salida
-    /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+    //  int posix_spawn(pid_t *pid, const char *path,
+    //                  const posix_spawn_file_actions_t *file_actions,
+    //                  const posix_spawnattr_t *attrp,
+    //                  char *const argv[], char *const envp[]);
+      /// Para escribir en un log la salida
+      /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
 
 #endif
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
 }
 
 #ifdef WIN32

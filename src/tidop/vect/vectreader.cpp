@@ -125,10 +125,10 @@ public:
 
     try {
     
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
 
       OGRLayer *ogrLayer = mDataset->GetLayer(layerId);
-      TL_ASSERT(ogrLayer != nullptr, "Layer not found")
+      TL_ASSERT(ogrLayer != nullptr, "Layer not found");
 
       layer = this->read(ogrLayer);
 
@@ -145,10 +145,10 @@ public:
 
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
 
       OGRLayer *ogrLayer = mDataset->GetLayerByName(layerName.c_str());
-      TL_ASSERT(ogrLayer != nullptr, "Layer not found")
+      TL_ASSERT(ogrLayer != nullptr, "Layer not found");
     
       this->read(ogrLayer);
 
@@ -165,7 +165,7 @@ public:
     
     try {
 
-      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method")
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
 
 #if GDAL_VERSION_MAJOR >= 3
       const OGRSpatialReference *spatialReference = nullptr;

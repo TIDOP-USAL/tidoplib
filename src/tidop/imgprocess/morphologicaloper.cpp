@@ -46,7 +46,7 @@ void MorphologicalOperation::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::Mat element = getStructuringElement(mShapes,
     cv::Size(2 * mSize + 1, 2 * mSize + 1),

@@ -462,7 +462,12 @@ void Path::removeDirectory(const std::wstring &directory)
   fs::remove_all(directory);
 }
 
-std::size_t tl::Path::hash(const Path &path)
+void Path::removeFile(const Path &file)
+{
+  fs::remove(file.toWString());
+}
+
+size_t tl::Path::hash(const Path &path)
 {
   return fs::hash_value(path.mPath->ref());
 }

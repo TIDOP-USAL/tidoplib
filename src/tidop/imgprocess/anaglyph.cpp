@@ -128,8 +128,8 @@ cv::Mat StereoImage::run(const cv::Mat &left,
 
   try {
 
-    TL_ASSERT(left.size() == right.size(), "Different image size")
-    TL_ASSERT(left.type() == right.type(), "Different image type")
+    TL_ASSERT(left.size() == right.size(), "Different image size");
+    TL_ASSERT(left.type() == right.type(), "Different image type");
 
     int height = left.rows;
     int width = left.cols;

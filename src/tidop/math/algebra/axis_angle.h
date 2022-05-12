@@ -122,7 +122,7 @@ inline Vector<T, 3> AxisAngle<T>::axis() const
 template<typename T>
 inline T AxisAngle<T>::axis(size_t i) const
 {
-  TL_ASSERT((0 <= i) && (i < 3), "")
+  TL_ASSERT((0 <= i) && (i < 3), "");
   return mAxis.at(i);
 }
 

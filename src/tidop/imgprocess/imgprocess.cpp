@@ -60,7 +60,7 @@ void ImagingProcesses::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data");
 
     matIn.copyTo(matOut);
     for (const auto &process : mProcessList) {

@@ -712,25 +712,26 @@ void Vector<T, _size>::normalize()
 template<typename T, size_t _size> inline
 double Vector<T, _size>::dotProduct(const Vector<T, _size> &vector) const
 {
-  TL_ASSERT(this->size() == vector.size(), "Different vector size")
+  TL_ASSERT(this->size() == vector.size(), "Different vector size");
 
   double dot = static_cast<double>(vector[0]) * static_cast<double>(vector[0]);
   for (size_t i = 1; i < this->size(); i++) {
     dot += static_cast<double>(vector[i]) * static_cast<double>(vector[i]);
   }
+
   return dot;
 }
 
 template<typename T, size_t _size> inline
 Vector<T, _size> &Vector<T, _size>::operator+=(const Vector<T, _size> &vector)
 {
-  TL_ASSERT(this->size() == vector.size(), "")
+  TL_ASSERT(this->size() == vector.size(), "");
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
 
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] += vector[i];
-    }
+  for (size_t i = 0; i < this->size(); ++i) {
+    (*this)[i] += vector[i];
+  }
 
 #else
 
@@ -764,14 +765,17 @@ Vector<T, _size> &Vector<T, _size>::operator+=(const Vector<T, _size> &vector)
 template<typename T, size_t _size> inline
 Vector<T, _size> &Vector<T, _size>::operator-=(const Vector<T, _size> &vector)
 {
-  TL_ASSERT(this->size() == vector.size(), "")
+  TL_ASSERT(this->size() == vector.size(), "");
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] -= vector[i];
-    }
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    (*this)[i] -= vector[i];
+  }
+
 #else
-    using namespace simd;
+    
+  using namespace simd;
 
   Packed<T> packed_a;
   Packed<T> packed_b;
@@ -792,6 +796,7 @@ Vector<T, _size> &Vector<T, _size>::operator-=(const Vector<T, _size> &vector)
   for (size_t i = max_vector; i < this->size(); ++i) {
     (*this)[i] -= vector[i];
   }
+
 #endif
 
   return *this;
@@ -800,14 +805,17 @@ Vector<T, _size> &Vector<T, _size>::operator-=(const Vector<T, _size> &vector)
 template<typename T, size_t _size> inline
 Vector<T, _size> &Vector<T, _size>::operator*=(const Vector<T, _size> &vector)
 {
-  TL_ASSERT(this->size() == vector.size(), "")
+  TL_ASSERT(this->size() == vector.size(), "");
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] *= vector[i];
-    }
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    (*this)[i] *= vector[i];
+  }
+
 #else
-    using namespace simd;
+    
+  using namespace simd;
 
   Packed<T> packed_a;
   Packed<T> packed_b;
@@ -828,6 +836,7 @@ Vector<T, _size> &Vector<T, _size>::operator*=(const Vector<T, _size> &vector)
   for (size_t i = max_vector; i < this->size(); ++i) {
     (*this)[i] *= vector[i];
   }
+
 #endif
 
   return *this;
@@ -836,14 +845,17 @@ Vector<T, _size> &Vector<T, _size>::operator*=(const Vector<T, _size> &vector)
 template<typename T, size_t _size> inline
 Vector<T, _size> &Vector<T, _size>::operator/=(const Vector<T, _size> &vector)
 {
-  TL_ASSERT(this->size() == vector.size(), "")
+  TL_ASSERT(this->size() == vector.size(), "");
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
-    for (size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] /= vector[i];
-    }
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    (*this)[i] /= vector[i];
+  }
+
 #else
-    using namespace simd;
+  
+  using namespace simd;
 
   Packed<T> packed_a;
   Packed<T> packed_b;
@@ -864,6 +876,7 @@ Vector<T, _size> &Vector<T, _size>::operator/=(const Vector<T, _size> &vector)
   for (size_t i = max_vector; i < this->size(); ++i) {
     (*this)[i] /= vector[i];
   }
+
 #endif
 
   return *this;
@@ -982,7 +995,7 @@ Vector<T, _size> operator * (const Vector<T, _size> &v0,
                              const Vector<T, _size> &v1)
 {
   size_t vector_size = v0.size();
-  TL_ASSERT(vector_size == v1.size(), "")
+  TL_ASSERT(vector_size == v1.size(), "");
 
   Vector<T, _size> result(v0);
 
@@ -1082,7 +1095,7 @@ template<typename T, size_t _size>
 double dotProduct(const Vector<T, _size> &v1,
                   const Vector<T, _size> &v2)
 {
-  TL_ASSERT(v1.size() == v2.size(), "Different vector size")
+  TL_ASSERT(v1.size() == v2.size(), "Different vector size");
 
   double dot = static_cast<double>(v1[0]) * static_cast<double>(v2[0]);
   for (size_t i = 1; i < v1.size(); i++) {

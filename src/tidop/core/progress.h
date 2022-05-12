@@ -59,10 +59,10 @@ public:
   virtual bool operator() (size_t increment = 1.) = 0;
   
   virtual void setRange(size_t min, size_t max) = 0;
-  virtual size_t minimun() const = 0;
-  virtual void setMinimun(size_t min) = 0;
-  virtual size_t maximun() const = 0;
-  virtual void setMaximun(size_t max) = 0;
+  virtual size_t minimum() const = 0;
+  virtual void setMinimum(size_t min) = 0;
+  virtual size_t maximum() const = 0;
+  virtual void setMaximum(size_t max) = 0;
   virtual void setText(const std::string &text) = 0;
 
   virtual void reset() = 0;
@@ -95,10 +95,10 @@ public:
 
   bool operator()(size_t increment = 1) override;
   void setRange(size_t min, size_t max) override;
-  size_t minimun() const override;
-  void setMinimun(size_t min) override;
-  size_t maximun() const override;
-  void setMaximun(size_t max) override;
+  size_t minimum() const override;
+  void setMinimum(size_t min) override;
+  size_t maximum() const override;
+  void setMaximum(size_t max) override;
   void setText(const std::string &text) override;
   void reset() override;
 
@@ -115,12 +115,12 @@ private:
   /*!
    * \brief Valor mínimo
    */
-  size_t mMinimun{0};
+  size_t mMinimum{0};
 
   /*!
    * \brief Valor máximo
    */
-  size_t mMaximun{0};
+  size_t mMaximum{0};
 
   /*!
    * \brief Mensaje que se puede añadir con información del proceso.

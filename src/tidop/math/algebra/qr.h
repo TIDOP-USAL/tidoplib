@@ -231,8 +231,8 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
-  TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes")
-  TL_ASSERT(!singular, "Singular")
+  TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
+  TL_ASSERT(!singular, "Singular");
 
   Vector<T, _rows> x = Q_t * b;
 

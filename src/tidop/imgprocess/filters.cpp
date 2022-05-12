@@ -46,14 +46,14 @@ void BilateralFilter::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
     cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
     mat_aux.copyTo(matOut);
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("BilateralFilter::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -84,12 +84,12 @@ void Blur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
   
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::blur(matIn, matOut, mKernelSize, mAnchor, mBorderType);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("Blur::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -122,12 +122,12 @@ void BoxFilter::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
  
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::boxFilter(matIn, matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("BoxFilter::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -165,12 +165,12 @@ void Convolution::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::filter2D(matIn, matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("FunctionProcess::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -206,12 +206,12 @@ void GaussianBlur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::GaussianBlur(matIn, matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("GaussianBlur::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -246,12 +246,12 @@ void Laplacian::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::Laplacian(matIn, matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("Laplacian::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -280,12 +280,12 @@ void MedianBlur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
   
     cv::medianBlur(matIn, matOut, mKernelSize);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("MedianBlur::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -322,7 +322,7 @@ void Sobel::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
     
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     cv::Mat grad_x, grad_y;
     cv::Mat abs_grad_x, abs_grad_y;
@@ -334,7 +334,7 @@ void Sobel::run(const cv::Mat &matIn, cv::Mat &matOut) const
     threshold(abs_grad_x, matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("Sobel::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
 }
@@ -365,7 +365,7 @@ void Canny::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
     double th1 = mThreshold1;
     double th2 = mThreshold2;
@@ -381,7 +381,7 @@ void Canny::run(const cv::Mat &matIn, cv::Mat &matOut) const
     cv::Canny(matIn, matOut, th1, th2, 3);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("Canny::run() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 

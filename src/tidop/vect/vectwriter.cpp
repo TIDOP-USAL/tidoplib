@@ -135,11 +135,11 @@ void VectorWriterGdal::open()
 
     std::string driver_name = driverFromExt(mFile.extension().toString());
 
-    TL_ASSERT(!driver_name.empty(), "Vector file open fail. Driver not found")
+    TL_ASSERT(!driver_name.empty(), "Vector file open fail. Driver not found");
 
     mDriver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str());
 
-    TL_ASSERT(isOpen(), "Vector file open fail. Driver not valid")
+    TL_ASSERT(isOpen(), "Vector file open fail. Driver not valid");
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -172,7 +172,7 @@ void VectorWriterGdal::create()
 
     mDataset = mDriver->Create(mFile.toString().c_str(), 0, 0, 0, GDT_Unknown, nullptr);
 
-    TL_ASSERT(mDataset != nullptr, "Creation of output file failed")
+    TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -183,7 +183,7 @@ void VectorWriterGdal::write(const GLayer &layer)
 {
   try {
 
-    TL_ASSERT(mDataset, "The file has not been created. Use VectorWriter::create() method")
+    TL_ASSERT(mDataset, "The file has not been created. Use VectorWriter::create() method");
 
     OGRLayer *ogrLayer = mDataset->GetLayerByName(layer.name().c_str());
     if (!ogrLayer) {
@@ -371,7 +371,7 @@ OGRLayer *VectorWriterGdal::createLayer(const std::string &layerName)
     
   try {
 
-    TL_ASSERT(mDataset, "The file has not been created. Use VectorWriter::create() method")
+    TL_ASSERT(mDataset, "The file has not been created. Use VectorWriter::create() method");
 
     char **encoding = nullptr;
     encoding = CSLAddString(encoding, "ENCODING=UTF-8");

@@ -61,8 +61,8 @@ void Resize::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
   
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
-    TL_ASSERT(mWidth > 0 || mScaleX != 0, "Invalid parameter value")
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+    TL_ASSERT(mWidth > 0 || mScaleX != 0, "Invalid parameter value");
 
     if (mScaleX) {
       cv::resize(matIn, matOut, cv::Size(), mScaleX, mScaleY);
@@ -134,7 +134,7 @@ void ResizeCanvas::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   try {
 
-    TL_ASSERT(matIn.empty(), "Incorrect input data")
+    TL_ASSERT(matIn.empty(), "Incorrect input data");
 
     TL_TODO("No esta terminada")
     cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth, mHeight), matIn.type());

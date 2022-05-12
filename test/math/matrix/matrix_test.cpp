@@ -1375,9 +1375,9 @@ Matrix<T> mulmat3(const Matrix<T> &matrix1,
   size_t cols = matrix2.cols();
   size_t dim2 = matrix2.rows();
 
-  TL_ASSERT(dim1 == dim2, "A columns != B rows")
+  TL_ASSERT(dim1 == dim2, "A columns != B rows");
 
-    Matrix<T> matrix = Matrix<T>::zero(rows, cols);
+  Matrix<T> matrix = Matrix<T>::zero(rows, cols);
 
   static const size_t num_unroll_r = 5;
   static const size_t num_unroll_k = 5;

@@ -116,11 +116,11 @@ public:
   
       std::string driver_name = gdalDriverFromExtension(mFile.extension().toString());
      
-      TL_ASSERT(!driver_name.empty(), "Image open fail. Driver not found")
+      TL_ASSERT(!driver_name.empty(), "Image open fail. Driver not found");
 
       mDriver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str()); 
   
-      TL_ASSERT(isOpen(), "Image open fail. Driver not valid")
+      TL_ASSERT(isOpen(), "Image open fail. Driver not valid");
   
       mValidDataTypes = gdalValidDataTypes(driver_name);
   
@@ -206,7 +206,7 @@ public:
       if (!isOpen()) open(); // Se trata de abrir el archivo si no esta abierto.
 
       mDataType = type;
-      TL_ASSERT(checkDataType(), "Data Type not supported")
+      TL_ASSERT(checkDataType(), "Data Type not supported");
     
       if (mDataset) {
         GDALClose(mDataset);
@@ -224,7 +224,7 @@ public:
       mDataset = mDriver->Create(bTempFile ? mTempFile.toString().c_str() : mFile.toString().c_str(), 
                                  cols, rows, bands, dataTypeToGdalDataType(type), gdalOpt);
 
-      TL_ASSERT(mDataset != nullptr, "Creation of output file failed")
+      TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
       char **gdalMetadata = nullptr;
       if (mImageMetadata) {
@@ -418,7 +418,7 @@ public:
 
     try {
 
-      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method")
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
       rows = mDataset->GetRasterYSize();
     
@@ -452,7 +452,7 @@ public:
 
     try {
 
-      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method")
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
       
       channels = mDataset->GetRasterCount();
 
