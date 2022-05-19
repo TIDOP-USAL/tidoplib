@@ -296,7 +296,7 @@ void FeaturesWriterBinary::write()
 void FeaturesWriterBinary::open()
 {
   try {
-    mFile = std::fopen(filePath().toString().c_str(), "rb");
+    mFile = std::fopen(filePath().toString().c_str(), "wb");
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }

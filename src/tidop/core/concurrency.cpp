@@ -43,20 +43,25 @@ namespace tl
 
 uint32_t optimalNumberOfThreads()
 {
-//#ifdef TL_HAVE_OPENMP
-//  return omp_get_max_threads();
+  uint32_t n_threads = 0;
+
+#ifdef TL_HAVE_OPENMP
+  n_threads =  omp_get_max_threads();
 //#elif defined TL_MSVS_CONCURRENCY
 //  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
-//#else
-  uint32_t n_threads = std::thread::hardware_concurrency();
+#else
+  n_threads = std::thread::hardware_concurrency();
+#endif
   return n_threads == 0 ? 1 : n_threads;
-//#endif
 }
 
 void parallel_for(size_t ini, 
                   size_t end, 
-                  const std::function<void(size_t)> &f)
+                  std::function<void(size_t)> f)
 {
+  size_t size = end - ini;
+  if(size == 0) return;
+
 #ifdef TL_HAVE_OPENMP
   #pragma omp parallel for
   for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
@@ -79,15 +84,26 @@ void parallel_for(size_t ini,
   size_t num_threads = optimalNumberOfThreads();
   std::vector<std::thread> threads(num_threads);
 
-  size_t size = (end - ini) / num_threads;
+  size_t block_size = size / num_threads;
+
+  size_t block_ini = 0;
+  size_t block_end = 0;
+
   for (size_t i = 0; i < num_threads; i++) {
-    size_t _ini = i * size + ini;
-    size_t _end = _ini + size;
-    if (i == num_threads -1) _end = end;
-    threads[i] = std::thread(f_aux, _ini, _end);
+
+    if (i == num_threads -1) block_end = end;
+    else block_end = block_ini + block_size;
+
+    threads[i] = std::thread(f_aux, block_ini, block_end);
+
+    block_ini = block_end;
   }
 
-  for (auto &_thread : threads) _thread.join();
+  for(auto &_thread : threads) {
+    if(_thread.joinable())
+      _thread.join();
+  }
+
 #endif
 
 }
