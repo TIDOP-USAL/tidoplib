@@ -226,6 +226,8 @@ private:
 
 public:
 
+  static std::unique_ptr<ImageWriter> create(const Path &fileName);
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
 };
 

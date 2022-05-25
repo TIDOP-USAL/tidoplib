@@ -35,6 +35,8 @@
 namespace tl
 {
 
+class Task;
+
 /*! \addtogroup core
  *  \{
  */
@@ -182,9 +184,15 @@ class TL_EXPORT TaskFinalizedEvent
 
 public:
 
-  TaskFinalizedEvent();
+  TaskFinalizedEvent(Task const *task = nullptr);
+
+  Task const *task() const;
 
   void clear() override;
+
+private:
+
+  Task const *mTask;
 };
 
 

@@ -24,6 +24,7 @@
 
 #include "tidop/core/event.h"
 
+#include "tidop/core/task.h"
 
 namespace tl
 {
@@ -115,9 +116,15 @@ void TaskStoppedEvent::clear()
 
 /* Task Finalized Event */
 
-TaskFinalizedEvent::TaskFinalizedEvent()
-  : EventBase(Event::Type::task_finalized)
+TaskFinalizedEvent::TaskFinalizedEvent(Task const *task)
+  : EventBase(Event::Type::task_finalized),
+    mTask(task)
 {
+}
+
+Task const *TaskFinalizedEvent::task() const
+{
+  return mTask;
 }
 
 void TaskFinalizedEvent::clear()

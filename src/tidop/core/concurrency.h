@@ -208,15 +208,17 @@ class Producer
 public:
 
   explicit Producer(QueueMPMC<T> *queue) : mQueue(queue){}
-  Producer(const Producer &) = delete;
-  Producer(Producer &&) = delete;
   ~Producer() = default;
 
-  void operator=(const Producer &) = delete;
-  void operator=(Producer &&) = delete;
-
-  virtual void operator() (size_t size) = 0;
+  virtual void operator() () = 0;
   virtual void operator() (size_t ini, size_t end) = 0;
+
+protected:
+
+  QueueMPMC<T> *queue()
+  {
+    return mQueue;
+  }
 
 private:
 
@@ -234,14 +236,16 @@ class Consumer
 public:
 
   explicit Consumer(QueueMPMC<T> *queue) : mQueue(queue){}
-  Consumer(const Consumer &) = delete;
-  Consumer(Consumer &&) = delete;
   ~Consumer() = default;
 
-  void operator=(const Consumer &) = delete;
-  void operator=(Consumer &&) = delete;
-
   virtual void operator() () = 0;
+
+protected:
+
+  QueueMPMC<T> *queue()
+  {
+    return mQueue;
+  }
 
 private:
 

@@ -904,7 +904,7 @@ private:
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
+std::unique_ptr<ImageReader> ImageReaderFactory::create(const Path &file)
 {
   std::unique_ptr<ImageReader> image_reader; 
   
@@ -932,6 +932,10 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
   return image_reader;
 }
 
+std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
+{
+  return ImageReaderFactory::create(file);
+}
 
 } // End namespace tl
 

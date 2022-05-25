@@ -994,7 +994,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_color_rgb, ColorTest)
 
 BOOST_FIXTURE_TEST_CASE(color_from_color_rgb, ColorTest)
 {
-  graph::Color color(rgb2);
+  graph::Color color(*rgb2);
   BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
 }
 

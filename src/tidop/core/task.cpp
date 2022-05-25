@@ -59,7 +59,7 @@ Task::~Task() = default;
 TaskBase::TaskBase()
   : Task(),
     mTaskErrorEvent(new TaskErrorEvent),
-    mTaskFinalizedEvent(new TaskFinalizedEvent),
+    mTaskFinalizedEvent(new TaskFinalizedEvent(this)),
     mTaskPauseEvent(new TaskPauseEvent),
     mTaskPausingEvent(new TaskPausingEvent),
     mTaskResumedEvent(new TaskResumedEvent),

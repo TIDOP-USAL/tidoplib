@@ -118,8 +118,9 @@ private:
 
 public:
 
+  static std::unique_ptr<FeaturesReader> create(const tl::Path &file);
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<FeaturesReader> createReader(const tl::Path &file);
-
 };
 
 /*!
@@ -135,8 +136,9 @@ private:
 
 public:
 
+  static std::unique_ptr<FeaturesWriter> create(const tl::Path &file);
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<FeaturesWriter> createWriter(const tl::Path &file);
-
 };
 
 
