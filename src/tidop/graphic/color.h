@@ -451,7 +451,7 @@ public:
    * \brief Constructora
    * \param[in] color Color como entero
    */
-  Color(int color);
+  Color(uint32_t color);
 
   /*!
    * \brief Constructora
@@ -466,7 +466,7 @@ public:
    */
   Color(const Color::Name &color);
 
-  Color(const ColorModel *colorModel);
+  Color(const ColorModel &colorModel);
 
   ~Color();
 

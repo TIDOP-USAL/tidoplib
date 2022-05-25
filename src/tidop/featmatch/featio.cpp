@@ -865,8 +865,7 @@ void FeaturesWriterTxt::close()
 
 /* ---------------------------------------------------------------------------------- */
 
-
-std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Path &file)
+std::unique_ptr<FeaturesReader> FeaturesReaderFactory::create(const tl::Path &file)
 {
   std::unique_ptr<FeaturesReader> features_reader;
 
@@ -892,13 +891,18 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Pa
   return features_reader;
 }
 
+std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Path &file)
+{
+  return FeaturesReaderFactory::create(file);
+}
+
 
 
 /* ---------------------------------------------------------------------------------- */
 
 
 
-std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Path &file)
+std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::create(const tl::Path &file)
 {
   std::unique_ptr<FeaturesWriter> features_writer;
  
@@ -924,6 +928,10 @@ std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Pa
   return features_writer;
 }
 
+std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Path &file)
+{
+  return FeaturesWriterFactory::create(file);
+}
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -938,7 +946,7 @@ void FeaturesIOHandler::read(const tl::Path &file)
 {
   try {
 
-    mReader = FeaturesReaderFactory::createReader(file);
+    mReader = FeaturesReaderFactory::create(file);
     mReader->read();
 
   } catch (...) {
@@ -950,7 +958,7 @@ void FeaturesIOHandler::write(const tl::Path &file)
 {
   try {
 
-    mWriter = FeaturesWriterFactory::createWriter(file);
+    mWriter = FeaturesWriterFactory::create(file);
     mWriter->write();
 
   } catch (...) {

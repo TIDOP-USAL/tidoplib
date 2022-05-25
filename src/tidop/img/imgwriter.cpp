@@ -642,7 +642,7 @@ public:
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
+std::unique_ptr<ImageWriter> ImageWriterFactory::create(const Path &file)
 {
   std::unique_ptr<ImageWriter> image_writer;
 
@@ -671,6 +671,10 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
   return image_writer;
 }
 
+std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
+{
+  return ImageWriterFactory::create(file);
+}
 
 } // End namespace tl
 
