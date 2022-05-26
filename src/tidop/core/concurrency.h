@@ -105,13 +105,190 @@ void parallel_for(itIn it_begin,
 
 /*--------------------------------------------------------------------------------*/
 
-constexpr auto QueueMPMCDefaultCapacity = 256;
+
+constexpr auto QueueDefaultCapacity = 256;
+
+template<typename T>
+class Queue
+{
+
+public:
+
+  Queue() = default;
+  Queue(size_t capacity) : mCapacity(capacity) {}
+
+  virtual ~Queue() = default;
+
+  /*!
+   * \brief Inserts an element at the end
+   * \param[in] value
+   */
+  virtual void push(const T &value) = 0;
+
+  /*!
+   * \brief Removes the first element
+   * \param[in] value
+   */
+  virtual bool pop(T &value) = 0;
+
+  /*!
+   * \brief Returns the number of elements
+   * \return Number of elements
+   */
+  size_t size() const;
+
+  /*!
+   * \brief Returns the capacity
+   * \return Maximun number of elements in queue
+   */
+  size_t capacity() const;
+
+  bool empty() const;
+  bool full() const;
+
+protected:
+
+  std::queue<T> &buffer();
+  std::mutex &mutex();
+
+private:
+
+  size_t mCapacity{QueueDefaultCapacity};
+  std::queue<T> mBuffer;
+  mutable std::mutex mMutex;
+
+};
+
+template<typename T>
+inline size_t Queue<T>::size() const
+{
+  std::lock_guard<std::mutex> locker(mMutex);
+  return mBuffer.size();
+}
+
+template<typename T>
+inline size_t Queue<T>::capacity() const
+{
+  return mCapacity;
+}
+
+template<typename T>
+inline bool Queue<T>::empty() const
+{
+  std::lock_guard<std::mutex> locker(mMutex);
+  return mBuffer.empty();
+}
+
+template<typename T>
+inline bool Queue<T>::full() const
+{
+  std::lock_guard<std::mutex> locker(mMutex);
+  return mBuffer.size() < mCapacity;
+}
+
+template<typename T>
+inline std::queue<T> &Queue<T>::buffer()
+{
+  return mBuffer;
+}
+
+template<typename T>
+inline std::mutex &Queue<T>::mutex()
+{
+  return mMutex;
+}
+
+
+
+/*--------------------------------------------------------------------------------*/
+
+
+
+/*!
+ * \brief Single-producer Single-consumer queue
+ */
+template<typename T>
+class QueueSPSC
+  : public Queue<T>
+{
+
+public:
+
+  QueueSPSC() = default;
+  QueueSPSC(size_t capacity);
+  QueueSPSC(const QueueSPSC &) = delete;
+  QueueSPSC(QueueSPSC &&) = delete;
+  ~QueueSPSC() = default;
+
+  void operator=(const QueueSPSC &) = delete;
+  void operator=(QueueSPSC &&) = delete;
+
+  /*!
+   * \brief Inserts an element at the end
+   * \param[in] value
+   */
+  void push(const T &value) override;
+
+  /*!
+   * \brief Removes the first element
+   * \param[in] value
+   */
+  bool pop(T &value) override;
+
+private:
+
+  std::condition_variable mConditionVariable;
+};
+
+
+template<typename T>
+QueueSPSC<T>::QueueSPSC(size_t capacity)
+  : Queue(capacity)
+{
+}
+
+template<typename T>
+void QueueSPSC<T>::push(const T &value)
+{
+  std::unique_lock<std::mutex> locker(mutex());
+
+  mConditionVariable.wait(locker, [this]() {
+    return buffer().size() < capacity();
+  });
+
+  buffer().push(value);
+  locker.unlock();
+  mConditionVariable.notify_one();
+}
+
+template<typename T>
+inline bool QueueSPSC<T>::pop(T &value)
+{
+  std::unique_lock<std::mutex> locker(mutex());
+
+  mConditionVariable.wait(locker, [this]() {
+    return !buffer().empty();
+  });
+
+  value = buffer().front();
+  buffer().pop();
+  locker.unlock();
+  mConditionVariable.notify_one();
+
+  return true;
+
+}
+
+
+/*--------------------------------------------------------------------------------*/
+
 
 /*!
  * \brief Multi-producer multi-consumer queue
  */
 template<typename T>
 class QueueMPMC
+  : public Queue<T>
 {
 
 public:
@@ -126,76 +303,82 @@ public:
   void operator=(QueueMPMC &&) = delete;
 
   /*!
-   * \brief Inserts element at the end
+   * \brief Inserts an element at the end
    * \param[in] value
    */
-  void push(const T &value);
+  void push(const T &value) override;
 
   /*!
    * \brief Removes the first element
    * \param[in] value
    */
-  void pop(T &value);
+  bool pop(T &value) override;
 
-  /*!
-   * \brief Returns the number of elements
-   * \return Number of elements
-   */
-  size_t size() const;
+  void stop()
+  {
+    std::unique_lock<std::mutex> locker(mutex());
+    mStop = true;
+    mConditionVariable.notify_all();
+  }
 
 private:
 
-  size_t mCapacity{QueueMPMCDefaultCapacity};
-  std::queue<T> mBuffer;
-  mutable std::mutex mMutex;
   std::condition_variable mConditionVariable;
+  bool mStop;
 };
 
 
 template<typename T>
 QueueMPMC<T>::QueueMPMC(size_t capacity)
-  : mCapacity(capacity)
+  : Queue(capacity),
+  mStop(false)
 {
 }
 
 template<typename T>
 void QueueMPMC<T>::push(const T &value)
 {
-  std::unique_lock<std::mutex> locker(mMutex);
+  std::unique_lock<std::mutex> locker(mutex());
 
-  while (true) {
-    mConditionVariable.wait(locker, [this]() {
-      return mBuffer.size() < mCapacity; 
-      });
-    mBuffer.push(value);
-    locker.unlock();
-    mConditionVariable.notify_one();
-    return;
+  mConditionVariable.wait(locker, [this]() {
+    return buffer().size() < capacity() || mStop;
+  });
+
+  if (!mStop) {
+    buffer().push(value);
   }
+
+  locker.unlock();
+  mConditionVariable.notify_one();
 }
 
 template<typename T>
-inline void QueueMPMC<T>::pop(T &value)
+inline bool QueueMPMC<T>::pop(T &value)
 {
-  std::unique_lock<std::mutex> locker(mMutex);
-  while (true) {
-    mConditionVariable.wait(locker, [this]() {
-      return mBuffer.size() > 0; 
-      });
-    value = mBuffer.front();
-    mBuffer.pop();
-    locker.unlock();
-    mConditionVariable.notify_one();
-    return;
+  std::unique_lock<std::mutex> locker(mutex());
+
+  mConditionVariable.wait(locker, [this]() {
+    return !buffer().empty() || mStop;
+  });
+
+  bool read_buffer = !buffer().empty();
+
+  if (read_buffer) {
+    value = buffer().front();
+    buffer().pop();
   }
+
+  locker.unlock();
+  mConditionVariable.notify_one();
+
+  return read_buffer;
 }
 
-template<typename T>
-inline size_t QueueMPMC<T>::size() const
-{
-  std::unique_lock<std::mutex> locker(mMutex);
-  return mBuffer.size();
-}
+
+
+
+/*--------------------------------------------------------------------------------*/
+
 
 
 
@@ -207,7 +390,7 @@ class Producer
 {
 public:
 
-  explicit Producer(QueueMPMC<T> *queue) : mQueue(queue){}
+  explicit Producer(Queue<T> *queue) : mQueue(queue) {}
   ~Producer() = default;
 
   virtual void operator() () = 0;
@@ -215,16 +398,19 @@ public:
 
 protected:
 
-  QueueMPMC<T> *queue()
+  Queue<T> *queue()
   {
     return mQueue;
   }
 
 private:
 
-  QueueMPMC<T> *mQueue;
+  Queue<T> *mQueue;
 
 };
+
+
+/*--------------------------------------------------------------------------------*/
 
 
 /*!
@@ -235,21 +421,21 @@ class Consumer
 {
 public:
 
-  explicit Consumer(QueueMPMC<T> *queue) : mQueue(queue){}
+  explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
   ~Consumer() = default;
 
   virtual void operator() () = 0;
 
 protected:
 
-  QueueMPMC<T> *queue()
+  Queue<T> *queue()
   {
     return mQueue;
   }
 
 private:
 
-  QueueMPMC<T> *mQueue;
+  Queue<T> *mQueue;
 
 };
 
