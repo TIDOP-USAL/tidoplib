@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(ArgumentList_constructor)
   ArgumentList_<int, false> arg_list("list", "lista de argumentos", list, &idx);
 
   BOOST_CHECK_EQUAL("list", arg_list.name());
-  BOOST_CHECK_EQUAL("lista de argumentos", arg_list.description());
+  BOOST_CHECK_EQUAL("lista de argumentos [Values: 0 10 20 30 40]", arg_list.description());
   BOOST_CHECK_EQUAL(char(), arg_list.shortName());
   BOOST_CHECK_EQUAL("int", arg_list.typeName());
   BOOST_CHECK_EQUAL(false, arg_list.isRequired());
