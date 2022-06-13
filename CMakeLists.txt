@@ -188,31 +188,11 @@ endif (BUILD_SHARED_LIBS)
 
 
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-# Compiler info
+include(CompilerInfo)
+include(OperatingSystemInfo)
 
-message(STATUS "\nCompiler info:\n")
-if(CMAKE_CXX_COMPILER_LOADED)
-  message(STATUS "  C++ compiler:         ${CMAKE_CXX_COMPILER}")
-  message(STATUS "  C++ compiler ID:      ${CMAKE_CXX_COMPILER_ID}")
-  message(STATUS "  C++ compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
-  message(STATUS "  C++ estandar:         ${CMAKE_CXX_STANDARD}\n")
-endif()
-
-# Operating system info
-
-message(STATUS "\nOperating system info:\n")
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  message(STATUS "  Linux ${CMAKE_SYSTEM_VERSION}\n")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  message(STATUS "  macOS ${CMAKE_SYSTEM_VERSION}\n")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  message(STATUS "  Windows ${CMAKE_SYSTEM_VERSION}\n")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
-  message(STATUS "  IBM AIX ${CMAKE_SYSTEM_VERSION}\n")
-else()
-  message(STATUS "  ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}\n")
-endif()
 
 
 
@@ -269,7 +249,7 @@ if (TIDOPLIB_USE_SIMD_INTRINSICS)
 
     set(TL_HAVE_SIMD_INTRINSICS TRUE)
 
-    message(STATUS "Build with SIMD intrinsics [${SIMD}]")
+    message(STATUS "Build with SIMD intrinsics [${TIDOPLIB_SIMD}]")
 
     if(${TIDOPLIB_SIMD} STREQUAL "AVX2")
       set(TL_HAVE_AVX2 TRUE)
@@ -375,7 +355,7 @@ endif()
 #   variarán.                                                            #
 ##########################################################################
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+#set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)

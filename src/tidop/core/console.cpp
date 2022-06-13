@@ -81,6 +81,7 @@ msgProperties messageProperties(MessageLevel msgLevel)
 EnumFlags<MessageLevel> Console::sLevel = MessageLevel::msg_error;
 std::unique_ptr<Console> Console::sObjConsole;
 std::mutex Console::mtx;
+std::once_flag Console::sInitFlag;
 
 Console::Console()
 #ifdef TL_MESSAGE_HANDLER
@@ -101,12 +102,11 @@ Console::~Console()
 
 Console &Console::instance()
 {
-  if (sObjConsole == nullptr) {
-    std::lock_guard<std::mutex> lck(Console::mtx);
-    if (sObjConsole == nullptr) {
-      sObjConsole.reset(new Console());
-    }
-  }
+  std::call_once(sInitFlag, []() {
+    sObjConsole.reset(new Console());
+  });
+
+
   return *sObjConsole;
 }
 
@@ -122,6 +122,8 @@ void Console::setMessageLevel(MessageLevel level)
 
 void Console::printMessage(const std::string &message)
 {
+  std::lock_guard<std::mutex> lck(Console::mtx);
+
   // Por si esta corriendo la barra de progreso
   if (Progress::isRunning()) {
     std::cout << "\r" << std::string(50, ' ') << "\r";
@@ -134,6 +136,8 @@ void Console::printMessage(const std::string &message)
 
 void Console::printErrorMessage(const std::string &message)
 {
+  std::lock_guard<std::mutex> lck(Console::mtx);
+
   setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
                             messageProperties(MessageLevel::msg_error).intensity);
 

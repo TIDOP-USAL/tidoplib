@@ -188,7 +188,7 @@ TaskBase &TaskBase::operator=(TaskBase &&task) TL_NOEXCEPT
 
 void TaskBase::run(Progress *progressBar)
 {
-  mThread = std::move(std::thread(&TaskBase::executeTask, this, progressBar));
+  mThread = std::thread(&TaskBase::executeTask, this, progressBar);
   mThread.join();
 }
 
@@ -521,9 +521,12 @@ void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
     printException(e);
     mTaskErrorEvent->setErrorMessage(e.what());
     setStatus(Status::error);
+  } catch(...) {
+    printException(tl::Exception("Unknown exception"));
+    mTaskErrorEvent->setErrorMessage("Unknown exception");
+    setStatus(Status::error);
   }
 
-  //mStatus = Status::start;
 }
 
 

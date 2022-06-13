@@ -48,10 +48,8 @@ namespace tl
  */
 class TL_EXPORT RegisterGdal
 {
-private:
 
-  static std::unique_ptr<RegisterGdal> sRegisterGdal;
-  static std::mutex sMutex;
+private:
 
   /*!
    * \brief Constructor privado
@@ -71,6 +69,10 @@ public:
    * \brief Método para iniciar GDAL una unica vez
    */
   static void init();
+
+private:
+
+  static std::once_flag init_flag;
 
 };
 

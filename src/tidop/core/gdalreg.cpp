@@ -41,18 +41,13 @@ namespace tl
 #ifdef TL_HAVE_GDAL
 
 
-std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
-std::mutex RegisterGdal::sMutex;
+std::once_flag RegisterGdal::init_flag;
 
 void RegisterGdal::init()
 {
-  if (sRegisterGdal.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
-    if (sRegisterGdal.get() == nullptr) {
-      sRegisterGdal.reset(new RegisterGdal());
-      GDALAllRegister();
-    }
-  }
+  std::call_once(init_flag, []() {
+    GDALAllRegister(); 
+  });
 }
 
 #endif

@@ -55,7 +55,7 @@ static struct _msgProperties _msgTemplate[] = {
 std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 bool MessageManager::sStopHandler = false;
 std::mutex MessageManager::sMutex;
-
+std::once_flag MessageManager::sInitFlag;
 std::string MessageManager::Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
 MessageManager::MessageManager() 
@@ -70,12 +70,10 @@ MessageManager::~MessageManager()
 
 MessageManager &MessageManager::instance()
 {
-  if (sObjMessage == nullptr) {
-    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-    if (sObjMessage == nullptr) {
-      sObjMessage.reset(new MessageManager());
-    }
-  }
+  std::call_once(sInitFlag, []() {
+    sObjMessage.reset(new MessageManager());
+  });
+
   return *sObjMessage;
 }
 
