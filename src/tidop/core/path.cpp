@@ -472,6 +472,11 @@ size_t tl::Path::hash(const Path &path)
   return fs::hash_value(path.mPath->ref());
 }
 
+void tl::Path::copy(const Path &from, const Path &to)
+{
+  fs::copy(from.toWString(), to.toWString());
+}
+
 /* Override operators */
 
 bool Path::operator==(const Path& path) const
