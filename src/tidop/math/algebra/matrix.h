@@ -2810,7 +2810,7 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matri
 {
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      os << " " << matrix(r, c);
+      os << matrix(r, c) << " ";
     }
     os << "\n";
   }
@@ -2823,7 +2823,7 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
 {
   for (size_t r = 0; r < matrix->rows(); r++) {
     for (size_t c = 0; c < matrix->cols(); c++) {
-      os << " " << matrix(r, c);
+      os << matrix(r, c) << " ";
     }
     os << "\n";
   }
@@ -3582,6 +3582,13 @@ public:
       mEndCol(endCol)
   { }
   ~MatrixBlock()= default;
+
+  //MatrixBlock &operator = (const Matrix<T> &block)
+  //{
+  //  for (size_t r = 0; r < rows(); )
+
+  //  return *this;
+  //}
 
   MatrixBlock &operator = (const MatrixBlock &block)
   {

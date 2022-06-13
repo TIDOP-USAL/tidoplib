@@ -122,6 +122,7 @@ public:
   static void removeDirectory(const std::wstring &directory);
   static void removeFile(const Path &file);
   static size_t hash(const Path &path);
+  static void copy(const Path &from, const Path &to);
 
   /* Override operators */
 
