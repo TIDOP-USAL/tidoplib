@@ -356,6 +356,31 @@ void ExifMetadata::init()
   mMetadata["EXIF_GPSDateStamp"] = std::make_pair("", false);
   mMetadata["EXIF_GPSDifferential"] = std::make_pair("", false);
   mMetadata["EXIF_GPSHPositioningError"] = std::make_pair("", false);
+
+
+  mMetadata["XMP_About"] = std::make_pair("", false);
+  mMetadata["XMP_AbsoluteAltitude"] = std::make_pair("", false);
+  mMetadata["XMP_RelativeAltitude"] = std::make_pair("", false);
+  mMetadata["XMP_GpsLatitude"] = std::make_pair("", false);
+  mMetadata["XMP_GpsLongitude"] = std::make_pair("", false);
+  mMetadata["XMP_GimbalRollDegree"] = std::make_pair("", false);
+  mMetadata["XMP_GimbalYawDegree"] = std::make_pair("", false);
+  mMetadata["XMP_GimbalPitchDegree"] = std::make_pair("", false);
+  mMetadata["XMP_FlightRollDegree"] = std::make_pair("", false);
+  mMetadata["XMP_FlightYawDegree"] = std::make_pair("", false);
+  mMetadata["XMP_FlightPitchDegree"] = std::make_pair("", false);
+  mMetadata["XMP_FlightXSpeed"] = std::make_pair("", false);
+  mMetadata["XMP_FlightYSpeed"] = std::make_pair("", false);
+  mMetadata["XMP_FlightZSpeed"] = std::make_pair("", false);
+  mMetadata["XMP_CamReverse"] = std::make_pair("", false);
+  mMetadata["XMP_GimbalReverse"] = std::make_pair("", false);
+  mMetadata["XMP_CalibratedFocalLength"] = std::make_pair("", false);
+  mMetadata["XMP_CalibratedOpticalCenterX"] = std::make_pair("", false);
+  mMetadata["XMP_CalibratedOpticalCenterY"] = std::make_pair("", false);
+  mMetadata["XMP_RtkFlag"] = std::make_pair("", false);
+  mMetadata["XMP_RtkStdLon"] = std::make_pair("", false);
+  mMetadata["XMP_RtkStdLat"] = std::make_pair("", false);
+  mMetadata["XMP_RtkStdHgt"] = std::make_pair("", false);
 }
 
 
@@ -589,19 +614,6 @@ void TiffMetadata::init()
   mMetadata["TIFFTAG_MAXSAMPLEVALUE"] = std::make_pair("", false);
   mMetadata["GEO_METADATA"] = std::make_pair("", false);
   mMetadata["TIFF_RSID"] = std::make_pair("", false);
-
-  mMetadata["XMP_About"] = std::make_pair("", false);
-  mMetadata["XMP_AbsoluteAltitude"] = std::make_pair("", false);
-  mMetadata["XMP_RelativeAltitude"] = std::make_pair("", false);
-  mMetadata["XMP_GimbalRollDegree"] = std::make_pair("", false);
-  mMetadata["XMP_GimbalYawDegree"] = std::make_pair("", false);
-  mMetadata["XMP_GimbalPitchDegree"] = std::make_pair("", false);
-  mMetadata["XMP_FlightRollDegree"] = std::make_pair("", false);
-  mMetadata["XMP_FlightYawDegree"] = std::make_pair("", false);
-  mMetadata["XMP_FlightPitchDegree"] = std::make_pair("", false);
-  mMetadata["XMP_CamReverse"] = std::make_pair("", false);
-  mMetadata["XMP_GimbalReverse"] = std::make_pair("", false);
-  mMetadata["XMP_RtkFlag"] = std::make_pair("", false);
 }
 
 

@@ -413,7 +413,7 @@ public:
 
             /// Sacar a función parseXMP
             {
-              metadata->setMetadata("XMP", *gdalMetadata);
+
               CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
               while (xml_node) {
                 if (std::string(xml_node->pszValue).compare("xpacket") == 0) {
@@ -440,36 +440,72 @@ public:
                             } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:AbsoluteAltitude") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
                               metadata->setMetadata("XMP_AbsoluteAltitude", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:RelativeAltitude") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_RelativeAltitude", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLatitude") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_GpsLatitude", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLongitude") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_GpsLongitude", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLongtitude") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_GpsLongitude", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalRollDegree") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_GimbalRollDegree", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalYawDegree") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_GimbalYawDegree", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalPitchDegree") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_GimbalPitchDegree", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightRollDegree") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_FlightRollDegree", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYawDegree") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_FlightYawDegree", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightPitchDegree") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_FlightPitchDegree", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightXSpeed") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_FlightXSpeed", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYSpeed") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_FlightYSpeed", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightZSpeed") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_FlightZSpeed", value);
                             } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CamReverse") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
                               metadata->setMetadata("XMP_CamReverse", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightPitchDegree") == 0) {
-                              std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_FlightPitchDegree", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightRollDegree") == 0) {
-                              std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_FlightRollDegree", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYawDegree") == 0) {
-                              std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_FlightYawDegree", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalPitchDegree") == 0) {
-                              std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_GimbalPitchDegree", value);
                             } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalReverse") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
                               metadata->setMetadata("XMP_GimbalReverse", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalRollDegree") == 0) {
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedFocalLength") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_GimbalRollDegree", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalYawDegree") == 0) {
+                              metadata->setMetadata("XMP_CalibratedFocalLength", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedOpticalCenterX") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_GimbalYawDegree", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RelativeAltitude") == 0) {
+                              metadata->setMetadata("CalibratedOpticalCenterX", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedOpticalCenterY") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
-                              metadata->setMetadata("XMP_RelativeAltitude", value);
-                            } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkFlag") == 0) {
+                              metadata->setMetadata("XMP_CalibratedOpticalCenterY", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkFlag") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
                               metadata->setMetadata("XMP_RtkFlag", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdLon") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_RtkStdLon", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdLat") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_RtkStdLat", value);
+                            } else if(std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdHgt") == 0) {
+                              std::string value = rdfdescription_node->psChild->pszValue;
+                              metadata->setMetadata("XMP_RtkStdHgt", value);
                             } else if (std::string(rdfdescription_node->pszValue).compare("xmpDM:cameraModel") == 0) {
                               std::string value = rdfdescription_node->psChild->pszValue;
                               metadata->setMetadata("EXIF_Model", value);

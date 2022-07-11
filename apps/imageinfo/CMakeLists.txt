@@ -38,13 +38,13 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND TL_HAVE_GDAL 
       
     add_executable(${PROJECT_NAME} imageinfo.cpp)
 
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    #target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
-    target_compile_definitions(${PROJECT_NAME} PUBLIC
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
                                $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} 
+    target_link_libraries(${PROJECT_NAME} PRIVATE
                           tl_img
                           tl_core
                           tl_math
