@@ -38,6 +38,8 @@ std::string Log::sLogFile;
 EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
+std::once_flag Log::sInitFlag;
+
 #ifdef TL_MESSAGE_HANDLER
 bool Log::sPauseListener = false;
 #endif
@@ -55,12 +57,10 @@ Log::~Log()
 
 Log &Log::instance()
 {
-  if (sObjLog == nullptr) {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    if (sObjLog == nullptr) {
-      sObjLog.reset(new Log());
-    }
-  }
+  std::call_once(sInitFlag, []() {
+    sObjLog.reset(new Log());
+  });
+
   return *sObjLog;
 }
 

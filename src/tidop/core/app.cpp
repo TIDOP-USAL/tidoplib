@@ -35,6 +35,7 @@ namespace tl
 
 std::unique_ptr<App> App::sObjApp;
 std::mutex App::mtx;
+std::once_flag App::sInitFlag;
 
 App::App()
 {
@@ -43,12 +44,10 @@ App::App()
 
 App &App::instance()
 {
-  if (sObjApp == nullptr) {
-    std::lock_guard<std::mutex> lck(App::mtx);
-    if (sObjApp == nullptr) {
-      sObjApp.reset(new App());
-    }
-  }
+  std::call_once(sInitFlag, []() {
+    sObjApp.reset(new App());
+  });
+
   return *sObjApp;
 }
 

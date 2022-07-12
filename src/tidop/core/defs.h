@@ -44,6 +44,10 @@
 #endif // TL_HAVE_VLD
 
 
+#define TL_COMPUTE_VERSION(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
+#define TL_VERSION_NUM TL_COMPUTE_VERSION(TL_VERSION_MAJOR, TL_VERSION_MINOR, TL_VERSION_PATCH)
+
+
 #if defined _MSC_VER && _MSC_VER < 1600
 
 //Copiado de stdint.h. Las versiones antiguas de Visual Studio no incluyen stdint.h
@@ -336,6 +340,18 @@
 #else
 #  define TL_TODO(msg)
 #endif
+
+
+
+#define TL_DISABLE_COPY(Class)                \
+  Class(const Class &) = delete;              \
+  Class &operator = (const Class &) = delete;
+
+#define TL_DISABLE_MOVE(Class)                \
+  Class(Class &&) = delete;                   \
+  Class &operator = (Class &&) = delete;
+
+
 
 namespace tl
 {

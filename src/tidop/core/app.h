@@ -53,12 +53,10 @@ private:
 
 public:
 
-
   ~App() = default;
-  App(const App &) = delete;
-  App(App &&) = delete;
-  App &operator = (const App &) = delete;
-  App &operator = (App &&) = delete;
+
+  TL_DISABLE_COPY(App)
+  TL_DISABLE_MOVE(App)
 
   /*!
    * \brief Singleton
@@ -76,7 +74,7 @@ private:
 
   static std::unique_ptr<App> sObjApp;
   static std::mutex mtx;
-
+  static std::once_flag sInitFlag;
 };
 
 /*! \} */ // end of core

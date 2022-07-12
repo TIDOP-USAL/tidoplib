@@ -79,10 +79,8 @@ public:
    */
   ~Log() override;
 
-  Log(const Log &) = delete;
-  Log(Log &&) = delete;
-  void operator=(const Log &) = delete;
-  void operator=(Log &&) = delete;
+  TL_DISABLE_COPY(Log)
+  TL_DISABLE_MOVE(Log)
 
   /*!
    * \brief Singleton para obtener una referencia única
@@ -207,6 +205,7 @@ private:
   static std::string sTimeLogFormat;
 
   static std::mutex mtx;
+  static std::once_flag sInitFlag;
 
 #ifdef TL_MESSAGE_HANDLER
   static bool sPauseListener;
