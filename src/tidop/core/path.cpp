@@ -366,6 +366,11 @@ void Path::removeDirectory() const
   fs::remove_all(mPath->ref());
 }
 
+void tl::Path::normalize()
+{
+  mPath->ref().make_preferred();
+}
+
 void Path::clear()
 {
   mPath = std::make_unique<internal::Path>("");

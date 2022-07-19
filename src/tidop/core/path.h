@@ -103,6 +103,7 @@ public:
   bool createDirectory() const;
   bool createDirectories() const;
   void removeDirectory() const;
+  void normalize();
 
   void clear();
 
