@@ -34,6 +34,7 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
                       tl_core
+                      $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

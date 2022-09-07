@@ -67,50 +67,6 @@ TL_EXPORT void parallel_for(size_t ini,
 
 
 
-/*!
- * \brief Iterate over containers and execute a function in parallel
- * \param[in] it_begin Input iterator to the beginning of the first range of elements
- * \param[in] it_end Input iterator to the end of the first range of elements
- * \param[out] it_out_begin Output iterator to the beginning of the second range of elements
- * \param[in] f Function or lambda
- */
-//template<typename itIn, typename itOut, typename Function> inline
-//void parallel_for(itIn it_begin, 
-//                  itIn it_end, 
-//                  itOut &it_out_begin, 
-//                  Function f)
-//{
-//  TL_TODO("Esto en realidad seria un transform parallel")
-//  auto size = std::distance(it_begin, it_end);
-//  if (size == 0) return;
-//
-//  auto f_aux = [&](itIn ini, itIn end, itOut &out) {
-//    while (ini != end) {
-//      *out++ = f(*ini++);
-//    }
-//  };
-//
-//  size_t num_threads = optimalNumberOfThreads();
-//  std::vector<std::thread> threads(num_threads);
-//  
-//  size_t _size = size / num_threads;
-//  for (size_t i = 0; i < num_threads; i++) {
-//    itIn _ini = i * _size + it_begin;
-//    itIn _end = _ini + _size;
-//    itOut _out = i * _size + it_out_begin;
-//    if (i == num_threads - 1) _end = it_end;
-//    threads[i] = std::thread(f_aux, _ini, _end, _out);
-//  }
-//
-//  for(auto &_thread : threads) {
-//    if(_thread.joinable())
-//      _thread.join();
-//  }
-//}
-
-
-
-
 template<typename Iter, typename Function>
 Function parallel_for_each(Iter first,
                            Iter last,

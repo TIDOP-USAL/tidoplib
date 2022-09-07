@@ -55,7 +55,7 @@ public:
 
 
 /*!
- * \brief Clase circulo
+ * \brief Circle class
  *
  */
 template<typename T>
@@ -72,69 +72,69 @@ public:
   typedef T value_type;
 
   /*!
-   * \brief Centro
+   * \brief Circle center
    */
   Point<T> center;
 
   /*!
-   * \brief Radio
+   * \brief Circle radius
    */
   T radius;
 
 public:
 
   /*!
-   * \brief Constructora por defecto
+   * \brief Default constructor
    */
   Circle();
 
   /*!
    * \brief Constructor
-   * \param[in] center Centro
-   * \param[in] radius Radio
+   * \param[in] center Circle center
+   * \param[in] radius Circle radius
    */
   Circle(const Point<T> &center, T radius);
 
   /*!
-   * \brief Constructor de copia
-   * \param[in] circle Objeto circulo que se copia
+   * \brief Copy constructor
+   * \param[in] circle Circle object to copy
    */
   Circle(const Circle<T> &circle);
    
   /*!
-   * \brief Constructor de movimiento
-   * \param[in] circle Objeto circulo que se mueve
+   * \brief Move constructor
+   * \param[in] circle Circle object to move
    */
   Circle(Circle<T> &&circle) TL_NOEXCEPT;
 
   ~Circle() override = default;
 
   /*!
-   * \brief Operador de asignación
-   * \param[in] circle Objeto Circle que se copia
+   * \brief Copy assignment operator
+   * \param[in] circle Circle object to copy
    */
   Circle<T> &operator = (const Circle<T> &circle);
     
   /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] circle Objeto Circle que se mueve
+   * \brief Move assignment operator
+   * \param[in] circle Circle object to move
    */
   Circle<T>& operator = (Circle<T> &&circle) TL_NOEXCEPT;
 
   /*!
-   * \brief Conversión de tipo
+   * \brief Type conversion
    */
   template<typename T2> operator Circle<T2>() const;
 
   /*!
-   * \brief Area de un circulo
+   * \brief Circle area
    * \return Area
    */
   double area() const override;
 
   /*!
-   * \brief Longitud o circunferencia del circulo
-   * \return longitud
+   * \brief Circumference (Distance around the perimeter of a circle)
+   * \return length
    */
   double length() const;
 
@@ -223,8 +223,9 @@ double Circle<T>::length() const
 }
 
 
+
 /*!
- * \brief Clase Ellipse
+ * \brief Ellipse class
  *
  */
 template<typename T>
@@ -241,77 +242,77 @@ public:
   typedef T value_type;
 
   /*!
-   * \brief Centro
+   * \brief Center
    */
   Point<T> center;
 
   /*!
-   * \brief Semieje mayor
+   * \brief Semi-major axis
    */
   T a;
 
   /*!
-   * \brief Semieje menor
+   * \brief Semi-minor axis
    */
   T b;
 
-  TL_TODO("angulo")
+  TL_TODO("ángulo")
 
 public:
 
   /*!
-   * \brief Constructora por defecto
+   * \brief Default constructor
    */
   Ellipse();
 
   /*!
    * \brief Constructor
-   * \param[in] center Centro de la elipse
-   * \param[in] a Semieje mayor
-   * \param[in] b Semieje menor
+   * \param[in] center Ellipse center
+   * \param[in] a Semi-major axis
+   * \param[in] b Semi-minor axis
    */
   Ellipse(const Point<T> &center, T a, T b);
 
   /*!
-   * \brief Constructor de copia
-   * \param[in] ellipse Objeto Ellipse que se copia
+   * \brief Copy constructor
+   * \param[in] ellipse Ellipse object to copy
    */
   Ellipse(const Ellipse<T> &ellipse);
    
   /*!
-   * \brief Constructor de movimiento
-   * \param[in] ellipse Objeto Ellipse que se mueve
+   * \brief Move constructor
+   * \param[in] ellipse Ellipse object to move
    */
   Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
   ~Ellipse() override = default;
 
   /*!
-   * \brief Operador de asignación
-   * \param[in] ellipse Objeto Ellipse que se copia
+   * \brief Copy assignment operator
+   * \param[in] ellipse Ellipse object to copy
    */
   Ellipse<T> &operator = (const Ellipse<T> &ellipse);
 
   /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] ellipse Objeto Ellipse que se mueve
+   * \brief Move assignment operator
+   * \param[in] ellipse Ellipse object to move
    */
   Ellipse<T> &operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
   /*!
-   * \brief Conversión de tipo
+   * \brief Type conversion
    */
   template<typename T2> operator Ellipse<T2>() const;
 
   /*!
-   * \brief Area de una elipse
+   * \brief Ellipse area
    * \return Area
    */
   double area() const override;
 
   /*!
-   * \brief Longitud o circunferencia de la elipse
-   * \return longitud
+   * \brief Circumference
+   * \return length
    */
   double length() const;
 

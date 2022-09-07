@@ -47,7 +47,7 @@ class XmlNode
 
 public:
 
-	CPLXMLNode *mCplXmlNode;
+	CPLXMLNode *node;
 	friend class tl::XmlNode;
 };
 
@@ -67,22 +67,22 @@ XmlNodeValue::~XmlNodeValue()
 
 std::string XmlNodeValue::toString()
 {
-	return std::string();
+	return mValue;
 }
 
 int XmlNodeValue::toInteger()
 {
-	return 0;
+	return std::stoi(mValue);
 }
 
 float XmlNodeValue::toFloat()
 {
-	return 0.0f;
+	return std::stof(mValue);
 }
 
 double XmlNodeValue::toDouble()
 {
-	return 0.0;
+	return std::stod(mValue);
 }
 
 
@@ -105,22 +105,65 @@ XmlNode &XmlNode::next()
 {
 	//internal::XmlNode node{};
 	//node.mCplXmlNode = this->mNode->mCplXmlNode->psNext;
-	XmlNode node{};
-	node.mNode->mCplXmlNode = this->mNode->mCplXmlNode->psNext;
+	//XmlNode node{};
+	this->mNode->node = this->mNode->node->psNext;
 
-	return node;
+	return *this;
 }
 
 XmlNode &XmlNode::child()
 {
-	XmlNode node{};
-	node.mNode->mCplXmlNode = this->mNode->mCplXmlNode->psChild;
-	return node;
+	//XmlNode node{};
+	//node.mNode->node = this->mNode->node->psChild;
+	this->mNode->node = this->mNode->node->psChild;
+	return *this;
 }
 
-XmlNodeValue XmlNode::value()
+XmlNodeValue XmlNode::value() const
 {
-	return XmlNodeValue(this->mNode->mCplXmlNode->pszValue);
+	return XmlNodeValue(this->mNode->node->pszValue);
+}
+
+XmlNode::Type XmlNode::type() const
+{
+	Type type; 
+
+	switch(mNode->node->eType) {
+		case CPLXMLNodeType::CXT_Element:
+			type = XmlNode::Type::element;
+			break;
+		case CPLXMLNodeType::CXT_Text:
+			type = XmlNode::Type::text;
+			break;
+		case CPLXMLNodeType::CXT_Attribute:
+			type = XmlNode::Type::attribute;
+			break;
+		case CPLXMLNodeType::CXT_Comment:
+			type = XmlNode::Type::comment;
+			break;
+		case CPLXMLNodeType::CXT_Literal:
+			type = XmlNode::Type::literal;
+			break;
+		default:
+			break;
+	}
+
+	return Type();
+}
+
+bool XmlNode::isAttibute() const
+{
+	return mNode->node->eType == CXT_Attribute;
+}
+
+bool XmlNode::isText() const
+{
+	return mNode->node->eType == CXT_Text;
+}
+
+bool XmlNode::isComment() const
+{
+	return mNode->node->eType == CXT_Comment;
 }
 
 
@@ -131,9 +174,21 @@ XMLReader::XMLReader()
 	
 }
 
-void XMLReader::parse(const tl::Path &file)
+XmlNode XMLReader::parse(const tl::Path &file)
 {
-	CPLXMLNode *xml_node = CPLParseXMLFile(file.toString().c_str());
+	//CPLXMLNode *_xml_node = CPLParseXMLFile(file.toString().c_str());
+	XmlNode xml_node;
+	xml_node.mNode->node = CPLParseXMLFile(file.toString().c_str());
+	return xml_node;
+}
+
+XmlNode XMLReader::parse(const std::string &xml)
+{
+	CPLXMLNode *cpl_xml_node = CPLParseXMLString(xml.c_str());
+	XmlNode xml_node;
+	xml_node.mNode = std::make_shared<internal::XmlNode>();
+	xml_node.mNode->node = cpl_xml_node;
+	return xml_node;
 }
 
 

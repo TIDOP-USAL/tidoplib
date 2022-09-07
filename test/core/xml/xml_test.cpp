@@ -46,7 +46,8 @@ struct XmlTest
 
   void setup()
   {
-    text = "<Nodo1>"
+    text = "<?xml version=\"1.0\" encoding=\"UTF - 8\"?>"
+           "<Nodo1>"
            "  <Nodo2>"
            "  </Nodo2>"
            "</Nodo1>";
@@ -62,6 +63,16 @@ struct XmlTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, XmlTest)
 {
+  XmlNode xml_node;
+  {
+    XMLReader reader;
+    xml_node = reader.parse(text);
+  }
+  auto &node = xml_node.next();
+  std::string node_value = node.value().toString();
+  auto &child = xml_node.child();
+  std::string child_value = child.value().toString();
+
 }
 
 BOOST_FIXTURE_TEST_CASE(next, XmlTest)

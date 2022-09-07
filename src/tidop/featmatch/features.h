@@ -808,7 +808,7 @@ public:
 
 /*!
  * \brief HOG (Histogram of Oriented Gradients)
- * Navneet Dalal and Bill Triggs @cite Dalal2005
+ * Navneet Dalal and Bill Triggs \cite Dalal2005
  */
 class TL_EXPORT Hog
   : public FeatureBase

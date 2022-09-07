@@ -71,6 +71,16 @@ private:
 
 class TL_EXPORT XmlNode
 {
+public:
+
+  enum class Type : uint8_t
+  {
+    element,
+    text,
+    attribute,
+    comment,
+    literal
+  };
 
 public:
 
@@ -80,7 +90,18 @@ public:
 
   XmlNode &next();
   XmlNode &child();
-  XmlNodeValue value();
+  XmlNodeValue value() const;
+
+  Type type() const;
+
+  bool isAttibute() const;
+  bool isText() const;
+  bool isComment() const;
+
+private:
+
+  friend class XMLReader;
+  friend class XMLWriter;
 
 private:
 
@@ -101,10 +122,8 @@ public:
   XMLReader();
   ~XMLReader() = default;
 
-  void parse(const tl::Path &file);
-
-private:
-
+  XmlNode parse(const tl::Path &file);
+  XmlNode parse(const std::string &xml);
 
 };
 
