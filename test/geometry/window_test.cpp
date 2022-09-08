@@ -172,6 +172,13 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor_dif_types, WindowTest)
   BOOST_CHECK_EQUAL(0, w2.pt1.y);
   BOOST_CHECK_EQUAL(101, w2.pt2.x);
   BOOST_CHECK_EQUAL(100, w2.pt2.y);
+
+  const WindowI w_int(PointI(1, 4), PointI(100, 100));
+  WindowD w_double(w_int);
+  BOOST_CHECK_EQUAL(1, w_double.pt1.x);
+  BOOST_CHECK_EQUAL(4, w_double.pt1.y);
+  BOOST_CHECK_EQUAL(100, w_double.pt2.x);
+  BOOST_CHECK_EQUAL(100, w_double.pt2.y);
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_center_side, WindowTest) 
@@ -376,6 +383,13 @@ BOOST_AUTO_TEST_CASE(WindowI_constructor_vector)
   BOOST_CHECK_EQUAL(-4, w2.pt1.y);
   BOOST_CHECK_EQUAL(-1, w2.pt2.x);
   BOOST_CHECK_EQUAL(-2, w2.pt2.y);
+
+  std::vector<PointI> v3{PointI(2, 3), PointI(10, 15)};
+  WindowD w3(v3);
+  BOOST_CHECK_EQUAL(2, w3.pt1.x);
+  BOOST_CHECK_EQUAL(3, w3.pt1.y);
+  BOOST_CHECK_EQUAL(10, w3.pt2.x);
+  BOOST_CHECK_EQUAL(15, w3.pt2.y);
 }
 
 BOOST_AUTO_TEST_CASE(Window_assing_operator)

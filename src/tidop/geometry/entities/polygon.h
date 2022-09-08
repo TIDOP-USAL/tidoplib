@@ -54,6 +54,7 @@ public:
 
   PolygonHole();
   PolygonHole(typename PolygonHole<Point_t>::size_type size);
+  PolygonHole(std::initializer_list<Point_t> pointList);
   ~PolygonHole() override = default;
 
 };
@@ -67,6 +68,12 @@ PolygonHole<Point_t>::PolygonHole()
 template<typename Point_t> inline
 PolygonHole<Point_t>::PolygonHole(typename PolygonHole<Point_t>::size_type size)
   : Entities2D<Point_t>(size)
+{
+}
+
+template<typename Point_t> inline
+PolygonHole<Point_t>::PolygonHole(std::initializer_list<Point_t> pointList)
+  : Entities2D<Point_t>(pointList)
 {
 }
 
@@ -336,9 +343,11 @@ template<typename Point_t> inline
 double Polygon<Point_t>::length()  const
 {
   double perimeter = 0.;
+
   for (size_t i = 1; i < this->size(); i++) {
     perimeter += distance(this->at(i-1), this->at(i));
   }
+
   return perimeter;
 }
 
@@ -347,6 +356,7 @@ double Polygon<Point_t>::area() const
 {
   TL_TODO("Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo")
   double area = 0.;
+
   for (size_t i = 0; i < this->size(); i++) {
     if (i == this->size()-1)
       area += crossProduct(this->at(i), this->at(0));
@@ -365,6 +375,7 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (const Polygon<Point_t> &polygon)
     Entities2D<Point_t>::operator = (polygon);
     mPolygonHole = polygon.mPolygonHole;
   }
+
   return *this;
 }
 
@@ -376,6 +387,7 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (Polygon<Point_t> &&polygon) TL_N
     Entities2D<Point_t>::operator = (std::forward<Entities2D<Point_t>>(polygon));
     mPolygonHole = std::forward<std::vector<PolygonHole<Point_t>>>(polygon.mPolygonHole);
   }
+
   return *this;
 }
 
@@ -383,12 +395,14 @@ template<typename Point_t> inline
 Window<Point_t> Polygon<Point_t>::window() const
 {
   Window<Point_t> w;
+
   for (size_t i = 0; i < this->size(); i++) {
     if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
     if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
     if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
     if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
   }
+
   return w;
 }
 
@@ -429,6 +443,7 @@ public:
 
   Polygon3DHole();
   Polygon3DHole(typename Polygon3DHole<Point3_t>::size_type size);
+  Polygon3DHole(std::initializer_list<Point3_t> pointList);
   ~Polygon3DHole() override = default;
 
 };
@@ -442,6 +457,12 @@ Polygon3DHole<Point3_t>::Polygon3DHole()
 template<typename Point3_t> inline
 Polygon3DHole<Point3_t>::Polygon3DHole(typename Polygon3DHole<Point3_t>::size_type size)
   : Entities3D<Point3_t>(size)
+{
+}
+
+template<typename Point3_t> inline
+Polygon3DHole<Point3_t>::Polygon3DHole(std::initializer_list<Point3_t> pointList)
+  : Entities3D<Point3_t>(pointList)
 {
 }
 
@@ -586,9 +607,11 @@ template<typename Point3_t> inline
 double Polygon3D<Point3_t>::length()  const
 {
   double perimeter = 0.;
+
   for (size_t i = 1; i < this->size(); i++) {
     perimeter += distance(this->at(i-1), this->at(i));
   }
+
   return perimeter;
 }
 
@@ -600,6 +623,7 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (const Polygon3D<Point3_t> 
     Entities3D<Point3_t>::operator = (polygon);
     mPolygonHole = polygon.mPolygonHole;
   }
+
   return *this;
 }
 
@@ -611,6 +635,7 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&poly
     Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
     mPolygonHole = std::forward<std::vector<Polygon3DHole<Point3_t>>>(polygon.mPolygonHole);
   }
+
   return *this;
 }
 
@@ -618,6 +643,7 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> Polygon3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
+
   for (size_t i = 0; i < this->size(); i++) {
     if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
     if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
@@ -626,6 +652,7 @@ BoundingBox<Point3_t> Polygon3D<Point3_t>::boundingBox() const
     if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
     if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
   }
+
   return bounding_box;
 }
 
@@ -740,6 +767,7 @@ MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (const MultiPolygon &mu
     Entity::operator = (multiPolygon);
     Entities2D<Polygon<Point_t>>::operator = (multiPolygon);
   }
+
   return *this;
 }
 
@@ -750,6 +778,7 @@ MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (MultiPolygon &&multiPo
     Entity::operator = (std::forward<Entity>(multiPolygon));
     Entities2D<Polygon<Point_t>>::operator = (std::forward<Entities2D<Polygon<Point_t>>>(multiPolygon));
   }
+
   return *this;
 }
 
@@ -757,9 +786,11 @@ template<typename Point_t> inline
 Window<Point_t> MultiPolygon<Point_t>::window() const
 {
   Window<Point_t> w;
+
   for (size_t i = 0; i < this->size(); i++) {
     w = joinWindow(w, this->at(i).window());
   }
+
   return w;
 }
 
@@ -854,6 +885,7 @@ MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (const MultiPolyg
     Entity::operator = (multiPolygon);
     Entities3D<Polygon3D<Point3_t>>::operator = (multiPolygon);
   }
+
   return *this;
 }
 
@@ -864,6 +896,7 @@ MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (MultiPolygon3D &
     Entity::operator = (std::forward<Entity>(multiPolygon));
     Entities3D<Polygon3D<Point3_t>>::operator = (std::forward<Entities3D<Polygon3D<Point3_t>>>(multiPolygon));
   }
+
   return *this;
 }
 
@@ -872,9 +905,11 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> MultiPolygon3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
+
   for (size_t i = 0; i < this->size(); i++) {
     bounding_box = joinBoundingBoxes(bounding_box, this->at(i).boundingBox());
   }
+
   return bounding_box;
 }
 

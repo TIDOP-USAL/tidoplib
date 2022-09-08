@@ -56,6 +56,23 @@ BOOST_AUTO_TEST_CASE(Segment_ConstructorPointIniEnd)
   BOOST_CHECK_EQUAL(654.4, segment.pt2.y);
 }
 
+/* Constructor punto, angulo, longitud y centro */
+
+BOOST_AUTO_TEST_CASE(Segment_ConstructorCenterAngleLenghtCenter)
+{
+  Segment<Point<double>> segment(PointD(5., 10.), 45. * math::consts::deg_to_rad<double>, 10.);
+  BOOST_CHECK_EQUAL(8.5355339059327378, segment.pt1.x);
+  BOOST_CHECK_EQUAL(6.4644660940672622, segment.pt1.y);
+  BOOST_CHECK_EQUAL(1.4644660940672622, segment.pt2.x);
+  BOOST_CHECK_EQUAL(13.535533905932738, segment.pt2.y);
+
+  Segment<Point<int>> segment2(Point<int>(5, 10), 45. * math::consts::deg_to_rad<double>, 10.);
+  BOOST_CHECK_EQUAL(9, segment2.pt1.x);
+  BOOST_CHECK_EQUAL(6, segment2.pt1.y);
+  BOOST_CHECK_EQUAL(1, segment2.pt2.x);
+  BOOST_CHECK_EQUAL(14, segment2.pt2.y);
+}
+
 /* Constructor de copia */
 
 BOOST_AUTO_TEST_CASE(Segment_CopyConstructor)
@@ -92,6 +109,13 @@ BOOST_AUTO_TEST_CASE(Segment_conversion)
   BOOST_CHECK_EQUAL(93, segment_int.pt1.y);
   BOOST_CHECK_EQUAL(25, segment_int.pt2.x);
   BOOST_CHECK_EQUAL(654, segment_int.pt2.y);
+
+  Segment<Point<float>> segment_float(Point<float>(5.5f, 93.2f), Point<float>(25.3f, 654.4f));
+  Segment<Point<double>> segment_double = static_cast<Segment<Point<double>>>(segment_float);
+  BOOST_CHECK_CLOSE(5.5, segment_double.pt1.x, 0.01);
+  BOOST_CHECK_CLOSE(93.2, segment_double.pt1.y, 0.01);
+  BOOST_CHECK_CLOSE(25.3, segment_double.pt2.x, 0.01);
+  BOOST_CHECK_CLOSE(654.4, segment_double.pt2.y, 0.01);
 }
 
 /* Angulo medido respecto al eje x */
@@ -301,4 +325,27 @@ BOOST_AUTO_TEST_CASE(Segment3D_vector)
   BOOST_CHECK_CLOSE(19.8, v.x, 0.1);
   BOOST_CHECK_CLOSE(561.19, v.y, 0.1);
   BOOST_CHECK_CLOSE(5.5, v.z, 0.1);
+}
+
+/* Conversión a un tipo diferente */
+
+BOOST_AUTO_TEST_CASE(Segment3D_conversion)
+{
+  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 2.3), Point3D(25.3, 654.4, 52.6));
+  Segment3D<Point3<int>> segment_int = static_cast<Segment3D<Point3<int>>>(segment);
+  BOOST_CHECK_EQUAL(6, segment_int.pt1.x);
+  BOOST_CHECK_EQUAL(93, segment_int.pt1.y);
+  BOOST_CHECK_EQUAL(2, segment_int.pt1.z);
+  BOOST_CHECK_EQUAL(25, segment_int.pt2.x);
+  BOOST_CHECK_EQUAL(654, segment_int.pt2.y);
+  BOOST_CHECK_EQUAL(53, segment_int.pt2.z);
+
+  Segment3D<Point3<float>> segment_float(Point3<float>(5.5f, 93.2f, 2.3f), Point3<float>(25.3f, 654.4f, 52.6f));
+  Segment3D<Point3<double>> segment_double = static_cast<Segment3D<Point3<double>>>(segment_float);
+  BOOST_CHECK_CLOSE(5.5, segment_double.pt1.x, 0.01);
+  BOOST_CHECK_CLOSE(93.2, segment_double.pt1.y, 0.01);
+  BOOST_CHECK_CLOSE(2.3, segment_double.pt1.z, 0.01);
+  BOOST_CHECK_CLOSE(25.3, segment_double.pt2.x, 0.01);
+  BOOST_CHECK_CLOSE(654.4, segment_double.pt2.y, 0.01);
+  BOOST_CHECK_CLOSE(52.6, segment_double.pt2.z, 0.01);
 }

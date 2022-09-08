@@ -170,9 +170,11 @@ template<typename Point_t> inline
 double LineString<Point_t>::length()  const
 {
   double length = 0.;
+
   for (size_t i = 1; i < this->size(); i++) {
     length += distance(this->at(i - 1), this->at(i));
   }
+
   return length;
 }
 
@@ -183,6 +185,7 @@ LineString<Point_t> &LineString<Point_t>::operator = (const LineString<Point_t> 
     Entity::operator = (lineString);
     Entities2D<Point_t>::operator = (lineString);
   }
+
   return *this;
 }
 
@@ -193,6 +196,7 @@ LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&line
     Entity::operator = (std::forward<Entity>(lineString));
     Entities2D<Point_t>::operator = (std::forward<Entities2D<Point_t>>(lineString));
   }
+
   return *this;
 }
 
@@ -344,9 +348,11 @@ template<typename Point3_t> inline
 double LineString3D<Point3_t>::length()  const
 {
   double length = 0.;
+
   for (size_t i = 1; i < this->size(); i++) {
     length += distance(this->at(i - 1), this->at(i));
   }
+
   return length;
 }
 
@@ -357,6 +363,7 @@ LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (const LineString3D &
     Entity::operator = (lineString);
     Entities3D<Point3_t>::operator = (lineString);
   }
+
   return *this;
 }
 
@@ -367,6 +374,7 @@ LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (LineString3D &&lineS
     Entity::operator = (std::forward<Entity>(lineString));
     Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(lineString));
   }
+
   return *this;
 }
 
@@ -374,6 +382,7 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> LineString3D<Point3_t>::boundingBox() const
 {
   BoundingBox<Point3_t> bounding_box;
+
   for (size_t i = 0; i < this->size(); i++) {
     if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
     if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
@@ -382,6 +391,7 @@ BoundingBox<Point3_t> LineString3D<Point3_t>::boundingBox() const
     if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
     if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
   }
+
   return bounding_box;
 }
 
@@ -603,6 +613,7 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (const Mult
     Entity::operator = (multiLineString);
     Entities3D<LineString3D<Point3_t>>::operator = (multiLineString);
   }
+
   return *this;
 }
 

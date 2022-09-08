@@ -238,6 +238,27 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, RectTest)
   BOOST_CHECK_EQUAL(100, rect2.height);
 }
 
+BOOST_FIXTURE_TEST_CASE(copy_assignment, RectTest)
+{
+  RectI rect(5, 10, 100, 100);
+  RectI rect2;
+  rect2 = rect;
+  BOOST_CHECK_EQUAL(5, rect2.x);
+  BOOST_CHECK_EQUAL(10, rect2.y);
+  BOOST_CHECK_EQUAL(100, rect2.width);
+  BOOST_CHECK_EQUAL(100, rect2.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(move_assignment, RectTest)
+{
+  RectI rect2;
+  rect2 = RectI(5, 10, 100, 100);
+  BOOST_CHECK_EQUAL(5, rect2.x);
+  BOOST_CHECK_EQUAL(10, rect2.y);
+  BOOST_CHECK_EQUAL(100, rect2.width);
+  BOOST_CHECK_EQUAL(100, rect2.height);
+}
+
 BOOST_FIXTURE_TEST_CASE(topLeft, RectTest) 
 {
   BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topLeft().x);
@@ -360,7 +381,35 @@ BOOST_FIXTURE_TEST_CASE(cast, RectTest)
   BOOST_CHECK_EQUAL(11, recti.y);
   BOOST_CHECK_EQUAL(100, recti.width);
   BOOST_CHECK_EQUAL(100, recti.height);
+
+  RectD rectd = static_cast<RectD>(*rect_integer);
+  BOOST_CHECK_EQUAL(5., rectd.x);
+  BOOST_CHECK_EQUAL(10., rectd.y);
+  BOOST_CHECK_EQUAL(100., rectd.width);
+  BOOST_CHECK_EQUAL(100., rectd.height);
 }
 
+BOOST_FIXTURE_TEST_CASE(is_equal, RectTest)
+{
+  RectI rect(5, 10, 100, 100);
+  BOOST_CHECK(rect == *rect_integer);
+}
+
+BOOST_FIXTURE_TEST_CASE(is_not_equal, RectTest)
+{
+  RectI rect(8, 2, 45, 78);
+  BOOST_CHECK(rect != *rect_integer);
+}
+
+BOOST_FIXTURE_TEST_CASE(intersection, RectTest)
+{
+  RectI rect1(50, 50, 100, 100);
+  RectI rect2(75, 75, 150, 150);
+  RectI rect3 = intersect(rect1, rect2);
+  BOOST_CHECK_EQUAL(75, rect3.x);
+  BOOST_CHECK_EQUAL(75, rect3.y);
+  BOOST_CHECK_EQUAL(75, rect3.width);
+  BOOST_CHECK_EQUAL(75, rect3.height);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

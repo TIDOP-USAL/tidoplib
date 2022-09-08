@@ -148,14 +148,18 @@ template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &window) const
 {
   std::vector<Entity_t> r_points(this->mEntities.size());
+
   size_t j = 0;
+
   for (size_t i = 0; i < this->mEntities.size(); i++) {
     if (window.containsPoint(this->mEntities[i])) {
       r_points[i] = this->mEntities[i];
       j++;
     }
   }
+
   r_points.resize(j);
+
   return r_points;
 }
 
@@ -165,6 +169,7 @@ Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t>
   if (this != &entities) {
     EntityContainer<Entity_t>::operator=(entities);
   }
+
   return (*this);
 }
 
@@ -174,6 +179,7 @@ Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&ent
   if (this != &entities) {
     EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));
   }
+
   return (*this);
 }
 

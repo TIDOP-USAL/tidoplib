@@ -42,6 +42,10 @@ namespace tl
  *  \{
  */
 
+ /*!
+  * \brief Shape interface
+  *
+  */
 class Shape
 {
 
@@ -202,12 +206,7 @@ Circle<T> &Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT
 template<typename T> template<typename T2> inline
 Circle<T>::operator Circle<T2>() const
 {
-  if (std::is_integral<T2>::value) {
-    return Circle<T2>(static_cast<Point<T2>>(this->center), 
-                      static_cast<T2>(std::round(this->radius)));
-  } else {
-    return Circle<T2>(Point<T2>(center), static_cast<T2>(this->radius));
-  }
+  return Circle<T2>(this->center, numberCast<T2>(this->radius));
 }
 
 template<typename T> inline
@@ -385,21 +384,16 @@ Ellipse<T> &Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT
     this->a = ellipse.a;
     this->b = ellipse.b;
   }
+
   return *this;
 }
 
 template<typename T> template<typename T2> inline
 Ellipse<T>::operator Ellipse<T2>() const
 {
-  if (std::is_integral<T2>::value) {
-    return Ellipse<T2>(static_cast<Point<T2>>(this->center), 
-                       static_cast<T2>(std::round(this->a)), 
-                       static_cast<T2>(std::round(this->b)));
-  } else {
-    return Ellipse<T2>(static_cast<Point<T2>>(this->center), 
-                       static_cast<T2>(this->a), 
-                       static_cast<T2>(this->b));
-  }
+  return Ellipse<T2>(this->center,
+                     numberCast<T2>(this->a),
+                     numberCast<T2>(this->b));
 }
 
 template<typename T> inline

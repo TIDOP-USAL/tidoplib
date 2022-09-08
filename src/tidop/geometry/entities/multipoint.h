@@ -35,8 +35,6 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/entities2d.h"
 #include "tidop/geometry/entities/entities3d.h"
-//#include "tidop/geometry/entities/window.h"
-//#include "tidop/geometry/entities/bbox.h"
 
 namespace tl
 {
@@ -192,12 +190,14 @@ template<typename Point_t> inline
 Window<Point_t> MultiPoint<Point_t>::window() const
 {
   Window<Point_t> w;
+
   for (size_t i = 0; i < this->size(); i++) {
     if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
     if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
     if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
     if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
   }
+
   return w;
 }
 
@@ -336,6 +336,7 @@ MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &mu
     Entity::operator=(multiPoint);
     Entities3D<Point_t>::operator = (multiPoint);
   }
+
   return *this;
 }
 
@@ -346,6 +347,7 @@ MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPo
     Entity::operator = (std::forward<Entity>(multiPoint));
     Entities3D<Point_t>::operator = (std::forward<Entities3D<Point_t>>(multiPoint));
   }
+
   return *this;
 }
 
@@ -353,6 +355,7 @@ template<typename Point_t> inline
 BoundingBox<Point_t> MultiPoint3D<Point_t>::boundingBox() const
 {
   BoundingBox<Point_t> bounding_box;
+
   for (size_t i = 0; i < this->size(); i++) {
     if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
     if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
@@ -361,6 +364,7 @@ BoundingBox<Point_t> MultiPoint3D<Point_t>::boundingBox() const
     if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
     if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
   }
+
   return bounding_box;
 }
 

@@ -231,9 +231,14 @@ Segment<Point_t>::Segment(Point_t _pt1, Point_t _pt2)
 }
 
 template<typename Point_t> inline
-Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool bCenter)
+Segment<Point_t>::Segment(const Point_t &pt, 
+                          double angle, 
+                          double length, 
+                          bool bCenter)
   : Entity(Entity::Type::segment2d)
 {
+  using point_type = typename Point_t::value_type;
+
   double a = cos(angle);
   double b = sin(angle);
   double l1 = 0;
@@ -243,17 +248,10 @@ Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool b
     l1 = l2 = length / 2.;
   }
   
-  if (std::is_integral<typename Point_t::value_type>::value) {
-    pt1.x = roundToInteger(pt.x - l1 * -b);
-    pt1.y = roundToInteger(pt.y - l1 * a);
-    pt2.x = roundToInteger(pt.x + l2 * -b);
-    pt2.y = roundToInteger(pt.y + l2 * a);
-  } else {
-    pt1.x = static_cast<typename Point_t::value_type>(pt.x - l1 * -b);
-    pt1.y = static_cast<typename Point_t::value_type>(pt.y - l1 * a);
-    pt2.x = static_cast<typename Point_t::value_type>(pt.x + l2 * -b);
-    pt2.y = static_cast<typename Point_t::value_type>(pt.y + l2 * a);
-  }
+  pt1.x = numberCast<point_type>(pt.x - l1 * -b);
+  pt1.y = numberCast<point_type>(pt.y - l1 * a);
+  pt2.x = numberCast<point_type>(pt.x + l2 * -b);
+  pt2.y = numberCast<point_type>(pt.y + l2 * a);
 }
 
 
@@ -284,20 +282,13 @@ Segment<Point_t>::operator Segment<Point_t2>() const
 {
   Segment<Point_t2> s;
 
-  using sub_type = typename Point_t2::value_type;
+  using point_type = typename Point_t2::value_type;
 
-  if (std::is_integral<sub_type>::value) {
-    s.pt1.x = roundToInteger(pt1.x);
-    s.pt1.y = roundToInteger(pt1.y);
-    s.pt2.x = roundToInteger(pt2.x);
-    s.pt2.y = roundToInteger(pt2.y);
-  } else {
-    s.pt1.x = static_cast<sub_type>(pt1.x);
-    s.pt1.y = static_cast<sub_type>(pt1.y);
-    s.pt2.x = static_cast<sub_type>(pt2.x);
-    s.pt2.y = static_cast<sub_type>(pt1.y);
-  }
-  
+  s.pt1.x = numberCast<point_type>(pt1.x);
+  s.pt1.y = numberCast<point_type>(pt1.y);
+  s.pt2.x = numberCast<point_type>(pt2.x);
+  s.pt2.y = numberCast<point_type>(pt2.y);
+
   return s;
 }
 
@@ -555,23 +546,14 @@ Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
 {
   Segment3D<Point3_t2> s;
 
-  using sub_type = typename Point3_t2::value_type;
+  using point_type = typename Point3_t2::value_type;
 
-  if (std::is_integral<sub_type>::value) {
-    s.pt1.x = roundToInteger(pt1.x);
-    s.pt1.y = roundToInteger(pt1.y);
-    s.pt1.z = roundToInteger(pt1.z);
-    s.pt2.x = roundToInteger(pt2.x);
-    s.pt2.y = roundToInteger(pt2.y);
-    s.pt2.z = roundToInteger(pt2.z);
-  } else {
-    s.pt1.x = static_cast<sub_type>(pt1.x);
-    s.pt1.y = static_cast<sub_type>(pt1.y);
-    s.pt1.z = static_cast<sub_type>(pt1.z);
-    s.pt2.x = static_cast<sub_type>(pt2.x);
-    s.pt2.y = static_cast<sub_type>(pt1.y);
-    s.pt2.z = static_cast<sub_type>(pt1.z);
-  }
+  s.pt1.x = numberCast<point_type>(pt1.x);
+  s.pt1.y = numberCast<point_type>(pt1.y);
+  s.pt1.z = numberCast<point_type>(pt1.z);
+  s.pt2.x = numberCast<point_type>(pt2.x);
+  s.pt2.y = numberCast<point_type>(pt2.y);
+  s.pt2.z = numberCast<point_type>(pt2.z);
 
   return s;
 }

@@ -42,6 +42,10 @@ namespace tl
  *  \{
  */
 
+ /*!
+  * \brief Class for 2D rectangles.
+  *
+  */
 template<typename T>
 class Rect
 {
@@ -52,32 +56,130 @@ public:
 
 public:
 
+  /*!
+   * \brief Default constructor.
+   * Constructs a empty Rect object. isValid() returns false
+   * and isEmpty() return true.
+   */
   Rect();
+
+  /*!
+   * \brief Constructs a rectangle with top-left corner (x, y) and width and height
+   * \param[in] x Rectangle left coordinate
+   * \param[in] y Rectangle top coordinate
+   * \param[in] width Rectangle width
+   * \param[in] height Rectangle height
+   */
   Rect(T x, T y, T width, T height);
+
+  /*!
+   * \brief Constructs a rectangle with top-left and bottom-right corners
+   * \param[in] topLeft Rectangle top-left corner
+   * \param[in] bottomRight Rectangle bottom-right corner
+   */
   Rect(const Point<T> &topLeft, 
        const Point<T> &bottomRight);
+
+  /*!
+   * \brief Constructs a rectangle with top-left corner and size (width==height)
+   * \param[in] topLeft Rectangle top-left corner
+   * \param[in] size Rectangle width and height size
+   */
   Rect(const Point<T> &topLeft, 
        const Size<T> &size);
+
+  /*!
+   * \brief Constructs a rectangle with top-left corner and dimensions (width and height)
+   * \param[in] topLeft Rectangle top-left corner
+   * \param[in] width Rectangle width
+   * \param[in] height Rectangle height
+   */
   Rect(const Point<T> &topLeft, 
        T width, 
        T height);
+
+  /*!
+   * \brief Copy constructor
+   * \param[in] rect Rect object to copy
+   */
   Rect(const Rect &rect);
+
+  /*!
+   * \brief Move constructor
+   * \param[in] rect Rect object to move
+   */
   Rect(Rect &&rect) TL_NOEXCEPT;
 
+  /*!
+   * \brief Copy assignment operator
+   * \param[in] rect Rect object to copy
+   */
   Rect &operator = (const Rect &rect);
+
+  /*!
+   * \brief Move assignment operator
+   * \param[in] rect Rect object to move
+   */
   Rect &operator = (Rect &&rect) TL_NOEXCEPT;
 
+  /*!
+   * \brief Return top-left corner
+   */
   Point<T> topLeft() const;
+
+  /*!
+   * \brief Return top-right corner
+   */
   Point<T> topRight() const;
+
+  /*!
+   * \brief Return bottom-right corner
+   */
   Point<T> bottomRight() const;
+
+  /*!
+   * \brief Return bottom-left corner
+   */
   Point<T> bottomLeft() const;
+
+  /*!
+   * \brief Returns the size of the rectangle.
+   */
   Size<T> size() const;
+
+  /*!
+   * \brief Check if Rect object is empty. 
+   * \return Returns true if the rectangle is empty, otherwise returns false. 
+   */
   bool isEmpty() const;
+
+  /*!
+   * \brief Check if Rect object is valid.
+   * \return Returns true if the rectangle is valid, otherwise returns false.
+   */
   bool isValid() const;
+
+  /*!
+   * \brief Check if a point is contained in the rectangle.
+   * \param[in] pt Point to check if is contained.
+   * \return Returns true if the rectangle contains the point.
+  */
   bool contains(const Point<T> &pt) const;
+
+  /*!
+   * \brief Transform a Rect object to a Window object
+   * \return Window
+   */
   Window<Point<T>> window() const;
+
+  /*!
+   * \brief Normalize the rectangle.
+   */
   void normalized();
 
+  /*!
+   * \brief Type conversion
+   */
   template<typename T2> operator Rect<T2>() const;
 
 public:
@@ -262,25 +364,13 @@ inline void tl::Rect<T>::normalized()
 template<typename T> template<typename T2> inline 
 Rect<T>::operator Rect<T2>() const
 {
-  Rect<T2> rect{};
-
-  if (std::is_integral<T2>::value) {
-    rect = Rect<T2>(roundToInteger(this->x),
-                    roundToInteger(this->y),
-                    roundToInteger(this->width),
-                    roundToInteger(this->height));
-  } else {
-
-    rect = Rect<T2>(static_cast<T2>(this->x),
-                    static_cast<T2>(this->y),
-                    static_cast<T2>(this->width),
-                    static_cast<T2>(this->height));
-  }
+  Rect<T2> rect(numberCast<T2>(this->x),
+                numberCast<T2>(this->y),
+                numberCast<T2>(this->width),
+                numberCast<T2>(this->height));
 
   return rect;
 }
-
-
 
 template<typename T> static inline
 bool operator == (const Rect<T> &rect1, 

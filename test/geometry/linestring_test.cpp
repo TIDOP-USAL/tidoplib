@@ -282,7 +282,8 @@ BOOST_FIXTURE_TEST_CASE(is3D, LineStringTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, LineStringTest) 
 {
-  LineStringD lineString = *line_string_double;
+  LineStringD lineString;
+  lineString = *line_string_double;
 
   for (int i = 0; i < lineString.size(); i++) {
     BOOST_CHECK(lineString[i] == line_string_double->at(i));
@@ -292,7 +293,8 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, LineStringTest)
 BOOST_FIXTURE_TEST_CASE(move_operator, LineStringTest) 
 {
   LineString<Point<double>> line_to_move(v_d);
-  LineString<Point<double>> lineString = std::move(line_to_move);
+  LineString<Point<double>> lineString;
+  lineString = std::move(line_to_move);
 
   BOOST_CHECK_EQUAL(7, lineString.size());
   BOOST_CHECK_EQUAL(0, line_to_move.size());
@@ -539,7 +541,8 @@ BOOST_FIXTURE_TEST_CASE(is3D, LineString3DTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_assing_operator, LineString3DTest) 
 {
-  LineString3D<Point3<double>> lineString = *line_string_double;
+  LineString3D<Point3<double>> lineString;
+  lineString = *line_string_double;
 
   for (int i = 0; i < lineString.size(); i++) {
     BOOST_CHECK(lineString[i] == line_string_double->at(i));
@@ -549,7 +552,8 @@ BOOST_FIXTURE_TEST_CASE(copy_assing_operator, LineString3DTest)
 BOOST_FIXTURE_TEST_CASE(move_operator, LineString3DTest) 
 {
   LineString3D<Point3<double>> line_to_move(v_d);
-  LineString3D<Point3<double>> lineString = std::move(line_to_move);
+  LineString3D<Point3<double>> lineString;
+  lineString = std::move(line_to_move);
 
   BOOST_CHECK_EQUAL(4, lineString.size());
   BOOST_CHECK_EQUAL(0, line_to_move.size());
@@ -566,39 +570,165 @@ BOOST_AUTO_TEST_SUITE_END()
 
 /* MultiLineString  */
 
+BOOST_AUTO_TEST_SUITE(MultiLineStringTestSuite)
 
-//BOOST_AUTO_TEST_CASE(MultiLineString_default_constructor) 
-//{
-//  MultiLineString<PointD> multiline;
-//  WindowD w = multiline.window();
-//  
-//  BOOST_CHECK_EQUAL(0, multiline.size());
-//  BOOST_CHECK(multiline.type() == Entity::Type::multiline2d);
-//  BOOST_CHECK_EQUAL(false, multiline.is3D());
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
-//}
-//
-//BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve) 
-//{
-//  MultiLineString<PointD> multiline(10);
-//  WindowD w = multiline.window();
-// 
-//  BOOST_CHECK_EQUAL(10, multiline.size());
-//  BOOST_CHECK(multiline.type() == Entity::Type::multiline2d);
-//  BOOST_CHECK_EQUAL(false, multiline.is3D());
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
-//}
+std::initializer_list<PointI> points1
+{
+  PointI(34, 34),
+  PointI(45, 54),
+  PointI(51, 45),
+  PointI(12, 47),
+  PointI(95, 25),
+  PointI(15, 36),
+  PointI(18, 82)
+};
+
+std::initializer_list<PointI> points2
+{
+  PointI(76, 70),
+  PointI(26, 35),
+  PointI(55, 25),
+  PointI(82, 21)
+};
+
+
+
+struct MultiLineStringTest
+{
+
+  MultiLineStringTest()
+    : multiline_string_integer(nullptr)
+    //line_string_double(nullptr),
+    //line_string_float(nullptr),
+    //line_string_integer_copy(nullptr),
+    //line_string_double_copy(nullptr),
+    //line_string_float_copy(nullptr),
+    //line_string_constructor_reserve(nullptr),
+    //line_string_constructor_vector(nullptr)
+  {
+
+  }
+
+  ~MultiLineStringTest()
+  {
+    delete multiline_string_integer;
+    //delete line_string_double;
+    //delete line_string_float;
+    //delete line_string_integer_copy;
+    //delete line_string_double_copy;
+    //delete line_string_float_copy;
+    //delete line_string_constructor_reserve;
+    //delete line_string_constructor_vector;
+  }
+
+  void setup()
+  {
+
+    //v_d.push_back(PointD(41572.22, 6647.89));
+    //v_d.push_back(PointD(41490.43, 6888.36));
+    //v_d.push_back(PointD(41728.03, 6903.40));
+    //v_d.push_back(PointD(41771.48, 6429.97));
+    //v_d.push_back(PointD(41370.12, 6718.08));
+    //v_d.push_back(PointD(41462.92, 6669.53));
+    //v_d.push_back(PointD(41387.59, 7026.70));
+
+    multiline_string_integer = new MultiLineString<PointI>();
+    multiline_string_integer->push_back(LineStringI(points1));
+    multiline_string_integer->push_back(LineStringI(points2));
+
+    //line_string_double = new LineString<PointD>(initializer_list_line_string_double);
+    //line_string_float = new LineString<PointF>();
+
+    //line_string_integer_copy = new LineString<PointI>(*line_string_integer);
+    //line_string_double_copy = new LineString<PointD>(*line_string_double);
+    //line_string_float_copy = new LineString<PointF>(*line_string_float);
+
+    //line_string_constructor_reserve = new LineString<PointI>(10);
+
+    //line_string_constructor_vector = new LineString<PointD>(v_d);
+  }
+
+  void teardown()
+  {
+
+  }
+
+  //std::vector<PointD> v_d;
+
+  MultiLineString<PointD> multiline_default_constructor;
+
+  MultiLineString<PointI> *multiline_string_integer;
+  //LineString<PointD> *line_string_double;
+  //LineString<PointF> *line_string_float;
+  //LineString<PointI> *line_string_integer_copy;
+  //LineString<PointD> *line_string_double_copy;
+  //LineString<PointF> *line_string_float_copy;
+
+  //LineString<PointI> *line_string_constructor_reserve;
+
+  //LineString<PointD> *line_string_constructor_vector;
+};
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, MultiLineStringTest)
+{
+  WindowD w = multiline_default_constructor.window();
+  
+  BOOST_CHECK_EQUAL(0, multiline_default_constructor.size());
+  BOOST_CHECK(multiline_default_constructor.type() == Entity::Type::multiline2d);
+  BOOST_CHECK_EQUAL(false, multiline_default_constructor.is3D());
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
+}
+
+BOOST_FIXTURE_TEST_CASE(push_back, MultiLineStringTest)
+{
+  BOOST_CHECK_EQUAL(2, multiline_string_integer->size());
+  BOOST_CHECK_EQUAL(7, multiline_string_integer->at(0).size());
+  BOOST_CHECK_EQUAL(4, multiline_string_integer->at(1).size());
+  BOOST_CHECK_EQUAL(34, multiline_string_integer->at(0).at(0).x);
+  BOOST_CHECK_EQUAL(34, multiline_string_integer->at(0).at(0).y);
+}
+
+BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve)
+{
+  MultiLineString<PointD> multiline(10);
+  WindowD w = multiline.window();
+
+  BOOST_CHECK_EQUAL(10, multiline.size());
+  BOOST_CHECK(multiline.type() == Entity::Type::multiline2d);
+  BOOST_CHECK_EQUAL(false, multiline.is3D());
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
+}
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
+{
+  MultiLineString<PointI> multiline(*multiline_string_integer);
+  BOOST_CHECK_EQUAL(2, multiline.size());
+  BOOST_CHECK_EQUAL(7, multiline.at(0).size());
+  BOOST_CHECK_EQUAL(4, multiline.at(1).size());
+}
+
 
 //BOOST_AUTO_TEST_CASE(MultiLineString_copy_constructor) 
 //{
-//  LineStringI  line1(ptsIn);
-//  std::vector<PointI> vect{
+//  std::vector<PointI> vect1
+//  {
+//    PointI(34, 34),
+//    PointI(45, 54),
+//    PointI(51, 45),
+//    PointI(12, 47),
+//    PointI(95, 25),
+//    PointI(15, 36),
+//    PointI(18, 82)
+//  };
+//  LineStringI  line1(vect1);
+//
+//  std::vector<PointI> vect2{
 //	  PointI(4150653, 668925),
 //	  PointI(4148532, 688836),
 //	  PointI(4120568, 693696),
@@ -606,7 +736,7 @@ BOOST_AUTO_TEST_SUITE_END()
 //	  PointI(4152639, 665658),
 //	  PointI(4156305, 636996),
 //	  PointI(4139568, 653366) };
-//  LineStringI  line2(vect);
+//  LineStringI  line2(vect2);
 //
 //  MultiLineString<PointI> multiline;
 //  multiline.push_back(line1);
@@ -624,11 +754,6 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
 //  BOOST_CHECK_EQUAL(702670, w.pt2.y);
 //
-//  LineString<PointI> linestring = multiline_copy[1];
-//  for (size_t i = 0; i < linestring.size(); i++) {
-//    BOOST_CHECK_EQUAL(vect[i].x, linestring[i].x);
-//    BOOST_CHECK_EQUAL(vect[i].y, linestring[i].y);
-//  }
 //}
 
 //BOOST_AUTO_TEST_CASE(MultiLineString_assing_operator)
@@ -665,6 +790,8 @@ BOOST_AUTO_TEST_SUITE_END()
 //    BOOST_CHECK_EQUAL(vect[i].y, linestring[i].y);
 //  }
 //}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 /* MultiLineString3D */
 

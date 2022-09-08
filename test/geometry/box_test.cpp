@@ -271,7 +271,8 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, BoundingBoxTest)
 BOOST_FIXTURE_TEST_CASE(copy_assing_operator, BoundingBoxTest)
 {
   BoundingBoxD box(Point3D(50., 20., 30.), Point3D(100., 100., 100.));
-  BoundingBoxD box2 = box;
+  BoundingBoxD box2;
+  box2 = box;
   BOOST_CHECK_EQUAL(50., box2.pt1.x);
   BOOST_CHECK_EQUAL(20., box2.pt1.y);
   BOOST_CHECK_EQUAL(30., box2.pt1.z);
@@ -283,7 +284,8 @@ BOOST_FIXTURE_TEST_CASE(copy_assing_operator, BoundingBoxTest)
 BOOST_FIXTURE_TEST_CASE(move_assing_operator, BoundingBoxTest)
 {
   BoundingBoxD box(Point3D(50., 20., 30.), Point3D(100., 100., 100.));
-  BoundingBoxD box2 = std::move(box);
+  BoundingBoxD box2;
+  box2 = std::move(box);
   BOOST_CHECK_EQUAL(50., box2.pt1.x);
   BOOST_CHECK_EQUAL(20., box2.pt1.y);
   BOOST_CHECK_EQUAL(30., box2.pt1.z);
@@ -418,6 +420,15 @@ BOOST_FIXTURE_TEST_CASE(isEmpty, BoundingBoxTest)
   BOOST_CHECK(box_integer_copy->isEmpty() == false);
   BOOST_CHECK(box_constructor_center_side_integer_even_size->isEmpty() == false);
   BOOST_CHECK(box_constructor_center_size_integer_even_size->isEmpty() == false);
+}
+
+BOOST_FIXTURE_TEST_CASE(isValid, BoundingBoxTest)
+{
+  BOOST_CHECK(!box_default_constructor_integer.isValid());
+  BOOST_CHECK(box_integer->isValid() == true);
+  BOOST_CHECK(box_integer_copy->isValid() == true);
+  BOOST_CHECK(box_constructor_center_side_integer_even_size->isValid() == true);
+  BOOST_CHECK(box_constructor_center_size_integer_even_size->isValid() == true);
 }
 
 BOOST_FIXTURE_TEST_CASE(is3D, BoundingBoxTest) 

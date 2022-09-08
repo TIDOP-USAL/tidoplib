@@ -133,6 +133,23 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, SizeTest)
   BOOST_CHECK_EQUAL(100, size2.height);
 }
 
+BOOST_FIXTURE_TEST_CASE(copy_assignment, SizeTest)
+{
+  SizeI size(100, 100);
+  SizeI size2(50, 50);
+  size2 = size;
+  BOOST_CHECK_EQUAL(100, size2.width);
+  BOOST_CHECK_EQUAL(100, size2.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(move_assignment, SizeTest)
+{
+  SizeI size2;
+  size2 = SizeI(100, 100);
+  BOOST_CHECK_EQUAL(100, size2.width);
+  BOOST_CHECK_EQUAL(100, size2.height);
+}
+
 BOOST_FIXTURE_TEST_CASE(constructor_width_height, SizeTest) 
 {
   BOOST_CHECK_EQUAL(100, size_constructor_integer_width_height->width);
@@ -160,8 +177,91 @@ BOOST_FIXTURE_TEST_CASE(cast, SizeTest)
   SizeI size = static_cast<SizeI>(*size_double);
   BOOST_CHECK_EQUAL(100, size.width);
   BOOST_CHECK_EQUAL(100, size.height);
+
+  SizeD size2 = static_cast<SizeD>(*size_integer);
+  BOOST_CHECK_EQUAL(100., size2.width);
+  BOOST_CHECK_EQUAL(100., size2.height);
 }
 
+BOOST_FIXTURE_TEST_CASE(is_equal, SizeTest)
+{
+  SizeI size = *size_integer;
+  BOOST_CHECK(size == *size_integer);
+}
+
+BOOST_FIXTURE_TEST_CASE(is_not_equal, SizeTest)
+{
+  SizeI size(50, 50);
+  BOOST_CHECK(size != *size_integer);
+}
+
+BOOST_FIXTURE_TEST_CASE(add1, SizeTest)
+{
+  SizeI size1(50, 50);
+  SizeI size2(20, 30);
+  SizeI size3 = size1 + size2;
+  BOOST_CHECK_EQUAL(70, size3.width);
+  BOOST_CHECK_EQUAL(80, size3.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(add2, SizeTest)
+{
+  SizeI size1(50, 50);
+  SizeI size2(20, 30);
+  size2 += size1;
+  BOOST_CHECK_EQUAL(70, size2.width);
+  BOOST_CHECK_EQUAL(80, size2.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(minus1, SizeTest)
+{
+  SizeI size1(50, 50);
+  SizeI size2(20, 30);
+  SizeI size3 = size1 - size2;
+  BOOST_CHECK_EQUAL(30, size3.width);
+  BOOST_CHECK_EQUAL(20, size3.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(minus2, SizeTest)
+{
+  SizeI size1(50, 50);
+  SizeI size2(20, 30);
+  size2 -= size1;
+  BOOST_CHECK_EQUAL(-30, size2.width);
+  BOOST_CHECK_EQUAL(-20, size2.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(mul1, SizeTest)
+{
+  SizeI size1(14, 23);
+  SizeI size2 = size1 * 10;
+  BOOST_CHECK_EQUAL(140, size2.width);
+  BOOST_CHECK_EQUAL(230, size2.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(mul2, SizeTest)
+{
+  SizeI size1(14, 23);
+  size1 *= 10;
+  BOOST_CHECK_EQUAL(140, size1.width);
+  BOOST_CHECK_EQUAL(230, size1.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(div1, SizeTest)
+{
+  SizeD size1(14., 23.);
+  SizeD size2 = size1 / 10.;
+  BOOST_CHECK_EQUAL(1.4, size2.width);
+  BOOST_CHECK_EQUAL(2.3, size2.height);
+}
+
+BOOST_FIXTURE_TEST_CASE(div2, SizeTest)
+{
+  SizeD size1(14., 23.);
+  size1 /= 10.;
+  BOOST_CHECK_EQUAL(1.4, size1.width);
+  BOOST_CHECK_EQUAL(2.3, size1.height);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

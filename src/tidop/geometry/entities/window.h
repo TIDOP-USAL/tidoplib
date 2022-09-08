@@ -243,7 +243,11 @@ Window<Point_t>::Window(const Point_t &pt,
   auto half_width = width / two;
   auto half_height = height / two;
 
-  if (std::is_integral<typename Point_t::value_type>::value) {
+#if (__cplusplus >= 201703L)
+  if constexpr(std::is_integral<typename Point_t::value_type>::value) {
+#else
+  if(std::is_integral<typename Point_t::value_type>::value) {
+#endif
 
     int dx = static_cast<int>(width) % 2;
     int dy = static_cast<int>(height) % 2;
@@ -268,7 +272,11 @@ Window<Point_t>::Window(const Point_t &pt,
   typename Point_t::value_type two{2};
   auto half_side = side / two;
 
-  if (std::is_integral<typename Point_t::value_type>::value) {
+#if (__cplusplus >= 201703L)
+  if constexpr(std::is_integral<typename Point_t::value_type>::value) {
+#else
+  if(std::is_integral<typename Point_t::value_type>::value) {
+#endif
     int dxy = static_cast<int>(side) % 2;
     this->pt1 = Point_t(pt.x - half_side,
                         pt.y - half_side);
@@ -308,19 +316,14 @@ Window<Point_t>::Window(const std::vector<Point_t2> &window)
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), 
     -std::numeric_limits<typename Point_t::value_type>().max())
 {
+  using point_type = typename Point_t::value_type;
+  
   if (window.size() >= 2) {
     for (size_t i = 0; i < window.size(); i++) {
-      if (std::is_integral<typename Point_t::value_type>::value) {
-        if (pt1.x > window[i].x) pt1.x = static_cast<typename Point_t::value_type>(std::round(window[i].x));
-        if (pt1.y > window[i].y) pt1.y = static_cast<typename Point_t::value_type>(std::round(window[i].y));
-        if (pt2.x < window[i].x) pt2.x = static_cast<typename Point_t::value_type>(std::round(window[i].x));
-        if (pt2.y < window[i].y) pt2.y = static_cast<typename Point_t::value_type>(std::round(window[i].y));
-      } else {
-        if (pt1.x > window[i].x) pt1.x = static_cast<typename Point_t::value_type>(window[i].x);
-        if (pt1.y > window[i].y) pt1.y = static_cast<typename Point_t::value_type>(window[i].y);
-        if (pt2.x < window[i].x) pt2.x = static_cast<typename Point_t::value_type>(window[i].x);
-        if (pt2.y < window[i].y) pt2.y = static_cast<typename Point_t::value_type>(window[i].y);
-      }
+      if(pt1.x > window[i].x) pt1.x = numberCast<point_type>(window[i].x);
+      if(pt1.y > window[i].y) pt1.y = numberCast<point_type>(window[i].y);
+      if(pt2.x < window[i].x) pt2.x = numberCast<point_type>(window[i].x);
+      if(pt2.y < window[i].y) pt2.y = numberCast<point_type>(window[i].y);
     }
   }
 }
@@ -356,18 +359,14 @@ bool Window<Point_t>::operator == (const Window &window) const
 template<typename Point_t> template<typename Point_t2> inline
 Window<Point_t>::operator Window<Point_t2>() const
 {
+  using point_type = typename Point_t2::value_type;
+
   Window<Point_t2> w;
-  if (std::is_integral<typename Point_t2::value_type>::value) {
-    w.pt1.x = static_cast<typename Point_t2::value_type>(std::round(pt1.x));
-    w.pt1.y = static_cast<typename Point_t2::value_type>(std::round(pt1.y));
-    w.pt2.x = static_cast<typename Point_t2::value_type>(std::round(pt2.x));
-    w.pt2.y = static_cast<typename Point_t2::value_type>(std::round(pt2.y));
-  } else {
-    w.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
-    w.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
-    w.pt2.x = static_cast<typename Point_t2::value_type>(pt2.x);
-    w.pt2.y = static_cast<typename Point_t2::value_type>(pt2.y);
-  }
+  w.pt1.x = numberCast<point_type>(pt1.x);
+  w.pt1.y = numberCast<point_type>(pt1.y);
+  w.pt2.x = numberCast<point_type>(pt2.x);
+  w.pt2.y = numberCast<point_type>(pt2.y);
+
   return w;
 }
 

@@ -43,7 +43,34 @@ namespace tl
  */
 
 
+template<typename T1, typename T2> static inline
+  typename std::enable_if<
+  std::is_integral<T1>::value,
+  T1>::type
+numberCast(T2 number)
+{
+  return static_cast<T1>(std::round(number));
+}
 
+template<typename T1, typename T2> static inline
+  typename std::enable_if<
+  std::is_floating_point<T1>::value,
+  T1>::type
+numberCast(T2 number)
+{
+  return static_cast<T1>(number);
+}
+
+template<typename T1, typename T2> static inline
+  typename std::enable_if<
+  !std::is_arithmetic<T1>::value,
+  T1>::type
+numberCast(T2 b)
+{
+  TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
+  throw TL_ERROR("Invalid conversion. It isn't an arithmetic type.");
+  return T1{0};
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */

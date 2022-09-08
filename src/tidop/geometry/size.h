@@ -43,6 +43,10 @@ namespace tl
  */
 
 
+ /*!
+  * \brief Class for specifying the size of a two-dimensional object.
+  *
+  */
 template<typename T>
 class Size
 {
@@ -53,20 +57,60 @@ public:
 
 public:
 
+  /*!
+   * \brief Default constructor.
+   * Constructs a empty Size object. isValid() returns false 
+   * and isEmpty() return true.
+   */
   Size();
+
+  /*!
+   * \brief Constructs a size with the given width and height.
+   * \param[in] width Size width
+   * \param[in] height Size height
+   */
   Size(T width, T height);
+
+  /*!
+   * \brief Copy constructor
+   * \param[in] size Size object to copy
+   */
   Size(const Size &size);
+
+  /*!
+   * \brief Move constructor
+   * \param[in] size Size object to move
+   */
   Size(Size &&size) TL_NOEXCEPT;
+
   ~Size() = default;
 
+  /*!
+   * \brief Copy assignment operator
+   * \param[in] size Size object to copy
+   */
   Size &operator = (const Size &size);
+
+  /*!
+   * \brief Move assignment operator
+   * \param[in] size Size object to move
+   */
   Size &operator = (Size &&size) TL_NOEXCEPT;
 
+  /*!
+   * \brief Check if Size object is empty 
+   * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
+   */
   bool isEmpty() const;
+  
+  /*!
+   * \brief Check if Size object is valid 
+   * \return Returns true if both the width and height is equal to or greater than 0; otherwise returns false.
+   */
   bool isValid() const;
 
   /*!
-   * \brief Conversión de tipo
+   * \brief Type conversion
    */
   template<typename T2> operator Size<T2>() const;
 
@@ -118,6 +162,7 @@ Size<T> &Size<T>::operator = (const Size &size)
     this->width = size.width;
     this->height = size.height;
   }
+
   return *this;
 }
 
@@ -128,6 +173,7 @@ Size<T> &Size<T>::operator = (Size &&size) TL_NOEXCEPT
     this->width = size.width;
     this->height = size.height;
   }
+
   return *this;
 }
 
@@ -147,13 +193,10 @@ template<typename T> template<typename T2> inline
 Size<T>::operator Size<T2>() const
 {
   Size<T2> size;
-  if (std::is_integral<T2>::value) {
-    size.width = roundToInteger(this->width);
-    size.height = roundToInteger(this->height);
-  } else {
-    size.width = static_cast<T2>(this->width);
-    size.height = static_cast<T2>(this->height);
-  }
+
+  size.width = numberCast<T2>(this->width);
+  size.height = numberCast<T2>(this->height);
+
   return size;
 }
 
@@ -176,6 +219,7 @@ Size<T>& operator += (Size<T> &size1, const Size<T> &size2)
 {
   size1.width += size2.width;
   size1.height += size2.height;
+
   return size1;
 }
 
@@ -184,6 +228,7 @@ Size<T>& operator -= (Size<T> &size1, const Size<T> &size2)
 {
   size1.width -= size2.width;
   size1.height -= size2.height;
+
   return size1;
 }
 
@@ -213,6 +258,7 @@ Size<T> & operator *= (Size<T> &size, T scalar)
 {
   size.width *= scalar;
   size.height *= scalar;
+
   return size;
 }
 
@@ -221,6 +267,7 @@ Size<T>& operator /= (Size<T> &size, T scalar)
 {
   size.width /= scalar;
   size.height /= scalar;
+
   return size;
 }
 

@@ -40,7 +40,8 @@ struct PolygonTest
     : polygon_initializer_list_constructor(nullptr),
       polygon_reserve_constructor(nullptr),
       polygon_copy_constructor_integer(nullptr),
-      polygon_copy_constructor_double(nullptr)
+      polygon_copy_constructor_double(nullptr),
+      polygon_holes(nullptr)
   {
   }
 
@@ -62,6 +63,10 @@ struct PolygonTest
       delete polygon_copy_constructor_double;
       polygon_copy_constructor_double = nullptr;
     }
+    if(polygon_holes) {
+      delete polygon_holes;
+      polygon_holes = nullptr;
+    }
   }
 
   void setup()
@@ -80,6 +85,16 @@ struct PolygonTest
     polygon_copy_constructor_integer = new PolygonI(*polygon_initializer_list_constructor);
     
     polygon_copy_constructor_double = new PolygonD(*polygon_reserve_constructor);
+
+    polygon_holes = new PolygonD({Point<double>(0., 0.),
+                                  Point<double>(100., 0.),
+                                  Point<double>(100., 100.),
+                                  Point<double>(0., 100.)
+                                 });
+    PolygonHole<Point<double>> hole{Point<double>(20., 20.),
+                                    Point<double>(80., 20.),
+                                    Point<double>(50., 80.)};
+    polygon_holes->addHole(hole);
   }
 
   void teardown()
@@ -97,6 +112,7 @@ struct PolygonTest
   PolygonI *polygon_copy_constructor_integer;
   PolygonD *polygon_copy_constructor_double;
 
+  PolygonD *polygon_holes;
 };
 
 
@@ -182,7 +198,8 @@ BOOST_FIXTURE_TEST_CASE(type, PolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 {
-  PolygonI polygon = *polygon_initializer_list_constructor;
+  PolygonI polygon;
+  polygon = *polygon_initializer_list_constructor;
 
   BOOST_CHECK_EQUAL(7, polygon.size());
 
@@ -199,7 +216,8 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 BOOST_FIXTURE_TEST_CASE(move_operator, PolygonTest)
 {
   PolygonI polygon_to_move(*polygon_initializer_list_constructor);
-  PolygonI polygon = std::move(polygon_to_move);
+  PolygonI polygon;
+  polygon = std::move(polygon_to_move);
 
   BOOST_CHECK_EQUAL(7, polygon.size());
   BOOST_CHECK_EQUAL(0, polygon_to_move.size());
@@ -222,6 +240,14 @@ BOOST_FIXTURE_TEST_CASE(isInner, PolygonTest)
   BOOST_CHECK(polygon_initializer_list_constructor->isInner(PointI(4160000, 675000)));
 }
 
+BOOST_FIXTURE_TEST_CASE(holes, PolygonTest)
+{
+  BOOST_CHECK_EQUAL(1, polygon_holes->holes());
+  auto hole = polygon_holes->hole(0);
+  BOOST_CHECK_EQUAL(3, hole.size());
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -233,6 +259,7 @@ BOOST_AUTO_TEST_SUITE(Polygon3DTestSuite)
 struct Polygon3DTest
 {
   Polygon3DTest()
+    : polygon_holes(nullptr)
   {
     polygon_initializer_list_constructor = new Polygon3dI {
       Point3I(4157222, 664789, 10),
@@ -245,14 +272,38 @@ struct Polygon3DTest
              
     polygon_reserve_constructor = new Polygon3dD(10);
   }
+
   ~Polygon3DTest()
   {
-    if (polygon_initializer_list_constructor) delete polygon_initializer_list_constructor, polygon_initializer_list_constructor = nullptr;
-    if (polygon_reserve_constructor) delete polygon_reserve_constructor, polygon_reserve_constructor = nullptr;
+    if(polygon_initializer_list_constructor) {
+      delete polygon_initializer_list_constructor;
+      polygon_initializer_list_constructor = nullptr;
+    }
+
+    if(polygon_reserve_constructor) {
+      delete polygon_reserve_constructor;
+      polygon_reserve_constructor = nullptr;
+    }
+
+    if(polygon_holes) {
+      delete polygon_holes;
+      polygon_holes = nullptr;
+    }
   }
 
   void setup()
   {
+    Polygon3DHole<Point3<double>> hole{Point3<double>(20., 20., 2.),
+                                       Point3<double>(80., 20., 2.),
+                                       Point3<double>(50., 80., 2.)};
+
+    polygon_holes = new Polygon3dD({Point3<double>(0., 0., 0.),
+                                    Point3<double>(100., 0., 0.),
+                                    Point3<double>(100., 100., 0.),
+                                    Point3<double>(0., 100., 0.)});
+
+    polygon_holes->addHole(hole);
+
   }
 
   void teardown()
@@ -263,10 +314,10 @@ struct Polygon3DTest
   Polygon3dI  polygon_default_constructor_integer;
   Polygon3dI *polygon_initializer_list_constructor;
   Polygon3dD *polygon_reserve_constructor;
+  Polygon3dD *polygon_holes;
 };
 
 
-/* Constructor por defecto */
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
 {
@@ -284,8 +335,6 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
   BOOST_CHECK(polygon_default_constructor_integer.is3D());
 }
 
-/* Constructor reserve */
-
 BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
 {
   BoundingBoxD bbox = polygon_reserve_constructor->boundingBox();
@@ -300,8 +349,6 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
   BOOST_CHECK_EQUAL(0., bbox.pt2.z);
   BOOST_CHECK_EQUAL(0., polygon_reserve_constructor->length());
 }
-
-/*Constructor de copia*/
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 {
@@ -318,11 +365,24 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
   BOOST_CHECK_EQUAL(0., bbox.pt2.z);
 
   BOOST_CHECK_EQUAL(0., pol_c.length());
-
 }
 
+BOOST_FIXTURE_TEST_CASE(move_constructor, Polygon3DTest)
+{
+  Polygon3dD pol(std::move(Polygon3dD()));
+  BOOST_CHECK_EQUAL(0, pol.size());
 
-/* Constructor lista de inicializadores */
+  BoundingBoxD bbox = pol.boundingBox();
+  BOOST_CHECK(pol.type() == Entity::Type::polygon3d);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, bbox.pt1.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, bbox.pt1.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, bbox.pt1.z);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, bbox.pt2.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, bbox.pt2.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, bbox.pt2.z);
+
+  BOOST_CHECK_EQUAL(0., pol.length());
+}
 
 BOOST_FIXTURE_TEST_CASE(constructor_list, Polygon3DTest)
 {
@@ -351,7 +411,8 @@ BOOST_FIXTURE_TEST_CASE(type, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
 {
-  Polygon3dI polygon = *polygon_initializer_list_constructor;
+  Polygon3dI polygon;
+  polygon = *polygon_initializer_list_constructor;
 
   BOOST_CHECK_EQUAL(7, polygon.size());
 
@@ -363,6 +424,29 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
   BOOST_CHECK_EQUAL(4177148, bbox.pt2.x);
   BOOST_CHECK_EQUAL(702670, bbox.pt2.y);
   BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+}
+
+
+BOOST_FIXTURE_TEST_CASE(move_operator, Polygon3DTest)
+{
+  Polygon3dI polygon_to_move(*polygon_initializer_list_constructor);
+  Polygon3dI polygon;
+  polygon = std::move(polygon_to_move);
+
+  BOOST_CHECK_EQUAL(7, polygon.size());
+  BOOST_CHECK_EQUAL(0, polygon_to_move.size());
+
+  for(int i = 0; i < polygon.size(); i++) {
+    BOOST_CHECK(polygon[i] == (*polygon_initializer_list_constructor)[i]);
+  }
+
+}
+
+BOOST_FIXTURE_TEST_CASE(holes, Polygon3DTest)
+{
+  BOOST_CHECK_EQUAL(1, polygon_holes->holes());
+  auto hole = polygon_holes->hole(0);
+  BOOST_CHECK_EQUAL(3, hole.size());
 }
 
 
@@ -459,7 +543,8 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygonTest)
 {
-	MultiPolygon<PointI> multipolygon_copy = multipolygon2;
+  MultiPolygon<PointI> multipolygon_copy;
+  multipolygon_copy = multipolygon2;
   BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
   BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
   BOOST_CHECK(false == multipolygon_copy.is3D());
@@ -567,7 +652,8 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygon3DTest)
 {
-  MultiPolygon3D<Point3I> multipolygon_copy = multipolygon2;
+  MultiPolygon3D<Point3I> multipolygon_copy;
+  multipolygon_copy = multipolygon2;
   
   BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);
   BOOST_CHECK(multipolygon_copy.is3D());

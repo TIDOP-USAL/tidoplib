@@ -57,48 +57,48 @@ public:
   using value_type = Point3_t;
 
   /*!
-   * \brief Punto 1
+   * \brief Point 1
    */
   Point3_t pt1;
 
   /*!
-   * \brief Punto 2
+   * \brief Point 2
    */
   Point3_t pt2;
 
 public:
 
   /*!
-   * \brief Constructor por defecto
+   * \brief Default constructor
    */
   BoundingBox();
 
   /*!
-   * \brief Constructor de copia
-   * \param[in] bbox Objeto que se copia
+   * \brief Copy constructor
+   * \param[in] bbox BoundingBox object to copy
    */
   BoundingBox(const BoundingBox &bbox);
     
   /*!
-   * \brief Constructor de movimiento
-   * \param[in] bbox Objeto que se mueve
+   * \brief Move constructor
+   * \param[in] bbox BoundingBox object to move
    */
   BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor
-   * \param[in] pt1 Primer punto
-   * \param[in] pt2 Segundo punto
+   * \param[in] pt1 first point
+   * \param[in] pt2 Second point
    */
   BoundingBox(const Point3_t &pt1, 
               const Point3_t &pt2);
 
   /*!
    * \brief Constructor
-   * \param[in] pt Punto central
-   * \param[in] width Anchura de la caja
-   * \param[in] depth Profundidad de la caja
-   * \param[in] height Altura de la caja 
+   * \param[in] pt Central point
+   * \param[in] width Box width
+   * \param[in] depth Box depth
+   * \param[in] height Box height
    */
   template<typename T>
   BoundingBox(const Point3_t &pt, 
@@ -106,8 +106,8 @@ public:
 
   /*!
    * \brief Constructor 
-   * \param[in] pt Punto central
-   * \param[in] side Dimensiones
+   * \param[in] pt Central point
+   * \param[in] side Side dimensions (width == depth == height)
    */
   template<typename T>
   BoundingBox(const Point3_t &pt, T side);
@@ -115,16 +115,16 @@ public:
   ~BoundingBox() override = default;
 
   /*!
-   * \brief Sobrecarga del operador de asignación
-   * \param[in] bbox BoundingBox que se asigna
-   * \return Referencia al Bbox
+   * \brief Copy assignment operator
+   * \param[in] bbox BoundingBox object to copy
+   * \return BoundingBox reference
    */
   BoundingBox &operator = (const BoundingBox &bbox);
 
   /*!
-   * \brief Sobrecarga del operador de asignación de movimiento
-   * \param[in] bbox Bounding Box que se mueve
-   * \return Referencia al Bbox
+   * \brief Move assignment operator
+   * \param[in] bbox BoundingBox object to move
+   * \return BoundingBox reference
    */
   BoundingBox &operator = (BoundingBox &&bbox) TL_NOEXCEPT;
 
@@ -136,39 +136,43 @@ public:
   bool operator == (const BoundingBox &bbox) const;
 
   /*!
-   * \brief Conversión a una caja envolvente de un tipo diferente
+   * \brief Conversion
    */
   template<typename Point3_t2> operator BoundingBox<Point3_t2>() const;
 
   /*!
-   * \brief Devuelve centro del Bbox
-   * \return Centro del Bbox
+   * \brief Bounding Box center
    */
   Point3_t center() const;
 
   /*!
-   * \brief Devuelve el ancho del cuadro envolvente
-   * \return Ancho
+   * \brief Bounding Box width
    */
   typename Point3_t::value_type width() const;
 
   /*!
-   * \brief Devuelve el alto de la caja
-   * \return Alto
+   * \brief Bounding Box height
    */
   typename Point3_t::value_type height() const;
 
   /*!
-   * \brief Devuelve la profundidad del cuadro delimitador
-   * \return Profundidad
+   * \brief Bounding Box depth
    */
   typename Point3_t::value_type depth() const;
 
   /*!
-   * \brief Comprueba si el cuadro delimitador esta vacio
+   * \brief Check if Bounding Box is empty
    */
   bool isEmpty() const;
+
+  /*!
+   * \brief Check if Bounding Box is valid
+   */
   bool isValid() const;
+
+  /*!
+   * \brief Normalize Bounding Box
+   */
   void normalized();
 
   /*!
@@ -235,7 +239,11 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
   auto half_depth = depth / two;
   auto half_height = height / two;
 
-  if (std::is_integral<typename Point3_t::value_type>::value) {
+#if (__cplusplus >= 201703L)
+  if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
+#else
+  if(std::is_integral<typename Point3_t::value_type>::value) {
+#endif
 
     int dx = static_cast<int>(width) % 2;
     int dy = static_cast<int>(depth) % 2;
@@ -257,7 +265,6 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
   }
 }
 
-
 template<typename Point3_t> template<typename T> inline
 BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, 
                                    T side) 
@@ -266,7 +273,11 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
   typename Point3_t::value_type two{2};
   auto half_side = side / two;
 
+#if (__cplusplus >= 201703L)
+  if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
+#else
   if (std::is_integral<typename Point3_t::value_type>::value) {
+#endif
 
     int dxyz = static_cast<int>(side) % 2;
 
@@ -371,7 +382,7 @@ bool BoundingBox<Point3_t>::isValid() const
 {
   return this->width() > static_cast<typename Point3_t::value_type>(0) &&
          this->height() > static_cast<typename Point3_t::value_type>(0) &&
-      this->depth() > static_cast<typename Point3_t::value_type>(0);
+         this->depth() > static_cast<typename Point3_t::value_type>(0);
 }
 
 template<typename Point3_t>
@@ -421,12 +432,14 @@ template<typename T> inline
 T joinBoundingBoxes(const T &b1, const T &b2)
 {
   T bounding_box;
+
   bounding_box.pt1.x = std::min(b1.pt1.x, b2.pt1.x);
   bounding_box.pt1.y = std::min(b1.pt1.y, b2.pt1.y);
   bounding_box.pt1.z = std::min(b1.pt1.z, b2.pt1.z);
   bounding_box.pt2.x = std::max(b1.pt2.x, b2.pt2.x);
   bounding_box.pt2.y = std::max(b1.pt2.y, b2.pt2.y);
   bounding_box.pt2.z = std::max(b1.pt2.z, b2.pt2.z);
+
   return bounding_box;
 }
 
@@ -441,12 +454,14 @@ template<typename T> inline
 T intersectBoundingBoxes(const T &b1, const T &b2)
 {
   T bounding_box;
+
   bounding_box.pt1.x = std::max(b1.pt1.x, b2.pt1.x);
   bounding_box.pt1.y = std::max(b1.pt1.y, b2.pt1.y);
   bounding_box.pt1.z = std::max(b1.pt1.z, b2.pt1.z);
   bounding_box.pt2.x = std::min(b1.pt2.x, b2.pt2.x);
   bounding_box.pt2.y = std::min(b1.pt2.y, b2.pt2.y);
   bounding_box.pt2.z = std::min(b1.pt2.z, b2.pt2.z);
+
   return bounding_box;
 }
 

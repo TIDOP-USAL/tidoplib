@@ -28,25 +28,6 @@
 #include "tidop/core/path.h"
 #include "tidop/core/app.h"
 
-// //TODO: Incluir filesystem. Se simplificarian bastantes cosas
-// // filesystem
-//#if (__cplusplus >= 201703L)
-////C++17
-////http://en.cppreference.com/w/cpp/filesystem
-//#include <filesystem>
-//#else
-////Boost
-////http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-//#include <boost/filesystem.hpp>
-//#endif
-//#include <boost/algorithm/string.hpp>
-
-//#if (__cplusplus >= 201703L)
-//namespace fs = std::filesystem;
-//#else
-//namespace fs = boost::filesystem;
-//#endif
-
 
 namespace tl
 {

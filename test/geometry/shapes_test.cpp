@@ -101,12 +101,23 @@ BOOST_AUTO_TEST_CASE(CircleD_assignment)
 
 BOOST_AUTO_TEST_CASE(CircleD_conversion)
 {
-  CircleI circle(PointI(50, 32), 25);
-  CircleD circle2 = static_cast<Circle<double>>(circle);
-  BOOST_CHECK_EQUAL(50., circle2.center.x);
-  BOOST_CHECK_EQUAL(32., circle2.center.y);
-  BOOST_CHECK_EQUAL(25., circle2.radius);
-  BOOST_CHECK(circle2.type() == Entity::Type::circle);
+  {
+    CircleI circle(PointI(50, 32), 25);
+    CircleD circle2 = static_cast<Circle<double>>(circle);
+    BOOST_CHECK_EQUAL(50., circle2.center.x);
+    BOOST_CHECK_EQUAL(32., circle2.center.y);
+    BOOST_CHECK_EQUAL(25., circle2.radius);
+    BOOST_CHECK(circle2.type() == Entity::Type::circle);
+  }
+
+  {
+    CircleF circle(PointF(50.f, 32.f), 25.f);
+    CircleI circle2 = static_cast<CircleI>(circle);
+    BOOST_CHECK_EQUAL(50.f, circle2.center.x);
+    BOOST_CHECK_EQUAL(32.f, circle2.center.y);
+    BOOST_CHECK_EQUAL(25.f, circle2.radius);
+    BOOST_CHECK(circle2.type() == Entity::Type::circle);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(CircleD_area)
@@ -205,6 +216,14 @@ BOOST_AUTO_TEST_CASE(EllipseD_conversion)
   BOOST_CHECK_EQUAL(25., ellipse2.a);
   BOOST_CHECK_EQUAL(10., ellipse2.b);
   BOOST_CHECK(ellipse2.type() == Entity::Type::ellipse);
+
+  EllipseD ellipse_double(PointD(50., 32.), 25., 10.);
+  EllipseI ellipse_int = static_cast<EllipseI>(ellipse_double);
+  BOOST_CHECK_EQUAL(50, ellipse_int.center.x);
+  BOOST_CHECK_EQUAL(32, ellipse_int.center.y);
+  BOOST_CHECK_EQUAL(25, ellipse_int.a);
+  BOOST_CHECK_EQUAL(10, ellipse_int.b);
+  BOOST_CHECK(ellipse_int.type() == Entity::Type::ellipse);
 }
 
 BOOST_AUTO_TEST_CASE(EllipseD_area)

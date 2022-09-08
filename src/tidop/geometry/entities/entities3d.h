@@ -189,6 +189,7 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t>
   if (this != &entities) {
     EntityContainer<Entity_t>::operator=(entities);
   }
+
   return (*this);
 }
 
@@ -198,6 +199,7 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&ent
   if (this != &entities) {
     EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));
   }
+
   return (*this);
 }
 

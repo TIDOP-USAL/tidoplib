@@ -484,19 +484,22 @@ typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::begin()
 }
 
 template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::const_iterator EntityContainer<Entity_t>::begin() const 
+typename EntityContainer<Entity_t>::const_iterator
+EntityContainer<Entity_t>::begin() const 
 {
   return mEntities.cbegin();
 }
 
 template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::end()
+typename EntityContainer<Entity_t>::iterator
+EntityContainer<Entity_t>::end()
 {
   return mEntities.end();
 }
 
 template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::const_iterator EntityContainer<Entity_t>::end() const 
+typename EntityContainer<Entity_t>::const_iterator 
+EntityContainer<Entity_t>::end() const 
 {
   return mEntities.cend();
 }
@@ -514,13 +517,15 @@ void EntityContainer<Entity_t>::push_back(Entity_t &&entity) TL_NOEXCEPT
 }
 
 template<typename Entity_t> inline
-typename std::vector<Entity_t>::const_reference EntityContainer<Entity_t>::at(size_type position) const
+typename std::vector<Entity_t>::const_reference 
+EntityContainer<Entity_t>::at(size_type position) const
 {
   return mEntities.at(position);
 }
 
 template<typename Entity_t> inline
-typename std::vector<Entity_t>::reference EntityContainer<Entity_t>::at(size_type position)
+typename std::vector<Entity_t>::reference 
+EntityContainer<Entity_t>::at(size_type position)
 {
   return mEntities.at(position);
 }
@@ -562,19 +567,22 @@ typename EntityContainer<Entity_t>::size_type EntityContainer<Entity_t>::size() 
 }
 
 template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::const_reference EntityContainer<Entity_t>::operator[](size_type position) const
+typename EntityContainer<Entity_t>::const_reference 
+EntityContainer<Entity_t>::operator[](size_type position) const
 {
   return mEntities[position];
 }
   
 template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::reference EntityContainer<Entity_t>::operator[](size_type position)
+typename EntityContainer<Entity_t>::reference 
+EntityContainer<Entity_t>::operator[](size_type position)
 {
   return mEntities[position];
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entity) 
+EntityContainer<Entity_t>
+&EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entity) 
 {
   if (this != &entity) {
     this->mEntities = entity.mEntities;
@@ -583,7 +591,8 @@ EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(const EntityCont
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT
+EntityContainer<Entity_t> 
+&EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT
 {
   if (this != &entity) {
     this->mEntities.clear();
@@ -594,7 +603,8 @@ EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(EntityContainer<
 }
 
 template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last)
+typename EntityContainer<Entity_t>::iterator
+EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last)
 {
   return mEntities.erase(first, last);
 }
