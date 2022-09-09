@@ -358,13 +358,13 @@ BOOST_FIXTURE_TEST_CASE(normalizePositive, GradiansTest)
 BOOST_FIXTURE_TEST_CASE(setDegrees, GradiansTest)
 {
   {
-    Gradians<double> angle;
-    angle.setDegrees(23);
-    BOOST_CHECK_EQUAL(23, angle.degrees());
-    BOOST_CHECK_CLOSE(23., angle.value(), 0.1);
+    Gradians<double> _angle;
+    _angle.setDegrees(23);
+    BOOST_CHECK_EQUAL(23, _angle.degrees());
+    BOOST_CHECK_CLOSE(23., _angle.value(), 0.1);
 
     angle.setMinutes(23);
-    BOOST_CHECK_EQUAL(23, angle.degrees());
+    BOOST_CHECK_EQUAL(23, _angle.degrees());
     BOOST_CHECK_EQUAL(23, angle.minutes());
     BOOST_CHECK_CLOSE(23.23, angle.value(), 0.1);
 
@@ -794,10 +794,6 @@ struct AngleConvertion
   std::vector<double> gradians;
 };
 
-//std::vector<double> decimalDegrees = { 0., 0.5, 135.5742, 86.9997, -269.385 };
-//std::vector<std::vector<int>> dms{ { 0, 0, 0 }, { 0, 30, 0 }, { 135, 34, 27 }, { 86, 59, 59 }, { -269, 23, 6 } };
-//std::vector<double> radians{ 0.,0.00872664626,2.3662161708,1.518431213, -4.7016552055 };
-//std::vector<double> gradians{ 0., 0.555556, 150.63800, 96.666335, -299.3166718 };
 
 BOOST_FIXTURE_TEST_CASE(degrees_to_decimal_degrees, AngleConvertion) 
 {

@@ -283,7 +283,10 @@ public:
 };
 
 
+/// \cond
 
+namespace internal
+{
 
 template<typename T> inline
 typename std::enable_if<
@@ -524,7 +527,7 @@ set(T data)
     return _mm256_set1_epi16(data);
   else if (P::size() == 8)
     return _mm256_set1_epi32(data);
-  else if (P::size() == 4)
+  else /*if (P::size() == 4)*/
     return _mm256_set1_epi64x(data);
 #elif defined TL_HAVE_SSE2
   if (P::size() == 16)
@@ -533,7 +536,7 @@ set(T data)
     return _mm_set1_epi16(data);
   else if (P::size() == 4)
     return _mm_set1_epi32(data);
-  else if (P::size() == 2)
+  else /*if (P::size() == 2)*/
     return _mm_set1_epi64x(data);
 #endif
 }
@@ -1027,9 +1030,9 @@ horizontal_sum(const Packed<T> &packed)
   return sum;
 }
 
+} // namespace internal 
 
-
-
+/// \endcond
 
 /* PackedBase Implementation */
 
@@ -1041,40 +1044,40 @@ PackedBase<T>::PackedBase(const typename PackedBase<T>::simd_type &packed)
 
 template<typename T>
 PackedBase<T>::PackedBase(typename PackedBase<T>::value_type scalar)
-  : mValue(set(scalar))
+  : mValue(internal::set(scalar))
 {
 }
 
 template<typename T> inline
 typename PackedBase<T>::simd_type &PackedBase<T>::loadAligned(const value_type *src)
 {
-  mValue = loadPackedAligned(src);
+  mValue = internal::loadPackedAligned(src);
   return mValue; // TODO: para que devolver una referencia
 }
 
 template<typename T> inline
 typename PackedBase<T>::simd_type &PackedBase<T>::loadUnaligned(const value_type *src)
 {
-  mValue = loadPackedUnaligned(src);
+  mValue = internal::loadPackedUnaligned(src);
   return mValue;
 }
 
 template<typename T> inline
 void PackedBase<T>::storeAligned(value_type *dst) const
 {
-  storePackedAligned(dst, mValue);
+  internal::storePackedAligned(dst, mValue);
 }
 
 template<typename T> inline
 void PackedBase<T>::storeUnaligned(value_type *dst) const
 {
-  storePackedUnaligned(dst, mValue);
+  internal::storePackedUnaligned(dst, mValue);
 }
 
 template<typename T> inline
 void PackedBase<T>::setScalar(value_type value)
 {
-  mValue = set(value);
+  mValue = internal::set(value);
 }
 
 template<typename T> inline
@@ -1139,7 +1142,7 @@ template<typename T> inline
 Packed<T> operator+(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
-  return add(packed1, packed2);
+  return internal::add(packed1, packed2);
 }
 
 template<typename T> inline
@@ -1158,7 +1161,7 @@ template<typename T> inline
 Packed<T> operator-(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
-  return sub(packed1, packed2);
+  return internal::sub(packed1, packed2);
 }
 
 template<typename T> inline
@@ -1177,7 +1180,7 @@ template<typename T> inline
 Packed<T> operator*(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
-  return mul(packed1, packed2);
+  return internal::mul(packed1, packed2);
 }
 
 template<typename T> inline
@@ -1196,7 +1199,7 @@ template<typename T> inline
 Packed<T> operator/(const Packed<T> &packed1,
                     const Packed<T> &packed2)
 {
-  return div(packed1, packed2);
+  return internal::div(packed1, packed2);
 }
 
 template<typename T> inline
@@ -1289,7 +1292,7 @@ Packed<T> &Packed<T>::operator--()
 template<typename T> inline
 T Packed<T>::sum()
 {
-  return horizontal_sum(*this);
+  return internal::horizontal_sum(*this);
 }
 
 

@@ -40,6 +40,7 @@ namespace geospatial
 
 #if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
+/// \cond
 namespace internal
 {
 
@@ -73,7 +74,8 @@ private:
   OGRCoordinateTransformation *mTransform;
 };
 
-}
+} // namespace internal
+/// \endcond
 
 
 CrsTransform::CrsTransform(const std::shared_ptr<Crs> &epsgIn,

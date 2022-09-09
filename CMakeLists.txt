@@ -125,8 +125,8 @@ endif()
 if(MSVC)
 
   # Nivel de warning
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
-
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  
   # /EH (Modelo de control de excepciones)
   # /EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones
   # declaradas como extern "C" jamás inician una excepción de C++.

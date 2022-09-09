@@ -327,8 +327,6 @@
 #  define TL_ENABLE_WARNING(warn) DIAG_PRAGMA(pop)
 #endif
 
-#define TL_UNUSED_PARAMETER(param)
-
 
 #ifdef TL_WARNING_TODO
 #  ifndef _MSC_VER
@@ -377,6 +375,12 @@ template<typename ...Args>
 constexpr size_t args_empty(Args&&...)
 {
   return sizeof...(Args) == 0;
+}
+
+template<typename T>
+constexpr auto unusedParameter(T param)
+{
+  return (void)param;
 }
 
 

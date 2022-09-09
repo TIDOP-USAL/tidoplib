@@ -301,7 +301,9 @@ int rgbToLuminance(int red, int green, int blue)
 void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b)
 {
   adjustRangeRGBA(&red, &green, &blue);
-  double sum = red + green + blue;
+  double sum = static_cast<double>(red) 
+             + static_cast<double>(green) 
+             + static_cast<double>(blue);
   *r = red / sum;
   *g = green / sum;
   *b = blue / sum;
@@ -969,10 +971,10 @@ ColorHSL::ColorHSL()
 
 }
 
-ColorHSL::ColorHSL(double hue, double saturation, double value)
+ColorHSL::ColorHSL(double hue, double saturation, double lightness)
   : mHue(hue),
     mSaturation(saturation),
-    mLightness(lightness()),
+    mLightness(lightness),
     mRangeMinHue(0.),
     mRangeMaxHue(360.),
     mRangeMin(0.),

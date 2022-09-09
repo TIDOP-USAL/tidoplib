@@ -159,14 +159,16 @@ public:
  * trayectoria de la línea.
  */
 class TL_EXPORT BresenhamLine 
-  : public LineAlgorithms, 
-    public std::iterator<std::bidirectional_iterator_tag, int>
+  : public LineAlgorithms
 {
-private:
 
-  int p;
-  int incE;
-  int incNE;
+public:
+
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = int;
+  using difference_type = std::ptrdiff_t;
+  using pointer = int *;
+  using reference = int &;
 
 public:
 
@@ -264,6 +266,11 @@ private:
 
   void _next(int *max, int *min, int endMax, int stepMax, int stepMin);
 
+private:
+
+  int p;
+  int incE;
+  int incNE;
 };
 
 
@@ -281,21 +288,16 @@ private:
  * próximos a la trayectoria de la línea para la otra coordenada.
  */
 class TL_EXPORT DDA
-  : public LineAlgorithms,
-    public std::iterator<std::bidirectional_iterator_tag, int>
+  : public LineAlgorithms
 {
 
-private:
+public:
 
-  /*!
-   * \brief Pendiente de la recta
-   */
-  float m;
-
-  /*!
-   * \brief Ordenada en el origen
-   */
-  float b;
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = int;
+  using difference_type = std::ptrdiff_t;
+  using pointer = int *;
+  using reference = int &;
 
 public:
 
@@ -389,6 +391,21 @@ private:
   void init();
 
   void _next(int *max, int *min, int dMin, int endMax, int step);
+
+
+private:
+
+  /*!
+   * \brief Pendiente de la recta
+   */
+  float m;
+
+  /*!
+   * \brief Ordenada en el origen
+   */
+  float b;
+
+
 };
 
 

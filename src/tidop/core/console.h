@@ -687,18 +687,15 @@ bool Argument_<T, required>::isRequired() const
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
 {
-  if(typeid(T) == typeid(bool)) {
-    if (value == "true" || value == "1")
-      *mValue = true;
-    else
-      *mValue = false;
-  } else if (std::is_integral<T>::value) {
-    *mValue = stringToInteger(value);
-  } else if (std::is_floating_point<T>::value) {
-    *mValue = std::stod(value);
-  } else {
-    /// No se ha podido obtener el valor
+
+  try {
+
+    *mValue = convertStringTo<T>(value);
+
+  } catch (...) {
+
     bValid = false;
+
   }
 }
 
@@ -749,7 +746,7 @@ void Argument_<T, required>::setValue(const T &value)
 template<typename T, bool required> inline
 bool Argument_<T, required>::isValid()
 {
-  TL_TODO("Incluir clase ArgumentValidator")
+  //TL_TODO("Incluir clase ArgumentValidator")
   return bValid;
 }
 

@@ -56,7 +56,9 @@ inline int isNegative(T t)
  * \param[in] seconds Seconds
  * \return Decimal degrees
  */
-TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, double seconds);
+TL_EXPORT double degreesToDecimalDegrees(int degrees, 
+                                         int minutes, 
+                                         double seconds);
 
 
 /*!
@@ -66,7 +68,9 @@ TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, double second
  * \param[in] seconds Seconds
  * \return radians
  */
-TL_EXPORT double degreesToRadians(int degrees, int minutes, double seconds);
+TL_EXPORT double degreesToRadians(int degrees,
+                                  int minutes,
+                                  double seconds);
 
 /*!
  * \brief Convert from degrees, minutes and seconds to gradians
@@ -75,7 +79,9 @@ TL_EXPORT double degreesToRadians(int degrees, int minutes, double seconds);
  * \param[in] seconds Seconds
  * \return Gradians
  */
-TL_EXPORT double degreesToGradians(int degrees, int minutes, double seconds);
+TL_EXPORT double degreesToGradians(int degrees, 
+                                   int minutes, 
+                                   double seconds);
 
 /*!
  * \brief Convert from decimal degrees to degrees, minutes and seconds
@@ -91,7 +97,10 @@ TL_EXPORT double degreesToGradians(int degrees, int minutes, double seconds);
  * decimalDegreesToDegrees(55.666, degrees, minutes, seconds);
  * \endcode
  */
-TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int &degrees, int &minutes, double &seconds);
+TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees,
+                                       int &degrees, 
+                                       int &minutes, 
+                                       double &seconds);
 
 /*!
  * \brief Convert from decimal degrees to radians
@@ -114,7 +123,10 @@ TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
  * \param[out] minutes Minutes
  * \param[out] seconds Seconds
  */
-TL_EXPORT void radiansToDegrees(double radians, int &degrees, int &minutes, double &seconds);
+TL_EXPORT void radiansToDegrees(double radians,
+                                int &degrees,
+                                int &minutes, 
+                                double &seconds);
 
 /*!
  * \brief Convert from  radians to Degrees
@@ -137,7 +149,10 @@ TL_EXPORT double radiansToGradians(double radians);
  * \param[out] minutes Minutes
  * \param[out] seconds Seconds
  */
-TL_EXPORT void gradiansToDegrees(double gradians, int &degrees, int &minutes, double &seconds);
+TL_EXPORT void gradiansToDegrees(double gradians, 
+                                 int &degrees, 
+                                 int &minutes, 
+                                 double &seconds);
 
 /*!
  * \brief Convert from gradians to Degrees
@@ -186,7 +201,7 @@ public:
   virtual Unit unit() const = 0;
 
   /*!
-   * \brief normalize angle 
+   * \brief Normalize angle 
    */
   virtual void normalize() = 0;
 

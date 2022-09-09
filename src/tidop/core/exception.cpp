@@ -137,29 +137,65 @@ void printException(const std::exception &e, int level)
 /* ---------------------------------------------------------------------------------- */
 
 
-#ifdef WIN32
-std::string formatWindowsErrorMsg(DWORD errorCode)
-{
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
-    | FORMAT_MESSAGE_IGNORE_INSERTS
-    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
-  
-  TCHAR errorMessage[1024] = TEXT("");
-
-  FormatMessage(flags,
-                NULL,
-                errorCode,
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                errorMessage,
-                sizeof(errorMessage)/sizeof(TCHAR),
-                NULL);
-
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-  std::string strError = converter.to_bytes(errorMessage);
-
-  return strError;
-}
-#endif
+//#ifdef WIN32
+//
+////https ://stackoverflow.com/a/69410299
+//
+//std::wstring string_to_wide_string(const std::string &string)
+//{
+//  if(string.empty()) {
+//    return L"";
+//  }
+//
+//  const auto size_needed = MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), nullptr, 0);
+//  if(size_needed <= 0) {
+//    throw std::runtime_error("MultiByteToWideChar() failed: " + std::to_string(size_needed));
+//  }
+//
+//  std::wstring result(size_needed, 0);
+//  MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), &result.at(0), size_needed);
+//  return result;
+//}
+//
+//std::string wide_string_to_string(const std::wstring &wide_string)
+//{
+//  if(wide_string.empty()) {
+//    return "";
+//  }
+//
+//  const auto size_needed = WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), nullptr, 0, nullptr, nullptr);
+//  if(size_needed <= 0) {
+//    throw std::runtime_error("WideCharToMultiByte() failed: " + std::to_string(size_needed));
+//  }
+//
+//  std::string result(size_needed, 0);
+//  WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), &result.at(0), size_needed, nullptr, nullptr);
+//  return result;
+//}
+//
+//std::string formatWindowsErrorMsg(DWORD errorCode)
+//{
+//  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
+//    | FORMAT_MESSAGE_IGNORE_INSERTS
+//    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
+//  
+//  TCHAR errorMessage[1024] = TEXT("");
+//
+//  FormatMessage(flags,
+//                NULL,
+//                errorCode,
+//                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+//                errorMessage,
+//                sizeof(errorMessage)/sizeof(TCHAR),
+//                NULL);
+//
+//  //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+//  //std::string strError = converter.to_bytes(errorMessage);
+//  std::string strError = wide_string_to_string(errorMessage);
+//
+//  return strError;
+//}
+//#endif
 
 
 } // End namespace tl

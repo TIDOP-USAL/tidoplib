@@ -162,7 +162,7 @@ void ProgressBar::updateProgress()
   int posInBar = roundToInteger(static_cast<double>(percent()) * 
                                  static_cast<double>(mProgressBarSize) / 100.);
 
-  int ini = mProgressBarSize / 2 - 2;
+  //int ini = mProgressBarSize / 2 - 2;
 
   for (int i = 0; i < mProgressBarSize; i++) {
 

@@ -72,6 +72,45 @@ numberCast(T2 b)
   return T1{0};
 }
 
+
+
+template <typename T> inline
+typename std::enable_if<
+  std::is_arithmetic<T>::value && !std::is_same<T, bool>::value,
+  T>::type
+convertStringTo(const std::string &str)
+{
+  T value{};
+
+  std::istringstream ss(str);
+  ss >> value;
+
+  return value;
+}
+
+template <typename T> inline
+typename std::enable_if<
+  std::is_same<T, bool>::value,
+  T>::type
+convertStringTo(const std::string &str)
+{
+  T value = (compareInsensitiveCase(str, "true") || str == "1");
+
+  return value;
+}
+
+template <typename T> inline
+typename std::enable_if<
+  !std::is_arithmetic<T>::value,
+  T>::type
+convertStringTo(const std::string &str)
+{
+  TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
+  throw TL_ERROR("Invalid conversion. It isn't an arithmetic type.");
+  return T{0};
+}
+
+
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */

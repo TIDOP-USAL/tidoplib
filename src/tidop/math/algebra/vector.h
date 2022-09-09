@@ -928,7 +928,7 @@ Vector<T, _size> Vector<T, _size>::randon()
   std::uniform_real_distribution<> distribution(0.0, 99.0);
 
   for (size_t i = 0; i < vector.size(); i++) {
-    vector[i] = distribution(random_number_engine);
+    vector[i] = static_cast<T>(distribution(random_number_engine));
   }
 
   return vector;
@@ -946,7 +946,7 @@ Vector<T, _size> Vector<T, _size>::randon(size_t size)
   std::uniform_real_distribution<> distribution(0.0, 99.0);
 
   for (size_t i = 0; i < vector.size(); i++) {
-    vector[i] = distribution(random_number_engine);
+    vector[i] = static_cast<T>(distribution(random_number_engine));
   }
 
   return vector;

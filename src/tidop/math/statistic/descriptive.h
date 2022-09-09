@@ -860,9 +860,9 @@ void DescriptiveStatistics<T>::computeVariance()
     sum += aux * aux;
   }
 
-  double div = mConfig.sample ? n - 1 : n;
+  size_t div = mConfig.sample ? n - 1 : n;
 
-  mVariance = (sum - ep * ep / n) / div;
+  mVariance = (sum - ep * ep / static_cast<double>(n)) / static_cast<double>(div);
 
   mStatus.flagOn(InternalStatus::variance);
 }
@@ -898,7 +898,8 @@ void DescriptiveStatistics<T>::computeFirstQuartile()
 template<typename T> inline
 void DescriptiveStatistics<T>::computeSecondQuartile()
 {
-  mMedian = mQ2 = tl::math::quantile(mData.begin(), mData.end(), 0.5);
+  mQ2 = tl::math::quantile(mData.begin(), mData.end(), 0.5);
+  mMedian = static_cast<T>(mQ2);
   mStatus.flagOn(InternalStatus::second_quartile);
   mStatus.flagOn(InternalStatus::median);
 }

@@ -104,14 +104,14 @@ TL_EXPORT void printException(const std::exception &e, int level = 0);
 
 
 
-#ifdef WIN32
-
-/*!
- * \brief formatWindowsErrorMsg
- */
-TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
-
-#endif
+//#ifdef WIN32
+//
+///*!
+// * \brief formatWindowsErrorMsg
+// */
+//TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
+//
+//#endif
 
 /*! \} */ // end of core
 

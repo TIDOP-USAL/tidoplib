@@ -38,6 +38,8 @@ TL_DEFAULT_WARNINGS
 
 namespace tl
 {
+	
+/// \cond
 
 namespace internal
 {
@@ -51,9 +53,9 @@ public:
 	friend class tl::XmlNode;
 };
 
-}
+} // namespace internal
 
-
+/// \endcond
 
 
 XmlNodeValue::XmlNodeValue(std::string value)
@@ -195,6 +197,7 @@ XmlNode XMLReader::parse(const std::string &xml)
 
 XMLWriter::XMLWriter(const std::string &file)
 {
+	unusedParameter(file);
 }
 
 

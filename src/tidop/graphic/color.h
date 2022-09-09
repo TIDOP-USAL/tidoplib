@@ -34,10 +34,6 @@
 #include <typeinfo>
 #include <functional>
 
-//#ifdef TL_HAVE_OPENCV
-//#include "opencv2/core/core.hpp"
-//#endif // TL_HAVE_OPENCV
-
 #include "tidop/core/defs.h"
 #include "tidop/core/exception.h"
 
@@ -47,28 +43,6 @@ namespace tl
 /*! \addtogroup GraphicEntities
  *  \{
  */
-
-//template<typename T> inline
-//T Color::get() const
-//{
-//  T color = T();
-//  void *_color = (void *)&color;
-//
-//  if (typeid(T) == typeid(std::string)) {
-//    *(std::string *)_color = TL::intToHex(mColor);
-//  } else if (typeid(T) == typeid(int)) {
-//    color = mColor;
-//  }
-//#ifdef TL_HAVE_OPENCV
-//  else if (typeid(T) == typeid(cv::Scalar)) {
-//    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
-//  }
-//#endif
-//  else {
-//    throw TL::Exception("Tipo de conversión no permitida");  
-//  }
-//  return color;
-//}
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
@@ -528,6 +502,9 @@ protected:
 
 TL_EXPORT bool operator == (const tl::graph::Color &color1, const tl::graph::Color &color2);
 TL_EXPORT bool operator != (const tl::graph::Color &color1, const tl::graph::Color &color2);
+
+
+
 
 /*!
  * \brief Interfaz modelo de color

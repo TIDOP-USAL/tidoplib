@@ -167,5 +167,5 @@ BOOST_AUTO_TEST_CASE(_args_size)
 BOOST_AUTO_TEST_CASE(_args_empty)
 {
   BOOST_CHECK(tl::args_empty());
-  BOOST_CHECK_EQUAL(false, tl::args_empty(1, 3));
+  BOOST_CHECK(!tl::args_empty(1, 3));
 }

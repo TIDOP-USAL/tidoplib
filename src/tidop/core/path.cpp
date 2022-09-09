@@ -49,6 +49,8 @@ namespace fs = boost::filesystem;
 namespace tl
 {
 
+/// \cond
+
 namespace internal
 {
 
@@ -100,9 +102,9 @@ private:
 
 };
 
-} // internal
+} // namespace internal
 
-
+/// \endcond
 
 
 

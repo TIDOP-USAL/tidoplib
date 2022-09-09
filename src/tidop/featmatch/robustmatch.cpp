@@ -264,8 +264,15 @@ std::vector<cv::DMatch> RobustMatchingImp::filterByHomographyMatrix(const std::v
   return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::filterByEssentialMatrix(const std::vector<cv::DMatch> &matches, const std::vector<cv::Point2f> &points1, const std::vector<cv::Point2f> &points2, std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::filterByEssentialMatrix(const std::vector<cv::DMatch> &matches, 
+                                                                   const std::vector<cv::Point2f> &points1, 
+                                                                   const std::vector<cv::Point2f> &points2, 
+                                                                   std::vector<cv::DMatch> *wrongMatches)
 {
+  unusedParameter(points1);
+  unusedParameter(points2);
+  unusedParameter(wrongMatches);
+
   std::vector<cv::DMatch> filter_matches;
 
   int fm = cv::RANSAC;
@@ -278,6 +285,7 @@ std::vector<cv::DMatch> RobustMatchingImp::filterByEssentialMatrix(const std::ve
 
   // Convert keypoints into Point2f
   size_t nPoints = matches.size();
+  unusedParameter(nPoints);
 
   TL_TODO("Se necesita la calibración de la cámara (focal y pp) con lo cual no se si es interesante")
 
@@ -415,6 +423,8 @@ bool RobustMatchingImp::compute(const cv::Mat &queryDescriptor,
                                 const cv::Size &queryImageSize,
                                 const cv::Size &trainImageSize)
 {
+  unusedParameter(queryImageSize);
+  unusedParameter(trainImageSize);
   try {
     *goodMatches = this->match(queryDescriptor, trainDescriptor, wrongMatches);
     *goodMatches = this->geometricFilter(*goodMatches, keypoints1, keypoints2, wrongMatches);

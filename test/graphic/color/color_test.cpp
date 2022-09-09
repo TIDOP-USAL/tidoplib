@@ -931,8 +931,7 @@ BOOST_AUTO_TEST_SUITE(ColorTestSuite)
 struct ColorTest
 {
   ColorTest()
-    : color2(new graph::Color(graph::Color::Name::azure)),
-      rgb2(new graph::ColorRGB(10, 25, 30))
+    : color2(new graph::Color(graph::Color::Name::azure))
   {}
 
   ~ColorTest()
@@ -940,10 +939,6 @@ struct ColorTest
     if (color2){
       delete color2;
       color2 = nullptr;
-    }
-    if (rgb2) {
-      delete rgb2;
-      rgb2 = nullptr;
     }
   }
  
@@ -957,8 +952,6 @@ struct ColorTest
 
   graph::Color color1;
   graph::Color *color2;
-  graph::ColorRGB rgb1;
-  graph::ColorRGB *rgb2;
 };
 
 
@@ -978,27 +971,67 @@ BOOST_FIXTURE_TEST_CASE(equal, ColorTest)
   BOOST_CHECK(azure == *color2);
 }
 
-BOOST_FIXTURE_TEST_CASE(default_constructor_color_rgb, ColorTest)
-{
-  BOOST_CHECK_EQUAL(0, rgb1.red());
-  BOOST_CHECK_EQUAL(0, rgb1.green());
-  BOOST_CHECK_EQUAL(0, rgb1.blue());
-}
-
-BOOST_FIXTURE_TEST_CASE(constructor_color_rgb, ColorTest)
-{
-  BOOST_CHECK_EQUAL(10, rgb2->red());
-  BOOST_CHECK_EQUAL(25, rgb2->green());
-  BOOST_CHECK_EQUAL(30, rgb2->blue());
-}
-
 BOOST_FIXTURE_TEST_CASE(color_from_color_rgb, ColorTest)
 {
-  graph::Color color(*rgb2);
+  graph::ColorRGB rgb(10, 25, 30);
+  graph::Color color(rgb);
   BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+
+
+
+
+
+/* ColorRGB */
+
+
+BOOST_AUTO_TEST_SUITE(ColorRGBTestSuite)
+
+struct ColorRGBTest
+{
+  ColorRGBTest()
+    : rgb(new graph::ColorRGB(10, 25, 30))
+  {
+  }
+
+  ~ColorRGBTest()
+  {
+    if (rgb) {
+      delete rgb;
+      rgb = nullptr;
+    }
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+  }
+
+  graph::ColorRGB rgb_def;
+  graph::ColorRGB *rgb;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, ColorRGBTest)
+{
+  BOOST_CHECK_EQUAL(0, rgb_def.red());
+  BOOST_CHECK_EQUAL(0, rgb_def.green());
+  BOOST_CHECK_EQUAL(0, rgb_def.blue());
+  BOOST_CHECK(graph::Color(graph::Color::Name::black) == rgb_def.toColor());
+}
+
+BOOST_FIXTURE_TEST_CASE(constructor, ColorRGBTest)
+{
+  BOOST_CHECK_EQUAL(10, rgb->red());
+  BOOST_CHECK_EQUAL(25, rgb->green());
+  BOOST_CHECK_EQUAL(30, rgb->blue());
+}
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setRed)
 {
@@ -1048,8 +1081,39 @@ BOOST_AUTO_TEST_CASE(ColorRGB_setBlueOutRange)
   BOOST_CHECK_EQUAL(0, rgb.blue());
 }
 
-/// toColor
-/// fromColor
+BOOST_AUTO_TEST_CASE(ColorRGB_toColor)
+{
+  graph::ColorRGB rgb(255, 0, 0);
+  BOOST_CHECK(graph::Color(16711680) == rgb.toColor());
+
+}
+
+BOOST_AUTO_TEST_CASE(ColorRGB_fromColor)
+{
+  graph::Color color(graph::Color::Name::deep_sky_blue);
+  graph::ColorRGB rgb;
+  rgb.fromColor(color);
+  BOOST_CHECK_EQUAL(0, rgb.red());
+  BOOST_CHECK_EQUAL(191, rgb.green());
+  BOOST_CHECK_EQUAL(255, rgb.blue());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 BOOST_AUTO_TEST_CASE(ColorRGBA_setAlpha)
 {
