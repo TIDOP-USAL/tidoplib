@@ -28,7 +28,7 @@
 
 
 using namespace tl;
-//using namespace std;
+using namespace graph;
 
 ////Datos para los test
 //std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 }  };
@@ -978,6 +978,13 @@ BOOST_FIXTURE_TEST_CASE(color_from_color_rgb, ColorTest)
   BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
 }
 
+BOOST_FIXTURE_TEST_CASE(color_from_color_rgba, ColorTest)
+{
+  graph::ColorRGBA rgba(10, 25, 30, 0);
+  graph::Color color(rgba);
+  BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1031,6 +1038,14 @@ BOOST_FIXTURE_TEST_CASE(constructor, ColorRGBTest)
   BOOST_CHECK_EQUAL(10, rgb->red());
   BOOST_CHECK_EQUAL(25, rgb->green());
   BOOST_CHECK_EQUAL(30, rgb->blue());
+}
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, ColorRGBTest)
+{
+  ColorRGB rgb_color(*rgb);
+  BOOST_CHECK_EQUAL(10, rgb_color.red());
+  BOOST_CHECK_EQUAL(25, rgb_color.green());
+  BOOST_CHECK_EQUAL(30, rgb_color.blue());
 }
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setRed)
@@ -1105,43 +1120,222 @@ BOOST_AUTO_TEST_SUITE_END()
 
 
 
+/* ColorRGBA */
 
 
+BOOST_AUTO_TEST_SUITE(ColorRGBATestSuite)
+
+struct ColorRGBATest
+{
+  ColorRGBATest()
+    : rgba(new ColorRGBA(10, 25, 30, 75))
+  {
+  }
+
+  ~ColorRGBATest()
+  {
+    if (rgba) {
+      delete rgba;
+      rgba = nullptr;
+    }
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+  }
+
+  graph::ColorRGBA rgba_def;
+  graph::ColorRGBA *rgba;
+};
 
 
+BOOST_FIXTURE_TEST_CASE(default_constructor, ColorRGBATest)
+{
+  BOOST_CHECK_EQUAL(0, rgba_def.red());
+  BOOST_CHECK_EQUAL(0, rgba_def.green());
+  BOOST_CHECK_EQUAL(0, rgba_def.blue());
+  BOOST_CHECK_EQUAL(0, rgba_def.alpha());
+  BOOST_CHECK(graph::Color(graph::Color::Name::black) == rgba_def.toColor());
+}
 
+BOOST_FIXTURE_TEST_CASE(constructor, ColorRGBATest)
+{
+  BOOST_CHECK_EQUAL(10, rgba->red());
+  BOOST_CHECK_EQUAL(25, rgba->green());
+  BOOST_CHECK_EQUAL(30, rgba->blue());
+  BOOST_CHECK_EQUAL(75, rgba->alpha());
+}
 
+BOOST_FIXTURE_TEST_CASE(copy_constructor, ColorRGBATest)
+{
+  ColorRGBA rgba_color(*rgba);
+  BOOST_CHECK_EQUAL(10, rgba_color.red());
+  BOOST_CHECK_EQUAL(25, rgba_color.green());
+  BOOST_CHECK_EQUAL(30, rgba_color.blue());
+  BOOST_CHECK_EQUAL(75, rgba_color.alpha());
+}
 
+BOOST_AUTO_TEST_CASE(ColorRGBA_setRed)
+{
+  ColorRGBA rgba;
+  rgba.setRed(45);
+  BOOST_CHECK_EQUAL(45, rgba.red());
+}
 
+BOOST_AUTO_TEST_CASE(ColorRGBA_setRedOutRange)
+{
+  ColorRGBA rgba;
+  rgba.setRed(300);
+  BOOST_CHECK_EQUAL(255, rgba.red());
+  rgba.setRed(-4);
+  BOOST_CHECK_EQUAL(0, rgba.red());
+}
 
+BOOST_AUTO_TEST_CASE(ColorRGBA_setGreen)
+{
+  ColorRGBA rgba;
+  rgba.setGreen(45);
+  BOOST_CHECK_EQUAL(45, rgba.green());
+}
+
+BOOST_AUTO_TEST_CASE(ColorRGBA_setGreenOutRange)
+{
+  ColorRGBA rgba;
+  rgba.setGreen(300);
+  BOOST_CHECK_EQUAL(255, rgba.green());
+  rgba.setGreen(-4);
+  BOOST_CHECK_EQUAL(0, rgba.green());
+}
+
+BOOST_AUTO_TEST_CASE(ColorRGBA_setBlue)
+{
+  ColorRGBA rgba;
+  rgba.setBlue(45);
+  BOOST_CHECK_EQUAL(45, rgba.blue());
+}
+
+BOOST_AUTO_TEST_CASE(ColorRGBA_setBlueOutRange)
+{
+  ColorRGBA rgba;
+  rgba.setBlue(300);
+  BOOST_CHECK_EQUAL(255, rgba.blue());
+  rgba.setBlue(-4);
+  BOOST_CHECK_EQUAL(0, rgba.blue());
+}
 
 BOOST_AUTO_TEST_CASE(ColorRGBA_setAlpha)
 {
-  graph::ColorRGBA rgba;
+  ColorRGBA rgba;
   rgba.setAlpha(45);
   BOOST_CHECK_EQUAL(45, rgba.alpha());
 }
 
 BOOST_AUTO_TEST_CASE(ColorRGBA_setAlphaOutRange)
 {
-  graph::ColorRGBA rgba;
+  ColorRGBA rgba;
   rgba.setAlpha(300);
   BOOST_CHECK_EQUAL(255, rgba.alpha());
   rgba.setAlpha(-4);
   BOOST_CHECK_EQUAL(0, rgba.alpha());
 }
 
+BOOST_AUTO_TEST_CASE(ColorRGB_toColor)
+{
+  ColorRGBA rgba(255, 0, 0, 0);
+  BOOST_CHECK(Color(16711680) == rgba.toColor());
+}
+
+BOOST_AUTO_TEST_CASE(ColorRGB_fromColor)
+{
+  Color color(graph::Color::Name::deep_sky_blue);
+  ColorRGBA rgba;
+  rgba.fromColor(color);
+  BOOST_CHECK_EQUAL(0, rgba.red());
+  BOOST_CHECK_EQUAL(191, rgba.green());
+  BOOST_CHECK_EQUAL(255, rgba.blue());
+  BOOST_CHECK_EQUAL(0, rgba.alpha());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+
+
+
+/* ColorRGBA */
+
+
+BOOST_AUTO_TEST_SUITE(ColorCMYKTestSuite)
+
+struct ColorCMYKTest
+{
+  ColorCMYKTest()
+    : cmyk(new ColorCMYK(0, 1, 1, 0))
+  {
+  }
+
+  ~ColorCMYKTest()
+  {
+    if (cmyk) {
+      delete cmyk;
+      cmyk = nullptr;
+    }
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+  }
+
+  graph::ColorCMYK cmyk_def;
+  graph::ColorCMYK *cmyk;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, ColorCMYKTest)
+{
+  BOOST_CHECK_EQUAL(0, cmyk_def.cyan());
+  BOOST_CHECK_EQUAL(0, cmyk_def.magenta());
+  BOOST_CHECK_EQUAL(0, cmyk_def.yellow());
+  BOOST_CHECK_EQUAL(0, cmyk_def.key());
+}
+
+BOOST_FIXTURE_TEST_CASE(constructor, ColorCMYKTest)
+{
+  BOOST_CHECK_EQUAL(0, cmyk->cyan());
+  BOOST_CHECK_EQUAL(1, cmyk->magenta());
+  BOOST_CHECK_EQUAL(1, cmyk->yellow());
+  BOOST_CHECK_EQUAL(0, cmyk->key());
+  BOOST_CHECK(Color(16711680) == cmyk->toColor());
+}
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, ColorCMYKTest)
+{
+  ColorCMYK cmyk_color(*cmyk);
+  BOOST_CHECK_EQUAL(0, cmyk_color.cyan());
+  BOOST_CHECK_EQUAL(1, cmyk_color.magenta());
+  BOOST_CHECK_EQUAL(1, cmyk_color.yellow());
+  BOOST_CHECK_EQUAL(0, cmyk_color.key());
+}
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setGetCyan)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setCyan(0.5);
   BOOST_CHECK_EQUAL(0.5, cmyk.cyan());
 }
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setCyanOutRange)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setCyan(1.1);
   BOOST_CHECK_EQUAL(1.0, cmyk.cyan());
   cmyk.setCyan(-0.1);
@@ -1150,14 +1344,14 @@ BOOST_AUTO_TEST_CASE(ColorCMYK_setCyanOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setGetGreen)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setMagenta(0.3);
   BOOST_CHECK_EQUAL(0.3, cmyk.magenta());
 }
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setMagentaOutRange)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setMagenta(1.1);
   BOOST_CHECK_EQUAL(1.0, cmyk.magenta());
   cmyk.setMagenta(-0.1);
@@ -1166,14 +1360,14 @@ BOOST_AUTO_TEST_CASE(ColorCMYK_setMagentaOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setGetYellow)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setYellow(0.6);
   BOOST_CHECK_EQUAL(0.6, cmyk.yellow());
 }
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setYellowOutRange)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setYellow(1.1);
   BOOST_CHECK_EQUAL(1.0, cmyk.yellow());
   cmyk.setYellow(-0.1);
@@ -1182,21 +1376,100 @@ BOOST_AUTO_TEST_CASE(ColorCMYK_setYellowOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setGetKey)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setKey(0.6);
   BOOST_CHECK_EQUAL(0.6, cmyk.key());
 }
 
 BOOST_AUTO_TEST_CASE(ColorCMYK_setKeyOutRange)
 {
-  graph::ColorCMYK cmyk;
+  ColorCMYK cmyk;
   cmyk.setKey(1.2);
   BOOST_CHECK_EQUAL(1.0, cmyk.key());
   cmyk.setKey(-0.1);
   BOOST_CHECK_EQUAL(0.0, cmyk.key());
 }
 
+BOOST_AUTO_TEST_CASE(ColorCMYK_toColor)
+{
+  ColorCMYK cmyk(1.0000, 0.0000, 1.0000, 0.6078);
+  BOOST_CHECK(Color(25600) == cmyk.toColor());
+}
+
+BOOST_AUTO_TEST_CASE(ColorCMYK_fromColor)
+{
+  Color color(Color::Name::deep_sky_blue);
+  ColorCMYK cmyk;
+  cmyk.fromColor(color);
+  BOOST_CHECK_EQUAL(1., cmyk.cyan());
+  BOOST_CHECK_CLOSE(0.2510, cmyk.magenta(), 0.1);
+  BOOST_CHECK_EQUAL(0., cmyk.yellow());
+  BOOST_CHECK_EQUAL(0., cmyk.key());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+
+
+
+
+
 /* ColorHSV */
+
+BOOST_AUTO_TEST_SUITE(ColorHSVTestSuite)
+
+struct ColorHSVTest
+{
+  ColorHSVTest()
+    : hsv(new ColorHSV(259.592, 57.647, 33.333))
+  {
+  }
+
+  ~ColorHSVTest()
+  {
+    if (hsv) {
+      delete hsv;
+      hsv = nullptr;
+    }
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+  }
+
+  ColorHSV hsv_def;
+  ColorHSV *hsv;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, ColorHSVTest)
+{
+  BOOST_CHECK_EQUAL(0, hsv_def.hue());
+  BOOST_CHECK_EQUAL(0, hsv_def.saturation());
+  BOOST_CHECK_EQUAL(0, hsv_def.value());
+  BOOST_CHECK(graph::Color(graph::Color::Name::black) == hsv_def.toColor());
+}
+
+BOOST_FIXTURE_TEST_CASE(constructor, ColorHSVTest)
+{
+  BOOST_CHECK_EQUAL(259.592, hsv->hue());
+  BOOST_CHECK_EQUAL(57.647, hsv->saturation());
+  BOOST_CHECK_EQUAL(33.333, hsv->value());
+}
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, ColorHSVTest)
+{
+  ColorHSV hsv_color(*hsv);
+  BOOST_CHECK_EQUAL(259.592, hsv_color.hue());
+  BOOST_CHECK_EQUAL(57.647, hsv_color.saturation());
+  BOOST_CHECK_EQUAL(33.333, hsv_color.value());
+}
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setHue)
 {
@@ -1245,6 +1518,27 @@ BOOST_AUTO_TEST_CASE(ColorHSV_setValueOutRange)
   hsv.setValue(-4);
   BOOST_CHECK_EQUAL(0, hsv.value());
 }
+
+BOOST_AUTO_TEST_CASE(ColorHSV_toColor)
+{
+  ColorHSV hsv(338.298, 77.366, 95.294);
+  BOOST_CHECK(Color(15939451) == hsv.toColor());
+}
+
+BOOST_AUTO_TEST_CASE(ColorHSV_fromColor)
+{
+  Color color(15939451);
+  ColorHSV hsv;
+  hsv.fromColor(color);
+  BOOST_CHECK_CLOSE(338.298, hsv.hue(), 0.1);
+  BOOST_CHECK_CLOSE(77.366, hsv.saturation(), 0.1);
+  BOOST_CHECK_CLOSE(95.294, hsv.value(), 0.1);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
 
 /* ColorHSL */
 

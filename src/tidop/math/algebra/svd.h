@@ -470,12 +470,12 @@ template<
 inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 {
   lapack_int info;
-  lapack_int lda = mCols;
-  lapack_int ldu = mRows;
-  lapack_int ldvt = mCols;
+  lapack_int lda = static_cast<int>(mCols);
+  lapack_int ldu = static_cast<int>(mRows);
+  lapack_int ldvt = static_cast<int>(mCols);
   T *superb = new T[std::min(mRows,mCols)-1];
 
-  info = lapack::gesvd(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
+  info = lapack::gesvd(static_cast<int>(mRows), static_cast<int>(mCols), A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
   V = V.transpose();
 
   delete[] superb;

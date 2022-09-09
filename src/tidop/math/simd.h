@@ -716,15 +716,11 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  //Packed<T> r;
-
 #ifdef TL_HAVE_AVX
   return _mm256_mul_ps(packed1, packed2);
 #elif defined TL_HAVE_SSE
   return _mm_mul_ps(packed1, packed2);
 #endif
-
-  return Packed<T>();
 }
 
 template<typename T> inline

@@ -1132,7 +1132,8 @@ std::shared_ptr<StyleLabel> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrS
   /* Anchor Position */
   int anchor = ogrStyleLabel->Anchor(bDefault);
   if (!bDefault) {
-    StyleLabel::AnchorPosition anchorPosition;
+    StyleLabel::AnchorPosition anchorPosition = StyleLabel::AnchorPosition::vertical_baseline |
+                                                StyleLabel::AnchorPosition::horizontal_left;
     if (anchor == 1) {
       anchorPosition = StyleLabel::AnchorPosition::vertical_baseline |
         StyleLabel::AnchorPosition::horizontal_left;

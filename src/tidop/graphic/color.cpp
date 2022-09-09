@@ -467,7 +467,6 @@ ColorRGB::ColorRGB(const ColorRGB &color)
      mRangeMin(color.mRangeMin),
      mRangeMax(color.mRangeMax)
 {
-
 }
 
 ColorRGB::~ColorRGB()

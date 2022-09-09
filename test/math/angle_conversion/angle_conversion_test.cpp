@@ -392,21 +392,21 @@ BOOST_FIXTURE_TEST_CASE(setDegrees, GradiansTest)
   }
 
   {
-    Gradians<double> angle;
-    angle.setDegrees(-23);
-    BOOST_CHECK_EQUAL(-23, angle.degrees());
-    BOOST_CHECK_CLOSE(-23., angle.value(), 0.1);
+    Gradians<double> angle_1;
+    angle_1.setDegrees(-23);
+    BOOST_CHECK_EQUAL(-23, angle_1.degrees());
+    BOOST_CHECK_CLOSE(-23., angle_1.value(), 0.1);
 
-    angle.setMinutes(23);
-    BOOST_CHECK_EQUAL(-23, angle.degrees());
-    BOOST_CHECK_EQUAL(23, angle.minutes());
-    BOOST_CHECK_CLOSE(-23.23, angle.value(), 0.1);
+    angle_1.setMinutes(23);
+    BOOST_CHECK_EQUAL(-23, angle_1.degrees());
+    BOOST_CHECK_EQUAL(23, angle_1.minutes());
+    BOOST_CHECK_CLOSE(-23.23, angle_1.value(), 0.1);
 
-    angle.setSeconds(65.4564654);
-    BOOST_CHECK_EQUAL(-23, angle.degrees());
-    BOOST_CHECK_EQUAL(23, angle.minutes());
-    BOOST_CHECK_CLOSE(65.4564654, angle.seconds(), 0.1);
-    BOOST_CHECK_CLOSE(-23.23654564654, angle.value(), 0.1);
+    angle_1.setSeconds(65.4564654);
+    BOOST_CHECK_EQUAL(-23, angle_1.degrees());
+    BOOST_CHECK_EQUAL(23, angle_1.minutes());
+    BOOST_CHECK_CLOSE(65.4564654, angle_1.seconds(), 0.1);
+    BOOST_CHECK_CLOSE(-23.23654564654, angle_1.value(), 0.1);
 
     Gradians<double> angle_2;
     angle_2.setSeconds(65.4564654);
