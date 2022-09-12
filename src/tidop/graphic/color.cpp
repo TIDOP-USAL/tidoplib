@@ -345,7 +345,9 @@ Color::Color()
 }
 
 Color::Color(const Color &color)
-  : mColor(color.mColor)
+  : mColor(color.mColor),
+    mOpacity(color.mOpacity),
+    mHasOpacity(color.mHasOpacity)
 {
 
 }
@@ -362,8 +364,8 @@ Color::Color(const std::string &color)
 }
 
 Color::Color(const Color::Name &color)
+  : mColor(static_cast<uint32_t>(color))
 {
-  mColor = static_cast<uint32_t>(color);
 }
 
 Color::Color(const ColorModel &colorModel)
@@ -390,9 +392,14 @@ int Color::red() const
   return (mColor & 0xFF0000) >> 16;
 }
 
-int Color::alpha() const
+uint8_t Color::opacity() const
 {
-  return (mColor & 0xFF000000) >> 24;
+  return mOpacity/*(mColor & 0xFF000000) >> 24*/;
+}
+
+void Color::setOpacity(uint8_t opacity)
+{
+  mOpacity = opacity;
 }
 
 int Color::luminance() const
@@ -525,7 +532,9 @@ ColorRGB &ColorRGB::operator =(const ColorRGB &color)
 
 Color ColorRGB::toColor() const
 {
-  Color color((mBlue & 0xFF) | ((mGreen << 8) & 0xFF00) | ((mRed << 16) & 0xFF0000));
+  Color color((mBlue & 0xFF) | 
+              ((mGreen << 8) & 0xFF00) | 
+              ((mRed << 16) & 0xFF0000));
   return color;
 }
 
@@ -601,7 +610,7 @@ Color ColorRGBA::toColor() const
 void ColorRGBA::fromColor(const Color &color)
 {
   ColorRGB::fromColor(color);
-  mAlpha = color.alpha();
+  mAlpha = color.opacity();
 }
 
 ColorRGBA &ColorRGBA::operator =(const ColorRGBA &color)
@@ -897,7 +906,7 @@ Color ColorHSV::toColor() const
     _rgb[2] = x;
   }
 
-  double m = mValue - chroma;
+  double m = normValue - chroma;
 
   int red = roundToInteger((_rgb[0] + m) * 255);
   int green = roundToInteger((_rgb[1] + m) * 255);

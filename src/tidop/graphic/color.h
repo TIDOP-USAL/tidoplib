@@ -401,12 +401,6 @@ public:
     white = 	                0xFFFFFF    // (255,255,255)	(0°,0%,100%)	    (0°,0%,100%)
   };
 
-protected:
-
-  /*!
-   * \brief Color
-   */
-  uint32_t mColor;
 
 public:
 
@@ -466,7 +460,9 @@ public:
    * \brief Devuelve el canal alfa
    * \return Canal alfa
    */
-  int alpha() const;
+  uint8_t opacity() const;
+
+  void setOpacity(uint8_t opacity);
 
   /*!
    * \brief Valor de luminancia de un color a luminancia
@@ -495,9 +491,15 @@ public:
    */
   Color &operator = (const Color &color);
 
-protected:
+private:
 
-  //friend class ColorModel;
+  /*!
+   * \brief Color
+   */
+  uint32_t mColor;
+  uint8_t mOpacity{255};
+  bool mHasOpacity{false};
+
 };
 
 TL_EXPORT bool operator == (const tl::graph::Color &color1, const tl::graph::Color &color2);
@@ -674,7 +676,7 @@ public:
    * \param[in] blue Componente azul
    * \param[in] alpha Canal alfa
    */
-  ColorRGBA(int red, int green, int blue, int alpha);
+  ColorRGBA(int red, int green, int blue, int alpha = 255);
 
   /*!
    * \brief Constructor de copia ColorRGBA

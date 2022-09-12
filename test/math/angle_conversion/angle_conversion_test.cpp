@@ -358,21 +358,21 @@ BOOST_FIXTURE_TEST_CASE(normalizePositive, GradiansTest)
 BOOST_FIXTURE_TEST_CASE(setDegrees, GradiansTest)
 {
   {
-    Gradians<double> _angle;
-    _angle.setDegrees(23);
-    BOOST_CHECK_EQUAL(23, _angle.degrees());
-    BOOST_CHECK_CLOSE(23., _angle.value(), 0.1);
+    Gradians<double> angle_1;
+    angle_1.setDegrees(23);
+    BOOST_CHECK_EQUAL(23, angle_1.degrees());
+    BOOST_CHECK_CLOSE(23., angle_1.value(), 0.1);
 
-    angle.setMinutes(23);
-    BOOST_CHECK_EQUAL(23, _angle.degrees());
-    BOOST_CHECK_EQUAL(23, angle.minutes());
-    BOOST_CHECK_CLOSE(23.23, angle.value(), 0.1);
+    angle_1.setMinutes(23);
+    BOOST_CHECK_EQUAL(23, angle_1.degrees());
+    BOOST_CHECK_EQUAL(23, angle_1.minutes());
+    BOOST_CHECK_CLOSE(23.23, angle_1.value(), 0.1);
 
-    angle.setSeconds(65.4564654);
-    BOOST_CHECK_EQUAL(23, angle.degrees());
-    BOOST_CHECK_EQUAL(23, angle.minutes());
-    BOOST_CHECK_CLOSE(65.4564654, angle.seconds(), 0.1);
-    BOOST_CHECK_CLOSE(23.23654564654, angle.value(), 0.1);
+    angle_1.setSeconds(65.4564654);
+    BOOST_CHECK_EQUAL(23, angle_1.degrees());
+    BOOST_CHECK_EQUAL(23, angle_1.minutes());
+    BOOST_CHECK_CLOSE(65.4564654, angle_1.seconds(), 0.1);
+    BOOST_CHECK_CLOSE(23.23654564654, angle_1.value(), 0.1);
 
     Gradians<double> angle_2;
     angle_2.setSeconds(65.4564654);
@@ -629,21 +629,21 @@ BOOST_FIXTURE_TEST_CASE(normalizePositive, DegreesTest)
 BOOST_FIXTURE_TEST_CASE(setDegrees, DegreesTest)
 {
   {
-    Degrees<double> angle;
-    angle.setDegrees(43);
-    BOOST_CHECK_EQUAL(43, angle.degrees());
-    BOOST_CHECK_CLOSE(43., angle.value(), 0.01);
+    Degrees<double> angle_1;
+    angle_1.setDegrees(43);
+    BOOST_CHECK_EQUAL(43, angle_1.degrees());
+    BOOST_CHECK_CLOSE(43., angle_1.value(), 0.01);
 
-    angle.setMinutes(2);
-    BOOST_CHECK_EQUAL(43, angle.degrees());
-    BOOST_CHECK_EQUAL(2, angle.minutes());
-    BOOST_CHECK_CLOSE(43.033333333, angle.value(), 0.01);
+    angle_1.setMinutes(2);
+    BOOST_CHECK_EQUAL(43, angle_1.degrees());
+    BOOST_CHECK_EQUAL(2, angle_1.minutes());
+    BOOST_CHECK_CLOSE(43.033333333, angle_1.value(), 0.01);
 
-    angle.setSeconds(1.9604);
-    BOOST_CHECK_EQUAL(43, angle.degrees());
-    BOOST_CHECK_EQUAL(2, angle.minutes());
-    BOOST_CHECK_CLOSE(1.9604, angle.seconds(), 0.1);
-    BOOST_CHECK_CLOSE(43.0338778888889, angle.value(), 0.01);
+    angle_1.setSeconds(1.9604);
+    BOOST_CHECK_EQUAL(43, angle_1.degrees());
+    BOOST_CHECK_EQUAL(2, angle_1.minutes());
+    BOOST_CHECK_CLOSE(1.9604, angle_1.seconds(), 0.1);
+    BOOST_CHECK_CLOSE(43.0338778888889, angle_1.value(), 0.01);
 
     Degrees<double> angle_2;
     angle_2.setSeconds(1.9604);
@@ -663,21 +663,21 @@ BOOST_FIXTURE_TEST_CASE(setDegrees, DegreesTest)
   }
   
   {
-    Degrees<double> angle;
-    angle.setDegrees(-43);
-    BOOST_CHECK_EQUAL(-43, angle.degrees());
-    BOOST_CHECK_CLOSE(-43., angle.value(), 0.01);
+    Degrees<double> angle_1;
+    angle_1.setDegrees(-43);
+    BOOST_CHECK_EQUAL(-43, angle_1.degrees());
+    BOOST_CHECK_CLOSE(-43., angle_1.value(), 0.01);
 
-    angle.setMinutes(2);
-    BOOST_CHECK_EQUAL(-43, angle.degrees());
-    BOOST_CHECK_EQUAL(2, angle.minutes());
-    BOOST_CHECK_CLOSE(-43.033333333, angle.value(), 0.01);
+    angle_1.setMinutes(2);
+    BOOST_CHECK_EQUAL(-43, angle_1.degrees());
+    BOOST_CHECK_EQUAL(2, angle_1.minutes());
+    BOOST_CHECK_CLOSE(-43.033333333, angle_1.value(), 0.01);
 
-    angle.setSeconds(1.9604);
-    BOOST_CHECK_EQUAL(-43, angle.degrees());
-    BOOST_CHECK_EQUAL(2, angle.minutes());
-    BOOST_CHECK_CLOSE(1.9604, angle.seconds(), 0.1);
-    BOOST_CHECK_CLOSE(-43.0338778888889, angle.value(), 0.01);
+    angle_1.setSeconds(1.9604);
+    BOOST_CHECK_EQUAL(-43, angle_1.degrees());
+    BOOST_CHECK_EQUAL(2, angle_1.minutes());
+    BOOST_CHECK_CLOSE(1.9604, angle_1.seconds(), 0.1);
+    BOOST_CHECK_CLOSE(-43.0338778888889, angle_1.value(), 0.01);
 
     Degrees<double> angle_2;
     angle_2.setSeconds(1.9604);
@@ -697,21 +697,21 @@ BOOST_FIXTURE_TEST_CASE(setDegrees, DegreesTest)
   }
 
   {
-    Degrees<double> angle;
-    angle.setDegrees(74);
-    BOOST_CHECK_EQUAL(74, angle.degrees());
-    BOOST_CHECK_CLOSE(74., angle.value(), 0.01);
+    Degrees<double> angle_1;
+    angle_1.setDegrees(74);
+    BOOST_CHECK_EQUAL(74, angle_1.degrees());
+    BOOST_CHECK_CLOSE(74., angle_1.value(), 0.01);
 
-    angle.setMinutes(59);
-    BOOST_CHECK_EQUAL(74, angle.degrees());
-    BOOST_CHECK_EQUAL(59, angle.minutes());
-    BOOST_CHECK_CLOSE(74.983333, angle.value(), 0.01);
+    angle_1.setMinutes(59);
+    BOOST_CHECK_EQUAL(74, angle_1.degrees());
+    BOOST_CHECK_EQUAL(59, angle_1.minutes());
+    BOOST_CHECK_CLOSE(74.983333, angle_1.value(), 0.01);
 
-    angle.setSeconds(17.8786);
-    BOOST_CHECK_EQUAL(74, angle.degrees());
-    BOOST_CHECK_EQUAL(59, angle.minutes());
-    BOOST_CHECK_CLOSE(17.8786, angle.seconds(), 0.1);
-    BOOST_CHECK_CLOSE(74.98829961, angle.value(), 0.01);
+    angle_1.setSeconds(17.8786);
+    BOOST_CHECK_EQUAL(74, angle_1.degrees());
+    BOOST_CHECK_EQUAL(59, angle_1.minutes());
+    BOOST_CHECK_CLOSE(17.8786, angle_1.seconds(), 0.1);
+    BOOST_CHECK_CLOSE(74.98829961, angle_1.value(), 0.01);
 
     Degrees<double> angle_2;
     angle_2.setSeconds(17.8786);
