@@ -51,7 +51,7 @@ namespace graph
 /*!
  * \brief Estilo de pluma
  */
-class TL_EXPORT StylePen
+class TL_EXPORT Pen
 {
 public:
 
@@ -91,70 +91,23 @@ public:
     bevel       /*!< Unión biselada */
   };
 
-protected:
-
-  /*!
-   * \brief Color de Pluma
-   * \see Color
-   */
-  Color mPenColor;
-
-  /*!
-   * \brief Ancho de pluma
-   */
-  uint8_t mPenWidth;
-
-  /*!
-   * \brief Patrón
-   */
-  std::string mPattern;
-
-  /*!
-   * \brief Nombre o id de pluma
-   * \see PenName
-   */
-  Name mPenName;
-
-  /*!
-   * \brief Forma de puntos extremos de las líneas
-   * \see PenCap
-   */
-  Cap mPenCap;
-
-  /*!
-   * \brief Forma del punto de unión (vértice) de líneas
-   * \see PenJoin
-   */
-  Join mPenJoin;
-
-  /*!
-   * \brief Desplazamiento desde el centro de la línea.
-   * Si es negativo se dibuja a la izquierda
-   */
-  int32_t mPerpendicularOffset;
-
-  /*!
-   * \brief mPriorityLevel
-   */
-  uint32_t mPriorityLevel;
-
 public:
 
   /*!
    * \brief Constructora por defecto
    */
-  StylePen();
+  Pen();
 
   /*!
    * \brief Constructora de copia
-   * \param[in] stylePen Clase estilo de pluma que se copia
+   * \param[in] pen Clase estilo de pluma que se copia
    */
-  StylePen(const StylePen &stylePen);
+  Pen(const Pen &pen);
 
   /*!
    * \brief destructora
    */
-  ~StylePen();
+  ~Pen();
 
   /*!
    * \brief Devuelve el color de Pluma
@@ -165,10 +118,10 @@ public:
 
   /*!
    * \brief Establece el color de Pluma
-   * \param[in] pencolor Color de Pluma
+   * \param[in] color Color de Pluma
    * \see Color
    */
-  void setColor(const Color &pencolor);
+  void setColor(const Color &color);
 
   /*!
    * \brief Devuelve el ancho de pluma
@@ -178,9 +131,9 @@ public:
 
   /*!
    * \brief Establece el ancho de pluma
-   * \param[in] penwidth Ancho de pluma
+   * \param[in] width Ancho de pluma
    */
-  void setWidth(uint8_t penwidth);
+  void setWidth(uint8_t width);
 
   /*!
    * \brief Devuelve el patrón de pluma
@@ -257,17 +210,64 @@ public:
 
   /*!
    * \brief operador de asignación
-   * \param stylePen Estilo de pluma
+   * \param pen Estilo de pluma
    * \return Referencia al estilo de pluma
    */
-  StylePen &operator = (const StylePen &stylePen);
+  Pen &operator = (const Pen &stylePen);
+
+private:
+
+  /*!
+   * \brief Color de Pluma
+   * \see Color
+   */
+  Color mColor;
+
+  /*!
+   * \brief Ancho de pluma
+   */
+  uint8_t mWidth;
+
+  /*!
+   * \brief Patrón
+   */
+  std::string mPattern;
+
+  /*!
+   * \brief Nombre o id de pluma
+   * \see Name
+   */
+  Name mName;
+
+  /*!
+   * \brief Forma de puntos extremos de las líneas
+   * \see Cap
+   */
+  Cap mCap;
+
+  /*!
+   * \brief Forma del punto de unión (vértice) de líneas
+   * \see Join
+   */
+  Join mJoin;
+
+  /*!
+   * \brief Desplazamiento desde el centro de la línea.
+   * Si es negativo se dibuja a la izquierda
+   */
+  int32_t mPerpendicularOffset;
+
+  /*!
+   * \brief mPriorityLevel
+   */
+  uint32_t mPriorityLevel;
 };
 
 
 /*!
  * \brief Clase estilo de pincel
  */
-class TL_EXPORT StyleBrush
+class TL_EXPORT Brush
 {
 public:
 
@@ -283,103 +283,63 @@ public:
     diagcross_hatch    /*!<  xxxxxx*/
   };
 
-protected:
-
-  /*!
-   * \brief Color de primer plano
-   * \see Color
-   */
-  Color mForeColor;
-  
-  /*!
-   * \brief Color de fondo
-   * \see Color
-   */
-  Color mBackColor;
-
-  /*!
-   * \brief Nombre de pincel
-   */
-  Name mBrushName;
-
-  /*!
-   * \brief Ángulo de rotación en grados sexagesimales en notación decimal
-   * \see angleConversion
-   */
-  double mAngle;
-  
-  /*!
-   * \brief Factor de escala
-   */
-  double mScalingFactor;
-
-  /*!
-   * \brief Espaciado entre simbolos
-   */
-  std::array<double,2> mSpacing;
-
-  /*!
-   * \brief mPriorityLevel
-   */
-  uint32_t mPriorityLevel;
-
 public:
 
   /*!
    * \brief Constructora por defecto
    */
-  StyleBrush();
+  Brush();
 
   /*!
    * \brief Constructora de copia
-   * \param[in] styleBrush Objeto StyleBrush que se copia
+   * \param[in] brush Objeto Brush que se copia
    */
-  StyleBrush(const StyleBrush &styleBrush);
+  Brush(const Brush &brush);
 
   /*!
    * \brief Destructora
    */  
-  ~StyleBrush();
+  ~Brush();
 
   /*!
    * \brief Devuelve el color
    * \return Color
-   * \see Color
+   * \see Foreground color
    */
-  Color foreColor() const;
+  Color foregroundColor() const;
 
   /*!
    * \brief Establece el color
-   * \param[in] forecolor Color
+   * \param[in] foregroundColor Foreground color
    * \see Color
    */
-  void setForeColor(Color forecolor);
+  void setForegroundColor(Color foregroundColor);
 
     /*!
    * \brief Devuelve el color de fondo
    * \return Color de fondo
    * \see Color
    */
-  Color backColor() const;
+  Color backgroundColor() const;
 
   /*!
    * \brief Establece el color de fondo
-   * \param[in] backcolor Color de fondo
+   * \param[in] backgroundColor Color de fondo
    * \see Color
    */
-  void setBackColor(Color backcolor);
+  void setBackgroundColor(Color backgroundColor);
 
   /*!
    * \brief Devuelve el nombre o id de pincel
    * \return Nombre o id de pincel
    */
-  Name brushName() const;
+  Name name() const;
 
   /*!
    * \brief Establece el nombre o id de pincel
-   * \param[in] brushname Nombre o id de pincel
+   * \param[in] name Nombre o id de pincel
    */
-  void setBrushName(Name brushname);
+  void setName(Name name);
 
   /*!
    * \brief Devuelve el ángulo de rotación
@@ -432,17 +392,57 @@ public:
 
   /*!
    * \brief operador de asignación
-   * \param styleBrush Estilo de pincel
+   * \param brush Estilo de pincel
    * \return Referencia al estilo de pluma
    */
-  StyleBrush &operator = (const StyleBrush &styleBrush);
+  Brush &operator = (const Brush &brush);
+
+private:
+
+  /*!
+   * \brief Color de primer plano
+   * \see Color
+   */
+  Color mForeColor;
+
+  /*!
+   * \brief Color de fondo
+   * \see Color
+   */
+  Color mBackColor;
+
+  /*!
+   * \brief Nombre de pincel
+   */
+  Name mName;
+
+  /*!
+   * \brief Ángulo de rotación en grados sexagesimales en notación decimal
+   * \see angleConversion
+   */
+  double mAngle;
+
+  /*!
+   * \brief Factor de escala
+   */
+  double mScalingFactor;
+
+  /*!
+   * \brief Espaciado entre simbolos
+   */
+  std::array<double, 2> mSpacing;
+
+  /*!
+   * \brief mPriorityLevel
+   */
+  uint32_t mPriorityLevel;
 };
 
 
 /*!
  * \brief Clase estilo simbolo
  */
-class TL_EXPORT StyleSymbol
+class TL_EXPORT Symbol
 {
 
 public:
@@ -462,63 +462,23 @@ public:
     vertical_bar       /*!< | */
   };
 
-protected:
-  
-  /*!
-   * \brief Nombre o identificador del simbolo
-   */
-  Name mName;
-
-  /*!
-   * \brief Ángulo de rotación en grados sexagesimales en notación decimal
-   * \see angleConversion
-   */
-  double mAngle;
-
-  /*!
-   * \brief Color
-   * \see Color
-   */
-  Color mColor;
-  
-  /*!
-   * \brief Color de borde
-   * \see Color
-   */
-  Color mOutlineColor;
-
-  /*!
-   * \brief Factor de escala
-   */
-  double mScalingFactor;
-
-  /*!
-   * \brief Desplazamiento X e Y del punto de inserción del símbolo.
-   */
-  std::array<double,2> mOffset;
-
-  /*!
-   * \brief mPriorityLevel
-   */
-  uint32_t mPriorityLevel;
-
 public:
 
   /*!
    * \brief Constructora por defecto
    */
-  StyleSymbol();
+  Symbol();
 
   /*!
    * \brief Constructora de copia
-   * \param[in] styleSymbol Clase Estilo de símbolo que se copia
+   * \param[in] symbol Clase Estilo de símbolo que se copia
    */
-  StyleSymbol(const StyleSymbol &styleSymbol);
+  Symbol(const Symbol &symbol);
 
   /*!
    * \brief Destructora
    */
-  ~StyleSymbol();
+  ~Symbol();
 
   /*!
    * \brief Devuelve el ángulo de rotación
@@ -609,21 +569,62 @@ public:
 
   /*!
    * \brief operador de asignación
-   * \param styleSymbol Estilo de simbolo
+   * \param symbol Estilo de simbolo
    * \return Referencia al estilo de simbolo
    */
-  StyleSymbol &operator = (const StyleSymbol &styleSymbol);
+  Symbol &operator = (const Symbol &symbol);
+
+private:
+
+  /*!
+   * \brief Nombre o identificador del simbolo
+   */
+  Name mName;
+
+  /*!
+   * \brief Ángulo de rotación en grados sexagesimales en notación decimal
+   * \see angleConversion
+   */
+  double mAngle;
+
+  /*!
+   * \brief Color
+   * \see Color
+   */
+  Color mColor;
+
+  /*!
+   * \brief Color de borde
+   * \see Color
+   */
+  Color mOutlineColor;
+
+  /*!
+   * \brief Factor de escala
+   */
+  double mScalingFactor;
+
+  /*!
+   * \brief Desplazamiento X e Y del punto de inserción del símbolo.
+   */
+  std::array<double, 2> mOffset;
+
+  /*!
+   * \brief mPriorityLevel
+   */
+  uint32_t mPriorityLevel;
+
 };
 
 
 /*!
  * \brief Clase estilo de texto
  */
-class TL_EXPORT StyleLabel
+class TL_EXPORT Label
 {
 public:
 
-  enum class LabelPlacement : uint8_t
+  enum class Placement : uint8_t
   {
     p,     /*!< Etiqueta asociada a un punto o al primer vértice de una polilínea */
     l,     /*!< Etiqueta asociada al último vértice de una polilínea */
@@ -648,90 +649,11 @@ public:
     horizontal_right = 1 << 6     /*!<  */
   };
 
-protected:
-
-  /*!
-   * \brief Fuente
-   */
-  Font mFont;
-
-  /*!
-   * \brief Texto de la etiqueta
-   */
-  std::string mText;
-
-  /*!
-   * \brief Angulo de rotación  en grados sexagesimales en notación decimal
-   * \see angleConversion
-   */
-  double mAngle;
-
-  /*!
-   * \brief Color de primer plano
-   * \see Color
-   */
-  Color mForegroundColor;
-
-  /*!
-   * \brief Color de fondo
-   * \see Color
-   */
-  Color mBackgroundColor;
-
-  /*!
-   * \brief Color de contorno
-   * \see Color
-   */
-  Color mOutlineColor;
-
-  /*!
-   * \brief Color de la sombra
-   * \see Color
-   */
-  Color mShadowColor;
-
-  /*!
-   * \brief Escalado en tanto por ciento
-   */
-  double mStretch;
-
-  /*!
-   * \brief Modo de colocación de la etiqueta en las entidades
-   * \see LabelPlacement
-   */
-  LabelPlacement mLabelPlacement;
-  
-  /*!
-   * \brief Posición de anclaje de la etiqueta
-   * \see AnchorPosition
-   */
-  AnchorPosition mAnchorPosition;
-
-  /*!
-   * \brief Desplazamiento X e Y del punto de inserción de la etiqueta
-   */
-  std::array<double,2> mOffset;
-
-  /*!
-   * \brief Distancia perpendicular entre la etiqueta y la línea a lo largo de la cual se coloca
-   */
-  int mPerpendicularOffset;
-
-  /*!
-   * \brief Tachado
-   */
-  bool bStrikeout;
-
-  /*!
-   * \brief mPriorityLevel
-   */
-  uint32_t mPriorityLevel;
-
 public:
 
-  StyleLabel();
-  StyleLabel(const StyleLabel &styleLabel);
-  ~StyleLabel();
+  Label();
+  Label(const Label &label);
+  ~Label();
 
   /*!
    * \brief Devuelve el texto de la etiqueta
@@ -823,16 +745,16 @@ public:
 
   /*!
    * \brief Modo de colocación de la etiqueta en las entidades
-   * \see LabelPlacement
+   * \see Placement
    */
-  LabelPlacement labelPlacement() const;
+  Placement placement() const;
 
   /*!
    * \brief Modo de colocación de la etiqueta en las entidades
-   * \param[in] labelPlacement
-   * \see LabelPlacement
+   * \param[in] placement
+   * \see Placement
    */
-  void setLabelPlacement(LabelPlacement labelPlacement);
+  void setPlacement(Placement placement);
 
   /*!
    * \brief Posición de anclaje de la etiqueta
@@ -866,17 +788,97 @@ public:
 
   /*!
    * \brief operador de asignación
-   * \param styleLabel Estilo de etiqueta
+   * \param label Estilo de etiqueta
    * \return Referencia al estilo de etiqueta
    */
-  StyleLabel &operator = (const StyleLabel &styleLabel);
+  Label &operator = (const Label &label);
   void setFont(const Font &font);
   Font font() const;
   int perpendicularOffset() const;
   void setPerpendicularOffset(int perpendicularOffset);
+
+private:
+
+  /*!
+   * \brief Fuente
+   */
+  Font mFont;
+
+  /*!
+   * \brief Texto de la etiqueta
+   */
+  std::string mText;
+
+  /*!
+   * \brief Angulo de rotación  en grados sexagesimales en notación decimal
+   * \see angleConversion
+   */
+  double mAngle;
+
+  /*!
+   * \brief Color de primer plano
+   * \see Color
+   */
+  Color mForegroundColor;
+
+  /*!
+   * \brief Color de fondo
+   * \see Color
+   */
+  Color mBackgroundColor;
+
+  /*!
+   * \brief Color de contorno
+   * \see Color
+   */
+  Color mOutlineColor;
+
+  /*!
+   * \brief Color de la sombra
+   * \see Color
+   */
+  Color mShadowColor;
+
+  /*!
+   * \brief Escalado en tanto por ciento
+   */
+  double mStretch;
+
+  /*!
+   * \brief Modo de colocación de la etiqueta en las entidades
+   * \see Placement
+   */
+  Placement mPlacement;
+
+  /*!
+   * \brief Posición de anclaje de la etiqueta
+   * \see AnchorPosition
+   */
+  AnchorPosition mAnchorPosition;
+
+  /*!
+   * \brief Desplazamiento X e Y del punto de inserción de la etiqueta
+   */
+  std::array<double, 2> mOffset;
+
+  /*!
+   * \brief Distancia perpendicular entre la etiqueta y la línea a lo largo de la cual se coloca
+   */
+  int mPerpendicularOffset;
+
+  /*!
+   * \brief Tachado
+   */
+  bool bStrikeout;
+
+  /*!
+   * \brief mPriorityLevel
+   */
+  uint32_t mPriorityLevel;
+
 };
 
-ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
+ALLOW_BITWISE_FLAG_OPERATIONS(Label::AnchorPosition)
 
 /*!
  * \brief Clase estilos
@@ -885,27 +887,6 @@ ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
  */
 class TL_EXPORT GraphicStyle
 {
-protected:
-
-  /*!
-   * \brief Estilo de pluma
-   */
-  std::shared_ptr<StylePen> mStylePen;
-  
-  /*!
-   * \brief Estilo de pincel
-   */
-  std::shared_ptr<StyleBrush> mStyleBrush;
-  
-  /*!
-   * \brief Estilo de simbolos
-   */  
-  std::shared_ptr<StyleSymbol> mStyleSymbol;
-  
-  /*!
-   * \brief Estilo de etiqueta
-   */
-  std::shared_ptr<StyleLabel> mStyleLabel;
 
 public:
 
@@ -926,67 +907,53 @@ public:
   {
   }
 
-//#ifdef TL_HAVE_GDAL
-//  
-//  ///TODO: creo que seria mejor una clase ReaderStyles 
-//  /*!
-//   * \brief Lee los estilos de GDAL/OGR
-//   * \param[in] ogrStyle Estilos ogr
-//   * \return
-//   */
-//  bool readFromOGR(OGRStyleMgr *ogrStyle);
-//
-//#endif 
-//
-//  bool write();
-
   /*!
    * \brief Estilo de pluma
    * \return
    */
-  StylePen *stylePen() const;
+  Pen *pen() const;
 
   /*!
    * \brief Establece el estilo de pluma
-   * \param[in] stylePen Estilo de pluma
+   * \param[in] pen Estilo de pluma
    */
-  void setStylePen(const std::shared_ptr<StylePen> &stylePen);
+  void setPen(const std::shared_ptr<Pen> &pen);
 
   /*!
    * \brief Estilo de pincel
    * \return
    */
-  StyleBrush *styleBrush() const;
+  Brush *brush() const;
 
   /*!
    * \brief Establece el estilo de pincel
-   * \param[in] styleBrush Estilo de pincel
+   * \param[in] brush Estilo de pincel
    */
-  void setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush);
+  void setBrush(const std::shared_ptr<Brush> &brush);
 
   /*!
    * \brief Estilo simbolo
    * \return
    */
-  StyleSymbol *styleSymbol() const;
+  Symbol *symbol() const;
 
   /*!
    * \brief Establece el estilo de simbolos
-   * \param[in] styleSymbol Estilo simbolos
+   * \param[in] symbol Estilo simbolos
    */
-  void setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol);
+  void setSymbol(const std::shared_ptr<Symbol> &symbol);
 
   /*!
    * \brief Estilo etiqueta
    * \return
    */
-  StyleLabel *styleLabel() const;
+  Label *label() const;
 
   /*!
    * \brief Establece el estilo de etiqueta
-   * \param[in] styleLabel Estilo de etiqueta
+   * \param[in] label Estilo de etiqueta
    */
-  void setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel);
+  void setLabel(const std::shared_ptr<Label> &label);
 
   /*!
    * \brief Operador de asignación
@@ -996,33 +963,26 @@ public:
 
 private:
 
-//#ifdef TL_HAVE_GDAL
-//
-//  /*!
-//   * \brief Lee el estilo de pincel
-//   * \param[in] ogrStylePen Estilo pincel GDAL
-//   */
-//  void readStylePen(OGRStylePen *ogrStylePen);
-//
-//  /*!
-//   * \brief Lee el estilo de pluma
-//   * \param[in] ogrStylePen Estilo pluma GDAL
-//   */
-//  void readStyleBrush(OGRStyleBrush *ogrStyleBrush);
-//
-//  /*!
-//   * \brief Lee el estilo símbolo
-//   * \param[in] ogrStylePen Estilo símbolo GDAL
-//   */
-//  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
-//
-//  /*!
-//   * \brief Lee el estilo etiqueta
-//   * \param[in] ogrStylePen Estilo etiqueta GDAL
-//   */
-//  void readStyleLabel(OGRStyleLabel *ogrStyleLabel);
-//
-//#endif
+  /*!
+   * \brief Estilo de pluma
+   */
+  std::shared_ptr<Pen> mPen;
+
+  /*!
+   * \brief Estilo de pincel
+   */
+  std::shared_ptr<Brush> mBrush;
+
+  /*!
+   * \brief Estilo de simbolos
+   */
+  std::shared_ptr<Symbol> mSymbol;
+
+  /*!
+   * \brief Estilo de etiqueta
+   */
+  std::shared_ptr<Label> mLabel;
+
 };
 
 

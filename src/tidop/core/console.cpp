@@ -42,7 +42,7 @@ namespace tl
 struct msgProperties {
   const char *normal;
   const char *extend;
-  Console::Color foreColor;
+  Console::Color foregroundColor;
   Console::Intensity intensity;
 };
 
@@ -138,7 +138,7 @@ void Console::printErrorMessage(const std::string &message)
 {
   std::lock_guard<std::mutex> lck(Console::mtx);
 
-  setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
+  setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foregroundColor,
                             messageProperties(MessageLevel::msg_error).intensity);
 
   // Por si esta corriendo la barra de progreso
@@ -308,7 +308,7 @@ void Console::onMsgDebug(const std::string &message,
                          const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_debug)) {
-    setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foreColor,
+    setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foregroundColor,
                               messageProperties(MessageLevel::msg_debug).intensity);
     printMessage(message);
     reset();
@@ -319,7 +319,7 @@ void Console::onMsgInfo(const std::string &message,
                         const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_info)) {
-    setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foreColor,
+    setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foregroundColor,
                               messageProperties(MessageLevel::msg_info).intensity);
     printMessage(message);
     reset();
@@ -330,7 +330,7 @@ void Console::onMsgWarning(const std::string &message,
                            const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_warning)) {
-    setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foreColor,
+    setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foregroundColor,
                               messageProperties(MessageLevel::msg_warning).intensity);
     printMessage(message);
     reset();

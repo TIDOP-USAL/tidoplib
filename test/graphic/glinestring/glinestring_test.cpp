@@ -21,43 +21,53 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#define BOOST_TEST_MODULE Tidop geospatial dtm test
+
+#define BOOST_TEST_MODULE Tidop graphic linestring test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geospatial/dtm.h>
+#include <tidop/graphic/entities/linestring.h>
+
 
 using namespace tl;
-using namespace geospatial;
+using namespace graph;
 
-//class DtmTest
-//  : public testing::Test
-//{
-//public:
+BOOST_AUTO_TEST_SUITE(GLineStringTestSuite)
 
-//  virtual void SetUp()
-//  {
-//    double radius = 0.;
-//    dtm_linear = new DtmLinear(radius);
-//    double radius1 = 0.0;
-//    double radius2 = 0.0;
-//    double angle = 0.0;
-//    dtm_linear = new DtmNearest(radius1, radius2, angle);
-//  }
+struct GLineStringTest
+{
 
-//  virtual void TearDown()
-//  {
-//    if (dtm_linear){
-//      delete dtm_linear;
-//      dtm_linear = nullptr;
-//    }
-//  }
+  GLineStringTest()
+  {
+  }
 
-//  Dtm *dtm_linear;
-//  Dtm *dtm_nearest;
-//};
+  ~GLineStringTest()
+  {
+  }
 
-//TEST_F(DtmTest, Constructor)
-//{
-//  //EXPECT_TRUE(dtm_linear->interpolation() == Dtm::Interpolation::LINEAR);
-//  //EXPECT_TRUE(dtm_nearest->interpolation() == Dtm::Interpolation::NEAREST);
-//}
+  GLineString linestring;
+  GLineString3D linestring_3d;
+  GMultiLineString multi_linestring;
+  GMultiLineString3D multi_linestring_3d;
+};
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, GLineStringTest)
+{
+  BOOST_CHECK_EQUAL(false, linestring.isMultiEntity());
+  BOOST_CHECK_EQUAL(true, linestring.isSimpleEntity());
+  BOOST_CHECK_EQUAL(false, linestring.is3D());
+
+  BOOST_CHECK_EQUAL(false, linestring_3d.isMultiEntity());
+  BOOST_CHECK_EQUAL(true, linestring_3d.isSimpleEntity());
+  BOOST_CHECK_EQUAL(true, linestring_3d.is3D());
+
+  BOOST_CHECK_EQUAL(true, multi_linestring.isMultiEntity());
+  BOOST_CHECK_EQUAL(false, multi_linestring.isSimpleEntity());
+  BOOST_CHECK_EQUAL(false, multi_linestring.is3D());
+
+  BOOST_CHECK_EQUAL(true, multi_linestring_3d.isMultiEntity());
+  BOOST_CHECK_EQUAL(false, multi_linestring_3d.isSimpleEntity());
+  BOOST_CHECK_EQUAL(true, multi_linestring_3d.is3D());
+  
+}
+
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -58,53 +58,6 @@ public:
 #endif
   };
 
-  /*!
-   * \brief
-   */
-  Type mType;
-
-protected:
-
-  /*!
-   * \brief Punto inicial
-   */
-  PointI mPt1;
-
-  /*!
-   * \brief Punto final
-   */
-  PointI mPt2;
-
-  /*!
-   * \brief Paso en X
-   */
-  int mStepX;
-
-  /*!
-   * \brief Paso en Y
-   */
-  int mStepY;
-
-  /*!
-   * \brief Posición actual
-   */
-  PointI mPos;
-
-  /*!
-   * \brief Incremento en X
-   */
-  int dx;
-
-  /*!
-   * \brief Incremento en Y
-   */
-  int dy;
-
-  /*!
-   * \brief número de puntos
-   */
-  int mCount;
-
 public:
 
   /*!
@@ -145,6 +98,53 @@ public:
    * \brief devuelve un vector con los puntos de la recta
    */
   virtual std::vector<PointI> points() = 0;
+
+protected:
+
+  /*!
+   * \brief
+   */
+  Type mType;
+
+  /*!
+   * \brief Punto inicial
+   */
+  PointI mPt1;
+
+  /*!
+   * \brief Punto final
+   */
+  PointI mPt2;
+
+  /*!
+   * \brief Paso en X
+   */
+  int mStepX;
+
+  /*!
+   * \brief Paso en Y
+   */
+  int mStepY;
+
+  /*!
+   * \brief Posición actual
+   */
+  PointI mPos;
+
+  /*!
+   * \brief Incremento en X
+   */
+  int dx;
+
+  /*!
+   * \brief Incremento en Y
+   */
+  int dy;
+
+  /*!
+   * \brief número de puntos
+   */
+  int mCount;
 
 };
 

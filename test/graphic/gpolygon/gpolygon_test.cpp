@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -22,104 +22,52 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_STATISTIC_TUKEY_H
-#define TL_MATH_STATISTIC_TUKEY_H
+#define BOOST_TEST_MODULE Tidop graphic polygon test
+#include <boost/test/unit_test.hpp>
+#include <tidop/graphic/entities/polygon.h>
 
-#include <tidop/core/defs.h>
-#include <tidop/core/messages.h>
-#include <tidop/math/statistic/descriptive.h>
 
-namespace tl
+using namespace tl;
+using namespace graph;
+
+BOOST_AUTO_TEST_SUITE(GPolygonTestSuite)
+
+struct GPolygonTest
 {
 
-namespace math
-{
-  
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \defgroup statistics Statistics
- *  \{
- */
- 
-/*!
- * /brief Tukey's fences
- *  
- */
-template<typename T>
-class TukeyFences
-{
-
-public:
-
-  enum class K
+  GPolygonTest()
   {
-    outlier, /* k = 1.5 */
-    far_out  /* k = 3   */
-  };
+  }
 
-public:
+  ~GPolygonTest()
+  {
+  }
 
-  TukeyFences();
-  ~TukeyFences();
-
-  std::vector<bool> eval(const Series<T> &data, K k = K::outlier);
-
+  graph::GPolygon polygon;
+  graph::GPolygon3D polygon_3d;
+  graph::GMultiPolygon multi_polygon;
+  graph::GMultiPolygon3D multi_polygon_3d;
 };
 
-
-/* Implementation */
-
-template<typename T>
-TukeyFences<T>::TukeyFences()
+BOOST_FIXTURE_TEST_CASE(default_constructor, GPolygonTest)
 {
-}
+  BOOST_CHECK_EQUAL(false, polygon.isMultiEntity());
+  BOOST_CHECK_EQUAL(true, polygon.isSimpleEntity());
+  BOOST_CHECK_EQUAL(false, polygon.is3D());
 
-template<typename T>
-TukeyFences<T>::~TukeyFences()
-{
-}
+  BOOST_CHECK_EQUAL(false, polygon_3d.isMultiEntity());
+  BOOST_CHECK_EQUAL(true, polygon_3d.isSimpleEntity());
+  BOOST_CHECK_EQUAL(true, polygon_3d.is3D());
 
-template<typename T> inline
-std::vector<bool> TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k)
-{
-  DescriptiveStatistics<T> stat(series);
+  BOOST_CHECK_EQUAL(true, multi_polygon.isMultiEntity());
+  BOOST_CHECK_EQUAL(false, multi_polygon.isSimpleEntity());
+  BOOST_CHECK_EQUAL(false, multi_polygon.is3D());
 
-  double _k{};
-
-  switch(k) {
-    case K::outlier:
-      _k = 1.5;
-      break;
-    case K::far_out:
-      _k = 3.;
-      break;
-  }
-
-  T el1 = stat.firstQuartile() - stat.interquartileRange() * _k;
-  T el2 = stat.thirdQuartile() + stat.interquartileRange() * _k;
-
-  std::vector<bool> inliers(stat.size(), false);
-
-  auto out = inliers.begin();
-  for(const auto &data : series) {
-    *out++ = el1 < data && data < el2;
-  }
-
-  return inliers;
+  BOOST_CHECK_EQUAL(true, multi_polygon_3d.isMultiEntity());
+  BOOST_CHECK_EQUAL(false, multi_polygon_3d.isSimpleEntity());
+  BOOST_CHECK_EQUAL(true, multi_polygon_3d.is3D());
+  
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
-
-} // End namespace math
-
-} // End namespace tl
-
-#endif TL_MATH_STATISTIC_TUKEY_H
-
-
+BOOST_AUTO_TEST_SUITE_END()

@@ -26,7 +26,6 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/graphic/font.h>
 
-
 using namespace tl;
 using namespace graph;
 

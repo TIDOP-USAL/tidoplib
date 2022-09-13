@@ -115,11 +115,6 @@ public:
    * \param[in] scale Escala
    * \param[in] rotation Matriz de rotación
    */
-  //Helmert3D(double tx, 
-  //          double ty, 
-  //          double tz, 
-  //          double scale, 
-  //          const std::array<std::array<double, 3>, 3> &rotation);
   Helmert3D(double tx, 
             double ty, 
             double tz, 
@@ -201,6 +196,8 @@ public:
 
   /*!
    * \brief Devuelve la escala de la transformación
+   * Escala en ppm: 
+   * (s - 1)*10^6
    * \return Escala de la transformación
    */
   double scale() const { return mScale; }
@@ -327,23 +324,6 @@ Helmert3D<Point_t>::Helmert3D(double tx,
   update();
 }
 
-//template<typename Point_t> inline
-//Helmert3D<Point_t>::Helmert3D(double tx, 
-//                              double ty, 
-//                              double tz,
-//                              double scale,
-//                              const std::array<std::array<double, 3>, 3> &rotation)
-//  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
-//    tx(tx),
-//    ty(ty),
-//    tz(tz),
-//    mScale(scale),
-//    mR(rotation)
-//{
-//  eulerAngles(mR, &mOmega, &mPhi, &mKappa);
-//  update();
-//}
-
 template<typename Point_t> inline
 Helmert3D<Point_t>::Helmert3D(double tx, 
                               double ty, 
@@ -407,86 +387,54 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 7;
 
-//  double *A = nullptr;
-//  double *L = nullptr;
-//  double *C = nullptr;
-
   try {
 
     math::Matrix<double> A(m, n, 0);
     math::Vector<double> B(m);
 
-//    A = new double[m * n];
-//    double *pa = A;
-//    L = new double[m];
-//    double *pl = L;
-//    C = new double[n];
-
     for (size_t i = 0, r = 0; i < n1; i++, r++) {
-      //*pa++ = pts1[i].x;
+
       A.at(r, 0) = pts1[i].x;
-      //*pa++ = 0;
       //A.at(r, 1) = 0;
-      //*pa++ = -pts1[i].z;
       A.at(r, 2) = -pts1[i].z;
-      //*pa++ = pts1[i].y;
       A.at(r, 3) = pts1[i].y;
-      //*pa++ = 1;
       A.at(r, 4) = 1;
-      //*pa++ = 0;
       //A.at(r, 5) = 0;
-      //*pa++ = 0;
       //A.at(r, 6) = 0;
 
-      //*pl++ = pts2[i].x;
       B[r] = pts2[i].x;
 
       r++;
 
-      //*pa++ = pts1[i].y;
       A.at(r, 0) = pts1[i].y;
-      //*pa++ = pts1[i].z;
       A.at(r, 1) = pts1[i].z;
-      //*pa++ = 0;
       //A.at(r, 2) = 0;
-      //*pa++ = -pts1[i].x;
       A.at(r, 3) = -pts1[i].x;
-      //*pa++ = 0;
       //A.at(r, 4) = 0;
-      //*pa++ = 1;
       A.at(r, 5) = 1;
-      //*pa++ = 0;
       //A.at(r, 6) = 0;
 
-      //*pl++ = pts2[i].y;
       B[r] = pts2[i].y;
 
       r++;
 
-      //*pa++ = pts1[i].z;
       A.at(r, 0) = pts1[i].z;
-      //*pa++ = -pts1[i].y;
       A.at(r, 1) = -pts1[i].y;
-      //*pa++ = pts1[i].x;
       A.at(r, 2) = pts1[i].x;
-      //*pa++ = 0;
       //A.at(r, 3) = 0;
-      //*pa++ = 0;
       //A.at(r, 4) = 0;
-      //*pa++ = 0;
       //A.at(r, 5) = 0;
-      //*pa++ = 1;
       A.at(r, 6) = 1;
 
-      //*pl++ = pts2[i].z;
       B[r] = pts2[i].z;
     }
 
-    //solveSVD(m, n, A, L, C);
     math::SingularValueDecomposition<math::Matrix<double>> svd(A);
     math::Vector<double> C = svd.solve(B);
 
-    mScale = C[0];
+    using sub_type = typename Point_t::value_type;
+
+    mScale = (C[0] - 1) * pow (10, 6);
     mOmega = C[1];
     mPhi = C[2];
     mKappa = C[3];
@@ -496,27 +444,17 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
     if (error) {
       ///TODO: este metodo sólo contempla puntos en 2d....
-      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+      //if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
     
-    //rmse = _rootMeanSquareError(pts1, pts2, error);
   } catch (std::exception &e) {
     msgError(e.what());
     status = Transform::Status::failure;
   }
 
-//  delete[] A;
-//  delete[] L;
-//  delete[] C;
-
   return status;
 }
-//
-//template<typename Point_t> inline
-//const std::array<std::array<double, 3>, 3> &Helmert3D<Point_t>::rotationMatrix() const 
-//{
-//  return mR;
-//}
+
 
 template<typename Point_t> inline
 math::RotationMatrix<double> Helmert3D<Point_t>::rotationMatrix() const
@@ -526,8 +464,8 @@ math::RotationMatrix<double> Helmert3D<Point_t>::rotationMatrix() const
 
 template<typename Point_t> inline
 Transform::Status Helmert3D<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
-                                               std::vector<Point_t> &ptsOut, 
-                                               Transform::Order trfOrder) const
+                                                std::vector<Point_t> &ptsOut, 
+                                                Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
 
@@ -550,11 +488,16 @@ Transform::Status Helmert3D<Point_t>::transform(const Point_t &ptIn,
 
   Point_t ptAux = ptIn;
 
+  sub_type scale = 1 + mScale * 1e-6/*pow(10, -6)*/;
   try {
     if (trfOrder == Transform::Order::direct){
-      ptOut.x = static_cast<sub_type>(mScale * (ptAux.x * mR.at(0,0) + ptAux.y * mR.at(0,1) + ptAux.z * mR.at(0,2)) + tx);
-      ptOut.y = static_cast<sub_type>(mScale * (ptAux.x * mR.at(1,0) + ptAux.y * mR.at(1,1) + ptAux.z * mR.at(1,2)) + ty);
-      ptOut.z = static_cast<sub_type>(mScale * (ptAux.x * mR.at(2,0) + ptAux.y * mR.at(2,1) + ptAux.z * mR.at(2,2)) + tz);
+      ptOut.x = static_cast<sub_type>(scale * (ptAux.x * mR.at(0,0) + ptAux.y * mR.at(0,1) + ptAux.z * mR.at(0,2)) + tx);
+      ptOut.y = static_cast<sub_type>(scale * (ptAux.x * mR.at(1,0) + ptAux.y * mR.at(1,1) + ptAux.z * mR.at(1,2)) + ty);
+      ptOut.z = static_cast<sub_type>(scale * (ptAux.x * mR.at(2,0) + ptAux.y * mR.at(2,1) + ptAux.z * mR.at(2,2)) + tz);
+
+      //ptOut.x = tx + scale * (ptAux.x /** mR.at(0, 0)*/ - ptAux.y * mKappa/*mR.at(0, 1)*/ + ptAux.z * mPhi/*mR.at(0, 2)*/);
+      //ptOut.y = ty + scale * (ptAux.x * /*mR.at(1, 0)*/mKappa + ptAux.y /** mR.at(1, 1)*/ - ptAux.z * mOmega/*mR.at(1, 2)*/);
+      //ptOut.z = tz + scale * (-ptAux.x * mPhi/*mR.at(2, 0)*/ + ptAux.y * mOmega/*mR.at(2, 1)*/ + ptAux.z /** mR.at(2, 2)*/);
     } else {
       sub_type dx = ptIn.x - tx; 
       sub_type dy = ptIn.y - ty; 

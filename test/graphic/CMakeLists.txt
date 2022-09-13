@@ -30,5 +30,7 @@ if(HAVE_TL_GRAPHIC)
 add_subdirectory(color)
 add_subdirectory(font)
 add_subdirectory(styles)
-
+add_subdirectory(gpoint)
+add_subdirectory(gpolygon)
+add_subdirectory(glinestring)
 endif()

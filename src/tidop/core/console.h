@@ -308,7 +308,6 @@ private:
    */
   WORD mBackgroundColor;
 
-  TL_TODO("Por terminar")
   CONSOLE_FONT_INFOEX mIniFont;
   CONSOLE_FONT_INFOEX mCurrentFont;
 

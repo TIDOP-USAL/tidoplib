@@ -255,18 +255,18 @@ private:
   std::shared_ptr<graph::GMultiPolygon> readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon);
   std::shared_ptr<graph::GMultiPolygon3D> readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon);
   void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicEntity> &gStyle);
-  std::shared_ptr<StylePen> readStylePen(OGRStylePen *ogrStylePen);
-  void readStylePenColor(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenCap(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenPattern(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenJoin(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenName(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenWidth(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenPerpendicularOffset(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  void readStylePenPriorityLevel(OGRStylePen *ogrStylePen, std::shared_ptr<StylePen> &stylePen);
-  std::shared_ptr<graph::StyleBrush> readStyleBrush(OGRStyleBrush *ogrStyleBrush);
-  std::shared_ptr<graph::StyleSymbol> readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
-  std::shared_ptr<graph::StyleLabel> readStyleLabel(OGRStyleLabel *ogrStyleLabel);
+  std::shared_ptr<Pen> readStylePen(OGRStylePen *ogrStylePen);
+  void readStylePenColor(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenCap(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenPattern(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenJoin(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenName(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenWidth(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenPerpendicularOffset(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  void readStylePenPriorityLevel(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
+  std::shared_ptr<graph::Brush> readStyleBrush(OGRStyleBrush *ogrStyleBrush);
+  std::shared_ptr<graph::Symbol> readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
+  std::shared_ptr<graph::Label> readStyleLabel(OGRStyleLabel *ogrStyleLabel);
   void readData(OGRFeature *ogrFeature,
                 OGRFeatureDefn *ogrFeatureDefinition,
                 std::shared_ptr<TableRegister> &data);
@@ -801,16 +801,16 @@ void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<Graphic
       OGRSTClassId ogrStyleType = ogrStyleTool->GetType();
       switch (ogrStyleType) {
       case OGRSTCPen:
-        gStyle->setStylePen(readStylePen(dynamic_cast<OGRStylePen *>(ogrStyleTool)));
+        gStyle->setPen(readStylePen(dynamic_cast<OGRStylePen *>(ogrStyleTool)));
         break;
       case OGRSTCBrush:
-        gStyle->setStyleBrush(readStyleBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool)));
+        gStyle->setBrush(readStyleBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool)));
         break;
       case OGRSTCSymbol:
-        gStyle->setStyleSymbol(readStyleSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool)));
+        gStyle->setSymbol(readStyleSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool)));
         break;
       case OGRSTCLabel:
-        gStyle->setStyleLabel(readStyleLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool)));
+        gStyle->setLabel(readStyleLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool)));
         break;
       case OGRSTCVector:
 
@@ -822,10 +822,10 @@ void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<Graphic
   }
 }
 
-std::shared_ptr<StylePen> VectorReaderGdal::readStylePen(OGRStylePen *ogrStylePen)
+std::shared_ptr<Pen> VectorReaderGdal::readStylePen(OGRStylePen *ogrStylePen)
 {
 
-  std::shared_ptr<StylePen> stylePen = std::make_shared<StylePen>();
+  std::shared_ptr<Pen> stylePen = std::make_shared<Pen>();
 
   this->readStylePenColor(ogrStylePen, stylePen);
   this->readStylePenCap(ogrStylePen, stylePen);
@@ -840,7 +840,7 @@ std::shared_ptr<StylePen> VectorReaderGdal::readStylePen(OGRStylePen *ogrStylePe
 }
 
 void VectorReaderGdal::readStylePenColor(OGRStylePen *ogrStylePen,
-                                         std::shared_ptr<StylePen> &stylePen)
+                                         std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   const char *hexColor = ogrStylePen->Color(bDefault);
@@ -850,25 +850,25 @@ void VectorReaderGdal::readStylePenColor(OGRStylePen *ogrStylePen,
 }
 
 void VectorReaderGdal::readStylePenCap(OGRStylePen *ogrStylePen,
-                                       std::shared_ptr<StylePen> &stylePen)
+                                       std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   const char *cap = ogrStylePen->Cap(bDefault);
   if (!bDefault) {
-    StylePen::Cap penCap;
+    Pen::Cap penCap;
     if (strcmp(cap, "cap:r") == 0) {
-      penCap = StylePen::Cap::round;
+      penCap = Pen::Cap::round;
     } else if (strcmp(cap, "cap:p") == 0) {
-      penCap = StylePen::Cap::projective;
+      penCap = Pen::Cap::projective;
     } else {
-      penCap = StylePen::Cap::butt;
+      penCap = Pen::Cap::butt;
     }
     stylePen->setCap(penCap);
   }
 }
 
 void VectorReaderGdal::readStylePenPattern(OGRStylePen *ogrStylePen, 
-                                           std::shared_ptr<StylePen> &stylePen)
+                                           std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   const char *pattern = ogrStylePen->Pattern(bDefault);
@@ -878,55 +878,55 @@ void VectorReaderGdal::readStylePenPattern(OGRStylePen *ogrStylePen,
 }
 
 void VectorReaderGdal::readStylePenJoin(OGRStylePen *ogrStylePen, 
-                                        std::shared_ptr<StylePen> &stylePen)
+                                        std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   const char *join = ogrStylePen->Join(bDefault);
   if (!bDefault) {
-    StylePen::Join penJoin;
+    Pen::Join penJoin;
     if (strcmp(join, "j:r") == 0) {
-      penJoin = StylePen::Join::rounded;
+      penJoin = Pen::Join::rounded;
     } else if (strcmp(join, "j:b") == 0) {
-      penJoin = StylePen::Join::bevel;
+      penJoin = Pen::Join::bevel;
     } else {
-      penJoin = StylePen::Join::miter;
+      penJoin = Pen::Join::miter;
     }
     stylePen->setJoin(penJoin);
   }
 }
 
 void VectorReaderGdal::readStylePenName(OGRStylePen *ogrStylePen, 
-                                        std::shared_ptr<StylePen> &stylePen)
+                                        std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   const char *name = ogrStylePen->Id(bDefault);
   if (!bDefault) {
-    StylePen::Name penName;
+    Pen::Name penName;
     if (strcmp(name, "ogr-pen-1") == 0) {
-      penName = StylePen::Name::null;
+      penName = Pen::Name::null;
     } else if (strcmp(name, "ogr-pen-2") == 0) {
-      penName = StylePen::Name::dash;
+      penName = Pen::Name::dash;
     } else if (strcmp(name, "ogr-pen-3") == 0) {
-      penName = StylePen::Name::short_dash;
+      penName = Pen::Name::short_dash;
     } else if (strcmp(name, "ogr-pen-4") == 0) {
-      penName = StylePen::Name::long_dash;
+      penName = Pen::Name::long_dash;
     } else if (strcmp(name, "ogr-pen-5") == 0) {
-      penName = StylePen::Name::dot_line;
+      penName = Pen::Name::dot_line;
     } else if (strcmp(name, "ogr-pen-6") == 0) {
-      penName = StylePen::Name::dash_dot_line;
+      penName = Pen::Name::dash_dot_line;
     } else if (strcmp(name, "ogr-pen-7") == 0) {
-      penName = StylePen::Name::dash_dot_dot_line;
+      penName = Pen::Name::dash_dot_dot_line;
     } else if (strcmp(name, "ogr-pen-8") == 0) {
-      penName = StylePen::Name::alternate_line;
+      penName = Pen::Name::alternate_line;
     } else {
-      penName = StylePen::Name::solid;
+      penName = Pen::Name::solid;
     }
     stylePen->setName(penName);
   }
 }
 
 void VectorReaderGdal::readStylePenWidth(OGRStylePen *ogrStylePen, 
-                                         std::shared_ptr<StylePen> &stylePen)
+                                         std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   double width = ogrStylePen->Width(bDefault);
@@ -955,7 +955,7 @@ void VectorReaderGdal::readStylePenWidth(OGRStylePen *ogrStylePen,
 }
 
 void VectorReaderGdal::readStylePenPerpendicularOffset(OGRStylePen *ogrStylePen,
-                                                       std::shared_ptr<StylePen> &stylePen)
+                                                       std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   double perpendicularOffset = ogrStylePen->PerpendicularOffset(bDefault);
@@ -966,7 +966,7 @@ void VectorReaderGdal::readStylePenPerpendicularOffset(OGRStylePen *ogrStylePen,
 }
 
 void VectorReaderGdal::readStylePenPriorityLevel(OGRStylePen *ogrStylePen, 
-                                                 std::shared_ptr<StylePen> &stylePen)
+                                                 std::shared_ptr<Pen> &stylePen)
 {
   GBool bDefault = false;
   auto priority = static_cast<uint32_t>(ogrStylePen->Priority(bDefault));
@@ -975,63 +975,63 @@ void VectorReaderGdal::readStylePenPriorityLevel(OGRStylePen *ogrStylePen,
   }
 }
 
-std::shared_ptr<StyleBrush> VectorReaderGdal::readStyleBrush(OGRStyleBrush *ogrStyleBrush)
+std::shared_ptr<Brush> VectorReaderGdal::readStyleBrush(OGRStyleBrush *ogrStyleBrush)
 {
   GBool bDefault = false;
-  std::shared_ptr<StyleBrush> styleBrush = std::make_shared<StyleBrush>();
+  std::shared_ptr<Brush> brush = std::make_shared<Brush>();
 
   /* Angle */
   double angle = ogrStyleBrush->Angle(bDefault);
   if (!bDefault) {
-    styleBrush->setAngle(angle); //TODO: ?Mejor como float en radianes??
+    brush->setAngle(angle); //TODO: ?Mejor como float en radianes??
   }
 
   /* Back Color */
   const char *hexColor = ogrStyleBrush->BackColor(bDefault);
   if (!bDefault) {
-    styleBrush->setBackColor(tl::graph::Color(hexColor + 1));
+    brush->setBackgroundColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Fore Color */
   hexColor = ogrStyleBrush->ForeColor(bDefault);
   if (!bDefault) {
-    styleBrush->setForeColor(tl::graph::Color(hexColor + 1));
+    brush->setForegroundColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Brush Name */
   const char *brush_name = ogrStyleBrush->Id(bDefault);
   if (!bDefault) {
-    StyleBrush::Name brushName;
+    Brush::Name name;
     if (strcmp(brush_name, "ogr-pen-1") == 0) {
-      brushName = StyleBrush::Name::null;
+      name = Brush::Name::null;
     } else if (strcmp(brush_name, "ogr-pen-2") == 0) {
-      brushName = StyleBrush::Name::horizontal_hatch;
+      name = Brush::Name::horizontal_hatch;
     } else if (strcmp(brush_name, "ogr-pen-3") == 0) {
-      brushName = StyleBrush::Name::vertical_hatch;
+      name = Brush::Name::vertical_hatch;
     } else if (strcmp(brush_name, "ogr-pen-4") == 0) {
-      brushName = StyleBrush::Name::fdiagonal_hatch;
+      name = Brush::Name::fdiagonal_hatch;
     } else if (strcmp(brush_name, "ogr-pen-5") == 0) {
-      brushName = StyleBrush::Name::bdiagonal_hatch;
+      name = Brush::Name::bdiagonal_hatch;
     } else if (strcmp(brush_name, "ogr-pen-6") == 0) {
-      brushName = StyleBrush::Name::cross_hatch;
+      name = Brush::Name::cross_hatch;
     } else if (strcmp(brush_name, "ogr-pen-7") == 0) {
-      brushName = StyleBrush::Name::diagcross_hatch;
+      name = Brush::Name::diagcross_hatch;
     } else {
-      brushName = StyleBrush::Name::solid;
+      name = Brush::Name::solid;
     }
-    styleBrush->setBrushName(brushName);
+    brush->setName(name);
   }
 
   /* Priority Level */
   auto  priority = static_cast<uint32_t>(ogrStyleBrush->Priority(bDefault));
   if (!bDefault) {
-    styleBrush->setPriorityLevel(priority);
+    brush->setPriorityLevel(priority);
   }
 
   /* Scaling Factor */
   double scalingFactor = ogrStyleBrush->Size(bDefault);
   if (!bDefault) {
-    styleBrush->setScalingFactor(scalingFactor);
+    brush->setScalingFactor(scalingFactor);
   }
 
   /* Spacing */
@@ -1040,59 +1040,59 @@ std::shared_ptr<StyleBrush> VectorReaderGdal::readStyleBrush(OGRStyleBrush *ogrS
   GBool bDefault2 = false;
   double spacingY = ogrStyleBrush->SpacingY(bDefault);
   if (!bDefault && !bDefault2) {
-    styleBrush->setSpacing(spacingX, spacingY);
+    brush->setSpacing(spacingX, spacingY);
   }
 
-  return styleBrush;
+  return brush;
 }
 
-std::shared_ptr<StyleSymbol> VectorReaderGdal::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol)
+std::shared_ptr<Symbol> VectorReaderGdal::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol)
 {
   GBool bDefault = false;
-  std::shared_ptr<StyleSymbol> styleSymbol = std::make_shared<StyleSymbol>();
+  std::shared_ptr<Symbol> symbol = std::make_shared<Symbol>();
 
   /* Angle */
   double angle = ogrStyleSymbol->Angle(bDefault);
   if (!bDefault) {
-    styleSymbol->setAngle(angle);
+    symbol->setAngle(angle);
   }
 
   /* Color */
   const char *hexColor = ogrStyleSymbol->Color(bDefault);
   if (!bDefault) {
-    styleSymbol->setColor(tl::graph::Color(hexColor + 1));
+    symbol->setColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Name */
   const char *name = ogrStyleSymbol->Id(bDefault);
   if (!bDefault) {
-    StyleSymbol::Name symbolName = StyleSymbol::Name::cross;
+    Symbol::Name symbolName = Symbol::Name::cross;
     if (strcmp(name, "ogr-sym-0") == 0) {
-      symbolName = StyleSymbol::Name::cross;
+      symbolName = Symbol::Name::cross;
     } else if (strcmp(name, "ogr-sym-1") == 0) {
-      symbolName = StyleSymbol::Name::diagonal_cross;
+      symbolName = Symbol::Name::diagonal_cross;
     } else if (strcmp(name, "ogr-sym-2") == 0) {
-      symbolName = StyleSymbol::Name::circle;
+      symbolName = Symbol::Name::circle;
     } else if (strcmp(name, "ogr-sym-3") == 0) {
-      symbolName = StyleSymbol::Name::circle_filled;
+      symbolName = Symbol::Name::circle_filled;
     } else if (strcmp(name, "ogr-sym-4") == 0) {
-      symbolName = StyleSymbol::Name::square;
+      symbolName = Symbol::Name::square;
     } else if (strcmp(name, "ogr-sym-5") == 0) {
-      symbolName = StyleSymbol::Name::square_filled;
+      symbolName = Symbol::Name::square_filled;
     } else if (strcmp(name, "ogr-sym-6") == 0) {
-      symbolName = StyleSymbol::Name::triangle;
+      symbolName = Symbol::Name::triangle;
     } else if (strcmp(name, "ogr-sym-7") == 0) {
-      symbolName = StyleSymbol::Name::triangle_filled;
+      symbolName = Symbol::Name::triangle_filled;
     } else if (strcmp(name, "ogr-sym-8") == 0) {
-      symbolName = StyleSymbol::Name::star;
+      symbolName = Symbol::Name::star;
     } else if (strcmp(name, "ogr-sym-9") == 0) {
-      symbolName = StyleSymbol::Name::star_filled;
+      symbolName = Symbol::Name::star_filled;
     } else if (strcmp(name, "ogr-sym-10") == 0) {
-      symbolName = StyleSymbol::Name::vertical_bar;
+      symbolName = Symbol::Name::vertical_bar;
     } else {
       ///TODO: Bitmap...
     }
-    styleSymbol->setName(symbolName);
+    symbol->setName(symbolName);
   }
 
   /* Offset */
@@ -1100,130 +1100,130 @@ std::shared_ptr<StyleSymbol> VectorReaderGdal::readStyleSymbol(OGRStyleSymbol *o
   double offsetX = ogrStyleSymbol->SpacingX(bDefault);
   double offsetY = ogrStyleSymbol->SpacingY(bDefault1);
   if (!bDefault && !bDefault1) {
-    styleSymbol->setOffset(offsetX, offsetY);
+    symbol->setOffset(offsetX, offsetY);
   }
 
   /* Outline Color */
   hexColor = ogrStyleSymbol->OColor(bDefault);
   if (!bDefault) {
-    styleSymbol->setOutlineColor(tl::graph::Color(hexColor + 1));
+    symbol->setOutlineColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Priority Level */
   auto  priorityLevel = static_cast<uint32_t>(ogrStyleSymbol->Priority(bDefault));
   if (!bDefault) {
-    styleSymbol->setPriorityLevel(priorityLevel);
+    symbol->setPriorityLevel(priorityLevel);
   }
 
   /* Scaling Factor */
   double scalingFactor = ogrStyleSymbol->Size(bDefault);
   if (!bDefault) {
-    styleSymbol->setScalingFactor(scalingFactor);
+    symbol->setScalingFactor(scalingFactor);
   }
 
-  return styleSymbol;
+  return symbol;
 }
 
-std::shared_ptr<StyleLabel> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrStyleLabel)
+std::shared_ptr<Label> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrStyleLabel)
 {
   GBool bDefault = false;
-  std::shared_ptr<StyleLabel> styleLabel = std::make_shared<StyleLabel>();
+  std::shared_ptr<Label> label = std::make_shared<Label>();
 
   /* Anchor Position */
   int anchor = ogrStyleLabel->Anchor(bDefault);
   if (!bDefault) {
-    StyleLabel::AnchorPosition anchorPosition = StyleLabel::AnchorPosition::vertical_baseline |
-                                                StyleLabel::AnchorPosition::horizontal_left;
+    Label::AnchorPosition anchorPosition = Label::AnchorPosition::vertical_baseline |
+                                                Label::AnchorPosition::horizontal_left;
     if (anchor == 1) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_baseline |
-        StyleLabel::AnchorPosition::horizontal_left;
+      anchorPosition = Label::AnchorPosition::vertical_baseline |
+        Label::AnchorPosition::horizontal_left;
     } else if (anchor == 2) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_baseline |
-        StyleLabel::AnchorPosition::horizontal_center;
+      anchorPosition = Label::AnchorPosition::vertical_baseline |
+        Label::AnchorPosition::horizontal_center;
     } else if (anchor == 3) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_baseline |
-        StyleLabel::AnchorPosition::horizontal_right;
+      anchorPosition = Label::AnchorPosition::vertical_baseline |
+        Label::AnchorPosition::horizontal_right;
     } else if (anchor == 4) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_center |
-        StyleLabel::AnchorPosition::horizontal_left;
+      anchorPosition = Label::AnchorPosition::vertical_center |
+        Label::AnchorPosition::horizontal_left;
     } else if (anchor == 5) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_center |
-                       StyleLabel::AnchorPosition::horizontal_center;
+      anchorPosition = Label::AnchorPosition::vertical_center |
+                       Label::AnchorPosition::horizontal_center;
     } else if (anchor == 6) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_center |
-                       StyleLabel::AnchorPosition::horizontal_right;
+      anchorPosition = Label::AnchorPosition::vertical_center |
+                       Label::AnchorPosition::horizontal_right;
     } else if (anchor == 7) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_top |
-                       StyleLabel::AnchorPosition::horizontal_left;
+      anchorPosition = Label::AnchorPosition::vertical_top |
+                       Label::AnchorPosition::horizontal_left;
     } else if (anchor == 8) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_top |
-                       StyleLabel::AnchorPosition::horizontal_center;
+      anchorPosition = Label::AnchorPosition::vertical_top |
+                       Label::AnchorPosition::horizontal_center;
     } else if (anchor == 9) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_top |
-                       StyleLabel::AnchorPosition::horizontal_right;
+      anchorPosition = Label::AnchorPosition::vertical_top |
+                       Label::AnchorPosition::horizontal_right;
     } else if (anchor == 10) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_bottom |
-                       StyleLabel::AnchorPosition::horizontal_left;
+      anchorPosition = Label::AnchorPosition::vertical_bottom |
+                       Label::AnchorPosition::horizontal_left;
     } else if (anchor == 11) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_bottom |
-                       StyleLabel::AnchorPosition::horizontal_center;
+      anchorPosition = Label::AnchorPosition::vertical_bottom |
+                       Label::AnchorPosition::horizontal_center;
     } else if (anchor == 12) {
-      anchorPosition = StyleLabel::AnchorPosition::vertical_bottom |
-                       StyleLabel::AnchorPosition::horizontal_right;
+      anchorPosition = Label::AnchorPosition::vertical_bottom |
+                       Label::AnchorPosition::horizontal_right;
     }
-    styleLabel->setAnchorPosition(anchorPosition);
+    label->setAnchorPosition(anchorPosition);
   }
 
   /* Angle */
   double angle = ogrStyleLabel->Angle(bDefault);
   if (!bDefault) {
-    styleLabel->setAngle(angle);
+    label->setAngle(angle);
   }
 
   /* Background Color */
   const char *hexColor = ogrStyleLabel->BackColor(bDefault);
   if (!bDefault) {
-    styleLabel->setBackgroundColor(tl::graph::Color(hexColor + 1));
+    label->setBackgroundColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Foreground Color */
   hexColor = ogrStyleLabel->ForeColor(bDefault);
   if (!bDefault) {
-    styleLabel->setForegroundColor(tl::graph::Color(hexColor + 1));
+    label->setForegroundColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Outline Color */
   hexColor = ogrStyleLabel->OutlineColor(bDefault);
   if (!bDefault) {
-    styleLabel->setOutlineColor(tl::graph::Color(hexColor + 1));
+    label->setOutlineColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Shadow Color */
   hexColor = ogrStyleLabel->ShadowColor(bDefault);
   if (!bDefault) {
-    styleLabel->setShadowColor(tl::graph::Color(hexColor + 1));
+    label->setShadowColor(tl::graph::Color(hexColor + 1));
   }
 
   /* Label Placement */
-  const char *placement = ogrStyleLabel->Placement(bDefault);
+  const char *ogr_placement = ogrStyleLabel->Placement(bDefault);
   if (!bDefault) {
-    StyleLabel::LabelPlacement labelPlacement;
-    if (strcmp(placement, "m:l") == 0) {
-      labelPlacement = StyleLabel::LabelPlacement::l;
-    } else if (strcmp(placement, "m:s") == 0) {
-      labelPlacement = StyleLabel::LabelPlacement::s;
-    } else if (strcmp(placement, "m:m") == 0) {
-      labelPlacement = StyleLabel::LabelPlacement::m;
-    } else if (strcmp(placement, "m:w") == 0) {
-      labelPlacement = StyleLabel::LabelPlacement::w;
-    } else if (strcmp(placement, "m:h") == 0) {
-      labelPlacement = StyleLabel::LabelPlacement::h;
-    } else if (strcmp(placement, "m:a") == 0) {
-      labelPlacement = StyleLabel::LabelPlacement::a;
+    Label::Placement placement;
+    if (strcmp(ogr_placement, "m:l") == 0) {
+      placement = Label::Placement::l;
+    } else if (strcmp(ogr_placement, "m:s") == 0) {
+      placement = Label::Placement::s;
+    } else if (strcmp(ogr_placement, "m:m") == 0) {
+      placement = Label::Placement::m;
+    } else if (strcmp(ogr_placement, "m:w") == 0) {
+      placement = Label::Placement::w;
+    } else if (strcmp(ogr_placement, "m:h") == 0) {
+      placement = Label::Placement::h;
+    } else if (strcmp(ogr_placement, "m:a") == 0) {
+      placement = Label::Placement::a;
     } else {
-      labelPlacement = StyleLabel::LabelPlacement::p;
+      placement = Label::Placement::p;
     }
-    styleLabel->setLabelPlacement(labelPlacement);
+    label->setPlacement(placement);
   }
 
   /* Offset */
@@ -1231,13 +1231,13 @@ std::shared_ptr<StyleLabel> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrS
   double offsetX = ogrStyleLabel->SpacingX(bDefault);
   double offsetY = ogrStyleLabel->SpacingY(bDefault1);
   if (!bDefault && !bDefault1) {
-    styleLabel->setOffset(offsetX, offsetY);
+    label->setOffset(offsetX, offsetY);
   }
 
   /* Stretch */
   double stretch = ogrStyleLabel->Stretch(bDefault);
   if (!bDefault) {
-    styleLabel->setStretch(stretch);
+    label->setStretch(stretch);
   }
 
   /* Font */
@@ -1296,9 +1296,9 @@ std::shared_ptr<StyleLabel> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrS
     font.setStrikethrough(strikeout);
   }
 
-  styleLabel->setFont(font);
+  label->setFont(font);
 
-  return styleLabel;
+  return label;
 }
 
 void VectorReaderGdal::readData(OGRFeature *ogrFeature,

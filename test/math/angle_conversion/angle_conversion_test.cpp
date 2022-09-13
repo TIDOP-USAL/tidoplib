@@ -91,6 +91,19 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, RadiansTest)
   BOOST_CHECK_EQUAL(0.0, angle.value());
 }
 
+BOOST_FIXTURE_TEST_CASE(copy_constructor, RadiansTest)
+{
+  Radians<double> copy(angle_pi_div2);
+  BOOST_CHECK_EQUAL(consts::half_pi<double>, copy.value());
+}
+
+BOOST_FIXTURE_TEST_CASE(move_constructor, RadiansTest)
+{
+  Radians<double> temp(-3 * consts::pi<double>);
+  Radians<double> move(std::move(temp));
+  BOOST_CHECK_EQUAL(-3 * consts::pi<double>, move.value());
+}
+
 BOOST_FIXTURE_TEST_CASE(normalize, RadiansTest) 
 {
   /// Angulos entre 0 y 2*PI

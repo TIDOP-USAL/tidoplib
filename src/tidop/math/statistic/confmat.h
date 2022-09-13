@@ -25,11 +25,6 @@
 #ifndef TL_MATH_STATISTIC_CONFUSSION_MATRIX_H
 #define TL_MATH_STATISTIC_CONFUSSION_MATRIX_H
 
-//#include <vector> 
-//#include <string> 
-//#include <tuple>
-//#include <iomanip>
-
 #include <tidop/core/defs.h>
 #include <tidop/core/messages.h>
 

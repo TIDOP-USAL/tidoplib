@@ -137,8 +137,6 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
       }
     }
 
-    TL_TODO("devolver wrongMatches")
-
 #  else
     TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
     throw TL_ERROR("'matchGMS' not supported in OpenCV versions < 3.3.1");

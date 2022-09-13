@@ -24,15 +24,6 @@
 
 #include "tidop/graphic/painter.h"
 
-#ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal_priv.h"
-#include "cpl_conv.h"
-#include "ogr_core.h"
-#include "ogr_featurestyle.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -53,28 +44,19 @@ namespace graph
 
 Painter::Painter()
   : mTrf(nullptr),
-    mCanvas(nullptr),
-    mGraphicStyle(new GraphicStyle)
+    mCanvas(nullptr)
 {
 }
 
 Painter::Painter(Canvas *canvas)
   : mTrf(nullptr),
-    mCanvas(canvas),
-    mGraphicStyle(new GraphicStyle)
+    mCanvas(canvas)
 {
 }
 
-//Painter::Painter(const Painter &painter)
-//  : mTrf(painter.mTrf),
-//    mCanvas(new Canvas),
-//    mGraphicStyle(painter.mGraphicStyle)
-//{
-//}
 
 Painter::~Painter()
 {
-  if (mGraphicStyle) delete mGraphicStyle;
 }
 
 void Painter::drawPoint(const GPoint &point) 
@@ -89,7 +71,7 @@ void Painter::drawPoint(const GPoint &point)
 void Painter::drawPoint(const PointD &point)
 {
   if (mCanvas){
-    mCanvas->drawPoint(point, *mGraphicStyle);
+    mCanvas->drawPoint(point, *this);
   } else {
      msgError("Canvas not defined");
   }
@@ -112,7 +94,7 @@ void Painter::drawPolygon(const GPolygon &polygon)
       polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::inverse);
     }
     
-    mCanvas->drawPolygon(polygon_transform, *mGraphicStyle);
+    mCanvas->drawPolygon(polygon_transform, *this);
   } else {
     msgError("Canvas not defined");
   }
@@ -142,7 +124,7 @@ void Painter::drawPicture(const cv::Mat &bmp)
 
 void Painter::drawText(const PointD &point, const std::string &text)
 {
-  mCanvas->drawText(point, text, *mGraphicStyle);
+  mCanvas->drawText(point, text, *this);
 }
 
 void Painter::setCanvas(Canvas *canvas)
@@ -150,25 +132,25 @@ void Painter::setCanvas(Canvas *canvas)
   mCanvas = canvas;
 }
 
-void Painter::setPen(const std::shared_ptr<StylePen> &pen)
-{
-  mGraphicStyle->setStylePen(pen);
-}
-
-void Painter::setBrush(const std::shared_ptr<StyleBrush> &brush)
-{
-  mGraphicStyle->setStyleBrush(brush);
-}
-
-void Painter::setSymbol(const std::shared_ptr<StyleSymbol> &symbol)
-{
-  mGraphicStyle->setStyleSymbol(symbol);
-}
-
-void Painter::setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel)
-{
-  mGraphicStyle->setStyleLabel(styleLabel);
-}
+//void Painter::setPen(const std::shared_ptr<Pen> &pen)
+//{
+//  mGraphicStyle->setPen(pen);
+//}
+//
+//void Painter::setBrush(const std::shared_ptr<Brush> &brush)
+//{
+//  mGraphicStyle->setBrush(brush);
+//}
+//
+//void Painter::setSymbol(const std::shared_ptr<Symbol> &symbol)
+//{
+//  mGraphicStyle->setSymbol(symbol);
+//}
+//
+//void Painter::setLabel(const std::shared_ptr<Label> &label)
+//{
+//  mGraphicStyle->setLabel(label);
+//}
 
 void Painter::setTransform(Transform/*<PointF>*/ *trf)
 {

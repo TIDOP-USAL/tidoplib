@@ -34,7 +34,7 @@ struct StylePenTest
 {
   StylePenTest()
   {
-    style = new graph::StylePen;
+    style = new graph::Pen;
   }
     
   ~StylePenTest()
@@ -53,8 +53,8 @@ struct StylePenTest
   {
   }
 
-  graph::StylePen def_style;
-  graph::StylePen *style;
+  graph::Pen def_style;
+  graph::Pen *style;
 };
 
 
@@ -64,9 +64,9 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StylePenTest)
   BOOST_CHECK(color == def_style.color());
   BOOST_CHECK_EQUAL(1, def_style.width());
   BOOST_CHECK_EQUAL("", def_style.pattern());
-  BOOST_CHECK(StylePen::Name::solid == def_style.name());
-  BOOST_CHECK(StylePen::Cap::butt == def_style.cap());
-  BOOST_CHECK(StylePen::Join::bevel == def_style.join());
+  BOOST_CHECK(Pen::Name::solid == def_style.name());
+  BOOST_CHECK(Pen::Cap::butt == def_style.cap());
+  BOOST_CHECK(Pen::Join::bevel == def_style.join());
   BOOST_CHECK_EQUAL(0, def_style.perpendicularOffset());
   BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
 }
@@ -92,20 +92,20 @@ BOOST_FIXTURE_TEST_CASE(setPattern, StylePenTest)
 
 BOOST_FIXTURE_TEST_CASE(setName, StylePenTest)
 {
-  style->setName(StylePen::Name::dash_dot_line);
-  BOOST_CHECK(StylePen::Name::dash_dot_line == style->name());
+  style->setName(Pen::Name::dash_dot_line);
+  BOOST_CHECK(Pen::Name::dash_dot_line == style->name());
 }
 
 BOOST_FIXTURE_TEST_CASE(setCap, StylePenTest)
 {
-  style->setCap(StylePen::Cap::projective);
-  BOOST_CHECK(StylePen::Cap::projective == style->cap());
+  style->setCap(Pen::Cap::projective);
+  BOOST_CHECK(Pen::Cap::projective == style->cap());
 }
 
 BOOST_FIXTURE_TEST_CASE(setJoin, StylePenTest)
 {
-  style->setJoin(StylePen::Join::rounded);
-  BOOST_CHECK(StylePen::Join::rounded == style->join());
+  style->setJoin(Pen::Join::rounded);
+  BOOST_CHECK(Pen::Join::rounded == style->join());
 }
 
 BOOST_FIXTURE_TEST_CASE(setPerpendicularOffset, StylePenTest)
@@ -141,16 +141,16 @@ struct StyleBrushTest
   {
   }
 
-  StyleBrush def_style;
+  Brush def_style;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, StyleBrushTest)
 {
   graph::Color color;
-  BOOST_CHECK(color == def_style.foreColor());
-  BOOST_CHECK(color == def_style.backColor());
-  BOOST_CHECK(StyleBrush::Name::solid == def_style.brushName());
+  BOOST_CHECK(color == def_style.foregroundColor());
+  BOOST_CHECK(color == def_style.backgroundColor());
+  BOOST_CHECK(Brush::Name::solid == def_style.name());
   BOOST_CHECK_EQUAL(0., def_style.angle());
   BOOST_CHECK_EQUAL(1., def_style.scalingFactor());
   BOOST_CHECK_EQUAL(0., def_style.spacingX());
@@ -158,24 +158,24 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleBrushTest)
   BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
 }
 
-BOOST_FIXTURE_TEST_CASE(setForeColor, StyleBrushTest)
+BOOST_FIXTURE_TEST_CASE(setForegroundColor, StyleBrushTest)
 {
   graph::Color color(graph::Color::Name::indigo);
-  def_style.setForeColor(color);
-  BOOST_CHECK(color == def_style.foreColor());
+  def_style.setForegroundColor(color);
+  BOOST_CHECK(color == def_style.foregroundColor());
 }
 
-BOOST_FIXTURE_TEST_CASE(setBackColor, StyleBrushTest)
+BOOST_FIXTURE_TEST_CASE(setBackgroundColor, StyleBrushTest)
 {
   graph::Color color(graph::Color::Name::indigo);
-  def_style.setBackColor(color);
-  BOOST_CHECK(color == def_style.backColor());
+  def_style.setBackgroundColor(color);
+  BOOST_CHECK(color == def_style.backgroundColor());
 }
 
-BOOST_FIXTURE_TEST_CASE(setBrushName, StyleBrushTest)
+BOOST_FIXTURE_TEST_CASE(setName, StyleBrushTest)
 {
-  def_style.setBrushName(StyleBrush::Name::null);
-  BOOST_CHECK(StyleBrush::Name::null == def_style.brushName());
+  def_style.setName(Brush::Name::null);
+  BOOST_CHECK(Brush::Name::null == def_style.name());
 }
 
 BOOST_FIXTURE_TEST_CASE(setAngle, StyleBrushTest)
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_SUITE(StyleSymbolTestSuite)
 struct StyleSymbolTest
 {
   StyleSymbolTest()
-    : style(new StyleSymbol)
+    : style(new Symbol)
   {}
 
   ~StyleSymbolTest()
@@ -228,15 +228,15 @@ struct StyleSymbolTest
 
   }
 
-  StyleSymbol def_style;
-  StyleSymbol *style;
+  Symbol def_style;
+  Symbol *style;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, StyleSymbolTest)
 {
   BOOST_CHECK_EQUAL(0., def_style.angle());
-  BOOST_CHECK(StyleSymbol::Name::cross == def_style.name());
+  BOOST_CHECK(Symbol::Name::cross == def_style.name());
   graph::Color color;
   BOOST_CHECK(color == def_style.color());
   BOOST_CHECK(color == def_style.outlineColor());
@@ -254,8 +254,8 @@ BOOST_FIXTURE_TEST_CASE(setAngle, StyleSymbolTest)
 
 BOOST_FIXTURE_TEST_CASE(setName, StyleSymbolTest)
 {
-  style->setName(StyleSymbol::Name::circle);
-  BOOST_CHECK(StyleSymbol::Name::circle == style->name());
+  style->setName(Symbol::Name::circle);
+  BOOST_CHECK(Symbol::Name::circle == style->name());
 }
 
 BOOST_FIXTURE_TEST_CASE(setColor, StyleSymbolTest)
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_SUITE(StyleLabelTestSuite)
 struct StyleLabelTest
 {
   StyleLabelTest()
-    : style(new StyleLabel)
+    : style(new Label)
   {}
 
   ~StyleLabelTest()
@@ -313,8 +313,8 @@ struct StyleLabelTest
   {
   }
 
-  StyleLabel def_style;
-  StyleLabel *style;
+  Label def_style;
+  Label *style;
 };
 
 
@@ -328,8 +328,8 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
   BOOST_CHECK(color == def_style.outlineColor());
   BOOST_CHECK(color == def_style.shadowColor());
   BOOST_CHECK_EQUAL(100., def_style.stretch());
-  BOOST_CHECK(StyleLabel::LabelPlacement::p == def_style.labelPlacement());
-  BOOST_CHECK((StyleLabel::AnchorPosition::vertical_baseline | StyleLabel::AnchorPosition::horizontal_left) ==
+  BOOST_CHECK(Label::Placement::p == def_style.placement());
+  BOOST_CHECK((Label::AnchorPosition::vertical_baseline | Label::AnchorPosition::horizontal_left) ==
             def_style.anchorPosition());
   BOOST_CHECK_EQUAL(0., def_style.offsetX());
   BOOST_CHECK_EQUAL(0., def_style.offsetY());
@@ -382,16 +382,16 @@ BOOST_FIXTURE_TEST_CASE(setStretch, StyleLabelTest)
   BOOST_CHECK_EQUAL(25., style->stretch());
 }
 
-BOOST_FIXTURE_TEST_CASE(setLabelPlacement, StyleLabelTest)
+BOOST_FIXTURE_TEST_CASE(setPlacement, StyleLabelTest)
 {
-  style->setLabelPlacement(StyleLabel::LabelPlacement::l);
-  BOOST_CHECK(StyleLabel::LabelPlacement::l == style->labelPlacement());
+  style->setPlacement(Label::Placement::l);
+  BOOST_CHECK(Label::Placement::l == style->placement());
 }
 
 BOOST_FIXTURE_TEST_CASE(setAnchorPosition, StyleLabelTest)
 {
-  style->setAnchorPosition(StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left);
-  BOOST_CHECK((StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left) == style->anchorPosition());
+  style->setAnchorPosition(Label::AnchorPosition::vertical_center | Label::AnchorPosition::horizontal_left);
+  BOOST_CHECK((Label::AnchorPosition::vertical_center | Label::AnchorPosition::horizontal_left) == style->anchorPosition());
 }
 
 BOOST_FIXTURE_TEST_CASE(setOffset, StyleLabelTest)

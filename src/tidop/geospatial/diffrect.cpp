@@ -94,8 +94,8 @@ Point3<double> DifferentialRectification::forwardProjection(const Point<double> 
     double z_dif = point.z - mCameraPosition.z;
 
     double div = mRotationMatrix.at(0, 2) * x +
-      mRotationMatrix.at(1, 2) * y -
-      mRotationMatrix.at(2, 2) * mFocal;
+                 mRotationMatrix.at(1, 2) * y -
+                 mRotationMatrix.at(2, 2) * mFocal;
 
     point.x = mCameraPosition.x +
       z_dif * (mRotationMatrix.at(0, 0) * imagePoint.x +
@@ -124,8 +124,8 @@ Point<double> DifferentialRectification::backwardProjection(const Point3<double>
     double dy = groundPoint.y - mCameraPosition.y;
     double dz = groundPoint.z - mCameraPosition.z;
     double div = mRotationMatrix.at(2, 0) * dx +
-      mRotationMatrix.at(2, 1) * dy +
-      mRotationMatrix.at(2, 2) * (groundPoint.z - mCameraPosition.z);
+                 mRotationMatrix.at(2, 1) * dy +
+                 mRotationMatrix.at(2, 2) * (groundPoint.z - mCameraPosition.z);
 
 
     photo_coordinates.x = -mFocal * (mRotationMatrix.at(0, 0) * dx +

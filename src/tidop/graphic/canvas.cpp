@@ -32,12 +32,6 @@
 #include "opencv2/highgui/highgui.hpp"
 #endif
 
-#ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif
-
 namespace tl
 {
 
@@ -76,55 +70,55 @@ CanvasCV::~CanvasCV()
 
 void CanvasCV::drawPoint(const GPoint &point)
 {
-  StyleSymbol *style_symbol = point.styleSymbol();
-  StylePen *style_pen = point.stylePen();
+  Symbol *style_symbol = point.symbol();
+  Pen *style_pen = point.pen();
   Color c = style_pen->color();
   cv::Scalar color = colorToCvScalar(c);
   PointD pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
   PointI pt = point + pt_offset;
 
   switch (style_symbol->name()) {
-  case StyleSymbol::Name::cross:
+  case Symbol::Name::cross:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_CROSS, 10, 1);
     break;
-  case StyleSymbol::Name::diagonal_cross:
+  case Symbol::Name::diagonal_cross:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TILTED_CROSS, 10, 1);
     break;
-  case StyleSymbol::Name::circle:
+  case Symbol::Name::circle:
     cv::circle(mCanvas, cv::Point(pt.x, pt.y), 10, color, 1);
     break;
-  case StyleSymbol::Name::circle_filled:
+  case Symbol::Name::circle_filled:
     cv::circle(mCanvas, cv::Point(pt.x, pt.y), 10, color, -1);
     break;
-  case StyleSymbol::Name::square:
+  case Symbol::Name::square:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_SQUARE, 10, 1);
     break;
-  case StyleSymbol::Name::square_filled:
+  case Symbol::Name::square_filled:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_SQUARE, 10, -1);
     break;
-  case StyleSymbol::Name::triangle:
+  case Symbol::Name::triangle:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TRIANGLE_UP, 10, 1);
     break;
-  case StyleSymbol::Name::triangle_filled:
+  case Symbol::Name::triangle_filled:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TRIANGLE_UP, 10, -1);
     break;
-  case StyleSymbol::Name::star:
+  case Symbol::Name::star:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_STAR, 10, 1);
     break;
-  case StyleSymbol::Name::star_filled:
+  case Symbol::Name::star_filled:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_STAR, 10, -1);
     break;
-  case StyleSymbol::Name::vertical_bar:
+  case Symbol::Name::vertical_bar:
     break;
   default:
     cv::line(mCanvas, cv::Point(pt.x, pt.y), cv::Point(pt.x, pt.y), color, style_pen->width());
     break;
   }
 
-  StyleLabel *style_label = point.styleLabel();
+  Label *style_label = point.label();
   Font font = style_label->font();
-  Color foreColor = style_label->foregroundColor();
-  cv::QtFont qt_font = cv::fontQt(font.name(),font.size(), colorToCvScalar(foreColor),
+  Color foregroundColor = style_label->foregroundColor();
+  cv::QtFont qt_font = cv::fontQt(font.name(),font.size(), colorToCvScalar(foregroundColor),
                                   font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
                                   font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
   cv::addText(mCanvas, style_label->text(), cv::Point(pt.x, pt.y), qt_font);
@@ -132,56 +126,56 @@ void CanvasCV::drawPoint(const GPoint &point)
 
 void CanvasCV::drawPoint(const PointD &point, const GraphicStyle &style)
 {
-  StyleSymbol *style_symbol = style.styleSymbol();
-  StylePen *style_pen = style.stylePen();
+  Symbol *style_symbol = style.symbol();
+  Pen *style_pen = style.pen();
   Color c = style_pen->color();
   cv::Scalar color = colorToCvScalar(c);
   PointD pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
   PointI pt = point + pt_offset;
 
   switch (style_symbol->name()) {
-  case StyleSymbol::Name::cross:
+  case Symbol::Name::cross:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_CROSS, 10, 1);
     break;
-  case StyleSymbol::Name::diagonal_cross:
+  case Symbol::Name::diagonal_cross:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TILTED_CROSS, 10, 1);
     break;
-  case StyleSymbol::Name::circle:
+  case Symbol::Name::circle:
     cv::circle(mCanvas, cv::Point(pt.x, pt.y), 10, color, 1);
     break;
-  case StyleSymbol::Name::circle_filled:
+  case Symbol::Name::circle_filled:
     cv::circle(mCanvas, cv::Point(pt.x, pt.y), 10, color, -1);
     break;
-  case StyleSymbol::Name::square:
+  case Symbol::Name::square:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_SQUARE, 10, 1);
     break;
-  case StyleSymbol::Name::square_filled:
+  case Symbol::Name::square_filled:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_SQUARE, 10, -1);
     break;
-  case StyleSymbol::Name::triangle:
+  case Symbol::Name::triangle:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TRIANGLE_UP, 10, 1);
     break;
-  case StyleSymbol::Name::triangle_filled:
+  case Symbol::Name::triangle_filled:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TRIANGLE_UP, 10, -1);
     break;
-  case StyleSymbol::Name::star:
+  case Symbol::Name::star:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_STAR, 10, 1);
     break;
-  case StyleSymbol::Name::star_filled:
+  case Symbol::Name::star_filled:
     cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_STAR, 10, -1);
     break;
-  case StyleSymbol::Name::vertical_bar:
+  case Symbol::Name::vertical_bar:
     break;
   default:
     cv::line(mCanvas, cv::Point(pt.x, pt.y), cv::Point(pt.x, pt.y), color, style_pen->width());
     break;
   }
 
-  StyleLabel *style_label = style.styleLabel();
+  Label *style_label = style.label();
   Font font = style_label->font();
-  Color foreColor = style_label->foregroundColor();
+  Color foregroundColor = style_label->foregroundColor();
   cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
-                                  colorToCvScalar(foreColor),
+                                  colorToCvScalar(foregroundColor),
                                   font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
                                   font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
   cv::addText(mCanvas, style_label->text(), cv::Point(pt.x, pt.y), qt_font);
@@ -199,7 +193,7 @@ void CanvasCV::drawLineString(const GLineString &lineString)
 //  const cv::Point *cpts = (const cv::Point*) cv::Mat(pts).data;
 //  int npts = cv::Mat(pts).rows;
 
-  StylePen *style_pen = lineString.stylePen();
+  Pen *style_pen = lineString.pen();
   if (!style_pen->pattern().empty()){
     ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
   } else {
@@ -222,12 +216,12 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
     pts[0][i].y = static_cast<int>(polygon[i].y);
   }
 
-  if (StyleBrush *style_brush = style.styleBrush()) {
-    Color fore_color = style_brush->foreColor();
+  if (Brush *style_brush = style.brush()) {
+    Color fore_color = style_brush->foregroundColor();
     cv::fillPoly(mCanvas, pts, colorToCvScalar(fore_color));
   }
 
-  if (StylePen *style_pen = style.stylePen()) {
+  if (Pen *style_pen = style.pen()) {
     Color color = style_pen->color();
     uint8_t width = style_pen->width();
     if (!style_pen->pattern().empty()) {
@@ -237,11 +231,11 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
     }
   }
 
-  if (StyleLabel *style_label = style.styleLabel()) {
+  if (Label *style_label = style.label()) {
     /// TODO: completar
   }
 
-  if (StyleSymbol *style_symbol = style.styleSymbol()) {
+  if (Symbol *style_symbol = style.symbol()) {
     /// TODO: completar
   }
 }

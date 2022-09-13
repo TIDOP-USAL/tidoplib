@@ -60,34 +60,6 @@ public:
     italic        = 1 << 1
   };
 
-private:
-
-  /*!
-   * \brief Nombre de fuente
-   */
-  std::string mName;
-
-  /*!
-   * \brief Tamaño de fuente
-   */
-  int mSize;
-
-  /*!
-   * \brief Estilo
-   * \see Style
-   */
-  EnumFlags<Style> mStyle;
-
-  /*!
-   * \brief Subrayado de fuente
-   */
-  bool mUnderline;
-
-  /*!
-   * \brief Tachado de fuente
-   */
-  bool mStrikethrough;
-
 public:
 
   /*!
@@ -214,8 +186,36 @@ public:
    * \return
    */
   Font &operator = (Font &&font) TL_NOEXCEPT;
-};
 
+private:
+
+  /*!
+   * \brief Nombre de fuente
+   */
+  std::string mName;
+
+  /*!
+   * \brief Tamaño de fuente
+   */
+  int mSize;
+
+  /*!
+   * \brief Estilo
+   * \see Style
+   */
+  EnumFlags<Style> mStyle;
+
+  /*!
+   * \brief Subrayado de fuente
+   */
+  bool mUnderline;
+
+  /*!
+   * \brief Tachado de fuente
+   */
+  bool mStrikethrough;
+
+};
 ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)
 
 } // End namespace graph

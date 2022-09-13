@@ -58,6 +58,7 @@ class GraphicStyle;
 
 
 class TL_EXPORT Painter
+  : public GraphicStyle
 {
 
 public:
@@ -82,6 +83,9 @@ public:
    * \brief Destructora
    */
   ~Painter();
+
+  void begin(Canvas *canvas){ }
+  void end(){ }
 
   /*!
    * \brief Dibuja un punto en el canvas
@@ -132,29 +136,29 @@ public:
    */
   void setCanvas(Canvas *canvas);
 
-  /*!
-   * \brief Establece el estilo de pluma
-   * \param[in] pen Estilo pluma
-   */
-  void setPen(const std::shared_ptr<StylePen> &pen);
+  ///*!
+  // * \brief Establece el estilo de pluma
+  // * \param[in] pen Estilo pluma
+  // */
+  //void setPen(const std::shared_ptr<Pen> &pen);
 
-  /*!
-   * \brief Establece el estilo de pincel
-   * \param[in] brush Estilo pincel
-   */
-  void setBrush(const std::shared_ptr<StyleBrush> &brush);
+  ///*!
+  // * \brief Establece el estilo de pincel
+  // * \param[in] brush Estilo pincel
+  // */
+  //void setBrush(const std::shared_ptr<Brush> &brush);
 
-  /*!
-   * \brief Establece el estilo de simbolo
-   * \param[in] symbol Estilo simbolo
-   */
-  void setSymbol(const std::shared_ptr<StyleSymbol> &symbol);
+  ///*!
+  // * \brief Establece el estilo de simbolo
+  // * \param[in] symbol Estilo simbolo
+  // */
+  //void setSymbol(const std::shared_ptr<Symbol> &symbol);
 
-  /*!
-   * \brief Establece el estilo de etiqueta
-   * \param[in] styleLabel Estilo de etiqueta
-   */
-  void setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel);
+  ///*!
+  // * \brief Establece el estilo de etiqueta
+  // * \param[in] label Estilo de etiqueta
+  // */
+  //void setLabel(const std::shared_ptr<Label> &label);
 
   /*!
    * \brief Establece la transformación que se aplica para dibujar el en canvas
@@ -169,7 +173,7 @@ protected:
 
   Transform *mTrf;
   Canvas *mCanvas;
-  GraphicStyle *mGraphicStyle;
+  //GraphicStyle *mGraphicStyle;
 
 };
 

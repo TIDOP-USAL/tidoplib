@@ -29,6 +29,7 @@
 #include <tidop/math/statistic/series.h>
 #include <tidop/math/statistic/confmat.h>
 #include <tidop/math/statistic/covariance.h>
+#include <tidop/math/statistic/tukeyfences.h>
 
 using namespace tl::math;
 
@@ -618,5 +619,61 @@ BOOST_FIXTURE_TEST_CASE(falseNegativeRate, ConfusionMatrixTest)
   BOOST_CHECK_EQUAL(0.0625, mConfusionMatrix->falseNegativeRate(threshold));
   BOOST_CHECK_CLOSE(0.3333, ConfusionMatrix<double>::falseNegativeRate(10, 20), 0.1);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+
+/* Tukey's fences */
+
+BOOST_AUTO_TEST_SUITE(TukeyFencesTestSuite)
+
+struct TukeyFencesTest
+{
+
+  TukeyFencesTest()
+  {
+  }
+  ~TukeyFencesTest()
+  {
+  }
+
+  void setup()
+  {
+    s1 = Series<double>({-3., 2.4, 15., 3.9, 5., 6, 4.5, 5.2, 3., 4., 5., 16, 7, 5., 4});
+  }
+
+  void teardown()
+  {
+
+  }
+
+  Series<double> s1;
+  TukeyFences<double> tukey;
+
+};
+
+BOOST_FIXTURE_TEST_CASE(run_test, TukeyFencesTest)
+{
+  auto inliers = tukey.eval(s1, TukeyFences<double>::K::outlier);
+
+  BOOST_CHECK(!inliers[0]);
+  BOOST_CHECK(inliers[1]);
+  BOOST_CHECK(!inliers[2]);
+  BOOST_CHECK(inliers[3]);
+  BOOST_CHECK(inliers[4]);
+  BOOST_CHECK(inliers[5]);
+  BOOST_CHECK(inliers[6]);
+  BOOST_CHECK(inliers[7]);
+  BOOST_CHECK(inliers[8]);
+  BOOST_CHECK(inliers[9]);
+  BOOST_CHECK(inliers[10]);
+  BOOST_CHECK(!inliers[11]);
+  BOOST_CHECK(inliers[12]);
+  BOOST_CHECK(inliers[13]);
+  BOOST_CHECK(inliers[14]);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

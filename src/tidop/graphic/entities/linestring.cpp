@@ -80,12 +80,12 @@ GLineString &GLineString::operator = (GLineString &&gLineString) TL_NOEXCEPT
 
 bool GLineString::isMultiEntity() const
 {
-  return true;
+  return false;
 }
 
 bool GLineString::isSimpleEntity() const
 {
-  return false;
+  return true;
 }
 
 

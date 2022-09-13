@@ -24,15 +24,6 @@
 
 #include "tidop/graphic/entities/entity.h"
 
-#ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal_priv.h"
-#include "cpl_conv.h"
-#include "ogr_core.h"
-#include "ogr_featurestyle.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"

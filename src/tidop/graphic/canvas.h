@@ -113,6 +113,8 @@ public:
    */
   virtual void setBackgroundColor(const Color &color) = 0;
 
+protected:
+
   /*!
    * \brief Dibuja un punto en el canvas
    * \param point Punto
@@ -137,7 +139,7 @@ public:
   virtual void drawText(const PointD &point, const std::string &text) = 0;
   virtual void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) = 0;
 
-  //virtual void setPicture(const cv::Mat &bmp) = 0;
+  friend class Painter;
 };
 
 #ifdef TL_HAVE_OPENCV

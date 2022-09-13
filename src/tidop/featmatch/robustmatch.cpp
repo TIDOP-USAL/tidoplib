@@ -339,7 +339,9 @@ std::vector<cv::DMatch> RobustMatchingImp::filterByFundamentalMatrix(const std::
   return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::match(const cv::Mat &queryDescriptor, const cv::Mat &trainDescriptor, std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::match(const cv::Mat &queryDescriptor,
+                                                 const cv::Mat &trainDescriptor,
+                                                 std::vector<cv::DMatch> *wrongMatches)
 {
   if (this->crossCheck()){
     return this->robustMatch(queryDescriptor, trainDescriptor, wrongMatches);
@@ -348,7 +350,9 @@ std::vector<cv::DMatch> RobustMatchingImp::match(const cv::Mat &queryDescriptor,
   }
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescriptor, const cv::Mat &trainDescriptor, std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescriptor,
+                                                       const cv::Mat &trainDescriptor,
+                                                       std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> goodMatches;
 

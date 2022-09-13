@@ -31,33 +31,52 @@ if (BUILD_TL_GRAPHIC)
   
     project(tl_graphic)
   
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
-                color.cpp
-                color.h
-                font.cpp
-                font.h
-                linealgorithms.cpp
-                linealgorithms.h
-                styles.cpp
-                styles.h
-                layer.cpp
-                layer.h
-                canvas.cpp
-                canvas.h
-                painter.cpp
-                painter.h
-                datamodel.cpp
-                datamodel.h
-                entities/entity.cpp
-                entities/entity.h
-                entities/point.cpp
-                entities/point.h
-                entities/polygon.cpp
-                entities/polygon.h
-                entities/linestring.cpp
-                entities/linestring.h)
+    set(TL_GRAPHIC_SOURCES
+        color.cpp
+        font.cpp
+        linealgorithms.cpp
+        styles.cpp
+        layer.cpp
+        canvas.cpp
+        painter.cpp
+        datamodel.cpp
+        entities/entity.cpp
+        entities/point.cpp
+        entities/polygon.cpp
+        entities/linestring.cpp)
 
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    set(TL_GRAPHIC_HEADERS
+        color.h
+        font.h
+        linealgorithms.h
+        styles.h
+        layer.h
+        canvas.h
+        painter.h
+        datamodel.h
+        entities/entity.h
+        entities/point.h
+        entities/polygon.h
+        entities/linestring.h)
+
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                ${TL_GRAPHIC_SOURCES}
+                ${TL_GRAPHIC_HEADERS})
+
+    foreach(_source IN ITEMS ${TL_GRAPHIC_SOURCES})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "/" "\\" _group_path "${_source_path}")
+        source_group("Source Files\\${_group_path}" FILES "${_source}")
+    endforeach()
+
+    foreach(_source IN ITEMS ${TL_GRAPHIC_HEADERS})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "/" "\\" _group_path "${_source_path}")
+        source_group("Header Files\\${_group_path}" FILES "${_source}")
+    endforeach()
+    
+
+    #target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>

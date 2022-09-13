@@ -114,6 +114,14 @@ constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad
 template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_rad = pi<T> / static_cast<T>(180);
 template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_arcminute = static_cast<T>(60);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type arcminute_to_deg = one<T> / static_cast<T>(60);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_arcsecond = static_cast<T>(3600);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type arcsecond_to_deg = one<T> / static_cast<T>(3600);
+template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_grad = static_cast<T>(200) / pi<T>;
 template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type grad_to_rad = pi<T> / static_cast<T>(200);

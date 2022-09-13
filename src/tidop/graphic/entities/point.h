@@ -45,6 +45,7 @@ class TL_EXPORT GPoint
   : public Point<double>,
     public GraphicEntity
 {
+
 public:
 
   /*!
@@ -106,6 +107,7 @@ class TL_EXPORT GPoint3D
   : public Point3<double>, 
     public GraphicEntity
 {
+
 public:
 
   /*!
@@ -167,6 +169,7 @@ class TL_EXPORT GMultiPoint
   : public MultiPoint<Point<double>>, 
     public GraphicEntity
 {
+
 public:
 
   GMultiPoint();
@@ -185,6 +188,7 @@ class TL_EXPORT GMultiPoint3D
   : public MultiPoint3D<Point3<double>>, 
     public GraphicEntity
 {
+
 public:
 
   GMultiPoint3D();
