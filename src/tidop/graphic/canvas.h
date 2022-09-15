@@ -54,6 +54,8 @@ namespace tl
 namespace graph
 {
 
+class Painter;
+
 /*!
  * \brief Clase Canvas
  */
@@ -65,7 +67,7 @@ public:
   /*!
    * \brief Constructora canvas
    */
-  Canvas(){}
+  Canvas();
 
   virtual ~Canvas(){}
 
@@ -106,6 +108,9 @@ public:
    */
   virtual void setSize(int width, int height) = 0;
 
+  virtual void setSize(const Size<int> &size) = 0;
+  virtual Size<int> size() const = 0;
+
   /*!
    * \brief Establece el color de fondo del canvas
    * \param color Color
@@ -119,27 +124,33 @@ protected:
    * \brief Dibuja un punto en el canvas
    * \param point Punto
    */
-  virtual void drawPoint(const GPoint &point) = 0;
+  //virtual void drawPoint(const GPoint &point) = 0;
   virtual void drawPoint(const PointD &point, const GraphicStyle &style) = 0;
 
   /*!
    * \brief Dibuja una polilinea en el canvas
    * \param lineString Polilinea
    */
-  virtual void drawLineString(const GLineString &lineString) = 0;
+  //virtual void drawLineString(const GLineString &lineString) = 0;
+  virtual void drawLineString(const LineStringD &lineString, const GraphicStyle &style) = 0;
 
   /*!
    * \brief Dibuja un poligono en el canvas
    * \param polygon Poligono
    */
-  virtual void drawPolygon(const GPolygon &polygon) = 0;
+  //virtual void drawPolygon(const GPolygon &polygon) = 0;
   virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
 
 
-  virtual void drawText(const PointD &point, const std::string &text) = 0;
+  //virtual void drawText(const PointD &point, const std::string &text) = 0;
   virtual void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) = 0;
 
+  void setPainter(Painter *painter);
+
+private:
+
   friend class Painter;
+  Painter *mPainter;
 };
 
 #ifdef TL_HAVE_OPENCV
@@ -160,7 +171,6 @@ public:
    * \param[in] canvas Objeto canvas que se copia
    */
   CanvasCV(const CanvasCV &canvas);
-
   ~CanvasCV() override;
 
   int width() const override;
@@ -169,21 +179,26 @@ public:
   void setWidth(int width) override;
   void setHeight(int height) override;
   void setSize(int width, int height) override;
+  void setSize(const Size<int> &size) override;
+  Size<int> size() const override;
   void setBackgroundColor(const Color &color) override;
-  void drawPoint(const GPoint &point) override;
+
+  cv::Mat bmp();
+
+protected:
+
+  //void drawPoint(const GPoint &point) override;
   void drawPoint(const PointD &point, const GraphicStyle &style) override;
-  void drawLineString(const GLineString &lineString) override;
-  void drawPolygon(const GPolygon &polygon) override;
+  //void drawLineString(const GLineString &lineString) override;
+  void drawLineString(const LineStringD &lineString, const GraphicStyle &style) override;
+  //void drawPolygon(const GPolygon &polygon) override;
   void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
-  void drawText(const PointD &point, const std::string &text) override;
+  //void drawText(const PointD &point, const std::string &text) override;
   void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) override;
 
   void setPicture(const cv::Mat &bmp);
 
-  cv::Mat bmp()
-  {
-    return mCanvas;
-  }
+
 
   /*!
    * \brief operador asignación
@@ -200,54 +215,12 @@ private:
 
 private:
 
-  int mWidth;
-  int mHeight;
+  Size<int> mSize;
   Color mBgColor;
   cv::Mat mCanvas;
 
 };
 
-/// Definición de métodos inline
-
-inline int CanvasCV::width() const
-{
-  return mCanvas.cols;
-}
-
-inline int CanvasCV::height() const
-{
-  return mCanvas.rows;
-}
-
-inline Color CanvasCV::backgroundColor() const
-{
-  return mBgColor;
-}
-
-inline void CanvasCV::setWidth(int width)
-{
-  mWidth = width;
-  update();
-}
-
-inline void CanvasCV::setHeight(int height)
-{
-  mHeight = height;
-  update();
-}
-
-inline void CanvasCV::setSize(int width, int height)
-{
-  mWidth = width;
-  mHeight = height;
-  update();
-}
-
-inline void CanvasCV::setBackgroundColor(const Color &color)
-{
-  mBgColor = color;
-  update();
-}
 
 #endif // TL_HAVE_OPENCV
 

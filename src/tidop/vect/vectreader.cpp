@@ -324,7 +324,11 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 
 
   OGRFeature *ogrFeature;
-  while ((ogrFeature = ogrLayer->GetNextFeature()) != nullptr) {
+  for(size_t i = 0; i < ogrLayer->GetFeatureCount(); i++) {
+    ogrFeature = ogrLayer->GetFeature(i);
+  //}
+  //
+  //while ((ogrFeature = ogrLayer->GetNextFeature()) != nullptr) {
 
     const char *driver_name = mDataset->GetDriverName();
     const char *layerName = nullptr;
@@ -1334,7 +1338,7 @@ void VectorReaderGdal::readData(OGRFeature *ogrFeature,
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file)
+std::unique_ptr<VectorReader> VectorReaderFactory::create(const Path &file)
 {
   std::unique_ptr<VectorReader> vector_reader;
 
@@ -1355,6 +1359,11 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file
   }
 
   return vector_reader;
+}
+
+std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file)
+{
+  return VectorReaderFactory::create(file);
 }
 
 } // End namespace tl

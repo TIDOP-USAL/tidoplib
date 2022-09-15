@@ -141,7 +141,7 @@ public:
   template <typename Point_t2>
   explicit operator Affine<Point_t2>() const;
 
-  bool isNull() const
+  bool isNull() const override
   {
     return (tx == 0. &&
             ty == 0.);

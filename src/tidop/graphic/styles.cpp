@@ -591,6 +591,10 @@ Font Label::font() const
 
 
 GraphicStyle::GraphicStyle()
+  : mPen(std::make_shared<Pen>()),
+    mBrush(std::make_shared<Brush>()),
+    mSymbol(std::make_shared<Symbol>()),
+    mLabel(std::make_shared<Label>())
 {
 }
 

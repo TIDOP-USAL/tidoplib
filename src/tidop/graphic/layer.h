@@ -33,6 +33,7 @@
 #include <string>
 
 #include "tidop/graphic/datamodel.h"
+#include "tidop/geometry/entities/window.h"
 
 namespace tl
 {
@@ -240,6 +241,8 @@ public:
   void addDataField(const std::shared_ptr<TableField> &field);
 
   std::vector<std::shared_ptr<TableField>> tableFields() const;
+
+  Window<Point<double>> window() const;
 
 protected:
 

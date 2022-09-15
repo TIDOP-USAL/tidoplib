@@ -131,7 +131,7 @@ public:
   
         bTempFile = true;
         mTempFile = Path::tempPath();
-        mTempFile.append("\\").append(mFile.fileName());
+        mTempFile.append(mFile.fileName());
         mTempFile.replaceExtension(".tif");
 
       }

@@ -387,8 +387,8 @@ bool Path::exists(const Path &path)
 
 Path Path::tempPath()
 {
-  std::string temp = fs::temp_directory_path().string();
-  return Path(temp);
+  Path temp_path(fs::temp_directory_path().string());
+  return temp_path;
 }
 
 Path Path::tempDirectory()

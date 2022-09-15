@@ -99,12 +99,14 @@ public:
    * \param[in] lineString Polilinea
    */
   void drawLineString(const GLineString &lineString);
+  void drawLineString(const LineStringD &lineString);
 
   /*!
    * \brief Dibuja un poligono
    * \param[in] polygon Poligono
    */
   void drawPolygon(const GPolygon &polygon);
+  void drawPolygon(const PolygonD &polygon);
 
   /*!
    * \brief Dibuja un multipunto

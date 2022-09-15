@@ -54,7 +54,6 @@ Painter::Painter(Canvas *canvas)
 {
 }
 
-
 Painter::~Painter()
 {
 }
@@ -62,7 +61,18 @@ Painter::~Painter()
 void Painter::drawPoint(const GPoint &point) 
 {
   if (mCanvas){
-    mCanvas->drawPoint(point);
+
+    if(mTrf) {
+      
+      Point<double> point_transform = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(point, Transform::Order::direct);
+
+      mCanvas->drawPoint(point_transform, point);
+
+    } else {
+
+      mCanvas->drawPoint(point, point);
+    }
+
   } else {
      msgError("Canvas not defined");
   }
@@ -80,7 +90,32 @@ void Painter::drawPoint(const PointD &point)
 void Painter::drawLineString(const GLineString &lineString)
 {
   if (mCanvas){
-    mCanvas->drawLineString(lineString);
+
+    if(mTrf) {
+
+      LineString<Point<double>> linestring_transform(lineString.size());
+
+      for(size_t i = 0; i < lineString.size(); i++) {
+        linestring_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(lineString[i], Transform::Order::direct);
+      }
+
+      mCanvas->drawLineString(linestring_transform, lineString);
+
+    } else {
+
+      mCanvas->drawLineString(lineString, lineString);
+
+    }
+
+  } else {
+    msgError("Canvas not defined");
+  }
+}
+
+void Painter::drawLineString(const LineStringD &lineString)
+{
+  if(mCanvas) {
+    mCanvas->drawLineString(lineString, *this);
   } else {
     msgError("Canvas not defined");
   }
@@ -89,17 +124,45 @@ void Painter::drawLineString(const GLineString &lineString)
 void Painter::drawPolygon(const GPolygon &polygon)
 {
   if (mCanvas){
-    Polygon<Point<double>> polygon_transform(polygon.size());
-    for (size_t i = 0; i < polygon.size(); i++) {
-      polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::inverse);
-    }
+
+    if(mTrf) {
+      Polygon<Point<double>> polygon_transform(polygon.size());
+
+      for (size_t i = 0; i < polygon.size(); i++) {
+        polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
+      }
     
-    mCanvas->drawPolygon(polygon_transform, *this);
+      mCanvas->drawPolygon(polygon_transform, polygon);
+    } else {
+      mCanvas->drawPolygon(polygon, polygon);
+    }
+
   } else {
     msgError("Canvas not defined");
   }
 }
-  
+
+void Painter::drawPolygon(const PolygonD &polygon)
+{
+  if(mCanvas) {
+
+    if(mTrf) {
+      Polygon<Point<double>> polygon_transform(polygon.size());
+
+      for(size_t i = 0; i < polygon.size(); i++) {
+        polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
+      }
+
+      mCanvas->drawPolygon(polygon_transform, *this);
+    } else {
+      mCanvas->drawPolygon(polygon, *this);
+    }
+
+  } else {
+    msgError("Canvas not defined");
+  }
+}
+
 void Painter::drawMultiPoint(const GMultiPoint &multipoint)
 {
 
@@ -124,33 +187,29 @@ void Painter::drawPicture(const cv::Mat &bmp)
 
 void Painter::drawText(const PointD &point, const std::string &text)
 {
-  mCanvas->drawText(point, text, *this);
+  if(mCanvas) {
+
+    if(mTrf) {
+
+      Point<double> point_transform = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(point, Transform::Order::direct);
+
+      mCanvas->drawText(point_transform, text, *this);
+
+    } else {
+
+      mCanvas->drawText(point, text, *this);
+    }
+
+  } else {
+    msgError("Canvas not defined");
+  }
+  
 }
 
 void Painter::setCanvas(Canvas *canvas)
 {
   mCanvas = canvas;
 }
-
-//void Painter::setPen(const std::shared_ptr<Pen> &pen)
-//{
-//  mGraphicStyle->setPen(pen);
-//}
-//
-//void Painter::setBrush(const std::shared_ptr<Brush> &brush)
-//{
-//  mGraphicStyle->setBrush(brush);
-//}
-//
-//void Painter::setSymbol(const std::shared_ptr<Symbol> &symbol)
-//{
-//  mGraphicStyle->setSymbol(symbol);
-//}
-//
-//void Painter::setLabel(const std::shared_ptr<Label> &label)
-//{
-//  mGraphicStyle->setLabel(label);
-//}
 
 void Painter::setTransform(Transform/*<PointF>*/ *trf)
 {

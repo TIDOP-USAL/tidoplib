@@ -163,8 +163,6 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
   for (size_t i = 0; i < mRows; i++) {
 
-    T lii = L[i][i];
-
     for (size_t j = i; j < mRows; j++) {
 
       T sum = L[i][j];
@@ -177,7 +175,7 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         TL_ASSERT(sum > 0.0, "Cholesky failed");
         L[i][i] = sqrt(sum);
       } else {
-        L[j][i] = sum / lii;
+        L[j][i] = sum / L[i][i];
       }
 
     }

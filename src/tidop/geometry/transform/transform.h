@@ -512,6 +512,11 @@ public:
                               std::vector<Point_t> &ptsOut,
                               Transform::Order trfOrder = Transform::Order::direct) const override;
 
+  bool isNull() const override
+  {
+    return mTransformations.empty();
+  }
+
 private:
 
   /*!

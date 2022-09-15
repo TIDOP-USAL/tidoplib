@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 
   try {
 
-    std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::createReader(img);
+    std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::create(img);
 
     imageReader->open();
     if (imageReader->isOpen()) {

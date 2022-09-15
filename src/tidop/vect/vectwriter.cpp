@@ -757,7 +757,7 @@ void VectorWriterGdal::setGdalProjection(const std::string &crs)
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file)
+std::unique_ptr<VectorWriter> VectorWriterFactory::create(const Path &file)
 {
   std::unique_ptr<VectorWriter> vector_writer;
 
@@ -786,6 +786,11 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file
   }
 
   return vector_writer;
+}
+
+std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file)
+{
+  return VectorWriterFactory::create(file);
 }
 
 } // End namespace tl

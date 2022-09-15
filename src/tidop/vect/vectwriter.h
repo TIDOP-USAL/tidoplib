@@ -106,6 +106,8 @@ private:
 
 public:
 
+  static std::unique_ptr<VectorWriter> create(const Path &file);
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<VectorWriter> createWriter(const Path &file);
 };
 

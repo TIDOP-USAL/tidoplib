@@ -104,6 +104,8 @@ private:
 
 public:
 
+  static std::unique_ptr<VectorReader> create(const Path &file);
+  TL_DEPRECATED("create", "2.1")
   static std::unique_ptr<VectorReader> createReader(const Path &file);
 };
 
