@@ -54,25 +54,25 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND TL_HAVE_GDAL 
                           $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
     
-    if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} 
-                              ${OpenCV_LIBS})
-    endif(HAVE_OPENCV)
+    #if(TL_HAVE_OPENCV)
+    #    target_link_libraries(${PROJECT_NAME} PRIVATE
+    #                          ${OpenCV_LIBS})
+    #endif(TL_HAVE_OPENCV)
 
     
-    if (UNIX)
-        target_link_libraries(${PROJECT_NAME} 
-                              -lpthread 
-                              -ldl 
-                              -lexpat 
-                              -ljasper 
-                              -ljpeg 
-                              -ltiff 
-                              -lpng 
-                              -lm 
-                              -lrt 
-                              -lpcre)
-    endif()
+    #if (UNIX)
+    #    target_link_libraries(${PROJECT_NAME}
+    #                          -lpthread
+    #                          -ldl
+    #                          -lexpat
+    #                          -ljasper
+    #                          -ljpeg
+    #                          -ltiff
+    #                          -lpng
+    #                          -lm
+    #                          -lrt
+    #                          -lpcre)
+    #endif()
     
 
     set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/imageinfo")

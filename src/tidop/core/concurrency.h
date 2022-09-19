@@ -34,6 +34,7 @@
 #include <queue>
 #include <condition_variable>
 #include <future>
+#include <algorithm>
 
 namespace tl
 {
@@ -307,20 +308,20 @@ private:
 
 template<typename T>
 QueueSPSC<T>::QueueSPSC(size_t capacity)
-  : Queue(capacity)
+  : Queue<T>(capacity)
 {
 }
 
 template<typename T>
 void QueueSPSC<T>::push(const T &value)
 {
-  std::unique_lock<std::mutex> locker(mutex());
+  std::unique_lock<std::mutex> locker(this->mutex());
 
   mConditionVariable.wait(locker, [this]() {
-    return buffer().size() < capacity();
+    return this->buffer().size() < this->capacity();
   });
 
-  buffer().push(value);
+  this->buffer().push(value);
   locker.unlock();
   mConditionVariable.notify_one();
 }
@@ -328,14 +329,14 @@ void QueueSPSC<T>::push(const T &value)
 template<typename T>
 inline bool QueueSPSC<T>::pop(T &value)
 {
-  std::unique_lock<std::mutex> locker(mutex());
+  std::unique_lock<std::mutex> locker(this->mutex());
 
   mConditionVariable.wait(locker, [this]() {
-    return !buffer().empty();
+    return !this->buffer().empty();
   });
 
-  value = buffer().front();
-  buffer().pop();
+  value = this->buffer().front();
+  this->buffer().pop();
   locker.unlock();
   mConditionVariable.notify_one();
 
@@ -380,7 +381,7 @@ public:
 
   void stop()
   {
-    std::unique_lock<std::mutex> locker(mutex());
+    std::unique_lock<std::mutex> locker(this->mutex());
     mStop = true;
     mConditionVariable.notify_all();
   }
@@ -394,7 +395,7 @@ private:
 
 template<typename T>
 QueueMPMC<T>::QueueMPMC(size_t capacity)
-  : Queue(capacity),
+  : Queue<T>(capacity),
   mStop(false)
 {
 }
@@ -402,14 +403,14 @@ QueueMPMC<T>::QueueMPMC(size_t capacity)
 template<typename T>
 void QueueMPMC<T>::push(const T &value)
 {
-  std::unique_lock<std::mutex> locker(mutex());
+  std::unique_lock<std::mutex> locker(this->mutex());
 
   mConditionVariable.wait(locker, [this]() {
-    return buffer().size() < capacity() || mStop;
+    return this->buffer().size() < this->capacity() || mStop;
   });
 
   if (!mStop) {
-    buffer().push(value);
+    this->buffer().push(value);
   }
 
   locker.unlock();
@@ -419,17 +420,17 @@ void QueueMPMC<T>::push(const T &value)
 template<typename T>
 inline bool QueueMPMC<T>::pop(T &value)
 {
-  std::unique_lock<std::mutex> locker(mutex());
+  std::unique_lock<std::mutex> locker(this->mutex());
 
   mConditionVariable.wait(locker, [this]() {
-    return !buffer().empty() || mStop;
+    return !this->buffer().empty() || mStop;
   });
 
-  bool read_buffer = !buffer().empty();
+  bool read_buffer = !this->buffer().empty();
 
   if (read_buffer) {
-    value = buffer().front();
-    buffer().pop();
+    value = this->buffer().front();
+    this->buffer().pop();
   }
 
   locker.unlock();

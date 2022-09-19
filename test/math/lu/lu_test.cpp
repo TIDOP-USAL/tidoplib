@@ -82,7 +82,6 @@ struct LuTest
 
     lu2 = new LuDecomposition<Matrix<double>>(A2);
 
-    SA;
     SA[0][0] = 12.;
     SA[0][1] = -51.;
     SA[0][2] = 4.;
@@ -93,7 +92,6 @@ struct LuTest
     SA[2][1] = 24.;
     SA[2][2] = -41.;
 
-    SB;
     SB[0] = 1;
     SB[1] = 3;
     SB[2] = 2;

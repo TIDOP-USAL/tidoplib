@@ -74,7 +74,8 @@ if(BUILD_TL_CORE)
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
-                          $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>)
+                          $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${UNIX}>:-lpthread>)
     
     set_property(TARGET ${PROJECT_NAME}
                  PROPERTY FOLDER "modules")

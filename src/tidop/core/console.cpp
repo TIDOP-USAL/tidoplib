@@ -286,7 +286,7 @@ void Console::setFontHeight(int16_t fontHeight)
 #ifdef WIN32
   mCurrentFont.dwFontSize.Y = static_cast<SHORT>(fontHeight);
 #else
-  TL_UNUSED_PARAMETER(fontHeight);
+  unusedParameter(fontHeight);
 #endif
   update();
 }

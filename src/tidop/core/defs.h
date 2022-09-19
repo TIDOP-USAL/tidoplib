@@ -200,7 +200,6 @@
 // /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 //                                                                                                                   ^
-// Por ahora no hace nada...
 #  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
 #  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif

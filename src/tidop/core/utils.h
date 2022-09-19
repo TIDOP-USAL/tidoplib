@@ -30,8 +30,10 @@
 #include <vector>
 #include <string>
 #include <numeric>
+#include <sstream>
 
 #include "tidop/core/defs.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
@@ -41,6 +43,9 @@ namespace tl
  *
  * \{
  */
+
+TL_EXPORT bool compareInsensitiveCase(const std::string &source,
+                                      const std::string &compare);
 
 
 template<typename T1, typename T2> static inline
@@ -65,10 +70,11 @@ template<typename T1, typename T2> static inline
   typename std::enable_if<
   !std::is_arithmetic<T1>::value,
   T1>::type
-numberCast(T2 b)
+numberCast(T2 /*b*/)
 {
-  TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
-  throw TL_ERROR("Invalid conversion. It isn't an arithmetic type.");
+  //En linux me sale siempre el error aunque no se llame a la función.
+  //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
+  throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
   return T1{0};
 }
 
@@ -103,10 +109,11 @@ template <typename T> inline
 typename std::enable_if<
   !std::is_arithmetic<T>::value,
   T>::type
-convertStringTo(const std::string &str)
+convertStringTo(const std::string &/*str*/)
 {
-  TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
-  throw TL_ERROR("Invalid conversion. It isn't an arithmetic type.");
+  //En linux me sale siempre el error aunque no se llame a la función.
+  //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
+  throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
   return T{0};
 }
 
@@ -253,9 +260,6 @@ std::vector<int> sortIdx(const std::vector<T> &v)
 
   return idx;
 }
-
-TL_EXPORT bool compareInsensitiveCase(const std::string &source,
-                                      const std::string &compare);
 
 
 
