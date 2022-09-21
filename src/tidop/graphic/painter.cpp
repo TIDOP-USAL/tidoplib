@@ -211,7 +211,7 @@ void Painter::setCanvas(Canvas *canvas)
   mCanvas = canvas;
 }
 
-void Painter::setTransform(Transform/*<PointF>*/ *trf)
+void Painter::setTransform(Transform *trf)
 {
   mTrf = trf;
 }

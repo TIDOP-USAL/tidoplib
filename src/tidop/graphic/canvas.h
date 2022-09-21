@@ -43,8 +43,6 @@
 namespace tl
 {
 
-/*template<typename T> class Transform;*/
-
 
 /*! \defgroup GraphicEntities Entidades gráficas
  *  Puntos, lineas, ...
