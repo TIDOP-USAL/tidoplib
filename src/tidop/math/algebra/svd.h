@@ -311,11 +311,11 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
       
       for (l = k; l >= 0; l--) { //Test for splitting.
         nm = static_cast<size_t>(l) - consts::one<int>; //Note that rv1[1] is always zero.
-        if (l == 0 || abs(rv1[l]) <= eps * anorm) {
+        if (l == 0 || std::abs(rv1[l]) <= eps * anorm) {
           flag = false;
           break;
         }
-        if (abs(W[nm]) <= eps * anorm) break;
+        if (std::abs(W[nm]) <= eps * anorm) break;
       }
 
       if (flag) {
@@ -324,7 +324,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         for (i = l; i < k + consts::one<int>; i++) {
           f = s * rv1[i];
           rv1[i] = c * rv1[i];
-          if (abs(f) <= eps * anorm) break;
+          if (std::abs(f) <= eps * anorm) break;
           g = W[i];
           h = math::module(f, g);
           W[i] = h;

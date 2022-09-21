@@ -342,7 +342,7 @@ template<typename Point_t> inline
 bool Segment<Point_t>::isParallel(const Segment<Point_t> &l2, 
                                   double tol) const
 {
-  return (abs(angleOX() - l2.angleOX()) < tol);
+  return (std::abs(angleOX() - l2.angleOX()) < tol);
 }
 
 template<typename Point_t> inline

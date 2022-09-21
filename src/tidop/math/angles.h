@@ -657,7 +657,7 @@ template<typename T> inline
 void tl::math::Gradians<T>::setDegrees(int degrees)
 {
   T value = isNegative(degrees) * 
-            (static_cast<T>(abs(degrees)) +
+            (static_cast<T>(std::abs(degrees)) +
             ((this->seconds() / consts::quarter_circle_grad) + this->minutes()) / 
             consts::quarter_circle_grad);
   this->setValue(value); 
@@ -674,7 +674,7 @@ template<typename T> inline
 {
   int degrees = this->degrees();
   T value = isNegative(degrees) *
-            (static_cast<T>(abs(degrees)) + 
+            (static_cast<T>(std::abs(degrees)) +
              ((this->seconds() / static_cast<T>(consts::quarter_circle_grad)) +
               static_cast<T>(minutes)) / static_cast<T>(consts::quarter_circle_grad));
   this->setValue(value);
@@ -692,7 +692,7 @@ void tl::math::Gradians<T>::setSeconds(T seconds)
 {
   int degrees = this->degrees();
   T value = isNegative(degrees) * 
-            (static_cast<T>(abs(this->degrees())) +
+            (static_cast<T>(std::abs(this->degrees())) +
              ((seconds / consts::quarter_circle_grad) +
               static_cast<T>(this->minutes())) / consts::quarter_circle_grad);
   this->setValue(value);
@@ -732,7 +732,7 @@ Degrees<T>::Degrees(int degrees, int minutes, T seconds)
   : AngleBase<T>(Angle::Unit::degrees)
 {
   this->setValue(isNegative(degrees) *
-                 (abs(degrees) +
+                 (std::abs(degrees) +
                   minutes / static_cast<T>(consts::degrees_to_minutes) +
                   seconds / static_cast<T>(consts::degrees_to_seconds)));
 }
@@ -801,7 +801,7 @@ int Degrees<T>::degrees() const
 template<typename T> inline
 void tl::math::Degrees<T>::setDegrees(int degrees)
 {
-  T value = isNegative(degrees) * (abs(degrees) +
+  T value = isNegative(degrees) * (std::abs(degrees) +
              this->minutes() / static_cast<T>(consts::degrees_to_minutes) +
              this->seconds() / static_cast<T>(consts::degrees_to_seconds));
   this->setValue(value);
@@ -818,7 +818,7 @@ int Degrees<T>::minutes() const
 template<typename T> inline
 void tl::math::Degrees<T>::setMinutes(int minutes)
 {
-  T value = isNegative(this->degrees()) * (abs(this->degrees()) +
+  T value = isNegative(this->degrees()) * (std::abs(this->degrees()) +
                                            minutes / static_cast<T>(consts::degrees_to_minutes) +
                                            this->seconds() / static_cast<T>(consts::degrees_to_seconds));
 

@@ -261,7 +261,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     pivot_row = k;
 
     for (size_t i = k; i < mRows; i++) {
-      temp = abs(LU[i][k]) / max_elements[i];
+      temp = std::abs(LU[i][k]) / max_elements[i];
       if (temp > big) {
         big = temp;
         pivot_row = i;
@@ -307,7 +307,7 @@ tl::math::Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxEl
     max = consts::zero<T>;
 
     for (size_t c = 0; c < mRows; c++) {
-      if ((element = abs(LU[r][c])) > max) {
+      if ((element = std::abs(LU[r][c])) > max) {
         max = element;
       }
     }

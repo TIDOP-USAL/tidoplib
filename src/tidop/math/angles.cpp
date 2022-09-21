@@ -33,7 +33,7 @@ namespace math
 
 double degreesToDecimalDegrees(int degrees, int minutes, double seconds)
 {
-  return isNegative(degrees) * (abs(degrees) +
+  return isNegative(degrees) * (std::abs(degrees) +
                                 minutes / static_cast<double>(consts::degrees_to_minutes) +
                                 seconds / static_cast<double>(consts::degrees_to_seconds));
 }

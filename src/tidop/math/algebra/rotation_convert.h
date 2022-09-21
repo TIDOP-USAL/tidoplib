@@ -513,7 +513,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = asin(math::clamp(m21, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m21) < consts::one<T> ) {
+    if (std::abs(m21) < consts::one<T> ) {
 
       eulerAngles.x = atan2(-m01, m11);
       eulerAngles.z = atan2(-m20, m22);
@@ -529,7 +529,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = asin(-math::clamp(m20, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m20) < consts::one<T> ) {
+    if (std::abs(m20) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m10, m00); 
       eulerAngles.z = atan2(m21, m22);
@@ -545,7 +545,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = asin(math::clamp(m10, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m10) < consts::one<T> ) {
+    if (std::abs(m10) < consts::one<T> ) {
 
       eulerAngles.x = atan2(-m20, m00);
       eulerAngles.z = atan2(-m12, m11);
@@ -561,7 +561,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = asin(-math::clamp(m01, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m01) < consts::one<T> ) {
+    if (std::abs(m01) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m21, m11);
       eulerAngles.z = atan2(m02, m00);
@@ -577,7 +577,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = std::acos(math::clamp(m00, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m00) < consts::one<T> ) {
+    if (std::abs(m00) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m10, -m20);
       eulerAngles.z = atan2(m01, m02);
@@ -593,7 +593,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = std::acos(math::clamp(m00, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m00) < consts::one<T> ) {
+    if (std::abs(m00) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m20, m10);
       eulerAngles.z = atan2(m02, -m01);
@@ -609,7 +609,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
     
     eulerAngles.y = std::acos(math::clamp(m11, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m11) < consts::one<T> ) {
+    if (std::abs(m11) < consts::one<T> ) {
       eulerAngles.x = atan2(m01, m21);
       eulerAngles.z = atan2(m10, -m12);
     } else {
@@ -623,7 +623,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = std::acos(math::clamp(m11, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m11) < consts::one<T> ) {
+    if (std::abs(m11) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m21, -m01);
       eulerAngles.z = atan2(m12, m10);
@@ -639,7 +639,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = std::acos(math::clamp(m22, -consts::one<T> , consts::one<T> ));
     
-    if (abs(m22) < consts::one<T> ) {
+    if (std::abs(m22) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m02, -m12);
       eulerAngles.z = atan2(m20, m21);
@@ -655,7 +655,7 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
     eulerAngles.y = std::acos(math::clamp(m22, -consts::one<T> , consts::one<T> ));
 
-    if (abs(m22) < consts::one<T> ) {
+    if (std::abs(m22) < consts::one<T> ) {
 
       eulerAngles.x = atan2(m12, m02);
       eulerAngles.z = atan2(m21, -m20);

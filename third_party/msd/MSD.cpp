@@ -455,7 +455,7 @@ float MsdDetector::computeOrientation(const cv::Mat &img, int x, int y, const st
     int bin = static_cast <int> (std::floor(binF));
 
     assert(bin >= 0 && bin < nBins);
-    float binDist = abs(binF - bin - 0.5f);
+    float binDist = std::abs(binF - bin - 0.5f);
 
     float weightA = weight * (1.0f - binDist);
     float weightB = weight * binDist;

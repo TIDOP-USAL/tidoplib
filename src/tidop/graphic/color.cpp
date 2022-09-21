@@ -172,7 +172,7 @@ void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, dou
   if (delta == 0)
     *saturation = 0.;
   else
-    *saturation = delta / (1 - abs(2 * *lightness - 1));
+    *saturation = delta / (1 - std::abs(2 * *lightness - 1));
 
   *saturation *= 100;
   *lightness *= 100;
@@ -185,7 +185,7 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
 
   lightness /= 100.;
   saturation /= 100.;
-  double chroma = (1 - abs(2 * lightness - 1)) * saturation;
+  double chroma = (1 - std::abs(2 * lightness - 1)) * saturation;
   double h = hue / 60.;
   double x = chroma * (1 - fabs(fmod(h, 2) - 1));
 
@@ -1056,7 +1056,7 @@ Color ColorHSL::toColor() const
 {
   double lightnessNorm = mLightness / mRangeMax;
   double saturationNorm = mSaturation/ mRangeMax;
-  double chroma = (1 - abs(2 * lightnessNorm - 1)) * saturationNorm;
+  double chroma = (1 - std::abs(2 * lightnessNorm - 1)) * saturationNorm;
   double h = mHue / (mRangeMaxHue/6.);
   double x = chroma * (1 - fabs(fmod(h, 2) - 1));
 
@@ -1119,7 +1119,7 @@ void ColorHSL::fromColor(const Color &color)
   if (delta == 0)
     mSaturation = 0.;
   else
-    mSaturation = delta / (1 - abs(2 * mLightness - 1));
+    mSaturation = delta / (1 - std::abs(2 * mLightness - 1));
 
   mSaturation *= mRangeMax;
   mLightness *= mRangeMax;

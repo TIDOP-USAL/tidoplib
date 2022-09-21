@@ -161,7 +161,7 @@ typename std::enable_if<
     double>::type
 module(T a, T b)
 {
-  auto result = std::minmax(abs(a), abs(b));
+  auto result = std::minmax(std::abs(a), std::abs(b));
   double div = static_cast<double>(result.first) /
                static_cast<double>(result.second);
   return static_cast<double>(result.second) * sqrt(1. + div * div);
@@ -172,7 +172,7 @@ typename std::enable_if<
     std::is_floating_point<T>::value,T>::type
 module(T a, T b)
 {
-  auto result = std::minmax(abs(a), abs(b));
+  auto result = std::minmax(std::abs(a), std::abs(b));
   T div = static_cast<T>(result.first) / static_cast<T>(result.second);
   return result.second * std::sqrt(static_cast<T>(1) + div * div);
 }
