@@ -24,29 +24,26 @@
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-project(test)
-
 set(test_filename mser_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
-set(test_target "${test_name}")
 
-add_executable(${test_target} 
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
                ${test_filename})
 
-target_link_libraries(${test_target} tl_core tl_geom tl_featmatch)
-target_link_libraries(${test_target} 
-                      ${Boost_FILESYSTEM_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-if(HAVE_OPENCV)
-    target_link_libraries(${test_target} ${OpenCV_LIBS})
-endif(HAVE_OPENCV)
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core 
+                      TidopLib::Geom 
+                      TidopLib::FeatMatch
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      ${OpenCV_LIBS})
 	
-set_target_properties(${test_target} PROPERTIES
-                      OUTPUT_NAME ${test_target}
-                      PROJECT_LABEL "(TEST) ${test_name}")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
 
-set_target_properties(${test_target} PROPERTIES 
+set_target_properties(${PROJECT_NAME} PROPERTIES 
                       FOLDER "test/featmatch")
 
-add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

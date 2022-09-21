@@ -33,10 +33,10 @@ set(test_target "${test_name}")
 add_executable(${test_target} 
                ${test_filename}
                ${CMAKE_SOURCE_DIR}/src/tidop/math/statistics.h)
-target_link_libraries(${test_target} tl_core)
-target_link_libraries(${test_target} 
-                      ${Boost_FILESYSTEM_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
+
+target_link_libraries(${test_target}
+                      TidopLib::Core
+                      TidopLib::Math
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set_target_properties(${test_target} PROPERTIES

@@ -33,7 +33,7 @@ add_executable(${PROJECT_NAME}
                ${test_filename})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-                      tl_core
+                      TidopLib::Core
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

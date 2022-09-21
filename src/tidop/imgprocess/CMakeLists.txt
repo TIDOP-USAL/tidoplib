@@ -30,7 +30,7 @@
 
 if (BUILD_TL_IMG_PROCESS)
 
-    project(tl_imgprocess)
+    project(ImgProcess)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 anaglyph.cpp
@@ -55,13 +55,17 @@ if (BUILD_TL_IMG_PROCESS)
                 morphologicaloper.cpp
                 morphologicaloper.h)
 
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     target_link_libraries(${PROJECT_NAME} PRIVATE
-                          tl_core
-                          tl_graphic
+                          TidopLib::Core
+                          TidopLib::Graphic
                           ${OpenCV_LIBS})  
 
-    set_property(TARGET ${PROJECT_NAME} 
-                 PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_imgprocess")
+
 
 
     if(BUILD_SHARED_LIBS)
@@ -87,10 +91,10 @@ if (BUILD_TL_IMG_PROCESS)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})       
   
     set(TL_HAVE_IMG_PROCESS YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::tl_imgprocess enabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
-    message(STATUS "  TidopLib::tl_imgprocess disabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
 
 endif(BUILD_TL_IMG_PROCESS)

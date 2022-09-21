@@ -33,9 +33,9 @@ add_executable(${PROJECT_NAME}
                ${test_filename})
 
 target_link_libraries(${PROJECT_NAME}
-                      tl_core 
-                      tl_geom 
-                      tl_featmatch
+                      TidopLib::Core 
+                      TidopLib::Geom 
+                      TidopLib::FeatMatch
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       ${OpenCV_LIBS})
 	

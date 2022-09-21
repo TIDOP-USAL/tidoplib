@@ -39,9 +39,9 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 							   
 target_link_libraries(${PROJECT_NAME}
-                      tl_core 
-                      tl_geom 
-                      tl_geospatial
+                      TidopLib::Core 
+                      TidopLib::Geom 
+                      TidopLib::Geospatial
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
                       $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
