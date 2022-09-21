@@ -32,7 +32,8 @@ if (BUILD_TL_VECT)
     project(tl_vect)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                vect.h
+                vect.cpp
+				vect.h
                 vectreader.cpp
                 vectreader.h
                 vectwriter.cpp

@@ -32,7 +32,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-
+#include "tidop/vect/vect.h"
 
 #ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -254,22 +254,46 @@ private:
   std::shared_ptr<graph::GMultiLineString3D> readMultiLineString3D(OGRMultiLineString *ogrMultiLineString);
   std::shared_ptr<graph::GMultiPolygon> readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon);
   std::shared_ptr<graph::GMultiPolygon3D> readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon);
-  void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicEntity> &gStyle);
-  std::shared_ptr<Pen> readStylePen(OGRStylePen *ogrStylePen);
-  void readStylePenColor(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenCap(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenPattern(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenJoin(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenName(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenWidth(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenPerpendicularOffset(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  void readStylePenPriorityLevel(OGRStylePen *ogrStylePen, std::shared_ptr<Pen> &stylePen);
-  std::shared_ptr<graph::Brush> readStyleBrush(OGRStyleBrush *ogrStyleBrush);
-  std::shared_ptr<graph::Symbol> readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
-  std::shared_ptr<graph::Label> readStyleLabel(OGRStyleLabel *ogrStyleLabel);
+  void readStyles(OGRStyleMgr *ogrStyle, graph::GraphicEntity *gStyle);
+  std::shared_ptr<Pen> readPen(OGRStylePen *ogrStylePen);
+  void readPenColor(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenCap(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenPattern(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenJoin(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenName(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenWidth(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenPerpendicularOffset(OGRStylePen *ogrStylePen, Pen *pen);
+  void readPenPriorityLevel(OGRStylePen *ogrStylePen, Pen *pen);
+  std::shared_ptr<graph::Brush> readBrush(OGRStyleBrush *ogrStyleBrush);
+  void readBrushAngle(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  void readBrushBackColor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  void readBrushForeColor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  void readBrushName(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  void readBrushPriorityLevel(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  void readBrushScalingFactor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  void readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *brush);
+  std::shared_ptr<graph::Symbol> readSymbol(OGRStyleSymbol *ogrStyleSymbol);
+  void readSymbolAngle(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  void readSymbolColor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  void readSymbolName(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  void readSymbolOffset(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  void readSymbolOutlineColor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  void readSymbolPriorityLevel(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  void readSymbolScalingFactor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
+  std::shared_ptr<Label> readLabel(OGRStyleLabel *ogrStyleLabel);
+  void readLabelAnchorPosition(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelAngle(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelBackgroundColor(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelForegroundColor(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelOutlineColor(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelShadowColor(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelLabelPlacement(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelOffset(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelStretch(OGRStyleLabel *ogrStyleLabel, Label *label);
+  void readLabelFont(OGRStyleLabel *ogrStyleLabel, Label *label);
   void readData(OGRFeature *ogrFeature,
                 OGRFeatureDefn *ogrFeatureDefinition,
-                std::shared_ptr<TableRegister> &data);
+                TableRegister *data);
 
 private:
 
@@ -291,31 +315,11 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 
     if (OGRFieldDefn *fieldDefinition = featureDefinition->GetFieldDefn(i)) {
 
-      TableField::Type type;
-
       const char *name = fieldDefinition->GetNameRef();
-      OGRFieldType ogr_type = fieldDefinition->GetType();
-      switch (ogr_type) {
-        case OFTInteger:
-          type = TableField::Type::INT;
-          break;
-        case OFTInteger64:
-          type = TableField::Type::INT64;
-          break;
-        case OFTReal:
-          type = TableField::Type::DOUBLE;
-          break;
-        case OFTString:
-          type = TableField::Type::STRING;
-          break;
-        default:
-          type = TableField::Type::STRING;
-          break;
-      }
+      TableField::Type type = typeFromGdal(fieldDefinition->GetType());
       int width = fieldDefinition->GetWidth();
 
-      std::shared_ptr<TableField> field(new TableField(name, type, width));
-      layer->addDataField(field);
+      layer->addDataField(std::make_shared<TableField>(name, type, width));
 
     }
   }
@@ -349,10 +353,10 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
         std::shared_ptr<graph::GraphicEntity> entity = readEntity(pGeometry);
         ogrStyleMgr = new OGRStyleMgr();
         ogrStyleMgr->GetStyleString(ogrFeature);
-        readStyles(ogrStyleMgr, entity);
+        readStyles(ogrStyleMgr, entity.get());
 
-        std::shared_ptr<TableRegister> data(new TableRegister(layer->tableFields()));
-        readData(ogrFeature, featureDefinition, data);
+		std::shared_ptr<TableRegister> data = std::make_shared<TableRegister>(layer->tableFields());
+        readData(ogrFeature, featureDefinition, data.get());
         entity->setData(data);
         
         layer->push_back(entity);
@@ -548,57 +552,57 @@ std::shared_ptr<graph::GraphicEntity> VectorReaderGdal::readEntity(OGRGeometry *
 
 std::shared_ptr<GPoint> VectorReaderGdal::readPoint(OGRPoint *ogrPoint)
 {
-  std::shared_ptr<GPoint> gPoint(new GPoint(ogrPoint->getX(), 
-                                            ogrPoint->getY()));
-  return gPoint;
+  return std::make_shared<GPoint>(ogrPoint->getX(),
+                                  ogrPoint->getY());
 }
 
 std::shared_ptr<GPoint3D> VectorReaderGdal::readPoint3D(OGRPoint *ogrPoint)
 {
-  std::shared_ptr<GPoint3D> gPoint(new GPoint3D(ogrPoint->getX(), 
-                                                ogrPoint->getY(), 
-                                                ogrPoint->getZ()));
-  return gPoint;
+  return std::make_shared<GPoint3D>(ogrPoint->getX(),
+                                    ogrPoint->getY(),
+                                    ogrPoint->getZ());
 }
 
 std::shared_ptr<GLineString> VectorReaderGdal::readLineString(OGRLineString *ogrLineString)
 {
-  int n = ogrLineString->getNumPoints();
-  std::shared_ptr<GLineString> lineString(new GLineString);
-  lineString->resize(static_cast<size_t>(n));
-  for (int i = 0; i < n; i++) {
+  int size = ogrLineString->getNumPoints();
+  std::shared_ptr<GLineString> lineString = std::make_shared<GLineString>(size);
+  
+  for (int i = 0; i < size; i++) {
     (*lineString)[static_cast<size_t>(i)].x = ogrLineString->getX(i);
     (*lineString)[static_cast<size_t>(i)].y = ogrLineString->getY(i);
   }
+  
   return lineString;
 }
 
 std::shared_ptr<GLineString3D> VectorReaderGdal::readLineString3D(OGRLineString *ogrLineString)
 {
-  int n = ogrLineString->getNumPoints();
-  std::shared_ptr<GLineString3D> lineString(new GLineString3D);
-  lineString->resize(static_cast<size_t>(n));
-  for (int i = 0; i < n; i++) {
+  int size = ogrLineString->getNumPoints();
+  std::shared_ptr<GLineString3D> lineString = std::make_shared<GLineString3D>(size);
+  
+  for (int i = 0; i < size; i++) {
     (*lineString)[static_cast<size_t>(i)].x = ogrLineString->getX(i);
     (*lineString)[static_cast<size_t>(i)].y = ogrLineString->getY(i);
     (*lineString)[static_cast<size_t>(i)].z = ogrLineString->getZ(i);
   }
+  
   return lineString;
 }
 
 std::shared_ptr<GPolygon> VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon)
 {
   OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
-  int n = ogrLinearRing->getNumPoints();
-  std::shared_ptr<GPolygon> gPolygon(new GPolygon);
-  gPolygon->resize(static_cast<size_t>(n));
-  for (int i = 0; i < n; i++) {
+  int size = ogrLinearRing->getNumPoints();
+  std::shared_ptr<GPolygon> gPolygon = std::make_shared <GPolygon>(size);
+   
+  for (int i = 0; i < size; i++) {
     (*gPolygon)[static_cast<size_t>(i)] = PointD(ogrLinearRing->getX(i), 
                                                  ogrLinearRing->getY(i));
   }
 
-  n = ogrPolygon->getNumInteriorRings();
-  for (int i = 0; i < n; i++) {
+  size = ogrPolygon->getNumInteriorRings();
+  for (int i = 0; i < size; i++) {
     ogrLinearRing = ogrPolygon->getInteriorRing(i);
     int nr = ogrLinearRing->getNumPoints();
     PolygonHole<PointD> hole(nr);
@@ -615,18 +619,17 @@ std::shared_ptr<GPolygon> VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon)
 std::shared_ptr<GPolygon3D> VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolygon)
 {
   OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
-  auto n = static_cast<size_t>(ogrLinearRing->getNumPoints());
-  std::shared_ptr<GPolygon3D> gPolygon(new GPolygon3D);
-  gPolygon->resize(n);
-
-  for (size_t i = 0; i < n; i++) {
+  int size = ogrLinearRing->getNumPoints();
+  std::shared_ptr<GPolygon3D> gPolygon = std::make_shared <GPolygon3D>(static_cast<size_t>(size));
+  
+  for (size_t i = 0; i < size; i++) {
     (*gPolygon)[i] = Point3D(ogrLinearRing->getX(static_cast<int>(i)),
                              ogrLinearRing->getY(static_cast<int>(i)),
                              ogrLinearRing->getZ(static_cast<int>(i)));
   }
 
-  n = static_cast<size_t>(ogrPolygon->getNumInteriorRings());
-  for (size_t i = 0; i < n; i++) {
+  size = static_cast<size_t>(ogrPolygon->getNumInteriorRings());
+  for (size_t i = 0; i < size; i++) {
     ogrLinearRing = ogrPolygon->getInteriorRing(static_cast<int>(i));
     auto nr = static_cast<size_t>(ogrLinearRing->getNumPoints());
     Polygon3DHole<Point3D> hole(nr);
@@ -643,11 +646,10 @@ std::shared_ptr<GPolygon3D> VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolyg
 
 std::shared_ptr<GMultiPoint> VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogrMultiPoint)
 {
-  auto n = static_cast<size_t>(ogrMultiPoint->getNumGeometries());
-  std::shared_ptr<GMultiPoint> multiPoint(new GMultiPoint);
-  multiPoint->resize(n);
+  auto size = static_cast<size_t>(ogrMultiPoint->getNumGeometries());
+  std::shared_ptr<GMultiPoint> multiPoint = std::make_shared<GMultiPoint>(size);
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPoint *ogrPoint = ogrMultiPoint->getGeometryRef(static_cast<int>(i));
@@ -664,11 +666,10 @@ std::shared_ptr<GMultiPoint> VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogr
 
 std::shared_ptr<GMultiPoint3D> VectorReaderGdal::readMultiPoint3D(OGRMultiPoint *ogrMultiPoint)
 {
-  auto n = static_cast<size_t>(ogrMultiPoint->getNumGeometries());
-  std::shared_ptr<GMultiPoint3D> multiPoint(new GMultiPoint3D);
-  multiPoint->resize(n);
+  auto size = static_cast<size_t>(ogrMultiPoint->getNumGeometries());
+  std::shared_ptr<GMultiPoint3D> multiPoint = std::make_shared<GMultiPoint3D>(size);
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPoint *ogrPoint = ogrMultiPoint->getGeometryRef(static_cast<int>(i));
@@ -686,11 +687,10 @@ std::shared_ptr<GMultiPoint3D> VectorReaderGdal::readMultiPoint3D(OGRMultiPoint 
 
 std::shared_ptr<graph::GMultiLineString> VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineString)
 {
-  auto n = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
-  std::shared_ptr<GMultiLineString> multiLineString(new GMultiLineString);
-  multiLineString->resize(n);
-
-  for (size_t i = 0; i < n; i++) {
+  size_t size = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
+  std::shared_ptr<GMultiLineString> multiLineString = std::make_shared<GMultiLineString>(size);
+ 
+  for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRLineString *ogrLineString = ogrMultiLineString->getGeometryRef(static_cast<int>(i));
@@ -712,11 +712,10 @@ std::shared_ptr<graph::GMultiLineString> VectorReaderGdal::readMultiLineString(O
 
 std::shared_ptr<graph::GMultiLineString3D> VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineString)
 {
-  auto n = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
-  std::shared_ptr<GMultiLineString3D> multiLineString(new GMultiLineString3D);
-  multiLineString->resize(n);
-
-  for (size_t i = 0; i < n; i++) {
+  size_t size = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
+  std::shared_ptr<GMultiLineString3D> multiLineString = std::make_shared<GMultiLineString3D>(size);
+  
+  for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRLineString *ogrLineString = ogrMultiLineString->getGeometryRef(static_cast<int>(i));
@@ -724,10 +723,10 @@ std::shared_ptr<graph::GMultiLineString3D> VectorReaderGdal::readMultiLineString
     OGRLineString *ogrLineString = dynamic_cast<OGRLineString *>(ogrMultiLineString->getGeometryRef(static_cast<int>(i)));
 #endif
 
-    auto np = static_cast<size_t>(ogrLineString->getNumPoints());
-    (*multiLineString)[i].resize(np);
+    auto points_size = static_cast<size_t>(ogrLineString->getNumPoints());
+    (*multiLineString)[i].resize(points_size);
 
-    for (size_t j = 0; j < np; j++) {
+    for (size_t j = 0; j < points_size; j++) {
       (*multiLineString)[i][j].x = ogrLineString->getX(static_cast<int>(j));
       (*multiLineString)[i][j].y = ogrLineString->getY(static_cast<int>(j));
       (*multiLineString)[i][j].z = ogrLineString->getZ(static_cast<int>(j));
@@ -739,11 +738,10 @@ std::shared_ptr<graph::GMultiLineString3D> VectorReaderGdal::readMultiLineString
 
 std::shared_ptr<graph::GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon)
 {
-  auto n = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
-  std::shared_ptr<GMultiPolygon> multiPolygon( new GMultiPolygon);
-  multiPolygon->resize(n);
+  size_t size = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
+  std::shared_ptr<GMultiPolygon> multiPolygon = std::make_shared<GMultiPolygon>(size);
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPolygon *ogrPolygon = ogrMultiPolygon->getGeometryRef(static_cast<int>(i));
@@ -755,7 +753,7 @@ std::shared_ptr<graph::GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMult
     auto np = static_cast<size_t>(ogrLinearRing->getNumPoints());
     (*multiPolygon)[i].resize(np);
 
-    for (size_t j = 0; j < n; j++) {
+    for (size_t j = 0; j < size; j++) {
       (*multiPolygon)[i][j].x = ogrLinearRing->getX(static_cast<int>(j));
       (*multiPolygon)[i][j].y = ogrLinearRing->getY(static_cast<int>(j));
     }
@@ -768,11 +766,10 @@ std::shared_ptr<graph::GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMult
 
 std::shared_ptr<graph::GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon)
 {
-  auto n = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
-  std::shared_ptr<GMultiPolygon3D> multiPolygon( new GMultiPolygon3D);
-  multiPolygon->resize(n);
-
-  for (size_t i = 0; i < n; i++) {
+  size_t size = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
+  std::shared_ptr<GMultiPolygon3D> multiPolygon = std::make_shared <GMultiPolygon3D>(size);
+ 
+  for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
     OGRPolygon *ogrPolygon = ogrMultiPolygon->getGeometryRef(static_cast<int>(i));
@@ -781,10 +778,10 @@ std::shared_ptr<graph::GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGR
 #endif
 
     OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
-    auto np = static_cast<size_t>(ogrLinearRing->getNumPoints());
-    (*multiPolygon)[i].resize(np);
+    auto points_size = static_cast<size_t>(ogrLinearRing->getNumPoints());
+    (*multiPolygon)[i].resize(points_size);
 
-    for (size_t j = 0; j < n; j++) {
+    for (size_t j = 0; j < points_size; j++) {
       (*multiPolygon)[i][j].x = ogrLinearRing->getX(static_cast<int>(j));
       (*multiPolygon)[i][j].y = ogrLinearRing->getY(static_cast<int>(j));
       (*multiPolygon)[i][j].z = ogrLinearRing->getZ(static_cast<int>(j));
@@ -796,7 +793,7 @@ std::shared_ptr<graph::GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGR
   return multiPolygon;
 }
 
-void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<GraphicEntity>  &gStyle)
+void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, GraphicEntity *gStyle)
 {
   OGRStyleTool *ogrStyleTool = nullptr;
 
@@ -805,16 +802,16 @@ void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<Graphic
       OGRSTClassId ogrStyleType = ogrStyleTool->GetType();
       switch (ogrStyleType) {
       case OGRSTCPen:
-        gStyle->setPen(readStylePen(dynamic_cast<OGRStylePen *>(ogrStyleTool)));
+        gStyle->setPen(readPen(dynamic_cast<OGRStylePen *>(ogrStyleTool)));
         break;
       case OGRSTCBrush:
-        gStyle->setBrush(readStyleBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool)));
+        gStyle->setBrush(readBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool)));
         break;
       case OGRSTCSymbol:
-        gStyle->setSymbol(readStyleSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool)));
+        gStyle->setSymbol(readSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool)));
         break;
       case OGRSTCLabel:
-        gStyle->setLabel(readStyleLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool)));
+        gStyle->setLabel(readLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool)));
         break;
       case OGRSTCVector:
 
@@ -826,35 +823,35 @@ void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<Graphic
   }
 }
 
-std::shared_ptr<Pen> VectorReaderGdal::readStylePen(OGRStylePen *ogrStylePen)
+std::shared_ptr<Pen> VectorReaderGdal::readPen(OGRStylePen *ogrStylePen)
 {
 
-  std::shared_ptr<Pen> stylePen = std::make_shared<Pen>();
+  std::shared_ptr<Pen> pen = std::make_shared<Pen>();
 
-  this->readStylePenColor(ogrStylePen, stylePen);
-  this->readStylePenCap(ogrStylePen, stylePen);
-  this->readStylePenPattern(ogrStylePen, stylePen);
-  this->readStylePenJoin(ogrStylePen, stylePen);
-  this->readStylePenName(ogrStylePen, stylePen);
-  this->readStylePenWidth(ogrStylePen, stylePen);
-  this->readStylePenPerpendicularOffset(ogrStylePen, stylePen);
-  this->readStylePenPriorityLevel(ogrStylePen, stylePen);
+  readPenColor(ogrStylePen, pen.get());
+  readPenCap(ogrStylePen, pen.get());
+  readPenPattern(ogrStylePen, pen.get());
+  readPenJoin(ogrStylePen, pen.get());
+  readPenName(ogrStylePen, pen.get());
+  readPenWidth(ogrStylePen, pen.get());
+  readPenPerpendicularOffset(ogrStylePen, pen.get());
+  readPenPriorityLevel(ogrStylePen, pen.get());
 
-  return stylePen;
+  return pen;
 }
 
-void VectorReaderGdal::readStylePenColor(OGRStylePen *ogrStylePen,
-                                         std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenColor(OGRStylePen *ogrStylePen,
+                                    Pen *pen)
 {
   GBool bDefault = false;
   const char *hexColor = ogrStylePen->Color(bDefault);
   if (!bDefault) {
-    stylePen->setColor(tl::graph::Color(hexColor + 1));
+    pen->setColor(tl::graph::Color(hexColor + 1));
   }
 }
 
-void VectorReaderGdal::readStylePenCap(OGRStylePen *ogrStylePen,
-                                       std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenCap(OGRStylePen *ogrStylePen,
+                                       Pen *pen)
 {
   GBool bDefault = false;
   const char *cap = ogrStylePen->Cap(bDefault);
@@ -867,22 +864,22 @@ void VectorReaderGdal::readStylePenCap(OGRStylePen *ogrStylePen,
     } else {
       penCap = Pen::Cap::butt;
     }
-    stylePen->setCap(penCap);
+    pen->setCap(penCap);
   }
 }
 
-void VectorReaderGdal::readStylePenPattern(OGRStylePen *ogrStylePen, 
-                                           std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenPattern(OGRStylePen *ogrStylePen, 
+                                      Pen *pen)
 {
   GBool bDefault = false;
   const char *pattern = ogrStylePen->Pattern(bDefault);
   if (!bDefault) {
-    stylePen->setPattern(pattern);
+    pen->setPattern(pattern);
   }
 }
 
-void VectorReaderGdal::readStylePenJoin(OGRStylePen *ogrStylePen, 
-                                        std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenJoin(OGRStylePen *ogrStylePen, 
+                                   Pen *pen)
 {
   GBool bDefault = false;
   const char *join = ogrStylePen->Join(bDefault);
@@ -895,12 +892,12 @@ void VectorReaderGdal::readStylePenJoin(OGRStylePen *ogrStylePen,
     } else {
       penJoin = Pen::Join::miter;
     }
-    stylePen->setJoin(penJoin);
+    pen->setJoin(penJoin);
   }
 }
 
-void VectorReaderGdal::readStylePenName(OGRStylePen *ogrStylePen, 
-                                        std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenName(OGRStylePen *ogrStylePen, 
+                                   Pen *pen)
 {
   GBool bDefault = false;
   const char *name = ogrStylePen->Id(bDefault);
@@ -925,12 +922,12 @@ void VectorReaderGdal::readStylePenName(OGRStylePen *ogrStylePen,
     } else {
       penName = Pen::Name::solid;
     }
-    stylePen->setName(penName);
+    pen->setName(penName);
   }
 }
 
-void VectorReaderGdal::readStylePenWidth(OGRStylePen *ogrStylePen, 
-                                         std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenWidth(OGRStylePen *ogrStylePen, 
+                                    Pen *pen)
 {
   GBool bDefault = false;
   double width = ogrStylePen->Width(bDefault);
@@ -954,55 +951,80 @@ void VectorReaderGdal::readStylePenWidth(OGRStylePen *ogrStylePen,
         penWidth = width;
         break;
     }
-    stylePen->setWidth(static_cast<uint8_t>(penWidth));
+    pen->setWidth(static_cast<uint8_t>(penWidth));
   }
 }
 
-void VectorReaderGdal::readStylePenPerpendicularOffset(OGRStylePen *ogrStylePen,
-                                                       std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenPerpendicularOffset(OGRStylePen *ogrStylePen,
+                                                  Pen *pen)
 {
   GBool bDefault = false;
   double perpendicularOffset = ogrStylePen->PerpendicularOffset(bDefault);
   if (!bDefault) {
     ///TODO: El valor depende de las unidades tambi?n
-    stylePen->setPerpendicularOffset(static_cast<int32_t>(perpendicularOffset));
+    pen->setPerpendicularOffset(static_cast<int32_t>(perpendicularOffset));
   }
 }
 
-void VectorReaderGdal::readStylePenPriorityLevel(OGRStylePen *ogrStylePen, 
-                                                 std::shared_ptr<Pen> &stylePen)
+void VectorReaderGdal::readPenPriorityLevel(OGRStylePen *ogrStylePen, 
+                                            Pen *pen)
 {
   GBool bDefault = false;
   auto priority = static_cast<uint32_t>(ogrStylePen->Priority(bDefault));
   if (!bDefault) {
-    stylePen->setPriorityLevel(priority);
+    pen->setPriorityLevel(priority);
   }
 }
 
-std::shared_ptr<Brush> VectorReaderGdal::readStyleBrush(OGRStyleBrush *ogrStyleBrush)
+std::shared_ptr<Brush> VectorReaderGdal::readBrush(OGRStyleBrush *ogrStyleBrush)
 {
-  GBool bDefault = false;
   std::shared_ptr<Brush> brush = std::make_shared<Brush>();
 
-  /* Angle */
+  readBrushAngle(ogrStyleBrush, brush.get());
+  readBrushBackColor(ogrStyleBrush, brush.get());
+  readBrushForeColor(ogrStyleBrush, brush.get());
+  readBrushName(ogrStyleBrush, brush.get());
+  readBrushPriorityLevel(ogrStyleBrush, brush.get());
+  readBrushScalingFactor(ogrStyleBrush, brush.get());
+  readBrushSpacing(ogrStyleBrush, brush.get());
+  
+  return brush;
+}
+
+void VectorReaderGdal::readBrushAngle(OGRStyleBrush *ogrStyleBrush, 
+                                      Brush *brush)
+{
+  GBool bDefault = false;
   double angle = ogrStyleBrush->Angle(bDefault);
   if (!bDefault) {
-    brush->setAngle(angle); //TODO: ?Mejor como float en radianes??
+    brush->setAngle(angle); //TODO: Mejor como float en radianes??
   }
+}
 
-  /* Back Color */
+void VectorReaderGdal::readBrushBackColor(OGRStyleBrush *ogrStyleBrush, 
+                                          Brush *brush)
+{
+  GBool bDefault = false;
   const char *hexColor = ogrStyleBrush->BackColor(bDefault);
   if (!bDefault) {
-    brush->setBackgroundColor(tl::graph::Color(hexColor + 1));
+    brush->setBackgroundColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Fore Color */
-  hexColor = ogrStyleBrush->ForeColor(bDefault);
+void VectorReaderGdal::readBrushForeColor(OGRStyleBrush *ogrStyleBrush, 
+                                          Brush *brush)
+{
+  GBool bDefault = false;
+  const char *hexColor = ogrStyleBrush->ForeColor(bDefault);
   if (!bDefault) {
-    brush->setForegroundColor(tl::graph::Color(hexColor + 1));
+    brush->setForegroundColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Brush Name */
+void VectorReaderGdal::readBrushName(OGRStyleBrush *ogrStyleBrush, 
+                                     Brush *brush)
+{
+  GBool bDefault = false;
   const char *brush_name = ogrStyleBrush->Id(bDefault);
   if (!bDefault) {
     Brush::Name name;
@@ -1023,22 +1045,35 @@ std::shared_ptr<Brush> VectorReaderGdal::readStyleBrush(OGRStyleBrush *ogrStyleB
     } else {
       name = Brush::Name::solid;
     }
+	
     brush->setName(name);
   }
+}
 
-  /* Priority Level */
-  auto  priority = static_cast<uint32_t>(ogrStyleBrush->Priority(bDefault));
+void VectorReaderGdal::readBrushPriorityLevel(OGRStyleBrush *ogrStyleBrush, 
+                                              Brush *brush)
+{
+  GBool bDefault = false;
+  uint32_t  priority = static_cast<uint32_t>(ogrStyleBrush->Priority(bDefault));
   if (!bDefault) {
     brush->setPriorityLevel(priority);
   }
+}
 
-  /* Scaling Factor */
+void VectorReaderGdal::readBrushScalingFactor(OGRStyleBrush *ogrStyleBrush,
+                                              Brush *brush)
+{
+  GBool bDefault = false;
   double scalingFactor = ogrStyleBrush->Size(bDefault);
   if (!bDefault) {
     brush->setScalingFactor(scalingFactor);
   }
+}
 
-  /* Spacing */
+void VectorReaderGdal::readBrushSpacing(OGRStyleBrush *ogrStyleBrush, 
+                                        Brush *brush)
+{
+  GBool bDefault = false;
   ///TODO: spacingX y spacingY est?n asociados a un tipo de unidad
   double spacingX = ogrStyleBrush->SpacingX(bDefault);
   GBool bDefault2 = false;
@@ -1046,28 +1081,48 @@ std::shared_ptr<Brush> VectorReaderGdal::readStyleBrush(OGRStyleBrush *ogrStyleB
   if (!bDefault && !bDefault2) {
     brush->setSpacing(spacingX, spacingY);
   }
-
-  return brush;
 }
 
-std::shared_ptr<Symbol> VectorReaderGdal::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol)
+std::shared_ptr<Symbol> VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol)
 {
   GBool bDefault = false;
   std::shared_ptr<Symbol> symbol = std::make_shared<Symbol>();
 
-  /* Angle */
+  readSymbolAngle(ogrStyleSymbol, symbol.get());
+  readSymbolColor(ogrStyleSymbol, symbol.get());
+  readSymbolName(ogrStyleSymbol, symbol.get());
+  readSymbolOffset(ogrStyleSymbol, symbol.get());
+  readSymbolOutlineColor(ogrStyleSymbol, symbol.get());
+  readSymbolPriorityLevel(ogrStyleSymbol, symbol.get());
+  readSymbolScalingFactor(ogrStyleSymbol, symbol.get());
+
+  return symbol;
+}
+
+void VectorReaderGdal::readSymbolAngle(OGRStyleSymbol *ogrStyleSymbol, 
+                                       Symbol *symbol)
+{
+  GBool bDefault = false;
   double angle = ogrStyleSymbol->Angle(bDefault);
   if (!bDefault) {
     symbol->setAngle(angle);
   }
+}
 
-  /* Color */
+void VectorReaderGdal::readSymbolColor(OGRStyleSymbol *ogrStyleSymbol, 
+                                       Symbol *symbol)
+{
+  GBool bDefault = false;
   const char *hexColor = ogrStyleSymbol->Color(bDefault);
   if (!bDefault) {
     symbol->setColor(tl::graph::Color(hexColor + 1));
   }
+}
 
-  /* Name */
+void VectorReaderGdal::readSymbolName(OGRStyleSymbol *ogrStyleSymbol, 
+                                      Symbol *symbol)
+{
+  GBool bDefault = false;
   const char *name = ogrStyleSymbol->Id(bDefault);
   if (!bDefault) {
     Symbol::Name symbolName = Symbol::Name::cross;
@@ -1096,45 +1151,77 @@ std::shared_ptr<Symbol> VectorReaderGdal::readStyleSymbol(OGRStyleSymbol *ogrSty
     } else {
       ///TODO: Bitmap...
     }
+	
     symbol->setName(symbolName);
   }
+}
 
-  /* Offset */
+void VectorReaderGdal::readSymbolOffset(OGRStyleSymbol *ogrStyleSymbol, 
+                                        Symbol *symbol)
+{
+  GBool bDefault = false;
   GBool bDefault1 = false;
   double offsetX = ogrStyleSymbol->SpacingX(bDefault);
   double offsetY = ogrStyleSymbol->SpacingY(bDefault1);
   if (!bDefault && !bDefault1) {
     symbol->setOffset(offsetX, offsetY);
   }
+}
 
-  /* Outline Color */
-  hexColor = ogrStyleSymbol->OColor(bDefault);
+void VectorReaderGdal::readSymbolOutlineColor(OGRStyleSymbol *ogrStyleSymbol, 
+                                              Symbol *symbol)
+{
+  GBool bDefault = false;
+  const char *hexColor = ogrStyleSymbol->OColor(bDefault);
   if (!bDefault) {
-    symbol->setOutlineColor(tl::graph::Color(hexColor + 1));
+    symbol->setOutlineColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Priority Level */
-  auto  priorityLevel = static_cast<uint32_t>(ogrStyleSymbol->Priority(bDefault));
+void VectorReaderGdal::readSymbolPriorityLevel(OGRStyleSymbol *ogrStyleSymbol, 
+                                               Symbol *symbol)
+{
+  GBool bDefault = false;
+  uint32_t  priorityLevel = static_cast<uint32_t>(ogrStyleSymbol->Priority(bDefault));
   if (!bDefault) {
     symbol->setPriorityLevel(priorityLevel);
   }
+}
 
-  /* Scaling Factor */
+void VectorReaderGdal::readSymbolScalingFactor(OGRStyleSymbol *ogrStyleSymbol, 
+                                               Symbol *symbol)
+{
+  GBool bDefault = false;
   double scalingFactor = ogrStyleSymbol->Size(bDefault);
   if (!bDefault) {
     symbol->setScalingFactor(scalingFactor);
   }
-
-  return symbol;
 }
 
-std::shared_ptr<Label> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrStyleLabel)
+std::shared_ptr<Label> VectorReaderGdal::readLabel(OGRStyleLabel *ogrStyleLabel)
 {
-  GBool bDefault = false;
   std::shared_ptr<Label> label = std::make_shared<Label>();
 
-  /* Anchor Position */
+  readLabelAnchorPosition(ogrStyleLabel, label.get());
+  readLabelAngle(ogrStyleLabel, label.get());
+  readLabelBackgroundColor(ogrStyleLabel, label.get());
+  readLabelForegroundColor(ogrStyleLabel, label.get());
+  readLabelOutlineColor(ogrStyleLabel, label.get());
+  readLabelShadowColor(ogrStyleLabel, label.get());
+  readLabelLabelPlacement(ogrStyleLabel, label.get());
+  readLabelOffset(ogrStyleLabel, label.get());
+  readLabelStretch(ogrStyleLabel, label.get());
+  readLabelFont(ogrStyleLabel, label.get());
+
+  return label;
+}
+
+void VectorReaderGdal::readLabelAnchorPosition(OGRStyleLabel *ogrStyleLabel, 
+                                               Label *label)
+{
+  GBool bDefault = false;
   int anchor = ogrStyleLabel->Anchor(bDefault);
+  
   if (!bDefault) {
     Label::AnchorPosition anchorPosition = Label::AnchorPosition::vertical_baseline |
                                                 Label::AnchorPosition::horizontal_left;
@@ -1177,74 +1264,111 @@ std::shared_ptr<Label> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrStyleL
     }
     label->setAnchorPosition(anchorPosition);
   }
+}
 
-  /* Angle */
+void VectorReaderGdal::readLabelAngle(OGRStyleLabel *ogrStyleLabel, 
+                                      Label *label)
+{
+  GBool bDefault = false;
   double angle = ogrStyleLabel->Angle(bDefault);
   if (!bDefault) {
     label->setAngle(angle);
   }
+}
 
-  /* Background Color */
+void VectorReaderGdal::readLabelBackgroundColor(OGRStyleLabel *ogrStyleLabel,
+                                                Label *label)
+{
+  GBool bDefault = false;
   const char *hexColor = ogrStyleLabel->BackColor(bDefault);
   if (!bDefault) {
-    label->setBackgroundColor(tl::graph::Color(hexColor + 1));
+    label->setBackgroundColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Foreground Color */
-  hexColor = ogrStyleLabel->ForeColor(bDefault);
+void VectorReaderGdal::readLabelForegroundColor(OGRStyleLabel *ogrStyleLabel,
+                                                Label *label)
+{
+  GBool bDefault = false;
+  const char *hexColor = ogrStyleLabel->ForeColor(bDefault);
   if (!bDefault) {
-    label->setForegroundColor(tl::graph::Color(hexColor + 1));
+    label->setForegroundColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Outline Color */
-  hexColor = ogrStyleLabel->OutlineColor(bDefault);
+void VectorReaderGdal::readLabelOutlineColor(OGRStyleLabel *ogrStyleLabel, 
+                                             Label *label)
+{
+  GBool bDefault = false;
+  const char *hexColor = ogrStyleLabel->OutlineColor(bDefault);
   if (!bDefault) {
-    label->setOutlineColor(tl::graph::Color(hexColor + 1));
+    label->setOutlineColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Shadow Color */
-  hexColor = ogrStyleLabel->ShadowColor(bDefault);
+void VectorReaderGdal::readLabelShadowColor(OGRStyleLabel *ogrStyleLabel,
+                                            Label *label)
+{
+  GBool bDefault = false;
+  const char *hexColor = ogrStyleLabel->ShadowColor(bDefault);
   if (!bDefault) {
-    label->setShadowColor(tl::graph::Color(hexColor + 1));
+    label->setShadowColor(graph::Color(hexColor + 1));
   }
+}
 
-  /* Label Placement */
-  const char *ogr_placement = ogrStyleLabel->Placement(bDefault);
+void VectorReaderGdal::readLabelLabelPlacement(OGRStyleLabel *ogrStyleLabel, 
+                                               Label *label)
+{
+  GBool bDefault = false;
+  const char *placement = ogrStyleLabel->Placement(bDefault);
   if (!bDefault) {
-    Label::Placement placement;
-    if (strcmp(ogr_placement, "m:l") == 0) {
-      placement = Label::Placement::l;
-    } else if (strcmp(ogr_placement, "m:s") == 0) {
-      placement = Label::Placement::s;
-    } else if (strcmp(ogr_placement, "m:m") == 0) {
-      placement = Label::Placement::m;
-    } else if (strcmp(ogr_placement, "m:w") == 0) {
-      placement = Label::Placement::w;
-    } else if (strcmp(ogr_placement, "m:h") == 0) {
-      placement = Label::Placement::h;
-    } else if (strcmp(ogr_placement, "m:a") == 0) {
-      placement = Label::Placement::a;
+    Label::Placement labelPlacement;
+    if (strcmp(placement, "m:l") == 0) {
+      labelPlacement = Label::Placement::l;
+    } else if (strcmp(placement, "m:s") == 0) {
+      labelPlacement = Label::Placement::s;
+    } else if (strcmp(placement, "m:m") == 0) {
+      labelPlacement = Label::Placement::m;
+    } else if (strcmp(placement, "m:w") == 0) {
+      labelPlacement = Label::Placement::w;
+    } else if (strcmp(placement, "m:h") == 0) {
+      labelPlacement = Label::Placement::h;
+    } else if (strcmp(placement, "m:a") == 0) {
+      labelPlacement = Label::Placement::a;
     } else {
-      placement = Label::Placement::p;
+      labelPlacement = Label::Placement::p;
     }
-    label->setPlacement(placement);
+    label->setPlacement(labelPlacement);
   }
+}
 
-  /* Offset */
+void VectorReaderGdal::readLabelOffset(OGRStyleLabel *ogrStyleLabel,
+                                       Label *label)
+{
+  GBool bDefault = false;
   GBool bDefault1 = false;
   double offsetX = ogrStyleLabel->SpacingX(bDefault);
   double offsetY = ogrStyleLabel->SpacingY(bDefault1);
   if (!bDefault && !bDefault1) {
     label->setOffset(offsetX, offsetY);
   }
+}
 
-  /* Stretch */
+void VectorReaderGdal::readLabelStretch(OGRStyleLabel *ogrStyleLabel, 
+                                        Label *label)
+{
+  GBool bDefault = false;
   double stretch = ogrStyleLabel->Stretch(bDefault);
   if (!bDefault) {
     label->setStretch(stretch);
   }
+}
 
-  /* Font */
+void VectorReaderGdal::readLabelFont(OGRStyleLabel *ogrStyleLabel, 
+                                     Label *label)
+{
+  GBool bDefault = false;
+
   Font font;
 
   const char *fontName = ogrStyleLabel->FontName(bDefault);
@@ -1301,13 +1425,11 @@ std::shared_ptr<Label> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrStyleL
   }
 
   label->setFont(font);
-
-  return label;
 }
 
 void VectorReaderGdal::readData(OGRFeature *ogrFeature,
                                 OGRFeatureDefn *ogrFeatureDefinition,
-                                std::shared_ptr<TableRegister> &data)
+                                TableRegister *data)
 {
   for (int i = 0; i < ogrFeatureDefinition->GetFieldCount(); i++) {
     OGRFieldDefn *poFieldDefn = ogrFeatureDefinition->GetFieldDefn(i);

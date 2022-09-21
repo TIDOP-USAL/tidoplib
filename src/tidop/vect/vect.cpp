@@ -22,30 +22,56 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECT_H
-#define TL_VECT_H
-
-#include "config_tl.h"
-#include "tidop/core/defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/datamodel.h"
+#include "vect.h"
 
 namespace tl
 {
 
 #ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
+
+TableField::Type typeFromGdal(OGRFieldType ogrType)
+{
+  TableField::Type type = TableField::Type::STRING;
+
+  switch (ogrType) {
+    case OFTInteger:
+      type = TableField::Type::INT;
+      break;
+    case OFTInteger64:
+      type = TableField::Type::INT64;
+      break;
+    case OFTReal:
+      type = TableField::Type::DOUBLE;
+      break;
+    case OFTString:
+      type = TableField::Type::STRING;
+      break;
+  }
+
+  return type;
+}
+
+OGRFieldType typeToGdal(TableField::Type type)
+{
+  OGRFieldType ogr_type = OFTString;
+  switch (type) {
+    case TableField::Type::INT:
+      ogr_type = OFTInteger;
+      break;
+    case TableField::Type::INT64:
+      ogr_type = OFTInteger64;
+      break;
+    case TableField::Type::DOUBLE:
+      ogr_type = OFTReal;
+      break;
+    case TableField::Type::STRING:
+      ogr_type = OFTString;
+      break;
+  }
+  return ogr_type;
+}
+
 #endif // TL_HAVE_GDAL
 
 } // End namespace tl
 
-
-
-#endif // TL_VECT_H

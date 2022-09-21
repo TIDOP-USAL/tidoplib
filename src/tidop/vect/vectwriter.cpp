@@ -30,6 +30,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
+#include "tidop/vect/vect.h"
 
 #ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -194,26 +195,7 @@ void VectorWriterGdal::write(const GLayer &layer)
 
     for (auto & field : fields) {
 
-      TableField::Type type = field->type();
-      OGRFieldType ogr_type;
-      switch (type) {
-        case TableField::Type::INT:
-          ogr_type = OFTInteger;
-          break;
-        case TableField::Type::INT64:
-          ogr_type = OFTInteger64;
-          break;
-        case TableField::Type::DOUBLE:
-          ogr_type = OFTReal;
-          break;
-        case TableField::Type::STRING:
-          ogr_type = OFTString;
-          break;
-        default:
-          ogr_type = OFTString;
-          break;
-      }
-
+      OGRFieldType ogr_type = typeToGdal(fields[i]->type());
       OGRFieldDefn fieldDefinition(field->name().c_str(), ogr_type);
       fieldDefinition.SetWidth(field->size());
       OGRErr error = ogrLayer->CreateField(&fieldDefinition);
@@ -330,8 +312,8 @@ void VectorWriterGdal::setCRS(const std::string &crs)
 //}
 //#endif
 
-void VectorWriterGdal::writeStyles(OGRStyleMgr * /*ogrStyleMgr*/, 
-                                   const GraphicEntity * /*gStyle*/)
+void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr, 
+                                   const GraphicEntity *gStyle)
 {
   OGRStyleTool *ogrStyleTool = nullptr;
 
