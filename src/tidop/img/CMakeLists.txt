@@ -30,7 +30,7 @@
 
 if(BUILD_TL_IMG)
   
-    project(tl_img)
+    project(Img)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 img.h
@@ -46,6 +46,8 @@ if(BUILD_TL_IMG)
                 metadata.h
                 metadata.cpp)
 
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     if(MSVC)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
     endif(MSVC)
@@ -57,15 +59,18 @@ if(BUILD_TL_IMG)
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
-                          tl_core
-                          tl_geom
-                          tl_math
-                          tl_graphic
+                          TidopLib::Core
+                          TidopLib::Geom
+                          TidopLib::Math
+                          TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 
-    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_img")
+
 
     if(BUILD_SHARED_LIBS)
         install(TARGETS ${PROJECT_NAME}
@@ -93,11 +98,11 @@ if(BUILD_TL_IMG)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(TL_HAVE_IMG YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::tl_img enabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)  
 
-    message(STATUS "  TidopLib::tl_img disabled")
-    message(STATUS "  TidopLib::tl_geospatial disabled [Module dependent on tl_img that is deactivated]") 
+    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
+    message(STATUS "  TidopLib::Geospatial disabled [Module dependent on TidopLib::${PROJECT_NAME} that is deactivated]") 
 
 endif(BUILD_TL_IMG)

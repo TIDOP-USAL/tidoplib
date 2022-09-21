@@ -44,10 +44,10 @@ if(TL_HAVE_GEOSPATIAL)
                                $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} 
-                          tl_core
-                          tl_math
-                          tl_geom
-                          tl_geospatial
+                          TidopLib::Core
+                          TidopLib::Math
+                          TidopLib::Geom
+                          TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)

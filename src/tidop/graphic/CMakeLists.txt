@@ -29,7 +29,7 @@
 
 if (BUILD_TL_GRAPHIC)
   
-    project(tl_graphic)
+    project(Graphic)
   
     set(TL_GRAPHIC_SOURCES
         color.cpp
@@ -63,6 +63,8 @@ if (BUILD_TL_GRAPHIC)
                 ${TL_GRAPHIC_SOURCES}
                 ${TL_GRAPHIC_HEADERS})
 
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     foreach(_source IN ITEMS ${TL_GRAPHIC_SOURCES})
         get_filename_component(_source_path "${_source}" PATH)
         string(REPLACE "/" "\\" _group_path "${_source_path}")
@@ -76,20 +78,19 @@ if (BUILD_TL_GRAPHIC)
     endforeach()
     
 
-    #target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
-
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-  	                      tl_core 
-                          tl_geom
+  	                      TidopLib::Core 
+                          TidopLib::Geom
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 
-  set_property(TARGET ${PROJECT_NAME} 
-               PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_graphic")
 
 
     if(BUILD_SHARED_LIBS)
@@ -123,9 +124,9 @@ if (BUILD_TL_GRAPHIC)
    
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
-    message(STATUS "  TidopLib::tl_graphic disabled")
-    message(STATUS "  TidopLib::tl_imgprocess disabled   [Module dependent on tl_graphic that is deactivated]") 
-    message(STATUS "  TidopLib::tl_vect disabled         [Module dependent on tl_graphic that is deactivated]") 
-    message(STATUS "  TidopLib::tl_experimental disabled [Module dependent on tl_graphic that is deactivated]")
+    message(STATUS "  TidopLib::Graphic disabled")
+    message(STATUS "  TidopLib::ImgProcess disabled   [Module dependent on TidopLib::Graphic that is deactivated]") 
+    message(STATUS "  TidopLib::Vect disabled         [Module dependent on TidopLib::Graphic that is deactivated]") 
+    message(STATUS "  TidopLib::Experimental disabled [Module dependent on TidopLib::Graphic that is deactivated]")
 
 endif(BUILD_TL_GRAPHIC)

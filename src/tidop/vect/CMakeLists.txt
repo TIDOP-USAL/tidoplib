@@ -29,7 +29,7 @@
 
 if (BUILD_TL_VECT)
 
-    project(tl_vect)
+    project(Vect)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 vect.h
@@ -39,7 +39,9 @@ if (BUILD_TL_VECT)
                 vectwriter.h			
                 formats.cpp
                 formats.h)
-      
+
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})   
+    
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
@@ -47,12 +49,14 @@ if (BUILD_TL_VECT)
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-                          tl_core
-                          tl_graphic
+                          TidopLib::Core
+                          TidopLib::Graphic
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)	
 
-    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_vect")
     
 
     if(BUILD_SHARED_LIBS)
@@ -67,7 +71,7 @@ if (BUILD_TL_VECT)
     
     else()
     
-        install(TARGETS tl_vect 
+        install(TARGETS ${PROJECT_NAME} 
                 EXPORT "${TARGETS_EXPORT_NAME}"
                 LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
                 ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
@@ -85,8 +89,8 @@ if (BUILD_TL_VECT)
  
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
-    message(STATUS "  TidopLib::tl_vect disabled")
-    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_vect that is deactivated]")
+    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
+    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::${PROJECT_NAME} that is deactivated]")
 
 endif(BUILD_TL_VECT)
   

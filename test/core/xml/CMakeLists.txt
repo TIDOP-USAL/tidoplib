@@ -33,7 +33,7 @@ add_executable(${PROJECT_NAME}
                ${test_filename})
 
 target_link_libraries(${PROJECT_NAME}
-                      tl_core
+                      TidopLib::Core
                       $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 

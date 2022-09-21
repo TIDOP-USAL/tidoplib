@@ -33,8 +33,11 @@ set(test_target "${test_name}")
 
 add_executable(${test_target} 
                ${test_filename})
-target_link_libraries(${test_target} tl_core tl_geom tl_graphic)
+
 target_link_libraries(${test_target} 
+                      TidopLib::Core 
+                      TidopLib::Geom 
+                      TidopLib::Graphic
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

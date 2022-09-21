@@ -29,7 +29,7 @@
 
 if(BUILD_TL_CORE)
 
-    project(tl_core)
+    project(Core)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 app.cpp
@@ -64,7 +64,9 @@ if(BUILD_TL_CORE)
                 path.h
                 xml.cpp
                 xml.h)
-    
+
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
@@ -77,9 +79,10 @@ if(BUILD_TL_CORE)
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${UNIX}>:-lpthread>)
     
-    set_property(TARGET ${PROJECT_NAME}
-                 PROPERTY FOLDER "modules")
-    
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_core")
+
     if(BUILD_SHARED_LIBS)
     
         install(TARGETS ${PROJECT_NAME}
@@ -109,19 +112,19 @@ if(BUILD_TL_CORE)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(TL_HAVE_CORE YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::tl_core enabled")
+    message(STATUS "  TidopLib::Core enabled")
     
 else()
 
-    message(STATUS "  TidopLib::tl_core disabled")
-    message(STATUS "  TidopLib::tl_math disabled         [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_geom disabled         [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_img disabled          [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_imgprocess disabled   [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_graphic disabled      [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_featmatch disabled    [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_vect disabled         [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_core that is deactivated]")
-    message(STATUS "  TidopLib::tl_experimental disabled [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::Core disabled")
+    message(STATUS "  TidopLib::Math disabled         [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::ImgProcess disabled   [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Graphic disabled      [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::FeatMatch disabled    [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Vect disabled         [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Experimental disabled [Module dependent on TidopLib::Core that is deactivated]")
   
 endif(BUILD_TL_CORE)

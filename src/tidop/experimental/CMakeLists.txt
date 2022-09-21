@@ -24,7 +24,7 @@
 
 # TidopLib experimental module
 
-project(tl_experimental)
+project(Experimental)
 
 if (BUILD_TL_EXPERIMENTAL)
 
@@ -37,15 +37,14 @@ if (BUILD_TL_EXPERIMENTAL)
                 compression.h
                 csv.cpp
                 csv.h)
-    
-    #target_include_directories(${PROJECT_NAME} PUBLIC 
-    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                           $<INSTALL_INTERFACE:include>)
+
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
     target_link_libraries(${PROJECT_NAME} PRIVATE 
-                          tl_core
-                          tl_graphic
+                          TidopLib::Core
+                          TidopLib::Graphic
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
@@ -55,8 +54,9 @@ if (BUILD_TL_EXPERIMENTAL)
                               ${OpenCV_LIBS})
     endif(HAVE_OPENCV)
 
-    set_property(TARGET ${PROJECT_NAME} 
-                 PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_experimental")
 
   #install
   if(BUILD_SHARED_LIBS)

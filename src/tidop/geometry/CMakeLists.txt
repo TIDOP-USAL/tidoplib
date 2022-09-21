@@ -30,7 +30,7 @@
 
 if(BUILD_TL_GEOMETRY)
 
-    project(tl_geom)
+    project(Geom)
   
     set(TL_GEOMETRY_SOURCES
         entities/segment.cpp)
@@ -69,7 +69,9 @@ if(BUILD_TL_GEOMETRY)
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${TL_GEOMETRY_SOURCES}
                 ${TL_GEOMETRY_HEADERS})
-   
+    
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     foreach(_source IN ITEMS ${TL_GEOMETRY_SOURCES})
         get_filename_component(_source_path "${_source}" PATH)
         string(REPLACE "/" "\\" _group_path "${_source_path}")
@@ -91,15 +93,17 @@ if(BUILD_TL_GEOMETRY)
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
-                          tl_core
-                          tl_math
+                          TidopLib::Core
+                          TidopLib::Math
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
 
 
     set_property(TARGET ${PROJECT_NAME} 
                  PROPERTY FOLDER "modules")
   
-
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_geom")
 
     if(BUILD_SHARED_LIBS)
   
@@ -128,14 +132,14 @@ if(BUILD_TL_GEOMETRY)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
   
     set(TL_HAVE_GEOMETRY YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::tl_geom enabled")
+    message(STATUS "  TidopLib::Geom enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
 
-    message(STATUS "  TidopLib::tl_geom disabled")
-    message(STATUS "  TidopLib::tl_img disabled          [Module dependent on tl_geom that is deactivated]") 
-    message(STATUS "  TidopLib::tl_graphic disabled      [Module dependent on tl_geom that is deactivated]") 
-    message(STATUS "  TidopLib::tl_featmatch disabled    [Module dependent on tl_geom that is deactivated]")
-    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_geom that is deactivated]")
+    message(STATUS "  TidopLib::Geom disabled")
+    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
+    message(STATUS "  TidopLib::Graphic disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
+    message(STATUS "  TidopLib::FeatMatch disabled    [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Geom that is deactivated]")
 
 endif(BUILD_TL_GEOMETRY)

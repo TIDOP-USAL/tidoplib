@@ -26,7 +26,7 @@
 
 if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
   
-    project(tl_featmatch)
+    project(FeatMatch)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 agast.cpp
@@ -93,18 +93,21 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp)
     
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     target_include_directories(${PROJECT_NAME} PRIVATE 
                                ${GDAL_INCLUDE_DIR} 
                                ${CMAKE_SOURCE_DIR}/third_party)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
-                          tl_core 
-                          tl_geom
+                          TidopLib::Core 
+                          TidopLib::Geom
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           ${OpenCV_LIBS})
 
-    set_property(TARGET ${PROJECT_NAME}
-                 PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_featmatch")
   
     if(BUILD_SHARED_LIBS)
   
@@ -133,14 +136,14 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
     set(TL_HAVE_FEAT_MATCH YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::tl_featmatch enabled")
+    message(STATUS "  TidopLib::FeatMatch enabled")
   
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
     if(NOT TL_HAVE_OPENCV)
-        message(STATUS "  TidopLib::tl_featmatch disabled [OPENCV not found]")
+        message(STATUS "  TidopLib::FeatMatch disabled [OPENCV not found]")
     else()
-        message(STATUS "  TidopLib::tl_featmatch disabled")
+        message(STATUS "  TidopLib::FeatMatch disabled")
     endif()
 
 endif()

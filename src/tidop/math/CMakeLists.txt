@@ -29,7 +29,7 @@
 
 if(BUILD_TL_MATH)
 
-    project(tl_math)
+    project(Math)
     
     set(TL_MATH_SOURCES
         angles.cpp)
@@ -63,6 +63,8 @@ if(BUILD_TL_MATH)
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${TL_MATH_SOURCES}
                 ${TL_MATH_HEADERS})
+    
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
     foreach(_source IN ITEMS ${TL_MATH_SOURCES})
         get_filename_component(_source_path "${_source}" PATH)
@@ -85,11 +87,12 @@ if(BUILD_TL_MATH)
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC 
-                          tl_core
+                          TidopLib::Core
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        
-    set_property(TARGET ${PROJECT_NAME} 
-                 PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_math")
 
     if(BUILD_SHARED_LIBS)
     
@@ -117,13 +120,13 @@ if(BUILD_TL_MATH)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(TL_HAVE_MATH YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::tl_math enabled")
+    message(STATUS "  TidopLib::Math enabled")
 
 elseif(BUILD_TL_CORE)
     
-    message(STATUS "  TidopLib::tl_math disabled")
-    message(STATUS "  TidopLib::tl_geom disabled         [Module dependent on tl_math that is deactivated]") 
-    message(STATUS "  TidopLib::tl_img disabled          [Module dependent on tl_math that is deactivated]") 
-    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_math that is deactivated]") 
+    message(STATUS "  TidopLib::Math disabled")
+    message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Math that is deactivated]") 
+    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Math that is deactivated]") 
+    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Math that is deactivated]") 
 
 endif(BUILD_TL_MATH)

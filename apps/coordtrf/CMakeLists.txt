@@ -45,10 +45,10 @@ if(TL_HAVE_CORE AND TL_HAVE_GEOMETRY)
 
 
     target_link_libraries(${PROJECT_NAME} 
-                          tl_core
-                          tl_math
-                          tl_geom
-                          tl_img
+                          TidopLib::Core
+                          TidopLib::Math
+                          TidopLib::Geom
+                          TidopLib::Img
                           $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           ${OpenCV_LIBS}

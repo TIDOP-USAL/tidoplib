@@ -32,16 +32,16 @@ set(test_target "${test_name}")
 
 add_executable(${test_target} 
                ${test_filename})
-target_link_libraries(${test_target} tl_core tl_math)
-target_link_libraries(${test_target} 
+              
+target_link_libraries(${test_target}
+                      TidopLib::Core
+                      TidopLib::Math
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
 
 if(HAVE_OPENBLAS)
-    target_link_libraries(${test_target}
-                          OpenBLAS::OpenBLAS)
-
     add_definitions(-DHAVE_LAPACK_CONFIG_H)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
 endif(HAVE_OPENBLAS)

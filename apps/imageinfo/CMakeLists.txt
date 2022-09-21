@@ -45,11 +45,11 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND TL_HAVE_GDAL 
                                $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-                          tl_img
-                          tl_core
-                          tl_math
-                          tl_geom
-                          tl_geospatial
+                          TidopLib::Img
+                          TidopLib::Core
+                          TidopLib::Math
+                          TidopLib::Geom
+                          TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)

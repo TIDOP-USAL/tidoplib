@@ -30,7 +30,7 @@
 
 if (BUILD_TL_GEOSPATIAL)
 
-    project(tl_geospatial)
+    project(Geospatial)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 crs.cpp
@@ -44,6 +44,8 @@ if (BUILD_TL_GEOSPATIAL)
                 diffrect.cpp
                 diffrect.h)
 
+    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC
@@ -51,20 +53,21 @@ if (BUILD_TL_GEOSPATIAL)
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
-                          tl_core 
-                          tl_math 
-                          tl_geom
-                          tl_vect
-                          tl_img
-                          tl_graphic
+                          TidopLib::Core 
+                          TidopLib::Math 
+                          TidopLib::Geom
+                          TidopLib::Vect
+                          TidopLib::Img
+                          TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 
     
-    set_property(TARGET ${PROJECT_NAME} 
-                 PROPERTY FOLDER "modules")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_geospatial")
 
     if(BUILD_SHARED_LIBS)
     
@@ -97,6 +100,6 @@ if (BUILD_TL_GEOSPATIAL)
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
 
-    message(STATUS "  TidopLib::tl_geospatial disabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
 
 endif()
