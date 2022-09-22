@@ -51,9 +51,7 @@ Log::Log()
 {
 }
 
-Log::~Log()
-{
-}
+Log::~Log() = default;
 
 Log &Log::instance()
 {

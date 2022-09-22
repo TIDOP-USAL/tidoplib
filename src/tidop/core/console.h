@@ -125,11 +125,8 @@ public:
   ~Console();
 #endif
 
-  /// Se invalida la copia y la asignación
-  Console(const Console &) = delete;
-  Console(Console &&) = delete;
-  Console &operator = (const Console &) = delete;
-  Console &operator = (Console &&) = delete;
+  TL_DISABLE_COPY(Console)
+  TL_DISABLE_MOVE(Console)
 
   /*!
    * \brief Singleton que devuelve una referencia unica de un objeto Console

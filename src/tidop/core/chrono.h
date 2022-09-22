@@ -109,7 +109,7 @@ public:
   Chrono(std::string message);
   Chrono(const Chrono &) = delete;
   Chrono(Chrono &&) = delete;
-  virtual ~Chrono();
+  virtual ~Chrono() = default;
 
   void operator=(const Chrono &) = delete;
   void operator=(Chrono &&) = delete;

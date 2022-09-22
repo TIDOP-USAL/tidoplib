@@ -591,9 +591,7 @@ Process::Process(std::string commandText/*,
 #endif
 }
 
-Process::~Process()
-{
-}
+Process::~Process() = default;
 
 void Process::execute(Progress *)
 {
@@ -820,9 +818,7 @@ TaskList::TaskList(std::initializer_list<std::shared_ptr<Task>> tasks)
 {
 }
 
-TaskList::~TaskList()
-{
-}
+TaskList::~TaskList() = default;
 
 void TaskList::push_back(const std::shared_ptr<Task> &task)
 {
@@ -861,9 +857,7 @@ TaskTree::TaskTree()
 {
 }
 
-TaskTree::~TaskTree()
-{
-}
+TaskTree::~TaskTree() = default;
 
 void TaskTree::addTask(const std::shared_ptr<Task> &task,
                        const std::list<std::shared_ptr<Task>> &parentTasks)

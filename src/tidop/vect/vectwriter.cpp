@@ -193,9 +193,9 @@ void VectorWriterGdal::write(const GLayer &layer)
 
     std::vector<std::shared_ptr<TableField>> fields = layer.tableFields();
 
-    for (auto & field : fields) {
+    for (auto &field : fields) {
 
-      OGRFieldType ogr_type = typeToGdal(fields[i]->type());
+      OGRFieldType ogr_type = typeToGdal(field->type());
       OGRFieldDefn fieldDefinition(field->name().c_str(), ogr_type);
       fieldDefinition.SetWidth(field->size());
       OGRErr error = ogrLayer->CreateField(&fieldDefinition);

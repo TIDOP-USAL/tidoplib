@@ -66,10 +66,6 @@ Chrono::Chrono(std::string message)
 {
 }
 
-Chrono::~Chrono()
-{
-}
-
 double Chrono::pause()
 {
   if (mStatus == Status::running) {
