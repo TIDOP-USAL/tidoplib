@@ -68,7 +68,8 @@ if(BUILD_TL_GEOMETRY)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${TL_GEOMETRY_SOURCES}
-                ${TL_GEOMETRY_HEADERS})
+                #${TL_GEOMETRY_HEADERS}
+                )
     
     add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
@@ -106,25 +107,25 @@ if(BUILD_TL_GEOMETRY)
                           OUTPUT_NAME "tl_geom")
 
     if(BUILD_SHARED_LIBS)
-  
+    
         install(TARGETS ${PROJECT_NAME}
                 EXPORT "${TARGETS_EXPORT_NAME}"
                 RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
                 LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
                 ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  
+    
         set_target_properties(${PROJECT_NAME} PROPERTIES
                               DEFINE_SYMBOL TIDOPLIB_EXPORTS)
     else()
-  
+    
       install(TARGETS ${PROJECT_NAME} 
               EXPORT "${TARGETS_EXPORT_NAME}"
               LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  
+              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+              PUBLIC_HEADER DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/include/tidop/geometry)
+    
     endif()
-  
-  
+
     install(DIRECTORY . 
             DESTINATION include/tidop/geometry
             FILES_MATCHING PATTERN "*.h")

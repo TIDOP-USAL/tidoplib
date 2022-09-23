@@ -40,9 +40,7 @@ target_link_libraries(${test_target}
 
 set_target_properties(${test_target} PROPERTIES
                       OUTPUT_NAME ${test_target}
-                      PROJECT_LABEL "(TEST) ${test_name}")
-
-set_target_properties(${test_target} PROPERTIES 
+                      PROJECT_LABEL "(TEST) ${test_name}" 
                       FOLDER "test/math")
 
 add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)

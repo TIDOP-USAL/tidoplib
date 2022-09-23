@@ -36,7 +36,7 @@ project(TidopLib
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
 
-message(STATUS "\nTidopLib ${TidopLib_VERSION}")
+message(STATUS "\n${PROJECT_NAME} ${TidopLib_VERSION}")
 message(STATUS ${TidopLib_DESCRIPTION})
 message(STATUS ${TidopLib_HOMEPAGE_URL})
 

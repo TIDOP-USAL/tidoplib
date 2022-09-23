@@ -496,9 +496,6 @@ public:
   explicit Producer(Queue<T> *queue) : mQueue(queue) {}
   ~Producer() = default;
 
-  TL_DISABLE_COPY(Producer)
-  TL_DISABLE_MOVE(Producer)
-
   virtual void operator() () = 0;
   virtual void operator() (size_t ini, size_t end) = 0;
 
@@ -529,9 +526,6 @@ public:
 
   explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
   ~Consumer() = default;
-
-  TL_DISABLE_COPY(Consumer)
-  TL_DISABLE_MOVE(Consumer)
 
   virtual void operator() () = 0;
 
