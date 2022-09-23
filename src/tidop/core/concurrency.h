@@ -27,6 +27,7 @@
 
 #include "config_tl.h"
 #include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 
 #include <functional>
 #include <thread>
@@ -179,10 +180,21 @@ class Queue
 
 public:
 
+  /*!
+   * \brief Default constructor
+   */
   Queue() = default;
-  Queue(size_t capacity) : mCapacity(capacity) {}
+
+  /*!
+   * \brief Constructor with queue capacity
+   * \param[in] capacity Queue capacity
+   */
+  Queue(size_t capacity);
 
   virtual ~Queue() = default;
+
+  TL_DISABLE_COPY(Queue)
+  TL_DISABLE_MOVE(Queue)
 
   /*!
    * \brief Inserts an element at the end
@@ -223,6 +235,14 @@ private:
   mutable std::mutex mMutex;
 
 };
+
+
+
+template<typename T>
+Queue<T>::Queue(size_t capacity)
+  : mCapacity(capacity)
+{
+}
 
 template<typename T>
 inline size_t Queue<T>::size() const
@@ -279,14 +299,21 @@ class QueueSPSC
 
 public:
 
+  /*!
+   * \brief Default constructor
+   */
   QueueSPSC() = default;
+
+  /*!
+   * \brief Constructor with queue capacity
+   * \param[in] capacity Queue capacity
+   */
   QueueSPSC(size_t capacity);
-  QueueSPSC(const QueueSPSC &) = delete;
-  QueueSPSC(QueueSPSC &&) = delete;
+
   ~QueueSPSC() = default;
 
-  void operator=(const QueueSPSC &) = delete;
-  void operator=(QueueSPSC &&) = delete;
+  TL_DISABLE_COPY(QueueSPSC)
+  TL_DISABLE_MOVE(QueueSPSC)
 
   /*!
    * \brief Inserts an element at the end
@@ -358,14 +385,21 @@ class QueueMPMC
 
 public:
 
-  QueueMPMC() = default;
+  /*!
+   * \brief Default constructor
+   */
+  QueueMPMC();
+
+  /*!
+   * \brief Constructor with queue capacity
+   * \param[in] capacity Queue capacity
+   */
   QueueMPMC(size_t capacity);
-  QueueMPMC(const QueueMPMC &) = delete;
-  QueueMPMC(QueueMPMC &&) = delete;
+
   ~QueueMPMC() = default;
 
-  void operator=(const QueueMPMC &) = delete;
-  void operator=(QueueMPMC &&) = delete;
+  TL_DISABLE_COPY(QueueMPMC)
+  TL_DISABLE_MOVE(QueueMPMC)
 
   /*!
    * \brief Inserts an element at the end
@@ -389,14 +423,18 @@ public:
 private:
 
   std::condition_variable mConditionVariable;
-  bool mStop;
+  bool mStop{false};
 };
 
+template<typename T>
+QueueMPMC<T>::QueueMPMC()
+  : Queue<T>()
+{
+}
 
 template<typename T>
 QueueMPMC<T>::QueueMPMC(size_t capacity)
-  : Queue<T>(capacity),
-  mStop(false)
+  : Queue<T>(capacity)
 {
 }
 
@@ -458,6 +496,9 @@ public:
   explicit Producer(Queue<T> *queue) : mQueue(queue) {}
   ~Producer() = default;
 
+  TL_DISABLE_COPY(Producer)
+  TL_DISABLE_MOVE(Producer)
+
   virtual void operator() () = 0;
   virtual void operator() (size_t ini, size_t end) = 0;
 
@@ -488,6 +529,9 @@ public:
 
   explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
   ~Consumer() = default;
+
+  TL_DISABLE_COPY(Consumer)
+  TL_DISABLE_MOVE(Consumer)
 
   virtual void operator() () = 0;
 

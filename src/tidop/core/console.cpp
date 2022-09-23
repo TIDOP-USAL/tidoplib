@@ -433,7 +433,12 @@ Argument::Argument(std::string name,
 {
 }
 
-Argument::Argument(const Argument &argument) = default;
+Argument::Argument(const Argument &argument)
+  : mName(argument.mName),
+    mDescription(argument.mDescription),
+    mShortName(argument.mShortName)
+{
+}
 
 Argument::Argument(Argument &&argument) TL_NOEXCEPT
   : mName(std::move(argument.mName)),
