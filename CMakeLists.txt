@@ -36,6 +36,10 @@ project(TidopLib
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
 
+message(STATUS "\nTidopLib ${TidopLib_VERSION}")
+message(STATUS ${TidopLib_DESCRIPTION})
+message(STATUS ${TidopLib_HOMEPAGE_URL})
+
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(TL_ARCH x64)
@@ -249,7 +253,7 @@ if (TIDOPLIB_USE_SIMD_INTRINSICS)
 
     set(TL_HAVE_SIMD_INTRINSICS TRUE)
 
-    message(STATUS "Build with SIMD intrinsics [${TIDOPLIB_SIMD}]")
+    message(STATUS "  [TidopLib] Build with SIMD intrinsics [${TIDOPLIB_SIMD}]")
 
     if(${TIDOPLIB_SIMD} STREQUAL "AVX2")
       set(TL_HAVE_AVX2 TRUE)
@@ -320,10 +324,10 @@ endif()
 
 if(TIDOPLIB_WARNING_TODO)
   set(TL_WARNING_TODO YES)
-  message(STATUS "  [TidopLib] Enable TODO Warning")
+  message(STATUS "  [TidopLib] Enable TODO Warnings")
 else()
   set(TL_WARNING_TODO NO)
-  message(STATUS "  [TidopLib] Disable TODO Warning")
+  message(STATUS "  [TidopLib] Disable TODO Warnings")
 endif()
 
 if(BUILD_APPS)
@@ -447,7 +451,10 @@ endif(WITH_GDAL)
 ##########################################################################
 
 if(WITH_PROJ4)
+
+  set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
   find_package(PROJ4 QUIET)
+  set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
   if(NOT PROJ4_FOUND)
     set(TL_HAVE_PROJ4 NO)
@@ -457,7 +464,6 @@ if(WITH_PROJ4)
     message(STATUS "  PROJ version: ${PROJ4_VERSION}")
   endif()
 endif(WITH_PROJ4)
-
 
 ##########################################################################
 # LibRaw (optional)                                                      #
