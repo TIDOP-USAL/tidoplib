@@ -27,6 +27,7 @@
 #  TidopLib Geometry module                                              #
 ##########################################################################
 
+include(TidopUtils)
 
 if(BUILD_TL_GEOMETRY)
 
@@ -68,23 +69,13 @@ if(BUILD_TL_GEOMETRY)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${TL_GEOMETRY_SOURCES}
-                #${TL_GEOMETRY_HEADERS}
-                )
+                ${TL_GEOMETRY_HEADERS})
     
     add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-    foreach(_source IN ITEMS ${TL_GEOMETRY_SOURCES})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "/" "\\" _group_path "${_source_path}")
-        source_group("Source Files\\${_group_path}" FILES "${_source}")
-    endforeach()
-
-    foreach(_source IN ITEMS ${TL_GEOMETRY_HEADERS})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "/" "\\" _group_path "${_source_path}")
-        source_group("Header Files\\${_group_path}" FILES "${_source}")
-    endforeach()
-    
+    add_files_to_source_group("Source Files" ${TL_GEOMETRY_SOURCES})
+	add_files_to_source_group("Header Files" ${TL_GEOMETRY_HEADERS})
+	
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
@@ -99,32 +90,20 @@ if(BUILD_TL_GEOMETRY)
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
 
 
-    set_property(TARGET ${PROJECT_NAME} 
-                 PROPERTY FOLDER "modules")
-  
-    set_target_properties(${PROJECT_NAME} PROPERTIES 
+    set_target_properties(${PROJECT_NAME} PROPERTIES
                           FOLDER "modules"
                           OUTPUT_NAME "tl_geom")
 
     if(BUILD_SHARED_LIBS)
-    
-        install(TARGETS ${PROJECT_NAME}
-                EXPORT "${TARGETS_EXPORT_NAME}"
-                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-    
         set_target_properties(${PROJECT_NAME} PROPERTIES
                               DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-    else()
-    
-      install(TARGETS ${PROJECT_NAME} 
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-              PUBLIC_HEADER DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/include/tidop/geometry)
-    
     endif()
+            
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 
     install(DIRECTORY . 
             DESTINATION include/tidop/geometry

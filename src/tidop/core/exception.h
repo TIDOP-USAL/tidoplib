@@ -32,7 +32,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
-
+#include "tidop/core/path.h"
 
 namespace tl
 {
@@ -45,42 +45,82 @@ namespace tl
 /*!
  * Clase para el manejo de excepciones
  */
-class TL_EXPORT Exception
+class Exception
   : public std::exception
 {
 
 public:
 
-  explicit Exception(std::string error) TL_NOEXCEPT;
+  explicit Exception(std::string error) TL_NOEXCEPT
+    : mError(std::move(error)),
+      mFile(""),
+      mLine(-1),
+      mFunction("")
+  {
+  }
+
   explicit Exception(std::string error, 
                      const std::string &file, 
                      int line, 
-                     std::string function) TL_NOEXCEPT;
+                     std::string function) TL_NOEXCEPT
+    : mError(std::move(error)),
+      mLine(line),
+      mFunction(std::move(function))
+  {
+    mFile = Path(file).fileName().toString();
+    messagef();
+  }
+
   ~Exception() TL_NOEXCEPT override = default;
 
   /*!
    * \brief Descripción del error
    */
-  const char *what() const TL_NOEXCEPT override;
-  
+  const char *what() const TL_NOEXCEPT override
+  {
+    return mMessage.c_str();
+  }
+
   /*!
    * \brief Fichero fuente donde se ha producido el error
    */
-  std::string file() const;
+  std::string file() const
+  {
+    return mFile;
+  }
 
   /*!
    * \brief Nombre de la función donde se ha producido el error
    */
-  std::string function() const;
+  std::string function() const
+  {
+    return mFunction;
+  }
 
   /*!
    * \brief Número de línea donde se ha producido el error
    */
-  int line() const;
+  int line() const
+  {
+    return mLine;
+  }
 
 private:
 
-  void messagef();
+  void messagef()
+  {
+    char buf[1000];
+    if (mLine == -1) {
+      mMessage = mError;
+    } else {
+#if defined _MSC_VER
+      sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
+#else
+      snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
+#endif
+      mMessage = std::string(buf);
+    }
+  }
 
 private:
 

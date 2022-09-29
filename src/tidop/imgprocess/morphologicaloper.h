@@ -63,7 +63,7 @@ namespace tl
  * \li TopHat = src - apertura(src)
  * \li BlackHat = cierre(src) - src
  */
-class MorphologicalOperation 
+class TL_EXPORT MorphologicalOperation
   : public ImageProcess
 {
 

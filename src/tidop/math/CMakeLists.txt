@@ -27,6 +27,9 @@
 #  TidopLib math module                                                  #
 ##########################################################################
 
+include(TidopUtils)
+
+
 if(BUILD_TL_MATH)
 
     project(Math)
@@ -66,18 +69,9 @@ if(BUILD_TL_MATH)
     
     add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-    foreach(_source IN ITEMS ${TL_MATH_SOURCES})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "/" "\\" _group_path "${_source_path}")
-        source_group("Source Files\\${_group_path}" FILES "${_source}")
-    endforeach()
-    
-    foreach(_source IN ITEMS ${TL_MATH_HEADERS})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "/" "\\" _group_path "${_source_path}")
-        source_group("Header Files\\${_group_path}" FILES "${_source}")
-    endforeach()
-    
+    add_files_to_source_group("Source Files" ${TL_MATH_SOURCES})
+	add_files_to_source_group("Header Files" ${TL_MATH_HEADERS})
+
     if(MSVC)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
     endif(MSVC)
@@ -94,25 +88,17 @@ if(BUILD_TL_MATH)
                           FOLDER "modules"
                           OUTPUT_NAME "tl_math")
 
-    if(BUILD_SHARED_LIBS)
-    
-        install(TARGETS ${PROJECT_NAME}
-                EXPORT "${TARGETS_EXPORT_NAME}"
-                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-    			
+    if(BUILD_SHARED_LIBS)	
         set_target_properties(${PROJECT_NAME} PROPERTIES
                               DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-    
-    else()
-
-      install(TARGETS ${PROJECT_NAME}
-    			EXPORT "${TARGETS_EXPORT_NAME}"
-    			LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-    			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
     endif()
     
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+
     install(DIRECTORY . 
             DESTINATION include/tidop/math
             FILES_MATCHING PATTERN "*.h")

@@ -27,6 +27,9 @@
 #  TidopLib graphic module                                               #
 ##########################################################################
 
+include(TidopUtils)
+
+
 if (BUILD_TL_GRAPHIC)
   
     project(Graphic)
@@ -65,18 +68,8 @@ if (BUILD_TL_GRAPHIC)
 
     add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-    foreach(_source IN ITEMS ${TL_GRAPHIC_SOURCES})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "/" "\\" _group_path "${_source_path}")
-        source_group("Source Files\\${_group_path}" FILES "${_source}")
-    endforeach()
-
-    foreach(_source IN ITEMS ${TL_GRAPHIC_HEADERS})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "/" "\\" _group_path "${_source_path}")
-        source_group("Header Files\\${_group_path}" FILES "${_source}")
-    endforeach()
-    
+    add_files_to_source_group("Source Files" ${TL_GRAPHIC_SOURCES})
+	add_files_to_source_group("Header Files" ${TL_GRAPHIC_HEADERS})
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
@@ -94,33 +87,24 @@ if (BUILD_TL_GRAPHIC)
 
 
     if(BUILD_SHARED_LIBS)
-
-        install(TARGETS ${PROJECT_NAME}
-                EXPORT "${TARGETS_EXPORT_NAME}"
-                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  	
   	    set_target_properties(${PROJECT_NAME} PROPERTIES
                               DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  
-  else()
+    endif()
 
-      install(TARGETS ${PROJECT_NAME} 
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-
-  endif()
-  
-  install(DIRECTORY . 
-          DESTINATION include/tidop/graphic
-          FILES_MATCHING PATTERN "*.h")
-          
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-  
-  set(TL_HAVE_GRAPHIC YES CACHE INTERNAL "")
-  message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    
+    install(DIRECTORY . 
+            DESTINATION include/tidop/graphic
+            FILES_MATCHING PATTERN "*.h")
+            
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
+    
+    set(TL_HAVE_GRAPHIC YES CACHE INTERNAL "")
+    message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
    
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 

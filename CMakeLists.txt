@@ -170,25 +170,12 @@ if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
   endif()
 endif()
 
-# Se permite elegir entre libreria estatica o dinámica
-#TODO: BUILD_SHARED_LIBS es un flag global de CMAKE: set(BUILD_SHARED_LIBS OFF)
-#      Tal vez seria mejor cambiar el nombre 
-OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+
 
 # Por defecto se establece el tipo de librería estática
 set (LIB_TYPE STATIC)
 
-if (BUILD_SHARED_LIBS)
-  # Se configura como libreria dinámica
-  set (LIB_TYPE SHARED)
 
-  if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
-    #TODO: Probar
-    #set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  endif(MSVC)
-
-endif (BUILD_SHARED_LIBS)
 
 
 
@@ -226,9 +213,10 @@ cmake_dependent_option(BUILD_TL_EXPERIMENTAL "Include experimental module in Tid
 
 # Activación/desactivación de otros componentes de la libreria
 
-OPTION (BUILD_APPS                     "APPS"                  ON )
-OPTION (BUILD_TEST                     "Include test"          OFF)
-OPTION (BUILD_DOC                      "Build documentation"   OFF)
+OPTION (BUILD_APPS                    "Build Apps"             ON )
+OPTION (BUILD_SHARED_LIBS             "Build Shared Libraries" OFF)
+OPTION (BUILD_TEST                    "Build test"             OFF)
+OPTION (BUILD_DOC                     "Build documentation"    OFF)
 
 # Configuración de la librería
 
@@ -335,6 +323,21 @@ if(BUILD_APPS)
 else()
   message(STATUS "  [TidopLib] Build apps disabled")
 endif()
+
+if (BUILD_SHARED_LIBS)
+  # Se configura como libreria dinámica
+  set (LIB_TYPE SHARED)
+
+  if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+    #TODO: Probar
+    #set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    message(STATUS "  [TidopLib] Build with shared libraries.")
+  endif(MSVC)
+else()
+  message(STATUS "  [TidopLib] Build with static libraries")
+endif (BUILD_SHARED_LIBS)
+
 
 if(BUILD_TEST)
   enable_testing()

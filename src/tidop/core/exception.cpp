@@ -23,7 +23,6 @@
  **************************************************************************/
 
 #include "tidop/core/exception.h"
-#include "tidop/core/path.h"
 
 #include <locale>
 #include <codecvt>
@@ -42,60 +41,60 @@ namespace tl
 {
 
 
-Exception::Exception(std::string error) TL_NOEXCEPT
-  : mError(std::move(error)),
-    mFile(""),
-    mLine(-1),
-    mFunction("")
-{
-}
-
-Exception::Exception(std::string error, 
-                     const std::string &file, 
-                     int line, 
-                     std::string function ) TL_NOEXCEPT
-  : mError(std::move(error)),
-    mLine(line), 
-    mFunction(std::move(function))
-{
-  mFile = Path(file).fileName().toString();
-  messagef();
-}
-
-const char *Exception::what() const TL_NOEXCEPT
-{
-  return mMessage.c_str();
-}
-
-std::string tl::Exception::file() const
-{
-  return mFile;
-}
-
-std::string tl::Exception::function() const
-{
-  return mFunction;
-}
-
-int tl::Exception::line() const
-{
-  return mLine;
-}
-
-void Exception::messagef()
-{
-  char buf[1000];
-  if (mLine == -1) {
-    mMessage = mError;
-  } else {
-#if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
-#else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
-#endif
-    mMessage = std::string(buf);
-  }
-}
+//Exception::Exception(std::string error) TL_NOEXCEPT
+//  : mError(std::move(error)),
+//    mFile(""),
+//    mLine(-1),
+//    mFunction("")
+//{
+//}
+//
+//Exception::Exception(std::string error, 
+//                     const std::string &file, 
+//                     int line, 
+//                     std::string function ) TL_NOEXCEPT
+//  : mError(std::move(error)),
+//    mLine(line), 
+//    mFunction(std::move(function))
+//{
+//  mFile = Path(file).fileName().toString();
+//  messagef();
+//}
+//
+//const char *Exception::what() const TL_NOEXCEPT
+//{
+//  return mMessage.c_str();
+//}
+//
+//std::string tl::Exception::file() const
+//{
+//  return mFile;
+//}
+//
+//std::string tl::Exception::function() const
+//{
+//  return mFunction;
+//}
+//
+//int tl::Exception::line() const
+//{
+//  return mLine;
+//}
+//
+//void Exception::messagef()
+//{
+//  char buf[1000];
+//  if (mLine == -1) {
+//    mMessage = mError;
+//  } else {
+//#if defined _MSC_VER
+//    sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
+//#else
+//    snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
+//#endif
+//    mMessage = std::string(buf);
+//  }
+//}
 
 
 

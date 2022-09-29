@@ -119,7 +119,7 @@ ImageMetadata::Format ImageMetadata::format()
 
 
 
-class ImageMetadataBase
+class TL_EXPORT ImageMetadataBase
   : public ImageMetadata
 {
 

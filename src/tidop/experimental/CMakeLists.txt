@@ -58,35 +58,31 @@ if (BUILD_TL_EXPERIMENTAL)
                           FOLDER "modules"
                           OUTPUT_NAME "tl_experimental")
 
-  #install
-  if(BUILD_SHARED_LIBS)
+    #install
   
-      install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-      	  	  ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib) 
+    if(BUILD_SHARED_LIBS)   
   		  
-      set_target_properties(${PROJECT_NAME} PROPERTIES
-                            DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 
-  else()
+
   
-    install(TARGETS ${PROJECT_NAME} 
+    endif()
+  
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
-            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+			
+    install(DIRECTORY . 
+            DESTINATION include/tidop/experimental
+            FILES_MATCHING PATTERN "*.h")
   
-  endif()
-  
-  install(DIRECTORY . 
-          DESTINATION include/tidop/experimental
-          FILES_MATCHING PATTERN "*.h")
-  
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
-  set(TL_HAVE_EXPERIMENTAL YES CACHE INTERNAL "")
-  message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
+    set(TL_HAVE_EXPERIMENTAL YES CACHE INTERNAL "")
+    message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
      
