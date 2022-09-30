@@ -58,7 +58,7 @@ void cblas_dgemm(OPENBLAS_CONST enum CBLAS_ORDER Order, OPENBLAS_CONST enum CBLA
 template<typename T> inline
 typename std::enable_if<
   std::is_same<float, typename std::remove_cv<T>::type>::value, void>::type
-gemm(blasint m, blasint n, blasint k, 
+gemm(int m, int n, int k,
      const T *a, const T *b, T *c)
 {
   T alpha = 1.f;
@@ -76,7 +76,7 @@ gemm(blasint m, blasint n, blasint k,
 template<typename T> inline
 typename std::enable_if<
   std::is_same<double, typename std::remove_cv<T>::type>::value, void>::type
-gemm(blasint m, blasint n, blasint k, 
+gemm(int m, int n, int k,
      const T *a, const T *b, T *c)
 {
   T alpha = 1.;

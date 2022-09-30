@@ -54,36 +54,10 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND TL_HAVE_GDAL 
                           $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
     
-    #if(TL_HAVE_OPENCV)
-    #    target_link_libraries(${PROJECT_NAME} PRIVATE
-    #                          ${OpenCV_LIBS})
-    #endif(TL_HAVE_OPENCV)
-
-    
-    #if (UNIX)
-    #    target_link_libraries(${PROJECT_NAME}
-    #                          -lpthread
-    #                          -ldl
-    #                          -lexpat
-    #                          -ljasper
-    #                          -ljpeg
-    #                          -ltiff
-    #                          -lpng
-    #                          -lm
-    #                          -lrt
-    #                          -lpcre)
-    #endif()
-    
-
-    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/imageinfo")
-    
     set_target_properties(${PROJECT_NAME} PROPERTIES
-                          OUTPUT_NAME "${PROJECT_NAME}"
-                          PROJECT_LABEL "${PROJECT_NAME}")
-    
-    if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/imageinfo")
-    endif()
+                          OUTPUT_NAME ${PROJECT_NAME}
+                          PROJECT_LABEL ${PROJECT_NAME}
+                          FOLDER "apps/imageinfo")
     
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)

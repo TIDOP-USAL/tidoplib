@@ -574,12 +574,7 @@ add_subdirectory(doc)
 
 message(STATUS "\nTidop modules:\n")
 
-# include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
-
-
-
-
 include_directories("${PROJECT_BINARY_DIR}")
 
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")

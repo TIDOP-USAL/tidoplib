@@ -33,49 +33,46 @@ if(BUILD_TL_GEOMETRY)
 
     project(Geom)
   
-    set(TL_GEOMETRY_SOURCES
-        entities/segment.cpp)
-    
-    set(TL_GEOMETRY_HEADERS
-        transform/transform.h
-        transform/affine.h
-        transform/helmert2d.h
-        transform/helmert3d.h
-        transform/polynomial.h
-        transform/projective.h
-        transform/rotation.h
-        transform/scale.h
-        transform/translation.h
-        rect.h
-        size.h
-        entities/bbox.h
-        entities/entity.h
-        entities/entities2d.h
-        entities/entities3d.h
-        entities/linestring.h
-        entities/point.h
-        entities/polygon.h
-        entities/multipoint.h
-        entities/segment.h
-        entities/window.h
-        entities/shapes.h
-        algorithms.h
-        algorithms/vector.h
-        algorithms/distance.h
-        algorithms/angle.h
-        algorithms/projection.h
-        algorithms/buffer.h
-        algorithms/intersect.h)
+    add_files_to_groups(${PROJECT_NAME} 
+                        SOURCE_FILES 
+                            entities/segment.cpp
+                        HEADER_FILES
+                            transform/transform.h
+                            transform/affine.h
+                            transform/helmert2d.h
+                            transform/helmert3d.h
+                            transform/polynomial.h
+                            transform/projective.h
+                            transform/rotation.h
+                            transform/scale.h
+                            transform/translation.h
+                            rect.h
+                            size.h
+                            entities/bbox.h
+                            entities/entity.h
+                            entities/entities2d.h
+                            entities/entities3d.h
+                            entities/linestring.h
+                            entities/point.h
+                            entities/polygon.h
+                            entities/multipoint.h
+                            entities/segment.h
+                            entities/window.h
+                            entities/shapes.h
+                            algorithms.h
+                            algorithms/vector.h
+                            algorithms/distance.h
+                            algorithms/angle.h
+                            algorithms/projection.h
+                            algorithms/buffer.h
+                            algorithms/intersect.h)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                ${TL_GEOMETRY_SOURCES}
-                ${TL_GEOMETRY_HEADERS})
+                ${Geom_SOURCE_FILES}
+                ${Geom_HEADER_FILES})
     
     add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-    add_files_to_source_group("Source Files" ${TL_GEOMETRY_SOURCES})
-	add_files_to_source_group("Header Files" ${TL_GEOMETRY_HEADERS})
-	
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)

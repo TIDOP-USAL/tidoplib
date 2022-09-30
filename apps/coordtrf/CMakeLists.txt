@@ -75,13 +75,9 @@ if(TL_HAVE_CORE AND TL_HAVE_GEOMETRY)
                  FOLDER "apps/coordtransform")
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
-                          OUTPUT_NAME "${PROJECT_NAME}"
-                          PROJECT_LABEL "${PROJECT_NAME}")
-    
-    if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${PROJECT_NAME} PROPERTIES 
-                            FOLDER "apps/coordtransform")
-    endif()
+                          FOLDER "apps/coordtransform"
+                          OUTPUT_NAME ${PROJECT_NAME}
+                          PROJECT_LABEL ${PROJECT_NAME})
     
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)

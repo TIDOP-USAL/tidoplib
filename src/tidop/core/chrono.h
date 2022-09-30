@@ -115,28 +115,28 @@ public:
   void operator=(Chrono &&) = delete;
 
   /*!
-   * \brief Pausa el cronometro
+   * \brief Pausa el cronómetro
    * \return Tiempo transcurrido en segundos
    */
   double pause();
 
   /*!
-   * \brief Reinicio del cronometro
+   * \brief Reinicio del cronómetro
    */
   void reset();
 
   /*!
-   * \brief Continua corriendo el cronometro cuando estaba pausado
+   * \brief Continua corriendo el cronómetro cuando estaba pausado
    */
   void resume();
 
   /*!
-   * \brief Arranca el cronometro
+   * \brief Arranca el cronómetro
    */
   void run();
 
   /*!
-   * \brief Detiene el cronometro
+   * \brief Detiene el cronómetro
    * \return Tiempo transcurrido en segundos
    */
   double stop();

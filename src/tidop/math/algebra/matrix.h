@@ -35,6 +35,7 @@
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 #include "tidop/math/simd.h"
+#include "tidop/math/blas.h"
 
 namespace tl
 {
@@ -785,10 +786,193 @@ using Matrix4x4d = Matrix<double, 4, 4>;
 
 
 
+/// \cond
+
+namespace internal
+{
+
+template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
+void mulmat_simd(const Matrix<T, _rows, _dim> &matrix1,
+                 const Matrix<T, _dim, _cols> &matrix2,
+                 Matrix<T, _rows, _cols> &matrix)
+{
+  using namespace simd;
+
+  size_t rows = matrix1.rows();
+  size_t dim = matrix1.cols();
+  size_t cols = matrix2.cols();
+
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+  Packed<T> packed_c;
+
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = cols - cols % packed_size;
+  size_t iter = rows - rows % 8;
+
+  T b{};
+
+  for (size_t r = 0; r < iter; r += 8) {
+    for (size_t i = 0; i < dim; i++) {
+
+      Packed<T> packed_a1(matrix1(r, i));
+      Packed<T> packed_a2(matrix1(r + 1, i));
+      Packed<T> packed_a3(matrix1(r + 2, i));
+      Packed<T> packed_a4(matrix1(r + 3, i));
+      Packed<T> packed_a5(matrix1(r + 4, i));
+      Packed<T> packed_a6(matrix1(r + 5, i));
+      Packed<T> packed_a7(matrix1(r + 6, i));
+      Packed<T> packed_a8(matrix1(r + 7, i));
+
+      for (size_t c = 0; c < max_vector; c += packed_size) {
+
+        packed_b.loadUnaligned(&matrix2(i, c));
+
+        packed_c.loadUnaligned(&matrix(r, c));
+        packed_c += packed_a1 * packed_b;
+        packed_c.storeUnaligned(&matrix(r, c));
+
+        packed_c.loadUnaligned(&matrix(r + 1, c));
+        packed_c += packed_a2 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 1, c));
+
+        packed_c.loadUnaligned(&matrix(r + 2, c));
+        packed_c += packed_a3 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 2, c));
+
+        packed_c.loadUnaligned(&matrix(r + 3, c));
+        packed_c += packed_a4 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 3, c));
+
+        packed_c.loadUnaligned(&matrix(r + 4, c));
+        packed_c += packed_a5 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 4, c));
+
+        packed_c.loadUnaligned(&matrix(r + 5, c));
+        packed_c += packed_a6 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 5, c));
+
+        packed_c.loadUnaligned(&matrix(r + 6, c));
+        packed_c += packed_a7 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 6, c));
+
+        packed_c.loadUnaligned(&matrix(r + 7, c));
+        packed_c += packed_a8 * packed_b;
+        packed_c.storeUnaligned(&matrix(r + 7, c));
+
+      }
+
+      for (size_t c = max_vector; c < cols; c++) {
+
+        b = matrix2(i, c);
+        matrix(r, c) += matrix1(r, i) * b;
+        matrix(r + 1, c) += matrix1(r + 1, i) * b;
+        matrix(r + 2, c) += matrix1(r + 2, i) * b;
+        matrix(r + 3, c) += matrix1(r + 3, i) * b;
+        matrix(r + 4, c) += matrix1(r + 4, i) * b;
+        matrix(r + 5, c) += matrix1(r + 5, i) * b;
+        matrix(r + 6, c) += matrix1(r + 6, i) * b;
+        matrix(r + 7, c) += matrix1(r + 7, i) * b;
+      }
+
+    }
+  }
+
+  for (size_t r = iter; r < rows; r++) {
+    for (size_t i = 0; i < dim; i++) {
+
+      T a = matrix1(r, i);
+      packed_a.setScalar(a);
+
+      for (size_t c = 0; c < max_vector; c += packed_size) {
+
+        packed_b.loadUnaligned(&matrix2(i, c));
+
+        packed_c.loadUnaligned(&matrix(r, c));
+        packed_c += packed_a * packed_b;
+        packed_c.storeUnaligned(&matrix(r, c));
+      }
+
+      for (size_t c = max_vector; c < cols; c++) {
+        matrix(r, c) += a * matrix2(i, c);
+      }
+
+    }
+  }
+}
+
+template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
+void mulmat_cpp(const Matrix<T, _rows, _dim> &matrix1,
+                const Matrix<T, _dim, _cols> &matrix2,
+                Matrix<T, _rows, _cols> &matrix)
+{
+  for (size_t r = 0; r < matrix1.rows(); r++) {
+    for (size_t i = 0; i < matrix1.cols(); i++) {
+      T a = matrix1(r, i);
+      for (size_t c = 0; c < matrix2.cols(); c++) {
+        matrix(r, c) += a * matrix2(i, c);
+      }
+    }
+  }
+}
+
+template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
+typename std::enable_if < 
+  std::is_integral<typename std::remove_cv<T>::type>::value,
+  void>::type
+mulmat(const Matrix<T, _rows, _dim> &matrix1,
+       const Matrix<T, _dim, _cols> &matrix2,
+       Matrix<T, _rows, _cols> &matrix)
+{
+#if defined TL_HAVE_SIMD_INTRINSICS
+
+  mulmat_simd(matrix1, matrix2, matrix);
+
+#else 
+
+  mulmat_cpp(matrix1, matrix2, matrix);
+
+#endif
+}
+
+template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
+typename std::enable_if <
+  std::is_floating_point<typename std::remove_cv<T>::type>::value,
+  void>::type
+mulmat(const Matrix<T, _rows, _dim> &matrix1,
+       const Matrix<T, _dim, _cols> &matrix2,
+       Matrix<T, _dim, _cols> &matrix)
+{
+
+#ifdef TL_HAVE_OPENBLAS
+
+  blas::gemm(static_cast<int>(matrix1.rows()),
+             static_cast<int>(matrix1.cols()),
+             static_cast<int>(matrix1.cols()),
+             matrix1.data(), matrix2.data(), matrix.data());
+
+#elif defined TL_HAVE_SIMD_INTRINSICS
+
+  mulmat_simd(matrix1, matrix2, matrix);
+
+#else 
+
+  mulmat_cpp(matrix1, matrix2, matrix);
+
+#endif
+}
+
+} // namespace internal 
+
+/// \endcond
+
 
 /*------------------------------------------------------------------------*/
 /* Implementation                                                         */
 /*------------------------------------------------------------------------*/
+
+
+
 
 
 /* Static MatrixBase implementation */
@@ -2359,119 +2543,7 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
 {
   Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::zero();
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-  for (size_t r = 0; r < _rows; r++) {
-    for (size_t i = 0; i < _dim; i++) {
-      T a = matrix1(r, i);
-      for (size_t c = 0; c < _cols; c++) {
-        matrix(r, c) += a * matrix2(i, c);
-      }
-    }
-  }
-
-#else
-
-  using namespace simd;
-
-  Packed<T> packed_a;
-  Packed<T> packed_b;
-  Packed<T> packed_c;
-
-  constexpr size_t packed_size = packed_a.size();
-  constexpr size_t max_vector = _cols - _cols % packed_size;
-  constexpr size_t iter = _rows - _rows % 8;
-  T b{};
-
-  for (size_t r = 0; r < iter; r += 8) {
-    for (size_t i = 0; i < _dim; i++) {
-
-      Packed<T> packed_a1(matrix1(r, i));
-      Packed<T> packed_a2(matrix1(r + 1, i));
-      Packed<T> packed_a3(matrix1(r + 2, i));
-      Packed<T> packed_a4(matrix1(r + 3, i));
-      Packed<T> packed_a5(matrix1(r + 4, i));
-      Packed<T> packed_a6(matrix1(r + 5, i));
-      Packed<T> packed_a7(matrix1(r + 6, i));
-      Packed<T> packed_a8(matrix1(r + 7, i));
-
-      for (size_t c = 0; c < max_vector; c += packed_size) {
-
-        packed_b.loadUnaligned(&matrix2(i, c));
-
-        packed_c.loadUnaligned(&matrix(r, c));
-        packed_c += packed_a1 * packed_b;
-        packed_c.storeUnaligned(&matrix(r, c));
-
-        packed_c.loadUnaligned(&matrix(r + 1, c));
-        packed_c += packed_a2 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 1, c));
-
-        packed_c.loadUnaligned(&matrix(r + 2, c));
-        packed_c += packed_a3 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 2, c));
-
-        packed_c.loadUnaligned(&matrix(r + 3, c));
-        packed_c += packed_a4 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 3, c));
-
-        packed_c.loadUnaligned(&matrix(r + 4, c));
-        packed_c += packed_a5 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 4, c));
-
-        packed_c.loadUnaligned(&matrix(r + 5, c));
-        packed_c += packed_a6 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 5, c));
-
-        packed_c.loadUnaligned(&matrix(r + 6, c));
-        packed_c += packed_a7 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 6, c));
-
-        packed_c.loadUnaligned(&matrix(r + 7, c));
-        packed_c += packed_a8 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 7, c));
-
-      }
-
-      for (size_t c = max_vector; c < _cols; c++) {
-
-        b = matrix2(i, c);
-        matrix(r, c) += matrix1(r, i) * b;
-        matrix(r + 1, c) += matrix1(r + 1, i) * b;
-        matrix(r + 2, c) += matrix1(r + 2, i) * b;
-        matrix(r + 3, c) += matrix1(r + 3, i) * b;
-        matrix(r + 4, c) += matrix1(r + 4, i) * b;
-        matrix(r + 5, c) += matrix1(r + 5, i) * b;
-        matrix(r + 6, c) += matrix1(r + 6, i) * b;
-        matrix(r + 7, c) += matrix1(r + 7, i) * b;
-      }
-
-    }
-  }
-
-  for (size_t r = iter; r < _rows; r++) {
-    for (size_t i = 0; i < _dim; i++) {
-
-      T a = matrix1(r, i);
-      packed_a.setScalar(a);
-
-      for (size_t c = 0; c < max_vector; c += packed_size) {
-
-        packed_b.loadUnaligned(&matrix2(i, c));
-
-        packed_c.loadUnaligned(&matrix(r, c));
-        packed_c += packed_a * packed_b;
-        packed_c.storeUnaligned(&matrix(r, c));
-      }
-
-      for (size_t c = max_vector; c < _cols; c++) {
-        matrix(r, c) += a * matrix2(i, c);
-      }
-
-    }
-  }
-
-#endif
+  internal::mulmat(matrix1, matrix2, matrix);
 
   return matrix;
 }
@@ -2488,121 +2560,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
   TL_ASSERT(dim1 == dim2, "A columns != B rows");
 
   Matrix<T> matrix = Matrix<T>::zero(rows, cols);
-
-  TL_TODO("Repetido. Extraer multiplicación.")
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-  for (size_t r = 0; r < rows; r++) {
-    for (size_t i = 0; i < dim1; i++) {
-      T a = matrix1(r, i);
-      for (size_t c = 0; c < cols; c++) {
-        matrix(r, c) += a * matrix2(i, c);
-      }
-    }
-  }
-
-#else
-
-  using namespace simd;
-
-  Packed<T> packed_a;
-  Packed<T> packed_b;
-  Packed<T> packed_c;
-
-  constexpr size_t packed_size = packed_a.size();
-  size_t max_vector = cols - cols % packed_size;
-  size_t iter = rows - rows % 8;
-  T b{};
-
-  for (size_t r = 0; r < iter; r += 8) {
-    for (size_t i = 0; i < dim1; i++) {
-
-      Packed<T> packed_a1(matrix1(r, i));
-      Packed<T> packed_a2(matrix1(r + 1, i));
-      Packed<T> packed_a3(matrix1(r + 2, i));
-      Packed<T> packed_a4(matrix1(r + 3, i));
-      Packed<T> packed_a5(matrix1(r + 4, i));
-      Packed<T> packed_a6(matrix1(r + 5, i));
-      Packed<T> packed_a7(matrix1(r + 6, i));
-      Packed<T> packed_a8(matrix1(r + 7, i));
-
-      for (size_t c = 0; c < max_vector; c += packed_size) {
-
-        packed_b.loadUnaligned(&matrix2(i, c));
-
-        packed_c.loadUnaligned(&matrix(r, c));
-        packed_c += packed_a1 * packed_b;
-        packed_c.storeUnaligned(&matrix(r, c));
-
-        packed_c.loadUnaligned(&matrix(r + 1, c));
-        packed_c += packed_a2 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 1, c));
-
-        packed_c.loadUnaligned(&matrix(r + 2, c));
-        packed_c += packed_a3 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 2, c));
-
-        packed_c.loadUnaligned(&matrix(r + 3, c));
-        packed_c += packed_a4 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 3, c));
-
-        packed_c.loadUnaligned(&matrix(r + 4, c));
-        packed_c += packed_a5 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 4, c));
-
-        packed_c.loadUnaligned(&matrix(r + 5, c));
-        packed_c += packed_a6 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 5, c));
-
-        packed_c.loadUnaligned(&matrix(r + 6, c));
-        packed_c += packed_a7 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 6, c));
-
-        packed_c.loadUnaligned(&matrix(r + 7, c));
-        packed_c += packed_a8 * packed_b;
-        packed_c.storeUnaligned(&matrix(r + 7, c));
-
-      }
-
-      for (size_t c = max_vector; c < cols; c++) {
-
-        b = matrix2(i, c);
-        matrix(r, c) += matrix1(r, i) * b;
-        matrix(r + 1, c) += matrix1(r + 1, i) * b;
-        matrix(r + 2, c) += matrix1(r + 2, i) * b;
-        matrix(r + 3, c) += matrix1(r + 3, i) * b;
-        matrix(r + 4, c) += matrix1(r + 4, i) * b;
-        matrix(r + 5, c) += matrix1(r + 5, i) * b;
-        matrix(r + 6, c) += matrix1(r + 6, i) * b;
-        matrix(r + 7, c) += matrix1(r + 7, i) * b;
-      }
-
-    }
-  }
-
-  for (size_t r = iter; r < rows; r++) {
-    for (size_t i = 0; i < dim1; i++) {
-
-      T a = matrix1(r, i);
-      packed_a.setScalar(a);
-
-      for (size_t c = 0; c < max_vector; c += packed_size) {
-
-        packed_b.loadUnaligned(&matrix2(i, c));
-
-        packed_c.loadUnaligned(&matrix(r, c));
-        packed_c += packed_a * packed_b;
-        packed_c.storeUnaligned(&matrix(r, c));
-      }
-
-      for (size_t c = max_vector; c < cols; c++) {
-        matrix(r, c) += a * matrix2(i, c);
-      }
-
-    }
-  }
-
-#endif
+  internal::mulmat(matrix1, matrix2, matrix);
 
   return matrix;
 }
