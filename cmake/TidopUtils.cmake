@@ -35,20 +35,40 @@ function(add_files_to_source_group group_name files)
 endfunction()
 
 
-function(add_files_to_groups TARGET)
+function(add_files_to_project TARGET)
 
     cmake_parse_arguments(
         PARSE_ARGV 1 
         PARAM 
         "DISABLE_FOLDERS"
-        ""
+        "DIRECTORY"
         "SOURCE_FILES;HEADER_FILES;RESOURCE_FILES;FORM_FILES")
 
-    set(${TARGET}_SOURCE_FILES "${PARAM_SOURCE_FILES}" PARENT_SCOPE)
-    set(${TARGET}_HEADER_FILES "${PARAM_HEADER_FILES}" PARENT_SCOPE)
-    set(${TARGET}_RESOURCE_FILES "${PARAM_RESOURCE_FILES}" PARENT_SCOPE)
-    set(${TARGET}_FORM_FILES "${PARAM_FORM_FILES}" PARENT_SCOPE)
+    #if (IS_DIRECTORY ${PARAM_DIRECTORY})
+	#	# Carga automatica en función de las extensiones de archivo
+	#    file(GLOB_RECURSE DIRECTORY_SOURCES_FILES RELATIVE "${PARAM_DIRECTORY}" CONFIGURE_DEPENDS *.cpp)
+    #    file(GLOB_RECURSE DIRECTORY_HEADER_FILES RELATIVE "${PARAM_DIRECTORY}" CONFIGURE_DEPENDS *.h *.hpp)
+	#	#file(GLOB_RECURSE RESOURCE_FILES RELATIVE ${PARAM_DIRECTORY} CONFIGURE_DEPENDS *.cpp)
+    #    #file(GLOB_RECURSE FORM_FILES RELATIVE ${PARAM_DIRECTORY} CONFIGURE_DEPENDS *.h *.hpp)
+	#endif()
+	
+    set(_SOURCES_FILES ${PARAM_SOURCE_FILES} "${PROJECT_SOURCE_FILES}")
+    set(_HEADER_FILES ${PARAM_HEADER_FILES} "${PROJECT_HEADER_FILES}")
+    set(_RESOURCE_FILES ${PARAM_RESOURCE_FILES} "${PROJECT_RESOURCE_FILES}")
+    set(_FORM_FILES ${PARAM_FORM_FILES} "${PROJECT_FORM_FILES}")
+
+    set(PROJECT_SOURCE_FILES "${_SOURCES_FILES}" PARENT_SCOPE)
+    set(PROJECT_HEADER_FILES "${_HEADER_FILES}" PARENT_SCOPE)
+    set(PROJECT_RESOURCE_FILES "${_RESOURCE_FILES}" PARENT_SCOPE)
+    set(PROJECT_FORM_FILES "${PARAM_FORM_FILES}" PARENT_SCOPE)
+
+    set(${TARGET}_SOURCE_FILES "${_SOURCES_FILES}" PARENT_SCOPE)
+    set(${TARGET}_HEADER_FILES "${_HEADER_FILES}" PARENT_SCOPE)
+    set(${TARGET}_RESOURCE_FILES "${_RESOURCE_FILES}" PARENT_SCOPE)
+    set(${TARGET}_FORM_FILES "${_FORM_FILES}" PARENT_SCOPE)
  
+
+	
     if (NOT ${PARAM_DISABLE_FOLDERS})
         add_files_to_source_group("Source Files" "${PARAM_SOURCE_FILES}")
         add_files_to_source_group("Header Files" "${PARAM_HEADER_FILES}")
@@ -56,4 +76,7 @@ function(add_files_to_groups TARGET)
         add_files_to_source_group("Form Files" "${PARAM_FORM_FILES}")
 	endif()
 	
+
+
 endfunction()
+

@@ -33,7 +33,7 @@ if(BUILD_TL_GEOMETRY)
 
     project(Geom)
   
-    add_files_to_groups(${PROJECT_NAME} 
+    add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
                             entities/segment.cpp
                         HEADER_FILES
@@ -68,10 +68,11 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/intersect.h)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                ${Geom_SOURCE_FILES}
-                ${Geom_HEADER_FILES})
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
     
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(TidopLib::${PROJECT_NAME}
+                ALIAS ${PROJECT_NAME})
 
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>

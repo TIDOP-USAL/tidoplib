@@ -33,49 +33,47 @@ include(TidopUtils)
 if (BUILD_TL_GRAPHIC)
   
     project(Graphic)
-  
-    set(TL_GRAPHIC_SOURCES
-        color.cpp
-        font.cpp
-        linealgorithms.cpp
-        styles.cpp
-        layer.cpp
-        canvas.cpp
-        painter.cpp
-        datamodel.cpp
-        entities/entity.cpp
-        entities/point.cpp
-        entities/polygon.cpp
-        entities/linestring.cpp)
 
-    set(TL_GRAPHIC_HEADERS
-        color.h
-        font.h
-        linealgorithms.h
-        styles.h
-        layer.h
-        canvas.h
-        painter.h
-        datamodel.h
-        entities/entity.h
-        entities/point.h
-        entities/polygon.h
-        entities/linestring.h)
+    add_files_to_project(${PROJECT_NAME} 
+                        SOURCE_FILES 
+                            color.cpp
+                            font.cpp
+                            linealgorithms.cpp
+                            styles.cpp
+                            layer.cpp
+                            canvas.cpp
+                            painter.cpp
+                            datamodel.cpp
+                            entities/entity.cpp
+                            entities/point.cpp
+                            entities/polygon.cpp
+                            entities/linestring.cpp
+                        HEADER_FILES
+                            color.h
+                            font.h
+                            linealgorithms.h
+                            styles.h
+                            layer.h
+                            canvas.h
+                            painter.h
+                            datamodel.h
+                            entities/entity.h
+                            entities/point.h
+                            entities/polygon.h
+                            entities/linestring.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                ${TL_GRAPHIC_SOURCES}
-                ${TL_GRAPHIC_HEADERS})
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
 
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
-    add_files_to_source_group("Source Files" ${TL_GRAPHIC_SOURCES})
-	add_files_to_source_group("Header Files" ${TL_GRAPHIC_HEADERS})
+    add_library(TidopLib::${PROJECT_NAME} 
+                ALIAS ${PROJECT_NAME})
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+    target_link_libraries(${PROJECT_NAME} PUBLIC
   	                      TidopLib::Core 
                           TidopLib::Geom
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>

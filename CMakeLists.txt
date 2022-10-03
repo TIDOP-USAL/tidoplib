@@ -54,12 +54,17 @@ endif()
 
 # C++ standar
 
-list(APPEND cxx_standard_values C++11 C++14)
-    
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8)
+list(APPEND cxx_standard_values C++11)
+
+if ("cxx_std_14" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+list (APPEND cxx_standard_values C++14)
+endif()
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 list (APPEND cxx_standard_values C++17)
 endif()
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12)
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 list (APPEND cxx_standard_values C++20)
 endif()
 

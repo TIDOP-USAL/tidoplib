@@ -34,43 +34,41 @@ if(BUILD_TL_MATH)
 
     project(Math)
     
-    set(TL_MATH_SOURCES
-        angles.cpp)
-                
-    set(TL_MATH_HEADERS
-        math.h
-        angles.h
-        statistics.h
-        mathutils.h
-        simd.h
-        statistic/series.h
-        statistic/descriptive.h
-        statistic/confmat.h
-		statistic/covariance.h
-        statistic/tukeyfences.h
-        algebra/quaternion.h
-        algebra/euler_angles.h
-        algebra/rotations.h
-        algebra/rotation_matrix.h
-        algebra/rotation_convert.h
-        algebra/axis_angle.h
-        algebra/matrix.h
-        algebra/vector.h
-        algebra/svd.h
-        algebra/lu.h
-        algebra/qr.h
-        algebra/cholesky.h
-        lapack.h
-        blas.h)
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES 
+                             angles.cpp
+                         HEADER_FILES
+                             math.h
+                             angles.h
+                             statistics.h
+                             mathutils.h
+                             simd.h
+                             statistic/series.h
+                             statistic/descriptive.h
+                             statistic/confmat.h
+		                     statistic/covariance.h
+                             statistic/tukeyfences.h
+                             algebra/quaternion.h
+                             algebra/euler_angles.h
+                             algebra/rotations.h
+                             algebra/rotation_matrix.h
+                             algebra/rotation_convert.h
+                             algebra/axis_angle.h
+                             algebra/matrix.h
+                             algebra/vector.h
+                             algebra/svd.h
+                             algebra/lu.h
+                             algebra/qr.h
+                             algebra/cholesky.h
+                             lapack.h
+                             blas.h)
                 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                ${TL_MATH_SOURCES}
-                ${TL_MATH_HEADERS})
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
     
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
-    add_files_to_source_group("Source Files" ${TL_MATH_SOURCES})
-	add_files_to_source_group("Header Files" ${TL_MATH_HEADERS})
+    add_library(TidopLib::${PROJECT_NAME} 
+                ALIAS ${PROJECT_NAME})
 
     if(MSVC)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
