@@ -93,7 +93,8 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp)
     
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(TidopLib::${PROJECT_NAME}
+                ALIAS ${PROJECT_NAME})
 
     target_include_directories(${PROJECT_NAME} PRIVATE 
                                ${GDAL_INCLUDE_DIR} 

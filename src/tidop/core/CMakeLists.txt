@@ -65,7 +65,8 @@ if(BUILD_TL_CORE)
                 xml.cpp
                 xml.h)
 
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(TidopLib::${PROJECT_NAME}
+                ALIAS ${PROJECT_NAME})
 
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>

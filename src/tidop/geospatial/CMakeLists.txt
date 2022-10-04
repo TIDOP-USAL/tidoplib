@@ -44,7 +44,8 @@ if (BUILD_TL_GEOSPATIAL)
                 diffrect.cpp
                 diffrect.h)
 
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(TidopLib::${PROJECT_NAME} 
+                ALIAS ${PROJECT_NAME})
 
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
