@@ -108,16 +108,12 @@ if(MSVC)
 
   if(MSVC_VERSION EQUAL 1900)
     set(TL_RUNTIME vc14)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
   elseif(MSVC_VERSION MATCHES "^191[0-9]$")
     set(TL_RUNTIME vc15)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
   elseif(MSVC_VERSION MATCHES "^192[0-9]$")
     set(TL_RUNTIME vc16)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
   elseif(MSVC_VERSION MATCHES "^193[0-9]$")
     set(TL_RUNTIME vc17)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
   else()
     message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
   endif()
@@ -129,30 +125,13 @@ elseif(MINGW)
 endif()
 
 
-# Configuracion especifica de Visual Studio
-#TODO: https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
+# Compile options 
+
 if(MSVC)
-
-  # Nivel de warning
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-  
-  # /EH (Modelo de control de excepciones)
-  # /EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones
-  # declaradas como extern "C" jamás inician una excepción de C++.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-
-  # Las llamadas a los métodos potencialmente no seguros en la biblioteca estándar de C++ dan lugar
-  # a una Advertencia del compilador (nivel 3) C4996.
-  # Para deshabilitar esta advertencia se debe definir la macro _SCL_SECURE_NO_WARNINGS
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
-
-  # https://docs.microsoft.com/es-es/cpp/build/reference/zc-cplusplus?view=vs-2019
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++latest")
-
+    add_compile_options("/W3" "/EHsc" "-D_SCL_SECURE_NO_WARNINGS" "-D_CRT_SECURE_NO_DEPRECATE")
+else()
+    add_compile_options("-Wall" "-Wextra" "-Werror")
 endif()
-
-
-
 
 
 unset(TL_HAVE_SSE CACHE)
