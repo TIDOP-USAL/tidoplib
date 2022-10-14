@@ -328,7 +328,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 
 
   OGRFeature *ogrFeature;
-  for(size_t i = 0; i < ogrLayer->GetFeatureCount(); i++) {
+  for(int i = 0; i < ogrLayer->GetFeatureCount(); i++) {
     ogrFeature = ogrLayer->GetFeature(i);
   //}
   //
@@ -355,7 +355,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
         ogrStyleMgr->GetStyleString(ogrFeature);
         readStyles(ogrStyleMgr, entity.get());
 
-		std::shared_ptr<TableRegister> data = std::make_shared<TableRegister>(layer->tableFields());
+		    std::shared_ptr<TableRegister> data = std::make_shared<TableRegister>(layer->tableFields());
         readData(ogrFeature, featureDefinition, data.get());
         entity->setData(data);
         

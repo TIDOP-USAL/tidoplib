@@ -403,8 +403,8 @@ BOOST_FIXTURE_TEST_CASE(setOffset, StyleLabelTest)
 
 BOOST_FIXTURE_TEST_CASE(setPerpendicularOffset, StyleLabelTest)
 {
-  style->setPerpendicularOffset(10.);
-  BOOST_CHECK_EQUAL(10., style->perpendicularOffset());
+  style->setPerpendicularOffset(10);
+  BOOST_CHECK_EQUAL(10, style->perpendicularOffset());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
