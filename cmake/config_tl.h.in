@@ -94,4 +94,24 @@
 #cmakedefine TL_HAVE_AVX512
 #cmakedefine TL_HAVE_SIMD_INTRINSICS
 
+
+/// https://philippegroarke.com/blog/2017/11/20/simplifying-compile-time-options-with-if-constexpr/
+
+#define CPP_VERSION @CMAKE_CXX_STANDARD@
+
+namespace tl
+{
+
+enum class CppVersion {
+  cpp_11 = 11, 
+  cpp_14 = 14, 
+  cpp_17 = 17, 
+  cpp_20 = 20,
+  cpp_23 = 23
+};
+
+constexpr static CppVersion cpp_version = static_cast<CppVersion>(@CMAKE_CXX_STANDARD@);
+
+}
+
 #endif // TL_CONFIG_H

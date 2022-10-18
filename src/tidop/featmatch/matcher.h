@@ -43,6 +43,9 @@
 namespace tl
 {
 
+class GeometricTest;
+
+
 /*! \addtogroup Features
  * 
  *  \{
@@ -316,37 +319,6 @@ class TL_EXPORT RobustMatcher
 
 public:
 
-  enum class GeometricTest
-  {
-    homography,
-    fundamental,
-    essential
-  };
-
-  enum class HomographyComputeMethod
-  {
-    all_points,
-    ransac,
-    lmeds,
-    rho
-  };
-
-  enum class FundamentalComputeMethod
-  {
-    algorithm_7_point,
-    algorithm_8_point,
-    ransac,
-    lmeds
-  };
-
-  enum class EssentialComputeMethod
-  {
-    ransac,
-    lmeds
-  };
-
-public:
-
   RobustMatcher()
     : MatchingStrategyBase(Strategy::robust_matching) {}
   ~RobustMatcher() override = default;
@@ -357,31 +329,8 @@ public:
   virtual bool crossCheck() const = 0;
   virtual void setCrossCheck(bool crossCheck) = 0;
 
-  virtual GeometricTest geometricTest() const = 0;
-  virtual void setGeometricTest(GeometricTest geometricTest) = 0;
-
-  virtual HomographyComputeMethod homographyComputeMethod() const = 0;
-  virtual void setHomographyComputeMethod(HomographyComputeMethod computeMethod) = 0;
-
-  virtual FundamentalComputeMethod fundamentalComputeMethod() const = 0;
-  virtual void setFundamentalComputeMethod(FundamentalComputeMethod computeMethod) = 0;
-
-  virtual EssentialComputeMethod essentialComputeMethod() const = 0;
-  virtual void setEssentialComputeMethod(EssentialComputeMethod computeMethod) = 0;
-
-  virtual double distance() const = 0;
-  virtual void setDistance(double distance) = 0;
-
-  virtual double confidence() const = 0;
-  virtual void setConfidence(double confidence) = 0;
-
-  virtual int maxIter() const = 0;
-  virtual void setMaxIters(int maxIter) = 0;
-
-  /*!
-   * \brief Recover the default values
-   */
-  //virtual void reset() = 0;
+  virtual std::shared_ptr<GeometricTest> geometricTest() const = 0;
+  virtual void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) = 0;
 
 };
 
