@@ -88,6 +88,8 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                 flann.h
                 keypointsfilter.cpp
                 keypointsfilter.h
+                geomtest.cpp
+                geomtest.h
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.h
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.cpp
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h

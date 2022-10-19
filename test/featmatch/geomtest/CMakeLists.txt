@@ -22,29 +22,28 @@
 #                                                                        #
 ##########################################################################
 
-# Test modulo featmatch
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-if(TL_HAVE_FEAT_MATCH)
+set(test_filename geometric_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
 
-add_subdirectory(agast)
-add_subdirectory(akaze)
-add_subdirectory(boost)
-add_subdirectory(brief)
-add_subdirectory(brisk)
-add_subdirectory(daisy)
-add_subdirectory(evaluation)
-add_subdirectory(fast)
-add_subdirectory(freak)
-add_subdirectory(geomtest)
-add_subdirectory(gftt)
-add_subdirectory(hog)
-add_subdirectory(kaze)
-add_subdirectory(latch)
-add_subdirectory(lucid)
-add_subdirectory(mser)
-add_subdirectory(orb)
-add_subdirectory(sift)
-add_subdirectory(star)
-add_subdirectory(surf)
-add_subdirectory(vgg)
-endif()
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
+               ${test_filename})
+
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core 
+                      TidopLib::Geom 
+                      TidopLib::FeatMatch
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      ${OpenCV_LIBS})
+	
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+                      FOLDER "test/featmatch")
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

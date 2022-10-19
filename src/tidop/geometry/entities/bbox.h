@@ -242,7 +242,7 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
 #if (__cplusplus >= 201703L)
   if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
 #else
-  if(std::is_integral<typename Point3_t::value_type>::value) {
+  if (std::is_integral<typename Point3_t::value_type>::value) {
 #endif
 
     int dx = static_cast<int>(width) % 2;
