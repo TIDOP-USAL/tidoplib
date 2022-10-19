@@ -26,6 +26,7 @@
 
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
+#include "tidop/core/utils.h"
 
 #include <stdexcept>
 #include <fstream>

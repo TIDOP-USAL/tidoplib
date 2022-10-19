@@ -1906,7 +1906,6 @@ T Matrix<T, _rows, _cols>::determinant3x3() const
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant4x4() const
 {
-  TL_TODO("codigo repetido con adjoint4x4")
   T m00 = (*this)(0,0);
   T m01 = (*this)(0,1);
   T m02 = (*this)(0,2);
@@ -3434,7 +3433,7 @@ Vector<T> operator - (const MatrixCol<T> &c0,
 
 template<typename T>
 Vector<T> operator*(const MatrixCol<T> &c0,
-                       const MatrixCol<T> &c1)
+                    const MatrixCol<T> &c1)
 {
   size_t size = c0.size();
   Vector<T> v(size);
@@ -3448,7 +3447,7 @@ Vector<T> operator*(const MatrixCol<T> &c0,
 
 template<typename T>
 Vector<T> operator / (const MatrixCol<T> &c0,
-                         const MatrixCol<T> &c1)
+                      const MatrixCol<T> &c1)
 {
   size_t size = c0.size();
   Vector<T> v(size);

@@ -161,6 +161,8 @@ typename std::enable_if<
     double>::type
 module(T a, T b)
 {
+  if (a == 0 && b == 0) return 0.;
+
   auto result = std::minmax(std::abs(a), std::abs(b));
   double div = static_cast<double>(result.first) /
                static_cast<double>(result.second);
@@ -172,9 +174,11 @@ typename std::enable_if<
     std::is_floating_point<T>::value,T>::type
 module(T a, T b)
 {
+  if (a == consts::zero<T> && b == consts::zero<T>) return consts::zero<T>;
+
   auto result = std::minmax(std::abs(a), std::abs(b));
   T div = static_cast<T>(result.first) / static_cast<T>(result.second);
-  return result.second * std::sqrt(static_cast<T>(1) + div * div);
+  return result.second * std::sqrt(consts::one<T> + div * div);
 }
 
 
@@ -224,6 +228,7 @@ isNearlyZero(T value)
 {
   return isNearlyEqual(value, consts::zero<T>);
 }
+
 
 /*! \} */ // end of math
 

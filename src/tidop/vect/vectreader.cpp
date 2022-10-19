@@ -328,7 +328,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 
 
   OGRFeature *ogrFeature;
-  for(size_t i = 0; i < ogrLayer->GetFeatureCount(); i++) {
+  for(size_t i = 0; i < static_cast<size_t>(ogrLayer->GetFeatureCount()); i++) {
     ogrFeature = ogrLayer->GetFeature(i);
   //}
   //

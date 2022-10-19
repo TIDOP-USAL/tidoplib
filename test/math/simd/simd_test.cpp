@@ -1546,7 +1546,7 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_intri_block_2, PackedTest)
 
   constexpr size_t step = packed_b_d.size();
 
-  int iter = (matrix1.rows() / 2) * 2;
+  size_t iter = (matrix1.rows() / 2) * 2;
 
 
   for (size_t r = 0; r < iter; r += 2) {
@@ -1715,7 +1715,7 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_intri_block_4, PackedTest)
 
   constexpr size_t step = packed_b_d.size();
 
-  int iter = (matrix1.rows() / 4) * 4;
+  size_t iter = (matrix1.rows() / 4) * 4;
 
 
   for (size_t r = 0; r < iter; r += 4) {
@@ -1898,7 +1898,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_8, PackedTest)
 
   constexpr size_t step = packed_b_d.size();
 
-  int iter = (matrix1.rows() / 8) * 8;
+  size_t iter = (matrix1.rows() / 8) * 8;
 
 
   for (size_t r = 0; r < iter; r += 8) {
@@ -2110,7 +2110,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
 
   constexpr size_t step = packed_b_d.size();
 
-  int iter = (matrix1.rows() / 10) * 10;
+  size_t iter = (matrix1.rows() / 10) * 10;
 
   Packed<double> packed_a1{};
   Packed<double> packed_a2{};

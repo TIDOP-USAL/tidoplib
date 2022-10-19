@@ -128,7 +128,7 @@ endif()
 # Compile options 
 
 if(MSVC)
-    add_compile_options("/W3" "/EHsc" "-D_SCL_SECURE_NO_WARNINGS" "-D_CRT_SECURE_NO_DEPRECATE")
+    add_compile_options("/W3" "/EHsc" "/permissive-" "-D_SCL_SECURE_NO_WARNINGS" "-D_CRT_SECURE_NO_DEPRECATE")
 else()
     add_compile_options("-Wall" "-Wextra" "-Werror")
 endif()

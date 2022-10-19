@@ -40,6 +40,13 @@ BOOST_AUTO_TEST_CASE(tl_math_clamp)
   BOOST_CHECK_EQUAL(20, math::clamp(21, 11, 20));
 }
 
+BOOST_AUTO_TEST_CASE(tl_math_module)
+{
+  BOOST_CHECK_EQUAL(0, math::module(0, 0));
+  BOOST_CHECK_EQUAL(10, math::module(10, 0));
+  BOOST_CHECK_EQUAL(10, math::module(0, 10));
+  BOOST_CHECK_CLOSE(14.142135623730, math::module(10, 10), 0.1);
+}
 
 BOOST_AUTO_TEST_CASE(scalar_is_zero)
 {
@@ -178,20 +185,4 @@ BOOST_AUTO_TEST_CASE(numbers_opposite_sides_of_0)
   BOOST_CHECK_EQUAL(false, math::isNearlyEqual(1.0f, -1.000000001f));
   BOOST_CHECK_EQUAL(true, math::isNearlyEqual(-0.0000000000000000000000000000000000001f, 0.0000000000000000000000000000000000001f));
   //assertFalse(nearlyEqual(10000 * Float.MIN_VALUE, 10000 * -Float.MIN_VALUE));
-}
-
-BOOST_AUTO_TEST_CASE(very_close_to_zero)
-{
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(std::numeric_limits<float>::min(), std::numeric_limits<float>::min()));
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(std::numeric_limits<float>::min(), -std::numeric_limits<float>::min()));
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(-std::numeric_limits<float>::min(), std::numeric_limits<float>::min()));
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(std::numeric_limits<float>::min(), 0.f));
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(0.f, std::numeric_limits<float>::min()));
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(-std::numeric_limits<float>::min(), 0.f));
-  BOOST_CHECK_EQUAL(true, math::isNearlyEqual(0.f, -std::numeric_limits<float>::min()));
-
-  //assertFalse(nearlyEqual(0.000000001f, -Float.MIN_VALUE));
-  //assertFalse(nearlyEqual(0.000000001f, Float.MIN_VALUE));
-  //assertFalse(nearlyEqual(Float.MIN_VALUE, 0.000000001f));
-  //assertFalse(nearlyEqual(-Float.MIN_VALUE, 0.000000001f));
 }

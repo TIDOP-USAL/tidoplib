@@ -511,10 +511,10 @@ void PRCurve<T>::compute(size_t steeps)
 
     std::map<typename PRCurve<T>::Classification,size_t> confussionMatrix = this->confusionMatrix(threshold);
 
-    double recall = truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives], 
-                                     confussionMatrix[PRCurve<T>::Classification::false_negatives]);
-    double precision = positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
-                                               confussionMatrix[PRCurve<T>::Classification::false_positives]);
+    double recall = this->truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives], 
+                                           confussionMatrix[PRCurve<T>::Classification::false_negatives]);
+    double precision = this->positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
+                                                     confussionMatrix[PRCurve<T>::Classification::false_positives]);
     this->mCurve.emplace_back(recall, 1. - precision);
     threshold += step;
   }
@@ -547,10 +547,10 @@ void PRCurve<T>::compute()
 
     std::map<typename PRCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
 
-    double recall = truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives], 
-                                     confussionMatrix[PRCurve<T>::Classification::false_negatives]);
-    double precision = positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
-                                               confussionMatrix[PRCurve<T>::Classification::false_positives]);
+    double recall = this->truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives], 
+                                           confussionMatrix[PRCurve<T>::Classification::false_negatives]);
+    double precision = this->positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
+                                                     confussionMatrix[PRCurve<T>::Classification::false_positives]);
     this->mCurve.emplace_back(recall, 1.f - precision);
   }
 

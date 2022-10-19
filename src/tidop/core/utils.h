@@ -163,6 +163,7 @@ TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, con
  */
 TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
 
+
 /*!
  * \brief Reemplaza una cadena por otra en un texto.
  * \param[in] str Cadena original

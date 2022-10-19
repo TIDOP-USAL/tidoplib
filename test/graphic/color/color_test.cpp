@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop color test
 #include <boost/test/unit_test.hpp>
 #include <tidop/graphic/color.h>
-
+#include <tidop/core/utils.h>
 
 using namespace tl;
 using namespace graph;

@@ -638,7 +638,7 @@ template<typename Point_t> inline
 bool TransformMultiple<Point_t>::isNumberOfPointsValid(size_t ) const
 { 
   msgError("'isNumberOfPointsValid' is not supported for TransformMultiple");
-  TL_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TransformMultiple")
+  //TL_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TransformMultiple")
   return true;
 }
 
@@ -649,7 +649,7 @@ Transform::Status TransformMultiple<Point_t>::compute(const std::vector<Point_t>
                                                       double *)
 {
   msgError("'compute' is not supported for TransformMultiple");
-  TL_COMPILER_WARNING("'compute' is not supported for TransformMultiple")
+  //TL_COMPILER_WARNING("'compute' is not supported for TransformMultiple")
   return Transform::Status::failure;
 }
 

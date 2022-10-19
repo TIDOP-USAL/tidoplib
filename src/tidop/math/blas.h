@@ -49,46 +49,47 @@ namespace blas
 
 /* Multiplicación matrices */
 
-/* void cblas_sgemm(OPENBLAS_CONST enum CBLAS_ORDER Order, OPENBLAS_CONST enum CBLAS_TRANSPOSE TransA, OPENBLAS_CONST enum CBLAS_TRANSPOSE TransB, OPENBLAS_CONST blasint M, OPENBLAS_CONST blasint N, OPENBLAS_CONST blasint K,
-		 OPENBLAS_CONST float alpha, OPENBLAS_CONST float *A, OPENBLAS_CONST blasint lda, OPENBLAS_CONST float *B, OPENBLAS_CONST blasint ldb, OPENBLAS_CONST float beta, float *C, OPENBLAS_CONST blasint ldc);
-		 
-void cblas_dgemm(OPENBLAS_CONST enum CBLAS_ORDER Order, OPENBLAS_CONST enum CBLAS_TRANSPOSE TransA, OPENBLAS_CONST enum CBLAS_TRANSPOSE TransB, OPENBLAS_CONST blasint M, OPENBLAS_CONST blasint N, OPENBLAS_CONST blasint K,
-		 OPENBLAS_CONST double alpha, OPENBLAS_CONST double *A, OPENBLAS_CONST blasint lda, OPENBLAS_CONST double *B, OPENBLAS_CONST blasint ldb, OPENBLAS_CONST double beta, double *C, OPENBLAS_CONST blasint ldc); */
-
 template<typename T> inline
 typename std::enable_if<
   std::is_same<float, typename std::remove_cv<T>::type>::value, void>::type
-gemm(int m, int n, int k,
+gemm(size_t m, size_t n, size_t k,
      const T *a, const T *b, T *c)
 {
   T alpha = 1.f;
   T beta = 0.f;
-  blasint lda = k;
-  blasint ldb = n;
-  blasint ldc = n;
+  blasint lda = static_cast<blasint>(k);
+  blasint ldb = static_cast<blasint>(n);
+  blasint ldc = static_cast<blasint>(n);
+
   cblas_sgemm(CBLAS_ORDER::CblasRowMajor,
               CBLAS_TRANSPOSE::CblasNoTrans,
               CBLAS_TRANSPOSE::CblasNoTrans,
-              m, n, k, alpha, a, lda, b, ldb,
+              static_cast<blasint>(m),
+              static_cast<blasint>(n), 
+              static_cast<blasint>(k),
+              alpha, a, lda, b, ldb,
               beta, c, ldc);
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<double, typename std::remove_cv<T>::type>::value, void>::type
-gemm(int m, int n, int k,
+gemm(size_t m, size_t n, size_t k,
      const T *a, const T *b, T *c)
 {
   T alpha = 1.;
   T beta = 0.;
-  blasint lda = k;
-  blasint ldb = n;
-  blasint ldc = n;
+  blasint lda = static_cast<blasint>(k);
+  blasint ldb = static_cast<blasint>(n);
+  blasint ldc = static_cast<blasint>(n);
 
   cblas_dgemm(CBLAS_ORDER::CblasRowMajor,
               CBLAS_TRANSPOSE::CblasNoTrans, 
               CBLAS_TRANSPOSE::CblasNoTrans, 
-              m, n, k, alpha, a, lda, b, ldb,
+              static_cast<blasint>(m),
+              static_cast<blasint>(n), 
+              static_cast<blasint>(k),
+              alpha, a, lda, b, ldb,
               beta, c, ldc);
 }
 

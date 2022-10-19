@@ -78,19 +78,42 @@ public:
 
   /*!
    * \brief Series
-   * \param data
+   * \param[in] data
    */
   Series(std::initializer_list<std::pair<std::string, T>> data);
 
   /*!
    * \brief Series
-   * \param data
+   * \param[in] data
    */
   Series(std::initializer_list<std::pair<size_t, T>> data);
 
+  /*!
+   * \brief Copy constructor
+   * \param[in] series Series object to copy
+   */
+  Series(const Series<T> &series);
+
+  /*!
+   * \brief Move constructor
+   * \param[in] series Series object to move
+   */
+  Series(Series<T> &&series) TL_NOEXCEPT;
+
   ~Series();
 
-  TL_TODO("Añadir copia y asignación")
+
+  /*!
+   * \brief Copy assignment operator
+   * \param[in] series Series object to copy
+   */
+  Series<T> &operator = (const Series<T> &series);
+
+  /*!
+   * \brief Move assignment operator
+   * \param[in] series Series object to move
+   */
+  Series<T> &operator = (Series<T> &&series) TL_NOEXCEPT;
 
   size_t size() const;
 
@@ -116,14 +139,12 @@ public:
 
 private:
 
-private:
-
 #ifdef DATA_USE_VAL_ARRAY
   std::valarray<size_t> mIndex;
   std::valarray<T> mData;
 #else
   std::vector<size_t> mIndex;
-  std::vector <std::string> mStringIndex;
+  std::vector<std::string> mStringIndex;
   std::vector<T> mData;
 #endif
 
@@ -165,9 +186,62 @@ Series<T>::Series(std::initializer_list<std::pair<size_t, T>> data)
 }
 
 template<typename T> inline
+Series<T>::Series(const Series<T> &series)
+  : mIndex(series.mIndex),
+#ifndef DATA_USE_VAL_ARRAY
+    mStringIndex(series.mStringIndex),
+#endif
+    mData(series.mData)
+{
+}
+
+template<typename T> inline
+Series<T>::Series(Series<T> &&series) TL_NOEXCEPT
+#ifdef DATA_USE_VAL_ARRAY
+  : mIndex(std::forward<std::valarray<size_t>>(series.mIndex)),
+    mData(std::forward<std::valarray<T>>(series.mData))
+#else
+  : mIndex(std::forward<std::vector<size_t>>(series.mIndex)),
+    mStringIndex(std::forward<std::vector<std::string>>(series.mStringIndex)),
+    mData(std::forward<std::vector<T>>(series.mData))
+#endif
+{
+}
+
+template<typename T> inline
 Series<T>::~Series()
 {
 }
+
+template<typename T> inline
+Series<T> &Series<T>::operator = (const Series &series)
+{
+  if (this != &series) {
+    this->mIndex = series.mIndex;
+#ifndef DATA_USE_VAL_ARRAY
+    this->mStringIndex = series.mStringIndex;
+#endif
+    this->mData = series.mData;
+  }
+  return *this;
+}
+
+template<typename T> inline
+Series<T> &Series<T>::operator = (Series &&series) TL_NOEXCEPT
+{
+  if (this != &series) {
+#ifdef DATA_USE_VAL_ARRAY
+    this->mIndex = std::forward<std::valarray<size_t>>(series.mIndex);
+    this->mData = std::forward<std::valarray<T>>(series.mData);
+#else
+    this->mIndex = std::forward<std::vector<size_t>>(series.mIndex);
+    this->mStringIndex = std::forward<std::vector<std::string>>(series.mStringIndex);
+    this->mData = std::forward<std::vector<T>>(series.mData);
+#endif
+  }
+  return *this;
+}
+
 
 template<typename T> inline
 size_t Series<T>::size() const
@@ -191,7 +265,6 @@ T Series<T>::operator[](size_t idx)
         break;
       }
     }
-    TL_TODO("Devolver excepción si no se encuentra el indice??")
   }
 
   return value;
@@ -209,8 +282,7 @@ T Series<T>::operator[](const std::string &idx)
       size_t integer_idx = std::stoull(idx);
       if (mIndex.empty()) {
         value = mData[integer_idx];
-      }
-      else {
+      } else {
         for (size_t i = 0; i < mIndex.size(); i++) {
           if (integer_idx == mIndex[i]) {
             value = mData[i];
@@ -223,8 +295,7 @@ T Series<T>::operator[](const std::string &idx)
       msgError("Invalid index", e.what());
     }
 
-  }
-  else {
+  } else {
 
     for (size_t i = 0; i < mStringIndex.size(); i++) {
       if (mStringIndex[i] == idx) {

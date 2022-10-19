@@ -204,9 +204,6 @@ void TaskBase::pause()
 
     setStatus(Status::pausing);
 
-    TL_TODO("Revisar")
-    //while (mStatus != Status::paused || mStatus != Status::finalized || mStatus != Status::error);
-
     eventTriggered(Event::Type::task_paused);
   }
 }

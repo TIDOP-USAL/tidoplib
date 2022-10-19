@@ -42,6 +42,7 @@ BOOST_AUTO_TEST_CASE(compare_insensitive_case)
 /*                        Test Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 BOOST_AUTO_TEST_CASE(split_to_numbers_empty_string)
 {
   std::vector<int> vOut;
@@ -115,6 +116,8 @@ BOOST_AUTO_TEST_CASE(split_t_numbers_separator)
   BOOST_CHECK_EQUAL(1, splitToNumbers("234.6@235253.6", vOutD, ","));
   BOOST_CHECK_EQUAL(0, vOutD.size());
 }
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 BOOST_AUTO_TEST_CASE(replace_string)
 {

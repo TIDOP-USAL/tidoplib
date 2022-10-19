@@ -126,10 +126,7 @@ double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 double module(const Point_t &v)
 {
-  TL_TODO("cambiar por math::module para evitar desbordes")
-  return sqrt(dotProduct(v, v));
-
-  //return std::hypot(v.x, v.y);
+  return math::module(v.x, v.y);
 }
 
 /*!
@@ -139,8 +136,7 @@ double module(const Point_t &v)
 template<typename Point3_t> inline
 double module3D(const Point3_t &v)
 {
-  TL_TODO("cambiar por math::module3d para evitar desbordes")
-    return sqrt(dotProduct3D(v, v));
+  return sqrt(dotProduct3D(v, v));
 }
 
 /*! \} */ // end of geometry

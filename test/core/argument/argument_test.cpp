@@ -529,34 +529,34 @@ BOOST_FIXTURE_TEST_CASE(set_and_get_version, CommandTest)
 
 BOOST_FIXTURE_TEST_CASE(parseHelp, CommandTest)
 {
-  std::array<char *, 2> argv{"" , "-h"};
+  std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("-h")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::show_help);
 
-  std::array<char *, 2> argv2{"" , "--help"};
+  std::array<char *, 2> argv2{const_cast<char *>("") , const_cast<char *>("--help")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_help);
 }
 
 BOOST_FIXTURE_TEST_CASE(parseVersion, CommandTest)
 {
-  std::array<char *, 2> argv2{"" , "--version"};
+  std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--version")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_version);
 }
 
 BOOST_FIXTURE_TEST_CASE(parseLicence, CommandTest)
 {
-  std::array<char *, 2> argv2{"" , "--licence"};
+  std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--licence")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_licence);
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_option_ok, CommandTest)
 {
-  std::array<char *, 4> argv{"" , "-i", "2", "-b"};
+  std::array<char *, 4> argv{const_cast<char *>(""), const_cast<char *>("-i"), const_cast<char *>("2"), const_cast<char *>("-b")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
   BOOST_CHECK_EQUAL(2, val2);
   BOOST_CHECK(val_b);
   BOOST_CHECK(false == opt);
 
-  std::array<char *, 4> argv_large{"" , "--int", "2", "-b"};
+  std::array<char *, 4> argv_large{const_cast<char *>(""), const_cast<char *>("--int"), const_cast<char *>("2"), const_cast<char *>("-b")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv_large.size()), argv_large.data()) == Command::Status::parse_success);
   BOOST_CHECK_EQUAL(2, val2);
   BOOST_CHECK(val_b);
@@ -565,7 +565,7 @@ BOOST_FIXTURE_TEST_CASE(parse_option_ok, CommandTest)
 
 BOOST_FIXTURE_TEST_CASE(parse_option_short, CommandTest)
 {
-  std::array<char *, 3> argv{"" , "-i2", "-b"};
+  std::array<char *, 3> argv{const_cast<char *>(""), const_cast<char *>("-i2"), const_cast<char *>("-b")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
   BOOST_CHECK_EQUAL(2, val2);
   BOOST_CHECK(val_b);
@@ -574,7 +574,7 @@ BOOST_FIXTURE_TEST_CASE(parse_option_short, CommandTest)
 
 BOOST_FIXTURE_TEST_CASE(parse_option_ok_equal, CommandTest)
 {
-  std::array<char *, 3> argv_large{"" , "--int=2", "-b"};
+  std::array<char *, 3> argv_large{const_cast<char *>("") , const_cast<char *>("--int=2"), const_cast<char *>("-b")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv_large.size()), argv_large.data()) == Command::Status::parse_success);
   BOOST_CHECK_EQUAL(2, val2);
   BOOST_CHECK(val_b);
@@ -583,23 +583,23 @@ BOOST_FIXTURE_TEST_CASE(parse_option_ok_equal, CommandTest)
 
 BOOST_FIXTURE_TEST_CASE(parseMultipleOptions, CommandTest)
 {
-  std::array<char *, 2> argv{"" , "-b"};
+  std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("-b")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_error);
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_error, CommandTest)
 {
-  std::array<char *, 2> argv{"" , "-b"};
+  std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("-b")};
   BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_error);
 }
 
 BOOST_FIXTURE_TEST_CASE(parseOptionsParameter, CommandTest)
 {
-  std::array<char *, 3> argv{"" , "--options", "OPT3"};
+  std::array<char *, 3> argv{const_cast<char *>(""), const_cast<char *>("--options"), const_cast<char *>("OPT3")};
   BOOST_CHECK(cmd_arg_list->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
   BOOST_CHECK_EQUAL(3, idx);
 
-  std::array<char *, 3> argv2{"" , "--options", "OPT_ERROR"};
+  std::array<char *, 3> argv2{const_cast<char *>(""), const_cast<char *>("--options"), const_cast<char *>("OPT_ERROR")};
   BOOST_CHECK(cmd_arg_list->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::parse_error);
 }
 
@@ -623,7 +623,7 @@ BOOST_FIXTURE_TEST_CASE(empty, CommandTest)
 
 BOOST_FIXTURE_TEST_CASE(parseTextWithHyphen, CommandTest)
 {
-  std::array<char *, 3> argv{"" , "--input", "sdfsd-sdfsdf"};
+  std::array<char *, 3> argv{const_cast<char *>(""), const_cast<char *>("--input"), const_cast<char *>("sdfsd-sdfsdf")};
   BOOST_CHECK(cmd_arg_posix3->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
 }
 
