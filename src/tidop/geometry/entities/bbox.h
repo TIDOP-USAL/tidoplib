@@ -239,7 +239,7 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
   auto half_depth = depth / two;
   auto half_height = height / two;
 
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
   if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
 #else
   if (std::is_integral<typename Point3_t::value_type>::value) {
@@ -273,7 +273,7 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
   typename Point3_t::value_type two{2};
   auto half_side = side / two;
 
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
   if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
 #else
   if (std::is_integral<typename Point3_t::value_type>::value) {

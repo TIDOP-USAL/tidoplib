@@ -24,9 +24,9 @@
 
 function(add_files_to_source_group group_name files)
     
-	set(FILE_LIST ${files} ${ARGN})
-	
-	foreach(_source IN ITEMS ${FILE_LIST})
+	  set(FILE_LIST ${files} ${ARGN})
+	  
+	  foreach(_source IN ITEMS ${FILE_LIST})
         get_filename_component(_source_path "${_source}" PATH)
         string(REPLACE "/" "\\" _group_path "${_source_path}")
         source_group("${group_name}\\${_group_path}" FILES "${_source}")
@@ -74,7 +74,7 @@ function(add_files_to_project TARGET)
         add_files_to_source_group("Header Files" "${PARAM_HEADER_FILES}")
         add_files_to_source_group("Resource Files" "${PARAM_RESOURCE_FILES}")
         add_files_to_source_group("Form Files" "${PARAM_FORM_FILES}")
-	endif()
+    endif()
 	
 
 
