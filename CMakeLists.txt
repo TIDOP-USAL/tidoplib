@@ -54,9 +54,14 @@ endif()
 
 # C++ standar
 
-list(APPEND cxx_standard_values C++11)
 
-if ("cxx_std_14" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+set(cxx_standard_values "")
+
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_11" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+list (APPEND cxx_standard_values C++11)
+endif()
+
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_14" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 list (APPEND cxx_standard_values C++14)
 endif()
 
@@ -68,11 +73,21 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CX
 list (APPEND cxx_standard_values C++20)
 endif()
 
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+list (APPEND cxx_standard_values C++23)
+endif()
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+list (APPEND cxx_standard_values C++26)
+endif()
+
 set(TIDOPLIB_CXX_STANDARD "C++14" CACHE STRING "")
 set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
 
 if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++11")
   set(CMAKE_CXX_STANDARD 11)
+elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++14")
+  set(CMAKE_CXX_STANDARD 14)
 elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++17")
   set(CMAKE_CXX_STANDARD 17)
 elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
@@ -80,7 +95,7 @@ elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
 elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++23")
   set(CMAKE_CXX_STANDARD 23)
 else()
-  set(CMAKE_CXX_STANDARD 14)
+
 endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -134,14 +149,14 @@ else()
 endif()
 
 
-unset(TL_HAVE_SSE CACHE)
-unset(TL_HAVE_SSE2 CACHE)
-unset(TL_HAVE_SSE3 CACHE)
-unset(TL_HAVE_SSE4_1 CACHE)
-unset(TL_HAVE_SSE4_2 CACHE)
-unset(TL_HAVE_AVX CACHE)
-unset(TL_HAVE_AVX2 CACHE)
-unset(TL_HAVE_SIMD_INTRINSICS CACHE)
+#unset(TL_HAVE_SSE CACHE)
+#unset(TL_HAVE_SSE2 CACHE)
+#unset(TL_HAVE_SSE3 CACHE)
+#unset(TL_HAVE_SSE4_1 CACHE)
+#unset(TL_HAVE_SSE4_2 CACHE)
+#unset(TL_HAVE_AVX CACHE)
+#unset(TL_HAVE_AVX2 CACHE)
+#unset(TL_HAVE_SIMD_INTRINSICS CACHE)
 
 
 
@@ -167,7 +182,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 include(CompilerInfo)
 include(OperatingSystemInfo)
-
+include(TidopLibSIMDSupport)
 
 
 
@@ -213,58 +228,78 @@ OPTION (TIDOPLIB_WARNING_TODO                   "Active TODO warning"           
 
 if (TIDOPLIB_USE_SIMD_INTRINSICS)
 
-    set(TIDOPLIB_SIMD "SSE3" CACHE STRING "")
-    set_property(CACHE TIDOPLIB_SIMD PROPERTY STRINGS
-                 SSE 
-                 SSE2
-                 SSE3 
-                 SSE4_1 
-                 SSE4_2 
-                 AVX
-                 AVX2)
+    set(architectures SSE SSE2 SSE3 SSE4_1 SSE4_2 AVX AVX2)
+    find_supported_architectures()
+    
+    #set(supported_architectures "")
+    #if (${ARCH_FOUND})
+    #    if(${ARCH_SSE})
+    #        list (APPEND supported_architectures SSE)
+    #    elseif(${ARCH_SSE2})
+    #        list (APPEND supported_architectures SSE2)     
+    #    elseif(${ARCH_SSE3})
+    #        list (APPEND supported_architectures SSE3)
+    #    endif()
+    #endif()
+
+    message(STATUS "  [TidopLib] Supported architectures: ${SUPPORTED_ARCHITECTURES}")
+
+    set(TIDOPLIB_SIMD "SSE2" CACHE STRING "")
+    set_property(CACHE TIDOPLIB_SIMD PROPERTY STRINGS 
+                 ${SUPPORTED_ARCHITECTURES}
+                 #SSE 
+                 #SSE2
+                 #SSE3 
+                 #SSE4_1 
+                 #SSE4_2 
+                 #AVX
+                 #AVX2
+                 )
 
     set(TL_HAVE_SIMD_INTRINSICS TRUE)
 
     message(STATUS "  [TidopLib] Build with SIMD intrinsics [${TIDOPLIB_SIMD}]")
 
-    if(${TIDOPLIB_SIMD} STREQUAL "AVX2")
-      set(TL_HAVE_AVX2 TRUE)
-      set(TL_HAVE_AVX TRUE)
-      set(TL_HAVE_SSE4_2 TRUE)
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${TIDOPLIB_SIMD} STREQUAL "AVX")
-      set(TL_HAVE_AVX TRUE)
-      set(TL_HAVE_SSE4_2 TRUE)
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE4_2")
-      set(TL_HAVE_SSE4_2 TRUE)
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE4_1")
-      set(TL_HAVE_SSE4_1 TRUE)
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE3")
-      set(TL_HAVE_SSE3 TRUE)
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE2")
-      set(TL_HAVE_SSE2 TRUE)
-      set(TL_HAVE_SSE TRUE)
-    elseif(${TIDOPLIB_SIMD} STREQUAL "SSE")
-      set(TL_HAVE_SSE TRUE)
-    else()
-      set(TL_HAVE_SIMD_INTRINSICS FALSE)
-    endif()
+    set_architecture(${TIDOPLIB_SIMD})
+
+    #if(${TIDOPLIB_SIMD} STREQUAL "AVX2")
+    #  set(TL_HAVE_AVX2 TRUE)
+    #  set(TL_HAVE_AVX TRUE)
+    #  set(TL_HAVE_SSE4_2 TRUE)
+    #  set(TL_HAVE_SSE4_1 TRUE)
+    #  set(TL_HAVE_SSE3 TRUE)
+    #  set(TL_HAVE_SSE2 TRUE)
+    #  set(TL_HAVE_SSE TRUE)
+    #elseif(${TIDOPLIB_SIMD} STREQUAL "AVX")
+    #  set(TL_HAVE_AVX TRUE)
+    #  set(TL_HAVE_SSE4_2 TRUE)
+    #  set(TL_HAVE_SSE4_1 TRUE)
+    #  set(TL_HAVE_SSE3 TRUE)
+    #  set(TL_HAVE_SSE2 TRUE)
+    #  set(TL_HAVE_SSE TRUE)
+    #elseif(${TIDOPLIB_SIMD} STREQUAL "SSE4_2")
+    #  set(TL_HAVE_SSE4_2 TRUE)
+    #  set(TL_HAVE_SSE4_1 TRUE)
+    #  set(TL_HAVE_SSE3 TRUE)
+    #  set(TL_HAVE_SSE2 TRUE)
+    #  set(TL_HAVE_SSE TRUE)
+    #elseif(${TIDOPLIB_SIMD} STREQUAL "SSE4_1")
+    #  set(TL_HAVE_SSE4_1 TRUE)
+    #  set(TL_HAVE_SSE3 TRUE)
+    #  set(TL_HAVE_SSE2 TRUE)
+    #  set(TL_HAVE_SSE TRUE)
+    #elseif(${TIDOPLIB_SIMD} STREQUAL "SSE3")
+    #  set(TL_HAVE_SSE3 TRUE)
+    #  set(TL_HAVE_SSE2 TRUE)
+    #  set(TL_HAVE_SSE TRUE)
+    #elseif(${TIDOPLIB_SIMD} STREQUAL "SSE2")
+    #  set(TL_HAVE_SSE2 TRUE)
+    #  set(TL_HAVE_SSE TRUE)
+    #elseif(${TIDOPLIB_SIMD} STREQUAL "SSE")
+    #  set(TL_HAVE_SSE TRUE)
+    #else()
+    #  set(TL_HAVE_SIMD_INTRINSICS FALSE)
+    #endif()
 
 else(TIDOPLIB_USE_SIMD_INTRINSICS)
     unset(TIDOPLIB_SIMD CACHE)
