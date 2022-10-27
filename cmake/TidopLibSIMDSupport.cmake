@@ -37,73 +37,98 @@ macro(find_supported_architecture architecture)
         set(ARCHITECTURE_SUPPORTED 0)
         
         if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-            file(READ "/proc/cpuinfo" _cpuinfo)
-            string(REGEX REPLACE ".*flags[ \t]*:[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpuinfo}")
+        
+            file(READ "/proc/cpuinfo" cpuinfo)
+            string(REGEX REPLACE ".*flags[ \t]*:[ \t]+([^\n]+).*" "\\1" cpuinfo_flags "${cpuinfo}")
              
             string(TOLOWER "${architecture}" ${architecture}_lower)
             
-            if(_cpu_flags MATCHES ${architecture_lower})
+            if(cpuinfo_flags MATCHES ${architecture_lower})
                 set(ARCHITECTURE_SUPPORTED 1)
             else()
                 set(ARCHITECTURE_SUPPORTED 0)
             endif()
              
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            get_filename_component(_vendor_id "[HKEY_LOCAL_MACHINE\\Hardware\\Description\\System\\CentralProcessor\\0;VendorIdentifier]" NAME)
-            get_filename_component(_cpu_id "[HKEY_LOCAL_MACHINE\\Hardware\\Description\\System\\CentralProcessor\\0;Identifier]" NAME)
-            #mark_as_advanced(_vendor_id _cpu_id)
-            string(REGEX REPLACE ".* Family ([0-9]+) .*" "\\1" _cpu_family "${_cpu_id}")
-            string(REGEX REPLACE ".* Model ([0-9]+) .*" "\\1" _cpu_model "${_cpu_id}")
-            if(_vendor_id STREQUAL "GenuineIntel")
-                if(_cpu_family EQUAL 6)
-                    if(_cpu_model EQUAL 87) # Knights Landing
-                    elseif(_cpu_model EQUAL 92) # goldmont
-                    elseif(_cpu_model EQUAL 90 OR _cpu_model EQUAL 76) # silvermont
-                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4.1 SSE4.2 RDRND)
-                    elseif(_cpu_model EQUAL 102) # cannonlake
-                    elseif(_cpu_model EQUAL 142 OR _cpu_model EQUAL 158) # kaby-lake
-                    elseif(_cpu_model EQUAL 85) # skylake-avx512
-                    elseif(_cpu_model EQUAL 78 OR _cpu_model EQUAL 94) # skylake
-                        #TODO: En mi portatil (desde la terminal con ubuntu) tiene ssse3 pero no sse3. Con CPU-Z si que sale. 
+        
+            get_filename_component(vendor_id "[HKEY_LOCAL_MACHINE\\Hardware\\Description\\System\\CentralProcessor\\0;VendorIdentifier]" NAME)
+            get_filename_component(cpu_id "[HKEY_LOCAL_MACHINE\\Hardware\\Description\\System\\CentralProcessor\\0;Identifier]" NAME)
+            string(REGEX REPLACE ".* Family ([0-9]+) .*" "\\1" cpu_family "${cpu_id}")
+            string(REGEX REPLACE ".* Model ([0-9]+) .*" "\\1" cpu_model "${cpu_id}")
+            
+            if(vendor_id STREQUAL "GenuineIntel")
+                if(cpu_family EQUAL 6)
+                    if(cpu_model EQUAL 87) # Knights Landing
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 AVX512F AVX512PF AVX512ER AVX512CD)
+                    elseif(cpu_model EQUAL 92) # Knights Mill
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 AVX512F AVX512CD AVX512DQ AVX512BW AVX512VL AVX512IFMA AVX512VBMI AVX512_4FMAPS)
+                    elseif(cpu_model EQUAL 92) # goldmont
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 RDRND)
+                    elseif(cpu_model EQUAL 90 OR cpu_model EQUAL 76) # silvermont
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 RDRND)
+                    elseif(cpu_model EQUAL 102) # cannonlake
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 AVX512F AVX512CD AVX512DQ AVX512BW AVX512VL AVX512IFMA AVX512VBMI)
+                    elseif(cpu_model EQUAL 142) # kaby lake
                         set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2)
-                    elseif(_cpu_model EQUAL 61 OR _cpu_model EQUAL 71 OR _cpu_model EQUAL 79 OR _cpu_model EQUAL 86) # broadwell
-                    elseif(_cpu_model EQUAL 60 OR _cpu_model EQUAL 69 OR _cpu_model EQUAL 70 OR _cpu_model EQUAL 63) # haswell
-                    elseif(_cpu_model EQUAL 58 OR _cpu_model EQUAL 62) # ivy-bridge
+                    elseif(cpu_model EQUAL 158) # coffe lake
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2)
+                    elseif(cpu_model EQUAL 85) # skylake avx512
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 AVX512F AVX512CD AVX512DQ AVX512BW AVX512VL)
+                    elseif(cpu_model EQUAL 78 OR cpu_model EQUAL 94) # skylake
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2)
+                    elseif(cpu_model EQUAL 61 OR cpu_model EQUAL 71 OR cpu_model EQUAL 79 OR cpu_model EQUAL 86) # broadwell
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2)
+                    elseif(cpu_model EQUAL 60 OR cpu_model EQUAL 69 OR cpu_model EQUAL 70 OR cpu_model EQUAL 63) # haswell
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2)
+                    elseif(cpu_model EQUAL 58 OR cpu_model EQUAL 62) # ivy bridge
                         set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX AVXI RDRND F16C)
-                    elseif(_cpu_model EQUAL 42 OR _cpu_model EQUAL 45) # sandy-bridge
-                    elseif(_cpu_model EQUAL 37 OR _cpu_model EQUAL 44 OR _cpu_model EQUAL 47) # westmere
-                    elseif(_cpu_model EQUAL 26 OR _cpu_model EQUAL 30 OR _cpu_model EQUAL 31 OR _cpu_model EQUAL 46) # nehalem
-                    elseif(_cpu_model EQUAL 23 OR _cpu_model EQUAL 29) # penryn
-                    elseif(_cpu_model EQUAL 15) # merom
-                    elseif(_cpu_model EQUAL 28) # atom
-                    elseif(_cpu_model EQUAL 14) # core
-                    elseif(_cpu_model LESS 14) 
+                    elseif(cpu_model EQUAL 42 OR cpu_model EQUAL 45) # sandy bridge
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX)
+                    elseif(cpu_model EQUAL 31 OR cpu_model EQUAL 37 OR cpu_model EQUAL 44 OR cpu_model EQUAL 47) # westmere
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2)
+                    elseif(cpu_model EQUAL 26 OR cpu_model EQUAL 30 OR cpu_model EQUAL 31 OR cpu_model EQUAL 46) # nehalem
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2)
+                    elseif(cpu_model EQUAL 23 OR cpu_model EQUAL 29) # penryn
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3)
+                    elseif(cpu_model EQUAL 15) # merom
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3)
+                    elseif(cpu_model EQUAL 28) # atom
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3)
+                    elseif(cpu_model EQUAL 14) # core
+                    set(architecture_instructions SSE SSE2 SSE3)
+                    elseif(cpu_model LESS 14) 
                         set(architecture_instructions SSE SSE2)
                     else()
                         set(architecture_instructions "")
                     endif()
-                elseif(_cpu_family EQUAL 7) # Itanium 
+                elseif(cpu_family EQUAL 7) # Itanium 
                     set(architecture_instructions "")
-                elseif(_cpu_family EQUAL 15) # NetBurst
-                    if(_cpu_model GREATER 2) # Not sure whether this must be 3 or even 4 instead
+                elseif(cpu_family EQUAL 15) # NetBurst
+                    if(cpu_model GREATER 2) # Not sure whether this must be 3 or even 4 instead
                         set(architecture_instructions SSE SSE2 SSE3)
                     else()
                         set(architecture_instructions SSE SSE2)    
                     endif()
                 endif()
-            elseif(_vendor_id STREQUAL "AuthenticAMD")
-                if(_cpu_family EQUAL 23) # zen
-                elseif(_cpu_family EQUAL 22) # AMD 16h
-                elseif(_cpu_family EQUAL 21) # 15h
-                    if(_cpu_model LESS 2) # bulldozer
+            elseif(vendor_id STREQUAL "AuthenticAMD")
+                if(cpu_family EQUAL 23) # zen
+                    set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 SSE4A)
+                elseif(cpu_family EQUAL 22) # AMD 16h
+                    set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4A SSE4_1 SSE4_2 AVX F16C)
+                elseif(cpu_family EQUAL 21) # 15h
+                    if(cpu_model LESS 2) # bulldozer
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4A SSE4_1 SSE4_2 AVX XOP FMA4)
                     else() # piledriver
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4A SSE4_1 SSE4_2 AVX XOP MA4 FMA F16C)
                     endif()
-                elseif(_cpu_family EQUAL 20) # AMD 14h
-                elseif(_cpu_family EQUAL 18) # 12h
-                elseif(_cpu_family EQUAL 16) # barcelona
-                elseif(_cpu_family EQUAL 15) # k8
-                    if(_cpu_model GREATER 64) # k8-sse3. I don't know the right number to put here. This is just a guess from the hardware I have access to
-                    endif()
+                elseif(cpu_family EQUAL 20) # AMD 14h
+                    set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4A)
+                elseif(cpu_family EQUAL 18) # barcelona
+                    set(architecture_instructions SSE SSE2 SSE3 SSE4A)
+                elseif(cpu_family EQUAL 16) # 
+                    set(architecture_instructions SSE SSE2 SSE3 SSE4A)
+                elseif(cpu_family EQUAL 15) # k8
+                    set(architecture_instructions SSE SSE2)
                 endif()
             endif()
             
@@ -203,12 +228,15 @@ function(set_architecture architecture)
         elseif(${architecture} STREQUAL "AVX")
         ADD_DEFINITIONS(/arch:AVX)
         elseif(${architecture} STREQUAL "SSE4_2")
+        ADD_DEFINITIONS(/arch:SSE2)
         elseif(${architecture} STREQUAL "SSE4_1")
+        ADD_DEFINITIONS(/arch:SSE2)
         elseif(${architecture} STREQUAL "SSE3")
-        #TODO: Por defecto en x64
+        ADD_DEFINITIONS(/arch:SSE2)
         elseif(${architecture} STREQUAL "SSE2")
-        #TODO: Por defecto en x64
+        ADD_DEFINITIONS(/arch:SSE2)
         elseif(${architecture} STREQUAL "SSE")
+        ADD_DEFINITIONS(/arch:SSE)
         endif()
     endif(MSVC)
 endfunction(set_architecture)
