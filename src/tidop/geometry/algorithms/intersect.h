@@ -115,9 +115,9 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
 }
 
 
-template<typename Point_t>
-bool linePlaneIntersection(const std::array<double, 4> &plane, const Segment<Point_t> &ln, Point_t *intersect)
-{
+//template<typename Point_t>
+//bool linePlaneIntersection(const std::array<double, 4> &plane, const Segment<Point_t> &ln, Point_t *intersect)
+//{
   //Segment<Point_t>  v = ln.vector();
   //double num = (plane[0] * ln.pt1.x + plane[1] * ln.pt1.y + plane[2] * ln.pt1.z + plane[3]);
   //double den = (plane[0] * v + plane[1] * v + plane[2] * v);
@@ -125,7 +125,7 @@ bool linePlaneIntersection(const std::array<double, 4> &plane, const Segment<Poi
   //planePoint->x = point.x + plane[0] * t;
   //planePoint->y = point.y + plane[1] * t;
   //planePoint->z = point.z + plane[2] * t;
-}
+//}
 
 /*! \} */ // end of geometry_algorithms
 

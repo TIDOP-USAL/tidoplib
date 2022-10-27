@@ -54,6 +54,7 @@ Image::Image(int rows,
     mChannels(channels),
     mData(nullptr)
 {
+  unusedParameter(color); /// Para inicializar la imagen con ese color
   init();
 }
 
@@ -93,6 +94,7 @@ Image::Image(const SizeI &size,
     mChannels(channels),
     mData(nullptr)
 {
+  unusedParameter(color); /// Para inicializar la imagen con ese color
   init();
 }
 
@@ -187,10 +189,10 @@ bool Image::isEmpty()
 
 void Image::init()
 {
-  mData = (unsigned char *)std::malloc(static_cast<size_t>(mRows) * 
+  mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
                                        static_cast<size_t>(mCols) * 
                                        static_cast<size_t>(mChannels) * 
-                                       static_cast<size_t>(this->depth()));
+                                       static_cast<size_t>(this->depth())));
 }
 
 } // End namespace tl

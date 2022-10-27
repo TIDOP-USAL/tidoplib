@@ -474,7 +474,7 @@ Transform::Status Affine<Point_t>::transform(const std::vector<Point_t> &ptsIn,
 
   this->formatVectorOut(ptsIn, ptsOut);
 
-  for (int i = 0; i < ptsIn.size(); i++) {
+  for (size_t i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], ptsOut[i], trfOrder);
     if ( r_status == Transform::Status::failure ) break;
   }

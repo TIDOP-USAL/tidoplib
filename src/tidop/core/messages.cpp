@@ -252,7 +252,7 @@ MessageManager::Message::Message(const char *message, ...)
     memset(buf, 0, sizeof(buf));
     std::string aux(message);
     replaceString(&aux, "% ", "%% ");
-    replaceString(&aux, "%(\s)", "%%");
+    replaceString(&aux, "%(\\s)", "%%");
     va_list args;
     va_start(args, message);
 #ifdef _MSC_VER

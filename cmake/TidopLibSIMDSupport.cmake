@@ -41,9 +41,8 @@ macro(find_supported_architecture architecture)
             file(READ "/proc/cpuinfo" cpuinfo)
             string(REGEX REPLACE ".*flags[ \t]*:[ \t]+([^\n]+).*" "\\1" cpuinfo_flags "${cpuinfo}")
              
-            string(TOLOWER "${architecture}" ${architecture}_lower)
-            
-            if(cpuinfo_flags MATCHES ${architecture_lower})
+            string(TOLOWER "${architecture}" architecture_lower)
+            if(${cpuinfo_flags} MATCHES ${architecture_lower})
                 set(ARCHITECTURE_SUPPORTED 1)
             else()
                 set(ARCHITECTURE_SUPPORTED 0)

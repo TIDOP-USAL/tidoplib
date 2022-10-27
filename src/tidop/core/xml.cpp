@@ -146,11 +146,9 @@ XmlNode::Type XmlNode::type() const
 		case CPLXMLNodeType::CXT_Literal:
 			type = XmlNode::Type::literal;
 			break;
-		default:
-			break;
 	}
 
-	return Type();
+  return type;
 }
 
 bool XmlNode::isAttibute() const

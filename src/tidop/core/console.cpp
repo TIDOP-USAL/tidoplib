@@ -296,6 +296,7 @@ void Console::setTitle(const std::string &title)
 #ifdef WIN32
   SetConsoleTitleA(title.c_str());
 #else
+  unusedParameter(title);
   //printf("%c]0;%s%c", '\033', title, '\007');
 #endif
 }

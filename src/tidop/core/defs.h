@@ -302,8 +302,6 @@
 #  define DIAG_DO_PRAGMA(x) _Pragma (#x)
 #  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
 #  define TL_DISABLE_WARNING(warn) DIAG_PRAGMA(push) DIAG_PRAGMA(ignored warn)
-//#  define TL_DISABLE_WARNING(warn) _Pragma GCC diagnostic push \
-//   _Pragma GCC diagnostic ignored warn
 #endif
 
 /*!

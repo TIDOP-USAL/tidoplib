@@ -412,7 +412,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
 {
   int i;
   int j;
-  int k;
+  size_t k;
   
   int inc = 1;
   T sw;

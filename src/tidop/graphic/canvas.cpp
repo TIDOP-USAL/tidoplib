@@ -193,8 +193,8 @@ void CanvasCV::drawPoint(const PointD &point, const GraphicStyle &style)
     double fontScale = 2;
     int thickness = 3;
     int baseline = 0;
-    cv::Size textSize = cv::getTextSize(style_label->text(), fontFace,
-                                        fontScale, thickness, &baseline);
+    //cv::Size textSize = cv::getTextSize(style_label->text(), fontFace,
+    //                                    fontScale, thickness, &baseline);
     baseline += thickness;
 
     cv::putText(mCanvas, style_label->text(), cv::Point(roundToInteger(point.x), roundToInteger(point.y)), fontFace, fontScale,
@@ -274,13 +274,14 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
     }
   }
 
-  if (Label *style_label = style.label()) {
-    /// TODO: completar
-  }
-
-  if (Symbol *style_symbol = style.symbol()) {
-    /// TODO: completar
-  }
+  /// TODO: completar
+  //if (Label *style_label = style.label()) {
+  //  ...
+  //}
+  //
+  //if (Symbol *style_symbol = style.symbol()) {
+  //  ...
+  //}
 }
 
 //void CanvasCV::drawText(const PointD &point, const std::string &text)
@@ -296,8 +297,8 @@ void CanvasCV::drawText(const PointD &point, const std::string &text, const Grap
   double fontScale = 2;
   int thickness = 3;
   int baseline = 0;
-  cv::Size textSize = cv::getTextSize(text, fontFace,
-                                      fontScale, thickness, &baseline);
+  //cv::Size textSize = cv::getTextSize(text, fontFace,
+  //                                    fontScale, thickness, &baseline);
   baseline += thickness;
 
 

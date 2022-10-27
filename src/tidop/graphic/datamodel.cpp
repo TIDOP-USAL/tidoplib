@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -120,14 +120,14 @@ TableRegister::~TableRegister()
 {
 }
 
-std::string TableRegister::value(int idx) const
+std::string TableRegister::value(size_t idx) const
 {
   if (idx < mRegisterValues.size())
     return mRegisterValues[idx].value();
   else return std::string();
 }
 
-void TableRegister::setValue(int idx, const std::string &field)
+void TableRegister::setValue(size_t idx, const std::string &field)
 {
   if (idx < mRegisterValues.size())
     mRegisterValues[idx].setValue(field);
@@ -182,9 +182,11 @@ std::string DataTable::name() const
 //  return *it;
 //}
 
-TL_TODO("¿Mejor como estatica?")
+TL_TODO("Â¿Mejor como estatica?")
 std::shared_ptr<TableRegister> DataTable::createRegister(int index)
 {
+  ///TODO: Completar
+  unusedParameter(index);
   return std::shared_ptr<TableRegister>(new TableRegister(mTableFields));
 }
 

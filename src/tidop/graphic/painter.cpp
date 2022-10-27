@@ -165,23 +165,24 @@ void Painter::drawPolygon(const PolygonD &polygon)
 
 void Painter::drawMultiPoint(const GMultiPoint &multipoint)
 {
-
+  unusedParameter(multipoint);
 }
 
 void Painter::drawMultiLineString(const GMultiLineString &multiLineString)
 {
-
+  unusedParameter(multiLineString);
 }
 
 void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon)
 {
-
+  unusedParameter(multiPolygon);
 }
 
 #ifdef TL_HAVE_OPENCV
 void Painter::drawPicture(const cv::Mat &bmp)
 {
   ///mCanvas->
+  unusedParameter(bmp);
 }
 #endif // TL_HAVE_OPENCV
 

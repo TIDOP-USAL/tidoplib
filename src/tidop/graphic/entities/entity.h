@@ -64,6 +64,8 @@ public:
 
   GData(const GData &gData)
   {
+    ///TODO: terminar
+    unusedParameter(gData);
   }
 
   ~GData()
@@ -73,6 +75,7 @@ public:
   GData &operator =(const GData &gData)
   {
     ///TODO: terminar
+    unusedParameter(gData);
     return *this;
   }
 

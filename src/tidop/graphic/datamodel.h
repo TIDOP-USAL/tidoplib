@@ -153,8 +153,8 @@ public:
    */
   ~TableRegister();
 
-  std::string value(int idx) const;
-  void setValue(int idx, const std::string &field);
+  std::string value(size_t idx) const;
+  void setValue(size_t idx, const std::string &field);
 
   size_t size() const;
 

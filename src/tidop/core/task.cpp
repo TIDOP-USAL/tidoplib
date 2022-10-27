@@ -269,6 +269,8 @@ void TaskBase::subscribe(Event::Type eventType,
     case Event::Type::task_finalized:
       mTaskFinalizedEventHandler.emplace_back(eventHandler);
       break;
+    default:
+      break;
   }
 
 
@@ -669,7 +671,7 @@ void Process::execute(Progress *)
     pid_t pid;
     char *cmd = nullptr;
     strcpy(cmd, mCommandText.c_str());
-    char *argv[] = {"sh", "-c", cmd, nullptr};
+    char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), cmd, nullptr};
     int status;
     //printf("Run command: %s\n", cmd);
     status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);

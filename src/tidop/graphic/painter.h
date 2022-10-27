@@ -84,7 +84,7 @@ public:
    */
   ~Painter();
 
-  void begin(Canvas *canvas){ }
+  void begin(Canvas *canvas){ unusedParameter(canvas); }
   void end(){ }
 
   /*!

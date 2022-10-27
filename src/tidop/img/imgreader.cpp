@@ -398,6 +398,7 @@ public:
       metadata = ImageMetadataFactory::create(driver_name);
 
       char **gdalMetadata = mDataset->GetMetadata(); // Si no hago esto no lee el exif...
+      unusedParameter(gdalMetadata);
 
       char **gdalMetadataDomainList = mDataset->GetMetadataDomainList();
       if (gdalMetadataDomainList != nullptr && *gdalMetadataDomainList != nullptr) {
