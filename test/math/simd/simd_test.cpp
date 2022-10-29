@@ -53,6 +53,8 @@ struct PackedTest
     v2d = { -1., 4., 2., 2., 2., 8., 2., 3., 8., 4., 1., 7. };
     v1i32 = { 1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5 };
     v2i32 = { -1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7 };
+    v1ui32 = {45, 65, 75, 23, 574, 23, 23, 426, 2362, 346, 235, 755};
+    v2ui32 = {962, 59, 98, 854, 175, 45, 2, 78, 785, 786, 298, 725};
     v1i8 = {1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5, 9, 7, 2, 1, 1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5, 9, 7, 2, 1};
     v2i8 = {-1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7, 0, 3, -2, 2, -1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7, 0, 3, -2, 2};
 
@@ -90,6 +92,8 @@ struct PackedTest
   Packed<double> packed_b_d;
   Packed<int32_t> packed_a_i32;
   Packed<int32_t> packed_b_i32;
+  Packed<uint32_t> packed_a_ui32;
+  Packed<uint32_t> packed_b_ui32;
   Packed<int8_t> packed_a_i8;
   Packed<int8_t> packed_b_i8;
 
@@ -99,6 +103,8 @@ struct PackedTest
   Vector<double> v2d;
   Vector<int32_t> v1i32;
   Vector<int32_t> v2i32;
+  Vector<uint32_t> v1ui32;
+  Vector<uint32_t> v2ui32;
   Vector<int8_t> v1i8;
   Vector<int8_t> v2i8;
 
@@ -321,6 +327,119 @@ BOOST_FIXTURE_TEST_CASE(load_store_unaligned_int8, PackedTest)
   }
 }
 
+BOOST_FIXTURE_TEST_CASE(set_scalar, PackedTest)
+{
+  {
+    Packed<float> packed_float;
+    packed_float.setScalar(2.5f);
+    Vector<float> v(packed_float.size());
+    packed_float.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_float.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], 2.5f);
+    }
+  }
+
+  {
+    Packed<double> packed_double;
+    packed_double.setScalar(2.5);
+    Vector<double> v(packed_double.size());
+    packed_double.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_double.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], 2.5);
+    }
+  }
+
+  {
+    Packed<int64_t> packed_i64;
+    packed_i64.setScalar(-234234);
+    Vector<int64_t> v(packed_i64.size());
+    packed_i64.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_i64.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], -234234);
+    }
+  }
+
+  {
+    Packed<uint64_t> packed_ui64;
+    packed_ui64.setScalar(45735);
+    Vector<uint64_t> v(packed_ui64.size());
+    packed_ui64.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_ui64.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], 45735);
+    }
+  }
+
+  {
+    Packed<int32_t> packed_i32;
+    packed_i32.setScalar(-24577);
+    Vector<int32_t> v(packed_i32.size());
+    packed_i32.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_i32.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], -24577);
+    }
+  }
+
+  {
+    Packed<int32_t> packed_ui32;
+    packed_ui32.setScalar(47268);
+    Vector<int32_t> v(packed_ui32.size());
+    packed_ui32.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_ui32.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], 47268);
+    }
+  }
+
+  {
+    Packed<int32_t> packed_i16;
+    packed_i16.setScalar(-2356);
+    Vector<int32_t> v(packed_i16.size());
+    packed_i16.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_i16.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], -2356);
+    }
+  }
+
+  {
+    Packed<uint16_t> packed_ui16;
+    packed_ui16.setScalar(23456);
+    Vector<uint16_t> v(packed_ui16.size());
+    packed_ui16.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_ui16.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], 23456);
+    }
+  }
+
+  {
+    Packed<int8_t> packed_i8;
+    packed_i8.setScalar(-124);
+    Vector<int8_t> v(packed_i8.size());
+    packed_i8.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_i8.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], -124);
+    }
+  }
+
+  {
+    Packed<uint8_t> packed_ui8;
+    packed_ui8.setScalar(250);
+    Vector<uint8_t> v(packed_ui8.size());
+    packed_ui8.storeUnaligned(&v[0]);
+
+    for(size_t i = 0; i < packed_ui8.size(); i++) {
+      BOOST_CHECK_EQUAL(v[i], 250);
+    }
+  }
+}
+
 BOOST_FIXTURE_TEST_CASE(vector_add_float, PackedTest)
 {
 
@@ -494,6 +613,42 @@ BOOST_FIXTURE_TEST_CASE(vector_add_int32, PackedTest)
   BOOST_CHECK_EQUAL(6, v3[9]);
   BOOST_CHECK_EQUAL(10, v3[10]);
   BOOST_CHECK_EQUAL(12, v3[11]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_add_uint32, PackedTest)
+{
+
+  Vector<uint32_t> v3(v1ui32.size());
+
+  size_t max_vector = (v1ui32.size() / packed_a_ui32.size()) * packed_a_ui32.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_ui32.size()) {
+
+    packed_a_ui32.loadAligned(&v1ui32[i]);
+    packed_b_ui32.loadAligned(&v2ui32[i]);
+
+    Packed<uint32_t> packed_c = packed_a_ui32 + packed_b_ui32;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1ui32.size(); ++i) {
+    v3[i] = v1ui32[i] + v2ui32[i];
+  }
+  v1ui32 = {45, 65, 75, 23, 574, 23, 23, 426, 2362, 346, 235, 755};
+  v2ui32 = {962, 59, 98, 854, 175, 45, 2, 78, 785, 786, 298, 725};
+  BOOST_CHECK_EQUAL(1007, v3[0]);
+  BOOST_CHECK_EQUAL(124, v3[1]);
+  BOOST_CHECK_EQUAL(173, v3[2]);
+  BOOST_CHECK_EQUAL(877, v3[3]);
+  BOOST_CHECK_EQUAL(749, v3[4]);
+  BOOST_CHECK_EQUAL(68, v3[5]);
+  BOOST_CHECK_EQUAL(25, v3[6]);
+  BOOST_CHECK_EQUAL(504, v3[7]);
+  BOOST_CHECK_EQUAL(3147, v3[8]);
+  BOOST_CHECK_EQUAL(1132, v3[9]);
+  BOOST_CHECK_EQUAL(533, v3[10]);
+  BOOST_CHECK_EQUAL(1480, v3[11]);
 
 }
 
@@ -1244,7 +1399,7 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_double_2, PackedTest)
   size_t max_vector = (matrix2.cols() / packed_b_d.size()) * packed_b_d.size();
   Packed<double> packed_c;
 
-  constexpr size_t step = packed_b_d.size();
+  constexpr size_t step = Packed<double>::size();
 
   int iter = (9 / 2) * 2;
 
@@ -1544,7 +1699,7 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_intri_block_2, PackedTest)
   size_t max_vector = (matrix2.cols() / packed_b_d.size()) * packed_b_d.size();
   Packed<double> packed_c;
 
-  constexpr size_t step = packed_b_d.size();
+  constexpr size_t step = Packed<double>::size();
 
   size_t iter = (matrix1.rows() / 2) * 2;
 
@@ -1713,7 +1868,7 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_intri_block_4, PackedTest)
   size_t max_vector = (matrix2.cols() / packed_b_d.size()) * packed_b_d.size();
   Packed<double> packed_c;
 
-  constexpr size_t step = packed_b_d.size();
+  constexpr size_t step = Packed<double>::size();
 
   size_t iter = (matrix1.rows() / 4) * 4;
 
@@ -1896,7 +2051,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_8, PackedTest)
   size_t max_vector = (matrix2.cols() / packed_b_d.size()) * packed_b_d.size();
   Packed<double> packed_c;
 
-  constexpr size_t step = packed_b_d.size();
+  constexpr size_t step = Packed<double>::size();
 
   size_t iter = (matrix1.rows() / 8) * 8;
 
@@ -2108,7 +2263,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
   size_t max_vector = (matrix2.cols() / packed_b_d.size()) * packed_b_d.size();
   Packed<double> packed_c;
 
-  constexpr size_t step = packed_b_d.size();
+  constexpr size_t step = Packed<double>::size();
 
   size_t iter = (matrix1.rows() / 10) * 10;
 
