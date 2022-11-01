@@ -224,9 +224,11 @@ public:
 
 public:
 
-  PackedBase() = default;
-  PackedBase(const simd_type &packed);
-  PackedBase(value_type scalar);
+  explicit PackedBase() = default;
+  explicit PackedBase(const PackedBase &packed);
+  explicit PackedBase(PackedBase &&packed) TL_NOEXCEPT;
+  explicit PackedBase(const simd_type &packed);
+  explicit PackedBase(value_type scalar);
 
   simd_type &loadAligned(const value_type *src);
   simd_type &loadUnaligned(const value_type *src);
@@ -234,6 +236,9 @@ public:
   void storeUnaligned(value_type *dst) const;
 
   void setScalar(value_type value);
+
+  PackedBase<T> &operator=(const PackedBase<T> &packed);
+  PackedBase<T> &operator=(PackedBase<T> &&packed) TL_NOEXCEPT;
 
   /*!
    * \brief  Assignment operator
@@ -263,8 +268,13 @@ class Packed
 public:
 
   Packed();
+  Packed(const Packed &packed);
+  Packed(Packed &&packed) TL_NOEXCEPT;
   Packed(const typename PackedTraits<Packed<T>>::simd_type &packed);
   Packed(typename PackedTraits<Packed<T>>::value_type scalar);
+
+  Packed<T> &operator=(const Packed<T> &packed);
+  Packed<T> &operator=(Packed<T> &&packed) TL_NOEXCEPT;
 
   Packed<T> &operator+=(const Packed<T> &packed);
   Packed<T> &operator-=(const Packed<T> &packed);
@@ -291,107 +301,83 @@ namespace internal
 template<typename T> inline
 typename std::enable_if<
   std::is_same<float, T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 loadPackedAligned(const T *data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_load_ps(data);
+  return _mm256_load_ps(data);
 #elif defined TL_HAVE_SSE
-  r = _mm_load_ps(data);
+  return _mm_load_ps(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<double, T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 loadPackedAligned(const T *data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_load_pd(data);
+  return _mm256_load_pd(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_load_pd(data);
+  return _mm_load_pd(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_integral<T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 loadPackedAligned(const T *data)
 {
   using simd_type = typename Packed<T>::simd_type;
 
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_load_si256(reinterpret_cast<simd_type const *>(data));
+  return _mm256_load_si256(reinterpret_cast<simd_type const *>(data));
 #elif defined TL_HAVE_SSE2
-  r = _mm_load_si128(reinterpret_cast<simd_type const *>(data));
+  return _mm_load_si128(reinterpret_cast<simd_type const *>(data));
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<float, T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 loadPackedUnaligned(const T *data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_loadu_ps(data);
+  return _mm256_loadu_ps(data);
 #elif defined TL_HAVE_SSE
-  r = _mm_loadu_ps(data);
+  return _mm_loadu_ps(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<double, T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 loadPackedUnaligned(const T *data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_loadu_pd(data);
+  return _mm256_loadu_pd(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_loadu_pd(data);
+  return _mm_loadu_pd(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_integral<T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 loadPackedUnaligned(const T *data)
 {
   using simd_type = typename Packed<T>::simd_type;
 
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_loadu_si256(reinterpret_cast<simd_type const *>(data));
+  return _mm256_loadu_si256(reinterpret_cast<simd_type const *>(data));
 #elif defined TL_HAVE_SSE2
-  r = _mm_loadu_si128(reinterpret_cast<simd_type const *>(data));
+  return _mm_loadu_si128(reinterpret_cast<simd_type const *>(data));
 #endif
-
-  return r;
 }
 
 
@@ -479,107 +465,83 @@ storePackedUnaligned(T *data, U &result)
 template<typename T> inline
 typename std::enable_if<
   std::is_same<float, T>::value, 
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 set(T data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_set1_ps(data);
+  return _mm256_set1_ps(data);
 #elif defined TL_HAVE_SSE
-  r = _mm_set1_ps(data);
+  return _mm_set1_ps(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<double, T>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 set(T data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_set1_pd(data);
+  return _mm256_set1_pd(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_set1_pd(data);
+  return _mm_set1_pd(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 set(T data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_set1_epi8(data);
+  return _mm256_set1_epi8(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_set1_epi8(data);
+  return _mm_set1_epi8(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 set(T data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_set1_epi16(data);
+  return _mm256_set1_epi16(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_set1_epi16(data);
+  return _mm_set1_epi16(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 set(T data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_set1_epi32(data);
+  return _mm256_set1_epi32(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_set1_epi32(data);
+  return _mm_set1_epi32(data);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
-  Packed<T>>::type
+  typename Packed<T>::simd_type>::type
 set(T data)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_set1_epi64x(data);
+  return _mm256_set1_epi64x(data);
 #elif defined TL_HAVE_SSE2
-  r = _mm_set1_epi64x(data);
+  return _mm_set1_epi64x(data);
 #endif
-
-  return r;
 }
 
 
@@ -591,15 +553,11 @@ typename std::enable_if<
   Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_add_ps(packed1, packed2);
+  return _mm256_add_ps(packed1, packed2);
 #elif defined TL_HAVE_SSE
-  r = _mm_add_ps(packed1, packed2);
+  return _mm_add_ps(packed1, packed2);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
@@ -608,15 +566,11 @@ typename std::enable_if<
   Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX
-  r = _mm256_add_pd(packed1, packed2);
+  return _mm256_add_pd(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-  r = _mm_add_pd(packed1, packed2);
+  return _mm_add_pd(packed1, packed2);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
@@ -626,15 +580,11 @@ typename std::enable_if<
   Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_add_epi8(packed1, packed2);
+  return _mm256_add_epi8(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-  r = _mm_add_epi8(packed1, packed2);
+  return _mm_add_epi8(packed1, packed2);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
@@ -644,15 +594,11 @@ typename std::enable_if<
   Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_add_epi16(packed1, packed2);
+  return _mm256_add_epi16(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-  r = _mm_add_epi16(packed1, packed2);
+  return _mm_add_epi16(packed1, packed2);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
@@ -662,15 +608,11 @@ typename std::enable_if<
   Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_add_epi32(packed1, packed2);
+  return _mm256_add_epi32(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-  r = _mm_add_epi32(packed1, packed2);
+  return _mm_add_epi32(packed1, packed2);
 #endif
-
-  return r;
 }
 
 template<typename T> inline
@@ -680,15 +622,11 @@ typename std::enable_if<
   Packed<T>>::type
 add(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
-
 #ifdef TL_HAVE_AVX2
-  r = _mm256_add_epi64(packed1, packed2);
+  return _mm256_add_epi64(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-  r = _mm_add_epi64(packed1, packed2);
+  return _mm_add_epi64(packed1, packed2);
 #endif
-
-  return r;
 }
 
 /// Subtract
@@ -699,7 +637,7 @@ typename std::enable_if<
   Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX
   r = _mm256_sub_ps(packed1, packed2);
@@ -716,7 +654,7 @@ typename std::enable_if<
   Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX
   r = _mm256_sub_pd(packed1, packed2);
@@ -733,7 +671,7 @@ typename std::enable_if<
   Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_sub_epi8(packed1, packed2);
@@ -750,7 +688,7 @@ typename std::enable_if<
   Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_sub_epi16(packed1, packed2);
@@ -767,7 +705,7 @@ typename std::enable_if<
   Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_sub_epi32(packed1, packed2);
@@ -784,7 +722,7 @@ typename std::enable_if<
   Packed<T>>::type
 sub(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_sub_epi64(packed1, packed2);
@@ -834,7 +772,7 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX
   r = _mm256_mul_ps(packed1, packed2);
@@ -851,7 +789,7 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX
   r = _mm256_mul_pd(packed1, packed2);
@@ -862,98 +800,6 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
   return r;
 }
 
-//template<typename T> inline
-//typename std::enable_if<
-//  std::is_integral<T>::value,
-//  Packed<T>>::type
-//mul(const Packed<T> &packed1, const Packed<T> &packed2)
-//{
-//  Packed<T> r;
-//
-//#ifdef TL_HAVE_AVX2
-//  if (packed1.size() == 32) {
-//    /// Copy from 'vector class library':
-//    /// https://github.com/vectorclass/version2/blob/master/vectori256.h
-//    /// (c) Copyright 2012-2021 Agner Fog.
-//    /// Apache License version 2.0 or later.
-//    // There is no 8-bit multiply in AVX2. Split into two 16-bit multiplications
-//    __m256i aodd = _mm256_srli_epi16(packed1, 8);              // odd numbered elements of a
-//    __m256i bodd = _mm256_srli_epi16(packed2, 8);              // odd numbered elements of b
-//    __m256i muleven = _mm256_mullo_epi16(packed1, packed2);    // product of even numbered elements
-//    __m256i mulodd = _mm256_mullo_epi16(aodd, bodd);           // product of odd  numbered elements
-//    mulodd = _mm256_slli_epi16(mulodd, 8);                     // put odd numbered elements back in place
-//    __m256i mask = _mm256_set1_epi32(0x00FF00FF);              // mask for even positions
-//    r = _mm256_blendv_epi8(mask, muleven, mulodd);             // interleave even and odd
-//  } else if (packed1.size() == 16) {
-//    r = _mm256_mullo_epi16(packed1, packed2);
-//  } else if (packed1.size() == 8) {
-//    r = _mm256_mullo_epi32(packed1, packed2);
-//  } else if (packed1.size() == 4) {
-//    r = _mm256_mullo_epi64(packed1, packed2);
-//  }
-//#elif defined TL_HAVE_SSE2
-//  if (packed1.size() == 16) {
-//    /// Copy from 'vector class library':
-//    /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
-//    /// (c) Copyright 2012-2021 Agner Fog.
-//    /// Apache License version 2.0 or later.
-//    // There is no 8-bit multiply in SSE2. Split into two 16-bit multiplies
-//    __m128i aodd = _mm_srli_epi16(packed1, 8);         // odd numbered elements of a
-//    __m128i bodd = _mm_srli_epi16(packed2, 8);         // odd numbered elements of b
-//    __m128i muleven = _mm_mullo_epi16(packed1, packed2);     // product of even numbered elements
-//    __m128i mulodd = _mm_mullo_epi16(aodd, bodd);// product of odd  numbered elements
-//    mulodd = _mm_slli_epi16(mulodd, 8);          // put odd numbered elements back in place
-//    __m128i mask = _mm_set1_epi32(0x00FF00FF);   // mask for even positions
-//#ifdef TL_HAVE_SSE4_1
-//    r = _mm_blendv_epi8(mulodd, muleven, mask);
-//#else
-//    r = _mm_or_si128(_mm_and_si128(mask, muleven), _mm_andnot_si128(mask, mulodd));
-//#endif
-//  } else if (packed1.size() == 8) {
-//    r = _mm_mullo_epi16(packed1, packed2);
-//  } else if (packed1.size() == 4) {
-//    /// Copy from 'vector class library':
-//    /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
-//    /// (c) Copyright 2012-2021 Agner Fog.
-//    /// Apache License version 2.0 or later.
-//#  if defined TL_HAVE_SSE4_1
-//    r = _mm_mullo_epi32(packed1, packed2);
-//#  else
-//    __m128i a13 = _mm_shuffle_epi32(packed1, 0xF5);
-//    __m128i b13 = _mm_shuffle_epi32(packed2, 0xF5);
-//    __m128i prod02 = _mm_mul_epu32(packed1, packed2);
-//    __m128i prod13 = _mm_mul_epu32(a13, b13);
-//    __m128i prod01 = _mm_unpacklo_epi32(prod02, prod13);
-//    __m128i prod23 = _mm_unpackhi_epi32(prod02, prod13);
-//    r = _mm_unpacklo_epi64(prod01, prod23);
-//#  endif
-//  } else if (packed1.size() == 2) {
-//    /// Copy from 'vector class library':
-//    /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
-//    /// (c) Copyright 2012-2021 Agner Fog.
-//    /// Apache License version 2.0 or later.
-//    // Split into 32-bit multiplies
-//#  if defined TL_HAVE_SSE4_1
-//    __m128i bswap = _mm_shuffle_epi32(packed2, 0xB1);      // b0H,b0L,b1H,b1L (swap H<->L)
-//    __m128i prodlh = _mm_mullo_epi32(packed1, bswap);      // a0Lb0H,a0Hb0L,a1Lb1H,a1Hb1L, 32 bit L*H products
-//    __m128i zero = _mm_setzero_si128();                    // 0
-//    __m128i prodlh2 = _mm_hadd_epi32(prodlh, zero);        // a0Lb0H+a0Hb0L,a1Lb1H+a1Hb1L,0,0
-//    __m128i prodlh3 = _mm_shuffle_epi32(prodlh2, 0x73);    // 0, a0Lb0H+a0Hb0L, 0, a1Lb1H+a1Hb1L
-//    __m128i prodll = _mm_mul_epu32(packed1, packed2);      // a0Lb0L,a1Lb1L, 64 bit unsigned products
-//    __m128i prod = _mm_add_epi64(prodll, prodlh3);         // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
-//    r = prod;
-//#  else
-//    ///TODO: Error
-//    //int64_t aa[2], bb[2];
-//    //packed1.storeUnaligned(&aa[0]);                                     // split into elements
-//    //packed2.storeUnaligned(&bb[0]);
-//    //r = _mm_set_epi64x(aa[0] * bb[0], aa[1] * bb[1]);     // multiply elements separetely
-//#  endif
-//  }
-//#endif
-//
-//  return r;
-//}
 
 template<typename T> inline
 typename std::enable_if<
@@ -962,7 +808,7 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   /// Copy from 'vector class library':
@@ -1006,7 +852,7 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_mullo_epi16(packed1, packed2);
@@ -1024,7 +870,7 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_mullo_epi32(packed1, packed2);
@@ -1056,7 +902,7 @@ typename std::enable_if<
   Packed<T>>::type
 mul(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
   r = _mm256_mullo_epi64(packed1, packed2);
@@ -1077,10 +923,10 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
   r = prod;
 #  else
     ///TODO: Error
-    //int64_t aa[2], bb[2];
-    //packed1.storeUnaligned(&aa[0]);                                     // split into elements
-    //packed2.storeUnaligned(&bb[0]);
-    //r = _mm_set_epi64x(aa[0] * bb[0], aa[1] * bb[1]);     // multiply elements separetely
+    int64_t aa[2], bb[2];
+    packed1.storeUnaligned(&aa[0]);                                     // split into elements
+    packed2.storeUnaligned(&bb[0]);
+    r = _mm_set_epi64x(aa[0] * bb[0], aa[1] * bb[1]);     // multiply elements separetely
 #  endif
 #endif
 
@@ -1094,7 +940,7 @@ typename std::enable_if<
   Packed<T>>::type
 div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX
   r = _mm256_div_ps(packed1, packed2);
@@ -1111,7 +957,7 @@ typename std::enable_if<
   Packed<T>>::type
   div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
-  Packed<T> r;
+  typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX
   r = _mm256_div_pd(packed1, packed2);
@@ -1334,7 +1180,7 @@ horizontal_sum(const Packed<T> &packed)
   __m128i sum1 = _mm_unpackhi_epi64(packed, packed);          // high element
   __m128i sum2 = _mm_add_epi64(packed, sum1);                 // sum
 #  ifdef __x86_64__
-  return _mm_cvtsi128_si64(sum2);
+  sum = _mm_cvtsi128_si64(sum2);
 #  else
     // 64 bit registers not available
   union
@@ -1359,6 +1205,18 @@ horizontal_sum(const Packed<T> &packed)
 template<typename T>
 PackedBase<T>::PackedBase(const typename PackedBase<T>::simd_type &packed)
   : mValue(packed)
+{
+}
+
+template<typename T>
+PackedBase<T>::PackedBase(const PackedBase<T> &packed)
+  : mValue(packed.mValue)
+{
+}
+
+template<typename T>
+PackedBase<T>::PackedBase(PackedBase<T> &&packed) TL_NOEXCEPT
+  : mValue(std::move(packed.mValue))
 {
 }
 
@@ -1398,6 +1256,26 @@ template<typename T> inline
 void PackedBase<T>::setScalar(value_type value)
 {
   mValue = internal::set(value);
+}
+
+template<typename T> inline
+PackedBase<T> &PackedBase<T>::operator=(const PackedBase<T> &packed)
+{
+  if(this != &packed) {
+    mValue = packed.mValue;
+  }
+
+  return *this;
+}
+
+template<typename T> inline
+PackedBase<T> &PackedBase<T>::operator=(PackedBase<T> &&packed) TL_NOEXCEPT
+{
+  if(this != &packed) {
+    mValue = std::move(packed.mValue);
+  }
+
+  return *this;
 }
 
 template<typename T> inline
@@ -1537,7 +1415,20 @@ Packed<T> operator/(T scalar, const Packed<T> &packed)
 }
 
 template<typename T> inline
-Packed<T>::Packed() : PackedBase<Packed<T>>()
+Packed<T>::Packed()
+  : PackedBase<Packed<T>>()
+{
+}
+
+template<typename T> inline
+Packed<T>::Packed(const Packed &packed)
+  : PackedBase<Packed<T>>(packed)
+{
+}
+
+template<typename T> inline
+Packed<T>::Packed(Packed &&packed) TL_NOEXCEPT
+  : PackedBase<Packed<T>>(std::forward<PackedBase<Packed<T>>>(packed))
 {
 }
 
@@ -1551,6 +1442,26 @@ template<typename T> inline
 Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
   : PackedBase<Packed<T>>(scalar)
 {
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
+{
+  if(this != &packed) {
+    PackedBase<Packed<T>>::operator = (packed);
+  }
+
+  return *this;
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
+{
+  if(this != &packed) {
+    PackedBase<Packed<T>>::operator = (std::forward<PackedBase<Packed<T>>>(packed));
+  }
+
+  return *this;
 }
 
 template<typename T> inline

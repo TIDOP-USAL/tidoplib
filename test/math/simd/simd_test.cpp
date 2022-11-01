@@ -51,10 +51,14 @@ struct PackedTest
     v2 = { -1.f, 4.f, 2.f, 2.f, 2.f, 8.f, 2.f, 3.f, 8.f, 4.f, 1.f, 7.f };
     v1d = { 1., 0., 3., 5., 8., 9., 2., 2., 5., 2., 9., 5. };
     v2d = { -1., 4., 2., 2., 2., 8., 2., 3., 8., 4., 1., 7. };
+    v1i64 = {1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5};
+    v2i64 = {-1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7};
     v1i32 = { 1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5 };
     v2i32 = { -1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7 };
     v1ui32 = {45, 65, 75, 23, 574, 23, 23, 426, 2362, 346, 235, 755};
     v2ui32 = {962, 59, 98, 854, 175, 45, 2, 78, 785, 786, 298, 725};
+    v1i16 = {1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5, 9, 7, 2, 1, 1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5, 9, 7, 2, 1};
+    v2i16 = {-1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7, 0, 3, -2, 2, -1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7, 0, 3, -2, 2};
     v1i8 = {1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5, 9, 7, 2, 1, 1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5, 9, 7, 2, 1};
     v2i8 = {-1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7, 0, 3, -2, 2, -1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7, 0, 3, -2, 2};
 
@@ -90,10 +94,14 @@ struct PackedTest
   Packed<float> packed_b;
   Packed<double> packed_a_d;
   Packed<double> packed_b_d;
+  Packed<int64_t> packed_a_i64;
+  Packed<int64_t> packed_b_i64;
   Packed<int32_t> packed_a_i32;
   Packed<int32_t> packed_b_i32;
   Packed<uint32_t> packed_a_ui32;
   Packed<uint32_t> packed_b_ui32;
+  Packed<int16_t> packed_a_i16;
+  Packed<int16_t> packed_b_i16;
   Packed<int8_t> packed_a_i8;
   Packed<int8_t> packed_b_i8;
 
@@ -101,10 +109,14 @@ struct PackedTest
   Vector<float> v2;
   Vector<double> v1d;
   Vector<double> v2d;
+  Vector<int64_t> v1i64;
+  Vector<int64_t> v2i64;
   Vector<int32_t> v1i32;
   Vector<int32_t> v2i32;
   Vector<uint32_t> v1ui32;
   Vector<uint32_t> v2ui32;
+  Vector<int16_t> v1i16;
+  Vector<int16_t> v2i16;
   Vector<int8_t> v1i8;
   Vector<int8_t> v2i8;
 
@@ -580,6 +592,74 @@ BOOST_FIXTURE_TEST_CASE(vector_add_equal_double, PackedTest)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(vector_add_int64, PackedTest)
+{
+
+  Vector<int64_t> v3(v1i64.size());
+
+  size_t max_vector = (v1i64.size() / packed_a_i64.size()) * packed_a_i64.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i64.size()) {
+
+    packed_a_i64.loadAligned(&v1i64[i]);
+    packed_b_i64.loadAligned(&v2i64[i]);
+
+    Packed<int64_t> packed_c = packed_a_i64 + packed_b_i64;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i64.size(); ++i) {
+    v3[i] = v1i64[i] + v2i64[i];
+  }
+
+  BOOST_CHECK_EQUAL(0, v3[0]);
+  BOOST_CHECK_EQUAL(4, v3[1]);
+  BOOST_CHECK_EQUAL(5, v3[2]);
+  BOOST_CHECK_EQUAL(7, v3[3]);
+  BOOST_CHECK_EQUAL(10, v3[4]);
+  BOOST_CHECK_EQUAL(17, v3[5]);
+  BOOST_CHECK_EQUAL(4, v3[6]);
+  BOOST_CHECK_EQUAL(5, v3[7]);
+  BOOST_CHECK_EQUAL(13, v3[8]);
+  BOOST_CHECK_EQUAL(6, v3[9]);
+  BOOST_CHECK_EQUAL(10, v3[10]);
+  BOOST_CHECK_EQUAL(12, v3[11]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_add_equal_int64, PackedTest)
+{
+
+  size_t max_vector = (v1i64.size() / packed_a_i64.size()) * packed_a_i64.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i64.size()) {
+
+    packed_a_i64.loadAligned(&v1i64[i]);
+    packed_b_i64.loadAligned(&v2i64[i]);
+
+    packed_a_i64 += packed_b_i64;
+    packed_a_i64.storeAligned(&v1i64[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i64.size(); ++i) {
+    v1i64[i] += v2i64[i];
+  }
+
+  BOOST_CHECK_EQUAL(v1i64[0], 0);
+  BOOST_CHECK_EQUAL(v1i64[1], 4);
+  BOOST_CHECK_EQUAL(v1i64[2], 5);
+  BOOST_CHECK_EQUAL(v1i64[3], 7);
+  BOOST_CHECK_EQUAL(v1i64[4], 10);
+  BOOST_CHECK_EQUAL(v1i64[5], 17);
+  BOOST_CHECK_EQUAL(v1i64[6], 4);
+  BOOST_CHECK_EQUAL(v1i64[7], 5);
+  BOOST_CHECK_EQUAL(v1i64[8], 13);
+  BOOST_CHECK_EQUAL(v1i64[9], 6);
+  BOOST_CHECK_EQUAL(v1i64[10], 10);
+  BOOST_CHECK_EQUAL(v1i64[11], 12);
+
+}
+
 BOOST_FIXTURE_TEST_CASE(vector_add_int32, PackedTest)
 {
 
@@ -684,6 +764,80 @@ BOOST_FIXTURE_TEST_CASE(vector_add_equal_int32, PackedTest)
   BOOST_CHECK_EQUAL(v1i32[10], 10);
   BOOST_CHECK_EQUAL(v1i32[11], 12);
 
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_add_int16, PackedTest)
+{
+
+  Vector<int16_t> v3(v1i16.size());
+
+  size_t max_vector = (v1i16.size() / packed_a_i16.size()) * packed_a_i16.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i16.size()) {
+
+    packed_a_i16.loadAligned(&v1i16[i]);
+    packed_b_i16.loadAligned(&v2i16[i]);
+
+    Packed<int16_t> packed_c = packed_a_i16 + packed_b_i16;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i16.size(); ++i) {
+    v3[i] = v1i16[i] + v2i16[i];
+  }
+
+  BOOST_CHECK_EQUAL(0, v3[0]);
+  BOOST_CHECK_EQUAL(4, v3[1]);
+  BOOST_CHECK_EQUAL(5, v3[2]);
+  BOOST_CHECK_EQUAL(7, v3[3]);
+  BOOST_CHECK_EQUAL(10, v3[4]);
+  BOOST_CHECK_EQUAL(17, v3[5]);
+  BOOST_CHECK_EQUAL(4, v3[6]);
+  BOOST_CHECK_EQUAL(5, v3[7]);
+  BOOST_CHECK_EQUAL(13, v3[8]);
+  BOOST_CHECK_EQUAL(6, v3[9]);
+  BOOST_CHECK_EQUAL(10, v3[10]);
+  BOOST_CHECK_EQUAL(12, v3[11]);
+  BOOST_CHECK_EQUAL(9, v3[12]);
+  BOOST_CHECK_EQUAL(10, v3[13]);
+  BOOST_CHECK_EQUAL(0, v3[14]);
+  BOOST_CHECK_EQUAL(3, v3[15]);
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_add_equal_int16, PackedTest)
+{
+
+  size_t max_vector = (v1i16.size() / packed_a_i16.size()) * packed_a_i16.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i16.size()) {
+
+    packed_a_i16.loadAligned(&v1i16[i]);
+    packed_b_i16.loadAligned(&v2i16[i]);
+
+    packed_a_i16 += packed_b_i16;
+    packed_a_i16.storeAligned(&v1i16[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i16.size(); ++i) {
+    v1i16[i] += v2i16[i];
+  }
+
+  BOOST_CHECK_EQUAL(v1i16[0], 0);
+  BOOST_CHECK_EQUAL(v1i16[1], 4);
+  BOOST_CHECK_EQUAL(v1i16[2], 5);
+  BOOST_CHECK_EQUAL(v1i16[3], 7);
+  BOOST_CHECK_EQUAL(v1i16[4], 10);
+  BOOST_CHECK_EQUAL(v1i16[5], 17);
+  BOOST_CHECK_EQUAL(v1i16[6], 4);
+  BOOST_CHECK_EQUAL(v1i16[7], 5);
+  BOOST_CHECK_EQUAL(v1i16[8], 13);
+  BOOST_CHECK_EQUAL(v1i16[9], 6);
+  BOOST_CHECK_EQUAL(v1i16[10], 10);
+  BOOST_CHECK_EQUAL(v1i16[11], 12);
+  BOOST_CHECK_EQUAL(v1i16[12], 9);
+  BOOST_CHECK_EQUAL(v1i16[13], 10);
+  BOOST_CHECK_EQUAL(v1i16[14], 0);
+  BOOST_CHECK_EQUAL(v1i16[15], 3);
 }
 
 BOOST_FIXTURE_TEST_CASE(vector_add_int8, PackedTest)
@@ -898,6 +1052,74 @@ BOOST_FIXTURE_TEST_CASE(vector_sub_equal_double, PackedTest)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(vector_sub_int64, PackedTest)
+{
+
+  Vector<int64_t> v3(v1i64.size());
+
+  size_t max_vector = (v1i64.size() / packed_a_i64.size()) * packed_a_i64.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i64.size()) {
+
+    packed_a_i64.loadAligned(&v1i64[i]);
+    packed_b_i64.loadAligned(&v2i64[i]);
+
+    Packed<int64_t> packed_c = packed_a_i64 - packed_b_i64;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i64.size(); ++i) {
+    v3[i] = v1i64[i] - v2i64[i];
+  }
+
+  BOOST_CHECK_EQUAL(2, v3[0]);
+  BOOST_CHECK_EQUAL(-4, v3[1]);
+  BOOST_CHECK_EQUAL(1, v3[2]);
+  BOOST_CHECK_EQUAL(3, v3[3]);
+  BOOST_CHECK_EQUAL(6, v3[4]);
+  BOOST_CHECK_EQUAL(1, v3[5]);
+  BOOST_CHECK_EQUAL(0, v3[6]);
+  BOOST_CHECK_EQUAL(-1, v3[7]);
+  BOOST_CHECK_EQUAL(-3, v3[8]);
+  BOOST_CHECK_EQUAL(-2, v3[9]);
+  BOOST_CHECK_EQUAL(8, v3[10]);
+  BOOST_CHECK_EQUAL(-2, v3[11]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_sub_equal_int64, PackedTest)
+{
+
+  size_t max_vector = (v1i64.size() / packed_a_i64.size()) * packed_a_i64.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i64.size()) {
+
+    packed_a_i64.loadAligned(&v1i64[i]);
+    packed_b_i64.loadAligned(&v2i64[i]);
+
+    packed_a_i64 -= packed_b_i64;
+    packed_a_i64.storeAligned(&v1i64[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i64.size(); ++i) {
+    v1i64[i] -= v2i64[i];
+  }
+
+  BOOST_CHECK_EQUAL(2, v1i64[0]);
+  BOOST_CHECK_EQUAL(-4, v1i64[1]);
+  BOOST_CHECK_EQUAL(1, v1i64[2]);
+  BOOST_CHECK_EQUAL(3, v1i64[3]);
+  BOOST_CHECK_EQUAL(6, v1i64[4]);
+  BOOST_CHECK_EQUAL(1, v1i64[5]);
+  BOOST_CHECK_EQUAL(0, v1i64[6]);
+  BOOST_CHECK_EQUAL(-1, v1i64[7]);
+  BOOST_CHECK_EQUAL(-3, v1i64[8]);
+  BOOST_CHECK_EQUAL(-2, v1i64[9]);
+  BOOST_CHECK_EQUAL(8, v1i64[10]);
+  BOOST_CHECK_EQUAL(-2, v1i64[11]);
+
+}
+
 BOOST_FIXTURE_TEST_CASE(vector_sub_int32, PackedTest)
 {
 
@@ -964,6 +1186,80 @@ BOOST_FIXTURE_TEST_CASE(vector_sub_equal_int32, PackedTest)
   BOOST_CHECK_EQUAL(8, v1i32[10]);
   BOOST_CHECK_EQUAL(-2, v1i32[11]);
 
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_sub_int16, PackedTest)
+{
+
+  Vector<int16_t> v3(v1i16.size());
+
+  size_t max_vector = (v1i16.size() / packed_a_i16.size()) * packed_a_i16.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i16.size()) {
+
+    packed_a_i16.loadAligned(&v1i16[i]);
+    packed_b_i16.loadAligned(&v2i16[i]);
+
+    Packed<int16_t> packed_c = packed_a_i16 - packed_b_i16;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i16.size(); ++i) {
+    v3[i] = v1i16[i] - v2i16[i];
+  }
+
+  BOOST_CHECK_EQUAL(2, v3[0]);
+  BOOST_CHECK_EQUAL(-4, v3[1]);
+  BOOST_CHECK_EQUAL(1, v3[2]);
+  BOOST_CHECK_EQUAL(3, v3[3]);
+  BOOST_CHECK_EQUAL(6, v3[4]);
+  BOOST_CHECK_EQUAL(1, v3[5]);
+  BOOST_CHECK_EQUAL(0, v3[6]);
+  BOOST_CHECK_EQUAL(-1, v3[7]);
+  BOOST_CHECK_EQUAL(-3, v3[8]);
+  BOOST_CHECK_EQUAL(-2, v3[9]);
+  BOOST_CHECK_EQUAL(8, v3[10]);
+  BOOST_CHECK_EQUAL(-2, v3[11]);
+  BOOST_CHECK_EQUAL(9, v3[12]);
+  BOOST_CHECK_EQUAL(4, v3[13]);
+  BOOST_CHECK_EQUAL(4, v3[14]);
+  BOOST_CHECK_EQUAL(-1, v3[15]);
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_sub_equal_int16, PackedTest)
+{
+
+  size_t max_vector = (v1i16.size() / packed_a_i16.size()) * packed_a_i16.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i16.size()) {
+
+    packed_a_i16.loadAligned(&v1i16[i]);
+    packed_b_i16.loadAligned(&v2i16[i]);
+
+    packed_a_i16 -= packed_b_i16;
+    packed_a_i16.storeAligned(&v1i16[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i16.size(); ++i) {
+    v1i16[i] -= v2i16[i];
+  }
+
+  BOOST_CHECK_EQUAL(2, v1i16[0]);
+  BOOST_CHECK_EQUAL(-4, v1i16[1]);
+  BOOST_CHECK_EQUAL(1, v1i16[2]);
+  BOOST_CHECK_EQUAL(3, v1i16[3]);
+  BOOST_CHECK_EQUAL(6, v1i16[4]);
+  BOOST_CHECK_EQUAL(1, v1i16[5]);
+  BOOST_CHECK_EQUAL(0, v1i16[6]);
+  BOOST_CHECK_EQUAL(-1, v1i16[7]);
+  BOOST_CHECK_EQUAL(-3, v1i16[8]);
+  BOOST_CHECK_EQUAL(-2, v1i16[9]);
+  BOOST_CHECK_EQUAL(8, v1i16[10]);
+  BOOST_CHECK_EQUAL(-2, v1i16[11]);
+  BOOST_CHECK_EQUAL(9, v1i16[12]);
+  BOOST_CHECK_EQUAL(4, v1i16[13]);
+  BOOST_CHECK_EQUAL(4, v1i16[14]);
+  BOOST_CHECK_EQUAL(-1, v1i16[15]);
 }
 
 BOOST_FIXTURE_TEST_CASE(vector_sub_int8, PackedTest)
@@ -1112,6 +1408,41 @@ BOOST_FIXTURE_TEST_CASE(vector_multiplication_double, PackedTest)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(vector_multiplication_int64, PackedTest)
+{
+
+  Vector<int64_t> v3(v1i64.size());
+
+  size_t max_vector = (v1i64.size() / packed_a_i64.size()) * packed_a_i64.size();
+  for(size_t i = 0; i < max_vector; i += packed_a_i64.size()) {
+
+    packed_a_i64.loadAligned(&v1i64[i]);
+    packed_b_i64.loadAligned(&v2i64[i]);
+
+    Packed<int64_t> packed_c = packed_a_i64 * packed_b_i64;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for(size_t i = max_vector; i < v1i64.size(); ++i) {
+    v3[i] = v1i64[i] * v2i64[i];
+  }
+
+  BOOST_CHECK_EQUAL(-1, v3[0]);
+  BOOST_CHECK_EQUAL(0, v3[1]);
+  BOOST_CHECK_EQUAL(6, v3[2]);
+  BOOST_CHECK_EQUAL(10, v3[3]);
+  BOOST_CHECK_EQUAL(16, v3[4]);
+  BOOST_CHECK_EQUAL(72, v3[5]);
+  BOOST_CHECK_EQUAL(4, v3[6]);
+  BOOST_CHECK_EQUAL(6, v3[7]);
+  BOOST_CHECK_EQUAL(40, v3[8]);
+  BOOST_CHECK_EQUAL(8, v3[9]);
+  BOOST_CHECK_EQUAL(9, v3[10]);
+  BOOST_CHECK_EQUAL(35, v3[11]);
+
+}
+
 BOOST_FIXTURE_TEST_CASE(vector_multiplication_int32, PackedTest)
 {
 
@@ -1147,13 +1478,51 @@ BOOST_FIXTURE_TEST_CASE(vector_multiplication_int32, PackedTest)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(vector_multiplication_int16, PackedTest)
+{
+
+  Vector<int16_t> v3(v1i16.size());
+
+  size_t max_vector = (v1i16.size() / packed_a_i16.size()) * packed_a_i16.size();
+  for (size_t i = 0; i < max_vector; i += packed_a_i16.size()) {
+
+    packed_a_i16.loadAligned(&v1i16[i]);
+    packed_b_i16.loadAligned(&v2i16[i]);
+
+    Packed<int16_t> packed_c = packed_a_i16 * packed_b_i16;
+    packed_c.storeAligned(&v3[i]);
+
+  }
+
+  for (size_t i = max_vector; i < v1i16.size(); ++i) {
+    v3[i] = v1i16[i] * v2i16[i];
+  }
+
+  BOOST_CHECK_EQUAL(-1, v3[0]);
+  BOOST_CHECK_EQUAL(0, v3[1]);
+  BOOST_CHECK_EQUAL(6, v3[2]);
+  BOOST_CHECK_EQUAL(10, v3[3]);
+  BOOST_CHECK_EQUAL(16, v3[4]);
+  BOOST_CHECK_EQUAL(72, v3[5]);
+  BOOST_CHECK_EQUAL(4, v3[6]);
+  BOOST_CHECK_EQUAL(6, v3[7]);
+  BOOST_CHECK_EQUAL(40, v3[8]);
+  BOOST_CHECK_EQUAL(8, v3[9]);
+  BOOST_CHECK_EQUAL(9, v3[10]);
+  BOOST_CHECK_EQUAL(35, v3[11]);
+  BOOST_CHECK_EQUAL(0, v3[12]);
+  BOOST_CHECK_EQUAL(21, v3[13]);
+  BOOST_CHECK_EQUAL(-4, v3[14]);
+  BOOST_CHECK_EQUAL(2, v3[15]);
+}
+
 BOOST_FIXTURE_TEST_CASE(vector_multiplication_int8, PackedTest)
 {
 
   Vector<int8_t> v3(v1i8.size());
 
   size_t max_vector = (v1i8.size() / packed_a_i8.size()) * packed_a_i8.size();
-  for (size_t i = 0; i < max_vector; i += packed_a_i8.size()) {
+  for(size_t i = 0; i < max_vector; i += packed_a_i8.size()) {
 
     packed_a_i8.loadAligned(&v1i8[i]);
     packed_b_i8.loadAligned(&v2i8[i]);
@@ -1163,7 +1532,7 @@ BOOST_FIXTURE_TEST_CASE(vector_multiplication_int8, PackedTest)
 
   }
 
-  for (size_t i = max_vector; i < v1i8.size(); ++i) {
+  for(size_t i = max_vector; i < v1i8.size(); ++i) {
     v3[i] = v1i8[i] * v2i8[i];
   }
 
@@ -1257,6 +1626,18 @@ BOOST_FIXTURE_TEST_CASE(vector_div_double, PackedTest)
 
 }
 
+
+///TODO: Añadir test
+// - horizontal_sum
+// - operator -
+// - operator+(const Packed<T> &packed, T scalar)
+// - operator+(T scalar, const Packed<T> &packed)
+// - operator-(const Packed<T> &packed, T scalar)
+// - operator-(T scalar, const Packed<T> &packed)
+// - operator*(const Packed<T> &packed, T scalar)
+
+
+/// Pruebas de multiplicación de matrices
 
 BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
 {

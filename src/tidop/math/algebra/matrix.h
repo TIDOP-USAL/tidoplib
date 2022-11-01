@@ -1091,13 +1091,13 @@ const T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c) const
 template<typename T, size_t _rows, size_t _cols> inline
 T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c)
 {
-  return mData[r * this->cols() + c];
+  return mData[r * _cols + c];
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 const T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c) const
 {
-  return mData[r * this->cols() + c];
+  return mData[r * _cols + c];
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
@@ -2551,14 +2551,9 @@ template<typename T> inline
 Matrix<T> operator * (const Matrix<T> &matrix1,
                       const Matrix<T> &matrix2)
 {
-  size_t rows = matrix1.rows();
-  size_t dim1 = matrix1.cols();
-  size_t cols = matrix2.cols();
-  size_t dim2 = matrix2.rows();
+  TL_ASSERT(matrix1.cols() == matrix2.rows(), "A columns != B rows");
 
-  TL_ASSERT(dim1 == dim2, "A columns != B rows");
-
-  Matrix<T> matrix = Matrix<T>::zero(rows, cols);
+  Matrix<T> matrix = Matrix<T>::zero(matrix1.rows(), matrix2.cols());
   internal::mulmat(matrix1, matrix2, matrix);
 
   return matrix;
