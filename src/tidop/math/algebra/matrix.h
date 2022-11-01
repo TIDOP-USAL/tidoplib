@@ -805,6 +805,14 @@ void mulmat_simd(const Matrix<T, _rows, _dim> &matrix1,
   Packed<T> packed_a;
   Packed<T> packed_b;
   Packed<T> packed_c;
+  Packed<T> packed_a1;
+  Packed<T> packed_a2;
+  Packed<T> packed_a3;
+  Packed<T> packed_a4;
+  Packed<T> packed_a5;
+  Packed<T> packed_a6;
+  Packed<T> packed_a7;
+  Packed<T> packed_a8;
 
   constexpr size_t packed_size = packed_a.size();
   size_t max_vector = cols - cols % packed_size;
@@ -815,14 +823,14 @@ void mulmat_simd(const Matrix<T, _rows, _dim> &matrix1,
   for (size_t r = 0; r < iter; r += 8) {
     for (size_t i = 0; i < dim; i++) {
 
-      Packed<T> packed_a1(matrix1(r, i));
-      Packed<T> packed_a2(matrix1(r + 1, i));
-      Packed<T> packed_a3(matrix1(r + 2, i));
-      Packed<T> packed_a4(matrix1(r + 3, i));
-      Packed<T> packed_a5(matrix1(r + 4, i));
-      Packed<T> packed_a6(matrix1(r + 5, i));
-      Packed<T> packed_a7(matrix1(r + 6, i));
-      Packed<T> packed_a8(matrix1(r + 7, i));
+      packed_a1.setScalar(matrix1(r, i));
+      packed_a2.setScalar(matrix1(r + 1, i));
+      packed_a3.setScalar(matrix1(r + 2, i));
+      packed_a4.setScalar(matrix1(r + 3, i));
+      packed_a5.setScalar(matrix1(r + 4, i));
+      packed_a6.setScalar(matrix1(r + 5, i));
+      packed_a7.setScalar(matrix1(r + 6, i));
+      packed_a8.setScalar(matrix1(r + 7, i));
 
       for (size_t c = 0; c < max_vector; c += packed_size) {
 
@@ -918,7 +926,7 @@ void mulmat_cpp(const Matrix<T, _rows, _dim> &matrix1,
 
 template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
 typename std::enable_if < 
-  std::is_integral<typename std::remove_cv<T>::type>::value,
+  std::is_integral<T>::value,
   void>::type
 mulmat(const Matrix<T, _rows, _dim> &matrix1,
        const Matrix<T, _dim, _cols> &matrix2,
@@ -937,7 +945,7 @@ mulmat(const Matrix<T, _rows, _dim> &matrix1,
 
 template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
 typename std::enable_if <
-  std::is_floating_point<typename std::remove_cv<T>::type>::value,
+  std::is_floating_point<T>::value,
   void>::type
 mulmat(const Matrix<T, _rows, _dim> &matrix1,
        const Matrix<T, _dim, _cols> &matrix2,
