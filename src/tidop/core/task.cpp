@@ -824,6 +824,11 @@ void TaskList::push_back(const std::shared_ptr<Task> &task)
   mTasks.push_back(task);
 }
 
+size_t tl::TaskList::size() const
+{
+  return mTasks.size();
+}
+
 void TaskList::stop()
 {
   TaskBase::stop();

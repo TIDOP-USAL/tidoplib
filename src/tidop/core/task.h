@@ -321,6 +321,7 @@ public:
   ~TaskList() override;
 
   void push_back(const std::shared_ptr<Task> &task);
+  size_t size() const;
 
 // Task interface
 
