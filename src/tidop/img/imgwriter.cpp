@@ -43,6 +43,72 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+GDALDataType dataTypeToGdalDataType(DataType dataType)
+{ 
+  GDALDataType ret = GDT_Unknown;
+  switch (dataType) {
+  case DataType::TL_8U:
+    ret = GDT_Byte;
+    break;
+  case DataType::TL_8S:
+    ret = GDT_Byte;
+    break;
+  case DataType::TL_16U:
+    ret = GDT_UInt16;
+    break;
+  case DataType::TL_16S:
+    ret = GDT_Int16;
+    break;
+  case DataType::TL_32U:
+    ret = GDT_UInt32;
+    break;
+  case DataType::TL_32S:
+    ret = GDT_Int32;
+    break;
+  case DataType::TL_32F:
+    ret = GDT_Float32;
+    break;
+  case DataType::TL_64F:
+    ret = GDT_Float64;
+    break;
+  default:
+    ret = GDT_Unknown;
+    break;
+  }
+  return ret;
+}
+
+/*!
+ * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
+ * \param cvdt Profundidad de bits
+ * \return GDALDataType
+ */
+GDALDataType openCvToGdal(int cvdt)
+{
+  GDALDataType ret;
+
+  if(cvdt == CV_8U)
+    ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
+  else if(cvdt == CV_8S)
+    ret = GDT_Byte;      //  CV_8S  == 1     GDT_Byte == 1
+  else if(cvdt == CV_16U)
+    ret = GDT_UInt16;    //  CV_16U == 2     GDT_UInt16 == 2
+  else if(cvdt == CV_16S)
+    ret = GDT_Int16;     //  CV_16S == 3     GDT_Int16 == 3
+  else if(cvdt == CV_32S)
+    ret = GDT_Int32;     //  CV_32S == 4     GDT_Int32 == 5
+  else if(cvdt == CV_32F)
+    ret = GDT_Float32;   //  CV_32F == 5     GDT_Float32 == 6
+  else if(cvdt == CV_64F)
+    ret = GDT_Float64;   //  CV_64F == 6     GDT_Float64 == 7
+  else
+    ret = GDT_Unknown;   //                  GDT_Unknown == 0
+
+  return(ret);
+}
+
+
+
 
 ImageWriter::ImageWriter(tl::Path file)
   : mFile(std::move(file))

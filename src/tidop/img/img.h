@@ -29,11 +29,11 @@
 
 #include "tidop/core/defs.h"
 
-#ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+//#ifdef TL_HAVE_GDAL
+//TL_SUPPRESS_WARNINGS
+//#include "gdal.h"
+//TL_DEFAULT_WARNINGS
+//#endif // TL_HAVE_GDAL
 
 #include <string>
 #include <vector>
@@ -71,8 +71,8 @@ TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 
 #ifdef TL_HAVE_GDAL
 
-TL_EXPORT DataType gdalConvertDataType(GDALDataType dataType);
-TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
+//TL_EXPORT DataType gdalConvertDataType(GDALDataType dataType);
+//TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
 
 #endif // TL_HAVE_GDAL
 
@@ -89,7 +89,7 @@ TL_EXPORT std::vector<int> gdalBandOrder(int channels);
  * \param channels Número de canales
  * \return Tipo de OpenCV
  */
-int gdalToOpenCv(GDALDataType gdalType, int channels);
+//int gdalToOpenCv(GDALDataType gdalType, int channels);
 
 
 /*!
@@ -97,7 +97,7 @@ int gdalToOpenCv(GDALDataType gdalType, int channels);
  * \param cvdt Profundidad de bits
  * \return GDALDataType
  */
-GDALDataType openCvToGdal(int cvdt);
+//GDALDataType openCvToGdal(int cvdt);
 
 #endif
 

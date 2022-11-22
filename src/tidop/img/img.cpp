@@ -257,72 +257,72 @@ std::string gdalDriverFromExtension(const std::string &extension)
 
 #ifdef TL_HAVE_GDAL
 
-DataType gdalConvertDataType(GDALDataType dataType)
-{
-  DataType ret;
-  switch (dataType) {
-  case GDT_Byte:
-    ret = DataType::TL_8U;
-    break;
-  case GDT_UInt16:
-    ret = DataType::TL_16U;
-    break;
-  case GDT_Int16:
-    ret = DataType::TL_16S;
-    break;
-  case GDT_UInt32:
-    ret = DataType::TL_32U;
-    break;
-  case GDT_Int32:
-    ret = DataType::TL_32S;
-    break;
-  case GDT_Float32:
-    ret = DataType::TL_32F;
-    break;
-  case GDT_Float64:
-    ret = DataType::TL_64F;
-    break;
-  default:
-    ret = DataType::TL_8U;
-    break;
-  }
-  return ret;
-}
+//DataType gdalConvertDataType(GDALDataType dataType)
+//{
+//  DataType ret;
+//  switch (dataType) {
+//  case GDT_Byte:
+//    ret = DataType::TL_8U;
+//    break;
+//  case GDT_UInt16:
+//    ret = DataType::TL_16U;
+//    break;
+//  case GDT_Int16:
+//    ret = DataType::TL_16S;
+//    break;
+//  case GDT_UInt32:
+//    ret = DataType::TL_32U;
+//    break;
+//  case GDT_Int32:
+//    ret = DataType::TL_32S;
+//    break;
+//  case GDT_Float32:
+//    ret = DataType::TL_32F;
+//    break;
+//  case GDT_Float64:
+//    ret = DataType::TL_64F;
+//    break;
+//  default:
+//    ret = DataType::TL_8U;
+//    break;
+//  }
+//  return ret;
+//}
 
-GDALDataType dataTypeToGdalDataType(DataType dataType)
-{ 
-  GDALDataType ret = GDT_Unknown;
-  switch (dataType) {
-  case DataType::TL_8U:
-    ret = GDT_Byte;
-    break;
-  case DataType::TL_8S:
-    ret = GDT_Byte;
-    break;
-  case DataType::TL_16U:
-    ret = GDT_UInt16;
-    break;
-  case DataType::TL_16S:
-    ret = GDT_Int16;
-    break;
-  case DataType::TL_32U:
-    ret = GDT_UInt32;
-    break;
-  case DataType::TL_32S:
-    ret = GDT_Int32;
-    break;
-  case DataType::TL_32F:
-    ret = GDT_Float32;
-    break;
-  case DataType::TL_64F:
-    ret = GDT_Float64;
-    break;
-  default:
-    ret = GDT_Unknown;
-    break;
-  }
-  return ret;
-}
+//GDALDataType dataTypeToGdalDataType(DataType dataType)
+//{ 
+//  GDALDataType ret = GDT_Unknown;
+//  switch (dataType) {
+//  case DataType::TL_8U:
+//    ret = GDT_Byte;
+//    break;
+//  case DataType::TL_8S:
+//    ret = GDT_Byte;
+//    break;
+//  case DataType::TL_16U:
+//    ret = GDT_UInt16;
+//    break;
+//  case DataType::TL_16S:
+//    ret = GDT_Int16;
+//    break;
+//  case DataType::TL_32U:
+//    ret = GDT_UInt32;
+//    break;
+//  case DataType::TL_32S:
+//    ret = GDT_Int32;
+//    break;
+//  case DataType::TL_32F:
+//    ret = GDT_Float32;
+//    break;
+//  case DataType::TL_64F:
+//    ret = GDT_Float64;
+//    break;
+//  default:
+//    ret = GDT_Unknown;
+//    break;
+//  }
+//  return ret;
+//}
 
 #endif // TL_HAVE_GDAL
 
@@ -431,65 +431,65 @@ std::vector<int> gdalBandOrder(int channels)
  * \param channels Número de canales
  * \return Tipo de OpenCV
  */
-int gdalToOpenCv(GDALDataType gdalType, int channels)
-{
-  int depth;
-  if (gdalType == GDT_Byte)
-    depth = CV_8U;
-  else if (gdalType == GDT_UInt16)
-    depth = CV_16U;
-  else if (gdalType == GDT_Int16)
-    depth = CV_16S;
-  else if (gdalType == GDT_UInt32)
-    depth = CV_32S;
-  else if (gdalType == GDT_Int32)
-    depth = CV_32S;
-  else if (gdalType == GDT_Float32)
-    depth = CV_32F;  
-  else if (gdalType == GDT_Float64)
-    depth = CV_64F; 
-  //else if (gdalType == GDT_CInt16)
-  //  depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
-  //else if (gdalType == GDT_CInt32)
-  //  depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
-  //else if (gdalType == GDT_CFloat32)
-  //  depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
-  //else if (gdalType == GDT_CFloat64)
-  //  depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
-  else
-    depth = -1;
-  return(CV_MAKETYPE(depth, channels));
-}
+//int gdalToOpenCv(GDALDataType gdalType, int channels)
+//{
+//  int depth;
+//  if (gdalType == GDT_Byte)
+//    depth = CV_8U;
+//  else if (gdalType == GDT_UInt16)
+//    depth = CV_16U;
+//  else if (gdalType == GDT_Int16)
+//    depth = CV_16S;
+//  else if (gdalType == GDT_UInt32)
+//    depth = CV_32S;
+//  else if (gdalType == GDT_Int32)
+//    depth = CV_32S;
+//  else if (gdalType == GDT_Float32)
+//    depth = CV_32F;  
+//  else if (gdalType == GDT_Float64)
+//    depth = CV_64F; 
+//  //else if (gdalType == GDT_CInt16)
+//  //  depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
+//  //else if (gdalType == GDT_CInt32)
+//  //  depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
+//  //else if (gdalType == GDT_CFloat32)
+//  //  depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
+//  //else if (gdalType == GDT_CFloat64)
+//  //  depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
+//  else
+//    depth = -1;
+//  return(CV_MAKETYPE(depth, channels));
+//}
 
 
-/*!
- * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
- * \param cvdt Profundidad de bits
- * \return GDALDataType
- */
-GDALDataType openCvToGdal(int cvdt)
-{
-  GDALDataType ret;
-  
-  if (cvdt == CV_8U)  
-    ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
-  else if (cvdt == CV_8S)  
-    ret = GDT_Byte;      //  CV_8S  == 1     GDT_Byte == 1
-  else if (cvdt == CV_16U)  
-    ret = GDT_UInt16;    //  CV_16U == 2     GDT_UInt16 == 2
-  else if (cvdt == CV_16S)  
-    ret = GDT_Int16;     //  CV_16S == 3     GDT_Int16 == 3
-  else if (cvdt == CV_32S)  
-    ret = GDT_Int32;     //  CV_32S == 4     GDT_Int32 == 5
-  else if (cvdt == CV_32F)  
-    ret = GDT_Float32;   //  CV_32F == 5     GDT_Float32 == 6
-  else if (cvdt == CV_64F)  
-    ret = GDT_Float64;   //  CV_64F == 6     GDT_Float64 == 7
-  else                        
-    ret = GDT_Unknown;   //                  GDT_Unknown == 0
-  
-  return(ret);
-}
+///*!
+// * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
+// * \param cvdt Profundidad de bits
+// * \return GDALDataType
+// */
+//GDALDataType openCvToGdal(int cvdt)
+//{
+//  GDALDataType ret;
+//  
+//  if (cvdt == CV_8U)  
+//    ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
+//  else if (cvdt == CV_8S)  
+//    ret = GDT_Byte;      //  CV_8S  == 1     GDT_Byte == 1
+//  else if (cvdt == CV_16U)  
+//    ret = GDT_UInt16;    //  CV_16U == 2     GDT_UInt16 == 2
+//  else if (cvdt == CV_16S)  
+//    ret = GDT_Int16;     //  CV_16S == 3     GDT_Int16 == 3
+//  else if (cvdt == CV_32S)  
+//    ret = GDT_Int32;     //  CV_32S == 4     GDT_Int32 == 5
+//  else if (cvdt == CV_32F)  
+//    ret = GDT_Float32;   //  CV_32F == 5     GDT_Float32 == 6
+//  else if (cvdt == CV_64F)  
+//    ret = GDT_Float64;   //  CV_64F == 6     GDT_Float64 == 7
+//  else                        
+//    ret = GDT_Unknown;   //                  GDT_Unknown == 0
+//  
+//  return(ret);
+//}
 
 #endif // TL_HAVE_OPENCV
 

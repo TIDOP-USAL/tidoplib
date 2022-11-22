@@ -43,6 +43,73 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+DataType gdalConvertDataType(GDALDataType dataType)
+{
+  DataType ret;
+  switch (dataType) {
+  case GDT_Byte:
+    ret = DataType::TL_8U;
+    break;
+  case GDT_UInt16:
+    ret = DataType::TL_16U;
+    break;
+  case GDT_Int16:
+    ret = DataType::TL_16S;
+    break;
+  case GDT_UInt32:
+    ret = DataType::TL_32U;
+    break;
+  case GDT_Int32:
+    ret = DataType::TL_32S;
+    break;
+  case GDT_Float32:
+    ret = DataType::TL_32F;
+    break;
+  case GDT_Float64:
+    ret = DataType::TL_64F;
+    break;
+  default:
+    ret = DataType::TL_8U;
+    break;
+  }
+  return ret;
+}
+
+/*!
+ * \brief Obtiene el tipo de dato de OpenCV
+ * \param gdalType Tipo de GDAL
+ * \param channels Número de canales
+ * \return Tipo de OpenCV
+ */
+int gdalToOpenCv(GDALDataType gdalType, int channels)
+{
+  int depth;
+  if(gdalType == GDT_Byte)
+    depth = CV_8U;
+  else if(gdalType == GDT_UInt16)
+    depth = CV_16U;
+  else if(gdalType == GDT_Int16)
+    depth = CV_16S;
+  else if(gdalType == GDT_UInt32)
+    depth = CV_32S;
+  else if(gdalType == GDT_Int32)
+    depth = CV_32S;
+  else if(gdalType == GDT_Float32)
+    depth = CV_32F;
+  else if(gdalType == GDT_Float64)
+    depth = CV_64F;
+  //else if (gdalType == GDT_CInt16)
+  //  depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
+  //else if (gdalType == GDT_CInt32)
+  //  depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
+  //else if (gdalType == GDT_CFloat32)
+  //  depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
+  //else if (gdalType == GDT_CFloat64)
+  //  depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
+  else
+    depth = -1;
+  return(CV_MAKETYPE(depth, channels));
+}
 
 ImageReader::ImageReader(tl::Path file)
   : mFile(std::move(file))

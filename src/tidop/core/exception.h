@@ -177,7 +177,7 @@ TL_EXPORT void printException(const std::exception &e, int level = 0);
   */
 #define TL_THROW_EXCEPTION_WITH_NESTED(...) std::throw_with_nested(tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION))
 
-#define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " MESSAGE)
+#define TL_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " __VA_ARGS__)
 
 /*! \} */ // end of core
 
