@@ -70,10 +70,6 @@ public:
    */
   static void init();
 
-private:
-
-  static std::once_flag init_flag;
-
 };
 
 #endif // TL_HAVE_GDAL

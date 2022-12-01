@@ -79,9 +79,7 @@ msgProperties messageProperties(MessageLevel msgLevel)
 
 
 EnumFlags<MessageLevel> Console::sLevel = MessageLevel::msg_error;
-std::unique_ptr<Console> Console::sObjConsole;
 std::mutex Console::mtx;
-std::once_flag Console::sInitFlag;
 
 Console::Console()
 #ifdef TL_MESSAGE_HANDLER
@@ -102,12 +100,8 @@ Console::~Console()
 
 Console &Console::instance()
 {
-  std::call_once(sInitFlag, []() {
-    sObjConsole.reset(new Console());
-  });
-
-
-  return *sObjConsole;
+  static Console console;
+  return console;
 }
 
 EnumFlags<MessageLevel> Console::messageLevel()

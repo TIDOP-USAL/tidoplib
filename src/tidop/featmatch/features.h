@@ -75,7 +75,8 @@ public:
     sift,
     star,
     surf,
-    vgg
+    vgg,
+    user_defined = 100
   };
   
 ///TODO: GLOH -> https://www.robots.ox.ac.uk/~vgg/research/affine/det_eval_files/mikolajczyk_pami2004.pdf

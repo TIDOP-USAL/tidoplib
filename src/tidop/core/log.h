@@ -176,11 +176,6 @@ protected:
 private:
 
   /*!
-   * \brief sObjMessage
-   */
-  static std::unique_ptr<Log> sObjLog;
-
-  /*!
    * \brief Fichero log
    */
   static std::string sLogFile;
@@ -205,7 +200,6 @@ private:
   static std::string sTimeLogFormat;
 
   static std::mutex mtx;
-  static std::once_flag sInitFlag;
 
 #ifdef TL_MESSAGE_HANDLER
   static bool sPauseListener;

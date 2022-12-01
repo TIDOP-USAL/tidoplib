@@ -169,9 +169,12 @@ BoostDescriptor &BoostDescriptor::operator =(BoostDescriptor &&boostDescriptor) 
 
 void BoostDescriptor::update()
 {
-#ifdef HAVE_OPENCV_XFEATURES2D
+  try {
 
-#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
+#ifdef HAVE_OPENCV_XFEATURES2D 
+
+#  if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
+
   int descriptor_type = cv::xfeatures2d::BoostDesc::BGM;
   std::string descriptorType = BoostProperties::descriptorType();
   if (descriptorType == "BGM") {
@@ -190,18 +193,27 @@ void BoostDescriptor::update()
     descriptor_type = cv::xfeatures2d::BoostDesc::BINBOOST_256;
   }
 
-  try {
+  mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
+           BoostProperties::useOrientation(),
+           static_cast<float>(BoostProperties::scaleFactor()));
 
-    mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
-             BoostProperties::useOrientation(),
-             static_cast<float>(BoostProperties::scaleFactor()));
+#  else
+
+    TL_COMPILER_WARNING("Boost Descriptor not supported in OpenCV versions < 3.3")
+    throw TL_ERROR("Boost Descriptor not supported in OpenCV versions < 3.3");
+
+#  endif
+
+#else
+
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Boost Descriptor not supported")
+  throw TL_ERROR("OpenCV not built with extra modules. Boost Descriptor not supported");
+
+#endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
   }
-  
-#endif
-
-#endif
 }
 
 void BoostDescriptor::reset()

@@ -29,19 +29,16 @@
 
 #include <memory>
 
-#include <opencv2/xfeatures2d.hpp>
-
-#include "lss/lss.h"
-
 #include "tidop/featmatch/features.h"
+
+class LSS;
+
 
 namespace tl
 {
 
-
-
 class TL_EXPORT LssProperties
-  : public ILss
+  : public Lss
 {
 public:
 
@@ -79,9 +76,8 @@ private:
 
 public:
 
-  bool extract(const cv::Mat &img,
-               std::vector<cv::KeyPoint> &keyPoints,
-               cv::Mat &descriptors) override;
+  cv::Mat extract(const cv::Mat &img,
+                  std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Feature interface
 
