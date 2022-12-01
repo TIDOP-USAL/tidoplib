@@ -29,7 +29,7 @@
 #include "tidop/core/exception.h"
 
 // filesystem
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
 #include <filesystem>
 #include <functional> 
 #else
@@ -40,7 +40,7 @@
 #include <ostream>
 
 
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
 namespace fs = std::filesystem;
 #else
 namespace fs = boost::filesystem;

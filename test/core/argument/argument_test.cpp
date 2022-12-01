@@ -522,8 +522,6 @@ BOOST_FIXTURE_TEST_CASE(set_and_get_version, CommandTest)
   BOOST_CHECK_EQUAL("1.0.0", cmd_arg_posix2->version());
 }
 
-#if !(__cplusplus >= 201703L)
-
 // En C++20:
 // error C2440: 'inicializando': no se puede realizar la conversión de 'const char [1]' a '_Ty'
 
@@ -627,7 +625,6 @@ BOOST_FIXTURE_TEST_CASE(parseTextWithHyphen, CommandTest)
   BOOST_CHECK(cmd_arg_posix3->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
 }
 
-#endif
 
 BOOST_AUTO_TEST_SUITE_END()
 

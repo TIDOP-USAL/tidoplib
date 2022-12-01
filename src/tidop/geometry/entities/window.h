@@ -243,7 +243,7 @@ Window<Point_t>::Window(const Point_t &pt,
   auto half_width = width / two;
   auto half_height = height / two;
 
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
   if constexpr(std::is_integral<typename Point_t::value_type>::value) {
 #else
   if(std::is_integral<typename Point_t::value_type>::value) {
@@ -272,7 +272,7 @@ Window<Point_t>::Window(const Point_t &pt,
   typename Point_t::value_type two{2};
   auto half_side = side / two;
 
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
   if constexpr(std::is_integral<typename Point_t::value_type>::value) {
 #else
   if(std::is_integral<typename Point_t::value_type>::value) {

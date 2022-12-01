@@ -382,6 +382,8 @@ std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>
   return confussionMatrix;
 }
 
+
+
 /*! \} */ // end of statistic
 
 /*! \} */ // end of math

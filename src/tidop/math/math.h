@@ -144,7 +144,7 @@ constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type gra
 template<typename T> inline
 constexpr T clamp(const T &value, const T &min, const T &max)
 {
-#if (__cplusplus >= 201703L)
+#if (CPP_VERSION >= 17)
   return std::clamp(value, min, max);
 #else
   return std::max(min, std::min(max, value));

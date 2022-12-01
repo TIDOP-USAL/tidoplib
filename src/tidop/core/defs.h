@@ -164,7 +164,6 @@
  */
 #ifdef TL_WARNING_DEPRECATED_METHOD 
 #  if CPP_VERSION >= 14
-//#  if __cplusplus >= 201402L // c++ 14
 #    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " version ": Use " msg " instead")]]
 #  else
 #    ifdef __GNUC__
@@ -224,7 +223,7 @@
 #endif
 //__FUNCSIG__
 
-#  if CPP_VERSION >= 11
+#if CPP_VERSION >= 11
 #  define TL_NOEXCEPT noexcept
 #  define TL_NOEXCEPT_OP(x) noexcept((x))
 #else

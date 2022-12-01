@@ -73,13 +73,13 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CX
 list (APPEND cxx_standard_values C++20)
 endif()
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++23)
-endif()
-
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++26)
-endif()
+#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+#list (APPEND cxx_standard_values C++23)
+#endif()
+#
+#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+#list (APPEND cxx_standard_values C++26)
+#endif()
 
 set(TIDOPLIB_CXX_STANDARD "C++14" CACHE STRING "")
 set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
@@ -170,10 +170,11 @@ set (LIB_TYPE STATIC)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+
+include(CMakeDependentOption)
 include(CompilerInfo)
 include(OperatingSystemInfo)
 include(TidopLibSIMDSupport)
-
 
 
 ##########################################################################
@@ -185,7 +186,7 @@ include(TidopLibSIMDSupport)
 #                                                                        #
 ##########################################################################
 
-include(CMakeDependentOption)
+
 
 message(STATUS "\nTidopLib config:\n")
 
@@ -218,7 +219,6 @@ OPTION (TIDOPLIB_WARNING_TODO                   "Active TODO warning"           
 
 if (TIDOPLIB_USE_SIMD_INTRINSICS)
 
-    set(architectures SSE SSE2 SSE3 SSE4_1 SSE4_2 AVX AVX2)
     find_supported_architectures()
     
     message(STATUS "  [TidopLib] Supported architectures: ${SUPPORTED_ARCHITECTURES}SSE")

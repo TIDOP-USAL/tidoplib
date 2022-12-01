@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -103,11 +103,10 @@ namespace tl
 {
 
 enum class CppVersion {
-  cpp_11 = 11, 
+  //cpp_11 = 11, 
   cpp_14 = 14, 
   cpp_17 = 17, 
-  cpp_20 = 20,
-  cpp_23 = 23
+  cpp_20 = 20
 };
 
 constexpr static CppVersion cpp_version = static_cast<CppVersion>(@CMAKE_CXX_STANDARD@);
