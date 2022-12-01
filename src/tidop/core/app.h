@@ -70,11 +70,6 @@ private:
 
   void init();
 
-private:
-
-  static std::unique_ptr<App> sObjApp;
-  static std::mutex mtx;
-  static std::once_flag sInitFlag;
 };
 
 /*! \} */ // end of core

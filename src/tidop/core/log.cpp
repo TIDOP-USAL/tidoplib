@@ -33,12 +33,10 @@
 namespace tl
 {
 
-std::unique_ptr<Log> Log::sObjLog;
 std::string Log::sLogFile;
 EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
-std::once_flag Log::sInitFlag;
 
 #ifdef TL_MESSAGE_HANDLER
 bool Log::sPauseListener = false;
@@ -55,11 +53,8 @@ Log::~Log() = default;
 
 Log &Log::instance()
 {
-  std::call_once(sInitFlag, []() {
-    sObjLog.reset(new Log());
-  });
-
-  return *sObjLog;
+  static Log log;
+  return log;
 }
 
 EnumFlags<MessageLevel> Log::logLevel()

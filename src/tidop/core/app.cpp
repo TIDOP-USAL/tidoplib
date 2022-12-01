@@ -33,9 +33,9 @@
 namespace tl
 {
 
-std::unique_ptr<App> App::sObjApp;
-std::mutex App::mtx;
-std::once_flag App::sInitFlag;
+//std::unique_ptr<App> App::sObjApp;
+//std::mutex App::mtx;
+//std::once_flag App::sInitFlag;
 
 App::App()
 {
@@ -44,11 +44,13 @@ App::App()
 
 App &App::instance()
 {
-  std::call_once(sInitFlag, []() {
-    sObjApp.reset(new App());
-  });
+  //std::call_once(sInitFlag, []() {
+  //  sObjApp.reset(new App());
+  //});
 
-  return *sObjApp;
+  //return *sObjApp;
+  static App app;
+  return app;
 }
 
 tl::Path App::path() const

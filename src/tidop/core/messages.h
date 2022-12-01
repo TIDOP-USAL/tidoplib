@@ -310,7 +310,6 @@ private:
   static bool sStopHandler;
 
   static std::mutex sMutex;
-  static std::once_flag sInitFlag;
 };
 
 #ifdef _DEBUG

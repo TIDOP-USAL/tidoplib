@@ -336,9 +336,8 @@ private:
 #endif
   
   static EnumFlags<MessageLevel> sLevel;
-  static std::unique_ptr<Console> sObjConsole;
   static std::mutex mtx;
-  static std::once_flag sInitFlag;
+
 };
 
 

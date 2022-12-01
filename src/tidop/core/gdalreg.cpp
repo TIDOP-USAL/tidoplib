@@ -41,10 +41,12 @@ namespace tl
 #ifdef TL_HAVE_GDAL
 
 
-std::once_flag RegisterGdal::init_flag;
+
 
 void RegisterGdal::init()
 {
+  static std::once_flag init_flag;
+
   std::call_once(init_flag, []() {
     GDALAllRegister(); 
   });

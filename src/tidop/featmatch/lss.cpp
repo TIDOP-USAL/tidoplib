@@ -26,12 +26,14 @@
 
 #include <tidop/core/messages.h>
 
+#include "lss/lss.h"
+
 namespace tl
 {
 
 
 LssProperties::LssProperties()
-  : ILss()
+  : Lss()
 {
 }
 
@@ -69,10 +71,10 @@ void LssDescriptor::update()
 {
 }
 
-bool LssDescriptor::extract(const cv::Mat &img,
-                            std::vector<cv::KeyPoint> &keyPoints,
-                            cv::Mat &descriptors)
+cv::Mat LssDescriptor::extract(const cv::Mat &img,
+                               std::vector<cv::KeyPoint> &keyPoints)
 {
+  cv::Mat descriptors;
 
   try {
 
@@ -109,12 +111,11 @@ bool LssDescriptor::extract(const cv::Mat &img,
     descriptors = tempDesc;
     keyPoints = lss_key;
 
-  } catch (cv::Exception &e) {
-    msgError("LSS Descriptor error: %s", e.what());
-    return true;
+  } catch(...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
-  return false;
+  return descriptors;
 }
 
 void LssDescriptor::reset()

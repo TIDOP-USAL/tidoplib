@@ -28,6 +28,8 @@
 #include "config_tl.h"
 
 #include <memory>
+#include <string>
+#include <map>
 
 #include <opencv2/features2d.hpp>
 
@@ -41,7 +43,27 @@ namespace tl
  * 
  *  \{
  */
- 
+
+///*!
+// * \brief Features metadata
+// * 
+// */
+//class FeaturesMetadata
+//{
+//
+//public:
+//
+//  FeaturesMetadata();
+//
+//private:
+//
+//  std::string data;
+//  double time; 
+//  std::string detector;
+//  std::map<std::string, std::string> detector_parameters;
+//  std::string descriptor;
+//  std::map<std::string, std::string> descriptor_parameters;
+//};
  
 /*!
  * \brief FeaturesWriter class allows the writing of the detected features in different formats
@@ -58,18 +80,21 @@ public:
 
   void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
   void setDescriptors(const cv::Mat &descriptors);
+  //void setMetadata(const FeaturesMetadata &metadata);
 
 protected:
 
   const tl::Path &filePath() const;
   const std::vector<cv::KeyPoint> &keyPoints() const;
   const cv::Mat &descriptors() const;
+  //const FeaturesMetadata &metadata() const;
 
 private:
 
   tl::Path mFilePath;
   std::vector<cv::KeyPoint> mKeyPoints;
   cv::Mat mDescriptors;
+  //FeaturesMetadata mMetadata;
 };
 
 
@@ -91,6 +116,7 @@ public:
 
   std::vector<cv::KeyPoint> keyPoints() const;
   cv::Mat descriptors() const;
+  //FeaturesMetadata metadata() const;
   tl::Path file() const;
 
 protected:
@@ -98,6 +124,7 @@ protected:
   tl::Path mFilePath;
   std::vector<cv::KeyPoint> mKeyPoints;
   cv::Mat mDescriptors;
+  //FeaturesMetadata mMetadata;
 };
 
 
