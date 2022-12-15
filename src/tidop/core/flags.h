@@ -539,19 +539,19 @@ Flags<T> &Flags<T>::operator = (Flags<T> &&flag) TL_NOEXCEPT
 template<typename T> inline
 bool Flags<T>::isActive(T flag) const
 {
-  return 0 != (mFlag & static_cast<Type>(static_cast<T>(1) << flag));
+  return 0 != (mFlag & T{1} << flag);
 }
 
 template<typename T> inline
 void Flags<T>::flagOn(T flag)
 {
-  mFlag |= static_cast<Type>(static_cast<T>(1) << flag);
+  mFlag |= (T{1} << flag);
 }
 
 template<typename T> inline
 void Flags<T>::flagOff(T flag)
 {
-  mFlag &= ~static_cast<Type>(static_cast<T>(1) << flag);
+  mFlag &= ~(T{1} << flag);
 }
 
 template<typename T> inline
@@ -566,7 +566,7 @@ void Flags<T>::switchFlag(T flag)
 template<typename T> inline
 void Flags<T>::clear()
 {
-  mFlag = static_cast<Type>(0);
+  mFlag = T{0};
 }
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
@@ -580,7 +580,7 @@ T Flags<T>::getFlags() const
 template<typename T> inline
 T Flags<T>::flags() const
 {
-  return static_cast<T>(mFlag);
+  return mFlag;
 }
 
 /*! \} */ // end of core

@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(EnumFlags_switchFlag)
 BOOST_AUTO_TEST_CASE(Flags_8_constructor)
 {
   Flags_8 flag8;
-  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag8.flags()));
+  BOOST_CHECK_EQUAL(0, flag8.flags());
   for (int i = 0; i < 8; i++)
     BOOST_CHECK_EQUAL(false, flag8.isActive(i));
 }
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(Flags_8_constructor)
 BOOST_AUTO_TEST_CASE(Flags_16_constructor)
 {
   Flags_16 flag16;
-  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag16.flags()));
+  BOOST_CHECK_EQUAL(0, flag16.flags());
   for (int i = 0; i < 16; i++)
     BOOST_CHECK_EQUAL(false, flag16.isActive(i));
 }
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(Flags_16_constructor)
 BOOST_AUTO_TEST_CASE(Flags_32_constructor)
 {
   Flags_32 flag32;
-  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag32.flags()));
+  BOOST_CHECK_EQUAL(0, flag32.flags());
   for (int i = 0; i < 32; i++)
     BOOST_CHECK_EQUAL(false, flag32.isActive(i));
 }
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(Flags_32_constructor)
 BOOST_AUTO_TEST_CASE(Flags_64_constructor)
 {
   Flags_64 flag64;
-  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag64.flags()));
+  BOOST_CHECK_EQUAL(0, flag64.flags());
   for (int i = 0; i < 64; i++)
     BOOST_CHECK_EQUAL(false, flag64.isActive(i));
 }

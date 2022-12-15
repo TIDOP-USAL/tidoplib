@@ -213,38 +213,36 @@ struct PackedTraits<Packed<uint64_t>>
 };
 
 
+
 template<typename T>
-class PackedBase
+class Packed
 {
 
 public:
 
-  using value_type = typename PackedTraits<T>::value_type;
-  using simd_type = typename PackedTraits<T>::simd_type;
+  using value_type = typename PackedTraits<Packed<T>>::value_type;
+  using simd_type = typename PackedTraits<Packed<T>>::simd_type;
 
 public:
 
-  explicit PackedBase() = default;
-  explicit PackedBase(const PackedBase &packed);
-  explicit PackedBase(PackedBase &&packed) TL_NOEXCEPT;
-  explicit PackedBase(const simd_type &packed);
-  explicit PackedBase(value_type scalar);
+  Packed() = default;
+  Packed(const Packed &packed);
+  Packed(Packed &&packed) TL_NOEXCEPT;
+  Packed(const typename PackedTraits<Packed<T>>::simd_type &packed);
+  Packed(typename PackedTraits<Packed<T>>::value_type scalar);
 
-  simd_type &loadAligned(const value_type *src);
-  simd_type &loadUnaligned(const value_type *src);
+  void loadAligned(const value_type *src);
+  void loadUnaligned(const value_type *src);
   void storeAligned(value_type *dst) const;
   void storeUnaligned(value_type *dst) const;
 
   void setScalar(value_type value);
 
-  PackedBase<T> &operator=(const PackedBase<T> &packed);
-  PackedBase<T> &operator=(PackedBase<T> &&packed) TL_NOEXCEPT;
-
   /*!
    * \brief  Assignment operator
    * Assign from intrinsic type
    */
-  PackedBase<T> &operator=(const simd_type &packed);
+  Packed<T> &operator=(const simd_type &packed);
 
   /*!
    * \brief Type cast operator to convert to intrinsic type
@@ -252,26 +250,6 @@ public:
   operator simd_type() const;
 
   static constexpr size_t size();
-
-private:
-
-  simd_type mValue;
-
-};
-
-
-template<typename T>
-class Packed
-  : public PackedBase<Packed<T>>
-{
-
-public:
-
-  Packed();
-  Packed(const Packed &packed);
-  Packed(Packed &&packed) TL_NOEXCEPT;
-  Packed(const typename PackedTraits<Packed<T>>::simd_type &packed);
-  Packed(typename PackedTraits<Packed<T>>::value_type scalar);
 
   Packed<T> &operator=(const Packed<T> &packed);
   Packed<T> &operator=(Packed<T> &&packed) TL_NOEXCEPT;
@@ -290,6 +268,10 @@ public:
    * \brief Suma de los elementos de un vector
    */
   T sum();
+
+private:
+
+  simd_type mValue;
 };
 
 
@@ -1200,119 +1182,6 @@ horizontal_sum(const Packed<T> &packed)
 
 /// \endcond
 
-/* PackedBase Implementation */
-
-template<typename T>
-PackedBase<T>::PackedBase(const typename PackedBase<T>::simd_type &packed)
-  : mValue(packed)
-{
-}
-
-template<typename T>
-PackedBase<T>::PackedBase(const PackedBase<T> &packed)
-  : mValue(packed.mValue)
-{
-}
-
-template<typename T>
-PackedBase<T>::PackedBase(PackedBase<T> &&packed) TL_NOEXCEPT
-  : mValue(std::move(packed.mValue))
-{
-}
-
-template<typename T>
-PackedBase<T>::PackedBase(typename PackedBase<T>::value_type scalar)
-  : mValue(internal::set(scalar))
-{
-}
-
-template<typename T> inline
-typename PackedBase<T>::simd_type &PackedBase<T>::loadAligned(const value_type *src)
-{
-  mValue = internal::loadPackedAligned(src);
-  return mValue; // TODO: para que devolver una referencia
-}
-
-template<typename T> inline
-typename PackedBase<T>::simd_type &PackedBase<T>::loadUnaligned(const value_type *src)
-{
-  mValue = internal::loadPackedUnaligned(src);
-  return mValue;
-}
-
-template<typename T> inline
-void PackedBase<T>::storeAligned(value_type *dst) const
-{
-  internal::storePackedAligned(dst, mValue);
-}
-
-template<typename T> inline
-void PackedBase<T>::storeUnaligned(value_type *dst) const
-{
-  internal::storePackedUnaligned(dst, mValue);
-}
-
-template<typename T> inline
-void PackedBase<T>::setScalar(value_type value)
-{
-  mValue = internal::set(value);
-}
-
-template<typename T> inline
-PackedBase<T> &PackedBase<T>::operator=(const PackedBase<T> &packed)
-{
-  if(this != &packed) {
-    mValue = packed.mValue;
-  }
-
-  return *this;
-}
-
-template<typename T> inline
-PackedBase<T> &PackedBase<T>::operator=(PackedBase<T> &&packed) TL_NOEXCEPT
-{
-  if(this != &packed) {
-    mValue = std::move(packed.mValue);
-  }
-
-  return *this;
-}
-
-template<typename T> inline
-PackedBase<T> &PackedBase<T>::operator=(const typename PackedBase<T>::simd_type &packed)
-{
-  mValue = packed;
-  return *this;
-}
-
-template<typename T> inline
-constexpr size_t PackedBase<T>::size()
-{
-  return PackedTraits<T>::size;
-}
-
-template<typename T> inline
-PackedBase<T>::operator simd_type() const
-{
-  return mValue;
-}
-
-//template<typename T>
-//inline PackedBase<T> operator+(const PackedBase<T> &packed,
-//                               const typename PackedTraits<T>::type &scalar)
-//{
-//  return packed() + T(scalar);
-//}
-//
-//template<typename T>
-//inline PackedBase<T> operator+(const typename PackedTraits<T>::type &scalar,
-//                               const PackedBase<T> &packed)
-//{
-//  return T(scalar) + packed();
-//}
-
-
-
 
 /* Packed Implementation */
 
@@ -1414,41 +1283,85 @@ Packed<T> operator/(T scalar, const Packed<T> &packed)
   return Packed<T>(scalar) / packed;
 }
 
-template<typename T> inline
-Packed<T>::Packed()
-  : PackedBase<Packed<T>>()
-{
-}
 
 template<typename T> inline
 Packed<T>::Packed(const Packed &packed)
-  : PackedBase<Packed<T>>(packed)
+  : mValue(packed.mValue)
 {
 }
 
 template<typename T> inline
 Packed<T>::Packed(Packed &&packed) TL_NOEXCEPT
-  : PackedBase<Packed<T>>(std::forward<PackedBase<Packed<T>>>(packed))
+  : mValue(std::move(packed.mValue))
 {
 }
 
 template<typename T> inline
 Packed<T>::Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
-  : PackedBase<Packed<T>>(packed)
+  : mValue(packed)
 {
 }
 
 template<typename T> inline
 Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
-  : PackedBase<Packed<T>>(scalar)
+  : mValue(internal::set(scalar))
 {
+}
+
+template<typename T> inline
+void Packed<T>::loadAligned(const value_type *src)
+{
+  mValue = internal::loadPackedAligned(src);
+}
+
+template<typename T> inline
+void Packed<T>::loadUnaligned(const value_type *src)
+{
+  mValue = internal::loadPackedUnaligned(src);
+}
+
+template<typename T> inline
+void Packed<T>::storeAligned(value_type *dst) const
+{
+  internal::storePackedAligned(dst, mValue);
+}
+
+template<typename T> inline
+void Packed<T>::storeUnaligned(value_type *dst) const
+{
+  internal::storePackedUnaligned(dst, mValue);
+}
+
+template<typename T> inline
+void Packed<T>::setScalar(value_type value)
+{
+  mValue = internal::set(value);
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator=(const typename Packed<T>::simd_type &packed)
+{
+  mValue = packed;
+  return *this;
+}
+
+template<typename T> inline
+constexpr size_t Packed<T>::size()
+{
+  return PackedTraits<Packed<T>>::size;
+}
+
+template<typename T> inline
+Packed<T>::operator simd_type() const
+{
+  return mValue;
 }
 
 template<typename T> inline
 Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
 {
   if(this != &packed) {
-    PackedBase<Packed<T>>::operator = (packed);
+    mValue = packed;
   }
 
   return *this;
@@ -1458,7 +1371,7 @@ template<typename T> inline
 Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
 {
   if(this != &packed) {
-    PackedBase<Packed<T>>::operator = (std::forward<PackedBase<Packed<T>>>(packed));
+    mValue = std::move(packed);
   }
 
   return *this;
