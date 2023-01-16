@@ -598,11 +598,11 @@ void ROCCurve<T>::compute(size_t steeps)
   T threshold = min;
   for (size_t i = 0; i < steeps; i++) {
 
-    std::map<typename PRCurve<T>::Classification,size_t> confussionMatrix = this->confusionMatrix(threshold);
-    double fpr = this->falsePositiveRate(confussionMatrix[PRCurve<T>::Classification::false_positives],
-                                         confussionMatrix[PRCurve<T>::Classification::true_negatives]);
-    double tpr = this->truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives], 
-                                        confussionMatrix[PRCurve<T>::Classification::false_negatives]);
+    std::map<typename ROCCurve<T>::Classification,size_t> confussionMatrix = this->confusionMatrix(threshold);
+    double fpr = this->falsePositiveRate(confussionMatrix[ROCCurve<T>::Classification::false_positives],
+                                         confussionMatrix[ROCCurve<T>::Classification::true_negatives]);
+    double tpr = this->truePositiveRate(confussionMatrix[ROCCurve<T>::Classification::true_positives],
+                                        confussionMatrix[ROCCurve<T>::Classification::false_negatives]);
     this->mCurve.emplace_back(fpr, tpr);
     threshold += step;
   }
@@ -632,11 +632,11 @@ void ROCCurve<T>::compute()
   this->mCurve.resize(0);
 
   for (auto &data : this->mData) {
-    std::map<typename PRCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
-    double fpr = this->falsePositiveRate(confussionMatrix[PRCurve<T>::Classification::false_positives], 
-                                         confussionMatrix[PRCurve<T>::Classification::true_negatives]);
-    double tpr = this->truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives],
-                                        confussionMatrix[PRCurve<T>::Classification::false_negatives]);
+    std::map<typename ROCCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
+    double fpr = this->falsePositiveRate(confussionMatrix[ROCCurve<T>::Classification::false_positives],
+                                         confussionMatrix[ROCCurve<T>::Classification::true_negatives]);
+    double tpr = this->truePositiveRate(confussionMatrix[ROCCurve<T>::Classification::true_positives],
+                                        confussionMatrix[ROCCurve<T>::Classification::false_negatives]);
     this->mCurve.emplace_back(fpr, tpr);
   }
 
@@ -686,10 +686,10 @@ void DETCurve<T>::compute(size_t steeps)
   for (size_t i = 0; i < steeps; i++) {
 
     std::map<typename DETCurve<T>::Classification,size_t> confussionMatrix = this->confusionMatrix(threshold);
-    double fpr = this->falsePositiveRate(confussionMatrix[PRCurve<T>::Classification::false_positives],
-                                         confussionMatrix[PRCurve<T>::Classification::true_negatives]);
+    double fpr = this->falsePositiveRate(confussionMatrix[DETCurve<T>::Classification::false_positives],
+                                         confussionMatrix[DETCurve<T>::Classification::true_negatives]);
     double fnr = this->falseNegativeRate(confussionMatrix[DETCurve<T>::Classification::false_negatives], 
-                                         confussionMatrix[PRCurve<T>::Classification::true_positives]);
+                                         confussionMatrix[DETCurve<T>::Classification::true_positives]);
     this->mCurve.emplace_back(fpr, fnr);
     threshold += step;
   }
@@ -719,10 +719,10 @@ void DETCurve<T>::compute()
 
   for (auto &data : this->mData) {
     std::map<typename DETCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
-    double fpr = this->falsePositiveRate(confussionMatrix[PRCurve<T>::Classification::false_positives],
-                                         confussionMatrix[PRCurve<T>::Classification::true_negatives]);
+    double fpr = this->falsePositiveRate(confussionMatrix[DETCurve<T>::Classification::false_positives],
+                                         confussionMatrix[DETCurve<T>::Classification::true_negatives]);
     double fnr = this->falseNegativeRate(confussionMatrix[DETCurve<T>::Classification::false_negatives],
-                                         confussionMatrix[PRCurve<T>::Classification::true_positives]);
+                                         confussionMatrix[DETCurve<T>::Classification::true_positives]);
     this->mCurve.emplace_back(fpr, fnr);
   }
 
