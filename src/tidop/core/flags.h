@@ -491,21 +491,21 @@ template<typename T>
 Flags<T>::Flags()
   : mFlag(0)
 {
-  static_assert(std::is_integral<T>::value, "Float point type not supported");
+  static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T> inline
 Flags<T>::Flags(const Flags &flag) 
   : mFlag(flag.mFlag)
 {
-  static_assert(std::is_integral<T>::value, "Float point type not supported");
+  static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T>
 Flags<T>::Flags(Flags &&flag) TL_NOEXCEPT
   : mFlag(flag.mFlag)
 {
-  static_assert(std::is_integral<T>::value, "Float point type not supported");
+  static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T> inline

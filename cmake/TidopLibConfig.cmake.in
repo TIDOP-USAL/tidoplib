@@ -33,23 +33,19 @@ set(TidopLib_INCLUDE_DIRS "@INCLUDE_DIRS_TIDOP@")
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
-set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
+set(Boost_DIR "@Boost_DIR@" CACHE PATH "The directory containing BoostConfig.cmake")
 
-find_dependency(Boost REQUIRED)
-#include_directories(${Boost_INCLUDE_DIRS})
-
+find_dependency(Boost QUIET REQUIRED filesystem system)
 
 if(@TL_HAVE_GDAL@)
   set(GDAL_ROOT "" CACHE PATH "GDAL root directory")
   get_filename_component(GDAL_ROOT "@GDAL_INCLUDE_DIR@" PATH)
   find_dependency(GDAL QUIET)
-  #include_directories(${GDAL_INCLUDE_DIR})
 endif()
 
 if(@TL_HAVE_PROJ4@)
   set(PROJ4_DIR "@PROJ4_DIR@" CACHE PATH "The directory containing PROJ4Config.cmake")
   find_dependency(PROJ4 QUIET)
-  #include_directories(${PROJ4_INCLUDE})
 endif()
 
 if(@TL_HAVE_OPENCV@)
@@ -60,7 +56,6 @@ endif()
 if(@TL_HAVE_OPENBLAS@)
   set(OpenBLAS_DIR "@OpenBLAS_DIR@" CACHE PATH "The directory containing OpenBLASConfig.cmake")
   find_dependency(OpenBLAS QUIET)
-  #include_directories(${OpenBLAS_INCLUDE_DIRS})
 endif()
 
 if(@TL_HAVE_OPENMP@)
