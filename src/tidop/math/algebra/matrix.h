@@ -3738,6 +3738,7 @@ Vector<T> operator / (const MatrixCol<T> &col,
 
 template<typename T>
 class MatrixBlock
+  //: public Matrix<T>
 {
 
 public:
@@ -3791,6 +3792,20 @@ public:
     return *this;
   }
   
+  //reference at(size_t r, size_t c)
+  //{
+  //  if (mEndRow - mIniRow < r || mEndCol - mIniCol < c) throw std::out_of_range("Matrix block out of range");
+
+  //  return (*this)(r, c);
+  //}
+
+  //const_reference at(size_t r, size_t c) const
+  //{
+  //  if (mEndRow - mIniRow < r || mEndCol - mIniCol < c) throw std::out_of_range("Matrix block out of range");
+
+  //  return (*this)(r , c);
+  //}
+
   reference operator()(size_t row, size_t col)
   {
     return mData[(mIniRow + row) * mCols + col + mIniCol];

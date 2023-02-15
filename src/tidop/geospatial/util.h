@@ -58,7 +58,10 @@ TL_EXPORT int utmZoneFromLongitude(double longitude);
 constexpr auto CONSECUTIVE_MISS = 15;
 
 template<typename Point_t> inline
-Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon, const Window<Point_t> bounds, double nCells, double mCells)
+Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon, 
+                                      const Window<Point_t> bounds, 
+                                      double nCells, 
+                                      double mCells)
 {
   Point_t pia = bounds.center();
   Point_t tmp{};
@@ -70,13 +73,12 @@ Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon, const Win
   // biggest known distance
   double max_distance = 0.;
 
-  int i, j;
   double tmp_distance = TL_DOUBLE_MAX;
-  for (i = 0; i <= nCells; i++) {
+  for (int i = 0; static_cast<double>(i) <= nCells; i++) {
 
     tmp.x = bounds.pt1.x + i * increment_x;
 
-    for (j = 0; j <= mCells; j++) {
+    for (int j = 0; static_cast<double>(j) <= mCells; j++) {
 
       tmp.y = bounds.pt1.y + j * increment_y;
 
@@ -96,7 +98,10 @@ Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon, const Win
 
 // Polo de inaccesibilidad para un poligono 2D
 template<typename Point_t> inline
-void poleOfInaccessibility(const Polygon<Point_t> &polygon, Point_t *pole, double nCells = 20., double mCells = 20.)
+void poleOfInaccessibility(const Polygon<Point_t> &polygon, 
+                           Point_t *pole, 
+                           double nCells = 20., 
+                           double mCells = 20.)
 {
   if (pole == NULL) return;
   Window<Point_t> w = polygon.window();

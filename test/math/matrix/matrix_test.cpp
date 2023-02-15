@@ -2826,9 +2826,35 @@ BOOST_FIXTURE_TEST_CASE(constructor, MatrixBlockTest)
   BOOST_CHECK_EQUAL(7, (*block2)(2, 1));
   BOOST_CHECK_EQUAL(4, (*block2)(2, 2));
   BOOST_CHECK_EQUAL(7, (*block2)(2, 3));
+
 }
 
-
+//BOOST_FIXTURE_TEST_CASE(determinant2x2, MatrixBlockTest)
+//{
+//  BOOST_CHECK_EQUAL(1., block->determinant());
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(at, MatrixBlockTest)
+//{
+//  BOOST_CHECK_EQUAL(1, block->at(0, 0));
+//  BOOST_CHECK_EQUAL(0, block->at(0, 1));
+//  BOOST_CHECK_EQUAL(0, block->at(1, 0));
+//  BOOST_CHECK_EQUAL(1, block->at(1, 1));
+//
+//  BOOST_CHECK_EQUAL(3, block2->at(0, 0));
+//  BOOST_CHECK_EQUAL(2, block2->at(0, 1));
+//  BOOST_CHECK_EQUAL(3, block2->at(0, 2));
+//  BOOST_CHECK_EQUAL(3, block2->at(0, 3));
+//  BOOST_CHECK_EQUAL(3, block2->at(1, 0));
+//  BOOST_CHECK_EQUAL(3, block2->at(1, 1));
+//  BOOST_CHECK_EQUAL(7, block2->at(1, 2));
+//  BOOST_CHECK_EQUAL(6, block2->at(1, 3));
+//  BOOST_CHECK_EQUAL(5, block2->at(2, 0));
+//  BOOST_CHECK_EQUAL(7, block2->at(2, 1));
+//  BOOST_CHECK_EQUAL(4, block2->at(2, 2));
+//  BOOST_CHECK_EQUAL(7, block2->at(2, 3));
+//
+//}
 
 /* Operaciones unarias */
 
