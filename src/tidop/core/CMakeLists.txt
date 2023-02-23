@@ -63,7 +63,8 @@ if(BUILD_TL_CORE)
                 path.cpp
                 path.h
                 xml.cpp
-                xml.h)
+                xml.h
+                endian.h)
 
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
