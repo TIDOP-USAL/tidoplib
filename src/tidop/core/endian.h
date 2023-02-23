@@ -46,7 +46,7 @@ enum class endianness
 #ifdef _WIN32
   little_endian,
   big_endian,
-  native = big_endian
+  native = little_endian
 #else
   little_endian = __ORDER_LITTLE_ENDIAN__,
   little_endian = __ORDER_BIG_ENDIAN__,
