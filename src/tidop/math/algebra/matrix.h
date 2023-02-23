@@ -754,6 +754,8 @@ public:
    */
   Matrix &operator *=(T scalar);
 
+  Matrix &operator /=(T scalar);
+
 private:
 
 
@@ -2550,6 +2552,45 @@ Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator *= (T scalar)
   return *this;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator /= (T scalar)
+{
+  size_t size = this->rows() * this->cols();
+
+#ifndef TL_HAVE_SIMD_INTRINSICS
+
+  for (size_t i = 0; i < size; ++i) {
+    (*this)(i) /= scalar;
+  }
+
+#else
+
+  using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b(scalar);
+
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_size = size - size % packed_size;
+
+  size_t i{0};
+  for (; i < max_size; i += packed_size) {
+
+    packed_a.loadUnaligned(&(*this)(i));
+    packed_a /= packed_b;
+    packed_a.storeUnaligned(&(*this)(i));
+  }
+
+  for (; i < size; ++i) {
+    (*this)(i) /= scalar;
+  }
+
+#endif
+
+  return *this;
+}
+
+
 /* Operaciones unarias */
 
 template<typename T, size_t _rows, size_t _cols> inline  static
@@ -2674,6 +2715,22 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
   return matrix1;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix1,
+                                    Matrix<T, _rows, _cols> &&matrix2)
+{
+  matrix2 += matrix1;
+  return matrix2;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
+                                    Matrix<T, _rows, _cols> &&matrix2)
+{
+  matrix1 += matrix2;
+  return matrix1;
+}
+
 /*!
  * \brief Resta de matrices 
  * 
@@ -2724,6 +2781,22 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
                                     const Matrix<T, _rows, _cols> &matrix2)
+{
+  matrix1 -= matrix2;
+  return matrix1;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
+                                    Matrix<T, _rows, _cols> &&matrix2)
+{
+  matrix2 -= matrix1;
+  return -matrix2;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
+                                    Matrix<T, _rows, _cols> &&matrix2)
 {
   matrix1 -= matrix2;
   return matrix1;
@@ -2918,35 +2991,42 @@ Matrix<T, _rows, _cols> operator / (const Matrix<T, _rows, _cols> &matrix, T sca
 }
 
 template<typename T, size_t _rows, size_t _cols> inline static
-Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
+Matrix<T, _rows, _cols> operator / (Matrix<T, _rows, _cols> &&matrix, T scalar)
 {
-  if (scalar != consts::zero<T>) {
-    for (size_t r = 0; r < matrix.rows(); r++) {
-      for (size_t c = 0; c < matrix.cols(); c++) {
-        matrix(r, c) /= scalar;
-      }
-    }
-  } else {
-    matrix = Matrix<T, _rows, _cols>::zero();
-  }
-
+  matrix /= scalar;
   return matrix;
 }
 
-template<typename T> inline static
-Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
-{
-  if (scalar != consts::zero<T>) {
-    for (size_t r = 0; r < matrix.rows(); r++) {
-      for (size_t c = 0; c < matrix.cols(); c++) {
-        matrix(r, c) /= scalar;
-      }
-    }
-  } else {
-    matrix = Matrix<T>::zero(matrix.rows(), matrix.cols());
-  }
-  return matrix;
-}
+//template<typename T, size_t _rows, size_t _cols> inline static
+//Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
+//{
+//  if (scalar != consts::zero<T>) {
+//    for (size_t r = 0; r < matrix.rows(); r++) {
+//      for (size_t c = 0; c < matrix.cols(); c++) {
+//        matrix(r, c) /= scalar;
+//      }
+//    }
+//  } else {
+//    matrix = Matrix<T, _rows, _cols>::zero();
+//  }
+//
+//  return matrix;
+//}
+//
+//template<typename T> inline static
+//Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
+//{
+//  if (scalar != consts::zero<T>) {
+//    for (size_t r = 0; r < matrix.rows(); r++) {
+//      for (size_t c = 0; c < matrix.cols(); c++) {
+//        matrix(r, c) /= scalar;
+//      }
+//    }
+//  } else {
+//    matrix = Matrix<T>::zero(matrix.rows(), matrix.cols());
+//  }
+//  return matrix;
+//}
 
 template<typename T, size_t _rows, size_t _cols> inline static
 bool operator == (const Matrix<T, _rows, _cols> &matrix1,

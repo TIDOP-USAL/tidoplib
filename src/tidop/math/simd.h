@@ -937,7 +937,7 @@ template<typename T> inline
 typename std::enable_if<
   std::is_same<double, T>::value, 
   Packed<T>>::type
-  div(const Packed<T> &packed1, const Packed<T> &packed2)
+div(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   typename PackedTraits<Packed<T>>::simd_type r;
 

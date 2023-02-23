@@ -207,6 +207,12 @@ BOOST_FIXTURE_TEST_CASE(neg, QuaternionTest)
   BOOST_CHECK_EQUAL(-3., neg_d.y);
   BOOST_CHECK_EQUAL(5., neg_d.z);
   BOOST_CHECK_EQUAL(-1., neg_d.w);
+
+  auto neg_move = -Quaterniond::identity();
+  BOOST_CHECK_EQUAL(0., neg_move.x);
+  BOOST_CHECK_EQUAL(0., neg_move.y);
+  BOOST_CHECK_EQUAL(0., neg_move.z);
+  BOOST_CHECK_EQUAL(-1., neg_move.w);
 }
 
 /* */
@@ -218,7 +224,16 @@ BOOST_FIXTURE_TEST_CASE(multiplication, QuaternionTest)
   BOOST_CHECK_EQUAL(  4.f, multi.y);
   BOOST_CHECK_EQUAL(-14.f, multi.z);
   BOOST_CHECK_EQUAL(-16.f, multi.w);
+
+  q *= q2;
+  BOOST_CHECK_EQUAL(6.f, q.x);
+  BOOST_CHECK_EQUAL(4.f, q.y);
+  BOOST_CHECK_EQUAL(-14.f, q.z);
+  BOOST_CHECK_EQUAL(-16.f, q.w);
+
+
 }
+
 BOOST_FIXTURE_TEST_CASE(sum, QuaternionTest)
 {
   Quaternionf sum = q + q2;
@@ -226,7 +241,26 @@ BOOST_FIXTURE_TEST_CASE(sum, QuaternionTest)
   BOOST_CHECK_EQUAL( 4.f, sum.y);
   BOOST_CHECK_EQUAL(-8.f, sum.z);
   BOOST_CHECK_EQUAL( 3.f, sum.w);
+
+  auto sum1 = Quaternionf::identity() + q2;
+  BOOST_CHECK_EQUAL(1.f, sum1.x);
+  BOOST_CHECK_EQUAL(3.f, sum1.y);
+  BOOST_CHECK_EQUAL(-5.f, sum1.z);
+  BOOST_CHECK_EQUAL(2.f, sum1.w);
+
+  auto sum2 = q2 + Quaternionf::identity();
+  BOOST_CHECK_EQUAL(1.f, sum2.x);
+  BOOST_CHECK_EQUAL(3.f, sum2.y);
+  BOOST_CHECK_EQUAL(-5.f, sum2.z);
+  BOOST_CHECK_EQUAL(2.f, sum2.w);
+
+  auto sum3 = Quaternionf::i() + Quaternionf::j();
+  BOOST_CHECK_EQUAL(1.f, sum3.x);
+  BOOST_CHECK_EQUAL(1.f, sum3.y);
+  BOOST_CHECK_EQUAL(0.f, sum3.z);
+  BOOST_CHECK_EQUAL(0.f, sum3.w);
 }
+
 BOOST_FIXTURE_TEST_CASE(sum2, QuaternionTest)
 {
   Quaternionf sum = q;
@@ -244,6 +278,24 @@ BOOST_FIXTURE_TEST_CASE(subtraction, QuaternionTest)
   BOOST_CHECK_EQUAL(-2.f, subtraction.y);
   BOOST_CHECK_EQUAL(2.f, subtraction.z);
   BOOST_CHECK_EQUAL(1.f, subtraction.w);
+
+  auto sub1 = Quaternionf::identity() - q2;
+  BOOST_CHECK_EQUAL(-1.f, sub1.x);
+  BOOST_CHECK_EQUAL(-3.f, sub1.y);
+  BOOST_CHECK_EQUAL(5.f, sub1.z);
+  BOOST_CHECK_EQUAL(0.f, sub1.w);
+
+  auto sub2 = q2 - Quaternionf::identity();
+  BOOST_CHECK_EQUAL(1.f, sub2.x);
+  BOOST_CHECK_EQUAL(3.f, sub2.y);
+  BOOST_CHECK_EQUAL(-5.f, sub2.z);
+  BOOST_CHECK_EQUAL(0.f, sub2.w);
+
+  auto sub3 = Quaternionf::i() - Quaternionf::j();
+  BOOST_CHECK_EQUAL(1.f, sub3.x);
+  BOOST_CHECK_EQUAL(-1.f, sub3.y);
+  BOOST_CHECK_EQUAL(0.f, sub3.z);
+  BOOST_CHECK_EQUAL(0.f, sub3.w);
 }
 BOOST_FIXTURE_TEST_CASE(subtraction2, QuaternionTest)
 {
@@ -262,6 +314,12 @@ BOOST_FIXTURE_TEST_CASE(quaternion_by_scalar, QuaternionTest)
   BOOST_CHECK_EQUAL(2.f, multi.y);
   BOOST_CHECK_EQUAL(-6.f, multi.z);
   BOOST_CHECK_EQUAL(4.f, multi.w);
+
+  Quaternionf q_move = Quaternionf::identity() * 2.f;
+  BOOST_CHECK_EQUAL(0.f, q_move.x);
+  BOOST_CHECK_EQUAL(0.f, q_move.y);
+  BOOST_CHECK_EQUAL(0.f, q_move.z);
+  BOOST_CHECK_EQUAL(2.f, q_move.w);
 }
 
 BOOST_FIXTURE_TEST_CASE(scalar_by_quaternion, QuaternionTest)
@@ -271,6 +329,12 @@ BOOST_FIXTURE_TEST_CASE(scalar_by_quaternion, QuaternionTest)
   BOOST_CHECK_EQUAL(2.f, multi.y);
   BOOST_CHECK_EQUAL(-6.f, multi.z);
   BOOST_CHECK_EQUAL(4.f, multi.w);
+
+  Quaternionf q_move = 2.f * Quaternionf::identity();
+  BOOST_CHECK_EQUAL(0.f, q_move.x);
+  BOOST_CHECK_EQUAL(0.f, q_move.y);
+  BOOST_CHECK_EQUAL(0.f, q_move.z);
+  BOOST_CHECK_EQUAL(2.f, q_move.w);
 }
 
 BOOST_FIXTURE_TEST_CASE(quaternion_divided_by_scalar, QuaternionTest)

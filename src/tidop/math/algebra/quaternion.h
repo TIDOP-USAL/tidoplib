@@ -139,6 +139,13 @@ public:
   // zero, which is considered to be an improbable case.
   Quaternion<T> inverse() const;
 
+  Quaternion &operator *=(const Quaternion &quaternion);
+  Quaternion &operator +=(const Quaternion &quaternion);
+  Quaternion &operator -=(const Quaternion &quaternion);
+
+  Quaternion &operator *=(T scalar);
+  Quaternion &operator /=(T scalar);
+
   /* Factory methods */
 
   /*!
@@ -221,10 +228,10 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 template<typename T>
 Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT
   : RotationBase<T>(Rotation::Type::quaternion),
-    x(std::move(quaternion.x)),
-    y(std::move(quaternion.y)),
-    z(std::move(quaternion.z)),
-    w(std::move(quaternion.w))
+    x(std::exchange(quaternion.x, -std::numeric_limits<T>().max())),
+    y(std::exchange(quaternion.y, -std::numeric_limits<T>().max())),
+    z(std::exchange(quaternion.z, -std::numeric_limits<T>().max())),
+    w(std::exchange(quaternion.w, -std::numeric_limits<T>().max()))
 {
 }
 
@@ -250,10 +257,10 @@ Quaternion<T>& Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT
 {
   if (this != &quaternion){
     RotationBase<T>::operator=(std::forward<RotationBase<T>>(quaternion));
-    this->x = std::move(quaternion.x);
-    this->y = std::move(quaternion.y);
-    this->z = std::move(quaternion.z);
-    this->w = std::move(quaternion.w);
+    this->x = std::exchange(quaternion.x, -std::numeric_limits<T>().max());
+    this->y = std::exchange(quaternion.y, -std::numeric_limits<T>().max());
+    this->z = std::exchange(quaternion.z, -std::numeric_limits<T>().max());
+    this->w = std::exchange(quaternion.w, -std::numeric_limits<T>().max());
   }
 
   return *this;
@@ -284,6 +291,71 @@ Quaternion<T> Quaternion<T>::inverse() const
   T _dot = dot(*this, *this);
   Quaternion<T> inverse = this->conjugate() / _dot;
   return inverse;
+}
+
+template<typename T>
+Quaternion<T> &Quaternion<T>::operator *= (const Quaternion<T> &quaternion)
+{
+  Quaternion<T> copy = *this;
+
+  this->x = copy.x * quaternion.w + copy.y * quaternion.z - copy.z * quaternion.y + copy.w * quaternion.x;
+  this->y = -copy.x * quaternion.z + copy.y * quaternion.w + copy.z * quaternion.x + copy.w * quaternion.y;
+  this->z = copy.x * quaternion.y - copy.y * quaternion.x + copy.z * quaternion.w + copy.w * quaternion.z;
+  this->w = -copy.x * quaternion.x - copy.y * quaternion.y - copy.z * quaternion.z + copy.w * quaternion.w;
+
+  return *this;
+}
+
+template<typename T>
+Quaternion<T> &Quaternion<T>::operator += (const Quaternion<T> &quaternion)
+{
+  this->x += quaternion.x;
+  this->y += quaternion.y;
+  this->z += quaternion.z;
+  this->w += quaternion.w;
+
+  return *this;
+}
+
+template<typename T>
+Quaternion<T> &Quaternion<T>::operator -= (const Quaternion<T> &quaternion)
+{
+  this->x -= quaternion.x;
+  this->y -= quaternion.y;
+  this->z -= quaternion.z;
+  this->w -= quaternion.w;
+
+  return *this;
+}
+
+template<typename T>
+Quaternion<T> &Quaternion<T>::operator *= (T scalar)
+{
+  this->x *= scalar;
+  this->y *= scalar;
+  this->z *= scalar;
+  this->w *= scalar;
+
+  return *this;
+}
+
+template<typename T>
+Quaternion<T> &Quaternion<T>::operator /= (T scalar)
+{
+  if (scalar != consts::zero<T>) {
+    this->x /= scalar;
+    this->y /= scalar;
+    this->z /= scalar;
+    this->w /= scalar;
+  } else {
+    //¿Devolver excepción?
+    this->x = consts::zero<T>;
+    this->y = consts::zero<T>;
+    this->z = consts::zero<T>;
+    this->w = consts::zero<T>;
+  }
+
+  return *this;
 }
 
 template<typename T>
@@ -351,6 +423,17 @@ Quaternion<T> operator - (const Quaternion<T> &quaternion)
                        -quaternion.w);
 }
 
+template <typename T>
+Quaternion<T> operator - (Quaternion<T> &&quaternion)
+{
+  quaternion.x = -quaternion.x;
+  quaternion.y = -quaternion.y;
+  quaternion.z = -quaternion.z;
+  quaternion.w = -quaternion.w;
+
+  return quaternion;
+}
+
 /* Operaciones entre cuaterniones */
 
 /*!
@@ -363,12 +446,9 @@ template<typename T>
 Quaternion<T> operator *(const Quaternion<T> &quat1, 
                          const Quaternion<T> &quat2)
 {
-  return Quaternion<T>(
-     quat1.x * quat2.w + quat1.y * quat2.z - quat1.z * quat2.y + quat1.w * quat2.x,
-    -quat1.x * quat2.z + quat1.y * quat2.w + quat1.z * quat2.x + quat1.w * quat2.y,
-     quat1.x * quat2.y - quat1.y * quat2.x + quat1.z * quat2.w + quat1.w * quat2.z,
-    -quat1.x * quat2.x - quat1.y * quat2.y - quat1.z * quat2.z + quat1.w * quat2.w
-  );
+  Quaternion<T> quaternion = quat1;
+  quaternion *= quat2;
+  return quaternion;
 }
 
 /*!
@@ -388,15 +468,34 @@ Quaternion<T> operator + (const Quaternion<T> &quat1,
 }
 
 template<typename T>
-Quaternion<T> &operator += (Quaternion<T> &quat1, const Quaternion<T> &quat2)
+Quaternion<T> operator + (Quaternion<T> &&quat1,
+                          const Quaternion<T> &quat2)
 {
-  quat1.x += quat2.x;
-  quat1.y += quat2.y;
-  quat1.z += quat2.z;
-  quat1.w += quat2.w;
-  return quat1;
+  return quat1 += quat2;
 }
 
+template<typename T>
+Quaternion<T> operator + (const Quaternion<T> &quat1,
+                          Quaternion<T> &&quat2)
+{
+  return quat2 += quat1;
+}
+
+template<typename T>
+Quaternion<T> operator + (Quaternion<T> &&quat1,
+                          Quaternion<T> &&quat2)
+{
+  return quat1 += quat2;
+}
+
+/*!
+ * \brief Resta de cuaterniones
+ * La resta de cuaterniones se realiza termino a termino
+ * \f[ q1 = w1+x1i+y1j+z1k \f]
+ * \f[ q2 = w2+x2i+y2j+z2k \f]
+ * \f[ q = q1 - q2 \f]
+ * \f[ q = (w1-w2) + (x1-x2)i + (y1-y2)j + (z1-z2)k \f]
+ */
 template<typename T>
 Quaternion<T> operator - (const Quaternion<T> &quat1, 
                           const Quaternion<T> &quat2)
@@ -406,13 +505,24 @@ Quaternion<T> operator - (const Quaternion<T> &quat1,
 }
 
 template<typename T>
-Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
+Quaternion<T> operator - (Quaternion<T> &&quat1,
+                          const Quaternion<T> &quat2)
 {
-  quat1.x -= quat2.x;
-  quat1.y -= quat2.y;
-  quat1.z -= quat2.z;
-  quat1.w -= quat2.w;
-  return quat1;
+  return quat1 -= quat2;
+}
+
+template<typename T>
+Quaternion<T> operator - (const Quaternion<T> &quat1,
+                          Quaternion<T> &&quat2)
+{
+  return -(quat2 -= quat1);
+}
+
+template<typename T>
+Quaternion<T> operator - (Quaternion<T> &&quat1,
+                          Quaternion<T> &&quat2)
+{
+  return quat1 -= quat2;
 }
 
 template<typename T>
@@ -423,6 +533,13 @@ Quaternion<T> operator * (const Quaternion<T> &quaternion, T scalar)
 }
 
 template<typename T>
+Quaternion<T> operator * (Quaternion<T> &&quaternion, T scalar)
+{
+  quaternion *= scalar;
+  return quaternion;
+}
+
+template<typename T>
 Quaternion<T> operator * (T scalar, const Quaternion<T> &quaternion)
 {
   Quaternion<T> q = quaternion;
@@ -430,12 +547,9 @@ Quaternion<T> operator * (T scalar, const Quaternion<T> &quaternion)
 }
 
 template<typename T>
-Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
+Quaternion<T> operator * (T scalar, Quaternion<T> &&quaternion)
 {
-  quaternion.x *= scalar;
-  quaternion.y *= scalar;
-  quaternion.z *= scalar;
-  quaternion.w *= scalar;
+  quaternion *= scalar;
   return quaternion;
 }
 
@@ -447,6 +561,13 @@ Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
 }
 
 template<typename T>
+Quaternion<T> operator / (Quaternion<T> &&quaternion, T scalar)
+{
+  quaternion /= scalar;
+  return quaternion;
+}
+
+template<typename T>
 Quaternion<T> operator / (T scalar, const Quaternion<T> &quaternion)
 {
   Quaternion<T> q = quaternion;
@@ -454,16 +575,9 @@ Quaternion<T> operator / (T scalar, const Quaternion<T> &quaternion)
 }
 
 template<typename T>
-Quaternion<T> &operator /= (Quaternion<T> &quaternion, T scalar)
+Quaternion<T> operator / (T scalar, Quaternion<T> &&quaternion)
 {
-  if (scalar != consts::zero<T>) {
-    quaternion.x /= scalar;
-    quaternion.y /= scalar;
-    quaternion.z /= scalar;
-    quaternion.w /= scalar;
-  } else {
-    quaternion = Quaternion<T>::zero();
-  }
+  quaternion /= scalar;
   return quaternion;
 }
 
@@ -483,6 +597,25 @@ template<typename T> static inline
 bool operator != (const Quaternion<T> &q1, const Quaternion<T> &q2)
 {
   return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
+}
+
+
+template<typename T>
+std::ostream &operator<< (std::ostream &os, const Quaternion<T> &q)
+{
+  os << "[w=" << q.w << ", x=" << q.x << ", y=" << q.y << ", z=" << q.z << "]";
+  os << std::endl;
+
+  return os;
+}
+
+template<typename T>
+std::ostream &operator<< (std::ostream &os, const Quaternion<T> *q)
+{
+  os << "[w=" << q->w << ", x=" << q->x << ", y=" << q->y << ", z=" << q->z << "]";
+  os << std::endl;
+
+  return os;
 }
 
 /*! \} */ // end of rotations
