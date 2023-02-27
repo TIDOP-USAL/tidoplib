@@ -230,6 +230,8 @@ isNearlyZero(T value)
 }
 
 
+
+
 /*! \} */ // end of math
 
 } // Fin namespace math

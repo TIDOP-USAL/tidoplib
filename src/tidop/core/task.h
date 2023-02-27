@@ -32,6 +32,7 @@
 #include <functional>
 #include <map>
 #include <list>
+#include <queue>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/event.h"
@@ -321,7 +322,8 @@ public:
   ~TaskList() override;
 
   void push_back(const std::shared_ptr<Task> &task);
-  size_t size() const;
+  size_t size() const TL_NOEXCEPT;
+  bool empty() const TL_NOEXCEPT;
 
 // Task interface
 
@@ -341,6 +343,38 @@ private:
 
 };
 
+
+class TaskQueue
+  : public TaskBase
+{
+
+public:
+
+  TaskQueue();
+  ~TaskQueue();
+
+  void push(std::shared_ptr<Task> task);
+  void pop() TL_NOEXCEPT;
+  size_t size() const TL_NOEXCEPT;
+  bool empty() const TL_NOEXCEPT;
+
+// Task interface
+
+public:
+
+  void stop() override;
+
+// TaskBase interface
+
+private:
+
+  virtual void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+  std::queue<std::shared_ptr<Task>> mQueue;
+
+};
 
 
 /* Task Tree */

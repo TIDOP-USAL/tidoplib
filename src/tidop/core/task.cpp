@@ -824,9 +824,14 @@ void TaskList::push_back(const std::shared_ptr<Task> &task)
   mTasks.push_back(task);
 }
 
-size_t tl::TaskList::size() const
+size_t tl::TaskList::size() const TL_NOEXCEPT
 {
   return mTasks.size();
+}
+
+bool tl::TaskList::empty() const TL_NOEXCEPT
+{
+  return mTasks.empty();
 }
 
 void TaskList::stop()
@@ -853,6 +858,66 @@ void TaskList::execute(Progress *progressBar)
   }
 }
 
+
+/* Task Queue */
+
+TaskQueue::TaskQueue()
+  : TaskBase()
+{
+}
+
+TaskQueue::~TaskQueue() = default;
+
+void TaskQueue::push(std::shared_ptr<Task> task)
+{
+  mQueue.push(task);
+
+  if (status() == Status::finalized ||
+      status() == Status::stopped) {
+    setStatus(Status::start);
+  //  setStatus(Status::running);
+  //  // Al ser una cola se vuelve a ejecutar cada vez que se añade un elemento
+  //  run();
+  }
+
+}
+
+void TaskQueue::pop() TL_NOEXCEPT
+{
+  mQueue.pop();
+}
+
+size_t tl::TaskQueue::size() const TL_NOEXCEPT
+{
+  return mQueue.size();
+}
+
+bool tl::TaskQueue::empty() const TL_NOEXCEPT
+{
+  return mQueue.empty();
+}
+
+void TaskQueue::stop()
+{
+  TaskBase::stop();
+
+  if (status() == Status::stopping) {
+    mQueue.front()->stop();
+  }
+}
+
+void TaskQueue::execute(Progress *progressBar)
+{
+  while (!mQueue.empty()) {
+
+    //if (status() == Status::stopping) return;
+
+    mQueue.front()->run();
+
+    //if (progressBar) (*progressBar)();
+    mQueue.pop();
+  }
+}
 
 
 /* Task Tree */

@@ -2400,6 +2400,25 @@ BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixRowTest)
   BOOST_CHECK_CLOSE(0.6, a[3][4], 0.01);
 }
 
+BOOST_FIXTURE_TEST_CASE(asign_vector, MatrixRowTest)
+{
+  Matrix<int, 5, 5> a{{6,8,6,7,3},
+                      {9,6,2,3,3},
+                      {8,3,2,3,3},
+                      {5,3,3,7,6},
+                      {5,5,7,4,7}};
+
+  Vector<int> v{1, 2, 3, 4, 5};
+
+  a.row(0) = v;
+
+  BOOST_CHECK_EQUAL(1, a.row(0)[0]);
+  BOOST_CHECK_EQUAL(2, a.row(0)[1]);
+  BOOST_CHECK_EQUAL(3, a.row(0)[2]);
+  BOOST_CHECK_EQUAL(4, a.row(0)[3]);
+  BOOST_CHECK_EQUAL(5, a.row(0)[4]);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2834,6 +2853,26 @@ BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixColTest)
   BOOST_CHECK_EQUAL(5 / 10., a.col(1)[4]);
 
 }
+
+BOOST_FIXTURE_TEST_CASE(asign_vector, MatrixColTest)
+{
+  Matrix<int, 5, 5> a{{6,8,6,7,3},
+                      {9,6,2,3,3},
+                      {8,3,2,3,3},
+                      {5,3,3,7,6},
+                      {5,5,7,4,7}};
+
+  Vector<int> v{1, 2, 3, 4, 5};
+
+  a.col(0) = v;
+
+  BOOST_CHECK_EQUAL(1, a.col(0)[0]);
+  BOOST_CHECK_EQUAL(2, a.col(0)[1]);
+  BOOST_CHECK_EQUAL(3, a.col(0)[2]);
+  BOOST_CHECK_EQUAL(4, a.col(0)[3]);
+  BOOST_CHECK_EQUAL(5, a.col(0)[4]);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

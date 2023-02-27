@@ -58,6 +58,11 @@ constexpr auto DynamicMatrix = std::numeric_limits<size_t>::max();
  *  \{
  */
 
+enum order
+{
+  row,
+  col
+};
 
 /*! \defgroup algebra Algebra
  *  
@@ -3356,6 +3361,14 @@ public:
     std::fill(begin(), end(), value);
   }
 
+  void operator=(const Vector<T> &vector)
+  {
+    TL_ASSERT(vector.size() == size(), "Invalid vector size");
+
+    for (size_t i = 0; i < size(); i++)
+      (*this)[i] = vector[i];
+  }
+
   MatrixRow<T> &operator += (const MatrixRow<T> &matrixRow)
   {
     TL_ASSERT(this->size() == matrixRow.size(), "");
@@ -3422,6 +3435,33 @@ public:
     return *this;
   }
 
+  MatrixRow<T> &operator += (T scalar)
+  {
+    for (size_t i = 0; i < this->size(); i++) {
+      (*this)[i] += scalar;
+    }
+    return *this;
+  }
+
+  MatrixRow<T> &operator -= (T scalar)
+  {
+    for (size_t i = 0; i < this->size(); i++) {
+      (*this)[i] -= scalar;
+    }
+    return *this;
+  }
+
+  // Solución provisional. MatrixRow debería ser totalmente compatible con vector
+  Vector<T> vector() const
+  {
+    Vector<T> vect(this->size());
+    for (size_t i = 0; i < this->size(); i++) {
+      vect[i] = (*this)[i];
+    }
+
+    return vect;
+  }
+
 private:
 
   T *mData;
@@ -3486,6 +3526,14 @@ public:
   void operator=(T value)
   {
     std::fill(begin(), end(), value);
+  }
+
+  void operator=(const Vector<T> &vector)
+  {
+    TL_ASSERT(vector.size() == size(), "Invalid vector size");
+
+    for (size_t i = 0; i < size(); i++)
+      (*this)[i] = vector[i];
   }
 
   MatrixCol<T> &operator += (const MatrixCol<T> &matrixCol)
@@ -3556,6 +3604,34 @@ public:
     return *this;
   }
 
+  MatrixCol<T> &operator += (T scalar)
+  {
+    for (size_t i = 0; i < this->size(); i++) {
+      (*this)[i] += scalar;
+    }
+
+    return *this;
+  }
+
+  MatrixCol<T> &operator -= (T scalar)
+  {
+    for (size_t i = 0; i < this->size(); i++) {
+      (*this)[i] -= scalar;
+    }
+
+    return *this;
+  }
+
+  // Solución provisional. MatrixCol debería ser totalmente compatible con vector
+  Vector<T> vector() const
+  {
+    Vector<T> vect(this->size());
+    for (size_t i = 0; i < this->size(); i++) {
+      vect[i] = (*this)[i];
+    }
+
+    return vect;
+  }
 
 private:
 
