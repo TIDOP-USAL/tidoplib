@@ -1050,8 +1050,10 @@ BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
 
 /// Suma o adición de matrices
 
+
 BOOST_FIXTURE_TEST_CASE(addition, MatrixTest)
 {
+
   Matrix<double,3,3> mat = mat_ones + _mat_3x3_d;
 
   BOOST_CHECK_EQUAL(2.5, mat[0][0]);
