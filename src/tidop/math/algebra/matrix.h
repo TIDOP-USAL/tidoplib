@@ -27,9 +27,6 @@
 
 #include "config_tl.h"
 
-//#include <vector>
-//#include <array>
-
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
@@ -38,6 +35,8 @@
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
 #include "tidop/math/data.h"
+
+#include <iomanip>
 
 namespace tl
 {
@@ -81,6 +80,8 @@ class MatrixCol;
 template<typename T>
 class MatrixBase;
 
+template<typename T, size_t _rows, size_t _cols>
+class Matrix;
 
 template<typename T, size_t _rows, size_t _cols>
 class MatrixBlock;
@@ -88,24 +89,41 @@ class MatrixBlock;
 
 template<
   template<typename, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
-class MatrixDerived, typename T, size_t _rows, size_t _cols
+  class MatrixDerived, typename T, size_t _rows, size_t _cols
 >
 class MatrixBase<MatrixDerived<T, _rows, _cols>>
 {
 
 public:
 
-  //using value_type = typename MatrixDerived<T, _rows, _cols>::value_type;
-  //  using size_type = size_t;
-  //  using pointer = T *;
-  //  using const_pointer = const T *;
-  //  using reference = T &;
-  //  using const_reference = const T &;
-
-public:
-
   MatrixBase() = default;
   virtual ~MatrixBase() = default;
+
+  /*!
+   * \brief Determinante de la matriz
+   * \return Determinante
+   */
+  T determinant() const
+  {
+    static_assert(_rows == _cols, "Non-Square Matrix");
+
+    auto &derived = this->derived();
+
+    T d = consts::one<T>;
+    size_t rows = derived.rows();
+
+    if (rows == 2) {
+      d = determinant2x2();
+    } else if (rows == 3) {
+      d = determinant3x3();
+    } else if (rows == 4) {
+      d = determinant4x4();
+    } else {
+      d = determinantnxn();
+    }
+
+    return d;
+  }
 
   /*!
    * \brief Adición a una matriz
@@ -403,14 +421,21 @@ public:
     return derived;
   }
 
-  //MatrixBlock<T, _rows, _cols> block(size_t iniRow,
-  //                                   size_t endRow,
-  //                                   size_t iniCol,
-  //                                   size_t endCol)
-  //{
-  //  MatrixDerived<T, _rows, _cols> &mat = (*this)();
-  //  return MatrixBlock<T, _rows, _cols>(mat.data(), mat.rows(), mat.cols(), iniRow, endRow, iniCol, endCol);
-  //}
+  /// Tendria que ser una clase Vector al igual que MatrixCol y MatrixRow
+  /// Por ahora construyo un vector
+  Vector<T> diagonal() const
+  {
+
+    auto &derived = this->derived();
+    size_t size = std::min(derived.rows(), derived.cols());
+    Vector<T> diag_vector(size);
+
+    for (size_t i = 0; i < size; ++i) {
+      diag_vector[i] = derived(i, i);
+    }
+
+    return diag_vector;
+  }
 
 private:
 
@@ -424,6 +449,122 @@ private:
     return *static_cast<const MatrixDerived<T, _rows, _cols> *>(this);
   }
 
+protected:
+
+  T determinant2x2() const
+  {
+    auto &derived = this->derived();
+
+    T det = derived(0, 0) * derived(1, 1) - derived(0, 1) * derived(1, 0);
+
+    return det;
+  }
+
+  T determinant3x3() const
+  {
+    auto &derived = this->derived();
+
+    T m00 = derived(0, 0);
+    T m01 = derived(0, 1);
+    T m02 = derived(0, 2);
+    T m10 = derived(1, 0);
+    T m11 = derived(1, 1);
+    T m12 = derived(1, 2);
+    T m20 = derived(2, 0);
+    T m21 = derived(2, 1);
+    T m22 = derived(2, 2);
+
+    T c00 = m11 * m22 - m12 * m21;
+    T c10 = m12 * m20 - m10 * m22;
+    T c20 = m10 * m21 - m11 * m20;
+
+    T det = m00 * c00 + m01 * c10 + m02 * c20;
+
+    return det;
+  }
+
+  T determinant4x4() const
+  {
+    auto &derived = this->derived();
+
+    T m00 = derived(0, 0);
+    T m01 = derived(0, 1);
+    T m02 = derived(0, 2);
+    T m03 = derived(0, 3);
+    T m10 = derived(1, 0);
+    T m11 = derived(1, 1);
+    T m12 = derived(1, 2);
+    T m13 = derived(1, 3);
+    T m20 = derived(2, 0);
+    T m21 = derived(2, 1);
+    T m22 = derived(2, 2);
+    T m23 = derived(2, 3);
+    T m30 = derived(3, 0);
+    T m31 = derived(3, 1);
+    T m32 = derived(3, 2);
+    T m33 = derived(3, 3);
+
+    T a0 = m00 * m11 - m01 * m10;
+    T a1 = m00 * m12 - m02 * m10;
+    T a2 = m00 * m13 - m03 * m10;
+    T a3 = m01 * m12 - m02 * m11;
+    T a4 = m01 * m13 - m03 * m11;
+    T a5 = m02 * m13 - m03 * m12;
+    T b0 = m20 * m31 - m21 * m30;
+    T b1 = m20 * m32 - m22 * m30;
+    T b2 = m20 * m33 - m23 * m30;
+    T b3 = m21 * m32 - m22 * m31;
+    T b4 = m21 * m33 - m23 * m31;
+    T b5 = m22 * m33 - m23 * m32;
+
+    T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+
+    return det;
+  }
+
+  T determinantnxn() const
+  {
+    auto &derived = this->derived();
+
+    T d = consts::one<T>;
+    size_t rows = derived.rows();
+    size_t cols = derived.cols();
+
+    // constructora 
+    //Matrix<T, DynamicDataStorage, DynamicDataStorage> matrix(derived.data(), rows, cols);
+    Matrix<T, DynamicDataStorage, DynamicDataStorage> matrix = derived;
+
+    for (size_t i = 0; i < rows; ++i) {
+      T pivotElement = matrix(i, i);
+      size_t pivotRow = i;
+      for (size_t r = i + 1; r < rows; ++r) {
+        if (std::abs(matrix(r, i)) > std::abs(pivotElement)) {
+          pivotElement = matrix(r, i);
+          pivotRow = r;
+        }
+      }
+
+      if (pivotElement == consts::zero<T>) {
+        d = consts::zero<T>;
+        break;
+      }
+
+      if (pivotRow != i) {
+        matrix.swapRows(i, pivotRow);
+        d = -d;
+      }
+
+      d *= pivotElement;
+
+      for (size_t r = i + 1; r < rows; ++r) {
+        for (size_t c = i + 1; c < cols; ++c) {
+          matrix(r, c) -= matrix(r, i) * matrix(i, c) / pivotElement;
+        }
+      }
+    }
+
+    return d;
+  }
 };
 
 
@@ -441,12 +582,8 @@ public:
   using reference = T &;
   using const_reference = const T &;
 
-  //enum class data : size_t
-  //{
-  //  size = DataSize<T, _rows, _cols>::size()
-  //};
   enum data
-  {
+  { 
     size = DataSize<T, _rows, _cols>::size()
   };
 
@@ -514,23 +651,23 @@ public:
     if (_rows == DynamicDataStorage && _cols == DynamicDataStorage) {
       this->mRows = 1;
       this->mCols = values.size();
-      _data = Data<T, data::size/*Matrix::dataSize()*/>(values.size());
+      _data = Data<T, data::size>(values.size());
       std::copy(values.begin(), values.end(), _data.begin());
 
     } else {
       
-      _data = Data<T, data::size/*Matrix::dataSize()*/>();
+      _data = Data<T, data::size>();
       this->mRows = _rows;
       this->mCols = _cols;
 
       size_t n = values.size();
-      if (n == _rows * _cols) {
+      if (n == data::size) {
         std::copy(values.begin(), values.end(), _data.begin());
-      } else if (n < _rows * _cols) {
+      } else if (n < data::size) {
         std::copy(values.begin(), values.end(), _data.begin());
         std::fill(_data.begin() + n, _data.end(), consts::zero<T>);
       } else {
-        std::copy(values.begin(), values.begin() + _rows * _cols, _data.begin());
+        std::copy(values.begin(), values.begin() + data::size, _data.begin());
       }
     }
   }
@@ -585,7 +722,7 @@ public:
     }
   }
 
-  Matrix(T *data, size_t rows, size_t cols)
+  Matrix(const T *data, size_t rows, size_t cols)
     : _data(Data<T, data::size>(data, rows * cols)),
       mRows(_rows == DynamicDataStorage ? rows : _rows),
       mCols(_cols == DynamicDataStorage ? cols : _cols)
@@ -605,9 +742,9 @@ public:
   Matrix &operator = (const Matrix &matrix)
   {
     if (this != &matrix) {
-      _data = matrix._data;
-      mRows = matrix.mRows;
-      mCols = matrix.mCols;
+      this->_data = matrix._data;
+      this->mRows = matrix.mRows;
+      this->mCols = matrix.mCols;
     }
 
     return *this;
@@ -620,12 +757,18 @@ public:
   Matrix &operator = (Matrix &&matrix) TL_NOEXCEPT
   {
     if (this != &matrix) {
-      _data = std::move(matrix._data);
-      mRows = std::move(matrix.mRows);
-      mCols = std::move(matrix.mCols);
+      this->_data = std::move(matrix._data);
+      this->mRows = std::move(matrix.mRows);
+      this->mCols = std::move(matrix.mCols);
     }
 
     return *this;
+  }
+
+  operator Matrix<T, DynamicDataStorage, DynamicDataStorage>() const
+  {
+    Matrix<T, DynamicDataStorage, DynamicDataStorage> matrix(this->data(), this->rows(), this->cols());
+    return matrix;
   }
 
   /*!
@@ -643,7 +786,6 @@ public:
    */
   size_t cols() const
   {
-
     return mCols;
   }
 
@@ -708,10 +850,10 @@ public:
   Matrix cofactorMatrix() const;
 
   /*!
- * \brief Determinante de la matriz
- * \return Determinante
- */
-  T determinant() const;
+   * \brief Determinante de la matriz
+   * \return Determinante
+   */
+  //T determinant() const;
 
   /*!
    * \brief Traza de una matriz cuadrada
@@ -774,16 +916,16 @@ public:
   Matrix reducedRowEchelonForm() const;
 
   /*!
+   * \brief Rango de una matriz
+   */
+  int rank() const;
+
+  /*!
    * \brief Intercambia dos filas
    * \param[in] i Primera fila a intercambiar
    * \param[in] j Segunda fila a intercambiar
    */
-  void swapRows(size_t i, size_t j)
-  {
-    for (size_t c = 0; c < mCols; c++) {
-      std::swap(_data[i * mCols + c], _data[j * mCols + c]);
-    }
-  }
+  void swapRows(size_t i, size_t j);
 
   /*!
    * \brief Referencia al elemento en la posición fila (r) y columna (c)
@@ -799,7 +941,6 @@ public:
    */
   reference at(size_t r, size_t c)
   {
-    //return _data.at(r, c);
     return _data.at(r * mCols + c);
   }
 
@@ -815,7 +956,6 @@ public:
    */
   const_reference at(size_t r, size_t c) const
   {
-    //return _data.at(r, c);
     return _data.at(r * mCols + c);
   }
 
@@ -917,38 +1057,50 @@ public:
     return MatrixCol<T>(this->data(), col, this->rows(), this->cols());
   }
 
-  const MatrixBlock<const T, _rows, _cols> block(size_t iniRow,
+  const MatrixBlock<const T, DynamicDataStorage, DynamicDataStorage> block(size_t iniRow,
                                                  size_t endRow,
                                                  size_t iniCol,
                                                  size_t endCol) const
   {
-    return MatrixBlock<const T, _rows, _cols>(this->data(), this->rows(), this->cols(), iniRow, endRow, iniCol, endCol);
+    return MatrixBlock<const T, DynamicDataStorage, DynamicDataStorage>(this->data(),
+                                              this->rows(),
+                                              this->cols(),
+                                              iniRow, 
+                                              endRow, 
+                                              iniCol, 
+                                              endCol);
   }
 
-  MatrixBlock<T, _rows, _cols> block(size_t iniRow,
+  MatrixBlock<T, DynamicDataStorage, DynamicDataStorage> block(size_t iniRow,
                                      size_t endRow,
                                      size_t iniCol,
                                      size_t endCol)
   {
-    return MatrixBlock<T, _rows, _cols>(this->data(), this->rows(), this->cols(), iniRow, endRow, iniCol, endCol);
+    return MatrixBlock<T, DynamicDataStorage, DynamicDataStorage>(this->data(),
+                                        this->rows(), 
+                                        this->cols(), 
+                                        iniRow, 
+                                        endRow,
+                                        iniCol,
+                                        endCol);
   }
 
-  const MatrixBlock<const T, _rows, _cols> rowBlock(size_t iniRow, size_t endRow) const
+  const MatrixBlock<const T, DynamicDataStorage, DynamicDataStorage> rowBlock(size_t iniRow, size_t endRow) const
   {
     return block(iniRow, endRow, 0, this->cols() - 1);
   }
 
-  MatrixBlock<T, _rows, _cols> rowBlock(size_t iniRow, size_t endRow)
+  MatrixBlock<T, DynamicDataStorage, DynamicDataStorage> rowBlock(size_t iniRow, size_t endRow)
   {
     return block(iniRow, endRow, 0, this->cols() - 1);
   }
 
-  const MatrixBlock<const T, _rows, _cols> colBlock(size_t iniCol, size_t endCol) const
+  const MatrixBlock<const T, DynamicDataStorage, DynamicDataStorage> colBlock(size_t iniCol, size_t endCol) const
   {
     return block(0, this->rows() - 1, iniCol, endCol);
   }
 
-  MatrixBlock<T, _rows, _cols> colBlock(size_t iniCol, size_t endCol)
+  MatrixBlock<T, DynamicDataStorage, DynamicDataStorage> colBlock(size_t iniCol, size_t endCol)
   {
     return block(0, this->rows() - 1, iniCol, endCol);
   }
@@ -1091,7 +1243,6 @@ public:
     return matrix;
   }
 
-
   T *data()
   {
     return _data.data();
@@ -1104,10 +1255,10 @@ public:
 
 private:
 
-  T determinant2x2() const;
-  T determinant3x3() const;
-  T determinant4x4() const;
-  T determinantnxn() const;
+  //T determinant2x2() const;
+  //T determinant3x3() const;
+  //T determinant4x4() const;
+  //T determinantnxn() const;
   Matrix inverse2x2(bool *invertibility) const;
   Matrix inverse3x3(bool *invertibility) const;
   Matrix inverse4x4(bool *invertibility) const;
@@ -1117,16 +1268,8 @@ private:
   Matrix adjoint4x4() const;
   Matrix adjointnxn() const;
 
-  //static constexpr size_t dataSize()
-  //{
-  //  return static_cast<size_t>(data::size);
-  //}
-
 private:
 
-  //std::array<T, _rows *_cols> mData;
-  //Data<T, _rows * _cols> _data;
-  //Data<T, static_cast<size_t>(data::size)> _data;
   Data<T, size> _data;
   size_t mRows{_rows};
   size_t mCols{_cols};
@@ -1457,9 +1600,9 @@ public:
 
   MatrixCol(T *data, size_t col, size_t rows, size_t cols)
     : mData(data),
-    mCol(col),
-    mRows(rows),
-    mCols(cols)
+      mCol(col),
+      mRows(rows),
+      mCols(cols)
   {
   }
   ~MatrixCol() = default;
@@ -1852,7 +1995,7 @@ Vector<T> operator / (const MatrixCol<T> &col,
 }
 
 
-template<typename T, size_t _rows = tl::math::DynamicDataStorage, size_t _cols = tl::math::DynamicDataStorage>
+template<typename T, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
 class MatrixBlock
   : public MatrixBase<MatrixBlock<T, _rows, _cols>>
 {
@@ -1886,12 +2029,24 @@ public:
   }
   ~MatrixBlock() = default;
 
-  //MatrixBlock &operator = (const Matrix<T> &block)
-  //{
-  //  for (size_t r = 0; r < rows(); )
+  template<typename T2, size_t _rows2, size_t _cols2>
+  MatrixBlock &operator = (const Matrix<T2, _rows2, _cols2> &matrix)
+  {
+    size_t rows = this->rows();
+    size_t cols = this->cols();
+    size_t rows2 = matrix.rows();
+    size_t cols2 = matrix.cols();
 
-  //  return *this;
-  //}
+    TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size");
+
+    for (size_t r = 0; r < this->rows(); r++) {
+      for (size_t c = 0; c < this->cols(); c++) {
+        (*this)(r, c) = static_cast<T>(matrix(r, c));
+      }
+    }
+
+    return *this;
+  }
 
   //MatrixBlock &operator = (const MatrixBlock &block)
   //{
@@ -2027,6 +2182,20 @@ public:
   size_t cols() const
   {
     return mEndCol - mIniCol + 1;
+  }
+
+
+  operator Matrix<T>() const
+  {
+    Matrix<T> matrix(this->rows(), this->cols());
+
+    for (size_t r = 0; r < this->rows(); r++) {
+      for (size_t c = 0; c < this->cols(); c++) {
+        matrix(r, c) =(*this)(r, c);
+      }
+    }
+
+    return matrix;
   }
 
 private:
@@ -2407,9 +2576,9 @@ template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
 typename std::enable_if <
   std::is_integral<T>::value,
   void>::type
-  mulmat(const Matrix<T, _rows, _dim> &matrix1,
-         const Matrix<T, _dim, _cols> &matrix2,
-         Matrix<T, _rows, _cols> &matrix)
+mulmat(const Matrix<T, _rows, _dim> &matrix1,
+       const Matrix<T, _dim, _cols> &matrix2,
+       Matrix<T, _rows, _cols> &matrix)
 {
 #if defined TL_HAVE_SIMD_INTRINSICS
 
@@ -2427,9 +2596,9 @@ template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
 typename std::enable_if <
   std::is_floating_point<T>::value,
   void>::type
-  mulmat(const Matrix<T, _rows, _dim> &matrix1,
-         const Matrix<T, _dim, _cols> &matrix2,
-         Matrix<T, _dim, _cols> &matrix)
+mulmat(const Matrix<T, _rows, _dim> &matrix1,
+       const Matrix<T, _dim, _cols> &matrix2,
+       Matrix<T, _dim, _cols> &matrix)
 {
 
 #ifdef TL_HAVE_OPENBLAS
@@ -2490,7 +2659,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse2x2(bool *invertibility)
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T det = determinant2x2();
+  T det = this->determinant2x2();
   if (det != consts::zero<T>) {
     matrix[0][0] = (*this)(1, 1) / det;
     matrix[0][1] = -(*this)(0, 1) / det;
@@ -2595,7 +2764,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inversenxn(bool *invertibility)
   Matrix<T, _rows, _cols> matrix(*this);
 
   //#ifdef TL_INVERSE_ADJUGATE_DIV_DETERMINANT
-  T det = determinantnxn();
+  T det = this->determinantnxn();
   if (det != consts::zero<T>) {
     matrix = this->adjugate();
     matrix /= det;
@@ -2773,134 +2942,6 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-T Matrix<T, _rows, _cols>::determinant() const
-{
-  static_assert(_rows == _cols, "Non-Square Matrix");
-
-  T d = consts::one<T>;
-  size_t rows = this->rows();
-
-  if (rows == 2) {
-    d = determinant2x2();
-  } else if (rows == 3) {
-    d = determinant3x3();
-  } else if (rows == 4) {
-    d = determinant4x4();
-  } else {
-    d = determinantnxn();
-  }
-
-  return d;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-T Matrix<T, _rows, _cols>::determinant2x2() const
-{
-  T det = (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
-  return det;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-T Matrix<T, _rows, _cols>::determinant3x3() const
-{
-  T m00 = (*this)(0, 0);
-  T m01 = (*this)(0, 1);
-  T m02 = (*this)(0, 2);
-  T m10 = (*this)(1, 0);
-  T m11 = (*this)(1, 1);
-  T m12 = (*this)(1, 2);
-  T m20 = (*this)(2, 0);
-  T m21 = (*this)(2, 1);
-  T m22 = (*this)(2, 2);
-
-  T c00 = m11 * m22 - m12 * m21;
-  T c10 = m12 * m20 - m10 * m22;
-  T c20 = m10 * m21 - m11 * m20;
-
-  T det = m00 * c00 + m01 * c10 + m02 * c20;
-
-  return det;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-T Matrix<T, _rows, _cols>::determinant4x4() const
-{
-  T m00 = (*this)(0, 0);
-  T m01 = (*this)(0, 1);
-  T m02 = (*this)(0, 2);
-  T m03 = (*this)(0, 3);
-  T m10 = (*this)(1, 0);
-  T m11 = (*this)(1, 1);
-  T m12 = (*this)(1, 2);
-  T m13 = (*this)(1, 3);
-  T m20 = (*this)(2, 0);
-  T m21 = (*this)(2, 1);
-  T m22 = (*this)(2, 2);
-  T m23 = (*this)(2, 3);
-  T m30 = (*this)(3, 0);
-  T m31 = (*this)(3, 1);
-  T m32 = (*this)(3, 2);
-  T m33 = (*this)(3, 3);
-
-  T a0 = m00 * m11 - m01 * m10;
-  T a1 = m00 * m12 - m02 * m10;
-  T a2 = m00 * m13 - m03 * m10;
-  T a3 = m01 * m12 - m02 * m11;
-  T a4 = m01 * m13 - m03 * m11;
-  T a5 = m02 * m13 - m03 * m12;
-  T b0 = m20 * m31 - m21 * m30;
-  T b1 = m20 * m32 - m22 * m30;
-  T b2 = m20 * m33 - m23 * m30;
-  T b3 = m21 * m32 - m22 * m31;
-  T b4 = m21 * m33 - m23 * m31;
-  T b5 = m22 * m33 - m23 * m32;
-
-  T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-  return det;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-T Matrix<T, _rows, _cols>::determinantnxn() const
-{
-  T d = consts::one<T>;
-  size_t rows = this->rows();
-  size_t cols = this->cols();
-
-  Matrix<T, _rows, _cols> matrix(*this);
-
-  for (size_t i = 0; i < rows; ++i) {
-    T pivotElement = matrix[i][i];
-    size_t pivotRow = i;
-    for (size_t r = i + 1; r < rows; ++r) {
-      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
-        pivotElement = matrix[r][i];
-        pivotRow = r;
-      }
-    }
-
-    if (pivotElement == consts::zero<T>) {
-      d = consts::zero<T>;
-      break;
-    }
-
-    if (pivotRow != i) {
-      matrix.swapRows(i, pivotRow);
-      d = -d;
-    }
-
-    d *= pivotElement;
-
-    for (size_t r = i + 1; r < rows; ++r) {
-      for (size_t c = i + 1; c < cols; ++c) {
-        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
-      }
-    }
-  }
-
-  return d;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::trace() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
@@ -2920,14 +2961,14 @@ T Matrix<T, _rows, _cols>::trace() const
 template<typename T, size_t _rows, size_t _cols> inline
 bool Matrix<T, _rows, _cols>::invertible()
 {
-  T det = determinant();
+  T det = this->determinant();
   return (det != consts::zero<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 bool Matrix<T, _rows, _cols>::singular()
 {
-  T det = determinant();
+  T det = this->determinant();
   return (det == consts::zero<T>);
 }
 
@@ -3000,17 +3041,27 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm() const
   Matrix<T, _rows, _cols> matrix(*this);
 
   for (size_t i = 0; i < rows; ++i) {
-    T pivotElement = matrix[i][i];
-    size_t pivotRow = i;
-    for (size_t r = i + 1; r < rows; ++r) {
-      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
-        pivotElement = matrix[r][i];
-        pivotRow = r;
-      }
-    }
 
-    if (pivotElement == consts::zero<T>) {
-      break;
+    T pivotElement{};
+    size_t pivotRow{};
+    size_t colPivotElement{};
+
+    for (size_t c = i; c < cols; ++c) {
+
+      pivotElement = matrix[i][c];
+      pivotRow = i;
+
+      for (size_t r = i + 1; r < rows; ++r) {
+        if (std::abs(matrix[r][c]) > std::abs(pivotElement)) {
+          pivotElement = matrix[r][c];
+          pivotRow = r;
+        }
+      }
+
+      if (pivotElement != consts::zero<T>) {
+        colPivotElement = c;
+        break;
+      }
     }
 
     if (pivotRow != i) {
@@ -3020,10 +3071,13 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm() const
     matrix[i] /= pivotElement;
 
     for (size_t r = i + 1; r < rows; ++r) {
-      T scale = matrix[r][i];
-      for (size_t c = i; c < cols; ++c) {
-        matrix[r][c] = matrix[r][c] - scale * matrix[i][c];
+      T scale = matrix[r][colPivotElement];
+      if (scale != consts::zero<T>) {
+        for (size_t c = i; c < cols; ++c) {
+          matrix[r][c] = matrix[r][c] - scale * matrix[i][c];
+        }
       }
+
     }
   }
 
@@ -3054,6 +3108,31 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::reducedRowEchelonForm() const
   return matrix;
 }
 
+template<typename T, size_t _rows, size_t _cols>
+inline int Matrix<T, _rows, _cols>::rank() const
+{
+  auto matrix = rowEchelonForm();
+  int rank{};
+
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = r; c < matrix.cols(); c++) {
+      if (matrix[r][c] != 0) {
+        rank++;
+        break;
+      }
+    }
+  }
+
+  return rank;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+void Matrix<T, _rows, _cols>::swapRows(size_t i, size_t j)
+{
+  for (size_t c = 0; c < mCols; c++) {
+    std::swap(_data[i * mCols + c], _data[j * mCols + c]);
+  }
+}
 
 
 
@@ -3070,6 +3149,24 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix)
 {
   return matrix;
 }
+
+//template<
+//  template<typename, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
+//class MatrixDerived, typename T, size_t _rows, size_t _cols
+//>
+//inline  static MatrixDerived<T, _rows, _cols> operator + (const MatrixDerived<T, _rows, _cols> &matrix)
+//{
+//  return matrix;
+//}
+//
+//template<
+//  template<typename, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
+//class MatrixDerived, typename T, size_t _rows, size_t _cols
+//>
+//inline  static Matrix<T, _rows, _cols> operator + (MatrixDerived<T, _rows, _cols> &&matrix)
+//{
+//  return matrix;
+//}
 
 /*!
  * \brief Cambia el signo de una matriz
@@ -3122,6 +3219,58 @@ Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix)
 
   return matrix;
 }
+
+template<typename T> inline static
+Matrix<T> operator - (const MatrixBlock<T> &matrix)
+{
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
+  Matrix<T> _m = matrix;
+
+  size_t size = matrix.rows() * matrix.cols();
+
+  for (size_t i = 0; i < size; ++i) {
+    _m(i) = -_m(i);
+  }
+
+  return _m;
+}
+
+//template<
+//  template<typename, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
+//class MatrixDerived, typename T, size_t _rows, size_t _cols
+//>
+//inline static Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix)
+//{
+//  static_assert(std::is_signed<T>::value, "Requires signed type");
+//
+//  Matrix<T, _rows, _cols> _m(matrix);
+//
+//  size_t size = matrix.rows() * matrix.cols();
+//
+//  for (size_t i = 0; i < size; ++i) {
+//    _m(i) = -_m(i);
+//  }
+//
+//  return _m;
+//}
+//
+//template<
+//  template<typename, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
+//class MatrixDerived, typename T, size_t _rows, size_t _cols
+//>
+//inline static Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix)
+//{
+//  static_assert(std::is_signed<T>::value, "Requires signed type");
+//
+//  size_t size = matrix.rows() * matrix.cols();
+//
+//  for (size_t i = 0; i < size; ++i) {
+//    matrix(i) = -matrix(i);
+//  }
+//
+//  return matrix;
+//}
 
 /* Operaciones binarias entre matrices */
 
@@ -3196,6 +3345,15 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
   return matrix1;
 }
 
+template<typename T> inline static
+Matrix<T> operator + (const MatrixBlock<T> &matrix1,
+                      const MatrixBlock<T> &matrix2)
+{
+  Matrix<T> matrix = matrix1;
+  matrix += matrix2;
+  return matrix;
+}
+
 /*!
  * \brief Resta de matrices
  *
@@ -3267,6 +3425,14 @@ Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
   return matrix1;
 }
 
+template<typename T> inline static
+Matrix<T> operator - (const MatrixBlock<T> &matrix1,
+                      const MatrixBlock<T> &matrix2)
+{
+  Matrix<T> matrix = matrix1;
+  matrix -= matrix2;
+  return matrix;
+}
 /*!
  * \brief Multiplicación de matrices
  *
@@ -3376,6 +3542,15 @@ Matrix<T, _rows, _cols> operator * (Matrix<T, _rows, _cols> &&matrix,
   return matrix;
 }
 
+template<typename T> 
+inline static Matrix<T> operator * (const MatrixBlock<T> &matrix,
+                                    T scalar)
+{
+  Matrix<T> _matrix = matrix;
+  _matrix *= scalar;
+  return _matrix;
+}
+
 /*!
  * \brief Multiplicación de un escalar por una matriz
  *
@@ -3404,19 +3579,27 @@ Matrix<T, _rows, _cols> operator * (Matrix<T, _rows, _cols> &&matrix,
  * Matrix2x2i C = s * A;
  * \endcode
  */
-template<typename T, size_t _rows, size_t _cols> inline static
-Matrix<T, _rows, _cols> operator * (T scalar, const Matrix<T, _rows, _cols> &matrix)
+template<typename T, size_t _rows, size_t _cols>
+inline static Matrix<T, _rows, _cols> operator * (T scalar, const Matrix<T, _rows, _cols> &matrix)
 {
   Matrix<T, _rows, _cols> _matrix = matrix;
   _matrix *= scalar;
   return _matrix;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
-Matrix<T, _rows, _cols> operator * (T scalar, Matrix<T, _rows, _cols> &&matrix)
+template<typename T, size_t _rows, size_t _cols>
+inline static Matrix<T, _rows, _cols> operator * (T scalar, Matrix<T, _rows, _cols> &&matrix)
 {
   matrix *= scalar;
   return matrix;
+}
+
+template<typename T>
+inline static Matrix<T> operator * (T scalar, const MatrixBlock<T> &matrix)
+{
+  Matrix<T> _matrix = matrix;
+  _matrix *= scalar;
+  return _matrix;
 }
 
 /*!
@@ -3461,37 +3644,6 @@ Matrix<T, _rows, _cols> operator / (Matrix<T, _rows, _cols> &&matrix, T scalar)
   matrix /= scalar;
   return matrix;
 }
-
-//template<typename T, size_t _rows, size_t _cols> inline static
-//Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
-//{
-//  if (scalar != consts::zero<T>) {
-//    for (size_t r = 0; r < matrix.rows(); r++) {
-//      for (size_t c = 0; c < matrix.cols(); c++) {
-//        matrix(r, c) /= scalar;
-//      }
-//    }
-//  } else {
-//    matrix = Matrix<T, _rows, _cols>::zero();
-//  }
-//
-//  return matrix;
-//}
-//
-//template<typename T> inline static
-//Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
-//{
-//  if (scalar != consts::zero<T>) {
-//    for (size_t r = 0; r < matrix.rows(); r++) {
-//      for (size_t c = 0; c < matrix.cols(); c++) {
-//        matrix(r, c) /= scalar;
-//      }
-//    }
-//  } else {
-//    matrix = Matrix<T>::zero(matrix.rows(), matrix.cols());
-//  }
-//  return matrix;
-//}
 
 template<typename T, size_t _rows, size_t _cols> inline static
 bool operator == (const Matrix<T, _rows, _cols> &matrix1,
@@ -3541,7 +3693,7 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matri
 {
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      os << matrix(r, c) << " ";
+      os << std::left << std::setw(12) << matrix(r, c) << " ";
     }
     os << "\n";
   }
@@ -3554,7 +3706,34 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
 {
   for (size_t r = 0; r < matrix->rows(); r++) {
     for (size_t c = 0; c < matrix->cols(); c++) {
-      os << matrix(r, c) << " ";
+      os << std::left << std::setw(12) << (*matrix)(r, c) << " ";
+    }
+    os << "\n";
+  }
+  os << std::flush;
+  return os;
+}
+
+
+template<typename T, size_t _rows, size_t _cols>
+std::ostream &operator<< (std::ostream &os, const MatrixBlock<T, _rows, _cols> &matrix)
+{
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
+      os << std::left << std::setw(12) << matrix(r, c) << " ";
+    }
+    os << "\n";
+  }
+  os << std::flush;
+  return os;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+std::ostream &operator<< (std::ostream &os, const MatrixBlock<T, _rows, _cols> *matrix)
+{
+  for (size_t r = 0; r < matrix->rows(); r++) {
+    for (size_t c = 0; c < matrix->cols(); c++) {
+      os << std::left << std::setw(12) << (*matrix)(r, c) << " ";
     }
     os << "\n";
   }
@@ -3565,6 +3744,8 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
 
 /*------------------------------------------------------------------------*/
 
+
+/// Revisar esto...
 
 template<typename T, size_t _rows, size_t _dim> inline  static
 Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
@@ -3632,6 +3813,50 @@ static Vector<T> operator * (const Matrix<T> &matrix,
   return vect;
 }
 
+//template<
+//  template<typename, size_t _rows = DynamicDataStorage, size_t _cols = DynamicDataStorage>
+//  class MatrixDerived, typename T, size_t _rows, size_t _cols,
+//>
+//static Vector<T, _cols> operator * (const MatrixDerived<T, _rows, _cols> &matrix,
+//                                    const Vector<T, _cols> &vector)
+//{
+//  size_t rows = matrix.rows();
+//  size_t dim1 = matrix.cols();
+//  size_t dim2 = vector.size();
+//
+//  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
+//
+//  Vector<T, _col> vect = Vector<T>::zero(rows);
+//
+//  for (size_t r = 0; r < rows; r++) {
+//    for (size_t c = 0; c < dim1; c++) {
+//      vect[r] += matrix(r, c) * vector[c];
+//    }
+//  }
+//
+//  return vect;
+//}
+
+template<typename T> inline
+static Vector<T> operator * (const MatrixBlock<T> &matrix,
+                             const Vector<T> &vector)
+{
+  size_t rows = matrix.rows();
+  size_t dim1 = matrix.cols();
+  size_t dim2 = vector.size();
+
+  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
+
+  Vector<T> vect = Vector<T>::zero(rows);
+
+  for (size_t r = 0; r < rows; r++) {
+    for (size_t c = 0; c < dim1; c++) {
+      vect[r] += matrix(r, c) * vector[c];
+    }
+  }
+
+  return vect;
+}
 
 /*! \} */ // end of algebra
 
