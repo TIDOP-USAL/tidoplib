@@ -1202,6 +1202,41 @@ BOOST_FIXTURE_TEST_CASE(addition, MatrixTest)
   BOOST_CHECK_CLOSE(mat3[9][7], 5.02, 0.01);
   BOOST_CHECK_CLOSE(mat3[9][8], 9.09, 0.01);
   BOOST_CHECK_CLOSE(mat3[9][9], 3.88, 0.01);
+
+
+  Matrix<double, 3, 3> mat4 = Matrix<double, 3, 3>::ones() + mat_identity;
+  BOOST_CHECK_EQUAL(2., mat4[0][0]);
+  BOOST_CHECK_EQUAL(1., mat4[0][1]);
+  BOOST_CHECK_EQUAL(1., mat4[0][2]);
+  BOOST_CHECK_EQUAL(1., mat4[1][0]);
+  BOOST_CHECK_EQUAL(2., mat4[1][1]);
+  BOOST_CHECK_EQUAL(1., mat4[1][2]);
+  BOOST_CHECK_EQUAL(1., mat4[2][0]);
+  BOOST_CHECK_EQUAL(1., mat4[2][1]);
+  BOOST_CHECK_EQUAL(2., mat4[2][2]);
+
+  auto ones = Matrix<double, 3, 3>::ones();
+  mat4 = ones + Matrix<double, 3, 3>::identity();
+  BOOST_CHECK_EQUAL(2., mat4[0][0]);
+  BOOST_CHECK_EQUAL(1., mat4[0][1]);
+  BOOST_CHECK_EQUAL(1., mat4[0][2]);
+  BOOST_CHECK_EQUAL(1., mat4[1][0]);
+  BOOST_CHECK_EQUAL(2., mat4[1][1]);
+  BOOST_CHECK_EQUAL(1., mat4[1][2]);
+  BOOST_CHECK_EQUAL(1., mat4[2][0]);
+  BOOST_CHECK_EQUAL(1., mat4[2][1]);
+  BOOST_CHECK_EQUAL(2., mat4[2][2]);
+
+  mat4 = Matrix<double, 3, 3>::ones() + Matrix<double, 3, 3>::identity();
+  BOOST_CHECK_EQUAL(2., mat4[0][0]);
+  BOOST_CHECK_EQUAL(1., mat4[0][1]);
+  BOOST_CHECK_EQUAL(1., mat4[0][2]);
+  BOOST_CHECK_EQUAL(1., mat4[1][0]);
+  BOOST_CHECK_EQUAL(2., mat4[1][1]);
+  BOOST_CHECK_EQUAL(1., mat4[1][2]);
+  BOOST_CHECK_EQUAL(1., mat4[2][0]);
+  BOOST_CHECK_EQUAL(1., mat4[2][1]);
+  BOOST_CHECK_EQUAL(2., mat4[2][2]);
 }
 
 /// Resta de matrices
@@ -1361,6 +1396,40 @@ BOOST_FIXTURE_TEST_CASE(subtraction, MatrixTest)
   BOOST_CHECK_CLOSE(mat3[9][8], -3.01, 0.01);
   BOOST_CHECK_CLOSE(mat3[9][9], 2.24, 0.01);
   
+  auto identity = Matrix<double, 3, 3>::identity();
+  Matrix<double, 3, 3> mat4 = Matrix<double, 3, 3>::ones() - identity;
+  BOOST_CHECK_EQUAL(0., mat4[0][0]);
+  BOOST_CHECK_EQUAL(1., mat4[0][1]);
+  BOOST_CHECK_EQUAL(1., mat4[0][2]);
+  BOOST_CHECK_EQUAL(1., mat4[1][0]);
+  BOOST_CHECK_EQUAL(0., mat4[1][1]);
+  BOOST_CHECK_EQUAL(1., mat4[1][2]);
+  BOOST_CHECK_EQUAL(1., mat4[2][0]);
+  BOOST_CHECK_EQUAL(1., mat4[2][1]);
+  BOOST_CHECK_EQUAL(0., mat4[2][2]);
+
+  auto ones = Matrix<double, 3, 3>::ones();
+  mat4 = ones - Matrix<double, 3, 3>::identity();
+  BOOST_CHECK_EQUAL(0., mat4[0][0]);
+  BOOST_CHECK_EQUAL(1., mat4[0][1]);
+  BOOST_CHECK_EQUAL(1., mat4[0][2]);
+  BOOST_CHECK_EQUAL(1., mat4[1][0]);
+  BOOST_CHECK_EQUAL(0., mat4[1][1]);
+  BOOST_CHECK_EQUAL(1., mat4[1][2]);
+  BOOST_CHECK_EQUAL(1., mat4[2][0]);
+  BOOST_CHECK_EQUAL(1., mat4[2][1]);
+  BOOST_CHECK_EQUAL(0., mat4[2][2]);
+
+  mat4 = Matrix<double, 3, 3>::ones() - Matrix<double, 3, 3>::identity();
+  BOOST_CHECK_EQUAL(0., mat4[0][0]);
+  BOOST_CHECK_EQUAL(1., mat4[0][1]);
+  BOOST_CHECK_EQUAL(1., mat4[0][2]);
+  BOOST_CHECK_EQUAL(1., mat4[1][0]);
+  BOOST_CHECK_EQUAL(0., mat4[1][1]);
+  BOOST_CHECK_EQUAL(1., mat4[1][2]);
+  BOOST_CHECK_EQUAL(1., mat4[2][0]);
+  BOOST_CHECK_EQUAL(1., mat4[2][1]);
+  BOOST_CHECK_EQUAL(0., mat4[2][2]);
 }
 
 /// Multiplicación de matrices
@@ -1771,6 +1840,18 @@ BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
   BOOST_CHECK_EQUAL(.13, mat2[2][0]);
   BOOST_CHECK_EQUAL(.26, mat2[2][1]);
   BOOST_CHECK_EQUAL(.03, mat2[2][2]);
+
+  Matrix<double, 2, 2> mat3 = Matrix<double, 2, 2>::ones() / 10.;
+  BOOST_CHECK_EQUAL(0.1, mat3[0][0]);
+  BOOST_CHECK_EQUAL(0.1, mat3[0][1]);
+  BOOST_CHECK_EQUAL(0.1, mat3[1][0]);
+  BOOST_CHECK_EQUAL(0.1, mat3[1][1]);
+
+  Matrix<double> mat4 = Matrix<double>::ones(2, 2) / 20.;
+  BOOST_CHECK_EQUAL(0.05, mat4[0][0]);
+  BOOST_CHECK_EQUAL(0.05, mat4[0][1]);
+  BOOST_CHECK_EQUAL(0.05, mat4[1][0]);
+  BOOST_CHECK_EQUAL(0.05, mat4[1][1]);
 }
 
 
@@ -2826,9 +2907,35 @@ BOOST_FIXTURE_TEST_CASE(constructor, MatrixBlockTest)
   BOOST_CHECK_EQUAL(7, (*block2)(2, 1));
   BOOST_CHECK_EQUAL(4, (*block2)(2, 2));
   BOOST_CHECK_EQUAL(7, (*block2)(2, 3));
+
 }
 
-
+//BOOST_FIXTURE_TEST_CASE(determinant2x2, MatrixBlockTest)
+//{
+//  BOOST_CHECK_EQUAL(1., block->determinant());
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(at, MatrixBlockTest)
+//{
+//  BOOST_CHECK_EQUAL(1, block->at(0, 0));
+//  BOOST_CHECK_EQUAL(0, block->at(0, 1));
+//  BOOST_CHECK_EQUAL(0, block->at(1, 0));
+//  BOOST_CHECK_EQUAL(1, block->at(1, 1));
+//
+//  BOOST_CHECK_EQUAL(3, block2->at(0, 0));
+//  BOOST_CHECK_EQUAL(2, block2->at(0, 1));
+//  BOOST_CHECK_EQUAL(3, block2->at(0, 2));
+//  BOOST_CHECK_EQUAL(3, block2->at(0, 3));
+//  BOOST_CHECK_EQUAL(3, block2->at(1, 0));
+//  BOOST_CHECK_EQUAL(3, block2->at(1, 1));
+//  BOOST_CHECK_EQUAL(7, block2->at(1, 2));
+//  BOOST_CHECK_EQUAL(6, block2->at(1, 3));
+//  BOOST_CHECK_EQUAL(5, block2->at(2, 0));
+//  BOOST_CHECK_EQUAL(7, block2->at(2, 1));
+//  BOOST_CHECK_EQUAL(4, block2->at(2, 2));
+//  BOOST_CHECK_EQUAL(7, block2->at(2, 3));
+//
+//}
 
 /* Operaciones unarias */
 

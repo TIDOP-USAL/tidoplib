@@ -236,7 +236,7 @@ std::string gdalDriverFromExtension(const std::string &extension)
   else if (compareInsensitiveCase(extension, ".img")) 
     format = "HFA";          // Erdas Imagine (.img)
   else if (compareInsensitiveCase(extension, ".blx") ||
-    compareInsensitiveCase(extension, ".xlb")) 
+           compareInsensitiveCase(extension, ".xlb")) 
     format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
   else if (compareInsensitiveCase(extension, ".map")) 
     format = "MAP";          // OziExplorer .MAP

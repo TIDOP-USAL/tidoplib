@@ -138,7 +138,11 @@ int stringToInteger(const std::string &text, Base base)
   return ss >> number ? number : 0;
 }
 
+#if CPP_VERSION >= 17
+bool compareInsensitiveCase(std::string_view source, std::string_view compare)
+#else
 bool compareInsensitiveCase(const std::string &source, const std::string &compare)
+#endif
 {
   return boost::iequals(source, compare);
 }

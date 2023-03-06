@@ -955,6 +955,11 @@ public:
       mMax(std::numeric_limits<T>().max())
   {}
 
+  ArgumentValidator(T min, T max)
+    : mMin(min),
+      mMax(max)
+  {}
+
   bool validate(T value)
   {
     return (value > mMin && value < mMax);

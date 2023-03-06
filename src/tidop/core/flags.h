@@ -152,20 +152,50 @@ public:
    * \brief Comprueba si el flag esta activo
    * \param[in] flag Flag que se comprueba
    * \return Verdadero si esta activo y falso en caso contrario.
+   * \deprecated Use 'flags()' en su lugar 
    */
+  TL_DEPRECATED("Use isEnabled() method", 3.0)
   bool isActive(T flag) const;
+
+  /*!
+   * \brief Comprueba si el flag esta desactivado
+   * \param[in] flag Flag que se comprueba
+   * \return Verdadero si esta desactivado y falso en caso contrario.
+   */
+  bool isEnabled(T flag) const;
+
+  /*!
+   * \brief Comprueba si el flag esta desactivado
+   * \param[in] flag Flag que se comprueba
+   * \return Verdadero si esta desactivado y falso en caso contrario.
+   */
+  bool isDisabled(T flag) const;
 
   /*!
    * \brief Activa un flag
    * \param[in] flag Flag que se activa
    */
+  TL_DEPRECATED("Use enable() method", 3.0)
   void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param[in] flag Flag que se desactiva
    */
+  TL_DEPRECATED("Use disable() method", 3.0)
   void flagOff(T flag);
+
+  /*!
+   * \brief Activa un flag
+   * \param[in] flag Flag que se activa
+   */
+  void enable(T flag);
+
+  /*!
+   * \brief Desactiva un flag
+   * \param[in] flag Flag que se desactiva
+   */
+  void disable(T flag);
 
   /*!
    * \brief Activa o desactiva un flag
@@ -269,6 +299,18 @@ bool EnumFlags<T>::isActive(T flag) const
 }
 
 template<typename T> inline
+bool EnumFlags<T>::isEnabled(T flag) const
+{
+  return 0 != (mFlag & static_cast<Type>(flag));
+}
+
+template<typename T> inline
+bool EnumFlags<T>::isDisabled(T flag) const
+{
+  return 0 == (mFlag & static_cast<Type>(flag));
+}
+
+template<typename T> inline
 void EnumFlags<T>::flagOn(T flag)
 {
   mFlag |= static_cast<Type>(flag);
@@ -281,21 +323,33 @@ void EnumFlags<T>::flagOff(T flag)
 }
 
 template<typename T> inline
+void tl::EnumFlags<T>::enable(T flag)
+{
+  mFlag |= static_cast<Type>(flag);
+}
+
+template<typename T> inline
+void EnumFlags<T>::disable(T flag)
+{
+  mFlag &= ~static_cast<Type>(flag);
+}
+
+template<typename T> inline
 void EnumFlags<T>::activeFlag(T flag, bool active)
 {
   if (active) 
-    flagOn(flag);
+    enable(flag);
   else 
-    flagOff(flag);
+    disable(flag);
 }
 
 template<typename T> inline
 void EnumFlags<T>::switchFlag(T flag)
 {
   if (isActive(flag)) 
-    flagOff(flag);
+    disable(flag);
   else 
-    flagOn(flag);
+    enable(flag);
 }
 
 template<typename T> inline
@@ -429,19 +483,48 @@ public:
    * \param flag Flag que se comprueba
    * \return Verdadero si esta activo y falso en caso contrario.
    */
+  TL_DEPRECATED("Use isEnabled() method", 3.0)
   bool isActive(T flag) const;
+
+  /*!
+   * \brief Comprueba si el flag esta desactivado
+   * \param[in] flag Flag que se comprueba
+   * \return Verdadero si esta desactivado y falso en caso contrario.
+   */
+  bool isEnabled(T flag) const;
+
+  /*!
+   * \brief Comprueba si el flag esta desactivado
+   * \param[in] flag Flag que se comprueba
+   * \return Verdadero si esta desactivado y falso en caso contrario.
+   */
+  bool isDisabled(T flag) const;
 
   /*!
    * \brief Activa un flag
    * \param flag Flag que se activa
    */
+  TL_DEPRECATED("Use enable() method", 3.0)
   void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param flag Flag que se desactiva
    */
+  TL_DEPRECATED("Use disable() method", 3.0)
   void flagOff(T flag);
+
+  /*!
+   * \brief Activa un flag
+   * \param flag Flag que se activa
+   */
+  void enable(T flag);
+
+  /*!
+   * \brief Desactiva un flag
+   * \param flag Flag que se desactiva
+   */
+  void disable(T flag);
 
   /*!
    * \brief Invierte un flag
@@ -491,21 +574,21 @@ template<typename T>
 Flags<T>::Flags()
   : mFlag(0)
 {
-  static_assert(std::is_integral<T>::value, "Float point type not supported");
+  static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T> inline
 Flags<T>::Flags(const Flags &flag) 
   : mFlag(flag.mFlag)
 {
-  static_assert(std::is_integral<T>::value, "Float point type not supported");
+  static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T>
 Flags<T>::Flags(Flags &&flag) TL_NOEXCEPT
   : mFlag(flag.mFlag)
 {
-  static_assert(std::is_integral<T>::value, "Float point type not supported");
+  static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T> inline
@@ -514,7 +597,7 @@ Flags<T>::Flags(std::initializer_list<T> flags)
 {
   static_assert(std::is_integral<T>::value, "Float point type not supported");
   for (auto flg : flags) {
-    this->flagOn(flg);
+    this->enable(flg);
   }
 }
 
@@ -542,6 +625,18 @@ bool Flags<T>::isActive(T flag) const
   return 0 != (mFlag & T{1} << flag);
 }
 
+template<typename T>
+inline bool Flags<T>::isEnabled(T flag) const
+{
+  return 0 != (mFlag & T{1} << flag);
+}
+
+template<typename T>
+inline bool Flags<T>::isDisabled(T flag) const
+{
+  return 0 == (mFlag & T{1} << flag);
+}
+
 template<typename T> inline
 void Flags<T>::flagOn(T flag)
 {
@@ -555,12 +650,24 @@ void Flags<T>::flagOff(T flag)
 }
 
 template<typename T> inline
+void Flags<T>::enable(T flag)
+{
+  mFlag |= (T{1} << flag);
+}
+
+template<typename T> inline
+void Flags<T>::disable(T flag)
+{
+  mFlag &= ~(T{1} << flag);
+}
+
+template<typename T> inline
 void Flags<T>::switchFlag(T flag)
 {
   if (isActive(flag)) 
-    flagOff(flag);
+    disable(flag);
   else 
-    flagOn(flag);
+    enable(flag);
 }
 
 template<typename T> inline

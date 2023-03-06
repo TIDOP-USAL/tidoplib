@@ -44,9 +44,13 @@ namespace tl
  * \{
  */
 
+#if CPP_VERSION >= 17
+TL_EXPORT bool compareInsensitiveCase(std::string_view source,
+                                      std::string_view compare);
+#else
 TL_EXPORT bool compareInsensitiveCase(const std::string &source,
                                       const std::string &compare);
-
+#endif
 
 template<typename T1, typename T2> static inline
   typename std::enable_if<

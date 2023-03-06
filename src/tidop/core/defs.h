@@ -125,8 +125,10 @@
 #ifdef TIDOPLIB_EXPORTS
 #  if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__)
 #    define TL_EXPORT __declspec(dllexport)
+#    define TL_IMPORT __declspec(dllimport)
 #  elif defined __GNUC__ && __GNUC__ >= 4
 #    define TL_EXPORT __attribute__ ((visibility ("default")))
+#    define TL_IMPORT __attribute__ ((visibility("default")))
 #  endif
 #else
 #  define TL_EXPORT
@@ -250,6 +252,12 @@
 #endif
 
 
+#ifdef _MSC_VER
+#  define DIAG_PRAGMA(x)
+#else
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#endif
 
 /*!
  * \brief Se suprimen todos los mensajes de advertencia

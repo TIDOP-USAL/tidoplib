@@ -22,53 +22,59 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/app.h"
+#ifndef TL_CORE_ENDIANNESS_H
+#define TL_CORE_ENDIANNESS_H
 
-#if defined __linux__ || defined __GNUC__
-#include <unistd.h>
-#endif
+#include "config_tl.h"
 
-#include <array>
+#include <string>
+#include <memory>
+#include <mutex>
+
+#include "tidop/core/defs.h"
+#include "tidop/core/path.h"
 
 namespace tl
 {
 
-App::App()
-{
-  init();
-}
+/*! \addtogroup core
+ *  \{
+ */
 
-App &App::instance()
+enum class endianness
 {
-  static App app;
-  return app;
-}
-
-tl::Path App::path() const
-{
-  static std::array<char, TL_MAX_PATH> runfile;
-
-#ifdef WIN32
-  ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
-  return tl::Path(std::string(runfile.data()));
+#ifdef _WIN32
+  little_endian,
+  big_endian,
+  native = little_endian
 #else
-  std::array<char, 32> _path{};
-  sprintf(_path.data(), "/proc/%d/exe", getpid());
-  long len = readlink(_path.data(), runfile.data(), runfile.size());
-  if (len >= 0)
-    runfile.at(static_cast<size_t>(len)) = '\0';
-
-  return tl::Path(std::string(runfile.data()));
+  little_endian = __ORDER_LITTLE_ENDIAN__,
+  little_endian = __ORDER_BIG_ENDIAN__,
+  native = __BYTE_ORDER__
 #endif
+};
+
+
+template <typename T>
+typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+swapEndian(T val)
+{
+  union U
+  {
+    T val;
+    std::array<uint8_t, sizeof(T)> raw;
+  } src, dst;
+
+  src.val = val;
+  std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
+  return dst.val;
 }
 
-std::string App::version() const
-{
-  return std::string();
-}
+template <> int8_t swapEndian<int8_t>(int8_t val) { return val; }
+template <> uint8_t swapEndian<uint8_t>(uint8_t val) { return val; }
 
-void App::init()
-{
-}
+/*! \} */ // end of core
 
 } // namespace tl
+
+#endif // TL_CORE_ENDIANNESS_H

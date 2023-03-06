@@ -87,6 +87,7 @@ public:
   EulerAngles();
   EulerAngles(double x, double y, double z, Axes axes);
   EulerAngles(const EulerAngles<T> &eulerAngles);
+  EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
   ~EulerAngles() override = default;
 
   /*!
@@ -138,6 +139,16 @@ EulerAngles<T>::EulerAngles(const EulerAngles<T> &eulerAngles)
 }
 
 template<typename T>
+EulerAngles<T>::EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
+  : RotationBase<T>(Rotation::Type::euler_angles),
+    x(std::exchange(eulerAngles.x, 0)),
+    y(std::exchange(eulerAngles.y, 0)),
+    z(std::exchange(eulerAngles.z, 0)),
+    axes(std::exchange(eulerAngles.axes, Axes::xyz))
+{
+}
+
+template<typename T>
 EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
 {
   if (this != &eulerAngles) {
@@ -148,7 +159,6 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
   }
   return *this;
 }
-
 
 
 
