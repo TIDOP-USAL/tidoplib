@@ -906,7 +906,7 @@ void TaskQueue::stop()
   }
 }
 
-void TaskQueue::execute(Progress *progressBar)
+void TaskQueue::execute(Progress */*progressBar*/)
 {
   while (!mQueue.empty()) {
 

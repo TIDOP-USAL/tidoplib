@@ -33,6 +33,7 @@
 #include <map>
 #include <list>
 #include <queue>
+#include <memory>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/event.h"
