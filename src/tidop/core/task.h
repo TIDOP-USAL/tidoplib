@@ -32,6 +32,7 @@
 #include <functional>
 #include <map>
 #include <list>
+#include <memory>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/event.h"
