@@ -101,7 +101,7 @@ void Log::resumeListener()
 void Log::onMsgDebug(const std::string &message, 
                      const std::string &date)
 {
-  if (sLevel.isActive(MessageLevel::msg_debug)) {
+  if (sLevel.isEnabled(MessageLevel::msg_debug)) {
     _write(message, date);
   }
 }
@@ -109,7 +109,7 @@ void Log::onMsgDebug(const std::string &message,
 void Log::onMsgInfo(const std::string &message, 
                     const std::string &date)
 {
-  if (sLevel.isActive(MessageLevel::msg_info)) {
+  if (sLevel.isEnabled(MessageLevel::msg_info)) {
     _write(message, date);
   }
 }
@@ -117,7 +117,7 @@ void Log::onMsgInfo(const std::string &message,
 void Log::onMsgWarning(const std::string &message, 
                        const std::string &date)
 {
-  if (sLevel.isActive(MessageLevel::msg_warning)) {
+  if (sLevel.isEnabled(MessageLevel::msg_warning)) {
     _write(message, date);
   }
 }
@@ -125,7 +125,7 @@ void Log::onMsgWarning(const std::string &message,
 void Log::onMsgError(const std::string &message, 
                      const std::string &date)
 {
-  if (sLevel.isActive(MessageLevel::msg_error)) {
+  if (sLevel.isEnabled(MessageLevel::msg_error)) {
     _write(message, date);
   }
 }

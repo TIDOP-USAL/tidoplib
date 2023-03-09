@@ -186,7 +186,7 @@ public:
    */
   bool is3D() const
   {
-    return mEntityType.isActive(Type::geom3d);
+    return mEntityType.isEnabled(Type::geom3d);
   }
 
 private:

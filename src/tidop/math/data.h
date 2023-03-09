@@ -37,7 +37,7 @@ namespace tl
 namespace math
 {
 
-constexpr auto DynamicDataStorage = std::numeric_limits<size_t>::max();
+constexpr auto DynamicData = std::numeric_limits<size_t>::max();
 
 /*! \addtogroup math
  *  \{
@@ -51,7 +51,7 @@ public:
 
   static constexpr size_t size() 
   {
-    return _rows == DynamicDataStorage ? DynamicDataStorage : _rows * _cols;
+    return _rows == DynamicData ? DynamicData : _rows * _cols;
   }
 
 };
@@ -87,64 +87,34 @@ public:
   Data(const T *data, size_t size = 0);
   virtual ~Data() = default;
 
-  Data &operator = (const Data &matrix);
-  Data &operator = (Data &&matrix) TL_NOEXCEPT;
+  auto operator = (const Data &matrix) -> Data&;
+  auto operator = (Data &&matrix) TL_NOEXCEPT -> Data&;
 
-  reference at(size_t position);
-  const_reference at(size_t position) const;
-  reference operator[](size_t position);
-  const_reference operator[](size_t position) const;
+  auto at(size_t position) -> reference;
+  auto at(size_t position) const -> const_reference;
+  auto operator[](size_t position) -> reference;
+  auto operator[](size_t position) const -> const_reference;
 
   void operator=(T value);
 
-  reference front()
-  {
-    return mData.front();
-  }
+  auto front() -> reference;
+  auto front() const -> const_reference;
+  auto back() -> reference;
+  auto back() const -> const_reference;
+  auto begin() TL_NOEXCEPT -> iterator;
+  auto begin() const TL_NOEXCEPT -> const_iterator;
+  auto end() TL_NOEXCEPT -> iterator;
+  auto end() const TL_NOEXCEPT -> const_iterator;
 
-  const_reference front() const
-  {
-    return mData.front();
-  }
-
-  reference back()
-  {
-    return mData.back();
-  }
-
-  const_reference back() const
-  {
-    return mData.back();
-  }
-
-  iterator begin() TL_NOEXCEPT
-  {
-    return mData.begin();
-  }
-  
-  const_iterator begin() const TL_NOEXCEPT
-  {
-    return mData.begin();
-  }
-
-  iterator end() TL_NOEXCEPT
-  {
-    return mData.end();
-  }
-
-  const_iterator end() const TL_NOEXCEPT
-  {
-    return mData.end();
-  }
-
-  pointer data();
-  const_pointer data() const;
+  auto data() -> pointer;
+  auto data() const -> const_pointer;
 
   size_t size() const { return mData.size(); }
 
 private:
 
   std::array<T, _size> mData;
+
 };
 
 
@@ -156,7 +126,7 @@ private:
  * \brief Dynamic data storage
  */
 template<typename T>
-class Data<T, DynamicDataStorage>
+class Data<T, DynamicData>
 {
 
 public:
@@ -182,65 +152,27 @@ public:
   Data(const T *data, size_t size);
   virtual ~Data() = default;
 
-  Data &operator = (const Data &matrix);
-  Data &operator = (Data &&matrix) TL_NOEXCEPT;
+  auto operator = (const Data &matrix) -> Data&;
+  auto operator = (Data &&matrix) TL_NOEXCEPT -> Data&;
 
-  reference at(size_t position);
-  const_reference at(size_t position) const;
-  reference operator[](size_t position);
-  const_reference operator[](size_t position) const;
+  auto at(size_t position) -> reference;
+  auto at(size_t position) const -> const_reference;
+  auto operator[](size_t position) -> reference;
+  auto operator[](size_t position) const -> const_reference;
 
-  /*!
-   * \brief Asigna el mismo valor a toda el conjunto de datos
-   * \param[in] value Valor escalar que se asigna
-   */
-  void operator=(T value)
-  {
-    std::fill(mData.begin(), mData.end(), value);
-  }
+  void operator=(T value);
 
-  reference front()
-  {
-    return mData.front();
-  }
+  auto front() -> reference;
+  auto front() const -> const_reference;
+  auto back() -> reference;
+  auto back() const -> const_reference;
+  auto begin() TL_NOEXCEPT -> iterator;
+  auto begin() const TL_NOEXCEPT -> const_iterator;
+  auto end() TL_NOEXCEPT -> iterator;
+  auto end() const TL_NOEXCEPT -> const_iterator;
 
-  const_reference front() const
-  {
-    return mData.front();
-  }
-
-  reference back()
-  {
-    return mData.back();
-  }
-
-  const_reference back() const
-  {
-    return mData.back();
-  }
-
-  iterator begin() TL_NOEXCEPT
-  {
-    return mData.begin();
-  }
-
-  const_iterator begin() const TL_NOEXCEPT
-  {
-    return mData.begin();
-  }
-
-  iterator end() TL_NOEXCEPT
-  {
-    return mData.end();
-  }
-
-  const_iterator end() const TL_NOEXCEPT
-  {
-    return mData.end();
-  }
-
-  pointer data();
-  const_pointer data() const;
+  auto data() -> pointer;
+  auto data() const -> const_pointer;
 
   size_t size() const { return mData.size(); }
 
@@ -259,37 +191,41 @@ private:
 
 /* Static Data implementation */
 
-template<typename T, size_t _size> inline
-Data<T, _size>::Data()
+template<typename T, size_t _size> 
+inline Data<T, _size>::Data()
   : mData()
 {
   this->mData.fill(-std::numeric_limits<T>().max());
 }
 
-template<typename T, size_t _size> inline
-Data<T, _size>::Data(size_t  /*size*/)
+template<typename T, size_t _size>
+inline Data<T, _size>::Data(size_t  /*size*/)
   : mData()
 {
   this->mData.fill(-std::numeric_limits<T>().max());
 }
 
-template<typename T, size_t _size> inline
-Data<T, _size>::Data(size_t  /*size*/, T val)
+template<typename T, size_t _size> 
+inline Data<T, _size>::Data(size_t  /*size*/, T val)
   : mData()
 {
   this->mData.fill(val);
 }
 
-template<typename T, size_t _size> inline
-Data<T, _size>::Data(const Data &matrix)
+template<typename T, size_t _size> 
+inline Data<T, _size>::Data(const Data &matrix)
+  : mData(matrix.mData)
+{
+}
+
+template<typename T, size_t _size> 
+inline Data<T, _size>::Data(Data &&matrix) TL_NOEXCEPT
   : mData(std::move(matrix.mData))
 {
 }
 
-// ¿El de movimiento???
-
-template<typename T, size_t _size> inline
-Data<T, _size>::Data(std::initializer_list<T> values)
+template<typename T, size_t _size>
+inline Data<T, _size>::Data(std::initializer_list<T> values)
 {
   size_t n = values.size();
   if (n == _size) {
@@ -309,14 +245,8 @@ inline Data<T, _size>::Data(const T *data,
 {
 }
 
-template<typename T, size_t _size> inline
-Data<T, _size>::Data(Data &&matrix) TL_NOEXCEPT
-  : mData(std::move(matrix.mData))
-{
-}
-
-template<typename T, size_t _size> inline
-Data<T, _size> &Data<T, _size>::operator = (const Data &matrix)
+template<typename T, size_t _size>
+inline auto Data<T, _size>::operator = (const Data &matrix) -> Data&
 {
   if (this != &matrix) {
     this->mData = matrix.mData;
@@ -324,8 +254,8 @@ Data<T, _size> &Data<T, _size>::operator = (const Data &matrix)
   return *this;
 }
 
-template<typename T, size_t _size> inline
-Data<T, _size> &Data<T, _size>::operator = (Data &&matrix) TL_NOEXCEPT
+template<typename T, size_t _size>
+inline auto Data<T, _size>::operator = (Data &&matrix) TL_NOEXCEPT -> Data&
 {
   if (this != &matrix) {
     this->mData = std::move(matrix.mData);
@@ -333,44 +263,92 @@ Data<T, _size> &Data<T, _size>::operator = (Data &&matrix) TL_NOEXCEPT
   return *this;
 }
 
-template<typename T, size_t _size> inline
-T &Data<T, _size>::at(size_t position)
+template<typename T, size_t _size>
+inline auto Data<T, _size>::at(size_t position) -> reference
 {
   return mData.at(position);
 }
 
-template<typename T, size_t _size> inline
-const T &Data<T, _size>::at(size_t position) const
+template<typename T, size_t _size>
+inline auto Data<T, _size>::at(size_t position) const -> const_reference
 {
   return mData.at(position);
 }
 
-template<typename T, size_t _size> inline
-T &Data<T, _size>::operator[](size_t position)
+template<typename T, size_t _size>
+inline auto Data<T, _size>::operator[](size_t position) -> reference
 {
   return mData[position];
 }
 
-template<typename T, size_t _size> inline
-const T &Data<T, _size>::operator[](size_t position) const
+template<typename T, size_t _size>
+inline auto Data<T, _size>::operator[](size_t position) const -> const_reference
 {
   return mData[position];
 }
 
-template<typename T, size_t _size> inline
-void Data<T, _size>::operator=(T value)
+template<typename T, size_t _size>
+inline void Data<T, _size>::operator=(T value)
 {
   mData.fill(value);
 }
 
-template<typename T, size_t _size> inline
-T *Data<T, _size>::data()
+template<typename T, size_t _size>
+inline auto Data<T, _size>::front() -> reference
+{
+  return mData.front();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::front() const -> const_reference
+{
+  return mData.front();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::back() -> reference
+{
+  return mData.back();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::back() const -> const_reference
+{
+  return mData.back();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::begin() TL_NOEXCEPT -> iterator
+{
+  return mData.begin();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::begin() const TL_NOEXCEPT -> const_iterator
+{
+  return mData.begin();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::end() TL_NOEXCEPT -> iterator
+{
+  return mData.end();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::end() const TL_NOEXCEPT -> const_iterator
+{
+  return mData.end();
+}
+
+template<typename T, size_t _size>
+inline auto Data<T, _size>::data() -> pointer
 {
   return mData.data();
 }
 
-template<typename T, size_t _size> inline
-const T *Data<T, _size>::data() const
+template<typename T, size_t _size>
+inline auto Data<T, _size>::data() const -> const_pointer
 {
   return mData.data();
 }
@@ -379,47 +357,46 @@ const T *Data<T, _size>::data() const
 
 /* Dynamic Data implementation */
 
-template<typename T> inline
-Data<T, DynamicDataStorage>::Data(size_t size)
+template<typename T> 
+inline Data<T, DynamicData>::Data(size_t size)
   : mData(size, -std::numeric_limits<T>().max())
 {
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>::Data(size_t size, T val)
+template<typename T> 
+inline Data<T, DynamicData>::Data(size_t size, T val)
   : mData(size, val)
 {
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>::Data(const Data &matrix)
+template<typename T> 
+inline Data<T, DynamicData>::Data(const Data &matrix)
   : mData(matrix.mData)
 {
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>::Data(Data &&matrix) TL_NOEXCEPT
+template<typename T> 
+inline Data<T, DynamicData>::Data(Data &&matrix) TL_NOEXCEPT
   : mData(std::move(matrix.mData))
 {
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>::Data(std::initializer_list<T> values)
+template<typename T> 
+inline Data<T, DynamicData>::Data(std::initializer_list<T> values)
 {
   mData.resize(values.size());
   std::copy(values.begin(), values.end(), mData.begin());
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>::Data(const T *data, size_t size)
+template<typename T> 
+inline Data<T, DynamicData>::Data(const T *data, size_t size)
   : mData(size, -std::numeric_limits<T>().max())
 {
   mData.assign(data, data + mData.size());
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>
-&Data<T, DynamicDataStorage>::operator = (const Data<T, DynamicDataStorage> &matrix)
+template<typename T> 
+inline auto Data<T, DynamicData>::operator = (const Data<T, DynamicData> &matrix) -> Data&
 {
   if (this != &matrix) {
     this->mData = matrix.mData;
@@ -427,9 +404,8 @@ Data<T, DynamicDataStorage>
   return *this;
 }
 
-template<typename T> inline
-Data<T, DynamicDataStorage>
-&Data<T, DynamicDataStorage>::operator = (Data<T, DynamicDataStorage> &&matrix) TL_NOEXCEPT
+template<typename T> 
+inline auto Data<T, DynamicData>::operator = (Data<T, DynamicData> &&matrix) TL_NOEXCEPT -> Data &
 {
   if (this != &matrix) {
     this->mData = std::move(matrix.mData);
@@ -437,38 +413,92 @@ Data<T, DynamicDataStorage>
   return *this;
 }
 
-template<typename T> inline
-T &Data<T, DynamicDataStorage>::at(size_t position)
+template<typename T>
+inline auto Data<T, DynamicData>::at(size_t position) -> reference
 {
   return mData.at(position);
 }
 
-template<typename T> inline
-const T &Data<T, DynamicDataStorage>::at(size_t position) const
+template<typename T>
+inline auto Data<T, DynamicData>::at(size_t position) const -> const_reference
 {
   return mData.at(position);
 }
 
-template<typename T> inline
-T &Data<T, DynamicDataStorage>::operator[](size_t position)
+template<typename T>
+inline auto Data<T, DynamicData>::operator[](size_t position) -> reference
 {
   return mData[position];
 }
 
-template<typename T> inline
-const T &Data<T, DynamicDataStorage>::operator[](size_t position) const
+template<typename T>
+inline auto Data<T, DynamicData>::operator[](size_t position) const -> const_reference
 {
   return mData[position];
 }
 
-template<typename T> inline
-T *Data<T, DynamicDataStorage>::data()
+template<typename T> 
+inline void Data<T, DynamicData>::operator=(T value)
+{
+  std::fill(mData.begin(), mData.end(), value);
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::front() -> reference
+{
+  return mData.front();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::front() const-> const_reference
+{
+  return mData.front();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::back() -> reference
+{
+  return mData.back();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::back() const -> const_reference
+{
+  return mData.back();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::begin() TL_NOEXCEPT  -> iterator
+{
+  return mData.begin();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::begin() const TL_NOEXCEPT-> const_iterator
+{
+  return mData.begin();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::end() TL_NOEXCEPT -> iterator
+{
+  return mData.end();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::end() const TL_NOEXCEPT -> const_iterator
+{
+  return mData.end();
+}
+
+template<typename T>
+inline auto Data<T, DynamicData>::data() -> pointer
 {
   return mData.data();
 }
 
-template<typename T> inline
-const T *Data<T, DynamicDataStorage>::data() const
+template<typename T>
+inline auto Data<T, DynamicData>::data() const -> const_pointer
 {
   return mData.data();
 }

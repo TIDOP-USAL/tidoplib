@@ -95,8 +95,10 @@ public:
 		Matrix<double> dst_demean = dst;
 
 		for (size_t c = 0; c < dimension; c++) {
-			src_demean.col(c) -= mean_src[c];
-			dst_demean.col(c) -= mean_dst[c];
+			for(size_t r = 0; r < size; r++) {
+				src_demean[r][c] -= mean_src[c];
+				dst_demean[r][c] -= mean_dst[c];
+			}
 		}
 
 		auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
@@ -121,7 +123,7 @@ public:
 		double src_var{};
 		double module{};
 		for (size_t c = 0; c < src_demean.cols(); c++) {
-			auto vector = src_demean.col(c).vector();
+			auto vector = src_demean.col(c);
 			module = vector.module();
 			src_var += module * module;
 		}

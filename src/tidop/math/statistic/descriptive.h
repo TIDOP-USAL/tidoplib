@@ -491,7 +491,7 @@ Series<T> DescriptiveStatistics<T>::data()
 template<typename T> inline
 T DescriptiveStatistics<T>::min()
 {
-  if (!mStatus.isActive(InternalStatus::min)) {
+  if (!mStatus.isEnabled(InternalStatus::min)) {
     computeMinMax();
   }
   return mMin;
@@ -500,7 +500,7 @@ T DescriptiveStatistics<T>::min()
 template<typename T> inline
 T DescriptiveStatistics<T>::max()
 {
-  if (!mStatus.isActive(InternalStatus::max)) {
+  if (!mStatus.isEnabled(InternalStatus::max)) {
     computeMinMax();
   }
   return mMax;
@@ -533,7 +533,7 @@ T DescriptiveStatistics<T>::sum()
 template<typename T> inline
 double DescriptiveStatistics<T>::mean()
 {
-  if (!mStatus.isActive(InternalStatus::mean)) {
+  if (!mStatus.isEnabled(InternalStatus::mean)) {
     computeMean();
   }
   return mMean;
@@ -542,7 +542,7 @@ double DescriptiveStatistics<T>::mean()
 template<typename T> inline
 T DescriptiveStatistics<T>::median()
 {
-  if (!mStatus.isActive(InternalStatus::median)) {
+  if (!mStatus.isEnabled(InternalStatus::median)) {
     computeSecondQuartile();
   }
   return mMedian;
@@ -551,7 +551,7 @@ T DescriptiveStatistics<T>::median()
 template<typename T> inline
 double DescriptiveStatistics<T>::variance()
 {
-  if (!mStatus.isActive(InternalStatus::variance)) {
+  if (!mStatus.isEnabled(InternalStatus::variance)) {
     computeVariance();
   }
   return mVariance;
@@ -560,7 +560,7 @@ double DescriptiveStatistics<T>::variance()
 template<typename T> inline
 double DescriptiveStatistics<T>::standarDeviation()
 {
-  if (!mStatus.isActive(InternalStatus::standar_deviation)) {
+  if (!mStatus.isEnabled(InternalStatus::standar_deviation)) {
     computeStandarDeviation();
   }
   return mStandarDeviation;
@@ -569,7 +569,7 @@ double DescriptiveStatistics<T>::standarDeviation()
 template<typename T> inline
 double DescriptiveStatistics<T>::mode()
 {
-  if (!mStatus.isActive(InternalStatus::mode)) {
+  if (!mStatus.isEnabled(InternalStatus::mode)) {
     computeMode();
   }
   return mMode;
@@ -578,7 +578,7 @@ double DescriptiveStatistics<T>::mode()
 template<typename T> inline
 T DescriptiveStatistics<T>::range()
 {
-  if (!mStatus.isActive(InternalStatus::range)) {
+  if (!mStatus.isEnabled(InternalStatus::range)) {
     computeRange();
   }
   return mRange;
@@ -587,7 +587,7 @@ T DescriptiveStatistics<T>::range()
 template<typename T> inline
 double DescriptiveStatistics<T>::firstQuartile()
 {
-  if (!mStatus.isActive(InternalStatus::first_quartile)) {
+  if (!mStatus.isEnabled(InternalStatus::first_quartile)) {
     computeFirstQuartile();
   }
   return mQ1;
@@ -596,7 +596,7 @@ double DescriptiveStatistics<T>::firstQuartile()
 template<typename T> inline
 double DescriptiveStatistics<T>::secondQuartile()
 {
-  if (!mStatus.isActive(InternalStatus::second_quartile)) {
+  if (!mStatus.isEnabled(InternalStatus::second_quartile)) {
     computeSecondQuartile();
   }
   return mQ2;
@@ -605,7 +605,7 @@ double DescriptiveStatistics<T>::secondQuartile()
 template<typename T> inline
 double DescriptiveStatistics<T>::thirdQuartile()
 {
-  if (!mStatus.isActive(InternalStatus::third_quartile)) {
+  if (!mStatus.isEnabled(InternalStatus::third_quartile)) {
     computeThirdQuartile();
   }
   return mQ3;
@@ -654,7 +654,7 @@ double DescriptiveStatistics<T>::medianAbsoluteDeviation()
 template<typename T> inline
 double DescriptiveStatistics<T>::sumOfSquares()
 {
-  if (!mStatus.isActive(InternalStatus::sum_of_squares)) {
+  if (!mStatus.isEnabled(InternalStatus::sum_of_squares)) {
     computeSumOfSquares();
   }
 
@@ -664,7 +664,7 @@ double DescriptiveStatistics<T>::sumOfSquares()
 template<typename T> inline
 double DescriptiveStatistics<T>::rootMeanSquare()
 {
-  if (!mStatus.isActive(InternalStatus::rms)) {
+  if (!mStatus.isEnabled(InternalStatus::rms)) {
     computeRootMeanSquare();
   }
 
@@ -713,7 +713,7 @@ double DescriptiveStatistics<T>::kurtosis()
 template<typename T>
 inline double DescriptiveStatistics<T>::kurtosisExcess()
 {
-  int n = size();
+  size_t n = size();
   double kurtosis_excess{};
 
   if (mConfig.sample) {
@@ -814,8 +814,8 @@ void DescriptiveStatistics<T>::computeMinMax()
   auto min_max = std::minmax_element(mData.begin(), mData.end());
   mMin = *min_max.first;
   mMax = *min_max.second;
-  mStatus.flagOn(InternalStatus::min);
-  mStatus.flagOn(InternalStatus::max);
+  mStatus.enable(InternalStatus::min);
+  mStatus.enable(InternalStatus::max);
 }
 
 template<typename T> inline
@@ -823,7 +823,7 @@ void DescriptiveStatistics<T>::computeMean()
 {
   mMean = tl::math::mean(mData.begin(), mData.end());
 
-  mStatus.flagOn(InternalStatus::mean);
+  mStatus.enable(InternalStatus::mean);
 }
 
 template<typename T> inline
@@ -831,7 +831,7 @@ void DescriptiveStatistics<T>::computeSumOfSquares()
 {
   mSumOfSquares = tl::math::sumOfSquares(mData.begin(), mData.end());
 
-  mStatus.flagOn(InternalStatus::sum_of_squares);
+  mStatus.enable(InternalStatus::sum_of_squares);
 }
 
 template<typename T> inline
@@ -839,7 +839,7 @@ void DescriptiveStatistics<T>::computeRootMeanSquare()
 {
   mRootMeanSquare = tl::math::rootMeanSquare(mData.begin(), mData.end());
 
-  mStatus.flagOn(InternalStatus::rms);
+  mStatus.enable(InternalStatus::rms);
 }
 
 template<typename T>
@@ -864,35 +864,35 @@ void DescriptiveStatistics<T>::computeVariance()
 
   mVariance = (sum - ep * ep / static_cast<double>(n)) / static_cast<double>(div);
 
-  mStatus.flagOn(InternalStatus::variance);
+  mStatus.enable(InternalStatus::variance);
 }
 
 template<typename T> inline
 void DescriptiveStatistics<T>::computeStandarDeviation()
 {
   mStandarDeviation = sqrt(variance());
-  mStatus.flagOn(InternalStatus::standar_deviation);
+  mStatus.enable(InternalStatus::standar_deviation);
 }
 
 template<typename T> inline
 void DescriptiveStatistics<T>::computeMode()
 {
   mMode = tl::math::mode(mData.begin(), mData.end());
-  mStatus.flagOn(InternalStatus::mode);
+  mStatus.enable(InternalStatus::mode);
 }
 
 template<typename T> inline
 void DescriptiveStatistics<T>::computeRange()
 {
   mRange = max() - min();
-  mStatus.flagOn(InternalStatus::range);
+  mStatus.enable(InternalStatus::range);
 }
 
 template<typename T> inline
 void DescriptiveStatistics<T>::computeFirstQuartile()
 {
   mQ1 = tl::math::quantile(mData.begin(), mData.end(), 0.25);
-  mStatus.flagOn(InternalStatus::first_quartile);
+  mStatus.enable(InternalStatus::first_quartile);
 }
 
 template<typename T> inline
@@ -900,15 +900,15 @@ void DescriptiveStatistics<T>::computeSecondQuartile()
 {
   mQ2 = tl::math::quantile(mData.begin(), mData.end(), 0.5);
   mMedian = static_cast<T>(mQ2);
-  mStatus.flagOn(InternalStatus::second_quartile);
-  mStatus.flagOn(InternalStatus::median);
+  mStatus.enable(InternalStatus::second_quartile);
+  mStatus.enable(InternalStatus::median);
 }
 
 template<typename T> inline
 void DescriptiveStatistics<T>::computeThirdQuartile()
 {
   mQ3 = tl::math::quantile(mData.begin(), mData.end(), 0.75);
-  mStatus.flagOn(InternalStatus::third_quartile);
+  mStatus.enable(InternalStatus::third_quartile);
 }
 
 

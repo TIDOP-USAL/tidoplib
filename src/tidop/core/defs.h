@@ -145,6 +145,11 @@
 #endif
 
 
+// convierte a cadena
+#define TO_STRING(x) #x
+// Convierte a cadena despues de expandir una macro
+#define TL_CONVERT_TO_STRING(x) TO_STRING(x)
+
 
 /*!
  * \brief Warning para informar que una función esta obsoleta
@@ -166,12 +171,13 @@
  */
 #ifdef TL_WARNING_DEPRECATED_METHOD 
 #  if CPP_VERSION >= 14
-#    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " version ": Use " msg " instead")]]
+#    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " TL_CONVERT_TO_STRING(version) ". Use " msg " instead")]]
+//#    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " version ": Use " msg " instead")]]
 #  else
 #    ifdef __GNUC__
-#      define TL_DEPRECATED(msg, version) __attribute__((deprecated(version " Use " msg " instead")))
+#      define TL_DEPRECATED(msg, version) __attribute__((deprecated("Deprecated in version " version ". Use " msg " instead")))
 #    elif defined _MSC_VER
-#      define TL_DEPRECATED(msg, version) __declspec(deprecated("Deprecated in version " version ": use " msg " instead"))
+#      define TL_DEPRECATED(msg, version) __declspec(deprecated("Deprecated in version " version ". use " msg " instead"))
 #    else
 #      pragma message("WARNING: You need to implement TL_DEPRECATED for this compiler")
 #      define TL_DEPRECATED(msg, version)
@@ -185,25 +191,19 @@
 
 // Mensajes de error y warning para mostrar al compilar
 
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-
-#ifdef __GNUC__
-#define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
-#endif
 
 #ifdef _MSC_VER
-#  define TL_COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#  define TL_COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #else
 // Ver si funciona _Pragma()... Da los errores:
 // /home/esteban/desarrollo/tidoplib/src/transform.h:331: error: _Pragma takes a parenthesized string literal
 // TL_COMPILER_WARNING("'compute' no esta soportado para TransformMultiple");
 //                                                                   ^
 // /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
-//  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+//  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 //                                                                                                                   ^
 #  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
-#  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
 
@@ -252,12 +252,12 @@
 #endif
 
 
-#ifdef _MSC_VER
-#  define DIAG_PRAGMA(x)
-#else
-#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
-#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#ifdef __GNUC__
+#define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
+#define DIAG_PRAGMA(x) MAKE_LINUX_PRAGMA(GCC diagnostic x)
 #endif
+
+
 
 /*!
  * \brief Se suprimen todos los mensajes de advertencia
@@ -275,7 +275,7 @@
  */
 #ifdef _MSC_VER
 #  define TL_SUPPRESS_WARNINGS __pragma(warning(push, 0))
-#else
+#elif defined __GNUC__
 #  define TL_SUPPRESS_WARNINGS DIAG_PRAGMA(push) DIAG_PRAGMA(ignored "-Wall")
 #endif
 
@@ -284,9 +284,7 @@
  */
 #ifdef _MSC_VER
 #  define TL_DEFAULT_WARNINGS __pragma(warning(pop))
-#else
-#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
-#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#elif defined __GNUC__
 #  define TL_DEFAULT_WARNINGS DIAG_PRAGMA(pop)
 #endif
 
@@ -305,9 +303,7 @@
  */
 #ifdef _MSC_VER
 #  define TL_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
-#else
-#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
-#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#elif defined __GNUC__
 #  define TL_DISABLE_WARNING(warn) DIAG_PRAGMA(push) DIAG_PRAGMA(ignored warn)
 #endif
 
@@ -326,19 +322,16 @@
  */
 #ifdef _MSC_VER
 #  define TL_ENABLE_WARNING(warn) __pragma(warning(default : warn))
-#else
-#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
-#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#elif defined __GNUC__
 #  define TL_ENABLE_WARNING(warn) DIAG_PRAGMA(pop)
 #endif
 
 
 #ifdef TL_WARNING_TODO
-#  ifndef _MSC_VER
-#    define DO_PRAGMA(x) _Pragma (#x)
-#    define TL_TODO(x) DO_PRAGMA(message ("TODO: " #x))
-#  else
-#    define TL_TODO(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#  ifdef _MSC_VER
+#    define TL_TODO(msg) __pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#  elif defined __GNUC__
+#    define TL_TODO(x) MAKE_LINUX_PRAGMA(message ("TODO: " #x))
 #  endif
 #else
 #  define TL_TODO(msg)

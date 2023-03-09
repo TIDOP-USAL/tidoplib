@@ -113,79 +113,79 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
 {
   EnumFlags<DataType> flag;
   if (format.compare("BMP") == 0) {
-    flag.flagOn(DataType::TL_8U);
+    flag.enable(DataType::TL_8U);
   } else if (format.compare("PNG") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_16U);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_16U);
   } else if (format.compare("JPEG") == 0) {
-    flag.flagOn(DataType::TL_8U);
+    flag.enable(DataType::TL_8U);
   } else if (format.compare("GTiff") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_16U);
-    flag.flagOn(DataType::TL_16S);
-    flag.flagOn(DataType::TL_32U);
-    flag.flagOn(DataType::TL_32S);
-    flag.flagOn(DataType::TL_32F);
-    flag.flagOn(DataType::TL_64F);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_16U);
+    flag.enable(DataType::TL_16S);
+    flag.enable(DataType::TL_32U);
+    flag.enable(DataType::TL_32S);
+    flag.enable(DataType::TL_32F);
+    flag.enable(DataType::TL_64F);
   } else if (format.compare("GIF") == 0) {
-    flag.flagOn(DataType::TL_8U);
+    flag.enable(DataType::TL_8U);
   } else if (format.compare("GTX") == 0) {
-    flag.flagOn(DataType::TL_32F);
+    flag.enable(DataType::TL_32F);
   } else if (format.compare("AAIGrid") == 0) {
-    flag.flagOn(DataType::TL_32U);
-    flag.flagOn(DataType::TL_32F);
-    flag.flagOn(DataType::TL_64F);
+    flag.enable(DataType::TL_32U);
+    flag.enable(DataType::TL_32F);
+    flag.enable(DataType::TL_64F);
   } else if (format.compare("NTv2") == 0) {
-    flag.flagOn(DataType::TL_32F);
+    flag.enable(DataType::TL_32F);
   } else if (format.compare("ECW") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_16U);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_16U);
   } else if (format.compare("JP2OpenJPEG") == 0) {
   
   } else if (format.compare("LAN") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_16S);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_16S);
   } else if (format.compare("ENVI") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_16U);
-    flag.flagOn(DataType::TL_16S);
-    flag.flagOn(DataType::TL_32U);
-    flag.flagOn(DataType::TL_32S);
-    flag.flagOn(DataType::TL_32F);
-    flag.flagOn(DataType::TL_64F);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_16U);
+    flag.enable(DataType::TL_16S);
+    flag.enable(DataType::TL_32U);
+    flag.enable(DataType::TL_32S);
+    flag.enable(DataType::TL_32F);
+    flag.enable(DataType::TL_64F);
   } else if (format.compare("HFA") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_8S);
-    flag.flagOn(DataType::TL_16U);
-    flag.flagOn(DataType::TL_16S);
-    flag.flagOn(DataType::TL_32U);
-    flag.flagOn(DataType::TL_32S);
-    flag.flagOn(DataType::TL_32F);
-    flag.flagOn(DataType::TL_64F);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_8S);
+    flag.enable(DataType::TL_16U);
+    flag.enable(DataType::TL_16S);
+    flag.enable(DataType::TL_32U);
+    flag.enable(DataType::TL_32S);
+    flag.enable(DataType::TL_32F);
+    flag.enable(DataType::TL_64F);
   } else if (format.compare("BLX") == 0) {
-    flag.flagOn(DataType::TL_16U); 
+    flag.enable(DataType::TL_16U); 
   } else if (format.compare("MAP") == 0) {
   
   } else if (format.compare("E00GRID") == 0) {
   
   } else if (format.compare("MFF") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_8S);
-    flag.flagOn(DataType::TL_16U);
-    flag.flagOn(DataType::TL_16S);
-    flag.flagOn(DataType::TL_32U);
-    flag.flagOn(DataType::TL_32S);
-    flag.flagOn(DataType::TL_32F);
-    flag.flagOn(DataType::TL_64F);
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_8S);
+    flag.enable(DataType::TL_16U);
+    flag.enable(DataType::TL_16S);
+    flag.enable(DataType::TL_32U);
+    flag.enable(DataType::TL_32S);
+    flag.enable(DataType::TL_32F);
+    flag.enable(DataType::TL_64F);
   } else if (format.compare("HFA") == 0) {
-    flag.flagOn(DataType::TL_8U);
-    flag.flagOn(DataType::TL_8S);
-    flag.flagOn(DataType::TL_16U);
-    flag.flagOn(DataType::TL_16S);
-    flag.flagOn(DataType::TL_32U);
-    flag.flagOn(DataType::TL_32S);
-    flag.flagOn(DataType::TL_32F);
-    flag.flagOn(DataType::TL_64F);  
+    flag.enable(DataType::TL_8U);
+    flag.enable(DataType::TL_8S);
+    flag.enable(DataType::TL_16U);
+    flag.enable(DataType::TL_16S);
+    flag.enable(DataType::TL_32U);
+    flag.enable(DataType::TL_32S);
+    flag.enable(DataType::TL_32F);
+    flag.enable(DataType::TL_64F);  
   } else if (format.compare("WMS") == 0) {
   
   }

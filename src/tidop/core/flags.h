@@ -154,7 +154,7 @@ public:
    * \return Verdadero si esta activo y falso en caso contrario.
    * \deprecated Use 'flags()' en su lugar 
    */
-  TL_DEPRECATED("Use isEnabled() method", 3.0)
+  TL_DEPRECATED("isEnabled()", 3.0)
   bool isActive(T flag) const;
 
   /*!
@@ -175,14 +175,14 @@ public:
    * \brief Activa un flag
    * \param[in] flag Flag que se activa
    */
-  TL_DEPRECATED("Use enable() method", 3.0)
+  TL_DEPRECATED("enable()", 3.0)
   void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param[in] flag Flag que se desactiva
    */
-  TL_DEPRECATED("Use disable() method", 3.0)
+  TL_DEPRECATED("disable()", 3.0)
   void flagOff(T flag);
 
   /*!
@@ -215,16 +215,6 @@ public:
    */
   void clear();
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve los flags
-   * \return
-   * \deprecated Use 'flags()' en su lugar 
-   */
-  TL_DEPRECATED("EnumFlags::flags", "2.0")
-  T getFlags() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
-   
   /*!
    * \brief Devuelve los flags
    * \return
@@ -358,14 +348,6 @@ void EnumFlags<T>::clear()
   mFlag = static_cast<Type>(0);
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename T> inline
-T EnumFlags<T>::getFlags() const
-{
-  return static_cast<T> (mFlag);
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 template<typename T> inline
 T EnumFlags<T>::flags() const
 {
@@ -483,7 +465,7 @@ public:
    * \param flag Flag que se comprueba
    * \return Verdadero si esta activo y falso en caso contrario.
    */
-  TL_DEPRECATED("Use isEnabled() method", 3.0)
+  TL_DEPRECATED("isEnabled()", 3.0)
   bool isActive(T flag) const;
 
   /*!
@@ -504,14 +486,14 @@ public:
    * \brief Activa un flag
    * \param flag Flag que se activa
    */
-  TL_DEPRECATED("Use enable() method", 3.0)
+  TL_DEPRECATED("enable()", 3.0)
   void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param flag Flag que se desactiva
    */
-  TL_DEPRECATED("Use disable() method", 3.0)
+  TL_DEPRECATED("disable()", 3.0)
   void flagOff(T flag);
 
   /*!
@@ -536,16 +518,6 @@ public:
    * \brief Pone a cero todos los flags
    */
   void clear();
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve los flags
-   * \return
-   * \deprecated Use 'flags()' en su lugar 
-   */
-  TL_DEPRECATED("Flags::flags", "2.0")
-  T getFlags() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
    
   /*!
    * \brief Devuelve los flags
@@ -675,14 +647,6 @@ void Flags<T>::clear()
 {
   mFlag = T{0};
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename T> inline
-T Flags<T>::getFlags() const
-{
-  return static_cast<T>(mFlag);
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename T> inline
 T Flags<T>::flags() const

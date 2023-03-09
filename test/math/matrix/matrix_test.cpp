@@ -784,8 +784,8 @@ BOOST_FIXTURE_TEST_CASE(randon, MatrixTest)
 
     for (size_t r = 0; r < randon_matrix.rows(); r++) {
       for (size_t c = 0; c < randon_matrix.cols(); c++) {
-        BOOST_TEST(0 <= randon_matrix[r][c]);
-        BOOST_TEST(99 >= randon_matrix[r][c]);
+        BOOST_TEST(0.f <= randon_matrix[r][c]);
+        BOOST_TEST(99.f >= randon_matrix[r][c]);
       }
     }
   }
@@ -1050,9 +1050,9 @@ BOOST_FIXTURE_TEST_CASE(adjointnxn, MatrixTest)
 
 }
 
-/* Operaciones unarias */
+/* Unary arithmetic operators */
 
-BOOST_FIXTURE_TEST_CASE(plus, MatrixTest)
+BOOST_FIXTURE_TEST_CASE(unary_plus, MatrixTest)
 {
   Matrix<double,3,3> mat = +_mat_3x3_d;
   for (size_t r = 0; r < mat.rows(); r++){
@@ -1078,7 +1078,7 @@ BOOST_FIXTURE_TEST_CASE(plus, MatrixTest)
 
 }
 
-BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
+BOOST_FIXTURE_TEST_CASE(unary_minus, MatrixTest)
 {
   Matrix<double,3,3> mat = -_mat_3x3_d;
   for (size_t r = 0; r < mat.rows(); r++){
@@ -1875,6 +1875,24 @@ BOOST_FIXTURE_TEST_CASE(vector_matrix, MatrixTest)
 
   BOOST_CHECK_EQUAL(40, vect4[0]);
   BOOST_CHECK_EQUAL(27, vect4[1]);
+
+  Vector<double, 5> vect5{ 1, 2, 3 , 4, 5};
+  Vector<double, 5> vect6 = _mat_5x5_d * vect5;
+
+  BOOST_CHECK_EQUAL(83., vect6[0]);
+  BOOST_CHECK_EQUAL(54., vect6[1]);
+  BOOST_CHECK_EQUAL(47., vect6[2]);
+  BOOST_CHECK_EQUAL(78., vect6[3]);
+  BOOST_CHECK_EQUAL(87., vect6[4]);
+
+  Vector<double> vect7{ 1, 2, 3 , 4, 5};
+  Vector<double> vect8 = *_mat_dyn_5x5_d * vect7;
+
+  BOOST_CHECK_EQUAL(83., vect8[0]);
+  BOOST_CHECK_EQUAL(54., vect8[1]);
+  BOOST_CHECK_EQUAL(47., vect8[2]);
+  BOOST_CHECK_EQUAL(78., vect8[3]);
+  BOOST_CHECK_EQUAL(87., vect8[4]);
 }
 
 
@@ -2687,7 +2705,7 @@ BOOST_FIXTURE_TEST_CASE(asign, MatrixColTest)
 BOOST_FIXTURE_TEST_CASE(plus, MatrixColTest)
 {
   {
-    auto c0 = +_mat_3x3_d.col(0);
+    Vector<double> c0 = +_mat_3x3_d.col(0);
 
     BOOST_CHECK_EQUAL(1.5, c0[0]);
     BOOST_CHECK_EQUAL(1.0, c0[1]);
@@ -3131,10 +3149,42 @@ BOOST_FIXTURE_TEST_CASE(determinantnxn, MatrixBlockTest)
   BOOST_CHECK_CLOSE(-4932.993342108, block.determinant(), 0.1);
 }
 
-/* Operaciones unarias */
+/* Unary arithmetic operators */
 
+BOOST_FIXTURE_TEST_CASE(unary_plus, MatrixBlockTest)
+{
+  auto _block = +(*block);
+  BOOST_CHECK_EQUAL(1, _block(0, 0));
+  BOOST_CHECK_EQUAL(0, _block(0, 1));
+  BOOST_CHECK_EQUAL(0, _block(1, 0));
+  BOOST_CHECK_EQUAL(1, _block(1, 1));
 
-BOOST_FIXTURE_TEST_CASE(minus, MatrixBlockTest)
+  _block = +(*block2);
+
+  BOOST_CHECK_EQUAL(3, _block(0, 0));
+  BOOST_CHECK_EQUAL(2, _block(0, 1));
+  BOOST_CHECK_EQUAL(3, _block(0, 2));
+  BOOST_CHECK_EQUAL(3, _block(0, 3));
+  BOOST_CHECK_EQUAL(3, _block(1, 0));
+  BOOST_CHECK_EQUAL(3, _block(1, 1));
+  BOOST_CHECK_EQUAL(7, _block(1, 2));
+  BOOST_CHECK_EQUAL(6, _block(1, 3));
+  BOOST_CHECK_EQUAL(5, _block(2, 0));
+  BOOST_CHECK_EQUAL(7, _block(2, 1));
+  BOOST_CHECK_EQUAL(4, _block(2, 2));
+  BOOST_CHECK_EQUAL(7, _block(2, 3));
+
+  auto _block2 = +mat_10x10_d.block(2, 4, 0, 2);
+
+  BOOST_CHECK_EQUAL(6.39, _block2(0, 0));
+  BOOST_CHECK_EQUAL(3.54, _block2(0, 1));
+  BOOST_CHECK_EQUAL(7.86, _block2(1, 0));
+  BOOST_CHECK_EQUAL(5.01, _block2(1, 1));
+  BOOST_CHECK_EQUAL(0.11, _block2(2, 0));
+  BOOST_CHECK_EQUAL(3.99, _block2(2, 1));
+}
+
+BOOST_FIXTURE_TEST_CASE(unary_minus, MatrixBlockTest)
 {
   auto _block = -(*block);
   BOOST_CHECK_EQUAL(-1, _block(0, 0));
@@ -3374,6 +3424,24 @@ BOOST_FIXTURE_TEST_CASE(div_block_matrix_scalar, MatrixBlockTest)
   BOOST_CHECK_CLOSE(0.144048, block1(2, 3), 0.1);
 }
 
+BOOST_FIXTURE_TEST_CASE(div_block_matrix_scalar2, MatrixBlockTest)
+{
+  auto block1 = mat_5x5_d.block(0, 2, 0, 3);
+  auto mat = block1 / 25.2;
+
+  BOOST_CHECK_CLOSE(0.291667, mat(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.105556, mat(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.327381, mat(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.328571, mat(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(0.258333, mat(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.253571, mat(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.046825, mat(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.350397, mat(1, 3), 0.1);
+  BOOST_CHECK_CLOSE(0.004365, mat(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.312698, mat(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.095635, mat(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.144048, mat(2, 3), 0.1);
+}
 
 // Vector
 

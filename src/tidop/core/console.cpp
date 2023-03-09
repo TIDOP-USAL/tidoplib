@@ -302,7 +302,7 @@ TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void Console::onMsgDebug(const std::string &message,
                          const std::string &)
 {
-  if (sLevel.isActive(MessageLevel::msg_debug)) {
+  if (sLevel.isEnabled(MessageLevel::msg_debug)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foregroundColor,
                               messageProperties(MessageLevel::msg_debug).intensity);
     printMessage(message);
@@ -313,7 +313,7 @@ void Console::onMsgDebug(const std::string &message,
 void Console::onMsgInfo(const std::string &message,
                         const std::string &)
 {
-  if (sLevel.isActive(MessageLevel::msg_info)) {
+  if (sLevel.isEnabled(MessageLevel::msg_info)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foregroundColor,
                               messageProperties(MessageLevel::msg_info).intensity);
     printMessage(message);
@@ -324,7 +324,7 @@ void Console::onMsgInfo(const std::string &message,
 void Console::onMsgWarning(const std::string &message,
                            const std::string &)
 {
-  if (sLevel.isActive(MessageLevel::msg_warning)) {
+  if (sLevel.isEnabled(MessageLevel::msg_warning)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foregroundColor,
                               messageProperties(MessageLevel::msg_warning).intensity);
     printMessage(message);
@@ -335,7 +335,7 @@ void Console::onMsgWarning(const std::string &message,
 void Console::onMsgError(const std::string &message,
                          const std::string &)
 {
-  if (sLevel.isActive(MessageLevel::msg_error)) {
+  if (sLevel.isEnabled(MessageLevel::msg_error)) {
     printErrorMessage(message);
   }
 }
