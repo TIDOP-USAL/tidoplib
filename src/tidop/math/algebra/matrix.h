@@ -1328,75 +1328,69 @@ public:
     return MatrixRow<const T>(this->data(), position, this->cols());
   }
 
-  MatrixRow<T> operator[](size_t position)
+  auto operator[](size_t position)  -> MatrixRow<T>
   {
     return MatrixRow<T>(this->data(), position, this->cols());
   }
 
-  const MatrixRow<const T> row(size_t row) const
+  auto row(size_t row) const -> const MatrixRow<const T>
   {
     return MatrixRow<const T>(this, row);
   }
 
-  MatrixRow<T> row(size_t row)
+  auto row(size_t row) -> MatrixRow<T>
   {
     return MatrixRow<T>(this->data(), row, this->cols());
   }
 
-  const MatrixCol<const T> col(size_t col) const
+  auto col(size_t col) const -> const MatrixCol<const T>
   {
     return MatrixCol<const T>(this->data(), col, this->rows(), this->cols());
   }
 
-  MatrixCol<T> col(size_t col)
+  auto col(size_t col) -> MatrixCol<T>
   {
     return MatrixCol<T>(this->data(), col, this->rows(), this->cols());
   }
 
-  const MatrixBlock<const T, DynamicData, DynamicData> block(size_t iniRow,
-                                                 size_t endRow,
-                                                 size_t iniCol,
-                                                 size_t endCol) const
+  auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) const -> const MatrixBlock<const T, DynamicData, DynamicData>
   {
-    return MatrixBlock<const T, DynamicData, DynamicData>(this->data(),
-                                              this->rows(),
-                                              this->cols(),
-                                              iniRow, 
-                                              endRow, 
-                                              iniCol, 
-                                              endCol);
+    return MatrixBlock<const T, DynamicData, DynamicData>(this->data(), 
+                                                          this->rows(),
+                                                          this->cols(),
+                                                           iniRow, 
+                                                           endRow, 
+                                                           iniCol, 
+                                                           endCol);
   }
 
-  MatrixBlock<T, DynamicData, DynamicData> block(size_t iniRow,
-                                     size_t endRow,
-                                     size_t iniCol,
-                                     size_t endCol)
+  auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) -> MatrixBlock<T, DynamicData, DynamicData>
   {
     return MatrixBlock<T, DynamicData, DynamicData>(this->data(),
-                                        this->rows(), 
-                                        this->cols(), 
-                                        iniRow, 
-                                        endRow,
-                                        iniCol,
-                                        endCol);
+                                                    this->rows(), 
+                                                    this->cols(), 
+                                                    iniRow, 
+                                                    endRow,
+                                                    iniCol,
+                                                    endCol);
   }
 
-  const MatrixBlock<const T, DynamicData, DynamicData> rowBlock(size_t iniRow, size_t endRow) const
+  auto rowBlock(size_t iniRow, size_t endRow) const -> const MatrixBlock<const T, DynamicData, DynamicData>
   {
     return block(iniRow, endRow, 0, this->cols() - 1);
   }
 
-  MatrixBlock<T, DynamicData, DynamicData> rowBlock(size_t iniRow, size_t endRow)
+  auto rowBlock(size_t iniRow, size_t endRow) -> MatrixBlock<T, DynamicData, DynamicData>
   {
     return block(iniRow, endRow, 0, this->cols() - 1);
   }
 
-  const MatrixBlock<const T, DynamicData, DynamicData> colBlock(size_t iniCol, size_t endCol) const
+  auto colBlock(size_t iniCol, size_t endCol) const -> const MatrixBlock<const T, DynamicData, DynamicData>
   {
     return block(0, this->rows() - 1, iniCol, endCol);
   }
 
-  MatrixBlock<T, DynamicData, DynamicData> colBlock(size_t iniCol, size_t endCol)
+  auto colBlock(size_t iniCol, size_t endCol) -> MatrixBlock<T, DynamicData, DynamicData> 
   {
     return block(0, this->rows() - 1, iniCol, endCol);
   }
@@ -3537,7 +3531,7 @@ Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
       packed_a.loadUnaligned(&vector[i]);
       packed_b.loadUnaligned(&matrix(r, i));
       packed_c = packed_a * packed_b;
-      vect[r] = packed_c.sum();
+      vect[r] += packed_c.sum();
     }
   
     for (size_t i = max_vector; i < _dim; i++) {
@@ -3587,7 +3581,7 @@ static Vector<T> operator * (const Matrix<T> &matrix,
       packed_a.loadUnaligned(&vector[i]);
       packed_b.loadUnaligned(&matrix(r, i));
       packed_c = packed_a * packed_b;
-      vect[r] = packed_c.sum();
+      vect[r] += packed_c.sum();
     }
   
     for (size_t i = max_vector; i < dim1; i++) {

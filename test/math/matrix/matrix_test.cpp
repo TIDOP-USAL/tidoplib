@@ -3093,6 +3093,13 @@ BOOST_FIXTURE_TEST_CASE(assing_matrix, MatrixBlockTest)
   BOOST_CHECK_EQUAL(1, block->at(0, 1));
   BOOST_CHECK_EQUAL(1, block->at(1, 0));
   BOOST_CHECK_EQUAL(1, block->at(1, 1));
+
+  (*block) = Matrix<double>::ones(2, 2);
+  BOOST_CHECK_EQUAL(1, block->at(0, 0));
+  BOOST_CHECK_EQUAL(1, block->at(0, 1));
+  BOOST_CHECK_EQUAL(1, block->at(1, 0));
+  BOOST_CHECK_EQUAL(1, block->at(1, 1));
+
 }
 
 BOOST_FIXTURE_TEST_CASE(at, MatrixBlockTest)
