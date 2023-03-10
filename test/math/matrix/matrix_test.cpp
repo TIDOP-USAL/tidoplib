@@ -2397,6 +2397,21 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixRowTest)
   BOOST_CHECK_EQUAL(12, a[0][2]);
   BOOST_CHECK_EQUAL(21, a[0][3]);
   BOOST_CHECK_EQUAL(9, a[0][4]);
+
+  Matrix<double, 5, 5> a_d{{6., 8., 6., 7., 3.},
+                           {9., 6., 2., 3., 3.},
+                           {8., 3., 2., 3., 3.},
+                           {5., 3., 3., 7., 6.},
+                           {5., 5., 7., 4., 7.}};
+
+  auto v_d = a_d[0] * a_d[1];
+
+  BOOST_CHECK_EQUAL(54., v_d[0]);
+  BOOST_CHECK_EQUAL(48., v_d[1]);
+  BOOST_CHECK_EQUAL(12., v_d[2]);
+  BOOST_CHECK_EQUAL(21., v_d[3]);
+  BOOST_CHECK_EQUAL(9.,  v_d[4]);
+
 }
 
 BOOST_FIXTURE_TEST_CASE(division, MatrixRowTest)
