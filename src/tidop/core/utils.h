@@ -195,7 +195,7 @@ TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const
  * split(in, out, ",")
  * \endcode
  */
-TL_EXPORT std::vector<std::string> split(const std::string &in, const std::string &chs = ",");
+TL_EXPORT std::vector<std::string> split(const std::string &in, char separator);
 
 
 /*! \} */ // end of stringOper

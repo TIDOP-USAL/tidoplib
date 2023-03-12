@@ -112,7 +112,7 @@
 #    define TL_MAX_EXT    256
 #  endif
 #else
-#  include <linux/limits.h>
+#  include <limits.h>
 #  define TL_MAX_PATH   PATH_MAX
 #  define TL_MAX_FNAME  NAME_MAX
 #  define TL_MAX_DRIVE  PATH_MAX

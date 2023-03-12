@@ -124,9 +124,8 @@ TaskBase::TaskBase(TaskBase &&task) TL_NOEXCEPT
 
 TaskBase::~TaskBase()
 {
-  if((mStatus != Status::start) || 
-     mStatus != Status::finalized ||
-     mStatus != Status::stopped) {
+  // if((mStatus != Status::start) || mStatus != Status::finalized || mStatus != Status::stopped) {
+
     if(mStatus == Status::running ||
         mStatus == Status::paused ||
         mStatus == Status::pausing) {
@@ -137,7 +136,7 @@ TaskBase::~TaskBase()
     //  mStatus = Status::finalized;
     //  eventTriggered(Event::Type::task_finalized);
     //}
-  }
+  // }
 }
 
 TaskBase &TaskBase::operator=(const TaskBase &task)

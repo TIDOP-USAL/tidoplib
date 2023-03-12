@@ -27,8 +27,13 @@
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
+#ifdef TL_HAVE_BOOST
 #include <boost/algorithm/string.hpp>
+#elif  CPP_VERSION >= 14
+#include <algorithm>
+#endif
 #include <sstream>
+#include <string>
 
 namespace tl
 {
@@ -111,10 +116,18 @@ void replaceString(std::string *str, const std::string &str_old, const std::stri
   }
 }
 
-std::vector<std::string> split(const std::string &in, const std::string &chs)
+std::vector<std::string> split(const std::string &in, char separator)
 {
   std::vector<std::string> out;
+#ifdef TL_HAVE_BOOST
   boost::split(out, in, boost::is_any_of(chs));
+#else
+  std::stringstream ss(in);
+  std::string item;
+  while (std::getline(ss, item, separator)) {
+    out.push_back(item);
+  }
+#endif
   return out;
 }
 
@@ -144,7 +157,25 @@ bool compareInsensitiveCase(std::string_view source, std::string_view compare)
 bool compareInsensitiveCase(const std::string &source, const std::string &compare)
 #endif
 {
+#ifdef TL_HAVE_BOOST
   return boost::iequals(source, compare);
+#elif CPP_VERSION >= 14
+  //https://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
+  return std::equal(source.begin(), source.end(),
+                    compare.begin(), compare.end(),
+                    [](char a, char b) {
+                      return tolower(a) == tolower(b);
+                    });
+#else
+   
+  unsigned int sz = source.size();
+  if (compare.size() != sz)
+    return false;
+  for (unsigned int i = 0; i < sz; ++i)
+    if (tolower(source[i]) != tolower(compare[i]))
+      return false;
+ return true;
+#endif
 }
 
 
