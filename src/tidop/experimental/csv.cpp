@@ -103,7 +103,7 @@ Csv::Status Csv::create(const std::string &header)
   //setName(File::mName.c_str());
 
 
-  std::vector<std::string> out = split(header, ";");
+  std::vector<std::string> out = split<std::string>(header, ';');
   size_t size = out.size();
   for (size_t i = 0; i < size; i++) {
     fs << out[i];

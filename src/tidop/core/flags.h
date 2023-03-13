@@ -154,7 +154,7 @@ public:
    * \return Verdadero si esta activo y falso en caso contrario.
    * \deprecated Use 'flags()' en su lugar 
    */
-  TL_DEPRECATED("isEnabled()", 3.0)
+  TL_DEPRECATED("isEnabled()", 2.2)
   bool isActive(T flag) const;
 
   /*!
@@ -175,14 +175,14 @@ public:
    * \brief Activa un flag
    * \param[in] flag Flag que se activa
    */
-  TL_DEPRECATED("enable()", 3.0)
+  TL_DEPRECATED("enable()", 2.2)
   void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param[in] flag Flag que se desactiva
    */
-  TL_DEPRECATED("disable()", 3.0)
+  TL_DEPRECATED("disable()", 2.2)
   void flagOff(T flag);
 
   /*!
@@ -465,7 +465,7 @@ public:
    * \param flag Flag que se comprueba
    * \return Verdadero si esta activo y falso en caso contrario.
    */
-  TL_DEPRECATED("isEnabled()", 3.0)
+  TL_DEPRECATED("isEnabled()", 2.2)
   bool isActive(T flag) const;
 
   /*!
@@ -486,14 +486,14 @@ public:
    * \brief Activa un flag
    * \param flag Flag que se activa
    */
-  TL_DEPRECATED("enable()", 3.0)
+  TL_DEPRECATED("enable()", 2.2)
   void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param flag Flag que se desactiva
    */
-  TL_DEPRECATED("disable()", 3.0)
+  TL_DEPRECATED("disable()", 2.2)
   void flagOff(T flag);
 
   /*!

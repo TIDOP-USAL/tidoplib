@@ -25,8 +25,10 @@
 #define BOOST_TEST_MODULE Tidop angle convertion test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/angles.h>
+#include <tidop/core/utils.h>
 
-using namespace tl::math;
+using namespace tl;
+using namespace math;
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -772,134 +774,165 @@ struct AngleConvertion
 
   void setup()
   {
-    decimalDegrees.push_back(0.);
-    decimalDegrees.push_back(0.5);
-    decimalDegrees.push_back(135.5742);
-    decimalDegrees.push_back(86.9997);
-    decimalDegrees.push_back(-269.385);
-
-    dms.push_back({ 0, 0, 0 });
-    dms.push_back({ 0, 30, 0 });
-    dms.push_back({ 135, 34, 27 });
-    dms.push_back({ 86, 59, 59 });
-    dms.push_back({ -269, 23, 6 });
     
-    radians.push_back(0.);
-    radians.push_back(0.00872664626);
-    radians.push_back(2.3662161708);
-    radians.push_back(1.518431213);
-    radians.push_back(-4.7016552055);
+    degrees1 = Degrees<double>(0, 0, 0);
+    degrees2 = Degrees<double>(0, 30, 0);
+    degrees3 = Degrees<double>(135, 34, 27);
+    degrees4 = Degrees<double>(86, 59, 59);
+    degrees5 = Degrees<double>(-269, 23, 6);
 
-    gradians.push_back(0.);
-    gradians.push_back(0.555556);
-    gradians.push_back(150.63800);
-    gradians.push_back(96.666335);
-    gradians.push_back(-299.3166718);
+    radians1 = Radians<double>(0.);
+    radians2 = Radians<double>(0.00872664626);
+    radians3 = Radians<double>(2.3662161708);
+    radians4 = Radians<double>(1.518431213);
+    radians5 = Radians<double>(-4.7016552055);
+
+    gradians1 = Gradians<double>(0.);
+    gradians2 = Gradians<double>(0.555556);
+    gradians3 = Gradians<double>(150.63800);
+    gradians4 = Gradians<double>(96.666335);
+    gradians5 = Gradians<double>(-299.3166718);
+
   }
  
   void teardown()
   {
   }
 
-  std::vector<double> decimalDegrees;
-  std::vector<std::vector<int>> dms;
-  std::vector<double> radians;
-  std::vector<double> gradians;
+  Radians<double> radians1;
+  Radians<double> radians2;
+  Radians<double> radians3;
+  Radians<double> radians4;
+  Radians<double> radians5;
+  Gradians<double> gradians1;
+  Gradians<double> gradians2;
+  Gradians<double> gradians3;
+  Gradians<double> gradians4;
+  Gradians<double> gradians5;
+  Degrees<double> degrees1;
+  Degrees<double> degrees2;
+  Degrees<double> degrees3;
+  Degrees<double> degrees4;
+  Degrees<double> degrees5;
 };
 
 
-BOOST_FIXTURE_TEST_CASE(degrees_to_decimal_degrees, AngleConvertion) 
-{
-  for (size_t i = 0; i < dms.size(); i++) {
-    BOOST_CHECK_CLOSE(decimalDegrees[i], degreesToDecimalDegrees(dms[i][0], dms[i][1], static_cast<double>(dms[i][2])), 0.1);
-  }
-}
-
 BOOST_FIXTURE_TEST_CASE(degrees_to_radians, AngleConvertion) 
 {
-  for (size_t i = 0; i < dms.size(); i++) {
-    BOOST_CHECK_CLOSE(radians[i], degreesToRadians(dms[i][0], dms[i][1], static_cast<double>(dms[i][2])), 0.1);
-  }
+  Radians<double> rad = degrees1;
+  BOOST_CHECK_CLOSE(0., rad.value(), 0.1);
+  rad = degrees2;
+  BOOST_CHECK_CLOSE(0.00872664626, rad.value(), 0.1);
+  rad = degrees3;
+  BOOST_CHECK_CLOSE(2.3662161708, rad.value(), 0.1);
+  rad = degrees4;
+  BOOST_CHECK_CLOSE(1.518431213, rad.value(), 0.1);
+  rad = degrees5;
+  BOOST_CHECK_CLOSE(-4.7016552055, rad.value(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(degrees_to_gradians, AngleConvertion)
 {
-  for (size_t i = 0; i < dms.size(); i++) {
-    BOOST_CHECK_CLOSE(gradians[i], degreesToGradians(dms[i][0], dms[i][1], static_cast<double>(dms[i][2])), 0.1);
-  }
+  Gradians<double> rad = degrees1;
+  BOOST_CHECK_CLOSE(0., rad.value(), 0.1);
+  rad = degrees2;
+  BOOST_CHECK_CLOSE(0.555556, rad.value(), 0.1);
+  rad = degrees3;
+  BOOST_CHECK_CLOSE(150.63800, rad.value(), 0.1);
+  rad = degrees4;
+  BOOST_CHECK_CLOSE(96.666335, rad.value(), 0.1);
+  rad = degrees5;
+  BOOST_CHECK_CLOSE(-299.3166718, rad.value(), 0.1);
 }
 
-  
-BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_degrees, AngleConvertion) 
+BOOST_FIXTURE_TEST_CASE(radians_to_degrees, AngleConvertion)
 {
-  int degrees, minutes;
-  double seconds;
-  for (size_t i = 0; i < decimalDegrees.size(); i++) {
-    decimalDegreesToDegrees(decimalDegrees[i], degrees, minutes, seconds);
-    BOOST_CHECK_EQUAL(dms[i][0], degrees);
-    BOOST_CHECK_EQUAL(dms[i][1], minutes);
-    BOOST_CHECK_EQUAL(dms[i][2], TL_ROUND_TO_INT(seconds));
-  }
+  Degrees<double> deg = radians1;
+  BOOST_CHECK_EQUAL(0, deg.degrees());
+  BOOST_CHECK_EQUAL(0, deg.minutes());
+  BOOST_CHECK_EQUAL(0., deg.seconds());
+
+  deg = radians2;
+  BOOST_CHECK_EQUAL(0, deg.degrees());
+  BOOST_CHECK_EQUAL(30, deg.minutes());
+  BOOST_CHECK_EQUAL(0, roundToInteger(deg.seconds()));
+
+  deg = radians3;
+  BOOST_CHECK_EQUAL(135, deg.degrees());
+  BOOST_CHECK_EQUAL(34, deg.minutes());
+  BOOST_CHECK_EQUAL(27, roundToInteger(deg.seconds()));
+
+  deg = radians4;
+  BOOST_CHECK_EQUAL(86, deg.degrees());
+  BOOST_CHECK_EQUAL(59, deg.minutes());
+  BOOST_CHECK_EQUAL(59, roundToInteger(deg.seconds()));
+
+  deg = radians5;
+  BOOST_CHECK_EQUAL(-269, deg.degrees());
+  BOOST_CHECK_EQUAL(23, deg.minutes());
+  BOOST_CHECK_EQUAL(6, roundToInteger(deg.seconds()));
 }
 
-BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_radians, AngleConvertion)
+BOOST_FIXTURE_TEST_CASE(radians_to_gradians, AngleConvertion) 
 {
-  for (size_t i = 0; i < decimalDegrees.size(); i++) {
-    BOOST_CHECK_CLOSE(radians[i], decimalDegreesToRadians(decimalDegrees[i]), 0.1);
-  }
-}
-
-BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_gradians, AngleConvertion) {
-  for (size_t i = 0; i < decimalDegrees.size(); i++) {
-    BOOST_CHECK_CLOSE(gradians[i], decimalDegreesToGradians(decimalDegrees[i]), 0.1);
-  }
-}
-
-BOOST_FIXTURE_TEST_CASE(radians_to_degrees, AngleConvertion) {
-  int degrees, minutes;
-  double seconds;
-  for (size_t i = 0; i < radians.size(); i++) {
-    radiansToDegrees(radians[i], degrees, minutes, seconds);
-    BOOST_CHECK_EQUAL(dms[i][0], degrees);
-    BOOST_CHECK_EQUAL(dms[i][1], minutes);
-    BOOST_CHECK_EQUAL(dms[i][2], TL_ROUND_TO_INT(seconds));
-  }
-}
-
-BOOST_FIXTURE_TEST_CASE(radians_to_decimal_degrees, AngleConvertion) {
-  for (size_t i = 0; i < radians.size(); i++) {
-    BOOST_CHECK_CLOSE(decimalDegrees[i], radiansToDecimalDegrees(radians[i]), 0.1);
-  }
-}
-
-BOOST_FIXTURE_TEST_CASE(radians_to_gradians, AngleConvertion) {
-  for (size_t i = 0; i < radians.size(); i++) {
-    BOOST_CHECK_CLOSE(gradians[i], radiansToGradians(radians[i]), 0.1);
-  }
+  Gradians<double> rad = radians1;
+  BOOST_CHECK_CLOSE(0., rad.value(), 0.1);
+  rad = radians2;
+  BOOST_CHECK_CLOSE(0.555556, rad.value(), 0.1);
+  rad = radians3;
+  BOOST_CHECK_CLOSE(150.63800, rad.value(), 0.1);
+  rad = radians4;
+  BOOST_CHECK_CLOSE(96.666335, rad.value(), 0.1);
+  rad = radians5;
+  BOOST_CHECK_CLOSE(-299.3166718, rad.value(), 0.1);
 }
 
 
-BOOST_FIXTURE_TEST_CASE(gradians_to_degrees, AngleConvertion) {
-  int degrees, minutes;
-  double seconds;
-  for (size_t i = 0; i < gradians.size(); i++) {
-    gradiansToDegrees(gradians[i], degrees, minutes, seconds);
-    BOOST_CHECK_EQUAL(dms[i][0], degrees);
-    BOOST_CHECK_EQUAL(dms[i][1], minutes);
-    BOOST_CHECK_EQUAL(dms[i][2], TL_ROUND_TO_INT(seconds));
-  }
+BOOST_FIXTURE_TEST_CASE(gradians_to_degrees, AngleConvertion)
+{
+  Degrees<double> deg = gradians1;
+  BOOST_CHECK_EQUAL(0, deg.degrees());
+  BOOST_CHECK_EQUAL(0, deg.minutes());
+  BOOST_CHECK_EQUAL(0., deg.seconds());
+
+  deg = gradians2;
+  BOOST_CHECK_EQUAL(0, deg.degrees());
+  BOOST_CHECK_EQUAL(30, deg.minutes());
+  BOOST_CHECK_EQUAL(0, roundToInteger(deg.seconds()));
+
+  deg = gradians3;
+  BOOST_CHECK_EQUAL(135, deg.degrees());
+  BOOST_CHECK_EQUAL(34, deg.minutes());
+  BOOST_CHECK_EQUAL(27, roundToInteger(deg.seconds()));
+
+  deg = gradians4;
+  BOOST_CHECK_EQUAL(86, deg.degrees());
+  BOOST_CHECK_EQUAL(59, deg.minutes());
+  BOOST_CHECK_EQUAL(59, roundToInteger(deg.seconds()));
+
+  deg = gradians5;
+  BOOST_CHECK_EQUAL(-269, deg.degrees());
+  BOOST_CHECK_EQUAL(23, deg.minutes());
+  BOOST_CHECK_EQUAL(6, roundToInteger(deg.seconds()));
 }
 
-BOOST_FIXTURE_TEST_CASE(gradians_to_decimalDegrees, AngleConvertion) {
-  for (size_t i = 0; i < gradians.size(); i++) {
-    BOOST_CHECK_CLOSE(decimalDegrees[i], gradiansToDecimalDegrees(gradians[i]), 0.1);
-  }
-}
+BOOST_FIXTURE_TEST_CASE(gradians_to_radians, AngleConvertion) 
+{
+  Radians<double> rad = gradians1;
 
-BOOST_FIXTURE_TEST_CASE(gradians_to_radians, AngleConvertion) {
-  for (size_t i = 0; i < gradians.size(); i++) {
-    BOOST_CHECK_CLOSE(radians[i], gradiansToRadians(gradians[i]), 0.1);
-  }
+  BOOST_CHECK_CLOSE(0., rad.value(), 0.1);
+
+  rad = gradians2;
+  BOOST_CHECK_CLOSE(0.00872664626, rad.value(), 0.1);
+
+  rad = gradians3;
+  BOOST_CHECK_CLOSE(2.3662161708, rad.value(), 0.1);
+
+  rad = gradians4;
+  BOOST_CHECK_CLOSE(1.518431213, rad.value(), 0.1);
+
+  rad = gradians5;
+  BOOST_CHECK_CLOSE(-4.7016552055, rad.value(), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

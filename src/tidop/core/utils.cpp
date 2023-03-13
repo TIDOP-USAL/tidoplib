@@ -32,8 +32,7 @@
 #elif  CPP_VERSION >= 14
 #include <algorithm>
 #endif
-#include <sstream>
-#include <string>
+
 
 namespace tl
 {
@@ -42,93 +41,14 @@ namespace tl
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
 
-int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs)
-{
-  int r_err = 0;
-  char *dup = strdup(cad.c_str()); // -> warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup
-  //char *dup = _strdup(cad.c_str());
-  vOut.resize(0);
-
-  try {
-    char *token = strtok(dup, chs);
-    //char *context = NULL;
-    //char *token = strtok_s(dup, chs, &context);
-    while (token != nullptr) {
-      char *pEnd;
-      int number = strtol(token, &pEnd, 10);
-      if (*pEnd == 0) {
-        vOut.push_back(number);
-        token = strtok(nullptr, chs);
-        //token = strtok_s(dup, chs, &context);
-      } else
-        throw std::runtime_error("Split string to numbers fail");
-    }
-  } catch (std::exception &e) {
-    vOut.resize(0);
-    msgError(e.what());
-    r_err = 1;
-  }
-
-  free(dup);
-  return r_err;
-}
-
-int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char *chs)
-{
-  int r_err = 0;
-  char *dup = strdup(cad.c_str());
-  //char *dup = _strdup(cad.c_str());
-  vOut.resize(0);
-
-  try {
-    char *token = strtok(dup, chs);
-    //char *context = NULL;
-    //char *token = strtok_s(dup, chs, &context);
-    while (token != NULL) {
-      //vOut.push_back(atof(token));
-      char *pEnd;
-      double number = strtod(token, &pEnd);
-      if (*pEnd == 0) {
-        vOut.push_back(number);
-        token = strtok(nullptr, chs);
-        //token = strtok_s(dup, chs, &context);
-      } else
-        throw std::runtime_error("Split string to numbers fail");
-    }
-  } catch (std::exception &e) {
-    vOut.resize(0);
-    msgError(e.what());
-    r_err = 1;
-  }
-
-  free(dup);
-  return r_err;
-}
 
 void replaceString(std::string *str, const std::string &str_old, const std::string &str_new)
 {
   std::size_t ini = str->find(str_old);
-  //std::size_t end;
   while (ini != std::string::npos) {
-    //end = ini + str_old.size();
     str->replace(ini, str_old.size(), str_new);
     ini = str->find(str_old, str_new.size() + ini);
   }
-}
-
-std::vector<std::string> split(const std::string &in, char separator)
-{
-  std::vector<std::string> out;
-#ifdef TL_HAVE_BOOST
-  boost::split(out, in, boost::is_any_of(chs));
-#else
-  std::stringstream ss(in);
-  std::string item;
-  while (std::getline(ss, item, separator)) {
-    out.push_back(item);
-  }
-#endif
-  return out;
 }
 
 int stringToInteger(const std::string &text, Base base)

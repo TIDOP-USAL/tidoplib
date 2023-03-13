@@ -26,6 +26,7 @@
 
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
+#include <tidop/core/log.h>
 #include <tidop/core/messages.h>
 #include <tidop/core/chrono.h>
 #include <tidop/img/imgreader.h>
@@ -53,6 +54,11 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
+  // Log 
+  Log &log = Log::instance();
+  log.setMessageLevel(MessageLevel::msg_verbose);
+  MessageManager::instance().addListener(&log);
+
   Path img;
 
   Command cmd("imageinfo", "Image Metadata");
@@ -69,6 +75,8 @@ int main(int argc, char** argv)
   } else if (status == Command::Status::show_version) {
     return 0;
   }
+
+  log.setLogFile(Path(img).replaceExtension(".log").toString());
 
   Chrono chrono("Image read");
   chrono.run();

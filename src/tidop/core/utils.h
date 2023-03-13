@@ -31,6 +31,7 @@
 #include <string>
 #include <numeric>
 #include <sstream>
+#include <string>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/exception.h"
@@ -131,41 +132,41 @@ convertStringTo(const std::string &/*str*/)
  * \{
  */
 
-/*!
- * \brief Separa una cadena en un array de enteros
- * \param[in] cad Cadena de texto que contiene una lista de numeros
- * \param[out] vOut Vector con los números extraidos
- * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * std::string aux = "1102,3654";
- * std::vector<int> coord;
- * if ( splitToNumbers(aux, coord) == 0 ){
- *   ...
- * }
- * \endcode
- */
-TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
 
-/*!
- * \brief Separa una cadena en un array de dobles
- * \param[in] cad Cadena de texto que contiene una lista de numeros
- * \param[out] vOut Vector con los números extraidos
- * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * std::string aux = "1102.52,3654.95";
- * std::vector<double> coord;
- * if ( splitToNumbers(aux, coord) == 0 ){
- *   ...
- * }
- * \endcode
- */
-TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
+template <typename T> inline
+typename std::enable_if<
+  std::is_same<T, std::string>::value,
+  std::vector<T>>::type
+split(const std::string &string, char separator = ',')
+{
+  std::vector<T> out;
+
+  std::stringstream ss(string);
+  std::string  item{};
+  while(std::getline(ss, item, separator)) {
+    out.push_back(item);
+  }
+
+  return out;
+}
+
+template <typename T> inline
+typename std::enable_if<
+  std::is_arithmetic<T>::value && !std::is_same<T, bool>::value,
+  std::vector<T>>::type
+split(const std::string &string, char separator = ',')
+{
+  std::vector<T> out;
+
+  std::stringstream ss(string);
+  std::string item{};
+  while(std::getline(ss, item, separator)) {
+    out.push_back(convertStringTo<T>(item));
+  }
+
+  return out;
+}
+
 
 
 /*!
@@ -181,21 +182,6 @@ TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, 
  * \endcode
  */
 TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
-
-/*!
- * \brief Separa una cadena
- *
- * \param[in] in Cadena de entrada
- * \param[in] chs cadena de separación. Si se omite toma por defecto ","
- * \return vector con las cadenas resultantes
- * <h4>Ejemplo</h4>
- * \code
- * char *in = "cadena1,cadena2";
- * std::vector<std::string> out;
- * split(in, out, ",")
- * \endcode
- */
-TL_EXPORT std::vector<std::string> split(const std::string &in, char separator);
 
 
 /*! \} */ // end of stringOper
