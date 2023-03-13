@@ -3512,7 +3512,7 @@ Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
 {
   Vector<T, _rows> vect = Vector<T, _rows>::zero();
 
-//#ifndef TL_HAVE_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
 
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _dim; c++) {
@@ -3520,33 +3520,32 @@ Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
     }
   }
 
-//#else
-//  
-//    using namespace simd;
-//  
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//    Packed<T> packed_c;
-//  
-//    constexpr size_t packed_size = packed_a.size();
-//    constexpr size_t max_vector = _dim - _dim % packed_size;
-//  
-//    for (size_t r = 0; r < _rows; r++) {
-//      for (size_t i = 0; i < max_vector; i += packed_size) {
-//  
-//        packed_a.setScalar(vector[i]);
-//        packed_b.loadUnaligned(&matrix(r, i));
-//        packed_c.loadUnaligned(&vect[r]);
-//        packed_c += packed_a * packed_b;
-//        packed_c.storeUnaligned(&vect[r]);
-//      }
-//  
-//      for (size_t i = max_vector; i < _dim; i++) {
-//        vect[r] += matrix(r, i) * vector[i];
-//      }
-//    }
-//  
-//#endif
+#else
+  
+  using namespace simd;
+  
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+  Packed<T> packed_c;
+  
+  constexpr size_t packed_size = packed_a.size();
+  constexpr size_t max_vector = _dim - _dim % packed_size;
+  
+  for (size_t r = 0; r < _rows; r++) {
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+  
+      packed_a.loadUnaligned(&vector[i]);
+      packed_b.loadUnaligned(&matrix(r, i));
+      packed_c = packed_a * packed_b;
+      vect[r] = packed_c.sum();
+    }
+  
+    for (size_t i = max_vector; i < _dim; i++) {
+      vect[r] += matrix(r, i) * vector[i];
+    }
+  }
+
+#endif
 
   return vect;
 }
@@ -3563,11 +3562,40 @@ static Vector<T> operator * (const Matrix<T> &matrix,
 
   Vector<T> vect = Vector<T>::zero(rows);
 
+#ifndef TL_HAVE_SIMD_INTRINSICS
+
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < dim1; c++) {
       vect[r] += matrix(r, c) * vector[c];
     }
   }
+
+#else
+  
+  using namespace simd;
+  
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+  Packed<T> packed_c;
+  
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = dim1 - dim1 % packed_size;
+  
+  for (size_t r = 0; r < rows; r++) {
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+  
+      packed_a.loadUnaligned(&vector[i]);
+      packed_b.loadUnaligned(&matrix(r, i));
+      packed_c = packed_a * packed_b;
+      vect[r] = packed_c.sum();
+    }
+  
+    for (size_t i = max_vector; i < dim1; i++) {
+      vect[r] += matrix(r, i) * vector[i];
+    }
+  }
+
+#endif
 
   return vect;
 }
