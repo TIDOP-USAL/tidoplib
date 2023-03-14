@@ -88,7 +88,7 @@ public:
 
   Matrix<T, _rows, _cols> q() const;
   Matrix<T, _rows, _cols> r() const;
-  Matrix<T, _rows, _cols> qr() const;
+  //Matrix<T, _rows, _cols> qr() const;
 
 private:
 

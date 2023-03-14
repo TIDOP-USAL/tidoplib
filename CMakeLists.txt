@@ -315,7 +315,7 @@ endif()
 
 #set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
-OPTION (WITH_BOOST  "Include Boost support"                   ON)
+#OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
 OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
 OPTION (WITH_PROJ4  "Include PROJ4 Support"                   OFF)
@@ -347,16 +347,23 @@ message(STATUS "\nDependency loading:\n")
 # BOOST (REQUIRED)                                                       #
 ##########################################################################
 
-if(WITH_BOOST)
+if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
 
     set(Boost_USE_STATIC_LIBS        ON) # only find static libs
     set(Boost_USE_MULTITHREADED      ON)
     set(Boost_USE_STATIC_RUNTIME     OFF)
 
-    find_package(Boost 1.50 COMPONENTS filesystem system unit_test_framework REQUIRED)
+    find_package(Boost 1.50 COMPONENTS REQUIRED
+                filesystem 
+                system 
+                unit_test_framework)
+
     if(Boost_FOUND)
         message(STATUS "  Boost version: ${Boost_VERSION}")
         include_directories(${Boost_INCLUDE_DIRS})
+        set(TL_HAVE_BOOST YES)
+    else()
+        set(TL_HAVE_BOOST NO)
     endif()
 
 endif()

@@ -70,8 +70,8 @@ swapEndian(T val)
   return dst.val;
 }
 
-template <> int8_t swapEndian<int8_t>(int8_t val) { return val; }
-template <> uint8_t swapEndian<uint8_t>(uint8_t val) { return val; }
+//template <> int8_t swapEndian<int8_t>(int8_t val) { return val; }
+//template <> uint8_t swapEndian<uint8_t>(uint8_t val) { return val; }
 
 /*! \} */ // end of core
 

@@ -56,7 +56,7 @@ int main(int argc, char** argv)
   std::string epsg_in;
   std::string epsg_out;
   std::string coord;
-  std::string separator = ";";
+  char separator = ';';
   std::string coord_trf;
   std::string log_file;
 
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
   cmd.addArgument(CreateArgumentStringRequired("epsg_in", 'i', "Sistema de referencia de entrada", &epsg_in));
   cmd.addArgument(CreateArgumentStringRequired("epsg_out", 'o', "Sistema de referencia de salida", &epsg_out));
   cmd.addArgument(CreateArgumentStringRequired("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto", &coord));
-  cmd.addArgument(CreateArgumentStringOptional("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", &separator));
+  cmd.addArgument(CreateArgumentCharOptional("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", &separator));
   cmd.addArgument(CreateArgumentStringOptional("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", &coord_trf));
   cmd.addArgument(CreateArgumentStringOptional("log", 'l', "Fichero de log", &log_file));
 
@@ -107,8 +107,7 @@ int main(int argc, char** argv)
 
         std::string line;
         while (std::getline(ifs, line)) {
-          std::vector<double> vector;
-          splitToNumbers(line, vector, separator.c_str());
+          std::vector<double> vector = split<double>(line, separator);
           Point3D pt_in(vector[0], vector[1], vector[2]);
           Point3D pt_out;
           crs.transform(pt_in, pt_out);
@@ -123,8 +122,7 @@ int main(int argc, char** argv)
       }
 
     } else {
-      std::vector<double> point;
-      splitToNumbers(coord, point, separator.c_str());
+      std::vector<double> point = split<double>(coord, separator);
       Point3D pt_in(point[0], point[1], point[2]);
       Point3D pt_out;
       crs.transform(pt_in, pt_out);

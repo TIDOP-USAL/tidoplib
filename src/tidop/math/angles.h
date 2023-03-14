@@ -49,6 +49,8 @@ inline int isNegative(T t)
   return t < 0 ? -1 : 1;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 /*!
  * \brief Convert from degrees, minutes and seconds to decimal degrees
  * \param[in] degrees Degrees
@@ -56,6 +58,7 @@ inline int isNegative(T t)
  * \param[in] seconds Seconds
  * \return Decimal degrees
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double degreesToDecimalDegrees(int degrees, 
                                          int minutes, 
                                          double seconds);
@@ -68,6 +71,7 @@ TL_EXPORT double degreesToDecimalDegrees(int degrees,
  * \param[in] seconds Seconds
  * \return radians
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double degreesToRadians(int degrees,
                                   int minutes,
                                   double seconds);
@@ -79,6 +83,7 @@ TL_EXPORT double degreesToRadians(int degrees,
  * \param[in] seconds Seconds
  * \return Gradians
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double degreesToGradians(int degrees, 
                                    int minutes, 
                                    double seconds);
@@ -97,6 +102,7 @@ TL_EXPORT double degreesToGradians(int degrees,
  * decimalDegreesToDegrees(55.666, degrees, minutes, seconds);
  * \endcode
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees,
                                        int &degrees, 
                                        int &minutes, 
@@ -107,6 +113,7 @@ TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees,
  * \param[in] decimalDegrees Decimal degrees
  * \return Radianes
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
 
 /*!
@@ -114,6 +121,7 @@ TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
  * \param[in] decimalDegrees Decimal degrees
  * \return Gradians
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
 
 /*!
@@ -123,6 +131,7 @@ TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
  * \param[out] minutes Minutes
  * \param[out] seconds Seconds
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT void radiansToDegrees(double radians,
                                 int &degrees,
                                 int &minutes, 
@@ -133,6 +142,7 @@ TL_EXPORT void radiansToDegrees(double radians,
  * \param[in] radians Radians
  * \return Degrees
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double radiansToDecimalDegrees(double radians);
 
 /*!
@@ -140,6 +150,7 @@ TL_EXPORT double radiansToDecimalDegrees(double radians);
  * \param[in] radians Radians
  * \return Gradians
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double radiansToGradians(double radians);
 
 /*!
@@ -149,6 +160,7 @@ TL_EXPORT double radiansToGradians(double radians);
  * \param[out] minutes Minutes
  * \param[out] seconds Seconds
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT void gradiansToDegrees(double gradians, 
                                  int &degrees, 
                                  int &minutes, 
@@ -159,6 +171,7 @@ TL_EXPORT void gradiansToDegrees(double gradians,
  * \param[in] gradians Gradians
  * \return Degrees
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double gradiansToDecimalDegrees(double gradians);
 
 /*!
@@ -166,9 +179,10 @@ TL_EXPORT double gradiansToDecimalDegrees(double gradians);
  * \param[in] gradians Gradians
  * \return radians
  */
+TL_DEPRECATED("", 2.2)
 TL_EXPORT double gradiansToRadians(double gradians);
 
-
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /*!
@@ -213,11 +227,17 @@ public:
 
 
 
-/*!
- * \brief Angle Base class
- */
 template<typename T>
-class AngleBase
+class AngleConverter;
+
+template<typename T>
+class AngleBase;
+
+
+template<
+  template<typename>
+  class AngleDerived, typename T>
+class AngleBase<AngleDerived<T>>
   : public Angle 
 {
 
@@ -231,12 +251,35 @@ public:
 
   AngleBase &operator=(const AngleBase &angle);
   AngleBase &operator=(AngleBase &&angle) TL_NOEXCEPT;
-  //void operator=(T angle);
 
   virtual T value() const;
-  virtual void setValue(T angle);
-
   Unit unit() const override;
+
+  template<
+    template<typename>
+    class AngleDerived2, typename T2>
+  operator AngleDerived2<T2>()
+  {
+    AngleDerived2<T> angle;
+    AngleConverter<T>::convert(derived(), angle.derived());
+    return AngleDerived2<T2>(angle.value());
+  }
+
+public:
+
+  AngleDerived<T> &derived()
+  {
+    return *static_cast<AngleDerived<T> *>(this);
+  }
+
+  const AngleDerived<T> &derived() const
+  {
+    return *static_cast<const AngleDerived<T> *>(this);
+  }
+
+protected:
+
+  virtual void setValue(T angle);
 
 private:
 
@@ -253,7 +296,7 @@ private:
  */
 template<typename T>
 class Radians
-  : public AngleBase<T>
+  : public AngleBase<Radians<T>>
 {
 
 public:
@@ -280,7 +323,7 @@ public:
  */
 template<typename T>
 class Gradians
-  : public AngleBase<T>
+  : public AngleBase<Gradians<T>>
 {
 
 public:
@@ -313,7 +356,7 @@ public:
  */
 template<typename T>
 class Degrees
-  : public AngleBase<T>
+  : public AngleBase<Degrees<T>>
 {
 
 public:
@@ -411,40 +454,50 @@ public:
 
 /* AngleBase implementation */
 
-template<typename T>
-AngleBase<T>::AngleBase(Unit unit)
+template<
+  template<typename>
+  class AngleDerived, typename T>
+AngleBase<AngleDerived<T>>::AngleBase(Unit unit)
   : mUnit(unit),
     mValue(0)
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
-template<typename T>
-AngleBase<T>::AngleBase(Unit unit, T value)
+template<
+  template<typename>
+  class AngleDerived, typename T>
+AngleBase<AngleDerived<T>>::AngleBase(Unit unit, T value)
   : mUnit(unit),
     mValue(value)
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
-template<typename T> inline
-AngleBase<T>::AngleBase(const AngleBase &angle)
+template<
+  template<typename>
+  class AngleDerived, typename T>
+AngleBase<AngleDerived<T>>::AngleBase(const AngleBase &angle)
   : mUnit(angle.mUnit),
     mValue(angle.mValue)
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
-template<typename T> inline
-AngleBase<T>::AngleBase(AngleBase &&angle) TL_NOEXCEPT
+template<
+  template<typename>
+  class AngleDerived, typename T>
+AngleBase<AngleDerived<T>>::AngleBase(AngleBase &&angle) TL_NOEXCEPT
   : mUnit(angle.mUnit),
     mValue(angle.mValue)
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
-template<typename T> inline
-AngleBase<T> &AngleBase<T>::operator=(const AngleBase &angle)
+template<
+  template<typename>
+  class AngleDerived, typename T>
+AngleBase<AngleDerived<T>> &AngleBase<AngleDerived<T>>::operator=(const AngleBase &angle)
 {
   if (this != &angle) {
     mUnit = angle.mUnit;
@@ -453,8 +506,10 @@ AngleBase<T> &AngleBase<T>::operator=(const AngleBase &angle)
   return (*this);
 }
 
-template<typename T> inline
-AngleBase<T> &AngleBase<T>::operator=(AngleBase &&angle) TL_NOEXCEPT
+template<
+  template<typename>
+  class AngleDerived, typename T>
+AngleBase<AngleDerived<T>> &AngleBase<AngleDerived<T>>::operator=(AngleBase &&angle) TL_NOEXCEPT
 {
   if (this != &angle) {
     mUnit = angle.mUnit;
@@ -463,55 +518,54 @@ AngleBase<T> &AngleBase<T>::operator=(AngleBase &&angle) TL_NOEXCEPT
   return (*this);
 }
 
-//template<typename T> inline
-//void AngleBase<T>::operator=(T angle)
-//{
-//  mValue = angle;
-//}
-
-template<typename T> inline
-T AngleBase<T>::value() const
+template<
+  template<typename>
+  class AngleDerived, typename T>
+inline T AngleBase<AngleDerived<T>>::value() const
 {
   return mValue;
 }
 
-template<typename T> inline
-void AngleBase<T>::setValue(T angle)
+template<
+  template<typename>
+  class AngleDerived, typename T>
+inline void AngleBase<AngleDerived<T>>::setValue(T angle)
 {
   mValue = angle;
 }
 
-template<typename T> inline
-Angle::Unit AngleBase<T>::unit() const
+template<
+  template<typename>
+  class AngleDerived, typename T>
+inline Angle::Unit AngleBase<AngleDerived<T>>::unit() const
 {
   return mUnit;
 }
-
 
 
 /* Radians implementation */
 
 template<typename T> inline
 Radians<T>::Radians()
-  : AngleBase<T>(Angle::Unit::radians)
+  : AngleBase<Radians<T>>(Angle::Unit::radians)
 {
 }
 
 template<typename T> inline
 Radians<T>::Radians(double angle)
-  : AngleBase<T>(Angle::Unit::radians, angle)
+  : AngleBase<Radians<T>>(Angle::Unit::radians, angle)
 {
 }
 
 template<typename T> inline
 Radians<T>::Radians(const Radians &radians)
-  : AngleBase<T>(radians)
+  : AngleBase<Radians<T>>(radians)
 {
 }
 
 template<typename T> inline
 Radians<T>::Radians(Radians &&radians) TL_NOEXCEPT
-  : AngleBase<T>(std::forward<AngleBase<T>>(radians))
+  : AngleBase<Radians<T>>(std::forward<AngleBase<Radians<T>>>(radians))
 {
 }
 
@@ -519,7 +573,7 @@ template<typename T> inline
 Radians<T> &Radians<T>::operator=(const Radians &radians)
 {
   if (this != &radians) {
-    AngleBase<T>::operator=(radians);
+    AngleBase<Radians<T>>::operator=(radians);
   }
   return (*this);
 }
@@ -528,7 +582,7 @@ template<typename T> inline
 Radians<T> &Radians<T>::operator=(Radians &&radians) TL_NOEXCEPT
 {
   if (this != &radians) {
-    AngleBase<T>::operator=(std::forward<AngleBase<T>>(radians));
+    AngleBase<Radians<T>>::operator=(std::forward<AngleBase<Radians<T>>>(radians));
   }
   return (*this);
 }
@@ -571,25 +625,25 @@ void Radians<T>::normalizePositive()
 
 template<typename T> inline
 Gradians<T>::Gradians()
-  : AngleBase<T>(Angle::Unit::gradians)
+  : AngleBase<Gradians<T>>(Angle::Unit::gradians)
 {
 }
 
 template<typename T> inline
 Gradians<T>::Gradians(T value)
-  : AngleBase<T>(Angle::Unit::gradians, value)
+  : AngleBase<Gradians<T>>(Angle::Unit::gradians, value)
 {
 }
 
 template<typename T> inline
 Gradians<T>::Gradians(const Gradians &gradians)
-  : AngleBase<T>(gradians)
+  : AngleBase<Gradians<T>>(gradians)
 {
 }
 
 template<typename T> inline
 Gradians<T>::Gradians(Gradians &&gradians) TL_NOEXCEPT
-  : AngleBase<T>(std::forward<AngleBase<T>>(gradians))
+  : AngleBase<Gradians<T>>(std::forward<AngleBase<Gradians<T>>>(gradians))
 {
 }
 
@@ -597,7 +651,7 @@ template<typename T> inline
 Gradians<T> &Gradians<T>::operator=(const Gradians &gradians)
 {
   if (this != &gradians) {
-    AngleBase<T>::operator=(gradians);
+    AngleBase<Gradians<T>>::operator=(gradians);
   }
   return (*this);
 }
@@ -606,7 +660,7 @@ template<typename T> inline
 Gradians<T> &Gradians<T>::operator=(Gradians &&gradians) TL_NOEXCEPT
 {
   if (this != &gradians) {
-    AngleBase<T>::operator=(std::forward<AngleBase<T>>(gradians));
+    AngleBase<Gradians<T>>::operator=(std::forward<AngleBase<Gradians<T>>>(gradians));
   }
   return (*this);
 }
@@ -704,32 +758,31 @@ void tl::math::Gradians<T>::setSeconds(T seconds)
 
 template<typename T> inline
 Degrees<T>::Degrees()
-  : AngleBase<T>(Angle::Unit::degrees)
+  : AngleBase<Degrees<T>>(Angle::Unit::degrees)
 {
 }
 
 template<typename T> inline
 Degrees<T>::Degrees(T value)
-  : AngleBase<T>(Angle::Unit::degrees, value)
+  : AngleBase<Degrees<T>>(Angle::Unit::degrees, value)
 {
 }
 
 template<typename T> inline
 Degrees<T>::Degrees(const Degrees &degrees)
-  : AngleBase<T>(degrees)
+  : AngleBase<Degrees<T>>(degrees)
 {
-
 }
 
 template<typename T> inline
 Degrees<T>::Degrees(Degrees &&degrees) TL_NOEXCEPT
-  : AngleBase<T>(std::forward<AngleBase<T>>(degrees))
+  : AngleBase<Degrees<T>>(std::forward<AngleBase<Degrees<T>>>(degrees))
 {
 }
 
 template<typename T> inline
 Degrees<T>::Degrees(int degrees, int minutes, T seconds)
-  : AngleBase<T>(Angle::Unit::degrees)
+  : AngleBase<Degrees<T>>(Angle::Unit::degrees)
 {
   this->setValue(isNegative(degrees) *
                  (std::abs(degrees) +
@@ -741,7 +794,7 @@ template<typename T> inline
 Degrees<T> &Degrees<T>::operator=(const Degrees &degrees)
 {
   if (this != &degrees) {
-    AngleBase<T>::operator=(degrees);
+    AngleBase<Degrees<T>>::operator=(degrees);
   }
   return (*this);
 }
@@ -750,7 +803,7 @@ template<typename T> inline
 Degrees<T> &Degrees<T>::operator=(Degrees &&degrees) TL_NOEXCEPT
 {
   if (this != &degrees) {
-    AngleBase<T>::operator=(std::forward<AngleBase<T>>(degrees));
+    AngleBase<Degrees<T>>::operator=(std::forward<AngleBase<Degrees<T>>>(degrees));
   }
   return (*this);
 }

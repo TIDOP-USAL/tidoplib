@@ -97,7 +97,7 @@ typename std::enable_if<
     typename std::iterator_traits<It>::value_type>::type
 mean(It first, It last)
 {
-  using T = typename std::iterator_traits<It>::value_type;
+  using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
   T x{0};
   T i{1};
@@ -148,7 +148,7 @@ typename std::enable_if<
   typename std::iterator_traits<It>::value_type>::type
 quantile(It first, It last, double p)
 {
-  using T = typename std::iterator_traits<It>::value_type;
+  using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
   T q;
 
@@ -164,7 +164,7 @@ quantile(It first, It last, double p)
   if (idx_1 == idx_2) {
     q = sort_vector[idx_1];
   } else {
-    q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
+    q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * static_cast<T>(fabs(idx - static_cast<int>(idx)));
   }
 
   return q;

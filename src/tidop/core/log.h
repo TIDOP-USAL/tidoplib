@@ -135,40 +135,65 @@ protected:
    * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
+#if CPP_VERSION >= 17
+  void onMsgDebug(std::string_view message, 
+                  std::string_view date) override;
+#else
   void onMsgDebug(const std::string &message, 
                   const std::string &date) override;
+#endif
 
   /*!
    * \brief Mensaje de información
    * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
+#if CPP_VERSION >= 17
+  void onMsgInfo(std::string_view message, 
+                 std::string_view date) override;
+#else
   void onMsgInfo(const std::string &message, 
                  const std::string &date) override;
+#endif
 
   /*!
    * \brief Mensaje de advertencia
    * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
+#if CPP_VERSION >= 17
+  void onMsgWarning(std::string_view message, 
+                    std::string_view date) override;
+#else
   void onMsgWarning(const std::string &message, 
                     const std::string &date) override;
+#endif
 
   /*!
    * \brief Mensaje de error
    * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
+#if CPP_VERSION >= 17
+  void onMsgError(std::string_view message, 
+                  std::string_view date) override;
+#else
   void onMsgError(const std::string &message, 
                   const std::string &date) override;
+#endif
 
   /*!
    * \brief Escribe una linea en el log
    * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
+#if CPP_VERSION >= 17
+  void _write(std::string_view message, 
+              std::string_view date);
+#else
   void _write(const std::string &message, 
               const std::string &date);
+#endif
 
 #endif // TL_MESSAGE_HANDLER
 

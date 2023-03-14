@@ -30,6 +30,7 @@ namespace tl
 namespace math
 {
   
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 double degreesToDecimalDegrees(int degrees, int minutes, double seconds)
 {
@@ -99,6 +100,8 @@ double gradiansToRadians(double gradians)
 {
   return gradians * consts::grad_to_rad<double>;
 }
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 } // Fin namespace math

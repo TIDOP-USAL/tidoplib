@@ -908,7 +908,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     int64_t aa[2], bb[2];
     packed1.storeUnaligned(&aa[0]);                                     // split into elements
     packed2.storeUnaligned(&bb[0]);
-    r = _mm_set_epi64x(aa[0] * bb[0], aa[1] * bb[1]);     // multiply elements separetely
+    r = _mm_set_epi64x(aa[1] * bb[1], aa[0] * bb[0]);     // multiply elements separetely
 #  endif
 #endif
 

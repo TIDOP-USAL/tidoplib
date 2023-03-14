@@ -23,10 +23,10 @@
 ##########################################################################
 
 function(add_files_to_source_group group_name files)
-    
-	  set(FILE_LIST ${files} ${ARGN})
+   
+    set(FILE_LIST ${files} ${ARGN})
 	  
-	  foreach(_source IN ITEMS ${FILE_LIST})
+    foreach(_source IN ITEMS ${FILE_LIST})
         get_filename_component(_source_path "${_source}" PATH)
         string(REPLACE "/" "\\" _group_path "${_source_path}")
         source_group("${group_name}\\${_group_path}" FILES "${_source}")
@@ -45,12 +45,12 @@ function(add_files_to_project TARGET)
         "SOURCE_FILES;HEADER_FILES;RESOURCE_FILES;FORM_FILES")
 
     #if (IS_DIRECTORY ${PARAM_DIRECTORY})
-	#	# Carga automatica en función de las extensiones de archivo
-	#    file(GLOB_RECURSE DIRECTORY_SOURCES_FILES RELATIVE "${PARAM_DIRECTORY}" CONFIGURE_DEPENDS *.cpp)
+    #    # Carga automatica en función de las extensiones de archivo
+    #    file(GLOB_RECURSE DIRECTORY_SOURCES_FILES RELATIVE "${PARAM_DIRECTORY}" CONFIGURE_DEPENDS *.cpp)
     #    file(GLOB_RECURSE DIRECTORY_HEADER_FILES RELATIVE "${PARAM_DIRECTORY}" CONFIGURE_DEPENDS *.h *.hpp)
-	#	#file(GLOB_RECURSE RESOURCE_FILES RELATIVE ${PARAM_DIRECTORY} CONFIGURE_DEPENDS *.cpp)
+    #    #file(GLOB_RECURSE RESOURCE_FILES RELATIVE ${PARAM_DIRECTORY} CONFIGURE_DEPENDS *.cpp)
     #    #file(GLOB_RECURSE FORM_FILES RELATIVE ${PARAM_DIRECTORY} CONFIGURE_DEPENDS *.h *.hpp)
-	#endif()
+    #endif()
 	
     set(_SOURCES_FILES ${PARAM_SOURCE_FILES} "${PROJECT_SOURCE_FILES}")
     set(_HEADER_FILES ${PARAM_HEADER_FILES} "${PROJECT_HEADER_FILES}")

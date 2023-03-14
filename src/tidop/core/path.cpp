@@ -407,7 +407,7 @@ Path Path::tempDirectory()
     temp_path.assign(c_path.begin(), c_path.end() - 1);
   } else {
     temp_path = "";
-    TL_TODO("devolver error?")
+    msgWarning("Failed to create temporary directory");
   }
 #endif
 

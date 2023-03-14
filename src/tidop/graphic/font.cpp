@@ -92,7 +92,7 @@ void Font::setSize(int size)
 
 bool Font::isBold() const
 {
-  return mStyle.isActive(Style::bold);
+  return mStyle.isEnabled(Style::bold);
 }
 
 void Font::setBold(bool active)
@@ -102,7 +102,7 @@ void Font::setBold(bool active)
 
 bool Font::isItalic() const
 {
-  return mStyle.isActive(Style::italic);
+  return mStyle.isEnabled(Style::italic);
 }
 
 void Font::setItalic(bool active)

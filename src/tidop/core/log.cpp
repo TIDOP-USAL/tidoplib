@@ -98,40 +98,66 @@ void Log::resumeListener()
   sPauseListener = false;
 }
 
+#if CPP_VERSION >= 17
+void Log::onMsgDebug(std::string_view message, 
+                     std::string_view date)
+#else
 void Log::onMsgDebug(const std::string &message, 
                      const std::string &date)
+#endif
 {
-  if (sLevel.isActive(MessageLevel::msg_debug)) {
+  if (sLevel.isEnabled(MessageLevel::msg_debug)) {
     _write(message, date);
   }
 }
 
+#if CPP_VERSION >= 17
+void Log::onMsgInfo(std::string_view message, 
+                    std::string_view date)
+#else
 void Log::onMsgInfo(const std::string &message, 
-                    const std::string &date)
+                    const std::string &date) 
+#endif
 {
-  if (sLevel.isActive(MessageLevel::msg_info)) {
+  if (sLevel.isEnabled(MessageLevel::msg_info)) {
     _write(message, date);
   }
 }
 
+#if CPP_VERSION >= 17
+void Log::onMsgWarning(std::string_view message, 
+                       std::string_view date)
+#else
 void Log::onMsgWarning(const std::string &message, 
                        const std::string &date)
+#endif
 {
-  if (sLevel.isActive(MessageLevel::msg_warning)) {
+  if (sLevel.isEnabled(MessageLevel::msg_warning)) {
     _write(message, date);
   }
 }
 
+#if CPP_VERSION >= 17
+void Log::onMsgError(std::string_view message, 
+                     std::string_view date)
+#else
 void Log::onMsgError(const std::string &message, 
                      const std::string &date)
+#endif
 {
-  if (sLevel.isActive(MessageLevel::msg_error)) {
+  if (sLevel.isEnabled(MessageLevel::msg_error)) {
     _write(message, date);
   }
 }
+
+#if CPP_VERSION >= 17
+void Log::_write(std::string_view message, 
+                 std::string_view date)
+#else
 
 void Log::_write(const std::string &message, 
                  const std::string &date)
+#endif
 {
   if (sLogFile.empty()) {
     // Log por defecto

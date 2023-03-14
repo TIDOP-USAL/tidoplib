@@ -713,7 +713,7 @@ void passPointsRead(const std::string &fname, std::vector<std::vector<std::pair<
     while (std::getline(ifs, line)) {
 
       std::vector<std::string> list;
-      list = split(line, ";");
+      list = split<std::string>(line, ';');
       size_t size = list.size();
       if (size >= 1){
         if (size == 1 || size % 2 == 0){

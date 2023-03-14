@@ -66,8 +66,12 @@ public:
   RotationMatrix();
   RotationMatrix(const RotationMatrix<T> &rot);
   RotationMatrix(const Matrix<T, 3, 3> &rot);
+  RotationMatrix(Matrix<T, 3, 3> &&rot) TL_NOEXCEPT;
   ~RotationMatrix() override = default;
 
+  RotationMatrix &operator = (const RotationMatrix<T> &rot);
+
+  RotationMatrix &operator = (RotationMatrix &&rot) TL_NOEXCEPT;
 
 private:
 
@@ -89,10 +93,33 @@ RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
 }
 
 template <typename T> inline
-RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
+RotationMatrix<T>::RotationMatrix(Matrix<T, 3, 3> &&rot) TL_NOEXCEPT
   : RotationBase<T>(Rotation::Type::rotation_matrix),
-    Matrix<T, 3, 3>(rot)
+    Matrix<T, 3, 3>(std::forward<Matrix<T, 3, 3>>(rot))
 {
+}
+
+
+template <typename T> 
+inline RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix<T> &rot)
+{
+  if (this != &rot) {
+    RotationBase<T>::operator = (rot);
+    Matrix<T, 3, 3>::operator = (rot);
+  }
+
+  return *this;
+}
+
+template <typename T> 
+RotationMatrix<T> &RotationMatrix<T>::operator = (RotationMatrix &&rot) TL_NOEXCEPT
+{
+  if (this != &rot) {
+    RotationBase<T>::operator = (std::forward<RotationBase<T>>(rot));
+    Matrix<T, 3, 3>::operator = (std::forward<Matrix<T, 3, 3>>(rot));
+  }
+
+  return *this;
 }
 
 /*! \} */ // end of rotation

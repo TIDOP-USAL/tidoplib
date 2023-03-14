@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(default_constructor)
 {
   Console &console = Console::instance();
   EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isActive(MessageLevel::msg_error));
+  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::msg_error));
 }
 
 BOOST_AUTO_TEST_CASE(messageLevel)
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(messageLevel)
   Console &console = Console::instance();
   console.setMessageLevel(MessageLevel::msg_debug);
   EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isActive(MessageLevel::msg_debug));
+  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::msg_debug));
 }
 
 BOOST_AUTO_TEST_CASE(printMessage)

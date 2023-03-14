@@ -43,6 +43,7 @@ if(BUILD_TL_MATH)
                              statistics.h
                              mathutils.h
                              simd.h
+                             data.h
                              statistic/series.h
                              statistic/descriptive.h
                              statistic/confmat.h
@@ -60,6 +61,7 @@ if(BUILD_TL_MATH)
                              algebra/lu.h
                              algebra/qr.h
                              algebra/cholesky.h
+                             algebra/umeyama.h
                              lapack.h
                              blas.h)
                 

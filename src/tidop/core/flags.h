@@ -66,13 +66,13 @@ namespace tl
  *   EnumFlags<ePrueba> flag(ePrueba::flag_1);
  *
  *   // Comprueba si el flag esta activo
- *   bool bActive = flag.isActive(ePrueba::flag_1);
+ *   bool bActive = flag.isEnabled(ePrueba::flag_1);
  *
  *   // Activa un flag
- *   flag2.flagOn(ePrueba::flag_3);
+ *   flag2.enable(ePrueba::flag_3);
  *
  *   // Desactiva un flag
- *   flag2.flagOff(ePrueba::flag_1);
+ *   flag2.disable(ePrueba::flag_1);
  *
  *   // Invierte un flag
  *   flag2.switchFlag(ePrueba::flag_5);
@@ -149,15 +149,6 @@ public:
   EnumFlags<T> &operator = (T flag);
 
   /*!
-   * \brief Comprueba si el flag esta activo
-   * \param[in] flag Flag que se comprueba
-   * \return Verdadero si esta activo y falso en caso contrario.
-   * \deprecated Use 'flags()' en su lugar 
-   */
-  TL_DEPRECATED("Use isEnabled() method", 3.0)
-  bool isActive(T flag) const;
-
-  /*!
    * \brief Comprueba si el flag esta desactivado
    * \param[in] flag Flag que se comprueba
    * \return Verdadero si esta desactivado y falso en caso contrario.
@@ -170,20 +161,6 @@ public:
    * \return Verdadero si esta desactivado y falso en caso contrario.
    */
   bool isDisabled(T flag) const;
-
-  /*!
-   * \brief Activa un flag
-   * \param[in] flag Flag que se activa
-   */
-  TL_DEPRECATED("Use enable() method", 3.0)
-  void flagOn(T flag);
-
-  /*!
-   * \brief Desactiva un flag
-   * \param[in] flag Flag que se desactiva
-   */
-  TL_DEPRECATED("Use disable() method", 3.0)
-  void flagOff(T flag);
 
   /*!
    * \brief Activa un flag
@@ -215,21 +192,39 @@ public:
    */
   void clear();
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve los flags
-   * \return
-   * \deprecated Use 'flags()' en su lugar 
-   */
-  TL_DEPRECATED("EnumFlags::flags", "2.0")
-  T getFlags() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
-   
   /*!
    * \brief Devuelve los flags
    * \return
    */
   T flags() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Comprueba si el flag esta activo
+   * \param[in] flag Flag que se comprueba
+   * \return Verdadero si esta activo y falso en caso contrario.
+   * \deprecated Use 'flags()' en su lugar 
+   */
+  TL_DEPRECATED("isEnabled()", 2.2)
+  bool isActive(T flag) const;
+
+  /*!
+   * \brief Activa un flag
+   * \param[in] flag Flag que se activa
+   */
+  TL_DEPRECATED("enable()", 2.2)
+  void flagOn(T flag);
+
+  /*!
+   * \brief Desactiva un flag
+   * \param[in] flag Flag que se desactiva
+   */
+  TL_DEPRECATED("disable()", 2.2)
+  void flagOff(T flag);
+
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 private:
 
@@ -240,35 +235,35 @@ private:
 
 };
 
-template<typename T> inline
-EnumFlags<T>::EnumFlags() 
+template<typename T>
+inline EnumFlags<T>::EnumFlags() 
   : mFlag(0) 
 {
 }
 
-template<typename T> inline
-EnumFlags<T>::EnumFlags(const EnumFlags<T> &flag)
+template<typename T>
+inline EnumFlags<T>::EnumFlags(const EnumFlags<T> &flag)
   : mFlag(flag.mFlag) 
 {
 
 }
 
-template<typename T> inline
-EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT
+template<typename T>
+inline EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT
   : mFlag(std::move(flag.mFlag)) 
 {
 
 }
 
 
-template<typename T> inline
-EnumFlags<T>::EnumFlags(T flag) 
+template<typename T>
+inline EnumFlags<T>::EnumFlags(T flag) 
   : mFlag(static_cast<Type>(flag))
 {
 }
 
-template<typename T> inline
-EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
+template<typename T>
+inline EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
 {
   if (this != &flag) {
     this->mFlag = flag.mFlag;
@@ -276,8 +271,8 @@ EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
   return *this;
 }
 
-template<typename T> inline
-EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag) TL_NOEXCEPT
+template<typename T>
+inline EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag) TL_NOEXCEPT
 {
   if (this != &flag) {
     this->mFlag = std::move(flag.mFlag);
@@ -285,29 +280,73 @@ EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag) TL_NOEXCEPT
   return *this;
 }
 
-template<typename T> inline
-EnumFlags<T> &EnumFlags<T>::operator = (T flag)
+template<typename T>
+inline EnumFlags<T> &EnumFlags<T>::operator = (T flag)
 {
   mFlag = static_cast<Type>(flag);
   return *this;
 }
 
+template<typename T>
+inline bool EnumFlags<T>::isEnabled(T flag) const
+{
+  return 0 != (mFlag & static_cast<Type>(flag));
+}
+
+template<typename T>
+inline bool EnumFlags<T>::isDisabled(T flag) const
+{
+  return 0 == (mFlag & static_cast<Type>(flag));
+}
+
+template<typename T>
+inline void tl::EnumFlags<T>::enable(T flag)
+{
+  mFlag |= static_cast<Type>(flag);
+}
+
+template<typename T>
+inline void EnumFlags<T>::disable(T flag)
+{
+  mFlag &= ~static_cast<Type>(flag);
+}
+
+template<typename T>
+inline void EnumFlags<T>::activeFlag(T flag, bool active)
+{
+  if (active) 
+    enable(flag);
+  else 
+    disable(flag);
+}
+
+template<typename T>
+inline void EnumFlags<T>::switchFlag(T flag)
+{
+  if (isEnabled(flag)) 
+    disable(flag);
+  else 
+    enable(flag);
+}
+
+template<typename T>
+inline void EnumFlags<T>::clear()
+{
+  mFlag = static_cast<Type>(0);
+}
+
+template<typename T>
+inline T EnumFlags<T>::flags() const
+{
+  return static_cast<T>(mFlag);
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 template<typename T> inline
 bool EnumFlags<T>::isActive(T flag) const
 {
   return 0 != (mFlag & static_cast<Type>(flag));
-}
-
-template<typename T> inline
-bool EnumFlags<T>::isEnabled(T flag) const
-{
-  return 0 != (mFlag & static_cast<Type>(flag));
-}
-
-template<typename T> inline
-bool EnumFlags<T>::isDisabled(T flag) const
-{
-  return 0 == (mFlag & static_cast<Type>(flag));
 }
 
 template<typename T> inline
@@ -322,55 +361,8 @@ void EnumFlags<T>::flagOff(T flag)
   mFlag &= ~static_cast<Type>(flag);
 }
 
-template<typename T> inline
-void tl::EnumFlags<T>::enable(T flag)
-{
-  mFlag |= static_cast<Type>(flag);
-}
-
-template<typename T> inline
-void EnumFlags<T>::disable(T flag)
-{
-  mFlag &= ~static_cast<Type>(flag);
-}
-
-template<typename T> inline
-void EnumFlags<T>::activeFlag(T flag, bool active)
-{
-  if (active) 
-    enable(flag);
-  else 
-    disable(flag);
-}
-
-template<typename T> inline
-void EnumFlags<T>::switchFlag(T flag)
-{
-  if (isActive(flag)) 
-    disable(flag);
-  else 
-    enable(flag);
-}
-
-template<typename T> inline
-void EnumFlags<T>::clear()
-{
-  mFlag = static_cast<Type>(0);
-}
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename T> inline
-T EnumFlags<T>::getFlags() const
-{
-  return static_cast<T> (mFlag);
-}
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
-template<typename T> inline
-T EnumFlags<T>::flags() const
-{
-  return static_cast<T>(mFlag);
-}
 
 
 
@@ -479,14 +471,6 @@ public:
   Flags &operator = (Flags<T> &&flag) TL_NOEXCEPT;
 
   /*!
-   * \brief Comprueba si el flag esta activo
-   * \param flag Flag que se comprueba
-   * \return Verdadero si esta activo y falso en caso contrario.
-   */
-  TL_DEPRECATED("Use isEnabled() method", 3.0)
-  bool isActive(T flag) const;
-
-  /*!
    * \brief Comprueba si el flag esta desactivado
    * \param[in] flag Flag que se comprueba
    * \return Verdadero si esta desactivado y falso en caso contrario.
@@ -499,20 +483,6 @@ public:
    * \return Verdadero si esta desactivado y falso en caso contrario.
    */
   bool isDisabled(T flag) const;
-
-  /*!
-   * \brief Activa un flag
-   * \param flag Flag que se activa
-   */
-  TL_DEPRECATED("Use enable() method", 3.0)
-  void flagOn(T flag);
-
-  /*!
-   * \brief Desactiva un flag
-   * \param flag Flag que se desactiva
-   */
-  TL_DEPRECATED("Use disable() method", 3.0)
-  void flagOff(T flag);
 
   /*!
    * \brief Activa un flag
@@ -536,22 +506,39 @@ public:
    * \brief Pone a cero todos los flags
    */
   void clear();
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve los flags
-   * \return
-   * \deprecated Use 'flags()' en su lugar 
-   */
-  TL_DEPRECATED("Flags::flags", "2.0")
-  T getFlags() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
    
   /*!
    * \brief Devuelve los flags
    * \return
    */
   T flags() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Comprueba si el flag esta activo
+   * \param flag Flag que se comprueba
+   * \return Verdadero si esta activo y falso en caso contrario.
+   */
+  TL_DEPRECATED("isEnabled()", 2.2)
+  bool isActive(T flag) const;
+  
+  /*!
+   * \brief Activa un flag
+   * \param flag Flag que se activa
+   */
+  TL_DEPRECATED("enable()", 2.2)
+  void flagOn(T flag);
+
+  /*!
+   * \brief Desactiva un flag
+   * \param flag Flag que se desactiva
+   */
+  TL_DEPRECATED("disable()", 2.2)
+  void flagOff(T flag);
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 
 private:
 
@@ -571,28 +558,28 @@ using Flags_64 = Flags<uint64_t>;
 
 
 template<typename T>
-Flags<T>::Flags()
+inline Flags<T>::Flags()
   : mFlag(0)
 {
   static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
-template<typename T> inline
-Flags<T>::Flags(const Flags &flag) 
+template<typename T> 
+inline Flags<T>::Flags(const Flags &flag) 
   : mFlag(flag.mFlag)
 {
   static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T>
-Flags<T>::Flags(Flags &&flag) TL_NOEXCEPT
+inline Flags<T>::Flags(Flags &&flag) TL_NOEXCEPT
   : mFlag(flag.mFlag)
 {
   static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
-template<typename T> inline
-Flags<T>::Flags(std::initializer_list<T> flags)
+template<typename T> 
+inline Flags<T>::Flags(std::initializer_list<T> flags)
   : mFlag(0)
 {
   static_assert(std::is_integral<T>::value, "Float point type not supported");
@@ -601,8 +588,8 @@ Flags<T>::Flags(std::initializer_list<T> flags)
   }
 }
 
-template<typename T> inline
-Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
+template<typename T>
+inline Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
 {
   if (this != &flag) {
     mFlag = flag.mFlag;
@@ -610,19 +597,13 @@ Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
   return *this;
 }
 
-template<typename T> inline
-Flags<T> &Flags<T>::operator = (Flags<T> &&flag) TL_NOEXCEPT
+template<typename T>
+inline Flags<T> &Flags<T>::operator = (Flags<T> &&flag) TL_NOEXCEPT
 {
   if (this != &flag) {
     mFlag = flag.mFlag;
   }
   return *this;
-}
-
-template<typename T> inline
-bool Flags<T>::isActive(T flag) const
-{
-  return 0 != (mFlag & T{1} << flag);
 }
 
 template<typename T>
@@ -637,6 +618,47 @@ inline bool Flags<T>::isDisabled(T flag) const
   return 0 == (mFlag & T{1} << flag);
 }
 
+template<typename T>
+inline void Flags<T>::enable(T flag)
+{
+  mFlag |= (T{1} << flag);
+}
+
+template<typename T> 
+inline void Flags<T>::disable(T flag)
+{
+  mFlag &= ~(T{1} << flag);
+}
+
+template<typename T> 
+inline void Flags<T>::switchFlag(T flag)
+{
+  if (isEnabled(flag)) 
+    disable(flag);
+  else 
+    enable(flag);
+}
+
+template<typename T> 
+inline void Flags<T>::clear()
+{
+  mFlag = T{0};
+}
+
+template<typename T> 
+inline T Flags<T>::flags() const
+{
+  return mFlag;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+template<typename T> inline
+bool Flags<T>::isActive(T flag) const
+{
+  return 0 != (mFlag & T{1} << flag);
+}
+
 template<typename T> inline
 void Flags<T>::flagOn(T flag)
 {
@@ -649,46 +671,7 @@ void Flags<T>::flagOff(T flag)
   mFlag &= ~(T{1} << flag);
 }
 
-template<typename T> inline
-void Flags<T>::enable(T flag)
-{
-  mFlag |= (T{1} << flag);
-}
-
-template<typename T> inline
-void Flags<T>::disable(T flag)
-{
-  mFlag &= ~(T{1} << flag);
-}
-
-template<typename T> inline
-void Flags<T>::switchFlag(T flag)
-{
-  if (isActive(flag)) 
-    disable(flag);
-  else 
-    enable(flag);
-}
-
-template<typename T> inline
-void Flags<T>::clear()
-{
-  mFlag = T{0};
-}
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename T> inline
-T Flags<T>::getFlags() const
-{
-  return static_cast<T>(mFlag);
-}
 #endif // TL_ENABLE_DEPRECATED_METHODS
-
-template<typename T> inline
-T Flags<T>::flags() const
-{
-  return mFlag;
-}
 
 /*! \} */ // end of core
 

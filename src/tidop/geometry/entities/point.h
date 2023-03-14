@@ -121,6 +121,7 @@ public:
   template<typename T2> operator Point3<T2>() const;
 
   math::Vector<T, 2> vector() const;
+  math::Vector<T> dynVector() const;
 
 public:
 
@@ -249,6 +250,12 @@ template<typename T> inline
 math::Vector<T, 2> Point<T>::vector() const
 {
   return math::Vector<T, 2>{this->x, this->y};
+}
+
+template<typename T> inline
+math::Vector<T> tl::Point<T>::dynVector() const
+{
+  return math::Vector<T>{this->x, this->y};
 }
 
 template<typename T> static inline
@@ -479,6 +486,8 @@ public:
   template<typename T2> operator Point<T2>() const;
 
   math::Vector<T, 3> vector() const;
+  math::Vector<T> dynVector() const;
+
 };
 
 using Point3I = Point3<int>;
@@ -599,6 +608,11 @@ math::Vector<T, 3> Point3<T>::vector() const
   return math::Vector<T, 3>{this->x, this->y, this->z};
 }
 
+template<typename T> inline
+math::Vector<T> Point3<T>::dynVector() const
+{
+  return math::Vector<T>{this->x, this->y, this->z};
+}
 
 template<typename T> static inline
 Point3<T>& operator += (Point3<T>& pt1, const Point3<T>& pt2)

@@ -151,13 +151,21 @@ public:
    * \brief Imprime un mensaje en la consola
    * \param[in] message Mensaje que se muestra por consola
    */
+#if CPP_VERSION >= 17
+  void printMessage(std::string_view message);
+#else
   void printMessage(const std::string &message);
+#endif
 
   /*!
    * \brief Imprime un mensaje de error en la consola
    * \param[in] message Mensaje que se muestra por consola
    */
+#if CPP_VERSION >= 17
+  void printErrorMessage(std::string_view message);
+#else
   void printErrorMessage(const std::string &message);
+#endif
 
   /*!
    * \brief Recupera los valores iniciales
@@ -213,32 +221,52 @@ protected:
    * \param msg
    * \param date
    */
+#if CPP_VERSION >= 17
+  void onMsgDebug(std::string_view message, 
+                  std::string_view date) override;
+#else
   void onMsgDebug(const std::string &message, 
                   const std::string &date) override;
+#endif
 
   /*!
    * \brief onMsgInfo
    * \param msg
    * \param date
    */
+#if CPP_VERSION >= 17
+  void onMsgInfo(std::string_view message, 
+                 std::string_view date) override;
+#else
   void onMsgInfo(const std::string &message, 
                  const std::string &date) override;
+#endif
 
   /*!
    * \brief onMsgWarning
    * \param msg
    * \param date
    */
+#if CPP_VERSION >= 17
+  void onMsgWarning(std::string_view message, 
+                    std::string_view date) override;
+#else
   void onMsgWarning(const std::string &message, 
                     const std::string &date) override;
+#endif
 
   /*!
    * \brief onMsgError
    * \param msg
    * \param date
    */
+#if CPP_VERSION >= 17
+  void onMsgError(std::string_view message, 
+                  std::string_view date) override;
+#else
   void onMsgError(const std::string &message, 
                   const std::string &date) override;
+#endif
 
 #endif // TL_MESSAGE_HANDLER 
 
@@ -595,6 +623,8 @@ using ArgumentBooleanRequired = Argument_<bool, true>;
 using ArgumentBooleanOptional = Argument_<bool, false>;
 using ArgumentStringRequired = Argument_<std::string, true>;
 using ArgumentStringOptional = Argument_<std::string, false>;
+using ArgumentCharRequired = Argument_<char, true>;
+using ArgumentCharOptional = Argument_<char, false>;
 using ArgumentPathRequired = Argument_<Path, true>;
 using ArgumentPathOptional = Argument_<Path, false>;
 
@@ -1608,6 +1638,8 @@ private:
 # define CreateArgumentBooleanOptional(...) std::make_shared<tl::ArgumentBooleanOptional>(__VA_ARGS__)
 # define CreateArgumentStringRequired(...) std::make_shared<tl::ArgumentStringRequired>(__VA_ARGS__)
 # define CreateArgumentStringOptional(...) std::make_shared<tl::ArgumentStringOptional>(__VA_ARGS__)
+# define CreateArgumentCharRequired(...) std::make_shared<tl::ArgumentCharRequired>(__VA_ARGS__)
+# define CreateArgumentCharOptional(...) std::make_shared<tl::ArgumentCharOptional>(__VA_ARGS__)
 # define CreateArgumentPathRequired(...) std::make_shared<tl::ArgumentPathRequired>(__VA_ARGS__)
 # define CreateArgumentPathOptional(...) std::make_shared<tl::ArgumentPathOptional>(__VA_ARGS__)
 # define CreateArgumentListIntegerRequired(...) std::make_shared<tl::ArgumentListIntegerRequired>(__VA_ARGS__)
