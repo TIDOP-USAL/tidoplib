@@ -501,7 +501,7 @@ Transform::Status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsI
   Transform::Status r_status = Transform::Status::success;
 
   this->formatVectorOut(ptsIn, ptsOut);
-  for (int i = 0; i < ptsIn.size(); i++) {
+  for (size_t i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], ptsOut[i], trfOrder);
     if ( r_status == Transform::Status::failure ) break;
   }
