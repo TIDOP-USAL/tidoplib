@@ -257,12 +257,12 @@ public:
 
   template<
     template<typename>
-    class AngleDerived2, typename T>
-  operator AngleDerived2<T>()
+    class AngleDerived2, typename T2>
+  operator AngleDerived2<T2>()
   {
     AngleDerived2<T> angle;
     AngleConverter<T>::convert(derived(), angle.derived());
-    return angle;
+    return AngleDerived2<T2>(angle.value());
   }
 
 public:
