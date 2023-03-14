@@ -132,14 +132,14 @@ BOOST_AUTO_TEST_CASE(EnumFlags_flagOn)
 {
   EnumFlags<ePrueba3> flag2;
 
-  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag03));
+  BOOST_CHECK_EQUAL(false, flag2.isEnabled(ePrueba3::flag03));
 
-  flag2.flagOn(ePrueba3::flag03);
+  flag2.enable(ePrueba3::flag03);
 
   BOOST_CHECK(flag2.isEnabled(ePrueba3::flag03));
 
   //Prueba a activar un flag ya activo
-  flag2.flagOn(ePrueba3::flag03);
+  flag2.enable(ePrueba3::flag03);
   BOOST_CHECK(flag2.isEnabled(ePrueba3::flag03));
 }
 
@@ -149,12 +149,12 @@ BOOST_AUTO_TEST_CASE(EnumFlags_flagOff)
 
   BOOST_CHECK(flag2.isEnabled(ePrueba3::flag15));
 
-  flag2.flagOff(ePrueba3::flag15);
+  flag2.disable(ePrueba3::flag15);
 
   BOOST_CHECK(flag2.isDisabled(ePrueba3::flag15));
 
   //Prueba a desactivar un flag ya desactivado
-  flag2.flagOff(ePrueba3::flag15);
+  flag2.disable(ePrueba3::flag15);
   BOOST_CHECK(flag2.isDisabled(ePrueba3::flag15));
 }
 
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(Flags_64_constructor)
 BOOST_AUTO_TEST_CASE(Flags_copy_constructor)
 {
   Flags_16 flag16;
-  flag16.flagOn(3);
+  flag16.enable(3);
 
   Flags<uint16_t> flag_copy(flag16);
   for (int i = 0; i < 16; i++) {
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(Flags_initializer_list_constructor)
 BOOST_AUTO_TEST_CASE(Flags_assign)
 {
   Flags_8 flag1;
-  flag1.flagOn(1);
+  flag1.enable(1);
 
   Flags_8 flag2 = flag1;
 
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(Flags_assign)
 BOOST_AUTO_TEST_CASE(Flags_clear)
 {
   Flags_32 flag;
-  flag.flagOn(2);
+  flag.enable(2);
   flag.switchFlag(3);
 
   BOOST_CHECK(flag.isEnabled(2));
@@ -283,12 +283,12 @@ BOOST_AUTO_TEST_CASE(Flags_flagOn)
   Flags_64 flag2;
   BOOST_CHECK(flag2.isDisabled(15));
   
-  flag2.flagOn(15);
+  flag2.enable(15);
 
   BOOST_CHECK(flag2.isEnabled(15));
 
   //Prueba a activar un flag ya activo
-  flag2.flagOn(3);
+  flag2.enable(3);
   BOOST_CHECK(flag2.isEnabled(3));
 }
 
@@ -298,12 +298,12 @@ BOOST_AUTO_TEST_CASE(Flags_flagOff)
 
   BOOST_CHECK(flag2.isEnabled(15));
 
-  flag2.flagOff(15);
+  flag2.disable(15);
 
   BOOST_CHECK(flag2.isDisabled(15));
 
   //Prueba a desactivar un flag ya desactivado
-  flag2.flagOff(15);
+  flag2.disable(15);
   BOOST_CHECK(flag2.isDisabled(15));
 }
 
@@ -331,8 +331,8 @@ BOOST_AUTO_TEST_CASE(Flags_switchFlag)
 BOOST_AUTO_TEST_CASE(Flags_bad_data)
 {
   Flags_16 flag_16;
-  flag_16.flagOn(5);
-  flag_16.flagOn(25); // Se asigna un valor fuera de rango
+  flag_16.enable(5);
+  flag_16.enable(25); // Se asigna un valor fuera de rango
   BOOST_CHECK(flag_16.isDisabled(25));
   BOOST_CHECK(flag_16.isEnabled(5));
 }
