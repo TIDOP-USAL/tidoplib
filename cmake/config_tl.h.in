@@ -52,6 +52,9 @@
 
 /* TidopLib dependencies */
 
+// Boost
+#cmakedefine TL_HAVE_BOOST
+
 // OpenCV
 #cmakedefine TL_HAVE_OPENCV
 

@@ -67,6 +67,7 @@ public:
 public:
 
   Event() = default;
+  virtual ~Event() = default;
 
   virtual Type type() const = 0;
   virtual void clear() = 0;

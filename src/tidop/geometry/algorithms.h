@@ -40,7 +40,6 @@
 /*!
  * \brief Comprueba si un punto esta a la derecha o izquierda de una linea
  */
-TL_TODO("Mover a clase Segment")
 template<typename Point_t> inline
 int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
 {

@@ -114,7 +114,11 @@ void Console::setMessageLevel(MessageLevel level)
   sLevel = level;
 }
 
+#if CPP_VERSION >= 17
+void Console::printMessage(std::string_view message)
+#else
 void Console::printMessage(const std::string &message)
+#endif
 {
   std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -123,12 +127,16 @@ void Console::printMessage(const std::string &message)
     std::cout << "\r" << std::string(50, ' ') << "\r";
   }
 
-  std::string aux(message);
-  replaceString(&aux, "%", "%%");
-  std::cout << aux << std::endl;
+  //std::string aux(message);
+  //replaceString(&aux, "%", "%%");
+  std::cout << /*aux*/message << std::endl;
 }
 
+#if CPP_VERSION >= 17
+void Console::printErrorMessage(std::string_view message)
+#else
 void Console::printErrorMessage(const std::string &message)
+#endif
 {
   std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -139,9 +147,9 @@ void Console::printErrorMessage(const std::string &message)
   if (Progress::isRunning())
     std::cout << "\r" << std::string(50, ' ') << "\r";
 
-  std::string aux(message);
-  replaceString(&aux, "%", "%%");
-  std::cerr << aux << std::endl;
+  //std::string aux(message);
+  //replaceString(&aux, "%", "%%");
+  std::cerr << /*aux*/message << std::endl;
 
   reset();
 }
@@ -299,8 +307,13 @@ void Console::setTitle(const std::string &title)
 
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-void Console::onMsgDebug(const std::string &message,
-                         const std::string &)
+#if CPP_VERSION >= 17
+void Console::onMsgDebug(std::string_view message, 
+                         std::string_view date)
+#else
+void Console::onMsgDebug(const std::string &message, 
+                         const std::string &date)
+#endif
 {
   if (sLevel.isEnabled(MessageLevel::msg_debug)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foregroundColor,
@@ -310,8 +323,13 @@ void Console::onMsgDebug(const std::string &message,
   }
 }
 
-void Console::onMsgInfo(const std::string &message,
-                        const std::string &)
+#if CPP_VERSION >= 17
+void Console::onMsgInfo(std::string_view message, 
+                        std::string_view date)
+#else
+void Console::onMsgInfo(const std::string &message, 
+                        const std::string &date) 
+#endif
 {
   if (sLevel.isEnabled(MessageLevel::msg_info)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foregroundColor,
@@ -321,8 +339,13 @@ void Console::onMsgInfo(const std::string &message,
   }
 }
 
-void Console::onMsgWarning(const std::string &message,
-                           const std::string &)
+#if CPP_VERSION >= 17
+void Console::onMsgWarning(std::string_view message, 
+                           std::string_view date)
+#else
+void Console::onMsgWarning(const std::string &message, 
+                           const std::string &date)
+#endif
 {
   if (sLevel.isEnabled(MessageLevel::msg_warning)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foregroundColor,
@@ -332,8 +355,13 @@ void Console::onMsgWarning(const std::string &message,
   }
 }
 
-void Console::onMsgError(const std::string &message,
-                         const std::string &)
+#if CPP_VERSION >= 17
+void Console::onMsgError(std::string_view message, 
+                         std::string_view date)
+#else
+void Console::onMsgError(const std::string &message, 
+                         const std::string &date)
+#endif
 {
   if (sLevel.isEnabled(MessageLevel::msg_error)) {
     printErrorMessage(message);
@@ -579,7 +607,7 @@ Command::Status Command::parse(int argc, char **argv)
     if (found_name != std::string::npos && found_name == 0) {
       arg_cmd_name = (argv[i])+2;
       /// argumento-valor separado por =
-      std::vector<std::string> v = split(arg_cmd_name, "=");
+      std::vector<std::string> v = split<std::string>(arg_cmd_name, '=');
       if(v.size() == 2){
         cmd_in[v[0]] = v[1];
         continue;

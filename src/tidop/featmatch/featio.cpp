@@ -682,7 +682,7 @@ void FeaturesReaderTxt::readBody()
     std::string line;
     while (std::getline(ifs, line)) {
 
-      std::vector<std::string> list = split(line, " ");
+      std::vector<std::string> list = split<std::string>(line, ' ');
       keyPoints()[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
       keyPoints()[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
       keyPoints()[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);

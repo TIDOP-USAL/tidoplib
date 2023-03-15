@@ -112,33 +112,52 @@ public:
      * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
+#if CPP_VERSION >= 17
+    virtual void onMsgDebug(std::string_view message, 
+                            std::string_view date) = 0;
+#else
     virtual void onMsgDebug(const std::string &message, 
                             const std::string &date) = 0;
+#endif
 
     /*!
      * \brief Mensaje de información
      * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
-    virtual void onMsgInfo(const std::string &message, 
-                           const std::string &date) = 0;
+#if CPP_VERSION >= 17
+     virtual void onMsgInfo(std::string_view message, 
+                            std::string_view date) = 0;
+#else
+     virtual void onMsgInfo(const std::string &message, 
+                            const std::string &date) = 0;
+#endif
 
     /*!
      * \brief Mensaje de advertencia
      * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
+#if CPP_VERSION >= 17
+    virtual void onMsgWarning(std::string_view message, 
+                              std::string_view date) = 0;
+#else
     virtual void onMsgWarning(const std::string &message, 
                               const std::string &date) = 0;
+#endif
 
     /*!
      * \brief Mensaje de error
      * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
+#if CPP_VERSION >= 17
+    virtual void onMsgError(std::string_view message, 
+                            std::string_view date) = 0;
+#else
     virtual void onMsgError(const std::string &message, 
                             const std::string &date) = 0;
-
+#endif
   };
 
   /*!

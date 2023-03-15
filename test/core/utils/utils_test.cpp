@@ -42,83 +42,6 @@ BOOST_AUTO_TEST_CASE(compare_insensitive_case)
 /*                        Test Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-BOOST_AUTO_TEST_CASE(split_to_numbers_empty_string)
-{
-  std::vector<int> vOut;
-  BOOST_CHECK_EQUAL(0, splitToNumbers("", vOut));
-  BOOST_CHECK_EQUAL(0, vOut.size());
-  std::vector<double> vOutD;
-  BOOST_CHECK_EQUAL(0, splitToNumbers("", vOutD));
-  BOOST_CHECK_EQUAL(0, vOutD.size());
-}
-
-
-BOOST_AUTO_TEST_CASE(split_t_numbers_default_separator)
-{
-  std::vector<int> vOut;
-  BOOST_CHECK_EQUAL(0, splitToNumbers("1,2,3,4", vOut));
-  BOOST_CHECK_EQUAL(4, vOut.size());
-  BOOST_CHECK_EQUAL(1, vOut[0]);
-  BOOST_CHECK_EQUAL(2, vOut[1]);
-  BOOST_CHECK_EQUAL(3, vOut[2]);
-  BOOST_CHECK_EQUAL(4, vOut[3]);
-  vOut.resize(0);
-  BOOST_CHECK_EQUAL(0, splitToNumbers("0,5,6", vOut));
-  BOOST_CHECK_EQUAL(3, vOut.size());
-  BOOST_CHECK_EQUAL(0, vOut[0]);
-  BOOST_CHECK_EQUAL(5, vOut[1]);
-  BOOST_CHECK_EQUAL(6, vOut[2]);
-  std::vector<double> vOutD;
-  BOOST_CHECK_EQUAL(0, splitToNumbers("1.0,3.5,5.2", vOutD));
-  BOOST_CHECK_EQUAL(3, vOutD.size());
-  BOOST_CHECK_EQUAL(1.0, vOutD[0]);
-  BOOST_CHECK_EQUAL(3.5, vOutD[1]);
-  BOOST_CHECK_EQUAL(5.2, vOutD[2]);
-  vOutD.resize(0);
-  BOOST_CHECK_EQUAL(0, splitToNumbers("234.6,235253.6", vOutD));
-  BOOST_CHECK_EQUAL(2, vOutD.size());
-  BOOST_CHECK_EQUAL(234.6, vOutD[0]);
-  BOOST_CHECK_EQUAL(235253.6, vOutD[1]);
-}
-
-BOOST_AUTO_TEST_CASE(split_t_numbers_separator)
-{
-  std::vector<int> vOut;
-  BOOST_CHECK_EQUAL(0, splitToNumbers("1#2#3#4", vOut, "#"));
-  BOOST_CHECK_EQUAL(4, vOut.size());
-  BOOST_CHECK_EQUAL(1, vOut[0]);
-  BOOST_CHECK_EQUAL(2, vOut[1]);
-  BOOST_CHECK_EQUAL(3, vOut[2]);
-  BOOST_CHECK_EQUAL(4, vOut[3]);
-  vOut.resize(0);
-  BOOST_CHECK_EQUAL(0, splitToNumbers("0-5-6", vOut, "-"));
-  BOOST_CHECK_EQUAL(3, vOut.size());
-  BOOST_CHECK_EQUAL(0, vOut[0]);
-  BOOST_CHECK_EQUAL(5, vOut[1]);
-  BOOST_CHECK_EQUAL(6, vOut[2]);
-  std::vector<double> vOutD;
-  BOOST_CHECK_EQUAL(0, splitToNumbers("1.0 3.5 5.2", vOutD, " "));
-  BOOST_CHECK_EQUAL(3, vOutD.size());
-  BOOST_CHECK_EQUAL(1.0, vOutD[0]);
-  BOOST_CHECK_EQUAL(3.5, vOutD[1]);
-  BOOST_CHECK_EQUAL(5.2, vOutD[2]);
-  vOutD.resize(0);
-  BOOST_CHECK_EQUAL(0, splitToNumbers("234.6@235253.6", vOutD, "@"));
-  BOOST_CHECK_EQUAL(2, vOutD.size());
-  BOOST_CHECK_EQUAL(234.6, vOutD[0]);
-  BOOST_CHECK_EQUAL(235253.6, vOutD[1]);
-
-  vOut.resize(0);
-  BOOST_CHECK_EQUAL(1, splitToNumbers("345@45", vOut, ","));
-  BOOST_CHECK_EQUAL(0, vOut.size());
-  vOutD.resize(0);
-  BOOST_CHECK_EQUAL(1, splitToNumbers("234.6@235253.6", vOutD, ","));
-  BOOST_CHECK_EQUAL(0, vOutD.size());
-}
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 BOOST_AUTO_TEST_CASE(replace_string)
 {
   //std::string cadena = "Prueba cadena";
@@ -132,15 +55,15 @@ BOOST_AUTO_TEST_CASE(replace_string)
 BOOST_AUTO_TEST_CASE(split_string)
 {
   std::vector<std::string> out;
-  std::vector<std::string> v = split("");
-  BOOST_CHECK_EQUAL(1, v.size());
+  std::vector<std::string> v = split<std::string>("");
+  BOOST_CHECK_EQUAL(0, v.size());
 
 }
 
 
 BOOST_AUTO_TEST_CASE(split_default_separator)
 {
-  std::vector<std::string> out = split("cad1,cad2,cad3");
+  std::vector<std::string> out = split<std::string>("cad1,cad2,cad3");
   BOOST_CHECK_EQUAL(3, out.size());
   BOOST_CHECK_EQUAL("cad1", out[0]);
   BOOST_CHECK_EQUAL("cad2", out[1]);
@@ -150,11 +73,23 @@ BOOST_AUTO_TEST_CASE(split_default_separator)
 
 BOOST_AUTO_TEST_CASE(split_separator)
 {
-  std::vector<std::string> out = split("cad1#cad2#cad3", "#");
+  std::vector<std::string> out = split<std::string>("cad1#cad2#cad3", '#');
   BOOST_CHECK_EQUAL(3, out.size());
   BOOST_CHECK_EQUAL("cad1", out[0]);
   BOOST_CHECK_EQUAL("cad2", out[1]);
   BOOST_CHECK_EQUAL("cad3", out[2]);
+
+  std::vector<int> out2 = split<int>("1,2,3", ',');
+  BOOST_CHECK_EQUAL(3, out2.size());
+  BOOST_CHECK_EQUAL(1, out2[0]);
+  BOOST_CHECK_EQUAL(2, out2[1]);
+  BOOST_CHECK_EQUAL(3, out2[2]);
+
+  std::vector<double> out3 = split<double>("1.2,2.6,3.4", ',');
+  BOOST_CHECK_EQUAL(3, out3.size());
+  BOOST_CHECK_EQUAL(1.2, out3[0]);
+  BOOST_CHECK_EQUAL(2.6, out3[1]);
+  BOOST_CHECK_EQUAL(3.4, out3[2]);
 }
 
 
@@ -171,4 +106,25 @@ BOOST_AUTO_TEST_CASE(_args_empty)
 {
   BOOST_CHECK(tl::args_empty());
   BOOST_CHECK(!tl::args_empty(1, 3));
+}
+
+BOOST_AUTO_TEST_CASE(convert_string_to)
+{
+  int out = convertStringTo<int>("123");
+  BOOST_CHECK_EQUAL(123, out);
+
+  double out2 = convertStringTo<double>("152.24");
+  BOOST_CHECK_EQUAL(152.24, out2);
+
+  bool out3 = convertStringTo<bool>("true");
+  BOOST_CHECK_EQUAL(true, out3);
+
+  bool out4 = convertStringTo<bool>("false");
+  BOOST_CHECK_EQUAL(false, out4);
+
+  bool out5 = convertStringTo<bool>("1");
+  BOOST_CHECK_EQUAL(true, out5);
+
+  bool out6 = convertStringTo<bool>("0");
+  BOOST_CHECK_EQUAL(false, out6);
 }

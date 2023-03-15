@@ -600,7 +600,7 @@ private:
 
   bool checkDataType()
   {
-    return mValidDataTypes.isActive(mDataType);
+    return mValidDataTypes.isEnabled(mDataType);
   }
 
   void setGdalGeoTransform()

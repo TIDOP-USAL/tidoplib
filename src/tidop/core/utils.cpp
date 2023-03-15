@@ -27,8 +27,12 @@
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
+#ifdef TL_HAVE_BOOST
 #include <boost/algorithm/string.hpp>
-#include <sstream>
+#elif  CPP_VERSION >= 14
+#include <algorithm>
+#endif
+
 
 namespace tl
 {
@@ -37,85 +41,14 @@ namespace tl
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
 
-int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs)
-{
-  int r_err = 0;
-  char *dup = strdup(cad.c_str()); // -> warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup
-  //char *dup = _strdup(cad.c_str());
-  vOut.resize(0);
-
-  try {
-    char *token = strtok(dup, chs);
-    //char *context = NULL;
-    //char *token = strtok_s(dup, chs, &context);
-    while (token != nullptr) {
-      char *pEnd;
-      int number = strtol(token, &pEnd, 10);
-      if (*pEnd == 0) {
-        vOut.push_back(number);
-        token = strtok(nullptr, chs);
-        //token = strtok_s(dup, chs, &context);
-      } else
-        throw std::runtime_error("Split string to numbers fail");
-    }
-  } catch (std::exception &e) {
-    vOut.resize(0);
-    msgError(e.what());
-    r_err = 1;
-  }
-
-  free(dup);
-  return r_err;
-}
-
-int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char *chs)
-{
-  int r_err = 0;
-  char *dup = strdup(cad.c_str());
-  //char *dup = _strdup(cad.c_str());
-  vOut.resize(0);
-
-  try {
-    char *token = strtok(dup, chs);
-    //char *context = NULL;
-    //char *token = strtok_s(dup, chs, &context);
-    while (token != NULL) {
-      //vOut.push_back(atof(token));
-      char *pEnd;
-      double number = strtod(token, &pEnd);
-      if (*pEnd == 0) {
-        vOut.push_back(number);
-        token = strtok(nullptr, chs);
-        //token = strtok_s(dup, chs, &context);
-      } else
-        throw std::runtime_error("Split string to numbers fail");
-    }
-  } catch (std::exception &e) {
-    vOut.resize(0);
-    msgError(e.what());
-    r_err = 1;
-  }
-
-  free(dup);
-  return r_err;
-}
 
 void replaceString(std::string *str, const std::string &str_old, const std::string &str_new)
 {
   std::size_t ini = str->find(str_old);
-  //std::size_t end;
   while (ini != std::string::npos) {
-    //end = ini + str_old.size();
     str->replace(ini, str_old.size(), str_new);
     ini = str->find(str_old, str_new.size() + ini);
   }
-}
-
-std::vector<std::string> split(const std::string &in, const std::string &chs)
-{
-  std::vector<std::string> out;
-  boost::split(out, in, boost::is_any_of(chs));
-  return out;
 }
 
 int stringToInteger(const std::string &text, Base base)
@@ -144,7 +77,25 @@ bool compareInsensitiveCase(std::string_view source, std::string_view compare)
 bool compareInsensitiveCase(const std::string &source, const std::string &compare)
 #endif
 {
+#ifdef TL_HAVE_BOOST
   return boost::iequals(source, compare);
+#elif CPP_VERSION >= 14
+  //https://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
+  return std::equal(source.begin(), source.end(),
+                    compare.begin(), compare.end(),
+                    [](char a, char b) {
+                      return tolower(a) == tolower(b);
+                    });
+#else
+   
+  unsigned int sz = source.size();
+  if (compare.size() != sz)
+    return false;
+  for (unsigned int i = 0; i < sz; ++i)
+    if (tolower(source[i]) != tolower(compare[i]))
+      return false;
+ return true;
+#endif
 }
 
 

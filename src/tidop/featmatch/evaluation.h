@@ -269,7 +269,7 @@ Curve<T>::Curve(const std::vector<std::pair<T, int>> &data)
   std::sort(mData.begin(), mData.end(),
             [](const std::pair<T, int> &data1,
                const std::pair<T, int> &data2){
-    return data1.first < data2.first;});
+      return data1.first > data2.first; }); // Ordenado al reves al utilizar la distancia de los matches
 
   for(size_t i = 0; i < mData.size(); i++) {
     if (mData[i].second == 1){
@@ -291,7 +291,7 @@ std::map<typename Curve<T>::Classification,size_t> Curve<T>::confusionMatrix(T t
 
   for (size_t j = 0; j < mData.size(); j++) {
 
-    if (mData[j].first < threshold) {
+    if (mData[j].first > threshold) {
       if (mData[j].second == 1)
         false_negatives++;
       else
@@ -515,7 +515,7 @@ void PRCurve<T>::compute(size_t steeps)
                                            confussionMatrix[PRCurve<T>::Classification::false_negatives]);
     double precision = this->positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
                                                      confussionMatrix[PRCurve<T>::Classification::false_positives]);
-    this->mCurve.emplace_back(recall, 1. - precision);
+    this->mCurve.emplace_back(recall, precision);
     threshold += step;
   }
 
@@ -529,7 +529,7 @@ void PRCurve<T>::compute(size_t steeps)
 
     for(size_t i = 1; i < size; i++){
       point2 = this->mCurve[i];
-      this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+      this->mAuc += std::abs(point1.x - point2.x) * (point1.y + point2.y) / 2.;
       point1 = point2;
     }
   }
@@ -551,7 +551,7 @@ void PRCurve<T>::compute()
                                            confussionMatrix[PRCurve<T>::Classification::false_negatives]);
     double precision = this->positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
                                                      confussionMatrix[PRCurve<T>::Classification::false_positives]);
-    this->mCurve.emplace_back(recall, 1.f - precision);
+    this->mCurve.emplace_back(recall, precision);
   }
 
   /// AUC
@@ -564,7 +564,7 @@ void PRCurve<T>::compute()
 
     for (size_t i = 1; i < size; i++) {
       point2 = this->mCurve[i];
-      this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+      this->mAuc += std::abs(point1.x - point2.x) * (point1.y + point2.y) / 2.;
       point1 = point2;
     }
   }
@@ -617,7 +617,7 @@ void ROCCurve<T>::compute(size_t steeps)
 
     for(size_t i = 1; i < size; i++){
       point2 = this->mCurve[i];
-      this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+      this->mAuc += std::abs(point1.x - point2.x) * (point1.y + point2.y) / 2.;
       point1 = point2;
     }
 
@@ -650,7 +650,7 @@ void ROCCurve<T>::compute()
 
     for(size_t i = 1; i < size; i++){
       point2 = this->mCurve[i];
-      this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+      this->mAuc += std::abs(point1.x - point2.x) * (point1.y + point2.y) / 2.;
       point1 = point2;
     }
 
@@ -695,19 +695,19 @@ void DETCurve<T>::compute(size_t steeps)
   }
 
   /// AUC
-  size_t size = this->mCurve.size();
+  //size_t size = this->mCurve.size();
   this->mAuc = 0.0;
 
-  if (size > 2) {
-    PointD point1 = this->mCurve[0];
-    PointD point2;
+  //if (size > 2) {
+  //  PointD point1 = this->mCurve[0];
+  //  PointD point2;
 
-    for(size_t i = 1; i < size; i++){
-      point2 = this->mCurve[i];
-      this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
-      point1 = point2;
-    }
-  }
+  //  for(size_t i = 1; i < size; i++){
+  //    point2 = this->mCurve[i];
+  //    this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+  //    point1 = point2;
+  //  }
+  //}
 }
 
 template<typename T> inline
@@ -727,19 +727,19 @@ void DETCurve<T>::compute()
   }
 
   /// AUC
-  size_t size = this->mCurve.size();
+  //size_t size = this->mCurve.size();
   this->mAuc = 0.0;
 
-  if (size > 2) {
-    PointD point1 = this->mCurve[0];
-    PointD point2;
+  //if (size > 2) {
+  //  PointD point1 = this->mCurve[0];
+  //  PointD point2;
 
-    for (size_t i = 1; i < size; i++) {
-      point2 = this->mCurve[i];
-      this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
-      point1 = point2;
-    }
-  }
+  //  for (size_t i = 1; i < size; i++) {
+  //    point2 = this->mCurve[i];
+  //    this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+  //    point1 = point2;
+  //  }
+  //}
 }
 
 } // namespace tl
