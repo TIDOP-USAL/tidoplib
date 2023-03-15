@@ -63,7 +63,17 @@ namespace math
  *  \{
  */
 
+template<typename T>
+class MatrixBase;
 
+template<typename T, size_t _rows, size_t _cols>
+class Matrix;
+
+
+/// \cond
+
+namespace internal
+{
 
  /* Iterators */
 
@@ -291,17 +301,144 @@ private:
 };
 
 
-
-
-template<typename T>
-class MatrixBase;
-
-template<typename T, size_t _rows, size_t _cols>
-class Matrix;
-
 template<typename T, size_t _rows, size_t _cols>
 class MatrixBlock;
 
+
+template<typename T, size_t _rows = DynamicData, size_t _cols = DynamicData>
+class MatrixBlock
+  : public MatrixBase<MatrixBlock<T, _rows, _cols>>
+{
+
+public:
+
+  using value_type = T;
+  using size_type = size_t;
+  using pointer = T *;
+  using const_pointer = const T *;
+  using reference = T &;
+  using const_reference = const T &;
+
+public:
+
+  MatrixBlock(T *data,
+              size_t rows,
+              size_t cols,
+              size_t iniRow,
+              size_t endRow,
+              size_t iniCol,
+              size_t endCol);
+  MatrixBlock(T *data,
+              const Size<int> &size, 
+              const Rect<int> &rect);
+  ~MatrixBlock() = default;
+
+  auto operator=(const MatrixBlock &block) -> MatrixBlock&;
+  template<typename T2, size_t _rows2, size_t _cols2>
+  auto operator=(const Matrix<T2, _rows2, _cols2> &matrix) -> MatrixBlock&;
+
+  /*!
+   * \brief Referencia al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila de la matriz
+   * \param[in] c Columna de la matriz
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix.at(0, 0) = 1.5;
+   * double value = matrix.at(0, 0);
+   * \endcode
+   */
+  auto at(size_t r, size_t c) -> reference;
+
+  /*!
+   * \brief Referencia constante al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila
+   * \param[in] c Columna
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * double value = matrix.at(0, 0);
+   * \endcode
+   */
+  auto at(size_t r, size_t c) const -> const_reference;
+
+  /*!
+   * \brief Referencia al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila de la matriz
+   * \param[in] c Columna de la matriz
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(0, 0) = 1.5;
+   * double value = matrix(0, 0);
+   * \endcode
+   */
+  auto operator()(size_t row, size_t col) -> reference;
+
+  /*!
+   * \brief Referencia constante al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila
+   * \param[in] c Columna
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * double value = matrix(0, 0);
+   * \endcode
+   */
+  auto operator()(size_t row, size_t col) const -> const_reference;
+
+  /*!
+   * \brief Referencia al elemento
+   * La posición del elemento se determina como:
+   *   r * this->cols() + c
+   * \param[in] position Posición del elemento de la matriz
+   * \return Valor de la matriz en dicha posición
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(4) = 1.5;
+   * double value = matrix(4); // value == 1.5
+   * \endcode
+   */
+  auto operator()(size_t position) -> reference;
+
+  /*!
+   * \brief Referencia constante al elemento
+   * La posición del elemento se determina como:
+   *   r * this->cols() + c
+   * \param[in] position Posición del elemento de la matriz
+   * \return Valor de la matriz en dicha posición
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(4) = 1.5;
+   * double value = matrix(4); // value == 1.5
+   * \endcode
+   */
+  auto operator()(size_t position) const -> const_reference;
+
+  auto rows() const -> size_t;
+  auto cols() const -> size_t;
+
+  operator Matrix<T, DynamicData, DynamicData>() const;
+
+private:
+
+  T *mData;
+  size_t mRows;
+  size_t mCols;
+  size_t mIniRow;
+  size_t mEndRow;
+  size_t mIniCol;
+  size_t mEndCol;
+  
+};
+
+} // namespace internal
+
+/// \endcond
 
 template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
@@ -1323,39 +1460,42 @@ public:
    */
   auto operator()(size_t position) const -> const_reference;
 
-  auto operator[](size_t position) const -> const MatrixRow<const T> 
+  auto operator[](size_t position) const -> const internal::MatrixRow<const T> 
   {
-    return MatrixRow<const T>(this->data(), position, this->cols());
+    return internal::MatrixRow<const T>(this->data(), position, this->cols());
   }
 
-  auto operator[](size_t position)  -> MatrixRow<T>
+  auto operator[](size_t position)  -> internal::MatrixRow<T>
   {
-    return MatrixRow<T>(this->data(), position, this->cols());
+    return internal::MatrixRow<T>(this->data(), position, this->cols());
   }
 
-  auto row(size_t row) const -> const MatrixRow<const T>
+  auto row(size_t row) const -> const internal::MatrixRow<const T>
   {
-    return MatrixRow<const T>(this, row);
+    return internal::MatrixRow<const T>(this, row);
   }
 
-  auto row(size_t row) -> MatrixRow<T>
+  auto row(size_t row) -> internal::MatrixRow<T>
   {
-    return MatrixRow<T>(this->data(), row, this->cols());
+    return internal::MatrixRow<T>(this->data(), row, this->cols());
   }
 
-  auto col(size_t col) const -> const MatrixCol<const T>
+  auto col(size_t col) const -> const internal::MatrixCol<const T>
   {
-    return MatrixCol<const T>(this->data(), col, this->rows(), this->cols());
+    return internal::MatrixCol<const T>(this->data(), col, this->rows(), this->cols());
   }
 
-  auto col(size_t col) -> MatrixCol<T>
+  auto col(size_t col) -> internal::MatrixCol<T>
   {
-    return MatrixCol<T>(this->data(), col, this->rows(), this->cols());
+    return internal::MatrixCol<T>(this->data(), col, this->rows(), this->cols());
   }
 
-  auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) const -> const MatrixBlock<const T, DynamicData, DynamicData>
+  auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) const -> const internal::MatrixBlock<const T, DynamicData, DynamicData>
   {
-    return MatrixBlock<const T, DynamicData, DynamicData>(this->data(), 
+    TL_ASSERT(iniRow >= 0 && endRow > iniRow && endRow < this->rows() &&
+              iniCol >= 0 && endCol > iniCol && endCol < this->cols(), "Matrix block out of range");
+
+    return internal::MatrixBlock<const T, DynamicData, DynamicData>(this->data(), 
                                                           this->rows(),
                                                           this->cols(),
                                                            iniRow, 
@@ -1364,33 +1504,31 @@ public:
                                                            endCol);
   }
 
-  auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) -> MatrixBlock<T, DynamicData, DynamicData>
+  auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) -> internal::MatrixBlock<T>
   {
-    return MatrixBlock<T, DynamicData, DynamicData>(this->data(),
-                                                    this->rows(), 
-                                                    this->cols(), 
-                                                    iniRow, 
-                                                    endRow,
-                                                    iniCol,
-                                                    endCol);
+    TL_ASSERT(iniRow >= 0 && endRow > iniRow && endRow < this->rows() &&
+              iniCol >= 0 && endCol > iniCol && endCol < this->cols(), "Matrix block out of range");
+
+    return internal::MatrixBlock<T>(this->data(), this->rows(), this->cols(), 
+                                    iniRow, endRow, iniCol, endCol);
   }
 
-  auto rowBlock(size_t iniRow, size_t endRow) const -> const MatrixBlock<const T, DynamicData, DynamicData>
+  auto rowBlock(size_t iniRow, size_t endRow) const -> const internal::MatrixBlock<const T, DynamicData, DynamicData>
   {
     return block(iniRow, endRow, 0, this->cols() - 1);
   }
 
-  auto rowBlock(size_t iniRow, size_t endRow) -> MatrixBlock<T, DynamicData, DynamicData>
+  auto rowBlock(size_t iniRow, size_t endRow) -> internal::MatrixBlock<T, DynamicData, DynamicData>
   {
     return block(iniRow, endRow, 0, this->cols() - 1);
   }
 
-  auto colBlock(size_t iniCol, size_t endCol) const -> const MatrixBlock<const T, DynamicData, DynamicData>
+  auto colBlock(size_t iniCol, size_t endCol) const -> const internal::MatrixBlock<const T, DynamicData, DynamicData>
   {
     return block(0, this->rows() - 1, iniCol, endCol);
   }
 
-  auto colBlock(size_t iniCol, size_t endCol) -> MatrixBlock<T, DynamicData, DynamicData> 
+  auto colBlock(size_t iniCol, size_t endCol) -> internal::MatrixBlock<T, DynamicData, DynamicData> 
   {
     return block(0, this->rows() - 1, iniCol, endCol);
   }
@@ -1468,132 +1606,7 @@ private:
 
 
 
-template<typename T, size_t _rows = DynamicData, size_t _cols = DynamicData>
-class MatrixBlock
-  : public MatrixBase<MatrixBlock<T, _rows, _cols>>
-{
 
-public:
-
-  using value_type = T;
-  using size_type = size_t;
-  using pointer = T *;
-  using const_pointer = const T *;
-  using reference = T &;
-  using const_reference = const T &;
-
-public:
-
-  MatrixBlock(T *data,
-              size_t rows,
-              size_t cols,
-              size_t iniRow,
-              size_t endRow,
-              size_t iniCol,
-              size_t endCol);
-  ~MatrixBlock() = default;
-
-  template<typename T2, size_t _rows2, size_t _cols2>
-  auto operator=(const Matrix<T2, _rows2, _cols2> &matrix) -> MatrixBlock&;
-
-  /*!
-   * \brief Referencia al elemento en la posición fila (r) y columna (c)
-   * \param[in] r Fila de la matriz
-   * \param[in] c Columna de la matriz
-   * \return Valor de la matriz en la posición fila y columna
-   * <h4>Ejemplo</h4>
-   * \code
-   * Matrix<double,3,3> matrix;
-   * matrix.at(0, 0) = 1.5;
-   * double value = matrix.at(0, 0);
-   * \endcode
-   */
-  auto at(size_t r, size_t c) -> reference;
-
-  /*!
-   * \brief Referencia constante al elemento en la posición fila (r) y columna (c)
-   * \param[in] r Fila
-   * \param[in] c Columna
-   * \return Valor de la matriz en la posición fila y columna
-   * <h4>Ejemplo</h4>
-   * \code
-   * double value = matrix.at(0, 0);
-   * \endcode
-   */
-  auto at(size_t r, size_t c) const -> const_reference;
-
-  /*!
-   * \brief Referencia al elemento en la posición fila (r) y columna (c)
-   * \param[in] r Fila de la matriz
-   * \param[in] c Columna de la matriz
-   * \return Valor de la matriz en la posición fila y columna
-   * <h4>Ejemplo</h4>
-   * \code
-   * Matrix<double,3,3> matrix;
-   * matrix(0, 0) = 1.5;
-   * double value = matrix(0, 0);
-   * \endcode
-   */
-  auto operator()(size_t row, size_t col) -> reference;
-
-  /*!
-   * \brief Referencia constante al elemento en la posición fila (r) y columna (c)
-   * \param[in] r Fila
-   * \param[in] c Columna
-   * \return Valor de la matriz en la posición fila y columna
-   * <h4>Ejemplo</h4>
-   * \code
-   * double value = matrix(0, 0);
-   * \endcode
-   */
-  auto operator()(size_t row, size_t col) const -> const_reference;
-
-  /*!
-   * \brief Referencia al elemento
-   * La posición del elemento se determina como:
-   *   r * this->cols() + c
-   * \param[in] position Posición del elemento de la matriz
-   * \return Valor de la matriz en dicha posición
-   * <h4>Ejemplo</h4>
-   * \code
-   * Matrix<double,3,3> matrix;
-   * matrix(4) = 1.5;
-   * double value = matrix(4); // value == 1.5
-   * \endcode
-   */
-  auto operator()(size_t position) -> reference;
-
-  /*!
-   * \brief Referencia constante al elemento
-   * La posición del elemento se determina como:
-   *   r * this->cols() + c
-   * \param[in] position Posición del elemento de la matriz
-   * \return Valor de la matriz en dicha posición
-   * <h4>Ejemplo</h4>
-   * \code
-   * Matrix<double,3,3> matrix;
-   * matrix(4) = 1.5;
-   * double value = matrix(4); // value == 1.5
-   * \endcode
-   */
-  auto operator()(size_t position) const -> const_reference;
-
-  auto rows() const -> size_t;
-  auto cols() const -> size_t;
-
-  operator Matrix<T>() const;
-
-private:
-
-  T *mData;
-  size_t mRows;
-  size_t mCols;
-  size_t mIniRow;
-  size_t mEndRow;
-  size_t mIniCol;
-  size_t mEndCol;
-
-};
 
 
 
@@ -2009,12 +2022,6 @@ mulmat(const Matrix<T, _rows, _dim> &matrix1,
 #endif
 }
 
-} // namespace internal 
-
-/// \endcond
-
-
-
 
 
 
@@ -2290,6 +2297,162 @@ inline MatrixCol<T, _size_>::operator Vector<T>() const
 }
 
 
+
+/*------------------------------------------------------------------------*/
+/* MatrixBlock implementation                                             */
+/*------------------------------------------------------------------------*/
+
+template<typename T, size_t _rows, size_t _cols>
+inline MatrixBlock<T, _rows, _cols>::MatrixBlock(T *data,
+                                                 size_t rows,
+                                                 size_t cols,
+                                                 size_t iniRow,
+                                                 size_t endRow,
+                                                 size_t iniCol,
+                                                 size_t endCol)
+  : mData(data),
+    mRows(rows),
+    mCols(cols),
+    mIniRow(iniRow),
+    mEndRow(endRow),
+    mIniCol(iniCol),
+    mEndCol(endCol)
+{
+}
+
+template<typename T, size_t _rows, size_t _cols>
+auto MatrixBlock<T, _rows, _cols>::operator=(const MatrixBlock &block) -> MatrixBlock&
+{
+  size_t rows = this->rows();
+  size_t cols = this->cols();
+  size_t rows2 = block.rows();
+  size_t cols2 = block.cols();
+
+  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size");
+
+  Rect<int> rect1(this->mIniCol, cols, this->cols(), rows);
+  Rect<int> rect2(block.mIniCol, block.mIniRow, cols2, rows2);
+  Rect<int> intersect = tl::intersect(rect1, rect2);
+
+  if (this->mData == block.mData && intersect.isValid()){
+    Matrix<T> mat = block;
+      
+    for (size_t r = 0; r < this->rows(); r++) {
+      for (size_t c = 0; c < this->cols(); c++) {
+        (*this)(r, c) = mat(r, c);
+      }
+    }
+
+  } else {
+
+    for (size_t r = 0; r < this->rows(); r++) {
+      for (size_t c = 0; c < this->cols(); c++) {
+        (*this)(r, c) = block(r, c);
+      }
+    }
+
+  }
+
+  return *this;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+template<typename T2, size_t _rows2, size_t _cols2>
+auto MatrixBlock<T, _rows, _cols>::operator=(const Matrix<T2, _rows2, _cols2> &matrix) -> MatrixBlock&
+{
+  size_t rows = this->rows();
+  size_t cols = this->cols();
+  size_t rows2 = matrix.rows();
+  size_t cols2 = matrix.cols();
+
+  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size");
+
+  for (size_t r = 0; r < this->rows(); r++) {
+    for (size_t c = 0; c < this->cols(); c++) {
+      (*this)(r, c) = static_cast<T>(matrix(r, c));
+    }
+  }
+
+  return *this;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::at(size_t r, size_t c) -> reference
+{
+  if (mEndRow - mIniRow < r || mEndCol - mIniCol < c) throw std::out_of_range("Matrix block out of range");
+
+  return (*this)(r, c);
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::at(size_t r, size_t c) const -> const_reference
+{
+  if (mEndRow - mIniRow < r || mEndCol - mIniCol < c) throw std::out_of_range("Matrix block out of range");
+
+  return (*this)(r, c);
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t row, size_t col) -> reference
+{
+  return mData[(mIniRow + row) * mCols + col + mIniCol];
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t row, size_t col) const -> const_reference
+{
+  return mData[(mIniRow + row) * mCols + col + mIniCol];
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t position) -> reference
+{
+  size_t col = position % cols();
+  size_t row = position / cols();
+
+  return (*this)(row, col);
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t position) const -> const_reference
+{
+  size_t col = position % cols();
+  size_t row = position / cols();
+
+  return (*this)(row, col);
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::rows() const -> size_t
+{
+  return mEndRow - mIniRow + 1;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline auto MatrixBlock<T, _rows, _cols>::cols() const -> size_t
+{
+  return mEndCol - mIniCol + 1;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+MatrixBlock<T, _rows, _cols>::operator Matrix<T>() const
+{
+  Matrix<T> matrix(this->rows(), this->cols());
+
+  for (size_t r = 0; r < this->rows(); r++) {
+    for (size_t c = 0; c < this->cols(); c++) {
+      matrix(r, c) =(*this)(r, c);
+    }
+  }
+
+  return matrix;
+}
+
+
+
+} // namespace internal 
+
+/// \endcond
 
 
 /*------------------------------------------------------------------------*/
@@ -3075,120 +3238,6 @@ inline auto Matrix<T, _rows, _cols>::data() const -> const_pointer
 
 
 
-/*------------------------------------------------------------------------*/
-/* MatrixBlock implementation                                             */
-/*------------------------------------------------------------------------*/
-
-template<typename T, size_t _rows, size_t _cols>
-inline MatrixBlock<T, _rows, _cols>::MatrixBlock(T *data,
-                                                 size_t rows,
-                                                 size_t cols,
-                                                 size_t iniRow,
-                                                 size_t endRow,
-                                                 size_t iniCol,
-                                                 size_t endCol)
-  : mData(data),
-    mRows(rows),
-    mCols(cols),
-    mIniRow(iniRow),
-    mEndRow(endRow),
-    mIniCol(iniCol),
-    mEndCol(endCol)
-{
-}
-
-template<typename T, size_t _rows, size_t _cols>
-template<typename T2, size_t _rows2, size_t _cols2>
-auto MatrixBlock<T, _rows, _cols>::operator=(const Matrix<T2, _rows2, _cols2> &matrix) -> MatrixBlock&
-{
-  size_t rows = this->rows();
-  size_t cols = this->cols();
-  size_t rows2 = matrix.rows();
-  size_t cols2 = matrix.cols();
-
-  TL_ASSERT(rows == rows2 && cols == cols2, "A size != B size");
-
-  for (size_t r = 0; r < this->rows(); r++) {
-    for (size_t c = 0; c < this->cols(); c++) {
-      (*this)(r, c) = static_cast<T>(matrix(r, c));
-    }
-  }
-
-  return *this;
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::at(size_t r, size_t c) -> reference
-{
-  if (mEndRow - mIniRow < r || mEndCol - mIniCol < c) throw std::out_of_range("Matrix block out of range");
-
-  return (*this)(r, c);
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::at(size_t r, size_t c) const -> const_reference
-{
-  if (mEndRow - mIniRow < r || mEndCol - mIniCol < c) throw std::out_of_range("Matrix block out of range");
-
-  return (*this)(r, c);
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t row, size_t col) -> reference
-{
-  return mData[(mIniRow + row) * mCols + col + mIniCol];
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t row, size_t col) const -> const_reference
-{
-  return mData[(mIniRow + row) * mCols + col + mIniCol];
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t position) -> reference
-{
-  size_t col = position % cols();
-  size_t row = position / cols();
-
-  return (*this)(row, col);
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::operator()(size_t position) const -> const_reference
-{
-  size_t col = position % cols();
-  size_t row = position / cols();
-
-  return (*this)(row, col);
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::rows() const -> size_t
-{
-  return mEndRow - mIniRow + 1;
-}
-
-template<typename T, size_t _rows, size_t _cols>
-inline auto MatrixBlock<T, _rows, _cols>::cols() const -> size_t
-{
-  return mEndCol - mIniCol + 1;
-}
-
-template<typename T, size_t _rows, size_t _cols>
-MatrixBlock<T, _rows, _cols>::operator Matrix<T>() const
-{
-  Matrix<T> matrix(this->rows(), this->cols());
-
-  for (size_t r = 0; r < this->rows(); r++) {
-    for (size_t c = 0; c < this->cols(); c++) {
-      matrix(r, c) =(*this)(r, c);
-    }
-  }
-
-  return matrix;
-}
-
 
 /* Binary arithmetic operators */
 
@@ -3469,7 +3518,7 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
 
 
 template<typename T, size_t _rows, size_t _cols>
-std::ostream &operator<< (std::ostream &os, const MatrixBlock<T, _rows, _cols> &matrix)
+std::ostream &operator<< (std::ostream &os, const internal::MatrixBlock<T, _rows, _cols> &matrix)
 {
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
@@ -3482,7 +3531,7 @@ std::ostream &operator<< (std::ostream &os, const MatrixBlock<T, _rows, _cols> &
 }
 
 template<typename T, size_t _rows, size_t _cols>
-std::ostream &operator<< (std::ostream &os, const MatrixBlock<T, _rows, _cols> *matrix)
+std::ostream &operator<< (std::ostream &os, const internal::MatrixBlock<T, _rows, _cols> *matrix)
 {
   for (size_t r = 0; r < matrix->rows(); r++) {
     for (size_t c = 0; c < matrix->cols(); c++) {
@@ -3498,7 +3547,6 @@ std::ostream &operator<< (std::ostream &os, const MatrixBlock<T, _rows, _cols> *
 /*------------------------------------------------------------------------*/
 
 
-/// Revisar esto...
 
 template<typename T, size_t _rows, size_t _dim> inline  static
 Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
@@ -3619,7 +3667,7 @@ static Vector<T> operator * (const Matrix<T> &matrix,
 //}
 
 template<typename T> inline
-static Vector<T> operator * (const MatrixBlock<T> &matrix,
+static Vector<T> operator * (const internal::MatrixBlock<T> &matrix,
                              const Vector<T> &vector)
 {
   size_t rows = matrix.rows();
