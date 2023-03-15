@@ -24,7 +24,7 @@
 
 # Graphic Test
 
-if(HAVE_TL_GRAPHIC)
+if(TL_HAVE_GRAPHIC)
 
 #add_subdirectory(canvas)
 add_subdirectory(color)
@@ -33,4 +33,4 @@ add_subdirectory(styles)
 add_subdirectory(gpoint)
 add_subdirectory(gpolygon)
 add_subdirectory(glinestring)
-endif()
+endif(TL_HAVE_GRAPHIC)

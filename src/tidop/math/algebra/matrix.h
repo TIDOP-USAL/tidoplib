@@ -35,6 +35,7 @@
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
 #include "tidop/math/data.h"
+#include "tidop/geometry/rect.h"
 
 #include <iomanip>
 
@@ -328,9 +329,6 @@ public:
               size_t endRow,
               size_t iniCol,
               size_t endCol);
-  MatrixBlock(T *data,
-              const Size<int> &size, 
-              const Rect<int> &rect);
   ~MatrixBlock() = default;
 
   auto operator=(const MatrixBlock &block) -> MatrixBlock&;
@@ -1506,8 +1504,8 @@ public:
 
   auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) -> internal::MatrixBlock<T>
   {
-    TL_ASSERT(iniRow >= 0 && endRow > iniRow && endRow < this->rows() &&
-              iniCol >= 0 && endCol > iniCol && endCol < this->cols(), "Matrix block out of range");
+    TL_ASSERT(iniRow >= 0 && endRow >= iniRow && endRow < this->rows() &&
+              iniCol >= 0 && endCol >= iniCol && endCol < this->cols(), "Matrix block out of range");
 
     return internal::MatrixBlock<T>(this->data(), this->rows(), this->cols(), 
                                     iniRow, endRow, iniCol, endCol);
