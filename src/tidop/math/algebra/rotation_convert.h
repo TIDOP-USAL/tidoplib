@@ -25,8 +25,6 @@
 #ifndef TL_MATH_ROTATION_CONVERT_H
 #define TL_MATH_ROTATION_CONVERT_H
 
-#include "config_tl.h"
-
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/quaternion.h"
 #include "tidop/math/algebra/euler_angles.h"

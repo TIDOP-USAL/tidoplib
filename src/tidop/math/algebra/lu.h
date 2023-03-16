@@ -25,8 +25,6 @@
 #ifndef TL_MATH_LU_DECOMPOSITION_H
 #define TL_MATH_LU_DECOMPOSITION_H
 
-#include "config_tl.h"
-
 #include <algorithm>
 
 #include "tidop/math/math.h"

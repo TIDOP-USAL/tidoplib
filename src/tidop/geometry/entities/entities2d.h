@@ -25,9 +25,6 @@
 #ifndef TL_GEOMETRY_ENTITIES_2D_H
 #define TL_GEOMETRY_ENTITIES_2D_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/window.h"
 

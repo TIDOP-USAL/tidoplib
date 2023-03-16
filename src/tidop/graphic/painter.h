@@ -25,8 +25,6 @@
 #ifndef TL_GRAPHIC_PAINTER_H
 #define TL_GRAPHIC_PAINTER_H
 
-#include "config_tl.h"
-
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // TL_HAVE_OPENCV

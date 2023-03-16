@@ -25,12 +25,8 @@
 #ifndef TL_GEOMETRY_SHAPES_H
 #define TL_GEOMETRY_SHAPES_H
 
-#include "config_tl.h"
-
 #include <limits>
 #include <numeric>
-
-#include "tidop/core/defs.h"
 
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"

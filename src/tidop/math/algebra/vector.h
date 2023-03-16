@@ -25,10 +25,6 @@
 #ifndef TL_MATH_VECTOR_H
 #define TL_MATH_VECTOR_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
-
 #include <iterator>
 #include <vector>
 #include <array>

@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "whitebalance.h"
+#include "tidop/imgprocess/whitebalance.h"
 
 #include "tidop/core/messages.h"
 #include "tidop/core/concurrency.h"

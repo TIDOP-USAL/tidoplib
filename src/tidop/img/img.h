@@ -25,19 +25,10 @@
 #ifndef TL_IMG_H
 #define TL_IMG_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
-
-//#ifdef TL_HAVE_GDAL
-//TL_SUPPRESS_WARNINGS
-//#include "gdal.h"
-//TL_DEFAULT_WARNINGS
-//#endif // TL_HAVE_GDAL
-
 #include <string>
 #include <vector>
 
+#include "tidop/core/defs.h"
 
 namespace tl
 {

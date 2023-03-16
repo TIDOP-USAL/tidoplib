@@ -25,7 +25,7 @@
 #ifndef TL_CORE_CONSOLE_H
 #define TL_CORE_CONSOLE_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <functional>
 #include <map>

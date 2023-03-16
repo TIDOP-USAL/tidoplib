@@ -25,7 +25,7 @@
 #ifndef TL_CORE_LICENCE_H
 #define TL_CORE_LICENCE_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 #include "tidop/core/defs.h"
 
 #include <string>

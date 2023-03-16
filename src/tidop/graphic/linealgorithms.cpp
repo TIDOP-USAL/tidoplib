@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "linealgorithms.h"
+#include "tidop/graphic/linealgorithms.h"
 
 
 namespace tl 

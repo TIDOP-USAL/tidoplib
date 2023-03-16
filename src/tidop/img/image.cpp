@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "image.h"
+#include "tidop/img/image.h"
 
 
 namespace tl

@@ -25,8 +25,6 @@
 #ifndef TL_VECTOR_READER_H
 #define TL_VECTOR_READER_H
 
-#include "config_tl.h"
-
 #include <memory>
 #include <list>
 #include <string>

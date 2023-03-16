@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "linedetector.h"
+#include "tidop/imgprocess/linedetector.h"
 
 #ifdef TL_HAVE_OPENCV
 #ifdef HAVE_OPENCV_XIMGPROC

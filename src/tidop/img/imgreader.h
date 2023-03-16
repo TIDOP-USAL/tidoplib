@@ -25,9 +25,6 @@
 #ifndef TL_IMAGE_READER_H
 #define TL_IMAGE_READER_H
 
-#include "config_tl.h"
-
-
 #ifdef TL_HAVE_OPENCV
 
 

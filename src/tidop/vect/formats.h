@@ -25,7 +25,6 @@
 #ifndef TL_GRAPHIC_VECT_FORMATS_H
 #define TL_GRAPHIC_VECT_FORMATS_H
 
-#include "config_tl.h"
 #include "tidop/core/defs.h"
 
 #include <vector>

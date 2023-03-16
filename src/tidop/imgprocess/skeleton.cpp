@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "skeleton.h"
+#include "tidop/imgprocess/skeleton.h"
 
 #include "tidop/core/utils.h"
 #include "tidop/core/concurrency.h"

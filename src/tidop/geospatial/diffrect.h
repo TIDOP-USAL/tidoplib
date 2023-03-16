@@ -25,8 +25,6 @@
 #ifndef TL_GEOSPATIAL_DIFFERENTIAL_RECTIFICATION_H
 #define TL_GEOSPATIAL_DIFFERENTIAL_RECTIFICATION_H
 
-#include "config_tl.h"
-
 #include "tidop/core/messages.h"
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/geometry/entities/point.h"

@@ -25,7 +25,6 @@
 #ifndef TL_IMGPROCESS_FOURIER_H
 #define TL_IMGPROCESS_FOURIER_H
 
-#include "config_tl.h"
 #include "tidop/core/defs.h"
 
 #ifdef TL_HAVE_OPENCV

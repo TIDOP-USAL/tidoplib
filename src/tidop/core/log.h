@@ -26,7 +26,7 @@
 #define TL_CORE_LOG_H
 
 
-#include "config_tl.h"
+#include "tidop/config.h"
 #include "tidop/core/defs.h"
 
 #include <iostream>

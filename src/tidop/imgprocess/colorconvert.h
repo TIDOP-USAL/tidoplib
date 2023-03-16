@@ -25,8 +25,6 @@
 #ifndef TL_IMGPROCESS_COLOR_CONVERSION_H
 #define TL_IMGPROCESS_COLOR_CONVERSION_H
 
-#include "config_tl.h"
-
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"

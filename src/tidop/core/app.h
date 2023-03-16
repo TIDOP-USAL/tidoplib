@@ -25,7 +25,7 @@
 #ifndef TL_CORE_APP_H
 #define TL_CORE_APP_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <string>
 #include <memory>

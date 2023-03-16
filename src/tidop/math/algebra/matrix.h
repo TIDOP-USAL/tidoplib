@@ -25,7 +25,7 @@
 #ifndef TL_MATH_MATRIX_H
 #define TL_MATH_MATRIX_H
 
-#include "config_tl.h"
+#include <iomanip>
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
@@ -37,7 +37,7 @@
 #include "tidop/math/data.h"
 #include "tidop/geometry/rect.h"
 
-#include <iomanip>
+
 
 namespace tl
 {

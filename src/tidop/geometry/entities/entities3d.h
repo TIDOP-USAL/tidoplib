@@ -25,9 +25,6 @@
 #ifndef TL_GEOMETRY_ENTITIES_3D_H
 #define TL_GEOMETRY_ENTITIES_3D_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/bbox.h"

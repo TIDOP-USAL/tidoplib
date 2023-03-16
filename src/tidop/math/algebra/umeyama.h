@@ -25,8 +25,6 @@
 #ifndef TL_MATH_UMEYAMA_H
 #define TL_MATH_UMEYAMA_H
 
-#include "config_tl.h"
-
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"

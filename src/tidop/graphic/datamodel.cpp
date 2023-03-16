@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "datamodel.h"
+#include "tidop/graphic/datamodel.h"
 
 namespace tl
 {

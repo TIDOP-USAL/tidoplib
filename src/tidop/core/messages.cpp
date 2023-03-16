@@ -164,6 +164,9 @@ void MessageManager::onDebug(const std::string &message, const std::string &date
       lst->onMsgDebug(message, date);
     }
   }
+#else
+  unusedParameter(message);
+  unusedParameter(date);
 #endif
 }
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)

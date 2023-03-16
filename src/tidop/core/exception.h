@@ -25,7 +25,7 @@
 #ifndef TL_CORE_EXCEPTION_H
 #define TL_CORE_EXCEPTION_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <exception>
 #include <string>

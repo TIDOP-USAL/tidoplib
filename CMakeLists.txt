@@ -155,7 +155,7 @@ if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
     set(TL_INSTALL_BINARIES_PREFIX "${TL_ARCH}/${TL_RUNTIME}/")
   else()
     message(STATUS "Can't detect runtime and/or arch")
-    set(TL_INSTALL_BINARIES_PREFIX "")
+    set(TL_INSTALL_BINARIES_PREFIX .)
   endif()
 endif()
 
@@ -546,7 +546,7 @@ add_subdirectory(test)
 message("\n")
 
 # TidopLib config file
-configure_file("cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
+configure_file("cmake/config.h.in" "${PROJECT_BINARY_DIR}/tidop/config.h")
 
 
 ##########################################################################
@@ -556,7 +556,7 @@ configure_file("cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
 include(GNUInstallDirs)
 
 # TidopLib config file
-install(FILES ${PROJECT_BINARY_DIR}/config_tl.h 
+install(FILES ${PROJECT_BINARY_DIR}/tidop/config.h 
         DESTINATION include)
 
 

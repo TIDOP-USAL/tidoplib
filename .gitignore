@@ -1,5 +1,5 @@
 #Carpeta de compilación
-build
+build*
 
 #ignorar copias de ficheros
 * - copia.*

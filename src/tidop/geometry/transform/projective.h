@@ -25,8 +25,6 @@
 #ifndef TL_GEOMETRY_TRANSFORM_PROJECTIVE_H
 #define TL_GEOMETRY_TRANSFORM_PROJECTIVE_H
 
-#include "config_tl.h"
-
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/math/mathutils.h"
 #include "tidop/math/algebra/matrix.h"
