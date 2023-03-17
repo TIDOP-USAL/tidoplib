@@ -557,7 +557,7 @@ include(GNUInstallDirs)
 
 # TidopLib config file
 install(FILES ${PROJECT_BINARY_DIR}/tidop/config.h 
-        DESTINATION include)
+        DESTINATION include/tidop)
 
 
 
