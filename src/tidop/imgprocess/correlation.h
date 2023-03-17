@@ -25,15 +25,17 @@
 #ifndef TL_IMGPROCESS_FILTERS_H
 #define TL_IMGPROCESS_FILTERS_H
 
+#include "tidop/config.h"
+
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "tidop/core/defs.h"
 //#include "graphic_entities/color.h"
-#include "tidop/img_process/img_processing.h"
+#include "tidop/imgprocess/imgprocess.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup ImgProc
@@ -102,7 +104,7 @@ namespace TL
 
 /*! \} */ // end of ImgProc
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_HAVE_OPENCV
 
