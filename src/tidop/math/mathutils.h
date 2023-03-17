@@ -25,9 +25,6 @@
 #ifndef TL_CORE_MATH_UTILS_H
 #define TL_CORE_MATH_UTILS_H
 
-#include "config_tl.h"
-#include "tidop/core/defs.h"
-
 #include <vector>
 #include <array>
 

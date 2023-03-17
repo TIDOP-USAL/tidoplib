@@ -25,9 +25,7 @@
 #ifndef TL_CORE_CONCURRENCY_H
 #define TL_CORE_CONCURRENCY_H
 
-#include "config_tl.h"
-#include "tidop/core/defs.h"
-#include "tidop/math/math.h"
+#include "tidop/config.h"
 
 #include <functional>
 #include <thread>
@@ -36,6 +34,9 @@
 #include <condition_variable>
 #include <future>
 #include <algorithm>
+
+#include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 
 namespace tl
 {

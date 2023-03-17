@@ -25,7 +25,7 @@
 #ifndef TL_GEOMETRY_ENTITY_H
 #define TL_GEOMETRY_ENTITY_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <iterator>
 #include <limits>

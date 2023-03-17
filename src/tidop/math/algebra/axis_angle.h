@@ -25,11 +25,10 @@
 #ifndef TL_MATH_AXIS_ANGLE_H
 #define TL_MATH_AXIS_ANGLE_H
 
-#include "tidop/math/math.h"
-
 #include <vector>
 #include <array>
 
+#include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/rotations.h"
 

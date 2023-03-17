@@ -315,6 +315,8 @@ void Console::onMsgDebug(const std::string &message,
                          const std::string &date)
 #endif
 {
+  unusedParameter(date);
+
   if (sLevel.isEnabled(MessageLevel::msg_debug)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foregroundColor,
                               messageProperties(MessageLevel::msg_debug).intensity);
@@ -331,6 +333,8 @@ void Console::onMsgInfo(const std::string &message,
                         const std::string &date) 
 #endif
 {
+  unusedParameter(date);
+
   if (sLevel.isEnabled(MessageLevel::msg_info)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foregroundColor,
                               messageProperties(MessageLevel::msg_info).intensity);
@@ -347,6 +351,8 @@ void Console::onMsgWarning(const std::string &message,
                            const std::string &date)
 #endif
 {
+  unusedParameter(date);
+
   if (sLevel.isEnabled(MessageLevel::msg_warning)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foregroundColor,
                               messageProperties(MessageLevel::msg_warning).intensity);
@@ -363,6 +369,8 @@ void Console::onMsgError(const std::string &message,
                          const std::string &date)
 #endif
 {
+  unusedParameter(date);
+
   if (sLevel.isEnabled(MessageLevel::msg_error)) {
     printErrorMessage(message);
   }

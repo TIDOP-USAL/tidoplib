@@ -25,13 +25,12 @@
 #ifndef TL_GRAPHIC_CANVAS_H
 #define TL_GRAPHIC_CANVAS_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // TL_HAVE_OPENCV
 
-#include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/entities/point.h"

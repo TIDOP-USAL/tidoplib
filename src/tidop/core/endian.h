@@ -25,7 +25,7 @@
 #ifndef TL_CORE_ENDIANNESS_H
 #define TL_CORE_ENDIANNESS_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <string>
 #include <memory>

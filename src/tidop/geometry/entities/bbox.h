@@ -25,11 +25,8 @@
 #ifndef TL_GEOMETRY_BOUNDING_BOX_H
 #define TL_GEOMETRY_BOUNDING_BOX_H
 
-#include "config_tl.h"
-
 #include <algorithm>
 
-#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"
 

@@ -27,9 +27,6 @@
 
 #include <utility>
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/math/mathutils.h"
 #include "tidop/geometry/entities/point.h"

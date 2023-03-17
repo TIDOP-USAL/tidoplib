@@ -25,7 +25,7 @@
 #ifndef TL_CORE_UTILS_H
 #define TL_CORE_UTILS_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <vector>
 #include <string>

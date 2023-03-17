@@ -27,8 +27,6 @@
 #ifndef TL_GRAPHIC_COLOR_H
 #define TL_GRAPHIC_COLOR_H
 
-#include "config_tl.h"
-
 #include <string>
 #include <sstream>
 #include <typeinfo>

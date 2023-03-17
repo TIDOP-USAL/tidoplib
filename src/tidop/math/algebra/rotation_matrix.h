@@ -25,8 +25,6 @@
 #ifndef TL_MATH_ROTATION_MATRIX_H
 #define TL_MATH_ROTATION_MATRIX_H
 
-#include "config_tl.h"
-
 #include <vector>
 #include <array>
 

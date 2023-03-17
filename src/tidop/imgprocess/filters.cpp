@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "filters.h"
+#include "tidop/imgprocess/filters.h"
 
 #ifdef TL_HAVE_OPENCV
 

@@ -1,7 +1,7 @@
 [](http://)# TidopLib
 
 <p align="center">
-<img src="http://tidop.usal.es/theme/icons/Tidop_en.png" />
+<img src="tidop_logo.png" />
 </p>
 
 TidopLib is an open-source C++ library developed by [Tidop Research Group](http://tidop.usal.es)
@@ -12,7 +12,7 @@ TidopLib is an open-source C++ library developed by [Tidop Research Group](http:
 
 ```
 cd D:/dev
-git clone https://github.com/estebanrdo/tidoplib.git
+git clone https://github.com/TIDOP-USAL/tidoplib.git
 ```
 
 ### CMake 

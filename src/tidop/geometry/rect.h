@@ -25,12 +25,9 @@
 #ifndef TL_GEOMETRY_RECT_H
 #define TL_GEOMETRY_RECT_H
 
-#include "config_tl.h"
-
 #include <limits>
 #include <numeric>
 
-#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/size.h"

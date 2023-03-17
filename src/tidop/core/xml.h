@@ -25,7 +25,7 @@
 #ifndef TL_CORE_UTILS_XML_H
 #define TL_CORE_UTILS_XML_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #ifdef TL_HAVE_GDAL
 

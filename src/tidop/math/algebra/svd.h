@@ -25,8 +25,6 @@
 #ifndef TL_MATH_SVD_H
 #define TL_MATH_SVD_H
 
-#include "config_tl.h"
-
 #include <algorithm>
 
 #include "tidop/core/defs.h"

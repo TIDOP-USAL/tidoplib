@@ -2998,14 +2998,14 @@ struct MatrixBlockTest
   void setup()
   {
     mat_3x3_i = Matrix<int, 3, 3>::identity();
-    block = new MatrixBlock<int>(mat_3x3_i.data(), mat_3x3_i.rows(), mat_3x3_i.cols(), 1, 2, 1, 2);
+    block = new internal::MatrixBlock<int>(mat_3x3_i.data(), mat_3x3_i.rows(), mat_3x3_i.cols(), 1, 2, 1, 2);
 
     m_5x5 = { {6, 8, 6, 7, 3},
               {9, 6, 2, 3, 3},
               {8, 3, 2, 3, 3},
               {5, 3, 3, 7, 6},
               {5, 5, 7, 4, 7} };
-    block2 = new MatrixBlock<int>(m_5x5.data(), m_5x5.rows(), m_5x5.cols(), 2, 4, 1, 4);
+    block2 = new internal::MatrixBlock<int>(m_5x5.data(), m_5x5.rows(), m_5x5.cols(), 2, 4, 1, 4);
 
     mat_10x10_d = {0.81, 7.45, 1.17, 3.44, 4.13, 5.67, 4.57, 2.03, 5.53, 5.25,
                    6.69, 7.87, 1.70, 4.32, 6.33, 0.67, 8.99, 7.63, 7.08, 7.24,
@@ -3039,13 +3039,14 @@ struct MatrixBlockTest
   Matrix<int, 5, 5> m_5x5;
   Matrix<double, 10, 10> mat_10x10_d;
   Matrix<double, 5, 5> mat_5x5_d;
-  MatrixBlock<int> *block;
-  MatrixBlock<int> *block2;
+  internal::MatrixBlock<int> *block;
+  internal::MatrixBlock<int> *block2;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(constructor, MatrixBlockTest)
 {
+
   BOOST_CHECK_EQUAL(1, (*block)(0, 0));
   BOOST_CHECK_EQUAL(0, (*block)(0, 1));
   BOOST_CHECK_EQUAL(0, (*block)(1, 0));
@@ -3093,6 +3094,44 @@ BOOST_FIXTURE_TEST_CASE(assing_matrix, MatrixBlockTest)
   BOOST_CHECK_EQUAL(1, block->at(0, 1));
   BOOST_CHECK_EQUAL(1, block->at(1, 0));
   BOOST_CHECK_EQUAL(1, block->at(1, 1));
+
+  (*block) = Matrix<double>::ones(2, 2);
+  BOOST_CHECK_EQUAL(1, block->at(0, 0));
+  BOOST_CHECK_EQUAL(1, block->at(0, 1));
+  BOOST_CHECK_EQUAL(1, block->at(1, 0));
+  BOOST_CHECK_EQUAL(1, block->at(1, 1));
+
+  std::cout << m_5x5;
+  m_5x5.block(0, 1, 0, 1) = m_5x5.block(2, 3, 2, 3);
+  BOOST_CHECK_EQUAL(2, m_5x5.block(0, 1, 0, 1)(0, 0));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(0, 1, 0, 1)(0, 1));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(0, 1, 0, 1)(1, 0));
+  BOOST_CHECK_EQUAL(7, m_5x5.block(0, 1, 0, 1)(1, 1));
+
+  m_5x5.block(0, 2, 0, 2) = m_5x5.block(2, 4, 2, 4);
+
+  BOOST_CHECK_EQUAL(2, m_5x5.block(0, 2, 0, 2)(0, 0));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(0, 2, 0, 2)(0, 1));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(0, 2, 0, 2)(0, 2));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(0, 2, 0, 2)(1, 0));
+  BOOST_CHECK_EQUAL(7, m_5x5.block(0, 2, 0, 2)(1, 1));
+  BOOST_CHECK_EQUAL(6, m_5x5.block(0, 2, 0, 2)(1, 2));
+  BOOST_CHECK_EQUAL(7, m_5x5.block(0, 2, 0, 2)(2, 0));
+  BOOST_CHECK_EQUAL(4, m_5x5.block(0, 2, 0, 2)(2, 1));
+  BOOST_CHECK_EQUAL(7, m_5x5.block(0, 2, 0, 2)(2, 2));
+
+  m_5x5.block(2, 4, 2, 4) = m_5x5.block(1, 3, 1, 3);
+
+  BOOST_CHECK_EQUAL(7, m_5x5.block(2, 4, 2, 4)(0, 0));
+  BOOST_CHECK_EQUAL(6, m_5x5.block(2, 4, 2, 4)(0, 1));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(2, 4, 2, 4)(0, 2));
+  BOOST_CHECK_EQUAL(4, m_5x5.block(2, 4, 2, 4)(1, 0));
+  BOOST_CHECK_EQUAL(7, m_5x5.block(2, 4, 2, 4)(1, 1));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(2, 4, 2, 4)(1, 2));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(2, 4, 2, 4)(2, 0));
+  BOOST_CHECK_EQUAL(3, m_5x5.block(2, 4, 2, 4)(2, 1));
+  BOOST_CHECK_EQUAL(7, m_5x5.block(2, 4, 2, 4)(2, 2));
+
 }
 
 BOOST_FIXTURE_TEST_CASE(at, MatrixBlockTest)

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "fourier.h"
-
+#include "tidop/imgprocess/fourier.h"
 #include "tidop/core/utils.h"
 #include "tidop/math/mathutils.h"
 

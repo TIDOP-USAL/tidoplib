@@ -25,14 +25,11 @@
 #ifndef TL_GEOMETRY_WINDOW_H
 #define TL_GEOMETRY_WINDOW_H
 
-#include "config_tl.h"
-
 #include <algorithm>
 #include <typeinfo>
 #include <cmath>
 #include <utility>
 
-#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/size.h"

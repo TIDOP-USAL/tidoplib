@@ -25,8 +25,6 @@
 #ifndef TL_DATA_MODEL_H
 #define TL_DATA_MODEL_H
 
-#include "config_tl.h"
-
 #include <list>
 #include <vector>
 #include <memory>

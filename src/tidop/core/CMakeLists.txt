@@ -90,12 +90,12 @@ if(BUILD_TL_CORE)
         set_target_properties(${PROJECT_NAME} PROPERTIES
                               DEFINE_SYMBOL TIDOPLIB_EXPORTS)  
     endif()
-    
+
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
-            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib)
                 
     install(DIRECTORY .
             DESTINATION include/tidop/core

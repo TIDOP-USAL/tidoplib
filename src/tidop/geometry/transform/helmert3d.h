@@ -25,8 +25,6 @@
 #ifndef TL_GEOMETRY_TRANSFORM_HELMERT_3D_H
 #define TL_GEOMETRY_TRANSFORM_HELMERT_3D_H
 
-#include "config_tl.h"
-
 #include "tidop/core/exception.h"
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/math/algebra/rotation_convert.h"

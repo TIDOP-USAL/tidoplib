@@ -25,9 +25,6 @@
 #ifndef TL_GRAPHIC_ENTITIES_POLYGON_H
 #define TL_GRAPHIC_ENTITIES_POLYGON_H
 
-#include "config_tl.h"
-#include "tidop/core/defs.h"
-
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/polygon.h"
 #include "tidop/graphic/entities/entity.h"

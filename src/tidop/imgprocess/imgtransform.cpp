@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "imgtransform.h"
+#include "tidop/imgprocess/imgtransform.h"
 
 #ifdef TL_HAVE_OPENCV
 

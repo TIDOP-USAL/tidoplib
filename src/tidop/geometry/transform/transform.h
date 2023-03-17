@@ -25,9 +25,6 @@
 #ifndef TL_GEOMETRY_TRANSFORM_H
 #define TL_GEOMETRY_TRANSFORM_H
 
-#include "config_tl.h"
-
-
 #include <vector>
 #include <memory>
 #include <list>
