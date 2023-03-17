@@ -25,8 +25,6 @@
 #ifndef TL_FEATMATCH_AKAZE_DETECTOR_DESCRIPTOR_H
 #define TL_FEATMATCH_AKAZE_DETECTOR_DESCRIPTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 namespace tl

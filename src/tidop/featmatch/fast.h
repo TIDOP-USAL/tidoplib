@@ -25,8 +25,6 @@
 #ifndef TL_FEATMATCH_FAST_DETECTOR_H
 #define TL_FEATMATCH_FAST_DETECTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 #ifdef HAVE_OPENCV_CUDAFEATURES2D

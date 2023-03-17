@@ -25,7 +25,7 @@
 #ifndef TL_FEATMATCH_KAZE_DETECTOR_DESCRIPTOR_H
 #define TL_FEATMATCH_KAZE_DETECTOR_DESCRIPTOR_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include "tidop/featmatch/features.h"
 
