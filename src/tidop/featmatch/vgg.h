@@ -25,14 +25,11 @@
 #ifndef TL_FEATMATCH_VGG_DESCRIPTOR_H
 #define TL_FEATMATCH_VGG_DESCRIPTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
 #include <opencv2/xfeatures2d.hpp>
 #endif // HAVE_OPENCV_XFEATURES2D
-
 
 namespace tl
 {

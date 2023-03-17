@@ -25,8 +25,6 @@
 #ifndef TL_FEATMATCH_SURF_DETECTOR_DESCRIPTOR_H
 #define TL_FEATMATCH_SURF_DETECTOR_DESCRIPTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
@@ -36,7 +34,6 @@
 #include <opencv2/cudafeatures2d.hpp>
 #include <opencv2/xfeatures2d/cuda.hpp>
 #endif // HAVE_OPENCV_CUDAFEATURES2D
-
 
 namespace tl
 {

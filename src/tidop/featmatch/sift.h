@@ -25,8 +25,6 @@
 #ifndef TL_FEATMATCH_SIFT_DETECTOR_DESCRIPTOR_H
 #define TL_FEATMATCH_SIFT_DETECTOR_DESCRIPTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 #if defined OPENCV_ENABLE_NONFREE && defined HAVE_OPENCV_XFEATURES2D

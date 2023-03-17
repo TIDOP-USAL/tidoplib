@@ -25,13 +25,12 @@
 #ifndef TL_FEATMATCH_ORB_DETECTOR_DESCRIPTOR_H
 #define TL_FEATMATCH_ORB_DETECTOR_DESCRIPTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>
 #endif // HAVE_OPENCV_CUDAFEATURES2D
+
 
 namespace tl
 {

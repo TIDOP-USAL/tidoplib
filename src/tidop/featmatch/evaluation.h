@@ -25,15 +25,13 @@
 #ifndef TL_EVALUATION_H
 #define TL_EVALUATION_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <map>
 
 #include <opencv2/features2d.hpp>
 
 #include "tidop/geometry/entities/point.h"
-
-
 
 namespace tl
 {
