@@ -25,12 +25,13 @@
 #ifndef TL_MATH_TRANSFORM_H
 #define TL_MATH_TRANSFORM_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <vector>
 #include <array>
 
 #include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/rotation_matrix.h"
 
 namespace tl
 {
@@ -62,12 +63,12 @@ class Transform
 public:
   
   Transform();
-  Transform(const Transform<T> &matrix);
+  Transform(const Transform<T, dim> &matrix);
   Transform(const Matrix<T, dim + 1, dim + 1> &matrix);
   ~Transform() override = default;
 
-  RotationMatrix<T, dim> rotation() const;
-  void setRotation(const RotationMatrix<T, dim> &rotation);
+  RotationMatrix<T> rotation() const;
+  void setRotation(const RotationMatrix<T> &rotation);
   
   Vector<T, dim> translation() const;
   void setTranslation(const Vector<T, dim> &translation);
@@ -80,49 +81,49 @@ private:
 };
 
 
-template <typename T> inline
-Transform<T>::Transform()
+template <typename T, size_t dim> inline
+Transform<T, dim>::Transform()
   : Matrix<T, dim + 1, dim + 1>()
 {
 }
 
-template <typename T> inline
-Transform<T>::Transform(const Transform<T> &matrix)
+template <typename T, size_t dim> inline
+Transform<T, dim>::Transform(const Transform<T, dim> &matrix)
   : Matrix<T, dim + 1, dim + 1>(matrix)
 {
 }
 
-template <typename T> inline
-Transform<T>::Transform(const Matrix<T, dim + 1, dim + 1> &matrix)
+template <typename T, size_t dim> inline
+Transform<T, dim>::Transform(const Matrix<T, dim + 1, dim + 1> &matrix)
   : Matrix<T, dim + 1, dim + 1>(matrix)
 {
 }
 
-template <typename T> inline
-RotationMatrix<T, dim, dim> Transform<T>::rotation() const
+template <typename T, size_t dim> inline
+RotationMatrix<T> Transform<T, dim>::rotation() const
 {
   return RotationMatrix<T>();
 }
 
-template <typename T> inline
-void Transform<T>::setRotation(const RotationMatrix<T, dim, dim> &rotation) const
+template <typename T, size_t dim> inline
+void Transform<T, dim>::setRotation(const RotationMatrix<T> &rotation)
 {
 }
 
-template <typename T> inline
-Vector<T, dim> Transform<T>::translation() const
+template <typename T, size_t dim> inline
+Vector<T, dim> Transform<T, dim>::translation() const
 {
   return Vector<T, dim>();
 }
 
-template <typename T> inline
-T Transform<T>::scale() const
+template <typename T, size_t dim> inline
+T Transform<T, dim>::scale() const
 {
   return T();
 }
 
-template <typename T> inline
-void setScale(T scale)
+template <typename T, size_t dim> inline
+void Transform<T, dim>::setScale(T scale)
 {
   
 }

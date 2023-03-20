@@ -272,7 +272,7 @@ protected:
 
 private:
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 
   /*!
    * \brief Inicializa la consola guardando la configuración  actual.
@@ -296,7 +296,7 @@ private:
 
 private:
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 
   /* Consola de Windows */
 

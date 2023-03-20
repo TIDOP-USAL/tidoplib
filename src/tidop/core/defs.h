@@ -27,6 +27,37 @@
 #ifndef TL_CORE_DEFS_H
 #define TL_CORE_DEFS_H
 
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#define TL_OS_WINDOWS
+#elif defined(linux) || defined(__linux) || defined(__linux__)
+#define TL_OS_LINUX
+#elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
+#define TL_OS_MACOSX
+#elif defined(__FreeBSD__)
+#define TL_OS_FREEBSD
+#elif defined(__NetBSD__)
+# define TL_OS_NETBSD
+#elif defined(__OpenBSD__)
+#define TL_OS_OPENBSD
+#else
+#endif
+
+
+#if defined __GNUC__ || (defined(__cplusplus) && (__cplusplus >= 201103))
+#  define TL_FUNCTION __func__
+#elif defined __clang__ && (__clang_minor__ * 100 + __clang_major__ >= 305)
+#define TL_FUNCTION __func__
+#elif defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901)
+# define TL_FUNCTION __func__
+#elif defined _MSC_VER
+#  define TL_FUNCTION __FUNCTION__
+#else
+#  define TL_FUNCTION ""
+#endif
+
+
+
 #include "tidop/config.h"
 
 #include <limits>
@@ -63,7 +94,7 @@
   #include <cstdint>
 #endif
 
-#if defined WIN32
+#if defined TL_OS_WINDOWS
 // Para que no den problemas std::numeric_limits<T>().max()
 #  ifndef NOMINMAX
 #    define NOMINMAX
@@ -93,7 +124,7 @@
 
 
 
-#if defined WIN32 || defined _WIN32
+#if defined TL_OS_WINDOWS
 #  ifdef _MSC_VER
 #    define TL_MAX_PATH   _MAX_PATH
 #    define TL_MAX_DRIVE  _MAX_DRIVE
@@ -102,7 +133,7 @@
 #    define TL_MAX_EXT    _MAX_EXT
 #  else //__GNUC__ No encuentra _MAX_DRIVE, _MAX_DIR, _MAX_FNAME y _MAX_EXT
 #    ifdef __GNUC__
-#      define TL_MAX_PATH   MAX_PATH
+#      define TL_MAX_PATH   PATH_MAX
 #    else
 #      define TL_MAX_PATH  260
 #    endif
@@ -208,22 +239,7 @@
 
 
 
-// __FUNCTION__ no es estandar (Es de Visual Studio).
-// __func__ es valida a partir de C99 / C++11
-#if defined (__GNUC__)
-#  define TL_FUNCTION __PRETTY_FUNCTION__
-#elif defined(__FUNCSIG__)
-# define TL_FUNCTION __FUNCSIG__
-#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
-# define TL_FUNCTION __func__
-#elif defined(__cplusplus) && (__cplusplus >= 201103)
-#  define TL_FUNCTION __func__
-#elif defined _MSC_VER
-#  define TL_FUNCTION __FUNCTION__
-#else
-#  define TL_FUNCTION ""
-#endif
-//__FUNCSIG__
+
 
 #if CPP_VERSION >= 11
 #  define TL_NOEXCEPT noexcept

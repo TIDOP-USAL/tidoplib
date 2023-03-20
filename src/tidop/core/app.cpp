@@ -24,7 +24,7 @@
 
 #include "tidop/core/app.h"
 
-#if defined __linux__ || defined __GNUC__
+#if TL_OS_LINUX
 #include <unistd.h>
 #endif
 
@@ -48,10 +48,10 @@ tl::Path App::path() const
 {
   static std::array<char, TL_MAX_PATH> runfile;
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
   return tl::Path(std::string(runfile.data()));
-#else
+#elif defined TL_OS_LINUX
   std::array<char, 32> _path{};
   sprintf(_path.data(), "/proc/%d/exe", getpid());
   long len = readlink(_path.data(), runfile.data(), runfile.size());

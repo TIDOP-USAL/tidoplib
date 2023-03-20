@@ -239,7 +239,7 @@ class TL_EXPORT Process
 
 public:
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 
   enum class Priority
   {
@@ -259,7 +259,7 @@ public:
           Priority priority = Priority::normal*/);
   ~Process() override;
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   Priority priority() const;
 
   /*!
@@ -283,7 +283,7 @@ private:
 private:
 
   std::string mCommandText;
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   STARTUPINFO mStartUpInfo;
   PROCESS_INFORMATION mProcessInformation;
   SECURITY_ATTRIBUTES mSecurityAttributes;

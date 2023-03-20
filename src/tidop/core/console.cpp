@@ -86,7 +86,7 @@ Console::Console()
   : MessageManager::Listener(false)
 #endif
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   init(STD_OUTPUT_HANDLE);
 #else
   init(stdout);
@@ -156,7 +156,7 @@ void Console::printErrorMessage(const std::string &message)
 
 void Console::reset()
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   mForegroundColor = (mOldColorAttrs & 0x0007);
   mForegroundIntensity = (mOldColorAttrs & 0x0008);
   mBackgroundColor = (mOldColorAttrs & 0x0070);
@@ -171,7 +171,7 @@ void Console::reset()
 void Console::setConsoleBackgroundColor(Console::Color backgroundColor,
                                         Console::Intensity intensity)
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   switch (backgroundColor) {
   case tl::Console::Color::black:
     mBackgroundColor = 0;
@@ -214,7 +214,7 @@ void Console::setConsoleBackgroundColor(Console::Color backgroundColor,
 void Console::setConsoleForegroundColor(Console::Color foregroundColor,
                                         Console::Intensity intensity)
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   switch (foregroundColor) {
   case tl::Console::Color::black:
     mForegroundColor = 0;
@@ -258,7 +258,7 @@ void Console::setConsoleForegroundColor(Console::Color foregroundColor,
 
 void Console::setConsoleUnicode()
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   //SetConsoleOutputCP(1252);
   //SetConsoleCP(1252);
   SetConsoleOutputCP(CP_UTF8/*65001*/);
@@ -267,7 +267,7 @@ void Console::setConsoleUnicode()
 
 void Console::setFontBold(bool bBold)
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   if (bBold) {
     mCurrentFont.FontWeight = FW_BOLD;
   } else {
@@ -285,7 +285,7 @@ void Console::setFontBold(bool bBold)
 
 void Console::setFontHeight(int16_t fontHeight)
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   mCurrentFont.dwFontSize.Y = static_cast<SHORT>(fontHeight);
 #else
   unusedParameter(fontHeight);
@@ -295,7 +295,7 @@ void Console::setFontHeight(int16_t fontHeight)
 
 void Console::setTitle(const std::string &title)
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   SetConsoleTitleA(title.c_str());
 #else
   unusedParameter(title);
@@ -380,7 +380,7 @@ TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 #endif // TL_MESSAGE_HANDLER
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 void Console::init(DWORD handle)
 {
   setConsoleUnicode();
@@ -420,7 +420,7 @@ void Console::init(FILE *stream)
 
 void Console::update()
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   SetConsoleTextAttribute(mHandle, mForegroundColor | mBackgroundColor | mForegroundIntensity | mBackgroundIntensity);
   SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else

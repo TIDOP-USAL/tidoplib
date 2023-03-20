@@ -31,7 +31,7 @@ endif()
 
 
 project(TidopLib
-        VERSION 2.2.0
+        VERSION 3.0.0
         DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)

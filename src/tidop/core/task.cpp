@@ -27,9 +27,9 @@
 #include "tidop/core/messages.h"
 #include "tidop/core/progress.h"
 
-#if defined WIN32
-#include <windows.h>
-#else
+#ifdef TL_OS_LINUX
+//#include <windows.h>
+//#else
 #include <spawn.h>
 #include <sys/wait.h>
 #endif
@@ -38,7 +38,7 @@
 #include <utility>
 #include <cstring>
 
-#ifndef WIN32
+#ifdef TL_OS_LINUX
 extern char **environ;
 #endif
 
@@ -531,7 +531,7 @@ void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
 
 /* Process */
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 
 WCHAR *toWCHAR(const char *str)
 {
@@ -569,13 +569,13 @@ Process::Process(std::string commandText/*,
                                  Priority priority*/)
   : mCommandText(std::move(commandText))/*,
     mPriority(priority)*/
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
     ,
     mPriority(Priority::normal),
     mThreadHandle(nullptr)
-#endif
+#endif // TL_OS_WINDOWS
 {
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
   ZeroMemory(&mStartUpInfo, sizeof(mStartUpInfo));
   mStartUpInfo.cb = sizeof(mStartUpInfo);
   mStartUpInfo.dwFlags |= STARTF_USESTDHANDLES;
@@ -586,7 +586,7 @@ Process::Process(std::string commandText/*,
   mSecurityAttributes.lpSecurityDescriptor = NULL;
 
   ZeroMemory(&mProcessInformation, sizeof(mProcessInformation));
-#endif
+#endif // TL_OS_WINDOWS
 }
 
 Process::~Process() = default;
@@ -595,7 +595,7 @@ void Process::execute(Progress *)
 {
   try {
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 
     //if (!createPipe()) return;
 
@@ -701,7 +701,7 @@ void Process::execute(Progress *)
 
 }
 
-#ifdef WIN32
+#ifdef TL_OS_WINDOWS
 Process::Priority Process::priority() const
 {
   return static_cast<Priority>(GetPriorityClass(mProcessInformation.hProcess));
