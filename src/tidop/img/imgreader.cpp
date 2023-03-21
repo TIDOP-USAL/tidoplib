@@ -31,7 +31,7 @@
 #ifdef TL_HAVE_OPENCV
 
 #ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "cpl_conv.h"

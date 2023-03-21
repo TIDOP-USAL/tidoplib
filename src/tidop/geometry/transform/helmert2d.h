@@ -656,10 +656,8 @@ void Helmert2D<Point_t>::updateInv()
   } else {
     ai = a / det;
     bi = -b / det;
-    TL_DISABLE_WARNING(TL_WARNING_C4244)
     txi = (-a * tx - b * ty) / det;
     tyi = (-a * ty + b * tx) / det;
-    TL_ENABLE_WARNING(TL_WARNING_C4244)
   }
 }
 

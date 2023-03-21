@@ -25,7 +25,7 @@
 #include "tidop/geospatial/crstransf.h"
 
 #ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "ogr_spatialref.h"
 #include "ogr_p.h"
 #include "ogr_api.h"
@@ -106,17 +106,19 @@ CrsTransform::~CrsTransform()
   OSRCleanup();
 }
 
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 Transform::Status CrsTransform::compute(const std::vector<Point3<double>> &pts1,
                                         const std::vector<Point3<double>> &pts2,
                                         std::vector<double> *error,
                                         double *rmse)
 {
+  unusedParameter(pts1);
+  unusedParameter(pts2);
+  unusedParameter(error);
+  unusedParameter(rmse);
   msgError("'compute' is not supported for CrsTransform");
   //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
   return Transform::Status::failure;
 }
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 Transform::Status CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
                                           std::vector<Point3<double>> &ptsOut,

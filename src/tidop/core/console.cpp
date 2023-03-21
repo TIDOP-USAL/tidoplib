@@ -305,8 +305,6 @@ void Console::setTitle(const std::string &title)
 
 #ifdef TL_MESSAGE_HANDLER
 
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-
 #if CPP_VERSION >= 17
 void Console::onMsgDebug(std::string_view message, 
                          std::string_view date)
@@ -375,8 +373,6 @@ void Console::onMsgError(const std::string &message,
     printErrorMessage(message);
   }
 }
-
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 #endif // TL_MESSAGE_HANDLER
 

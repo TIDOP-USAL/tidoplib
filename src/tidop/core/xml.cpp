@@ -30,7 +30,7 @@
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
 

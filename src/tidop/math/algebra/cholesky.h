@@ -131,9 +131,8 @@ inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(
 
     sum = b[r];
 
-    for (size_t k = r; k > 0; k--) {
+    for (size_t k = r; k > 0; k--)
       sum -= L[r][k-1] * x[k-1];
-    }
 
     x[r] = sum / L[r][r];
 
@@ -143,9 +142,8 @@ inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(
 
     sum = x[i-1];
 
-    for (size_t k = i; k < mRows; k++) {
+    for (size_t k = i; k < mRows; k++)
       sum -= L[k][i-1] * x[k];
-    }
 
     x[i-1] = sum / L[i-1][i-1];
 

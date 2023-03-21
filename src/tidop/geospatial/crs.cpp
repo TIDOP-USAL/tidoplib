@@ -28,7 +28,7 @@
 
 #include "tidop/core/messages.h"
 
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "ogr_spatialref.h"
 TL_DEFAULT_WARNINGS
 

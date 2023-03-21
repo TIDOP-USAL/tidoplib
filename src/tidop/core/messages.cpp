@@ -154,7 +154,6 @@ void MessageManager::resume()
   sStopHandler = false;
 }
 
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void MessageManager::onDebug(const std::string &message, const std::string &date)
 {
 #ifdef _DEBUG
@@ -169,7 +168,6 @@ void MessageManager::onDebug(const std::string &message, const std::string &date
   unusedParameter(date);
 #endif
 }
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void MessageManager::onInfo(const std::string &message, const std::string &date)
 {

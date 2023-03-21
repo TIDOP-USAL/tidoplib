@@ -28,7 +28,7 @@
 #include "tidop/core/defs.h"
 
 #ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "ogrsf_frmts.h"
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL

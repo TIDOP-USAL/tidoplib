@@ -62,8 +62,14 @@ class AxisAngle
 public:
 
   AxisAngle();
+  AxisAngle(const AxisAngle &axisAngle);
+  AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT;
   AxisAngle(T angle, const Vector<T, 3> &axis);
   ~AxisAngle() override = default;
+
+  AxisAngle &operator = (const AxisAngle<T> &rot);
+  AxisAngle &operator = (AxisAngle &&rot) TL_NOEXCEPT;
+
 
   T angle() const;
   void setAngle(T angle);
@@ -90,6 +96,24 @@ AxisAngle<T>::AxisAngle()
 }
 
 template<typename T>
+AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
+  : RotationBase<T>(Rotation::Type::axis_angle),
+    mAngle(axisAngle.mAngle),
+    mAxis(axisAngle.mAxis)
+{
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+}
+
+template<typename T>
+AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT
+  : RotationBase<T>(std::forward<RotationBase<T>>(axisAngle)),
+    mAngle(axisAngle.mAngle),
+    mAxis(std::forward<Vector<T, 3>>(axisAngle))
+{
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+}
+
+template<typename T>
 AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
   : RotationBase<T>(Rotation::Type::axis_angle),
     mAngle(angle),
@@ -98,6 +122,30 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
   mAxis.normalize();
+}
+
+template <typename T> 
+inline AxisAngle<T> &AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle)
+{
+  if (this != &axisAngle) {
+    RotationBase<T>::operator = (axisAngle);
+    mAngle = axisAngle.mAngle;
+    mAxis = axisAngle.axisAngle;
+  }
+
+  return *this;
+}
+
+template <typename T> 
+AxisAngle<T> &AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT
+{
+  if (this != &axisAngle) {
+    RotationBase<T>::operator = (std::forward<RotationBase<T>>(axisAngle));
+    mAngle = axisAngle.mAngle;
+    mAxis = std::forward<Vector<T, 3>>(axisAngle);
+  }
+
+  return *this;
 }
 
 template<typename T>

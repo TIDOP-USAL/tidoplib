@@ -92,6 +92,7 @@ class RotationBase
 public:
   
   RotationBase(Type rotationType);
+  RotationBase(const RotationBase &rotation);
   ~RotationBase() override = default;
 
   Type rotationType() const override;
@@ -110,6 +111,12 @@ private:
 template<typename T> inline
 RotationBase<T>::RotationBase(Type rotationType)
   : mRotationType(rotationType)
+{
+}
+
+template<typename T> inline
+RotationBase<T>::RotationBase(const RotationBase &rotation)
+  : mRotationType(rotation.mRotationType)
 {
 }
 
