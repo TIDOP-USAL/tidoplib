@@ -29,13 +29,14 @@ include(CMakeFindDependencyMacro)
 set(TidopLib_INCLUDE_DIRS "@INCLUDE_DIRS_TIDOP@")
 
 
-
+if(@TL_HAVE_BOOST@)
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 set(Boost_DIR "@Boost_DIR@" CACHE PATH "The directory containing BoostConfig.cmake")
 
 find_dependency(Boost QUIET REQUIRED filesystem system)
+endif()
 
 if(@TL_HAVE_GDAL@)
   set(GDAL_ROOT "" CACHE PATH "GDAL root directory")
