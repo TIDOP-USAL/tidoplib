@@ -90,8 +90,6 @@ if(BUILD_TL_CORE)
         set_target_properties(${PROJECT_NAME} PROPERTIES
                               DEFINE_SYMBOL TIDOPLIB_EXPORTS)  
     endif()
-    
-    message (STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"

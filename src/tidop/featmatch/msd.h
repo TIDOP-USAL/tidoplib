@@ -25,8 +25,6 @@
 #ifndef TL_FEATMATCH_MSD_DETECTOR_H
 #define TL_FEATMATCH_MSD_DETECTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 #include <memory>
@@ -36,6 +34,7 @@
 #else
 class MsdDetector;
 #endif
+
 
 namespace tl
 {

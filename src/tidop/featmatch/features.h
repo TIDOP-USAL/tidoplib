@@ -25,8 +25,7 @@
 #ifndef TL_FEATMATCH_FEATURES_H
 #define TL_FEATMATCH_FEATURES_H
 
-#include "config_tl.h"
-
+#include "tidop/config.h"
 
 #include <opencv2/features2d.hpp>
 

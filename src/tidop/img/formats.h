@@ -25,6 +25,9 @@
 #ifndef TL_IMG_FORMATS_H
 #define TL_IMG_FORMATS_H
 
+#include "tidop/config.h"
+#include "tidop/core/defs.h"
+
 #include <vector>
 #include <map>
 

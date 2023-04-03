@@ -25,6 +25,8 @@
 #ifndef TL_IMAGE_WRITER_H
 #define TL_IMAGE_WRITER_H
 
+#include "tidop/config.h"
+
 #ifdef TL_HAVE_OPENCV
 
 #include <string>

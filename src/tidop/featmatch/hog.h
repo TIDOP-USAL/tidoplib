@@ -25,13 +25,13 @@
 #ifndef TL_FEATMATCH_HOG_DESCRIPTOR_H
 #define TL_FEATMATCH_HOG_DESCRIPTOR_H
 
-#include "config_tl.h"
-
-#include "tidop/featmatch/features.h"
+#include "tidop/config.h"
 
 #include <memory>
 
 #include <opencv2/objdetect.hpp>
+
+#include "tidop/featmatch/features.h"
 
 namespace tl
 {

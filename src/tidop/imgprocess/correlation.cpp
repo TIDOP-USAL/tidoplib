@@ -24,11 +24,11 @@
  
  #include "correlation.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
-#include "core/messages.h"
+#include "tidop/core/messages.h"
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */

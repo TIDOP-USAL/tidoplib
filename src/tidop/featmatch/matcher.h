@@ -25,7 +25,7 @@
 #ifndef TL_FEATMATCH_MATCHER_H
 #define TL_FEATMATCH_MATCHER_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <memory>
 

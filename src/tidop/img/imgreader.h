@@ -25,8 +25,9 @@
 #ifndef TL_IMAGE_READER_H
 #define TL_IMAGE_READER_H
 
-#ifdef TL_HAVE_OPENCV
+#include "tidop/config.h"
 
+#ifdef TL_HAVE_OPENCV
 
 #include <string>
 #include <memory>

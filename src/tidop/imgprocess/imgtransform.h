@@ -25,6 +25,8 @@
 #ifndef TL_IMGPROCESS_TRANSFORM_H
 #define TL_IMGPROCESS_TRANSFORM_H
 
+#include "tidop/config.h"
+
 #ifdef TL_HAVE_OPENCV
 
 #include <opencv2/core.hpp>

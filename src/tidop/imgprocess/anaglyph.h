@@ -25,9 +25,10 @@
 #ifndef TL_IMGPROCESS_ANAGLYPH_H
 #define TL_IMGPROCESS_ANAGLYPH_H
 
+#include "tidop/config.h"
+
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
-
 
 #include "tidop/core/defs.h"
 

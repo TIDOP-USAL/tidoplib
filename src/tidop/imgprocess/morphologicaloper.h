@@ -25,6 +25,8 @@
 #ifndef TL_IMGPROCESS_MORPHOLOGICAL_OPERATIONS
 #define TL_IMGPROCESS_MORPHOLOGICAL_OPERATIONS
 
+#include "tidop/config.h"
+
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>

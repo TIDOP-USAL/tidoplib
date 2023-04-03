@@ -25,6 +25,8 @@
 #ifndef TL_IMGPROCESS_WHITE_BALANCE_H
 #define TL_IMGPROCESS_WHITE_BALANCE_H
 
+#include "tidop/config.h"
+
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
