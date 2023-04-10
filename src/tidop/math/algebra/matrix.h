@@ -35,6 +35,7 @@
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
 #include "tidop/math/data.h"
+#include "tidop/math/algebra/lu.h"
 #include "tidop/geometry/rect.h"
 
 
@@ -70,6 +71,8 @@ class MatrixBase;
 template<typename T, size_t _rows, size_t _cols>
 class Matrix;
 
+template<typename T>
+class LuDecomposition;
 
 /// \cond
 
@@ -445,6 +448,12 @@ template<
 >
 class MatrixBase<MatrixDerived<T, _rows, _cols>>
 {
+public:
+
+  enum class properties
+  {
+    contiguous_memory = 0x01
+  };
 
 public:
 
@@ -572,6 +581,14 @@ public:
     return matrix;
   }
 
+  template<typename MatrixDerived2>
+  const MatrixDerived<T, _rows, _cols> operator +(const MatrixDerived2 &matrix2)
+  {
+    MatrixDerived<T, _rows, _cols> matrix = this->derived();
+    matrix += matrix2;
+    return matrix;
+  }
+
   /*!
    * \brief Adición a una matriz
    *
@@ -610,7 +627,8 @@ public:
    *
    * \endcode
    */
-  MatrixDerived<T, _rows, _cols> &operator +=(const MatrixDerived<T, _rows, _cols> &matrix)
+  template<typename MatrixDerived2>
+  MatrixDerived<T, _rows, _cols> &operator +=(const MatrixDerived2 &matrix)
   {
     auto &derived = this->derived();
 
@@ -640,12 +658,15 @@ public:
     size_t max_size = size - size % packed_size;
     
     size_t i{0};
-    for (; i < max_size; i += packed_size) {
-    
-      packed_a.loadUnaligned(&derived(i));
-      packed_b.loadUnaligned(&matrix(i));
-      packed_a += packed_b;
-      packed_a.storeUnaligned(&derived(i));
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) && 
+        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+       
+      for (; i < max_size; i += packed_size) {
+        packed_a.loadUnaligned(&derived(i));
+        packed_b.loadUnaligned(&matrix(i));
+        packed_a += packed_b;
+        packed_a.storeUnaligned(&derived(i));
+      }
     }
     
     for (; i < size; ++i) {
@@ -695,9 +716,17 @@ public:
    * Matrix2x2i C = A - B;
    * \endcode
    */
-  Matrix<T, _rows, _cols> operator -(const Matrix<T, _rows, _cols> &matrix2)
+  Matrix<T, _rows, _cols> operator -(const MatrixDerived<T, _rows, _cols> &matrix2)
   {
     Matrix<T, _rows, _cols> matrix = this->derived();
+    matrix -= matrix2;
+    return matrix;
+  }
+    
+  template<typename MatrixDerived2>
+  const MatrixDerived<T, _rows, _cols> operator -(const MatrixDerived2 &matrix2)
+  {
+    MatrixDerived<T, _rows, _cols> matrix = this->derived();
     matrix -= matrix2;
     return matrix;
   }
@@ -734,7 +763,8 @@ public:
    * Matrix2x2i A -= B;
    * \endcode
    */
-  MatrixDerived<T, _rows, _cols> &operator -=(const MatrixDerived<T, _rows, _cols> &matrix)
+  template<typename MatrixDerived2>
+  MatrixDerived<T, _rows, _cols> &operator -=(const MatrixDerived2 &matrix)
   {
     auto &derived = this->derived();
 
@@ -764,12 +794,15 @@ public:
     size_t max_size = size - size % packed_size;
 
     size_t i{0};
-    for (; i < max_size; i += packed_size) {
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
+        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+      for (; i < max_size; i += packed_size) {
 
-      packed_a.loadUnaligned(&derived(i));
-      packed_b.loadUnaligned(&matrix(i));
-      packed_a -= packed_b;
-      packed_a.storeUnaligned(&derived(i));
+        packed_a.loadUnaligned(&derived(i));
+        packed_b.loadUnaligned(&matrix(i));
+        packed_a -= packed_b;
+        packed_a.storeUnaligned(&derived(i));
+      }
     }
 
     for (; i < size; ++i) {
@@ -948,10 +981,12 @@ public:
     auto &derived = this->derived();
     size_t size = derived.rows() * derived.cols();
 
+    T s = consts::one<T> / scalar;
+
 #ifndef TL_HAVE_SIMD_INTRINSICS
 
     for (size_t i = 0; i < size; ++i) {
-      derived(i) /= scalar;
+      derived(i) *= s;
     }
 
 #else
@@ -959,7 +994,7 @@ public:
     using namespace simd;
 
     Packed<T> packed_a;
-    Packed<T> packed_b(scalar);
+    Packed<T> packed_b(s);
 
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
@@ -968,12 +1003,12 @@ public:
     for (; i < max_size; i += packed_size) {
 
       packed_a.loadUnaligned(&derived(i));
-      packed_a /= packed_b;
+      packed_a *= packed_b;
       packed_a.storeUnaligned(&derived(i));
     }
 
     for (; i < size; ++i) {
-      derived(i) /= scalar;
+      derived(i) *= s;
     }
 
 #endif
@@ -1011,8 +1046,8 @@ public:
 
 protected:
 
-  template<typename MatrixDerived>
-  void set(const MatrixDerived &matrix)
+  template<typename MatrixDerived2>
+  void set(const MatrixDerived2 &matrix)
   {
     auto &derived = this->derived();
 
@@ -1023,34 +1058,38 @@ protected:
 
     TL_ASSERT(rows == matrix.rows() && cols == matrix.cols(), "Different size matrices");
 
-//#ifndef TL_HAVE_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
 
     for (size_t i = 0; i < size; ++i) {
       derived(i) = matrix(i);
     }
 
-    // Problema con los bloques
-//#else
-//
-//    using namespace simd;
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_size = size - size % packed_size;
-//
-//    size_t i{0};
-//    for (; i < max_size; i += packed_size) {
-//      packed_b.loadUnaligned(&matrix(i));
-//      packed_b.storeUnaligned(&derived(i));
-//    }
-//
-//    for (; i < size; ++i) {
-//      derived(i) = matrix(i);
-//    }
-//
-//#endif
+#else
+
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_size = size - size % packed_size;
+
+    size_t i{0};
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
+        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+
+      for (; i < max_size; i += packed_size) {
+        packed_b.loadUnaligned(&matrix(i));
+        packed_b.storeUnaligned(&derived(i));
+      }
+
+    }
+
+    for (; i < size; ++i) {
+      derived(i) = matrix(i);
+    }
+
+#endif
 
   }
 
@@ -1059,6 +1098,11 @@ protected:
   T determinant4x4() const;
   T determinantnxn() const;
  
+  /// Por ahora publico...
+public:
+
+  EnumFlags<properties> flag;
+
 };
 
 
@@ -1093,6 +1137,7 @@ public:
       mRows(_rows == DynamicData ? 0 : _rows),
       mCols(_cols == DynamicData ? 0 : _cols)
   {
+
   }
 
   /*!
@@ -2382,6 +2427,7 @@ inline MatrixBlock<T, _rows, _cols>::MatrixBlock(T *data,
     mIniCol(iniCol),
     mEndCol(endCol)
 {
+  this->flag.enable(MatrixBlock<T, _rows, _cols>::properties::contiguous_memory);
 }
 
 template<typename T, size_t _rows, size_t _cols>
@@ -2791,11 +2837,19 @@ auto Matrix<T, _rows, _cols>::inversenxn(bool *invertibility) const -> Matrix
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T det = this->determinantnxn();
+  LuDecomposition<Matrix<T, _rows, _cols>> lu(*this);
+
+  T det = lu.determinant();//this->determinantnxn();
   if(det != consts::zero<T>) {
 
-    matrix = this->adjugate();
-    matrix /= det;
+  //  matrix = this->adjugate();
+  //  matrix /= det;
+
+    Matrix<T, _rows, _cols> indentity(this->rows(), this->cols(), 0);
+    for (size_t r = 0; r < this->rows(); r++)
+      indentity(r, r) = consts::one<T>;
+    matrix = lu.solve(indentity);
+
     if(invertibility != nullptr) *invertibility = true;
 
   } else if(invertibility != nullptr){
@@ -3331,6 +3385,15 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
   return matrix1;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator + (const internal::MatrixBlock<T> &matrix1,
+                                    const Matrix<T, _rows, _cols> &matrix2)
+{
+  Matrix<T, _rows, _cols> matrix = matrix2;
+  matrix += matrix1;
+  return matrix;
+}
+
 /* Casos especiales de resta de matrices */
 
 template<typename T, size_t _rows, size_t _cols> inline static
@@ -3356,6 +3419,16 @@ Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
   matrix1 -= matrix2;
   return matrix1;
 }
+
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator - (const internal::MatrixBlock<T> &matrix1,
+                                    const Matrix<T, _rows, _cols> &matrix2)
+{
+  Matrix<T, _rows, _cols> matrix = matrix2;
+  matrix -= matrix1;
+  return -matrix;
+}
+
 
 /*!
  * \brief Multiplicación de matrices

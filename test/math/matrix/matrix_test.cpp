@@ -1451,6 +1451,44 @@ BOOST_FIXTURE_TEST_CASE(addition, MatrixTest)
   BOOST_CHECK_EQUAL(1., mat4[2][0]);
   BOOST_CHECK_EQUAL(1., mat4[2][1]);
   BOOST_CHECK_EQUAL(2., mat4[2][2]);
+
+  // Tipos de matriz diferentes
+  // Por ahora es muy poco eficiente ya que convierte de tipo de matriz en lugar de realizar la operación automaticamente
+  auto dyn_ones = Matrix<double>::ones(3, 3);
+  Matrix<double,3,3> mat5 = dyn_ones + _mat_3x3_d;
+
+  BOOST_CHECK_EQUAL(2.5, mat5[0][0]);
+  BOOST_CHECK_EQUAL(1.0, mat5[0][1]);
+  BOOST_CHECK_EQUAL(3.5, mat5[0][2]);
+  BOOST_CHECK_EQUAL(2.0, mat5[1][0]);
+  BOOST_CHECK_EQUAL(2.0, mat5[1][1]);
+  BOOST_CHECK_EQUAL(2.2, mat5[1][2]);
+  BOOST_CHECK_EQUAL(2.3, mat5[2][0]);
+  BOOST_CHECK_EQUAL(3.6, mat5[2][1]);
+  BOOST_CHECK_EQUAL(1.3, mat5[2][2]);
+
+  mat5 = _mat_3x3_d + Matrix<double>::ones(3, 3);
+
+  BOOST_CHECK_EQUAL(2.5, mat5[0][0]);
+  BOOST_CHECK_EQUAL(1.0, mat5[0][1]);
+  BOOST_CHECK_EQUAL(3.5, mat5[0][2]);
+  BOOST_CHECK_EQUAL(2.0, mat5[1][0]);
+  BOOST_CHECK_EQUAL(2.0, mat5[1][1]);
+  BOOST_CHECK_EQUAL(2.2, mat5[1][2]);
+  BOOST_CHECK_EQUAL(2.3, mat5[2][0]);
+  BOOST_CHECK_EQUAL(3.6, mat5[2][1]);
+  BOOST_CHECK_EQUAL(1.3, mat5[2][2]);
+
+  //Matrix<double, 5, 5> a = Matrix<double, 5, 5>::randon();
+  //Matrix<double, 5, 5> b = Matrix<double, 5, 5>::randon();
+  //Matrix<double, 5, 5> c = Matrix<double, 5, 5>::randon();
+  //Matrix<double, 5, 5> d = Matrix<double, 5, 5>::randon();
+  //Matrix<double, 5, 5> e = Matrix<double, 5, 5>::randon();
+  //auto f = a + b;
+  //auto g = a + b + c;
+  //auto h = a + b + c + d;
+  //auto i = a + b + c + d + e;
+
 }
 
 /// Resta de matrices
@@ -2051,7 +2089,7 @@ BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
 {
   Matrix<double,3,3> mat = _mat_3x3_d / 10.;
 
-  BOOST_CHECK_EQUAL(.15, mat[0][0]);
+  BOOST_CHECK_CLOSE(.15, mat[0][0], 0.01);
   BOOST_CHECK_EQUAL(.0, mat[0][1]);
   BOOST_CHECK_EQUAL(.25, mat[0][2]);
   BOOST_CHECK_EQUAL(.10, mat[1][0]);
@@ -2063,7 +2101,7 @@ BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
 
   Matrix<double> mat2 = (*_mat_dyn_3x3_d) / 10.;
 
-  BOOST_CHECK_EQUAL(.15, mat2[0][0]);
+  BOOST_CHECK_CLOSE(.15, mat2[0][0], 0.01);
   BOOST_CHECK_EQUAL(.0, mat2[0][1]);
   BOOST_CHECK_EQUAL(.25, mat2[0][2]);
   BOOST_CHECK_EQUAL(.10, mat2[1][0]);
@@ -3440,8 +3478,9 @@ BOOST_FIXTURE_TEST_CASE(addition, MatrixBlockTest)
 {
   {
     auto block1 = mat_5x5_d.block(0, 2, 0, 3);
-    auto block2 = mat_10x10_d.block(3, 5, 4, 7);
-    Matrix<double> mat = block1 + block2;
+    auto block2 = mat_10x10_d.block(3, 5, 4, 7);                   
+
+    Matrix<double> mat = mat_5x5_d.block(0, 2, 0, 3) + mat_10x10_d.block(3, 5, 4, 7);
 
     BOOST_CHECK_CLOSE(16.29, mat(0, 0), 0.1);
     BOOST_CHECK_CLOSE(9.19, mat(0, 1), 0.1);
@@ -3455,6 +3494,138 @@ BOOST_FIXTURE_TEST_CASE(addition, MatrixBlockTest)
     BOOST_CHECK_CLOSE(10.52, mat(2, 1), 0.1);
     BOOST_CHECK_CLOSE(8.82, mat(2, 2), 0.1);
     BOOST_CHECK_CLOSE(8.01, mat(2, 3), 0.1);
+
+    // Se comprueba que los bloques no se han modificado
+
+    BOOST_CHECK_CLOSE(7.35, block1(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.66, block1(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.25, block1(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.28, block1(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block1(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.39, block1(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.18, block1(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.83, block1(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.11, block1(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(7.88, block1(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.41, block1(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(3.63, block1(2, 3), 0.1);
+                           
+    BOOST_CHECK_CLOSE(8.94, block2(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.53, block2(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.04, block2(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(5.91, block2(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(5.71, block2(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block2(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.84, block2(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.33, block2(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.13, block2(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.64, block2(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.41, block2(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.38, block2(2, 3), 0.1);
+
+    mat = block1 + block2;
+
+    BOOST_CHECK_CLOSE(16.29, mat(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(9.19, mat(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(10.29, mat(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(14.19, mat(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(12.22, mat(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(12.9, mat(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.02, mat(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(13.16, mat(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.24, mat(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(10.52, mat(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.82, mat(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.01, mat(2, 3), 0.1);
+
+    // Se comprueba que los bloques no se han modificado
+
+    BOOST_CHECK_CLOSE(7.35, block1(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.66, block1(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.25, block1(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.28, block1(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block1(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.39, block1(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.18, block1(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.83, block1(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.11, block1(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(7.88, block1(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.41, block1(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(3.63, block1(2, 3), 0.1);
+                           
+    BOOST_CHECK_CLOSE(8.94, block2(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.53, block2(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.04, block2(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(5.91, block2(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(5.71, block2(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block2(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.84, block2(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.33, block2(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.13, block2(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.64, block2(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.41, block2(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.38, block2(2, 3), 0.1);
+
+    Matrix<double> mat2 = block2;
+    mat = block1 + mat2;
+
+    BOOST_CHECK_CLOSE(16.29, mat(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(9.19, mat(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(10.29, mat(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(14.19, mat(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(12.22, mat(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(12.9, mat(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.02, mat(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(13.16, mat(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.24, mat(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(10.52, mat(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.82, mat(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.01, mat(2, 3), 0.1);
+
+    // Se comprueba que los bloques no se han modificado
+
+    BOOST_CHECK_CLOSE(7.35, block1(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.66, block1(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.25, block1(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.28, block1(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block1(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.39, block1(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.18, block1(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.83, block1(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.11, block1(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(7.88, block1(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.41, block1(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(3.63, block1(2, 3), 0.1);
+
+    mat = mat2 + block1;
+
+    BOOST_CHECK_CLOSE(16.29, mat(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(9.19, mat(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(10.29, mat(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(14.19, mat(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(12.22, mat(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(12.9, mat(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.02, mat(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(13.16, mat(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.24, mat(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(10.52, mat(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.82, mat(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.01, mat(2, 3), 0.1);
+
+    // Se comprueba que los bloques no se han modificado
+                           
+    BOOST_CHECK_CLOSE(8.94, block2(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.53, block2(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.04, block2(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(5.91, block2(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(5.71, block2(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block2(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.84, block2(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.33, block2(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.13, block2(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.64, block2(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.41, block2(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.38, block2(2, 3), 0.1);
   }
 
   //{
@@ -3507,7 +3678,8 @@ BOOST_FIXTURE_TEST_CASE(subtraction, MatrixBlockTest)
   {
     auto block1 = mat_5x5_d.block(0, 2, 0, 3);
     auto block2 = mat_10x10_d.block(3, 5, 4, 7);
-    Matrix<double> mat = block1 - block2;
+    
+    Matrix<double> mat = mat_5x5_d.block(0, 2, 0, 3) - mat_10x10_d.block(3, 5, 4, 7);
 
     BOOST_CHECK_CLOSE(-1.59, mat(0, 0), 0.1);
     BOOST_CHECK_CLOSE(-3.87, mat(0, 1), 0.1);
@@ -3521,6 +3693,103 @@ BOOST_FIXTURE_TEST_CASE(subtraction, MatrixBlockTest)
     BOOST_CHECK_CLOSE(5.24, mat(2, 1), 0.1);
     BOOST_CHECK_CLOSE(-4, mat(2, 2), 0.1);
     BOOST_CHECK_CLOSE(-0.75, mat(2, 3), 0.1);
+
+    BOOST_CHECK_CLOSE(7.35, block1(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.66, block1(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.25, block1(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.28, block1(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block1(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.39, block1(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.18, block1(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.83, block1(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.11, block1(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(7.88, block1(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.41, block1(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(3.63, block1(2, 3), 0.1);
+                           
+    BOOST_CHECK_CLOSE(8.94, block2(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.53, block2(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.04, block2(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(5.91, block2(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(5.71, block2(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block2(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.84, block2(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.33, block2(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.13, block2(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.64, block2(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.41, block2(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.38, block2(2, 3), 0.1);
+
+    mat = block1 - block2;
+
+    BOOST_CHECK_CLOSE(-1.59, mat(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(-3.87, mat(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.21, mat(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(2.37, mat(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.8, mat(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(-0.12, mat(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(-5.66, mat(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.5, mat(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(-4.02, mat(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(5.24, mat(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(-4, mat(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(-0.75, mat(2, 3), 0.1);
+
+    BOOST_CHECK_CLOSE(7.35, block1(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.66, block1(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.25, block1(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.28, block1(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block1(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.39, block1(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.18, block1(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.83, block1(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.11, block1(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(7.88, block1(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.41, block1(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(3.63, block1(2, 3), 0.1);
+                           
+    BOOST_CHECK_CLOSE(8.94, block2(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.53, block2(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.04, block2(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(5.91, block2(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(5.71, block2(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block2(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.84, block2(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.33, block2(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(4.13, block2(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.64, block2(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.41, block2(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.38, block2(2, 3), 0.1);
+
+    Matrix<double> mat2 = block2;
+    mat = block1 - mat2;
+
+    BOOST_CHECK_CLOSE(-1.59, mat(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(-3.87, mat(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(6.21, mat(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(2.37, mat(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.8, mat(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(-0.12, mat(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(-5.66, mat(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(4.5, mat(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(-4.02, mat(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(5.24, mat(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(-4, mat(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(-0.75, mat(2, 3), 0.1);
+
+    BOOST_CHECK_CLOSE(7.35, block1(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(2.66, block1(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(8.25, block1(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.28, block1(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(6.51, block1(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(6.39, block1(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.18, block1(1, 2), 0.1);
+    BOOST_CHECK_CLOSE(8.83, block1(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.11, block1(2, 0), 0.1);
+    BOOST_CHECK_CLOSE(7.88, block1(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(2.41, block1(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(3.63, block1(2, 3), 0.1);
+
   }
 
   {

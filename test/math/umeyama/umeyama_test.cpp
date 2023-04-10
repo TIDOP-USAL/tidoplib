@@ -120,6 +120,27 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
   BOOST_CHECK_CLOSE(0, transform[3][2], 0.1);
   BOOST_CHECK_CLOSE(1, transform[3][3], 0.1);
 
+  auto rotation = umeyama.rotation();
+  BOOST_CHECK_CLOSE(1., rotation[0][0], 0.1);
+  BOOST_CHECK_CLOSE(-3.80747e-05, rotation[0][1], 0.1);
+  BOOST_CHECK_CLOSE(-8.79539e-06, rotation[0][2], 0.1);
+  BOOST_CHECK_CLOSE(3.80748e-05, rotation[1][0], 0.1);
+  BOOST_CHECK_CLOSE(1., rotation[1][1], 0.1);
+  BOOST_CHECK_CLOSE(4.1215e-06, rotation[1][2], 0.1);
+  BOOST_CHECK_CLOSE(8.79523e-06, rotation[2][0], 0.1);
+  BOOST_CHECK_CLOSE(-4.12183e-06, rotation[2][1], 0.1);
+  BOOST_CHECK_CLOSE(1., rotation[2][2], 0.1);
+
+  auto scale = umeyama.scale();
+  BOOST_CHECK_CLOSE(1., scale[0], 0.1);
+  BOOST_CHECK_CLOSE(1., scale[1], 0.1);
+  BOOST_CHECK_CLOSE(1., scale[2], 0.1);
+
+  auto translation = umeyama.translation();
+  BOOST_CHECK_CLOSE(-419.568, translation[0], 0.1);
+  BOOST_CHECK_CLOSE(-99.246,  translation[1], 0.1);
+  BOOST_CHECK_CLOSE(-591.456, translation[2], 0.1);
+
 }
 
 

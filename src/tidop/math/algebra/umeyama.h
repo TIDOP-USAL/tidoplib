@@ -69,98 +69,107 @@ class Umeyama<Matrix_t<T, _rows, _cols>>
 
 public:
 
-	Umeyama(const Matrix_t<T, _rows, _cols> &src,
-					const Matrix_t<T, _rows, _cols> &dst)
-	{
-		size_t size = src.rows();
-		size_t dimension = dst.cols();
+  Umeyama(const Matrix_t<T, _rows, _cols> &src,
+          const Matrix_t<T, _rows, _cols> &dst)
+  {
+    size_t size = src.rows();
+    size_t dimension = dst.cols();
+    Vector<double> mean_src(dimension);
+    Vector<double> mean_dst(dimension);
+    for (size_t c = 0; c < dimension; c++) {
+      auto src_col = src.col(c);
+      mean_src[c] = mean(src_col.begin(), src_col.end());
+      auto dst_col = dst.col(c);
+      mean_dst[c] = mean(dst_col.begin(), dst_col.end());
+    }
+          
+    Matrix<double> src_demean = src;
+    Matrix<double> dst_demean = dst;
+    for (size_t c = 0; c < dimension; c++) {
+      for(size_t r = 0; r < size; r++) {
+        src_demean[r][c] -= mean_src[c];
+        dst_demean[r][c] -= mean_dst[c];
+      }
+    }
 
-		Vector<double> mean_src(dimension);
-		Vector<double> mean_dst(dimension);
+	auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
+    SingularValueDecomposition<Matrix<double>> svd(sigma);
+    transformMatrix = Matrix<double>::identity(dimension + 1, dimension + 1);
+    Matrix<double> S = Matrix<double>::identity(dimension, dimension);
+    if (sigma.determinant() < 0) {
+      S[dimension - 1][dimension - 1] = -1;
+    }
+       
+    if (sigma.rank() == dimension - 1) {
+      if (svd.u().determinant() * svd.v().determinant() < 0)
+        S[dimension - 1][dimension - 1] = -1;
+    }
 
-		for (size_t c = 0; c < dimension; c++) {
+    auto block = transformMatrix.block(0, dimension - 1, 0, dimension - 1);
+    block = svd.u() * S * svd.v().transpose();
 
-			auto src_col = src.col(c);
-			mean_src[c] = mean(src_col.begin(), src_col.end());
+    double src_var{};
+    double module{};
+    for (size_t c = 0; c < src_demean.cols(); c++) {
+      auto vector = src_demean.col(c);
+      module = vector.module();
+      src_var += module * module;
+    }
 
-			auto dst_col = dst.col(c);
-			mean_dst[c] = mean(dst_col.begin(), dst_col.end());
+    src_var /= size;
 
-		}
+    double scale = 1 / src_var * svd.w().dotProduct(S.diagonal());
 
+    transformMatrix.col(dimension)[0] = mean_dst[0];
+    transformMatrix.col(dimension)[1] = mean_dst[1];
+    transformMatrix.col(dimension)[2] = mean_dst[2];
 
-		Matrix<double> src_demean = src;
-		Matrix<double> dst_demean = dst;
+    auto aux = scale * transformMatrix.block(0, dimension - 1, 0, dimension - 1) * mean_src;
+    transformMatrix.col(dimension)[0] -= aux[0];
+    transformMatrix.col(dimension)[1] -= aux[1];
+    transformMatrix.col(dimension)[2] -= aux[2];
+    transformMatrix.block(0, 0, dimension, dimension) *= scale;
 
-		for (size_t c = 0; c < dimension; c++) {
-			for(size_t r = 0; r < size; r++) {
-				src_demean[r][c] -= mean_src[c];
-				dst_demean[r][c] -= mean_dst[c];
-			}
-		}
+  }
 
-		auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
+  ~Umeyama()
+  {
+  }
 
-		SingularValueDecomposition<Matrix<double>> svd(sigma);
-		transformMatrix = Matrix<double>::identity(dimension + 1, dimension + 1);
+  Matrix<T/*, _cols + 1, _cols + 1*/> transform() const
+  {
+    return transformMatrix;
+  }
 
-		Matrix<double> S = Matrix<double>::identity(dimension, dimension);
-		if (sigma.determinant() < 0) {
-			S[dimension - 1][dimension - 1] = -1;
-		}
+  Matrix<T, _cols, _cols> rotation() const
+  {
+    size_t dimension = transformMatrix.cols();
+    Matrix<T, _cols, _cols> rotation(dimension, dimension);
 
-		if (sigma.rank() == dimension - 1) {
+    for (size_t r = 0; r < dimension; r++){
+      for (size_t c = 0; c < dimension; c++){
+        rotation(r, c) = transformMatrix(r, c);
+      }
+    }
 
-			if (svd.u().determinant() * svd.v().determinant() < 0)
-				S[dimension - 1][dimension - 1] = -1;
-		}
+    return rotation;
+  }
 
-		auto block = transformMatrix.block(0, dimension - 1, 0, dimension - 1);
-		block = svd.u() * S * svd.v().transpose();
+  Vector<T, _cols> scale() const
+  {
+    return Vector<T>{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
+  }
 
-		double src_var{};
-		double module{};
-		for (size_t c = 0; c < src_demean.cols(); c++) {
-			auto vector = src_demean.col(c);
-			module = vector.module();
-			src_var += module * module;
-		}
-
-		src_var /= size;
-
-		double scale = 1 / src_var * svd.w().dotProduct(S.diagonal());
-
-		transformMatrix.col(dimension)[0] = mean_dst[0];
-		transformMatrix.col(dimension)[1] = mean_dst[1];
-		transformMatrix.col(dimension)[2] = mean_dst[2];
-
-		auto aux = scale * transformMatrix.block(0, dimension - 1, 0, dimension - 1) * mean_src;
-		transformMatrix.col(dimension)[0] -= aux[0];
-		transformMatrix.col(dimension)[1] -= aux[1];
-		transformMatrix.col(dimension)[2] -= aux[2];
-		transformMatrix.block(0, 0, dimension, dimension) *= scale;
-
-	}
-
-	~Umeyama()
-	{
-	}
-
-	Matrix<T/*, _cols + 1, _cols + 1*/> transform() const
-	{
-		return transformMatrix;
-	}
-
-	T scale()
-	{
-		return T{};
-	}
-
-
+  Vector<T, _cols> translation() const
+  {
+    size_t col = transformMatrix.cols()-1;
+    return Vector<T>{transformMatrix[0][col], transformMatrix[1][col], transformMatrix[2][col]};
+  }
 
 private:
 
-	Matrix<T/*, _cols + 1, _cols + 1*/> transformMatrix;
+  Matrix<T/*, _cols + 1, _cols + 1*/> transformMatrix;
+
 };
 
 
