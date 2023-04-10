@@ -3457,23 +3457,46 @@ BOOST_FIXTURE_TEST_CASE(addition, MatrixBlockTest)
     BOOST_CHECK_CLOSE(8.01, mat(2, 3), 0.1);
   }
 
+  //{
+  //  auto block1 = mat_5x5_d.block(0, 2, 0, 3);
+  //  auto block2 = mat_10x10_d.block(3, 5, 4, 7);
+  //  block1 += block2;
+
+  //  BOOST_CHECK_CLOSE(16.29, block1(0, 0), 0.1);
+  //  BOOST_CHECK_CLOSE(9.19, block1(0, 1), 0.1);
+  //  BOOST_CHECK_CLOSE(10.29, block1(0, 2), 0.1);
+  //  BOOST_CHECK_CLOSE(14.19, block1(0, 3), 0.1);
+  //  BOOST_CHECK_CLOSE(12.22, block1(1, 0), 0.1);
+  //  BOOST_CHECK_CLOSE(12.9, block1(1, 1), 0.1);
+  //  BOOST_CHECK_CLOSE(8.02, block1(1, 2), 0.1);
+  //  BOOST_CHECK_CLOSE(13.16, block1(1, 3), 0.1);
+  //  BOOST_CHECK_CLOSE(4.24, block1(2, 0), 0.1);
+  //  BOOST_CHECK_CLOSE(10.52, block1(2, 1), 0.1);
+  //  BOOST_CHECK_CLOSE(8.82, block1(2, 2), 0.1);
+  //  BOOST_CHECK_CLOSE(8.01, block1(2, 3), 0.1);
+  //}
+
   {
-    auto block1 = mat_5x5_d.block(0, 2, 0, 3);
-    auto block2 = mat_10x10_d.block(3, 5, 4, 7);
+    auto block1 = mat_5x5_d.block(0, 2, 0, 4);
+    auto block2 = mat_10x10_d.block(3, 5, 4, 8);
+
     block1 += block2;
 
-    BOOST_CHECK_CLOSE(16.29, block1(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(9.19, block1(0, 1), 0.1);
-    BOOST_CHECK_CLOSE(10.29, block1(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(14.19, block1(0, 3), 0.1);
-    BOOST_CHECK_CLOSE(12.22, block1(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(12.9, block1(1, 1), 0.1);
-    BOOST_CHECK_CLOSE(8.02, block1(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(13.16, block1(1, 3), 0.1);
-    BOOST_CHECK_CLOSE(4.24, block1(2, 0), 0.1);
-    BOOST_CHECK_CLOSE(10.52, block1(2, 1), 0.1);
-    BOOST_CHECK_CLOSE(8.82, block1(2, 2), 0.1);
-    BOOST_CHECK_CLOSE(8.01, block1(2, 3), 0.1);
+    BOOST_CHECK_CLOSE(16.29, block1(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(9.19, block1(0, 1), 0.01);
+    BOOST_CHECK_CLOSE(10.29, block1(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(14.19, block1(0, 3), 0.01);
+    BOOST_CHECK_CLOSE(9.8, block1(0, 4), 0.01);
+    BOOST_CHECK_CLOSE(12.22, block1(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(12.9, block1(1, 1), 0.01);
+    BOOST_CHECK_CLOSE(8.02, block1(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(13.16, block1(1, 3), 0.01);
+    BOOST_CHECK_CLOSE(6.87, block1(1, 4), 0.01);
+    BOOST_CHECK_CLOSE(4.24, block1(2, 0), 0.01);
+    BOOST_CHECK_CLOSE(10.52, block1(2, 1), 0.01);
+    BOOST_CHECK_CLOSE(8.82, block1(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(8.01, block1(2, 3), 0.01);
+    BOOST_CHECK_CLOSE(10.9499, block1(2, 4), 0.01);
   }
 }
 
