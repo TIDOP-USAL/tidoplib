@@ -2089,7 +2089,7 @@ BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
 {
   Matrix<double,3,3> mat = _mat_3x3_d / 10.;
 
-  BOOST_CHECK_EQUAL(.15, mat[0][0]);
+  BOOST_CHECK_CLOSE(.15, mat[0][0], 0.01);
   BOOST_CHECK_EQUAL(.0, mat[0][1]);
   BOOST_CHECK_EQUAL(.25, mat[0][2]);
   BOOST_CHECK_EQUAL(.10, mat[1][0]);
@@ -2101,7 +2101,7 @@ BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
 
   Matrix<double> mat2 = (*_mat_dyn_3x3_d) / 10.;
 
-  BOOST_CHECK_EQUAL(.15, mat2[0][0]);
+  BOOST_CHECK_CLOSE(.15, mat2[0][0], 0.01);
   BOOST_CHECK_EQUAL(.0, mat2[0][1]);
   BOOST_CHECK_EQUAL(.25, mat2[0][2]);
   BOOST_CHECK_EQUAL(.10, mat2[1][0]);

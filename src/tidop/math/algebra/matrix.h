@@ -35,6 +35,7 @@
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
 #include "tidop/math/data.h"
+#include "tidop/math/algebra/lu.h"
 #include "tidop/geometry/rect.h"
 
 
@@ -70,6 +71,8 @@ class MatrixBase;
 template<typename T, size_t _rows, size_t _cols>
 class Matrix;
 
+template<typename T>
+class LuDecomposition;
 
 /// \cond
 
@@ -978,10 +981,12 @@ public:
     auto &derived = this->derived();
     size_t size = derived.rows() * derived.cols();
 
+    T s = consts::one<T> / scalar;
+
 #ifndef TL_HAVE_SIMD_INTRINSICS
 
     for (size_t i = 0; i < size; ++i) {
-      derived(i) /= scalar;
+      derived(i) *= s;
     }
 
 #else
@@ -989,7 +994,7 @@ public:
     using namespace simd;
 
     Packed<T> packed_a;
-    Packed<T> packed_b(scalar);
+    Packed<T> packed_b(s);
 
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
@@ -998,12 +1003,12 @@ public:
     for (; i < max_size; i += packed_size) {
 
       packed_a.loadUnaligned(&derived(i));
-      packed_a /= packed_b;
+      packed_a *= packed_b;
       packed_a.storeUnaligned(&derived(i));
     }
 
     for (; i < size; ++i) {
-      derived(i) /= scalar;
+      derived(i) *= s;
     }
 
 #endif
@@ -1059,7 +1064,6 @@ protected:
       derived(i) = matrix(i);
     }
 
-    // Problema con los bloques
 #else
 
     using namespace simd;
@@ -2833,11 +2837,19 @@ auto Matrix<T, _rows, _cols>::inversenxn(bool *invertibility) const -> Matrix
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T det = this->determinantnxn();
+  LuDecomposition<Matrix<T, _rows, _cols>> lu(*this);
+
+  T det = lu.determinant();//this->determinantnxn();
   if(det != consts::zero<T>) {
 
-    matrix = this->adjugate();
-    matrix /= det;
+  //  matrix = this->adjugate();
+  //  matrix /= det;
+
+    Matrix<T, _rows, _cols> indentity(this->rows(), this->cols(), 0);
+    for (size_t r = 0; r < this->rows(); r++)
+      indentity(r, r) = consts::one<T>;
+    matrix = lu.solve(indentity);
+
     if(invertibility != nullptr) *invertibility = true;
 
   } else if(invertibility != nullptr){

@@ -143,11 +143,12 @@ public:
 
   Matrix<T, _cols, _cols> rotation() const
   {
-    Matrix<T, _cols, _cols> rotation;
+    size_t dimension = transformMatrix.cols();
+    Matrix<T, _cols, _cols> rotation(dimension, dimension);
 
-    for (size_t r = 0; r < _cols; r++){
-      for (size_t c = 0; c < _cols; c++){
-        rotation[r][c] = transformMatrix[r][c];
+    for (size_t r = 0; r < dimension; r++){
+      for (size_t c = 0; c < dimension; c++){
+        rotation(r, c) = transformMatrix(r, c);
       }
     }
 
