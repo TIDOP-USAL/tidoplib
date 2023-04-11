@@ -29,7 +29,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
-#include "tidop/math/algebra/matrix.h"
+//#include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/lapack.h"
 
@@ -76,11 +76,11 @@ public:
   ~LuDecomposition();
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);
-  Matrix<T> solve(const Matrix<T> &b);
-  Matrix<T, _rows, _cols> lu() const;
+  Matrix_t<T, _rows, _cols> solve(const Matrix_t<T, _rows, _cols> &b);
+  Matrix_t<T, _rows, _cols> lu() const;
 
   T determinant() const;
-  Matrix<T, _rows, _cols> inverse();
+  //Matrix_t<T, _rows, _cols> inverse();
 
 private:
 
@@ -92,7 +92,7 @@ private:
 
 private:
 
-  Matrix<T, _rows, _cols> LU;
+  Matrix_t<T, _rows, _cols> LU;
 #ifndef TL_HAVE_OPENBLAS 
   Vector<size_t, _rows> mPivotIndex;
 #else
@@ -200,11 +200,11 @@ template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Matrix<T> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T> &b) ///Por ahora solo funciona con matrizes dinamicas
+Matrix_t<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix_t<T, _rows, _cols> &b) ///Por ahora solo funciona con matrizes dinamicas
 {
   TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
   
-  Matrix<T> x(b);
+  Matrix_t<T, _rows, _cols> x(b);
 
 #ifdef TL_HAVE_OPENBLAS    
 
@@ -341,7 +341,7 @@ template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
 > 
-inline Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const
+inline Matrix_t<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const
 {
   return LU;
 }
@@ -360,17 +360,17 @@ T LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const
 	return det;
 }
 
-template<
-  template<typename, size_t, size_t> 
-  class Matrix_t, typename T, size_t _rows, size_t _cols
-> 
-Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse()
-{
-  Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::identity(mRows, mRows);
-
-  Matrix<T, _rows, _cols> inv = this->solve(matrix);
-  return inv;
-}
+//template<
+//  template<typename, size_t, size_t> 
+//  class Matrix_t, typename T, size_t _rows, size_t _cols
+//> 
+//Matrix_t<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse()
+//{
+//  Matrix_t<T, _rows, _cols> matrix = Matrix_t<T, _rows, _cols>::identity(mRows, mRows);
+//
+//  Matrix_t<T, _rows, _cols> inv = this->solve(matrix);
+//  return inv;
+//}
 
 
 /*! \} */ // end of algebra
