@@ -381,6 +381,155 @@ BOOST_FIXTURE_TEST_CASE(iterator_list_constructor, MatrixTest)
   BOOST_CHECK_EQUAL(8, it_list3x3_d[2][2]);
 }
 
+BOOST_FIXTURE_TEST_CASE(assing, MatrixTest)
+{
+  // Asignación de estática a dinámica
+
+  Matrix<int, 5, 5> mat1{ {6,8,6,7,3},
+                          {9,6,2,3,3},
+                          {8,3,2,3,3},
+                          {5,3,3,7,6},
+                          {5,5,7,4,7}};
+
+  Matrix<int> mat2 = mat1;
+   
+  BOOST_CHECK_EQUAL(6, mat2[0][0]);
+  BOOST_CHECK_EQUAL(8, mat2[0][1]);
+  BOOST_CHECK_EQUAL(6, mat2[0][2]);
+  BOOST_CHECK_EQUAL(7, mat2[0][3]);
+  BOOST_CHECK_EQUAL(3, mat2[0][4]);
+  BOOST_CHECK_EQUAL(9, mat2[1][0]);
+  BOOST_CHECK_EQUAL(6, mat2[1][1]);
+  BOOST_CHECK_EQUAL(2, mat2[1][2]);
+  BOOST_CHECK_EQUAL(3, mat2[1][3]);
+  BOOST_CHECK_EQUAL(3, mat2[1][4]);
+  BOOST_CHECK_EQUAL(8, mat2[2][0]);
+  BOOST_CHECK_EQUAL(3, mat2[2][1]);
+  BOOST_CHECK_EQUAL(2, mat2[2][2]);
+  BOOST_CHECK_EQUAL(3, mat2[2][3]);
+  BOOST_CHECK_EQUAL(3, mat2[2][4]);
+  BOOST_CHECK_EQUAL(5, mat2[3][0]);
+  BOOST_CHECK_EQUAL(3, mat2[3][1]);
+  BOOST_CHECK_EQUAL(3, mat2[3][2]);
+  BOOST_CHECK_EQUAL(7, mat2[3][3]);
+  BOOST_CHECK_EQUAL(6, mat2[3][4]);
+  BOOST_CHECK_EQUAL(5, mat2[4][0]);
+  BOOST_CHECK_EQUAL(5, mat2[4][1]);
+  BOOST_CHECK_EQUAL(7, mat2[4][2]);
+  BOOST_CHECK_EQUAL(4, mat2[4][3]);
+  BOOST_CHECK_EQUAL(7, mat2[4][4]);
+
+  // Asignación de dinámica a estática
+
+  Matrix<int> mat3{ {6,8,6,7,3},
+                    {9,6,2,3,3},
+                    {8,3,2,3,3},
+                    {5,3,3,7,6},
+                    {5,5,7,4,7}};
+  
+  Matrix<int, 5, 5> mat4 = mat3;
+   
+  BOOST_CHECK_EQUAL(6, mat4[0][0]);
+  BOOST_CHECK_EQUAL(8, mat4[0][1]);
+  BOOST_CHECK_EQUAL(6, mat4[0][2]);
+  BOOST_CHECK_EQUAL(7, mat4[0][3]);
+  BOOST_CHECK_EQUAL(3, mat4[0][4]);
+  BOOST_CHECK_EQUAL(9, mat4[1][0]);
+  BOOST_CHECK_EQUAL(6, mat4[1][1]);
+  BOOST_CHECK_EQUAL(2, mat4[1][2]);
+  BOOST_CHECK_EQUAL(3, mat4[1][3]);
+  BOOST_CHECK_EQUAL(3, mat4[1][4]);
+  BOOST_CHECK_EQUAL(8, mat4[2][0]);
+  BOOST_CHECK_EQUAL(3, mat4[2][1]);
+  BOOST_CHECK_EQUAL(2, mat4[2][2]);
+  BOOST_CHECK_EQUAL(3, mat4[2][3]);
+  BOOST_CHECK_EQUAL(3, mat4[2][4]);
+  BOOST_CHECK_EQUAL(5, mat4[3][0]);
+  BOOST_CHECK_EQUAL(3, mat4[3][1]);
+  BOOST_CHECK_EQUAL(3, mat4[3][2]);
+  BOOST_CHECK_EQUAL(7, mat4[3][3]);
+  BOOST_CHECK_EQUAL(6, mat4[3][4]);
+  BOOST_CHECK_EQUAL(5, mat4[4][0]);
+  BOOST_CHECK_EQUAL(5, mat4[4][1]);
+  BOOST_CHECK_EQUAL(7, mat4[4][2]);
+  BOOST_CHECK_EQUAL(4, mat4[4][3]);
+  BOOST_CHECK_EQUAL(7, mat4[4][4]);
+
+  bool exception_catch = false;
+
+  try {
+    // Se lanza una excepción al intentar asignar una matriz de diferente tamaño a una matriz estática
+    Matrix<int, 3, 3> mat5 = mat1;
+  } catch(...) {
+    exception_catch = true;
+  }
+
+  BOOST_CHECK(exception_catch);
+
+  // redimensión de matriz dinámica
+  Matrix<int> mat6(6, 6);
+  mat6 = mat3;
+     
+  BOOST_CHECK_EQUAL(5, mat6.rows());
+  BOOST_CHECK_EQUAL(5, mat6.cols());
+  BOOST_CHECK_EQUAL(6, mat6[0][0]);
+  BOOST_CHECK_EQUAL(8, mat6[0][1]);
+  BOOST_CHECK_EQUAL(6, mat6[0][2]);
+  BOOST_CHECK_EQUAL(7, mat6[0][3]);
+  BOOST_CHECK_EQUAL(3, mat6[0][4]);
+  BOOST_CHECK_EQUAL(9, mat6[1][0]);
+  BOOST_CHECK_EQUAL(6, mat6[1][1]);
+  BOOST_CHECK_EQUAL(2, mat6[1][2]);
+  BOOST_CHECK_EQUAL(3, mat6[1][3]);
+  BOOST_CHECK_EQUAL(3, mat6[1][4]);
+  BOOST_CHECK_EQUAL(8, mat6[2][0]);
+  BOOST_CHECK_EQUAL(3, mat6[2][1]);
+  BOOST_CHECK_EQUAL(2, mat6[2][2]);
+  BOOST_CHECK_EQUAL(3, mat6[2][3]);
+  BOOST_CHECK_EQUAL(3, mat6[2][4]);
+  BOOST_CHECK_EQUAL(5, mat6[3][0]);
+  BOOST_CHECK_EQUAL(3, mat6[3][1]);
+  BOOST_CHECK_EQUAL(3, mat6[3][2]);
+  BOOST_CHECK_EQUAL(7, mat6[3][3]);
+  BOOST_CHECK_EQUAL(6, mat6[3][4]);
+  BOOST_CHECK_EQUAL(5, mat6[4][0]);
+  BOOST_CHECK_EQUAL(5, mat6[4][1]);
+  BOOST_CHECK_EQUAL(7, mat6[4][2]);
+  BOOST_CHECK_EQUAL(4, mat6[4][3]);
+  BOOST_CHECK_EQUAL(7, mat6[4][4]);
+
+  // Bloque a matriz dinámica
+
+  Matrix<int, 3, 3> mat7 = mat1.block(0, 2, 0, 2);
+   
+  BOOST_CHECK_EQUAL(6, mat7[0][0]);
+  BOOST_CHECK_EQUAL(8, mat7[0][1]);
+  BOOST_CHECK_EQUAL(6, mat7[0][2]);
+  BOOST_CHECK_EQUAL(9, mat7[1][0]);
+  BOOST_CHECK_EQUAL(6, mat7[1][1]);
+  BOOST_CHECK_EQUAL(2, mat7[1][2]);
+  BOOST_CHECK_EQUAL(8, mat7[2][0]);
+  BOOST_CHECK_EQUAL(3, mat7[2][1]);
+  BOOST_CHECK_EQUAL(2, mat7[2][2]);
+
+  // Bloque a matriz estática
+
+  Matrix<int> mat8 = mat1.block(0, 2, 0, 2);
+   
+  BOOST_CHECK_EQUAL(3, mat8.rows());
+  BOOST_CHECK_EQUAL(3, mat8.cols());
+  BOOST_CHECK_EQUAL(6, mat8[0][0]);
+  BOOST_CHECK_EQUAL(8, mat8[0][1]);
+  BOOST_CHECK_EQUAL(6, mat8[0][2]);
+  BOOST_CHECK_EQUAL(9, mat8[1][0]);
+  BOOST_CHECK_EQUAL(6, mat8[1][1]);
+  BOOST_CHECK_EQUAL(2, mat8[1][2]);
+  BOOST_CHECK_EQUAL(8, mat8[2][0]);
+  BOOST_CHECK_EQUAL(3, mat8[2][1]);
+  BOOST_CHECK_EQUAL(2, mat8[2][2]);
+
+}
+
 BOOST_FIXTURE_TEST_CASE(array_index_operator, MatrixTest)
 {
   BOOST_CHECK_EQUAL(1.5, _mat_3x3_d[0][0]);

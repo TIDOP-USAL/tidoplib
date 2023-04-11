@@ -278,6 +278,8 @@ public:
   auto operator[](size_t row) -> reference;
   auto operator=(T value) -> void;
   auto operator=(const Vector<T> &vector) -> MatrixCol&;
+  template<typename T2, size_t _size2>
+  auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;
 
   /// Métodos sobreescritos para no usar intrinsecos ya que los datos no son contiguos
 
@@ -287,8 +289,7 @@ public:
   auto operator /= (const MatrixCol<T> &matrixCol) -> MatrixCol&;
   auto operator *= (T scalar) -> MatrixCol&;
   auto operator /= (T scalar) -> MatrixCol&;
-  template<typename T2, size_t _size2>
-  auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;
+
 
   operator Vector<T>() const;
 
@@ -619,10 +620,10 @@ public:
     size_t cols2 = matrix.cols();
 
     TL_ASSERT(rows == rows2 && cols == cols2, "Different size matrices");
+       
+    size_t size = rows * cols;
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
-
-    size_t size = rows * cols;
 
     for (size_t i = 0; i < size; ++i) {
       derived(i) += matrix(i);
@@ -636,7 +637,6 @@ public:
     Packed<T> packed_b;
     
     constexpr size_t packed_size = packed_a.size();
-    size_t size = rows * cols;
     size_t max_size = size - size % packed_size;
     
     size_t i{0};
@@ -744,10 +744,10 @@ public:
     size_t cols2 = matrix.cols();
 
     TL_ASSERT(rows == rows2 && cols == cols2, "Different size matrices");
+       
+    size_t size = rows * cols;
 
 #ifndef TL_HAVE_SIMD_INTRINSICS
-
-    size_t size = rows * cols;
 
     for (size_t i = 0; i < size; ++i) {
       derived(i) -= matrix(i);
@@ -761,7 +761,6 @@ public:
     Packed<T> packed_b;
 
     constexpr size_t packed_size = packed_a.size();
-    size_t size = rows * cols;
     size_t max_size = size - size % packed_size;
 
     size_t i{0};
@@ -998,7 +997,7 @@ public:
     return diag_vector;
   }
 
-private:
+public:
 
   MatrixDerived<T, _rows, _cols> &derived()
   {
@@ -1011,6 +1010,49 @@ private:
   }
 
 protected:
+
+  template<typename MatrixDerived>
+  void set(const MatrixDerived &matrix)
+  {
+    auto &derived = this->derived();
+
+    size_t rows = derived.rows();
+    size_t cols = derived.cols();
+
+    size_t size = rows * cols;
+
+    TL_ASSERT(rows == matrix.rows() && cols == matrix.cols(), "Different size matrices");
+
+//#ifndef TL_HAVE_SIMD_INTRINSICS
+
+    for (size_t i = 0; i < size; ++i) {
+      derived(i) = matrix(i);
+    }
+
+    // Problema con los bloques
+//#else
+//
+//    using namespace simd;
+//
+//    Packed<T> packed_a;
+//    Packed<T> packed_b;
+//
+//    constexpr size_t packed_size = packed_a.size();
+//    size_t max_size = size - size % packed_size;
+//
+//    size_t i{0};
+//    for (; i < max_size; i += packed_size) {
+//      packed_b.loadUnaligned(&matrix(i));
+//      packed_b.storeUnaligned(&derived(i));
+//    }
+//
+//    for (; i < size; ++i) {
+//      derived(i) = matrix(i);
+//    }
+//
+//#endif
+
+  }
 
   T determinant2x2() const;
   T determinant3x3() const;
@@ -1087,6 +1129,30 @@ public:
       mRows(mat.mRows),
       mCols(mat.mCols)
   {
+  }
+  
+  template<typename MatrixDerived>
+  Matrix(const MatrixDerived &matrix)
+  {
+    if (_rows == DynamicData && _cols == DynamicData) {
+      _data = Data<T, data::size>(matrix.rows() * matrix.cols());
+      mRows = matrix.rows();
+      mCols = matrix.cols();
+    }
+
+    TL_ASSERT(matrix.rows() == this->rows() &&
+              matrix.cols() == this->cols(), "Static matrix cannot be resized");
+
+    if(matrix.rows() == this->rows() &&
+       matrix.cols() == this->cols()) {
+      MatrixBase<Matrix<T, _rows, _cols>>::set(matrix);
+    }
+
+
+    
+
+    //auto data = mat.data();
+    //std::copy(data.begin(), data.end(), _data.begin());
   }
 
   /*!
