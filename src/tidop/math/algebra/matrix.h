@@ -527,8 +527,28 @@ public:
     Matrix<T, _rows, _cols> matrix = this->derived();
 
     size_t size = matrix.rows() * matrix.cols();
+    size_t i{0};
 
-    for(size_t i = 0; i < size; ++i)
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    using namespace simd;
+    
+    Packed<T> packed_a;
+    
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_size = size - size % packed_size;
+    
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory)) {
+       
+      for (; i < max_size; i += packed_size) {
+        packed_a.loadUnaligned(&matrix(i));
+        packed_a = -packed_a;
+        packed_a.storeUnaligned(&matrix(i));
+      }
+    }
+ #endif
+
+    for(; i < size; i++)
       matrix(i) = -matrix(i);
 
     return matrix;
@@ -640,15 +660,10 @@ public:
     TL_ASSERT(rows == rows2 && cols == cols2, "Different size matrices");
        
     size_t size = rows * cols;
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) += matrix(i);
-    }
-
-#else
-    
     using namespace simd;
     
     Packed<T> packed_a;
@@ -657,7 +672,6 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
     
-    size_t i{0};
     if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) && 
         matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
        
@@ -668,12 +682,11 @@ public:
         packed_a.storeUnaligned(&derived(i));
       }
     }
-    
-    for (; i < size; ++i) {
+ #endif
+
+    for (; i < size; i++) {
       derived(i) += matrix(i);
     }
-    
-#endif
 
     return derived;
   }
@@ -776,14 +789,9 @@ public:
     TL_ASSERT(rows == rows2 && cols == cols2, "Different size matrices");
        
     size_t size = rows * cols;
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) -= matrix(i);
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
@@ -793,7 +801,6 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
     if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
         matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
       for (; i < max_size; i += packed_size) {
@@ -805,11 +812,11 @@ public:
       }
     }
 
-    for (; i < size; ++i) {
+#endif
+
+    for (; i < size; i++) {
       derived(i) -= matrix(i);
     }
-
-#endif
 
     return  derived;
   }
@@ -880,14 +887,9 @@ public:
   {
     auto &derived = this->derived();
     size_t size = derived.rows() * derived.cols();
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) *= scalar;
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
@@ -897,7 +899,6 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
     for (; i < max_size; i += packed_size) {
 
       packed_a.loadUnaligned(&derived(i));
@@ -905,11 +906,11 @@ public:
       packed_a.storeUnaligned(&derived(i));
     }
 
-    for (; i < size; ++i) {
+#endif
+
+    for (; i < size; i++) {
       derived(i) *= scalar;
     }
-
-#endif
 
     return derived;
   }
@@ -980,16 +981,11 @@ public:
   {
     auto &derived = this->derived();
     size_t size = derived.rows() * derived.cols();
+    size_t i{0};
 
     T s = consts::one<T> / scalar;
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) *= s;
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
@@ -999,7 +995,7 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
+
     for (; i < max_size; i += packed_size) {
 
       packed_a.loadUnaligned(&derived(i));
@@ -1007,11 +1003,11 @@ public:
       packed_a.storeUnaligned(&derived(i));
     }
 
-    for (; i < size; ++i) {
+#endif
+
+    for (; i < size; i++) {
       derived(i) *= s;
     }
-
-#endif
 
     return derived;
   }
@@ -1054,17 +1050,12 @@ protected:
     size_t rows = derived.rows();
     size_t cols = derived.cols();
 
-    size_t size = rows * cols;
-
     TL_ASSERT(rows == matrix.rows() && cols == matrix.cols(), "Different size matrices");
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+    size_t size = rows * cols;
+    size_t i{0};
 
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) = matrix(i);
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
@@ -1074,7 +1065,6 @@ protected:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
     if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
         matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
 
@@ -1085,11 +1075,11 @@ protected:
 
     }
 
-    for (; i < size; ++i) {
+#endif
+
+    for (; i < size; i++) {
       derived(i) = matrix(i);
     }
-
-#endif
 
   }
 
@@ -1244,7 +1234,6 @@ public:
       this->mRows = values.size();
       auto it = values.begin();
       this->mCols = it->size();
-      //mData.resize(this->mRows * this->mCols);
       _data = Data<T, data::size>(this->mRows * this->mCols);
 
       auto it_data = _data.begin();

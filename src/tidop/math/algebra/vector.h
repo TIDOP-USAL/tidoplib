@@ -339,13 +339,9 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived<
 
   TL_ASSERT(derived.size() == vector.size(), "Different size vectors");
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+  size_t i{0};
 
-  for (size_t i = 0; i < derived.size(); ++i) {
-    derived[i] += vector[i];
-  }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
   using namespace simd;
 
@@ -355,7 +351,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived<
   constexpr size_t packed_size = packed_a.size();
   size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-  for (size_t i = 0; i < max_vector; i += packed_size) {
+  for (; i < max_vector; i += packed_size) {
 
     packed_a.loadUnaligned(&derived[i]);
     packed_b.loadUnaligned(&vector[i]);
@@ -365,11 +361,11 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived<
 
   }
 
-  for (size_t i = max_vector; i < derived.size(); ++i) {
+#endif
+
+  for (; i < derived.size(); ++i) {
     derived[i] += vector[i];
   }
-
-#endif
 
   return derived;
 }
@@ -383,13 +379,9 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived<
 
   TL_ASSERT(derived.size() == vector.size(), "");
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+  size_t i{0};
 
-  for (size_t i = 0; i < derived.size(); ++i) {
-    derived[i] -= vector[i];
-  }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
   using namespace simd;
 
@@ -399,7 +391,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived<
   constexpr size_t packed_size = packed_a.size();
 
   size_t max_vector = (derived.size() / packed_size) * packed_size;
-  for (size_t i = 0; i < max_vector; i += packed_size) {
+  for (; i < max_vector; i += packed_size) {
 
     packed_a.loadUnaligned(&derived[i]);
     packed_b.loadUnaligned(&vector[i]);
@@ -408,11 +400,11 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived<
 
   }
 
-  for (size_t i = max_vector; i < derived.size(); ++i) {
+#endif
+
+  for (; i < derived.size(); ++i) {
     derived[i] -= vector[i];
   }
-
-#endif
 
   return derived;
 }
@@ -426,13 +418,9 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived<
 
   TL_ASSERT(derived.size() == vector.size(), "");
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+  size_t i{0};
 
-  for (size_t i = 0; i < derived.size(); ++i) {
-    derived[i] *= vector[i];
-  }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
   using namespace simd;
 
@@ -442,7 +430,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived<
   constexpr size_t packed_size = packed_a.size();
 
   size_t max_vector = (derived.size() / packed_size) * packed_size;
-  for (size_t i = 0; i < max_vector; i += packed_size) {
+  for (; i < max_vector; i += packed_size) {
 
     packed_a.loadUnaligned(&derived[i]);
     packed_b.loadUnaligned(&vector[i]);
@@ -451,11 +439,13 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived<
 
   }
 
-  for (size_t i = max_vector; i < derived.size(); ++i) {
+#endif
+
+  for (; i < derived.size(); ++i) {
     derived[i] *= vector[i];
   }
 
-#endif
+
 
   return derived;
 }
@@ -469,13 +459,9 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived<
 
   TL_ASSERT(derived.size() == vector.size(), "");
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+  size_t i{0};
 
-  for (size_t i = 0; i < derived.size(); ++i) {
-    derived[i] /= vector[i];
-  }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
   using namespace simd;
 
@@ -485,7 +471,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived<
   constexpr size_t packed_size = packed_a.size();
   size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-  for (size_t i = 0; i < max_vector; i += packed_size) {
+  for (; i < max_vector; i += packed_size) {
 
     packed_a.loadUnaligned(&derived[i]);
     packed_b.loadUnaligned(&vector[i]);
@@ -494,11 +480,11 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived<
 
   }
 
-  for (size_t i = max_vector; i < derived.size(); ++i) {
+#endif
+
+  for (; i < derived.size(); ++i) {
     derived[i] /= vector[i];
   }
-
-#endif
 
   return derived;
 }
@@ -510,13 +496,9 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(T scalar) -> VectorD
 {
   auto &derived = this->derived();
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+  size_t i{0};
 
-  for (size_t i = 0; i < derived.size(); i++) {
-    derived[i] *= scalar;
-  }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
   using namespace simd;
 
@@ -526,7 +508,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(T scalar) -> VectorD
   constexpr size_t packed_size = packed_a.size();
   size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-  for (size_t i = 0; i < max_vector; i += packed_size) {
+  for (; i < max_vector; i += packed_size) {
 
     packed_a.loadUnaligned(&derived[i]);
     packed_a *= packed_b;
@@ -534,11 +516,11 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(T scalar) -> VectorD
 
   }
 
-  for (size_t i = max_vector; i < derived.size(); ++i) {
+#endif
+
+  for (; i < derived.size(); i++) {
     derived[i] *= scalar;
   }
-
-#endif
 
   return derived;
 }
@@ -552,13 +534,9 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorD
 
   TL_ASSERT(scalar != consts::zero<T>, "Division by zero");
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+  size_t i{0};
 
-  for (size_t i = 0; i < derived.size(); i++) {
-    derived[i] /= scalar;
-  }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
   using namespace simd;
 
@@ -568,7 +546,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorD
   constexpr size_t packed_size = packed_a.size();
   size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-  for (size_t i = 0; i < max_vector; i += packed_size) {
+  for (; i < max_vector; i += packed_size) {
 
     packed_a.loadUnaligned(&derived[i]);
     packed_a /= packed_b;
@@ -576,11 +554,13 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorD
 
   }
 
-  for (size_t i = max_vector; i < derived.size(); ++i) {
+#endif
+
+  for (; i < derived.size(); ++i) {
     derived[i] /= scalar;
   }
 
-#endif
+
 
   return derived;
 }
