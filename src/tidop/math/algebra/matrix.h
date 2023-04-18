@@ -35,6 +35,7 @@
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
 #include "tidop/math/data.h"
+#include "tidop/math/algebra/lu.h"
 #include "tidop/geometry/rect.h"
 
 
@@ -70,6 +71,8 @@ class MatrixBase;
 template<typename T, size_t _rows, size_t _cols>
 class Matrix;
 
+template<typename T>
+class LuDecomposition;
 
 /// \cond
 
@@ -445,6 +448,12 @@ template<
 >
 class MatrixBase<MatrixDerived<T, _rows, _cols>>
 {
+public:
+
+  enum class properties
+  {
+    contiguous_memory = 0x01
+  };
 
 public:
 
@@ -518,8 +527,28 @@ public:
     Matrix<T, _rows, _cols> matrix = this->derived();
 
     size_t size = matrix.rows() * matrix.cols();
+    size_t i{0};
 
-    for(size_t i = 0; i < size; ++i)
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    using namespace simd;
+    
+    Packed<T> packed_a;
+    
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_size = size - size % packed_size;
+    
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory)) {
+       
+      for (; i < max_size; i += packed_size) {
+        packed_a.loadUnaligned(&matrix(i));
+        packed_a = -packed_a;
+        packed_a.storeUnaligned(&matrix(i));
+      }
+    }
+ #endif
+
+    for(; i < size; i++)
       matrix(i) = -matrix(i);
 
     return matrix;
@@ -572,6 +601,14 @@ public:
     return matrix;
   }
 
+  template<typename MatrixDerived2>
+  const MatrixDerived<T, _rows, _cols> operator +(const MatrixDerived2 &matrix2)
+  {
+    MatrixDerived<T, _rows, _cols> matrix = this->derived();
+    matrix += matrix2;
+    return matrix;
+  }
+
   /*!
    * \brief Adición a una matriz
    *
@@ -610,7 +647,8 @@ public:
    *
    * \endcode
    */
-  MatrixDerived<T, _rows, _cols> &operator +=(const MatrixDerived<T, _rows, _cols> &matrix)
+  template<typename MatrixDerived2>
+  MatrixDerived<T, _rows, _cols> &operator +=(const MatrixDerived2 &matrix)
   {
     auto &derived = this->derived();
 
@@ -622,15 +660,10 @@ public:
     TL_ASSERT(rows == rows2 && cols == cols2, "Different size matrices");
        
     size_t size = rows * cols;
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) += matrix(i);
-    }
-
-#else
-    
     using namespace simd;
     
     Packed<T> packed_a;
@@ -639,20 +672,21 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
     
-    size_t i{0};
-    for (; i < max_size; i += packed_size) {
-    
-      packed_a.loadUnaligned(&derived(i));
-      packed_b.loadUnaligned(&matrix(i));
-      packed_a += packed_b;
-      packed_a.storeUnaligned(&derived(i));
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) && 
+        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+       
+      for (; i < max_size; i += packed_size) {
+        packed_a.loadUnaligned(&derived(i));
+        packed_b.loadUnaligned(&matrix(i));
+        packed_a += packed_b;
+        packed_a.storeUnaligned(&derived(i));
+      }
     }
-    
-    for (; i < size; ++i) {
+ #endif
+
+    for (; i < size; i++) {
       derived(i) += matrix(i);
     }
-    
-#endif
 
     return derived;
   }
@@ -695,9 +729,17 @@ public:
    * Matrix2x2i C = A - B;
    * \endcode
    */
-  Matrix<T, _rows, _cols> operator -(const Matrix<T, _rows, _cols> &matrix2)
+  Matrix<T, _rows, _cols> operator -(const MatrixDerived<T, _rows, _cols> &matrix2)
   {
     Matrix<T, _rows, _cols> matrix = this->derived();
+    matrix -= matrix2;
+    return matrix;
+  }
+    
+  template<typename MatrixDerived2>
+  const MatrixDerived<T, _rows, _cols> operator -(const MatrixDerived2 &matrix2)
+  {
+    MatrixDerived<T, _rows, _cols> matrix = this->derived();
     matrix -= matrix2;
     return matrix;
   }
@@ -734,7 +776,8 @@ public:
    * Matrix2x2i A -= B;
    * \endcode
    */
-  MatrixDerived<T, _rows, _cols> &operator -=(const MatrixDerived<T, _rows, _cols> &matrix)
+  template<typename MatrixDerived2>
+  MatrixDerived<T, _rows, _cols> &operator -=(const MatrixDerived2 &matrix)
   {
     auto &derived = this->derived();
 
@@ -746,14 +789,9 @@ public:
     TL_ASSERT(rows == rows2 && cols == cols2, "Different size matrices");
        
     size_t size = rows * cols;
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) -= matrix(i);
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
@@ -763,20 +801,22 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
-    for (; i < max_size; i += packed_size) {
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
+        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+      for (; i < max_size; i += packed_size) {
 
-      packed_a.loadUnaligned(&derived(i));
-      packed_b.loadUnaligned(&matrix(i));
-      packed_a -= packed_b;
-      packed_a.storeUnaligned(&derived(i));
-    }
-
-    for (; i < size; ++i) {
-      derived(i) -= matrix(i);
+        packed_a.loadUnaligned(&derived(i));
+        packed_b.loadUnaligned(&matrix(i));
+        packed_a -= packed_b;
+        packed_a.storeUnaligned(&derived(i));
+      }
     }
 
 #endif
+
+    for (; i < size; i++) {
+      derived(i) -= matrix(i);
+    }
 
     return  derived;
   }
@@ -847,14 +887,9 @@ public:
   {
     auto &derived = this->derived();
     size_t size = derived.rows() * derived.cols();
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) *= scalar;
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
@@ -864,7 +899,6 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
     for (; i < max_size; i += packed_size) {
 
       packed_a.loadUnaligned(&derived(i));
@@ -872,11 +906,11 @@ public:
       packed_a.storeUnaligned(&derived(i));
     }
 
-    for (; i < size; ++i) {
+#endif
+
+    for (; i < size; i++) {
       derived(i) *= scalar;
     }
-
-#endif
 
     return derived;
   }
@@ -947,36 +981,33 @@ public:
   {
     auto &derived = this->derived();
     size_t size = derived.rows() * derived.cols();
+    size_t i{0};
 
-#ifndef TL_HAVE_SIMD_INTRINSICS
+    T s = consts::one<T> / scalar;
 
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) /= scalar;
-    }
-
-#else
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
     using namespace simd;
 
     Packed<T> packed_a;
-    Packed<T> packed_b(scalar);
+    Packed<T> packed_b(s);
 
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    size_t i{0};
+
     for (; i < max_size; i += packed_size) {
 
       packed_a.loadUnaligned(&derived(i));
-      packed_a /= packed_b;
+      packed_a *= packed_b;
       packed_a.storeUnaligned(&derived(i));
     }
 
-    for (; i < size; ++i) {
-      derived(i) /= scalar;
-    }
-
 #endif
+
+    for (; i < size; i++) {
+      derived(i) *= s;
+    }
 
     return derived;
   }
@@ -1011,46 +1042,44 @@ public:
 
 protected:
 
-  template<typename MatrixDerived>
-  void set(const MatrixDerived &matrix)
+  template<typename MatrixDerived2>
+  void set(const MatrixDerived2 &matrix)
   {
     auto &derived = this->derived();
 
     size_t rows = derived.rows();
     size_t cols = derived.cols();
 
-    size_t size = rows * cols;
-
     TL_ASSERT(rows == matrix.rows() && cols == matrix.cols(), "Different size matrices");
 
-//#ifndef TL_HAVE_SIMD_INTRINSICS
+    size_t size = rows * cols;
+    size_t i{0};
 
-    for (size_t i = 0; i < size; ++i) {
-      derived(i) = matrix(i);
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_size = size - size % packed_size;
+
+    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
+        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+
+      for (; i < max_size; i += packed_size) {
+        packed_b.loadUnaligned(&matrix(i));
+        packed_b.storeUnaligned(&derived(i));
+      }
+
     }
 
-    // Problema con los bloques
-//#else
-//
-//    using namespace simd;
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_size = size - size % packed_size;
-//
-//    size_t i{0};
-//    for (; i < max_size; i += packed_size) {
-//      packed_b.loadUnaligned(&matrix(i));
-//      packed_b.storeUnaligned(&derived(i));
-//    }
-//
-//    for (; i < size; ++i) {
-//      derived(i) = matrix(i);
-//    }
-//
-//#endif
+#endif
+
+    for (; i < size; i++) {
+      derived(i) = matrix(i);
+    }
 
   }
 
@@ -1059,6 +1088,11 @@ protected:
   T determinant4x4() const;
   T determinantnxn() const;
  
+  /// Por ahora publico...
+public:
+
+  EnumFlags<properties> flag;
+
 };
 
 
@@ -1093,6 +1127,7 @@ public:
       mRows(_rows == DynamicData ? 0 : _rows),
       mCols(_cols == DynamicData ? 0 : _cols)
   {
+
   }
 
   /*!
@@ -1199,7 +1234,6 @@ public:
       this->mRows = values.size();
       auto it = values.begin();
       this->mCols = it->size();
-      //mData.resize(this->mRows * this->mCols);
       _data = Data<T, data::size>(this->mRows * this->mCols);
 
       auto it_data = _data.begin();
@@ -2382,6 +2416,7 @@ inline MatrixBlock<T, _rows, _cols>::MatrixBlock(T *data,
     mIniCol(iniCol),
     mEndCol(endCol)
 {
+  this->flag.enable(MatrixBlock<T, _rows, _cols>::properties::contiguous_memory);
 }
 
 template<typename T, size_t _rows, size_t _cols>
@@ -2791,11 +2826,19 @@ auto Matrix<T, _rows, _cols>::inversenxn(bool *invertibility) const -> Matrix
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T det = this->determinantnxn();
+  LuDecomposition<Matrix<T, _rows, _cols>> lu(*this);
+
+  T det = lu.determinant();//this->determinantnxn();
   if(det != consts::zero<T>) {
 
-    matrix = this->adjugate();
-    matrix /= det;
+  //  matrix = this->adjugate();
+  //  matrix /= det;
+
+    Matrix<T, _rows, _cols> indentity(this->rows(), this->cols(), 0);
+    for (size_t r = 0; r < this->rows(); r++)
+      indentity(r, r) = consts::one<T>;
+    matrix = lu.solve(indentity);
+
     if(invertibility != nullptr) *invertibility = true;
 
   } else if(invertibility != nullptr){
@@ -2804,6 +2847,34 @@ auto Matrix<T, _rows, _cols>::inversenxn(bool *invertibility) const -> Matrix
 
   return matrix;
 }
+
+//#define TL_TRANSPOSE4(row0, row1, row2, row3) {                 \
+//            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
+//                                                                    \
+//            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
+//            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
+//            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
+//            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
+//                                                                    \
+//            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
+//            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
+//            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
+//            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
+//        }
+//
+//#define TL_TRANSPOSE8(row0, row1, row2, row3) {                 \
+//            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
+//                                                                    \
+//            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
+//            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
+//            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
+//            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
+//                                                                    \
+//            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
+//            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
+//            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
+//            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
+//        }
 
 template<typename T, size_t _rows, size_t _cols>
 auto Matrix<T, _rows, _cols>::transpose() const -> Matrix<T, _cols, _rows>
@@ -2818,6 +2889,12 @@ auto Matrix<T, _rows, _cols>::transpose() const -> Matrix<T, _cols, _rows>
       matrix[c][r] = (*this)(r, c);
     }
   }
+  
+#if defined TL_HAVE_SIMD_INTRINSICS
+
+
+
+#endif
 
   return matrix;
 }
@@ -3081,7 +3158,7 @@ auto Matrix<T, _rows, _cols>::rowEchelonForm() const -> Matrix
         T scale = matrix[r][colPivotElement];
         if(scale != consts::zero<T>) {
           for(size_t c = i; c < cols; ++c) {
-            matrix[r][c] = matrix[r][c] - scale * matrix[i][c];
+            matrix[r][c] -= scale * matrix[i][c];
           }
         }
 
@@ -3095,19 +3172,47 @@ auto Matrix<T, _rows, _cols>::rowEchelonForm() const -> Matrix
 template<typename T, size_t _rows, size_t _cols>
 auto Matrix<T, _rows, _cols>::reducedRowEchelonForm() const -> Matrix
 {
-  Matrix<T, _rows, _cols> matrix = this->rowEchelonForm();
+  size_t rows = this->rows();
+  size_t cols = this->cols();
 
-  for(size_t i = this->rows(); i > 0; --i) {
+  Matrix<T, _rows, _cols> matrix(*this);
 
-    for(size_t r = i - 1; r > 0; --r) {
+  int lead = 0; // índice de la columna principal
 
-      T scale = matrix[r - 1][i - 1];
+  for (int r = 0; r < rows; r++) { // para cada fila
+    if (lead >= cols) { // si hemos llegado al final de las columnas
+      return matrix;
+    }
+    int i = r;
+    while (abs(matrix[i][lead]) < std::numeric_limits<T>::epsilon()) { // si el valor es cercano a cero, buscar en la siguiente fila
+      i++;
+      if (i == rows) {
+        i = r;
+        lead++;
+        if (lead == cols) { // si hemos llegado al final de las columnas
+          return matrix; 
+        }
+      }
+    }
+    
+    // intercambiar las filas
+    if (r != i) 
+      matrix.swapRows(i, r);
+    
+    double lv = 1. / matrix[r][lead]; // elemento diagonal principal
 
-      for(size_t c = i - 1; c < this->cols(); ++c) {
-        matrix[r - 1][c] = matrix[r - 1][c] - scale * matrix[i - 1][c];
+    matrix[r] *= lv;
+
+    for (int i = 0; i < rows; i++) { // para cada fila
+      if (i != r) {
+        double lv2 = matrix[i][lead];
+        for (int c = 0; c < cols; c++) { // para cada columna
+          matrix[i][c] -= lv2 * matrix[r][c]; // restar la fila escalada
+        }
       }
     }
 
+    lead++; // avanzar a la siguiente columna principal
   }
 
   return matrix;
@@ -3331,6 +3436,15 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
   return matrix1;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator + (const internal::MatrixBlock<T> &matrix1,
+                                    const Matrix<T, _rows, _cols> &matrix2)
+{
+  Matrix<T, _rows, _cols> matrix = matrix2;
+  matrix += matrix1;
+  return matrix;
+}
+
 /* Casos especiales de resta de matrices */
 
 template<typename T, size_t _rows, size_t _cols> inline static
@@ -3356,6 +3470,16 @@ Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
   matrix1 -= matrix2;
   return matrix1;
 }
+
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator - (const internal::MatrixBlock<T> &matrix1,
+                                    const Matrix<T, _rows, _cols> &matrix2)
+{
+  Matrix<T, _rows, _cols> matrix = matrix2;
+  matrix -= matrix1;
+  return -matrix;
+}
+
 
 /*!
  * \brief Multiplicación de matrices
