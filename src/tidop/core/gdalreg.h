@@ -59,10 +59,8 @@ public:
 
   ~RegisterGdal() = default;
 
-  RegisterGdal(const RegisterGdal &) = delete;
-  RegisterGdal(RegisterGdal &&) = delete;
-  void operator=(const RegisterGdal &) = delete;
-  void operator=(RegisterGdal &&) = delete;
+  TL_DISABLE_COPY(RegisterGdal)
+  TL_DISABLE_MOVE(RegisterGdal)
 
   /*!
    * \brief Método para iniciar GDAL una unica vez

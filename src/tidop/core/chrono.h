@@ -107,12 +107,10 @@ public:
 
   Chrono();
   Chrono(std::string message);
-  Chrono(const Chrono &) = delete;
-  Chrono(Chrono &&) = delete;
   virtual ~Chrono() = default;
 
-  void operator=(const Chrono &) = delete;
-  void operator=(Chrono &&) = delete;
+  TL_DISABLE_COPY(Chrono)
+  TL_DISABLE_MOVE(Chrono)
 
   /*!
    * \brief Pausa el cronómetro
@@ -182,10 +180,8 @@ public:
   explicit ChronoAuto(const std::string &message);
   ~ChronoAuto() override;
 
-  ChronoAuto(const ChronoAuto &) = delete;
-  ChronoAuto(ChronoAuto &&) = delete;
-  void operator=(const ChronoAuto &) = delete;
-  void operator=(ChronoAuto &&) = delete;
+  TL_DISABLE_COPY(ChronoAuto)
+  TL_DISABLE_MOVE(ChronoAuto)
 
 private:
 
