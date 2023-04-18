@@ -3162,6 +3162,78 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
 //
 //
 //}
+
+void transpose(Matrix<double> &A, Matrix<double> &B)
+{
+  size_t rows = A.rows();
+  size_t cols = A.cols();
+
+  Packed<double> packed_a1;
+  Packed<double> packed_a2;
+  Packed<double> packed_a3;
+  Packed<double> packed_a4;
+
+  Packed<double> packed_b1;
+  Packed<double> packed_b2;
+  Packed<double> packed_b3;
+  Packed<double> packed_b4;
+
+  constexpr size_t packed_size = packed_a1.size();
+  size_t max_cols = cols - cols % packed_size;
+  size_t max_rows = rows - rows % packed_size;
+
+  for (int r = 0; r < max_rows; r += packed_size) {
+    for (int c = 0; c < max_cols; c += packed_size) {
+
+      // Cargar 4 elementos de la columna i en un registro AVX
+      __m256d a0 = _mm256_loadu_pd(&A(r, c));
+      __m256d a1 = _mm256_loadu_pd(&A(r + 1, c));
+      __m256d a2 = _mm256_loadu_pd(&A(r + 2, c));
+      __m256d a3 = _mm256_loadu_pd(&A(r + 3, c));
+      //packed_a1.loadUnaligned(&A(r, c));
+      //packed_a2.loadUnaligned(&A(r + 1, c));
+      //packed_a3.loadUnaligned(&A(r + 2, c));
+      //packed_a4.loadUnaligned(&A(r + 3, c));
+
+      // Desempaquetar los elementos del registro AVX
+      __m256d b0 = _mm256_unpacklo_pd(a0, a1);
+      __m256d b1 = _mm256_unpackhi_pd(a0, a1);
+      __m256d b2 = _mm256_unpacklo_pd(a2, a3);
+      __m256d b3 = _mm256_unpackhi_pd(a2, a3);
+      //packed_b1 = _mm256_unpacklo_pd(packed_a1, packed_a2);
+      //packed_b2 = _mm256_unpackhi_pd(packed_a1, packed_a2);
+      //packed_b3 = _mm256_unpacklo_pd(packed_a3, packed_a4);
+      //packed_b4 = _mm256_unpackhi_pd(packed_a3, packed_a4);
+
+      // Intercalar los elementos de los registros temporales
+      __m256d c0 = _mm256_permute2f128_pd(b0, b2, 0x20);
+      __m256d c1 = _mm256_permute2f128_pd(b1, b3, 0x20);
+      __m256d c2 = _mm256_permute2f128_pd(b0, b2, 0x31);
+      __m256d c3 = _mm256_permute2f128_pd(b1, b3, 0x31);
+
+      // Almacenar los elementos intercalados en la matriz de destino
+      _mm256_storeu_pd(&B(c, r), c0);
+      _mm256_storeu_pd(&B(c+1, r), c1);
+      _mm256_storeu_pd(&B(c+2, r), c2);
+      _mm256_storeu_pd(&B(c+3, r), c3);
+    }
+
+    // Recorre las columnas no alineadas
+    for (int c = max_cols; c < cols; c++) {
+      B(c, r) = A(r, c);
+    }
+  }
+
+
+}
+
+BOOST_FIXTURE_TEST_CASE(matrix_transpose, PackedTest)
+{
+  auto transpose_matrix = matrix1.transpose();
+
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 #endif // TL_HAVE_SIMD_INTRINSICS

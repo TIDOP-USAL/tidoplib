@@ -2848,6 +2848,34 @@ auto Matrix<T, _rows, _cols>::inversenxn(bool *invertibility) const -> Matrix
   return matrix;
 }
 
+//#define TL_TRANSPOSE4(row0, row1, row2, row3) {                 \
+//            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
+//                                                                    \
+//            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
+//            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
+//            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
+//            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
+//                                                                    \
+//            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
+//            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
+//            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
+//            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
+//        }
+//
+//#define TL_TRANSPOSE8(row0, row1, row2, row3) {                 \
+//            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
+//                                                                    \
+//            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
+//            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
+//            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
+//            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
+//                                                                    \
+//            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
+//            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
+//            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
+//            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
+//        }
+
 template<typename T, size_t _rows, size_t _cols>
 auto Matrix<T, _rows, _cols>::transpose() const -> Matrix<T, _cols, _rows>
 {
@@ -2861,6 +2889,12 @@ auto Matrix<T, _rows, _cols>::transpose() const -> Matrix<T, _cols, _rows>
       matrix[c][r] = (*this)(r, c);
     }
   }
+  
+#if defined TL_HAVE_SIMD_INTRINSICS
+
+
+
+#endif
 
   return matrix;
 }
@@ -3124,7 +3158,7 @@ auto Matrix<T, _rows, _cols>::rowEchelonForm() const -> Matrix
         T scale = matrix[r][colPivotElement];
         if(scale != consts::zero<T>) {
           for(size_t c = i; c < cols; ++c) {
-            matrix[r][c] = matrix[r][c] - scale * matrix[i][c];
+            matrix[r][c] -= scale * matrix[i][c];
           }
         }
 
@@ -3138,19 +3172,47 @@ auto Matrix<T, _rows, _cols>::rowEchelonForm() const -> Matrix
 template<typename T, size_t _rows, size_t _cols>
 auto Matrix<T, _rows, _cols>::reducedRowEchelonForm() const -> Matrix
 {
-  Matrix<T, _rows, _cols> matrix = this->rowEchelonForm();
+  size_t rows = this->rows();
+  size_t cols = this->cols();
 
-  for(size_t i = this->rows(); i > 0; --i) {
+  Matrix<T, _rows, _cols> matrix(*this);
 
-    for(size_t r = i - 1; r > 0; --r) {
+  int lead = 0; // índice de la columna principal
 
-      T scale = matrix[r - 1][i - 1];
+  for (int r = 0; r < rows; r++) { // para cada fila
+    if (lead >= cols) { // si hemos llegado al final de las columnas
+      return matrix;
+    }
+    int i = r;
+    while (abs(matrix[i][lead]) < std::numeric_limits<T>::epsilon()) { // si el valor es cercano a cero, buscar en la siguiente fila
+      i++;
+      if (i == rows) {
+        i = r;
+        lead++;
+        if (lead == cols) { // si hemos llegado al final de las columnas
+          return matrix; 
+        }
+      }
+    }
+    
+    // intercambiar las filas
+    if (r != i) 
+      matrix.swapRows(i, r);
+    
+    double lv = 1. / matrix[r][lead]; // elemento diagonal principal
 
-      for(size_t c = i - 1; c < this->cols(); ++c) {
-        matrix[r - 1][c] = matrix[r - 1][c] - scale * matrix[i - 1][c];
+    matrix[r] *= lv;
+
+    for (int i = 0; i < rows; i++) { // para cada fila
+      if (i != r) {
+        double lv2 = matrix[i][lead];
+        for (int c = 0; c < cols; c++) { // para cada columna
+          matrix[i][c] -= lv2 * matrix[r][c]; // restar la fila escalada
+        }
       }
     }
 
+    lead++; // avanzar a la siguiente columna principal
   }
 
   return matrix;

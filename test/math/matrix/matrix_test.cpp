@@ -43,6 +43,7 @@ struct MatrixTest
       _mat_dyn_2x3_i(new Matrix<int>(2, 3)),
       _cofactor_matrix_dyn(new Matrix<int>(3, 3))
   {}
+
   ~MatrixTest()
   { 
     if (_mat_dyn_default_constructor) delete _mat_dyn_default_constructor, _mat_dyn_default_constructor = nullptr;
@@ -3288,7 +3289,6 @@ BOOST_FIXTURE_TEST_CASE(assing_matrix, MatrixBlockTest)
   BOOST_CHECK_EQUAL(1, block->at(1, 0));
   BOOST_CHECK_EQUAL(1, block->at(1, 1));
 
-  std::cout << m_5x5;
   m_5x5.block(0, 1, 0, 1) = m_5x5.block(2, 3, 2, 3);
   BOOST_CHECK_EQUAL(2, m_5x5.block(0, 1, 0, 1)(0, 0));
   BOOST_CHECK_EQUAL(3, m_5x5.block(0, 1, 0, 1)(0, 1));

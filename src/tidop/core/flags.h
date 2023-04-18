@@ -314,19 +314,13 @@ inline void EnumFlags<T>::disable(T flag)
 template<typename T>
 inline void EnumFlags<T>::activeFlag(T flag, bool active)
 {
-  if (active) 
-    enable(flag);
-  else 
-    disable(flag);
+  active ? enable(flag) : disable(flag);
 }
 
 template<typename T>
 inline void EnumFlags<T>::switchFlag(T flag)
 {
-  if (isEnabled(flag)) 
-    disable(flag);
-  else 
-    enable(flag);
+  isEnabled(flag) ? disable(flag) : enable(flag);
 }
 
 template<typename T>
@@ -497,6 +491,13 @@ public:
   void disable(T flag);
 
   /*!
+   * \brief Activa o desactiva un flag
+   * \param[in] flag Flag que se desactiva
+   * \param[in] active Verdadero para activar el flag
+   */
+  void activeFlag(T flag, bool active);
+
+  /*!
    * \brief Invierte un flag
    * \param flag Flag que se invierte
    */
@@ -631,12 +632,15 @@ inline void Flags<T>::disable(T flag)
 }
 
 template<typename T> 
+inline void Flags<T>::activeFlag(T flag, bool active)
+{
+  active ? enable(flag) : disable(flag);
+}
+
+template<typename T> 
 inline void Flags<T>::switchFlag(T flag)
 {
-  if (isEnabled(flag)) 
-    disable(flag);
-  else 
-    enable(flag);
+  isEnabled(flag) ? disable(flag) : enable(flag);
 }
 
 template<typename T> 
