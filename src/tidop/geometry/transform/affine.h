@@ -674,10 +674,8 @@ void Affine<Point_t>::updateInv()
     bi = -b / det;
     ci = -c / det;
     di = a / det;
-    TL_DISABLE_WARNING(TL_WARNING_C4244)
     this->txi = (-d * tx + b * ty) / det;
     this->tyi = (-a * ty + c * tx) / det;
-    TL_ENABLE_WARNING(TL_WARNING_C4244)
   }
 }
 

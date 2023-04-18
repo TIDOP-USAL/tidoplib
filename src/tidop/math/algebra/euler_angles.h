@@ -88,11 +88,8 @@ public:
   EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
   ~EulerAngles() override = default;
 
-  /*!
-   * \brief Operador de asignación
-   * \param[in] eulerAngles Objeto que se copia
-   */
   EulerAngles &operator = (const EulerAngles<T> &eulerAngles);
+  EulerAngles &operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
 
 public:
 
@@ -158,7 +155,17 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
   return *this;
 }
 
-
+template<typename T>
+EulerAngles<T> &EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
+{
+  if (this != &eulerAngles) {
+    x = std::exchange(eulerAngles.x, 0);
+    y = std::exchange(eulerAngles.y, 0);
+    z = std::exchange(eulerAngles.z, 0);
+    axes = std::exchange(eulerAngles.axes, Axes::xyz);
+  }
+  return *this;
+}
 
 /* Operaciones unarias */
 

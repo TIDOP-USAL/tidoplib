@@ -30,7 +30,7 @@
 #include <vector>
 
 #ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "gdal_priv.h"
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL

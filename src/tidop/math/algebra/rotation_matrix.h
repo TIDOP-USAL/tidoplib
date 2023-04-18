@@ -63,12 +63,11 @@ public:
   
   RotationMatrix();
   RotationMatrix(const RotationMatrix<T> &rot);
+  RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT;
   RotationMatrix(const Matrix<T, 3, 3> &rot);
-  RotationMatrix(Matrix<T, 3, 3> &&rot) TL_NOEXCEPT;
   ~RotationMatrix() override = default;
 
   RotationMatrix &operator = (const RotationMatrix<T> &rot);
-
   RotationMatrix &operator = (RotationMatrix &&rot) TL_NOEXCEPT;
 
 private:
@@ -91,12 +90,19 @@ RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
 }
 
 template <typename T> inline
-RotationMatrix<T>::RotationMatrix(Matrix<T, 3, 3> &&rot) TL_NOEXCEPT
-  : RotationBase<T>(Rotation::Type::rotation_matrix),
+RotationMatrix<T>::RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT
+  : RotationBase<T>(std::forward<RotationBase<T>>(rot)),
     Matrix<T, 3, 3>(std::forward<Matrix<T, 3, 3>>(rot))
 {
 }
 
+template <typename T> inline
+RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>(rot)
+{
+
+}
 
 template <typename T> 
 inline RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix<T> &rot)

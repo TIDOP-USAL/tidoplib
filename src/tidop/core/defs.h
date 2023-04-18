@@ -57,6 +57,15 @@
 #endif
 
 
+#ifdef _MSC_VER
+#  define TL_PRAGMA(...) __pragma(__VA_ARGS__)
+#elif defined __clang__
+#  define TL_PRAGMA(...) _Pragma(#__VA_ARGS__)
+#elif defined __GNUC__
+#  define TL_PRAGMA(...) _Pragma(#__VA_ARGS__)
+#endif
+
+
 
 #include "tidop/config.h"
 
@@ -233,8 +242,8 @@
 // /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 //                                                                                                                   ^
-#  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
-#  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+//#  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
+#  define TL_COMPILER_WARNING(msg) TL_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
 
@@ -249,28 +258,68 @@
 #  define TL_NOEXCEPT_OP(x)
 #endif
 
+
+
 /*-----------------------------------------------------------------------------------*/
 /*                                       WARNIGS                                     */
 /*-----------------------------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#  define TL_WARNING_DEPRECATED 4996
-#  define TL_UNREFERENCED_FORMAL_PARAMETER 4100
-#  define TL_UNREFERENCED_LOCAL_VARIABLE 4101
-#  define TL_WARNING_C4244 4244
-#  define TL_FORCEINLINE_NOT_INLINED 4714
+//#ifdef _MSC_VER
+//#  define TL_WARNING_DEPRECATED 4996
+//#  define TL_UNREFERENCED_FORMAL_PARAMETER 4100
+//#  define TL_UNREFERENCED_LOCAL_VARIABLE 4101
+//#  define TL_WARNING_C4244 4244
+//#  define TL_FORCEINLINE_NOT_INLINED 4714
+//#else
+//#  define TL_WARNING_DEPRECATED "-Wdeprecated-declarations"
+//#  define TL_UNREFERENCED_FORMAL_PARAMETER "-Wunused-variable"
+//#  define TL_UNREFERENCED_LOCAL_VARIABLE "-Wunused-variable"
+//#  define TL_WARNING_C4244 "-W"
+//#  define TL_FORCEINLINE_NOT_INLINED 4714 "-W"
+//#endif
+
+
+
+#if defined __clang__
+#  define TL_WARNING_PUSH TL_PRAGMA(clang diagnostic push)
+#  define TL_WARNING_POP TL_PRAGMA(clang diagnostic push)
+#  define TL_DISABLE_WARNING_CLANG(warn) TL_PRAGMA(clang diagnostic ignored warn)
+#  define TL_DISABLE_WARNING_GCC(warn)
+#  define TL_DISABLE_WARNING_MSVC(warn)
+#  define TL_ENABLE_WARNING_CLANG(warn) TL_PRAGMA(clang diagnostic warning warn) 
+#  define TL_ENABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNINGS TL_DISABLE_WARNING_CLANG("-Wall")
+#elif defined __GNUC__ && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
+#  define TL_WARNING_PUSH TL_PRAGMA(GCC diagnostic push)
+#  define TL_WARNING_POP TL_PRAGMA(GCC diagnostic pop)
+#  define TL_DISABLE_WARNING_GCC(warn) TL_PRAGMA(GCC diagnostic ignored warn)
+#  define TL_DISABLE_WARNING_CLANG(warn)
+#  define TL_DISABLE_WARNING_MSVC(warn)
+#  define TL_ENABLE_WARNING_GCC(warn) TL_PRAGMA(GCC diagnostic warning warn)
+#  define TL_ENABLE_WARNING_CLANG(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNINGS TL_DISABLE_WARNING_GCC("-Wall")
+#elif defined _MSC_VER
+#  define TL_WARNING_PUSH TL_PRAGMA(warning(push))
+#  define TL_WARNING_POP TL_PRAGMA(warning(pop))
+#  define TL_DISABLE_WARNING_MSVC(warn) TL_PRAGMA(warning(disable : warn))
+#  define TL_DISABLE_WARNING_CLANG(warn)
+#  define TL_DISABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn) TL_PRAGMA(warning(default : warn))
+#  define TL_ENABLE_WARNING_CLANG(warn)
+#  define TL_ENABLE_WARNING_GCC(warn)
+#  define TL_DISABLE_WARNINGS TL_PRAGMA(warning(push, 0))
 #else
-#  define TL_WARNING_DEPRECATED "-Wdeprecated-declarations"
-#  define TL_UNREFERENCED_FORMAL_PARAMETER "-Wunused-variable"
-#  define TL_UNREFERENCED_LOCAL_VARIABLE "-Wunused-variable"
-#  define TL_WARNING_C4244 "-W"
-#  define TL_FORCEINLINE_NOT_INLINED 4714 "-W"
-#endif
-
-
-#ifdef __GNUC__
-#define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
-#define DIAG_PRAGMA(x) MAKE_LINUX_PRAGMA(GCC diagnostic x)
+#  define TL_WARNING_PUSH 
+#  define TL_WARNING_POP
+#  define TL_DISABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNING_CLANG(warn)
+#  define TL_DISABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_CLANG(warn)
+#  define TL_ENABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNINGS
 #endif
 
 
@@ -287,41 +336,21 @@
  *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
  *   return true;
  * }
+ * TL_DEFAULT_WARNINGS
  * \endcode
  */
-#ifdef _MSC_VER
-#  define TL_SUPPRESS_WARNINGS __pragma(warning(push, 0))
-#elif defined __GNUC__
-#  define TL_SUPPRESS_WARNINGS DIAG_PRAGMA(push) DIAG_PRAGMA(ignored "-Wall")
-#endif
+//#ifdef _MSC_VER
+//#  define TL_SUPPRESS_WARNINGS TL_PRAGMA(warning(push, 0))
+//#elif defined __clang__
+//#  define TL_SUPPRESS_WARNINGS TL_PRAGMA(clang diagnostic ignored "-Wall")
+//#elif defined __GNUC__
+//#  define TL_SUPPRESS_WARNINGS TL_PRAGMA(GCC diagnostic ignored "-Wall")
+//#endif
 
 /*!
  * \brief Se pone por defecto la configuración de mensajes de advertencia
  */
-#ifdef _MSC_VER
-#  define TL_DEFAULT_WARNINGS __pragma(warning(pop))
-#elif defined __GNUC__
-#  define TL_DEFAULT_WARNINGS DIAG_PRAGMA(pop)
-#endif
-
-/*!
- * \brief Se desactiva un mensaje de advertencia especifico
- *
- * <h4>Ejemplo</h4>
- * \code
- * TL_DISABLE_WARNING(4244)
- * bool f(double d) {
- *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
- *   return true;
- * }
- * TL_ENABLE_WARNING(4244)
- * \endcode
- */
-#ifdef _MSC_VER
-#  define TL_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
-#elif defined __GNUC__
-#  define TL_DISABLE_WARNING(warn) DIAG_PRAGMA(push) DIAG_PRAGMA(ignored warn)
-#endif
+#define TL_DEFAULT_WARNINGS TL_WARNING_POP
 
 /*!
  * \brief Se activa un mensaje de advertencia especifico
@@ -336,18 +365,22 @@
  * TL_ENABLE_WARNING(4244)
  * \endcode
  */
-#ifdef _MSC_VER
-#  define TL_ENABLE_WARNING(warn) __pragma(warning(default : warn))
-#elif defined __GNUC__
-#  define TL_ENABLE_WARNING(warn) DIAG_PRAGMA(pop)
-#endif
+//#ifdef _MSC_VER
+//#  define TL_ENABLE_WARNING(warn) TL_PRAGMA(warning(default : warn))
+//#elif defined __clang__
+//#  define TL_ENABLE_WARNING(warn) TL_PRAGMA(clang diagnostic warning warn) 
+//#elif defined __GNUC__
+//#  define TL_ENABLE_WARNING(warn) TL_PRAGMA(GCC diagnostic warning warn)
+//#endif
 
 
 #ifdef TL_WARNING_TODO
 #  ifdef _MSC_VER
-#    define TL_TODO(msg) __pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
-#  elif defined __GNUC__
-#    define TL_TODO(x) MAKE_LINUX_PRAGMA(message ("TODO: " #x))
+#    define TL_TODO(msg) TL_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#  elif defined __GNUC__ || defined __clang__
+#    define TL_TODO(x) TL_PRAGMA(message ("TODO: " #x))
+#  else
+#    define TL_TODO(msg)
 #  endif
 #else
 #  define TL_TODO(msg)
