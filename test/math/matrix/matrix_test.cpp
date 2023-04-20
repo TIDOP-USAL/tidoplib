@@ -2081,6 +2081,26 @@ BOOST_FIXTURE_TEST_CASE(vector_matrix, MatrixTest)
   BOOST_CHECK_EQUAL(47., vect8[2]);
   BOOST_CHECK_EQUAL(78., vect8[3]);
   BOOST_CHECK_EQUAL(87., vect8[4]);
+
+  Matrix<float, 8, 8> matrix_f{1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8,
+                               1, 2, 3, 4, 5, 6, 7, 8};
+  Vector<float, 8> vectf{ 1, 2, 3 , 4, 5, 6, 7, 8};
+  Vector<float, 8> vect_result = matrix_f * vectf;
+
+  BOOST_CHECK_EQUAL(204.f, vect_result[0]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[1]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[2]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[3]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[4]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[5]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[6]);
+  BOOST_CHECK_EQUAL(204.f, vect_result[7]);
 }
 
 

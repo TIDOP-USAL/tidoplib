@@ -3943,6 +3943,235 @@ BOOST_FIXTURE_TEST_CASE(operator_not_equal, PackedTest)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(horizontal_sum, PackedTest)
+{
+  // float
+  {
+    std::vector<float> a;
+    Packed<float> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1.f);
+
+    packed_a.loadUnaligned(&a[0]);
+
+    BOOST_CHECK_EQUAL(static_cast<float>(packed_a.size()), packed_a.sum());
+  }
+
+  // double
+  {
+    std::vector<double> a;
+    Packed<double> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++) {
+      a.push_back(1.);
+    }
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<double>(packed_a.size()), packed_a.sum());
+  }
+
+  // int8
+  {
+    std::vector<int8_t> a;
+    Packed<int8_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<int8_t>(packed_a.size()), packed_a.sum());
+
+  }
+
+  // uint8
+  {
+    std::vector<uint8_t> a;
+    Packed<uint8_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<uint8_t>(packed_a.size()), packed_a.sum());
+  }
+
+  // int16
+  {
+    std::vector<int16_t> a;
+    Packed<int16_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<int16_t>(packed_a.size()), packed_a.sum());
+  }
+
+  // uint16
+  {
+    std::vector<uint16_t> a;
+    Packed<uint16_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<uint16_t>(packed_a.size()), packed_a.sum());
+  }
+
+  // int32
+  {
+    std::vector<int> a;
+    Packed<int> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<int>(packed_a.size()), packed_a.sum());
+  }
+
+  // uint32
+  {
+    std::vector<uint32_t> a;
+    Packed<uint32_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<uint32_t>(packed_a.size()), packed_a.sum());
+  }
+
+  // int64
+  {
+    std::vector<int64_t> a;
+    Packed<int64_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<int64_t>(packed_a.size()), packed_a.sum());
+  }
+
+  // uint64
+  {
+    std::vector<uint64_t> a;
+    Packed<uint64_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    BOOST_CHECK_EQUAL(static_cast<uint64_t>(packed_a.size()), packed_a.sum());
+  }
+
+}
+
+BOOST_FIXTURE_TEST_CASE(change_sign, PackedTest)
+{
+  // float
+  {
+    std::vector<float> a;
+    Packed<float> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1.f);
+
+    packed_a.loadUnaligned(&a[0]);
+
+    Packed<float> packed_b = -packed_a;
+    packed_b.storeUnaligned(&a[0]);
+
+    for(size_t i = 0; i < a.size(); i++)
+      BOOST_CHECK_EQUAL(-1.f, a[i]);
+
+  }
+
+  // double
+  {
+    std::vector<double> a;
+    Packed<double> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1.f);
+
+    packed_a.loadUnaligned(&a[0]);
+    Packed<double> packed_b = -packed_a;
+    packed_b.storeUnaligned(&a[0]);
+
+    for(size_t i = 0; i < a.size(); i++)
+      BOOST_CHECK_EQUAL(-1., a[i]);
+  }
+
+  // int8
+  {
+    std::vector<int8_t> a;
+    Packed<int8_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    Packed<int8_t> packed_b = -packed_a;
+    packed_b.storeUnaligned(&a[0]);
+
+    for(size_t i = 0; i < a.size(); i++)
+      BOOST_CHECK_EQUAL(-1, a[i]);
+  }
+
+  // int16
+  {
+    std::vector<int16_t> a;
+    Packed<int16_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    Packed<int16_t> packed_b = -packed_a;
+    packed_b.storeUnaligned(&a[0]);
+
+    for(size_t i = 0; i < a.size(); i++)
+      BOOST_CHECK_EQUAL(-1, a[i]);
+  }
+
+  // int32
+  {
+    std::vector<int> a;
+    Packed<int> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    Packed<int> packed_b = -packed_a;
+    packed_b.storeUnaligned(&a[0]);
+
+    for(size_t i = 0; i < a.size(); i++)
+      BOOST_CHECK_EQUAL(-1, a[i]);
+  }
+
+  // int64
+  {
+    std::vector<int64_t> a;
+    Packed<int64_t> packed_a;
+
+    for(size_t i = 0; i < packed_a.size(); i++)
+      a.push_back(1);
+
+    packed_a.loadUnaligned(&a[0]);
+    Packed<int64_t> packed_b = -packed_a;
+    packed_b.storeUnaligned(&a[0]);
+
+    for(size_t i = 0; i < a.size(); i++)
+      BOOST_CHECK_EQUAL(-1, a[i]);
+  }
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 #endif // TL_HAVE_SIMD_INTRINSICS

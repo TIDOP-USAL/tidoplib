@@ -801,7 +801,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
   __m256i mulodd = _mm256_mullo_epi16(aodd, bodd);           // product of odd  numbered elements
   mulodd = _mm256_slli_epi16(mulodd, 8);                     // put odd numbered elements back in place
   __m256i mask = _mm256_set1_epi32(0x00FF00FF);              // mask for even positions
-  r = _mm256_blendv_epi8(mask, muleven, mulodd);             // interleave even and odd
+  r = _mm256_blendv_epi8(mulodd, muleven, mask);             // interleave even and odd
 #elif defined TL_HAVE_SSE2
   /// Copy from 'vector class library':
   /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
@@ -884,7 +884,19 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
   typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
-  r = _mm256_mullo_epi64(packed1, packed2);
+  /// Copy from 'vector class library':
+  /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori256.h
+  /// (c) Copyright 2012-2021 Agner Fog.
+  /// Apache License version 2.0 or later.
+  // Split into 32-bit multiplies
+  __m256i bswap   = _mm256_shuffle_epi32(packed2,0xB1);  // swap H<->L
+  __m256i prodlh  = _mm256_mullo_epi32(packed1,bswap);   // 32 bit L*H products
+  __m256i zero    = _mm256_setzero_si256();              // 0
+  __m256i prodlh2 = _mm256_hadd_epi32(prodlh,zero);      // a0Lb0H+a0Hb0L,a1Lb1H+a1Hb1L,0,0
+  __m256i prodlh3 = _mm256_shuffle_epi32(prodlh2,0x73);  // 0, a0Lb0H+a0Hb0L, 0, a1Lb1H+a1Hb1L
+  __m256i prodll  = _mm256_mul_epu32(packed1,packed2);   // a0Lb0L,a1Lb1L, 64 bit unsigned products
+  __m256i prod    = _mm256_add_epi64(prodll,prodlh3);    // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
+  r = prod;
 #elif defined TL_HAVE_SSE2
   /// Copy from 'vector class library':
   /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
@@ -1197,7 +1209,9 @@ typename std::enable_if<
 changeSign(const Packed<T> &packet)
 {
 #ifdef TL_HAVE_AVX2
-  return _mm256_xor_pd(packet, _mm256_castps_pd(constant8f<0u,0x80000000u,0u,0x80000000u,0u,0x80000000u,0u,0x80000000u> ()));
+  __m256d sign_mask = _mm256_set1_pd(-0.0); // Set all 256 bits to -0.0
+  return _mm256_xor_pd(packet, sign_mask);  // Change sign of the 4 double values
+  //return _mm256_xor_pd(packet, _mm256_castps_pd(_mm256_castsi256_ps(_mm256_setr_epi32(0u,0x80000000u,0u,0x80000000u,0u,0x80000000u,0u,0x80000000u))));
 #elif defined TL_HAVE_SSE2
   return _mm_xor_pd(packet, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
 #endif
@@ -1205,8 +1219,7 @@ changeSign(const Packed<T> &packet)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value,
   Packed<T>>::type
 changeSign(const Packed<T> &packet)
 {
@@ -1218,8 +1231,7 @@ changeSign(const Packed<T> &packet)
 }
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value,
   typename Packed<T>::simd_type>::type
 changeSign(const Packed<T> &packet)
 {
@@ -1232,8 +1244,7 @@ changeSign(const Packed<T> &packet)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value,
   typename Packed<T>::simd_type>::type
 changeSign(const Packed<T> &packet)
 {
@@ -1246,8 +1257,7 @@ changeSign(const Packed<T> &packet)
 
 template<typename T> inline
 typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value,
   typename Packed<T>::simd_type>::type
 changeSign(const Packed<T> &packet)
 {
