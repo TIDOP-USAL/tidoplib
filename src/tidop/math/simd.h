@@ -1258,6 +1258,157 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, T>::value, 
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256 compare_result = _mm256_cmp_ps(packed1, packed2, _CMP_EQ_OQ);
+  return _mm256_movemask_ps(compare_result) == 0b11111111;
+#elif defined TL_HAVE_SSE
+  __m128 compare_result = _mm_cmpeq_ps(packed1, packed2);
+  return _mm_movemask_ps(compare_result) == 0b1111;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, T>::value, 
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256d compare_result = _mm256_cmp_pd(packed1, packed2, _CMP_EQ_OQ);
+  return _mm256_movemask_pd(compare_result) == 0b1111;
+#elif defined TL_HAVE_SSE2
+  __m128d compare_result = _mm_cmpeq_pd(packed1, packed2);
+  return _mm_movemask_pd(compare_result) == 0b11;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi8(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE2
+  __m128i compare_result = _mm_cmpeq_epi8(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi16(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE2
+  __m128i compare_result = _mm_cmpeq_epi16(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi32(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE2
+  __m128i compare_result = _mm_cmpeq_epi32(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi64(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE4_1
+  __m128i compare_result = _mm_cmpeq_epi64(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#else
+  __m128i com32 = _mm_cmpeq_epi32(packed1, packed2);                 // 32 bit compares
+  __m128i com32s = _mm_shuffle_epi32(com32, 0xB1);       // swap low and high dwords
+  __m128i test = _mm_and_si128(com32, com32s);           // low & high
+  __m128i teste = _mm_srai_epi32(test, 31);              // extend sign bit to 32 bits
+  __m128i compare_result = _mm_shuffle_epi32(teste, 0xF5);       // extend sign bit to 64 bits
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, T>::value, 
+  bool>::type
+notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256 compare_result = _mm256_cmp_ps(packed1, packed2, _CMP_NEQ_UQ);
+  return _mm256_movemask_ps(compare_result) != 0;
+#elif defined TL_HAVE_SSE
+  __m128 compare_result = _mm_cmpneq_ps(packed1, packed2);
+  return _mm_movemask_ps(compare_result) != 0;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, T>::value, 
+  bool>::type
+notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256d compare_result = _mm256_cmp_pd(packed1, packed2, _CMP_NEQ_UQ);
+  return _mm256_movemask_pd(compare_result) != 0;
+#elif defined TL_HAVE_SSE2
+  __m128d compare_result = _mm_cmpneq_pd(packed1, packed2);
+  return _mm_movemask_pd(compare_result) != 0;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_integral<T>::value,
+  bool>::type
+notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi64(packed1, packed2);
+  __m256i xor_value = _mm256_xor_si256(compare_result, _mm256_set1_epi32(-1));
+  return _mm256_movemask_epi8(xor_value) != 0;
+#elif defined TL_HAVE_SSE2
+  //__m128d compare_result = _mm_xor_si128(packed1 == packed2, _mm_set1_epi32(-1));
+  //return _mm_movemask_epi8(compare_result) == 0xffff;
+  __m128i compare_result = _mm_cmpeq_epi32(packed1, packed2);
+  __m128i xor_value = _mm_xor_si128(compare_result, _mm_set1_epi32(-1));
+  return _mm_movemask_epi8(xor_value) != 0;
+#endif
+}
+
 
 } // namespace internal 
 
@@ -1351,6 +1502,25 @@ inline Packed<T> operator/(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) / packed;
 }
+
+/* Comparison Operators */
+
+
+template<typename T> 
+static inline bool operator == (const Packed<T> &packed1,
+                                     const Packed<T> &packed2) 
+{
+  return internal::equalTo(packed1, packed2);
+}
+
+template<typename T> 
+static inline bool operator != (const Packed<T> &packed1,
+                                     const Packed<T> &packed2) 
+{
+  return internal::notEqual(packed1, packed2);
+}
+
+
 
 
 template<typename T> 
