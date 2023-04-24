@@ -4172,6 +4172,76 @@ BOOST_FIXTURE_TEST_CASE(change_sign, PackedTest)
 
 }
 
+
+double calculate_mean(std::vector<double> &data, int size)
+{
+    //__m256d sum = _mm256_setzero_pd();
+    //int i = 0;
+
+    //for (; i + 4 <= size; i += 4) {
+    //    __m256d vec = _mm256_loadu_pd(data + i);
+    //    sum = _mm256_add_pd(sum, vec);
+    //}
+
+    //__m128d sum_hi = _mm256_extractf128_pd(sum, 1);
+    //__m128d sum_lo = _mm256_castpd256_pd128(sum);
+    //sum_lo = _mm_add_pd(sum_lo, sum_hi);
+
+    //double total_sum;
+    //_mm_store_sd(&total_sum, sum_lo);
+
+    //for (; i < size; i++) {
+    //    total_sum += data[i];
+    //}
+
+    //return total_sum / size;
+
+  size_t i{0};
+
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+  using namespace simd;
+
+  double x{0};
+
+  Packed<double> packed_a;
+  Packed<double> packed_x = Packed<double>::zero();
+
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = (data.size() / packed_size) * packed_size;
+
+  for (; i < max_vector; i += packed_size) {
+
+    packed_a.loadUnaligned(&data[i]);
+    
+    packed_x += packed_a;
+
+  }
+
+  x = packed_x.sum();
+  x /= (i);
+
+#endif
+
+  for (; i < data.size(); i++) {
+    x += (data[i] - x)/(i+1);
+  }
+
+  return x;
+}
+
+BOOST_FIXTURE_TEST_CASE(mean, PackedTest)
+{
+  std::vector<double> data = {8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5};
+
+  // Calcular la media del vector
+  double mean = calculate_mean(data, 8);
+
+  BOOST_CHECK_CLOSE(7.695, mean, 0.1);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
 #endif // TL_HAVE_SIMD_INTRINSICS

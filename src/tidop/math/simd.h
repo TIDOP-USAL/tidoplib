@@ -266,6 +266,8 @@ public:
    */
   T sum();
 
+  static auto zero() -> Packed;
+
 private:
 
   simd_type mValue;
@@ -523,6 +525,50 @@ set(T data)
 #endif
 }
 
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, T>::value, 
+  typename Packed<T>::simd_type>::type
+setZero()
+{
+#ifdef TL_HAVE_AVX
+  return _mm256_setzero_ps();
+#elif defined TL_HAVE_SSE
+  return _mm_setzero_ps();
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, T>::value,
+  typename Packed<T>::simd_type>::type
+setZero()
+{
+#ifdef TL_HAVE_AVX
+  return _mm256_setzero_pd();
+#elif defined TL_HAVE_SSE2
+  return _mm_setzero_pd();
+#else
+  //...
+#endif
+}
+
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_integral<T>::value,
+  void>::type
+setZero()
+{
+  using simd_type = typename Packed<T>::simd_type;
+
+#ifdef TL_HAVE_AVX
+  return _mm256_setzero_si256();
+#elif defined TL_HAVE_SSE2
+  return _mm_setzero_si128();
+#endif
+}
 
 /// Addition
 
@@ -1195,10 +1241,11 @@ typename std::enable_if<
   Packed<T>>::type
 changeSign(const Packed<T> &packet)
 {
-#ifdef TL_HAVE_AVX2
+#ifdef TL_HAVE_AVX
   return _mm256_xor_ps(packet, Packed<T>(-0.0f));
 #elif defined TL_HAVE_SSE2
-  return _mm_xor_ps(packet, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)));
+  __m128 a = packet;
+  return _mm_xor_ps(a, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)));
 #endif
 }
 
@@ -1208,12 +1255,11 @@ typename std::enable_if<
   Packed<T>>::type
 changeSign(const Packed<T> &packet)
 {
-#ifdef TL_HAVE_AVX2
-  __m256d sign_mask = _mm256_set1_pd(-0.0); // Set all 256 bits to -0.0
-  return _mm256_xor_pd(packet, sign_mask);  // Change sign of the 4 double values
-  //return _mm256_xor_pd(packet, _mm256_castps_pd(_mm256_castsi256_ps(_mm256_setr_epi32(0u,0x80000000u,0u,0x80000000u,0u,0x80000000u,0u,0x80000000u))));
+#ifdef TL_HAVE_AVX
+  return _mm256_xor_pd(packet, Packed<T>(-0.0));
 #elif defined TL_HAVE_SSE2
-  return _mm_xor_pd(packet, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
+  __m128d a = packet;
+  return _mm_xor_pd(a, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
 #endif
 }
 
@@ -1411,8 +1457,6 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
   __m256i xor_value = _mm256_xor_si256(compare_result, _mm256_set1_epi32(-1));
   return _mm256_movemask_epi8(xor_value) != 0;
 #elif defined TL_HAVE_SSE2
-  //__m128d compare_result = _mm_xor_si128(packed1 == packed2, _mm_set1_epi32(-1));
-  //return _mm_movemask_epi8(compare_result) == 0xffff;
   __m128i compare_result = _mm_cmpeq_epi32(packed1, packed2);
   __m128i xor_value = _mm_xor_si128(compare_result, _mm_set1_epi32(-1));
   return _mm_movemask_epi8(xor_value) != 0;
@@ -1690,6 +1734,11 @@ inline T Packed<T>::sum()
   return internal::horizontal_sum(*this);
 }
 
+template<typename T> 
+auto Packed<T>::zero() -> Packed 
+{
+  return internal::setZero<T>();
+}
 
 } // End namespace simd
 
