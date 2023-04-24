@@ -110,18 +110,18 @@ void MessageManager::release(const std::string &message,
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
 
   std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-
+  std::string _file = Path(file).fileName().toString();
   char buf[1000];
   #if defined _MSC_VER
     if (line == -1)
-      sprintf_s(buf, 1000, messageProperties(level).normal, message.c_str(), file.c_str(), line, function.c_str());
+      sprintf_s(buf, 1000, messageProperties(level).normal, message.c_str(), _file.c_str(), line, function.c_str());
     else
-      sprintf_s(buf, 1000, messageProperties(level).extend, message.c_str(), file.c_str(), line, function.c_str());
+      sprintf_s(buf, 1000, messageProperties(level).extend, message.c_str(), _file.c_str(), line, function.c_str());
   #else
     if (line == -1)
-      snprintf(buf, 1000, messageProperties(level).normal, message.c_str(), file.c_str(), line, function.c_str());
+      snprintf(buf, 1000, messageProperties(level).normal, message.c_str(), _file.c_str(), line, function.c_str());
     else
-      snprintf(buf, 1000, messageProperties(level).extend, message.c_str(), file.c_str(), line, function.c_str());
+      snprintf(buf, 1000, messageProperties(level).extend, message.c_str(), _file.c_str(), line, function.c_str());
   #endif
 
   switch (level) {
