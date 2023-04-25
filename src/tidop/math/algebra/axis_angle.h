@@ -67,15 +67,41 @@ public:
   AxisAngle(T angle, const Vector<T, 3> &axis);
   ~AxisAngle() override = default;
 
-  AxisAngle &operator = (const AxisAngle<T> &rot);
-  AxisAngle &operator = (AxisAngle &&rot) TL_NOEXCEPT;
+  auto operator = (const AxisAngle &rot) -> AxisAngle &;
+  auto operator = (AxisAngle &&rot) TL_NOEXCEPT -> AxisAngle &;
 
+  /*!
+   * \brief 
+   * \return 
+   */
+  auto angle() const -> T;
 
-  T angle() const;
-  void setAngle(T angle);
-  Vector<T, 3> axis() const;
-  T axis(size_t i) const;
-  void setAxis(const Vector<T, 3> &axis);
+  /*!
+   * \brief 
+   * \param[in] angle 
+   * \return 
+   */
+  auto setAngle(T angle) -> void;
+  
+  /*!
+   * \brief 
+   * \return 
+   */
+  auto axis() const -> Vector<T, 3>;
+  
+  /*!
+   * \brief 
+   * \param[in] i 
+   * \return 
+   */
+  auto axis(size_t i) const -> T;
+  
+  /*!
+   * \brief 
+   * \param axis 
+   * \return 
+   */
+  auto setAxis(const Vector<T, 3> &axis) -> void;
 
 private:
 
@@ -125,7 +151,7 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
 }
 
 template <typename T> 
-inline AxisAngle<T> &AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle)
+inline auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngle&
 {
   if (this != &axisAngle) {
     RotationBase<T>::operator = (axisAngle);
@@ -137,7 +163,7 @@ inline AxisAngle<T> &AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle)
 }
 
 template <typename T> 
-AxisAngle<T> &AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT
+inline auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle&
 {
   if (this != &axisAngle) {
     RotationBase<T>::operator = (std::forward<RotationBase<T>>(axisAngle));
@@ -149,32 +175,32 @@ AxisAngle<T> &AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT
 }
 
 template<typename T>
-inline T AxisAngle<T>::angle() const
+inline auto AxisAngle<T>::angle() const -> T
 {
   return mAngle;
 }
 
 template<typename T>
-inline void AxisAngle<T>::setAngle(T angle)
+inline auto AxisAngle<T>::setAngle(T angle) -> void
 {
   mAngle = angle;
 }
 
 template<typename T>
-inline Vector<T, 3> AxisAngle<T>::axis() const
+inline auto AxisAngle<T>::axis() const -> Vector<T, 3>
 {
   return mAxis;
 }
 
 template<typename T>
-inline T AxisAngle<T>::axis(size_t i) const
+inline auto AxisAngle<T>::axis(size_t i) const -> T
 {
   TL_ASSERT((0 <= i) && (i < 3), "");
   return mAxis.at(i);
 }
 
 template<typename T>
-inline void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
+inline auto AxisAngle<T>::setAxis(const Vector<T, 3> &axis) -> void
 {
   mAxis = axis;
   mAxis.normalize();
