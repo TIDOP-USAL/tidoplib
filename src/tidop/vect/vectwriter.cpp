@@ -480,7 +480,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
     for (size_t i = 0; i < gPolygon->holes(); i++) {
-      PolygonHole<PointD> hole = gPolygon->hole(i);
+      PolygonHole<Point<double>> hole = gPolygon->hole(i);
       OGRLinearRing ogrLinearRing;
       for (size_t j = 0; j < hole.size(); j++) {
         OGRPoint pt(hole[j].x, hole[j].y);
@@ -514,7 +514,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
     for (size_t i = 0; i < gPolygon3D->holes(); i++) {
-      Polygon3DHole<Point3D> hole = gPolygon3D->hole(i);
+      Polygon3DHole<Point3<double>> hole = gPolygon3D->hole(i);
       OGRLinearRing ogrLinearRing;
       for (size_t j = 0; j < hole.size(); j++) {
         OGRPoint pt(hole[j].x, hole[j].y, hole[j].z);
@@ -656,7 +656,7 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
 
       for (size_t i = 0; i < polygon.holes(); i++) {
 
-        PolygonHole<PointD> hole = polygon.hole(i);
+        PolygonHole<Point<double>> hole = polygon.hole(i);
         OGRLinearRing ogrLinearRing;
         for (size_t j = 0; j < hole.size(); j++) {
           OGRPoint pt(hole[j].x, hole[j].y);
@@ -701,7 +701,7 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
 
       for (size_t i = 0; i < polygon.holes(); i++) {
 
-        Polygon3DHole<Point3D> hole = polygon.hole(i);
+        Polygon3DHole<Point3<double>> hole = polygon.hole(i);
         OGRLinearRing ogrLinearRing;
         for (size_t j = 0; j < hole.size(); j++) {
           OGRPoint pt(hole[j].x, hole[j].y, hole[j].z);

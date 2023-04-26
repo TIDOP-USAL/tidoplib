@@ -61,7 +61,7 @@ public:
   /*!
    * \brief Constructora
    */
-  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2)
+  LineAlgorithms(Type type, const Point<int> &pt1, const Point<int> &pt2)
     : mType(type), mPt1(pt1), mPt2(pt2)
   {
     dx = pt2.x - pt1.x;
@@ -79,7 +79,7 @@ public:
    * \param[in] id Identificador de la posición
    * \return Posición actual
    */
-  virtual PointI position(int id = -1) = 0;
+  virtual Point<int> position(int id = -1) = 0;
  
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 
@@ -88,14 +88,14 @@ public:
    * \deprecated Use 'points()' en su lugar
    */
   TL_DEPRECATED("LineAlgorithms::points()", "2.0")
-  virtual std::vector<geometry::PointI> getPoints() = 0;
+  virtual std::vector<geometry::Point<int>> getPoints() = 0;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  virtual std::vector<PointI> points() = 0;
+  virtual std::vector<Point<int>> points() = 0;
 
 protected:
 
@@ -107,12 +107,12 @@ protected:
   /*!
    * \brief Punto inicial
    */
-  PointI mPt1;
+  Point<int> mPt1;
 
   /*!
    * \brief Punto final
    */
-  PointI mPt2;
+  Point<int> mPt2;
 
   /*!
    * \brief Paso en X
@@ -127,7 +127,7 @@ protected:
   /*!
    * \brief Posición actual
    */
-  PointI mPos;
+  Point<int> mPos;
 
   /*!
    * \brief Incremento en X
@@ -175,7 +175,7 @@ public:
    * tl::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
-  BresenhamLine(const PointI &pt1, const PointI &pt2)
+  BresenhamLine(const Point<int> &pt1, const Point<int> &pt2)
     : LineAlgorithms(LineAlgorithms::Type::bresenham, pt1, pt2)
   {
     init();
@@ -189,7 +189,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  PointI &operator*();
+  Point<int> &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -237,7 +237,7 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  PointI position(int id = -1) override;
+  Point<int> position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
@@ -249,14 +249,14 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<geometry::PointI> getPoints() override;
+  std::vector<geometry::Point<int>> getPoints() override;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<PointI> points() override;
+  std::vector<Point<int>> points() override;
 
 private:
 
@@ -304,7 +304,7 @@ public:
    * tl::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v2 = lineIter2.getPoints();
    */
-  DDA(const PointI &pt1, const PointI &pt2)
+  DDA(const Point<int> &pt1, const Point<int> &pt2)
     : LineAlgorithms(LineAlgorithms::Type::dda, pt1, pt2)
   {
     init();
@@ -315,7 +315,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  PointI &operator*();
+  Point<int> &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -363,7 +363,7 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  PointI position(int id = -1) override;
+  Point<int> position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
@@ -375,14 +375,14 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<geometry::PointI> getPoints() override;
+  std::vector<geometry::Point<int>> getPoints() override;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<PointI> points() override;
+  std::vector<Point<int>> points() override;
 
 private:
 

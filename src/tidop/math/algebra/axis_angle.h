@@ -206,6 +206,22 @@ inline auto AxisAngle<T>::setAxis(const Vector<T, 3> &axis) -> void
   mAxis.normalize();
 }
 
+template<typename T> 
+static inline bool operator == (const AxisAngle<T> &axisAngle1, 
+                                const AxisAngle<T> &axisAngle2)
+{
+  return axisAngle1.mAxis == axisAngle2.mAxis && 
+         axisAngle1.mAngle == axisAngle2.mAngle;
+}
+
+template<typename T>
+static inline bool operator != (const AxisAngle<T> &axisAngle1, 
+                                const AxisAngle<T> &axisAngle2)
+{
+  return axisAngle1.mAxis != axisAngle2.mAxis && 
+         axisAngle1.mAngle != axisAngle2.mAngle;
+}
+
 /*! \} */ // end of rotations
 
 /*! \} */ // end of algebra

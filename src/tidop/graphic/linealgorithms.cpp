@@ -33,7 +33,7 @@ namespace tl
 /*                        Algoritmos de trazado de lineas                             */
 /* ---------------------------------------------------------------------------------- */
 
-PointI &BresenhamLine::operator*()
+Point<int> &BresenhamLine::operator*()
 {
   return mPos;
 }
@@ -86,7 +86,7 @@ BresenhamLine BresenhamLine::end()
   return it;
 }
 
-PointI BresenhamLine::position(int id)
+Point<int> BresenhamLine::position(int id)
 {
   if (id == -1) {
     return mPos;
@@ -197,9 +197,9 @@ int BresenhamLine::size() const
 }
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-std::vector<PointI> BresenhamLine::getPoints()
+std::vector<Point<int>> BresenhamLine::getPoints()
 {
-  std::vector<PointI> pts;
+  std::vector<Point<int>> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);
@@ -208,9 +208,9 @@ std::vector<PointI> BresenhamLine::getPoints()
 }
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
-std::vector<PointI> BresenhamLine::points()
+std::vector<Point<int>> BresenhamLine::points()
 {
-  std::vector<PointI> pts;
+  std::vector<Point<int>> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);
@@ -220,7 +220,7 @@ std::vector<PointI> BresenhamLine::points()
 
 /* ---------------------------------------------------------------------------------- */
 
-PointI &DDA::operator*()
+Point<int> &DDA::operator*()
 {
   return mPos;
 }
@@ -274,7 +274,7 @@ DDA DDA::end()
   return it;
 }
 
-PointI DDA::position(int id)
+Point<int> DDA::position(int id)
 {
   if (id == -1) {
     return mPos;
@@ -325,9 +325,9 @@ int DDA::size() const
 }
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-std::vector<PointI> DDA::getPoints()
+std::vector<Point<int>> DDA::getPoints()
 {
-  std::vector<PointI> pts;
+  std::vector<Point<int>> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);
@@ -336,9 +336,9 @@ std::vector<PointI> DDA::getPoints()
 }
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
-std::vector<PointI> DDA::points()
+std::vector<Point<int>> DDA::points()
 {
-  std::vector<PointI> pts;
+  std::vector<Point<int>> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);

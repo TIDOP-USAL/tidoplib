@@ -236,7 +236,7 @@ public:
   auto operator=(T value) -> void;
   auto operator=(const Vector<T> &vector) -> MatrixRow&;
   template<typename T2, size_t _size2>
-  auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow &;
+  auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow&;
 
   operator Vector<T>() const;
 

@@ -67,7 +67,7 @@ namespace tl
  * double corr = regressionLinearYX(pts, &m, &b);
  * \endcode
  */
-//TL_EXPORT double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
+//TL_EXPORT double regressionLinearYX(const std::vector<cv::Point<int>> &pts, double *m, double *b);
 template<typename Point_t> inline 
 double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 {
@@ -116,7 +116,7 @@ double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
  * double corr = regressionLinearXY(pts, &m, &b);
  * \endcode
  */
-//TL_EXPORT double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
+//TL_EXPORT double regressionLinearXY(const std::vector<cv::Point<int>> &pts, double *m, double *b);
 template<typename Point_t> inline 
 double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 {
@@ -255,15 +255,15 @@ double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 //template<typename Point_t> inline
 //void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 //{
-//  std::vector<geometry::PointD> ptsLog(pts.size());
+//  std::vector<geometry::Point<double>> ptsLog(pts.size());
 //  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
-//                 [](Point_t pt) -> geometry::PointD {
-//                    return geometry::PointD(pt.x, log10(pt.y)); 
+//                 [](Point_t pt) -> geometry::Point<double> {
+//                    return geometry::Point<double>(pt.x, log10(pt.y)); 
 //                  });
 //
 //  double m = 0.;
 //  double b = 0.;
-//  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
+//  regressionLinearYX<geometry::Point<double>>(ptsLog, &m, &b);
 //  *A = pow(10, b);
 //  *r = pow(10, m);
 //}

@@ -92,7 +92,7 @@ public:
    * \param[in] point Punto
    */
   void drawPoint(const GPoint &point);
-  void drawPoint(const PointD &point);
+  void drawPoint(const Point<double> &point);
 
   /*!
    * \brief Dibuja una polilinea
@@ -130,7 +130,7 @@ public:
   void drawPicture(const cv::Mat &bmp);
 #endif // TL_HAVE_OPENCV
 
-  void drawText(const PointD &point, const std::string &text);
+  void drawText(const Point<double> &point, const std::string &text);
 
   /*!
    * \brief Establece el canvas
@@ -169,7 +169,7 @@ public:
   void setTransform(Transform *trf);
 
   //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
-  //void drawImage(const RasterGraphics &image, Helmert2D<geometry::PointI> *trf);
+  //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
 protected:
 

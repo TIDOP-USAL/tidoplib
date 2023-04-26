@@ -125,7 +125,7 @@ public:
    * \param[in] trf Transformaci�n entre el bloque y la imagen.
    */
   virtual void write(const cv::Mat &image, 
-                     const Affine<PointI> &trf) = 0;
+                     const Affine<Point<int>> &trf) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -140,7 +140,7 @@ public:
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformaci�n entre el bloque y la imagen. Si es nula no se aplica transformaci�n
    */
-  //virtual void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) = 0;
+  //virtual void write(const unsigned char *buff, const Helmert2D<geometry::Point<int>> *trf = nullptr) = 0;
 
   /*!
    * \brief Devuelve el n�mero de filas de la imagen
@@ -176,7 +176,7 @@ public:
    * \brief Establece la georeferencia de la imagen
    * \param[in] georeference Georeferencia
    */
-  virtual void setGeoreference(const Affine<PointD> &georeference) = 0;
+  virtual void setGeoreference(const Affine<Point<double>> &georeference) = 0;
 
   /*!
    * \brief Set the Coordinate Reference System
@@ -202,11 +202,11 @@ protected:
   
   void windowWrite(const WindowI &window, 
                    WindowI *windowWrite, 
-                   PointI *offset) const;
+                   Point<int> *offset) const;
 protected:
 
   Path mFile;
-  Affine<PointD> mAffine;
+  Affine<Point<double>> mAffine;
 //#ifdef TL_HAVE_GEOSPATIAL
 //  geospatial::Crs mCRS;
 //#endif

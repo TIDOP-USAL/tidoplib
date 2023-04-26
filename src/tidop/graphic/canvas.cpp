@@ -82,8 +82,8 @@ CanvasCV::~CanvasCV()
 //  Pen *style_pen = point.pen();
 //  Color c = style_pen->color();
 //  cv::Scalar color = colorToCvScalar(c);
-//  PointD pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
-//  PointI pt = point + pt_offset;
+//  Point<double> pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
+//  Point<int> pt = point + pt_offset;
 //
 //  switch (style_symbol->name()) {
 //  case Symbol::Name::cross:
@@ -132,14 +132,14 @@ CanvasCV::~CanvasCV()
 //  cv::addText(mCanvas, style_label->text(), cv::Point(pt.x, pt.y), qt_font);
 //}
 
-void CanvasCV::drawPoint(const PointD &point, const GraphicStyle &style)
+void CanvasCV::drawPoint(const Point<double> &point, const GraphicStyle &style)
 {
   Symbol *style_symbol = style.symbol();
   Pen *style_pen = style.pen();
   Color c = style_pen->color();
   cv::Scalar color = colorToCvScalar(c);
-  PointD pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
-  PointI pt = point + pt_offset;
+  Point<double> pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
+  Point<int> pt = point + pt_offset;
 
   switch (style_symbol->name()) {
   case Symbol::Name::cross:
@@ -284,12 +284,12 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
   //}
 }
 
-//void CanvasCV::drawText(const PointD &point, const std::string &text)
+//void CanvasCV::drawText(const Point<double> &point, const std::string &text)
 //{
 //
 //}
 
-void CanvasCV::drawText(const PointD &point, const std::string &text, const GraphicStyle &style)
+void CanvasCV::drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style)
 {
   Label *style_label = style.label();
   Color foregroundColor = style_label->foregroundColor();

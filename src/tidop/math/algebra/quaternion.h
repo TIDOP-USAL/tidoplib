@@ -104,13 +104,13 @@ public:
    * \brief Operador de asignación
    * \param[in] quaternion Objeto que se copia
    */
-  Quaternion &operator = (const Quaternion<T> &quaternion);
+  auto operator = (const Quaternion<T> &quaternion) -> Quaternion &;
 
   /*!
    * \brief Operador de movimiento
    * \param[in] quaternion Objeto Quaternion que se mueve
    */
-  Quaternion &operator = (Quaternion<T> &&quaternion) TL_NOEXCEPT;
+  auto operator = (Quaternion<T> &&quaternion) TL_NOEXCEPT -> Quaternion &;
 
   /*!
    * \brief Conjugado de un cuaternión
@@ -118,31 +118,31 @@ public:
    * "agregados" del cuaternión:
    * \f[ q = w-xi-yj-zk \f]
    */
-  Quaternion<T> conjugate() const;
+  auto conjugate() const -> Quaternion<T>;
 
   /*!
    * \brief Norma
    * \f[ q = w+xi+yj+zk \f]
    * \f[ n(q) = sqrt{q.q} = sqrt{w^2+x^2+y^2+z^2} \f]
    */
-  T norm() const;
+  auto norm() const -> T;
 
   /*!
    * \brief Normaliza el cuaternión
    */
-  void normalize();
+  auto normalize() -> void;
 
   // For a nonzero quaternion q = (x,y,z,w), inv(q) = (-x,-y,-z,w)/|q|^2, where
   // |q| is the length of the quaternion.  When q is zero, the function returns
   // zero, which is considered to be an improbable case.
-  Quaternion<T> inverse() const;
+  auto inverse() const -> Quaternion<T>;
 
-  Quaternion &operator *=(const Quaternion &quaternion);
-  Quaternion &operator +=(const Quaternion &quaternion);
-  Quaternion &operator -=(const Quaternion &quaternion);
+  auto operator *=(const Quaternion &quaternion) -> Quaternion &;
+  auto operator +=(const Quaternion &quaternion) -> Quaternion &;
+  auto operator -=(const Quaternion &quaternion) -> Quaternion &;
 
-  Quaternion &operator *=(T scalar);
-  Quaternion &operator /=(T scalar);
+  auto operator *=(T scalar) -> Quaternion &;
+  auto operator /=(T scalar) -> Quaternion &;
 
   /* Factory methods */
 
@@ -150,33 +150,33 @@ public:
    * \brief 
    * \f[ z = 0*i + 0*j + 0*k + 0 \f]
    */
-  static Quaternion zero();
+  static auto zero() -> Quaternion;
 
   /*!
    * \brief
    * \f[ i = 1*i + 0*j + 0*k + 0 \f]
    */
-  static Quaternion i();
+  static auto i() -> Quaternion;
 
   /*!
    * \brief 
    * \f[ j = 0*i + 1*j + 0*k + 0 \f]
    */
-  static Quaternion j();
+  static auto j() -> Quaternion;
 
   /*!
    * \brief 
    * \f[ k = 0*i + 0*j + 1*k + 0 \f]
    */
-  static Quaternion k();
+  static auto k() -> Quaternion;
 
   /*!
    * \brief 
    * \f[ 1 = 0*i + 0*j + 0*k + 1 \f]
    */
-  static Quaternion identity();
+  static auto identity() -> Quaternion;
 
-  static Quaternion normalize(const Quaternion<T> &quaternion);
+  static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
 
 public:
 
@@ -189,8 +189,8 @@ public:
 
 /* Definición de alias Matrix */
 
-typedef Quaternion<float>   Quaternionf;
-typedef Quaternion<double>  Quaterniond;
+using Quaternionf = Quaternion<float>;
+using Quaterniond = Quaternion<double>;
 
 
 template<typename T>
@@ -238,7 +238,7 @@ Quaternion<T>::~Quaternion()
 {}
 
 template<typename T>
-Quaternion<T> &Quaternion<T>::operator = (const Quaternion &quaternion)
+auto Quaternion<T>::operator = (const Quaternion &quaternion) -> Quaternion<T>&
 {
   if (this != &quaternion){
     this->x = quaternion.x;
@@ -251,7 +251,7 @@ Quaternion<T> &Quaternion<T>::operator = (const Quaternion &quaternion)
 }
 
 template<typename T>
-Quaternion<T>& Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT
+auto Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT -> Quaternion<T>&
 {
   if (this != &quaternion){
     RotationBase<T>::operator=(std::forward<RotationBase<T>>(quaternion));
@@ -265,26 +265,26 @@ Quaternion<T>& Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT
 }
 
 template<typename T>
-Quaternion<T> Quaternion<T>::conjugate() const
+auto Quaternion<T>::conjugate() const -> Quaternion<T>
 {
   return Quaternion<T>(-x, -y, -z, w);
 }
 
 template<typename T>
-T Quaternion<T>::norm() const
+auto Quaternion<T>::norm() const -> T
 {
   return sqrt(x*x + y*y + z*z + w*w);
 }
 
 template<typename T>
-void Quaternion<T>::normalize()
+auto Quaternion<T>::normalize() -> void
 {
   T length = this->norm();
   *this /= length;
 }
 
 template <typename T>
-Quaternion<T> Quaternion<T>::inverse() const
+auto Quaternion<T>::inverse() const -> Quaternion<T>
 {
   T _dot = dot(*this, *this);
   Quaternion<T> inverse = this->conjugate() / _dot;
@@ -292,7 +292,7 @@ Quaternion<T> Quaternion<T>::inverse() const
 }
 
 template<typename T>
-Quaternion<T> &Quaternion<T>::operator *= (const Quaternion<T> &quaternion)
+auto Quaternion<T>::operator *= (const Quaternion<T> &quaternion) -> Quaternion&
 {
   Quaternion<T> copy = *this;
 
@@ -305,7 +305,7 @@ Quaternion<T> &Quaternion<T>::operator *= (const Quaternion<T> &quaternion)
 }
 
 template<typename T>
-Quaternion<T> &Quaternion<T>::operator += (const Quaternion<T> &quaternion)
+auto Quaternion<T>::operator += (const Quaternion<T> &quaternion) -> Quaternion&
 {
   this->x += quaternion.x;
   this->y += quaternion.y;
@@ -316,7 +316,7 @@ Quaternion<T> &Quaternion<T>::operator += (const Quaternion<T> &quaternion)
 }
 
 template<typename T>
-Quaternion<T> &Quaternion<T>::operator -= (const Quaternion<T> &quaternion)
+auto Quaternion<T>::operator -= (const Quaternion<T> &quaternion) -> Quaternion&
 {
   this->x -= quaternion.x;
   this->y -= quaternion.y;
@@ -327,7 +327,7 @@ Quaternion<T> &Quaternion<T>::operator -= (const Quaternion<T> &quaternion)
 }
 
 template<typename T>
-Quaternion<T> &Quaternion<T>::operator *= (T scalar)
+auto Quaternion<T>::operator *= (T scalar) -> Quaternion&
 {
   this->x *= scalar;
   this->y *= scalar;
@@ -338,7 +338,7 @@ Quaternion<T> &Quaternion<T>::operator *= (T scalar)
 }
 
 template<typename T>
-Quaternion<T> &Quaternion<T>::operator /= (T scalar)
+auto Quaternion<T>::operator /= (T scalar) -> Quaternion&
 {
   if (scalar != consts::zero<T>) {
     this->x /= scalar;
@@ -357,7 +357,7 @@ Quaternion<T> &Quaternion<T>::operator /= (T scalar)
 }
 
 template<typename T>
-Quaternion<T> Quaternion<T>::zero()
+auto Quaternion<T>::zero() -> Quaternion<T>
 {
   return Quaternion(consts::zero<T>,
                     consts::zero<T>,
@@ -366,7 +366,7 @@ Quaternion<T> Quaternion<T>::zero()
 }
 
 template<typename T>
-Quaternion<T> Quaternion<T>::i()
+auto Quaternion<T>::i() -> Quaternion<T>
 {
   return Quaternion(consts::one<T>,
                     consts::zero<T>,
@@ -375,7 +375,7 @@ Quaternion<T> Quaternion<T>::i()
 }
 
 template<typename T>
-Quaternion<T> Quaternion<T>::j()
+auto Quaternion<T>::j() ->Quaternion<T>
 {
   return Quaternion(consts::zero<T>,
                     consts::one<T>,
@@ -384,7 +384,7 @@ Quaternion<T> Quaternion<T>::j()
 }
 
 template<typename T>
-Quaternion<T> Quaternion<T>::k()
+auto Quaternion<T>::k() -> Quaternion<T>
 {
   return Quaternion(consts::zero<T>,
                     consts::zero<T>,
@@ -393,7 +393,7 @@ Quaternion<T> Quaternion<T>::k()
 }
 
 template<typename T>
-Quaternion<T> Quaternion<T>::identity()
+auto Quaternion<T>::identity() -> Quaternion<T>
 {
   return Quaternion(consts::zero<T>,
                     consts::zero<T>,
@@ -402,7 +402,7 @@ Quaternion<T> Quaternion<T>::identity()
 }
 
 template<typename T> inline
-Quaternion<T> Quaternion<T>::normalize(const Quaternion<T> &quaternion)
+auto Quaternion<T>::normalize(const Quaternion<T> &quaternion) -> Quaternion<T>
 {
   Quaternion<T> _quaternion(quaternion);
   _quaternion.normalize();

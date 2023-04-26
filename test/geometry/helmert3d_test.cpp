@@ -155,7 +155,7 @@ struct Helmert3DTest
 //
 //BOOST_FIXTURE_TEST_CASE(copy_constructor, Helmert3DTest)
 //{
-//  Helmert3D<PointD> copy(*trf_pointer);
+//  Helmert3D<Point<double>> copy(*trf_pointer);
 //  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, copy.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, copy.scale());
 //  BOOST_CHECK_EQUAL(150.0, copy.tx);
@@ -165,7 +165,7 @@ struct Helmert3DTest
 //
 //BOOST_FIXTURE_TEST_CASE(assignement_operator, Helmert3DTest)
 //{
-//  Helmert3D<PointD> assig = *trf_pointer;
+//  Helmert3D<Point<double>> assig = *trf_pointer;
 //  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, assig.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, assig.scale());
 //  BOOST_CHECK_EQUAL(150.0, assig.tx);
@@ -175,7 +175,7 @@ struct Helmert3DTest
 //
 //BOOST_FIXTURE_TEST_CASE(move_constructor, Helmert3DTest)
 //{
-//  Helmert3D<PointD> move(Helmert3D<PointD>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>));
+//  Helmert3D<Point<double>> move(Helmert3D<Point<double>>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>));
 //  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, move.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, move.scale());
 //  BOOST_CHECK_EQUAL(150.0, move.tx);
@@ -185,7 +185,7 @@ struct Helmert3DTest
 //
 //BOOST_FIXTURE_TEST_CASE(move_operator, Helmert3DTest)
 //{
-//  Helmert3D<PointD> move_assig = Helmert3D<PointD>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>);
+//  Helmert3D<Point<double>> move_assig = Helmert3D<Point<double>>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>);
 //  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, move_assig.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, move_assig.scale());
 //  BOOST_CHECK_EQUAL(150.0, move_assig.tx);
@@ -219,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point_list, Helmert3DTest)
 
 //BOOST_FIXTURE_TEST_CASE(std_transform, Helmert3DTest)
 //{
-//  std::vector<PointD> pts_out2(ptsIn.size());
+//  std::vector<Point<double>> pts_out2(ptsIn.size());
 //  std::transform(ptsIn.begin(), ptsIn.end(), pts_out2.begin(), *trf_pointer);
 //
 //  for (size_t i = 0; i < ptsOut.size(); i++) {
@@ -228,7 +228,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point_list, Helmert3DTest)
 //  }
 //
 //  // Alternativa sin reservar tamaño en pts_out2:
-//  std::vector<PointD> pts_out3;
+//  std::vector<Point<double>> pts_out3;
 //  std::transform(ptsIn.begin(), ptsIn.end(), std::back_inserter(pts_out3), *trf_pointer);
 //
 //
@@ -316,7 +316,7 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //
 //BOOST_FIXTURE_TEST_CASE(inverse, Helmert3DTest)
 //{
-//  Helmert3D<PointD> trf_inv = trf_pointer->inverse();
+//  Helmert3D<Point<double>> trf_inv = trf_pointer->inverse();
 //  BOOST_CHECK_CLOSE(-663.564, trf_inv.tx, 0.1);
 //  BOOST_CHECK_CLOSE(98.400, trf_inv.ty, 0.1);
 //  BOOST_CHECK_CLOSE(-0.6108, trf_inv.rotation(), 0.1);
@@ -334,7 +334,7 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //  BOOST_CHECK_EQUAL(2, trf_h3D.minNumberOfPoints());
 //
 //  // cast a afín
-//  Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*trf_pointer);
+//  Affine<Point<double>> trf_affine = static_cast<Affine<Point<double>>>(*trf_pointer);
 //  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, trf_affine.rotation());
 //  BOOST_CHECK_EQUAL(0.25, trf_affine.scaleX());
 //  BOOST_CHECK_EQUAL(0.25, trf_affine.scaleY());
@@ -342,11 +342,11 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //  BOOST_CHECK_EQUAL(75.0, trf_affine.ty);
 //  BOOST_CHECK_EQUAL(3, trf_affine.minNumberOfPoints());
 //
-//  Translation<PointD> translation = static_cast<Translation<PointD>>(*trf_pointer);
+//  Translation<Point<double>> translation = static_cast<Translation<Point<double>>>(*trf_pointer);
 //  BOOST_CHECK_EQUAL(150.0, translation.tx);
 //  BOOST_CHECK_EQUAL(75.0, translation.ty);
 //
-//  Rotation<PointD> rotation = static_cast<Rotation<PointD>>(*trf_pointer);
+//  Rotation<Point<double>> rotation = static_cast<Rotation<Point<double>>>(*trf_pointer);
 //  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, rotation.angle());
 //}
 

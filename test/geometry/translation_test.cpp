@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_SUITE(TranslationTestSuite)
 struct TranslationTest
 {
   TranslationTest()
-    : trf_pointer(new Translation<PointD>(150.0, 75.0))
+    : trf_pointer(new Translation<Point<double>>(150.0, 75.0))
   {}
 
   ~TranslationTest()
@@ -53,22 +53,22 @@ struct TranslationTest
   void setup()
   {
     ptsIn = {
-      PointD(4157222.543, 664789.307),
-      PointD(4149043.336, 688836.443),
-      PointD(4172803.511, 690340.078),
-      PointD(4177148.376, 642997.635),
-      PointD(4137012.190, 671808.029),
-      PointD(4146292.729, 666952.887),
-      PointD(4138759.902, 702670.738) };
+      Point<double>(4157222.543, 664789.307),
+      Point<double>(4149043.336, 688836.443),
+      Point<double>(4172803.511, 690340.078),
+      Point<double>(4177148.376, 642997.635),
+      Point<double>(4137012.190, 671808.029),
+      Point<double>(4146292.729, 666952.887),
+      Point<double>(4138759.902, 702670.738) };
 
     ptsOut = {
-      PointD(4157372.543,	664864.307),
-      PointD(4149193.336,	688911.443),
-      PointD(4172953.511,	690415.078),
-      PointD(4177298.376,	643072.635),
-      PointD(4137162.19, 671883.029),
-      PointD(4146442.729,	667027.887),
-      PointD(4138909.902,	702745.738) };
+      Point<double>(4157372.543,	664864.307),
+      Point<double>(4149193.336,	688911.443),
+      Point<double>(4172953.511,	690415.078),
+      Point<double>(4177298.376,	643072.635),
+      Point<double>(4137162.19, 671883.029),
+      Point<double>(4146442.729,	667027.887),
+      Point<double>(4138909.902,	702745.738) };
 
     vectorIn = {
       math::Vector2d{{4157222.543, 664789.307}},
@@ -97,12 +97,12 @@ struct TranslationTest
 
   }
 
-  std::vector<PointD> ptsIn;
-  std::vector<PointD> ptsOut;
+  std::vector<Point<double>> ptsIn;
+  std::vector<Point<double>> ptsOut;
   std::vector<math::Vector2d> vectorIn;
   std::vector<math::Vector2d> vectorOut;
-  Translation<PointD> trf;
-  Translation<PointD> *trf_pointer;
+  Translation<Point<double>> trf;
+  Translation<Point<double>> *trf_pointer;
   //Translation<math::Vector2d> trf_vector;
 };
 
@@ -122,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE(constructor, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, TranslationTest)
 {
-  Translation<PointD> copy(*trf_pointer);
+  Translation<Point<double>> copy(*trf_pointer);
   BOOST_CHECK_EQUAL(150.0, copy.tx);
   BOOST_CHECK_EQUAL(75.0, copy.ty);
   BOOST_CHECK_EQUAL(1, copy.minNumberOfPoints());
@@ -130,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(assignement_operator, TranslationTest)
 {
-  Translation<PointD> assign = *trf_pointer;
+  Translation<Point<double>> assign = *trf_pointer;
   BOOST_CHECK_EQUAL(150.0, assign.tx);
   BOOST_CHECK_EQUAL(75.0, assign.ty);
   BOOST_CHECK_EQUAL(1, assign.minNumberOfPoints());
@@ -138,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE(assignement_operator, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, TranslationTest)
 {
-  Translation<PointD> move(Translation<PointD>(150.0, 75.0));
+  Translation<Point<double>> move(Translation<Point<double>>(150.0, 75.0));
   BOOST_CHECK_EQUAL(150.0, move.tx);
   BOOST_CHECK_EQUAL(75.0, move.ty);
   BOOST_CHECK_EQUAL(1, move.minNumberOfPoints());
@@ -146,7 +146,7 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(move_operator, TranslationTest)
 {
-  Translation<PointD> move_assign = Translation<PointD>(150.0, 75.0);
+  Translation<Point<double>> move_assign = Translation<Point<double>>(150.0, 75.0);
   BOOST_CHECK_EQUAL(150.0, move_assign.tx);
   BOOST_CHECK_EQUAL(75.0, move_assign.ty);
   BOOST_CHECK_EQUAL(1, move_assign.minNumberOfPoints());
@@ -154,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(transform_point, TranslationTest)
 {
-  PointD pt_out;
+  Point<double> pt_out;
   trf_pointer->transform(ptsIn[0], pt_out);
   BOOST_CHECK_EQUAL(ptsOut[0].x, pt_out.x);
   BOOST_CHECK_EQUAL(ptsOut[0].y, pt_out.y);
@@ -165,7 +165,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(transform_point_list, TranslationTest)
 {
-  std::vector<PointD> pts_out;
+  std::vector<Point<double>> pts_out;
   trf_pointer->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point_list, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(std_transform_point_list, TranslationTest)
 {
-  std::vector<PointD> pts_out2(ptsIn.size());
+  std::vector<Point<double>> pts_out2(ptsIn.size());
   std::transform(ptsIn.begin(), ptsIn.end(), pts_out2.begin(), *trf_pointer);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
@@ -185,7 +185,7 @@ BOOST_FIXTURE_TEST_CASE(std_transform_point_list, TranslationTest)
   }
 
   // Alternativa sin reservar tamaño en pts_out2:
-  std::vector<PointD> pts_out3;
+  std::vector<Point<double>> pts_out3;
   std::transform(ptsIn.begin(), ptsIn.end(), std::back_inserter(pts_out3), *trf_pointer);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
@@ -203,11 +203,11 @@ BOOST_FIXTURE_TEST_CASE(compute, TranslationTest)
 
 //  // Error
 //
-//  std::vector<PointD> ptsIn2{
-//    PointD(4157222.543, 664789.307),
-//    PointD(4149043.336, 688836.443),
-//    PointD(4172803.511, 690340.078),
-//    PointD(4177148.376, 642997.635)};
+//  std::vector<Point<double>> ptsIn2{
+//    Point<double>(4157222.543, 664789.307),
+//    Point<double>(4149043.336, 688836.443),
+//    Point<double>(4172803.511, 690340.078),
+//    Point<double>(4177148.376, 642997.635)};
 //
 //  Transform::Status status = trf.compute(ptsIn2, ptsOut);
 //
@@ -239,7 +239,7 @@ BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(inverse, TranslationTest)
 {
-  Translation<PointD> trf_inv = trf_pointer->inverse();
+  Translation<Point<double>> trf_inv = trf_pointer->inverse();
   BOOST_CHECK_EQUAL(-150.0, trf_inv.tx);
   BOOST_CHECK_EQUAL(-75.0, trf_inv.ty);
 }
@@ -252,7 +252,7 @@ BOOST_FIXTURE_TEST_CASE(casting, TranslationTest)
   BOOST_CHECK_EQUAL(0.f, trf_float.ty);
 
   // cast a Helmert2D
-  Helmert2D<PointD> trf_h2d = static_cast<Helmert2D<PointD>>(trf);
+  Helmert2D<Point<double>> trf_h2d = static_cast<Helmert2D<Point<double>>>(trf);
   BOOST_CHECK_EQUAL(0.0, trf_h2d.rotation());
   BOOST_CHECK_EQUAL(1., trf_h2d.scale());
   BOOST_CHECK_EQUAL(0., trf_h2d.tx);
@@ -260,7 +260,7 @@ BOOST_FIXTURE_TEST_CASE(casting, TranslationTest)
   BOOST_CHECK_EQUAL(2, trf_h2d.minNumberOfPoints());
 
   //// cast a afín
-  //Affine<PointD> trf_affine = static_cast<Affine<PointD>>(trf);
+  //Affine<Point<double>> trf_affine = static_cast<Affine<Point<double>>>(trf);
   //BOOST_CHECK_EQUAL(0.0, trf_affine.rotation());
   //BOOST_CHECK_EQUAL(1., trf_affine.scaleX());
   //BOOST_CHECK_EQUAL(1., trf_affine.scaleY());
@@ -268,7 +268,7 @@ BOOST_FIXTURE_TEST_CASE(casting, TranslationTest)
   //BOOST_CHECK_EQUAL(0., trf_affine.ty);
   //BOOST_CHECK_EQUAL(3, trf_affine.minNumberOfPoints());
 
-  //Affine<PointD> *trf_affine_ptr = static_cast<Affine<PointD>*>(trf_pointer);
+  //Affine<Point<double>> *trf_affine_ptr = static_cast<Affine<Point<double>>*>(trf_pointer);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

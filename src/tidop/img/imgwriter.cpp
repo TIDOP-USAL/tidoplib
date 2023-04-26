@@ -118,9 +118,9 @@ ImageWriter::ImageWriter(tl::Path file)
 
 void ImageWriter::windowWrite(const WindowI &window, 
                               WindowI *windowWrite, 
-                              PointI *offset) const
+                              Point<int> *offset) const
 {
-  WindowI window_all(PointI(0, 0), PointI(this->cols(), this->rows()));   // Ventana total de imagen
+  WindowI window_all(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
   if ( window.isEmpty() ) {
     *windowWrite = window_all;  // Se lee toda la ventana
   } else {
@@ -331,30 +331,30 @@ public:
       cv::Mat image_to_write;
 
       if (crop_image) {
-        Affine<PointD> affine;
-        std::vector<PointD> image_points{
-          PointD(0, 0),
-          PointD(image.cols, 0),
-          PointD(image.cols, image.rows),
-          PointD(0, image.rows)
+        Affine<Point<double>> affine;
+        std::vector<Point<double>> image_points{
+          Point<double>(0, 0),
+          Point<double>(image.cols, 0),
+          Point<double>(image.cols, image.rows),
+          Point<double>(0, image.rows)
         };
        
-        std::vector<PointD> image_rect{
-          static_cast<PointD>(rect.topLeft()),
-          static_cast<PointD>(rect.topRight()),
-          static_cast<PointD>(rect.bottomRight()),
-          static_cast<PointD>(rect.bottomLeft())
+        std::vector<Point<double>> image_rect{
+          static_cast<Point<double>>(rect.topLeft()),
+          static_cast<Point<double>>(rect.topRight()),
+          static_cast<Point<double>>(rect.bottomRight()),
+          static_cast<Point<double>>(rect.bottomLeft())
         };
 
         affine.compute(image_points, image_rect);
 
-        std::vector<PointD> image_points_transform;
+        std::vector<Point<double>> image_points_transform;
         affine.transform(image_points, image_points_transform);
         RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
         RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-        PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
-        PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
+        Point<double> tl = affine.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
+        Point<double> br = affine.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
       
         rect_to_crop_image = RectI(tl, br);
         image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
@@ -448,7 +448,7 @@ public:
   }
 
   void write(const cv::Mat &image, 
-             const Affine<PointI> &trf) override
+             const Affine<Point<int>> &trf) override
   {
     //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
 
@@ -550,7 +550,7 @@ public:
     return depth;
   }
 
-  void setGeoreference(const Affine<PointD> &georeference) override
+  void setGeoreference(const Affine<Point<double>> &georeference) override
   {
     mAffine = georeference;
       
@@ -689,7 +689,7 @@ public:
   }
 
   void write(const cv::Mat &image, 
-             const Affine<PointI> &trf) override
+             const Affine<Point<int>> &trf) override
   {
   }
 
@@ -697,7 +697,7 @@ public:
   //{
   //}
 
-  //void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) override
+  //void write(const unsigned char *buff, const Helmert2D<geometry::Point<int>> *trf = nullptr) override
   //{
   //}
 

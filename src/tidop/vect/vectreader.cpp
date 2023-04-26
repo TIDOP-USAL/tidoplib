@@ -596,7 +596,7 @@ std::shared_ptr<GPolygon> VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon)
   std::shared_ptr<GPolygon> gPolygon = std::make_shared <GPolygon>(size);
    
   for (int i = 0; i < size; i++) {
-    (*gPolygon)[static_cast<size_t>(i)] = PointD(ogrLinearRing->getX(i), 
+    (*gPolygon)[static_cast<size_t>(i)] = Point<double>(ogrLinearRing->getX(i), 
                                                  ogrLinearRing->getY(i));
   }
 
@@ -604,9 +604,9 @@ std::shared_ptr<GPolygon> VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon)
   for (int i = 0; i < size; i++) {
     ogrLinearRing = ogrPolygon->getInteriorRing(i);
     int nr = ogrLinearRing->getNumPoints();
-    PolygonHole<PointD> hole(nr);
+    PolygonHole<Point<double>> hole(nr);
     for (int j = 0; j < nr; j++) {
-      hole[j] = PointD(ogrLinearRing->getX(j), 
+      hole[j] = Point<double>(ogrLinearRing->getX(j), 
                        ogrLinearRing->getY(j));
     }
     gPolygon->addHole(hole);
@@ -622,7 +622,7 @@ std::shared_ptr<GPolygon3D> VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolyg
   std::shared_ptr<GPolygon3D> gPolygon = std::make_shared <GPolygon3D>(static_cast<size_t>(size));
   
   for (size_t i = 0; i < size; i++) {
-    (*gPolygon)[i] = Point3D(ogrLinearRing->getX(static_cast<int>(i)),
+    (*gPolygon)[i] = Point3<double>(ogrLinearRing->getX(static_cast<int>(i)),
                              ogrLinearRing->getY(static_cast<int>(i)),
                              ogrLinearRing->getZ(static_cast<int>(i)));
   }
@@ -631,9 +631,9 @@ std::shared_ptr<GPolygon3D> VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolyg
   for (size_t i = 0; i < size; i++) {
     ogrLinearRing = ogrPolygon->getInteriorRing(static_cast<int>(i));
     auto nr = static_cast<size_t>(ogrLinearRing->getNumPoints());
-    Polygon3DHole<Point3D> hole(nr);
+    Polygon3DHole<Point3<double>> hole(nr);
     for (size_t j = 0; j < nr; j++) {
-      hole[j] = Point3D(ogrLinearRing->getX(static_cast<int>(j)),
+      hole[j] = Point3<double>(ogrLinearRing->getX(static_cast<int>(j)),
                        ogrLinearRing->getY(static_cast<int>(j)),
                        ogrLinearRing->getZ(static_cast<int>(j)));
     }

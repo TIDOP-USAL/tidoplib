@@ -64,7 +64,7 @@ void Painter::drawPoint(const GPoint &point)
 
     if(mTrf) {
       
-      Point<double> point_transform = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(point, Transform::Order::direct);
+      Point<double> point_transform = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(point, Transform::Order::direct);
 
       mCanvas->drawPoint(point_transform, point);
 
@@ -78,7 +78,7 @@ void Painter::drawPoint(const GPoint &point)
   }
 }
 
-void Painter::drawPoint(const PointD &point)
+void Painter::drawPoint(const Point<double> &point)
 {
   if (mCanvas){
     mCanvas->drawPoint(point, *this);
@@ -96,7 +96,7 @@ void Painter::drawLineString(const GLineString &lineString)
       LineString<Point<double>> linestring_transform(lineString.size());
 
       for(size_t i = 0; i < lineString.size(); i++) {
-        linestring_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(lineString[i], Transform::Order::direct);
+        linestring_transform[i] = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(lineString[i], Transform::Order::direct);
       }
 
       mCanvas->drawLineString(linestring_transform, lineString);
@@ -129,7 +129,7 @@ void Painter::drawPolygon(const GPolygon &polygon)
       Polygon<Point<double>> polygon_transform(polygon.size());
 
       for (size_t i = 0; i < polygon.size(); i++) {
-        polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
+        polygon_transform[i] = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
       }
     
       mCanvas->drawPolygon(polygon_transform, polygon);
@@ -150,7 +150,7 @@ void Painter::drawPolygon(const PolygonD &polygon)
       Polygon<Point<double>> polygon_transform(polygon.size());
 
       for(size_t i = 0; i < polygon.size(); i++) {
-        polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
+        polygon_transform[i] = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
       }
 
       mCanvas->drawPolygon(polygon_transform, *this);
@@ -186,13 +186,13 @@ void Painter::drawPicture(const cv::Mat &bmp)
 }
 #endif // TL_HAVE_OPENCV
 
-void Painter::drawText(const PointD &point, const std::string &text)
+void Painter::drawText(const Point<double> &point, const std::string &text)
 {
   if(mCanvas) {
 
     if(mTrf) {
 
-      Point<double> point_transform = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(point, Transform::Order::direct);
+      Point<double> point_transform = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(point, Transform::Order::direct);
 
       mCanvas->drawText(point_transform, text, *this);
 

@@ -119,9 +119,9 @@ ImageReader::ImageReader(tl::Path file)
 
 void ImageReader::windowRead(const WindowI &wLoad, 
                              WindowI *wRead, 
-                             PointI *offset) const
+                             Point<int> *offset) const
 {
-  WindowI wAll(PointI(0, 0), PointI(this->cols(), this->rows()));   // Ventana total de imagen
+  WindowI wAll(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
   if (wLoad.isEmpty()) {
     *wRead = wAll;  // Se lee toda la ventana
   } else {
@@ -209,7 +209,7 @@ public:
 
   cv::Mat read(const RectI &rect, 
                const Size<int> &size,  
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
     cv::Mat image;
 
@@ -219,7 +219,7 @@ public:
       //TL_ASSERT(rect.isValid(), "Image Rect to read invalid")
 
       RectI rect_to_read;
-      PointI offset;
+      Point<int> offset;
       RectI rect_full_image(0, 0, this->cols(), this->rows());
       
 
@@ -272,7 +272,7 @@ public:
   cv::Mat read(double scaleX,
                double scaleY,  
                const RectI &rect, 
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
     cv::Mat image;
 
@@ -281,7 +281,7 @@ public:
       TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
       RectI rect_to_read;
-      PointI offset;
+      Point<int> offset;
       RectI rect_full_image(0, 0, this->cols(), this->rows());
       if (rect.isEmpty()) {
         rect_to_read = rect_full_image;
@@ -328,7 +328,7 @@ public:
   cv::Mat read(const WindowI &window, 
                double scaleX,
                double scaleY,
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
 
     int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
@@ -347,12 +347,12 @@ public:
     return image;
   }
 
-  cv::Mat read(const Window<PointD> &terrainWindow, 
+  cv::Mat read(const Window<Point<double>> &terrainWindow, 
                double scaleX,
                double scaleY,
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
-    Window<PointD> wLoad;
+    Window<Point<double>> wLoad;
     wLoad.pt1 = mAffine.transform(terrainWindow.pt1, Transform::Order::inverse);
     wLoad.pt2 = mAffine.transform(terrainWindow.pt2, Transform::Order::inverse);
     wLoad.normalized();
@@ -688,7 +688,7 @@ public:
     return georeferenced;
   }
 
-  Affine<PointD> georeference() const override
+  Affine<Point<double>> georeference() const override
   {
     return mAffine;
   }
@@ -749,8 +749,8 @@ public:
 
   WindowD window() const override
   {
-    PointD p1 = mAffine.transform(PointD(0, 0));
-    PointD p2 = mAffine.transform(PointD(cols(), rows()));
+    Point<double> p1 = mAffine.transform(Point<double>(0, 0));
+    Point<double> p2 = mAffine.transform(Point<double>(cols(), rows()));
     WindowD window(p1, p2);
     window.normalized();
     return window;
@@ -799,7 +799,7 @@ protected:
 private:
 
   GDALDataset *mDataset;
-  Affine<PointD> mAffine;
+  Affine<Point<double>> mAffine;
 };
 
 #endif // TL_HAVE_GDAL
@@ -864,7 +864,7 @@ public:
 
   cv::Mat read(const Rect<int> &rect, 
                const Size<int> size, 
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
   }
 
@@ -872,11 +872,11 @@ public:
   cv::Mat read(double scaleX,
                double scaleY, 
                const Rect<int> &rect, 
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
 
     RectI rect_to_read;
-    PointI offset;
+    Point<int> offset;
     RectI rect_full_image(0, 0, this->cols(), this->rows());
     if (rect.isEmpty()) {
       rect_to_read = rect_full_image;
@@ -948,7 +948,7 @@ public:
   cv::Mat read(const WindowI &window,
                double scaleX,
                double scaleY,
-               Affine<PointI> *trf) override
+               Affine<Point<int>> *trf) override
   {
   }
 

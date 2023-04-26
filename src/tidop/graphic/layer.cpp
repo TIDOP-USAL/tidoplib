@@ -189,32 +189,32 @@ Window<Point<double>> tl::graph::GLayer::window() const
       w = joinWindow(w, dynamic_cast<GLineString *>(entity.get())->window());
     } else if (type == GraphicEntity::Type::linestring_3d) {
       auto bbox = dynamic_cast<GLineString3D *>(entity.get())->boundingBox();
-      w = joinWindow(w, Window<Point<double>>(PointD(bbox.pt1.x, bbox.pt1.y), 
-                                              PointD(bbox.pt2.x, bbox.pt2.y)));
+      w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y), 
+                                              Point<double>(bbox.pt2.x, bbox.pt2.y)));
     } else if (type == GraphicEntity::Type::polygon_2d) {
       w = joinWindow(w, dynamic_cast<GPolygon *>(entity.get())->window());
     } else if (type == GraphicEntity::Type::polygon_3d) {
       auto bbox = dynamic_cast<GPolygon3D *>(entity.get())->boundingBox();
-      w = joinWindow(w, Window<Point<double>>(PointD(bbox.pt1.x, bbox.pt1.y),
-                     PointD(bbox.pt2.x, bbox.pt2.y)));
+      w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
+                     Point<double>(bbox.pt2.x, bbox.pt2.y)));
     } else if (type == GraphicEntity::Type::multipoint_2d) {
       w = joinWindow(w, dynamic_cast<GMultiPoint *>(entity.get())->window());
     } else if (type == GraphicEntity::Type::multipoint_3d) {
       auto bbox = dynamic_cast<GMultiPoint3D *>(entity.get())->boundingBox();
-      w = joinWindow(w, Window<Point<double>>(PointD(bbox.pt1.x, bbox.pt1.y),
-                     PointD(bbox.pt2.x, bbox.pt2.y)));
+      w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
+                     Point<double>(bbox.pt2.x, bbox.pt2.y)));
     } else if (type == GraphicEntity::Type::multiline_2d) {
       w = joinWindow(w, dynamic_cast<GMultiLineString *>(entity.get())->window());
     } else if (type == GraphicEntity::Type::multiline_3d) {
       auto bbox = dynamic_cast<GMultiLineString3D *>(entity.get())->boundingBox();
-      w = joinWindow(w, Window<Point<double>>(PointD(bbox.pt1.x, bbox.pt1.y),
-                     PointD(bbox.pt2.x, bbox.pt2.y)));
+      w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
+                     Point<double>(bbox.pt2.x, bbox.pt2.y)));
     } else if (type == GraphicEntity::Type::multipolygon_2d) {
       w = joinWindow(w, dynamic_cast<GMultiPolygon *>(entity.get())->window());
     } else if (type == GraphicEntity::Type::multipolygon_3d) {
       auto bbox = dynamic_cast<GMultiPolygon3D *>(entity.get())->boundingBox();
-      w = joinWindow(w, Window<Point<double>>(PointD(bbox.pt1.x, bbox.pt1.y),
-                     PointD(bbox.pt2.x, bbox.pt2.y)));
+      w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
+                     Point<double>(bbox.pt2.x, bbox.pt2.y)));
     } else {
 
     }

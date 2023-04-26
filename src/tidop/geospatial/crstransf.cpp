@@ -213,11 +213,11 @@ Point3<double> EcefToEnu::direct(const Point3<double> &ecef,
                                  double latitude)
 {
   math::RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
-  Point3D dif = ecef - mCenter;
+  Point3<double> dif = ecef - mCenter;
 
   math::Vector<double, 3> enu = rotation * dif.vector();
 
-  return Point3D(enu[0], enu[1], enu[2]);
+  return Point3<double>(enu[0], enu[1], enu[2]);
 }
 
 Point3<double> EcefToEnu::inverse(const Point3<double> &enu,
@@ -227,7 +227,7 @@ Point3<double> EcefToEnu::inverse(const Point3<double> &enu,
   math::RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
   math::Vector<double, 3> d = rotation.transpose() * enu.vector();
 
-  Point3D ecef;
+  Point3<double> ecef;
   ecef.x = mCenter.x + d[0];
   ecef.y = mCenter.y + d[1];
   ecef.z = mCenter.z + d[2];

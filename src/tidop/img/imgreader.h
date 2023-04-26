@@ -88,7 +88,7 @@ public:
    */
   virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
                        const Size<int> &size = Size<int>(), 
-                       Affine<PointI> *trf = nullptr) = 0;
+                       Affine<Point<int>> *trf = nullptr) = 0;
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una región
@@ -101,7 +101,7 @@ public:
   virtual cv::Mat read(double scaleX,
                        double scaleY, 
                        const Rect<int> &rect = Rect<int>(), 
-                       Affine<PointI> *trf = nullptr) = 0;
+                       Affine<Point<int>> *trf = nullptr) = 0;
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
@@ -113,7 +113,7 @@ public:
   virtual cv::Mat read(const WindowI &window, 
                        double scaleX = 1.,
                        double scaleY = 1., 
-                       Affine<PointI> *trf = nullptr) = 0;
+                       Affine<Point<int>> *trf = nullptr) = 0;
  
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana en coordenadas terreno
@@ -122,10 +122,10 @@ public:
    * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual cv::Mat read(const Window<PointD> &terrainWindow, 
+  virtual cv::Mat read(const Window<Point<double>> &terrainWindow, 
                        double scaleX = 1.,
                        double scaleY = 1., 
-                       Affine<PointI> *trf = nullptr) = 0;
+                       Affine<Point<int>> *trf = nullptr) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -175,7 +175,7 @@ public:
    * 6 - Resolución en y.
    * \return Georeferencia
    */
-  virtual Affine<PointD> georeference() const = 0;
+  virtual Affine<Point<double>> georeference() const = 0;
 
   /*!
    * \brief Sistema de referencia en formato WKT
@@ -206,7 +206,7 @@ protected:
   
   void windowRead(const WindowI &wLoad,
                   WindowI *wRead, 
-                  PointI *offset) const;
+                  Point<int> *offset) const;
 
 private:
 

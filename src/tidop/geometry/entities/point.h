@@ -42,9 +42,9 @@ namespace tl
  *
  * Se han definido los siguientes alias para facilitar el acceso:
  * \code
- * typedef Point<int> PointI;
- * typedef Point<double> PointD;
- * typedef Point<float> PointF;
+ * typedef Point<int> Point<int>;
+ * typedef Point<double> Point<double>;
+ * typedef Point<float> Point<float>;
  * \endcode
  */
 template<typename T>
@@ -137,9 +137,9 @@ public:
 
 /* Definición de alias Point */
 
-using PointI = Point<int>;
-using PointD = Point<double>;
-using PointF = Point<float>;
+using Point2i = Point<int>;
+using Point2d = Point<double>;
+using Point2f = Point<float>;
 
 
 /* Implementación Point */
@@ -395,9 +395,9 @@ operator / (const Point<T1>& pt, T2 b)
  *
  * Se han definido los siguientes alias para facilitar el acceso:
  * \code
- * typedef Point<int> Point3I;
- * typedef Point<double> Point3D;
- * typedef Point<float> Point3F;
+ * typedef Point<int> Point3<int>;
+ * typedef Point<double> Point3<double>;
+ * typedef Point<float> Point3<double>;
  * \endcode
  */
 template<typename T>
@@ -487,9 +487,9 @@ public:
 
 };
 
-using Point3I = Point3<int>;
-using Point3D = Point3<double>;
-using Point3F = Point3<float>;
+using Point3i = Point3<int>;
+using Point3d = Point3<double>;
+using Point3f = Point3<float>;
 
 
 template<typename T> inline

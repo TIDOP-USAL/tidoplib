@@ -86,8 +86,8 @@ int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point
     *ptp = pt;
     return 2;
   }
-  Point3D v1 = pt - ln.pt1;
-  Point3D v2 = ln.vector();
+  Point3<double> v1 = pt - ln.pt1;
+  Point3<double> v2 = ln.vector();
   double daux = dotProduct3D(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
 

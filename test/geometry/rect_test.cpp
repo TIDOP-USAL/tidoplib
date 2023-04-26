@@ -368,10 +368,10 @@ BOOST_FIXTURE_TEST_CASE(normalized, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(contains, RectTest)
 {
-  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(PointI(50, 50)));
-  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(PointI(0, 0)));
-  BOOST_CHECK(rect_integer->contains(PointI(50, 50)));
-  BOOST_CHECK_EQUAL(false, rect_integer->contains(PointI(0, 0)));
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(Point<int>(50, 50)));
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(Point<int>(0, 0)));
+  BOOST_CHECK(rect_integer->contains(Point<int>(50, 50)));
+  BOOST_CHECK_EQUAL(false, rect_integer->contains(Point<int>(0, 0)));
 }
 
 BOOST_FIXTURE_TEST_CASE(cast, RectTest)

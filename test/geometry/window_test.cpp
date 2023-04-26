@@ -73,17 +73,17 @@ struct WindowTest
 
   void setup()
   {
-    window_integer = new WindowI(PointI(0,0),PointI(100,100));
-    window_double = new WindowD(PointD(0., 0.), PointD(100., 100.));
-    window_float = new WindowF(PointF(0.f, 0.f), PointF(100.f, 100.f));
+    window_integer = new WindowI(Point<int>(0,0), Point<int>(100,100));
+    window_double = new WindowD(Point<double>(0., 0.), Point<double>(100., 100.));
+    window_float = new WindowF(Point<float>(0.f, 0.f), Point<float>(100.f, 100.f));
 
     window_integer_copy = new WindowI(*window_integer);
     window_double_copy = new WindowD(*window_double);
     window_float_copy = new WindowF(*window_float);
 
-    ptc_integer = PointI(50, 50);
-    ptc_double = PointD(50.67, 50.76);
-    ptc_float = PointF(50.67f, 34.45f);
+    ptc_integer = Point<int>(50, 50);
+    ptc_double = Point<double>(50.67, 50.76);
+    ptc_float = Point<float>(50.67f, 34.45f);
     
     window_constructor_center_side_integer_even_size = new WindowI(ptc_integer, 50);
     window_constructor_center_side_integer_odd_size = new WindowI(ptc_integer, 51);
@@ -112,9 +112,9 @@ struct WindowTest
   WindowD *window_double_copy;
   WindowF *window_float_copy;
 
-  PointI ptc_integer;
-  PointD ptc_double;
-  PointF ptc_float;
+  Point<int> ptc_integer;
+  Point<double> ptc_double;
+  Point<float> ptc_float;
 
   WindowI *window_constructor_center_side_integer_even_size;
   WindowI *window_constructor_center_side_integer_odd_size;
@@ -166,14 +166,14 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, WindowTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor_dif_types, WindowTest)
 {
-  const WindowD w(PointD(0.5, 0.4), PointD(100.6, 100.4));
+  const WindowD w(Point<double>(0.5, 0.4), Point<double>(100.6, 100.4));
   WindowI w2(w);
   BOOST_CHECK_EQUAL(1, w2.pt1.x);
   BOOST_CHECK_EQUAL(0, w2.pt1.y);
   BOOST_CHECK_EQUAL(101, w2.pt2.x);
   BOOST_CHECK_EQUAL(100, w2.pt2.y);
 
-  const WindowI w_int(PointI(1, 4), PointI(100, 100));
+  const WindowI w_int(Point<int>(1, 4), Point<int>(100, 100));
   WindowD w_double(w_int);
   BOOST_CHECK_EQUAL(1, w_double.pt1.x);
   BOOST_CHECK_EQUAL(4, w_double.pt1.y);
@@ -229,17 +229,17 @@ BOOST_FIXTURE_TEST_CASE(constructor_center_size, WindowTest)
 
 BOOST_FIXTURE_TEST_CASE(center, WindowTest) 
 {
-  BOOST_CHECK(PointI(0, 0) == window_default_constructor_integer.center());
-  BOOST_CHECK(PointD(0., 0.) == window_default_constructor_double.center());
-  BOOST_CHECK(PointF(0.f, 0.f) == window_default_constructor_float.center());
+  BOOST_CHECK(Point<int>(0, 0) == window_default_constructor_integer.center());
+  BOOST_CHECK(Point<double>(0., 0.) == window_default_constructor_double.center());
+  BOOST_CHECK(Point<float>(0.f, 0.f) == window_default_constructor_float.center());
 
-  BOOST_CHECK(PointI(50, 50) == window_integer->center());
-  BOOST_CHECK(PointD(50., 50.) == window_double->center());
-  BOOST_CHECK(PointF(50.f, 50.f) == window_float->center());
+  BOOST_CHECK(Point<int>(50, 50) == window_integer->center());
+  BOOST_CHECK(Point<double>(50., 50.) == window_double->center());
+  BOOST_CHECK(Point<float>(50.f, 50.f) == window_float->center());
 
-  BOOST_CHECK(PointI(50, 50) == window_integer_copy->center());
-  BOOST_CHECK(PointD(50., 50.) == window_double_copy->center());
-  BOOST_CHECK(PointF(50.f, 50.f) == window_float_copy->center());
+  BOOST_CHECK(Point<int>(50, 50) == window_integer_copy->center());
+  BOOST_CHECK(Point<double>(50., 50.) == window_double_copy->center());
+  BOOST_CHECK(Point<float>(50.f, 50.f) == window_float_copy->center());
 
   BOOST_CHECK(ptc_integer == window_constructor_center_side_integer_even_size->center());
   BOOST_CHECK(ptc_integer == window_constructor_center_side_integer_odd_size->center());
@@ -332,7 +332,7 @@ BOOST_FIXTURE_TEST_CASE(isValid, WindowTest)
 
 BOOST_FIXTURE_TEST_CASE(normalized, WindowTest) 
 {
-  WindowI w(PointI(100,100), PointI(0,0));
+  WindowI w(Point<int>(100,100), Point<int>(0,0));
   
   BOOST_CHECK_EQUAL(false, w.isValid());
   w.normalized();
@@ -345,9 +345,9 @@ BOOST_FIXTURE_TEST_CASE(normalized, WindowTest)
 
 BOOST_FIXTURE_TEST_CASE(containsPoint, WindowTest) 
 {
-  PointI point1(0, 0);
-  PointI point2(50, 50);
-  PointI point3(-50, -50);
+  Point<int> point1(0, 0);
+  Point<int> point2(50, 50);
+  Point<int> point3(-50, -50);
   BOOST_CHECK_EQUAL(false, window_default_constructor_integer.containsPoint(point1));
   BOOST_CHECK_EQUAL(true, window_integer->containsPoint(point1));
   BOOST_CHECK_EQUAL(true, window_integer->containsPoint(point2));
@@ -357,8 +357,8 @@ BOOST_FIXTURE_TEST_CASE(containsPoint, WindowTest)
 
 BOOST_FIXTURE_TEST_CASE(containsWindow, WindowTest) 
 {
-  WindowI w1(PointI(50, 50), 50);
-  WindowI w2(PointI(200, 50), 50);
+  WindowI w1(Point<int>(50, 50), 50);
+  WindowI w2(Point<int>(200, 50), 50);
   BOOST_CHECK_EQUAL(false, window_default_constructor_integer.containsWindow(w1));
   BOOST_CHECK_EQUAL(true, window_integer->containsWindow(w1));
   BOOST_CHECK_EQUAL(false, window_integer->containsWindow(w2));
@@ -370,21 +370,21 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(WindowI_constructor_vector)
 {
-  std::vector<PointD> v{ PointD(0.5, 1.5), PointD(3.6, 4.4) };
+  std::vector<Point<double>> v{ Point<double>(0.5, 1.5), Point<double>(3.6, 4.4) };
   WindowI w(v);
   BOOST_CHECK_EQUAL(1, w.pt1.x);
   BOOST_CHECK_EQUAL(2, w.pt1.y);
   BOOST_CHECK_EQUAL(4, w.pt2.x);
   BOOST_CHECK_EQUAL(4, w.pt2.y);
 
-  std::vector<PointD> v2{ PointD(-0.5, -1.5), PointD(-3.6, -4.4) };
+  std::vector<Point<double>> v2{ Point<double>(-0.5, -1.5), Point<double>(-3.6, -4.4) };
   WindowI w2(v2);
   BOOST_CHECK_EQUAL(-4, w2.pt1.x);
   BOOST_CHECK_EQUAL(-4, w2.pt1.y);
   BOOST_CHECK_EQUAL(-1, w2.pt2.x);
   BOOST_CHECK_EQUAL(-2, w2.pt2.y);
 
-  std::vector<PointI> v3{PointI(2, 3), PointI(10, 15)};
+  std::vector<Point<int>> v3{Point<int>(2, 3), Point<int>(10, 15)};
   WindowD w3(v3);
   BOOST_CHECK_EQUAL(2, w3.pt1.x);
   BOOST_CHECK_EQUAL(3, w3.pt1.y);
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(WindowI_constructor_vector)
 
 BOOST_AUTO_TEST_CASE(Window_assing_operator)
 {
-  const WindowD w(PointD(0., 0.), PointD(100., 100.));
+  const WindowD w(Point<double>(0., 0.), Point<double>(100., 100.));
   WindowD w2 = w;
   BOOST_CHECK(w.pt1 == w2.pt1);
   BOOST_CHECK(w.pt2 == w2.pt2);
@@ -407,47 +407,47 @@ BOOST_AUTO_TEST_CASE(Window_assing_operator)
 // Comprueba si dos ventanas intersectan
 BOOST_AUTO_TEST_CASE(intersectWindows_window_int)
 {
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(50, 50), PointI(150, 150))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(-50, -50), PointI(50, 50))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(-50, 0), PointI(50, 100))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(0, 50), PointI(100, 150))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(-50, -50), PointI(0, 0))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(100, 100), PointI(150, 150))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(150, 150), PointI(200, 200))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(-100, -100), PointI(-1, -1))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(101, 101), PointI(200, 200))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(0, 101), PointI(100, 200))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(50, 50), Point<int>(150, 150))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(-50, -50), Point<int>(50, 50))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(-50, 0), Point<int>(50, 100))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(0, 50), Point<int>(100, 150))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(-50, -50), Point<int>(0, 0))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(100, 100), Point<int>(150, 150))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(150, 150), Point<int>(200, 200))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(-100, -100), Point<int>(-1, -1))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(101, 101), Point<int>(200, 200))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(0, 101), Point<int>(100, 200))));
 }
 
 BOOST_AUTO_TEST_CASE(intersectWindows_different_window)
 {
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowD(PointD(50.5, 50.5), PointD(150.5, 150.5))));
-  BOOST_CHECK(intersectWindows(WindowD(PointD(-50.5, -50.5), PointD(50.5, 50.5)), WindowI(PointI(0, 0), PointI(100, 100))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowD(PointD(-50.5, 0.5), PointD(50.5, 100.5))));
-  BOOST_CHECK(intersectWindows(WindowF(PointF(0, 50), PointF(100, 150)), WindowI(PointI(0, 0), PointI(100, 100))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowF(PointF(-50, -50), PointF(0, 0))));
-  BOOST_CHECK(intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowF(PointF(100, 100), PointF(150, 150))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowD(PointD(150.5, 150.5), PointD(200.5, 200.5))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowD(PointD(-100, -100), PointD(-0.5, -0.5))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowF(PointF(101, 101), PointF(200, 200))));
-  BOOST_CHECK(false == intersectWindows(WindowI(PointI(0, 0), PointI(100, 100)), WindowF(PointF(0, 101), PointF(100, 200))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowD(Point<double>(50.5, 50.5), Point<double>(150.5, 150.5))));
+  BOOST_CHECK(intersectWindows(WindowD(Point<double>(-50.5, -50.5), Point<double>(50.5, 50.5)), WindowI(Point<int>(0, 0), Point<int>(100, 100))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowD(Point<double>(-50.5, 0.5), Point<double>(50.5, 100.5))));
+  BOOST_CHECK(intersectWindows(WindowF(Point<float>(0, 50), Point<float>(100, 150)), WindowI(Point<int>(0, 0), Point<int>(100, 100))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowF(Point<float>(-50, -50), Point<float>(0, 0))));
+  BOOST_CHECK(intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowF(Point<float>(100, 100), Point<float>(150, 150))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowD(Point<double>(150.5, 150.5), Point<double>(200.5, 200.5))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowD(Point<double>(-100, -100), Point<double>(-0.5, -0.5))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowF(Point<float>(101, 101), Point<float>(200, 200))));
+  BOOST_CHECK(false == intersectWindows(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowF(Point<float>(0, 101), Point<float>(100, 200))));
 }
 
 BOOST_AUTO_TEST_CASE(windowIntersection_window_int)
 {
-  WindowI w = windowIntersection(WindowI(PointI(0,0),PointI(100,100)), WindowI(PointI(50,50),PointI(150,150)));
+  WindowI w = windowIntersection(WindowI(Point<int>(0,0),Point<int>(100,100)), WindowI(Point<int>(50,50),Point<int>(150,150)));
   BOOST_CHECK_EQUAL(50, w.pt1.x);
   BOOST_CHECK_EQUAL(50, w.pt1.y);
   BOOST_CHECK_EQUAL(100, w.pt2.x);
   BOOST_CHECK_EQUAL(100, w.pt2.y);
 
-  w = windowIntersection(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(-50, -50), PointI(50, 50)));
+  w = windowIntersection(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(-50, -50), Point<int>(50, 50)));
   BOOST_CHECK_EQUAL(0, w.pt1.x);
   BOOST_CHECK_EQUAL(0, w.pt1.y);
   BOOST_CHECK_EQUAL(50, w.pt2.x);
   BOOST_CHECK_EQUAL(50, w.pt2.y);
 
-  w = windowIntersection(WindowI(PointI(0,0),PointI(100,100)), WindowI(PointI(150,150),PointI(200,200)));
+  w = windowIntersection(WindowI(Point<int>(0,0),Point<int>(100,100)), WindowI(Point<int>(150,150),Point<int>(200,200)));
   BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
   BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
   BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
@@ -456,7 +456,7 @@ BOOST_AUTO_TEST_CASE(windowIntersection_window_int)
 
 BOOST_AUTO_TEST_CASE(join_window)
 {
-  WindowI w = joinWindow(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(50, 50), PointI(150, 150)));
+  WindowI w = joinWindow(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(50, 50), Point<int>(150, 150)));
   BOOST_CHECK_EQUAL(0, w.pt1.x);
   BOOST_CHECK_EQUAL(0, w.pt1.y);
   BOOST_CHECK_EQUAL(150, w.pt2.x);

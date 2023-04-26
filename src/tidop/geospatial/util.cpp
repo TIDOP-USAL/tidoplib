@@ -40,13 +40,13 @@ int utmZoneFromLongitude(double longitude)
   return zone;
 }
 
-//Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix, 
-//                              const Point3D &camera_position, 
-//                              const PointD &coordinates_image, 
+//Point3<double> projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix, 
+//                              const Point3<double> &camera_position, 
+//                              const Point<double> &coordinates_image, 
 //                              double focal,
 //                              double z)
 //{
-//  Point3D point;
+//  Point3<double> point;
 //
 //  point.z = z;
 //
@@ -69,9 +69,9 @@ int utmZoneFromLongitude(double longitude)
 //  return point;
 //}
 //
-//PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
-//                             const Point3D &camera_position, 
-//                             const Point3D &coordinates_terrain, 
+//Point<double> projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
+//                             const Point3<double> &camera_position, 
+//                             const Point3<double> &coordinates_terrain, 
 //                             double focal)
 //{
 //  double dx = coordinates_terrain.x - camera_position.x;
@@ -81,7 +81,7 @@ int utmZoneFromLongitude(double longitude)
 //               rotation_matrix.at(2, 1) * dy + 
 //               rotation_matrix.at(2, 2) * (coordinates_terrain.z - camera_position.z);
 //
-//  PointD photocoord;
+//  Point<double> photocoord;
 //  photocoord.x = -focal * (rotation_matrix.at(0, 0) * dx + 
 //                           rotation_matrix.at(0, 1) * dy + 
 //                           rotation_matrix.at(0, 2) * dz) / div;

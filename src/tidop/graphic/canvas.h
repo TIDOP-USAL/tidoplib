@@ -122,7 +122,7 @@ protected:
    * \param point Punto
    */
   //virtual void drawPoint(const GPoint &point) = 0;
-  virtual void drawPoint(const PointD &point, const GraphicStyle &style) = 0;
+  virtual void drawPoint(const Point<double> &point, const GraphicStyle &style) = 0;
 
   /*!
    * \brief Dibuja una polilinea en el canvas
@@ -139,8 +139,8 @@ protected:
   virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
 
 
-  //virtual void drawText(const PointD &point, const std::string &text) = 0;
-  virtual void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) = 0;
+  //virtual void drawText(const Point<double> &point, const std::string &text) = 0;
+  virtual void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) = 0;
 
   void setPainter(Painter *painter);
 
@@ -185,13 +185,13 @@ public:
 protected:
 
   //void drawPoint(const GPoint &point) override;
-  void drawPoint(const PointD &point, const GraphicStyle &style) override;
+  void drawPoint(const Point<double> &point, const GraphicStyle &style) override;
   //void drawLineString(const GLineString &lineString) override;
   void drawLineString(const LineStringD &lineString, const GraphicStyle &style) override;
   //void drawPolygon(const GPolygon &polygon) override;
   void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
-  //void drawText(const PointD &point, const std::string &text) override;
-  void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) override;
+  //void drawText(const Point<double> &point, const std::string &text) override;
+  void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) override;
 
   void setPicture(const cv::Mat &bmp);
 

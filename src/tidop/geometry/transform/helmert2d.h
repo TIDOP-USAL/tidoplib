@@ -143,12 +143,12 @@ public:
    *  
    * <H3>Ejemplo:</H3>
    * \code
-   * Helmert2D<PointD> h2d(x0,y0, scale, rotation);
-   * std::vector<PointD> pts_in{ PointD(4157222.543, 664789.307),
-   *     PointD(4149043.336, 688836.443), PointD(4172803.511, 690340.078),
-   *     PointD(4177148.376, 642997.635), PointD(4137012.190, 671808.029), 
-   *     PointD(4146292.729, 666952.887), PointD(4138759.902, 702670.738) };
-   * std::vector<PointD> pts_out;
+   * Helmert2D<Point<double>> h2d(x0,y0, scale, rotation);
+   * std::vector<Point<double>> pts_in{ Point<double>(4157222.543, 664789.307),
+   *     Point<double>(4149043.336, 688836.443), Point<double>(4172803.511, 690340.078),
+   *     Point<double>(4177148.376, 642997.635), Point<double>(4137012.190, 671808.029), 
+   *     Point<double>(4146292.729, 666952.887), Point<double>(4138759.902, 702670.738) };
+   * std::vector<Point<double>> pts_out;
    * h2d.transform(pts_in, pts_out);
    * \endcode
    */

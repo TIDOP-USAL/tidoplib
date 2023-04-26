@@ -155,14 +155,14 @@ public:
    *
    * <H3>Ejemplo:</H3>
    * \code
-   * std::vector<PointD> pts_in{ 
-   *   PointD(12.3, 34.3), 
-   *   PointD(10.6, 34.345),
-   *   PointD(34.76, 54.26) };
+   * std::vector<Point<double>> pts_in{ 
+   *   Point<double>(12.3, 34.3), 
+   *   Point<double>(10.6, 34.345),
+   *   Point<double>(34.76, 54.26) };
    *
-   * std::vector<PointD> pts_out;
+   * std::vector<Point<double>> pts_out;
    *
-   * Rotation<PointD> rot(0.562);
+   * Rotation<Point<double>> rot(0.562);
    * rot.transform(pts_in, &pts_out);
    * \endcode
    * \param[in] ptsIn Puntos de entrada

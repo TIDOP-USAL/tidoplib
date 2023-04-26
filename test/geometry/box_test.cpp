@@ -73,17 +73,17 @@ struct BoundingBoxTest
 
   void setup()
   {
-    box_integer = new BoundingBoxI(Point3I(0, 0, 0), Point3I(100, 100, 100));
-    box_double = new BoundingBoxD(Point3D(0., 0., 0.), Point3D(100., 100., 100.));
-    box_float = new BoundingBoxF(Point3F(0.f, 0.f, 0.f), Point3F(100.f, 100.f, 100.f));
+    box_integer = new BoundingBoxI(Point3<int>(0, 0, 0), Point3<int>(100, 100, 100));
+    box_double = new BoundingBoxD(Point3<double>(0., 0., 0.), Point3<double>(100., 100., 100.));
+    box_float = new BoundingBoxF(Point3<double>(0.f, 0.f, 0.f), Point3<double>(100.f, 100.f, 100.f));
 
     box_integer_copy = new BoundingBoxI(*box_integer);
     box_double_copy = new BoundingBoxD(*box_double);
     box_float_copy = new BoundingBoxF(*box_float);
 
-    ptc_integer = Point3I(50, 50, 50);
-    ptc_double = Point3D(50.67, 50.76, 50.76);
-    ptc_float = Point3F(50.67f, 34.45f, 10.23f);
+    ptc_integer = Point3<int>(50, 50, 50);
+    ptc_double = Point3<double>(50.67, 50.76, 50.76);
+    ptc_float = Point3<double>(50.67f, 34.45f, 10.23f);
     
     box_constructor_center_side_integer_even_size = new BoundingBoxI(ptc_integer, 50);
     box_constructor_center_side_integer_odd_size = new BoundingBoxI(ptc_integer, 51);
@@ -112,9 +112,9 @@ struct BoundingBoxTest
   BoundingBoxD *box_double_copy;
   BoundingBoxF *box_float_copy;
 
-  Point3I ptc_integer;
-  Point3D ptc_double;
-  Point3F ptc_float;
+  Point3<int> ptc_integer;
+  Point3<double> ptc_double;
+  Point3<double> ptc_float;
 
   BoundingBoxI *box_constructor_center_side_integer_even_size;
   BoundingBoxI *box_constructor_center_side_integer_odd_size;
@@ -178,7 +178,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor_dif_types, BoundingBoxTest)
 {
-  BoundingBoxD box(Point3D(0.5, 0.4, 1.9), Point3D(100.6, 100.4, 105.49));
+  BoundingBoxD box(Point3<double>(0.5, 0.4, 1.9), Point3<double>(100.6, 100.4, 105.49));
   BoundingBoxI box2(box);
   BOOST_CHECK_EQUAL(1, box2.pt1.x);
   BOOST_CHECK_EQUAL(0, box2.pt1.y);
@@ -252,7 +252,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_center_size, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, BoundingBoxTest)
 {
-  BoundingBoxD box(Point3D(50., 20., 30.), Point3D(100., 100., 100.));
+  BoundingBoxD box(Point3<double>(50., 20., 30.), Point3<double>(100., 100., 100.));
   BoundingBoxD box2(std::move(box));
   BOOST_CHECK_EQUAL(50., box2.pt1.x);
   BOOST_CHECK_EQUAL(20., box2.pt1.y);
@@ -270,7 +270,7 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_assing_operator, BoundingBoxTest)
 {
-  BoundingBoxD box(Point3D(50., 20., 30.), Point3D(100., 100., 100.));
+  BoundingBoxD box(Point3<double>(50., 20., 30.), Point3<double>(100., 100., 100.));
   BoundingBoxD box2;
   box2 = box;
   BOOST_CHECK_EQUAL(50., box2.pt1.x);
@@ -283,7 +283,7 @@ BOOST_FIXTURE_TEST_CASE(copy_assing_operator, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(move_assing_operator, BoundingBoxTest)
 {
-  BoundingBoxD box(Point3D(50., 20., 30.), Point3D(100., 100., 100.));
+  BoundingBoxD box(Point3<double>(50., 20., 30.), Point3<double>(100., 100., 100.));
   BoundingBoxD box2;
   box2 = std::move(box);
   BOOST_CHECK_EQUAL(50., box2.pt1.x);
@@ -302,17 +302,17 @@ BOOST_FIXTURE_TEST_CASE(move_assing_operator, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(center, BoundingBoxTest) 
 {
-  BOOST_CHECK(Point3I(0, 0, 0) == box_default_constructor_integer.center());
-  BOOST_CHECK(Point3D(0., 0., 0.) == box_default_constructor_double.center());
-  BOOST_CHECK(Point3F(0.f, 0.f, 0.f) == box_default_constructor_float.center());
+  BOOST_CHECK(Point3<int>(0, 0, 0) == box_default_constructor_integer.center());
+  BOOST_CHECK(Point3<double>(0., 0., 0.) == box_default_constructor_double.center());
+  BOOST_CHECK(Point3<double>(0.f, 0.f, 0.f) == box_default_constructor_float.center());
 
-  BOOST_CHECK(Point3I(50, 50, 50) == box_integer->center());
-  BOOST_CHECK(Point3D(50., 50., 50.) == box_double->center());
-  BOOST_CHECK(Point3F(50.f, 50.f, 50.f) == box_float->center());
+  BOOST_CHECK(Point3<int>(50, 50, 50) == box_integer->center());
+  BOOST_CHECK(Point3<double>(50., 50., 50.) == box_double->center());
+  BOOST_CHECK(Point3<double>(50.f, 50.f, 50.f) == box_float->center());
 
-  BOOST_CHECK(Point3I(50, 50, 50) == box_integer_copy->center());
-  BOOST_CHECK(Point3D(50., 50., 50.) == box_double_copy->center());
-  BOOST_CHECK(Point3F(50.f, 50.f, 50.f) == box_float_copy->center());
+  BOOST_CHECK(Point3<int>(50, 50, 50) == box_integer_copy->center());
+  BOOST_CHECK(Point3<double>(50., 50., 50.) == box_double_copy->center());
+  BOOST_CHECK(Point3<double>(50.f, 50.f, 50.f) == box_float_copy->center());
 
   BOOST_CHECK(ptc_integer == box_constructor_center_side_integer_even_size->center());
   BOOST_CHECK(ptc_integer == box_constructor_center_side_integer_odd_size->center());
@@ -442,9 +442,9 @@ BOOST_FIXTURE_TEST_CASE(is3D, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(containsPoint, BoundingBoxTest) 
 {
-  Point3I point1(0, 0, 0);
-  Point3I point2(50, 50, 50);
-  Point3I point3(-50, -50, -50);
+  Point3<int> point1(0, 0, 0);
+  Point3<int> point2(50, 50, 50);
+  Point3<int> point3(-50, -50, -50);
   BOOST_CHECK_EQUAL(false, box_default_constructor_integer.containsPoint(point1));
   BOOST_CHECK_EQUAL(true, box_integer->containsPoint(point1));
   BOOST_CHECK_EQUAL(true, box_integer->containsPoint(point2));
@@ -454,18 +454,18 @@ BOOST_FIXTURE_TEST_CASE(containsPoint, BoundingBoxTest)
 
 BOOST_FIXTURE_TEST_CASE(containsBox, BoundingBoxTest)
 {
-  BoundingBoxI box(Point3I(0, 0, 0), Point3I(100, 100, 100));
-  BOOST_CHECK_EQUAL(false, box_default_constructor_integer.containsBox(BoundingBoxI(Point3I(50, 50, 50), 50)));
-  BOOST_CHECK_EQUAL(true, box_integer->containsBox(BoundingBoxI(Point3I(50, 50, 50), 50)));
-  BOOST_CHECK_EQUAL(false, box_integer->containsBox(BoundingBoxI(Point3I(200, 50, 50), 50)));
+  BoundingBoxI box(Point3<int>(0, 0, 0), Point3<int>(100, 100, 100));
+  BOOST_CHECK_EQUAL(false, box_default_constructor_integer.containsBox(BoundingBoxI(Point3<int>(50, 50, 50), 50)));
+  BOOST_CHECK_EQUAL(true, box_integer->containsBox(BoundingBoxI(Point3<int>(50, 50, 50), 50)));
+  BOOST_CHECK_EQUAL(false, box_integer->containsBox(BoundingBoxI(Point3<int>(200, 50, 50), 50)));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(Box_join)
 {
-  BoundingBoxI box1(Point3I(0, 0, 0), Point3I(50, 50, 50));
-  BoundingBoxI box2(Point3I(20, 30, 10), Point3I(100, 100, 100));
+  BoundingBoxI box1(Point3<int>(0, 0, 0), Point3<int>(50, 50, 50));
+  BoundingBoxI box2(Point3<int>(20, 30, 10), Point3<int>(100, 100, 100));
   BoundingBoxI box3 = joinBoundingBoxes(box1, box2);
   BOOST_CHECK_EQUAL(0, box3.pt1.x);
   BOOST_CHECK_EQUAL(0, box3.pt1.y);
@@ -477,8 +477,8 @@ BOOST_AUTO_TEST_CASE(Box_join)
 
 BOOST_AUTO_TEST_CASE(Box_intersect)
 {
-  BoundingBoxI box1(Point3I(0, 0, 0), Point3I(50, 50, 50));
-  BoundingBoxI box2(Point3I(20, 30, 10), Point3I(100, 100, 100));
+  BoundingBoxI box1(Point3<int>(0, 0, 0), Point3<int>(50, 50, 50));
+  BoundingBoxI box2(Point3<int>(20, 30, 10), Point3<int>(100, 100, 100));
   BoundingBoxI box3 = intersectBoundingBoxes(box1, box2);
   BOOST_CHECK_EQUAL(20, box3.pt1.x);
   BOOST_CHECK_EQUAL(30, box3.pt1.y);
@@ -490,7 +490,7 @@ BOOST_AUTO_TEST_CASE(Box_intersect)
 
 BOOST_AUTO_TEST_CASE(Box_cast)
 {
-  const BoundingBoxD box(Point3D(0.5, 0.4, 1.9), Point3D(100.6, 100.4, 105.49));
+  const BoundingBoxD box(Point3<double>(0.5, 0.4, 1.9), Point3<double>(100.6, 100.4, 105.49));
   BoundingBoxI box2 = static_cast<BoundingBoxI>(box);
   BOOST_CHECK_EQUAL(1, box2.pt1.x);
   BOOST_CHECK_EQUAL(0, box2.pt1.y);

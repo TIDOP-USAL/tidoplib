@@ -163,7 +163,7 @@ public:
   virtual void compute(size_t steeps) = 0;
   virtual void compute() = 0;
 
-  std::vector<PointD> curve() const;
+  std::vector<Point<double>> curve() const;
 
   /*!
    * \brief auc
@@ -182,7 +182,7 @@ public:
 protected:
 
   std::vector<std::pair<T, int>> mData;
-  std::vector<PointD> mCurve;
+  std::vector<Point<double>> mCurve;
   size_t mPositives;
   size_t mNegatives;
   double mAuc;
@@ -415,7 +415,7 @@ double Curve<T>::falseNegativeRate(T threshold) const
 }
 
 template<typename T>
-std::vector<PointD> Curve<T>::curve() const
+std::vector<Point<double>> Curve<T>::curve() const
 {
   return mCurve;
 }
@@ -522,8 +522,8 @@ void PRCurve<T>::compute(size_t steeps)
   this->mAuc = 0.0;
 
   if (size > 2) {
-    PointD point1 = this->mCurve[0];
-    PointD point2;
+    Point<double> point1 = this->mCurve[0];
+    Point<double> point2;
 
     for(size_t i = 1; i < size; i++){
       point2 = this->mCurve[i];
@@ -557,8 +557,8 @@ void PRCurve<T>::compute()
   this->mAuc = 0.0;
 
   if (size > 2) {
-    PointD point1 = this->mCurve[0];
-    PointD point2;
+    Point<double> point1 = this->mCurve[0];
+    Point<double> point2;
 
     for (size_t i = 1; i < size; i++) {
       point2 = this->mCurve[i];
@@ -610,8 +610,8 @@ void ROCCurve<T>::compute(size_t steeps)
   this->mAuc = 0.0;
 
   if (size > 2) {
-    PointD point1 = this->mCurve[0];
-    PointD point2;
+    Point<double> point1 = this->mCurve[0];
+    Point<double> point2;
 
     for(size_t i = 1; i < size; i++){
       point2 = this->mCurve[i];
@@ -643,8 +643,8 @@ void ROCCurve<T>::compute()
   this->mAuc = 0.0;
 
   if (size > 2) {
-    PointD point1 = this->mCurve[0];
-    PointD point2;
+    Point<double> point1 = this->mCurve[0];
+    Point<double> point2;
 
     for(size_t i = 1; i < size; i++){
       point2 = this->mCurve[i];
@@ -697,8 +697,8 @@ void DETCurve<T>::compute(size_t steeps)
   this->mAuc = 0.0;
 
   //if (size > 2) {
-  //  PointD point1 = this->mCurve[0];
-  //  PointD point2;
+  //  Point<double> point1 = this->mCurve[0];
+  //  Point<double> point2;
 
   //  for(size_t i = 1; i < size; i++){
   //    point2 = this->mCurve[i];
@@ -729,8 +729,8 @@ void DETCurve<T>::compute()
   this->mAuc = 0.0;
 
   //if (size > 2) {
-  //  PointD point1 = this->mCurve[0];
-  //  PointD point2;
+  //  Point<double> point1 = this->mCurve[0];
+  //  Point<double> point2;
 
   //  for (size_t i = 1; i < size; i++) {
   //    point2 = this->mCurve[i];

@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(AffineTestSuite)
 struct AffineTest
 {
   AffineTest()
-    : trf_pointer(new Affine<PointD>(150.0, 75.0, 0.25, 0.30, math::consts::deg_to_rad<double> * 35.))
+    : trf_pointer(new Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, math::consts::deg_to_rad<double> * 35.))
   { }
     
   ~AffineTest()
@@ -50,32 +50,32 @@ struct AffineTest
   void setup()
   {
     ptsIn = {
-      PointD(4157222.543, 664789.307),
-      PointD(4149043.336, 688836.443),
-      PointD(4172803.511, 690340.078),
-      PointD(4177148.376, 642997.635),
-      PointD(4137012.190, 671808.029),
-      PointD(4146292.729, 666952.887),
-      PointD(4138759.902, 702670.738) };
+      Point<double>(4157222.543, 664789.307),
+      Point<double>(4149043.336, 688836.443),
+      Point<double>(4172803.511, 690340.078),
+      Point<double>(4177148.376, 642997.635),
+      Point<double>(4137012.190, 671808.029),
+      Point<double>(4146292.729, 666952.887),
+      Point<double>(4138759.902, 702670.738) };
 
     ptsOut = {
-      PointD(737107.092,	759565.279),
-      PointD(731294.227,	764301.907),
-      PointD(735901.291,	768078.488),
-      PointD(744937.420,	757067.318),
-      PointD(731760.522,  758392.053),
-      PointD(734496.503,	758529.698),
-      PointD(726807.795,	766227.040) };
+      Point<double>(737107.092,	759565.279),
+      Point<double>(731294.227,	764301.907),
+      Point<double>(735901.291,	768078.488),
+      Point<double>(744937.420,	757067.318),
+      Point<double>(731760.522,  758392.053),
+      Point<double>(734496.503,	758529.698),
+      Point<double>(726807.795,	766227.040) };
   }
 
   void teardown()
   {
   }
 
-  std::vector<PointD> ptsIn;
-  std::vector<PointD> ptsOut;
-  Affine<PointD> trf;
-  Affine<PointD> *trf_pointer;
+  std::vector<Point<double>> ptsIn;
+  std::vector<Point<double>> ptsOut;
+  Affine<Point<double>> trf;
+  Affine<Point<double>> *trf_pointer;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, AffineTest)
@@ -102,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(constructor, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(assignement_operator, AffineTest)
 {
-  Affine<PointD> assig = *trf_pointer;
+  Affine<Point<double>> assig = *trf_pointer;
   BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, assig.rotation());
   BOOST_CHECK_EQUAL(0.25, assig.scaleX());
   BOOST_CHECK_EQUAL(0.30, assig.scaleY());
@@ -113,7 +113,7 @@ BOOST_FIXTURE_TEST_CASE(assignement_operator, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, AffineTest)
 {
-  Affine<PointD> move(Affine<PointD>(150.0, 75.0, 0.25, 0.30, math::consts::deg_to_rad<double> * 35.));
+  Affine<Point<double>> move(Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, math::consts::deg_to_rad<double> * 35.));
   BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, move.rotation());
   BOOST_CHECK_EQUAL(0.25, move.scaleX());
   BOOST_CHECK_EQUAL(0.30, move.scaleY());
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(move_operator, AffineTest)
 {
-  Affine<PointD> move_assig = Affine<PointD>(150.0, 75.0, 0.25, 0.30, 35. * math::consts::deg_to_rad<double>);
+  Affine<Point<double>> move_assig = Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, 35. * math::consts::deg_to_rad<double>);
   BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, move_assig.rotation());
   BOOST_CHECK_EQUAL(0.25, move_assig.scaleX());
   BOOST_CHECK_EQUAL(0.30, move_assig.scaleY());
@@ -135,7 +135,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(transform, AffineTest)
 {
-  std::vector<PointD> pts_out;
+  std::vector<Point<double>> pts_out;
   trf_pointer->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {

@@ -38,15 +38,15 @@ namespace geospatial
 
 TL_EXPORT int utmZoneFromLongitude(double longitude);
 
-//TL_EXPORT Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
-//                                        const Point3D &camera_position,
-//                                        const PointD &coordinates_image,
+//TL_EXPORT Point3<double> projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
+//                                        const Point3<double> &camera_position,
+//                                        const Point<double> &coordinates_image,
 //                                        double focal,
 //                                        double z);
 //
-//TL_EXPORT PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
-//                                       const Point3D &camera_position,
-//                                       const Point3D &coordinates_terrain,
+//TL_EXPORT Point<double> projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
+//                                       const Point3<double> &camera_position,
+//                                       const Point3<double> &coordinates_terrain,
 //                                       double focal);
 
 

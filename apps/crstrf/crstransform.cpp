@@ -108,8 +108,8 @@ int main(int argc, char** argv)
         std::string line;
         while (std::getline(ifs, line)) {
           std::vector<double> vector = split<double>(line, separator);
-          Point3D pt_in(vector[0], vector[1], vector[2]);
-          Point3D pt_out;
+          Point3<double> pt_in(vector[0], vector[1], vector[2]);
+          Point3<double> pt_out;
           crs.transform(pt_in, pt_out);
           msgInfo("%lf;%lf;%lf -> %lf;%lf;%lf", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
 
@@ -123,8 +123,8 @@ int main(int argc, char** argv)
 
     } else {
       std::vector<double> point = split<double>(coord, separator);
-      Point3D pt_in(point[0], point[1], point[2]);
-      Point3D pt_out;
+      Point3<double> pt_in(point[0], point[1], point[2]);
+      Point3<double> pt_out;
       crs.transform(pt_in, pt_out);
       msgInfo("%lf;%lf;%lf -> %lf;%lf;%lf", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
 

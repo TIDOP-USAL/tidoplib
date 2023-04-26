@@ -109,17 +109,17 @@ int main(int argc, char** argv)
 
   std::string transform_name = cmd_list_transform.commandName();
 
-  std::vector<PointD> pts_in = {
-    PointD(4157222.543, 664789.307),
-    PointD(4149043.336, 688836.443),
-    PointD(4172803.511, 690340.078),
-    PointD(4177148.376, 642997.635),
-    PointD(4137012.190, 671808.029),
-    PointD(4146292.729, 666952.887),
-    PointD(4138759.902, 702670.738) };
+  std::vector<Point<double>> pts_in = {
+    Point<double>(4157222.543, 664789.307),
+    Point<double>(4149043.336, 688836.443),
+    Point<double>(4172803.511, 690340.078),
+    Point<double>(4177148.376, 642997.635),
+    Point<double>(4137012.190, 671808.029),
+    Point<double>(4146292.729, 666952.887),
+    Point<double>(4138759.902, 702670.738) };
   
 
-  std::shared_ptr<TransformBase<PointD>> transformation;
+  std::shared_ptr<TransformBase<Point<double>>> transformation;
 
   Chrono chrono("Translation");
   chrono.run();
@@ -127,23 +127,23 @@ int main(int argc, char** argv)
   if (compute) {
 
     /// TODO: Por ahora para pruebas
-    std::vector<PointD> pts_out = {
-      PointD(737107.092,	759565.279),
-      PointD(731294.227,	764301.907),
-      PointD(735901.291,	768078.488),
-      PointD(744937.420,	757067.318),
-      PointD(731760.522,  758392.053),
-      PointD(734496.503,	758529.698),
-      PointD(726807.795,	766227.040) };
+    std::vector<Point<double>> pts_out = {
+      Point<double>(737107.092,	759565.279),
+      Point<double>(731294.227,	764301.907),
+      Point<double>(735901.291,	768078.488),
+      Point<double>(744937.420,	757067.318),
+      Point<double>(731760.522,  758392.053),
+      Point<double>(734496.503,	758529.698),
+      Point<double>(726807.795,	766227.040) };
 
     if (transform_name.compare("Translation") == 0) {
-      transformation = std::make_shared<Translation<PointD>>();
+      transformation = std::make_shared<Translation<Point<double>>>();
     } else if (transform_name.compare("Rotation") == 0) {
-      transformation = std::make_shared<Rotation<PointD>>();
+      transformation = std::make_shared<Rotation<Point<double>>>();
     } else if (transform_name.compare("Helmert2D") == 0) {
-      transformation = std::make_shared<Helmert2D<PointD>>();
+      transformation = std::make_shared<Helmert2D<Point<double>>>();
     } else if (transform_name.compare("Affine") == 0) {
-      transformation = std::make_shared<Affine<PointD>>();
+      transformation = std::make_shared<Affine<Point<double>>>();
     }
 
     transformation->compute(pts_in, pts_out);
@@ -151,16 +151,16 @@ int main(int argc, char** argv)
   } else {
 
     if (transform_name.compare("Translation") == 0) {
-      transformation = std::make_shared<Translation<PointD>>(tx, ty);
+      transformation = std::make_shared<Translation<Point<double>>>(tx, ty);
     } else if (transform_name.compare("Rotation") == 0) {
-      transformation = std::make_shared<Rotation<PointD>>(rotation_angle);
+      transformation = std::make_shared<Rotation<Point<double>>>(rotation_angle);
     } else if (transform_name.compare("Helmert2D") == 0) {
-      transformation = std::make_shared<Helmert2D<PointD>>(tx, ty, scale, rotation_angle);
+      transformation = std::make_shared<Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
     } else if (transform_name.compare("Affine") == 0) {
-      transformation = std::make_shared<Affine<PointD>>(tx, ty, scale_x, scale_y, rotation_angle);
+      transformation = std::make_shared<Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
     }
 
-    std::vector<PointD> pts_out;
+    std::vector<Point<double>> pts_out;
 
     transformation->transform(pts_in, pts_out);
     

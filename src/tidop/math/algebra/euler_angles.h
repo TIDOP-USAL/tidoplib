@@ -88,8 +88,8 @@ public:
   EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
   ~EulerAngles() override = default;
 
-  EulerAngles &operator = (const EulerAngles<T> &eulerAngles);
-  EulerAngles &operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
+  auto operator = (const EulerAngles<T> &eulerAngles) -> EulerAngles&;
+  auto operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
 
 public:
 
@@ -144,7 +144,7 @@ EulerAngles<T>::EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
 }
 
 template<typename T>
-EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
+auto EulerAngles<T>::operator = (const EulerAngles &eulerAngles) -> EulerAngles<T>&
 {
   if (this != &eulerAngles) {
     x = eulerAngles.x;
@@ -156,7 +156,7 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
 }
 
 template<typename T>
-EulerAngles<T> &EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
+auto EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles<T>&
 {
   if (this != &eulerAngles) {
     x = std::exchange(eulerAngles.x, 0);
