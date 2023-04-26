@@ -397,7 +397,7 @@ operator / (const Point<T1>& pt, T2 b)
  * \code
  * typedef Point<int> Point3<int>;
  * typedef Point<double> Point3<double>;
- * typedef Point<float> Point3<double>;
+ * typedef Point<float> Point3<float>;
  * \endcode
  */
 template<typename T>

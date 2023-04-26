@@ -212,7 +212,7 @@ BOOST_FIXTURE_TEST_CASE(cast, PointTest)
   BOOST_CHECK_EQUAL(254, pt_int.x);
   BOOST_CHECK_EQUAL(563, pt_int.y);
 
-  Point3<double> pt_float3D(564.26f, 646.65f, 23.32f);
+  Point3<float> pt_float3D(564.26f, 646.65f, 23.32f);
   Point<float> pt_float = static_cast<Point<float>>(pt_float3D);
   BOOST_CHECK_CLOSE(564.26f, pt_float.x, 0.05);
   BOOST_CHECK_CLOSE(646.65f, pt_float.y, 0.05);
@@ -388,7 +388,7 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, Point3Test)
   BOOST_CHECK_CLOSE(562.94, pt_double_c.y, 0.01);
   BOOST_CHECK_CLOSE(345.89, pt_double_c.z, 0.01);
 
-  Point3<double> pt_float_c = *point_float;
+  Point3<float> pt_float_c = *point_float;
 
   BOOST_CHECK_CLOSE(564.26f, pt_float_c.x, 0.05);
   BOOST_CHECK_CLOSE(646.65f, pt_float_c.y, 0.05);
@@ -422,7 +422,7 @@ BOOST_FIXTURE_TEST_CASE(cast, Point3Test)
   BOOST_CHECK_EQUAL(563, pt_int.y);
 
   Point<float> pt_float(564.26f, 646.65f);
-  Point3<double> pt_float_3d = static_cast<Point3<double>>(pt_float);
+  Point3<float> pt_float_3d = static_cast<Point3<float>>(pt_float);
   BOOST_CHECK_CLOSE(564.26f, pt_float_3d.x, 0.05);
   BOOST_CHECK_CLOSE(646.65f, pt_float_3d.y, 0.05);
   BOOST_CHECK_CLOSE(0.f, pt_float_3d.z, 0.05);

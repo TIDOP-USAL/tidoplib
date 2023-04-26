@@ -75,7 +75,7 @@ struct BoundingBoxTest
   {
     box_integer = new BoundingBoxI(Point3<int>(0, 0, 0), Point3<int>(100, 100, 100));
     box_double = new BoundingBoxD(Point3<double>(0., 0., 0.), Point3<double>(100., 100., 100.));
-    box_float = new BoundingBoxF(Point3<double>(0.f, 0.f, 0.f), Point3<double>(100.f, 100.f, 100.f));
+    box_float = new BoundingBoxF(Point3<float>(0.f, 0.f, 0.f), Point3<float>(100.f, 100.f, 100.f));
 
     box_integer_copy = new BoundingBoxI(*box_integer);
     box_double_copy = new BoundingBoxD(*box_double);
@@ -83,7 +83,7 @@ struct BoundingBoxTest
 
     ptc_integer = Point3<int>(50, 50, 50);
     ptc_double = Point3<double>(50.67, 50.76, 50.76);
-    ptc_float = Point3<double>(50.67f, 34.45f, 10.23f);
+    ptc_float = Point3<float>(50.67f, 34.45f, 10.23f);
     
     box_constructor_center_side_integer_even_size = new BoundingBoxI(ptc_integer, 50);
     box_constructor_center_side_integer_odd_size = new BoundingBoxI(ptc_integer, 51);
@@ -114,7 +114,7 @@ struct BoundingBoxTest
 
   Point3<int> ptc_integer;
   Point3<double> ptc_double;
-  Point3<double> ptc_float;
+  Point3<float> ptc_float;
 
   BoundingBoxI *box_constructor_center_side_integer_even_size;
   BoundingBoxI *box_constructor_center_side_integer_odd_size;
@@ -304,15 +304,15 @@ BOOST_FIXTURE_TEST_CASE(center, BoundingBoxTest)
 {
   BOOST_CHECK(Point3<int>(0, 0, 0) == box_default_constructor_integer.center());
   BOOST_CHECK(Point3<double>(0., 0., 0.) == box_default_constructor_double.center());
-  BOOST_CHECK(Point3<double>(0.f, 0.f, 0.f) == box_default_constructor_float.center());
+  BOOST_CHECK(Point3<float>(0.f, 0.f, 0.f) == box_default_constructor_float.center());
 
   BOOST_CHECK(Point3<int>(50, 50, 50) == box_integer->center());
   BOOST_CHECK(Point3<double>(50., 50., 50.) == box_double->center());
-  BOOST_CHECK(Point3<double>(50.f, 50.f, 50.f) == box_float->center());
+  BOOST_CHECK(Point3<float>(50.f, 50.f, 50.f) == box_float->center());
 
   BOOST_CHECK(Point3<int>(50, 50, 50) == box_integer_copy->center());
   BOOST_CHECK(Point3<double>(50., 50., 50.) == box_double_copy->center());
-  BOOST_CHECK(Point3<double>(50.f, 50.f, 50.f) == box_float_copy->center());
+  BOOST_CHECK(Point3<float>(50.f, 50.f, 50.f) == box_float_copy->center());
 
   BOOST_CHECK(ptc_integer == box_constructor_center_side_integer_even_size->center());
   BOOST_CHECK(ptc_integer == box_constructor_center_side_integer_odd_size->center());

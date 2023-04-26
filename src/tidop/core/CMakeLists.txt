@@ -27,44 +27,57 @@
 #  TidopLib Core module                                                  #
 ##########################################################################
 
+include(TidopUtils)
+
 if(BUILD_TL_CORE)
 
     project(Core)
-
+    
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES 
+                             app.cpp
+                             exception.cpp
+                             messages.cpp
+                             log.cpp
+                             utils.cpp
+                             task.cpp
+                             progress.cpp
+                             event.cpp
+                             licence.cpp
+                             gdalreg.cpp
+                             chrono.cpp
+                             concurrency.cpp
+                             path.cpp
+                             xml.cpp
+                             console/console.cpp
+                             console/argument.cpp
+                             console/command.cpp
+                         HEADER_FILES
+                             defs.h
+                             app.h
+                             exception.h
+                             flags.h
+                             messages.h
+                             log.h
+                             utils.h
+                             task.h
+                             progress.h
+                             event.h
+                             licence.h
+                             gdalreg.h
+                             chrono.h
+                             concurrency.h
+                             path.h
+                             xml.h
+                             endian.h
+                             console.h
+                             console/console.h
+                             console/argument.h
+                             console/command.h)
+                         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                app.cpp
-                app.h
-                console.cpp
-                console.h
-                defs.h
-                exception.cpp
-                exception.h
-                flags.h
-                messages.cpp
-                messages.h
-                log.cpp
-                log.h
-                utils.cpp
-                utils.h
-                task.cpp
-                task.h
-                progress.cpp
-                progress.h
-                event.cpp
-                event.h
-                licence.cpp
-                licence.h
-                gdalreg.cpp
-                gdalreg.h
-                chrono.cpp
-                chrono.h
-                concurrency.cpp
-                concurrency.h
-                path.cpp
-                path.h
-                xml.cpp
-                xml.h
-                endian.h)
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
 
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
