@@ -76,32 +76,32 @@ std::string Command::name() const
   return mName;
 }
 
-void Command::setName(const std::string &name)
+auto Command::setName(const std::string &name) -> void
 {
   mName = name;
 }
 
-std::string Command::description() const
+auto Command::description() const -> std::string
 {
   return mDescription;
 }
 
-void Command::setDescription(const std::string &description)
+auto Command::setDescription(const std::string &description) -> void
 {
   mDescription = description;
 }
 
-std::string Command::version() const
+auto Command::version() const -> std::string
 {
   return mVersion;
 }
 
-void Command::setVersion(const std::string &version)
+auto Command::setVersion(const std::string &version) -> void
 {
   mVersion = version;
 }
 
-Command::Status Command::parse(int argc, char **argv)
+auto Command::parse(int argc, char **argv) -> Status
 {
 
   std::map<std::string, std::string> cmd_in;
@@ -260,63 +260,63 @@ Command::Status Command::parse(int argc, char **argv)
   return Command::Status::parse_success;
 }
 
-Command::iterator Command::begin() TL_NOEXCEPT
+auto Command::begin() TL_NOEXCEPT -> iterator
 {
   return mArguments.begin();
 }
 
-Command::const_iterator Command::begin() const TL_NOEXCEPT
+auto Command::begin() const TL_NOEXCEPT -> const_iterator
 {
   return mArguments.cbegin();
 }
 
-Command::iterator Command::end() TL_NOEXCEPT
+auto Command::end() TL_NOEXCEPT -> iterator
 {
   return mArguments.end();
 }
 
-Command::const_iterator Command::end() const TL_NOEXCEPT
+auto Command::end() const TL_NOEXCEPT -> const_iterator
 {
   return mArguments.cend();
 }
 
-void Command::push_back(const std::shared_ptr<Argument> &argument)
+auto Command::push_back(const Argument::SharedPtr &argument) -> void
 {
   mArguments.push_back(argument);
 }
 
-void Command::addArgument(const std::shared_ptr<Argument> &argument)
+auto Command::addArgument(const Argument::SharedPtr &argument) -> void
 {
   mArguments.push_back(argument);
 }
 
-void Command::push_back(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT
+auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
 {
-  mArguments.push_back(std::forward<std::shared_ptr<Argument>>(argument));
+  mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
 }
 
-void Command::addArgument(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT
+auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
 {
-  mArguments.push_back(std::forward<std::shared_ptr<Argument>>(argument));
+  mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
 }
 
-void Command::clear() TL_NOEXCEPT
+auto Command::clear() TL_NOEXCEPT -> void
 {
   mArguments.clear();
   mExamples.clear();
 }
 
-bool Command::empty() const TL_NOEXCEPT
+auto Command::empty() const TL_NOEXCEPT -> bool
 {
   return mArguments.empty();
 }
 
-size_t Command::size() const TL_NOEXCEPT
+auto Command::size() const TL_NOEXCEPT -> size_t
 {
   return mArguments.size();
 }
 
-Command &Command::operator=(const Command &command)
+auto Command::operator=(const Command &command) -> Command&
 {
   if (this != &command) {
     this->mName = command.mName;
@@ -327,7 +327,7 @@ Command &Command::operator=(const Command &command)
   return (*this);
 }
 
-Command &Command::operator=(Command &&command) TL_NOEXCEPT
+auto Command::operator=(Command &&command) TL_NOEXCEPT -> Command&
 {
   if (this != &command) {
     this->mName = std::move(command.mName);
@@ -338,13 +338,13 @@ Command &Command::operator=(Command &&command) TL_NOEXCEPT
   return (*this);
 }
 
-Command::iterator Command::erase(Command::const_iterator first, 
-                                 Command::const_iterator last)
+auto Command::erase(const_iterator first, 
+                    const_iterator last) -> iterator
 {
   return mArguments.erase(first, last);
 }
 
-void Command::showHelp() const
+auto Command::showHelp() const -> void
 {
 
   Console &console = Console::instance();
@@ -412,7 +412,7 @@ void Command::showHelp() const
   std::cout << std::endl;
 }
 
-void Command::showVersion() const
+auto Command::showVersion() const -> void
 {
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
@@ -423,7 +423,7 @@ void Command::showVersion() const
   console.reset();
 }
 
-void Command::showLicence() const
+auto Command::showLicence() const -> void
 {
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
@@ -440,17 +440,17 @@ void Command::showLicence() const
   //mLicence.type();
 }
 
-void Command::addExample(const std::string &example)
+auto Command::addExample(const std::string &example) -> void
 {
   mExamples.push_back(example);
 }
 
-void Command::setLicence(const Licence &licence)
+auto Command::setLicence(const Licence &licence) -> void
 {
   mLicence = licence;
 }
 
-void Command::init()
+auto Command::init() -> void
 {
 
 }
@@ -489,7 +489,7 @@ CommandList::CommandList(CommandList &&commandList) TL_NOEXCEPT
 
 CommandList::CommandList(std::string name,
                          std::string description,
-                         std::initializer_list<std::shared_ptr<Command>> commands)
+                         std::initializer_list<Command::SharedPtr> commands)
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mCommands(commands),
@@ -497,7 +497,7 @@ CommandList::CommandList(std::string name,
 {
 }
 
-std::string CommandList::name() const
+auto CommandList::name() const -> std::string
 {
   return mName;
 }
@@ -507,7 +507,7 @@ void CommandList::setName(const std::string &name)
   mName = name;
 }
 
-std::string CommandList::description() const
+auto CommandList::description() const -> std::string
 {
   return mDescription;
 }
@@ -517,7 +517,7 @@ void CommandList::setDescription(const std::string &description)
   mDescription = description;
 }
 
-std::string CommandList::version() const
+auto CommandList::version() const -> std::string
 {
   return mVersion;
 }
@@ -527,7 +527,7 @@ void CommandList::setVersion(const std::string &version)
   mVersion = version;
 }
 
-CommandList::Status CommandList::parse(int argc, char **argv)
+auto CommandList::parse(int argc, char **argv) -> Status
 {
   if (argc <= 1) return Status::parse_error;
 
@@ -585,44 +585,44 @@ CommandList::Status CommandList::parse(int argc, char **argv)
   return Status::parse_error;
 }
 
-CommandList::iterator CommandList::begin() TL_NOEXCEPT
+auto CommandList::begin() TL_NOEXCEPT -> iterator
 {
   return mCommands.begin();
 }
 
-CommandList::const_iterator CommandList::begin() const TL_NOEXCEPT
+auto CommandList::begin() const TL_NOEXCEPT -> const_iterator
 {
   return mCommands.cbegin();
 }
 
-CommandList::iterator CommandList::end() TL_NOEXCEPT
+auto CommandList::end() TL_NOEXCEPT -> iterator
 {
   return mCommands.end();
 }
 
-CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
+auto CommandList::end() const TL_NOEXCEPT -> const_iterator
 {
   return mCommands.cend();
 }
 
-void CommandList::push_back(const std::shared_ptr<Command> &command)
+void CommandList::push_back(const Command::SharedPtr &command)
 {
   mCommands.push_back(command);
 }
 
-void CommandList::addCommand(const std::shared_ptr<Command> &command)
+void CommandList::addCommand(const Command::SharedPtr &command)
 {
   mCommands.push_back(command);
 }
 
-void CommandList::push_back(std::shared_ptr<Command> &&command) TL_NOEXCEPT
+void CommandList::push_back(Command::SharedPtr &&command) TL_NOEXCEPT
 {
-  mCommands.push_back(std::forward<std::shared_ptr<Command>>(command));
+  mCommands.push_back(std::forward<Command::SharedPtr>(command));
 }
 
-void CommandList::addCommand(std::shared_ptr<Command> &&command) TL_NOEXCEPT
+void CommandList::addCommand(Command::SharedPtr &&command) TL_NOEXCEPT
 {
-  mCommands.push_back(std::forward<std::shared_ptr<Command>>(command));
+  mCommands.push_back(std::forward<Command::SharedPtr>(command));
 }
 
 void CommandList::clear() TL_NOEXCEPT
@@ -635,17 +635,17 @@ bool CommandList::empty() const TL_NOEXCEPT
   return mCommands.empty();
 }
 
-CommandList::size_type CommandList::size() const TL_NOEXCEPT
+auto CommandList::size() const TL_NOEXCEPT -> size_type
 {
   return mCommands.size();
 }
 
-CommandList::iterator CommandList::erase(CommandList::const_iterator first, CommandList::const_iterator last)
+auto CommandList::erase(const_iterator first, const_iterator last) -> iterator
 {
   return mCommands.erase(first, last);
 }
 
-CommandList &CommandList::operator=(const CommandList &cmdList)
+auto CommandList::operator=(const CommandList &cmdList) -> CommandList&
 {
   if (this != &cmdList) {
     this->mName = cmdList.mName;
@@ -656,7 +656,7 @@ CommandList &CommandList::operator=(const CommandList &cmdList)
   return (*this);
 }
 
-CommandList &CommandList::operator=(CommandList &&cmdList) TL_NOEXCEPT
+auto CommandList::operator=(CommandList &&cmdList) TL_NOEXCEPT -> CommandList&
 {
   if (this != &cmdList) {
     this->mName = std::move(cmdList.mName);
@@ -718,7 +718,7 @@ void CommandList::showLicence() const
   std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
 }
 
-std::string CommandList::commandName() const
+auto CommandList::commandName() const -> std::string
 {
   return mCommand ? mCommand->name() : std::string();
 }

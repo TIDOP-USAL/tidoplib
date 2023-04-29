@@ -357,20 +357,25 @@ std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>
   size_t true_negatives = 0;
   size_t false_negatives = 0;
 
-  for (size_t j = 0; j < mData.size(); j++) {
+#if CPP_VERSION >= 17
+  for(const auto &[value, tag] : mData) {
+#else
+  for(const auto &data : mData) {
+    auto value = metadata.first;
+    auto tag = metadata.second;
+#endif
 
-    if (mData[j].first < threshold) {
-      if (mData[j].second == 1)
+    if(value < threshold) {
+      if(tag == 1)
         false_negatives++;
       else
         true_negatives++;
     } else {
-      if (mData[j].second == 0)
+      if(tag == 0)
         false_positives++;
       else
         true_positives++;
     }
-
   }
 
   std::map<Classification, size_t> confussionMatrix;

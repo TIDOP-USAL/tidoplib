@@ -55,6 +55,10 @@ class TL_EXPORT Argument
 
 public:
 
+  using SharedPtr = std::shared_ptr<Argument>;
+
+public:
+
   /*!
    * \brief Constructora argumento
    * \param[in] name Nombre del argumento

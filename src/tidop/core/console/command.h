@@ -85,6 +85,9 @@ namespace tl
  */
 class TL_EXPORT Command
 {
+public:
+
+  using SharedPtr = std::shared_ptr<Command>;
 
 public:
 
@@ -100,55 +103,16 @@ public:
     show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
   };
 
-  /*!
-   * \brief Allocator
-   */
-  using allocator_type = std::list<std::shared_ptr<Argument> >::allocator_type;
-
-  /*!
-   * \brief value_type
-   */
-  using value_type = std::list<std::shared_ptr<Argument> >::value_type;
-
-  /*!
-   * \brief Tipo entero sin signo (por lo general size_t)
-   */
-  using size_type = std::list<std::shared_ptr<Argument> >::size_type;
-
-  /*!
-   * \brief Tipo entero con signo (por lo general ptrdiff_t)
-   */
-  using difference_type = std::list<std::shared_ptr<Argument> >::difference_type;
-
-  /*!
-   * \brief std::allocator_traits<Allocator>::pointer
-   */
-  using pointer = std::list<std::shared_ptr<Argument> >::pointer;
-
-  /*!
-   * \brief std::allocator_traits<Allocator>::const_pointer
-   */
-  using const_pointer = std::list<std::shared_ptr<Argument> >::const_pointer;
-
-  /*!
-   * \brief value_type&
-   */
-  using reference = std::list<std::shared_ptr<Argument> >::reference;
-
-  /*!
-   * \brief const value_type&
-   */
-  using const_reference = std::list<std::shared_ptr<Argument> >::const_reference;
-
-  /*!
-   * \brief Iterador de acceso aleatorio
-   */
-  using iterator = std::list<std::shared_ptr<Argument> >::iterator;
-
-  /*!
-   * \brief Iterador constante de acceso aleatorio
-   */
-  using const_iterator = std::list<std::shared_ptr<Argument> >::const_iterator;
+  using allocator_type = std::list<Argument::SharedPtr>::allocator_type;
+  using value_type = std::list<Argument::SharedPtr>::value_type;
+  using size_type = std::list<Argument::SharedPtr>::size_type;
+  using difference_type = std::list<Argument::SharedPtr>::difference_type;
+  using pointer = std::list<Argument::SharedPtr>::pointer;
+  using const_pointer = std::list<Argument::SharedPtr>::const_pointer;
+  using reference = std::list<Argument::SharedPtr>::reference;
+  using const_reference = std::list<Argument::SharedPtr>::const_reference;
+  using iterator = std::list<Argument::SharedPtr>::iterator;
+  using const_iterator = std::list<Argument::SharedPtr>::const_iterator;
 
 public:
 
@@ -179,7 +143,7 @@ public:
    */
   Command(std::string name, 
           std::string description, 
-          std::initializer_list<std::shared_ptr<Argument>> arguments);
+          std::initializer_list<Argument::SharedPtr> arguments);
 
   ~Command() = default;
 
@@ -187,37 +151,37 @@ public:
    * \brief Devuelve el nombre del comando
    * \return Nombre del comando
    */
-  std::string name() const;
+  auto name() const -> std::string;
 
   /*!
    * \brief Establece el nombre del comando
    * \param[in] name Nombre del comando
    */
-  void setName(const std::string &name);
+  auto setName(const std::string &name) -> void;
 
   /*!
    * \brief Devuelve la descripción del comando
    * \return Descripción del comando
    */
-  std::string description() const;
+  auto description() const -> std::string;
 
   /*!
    * \brief Establece la descripción del comando
    * \param[in] description Descripción del comando
    */
-  void setDescription(const std::string &description);
+  auto setDescription(const std::string &description) -> void;
 
   /*!
    * \brief Versión del programa
    * \return
    */
-  std::string version() const;
+  auto version() const -> std::string;
 
   /*!
    * \brief Establece la versión del programa
    * \param[in] version Versión del programa
    */
-  void setVersion(const std::string &version);
+  auto setVersion(const std::string &version) -> void;
 
   /*!
    * \brief parsea los argumentos de entrada
@@ -226,105 +190,105 @@ public:
    * \return Devuelve el estado. 'parse_error' en caso de error y 'parse_success' cuando el parseo se ha hecho correctamente
    * \see CmdParser::Status
    */
-  Status parse(int argc, char **argv);
+  auto parse(int argc, char **argv) -> Status;
 
   /*!
    * \brief Devuelve un iterador al inicio
    * \return Iterador al primer elemento
    */
-  iterator begin() TL_NOEXCEPT;
+  auto begin() TL_NOEXCEPT -> iterator;
 
   /*!
    * \brief Devuelve un iterador constante al inicio
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const TL_NOEXCEPT;
+  auto begin() const TL_NOEXCEPT -> const_iterator;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después del último argumento
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último argumento
    */
-  iterator end() TL_NOEXCEPT;
+  auto end() TL_NOEXCEPT -> iterator;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después del último argumento
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último argumento
    */
-  const_iterator end() const TL_NOEXCEPT;
+  auto end() const TL_NOEXCEPT -> const_iterator;
 
   /*!
    * \brief Agrega un argumento mediante copia al final
    * \param[in] argument Argumento que se añade
    */
-  void push_back(const std::shared_ptr<Argument> &argument);
-  void addArgument(const std::shared_ptr<Argument> &argument);
+  auto push_back(const Argument::SharedPtr &argument) -> void;
+  auto addArgument(const Argument::SharedPtr &argument) -> void;
 
   /*!
    * \brief Agrega un argumento mediante movimiento al final
    * \param[in] argument Argumento que se añade
    */
-  void push_back(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT;
-  void addArgument(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT;
+  auto push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
+  auto addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
 
   /*!
    * \brief Elimina los argumentos
    */
-  void clear() TL_NOEXCEPT;
+  auto clear() TL_NOEXCEPT -> void;
 
   /*!
    * \brief Comprueba si no hay argumentos
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const TL_NOEXCEPT;
+  auto empty() const TL_NOEXCEPT -> bool;
 
   /*!
    * \brief Devuelve el tamaño del contenedor
    * \return Tamaño
    */
-  size_type size() const TL_NOEXCEPT;
+  auto size() const TL_NOEXCEPT -> size_t;
 
   /*!
    * \brief Asignación de copia
    */
-  Command& operator=(const Command &command);
+  auto operator=(const Command &command) -> Command&;
 
   /*!
    * \brief Asignación de movimiento
    */
-  Command& operator=(Command &&command) TL_NOEXCEPT;
+  auto operator=(Command &&command) TL_NOEXCEPT -> Command&;
 
   /*!
    * \brief Elimina el intervalo
    */
-  iterator erase(const_iterator first, const_iterator last);
+  auto erase(const_iterator first, const_iterator last) -> iterator;
 
   /*!
    * \brief Muestra la ayuda en la consola
    */
-  void showHelp() const;
+  auto showHelp() const -> void;
 
   /*!
    * \brief Muestra la versión en la consola
    */
-  void showVersion() const;
+  auto showVersion() const -> void;
 
   /*!
    * \brief Muestra la licencia en la consola
    */
-  void showLicence() const;
+  auto showLicence() const -> void;
 
   /*!
    * \brief Añade un ejemplo de uso
    */
-  void addExample(const std::string &example);
+  auto addExample(const std::string &example) -> void;
 
-  void setLicence(const Licence &licence);
+  auto setLicence(const Licence &licence) -> void;
 
 protected:
 
-  void init();
+  auto init() -> void;
 
 private:
 
@@ -341,7 +305,7 @@ private:
   /*!
    * \brief Listado de los argumentos del comando
    */
-  std::list<std::shared_ptr<Argument>> mArguments;
+  std::list<Argument::SharedPtr> mArguments;
 
   /*!
    * \brief Listado de los argumentos por defecto comando
@@ -381,55 +345,32 @@ public:
     show_licence    /*!< Se pasa como parámetro: licence. Se muestra la información de licencia */
   };
 
-  /*!
-   * \brief Allocator
-   */
-  using allocator_type = std::list<std::shared_ptr<Command> >::allocator_type;
-
-  /*!
-   * \brief value_type
-   */
-  using value_type = std::list<std::shared_ptr<Command> >::value_type;
-
-  /*!
-   * \brief Tipo entero sin signo (por lo general size_t)
-   */
-  using size_type = std::list<std::shared_ptr<Command> >::size_type;
-
-  /*!
-   * \brief Tipo entero con signo (por lo general ptrdiff_t)
-   */
-  using difference_type = std::list<std::shared_ptr<Command> >::difference_type;
-
-  /*!
-   * \brief std::allocator_traits<Allocator>::pointer
-   */
-  using pointer = std::list<std::shared_ptr<Command> >::pointer;
-
-  /*!
-   * \brief std::allocator_traits<Allocator>::const_pointer
-   */
-  using const_pointer = std::list<std::shared_ptr<Command> >::const_pointer;
+  using allocator_type = std::list<Command::SharedPtr>::allocator_type;
+  using value_type = std::list<Command::SharedPtr>::value_type;
+  using size_type = std::list<Command::SharedPtr>::size_type;
+  using difference_type = std::list<Command::SharedPtr>::difference_type;
+  using pointer = std::list<Command::SharedPtr>::pointer;
+  using const_pointer = std::list<Command::SharedPtr>::const_pointer;
 
   /*!
    * \brief value_type&
    */
-  using reference = std::list<std::shared_ptr<Command> >::reference;
+  using reference = std::list<Command::SharedPtr>::reference;
 
   /*!
    * \brief const value_type&
    */
-  using const_reference = std::list<std::shared_ptr<Command> >::const_reference;
+  using const_reference = std::list<Command::SharedPtr>::const_reference;
 
   /*!
    * \brief Iterador de acceso aleatorio
    */
-  using iterator = std::list<std::shared_ptr<Command> >::iterator;
+  using iterator = std::list<Command::SharedPtr>::iterator;
 
   /*!
    * \brief Iterador constante de acceso aleatorio
    */
-  using const_iterator = std::list<std::shared_ptr<Command> >::const_iterator;
+  using const_iterator = std::list<Command::SharedPtr>::const_iterator;
 
 public:
 
@@ -466,7 +407,7 @@ public:
    */
   CommandList(std::string name,
               std::string description,
-              std::initializer_list<std::shared_ptr<Command>> commands);
+              std::initializer_list<Command::SharedPtr> commands);
 
   ~CommandList() = default;
 
@@ -474,7 +415,7 @@ public:
    * \brief Devuelve el nombre del programa
    * \return Nombre del programa
    */
-  std::string name() const;
+  auto name() const -> std::string;
 
   /*!
    * \brief Establece el nombre del programa
@@ -486,7 +427,7 @@ public:
    * \brief Devuelve la descripción del comando
    * \return Descripción del comando
    */
-  std::string description() const;
+  auto description() const -> std::string;
 
   /*!
    * \brief Establece la descripción del comando
@@ -498,7 +439,7 @@ public:
    * \brief Versión del programa
    * \return
    */
-  std::string version() const;
+  auto version() const -> std::string;
 
   /*!
    * \brief Establece la versión del programa
@@ -513,47 +454,47 @@ public:
    * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
    * \see CmdParser::Status
    */
-  Status parse(int argc, char **argv);
+  auto parse(int argc, char **argv) -> Status;
 
   /*!
    * \brief Devuelve un iterador al inicio
    * \return Iterador al primer elemento
    */
-  iterator begin() TL_NOEXCEPT;
+  auto begin() TL_NOEXCEPT -> iterator;
 
   /*!
    * \brief Devuelve un iterador constante al inicio
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const TL_NOEXCEPT;
+  auto begin() const TL_NOEXCEPT -> const_iterator;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después del último comando
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último comando
    */
-  iterator end() TL_NOEXCEPT;
+  auto end() TL_NOEXCEPT -> iterator;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después del último comando
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último comando
    */
-  const_iterator end() const TL_NOEXCEPT;
+  auto end() const TL_NOEXCEPT -> const_iterator;
 
   /*!
    * \brief Agrega un comando mediante copia al final
    * \param[in] command Comando que se añade
    */
-  void push_back(const std::shared_ptr<Command> &command);
-  void addCommand(const std::shared_ptr<Command> &command);
+  void push_back(const Command::SharedPtr &command);
+  void addCommand(const Command::SharedPtr &command);
 
   /*!
    * \brief Agrega un comando mediante movimiento al final
    * \param[in] command Comando que se añade
    */
-  void push_back(std::shared_ptr<Command> && command) TL_NOEXCEPT;
-  void addCommand(std::shared_ptr<Command> && command) TL_NOEXCEPT;
+  void push_back(Command::SharedPtr && command) TL_NOEXCEPT;
+  void addCommand(Command::SharedPtr && command) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina los comandos
@@ -570,22 +511,22 @@ public:
    * \brief Devuelve el número de comandos
    * \return Número de comandos
    */
-  size_type size() const TL_NOEXCEPT;
+  auto size() const TL_NOEXCEPT -> size_type;
 
   /*!
    * \brief Asignación de copia
    */
-  CommandList& operator=(const CommandList& cmdList);
+  auto operator=(const CommandList& cmdList) -> CommandList&;
 
   /*!
    * \brief Asignación de movimiento
    */
-  CommandList& operator=(CommandList &&cmdList) TL_NOEXCEPT;
+  auto operator=(CommandList &&cmdList) TL_NOEXCEPT -> CommandList&;
 
   /*!
    * \brief Elimina el intervalo
    */
-  iterator erase(const_iterator first, const_iterator last);
+  auto erase(const_iterator first, const_iterator last) -> iterator;
 
   /*!
    * \brief Muestra la ayuda en la consola
@@ -602,7 +543,7 @@ public:
    */
   void showLicence() const;
 
-  std::string commandName() const;
+  auto commandName() const -> std::string;
 
 
 private:
@@ -620,9 +561,9 @@ private:
   /*!
    * \brief Listado de los argumentos del comando
    */
-  std::list<std::shared_ptr<Command>> mCommands;
+  std::list<Command::SharedPtr> mCommands;
 
-  std::shared_ptr<Command> mCommand;
+  Command::SharedPtr mCommand;
 
   /*!
    * \brief Versión del programa

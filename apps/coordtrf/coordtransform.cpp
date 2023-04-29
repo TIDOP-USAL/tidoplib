@@ -45,14 +45,14 @@ int main(int argc, char** argv)
   double scale_x = 1.;
   double scale_y = 1.;
 
-  std::shared_ptr<Argument> arg_compute = CreateArgumentBooleanOptional("compute", "Calcula la transformación a partir de listados de puntos", &compute);
-  std::shared_ptr<Argument> arg_transform = CreateArgumentBooleanOptional("transform", "Aplica la transformación a un listado de puntos", &transform);
-  std::shared_ptr<Argument> arg_tx = CreateArgumentDoubleOptional("tx", "Translación en X", &tx);
-  std::shared_ptr<Argument> arg_ty = CreateArgumentDoubleOptional("ty", "Translación en Y", &ty);
-  std::shared_ptr<Argument> arg_rotation = CreateArgumentDoubleOptional("rotation", "Rotación", &rotation_angle);
-  std::shared_ptr<Argument> arg_scale = CreateArgumentDoubleOptional("scale", "Escala", &scale);
-  std::shared_ptr<Argument> arg_scale_x = CreateArgumentDoubleOptional("scale_x", "Escala X", &scale_x);
-  std::shared_ptr<Argument> arg_scale_y = CreateArgumentDoubleOptional("scale_y", "Escala Y", &scale_y);
+  auto arg_compute = CreateArgumentBooleanOptional("compute", "Calcula la transformación a partir de listados de puntos", &compute);
+  auto arg_transform = CreateArgumentBooleanOptional("transform", "Aplica la transformación a un listado de puntos", &transform);
+  auto arg_tx = CreateArgumentDoubleOptional("tx", "Translación en X", &tx);
+  auto arg_ty = CreateArgumentDoubleOptional("ty", "Translación en Y", &ty);
+  auto arg_rotation = CreateArgumentDoubleOptional("rotation", "Rotación", &rotation_angle);
+  auto arg_scale = CreateArgumentDoubleOptional("scale", "Escala", &scale);
+  auto arg_scale_x = CreateArgumentDoubleOptional("scale_x", "Escala X", &scale_x);
+  auto arg_scale_y = CreateArgumentDoubleOptional("scale_y", "Escala Y", &scale_y);
 
   std::shared_ptr<Command> cmd_translation(new Command("Translation", "Translation transform", {
                                                        arg_compute,

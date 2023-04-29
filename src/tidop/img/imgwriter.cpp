@@ -224,8 +224,14 @@ public:
         char **gdalOpt = nullptr;
         if (mImageOptions) {
           std::map<std::string, std::string> options = mImageOptions->activeOptions();
+#if CPP_VERSION >= 17
+          for (const auto &[name, value] : options) {
+#else
           for (const auto &option : options) {
-            gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+            auto name = option.first;
+            auto value = option.second;
+#endif
+            gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
           }
         }
         GDALDataset *tempDataSet = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
@@ -281,9 +287,15 @@ public:
 
       char **gdalOpt = nullptr;
       if (mImageOptions && !bTempFile) {
-        std::map<std::string, std::string> options = mImageOptions->activeOptions();
-        for (const auto &option : options) {
-          gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+        auto options = mImageOptions->activeOptions();
+#if CPP_VERSION >= 17
+        for(const auto &[name, value] : options) {
+#else
+        for(const auto &option : options) {
+          auto name = option.first;
+          auto value = option.second;        
+#endif
+          gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
         }
       }
 
@@ -295,8 +307,14 @@ public:
       char **gdalMetadata = nullptr;
       if (mImageMetadata) {
         std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+#if CPP_VERSION >= 17
+        for(const auto &[name, value] : active_metadata) {
+#else
         for (const auto &metadata : active_metadata) {
-          gdalMetadata = CSLSetNameValue(gdalMetadata, metadata.first.c_str(), metadata.second.c_str());
+          auto name = metadata.first;
+          auto value = metadata.second;        
+#endif
+          gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
         }
       }
       mDataset->SetMetadata(gdalMetadata);
