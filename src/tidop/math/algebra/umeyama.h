@@ -76,6 +76,7 @@ public:
     size_t dimension = dst.cols();
     Vector<double> mean_src(dimension);
     Vector<double> mean_dst(dimension);
+
     for (size_t c = 0; c < dimension; c++) {
       auto src_col = src.col(c);
       mean_src[c] = mean(src_col.begin(), src_col.end());
@@ -92,7 +93,7 @@ public:
       }
     }
 
-	auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
+    auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
     SingularValueDecomposition<Matrix<double>> svd(sigma);
     transformMatrix = Matrix<double>::identity(dimension + 1, dimension + 1);
     Matrix<double> S = Matrix<double>::identity(dimension, dimension);
@@ -124,11 +125,11 @@ public:
     transformMatrix.col(dimension)[1] = mean_dst[1];
     transformMatrix.col(dimension)[2] = mean_dst[2];
 
-    auto aux = scale * transformMatrix.block(0, dimension - 1, 0, dimension - 1) * mean_src;
+    transformMatrix.block(0, dimension-1, 0, dimension-1) *= scale;
+    auto aux = transformMatrix.block(0, dimension - 1, 0, dimension - 1) * mean_src;
     transformMatrix.col(dimension)[0] -= aux[0];
     transformMatrix.col(dimension)[1] -= aux[1];
     transformMatrix.col(dimension)[2] -= aux[2];
-    transformMatrix.block(0, 0, dimension, dimension) *= scale;
 
   }
 
@@ -152,12 +153,18 @@ public:
       }
     }
 
-    return rotation;
+    return rotation / scale();
   }
 
-  Vector<T, _cols> scale() const
+  //Vector<T, _cols> scale() const
+  //{
+  //  return Vector<T>{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
+  //}
+
+  T scale() const
   {
-    return Vector<T>{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
+    Vector<T> scale{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
+    return tl::math::mean(scale.begin(), scale.end());
   }
 
   Vector<T, _cols> translation() const

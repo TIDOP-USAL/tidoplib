@@ -239,27 +239,34 @@ class TL_EXPORT Process
 
 public:
 
-#ifdef WIN32
+
 
   enum class Priority
   {
+#ifdef WIN32
     realtime = REALTIME_PRIORITY_CLASS,
     high = HIGH_PRIORITY_CLASS,
     above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
     normal = NORMAL_PRIORITY_CLASS,
     below_normal = BELOW_NORMAL_PRIORITY_CLASS,
     idle = IDLE_PRIORITY_CLASS
-  };
-
+#else 
+    realtime = -20,
+    high = -15,
+    above_normal = -10,
+    normal = 0,
+    below_normal = 10,
+    idle = 19
 #endif
+  };
 
 public:
 
-  Process(std::string commandText/*,
-          Priority priority = Priority::normal*/);
+  Process(std::string commandText,
+          Priority priority = Priority::normal);
   ~Process() override;
 
-#ifdef WIN32
+
   Priority priority() const;
 
   /*!
@@ -268,6 +275,7 @@ public:
    */
   void setPriority(Priority priority);
 
+#ifdef WIN32
 private:
 
   std::string formatErrorMsg(unsigned long errorCode);
@@ -282,12 +290,12 @@ private:
 
 private:
 
-  std::string mCommandText;
+  std::string mCommandText; 
+  Priority mPriority;
 #ifdef WIN32
   STARTUPINFO mStartUpInfo;
   PROCESS_INFORMATION mProcessInformation;
   SECURITY_ATTRIBUTES mSecurityAttributes;
-  Priority mPriority;
   HANDLE mThreadHandle;
 #endif
   
