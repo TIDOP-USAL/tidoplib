@@ -32,6 +32,8 @@
 #else
 #include <spawn.h>
 #include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #endif
 #include <array>
 #include <locale>
@@ -717,7 +719,7 @@ void Process::setPriority(Priority priority)
   SetPriorityClass(mProcessInformation.hProcess, 
                    static_cast<unsigned long>(priority));
 #else
-  setpriority(PRIO_PROCESS, getpid(), priority)
+  setpriority(PRIO_PROCESS, getpid(), static_cast<int>(priority));
 #endif
 
   mPriority = priority;
