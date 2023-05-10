@@ -33,6 +33,7 @@
 #include <spawn.h>
 #include <sys/wait.h>
 #endif
+#include <array>
 #include <locale>
 #include <codecvt>
 #include <utility>
@@ -550,14 +551,15 @@ HANDLE pipeWriteHandle = nullptr;
 unsigned long readFromPipe(void *)
 {
   DWORD numberOfBytesRead;
-  char buffer[process_bufsize];
+  //char buffer[process_bufsize];
+  std::array<char, process_bufsize+1> buffer{};
   int err = 0;
 
   for (;;) {
-    err = ReadFile(pipeReadHandle, buffer, process_bufsize, &numberOfBytesRead, nullptr);
+    err = ReadFile(pipeReadHandle, buffer.data(), process_bufsize, &numberOfBytesRead, nullptr);
     if (!err || numberOfBytesRead == 0) continue;
-    buffer[numberOfBytesRead] = '\0';
-    std::cout << buffer << std::endl;
+    buffer[static_cast<size_t>(numberOfBytesRead)] = '\0';
+    std::cout << buffer.data() << std::endl;
 
     if (!err) break;
   }
@@ -565,16 +567,14 @@ unsigned long readFromPipe(void *)
 }
 #endif
 
-Process::Process(std::string commandText/*,
-                                 Priority priority*/)
-  : mCommandText(std::move(commandText))/*,
-    mPriority(priority)*/
+Process::Process(std::string commandText,
+                 Priority priority)
+  : mCommandText(std::move(commandText))
 #ifdef TL_OS_WINDOWS
-    ,
-    mPriority(Priority::normal),
-    mThreadHandle(nullptr)
-#endif // TL_OS_WINDOWS
+    ,mThreadHandle(nullptr)
+#endif
 {
+  setPriority(priority);
 #ifdef TL_OS_WINDOWS
   ZeroMemory(&mStartUpInfo, sizeof(mStartUpInfo));
   mStartUpInfo.cb = sizeof(mStartUpInfo);
@@ -586,7 +586,7 @@ Process::Process(std::string commandText/*,
   mSecurityAttributes.lpSecurityDescriptor = NULL;
 
   ZeroMemory(&mProcessInformation, sizeof(mProcessInformation));
-#endif // TL_OS_WINDOWS
+#endif
 }
 
 Process::~Process() = default;
@@ -701,19 +701,29 @@ void Process::execute(Progress *)
 
 }
 
-#ifdef TL_OS_WINDOWS
+
 Process::Priority Process::priority() const
 {
+#ifdef TL_OS_WINDOWS
   return static_cast<Priority>(GetPriorityClass(mProcessInformation.hProcess));
+#else
+  return static_cast<Priority>(getpriority(PRIO_PROCESS, getpid()));
+#endif
 }
 
 void Process::setPriority(Priority priority)
 {
+#ifdef TL_OS_WINDOWS
   SetPriorityClass(mProcessInformation.hProcess, 
                    static_cast<unsigned long>(priority));
+#else
+  setpriority(PRIO_PROCESS, getpid(), priority)
+#endif
+
   mPriority = priority;
 }
 
+#ifdef TL_OS_WINDOWS
 //https ://stackoverflow.com/a/69410299
 
 std::wstring string_to_wide_string(const std::string &string)

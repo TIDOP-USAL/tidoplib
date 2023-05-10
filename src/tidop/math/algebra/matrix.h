@@ -457,7 +457,11 @@ public:
 
 public:
 
-  MatrixBase() = default;
+  MatrixBase()
+  {
+    this->flag.enable(properties::contiguous_memory);
+  }
+
   virtual ~MatrixBase() = default;
 
   /*!
@@ -538,7 +542,7 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
     
-    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory)) {
+    if (this->flag.isEnabled(properties::contiguous_memory)) {
        
       for (; i < max_size; i += packed_size) {
         packed_a.loadUnaligned(&matrix(i));
@@ -672,8 +676,8 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
     
-    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) && 
-        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+    if (this->flag.isEnabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) && 
+        matrix.flag.isEnabled(MatrixDerived2::properties::contiguous_memory)) {
        
       for (; i < max_size; i += packed_size) {
         packed_a.loadUnaligned(&derived(i));
@@ -801,8 +805,8 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
-        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+    if (this->flag.isEnabled(properties::contiguous_memory) &&
+        matrix.flag.isEnabled(MatrixDerived2::properties::contiguous_memory)) {
       for (; i < max_size; i += packed_size) {
 
         packed_a.loadUnaligned(&derived(i));
@@ -899,11 +903,13 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    for (; i < max_size; i += packed_size) {
+    if (this->flag.isEnabled(properties::contiguous_memory)) {
 
-      packed_a.loadUnaligned(&derived(i));
-      packed_a *= packed_b;
-      packed_a.storeUnaligned(&derived(i));
+      for (; i < max_size; i += packed_size) {
+        packed_a.loadUnaligned(&derived(i));
+        packed_a *= packed_b;
+        packed_a.storeUnaligned(&derived(i));
+      }
     }
 
 #endif
@@ -995,12 +1001,13 @@ public:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
+    if (this->flag.isEnabled(properties::contiguous_memory)) {
 
-    for (; i < max_size; i += packed_size) {
-
-      packed_a.loadUnaligned(&derived(i));
-      packed_a *= packed_b;
-      packed_a.storeUnaligned(&derived(i));
+      for (; i < max_size; i += packed_size) {
+        packed_a.loadUnaligned(&derived(i));
+        packed_a *= packed_b;
+        packed_a.storeUnaligned(&derived(i));
+      }
     }
 
 #endif
@@ -1065,8 +1072,8 @@ protected:
     constexpr size_t packed_size = packed_a.size();
     size_t max_size = size - size % packed_size;
 
-    if (this->flag.isDisabled(MatrixDerived<T, _rows, _cols>::properties::contiguous_memory) &&
-        matrix.flag.isDisabled(MatrixDerived2::properties::contiguous_memory)) {
+    if (this->flag.isEnabled(properties::contiguous_memory) &&
+        matrix.flag.isEnabled(MatrixDerived2::properties::contiguous_memory)) {
 
       for (; i < max_size; i += packed_size) {
         packed_b.loadUnaligned(&matrix(i));
@@ -2416,7 +2423,7 @@ inline MatrixBlock<T, _rows, _cols>::MatrixBlock(T *data,
     mIniCol(iniCol),
     mEndCol(endCol)
 {
-  this->flag.enable(MatrixBlock<T, _rows, _cols>::properties::contiguous_memory);
+  this->flag.disable(MatrixBlock<T, _rows, _cols>::properties::contiguous_memory);
 }
 
 template<typename T, size_t _rows, size_t _cols>
@@ -3873,6 +3880,14 @@ static Vector<T> operator * (const internal::MatrixBlock<T> &matrix,
   }
 
   return vect;
+}
+
+
+template<typename T, size_t _rows, size_t _dim> 
+inline  static Vector<T, _rows> operator * (const Vector<T, _dim> &vector,
+                                            const Matrix<T, _rows, _dim> &matrix)
+{
+  return matrix * vector;
 }
 
 /*! \} */ // end of algebra
