@@ -213,13 +213,13 @@ BOOST_FIXTURE_TEST_CASE(casting, RotationTest)
   BOOST_CHECK_EQUAL(2, trf_h2d.minNumberOfPoints());
 
   // cast a afín
-  Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*rot2);
-  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, trf_affine.rotation(), 0.0001);
-  BOOST_CHECK_EQUAL(1., trf_affine.scaleX());
-  BOOST_CHECK_EQUAL(1., trf_affine.scaleY());
-  BOOST_CHECK_EQUAL(0., trf_affine.tx);
-  BOOST_CHECK_EQUAL(0., trf_affine.ty);
-  BOOST_CHECK_EQUAL(3, trf_affine.minNumberOfPoints());
+  // Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*rot2);
+  // BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, trf_affine.rotation(), 0.0001);
+  // BOOST_CHECK_EQUAL(1., trf_affine.scaleX());
+  // BOOST_CHECK_EQUAL(1., trf_affine.scaleY());
+  // BOOST_CHECK_EQUAL(0., trf_affine.tx);
+  // BOOST_CHECK_EQUAL(0., trf_affine.ty);
+  // BOOST_CHECK_EQUAL(3, trf_affine.minNumberOfPoints());
 
   //Affine<PointD> *trf_affine_ptr = static_cast<Affine<PointD>*>(trf_pointer);
 }

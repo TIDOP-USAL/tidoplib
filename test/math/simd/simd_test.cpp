@@ -3185,6 +3185,7 @@ void transpose(Matrix<double> &A, Matrix<double> &B)
   for (int r = 0; r < max_rows; r += packed_size) {
     for (int c = 0; c < max_cols; c += packed_size) {
 
+#ifdef TL_HAVE_AVX2
       // Cargar 4 elementos de la columna i en un registro AVX
       __m256d a0 = _mm256_loadu_pd(&A(r, c));
       __m256d a1 = _mm256_loadu_pd(&A(r + 1, c));
@@ -3216,6 +3217,7 @@ void transpose(Matrix<double> &A, Matrix<double> &B)
       _mm256_storeu_pd(&B(c+1, r), c1);
       _mm256_storeu_pd(&B(c+2, r), c2);
       _mm256_storeu_pd(&B(c+3, r), c3);
+#endif
     }
 
     // Recorre las columnas no alineadas
