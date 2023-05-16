@@ -21,11 +21,39 @@
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
 ##########################################################################
+ 
 
-if(TL_HAVE_GEOSPATIAL)
-add_subdirectory(crs)
-add_subdirectory(ellipsoid)
-#add_subdirectory(crs_transform)
-add_subdirectory(util)
-add_subdirectory(diffrect)
-endif()
+include_directories(${CMAKE_BUILD_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+set(test_filename ellipsoid_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
+               ${test_filename})
+			   
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+							   
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core 
+                      TidopLib::Geom 
+                      TidopLib::Geospatial
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
+                      $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                      $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                      ${OpenCV_LIBS})
+					  
+	
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+                      FOLDER "test/geospatial")
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

@@ -36,6 +36,12 @@ class OGRSpatialReference;
 namespace tl
 {
 
+/*!
+ * \addtogroup geospatial
+ *
+ * \{
+ */
+
 namespace geospatial
 {
 
@@ -131,6 +137,8 @@ private:
 /* ---------------------------------------------------------------------------------- */
 
 } // End namespace geospatial
+
+/*! \} */ // end of geospatial
 
 } // End namespace tl
 

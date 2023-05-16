@@ -33,6 +33,7 @@ if (BUILD_TL_GEOSPATIAL)
     project(Geospatial)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
+                constants.h
                 crs.cpp
                 crs.h
                 crscache.cpp
@@ -42,7 +43,8 @@ if (BUILD_TL_GEOSPATIAL)
                 util.cpp
                 util.h
                 diffrect.cpp
-                diffrect.h)
+                diffrect.h
+                ellipsoid.h)
 
     add_library(TidopLib::${PROJECT_NAME} 
                 ALIAS ${PROJECT_NAME})

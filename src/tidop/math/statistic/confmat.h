@@ -361,8 +361,8 @@ std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>
   for(const auto &[value, tag] : mData) {
 #else
   for(const auto &data : mData) {
-    auto value = metadata.first;
-    auto tag = metadata.second;
+    auto value = data.first;
+    auto tag = data.second;
 #endif
 
     if(value < threshold) {
