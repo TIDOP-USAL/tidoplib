@@ -24,6 +24,7 @@
 
 #include "tidop/core/progress.h"
 
+#include "tidop/core/app.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/console.h"
 
@@ -207,7 +208,7 @@ void ProgressBarColor::updateProgress()
 {
   std::cout << "\r";
 
-  Console &console = Console::instance();
+  Console &console = App::console();
   int posInBar = roundToInteger(static_cast<double>(percent()) * static_cast<double>(mProgressBarSize) / 100.);
 
   int ini = mProgressBarSize / 2 - 2;

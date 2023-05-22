@@ -116,10 +116,15 @@ public:
   TL_DISABLE_COPY(Console)
   TL_DISABLE_MOVE(Console)
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief Singleton que devuelve una referencia unica de un objeto Console
    */
+  TL_DEPRECATED("App::console", "3.0")
   static Console &instance();
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Niveles de mensaje activados

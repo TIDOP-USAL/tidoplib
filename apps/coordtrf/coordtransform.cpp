@@ -37,6 +37,11 @@ using namespace tl;
 int main(int argc, char** argv)
 {
 
+  Console &console = App::console();
+  console.setTitle("Transform Example");
+  console.setMessageLevel(MessageLevel::msg_verbose);
+  App::messageManager().addListener(&console);
+
   bool compute = false;
   bool transform = true;
   double tx = 0.0;
@@ -46,10 +51,10 @@ int main(int argc, char** argv)
   double scale_x = 1.;
   double scale_y = 1.;
 
-  auto arg_compute = CreateArgumentBooleanOptional("compute", "Calcula la transformación a partir de listados de puntos", &compute);
+  auto arg_compute = CreateArgumentBooleanOptional("compute", "Calcula la transformación a partir de dos listas de puntos", &compute);
   auto arg_transform = CreateArgumentBooleanOptional("transform", "Aplica la transformación a un listado de puntos", &transform);
-  auto arg_tx = CreateArgumentDoubleOptional("tx", "Translación en X", &tx);
-  auto arg_ty = CreateArgumentDoubleOptional("ty", "Translación en Y", &ty);
+  auto arg_tx = CreateArgumentDoubleOptional("tx", "Traslación en X", &tx);
+  auto arg_ty = CreateArgumentDoubleOptional("ty", "Traslación en Y", &ty);
   auto arg_rotation = CreateArgumentDoubleOptional("rotation", "Rotación", &rotation_angle);
   auto arg_scale = CreateArgumentDoubleOptional("scale", "Escala", &scale);
   auto arg_scale_x = CreateArgumentDoubleOptional("scale_x", "Escala X", &scale_x);
@@ -59,21 +64,21 @@ int main(int argc, char** argv)
                                                        arg_compute,
                                                        arg_transform,
                                                        arg_tx,
-                                                       arg_ty
-                                           }));
+                                                       arg_ty}));
+
   std::shared_ptr<Command> cmd_rotation(new Command("Rotation", "Rotation transform", {
                                                     arg_compute,
                                                     arg_transform,
-                                                    arg_rotation
-                                        }));
+                                                    arg_rotation}));
+
   std::shared_ptr<Command> cmd_helmert_2d(new Command("Helmert2D", "Helmert2D transform", {
                                                        arg_compute,
                                                        arg_transform,
                                                        arg_tx,
                                                        arg_ty,
                                                        arg_scale,
-                                                       arg_rotation
-                                           }));
+                                                       arg_rotation}));
+
   std::shared_ptr<Command> cmd_affine(new Command("Affine", "Affine transform", {
                                                   arg_compute,
                                                   arg_transform,
@@ -81,8 +86,7 @@ int main(int argc, char** argv)
                                                   arg_ty,
                                                   arg_scale_x,
                                                   arg_scale_y,
-                                                  arg_rotation
-                                           }));
+                                                  arg_rotation}));
 
   CommandList cmd_list_transform("transform", "Transform");
   cmd_list_transform.addCommand(cmd_translation);
@@ -101,13 +105,6 @@ int main(int argc, char** argv)
   } else if (status == CommandList::Status::show_version) {
     return 0;
   }
-
-  Console &console = App::console();
-  //Console &console = Console::instance();
-  console.setTitle("Transform Example");
-  console.setMessageLevel(MessageLevel::msg_verbose);
-  MessageManager::instance().addListener(&console);
-
 
   std::string transform_name = cmd_list_transform.commandName();
 

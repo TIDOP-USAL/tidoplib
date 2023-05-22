@@ -25,6 +25,8 @@
 #include "tidop/core/app.h"
 
 #include "tidop/core/console/console.h"
+#include "tidop/core/messages.h"
+#include "tidop/core/log.h"
 
 #if TL_OS_LINUX
 #include <unistd.h>
@@ -73,6 +75,19 @@ Console &App::console()
 {
     static Console console;
     return console;
+}
+
+Log &App::log()
+{
+    static Log log;
+    return log;
+}
+
+MessageManager &App::messageManager()
+{
+    //static MessageManager message_manager;
+    //return message_manager;
+    return MessageManager::instance();
 }
 
 void App::init()

@@ -26,6 +26,7 @@
 #include <memory>
 #include <fstream>
 
+#include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 #include <tidop/core/path.h>
@@ -45,12 +46,12 @@ int main(int argc, char** argv)
   std::string cmd_name = app_path.baseName().toString();
 
   // Consola
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setTitle(cmd_name);
   console.setConsoleUnicode();
   console.setFontHeight(14);
   console.setMessageLevel(MessageLevel::msg_verbose);
-  MessageManager::instance().addListener(&console);
+  App::messageManager().addListener(&console);
 
   std::string epsg_in;
   std::string epsg_out;
@@ -83,10 +84,10 @@ int main(int argc, char** argv)
   }
 
   if (!log_file.empty()) {
-    Log &log = Log::instance();
+    Log &log = App::log();
     log.setMessageLevel(MessageLevel::msg_verbose);
     log.setLogFile(log_file);
-    MessageManager::instance().addListener(&log);
+    App::messageManager().addListener(&log);
   }
 
   try {

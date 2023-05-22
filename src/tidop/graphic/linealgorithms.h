@@ -88,7 +88,7 @@ public:
    * \deprecated Use 'points()' en su lugar
    */
   TL_DEPRECATED("LineAlgorithms::points()", "2.0")
-  virtual std::vector<geometry::Point<int>> getPoints() = 0;
+  virtual std::vector<Point<int>> getPoints() = 0;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -249,7 +249,7 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<geometry::Point<int>> getPoints() override;
+  std::vector<Point<int>> getPoints() override;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -375,7 +375,7 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<geometry::Point<int>> getPoints() override;
+  std::vector<Point<int>> getPoints() override;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 

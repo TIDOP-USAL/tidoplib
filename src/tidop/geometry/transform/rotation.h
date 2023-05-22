@@ -327,14 +327,6 @@ Transform::Status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
   return status;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-double Rotation<Point_t>::getAngle() const 
-{ 
-  return mAngle; 
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 template<typename Point_t> inline
 double Rotation<Point_t>::angle() const
 {

@@ -51,11 +51,15 @@ Log::Log()
 
 Log::~Log() = default;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 Log &Log::instance()
 {
   static Log log;
   return log;
 }
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 EnumFlags<MessageLevel> Log::logLevel()
 {

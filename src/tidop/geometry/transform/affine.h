@@ -541,13 +541,13 @@ double Affine<Point_t>::getRotation() const
 }
 
 template<typename Point_t>
-double Affine::getScaleX() const
+double Affine<Point_t>::getScaleX() const
 {
   return mScaleX;
 }
 
 template<typename Point_t>
-double Affine::getScaleY() const
+double Affine<Point_t>::getScaleY() const
 {
   return mScaleY;
 }

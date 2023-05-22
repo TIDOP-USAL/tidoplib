@@ -82,10 +82,15 @@ public:
   TL_DISABLE_COPY(Log)
   TL_DISABLE_MOVE(Log)
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief Singleton para obtener una referencia única
    */
+  TL_DEPRECATED("App::log", "3.0")
   static Log &instance();
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Niveles de log activados
@@ -229,6 +234,8 @@ private:
 #ifdef TL_MESSAGE_HANDLER
   static bool sPauseListener;
 #endif
+
+  friend class App;
 
 };
 

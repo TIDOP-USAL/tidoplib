@@ -24,6 +24,7 @@
 
 #include "tidop/core/console/command.h"
 
+#include "tidop/core/app.h"
 #include "tidop/core/console/console.h"
 
 #include <map>
@@ -347,7 +348,7 @@ auto Command::erase(const_iterator first,
 auto Command::showHelp() const -> void
 {
 
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   std::cout << "\nUsage: " << mName << " [OPTION...] \n\n";
@@ -414,7 +415,7 @@ auto Command::showHelp() const -> void
 
 auto Command::showVersion() const -> void
 {
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
@@ -425,7 +426,7 @@ auto Command::showVersion() const -> void
 
 auto Command::showLicence() const -> void
 {
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   std::cout << "Licence\n\n";
@@ -529,7 +530,11 @@ void CommandList::setVersion(const std::string &version)
 
 auto CommandList::parse(int argc, char **argv) -> Status
 {
-  if (argc <= 1) return Status::parse_error;
+  if (argc <= 1) {
+    msgError("No command found");
+    showHelp();
+    return Status::parse_error;
+  }
 
   std::string arg_cmd_name = std::string(argv[1]);
   std::size_t found_name = arg_cmd_name.find("--");
@@ -580,6 +585,7 @@ auto CommandList::parse(int argc, char **argv) -> Status
 
   if(!mCommand) {
     msgError("Unknow command : %s", arg_cmd_name.c_str());
+    showHelp();
   }
 
   return Status::parse_error;
@@ -670,7 +676,7 @@ auto CommandList::operator=(CommandList &&cmdList) TL_NOEXCEPT -> CommandList&
 void CommandList::showHelp() const
 {
 
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   std::cout << "\nUsage: " << mName << " [--version] [-h | --help] [--licence] <command> [<args>] \n\n";
@@ -698,7 +704,7 @@ void CommandList::showHelp() const
 
 void CommandList::showVersion() const
 {
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
@@ -709,7 +715,7 @@ void CommandList::showVersion() const
 
 void CommandList::showLicence() const
 {
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   std::cout << "Licence\n\n";

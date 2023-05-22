@@ -38,6 +38,8 @@ namespace tl
 {
 
 class Console;
+class Log;
+class MessageManager;
 
 
 /*! \addtogroup core
@@ -70,6 +72,8 @@ public:
     std::string version() const;
 
     static Console &console();
+    static Log &log();
+    static MessageManager &messageManager();
 
 private:
 

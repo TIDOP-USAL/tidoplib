@@ -25,6 +25,7 @@
 #include "tidop/core/messages.h"
 
 #include "tidop/core/defs.h"
+#include "tidop/core/app.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/chrono.h"
 
@@ -126,16 +127,16 @@ void MessageManager::release(const std::string &message,
 
   switch (level) {
   case MessageLevel::msg_debug:
-    sObjMessage->onDebug(buf, date);
+    MessageManager::instance().onDebug(buf, date);
     break;
   case MessageLevel::msg_info:
-    sObjMessage->onInfo(buf, date);
+    MessageManager::instance().onInfo(buf, date);
     break;
   case MessageLevel::msg_warning:
-    sObjMessage->onWarning(buf, date);
+    MessageManager::instance().onWarning(buf, date);
     break;
   case MessageLevel::msg_error:
-    sObjMessage->onError(buf, date);
+    MessageManager::instance().onError(buf, date);
     break;
   default:
     break;

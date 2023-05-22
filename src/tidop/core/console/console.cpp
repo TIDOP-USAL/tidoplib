@@ -91,11 +91,14 @@ Console::~Console()
   reset();
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 Console &Console::instance()
 {
   static Console console;
   return console;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 EnumFlags<MessageLevel> Console::messageLevel()
 {

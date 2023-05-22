@@ -57,6 +57,7 @@ enum class MessageLevel : int8_t {
   msg_error   = 1 << 1,                               /*!< Errores. */
   msg_warning = 1 << 2,                               /*!< Warnings */
   msg_info    = 1 << 3,                               /*!< Otra información. */
+  msg_trace   = 1 << 4,
   msg_verbose = msg_error | msg_warning | msg_info    /*!< Todos los mensajes. */
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
@@ -249,10 +250,8 @@ public:
    */
   ~MessageManager();
 
-  MessageManager(const MessageManager &) = delete;
-  MessageManager(MessageManager &&) = delete;
-  MessageManager operator=(const MessageManager &) = delete;
-  MessageManager operator=(MessageManager &&) = delete;
+  TL_DISABLE_COPY(MessageManager)
+  TL_DISABLE_MOVE(MessageManager)
 
   /*!
    * \brief Singleton para obtener una referencia
@@ -326,6 +325,8 @@ private:
   static bool sStopHandler;
 
   static std::mutex sMutex;
+
+  //friend class App;
 };
 
 #ifdef _DEBUG

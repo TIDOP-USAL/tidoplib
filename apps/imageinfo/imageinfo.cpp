@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 // Cabeceras tidopLib
+#include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/log.h>
 #include <tidop/core/messages.h>
@@ -48,16 +49,16 @@ int main(int argc, char** argv)
 {
 
   // Consola
-  Console &console = Console::instance();
+  Console &console = App::console();
   console.setTitle("Image Metadata");
   console.setMessageLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
-  MessageManager::instance().addListener(&console);
+  App::messageManager().addListener(&console);
 
   // Log 
-  Log &log = Log::instance();
+  Log &log = App::log();
   log.setMessageLevel(MessageLevel::msg_verbose);
-  MessageManager::instance().addListener(&log);
+  App::messageManager().addListener(&log);
 
   Path img;
 
@@ -66,7 +67,7 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::parse_error ) {
+  if (status == Command::Status::parse_error) {
     return 1;
   } else if (status == Command::Status::show_help) {
     return 0;
