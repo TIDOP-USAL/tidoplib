@@ -35,10 +35,6 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-namespace geospatial
-{
-
-
 
 Crs::Crs() 
 #if _DEBUG
@@ -63,8 +59,8 @@ Crs::Crs(const std::string &epsg,
     mCrs(new OGRSpatialReference(nullptr))
 #endif
 {
-  mCrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-  initFromEpsg();
+    mCrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    initFromEpsg();
 }
 
 Crs::Crs(const Crs &crs)
@@ -78,109 +74,114 @@ Crs::Crs(const Crs &crs)
     mCrs(new OGRSpatialReference(nullptr))
 #endif
 {
-  mCrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-  fromWktFormat(crs.toWktFormat());
+    mCrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+    fromWktFormat(crs.toWktFormat());
 }
 
 
 Crs::~Crs()
 {
-  if (mCrs) {
+    if (mCrs) {
 #if _DEBUG
-    OSRDestroySpatialReference(mCrs);
+        OSRDestroySpatialReference(mCrs);
 #else
-    OGRSpatialReference::DestroySpatialReference(mCrs);
+        OGRSpatialReference::DestroySpatialReference(mCrs);
 #endif
-    mCrs = nullptr;
-  }
+        mCrs = nullptr;
+    }
 }
 
 
 std::string Crs::epsgCode() const
 {
-  return mEpsg;
+    return mEpsg;
 }
 
 void Crs::setEpsgCode(const std::string &epsg)
 {
-  mEpsg = epsg;
-  this->initFromEpsg();
+    mEpsg = epsg;
+    this->initFromEpsg();
 }
 
 std::string Crs::toProjFormat() const
 {
-  
-  std::string s_prj;
 
-  char *c_prj = nullptr;
+    std::string s_prj;
 
-  try {
- 
-    mCrs->exportToProj4(&c_prj);
-    s_prj = c_prj;
+    char *c_prj = nullptr;
 
-  } catch (std::exception &e) {
-    msgError(e.what());
-  } catch (...) {
-    msgError("Unknow exception");
-  }
+    try {
 
-  CPLFree(c_prj);
+        mCrs->exportToProj4(&c_prj);
+        s_prj = c_prj;
 
-  return s_prj;
+    } catch (std::exception &e) {
+        msgError(e.what());
+    } catch (...) {
+        msgError("Unknow exception");
+    }
+
+    CPLFree(c_prj);
+
+    return s_prj;
 }
 
 void Crs::fromProjFormat(const std::string &proj)
 {
-  try {
-    OGRErr err = mCrs->importFromProj4(proj.c_str());
-    if (err != 0) {
-      msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+    try {
+
+        OGRErr err = mCrs->importFromProj4(proj.c_str());
+        if (err != 0) {
+            msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+    } catch (std::exception &e) {
+        msgError(e.what());
+    } catch (...) {
+        msgError("Unknow exception");
     }
-  } catch (std::exception &e) {
-    msgError(e.what());
-  } catch (...) {
-    msgError("Unknow exception");
-  }
 }
 
 std::string Crs::toWktFormat() const
 {
-  char *c_wtk = nullptr;
-  mCrs->exportToWkt(&c_wtk);
-  std::string s_wkt(c_wtk);
-  CPLFree(c_wtk);
-  return s_wkt;
+    char *c_wtk = nullptr;
+    mCrs->exportToWkt(&c_wtk);
+    std::string s_wkt(c_wtk);
+    CPLFree(c_wtk);
+    return s_wkt;
 }
 
 void Crs::fromWktFormat(const std::string &wkt)
 {
-  try {
-    OGRErr err = mCrs->importFromWkt(wkt.c_str());
-    if (err != 0) {
-      msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+    try {
+
+        OGRErr err = mCrs->importFromWkt(wkt.c_str());
+
+        if (err != 0) {
+            msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+    } catch (std::exception &e) {
+        msgError(e.what());
+    } catch (...) {
+        msgError("Unknow exception");
     }
-  } catch (std::exception &e) {
-    msgError(e.what());
-  } catch (...) {
-    msgError("Unknow exception");
-  }
 }
 
 bool Crs::isGeocentric() const
 {
-  return mCrs->IsGeocentric() != 0;
+    return mCrs->IsGeocentric() != 0;
 }
 
 bool Crs::isGeographic() const
 {
-  return mCrs->IsGeographic() != 0;
+    return mCrs->IsGeographic() != 0;
 }
 
 bool Crs::isValid() const
 {
-  OGRErr err = mCrs->Validate();
-  return err == 0;
+    OGRErr err = mCrs->Validate();
+    return err == 0;
 }
 
 OGRSpatialReference *Crs::getOGRSpatialReference()
@@ -190,45 +191,50 @@ OGRSpatialReference *Crs::getOGRSpatialReference()
 
 void Crs::initFromEpsg()
 {
-  try {
-    if (mEpsg.size() <= 5) return;
-    OGRErr err = mCrs->importFromEPSG(std::stoi(mEpsg.substr(5)));
-    if (err != 0) {
-      msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-    } else {
-      initGrid();
-      initGeoid();
+    try {
+
+        if (mEpsg.size() <= 5) return;
+        OGRErr err = mCrs->importFromEPSG(std::stoi(mEpsg.substr(5)));
+        if (err != 0) {
+            msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        } else {
+            initGrid();
+            initGeoid();
+        }
+
+    } catch (std::exception &e) {
+        msgError(e.what());
+    } catch (...) {
+        msgError("Unknow exception");
     }
-  } catch (std::exception &e) {
-    msgError(e.what());
-  } catch (...) {
-    msgError("Unknow exception");
-  }
 }
 
 void Crs::initGrid()
 {
-  if (mGrid.empty() == false) {
-    char *cprj = nullptr;
-    mCrs->exportToProj4(&cprj);
-    std::string crs_prj4 = std::string(cprj).append("+nadgrids=").append(mGrid);
-    mCrs->importFromProj4(crs_prj4.c_str());
-    CPLFree(cprj);
-  }
+    if (mGrid.empty() == false) {
+
+        char *cprj = nullptr;
+        mCrs->exportToProj4(&cprj);
+        std::string crs_prj4 = std::string(cprj).append("+nadgrids=").append(mGrid);
+        mCrs->importFromProj4(crs_prj4.c_str());
+        CPLFree(cprj);
+
+    }
 }
 
 void Crs::initGeoid()
 {
-  if (mGeoid.empty() == false) {
-    char *prjin = nullptr;
-    mCrs->exportToProj4(&prjin);
-    std::string crs_prj4 = std::string(prjin).append("+geoidgrids=").append(mGeoid);
-    mCrs->importFromProj4(crs_prj4.c_str());
-    CPLFree(prjin);
-  }
+    if (mGeoid.empty() == false) {
+
+        char *prjin = nullptr;
+        mCrs->exportToProj4(&prjin);
+        std::string crs_prj4 = std::string(prjin).append("+geoidgrids=").append(mGeoid);
+        mCrs->importFromProj4(crs_prj4.c_str());
+        CPLFree(prjin);
+
+    }
 }
 
-} // End namespace  geospatial
 
 } // End namespace tl
 

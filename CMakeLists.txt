@@ -312,7 +312,7 @@ endif()
 #   variarán.                                                            #
 ##########################################################################
 
-#set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
@@ -391,8 +391,9 @@ endif(WITH_OPENCV)
 # GDAL (optional)                                                        #
 ##########################################################################
 
-if(WITH_GDAL)
 
+
+if(WITH_GDAL) 
   find_package(GDAL QUIET)
 
   if(NOT GDAL_FOUND)

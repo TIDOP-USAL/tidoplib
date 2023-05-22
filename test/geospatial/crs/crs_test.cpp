@@ -29,7 +29,6 @@
 #ifdef TL_HAVE_GDAL
 
 using namespace tl;
-using namespace tl::geospatial;
 
 /* CrsTest */
 

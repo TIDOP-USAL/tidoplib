@@ -120,10 +120,15 @@ struct DescriptiveStatisticsTest
     Series<float> s_4({8.f, 8.5f, 7.5f, 9.f, 6.25f, 5.5f, 8.5f, 7.5f, 8.5f});
     stat_4 = DescriptiveStatistics<float>(s_4);
 
+#if (CPP_VERSION < 20)
     DescriptiveStatistics<double>::Config config{};
     config.skewness_method = SkewnessMethod::fisher_pearson;
     config.sample = false;
     stat_1_population = DescriptiveStatistics<double>(s_1, config);
+#else
+    stat_1_population = DescriptiveStatistics<double>(s_1, {.sample = false, 
+                                                            .skewness_method = SkewnessMethod::fisher_pearson });
+#endif
 
     x = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
     y = {92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};

@@ -22,6 +22,7 @@
  *                                                                        *
  **************************************************************************/
  
+#include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 #include <tidop/core/chrono.h>
@@ -101,7 +102,8 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  Console &console = Console::instance();
+  Console &console = App::console();
+  //Console &console = Console::instance();
   console.setTitle("Transform Example");
   console.setMessageLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);

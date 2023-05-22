@@ -24,6 +24,8 @@
 
 #include "tidop/core/app.h"
 
+#include "tidop/core/console/console.h"
+
 #if TL_OS_LINUX
 #include <unistd.h>
 #endif
@@ -46,25 +48,31 @@ App &App::instance()
 
 tl::Path App::path() const
 {
-  static std::array<char, TL_MAX_PATH> runfile;
+    static std::array<char, TL_MAX_PATH> runfile;
 
 #ifdef TL_OS_WINDOWS
-  ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
-  return tl::Path(std::string(runfile.data()));
+    ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
+    return tl::Path(std::string(runfile.data()));
 #elif defined TL_OS_LINUX
-  std::array<char, 32> _path{};
-  sprintf(_path.data(), "/proc/%d/exe", getpid());
-  long len = readlink(_path.data(), runfile.data(), runfile.size());
-  if (len >= 0)
-    runfile.at(static_cast<size_t>(len)) = '\0';
+    std::array<char, 32> _path{};
+    sprintf(_path.data(), "/proc/%d/exe", getpid());
+    long len = readlink(_path.data(), runfile.data(), runfile.size());
+    if (len >= 0)
+        runfile.at(static_cast<size_t>(len)) = '\0';
 
-  return tl::Path(std::string(runfile.data()));
+    return tl::Path(std::string(runfile.data()));
 #endif
 }
 
 std::string App::version() const
 {
-  return std::string();
+    return std::string();
+}
+
+Console &App::console()
+{
+    static Console console;
+    return console;
 }
 
 void App::init()

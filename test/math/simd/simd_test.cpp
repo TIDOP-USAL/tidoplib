@@ -3219,7 +3219,7 @@ void transpose(Matrix<double> &A, Matrix<double> &B)
     }
 
     // Recorre las columnas no alineadas
-    for (int c = max_cols; c < cols; c++) {
+    for (size_t c = max_cols; c < cols; c++) {
       B(c, r) = A(r, c);
     }
   }

@@ -37,7 +37,6 @@
 
 
 using namespace tl;
-using namespace geospatial;
 
 int main(int argc, char** argv)
 {

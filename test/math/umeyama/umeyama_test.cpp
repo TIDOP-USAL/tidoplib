@@ -26,6 +26,10 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/umeyama.h>
 #include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/rotation_matrix.h>
+#include <tidop/math/algebra/euler_angles.h>
+#include <tidop/math/algebra/rotation_convert.h>
+
 
 using namespace tl::math;
 
@@ -142,22 +146,55 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
   BOOST_CHECK_CLOSE(-99.246,  translation[1], 0.1);
   BOOST_CHECK_CLOSE(-591.456, translation[2], 0.1);
 
-  //{
-  //  Matrix<double> src_mat2 = {{74.19025779187848, 8.749411901636444, -18.612330072771144},
-  //             {74.36043674951422,8.749411901636464, -2.045092574570816},
-  //             {91.2480433111534, 8.749411901636464, -1.961327929447604},
-  //             {91.60235952827264, 8.749411901636464, -19.02572480319629}};
+  {
+    Matrix<double> src_mat2 = {{74.19025779187848, 8.749411901636444, -18.612330072771144},
+               {74.36043674951422,8.749411901636464, -2.045092574570816},
+               {91.2480433111534, 8.749411901636464, -1.961327929447604},
+               {91.60235952827264, 8.749411901636464, -19.02572480319629}};
 
-  //  Matrix<double> dst_mat2 = {{65.76787270674683, -2.842170943040401e-14, -24.428301993342885},
-  //              {70.61906389289197, 0, 6.908026593137352},
-  //              {99.47031667189891, 0, 3.111022232462366},
-  //              {95.375769367781, -2.842170943040401e-14, -28.312814463968905}};
+    Matrix<double> dst_mat2 = {{65.76787270674683, -2.842170943040401e-14, -24.428301993342885},
+                {70.61906389289197, 0, 6.908026593137352},
+                {99.47031667189891, 0, 3.111022232462366},
+                {95.375769367781, -2.842170943040401e-14, -28.312814463968905}};
 
-  //  Umeyama<Matrix<double>> umeyama(src_mat2, dst_mat2);
-  //  auto transform = umeyama.transform();
-  //  std::cout << transform << std::endl;
+    Umeyama<Matrix<double>> umeyama(src_mat2, dst_mat2);
+    auto transform = umeyama.transform();
 
-  //}
+    tl::math::Matrix<double> src_mat(src_mat2.rows(), 4);
+    for (size_t i = 0, j = 0; i < src_mat2.rows(); i++) {
+      src_mat(i, 0) = src_mat2(i, 0);
+      src_mat(i, 1) = src_mat2(i, 1);
+      src_mat(i, 2) = src_mat2(i, 2);
+      src_mat(i, 3) = 1;
+    }
+
+    auto transform_points = transform * src_mat.transpose();
+    auto diff = dst_mat2 - transform_points.transpose().block(0,3, 0, 2);
+
+    std::cout << "Coordenadas de entrada:\n" << src_mat2 << std::endl;
+    std::cout << "Coordenadas de salida:\n" <<  dst_mat2 << std::endl;
+    std::cout << "Coordenadas transformadas:\n" << transform_points.transpose().block(0,3, 0, 2) << std::endl;
+    std::cout << "Diferencia:\n" << diff << std::endl;
+
+    auto rotation = umeyama.rotation();
+    tl::math::RotationMatrix<double> rotation_matrix;
+    rotation_matrix[0][0] = rotation[0][0];
+    rotation_matrix[0][1] = rotation[0][1];
+    rotation_matrix[0][2] = rotation[0][2];
+    rotation_matrix[1][0] = rotation[1][0];
+    rotation_matrix[1][1] = rotation[1][1];
+    rotation_matrix[1][2] = rotation[1][2];
+    rotation_matrix[2][0] = rotation[2][0];
+    rotation_matrix[2][1] = rotation[2][1];
+    rotation_matrix[2][2] = rotation[2][2];
+    tl::math::EulerAngles<double> eulerAngles;
+    tl::math::RotationConverter<double>::convert(rotation_matrix, eulerAngles);
+    tl::math::Vector<double> scale{transform[0][0], transform[1][1], transform[2][2]};
+    auto translation = umeyama.translation(); 
+    std::cout << "\nTranslation:   [" << translation[0] << ", " << translation[1] << ", " << translation[2] << "]" << std::endl;
+    std::cout << "Rotation:      [" << eulerAngles.x << ", " << eulerAngles.y << ", " << eulerAngles.z << "]" << std::endl;
+    std::cout << "Scale:         [" << scale[0] << ", " << scale[1] << ", " << scale[2] << "]" << std::endl;
+  }
 
 }
 

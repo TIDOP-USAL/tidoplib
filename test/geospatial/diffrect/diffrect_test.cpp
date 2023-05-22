@@ -28,7 +28,6 @@
 #include <tidop/geospatial/diffrect.h>
 
 using namespace tl;
-using namespace tl::geospatial;
 
 
 BOOST_AUTO_TEST_SUITE(DifferentialRectificationTestSuite)

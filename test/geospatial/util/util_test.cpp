@@ -27,7 +27,6 @@
 #include <tidop/geospatial/util.h>
 
 using namespace tl;
-using namespace geospatial;
 
 
 BOOST_AUTO_TEST_CASE(TEST_utmZoneFromLongitude)

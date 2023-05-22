@@ -33,6 +33,9 @@
 namespace tl
 {
 
+class App;
+
+
 /*! \addtogroup core
  *  \{
  */
@@ -60,6 +63,7 @@ class TL_EXPORT Console
   : public MessageManager::Listener
 #endif
 {
+
 public:
 
   /*!
@@ -349,6 +353,8 @@ private:
   
   static EnumFlags<MessageLevel> sLevel;
   static std::mutex mtx;
+
+  friend class App;
 
 };
 

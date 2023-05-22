@@ -37,6 +37,9 @@
 namespace tl
 {
 
+class Console;
+
+
 /*! \addtogroup core
  *  \{
  */
@@ -49,26 +52,28 @@ class TL_EXPORT App
 
 private:
 
-  App();
+    App();
 
 public:
 
-  ~App() = default;
+    ~App() = default;
 
-  TL_DISABLE_COPY(App)
-  TL_DISABLE_MOVE(App)
+    TL_DISABLE_COPY(App)
+    TL_DISABLE_MOVE(App)
 
-  /*!
-   * \brief Singleton
-   */
-  static App &instance();
+    /*!
+     * \brief Singleton
+     */
+    static App &instance();
 
-  tl::Path path() const;
-  std::string version() const;
+    tl::Path path() const;
+    std::string version() const;
+
+    static Console &console();
 
 private:
 
-  void init();
+    void init();
 
 };
 
