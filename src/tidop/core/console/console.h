@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_CONSOLE_CONSOLE_H
-#define TL_CORE_CONSOLE_CONSOLE_H
+#pragma once
+
 
 #include "tidop/config.h"
 
@@ -66,199 +66,199 @@ class TL_EXPORT Console
 
 public:
 
-  /*!
-   * \brief Valores de intensidad de color
-   */
-  enum class Intensity : int8_t
-  {
-    normal,            /*!< Normal */
-    bright             /*!< Brillante */
-  };
-
-  /*!
-   * \brief Tipos de color de fondo y caracter.
-   */
-  enum class Color : int8_t 
-  {
-    black,    /*!< Negro */
-    red,      /*!< Rojo */
-    green,    /*!< Verde */
-    yellow,   /*!< Amarillo */
-    blue,     /*!< Azul */
-    magenta,  /*!< Magenta */
-    cyan,     /*!< Cian */
-    white     /*!< Blanco */
-  };
-
-  /*!
-   * \brief Modo de consola
-   */
-  enum class Mode : int8_t 
-  {
-    input,          /*!< Consola en modo entrada */
-    output,         /*!< Consola en modo salida */
-    output_error    /*!< Consola en modo salida de errores */
-  };
+    /*!
+     * \brief Valores de intensidad de color
+     */
+    enum class Intensity : int8_t
+    {
+      normal,            /*!< Normal */
+      bright             /*!< Brillante */
+    };
+    
+    /*!
+     * \brief Tipos de color de fondo y caracter.
+     */
+    enum class Color : int8_t 
+    {
+      black,    /*!< Negro */
+      red,      /*!< Rojo */
+      green,    /*!< Verde */
+      yellow,   /*!< Amarillo */
+      blue,     /*!< Azul */
+      magenta,  /*!< Magenta */
+      cyan,     /*!< Cian */
+      white     /*!< Blanco */
+    };
+    
+    /*!
+     * \brief Modo de consola
+     */
+    enum class Mode : int8_t 
+    {
+      input,          /*!< Consola en modo entrada */
+      output,         /*!< Consola en modo salida */
+      output_error    /*!< Consola en modo salida de errores */
+    };
 
 private:
 
-  /// Constructora privada ya que es un Singleton
-  Console();
+    /// Constructora privada ya que es un Singleton
+    Console();
 
 public:
 
 #ifdef TL_MESSAGE_HANDLER
-  ~Console() override;
+    ~Console() override;
 #else
-  ~Console();
+    ~Console();
 #endif
 
-  TL_DISABLE_COPY(Console)
-  TL_DISABLE_MOVE(Console)
+    TL_DISABLE_COPY(Console)
+    TL_DISABLE_MOVE(Console)
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 
-  /*!
-   * \brief Singleton que devuelve una referencia unica de un objeto Console
-   */
-  TL_DEPRECATED("App::console", "3.0")
-  static Console &instance();
+    /*!
+     * \brief Singleton que devuelve una referencia unica de un objeto Console
+     */
+    TL_DEPRECATED("App::console", "3.0")
+    static Console &instance();
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
-  /*!
-   * \brief Niveles de mensaje activados
-   * \return Flag con los niveles de mensajes aceptados por la consola
-   * \see EnumFlags
-   */
-  static EnumFlags<MessageLevel> messageLevel();
-
-  /*!
-   * \brief Establece los niveles de mensajes que se muestran por consola
-   * \param[in] level Nivel de log
-   * \see MessageLevel
-   */
-  static void setMessageLevel(MessageLevel level);
-
-  /*!
-   * \brief Imprime un mensaje en la consola
-   * \param[in] message Mensaje que se muestra por consola
-   */
+    /*!
+     * \brief Niveles de mensaje activados
+     * \return Flag con los niveles de mensajes aceptados por la consola
+     * \see EnumFlags
+     */
+    static EnumFlags<MessageLevel> messageLevel();
+    
+    /*!
+     * \brief Establece los niveles de mensajes que se muestran por consola
+     * \param[in] level Nivel de log
+     * \see MessageLevel
+     */
+    static void setMessageLevel(MessageLevel level);
+    
+    /*!
+     * \brief Imprime un mensaje en la consola
+     * \param[in] message Mensaje que se muestra por consola
+     */
 #if CPP_VERSION >= 17
-  void printMessage(std::string_view message);
+    void printMessage(std::string_view message);
 #else
-  void printMessage(const std::string &message);
+    void printMessage(const std::string &message);
 #endif
 
-  /*!
-   * \brief Imprime un mensaje de error en la consola
-   * \param[in] message Mensaje que se muestra por consola
-   */
+    /*!
+     * \brief Imprime un mensaje de error en la consola
+     * \param[in] message Mensaje que se muestra por consola
+     */
 #if CPP_VERSION >= 17
-  void printErrorMessage(std::string_view message);
+    void printErrorMessage(std::string_view message);
 #else
-  void printErrorMessage(const std::string &message);
+    void printErrorMessage(const std::string &message);
 #endif
 
-  /*!
-   * \brief Recupera los valores iniciales
-   */
-  void reset();
-
-  /*!
-   * \brief Establece el color de fondo
-   * \param[in] backgroundColor Color de fondo
-   * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
-   */
-  void setConsoleBackgroundColor(Console::Color backgroundColor,
-                                 Console::Intensity intensity = Console::Intensity::normal);
-
-  /*!
-   * \brief Establece el color de caracter
-   * \param[in] foregroundColor Color de caracter
-   * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
-   * \see Console::Color, Console::Intensity
-   */
-  void setConsoleForegroundColor(Console::Color foregroundColor,
-                                 Console::Intensity intensity = Console::Intensity::normal);
-
-  /*!
-   * \brief Establece la consola como modo Unicode
-   */
-  void setConsoleUnicode();
-
-  /*!
-   * \brief Establece la fuente como negrita
-   * \param[in] bBold 
-   */
-  void setFontBold(bool bBold);  
-
-  /*!
-   * \brief Establece el tamaño de la fuente
-   * \param[in] fontHeight Tamaño de la fuente
-   */
-  void setFontHeight(int16_t fontHeight);
-
-  /*!
-   * \brief Establece el título de la consola
-   * \param[in] title Titulo de la consola
-   */
-  void setTitle(const std::string &title);
+    /*!
+     * \brief Recupera los valores iniciales
+     */
+    void reset();
+    
+    /*!
+     * \brief Establece el color de fondo
+     * \param[in] backgroundColor Color de fondo
+     * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+     */
+    void setConsoleBackgroundColor(Console::Color backgroundColor,
+                                   Console::Intensity intensity = Console::Intensity::normal);
+    
+    /*!
+     * \brief Establece el color de caracter
+     * \param[in] foregroundColor Color de caracter
+     * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+     * \see Console::Color, Console::Intensity
+     */
+    void setConsoleForegroundColor(Console::Color foregroundColor,
+                                   Console::Intensity intensity = Console::Intensity::normal);
+    
+    /*!
+     * \brief Establece la consola como modo Unicode
+     */
+    void setConsoleUnicode();
+    
+    /*!
+     * \brief Establece la fuente como negrita
+     * \param[in] bBold 
+     */
+    void setFontBold(bool bBold);  
+    
+    /*!
+     * \brief Establece el tamaño de la fuente
+     * \param[in] fontHeight Tamaño de la fuente
+     */
+    void setFontHeight(int16_t fontHeight);
+    
+    /*!
+     * \brief Establece el título de la consola
+     * \param[in] title Titulo de la consola
+     */
+    void setTitle(const std::string &title);
 
 protected:
 
 #ifdef TL_MESSAGE_HANDLER  
 
-  /*!
-   * \brief onMsgDebug
-   * \param msg
-   * \param date
-   */
+    /*!
+     * \brief onMsgDebug
+     * \param msg
+     * \param date
+     */
 #if CPP_VERSION >= 17
-  void onMsgDebug(std::string_view message, 
-                  std::string_view date) override;
-#else
-  void onMsgDebug(const std::string &message, 
-                  const std::string &date) override;
-#endif
-
-  /*!
-   * \brief onMsgInfo
-   * \param msg
-   * \param date
-   */
-#if CPP_VERSION >= 17
-  void onMsgInfo(std::string_view message, 
-                 std::string_view date) override;
-#else
-  void onMsgInfo(const std::string &message, 
-                 const std::string &date) override;
-#endif
-
-  /*!
-   * \brief onMsgWarning
-   * \param msg
-   * \param date
-   */
-#if CPP_VERSION >= 17
-  void onMsgWarning(std::string_view message, 
+    void onMsgDebug(std::string_view message, 
                     std::string_view date) override;
 #else
-  void onMsgWarning(const std::string &message, 
+    void onMsgDebug(const std::string &message, 
                     const std::string &date) override;
 #endif
 
-  /*!
-   * \brief onMsgError
-   * \param msg
-   * \param date
-   */
+    /*!
+     * \brief onMsgInfo
+     * \param msg
+     * \param date
+     */
 #if CPP_VERSION >= 17
-  void onMsgError(std::string_view message, 
-                  std::string_view date) override;
+    void onMsgInfo(std::string_view message, 
+                   std::string_view date) override;
 #else
-  void onMsgError(const std::string &message, 
-                  const std::string &date) override;
+    void onMsgInfo(const std::string &message, 
+                   const std::string &date) override;
+#endif
+
+    /*!
+     * \brief onMsgWarning
+     * \param msg
+     * \param date
+     */
+#if CPP_VERSION >= 17
+    void onMsgWarning(std::string_view message, 
+                      std::string_view date) override;
+#else
+    void onMsgWarning(const std::string &message, 
+                      const std::string &date) override;
+#endif
+
+    /*!
+     * \brief onMsgError
+     * \param msg
+     * \param date
+     */
+#if CPP_VERSION >= 17
+    void onMsgError(std::string_view message, 
+                    std::string_view date) override;
+#else
+    void onMsgError(const std::string &message, 
+                    const std::string &date) override;
 #endif
 
 #endif // TL_MESSAGE_HANDLER 
@@ -267,99 +267,99 @@ private:
 
 #ifdef TL_OS_WINDOWS
 
-  /*!
-   * \brief Inicializa la consola guardando la configuración  actual.
-   * \param handle
-   */
-  void init(DWORD handle);
+    /*!
+     * \brief Inicializa la consola guardando la configuración  actual.
+     * \param handle
+     */
+    void init(DWORD handle);
 
 #else
 
-  /*!
-   * \brief Inicializa la consola guardando la configuración  actual.
-   */
-  void init(FILE *stream);
+    /*!
+     * \brief Inicializa la consola guardando la configuración  actual.
+     */
+    void init(FILE *stream);
 
 #endif
 
-  /*!
-   * \brief Actualiza la consola
-   */
-  void update();
+    /*!
+     * \brief Actualiza la consola
+     */
+    void update();
 
 private:
 
 #ifdef TL_OS_WINDOWS
 
-  /* Consola de Windows */
-
-  /*!
-   * \brief Manejador de la consola
-   */
-  HANDLE mHandle;
-  
-  /*!
-   * \brief Configuración de la consola al iniciar.
-   *
-   * La configuración inicial se recupera al salir o
-   * con el método reset
-   */
-  WORD mOldColorAttrs;
-
-  /*!
-   * \brief Intensidad de caracter
-   */
-  WORD mForegroundIntensity;
-
-  /*!
-   * \brief Color de caracteres
-   */
-  WORD mForegroundColor;
-
-  /*!
-   * \brief Intensidad de fondo
-   */
-  WORD mBackgroundIntensity;
-
-  /*!
-   * \brief Color de fondo
-   */
-  WORD mBackgroundColor;
-
-  CONSOLE_FONT_INFOEX mIniFont;
-  CONSOLE_FONT_INFOEX mCurrentFont;
+    /* Consola de Windows */
+    
+    /*!
+     * \brief Manejador de la consola
+     */
+    HANDLE mHandle;
+    
+    /*!
+     * \brief Configuración de la consola al iniciar.
+     *
+     * La configuración inicial se recupera al salir o
+     * con el método reset
+     */
+    WORD mOldColorAttrs;
+    
+    /*!
+     * \brief Intensidad de caracter
+     */
+    WORD mForegroundIntensity;
+    
+    /*!
+     * \brief Color de caracteres
+     */
+    WORD mForegroundColor;
+    
+    /*!
+     * \brief Intensidad de fondo
+     */
+    WORD mBackgroundIntensity;
+    
+    /*!
+     * \brief Color de fondo
+     */
+    WORD mBackgroundColor;
+    
+    CONSOLE_FONT_INFOEX mIniFont;
+    CONSOLE_FONT_INFOEX mCurrentFont;
 
 #else
 
-  /* Consola Linux */
-
-  /*!
-   * \brief mStream
-   */
-  FILE *mStream;
-
-  /*!
-   * \brief mCommand
-   */
-  char mCommand[13];
-
-  /*!
-   * \brief Color de caracteres
-   */
-  int mForegroundColor;
-
-  /*!
-   * \brief Color de fondo
-   */
-  int mBackgroundColor;
-  int mBold;
+    /* Consola Linux */
+    
+    /*!
+     * \brief mStream
+     */
+    FILE *mStream;
+    
+    /*!
+     * \brief mCommand
+     */
+    char mCommand[13];
+    
+    /*!
+     * \brief Color de caracteres
+     */
+    int mForegroundColor;
+    
+    /*!
+     * \brief Color de fondo
+     */
+    int mBackgroundColor;
+    int mBold;
 
 #endif
   
-  static EnumFlags<MessageLevel> sLevel;
-  static std::mutex mtx;
-
-  friend class App;
+    static EnumFlags<MessageLevel> sLevel;
+    static std::mutex mtx;
+    
+    friend class App;
 
 };
 
@@ -370,8 +370,4 @@ private:
 /*! \} */ // end of core
 
 
-
 } // End namespace tl
-
-
-#endif // TL_CORE_CONSOLE_CONSOLE_H

@@ -34,138 +34,142 @@
 
 using namespace tl;
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 
-  Console &console = App::console();
-  console.setTitle("Transform Example");
-  console.setMessageLevel(MessageLevel::msg_verbose);
-  App::messageManager().addListener(&console);
+    Console &console = App::console();
+    console.setTitle("Transform Example");
+    console.setMessageLevel(MessageLevel::msg_verbose);
+    App::messageManager().addListener(&console);
 
-  bool compute = false;
-  bool transform = true;
-  double tx = 0.0;
-  double ty = 0.0;
-  double rotation_angle = 0.;
-  double scale = 1.;
-  double scale_x = 1.;
-  double scale_y = 1.;
+    auto arg_compute = std::make_shared<Argument_<bool>>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
+    auto arg_transform = std::make_shared<Argument_<bool>>("transform", "Aplica la transformación a un listado de puntos", true);
+    auto arg_tx = std::make_shared<Argument_<double>>("tx", "Traslación en X", 0.0);
+    auto arg_ty = std::make_shared<Argument_<double>>("ty", "Traslación en Y", 0.0);
+    auto arg_rotation = std::make_shared<Argument_<double>>("rotation", "Rotación", 0.);
+    auto arg_scale = std::make_shared<Argument_<double>>("scale", "Escala", 1.);
+    arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
+    auto arg_scale_x = std::make_shared<Argument_<double>>("scale_x", "Escala X", 1.);
+    auto arg_scale_y = std::make_shared<Argument_<double>>("scale_y", "Escala Y", 1.);
 
-  auto arg_compute = CreateArgumentBooleanOptional("compute", "Calcula la transformación a partir de dos listas de puntos", &compute);
-  auto arg_transform = CreateArgumentBooleanOptional("transform", "Aplica la transformación a un listado de puntos", &transform);
-  auto arg_tx = CreateArgumentDoubleOptional("tx", "Traslación en X", &tx);
-  auto arg_ty = CreateArgumentDoubleOptional("ty", "Traslación en Y", &ty);
-  auto arg_rotation = CreateArgumentDoubleOptional("rotation", "Rotación", &rotation_angle);
-  auto arg_scale = CreateArgumentDoubleOptional("scale", "Escala", &scale);
-  auto arg_scale_x = CreateArgumentDoubleOptional("scale_x", "Escala X", &scale_x);
-  auto arg_scale_y = CreateArgumentDoubleOptional("scale_y", "Escala Y", &scale_y);
 
-  std::shared_ptr<Command> cmd_translation(new Command("Translation", "Translation transform", {
-                                                       arg_compute,
-                                                       arg_transform,
-                                                       arg_tx,
-                                                       arg_ty}));
+    std::shared_ptr<Command> cmd_translation(new Command("Translation", "Translation transform", {
+                                                         arg_compute,
+                                                         arg_transform,
+                                                         arg_tx,
+                                                         arg_ty}));
 
-  std::shared_ptr<Command> cmd_rotation(new Command("Rotation", "Rotation transform", {
+    std::shared_ptr<Command> cmd_rotation(new Command("Rotation", "Rotation transform", {
+                                                      arg_compute,
+                                                      arg_transform,
+                                                      arg_rotation}));
+
+    std::shared_ptr<Command> cmd_helmert_2d(new Command("Helmert2D", "Helmert2D transform", {
+                                                         arg_compute,
+                                                         arg_transform,
+                                                         arg_tx,
+                                                         arg_ty,
+                                                         arg_scale,
+                                                         arg_rotation}));
+
+    std::shared_ptr<Command> cmd_affine(new Command("Affine", "Affine transform", {
                                                     arg_compute,
                                                     arg_transform,
+                                                    arg_tx,
+                                                    arg_ty,
+                                                    arg_scale_x,
+                                                    arg_scale_y,
                                                     arg_rotation}));
 
-  std::shared_ptr<Command> cmd_helmert_2d(new Command("Helmert2D", "Helmert2D transform", {
-                                                       arg_compute,
-                                                       arg_transform,
-                                                       arg_tx,
-                                                       arg_ty,
-                                                       arg_scale,
-                                                       arg_rotation}));
+    CommandList cmd_list_transform("transform", "Transform");
+    cmd_list_transform.addCommand(cmd_translation);
+    cmd_list_transform.addCommand(cmd_rotation);
+    cmd_list_transform.addCommand(cmd_helmert_2d);
+    cmd_list_transform.addCommand(cmd_affine);
 
-  std::shared_ptr<Command> cmd_affine(new Command("Affine", "Affine transform", {
-                                                  arg_compute,
-                                                  arg_transform,
-                                                  arg_tx,
-                                                  arg_ty,
-                                                  arg_scale_x,
-                                                  arg_scale_y,
-                                                  arg_rotation}));
-
-  CommandList cmd_list_transform("transform", "Transform");
-  cmd_list_transform.addCommand(cmd_translation);
-  cmd_list_transform.addCommand(cmd_rotation);
-  cmd_list_transform.addCommand(cmd_helmert_2d);
-  cmd_list_transform.addCommand(cmd_affine);
-
-  // Parseo de los argumentos y comprobación de los mismos
-  CommandList::Status status = cmd_list_transform.parse(argc, argv);
-  if (status == CommandList::Status::parse_error ) {
-    return 1;
-  } else if (status == CommandList::Status::show_help) {
-    return 0;
-  } else if (status == CommandList::Status::show_licence) {
-    return 0;
-  } else if (status == CommandList::Status::show_version) {
-    return 0;
-  }
-
-  std::string transform_name = cmd_list_transform.commandName();
-
-  std::vector<Point<double>> pts_in = {
-    Point<double>(4157222.543, 664789.307),
-    Point<double>(4149043.336, 688836.443),
-    Point<double>(4172803.511, 690340.078),
-    Point<double>(4177148.376, 642997.635),
-    Point<double>(4137012.190, 671808.029),
-    Point<double>(4146292.729, 666952.887),
-    Point<double>(4138759.902, 702670.738) };
-  
-
-  std::shared_ptr<TransformBase<Point<double>>> transformation;
-
-  Chrono chrono("Translation");
-  chrono.run();
-
-  if (compute) {
-
-    /// TODO: Por ahora para pruebas
-    std::vector<Point<double>> pts_out = {
-      Point<double>(737107.092,	759565.279),
-      Point<double>(731294.227,	764301.907),
-      Point<double>(735901.291,	768078.488),
-      Point<double>(744937.420,	757067.318),
-      Point<double>(731760.522,  758392.053),
-      Point<double>(734496.503,	758529.698),
-      Point<double>(726807.795,	766227.040) };
-
-    if (transform_name.compare("Translation") == 0) {
-      transformation = std::make_shared<Translation<Point<double>>>();
-    } else if (transform_name.compare("Rotation") == 0) {
-      transformation = std::make_shared<Rotation<Point<double>>>();
-    } else if (transform_name.compare("Helmert2D") == 0) {
-      transformation = std::make_shared<Helmert2D<Point<double>>>();
-    } else if (transform_name.compare("Affine") == 0) {
-      transformation = std::make_shared<Affine<Point<double>>>();
+    // Parseo de los argumentos y comprobación de los mismos
+    CommandList::Status status = cmd_list_transform.parse(argc, argv);
+    if(status == CommandList::Status::parse_error) {
+        return 1;
+    } else if(status == CommandList::Status::show_help) {
+        return 0;
+    } else if(status == CommandList::Status::show_licence) {
+        return 0;
+    } else if(status == CommandList::Status::show_version) {
+        return 0;
     }
 
-    transformation->compute(pts_in, pts_out);
+    bool compute = arg_compute->value();
+    bool transform = arg_transform->value();
+    double tx = arg_tx->value();
+    double ty = arg_ty->value();
+    double rotation_angle = arg_rotation->value();
+    double scale = arg_scale->value();
+    double scale_x = arg_scale_x->value();
+    double scale_y = arg_scale_y->value();
 
-  } else {
+    std::string transform_name = cmd_list_transform.commandName();
 
-    if (transform_name.compare("Translation") == 0) {
-      transformation = std::make_shared<Translation<Point<double>>>(tx, ty);
-    } else if (transform_name.compare("Rotation") == 0) {
-      transformation = std::make_shared<Rotation<Point<double>>>(rotation_angle);
-    } else if (transform_name.compare("Helmert2D") == 0) {
-      transformation = std::make_shared<Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
-    } else if (transform_name.compare("Affine") == 0) {
-      transformation = std::make_shared<Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
+    std::vector<Point<double>> pts_in = {
+      Point<double>(4157222.543, 664789.307),
+      Point<double>(4149043.336, 688836.443),
+      Point<double>(4172803.511, 690340.078),
+      Point<double>(4177148.376, 642997.635),
+      Point<double>(4137012.190, 671808.029),
+      Point<double>(4146292.729, 666952.887),
+      Point<double>(4138759.902, 702670.738)};
+
+
+    std::shared_ptr<TransformBase<Point<double>>> transformation;
+
+    Chrono chrono("Translation");
+    chrono.run();
+
+    if(compute) {
+
+        /// TODO: Por ahora para pruebas
+        std::vector<Point<double>> pts_out = {
+          Point<double>(737107.092,	759565.279),
+          Point<double>(731294.227,	764301.907),
+          Point<double>(735901.291,	768078.488),
+          Point<double>(744937.420,	757067.318),
+          Point<double>(731760.522,  758392.053),
+          Point<double>(734496.503,	758529.698),
+          Point<double>(726807.795,	766227.040)};
+
+        if(transform_name.compare("Translation") == 0) {
+            transformation = std::make_shared<Translation<Point<double>>>();
+        } else if(transform_name.compare("Rotation") == 0) {
+            transformation = std::make_shared<Rotation<Point<double>>>();
+        } else if(transform_name.compare("Helmert2D") == 0) {
+            transformation = std::make_shared<Helmert2D<Point<double>>>();
+        } else if(transform_name.compare("Affine") == 0) {
+            transformation = std::make_shared<Affine<Point<double>>>();
+        }
+
+        transformation->compute(pts_in, pts_out);
+
+    } else {
+
+        if(transform_name.compare("Translation") == 0) {
+            transformation = std::make_shared<Translation<Point<double>>>(tx, ty);
+        } else if(transform_name.compare("Rotation") == 0) {
+            transformation = std::make_shared<Rotation<Point<double>>>(rotation_angle);
+        } else if(transform_name.compare("Helmert2D") == 0) {
+            transformation = std::make_shared<Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
+        } else if(transform_name.compare("Affine") == 0) {
+            transformation = std::make_shared<Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
+        }
+
+        std::vector<Point<double>> pts_out;
+
+        transformation->transform(pts_in, pts_out);
+
+        for(auto &point : pts_out)
+            std::cout << "[" << point.x << "," << point.y << "]" << std::endl;
     }
 
-    std::vector<Point<double>> pts_out;
+    chrono.stop();
 
-    transformation->transform(pts_in, pts_out);
-    
-  }
-
-  chrono.stop();
-
-  return 0;
+    return 0;
 }

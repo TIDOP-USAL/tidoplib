@@ -28,93 +28,123 @@ namespace tl
 {
 
 Argument::Argument(std::string name,
-                   std::string description)
+                   std::string description, 
+                   Type type)
   : mName(std::move(name)),
     mDescription(std::move(description)),
-    mShortName()
+    mShortName(),
+    mType(type)
 {
 
 }
 
 Argument::Argument(const char &shortName,
-                   std::string description)
+                   std::string description, 
+                   Type type)
   : mName(""),
     mDescription(std::move(description)),
-    mShortName(shortName)
+    mShortName(shortName),
+    mType(type)
 {
 }
 
 Argument::Argument(std::string name,
                    const char &shortName,
-                   std::string description)
+                   std::string description, 
+                   Type type)
   : mName(std::move(name)),
     mDescription(std::move(description)),
-    mShortName(shortName)
+    mShortName(shortName),
+    mType(type)
 {
 }
 
 Argument::Argument(const Argument &argument)
   : mName(argument.mName),
     mDescription(argument.mDescription),
-    mShortName(argument.mShortName)
+    mShortName(argument.mShortName),
+    mType(argument.mType)
 {
 }
 
 Argument::Argument(Argument &&argument) TL_NOEXCEPT
   : mName(std::move(argument.mName)),
     mDescription(std::move(argument.mDescription)),
-    mShortName(argument.mShortName)
+    mShortName(argument.mShortName),
+    mType(argument.mType)
 {
 }
 
-Argument &Argument::operator=(const Argument &argument)
+auto Argument::operator=(const Argument &argument) -> Argument &
 {
-  if (this != &argument){
-    this->mName = argument.mName;
-    this->mDescription = argument.mName;
-    this->mShortName = argument.mShortName;
-  }
-  return *this;
+    if(this != &argument) {
+
+        this->mName = argument.mName;
+        this->mDescription = argument.mName;
+        this->mShortName = argument.mShortName;
+        this->mType = argument.mType;
+    }
+
+    return *this;
 }
 
-Argument &Argument::operator = (Argument &&argument) TL_NOEXCEPT
+auto Argument::operator = (Argument &&argument) TL_NOEXCEPT -> Argument &
 {
-  if (this != &argument){
-    this->mName = std::move(argument.mName);
-    this->mDescription = std::move(argument.mName);
-    this->mShortName = argument.mShortName;
-  }
-  return *this;
+    if(this != &argument) {
+
+        this->mName = std::move(argument.mName);
+        this->mDescription = std::move(argument.mName);
+        this->mShortName = argument.mShortName;
+        this->mType = argument.mType;
+
+    }
+
+    return *this;
 }
 
-std::string Argument::name() const
+auto Argument::name() const -> std::string
 {
-  return mName;
+    return mName;
 }
 
 void Argument::setName(const std::string &name)
 {
-  mName = name;
+    mName = name;
 }
 
-std::string Argument::description() const
+auto Argument::description() const -> std::string
 {
-  return mDescription;
+    return mDescription;
 }
 
 void Argument::setDescription(const std::string &description)
 {
-  mDescription = description;
+    mDescription = description;
 }
 
-char Argument::shortName() const
+auto Argument::shortName() const -> char
 {
-  return mShortName;
+    return mShortName;
 }
 
 void Argument::setShortName(const char &shortName)
 {
-  mShortName = shortName;
+    mShortName = shortName;
+}
+
+auto Argument::type() const -> Type
+{
+    return mType;
+}
+
+auto Argument::validator() const -> std::shared_ptr<Validator>
+{
+    return mValidator;
+}
+
+void Argument::setValidator(const std::shared_ptr<Validator> &validator)
+{
+    mValidator = validator;
 }
 
 } // End mamespace tl

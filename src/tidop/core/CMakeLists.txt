@@ -73,7 +73,8 @@ if(BUILD_TL_CORE)
                              console.h
                              console/console.h
                              console/argument.h
-                             console/command.h)
+                             console/command.h
+                             console/validator.h)
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

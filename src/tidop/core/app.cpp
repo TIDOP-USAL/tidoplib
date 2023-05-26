@@ -39,13 +39,13 @@ namespace tl
 
 App::App()
 {
-  init();
+    init();
 }
 
 App &App::instance()
 {
-  static App app;
-  return app;
+    static App app;
+    return app;
 }
 
 tl::Path App::path() const

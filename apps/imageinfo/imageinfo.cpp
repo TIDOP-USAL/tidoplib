@@ -24,7 +24,6 @@
  
 #include <stdio.h>
 
-// Cabeceras tidopLib
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/log.h>
@@ -45,85 +44,82 @@ using namespace tl;
  *
  * uso:
  */
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 
-  // Consola
-  Console &console = App::console();
-  console.setTitle("Image Metadata");
-  console.setMessageLevel(MessageLevel::msg_verbose);
-  console.setConsoleUnicode();
-  App::messageManager().addListener(&console);
+    Path app_path(argv[0]);
+    std::string cmd_name = app_path.baseName().toString();
 
-  // Log 
-  Log &log = App::log();
-  log.setMessageLevel(MessageLevel::msg_verbose);
-  App::messageManager().addListener(&log);
+    Console &console = App::console();
+    console.setTitle("Image Metadata");
+    console.setMessageLevel(MessageLevel::msg_verbose);
+    console.setConsoleUnicode();
+    App::messageManager().addListener(&console);
 
-  Path img;
+    Log &log = App::log();
+    log.setMessageLevel(MessageLevel::msg_verbose);
+    App::messageManager().addListener(&log);
 
-  Command cmd("imageinfo", "Image Metadata");
-  cmd.addArgument(CreateArgumentPathRequired("img", 'i', "Image", &img));
+    Command cmd(cmd_name, "Image Metadata");
+    cmd.addArgument<std::string>("img", 'i', "Image");
 
-  // Parseo de los argumentos y comprobación de los mismos
-  Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::parse_error) {
-    return 1;
-  } else if (status == Command::Status::show_help) {
-    return 0;
-  } else if (status == Command::Status::show_licence) {
-    return 0;
-  } else if (status == Command::Status::show_version) {
-    return 0;
-  }
+    Command::Status status = cmd.parse(argc, argv);
 
-  log.setLogFile(Path(img).replaceExtension(".log").toString());
-
-  Chrono chrono("Image read");
-  chrono.run();
-
-  try {
-
-    std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::create(img);
-
-    imageReader->open();
-    if (imageReader->isOpen()) {
-
-      msgInfo("Numero de bandas: %i", imageReader->channels());
-      msgInfo("Profundidad de color: %i", imageReader->depth());
-      msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
-      msgInfo("Metadatos:");
-
-      std::shared_ptr<ImageMetadata> image_metadata = imageReader->metadata();
-      std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
-      std::string name;
-      std::string value;
-      
-      for (auto it = metadata.begin(); it != metadata.end(); it++) {
-        name = it->first;
-        value = it->second;
-        msgInfo("  %s: %s", name.c_str(), value.c_str());
-      }
-
-      imageReader->close();
-
-    } else {
-      msgError("Error al abrir la imagen: %s", img.toString().c_str());
+    if(status == Command::Status::parse_error) {
+        return 1;
+    } else if(status == Command::Status::show_help) {
+        return 0;
+    } else if(status == Command::Status::show_licence) {
+        return 0;
+    } else if(status == Command::Status::show_version) {
+        return 0;
     }
 
-  } catch (const std::exception &e) {
+    Path img = cmd.value<std::string>("img");
 
-    printException(e);
+    log.setLogFile(Path(img).replaceExtension(".log").toString());
 
-    return 1;
+    Chrono chrono("Image read");
+    chrono.run();
 
-  } catch (...) {
+    try {
 
-    msgError("Unknow exception");
+        std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::create(img);
 
-  }
+        imageReader->open();
+        if(imageReader->isOpen()) {
 
-  chrono.stop();
+            msgInfo("Numero de bandas: %i", imageReader->channels());
+            msgInfo("Profundidad de color: %i", imageReader->depth());
+            msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
+            msgInfo("Metadatos:");
 
-  return 0;
+            std::shared_ptr<ImageMetadata> image_metadata = imageReader->metadata();
+            std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
+            std::string name;
+            std::string value;
+
+            for(auto it = metadata.begin(); it != metadata.end(); it++) {
+                name = it->first;
+                value = it->second;
+                msgInfo("  %s: %s", name.c_str(), value.c_str());
+            }
+
+            imageReader->close();
+
+        } else {
+            msgError("Error al abrir la imagen: %s", img.toString().c_str());
+        }
+
+    } catch(const std::exception &e) {
+        printException(e);
+        return 1;
+    }  catch(...) {
+        msgError("Unknow exception");
+        return 1;
+    }
+
+    chrono.stop();
+
+    return 0;
 }

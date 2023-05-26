@@ -33,10 +33,10 @@ namespace tl
 {
 
 struct msgProperties {
-  const char *normal;
-  const char *extend;
-  Console::Color foregroundColor;
-  Console::Intensity intensity;
+    const char *normal;
+    const char *extend;
+    Console::Color foregroundColor;
+    Console::Intensity intensity;
 };
 
 static struct msgProperties msgTemplate[] = {
@@ -168,134 +168,127 @@ void Console::setConsoleBackgroundColor(Console::Color backgroundColor,
                                         Console::Intensity intensity)
 {
 #ifdef TL_OS_WINDOWS
-  switch (backgroundColor) {
-  case tl::Console::Color::black:
-    mBackgroundColor = 0;
-    break;
-  case tl::Console::Color::blue:
-    mBackgroundColor = BACKGROUND_BLUE;
-    break;
-  case tl::Console::Color::green:
-    mBackgroundColor = BACKGROUND_GREEN;
-    break;
-  case tl::Console::Color::cyan:
-    mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
-    break;
-  case tl::Console::Color::red:
-    mBackgroundColor = BACKGROUND_RED;
-    break;
-  case tl::Console::Color::magenta:
-    mBackgroundColor = BACKGROUND_RED | BACKGROUND_BLUE;
-    break;
-  case tl::Console::Color::yellow:
-    mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_RED;
-    break;
-  case tl::Console::Color::white:
-    mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
-    break;
-  default:
-    mBackgroundColor = 0;
-    break;
-  }
-  if(intensity == Console::Intensity::normal)
-      mBackgroundIntensity = 0;
-  else
-      mBackgroundIntensity = BACKGROUND_INTENSITY;
+    switch(backgroundColor) {
+        case tl::Console::Color::black:
+            mBackgroundColor = 0;
+            break;
+        case tl::Console::Color::blue:
+            mBackgroundColor = BACKGROUND_BLUE;
+            break;
+        case tl::Console::Color::green:
+            mBackgroundColor = BACKGROUND_GREEN;
+            break;
+        case tl::Console::Color::cyan:
+            mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
+            break;
+        case tl::Console::Color::red:
+            mBackgroundColor = BACKGROUND_RED;
+            break;
+        case tl::Console::Color::magenta:
+            mBackgroundColor = BACKGROUND_RED | BACKGROUND_BLUE;
+            break;
+        case tl::Console::Color::yellow:
+            mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_RED;
+            break;
+        case tl::Console::Color::white:
+            mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
+            break;
+        default:
+            mBackgroundColor = 0;
+            break;
+    }
+ 
+    if(intensity == Console::Intensity::normal)
+        mBackgroundIntensity = 0;
+    else
+        mBackgroundIntensity = BACKGROUND_INTENSITY;
 #else
-  mBackgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity) * 60;
+    mBackgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity) * 60;
 #endif
-  update();
+    update();
 }
 
 void Console::setConsoleForegroundColor(Console::Color foregroundColor,
                                         Console::Intensity intensity)
 {
 #ifdef TL_OS_WINDOWS
-  switch (foregroundColor) {
-  case tl::Console::Color::black:
-    mForegroundColor = 0;
-    break;
-  case tl::Console::Color::blue:
-    mForegroundColor = FOREGROUND_BLUE;
-    break;
-  case tl::Console::Color::green:
-    mForegroundColor = FOREGROUND_GREEN;
-    break;
-  case tl::Console::Color::cyan:
-    mForegroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
-    break;
-  case tl::Console::Color::red:
-    mForegroundColor = FOREGROUND_RED;
-    break;
-  case tl::Console::Color::magenta:
-    mForegroundColor = FOREGROUND_RED | FOREGROUND_BLUE;
-    break;
-  case tl::Console::Color::yellow:
-    mForegroundColor = FOREGROUND_GREEN | FOREGROUND_RED;
-    break;
-  case tl::Console::Color::white:
-    mForegroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
-    break;
-  default:
-    mForegroundColor = 0;
-    break;
-  }
+    switch(foregroundColor) {
+        case tl::Console::Color::black:
+            mForegroundColor = 0;
+            break;
+        case tl::Console::Color::blue:
+            mForegroundColor = FOREGROUND_BLUE;
+            break;
+        case tl::Console::Color::green:
+            mForegroundColor = FOREGROUND_GREEN;
+            break;
+        case tl::Console::Color::cyan:
+            mForegroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
+            break;
+        case tl::Console::Color::red:
+            mForegroundColor = FOREGROUND_RED;
+            break;
+        case tl::Console::Color::magenta:
+            mForegroundColor = FOREGROUND_RED | FOREGROUND_BLUE;
+            break;
+        case tl::Console::Color::yellow:
+            mForegroundColor = FOREGROUND_GREEN | FOREGROUND_RED;
+            break;
+        case tl::Console::Color::white:
+            mForegroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
+            break;
+        default:
+            mForegroundColor = 0;
+            break;
+    }
 
-  if(intensity == Console::Intensity::normal)
-      mForegroundIntensity = 0;
-  else
-      mForegroundIntensity = FOREGROUND_INTENSITY;
+    if(intensity == Console::Intensity::normal)
+        mForegroundIntensity = 0;
+    else
+        mForegroundIntensity = FOREGROUND_INTENSITY;
 #else
-  mForegroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity) * 60;
+    mForegroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity) * 60;
 #endif
 
-  update();
+    update();
 }
 
 void Console::setConsoleUnicode()
 {
 #ifdef TL_OS_WINDOWS
-  //SetConsoleOutputCP(1252);
-  //SetConsoleCP(1252);
-  SetConsoleOutputCP(CP_UTF8/*65001*/);
+    //SetConsoleOutputCP(1252);
+    //SetConsoleCP(1252);
+    SetConsoleOutputCP(CP_UTF8/*65001*/);
 #endif
 }
 
 void Console::setFontBold(bool bBold)
 {
 #ifdef TL_OS_WINDOWS
-  if (bBold) {
-    mCurrentFont.FontWeight = FW_BOLD;
-  } else {
-    mCurrentFont.FontWeight = FW_NORMAL;
-  }
+    mCurrentFont.FontWeight = bBold ? FW_BOLD : FW_NORMAL;
 #else
-  if (bBold) {
-    mBold = 1;
-  } else {
-    mBold = 21;
-  }
+    mBold = bBold ? 1 : 21
 #endif
-  update();
+    update();
 }
 
 void Console::setFontHeight(int16_t fontHeight)
 {
 #ifdef TL_OS_WINDOWS
-  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(fontHeight);
+    mCurrentFont.dwFontSize.Y = static_cast<SHORT>(fontHeight);
 #else
-  unusedParameter(fontHeight);
+    unusedParameter(fontHeight);
 #endif
-  update();
+    update();
 }
 
 void Console::setTitle(const std::string &title)
 {
 #ifdef TL_OS_WINDOWS
-  SetConsoleTitleA(title.c_str());
+    SetConsoleTitleA(title.c_str());
 #else
-  unusedParameter(title);
-  //printf("%c]0;%s%c", '\033', title, '\007');
+    unusedParameter(title);
+    //printf("%c]0;%s%c", '\033', title, '\007');
 #endif
 }
 
@@ -305,69 +298,69 @@ void Console::setTitle(const std::string &title)
 void Console::onMsgDebug(std::string_view message, 
                          std::string_view date)
 #else
-void Console::onMsgDebug(const std::string &message, 
+void Console::onMsgDebug(const std::string &message,
                          const std::string &date)
 #endif
 {
-  unusedParameter(date);
+    unusedParameter(date);
 
-  if (sLevel.isEnabled(MessageLevel::msg_debug)) {
-    setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foregroundColor,
-                              messageProperties(MessageLevel::msg_debug).intensity);
-    printMessage(message);
-    reset();
-  }
+    if(sLevel.isEnabled(MessageLevel::msg_debug)) {
+        setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foregroundColor,
+                                  messageProperties(MessageLevel::msg_debug).intensity);
+        printMessage(message);
+        reset();
+    }
 }
 
 #if CPP_VERSION >= 17
 void Console::onMsgInfo(std::string_view message, 
                         std::string_view date)
 #else
-void Console::onMsgInfo(const std::string &message, 
-                        const std::string &date) 
+void Console::onMsgInfo(const std::string &message,
+                        const std::string &date)
 #endif
 {
-  unusedParameter(date);
+    unusedParameter(date);
 
-  if (sLevel.isEnabled(MessageLevel::msg_info)) {
-    setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foregroundColor,
-                              messageProperties(MessageLevel::msg_info).intensity);
-    printMessage(message);
-    reset();
-  }
+    if(sLevel.isEnabled(MessageLevel::msg_info)) {
+        setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foregroundColor,
+                                  messageProperties(MessageLevel::msg_info).intensity);
+        printMessage(message);
+        reset();
+    }
 }
 
 #if CPP_VERSION >= 17
 void Console::onMsgWarning(std::string_view message, 
                            std::string_view date)
 #else
-void Console::onMsgWarning(const std::string &message, 
+void Console::onMsgWarning(const std::string &message,
                            const std::string &date)
 #endif
 {
-  unusedParameter(date);
+    unusedParameter(date);
 
-  if (sLevel.isEnabled(MessageLevel::msg_warning)) {
-    setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foregroundColor,
-                              messageProperties(MessageLevel::msg_warning).intensity);
-    printMessage(message);
-    reset();
-  }
+    if(sLevel.isEnabled(MessageLevel::msg_warning)) {
+        setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foregroundColor,
+                                  messageProperties(MessageLevel::msg_warning).intensity);
+        printMessage(message);
+        reset();
+    }
 }
 
 #if CPP_VERSION >= 17
 void Console::onMsgError(std::string_view message, 
                          std::string_view date)
 #else
-void Console::onMsgError(const std::string &message, 
+void Console::onMsgError(const std::string &message,
                          const std::string &date)
 #endif
 {
-  unusedParameter(date);
+    unusedParameter(date);
 
-  if (sLevel.isEnabled(MessageLevel::msg_error)) {
-    printErrorMessage(message);
-  }
+    if(sLevel.isEnabled(MessageLevel::msg_error)) {
+        printErrorMessage(message);
+    }
 }
 
 #endif // TL_MESSAGE_HANDLER
@@ -375,55 +368,58 @@ void Console::onMsgError(const std::string &message,
 #ifdef TL_OS_WINDOWS
 void Console::init(DWORD handle)
 {
-  setConsoleUnicode();
-  mHandle = GetStdHandle(handle);
-  CONSOLE_SCREEN_BUFFER_INFO info;
-  if (! GetConsoleScreenBufferInfo(mHandle, &info)) {
-    mOldColorAttrs = 0x0007;
-  } else {
-    mOldColorAttrs = info.wAttributes;
-  }
-  mForegroundColor = (mOldColorAttrs & 0x0007);
-  mForegroundIntensity = (mOldColorAttrs & 0x0008);
-  mBackgroundColor = (mOldColorAttrs & 0x0070);
-  mBackgroundIntensity = (mOldColorAttrs & 0x0080);
+    setConsoleUnicode();
+    mHandle = GetStdHandle(handle);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    if(!GetConsoleScreenBufferInfo(mHandle, &info)) {
+        mOldColorAttrs = 0x0007;
+    } else {
+        mOldColorAttrs = info.wAttributes;
+    }
 
-  mIniFont.cbSize = sizeof(mIniFont);
-  GetCurrentConsoleFontEx(mHandle, FALSE, &mIniFont);
-  mCurrentFont.cbSize = sizeof(mCurrentFont);
-  mCurrentFont = mIniFont;
-  //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
+    mForegroundColor = (mOldColorAttrs & 0x0007);
+    mForegroundIntensity = (mOldColorAttrs & 0x0008);
+    mBackgroundColor = (mOldColorAttrs & 0x0070);
+    mBackgroundIntensity = (mOldColorAttrs & 0x0080);
 
-  //CONSOLE_SCREEN_BUFFER_INFOEX cbi;
-  //cbi.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-  //GetConsoleScreenBufferInfoEx(mHandle, &cbi);
-  //cbi.wAttributes = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
-  //SetConsoleScreenBufferInfoEx(mHandle, &cbi);
+    mIniFont.cbSize = sizeof(mIniFont);
+    GetCurrentConsoleFontEx(mHandle, FALSE, &mIniFont);
+    mCurrentFont.cbSize = sizeof(mCurrentFont);
+    mCurrentFont = mIniFont;
+    //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
+
+    //CONSOLE_SCREEN_BUFFER_INFOEX cbi;
+    //cbi.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+    //GetConsoleScreenBufferInfoEx(mHandle, &cbi);
+    //cbi.wAttributes = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
+    //SetConsoleScreenBufferInfoEx(mHandle, &cbi);
 }
+
 #else
+
 void Console::init(FILE *stream)
 {
-  mStream = stream;
-  mForegroundColor = 0;
-  mBackgroundColor = 0;
-  mBold = 21;
+    mStream = stream;
+    mForegroundColor = 0;
+    mBackgroundColor = 0;
+    mBold = 21;
 }
 #endif
 
 void Console::update()
 {
 #ifdef TL_OS_WINDOWS
-  SetConsoleTextAttribute(mHandle, mForegroundColor | mBackgroundColor | mForegroundIntensity | mBackgroundIntensity);
-  SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
+    SetConsoleTextAttribute(mHandle, mForegroundColor | mBackgroundColor | mForegroundIntensity | mBackgroundIntensity);
+    SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
-  std::stringstream ss;
-  ss << "\x1B[" << mBold;
-  if (mForegroundColor != 0)
-    ss << ";" << mForegroundColor;
-  if (mBackgroundColor != 0)
-    ss << ";" << mBackgroundColor;
-  ss << "m";
-  fprintf(mStream, "%s", ss.str().c_str());
+    std::stringstream ss;
+    ss << "\x1B[" << mBold;
+    if(mForegroundColor != 0)
+        ss << ";" << mForegroundColor;
+    if(mBackgroundColor != 0)
+        ss << ";" << mBackgroundColor;
+    ss << "m";
+    fprintf(mStream, "%s", ss.str().c_str());
 #endif
 }
 

@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#pragma once
+
 
 #include "tidop/config.h"
 
@@ -84,5 +84,3 @@ private:
 /*! \} */ // end of core
 
 } // namespace tl
-
-#endif // TL_CORE_EVENT_H
