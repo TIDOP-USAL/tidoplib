@@ -25,6 +25,7 @@
 #ifndef TL_CORE_MESSAGES_H
 #define TL_CORE_MESSAGES_H
 
+
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
 
@@ -32,12 +33,14 @@
 #include <memory>
 #include <list>
 #include <mutex>
+#include <vector>
 
 #include "tidop/core/flags.h"
+//#include "tidop/core/app.h"
+//#include "tidop/core/console.h"
 
 namespace tl
 {
-
 
 /*! \addtogroup core
  *  \{
@@ -351,6 +354,24 @@ private:
 #  define msgError(...)
 
 #endif
+
+
+
+
+
+
+/* ----------------------------------------------------------------------------- */
+
+
+enum class Level : int8_t
+{
+	debug = 1 << 0,
+	error = 1 << 1,
+	warning = 1 << 2,
+	info = 1 << 3
+};
+
+
 
 /*! \} */ // end of Messages
 

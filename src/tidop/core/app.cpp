@@ -26,6 +26,9 @@
 
 #include "tidop/core/console/console.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/msg/handler.h"
+#include "tidop/core/msg/buffer.h"
+#include "tidop/core/msg/stream.h"
 #include "tidop/core/log.h"
 
 #if TL_OS_LINUX
@@ -77,6 +80,12 @@ Console &App::console()
     return console;
 }
 
+Console2 &App::console2()
+{
+    static Console2 console;
+    return console;
+}
+
 Log &App::log()
 {
     static Log log;
@@ -88,6 +97,19 @@ MessageManager &App::messageManager()
     //static MessageManager message_manager;
     //return message_manager;
     return MessageManager::instance();
+}
+
+MessageHandler &App::messageHandler()
+{
+    static MessageHandler message_handler;
+    return message_handler;
+}
+
+Message &App::message()
+{
+    MessageBuffer *buffer = App::messageHandler().buffer();
+    static Message message(buffer);
+    return message;
 }
 
 void App::init()

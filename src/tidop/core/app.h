@@ -22,7 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#ifndef TL_CORE_APP_H
+#define TL_CORE_APP_H
 
 
 #include "tidop/config.h"
@@ -41,6 +42,9 @@ class Console;
 class Log;
 class MessageManager;
 
+class MessageHandler;
+class Console2;
+class Message;
 
 /*! \addtogroup core
  *  \{
@@ -72,8 +76,11 @@ public:
     std::string version() const;
 
     static Console &console();
+    static Console2 &console2();
     static Log &log();
     static MessageManager &messageManager();
+    static MessageHandler &messageHandler();
+    static Message &message();
 
 private:
 
@@ -84,3 +91,5 @@ private:
 /*! \} */ // end of core
 
 } // namespace tl
+
+#endif TL_CORE_APP_H

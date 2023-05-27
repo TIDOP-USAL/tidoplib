@@ -22,11 +22,9 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_CONSOLE_H
-#define TL_CORE_CONSOLE_H
+#pragma once
+
 
 #include "tidop/core/console/argument.h"
 #include "tidop/core/console/command.h"
 #include "tidop/core/console/console.h"
-
-#endif // TL_CORE_CONSOLE_H

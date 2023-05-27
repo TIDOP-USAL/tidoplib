@@ -52,6 +52,9 @@ if(BUILD_TL_CORE)
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
+                             msg/buffer.cpp
+                             msg/handler.cpp
+                             msg/stream.cpp
                          HEADER_FILES
                              defs.h
                              app.h
@@ -74,7 +77,10 @@ if(BUILD_TL_CORE)
                              console/console.h
                              console/argument.h
                              console/command.h
-                             console/validator.h)
+                             console/validator.h
+                             msg/buffer.h
+                             msg/handler.h
+                             msg/stream.h)
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

@@ -28,6 +28,7 @@
 #include "tidop/core/app.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/chrono.h"
+#include "tidop/core/console.h"
 
 #include <cstdarg>
 #if defined WIN32
@@ -287,5 +288,6 @@ void MessageManager::Message::setTimeLogFormat(const std::string &timeTemplate)
 }
 
 #endif  // TL_MESSAGE_HANDLER
+
 
 } // End mamespace tl
