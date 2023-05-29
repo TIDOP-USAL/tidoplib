@@ -691,19 +691,19 @@ public:
         switch(level) {
         case Level::debug:
             //reset();
-            stream() << "Debug:   ";
+            _stream << "Debug:   ";
             break;
         case Level::info:
             //reset();
-            stream() << "Info:    ";
+            _stream << "Info:    ";
             break;
         case Level::warning:
             setForegroundColor(Color::magenta, Intensity::normal);
-            stream() << "Warning: ";
+            _stream << "Warning: ";
             break;
         case Level::error:
             setForegroundColor(Color::red, Intensity::normal);
-            stream() << "Error:   ";
+            _stream << "Error:   ";
             break;
         }
 
@@ -715,6 +715,13 @@ public:
         _stream << _endl;
         reset();
         return *this;
+    }
+
+    template<typename T>
+    Console2 &operator <<(T value)
+    {
+	    _stream << value;
+	    return *this;
     }
 
     [[nodiscard]] std::streambuf *rdbuf() const {
@@ -823,12 +830,12 @@ private:
     }
 };
 
-template<typename T>
-Console2 &operator <<(Console2 &message, T value)
-{
-	message.stream() << value;
-	return message;
-}
+//template<typename T>
+//inline Console2 &operator <<(Console2 &message, T value)
+//{
+//	message.stream() << value;
+//	return message;
+//}
 
 
 

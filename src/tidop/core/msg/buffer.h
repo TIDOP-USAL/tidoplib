@@ -22,78 +22,98 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#pragma once
 
 
 #include "tidop/config.h"
-
-#include <string>
-#include <memory>
-#include <mutex>
-
 #include "tidop/core/defs.h"
-#include "tidop/core/path.h"
+
+#include <iostream>
+#include <vector>
+
+#include "tidop/core/flags.h"
+
 
 namespace tl
 {
 
-class Console;
-class Log;
-class MessageManager;
-
-class MessageHandler;
-class Console2;
-class Message;
 
 /*! \addtogroup core
  *  \{
  */
 
-/*!
- * \brief Información de la aplicación 
+/*! \defgroup Messages Gestión de mensajes
+ *
+ *  \{
  */
-class TL_EXPORT App
+
+
+
+class MessageBuffer
+  : public std::streambuf
 {
 
 private:
 
-    App();
+  std::vector<std::streambuf *> buffer;
 
 public:
 
-    ~App() = default;
+  MessageBuffer()
+    : buffer(0)
+  {
+  }
 
-    TL_DISABLE_COPY(App)
-    TL_DISABLE_MOVE(App)
+  //static MessageBuffer &instance()
+  //{
+  //  static MessageBuffer message_buffer;
+  //  return message_buffer;
+  //}
 
-    /*!
-     * \brief Singleton
-     */
-    static App &instance();
+  void subscribe(std::streambuf *sb)
+  {
+    buffer.push_back(sb);
+  }
 
-    tl::Path path() const;
-    std::string version() const;
+  int overflow(int c)
+  {
+    typedef std::streambuf::traits_type traits;
+    //bool rc(true);
+    std::vector<bool> rc(buffer.size(), true);
+    if (!traits::eq_int_type(traits::eof(), c)) {
+      
+      for (size_t i = 0; i < buffer.size(); i++) {
+          traits::eq_int_type(this->buffer[i]->sputc(c), traits::eof()) && (rc[i] = false);
+      }
 
-    static Console &console();
-    static Console2 &console2();
-    static Log &log();
-    static MessageManager &messageManager();
-    static MessageHandler &messageHandler();
-    static Message &message();
+    }
 
-private:
+    bool r = false;
+    for (auto c : rc) {
+      if (c) {
+        r = true;
+        break;
+      }
+    }
 
-    void init();
+    return r ? traits::not_eof(c) : traits::eof();
+  }
 
-private:
-
-  static std::unique_ptr<Message> _message;
-
+  int sync()
+  {
+    bool rc(true);
+    for (size_t i = 0; i < buffer.size(); i++)
+      this->buffer[i]->pubsync() != -1 || (rc = false);
+    return rc ? 0 : -1;
+  }
 };
+
+
+/*! \} */ // end of Messages
+
 
 /*! \} */ // end of core
 
-} // namespace tl
 
-#endif TL_CORE_APP_H
+} // End namespace tl
+

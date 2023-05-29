@@ -22,78 +22,36 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#include "tidop/core/msg/stream.h"
 
+//#include "tidop/core/defs.h"
+//#include "tidop/core/app.h"
+//#include "tidop/core/utils.h"
+//#include "tidop/core/chrono.h"
+//#include "tidop/core/console.h"
+//
+//#include <cstdarg>
+//#if defined WIN32
+//# include <windows.h>
+//#endif
+//#include <cstdio>
+#include <iostream>
+//#include <fstream>
+//#include <cstring>
 
-#include "tidop/config.h"
-
-#include <string>
-#include <memory>
-#include <mutex>
-
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
 
 namespace tl
 {
 
-class Console;
-class Log;
-class MessageManager;
 
-class MessageHandler;
-class Console2;
-class Message;
-
-/*! \addtogroup core
- *  \{
- */
-
-/*!
- * \brief Información de la aplicación 
- */
-class TL_EXPORT App
+Message::Message(std::streambuf *buff)
+  : std::ostream(buff)
 {
+}
 
-private:
+Message::~Message()
+{
+}
 
-    App();
 
-public:
-
-    ~App() = default;
-
-    TL_DISABLE_COPY(App)
-    TL_DISABLE_MOVE(App)
-
-    /*!
-     * \brief Singleton
-     */
-    static App &instance();
-
-    tl::Path path() const;
-    std::string version() const;
-
-    static Console &console();
-    static Console2 &console2();
-    static Log &log();
-    static MessageManager &messageManager();
-    static MessageHandler &messageHandler();
-    static Message &message();
-
-private:
-
-    void init();
-
-private:
-
-  static std::unique_ptr<Message> _message;
-
-};
-
-/*! \} */ // end of core
-
-} // namespace tl
-
-#endif TL_CORE_APP_H
+} // End mamespace tl

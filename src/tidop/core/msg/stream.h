@@ -22,78 +22,71 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#pragma once
 
 
 #include "tidop/config.h"
-
-#include <string>
-#include <memory>
-#include <mutex>
-
 #include "tidop/core/defs.h"
-#include "tidop/core/path.h"
+
+#include <iostream>
+
+#include "tidop/core/app.h"
+#include "tidop/core/console.h"
 
 namespace tl
 {
 
-class Console;
-class Log;
-class MessageManager;
-
-class MessageHandler;
-class Console2;
-class Message;
 
 /*! \addtogroup core
  *  \{
  */
 
-/*!
- * \brief Información de la aplicación 
+/*! \defgroup Messages Gestión de mensajes
+ *
+ *  \{
  */
-class TL_EXPORT App
+
+class Message
+  : public std::ostream
 {
-
-private:
-
-    App();
 
 public:
 
-    ~App() = default;
+    Message(std::streambuf *buff);
+    ~Message();
 
-    TL_DISABLE_COPY(App)
-    TL_DISABLE_MOVE(App)
+    Message &operator <<(Level level)
+    {
+      App::console2() << level;
 
-    /*!
-     * \brief Singleton
-     */
-    static App &instance();
-
-    tl::Path path() const;
-    std::string version() const;
-
-    static Console &console();
-    static Console2 &console2();
-    static Log &log();
-    static MessageManager &messageManager();
-    static MessageHandler &messageHandler();
-    static Message &message();
-
-private:
-
-    void init();
-
-private:
-
-  static std::unique_ptr<Message> _message;
-
+      return *this;
+    }
+    
+    Message &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
+    {
+	    this->stream() << _endl;
+      App::console().reset();
+	    return *this;
+    }
+    
+    std::ostream &stream()
+    {
+        return *this;
+    }
 };
+
+
+template<typename T>
+inline Message &operator <<(Message &message, T value)
+{
+	message.stream() << value;
+	return message;
+}
+
+/*! \} */ // end of Messages
+
 
 /*! \} */ // end of core
 
-} // namespace tl
 
-#endif TL_CORE_APP_H
+} // End namespace tl

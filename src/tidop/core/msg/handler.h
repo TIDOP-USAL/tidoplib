@@ -22,78 +22,59 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#pragma once
 
 
 #include "tidop/config.h"
-
-#include <string>
-#include <memory>
-#include <mutex>
-
 #include "tidop/core/defs.h"
-#include "tidop/core/path.h"
+
+#include <streambuf>
 
 namespace tl
 {
 
-class Console;
-class Log;
-class MessageManager;
-
-class MessageHandler;
-class Console2;
-class Message;
 
 /*! \addtogroup core
  *  \{
  */
 
-/*!
- * \brief Información de la aplicación 
+/*! \defgroup Messages Gestión de mensajes
+ *
+ *  \{
  */
-class TL_EXPORT App
+
+class MessageBuffer;
+
+class MessageHandler
 {
 
 private:
 
-    App();
+    MessageHandler();
 
 public:
 
-    ~App() = default;
+    ~MessageHandler();
 
-    TL_DISABLE_COPY(App)
-    TL_DISABLE_MOVE(App)
-
-    /*!
-     * \brief Singleton
-     */
-    static App &instance();
-
-    tl::Path path() const;
-    std::string version() const;
-
-    static Console &console();
-    static Console2 &console2();
-    static Log &log();
-    static MessageManager &messageManager();
-    static MessageHandler &messageHandler();
-    static Message &message();
+    void subscribe(std::streambuf *sb);
 
 private:
 
-    void init();
+    MessageBuffer *buffer();
 
 private:
 
-  static std::unique_ptr<Message> _message;
-
+    MessageBuffer *_buffer;
+    friend class App;
 };
+
+
+
+/*! \} */ // end of Messages
+
 
 /*! \} */ // end of core
 
-} // namespace tl
 
-#endif TL_CORE_APP_H
+} // End namespace tl
+

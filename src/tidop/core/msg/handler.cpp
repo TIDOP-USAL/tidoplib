@@ -22,78 +22,32 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#include "tidop/core/msg/handler.h"
 
+#include "tidop/core/msg/buffer.h"
 
-#include "tidop/config.h"
-
-#include <string>
-#include <memory>
-#include <mutex>
-
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
 
 namespace tl
 {
 
-class Console;
-class Log;
-class MessageManager;
-
-class MessageHandler;
-class Console2;
-class Message;
-
-/*! \addtogroup core
- *  \{
- */
-
-/*!
- * \brief Información de la aplicación 
- */
-class TL_EXPORT App
+MessageHandler::MessageHandler()
+  : _buffer(new MessageBuffer)
 {
+}
 
-private:
+MessageHandler::~MessageHandler()
+{
+}
 
-    App();
+void MessageHandler::subscribe(std::streambuf *sb)
+{
+  _buffer->subscribe(sb);
+}
 
-public:
+MessageBuffer *MessageHandler::buffer()
+{
+  return _buffer;
+}
 
-    ~App() = default;
 
-    TL_DISABLE_COPY(App)
-    TL_DISABLE_MOVE(App)
-
-    /*!
-     * \brief Singleton
-     */
-    static App &instance();
-
-    tl::Path path() const;
-    std::string version() const;
-
-    static Console &console();
-    static Console2 &console2();
-    static Log &log();
-    static MessageManager &messageManager();
-    static MessageHandler &messageHandler();
-    static Message &message();
-
-private:
-
-    void init();
-
-private:
-
-  static std::unique_ptr<Message> _message;
-
-};
-
-/*! \} */ // end of core
-
-} // namespace tl
-
-#endif TL_CORE_APP_H
+} // End mamespace tl
