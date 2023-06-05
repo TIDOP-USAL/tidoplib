@@ -24,28 +24,17 @@
 
 #include "tidop/core/msg/stream.h"
 
-//#include "tidop/core/defs.h"
-//#include "tidop/core/app.h"
-//#include "tidop/core/utils.h"
-//#include "tidop/core/chrono.h"
-//#include "tidop/core/console.h"
-//
-//#include <cstdarg>
-//#if defined WIN32
-//# include <windows.h>
-//#endif
-//#include <cstdio>
+#include "tidop/core/msg/handler.h"
+
 #include <iostream>
-//#include <fstream>
-//#include <cstring>
 
 
 namespace tl
 {
 
 
-Message::Message(std::streambuf *buff)
-  : std::ostream(buff)
+Message::Message()
+  : std::ostream(App::messageHandler().buffer())
 {
 }
 

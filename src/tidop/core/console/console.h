@@ -30,6 +30,8 @@
 #include "tidop/core/messages.h"
 
 
+#include <format>
+
 namespace tl
 {
 
@@ -377,8 +379,6 @@ private:
 
 
 
-
-
 class Console2
 {
 
@@ -690,11 +690,9 @@ public:
     {
         switch(level) {
         case Level::debug:
-            //reset();
             _stream << "Debug:   ";
             break;
         case Level::info:
-            //reset();
             _stream << "Info:    ";
             break;
         case Level::warning:
@@ -761,6 +759,34 @@ public:
         auto &console = Console2::instance();
         console.reset();
         return console;
+    }
+
+    template<typename... Args>
+    static void debug(std::format_string<Args...> s, Args&&... args)
+    {
+        auto &console = Console2::instance();
+        console << Level::debug << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+    template<typename... Args>
+    static void info(std::format_string<Args...> s, Args&&... args)
+    {
+        auto &console = Console2::instance();
+        console << Level::info << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+    template<typename... Args>
+    static void warning(std::format_string<Args...> s, Args&&... args)
+    {
+        auto &console = Console2::instance();
+        console << Level::warning << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+    template<typename... Args>
+    static void error(std::format_string<Args...> s, Args&&... args)
+    {
+        auto &console = Console2::instance();
+        console << Level::error << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
     }
 
 private:

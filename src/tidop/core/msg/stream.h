@@ -32,6 +32,8 @@
 
 #include "tidop/core/app.h"
 #include "tidop/core/console.h"
+#include "tidop/core/msg/buffer.h"
+
 
 namespace tl
 {
@@ -52,12 +54,27 @@ class Message
 
 public:
 
-    Message(std::streambuf *buff);
+    Message();
     ~Message();
 
     Message &operator <<(Level level)
     {
-      App::console2() << level;
+      switch(level) {
+        case Level::debug:
+            this->stream() << "Debug:   ";
+            break;
+        case Level::info:
+            this->stream() << "Info:    ";
+            break;
+        case Level::warning:
+            App::console2().setForegroundColor(Console2::Color::magenta, Console2::Intensity::normal);
+            this->stream() << "Warning: ";
+            break;
+        case Level::error:
+            App::console2().setForegroundColor(Console2::Color::red, Console2::Intensity::normal);
+            this->stream() << "Error:   ";
+            break;
+        }
 
       return *this;
     }
@@ -65,7 +82,7 @@ public:
     Message &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
     {
 	    this->stream() << _endl;
-      App::console().reset();
+      App::console2().reset();
 	    return *this;
     }
     

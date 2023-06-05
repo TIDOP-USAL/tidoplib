@@ -64,12 +64,6 @@ public:
   {
   }
 
-  //static MessageBuffer &instance()
-  //{
-  //  static MessageBuffer message_buffer;
-  //  return message_buffer;
-  //}
-
   void subscribe(std::streambuf *sb)
   {
     buffer.push_back(sb);
@@ -78,7 +72,7 @@ public:
   int overflow(int c)
   {
     typedef std::streambuf::traits_type traits;
-    //bool rc(true);
+
     std::vector<bool> rc(buffer.size(), true);
     if (!traits::eq_int_type(traits::eof(), c)) {
       

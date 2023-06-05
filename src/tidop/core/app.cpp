@@ -40,7 +40,7 @@
 namespace tl
 {
 
-std::unique_ptr<Message> App::_message;
+//std::unique_ptr<Message> App::_message;
 
 
 App::App()
@@ -110,18 +110,8 @@ MessageHandler &App::messageHandler()
 
 Message &App::message()
 {
-    //MessageBuffer *buffer = App::messageHandler().buffer();
-    //static Message message(buffer);
-    //return message;
-    static std::once_flag init_flag;
-
-    std::call_once(init_flag, []() {
-        MessageBuffer *buffer = App::messageHandler().buffer();
-        _message = std::make_unique<Message>(buffer);
-
-    });
-
-    return *_message;
+    static Message message;
+    return message;
 }
 
 void App::init()

@@ -66,6 +66,7 @@ private:
 
     MessageBuffer *_buffer;
     friend class App;
+    friend class Message;
 };
 
 

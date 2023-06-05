@@ -88,7 +88,7 @@ private:
 
 private:
 
-  static std::unique_ptr<Message> _message;
+  //static std::unique_ptr<Message> _message;
 
 };
 
