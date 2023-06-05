@@ -29,8 +29,9 @@
 
 #include "tidop/core/messages.h"
 
-
+#if CPP_VERSION >= 20
 #include <format>
+#endif
 
 namespace tl
 {
@@ -761,6 +762,8 @@ public:
         return console;
     }
 
+#if CPP_VERSION >= 20
+
     template<typename... Args>
     static void debug(std::format_string<Args...> s, Args&&... args)
     {
@@ -788,6 +791,8 @@ public:
         auto &console = Console2::instance();
         console << Level::error << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
     }
+
+#endif
 
 private:
 

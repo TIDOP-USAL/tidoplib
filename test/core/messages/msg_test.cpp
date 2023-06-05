@@ -178,6 +178,8 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 
     chrono.stop();
 
+#if CPP_VERSION >= 20
+
     chrono.setMessage("Console 2 std::format");
     chrono.run();
 
@@ -189,6 +191,8 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     }
 
     chrono.stop();
+
+#endif
 
     chrono.reset();
     chrono.setMessage("App::message()");
