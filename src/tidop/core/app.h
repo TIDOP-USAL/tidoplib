@@ -31,9 +31,13 @@
 #include <string>
 #include <memory>
 #include <mutex>
+#if CPP_VERSION >= 20
+#include <format>
+#endif
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
+#include "tidop/core/log.h"
 
 namespace tl
 {
@@ -44,6 +48,7 @@ class MessageManager;
 
 class MessageHandler;
 class Console2;
+class Log2;
 class Message;
 
 /*! \addtogroup core
@@ -78,9 +83,42 @@ public:
     static Console &console();
     static Console2 &console2();
     static Log &log();
+    static Log2 &log2();
     static MessageManager &messageManager();
     static MessageHandler &messageHandler();
     static Message &message();
+
+#if CPP_VERSION >= 20
+
+    template<typename... Args>
+    static void debug(std::format_string<Args...> s, Args&&... args)
+    {
+        Console2::debug(std::vformat(s.get(), std::make_format_args(args...)));
+        Log2::debug(std::vformat(s.get(), std::make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void info(std::format_string<Args...> s, Args&&... args)
+    {
+        Console2::info(std::vformat(s.get(), std::make_format_args(args...)));
+        Log2::info(std::vformat(s.get(), std::make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void warning(std::format_string<Args...> s, Args&&... args)
+    {
+        Console2::warning(std::vformat(s.get(), std::make_format_args(args...)));
+        Log2::warning(std::vformat(s.get(), std::make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void error(std::format_string<Args...> s, Args&&... args)
+    {
+        Console2::error(std::vformat(s.get(), std::make_format_args(args...)));
+        Log2::error(std::vformat(s.get(), std::make_format_args(args...)));
+    }
+
+#endif
 
 private:
 

@@ -29,6 +29,7 @@
 #include "tidop/core/msg/handler.h"
 #include "tidop/core/msg/stream.h"
 #include "tidop/core/console.h"
+#include "tidop/core/log.h"
 #include "tidop/core/chrono.h"
 #include <fstream>
 #include <iostream>
@@ -73,13 +74,13 @@ BOOST_FIXTURE_TEST_CASE(old_console, MessageTest)
     App::messageManager().addListener(&console);
 
     Chrono chrono("Impresión por consola");
-    chrono.run();
+    //chrono.run();
 
-    for (size_t i = 0; i < 100; i++) {
-      console.printMessage("Impresión por consola");
-    }
+    //for (size_t i = 0; i < 100; i++) {
+    //  console.printMessage("Impresión por consola");
+    //}
 
-    chrono.stop();
+    //chrono.stop();
 
     //chrono.reset();
     //chrono.setMessage("Impresión por consola personalizada");
@@ -108,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(old_console, MessageTest)
     //
     //chrono.stop();
 
-    chrono.reset();
+    //chrono.reset();
     chrono.setMessage("Impresión con macros");
     chrono.run();
 
@@ -137,20 +138,20 @@ BOOST_FIXTURE_TEST_CASE(old_console, MessageTest)
 BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 {
 
-    Console2 &console = App::console2();
-    App::messageHandler().subscribe(console.rdbuf());
+    //Console2 &console = App::console2();
+    //App::messageHandler().subscribe(console.rdbuf());
 
-    std::ofstream log("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt", std::ofstream::app);
-    App::messageHandler().subscribe(log.rdbuf());
+    //std::ofstream log("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt", std::ofstream::app);
+    //App::messageHandler().subscribe(log.rdbuf());
 
     Chrono chrono("Impresión por consola");
-    chrono.run();
+    //chrono.run();
 
-    for (size_t i = 0; i < 100; i++) {
-      console << "Impresión por consola" << std::endl;
-    }
+    //for (size_t i = 0; i < 100; i++) {
+    //  console << "Impresión por consola" << std::endl;
+    //}
 
-    chrono.stop();
+    //chrono.stop();
 
     //chrono.reset();
     //chrono.setMessage("Console 2");
@@ -165,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 
     //chrono.stop();
 
-    chrono.reset();
+    //chrono.reset();
     chrono.setMessage("Console 2");
     chrono.run();
 
@@ -198,67 +199,77 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     chrono.setMessage("App::message()");
     chrono.run();
 
+    App::log2().open("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt");
+
     for (size_t i = 0; i < 100; i++) {
-      App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
-      App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+      //App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
+      //App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+      //App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+      //App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+      App::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
+      App::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+      App::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
+      App::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
     }
 
     chrono.stop();
 }
 
-#if CPP_VERSION >= 20
-
-#include <format>
-
-BOOST_FIXTURE_TEST_CASE(format_messages, MessageTest)
-{
-    Console &console = App::console();
-    console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
-    App::messageManager().addListener(&console);
-
-    Chrono chrono("Impresión por consola std::format");
-    chrono.run();
-
-    for (size_t i = 0; i < 100; i++) {
-      std::cout << std::format("Impresión por consola") << std::endl;
-    }
-    chrono.stop();
-
-    chrono.reset();
-    chrono.setMessage("Impresión con mas parametros");
-    chrono.run();
-
-    for (size_t i = 0; i < 100; i++) {
-      
-        // Mensage de debug
-        std::cout << std::format("{}Mensaje de información por consola {}, {}, {}", "Debug:   ", 1, 2.3, 3.5f) << std::endl;
-        
-        // Mensage de información
-        std::cout << std::format("{}Mensaje de información por consola {}, {}, {}", "Info:    ", 1, 2.3, 3.5f) << std::endl;
-
-        // Mensage de warning
-        console.setConsoleForegroundColor(Console::Color::magenta, Console::Intensity::normal);
-        std::cout << std::format("{}Mensaje de warning por consola {}, {}, {}", "Warning: ", 1, 2.3, 3.5f) << std::endl;
-        console.reset();
-
-        // Mensage de error
-        console.setConsoleForegroundColor(Console::Color::red, Console::Intensity::normal);
-        std::cout << std::format("{}Mensaje de error por consola {}, {}, {}", "Error:   ", 1, 2.3, 3.5f) << std::endl;
-        console.reset();
-
-    }
-
-    chrono.stop();
-}
-
-#endif
+//#if CPP_VERSION >= 20
+//
+//#include <format>
+//
+//BOOST_FIXTURE_TEST_CASE(format_messages, MessageTest)
+//{
+//    Console &console = App::console();
+//    console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
+//    App::messageManager().addListener(&console);
+//
+//    Chrono chrono("Impresión por consola std::format");
+//    chrono.run();
+//
+//    for (size_t i = 0; i < 100; i++) {
+//      std::cout << std::format("Impresión por consola") << std::endl;
+//    }
+//    chrono.stop();
+//
+//    chrono.reset();
+//    chrono.setMessage("Impresión con mas parametros");
+//    chrono.run();
+//
+//    for (size_t i = 0; i < 100; i++) {
+//      
+//        // Mensage de debug
+//        std::cout << std::format("{}Mensaje de información por consola {}, {}, {}", "Debug:   ", 1, 2.3, 3.5f) << std::endl;
+//        
+//        // Mensage de información
+//        std::cout << std::format("{}Mensaje de información por consola {}, {}, {}", "Info:    ", 1, 2.3, 3.5f) << std::endl;
+//
+//        // Mensage de warning
+//        console.setConsoleForegroundColor(Console::Color::magenta, Console::Intensity::normal);
+//        std::cout << std::format("{}Mensaje de warning por consola {}, {}, {}", "Warning: ", 1, 2.3, 3.5f) << std::endl;
+//        console.reset();
+//
+//        // Mensage de error
+//        console.setConsoleForegroundColor(Console::Color::red, Console::Intensity::normal);
+//        std::cout << std::format("{}Mensaje de error por consola {}, {}, {}", "Error:   ", 1, 2.3, 3.5f) << std::endl;
+//        console.reset();
+//
+//    }
+//
+//    chrono.stop();
+//}
+//
+//#endif
 
 
 
 //class Message3
 //{
+//public:
+//
+//    using iterator = std::vector<std::ostream *>::iterator;
+//    using const_iterator = std::vector<std::ostream *>::const_iterator;
 //
 //private:
 //
@@ -292,45 +303,58 @@ BOOST_FIXTURE_TEST_CASE(format_messages, MessageTest)
 //    template<typename... Args>
 //    static void debug(std::format_string<Args...> s, Args&&... args)
 //    {
-//        std::stringstream s;
-//        s << "Debug:   " << std::vformat(s.get(), std::make_format_args(args...));
-//        for (size_t i = 0; i < buffer.size(); i++) {
-//          buffer. << s << std::endl;
+//        std::stringstream string_stream;
+//        string_stream << "Debug:   " << std::vformat(s.get(), std::make_format_args(args...));
+//
+//        for (auto &message : Message3::instance()) {
+//          message.r << string_stream.str() << std::endl;
 //        }
 //    }
 //
 //    template<typename... Args>
 //    static void info(std::format_string<Args...> s, Args&&... args)
 //    {
-//        std::stringstream s;
-//        s << "Info:    " << std::vformat(s.get(), std::make_format_args(args...));
-//        for (size_t i = 0; i < buffer.size(); i++) {
-//          buffer << s << std::endl;
+//        std::stringstream string_stream;
+//        string_stream << "Info:    " << std::vformat(s.get(), std::make_format_args(args...));
+//
+//        for (auto &message : Message3::instance()) {
+//          message.stream() << string_stream.str() << std::endl;
 //        }
 //    }
 //
 //    template<typename... Args>
 //    static void warning(std::format_string<Args...> s, Args&&... args)
 //    {
-//        std::stringstream s;
-//        s << "Warning: " << std::vformat(s.get(), std::make_format_args(args...));
-//        for (size_t i = 0; i < buffer.size(); i++) {
-//          buffer << s << std::endl;
+//        std::stringstream string_stream;
+//        string_stream << "Warning: " << std::vformat(s.get(), std::make_format_args(args...));
+//        
+//        for (auto &message : Message3::instance()) {
+//          message.stream() << string_stream.str() << std::endl;
 //        }
 //    }
 //
 //    template<typename... Args>
 //    static void error(std::format_string<Args...> s, Args&&... args)
 //    {
-//        std::stringstream s;
-//        s << "Error:   " << std::vformat(s.get(), std::make_format_args(args...));
-//        for (size_t i = 0; i < buffer.size(); i++) {
-//          buffer << s << std::endl;
+//        std::stringstream string_stream;
+//        string_stream << "Error:   " << std::vformat(s.get(), std::make_format_args(args...));
+//        
+//        for (auto &message : Message3::instance()) {
+//          message.stream() << string_stream.str() << std::endl;
 //        }
 //    }
 //
 //private:
 //
+//    auto begin() TL_NOEXCEPT -> iterator
+//    {
+//      buffer.begin();
+//    }
+//
+//    auto end() TL_NOEXCEPT -> iterator
+//    {
+//      buffer.end();
+//    }
 //};
 //
 //
@@ -341,22 +365,11 @@ BOOST_FIXTURE_TEST_CASE(format_messages, MessageTest)
 //    Message3::instance().subscribe(&console.stream());
 //
 //    std::ofstream log("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt", std::ofstream::app);
-//    App::messageHandler().subscribe(&log);
+//    Message3::instance().subscribe(&log);
 //
-//    Chrono chrono("Message 3");
+//    Chrono chrono("Message 3 std::format");
+//
 //    chrono.run();
-//
-//    //for (size_t i = 0; i < 100; i++) {
-//    //  Console2::debug() << "Mensaje de depuración por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //  Console2::info() << "Mensaje de información por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //  Console2::warning() << "Mensaje de warning por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //  Console2::error() << "Mensaje de error por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //}
-//
-//    //chrono.stop();
-//
-//    //chrono.setMessage("Console 2 std::format");
-//    //chrono.run();
 //
 //    for (size_t i = 0; i < 100; i++) {
 //      Message3::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
@@ -367,19 +380,20 @@ BOOST_FIXTURE_TEST_CASE(format_messages, MessageTest)
 //
 //    chrono.stop();
 //
-//    //chrono.reset();
-//    //chrono.setMessage("App::message()");
-//    //chrono.run();
-//
-//    //for (size_t i = 0; i < 100; i++) {
-//    //  App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
-//    //  App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //  App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //  App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-//    //}
+////    //chrono.reset();
+////    //chrono.setMessage("App::message()");
+////    //chrono.run();
+////
+////    //for (size_t i = 0; i < 100; i++) {
+////    //  App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
+////    //  App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+////    //  App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+////    //  App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+////    //}
 //
 //    //chrono.stop();
 //}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

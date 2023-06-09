@@ -424,6 +424,285 @@ void Console::update()
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Console2::Console2(std::ostream &outstream)
+  : _stream(outstream) 
+{
+#ifdef TL_OS_WINDOWS
+    init(STD_OUTPUT_HANDLE);
+#else
+    init(stdout);
+#endif
+}
+
+Console2 &Console2::instance()
+{
+    static Console2 console;
+    return console;
+}
+
+void Console2::setTitle(const std::string &title)
+{
+#ifdef TL_OS_WINDOWS
+    SetConsoleTitleA(title.c_str());
+#else
+    unusedParameter(title);
+    //printf("%c]0;%s%c", '\033', title, '\007');
+#endif
+}
+
+void Console2::setBackgroundColor(Color backgroundColor,
+                                  Intensity intensity)
+{
+#ifdef TL_OS_WINDOWS
+    switch (backgroundColor) {
+        case Color::black:
+            this->backgroundColor = 0;
+            break;
+        case Color::blue:
+            this->backgroundColor = BACKGROUND_BLUE;
+            break;
+        case Color::green:
+            this->backgroundColor = BACKGROUND_GREEN;
+            break;
+        case Color::cyan:
+            this->backgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
+            break;
+        case Color::red:
+            this->backgroundColor = BACKGROUND_RED;
+            break;
+        case Color::magenta:
+            this->backgroundColor = BACKGROUND_RED | BACKGROUND_BLUE;
+            break;
+        case Color::yellow:
+            this->backgroundColor = BACKGROUND_GREEN | BACKGROUND_RED;
+            break;
+        case Color::white:
+            this->backgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
+            break;
+        default:
+            this->backgroundColor = 0;
+            break;
+    }
+
+    if (intensity == Intensity::normal)
+        this->backgroundIntensity = 0;
+    else
+        this->backgroundIntensity = BACKGROUND_INTENSITY;
+#else
+        this->mBackgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity) * 60;
+#endif
+
+    update();
+}
+
+
+void Console2::setForegroundColor(Color foregroundColor,
+                                  Intensity intensity)
+{
+#ifdef TL_OS_WINDOWS
+
+    switch(foregroundColor) {
+        case Color::black:
+            this->foregroundColor = 0;
+            break;
+        case Color::blue:
+            this->foregroundColor = FOREGROUND_BLUE;
+            break;
+        case Color::green:
+            this->foregroundColor = FOREGROUND_GREEN;
+            break;
+        case Color::cyan:
+            this->foregroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
+            break;
+        case Color::red:
+            this->foregroundColor = FOREGROUND_RED;
+            break;
+        case Color::magenta:
+            this->foregroundColor = FOREGROUND_RED | FOREGROUND_BLUE;
+            break;
+        case Color::yellow:
+            this->foregroundColor = FOREGROUND_GREEN | FOREGROUND_RED;
+            break;
+        case Color::white:
+            this->foregroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
+            break;
+        default:
+            this->foregroundColor = 0;
+            break;
+    }
+
+    if(intensity == Intensity::normal)
+        this->foregroundIntensity = 0;
+    else
+        this->foregroundIntensity = FOREGROUND_INTENSITY;
+#else
+    mForegroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity) * 60;
+#endif
+
+    update();
+}
+
+void Console2::setConsoleUnicode()
+{
+#ifdef TL_OS_WINDOWS
+    //SetConsoleOutputCP(1252);
+    //SetConsoleCP(1252);
+    SetConsoleOutputCP(CP_UTF8/*65001*/);
+#endif
+}
+
+void Console2::setFontBold(bool bold)
+{
+#ifdef TL_OS_WINDOWS
+    mCurrentFont.FontWeight = bold ? FW_BOLD : FW_NORMAL;
+#else
+    mBold = bold ? 1 : 21
+#endif
+    update();
+}
+
+void Console2::setFontHeight(int16_t fontHeight)
+{
+#ifdef TL_OS_WINDOWS
+    mCurrentFont.dwFontSize.Y = static_cast<SHORT>(fontHeight);
+#else
+    unusedParameter(fontHeight);
+#endif
+    update();
+}
+
+void Console2::reset()
+{
+#ifdef TL_OS_WINDOWS
+    foregroundColor = (oldColorAttrs & 0x0007);
+    foregroundIntensity = (oldColorAttrs & 0x0008);
+    backgroundColor = (oldColorAttrs & 0x0070);
+    backgroundIntensity = (oldColorAttrs & 0x0080);
+    update();
+#else
+    sprintf(mCommand, "%c[0;m", 0x1B);
+    fprintf(mStream, "%s", mCommand);
+#endif
+}
+
+Console2 &Console2::operator <<(Level level)
+{
+    switch(level) {
+    case Level::debug:
+        _stream << "Debug:   ";
+        break;
+    case Level::info:
+        _stream << "Info:    ";
+        break;
+    case Level::warning:
+        setForegroundColor(Color::magenta, Intensity::normal);
+        _stream << "Warning: ";
+        break;
+    case Level::error:
+        setForegroundColor(Color::red, Intensity::normal);
+        _stream << "Error:   ";
+        break;
+    }
+
+    return *this;
+}
+
+Console2 &Console2::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
+{
+    _stream << _endl;
+    reset();
+    return *this;
+}
+
+Console2 &Console2::debug()
+{
+    auto &console = Console2::instance();
+    console << Level::debug;
+    return console;
+}
+
+Console2 &Console2::info()
+{
+    auto &console = Console2::instance();
+    console << Level::info;
+    return console;
+}
+
+Console2 &Console2::warning()
+{
+    auto &console = Console2::instance();
+    console << Level::warning;
+    return console;
+}
+
+Console2 &Console2::error()
+{
+    auto &console = Console2::instance();
+    console << Level::error;
+    return console;
+}
+
+//Console2 &Console2::clear()
+//{
+//    auto &console = Console2::instance();
+//    console.reset();
+//    return console;
+//}
+
+#if CPP_VERSION >= 17
+void Console2::debug(std::string_view message)
+#else
+void Console2::debug(const std::string &message)
+#endif
+{
+    Console2::instance() << Level::debug << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Console2::info(std::string_view message)
+#else
+void Console2::info(const std::string &message)
+#endif
+{
+    Console2::instance() << Level::info << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Console2::warning(std::string_view message)
+#else
+void Console2::warning(const std::string &message)
+#endif
+{
+    Console2::instance() << Level::warning << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Console2::error(std::string_view message)
+#else
+void Console2::error(const std::string &message)
+#endif
+{
+    Console2::instance() << Level::error << message << std::endl;
+}
+
 } // End mamespace tl
 
 

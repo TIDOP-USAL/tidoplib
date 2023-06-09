@@ -95,6 +95,11 @@ Log &App::log()
     return log;
 }
 
+Log2 &App::log2()
+{
+    return Log2::instance();
+}
+
 MessageManager &App::messageManager()
 {
     //static MessageManager message_manager;

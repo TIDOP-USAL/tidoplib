@@ -28,11 +28,16 @@
 
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
+//#include "tidop/core/app.h"
 
 #include <iostream>
 #include <memory>
 #include <list>
 #include <mutex>
+#include <fstream>
+#if CPP_VERSION >= 20
+#include <format>
+#endif
 
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
@@ -238,6 +243,182 @@ private:
   friend class App;
 
 };
+
+
+
+
+class Log2
+{
+
+private:
+
+    std::ofstream _stream;
+    //friend class App;
+
+private:
+
+    Log2()
+    {
+    }
+
+public:
+
+    ~Log2()
+    {
+    }
+
+    TL_DISABLE_COPY(Log2)
+    TL_DISABLE_MOVE(Log2)
+
+    static Log2 &instance()
+    {
+        static Log2 log;
+        return log;
+    }
+
+    void open(const std::string &file)
+    {
+        _stream.open(file, std::ofstream::app);
+    }
+
+    void close()
+    {
+        _stream.close();
+    }
+
+    bool isOpen() const
+    {
+        return _stream.is_open();
+    }
+
+    Log2 &operator <<(Level level)
+    {
+        switch(level) {
+            case Level::debug:
+                _stream << "Debug:   ";
+                break;
+            case Level::info:
+                _stream << "Info:    ";
+                break;
+            case Level::warning:
+                _stream << "Warning: ";
+                break;
+            case Level::error:
+                _stream << "Error:   ";
+                break;
+        }
+
+        return *this;
+    }
+
+    Log2 &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
+    {
+        _stream << _endl;
+        return *this;
+    }
+
+    template<typename T>
+    Log2 &operator <<(T value)
+    {
+	    _stream << value;
+	    return *this;
+    }
+
+    static Log2 &debug()
+    {
+        auto &log = Log2::instance();
+        log << Level::debug;
+        return log;
+    }
+
+    static Log2 &info()
+    {
+        auto &log = Log2::instance();
+        log << Level::info;
+        return log;
+    }
+
+    static Log2 &warning()
+    {
+        auto &log = Log2::instance();
+        log << Level::warning;
+        return log;
+    }
+
+    static Log2 &error()
+    {
+        auto &log = Log2::instance();
+        log << Level::error;
+        return log;
+    }
+
+
+#if CPP_VERSION >= 17
+    static void debug(std::string_view message)
+#else
+    static void debug(const std::string &message)
+#endif
+    {
+      Log2::instance() << Level::debug << message << std::endl;
+    }
+
+#if CPP_VERSION >= 17
+    static void info(std::string_view message)
+#else
+    static void info(const std::string &message)
+#endif
+    {
+      Log2::instance() << Level::info << message << std::endl;
+    }
+
+#if CPP_VERSION >= 17
+    static void warning(std::string_view message)
+#else
+    static void warning(const std::string &message)
+#endif
+    {
+      Log2::instance() << Level::warning << message << std::endl;
+    }
+
+#if CPP_VERSION >= 17
+    static void error(std::string_view message)
+#else
+    static void error(const std::string &message)
+#endif
+    {
+      Log2::instance() << Level::error << message << std::endl;
+    }
+
+#if CPP_VERSION >= 20
+
+    template<typename... Args>
+    static void debug(std::format_string<Args...> s, Args&&... args)
+    {
+        Log2::instance() << Level::debug << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+    template<typename... Args>
+    static void info(std::format_string<Args...> s, Args&&... args)
+    {
+        Log2::instance() << Level::info << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+    template<typename... Args>
+    static void warning(std::format_string<Args...> s, Args&&... args)
+    {
+        Log2::instance() << Level::warning << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+    template<typename... Args>
+    static void error(std::format_string<Args...> s, Args&&... args)
+    {
+        Log2::instance() << Level::error << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+    }
+
+#endif
+
+};
+
 
 
 /*! \} */ // end of Log
