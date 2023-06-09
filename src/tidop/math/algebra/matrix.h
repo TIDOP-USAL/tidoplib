@@ -1711,9 +1711,15 @@ private:
 
 
 
-
-
-
+using Matrix2x2i = Matrix<int, 2, 2>;
+using Matrix2x2f = Matrix<float, 2, 2>;
+using Matrix2x2d = Matrix<double, 2, 2>;
+using Matrix3x3i = Matrix<int, 3, 3>;
+using Matrix3x3f = Matrix<float, 3, 3>;
+using Matrix3x3d = Matrix<double, 3, 3>;
+using Matrix4x4i = Matrix<int, 4, 4>;
+using Matrix4x4f = Matrix<float, 4, 4>;
+using Matrix4x4d = Matrix<double, 4, 4>;
 
 
 /// \cond
