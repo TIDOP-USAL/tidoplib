@@ -110,7 +110,6 @@ private:
 };
 
 
-
 template<typename T, size_t _size = DynamicData>
 class Vector
   : public VectorBase<Vector<T, _size>>
@@ -167,6 +166,16 @@ public:
 
   auto data() -> pointer;
   auto data() const -> const_pointer;
+
+  auto x() const -> T;
+  auto y() const -> T;
+  auto z() const -> T;
+  auto w() const -> T;
+
+  auto x() -> T&;
+  auto y() -> T&;
+  auto z() -> T&;
+  auto w() -> T&;
 
   bool operator == (const Vector &vector) const;
   bool operator != (const Vector &vector) const;
@@ -747,6 +756,70 @@ template<typename T, size_t _size>
 inline auto Vector<T, _size>::data() const -> const_pointer
 {
   return _data.data();
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::x() const -> T 
+{ 
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[0];
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::y() const -> T 
+{
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[1];
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::z() const -> T
+{
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[2];
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::w() const -> T 
+{ 
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[3];
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::x() -> T& 
+{ 
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[0]; 
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::y() -> T& 
+{
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[1];
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::z() -> T& 
+{
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[2];
+}
+
+template<typename T, size_t _size>
+inline auto Vector<T, _size>::w() -> T& 
+{
+  static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
+  static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+  return _data[3];
 }
 
 template<typename T, size_t _size> inline
