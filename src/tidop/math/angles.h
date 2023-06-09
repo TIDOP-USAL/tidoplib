@@ -49,140 +49,141 @@ inline int isNegative(T t)
   return t < 0 ? -1 : 1;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
 
-/*!
- * \brief Convert from degrees, minutes and seconds to decimal degrees
- * \param[in] degrees Degrees
- * \param[in] minutes Minutes
- * \param[in] seconds Seconds
- * \return Decimal degrees
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double degreesToDecimalDegrees(int degrees, 
-                                         int minutes, 
-                                         double seconds);
-
-
-/*!
- * \brief Convert from degrees, minutes and seconds to radians
- * \param[in] degrees Degrees
- * \param[in] minutes Minutes
- * \param[in] seconds Seconds
- * \return radians
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double degreesToRadians(int degrees,
-                                  int minutes,
-                                  double seconds);
-
-/*!
- * \brief Convert from degrees, minutes and seconds to gradians
- * \param[in] degrees Degrees
- * \param[in] minutes Minutes
- * \param[in] seconds Seconds
- * \return Gradians
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double degreesToGradians(int degrees, 
-                                   int minutes, 
-                                   double seconds);
-
-/*!
- * \brief Convert from decimal degrees to degrees, minutes and seconds
- * \param[in] decimalDegrees Decimal degrees
- * \param[out] degrees Degrees
- * \param[out] minutes Minutes
- * \param[out] seconds Seconds
- *
- *
- * <h4>Example</h4>
- * \code
- * int degrees, minutes, seconds;
- * decimalDegreesToDegrees(55.666, degrees, minutes, seconds);
- * \endcode
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees,
-                                       int &degrees, 
-                                       int &minutes, 
-                                       double &seconds);
-
-/*!
- * \brief Convert from decimal degrees to radians
- * \param[in] decimalDegrees Decimal degrees
- * \return Radianes
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
-
-/*!
- * \brief Convert from decimal degrees to gradians
- * \param[in] decimalDegrees Decimal degrees
- * \return Gradians
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
-
-/*!
- * \brief Convert from  radians to degrees, minutes and seconds
- * \param[in] radians Radians
- * \param[out] degrees Degrees
- * \param[out] minutes Minutes
- * \param[out] seconds Seconds
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT void radiansToDegrees(double radians,
-                                int &degrees,
-                                int &minutes, 
-                                double &seconds);
-
-/*!
- * \brief Convert from  radians to Degrees
- * \param[in] radians Radians
- * \return Degrees
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double radiansToDecimalDegrees(double radians);
-
-/*!
- * \brief Convert from radians to gradians
- * \param[in] radians Radians
- * \return Gradians
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double radiansToGradians(double radians);
-
-/*!
- * \brief Convert from gradians to degrees, minutes and seconds
- * \param[in] gradians Gradians
- * \param[out] degrees Degrees
- * \param[out] minutes Minutes
- * \param[out] seconds Seconds
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT void gradiansToDegrees(double gradians, 
-                                 int &degrees, 
-                                 int &minutes, 
-                                 double &seconds);
-
-/*!
- * \brief Convert from gradians to Degrees
- * \param[in] gradians Gradians
- * \return Degrees
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double gradiansToDecimalDegrees(double gradians);
-
-/*!
- * \brief Convert from gradians to radians
- * \param[in] gradians Gradians
- * \return radians
- */
-TL_DEPRECATED("", 2.2)
-TL_EXPORT double gradiansToRadians(double gradians);
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
+//#ifdef TL_ENABLE_DEPRECATED_METHODS
+//
+///*!
+// * \brief Convert from degrees, minutes and seconds to decimal degrees
+// * \param[in] degrees Degrees
+// * \param[in] minutes Minutes
+// * \param[in] seconds Seconds
+// * \return Decimal degrees
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double degreesToDecimalDegrees(int degrees, 
+//                                         int minutes, 
+//                                         double seconds);
+//
+//
+///*!
+// * \brief Convert from degrees, minutes and seconds to radians
+// * \param[in] degrees Degrees
+// * \param[in] minutes Minutes
+// * \param[in] seconds Seconds
+// * \return radians
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double degreesToRadians(int degrees,
+//                                  int minutes,
+//                                  double seconds);
+//
+///*!
+// * \brief Convert from degrees, minutes and seconds to gradians
+// * \param[in] degrees Degrees
+// * \param[in] minutes Minutes
+// * \param[in] seconds Seconds
+// * \return Gradians
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double degreesToGradians(int degrees, 
+//                                   int minutes, 
+//                                   double seconds);
+//
+///*!
+// * \brief Convert from decimal degrees to degrees, minutes and seconds
+// * \param[in] decimalDegrees Decimal degrees
+// * \param[out] degrees Degrees
+// * \param[out] minutes Minutes
+// * \param[out] seconds Seconds
+// *
+// *
+// * <h4>Example</h4>
+// * \code
+// * int degrees, minutes, seconds;
+// * decimalDegreesToDegrees(55.666, degrees, minutes, seconds);
+// * \endcode
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees,
+//                                       int &degrees, 
+//                                       int &minutes, 
+//                                       double &seconds);
+//
+///*!
+// * \brief Convert from decimal degrees to radians
+// * \param[in] decimalDegrees Decimal degrees
+// * \return Radianes
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
+//
+///*!
+// * \brief Convert from decimal degrees to gradians
+// * \param[in] decimalDegrees Decimal degrees
+// * \return Gradians
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
+//
+///*!
+// * \brief Convert from  radians to degrees, minutes and seconds
+// * \param[in] radians Radians
+// * \param[out] degrees Degrees
+// * \param[out] minutes Minutes
+// * \param[out] seconds Seconds
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT void radiansToDegrees(double radians,
+//                                int &degrees,
+//                                int &minutes, 
+//                                double &seconds);
+//
+///*!
+// * \brief Convert from  radians to Degrees
+// * \param[in] radians Radians
+// * \return Degrees
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double radiansToDecimalDegrees(double radians);
+//
+///*!
+// * \brief Convert from radians to gradians
+// * \param[in] radians Radians
+// * \return Gradians
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double radiansToGradians(double radians);
+//
+///*!
+// * \brief Convert from gradians to degrees, minutes and seconds
+// * \param[in] gradians Gradians
+// * \param[out] degrees Degrees
+// * \param[out] minutes Minutes
+// * \param[out] seconds Seconds
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT void gradiansToDegrees(double gradians, 
+//                                 int &degrees, 
+//                                 int &minutes, 
+//                                 double &seconds);
+//
+///*!
+// * \brief Convert from gradians to Degrees
+// * \param[in] gradians Gradians
+// * \return Degrees
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double gradiansToDecimalDegrees(double gradians);
+//
+///*!
+// * \brief Convert from gradians to radians
+// * \param[in] gradians Gradians
+// * \return radians
+// */
+//TL_DEPRECATED("", 2.2)
+//TL_EXPORT double gradiansToRadians(double gradians);
+//
+//#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /*!
