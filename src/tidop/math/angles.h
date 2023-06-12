@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_ANGLES_H
-#define TL_MATH_ANGLES_H
+#pragma once
+
 
 #include <utility>
 
@@ -44,146 +44,10 @@ namespace math
  */
 
 template<typename T>
-inline int isNegative(T t) 
+inline int isNegative(T t)
 {
-  return t < 0 ? -1 : 1;
+    return t < 0 ? -1 : 1;
 }
-
-
-//#ifdef TL_ENABLE_DEPRECATED_METHODS
-//
-///*!
-// * \brief Convert from degrees, minutes and seconds to decimal degrees
-// * \param[in] degrees Degrees
-// * \param[in] minutes Minutes
-// * \param[in] seconds Seconds
-// * \return Decimal degrees
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double degreesToDecimalDegrees(int degrees, 
-//                                         int minutes, 
-//                                         double seconds);
-//
-//
-///*!
-// * \brief Convert from degrees, minutes and seconds to radians
-// * \param[in] degrees Degrees
-// * \param[in] minutes Minutes
-// * \param[in] seconds Seconds
-// * \return radians
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double degreesToRadians(int degrees,
-//                                  int minutes,
-//                                  double seconds);
-//
-///*!
-// * \brief Convert from degrees, minutes and seconds to gradians
-// * \param[in] degrees Degrees
-// * \param[in] minutes Minutes
-// * \param[in] seconds Seconds
-// * \return Gradians
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double degreesToGradians(int degrees, 
-//                                   int minutes, 
-//                                   double seconds);
-//
-///*!
-// * \brief Convert from decimal degrees to degrees, minutes and seconds
-// * \param[in] decimalDegrees Decimal degrees
-// * \param[out] degrees Degrees
-// * \param[out] minutes Minutes
-// * \param[out] seconds Seconds
-// *
-// *
-// * <h4>Example</h4>
-// * \code
-// * int degrees, minutes, seconds;
-// * decimalDegreesToDegrees(55.666, degrees, minutes, seconds);
-// * \endcode
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees,
-//                                       int &degrees, 
-//                                       int &minutes, 
-//                                       double &seconds);
-//
-///*!
-// * \brief Convert from decimal degrees to radians
-// * \param[in] decimalDegrees Decimal degrees
-// * \return Radianes
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
-//
-///*!
-// * \brief Convert from decimal degrees to gradians
-// * \param[in] decimalDegrees Decimal degrees
-// * \return Gradians
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
-//
-///*!
-// * \brief Convert from  radians to degrees, minutes and seconds
-// * \param[in] radians Radians
-// * \param[out] degrees Degrees
-// * \param[out] minutes Minutes
-// * \param[out] seconds Seconds
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT void radiansToDegrees(double radians,
-//                                int &degrees,
-//                                int &minutes, 
-//                                double &seconds);
-//
-///*!
-// * \brief Convert from  radians to Degrees
-// * \param[in] radians Radians
-// * \return Degrees
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double radiansToDecimalDegrees(double radians);
-//
-///*!
-// * \brief Convert from radians to gradians
-// * \param[in] radians Radians
-// * \return Gradians
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double radiansToGradians(double radians);
-//
-///*!
-// * \brief Convert from gradians to degrees, minutes and seconds
-// * \param[in] gradians Gradians
-// * \param[out] degrees Degrees
-// * \param[out] minutes Minutes
-// * \param[out] seconds Seconds
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT void gradiansToDegrees(double gradians, 
-//                                 int &degrees, 
-//                                 int &minutes, 
-//                                 double &seconds);
-//
-///*!
-// * \brief Convert from gradians to Degrees
-// * \param[in] gradians Gradians
-// * \return Degrees
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double gradiansToDecimalDegrees(double gradians);
-//
-///*!
-// * \brief Convert from gradians to radians
-// * \param[in] gradians Gradians
-// * \return radians
-// */
-//TL_DEPRECATED("", 2.2)
-//TL_EXPORT double gradiansToRadians(double gradians);
-//
-//#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /*!
@@ -194,36 +58,36 @@ class Angle
 
 public:
 
-  /*!
-   * \brief Angle units
-   */
-  enum class Unit
-  {
-    radians,
-    degrees,
-    gradians
-  };
+    /*!
+     * \brief Angle units
+     */
+    enum class Unit
+    {
+        radians,
+        degrees,
+        gradians
+    };
 
 public:
 
-  Angle() = default;
-  virtual ~Angle() = default;
+    Angle() = default;
+    virtual ~Angle() = default;
 
-  /*!
-   * \brief Angle unit
-   * \see Unit
-   */
-  virtual Unit unit() const = 0;
+    /*!
+     * \brief Angle unit
+     * \see Unit
+     */
+    virtual Unit unit() const = 0;
 
-  /*!
-   * \brief Normalize angle 
-   */
-  virtual void normalize() = 0;
+    /*!
+     * \brief Normalize angle
+     */
+    virtual void normalize() = 0;
 
-  /*!
-   * \brief normalize angle positive
-   */
-  virtual void normalizePositive() = 0;
+    /*!
+     * \brief normalize angle positive
+     */
+    virtual void normalizePositive() = 0;
 };
 
 
@@ -239,53 +103,53 @@ template<
   template<typename>
   class AngleDerived, typename T>
 class AngleBase<AngleDerived<T>>
-  : public Angle 
+    : public Angle
 {
-
-public:
-  
-  AngleBase(Unit unit);
-  AngleBase(Unit unit, T value);
-  AngleBase(const AngleBase &angle);
-  AngleBase(AngleBase &&angle) TL_NOEXCEPT;
-  ~AngleBase() override = default;
-
-  AngleBase &operator=(const AngleBase &angle);
-  AngleBase &operator=(AngleBase &&angle) TL_NOEXCEPT;
-
-  virtual T value() const;
-  Unit unit() const override;
-
-  template<
-    template<typename>
-    class AngleDerived2, typename T2>
-  operator AngleDerived2<T2>()
-  {
-    AngleDerived2<T> angle;
-    AngleConverter<T>::convert(derived(), angle.derived());
-    return AngleDerived2<T2>(angle.value());
-  }
-
-public:
-
-  AngleDerived<T> &derived()
-  {
-    return *static_cast<AngleDerived<T> *>(this);
-  }
-
-  const AngleDerived<T> &derived() const
-  {
-    return *static_cast<const AngleDerived<T> *>(this);
-  }
-
-protected:
-
-  virtual void setValue(T angle);
 
 private:
 
-  Unit mUnit;
-  T mValue;
+    Unit mUnit;
+    T mValue;
+
+public:
+
+    AngleBase(Unit unit);
+    AngleBase(Unit unit, T value);
+    AngleBase(const AngleBase &angle);
+    AngleBase(AngleBase &&angle) TL_NOEXCEPT;
+    ~AngleBase() override = default;
+
+    auto operator=(const AngleBase &angle) -> AngleBase&;
+    auto operator=(AngleBase &&angle) TL_NOEXCEPT -> AngleBase&;
+
+    virtual auto value() const -> T;
+    auto unit() const -> Unit override;
+
+    template<
+        template<typename>
+    class AngleDerived2, typename T2>
+    operator AngleDerived2<T2>()
+    {
+        AngleDerived2<T> angle;
+        AngleConverter<T>::convert(derived(), angle.derived());
+        return AngleDerived2<T2>(angle.value());
+    }
+
+public:
+
+    auto derived() -> AngleDerived<T> &
+    {
+        return *static_cast<AngleDerived<T> *>(this);
+    }
+
+    auto derived() const -> const AngleDerived<T> &
+    {
+        return *static_cast<const AngleDerived<T> *>(this);
+    }
+
+protected:
+
+    virtual void setValue(T angle);
 
 };
 
@@ -297,22 +161,22 @@ private:
  */
 template<typename T>
 class Radians
-  : public AngleBase<Radians<T>>
+    : public AngleBase<Radians<T>>
 {
 
 public:
 
-  Radians();
-  Radians(double angle);
-  Radians(const Radians &radians);
-  Radians(Radians &&radians) TL_NOEXCEPT;
-  ~Radians() override = default;
+    Radians();
+    Radians(double angle);
+    Radians(const Radians &radians);
+    Radians(Radians &&radians) TL_NOEXCEPT;
+    ~Radians() override = default;
 
-  Radians &operator=(const Radians &radians);
-  Radians &operator=(Radians &&radians) TL_NOEXCEPT;
+    auto operator=(const Radians &radians) -> Radians&;
+    auto operator=(Radians &&radians) TL_NOEXCEPT -> Radians &;
 
-  void normalize() override;
-  void normalizePositive() override;
+    void normalize() override;
+    void normalizePositive() override;
 
 };
 
@@ -324,29 +188,30 @@ public:
  */
 template<typename T>
 class Gradians
-  : public AngleBase<Gradians<T>>
+    : public AngleBase<Gradians<T>>
 {
 
 public:
 
-  Gradians();
-  Gradians(T value);
-  Gradians(const Gradians &gradians);
-  Gradians(Gradians &&gradians) TL_NOEXCEPT;
-  ~Gradians() override = default;
+    Gradians();
+    Gradians(T value);
+    Gradians(const Gradians &gradians);
+    Gradians(Gradians &&gradians) TL_NOEXCEPT;
+    ~Gradians() override = default;
 
-  Gradians &operator=(const Gradians &gradians);
-  Gradians &operator=(Gradians &&gradians) TL_NOEXCEPT;
+    auto operator=(const Gradians &gradians) -> Gradians&;
+    auto operator=(Gradians &&gradians) TL_NOEXCEPT -> Gradians&;
 
-  void normalize() override;
-  void normalizePositive() override;
+    void normalize() override;
+    void normalizePositive() override;
 
-  int degrees() const;
-  void setDegrees(int degrees);
-  int minutes() const;
-  void setMinutes(int minutes);
-  T seconds() const;
-  void setSeconds(T seconds);
+    auto degrees() const -> int;
+    void setDegrees(int degrees);
+    auto minutes() const -> int;
+    void setMinutes(int minutes);
+    auto seconds() const -> T;
+    void setSeconds(T seconds);
+
 };
 
 
@@ -357,30 +222,30 @@ public:
  */
 template<typename T>
 class Degrees
-  : public AngleBase<Degrees<T>>
+    : public AngleBase<Degrees<T>>
 {
 
 public:
 
-  Degrees();
-  Degrees(T value);
-  Degrees(const Degrees &degrees);
-  Degrees(Degrees &&degrees) TL_NOEXCEPT;
-  Degrees(int degrees, int minutes, T seconds);
-  ~Degrees() override = default;
+    Degrees();
+    Degrees(T value);
+    Degrees(const Degrees &degrees);
+    Degrees(Degrees &&degrees) TL_NOEXCEPT;
+    Degrees(int degrees, int minutes, T seconds);
+    ~Degrees() override = default;
 
-  Degrees &operator=(const Degrees &degrees);
-  Degrees &operator=(Degrees &&degrees) TL_NOEXCEPT;
+    auto operator=(const Degrees &degrees) -> Degrees&;
+    auto operator=(Degrees &&degrees) TL_NOEXCEPT -> Degrees&;
 
-  void normalize() override;
-  void normalizePositive() override;
+    void normalize() override;
+    void normalizePositive() override;
 
-  int degrees() const;
-  void setDegrees(int degrees);
-  int minutes() const;
-  void setMinutes(int minutes);
-  T seconds() const;
-  void setSeconds(T seconds);
+    auto degrees() const -> int;
+    void setDegrees(int degrees);
+    auto minutes() const -> int;
+    void setMinutes(int minutes);
+    auto seconds() const -> T;
+    void setSeconds(T seconds);
 
 };
 
@@ -396,57 +261,57 @@ class AngleConverter
 
 private:
 
-  AngleConverter() = default;
+    AngleConverter() = default;
 
 public:
 
-  /*!
-   * \brief Convert from degrees to radians
-   * \param[in] degrees Degrees
-   * \param[ou] radians Radians
-   */
-  static void convert(const Degrees<T> &degrees,
-                      Radians<T> &radians);
+    /*!
+     * \brief Convert from degrees to radians
+     * \param[in] degrees Degrees
+     * \param[ou] radians Radians
+     */
+    static void convert(const Degrees<T> &degrees,
+                        Radians<T> &radians);
 
-  /*!
-   * \brief Convert from degrees to gradians
-   * \param[in] degrees Degrees
-   * \param[ou] gradians Gradians
-   */
-  static void convert(const Degrees<T> &degrees,
-                      Gradians<T> &gradians);
+    /*!
+     * \brief Convert from degrees to gradians
+     * \param[in] degrees Degrees
+     * \param[ou] gradians Gradians
+     */
+    static void convert(const Degrees<T> &degrees,
+                        Gradians<T> &gradians);
 
-  /*!
-   * \brief Convert from gradians to radians
-   * \param[in] gradians Gradians
-   * \param[ou] radians Radians
-   */
-  static void convert(const Gradians<T> &gradians,
-                      Radians<T> &radians);
+    /*!
+     * \brief Convert from gradians to radians
+     * \param[in] gradians Gradians
+     * \param[ou] radians Radians
+     */
+    static void convert(const Gradians<T> &gradians,
+                        Radians<T> &radians);
 
-  /*!
-   * \brief Convert from gradians to degrees
-   * \param[in] gradians Gradians
-   * \param[ou] degrees Degrees
-   */
-  static void convert(const Gradians<T> &gradians,
-                      Degrees<T> &degrees);
+    /*!
+     * \brief Convert from gradians to degrees
+     * \param[in] gradians Gradians
+     * \param[ou] degrees Degrees
+     */
+    static void convert(const Gradians<T> &gradians,
+                        Degrees<T> &degrees);
 
-  /*!
-   * \brief Convert from radians to degrees
-   * \param[in] radians Radians
-   * \param[ou] Degrees degrees
-   */
-  static void convert(const Radians<T> &radians,
-                      Degrees<T> &degrees);
+    /*!
+     * \brief Convert from radians to degrees
+     * \param[in] radians Radians
+     * \param[ou] Degrees degrees
+     */
+    static void convert(const Radians<T> &radians,
+                        Degrees<T> &degrees);
 
-  /*!
-   * \brief Convert from radians to gradians
-   * \param[in] radians Radians
-   * \param[ou] gradians Gradians
-   */
-  static void convert(const Radians<T> &radians,
-                      Gradians<T> &gradians);
+    /*!
+     * \brief Convert from radians to gradians
+     * \param[in] radians Radians
+     * \param[ou] gradians Gradians
+     */
+    static void convert(const Radians<T> &radians,
+                        Gradians<T> &gradians);
 
 };
 
@@ -462,7 +327,7 @@ AngleBase<AngleDerived<T>>::AngleBase(Unit unit)
   : mUnit(unit),
     mValue(0)
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<
@@ -472,7 +337,7 @@ AngleBase<AngleDerived<T>>::AngleBase(Unit unit, T value)
   : mUnit(unit),
     mValue(value)
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<
@@ -482,7 +347,7 @@ AngleBase<AngleDerived<T>>::AngleBase(const AngleBase &angle)
   : mUnit(angle.mUnit),
     mValue(angle.mValue)
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<
@@ -492,7 +357,7 @@ AngleBase<AngleDerived<T>>::AngleBase(AngleBase &&angle) TL_NOEXCEPT
   : mUnit(angle.mUnit),
     mValue(angle.mValue)
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<
@@ -504,6 +369,7 @@ AngleBase<AngleDerived<T>> &AngleBase<AngleDerived<T>>::operator=(const AngleBas
     mUnit = angle.mUnit;
     mValue = angle.mValue;
   }
+
   return (*this);
 }
 
@@ -512,19 +378,20 @@ template<
   class AngleDerived, typename T>
 AngleBase<AngleDerived<T>> &AngleBase<AngleDerived<T>>::operator=(AngleBase &&angle) TL_NOEXCEPT
 {
-  if (this != &angle) {
-    mUnit = angle.mUnit;
-    mValue = angle.mValue;
-  }
-  return (*this);
+    if (this != &angle) {
+        mUnit = angle.mUnit;
+        mValue = angle.mValue;
+    }
+
+    return (*this);
 }
 
 template<
   template<typename>
   class AngleDerived, typename T>
-inline T AngleBase<AngleDerived<T>>::value() const
+inline auto AngleBase<AngleDerived<T>>::value() const -> T
 {
-  return mValue;
+    return mValue;
 }
 
 template<
@@ -532,28 +399,28 @@ template<
   class AngleDerived, typename T>
 inline void AngleBase<AngleDerived<T>>::setValue(T angle)
 {
-  mValue = angle;
+    mValue = angle;
 }
 
 template<
   template<typename>
   class AngleDerived, typename T>
-inline Angle::Unit AngleBase<AngleDerived<T>>::unit() const
+inline auto AngleBase<AngleDerived<T>>::unit() const -> Unit 
 {
-  return mUnit;
+    return mUnit;
 }
 
 
 /* Radians implementation */
 
-template<typename T> inline
-Radians<T>::Radians()
+template<typename T> 
+inline Radians<T>::Radians()
   : AngleBase<Radians<T>>(Angle::Unit::radians)
 {
 }
 
-template<typename T> inline
-Radians<T>::Radians(double angle)
+template<typename T> 
+inline Radians<T>::Radians(double angle)
   : AngleBase<Radians<T>>(Angle::Unit::radians, angle)
 {
 }
@@ -564,74 +431,76 @@ Radians<T>::Radians(const Radians &radians)
 {
 }
 
-template<typename T> inline
-Radians<T>::Radians(Radians &&radians) TL_NOEXCEPT
+template<typename T> 
+inline Radians<T>::Radians(Radians &&radians) TL_NOEXCEPT
   : AngleBase<Radians<T>>(std::forward<AngleBase<Radians<T>>>(radians))
 {
 }
 
-template<typename T> inline
-Radians<T> &Radians<T>::operator=(const Radians &radians)
+template<typename T> 
+inline auto Radians<T>::operator=(const Radians &radians) -> Radians<T>&
 {
-  if (this != &radians) {
-    AngleBase<Radians<T>>::operator=(radians);
-  }
-  return (*this);
+    if (this != &radians) {
+        AngleBase<Radians<T>>::operator=(radians);
+    }
+
+    return (*this);
 }
 
-template<typename T> inline
-Radians<T> &Radians<T>::operator=(Radians &&radians) TL_NOEXCEPT
+template<typename T> 
+inline auto Radians<T>::operator=(Radians &&radians) TL_NOEXCEPT  -> Radians<T> &
 {
-  if (this != &radians) {
-    AngleBase<Radians<T>>::operator=(std::forward<AngleBase<Radians<T>>>(radians));
-  }
-  return (*this);
+    if (this != &radians) {
+        AngleBase<Radians<T>>::operator=(std::forward<AngleBase<Radians<T>>>(radians));
+    }
+
+    return (*this);
 }
 
-template<typename T> inline
-void Radians<T>::normalize()
+template<typename T> 
+inline void Radians<T>::normalize()
 {
-  T value = this->value();
+    T value = this->value();
 
-  if (value <= -consts::pi<T> || value > consts::pi<T>) {
-    value = fmod(value + consts::pi<T>, consts::two_pi<T>);
+    if (value <= -consts::pi<T> || value > consts::pi<T>) {
+        value = fmod(value + consts::pi<T>, consts::two_pi<T>);
 
-    if (value <= consts::zero<T>)
-      value += consts::pi<T>;
-    else
-      value -= consts::pi<T>;
+        if (value <= consts::zero<T>)
+            value += consts::pi<T>;
+        else
+            value -= consts::pi<T>;
 
-    this->setValue(value);
-  }
+        this->setValue(value);
+    }
 }
 
-template<typename T> inline
-void Radians<T>::normalizePositive()
+template<typename T> 
+inline void Radians<T>::normalizePositive()
 {
-  T value = this->value();
+    T value = this->value();
 
-  if (value < consts::zero<T> || value >= consts::two_pi<T>) {
-    value = fmod(value, consts::two_pi<T>);
+    if (value < consts::zero<T> || value >= consts::two_pi<T>) {
+        value = fmod(value, consts::two_pi<T>);
 
-    if (value < consts::zero<T>)
-      value += consts::two_pi<T>;
+        if (value < consts::zero<T>)
+            value += consts::two_pi<T>;
 
-    this->setValue(value);
-  }
+        this->setValue(value);
+    }
 }
 
 
 
 /* Gradians implementation */
 
-template<typename T> inline
-Gradians<T>::Gradians()
+template<typename T>
+inline Gradians<T>::Gradians()
   : AngleBase<Gradians<T>>(Angle::Unit::gradians)
 {
 }
 
-template<typename T> inline
-Gradians<T>::Gradians(T value)
+template<typename T> 
+inline Gradians<T>::Gradians(T value)
   : AngleBase<Gradians<T>>(Angle::Unit::gradians, value)
 {
 }
@@ -642,258 +511,262 @@ Gradians<T>::Gradians(const Gradians &gradians)
 {
 }
 
-template<typename T> inline
-Gradians<T>::Gradians(Gradians &&gradians) TL_NOEXCEPT
+template<typename T> 
+inline Gradians<T>::Gradians(Gradians &&gradians) TL_NOEXCEPT
   : AngleBase<Gradians<T>>(std::forward<AngleBase<Gradians<T>>>(gradians))
 {
 }
 
-template<typename T> inline
-Gradians<T> &Gradians<T>::operator=(const Gradians &gradians)
+template<typename T> 
+inline auto Gradians<T>::operator=(const Gradians &gradians) -> Gradians<T>&
 {
   if (this != &gradians) {
     AngleBase<Gradians<T>>::operator=(gradians);
   }
+
   return (*this);
 }
 
-template<typename T> inline
-Gradians<T> &Gradians<T>::operator=(Gradians &&gradians) TL_NOEXCEPT
+template<typename T> 
+inline auto Gradians<T>::operator=(Gradians &&gradians) TL_NOEXCEPT -> Gradians<T>&
 {
-  if (this != &gradians) {
-    AngleBase<Gradians<T>>::operator=(std::forward<AngleBase<Gradians<T>>>(gradians));
-  }
-  return (*this);
+    if (this != &gradians) {
+        AngleBase<Gradians<T>>::operator=(std::forward<AngleBase<Gradians<T>>>(gradians));
+    }
+
+    return (*this);
 }
 
 template<typename T>
 inline void Gradians<T>::normalize()
 {
-  T value = this->value();
+    T value = this->value();
 
-  if (value <= -static_cast<T>(consts::half_circle_grad) ||
-      value > static_cast<T>(consts::half_circle_grad)) {
+    if (value <= -static_cast<T>(consts::half_circle_grad) ||
+        value > static_cast<T>(consts::half_circle_grad)) {
 
-    value = fmod(value + consts::half_circle_grad, consts::full_circle_grad);
+        value = fmod(value + consts::half_circle_grad, consts::full_circle_grad);
 
-    if (value <= consts::zero<T>)
-      value += static_cast<T>(consts::half_circle_grad);
-    else
-      value -= static_cast<T>(consts::half_circle_grad);
+        if (value <= consts::zero<T>)
+            value += static_cast<T>(consts::half_circle_grad);
+        else
+            value -= static_cast<T>(consts::half_circle_grad);
 
-    this->setValue(value);
-  }
+        this->setValue(value);
+    }
 }
 
-template<typename T> inline
-void Gradians<T>::normalizePositive()
+template<typename T>
+inline void Gradians<T>::normalizePositive()
 {
-  T value = this->value();
+    T value = this->value();
 
-  if (value < consts::zero<T> ||
-      value >= static_cast<T>(consts::full_circle_grad)) {
+    if (value < consts::zero<T> ||
+        value >= static_cast<T>(consts::full_circle_grad)) {
 
-    value = fmod(value, static_cast<T>(consts::full_circle_grad));
+        value = fmod(value, static_cast<T>(consts::full_circle_grad));
 
-    if (value < consts::zero<T>)
-      value += static_cast<T>(consts::full_circle_grad);
+        if (value < consts::zero<T>)
+            value += static_cast<T>(consts::full_circle_grad);
 
-    this->setValue(value);
-  }
+        this->setValue(value);
+    }
 }
 
-template<typename T> inline
-int Gradians<T>::degrees() const
+template<typename T>
+inline auto Gradians<T>::degrees() const -> int
 {
-  return static_cast<int>(this->value());
+    return static_cast<int>(this->value());
 }
 
 template<typename T> inline
 void tl::math::Gradians<T>::setDegrees(int degrees)
 {
-  T value = isNegative(degrees) * 
-            (static_cast<T>(std::abs(degrees)) +
-            ((this->seconds() / consts::quarter_circle_grad) + this->minutes()) / 
-            consts::quarter_circle_grad);
-  this->setValue(value); 
+    T value = isNegative(degrees) *
+              (static_cast<T>(std::abs(degrees)) +
+              ((this->seconds() / consts::quarter_circle_grad) + this->minutes()) /
+              consts::quarter_circle_grad);
+    this->setValue(value);
 }
 
-template<typename T> inline
-int Gradians<T>::minutes() const
+template<typename T> 
+inline auto Gradians<T>::minutes() const -> int
 {
-  return static_cast<int>(fabs(this->value() - this->degrees()) * consts::quarter_circle_grad);
+    return static_cast<int>(fabs(this->value() - this->degrees()) * consts::quarter_circle_grad);
 }
 
-template<typename T> inline
- void tl::math::Gradians<T>::setMinutes(int minutes)
+template<typename T> 
+inline void Gradians<T>::setMinutes(int minutes)
 {
-  int degrees = this->degrees();
-  T value = isNegative(degrees) *
-            (static_cast<T>(std::abs(degrees)) +
-             ((this->seconds() / static_cast<T>(consts::quarter_circle_grad)) +
+    int degrees = this->degrees();
+    T value = isNegative(degrees) *
+              (static_cast<T>(std::abs(degrees)) +
+              ((this->seconds() / static_cast<T>(consts::quarter_circle_grad)) +
               static_cast<T>(minutes)) / static_cast<T>(consts::quarter_circle_grad));
-  this->setValue(value);
+    this->setValue(value);
 }
 
-template<typename T> inline
-T Gradians<T>::seconds() const
+template<typename T> 
+inline auto Gradians<T>::seconds() const -> T
 {
-  double min = fabs(this->value() - this->degrees()) * static_cast<T>(consts::quarter_circle_grad);
-  return fabs(min - this->minutes()) * static_cast<T>(consts::quarter_circle_grad);
+    double min = fabs(this->value() - this->degrees()) * static_cast<T>(consts::quarter_circle_grad);
+    return fabs(min - this->minutes()) * static_cast<T>(consts::quarter_circle_grad);
 }
 
-template<typename T> inline
-void tl::math::Gradians<T>::setSeconds(T seconds)
+template<typename T>
+inline void tl::math::Gradians<T>::setSeconds(T seconds)
 {
-  int degrees = this->degrees();
-  T value = isNegative(degrees) * 
-            (static_cast<T>(std::abs(this->degrees())) +
-             ((seconds / consts::quarter_circle_grad) +
+    int degrees = this->degrees();
+    T value = isNegative(degrees) *
+              (static_cast<T>(std::abs(this->degrees())) +
+              ((seconds / consts::quarter_circle_grad) +
               static_cast<T>(this->minutes())) / consts::quarter_circle_grad);
-  this->setValue(value);
+    this->setValue(value);
 }
 
 
 
 /* Degrees implementation */
 
-template<typename T> inline
-Degrees<T>::Degrees()
+template<typename T> 
+inline Degrees<T>::Degrees()
   : AngleBase<Degrees<T>>(Angle::Unit::degrees)
 {
 }
 
-template<typename T> inline
-Degrees<T>::Degrees(T value)
+template<typename T> 
+inline Degrees<T>::Degrees(T value)
   : AngleBase<Degrees<T>>(Angle::Unit::degrees, value)
 {
 }
 
-template<typename T> inline
-Degrees<T>::Degrees(const Degrees &degrees)
+template<typename T> 
+inline Degrees<T>::Degrees(const Degrees &degrees)
   : AngleBase<Degrees<T>>(degrees)
 {
 }
 
-template<typename T> inline
-Degrees<T>::Degrees(Degrees &&degrees) TL_NOEXCEPT
+template<typename T>
+inline Degrees<T>::Degrees(Degrees &&degrees) TL_NOEXCEPT
   : AngleBase<Degrees<T>>(std::forward<AngleBase<Degrees<T>>>(degrees))
 {
 }
 
-template<typename T> inline
-Degrees<T>::Degrees(int degrees, int minutes, T seconds)
+template<typename T> 
+inline Degrees<T>::Degrees(int degrees, int minutes, T seconds)
   : AngleBase<Degrees<T>>(Angle::Unit::degrees)
 {
-  this->setValue(isNegative(degrees) *
-                 (std::abs(degrees) +
-                  minutes / static_cast<T>(consts::degrees_to_minutes) +
-                  seconds / static_cast<T>(consts::degrees_to_seconds)));
+    this->setValue(isNegative(degrees) *
+                   (std::abs(degrees) +
+                   minutes / static_cast<T>(consts::degrees_to_minutes) +
+                   seconds / static_cast<T>(consts::degrees_to_seconds)));
 }
 
-template<typename T> inline
-Degrees<T> &Degrees<T>::operator=(const Degrees &degrees)
+template<typename T>
+inline auto Degrees<T>::operator=(const Degrees &degrees) -> Degrees<T>&
 {
-  if (this != &degrees) {
-    AngleBase<Degrees<T>>::operator=(degrees);
-  }
-  return (*this);
+    if (this != &degrees) {
+        AngleBase<Degrees<T>>::operator=(degrees);
+    }
+
+    return (*this);
 }
 
-template<typename T> inline
-Degrees<T> &Degrees<T>::operator=(Degrees &&degrees) TL_NOEXCEPT
+template<typename T>
+inline auto Degrees<T>::operator=(Degrees &&degrees) TL_NOEXCEPT -> Degrees<T>&
 {
-  if (this != &degrees) {
-    AngleBase<Degrees<T>>::operator=(std::forward<AngleBase<Degrees<T>>>(degrees));
-  }
-  return (*this);
+    if (this != &degrees) {
+        AngleBase<Degrees<T>>::operator=(std::forward<AngleBase<Degrees<T>>>(degrees));
+    }
+
+    return (*this);
 }
 
-template<typename T> inline
-void Degrees<T>::normalize()
+template<typename T> 
+inline void Degrees<T>::normalize()
 {
-  T value = this->value();
+    T value = this->value();
 
-  if (value <= -static_cast<T>(consts::half_circle_deg) ||
-      value > static_cast<T>(consts::half_circle_deg)) {
+    if (value <= -static_cast<T>(consts::half_circle_deg) ||
+        value > static_cast<T>(consts::half_circle_deg)) {
 
-    value = fmod(value + static_cast<T>(consts::half_circle_deg),
-                 static_cast<T>(consts::full_circle_deg));
+        value = fmod(value + static_cast<T>(consts::half_circle_deg),
+                     static_cast<T>(consts::full_circle_deg));
 
-    if (value <= consts::zero<T>)
-      value += static_cast<T>(consts::half_circle_deg);
-    else 
-      value -= static_cast<T>(consts::half_circle_deg);
+        if (value <= consts::zero<T>)
+            value += static_cast<T>(consts::half_circle_deg);
+        else
+            value -= static_cast<T>(consts::half_circle_deg);
+
+        this->setValue(value);
+    }
+}
+
+template<typename T> 
+inline void Degrees<T>::normalizePositive()
+{
+    T value = this->value();
+
+    if (value < consts::zero<T> ||
+        value >= static_cast<T>(consts::full_circle_deg)) {
+
+        value = fmod(value, static_cast<T>(consts::full_circle_deg));
+
+        if (value < consts::zero<T>)
+            value += static_cast<T>(consts::full_circle_deg);
+
+        this->setValue(value);
+    }
+}
+
+template<typename T> 
+inline auto Degrees<T>::degrees() const -> int
+{
+    return static_cast<int>(this->value());
+}
+
+template<typename T> 
+inline void Degrees<T>::setDegrees(int degrees)
+{
+    T value = isNegative(degrees) * (std::abs(degrees) +
+                                     this->minutes() / static_cast<T>(consts::degrees_to_minutes) +
+                                     this->seconds() / static_cast<T>(consts::degrees_to_seconds));
+    this->setValue(value);
+}
+
+template<typename T> 
+inline auto Degrees<T>::minutes() const -> int
+{
+    int seconds = static_cast<int>(std::round(this->value() * consts::degrees_to_seconds));
+    seconds = std::abs(seconds % consts::degrees_to_seconds);
+    return seconds / consts::minutes_to_seconds;
+}
+
+template<typename T>
+inline void Degrees<T>::setMinutes(int minutes)
+{
+    T value = isNegative(this->degrees()) * (std::abs(this->degrees()) +
+                                             minutes / static_cast<T>(consts::degrees_to_minutes) +
+                                             this->seconds() / static_cast<T>(consts::degrees_to_seconds));
 
     this->setValue(value);
-  }
 }
 
 template<typename T> inline
-void Degrees<T>::normalizePositive()
+auto Degrees<T>::seconds() const -> T
 {
-  T value = this->value();
+    double min = fabs(this->value() - this->degrees()) * consts::degrees_to_minutes;
+    return fabs(min - this->minutes()) * consts::minutes_to_seconds;
+}
 
-  if (value < consts::zero<T> ||
-      value >= static_cast<T>(consts::full_circle_deg)) {
-
-    value = fmod(value, static_cast<T>(consts::full_circle_deg));
-
-    if (value < consts::zero<T>)
-      value += static_cast<T>(consts::full_circle_deg);
-
+template<typename T> inline
+void Degrees<T>::setSeconds(T seconds)
+{
+    T value = isNegative(this->degrees()) *
+              (std::abs(this->degrees()) +
+              std::abs(this->value() - this->degrees()) +
+              seconds / static_cast<T>(consts::degrees_to_seconds));
     this->setValue(value);
-  }
-}
-
-template<typename T> inline
-int Degrees<T>::degrees() const
-{
-  return static_cast<int>(this->value());
-}
-
-template<typename T> inline
-void tl::math::Degrees<T>::setDegrees(int degrees)
-{
-  T value = isNegative(degrees) * (std::abs(degrees) +
-             this->minutes() / static_cast<T>(consts::degrees_to_minutes) +
-             this->seconds() / static_cast<T>(consts::degrees_to_seconds));
-  this->setValue(value);
-}
-
-template<typename T> inline
-int Degrees<T>::minutes() const
-{
-  int seconds = static_cast<int>(std::round(this->value() * consts::degrees_to_seconds));
-  seconds = std::abs(seconds % consts::degrees_to_seconds);
-  return seconds / consts::minutes_to_seconds;
-}
-
-template<typename T> inline
-void tl::math::Degrees<T>::setMinutes(int minutes)
-{
-  T value = isNegative(this->degrees()) * (std::abs(this->degrees()) +
-                                           minutes / static_cast<T>(consts::degrees_to_minutes) +
-                                           this->seconds() / static_cast<T>(consts::degrees_to_seconds));
-
-  this->setValue(value);
-}
-
-template<typename T> inline
-T Degrees<T>::seconds() const
-{
-  double min = fabs(this->value() - this->degrees()) * consts::degrees_to_minutes;
-  return fabs(min - this->minutes()) * consts::minutes_to_seconds;
-}
-
-template<typename T> inline
-void tl::math::Degrees<T>::setSeconds(T seconds)
-{
-  T value = isNegative(this->degrees()) * 
-            (std::abs(this->degrees()) +
-             std::abs(this->value() - this->degrees()) +
-             seconds / static_cast<T>(consts::degrees_to_seconds));
-  this->setValue(value);
 }
 
 
@@ -901,24 +774,24 @@ void tl::math::Degrees<T>::setSeconds(T seconds)
 /* Angle Converter */
 
 template<typename T>
-inline void AngleConverter<T>::convert(const Degrees<T> &degrees, 
+inline void AngleConverter<T>::convert(const Degrees<T> &degrees,
                                        Radians<T> &radians)
 {
-  radians = degrees.value() * consts::deg_to_rad<T>;
+    radians = degrees.value() * consts::deg_to_rad<T>;
 }
 
 template<typename T>
 inline void AngleConverter<T>::convert(const Degrees<T> &degrees,
                                        Gradians<T> &gradians)
 {
-  gradians = degrees.value() * consts::deg_to_grad<T>;
+    gradians = degrees.value() * consts::deg_to_grad<T>;
 }
 
 template<typename T>
-inline void AngleConverter<T>::convert(const Gradians<T> &gradians, 
+inline void AngleConverter<T>::convert(const Gradians<T> &gradians,
                                        Radians<T> &radians)
 {
-  radians = gradians.value() * consts::grad_to_rad<T>;
+    radians = gradians.value() * consts::grad_to_rad<T>;
 }
 
 template<typename T>
@@ -943,6 +816,21 @@ inline void AngleConverter<T>::convert(const Radians<T> &radians,
 }
 
 
+Radians<double> operator""_rad(long double radians)
+{
+    return Radians<double>(radians);
+}
+
+Gradians<double> operator""_grad(long double gradians)
+{
+    return Gradians<double>(gradians);
+}
+
+Degrees<double> operator""_deg(long double degrees)
+{
+    return Degrees<double>(degrees);
+}
+
 /*! \} */ // end of angleConversion  
   
 /*! \} */ // end of Math
@@ -952,5 +840,3 @@ inline void AngleConverter<T>::convert(const Radians<T> &radians,
 } // Fin namespace math
 
 } // Fin namespace tl
-
-#endif // TL_MATH_ANGLES_H 

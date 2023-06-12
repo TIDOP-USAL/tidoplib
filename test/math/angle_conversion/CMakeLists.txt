@@ -32,8 +32,7 @@ set(test_target "${test_name}")
 
 add_executable(${test_target} 
                ${test_filename}
-               ${CMAKE_SOURCE_DIR}/src/tidop/math/angles.h
-               ${CMAKE_SOURCE_DIR}/src/tidop/math/angles.cpp)
+               ${CMAKE_SOURCE_DIR}/src/tidop/math/angles.h)
 
 target_link_libraries(${test_target}
                       TidopLib::Core
