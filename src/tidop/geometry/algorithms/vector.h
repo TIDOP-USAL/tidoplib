@@ -123,7 +123,7 @@ double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 double module(const Point_t &v)
 {
-  return math::module(v.x, v.y);
+  return module(v.x, v.y);
 }
 
 /*!

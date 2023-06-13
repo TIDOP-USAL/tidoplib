@@ -290,8 +290,8 @@ Transform::Status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
   size_t n = 2;
 
   try {
-    math::Matrix<double> A(m, n, 0);
-    math::Vector<double> B(m);
+    Matrix<double> A(m, n, 0);
+    Vector<double> B(m);
 
     for (size_t i = 0, r = 0; i < n1; i++, r++) {
 
@@ -308,8 +308,8 @@ Transform::Status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
       B[r] = pts2[i].y;
     }
 
-    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-    math::Vector<double> C = svd.solve(B);
+    SingularValueDecomposition<Matrix<double>> svd(A);
+    Vector<double> C = svd.solve(B);
 
     r1 = C[0];
     r2 = C[1];

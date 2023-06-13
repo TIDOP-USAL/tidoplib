@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_MATH_UTILS_H
-#define TL_CORE_MATH_UTILS_H
+#pragma once
+
 
 #include <vector>
 #include <array>
@@ -460,4 +460,3 @@ double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &p
 
 } // End namespace tl
 
-#endif // TL_CORE_MATH_UTILS_H

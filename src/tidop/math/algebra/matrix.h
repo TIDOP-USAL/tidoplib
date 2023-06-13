@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_MATRIX_H
-#define TL_MATH_MATRIX_H
+#pragma once
 
 #include <iomanip>
 
@@ -41,9 +40,6 @@
 
 
 namespace tl
-{
-
-namespace math
 {
 
 
@@ -535,8 +531,6 @@ public:
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-    using namespace simd;
-    
     Packed<T> packed_a;
     
     constexpr size_t packed_size = packed_a.size();
@@ -668,8 +662,6 @@ public:
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-    using namespace simd;
-    
     Packed<T> packed_a;
     Packed<T> packed_b;
     
@@ -797,8 +789,6 @@ public:
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-    using namespace simd;
-
     Packed<T> packed_a;
     Packed<T> packed_b;
 
@@ -894,8 +884,6 @@ public:
     size_t i{0};
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-
-    using namespace simd;
 
     Packed<T> packed_a;
     Packed<T> packed_b(scalar);
@@ -993,8 +981,6 @@ public:
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-    using namespace simd;
-
     Packed<T> packed_a;
     Packed<T> packed_b(s);
 
@@ -1063,8 +1049,6 @@ protected:
     size_t i{0};
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-
-    using namespace simd;
 
     Packed<T> packed_a;
     Packed<T> packed_b;
@@ -1733,8 +1717,6 @@ void mulmat_simd(const Matrix<T, _rows, _dim> &matrix1,
                  const Matrix<T, _dim, _cols> &matrix2,
                  Matrix<T, _rows, _cols> &matrix)
 {
-  using namespace simd;
-
   size_t rows = matrix1.rows();
   size_t dim = matrix1.cols();
   size_t cols = matrix2.cols();
@@ -1851,7 +1833,6 @@ void mulmat_simd_parallel(const Matrix<T, _rows, _dim> &matrix1,
                           const Matrix<T, _dim, _cols> &matrix2,
                           Matrix<T, _rows, _cols> &matrix)
 {
-  using namespace simd;
 
   size_t rows = matrix1.rows();
   size_t dim = matrix1.cols();
@@ -3765,8 +3746,6 @@ Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
 
 #else
   
-  using namespace simd;
-  
   Packed<T> packed_a;
   Packed<T> packed_b;
   Packed<T> packed_c;
@@ -3814,8 +3793,6 @@ static Vector<T> operator * (const Matrix<T> &matrix,
   }
 
 #else
-  
-  using namespace simd;
   
   Packed<T> packed_a;
   Packed<T> packed_b;
@@ -3900,11 +3877,7 @@ inline  static Vector<T, _rows> operator * (const Vector<T, _dim> &vector,
 
 /*! \} */ // end of math
 
-} // Fin namespace math
-
 
 } // End namespace tl
-
-#endif // TL_MATH_MATRIX_H
 
 

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_ROTATION_MATRIX_H
-#define TL_MATH_ROTATION_MATRIX_H
+#pragma once
 
 #include <vector>
 #include <array>
@@ -32,9 +31,6 @@
 #include "tidop/math/algebra/rotations.h"
 
 namespace tl
-{
-
-namespace math
 {
 
 /*! \addtogroup math
@@ -54,21 +50,21 @@ namespace math
  * \brief Matriz de rotación
  */
 template <typename T>
-class RotationMatrix 
-  : public RotationBase<T>,
+class RotationMatrix
+  : public OrientationBase<T>,
     public Matrix<T, 3, 3>
 {
 
 public:
-  
-  RotationMatrix();
-  RotationMatrix(const RotationMatrix<T> &rot);
-  RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT;
-  RotationMatrix(const Matrix<T, 3, 3> &rot);
-  ~RotationMatrix() override = default;
 
-  RotationMatrix &operator = (const RotationMatrix<T> &rot);
-  RotationMatrix &operator = (RotationMatrix &&rot) TL_NOEXCEPT;
+    RotationMatrix();
+    RotationMatrix(const RotationMatrix<T> &rot);
+    RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT;
+    RotationMatrix(const Matrix<T, 3, 3> &rot);
+    ~RotationMatrix() override = default;
+
+    RotationMatrix &operator = (const RotationMatrix<T> &rot);
+    RotationMatrix &operator = (RotationMatrix &&rot) TL_NOEXCEPT;
 
 private:
 
@@ -77,53 +73,53 @@ private:
 
 template <typename T> inline
 RotationMatrix<T>::RotationMatrix()
-  : RotationBase<T>(Rotation::Type::rotation_matrix),
+  : OrientationBase<T>(Orientation::Type::rotation_matrix),
     Matrix<T, 3, 3>()
 {
 }
 
 template <typename T> inline
 RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
-  : RotationBase<T>(Rotation::Type::rotation_matrix),
+  : OrientationBase<T>(Orientation::Type::rotation_matrix),
     Matrix<T, 3, 3>(rot)
 {
 }
 
 template <typename T> inline
 RotationMatrix<T>::RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT
-  : RotationBase<T>(std::forward<RotationBase<T>>(rot)),
+  : OrientationBase<T>(std::forward<OrientationBase<T>>(rot)),
     Matrix<T, 3, 3>(std::forward<Matrix<T, 3, 3>>(rot))
 {
 }
 
 template <typename T> inline
 RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
-  : RotationBase<T>(Rotation::Type::rotation_matrix),
+  : OrientationBase<T>(Orientation::Type::rotation_matrix),
     Matrix<T, 3, 3>(rot)
 {
 
 }
 
-template <typename T> 
+template <typename T>
 inline RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix<T> &rot)
 {
-  if (this != &rot) {
-    RotationBase<T>::operator = (rot);
-    Matrix<T, 3, 3>::operator = (rot);
-  }
+    if (this != &rot) {
+        OrientationBase<T>::operator = (rot);
+        Matrix<T, 3, 3>::operator = (rot);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <typename T> 
-RotationMatrix<T> &RotationMatrix<T>::operator = (RotationMatrix &&rot) TL_NOEXCEPT
+template <typename T>
+inline RotationMatrix<T> &RotationMatrix<T>::operator = (RotationMatrix &&rot) TL_NOEXCEPT
 {
-  if (this != &rot) {
-    RotationBase<T>::operator = (std::forward<RotationBase<T>>(rot));
-    Matrix<T, 3, 3>::operator = (std::forward<Matrix<T, 3, 3>>(rot));
-  }
+    if (this != &rot) {
+        OrientationBase<T>::operator = (std::forward<OrientationBase<T>>(rot));
+        Matrix<T, 3, 3>::operator = (std::forward<Matrix<T, 3, 3>>(rot));
+    }
 
-  return *this;
+    return *this;
 }
 
 /*! \} */ // end of rotation
@@ -132,8 +128,5 @@ RotationMatrix<T> &RotationMatrix<T>::operator = (RotationMatrix &&rot) TL_NOEXC
 
 /*! \} */ // end of math
 
-} // Fin namespace math
-
 } // End namespace tl
 
-#endif // TL_MATH_ROTATION_MATRIX_H

@@ -30,8 +30,7 @@
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-using namespace tl::math;
-using namespace simd;
+using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(PackedTestSuite)
 
@@ -2892,7 +2891,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
 //      for (size_t c = 0; c < max_vector; c++) {
 //
 //        double b1 = matrix2[i][c];
-//        tl::math::simd::Packed<double> packed_b1(b1);
+//        tl::simd::Packed<double> packed_b1(b1);
 //        packed_c.loadUnaligned(&mat[r][c]);
 //        packed_c += packed_a * packed_b_d;
 //        packed_c.storeUnaligned(&mat[r][c]);
@@ -3034,7 +3033,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
 //
 //
 //
-//        std::array<double, tl::math::simd::PackedTraits<tl::math::simd::Packed<double>>::size> b;
+//        std::array<double, tl::simd::PackedTraits<tl::simd::Packed<double>>::size> b;
 //        for (size_t k = 0; k < packed_b_d.size(); k++) {
 //          b[k] = matrix2[i + k][c];
 //        }
@@ -4200,8 +4199,6 @@ double calculate_mean(std::vector<double> &data, int size)
 
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-
-  using namespace simd;
 
   double x{0};
 

@@ -72,7 +72,7 @@ struct DifferentialRectificationTest
   Point3<double> cameraPosition;
   Point<double> imagePoint;
   double focal;
-  math::RotationMatrix<double> cameraRotation;
+  RotationMatrix<double> cameraRotation;
 
   DifferentialRectification *differentialRectification;
 };

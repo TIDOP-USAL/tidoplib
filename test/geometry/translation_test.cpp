@@ -71,23 +71,23 @@ struct TranslationTest
       Point<double>(4138909.902,	702745.738) };
 
     vectorIn = {
-      math::Vector2d{{4157222.543, 664789.307}},
-      math::Vector2d{{4149043.336, 688836.443}},
-      math::Vector2d{{4172803.511, 690340.078}},
-      math::Vector2d{{4177148.376, 642997.635}},
-      math::Vector2d{{4137012.190, 671808.029}},
-      math::Vector2d{{4146292.729, 666952.887}},
-      math::Vector2d{{4138759.902, 702670.738}}
+      Vector2d{{4157222.543, 664789.307}},
+      Vector2d{{4149043.336, 688836.443}},
+      Vector2d{{4172803.511, 690340.078}},
+      Vector2d{{4177148.376, 642997.635}},
+      Vector2d{{4137012.190, 671808.029}},
+      Vector2d{{4146292.729, 666952.887}},
+      Vector2d{{4138759.902, 702670.738}}
     };
 
     vectorOut = {
-      math::Vector2d{{4157372.543,	664864.307}},
-      math::Vector2d{{4149193.336,	688911.443}},
-      math::Vector2d{{4172953.511,	690415.078}},
-      math::Vector2d{{4177298.376,	643072.635}},
-      math::Vector2d{{4137162.19,   671883.029}},
-      math::Vector2d{{4146442.729,	667027.887}},
-      math::Vector2d{{4138909.902,	702745.738}}
+      Vector2d{{4157372.543,	664864.307}},
+      Vector2d{{4149193.336,	688911.443}},
+      Vector2d{{4172953.511,	690415.078}},
+      Vector2d{{4177298.376,	643072.635}},
+      Vector2d{{4137162.19,   671883.029}},
+      Vector2d{{4146442.729,	667027.887}},
+      Vector2d{{4138909.902,	702745.738}}
     };
 
   }
@@ -99,11 +99,11 @@ struct TranslationTest
 
   std::vector<Point<double>> ptsIn;
   std::vector<Point<double>> ptsOut;
-  std::vector<math::Vector2d> vectorIn;
-  std::vector<math::Vector2d> vectorOut;
+  std::vector<Vector2d> vectorIn;
+  std::vector<Vector2d> vectorOut;
   Translation<Point<double>> trf;
   Translation<Point<double>> *trf_pointer;
-  //Translation<math::Vector2d> trf_vector;
+  //Translation<Vector2d> trf_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, TranslationTest)

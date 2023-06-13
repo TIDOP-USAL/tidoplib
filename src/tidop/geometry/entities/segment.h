@@ -322,10 +322,10 @@ template<typename Point_t> inline
 bool Segment<Point_t>::isEmpty() const
 {
   using sub_type = typename Point_t::value_type;
-  return (pt1.x == math::consts::zero<sub_type> && 
-          pt1.y == math::consts::zero<sub_type> && 
-          pt2.x == math::consts::zero<sub_type> && 
-          pt2.y == math::consts::zero<sub_type>); 
+  return (pt1.x == consts::zero<sub_type> && 
+          pt1.y == consts::zero<sub_type> && 
+          pt2.x == consts::zero<sub_type> && 
+          pt2.y == consts::zero<sub_type>); 
 }
 
 template<typename Point_t> inline

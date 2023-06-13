@@ -216,10 +216,10 @@ auto EcefToEnu::direct(const Point3<double> &ecef,
                        double longitude,
                        double latitude) -> Point3<double>
 {
-    math::RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
+    RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
     Point3<double> dif = ecef - center;
 
-    math::Vector<double, 3> enu = rotation * dif.vector();
+    Vector<double, 3> enu = rotation * dif.vector();
 
     return Point3<double>(enu[0], enu[1], enu[2]);
 }
@@ -228,8 +228,8 @@ auto EcefToEnu::inverse(const Point3<double> &enu,
                         double longitude,
                         double latitude) -> Point3<double>
 {
-    math::RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
-    math::Vector<double, 3> d = rotation.transpose() * enu.vector();
+    RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
+    Vector<double, 3> d = rotation.transpose() * enu.vector();
 
     Point3<double> ecef;
     ecef.x = center.x + d[0];
@@ -240,12 +240,12 @@ auto EcefToEnu::inverse(const Point3<double> &enu,
 }
 
 auto EcefToEnu::rotationMatrixToEnu(double longitude,
-                                    double latitude) -> math::RotationMatrix<double>
+                                    double latitude) -> RotationMatrix<double>
 {
-    math::RotationMatrix<double> rotation_enu;
+    RotationMatrix<double> rotation_enu;
 
-    double longitude_rad = longitude * math::consts::deg_to_rad<double>;
-    double latitude_rad = latitude * math::consts::deg_to_rad<double>;
+    double longitude_rad = longitude * consts::deg_to_rad<double>;
+    double latitude_rad = latitude * consts::deg_to_rad<double>;
 
     double sin_longitude = sin(longitude_rad);
     double cos_longitude = cos(longitude_rad);

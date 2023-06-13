@@ -243,8 +243,8 @@ Transform::Status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   try {
 
-    math::Matrix<double> A(m, n, 0);
-    math::Vector<double> B(m);
+    Matrix<double> A(m, n, 0);
+    Vector<double> B(m);
 
     for (size_t i = 0, r = 0; i < n1; i++, r++) {
 
@@ -262,8 +262,8 @@ Transform::Status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
 
     }
 
-    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-    math::Vector<double> C = svd.solve(B);
+    SingularValueDecomposition<Matrix<double>> svd(A);
+    Vector<double> C = svd.solve(B);
 
     mScale = (C[0] + C[1])/2.;
 

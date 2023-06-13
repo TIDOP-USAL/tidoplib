@@ -22,15 +22,11 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_ROTATIONS_H
-#define TL_MATH_ROTATIONS_H
+#pragma once
 
 #include "tidop/core/defs.h"
 
 namespace tl
-{
-
-namespace math
 {
 
 /*! \addtogroup math
@@ -38,45 +34,45 @@ namespace math
  */
 
 
-/*! \addtogroup algebra
- *  \{
- */
+ /*! \addtogroup algebra
+  *  \{
+  */
 
-/*! \defgroup rotations Rotations
- *  \{
- */
+  /*! \defgroup orientation Orientation
+   *  \{
+   */
 
 
 
-/*!
- * \brief Rotation Interface
- */
-class TL_EXPORT Rotation
+   /*!
+    * \brief Orientation Interface
+    */
+class TL_EXPORT Orientation
 {
 
 public:
 
-  /*!
-   * \brief Rotacion types
-   */
-  enum class Type
-  {
-    axis_angle,      /*!< Axial-angular */
-    euler_angles,    /*!< Euler/TaitBryan angles*/
-    rotation_matrix, /*!< Rotation matriz */
-    quaternion       /*!< Quaternions */
-  };
+    /*!
+     * \brief Rotacion types
+     */
+    enum class Type
+    {
+        axis_angle,      /*!< Axial-angular */
+        euler_angles,    /*!< Euler/TaitBryan angles*/
+        rotation_matrix, /*!< Rotation matriz */
+        quaternion       /*!< Quaternions */
+    };
 
 public:
 
-  Rotation() = default;
-  virtual ~Rotation() = default;
+    Orientation() = default;
+    virtual ~Orientation() = default;
 
-  /*!
-   * \brief Rotation type
-   * \see Rotation::Type
-   */
-  virtual Type rotationType() const = 0;
+    /*!
+     * \brief Rotation type
+     * \see Rotation::Type
+     */
+    virtual Type type() const = 0;
 
 };
 
@@ -85,45 +81,44 @@ public:
  * \brief Base class for rotations
  */
 template<typename T>
-class RotationBase
-  : public Rotation
+class OrientationBase
+    : public Orientation
 {
-
-public:
-  
-  RotationBase(Type rotationType);
-  RotationBase(const RotationBase &rotation);
-  ~RotationBase() override = default;
-
-  Type rotationType() const override;
-
 private:
 
-  Type mRotationType;
+    Type rotationType;
+
+public:
+
+    OrientationBase(Type type);
+    OrientationBase(const OrientationBase &rotation);
+    ~OrientationBase() override = default;
+
+    Type type() const override;
 
 };
 
 
 
-/* RotationBase implementation */
+/* OrientationBase implementation */
 
 
 template<typename T> inline
-RotationBase<T>::RotationBase(Type rotationType)
-  : mRotationType(rotationType)
+OrientationBase<T>::OrientationBase(Type type)
+  : rotationType(type)
 {
 }
 
 template<typename T> inline
-RotationBase<T>::RotationBase(const RotationBase &rotation)
-  : mRotationType(rotation.mRotationType)
+OrientationBase<T>::OrientationBase(const OrientationBase &rotation)
+  : rotationType(rotation.rotationType)
 {
 }
 
 template<typename Point_t>
-Rotation::Type RotationBase<Point_t>::rotationType() const
+inline Orientation::Type OrientationBase<Point_t>::type() const
 {
-  return mRotationType;
+    return rotationType;
 }
 
 /*! \} */ // end of rotation
@@ -132,9 +127,4 @@ Rotation::Type RotationBase<Point_t>::rotationType() const
 
 /*! \} */ // end of math
 
-
-} // Fin namespace math
-
 } // End namespace tl
-
-#endif // TL_MATH_ROTATIONS_H

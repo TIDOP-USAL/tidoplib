@@ -31,7 +31,7 @@
 #include <tidop/math/statistic/covariance.h>
 #include <tidop/math/statistic/tukeyfences.h>
 
-using namespace tl::math;
+using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(SeriesTestSuite)
 
@@ -304,11 +304,11 @@ BOOST_FIXTURE_TEST_CASE(kurtosisExcess, DescriptiveStatisticsTest)
 BOOST_FIXTURE_TEST_CASE(biweightMidvariance, DescriptiveStatisticsTest)
 {
   //std::vector<int> data{2, 2};
-  //BOOST_CHECK_EQUAL(0., tl::math::biweightMidvariance(data.begin(), data.end()));
+  //BOOST_CHECK_EQUAL(0., tl::biweightMidvariance(data.begin(), data.end()));
   //Vector<double> data2{6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3};
-  //BOOST_CHECK_CLOSE(0.677818, tl::math::biweightMidvariance(data2.begin(), data2.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.677818, tl::biweightMidvariance(data2.begin(), data2.end()), 0.1);
   //Vector<int> data3{1, 2, 3, 4};
-  //BOOST_CHECK_CLOSE(1.36477, tl::math::biweightMidvariance(data3.begin(), data3.end()), 0.1);
+  //BOOST_CHECK_CLOSE(1.36477, tl::biweightMidvariance(data3.begin(), data3.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(firstQuartile, DescriptiveStatisticsTest)
@@ -341,21 +341,21 @@ BOOST_FIXTURE_TEST_CASE(interquartileRange, DescriptiveStatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(quartileCoefficientOfDispersion, DescriptiveStatisticsTest)
 {
-  //BOOST_CHECK_CLOSE(0.10569, tl::math::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
-  //BOOST_CHECK_CLOSE(1, tl::math::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
-  //BOOST_CHECK_CLOSE(0.37037037037037, tl::math::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.10569, tl::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
+  //BOOST_CHECK_CLOSE(1, tl::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.37037037037037, tl::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartileDeviation, DescriptiveStatisticsTest)
 {
-  //BOOST_CHECK_CLOSE(0.8125, tl::math::quartileDeviation(vd.begin(), vd.end()), 0.1);
-  //BOOST_CHECK_CLOSE(1, tl::math::quartileDeviation(vi.begin(), vi.end()), 0.1);
-  //BOOST_CHECK_CLOSE(5, tl::math::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.8125, tl::quartileDeviation(vd.begin(), vd.end()), 0.1);
+  //BOOST_CHECK_CLOSE(1, tl::quartileDeviation(vi.begin(), vi.end()), 0.1);
+  //BOOST_CHECK_CLOSE(5, tl::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(covariance, DescriptiveStatisticsTest)
 {
-  tl::math::Covariance<double> covariance;
+  tl::Covariance<double> covariance;
   
   BOOST_CHECK_CLOSE(-33.06, covariance.eval(x, y), 0.1);
 }

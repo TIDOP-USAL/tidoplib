@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_MATH_H
-#define TL_CORE_MATH_H
+#pragma once
 
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
@@ -35,10 +34,6 @@
 namespace tl
 {
 
-
-
-namespace math
-{
 
 /*!
  * \defgroup math Mathematical module
@@ -145,9 +140,9 @@ template<typename T> inline
 constexpr T clamp(const T &value, const T &min, const T &max)
 {
 #if (CPP_VERSION >= 17)
-  return std::clamp(value, min, max);
+    return std::clamp(value, min, max);
 #else
-  return std::max(min, std::min(max, value));
+    return std::max(min, std::min(max, value));
 #endif
 }
 
@@ -161,12 +156,12 @@ typename std::enable_if<
     double>::type
 module(T a, T b)
 {
-  if (a == 0 && b == 0) return 0.;
+    if (a == 0 && b == 0) return 0.;
 
-  auto result = std::minmax(std::abs(a), std::abs(b));
-  double div = static_cast<double>(result.first) /
-               static_cast<double>(result.second);
-  return static_cast<double>(result.second) * sqrt(1. + div * div);
+    auto result = std::minmax(std::abs(a), std::abs(b));
+    double div = static_cast<double>(result.first) /
+        static_cast<double>(result.second);
+    return static_cast<double>(result.second) * sqrt(1. + div * div);
 }
 
 template<typename T> inline
@@ -174,11 +169,11 @@ typename std::enable_if<
     std::is_floating_point<T>::value,T>::type
 module(T a, T b)
 {
-  if (a == consts::zero<T> && b == consts::zero<T>) return consts::zero<T>;
+    if (a == consts::zero<T> && b == consts::zero<T>) return consts::zero<T>;
 
-  auto result = std::minmax(std::abs(a), std::abs(b));
-  T div = static_cast<T>(result.first) / static_cast<T>(result.second);
-  return result.second * std::sqrt(consts::one<T> + div * div);
+    auto result = std::minmax(std::abs(a), std::abs(b));
+    T div = static_cast<T>(result.first) / static_cast<T>(result.second);
+    return result.second * std::sqrt(consts::one<T> +div * div);
 }
 
 
@@ -188,15 +183,15 @@ typename std::enable_if<
   bool>::type
 isNearlyEqual(T a, T b)
 {
-  if (a == b) return true;
+    if (a == b) return true;
 
-  T diff = std::abs(a-b);
-  if (diff >= consts::one<T>) return false;
+    T diff = std::abs(a - b);
+    if (diff >= consts::one<T>) return false;
 
-  T epsilon = std::numeric_limits<T>::epsilon() * T{128};
-  T norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
-  
-  return diff < std::max(std::numeric_limits<T>::min(), epsilon * norm);
+    T epsilon = std::numeric_limits<T>::epsilon() * T { 128 };
+    T norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
+
+    return diff < std::max(std::numeric_limits<T>::min(), epsilon * norm);
 }
 
 
@@ -206,7 +201,7 @@ typename std::enable_if<
   bool>::type
 isZero(T value)
 {
-  return value == consts::zero<T>;
+    return value == consts::zero<T>;
 }
 
 template<typename T> inline
@@ -215,9 +210,9 @@ typename std::enable_if<
   bool>::type
 isZero(T value)
 {
-  T up = std::nextafter(consts::zero<T>, consts::one<T>);
-  T down = std::nextafter(consts::zero<T>, -consts::one<T>);
-  return (down <= value && value <= up);
+    T up = std::nextafter(consts::zero<T>, consts::one<T>);
+    T down = std::nextafter(consts::zero<T>, -consts::one<T>);
+    return (down <= value && value <= up);
 }
 
 template<typename T> inline
@@ -226,16 +221,11 @@ typename std::enable_if<
   bool>::type
 isNearlyZero(T value)
 {
-  return isNearlyEqual(value, consts::zero<T>);
+    return isNearlyEqual(value, consts::zero<T>);
 }
-
-
 
 
 /*! \} */ // end of math
 
-} // Fin namespace math
-
 } // End namespace tl
 
-#endif // TL_CORE_MATH_H

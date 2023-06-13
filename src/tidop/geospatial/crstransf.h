@@ -294,7 +294,7 @@ public:
 private:
 
     auto rotationMatrixToEnu(double longitude,
-                             double latitude) -> math::RotationMatrix<double>;
+                             double latitude) -> RotationMatrix<double>;
 
 };
 

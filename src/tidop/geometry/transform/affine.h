@@ -119,7 +119,7 @@ public:
    *
    * \param[in] mat Matriz de coficientes
    */
-  Affine(const math::Matrix<double, 2, 3> &mat);
+  Affine(const Matrix<double, 2, 3> &mat);
 
   ~Affine() override = default;
 
@@ -218,7 +218,7 @@ public:
    * \end{bmatrix}
    * \f]
    */
-  math::Matrix<double,2,3> parameters() const;
+  Matrix<double,2,3> parameters() const;
 
   /*!
    * \brief Devuelve el giro
@@ -288,7 +288,7 @@ public:
    *
    * \param[in] mat Matriz de coficientes
    */
-  void setParameters(const math::Matrix<double, 2, 3> &mat);
+  void setParameters(const Matrix<double, 2, 3> &mat);
 
   /*!
    * \brief Establece la rotación de la transformación
@@ -378,7 +378,7 @@ Affine<Point_t>::Affine(double tx,
 }
 
 template<typename Point_t> inline
-Affine<Point_t>::Affine(const math::Matrix<double, 2, 3> &mat)
+Affine<Point_t>::Affine(const Matrix<double, 2, 3> &mat)
   : Transform2D<Point_t>(Transform::Type::affine, 3)
 {
   this->setParameters(mat.at(0,0), mat.at(0,1), mat.at(1,0), 
@@ -411,8 +411,8 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   try {
 
-    math::Matrix<double> A(m, n, 0);
-    math::Vector<double> B(m);
+    Matrix<double> A(m, n, 0);
+    Vector<double> B(m);
 
     for (size_t i = 0, r = 0; i < n1; i++, r++) {
       A.at(r, 0) = pts1[i].x;
@@ -436,8 +436,8 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
       B[r] = pts2[i].y;
     }
 
-    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-    math::Vector<double> C = svd.solve(B);
+    SingularValueDecomposition<Matrix<double>> svd(A);
+    Vector<double> C = svd.solve(B);
 
     a = C[0];
     b = C[1];
@@ -449,8 +449,8 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
     updateInv();
 
     mRotation = (atan2(c, a) + atan2(-b, d)) / 2.;
-    mScaleX = math::module(a, c);
-    mScaleY = math::module(b, d);
+    mScaleX = module(a, c);
+    mScaleY = module(b, d);
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
@@ -554,9 +554,9 @@ double Affine<Point_t>::getScaleY() const
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename Point_t>
-math::Matrix<double, 2, 3> Affine<Point_t>::parameters() const
+Matrix<double, 2, 3> Affine<Point_t>::parameters() const
 {
-  math::Matrix<double, 2, 3> mat;
+  Matrix<double, 2, 3> mat;
   mat.at(0, 0) = this->a;
   mat.at(0, 1) = this->b;
   mat.at(0, 2) = this->tx;
@@ -623,7 +623,7 @@ void Affine<Point_t>::setParameters(double a,
 }
 
 template<typename Point_t>
-inline void Affine<Point_t>::setParameters(const math::Matrix<double, 2, 3> &mat)
+inline void Affine<Point_t>::setParameters(const Matrix<double, 2, 3> &mat)
 {
   this->setParameters(mat.at(0,0), mat.at(0,1), 
                       mat.at(1,0), mat.at(1,1), 

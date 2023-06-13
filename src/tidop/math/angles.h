@@ -580,7 +580,7 @@ inline auto Gradians<T>::degrees() const -> int
 }
 
 template<typename T> inline
-void tl::math::Gradians<T>::setDegrees(int degrees)
+void Gradians<T>::setDegrees(int degrees)
 {
     T value = isNegative(degrees) *
               (static_cast<T>(std::abs(degrees)) +
@@ -614,7 +614,7 @@ inline auto Gradians<T>::seconds() const -> T
 }
 
 template<typename T>
-inline void tl::math::Gradians<T>::setSeconds(T seconds)
+inline void Gradians<T>::setSeconds(T seconds)
 {
     int degrees = this->degrees();
     T value = isNegative(degrees) *

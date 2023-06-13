@@ -31,7 +31,7 @@
 #include <tidop/math/algebra/rotation_convert.h>
 
 
-using namespace tl::math;
+using namespace tl;
 
 
 BOOST_AUTO_TEST_SUITE(UmeyamaTestSuite)
@@ -160,7 +160,7 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
     Umeyama<Matrix<double>> umeyama(src_mat2, dst_mat2);
     auto transform = umeyama.transform();
 
-    tl::math::Matrix<double> src_mat(src_mat2.rows(), 4);
+    tl::Matrix<double> src_mat(src_mat2.rows(), 4);
     for (size_t i = 0, j = 0; i < src_mat2.rows(); i++) {
       src_mat(i, 0) = src_mat2(i, 0);
       src_mat(i, 1) = src_mat2(i, 1);
@@ -177,7 +177,7 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
     std::cout << "Diferencia:\n" << diff << std::endl;
 
     auto rotation = umeyama.rotation();
-    tl::math::RotationMatrix<double> rotation_matrix;
+    tl::RotationMatrix<double> rotation_matrix;
     rotation_matrix[0][0] = rotation[0][0];
     rotation_matrix[0][1] = rotation[0][1];
     rotation_matrix[0][2] = rotation[0][2];
@@ -187,9 +187,9 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
     rotation_matrix[2][0] = rotation[2][0];
     rotation_matrix[2][1] = rotation[2][1];
     rotation_matrix[2][2] = rotation[2][2];
-    tl::math::EulerAngles<double> eulerAngles;
-    tl::math::RotationConverter<double>::convert(rotation_matrix, eulerAngles);
-    tl::math::Vector<double> scale{transform[0][0], transform[1][1], transform[2][2]};
+    tl::EulerAngles<double> eulerAngles;
+    tl::RotationConverter<double>::convert(rotation_matrix, eulerAngles);
+    tl::Vector<double> scale{transform[0][0], transform[1][1], transform[2][2]};
     auto translation = umeyama.translation(); 
     std::cout << "\nTranslation:   [" << translation[0] << ", " << translation[1] << ", " << translation[2] << "]" << std::endl;
     std::cout << "Rotation:      [" << eulerAngles.x << ", " << eulerAngles.y << ", " << eulerAngles.z << "]" << std::endl;

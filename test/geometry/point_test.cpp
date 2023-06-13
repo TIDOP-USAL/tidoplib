@@ -71,9 +71,9 @@ struct PointTest
     point_double_copy = new Point<double>(*point_double);
     point_float_copy = new Point<float>(*point_float);
 
-    math::Vector2i vector_int{{23, 67}};
-    math::Vector2d vector_double{{253.56, 562.94}};
-    math::Vector2f vector_float{{564.26f, 646.65f}};
+    Vector2i vector_int{{23, 67}};
+    Vector2d vector_double{{253.56, 562.94}};
+    Vector2f vector_float{{564.26f, 646.65f}};
 
     std::array<int, 2> pt_int{ { 23, 67 } };
 
@@ -263,9 +263,9 @@ struct Point3Test
     point_double_copy = new Point3<double>(*point_double);
     point_float_copy = new Point3<float>(*point_float);
 
-    math::Vector3i vector_int{{23, 67, 23}};
-    math::Vector3d vector_double{{253.56, 562.94, 234.67}};
-    math::Vector3f vector_float{{564.26f, 646.65f, 56.21f}};
+    Vector3i vector_int{{23, 67, 23}};
+    Vector3d vector_double{{253.56, 562.94, 234.67}};
+    Vector3f vector_float{{564.26f, 646.65f, 56.21f}};
 
     std::array<int, 3> pt_int{ { 23, 67, 23 } };
 
