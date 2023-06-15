@@ -56,6 +56,11 @@ class AxisAngle
   : public OrientationBase<T>
 {
 
+private:
+
+    T mAngle;
+    Vector<T, 3> mAxis;
+
 public:
 
     AxisAngle();
@@ -71,27 +76,27 @@ public:
      * \brief
      * \return
      */
-    auto angle() const->T;
+    auto angle() const -> T;
 
     /*!
      * \brief
      * \param[in] angle
      * \return
      */
-    auto setAngle(T angle) -> void;
+    void setAngle(T angle);
 
     /*!
      * \brief
      * \return
      */
-    auto axis() const->Vector<T, 3>;
+    auto axis() const -> Vector<T, 3>;
 
     /*!
      * \brief
      * \param[in] i
      * \return
      */
-    auto axis(size_t i) const->T;
+    auto axis(size_t i) const -> T;
 
     /*!
      * \brief
@@ -100,10 +105,6 @@ public:
      */
     auto setAxis(const Vector<T, 3> &axis) -> void;
 
-private:
-
-    T mAngle;
-    Vector<T, 3> mAxis;
 };
 
 
@@ -153,7 +154,7 @@ inline auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngl
     if (this != &axisAngle) {
         OrientationBase<T>::operator = (axisAngle);
         mAngle = axisAngle.mAngle;
-        mAxis = axisAngle.axisAngle;
+        mAxis = axisAngle.mAxis;
     }
 
     return *this;
@@ -165,7 +166,7 @@ inline auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> Axis
     if (this != &axisAngle) {
         OrientationBase<T>::operator = (std::forward<OrientationBase<T>>(axisAngle));
         mAngle = axisAngle.mAngle;
-        mAxis = std::forward<Vector<T, 3>>(axisAngle);
+        mAxis = std::forward<Vector<T, 3>>(axisAngle.mAxis);
     }
 
     return *this;
@@ -197,7 +198,7 @@ inline auto AxisAngle<T>::axis(size_t i) const -> T
 }
 
 template<typename T>
-inline auto AxisAngle<T>::setAxis(const Vector<T, 3> &axis) -> void
+inline void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
 {
     mAxis = axis;
     mAxis.normalize();

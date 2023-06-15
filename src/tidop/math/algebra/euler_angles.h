@@ -78,22 +78,26 @@ public:
 
 public:
 
+    double x;
+    double y;
+    double z;
+    Axes axes;
+
+public:
+
     EulerAngles();
     EulerAngles(double x, double y, double z, Axes axes);
     EulerAngles(const EulerAngles<T> &eulerAngles);
     EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
     ~EulerAngles() override = default;
 
-    auto operator = (const EulerAngles<T> &eulerAngles)->EulerAngles &;
-    auto operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT->EulerAngles &;
+    auto operator = (const EulerAngles<T> &eulerAngles) -> EulerAngles&;
+    auto operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
+    
+    /* Unary arithmetic operators */
 
-public:
-
-    double x;
-    double y;
-    double z;
-    Axes axes;
-
+    auto operator+() -> EulerAngles<T>;
+    auto operator-() -> EulerAngles<T>;
 };
 
 template<typename T>
@@ -140,7 +144,7 @@ EulerAngles<T>::EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
 }
 
 template<typename T>
-auto EulerAngles<T>::operator = (const EulerAngles &eulerAngles) -> EulerAngles<T> &
+auto EulerAngles<T>::operator = (const EulerAngles &eulerAngles) -> EulerAngles<T>&
 {
     if (this != &eulerAngles) {
         x = eulerAngles.x;
@@ -152,7 +156,7 @@ auto EulerAngles<T>::operator = (const EulerAngles &eulerAngles) -> EulerAngles<
 }
 
 template<typename T>
-auto EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles<T> &
+auto EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles<T>&
 {
     if (this != &eulerAngles) {
         x = std::exchange(eulerAngles.x, 0);
@@ -160,19 +164,25 @@ auto EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> Eu
         z = std::exchange(eulerAngles.z, 0);
         axes = std::exchange(eulerAngles.axes, Axes::xyz);
     }
+
     return *this;
 }
 
 /* Operaciones unarias */
 
+template<typename T>
+inline auto EulerAngles<T>::operator+() -> EulerAngles<T>
+{
+    return *this;
+}
 
 template <typename T>
-EulerAngles<T> operator - (const EulerAngles<T> &eulerAngles)
+inline auto EulerAngles<T>::operator-() -> EulerAngles
 {
-    return EulerAngles<T>(-eulerAngles.x,
-                          -eulerAngles.y,
-                          -eulerAngles.z,
-                          eulerAngles.axes);
+    return EulerAngles<T>(-this->x,
+                          -this->y,
+                          -this->z,
+                          this->axes);
 }
 
 
