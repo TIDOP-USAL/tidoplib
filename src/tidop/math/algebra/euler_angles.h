@@ -39,18 +39,18 @@ namespace tl
  */
 
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
-  /*! \defgroup rotations Rotations
-   *  \{
-   */
+/*! \defgroup rotations Rotations
+ *  \{
+ */
 
 
-   /*!
-    * \brief Ángulos de Euler
-    */
+/*!
+ * \brief Ángulos de Euler
+ */
 template<typename T>
 class EulerAngles
     : public OrientationBase<T>
@@ -135,7 +135,7 @@ EulerAngles<T>::EulerAngles(const EulerAngles<T> &eulerAngles)
 
 template<typename T>
 EulerAngles<T>::EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
-    : OrientationBase<T>(Orientation::Type::euler_angles),
+  : OrientationBase<T>(Orientation::Type::euler_angles),
     x(std::exchange(eulerAngles.x, 0)),
     y(std::exchange(eulerAngles.y, 0)),
     z(std::exchange(eulerAngles.z, 0)),

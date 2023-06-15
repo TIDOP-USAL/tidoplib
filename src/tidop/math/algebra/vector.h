@@ -43,9 +43,9 @@ namespace tl
  */
 
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
 
 template<typename T>

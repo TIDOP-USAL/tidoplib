@@ -34,19 +34,19 @@ namespace tl
  */
 
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
-  /*! \defgroup orientation Orientation
-   *  \{
-   */
+/*! \defgroup orientation Orientation
+ *  \{
+ */
 
 
 
-   /*!
-    * \brief Orientation Interface
-    */
+/*!
+ * \brief Orientation Interface
+ */
 class TL_EXPORT Orientation
 {
 

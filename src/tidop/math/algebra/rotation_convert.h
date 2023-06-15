@@ -37,17 +37,17 @@ namespace tl
  *  \{
  */
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
-  /*! \defgroup rotations Rotations
-   *  \{
-   */
+/*! \defgroup rotations Rotations
+ *  \{
+ */
 
-   /*!
-    * \brief Clase para convertir entre diferentes sistemas de rotación
-    */
+/*!
+ * \brief Clase para convertir entre diferentes sistemas de rotación
+ */
 template <typename T>
 class RotationConverter
 {
@@ -411,7 +411,7 @@ template<typename T>
 void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle,
                                    Quaternion<T> &quaternion)
 {
-    T a_2 = axisAngle.angle() * consts::half<T>;
+    T a_2 = axisAngle.angle() * consts::one_half<T>;
     T sin_a_2 = std::sin(a_2);
     quaternion.x = sin_a_2 * axisAngle.axis(0);
     quaternion.y = sin_a_2 * axisAngle.axis(1);
@@ -670,17 +670,13 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles,
 {
     typename EulerAngles<T>::Axes axes = eulerAngles.axes;
 
-    T x = eulerAngles.x;
-    T y = eulerAngles.y;
-    T z = eulerAngles.z;
+    T c1 = cos(eulerAngles.x);
+    T c2 = cos(eulerAngles.y);
+    T c3 = cos(eulerAngles.z);
 
-    T c1 = cos(x);
-    T c2 = cos(y);
-    T c3 = cos(z);
-
-    T s1 = sin(x);
-    T s2 = sin(y);
-    T s3 = sin(z);
+    T s1 = sin(eulerAngles.x);
+    T s2 = sin(eulerAngles.y);
+    T s3 = sin(eulerAngles.z);
 
     // Tait-Bryan angles
     if (axes == EulerAngles<T>::Axes::xyz) {
@@ -848,19 +844,21 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles,
 {
     typename EulerAngles<T>::Axes axes = eulerAngles.axes;
 
-    T two{2};
-
     T x = eulerAngles.x;
     T y = eulerAngles.y;
     T z = eulerAngles.z;
 
-    T c1 = cos(x / two);
-    T c2 = cos(y / two);
-    T c3 = cos(z / two);
+    T x_half = x * consts::one_half<T>;
+    T y_half = y * consts::one_half<T>;
+    T z_half = z * consts::one_half<T>;
 
-    T s1 = sin(x / two);
-    T s2 = sin(y / two);
-    T s3 = sin(z / two);
+    T c1 = cos(x_half);
+    T c2 = cos(y_half);
+    T c3 = cos(z_half);
+
+    T s1 = sin(x_half);
+    T s2 = sin(y_half);
+    T s3 = sin(z_half);
 
     // Tait-Bryan angles
     if (axes == EulerAngles<T>::Axes::xyz) {
@@ -909,45 +907,45 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles,
     // Euler angles
     else if (axes == EulerAngles<T>::Axes::xyx) {
 
-        quaternion.x = c2 * sin((x + z) / two);
-        quaternion.y = s2 * cos((x - z) / two);
-        quaternion.z = s2 * sin((x - z) / two);
-        quaternion.w = c2 * cos((x + z) / two);
+        quaternion.x = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.y = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.z = s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (axes == EulerAngles<T>::Axes::xzx) {
 
-        quaternion.x = c2 * sin((x + z) / two);
-        quaternion.y = -s2 * sin((x - z) / two);
-        quaternion.z = s2 * cos((x - z) / two);
-        quaternion.w = c2 * cos((x + z) / two);
+        quaternion.x = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.y = -s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.z = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (axes == EulerAngles<T>::Axes::yxy) {
 
-        quaternion.x = s2 * cos((x - z) / two);
-        quaternion.y = c2 * sin((x + z) / two);
-        quaternion.z = -s2 * sin((x - z) / two);
-        quaternion.w = c2 * cos((x + z) / two);
+        quaternion.x = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.y = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.z = -s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (axes == EulerAngles<T>::Axes::yzy) {
 
-        quaternion.x = s2 * sin((x - z) / two);
-        quaternion.y = c2 * sin((x + z) / two);
-        quaternion.z = s2 * cos((x - z) / two);
-        quaternion.w = c2 * cos((x + z) / two);
+        quaternion.x = s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.y = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.z = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (axes == EulerAngles<T>::Axes::zxz) {
 
-        quaternion.x = s2 * cos((x - z) / two);
-        quaternion.y = s2 * sin((x - z) / two);
-        quaternion.z = c2 * sin((x + z) / two);
-        quaternion.w = c2 * cos((x + z) / two);
+        quaternion.x = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.y = s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.z = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (axes == EulerAngles<T>::Axes::zyz) {
 
-        quaternion.x = -s2 * sin((x - z) / two);
-        quaternion.y = s2 * cos((x - z) / two);
-        quaternion.z = c2 * sin((x + z) / two);
-        quaternion.w = c2 * cos((x + z) / two);
+        quaternion.x = -s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.y = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.z = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
 
     }
 }

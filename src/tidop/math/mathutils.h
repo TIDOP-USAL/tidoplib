@@ -71,30 +71,30 @@ namespace tl
 template<typename Point_t> inline 
 double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 {
-  double corr = 0.0;
-  double sx = 0.;
-  double sy = 0.;
-  double sx2 = 0.;
-  double sy2 = 0.;
-  double sxy = 0.;
-  size_t n = pts.size();
-  if (n >= 2) {
-    for (size_t i = 0; i < n; i++) {
-      sx += pts[i].x;
-      sy += pts[i].y;
-      sx2 += pts[i].x * pts[i].x;
-      sy2 += pts[i].y * pts[i].y;
-      sxy += pts[i].x * pts[i].y;
+    double corr = 0.0;
+    double sx = 0.;
+    double sy = 0.;
+    double sx2 = 0.;
+    double sy2 = 0.;
+    double sxy = 0.;
+    size_t n = pts.size();
+    if (n >= 2) {
+        for (size_t i = 0; i < n; i++) {
+            sx += pts[i].x;
+            sy += pts[i].y;
+            sx2 += pts[i].x * pts[i].x;
+            sy2 += pts[i].y * pts[i].y;
+            sxy += pts[i].x * pts[i].y;
+        }
+        double den = (n * sx2 - sx * sx);
+        if (den != 0.) {
+            // Línea no vertical
+            *m = (n * sxy - sy * sx) / (n * sx2 - sx * sx);
+            *b = (sy - *m * sx) / n;
+            corr = sqrt(*m * (sxy - sx * sy / n) / (sy2 - sy * sy / n));
+        }
     }
-    double den = (n*sx2 - sx*sx);
-    if (den != 0.) {
-      // Línea no vertical
-      *m = (n*sxy - sy*sx) / (n*sx2 - sx*sx);
-      *b = (sy - *m*sx) / n;
-      corr = sqrt(*m * (sxy - sx*sy / n) / (sy2 - sy*sy / n));
-    }
-  }
-  return(corr);
+    return(corr);
 }
 
 /*!
@@ -120,29 +120,29 @@ double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 template<typename Point_t> inline 
 double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 {
-  double corr = 0.0;
-  double sx = 0.;
-  double sy = 0.;
-  double sx2 = 0.;
-  double sy2 = 0.;
-  double sxy = 0.;
-  size_t n = pts.size();
-  if (n >= 2) {
-    for (size_t i = 0; i < n; i++) {
-      sx += pts[i].x;
-      sy += pts[i].y;
-      sx2 += pts[i].x * pts[i].x;
-      sy2 += pts[i].y * pts[i].y;
-      sxy += pts[i].x * pts[i].y;
+    double corr = 0.0;
+    double sx = 0.;
+    double sy = 0.;
+    double sx2 = 0.;
+    double sy2 = 0.;
+    double sxy = 0.;
+    size_t n = pts.size();
+    if (n >= 2) {
+        for (size_t i = 0; i < n; i++) {
+            sx += pts[i].x;
+            sy += pts[i].y;
+            sx2 += pts[i].x * pts[i].x;
+            sy2 += pts[i].y * pts[i].y;
+            sxy += pts[i].x * pts[i].y;
+        }
+        double den = (n * sy2 - sy * sy);
+        if (den != 0.) {
+            *m = (n * sxy - sy * sx) / (n * sy2 - sy * sy);
+            *b = (sx - *m * sy) / n;
+            corr = sqrt(*m * (sxy - sx * sy / n) / (sx2 - sx * sx / n));
+        }
     }
-    double den = (n*sy2 - sy*sy);
-    if (den != 0.) {
-      *m = (n*sxy - sy*sx) / (n*sy2 - sy*sy);
-      *b = (sx - *m*sy) / n;
-      corr = sqrt(*m * (sxy - sx*sy / n) / (sx2 - sx*sx / n));
-    }
-  }
-  return(corr);
+    return(corr);
 }
 
 
@@ -280,22 +280,22 @@ double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
  * \return Normal al plano
  */
 template<typename T> inline 
-double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
+double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false)
 {
-  T v1 = points[1] - points[0];
-  T v2 = points[2] - points[0];
-  plane[0] = v1.y*v2.z - v1.z*v2.y;
-  plane[1] = v1.z*v2.x - v1.x*v2.z;
-  plane[2] = v1.x*v2.y - v2.x*v1.y;
-  plane[3] = -plane[0] *points[0].x - plane[1]*points[0].y - plane[2]*points[0].z;
-  double N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + plane[2]*plane[2]);
-  if ( N != 0. && normalize ) {
-    plane[0] /= N;
-    plane[1] /= N;
-    plane[2] /= N;
-    plane[3] /= N;
-  }
-  return N ;
+    T v1 = points[1] - points[0];
+    T v2 = points[2] - points[0];
+    plane[0] = v1.y * v2.z - v1.z * v2.y;
+    plane[1] = v1.z * v2.x - v1.x * v2.z;
+    plane[2] = v1.x * v2.y - v2.x * v1.y;
+    plane[3] = -plane[0] * points[0].x - plane[1] * points[0].y - plane[2] * points[0].z;
+    double N = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
+    if (N != 0. && normalize) {
+        plane[0] /= N;
+        plane[1] /= N;
+        plane[2] /= N;
+        plane[3] /= N;
+    }
+    return N;
 }
 
 /*!

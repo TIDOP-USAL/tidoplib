@@ -40,36 +40,35 @@ namespace tl
  *  \{
  */
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
 
-  /*!
-   * \brief SVD (Singular value decomposition)
-   *
-   * En álgebra lineal, la descomposición en valores singulares de una matriz A
-   * es una factorización de la misma con muchas aplicaciones, entre ellas
-   * la resolución de sistemas lineales.
-   *
-   * Dada una matriz A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
-   * y una matriz diagonal Σ (de tamaño m×n) tales que:
-   *
-   * \f[ A = UΣV^T  \f]
-   *
-   * Esta factorización de A se llama descomposición en valores singulares de A.
-   *
-   *
-   * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
-   * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
-   */
+/*!
+ * \brief SVD (Singular value decomposition)
+ *
+ * En álgebra lineal, la descomposición en valores singulares de una matriz A
+ * es una factorización de la misma con muchas aplicaciones, entre ellas
+ * la resolución de sistemas lineales.
+ *
+ * Dada una matriz A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
+ * y una matriz diagonal Σ (de tamaño m×n) tales que:
+ *
+ * \f[ A = UΣV^T  \f]
+ *
+ * Esta factorización de A se llama descomposición en valores singulares de A.
+ *
+ *
+ * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
+ * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
+ */
 template<typename T>
 class SingularValueDecomposition;
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
+    class Matrix_t, typename T, size_t _rows, size_t _cols>
 class SingularValueDecomposition<Matrix_t<T, _rows, _cols>>
 {
 
@@ -130,7 +129,7 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
     eps = std::numeric_limits<T>::epsilon();
     this->decompose();
     this->reorder();
-    tsh = consts::half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
+    tsh = consts::one_half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
 #endif // TL_HAVE_OPENBLAS
 
 }

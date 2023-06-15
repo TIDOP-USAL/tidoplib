@@ -40,30 +40,30 @@ namespace tl
  */
 
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
-  //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
-  //https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
+//https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
+//https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
 
-  /*!
-   * \brief Factorización QR
-   *
-   * La descomposición o factorización QR de una matriz es una descomposición
-   * de la misma como producto de una matriz ortogonal por una triangular
-   * superior.
-   *
-   * La descomposición QR de una matriz cuadrada T A es:
-   *
-   * \f[ A = Q*R \f]
-   *
-   * donde Q es una matriz ortogonal:
-   *
-   * \f[ Q^t*Q = I \f]
-   *
-   * y R es una matriz triangular superior.
-   */
+/*!
+ * \brief Factorización QR
+ *
+ * La descomposición o factorización QR de una matriz es una descomposición
+ * de la misma como producto de una matriz ortogonal por una triangular
+ * superior.
+ *
+ * La descomposición QR de una matriz cuadrada T A es:
+ *
+ * \f[ A = Q*R \f]
+ *
+ * donde Q es una matriz ortogonal:
+ *
+ * \f[ Q^t*Q = I \f]
+ *
+ * y R es una matriz triangular superior.
+ */
 template<typename T>
 class QRDecomposition;
 
@@ -110,7 +110,7 @@ template<
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _rows, _cols> &a)
-    : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
+  : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
     R(a),
     //#ifdef TL_HAVE_OPENBLAS
     //    QR(a),

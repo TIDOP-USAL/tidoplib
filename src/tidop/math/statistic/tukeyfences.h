@@ -38,14 +38,14 @@ namespace tl
  */
 
 
- /*! \defgroup statistics Statistics
-  *  \{
-  */
+/*! \defgroup statistics Statistics
+ *  \{
+ */
 
-  /*!
-   * /brief Tukey's fences
-   *
-   */
+/*!
+ * /brief Tukey's fences
+ *
+ */
 template<typename T>
 class TukeyFences
 {

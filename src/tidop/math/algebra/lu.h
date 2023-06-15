@@ -40,21 +40,21 @@ namespace tl
  *  \{
  */
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
 
-  /*!
-   * \brief Factorización o descomposición LU
-   *
-   * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
-   *
-   * \f[ A=LU \f]
-   *
-   * donde L y U son matrices inferiores y superiores triangulares respectivamente.
-   *
-   */
+/*!
+ * \brief Factorización o descomposición LU
+ *
+ * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
+ *
+ * \f[ A=LU \f]
+ *
+ * donde L y U son matrices inferiores y superiores triangulares respectivamente.
+ *
+ */
 template<typename T>
 class LuDecomposition;
 

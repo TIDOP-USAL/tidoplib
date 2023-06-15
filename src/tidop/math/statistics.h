@@ -858,10 +858,6 @@ void zScore(itIn in_first, itIn in_last, itOut out_first)
 }
 
 
-
-
-
-
 /*! \} */ // end of statistic
 
 /*! \} */ // end of math

@@ -40,9 +40,9 @@ namespace tl
  */
 
 
- /*! \defgroup statistics Statistics
-  *  \{
-  */
+/*! \defgroup statistics Statistics
+ *  \{
+ */
 
 template<typename T>
 class Series

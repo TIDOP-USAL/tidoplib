@@ -40,27 +40,26 @@ namespace tl
  */
 
 
- /*! \defgroup algebra Algebra
-  *
-  * Algebra
-  *
-  *  \{
-  */
+/*! \defgroup algebra Algebra
+ *
+ * Algebra
+ *
+ *  \{
+ */
 
 
-  // S. Umeyama, "Least-squares estimation of transformation parameters 
-  // between two point patterns," in IEEE Transactions on Pattern Analysis 
-  // and Machine Intelligence, vol. 13, no. 4, pp. 376-380, April 1991, 
-  // doi: 10.1109/34.88573.
-  // https://web.stanford.edu/class/cs273/refs/umeyama.pdf
+// S. Umeyama, "Least-squares estimation of transformation parameters 
+// between two point patterns," in IEEE Transactions on Pattern Analysis 
+// and Machine Intelligence, vol. 13, no. 4, pp. 376-380, April 1991, 
+// doi: 10.1109/34.88573.
+// https://web.stanford.edu/class/cs273/refs/umeyama.pdf
 
 template<typename T>
 class Umeyama;
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
+    class Matrix_t, typename T, size_t _rows, size_t _cols>
 class Umeyama<Matrix_t<T, _rows, _cols>>
 {
 

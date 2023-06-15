@@ -37,27 +37,27 @@ namespace tl
  *  \{
  */
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
-  /*! \defgroup rotations Rotations
-   *  \{
-   */
+/*! \defgroup rotations Rotations
+ *  \{
+ */
 
 
 
-   /*!
-    * \brief Clase cuaternión para la representación de orientaciones y rotaciones en el espacio
-    * Los cuaterniones unitarios proporcionan una notación matemática para representar
-    * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con
-    * los ángulos de Euler, son más simples de componer y evitan el problema del bloqueo
-    * del cardán. Comparados con las matrices de rotación, son más eficientes y más
-    * estables numéricamente.
-    *
-    * Un cuaternión se representa como:
-    * \f[ w+xi+yj+zk \f]
-    */
+/*!
+ * \brief Clase cuaternión para la representación de orientaciones y rotaciones en el espacio
+ * Los cuaterniones unitarios proporcionan una notación matemática para representar
+ * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con
+ * los ángulos de Euler, son más simples de componer y evitan el problema del bloqueo
+ * del cardán. Comparados con las matrices de rotación, son más eficientes y más
+ * estables numéricamente.
+ *
+ * Un cuaternión se representa como:
+ * \f[ w+xi+yj+zk \f]
+ */
 template<typename T>
 class Quaternion
     : public OrientationBase<T>
@@ -191,7 +191,7 @@ using Quaterniond = Quaternion<double>;
 
 template<typename T>
 Quaternion<T>::Quaternion()
-    : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<T>(Orientation::Type::quaternion),
     x(-std::numeric_limits<T>().max()),
     y(-std::numeric_limits<T>().max()),
     z(-std::numeric_limits<T>().max()),
@@ -201,7 +201,7 @@ Quaternion<T>::Quaternion()
 
 template<typename T>
 Quaternion<T>::Quaternion(T x, T y, T z, T w)
-    : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<T>(Orientation::Type::quaternion),
     x(x),
     y(y),
     z(z),
@@ -211,7 +211,7 @@ Quaternion<T>::Quaternion(T x, T y, T z, T w)
 
 template<typename T>
 Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
-    : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<T>(Orientation::Type::quaternion),
     x(quaternion.x),
     y(quaternion.y),
     z(quaternion.z),
@@ -221,7 +221,7 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 
 template<typename T>
 Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT
-    : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<T>(Orientation::Type::quaternion),
     x(std::exchange(quaternion.x, -std::numeric_limits<T>().max())),
     y(std::exchange(quaternion.y, -std::numeric_limits<T>().max())),
     z(std::exchange(quaternion.z, -std::numeric_limits<T>().max())),
