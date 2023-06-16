@@ -29,13 +29,13 @@ namespace tl
 
 
 DifferentialRectification::DifferentialRectification()
-  : mRotationMatrix(math::RotationMatrix<double>::identity()),
+  : mRotationMatrix(RotationMatrix<double>::identity()),
     mCameraPosition(1., 1., 1.),
     mFocal(1)
 {
 }
 
-DifferentialRectification::DifferentialRectification(const math::RotationMatrix<double> &rotationMatrix,
+DifferentialRectification::DifferentialRectification(const RotationMatrix<double> &rotationMatrix,
                                                      const Point3<double> &cameraPosition,
                                                      double focal)
   : mRotationMatrix(rotationMatrix),
@@ -48,12 +48,12 @@ DifferentialRectification::~DifferentialRectification()
 {
 }
 
-auto DifferentialRectification::rotationMatrix() const -> math::RotationMatrix<double>
+auto DifferentialRectification::rotationMatrix() const -> RotationMatrix<double>
 {
     return mRotationMatrix;
 }
 
-auto DifferentialRectification::setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix) -> void
+auto DifferentialRectification::setRotationMatrix(const RotationMatrix<double> &rotationMatrix) -> void
 {
     mRotationMatrix = rotationMatrix;
 }

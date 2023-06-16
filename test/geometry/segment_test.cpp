@@ -60,13 +60,13 @@ BOOST_AUTO_TEST_CASE(Segment_ConstructorPointIniEnd)
 
 BOOST_AUTO_TEST_CASE(Segment_ConstructorCenterAngleLenghtCenter)
 {
-  Segment<Point<double>> segment(Point<double>(5., 10.), 45. * math::consts::deg_to_rad<double>, 10.);
+  Segment<Point<double>> segment(Point<double>(5., 10.), 45. * consts::deg_to_rad<double>, 10.);
   BOOST_CHECK_CLOSE(8.5355339059327378, segment.pt1.x, 0.1);
   BOOST_CHECK_CLOSE(6.4644660940672622, segment.pt1.y, 0.1);
   BOOST_CHECK_CLOSE(1.4644660940672622, segment.pt2.x, 0.1);
   BOOST_CHECK_CLOSE(13.535533905932738, segment.pt2.y, 0.1);
 
-  Segment<Point<int>> segment2(Point<int>(5, 10), 45. * math::consts::deg_to_rad<double>, 10.);
+  Segment<Point<int>> segment2(Point<int>(5, 10), 45. * consts::deg_to_rad<double>, 10.);
   BOOST_CHECK_EQUAL(9, segment2.pt1.x);
   BOOST_CHECK_EQUAL(6, segment2.pt1.y);
   BOOST_CHECK_EQUAL(1, segment2.pt2.x);

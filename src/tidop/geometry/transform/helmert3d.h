@@ -117,7 +117,7 @@ public:
             double ty, 
             double tz, 
             double scale, 
-            const math::RotationMatrix<double> &rotation);
+            const RotationMatrix<double> &rotation);
 
   /*!
    * \brief Constructor de copia Helmert3D
@@ -147,7 +147,7 @@ public:
    * \brief Devuelve la matriz de rotación
    */
   //const std::array<std::array<double, 3>, 3> &rotationMatrix() const;
-  math::RotationMatrix<double> rotationMatrix() const;
+  RotationMatrix<double> rotationMatrix() const;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 3D
@@ -277,13 +277,13 @@ private:
    * \brief Matriz de rotación
    */
   //std::array<std::array<double, 3>, 3> mR;
-  math::RotationMatrix<double> mR;
+  RotationMatrix<double> mR;
 
   /*!
    * \brief Matriz de rotación inversa
    */
   //std::array<std::array<double, 3>, 3> mRinv;
-  math::RotationMatrix<double> mRinv;
+  RotationMatrix<double> mRinv;
 };
 
 
@@ -327,7 +327,7 @@ Helmert3D<Point_t>::Helmert3D(double tx,
                               double ty, 
                               double tz, 
                               double scale, 
-                              const math::RotationMatrix<double> &rotation)
+                              const RotationMatrix<double> &rotation)
   : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
     tx(tx),
     ty(ty),
@@ -335,9 +335,9 @@ Helmert3D<Point_t>::Helmert3D(double tx,
     mScale(scale),
     mR(rotation)
 {
-  math::EulerAngles<double> eulerAngles;
-  eulerAngles.axes = math::EulerAngles<double>::Axes::xyz;
-  math::RotationConverter<double>::convert(rotation, eulerAngles);
+  EulerAngles<double> eulerAngles;
+  eulerAngles.axes = EulerAngles<double>::Axes::xyz;
+  RotationConverter<double>::convert(rotation, eulerAngles);
   mOmega = eulerAngles.x;
   mPhi = eulerAngles.y;
   mKappa = eulerAngles.z;
@@ -387,8 +387,8 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   try {
 
-    math::Matrix<double> A(m, n, 0);
-    math::Vector<double> B(m);
+    Matrix<double> A(m, n, 0);
+    Vector<double> B(m);
 
     for (size_t i = 0, r = 0; i < n1; i++, r++) {
 
@@ -427,8 +427,8 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
       B[r] = pts2[i].z;
     }
 
-    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-    math::Vector<double> C = svd.solve(B);
+    SingularValueDecomposition<Matrix<double>> svd(A);
+    Vector<double> C = svd.solve(B);
 
     using sub_type = typename Point_t::value_type;
 
@@ -455,7 +455,7 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
 
 template<typename Point_t> inline
-math::RotationMatrix<double> Helmert3D<Point_t>::rotationMatrix() const
+RotationMatrix<double> Helmert3D<Point_t>::rotationMatrix() const
 {
   return mR;
 }
@@ -601,9 +601,9 @@ void Helmert3D<Point_t>::setKappa(double kappa)
 template<typename Point_t> inline
 void Helmert3D<Point_t>::update()
 {
-  math::EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa, 
-                                        math::EulerAngles<double>::Axes::xyz);
-  math::RotationConverter<double>::convert(eulerAngles, mR);
+  EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa, 
+                                        EulerAngles<double>::Axes::xyz);
+  RotationConverter<double>::convert(eulerAngles, mR);
   mRinv = mR.inverse();
 }
 

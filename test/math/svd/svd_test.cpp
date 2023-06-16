@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/svd.h>
 
-using namespace tl::math;
+using namespace tl;
 
 
 BOOST_AUTO_TEST_SUITE(SvdTestSuite)

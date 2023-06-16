@@ -399,8 +399,8 @@ Transform::Status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   try {
 
-    math::Matrix<double> A(m, n, 0);
-    math::Vector<double> B(m);
+    Matrix<double> A(m, n, 0);
+    Vector<double> B(m);
 
     for (size_t i = 0, r = 0; i < n1; i++, r++) {
       
@@ -421,8 +421,8 @@ Transform::Status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
       B[r] = pts2[i].y;
     }
 
-    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-    math::Vector<double> C = svd.solve(B);
+    SingularValueDecomposition<Matrix<double>> svd(A);
+    Vector<double> C = svd.solve(B);
 
     a = C[0];
     b = C[1];
@@ -432,7 +432,7 @@ Transform::Status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
     updateInv();
 
     mRotation = atan2(b, a);
-    mScale = math::module(a, b);
+    mScale = module(a, b);
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);

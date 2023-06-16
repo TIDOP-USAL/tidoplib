@@ -27,7 +27,7 @@
 #include <tidop/math/algebra/lu.h>
 #include <tidop/math/algebra/matrix.h>
 
-using namespace tl::math;
+using namespace tl;
 
 
 BOOST_AUTO_TEST_SUITE(LuTestSuite)

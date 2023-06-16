@@ -93,7 +93,7 @@ std::pair<int, char> utmZoneFromLonLat(double longitude, double latitude)
     }
 }
 
-//Point3<double> projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix, 
+//Point3<double> projectPhotoToTerrain(const tl::RotationMatrix<double> &rotation_matrix, 
 //                              const Point3<double> &camera_position, 
 //                              const Point<double> &coordinates_image, 
 //                              double focal,
@@ -122,7 +122,7 @@ std::pair<int, char> utmZoneFromLonLat(double longitude, double latitude)
 //  return point;
 //}
 //
-//Point<double> projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
+//Point<double> projectTerrainToPhoto(const tl::RotationMatrix<double> &rotation_matrix,
 //                             const Point3<double> &camera_position, 
 //                             const Point3<double> &coordinates_terrain, 
 //                             double focal)

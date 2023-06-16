@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_AXIS_ANGLE_H
-#define TL_MATH_AXIS_ANGLE_H
+#pragma once
 
 #include <vector>
 #include <array>
@@ -32,10 +31,8 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/rotations.h"
 
-namespace tl
-{
 
-namespace math
+namespace tl
 {
 
 /*! \addtogroup math
@@ -47,66 +44,67 @@ namespace math
   *  \{
   */
 
-/*! \addtogroup rotations
- *  \{
- */
+  /*! \addtogroup rotations
+   *  \{
+   */
 
-/*!
- * \brief Notación axial-angular
- */
+   /*!
+    * \brief Notación axial-angular
+    */
 template<typename T>
 class AxisAngle
-  : public RotationBase<T>
+  : public OrientationBase<T>
 {
-
-public:
-
-  AxisAngle();
-  AxisAngle(const AxisAngle &axisAngle);
-  AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT;
-  AxisAngle(T angle, const Vector<T, 3> &axis);
-  ~AxisAngle() override = default;
-
-  auto operator = (const AxisAngle &rot) -> AxisAngle &;
-  auto operator = (AxisAngle &&rot) TL_NOEXCEPT -> AxisAngle &;
-
-  /*!
-   * \brief 
-   * \return 
-   */
-  auto angle() const -> T;
-
-  /*!
-   * \brief 
-   * \param[in] angle 
-   * \return 
-   */
-  auto setAngle(T angle) -> void;
-  
-  /*!
-   * \brief 
-   * \return 
-   */
-  auto axis() const -> Vector<T, 3>;
-  
-  /*!
-   * \brief 
-   * \param[in] i 
-   * \return 
-   */
-  auto axis(size_t i) const -> T;
-  
-  /*!
-   * \brief 
-   * \param axis 
-   * \return 
-   */
-  auto setAxis(const Vector<T, 3> &axis) -> void;
 
 private:
 
-  T mAngle;
-  Vector<T, 3> mAxis;
+    T mAngle;
+    Vector<T, 3> mAxis;
+
+public:
+
+    AxisAngle();
+    AxisAngle(const AxisAngle &axisAngle);
+    AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT;
+    AxisAngle(T angle, const Vector<T, 3> &axis);
+    ~AxisAngle() override = default;
+
+    auto operator = (const AxisAngle &rot)->AxisAngle &;
+    auto operator = (AxisAngle &&rot) TL_NOEXCEPT->AxisAngle &;
+
+    /*!
+     * \brief
+     * \return
+     */
+    auto angle() const -> T;
+
+    /*!
+     * \brief
+     * \param[in] angle
+     * \return
+     */
+    void setAngle(T angle);
+
+    /*!
+     * \brief
+     * \return
+     */
+    auto axis() const -> Vector<T, 3>;
+
+    /*!
+     * \brief
+     * \param[in] i
+     * \return
+     */
+    auto axis(size_t i) const -> T;
+
+    /*!
+     * \brief
+     * \param axis
+     * \return
+     */
+    auto setAxis(const Vector<T, 3> &axis) -> void;
+
 };
 
 
@@ -114,112 +112,112 @@ private:
 
 template<typename T>
 AxisAngle<T>::AxisAngle()
-  : RotationBase<T>(Rotation::Type::axis_angle),
+  : OrientationBase<T>(Orientation::Type::axis_angle),
     mAngle(0),
     mAxis{1,0,0}
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
-  : RotationBase<T>(Rotation::Type::axis_angle),
+  : OrientationBase<T>(Orientation::Type::axis_angle),
     mAngle(axisAngle.mAngle),
     mAxis(axisAngle.mAxis)
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT
-  : RotationBase<T>(std::forward<RotationBase<T>>(axisAngle)),
+  : OrientationBase<T>(std::forward<OrientationBase<T>>(axisAngle)),
     mAngle(axisAngle.mAngle),
     mAxis(std::forward<Vector<T, 3>>(axisAngle))
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
-  : RotationBase<T>(Rotation::Type::axis_angle),
+  : OrientationBase<T>(Orientation::Type::axis_angle),
     mAngle(angle),
     mAxis(axis)
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-  mAxis.normalize();
+    mAxis.normalize();
 }
 
-template <typename T> 
-inline auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngle&
+template <typename T>
+inline auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngle &
 {
-  if (this != &axisAngle) {
-    RotationBase<T>::operator = (axisAngle);
-    mAngle = axisAngle.mAngle;
-    mAxis = axisAngle.axisAngle;
-  }
+    if (this != &axisAngle) {
+        OrientationBase<T>::operator = (axisAngle);
+        mAngle = axisAngle.mAngle;
+        mAxis = axisAngle.mAxis;
+    }
 
-  return *this;
+    return *this;
 }
 
-template <typename T> 
-inline auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle&
+template <typename T>
+inline auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle &
 {
-  if (this != &axisAngle) {
-    RotationBase<T>::operator = (std::forward<RotationBase<T>>(axisAngle));
-    mAngle = axisAngle.mAngle;
-    mAxis = std::forward<Vector<T, 3>>(axisAngle);
-  }
+    if (this != &axisAngle) {
+        OrientationBase<T>::operator = (std::forward<OrientationBase<T>>(axisAngle));
+        mAngle = axisAngle.mAngle;
+        mAxis = std::forward<Vector<T, 3>>(axisAngle.mAxis);
+    }
 
-  return *this;
+    return *this;
 }
 
 template<typename T>
 inline auto AxisAngle<T>::angle() const -> T
 {
-  return mAngle;
+    return mAngle;
 }
 
 template<typename T>
 inline auto AxisAngle<T>::setAngle(T angle) -> void
 {
-  mAngle = angle;
+    mAngle = angle;
 }
 
 template<typename T>
 inline auto AxisAngle<T>::axis() const -> Vector<T, 3>
 {
-  return mAxis;
+    return mAxis;
 }
 
 template<typename T>
 inline auto AxisAngle<T>::axis(size_t i) const -> T
 {
-  TL_ASSERT((0 <= i) && (i < 3), "");
-  return mAxis.at(i);
+    TL_ASSERT((0 <= i) && (i < 3), "");
+    return mAxis.at(i);
 }
 
 template<typename T>
-inline auto AxisAngle<T>::setAxis(const Vector<T, 3> &axis) -> void
+inline void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
 {
-  mAxis = axis;
-  mAxis.normalize();
-}
-
-template<typename T> 
-static inline bool operator == (const AxisAngle<T> &axisAngle1, 
-                                const AxisAngle<T> &axisAngle2)
-{
-  return axisAngle1.mAxis == axisAngle2.mAxis && 
-         axisAngle1.mAngle == axisAngle2.mAngle;
+    mAxis = axis;
+    mAxis.normalize();
 }
 
 template<typename T>
-static inline bool operator != (const AxisAngle<T> &axisAngle1, 
+static inline bool operator == (const AxisAngle<T> &axisAngle1,
                                 const AxisAngle<T> &axisAngle2)
 {
-  return axisAngle1.mAxis != axisAngle2.mAxis && 
-         axisAngle1.mAngle != axisAngle2.mAngle;
+    return axisAngle1.mAxis == axisAngle2.mAxis &&
+           axisAngle1.mAngle == axisAngle2.mAngle;
+}
+
+template<typename T>
+static inline bool operator != (const AxisAngle<T> &axisAngle1,
+                                const AxisAngle<T> &axisAngle2)
+{
+    return axisAngle1.mAxis != axisAngle2.mAxis &&
+           axisAngle1.mAngle != axisAngle2.mAngle;
 }
 
 /*! \} */ // end of rotations
@@ -228,8 +226,4 @@ static inline bool operator != (const AxisAngle<T> &axisAngle1,
 
 /*! \} */ // end of math
 
-} // Fin namespace math
-
 } // End namespace tl
-
-#endif // TL_MATH_AXIS_ANGLE_H

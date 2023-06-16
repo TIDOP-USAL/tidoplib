@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(AffineTestSuite)
 struct AffineTest
 {
   AffineTest()
-    : trf_pointer(new Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, math::consts::deg_to_rad<double> * 35.))
+    : trf_pointer(new Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, consts::deg_to_rad<double> * 35.))
   { }
     
   ~AffineTest()
@@ -92,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, AffineTest)
 BOOST_FIXTURE_TEST_CASE(constructor, AffineTest)
 {
   BOOST_CHECK(Transform::Type::affine == trf_pointer->transformType());
-  BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, trf_pointer->rotation());
+  BOOST_CHECK_EQUAL(consts::deg_to_rad<double> * 35, trf_pointer->rotation());
   BOOST_CHECK_EQUAL(0.25, trf_pointer->scaleX());
   BOOST_CHECK_EQUAL(0.30, trf_pointer->scaleY());
   BOOST_CHECK_EQUAL(150.0, trf_pointer->tx);
@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE(constructor, AffineTest)
 BOOST_FIXTURE_TEST_CASE(assignement_operator, AffineTest)
 {
   Affine<Point<double>> assig = *trf_pointer;
-  BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, assig.rotation());
+  BOOST_CHECK_EQUAL(consts::deg_to_rad<double> * 35, assig.rotation());
   BOOST_CHECK_EQUAL(0.25, assig.scaleX());
   BOOST_CHECK_EQUAL(0.30, assig.scaleY());
   BOOST_CHECK_EQUAL(150.0, assig.tx);
@@ -113,8 +113,8 @@ BOOST_FIXTURE_TEST_CASE(assignement_operator, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, AffineTest)
 {
-  Affine<Point<double>> move(Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, math::consts::deg_to_rad<double> * 35.));
-  BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, move.rotation());
+  Affine<Point<double>> move(Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, consts::deg_to_rad<double> * 35.));
+  BOOST_CHECK_EQUAL(consts::deg_to_rad<double> * 35, move.rotation());
   BOOST_CHECK_EQUAL(0.25, move.scaleX());
   BOOST_CHECK_EQUAL(0.30, move.scaleY());
   BOOST_CHECK_EQUAL(150.0, move.tx);
@@ -124,8 +124,8 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(move_operator, AffineTest)
 {
-  Affine<Point<double>> move_assig = Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, 35. * math::consts::deg_to_rad<double>);
-  BOOST_CHECK_EQUAL(math::consts::deg_to_rad<double> * 35, move_assig.rotation());
+  Affine<Point<double>> move_assig = Affine<Point<double>>(150.0, 75.0, 0.25, 0.30, 35. * consts::deg_to_rad<double>);
+  BOOST_CHECK_EQUAL(consts::deg_to_rad<double> * 35, move_assig.rotation());
   BOOST_CHECK_EQUAL(0.25, move_assig.scaleX());
   BOOST_CHECK_EQUAL(0.30, move_assig.scaleY());
   BOOST_CHECK_EQUAL(150.0, move_assig.tx);
@@ -147,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(transform, AffineTest)
 BOOST_FIXTURE_TEST_CASE(compute, AffineTest)
 {
   trf.compute(ptsIn, ptsOut);
-  BOOST_CHECK_CLOSE( 35. * math::consts::deg_to_rad<double>, trf.rotation(), 0.1);
+  BOOST_CHECK_CLOSE( 35. * consts::deg_to_rad<double>, trf.rotation(), 0.1);
   BOOST_CHECK_CLOSE(0.25, trf.scaleX(), 0.1);
   BOOST_CHECK_CLOSE(0.30, trf.scaleY(), 0.1);
   BOOST_CHECK_CLOSE(150.0, trf.tx, 0.1);
@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(rotation, AffineTest)
 {
-  BOOST_CHECK_CLOSE( 35. * math::consts::deg_to_rad<double>, trf_pointer->rotation(), 0.0001);
+  BOOST_CHECK_CLOSE( 35. * consts::deg_to_rad<double>, trf_pointer->rotation(), 0.0001);
 }
 
 BOOST_FIXTURE_TEST_CASE(scaleX, AffineTest)
@@ -185,8 +185,8 @@ BOOST_FIXTURE_TEST_CASE(scaleY, AffineTest)
 BOOST_FIXTURE_TEST_CASE(setParameters, AffineTest)
 {
 
-  trf_pointer->setParameters(200., 175., 1.25, 1.5, 45. * math::consts::deg_to_rad<double>);
-  BOOST_CHECK_EQUAL(45. * math::consts::deg_to_rad<double>, trf_pointer->rotation());
+  trf_pointer->setParameters(200., 175., 1.25, 1.5, 45. * consts::deg_to_rad<double>);
+  BOOST_CHECK_EQUAL(45. * consts::deg_to_rad<double>, trf_pointer->rotation());
   BOOST_CHECK_EQUAL(1.25, trf_pointer->scaleX());
   BOOST_CHECK_EQUAL(1.5, trf_pointer->scaleY());
   BOOST_CHECK_EQUAL(200., trf_pointer->tx);
@@ -195,8 +195,8 @@ BOOST_FIXTURE_TEST_CASE(setParameters, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(setRotation, AffineTest)
 {
-  trf_pointer->setRotation(47. * math::consts::deg_to_rad<double>);
-  BOOST_CHECK_EQUAL( 47. * math::consts::deg_to_rad<double>, trf_pointer->rotation());
+  trf_pointer->setRotation(47. * consts::deg_to_rad<double>);
+  BOOST_CHECK_EQUAL( 47. * consts::deg_to_rad<double>, trf_pointer->rotation());
 }
 
 BOOST_FIXTURE_TEST_CASE(setScaleX, AffineTest)

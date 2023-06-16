@@ -509,7 +509,7 @@ struct DegreesTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, DegreesTest)
 {
-  BOOST_CHECK(Angle::Unit::degrees == angle.unit());
+  BOOST_CHECK_EQUAL(true, Angle::Unit::degrees == angle.unit());
   BOOST_CHECK_EQUAL(0.0, angle.value());
   BOOST_CHECK_EQUAL(0, angle.degrees());
   BOOST_CHECK_EQUAL(0, angle.minutes());
@@ -746,6 +746,25 @@ BOOST_FIXTURE_TEST_CASE(setDegrees, DegreesTest)
 
   }
   
+}
+
+BOOST_FIXTURE_TEST_CASE(user_defined_literals, DegreesTest)
+{
+    auto angle_rad = 1.0_rad;
+    BOOST_CHECK_CLOSE(1.0, angle_rad.value(), 0.1);
+
+    auto angle_grad = 23.23654564654_grad;
+    BOOST_CHECK_CLOSE(23.23654564654, angle_grad.value(), 0.1);
+    BOOST_CHECK_EQUAL(23, angle_grad.degrees());
+    BOOST_CHECK_EQUAL(23, angle_grad.minutes());
+    BOOST_CHECK_CLOSE(65.4564654, angle_grad.seconds(), 0.01);
+
+    auto angle_deg = 135.5742_deg;
+    BOOST_CHECK_CLOSE(135.5742, angle_deg.value(), 0.1);
+    BOOST_CHECK_EQUAL(135, angle_deg.degrees());
+    BOOST_CHECK_EQUAL(34, angle_deg.minutes());
+    BOOST_CHECK_CLOSE(27.1199, angle_deg.seconds(), 0.01);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

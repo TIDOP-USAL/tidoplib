@@ -41,9 +41,9 @@ struct Helmert3DTest
                                          72364.1120, 
                                          941534.6321,
                                          -266.6595, 
-                                         29421.7784 * math::consts::arcsecond_to_deg<double> * math::consts::deg_to_rad<double>,
-                                         -25330.9216 * math::consts::arcsecond_to_deg<double> * math::consts::deg_to_rad<double>,
-                                         1235.9212 * math::consts::arcsecond_to_deg<double> * math::consts::deg_to_rad<double>))
+                                         29421.7784 * consts::arcsecond_to_deg<double> * consts::deg_to_rad<double>,
+                                         -25330.9216 * consts::arcsecond_to_deg<double> * consts::deg_to_rad<double>,
+                                         1235.9212 * consts::arcsecond_to_deg<double> * consts::deg_to_rad<double>))
   {
 
   }
@@ -156,7 +156,7 @@ struct Helmert3DTest
 //BOOST_FIXTURE_TEST_CASE(copy_constructor, Helmert3DTest)
 //{
 //  Helmert3D<Point<double>> copy(*trf_pointer);
-//  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, copy.rotation(), 0.0001);
+//  BOOST_CHECK_CLOSE( 35 * consts::deg_to_rad<double>, copy.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, copy.scale());
 //  BOOST_CHECK_EQUAL(150.0, copy.tx);
 //  BOOST_CHECK_EQUAL(75.0, copy.ty);
@@ -166,7 +166,7 @@ struct Helmert3DTest
 //BOOST_FIXTURE_TEST_CASE(assignement_operator, Helmert3DTest)
 //{
 //  Helmert3D<Point<double>> assig = *trf_pointer;
-//  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, assig.rotation(), 0.0001);
+//  BOOST_CHECK_CLOSE( 35 * consts::deg_to_rad<double>, assig.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, assig.scale());
 //  BOOST_CHECK_EQUAL(150.0, assig.tx);
 //  BOOST_CHECK_EQUAL(75.0, assig.ty);
@@ -175,8 +175,8 @@ struct Helmert3DTest
 //
 //BOOST_FIXTURE_TEST_CASE(move_constructor, Helmert3DTest)
 //{
-//  Helmert3D<Point<double>> move(Helmert3D<Point<double>>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>));
-//  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, move.rotation(), 0.0001);
+//  Helmert3D<Point<double>> move(Helmert3D<Point<double>>(150.0, 75.0, 0.25, 35 * consts::deg_to_rad<double>));
+//  BOOST_CHECK_CLOSE( 35 * consts::deg_to_rad<double>, move.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, move.scale());
 //  BOOST_CHECK_EQUAL(150.0, move.tx);
 //  BOOST_CHECK_EQUAL(75.0, move.ty);
@@ -185,8 +185,8 @@ struct Helmert3DTest
 //
 //BOOST_FIXTURE_TEST_CASE(move_operator, Helmert3DTest)
 //{
-//  Helmert3D<Point<double>> move_assig = Helmert3D<Point<double>>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>);
-//  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, move_assig.rotation(), 0.0001);
+//  Helmert3D<Point<double>> move_assig = Helmert3D<Point<double>>(150.0, 75.0, 0.25, 35 * consts::deg_to_rad<double>);
+//  BOOST_CHECK_CLOSE( 35 * consts::deg_to_rad<double>, move_assig.rotation(), 0.0001);
 //  BOOST_CHECK_EQUAL(0.25, move_assig.scale());
 //  BOOST_CHECK_EQUAL(150.0, move_assig.tx);
 //  BOOST_CHECK_EQUAL(75.0, move_assig.ty);
@@ -241,9 +241,9 @@ BOOST_FIXTURE_TEST_CASE(transform_point_list, Helmert3DTest)
 BOOST_FIXTURE_TEST_CASE(compute, Helmert3DTest)
 {
   trf.compute(ptsIn, ptsOut);
-  double omega = trf.omega() * math::consts::deg_to_arcsecond<double> * math::consts::rad_to_deg<double>;
-  double phi = trf.phi() * math::consts::deg_to_arcsecond<double> *math::consts::rad_to_deg<double>;
-  double kappa = trf.kappa() * math::consts::deg_to_arcsecond<double> *math::consts::rad_to_deg<double>;
+  double omega = trf.omega() * consts::deg_to_arcsecond<double> * consts::rad_to_deg<double>;
+  double phi = trf.phi() * consts::deg_to_arcsecond<double> *consts::rad_to_deg<double>;
+  double kappa = trf.kappa() * consts::deg_to_arcsecond<double> *consts::rad_to_deg<double>;
  
   BOOST_CHECK_CLOSE(1.0237, trf.scale(), 0.1);
   BOOST_CHECK_CLOSE(0.8502, omega, 0.1);
@@ -255,9 +255,9 @@ BOOST_FIXTURE_TEST_CASE(compute, Helmert3DTest)
 
 
   //trf2->compute(ptsIn2, ptsOut2);
-  //omega = trf2->omega() * math::consts::deg_to_arcsecond<double> *math::consts::rad_to_deg<double>;
-  //phi = trf2->phi() * math::consts::deg_to_arcsecond<double> *math::consts::rad_to_deg<double>;
-  //kappa = trf2->kappa() * math::consts::deg_to_arcsecond<double> *math::consts::rad_to_deg<double>;
+  //omega = trf2->omega() * consts::deg_to_arcsecond<double> *consts::rad_to_deg<double>;
+  //phi = trf2->phi() * consts::deg_to_arcsecond<double> *consts::rad_to_deg<double>;
+  //kappa = trf2->kappa() * consts::deg_to_arcsecond<double> *consts::rad_to_deg<double>;
 
   //BOOST_CHECK_CLOSE(-266.6595, trf2->scale(), 0.1);
   //BOOST_CHECK_CLOSE(29421.7784, omega, 0.1);
@@ -283,7 +283,7 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //
 //BOOST_FIXTURE_TEST_CASE(rotation, Helmert3DTest)
 //{
-//  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, trf_pointer->rotation(), 0.0001);
+//  BOOST_CHECK_CLOSE( 35 * consts::deg_to_rad<double>, trf_pointer->rotation(), 0.0001);
 //}
 //
 //BOOST_FIXTURE_TEST_CASE(scale, Helmert3DTest)
@@ -303,8 +303,8 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //
 //BOOST_FIXTURE_TEST_CASE(setRotation, Helmert3DTest)
 //{
-//  trf_pointer->setRotation(47 * math::consts::deg_to_rad<double>);
-//  BOOST_CHECK_EQUAL( 47 * math::consts::deg_to_rad<double>, trf_pointer->rotation());
+//  trf_pointer->setRotation(47 * consts::deg_to_rad<double>);
+//  BOOST_CHECK_EQUAL( 47 * consts::deg_to_rad<double>, trf_pointer->rotation());
 //}
 //
 //BOOST_FIXTURE_TEST_CASE(setScale, Helmert3DTest)
@@ -335,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //
 //  // cast a afín
 //  Affine<Point<double>> trf_affine = static_cast<Affine<Point<double>>>(*trf_pointer);
-//  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, trf_affine.rotation());
+//  BOOST_CHECK_EQUAL(35 * consts::deg_to_rad<double>, trf_affine.rotation());
 //  BOOST_CHECK_EQUAL(0.25, trf_affine.scaleX());
 //  BOOST_CHECK_EQUAL(0.25, trf_affine.scaleY());
 //  BOOST_CHECK_EQUAL(150.0, trf_affine.tx);
@@ -347,7 +347,7 @@ BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 //  BOOST_CHECK_EQUAL(75.0, translation.ty);
 //
 //  Rotation<Point<double>> rotation = static_cast<Rotation<Point<double>>>(*trf_pointer);
-//  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, rotation.angle());
+//  BOOST_CHECK_EQUAL(35 * consts::deg_to_rad<double>, rotation.angle());
 //}
 
 BOOST_AUTO_TEST_SUITE_END()

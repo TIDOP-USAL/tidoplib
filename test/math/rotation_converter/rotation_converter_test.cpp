@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/rotation_convert.h>
 
-using namespace tl::math;
+using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(RotationConverterTestSuite)
 

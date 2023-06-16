@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_STATISTIC_COVARIANCE_H
-#define TL_MATH_STATISTIC_COVARIANCE_H
+#pragma once
 
 #include <tidop/core/defs.h>
 #include <tidop/core/messages.h>
@@ -32,33 +31,30 @@
 namespace tl
 {
 
-namespace math
-{
-	
 /*! \addtogroup math
  *  \{
  */
 
 
-/*! \defgroup statistics Statistics
- *  \{
- */
- 
-/*!
- * /brief Covariance
- *  
- */
+ /*! \defgroup statistics Statistics
+  *  \{
+  */
+
+  /*!
+   * /brief Covariance
+   *
+   */
 template<typename T>
 class Covariance
 {
 
 public:
 
-  Covariance();
-  ~Covariance();
+    Covariance();
+    ~Covariance();
 
-  double eval(const Series<T> &data1, 
-              const Series<T> &data2);
+    double eval(const Series<T> &data1,
+                const Series<T> &data2);
 
 };
 
@@ -76,31 +72,31 @@ Covariance<T>::~Covariance()
 }
 
 template<typename T> inline
-double Covariance<T>::eval(const Series<T> &series1, 
+double Covariance<T>::eval(const Series<T> &series1,
                            const Series<T> &series2)
 {
-  DescriptiveStatistics<T> stat1(series1);
-  DescriptiveStatistics<T> stat2(series2);
+    DescriptiveStatistics<T> stat1(series1);
+    DescriptiveStatistics<T> stat2(series2);
 
-  auto n_x = stat1.size();
-  auto n_y = stat2.size();
-  if (n_x != n_y || n_x <= 1) return consts::zero<double>;
+    auto n_x = stat1.size();
+    auto n_y = stat2.size();
+    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
 
-  double mean_x = stat1.mean();
-  double mean_y = stat2.mean();
-  double sum{};
-  double x{};
-  double y{};
+    double mean_x = stat1.mean();
+    double mean_y = stat2.mean();
+    double sum{};
+    double x{};
+    double y{};
 
-  auto it1 = series1.begin();
-  auto it2 = series2.begin();
-  while (it1 != series1.end()) {
-    x = static_cast<double>(*it1++) - mean_x;
-    y = static_cast<double>(*it2++) - mean_y;
-    sum += x*y;
-  }
+    auto it1 = series1.begin();
+    auto it2 = series2.begin();
+    while (it1 != series1.end()) {
+        x = static_cast<double>(*it1++) - mean_x;
+        y = static_cast<double>(*it2++) - mean_y;
+        sum += x * y;
+    }
 
-  return sum / n_x;
+    return sum / n_x;
 }
 
 
@@ -108,10 +104,4 @@ double Covariance<T>::eval(const Series<T> &series1,
 
 /*! \} */ // end of math
 
-} // End namespace math
-
 } // End namespace tl
-
-#endif TL_MATH_STATISTIC_COVARIANCE_H
-
-

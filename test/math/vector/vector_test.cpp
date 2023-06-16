@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/vector.h>
 
-using namespace tl::math;
+using namespace tl;
 
 
 BOOST_AUTO_TEST_SUITE(VectorTestSuite)

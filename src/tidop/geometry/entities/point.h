@@ -91,7 +91,7 @@ public:
    */
   Point(const std::array<T, 2> &v);
 
-  Point(const math::Vector<T, 2> &vector);
+  Point(const Vector<T, 2> &vector);
 
   ~Point() override = default;
 
@@ -117,8 +117,8 @@ public:
    */
   template<typename T2> operator Point3<T2>() const;
 
-  math::Vector<T, 2> vector() const;
-  math::Vector<T> dynVector() const;
+  Vector<T, 2> vector() const;
+  Vector<T> dynVector() const;
 
 public:
 
@@ -147,8 +147,8 @@ using Point2f = Point<float>;
 template<typename T> inline
 Point<T>::Point()
   : Entity(Entity::Type::point2d),
-    x(math::consts::zero<T>), 
-    y(math::consts::zero<T>)
+    x(consts::zero<T>), 
+    y(consts::zero<T>)
 {
 }
 
@@ -171,8 +171,8 @@ Point<T>::Point(const Point<T> &point)
 template<typename T> inline
 Point<T>::Point(Point<T> &&point) TL_NOEXCEPT
   : Entity(std::forward<Entity>(point)),
-    x(std::exchange(point.x, math::consts::zero<T>)),
-    y(std::exchange(point.y, math::consts::zero<T>))
+    x(std::exchange(point.x, consts::zero<T>)),
+    y(std::exchange(point.y, consts::zero<T>))
 {
 }
 
@@ -185,7 +185,7 @@ Point<T>::Point(const std::array<T, 2> &v)
 }
 
 template<typename T> inline
-Point<T>::Point(const math::Vector<T, 2> &vector)
+Point<T>::Point(const Vector<T, 2> &vector)
   : Entity(Entity::Type::point2d),
     x(vector[0]),
     y(vector[1])
@@ -212,8 +212,8 @@ Point<T> &Point<T>::operator = (Point<T> &&point) TL_NOEXCEPT
   if (this != &point) {
 
     Entity::operator = (std::forward<Entity>(point));
-    this->x = std::exchange(point.x, math::consts::zero<T>);
-    this->y = std::exchange(point.y, math::consts::zero<T>);
+    this->x = std::exchange(point.x, consts::zero<T>);
+    this->y = std::exchange(point.y, consts::zero<T>);
 
   }
 
@@ -244,15 +244,15 @@ Point<T>::operator Point3<T2>() const
 }
 
 template<typename T> inline
-math::Vector<T, 2> Point<T>::vector() const
+Vector<T, 2> Point<T>::vector() const
 {
-  return math::Vector<T, 2>{this->x, this->y};
+  return Vector<T, 2>{this->x, this->y};
 }
 
 template<typename T> inline
-math::Vector<T> tl::Point<T>::dynVector() const
+Vector<T> tl::Point<T>::dynVector() const
 {
-  return math::Vector<T>{this->x, this->y};
+  return Vector<T>{this->x, this->y};
 }
 
 template<typename T> static inline
@@ -460,7 +460,7 @@ public:
    */
   Point3(const std::array<T, 3> &v);
 
-  Point3(const math::Vector<T, 3> &vector);
+  Point3(const Vector<T, 3> &vector);
 
   ~Point3() override = default;
 
@@ -482,8 +482,8 @@ public:
   template<typename T2> operator Point3<T2>() const;
   template<typename T2> operator Point<T2>() const;
 
-  math::Vector<T, 3> vector() const;
-  math::Vector<T> dynVector() const;
+  Vector<T, 3> vector() const;
+  Vector<T> dynVector() const;
 
 };
 
@@ -495,9 +495,9 @@ using Point3f = Point3<float>;
 template<typename T> inline
 Point3<T>::Point3()
   : Entity(Entity::Type::point3d),
-    x(math::consts::zero<T>), 
-    y(math::consts::zero<T>), 
-    z(math::consts::zero<T>)
+    x(consts::zero<T>), 
+    y(consts::zero<T>), 
+    z(consts::zero<T>)
 {
 }
 
@@ -522,9 +522,9 @@ Point3<T>::Point3(const Point3<T> &point)
 template<typename T> inline
 Point3<T>::Point3(Point3<T> &&point) TL_NOEXCEPT
   : Entity(std::forward<Entity>(point)),
-    x(std::exchange(point.x, math::consts::zero<T>)),
-    y(std::exchange(point.y, math::consts::zero<T>)),
-    z(std::exchange(point.z, math::consts::zero<T>))
+    x(std::exchange(point.x, consts::zero<T>)),
+    y(std::exchange(point.y, consts::zero<T>)),
+    z(std::exchange(point.z, consts::zero<T>))
 {
 }
 
@@ -538,7 +538,7 @@ Point3<T>::Point3(const std::array<T, 3> &v)
 }
 
 template<typename T> inline
-Point3<T>::Point3(const math::Vector<T, 3> &vector)
+Point3<T>::Point3(const Vector<T, 3> &vector)
   : Entity(Entity::Type::point3d),
     x(vector[0]),
     y(vector[1]),
@@ -567,9 +567,9 @@ Point3<T> &Point3<T>::operator = (Point3 &&point) TL_NOEXCEPT
   if (this != &point) {
 
     Entity::operator = (std::forward<Entity>(point));
-    this->x = std::exchange(point.x, math::consts::zero<T>);
-    this->y = std::exchange(point.y, math::consts::zero<T>);
-    this->z = std::exchange(point.z, math::consts::zero<T>);
+    this->x = std::exchange(point.x, consts::zero<T>);
+    this->y = std::exchange(point.y, consts::zero<T>);
+    this->z = std::exchange(point.z, consts::zero<T>);
 
   }
 
@@ -600,15 +600,15 @@ Point3<T>::operator Point<T2>() const
 }
 
 template<typename T> inline
-math::Vector<T, 3> Point3<T>::vector() const
+Vector<T, 3> Point3<T>::vector() const
 {
-  return math::Vector<T, 3>{this->x, this->y, this->z};
+  return Vector<T, 3>{this->x, this->y, this->z};
 }
 
 template<typename T> inline
-math::Vector<T> Point3<T>::dynVector() const
+Vector<T> Point3<T>::dynVector() const
 {
-  return math::Vector<T>{this->x, this->y, this->z};
+  return Vector<T>{this->x, this->y, this->z};
 }
 
 template<typename T> static inline

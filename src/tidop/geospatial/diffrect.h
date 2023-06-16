@@ -46,20 +46,20 @@ class TL_EXPORT DifferentialRectification
 
 private:
 
-    math::RotationMatrix<double> mRotationMatrix;
+    RotationMatrix<double> mRotationMatrix;
     Point3<double> mCameraPosition;
     double mFocal;
 
 public:
 
     DifferentialRectification();
-    DifferentialRectification(const math::RotationMatrix<double> &rotationMatrix,
+    DifferentialRectification(const RotationMatrix<double> &rotationMatrix,
                               const Point3<double> &cameraPosition,
                               double focal);
     ~DifferentialRectification();
 
-    auto rotationMatrix() const -> math::RotationMatrix<double>;
-    auto setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix) -> void;
+    auto rotationMatrix() const -> RotationMatrix<double>;
+    auto setRotationMatrix(const RotationMatrix<double> &rotationMatrix) -> void;
     auto cameraPosition() const -> Point3<double>;
     auto setCameraPosition(const Point3<double> &cameraPosition) -> void;
     auto focal() const -> double;
