@@ -99,7 +99,8 @@ if(BUILD_TL_CORE)
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${UNIX}>:-lpthread>)
+                          $<$<BOOL:${UNIX}>:-lpthread>
+                          $<$<BOOL:${TL_HAVE_FMT}>:fmt::fmt>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

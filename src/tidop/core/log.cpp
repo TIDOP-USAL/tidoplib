@@ -193,4 +193,123 @@ void Log::_write(const std::string &message,
 #endif // TL_MESSAGE_HANDLER
 
 
+
+std::mutex Log2::mtx;
+
+Log2 &Log2::instance()
+{
+    static Log2 log;
+    return log;
+}
+
+void Log2::open(const std::string &file)
+{
+    _stream.open(file, std::ofstream::app);
+}
+
+void Log2::close()
+{
+    _stream.close();
+}
+
+bool Log2::isOpen() const
+{
+    return _stream.is_open();
+}
+
+Log2 &Log2::operator <<(Level level)
+{
+    switch (level) {
+    case Level::debug:
+        _stream << "Debug:   ";
+        break;
+    case Level::info:
+        _stream << "Info:    ";
+        break;
+    case Level::warning:
+        _stream << "Warning: ";
+        break;
+    case Level::error:
+        _stream << "Error:   ";
+        break;
+    }
+
+    return *this;
+}
+
+Log2 &Log2::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
+{
+    _stream << _endl;
+    return *this;
+}
+
+Log2 &Log2::debug()
+{
+    auto &log = Log2::instance();
+    log << Level::debug;
+    return log;
+}
+
+Log2 &Log2::info()
+{
+    auto &log = Log2::instance();
+    log << Level::info;
+    return log;
+}
+
+Log2 &Log2::warning()
+{
+    auto &log = Log2::instance();
+    log << Level::warning;
+    return log;
+}
+
+Log2 &Log2::error()
+{
+    auto &log = Log2::instance();
+    log << Level::error;
+    return log;
+}
+
+#if CPP_VERSION >= 17
+void Log2::debug(std::string_view message)
+#else
+void Log2::debug(const std::string &message)
+#endif
+{
+    std::lock_guard<std::mutex> lck(Log2::mtx);
+
+    Log2::instance() << Level::debug << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Log2::info(std::string_view message)
+#else
+void Log2::info(const std::string &message)
+#endif
+{
+    std::lock_guard<std::mutex> lck(Log2::mtx);
+    Log2::instance() << Level::info << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Log2::warning(std::string_view message)
+#else
+void Log2::warning(const std::string &message)
+#endif
+{
+    std::lock_guard<std::mutex> lck(Log2::mtx);
+    Log2::instance() << Level::warning << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Log2::error(std::string_view message)
+#else
+void Log2::error(const std::string &message)
+#endif
+{
+    std::lock_guard<std::mutex> lck(Log2::mtx);
+    Log2::instance() << Level::error << message << std::endl;
+}
+
 } // End mamespace tl

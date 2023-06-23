@@ -31,6 +31,8 @@
 
 #if CPP_VERSION >= 20
 #include <format>
+#else
+#include <fmt/format.h>
 #endif
 
 namespace tl
@@ -422,6 +424,7 @@ public:
 private:
 
     std::ostream &_stream;
+    static std::mutex mtx;
 
 #ifdef TL_OS_WINDOWS
 
@@ -593,30 +596,30 @@ public:
     static void error(const std::string &message);
 #endif
 
-#if CPP_VERSION >= 20
+#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
     template<typename... Args>
-    static void debug(std::format_string<Args...> s, Args&&... args)
+    static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console2::instance() << Level::debug << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+        Console2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>
-    static void info(std::format_string<Args...> s, Args&&... args)
+    static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console2::instance() << Level::info << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+        Console2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>
-    static void warning(std::format_string<Args...> s, Args&&... args)
+    static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console2::instance() << Level::warning << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+        Console2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>
-    static void error(std::format_string<Args...> s, Args&&... args)
+    static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console2::instance() << Level::error << std::vformat(s.get(), std::make_format_args(args...)) << std::endl;
+        Console2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
 #endif

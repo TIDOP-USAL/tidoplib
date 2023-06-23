@@ -342,8 +342,27 @@ unset(TL_HAVE_EXPERIMENTAL CACHE)
 
 message(STATUS "\nDependency loading:\n")
 
+
 ##########################################################################
-# BOOST (REQUIRED)                                                       #
+# fmt (REQUIRED C++ Version < 20)                                        #
+##########################################################################
+
+if(CMAKE_CXX_STANDARD LESS 20)
+
+    find_package(fmt REQUIRED)
+
+    if(fmt_FOUND)
+        message(STATUS "  fmt version: ${fmt_VERSION}")
+        set(TL_HAVE_FMT YES)
+        add_compile_definitions(TL_HAVE_FMT)
+    else()
+        set(TL_HAVE_FMT NO)
+    endif()
+
+endif()
+
+##########################################################################
+# BOOST (REQUIRED C++ Version < 17)                                      #
 ##########################################################################
 
 if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)

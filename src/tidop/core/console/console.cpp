@@ -440,7 +440,7 @@ void Console::update()
 
 
 
-
+std::mutex Console2::mtx;
 
 Console2::Console2(std::ostream &outstream)
   : _stream(outstream) 
@@ -673,6 +673,8 @@ void Console2::debug(std::string_view message)
 void Console2::debug(const std::string &message)
 #endif
 {
+    std::lock_guard<std::mutex> lck(Console2::mtx);
+
     Console2::instance() << Level::debug << message << std::endl;
 }
 
@@ -682,6 +684,8 @@ void Console2::info(std::string_view message)
 void Console2::info(const std::string &message)
 #endif
 {
+    std::lock_guard<std::mutex> lck(Console2::mtx);
+
     Console2::instance() << Level::info << message << std::endl;
 }
 
@@ -691,6 +695,8 @@ void Console2::warning(std::string_view message)
 void Console2::warning(const std::string &message)
 #endif
 {
+    std::lock_guard<std::mutex> lck(Console2::mtx);
+
     Console2::instance() << Level::warning << message << std::endl;
 }
 
@@ -700,6 +706,8 @@ void Console2::error(std::string_view message)
 void Console2::error(const std::string &message)
 #endif
 {
+    std::lock_guard<std::mutex> lck(Console2::mtx);
+
     Console2::instance() << Level::error << message << std::endl;
 }
 

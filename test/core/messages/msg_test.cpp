@@ -46,6 +46,9 @@ struct MessageTest
 {
   MessageTest()
   {
+    Console &console = App::console();
+    console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
+    App::messageManager().addListener(&console);
   }
 
   ~MessageTest()
@@ -67,69 +70,69 @@ struct MessageTest
 // Info:    Impresión por consola [Time: 0.107769 seconds] (chrono.cpp:114, tl::Chrono::stop)
 // Info:    Impresión por consola personalizada [Time: 2.289432 seconds] (chrono.cpp:114, tl::Chrono::stop)
 // Info:    Impresión con macros [Time: 1.287309 seconds] (chrono.cpp:114, tl::Chrono::stop)
-BOOST_FIXTURE_TEST_CASE(old_console, MessageTest)
-{
-    Console &console = App::console();
-    console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
-    App::messageManager().addListener(&console);
-
-    Chrono chrono("Impresión por consola");
-    //chrono.run();
-
-    //for (size_t i = 0; i < 100; i++) {
-    //  console.printMessage("Impresión por consola");
-    //}
-
-    //chrono.stop();
-
-    //chrono.reset();
-    //chrono.setMessage("Impresión por consola personalizada");
-    //chrono.run();
-
-    //for (size_t i = 0; i < 100; i++) {
-    //  
-    //    // Mensage de debug
-    //    console.setConsoleForegroundColor(Console::Color::white, Console::Intensity::normal);
-    //    console.printMessage("Mensaje de depuración por consola");
-    //    console.reset();
-    //    
-    //    // Mensage de información
-    //    console.setConsoleForegroundColor(Console::Color::white, Console::Intensity::bright);
-    //    console.printMessage("Mensaje de información por consola");
-    //    console.reset();
-
-    //    // Mensage de warning
-    //    console.setConsoleForegroundColor(Console::Color::magenta, Console::Intensity::bright);
-    //    console.printMessage("Mensaje de warning por consola");
-    //    console.reset();
-
-    //    // Mensage de error
-    //    console.printErrorMessage("Mensaje de error por consola");
-    //}
-    //
-    //chrono.stop();
-
-    //chrono.reset();
-    chrono.setMessage("Impresión con macros");
-    chrono.run();
-
-    for (size_t i = 0; i < 100; i++) {
-      
-        // Mensage de debug
-        msgDebug("Mensaje de depuración por consola: %i, %lf, %f", 1, 2.3, 3.5f);
-        
-        // Mensage de información
-        msgInfo("Mensaje de información por consola %i, %lf, %f", 1, 2.3, 3.5f);
-
-        // Mensage de warning
-        msgWarning("Mensaje de warning por consola %i, %lf, %f", 1, 2.3, 3.5f);
-
-        // Mensage de error
-        msgError("Mensaje de error por consola %i, %lf, %f", 1, 2.3, 3.5f);
-    }
-
-    chrono.stop();
-}
+//BOOST_FIXTURE_TEST_CASE(old_console, MessageTest)
+//{
+//    Console &console = App::console();
+//    console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
+//    App::messageManager().addListener(&console);
+//
+//    Chrono chrono("Impresión por consola");
+//    //chrono.run();
+//
+//    //for (size_t i = 0; i < 100; i++) {
+//    //  console.printMessage("Impresión por consola");
+//    //}
+//
+//    //chrono.stop();
+//
+//    //chrono.reset();
+//    //chrono.setMessage("Impresión por consola personalizada");
+//    //chrono.run();
+//
+//    //for (size_t i = 0; i < 100; i++) {
+//    //  
+//    //    // Mensage de debug
+//    //    console.setConsoleForegroundColor(Console::Color::white, Console::Intensity::normal);
+//    //    console.printMessage("Mensaje de depuración por consola");
+//    //    console.reset();
+//    //    
+//    //    // Mensage de información
+//    //    console.setConsoleForegroundColor(Console::Color::white, Console::Intensity::bright);
+//    //    console.printMessage("Mensaje de información por consola");
+//    //    console.reset();
+//
+//    //    // Mensage de warning
+//    //    console.setConsoleForegroundColor(Console::Color::magenta, Console::Intensity::bright);
+//    //    console.printMessage("Mensaje de warning por consola");
+//    //    console.reset();
+//
+//    //    // Mensage de error
+//    //    console.printErrorMessage("Mensaje de error por consola");
+//    //}
+//    //
+//    //chrono.stop();
+//
+//    //chrono.reset();
+//    chrono.setMessage("Impresión con macros");
+//    chrono.run();
+//
+//    for (size_t i = 0; i < 100; i++) {
+//      
+//        // Mensage de debug
+//        msgDebug("Mensaje de depuración por consola: %i, %lf, %f", 1, 2.3, 3.5f);
+//        
+//        // Mensage de información
+//        msgInfo("Mensaje de información por consola %i, %lf, %f", 1, 2.3, 3.5f);
+//
+//        // Mensage de warning
+//        msgWarning("Mensaje de warning por consola %i, %lf, %f", 1, 2.3, 3.5f);
+//
+//        // Mensage de error
+//        msgError("Mensaje de error por consola %i, %lf, %f", 1, 2.3, 3.5f);
+//    }
+//
+//    chrono.stop();
+//}
 
 //// Info:    Impresión por consola [Time: 0.380867 seconds] (chrono.cpp:114, tl::Chrono::stop)
 //// Info:    Console 2 [Time: 2.454635 seconds] (chrono.cpp:114, tl::Chrono::stop)
@@ -144,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     //std::ofstream log("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt", std::ofstream::app);
     //App::messageHandler().subscribe(log.rdbuf());
 
-    Chrono chrono("Impresión por consola");
+    //Chrono chrono("Impresión por consola");
     //chrono.run();
 
     //for (size_t i = 0; i < 100; i++) {
@@ -167,52 +170,58 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     //chrono.stop();
 
     //chrono.reset();
-    chrono.setMessage("Console 2");
-    chrono.run();
+    //chrono.setMessage("Console 2");
+    //chrono.run();
 
-    for (size_t i = 0; i < 100; i++) {
-      Console2::debug() << "Mensaje de depuración por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      Console2::info() << "Mensaje de información por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      Console2::warning() << "Mensaje de warning por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      Console2::error() << "Mensaje de error por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-    }
+    //for (size_t i = 0; i < 100; i++) {
+    //  Console2::debug() << "Mensaje de depuración por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console2::info() << "Mensaje de información por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console2::warning() << "Mensaje de warning por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console2::error() << "Mensaje de error por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //}
 
-    chrono.stop();
+    //chrono.stop();
 
-#if CPP_VERSION >= 20
+    //chrono.setMessage("Console 2 std::format");
+    //chrono.run();
 
-    chrono.setMessage("Console 2 std::format");
-    chrono.run();
+    auto f1 = []() {
+        for (size_t i = 0; i < 100; i++) {
+            Console2::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console2::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console2::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console2::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
+        }
+    };
 
-    for (size_t i = 0; i < 100; i++) {
-      Console2::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
-      Console2::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
-      Console2::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
-      Console2::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
-    }
+    //chrono.stop();
 
-    chrono.stop();
-
-#endif
-
-    chrono.reset();
-    chrono.setMessage("App::message()");
-    chrono.run();
+    //chrono.reset();
+    //chrono.setMessage("App::message()");
+    //chrono.run();
 
     App::log2().open("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt");
 
-    for (size_t i = 0; i < 100; i++) {
-      //App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
-      //App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      //App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      //App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-      App::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
-      App::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
-      App::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
-      App::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
-    }
+    auto f2 = []() {
+        for (size_t i = 0; i < 100; i++) {
+            //App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
+            //App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+            //App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+            //App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+            App::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
+            App::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+            App::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
+            App::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
+        }
+    };
 
-    chrono.stop();
+    std::thread t1(f1);
+    std::thread t2(f2);
+
+    t1.join();
+    t2.join();
+
+    //chrono.stop();
 }
 
 //#if CPP_VERSION >= 20
