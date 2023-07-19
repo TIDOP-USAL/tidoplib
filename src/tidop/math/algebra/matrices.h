@@ -5,7 +5,7 @@
 namespace tl
 {
 
-class Matrices 
+struct Matrices 
 {
 
     static Matrix4x4f scale(float sx, float sy, float sz)
