@@ -188,9 +188,9 @@ public:
 };
 
 
-using RectI = Rect<int>;
-using RectF = Rect<float>;
-using RectD = Rect<double>;
+using Recti = Rect<int>;
+using Rectf = Rect<float>;
+using Rectd = Rect<double>;
 
 
 template<typename T> inline

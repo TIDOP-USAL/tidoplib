@@ -207,7 +207,7 @@ public:
     }
   }
 
-  cv::Mat read(const RectI &rect, 
+  cv::Mat read(const Recti &rect, 
                const Size<int> &size,  
                Affine<Point<int>> *trf) override
   {
@@ -218,9 +218,9 @@ public:
       TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
       //TL_ASSERT(rect.isValid(), "Image Rect to read invalid")
 
-      RectI rect_to_read;
+      Recti rect_to_read;
       Point<int> offset;
-      RectI rect_full_image(0, 0, this->cols(), this->rows());
+      Recti rect_full_image(0, 0, this->cols(), this->rows());
       
 
       if (rect.isEmpty()) {
@@ -271,7 +271,7 @@ public:
 
   cv::Mat read(double scaleX,
                double scaleY,  
-               const RectI &rect, 
+               const Recti &rect, 
                Affine<Point<int>> *trf) override
   {
     cv::Mat image;
@@ -280,9 +280,9 @@ public:
 
       TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
-      RectI rect_to_read;
+      Recti rect_to_read;
       Point<int> offset;
-      RectI rect_full_image(0, 0, this->cols(), this->rows());
+      Recti rect_full_image(0, 0, this->cols(), this->rows());
       if (rect.isEmpty()) {
         rect_to_read = rect_full_image;
       } else {
@@ -334,7 +334,7 @@ public:
     int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
     int y = window.pt1.y < window.pt2.y ? window.pt1.y : window.pt2.y;
     
-    RectI rect = window.isEmpty() ? RectI() : RectI(x, y, std::abs(window.width()), std::abs(window.height()));
+    Recti rect = window.isEmpty() ? Recti() : Recti(x, y, std::abs(window.width()), std::abs(window.height()));
     
     cv::Mat image;
 
@@ -875,9 +875,9 @@ public:
                Affine<Point<int>> *trf) override
   {
 
-    RectI rect_to_read;
+    Recti rect_to_read;
     Point<int> offset;
-    RectI rect_full_image(0, 0, this->cols(), this->rows());
+    Recti rect_full_image(0, 0, this->cols(), this->rows());
     if (rect.isEmpty()) {
       rect_to_read = rect_full_image;
     } else {

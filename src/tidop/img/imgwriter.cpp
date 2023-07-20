@@ -335,8 +335,8 @@ public:
 
       TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
-      RectI rect_full_image(0, 0, this->cols(), this->rows());
-      RectI rect_to_write;
+      Recti rect_full_image(0, 0, this->cols(), this->rows());
+      Recti rect_to_write;
 
       bool crop_image = false;
       if (rect.isEmpty()) {
@@ -368,13 +368,13 @@ public:
 
         std::vector<Point<double>> image_points_transform;
         affine.transform(image_points, image_points_transform);
-        RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
-        RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
+        Recti rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+        Recti rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
         Point<double> tl = affine.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
         Point<double> br = affine.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
       
-        rect_to_crop_image = RectI(tl, br);
+        rect_to_crop_image = Recti(tl, br);
         image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
                               .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
                               .clone();
@@ -457,7 +457,7 @@ public:
   {
     try{
 
-      RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
+      Recti rect = window.isEmpty() ? Recti() : Recti(window.pt1, window.pt2);
       write(image, rect);
     
     } catch (...) {

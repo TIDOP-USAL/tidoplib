@@ -199,6 +199,7 @@ cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
+cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
 
@@ -338,6 +339,7 @@ unset(TL_HAVE_GRAPHIC CACHE)
 unset(TL_HAVE_GEOSPATIAL CACHE)
 unset(TL_HAVE_VECT CACHE)
 unset(TL_HAVE_EXPERIMENTAL CACHE)
+unset(TL_HAVE_VIEWER CACHE)
 
 
 message(STATUS "\nDependency loading:\n")
@@ -367,6 +369,44 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
 
 endif()
 
+if(BUILD_TL_VIEWER)
+
+	##########################################################################
+	# GLEW                                                      			 #
+	##########################################################################
+
+	find_package(GLEW REQUIRED)
+
+	##########################################################################
+	# Qt                                                                     #
+	##########################################################################
+	find_package(Qt6 REQUIRED 
+				 COMPONENTS 
+				 Core
+				 Concurrent
+				 OpenGL  
+				 Widgets
+				 OpenGLWidgets)
+	  
+	if (Qt6_POSITION_INDEPENDENT_CODE)
+	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	endif()
+
+	if(Qt6_FOUND)
+		message(STATUS "Found Qt")
+		message(STATUS "  Module : ${Qt6Core_DIR}")
+		message(STATUS "  Module : ${Qt6Concurrent_DIR}")
+		message(STATUS "  Module : ${Qt6OpenGL_DIR}")
+		message(STATUS "  Module : ${Qt6Widgets_DIR}")
+		message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+
+		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
+		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
+		set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
+		set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+	endif()
+
+endif()
 
 ##########################################################################
 # OpenCV  (optional)                                                     #

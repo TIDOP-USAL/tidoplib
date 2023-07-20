@@ -22,13 +22,9 @@
 #                                                                        #
 ##########################################################################
 
-add_subdirectory(tidop/core)
-add_subdirectory(tidop/math)
-add_subdirectory(tidop/geometry)
-add_subdirectory(tidop/img)
-add_subdirectory(tidop/featmatch)
-add_subdirectory(tidop/graphic)
-add_subdirectory(tidop/imgprocess)
-add_subdirectory(tidop/vect)
-add_subdirectory(tidop/geospatial)
-add_subdirectory(tidop/viewer)
+# Test modulo Core
+
+
+if(BUILD_TL_VIEWER)
+add_subdirectory(testQt)
+endif()

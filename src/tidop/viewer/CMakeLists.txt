@@ -29,53 +29,32 @@
 
 include(TidopUtils)
 
-if(BUILD_TL_CORE)
+if(BUILD_TL_VIEWER)
 
-    project(Core)
+    project(Viewer)
     
     add_files_to_project(${PROJECT_NAME} 
                          SOURCE_FILES 
-                             app.cpp
-                             exception.cpp
-                             messages.cpp
-                             log.cpp
-                             utils.cpp
-                             task.cpp
-                             progress.cpp
-                             event.cpp
-                             licence.cpp
-                             gdalreg.cpp
-                             chrono.cpp
-                             concurrency.cpp
-                             path.cpp
-                             xml.cpp
-                             console/console.cpp
-                             console/argument.cpp
-                             console/command.cpp
+                            opengl/buffer/VertexBuffer.cpp
+							opengl/buffer/IndexBuffer.cpp
+							opengl/buffer/VertexArray.cpp
+							opengl/shader/Shader.cpp
+							group/ModelBase.cpp
+							group/PointCloud.cpp
+							renderer/Camera.cpp
+							renderer/TrackballCamera.cpp
                          HEADER_FILES
-                             defs.h
-							 ptr.h
-                             app.h
-                             exception.h
-                             flags.h
-                             messages.h
-                             log.h
-                             utils.h
-                             task.h
-                             progress.h
-                             event.h
-                             licence.h
-                             gdalreg.h
-                             chrono.h
-                             concurrency.h
-                             path.h
-                             xml.h
-                             endian.h
-                             console.h
-                             console/console.h
-                             console/argument.h
-                             console/command.h
-                             console/validator.h)
+                            opengl/buffer/Buffer.h
+							opengl/buffer/IndexBuffer.h
+							opengl/buffer/VertexBuffer.h
+							opengl/buffer/VertexArray.h
+							opengl/shader/Shader.h
+							group/ModelBase.h
+							group/PointCloud.h
+							renderer/Camera.h
+							renderer/TrackballCamera.h
+							Vertex.h
+							 )
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -87,18 +66,31 @@ if(BUILD_TL_CORE)
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+							   
+	if(Qt6_FOUND)
+		include_directories(${Qt6Core_INCLUDE_DIRS}
+							${Qt6Concurrent_INCLUDE_DIRS}
+							${Qt6OpenGL_INCLUDE_DIRS}
+							${Qt6Widgets_INCLUDE_DIRS}
+							${Qt6LinguistTools_INCLUDE_DIRS}
+							${Qt6OpenGLWidgets_INCLUDE_DIRS})
+	endif()
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
-                          $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${UNIX}>:-lpthread>)
+                          $<$<BOOL:${UNIX}>:-lpthread>
+                          TidopLib::Core
+                          TidopLib::Geom
+                          TidopLib::Math
+						  GLEW::GLEW
+						  opengl32
+						  glu32)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"
-                          OUTPUT_NAME "tl_core")
+                          OUTPUT_NAME "tl_viewer")
 
     if(BUILD_SHARED_LIBS)
   
@@ -113,26 +105,12 @@ if(BUILD_TL_CORE)
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib)
                 
     install(DIRECTORY .
-            DESTINATION include/tidop/core
+            DESTINATION include/tidop/viewer
             FILES_MATCHING PATTERN "*.h")
     
     
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
-    set(TL_HAVE_CORE YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::Core enabled")
+    message(STATUS "  TidopLib::Viewer enabled")
     
-else()
-
-    message(STATUS "  TidopLib::Core disabled")
-    message(STATUS "  TidopLib::Math disabled         [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::ImgProcess disabled   [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Graphic disabled      [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::FeatMatch disabled    [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Vect disabled         [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Experimental disabled [Module dependent on TidopLib::Core that is deactivated]")
-  
-endif(BUILD_TL_CORE)
+endif(BUILD_TL_VIEWER)

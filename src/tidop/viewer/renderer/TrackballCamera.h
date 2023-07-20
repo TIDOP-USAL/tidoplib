@@ -1,0 +1,42 @@
+#pragma once
+
+#include "Camera.h"
+
+#include "tidop/geometry/rect.h"
+
+namespace tl
+{
+
+class TrackballCamera
+	: public Camera {
+
+private:
+
+	float theta, phi;
+	float radius;
+
+private:
+
+	TrackballCamera(const tl::Matrix4x4f& projectionMatrix, const tl::Matrix4x4f& viewMatrix);
+
+private:
+
+	tl::Vector4f toCartesianCoords();
+	tl::Vector3f getCameraPosition();
+
+public:
+
+	static TrackballCamera orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar);
+	static TrackballCamera orthoCamera(const Rectf& rect, float zNear, float zFar);
+
+	static TrackballCamera perspectiveCamera(float fovy, float aspect, float zNear, float zFar);
+
+	virtual tl::Matrix4x4f& getViewMatrix() override;
+
+	void rotate(float dTheta, float dPhi);
+	void pan(float dx, float dy);
+	void zoom(float dRadius);
+
+};
+
+}
