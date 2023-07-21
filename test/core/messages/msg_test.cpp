@@ -27,10 +27,10 @@
 #include <tidop/core/messages.h>
 #include "tidop/core/app.h"
 #include "tidop/core/msg/handler.h"
-#include "tidop/core/msg/stream.h"
 #include "tidop/core/console.h"
 #include "tidop/core/log.h"
 #include "tidop/core/chrono.h"
+#include "tidop/core/msg/message.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -46,9 +46,9 @@ struct MessageTest
 {
   MessageTest()
   {
-    Console &console = App::console();
-    console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
-    App::messageManager().addListener(&console);
+    //Console &console = App::console();
+    //console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
+    //App::messageManager().addListener(&console);
   }
 
   ~MessageTest()
@@ -189,6 +189,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
         for (size_t i = 0; i < 100; i++) {
             Console2::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
             Console2::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console2::succes("Mensaje de exito por consola {}, {}, {}", 1, 2.3, 3.5f);
             Console2::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
             Console2::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
         }
@@ -208,10 +209,18 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
             //App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
             //App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
             //App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-            App::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
-            App::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
-            App::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
-            App::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
+
+            //App::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
+            ////App::pauseMessages();
+            //App::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+            ////App::resumeMessages();
+            //App::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
+            //App::succes("Mensaje de éxito por consola {}, {}, {}", 1, 2.3, 3.5f);
+            //App::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Message::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Message::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Message::succes("Mensaje de éxito por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Message::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
         }
     };
 

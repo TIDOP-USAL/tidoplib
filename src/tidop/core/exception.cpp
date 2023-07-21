@@ -28,6 +28,9 @@
 #include <codecvt>
 #include <utility>
 
+
+#include "tidop/core/app.h"
+
 //TODO: mirar
 //https://en.cppreference.com/w/cpp/error/nested_exception
 //https://en.cppreference.com/w/cpp/error/throw_with_nested
@@ -119,9 +122,12 @@ void printException(const std::exception &e, int level)
     std::string err = std::string(level, ' ') + "exception: " + e.what();
     tl::MessageManager::release(err, tl::MessageLevel::msg_error);
     tl::MessageManager::release("Exception trace:", tl::MessageLevel::msg_error);
+    //Message::error("{}Eexception: {}", std::string(level, ' '), e.what());
+    //Message::error("Exception trace:");
   } else {
     std::string err = ">>" + std::string(level, ' ') + " " + e.what();
     tl::MessageManager::release(err, tl::MessageLevel::msg_error);
+    //Message::error(">>{} {}", std::string(level, ' '), e.what());
   }
 
   try {

@@ -38,6 +38,7 @@
 #include "tidop/core/flags.h"
 //#include "tidop/core/app.h"
 //#include "tidop/core/console.h"
+//#include "tidop/core/log.h"
 
 namespace tl
 {
@@ -59,9 +60,9 @@ enum class MessageLevel : int8_t {
   msg_debug   = 1 << 0,                               /*!< Información extra para depuración. */
   msg_error   = 1 << 1,                               /*!< Errores. */
   msg_warning = 1 << 2,                               /*!< Warnings */
-  msg_info    = 1 << 3,                               /*!< Otra información. */
-  msg_trace   = 1 << 4,
-  msg_verbose = msg_error | msg_warning | msg_info    /*!< Todos los mensajes. */
+  msg_succes  = 1 << 3,
+  msg_info    = 1 << 4,                               /*!< Otra información. */
+  msg_all = msg_error | msg_warning | msg_succes | msg_info
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
@@ -348,16 +349,12 @@ private:
 
 /// No se utiliza el manejador de mensajes
 
-#  define msgDebug(...)
+#  define msgDebug(...) 
 #  define msgInfo(...)
 #  define msgWarning(...)
 #  define msgError(...)
 
 #endif
-
-
-
-
 
 
 /* ----------------------------------------------------------------------------- */
@@ -368,7 +365,8 @@ enum class Level : int8_t
 	debug = 1 << 0,
 	error = 1 << 1,
 	warning = 1 << 2,
-	info = 1 << 3
+  succes = 1 << 3,
+	info = 1 << 4
 };
 
 

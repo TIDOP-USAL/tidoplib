@@ -83,7 +83,11 @@ public:
   /*!
    * \brief Destructora
    */
+#ifdef TL_MESSAGE_HANDLER
   ~Log() override;
+#else
+  ~Log();
+#endif
 
   TL_DISABLE_COPY(Log)
   TL_DISABLE_MOVE(Log)
@@ -255,18 +259,15 @@ private:
 
     std::ofstream _stream;
     static std::mutex mtx;
+    static EnumFlags<MessageLevel> messageLevelFlags;
 
 private:
 
-    Log2()
-    {
-    }
+    Log2() = default;
 
 public:
 
-    ~Log2()
-    {
-    }
+    ~Log2() = default;
 
     TL_DISABLE_COPY(Log2)
     TL_DISABLE_MOVE(Log2)
@@ -287,8 +288,30 @@ public:
 	    return *this;
     }
 
+    /*!
+     * \brief Message levels
+     * \return Flag with message levels activated
+     * \see EnumFlags
+     */
+    static auto messageLevel() -> EnumFlags<MessageLevel>;
+
+    /*!
+     * \brief Sets the message level
+     *
+     * Several log levels can be combined:
+     *
+     * \code
+     * Log log;
+     * log.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
+     * \endcode
+     *
+     * \param[in] level Message level.
+     */
+    static void setMessageLevel(MessageLevel level);
+
     static Log2 &debug();
     static Log2 &info();
+    static Log2 &succes();
     static Log2 &warning();
     static Log2 &error();
 
@@ -303,6 +326,12 @@ public:
     static void info(std::string_view message);
 #else
     static void info(const std::string &message);
+#endif
+
+#if CPP_VERSION >= 17
+    static void succes(std::string_view message);
+#else
+    static void succes(const std::string &message);
 #endif
 
 #if CPP_VERSION >= 17
@@ -322,25 +351,36 @@ public:
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Log2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        if (Log2::instance().isOpen())
+            Log2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Log2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        if (Log2::instance().isOpen())
+            Log2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void succes(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        if (Log2::instance().isOpen())
+            Log2::succes(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Log2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        if (Log2::instance().isOpen())
+            Log2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Log2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        if (Log2::instance().isOpen())
+            Log2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
 #endif

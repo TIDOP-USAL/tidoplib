@@ -28,7 +28,7 @@
 #include "tidop/core/app.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/chrono.h"
-#include "tidop/core/console.h"
+//#include "tidop/core/console.h"
 
 #include <cstdarg>
 #if defined WIN32

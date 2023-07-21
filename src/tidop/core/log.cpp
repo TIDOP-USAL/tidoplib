@@ -195,6 +195,7 @@ void Log::_write(const std::string &message,
 
 
 std::mutex Log2::mtx;
+EnumFlags<MessageLevel> Log2::messageLevelFlags = MessageLevel::msg_all;
 
 Log2 &Log2::instance()
 {
@@ -226,6 +227,9 @@ Log2 &Log2::operator <<(Level level)
     case Level::info:
         _stream << "Info:    ";
         break;
+    case Level::succes:
+        _stream << "Succes:  ";
+        break;
     case Level::warning:
         _stream << "Warning: ";
         break;
@@ -243,6 +247,16 @@ Log2 &Log2::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
     return *this;
 }
 
+auto Log2::messageLevel() -> EnumFlags<MessageLevel>
+{
+    return messageLevelFlags;
+}
+
+void Log2::setMessageLevel(MessageLevel level)
+{
+    messageLevelFlags = level;
+}
+
 Log2 &Log2::debug()
 {
     auto &log = Log2::instance();
@@ -254,6 +268,13 @@ Log2 &Log2::info()
 {
     auto &log = Log2::instance();
     log << Level::info;
+    return log;
+}
+
+Log2 &Log2::succes()
+{
+    auto &log = Log2::instance();
+    log << Level::succes;
     return log;
 }
 
@@ -279,7 +300,8 @@ void Log2::debug(const std::string &message)
 {
     std::lock_guard<std::mutex> lck(Log2::mtx);
 
-    Log2::instance() << Level::debug << message << std::endl;
+    if (Log2::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::msg_debug))
+        Log2::instance() << Level::debug << message << std::endl;
 }
 
 #if CPP_VERSION >= 17
@@ -289,7 +311,21 @@ void Log2::info(const std::string &message)
 #endif
 {
     std::lock_guard<std::mutex> lck(Log2::mtx);
-    Log2::instance() << Level::info << message << std::endl;
+
+    if (Log2::instance().isOpen())
+        Log2::instance() << Level::info << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Log2::succes(std::string_view message)
+#else
+void Log2::succes(const std::string &message)
+#endif
+{
+    std::lock_guard<std::mutex> lck(Log2::mtx);
+
+    if (Log2::instance().isOpen())
+        Log2::instance() << Level::succes << message << std::endl;
 }
 
 #if CPP_VERSION >= 17
@@ -299,7 +335,9 @@ void Log2::warning(const std::string &message)
 #endif
 {
     std::lock_guard<std::mutex> lck(Log2::mtx);
-    Log2::instance() << Level::warning << message << std::endl;
+
+    if (Log2::instance().isOpen()) 
+        Log2::instance() << Level::warning << message << std::endl;
 }
 
 #if CPP_VERSION >= 17
@@ -309,7 +347,9 @@ void Log2::error(const std::string &message)
 #endif
 {
     std::lock_guard<std::mutex> lck(Log2::mtx);
-    Log2::instance() << Level::error << message << std::endl;
+    
+    if (Log2::instance().isOpen())
+        Log2::instance() << Level::error << message << std::endl;
 }
 
 } // End mamespace tl

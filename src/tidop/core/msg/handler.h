@@ -28,7 +28,12 @@
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
 
-#include <streambuf>
+#include <string>
+#if CPP_VERSION >= 20
+#include <format>
+#else
+#include <fmt/format.h>
+#endif
 
 namespace tl
 {
@@ -43,32 +48,28 @@ namespace tl
  *  \{
  */
 
-class MessageBuffer;
 
 class MessageHandler
 {
 
-private:
-
-    MessageHandler();
-
 public:
 
-    ~MessageHandler();
+	  MessageHandler() = default;
+	  virtual ~MessageHandler() = default;
 
-    void subscribe(std::streambuf *sb);
+#if CPP_VERSION >= 17
+    virtual void info(std::string_view message) = 0;
+    virtual void success(std::string_view message) = 0;
+    virtual void warning(std::string_view message) = 0;
+    virtual void error(std::string_view message) = 0;
+#else
+    virtual void info(const std::string &message) = 0;
+    virtual void success(const std::string &message) = 0;
+    virtual void warning(const std::string &message) = 0;
+    virtual void error(const std::string &message) = 0;
+#endif
 
-private:
-
-    MessageBuffer *buffer();
-
-private:
-
-    MessageBuffer *_buffer;
-    friend class App;
-    friend class Message;
 };
-
 
 
 /*! \} */ // end of Messages

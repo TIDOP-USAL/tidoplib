@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     console.setTitle(cmd_name);
     console.setConsoleUnicode();
     console.setFontHeight(14);
-    console.setMessageLevel(MessageLevel::msg_verbose);
+    console.setMessageLevel(MessageLevel::msg_all);
     App::messageManager().addListener(&console);
 
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
     if(!log_file.empty()) {
         Log &log = App::log();
-        log.setMessageLevel(MessageLevel::msg_verbose);
+        log.setMessageLevel(MessageLevel::msg_all);
         log.setLogFile(log_file);
         App::messageManager().addListener(&log);
     }

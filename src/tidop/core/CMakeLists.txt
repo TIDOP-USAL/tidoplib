@@ -52,9 +52,7 @@ if(BUILD_TL_CORE)
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
-                             msg/buffer.cpp
-                             msg/handler.cpp
-                             msg/stream.cpp
+                             msg/message.cpp
                          HEADER_FILES
                              defs.h
                              app.h
@@ -78,9 +76,8 @@ if(BUILD_TL_CORE)
                              console/argument.h
                              console/command.h
                              console/validator.h
-                             msg/buffer.h
                              msg/handler.h
-                             msg/stream.h)
+                             msg/message.h)
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -93,6 +90,8 @@ if(BUILD_TL_CORE)
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+
+    #target_compile_definitions(${PROJECT_NAME} PUBLIC TL_HAVE_CORE)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
@@ -124,7 +123,7 @@ if(BUILD_TL_CORE)
     
     
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-    
+
     set(TL_HAVE_CORE YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::Core enabled")
     

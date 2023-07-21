@@ -40,18 +40,19 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
 #include "tidop/core/log.h"
+#include "tidop/core/msg/handler.h"
+#include "tidop/core/console.h"
 
 namespace tl
 {
 
 class Console;
-class Log;
+//class Log;
 class MessageManager;
 
-class MessageHandler;
+//class MessageHandler;
 class Console2;
-class Log2;
-class Message;
+//class Log2;
 
 /*! \addtogroup core
  *  \{
@@ -79,48 +80,68 @@ public:
      */
     static App &instance();
 
-    tl::Path path() const;
+    Path path() const;
     std::string version() const;
+
+    void addMessageHandler(MessageHandler *messageHandler);
+
+    static void pauseMessages();
+    static void resumeMessages();
 
     static Console &console();
     static Console2 &console2();
     static Log &log();
     static Log2 &log2();
     static MessageManager &messageManager();
-    static MessageHandler &messageHandler();
-    static Message &message();
 
-#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
-
-    template<typename... Args>
-    static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-    {
-        Console2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-    }
-
-    template<typename... Args>
-    static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-    {
-        Console2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-    }
-
-    template<typename... Args>
-    static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-    {
-        Console2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::warning(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
-    }
-
-    template<typename... Args>
-    static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-    {
-        Console2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-    }
-
-#endif
+//#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
+//
+//    template<typename... Args>
+//    static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+//    {
+//        if (stopHandler) return;
+//
+//        Console2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//        Log2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//    }
+//
+//    template<typename... Args>
+//    static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+//    {
+//        if (stopHandler) return;
+//
+//        Console2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//        Log2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//    }
+//
+//    template<typename... Args>
+//    static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+//    {
+//        if (stopHandler) return;
+//
+//        Console2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//        Log2::warning(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
+//    }
+//
+//    template<typename... Args>
+//    static void succes(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+//    {   
+//        if (stopHandler) return;
+//
+//        Console2::succes(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//        Log2::succes(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
+//    }
+//
+//    template<typename... Args>
+//    static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+//    {   
+//        if (stopHandler) return;
+//
+//        Console2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//        Log2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+//    }
+//
+//#endif
 
 private:
 
@@ -128,8 +149,8 @@ private:
 
 private:
 
-  //static std::unique_ptr<Message> _message;
-
+    std::list<MessageHandler *> messageHandlers;
+    static bool stopHandler;
 };
 
 /*! \} */ // end of core

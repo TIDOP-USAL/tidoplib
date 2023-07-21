@@ -27,8 +27,6 @@
 #include "tidop/core/console/console.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/msg/handler.h"
-#include "tidop/core/msg/buffer.h"
-#include "tidop/core/msg/stream.h"
 #include "tidop/core/log.h"
 
 #if TL_OS_LINUX
@@ -40,10 +38,10 @@
 namespace tl
 {
 
-//std::unique_ptr<Message> App::_message;
-
+bool App::stopHandler = false;
 
 App::App()
+  : messageHandlers(0)
 {
     init();
 }
@@ -77,6 +75,31 @@ std::string App::version() const
     return std::string();
 }
 
+void App::addMessageHandler(MessageHandler *messageHandler)
+{
+    // Se comprueba que no este añadido
+    bool added = false;
+    for (auto handler : messageHandlers) {
+        if (handler == messageHandler) {
+            added = true;
+            break;
+        }
+    }
+
+    if (!added)
+        messageHandlers.push_back(messageHandler);
+}
+
+void App::pauseMessages()
+{
+    stopHandler = true;
+}
+
+void App::resumeMessages()
+{
+    stopHandler = false;
+}
+
 Console &App::console()
 {
     static Console console;
@@ -85,8 +108,7 @@ Console &App::console()
 
 Console2 &App::console2()
 {
-    static Console2 console;
-    return console;
+    return Console2::instance();
 }
 
 Log &App::log()
@@ -102,25 +124,13 @@ Log2 &App::log2()
 
 MessageManager &App::messageManager()
 {
-    //static MessageManager message_manager;
-    //return message_manager;
     return MessageManager::instance();
-}
-
-MessageHandler &App::messageHandler()
-{
-    static MessageHandler message_handler;
-    return message_handler;
-}
-
-Message &App::message()
-{
-    static Message message;
-    return message;
 }
 
 void App::init()
 {
+  // The console is initialised
+  Console2::instance();
 }
 
 } // namespace tl

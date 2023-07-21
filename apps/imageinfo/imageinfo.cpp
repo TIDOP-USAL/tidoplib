@@ -52,12 +52,12 @@ int main(int argc, char **argv)
 
     Console &console = App::console();
     console.setTitle("Image Metadata");
-    console.setMessageLevel(MessageLevel::msg_verbose);
+    console.setMessageLevel(MessageLevel::msg_all);
     console.setConsoleUnicode();
     App::messageManager().addListener(&console);
 
     Log &log = App::log();
-    log.setMessageLevel(MessageLevel::msg_verbose);
+    log.setMessageLevel(MessageLevel::msg_all);
     App::messageManager().addListener(&log);
 
     Command cmd(cmd_name, "Image Metadata");

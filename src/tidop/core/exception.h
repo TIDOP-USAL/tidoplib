@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_EXCEPTION_H
-#define TL_CORE_EXCEPTION_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -33,6 +32,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/path.h"
+//#include "tidop/core/msg/message.h"
 
 namespace tl
 {
@@ -43,92 +43,99 @@ namespace tl
 
 
 /*!
- * Clase para el manejo de excepciones
+ * \brief Exception handling class
  */
 class Exception
   : public std::exception
 {
+private:
+
+    std::string mError;
+    std::string mFile;
+    int mLine;
+    std::string mFunction;
+    std::string mMessage;
 
 public:
 
-  explicit Exception(std::string error) TL_NOEXCEPT
-    : mError(std::move(error)),
-      mFile(""),
-      mLine(-1),
-      mFunction("")
-  {
-  }
-
-  explicit Exception(std::string error, 
-                     const std::string &file, 
-                     int line, 
-                     std::string function) TL_NOEXCEPT
-    : mError(std::move(error)),
-      mLine(line),
-      mFunction(std::move(function))
-  {
-    mFile = Path(file).fileName().toString();
-    messagef();
-  }
-
-  ~Exception() TL_NOEXCEPT override = default;
-
-  /*!
-   * \brief Descripción del error
-   */
-  const char *what() const TL_NOEXCEPT override
-  {
-    return mMessage.c_str();
-  }
-
-  /*!
-   * \brief Fichero fuente donde se ha producido el error
-   */
-  std::string file() const
-  {
-    return mFile;
-  }
-
-  /*!
-   * \brief Nombre de la función donde se ha producido el error
-   */
-  std::string function() const
-  {
-    return mFunction;
-  }
-
-  /*!
-   * \brief Número de línea donde se ha producido el error
-   */
-  int line() const
-  {
-    return mLine;
-  }
-
-private:
-
-  void messagef()
-  {
-    char buf[1000];
-    if (mLine == -1) {
-      mMessage = mError;
-    } else {
-#if defined _MSC_VER
-      sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
-#else
-      snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
-#endif
-      mMessage = std::string(buf);
+    explicit Exception(std::string error) TL_NOEXCEPT
+      : mError(std::move(error)),
+        mFile(""),
+        mLine(-1),
+        mFunction("")
+    {
     }
-  }
+
+    explicit Exception(std::string error,
+                       const std::string &file,
+                       int line,
+                       std::string function) TL_NOEXCEPT
+      : mError(std::move(error)),
+        mLine(line),
+        mFunction(std::move(function))
+    {
+        mFile = Path(file).fileName().toString();
+        messagef();
+    }
+
+    ~Exception() TL_NOEXCEPT override = default;
+
+    /*!
+     * \brief Error description
+     */
+    const char *what() const TL_NOEXCEPT override
+    {
+        return mMessage.c_str();
+    }
+
+    /*!
+     * \brief Source file where the error occurred
+     */
+    std::string file() const
+    {
+        return mFile;
+    }
+
+    /*!
+     * \brief Name of the function where the error occurred
+     */
+    std::string function() const
+    {
+        return mFunction;
+    }
+
+    /*!
+     * \brief Line number where the error occurred
+     */
+    int line() const
+    {
+        return mLine;
+    }
 
 private:
 
-  std::string mError;
-  std::string mFile;
-  int mLine;
-  std::string mFunction;
-  std::string mMessage;
+    void messagef()
+    {
+        char buf[1000];
+        if (mLine == -1) {
+          mMessage = mError;
+        } else {
+#if defined _MSC_VER
+          sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
+#else
+          snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
+#endif
+          mMessage = std::string(buf);
+        }
+        
+        //if (mLine == -1) {
+        //    mMessage = mError;
+        //} else {
+        //    //mMessage = Message::format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
+        //}
+    }
+
+
 };
 
 
@@ -166,6 +173,7 @@ TL_EXPORT void printException(const std::exception &e, int level = 0);
  * \brief Macro para crear una excepción
  */
 #define TL_ERROR(...) tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_ERROR2(...) tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
 /*!
  * \brief Macro para lanzar una excepción
@@ -180,5 +188,3 @@ TL_EXPORT void printException(const std::exception &e, int level = 0);
 #define TL_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " __VA_ARGS__)
 
 /*! \} */ // end of core
-
-#endif // TL_CORE_EXCEPTION_H

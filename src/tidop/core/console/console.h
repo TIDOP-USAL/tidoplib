@@ -27,7 +27,7 @@
 
 #include "tidop/config.h"
 
-#include "tidop/core/messages.h"
+//#include "tidop/core/messages.h"
 
 #if CPP_VERSION >= 20
 #include <format>
@@ -382,7 +382,7 @@ private:
 
 
 
-class Console2
+class TL_EXPORT Console2
 {
 
 public:
@@ -493,7 +493,7 @@ private:
 
 private:
 
-    Console2(std::ostream &outstream = std::cout);
+    Console2(/*std::ostream &outstream = std::cout*/);
 
 public:
 
@@ -568,6 +568,7 @@ public:
 
     static Console2 &debug();
     static Console2 &info();
+    static Console2 &succes();
     static Console2 &warning();
     static Console2 &error();
     //static Console2 &clear(); // ¿PAra que?
@@ -591,6 +592,12 @@ public:
 #endif
 
 #if CPP_VERSION >= 17
+    static void succes(std::string_view message);
+#else
+    static void succes(const std::string &message);
+#endif
+
+#if CPP_VERSION >= 17
     static void error(std::string_view message);
 #else
     static void error(const std::string &message);
@@ -608,6 +615,12 @@ public:
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         Console2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void succes(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        Console2::succes(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     template<typename... Args>

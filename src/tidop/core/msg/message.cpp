@@ -22,88 +22,75 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#include "tidop/core/msg/message.h"
 
-
-#include "tidop/config.h"
-#include "tidop/core/defs.h"
-
-#include <iostream>
-
-#include "tidop/core/app.h"
-#include "tidop/core/console.h"
-#include "tidop/core/msg/buffer.h"
+//#include "tidop/core/defs.h"
+//#include "tidop/core/app.h"
+//#include "tidop/core/utils.h"
+//#include "tidop/core/chrono.h"
+//
+//#include <cstdarg>
+//#if defined WIN32
+//# include <windows.h>
+//#endif
+//#include <cstdio>
+//#include <iostream>
+//#include <fstream>
+//#include <cstring>
 
 
 namespace tl
 {
 
+bool Message::stopHandler = false;
+std::list<MessageHandler *> Message::messageHandlers;
 
-/*! \addtogroup core
- *  \{
- */
+//Message::Message(const char *message, ...)
+//{
+//  TL_TODO("revisar")
+//  try {
+//
+//    mDate = formatTimeToString("%d/%b/%Y %H:%M:%S");
+//
+//    char buf[500];
+//    memset(buf, 0, sizeof(buf));
+//    std::string aux(message);
+//    replaceString(&aux, "% ", "%% ");
+//    replaceString(&aux, "%(\\s)", "%%");
+//    va_list args;
+//    va_start(args, message);
+//#ifdef _MSC_VER
+//  vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+//#else
+//  vsnprintf(buf, sizeof(buf), aux.c_str(), args);
+//#endif
+//    va_end(args);
+//    mMessage = buf;
+//  } catch (...) {
+//
+//    // Por evitar un error en la constructora... 
+//  }
+//}
 
-/*! \defgroup Messages Gestión de mensajes
- *
- *  \{
- */
-
-class Message
-  : public std::ostream
+Message &Message::instance()
 {
-
-public:
-
-    Message();
-    ~Message();
-
-    Message &operator <<(Level level)
-    {
-      switch(level) {
-        case Level::debug:
-            this->stream() << "Debug:   ";
-            break;
-        case Level::info:
-            this->stream() << "Info:    ";
-            break;
-        case Level::warning:
-            App::console2().setForegroundColor(Console2::Color::magenta, Console2::Intensity::normal);
-            this->stream() << "Warning: ";
-            break;
-        case Level::error:
-            App::console2().setForegroundColor(Console2::Color::red, Console2::Intensity::normal);
-            this->stream() << "Error:   ";
-            break;
-        }
-
-      return *this;
-    }
-    
-    Message &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
-    {
-	    this->stream() << _endl;
-      App::console2().reset();
-	    return *this;
-    }
-    
-    std::ostream &stream()
-    {
-        return *this;
-    }
-};
-
-
-template<typename T>
-inline Message &operator <<(Message &message, T value)
-{
-	message.stream() << value;
-	return message;
+    static Message message;
+    return message;
 }
 
-/*! \} */ // end of Messages
+std::string Message::date() const
+{
+  return mDate;
+}
 
+//std::string Message::message() const
+//{
+//  return mMessage;
+//}
+//
+//void Message::setTimeLogFormat(const std::string &timeTemplate)
+//{
+//  sTimeLogFormat = timeTemplate;
+//}
 
-/*! \} */ // end of core
-
-
-} // End namespace tl
+} // End mamespace tl

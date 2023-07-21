@@ -25,6 +25,7 @@
 #include "tidop/core/console.h"
 
 #include "tidop/core/progress.h"
+#include "tidop/core/messages.h"
 
 #include <map>
 #include <iomanip>
@@ -442,8 +443,8 @@ void Console::update()
 
 std::mutex Console2::mtx;
 
-Console2::Console2(std::ostream &outstream)
-  : _stream(outstream) 
+Console2::Console2(/*std::ostream &outstream*/)
+  : _stream(std::cout/*outstream*/) 
 {
 #ifdef TL_OS_WINDOWS
     init(STD_OUTPUT_HANDLE);
@@ -616,6 +617,10 @@ Console2 &Console2::operator <<(Level level)
         setForegroundColor(Color::magenta, Intensity::normal);
         _stream << "Warning: ";
         break;
+    case Level::succes:
+        setForegroundColor(Color::green, Intensity::normal);
+        _stream << "Succes:  ";
+        break;
     case Level::error:
         setForegroundColor(Color::red, Intensity::normal);
         _stream << "Error:   ";
@@ -643,6 +648,13 @@ Console2 &Console2::info()
 {
     auto &console = Console2::instance();
     console << Level::info;
+    return console;
+}
+
+Console2 &Console2::succes()
+{
+    auto &console = Console2::instance();
+    console << Level::succes;
     return console;
 }
 
@@ -687,6 +699,17 @@ void Console2::info(const std::string &message)
     std::lock_guard<std::mutex> lck(Console2::mtx);
 
     Console2::instance() << Level::info << message << std::endl;
+}
+
+#if CPP_VERSION >= 17
+void Console2::succes(std::string_view message)
+#else
+void Console2::succes(const std::string &message)
+#endif
+{
+    std::lock_guard<std::mutex> lck(Console2::mtx);
+
+    Console2::instance() << Level::succes << message << std::endl;
 }
 
 #if CPP_VERSION >= 17

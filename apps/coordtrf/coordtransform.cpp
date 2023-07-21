@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
     Console &console = App::console();
     console.setTitle("Transform Example");
-    console.setMessageLevel(MessageLevel::msg_verbose);
+    console.setMessageLevel(MessageLevel::msg_all);
     App::messageManager().addListener(&console);
 
     auto arg_compute = std::make_shared<Argument_<bool>>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
