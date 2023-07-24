@@ -58,19 +58,19 @@ if(TL_HAVE_GEOSPATIAL)
     endif(HAVE_OPENCV)
    
     
-    if (UNIX)
-        target_link_libraries(${PROJECT_NAME} 
-                              -lpthread 
-                              -ldl 
-                              -lexpat 
-                              -ljasper 
-                              -ljpeg 
-                              -ltiff 
-                              -lpng 
-                              -lm 
-                              -lrt 
-                              -lpcre)
-    endif()
+    #if (UNIX)
+    #    target_link_libraries(${PROJECT_NAME} 
+    #                          -lpthread 
+    #                          -ldl 
+    #                          -lexpat 
+    #                          -ljasper 
+    #                          -ljpeg 
+    #                          -ltiff 
+    #                          -lpng 
+    #                          -lm 
+    #                          -lrt 
+    #                          -lpcre)
+    #endif()
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           OUTPUT_NAME ${PROJECT_NAME}
