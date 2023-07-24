@@ -202,7 +202,7 @@ cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" O
 
 # Activación/desactivación de otros componentes de la libreria
 
-OPTION (BUILD_APPS                    "Build Apps"             ON )
+OPTION (BUILD_APPS                    "Build Apps"             OFF)
 OPTION (BUILD_SHARED_LIBS             "Build Shared Libraries" OFF)
 OPTION (BUILD_TEST                    "Build test"             OFF)
 OPTION (BUILD_DOC                     "Build documentation"    OFF)
@@ -315,9 +315,9 @@ endif()
 #set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #OPTION (WITH_BOOST  "Include Boost support"                   ON)
-OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
-OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
-OPTION (WITH_PROJ4  "Include PROJ4 Support"                   OFF)
+OPTION (WITH_OPENCV "Include OpenCV support"                  ON)
+OPTION (WITH_GDAL   "Include GDAL Support"                    ON)
+OPTION (WITH_PROJ4  "Include PROJ4 Support"                   ON)
 cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
 cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
@@ -413,15 +413,15 @@ endif(WITH_GDAL)
 if(WITH_PROJ4)
 
   set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
-  find_package(PROJ4 QUIET)
+  find_package(PROJ QUIET)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
-  if(NOT PROJ4_FOUND)
+  if(NOT PROJ_FOUND)
     set(TL_HAVE_PROJ4 NO)
   else()
     set(TL_HAVE_PROJ4 YES)
-    include_directories(${PROJ4_INCLUDE_DIRS})
-    message(STATUS "  PROJ version: ${PROJ4_VERSION}")
+    #include_directories(${PROJ_INCLUDE_DIRS})
+    message(STATUS "  PROJ version: ${PROJ_VERSION}")
   endif()
 endif(WITH_PROJ4)
 
