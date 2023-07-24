@@ -100,6 +100,8 @@ cv::Mat LucidDescriptor::extract(const cv::Mat &img,
 #ifdef HAVE_OPENCV_XFEATURES2D 
         mLUCID->compute(img, keyPoints, descriptors);
 #else
+        tl::unusedParameter(img);
+        tl::unusedParameter(keyPoints);
         TL_COMPILER_WARNING("OpenCV not built with extra modules. Lucid Descriptor not supported")
         throw TL_ERROR("OpenCV not built with extra modules. Lucid Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D

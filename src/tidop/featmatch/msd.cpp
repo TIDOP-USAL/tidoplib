@@ -316,7 +316,8 @@ std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
         mMSD->detect(img, keyPoints, mask);
 
 #else
-
+    tl::unusedParameter(mask);
+    
         if (MsdProperties::affineMSD()) {
 
             float maxX = 0;
