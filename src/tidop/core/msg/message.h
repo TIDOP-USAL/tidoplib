@@ -54,6 +54,13 @@ namespace tl
 
 class TL_EXPORT Message
 {
+
+#if CPP_VERSION >= 17
+    using String = std::string_view;
+#else
+    using String = const std::string &;
+#endif
+
 private:
 
     Message(){}
@@ -103,7 +110,7 @@ public:
      * \return Mensaje
      */
     template<typename... Args>
-    static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    static constexpr std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
     }
@@ -117,81 +124,47 @@ public:
      */
     //static void setTimeLogFormat(const std::string &timeTemplate);
 
+    static void debug(String message);
+    static void info(String message);
+    static void success(String message);
+    static void warning(String message);
+    static void error(String message);
+
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (stopHandler) return;
-
-        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-
-        std::list<MessageHandler *> handlers = messageHandlers;
-        if (!stopHandler && !handlers.empty()) {
-            for (auto &handler : handlers) {
-              handler->debug(message);
-            }
-        }
+        auto message = format(s, std::forward<Args>(args)...);
+        Message::debug(message);
     }
 
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (stopHandler) return;
-
-        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-
-        std::list<MessageHandler *> handlers = messageHandlers;
-        if (!stopHandler && !handlers.empty()) {
-            for (auto &handler : handlers) {
-              handler->info(message);
-            }
-        }
+        auto message = format(s, std::forward<Args>(args)...);
+        Message::info(message);
     }
 
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (stopHandler) return;
-
-        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-
-        std::list<MessageHandler *> handlers = messageHandlers;
-        if (!stopHandler && !handlers.empty()) {
-            for (auto &handler : handlers) {
-              handler->warning(message);
-            }
-        }
+        auto message = format(s, std::forward<Args>(args)...);
+        Message::warning(message);
     }
 
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   
-        if (stopHandler) return;
-
-        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-
-        std::list<MessageHandler *> handlers = messageHandlers;
-        if (!stopHandler && !handlers.empty()) {
-            for (auto &handler : handlers) {
-              handler->success(message);
-            }
-        }
+        auto message = format(s, std::forward<Args>(args)...);
+        Message::success(message);
     }
 
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   
-        if (stopHandler) return;
-
-        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-
-        std::list<MessageHandler *> handlers = messageHandlers;
-        if (!stopHandler && !handlers.empty()) {
-            for (auto &handler : handlers) {
-              handler->error(message);
-            }
-        }
+        auto message = format(s, std::forward<Args>(args)...);
+        Message::error(message);
     }
 
 #endif

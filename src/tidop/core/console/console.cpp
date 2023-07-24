@@ -281,11 +281,7 @@ Console &Console::error()
 //    return console;
 //}
 
-#if CPP_VERSION >= 17
-void Console::debug(std::string_view message)
-#else
-void Console::debug(const std::string &message)
-#endif
+void Console::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -293,11 +289,7 @@ void Console::debug(const std::string &message)
         Console::instance() << MessageLevel::debug << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Console::info(std::string_view message)
-#else
-void Console::info(const std::string &message)
-#endif
+void Console::info(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -305,11 +297,7 @@ void Console::info(const std::string &message)
         Console::instance() << MessageLevel::info << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Console::success(std::string_view message)
-#else
-void Console::success(const std::string &message)
-#endif
+void Console::success(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -317,11 +305,7 @@ void Console::success(const std::string &message)
         Console::instance() << MessageLevel::success << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Console::warning(std::string_view message)
-#else
-void Console::warning(const std::string &message)
-#endif
+void Console::warning(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -329,11 +313,7 @@ void Console::warning(const std::string &message)
         Console::instance() << MessageLevel::warning << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Console::error(std::string_view message)
-#else
-void Console::error(const std::string &message)
-#endif
+void Console::error(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 

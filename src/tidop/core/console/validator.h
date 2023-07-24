@@ -165,8 +165,8 @@ public:
             stream << "Invalid value: '" << value << "'. Valid values are: ";
             for (const auto &values : mValues)
                 stream << values << " ";
-            std::string str = stream.str();
-            Message::error(str);
+            
+            Message::error(stream.str());
         }
 
         return valid;

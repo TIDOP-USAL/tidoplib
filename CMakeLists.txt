@@ -360,7 +360,9 @@ if(CMAKE_CXX_STANDARD LESS 20)
         set(TL_HAVE_FMT NO)
         add_compile_definitions("FORMAT_NAMESPACE=std::")
     endif()
-
+else()
+    set(TL_HAVE_FMT NO)
+    add_compile_definitions("FORMAT_NAMESPACE=std::")
 endif()
 
 ##########################################################################

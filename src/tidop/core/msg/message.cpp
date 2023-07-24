@@ -79,4 +79,64 @@ std::string Message::date() const
 //  sTimeLogFormat = timeTemplate;
 //}
 
+void Message::debug(String message)
+{
+    if (stopHandler) return;
+
+    std::list<MessageHandler *> handlers = messageHandlers;
+    if (!stopHandler && !handlers.empty()) {
+        for (auto &handler : handlers) {
+            handler->debug(message);
+        }
+    }
+}
+
+void Message::info(String message)
+{
+    if (stopHandler) return;
+
+    std::list<MessageHandler *> handlers = messageHandlers;
+    if (!stopHandler && !handlers.empty()) {
+        for (auto &handler : handlers) {
+            handler->info(message);
+        }
+    }
+}
+
+void Message::success(String message)
+{
+    if (stopHandler) return;
+
+    std::list<MessageHandler *> handlers = messageHandlers;
+    if (!stopHandler && !handlers.empty()) {
+        for (auto &handler : handlers) {
+            handler->success(message);
+        }
+    }
+}
+
+void Message::warning(String message)
+{
+    if (stopHandler) return;
+
+    std::list<MessageHandler *> handlers = messageHandlers;
+    if (!stopHandler && !handlers.empty()) {
+        for (auto &handler : handlers) {
+            handler->warning(message);
+        }
+    }
+}
+
+void Message::error(String message)
+{
+    if (stopHandler) return;
+
+    std::list<MessageHandler *> handlers = messageHandlers;
+    if (!stopHandler && !handlers.empty()) {
+        for (auto &handler : handlers) {
+            handler->error(message);
+        }
+    }
+}
+
 } // End mamespace tl

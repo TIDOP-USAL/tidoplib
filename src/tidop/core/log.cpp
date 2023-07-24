@@ -130,11 +130,7 @@ Log &Log::error()
     return log;
 }
 
-#if CPP_VERSION >= 17
-void Log::debug(std::string_view message)
-#else
-void Log::debug(const std::string &message)
-#endif
+void Log::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
@@ -142,11 +138,7 @@ void Log::debug(const std::string &message)
         Log::instance() << MessageLevel::debug << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Log::info(std::string_view message)
-#else
-void Log::info(const std::string &message)
-#endif
+void Log::info(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
@@ -154,11 +146,7 @@ void Log::info(const std::string &message)
         Log::instance() << MessageLevel::info << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Log::success(std::string_view message)
-#else
-void Log::success(const std::string &message)
-#endif
+void Log::success(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
@@ -166,11 +154,7 @@ void Log::success(const std::string &message)
         Log::instance() << MessageLevel::success << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Log::warning(std::string_view message)
-#else
-void Log::warning(const std::string &message)
-#endif
+void Log::warning(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
@@ -178,11 +162,7 @@ void Log::warning(const std::string &message)
         Log::instance() << MessageLevel::warning << message << std::endl;
 }
 
-#if CPP_VERSION >= 17
-void Log::error(std::string_view message)
-#else
-void Log::error(const std::string &message)
-#endif
+void Log::error(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
     

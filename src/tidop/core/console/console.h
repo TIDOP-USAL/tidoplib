@@ -190,35 +190,11 @@ public:
 
 public:
 
-#if CPP_VERSION >= 17
-    void debug(std::string_view message) override;
-#else
-    void debug(const std::string &message) override;
-#endif
-
-#if CPP_VERSION >= 17
-    void info(std::string_view message) override;
-#else
-    void info(const std::string &message) override;
-#endif
-
-#if CPP_VERSION >= 17
-    void success(std::string_view message) override;
-#else
-    void success(const std::string &message) override;
-#endif
-
-#if CPP_VERSION >= 17
-    void warning(std::string_view message) override;
-#else
-    void warning(const std::string &message) override;
-#endif
-
-#if CPP_VERSION >= 17
-    void error(std::string_view message) override;
-#else
-    void error(const std::string &message) override;
-#endif
+    void debug(String message) override;
+    void info(String message) override;
+    void success(String message) override;
+    void warning(String message) override;
+    void error(String message) override;
 
 public:
 
