@@ -56,6 +56,7 @@ if(BUILD_TL_MATH)
                              algebra/rotation_convert.h
                              algebra/axis_angle.h
                              algebra/matrix.h
+							 algebra/matrices.h
                              algebra/vector.h
                              algebra/svd.h
                              algebra/lu.h
