@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_SIFT_DETECTOR_DESCRIPTOR_H
-#define TL_FEATMATCH_SIFT_DETECTOR_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -53,44 +52,45 @@ constexpr auto sift_default_value_sigma{1.6};
 
 
 class TL_EXPORT SiftProperties
-  : public Sift
+    : public Sift
 {
+
+private:
+
+    int mFeaturesNumber{sift_default_value_features_number};
+    int mOctaveLayers{sift_default_value_octave_layers};
+    double mContrastThreshold{sift_default_value_contrast_threshold};
+    double mEdgeThreshold{sift_default_value_edge_threshold};
+    double mSigma{sift_default_value_sigma};
 
 public:
 
-  SiftProperties();
-  SiftProperties(const SiftProperties &siftProperties);
-  ~SiftProperties() override = default;
+    SiftProperties();
+    SiftProperties(const SiftProperties &siftProperties);
+    ~SiftProperties() override = default;
 
 // Sift interface
 
 public:
 
-  int featuresNumber() const override;
-  int octaveLayers() const override;
-  double contrastThreshold() const override;
-  double edgeThreshold() const override;
-  double sigma() const override;
-  void setFeaturesNumber(int featuresNumber) override;
-  void setOctaveLayers(int octaveLayers) override;
-  void setContrastThreshold(double contrastThreshold) override;
-  void setEdgeThreshold(double edgeThreshold) override;
-  void setSigma(double sigma) override;
+    int featuresNumber() const override;
+    int octaveLayers() const override;
+    double contrastThreshold() const override;
+    double edgeThreshold() const override;
+    double sigma() const override;
+    void setFeaturesNumber(int featuresNumber) override;
+    void setOctaveLayers(int octaveLayers) override;
+    void setContrastThreshold(double contrastThreshold) override;
+    void setEdgeThreshold(double edgeThreshold) override;
+    void setSigma(double sigma) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  int mFeaturesNumber{sift_default_value_features_number};
-  int mOctaveLayers{sift_default_value_octave_layers};
-  double mContrastThreshold{sift_default_value_contrast_threshold};
-  double mEdgeThreshold{sift_default_value_edge_threshold};
-  double mSigma{sift_default_value_sigma};
 };
 
 
@@ -104,58 +104,58 @@ class TL_EXPORT SiftDetectorDescriptor
     public DescriptorExtractor
 {
 
+private:
+
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
+    cv::Ptr <cv::SIFT>  mSift;
+#elif defined OPENCV_ENABLE_NONFREE && defined HAVE_OPENCV_XFEATURES2D
+    cv::Ptr<cv::xfeatures2d::SIFT> mSift;
+#endif // HAVE_OPENCV_XFEATURES2D
+
 public:
 
-  SiftDetectorDescriptor();
-  SiftDetectorDescriptor(const SiftDetectorDescriptor &siftDetectorDescriptor);
-  SiftDetectorDescriptor(int featuresNumber,
-                         int octaveLayers,
-                         double contrastThreshold,
-                         double edgeThreshold,
-                         double sigma);
-  ~SiftDetectorDescriptor() override = default;
+    SiftDetectorDescriptor();
+    SiftDetectorDescriptor(const SiftDetectorDescriptor &siftDetectorDescriptor);
+    SiftDetectorDescriptor(int featuresNumber,
+                           int octaveLayers,
+                           double contrastThreshold,
+                           double edgeThreshold,
+                           double sigma);
+    ~SiftDetectorDescriptor() override = default;
 
 private:
 
-  void update();
+    void update();
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                     cv::InputArray &mask = cv::noArray()) override;
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Sift interface
 
 public:
 
-  void setFeaturesNumber(int featuresNumber) override;
-  void setOctaveLayers(int octaveLayers) override;
-  void setContrastThreshold(double contrastThreshold) override;
-  void setEdgeThreshold(double edgeThreshold) override;
-  void setSigma(double sigma) override;
+    void setFeaturesNumber(int featuresNumber) override;
+    void setOctaveLayers(int octaveLayers) override;
+    void setContrastThreshold(double contrastThreshold) override;
+    void setEdgeThreshold(double edgeThreshold) override;
+    void setSigma(double sigma) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
-  cv::Ptr <cv::SIFT>  mSift;
-#elif defined OPENCV_ENABLE_NONFREE && defined HAVE_OPENCV_XFEATURES2D
-  cv::Ptr<cv::xfeatures2d::SIFT> mSift;
-#endif // HAVE_OPENCV_XFEATURES2D
+    void reset() override;
 
 };
 
@@ -165,4 +165,3 @@ private:
 
 } // namespace tl
 
-#endif // TL_FEATMATCH_SIFT_DETECTOR_DESCRIPTOR_H

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMAGE_H
-#define TL_IMAGE_H
+#pragma once
 
 #include "tidop/img/img.h"
 #include "tidop/geometry/size.h"
@@ -35,42 +34,41 @@ namespace tl
 class TL_EXPORT Image
 {
 
+private:
+
+    int mRows{0};
+    int mCols{0};
+    DataType mType{DataType::TL_8U};
+    int mChannels{1};
+    unsigned char *mData{nullptr};
+
 public:
 
-  Image();
-  Image(int rows, int cols, DataType type, int channels);
-  Image(int rows, int cols, DataType type, int channels, const graph::Color &color);
-  Image(int rows, int cols, DataType type, int channels, void *data);
-  Image(const SizeI &size, DataType type, int channels);
-  Image(const SizeI &size, DataType type, int channels, const graph::Color &color);
-  Image(const SizeI &size, DataType type, int channels, void *data);
-  Image(const Image &image);
-  ~Image();
+    Image();
+    Image(int rows, int cols, DataType type, int channels);
+    Image(int rows, int cols, DataType type, int channels, const graph::Color &color);
+    Image(int rows, int cols, DataType type, int channels, void *data);
+    Image(const SizeI &size, DataType type, int channels);
+    Image(const SizeI &size, DataType type, int channels, const graph::Color &color);
+    Image(const SizeI &size, DataType type, int channels, void *data);
+    Image(const Image &image);
+    ~Image();
 
-  Image& operator = (const Image &image);
+    Image &operator = (const Image &image);
 
-  int rows() const;
-  int cols() const;
-  DataType type() const;
-  int channels() const;
-  unsigned char *data();
-  int depth();
+    int rows() const;
+    int cols() const;
+    DataType type() const;
+    int channels() const;
+    unsigned char *data();
+    int depth();
 
-  bool isEmpty();
-
-private:
-
-  void init();
+    bool isEmpty();
 
 private:
 
-  int mRows{0};
-  int mCols{0};
-  DataType mType{DataType::TL_8U};
-  int mChannels{1};
-  unsigned char *mData{nullptr};
+    void init();
+
 };
 
 } // End namespace tl
-
-#endif // TL_IMAGE_H

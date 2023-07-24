@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_CHRONO_H
-#define TL_CORE_CHRONO_H
+#pragma once
 
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
@@ -54,7 +53,7 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  * uint64_t time_ini = tickCount();
  * ...
  * double time = (tickCount() - time_ini) / 1000.;
- * msgInfo("Time %f", time);
+ * Message::info("Time {}", time);
  * \endcode
  */
 TL_EXPORT uint64_t tickCount();
@@ -92,62 +91,63 @@ class TL_EXPORT Chrono
 {
 public:
 
-  /*!
-   * \brief Posibles estados del cronómetro
-   */
-  enum class Status {
-    start,      /*!< Inicio */
-    running,    /*!< Corriendo */
-    pause,      /*!< Pausado */
-    stopped,    /*!< Detenido */
-    finalized   /*!< Finalizado */
-  };
+    /*!
+     * \brief Posibles estados del cronómetro
+     */
+    enum class Status
+    {
+        start,      /*!< Inicio */
+        running,    /*!< Corriendo */
+        pause,      /*!< Pausado */
+        stopped,    /*!< Detenido */
+        finalized   /*!< Finalizado */
+    };
 
 public:
-
-  Chrono();
-  Chrono(std::string message);
-  virtual ~Chrono() = default;
-
-  TL_DISABLE_COPY(Chrono)
-  TL_DISABLE_MOVE(Chrono)
-
-  /*!
-   * \brief Pausa el cronómetro
-   * \return Tiempo transcurrido en segundos
-   */
-  double pause();
-
-  /*!
-   * \brief Reinicio del cronómetro
-   */
-  void reset();
-
-  /*!
-   * \brief Continua corriendo el cronómetro cuando estaba pausado
-   */
-  void resume();
-
-  /*!
-   * \brief Arranca el cronómetro
-   */
-  void run();
-
-  /*!
-   * \brief Detiene el cronómetro
-   * \return Tiempo transcurrido en segundos
-   */
-  double stop();
-
-  void setMessage(const std::string &message);
-
+  
+    Chrono();
+    Chrono(std::string message);
+    virtual ~Chrono() = default;
+  
+    TL_DISABLE_COPY(Chrono)
+    TL_DISABLE_MOVE(Chrono)
+  
+    /*!
+     * \brief Pausa el cronómetro
+     * \return Tiempo transcurrido en segundos
+     */
+    double pause();
+  
+    /*!
+     * \brief Reinicio del cronómetro
+     */
+    void reset();
+  
+    /*!
+     * \brief Continua corriendo el cronómetro cuando estaba pausado
+     */
+    void resume();
+  
+    /*!
+     * \brief Arranca el cronómetro
+     */
+    void run();
+  
+    /*!
+     * \brief Detiene el cronómetro
+     * \return Tiempo transcurrido en segundos
+     */
+    double stop();
+  
+    void setMessage(const std::string &message);
+  
 private:
 
-  std::chrono::steady_clock::time_point mTimeIni;
-  std::chrono::duration<double> mAccumulated{};
-  Status mStatus{Chrono::Status::start};
-  std::string mMessage;
-  bool bWriteMessage{false};
+    std::chrono::steady_clock::time_point mTimeIni;
+    std::chrono::duration<double> mAccumulated{};
+    Status mStatus{Chrono::Status::start};
+    std::string mMessage;
+    bool bWriteMessage{false};
 
 };
 
@@ -193,6 +193,3 @@ private:
 
 
 } // End namespace tl
-
-
-#endif // TL_CORE_CHRONO_H

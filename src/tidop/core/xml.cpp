@@ -26,7 +26,6 @@
 
 #ifdef TL_HAVE_GDAL
 
-#include "tidop/core/messages.h"
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 

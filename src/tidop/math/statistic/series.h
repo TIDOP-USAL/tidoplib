@@ -30,7 +30,7 @@
 #include <iomanip>
 
 #include <tidop/core/defs.h>
-#include <tidop/core/messages.h>
+#include <tidop/core/exception.h>
 
 namespace tl
 {
@@ -287,7 +287,7 @@ T Series<T>::operator[](const std::string &idx)
             }
 
         } catch (const std::invalid_argument &e) {
-            msgError("Invalid index", e.what());
+            printException(e);
         }
 
     } else {

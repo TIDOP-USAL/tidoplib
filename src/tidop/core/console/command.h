@@ -33,6 +33,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/console/argument.h"
 #include "tidop/core/licence.h"
+#include "tidop/core/msg/message.h"
 
 namespace tl
 {
@@ -324,11 +325,10 @@ protected:
         if(type != return_type) {
 
             TL_ASSERT(type != Argument::Type::arg_string,
-                      "Conversion from \"%s\" to \"%s\" is not allowed", arg->typeName().c_str(), ArgTraits<std::string>::type_name);
+                      "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
 
             if(type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
-                msgWarning("Conversion from \"%s\" to \"%s\", possible loss of data",
-                           arg->typeName().c_str(), ArgTraits<T>::type_name);
+                Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), ArgTraits<T>::type_name);
             }
 
         }
@@ -380,7 +380,7 @@ protected:
         Argument::Type return_type = ArgTraits<std::string>::property_type;
 
         TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
-                  "Conversion from \"%s\" to \"%s\" is not allowed", arg->typeName().c_str(), ArgTraits<std::string>::type_name);
+                  "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
 
         std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
 

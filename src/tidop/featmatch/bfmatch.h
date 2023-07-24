@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_BRUTE_FORCE_MATCHER_H
-#define TL_FEATMATCH_BRUTE_FORCE_MATCHER_H
+#pragma once
 
 #include "tidop/featmatch/matcher.h"
 
@@ -37,31 +36,31 @@ namespace tl
 {
 
 class TL_EXPORT BruteForceMatcherProperties
-  : public BruteForceMatcher
+    : public BruteForceMatcher
 {
+
+private:
+
+    Norm mNormType{BruteForceMatcherProperties::Norm::l2};
 
 public:
 
-  BruteForceMatcherProperties();
-  ~BruteForceMatcherProperties() override = default;
+    BruteForceMatcherProperties();
+    ~BruteForceMatcherProperties() override = default;
 
 // Match interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
 // BruteForceMatcher interface
 
 public:
 
-  Norm normType() const override;
-  void setNormType(Norm normType) override;
-
-private:
-
-  Norm mNormType{BruteForceMatcherProperties::Norm::l2};
+    Norm normType() const override;
+    void setNormType(Norm normType) override;
 
 };
 
@@ -74,45 +73,46 @@ class TL_EXPORT BruteForceMatcherImp
     public DescriptorMatcher
 {
 
+private:
+
+    cv::Ptr<cv::BFMatcher> mBFMatcher;
+
 public:
 
-  BruteForceMatcherImp();
-  explicit BruteForceMatcherImp(Norm normType);
-  ~BruteForceMatcherImp() override = default;
+    BruteForceMatcherImp();
+    explicit BruteForceMatcherImp(Norm normType);
+    ~BruteForceMatcherImp() override = default;
 
 private:
 
-  void update();
+    void update();
 
 // DescriptorMatcher interface
 
 public:
 
-  void match(const cv::Mat &queryDescriptors,
-             const cv::Mat &trainDescriptors,
-             std::vector<cv::DMatch> &matches,
-             const cv::Mat mask = cv::Mat()) override;
+    void match(const cv::Mat &queryDescriptors,
+               const cv::Mat &trainDescriptors,
+               std::vector<cv::DMatch> &matches,
+               const cv::Mat mask = cv::Mat()) override;
 
-  void match(const cv::Mat &queryDescriptors,
-             const cv::Mat &trainDescriptors,
-             std::vector<std::vector<cv::DMatch>> &matches,
-             const cv::Mat mask = cv::Mat()) override;
+    void match(const cv::Mat &queryDescriptors,
+               const cv::Mat &trainDescriptors,
+               std::vector<std::vector<cv::DMatch>> &matches,
+               const cv::Mat mask = cv::Mat()) override;
 
 // Match interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
 // BruteForceMatcher interface
 
 public:
 
-  void setNormType(Norm normType) override;
+    void setNormType(Norm normType) override;
 
-private:
-
-  cv::Ptr<cv::BFMatcher> mBFMatcher;
 };
 
 
@@ -126,49 +126,48 @@ class TL_EXPORT BruteForceMatcherCuda
     public DescriptorMatcher
 {
 
+private:
+
+    cv::Ptr<cv::cuda::DescriptorMatcher> mBFMatcher;
+
 public:
 
-  BruteForceMatcherCuda();
-  explicit BruteForceMatcherCuda(Norm normType);
-  ~BruteForceMatcherCuda() override = default;
+    BruteForceMatcherCuda();
+    explicit BruteForceMatcherCuda(Norm normType);
+    ~BruteForceMatcherCuda() override = default;
 
 private:
 
-  void update();
+    void update();
 
 // DescriptorMatcher interface
 
 public:
 
-  void match(const cv::Mat &queryDescriptors,
-             const cv::Mat &trainDescriptors,
-             std::vector<cv::DMatch> &matches,
-             const cv::Mat mask = cv::Mat()) override;
+    void match(const cv::Mat &queryDescriptors,
+               const cv::Mat &trainDescriptors,
+               std::vector<cv::DMatch> &matches,
+               const cv::Mat mask = cv::Mat()) override;
 
-  void match(const cv::Mat &queryDescriptors,
-             const cv::Mat &trainDescriptors,
-             std::vector<std::vector<cv::DMatch>> &matches,
-             const cv::Mat mask = cv::Mat()) override;
+    void match(const cv::Mat &queryDescriptors,
+               const cv::Mat &trainDescriptors,
+               std::vector<std::vector<cv::DMatch>> &matches,
+               const cv::Mat mask = cv::Mat()) override;
 
 // Match interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-// IBruteForceMatcher interface
+// BruteForceMatcher interface
 
 public:
 
-  void setNormType(Norm normType) override;
+    void setNormType(Norm normType) override;
 
-private:
-
-  cv::Ptr<cv::cuda::DescriptorMatcher> mBFMatcher;
 };
 
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_BRUTE_FORCE_MATCHER_H

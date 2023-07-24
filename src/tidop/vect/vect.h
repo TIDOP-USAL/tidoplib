@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECT_H
-#define TL_VECT_H
+#pragma once
 
 #include "tidop/core/defs.h"
 
@@ -45,6 +44,3 @@ TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
 
 } // End namespace tl
 
-
-
-#endif // TL_VECT_H

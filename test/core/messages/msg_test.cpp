@@ -141,7 +141,7 @@ struct MessageTest
 BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 {
 
-    //Console2 &console = App::console2();
+    //Console &console = App::console();
     //App::messageHandler().subscribe(console.rdbuf());
 
     //std::ofstream log("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt", std::ofstream::app);
@@ -161,10 +161,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     //chrono.run();
 
     //for (size_t i = 0; i < 100; i++) {
-    //  console << Level::debug << "Mensaje de depuración por consola" << std::endl;
-    //  console << Level::info << "Mensaje de información por consola" << std::endl;
-    //  console << Level::warning << "Mensaje de warning por consola" << std::endl;
-    //  console << Level::error << "Mensaje de error por consola" << std::endl;
+    //  console << MessageLevel::debug << "Mensaje de depuración por consola" << std::endl;
+    //  console << MessageLevel::info << "Mensaje de información por consola" << std::endl;
+    //  console << MessageLevel::warning << "Mensaje de warning por consola" << std::endl;
+    //  console << MessageLevel::error << "Mensaje de error por consola" << std::endl;
     //}
 
     //chrono.stop();
@@ -174,10 +174,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     //chrono.run();
 
     //for (size_t i = 0; i < 100; i++) {
-    //  Console2::debug() << "Mensaje de depuración por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-    //  Console2::info() << "Mensaje de información por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-    //  Console2::warning() << "Mensaje de warning por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-    //  Console2::error() << "Mensaje de error por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console::debug() << "Mensaje de depuración por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console::info() << "Mensaje de información por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console::warning() << "Mensaje de warning por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+    //  Console::error() << "Mensaje de error por consola" << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
     //}
 
     //chrono.stop();
@@ -187,11 +187,11 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 
     auto f1 = []() {
         for (size_t i = 0; i < 100; i++) {
-            Console2::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Console2::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Console2::succes("Mensaje de exito por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Console2::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Console2::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console::success("Mensaje de exito por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Console::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
         }
     };
 
@@ -201,14 +201,18 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
     //chrono.setMessage("App::message()");
     //chrono.run();
 
-    App::log2().open("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt");
+    App::log().open("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt");
+
+    auto &message = Message::instance();
+    message.addMessageHandler(&Console::instance());
+    message.addMessageHandler(&Log::instance());
 
     auto f2 = []() {
         for (size_t i = 0; i < 100; i++) {
-            //App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
-            //App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-            //App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-            //App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+            //App::message() << MessageLevel::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
+            //App::message() << MessageLevel::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+            //App::message() << MessageLevel::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+            //App::message() << MessageLevel::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
 
             //App::debug("Mensaje de depuración por consola {}, {}, {}", 1, 2.3, 3.5f);
             ////App::pauseMessages();
@@ -217,10 +221,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
             //App::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
             //App::succes("Mensaje de éxito por consola {}, {}, {}", 1, 2.3, 3.5f);
             //App::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Message::info("Mensaje de información por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Message::warning("Mensaje de warning por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Message::succes("Mensaje de éxito por consola {}, {}, {}", 1, 2.3, 3.5f);
-            Message::error("Mensaje de error por consola {}, {}, {}", 1, 2.3, 3.5f);
+            Message::info("Mensaje de información {}, {}, {}", 1, 2.3, 3.5f);
+            Message::warning("Mensaje de warning {}, {}, {}", 1, 2.3, 3.5f);
+            Message::success("Mensaje de éxito {}, {}, {}", 1, 2.3, 3.5f);
+            Message::error("Mensaje de error {}, {}, {}", 1, 2.3, 3.5f);
         }
     };
 
@@ -379,7 +383,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 //BOOST_FIXTURE_TEST_CASE(message_3, MessageTest)
 //{
 //
-//    Console2 &console = App::console2();
+//    Console &console = App::console();
 //    Message3::instance().subscribe(&console.stream());
 //
 //    std::ofstream log("D:\\dev\\sources\\tidoplib\\test\\core\\messages\\log.txt", std::ofstream::app);
@@ -403,10 +407,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MessageTest)
 ////    //chrono.run();
 ////
 ////    //for (size_t i = 0; i < 100; i++) {
-////    //  App::message() << Level::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
-////    //  App::message() << Level::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-////    //  App::message() << Level::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
-////    //  App::message() << Level::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+////    //  App::message() << MessageLevel::debug << "Mensaje de depuración por consola: " << 1 << " " << 2.3 << " " << 3.5f << std::endl;
+////    //  App::message() << MessageLevel::info << "Mensaje de información por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+////    //  App::message() << MessageLevel::warning << "Mensaje de warning por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
+////    //  App::message() << MessageLevel::error << "Mensaje de error por consola: " << 1 << " " << 2.3 << " " << 3.5f  << std::endl;
 ////    //}
 //
 //    //chrono.stop();

@@ -24,8 +24,7 @@
 
 /* Archivo para definir macros y constantes de tipo general */
 
-#ifndef TL_CORE_DEFS_H
-#define TL_CORE_DEFS_H
+#pragma once
 
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
@@ -437,5 +436,3 @@ constexpr auto unusedParameter(T param)
 #define TL_ROUND_TO_INT(n)  tl::roundToInteger(n)
 
 /*! \} */ // end of core
-
-#endif // TL_CORE_DEFS_H

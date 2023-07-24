@@ -25,7 +25,6 @@
 #include "tidop/core/app.h"
 
 #include "tidop/core/console/console.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/msg/handler.h"
 #include "tidop/core/log.h"
 
@@ -38,10 +37,7 @@
 namespace tl
 {
 
-bool App::stopHandler = false;
-
 App::App()
-  : messageHandlers(0)
 {
     init();
 }
@@ -75,62 +71,19 @@ std::string App::version() const
     return std::string();
 }
 
-void App::addMessageHandler(MessageHandler *messageHandler)
-{
-    // Se comprueba que no este añadido
-    bool added = false;
-    for (auto handler : messageHandlers) {
-        if (handler == messageHandler) {
-            added = true;
-            break;
-        }
-    }
-
-    if (!added)
-        messageHandlers.push_back(messageHandler);
-}
-
-void App::pauseMessages()
-{
-    stopHandler = true;
-}
-
-void App::resumeMessages()
-{
-    stopHandler = false;
-}
-
 Console &App::console()
 {
-    static Console console;
-    return console;
-}
-
-Console2 &App::console2()
-{
-    return Console2::instance();
+    return Console::instance();
 }
 
 Log &App::log()
 {
-    static Log log;
-    return log;
-}
-
-Log2 &App::log2()
-{
-    return Log2::instance();
-}
-
-MessageManager &App::messageManager()
-{
-    return MessageManager::instance();
+    return Log::instance();
 }
 
 void App::init()
 {
-  // The console is initialised
-  Console2::instance();
+    Console::instance();
 }
 
 } // namespace tl

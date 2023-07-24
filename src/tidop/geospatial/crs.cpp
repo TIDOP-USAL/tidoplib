@@ -26,7 +26,7 @@
 
 #if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 TL_DISABLE_WARNINGS
 #include "ogr_spatialref.h"
@@ -116,9 +116,9 @@ std::string Crs::toProjFormat() const
         s_prj = c_prj;
 
     } catch (std::exception &e) {
-        msgError(e.what());
+        printException(e);
     } catch (...) {
-        msgError("Unknow exception");
+        Message::error("Unknow exception");
     }
 
     CPLFree(c_prj);
@@ -132,13 +132,13 @@ void Crs::fromProjFormat(const std::string &proj)
 
         OGRErr err = mCrs->importFromProj4(proj.c_str());
         if (err != 0) {
-            msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+            Message::warning("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
         }
 
     } catch (std::exception &e) {
-        msgError(e.what());
+        printException(e);
     } catch (...) {
-        msgError("Unknow exception");
+        Message::error("Unknow exception");
     }
 }
 
@@ -158,13 +158,13 @@ void Crs::fromWktFormat(const std::string &wkt)
         OGRErr err = mCrs->importFromWkt(wkt.c_str());
 
         if (err != 0) {
-            msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+            Message::warning("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
         }
 
     } catch (std::exception &e) {
-        msgError(e.what());
+        printException(e);
     } catch (...) {
-        msgError("Unknow exception");
+        Message::error("Unknow exception");
     }
 }
 
@@ -196,16 +196,16 @@ void Crs::initFromEpsg()
         if (mEpsg.size() <= 5) return;
         OGRErr err = mCrs->importFromEPSG(std::stoi(mEpsg.substr(5)));
         if (err != 0) {
-            msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+            Message::warning("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
         } else {
             initGrid();
             initGeoid();
         }
 
     } catch (std::exception &e) {
-        msgError(e.what());
+        printException(e);
     } catch (...) {
-        msgError("Unknow exception");
+        Message::error("Unknow exception");
     }
 }
 

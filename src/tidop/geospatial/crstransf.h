@@ -30,7 +30,6 @@
 #include <memory>
 
 #include "tidop/geospatial/crs.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/transform.h"

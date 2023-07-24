@@ -1150,4 +1150,4 @@ void ColorHSL::adjustRangeLightness()
 
 } // fin namespace graph
 
-} // End namespace TL
+} // End namespace tl

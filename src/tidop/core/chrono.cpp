@@ -24,7 +24,7 @@
 
 #include "tidop/core/chrono.h"
 
-#include "tidop/core/messages.h"
+#include "tidop/core/msg/message.h"
 
 #include <iomanip>
 #include <sstream>
@@ -35,21 +35,21 @@ namespace tl
 
 std::string formatTimeToString(const std::string &templ)
 {
-  auto now = std::chrono::system_clock::now();
-  auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-  std::stringstream ss;
-  ss << std::put_time(std::localtime(&in_time_t), templ.c_str());
-  return ss.str();
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), templ.c_str());
+    return ss.str();
 }
 
 
 uint64_t tickCount()
 {
 #if defined _MSC_VER
-  return GetTickCount64();
+    return GetTickCount64();
 #else
-  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 #endif
 }
 
@@ -68,59 +68,59 @@ Chrono::Chrono(std::string message)
 
 double Chrono::pause()
 {
-  if (mStatus == Status::running) {
-    mAccumulated += std::chrono::steady_clock::now() - mTimeIni;
-    mStatus = Status::pause;
-  }
-  return mAccumulated.count();
+    if (mStatus == Status::running) {
+        mAccumulated += std::chrono::steady_clock::now() - mTimeIni;
+        mStatus = Status::pause;
+    }
+    return mAccumulated.count();
 }
 
 void Chrono::reset()
 {
-  mAccumulated = std::chrono::seconds::zero();
-  mStatus = Status::start;
-  mMessage = "";
+    mAccumulated = std::chrono::seconds::zero();
+    mStatus = Status::start;
+    mMessage = "";
 }
 
 void Chrono::resume()
 {
-  if (mStatus == Status::pause) {
-    mTimeIni = std::chrono::steady_clock::now();
-    mStatus = Status::running;
-  }
+    if (mStatus == Status::pause) {
+        mTimeIni = std::chrono::steady_clock::now();
+        mStatus = Status::running;
+    }
 }
 
 void Chrono::run()
 {
-  mTimeIni = std::chrono::steady_clock::now();
-  mAccumulated = std::chrono::seconds::zero();
-  mStatus = Status::running;
+    mTimeIni = std::chrono::steady_clock::now();
+    mAccumulated = std::chrono::seconds::zero();
+    mStatus = Status::running;
 }
 
 double Chrono::stop()
 {
-  std::chrono::duration<double> time = mAccumulated;
+    std::chrono::duration<double> time = mAccumulated;
 
-  if (mStatus == Status::running) {
-    time += std::chrono::steady_clock::now() - mTimeIni;
-    mStatus = Status::stopped;
-  } else if (mStatus == Status::pause) {
-    mStatus = Status::stopped;
-  } else{
-    time = std::chrono::seconds::zero();
-  }
+    if (mStatus == Status::running) {
+        time += std::chrono::steady_clock::now() - mTimeIni;
+        mStatus = Status::stopped;
+    } else if (mStatus == Status::pause) {
+        mStatus = Status::stopped;
+    } else {
+        time = std::chrono::seconds::zero();
+    }
 
-  if (bWriteMessage){
-    msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time.count());
-  }
+    if (bWriteMessage) {
+        Message::info("{} [Time: {} seconds]", mMessage, time.count());
+    }
 
-  return time.count();
+    return time.count();
 }
 
 void Chrono::setMessage(const std::string &message)
 {
-  mMessage = message;
-  bWriteMessage = true;
+    mMessage = message;
+    bWriteMessage = true;
 }
 
 
@@ -130,12 +130,12 @@ void Chrono::setMessage(const std::string &message)
 ChronoAuto::ChronoAuto(const std::string &message)
   : Chrono(message)
 {
-  run();
+    run();
 }
 
 ChronoAuto::~ChronoAuto()
 {
-  stop();
+    stop();
 }
 
 

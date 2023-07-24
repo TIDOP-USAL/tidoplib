@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GRAPHIC_ENTITIES_LINESTRING_H
-#define TL_GRAPHIC_ENTITIES_LINESTRING_H
+#pragma once
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/linestring.h"
@@ -48,49 +47,49 @@ class TL_EXPORT GLineString
 {
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  GLineString();
+    /*!
+     * \brief Constructor por defecto
+     */
+    GLineString();
 
-  /*!
-   * \brief Constructora a partir de una polilínea
-   * Representa una polilinea sin estilo
-   * \param[in] lineString Objeto de la clase LineString
-   * \see LineString
-   */
-  GLineString(const LineString<Point<double>> &lineString);
+    /*!
+     * \brief Constructora a partir de una polilínea
+     * Representa una polilinea sin estilo
+     * \param[in] lineString Objeto de la clase LineString
+     * \see LineString
+     */
+    GLineString(const LineString<Point<double>> &lineString);
 
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] lineString Objeto que se nueve
-   */
-  GLineString(GLineString &&lineString) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] lineString Objeto que se nueve
+     */
+    GLineString(GLineString &&lineString) TL_NOEXCEPT;
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] lineString Objeto que se copia
-   */
-  GLineString(const GLineString &lineString);
+    /*!
+     * \brief Constructor de copia
+     * \param[in] lineString Objeto que se copia
+     */
+    GLineString(const GLineString &lineString);
 
-  ~GLineString() override;
+    ~GLineString() override;
 
-  /*!
-   * \brief Operador de asignación
-   * \param[in] gLineString Objeto GLineString que se copia
-   * \return Referencia al objeto
-   */
-  GLineString &operator = (const GLineString &gLineString);
-  
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] gLineString Objeto GLineString que se mueve
-   * \return Referencia al objeto
-   */
-  GLineString &operator = (GLineString &&gLineString) TL_NOEXCEPT;
+    /*!
+     * \brief Operador de asignación
+     * \param[in] gLineString Objeto GLineString que se copia
+     * \return Referencia al objeto
+     */
+    GLineString &operator = (const GLineString &gLineString);
 
-  bool isMultiEntity() const override;
-  bool isSimpleEntity() const override;
+    /*!
+     * \brief Operador de asignación de movimiento
+     * \param[in] gLineString Objeto GLineString que se mueve
+     * \return Referencia al objeto
+     */
+    GLineString &operator = (GLineString &&gLineString) TL_NOEXCEPT;
+
+    bool isMultiEntity() const override;
+    bool isSimpleEntity() const override;
 
 };
 
@@ -104,158 +103,158 @@ class TL_EXPORT GLineString3D
 {
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  GLineString3D();
+    /*!
+     * \brief Constructor por defecto
+     */
+    GLineString3D();
 
-  /*!
-   * \brief Constructora a partir de una polilinea 3D
-   * Representa una polilinea 3D sin estilo
-   * \param[in] gLineString3D Objeto de la clase LineString3D
-   * \see LineString3D
-   */
-  GLineString3D(const LineString3D<Point3<double>> &gLineString3D);
+    /*!
+     * \brief Constructora a partir de una polilinea 3D
+     * Representa una polilinea 3D sin estilo
+     * \param[in] gLineString3D Objeto de la clase LineString3D
+     * \see LineString3D
+     */
+    GLineString3D(const LineString3D<Point3<double>> &gLineString3D);
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] gLineString3D Objeto que se copia
-   */
-  GLineString3D(const GLineString3D &gLineString3D);
-    
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] gLineString3D Objeto que se mueve
-   */
-  GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de copia
+     * \param[in] gLineString3D Objeto que se copia
+     */
+    GLineString3D(const GLineString3D &gLineString3D);
 
-  ~GLineString3D() override;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] gLineString3D Objeto que se mueve
+     */
+    GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT;
 
-  /*!
-   * \brief Operador de asignación
-   * \param[in] gLineString Objeto GLineString3D que se copia
-   * \return Referencia al objeto
-   */
-  GLineString3D &operator = (const GLineString3D &gLineString);
-    
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] gLineString Objeto GLineString3D que se mueve
-   * \return Referencia al objeto
-   */
-  GLineString3D &operator = (GLineString3D &&gLineString) TL_NOEXCEPT;
+    ~GLineString3D() override;
 
-  bool isMultiEntity() const override;
-  bool isSimpleEntity() const override;
+    /*!
+     * \brief Operador de asignación
+     * \param[in] gLineString Objeto GLineString3D que se copia
+     * \return Referencia al objeto
+     */
+    GLineString3D &operator = (const GLineString3D &gLineString);
+
+    /*!
+     * \brief Operador de asignación de movimiento
+     * \param[in] gLineString Objeto GLineString3D que se mueve
+     * \return Referencia al objeto
+     */
+    GLineString3D &operator = (GLineString3D &&gLineString) TL_NOEXCEPT;
+
+    bool isMultiEntity() const override;
+    bool isSimpleEntity() const override;
 };
 
 
 /*!
  * \brief Clase gráfica multi-polilinea
  */
-class TL_EXPORT GMultiLineString 
-  : public MultiLineString<Point<double>>, 
+class TL_EXPORT GMultiLineString
+  : public MultiLineString<Point<double>>,
     public GraphicEntity
 {
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  GMultiLineString();
+    /*!
+     * \brief Constructor por defecto
+     */
+    GMultiLineString();
 
-  /*!
-   * \brief Constructora a partir de una multi-polilinea
-   * Representa una multi-polilinea sin estilo
-   * \param[in] multiLineString Objeto de la clase MultiLineString
-   * \see MultiLineString
-   */
-  GMultiLineString(const MultiLineString<Point<double>> &multiLineString);
+    /*!
+     * \brief Constructora a partir de una multi-polilinea
+     * Representa una multi-polilinea sin estilo
+     * \param[in] multiLineString Objeto de la clase MultiLineString
+     * \see MultiLineString
+     */
+    GMultiLineString(const MultiLineString<Point<double>> &multiLineString);
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] gMultiLineString Objeto que se copia
-   */
-  GMultiLineString(const GMultiLineString &gMultiLineString);
-    
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] gMultiLineString Objeto que se mueve
-   */
-  GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de copia
+     * \param[in] gMultiLineString Objeto que se copia
+     */
+    GMultiLineString(const GMultiLineString &gMultiLineString);
 
-  ~GMultiLineString() override;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] gMultiLineString Objeto que se mueve
+     */
+    GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT;
 
-  /*!
-   * \brief Operador de asignación
-   * \param[in] gMultiLineString Objeto GMultiLineString que se copia
-   * \return Referencia al objeto
-   */
-  GMultiLineString &operator = (const GMultiLineString &gMultiLineString);
+    ~GMultiLineString() override;
 
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] gMultiLineString Objeto GMultiLineString que se mueve
-   * \return Referencia al objeto
-   */
-  GMultiLineString &operator = (GMultiLineString &&gMultiLineString) TL_NOEXCEPT;
+    /*!
+     * \brief Operador de asignación
+     * \param[in] gMultiLineString Objeto GMultiLineString que se copia
+     * \return Referencia al objeto
+     */
+    GMultiLineString &operator = (const GMultiLineString &gMultiLineString);
 
-  bool isMultiEntity() const override;
-  bool isSimpleEntity() const override;
+    /*!
+     * \brief Operador de asignación de movimiento
+     * \param[in] gMultiLineString Objeto GMultiLineString que se mueve
+     * \return Referencia al objeto
+     */
+    GMultiLineString &operator = (GMultiLineString &&gMultiLineString) TL_NOEXCEPT;
+
+    bool isMultiEntity() const override;
+    bool isSimpleEntity() const override;
 };
 
 /*!
  * \brief Clase gráfica multi-polilinea 3D
  */
-class TL_EXPORT GMultiLineString3D 
+class TL_EXPORT GMultiLineString3D
   : public MultiLineString3D<Point3<double>>,
     public GraphicEntity
 {
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  GMultiLineString3D();
+    /*!
+     * \brief Constructor por defecto
+     */
+    GMultiLineString3D();
 
-  /*!
-   * \brief Constructora a partir de una multi-polilinea 3D
-   * Representa una multi-polilinea 3D sin estilo
-   * \param[in] gMultiLineString3D Objeto de la clase MultiLineString3D
-   * \see MultiLineString3D
-   */
-  GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D);
+    /*!
+     * \brief Constructora a partir de una multi-polilinea 3D
+     * Representa una multi-polilinea 3D sin estilo
+     * \param[in] gMultiLineString3D Objeto de la clase MultiLineString3D
+     * \see MultiLineString3D
+     */
+    GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D);
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] gMultiLineString3D Objeto que se copia
-   */
-  GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D);
-   
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] gMultiLineString3D Objeto que se mueve
-   */   
-  GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de copia
+     * \param[in] gMultiLineString3D Objeto que se copia
+     */
+    GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D);
 
-  ~GMultiLineString3D() override;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] gMultiLineString3D Objeto que se mueve
+     */
+    GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT;
 
-  /*!
-   * \brief Operador de asignación
-   * \param[in] gMultiLineString3D Objeto GMultiLineString3D que se copia
-   * \return Referencia al objeto
-   */
-  GMultiLineString3D &operator = (const GMultiLineString3D &gMultiLineString3D);
+    ~GMultiLineString3D() override;
 
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] gMultiLineString3D Objeto GMultiLineString3D que se asigna
-   * \return Referencia al objeto
-   */
-  GMultiLineString3D &operator = (GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT;
+    /*!
+     * \brief Operador de asignación
+     * \param[in] gMultiLineString3D Objeto GMultiLineString3D que se copia
+     * \return Referencia al objeto
+     */
+    GMultiLineString3D &operator = (const GMultiLineString3D &gMultiLineString3D);
 
-  bool isMultiEntity() const override;
-  bool isSimpleEntity() const override;
+    /*!
+     * \brief Operador de asignación de movimiento
+     * \param[in] gMultiLineString3D Objeto GMultiLineString3D que se asigna
+     * \return Referencia al objeto
+     */
+    GMultiLineString3D &operator = (GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT;
+
+    bool isMultiEntity() const override;
+    bool isSimpleEntity() const override;
 
 };
 
@@ -263,6 +262,4 @@ public:
 
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
-
-#endif // TL_GRAPHIC_ENTITIES_LINESTRING_H
+} // Fin namespace tl

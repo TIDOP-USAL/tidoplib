@@ -29,12 +29,12 @@ namespace tl
 {
 
 namespace graph
-{ 
+{
 
 /* ---------------------------------------------------------------------------------- */
 
 Pen::Pen()
-  : mColor(0),
+    : mColor(0),
     mWidth(1),
     mPattern(""),
     mName(Name::solid),
@@ -46,7 +46,7 @@ Pen::Pen()
 }
 
 Pen::Pen(const Pen &pen)
-  : mColor(pen.mColor),
+    : mColor(pen.mColor),
     mWidth(pen.mWidth),
     mPattern(pen.mPattern),
     mName(pen.mName),
@@ -63,97 +63,97 @@ Pen::~Pen()
 
 Color Pen::color() const
 {
-  return mColor;
+    return mColor;
 }
 
 void Pen::setColor(const Color &color)
 {
-  mColor = color;
+    mColor = color;
 }
 
 uint8_t Pen::width() const
 {
-  return mWidth;
+    return mWidth;
 }
 
-void Pen::setWidth(uint8_t width) 
+void Pen::setWidth(uint8_t width)
 {
-  mWidth = width;
+    mWidth = width;
 }
 
 std::string Pen::pattern() const
 {
-  return mPattern;
+    return mPattern;
 }
 
-void Pen::setPattern(std::string pattern) 
+void Pen::setPattern(std::string pattern)
 {
-  mPattern = pattern;
+    mPattern = pattern;
 }
 
 Pen::Name Pen::name() const
 {
-  return mName;
+    return mName;
 }
 
-void Pen::setName(Name name) 
+void Pen::setName(Name name)
 {
-  mName = name;
+    mName = name;
 }
 
 Pen::Cap Pen::cap() const
 {
-  return mCap;
+    return mCap;
 }
 
-void Pen::setCap(Cap cap) 
+void Pen::setCap(Cap cap)
 {
-  mCap = cap;
+    mCap = cap;
 }
 
 Pen::Join Pen::join() const
 {
-  return mJoin;
+    return mJoin;
 }
 
-void Pen::setJoin(Join join) 
+void Pen::setJoin(Join join)
 {
-  mJoin = join;
+    mJoin = join;
 }
 
 int32_t Pen::perpendicularOffset() const
 {
-  return mPerpendicularOffset;
+    return mPerpendicularOffset;
 }
 
 void Pen::setPerpendicularOffset(int32_t perpendicularoffset)
 {
-  mPerpendicularOffset = perpendicularoffset;
+    mPerpendicularOffset = perpendicularoffset;
 }
 
 uint32_t Pen::priorityLevel() const
 {
-  return mPriorityLevel;
+    return mPriorityLevel;
 }
 
-void Pen::setPriorityLevel(uint32_t priorityLevel) 
+void Pen::setPriorityLevel(uint32_t priorityLevel)
 {
-  mPriorityLevel = priorityLevel;
+    mPriorityLevel = priorityLevel;
 }
 
 Pen &Pen::operator = (const Pen &stylePen)
 {
-  if (this != &stylePen) {
-    mColor = stylePen.mColor;
-    mWidth = stylePen.mWidth;
-    mPattern = stylePen.mPattern;
-    mName = stylePen.mName;
-    mCap = stylePen.mCap;
-    mJoin = stylePen.mJoin;
-    mPerpendicularOffset = stylePen.mPerpendicularOffset;
-    mPriorityLevel = stylePen.mPriorityLevel;
-  }
-  return *this;
+    if (this != &stylePen) {
+        mColor = stylePen.mColor;
+        mWidth = stylePen.mWidth;
+        mPattern = stylePen.mPattern;
+        mName = stylePen.mName;
+        mCap = stylePen.mCap;
+        mJoin = stylePen.mJoin;
+        mPerpendicularOffset = stylePen.mPerpendicularOffset;
+        mPriorityLevel = stylePen.mPriorityLevel;
+    }
+    return *this;
 }
 
 
@@ -168,7 +168,7 @@ Brush::Brush()
     mScalingFactor(1.),
     mPriorityLevel(0)
 {
-  mSpacing[0] = mSpacing[1] = 0.;
+    mSpacing[0] = mSpacing[1] = 0.;
 }
 
 Brush::Brush(const Brush &brush)
@@ -188,92 +188,92 @@ Brush::~Brush()
 
 Color Brush::foregroundColor() const
 {
-  return mForeColor;
+    return mForeColor;
 }
 
 void Brush::setForegroundColor(Color foregroundColor)
 {
-  mForeColor = foregroundColor;
+    mForeColor = foregroundColor;
 }
 
 Color Brush::backgroundColor() const
 {
-  return mBackColor;
+    return mBackColor;
 }
 
 void Brush::setBackgroundColor(Color backgroundColor)
-{ 
-  mBackColor = backgroundColor;
+{
+    mBackColor = backgroundColor;
 }
 
 Brush::Name Brush::name() const
 {
-  return mName;
+    return mName;
 }
 
 void Brush::setName(Name name)
 {
-  mName = name;
+    mName = name;
 }
 
 double Brush::angle() const
 {
-  return mAngle;
+    return mAngle;
 }
 
 void Brush::setAngle(double angle)
 {
-  mAngle = angle;
+    mAngle = angle;
 }
 
 double Brush::scalingFactor() const
 {
-  return mScalingFactor;
+    return mScalingFactor;
 }
 
-void Brush::setScalingFactor(double scalingFactor) 
+void Brush::setScalingFactor(double scalingFactor)
 {
-  mScalingFactor = scalingFactor;
+    mScalingFactor = scalingFactor;
 }
 
 double Brush::spacingX() const
 {
-  return mSpacing[0];
+    return mSpacing[0];
 }
 
 double Brush::spacingY() const
 {
-  return mSpacing[1];
+    return mSpacing[1];
 }
 
-void Brush::setSpacing(double spacingX, double spacingY ) 
+void Brush::setSpacing(double spacingX, double spacingY)
 {
-  mSpacing[0] = spacingX;
-  mSpacing[1] = spacingY;
+    mSpacing[0] = spacingX;
+    mSpacing[1] = spacingY;
 }
 
 uint32_t Brush::priorityLevel() const
 {
-  return mPriorityLevel;
+    return mPriorityLevel;
 }
 
-void Brush::setPriorityLevel(uint32_t priorityLevel) 
+void Brush::setPriorityLevel(uint32_t priorityLevel)
 {
-  mPriorityLevel = priorityLevel;
+    mPriorityLevel = priorityLevel;
 }
 
 Brush &Brush::operator = (const Brush &brush)
 {
-  if (this != &brush) {
-    mForeColor = brush.mForeColor;
-    mBackColor = brush.mBackColor;
-    mName = brush.mName;
-    mAngle = brush.mAngle;
-    mScalingFactor = brush.mScalingFactor;
-    mSpacing = brush.mSpacing;
-    mPriorityLevel = brush.mPriorityLevel;
-  }
-  return *this;
+    if (this != &brush) {
+        mForeColor = brush.mForeColor;
+        mBackColor = brush.mBackColor;
+        mName = brush.mName;
+        mAngle = brush.mAngle;
+        mScalingFactor = brush.mScalingFactor;
+        mSpacing = brush.mSpacing;
+        mPriorityLevel = brush.mPriorityLevel;
+    }
+    return *this;
 }
 
 
@@ -288,7 +288,7 @@ Symbol::Symbol()
     mScalingFactor(1.),
     mPriorityLevel(0)
 {
-  mOffset[0] = mOffset[1] = 0.;
+    mOffset[0] = mOffset[1] = 0.;
 }
 
 Symbol::Symbol(const Symbol &symbol)
@@ -308,92 +308,92 @@ Symbol::~Symbol()
 
 double Symbol::angle() const
 {
-  return mAngle;
+    return mAngle;
 }
 
-void Symbol::setAngle(double angle) 
+void Symbol::setAngle(double angle)
 {
-  mAngle = angle;
+    mAngle = angle;
 }
 
 Symbol::Name Symbol::name() const
 {
-  return mName;
+    return mName;
 }
 
 void Symbol::setName(Name name)
 {
-  mName = name;
+    mName = name;
 }
 
 Color Symbol::color() const
 {
-  return mColor;
+    return mColor;
 }
 
 void Symbol::setColor(const Color &color)
 {
-  mColor = color;
+    mColor = color;
 }
 
 Color Symbol::outlineColor() const
 {
-  return mOutlineColor;
+    return mOutlineColor;
 }
 
 void Symbol::setOutlineColor(const Color &outlinecolor)
 {
-  mOutlineColor = outlinecolor;
+    mOutlineColor = outlinecolor;
 }
 
 double Symbol::scalingFactor() const
 {
-  return mScalingFactor;
+    return mScalingFactor;
 }
 
 void Symbol::setScalingFactor(double scalingFactor)
 {
-  mScalingFactor = scalingFactor;
+    mScalingFactor = scalingFactor;
 }
 
 double Symbol::offsetX() const
 {
-  return mOffset[0];
+    return mOffset[0];
 }
 
 double Symbol::offsetY() const
 {
-  return mOffset[1];
+    return mOffset[1];
 }
 
-void Symbol::setOffset(double dx, double dy) 
+void Symbol::setOffset(double dx, double dy)
 {
-  mOffset[0] = dx;
-  mOffset[1] = dy;
+    mOffset[0] = dx;
+    mOffset[1] = dy;
 }
 
 uint32_t Symbol::priorityLevel() const
 {
-  return mPriorityLevel;
+    return mPriorityLevel;
 }
 
-void Symbol::setPriorityLevel(uint32_t priorityLevel) 
+void Symbol::setPriorityLevel(uint32_t priorityLevel)
 {
-  mPriorityLevel = priorityLevel;
+    mPriorityLevel = priorityLevel;
 }
 
 Symbol &Symbol::operator = (const Symbol &symbol)
 {
-  if (this != &symbol) {
-    mName = symbol.mName;
-    mAngle = symbol.mAngle;
-    mColor = symbol.mColor;
-    mOutlineColor = symbol.mOutlineColor;
-    mScalingFactor = symbol.mScalingFactor;
-    mOffset = symbol.mOffset;
-    mPriorityLevel = symbol.mPriorityLevel;
-  }
-  return *this;
+    if (this != &symbol) {
+        mName = symbol.mName;
+        mAngle = symbol.mAngle;
+        mColor = symbol.mColor;
+        mOutlineColor = symbol.mOutlineColor;
+        mScalingFactor = symbol.mScalingFactor;
+        mOffset = symbol.mOffset;
+        mPriorityLevel = symbol.mPriorityLevel;
+    }
+    return *this;
 }
 
 
@@ -415,7 +415,7 @@ Label::Label()
     bStrikeout(false),
     mPriorityLevel(0)
 {
-  mOffset[0] = mOffset[1] = 0.;
+    mOffset[0] = mOffset[1] = 0.;
 }
 
 Label::Label(const Label &label)
@@ -442,148 +442,148 @@ Label::~Label()
 
 std::string Label::text() const
 {
-  return mText;
+    return mText;
 }
 
 void Label::setText(const std::string &text)
 {
-  mText = text;
+    mText = text;
 }
 
 double Label::angle() const
 {
-  return mAngle;
+    return mAngle;
 }
 
-void Label::setAngle(double angle) 
+void Label::setAngle(double angle)
 {
-  mAngle = angle;
+    mAngle = angle;
 }
 
 Color Label::foregroundColor() const
 {
-  return mForegroundColor;
+    return mForegroundColor;
 }
 
 void Label::setForegroundColor(const Color &color)
 {
-  mForegroundColor = color;
+    mForegroundColor = color;
 }
 
 Color Label::backgroundColor() const
 {
-  return mBackgroundColor;
+    return mBackgroundColor;
 }
 
 void Label::setBackgroundColor(const Color &color)
 {
-  mBackgroundColor = color;
+    mBackgroundColor = color;
 }
 
 Color Label::outlineColor() const
 {
-  return mOutlineColor;
+    return mOutlineColor;
 }
 
 void Label::setOutlineColor(const Color &color)
 {
-  mOutlineColor = color;
+    mOutlineColor = color;
 }
 
 Color Label::shadowColor() const
 {
-  return mShadowColor;
+    return mShadowColor;
 }
 
 void Label::setShadowColor(const Color &color)
 {
-  mShadowColor = color;
+    mShadowColor = color;
 }
 
 double Label::stretch() const
 {
-  return mStretch;
+    return mStretch;
 }
 
 void Label::setStretch(double stretch)
 {
-  mStretch = stretch;
+    mStretch = stretch;
 }
 
 Label::Placement Label::placement() const
 {
-  return mPlacement;
+    return mPlacement;
 }
 
 void Label::setPlacement(Placement placement)
 {
-  mPlacement = placement;
+    mPlacement = placement;
 }
 
 Label::AnchorPosition Label::anchorPosition() const
 {
-  return mAnchorPosition;
+    return mAnchorPosition;
 }
 
 void Label::setAnchorPosition(AnchorPosition anchorPosition)
 {
-  mAnchorPosition = anchorPosition;
+    mAnchorPosition = anchorPosition;
 }
 
 double Label::offsetX() const
 {
-  return mOffset[0];
+    return mOffset[0];
 }
 
 double Label::offsetY() const
 {
-  return mOffset[1];
+    return mOffset[1];
 }
 
-void Label::setOffset(double dx, double dy) 
+void Label::setOffset(double dx, double dy)
 {
-  mOffset[0] = dx; 
-  mOffset[1] = dy;
+    mOffset[0] = dx;
+    mOffset[1] = dy;
 }
 
 int Label::perpendicularOffset() const
 {
-  return mPerpendicularOffset;
+    return mPerpendicularOffset;
 }
 
 void Label::setPerpendicularOffset(int perpendicularOffset)
 {
-  mPerpendicularOffset = perpendicularOffset;
+    mPerpendicularOffset = perpendicularOffset;
 }
 
 Label &Label::operator = (const Label &label)
 {
-  if (this != &label) {
-    mFont = label.mFont;
-    mText = label.mText;
-    mAngle = label.mAngle;
-    mForegroundColor = label.mForegroundColor;
-    mBackgroundColor = label.mBackgroundColor;
-    mOutlineColor = label.mOutlineColor;
-    mShadowColor = label.mShadowColor;
-    mStretch = label.mStretch;
-    mPlacement = label.mPlacement;
-    mAnchorPosition = label.mAnchorPosition;
-    mPerpendicularOffset = label.mPerpendicularOffset;
-    bStrikeout = label.bStrikeout;
-    mPriorityLevel = label.mPriorityLevel;
-  }
-  return *this;
+    if (this != &label) {
+        mFont = label.mFont;
+        mText = label.mText;
+        mAngle = label.mAngle;
+        mForegroundColor = label.mForegroundColor;
+        mBackgroundColor = label.mBackgroundColor;
+        mOutlineColor = label.mOutlineColor;
+        mShadowColor = label.mShadowColor;
+        mStretch = label.mStretch;
+        mPlacement = label.mPlacement;
+        mAnchorPosition = label.mAnchorPosition;
+        mPerpendicularOffset = label.mPerpendicularOffset;
+        bStrikeout = label.bStrikeout;
+        mPriorityLevel = label.mPriorityLevel;
+    }
+    return *this;
 }
 
 void Label::setFont(const Font &font)
 {
-  mFont = font;
+    mFont = font;
 }
 
 Font Label::font() const
 {
-  return mFont;
+    return mFont;
 }
 
 
@@ -609,53 +609,53 @@ GraphicStyle::GraphicStyle(const GraphicStyle &graphicStyle)
 
 Pen *GraphicStyle::pen() const
 {
-  return mPen.get();
+    return mPen.get();
 }
 
 void GraphicStyle::setPen(const std::shared_ptr<Pen> &pen)
 {
-  mPen = pen;
+    mPen = pen;
 }
 
 Brush *GraphicStyle::brush() const
 {
-  return mBrush.get();
+    return mBrush.get();
 }
 
 void GraphicStyle::setBrush(const std::shared_ptr<Brush> &brush)
 {
-  mBrush = brush;
+    mBrush = brush;
 }
 
 Symbol *GraphicStyle::symbol() const
 {
-  return mSymbol.get();
+    return mSymbol.get();
 }
 
 void GraphicStyle::setSymbol(const std::shared_ptr<Symbol> &symbol)
 {
-  mSymbol = symbol;
+    mSymbol = symbol;
 }
 
 Label *GraphicStyle::label() const
 {
-  return mLabel.get();
+    return mLabel.get();
 }
 
 void GraphicStyle::setLabel(const std::shared_ptr<Label> &label)
 {
-  mLabel = label;
+    mLabel = label;
 }
 
 GraphicStyle &GraphicStyle::operator = (const GraphicStyle &graphicStyle)
-{ 
-  if (this != &graphicStyle) {
-    mPen = graphicStyle.mPen;
-    mBrush = graphicStyle.mBrush;
-    mSymbol = graphicStyle.mSymbol;
-    mLabel = graphicStyle.mLabel;
-  }
-  return *this;
+{
+    if (this != &graphicStyle) {
+        mPen = graphicStyle.mPen;
+        mBrush = graphicStyle.mBrush;
+        mSymbol = graphicStyle.mSymbol;
+        mLabel = graphicStyle.mLabel;
+    }
+    return *this;
 }
 
 

@@ -65,7 +65,7 @@ if(BUILD_TL_MATH)
                              lapack.h
                              blas.h)
                 
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
+    add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
                 ${PROJECT_HEADER_FILES})
     
@@ -73,14 +73,14 @@ if(BUILD_TL_MATH)
                 ALIAS ${PROJECT_NAME})
 
     if(MSVC)
-        target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
+        target_compile_options(${PROJECT_NAME} INTERFACE "/bigobj")
     endif(MSVC)
 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC
+    target_compile_definitions(${PROJECT_NAME} INTERFACE
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} PUBLIC 
+    target_link_libraries(${PROJECT_NAME} INTERFACE 
                           TidopLib::Core
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        

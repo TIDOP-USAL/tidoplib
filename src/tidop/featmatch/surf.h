@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_SURF_DETECTOR_DESCRIPTOR_H
-#define TL_FEATMATCH_SURF_DETECTOR_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -58,41 +57,42 @@ class TL_EXPORT SurfProperties
   : public Surf
 {
 
+private:
+
+    double mHessianThreshold{surf_default_value_hessian_threshold};
+    int mOctaves{surf_default_value_octaves};
+    int mOctaveLayers{surf_default_value_octave_layers};
+    bool mExtendedDescriptor{surf_default_value_extended_descriptor};
+    bool mUpright{surf_default_value_upright};
+
 public:
 
-  SurfProperties();
-  SurfProperties(const SurfProperties &surfProperties);
-  ~SurfProperties() override = default;
+    SurfProperties();
+    SurfProperties(const SurfProperties &surfProperties);
+    ~SurfProperties() override = default;
 
-  // Surf interface
+// Surf interface
 
 public:
 
-  double hessianThreshold() const override;
-  int octaves() const override;
-  int octaveLayers() const override;
-  bool extendedDescriptor() const override;
-  bool upright() const override;
-  void setHessianThreshold(double hessianThreshold) override;
-  void setOctaves(int octaves) override;
-  void setOctaveLayers(int octaveLayers) override;
-  void setExtendedDescriptor(bool extendedDescriptor) override;
-  void setUpright(bool upright) override;
+    double hessianThreshold() const override;
+    int octaves() const override;
+    int octaveLayers() const override;
+    bool extendedDescriptor() const override;
+    bool upright() const override;
+    void setHessianThreshold(double hessianThreshold) override;
+    void setOctaves(int octaves) override;
+    void setOctaveLayers(int octaveLayers) override;
+    void setExtendedDescriptor(bool extendedDescriptor) override;
+    void setUpright(bool upright) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  double mHessianThreshold{surf_default_value_hessian_threshold};
-  int mOctaves{surf_default_value_octaves};
-  int mOctaveLayers{surf_default_value_octave_layers};
-  bool mExtendedDescriptor{surf_default_value_extended_descriptor};
-  bool mUpright{surf_default_value_upright};
 };
 
 
@@ -105,53 +105,54 @@ class TL_EXPORT SurfDetectorDescriptor
     public DescriptorExtractor
 {
 
-public:
-
-  SurfDetectorDescriptor();
-  SurfDetectorDescriptor(const SurfDetectorDescriptor &surfDetectorDescriptor);
-  SurfDetectorDescriptor(double hessianThreshold,
-                         int octaves,
-                         int octaveLayers,
-                         bool extendedDescriptor,
-                         bool upright);
-
-  ~SurfDetectorDescriptor() override = default;
-
-// KeypointDetector interface
-
-public:
-
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
-
-// DescriptorExtractor interface
-
-public:
-
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
-
-// Surf interface
-
-public:
-
-  void setHessianThreshold(double hessianThreshold) override;
-  void setOctaves(int octaves) override;
-  void setOctaveLayers(int octaveLayers) override;
-  void setExtendedDescriptor(bool extendedDescriptor) override;
-  void setUpright(bool upright) override;
-
-// Feature interface
-
-public:
-
-  void reset() override;
-
 private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::SURF> mSurf;
 #endif // HAVE_OPENCV_XFEATURES2D
+
+public:
+
+    SurfDetectorDescriptor();
+    SurfDetectorDescriptor(const SurfDetectorDescriptor &surfDetectorDescriptor);
+    SurfDetectorDescriptor(double hessianThreshold,
+                           int octaves,
+                           int octaveLayers,
+                           bool extendedDescriptor,
+                           bool upright);
+
+    ~SurfDetectorDescriptor() override = default;
+
+// KeypointDetector interface
+
+public:
+
+    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                     cv::InputArray &mask = cv::noArray()) override;
+
+// DescriptorExtractor interface
+
+public:
+
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
+
+// Surf interface
+
+public:
+
+    void setHessianThreshold(double hessianThreshold) override;
+    void setOctaves(int octaves) override;
+    void setOctaveLayers(int octaveLayers) override;
+    void setExtendedDescriptor(bool extendedDescriptor) override;
+    void setUpright(bool upright) override;
+
+// Feature interface
+
+public:
+
+    void reset() override;
+
 };
 
 
@@ -165,52 +166,53 @@ class TL_EXPORT SurfCudaDetectorDescriptor
     public DescriptorExtractor
 {
 
+protected:
+
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D 
+    std::unique_ptr<cv::cuda::SURF_CUDA> mSurf;
+#endif
+
 public:
 
-  SurfCudaDetectorDescriptor();
-  SurfCudaDetectorDescriptor(const SurfCudaDetectorDescriptor &surfDetectorDescriptor);
-  SurfCudaDetectorDescriptor(double hessianThreshold,
-                             int octaves,
-                             int octaveLayers,
-                             bool extendedDescriptor,
-                             bool upright);
-  ~SurfCudaDetectorDescriptor() override = default;
+    SurfCudaDetectorDescriptor();
+    SurfCudaDetectorDescriptor(const SurfCudaDetectorDescriptor &surfDetectorDescriptor);
+    SurfCudaDetectorDescriptor(double hessianThreshold,
+                               int octaves,
+                               int octaveLayers,
+                               bool extendedDescriptor,
+                               bool upright);
+    ~SurfCudaDetectorDescriptor() override = default;
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                     cv::InputArray &mask = cv::noArray()) override;
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Surf interface
 
 public:
 
-  void setHessianThreshold(double hessianThreshold) override;
-  void setOctaves(int octaves) override;
-  void setOctaveLayers(int octaveLayers) override;
-  void setExtendedDescriptor(bool extendedDescriptor) override;
-  void setUpright(bool upright) override;
+    void setHessianThreshold(double hessianThreshold) override;
+    void setOctaves(int octaves) override;
+    void setOctaveLayers(int octaveLayers) override;
+    void setExtendedDescriptor(bool extendedDescriptor) override;
+    void setUpright(bool upright) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-protected:
-
-#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D 
-  std::unique_ptr<cv::cuda::SURF_CUDA> mSurf;
-#endif
 };
 
 
@@ -220,4 +222,3 @@ protected:
 
 } // namespace tl
 
-#endif // TL_FEATMATCH_SURF_DETECTOR_DESCRIPTOR_H

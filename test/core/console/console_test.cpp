@@ -59,15 +59,15 @@ BOOST_AUTO_TEST_CASE(default_constructor)
 {
   Console &console = App::console();
   EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::msg_error));
+  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
 }
 
 BOOST_AUTO_TEST_CASE(messageLevel)
 {
   Console &console = App::console();
-  console.setMessageLevel(MessageLevel::msg_debug);
+  console.setMessageLevel(MessageLevel::debug);
   EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::msg_debug));
+  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
 }
 
 BOOST_AUTO_TEST_CASE(printMessage)
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(printMessage)
   {
     cout_redirect guard(output.rdbuf());
 
-    console.printMessage("Test");
+    console << "Test" << std::endl;
   }
 
   BOOST_CHECK( output.is_equal( "Test\n" ) );

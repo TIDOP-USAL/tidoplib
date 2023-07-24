@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GRAPHIC_LAYER_H
-#define TL_GRAPHIC_LAYER_H
+#pragma once
 
 
 #include <list>
@@ -48,7 +47,7 @@ namespace graph
 class GraphicEntity;
 
 /*!
- * Capa. Puede contener elementos de uno o varios tipos. Pueden 
+ * Capa. Puede contener elementos de uno o varios tipos. Pueden
  * ser entidades gráficas o simples
  */
 class TL_EXPORT GLayer
@@ -56,211 +55,211 @@ class TL_EXPORT GLayer
 
 public:
 
-  /*!
-   * \brief Allocator
-   */
-  using allocator_type = std::list<std::shared_ptr<GraphicEntity> >::allocator_type;
+    /*!
+     * \brief Allocator
+     */
+    using allocator_type = std::list<std::shared_ptr<GraphicEntity> >::allocator_type;
 
-  /*!
-   * \brief value_type
-   */
-  using value_type = std::list<std::shared_ptr<GraphicEntity> >::value_type;
+    /*!
+     * \brief value_type
+     */
+    using value_type = std::list<std::shared_ptr<GraphicEntity> >::value_type;
 
-  /*!
-   * \brief Tipo entero sin signo (por lo general size_t) 
-   */
-  using size_type = std::list<std::shared_ptr<GraphicEntity> >::size_type;
+    /*!
+     * \brief Tipo entero sin signo (por lo general size_t)
+     */
+    using size_type = std::list<std::shared_ptr<GraphicEntity> >::size_type;
 
-  /*!
-   * \brief Tipo entero con signo (por lo general ptrdiff_t)
-   */
-  using difference_type = std::list<std::shared_ptr<GraphicEntity> >::difference_type;
+    /*!
+     * \brief Tipo entero con signo (por lo general ptrdiff_t)
+     */
+    using difference_type = std::list<std::shared_ptr<GraphicEntity> >::difference_type;
 
-  /*!
-   * \brief std::allocator_traits<Allocator>::pointer
-   */
-  using pointer = std::list<std::shared_ptr<GraphicEntity> >::pointer;
+    /*!
+     * \brief std::allocator_traits<Allocator>::pointer
+     */
+    using pointer = std::list<std::shared_ptr<GraphicEntity> >::pointer;
 
-  /*!
-   * \brief std::allocator_traits<Allocator>::const_pointer 
-   */
-  using const_pointer = std::list<std::shared_ptr<GraphicEntity> >::const_pointer;
+    /*!
+     * \brief std::allocator_traits<Allocator>::const_pointer
+     */
+    using const_pointer = std::list<std::shared_ptr<GraphicEntity> >::const_pointer;
 
-  /*!
-   * \brief value_type&
-   */
-  using reference = std::list<std::shared_ptr<GraphicEntity> >::reference;
+    /*!
+     * \brief value_type&
+     */
+    using reference = std::list<std::shared_ptr<GraphicEntity> >::reference;
 
-  /*!
-   * \brief const value_type&
-   */
-  using const_reference = std::list<std::shared_ptr<GraphicEntity> >::const_reference;
+    /*!
+     * \brief const value_type&
+     */
+    using const_reference = std::list<std::shared_ptr<GraphicEntity> >::const_reference;
 
-  /*!
-   * \brief Iterador de acceso aleatorio
-   */
-  using iterator = std::list<std::shared_ptr<GraphicEntity> >::iterator;
+    /*!
+     * \brief Iterador de acceso aleatorio
+     */
+    using iterator = std::list<std::shared_ptr<GraphicEntity> >::iterator;
 
-  /*!
-   * \brief Iterador constante de acceso aleatorio
-   */
-  using const_iterator = std::list<std::shared_ptr<GraphicEntity> >::const_iterator;
+    /*!
+     * \brief Iterador constante de acceso aleatorio
+     */
+    using const_iterator = std::list<std::shared_ptr<GraphicEntity> >::const_iterator;
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  GLayer();
+    /*!
+     * \brief Constructora por defecto
+     */
+    GLayer();
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] gLayer Objeto que se copia
-   */
-  GLayer(const GLayer &gLayer);
+    /*!
+     * \brief Constructor de copia
+     * \param[in] gLayer Objeto que se copia
+     */
+    GLayer(const GLayer &gLayer);
 
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] gLayer Objeto que se copia
-   */
-  GLayer(GLayer &&gLayer) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] gLayer Objeto que se copia
+     */
+    GLayer(GLayer &&gLayer) TL_NOEXCEPT;
 
 
-  /*!
-   * \brief Constructora de lista
-   * \param[in] entities listado de entidades
-   */
-  GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities);
+    /*!
+     * \brief Constructora de lista
+     * \param[in] entities listado de entidades
+     */
+    GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities);
 
-  /*!
-   * \brief Destructora
-   */
-  ~GLayer() = default;
+    /*!
+     * \brief Destructora
+     */
+    ~GLayer() = default;
 
-  /*!
-   * \brief Devuelve un iterador al inicio de la capa
-   * \return Iterador al primer elemento
-   */
-  iterator begin() TL_NOEXCEPT;
+    /*!
+     * \brief Devuelve un iterador al inicio de la capa
+     * \return Iterador al primer elemento
+     */
+    iterator begin() TL_NOEXCEPT;
 
-  /*!
-   * \brief Devuelve un iterador constante al inicio de la capa
-   * \return Iterador al primer elemento
-   */
-  const_iterator begin() const TL_NOEXCEPT;
+    /*!
+     * \brief Devuelve un iterador constante al inicio de la capa
+     * \return Iterador al primer elemento
+     */
+    const_iterator begin() const TL_NOEXCEPT;
 
-  /*!
-   * \brief Devuelve un iterador al siguiente elemento después de la última entidad
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-   * \return Iterador al siguiente elemento después de la última entidad
-   */
-  iterator end() TL_NOEXCEPT;
+    /*!
+     * \brief Devuelve un iterador al siguiente elemento después de la última entidad
+     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+     * \return Iterador al siguiente elemento después de la última entidad
+     */
+    iterator end() TL_NOEXCEPT;
 
-  /*!
-   * \brief Devuelve un iterador constante al siguiente elemento después de la última entidad
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
-   * \return Iterador al siguiente elemento después de la última entidad
-   */
-  const_iterator end() const TL_NOEXCEPT;
+    /*!
+     * \brief Devuelve un iterador constante al siguiente elemento después de la última entidad
+     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+     * \return Iterador al siguiente elemento después de la última entidad
+     */
+    const_iterator end() const TL_NOEXCEPT;
 
-  /*!
-   * \brief Agrega una entidad mediante copia al final del contenedor
-   * \param[in] entity Entidad que se añade
-   */
-  void push_back(const std::shared_ptr<GraphicEntity> &entity);
+    /*!
+     * \brief Agrega una entidad mediante copia al final del contenedor
+     * \param[in] entity Entidad que se añade
+     */
+    void push_back(const std::shared_ptr<GraphicEntity> &entity);
 
-  /*!
-   * \brief Agrega una entidad mediante movimiento al final del contenedor
-   * \param[in] entity Entidad que se añade
-   */
-  void push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT;
+    /*!
+     * \brief Agrega una entidad mediante movimiento al final del contenedor
+     * \param[in] entity Entidad que se añade
+     */
+    void push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT;
 
-  /*!
-   * \brief Elimina los elementos del recipiente
-   */
-  void clear() TL_NOEXCEPT;
-    
-  /*!
-   * \brief Comprueba si el contenedor esta vacio
-   * \return true si el contenedor está vacío y false en caso contrario
-   */
-  bool empty() const TL_NOEXCEPT;
+    /*!
+     * \brief Elimina los elementos del recipiente
+     */
+    void clear() TL_NOEXCEPT;
 
-  /*!
-   * \brief Modifica el tamaño del contenedor
-   * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual 
-   * es mayor que count el contenedor se trunca al número de elementos indicados.
-   * \param[in] count Nuevo tamaño del contenedor
-   */
-  void resize(size_type count);
+    /*!
+     * \brief Comprueba si el contenedor esta vacio
+     * \return true si el contenedor está vacío y false en caso contrario
+     */
+    bool empty() const TL_NOEXCEPT;
 
-  /*!
-   * \brief Modifica el tamaño del contenedor
-   * Si el tamaño actual es menor que count, se añaden elementos adicionales y se inicializan con value.
-   * Si el tamaño actual es mayor que count el contenedor se trunca al número de elementos indicados.
-   * \param[in] count Nuevo tamaño del contenedor
-   * \param[in] value Valor que se asigna a los nuevos elementos
-   */
-  void resize(size_type count, 
-              const std::shared_ptr<GraphicEntity> &value);
+    /*!
+     * \brief Modifica el tamaño del contenedor
+     * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual
+     * es mayor que count el contenedor se trunca al número de elementos indicados.
+     * \param[in] count Nuevo tamaño del contenedor
+     */
+    void resize(size_type count);
 
-  /*!
-   * \brief Devuelve el tamaño del contenedor
-   * \return Tamaño
-   */
-  size_type size() const TL_NOEXCEPT;
+    /*!
+     * \brief Modifica el tamaño del contenedor
+     * Si el tamaño actual es menor que count, se añaden elementos adicionales y se inicializan con value.
+     * Si el tamaño actual es mayor que count el contenedor se trunca al número de elementos indicados.
+     * \param[in] count Nuevo tamaño del contenedor
+     * \param[in] value Valor que se asigna a los nuevos elementos
+     */
+    void resize(size_type count,
+                const std::shared_ptr<GraphicEntity> &value);
 
-  /*!
-   * \brief Asignación de copia
-   */
-  GLayer &operator=(const GLayer& entity);
+    /*!
+     * \brief Devuelve el tamaño del contenedor
+     * \return Tamaño
+     */
+    size_type size() const TL_NOEXCEPT;
 
-  /*!
-   * \brief Asignación de movimiento
-   */
-  GLayer &operator=(GLayer &&entity) TL_NOEXCEPT;
+    /*!
+     * \brief Asignación de copia
+     */
+    GLayer &operator=(const GLayer &entity);
 
-  /*!
-   * \brief Elimina el intervalo
-   */
-  iterator erase(const_iterator first, const_iterator last);
+    /*!
+     * \brief Asignación de movimiento
+     */
+    GLayer &operator=(GLayer &&entity) TL_NOEXCEPT;
 
-  /*!
-   * \brief Devuelve el nombre de la capa
-   * \return Nombre de la capa
-   */
-  std::string name() const;
+    /*!
+     * \brief Elimina el intervalo
+     */
+    iterator erase(const_iterator first, const_iterator last);
 
-  /*!
-   * \brief Establece el nombre de la capa
-   * \param[in] name Nombre de la capa
-   */
-  void setName(const std::string &name);
+    /*!
+     * \brief Devuelve el nombre de la capa
+     * \return Nombre de la capa
+     */
+    std::string name() const;
 
-  void addDataField(const std::shared_ptr<TableField> &field);
+    /*!
+     * \brief Establece el nombre de la capa
+     * \param[in] name Nombre de la capa
+     */
+    void setName(const std::string &name);
 
-  std::vector<std::shared_ptr<TableField>> tableFields() const;
+    void addDataField(const std::shared_ptr<TableField> &field);
 
-  Window<Point<double>> window() const;
+    std::vector<std::shared_ptr<TableField>> tableFields() const;
+
+    Window<Point<double>> window() const;
 
 protected:
 
-  /*!
-   * \brief Nombre de la capa
-   */
-  std::string mName;
+    /*!
+     * \brief Nombre de la capa
+     */
+    std::string mName;
 
-  /*!
-   * \brief Listado de entidades
-   */
-  std::list<std::shared_ptr<GraphicEntity>> mEntities;
+    /*!
+     * \brief Listado de entidades
+     */
+    std::list<std::shared_ptr<GraphicEntity>> mEntities;
 
-  /*!
-   * \brief Entidades seleccionadas
-   */
-  std::shared_ptr<GraphicEntity> mSelectEntity;
+    /*!
+     * \brief Entidades seleccionadas
+     */
+    std::shared_ptr<GraphicEntity> mSelectEntity;
 
-  std::vector<std::shared_ptr<TableField>> mTableFields;
+    std::vector<std::shared_ptr<TableField>> mTableFields;
 };
 
 
@@ -269,5 +268,3 @@ protected:
 /*! \} */ //  GraphicEntities
 
 } // namespace tl
-
-#endif // TL_GRAPHIC_LAYER_H

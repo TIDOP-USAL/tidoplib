@@ -22,9 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
-
+#pragma once
 
 #include "tidop/config.h"
 
@@ -40,19 +38,13 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
 #include "tidop/core/log.h"
-#include "tidop/core/msg/handler.h"
 #include "tidop/core/console.h"
 
 namespace tl
 {
 
 class Console;
-//class Log;
-class MessageManager;
-
-//class MessageHandler;
-class Console2;
-//class Log2;
+class Log;
 
 /*! \addtogroup core
  *  \{
@@ -83,78 +75,15 @@ public:
     Path path() const;
     std::string version() const;
 
-    void addMessageHandler(MessageHandler *messageHandler);
-
-    static void pauseMessages();
-    static void resumeMessages();
-
     static Console &console();
-    static Console2 &console2();
     static Log &log();
-    static Log2 &log2();
-    static MessageManager &messageManager();
-
-//#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
-//
-//    template<typename... Args>
-//    static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-//    {
-//        if (stopHandler) return;
-//
-//        Console2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//        Log2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//    }
-//
-//    template<typename... Args>
-//    static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-//    {
-//        if (stopHandler) return;
-//
-//        Console2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//        Log2::info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//    }
-//
-//    template<typename... Args>
-//    static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-//    {
-//        if (stopHandler) return;
-//
-//        Console2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//        Log2::warning(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
-//    }
-//
-//    template<typename... Args>
-//    static void succes(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-//    {   
-//        if (stopHandler) return;
-//
-//        Console2::succes(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//        Log2::succes(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
-//    }
-//
-//    template<typename... Args>
-//    static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-//    {   
-//        if (stopHandler) return;
-//
-//        Console2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//        Log2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-//    }
-//
-//#endif
 
 private:
 
     void init();
 
-private:
-
-    std::list<MessageHandler *> messageHandlers;
-    static bool stopHandler;
 };
 
 /*! \} */ // end of core
 
 } // namespace tl
-
-#endif TL_CORE_APP_H

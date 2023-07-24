@@ -34,8 +34,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/path.h"
-//#include "tidop/core/messages.h"
-//#include "tidop/core/msg/message.h"
+#include "tidop/core/msg/message.h"
 
 
 namespace tl
@@ -99,11 +98,7 @@ public:
         bool valid = (value > mMin && value < mMax);
         
         if(!valid) {
-            std::string msg = "The value '";
-            msg.append(std::to_string(value)).append("' is out of valid range [");
-            msg.append(std::to_string(mMin)).append("-").append(std::to_string(mMin)).append("]");
-            msgError(msg.c_str());
-            //Message::error("The value '{}' is out of valid range [{}-{}]", value, mMin, mMax);
+            Message::error("The value '{}' is out of valid range [{}-{}]", value, mMin, mMax);
         }
 
         return valid;
@@ -171,7 +166,7 @@ public:
             for (const auto &values : mValues)
                 stream << values << " ";
             std::string str = stream.str();
-            msgError(str.c_str());
+            Message::error(str);
         }
 
         return valid;

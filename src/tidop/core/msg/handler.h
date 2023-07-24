@@ -27,6 +27,7 @@
 
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
+#include "tidop/core/flags.h"
 
 #include <string>
 #if CPP_VERSION >= 20
@@ -48,6 +49,16 @@ namespace tl
  *  \{
  */
 
+enum class MessageLevel : int8_t
+{
+	debug = 1 << 0,
+	error = 1 << 1,
+	warning = 1 << 2,
+    success = 1 << 3,
+	info = 1 << 4,
+    all = error | warning | success | info
+};
+ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
 class MessageHandler
 {
@@ -58,11 +69,13 @@ public:
 	  virtual ~MessageHandler() = default;
 
 #if CPP_VERSION >= 17
+    virtual void debug(std::string_view message) = 0;
     virtual void info(std::string_view message) = 0;
     virtual void success(std::string_view message) = 0;
     virtual void warning(std::string_view message) = 0;
     virtual void error(std::string_view message) = 0;
 #else
+    virtual void debug(std::string message) = 0;
     virtual void info(const std::string &message) = 0;
     virtual void success(const std::string &message) = 0;
     virtual void warning(const std::string &message) = 0;

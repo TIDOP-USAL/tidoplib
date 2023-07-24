@@ -24,7 +24,7 @@
 
 #include "hog.h"
 
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 #include <opencv2/imgproc.hpp>
 
@@ -38,7 +38,8 @@ HogProperties::HogProperties()
     mBlockSize(4, 4),
     mBlockStride(2, 2),
     mCellSize(2, 2)
-{}
+{
+}
 
 HogProperties::HogProperties(const HogProperties &hogProperties)
   : Hog(hogProperties),
@@ -53,77 +54,77 @@ HogProperties::HogProperties(const HogProperties &hogProperties)
 
 Size<int> HogProperties::winSize() const
 {
-  return mWinSize;
+    return mWinSize;
 }
 
 Size<int> HogProperties::blockSize() const
 {
-  return mBlockSize;
+    return mBlockSize;
 }
 
 Size<int> HogProperties::blockStride() const
 {
-  return mBlockStride;
+    return mBlockStride;
 }
 
 Size<int> HogProperties::cellSize() const
 {
-  return mCellSize;
+    return mCellSize;
 }
 
 int HogProperties::nbins() const
 {
-  return mNbins;
+    return mNbins;
 }
 
 int HogProperties::derivAperture() const
 {
-  return mDerivAperture;
+    return mDerivAperture;
 }
 
 void HogProperties::setWinSize(const Size<int> &winSize)
 {
-  mWinSize = winSize;
+    mWinSize = winSize;
 }
 
 void HogProperties::setBlockSize(const Size<int> &blockSize)
 {
-  mBlockSize = blockSize;
+    mBlockSize = blockSize;
 }
 
 void HogProperties::setBlockStride(const Size<int> &blockStride)
 {
-  mBlockStride = blockStride;
+    mBlockStride = blockStride;
 }
 
 void HogProperties::setCellSize(const Size<int> &cellSize)
 {
-  mCellSize = cellSize;
+    mCellSize = cellSize;
 }
 
 void HogProperties::setNbins(int nbins)
 {
-  mNbins = nbins;
+    mNbins = nbins;
 }
 
 void HogProperties::setDerivAperture(int derivAperture)
 {
-  mDerivAperture = derivAperture;
+    mDerivAperture = derivAperture;
 }
 
 void HogProperties::reset()
 {
-  mWinSize = Size<int>(16, 16);
-  mBlockSize = Size<int>(4, 4);
-  mBlockStride = Size<int>(2, 2);
-  mCellSize = Size<int>(2, 2);
-  mNbins = 9;
-  mDerivAperture = 1;
+    mWinSize = Size<int>(16, 16);
+    mBlockSize = Size<int>(4, 4);
+    mBlockStride = Size<int>(2, 2);
+    mCellSize = Size<int>(2, 2);
+    mNbins = 9;
+    mDerivAperture = 1;
 }
 
 std::string HogProperties::name() const
 {
-  return std::string("HOG");
+    return std::string("HOG");
 }
 
 
@@ -132,172 +133,172 @@ std::string HogProperties::name() const
 
 HogDescriptor::HogDescriptor()
 {
-  update();
+    update();
 }
 
 HogDescriptor::HogDescriptor(const HogDescriptor &hogDescriptor)
-  : HogProperties(hogDescriptor),
+    : HogProperties(hogDescriptor),
     DescriptorExtractor(hogDescriptor)
 {
-  update();
+    update();
 }
 
-HogDescriptor::HogDescriptor(const Size<int>& winSize,
-                             const Size<int>& blockSize,
-                             const Size<int>& blockStride,
-                             const Size<int>& cellSize,
+HogDescriptor::HogDescriptor(const Size<int> &winSize,
+                             const Size<int> &blockSize,
+                             const Size<int> &blockStride,
+                             const Size<int> &cellSize,
                              int nbins,
                              int derivAperture)
 {
-  HogProperties::setWinSize(winSize);
-  HogProperties::setBlockSize(blockSize);
-  HogProperties::setBlockStride(blockStride);
-  HogProperties::setCellSize(cellSize);
-  HogProperties::setNbins(nbins);
-  HogProperties::setDerivAperture(derivAperture);
-  update();
+    HogProperties::setWinSize(winSize);
+    HogProperties::setBlockSize(blockSize);
+    HogProperties::setBlockStride(blockStride);
+    HogProperties::setCellSize(cellSize);
+    HogProperties::setNbins(nbins);
+    HogProperties::setDerivAperture(derivAperture);
+    update();
 }
 
 void HogDescriptor::update()
 {
-  cv::Size win_size(HogProperties::winSize().width, 
-                    HogProperties::winSize().height);
-  cv::Size block_size(HogProperties::blockSize().width, 
-                      HogProperties::blockSize().height);
-  cv::Size block_stride(HogProperties::blockStride().width, 
-                        HogProperties::blockStride().height);
-  cv::Size cell_size(HogProperties::cellSize().width, 
-                     HogProperties::cellSize().height);
+    cv::Size win_size(HogProperties::winSize().width,
+                      HogProperties::winSize().height);
+    cv::Size block_size(HogProperties::blockSize().width,
+                        HogProperties::blockSize().height);
+    cv::Size block_stride(HogProperties::blockStride().width,
+                          HogProperties::blockStride().height);
+    cv::Size cell_size(HogProperties::cellSize().width,
+                       HogProperties::cellSize().height);
 
-  mHOG = std::make_shared<cv::HOGDescriptor>(win_size, 
-                                             block_size, 
-                                             block_stride,
-                                             cell_size, 
-                                             HogProperties::nbins(),
-                                             HogProperties::derivAperture());
+    mHOG = std::make_shared<cv::HOGDescriptor>(win_size,
+                                               block_size,
+                                               block_stride,
+                                               cell_size,
+                                               HogProperties::nbins(),
+                                               HogProperties::derivAperture());
 }
 
-void HogDescriptor::normalizepatch(const cv::Mat &gray, 
-                                   const cv::KeyPoint &keypoint, 
+void HogDescriptor::normalizepatch(const cv::Mat &gray,
+                                   const cv::KeyPoint &keypoint,
                                    cv::Mat &output)
 {
-  try {
+    try {
 
-    cv::Point center = keypoint.pt;
-    
-    cv::Size outsize(HogProperties::winSize().width, HogProperties::winSize().height);
-    output = cv::Mat::zeros(outsize, CV_8UC1);
-    cv::Size maskenter;
-    maskenter.height = cvRound(keypoint.size);
-    maskenter.width = cvRound(keypoint.size);
-    
-    cv::Mat input;
-    // Rotation and scale comes from the left corner, that is the center.
-    cv::getRectSubPix(gray, maskenter, center, input);
-    
-    
-    cv::Point2f pt;
-    
-    // here there are a problem with the center, it depends on the value it´s not a trivial thing.
-        // solved
-    if ((input.cols % 4) == 1) {
-      pt.x = static_cast<float>(cvRound(input.cols / 2.0));
-      pt.y = static_cast<float>(cvRound(input.rows / 2.0));
-    } else if ((input.cols % 4) == 0) {
-      pt.x = (input.cols / 2.0f) - 0.5f;
-      pt.y = (input.rows / 2.0f) - 0.5f;
-    } else if ((input.cols % 4) == 2) {
-      pt.x = (input.cols / 2.0f) - 0.5f;
-      pt.y = (input.rows / 2.0f) - 0.5f;
-    } else if ((input.cols % 4) == 3) {
-      pt.x = (input.cols / 2.0f) - 0.5f;
-      pt.y = (input.rows / 2.0f) - 0.5f;
+        cv::Point center = keypoint.pt;
+
+        cv::Size outsize(HogProperties::winSize().width, HogProperties::winSize().height);
+        output = cv::Mat::zeros(outsize, CV_8UC1);
+        cv::Size maskenter;
+        maskenter.height = cvRound(keypoint.size);
+        maskenter.width = cvRound(keypoint.size);
+
+        cv::Mat input;
+        // Rotation and scale comes from the left corner, that is the center.
+        cv::getRectSubPix(gray, maskenter, center, input);
+
+
+        cv::Point2f pt;
+
+        // here there are a problem with the center, it depends on the value it´s not a trivial thing.
+            // solved
+        if ((input.cols % 4) == 1) {
+            pt.x = static_cast<float>(cvRound(input.cols / 2.0));
+            pt.y = static_cast<float>(cvRound(input.rows / 2.0));
+        } else if ((input.cols % 4) == 0) {
+            pt.x = (input.cols / 2.0f) - 0.5f;
+            pt.y = (input.rows / 2.0f) - 0.5f;
+        } else if ((input.cols % 4) == 2) {
+            pt.x = (input.cols / 2.0f) - 0.5f;
+            pt.y = (input.rows / 2.0f) - 0.5f;
+        } else if ((input.cols % 4) == 3) {
+            pt.x = (input.cols / 2.0f) - 0.5f;
+            pt.y = (input.rows / 2.0f) - 0.5f;
+        }
+        // to calculate the scale, is the size of the keypoint between
+        // the scale is related to the diagonal of both pathces
+        // float scale = 1.0f*std::sqrt((maskenter.height*maskenter.height)+(maskenter.height*maskenter.height))/std::sqrt((outsize.height*outsize.height)+(outsize.height*outsize.height));
+
+        cv::Mat transform = cv::getRotationMatrix2D(pt, static_cast<double>(keypoint.angle), 1.0);
+        cv::Mat source1;
+
+        //ROTATE
+        cv::warpAffine(input, source1, transform, input.size(), cv::INTER_LINEAR + cv::WARP_INVERSE_MAP, cv::BORDER_REPLICATE);//+cv::WARP_INVERSE_MAP
+
+
+        // works best in 2 steps instead of one.
+        if (outsize.height != input.cols) cv::resize(source1, output, outsize);
+        else source1.copyTo(output);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
-    // to calculate the scale, is the size of the keypoint between
-    // the scale is related to the diagonal of both pathces
-    // float scale = 1.0f*std::sqrt((maskenter.height*maskenter.height)+(maskenter.height*maskenter.height))/std::sqrt((outsize.height*outsize.height)+(outsize.height*outsize.height));
-    
-    cv::Mat transform = cv::getRotationMatrix2D(pt, static_cast<double>(keypoint.angle), 1.0);
-    cv::Mat source1;
-    
-    //ROTATE
-    cv::warpAffine(input, source1, transform, input.size(), cv::INTER_LINEAR + cv::WARP_INVERSE_MAP, cv::BORDER_REPLICATE);//+cv::WARP_INVERSE_MAP
-    
-    
-    // works best in 2 steps instead of one.
-    if (outsize.height != input.cols) cv::resize(source1, output, outsize);
-    else source1.copyTo(output);
-  
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
 }
 
 cv::Mat HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-  cv::Mat descriptors;
+    cv::Mat descriptors;
 
-  try {
+    try {
 
-    int size = static_cast<int>(keyPoints.size());
-    descriptors = cv::Mat(size, static_cast<int>(mHOG->getDescriptorSize()), CV_32FC1);
+        int size = static_cast<int>(keyPoints.size());
+        descriptors = cv::Mat(size, static_cast<int>(mHOG->getDescriptorSize()), CV_32FC1);
 
-    for (int i = 0; i < size; i++) {
-      std::vector<float> hogdescriptor_aux;
-      cv::Mat patch;
-      normalizepatch(img, keyPoints[static_cast<size_t>(i)], patch);
-      mHOG->compute(patch, hogdescriptor_aux);
-      for (size_t j = 0; j < hogdescriptor_aux.size(); j++)
-        descriptors.at<float>(i, static_cast<int>(j)) = hogdescriptor_aux[j];
+        for (int i = 0; i < size; i++) {
+            std::vector<float> hogdescriptor_aux;
+            cv::Mat patch;
+            normalizepatch(img, keyPoints[static_cast<size_t>(i)], patch);
+            mHOG->compute(patch, hogdescriptor_aux);
+            for (size_t j = 0; j < hogdescriptor_aux.size(); j++)
+                descriptors.at<float>(i, static_cast<int>(j)) = hogdescriptor_aux[j];
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
-
-  return descriptors;
+    return descriptors;
 }
 
 void tl::HogDescriptor::setWinSize(const Size<int> &winSize)
 {
-  HogProperties::setWinSize(winSize);
-  update();
+    HogProperties::setWinSize(winSize);
+    update();
 }
 
 void HogDescriptor::setBlockSize(const Size<int> &blockSize)
 {
-  HogProperties::setBlockSize(blockSize);
-  update();
+    HogProperties::setBlockSize(blockSize);
+    update();
 }
 
 void HogDescriptor::setBlockStride(const Size<int> &blockStride)
 {
-  HogProperties::setBlockStride(blockStride);
-  update();
+    HogProperties::setBlockStride(blockStride);
+    update();
 }
 
 void HogDescriptor::setCellSize(const Size<int> &cellSize)
 {
-  HogProperties::setCellSize(cellSize);
-  update();
+    HogProperties::setCellSize(cellSize);
+    update();
 }
 
 void HogDescriptor::setNbins(int nbins)
 {
-  HogProperties::setNbins(nbins);
-  update();
+    HogProperties::setNbins(nbins);
+    update();
 }
 
 void HogDescriptor::setDerivAperture(int derivAperture)
 {
-  HogProperties::setDerivAperture(derivAperture);
-  update();
+    HogProperties::setDerivAperture(derivAperture);
+    update();
 }
 
 void HogDescriptor::reset()
 {
-  HogProperties::reset();
-  update();
+    HogProperties::reset();
+    update();
 }
 
 

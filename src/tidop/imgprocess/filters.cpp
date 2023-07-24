@@ -26,372 +26,395 @@
 
 #ifdef TL_HAVE_OPENCV
 
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
 
-/* ---------------------------------------------------------------------------------- */
+
+/* Bilateral filter */
 
 BilateralFilter::BilateralFilter(int diameter, double sigmaColor, double sigmaSpace, int borderType)
-  : ImageProcess(ImageProcess::ProcessType::bilateral), 
-    mDiameter(diameter), 
-    mSigmaColor(sigmaColor), 
-    mSigmaSpace(sigmaSpace), 
-    mBorderType(borderType) 
+  : ImageProcess(ImageProcess::ProcessType::bilateral),
+    mDiameter(diameter),
+    mSigmaColor(sigmaColor),
+    mSigmaSpace(sigmaSpace),
+    mBorderType(borderType)
 {
 }
 
 void BilateralFilter::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
+    try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-    cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
-    cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
-    mat_aux.copyTo(matOut);
-  
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+        cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
+        cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
+        mat_aux.copyTo(matOut);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
-void BilateralFilter::setParameters(int diameter, 
-                                    double sigmaColor, 
-                                    double sigmaSpace, 
+void BilateralFilter::setParameters(int diameter,
+                                    double sigmaColor,
+                                    double sigmaSpace,
                                     int borderType)
 {
-  mDiameter = diameter;
-  mSigmaColor = sigmaColor;
-  mSigmaSpace = sigmaSpace;
-  mBorderType = borderType;
+    mDiameter = diameter;
+    mSigmaColor = sigmaColor;
+    mSigmaSpace = sigmaSpace;
+    mBorderType = borderType;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-Blur::Blur(const cv::Size &ksize, 
-           const cv::Point &anchor, 
+
+
+/* Blur */
+
+Blur::Blur(const cv::Size &ksize,
+           const cv::Point &anchor,
            int borderType)
-  : ImageProcess(ImageProcess::ProcessType::blur), 
-    mKernelSize(ksize), 
-    mAnchor(anchor), 
-    mBorderType(borderType) 
+  : ImageProcess(ImageProcess::ProcessType::blur),
+    mKernelSize(ksize),
+    mAnchor(anchor),
+    mBorderType(borderType)
 {
 }
 
 void Blur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
-  
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+    try {
 
-    cv::blur(matIn, matOut, mKernelSize, mAnchor, mBorderType);
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+        cv::blur(matIn, matOut, mKernelSize, mAnchor, mBorderType);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
-void Blur::setParameters(const cv::Size ksize, 
-                         const cv::Point &anchor, 
+void Blur::setParameters(const cv::Size ksize,
+                         const cv::Point &anchor,
                          int borderType)
 {
-  mKernelSize = ksize;
-  mAnchor = anchor;
-  mBorderType = borderType;
+    mKernelSize = ksize;
+    mAnchor = anchor;
+    mBorderType = borderType;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-BoxFilter::BoxFilter(int ddepth, 
-                     const cv::Size &ksize, 
-                     const cv::Point &anchor, 
-                     bool normalize, 
+
+
+/* Box Filter */
+
+BoxFilter::BoxFilter(int ddepth,
+                     const cv::Size &ksize,
+                     const cv::Point &anchor,
+                     bool normalize,
                      int borderType)
-  : ImageProcess(ImageProcess::ProcessType::box_filter), 
-    mDepth(ddepth), 
-    mKernelSize(ksize), 
-    mAnchor(anchor), 
-    mNormalize(normalize), 
-    mBorderType(borderType) 
+  : ImageProcess(ImageProcess::ProcessType::box_filter),
+    mDepth(ddepth),
+    mKernelSize(ksize),
+    mAnchor(anchor),
+    mNormalize(normalize),
+    mBorderType(borderType)
 {
 }
 
 void BoxFilter::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
- 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+    try {
 
-    cv::boxFilter(matIn, matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+        cv::boxFilter(matIn, matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
-void BoxFilter::setParameters(int ddepth, 
-                              const cv::Size &ksize, 
-                              const cv::Point &anchor, 
-                              bool normalize, 
+void BoxFilter::setParameters(int ddepth,
+                              const cv::Size &ksize,
+                              const cv::Point &anchor,
+                              bool normalize,
                               int borderType)
 {
-  mDepth = ddepth;
-  mKernelSize = ksize;
-  mAnchor = anchor;
-  mNormalize = normalize;
-  mBorderType = borderType;
+    mDepth = ddepth;
+    mKernelSize = ksize;
+    mAnchor = anchor;
+    mNormalize = normalize;
+    mBorderType = borderType;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-Convolution::Convolution(int ddepth, 
-                         const cv::Mat &kernel, 
-                         const cv::Point &anchor, 
-                         double delta, 
+
+
+/* Convolution */
+
+Convolution::Convolution(int ddepth,
+                         const cv::Mat &kernel,
+                         const cv::Point &anchor,
+                         double delta,
                          int borderType)
-  : ImageProcess(ImageProcess::ProcessType::convolution), 
-    mDepth(ddepth), 
-    mKernel(kernel), 
-    mAnchor(anchor), 
-    mDelta(delta), 
-    mBorderType(borderType) 
+  : ImageProcess(ImageProcess::ProcessType::convolution),
+    mDepth(ddepth),
+    mKernel(kernel),
+    mAnchor(anchor),
+    mDelta(delta),
+    mBorderType(borderType)
 {
 }
 
 
 void Convolution::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
+    try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-    cv::filter2D(matIn, matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
+        cv::filter2D(matIn, matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
-void Convolution::setParameters(int ddepth, 
+void Convolution::setParameters(int ddepth,
                                 const cv::Mat &kernel,
-                                const cv::Point &anchor, 
-                                double delta, 
+                                const cv::Point &anchor,
+                                double delta,
                                 int borderType)
 {
-  mDepth = ddepth;
-  mKernel = kernel;
-  mAnchor = anchor;
-  mDelta = delta;
-  mBorderType = borderType;
+    mDepth = ddepth;
+    mKernel = kernel;
+    mAnchor = anchor;
+    mDelta = delta;
+    mBorderType = borderType;
 }
 
 
-/* ---------------------------------------------------------------------------------- */
 
-GaussianBlur::GaussianBlur(const cv::Size &kernelSize, 
-                           double sigmaX, 
-                           double sigmaY, 
+
+/* Gaussian blur */
+
+GaussianBlur::GaussianBlur(const cv::Size &kernelSize,
+                           double sigmaX,
+                           double sigmaY,
                            int borderType)
-  : ImageProcess(ProcessType::gaussian_blur), 
-    mKernelSize(kernelSize), 
-    mSigmaX(sigmaX), 
-    mSigmaY(sigmaY), 
-    mBorderType(borderType) 
+  : ImageProcess(ProcessType::gaussian_blur),
+    mKernelSize(kernelSize),
+    mSigmaX(sigmaX),
+    mSigmaY(sigmaY),
+    mBorderType(borderType)
 {
 }
 
 void GaussianBlur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
+    try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-    cv::GaussianBlur(matIn, matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
+        cv::GaussianBlur(matIn, matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
-void GaussianBlur::setParameters(const cv::Size &kernelSize, 
-                                 double sigmax, 
-                                 double sigmay, 
+void GaussianBlur::setParameters(const cv::Size &kernelSize,
+                                 double sigmax,
+                                 double sigmay,
                                  int bordertype)
 {
-  mKernelSize = kernelSize;
-  mSigmaX = sigmax;
-  mSigmaY = sigmay;
-  mBorderType = bordertype;
+    mKernelSize = kernelSize;
+    mSigmaX = sigmax;
+    mSigmaY = sigmay;
+    mBorderType = bordertype;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-Laplacian::Laplacian(int ddepth, 
-                     int ksize, 
-                     double scale, 
-                     double delta, 
+
+
+/* Laplacian */
+
+Laplacian::Laplacian(int ddepth,
+                     int ksize,
+                     double scale,
+                     double delta,
                      int bordertype)
-  : ImageProcess(ProcessType::laplacian), 
-    mDepth(ddepth), 
-    mKernelsize(ksize), 
-    mScale(scale), 
-    mDelta(delta), 
-    mBorderType(bordertype) 
+  : ImageProcess(ProcessType::laplacian),
+    mDepth(ddepth),
+    mKernelsize(ksize),
+    mScale(scale),
+    mDelta(delta),
+    mBorderType(bordertype)
 {
 }
 
 void Laplacian::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
+    try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-    cv::Laplacian(matIn, matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
+        cv::Laplacian(matIn, matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
-void Laplacian::setParameters(int ddepth, 
-                              int ksize, 
-                              double scale, 
-                              double delta, 
+void Laplacian::setParameters(int ddepth,
+                              int ksize,
+                              double scale,
+                              double delta,
                               int borderType)
 {
-  mDepth = ddepth;
-  mKernelsize = ksize;
-  mScale = scale;
-  mDelta = delta;
-  mBorderType = borderType;
+    mDepth = ddepth;
+    mKernelsize = ksize;
+    mScale = scale;
+    mDelta = delta;
+    mBorderType = borderType;
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
+/* Blur */
 
 MedianBlur::MedianBlur(int ksize)
-  : ImageProcess(ProcessType::median_blur), 
-    mKernelSize(ksize) 
+  : ImageProcess(ProcessType::median_blur),
+    mKernelSize(ksize)
 {
 }
 
 void MedianBlur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
+    try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
-  
-    cv::medianBlur(matIn, matOut, mKernelSize);
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+        cv::medianBlur(matIn, matOut, mKernelSize);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
 void MedianBlur::setParameters(int ksize)
 {
-  mKernelSize = ksize;
+    mKernelSize = ksize;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-Sobel::Sobel(int dx, 
-             int dy, 
-             int ksize, 
-             double scale, 
+
+
+/* Sobel */
+
+Sobel::Sobel(int dx,
+             int dy,
+             int ksize,
+             double scale,
              double delta,
-             int ddepth, 
-             double thresh, 
-             double maxval, 
+             int ddepth,
+             double thresh,
+             double maxval,
              int bordertype)
   : ImageProcess(ProcessType::sobel),
-    mDx(dx), 
-    mDy(dy), 
-    mKernelSize(ksize), 
-    mScale(scale), 
-    mDelta(delta), 
+    mDx(dx),
+    mDy(dy),
+    mKernelSize(ksize),
+    mScale(scale),
+    mDelta(delta),
     mDepth(ddepth),
-    mThresh(thresh), 
-    mMaxVal(maxval), 
-    mBorderType(bordertype) 
+    mThresh(thresh),
+    mMaxVal(maxval),
+    mBorderType(bordertype)
 {
 }
 
 void Sobel::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
-    
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+    try {
 
-    cv::Mat grad_x, grad_y;
-    cv::Mat abs_grad_x, abs_grad_y;
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-    cv::Sobel(matIn, grad_x, mDepth, mDx, mDy, mKernelSize, mScale, mDelta, mBorderType);
+        cv::Mat grad_x, grad_y;
+        cv::Mat abs_grad_x, abs_grad_y;
 
-    TL_TODO("No tiene mucho sentido añadir esto dentro del filtro Sobel")
-    convertScaleAbs(grad_x, abs_grad_x);
-    threshold(abs_grad_x, matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
+        cv::Sobel(matIn, grad_x, mDepth, mDx, mDy, mKernelSize, mScale, mDelta, mBorderType);
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+        TL_TODO("No tiene mucho sentido añadir esto dentro del filtro Sobel")
+        convertScaleAbs(grad_x, abs_grad_x);
+        threshold(abs_grad_x, matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 
 }
 
-void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype )
+void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype)
 {
-  mDx = dx;
-  mDy = dy;
-  mKernelSize = ksize;
-  mScale = scale;
-  mDelta = delta;
-  mDepth = ddepth;
-  mThresh = thresh;
-  mMaxVal = maxval;
-  mBorderType = bordertype;
+    mDx = dx;
+    mDy = dy;
+    mKernelSize = ksize;
+    mScale = scale;
+    mDelta = delta;
+    mDepth = ddepth;
+    mThresh = thresh;
+    mMaxVal = maxval;
+    mBorderType = bordertype;
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
+
+
+/* Canny */
 
 Canny::Canny(double threshold1, double threshold2)
-  : ImageProcess(ProcessType::canny), 
-    mThreshold1(threshold1), 
-    mThreshold2(threshold2) 
+  : ImageProcess(ProcessType::canny),
+    mThreshold1(threshold1),
+    mThreshold2(threshold2)
 {
 }
 
 void Canny::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  try {
+    try {
 
-    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+        TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-    double th1 = mThreshold1;
-    double th2 = mThreshold2;
+        double th1 = mThreshold1;
+        double th2 = mThreshold2;
 
-    if (th1 == 0.0 && th2 == 0.0) {
-      cv::Scalar mean;
-      cv::Scalar stdv;
-      cv::meanStdDev(matIn, mean, stdv);
-      th1 = mean[0] - stdv[0];
-      th2 = mean[0] + stdv[0];
+        if (th1 == 0.0 && th2 == 0.0) {
+            cv::Scalar mean;
+            cv::Scalar stdv;
+            cv::meanStdDev(matIn, mean, stdv);
+            th1 = mean[0] - stdv[0];
+            th2 = mean[0] + stdv[0];
+        }
+
+        cv::Canny(matIn, matOut, th1, th2, 3);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
     }
-
-    cv::Canny(matIn, matOut, th1, th2, 3);
-
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
 }
 
 void Canny::setParameters(double threshold1, double threshold2)
 {
-  mThreshold1 = threshold1;
-  mThreshold2 = threshold2;
+    mThreshold1 = threshold1;
+    mThreshold2 = threshold2;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
 }
 

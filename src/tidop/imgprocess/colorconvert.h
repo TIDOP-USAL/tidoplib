@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMGPROCESS_COLOR_CONVERSION_H
-#define TL_IMGPROCESS_COLOR_CONVERSION_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -39,9 +38,8 @@ namespace tl
 {
 
 
-/*! \addtogroup ImgProc 
+/*! \addtogroup ImgProc
  */
-
 
 
 /*!
@@ -116,56 +114,56 @@ TL_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord)
  * \brief Conversión del modo de color.
  * Conversión entre distintos tipos de modos de color
  */
-class TL_EXPORT ColorConversion 
+class TL_EXPORT ColorConversion
   : public ImageProcess
 {
 public:
-  
-  /*!
-   * Modelos de color
-   */
-  enum class ColorModel
-  {
-    rgb,
-    rgba,
-    cmyk,
-    hsl,
-    hsv,
-    luminance,
-    chromaticity
-  };
 
-public:
-
-  ColorConversion(ColorModel modelIn, ColorModel modelOut);
-  ~ColorConversion() override = default;
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   */
-  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
-
-  /*!
-   * \brief Establece el modelo de color de entrada
-   * \param[in] modelIn Modelo de color de entrada
-   */
-  void setInputColorModel(ColorModel modelIn);
-
-  /*!
-   * \brief Establece el modelo de color de salida
-   * \param[in] modelOut Modelo de color de salida
-   */
-  void setOutputColorModel(ColorModel modelOut);
+    /*!
+     * Modelos de color
+     */
+    enum class ColorModel
+    {
+        rgb,
+        rgba,
+        cmyk,
+        hsl,
+        hsv,
+        luminance,
+        chromaticity
+    };
 
 private:
 
-  ColorModel mModelIn;
-  ColorModel mModelOut;
+    ColorModel mModelIn;
+    ColorModel mModelOut;
+
+public:
+
+    ColorConversion(ColorModel modelIn, ColorModel modelOut);
+    ~ColorConversion() override = default;
+
+    /*!
+     * \brief Ejecuta el proceso.
+     * \param[in] matIn Imagen de entrada.
+     * \param[out] matOut Imagen de salida.
+     */
+    void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+    /*!
+     * \brief Establece el modelo de color de entrada
+     * \param[in] modelIn Modelo de color de entrada
+     */
+    void setInputColorModel(ColorModel modelIn);
+
+    /*!
+     * \brief Establece el modelo de color de salida
+     * \param[in] modelOut Modelo de color de salida
+     */
+    void setOutputColorModel(ColorModel modelOut);
+
 };
 
-/* ---------------------------------------------------------------------------------- */
 
 /*! \} */ // end of ImgProc
 
@@ -173,4 +171,3 @@ private:
 
 #endif // TL_HAVE_OPENCV
 
-#endif // TL_IMGPROCESS_COLOR_CONVERSION_H

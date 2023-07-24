@@ -35,27 +35,27 @@ namespace tl
 {
 
 namespace graph
-{ 
+{
 
 /* ---------------------------------------------------------------------------------- */
 
 
 GraphicEntity::GraphicEntity(Type type)
-  : GraphicStyle(),
+    : GraphicStyle(),
     //GData(),
     mEntityType(type)
 {
 }
 
 GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
-  : GraphicStyle(graphicEntity),
+    : GraphicStyle(graphicEntity),
     //GData(graphicEntity),
     mEntityType(graphicEntity.mEntityType)
 {
 }
 
 GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
-  : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
+    : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
     //GData(std::forward<GData>(graphicEntity)),
     mEntityType(std::move(graphicEntity.mEntityType))
 {
@@ -66,41 +66,41 @@ GraphicEntity::~GraphicEntity()
 }
 
 GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
-{ 
-  if (this != &graphicEntity) {
-    GraphicStyle::operator=(graphicEntity);
-    //GData::operator=(graphicEntity);
-    mEntityType = graphicEntity.mEntityType;
-  }
-  return *this;
+{
+    if (this != &graphicEntity) {
+        GraphicStyle::operator=(graphicEntity);
+        //GData::operator=(graphicEntity);
+        mEntityType = graphicEntity.mEntityType;
+    }
+    return *this;
 }
 
 GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT
-{ 
-  if (this != &graphicEntity) {
-    GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
-    //GData::operator=(std::forward<GData>(graphicEntity));
-    mEntityType = std::move(graphicEntity.mEntityType);
-  }
-  return *this;
+{
+    if (this != &graphicEntity) {
+        GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
+        //GData::operator=(std::forward<GData>(graphicEntity));
+        mEntityType = std::move(graphicEntity.mEntityType);
+    }
+    return *this;
 }
 
 GraphicEntity::Type GraphicEntity::type() const
 {
-  return mEntityType;
+    return mEntityType;
 }
 
 std::shared_ptr<TableRegister> graph::GraphicEntity::data() const
 {
-  return mData;
+    return mData;
 }
 
 void GraphicEntity::setData(std::shared_ptr<TableRegister> &data)
 {
-  mData = data;
+    mData = data;
 }
 
 
 } // Fin namespace graph
 
-} // End namespace TL
+} // End namespace tl

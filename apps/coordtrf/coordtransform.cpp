@@ -24,7 +24,7 @@
  
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
-#include <tidop/core/messages.h>
+#include <tidop/core/msg/message.h>
 #include <tidop/core/chrono.h>
 #include <tidop/geometry/transform/affine.h>
 #include <tidop/geometry/transform/translation.h>
@@ -39,8 +39,8 @@ int main(int argc, char **argv)
 
     Console &console = App::console();
     console.setTitle("Transform Example");
-    console.setMessageLevel(MessageLevel::msg_all);
-    App::messageManager().addListener(&console);
+    console.setMessageLevel(MessageLevel::all);
+    Message::instance().addMessageHandler(&console);
 
     auto arg_compute = std::make_shared<Argument_<bool>>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
     auto arg_transform = std::make_shared<Argument_<bool>>("transform", "Aplica la transformación a un listado de puntos", true);

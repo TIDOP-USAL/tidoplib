@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMG_H
-#define TL_IMG_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -37,14 +36,14 @@ template<typename T> class EnumFlags;
 
 enum class DataType : int16_t
 {
-  TL_8U = (1 << 0),      // Equivalente a CV_8U y GDT_Byte
-  TL_8S = (1 << 1),      // Equivalente a CV_8S
-  TL_16U = (1 << 2),     // Equivalente a CV_16U y GDT_UInt16
-  TL_16S = (1 << 3),     // Equivalente a CV_16S y GDT_Int16
-  TL_32U = (1 << 4),     // Equivalente a GDT_UInt32
-  TL_32S = (1 << 5),     // Equivalente a CV_32S y GDT_Int32
-  TL_32F = (1 << 6),     // Equivalente a CV_32F y GDT_Float32  
-  TL_64F = (1 << 7)      // Equivalente a CV_64F y GDT_Float64
+    TL_8U = (1 << 0),      // Equivalente a CV_8U y GDT_Byte
+    TL_8S = (1 << 1),      // Equivalente a CV_8S
+    TL_16U = (1 << 2),     // Equivalente a CV_16U y GDT_UInt16
+    TL_16S = (1 << 3),     // Equivalente a CV_16S y GDT_Int16
+    TL_32U = (1 << 4),     // Equivalente a GDT_UInt32
+    TL_32S = (1 << 5),     // Equivalente a CV_32S y GDT_Int32
+    TL_32F = (1 << 6),     // Equivalente a CV_32F y GDT_Float32  
+    TL_64F = (1 << 7)      // Equivalente a CV_64F y GDT_Float64
 };
 
 
@@ -80,15 +79,15 @@ TL_EXPORT std::vector<int> gdalBandOrder(int channels);
  * \param channels Número de canales
  * \return Tipo de OpenCV
  */
-//int gdalToOpenCv(GDALDataType gdalType, int channels);
+ //int gdalToOpenCv(GDALDataType gdalType, int channels);
 
 
-/*!
- * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
- * \param cvdt Profundidad de bits
- * \return GDALDataType
- */
-//GDALDataType openCvToGdal(int cvdt);
+ /*!
+  * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
+  * \param cvdt Profundidad de bits
+  * \return GDALDataType
+  */
+  //GDALDataType openCvToGdal(int cvdt);
 
 #endif
 
@@ -105,32 +104,30 @@ class TL_EXPORT RegisterEDSDK
 
 private:
 
-  /*!
-   * \brief Constructor privado
-   */
-  RegisterEDSDK();
+    /*!
+     * \brief Constructor privado
+     */
+    RegisterEDSDK();
 
 public:
 
-  ~RegisterEDSDK();
+    ~RegisterEDSDK();
 
-  RegisterEDSDK(RegisterEDSDK const&) = delete;
-  void operator=(RegisterEDSDK const&) = delete;
+    RegisterEDSDK(RegisterEDSDK const &) = delete;
+    void operator=(RegisterEDSDK const &) = delete;
 
-  /*!
-   * \brief Inicio de la API EDSDK
-   */
-  static void init();
+    /*!
+     * \brief Inicio de la API EDSDK
+     */
+    static void init();
 
 private:
 
-  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
-  static std::mutex sMutex;
+    static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+    static std::mutex sMutex;
 };
 
 #endif // TL_HAVE_EDSDK
 
 
 } // End namespace tl
-
-#endif // TL_IMG_H

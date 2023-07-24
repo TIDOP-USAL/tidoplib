@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_CONCURRENCY_H
-#define TL_CORE_CONCURRENCY_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -46,24 +45,24 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \defgroup concurrency Concurrency
-  *
-  * \{
-  */
+/*!
+ * \defgroup concurrency Concurrency
+ *
+ * \{
+ */
 
- /*!
-  * \brief Optimal number of threads
-  */
+/*!
+ * \brief Optimal number of threads
+ */
 TL_EXPORT uint32_t optimalNumberOfThreads();
 
 
- /*!
-  * \brief Iterates over a range of indices and executes a function in parallel
-  * \param[in] ini Initial index
-  * \param[in] end End index
-  * \param[in] f Function or lambda
-  */
+/*!
+ * \brief Iterates over a range of indices and executes a function in parallel
+ * \param[in] ini Initial index
+ * \param[in] end End index
+ * \param[in] f Function or lambda
+ */
 TL_EXPORT void parallel_for(size_t ini, 
                             size_t end, 
                             std::function<void(size_t)> f);
@@ -75,99 +74,100 @@ Function parallel_for_each(Iter first,
                            Iter last,
                            Function f)
 {
-  auto f_aux = [&](Iter ini, Iter end) {
-    while(ini != end) {
-      f(*ini++);
+    auto f_aux = [&](Iter ini, Iter end) {
+        while (ini != end) {
+            f(*ini++);
+        }
+    };
+
+    size_t num_threads = optimalNumberOfThreads();
+    std::vector<std::thread> threads(num_threads);
+    auto size = std::distance(first, last);
+    size_t block_size = size / num_threads;
+
+    Iter block_ini = first;
+    Iter block_end = block_ini;
+
+    for (size_t i = 0; i < num_threads; i++) {
+
+        if (i == num_threads - 1) {
+            block_end = last;
+        } else {
+            block_end = block_ini;
+            std::advance(block_end, block_size);
+        }
+
+        threads[i] = std::thread(f_aux, block_ini, block_end);
+
+        block_ini = block_end;
     }
-  };
 
-  size_t num_threads = optimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
-  auto size = std::distance(first, last);
-  size_t block_size = size / num_threads;
-
-  Iter block_ini = first;
-  Iter block_end = block_ini;
-
-  for(size_t i = 0; i < num_threads; i++) {
-
-    if (i == num_threads - 1) {
-      block_end = last;
-    } else {
-      block_end = block_ini;
-      std::advance(block_end, block_size);
+    for (auto &_thread : threads) {
+        if (_thread.joinable())
+            _thread.join();
     }
 
-    threads[i] = std::thread(f_aux, block_ini, block_end);
-
-    block_ini = block_end;
-  }
-
-  for(auto &_thread : threads) {
-    if(_thread.joinable())
-      _thread.join();
-  }
-
-  return f;
+    return f;
 }
 
 template<typename Iterator, typename Func>
 void parallel_for_each_2(Iterator first,
-                         Iterator last, 
+                         Iterator last,
                          Func f)
 {
-  unsigned long const length = std::distance(first, last);
-  if(!length)
-    return;
-  unsigned long const min_per_thread = 25;
-  unsigned long const max_threads = (length + min_per_thread - 1) / min_per_thread;
-  unsigned long const hardware_threads = std::thread::hardware_concurrency();
-  unsigned long const num_threads = std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
-  unsigned long const block_size = length / num_threads;
-  std::vector<std::future<void> > futures(num_threads - 1);
-  std::vector<std::thread> threads(num_threads - 1);
-  //join_threads joiner(threads);
-  Iterator block_start = first;
-  for(unsigned long i = 0; i < (num_threads - 1); ++i) {
-    Iterator block_end = block_start;
-    std::advance(block_end, block_size);
-    std::packaged_task<void(void)> task(
-    [=]() {
-         std::for_each(block_start, block_end, f);
-    });
-    futures[i] = task.get_future();
-    threads[i] = std::thread(std::move(task));
-    block_start = block_end;
-  }
-  std::for_each(block_start, last, f);
-  for(unsigned long i = 0; i < (num_threads - 1); ++i) {
-    futures[i].get();
-  }
+    unsigned long const length = std::distance(first, last);
+    if (!length) return;
 
-  for(auto &_thread : threads) {
-    if(_thread.joinable())
-      _thread.join();
-  }
+    unsigned long const min_per_thread = 25;
+    unsigned long const max_threads = (length + min_per_thread - 1) / min_per_thread;
+    unsigned long const hardware_threads = std::thread::hardware_concurrency();
+    unsigned long const num_threads = std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
+    unsigned long const block_size = length / num_threads;
+    std::vector<std::future<void> > futures(num_threads - 1);
+    std::vector<std::thread> threads(num_threads - 1);
+
+    Iterator block_start = first;
+    for (unsigned long i = 0; i < (num_threads - 1); ++i) {
+        Iterator block_end = block_start;
+        std::advance(block_end, block_size);
+        std::packaged_task<void(void)> task(
+            [=]() {
+                std::for_each(block_start, block_end, f);
+            });
+        futures[i] = task.get_future();
+        threads[i] = std::thread(std::move(task));
+        block_start = block_end;
+    }
+
+    std::for_each(block_start, last, f);
+    for (unsigned long i = 0; i < (num_threads - 1); ++i) {
+        futures[i].get();
+    }
+
+    for (auto &_thread : threads) {
+        if (_thread.joinable())
+            _thread.join();
+    }
 }
 
 template<typename Iterator, typename Func>
-void parallel_for_each_3(Iterator first, 
-                       Iterator last, 
-                       Func f)
+void parallel_for_each_3(Iterator first,
+                         Iterator last,
+                         Func f)
 {
-  unsigned long const length = std::distance(first, last);
-  if(!length)
-    return;
-  unsigned long const min_per_thread = 25;
-  if(length < (2 * min_per_thread)) {
-    std::for_each(first, last, f);
-  } else {
-    Iterator const mid_point = first + length / 2;
-    std::future<void> first_half = std::async(&parallel_for_each_2<Iterator, Func>,
-      first, mid_point, f);
-    parallel_for_each_2(mid_point, last, f);
-    first_half.get();
-  }
+    unsigned long const length = std::distance(first, last);
+    if (!length) return;
+
+    unsigned long const min_per_thread = 25;
+    if (length < (2 * min_per_thread)) {
+        std::for_each(first, last, f);
+    } else {
+        Iterator const mid_point = first + length / 2;
+        std::future<void> first_half = std::async(&parallel_for_each_2<Iterator, Func>,
+                                                  first, mid_point, f);
+        parallel_for_each_2(mid_point, last, f);
+        first_half.get();
+    }
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -178,62 +178,61 @@ constexpr auto QueueDefaultCapacity = 256;
 template<typename T>
 class Queue
 {
-
-public:
-
-  /*!
-   * \brief Default constructor
-   */
-  Queue() = default;
-
-  /*!
-   * \brief Constructor with queue capacity
-   * \param[in] capacity Queue capacity
-   */
-  Queue(size_t capacity);
-
-  virtual ~Queue() = default;
-
-  TL_DISABLE_COPY(Queue)
-  TL_DISABLE_MOVE(Queue)
-
-  /*!
-   * \brief Inserts an element at the end
-   * \param[in] value
-   */
-  virtual void push(const T &value) = 0;
-
-  /*!
-   * \brief Removes the first element
-   * \param[in] value
-   */
-  virtual bool pop(T &value) = 0;
-
-  /*!
-   * \brief Returns the number of elements
-   * \return Number of elements
-   */
-  size_t size() const;
-
-  /*!
-   * \brief Returns the capacity
-   * \return Maximun number of elements in queue
-   */
-  size_t capacity() const;
-
-  bool empty() const;
-  bool full() const;
-
 protected:
 
-  std::queue<T> &buffer();
-  std::mutex &mutex();
+    std::queue<T> &buffer();
+    std::mutex &mutex();
 
 private:
 
-  size_t mCapacity{QueueDefaultCapacity};
-  std::queue<T> mBuffer;
-  mutable std::mutex mMutex;
+    size_t mCapacity{QueueDefaultCapacity};
+    std::queue<T> mBuffer;
+    mutable std::mutex mMutex;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    Queue() = default;
+    
+    /*!
+     * \brief Constructor with queue capacity
+     * \param[in] capacity Queue capacity
+     */
+    Queue(size_t capacity);
+    
+    virtual ~Queue() = default;
+    
+    TL_DISABLE_COPY(Queue)
+    TL_DISABLE_MOVE(Queue)
+    
+    /*!
+     * \brief Inserts an element at the end
+     * \param[in] value
+     */
+    virtual void push(const T &value) = 0;
+    
+    /*!
+     * \brief Removes the first element
+     * \param[in] value
+     */
+    virtual bool pop(T &value) = 0;
+    
+    /*!
+     * \brief Returns the number of elements
+     * \return Number of elements
+     */
+    size_t size() const;
+    
+    /*!
+     * \brief Returns the capacity
+     * \return Maximun number of elements in queue
+     */
+    size_t capacity() const;
+    
+    bool empty() const;
+    bool full() const;
 
 };
 
@@ -248,40 +247,40 @@ Queue<T>::Queue(size_t capacity)
 template<typename T>
 inline size_t Queue<T>::size() const
 {
-  std::lock_guard<std::mutex> locker(mMutex);
-  return mBuffer.size();
+    std::lock_guard<std::mutex> locker(mMutex);
+    return mBuffer.size();
 }
 
 template<typename T>
 inline size_t Queue<T>::capacity() const
 {
-  return mCapacity;
+    return mCapacity;
 }
 
 template<typename T>
 inline bool Queue<T>::empty() const
 {
-  std::lock_guard<std::mutex> locker(mMutex);
-  return mBuffer.empty();
+    std::lock_guard<std::mutex> locker(mMutex);
+    return mBuffer.empty();
 }
 
 template<typename T>
 inline bool Queue<T>::full() const
 {
-  std::lock_guard<std::mutex> locker(mMutex);
-  return mBuffer.size() < mCapacity;
+    std::lock_guard<std::mutex> locker(mMutex);
+    return mBuffer.size() < mCapacity;
 }
 
 template<typename T>
 inline std::queue<T> &Queue<T>::buffer()
 {
-  return mBuffer;
+    return mBuffer;
 }
 
 template<typename T>
 inline std::mutex &Queue<T>::mutex()
 {
-  return mMutex;
+    return mMutex;
 }
 
 
@@ -298,39 +297,40 @@ class QueueSPSC
   : public Queue<T>
 {
 
-public:
-
-  /*!
-   * \brief Default constructor
-   */
-  QueueSPSC() = default;
-
-  /*!
-   * \brief Constructor with queue capacity
-   * \param[in] capacity Queue capacity
-   */
-  QueueSPSC(size_t capacity);
-
-  ~QueueSPSC() = default;
-
-  TL_DISABLE_COPY(QueueSPSC)
-  TL_DISABLE_MOVE(QueueSPSC)
-
-  /*!
-   * \brief Inserts an element at the end
-   * \param[in] value
-   */
-  void push(const T &value) override;
-
-  /*!
-   * \brief Removes the first element
-   * \param[in] value
-   */
-  bool pop(T &value) override;
-
 private:
 
-  std::condition_variable mConditionVariable;
+    std::condition_variable mConditionVariable;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    QueueSPSC() = default;
+  
+    /*!
+     * \brief Constructor with queue capacity
+     * \param[in] capacity Queue capacity
+     */
+    QueueSPSC(size_t capacity);
+  
+    ~QueueSPSC() = default;
+  
+    TL_DISABLE_COPY(QueueSPSC)
+    TL_DISABLE_MOVE(QueueSPSC)
+  
+    /*!
+     * \brief Inserts an element at the end
+     * \param[in] value
+     */
+    void push(const T &value) override;
+  
+    /*!
+     * \brief Removes the first element
+     * \param[in] value
+     */
+    bool pop(T &value) override;
+
 };
 
 
@@ -343,32 +343,32 @@ QueueSPSC<T>::QueueSPSC(size_t capacity)
 template<typename T>
 void QueueSPSC<T>::push(const T &value)
 {
-  std::unique_lock<std::mutex> locker(this->mutex());
+    std::unique_lock<std::mutex> locker(this->mutex());
 
-  mConditionVariable.wait(locker, [this]() {
-    return this->buffer().size() < this->capacity();
-  });
+    mConditionVariable.wait(locker, [this]() {
+        return this->buffer().size() < this->capacity();
+                            });
 
-  this->buffer().push(value);
-  locker.unlock();
-  mConditionVariable.notify_one();
+    this->buffer().push(value);
+    locker.unlock();
+    mConditionVariable.notify_one();
 }
 
 template<typename T>
 inline bool QueueSPSC<T>::pop(T &value)
 {
-  std::unique_lock<std::mutex> locker(this->mutex());
+    std::unique_lock<std::mutex> locker(this->mutex());
 
-  mConditionVariable.wait(locker, [this]() {
-    return !this->buffer().empty();
-  });
+    mConditionVariable.wait(locker, [this]() {
+        return !this->buffer().empty();
+                            });
 
-  value = this->buffer().front();
-  this->buffer().pop();
-  locker.unlock();
-  mConditionVariable.notify_one();
+    value = this->buffer().front();
+    this->buffer().pop();
+    locker.unlock();
+    mConditionVariable.notify_one();
 
-  return true;
+    return true;
 
 }
 
@@ -384,47 +384,48 @@ class QueueMPMC
   : public Queue<T>
 {
 
-public:
-
-  /*!
-   * \brief Default constructor
-   */
-  QueueMPMC();
-
-  /*!
-   * \brief Constructor with queue capacity
-   * \param[in] capacity Queue capacity
-   */
-  QueueMPMC(size_t capacity);
-
-  ~QueueMPMC() = default;
-
-  TL_DISABLE_COPY(QueueMPMC)
-  TL_DISABLE_MOVE(QueueMPMC)
-
-  /*!
-   * \brief Inserts an element at the end
-   * \param[in] value
-   */
-  void push(const T &value) override;
-
-  /*!
-   * \brief Removes the first element
-   * \param[in] value
-   */
-  bool pop(T &value) override;
-
-  void stop()
-  {
-    std::unique_lock<std::mutex> locker(this->mutex());
-    mStop = true;
-    mConditionVariable.notify_all();
-  }
-
 private:
 
-  std::condition_variable mConditionVariable;
-  bool mStop{false};
+    std::condition_variable mConditionVariable;
+    bool mStop{false};
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    QueueMPMC();
+    
+    /*!
+     * \brief Constructor with queue capacity
+     * \param[in] capacity Queue capacity
+     */
+    QueueMPMC(size_t capacity);
+    
+    ~QueueMPMC() = default;
+    
+    TL_DISABLE_COPY(QueueMPMC)
+    TL_DISABLE_MOVE(QueueMPMC)
+    
+    /*!
+     * \brief Inserts an element at the end
+     * \param[in] value
+     */
+    void push(const T &value) override;
+    
+    /*!
+     * \brief Removes the first element
+     * \param[in] value
+     */
+    bool pop(T &value) override;
+    
+    void stop()
+    {
+        std::unique_lock<std::mutex> locker(this->mutex());
+        mStop = true;
+        mConditionVariable.notify_all();
+    }
+
 };
 
 template<typename T>
@@ -442,40 +443,40 @@ QueueMPMC<T>::QueueMPMC(size_t capacity)
 template<typename T>
 void QueueMPMC<T>::push(const T &value)
 {
-  std::unique_lock<std::mutex> locker(this->mutex());
+    std::unique_lock<std::mutex> locker(this->mutex());
 
-  mConditionVariable.wait(locker, [this]() {
-    return this->buffer().size() < this->capacity() || mStop;
-  });
+    mConditionVariable.wait(locker, [this]() {
+        return this->buffer().size() < this->capacity() || mStop;
+                            });
 
-  if (!mStop) {
-    this->buffer().push(value);
-  }
+    if (!mStop) {
+        this->buffer().push(value);
+    }
 
-  locker.unlock();
-  mConditionVariable.notify_one();
+    locker.unlock();
+    mConditionVariable.notify_one();
 }
 
 template<typename T>
 inline bool QueueMPMC<T>::pop(T &value)
 {
-  std::unique_lock<std::mutex> locker(this->mutex());
+    std::unique_lock<std::mutex> locker(this->mutex());
 
-  mConditionVariable.wait(locker, [this]() {
-    return !this->buffer().empty() || mStop;
-  });
+    mConditionVariable.wait(locker, [this]() {
+        return !this->buffer().empty() || mStop;
+                            });
 
-  bool read_buffer = !this->buffer().empty();
+    bool read_buffer = !this->buffer().empty();
 
-  if (read_buffer) {
-    value = this->buffer().front();
-    this->buffer().pop();
-  }
+    if (read_buffer) {
+        value = this->buffer().front();
+        this->buffer().pop();
+    }
 
-  locker.unlock();
-  mConditionVariable.notify_one();
+    locker.unlock();
+    mConditionVariable.notify_one();
 
-  return read_buffer;
+    return read_buffer;
 }
 
 
@@ -494,22 +495,22 @@ class Producer
 {
 public:
 
-  explicit Producer(Queue<T> *queue) : mQueue(queue) {}
-  ~Producer() = default;
+    explicit Producer(Queue<T> *queue) : mQueue(queue) {}
+    ~Producer() = default;
 
-  virtual void operator() () = 0;
-  virtual void operator() (size_t ini, size_t end) = 0;
+    virtual void operator() () = 0;
+    virtual void operator() (size_t ini, size_t end) = 0;
 
 protected:
 
-  Queue<T> *queue()
-  {
-    return mQueue;
-  }
+    Queue<T> *queue()
+    {
+        return mQueue;
+    }
 
 private:
 
-  Queue<T> *mQueue;
+    Queue<T> *mQueue;
 
 };
 
@@ -525,21 +526,21 @@ class Consumer
 {
 public:
 
-  explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
-  ~Consumer() = default;
+    explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
+    ~Consumer() = default;
 
-  virtual void operator() () = 0;
+    virtual void operator() () = 0;
 
 protected:
 
-  Queue<T> *queue()
-  {
-    return mQueue;
-  }
+    Queue<T> *queue()
+    {
+        return mQueue;
+    }
 
 private:
 
-  Queue<T> *mQueue;
+    Queue<T> *mQueue;
 
 };
 
@@ -551,5 +552,3 @@ private:
 
 } // End namespace tl
 
-
-#endif // TL_CORE_CONCURRENCY_H

@@ -37,7 +37,7 @@ if(BUILD_TL_CORE)
                          SOURCE_FILES 
                              app.cpp
                              exception.cpp
-                             messages.cpp
+                             #messages.cpp
                              log.cpp
                              utils.cpp
                              task.cpp
@@ -58,7 +58,6 @@ if(BUILD_TL_CORE)
                              app.h
                              exception.h
                              flags.h
-                             messages.h
                              log.h
                              utils.h
                              task.h
@@ -76,6 +75,7 @@ if(BUILD_TL_CORE)
                              console/argument.h
                              console/command.h
                              console/validator.h
+                             messages.h
                              msg/handler.h
                              msg/message.h)
                          

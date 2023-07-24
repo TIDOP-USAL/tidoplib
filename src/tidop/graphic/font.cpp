@@ -34,8 +34,8 @@ namespace graph
 /*                                     Clase Font                                    */
 /* ---------------------------------------------------------------------------------- */
 
-Font::Font() 
-  : mName("Arial"),
+Font::Font()
+    : mName("Arial"),
     mSize(10),
     mStyle(Style::normal),
     mUnderline(false),
@@ -43,8 +43,8 @@ Font::Font()
 {
 }
 
-Font::Font(const Font &font) 
-  : mName(font.mName),
+Font::Font(const Font &font)
+    : mName(font.mName),
     mSize(font.mSize),
     mStyle(font.mStyle),
     mUnderline(font.mUnderline),
@@ -53,7 +53,7 @@ Font::Font(const Font &font)
 }
 
 Font::Font(Font &&font) TL_NOEXCEPT
-  : mName(std::move(font.mName)),
+    : mName(std::move(font.mName)),
     mSize(std::move(font.mSize)),
     mStyle(std::move(font.mStyle)),
     mUnderline(std::move(font.mUnderline)),
@@ -62,7 +62,7 @@ Font::Font(Font &&font) TL_NOEXCEPT
 }
 
 Font::Font(const std::string name, int size, Style style, bool underline, bool strikethrough)
-  : mName(name),
+    : mName(name),
     mSize(size),
     mStyle(style),
     mUnderline(underline),
@@ -72,93 +72,93 @@ Font::Font(const std::string name, int size, Style style, bool underline, bool s
 
 std::string Font::name() const
 {
-  return mName;
+    return mName;
 }
 
 void Font::setName(const std::string &name)
 {
-  mName = name;
+    mName = name;
 }
 
 int Font::size() const
 {
-  return mSize;
+    return mSize;
 }
 
 void Font::setSize(int size)
 {
-  mSize = size;
+    mSize = size;
 }
 
 bool Font::isBold() const
 {
-  return mStyle.isEnabled(Style::bold);
+    return mStyle.isEnabled(Style::bold);
 }
 
 void Font::setBold(bool active)
 {
-  mStyle.activeFlag(Style::bold, active);
+    mStyle.activeFlag(Style::bold, active);
 }
 
 bool Font::isItalic() const
 {
-  return mStyle.isEnabled(Style::italic);
+    return mStyle.isEnabled(Style::italic);
 }
 
 void Font::setItalic(bool active)
 {
-  mStyle.activeFlag(Style::italic, active);
+    mStyle.activeFlag(Style::italic, active);
 }
 
 bool Font::isUnderline() const
 {
-  return mUnderline;
+    return mUnderline;
 }
 
 void Font::setUnderline(bool active)
 {
-  mUnderline = active;
+    mUnderline = active;
 }
 
 bool Font::isStrikethrough() const
 {
-  return mStrikethrough;
+    return mStrikethrough;
 }
 
 void Font::setStrikethrough(bool active)
 {
-  mStrikethrough = active;
+    mStrikethrough = active;
 }
 
 void Font::setStyle(Style style)
 {
-  mStyle = style;
+    mStyle = style;
 }
 
 Font &Font::operator = (const Font &font)
 {
-  if (this != &font) {
-    this->mName = font.mName;
-    this->mSize = font.mSize;
-    this->mStyle = font.mStyle;
-    this->mUnderline = font.mUnderline;
-    this->mStrikethrough = font.mStrikethrough;
-  }
-  return *this;
+    if (this != &font) {
+        this->mName = font.mName;
+        this->mSize = font.mSize;
+        this->mStyle = font.mStyle;
+        this->mUnderline = font.mUnderline;
+        this->mStrikethrough = font.mStrikethrough;
+    }
+    return *this;
 }
 
 Font &Font::operator = (Font &&font) TL_NOEXCEPT
 {
-  if (this != &font) {
-    this->mName = std::move(font.mName);
-    this->mSize = std::move(font.mSize);
-    this->mStyle = std::move(font.mStyle);
-    this->mUnderline = std::move(font.mUnderline);
-    this->mStrikethrough = std::move(font.mStrikethrough);
-  }
-  return *this;
+    if (this != &font) {
+        this->mName = std::move(font.mName);
+        this->mSize = std::move(font.mSize);
+        this->mStyle = std::move(font.mStyle);
+        this->mUnderline = std::move(font.mUnderline);
+        this->mStrikethrough = std::move(font.mStrikethrough);
+    }
+    return *this;
 }
 
 } // End namespace graph
 
-} // End namespace TL
+} // End namespace tl

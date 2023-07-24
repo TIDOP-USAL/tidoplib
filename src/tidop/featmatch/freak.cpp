@@ -24,14 +24,13 @@
 
 #include "freak.h"
 
-#include "tidop/core/messages.h"
-
+#include "tidop/core/exception.h"
 
 namespace tl
 {
 
 
-FreakProperties::FreakProperties()   
+FreakProperties::FreakProperties()
 {
 }
 
@@ -46,55 +45,55 @@ FreakProperties::FreakProperties(const FreakProperties &freakProperties)
 
 bool FreakProperties::orientationNormalized() const
 {
-  return mOrientationNormalized;
+    return mOrientationNormalized;
 }
 
 bool FreakProperties::scaleNormalized() const
 {
-  return mScaleNormalized;
+    return mScaleNormalized;
 }
 
 double FreakProperties::patternScale() const
 {
-  return mPatternScale;
+    return mPatternScale;
 }
 
 int FreakProperties::octaves() const
 {
-  return mOctaves;
+    return mOctaves;
 }
 
 void FreakProperties::setOrientationNormalized(bool orientationNormalized)
 {
-  mOrientationNormalized = orientationNormalized;
+    mOrientationNormalized = orientationNormalized;
 }
 
 void FreakProperties::setScaleNormalized(bool scaleNormalized)
 {
-  mScaleNormalized = scaleNormalized;
+    mScaleNormalized = scaleNormalized;
 }
 
 void FreakProperties::setPatternScale(double patternScale)
 {
-  mPatternScale = patternScale;
+    mPatternScale = patternScale;
 }
 
 void FreakProperties::setOctaves(int octaves)
 {
-  mOctaves = octaves;
+    mOctaves = octaves;
 }
 
 void FreakProperties::reset()
 {
-  mOrientationNormalized = true;
-  mScaleNormalized = true;
-  mPatternScale = 22.;
-  mOctaves = 4;
+    mOrientationNormalized = true;
+    mScaleNormalized = true;
+    mPatternScale = 22.;
+    mOctaves = 4;
 }
 
 std::string FreakProperties::name() const
 {
-  return std::string("FREAK");
+    return std::string("FREAK");
 }
 
 
@@ -103,14 +102,14 @@ std::string FreakProperties::name() const
 
 FreakDescriptor::FreakDescriptor()
 {
-  update();
+    update();
 }
 
 FreakDescriptor::FreakDescriptor(const FreakDescriptor &freakDescriptor)
   : FreakProperties(freakDescriptor),
     DescriptorExtractor(freakDescriptor)
 {
-  update();
+    update();
 }
 
 FreakDescriptor::FreakDescriptor(bool orientationNormalized,
@@ -118,72 +117,72 @@ FreakDescriptor::FreakDescriptor(bool orientationNormalized,
                                  double patternScale,
                                  int octaves)
 {
-  FreakProperties::setOrientationNormalized(orientationNormalized);
-  FreakProperties::setScaleNormalized(scaleNormalized);
-  FreakProperties::setPatternScale(patternScale);
-  FreakProperties::setOctaves(octaves);
-  update();
+    FreakProperties::setOrientationNormalized(orientationNormalized);
+    FreakProperties::setScaleNormalized(scaleNormalized);
+    FreakProperties::setPatternScale(patternScale);
+    FreakProperties::setOctaves(octaves);
+    update();
 }
 
 void FreakDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mFREAK = cv::xfeatures2d::FREAK::create(FreakProperties::orientationNormalized(),
-                                          FreakProperties::scaleNormalized(),
-                                          static_cast<float>(FreakProperties::patternScale()),
-                                          FreakProperties::octaves());
+    mFREAK = cv::xfeatures2d::FREAK::create(FreakProperties::orientationNormalized(),
+                                            FreakProperties::scaleNormalized(),
+                                            static_cast<float>(FreakProperties::patternScale()),
+                                            FreakProperties::octaves());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
-cv::Mat FreakDescriptor::extract(const cv::Mat &img, 
+cv::Mat FreakDescriptor::extract(const cv::Mat &img,
                                  std::vector<cv::KeyPoint> &keyPoints)
 {
-  cv::Mat descriptors;
+    cv::Mat descriptors;
 
-  try {
+    try {
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
-    mFREAK->compute(img, keyPoints, descriptors);
+        mFREAK->compute(img, keyPoints, descriptors);
 #else
-    TL_COMPILER_WARNING("OpenCV not built with extra modules. Freak Descriptor not supported")
-    throw TL_ERROR("OpenCV not built with extra modules. Freak Descriptor not supported");
+        TL_COMPILER_WARNING("OpenCV not built with extra modules. Freak Descriptor not supported")
+        throw TL_ERROR("OpenCV not built with extra modules. Freak Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-  return descriptors;
+    return descriptors;
 }
 
 void FreakDescriptor::setOrientationNormalized(bool orientationNormalized)
 {
-  FreakProperties::setOrientationNormalized(orientationNormalized);
-  update();
+    FreakProperties::setOrientationNormalized(orientationNormalized);
+    update();
 }
 
 void FreakDescriptor::setScaleNormalized(bool scaleNormalized)
 {
-  FreakProperties::setScaleNormalized(scaleNormalized);
-  update();
+    FreakProperties::setScaleNormalized(scaleNormalized);
+    update();
 }
 
 void FreakDescriptor::setPatternScale(double patternScale)
 {
-  FreakProperties::setPatternScale(patternScale);
-  update();
+    FreakProperties::setPatternScale(patternScale);
+    update();
 }
 
 void FreakDescriptor::setOctaves(int octaves)
 {
-  FreakProperties::setOctaves(octaves);
-  update();
+    FreakProperties::setOctaves(octaves);
+    update();
 }
 
 void FreakDescriptor::reset()
 {
-  FreakProperties::reset();
-  update();
+    FreakProperties::reset();
+    update();
 }
 
 

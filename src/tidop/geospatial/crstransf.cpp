@@ -112,7 +112,7 @@ auto CrsTransform::compute(const std::vector<Point3<double>> &pts1,
     unusedParameter(pts2);
     unusedParameter(error);
     unusedParameter(rmse);
-    msgError("'compute' is not supported for CrsTransform");
+    Message::error("'compute' is not supported for CrsTransform");
     //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
     return Transform::Status::failure;
 }
@@ -155,12 +155,12 @@ auto CrsTransform::transform(const Point3<double> &ptIn,
       if (mCoordinateTransformation)
         ptOut = mCoordinateTransformation->transform(ptIn);
       else
-        msgError("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     } else {
       if (mCoordinateTransformationInv)
         ptOut = mCoordinateTransformationInv->transform(ptIn);
       else
-        msgError("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     }
 
   } catch (...) {

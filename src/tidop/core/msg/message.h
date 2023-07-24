@@ -35,15 +35,11 @@
 #include <fmt/format.h>
 #endif
 
-#include "tidop/core/console.h"
-#include "tidop/core/log.h"
 #include "tidop/core/msg/handler.h"
 
 namespace tl
 {
 
-//class Console2;
-//class Log2;
 
 /*! \addtogroup core
  *  \{
@@ -53,6 +49,7 @@ namespace tl
  *
  *  \{
  */
+
 
 
 class TL_EXPORT Message
@@ -127,8 +124,14 @@ public:
     {
         if (stopHandler) return;
 
-        Console2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+
+        std::list<MessageHandler *> handlers = messageHandlers;
+        if (!stopHandler && !handlers.empty()) {
+            for (auto &handler : handlers) {
+              handler->debug(message);
+            }
+        }
     }
 
     template<typename... Args>
@@ -137,8 +140,6 @@ public:
         if (stopHandler) return;
 
         auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Console2::info(message);
-        Log2::info(message);
 
         std::list<MessageHandler *> handlers = messageHandlers;
         if (!stopHandler && !handlers.empty()) {
@@ -153,17 +154,29 @@ public:
     {
         if (stopHandler) return;
 
-        Console2::warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::warning(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
+        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+
+        std::list<MessageHandler *> handlers = messageHandlers;
+        if (!stopHandler && !handlers.empty()) {
+            for (auto &handler : handlers) {
+              handler->warning(message);
+            }
+        }
     }
 
     template<typename... Args>
-    static void succes(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   
         if (stopHandler) return;
 
-        Console2::succes(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::succes(FORMAT_NAMESPACE vformat(s.get(),FORMAT_NAMESPACE make_format_args(args...)));
+        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+
+        std::list<MessageHandler *> handlers = messageHandlers;
+        if (!stopHandler && !handlers.empty()) {
+            for (auto &handler : handlers) {
+              handler->success(message);
+            }
+        }
     }
 
     template<typename... Args>
@@ -171,8 +184,14 @@ public:
     {   
         if (stopHandler) return;
 
-        Console2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
-        Log2::error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        auto message = format(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+
+        std::list<MessageHandler *> handlers = messageHandlers;
+        if (!stopHandler && !handlers.empty()) {
+            for (auto &handler : handlers) {
+              handler->error(message);
+            }
+        }
     }
 
 #endif

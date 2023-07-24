@@ -124,7 +124,7 @@ TaskFinalizedEvent::TaskFinalizedEvent(Task const *task)
 
 Task const *TaskFinalizedEvent::task() const
 {
-  return mTask;
+    return mTask;
 }
 
 void TaskFinalizedEvent::clear()
@@ -142,17 +142,17 @@ TaskErrorEvent::TaskErrorEvent()
 
 std::string TaskErrorEvent::errorMessage() const
 {
-  return mErrorMessage;
+    return mErrorMessage;
 }
 
 void TaskErrorEvent::setErrorMessage(const std::string &error)
 {
-  mErrorMessage = error;
+    mErrorMessage = error;
 }
 
 void TaskErrorEvent::clear()
 {
-  mErrorMessage.clear();
+    mErrorMessage.clear();
 }
 
 
@@ -167,17 +167,17 @@ ImageChangeEvent::ImageChangeEvent()
 
 std::string ImageChangeEvent::image() const
 {
-  return mImage;
+    return mImage;
 }
 
 void ImageChangeEvent::setImage(const std::string &image)
 {
-  mImage = image;
+    mImage = image;
 }
 
 void ImageChangeEvent::clear()
 {
-  mImage.clear();
+    mImage.clear();
 }
 
 } // namespace tl

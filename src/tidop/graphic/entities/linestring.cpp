@@ -28,30 +28,30 @@ namespace tl
 {
 
 namespace graph
-{ 
+{
 
 /* ---------------------------------------------------------------------------------- */
 
-GLineString::GLineString() 
-  : LineString<Point<double>>(), 
+GLineString::GLineString()
+    : LineString<Point<double>>(),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
-GLineString::GLineString(const LineString<Point<double>> &lineString) 
-  : LineString<Point<double>>(lineString), 
+GLineString::GLineString(const LineString<Point<double>> &lineString)
+    : LineString<Point<double>>(lineString),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
-GLineString::GLineString(const GLineString &lineString) 
-  : LineString<Point<double>>(lineString), 
+GLineString::GLineString(const GLineString &lineString)
+    : LineString<Point<double>>(lineString),
     GraphicEntity(lineString)
 {
 }
 
 GLineString::GLineString(GLineString &&lineString) TL_NOEXCEPT
-  : LineString<Point<double>>(std::forward<LineString<Point<double>>>(lineString)), 
+    : LineString<Point<double>>(std::forward<LineString<Point<double>>>(lineString)),
     GraphicEntity(std::forward<GraphicEntity>(lineString))
 {
 }
@@ -62,55 +62,55 @@ GLineString::~GLineString()
 
 GLineString &GLineString::operator = (const GLineString &gLineString)
 {
-  if (this != &gLineString) {
-    LineString<Point<double>>::operator=(gLineString);
-    GraphicEntity::operator=(gLineString);
-  }
-  return *this;
+    if (this != &gLineString) {
+        LineString<Point<double>>::operator=(gLineString);
+        GraphicEntity::operator=(gLineString);
+    }
+    return *this;
 }
 
 GLineString &GLineString::operator = (GLineString &&gLineString) TL_NOEXCEPT
 {
-  if (this != &gLineString) {
-    LineString<Point<double>>::operator=(std::forward<LineString<Point<double>>>(gLineString));
-    GraphicEntity::operator=(std::forward<GraphicEntity>(gLineString));
-  }
-  return *this;
+    if (this != &gLineString) {
+        LineString<Point<double>>::operator=(std::forward<LineString<Point<double>>>(gLineString));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gLineString));
+    }
+    return *this;
 }
 
 bool GLineString::isMultiEntity() const
 {
-  return false;
+    return false;
 }
 
 bool GLineString::isSimpleEntity() const
 {
-  return true;
+    return true;
 }
 
 
 /* ---------------------------------------------------------------------------------- */
 
-GLineString3D::GLineString3D() 
-  : LineString3D<Point3<double>>(),
+GLineString3D::GLineString3D()
+    : LineString3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
 GLineString3D::GLineString3D(const LineString3D<Point3<double>> &gLineString3D)
-  : LineString3D<Point3<double>>(gLineString3D),
+    : LineString3D<Point3<double>>(gLineString3D),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
-GLineString3D::GLineString3D(const GLineString3D &gLineString3D) 
-  : LineString3D<Point3<double>>(gLineString3D),
+GLineString3D::GLineString3D(const GLineString3D &gLineString3D)
+    : LineString3D<Point3<double>>(gLineString3D),
     GraphicEntity(gLineString3D)
 {
 }
 
 GLineString3D::GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT
-  : LineString3D<Point3<double>>(std::forward<LineString3D<Point3<double>>>(gLineString3D)),
+    : LineString3D<Point3<double>>(std::forward<LineString3D<Point3<double>>>(gLineString3D)),
     GraphicEntity(std::forward<GraphicEntity>(gLineString3D))
 {
 }
@@ -121,30 +121,30 @@ GLineString3D::~GLineString3D()
 
 GLineString3D &GLineString3D::operator = (const GLineString3D &gLineString3D)
 {
-  if (this != &gLineString3D) {
-    LineString3D<Point3<double>>::operator=(gLineString3D);
-    GraphicEntity::operator=(gLineString3D);
-  }
-  return *this;
+    if (this != &gLineString3D) {
+        LineString3D<Point3<double>>::operator=(gLineString3D);
+        GraphicEntity::operator=(gLineString3D);
+    }
+    return *this;
 }
 
 GLineString3D &GLineString3D::operator = (GLineString3D &&gLineString3D) TL_NOEXCEPT
 {
-  if (this != &gLineString3D) {
-    LineString3D<Point3<double>>::operator=(std::forward<LineString3D<Point3<double>>>(gLineString3D));
-    GraphicEntity::operator=(std::forward<GraphicEntity>(gLineString3D));
-  }
-  return *this;
+    if (this != &gLineString3D) {
+        LineString3D<Point3<double>>::operator=(std::forward<LineString3D<Point3<double>>>(gLineString3D));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gLineString3D));
+    }
+    return *this;
 }
 
 bool GLineString3D::isMultiEntity() const
 {
-  return false;
+    return false;
 }
 
 bool GLineString3D::isSimpleEntity() const
 {
-  return true;
+    return true;
 }
 
 
@@ -152,25 +152,25 @@ bool GLineString3D::isSimpleEntity() const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString::GMultiLineString()
-  : MultiLineString<Point<double>>(), 
+    : MultiLineString<Point<double>>(),
     GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
 GMultiLineString::GMultiLineString(const MultiLineString<Point<double>> &multiLineString)
-  : MultiLineString<Point<double>>(multiLineString), 
+    : MultiLineString<Point<double>>(multiLineString),
     GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
 GMultiLineString::GMultiLineString(const GMultiLineString &gMultiLineString)
-  : MultiLineString<Point<double>>(gMultiLineString), 
+    : MultiLineString<Point<double>>(gMultiLineString),
     GraphicEntity(gMultiLineString)
 {
 }
 
 GMultiLineString::GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT
-  : MultiLineString<Point<double>>(std::forward<MultiLineString<Point<double>>>(gMultiLineString)), 
+    : MultiLineString<Point<double>>(std::forward<MultiLineString<Point<double>>>(gMultiLineString)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiLineString))
 {
 }
@@ -181,55 +181,55 @@ GMultiLineString::~GMultiLineString()
 
 GMultiLineString &GMultiLineString::operator = (const GMultiLineString &gMultiLineString)
 {
-  if (this != &gMultiLineString) {
-    MultiLineString<Point<double>>::operator=(gMultiLineString);
-    GraphicEntity::operator=(gMultiLineString);
-  }
-  return *this;
+    if (this != &gMultiLineString) {
+        MultiLineString<Point<double>>::operator=(gMultiLineString);
+        GraphicEntity::operator=(gMultiLineString);
+    }
+    return *this;
 }
 
 GMultiLineString &GMultiLineString::operator = (GMultiLineString &&gMultiLineString) TL_NOEXCEPT
 {
-  if (this != &gMultiLineString) {
-    MultiLineString<Point<double>>::operator=(std::forward<MultiLineString<Point<double>>>(gMultiLineString));
-    GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString));
-  }
-  return *this;
+    if (this != &gMultiLineString) {
+        MultiLineString<Point<double>>::operator=(std::forward<MultiLineString<Point<double>>>(gMultiLineString));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString));
+    }
+    return *this;
 }
 
 bool GMultiLineString::isMultiEntity() const
 {
-  return true;
+    return true;
 }
 
 bool GMultiLineString::isSimpleEntity() const
 {
-  return false;
+    return false;
 }
 
 
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString3D::GMultiLineString3D()
-  : MultiLineString3D<Point3<double>>(),
+    : MultiLineString3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &multiLineString)
-  : MultiLineString3D<Point3<double>>(multiLineString),
+    : MultiLineString3D<Point3<double>>(multiLineString),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D)
-  : MultiLineString3D<Point3<double>>(gMultiLineString3D),
+    : MultiLineString3D<Point3<double>>(gMultiLineString3D),
     GraphicEntity(gMultiLineString3D)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT
-  : MultiLineString3D<Point3<double>>(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D)),
+    : MultiLineString3D<Point3<double>>(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiLineString3D))
 {
 }
@@ -240,30 +240,30 @@ GMultiLineString3D::~GMultiLineString3D()
 
 GMultiLineString3D &GMultiLineString3D::operator = (const GMultiLineString3D &gMultiLineString3D)
 {
-  if (this != &gMultiLineString3D) {
-    MultiLineString3D<Point3<double>>::operator=(gMultiLineString3D);
-    GraphicEntity::operator=(gMultiLineString3D);
-  }
-  return *this;
+    if (this != &gMultiLineString3D) {
+        MultiLineString3D<Point3<double>>::operator=(gMultiLineString3D);
+        GraphicEntity::operator=(gMultiLineString3D);
+    }
+    return *this;
 }
 
 GMultiLineString3D &GMultiLineString3D::operator = (GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT
 {
-  if (this != &gMultiLineString3D) {
-    MultiLineString3D<Point3<double>>::operator=(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D));
-    GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString3D));
-  }
-  return *this;
+    if (this != &gMultiLineString3D) {
+        MultiLineString3D<Point3<double>>::operator=(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString3D));
+    }
+    return *this;
 }
 
 bool GMultiLineString3D::isMultiEntity() const
 {
-  return true;
+    return true;
 }
 
 bool GMultiLineString3D::isSimpleEntity() const
 {
-  return false;
+    return false;
 }
 
 

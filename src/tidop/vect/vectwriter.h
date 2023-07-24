@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECTOR_WRITER_H
-#define TL_VECTOR_WRITER_H
+#pragma once
 
 #include <memory>
 #include <list>
@@ -48,45 +47,45 @@ class TL_EXPORT VectorWriter
 
 public:
 
-  VectorWriter(Path file);
-  virtual ~VectorWriter() = default;
+    VectorWriter(Path file);
+    virtual ~VectorWriter() = default;
 
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
+    /*!
+     * \brief Abre el fichero
+     */
+    virtual void open() = 0;
 
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
+    /*!
+     * \brief Comprueba si el fichero se ha cargado correctamente
+     */
+    virtual bool isOpen() const = 0;
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+    /*!
+     * \brief Cierra el fichero
+     */
+    virtual void close() = 0;
 
-  virtual void create() = 0;
+    virtual void create() = 0;
 
-  virtual void write(const graph::GLayer &layer) = 0;
+    virtual void write(const graph::GLayer &layer) = 0;
 
-  /*!
-   * \brief Set the Coordinate Reference System
-   * \param[in] crs Coordinate Reference System in WKT format
-   */
-  virtual void setCRS(const std::string &epsgCode) = 0;
+    /*!
+     * \brief Set the Coordinate Reference System
+     * \param[in] crs Coordinate Reference System in WKT format
+     */
+    virtual void setCRS(const std::string &epsgCode) = 0;
 
-//#ifdef TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Set the Coordinate Reference System
-//   * \param[in] crs geospatial::Crs object
-//   */
-//  virtual void setCRS(const geospatial::Crs &crs) = 0;
-//#endif
+    //#ifdef TL_HAVE_GEOSPATIAL
+    //  /*!
+    //   * \brief Set the Coordinate Reference System
+    //   * \param[in] crs geospatial::Crs object
+    //   */
+    //  virtual void setCRS(const geospatial::Crs &crs) = 0;
+    //#endif
 
 protected:
 
-  Path mFile;
+    Path mFile;
 
 };
 
@@ -100,17 +99,14 @@ public:
 
 private:
 
-  VectorWriterFactory() = default;
+    VectorWriterFactory() = default;
 
 public:
 
-  static std::unique_ptr<VectorWriter> create(const Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<VectorWriter> createWriter(const Path &file);
+    static std::unique_ptr<VectorWriter> create(const Path &file);
+    TL_DEPRECATED("create", "2.1")
+    static std::unique_ptr<VectorWriter> createWriter(const Path &file);
 };
 
 
 } // End namespace tl
-
-
-#endif // TL_VECTOR_WRITER_H

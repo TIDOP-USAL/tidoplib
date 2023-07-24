@@ -27,8 +27,7 @@
 
 #include <algorithm>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/lapack.h"

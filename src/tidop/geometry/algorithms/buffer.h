@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_ALGORITHMS_BUFFER_H
-#define TL_GEOMETRY_ALGORITHMS_BUFFER_H
+#pragma once
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/polygon.h"
@@ -50,20 +49,20 @@ namespace tl
 template<typename Point_t> inline
 Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
 {
-  Polygon<Point_t> buff(4);
+    Polygon<Point_t> buff(4);
 
-  Point_t pt1 = ln.pt1;
-  Point_t pt2 = ln.pt2;
-  double acimut = azimut(pt1, pt2);
-  double dx = size * sin(acimut + consts::half_pi<typename Point_t::value_type>);
-  double dy = size * cos(acimut + consts::half_pi<typename Point_t::value_type>);
+    Point_t pt1 = ln.pt1;
+    Point_t pt2 = ln.pt2;
+    double acimut = azimut(pt1, pt2);
+    double dx = size * sin(acimut + consts::half_pi<typename Point_t::value_type>);
+    double dy = size * cos(acimut + consts::half_pi<typename Point_t::value_type>);
 
-  buff[0] = Point_t(pt1.x + dx, pt1.y + dy);
-  buff[1] = Point_t(pt2.x + dx, pt2.y + dy);
-  buff[2] = Point_t(pt2.x - dx, pt2.y - dy);
-  buff[3] = Point_t(pt1.x - dx, pt1.y - dy);
+    buff[0] = Point_t(pt1.x + dx, pt1.y + dy);
+    buff[1] = Point_t(pt2.x + dx, pt2.y + dy);
+    buff[2] = Point_t(pt2.x - dx, pt2.y - dy);
+    buff[3] = Point_t(pt1.x - dx, pt1.y - dy);
 
-  return buff;
+    return buff;
 }
 
 /*! \} */ // end of geometry_algorithms
@@ -72,4 +71,3 @@ Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
 
 } // End namespace tl
 
-#endif // TL_GEOMETRY_ALGORITHMS_BUFFER_H

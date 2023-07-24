@@ -24,44 +24,45 @@
 
 #include "lucid.h"
 
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
 
 
 LucidProperties::LucidProperties()
-{}
+{
+}
 
 int LucidProperties::lucidKernel() const
 {
-  return mLucidKernel;
+    return mLucidKernel;
 }
 
 int LucidProperties::blurKernel() const
 {
-  return mBlurKernel;
+    return mBlurKernel;
 }
 
 void LucidProperties::setLucidKernel(int lucidKernel)
 {
-  mLucidKernel = lucidKernel;
+    mLucidKernel = lucidKernel;
 }
 
 void LucidProperties::setBlurKernel(int blurKernel)
 {
-  mBlurKernel = blurKernel;
+    mBlurKernel = blurKernel;
 }
 
 void LucidProperties::reset()
 {
-  mLucidKernel = 1;
-  mBlurKernel = 2;
+    mLucidKernel = 1;
+    mBlurKernel = 2;
 }
 
 std::string LucidProperties::name() const
 {
-  return std::string("LUCID");
+    return std::string("LUCID");
 }
 
 
@@ -70,64 +71,63 @@ std::string LucidProperties::name() const
 
 LucidDescriptor::LucidDescriptor()
 {
-  update();
+    update();
 }
 
 LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
-  : LucidProperties()
+    : LucidProperties()
 {
-  LucidProperties::setLucidKernel(lucidKernel);
-  LucidProperties::setBlurKernel(blurKernel);
-  update();
+    LucidProperties::setLucidKernel(lucidKernel);
+    LucidProperties::setBlurKernel(blurKernel);
+    update();
 }
 
 void LucidDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D
-  mLUCID = cv::xfeatures2d::LUCID::create(LucidProperties::lucidKernel(),
-                                          LucidProperties::blurKernel());
+    mLUCID = cv::xfeatures2d::LUCID::create(LucidProperties::lucidKernel(),
+                                            LucidProperties::blurKernel());
 #endif
 }
 
-cv::Mat LucidDescriptor::extract(const cv::Mat &img, 
+cv::Mat LucidDescriptor::extract(const cv::Mat &img,
                                  std::vector<cv::KeyPoint> &keyPoints)
 {
-  cv::Mat descriptors;
+    cv::Mat descriptors;
 
-  try {
+    try {
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
-    mLUCID->compute(img, keyPoints, descriptors);
+        mLUCID->compute(img, keyPoints, descriptors);
 #else
-    TL_COMPILER_WARNING("OpenCV not built with extra modules. Lucid Descriptor not supported")
-    throw TL_ERROR("OpenCV not built with extra modules. Lucid Descriptor not supported");
+        TL_COMPILER_WARNING("OpenCV not built with extra modules. Lucid Descriptor not supported")
+        throw TL_ERROR("OpenCV not built with extra modules. Lucid Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-  return descriptors;
+    return descriptors;
 }
 
 void LucidDescriptor::setLucidKernel(int lucidKernel)
 {
-  LucidProperties::setLucidKernel(lucidKernel);
-  update();
+    LucidProperties::setLucidKernel(lucidKernel);
+    update();
 }
 
 void LucidDescriptor::setBlurKernel(int blurKernel)
 {
-  LucidProperties::setBlurKernel(blurKernel);
-  update();
+    LucidProperties::setBlurKernel(blurKernel);
+    update();
 }
 
 void LucidDescriptor::reset()
 {
-  LucidProperties::reset();
-  update();
+    LucidProperties::reset();
+    update();
 }
-
 
 
 } // namespace tl

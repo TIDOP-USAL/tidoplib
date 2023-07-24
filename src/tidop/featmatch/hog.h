@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_HOG_DESCRIPTOR_H
-#define TL_FEATMATCH_HOG_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -48,46 +47,48 @@ namespace tl
 
 
 class TL_EXPORT HogProperties
-  : public Hog
+    : public Hog
 {
+
+private:
+
+    Size<int> mWinSize;
+    Size<int> mBlockSize;
+    Size<int> mBlockStride;
+    Size<int> mCellSize;
+    int mNbins{9};
+    int mDerivAperture{1};
+
 public:
 
-  HogProperties();
-  HogProperties(const HogProperties &hogProperties);
-  ~HogProperties() override = default;
+    HogProperties();
+    HogProperties(const HogProperties &hogProperties);
+    ~HogProperties() override = default;
 
 // Hog interface
 
 public:
 
-  Size<int> winSize() const override;
-  Size<int> blockSize() const override;
-  Size<int> blockStride() const override;
-  Size<int> cellSize() const override;
-  int nbins() const override;
-  int derivAperture() const override;
-  void setWinSize(const Size<int> &winSize) override;
-  void setBlockSize(const Size<int> &blockSize) override;
-  void setBlockStride(const Size<int> &blockStride) override;
-  void setCellSize(const Size<int> &cellSize) override;
-  void setNbins(int nbins) override;
-  void setDerivAperture(int derivAperture) override;
+    Size<int> winSize() const override;
+    Size<int> blockSize() const override;
+    Size<int> blockStride() const override;
+    Size<int> cellSize() const override;
+    int nbins() const override;
+    int derivAperture() const override;
+    void setWinSize(const Size<int> &winSize) override;
+    void setBlockSize(const Size<int> &blockSize) override;
+    void setBlockStride(const Size<int> &blockStride) override;
+    void setCellSize(const Size<int> &cellSize) override;
+    void setNbins(int nbins) override;
+    void setDerivAperture(int derivAperture) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  Size<int> mWinSize;
-  Size<int> mBlockSize;
-  Size<int> mBlockStride;
-  Size<int> mCellSize;
-  int mNbins{9};
-  int mDerivAperture{1};
 };
 
 
@@ -95,56 +96,57 @@ private:
 
 
 class TL_EXPORT HogDescriptor
-    : public HogProperties,
-      public DescriptorExtractor
+  : public HogProperties,
+    public DescriptorExtractor
 {
-
-public:
-
-  HogDescriptor();
-  HogDescriptor(const HogDescriptor &hogDescriptor);
-  HogDescriptor(const Size<int>& winSize,
-                const Size<int>& blockSize,
-                const Size<int>& blockStride,
-                const Size<int>& cellSize,
-                int nbins,
-                int derivAperture);
-  ~HogDescriptor() override = default;
 
 private:
 
-  void update();
-  void normalizepatch(const cv::Mat &gray, 
-                      const cv::KeyPoint &keypoint, 
-                      cv::Mat &output);
+    std::shared_ptr<cv::HOGDescriptor> mHOG;
+
+public:
+
+    HogDescriptor();
+    HogDescriptor(const HogDescriptor &hogDescriptor);
+    HogDescriptor(const Size<int> &winSize,
+                  const Size<int> &blockSize,
+                  const Size<int> &blockStride,
+                  const Size<int> &cellSize,
+                  int nbins,
+                  int derivAperture);
+    ~HogDescriptor() override = default;
+
+private:
+
+    void update();
+    void normalizepatch(const cv::Mat &gray,
+                        const cv::KeyPoint &keypoint,
+                        cv::Mat &output);
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Hog interface
 
 public:
 
-  void setWinSize(const Size<int> &winSize) override;
-  void setBlockSize(const Size<int> &blockSize) override;
-  void setBlockStride(const Size<int> &blockStride) override;
-  void setCellSize(const Size<int> &cellSize) override;
-  void setNbins(int nbins) override;
-  void setDerivAperture(int derivAperture) override;
+    void setWinSize(const Size<int> &winSize) override;
+    void setBlockSize(const Size<int> &blockSize) override;
+    void setBlockStride(const Size<int> &blockStride) override;
+    void setCellSize(const Size<int> &cellSize) override;
+    void setNbins(int nbins) override;
+    void setDerivAperture(int derivAperture) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-private:
-
-  std::shared_ptr<cv::HOGDescriptor> mHOG;
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
@@ -152,5 +154,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_HOG_DESCRIPTOR_H

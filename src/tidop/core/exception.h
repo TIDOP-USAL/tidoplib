@@ -30,9 +30,8 @@
 #include <string>
 
 #include "tidop/core/defs.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/path.h"
-//#include "tidop/core/msg/message.h"
+#include "tidop/core/msg/message.h"
 
 namespace tl
 {
@@ -116,23 +115,11 @@ private:
 
     void messagef()
     {
-        char buf[1000];
         if (mLine == -1) {
-          mMessage = mError;
+            mMessage = mError;
         } else {
-#if defined _MSC_VER
-          sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
-#else
-          snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
-#endif
-          mMessage = std::string(buf);
+            mMessage = Message::format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
         }
-        
-        //if (mLine == -1) {
-        //    mMessage = mError;
-        //} else {
-        //    //mMessage = Message::format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
-        //}
     }
 
 
@@ -151,15 +138,6 @@ TL_EXPORT void printException(const std::exception &e, int level = 0);
 
 
 
-//#ifdef WIN32
-//
-///*!
-// * \brief formatWindowsErrorMsg
-// */
-//TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
-//
-//#endif
-
 /*! \} */ // end of core
 
 } // fin namespace tl
@@ -172,18 +150,17 @@ TL_EXPORT void printException(const std::exception &e, int level = 0);
 /*!
  * \brief Macro para crear una excepción
  */
-#define TL_ERROR(...) tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
-#define TL_ERROR2(...) tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_ERROR(...) tl::makeException(tl::Message::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION)
 
 /*!
  * \brief Macro para lanzar una excepción
  */
-#define TL_THROW_EXCEPTION(...) throw tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_EXCEPTION(...) throw tl::makeException(tl::Message::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION)
 
  /*!
   * \brief Macro para lanzar una excepción
   */
-#define TL_THROW_EXCEPTION_WITH_NESTED(...) std::throw_with_nested(tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION))
+#define TL_THROW_EXCEPTION_WITH_NESTED(...) std::throw_with_nested(tl::makeException(tl::Message::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION))
 
 #define TL_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " __VA_ARGS__)
 

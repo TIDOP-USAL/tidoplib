@@ -24,20 +24,6 @@
 
 #include "tidop/core/msg/message.h"
 
-//#include "tidop/core/defs.h"
-//#include "tidop/core/app.h"
-//#include "tidop/core/utils.h"
-//#include "tidop/core/chrono.h"
-//
-//#include <cstdarg>
-//#if defined WIN32
-//# include <windows.h>
-//#endif
-//#include <cstdio>
-//#include <iostream>
-//#include <fstream>
-//#include <cstring>
-
 
 namespace tl
 {
