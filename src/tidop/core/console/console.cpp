@@ -167,7 +167,7 @@ void Console::setFontBold(bool bold)
 #ifdef TL_OS_WINDOWS
     mCurrentFont.FontWeight = bold ? FW_BOLD : FW_NORMAL;
 #else
-    mBold = bold ? 1 : 21
+    mBold = bold ? 1 : 21;
 #endif
     update();
 }
@@ -216,6 +216,9 @@ Console &Console::operator <<(MessageLevel level)
     case MessageLevel::error:
         setForegroundColor(Color::red, Intensity::normal);
         _stream << "Error:   ";
+        break;
+    case MessageLevel::all:
+        _stream << "Info:    ";
         break;
     }
 

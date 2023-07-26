@@ -442,7 +442,6 @@ public:
 
             if (cerr != 0) {
                 throw TL_ERROR("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-                //throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
             } else {
                 mDataset->FlushCache();
             }
@@ -465,9 +464,9 @@ public:
         }
     }
 
-    void write(const cv::Mat & image,
-               const Affine<Point<int>> &trf) override
-    {
+    // void write(const cv::Mat & image,
+    //            const Affine<Point<int>> &trf) override
+    // {
         //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
 
         ////TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
@@ -494,7 +493,7 @@ public:
         //if (cerr != 0) {
         //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
         //}
-    }
+    // }
 
     int rows() const override
     {
@@ -706,10 +705,10 @@ public:
     {
     }
 
-    void write(const cv::Mat &image,
-               const Affine<Point<int>> &trf) override
-    {
-    }
+    // void write(const cv::Mat &image,
+    //            const Affine<Point<int>> &trf) override
+    // {
+    // }
 
     //void write(const unsigned char *buff, const geometry::WindowI &window) override
     //{

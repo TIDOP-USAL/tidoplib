@@ -38,13 +38,87 @@
 namespace tl
 {
 
+/// \cond
+
+namespace internal
+{
+
+
+template<typename T>
+T arg_value(const Argument::SharedPtr &arg)
+{
+    Argument::Type type = arg->type();
+    Argument::Type return_type = ArgTraits<T>::property_type;
+    if(type != return_type) {
+        TL_ASSERT(type != Argument::Type::arg_string,
+                  "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
+        if(type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
+            Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), ArgTraits<T>::type_name);
+        }
+    }
+
+    T value{};
+    switch(type) {
+    case Argument::Type::arg_unknown:
+        // Exception
+        break;
+    case Argument::Type::arg_bool:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
+        break;
+    case Argument::Type::arg_int8:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
+        break;
+    case Argument::Type::arg_uint8:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
+        break;
+    case Argument::Type::arg_int16:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
+        break;
+    case Argument::Type::arg_uint16:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
+        break;
+    case Argument::Type::arg_int32:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
+        break;
+    case Argument::Type::arg_uin32:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
+        break;
+    case Argument::Type::arg_float32:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
+        break;
+    case Argument::Type::arg_float64:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
+        break;
+    default:
+        break;
+    }
+    
+    return value;
+}
+
+template<>
+std::string arg_value(const Argument::SharedPtr &arg)
+{
+    Argument::Type type = arg->type();
+    Argument::Type return_type = ArgTraits<std::string>::property_type;
+    TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
+              "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
+    std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
+    return value;
+}
+
+} // namespace internal 
+
+/// \endcond
+
+
 /*! \addtogroup core
  *  \{
  */
 
- /*! \addtogroup Console
-  *  \{
-  */
+/*! \addtogroup Console
+ *  \{
+ */
 
 
 
@@ -302,90 +376,19 @@ public:
     T value(const std::string &name) const
     {
         auto arg = argument(name);
-        return value<T>(arg);
+        return internal::arg_value<T>(arg);
     }
 
     template<typename T>
     T value(const char &short_name) const
     {
         auto arg = argument(short_name);
-        return value<T>(arg);
+        return internal::arg_value<T>(arg);
     }
 
 protected:
 
     auto init() -> void;
-
-    template<typename T>
-    T value(const Argument::SharedPtr &arg) const
-    {
-        Argument::Type type = arg->type();
-        Argument::Type return_type = ArgTraits<T>::property_type;
-
-        if(type != return_type) {
-
-            TL_ASSERT(type != Argument::Type::arg_string,
-                      "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
-
-            if(type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
-                Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), ArgTraits<T>::type_name);
-            }
-
-        }
-
-        T value{};
-
-        switch(type) {
-        case Argument::Type::arg_unknown:
-            // Exception
-            break;
-        case Argument::Type::arg_bool:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
-            break;
-        case Argument::Type::arg_int8:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
-            break;
-        case Argument::Type::arg_uint8:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
-            break;
-        case Argument::Type::arg_int16:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
-            break;
-        case Argument::Type::arg_uint16:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
-            break;
-        case Argument::Type::arg_int32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
-            break;
-        case Argument::Type::arg_uin32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
-            break;
-        case Argument::Type::arg_float32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
-            break;
-        case Argument::Type::arg_float64:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
-            break;
-        default:
-            break;
-        }
-
-        return value;
-    }
-
-    template<>
-    std::string value(const Argument::SharedPtr &arg) const
-    {
-        Argument::Type type = arg->type();
-        Argument::Type return_type = ArgTraits<std::string>::property_type;
-
-        TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
-                  "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
-
-        std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
-
-        return value;
-    }
 
 private:
 

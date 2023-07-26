@@ -117,8 +117,8 @@ public:
      * \param[in] image Bloque de imagen que se escribe
      * \param[in] trf Transformaci�n entre el bloque y la imagen.
      */
-    virtual void write(const cv::Mat &image,
-                       const Affine<Point<int>> &trf) = 0;
+    // virtual void write(const cv::Mat &image,
+    //                    const Affine<Point<int>> &trf) = 0;
 
     /*!
      * \brief Escribe en la imagen

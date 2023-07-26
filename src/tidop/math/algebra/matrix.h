@@ -2965,34 +2965,6 @@ auto Matrix<T, _rows, _cols>::inversenxn(bool *invertibility) const -> Matrix
     return matrix;
 }
 
-//#define TL_TRANSPOSE4(row0, row1, row2, row3) {                 \
-//            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
-//                                                                    \
-//            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
-//            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
-//            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
-//            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
-//                                                                    \
-//            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
-//            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
-//            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
-//            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
-//        }
-//
-//#define TL_TRANSPOSE8(row0, row1, row2, row3) {                 \
-//            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
-//                                                                    \
-//            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
-//            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
-//            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
-//            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
-//                                                                    \
-//            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
-//            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
-//            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
-//            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
-//        }
-
 template<typename T, size_t _rows, size_t _cols>
 auto Matrix<T, _rows, _cols>::transpose() const -> Matrix<T, _cols, _rows>
 {

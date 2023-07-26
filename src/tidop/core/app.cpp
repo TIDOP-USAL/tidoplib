@@ -28,7 +28,7 @@
 #include "tidop/core/msg/handler.h"
 #include "tidop/core/log.h"
 
-#if TL_OS_LINUX
+#ifdef TL_OS_LINUX
 #include <unistd.h>
 #endif
 

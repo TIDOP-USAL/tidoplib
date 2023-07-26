@@ -74,6 +74,9 @@ Log &Log::operator <<(MessageLevel level)
     case MessageLevel::error:
         _stream << "Error:   ";
         break;
+    case MessageLevel::all:
+        _stream << "Info:    ";
+        break;
     }
 
     return *this;
