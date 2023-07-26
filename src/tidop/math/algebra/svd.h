@@ -187,15 +187,15 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
     //int one = 1;
 
-    for (i = 0; i < mCols; i++) {
+    for (i = 0; i < static_cast<int>(mCols); i++) {
         l = i + 2;
         rv1[i] = scale * g;
         g = s = scale = 0.0;
 
-        if (i < mRows) {
-            for (k = i; k < mRows; k++) scale += std::abs(U[k][i]);
+        if (i < static_cast<int>(mRows)) {
+            for (k = i; k < static_cast<int>(mRows); k++) scale += std::abs(U[k][i]);
             if (scale != 0.) {
-                for (k = i; k < mRows; k++) {
+                for (k = i; k < static_cast<int>(mRows); k++) {
                     U[k][i] /= scale;
                     s += U[k][i] * U[k][i];
                 }
@@ -203,8 +203,8 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
                 g = -std::copysign(sqrt(s), f);
                 h = f * g - s;
                 U[i][i] = f - g;
-                for (j = l - consts::one<int>; j < mCols; j++) {
-                    for (s = 0.0, k = i; k < mRows; k++)
+                for (j = l - consts::one<int>; j < static_cast<int>(mCols); j++) {
+                    for (s = 0.0, k = i; k < static_cast<int>(mRows); k++)
                         s += U[k][i] * U[k][j];
                     f = s / h;
                     for (k = i; k < mRows; k++)

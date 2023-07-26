@@ -251,7 +251,6 @@ template<typename T>
 auto Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT -> Quaternion<T> &
 {
     if (this != &quaternion) {
-        OrientationBase<T>::operator=(std::forward<OrientationBase<T>>(quaternion));
         this->x = std::exchange(quaternion.x, -std::numeric_limits<T>().max());
         this->y = std::exchange(quaternion.y, -std::numeric_limits<T>().max());
         this->z = std::exchange(quaternion.z, -std::numeric_limits<T>().max());

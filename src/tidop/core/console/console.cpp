@@ -324,6 +324,46 @@ void Console::error(String message)
         Console::instance() << MessageLevel::error << message << std::endl;
 }
 
+#ifdef TL_OS_WINDOWS
+void init(DWORD handle) 
+{
+    setConsoleUnicode();
+    this->handle = GetStdHandle(handle);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+
+    if(!GetConsoleScreenBufferInfo(this->handle, &info)) {
+        oldColorAttrs = 0x0007;
+    } else {
+        oldColorAttrs = info.wAttributes;
+    }
+
+    foregroundColor = (oldColorAttrs & 0x0007);
+    foregroundIntensity = (oldColorAttrs & 0x0008);
+    backgroundColor = (oldColorAttrs & 0x0070);
+    backgroundIntensity = (oldColorAttrs & 0x0080);
+    mIniFont.cbSize = sizeof(mIniFont);
+    GetCurrentConsoleFontEx(this->handle, FALSE, &mIniFont);
+    mCurrentFont.cbSize = sizeof(mCurrentFont);
+    mCurrentFont = mIniFont;
+    //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
+    //CONSOLE_SCREEN_BUFFER_INFOEX cbi;
+    //cbi.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+    //GetConsoleScreenBufferInfoEx(mHandle, &cbi);
+    //cbi.wAttributes = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
+    //SetConsoleScreenBufferInfoEx(mHandle, &cbi);
+}
+
+#else
+
+void Console::init(FILE *stream)
+{
+  mStream = stream;
+  mForegroundColor = 0;
+  mBackgroundColor = 0;
+  mBold = 21;
+}
+
+#endif
 
 } // End mamespace tl
 

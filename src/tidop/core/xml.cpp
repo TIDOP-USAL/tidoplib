@@ -127,7 +127,7 @@ XmlNodeValue XmlNode::value() const
 
 XmlNode::Type XmlNode::type() const
 {
-	Type type; 
+	Type type = XmlNode::Type::element; 
 
 	switch(mNode->node->eType) {
 		case CPLXMLNodeType::CXT_Element:
