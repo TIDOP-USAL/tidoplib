@@ -33,7 +33,6 @@
 #define TL_VERSION "@TidopLib_VERSION@"
 
 
-#cmakedefine TL_MESSAGE_HANDLER
 #cmakedefine TL_ENABLE_DEPRECATED_METHODS 
 #cmakedefine TL_WARNING_DEPRECATED_METHOD
 #cmakedefine TL_WARNING_TODO

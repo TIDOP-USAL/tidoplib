@@ -29,10 +29,10 @@
 
 #include "tidop/core/msg/handler.h"
 
-#if CPP_VERSION >= 20
-#include <format>
-#else
+#ifdef TL_HAVE_FMT
 #include <fmt/format.h>
+#else
+#include <format>
 #endif
 #include <mutex>
 

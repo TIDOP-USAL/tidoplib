@@ -29,11 +29,6 @@
 #include <string>
 #include <memory>
 #include <mutex>
-#if CPP_VERSION >= 20
-#include <format>
-#else
-#include <fmt/format.h>
-#endif
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"

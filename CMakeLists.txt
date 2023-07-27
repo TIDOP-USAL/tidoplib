@@ -210,7 +210,6 @@ OPTION (BUILD_DOC                     "Build documentation"    OFF)
 # Configuración de la librería
 
 OPTION (TIDOPLIB_USE_SIMD_INTRINSICS    "Use SIMD intrinsics"               ON )
-OPTION (TIDOPLIB_MESSAGE_HANDLER        "Active message handle"             ON )
 OPTION (TIDOPLIB_DEPRECATED_METHODS     "Use deprecated methods and class"  OFF)
 
 OPTION (TIDOPLIB_WARNING_DEPRECATED_METHODS     "Active deprecated method warning"  OFF)
@@ -235,14 +234,6 @@ if (TIDOPLIB_USE_SIMD_INTRINSICS)
 else(TIDOPLIB_USE_SIMD_INTRINSICS)
     unset(TIDOPLIB_SIMD CACHE)
 endif(TIDOPLIB_USE_SIMD_INTRINSICS)
-
-if(TIDOPLIB_MESSAGE_HANDLER)
-  set(TL_MESSAGE_HANDLER YES)
-  message(STATUS "  [TidopLib] Message manager enabled")
-else()
-  set(TL_MESSAGE_HANDLER NO)
-  message(STATUS "  [TidopLib] Message manager disabled")
-endif()
 
 if(TIDOPLIB_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
@@ -347,8 +338,12 @@ message(STATUS "\nDependency loading:\n")
 # fmt (REQUIRED C++ Version < 20)                                        #
 ##########################################################################
 
-if(CMAKE_CXX_STANDARD LESS 20)
-
+if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
+    AND ((${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" AND ${CMAKE_CXX_COMPILER_VERSION} LESS 17.5) 
+         OR (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} LESS 13.1)))
+    set(TL_HAVE_FMT NO)
+    add_compile_definitions("FORMAT_NAMESPACE=std::")
+else()
     find_package(fmt REQUIRED)
 
     if(fmt_FOUND)
@@ -360,9 +355,6 @@ if(CMAKE_CXX_STANDARD LESS 20)
         set(TL_HAVE_FMT NO)
         add_compile_definitions("FORMAT_NAMESPACE=std::")
     endif()
-else()
-    set(TL_HAVE_FMT NO)
-    add_compile_definitions("FORMAT_NAMESPACE=std::")
 endif()
 
 ##########################################################################

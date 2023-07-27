@@ -29,10 +29,10 @@
 #include "tidop/core/defs.h"
 
 #include <list>
-#if CPP_VERSION >= 20
-#include <format>
-#else
+#ifdef TL_HAVE_FMT
 #include <fmt/format.h>
+#else
+#include <format>
 #endif
 
 #include "tidop/core/msg/handler.h"
@@ -110,7 +110,7 @@ public:
      * \return Mensaje
      */
     template<typename... Args>
-    static constexpr std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
     }
