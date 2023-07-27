@@ -24,7 +24,7 @@
 
 #pragma once
 
-
+#include "tidop/config.h"
 #include "tidop/math/math.h"
 
 #ifdef TL_HAVE_SIMD_INTRINSICS

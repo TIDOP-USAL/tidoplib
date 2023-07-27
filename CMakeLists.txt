@@ -338,9 +338,10 @@ message(STATUS "\nDependency loading:\n")
 # fmt (REQUIRED C++ Version < 20)                                        #
 ##########################################################################
 
+
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
-    AND ((${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" AND ${CMAKE_CXX_COMPILER_VERSION} LESS 17.5) 
-         OR (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} LESS 13.1)))
+    AND ((CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 17.5) 
+         OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 13.1)))
     set(TL_HAVE_FMT NO)
     add_compile_definitions("FORMAT_NAMESPACE=std::")
 else()
