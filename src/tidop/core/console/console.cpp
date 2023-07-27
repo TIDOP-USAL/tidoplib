@@ -325,7 +325,7 @@ void Console::error(String message)
 }
 
 #ifdef TL_OS_WINDOWS
-void init(DWORD handle) 
+void Console::init(DWORD handle) 
 {
     setConsoleUnicode();
     this->handle = GetStdHandle(handle);
