@@ -661,25 +661,20 @@ void Process::execute(Progress *)
 
 #else
         pid_t pid;
-        char *cmd = nullptr;
-        strcpy(cmd, mCommandText.c_str());
-        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), cmd, nullptr};
-        int status;
-        //printf("Run command: %s\n", cmd);
-        status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
-        if (status == 0) {
-            //printf("Child pid: %i\n", pid);
+        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), mCommandText.data(), nullptr};
+        
+        int status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
+        
+        TL_ASSERT(status == 0, "Error({}: {}) when executing the command : {}", status, strerror(status), mCommandText);
+
             if (waitpid(pid, &status, 0) != -1) {
-                //printf("Child exited with status %i\n", status);
+                eventTriggered(Event::Type::task_finalized);
                 return;
             } else {
-                return; //Process::Status::error;
+                eventTriggered(Event::Type::task_error);
+                return;
             }
-        } else {
-            printf("posix_spawn: %s\n", strerror(status));
-            Message::error("Error({}: {}) when executing the command : {}", status, strerror(status), mCommandText);
-                           return; //Process::Status::error;
-        }
+
         //  int posix_spawn(pid_t *pid, const char *path,
         //                  const posix_spawn_file_actions_t *file_actions,
         //                  const posix_spawnattr_t *attrp,
