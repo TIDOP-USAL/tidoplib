@@ -125,6 +125,11 @@ public:
         std::cout << "Valid range [" << mMin << " - " << mMax << "]";
     }
 
+    static auto create(T min, T max) -> std::shared_ptr<RangeValidator<T>>
+    {
+        return std::make_shared<RangeValidator<T>>(min, max);
+    }
+
 private:
 
     T mMin;
@@ -183,6 +188,11 @@ public:
         for (const auto &values : mValues)
             std::cout << values << " ";
         std::cout << "]";
+    }
+
+    static auto create(std::vector<T> values) -> std::shared_ptr<ValuesValidator<T>>
+    {
+        return std::make_shared<ValuesValidator<T>>(values);
     }
 
 private:
