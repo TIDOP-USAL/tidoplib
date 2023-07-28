@@ -51,88 +51,88 @@ class Path;
 class TL_EXPORT Path
 {
 
-public:
-
-  Path();
-  Path(const std::string &path);
-  Path(const std::wstring &path);
-  Path(const Path &path);
-  Path(Path &&path) TL_NOEXCEPT;
-  ~Path();
-
-  Path &operator = (const Path &path);
-  Path &operator = (Path &&path) TL_NOEXCEPT;
-
-  void setPath(const std::string &path);
-  void setPath(const std::wstring &path);
-
-  /*!
-   * \brief Convierte el path en una cadena
-   * \return
-   */
-  std::string toString() const;
-  std::wstring toWString() const;
-
-  Path fileName() const;
-  Path baseName() const;
-  Path extension() const;
-  Path parentPath() const;
-  std::list<Path> list(const std::string &extension);
-  std::list<Path> list(const std::regex &filter);
-
-  bool isDirectory() const;
-  bool isFile() const;
-  bool empty() const;
-  bool exists() const;
-
-  Path &replaceFileName(const std::string &fileName);
-  Path &replaceFileName(const std::wstring &fileName);
-  Path &replaceFileName(const Path &fileName);
-  Path &replaceBaseName(const std::string &baseName);
-  Path &replaceBaseName(const std::wstring &baseName);
-  Path &replaceBaseName(const Path &baseName);
-  Path &replaceExtension(const std::string &extension);
-  Path &replaceExtension(const std::wstring &extension);
-  Path &replaceExtension(const Path &extension);
-  Path &append(const std::string &text);
-  Path &append(const std::wstring &text);
-  Path &append(const Path&text);
-
-  int compare(const Path &path) const;
-  bool equivalent(const Path &path) const;
-  bool createDirectory() const;
-  bool createDirectories() const;
-  void removeDirectory() const;
-  void normalize();
-
-  void clear();
-
-/* Static methods */
-
-  static bool exists(const Path &path);
-  static Path tempPath();
-  static Path tempDirectory();
-  static bool createDirectory(const Path &directory);
-  static bool createDirectory(const std::string &directory);
-  static bool createDirectory(const std::wstring &directory);
-  static bool createDirectories(const Path &directory);
-  static bool createDirectories(const std::string &directory);
-  static bool createDirectories(const std::wstring &directory);
-  static void removeDirectory(const Path &directory);
-  static void removeDirectory(const std::string &directory);
-  static void removeDirectory(const std::wstring &directory);
-  static void removeFile(const Path &file);
-  static size_t hash(const Path &path);
-  static void copy(const Path &from, const Path &to);
-
-  /* Override operators */
-
-  bool operator == (const Path &path) const;
-  bool operator != (const Path &path) const;
-
 private:
 
-  std::unique_ptr<internal::Path> mPath;
+    std::unique_ptr<internal::Path> mPath;
+
+public:
+
+    Path();
+    Path(const std::string &path);
+    Path(const std::wstring &path);
+    Path(const Path &path);
+    Path(Path &&path) TL_NOEXCEPT;
+    ~Path();
+
+    Path &operator = (const Path &path);
+    Path &operator = (Path &&path) TL_NOEXCEPT;
+
+    void setPath(const std::string &path);
+    void setPath(const std::wstring &path);
+
+    /*!
+     * \brief Convierte el path en una cadena
+     * \return
+     */
+    std::string toString() const;
+    std::wstring toWString() const;
+
+    Path fileName() const;
+    Path baseName() const;
+    Path extension() const;
+    Path parentPath() const;
+    std::list<Path> list(const std::string &extension);
+    std::list<Path> list(const std::regex &filter);
+
+    bool isDirectory() const;
+    bool isFile() const;
+    bool empty() const;
+    bool exists() const;
+
+    Path &replaceFileName(const std::string &fileName);
+    Path &replaceFileName(const std::wstring &fileName);
+    Path &replaceFileName(const Path &fileName);
+    Path &replaceBaseName(const std::string &baseName);
+    Path &replaceBaseName(const std::wstring &baseName);
+    Path &replaceBaseName(const Path &baseName);
+    Path &replaceExtension(const std::string &extension);
+    Path &replaceExtension(const std::wstring &extension);
+    Path &replaceExtension(const Path &extension);
+    Path &append(const std::string &text);
+    Path &append(const std::wstring &text);
+    Path &append(const Path &text);
+
+    int compare(const Path &path) const;
+    bool equivalent(const Path &path) const;
+    bool createDirectory() const;
+    bool createDirectories() const;
+    void removeDirectory() const;
+    void normalize();
+
+    void clear();
+
+    /* Static methods */
+
+    static bool exists(const Path &path);
+    static Path tempPath();
+    static Path tempDirectory();
+    static bool createDirectory(const Path &directory);
+    static bool createDirectory(const std::string &directory);
+    static bool createDirectory(const std::wstring &directory);
+    static bool createDirectories(const Path &directory);
+    static bool createDirectories(const std::string &directory);
+    static bool createDirectories(const std::wstring &directory);
+    static void removeDirectory(const Path &directory);
+    static void removeDirectory(const std::string &directory);
+    static void removeDirectory(const std::wstring &directory);
+    static void removeFile(const Path &file);
+    static size_t hash(const Path &path);
+    static void copy(const Path &from, const Path &to);
+
+    /* Override operators */
+
+    bool operator == (const Path &path) const;
+    bool operator != (const Path &path) const;
 
 };
 
@@ -143,27 +143,27 @@ private:
  */
 class TL_EXPORT TemporalDir
 {
+    
+private:
+
+    bool bAutoRemove;
+    Path mPath;
 
 public:
 
-  /*!
-   * \brief
-   * \param[in] autoRemove 
-   */
-  explicit TemporalDir(bool autoRemove = true);
-  ~TemporalDir();
+    /*!
+     * \brief
+     * \param[in] autoRemove
+     */
+    explicit TemporalDir(bool autoRemove = true);
+    ~TemporalDir();
 
-  TemporalDir(const TemporalDir &) = delete;
-  TemporalDir(TemporalDir &&) = delete;
-  TemporalDir &operator=(const TemporalDir &) = delete;
-  TemporalDir &operator=(TemporalDir &&) = delete;
+    TemporalDir(const TemporalDir &) = delete;
+    TemporalDir(TemporalDir &&) = delete;
+    TemporalDir &operator=(const TemporalDir &) = delete;
+    TemporalDir &operator=(TemporalDir &&) = delete;
 
-  Path path() const;
-
-private:
-
-  bool bAutoRemove;
-  Path mPath;
+    Path path() const;
 
 };
 

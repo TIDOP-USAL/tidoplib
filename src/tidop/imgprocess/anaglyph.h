@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMGPROCESS_ANAGLYPH_H
-#define TL_IMGPROCESS_ANAGLYPH_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -37,50 +36,51 @@ namespace tl
 
 
 /*!
- * \brief construye una imagen estereo en modo anaglifo o 'side by side'
+ * \brief Constructs a stereo image in anaglyph or side by side mode
  *
- * \param[in] left Imagen derecha
- * \param[in] right Imagen Izquierda
- * \param[out] stimage imagen estereo
- * \param[in] mode Modo de visualización
- * \see StereoMode
+ * \param[in] left Image left
+ * \param[in] right Image right
+ * \param[out] stimage Stereo image
+ * \param[in] mode Visualisation mode
+ * \see Mode
  */
 class StereoImage
 {
 
 public:
 
-  enum class Mode
-  {
-    normal,
-    gray,
-    dubois,
-    half_color,
-    optimized,
-    red_blue,
-    side_by_side
-  };
-
-public:
-
-  /*!
-   * \brief Constructor
-   *
-   * \param[in] mode Modo de visualización
-   * \see StereoMode
-   */
-  StereoImage(Mode mode = Mode::normal);
-	~StereoImage();
-
-  cv::Mat run(const cv::Mat &left,
-              const cv::Mat &right);
-
-  Mode mode() const;
-  void setMode(Mode mode);
+    enum class Mode
+    {
+        normal,
+        gray,
+        dubois,
+        half_color,
+        optimized,
+        red_blue,
+        side_by_side
+    };
 
 private:
 
-  Mode mMode;
+    Mode mMode;
+
+public:
+
+    /*!
+     * \brief Constructor
+     *
+     * \param[in] mode Visualisation mode
+     * \see Mode
+     */
+    StereoImage(Mode mode = Mode::normal);
+    ~StereoImage();
+
+    cv::Mat run(const cv::Mat &left,
+                const cv::Mat &right);
+
+    Mode mode() const;
+    void setMode(Mode mode);
+
 };
 
 
@@ -88,5 +88,3 @@ private:
 } // End namespace tl
 
 #endif
-
-#endif // TL_IMGPROCESS_ANAGLYPH_H

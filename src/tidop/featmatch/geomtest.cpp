@@ -24,7 +24,6 @@
 
 #include "geomtest.h"
 
-#include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
 namespace tl
@@ -36,59 +35,59 @@ namespace tl
 
 
 class HomographyAllPointsTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  HomographyAllPointsTest()
-    : GeometricTest(GeometricTest::Type::homography_all_points)
-  {
-  }
-  ~HomographyAllPointsTest() override = default;
+    HomographyAllPointsTest()
+        : GeometricTest(GeometricTest::Type::homography_all_points)
+    {
+    }
+    ~HomographyAllPointsTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties) override
-  {
-    if(const AllPointsTestProperties *_properties = static_cast<const AllPointsTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findHomography(cv::Mat(points1),
-                         cv::Mat(points2),
-                         0,
-                         3, // Not used
-                         inliers,
-                         2000, // Not used
-                         mProperties.confidence);
-
-    } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties) override
+    {
+        if (const AllPointsTestProperties *_properties = static_cast<const AllPointsTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findHomography(cv::Mat(points1),
+                               cv::Mat(points2),
+                               0,
+                               3, // Not used
+                               inliers,
+                               2000, // Not used
+                               mProperties.confidence);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  AllPointsTestProperties mProperties;
+    AllPointsTestProperties mProperties;
 
 };
 
@@ -96,58 +95,58 @@ private:
 
 
 class HomographyRANSACTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  HomographyRANSACTest()
-    : GeometricTest(GeometricTest::Type::homography_ransac)
-  {
-  }
-  ~HomographyRANSACTest() override = default;
+    HomographyRANSACTest()
+        : GeometricTest(GeometricTest::Type::homography_ransac)
+    {
+    }
+    ~HomographyRANSACTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties) override
-  {
-    if(const RANSACTestProperties *_properties = static_cast<const RANSACTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-        
-      cv::findHomography(cv::Mat(points1),
-                         cv::Mat(points2),
-                         cv::RANSAC,
-                         mProperties.distance,
-                         inliers,
-                         mProperties.iterations,
-                         mProperties.confidence);
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties) override
+    {
+        if (const RANSACTestProperties *_properties = static_cast<const RANSACTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findHomography(cv::Mat(points1),
+                               cv::Mat(points2),
+                               cv::RANSAC,
+                               mProperties.distance,
+                               inliers,
+                               mProperties.iterations,
+                               mProperties.confidence);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  RANSACTestProperties mProperties;
+    RANSACTestProperties mProperties;
 
 };
 
@@ -155,58 +154,58 @@ private:
 
 
 class HomographyLMedsTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  HomographyLMedsTest()
-    : GeometricTest(GeometricTest::Type::homography_lmeds)
-  {
-  }
-  ~HomographyLMedsTest() override = default;
+    HomographyLMedsTest()
+        : GeometricTest(GeometricTest::Type::homography_lmeds)
+    {
+    }
+    ~HomographyLMedsTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties) override
-  {
-    if(const LMedsTestProperties *_properties = static_cast<const LMedsTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findHomography(cv::Mat(points1),
-                         cv::Mat(points2),
-                         cv::LMEDS,
-                         0, // Not used
-                         inliers,
-                         mProperties.iterations, // Not used
-                         mProperties.confidence);
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties) override
+    {
+        if (const LMedsTestProperties *_properties = static_cast<const LMedsTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findHomography(cv::Mat(points1),
+                               cv::Mat(points2),
+                               cv::LMEDS,
+                               0, // Not used
+                               inliers,
+                               mProperties.iterations, // Not used
+                               mProperties.confidence);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  LMedsTestProperties mProperties;
+    LMedsTestProperties mProperties;
 
 };
 
@@ -214,59 +213,59 @@ private:
 
 
 class HomographyRHOTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 
 public:
 
-  HomographyRHOTest()
-    : GeometricTest(GeometricTest::Type::homography_rho)
-  {
-  }
-  ~HomographyRHOTest() override = default;
+    HomographyRHOTest()
+        : GeometricTest(GeometricTest::Type::homography_rho)
+    {
+    }
+    ~HomographyRHOTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties) override
-  {
-    if(const RHOTestProperties *_properties = static_cast<const RHOTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findHomography(cv::Mat(points1),
-                         cv::Mat(points2),
-                         cv::RHO,
-                         mProperties.distance,
-                         inliers,
-                         0, // Not used
-                         mProperties.confidence);
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties) override
+    {
+        if (const RHOTestProperties *_properties = static_cast<const RHOTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findHomography(cv::Mat(points1),
+                               cv::Mat(points2),
+                               cv::RHO,
+                               mProperties.distance,
+                               inliers,
+                               0, // Not used
+                               mProperties.confidence);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  RHOTestProperties mProperties;
+    RHOTestProperties mProperties;
 
 };
 
@@ -276,68 +275,68 @@ private:
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
 
 class HomographyUsacTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  HomographyUsacTest()
-    : GeometricTest(GeometricTest::Type::homography_usac)
-  {
-  }
-  ~HomographyUsacTest() override = default;
+    HomographyUsacTest()
+        : GeometricTest(GeometricTest::Type::homography_usac)
+    {
+    }
+    ~HomographyUsacTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties) override
-  {
-    if(const UsacTestProperties *_properties = static_cast<const UsacTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::UsacParams params;
-      params.confidence = mProperties.confidence;
-      params.isParallel = mProperties.isParallel;
-      params.loIterations = mProperties.loIterations;
-      params.loMethod = mProperties.loMethod;
-      params.loSampleSize = mProperties.loSampleSize;
-      params.maxIterations = mProperties.maxIterations;
-      params.neighborsSearch = mProperties.neighborsSearch;
-      params.randomGeneratorState = mProperties.randomGeneratorState;
-      params.sampler = mProperties.sampler;
-      params.score = mProperties.score;
-      params.threshold = mProperties.threshold;
-
-      cv::findHomography(cv::Mat(points1),
-                         cv::Mat(points2),
-                         inliers,
-                         params);
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties) override
+    {
+        if (const UsacTestProperties *_properties = static_cast<const UsacTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::UsacParams params;
+            params.confidence = mProperties.confidence;
+            params.isParallel = mProperties.isParallel;
+            params.loIterations = mProperties.loIterations;
+            params.loMethod = mProperties.loMethod;
+            params.loSampleSize = mProperties.loSampleSize;
+            params.maxIterations = mProperties.maxIterations;
+            params.neighborsSearch = mProperties.neighborsSearch;
+            params.randomGeneratorState = mProperties.randomGeneratorState;
+            params.sampler = mProperties.sampler;
+            params.score = mProperties.score;
+            params.threshold = mProperties.threshold;
+
+            cv::findHomography(cv::Mat(points1),
+                               cv::Mat(points2),
+                               inliers,
+                               params);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  UsacTestProperties mProperties;
+    UsacTestProperties mProperties;
 
 };
 
@@ -348,360 +347,361 @@ private:
 
 
 class Fundamental7PointsTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  Fundamental7PointsTest() 
-    : GeometricTest(GeometricTest::Type::fundamental_seven_points)
-  {
-  }
+    Fundamental7PointsTest()
+        : GeometricTest(GeometricTest::Type::fundamental_seven_points)
+    {
+    }
 
-  ~Fundamental7PointsTest() override = default;
+    ~Fundamental7PointsTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return nullptr;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties) override
-  {
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-   
-    try {
-      
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findFundamentalMat(cv::Mat(points1),
-                             cv::Mat(points2),
-                             inliers,
-                             cv::FM_7POINT);
-
-    } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return nullptr;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties) override
+    {
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findFundamentalMat(cv::Mat(points1),
+                                   cv::Mat(points2),
+                                   inliers,
+                                   cv::FM_7POINT);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 };
 
 
 
 class Fundamental8PointsTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  Fundamental8PointsTest() 
-    : GeometricTest(GeometricTest::Type::fundamental_eight_points)
-  { }
+    Fundamental8PointsTest()
+        : GeometricTest(GeometricTest::Type::fundamental_eight_points)
+    {
+    }
 
-  ~Fundamental8PointsTest() override = default;
+    ~Fundamental8PointsTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return nullptr;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties = nullptr) override
-  {
-
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findFundamentalMat(cv::Mat(points1),
-                             cv::Mat(points2),
-                             inliers,
-                             cv::FM_8POINT);
-
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return nullptr;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties = nullptr) override
+    {
+
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findFundamentalMat(cv::Mat(points1),
+                                   cv::Mat(points2),
+                                   inliers,
+                                   cv::FM_8POINT);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 };
 
 
 
 class FundamentalRANSACTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  FundamentalRANSACTest()
-    : GeometricTest(GeometricTest::Type::fundamental_ransac)
-  {
-  }
+    FundamentalRANSACTest()
+        : GeometricTest(GeometricTest::Type::fundamental_ransac)
+    {
+    }
 
-  ~FundamentalRANSACTest() override = default;
+    ~FundamentalRANSACTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties = nullptr) override
-  {
-    if(const RANSACTestProperties *_properties = static_cast<const RANSACTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findFundamentalMat(cv::Mat(points1),
-                             cv::Mat(points2),
-                             cv::FM_RANSAC,
-                             mProperties.distance,
-                             mProperties.confidence,
-                             mProperties.iterations,
-                             inliers);
-
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties = nullptr) override
+    {
+        if (const RANSACTestProperties *_properties = static_cast<const RANSACTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findFundamentalMat(cv::Mat(points1),
+                                   cv::Mat(points2),
+                                   cv::FM_RANSAC,
+                                   mProperties.distance,
+                                   mProperties.confidence,
+                                   mProperties.iterations,
+                                   inliers);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  RANSACTestProperties mProperties;
+    RANSACTestProperties mProperties;
 
 };
 
 
 
 class FundamentalLMedSTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  FundamentalLMedSTest()
-    : GeometricTest(GeometricTest::Type::fundamental_lmeds)
-  {
-  }
+    FundamentalLMedSTest()
+        : GeometricTest(GeometricTest::Type::fundamental_lmeds)
+    {
+    }
 
-  ~FundamentalLMedSTest() override = default;
+    ~FundamentalLMedSTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties = nullptr) override
-  {
-    if(const LMedsTestProperties *_properties = static_cast<const LMedsTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::findFundamentalMat(cv::Mat(points1),
-                             cv::Mat(points2),
-                             cv::FM_LMEDS,
-                             0,
-                             mProperties.confidence,
-                             mProperties.iterations,
-                             inliers);
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties = nullptr) override
+    {
+        if (const LMedsTestProperties *_properties = static_cast<const LMedsTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::findFundamentalMat(cv::Mat(points1),
+                                   cv::Mat(points2),
+                                   cv::FM_LMEDS,
+                                   0,
+                                   mProperties.confidence,
+                                   mProperties.iterations,
+                                   inliers);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  LMedsTestProperties mProperties;
+    LMedsTestProperties mProperties;
 
 };
 
 
 
 class FundamentalUsacTest
-  : public GeometricTest
+    : public GeometricTest
 {
 
 public:
 
-  FundamentalUsacTest() 
-    : GeometricTest(GeometricTest::Type::fundamental_usac)
-  {
-  }
+    FundamentalUsacTest()
+        : GeometricTest(GeometricTest::Type::fundamental_usac)
+    {
+    }
 
-  ~FundamentalUsacTest() override = default;
+    ~FundamentalUsacTest() override = default;
 
 public:
 
-  const Properties *properties() const override
-  {
-    return &mProperties;
-  }
-
-  void setProperties(const GeometricTest::Properties *properties = nullptr) override
-  {
-    if(const UsacTestProperties *_properties = static_cast<const UsacTestProperties *>(properties))
-      mProperties = *_properties;
-  }
-
-  std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                  const std::vector<cv::Point2f> &points2) override
-  {
-    std::vector<unsigned char> inliers;
-
-    try {
-
-      TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
-
-      inliers.resize(points1.size(), 0);
-
-      cv::UsacParams params;
-      params.confidence = mProperties.confidence;
-      params.isParallel = mProperties.isParallel;
-      params.loIterations = mProperties.loIterations;
-      params.loMethod = mProperties.loMethod;
-      params.loSampleSize = mProperties.loSampleSize;
-      params.maxIterations = mProperties.maxIterations;
-      params.neighborsSearch = mProperties.neighborsSearch;
-      params.randomGeneratorState = mProperties.randomGeneratorState;
-      params.sampler = mProperties.sampler;
-      params.score = mProperties.score;
-      params.threshold = mProperties.threshold;
-      cv::findFundamentalMat(cv::Mat(points1),
-                             cv::Mat(points2),
-                             inliers,
-                             params);
-
-    } catch(...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
+    const Properties *properties() const override
+    {
+        return &mProperties;
     }
 
-    return inliers;
-  }
+    void setProperties(const GeometricTest::Properties *properties = nullptr) override
+    {
+        if (const UsacTestProperties *_properties = static_cast<const UsacTestProperties *>(properties))
+            mProperties = *_properties;
+    }
+
+    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
+                                    const std::vector<cv::Point2f> &points2) override
+    {
+        std::vector<unsigned char> inliers;
+
+        try {
+
+            TL_ASSERT(points1.size() == points2.size(), "Feature sizes are not equal");
+
+            inliers.resize(points1.size(), 0);
+
+            cv::UsacParams params;
+            params.confidence = mProperties.confidence;
+            params.isParallel = mProperties.isParallel;
+            params.loIterations = mProperties.loIterations;
+            params.loMethod = mProperties.loMethod;
+            params.loSampleSize = mProperties.loSampleSize;
+            params.maxIterations = mProperties.maxIterations;
+            params.neighborsSearch = mProperties.neighborsSearch;
+            params.randomGeneratorState = mProperties.randomGeneratorState;
+            params.sampler = mProperties.sampler;
+            params.score = mProperties.score;
+            params.threshold = mProperties.threshold;
+            cv::findFundamentalMat(cv::Mat(points1),
+                                   cv::Mat(points2),
+                                   inliers,
+                                   params);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return inliers;
+    }
 
 private:
 
-  UsacTestProperties mProperties;
+    UsacTestProperties mProperties;
 
 };
 
 std::shared_ptr<GeometricTest> GeometricTestFactory::create(GeometricTest::Type type)
 {
-  std::shared_ptr<GeometricTest> test;
+    std::shared_ptr<GeometricTest> test;
 
-  try {
+    try {
 
-    switch(type) {
-      case tl::GeometricTest::Type::homography_all_points:
-        test = std::make_shared<HomographyAllPointsTest>();
-        break;
-      case tl::GeometricTest::Type::homography_ransac:
-        test = std::make_shared<HomographyRANSACTest>();
-        break;
-      case tl::GeometricTest::Type::homography_lmeds:
-        test = std::make_shared<HomographyLMedsTest>();
-        break;
-      case tl::GeometricTest::Type::homography_rho:
-        test = std::make_shared<HomographyRHOTest>();
-        break;
+        switch (type) {
+        case tl::GeometricTest::Type::homography_all_points:
+            test = std::make_shared<HomographyAllPointsTest>();
+            break;
+        case tl::GeometricTest::Type::homography_ransac:
+            test = std::make_shared<HomographyRANSACTest>();
+            break;
+        case tl::GeometricTest::Type::homography_lmeds:
+            test = std::make_shared<HomographyLMedsTest>();
+            break;
+        case tl::GeometricTest::Type::homography_rho:
+            test = std::make_shared<HomographyRHOTest>();
+            break;
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
-      case tl::GeometricTest::Type::homography_usac:
-        test = std::make_shared<HomographyUsacTest>();
-        break;
+        case tl::GeometricTest::Type::homography_usac:
+            test = std::make_shared<HomographyUsacTest>();
+            break;
 #endif
-      case tl::GeometricTest::Type::fundamental_seven_points:
-        test = std::make_shared<Fundamental7PointsTest>();
-        break;
-      case tl::GeometricTest::Type::fundamental_eight_points:
-        test = std::make_shared<Fundamental8PointsTest>();
-        break;
-      case tl::GeometricTest::Type::fundamental_ransac:
-        test = std::make_shared<FundamentalRANSACTest>();
-        break;
-      case tl::GeometricTest::Type::fundamental_lmeds:
-        test = std::make_shared<FundamentalLMedSTest>();
-        break;
+        case tl::GeometricTest::Type::fundamental_seven_points:
+            test = std::make_shared<Fundamental7PointsTest>();
+            break;
+        case tl::GeometricTest::Type::fundamental_eight_points:
+            test = std::make_shared<Fundamental8PointsTest>();
+            break;
+        case tl::GeometricTest::Type::fundamental_ransac:
+            test = std::make_shared<FundamentalRANSACTest>();
+            break;
+        case tl::GeometricTest::Type::fundamental_lmeds:
+            test = std::make_shared<FundamentalLMedSTest>();
+            break;
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
-      case tl::GeometricTest::Type::fundamental_usac:
-        test = std::make_shared<FundamentalUsacTest>();
-        break;
+        case tl::GeometricTest::Type::fundamental_usac:
+            test = std::make_shared<FundamentalUsacTest>();
+            break;
 #endif
-      default:
-        break;
+        default:
+            break;
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
-  } catch(...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
-
-  return test;
+    return test;
 }
 
 std::shared_ptr<GeometricTest> GeometricTestFactory::create(GeometricTest::Type type,
                                                             const GeometricTest::Properties *properties)
 {
-  std::shared_ptr<GeometricTest> test;
+    std::shared_ptr<GeometricTest> test;
 
-  try {
+    try {
 
-    test = GeometricTestFactory::create(type);
-    test->setProperties(properties);
+        test = GeometricTestFactory::create(type);
+        test->setProperties(properties);
 
-  } catch(...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 
-  return test;
+    return test;
 }
 
 } // namespace tl

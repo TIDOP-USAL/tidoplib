@@ -40,69 +40,71 @@ Licence::Licence(std::string productName,
     
 }
 
-bool Licence::empty() const
+auto Licence::productName() const -> std::string
 {
-  return mProductName.empty() && mText.empty();
+    return mProductName;
 }
 
-std::string Licence::productName() const
+auto Licence::setProductName(const std::string &productName) -> void
 {
-  return mProductName;
+    mProductName = productName;
 }
 
-void Licence::setProductName(const std::string &productName)
+auto Licence::text() const -> std::string
 {
-  mProductName = productName;
-}
-std::string Licence::text() const
-{
-  return mText;
+    return mText;
 }
 
-void Licence::setText(const std::string &text)
+auto Licence::setText(const std::string &text) -> void
 {
-  mText = text;
+    mText = text;
 }
 
-std::string Licence::version() const
+auto Licence::version() const -> std::string
 {
-  return mVersion;
+    return mVersion;
 }
 
-void Licence::setVersion(const std::string &version)
+auto Licence::setVersion(const std::string &version) -> void
 {
-  mVersion = version;
+    mVersion = version;
 }
 
-std::string Licence::autor() const
+auto Licence::autor() const -> std::string
 {
-  return mAutor;
+    return mAutor;
 }
 
-void Licence::setAutor(const std::string &autor)
+auto Licence::setAutor(const std::string &autor) -> void
 {
-  mAutor = autor;
+    mAutor = autor;
 }
 
-std::string Licence::autorEmail() const
+auto Licence::autorEmail() const -> std::string
 {
-  return mEmail;
+    return mEmail;
 }
 
-void Licence::setAutorEmail(const std::string &autorEmail)
+auto Licence::setAutorEmail(const std::string &autorEmail) -> void
 {
-  mEmail = autorEmail;
+    mEmail = autorEmail;
 }
 
-std::string Licence::url() const
+auto Licence::url() const -> std::string
 {
-  return mUrl;
+    return mUrl;
 }
 
-void Licence::setUrl(const std::string &url)
+auto Licence::setUrl(const std::string &url) -> void
 {
-  mUrl = url;
+    mUrl = url;
 }
+
+auto Licence::empty() const -> bool
+{
+    return mProductName.empty() && mText.empty();
+}
+
 
 
 
@@ -111,55 +113,55 @@ AppLicence::AppLicence()
 {
 }
 
-AppLicence::iterator AppLicence::begin() TL_NOEXCEPT
+auto AppLicence::begin() TL_NOEXCEPT -> iterator
 {
-  return mThirdPartyLicences.begin();
+    return mThirdPartyLicences.begin();
 }
 
-AppLicence::const_iterator AppLicence::begin() const TL_NOEXCEPT
+auto AppLicence::begin() const TL_NOEXCEPT -> const_iterator
 {
-  return mThirdPartyLicences.cbegin();
+    return mThirdPartyLicences.cbegin();
 }
 
-AppLicence::iterator AppLicence::end() TL_NOEXCEPT
+auto AppLicence::end() TL_NOEXCEPT -> iterator
 {
-  return mThirdPartyLicences.end();
+    return mThirdPartyLicences.end();
 }
 
-AppLicence::const_iterator AppLicence::end() const TL_NOEXCEPT
+auto AppLicence::end() const TL_NOEXCEPT -> const_iterator
 {
-  return mThirdPartyLicences.cend();
+    return mThirdPartyLicences.cend();
 }
 
-void AppLicence::push_back(const Licence &licence)
+auto AppLicence::push_back(const Licence &licence) -> void
 {
-  mThirdPartyLicences.push_back(licence);
+    mThirdPartyLicences.push_back(licence);
 }
 
-void AppLicence::push_back(Licence &&licence) TL_NOEXCEPT
+auto AppLicence::push_back(Licence &&licence) TL_NOEXCEPT -> void
 {
-  mThirdPartyLicences.push_back(std::forward<Licence>(licence));
+    mThirdPartyLicences.push_back(std::forward<Licence>(licence));
 }
 
-void AppLicence::clear() TL_NOEXCEPT
+auto AppLicence::clear() TL_NOEXCEPT -> void
 {
-  mThirdPartyLicences.clear();
+    mThirdPartyLicences.clear();
 }
 
-bool AppLicence::empty() const TL_NOEXCEPT
+auto AppLicence::empty() const TL_NOEXCEPT -> bool
 {
-  return mThirdPartyLicences.empty();
+    return mThirdPartyLicences.empty();
 }
 
-size_t AppLicence::size() const TL_NOEXCEPT
+auto AppLicence::size() const TL_NOEXCEPT -> size_t
 {
-  return mThirdPartyLicences.size();
+    return mThirdPartyLicences.size();
 }
 
-AppLicence::iterator AppLicence::erase(AppLicence::const_iterator first,
-                                       AppLicence::const_iterator last)
+auto AppLicence::erase(const_iterator first,
+                       const_iterator last) -> iterator
 {
-  return mThirdPartyLicences.erase(first, last);
+    return mThirdPartyLicences.erase(first, last);
 }
 
 } // End namespace tl

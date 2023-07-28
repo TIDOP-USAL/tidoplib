@@ -24,173 +24,153 @@
 
 #include "tidop/core/log.h"
 #include "tidop/core/app.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/chrono.h"
 #include "tidop/core/path.h"
 
-#include <fstream>
+
 
 namespace tl
 {
 
-std::string Log::sLogFile;
-EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
-std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
-
-#ifdef TL_MESSAGE_HANDLER
-bool Log::sPauseListener = false;
-#endif
-
-Log::Log()
-#ifdef TL_MESSAGE_HANDLER
-  : MessageManager::Listener(false)
-#endif
-{
-}
-
-Log::~Log() = default;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
+EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
 
 Log &Log::instance()
 {
-  static Log log;
-  return log;
+    static Log log;
+    return log;
 }
 
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-EnumFlags<MessageLevel> Log::logLevel()
+void Log::open(const std::string &file)
 {
-  return sLevel;
+    _stream.open(file, std::ofstream::app);
+}
+
+void Log::close()
+{
+    _stream.close();
+}
+
+bool Log::isOpen() const
+{
+    return _stream.is_open();
+}
+
+Log &Log::operator <<(MessageLevel level)
+{
+    switch (level) {
+    case MessageLevel::debug:
+        _stream << "Debug:   ";
+        break;
+    case MessageLevel::info:
+        _stream << "Info:    ";
+        break;
+    case MessageLevel::success:
+        _stream << "Succes:  ";
+        break;
+    case MessageLevel::warning:
+        _stream << "Warning: ";
+        break;
+    case MessageLevel::error:
+        _stream << "Error:   ";
+        break;
+    case MessageLevel::all:
+        _stream << "Info:    ";
+        break;
+    }
+
+    return *this;
+}
+
+Log &Log::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
+{
+    _stream << _endl;
+    return *this;
+}
+
+auto Log::messageLevel() -> EnumFlags<MessageLevel>
+{
+    return messageLevelFlags;
 }
 
 void Log::setMessageLevel(MessageLevel level)
 {
-  sLevel = level;
-}
-  
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-void Log::setLogLevel(MessageLevel level)
-{
-  sLevel = level;
-}
-#endif
-
-void Log::setLogFile(const std::string &file)
-{
-  sLogFile = file;
+    messageLevelFlags = level;
 }
 
-void Log::write(const std::string &message)
+Log &Log::debug()
 {
-
-  std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-  this->_write(message, date);
+    auto &log = Log::instance();
+    log << MessageLevel::debug;
+    return log;
 }
 
-#ifdef TL_MESSAGE_HANDLER
-
-void Log::pauseListener()
+Log &Log::info()
 {
-  sPauseListener = true;
+    auto &log = Log::instance();
+    log << MessageLevel::info;
+    return log;
 }
 
-void Log::resumeListener()
+Log &Log::success()
 {
-  sPauseListener = false;
+    auto &log = Log::instance();
+    log << MessageLevel::success;
+    return log;
 }
 
-#if CPP_VERSION >= 17
-void Log::onMsgDebug(std::string_view message, 
-                     std::string_view date)
-#else
-void Log::onMsgDebug(const std::string &message, 
-                     const std::string &date)
-#endif
+Log &Log::warning()
 {
-  if (sLevel.isEnabled(MessageLevel::msg_debug)) {
-    _write(message, date);
-  }
+    auto &log = Log::instance();
+    log << MessageLevel::warning;
+    return log;
 }
 
-#if CPP_VERSION >= 17
-void Log::onMsgInfo(std::string_view message, 
-                    std::string_view date)
-#else
-void Log::onMsgInfo(const std::string &message, 
-                    const std::string &date) 
-#endif
+Log &Log::error()
 {
-  if (sLevel.isEnabled(MessageLevel::msg_info)) {
-    _write(message, date);
-  }
+    auto &log = Log::instance();
+    log << MessageLevel::error;
+    return log;
 }
 
-#if CPP_VERSION >= 17
-void Log::onMsgWarning(std::string_view message, 
-                       std::string_view date)
-#else
-void Log::onMsgWarning(const std::string &message, 
-                       const std::string &date)
-#endif
+void Log::debug(String message)
 {
-  if (sLevel.isEnabled(MessageLevel::msg_warning)) {
-    _write(message, date);
-  }
-}
-
-#if CPP_VERSION >= 17
-void Log::onMsgError(std::string_view message, 
-                     std::string_view date)
-#else
-void Log::onMsgError(const std::string &message, 
-                     const std::string &date)
-#endif
-{
-  if (sLevel.isEnabled(MessageLevel::msg_error)) {
-    _write(message, date);
-  }
-}
-
-#if CPP_VERSION >= 17
-void Log::_write(std::string_view message, 
-                 std::string_view date)
-#else
-
-void Log::_write(const std::string &message, 
-                 const std::string &date)
-#endif
-{
-  if (sLogFile.empty()) {
-    // Log por defecto
-    Path log_path(App::instance().path());
-    log_path.replaceExtension(".log");
-    sLogFile = log_path.toString();
-  }
-  
-  Path log_parent_path = Path(sLogFile).parentPath();
-  if (!log_parent_path.exists()) {
-    int err = log_parent_path.createDirectories();
-    if (err == -1) {
-      MessageManager::instance().removeListener(this);
-      return;
-    }
-  }
-
-  std::ofstream hLog(sLogFile,std::ofstream::app);
-  if (hLog.is_open()) {
     std::lock_guard<std::mutex> lck(Log::mtx);
-    hLog << date << " - " << message << "\n";
-    hLog.close();
-  } else {
-    MessageManager::instance().removeListener(this);
-  }
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::debug))
+        Log::instance() << MessageLevel::debug << message << std::endl;
 }
 
+void Log::info(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
 
-#endif // TL_MESSAGE_HANDLER
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::info))
+        Log::instance() << MessageLevel::info << message << std::endl;
+}
 
+void Log::success(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::success))
+        Log::instance() << MessageLevel::success << message << std::endl;
+}
+
+void Log::warning(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::warning)) 
+        Log::instance() << MessageLevel::warning << message << std::endl;
+}
+
+void Log::error(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
+    
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::error))
+        Log::instance() << MessageLevel::error << message << std::endl;
+}
 
 } // End mamespace tl

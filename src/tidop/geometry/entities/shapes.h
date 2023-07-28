@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_SHAPES_H
-#define TL_GEOMETRY_SHAPES_H
+#pragma once
 
 #include <limits>
 #include <numeric>
@@ -47,10 +46,10 @@ class Shape
 
 public:
 
-  Shape() = default;
-  virtual ~Shape() = default;
+    Shape() = default;
+    virtual ~Shape() = default;
 
-  virtual double area() const = 0;
+    virtual double area() const = 0;
 };
 
 
@@ -66,77 +65,77 @@ class Circle
 
 public:
 
-  /*!
-   * \brief type
-   */
-  typedef T value_type;
+    /*!
+     * \brief type
+     */
+    typedef T value_type;
 
-  /*!
-   * \brief Circle center
-   */
-  Point<T> center;
+    /*!
+     * \brief Circle center
+     */
+    Point<T> center;
 
-  /*!
-   * \brief Circle radius
-   */
-  T radius;
+    /*!
+     * \brief Circle radius
+     */
+    T radius;
 
 public:
 
-  /*!
-   * \brief Default constructor
-   */
-  Circle();
+    /*!
+     * \brief Default constructor
+     */
+    Circle();
 
-  /*!
-   * \brief Constructor
-   * \param[in] center Circle center
-   * \param[in] radius Circle radius
-   */
-  Circle(const Point<T> &center, T radius);
+    /*!
+     * \brief Constructor
+     * \param[in] center Circle center
+     * \param[in] radius Circle radius
+     */
+    Circle(const Point<T> &center, T radius);
 
-  /*!
-   * \brief Copy constructor
-   * \param[in] circle Circle object to copy
-   */
-  Circle(const Circle<T> &circle);
-   
-  /*!
-   * \brief Move constructor
-   * \param[in] circle Circle object to move
-   */
-  Circle(Circle<T> &&circle) TL_NOEXCEPT;
+    /*!
+     * \brief Copy constructor
+     * \param[in] circle Circle object to copy
+     */
+    Circle(const Circle<T> &circle);
 
-  ~Circle() override = default;
+    /*!
+     * \brief Move constructor
+     * \param[in] circle Circle object to move
+     */
+    Circle(Circle<T> &&circle) TL_NOEXCEPT;
 
-  /*!
-   * \brief Copy assignment operator
-   * \param[in] circle Circle object to copy
-   */
-  Circle<T> &operator = (const Circle<T> &circle);
-    
-  /*!
-   * \brief Move assignment operator
-   * \param[in] circle Circle object to move
-   */
-  Circle<T>& operator = (Circle<T> &&circle) TL_NOEXCEPT;
+    ~Circle() override = default;
 
-  /*!
-   * \brief Type conversion
-   */
-  template<typename T2> operator Circle<T2>() const;
+    /*!
+     * \brief Copy assignment operator
+     * \param[in] circle Circle object to copy
+     */
+    Circle<T> &operator = (const Circle<T> &circle);
 
-  /*!
-   * \brief Circle area
-   * \return Area
-   */
-  double area() const override;
+    /*!
+     * \brief Move assignment operator
+     * \param[in] circle Circle object to move
+     */
+    Circle<T> &operator = (Circle<T> &&circle) TL_NOEXCEPT;
 
-  /*!
-   * \brief Circumference (Distance around the perimeter of a circle)
-   * \return length
-   */
-  double length() const;
+    /*!
+     * \brief Type conversion
+     */
+    template<typename T2> operator Circle<T2>() const;
+
+    /*!
+     * \brief Circle area
+     * \return Area
+     */
+    double area() const override;
+
+    /*!
+     * \brief Circumference (Distance around the perimeter of a circle)
+     * \return length
+     */
+    double length() const;
 
 };
 
@@ -180,41 +179,43 @@ Circle<T>::Circle(Circle<T> &&circle) TL_NOEXCEPT
 template<typename T> inline
 Circle<T> &Circle<T>::operator = (const Circle &circle)
 {
-  if (this != &circle) {
-    Entity::operator = (circle);
-    this->center = circle.center;
-    this->radius = circle.radius;
-  }
-  return *this;
+    if (this != &circle) {
+        Entity::operator = (circle);
+        this->center = circle.center;
+        this->radius = circle.radius;
+    }
+
+    return *this;
 }
 
 template<typename T> inline
 Circle<T> &Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT
 {
-  if (this != &circle) {
-    Entity::operator = (std::forward<Entity>(circle));
-    this->center = std::move(circle.center);
-    this->radius = circle.radius;
-  }
-  return *this;
+    if (this != &circle) {
+        Entity::operator = (std::forward<Entity>(circle));
+        this->center = std::move(circle.center);
+        this->radius = circle.radius;
+    }
+
+    return *this;
 }
 
 template<typename T> template<typename T2> inline
 Circle<T>::operator Circle<T2>() const
 {
-  return Circle<T2>(this->center, numberCast<T2>(this->radius));
+    return Circle<T2>(this->center, numberCast<T2>(this->radius));
 }
 
 template<typename T> inline
 double Circle<T>::area() const
 {
-  return consts::pi<double> * radius * radius;
+    return consts::pi<double> * radius * radius;
 }
 
 template<typename T> inline
 double Circle<T>::length() const
 {
-  return consts::two_pi<double> * radius;
+    return consts::two_pi<double> * radius;
 }
 
 
@@ -225,91 +226,91 @@ double Circle<T>::length() const
  */
 template<typename T>
 class Ellipse
-  : public Entity,
+    : public Entity,
     public Shape
 {
 
 public:
 
-  /*!
-   * \brief type
-   */
-  typedef T value_type;
+    /*!
+     * \brief type
+     */
+    typedef T value_type;
 
-  /*!
-   * \brief Center
-   */
-  Point<T> center;
+    /*!
+     * \brief Center
+     */
+    Point<T> center;
 
-  /*!
-   * \brief Semi-major axis
-   */
-  T a;
+    /*!
+     * \brief Semi-major axis
+     */
+    T a;
 
-  /*!
-   * \brief Semi-minor axis
-   */
-  T b;
+    /*!
+     * \brief Semi-minor axis
+     */
+    T b;
 
-  TL_TODO("ángulo")
+    TL_TODO("ángulo")
 
 public:
 
-  /*!
-   * \brief Default constructor
-   */
-  Ellipse();
+    /*!
+     * \brief Default constructor
+     */
+    Ellipse();
 
-  /*!
-   * \brief Constructor
-   * \param[in] center Ellipse center
-   * \param[in] a Semi-major axis
-   * \param[in] b Semi-minor axis
-   */
-  Ellipse(const Point<T> &center, T a, T b);
+    /*!
+     * \brief Constructor
+     * \param[in] center Ellipse center
+     * \param[in] a Semi-major axis
+     * \param[in] b Semi-minor axis
+     */
+    Ellipse(const Point<T> &center, T a, T b);
 
-  /*!
-   * \brief Copy constructor
-   * \param[in] ellipse Ellipse object to copy
-   */
-  Ellipse(const Ellipse<T> &ellipse);
-   
-  /*!
-   * \brief Move constructor
-   * \param[in] ellipse Ellipse object to move
-   */
-  Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT;
+    /*!
+     * \brief Copy constructor
+     * \param[in] ellipse Ellipse object to copy
+     */
+    Ellipse(const Ellipse<T> &ellipse);
 
-  ~Ellipse() override = default;
+    /*!
+     * \brief Move constructor
+     * \param[in] ellipse Ellipse object to move
+     */
+    Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
-  /*!
-   * \brief Copy assignment operator
-   * \param[in] ellipse Ellipse object to copy
-   */
-  Ellipse<T> &operator = (const Ellipse<T> &ellipse);
+    ~Ellipse() override = default;
 
-  /*!
-   * \brief Move assignment operator
-   * \param[in] ellipse Ellipse object to move
-   */
-  Ellipse<T> &operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT;
+    /*!
+     * \brief Copy assignment operator
+     * \param[in] ellipse Ellipse object to copy
+     */
+    Ellipse<T> &operator = (const Ellipse<T> &ellipse);
 
-  /*!
-   * \brief Type conversion
-   */
-  template<typename T2> operator Ellipse<T2>() const;
+    /*!
+     * \brief Move assignment operator
+     * \param[in] ellipse Ellipse object to move
+     */
+    Ellipse<T> &operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
-  /*!
-   * \brief Ellipse area
-   * \return Area
-   */
-  double area() const override;
+    /*!
+     * \brief Type conversion
+     */
+    template<typename T2> operator Ellipse<T2>() const;
 
-  /*!
-   * \brief Circumference
-   * \return length
-   */
-  double length() const;
+    /*!
+     * \brief Ellipse area
+     * \return Area
+     */
+    double area() const override;
+
+    /*!
+     * \brief Circumference
+     * \return length
+     */
+    double length() const;
 
 };
 
@@ -334,11 +335,11 @@ Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
     a(a),
     b(b)
 {
-  if (b > a) {
-    T aux = b;
-    b = a;
-    a = aux;
-  }
+    if (b > a) {
+        T aux = b;
+        b = a;
+        a = aux;
+    }
 }
 
 template<typename T> inline
@@ -362,46 +363,47 @@ Ellipse<T>::Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT
 template<typename T> inline
 Ellipse<T> &Ellipse<T>::operator = (const Ellipse &ellipse)
 {
-  if (this != &ellipse) {
-    Entity::operator = (ellipse);
-    this->center = ellipse.center;
-    this->a = ellipse.a;
-    this->b = ellipse.b;
-  }
-  return *this;
+    if (this != &ellipse) {
+        Entity::operator = (ellipse);
+        this->center = ellipse.center;
+        this->a = ellipse.a;
+        this->b = ellipse.b;
+    }
+
+    return *this;
 }
 
 template<typename T> inline
 Ellipse<T> &Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT
 {
-  if (this != &ellipse) {
-    Entity::operator = (std::forward<Entity>(ellipse));
-    this->center = std::move(ellipse.center);
-    this->a = ellipse.a;
-    this->b = ellipse.b;
-  }
+    if (this != &ellipse) {
+        Entity::operator = (std::forward<Entity>(ellipse));
+        this->center = std::move(ellipse.center);
+        this->a = ellipse.a;
+        this->b = ellipse.b;
+    }
 
-  return *this;
+    return *this;
 }
 
 template<typename T> template<typename T2> inline
 Ellipse<T>::operator Ellipse<T2>() const
 {
-  return Ellipse<T2>(this->center,
-                     numberCast<T2>(this->a),
-                     numberCast<T2>(this->b));
+    return Ellipse<T2>(this->center,
+                       numberCast<T2>(this->a),
+                       numberCast<T2>(this->b));
 }
 
 template<typename T> inline
 double Ellipse<T>::area() const
 {
-  return consts::pi<double> * a * b;
+    return consts::pi<double> * a * b;
 }
 
 template<typename T> inline
 double Ellipse<T>::length() const
 {
-  return consts::pi<double> * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
+    return consts::pi<double> * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
 }
 
 
@@ -417,57 +419,57 @@ class Triangle
 
 public:
 
-  /*!
-   * \brief type
-   */
-  typedef T value_type;
+    /*!
+     * \brief type
+     */
+    typedef T value_type;
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  Triangle();
+    /*!
+     * \brief Constructora por defecto
+     */
+    Triangle();
 
-  Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
+    Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] triangle Objeto Triangle que se copia
-   */
-  Triangle(const Triangle<T> &triangle);
-   
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] triangle Objeto Triangle que se mueve
-   */
-  Triangle(Triangle<T> &&triangle) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de copia
+     * \param[in] triangle Objeto Triangle que se copia
+     */
+    Triangle(const Triangle<T> &triangle);
 
-  ~Triangle() override = default;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] triangle Objeto Triangle que se mueve
+     */
+    Triangle(Triangle<T> &&triangle) TL_NOEXCEPT;
 
-  /*!
-   * \brief Operador de asignación
-   * \param[in] triangle Objeto Triangle que se copia
-   */
-  Triangle<T> &operator = (const Triangle<T> &circle);
-    
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] triangle Objeto Triangle que se mueve
-   */
-  Triangle<T> &operator = (Triangle<T> &&triangle) TL_NOEXCEPT;
+    ~Triangle() override = default;
 
-  /*!
-   * \brief Area de un circulo
-   * \return Area
-   */
-  double area() const override;
+    /*!
+     * \brief Operador de asignación
+     * \param[in] triangle Objeto Triangle que se copia
+     */
+    Triangle<T> &operator = (const Triangle<T> &circle);
+
+    /*!
+     * \brief Operador de asignación de movimiento
+     * \param[in] triangle Objeto Triangle que se mueve
+     */
+    Triangle<T> &operator = (Triangle<T> &&triangle) TL_NOEXCEPT;
+
+    /*!
+     * \brief Area de un circulo
+     * \return Area
+     */
+    double area() const override;
 
 protected:
 
-  Point<T> mPt1;
-  Point<T> mPt2;
-  Point<T> mPt3;
+    Point<T> mPt1;
+    Point<T> mPt2;
+    Point<T> mPt3;
 
 };
 
@@ -513,31 +515,33 @@ Triangle<T>::Triangle(Triangle<T> &&triangle) TL_NOEXCEPT
 template<typename T> inline
 Triangle<T> &Triangle<T>::operator = (const Triangle &triangle)
 {
-  if (this != &triangle) {
-    Entity::operator = (triangle);
-    this->mPt1 = triangle.mPt1;
-    this->mPt2 = triangle.mPt2;
-    this->mPt3 = triangle.mPt3;
-  }
-  return *this;
+    if (this != &triangle) {
+        Entity::operator = (triangle);
+        this->mPt1 = triangle.mPt1;
+        this->mPt2 = triangle.mPt2;
+        this->mPt3 = triangle.mPt3;
+    }
+
+    return *this;
 }
 
 template<typename T> inline
 Triangle<T> &Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT
 {
-  if (this != &triangle) {
-    Entity::operator = (std::forward<Entity>(triangle));
-    this->mPt1 = std::move(triangle.mPt1);
-    this->mPt2 = std::move(triangle.mPt2);
-    this->mPt3 = std::move(triangle.mPt3);
-  }
-  return *this;
+    if (this != &triangle) {
+        Entity::operator = (std::forward<Entity>(triangle));
+        this->mPt1 = std::move(triangle.mPt1);
+        this->mPt2 = std::move(triangle.mPt2);
+        this->mPt3 = std::move(triangle.mPt3);
+    }
+
+    return *this;
 }
 
 template<typename T> inline
 double Triangle<T>::area() const
 {
-  return 0;
+    return 0;
 }
 
 
@@ -553,23 +557,23 @@ class Square
 
 public:
 
-  /*!
-   * \brief type
-   */
-  typedef T value_type;
+    /*!
+     * \brief type
+     */
+    typedef T value_type;
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  Square();
+    /*!
+     * \brief Constructora por defecto
+     */
+    Square();
 
-  /*!
-   * \brief Area
-   * \return Area
-   */
-  double area() const override;
+    /*!
+     * \brief Area
+     * \return Area
+     */
+    double area() const override;
 
 };
 
@@ -583,7 +587,7 @@ Square<T>::Square()
 template<typename T> inline
 double Square<T>::area() const
 {
-  return 0;
+    return 0;
 }
 
 
@@ -593,29 +597,29 @@ double Square<T>::area() const
  */
 template<typename T>
 class Rectangle
-  : public Entity,
+    : public Entity,
     public Shape
 {
 
 public:
 
-  /*!
-   * \brief type
-   */
-  typedef T value_type;
+    /*!
+     * \brief type
+     */
+    typedef T value_type;
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  Rectangle();
+    /*!
+     * \brief Constructora por defecto
+     */
+    Rectangle();
 
-  /*!
-   * \brief Area
-   * \return Area
-   */
-  double area() const override;
+    /*!
+     * \brief Area
+     * \return Area
+     */
+    double area() const override;
 
 };
 
@@ -629,12 +633,10 @@ Rectangle<T>::Rectangle()
 template<typename T> inline
 double Rectangle<T>::area() const
 {
-  return 0;
+    return 0;
 }
 
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_SHAPES_H

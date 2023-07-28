@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_MATCH_IO_H
-#define TL_FEATMATCH_MATCH_IO_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -50,27 +49,28 @@ namespace tl
 class TL_EXPORT MatchesReader
 {
 
+private:
+
+    tl::Path mFilePath;
+    std::vector<cv::DMatch> mGoodMatches;
+    std::vector<cv::DMatch> mWrongMatches;
+
 public:
 
-  MatchesReader(tl::Path file);
-  virtual ~MatchesReader() = default;
+    MatchesReader(tl::Path file);
+    virtual ~MatchesReader() = default;
 
-  virtual void read() = 0;
+    virtual void read() = 0;
 
-  std::vector<cv::DMatch> goodMatches() const;
-  std::vector<cv::DMatch> wrongMatches() const;
+    std::vector<cv::DMatch> goodMatches() const;
+    std::vector<cv::DMatch> wrongMatches() const;
 
 protected:
 
-  const tl::Path &filePath() const;
-  std::vector<cv::DMatch> &good_matches();
-  std::vector<cv::DMatch> &wrong_matches();
+    const tl::Path &filePath() const;
+    std::vector<cv::DMatch> &good_matches();
+    std::vector<cv::DMatch> &wrong_matches();
 
-private:
-
-  tl::Path mFilePath;
-  std::vector<cv::DMatch> mGoodMatches;
-  std::vector<cv::DMatch> mWrongMatches;
 };
 
 
@@ -82,27 +82,28 @@ private:
 class TL_EXPORT MatchesWriter
 {
 
+private:
+
+    tl::Path mFilePath;
+    std::vector<cv::DMatch> mGoodMatches;
+    std::vector<cv::DMatch> mWrongMatches;
+
 public:
 
-  MatchesWriter(tl::Path file);
-  virtual ~MatchesWriter() = default;
+    MatchesWriter(tl::Path file);
+    virtual ~MatchesWriter() = default;
 
-  virtual void write() = 0;
+    virtual void write() = 0;
 
-  void setGoodMatches(const std::vector<cv::DMatch> &goodMatches);
-  void setWrongMatches(const std::vector<cv::DMatch> &wrongMatches);
+    void setGoodMatches(const std::vector<cv::DMatch> &goodMatches);
+    void setWrongMatches(const std::vector<cv::DMatch> &wrongMatches);
 
 protected:
 
-  const tl::Path &filePath() const;
-  const std::vector<cv::DMatch> &goodMatches() const;
-  const std::vector<cv::DMatch> &wrongMatches() const;
+    const tl::Path &filePath() const;
+    const std::vector<cv::DMatch> &goodMatches() const;
+    const std::vector<cv::DMatch> &wrongMatches() const;
 
-private:
-
-  tl::Path mFilePath;
-  std::vector<cv::DMatch> mGoodMatches;
-  std::vector<cv::DMatch> mWrongMatches;
 };
 
 
@@ -116,13 +117,13 @@ class TL_EXPORT MatchesReaderFactory
 
 private:
 
-  MatchesReaderFactory() {}
+    MatchesReaderFactory() {}
 
 public:
 
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<MatchesReader> createReader(const tl::Path &file);
-  static std::unique_ptr<MatchesReader> create(const tl::Path &file);
+    TL_DEPRECATED("create", "2.1")
+    static std::unique_ptr<MatchesReader> createReader(const tl::Path &file);
+    static std::unique_ptr<MatchesReader> create(const tl::Path &file);
 };
 
 
@@ -133,17 +134,16 @@ public:
 
 class TL_EXPORT MatchesWriterFactory
 {
-public:
 
 private:
 
-  MatchesWriterFactory() {}
+    MatchesWriterFactory() {}
 
 public:
 
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<MatchesWriter> createWriter(const tl::Path &file);
-  static std::unique_ptr<MatchesWriter> create(const tl::Path &file);
+    TL_DEPRECATED("create", "2.1")
+    static std::unique_ptr<MatchesWriter> createWriter(const tl::Path &file);
+    static std::unique_ptr<MatchesWriter> create(const tl::Path &file);
 };
 
 
@@ -172,6 +172,3 @@ TL_EXPORT void passPointsRead(const std::string &fname,
 
 
 } // namespace tl
-
-
-#endif // TL_FEATMATCH_MATCH_IO_H

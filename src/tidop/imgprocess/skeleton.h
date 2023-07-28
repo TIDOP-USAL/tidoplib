@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMGPROCESS_SKELETON_H
-#define TL_IMGPROCESS_SKELETON_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -65,66 +64,67 @@ namespace tl
  * \brief Adelgazamiento (thinning) es la transformación de una imagen en una imagen simplificada pero topológicamente equivalente.
  *
  */
-class TL_EXPORT Thinning 
-  : public ImageProcess
+class TL_EXPORT Thinning
+    : public ImageProcess
 {
 
 public:
 
-  enum class Type
-  {
-    zhang_suen, /*!< Zhang-Suen algorithm. */
-    guo_hall    /*!< Guo-Hall algorithm. */
-  };
+    enum class Type
+    {
+        zhang_suen, /*!< Zhang-Suen algorithm. */
+        guo_hall    /*!< Guo-Hall algorithm. */
+    };
+
+private:
+
+    Type mType;
 
 public:
 
-  /*!
-   * \brief Constructora
-   * Se puede utilizar uno de los dos métodos siguientes:
-   * - Zhang-Suen algorithm: The algorithm is explained in “A fast parallel algorithm
-   * for thinning digital patterns” by T.Y. Zhang and C.Y. Suen.
-   * - Guo-Hall algorithm: The algorithm is explained in “Parallel thinning with two
-   * sub-iteration algorithms” by Zicheng Guo and Richard Hall.
-   *
-   * http://agcggs680.pbworks.com/f/Zhan-Suen_algorithm.pdf
-   * https://web.archive.org/web/20160322113207/http://opencv-code.com/quick-tips/implementation-of-thinning-algorithm-in-opencv/
-   * https://web.archive.org/web/20160314104646/http://opencv-code.com/quick-tips/implementation-of-guo-hall-thinning-algorithm/
-   *
-   * \param[in] type Tipo de algoritmo empleado. Por defecto zhang_suen
-   * \see Type
-   */
-  Thinning(Type type = Type::zhang_suen);
+    /*!
+     * \brief Constructora
+     * Se puede utilizar uno de los dos métodos siguientes:
+     * - Zhang-Suen algorithm: The algorithm is explained in “A fast parallel algorithm
+     * for thinning digital patterns” by T.Y. Zhang and C.Y. Suen.
+     * - Guo-Hall algorithm: The algorithm is explained in “Parallel thinning with two
+     * sub-iteration algorithms” by Zicheng Guo and Richard Hall.
+     *
+     * http://agcggs680.pbworks.com/f/Zhan-Suen_algorithm.pdf
+     * https://web.archive.org/web/20160322113207/http://opencv-code.com/quick-tips/implementation-of-thinning-algorithm-in-opencv/
+     * https://web.archive.org/web/20160314104646/http://opencv-code.com/quick-tips/implementation-of-guo-hall-thinning-algorithm/
+     *
+     * \param[in] type Tipo de algoritmo empleado. Por defecto zhang_suen
+     * \see Type
+     */
+    Thinning(Type type = Type::zhang_suen);
 
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   */
-  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+    /*!
+     * \brief Ejecuta el proceso
+     * \param[in] matIn Imagen de entrada
+     * \param[out] matOut Imagen de salida
+     */
+    void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
-  /*!
-   * \brief Establece el tipo de algoritmo de adelgazamiento usado
-   */
-  void setType(Type type);
+    /*!
+     * \brief Establece el tipo de algoritmo de adelgazamiento usado
+     */
+    void setType(Type type);
 
 private:
 
-  void thinningIteration(cv::Mat &image, int iter, Type type) const;
-  void thinningZhangSuen(cv::Mat &image, 
-                         cv::Mat &marker, 
-                         int iter, 
-                         int ini, 
+    void thinningIteration(cv::Mat &image, int iter, Type type) const;
+    void thinningZhangSuen(cv::Mat &image,
+                           cv::Mat &marker,
+                           int iter,
+                           int ini,
+                           int end) const;
+    void thinningGuoHall(cv::Mat &image,
+                         cv::Mat &marker,
+                         int iter,
+                         int ini,
                          int end) const;
-  void thinningGuoHall(cv::Mat &image, 
-                       cv::Mat &marker, 
-                       int iter, 
-                       int ini, 
-                       int end) const;
 
-private:
-
-  Type mType;
 };
 
 /*! \} */ // end of skeleton
@@ -134,5 +134,3 @@ private:
 } // End namespace tl
 
 #endif // TL_HAVE_OPENCV
-
-#endif // TL_IMGPROCESS_SKELETON_H

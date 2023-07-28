@@ -28,7 +28,7 @@
 
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
-#include <tidop/core/messages.h>
+#include <tidop/core/msg/message.h>
 #include <tidop/core/path.h>
 #include <tidop/core/log.h>
 #include <tidop/geometry/entities/point.h>
@@ -50,8 +50,8 @@ int main(int argc, char **argv)
     console.setTitle(cmd_name);
     console.setConsoleUnicode();
     console.setFontHeight(14);
-    console.setMessageLevel(MessageLevel::msg_verbose);
-    App::messageManager().addListener(&console);
+    console.setMessageLevel(MessageLevel::all);
+    Message::instance().addMessageHandler(&console);
 
 
     Command cmd(cmd_name, "Ejemplo de transformación de coordenadas");
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
     if(status == Command::Status::parse_error) {
         return 1;
     } else if(status == Command::Status::show_help || 
-              status == Command::Status::show_licence || 
-              status == Command::Status::show_version) {
+        status == Command::Status::show_licence || 
+        status == Command::Status::show_version) {
         return 0;
     }
 
@@ -84,9 +84,9 @@ int main(int argc, char **argv)
 
     if(!log_file.empty()) {
         Log &log = App::log();
-        log.setMessageLevel(MessageLevel::msg_verbose);
-        log.setLogFile(log_file);
-        App::messageManager().addListener(&log);
+        log.setMessageLevel(MessageLevel::all);
+        log.open(log_file);
+        Message::instance().addMessageHandler(&log);
     }
 
     try {
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
                     Point3<double> pt_in(vector[0], vector[1], vector[2]);
                     Point3<double> pt_out;
                     crs.transform(pt_in, pt_out);
-                    msgInfo("%lf;%lf;%lf -> %lf;%lf;%lf", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
+                    Message::info("{};{};{} -> {};{};{}", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
 
                     if(ofs.is_open()) {
                         ofs << vector[0] << separator << vector[1] << separator << vector[2] << separator << " -> "
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
             Point3<double> pt_in(point[0], point[1], point[2]);
             Point3<double> pt_out;
             crs.transform(pt_in, pt_out);
-            msgInfo("%lf;%lf;%lf -> %lf;%lf;%lf", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
+            Message::info("{};{};{} -> {};{};{}", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
 
             if(ofs.is_open()) {
                 ofs << point[0] << separator << point[1] << separator << point[2] << separator << " -> "

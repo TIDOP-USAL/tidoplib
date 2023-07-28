@@ -555,7 +555,6 @@ typename std::enable_if<
   void>::type
 setZero()
 {
-    using simd_type = typename Packed<T>::simd_type;
 
 #ifdef TL_HAVE_AVX
     return _mm256_setzero_si256();

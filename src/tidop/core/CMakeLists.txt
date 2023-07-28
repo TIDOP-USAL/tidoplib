@@ -37,7 +37,7 @@ if(BUILD_TL_CORE)
                          SOURCE_FILES 
                              app.cpp
                              exception.cpp
-                             messages.cpp
+                             #messages.cpp
                              log.cpp
                              utils.cpp
                              task.cpp
@@ -52,13 +52,13 @@ if(BUILD_TL_CORE)
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
+                             msg/message.cpp
                          HEADER_FILES
                              defs.h
 							 ptr.h
                              app.h
                              exception.h
                              flags.h
-                             messages.h
                              log.h
                              utils.h
                              task.h
@@ -75,7 +75,10 @@ if(BUILD_TL_CORE)
                              console/console.h
                              console/argument.h
                              console/command.h
-                             console/validator.h)
+                             console/validator.h
+                             messages.h
+                             msg/handler.h
+                             msg/message.h)
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -89,12 +92,15 @@ if(BUILD_TL_CORE)
                                $<INSTALL_INTERFACE:include>)
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
+    #target_compile_definitions(${PROJECT_NAME} PUBLIC TL_HAVE_CORE)
+
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${UNIX}>:-lpthread>)
+                          $<$<BOOL:${UNIX}>:-lpthread>
+                          $<$<BOOL:${TL_HAVE_FMT}>:fmt::fmt>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"
@@ -118,7 +124,7 @@ if(BUILD_TL_CORE)
     
     
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-    
+
     set(TL_HAVE_CORE YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::Core enabled")
     

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECTOR_READER_H
-#define TL_VECTOR_READER_H
+#pragma once
 
 #include <memory>
 #include <list>
@@ -49,43 +48,43 @@ class TL_EXPORT VectorReader
 
 public:
 
-	VectorReader(Path file);
-	virtual ~VectorReader() = default;
+    VectorReader(Path file);
+    virtual ~VectorReader() = default;
 
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
+    /*!
+     * \brief Abre el fichero
+     */
+    virtual void open() = 0;
 
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
+    /*!
+     * \brief Comprueba si el fichero se ha cargado correctamente
+     */
+    virtual bool isOpen() const = 0;
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+    /*!
+     * \brief Cierra el fichero
+     */
+    virtual void close() = 0;
 
-  virtual int layersCount() const = 0;
-  virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
-  virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
+    virtual int layersCount() const = 0;
+    virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
+    virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
 
-  /*!
-   * \brief Sistema de referencia en formato WKT
-   */
-  virtual std::string crsWkt() const = 0;
+    /*!
+     * \brief Sistema de referencia en formato WKT
+     */
+    virtual std::string crsWkt() const = 0;
 
-//#if defined TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Sistema de referencia
-//   */
-//  virtual geospatial::Crs crs() const = 0;
-//#endif
+    //#if defined TL_HAVE_GEOSPATIAL
+    //  /*!
+    //   * \brief Sistema de referencia
+    //   */
+    //  virtual geospatial::Crs crs() const = 0;
+    //#endif
 
 protected:
 
-  Path mFile;
+    Path mFile;
 
 };
 
@@ -98,18 +97,15 @@ class TL_EXPORT VectorReaderFactory
 
 private:
 
-  VectorReaderFactory() = default;
+    VectorReaderFactory() = default;
 
 public:
 
-  static std::unique_ptr<VectorReader> create(const Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<VectorReader> createReader(const Path &file);
+    static std::unique_ptr<VectorReader> create(const Path &file);
+    TL_DEPRECATED("create", "2.1")
+    static std::unique_ptr<VectorReader> createReader(const Path &file);
 };
 
 
 
 } // End namespace tl
-
-
-#endif // TL_VECTOR_READER_H

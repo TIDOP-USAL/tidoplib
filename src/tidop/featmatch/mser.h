@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_MSER_DETECTOR_H
-#define TL_FEATMATCH_MSER_DETECTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -44,53 +43,55 @@ namespace tl
 class TL_EXPORT MserProperties
   : public Mser
 {
+
+private:
+
+    int mDelta;
+    int mMinArea;
+    int mMaxArea;
+    double mMaxVariation;
+    double mMinDiversity;
+    int mMaxEvolution;
+    double mAreaThreshold;
+    double mMinMargin;
+    int mEdgeBlurSize;
+
 public:
 
-  MserProperties();
-  MserProperties(const MserProperties &mserProperties);
-  ~MserProperties() override = default;
+    MserProperties();
+    MserProperties(const MserProperties &mserProperties);
+    ~MserProperties() override = default;
 
 // Mser interface
 
 public:
 
-  int delta() const override;
-  int minArea() const override;
-  int maxArea() const override;
-  double maxVariation() const override;
-  double minDiversity() const override;
-  int maxEvolution() const override;
-  double areaThreshold() const override;
-  double minMargin() const override;
-  int edgeBlurSize() const override;
-  void setDelta(int delta) override;
-  void setMinArea(int minArea) override;
-  void setMaxArea(int maxArea) override;
-  void setMaxVariation(double maxVariation) override;
-  void setMinDiversity(double minDiversity) override;
-  void setMaxEvolution(int maxEvolution) override;
-  void setAreaThreshold(double areaThreshold) override;
-  void setMinMargin(double minMargin) override;
-  void setEdgeBlurSize(int edgeBlurSize) override;
+    int delta() const override;
+    int minArea() const override;
+    int maxArea() const override;
+    double maxVariation() const override;
+    double minDiversity() const override;
+    int maxEvolution() const override;
+    double areaThreshold() const override;
+    double minMargin() const override;
+    int edgeBlurSize() const override;
+    void setDelta(int delta) override;
+    void setMinArea(int minArea) override;
+    void setMaxArea(int maxArea) override;
+    void setMaxVariation(double maxVariation) override;
+    void setMinDiversity(double minDiversity) override;
+    void setMaxEvolution(int maxEvolution) override;
+    void setAreaThreshold(double areaThreshold) override;
+    void setMinMargin(double minMargin) override;
+    void setEdgeBlurSize(int edgeBlurSize) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  int mDelta;
-  int mMinArea;
-  int mMaxArea;
-  double mMaxVariation;
-  double mMinDiversity;
-  int mMaxEvolution;
-  double mAreaThreshold;
-  double mMinMargin;
-  int mEdgeBlurSize;
 };
 
 
@@ -102,55 +103,55 @@ class TL_EXPORT MserDetector
     public KeypointDetector
 {
 
+protected:
+
+    cv::Ptr<cv::MSER> mMSER;
+
 public:
 
-  MserDetector();
-  MserDetector(const MserDetector &mserDetector);
-  MserDetector(int delta,
-               int minArea,
-               int maxArea,
-               double maxVariation,
-               double minDiversity,
-               int maxEvolution,
-               double areaThreshold,
-               double minMargin,
-               int edgeBlurSize);
-  ~MserDetector() override = default;
+    MserDetector();
+    MserDetector(const MserDetector &mserDetector);
+    MserDetector(int delta,
+                 int minArea,
+                 int maxArea,
+                 double maxVariation,
+                 double minDiversity,
+                 int maxEvolution,
+                 double areaThreshold,
+                 double minMargin,
+                 int edgeBlurSize);
+    ~MserDetector() override = default;
 
 private:
 
-  void update();
+    void update();
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                     cv::InputArray &mask = cv::noArray()) override;
 
 // Mser interface
 
 public:
 
-  void setDelta(int delta) override;
-  void setMinArea(int minArea) override;
-  void setMaxArea(int maxArea) override;
-  void setMaxVariation(double maxVariation) override;
-  void setMinDiversity(double minDiversity) override;
-  void setMaxEvolution(int maxEvolution) override;
-  void setAreaThreshold(double areaThreshold) override;
-  void setMinMargin(double minMargin) override;
-  void setEdgeBlurSize(int edgeBlurSize) override;
+    void setDelta(int delta) override;
+    void setMinArea(int minArea) override;
+    void setMaxArea(int maxArea) override;
+    void setMaxVariation(double maxVariation) override;
+    void setMinDiversity(double minDiversity) override;
+    void setMaxEvolution(int maxEvolution) override;
+    void setAreaThreshold(double areaThreshold) override;
+    void setMinMargin(double minMargin) override;
+    void setEdgeBlurSize(int edgeBlurSize) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-protected:
-
-  cv::Ptr<cv::MSER> mMSER;
+    void reset() override;
 
 };
 
@@ -159,5 +160,3 @@ protected:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_MSER_DETECTOR_H

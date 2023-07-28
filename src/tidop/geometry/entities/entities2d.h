@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_ENTITIES_2D_H
-#define TL_GEOMETRY_ENTITIES_2D_H
+#pragma once
 
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/window.h"
@@ -42,65 +41,65 @@ namespace tl
  */
 template<typename Entity_t>
 class Entities2D
-  : public EntityContainer<Entity_t>
+    : public EntityContainer<Entity_t>
 {
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  Entities2D();
+    /*!
+     * \brief Constructora por defecto
+     */
+    Entities2D();
 
-  /*!
-   * \brief Constructor que reserva tamaño para n puntos
-   * \param[in] size Tamaños que se reserva
-   */
-  Entities2D(typename Entities2D<Entity_t>::size_type size);
+    /*!
+     * \brief Constructor que reserva tamaño para n puntos
+     * \param[in] size Tamaños que se reserva
+     */
+    Entities2D(typename Entities2D<Entity_t>::size_type size);
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] entities Objeto Entities2D que se copia
-   */
-  Entities2D(const Entities2D &entities);
+    /*!
+     * \brief Constructor de copia
+     * \param[in] entities Objeto Entities2D que se copia
+     */
+    Entities2D(const Entities2D &entities);
 
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] entities Objeto Entities2D que se copia
-   */
-  Entities2D(Entities2D &&entities) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] entities Objeto Entities2D que se copia
+     */
+    Entities2D(Entities2D &&entities) TL_NOEXCEPT;
 
-  /*!
-   * \brief Constructor
-   * \param[in] entities vector de entidades
-   */
-  Entities2D(const std::vector<Entity_t> &entities);
+    /*!
+     * \brief Constructor
+     * \param[in] entities vector de entidades
+     */
+    Entities2D(const std::vector<Entity_t> &entities);
 
-  /*!
-   * \brief Constructor lista de inicialización
-   * \param[in] entities Inicializador de lista con las entidades
-   */
-  Entities2D(std::initializer_list<Entity_t> entities);
+    /*!
+     * \brief Constructor lista de inicialización
+     * \param[in] entities Inicializador de lista con las entidades
+     */
+    Entities2D(std::initializer_list<Entity_t> entities);
 
-  ~Entities2D() override = default;
+    ~Entities2D() override = default;
 
-  /*!
-   * \brief Devuelve las entidades que están dentro de una ventana
-   * \param[in] window Ventana
-   * \return Entidades seleccionadas
-   */
-  template<typename Window_t>
-  std::vector<Entity_t> entitiesInWindow(const Window_t &window) const;
+    /*!
+     * \brief Devuelve las entidades que están dentro de una ventana
+     * \param[in] window Ventana
+     * \return Entidades seleccionadas
+     */
+    template<typename Window_t>
+    std::vector<Entity_t> entitiesInWindow(const Window_t &window) const;
 
-  /*!
-   * \brief Asignación de copia
-   */
-  Entities2D<Entity_t>& operator=(const Entities2D<Entity_t> &entities);
+    /*!
+     * \brief Asignación de copia
+     */
+    Entities2D<Entity_t> &operator=(const Entities2D<Entity_t> &entities);
 
-  /*!
-   * \brief Asignación de movimiento
-   */
-  Entities2D<Entity_t>& operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT;
+    /*!
+     * \brief Asignación de movimiento
+     */
+    Entities2D<Entity_t> &operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT;
 
 };
 
@@ -144,45 +143,43 @@ Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
 template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &window) const
 {
-  std::vector<Entity_t> r_points(this->mEntities.size());
+    std::vector<Entity_t> r_points(this->mEntities.size());
 
-  size_t j = 0;
+    size_t j = 0;
 
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (window.containsPoint(this->mEntities[i])) {
-      r_points[i] = this->mEntities[i];
-      j++;
+    for (size_t i = 0; i < this->mEntities.size(); i++) {
+        if (window.containsPoint(this->mEntities[i])) {
+            r_points[i] = this->mEntities[i];
+            j++;
+        }
     }
-  }
 
-  r_points.resize(j);
+    r_points.resize(j);
 
-  return r_points;
+    return r_points;
 }
 
 template<typename Entity_t> inline
 Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t> &entities)
 {
-  if (this != &entities) {
-    EntityContainer<Entity_t>::operator=(entities);
-  }
+    if (this != &entities) {
+        EntityContainer<Entity_t>::operator=(entities);
+    }
 
-  return (*this);
+    return (*this);
 }
 
 template<typename Entity_t> inline
 Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT
 {
-  if (this != &entities) {
-    EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));
-  }
+    if (this != &entities) {
+        EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));
+    }
 
-  return (*this);
+    return (*this);
 }
 
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_ENTITIES_2D_H

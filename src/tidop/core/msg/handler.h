@@ -22,68 +22,86 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/app.h"
+#pragma once
 
-#include "tidop/core/console/console.h"
-#include "tidop/core/msg/handler.h"
-#include "tidop/core/log.h"
 
-#ifdef TL_OS_LINUX
-#include <unistd.h>
+#include "tidop/config.h"
+#include "tidop/core/defs.h"
+#include "tidop/core/flags.h"
+
+#include <string>
+#if CPP_VERSION >= 20
+#include <format>
+#else
+#include <fmt/format.h>
 #endif
-
-#include <array>
 
 namespace tl
 {
 
-App::App()
+
+/*! \addtogroup core
+ *  \{
+ */
+
+/*! \defgroup Messages Gestión de mensajes
+ *
+ *  \{
+ */
+
+enum class MessageLevel : int8_t
 {
-    init();
-}
+	debug = 1 << 0,
+	error = 1 << 1,
+	warning = 1 << 2,
+    success = 1 << 3,
+	info = 1 << 4,
+    all = error | warning | success | info
+};
+ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
-App &App::instance()
+class MessageHandler
 {
-    static App app;
-    return app;
-}
+public:
 
-tl::Path App::path() const
-{
-    static std::array<char, TL_MAX_PATH> runfile;
-
-#ifdef TL_OS_WINDOWS
-    ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
-    return tl::Path(std::string(runfile.data()));
-#elif defined TL_OS_LINUX
-    std::array<char, 32> _path{};
-    sprintf(_path.data(), "/proc/%d/exe", getpid());
-    long len = readlink(_path.data(), runfile.data(), runfile.size());
-    if (len >= 0)
-        runfile.at(static_cast<size_t>(len)) = '\0';
-
-    return tl::Path(std::string(runfile.data()));
+#if CPP_VERSION >= 17
+    using String = std::string_view;
+#else
+    using String = const std::string &;
 #endif
-}
 
-std::string App::version() const
-{
-    return std::string();
-}
+public:
 
-Console &App::console()
-{
-    return Console::instance();
-}
+    MessageHandler() = default;
+	virtual ~MessageHandler() = default;
 
-Log &App::log()
-{
-    return Log::instance();
-}
+    virtual void debug(String message) = 0;
+    virtual void info(String message) = 0;
+    virtual void success(String message) = 0;
+    virtual void warning(String message) = 0;
+    virtual void error(String message) = 0;
+//#if CPP_VERSION >= 17
+//    virtual void debug(std::string_view message) = 0;
+//    virtual void info(std::string_view message) = 0;
+//    virtual void success(std::string_view message) = 0;
+//    virtual void warning(std::string_view message) = 0;
+//    virtual void error(std::string_view message) = 0;
+//#else
+//    virtual void debug(std::string message) = 0;
+//    virtual void info(const std::string &message) = 0;
+//    virtual void success(const std::string &message) = 0;
+//    virtual void warning(const std::string &message) = 0;
+//    virtual void error(const std::string &message) = 0;
+//#endif
 
-void App::init()
-{
-    Console::instance();
-}
+};
 
-} // namespace tl
+
+/*! \} */ // end of Messages
+
+
+/*! \} */ // end of core
+
+
+} // End namespace tl
+

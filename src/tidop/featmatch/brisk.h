@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_BRISK_DETECTOR_DESCRIPTOR_H
-#define TL_FEATMATCH_BRISK_DETECTOR_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -49,35 +48,38 @@ constexpr auto brisk_default_value_pattern_scale{1.0};
 class TL_EXPORT BriskProperties
   : public Brisk
 {
+
+
+private:
+
+    int mThreshold{brisk_default_value_threshold};
+    int mOctaves{brisk_default_value_octaves};
+    double mPatternScale{brisk_default_value_pattern_scale};
+
 public:
 
-  BriskProperties();
-  BriskProperties(const BriskProperties &briskProperties);
-  ~BriskProperties() override = default;
+    BriskProperties();
+    BriskProperties(const BriskProperties &briskProperties);
+    ~BriskProperties() override = default;
 
 // Brisk interface
 
 public:
 
-  int threshold() const override;
-  int octaves() const override;
-  double patternScale() const override;
-  void setThreshold(int threshold) override;
-  void setOctaves(int octaves) override;
-  void setPatternScale(double patternScale) override;
+    int threshold() const override;
+    int octaves() const override;
+    double patternScale() const override;
+    void setThreshold(int threshold) override;
+    void setOctaves(int octaves) override;
+    void setPatternScale(double patternScale) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  int mThreshold{brisk_default_value_threshold};
-  int mOctaves{brisk_default_value_octaves};
-  double mPatternScale{brisk_default_value_pattern_scale};
 };
 
 
@@ -90,51 +92,51 @@ class TL_EXPORT BriskDetectorDescriptor
     public DescriptorExtractor
 {
 
+private:
+
+    cv::Ptr<cv::BRISK> mBrisk;
+
 public:
 
-  BriskDetectorDescriptor();
-  BriskDetectorDescriptor(const BriskDetectorDescriptor &briskDetectorDescriptor);
-  BriskDetectorDescriptor(int threshold,
-                          int octaves,
-                          double patternScale);
-  ~BriskDetectorDescriptor() override = default;
+    BriskDetectorDescriptor();
+    BriskDetectorDescriptor(const BriskDetectorDescriptor &briskDetectorDescriptor);
+    BriskDetectorDescriptor(int threshold,
+                            int octaves,
+                            double patternScale);
+    ~BriskDetectorDescriptor() override = default;
 
 protected:
 
-  void update();
+    void update();
 
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                     cv::InputArray &mask = cv::noArray()) override;
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Brisk interface
 
 public:
 
-  void setThreshold(int threshold) override;
-  void setOctaves(int octaves) override;
-  void setPatternScale(double patternScale) override;
+    void setThreshold(int threshold) override;
+    void setOctaves(int octaves) override;
+    void setPatternScale(double patternScale) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-  cv::Ptr<cv::BRISK> mBrisk;
+    void reset() override;
 
 };
 
@@ -143,5 +145,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_BRISK_DETECTOR_DESCRIPTOR_H

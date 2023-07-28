@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_UTILS_H
-#define TL_CORE_UTILS_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -59,7 +58,7 @@ template<typename T1, typename T2> static inline
   T1>::type
 numberCast(T2 number)
 {
-  return static_cast<T1>(std::round(number));
+    return static_cast<T1>(std::round(number));
 }
 
 template<typename T1, typename T2> static inline
@@ -68,7 +67,7 @@ template<typename T1, typename T2> static inline
   T1>::type
 numberCast(T2 number)
 {
-  return static_cast<T1>(number);
+    return static_cast<T1>(number);
 }
 
 template<typename T1, typename T2> static inline
@@ -77,10 +76,10 @@ template<typename T1, typename T2> static inline
   T1>::type
 numberCast(T2 /*b*/)
 {
-  //En linux me sale siempre el error aunque no se llame a la función.
-  //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
-  throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
-  return T1{0};
+    //En linux me sale siempre el error aunque no se llame a la función.
+    //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
+    throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
+    return T1{0};
 }
 
 
@@ -91,13 +90,13 @@ typename std::enable_if<
   T>::type
 convertStringTo(const std::string &str)
 {
-  T value{};
+    T value{};
 
-  std::istringstream ss(str);
-  ss >> value;
+    std::istringstream ss(str);
+    ss >> value;
 
-  return value;
-}
+    return value;
+} 
 
 template <typename T> inline
 typename std::enable_if<
@@ -105,9 +104,9 @@ typename std::enable_if<
   T>::type
 convertStringTo(const std::string &str)
 {
-  T value = (compareInsensitiveCase(str, "true") || str == "1");
+    T value = (compareInsensitiveCase(str, "true") || str == "1");
 
-  return value;
+    return value;
 }
 
 template <typename T> inline
@@ -116,10 +115,10 @@ typename std::enable_if<
   T>::type
 convertStringTo(const std::string &/*str*/)
 {
-  //En linux me sale siempre el error aunque no se llame a la función.
-  //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
-  throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
-  return T{0};
+    //En linux me sale siempre el error aunque no se llame a la función.
+    //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
+    throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
+    return T{0};
 }
 
 
@@ -139,15 +138,15 @@ typename std::enable_if<
   std::vector<T>>::type
 split(const std::string &string, char separator = ',')
 {
-  std::vector<T> out;
+    std::vector<T> out;
 
-  std::stringstream ss(string);
-  std::string  item{};
-  while(std::getline(ss, item, separator)) {
-    out.push_back(item);
-  }
+    std::stringstream ss(string);
+    std::string  item{};
+    while (std::getline(ss, item, separator)) {
+        out.push_back(item);
+    }
 
-  return out;
+    return out;
 }
 
 template <typename T> inline
@@ -156,15 +155,15 @@ typename std::enable_if<
   std::vector<T>>::type
 split(const std::string &string, char separator = ',')
 {
-  std::vector<T> out;
+    std::vector<T> out;
 
-  std::stringstream ss(string);
-  std::string item{};
-  while(std::getline(ss, item, separator)) {
-    out.push_back(convertStringTo<T>(item));
-  }
+    std::stringstream ss(string);
+    std::string item{};
+    while (std::getline(ss, item, separator)) {
+        out.push_back(convertStringTo<T>(item));
+    }
 
-  return out;
+    return out;
 }
 
 
@@ -196,9 +195,9 @@ template <typename T> inline
 TL_DEPRECATED("std::to_string()", "2.0")
 std::string numberToString(T number)
 {
-  std::ostringstream ss;
-  ss << number;
-  return ss.str();
+    std::ostringstream ss;
+    ss << number;
+    return ss.str();
 }
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -211,15 +210,15 @@ std::string numberToString(T number)
 template <typename T> inline 
 T stringToNumber(const std::string &text)
 {
-  T number{};
-  return (std::istringstream(text) >> number) ? number : 0;
+    T number{};
+    return (std::istringstream(text) >> number) ? number : 0;
 }
 
 enum class Base : int8_t
 {
-  octal       =  8,
-  decimal     = 10,
-  hexadecimal = 16
+    octal       =  8,
+    decimal     = 10,
+    hexadecimal = 16
 };
 
 /*!
@@ -244,12 +243,12 @@ TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal
 template <typename T> inline 
 std::vector<int> sortIdx(const std::vector<T> &v)
 {
-  std::vector<int> idx(v.size());
-  std::iota(idx.begin(), idx.end(), 0);
-
-  sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] < v[i2]; });
-
-  return idx;
+    std::vector<int> idx(v.size());
+    std::iota(idx.begin(), idx.end(), 0);
+    
+    sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] < v[i2]; });
+    
+    return idx;
 }
 
 
@@ -263,10 +262,10 @@ class TL_EXPORT FileOptions
 {
 public:
 
-  FileOptions() = default;
-  virtual ~FileOptions() = default;
+    FileOptions() = default;
+    virtual ~FileOptions() = default;
 
-  virtual const char *options() = 0;
+    virtual const char *options() = 0;
 };
 
 /*!
@@ -278,63 +277,63 @@ class TL_EXPORT File
 {
 public:
 
-  //TODO: Revisar los modos. Igual es mejor utilizar flags
-  /*!
-   * \brief Modos de apertura de ficheros
-   */
-  enum class Mode : int8_t
-  {
-    read,      /*!< Lectura */
-    update,    /*!< Lectura y escritura. */
-    create     /*!< Creación */
-  };
+    //TODO: Revisar los modos. Igual es mejor utilizar flags
+    /*!
+     * \brief Modos de apertura de ficheros
+     */
+    enum class Mode : int8_t
+    {
+        read,      /*!< Lectura */
+        update,    /*!< Lectura y escritura. */
+        create     /*!< Creación */
+    };
 
-  /*!
-   * \brief Estado
-   */
-  enum class Status : int8_t
-  {
-    open_ok,
-    open_fail,
-    save_ok,
-    success,
-    failure
-  };
+    /*!
+     * \brief Estado
+     */
+    enum class Status : int8_t
+    {
+        open_ok,
+        open_fail,
+        save_ok,
+        success,
+        failure
+    };
 
 protected:
-  
-  /*!
-   * \brief Fichero
-   */
-  std::string mFile;
 
-  Mode mMode;
+    /*!
+     * \brief Fichero
+     */
+    std::string mFile;
+
+    Mode mMode;
 
 public:
 
-  File() : mFile(""), mMode(Mode::read){}
-  File(std::string file, Mode mode = Mode::update) : mFile(std::move(file)), mMode(mode) { }
-  virtual ~File()= default;
+    File() : mFile(""), mMode(Mode::read) {}
+    File(std::string file, Mode mode = Mode::update) : mFile(std::move(file)), mMode(mode) {}
+    virtual ~File() = default;
 
-  /*!
-   * \brief Abre un fichero especificando las opciones del formato
-   * \param[in] file Fichero
-   * \param[in] mode Modo de apertura
-   * \param[in] options Opciones del formato
-   * \return
-   * \see Mode
-   */
-  virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
- 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+    /*!
+     * \brief Abre un fichero especificando las opciones del formato
+     * \param[in] file Fichero
+     * \param[in] mode Modo de apertura
+     * \param[in] options Opciones del formato
+     * \return
+     * \see Mode
+     */
+    virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
 
-  /*!
-   * \brief Guarda una copia con otro nonbre
-   */
-  virtual Status createCopy(const std::string &fileOut) = 0;
+    /*!
+     * \brief Cierra el fichero
+     */
+    virtual void close() = 0;
+
+    /*!
+     * \brief Guarda una copia con otro nonbre
+     */
+    virtual Status createCopy(const std::string &fileOut) = 0;
 };
 
 
@@ -344,4 +343,3 @@ public:
 
 } // End namespace tl
 
-#endif // TL_CORE_UTILS_H

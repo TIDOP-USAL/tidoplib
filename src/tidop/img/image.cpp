@@ -30,9 +30,9 @@ namespace tl
 
 Image::Image() = default;
 
-Image::Image(int rows, 
-             int cols, 
-             DataType type, 
+Image::Image(int rows,
+             int cols,
+             DataType type,
              int channels)
   : mRows(rows),
     mCols(cols),
@@ -40,13 +40,13 @@ Image::Image(int rows,
     mChannels(channels),
     mData(nullptr)
 {
-  init();
+    init();
 }
 
-Image::Image(int rows, 
-             int cols, 
-             DataType type, 
-             int channels, 
+Image::Image(int rows,
+             int cols,
+             DataType type,
+             int channels,
              const graph::Color &color)
   : mRows(rows),
     mCols(cols),
@@ -54,14 +54,14 @@ Image::Image(int rows,
     mChannels(channels),
     mData(nullptr)
 {
-  unusedParameter(color); /// Para inicializar la imagen con ese color
-  init();
+    unusedParameter(color); /// Para inicializar la imagen con ese color
+    init();
 }
 
-Image::Image(int rows, 
-             int cols, 
-             DataType type, 
-             int channels, 
+Image::Image(int rows,
+             int cols,
+             DataType type,
+             int channels,
              void *data)
   : mRows(rows),
     mCols(cols),
@@ -72,8 +72,8 @@ Image::Image(int rows,
 
 }
 
-Image::Image(const SizeI &size, 
-             DataType type, 
+Image::Image(const SizeI &size,
+             DataType type,
              int channels)
   : mRows(size.height),
     mCols(size.width),
@@ -81,12 +81,12 @@ Image::Image(const SizeI &size,
     mChannels(channels),
     mData(nullptr)
 {
-  init();
+    init();
 }
 
-Image::Image(const SizeI &size, 
-             DataType type, 
-             int channels, 
+Image::Image(const SizeI &size,
+             DataType type,
+             int channels,
              const graph::Color &color)
   : mRows(size.height),
     mCols(size.width),
@@ -94,13 +94,13 @@ Image::Image(const SizeI &size,
     mChannels(channels),
     mData(nullptr)
 {
-  unusedParameter(color); /// Para inicializar la imagen con ese color
-  init();
+    unusedParameter(color); /// Para inicializar la imagen con ese color
+    init();
 }
 
-Image::Image(const SizeI &size, 
-             DataType type, 
-             int channels, 
+Image::Image(const SizeI &size,
+             DataType type,
+             int channels,
              void *data)
   : mRows(size.height),
     mCols(size.width),
@@ -116,83 +116,84 @@ Image::~Image() = default;
 
 Image &Image::operator=(const Image &image)
 {
-  if (this != &image) {
-    mRows = image.mRows;
-    mCols = image.mCols;
-    mType = image.mType;
-    mChannels = image.mChannels;
-    mData = image.mData;
-  }
-  return *this;
+    if (this != &image) {
+        mRows = image.mRows;
+        mCols = image.mCols;
+        mType = image.mType;
+        mChannels = image.mChannels;
+        mData = image.mData;
+    }
+    return *this;
 }
 
 int Image::rows() const
 {
-  return mRows;
+    return mRows;
 }
 
 int Image::cols() const
 {
-  return mCols;
+    return mCols;
 }
 
 DataType Image::type() const
 {
-  return mType;
+    return mType;
 }
 
 int Image::channels() const
 {
-  return mChannels;
+    return mChannels;
 }
 
 unsigned char *Image::data()
 {
-  return mData;
+    return mData;
 }
 
 int Image::depth()
 {
-  int bits = 0;
-  TL_TODO("Completar")
-  switch (mType) 	{
+    int bits = 0;
+    TL_TODO("Completar")
+    switch (mType) {
     case tl::DataType::TL_8U:
-      bits = 8;
-      break;
+        bits = 8;
+        break;
     case tl::DataType::TL_8S:
-      bits = 8;
-      break;
+        bits = 8;
+        break;
     case tl::DataType::TL_16U:
-      bits = 16;
-      break;
+        bits = 16;
+        break;
     case tl::DataType::TL_16S:
-      bits = 16;
-      break;
+        bits = 16;
+        break;
     case tl::DataType::TL_32U:
-      break;
+        break;
     case tl::DataType::TL_32S:
-      break;
+        break;
     case tl::DataType::TL_32F:
-      bits = 32;
-      break;
+        bits = 32;
+        break;
     case tl::DataType::TL_64F:
-      bits = 64;
-      break;
-  }
-  return bits;
+        bits = 64;
+        break;
+    }
+
+    return bits;
 }
 
 bool Image::isEmpty()
 {
-  return false;
+    return false;
 }
 
 void Image::init()
 {
-  mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
-                                       static_cast<size_t>(mCols) * 
-                                       static_cast<size_t>(mChannels) * 
-                                       static_cast<size_t>(this->depth())));
+    mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
+                                         static_cast<size_t>(mCols) *
+                                         static_cast<size_t>(mChannels) *
+                                         static_cast<size_t>(this->depth())));
 }
 
 } // End namespace tl

@@ -24,7 +24,7 @@
 
 #include "latch.h"
 
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 
 namespace tl
@@ -45,52 +45,52 @@ LatchProperties::LatchProperties(const LatchProperties &latchProperties)
 
 std::string LatchProperties::bytes() const
 {
-  return mBytes;
+    return mBytes;
 }
 
 bool LatchProperties::rotationInvariance() const
 {
-  return mRotationInvariance;
+    return mRotationInvariance;
 }
 
 int LatchProperties::halfSsdSize() const
 {
-  return mHalfSsdSize;
+    return mHalfSsdSize;
 }
 
 void LatchProperties::setBytes(const std::string &bytes)
 {
-  if (bytes == "1" ||
-      bytes == "2" ||
-      bytes == "4" ||
-      bytes == "8" ||
-      bytes == "16" ||
-      bytes == "32" ||
-      bytes == "64") {
-    mBytes = bytes;
-  }
+    if (bytes == "1" ||
+        bytes == "2" ||
+        bytes == "4" ||
+        bytes == "8" ||
+        bytes == "16" ||
+        bytes == "32" ||
+        bytes == "64") {
+        mBytes = bytes;
+    }
 }
 
 void LatchProperties::setRotationInvariance(bool rotationInvariance)
 {
-  mRotationInvariance = rotationInvariance;
+    mRotationInvariance = rotationInvariance;
 }
 
 void LatchProperties::setHalfSsdSize(int halfSsdSize)
 {
-  mHalfSsdSize = halfSsdSize;
+    mHalfSsdSize = halfSsdSize;
 }
 
 void LatchProperties::reset()
 {
-  mBytes = "32";
-  mRotationInvariance = true;
-  mHalfSsdSize = 3;
+    mBytes = "32";
+    mRotationInvariance = true;
+    mHalfSsdSize = 3;
 }
 
 std::string LatchProperties::name() const
 {
-  return std::string("LATCH");
+    return std::string("LATCH");
 }
 
 
@@ -99,80 +99,79 @@ std::string LatchProperties::name() const
 
 LatchDescriptor::LatchDescriptor()
 {
-  update();
+    update();
 }
 
 LatchDescriptor::LatchDescriptor(const LatchDescriptor &latchDescriptor)
   : LatchProperties(latchDescriptor),
     DescriptorExtractor(latchDescriptor)
 {
-  update();
+    update();
 }
 
 LatchDescriptor::LatchDescriptor(const std::string &bytes,
                                  bool rotationInvariance,
                                  int halfSsdSize)
-  : LatchProperties()
+    : LatchProperties()
 {
-  LatchProperties::setBytes(bytes);
-  LatchProperties::setRotationInvariance(rotationInvariance);
-  LatchProperties::setHalfSsdSize(halfSsdSize);
-  update();
+    LatchProperties::setBytes(bytes);
+    LatchProperties::setRotationInvariance(rotationInvariance);
+    LatchProperties::setHalfSsdSize(halfSsdSize);
+    update();
 }
 
 void LatchDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mLATCH = cv::xfeatures2d::LATCH::create(std::stoi(LatchProperties::bytes()),
-                                          LatchProperties::rotationInvariance(),
-                                          LatchProperties::halfSsdSize());
+    mLATCH = cv::xfeatures2d::LATCH::create(std::stoi(LatchProperties::bytes()),
+                                            LatchProperties::rotationInvariance(),
+                                            LatchProperties::halfSsdSize());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
 cv::Mat LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-  cv::Mat descriptors;
+    cv::Mat descriptors;
 
-  try {
+    try {
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
-    mLATCH->compute(img, keyPoints, descriptors);
+        mLATCH->compute(img, keyPoints, descriptors);
 #else
-    TL_COMPILER_WARNING("OpenCV not built with extra modules. Latch Descriptor not supported")
-    throw TL_ERROR("OpenCV not built with extra modules. Latch Descriptor not supported");
+        TL_COMPILER_WARNING("OpenCV not built with extra modules. Latch Descriptor not supported")
+        throw TL_ERROR("OpenCV not built with extra modules. Latch Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-  return descriptors;
+    return descriptors;
 }
 
 void LatchDescriptor::setBytes(const std::string &bytes)
 {
-  LatchProperties::setBytes(bytes);
-  update();
+    LatchProperties::setBytes(bytes);
+    update();
 }
 
 void LatchDescriptor::setRotationInvariance(bool rotationInvariance)
 {
-  LatchProperties::setRotationInvariance(rotationInvariance);
-  update();
+    LatchProperties::setRotationInvariance(rotationInvariance);
+    update();
 }
 
 void LatchDescriptor::setHalfSsdSize(int halfSsdSize)
 {
-  LatchProperties::setHalfSsdSize(halfSsdSize);
-  update();
+    LatchProperties::setHalfSsdSize(halfSsdSize);
+    update();
 }
 
 void LatchDescriptor::reset()
 {
-  LatchProperties::reset();
-  update();
+    LatchProperties::reset();
+    update();
 }
-
 
 
 } // namespace tl

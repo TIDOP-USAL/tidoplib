@@ -145,7 +145,7 @@ endif()
 if(MSVC)
     add_compile_options("/W3" "/EHsc" "/permissive-" "-D_SCL_SECURE_NO_WARNINGS" "-D_CRT_SECURE_NO_DEPRECATE")
 else()
-    add_compile_options("-Wall" "-Wextra" "-ftrack-macro-expansion=0" "-fno-diagnostics-show-caret" #[["-Werror"]])
+    add_compile_options("-Wall" "-Wextra" "-Wpedantic" "-ftrack-macro-expansion=0" "-fno-diagnostics-show-caret")
 endif()
 
 
@@ -203,7 +203,7 @@ cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build"
 
 # Activación/desactivación de otros componentes de la libreria
 
-OPTION (BUILD_APPS                    "Build Apps"             ON )
+OPTION (BUILD_APPS                    "Build Apps"             OFF)
 OPTION (BUILD_SHARED_LIBS             "Build Shared Libraries" OFF)
 OPTION (BUILD_TEST                    "Build test"             OFF)
 OPTION (BUILD_DOC                     "Build documentation"    OFF)
@@ -211,7 +211,6 @@ OPTION (BUILD_DOC                     "Build documentation"    OFF)
 # Configuración de la librería
 
 OPTION (TIDOPLIB_USE_SIMD_INTRINSICS    "Use SIMD intrinsics"               ON )
-OPTION (TIDOPLIB_MESSAGE_HANDLER        "Active message handle"             ON )
 OPTION (TIDOPLIB_DEPRECATED_METHODS     "Use deprecated methods and class"  OFF)
 
 OPTION (TIDOPLIB_WARNING_DEPRECATED_METHODS     "Active deprecated method warning"  OFF)
@@ -236,14 +235,6 @@ if (TIDOPLIB_USE_SIMD_INTRINSICS)
 else(TIDOPLIB_USE_SIMD_INTRINSICS)
     unset(TIDOPLIB_SIMD CACHE)
 endif(TIDOPLIB_USE_SIMD_INTRINSICS)
-
-if(TIDOPLIB_MESSAGE_HANDLER)
-  set(TL_MESSAGE_HANDLER YES)
-  message(STATUS "  [TidopLib] Message manager enabled")
-else()
-  set(TL_MESSAGE_HANDLER NO)
-  message(STATUS "  [TidopLib] Message manager disabled")
-endif()
 
 if(TIDOPLIB_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
@@ -316,9 +307,9 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #OPTION (WITH_BOOST  "Include Boost support"                   ON)
-OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
-OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
-OPTION (WITH_PROJ4  "Include PROJ4 Support"                   OFF)
+OPTION (WITH_OPENCV "Include OpenCV support"                  ON)
+OPTION (WITH_GDAL   "Include GDAL Support"                    ON)
+OPTION (WITH_PROJ4  "Include PROJ4 Support"                   ON)
 cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
 cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
@@ -344,8 +335,32 @@ unset(TL_HAVE_VIEWER CACHE)
 
 message(STATUS "\nDependency loading:\n")
 
+
 ##########################################################################
-# BOOST (REQUIRED)                                                       #
+# fmt (REQUIRED C++ Version < 20)                                        #
+##########################################################################
+
+if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
+    AND ((${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" AND ${CMAKE_CXX_COMPILER_VERSION} LESS 17.5) 
+         OR (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} LESS 13.1)))
+    set(TL_HAVE_FMT NO)
+    add_compile_definitions("FORMAT_NAMESPACE=std::")
+else()
+    find_package(fmt REQUIRED)
+
+    if(fmt_FOUND)
+        message(STATUS "  fmt version: ${fmt_VERSION}")
+        set(TL_HAVE_FMT YES)
+        add_compile_definitions(TL_HAVE_FMT)
+        add_compile_definitions("FORMAT_NAMESPACE=fmt::")
+    else()
+        set(TL_HAVE_FMT NO)
+        add_compile_definitions("FORMAT_NAMESPACE=std::")
+    endif()
+endif()
+
+##########################################################################
+# BOOST (REQUIRED C++ Version < 17)                                      #
 ##########################################################################
 
 if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
@@ -454,15 +469,15 @@ endif(WITH_GDAL)
 if(WITH_PROJ4)
 
   set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
-  find_package(PROJ4 QUIET)
+  find_package(PROJ QUIET)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
-  if(NOT PROJ4_FOUND)
+  if(NOT PROJ_FOUND)
     set(TL_HAVE_PROJ4 NO)
   else()
     set(TL_HAVE_PROJ4 YES)
-    include_directories(${PROJ4_INCLUDE_DIRS})
-    message(STATUS "  PROJ version: ${PROJ4_VERSION}")
+    #include_directories(${PROJ_INCLUDE_DIRS})
+    message(STATUS "  PROJ version: ${PROJ_VERSION}")
   endif()
 endif(WITH_PROJ4)
 

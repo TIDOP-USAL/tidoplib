@@ -34,26 +34,26 @@ namespace tl
 
 GroupLines::GroupLines()
 {
-  bbox = WindowI();
+    bbox = WindowI();
 }
 
 GroupLines::GroupLines(const std::vector<Line> &lines)
 {
-  linesgroup = lines; 
-  for (auto & i : linesgroup) {
-    if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
-    if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
-    if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
-    if (bbox.pt2.y < i.pt2.y) bbox.pt2.y = i.pt2.y;
-  }
+    linesgroup = lines;
+    for (auto &i : linesgroup) {
+        if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
+        if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
+        if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
+        if (bbox.pt2.y < i.pt2.y) bbox.pt2.y = i.pt2.y;
+    }
 }
 
 void GroupLines::add(const Line &line)
 {
-  linesgroup.push_back(line);
-  WindowI window = line.window();
-  //Se actualiza la ventana  envolvente
-  bbox = (bbox.isEmpty() ) ? window : joinWindow(bbox, window);
+    linesgroup.push_back(line);
+    WindowI window = line.window();
+    //Se actualiza la ventana  envolvente
+    bbox = (bbox.isEmpty()) ? window : joinWindow(bbox, window);
 }
 
 //#ifdef TL_HAVE_OPENCV
@@ -72,17 +72,17 @@ void GroupLines::add(const Line &line)
 
 double GroupLines::angleMean()
 {
-  double angle = 0.0;
-  for (auto & line : linesgroup){
-    angle += line.angleOX();
-  }
-  angle /= linesgroup.size();
-  return angle;
+    double angle = 0.0;
+    for (auto &line : linesgroup) {
+        angle += line.angleOX();
+    }
+    angle /= linesgroup.size();
+    return angle;
 }
 
 void GroupLines::deleteLine(int id)
 {
-  linesgroup.erase(linesgroup.begin() + id);
+    linesgroup.erase(linesgroup.begin() + id);
 }
 
 } // End namespace tl

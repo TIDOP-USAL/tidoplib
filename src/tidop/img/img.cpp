@@ -77,119 +77,120 @@ namespace tl
 bool gdalValidExtensions(const std::string &extension)
 {
     std::vector<std::string> extensions {
-    ".bmp",    // Microsoft Windows Device Independent Bitmap (.bmp)
-    ".png",    // Portable Network Graphics (.png)
-    ".jpg",".jpeg",".jpe",".jif",".jfif",".jfi",    // JPEG JFIF (.jpg)
-    ".tif",".tiff",    // TIFF / BigTIFF / GeoTIFF (.tif)
-    ".gif",    // Graphics Interchange Format (.gif)
-    ".gtx",    // NOAA .gtx vertical datum shift
-    ".grd",    // Arc/Info ASCII Grid
-    ".asc",    // Arc/Info ASCII Grid
-    ".gsb",    // NTv2 Datum Grid Shift
-    ".ecw",    // ERDAS Compressed Wavelets (.ecw)
-    ".jp2",    // JPEG2000 (.jp2, .j2k)
-    ".lan",    // Erdas 7.x .LAN and .GIS
-    ".hdr",    // ENVI .hdr Labelled Raster
-    ".img",    // Erdas Imagine (.img)
-    ".blx",    // Magellan BLX Topo (.blx, .xlb)
-    ".xlb",    // Magellan BLX Topo (.blx, .xlb)
-    ".map",    // OziExplorer .MAP
-    ".e00",    // Arc/Info Export E00 GRID
-    ".hdr",    // Vexcel MFF
-    ".img",    // Erdas Imagine (.img)
-    ".wms"
-  };
+        ".bmp",    // Microsoft Windows Device Independent Bitmap (.bmp)
+        ".png",    // Portable Network Graphics (.png)
+        ".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi",    // JPEG JFIF (.jpg)
+        ".tif", ".tiff",    // TIFF / BigTIFF / GeoTIFF (.tif)
+        ".gif",    // Graphics Interchange Format (.gif)
+        ".gtx",    // NOAA .gtx vertical datum shift
+        ".grd",    // Arc/Info ASCII Grid
+        ".asc",    // Arc/Info ASCII Grid
+        ".gsb",    // NTv2 Datum Grid Shift
+        ".ecw",    // ERDAS Compressed Wavelets (.ecw)
+        ".jp2",    // JPEG2000 (.jp2, .j2k)
+        ".lan",    // Erdas 7.x .LAN and .GIS
+        ".hdr",    // ENVI .hdr Labelled Raster
+        ".img",    // Erdas Imagine (.img)
+        ".blx",    // Magellan BLX Topo (.blx, .xlb)
+        ".xlb",    // Magellan BLX Topo (.blx, .xlb)
+        ".map",    // OziExplorer .MAP
+        ".e00",    // Arc/Info Export E00 GRID
+        ".hdr",    // Vexcel MFF
+        ".img",    // Erdas Imagine (.img)
+        ".wms"
+    };
 
-  for (auto &gdal_extension : extensions) {
-    if (compareInsensitiveCase(extension, gdal_extension)) {
-      return true;
+    for (auto &gdal_extension : extensions) {
+        if (compareInsensitiveCase(extension, gdal_extension)) {
+            return true;
+        }
     }
-  }
 
-  return false;
+    return false;
 }
 
 EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
 {
-  EnumFlags<DataType> flag;
-  if (format.compare("BMP") == 0) {
-    flag.enable(DataType::TL_8U);
-  } else if (format.compare("PNG") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_16U);
-  } else if (format.compare("JPEG") == 0) {
-    flag.enable(DataType::TL_8U);
-  } else if (format.compare("GTiff") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_16U);
-    flag.enable(DataType::TL_16S);
-    flag.enable(DataType::TL_32U);
-    flag.enable(DataType::TL_32S);
-    flag.enable(DataType::TL_32F);
-    flag.enable(DataType::TL_64F);
-  } else if (format.compare("GIF") == 0) {
-    flag.enable(DataType::TL_8U);
-  } else if (format.compare("GTX") == 0) {
-    flag.enable(DataType::TL_32F);
-  } else if (format.compare("AAIGrid") == 0) {
-    flag.enable(DataType::TL_32U);
-    flag.enable(DataType::TL_32F);
-    flag.enable(DataType::TL_64F);
-  } else if (format.compare("NTv2") == 0) {
-    flag.enable(DataType::TL_32F);
-  } else if (format.compare("ECW") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_16U);
-  } else if (format.compare("JP2OpenJPEG") == 0) {
-  
-  } else if (format.compare("LAN") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_16S);
-  } else if (format.compare("ENVI") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_16U);
-    flag.enable(DataType::TL_16S);
-    flag.enable(DataType::TL_32U);
-    flag.enable(DataType::TL_32S);
-    flag.enable(DataType::TL_32F);
-    flag.enable(DataType::TL_64F);
-  } else if (format.compare("HFA") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_8S);
-    flag.enable(DataType::TL_16U);
-    flag.enable(DataType::TL_16S);
-    flag.enable(DataType::TL_32U);
-    flag.enable(DataType::TL_32S);
-    flag.enable(DataType::TL_32F);
-    flag.enable(DataType::TL_64F);
-  } else if (format.compare("BLX") == 0) {
-    flag.enable(DataType::TL_16U); 
-  } else if (format.compare("MAP") == 0) {
-  
-  } else if (format.compare("E00GRID") == 0) {
-  
-  } else if (format.compare("MFF") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_8S);
-    flag.enable(DataType::TL_16U);
-    flag.enable(DataType::TL_16S);
-    flag.enable(DataType::TL_32U);
-    flag.enable(DataType::TL_32S);
-    flag.enable(DataType::TL_32F);
-    flag.enable(DataType::TL_64F);
-  } else if (format.compare("HFA") == 0) {
-    flag.enable(DataType::TL_8U);
-    flag.enable(DataType::TL_8S);
-    flag.enable(DataType::TL_16U);
-    flag.enable(DataType::TL_16S);
-    flag.enable(DataType::TL_32U);
-    flag.enable(DataType::TL_32S);
-    flag.enable(DataType::TL_32F);
-    flag.enable(DataType::TL_64F);  
-  } else if (format.compare("WMS") == 0) {
-  
-  }
-  return flag;
+    EnumFlags<DataType> flag;
+    if (format.compare("BMP") == 0) {
+        flag.enable(DataType::TL_8U);
+    } else if (format.compare("PNG") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_16U);
+    } else if (format.compare("JPEG") == 0) {
+        flag.enable(DataType::TL_8U);
+    } else if (format.compare("GTiff") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_16U);
+        flag.enable(DataType::TL_16S);
+        flag.enable(DataType::TL_32U);
+        flag.enable(DataType::TL_32S);
+        flag.enable(DataType::TL_32F);
+        flag.enable(DataType::TL_64F);
+    } else if (format.compare("GIF") == 0) {
+        flag.enable(DataType::TL_8U);
+    } else if (format.compare("GTX") == 0) {
+        flag.enable(DataType::TL_32F);
+    } else if (format.compare("AAIGrid") == 0) {
+        flag.enable(DataType::TL_32U);
+        flag.enable(DataType::TL_32F);
+        flag.enable(DataType::TL_64F);
+    } else if (format.compare("NTv2") == 0) {
+        flag.enable(DataType::TL_32F);
+    } else if (format.compare("ECW") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_16U);
+    } else if (format.compare("JP2OpenJPEG") == 0) {
+
+    } else if (format.compare("LAN") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_16S);
+    } else if (format.compare("ENVI") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_16U);
+        flag.enable(DataType::TL_16S);
+        flag.enable(DataType::TL_32U);
+        flag.enable(DataType::TL_32S);
+        flag.enable(DataType::TL_32F);
+        flag.enable(DataType::TL_64F);
+    } else if (format.compare("HFA") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_8S);
+        flag.enable(DataType::TL_16U);
+        flag.enable(DataType::TL_16S);
+        flag.enable(DataType::TL_32U);
+        flag.enable(DataType::TL_32S);
+        flag.enable(DataType::TL_32F);
+        flag.enable(DataType::TL_64F);
+    } else if (format.compare("BLX") == 0) {
+        flag.enable(DataType::TL_16U);
+    } else if (format.compare("MAP") == 0) {
+
+    } else if (format.compare("E00GRID") == 0) {
+
+    } else if (format.compare("MFF") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_8S);
+        flag.enable(DataType::TL_16U);
+        flag.enable(DataType::TL_16S);
+        flag.enable(DataType::TL_32U);
+        flag.enable(DataType::TL_32S);
+        flag.enable(DataType::TL_32F);
+        flag.enable(DataType::TL_64F);
+    } else if (format.compare("HFA") == 0) {
+        flag.enable(DataType::TL_8U);
+        flag.enable(DataType::TL_8S);
+        flag.enable(DataType::TL_16U);
+        flag.enable(DataType::TL_16S);
+        flag.enable(DataType::TL_32U);
+        flag.enable(DataType::TL_32S);
+        flag.enable(DataType::TL_32F);
+        flag.enable(DataType::TL_64F);
+    } else if (format.compare("WMS") == 0) {
+
+    }
+
+    return flag;
 }
 
 /*!
@@ -200,58 +201,58 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
  */
 std::string gdalDriverFromExtension(const std::string &extension)
 {
-  std::string format;
+    std::string format;
 
-  if (compareInsensitiveCase(extension, ".bmp")) 
-    format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
-  else if (compareInsensitiveCase(extension, ".png")) 
-    format = "PNG";          // Portable Network Graphics (.png)
-  else if (compareInsensitiveCase(extension, ".jpg") ||
-    compareInsensitiveCase(extension, ".jpeg") ||
-    compareInsensitiveCase(extension, ".jpe") ||
-    compareInsensitiveCase(extension, ".jif") ||
-    compareInsensitiveCase(extension, ".jfif") ||
-    compareInsensitiveCase(extension, ".jfi")) 
-    format = "JPEG";         // JPEG JFIF (.jpg)
-  else if (compareInsensitiveCase(extension, ".tif") ||
-    compareInsensitiveCase(extension, ".tiff")) 
-    format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
-  else if (compareInsensitiveCase(extension, ".gif")) 
-    format = "GIF";          // Graphics Interchange Format (.gif)
-  else if (compareInsensitiveCase(extension, ".gtx")) 
-    format = "GTX";          // NOAA .gtx vertical datum shift
-  else if (compareInsensitiveCase(extension, ".grd") ||
-    compareInsensitiveCase(extension, ".asc"))  
-    format = "AAIGrid";      // Arc/Info ASCII Grid
-  else if (compareInsensitiveCase(extension, ".gsb"))  
-    format = "NTv2";         // NTv2 Datum Grid Shift
-  else if (compareInsensitiveCase(extension, ".ecw")) 
-    format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
-  else if (compareInsensitiveCase(extension, ".jp2")) 
-    format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
-  else if (compareInsensitiveCase(extension, ".lan")) 
-    format = "LAN";          // Erdas 7.x .LAN and .GIS
-  else if (compareInsensitiveCase(extension, ".hdr")) 
-    format = "ENVI";         // ENVI .hdr Labelled Raster
-  else if (compareInsensitiveCase(extension, ".img")) 
-    format = "HFA";          // Erdas Imagine (.img)
-  else if (compareInsensitiveCase(extension, ".blx") ||
-           compareInsensitiveCase(extension, ".xlb")) 
-    format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
-  else if (compareInsensitiveCase(extension, ".map")) 
-    format = "MAP";          // OziExplorer .MAP
-  else if (compareInsensitiveCase(extension, ".e00")) 
-    format = "E00GRID";      // Arc/Info Export E00 GRID
-  else if (compareInsensitiveCase(extension, ".hdr")) 
-    format = "MFF";          // Vexcel MFF
-  else if (compareInsensitiveCase(extension, ".img")) 
-    format = "HFA";          // Erdas Imagine (.img)
-  else if (compareInsensitiveCase(extension, ".wms")) 
-    format = "WMS";          // WMS
-  else                                          
-    format = "";
+    if (compareInsensitiveCase(extension, ".bmp"))
+        format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
+    else if (compareInsensitiveCase(extension, ".png"))
+        format = "PNG";          // Portable Network Graphics (.png)
+    else if (compareInsensitiveCase(extension, ".jpg") ||
+             compareInsensitiveCase(extension, ".jpeg") ||
+             compareInsensitiveCase(extension, ".jpe") ||
+             compareInsensitiveCase(extension, ".jif") ||
+             compareInsensitiveCase(extension, ".jfif") ||
+             compareInsensitiveCase(extension, ".jfi"))
+        format = "JPEG";         // JPEG JFIF (.jpg)
+    else if (compareInsensitiveCase(extension, ".tif") ||
+             compareInsensitiveCase(extension, ".tiff"))
+        format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
+    else if (compareInsensitiveCase(extension, ".gif"))
+        format = "GIF";          // Graphics Interchange Format (.gif)
+    else if (compareInsensitiveCase(extension, ".gtx"))
+        format = "GTX";          // NOAA .gtx vertical datum shift
+    else if (compareInsensitiveCase(extension, ".grd") ||
+             compareInsensitiveCase(extension, ".asc"))
+        format = "AAIGrid";      // Arc/Info ASCII Grid
+    else if (compareInsensitiveCase(extension, ".gsb"))
+        format = "NTv2";         // NTv2 Datum Grid Shift
+    else if (compareInsensitiveCase(extension, ".ecw"))
+        format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
+    else if (compareInsensitiveCase(extension, ".jp2"))
+        format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
+    else if (compareInsensitiveCase(extension, ".lan"))
+        format = "LAN";          // Erdas 7.x .LAN and .GIS
+    else if (compareInsensitiveCase(extension, ".hdr"))
+        format = "ENVI";         // ENVI .hdr Labelled Raster
+    else if (compareInsensitiveCase(extension, ".img"))
+        format = "HFA";          // Erdas Imagine (.img)
+    else if (compareInsensitiveCase(extension, ".blx") ||
+             compareInsensitiveCase(extension, ".xlb"))
+        format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
+    else if (compareInsensitiveCase(extension, ".map"))
+        format = "MAP";          // OziExplorer .MAP
+    else if (compareInsensitiveCase(extension, ".e00"))
+        format = "E00GRID";      // Arc/Info Export E00 GRID
+    else if (compareInsensitiveCase(extension, ".hdr"))
+        format = "MFF";          // Vexcel MFF
+    else if (compareInsensitiveCase(extension, ".img"))
+        format = "HFA";          // Erdas Imagine (.img)
+    else if (compareInsensitiveCase(extension, ".wms"))
+        format = "WMS";          // WMS
+    else
+        format = "";
 
-  return format;
+    return format;
 }
 
 
@@ -330,97 +331,97 @@ std::string gdalDriverFromExtension(const std::string &extension)
 
 int dataTypeToOpenCVDataType(DataType dataType)
 {
-  int ret;
-  switch (dataType) {
-  case DataType::TL_8U:
-    ret = CV_8U;
-    break;
-  case DataType::TL_8S:
-    ret = CV_8S;
-    break;
-  case DataType::TL_16U:
-    ret = CV_16U;
-    break;
-  case DataType::TL_16S:
-    ret = CV_16S;
-    break;
-  case DataType::TL_32U:
-    ret = CV_32S;
-    break;
-  case DataType::TL_32S:
-    ret = CV_32S;
-    break;
-  case DataType::TL_32F:
-    ret = CV_32F;
-    break;
-  case DataType::TL_64F:
-    ret = CV_64F;
-    break;
-  default:
-    ret = -1;
-    break;
-  }
-  return ret;
+    int ret;
+    switch (dataType) {
+    case DataType::TL_8U:
+        ret = CV_8U;
+        break;
+    case DataType::TL_8S:
+        ret = CV_8S;
+        break;
+    case DataType::TL_16U:
+        ret = CV_16U;
+        break;
+    case DataType::TL_16S:
+        ret = CV_16S;
+        break;
+    case DataType::TL_32U:
+        ret = CV_32S;
+        break;
+    case DataType::TL_32S:
+        ret = CV_32S;
+        break;
+    case DataType::TL_32F:
+        ret = CV_32F;
+        break;
+    case DataType::TL_64F:
+        ret = CV_64F;
+        break;
+    default:
+        ret = -1;
+        break;
+    }
+    return ret;
 }
 
 DataType openCVDataTypeToDataType(int dataType)
 {
-  DataType data_type;
+    DataType data_type;
 
-  switch (dataType) {
+    switch (dataType) {
     case CV_8U:
-      data_type = DataType::TL_8U;
-      break;
+        data_type = DataType::TL_8U;
+        break;
     case CV_8S:
-      data_type = DataType::TL_8S;
-      break;
+        data_type = DataType::TL_8S;
+        break;
     case CV_16U:
-      data_type = DataType::TL_16U;
-      break;
+        data_type = DataType::TL_16U;
+        break;
     case CV_16S:
-      data_type = DataType::TL_16S;
-      break;
+        data_type = DataType::TL_16S;
+        break;
     case CV_32S:
-      data_type = DataType::TL_32S;
-      break;
+        data_type = DataType::TL_32S;
+        break;
     case CV_32F:
-      data_type = DataType::TL_32F;
-      break;
+        data_type = DataType::TL_32F;
+        break;
     case CV_64F:
-      data_type = DataType::TL_64F;
-      break;
+        data_type = DataType::TL_64F;
+        break;
     default:
-      data_type = DataType::TL_8U;
-      break;
-  }
+        data_type = DataType::TL_8U;
+        break;
+    }
 
-  return data_type;
+    return data_type;
 }
 
 #endif // TL_HAVE_OPENCV
 
 std::vector<int> gdalBandOrder(int channels)
 {
-  std::vector<int> panBandMap;
+    std::vector<int> panBandMap;
 #ifdef TL_HAVE_OPENCV
-  if (channels == 1) 
-    panBandMap = { 1 };
-  if (channels == 2)
-    panBandMap = {1, 2};
-  else if (channels == 3) 
-    panBandMap = { 3, 2, 1 };   // Orden de bandas de OpenCV
-  else if (channels == 4) 
-    panBandMap = { 3, 2, 1, 4 };
+    if (channels == 1)
+        panBandMap = {1};
+    if (channels == 2)
+        panBandMap = {1, 2};
+    else if (channels == 3)
+        panBandMap = {3, 2, 1};   // Orden de bandas de OpenCV
+    else if (channels == 4)
+        panBandMap = {3, 2, 1, 4};
 #else
-  if (channels == 1) 
-    panBandMap = { 1 };
-  else if (channels == 3) 
-    panBandMap = { 1, 2, 3 };
-  else if (channels == 4) 
-    panBandMap = { 1, 2, 3, 4 };
+    if (channels == 1)
+        panBandMap = {1};
+    else if (channels == 3)
+        panBandMap = {1, 2, 3};
+    else if (channels == 4)
+        panBandMap = {1, 2, 3, 4};
 #endif
 
-  return panBandMap;
+    return panBandMap;
 }
 
 #if defined TL_HAVE_OPENCV && defined TL_HAVE_GDAL
@@ -501,22 +502,22 @@ std::mutex RegisterEDSDK::sMutex;
 
 RegisterEDSDK::RegisterEDSDK() 
 {
-  EdsInitializeSDK();
+    EdsInitializeSDK();
 }
 
 RegisterEDSDK::~RegisterEDSDK() 
 {
-  EdsTerminateSDK();
+    EdsTerminateSDK();
 }
 
 void RegisterEDSDK::init()
 {
-  if (sRegisterEDSDK.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(RegisterEDSDK::sMutex);
     if (sRegisterEDSDK.get() == nullptr) {
-      sRegisterEDSDK.reset(new RegisterEDSDK());
+        std::lock_guard<std::mutex> lck(RegisterEDSDK::sMutex);
+        if (sRegisterEDSDK.get() == nullptr) {
+            sRegisterEDSDK.reset(new RegisterEDSDK());
+        }
     }
-  }
 }
 
 #endif // TL_HAVE_EDSDK

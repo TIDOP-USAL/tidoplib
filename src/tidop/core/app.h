@@ -24,7 +24,6 @@
 
 #pragma once
 
-
 #include "tidop/config.h"
 
 #include <string>
@@ -33,14 +32,14 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
+#include "tidop/core/log.h"
+#include "tidop/core/console.h"
 
 namespace tl
 {
 
 class Console;
 class Log;
-class MessageManager;
-
 
 /*! \addtogroup core
  *  \{
@@ -68,12 +67,11 @@ public:
      */
     static App &instance();
 
-    tl::Path path() const;
+    Path path() const;
     std::string version() const;
 
     static Console &console();
     static Log &log();
-    static MessageManager &messageManager();
 
 private:
 

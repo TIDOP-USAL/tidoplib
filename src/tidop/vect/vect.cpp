@@ -31,44 +31,45 @@ namespace tl
 
 TableField::Type typeFromGdal(OGRFieldType ogrType)
 {
-  TableField::Type type = TableField::Type::STRING;
+    TableField::Type type = TableField::Type::STRING;
 
-  switch (ogrType) {
+    switch (ogrType) {
     case OFTInteger:
-      type = TableField::Type::INT;
-      break;
+        type = TableField::Type::INT;
+        break;
     case OFTInteger64:
-      type = TableField::Type::INT64;
-      break;
+        type = TableField::Type::INT64;
+        break;
     case OFTReal:
-      type = TableField::Type::DOUBLE;
-      break;
+        type = TableField::Type::DOUBLE;
+        break;
     case OFTString:
-      type = TableField::Type::STRING;
-      break;
-  }
+        type = TableField::Type::STRING;
+        break;
+    }
 
-  return type;
+    return type;
 }
 
 OGRFieldType typeToGdal(TableField::Type type)
 {
-  OGRFieldType ogr_type = OFTString;
-  switch (type) {
+    OGRFieldType ogr_type = OFTString;
+    switch (type) {
     case TableField::Type::INT:
-      ogr_type = OFTInteger;
-      break;
+        ogr_type = OFTInteger;
+        break;
     case TableField::Type::INT64:
-      ogr_type = OFTInteger64;
-      break;
+        ogr_type = OFTInteger64;
+        break;
     case TableField::Type::DOUBLE:
-      ogr_type = OFTReal;
-      break;
+        ogr_type = OFTReal;
+        break;
     case TableField::Type::STRING:
-      ogr_type = OFTString;
-      break;
-  }
-  return ogr_type;
+        ogr_type = OFTString;
+        break;
+    }
+
+    return ogr_type;
 }
 
 #endif // TL_HAVE_GDAL

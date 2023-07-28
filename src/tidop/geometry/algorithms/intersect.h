@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_ALGORITHMS_INTERSECT_H
-#define TL_GEOMETRY_ALGORITHMS_INTERSECT_H
+#pragma once
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/segment.h"
@@ -54,29 +53,30 @@ namespace tl
 template <typename Point_t>
 inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
 {
-  int iret = 0;
-  Point_t vs1;
-  Point_t vs2;
-  vs1 = ln1.vector();
-  vs2 = ln2.vector();
-  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  double cross_product = crossProduct(vs1, vs2);
-  if (cross_product != 0.) {
-    Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = crossProduct(v11_12, vs2) / cross_product;
-    double u = crossProduct(v11_12, vs1) / cross_product;
-    if (t >= 0.  &&  t <= 1 && u >= 0.  &&  u <= 1) {
-      if (typeid(typename Point_t::value_type) == typeid(int)) {
-        pt->x = roundToInteger(ln1.pt1.x + t * vs1.x);
-        pt->y = roundToInteger(ln1.pt1.y + t * vs1.y);
-      } else {
-        pt->x += static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
-        pt->y += static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
-      }
-      iret = 1;
+    int iret = 0;
+    Point_t vs1;
+    Point_t vs2;
+    vs1 = ln1.vector();
+    vs2 = ln2.vector();
+    // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+    double cross_product = crossProduct(vs1, vs2);
+    if (cross_product != 0.) {
+        Point_t v11_12 = ln2.pt1 - ln1.pt1;
+        double t = crossProduct(v11_12, vs2) / cross_product;
+        double u = crossProduct(v11_12, vs1) / cross_product;
+        if (t >= 0. && t <= 1 && u >= 0. && u <= 1) {
+            if (typeid(typename Point_t::value_type) == typeid(int)) {
+                pt->x = roundToInteger(ln1.pt1.x + t * vs1.x);
+                pt->y = roundToInteger(ln1.pt1.y + t * vs1.y);
+            } else {
+                pt->x += static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
+                pt->y += static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
+            }
+            iret = 1;
+        }
     }
-  }
-  return(iret);
+
+    return(iret);
 }
 
 /*!
@@ -89,26 +89,27 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
 template<typename Point_t>
 inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
 {
-  int iret = 0;
-  Point_t vs1;
-  Point_t vs2;
-  vs1 = ln1.vector();
-  vs2 = ln2.vector();
-  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  double cross_product = crossProduct(vs1, vs2);
-  if (cross_product != 0.) {
-    Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = crossProduct(v11_12, vs2) / cross_product;
-    if (typeid(typename Point_t::value_type) == typeid(int)) {
-      pt->x = roundToInteger(ln1.pt1.x + t * vs1.x);
-      pt->y = roundToInteger(ln1.pt1.y + t * vs1.y);
-    } else {
-      pt->x = static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
-      pt->y = static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
+    int iret = 0;
+    Point_t vs1;
+    Point_t vs2;
+    vs1 = ln1.vector();
+    vs2 = ln2.vector();
+    // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+    double cross_product = crossProduct(vs1, vs2);
+    if (cross_product != 0.) {
+        Point_t v11_12 = ln2.pt1 - ln1.pt1;
+        double t = crossProduct(v11_12, vs2) / cross_product;
+        if (typeid(typename Point_t::value_type) == typeid(int)) {
+            pt->x = roundToInteger(ln1.pt1.x + t * vs1.x);
+            pt->y = roundToInteger(ln1.pt1.y + t * vs1.y);
+        } else {
+            pt->x = static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
+            pt->y = static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
+        }
+        iret = 1;
     }
-    iret = 1;
-  }
-  return(iret);
+
+    return(iret);
 }
 
 
@@ -130,4 +131,3 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
 
 } // End namespace tl
 
-#endif // TL_GEOMETRY_ALGORITHMS_INTERSECT_H

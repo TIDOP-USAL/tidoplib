@@ -43,66 +43,66 @@ namespace tl
 
 uint32_t optimalNumberOfThreads()
 {
-  uint32_t n_threads = 0;
+    uint32_t n_threads = 0;
 
 #ifdef TL_HAVE_OPENMP
-  n_threads =  omp_get_max_threads();
-//#elif defined TL_MSVS_CONCURRENCY
-//  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
+    n_threads = omp_get_max_threads();
+    //#elif defined TL_MSVS_CONCURRENCY
+    //  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
 #else
-  n_threads = std::thread::hardware_concurrency();
+    n_threads = std::thread::hardware_concurrency();
 #endif
-  return n_threads == 0 ? 1 : n_threads;
+    return n_threads == 0 ? 1 : n_threads;
 }
 
-void parallel_for(size_t ini, 
-                  size_t end, 
+void parallel_for(size_t ini,
+                  size_t end,
                   std::function<void(size_t)> f)
 {
-  size_t size = end - ini;
-  if(size == 0) return;
+    size_t size = end - ini;
+    if (size == 0) return;
 
 #ifdef TL_HAVE_OPENMP
-  #pragma omp parallel for
-  for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
-    f(i);
-  }
+#pragma omp parallel for
+    for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
+        f(i);
+    }
 #elif defined TL_MSVS_CONCURRENCY
-  Concurrency::cancellation_token_source cts;
-  //Concurrency::run_with_cancellation_token([ini, end, f]() {
-  //  Concurrency::parallel_for(ini, end, f);
-  //},cts.get_token());
-  Concurrency::parallel_for(ini, end, f);
+    Concurrency::cancellation_token_source cts;
+    //Concurrency::run_with_cancellation_token([ini, end, f]() {
+    //  Concurrency::parallel_for(ini, end, f);
+    //},cts.get_token());
+    Concurrency::parallel_for(ini, end, f);
 #else
 
-  auto f_aux = [&](size_t ini, size_t end) {
-    for (size_t r = ini; r < end; r++) {
-      f(r);
+    auto f_aux = [&](size_t ini, size_t end) {
+        for (size_t r = ini; r < end; r++) {
+            f(r);
+        }
+    };
+
+    size_t num_threads = optimalNumberOfThreads();
+    std::vector<std::thread> threads(num_threads);
+
+    size_t block_size = size / num_threads;
+
+    size_t block_ini = 0;
+    size_t block_end = 0;
+
+    for (size_t i = 0; i < num_threads; i++) {
+
+        if (i == num_threads - 1) block_end = end;
+        else block_end = block_ini + block_size;
+
+        threads[i] = std::thread(f_aux, block_ini, block_end);
+
+        block_ini = block_end;
     }
-  };
 
-  size_t num_threads = optimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
-
-  size_t block_size = size / num_threads;
-
-  size_t block_ini = 0;
-  size_t block_end = 0;
-
-  for (size_t i = 0; i < num_threads; i++) {
-
-    if (i == num_threads -1) block_end = end;
-    else block_end = block_ini + block_size;
-
-    threads[i] = std::thread(f_aux, block_ini, block_end);
-
-    block_ini = block_end;
-  }
-
-  for(auto &_thread : threads) {
-    if(_thread.joinable())
-      _thread.join();
-  }
+    for (auto &_thread : threads) {
+        if (_thread.joinable())
+            _thread.join();
+    }
 
 #endif
 

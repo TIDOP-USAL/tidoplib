@@ -243,17 +243,17 @@ auto Command::parse(int argc, char **argv) -> Status
         }
 
         if(!bFind && !bOptional) {
-            msgError("Missing mandatory argument: %s", argument->name().c_str());
+            Message::error("Missing mandatory argument: {}", argument->name());
             return Command::Status::parse_error;
         }
 
         if(bFind && !bFindValue) {
-            msgError("Missing value for argument: %s", argument->name().c_str());
+            Message::error("Missing value for argument: {}", argument->name());
             return Command::Status::parse_error;
         }
 
         if(!argument->isValid()) {
-            msgError("Invalid argument (%s)", argument->name().c_str());
+            Message::error("Invalid argument ({})", argument->name());
             return Command::Status::parse_error;
         }
     }
@@ -350,8 +350,8 @@ auto Command::erase(const_iterator first,
 auto Command::showHelp() const -> void
 {
 
-    Console &console = App::console();
-    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+    auto &console = App::console();
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "\nUsage: " << mName << " [OPTION...] \n\n";
     console.reset();
@@ -396,7 +396,7 @@ auto Command::showHelp() const -> void
     std::cout << "O: Optional argument\n\n";
 
 
-    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "Argument Syntax Conventions\n\n";
     console.reset();
@@ -408,7 +408,7 @@ auto Command::showHelp() const -> void
     std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n";
 
     if(!mExamples.empty()) {
-        console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+        console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
         console.setFontBold(true);
         std::cout << "Examples\n\n";
         console.reset();
@@ -424,7 +424,7 @@ auto Command::showHelp() const -> void
 auto Command::showVersion() const -> void
 {
   Console &console = App::console();
-  console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+  console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
   std::cout << "Version: " << mVersion << "\n";
@@ -435,7 +435,7 @@ auto Command::showVersion() const -> void
 auto Command::showLicence() const -> void
 {
   Console &console = App::console();
-  console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+  console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   std::cout << "Licence\n\n";
   console.reset();
@@ -470,7 +470,7 @@ auto Command::argument(const std::string &name) const -> Argument::SharedPtr
         }
     }
 
-    TL_ASSERT(argument != nullptr, "Argument not found: %s", name.c_str());
+    TL_ASSERT(argument != nullptr, "Argument not found: {}", name);
 
     return argument;
 }
@@ -486,7 +486,7 @@ auto Command::argument(const char &shortName) const -> Argument::SharedPtr
         }
     }
 
-    TL_ASSERT(argument != nullptr, "Argument not found: %s", shortName);
+    TL_ASSERT(argument != nullptr, "Argument not found: {}", shortName);
 
     return argument;
 }
@@ -571,7 +571,7 @@ auto CommandList::setVersion(const std::string &version) -> void
 auto CommandList::parse(int argc, char **argv) -> Status
 {
     if(argc <= 1) {
-        msgError("No command found");
+        Message::error("No command found");
         showHelp();
         return Status::parse_error;
     }
@@ -624,7 +624,8 @@ auto CommandList::parse(int argc, char **argv) -> Status
     }
 
     if(!mCommand) {
-        msgError("Unknow command : %s", arg_cmd_name.c_str());
+        Message::error("Unknow command : {}", arg_cmd_name);
+
         showHelp();
     }
 
@@ -719,14 +720,14 @@ auto CommandList::showHelp() const -> void
 {
 
     Console &console = App::console();
-    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "\nUsage: " << mName << " [--version] [-h | --help] [--licence] <command> [<args>] \n\n";
     console.reset();
 
     std::cout << mDescription << " \n\n";
 
-    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "Command list: \n\n";
     console.reset();
@@ -747,7 +748,7 @@ auto CommandList::showHelp() const -> void
 auto CommandList::showVersion() const -> void
 {
     Console &console = App::console();
-    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
 
     std::cout << "Version: " << mVersion << "\n";
@@ -758,7 +759,7 @@ auto CommandList::showVersion() const -> void
 auto CommandList::showLicence() const -> void
 {
     Console &console = App::console();
-    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "Licence\n\n";
     console.reset();

@@ -27,7 +27,7 @@
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/log.h>
-#include <tidop/core/messages.h>
+#include <tidop/core/msg/message.h>
 #include <tidop/core/chrono.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/img/metadata.h>
@@ -52,13 +52,13 @@ int main(int argc, char **argv)
 
     Console &console = App::console();
     console.setTitle("Image Metadata");
-    console.setMessageLevel(MessageLevel::msg_verbose);
+    console.setMessageLevel(MessageLevel::all);
     console.setConsoleUnicode();
-    App::messageManager().addListener(&console);
+    Message::instance().addMessageHandler(&console);
 
     Log &log = App::log();
-    log.setMessageLevel(MessageLevel::msg_verbose);
-    App::messageManager().addListener(&log);
+    log.setMessageLevel(MessageLevel::all);
+    Message::instance().addMessageHandler(&log);
 
     Command cmd(cmd_name, "Image Metadata");
     cmd.addArgument<std::string>("img", 'i', "Image");
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
     Path img = cmd.value<std::string>("img");
 
-    log.setLogFile(Path(img).replaceExtension(".log").toString());
+    log.open(Path(img).replaceExtension(".log").toString());
 
     Chrono chrono("Image read");
     chrono.run();
@@ -89,10 +89,10 @@ int main(int argc, char **argv)
         imageReader->open();
         if(imageReader->isOpen()) {
 
-            msgInfo("Numero de bandas: %i", imageReader->channels());
-            msgInfo("Profundidad de color: %i", imageReader->depth());
-            msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
-            msgInfo("Metadatos:");
+            Message::info("Numero de bandas: {}", imageReader->channels());
+            Message::info("Profundidad de color: {}", imageReader->depth());
+            Message::info("Dimensiones de la imagen: {}x{}", imageReader->cols(), imageReader->rows());
+            Message::info("Metadatos:");
 
             std::shared_ptr<ImageMetadata> image_metadata = imageReader->metadata();
             std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
@@ -102,20 +102,20 @@ int main(int argc, char **argv)
             for(auto it = metadata.begin(); it != metadata.end(); it++) {
                 name = it->first;
                 value = it->second;
-                msgInfo("  %s: %s", name.c_str(), value.c_str());
+                Message::info("  {}: {}", name, value);
             }
 
             imageReader->close();
 
         } else {
-            msgError("Error al abrir la imagen: %s", img.toString().c_str());
+            Message::error("Error al abrir la imagen: {}", img.toString());
         }
 
     } catch(const std::exception &e) {
         printException(e);
         return 1;
     }  catch(...) {
-        msgError("Unknow exception");
+        Message::error("Unknow exception");
         return 1;
     }
 

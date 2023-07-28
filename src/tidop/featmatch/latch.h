@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_LATCH_DESCRIPTOR_H
-#define TL_FEATMATCH_LATCH_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -48,84 +47,86 @@ namespace tl
 class TL_EXPORT LatchProperties
   : public Latch
 {
+
+private:
+
+    std::string mBytes;
+    bool mRotationInvariance{true};
+    int mHalfSsdSize{3};
+
 public:
 
-  LatchProperties();
-  LatchProperties(const LatchProperties &latchProperties);
-  ~LatchProperties() override = default;
+    LatchProperties();
+    LatchProperties(const LatchProperties &latchProperties);
+    ~LatchProperties() override = default;
 
 // Latch interface
 
 public:
 
-  std::string bytes() const override;
-  bool rotationInvariance() const override;
-  int halfSsdSize() const override;
-  void setBytes(const std::string &bytes) override;
-  void setRotationInvariance(bool rotationInvariance) override;
-  void setHalfSsdSize(int halfSsdSize) override;
+    std::string bytes() const override;
+    bool rotationInvariance() const override;
+    int halfSsdSize() const override;
+    void setBytes(const std::string &bytes) override;
+    void setRotationInvariance(bool rotationInvariance) override;
+    void setHalfSsdSize(int halfSsdSize) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  std::string mBytes;
-  bool mRotationInvariance{true};
-  int mHalfSsdSize{3};
 };
 
 /*----------------------------------------------------------------*/
 
 
 class TL_EXPORT LatchDescriptor
-    : public LatchProperties,
-      public DescriptorExtractor
+  : public LatchProperties,
+    public DescriptorExtractor
 {
-
-public:
-
-  LatchDescriptor();
-  LatchDescriptor(const LatchDescriptor &latchDescriptor);
-  LatchDescriptor(const std::string &bytes,
-                  bool rotationInvariance,
-                  int halfSsdSize);
-  ~LatchDescriptor() override = default;
 
 private:
 
-  void update();
-
-// DescriptorExtractor interface
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    cv::Ptr<cv::xfeatures2d::LATCH> mLATCH;
+#endif // HAVE_OPENCV_XFEATURES2D
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    LatchDescriptor();
+    LatchDescriptor(const LatchDescriptor &latchDescriptor);
+    LatchDescriptor(const std::string &bytes,
+                    bool rotationInvariance,
+                    int halfSsdSize);
+    ~LatchDescriptor() override = default;
+
+private:
+
+    void update();
+
+ // DescriptorExtractor interface
+
+public:
+
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Latch interface
 
 public:
 
-  void setBytes(const std::string &bytes) override;
-  void setRotationInvariance(bool rotationInvariance) override;
-  void setHalfSsdSize(int halfSsdSize) override;
+    void setBytes(const std::string &bytes) override;
+    void setRotationInvariance(bool rotationInvariance) override;
+    void setHalfSsdSize(int halfSsdSize) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-  cv::Ptr<cv::xfeatures2d::LATCH> mLATCH;
-#endif // HAVE_OPENCV_XFEATURES2D
+    void reset() override;
 
 };
 
@@ -134,5 +135,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_LATCH_DESCRIPTOR_H

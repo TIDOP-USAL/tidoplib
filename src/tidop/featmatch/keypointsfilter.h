@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_KEYPOINTSFILTER_H
-#define TL_FEATMATCH_KEYPOINTSFILTER_H
+#pragma once
 
 #include <vector>
 
@@ -40,30 +39,30 @@ class TL_EXPORT KeyPointsFilter
 
 public:
 
-  enum class Type
-  {
-    n_best,
-    size,
-    remove_duplicated,
-    mask
-  };
+    enum class Type
+    {
+        n_best,
+        size,
+        remove_duplicated,
+        mask
+    };
 
 public:
 
-  KeyPointsFilter() {}
-  virtual ~KeyPointsFilter() = default;
+    KeyPointsFilter() {}
+    virtual ~KeyPointsFilter() = default;
 
-  /*!
-   * \brief Recover the default values
-   */
-  virtual void reset() = 0;
+    /*!
+     * \brief Recover the default values
+     */
+    virtual void reset() = 0;
 
-  /*!
-   * \brief type of keypoints filter
-   * \return filter type
-   */
-  virtual Type type() const = 0;
-  virtual std::string name() const = 0;
+    /*!
+     * \brief type of keypoints filter
+     * \return filter type
+     */
+    virtual Type type() const = 0;
+    virtual std::string name() const = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(KeyPointsFilter::Type)
@@ -71,26 +70,26 @@ ALLOW_BITWISE_FLAG_OPERATIONS(KeyPointsFilter::Type)
 
 
 class TL_EXPORT KeyPointsFilterBase
-  : public KeyPointsFilter
+    : public KeyPointsFilter
 {
 
 public:
 
-  KeyPointsFilterBase(Type type) : mFilterType(type) {}
-  ~KeyPointsFilterBase() override = default;
+    KeyPointsFilterBase(Type type) : mFilterType(type) {}
+    ~KeyPointsFilterBase() override = default;
 
-  /*!
-   * \brief type of keypoints filter
-   * \return filter type
-   */
-  Type type() const override
-  { 
-    return mFilterType.flags(); 
-  }
+    /*!
+     * \brief type of keypoints filter
+     * \return filter type
+     */
+    Type type() const override
+    {
+        return mFilterType.flags();
+    }
 
 protected:
 
-  tl::EnumFlags<Type> mFilterType;
+    tl::EnumFlags<Type> mFilterType;
 };
 
 
@@ -103,15 +102,15 @@ class TL_EXPORT KeyPointsFilterProcess
 
 public:
 
-  KeyPointsFilterProcess() {}
-  virtual ~KeyPointsFilterProcess() = default;
+    KeyPointsFilterProcess() {}
+    virtual ~KeyPointsFilterProcess() = default;
 
-  /*!
-   * \brief filter
-   * \param[in] keypoints
-   * \return Filtered Keypoints
-   */
-  virtual std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) = 0;
+    /*!
+     * \brief filter
+     * \param[in] keypoints
+     * \return Filtered Keypoints
+     */
+    virtual std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) = 0;
 };
 
 
@@ -119,36 +118,36 @@ public:
 
 
 class TL_EXPORT KeyPointsFilterNBestProperties
-  : public KeyPointsFilterBase
+    : public KeyPointsFilterBase
 {
 
 public:
 
-  KeyPointsFilterNBestProperties();
-  ~KeyPointsFilterNBestProperties() override = default;
+    KeyPointsFilterNBestProperties();
+    ~KeyPointsFilterNBestProperties() override = default;
 
-  /*!
-   * \brief Number of points to retain
-   * \return Number of points
-   */
-  virtual int nPoints() const;
+    /*!
+     * \brief Number of points to retain
+     * \return Number of points
+     */
+    virtual int nPoints() const;
 
-  /*!
-   * \brief Set the number of points to retain
-   * \param[in] nPoints number of points to retain
-   */
-  virtual void setNPoints(int nPoints);
+    /*!
+     * \brief Set the number of points to retain
+     * \param[in] nPoints number of points to retain
+     */
+    virtual void setNPoints(int nPoints);
 
 // KeyPointsFilter interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
 private:
 
-  int mPointsNumber;
+    int mPointsNumber;
 };
 
 
@@ -162,27 +161,27 @@ class TL_EXPORT KeyPointsFilterNBest
 
 public:
 
-  KeyPointsFilterNBest();
-  explicit KeyPointsFilterNBest(int nPoints);
-  ~KeyPointsFilterNBest() override = default;
+    KeyPointsFilterNBest();
+    explicit KeyPointsFilterNBest(int nPoints);
+    ~KeyPointsFilterNBest() override = default;
 
 // KeyPointsFilterNBestProperties interface
 
 public:
 
-  void setNPoints(int nPoints) override;
+    void setNPoints(int nPoints) override;
 
 // KeyPointsFilter interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
 // KeyPointsFilterProcess interface
 
 public:
 
-  std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
+    std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
 
 };
 
@@ -196,44 +195,44 @@ class TL_EXPORT KeyPointsFilterBySizeProperties
 
 public:
 
-  KeyPointsFilterBySizeProperties();
-  ~KeyPointsFilterBySizeProperties() override = default;
+    KeyPointsFilterBySizeProperties();
+    ~KeyPointsFilterBySizeProperties() override = default;
 
-  /*!
-   * \brief Minimum size
-   * \return Minimum size
-   */
-  virtual double minSize() const;
+    /*!
+     * \brief Minimum size
+     * \return Minimum size
+     */
+    virtual double minSize() const;
 
-  /*!
-   * \brief set minimum size
-   * \param[in] minSize
-   */
-  virtual void setMinSize(double minSize);
+    /*!
+     * \brief set minimum size
+     * \param[in] minSize
+     */
+    virtual void setMinSize(double minSize);
 
-  /*!
-   * \brief maximum size
-   * \return maximum size
-   */
-  virtual double maxSize() const;
+    /*!
+     * \brief maximum size
+     * \return maximum size
+     */
+    virtual double maxSize() const;
 
-  /*!
-   * \brief Set maximum size
-   * \param[in] maxSize Maximum size
-   */
-  virtual void setMaxSize(double maxSize);
+    /*!
+     * \brief Set maximum size
+     * \param[in] maxSize Maximum size
+     */
+    virtual void setMaxSize(double maxSize);
 
-// KeyPointsFilter interface
+    // KeyPointsFilter interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
 private:
 
-  double mMinSize;
-  double mMaxSize;
+    double mMinSize;
+    double mMaxSize;
 
 };
 
@@ -248,28 +247,28 @@ class TL_EXPORT KeyPointsFilterBySize
 
 public:
 
-  KeyPointsFilterBySize();
-  KeyPointsFilterBySize(double minSize, double maxSize);
-  ~KeyPointsFilterBySize() override = default;
+    KeyPointsFilterBySize();
+    KeyPointsFilterBySize(double minSize, double maxSize);
+    ~KeyPointsFilterBySize() override = default;
 
 // KeyPointsFilterBySizeProperties interface
 
 public:
 
-  void setMinSize(double minSize) override;
-  void setMaxSize(double maxSize) override;
+    void setMinSize(double minSize) override;
+    void setMaxSize(double maxSize) override;
 
 // KeyPointsFilterProcess interface
 
 public:
 
-  std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
+    std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
 
 // KeyPointsFilter interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
 };
 
@@ -283,15 +282,15 @@ class TL_EXPORT KeyPointsFilterRemoveDuplicatedProperties
 
 public:
 
-  KeyPointsFilterRemoveDuplicatedProperties();
-  ~KeyPointsFilterRemoveDuplicatedProperties() override = default;
+    KeyPointsFilterRemoveDuplicatedProperties();
+    ~KeyPointsFilterRemoveDuplicatedProperties() override = default;
 
 // KeyPointsFilter interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
 };
 
@@ -307,23 +306,21 @@ class TL_EXPORT KeyPointsFilterRemoveDuplicated
 
 public:
 
-  KeyPointsFilterRemoveDuplicated();
-  ~KeyPointsFilterRemoveDuplicated() override = default;
+    KeyPointsFilterRemoveDuplicated();
+    ~KeyPointsFilterRemoveDuplicated() override = default;
 
 // KeyPointsFilterProcess interface
 
 public:
 
-  std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
+    std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
 
 // KeyPointsFilter interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 };
 
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_KEYPOINTSFILTER_H

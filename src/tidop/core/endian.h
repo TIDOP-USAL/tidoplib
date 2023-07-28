@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_ENDIANNESS_H
-#define TL_CORE_ENDIANNESS_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -44,12 +43,12 @@ namespace tl
 enum class endianness
 {
 #ifdef _WIN32
-  little_endian,
-  big_endian,
-  native = little_endian
+    little_endian,
+    big_endian,
+    native = little_endian
 #else
   little_endian = __ORDER_LITTLE_ENDIAN__,
-  little_endian = __ORDER_BIG_ENDIAN__,
+  big_endian = __ORDER_BIG_ENDIAN__,
   native = __BYTE_ORDER__
 #endif
 };
@@ -59,15 +58,15 @@ template <typename T>
 typename std::enable_if<std::is_arithmetic<T>::value, T>::type
 swapEndian(T val)
 {
-  union U
-  {
-    T val;
-    std::array<uint8_t, sizeof(T)> raw;
-  } src, dst;
+    union U
+    {
+        T val;
+        std::array<uint8_t, sizeof(T)> raw;
+    } src, dst;
 
-  src.val = val;
-  std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
-  return dst.val;
+    src.val = val;
+    std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
+    return dst.val;
 }
 
 //template <> int8_t swapEndian<int8_t>(int8_t val) { return val; }
@@ -77,4 +76,3 @@ swapEndian(T val)
 
 } // namespace tl
 
-#endif // TL_CORE_ENDIANNESS_H

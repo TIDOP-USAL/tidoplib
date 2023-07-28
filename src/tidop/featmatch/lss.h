@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
  
-#ifndef TL_LSS_DESCRIPTOR_H
-#define TL_LSS_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -38,17 +37,18 @@ namespace tl
 class TL_EXPORT LssProperties
   : public Lss
 {
+
 public:
 
-  LssProperties();
-  ~LssProperties() override;
+    LssProperties();
+    ~LssProperties() override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
-  std::string name() const final;
+    virtual void reset() override;
+    std::string name() const final;
 
 };
 
@@ -57,38 +57,38 @@ public:
 
 
 class TL_EXPORT LssDescriptor
-    : public LssProperties,
-      public DescriptorExtractor
+  : public LssProperties,
+    public DescriptorExtractor
 {
+
+protected:
+
+    std::shared_ptr<LSS> mLSS;
 
 public:
 
-  LssDescriptor();
-  ~LssDescriptor() override;
+    LssDescriptor();
+    ~LssDescriptor() override;
 
 private:
 
-  void update();
+    void update();
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-protected:
-
-  std::shared_ptr<LSS> mLSS;
 };
 
 
 } // namespace tl
 
-#endif // TL_LSS_DESCRIPTOR_H

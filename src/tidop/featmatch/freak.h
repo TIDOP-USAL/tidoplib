@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_FREAK_DESCRIPTOR_H
-#define TL_FEATMATCH_FREAK_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -49,38 +48,39 @@ class TL_EXPORT FreakProperties
   : public Freak
 {
 
+private:
+
+    bool mOrientationNormalized{true};
+    bool mScaleNormalized{true};
+    double mPatternScale{22.};
+    int mOctaves{4};
+
 public:
 
-  FreakProperties();
-  FreakProperties(const FreakProperties &freakProperties);
-  ~FreakProperties() override = default;
+    FreakProperties();
+    FreakProperties(const FreakProperties &freakProperties);
+    ~FreakProperties() override = default;
 
 // Freak interface
 
 public:
 
-  bool orientationNormalized() const override;
-  bool scaleNormalized() const override;
-  double patternScale() const override;
-  int octaves() const override;
-  void setOrientationNormalized(bool orientationNormalized) override;
-  void setScaleNormalized(bool scaleNormalized) override;
-  void setPatternScale(double patternScale) override;
-  void setOctaves(int octaves) override;
+    bool orientationNormalized() const override;
+    bool scaleNormalized() const override;
+    double patternScale() const override;
+    int octaves() const override;
+    void setOrientationNormalized(bool orientationNormalized) override;
+    void setScaleNormalized(bool scaleNormalized) override;
+    void setPatternScale(double patternScale) override;
+    void setOctaves(int octaves) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  bool mOrientationNormalized{true};
-  bool mScaleNormalized{true};
-  double mPatternScale{22.};
-  int mOctaves{4};
 };
 
 
@@ -88,51 +88,52 @@ private:
 
 
 class TL_EXPORT FreakDescriptor
-    : public FreakProperties,
-      public DescriptorExtractor
+  : public FreakProperties,
+    public DescriptorExtractor
 {
-
-public:
-
-  FreakDescriptor();
-  FreakDescriptor(const FreakDescriptor &freakDescriptor);
-  FreakDescriptor(bool orientationNormalized,
-                  bool scaleNormalized,
-                  double patternScale,
-                  int octaves);
-  ~FreakDescriptor() override = default;
 
 private:
 
-  void update();
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    cv::Ptr<cv::xfeatures2d::FREAK> mFREAK;
+#endif // HAVE_OPENCV_XFEATURES2D
+
+public:
+
+    FreakDescriptor();
+    FreakDescriptor(const FreakDescriptor &freakDescriptor);
+    FreakDescriptor(bool orientationNormalized,
+                    bool scaleNormalized,
+                    double patternScale,
+                    int octaves);
+    ~FreakDescriptor() override = default;
+
+private:
+
+    void update();
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Freak interface
 
 public:
 
-  void setOrientationNormalized(bool orientationNormalized) override;
-  void setScaleNormalized(bool scaleNormalized) override;
-  void setPatternScale(double patternScale) override;
-  void setOctaves(int octaves) override;
+    void setOrientationNormalized(bool orientationNormalized) override;
+    void setScaleNormalized(bool scaleNormalized) override;
+    void setPatternScale(double patternScale) override;
+    void setOctaves(int octaves) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-  cv::Ptr<cv::xfeatures2d::FREAK> mFREAK;
-#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
@@ -140,5 +141,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_FREAK_DESCRIPTOR_H

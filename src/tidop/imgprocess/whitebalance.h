@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMGPROCESS_WHITE_BALANCE_H
-#define TL_IMGPROCESS_WHITE_BALANCE_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -55,46 +54,46 @@ namespace tl
  *  \{
  */
 
-/* ---------------------------------------------------------------------------------- */
 
 #ifdef HAVE_OPENCV_XPHOTO
 #if defined CV_VERSION_MAJOR && CV_VERSION_MAJOR >= 3
-#  if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
+#if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
 
 /*!
  * \brief Balance de blancos  Gray World
  */
-class TL_EXPORT Grayworld 
+class TL_EXPORT Grayworld
   : public ImageProcess
 {
 
 public:
 
-  /*!
-   * \brief Constructora Gray World
-   */
-  Grayworld();
+    /*!
+     * \brief Constructora Gray World
+     */
+    Grayworld();
 
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   */
-  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+    /*!
+     * \brief Ejecuta el proceso
+     * \param[in] matIn Imagen de entrada
+     * \param[out] matOut Imagen de salida
+     */
+    void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
 private:
 
-  /*!
-   * \brief Tamaño del kernel
-   */
-  cv::Ptr<cv::xphoto::GrayworldWB> mGrayworld;
+    /*!
+     * \brief Tamaño del kernel
+     */
+    cv::Ptr<cv::xphoto::GrayworldWB> mGrayworld;
 
 };
 
-#  endif // CV_VERSION_MINOR
+#endif // CV_VERSION_MINOR
 #endif // CV_VERSION_MAJOR
 #endif // HAVE_OPENCV_XPHOTO
-/* ---------------------------------------------------------------------------------- */
+
+
 
 /*!
  * \brief Balance de blancos White Patch
@@ -110,48 +109,47 @@ private:
  * introduce la luz blanca:
  * (R, G, B) -> ((255/Rmax(I))*R, (255/Gmax(I))*G, (255/Gmax(I))*G)
  */
-class TL_EXPORT WhitePatch 
+class TL_EXPORT WhitePatch
   : public ImageProcess
 {
 
+private:
+
+    graph::Color mWhite;
+
 public:
 
-  /*!
-   * \brief Constructora WhitePatch
-   * \param[in] white Luz blanca. Por defecto (255, 255, 255)
-   */
-  WhitePatch(const graph::Color &white = graph::Color(graph::Color::Name::white));
+    /*!
+     * \brief Constructora WhitePatch
+     * \param[in] white Luz blanca. Por defecto (255, 255, 255)
+     */
+    WhitePatch(const graph::Color &white = graph::Color(graph::Color::Name::white));
 
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   */
-  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+    /*!
+     * \brief Ejecuta el proceso
+     * \param[in] matIn Imagen de entrada
+     * \param[out] matOut Imagen de salida
+     */
+    void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
-  /*!
-   * \brief Establece la luz blanca
-   * \param[in] white Luz blanca. Por defecto (255, 255, 255)
-   */
-  void setWhite(const graph::Color &white = graph::Color(graph::Color::Name::white));
-
-private:
-  
-  double scaleRed(const cv::Mat &red) const;
-  double scaleGreen(const cv::Mat &green) const;
-  double scaleBlue(const cv::Mat &blue) const;
+    /*!
+     * \brief Establece la luz blanca
+     * \param[in] white Luz blanca. Por defecto (255, 255, 255)
+     */
+    void setWhite(const graph::Color &white = graph::Color(graph::Color::Name::white));
 
 private:
 
-  graph::Color mWhite;
+    double scaleRed(const cv::Mat &red) const;
+    double scaleGreen(const cv::Mat &green) const;
+    double scaleBlue(const cv::Mat &blue) const;
+
 };
 
 /*! \} */ // end of WhiteBalance
 
 /*! \} */ // end of ImgProc
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_HAVE_OPENCV
-
-#endif // TL_IMGPROCESS_WHITE_BALANCE_H

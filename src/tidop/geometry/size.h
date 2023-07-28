@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_SIZE_H
-#define TL_GEOMETRY_SIZE_H
+#pragma once
 
 #include <limits>
 #include <numeric>
@@ -50,71 +49,71 @@ class Size
 
 public:
 
-  using value_type = T;
+    using value_type = T;
 
 public:
 
-  /*!
-   * \brief Default constructor.
-   * Constructs a empty Size object. isValid() returns false 
-   * and isEmpty() return true.
-   */
-  Size();
+    /*!
+     * \brief Default constructor.
+     * Constructs a empty Size object. isValid() returns false
+     * and isEmpty() return true.
+     */
+    Size();
 
-  /*!
-   * \brief Constructs a size with the given width and height.
-   * \param[in] width Size width
-   * \param[in] height Size height
-   */
-  Size(T width, T height);
+    /*!
+     * \brief Constructs a size with the given width and height.
+     * \param[in] width Size width
+     * \param[in] height Size height
+     */
+    Size(T width, T height);
 
-  /*!
-   * \brief Copy constructor
-   * \param[in] size Size object to copy
-   */
-  Size(const Size &size);
+    /*!
+     * \brief Copy constructor
+     * \param[in] size Size object to copy
+     */
+    Size(const Size &size);
 
-  /*!
-   * \brief Move constructor
-   * \param[in] size Size object to move
-   */
-  Size(Size &&size) TL_NOEXCEPT;
+    /*!
+     * \brief Move constructor
+     * \param[in] size Size object to move
+     */
+    Size(Size &&size) TL_NOEXCEPT;
 
-  ~Size() = default;
+    ~Size() = default;
 
-  /*!
-   * \brief Copy assignment operator
-   * \param[in] size Size object to copy
-   */
-  Size &operator = (const Size &size);
+    /*!
+     * \brief Copy assignment operator
+     * \param[in] size Size object to copy
+     */
+    Size &operator = (const Size &size);
 
-  /*!
-   * \brief Move assignment operator
-   * \param[in] size Size object to move
-   */
-  Size &operator = (Size &&size) TL_NOEXCEPT;
+    /*!
+     * \brief Move assignment operator
+     * \param[in] size Size object to move
+     */
+    Size &operator = (Size &&size) TL_NOEXCEPT;
 
-  /*!
-   * \brief Check if Size object is empty 
-   * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
-   */
-  bool isEmpty() const;
-  
-  /*!
-   * \brief Check if Size object is valid 
-   * \return Returns true if both the width and height is equal to or greater than 0; otherwise returns false.
-   */
-  bool isValid() const;
+    /*!
+     * \brief Check if Size object is empty
+     * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
+     */
+    bool isEmpty() const;
 
-  /*!
-   * \brief Type conversion
-   */
-  template<typename T2> operator Size<T2>() const;
+    /*!
+     * \brief Check if Size object is valid
+     * \return Returns true if both the width and height is equal to or greater than 0; otherwise returns false.
+     */
+    bool isValid() const;
+
+    /*!
+     * \brief Type conversion
+     */
+    template<typename T2> operator Size<T2>() const;
 
 public:
 
-  T width;
-  T height;
+    T width;
+    T height;
 };
 
 
@@ -155,128 +154,126 @@ Size<T>::Size(Size &&size) TL_NOEXCEPT
 template<typename T> inline
 Size<T> &Size<T>::operator = (const Size &size)
 {
-  if (this != &size) {
-    this->width = size.width;
-    this->height = size.height;
-  }
+    if (this != &size) {
+        this->width = size.width;
+        this->height = size.height;
+    }
 
-  return *this;
+    return *this;
 }
 
 template<typename T> inline
 Size<T> &Size<T>::operator = (Size &&size) TL_NOEXCEPT
 {
-  if (this != &size) {
-    this->width = size.width;
-    this->height = size.height;
-  }
+    if (this != &size) {
+        this->width = size.width;
+        this->height = size.height;
+    }
 
-  return *this;
+    return *this;
 }
 
 template<typename T>
 inline bool tl::Size<T>::isEmpty() const
 {
-  return width <= static_cast<T>(0) || height <= static_cast<T>(0);
+    return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
 inline bool tl::Size<T>::isValid() const
 {
-  return width > static_cast<T>(0) && height > static_cast<T>(0);
+    return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
 template<typename T> template<typename T2> inline
 Size<T>::operator Size<T2>() const
 {
-  Size<T2> size;
+    Size<T2> size;
 
-  size.width = numberCast<T2>(this->width);
-  size.height = numberCast<T2>(this->height);
+    size.width = numberCast<T2>(this->width);
+    size.height = numberCast<T2>(this->height);
 
-  return size;
+    return size;
 }
 
 template<typename T> static inline
 bool operator == (const Size<T> &size1, const Size<T> &size2)
 {
-  return (size1.width == size2.width &&
-          size1.height == size2.height);
+    return (size1.width == size2.width &&
+            size1.height == size2.height);
 }
 
 template<typename T> static inline
 bool operator != (const Size<T> &size1, const Size<T> &size2)
 {
-  return (size1.width != size2.width ||
-          size1.height != size2.height);
+    return (size1.width != size2.width ||
+            size1.height != size2.height);
 }
 
 template<typename T> static inline
-Size<T>& operator += (Size<T> &size1, const Size<T> &size2)
+Size<T> &operator += (Size<T> &size1, const Size<T> &size2)
 {
-  size1.width += size2.width;
-  size1.height += size2.height;
+    size1.width += size2.width;
+    size1.height += size2.height;
 
-  return size1;
+    return size1;
 }
 
 template<typename T> static inline
-Size<T>& operator -= (Size<T> &size1, const Size<T> &size2)
+Size<T> &operator -= (Size<T> &size1, const Size<T> &size2)
 {
-  size1.width -= size2.width;
-  size1.height -= size2.height;
+    size1.width -= size2.width;
+    size1.height -= size2.height;
 
-  return size1;
+    return size1;
 }
 
 template<typename T> static inline
 Size<T> operator + (const Size<T> &size1, const Size<T> &size2)
 {
-  return Size<T>(size1.width + size2.width,
-                 size1.height + size2.height);
+    return Size<T>(size1.width + size2.width,
+                   size1.height + size2.height);
 }
 
 template<typename T> static inline
 Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
 {
-  return Size<T>(size1.width - size2.width,
-                 size1.height - size2.height);
+    return Size<T>(size1.width - size2.width,
+                   size1.height - size2.height);
 }
 
 template<typename T> static inline
 Size<T> operator * (const Size<T> &size, T scalar)
 {
-  return Size<T>(size.width * scalar,
-                 size.height * scalar);
+    return Size<T>(size.width * scalar,
+                   size.height * scalar);
 }
 
 template<typename T> static inline
-Size<T> & operator *= (Size<T> &size, T scalar)
+Size<T> &operator *= (Size<T> &size, T scalar)
 {
-  size.width *= scalar;
-  size.height *= scalar;
+    size.width *= scalar;
+    size.height *= scalar;
 
-  return size;
+    return size;
 }
 
 template<typename T> static inline
-Size<T>& operator /= (Size<T> &size, T scalar)
+Size<T> &operator /= (Size<T> &size, T scalar)
 {
-  size.width /= scalar;
-  size.height /= scalar;
+    size.width /= scalar;
+    size.height /= scalar;
 
-  return size;
+    return size;
 }
 
 template<typename T> static inline
 Size<T> operator / (const Size<T> &size, T scalar)
 {
-  return Size<T>(size.width / scalar,
-                 size.height / scalar);
+    return Size<T>(size.width / scalar,
+                   size.height / scalar);
 }
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_SIZE_H

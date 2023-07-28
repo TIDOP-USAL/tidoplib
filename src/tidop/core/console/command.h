@@ -33,17 +33,105 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/console/argument.h"
 #include "tidop/core/licence.h"
+#include "tidop/core/msg/message.h"
 
 namespace tl
 {
+
+/// \cond
+
+namespace internal
+{
+
+
+template<typename T>
+class ArgValue
+
+{
+
+public:
+
+    ArgValue(/* args */) {}
+    ~ArgValue() {}
+
+    T value(const Argument::SharedPtr &arg);
+};
+
+template<typename T> inline
+T ArgValue<T>::value(const Argument::SharedPtr &arg)
+{
+    Argument::Type type = arg->type();
+    Argument::Type return_type = ArgTraits<T>::property_type;
+    if(type != return_type) {
+        TL_ASSERT(type != Argument::Type::arg_string,
+                  "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
+        if(type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
+            Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), ArgTraits<T>::type_name);
+        }
+    }
+
+    T value{};
+    switch(type) {
+    case Argument::Type::arg_unknown:
+        // Exception
+        break;
+    case Argument::Type::arg_bool:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
+        break;
+    case Argument::Type::arg_int8:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
+        break;
+    case Argument::Type::arg_uint8:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
+        break;
+    case Argument::Type::arg_int16:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
+        break;
+    case Argument::Type::arg_uint16:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
+        break;
+    case Argument::Type::arg_int32:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
+        break;
+    case Argument::Type::arg_uin32:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
+        break;
+    case Argument::Type::arg_float32:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
+        break;
+    case Argument::Type::arg_float64:
+        value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
+        break;
+    default:
+        break;
+    }
+ 
+    return value;
+}
+
+template<> inline
+std::string ArgValue<std::string>::value(const Argument::SharedPtr &arg)
+{
+     Argument::Type type = arg->type();
+     Argument::Type return_type = ArgTraits<std::string>::property_type;
+     TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
+               "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
+     std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
+     return value;
+}
+
+} // namespace internal 
+
+/// \endcond
+
 
 /*! \addtogroup core
  *  \{
  */
 
- /*! \addtogroup Console
-  *  \{
-  */
+/*! \addtogroup Console
+ *  \{
+ */
 
 
 
@@ -301,91 +389,38 @@ public:
     T value(const std::string &name) const
     {
         auto arg = argument(name);
-        return value<T>(arg);
+        internal::ArgValue<T> arg_value;
+        return arg_value.value(arg);
     }
 
     template<typename T>
     T value(const char &short_name) const
     {
         auto arg = argument(short_name);
-        return value<T>(arg);
+        internal::ArgValue<T> arg_value;
+        return arg_value.value(arg);
+    }
+
+public:
+
+    static auto create(std::string name,
+                       std::string description) TL_NOEXCEPT -> std::shared_ptr<Command>
+    {
+        std::shared_ptr<Command> cmd(new Command(name, description));
+        return cmd;
+    }
+
+    static auto create(std::string name,
+                       std::string description,
+                       std::initializer_list<Argument::SharedPtr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
+    {
+        std::shared_ptr<Command> cmd(new Command(name, description, arguments));
+        return cmd;
     }
 
 protected:
 
     auto init() -> void;
-
-    template<typename T>
-    T value(const Argument::SharedPtr &arg) const
-    {
-        Argument::Type type = arg->type();
-        Argument::Type return_type = ArgTraits<T>::property_type;
-
-        if(type != return_type) {
-
-            TL_ASSERT(type != Argument::Type::arg_string,
-                      "Conversion from \"%s\" to \"%s\" is not allowed", arg->typeName().c_str(), ArgTraits<std::string>::type_name);
-
-            if(type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
-                msgWarning("Conversion from \"%s\" to \"%s\", possible loss of data",
-                           arg->typeName().c_str(), ArgTraits<T>::type_name);
-            }
-
-        }
-
-        T value{};
-
-        switch(type) {
-        case Argument::Type::arg_unknown:
-            // Exception
-            break;
-        case Argument::Type::arg_bool:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
-            break;
-        case Argument::Type::arg_int8:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
-            break;
-        case Argument::Type::arg_uint8:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
-            break;
-        case Argument::Type::arg_int16:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
-            break;
-        case Argument::Type::arg_uint16:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
-            break;
-        case Argument::Type::arg_int32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
-            break;
-        case Argument::Type::arg_uin32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
-            break;
-        case Argument::Type::arg_float32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
-            break;
-        case Argument::Type::arg_float64:
-            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
-            break;
-        default:
-            break;
-        }
-
-        return value;
-    }
-
-    template<>
-    std::string value(const Argument::SharedPtr &arg) const
-    {
-        Argument::Type type = arg->type();
-        Argument::Type return_type = ArgTraits<std::string>::property_type;
-
-        TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
-                  "Conversion from \"%s\" to \"%s\" is not allowed", arg->typeName().c_str(), ArgTraits<std::string>::type_name);
-
-        std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
-
-        return value;
-    }
 
 private:
 

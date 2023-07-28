@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_SEGMENT_H
-#define TL_GEOMETRY_SEGMENT_H
+#pragma once
 
 #include <utility>
 
@@ -63,134 +62,134 @@ class Segment
 
 public:
 
-  /*!
-   * \brief type Tipo de punto
-   */
-  using value_type = Point_t;
-
-  /*!
-   * \brief Punto inicial del segmento
-   */
-  Point_t pt1;
-
-  /*!
-   * \brief Punto final del segmento
-   */
-  Point_t pt2;
+    /*!
+     * \brief type Tipo de punto
+     */
+    using value_type = Point_t;
+    
+    /*!
+     * \brief Punto inicial del segmento
+     */
+    Point_t pt1;
+    
+    /*!
+     * \brief Punto final del segmento
+     */
+    Point_t pt2;
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  Segment();
-
-  /*!
-   * \brief Constructor de copia
-   */
-  Segment(const Segment &segment);
+    /*!
+     * \brief Constructora por defecto
+     */
+    Segment();
     
-  /*!
-   * \brief Constructor de movimiento
-   */
-  Segment(Segment &&segment) TL_NOEXCEPT;
-
-  /*!
-   * \brief Constructor segment
-   * \param[in] _pt1 Punto inicial del segmento
-   * \param[in] _pt2 Punto final del segmento
-   */
-  Segment(Point_t _pt1, Point_t _pt2);
-
-  /*!
-   * \brief Constructor segment
-   * \param[in] pt Coordenadas del punto central o inicial (según el valor de bCenter)
-   * \param[in] angle Ángulo de la recta
-   * \param[in] length Longitud del segmento
-   * \param[in] bCenter Si es verdadero es el centro de la línea
-   */
-  Segment(const Point_t &pt, double angle, double length, bool bCenter = true);
-
-  /*!
-   * \brief Sobrecarga del operador de asignación
-   * \param[in] segment Segmento que se asigna
-   * \return Referencia al segmento
-   */
-  Segment &operator = (const Segment &segment);
+    /*!
+     * \brief Constructor de copia
+     */
+    Segment(const Segment &segment);
+      
+    /*!
+     * \brief Constructor de movimiento
+     */
+    Segment(Segment &&segment) TL_NOEXCEPT;
     
-  /*!
-   * \brief Sobrecarga del operador de asignación de movimiento
-   * \param[in] segment Segmento que se mueve
-   * \return Referencia al segmento
-   */
-  Segment &operator = (Segment &&segment) TL_NOEXCEPT;
-
-  ~Segment() override = default;
-
-  /*!
-   * \brief Conversión a un segmento de un tipo diferente
-   */
-  template<typename Point_t2> operator Segment<Point_t2>() const;
-
-  /*!
-   * \brief Angulo medido respecto al eje x.
-   * \return Ángulo en radianes
-   */
-  double angleOX() const;
-
-  /*!
-   * \brief Angulo medido respecto al eje y.
-   * \return Ángulo en radianes
-   */
-  double angleOY() const;
-
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente del segmento
-   */
-  Window<Point_t> window() const;
-
-  /*!
-   * \brief Comprueba si el segmento esta vacio pt1 = (0, 0) ; pt2 = (0, 0)
-   * \return Verdadero si esta vacio
-   */
-  bool isEmpty() const;
-
-  /*!
-   * \brief Comprueba si dos segmentos están próximos
-   * \param[in] l2 Segmento con el que se compara
-   * \param[in] dist Distancia máxima de separación
-   * \return Verdadero si esta a menos distancia de la indicada.
-   */
-  bool isNear(const Segment<Point_t> &l2, double dist = 10.) const;
-
-  /*!
-   * \brief Comprueba si es paralelo a otro segmento
-   * \param[in] l2 Segmento con el que se compara
-   * \param[in] tol Toleracia angular. Si es 0 los segmentos tienen que ser paralelos.
-   *  Si tiene otro valor se aceptan lineas que esten por debajo de esa tolerancia
-   * \return Verdadero si es paralela (± tol).
-   */
-  bool isParallel(const Segment<Point_t> &l2, double tol = 0.) const;
-
-  /*!
-   * \brief Longitud del segmento
-   * \return Longitud del segmento
-   */
-  double length() const;
-
-  /*!
-   * \brief Vector
-   * \return Vector del segmento
-   */
-  Point_t vector() const;
-
-  /*!
-   * \brief divide un segmento en n partes
-   * \param[in] n número de particiones
-   * \return Segmentos
-   */
-  std::vector<Segment<Point_t>> split(size_t n) const;
+    /*!
+     * \brief Constructor segment
+     * \param[in] _pt1 Punto inicial del segmento
+     * \param[in] _pt2 Punto final del segmento
+     */
+    Segment(Point_t _pt1, Point_t _pt2);
+    
+    /*!
+     * \brief Constructor segment
+     * \param[in] pt Coordenadas del punto central o inicial (según el valor de bCenter)
+     * \param[in] angle Ángulo de la recta
+     * \param[in] length Longitud del segmento
+     * \param[in] bCenter Si es verdadero es el centro de la línea
+     */
+    Segment(const Point_t &pt, double angle, double length, bool bCenter = true);
+    
+    /*!
+     * \brief Sobrecarga del operador de asignación
+     * \param[in] segment Segmento que se asigna
+     * \return Referencia al segmento
+     */
+    Segment &operator = (const Segment &segment);
+      
+    /*!
+     * \brief Sobrecarga del operador de asignación de movimiento
+     * \param[in] segment Segmento que se mueve
+     * \return Referencia al segmento
+     */
+    Segment &operator = (Segment &&segment) TL_NOEXCEPT;
+    
+    ~Segment() override = default;
+    
+    /*!
+     * \brief Conversión a un segmento de un tipo diferente
+     */
+    template<typename Point_t2> operator Segment<Point_t2>() const;
+    
+    /*!
+     * \brief Angulo medido respecto al eje x.
+     * \return Ángulo en radianes
+     */
+    double angleOX() const;
+    
+    /*!
+     * \brief Angulo medido respecto al eje y.
+     * \return Ángulo en radianes
+     */
+    double angleOY() const;
+    
+    /*!
+     * \brief Ventana envolvente
+     * \return Ventana envolvente del segmento
+     */
+    Window<Point_t> window() const;
+    
+    /*!
+     * \brief Comprueba si el segmento esta vacio pt1 = (0, 0) ; pt2 = (0, 0)
+     * \return Verdadero si esta vacio
+     */
+    bool isEmpty() const;
+    
+    /*!
+     * \brief Comprueba si dos segmentos están próximos
+     * \param[in] l2 Segmento con el que se compara
+     * \param[in] dist Distancia máxima de separación
+     * \return Verdadero si esta a menos distancia de la indicada.
+     */
+    bool isNear(const Segment<Point_t> &l2, double dist = 10.) const;
+    
+    /*!
+     * \brief Comprueba si es paralelo a otro segmento
+     * \param[in] l2 Segmento con el que se compara
+     * \param[in] tol Toleracia angular. Si es 0 los segmentos tienen que ser paralelos.
+     *  Si tiene otro valor se aceptan lineas que esten por debajo de esa tolerancia
+     * \return Verdadero si es paralela (± tol).
+     */
+    bool isParallel(const Segment<Point_t> &l2, double tol = 0.) const;
+    
+    /*!
+     * \brief Longitud del segmento
+     * \return Longitud del segmento
+     */
+    double length() const;
+    
+    /*!
+     * \brief Vector
+     * \return Vector del segmento
+     */
+    Point_t vector() const;
+    
+    /*!
+     * \brief divide un segmento en n partes
+     * \param[in] n número de particiones
+     * \return Segmentos
+     */
+    std::vector<Segment<Point_t>> split(size_t n) const;
 };
 
 // Definición de métodos
@@ -228,146 +227,149 @@ Segment<Point_t>::Segment(Point_t _pt1, Point_t _pt2)
 }
 
 template<typename Point_t> inline
-Segment<Point_t>::Segment(const Point_t &pt, 
-                          double angle, 
-                          double length, 
+Segment<Point_t>::Segment(const Point_t &pt,
+                          double angle,
+                          double length,
                           bool bCenter)
   : Entity(Entity::Type::segment2d)
 {
-  using point_type = typename Point_t::value_type;
+    using point_type = typename Point_t::value_type;
 
-  double a = cos(angle);
-  double b = sin(angle);
-  double l1 = 0;
-  double l2 = length;
-  
-  if (bCenter) {
-    l1 = l2 = length / 2.;
-  }
-  
-  pt1.x = numberCast<point_type>(pt.x - l1 * -b);
-  pt1.y = numberCast<point_type>(pt.y - l1 * a);
-  pt2.x = numberCast<point_type>(pt.x + l2 * -b);
-  pt2.y = numberCast<point_type>(pt.y + l2 * a);
+    double a = cos(angle);
+    double b = sin(angle);
+    double l1 = 0;
+    double l2 = length;
+
+    if (bCenter) {
+        l1 = l2 = length / 2.;
+    }
+
+    pt1.x = numberCast<point_type>(pt.x - l1 * -b);
+    pt1.y = numberCast<point_type>(pt.y - l1 * a);
+    pt2.x = numberCast<point_type>(pt.x + l2 * -b);
+    pt2.y = numberCast<point_type>(pt.y + l2 * a);
 }
 
 
 template<typename Point_t> inline
 Segment<Point_t> &Segment<Point_t>::operator = (const Segment &segment)
 {
-  if (this != &segment) {
-    Entity::operator = (segment);
-    this->pt1 = segment.pt1;
-    this->pt2 = segment.pt2;
-  }
-  return *this;
+    if (this != &segment) {
+        Entity::operator = (segment);
+        this->pt1 = segment.pt1;
+        this->pt2 = segment.pt2;
+    }
+
+    return *this;
 }
 
 template<typename Point_t> inline
 Segment<Point_t> &Segment<Point_t>::operator = (Segment &&segment) TL_NOEXCEPT
 {
-  if (this != &segment) {
-    Entity::operator = (std::forward<Entity>(segment));
-    this->pt1 = std::move(segment.pt1);
-    this->pt2 = std::move(segment.pt2);
-  }
-  return *this;
+    if (this != &segment) {
+        Entity::operator = (std::forward<Entity>(segment));
+        this->pt1 = std::move(segment.pt1);
+        this->pt2 = std::move(segment.pt2);
+    }
+
+    return *this;
 }
 
 template<typename Point_t> template<typename Point_t2> inline
 Segment<Point_t>::operator Segment<Point_t2>() const
 {
-  Segment<Point_t2> s;
+    Segment<Point_t2> s;
 
-  using point_type = typename Point_t2::value_type;
+    using point_type = typename Point_t2::value_type;
 
-  s.pt1.x = numberCast<point_type>(pt1.x);
-  s.pt1.y = numberCast<point_type>(pt1.y);
-  s.pt2.x = numberCast<point_type>(pt2.x);
-  s.pt2.y = numberCast<point_type>(pt2.y);
+    s.pt1.x = numberCast<point_type>(pt1.x);
+    s.pt1.y = numberCast<point_type>(pt1.y);
+    s.pt2.x = numberCast<point_type>(pt2.x);
+    s.pt2.y = numberCast<point_type>(pt2.y);
 
-  return s;
+    return s;
 }
 
 template<typename Point_t> inline
 double Segment<Point_t>::angleOX() const
 {
-  double angle = 0.0;
-  if (pt1 != pt2) {
-    angle = vectorAngleOX(vector());
-  }
-  return angle;
+    double angle = 0.0;
+    if (pt1 != pt2) {
+        angle = vectorAngleOX(vector());
+    }
 
+    return angle;
 }
 
 template<typename Point_t> inline
 double Segment<Point_t>::angleOY() const
 {
-  double angle = 0.0;
-  if (pt1 != pt2) {
-    angle = vectorAngleOY(vector());
-  }
-  return angle;
+    double angle = 0.0;
+    if (pt1 != pt2) {
+        angle = vectorAngleOY(vector());
+    }
+
+    return angle;
 }
 
 template<typename Point_t> inline
 Window<Point_t> Segment<Point_t>::window() const
 {
-  Window<Point_t> w(pt1, pt2);
-  w.normalized();
-  return w;
+    Window<Point_t> w(pt1, pt2);
+    w.normalized();
+    return w;
 }
 
 template<typename Point_t> inline
 bool Segment<Point_t>::isEmpty() const
 {
-  using sub_type = typename Point_t::value_type;
-  return (pt1.x == consts::zero<sub_type> && 
-          pt1.y == consts::zero<sub_type> && 
-          pt2.x == consts::zero<sub_type> && 
-          pt2.y == consts::zero<sub_type>); 
+    using sub_type = typename Point_t::value_type;
+    return (pt1.x == consts::zero<sub_type> &&
+            pt1.y == consts::zero<sub_type> &&
+            pt2.x == consts::zero<sub_type> &&
+            pt2.y == consts::zero<sub_type>);
 }
 
 template<typename Point_t> inline
 bool Segment<Point_t>::isNear(const Segment<Point_t> &l2, double dist) const
 {
-  double dist1 = minDistanceSegments(*this, l2);
-  return (dist1 <= dist);
+    double dist1 = minDistanceSegments(*this, l2);
+    return (dist1 <= dist);
 }
 
 template<typename Point_t> inline
 bool Segment<Point_t>::isParallel(const Segment<Point_t> &l2, 
                                   double tol) const
 {
-  return (std::abs(angleOX() - l2.angleOX()) < tol);
+    return (std::abs(angleOX() - l2.angleOX()) < tol);
 }
 
 template<typename Point_t> inline
 double Segment<Point_t>::length() const 
 { 
-  return distance(pt1, pt2); 
+    return distance(pt1, pt2); 
 }
 
 template<typename Point_t> inline
 Point_t Segment<Point_t>::vector() const 
 { 
-  return (pt2 - pt1); 
+    return (pt2 - pt1); 
 }
 
 template<typename Point_t> inline
 std::vector<Segment<Point_t>> Segment<Point_t>::split(size_t n) const
 {
-  std::vector<Segment<Point_t>> segments;
+    std::vector<Segment<Point_t>> segments;
 
-  Point_t point1 = pt1;
-  Point_t point2;
-  for (size_t i = 1; i <= n; i++) {
-    point2 = pt1 * (1 - i / static_cast<double>(n)) + pt2 * i / static_cast<double>(n);
-    segments.emplace_back(point1, point2);
-    point1 = point2;
-  }
+    Point_t point1 = pt1;
+    Point_t point2;
+    for (size_t i = 1; i <= n; i++) {
+        point2 = pt1 * (1 - i / static_cast<double>(n)) + pt2 * i / static_cast<double>(n);
+        segments.emplace_back(point1, point2);
+        point1 = point2;
+    }
 
-  return segments;
+    return segments;
 }
 
 using SegmentI = Segment<Point<int> >;
@@ -393,93 +395,94 @@ using Line = SegmentI;
  */
 template<typename Point3_t>
 class Segment3D
-  : public Entity
+    : public Entity
 {
-public:
-
-  using value_type = Point3_t;
-
-  /*!
-   * \brief Punto 1
-   */
-  Point3_t pt1;
-
-  /*!
-   * \brief Punto 2
-   */
-  Point3_t pt2;
 
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  Segment3D();
+    using value_type = Point3_t;
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] segment Segmento que se asigna
-   */
-  Segment3D(const Segment3D &segment);
+    /*!
+     * \brief Punto 1
+     */
+    Point3_t pt1;
 
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] segment Segmento que se mueve
-   */
-  Segment3D(Segment3D &&segment) TL_NOEXCEPT;
+    /*!
+     * \brief Punto 2
+     */
+    Point3_t pt2;
 
-  /*!
-   * \brief Constructor segment
-   * \param[in] _pt1 Punto 1
-   * \param[in] _pt2 Punto 2
-   */
-  Segment3D(const Point3_t &_pt1, const Point3_t &_pt2);
+public:
 
-  ~Segment3D() override = default;
+    /*!
+     * \brief Constructor por defecto
+     */
+    Segment3D();
 
-  /*!
-   * \brief Sobrecarga del operador de asignación
-   * \param[in] segment Segmento que se asigna
-   * \return Referencia a la ventana
-   */
-  Segment3D &operator = (const Segment3D &segment);
+    /*!
+     * \brief Constructor de copia
+     * \param[in] segment Segmento que se asigna
+     */
+    Segment3D(const Segment3D &segment);
 
-  /*!
-   * \brief Sobrecarga del operador de asignación de movimiento
-   * \param[in] segment Segmento que se mueve
-   * \return Referencia a la ventana
-   */
-  Segment3D &operator = (Segment3D &&segment) TL_NOEXCEPT;
+    /*!
+     * \brief Constructor de movimiento
+     * \param[in] segment Segmento que se mueve
+     */
+    Segment3D(Segment3D &&segment) TL_NOEXCEPT;
 
-  /*!
-   * \brief Conversión a un segmento de un tipo diferente
-   */
-  template<typename Point3_t2> operator Segment3D<Point3_t2>() const;
+    /*!
+     * \brief Constructor segment
+     * \param[in] _pt1 Punto 1
+     * \param[in] _pt2 Punto 2
+     */
+    Segment3D(const Point3_t &_pt1, const Point3_t &_pt2);
 
-  /*!
-   * \brief Caja envolvente del segmento
-   */
-  BoundingBox<Point3_t> boundingBox() const;
+    ~Segment3D() override = default;
 
-  /*!
-   * \brief Comprueba si el segmento esta vacio pt1 = (0, 0, 0) ; pt2 = (0, 0, 0)
-   * \return Verdadero si esta vacio
-   */
-  bool isEmpty() const;
+    /*!
+     * \brief Sobrecarga del operador de asignación
+     * \param[in] segment Segmento que se asigna
+     * \return Referencia a la ventana
+     */
+    Segment3D &operator = (const Segment3D &segment);
 
-  //  bool isNear(const Segment<T> &l2, double dist = 10) const;
+    /*!
+     * \brief Sobrecarga del operador de asignación de movimiento
+     * \param[in] segment Segmento que se mueve
+     * \return Referencia a la ventana
+     */
+    Segment3D &operator = (Segment3D &&segment) TL_NOEXCEPT;
 
-  /*!
-   * \brief Longitud del segmento
-   * \return Longitud del segmento
-   */
-  double length() const;
+    /*!
+     * \brief Conversión a un segmento de un tipo diferente
+     */
+    template<typename Point3_t2> operator Segment3D<Point3_t2>() const;
 
-  /*!
-   * \brief Vector
-   * \return Vector del segmento
-   */
-  Point3_t vector() const;
+    /*!
+     * \brief Caja envolvente del segmento
+     */
+    BoundingBox<Point3_t> boundingBox() const;
+
+    /*!
+     * \brief Comprueba si el segmento esta vacio pt1 = (0, 0, 0) ; pt2 = (0, 0, 0)
+     * \return Verdadero si esta vacio
+     */
+    bool isEmpty() const;
+
+    //  bool isNear(const Segment<T> &l2, double dist = 10) const;
+
+    /*!
+     * \brief Longitud del segmento
+     * \return Longitud del segmento
+     */
+    double length() const;
+
+    /*!
+     * \brief Vector
+     * \return Vector del segmento
+     */
+    Point3_t vector() const;
 };
 
 // Definición de métodos
@@ -519,55 +522,55 @@ Segment3D<Point3_t>::Segment3D(const Point3_t &_pt1, const Point3_t &_pt2)
 template<typename Point3_t> inline
 Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (const Segment3D &segment)
 {
-  if (this != &segment) {
-    Entity::operator=(segment);
-    this->pt1 = segment.pt1;
-    this->pt2 = segment.pt2;
-  }
-  return *this;
+    if (this != &segment) {
+        Entity::operator=(segment);
+        this->pt1 = segment.pt1;
+        this->pt2 = segment.pt2;
+    }
+    return *this;
 }
 
 template<typename Point3_t> inline
 Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (Segment3D &&segment) TL_NOEXCEPT
 {
-  if (this != &segment) {
-    Entity::operator=(std::forward<Entity>(segment));
-    this->pt1 = std::move(segment.pt1);
-    this->pt2 = std::move(segment.pt2);
-  }
-  return *this;
+    if (this != &segment) {
+        Entity::operator=(std::forward<Entity>(segment));
+        this->pt1 = std::move(segment.pt1);
+        this->pt2 = std::move(segment.pt2);
+    }
+    return *this;
 }
 
 template<typename Point3_t> template<typename Point3_t2> inline
 Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
 {
-  Segment3D<Point3_t2> s;
+    Segment3D<Point3_t2> s;
 
-  using point_type = typename Point3_t2::value_type;
+    using point_type = typename Point3_t2::value_type;
 
-  s.pt1.x = numberCast<point_type>(pt1.x);
-  s.pt1.y = numberCast<point_type>(pt1.y);
-  s.pt1.z = numberCast<point_type>(pt1.z);
-  s.pt2.x = numberCast<point_type>(pt2.x);
-  s.pt2.y = numberCast<point_type>(pt2.y);
-  s.pt2.z = numberCast<point_type>(pt2.z);
+    s.pt1.x = numberCast<point_type>(pt1.x);
+    s.pt1.y = numberCast<point_type>(pt1.y);
+    s.pt1.z = numberCast<point_type>(pt1.z);
+    s.pt2.x = numberCast<point_type>(pt2.x);
+    s.pt2.y = numberCast<point_type>(pt2.y);
+    s.pt2.z = numberCast<point_type>(pt2.z);
 
-  return s;
+    return s;
 }
 
 template<typename Point3_t> inline
 BoundingBox<Point3_t> Segment3D<Point3_t>::boundingBox() const
 {
-  return BoundingBox<Point3_t>(pt1, pt2);
+    return BoundingBox<Point3_t>(pt1, pt2);
 }
 
 template<typename Point3_t> inline
 bool Segment3D<Point3_t>::isEmpty() const
 {
-  return (pt1.x == static_cast<typename Point3_t::value_type>(0)  && 
-          pt1.y == static_cast<typename Point3_t::value_type>(0)  && 
-          pt2.x == static_cast<typename Point3_t::value_type>(0)  && 
-          pt2.y == static_cast<typename Point3_t::value_type>(0)); 
+    return (pt1.x == static_cast<typename Point3_t::value_type>(0) &&
+            pt1.y == static_cast<typename Point3_t::value_type>(0) &&
+            pt2.x == static_cast<typename Point3_t::value_type>(0) &&
+            pt2.y == static_cast<typename Point3_t::value_type>(0));
 }
 
 //template<typename T> inline
@@ -580,13 +583,13 @@ bool Segment3D<Point3_t>::isEmpty() const
 template<typename Point3_t> inline
 double Segment3D<Point3_t>::length() const 
 { 
-  return distance3D(pt1, pt2); 
+    return distance3D(pt1, pt2); 
 }
 
 template<typename Point3_t> inline
 Point3_t Segment3D<Point3_t>::vector() const 
 { 
-  return (pt2 - pt1); 
+    return (pt2 - pt1); 
 }
 
 using Segment3dI = Segment3D<Point3<int> >;
@@ -601,75 +604,76 @@ using Segment3dF = Segment3D<Point3<float> >;
  */
 class TL_EXPORT GroupLines
 {
-private:
-  /*!
-   * \brief linesgrops
-   */
-  std::vector<Line> linesgroup;
 
-  /*!
-   * \brief Ventana envolvente del grupo de líneas
-   */
-  WindowI bbox;
+private:
+    /*!
+     * \brief linesgrops
+     */
+    std::vector<Line> linesgroup;
+
+    /*!
+     * \brief Ventana envolvente del grupo de líneas
+     */
+    WindowI bbox;
 
 public:
 
-  /*!
-   * \brief Constructora GroupLines
-   */
-  GroupLines();
+    /*!
+     * \brief Constructora GroupLines
+     */
+    GroupLines();
 
-  /*!
-   * \brief GroupLines
-   * \param[in] lines Vector de lineas
-   */
-  GroupLines(const std::vector<Line> &lines);
+    /*!
+     * \brief GroupLines
+     * \param[in] lines Vector de lineas
+     */
+    GroupLines(const std::vector<Line> &lines);
 
-  /*!
-   * \brief Añade una línea
-   * \param[in] line Linea
-   */
-  void add(const Line &line);
+    /*!
+     * \brief Añade una línea
+     * \param[in] line Linea
+     */
+    void add(const Line &line);
 
-//#ifdef TL_HAVE_OPENCV
-//
-//  /*!
-//   * \brief Añade una línea
-//   * \param[in] lvect
-//   */
-//  void add(const cv::Vec4i &lvect);
-//
-//#endif
+    //#ifdef TL_HAVE_OPENCV
+    //
+    //  /*!
+    //   * \brief Añade una línea
+    //   * \param[in] lvect
+    //   */
+    //  void add(const cv::Vec4i &lvect);
+    //
+    //#endif
 
-  /*!
-   * \brief Ángulo medio
-   * \return
-   */
-  double angleMean();
+      /*!
+       * \brief Ángulo medio
+       * \return
+       */
+    double angleMean();
 
-  void deleteLine(int id);
+    void deleteLine(int id);
 
-  /*!
-   * \brief Ventana envolvente del grupo de lineas
-   * \return
-   */
-  WindowI window() const { return bbox; }
+    /*!
+     * \brief Ventana envolvente del grupo de lineas
+     * \return
+     */
+    WindowI window() const { return bbox; }
 
-  /*!
-   * \brief Número de líneas
-   * \return
-   */
-  size_t size() const { return linesgroup.size(); }
+    /*!
+     * \brief Número de líneas
+     * \return
+     */
+    size_t size() const { return linesgroup.size(); }
 
-  /*!
-   * \brief Operador de indexación sobrecargado
-   * \param[in] id Indice del elemento
-   * \return Linea
-   */
-  const Line &operator[](size_t id) const { return linesgroup[id]; }
-  Line &operator[](size_t id)  { return linesgroup[id]; }
+    /*!
+     * \brief Operador de indexación sobrecargado
+     * \param[in] id Indice del elemento
+     * \return Linea
+     */
+    const Line &operator[](size_t id) const { return linesgroup[id]; }
+    Line &operator[](size_t id) { return linesgroup[id]; }
 
-  const std::vector<Line> &getLines() const { return linesgroup; }
+    const std::vector<Line> &getLines() const { return linesgroup; }
 
 };
 
@@ -677,5 +681,3 @@ public:
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_SEGMENT_H

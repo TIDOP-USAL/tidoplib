@@ -29,10 +29,12 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/path.h"
+#include "tidop/core/msg/message.h"
 
 
 namespace tl
@@ -96,10 +98,7 @@ public:
         bool valid = (value > mMin && value < mMax);
         
         if(!valid) {
-            std::string msg = "The value '";
-            msg.append(std::to_string(value)).append("' is out of valid range [");
-            msg.append(std::to_string(mMin)).append("-").append(std::to_string(mMin)).append("]");
-            msgError(msg.c_str());
+            Message::error("The value '{}' is out of valid range [{}-{}]", value, mMin, mMax);
         }
 
         return valid;
@@ -124,6 +123,11 @@ public:
     void print() const
     {
         std::cout << "Valid range [" << mMin << " - " << mMax << "]";
+    }
+
+    static auto create(T min, T max) -> std::shared_ptr<RangeValidator<T>>
+    {
+        return std::make_shared<RangeValidator<T>>(min, max);
     }
 
 private:
@@ -166,8 +170,8 @@ public:
             stream << "Invalid value: '" << value << "'. Valid values are: ";
             for (const auto &values : mValues)
                 stream << values << " ";
-            std::string str = stream.str();
-            msgError(str.c_str());
+            
+            Message::error(stream.str());
         }
 
         return valid;
@@ -184,6 +188,11 @@ public:
         for (const auto &values : mValues)
             std::cout << values << " ";
         std::cout << "]";
+    }
+
+    static auto create(std::vector<T> values) -> std::shared_ptr<ValuesValidator<T>>
+    {
+        return std::make_shared<ValuesValidator<T>>(values);
     }
 
 private:
