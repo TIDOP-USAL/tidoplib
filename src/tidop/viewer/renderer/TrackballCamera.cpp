@@ -6,7 +6,7 @@ namespace tl
 {
 
 TrackballCamera::TrackballCamera(const tl::Matrix4x4f& projectionMatrix, const tl::Matrix4x4f& viewMatrix)
-    : Camera(projectionMatrix, viewMatrix), theta(tl::consts::pi<float>), phi(tl::consts::two_pi<float>), radius(0.0f) {
+    : Camera(projectionMatrix, viewMatrix), theta(tl::consts::pi<float>), phi(tl::consts::two_pi<float>), radius(1.0f) {
 }
 
 TrackballCamera TrackballCamera::orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar) {
@@ -24,7 +24,7 @@ TrackballCamera TrackballCamera::perspectiveCamera(float fovy, float aspect, flo
     tl::Matrix4x4f projection = tl::Matrices::perspective(fovy, aspect, zNear, zFar);
     tl::Matrix4x4f view = tl::Matrix4x4f::identity();
     TrackballCamera camera(projection, view);
-    camera.lookAt(tl::Vector3f({ 0.0f, 0.0f, 1.0f }), tl::Vector3f({ 0.0f, 0.0f, 0.0f }), tl::Vector3f({ 0.0f, 1.0f, 0.0f }));
+    camera.lookAt(tl::Vector3f({ 0.0f, 0.0f, -1.0f }), tl::Vector3f({ 0.0f, 0.0f, 0.0f }), tl::Vector3f({ 0.0f, 1.0f, 0.0f }));
     return camera;
 }
 
@@ -35,7 +35,7 @@ tl::Vector4f TrackballCamera::toCartesianCoords()
         radius * cosf(phi),
         radius * sinf(phi) * cosf(theta),
         1
-        });
+    });
 }
 
 tl::Vector3f TrackballCamera::getCameraPosition()
@@ -72,10 +72,11 @@ void TrackballCamera::rotate(float dTheta, float dPhi)
 
 void TrackballCamera::pan(float dx, float dy)
 {
-    tl::Matrix3x3f invView = viewMatrix.inverse();
-    tl::Vector3f Dx = invView * tl::Vector3f({ 1.0f, 0.0f, 0.0f });
-    tl::Vector3f Dy = invView * tl::Vector3f({ 0.0f, 1.0f, 0.0f });
-    target += (Dy * dy - Dx * dx);
+    tl::Matrix4x4f invView = viewMatrix.inverse();
+    tl::Vector4f Dx = invView * tl::Vector4f({ 1.0f, 0.0f, 0.0f, 0.0f });
+    tl::Vector4f Dy = invView * tl::Vector4f({ 0.0f, 1.0f, 0.0f, 0.0f });
+    tl::Vector4f diff = (Dy * dy - Dx * dx);
+    target += tl::Vector3f({ diff.x(), diff.y(), diff.z() });
 }
 
 void TrackballCamera::zoom(float dRadius)

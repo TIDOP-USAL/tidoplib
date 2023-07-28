@@ -12,27 +12,36 @@ class Camera
 
 protected:
 
-	tl::Matrix4x4f projectionMatrix;
-	tl::Matrix4x4f viewMatrix;
-	tl::Vector3f eye, target, up;
+	Matrix4x4f projectionMatrix;
+	Matrix4x4f viewMatrix;
+	Vector3f eye, target, up;
 
 public:
 
-	Camera(const tl::Matrix4x4f& _projectionMatrix, const tl::Matrix4x4f& _viewMatrix);
+	Camera(const Matrix4x4f& _projectionMatrix, const Matrix4x4f& _viewMatrix);
 	Camera() = default;
 	virtual ~Camera() = default;
 
 public:
 
-	virtual void lookAt(const tl::Vector3f& eye, const tl::Vector3f& center, const tl::Vector3f& up);
+	virtual void lookAt(const Vector3f& eye, const Vector3f& center, const Vector3f& up);
 
 public:
 
-	tl::Matrix4x4f& getProjectionMatrix() { return projectionMatrix; }
-	tl::Matrix4x4f getInverseProjectionMatrix() { return projectionMatrix.inverse(); }
+	Matrix4x4f& getProjectionMatrix() { return projectionMatrix; }
+	Matrix4x4f getInverseProjectionMatrix() { return projectionMatrix.inverse(); }
 
-	virtual tl::Matrix4x4f& getViewMatrix() { return viewMatrix; }
-	tl::Matrix4x4f getInverseViewMatrix() { return viewMatrix.inverse(); }
+	virtual Matrix4x4f& getViewMatrix() { return viewMatrix; }
+	Matrix4x4f getInverseViewMatrix() { return viewMatrix.inverse(); }
+
+	void setEye(const Vector3f& eye) { this->eye = eye; }
+	Vector3f& getEye() { return eye; }
+
+	void setTarget(const Vector3f& target) { this->target = target; }
+	Vector3f& getTarget() { return target; }
+
+	void setUp(const Vector3f& up) { this->up = up; }
+	Vector3f& getUp() { return up; }
 };
 
 }

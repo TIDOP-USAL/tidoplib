@@ -12,14 +12,14 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+private:
+
+    Ui::MainWindowClass ui;
+    ViewerWidget* viewerWidget;
+
 public:
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private:
-
-    Ui::MainWindowClass ui;
-
-    ViewerWidget* viewerWidget;
 };

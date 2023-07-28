@@ -135,7 +135,7 @@ void ShaderProgram::uniformVec3(const std::string& uniform, const Vector3f& vec)
 
 void ShaderProgram::uniformMat4(const std::string& uniform, const Matrix4x4f& mat) {
     int location = glGetUniformLocation(shaderProgramID, uniform.c_str());
-    glUniformMatrix4fv(location, 1, GL_FALSE, mat.data());
+    glUniformMatrix4fv(location, 1, GL_TRUE, mat.data());
 }
 
 void ShaderProgram::uniformTextureArray(const std::string& uniform, std::vector<int>& textures) {

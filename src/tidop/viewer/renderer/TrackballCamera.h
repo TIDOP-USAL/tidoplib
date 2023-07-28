@@ -37,6 +37,14 @@ public:
 	void pan(float dx, float dy);
 	void zoom(float dRadius);
 
+	void setTheta(float theta) { this->theta = theta; }
+	float getTheta() const { return theta; }
+
+	void setPhi(float phi) { this->phi = phi; }
+	float getPhi() const { return phi; }
+
+	void setRadius(float radius) { this->radius = radius; }
+	float getRadius() const { return radius; }
 };
 
 }

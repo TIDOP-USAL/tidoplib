@@ -63,24 +63,38 @@ struct Matrices
         };
     }
 
-    static Matrix4x4f perspective(float fovy, float aspect, float nearZ, float farZ)
+    // Right handed perspective projection matrix
+    static Matrix4x4f perspective(float fovy, float aspect, float nearZ, float farZ) 
     {
-        float m11 = 1 / (aspect * tan(fovy / 2));
-        float m22 = 1 / tan(fovy / 2);
-        float m33 = (-nearZ - farZ) / (nearZ - farZ);
-        float m34 = (2 * nearZ * farZ) / (nearZ - farZ);
+        float a = 1 / (aspect * tan(fovy / 2));
+        float b = 1 / tan(fovy / 2);
+        float c = -(farZ + nearZ) / (farZ - nearZ);
+        float d = -1.0f;
+        float e = (-2.0f * farZ * nearZ) / (farZ - nearZ);
 
+        /*// Column-major order
         return Matrix4x4f
         {
-            m11 , 0.0f, 0.0f, 0.0f,
-            0.0f,  m22, 0.0f, 0.0f,
-            0.0f, 0.0f,  m33,  m34,
-            0.0f, 0.0f,  1.0f, 0.0f
+            a , 0.0f, 0.0f, 0.0f,
+            0.0f, b,  0.0f, 0.0f,
+            0.0f, 0.0f, c,   d,
+            0.0f, 0.0f, e,  0.0f
+        };
+        */
+
+        // Row-major order
+        return Matrix4x4f
+        {
+            a , 0.0f, 0.0f, 0.0f,
+            0.0f, b,  0.0f, 0.0f,
+            0.0f, 0.0f, c,   e,
+            0.0f, 0.0f, d,  0.0f
         };
     }
 
-    static Matrix4x4f lookAt(const Vector3f& position, const Vector3f& target, const Vector3f& up) {
-
+    // Right handed look at matrix
+    static Matrix4x4f lookAt(const Vector3f& position, const Vector3f& target, const Vector3f& up) 
+    {
         auto dot = [&](const Vector3f& u, const Vector3f& v) {
             return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
         };
@@ -89,7 +103,7 @@ struct Matrices
             return Vector3f{ u.y() * v.z() - u.z() * v.y(), -u.x() * v.z() + u.z() * v.x(), u.x() * v.y() - u.y() * v.x() };
         };
 
-        Vector3f zaxis = { position.x() - target.x(), position.y() - target.y(), position.z() - target.z() };
+        Vector3f zaxis = Vector3f({ position.x() - target.x(), position.y() - target.y(), position.z() - target.z()});
         zaxis.normalize();
 
         Vector3f xaxis = cross(up, zaxis);
@@ -97,14 +111,14 @@ struct Matrices
 
         Vector3f yaxis = cross(zaxis, xaxis);
 
-        return Matrix4x4f{
-            xaxis.x(), xaxis.y(), xaxis.z(), -dot(xaxis, position),
-            yaxis.x(), yaxis.y(), yaxis.z(), -dot(yaxis, position),
-            zaxis.x(), zaxis.y(), zaxis.z(), -dot(zaxis, position),
-            0, 0, 0, 1
-        };
+        return Matrix4x4f
+        {
+            xaxis.x() , yaxis.x(), zaxis.x(), 0.0f,
+            xaxis.y(),  yaxis.y(), zaxis.y(), 0.0f,
+            xaxis.z(),  yaxis.z(), zaxis.z(), 0.0f,
+            -dot(xaxis, position), -dot(yaxis, position), -dot(zaxis, position), 1.0f
+        }.transpose();
     }
-
 };
 
 }

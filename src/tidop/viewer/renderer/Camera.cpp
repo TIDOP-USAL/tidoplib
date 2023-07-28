@@ -4,7 +4,7 @@ namespace tl
 {
 
 Camera::Camera(const tl::Matrix4x4f& _projectionMatrix, const tl::Matrix4x4f& _viewMatrix)
-    : projectionMatrix(_projectionMatrix), viewMatrix(_viewMatrix), eye({ 0.0f, 0.0f, 0.0f }),
+    : projectionMatrix(_projectionMatrix), viewMatrix(_viewMatrix), eye({ 0.0f, 0.0f, -1.0f }),
     target({ 0.0f, 0.0f, 0.0f }), up({ 0.0f, 1.0f, 0.0f }) {
 }
 

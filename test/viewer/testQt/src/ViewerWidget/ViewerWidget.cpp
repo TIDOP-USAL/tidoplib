@@ -8,8 +8,12 @@
 #include <tidop/viewer/opengl/buffer/VertexBuffer.h>
 #include <tidop/viewer/opengl/buffer/VertexArray.h>
 #include <tidop/viewer/opengl/shader/Shader.h>
+#include <tidop/viewer/renderer/TrackballCamera.h>
 
 #include <tidop/math/algebra/matrices.h>
+
+#include <QTimer>
+#include <QWheelEvent>
 
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
@@ -40,7 +44,6 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "   FragColor = color;\n"
 "}\n\0";
 
-
 std::vector<Vertex> vertices = {
     Vertex(Vector3f{-0.5, -0.5,  0.5}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
     Vertex(Vector3f{ 0.5, -0.5,  0.5}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
@@ -69,9 +72,10 @@ VertexArray::Ptr vertexArray;
 VertexBuffer::Ptr vertexBuffer;
 ShaderProgram::Ptr shaderProgram;
 
-Matrix4x4f model = Matrices::scale(0.5f, 0.5f, 0.5f) * Matrices::translate(0.0, 0.0, 5.0) * Matrices::rotationX(TO_RADIANS 45) * Matrices::rotationY(TO_RADIANS 45);
-Matrix4x4f view = Matrices::lookAt(Vector3f{0, 0, 1}, Vector3f{0, 0, 0}, Vector3f{0, 1, 0});
-Matrix4x4f projection = Matrix4x4f::identity();
+Matrix4x4f model = Matrices::scale(0.5f, 0.5f, 0.5f) * Matrices::rotationX(TO_RADIANS 45) * Matrices::rotationY(TO_RADIANS 45);
+
+double aspectRatio = static_cast<double>(WINDOW_WIDTH) / WINDOW_HEIGHT;
+TrackballCamera camera = TrackballCamera::perspectiveCamera(TO_RADIANS 45.0, aspectRatio, 0.1, 1000);
 
 void drawScene() 
 {
@@ -79,14 +83,14 @@ void drawScene()
     glDepthFunc(GL_LESS);
 
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
     shaderProgram->useProgram();
 
-    shaderProgram->uniformMat4("model", model.transpose());
-    shaderProgram->uniformMat4("view", view.transpose());
-    shaderProgram->uniformMat4("projection", projection.transpose());
+    shaderProgram->uniformMat4("model", model);
+    shaderProgram->uniformMat4("view", camera.getViewMatrix());
+    shaderProgram->uniformMat4("projection", camera.getProjectionMatrix());
 
     vertexArray->bind();
 
@@ -114,14 +118,24 @@ void ViewerWidget::initializeGL()
     vertexBuffer->bind();
     vertexArray->unbind();
 
-    // Projection
-    projection = Matrices::perspective(TO_RADIANS 45.0f, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 1000.0f);
+    // Camera
+    camera.zoom(-2.0f);
 }
 
 void ViewerWidget::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
-    projection = Matrices::perspective(TO_RADIANS 45.0f, static_cast<float>(w) / h, 1.0f, 1000.0f);
+
+    float theta = camera.getTheta();
+    float phi = camera.getPhi();
+    float radius = camera.getRadius();
+
+    double aspectRatio = static_cast<double>(w) / h;
+    camera = TrackballCamera::perspectiveCamera(TO_RADIANS 45.0, aspectRatio, 0.1, 1000);
+
+    camera.setTheta(theta);
+    camera.setPhi(phi);
+    camera.setRadius(radius);
 }
 
 void ViewerWidget::paintGL()
@@ -129,8 +143,30 @@ void ViewerWidget::paintGL()
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    model = model * Matrices::rotationX(TO_RADIANS 1.0f);
+    //model = model * Matrices::rotationX(TO_RADIANS 1.0f);
+    camera.rotate(0.0f, 0.01f);
 
     // Draw scene
     drawScene();
+
+    // Update -> WARNING: No FPS limit
+    update();
+}
+
+void ViewerWidget::mousePressEvent(QMouseEvent* event) {
+    std::cout << "working pressed event" << std::endl;
+}
+
+void ViewerWidget::mouseReleaseEvent(QMouseEvent* event) {
+    std::cout << "working release event" << std::endl;
+}
+
+void ViewerWidget::mouseMoveEvent(QMouseEvent* event) {
+    std::cout << "working mouse event" << std::endl;
+}
+
+void ViewerWidget::wheelEvent(QWheelEvent* event) {
+    float dr = 0.1f;
+    if (event->angleDelta().y() < 0) dr *= -1.0f;
+    camera.zoom(dr);
 }
