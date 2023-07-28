@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_FEAT_MATCH)
+if(TL_HAVE_FEAT_MATCH)
 
     project(featmatch LANGUAGES CXX)
     

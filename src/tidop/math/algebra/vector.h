@@ -28,6 +28,7 @@
 #include <vector>
 #include <array>
 #include <random>
+#include <iomanip>
 
 #include "tidop/core/exception.h"
 #include "tidop/math/math.h"

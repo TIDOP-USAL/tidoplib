@@ -12,7 +12,7 @@
 
 #include <tidop/math/algebra/matrices.h>
 
-#include <QTimer>
+#include <QMouseEvent>
 #include <QWheelEvent>
 
 #define WINDOW_WIDTH 600
@@ -76,6 +76,10 @@ Matrix4x4f model = Matrices::scale(0.5f, 0.5f, 0.5f) * Matrices::rotationX(TO_RA
 
 double aspectRatio = static_cast<double>(WINDOW_WIDTH) / WINDOW_HEIGHT;
 TrackballCamera camera = TrackballCamera::perspectiveCamera(TO_RADIANS 45.0, aspectRatio, 0.1, 1000);
+
+Vector2i previousMouse({0, 0});
+bool mousePressed = false, first = false;
+int button = 0;
 
 void drawScene() 
 {
@@ -144,7 +148,7 @@ void ViewerWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
 
     //model = model * Matrices::rotationX(TO_RADIANS 1.0f);
-    camera.rotate(0.0f, 0.01f);
+    //camera.rotate(0.0f, 0.01f);
 
     // Draw scene
     drawScene();
@@ -154,15 +158,40 @@ void ViewerWidget::paintGL()
 }
 
 void ViewerWidget::mousePressEvent(QMouseEvent* event) {
-    std::cout << "working pressed event" << std::endl;
+    mousePressed = true;
+    previousMouse[0] = event->x();
+    previousMouse[1] = event->y();
+    button = event->button();
 }
 
 void ViewerWidget::mouseReleaseEvent(QMouseEvent* event) {
-    std::cout << "working release event" << std::endl;
+    mousePressed = false;
 }
 
 void ViewerWidget::mouseMoveEvent(QMouseEvent* event) {
-    std::cout << "working mouse event" << std::endl;
+
+
+    if (mousePressed && button == Qt::LeftButton) {
+
+        float dTheta = (event->x() - previousMouse.x()) / static_cast<float>(WINDOW_WIDTH);
+        float dPhi = (event->y() - previousMouse.y()) / static_cast<float>(WINDOW_HEIGHT);
+        std::cout << event->x() << " " << event->y() << std::endl;
+
+        const float sensitivity = 1.0f;
+        previousMouse = Vector2i({ event->x(), event->y() });
+
+        camera.rotate(-dTheta * sensitivity, -dPhi * sensitivity);
+    }
+    else if (mousePressed && button == Qt::RightButton) {
+
+        float dx = (event->x() - previousMouse.x()) / (static_cast<float>(WINDOW_WIDTH) / 2);
+        float dy = (event->y() - previousMouse.y()) / (static_cast<float>(WINDOW_HEIGHT) / 2);
+
+        const float panSensitivity = 1.0f;
+        previousMouse = Vector2i({ event->x(), event->y() });
+
+        camera.pan(dx * panSensitivity, dy * panSensitivity);
+    }
 }
 
 void ViewerWidget::wheelEvent(QWheelEvent* event) {

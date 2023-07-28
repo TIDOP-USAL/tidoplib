@@ -83,7 +83,6 @@ if(BUILD_TL_VIEWER)
                           $<$<BOOL:${UNIX}>:-lpthread>
                           TidopLib::Core
                           TidopLib::Geom
-                          TidopLib::Math
 						  GLEW::GLEW
 						  opengl32
 						  glu32)
