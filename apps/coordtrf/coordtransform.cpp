@@ -42,15 +42,15 @@ int main(int argc, char **argv)
     console.setMessageLevel(MessageLevel::all);
     Message::instance().addMessageHandler(&console);
 
-    auto arg_compute = makeArgument<bool>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
-    auto arg_transform = makeArgument<bool>("transform", "Aplica la transformación a un listado de puntos", true);
-    auto arg_tx = makeArgument<double>("tx", "Traslación en X", 0.0);
-    auto arg_ty = makeArgument<double>("ty", "Traslación en Y", 0.0);
-    auto arg_rotation = makeArgument<double>("rotation", "Rotación", 0.);
-    auto arg_scale = makeArgument<double>("scale", "Escala", 1.);
+    auto arg_compute = Argument::make<bool>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
+    auto arg_transform = Argument::make<bool>("transform", "Aplica la transformación a un listado de puntos", true);
+    auto arg_tx = Argument::make<double>("tx", "Traslación en X", 0.0);
+    auto arg_ty = Argument::make<double>("ty", "Traslación en Y", 0.0);
+    auto arg_rotation = Argument::make<double>("rotation", "Rotación", 0.);
+    auto arg_scale = Argument::make<double>("scale", "Escala", 1.);
     arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
-    auto arg_scale_x = makeArgument<double>("scale_x", "Escala X", 1.);
-    auto arg_scale_y = makeArgument<double>("scale_y", "Escala Y", 1.);
+    auto arg_scale_x = Argument::make<double>("scale_x", "Escala X", 1.);
+    auto arg_scale_y = Argument::make<double>("scale_y", "Escala Y", 1.);
 
 
     auto cmd_translation = Command::create("Translation", "Translation transform", {
