@@ -42,44 +42,44 @@ int main(int argc, char **argv)
     console.setMessageLevel(MessageLevel::all);
     Message::instance().addMessageHandler(&console);
 
-    auto arg_compute = std::make_shared<Argument_<bool>>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
-    auto arg_transform = std::make_shared<Argument_<bool>>("transform", "Aplica la transformación a un listado de puntos", true);
-    auto arg_tx = std::make_shared<Argument_<double>>("tx", "Traslación en X", 0.0);
-    auto arg_ty = std::make_shared<Argument_<double>>("ty", "Traslación en Y", 0.0);
-    auto arg_rotation = std::make_shared<Argument_<double>>("rotation", "Rotación", 0.);
-    auto arg_scale = std::make_shared<Argument_<double>>("scale", "Escala", 1.);
+    auto arg_compute = makeArgument<bool>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
+    auto arg_transform = makeArgument<bool>("transform", "Aplica la transformación a un listado de puntos", true);
+    auto arg_tx = makeArgument<double>("tx", "Traslación en X", 0.0);
+    auto arg_ty = makeArgument<double>("ty", "Traslación en Y", 0.0);
+    auto arg_rotation = makeArgument<double>("rotation", "Rotación", 0.);
+    auto arg_scale = makeArgument<double>("scale", "Escala", 1.);
     arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
-    auto arg_scale_x = std::make_shared<Argument_<double>>("scale_x", "Escala X", 1.);
-    auto arg_scale_y = std::make_shared<Argument_<double>>("scale_y", "Escala Y", 1.);
+    auto arg_scale_x = makeArgument<double>("scale_x", "Escala X", 1.);
+    auto arg_scale_y = makeArgument<double>("scale_y", "Escala Y", 1.);
 
 
-    std::shared_ptr<Command> cmd_translation(new Command("Translation", "Translation transform", {
+    auto cmd_translation = Command::create("Translation", "Translation transform", {
                                                          arg_compute,
                                                          arg_transform,
                                                          arg_tx,
-                                                         arg_ty}));
+                                                         arg_ty});
 
-    std::shared_ptr<Command> cmd_rotation(new Command("Rotation", "Rotation transform", {
+    auto cmd_rotation = Command::create("Rotation", "Rotation transform", {
                                                       arg_compute,
                                                       arg_transform,
-                                                      arg_rotation}));
+                                                      arg_rotation});
 
-    std::shared_ptr<Command> cmd_helmert_2d(new Command("Helmert2D", "Helmert2D transform", {
+    auto cmd_helmert_2d = Command::create("Helmert2D", "Helmert2D transform", {
                                                          arg_compute,
                                                          arg_transform,
                                                          arg_tx,
                                                          arg_ty,
                                                          arg_scale,
-                                                         arg_rotation}));
+                                                         arg_rotation});
 
-    std::shared_ptr<Command> cmd_affine(new Command("Affine", "Affine transform", {
+    auto cmd_affine = Command::create("Affine", "Affine transform", {
                                                     arg_compute,
                                                     arg_transform,
                                                     arg_tx,
                                                     arg_ty,
                                                     arg_scale_x,
                                                     arg_scale_y,
-                                                    arg_rotation}));
+                                                    arg_rotation});
 
     CommandList cmd_list_transform("transform", "Transform");
     cmd_list_transform.addCommand(cmd_translation);

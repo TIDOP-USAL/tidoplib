@@ -401,6 +401,23 @@ public:
         return arg_value.value(arg);
     }
 
+public:
+
+    static auto create(std::string name,
+                       std::string description) TL_NOEXCEPT -> std::shared_ptr<Command>
+    {
+        std::shared_ptr<Command> cmd(new Command(name, description));
+        return cmd;
+    }
+
+    static auto create(std::string name,
+                       std::string description,
+                       std::initializer_list<Argument::SharedPtr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
+    {
+        std::shared_ptr<Command> cmd(new Command(name, description, arguments));
+        return cmd;
+    }
+
 protected:
 
     auto init() -> void;

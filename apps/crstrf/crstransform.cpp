@@ -70,8 +70,8 @@ int main(int argc, char **argv)
     if(status == Command::Status::parse_error) {
         return 1;
     } else if(status == Command::Status::show_help || 
-              status == Command::Status::show_licence || 
-              status == Command::Status::show_version) {
+        status == Command::Status::show_licence || 
+        status == Command::Status::show_version) {
         return 0;
     }
 

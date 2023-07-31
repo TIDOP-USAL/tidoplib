@@ -576,6 +576,13 @@ auto Argument_<T>::isValid() -> bool
 }
 
 
+
+template<typename T, typename... Arg>
+auto makeArgument(Arg&&... arg) -> std::shared_ptr<Argument_<T>>
+{
+    return std::make_shared<Argument_<T>>(std::forward<Arg>(arg)...);
+}
+
 /*! \} */ // end of Console
 
 /*! \} */ // end of core
