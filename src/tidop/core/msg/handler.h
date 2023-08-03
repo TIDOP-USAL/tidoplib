@@ -80,19 +80,6 @@ public:
     virtual void success(String message) = 0;
     virtual void warning(String message) = 0;
     virtual void error(String message) = 0;
-//#if CPP_VERSION >= 17
-//    virtual void debug(std::string_view message) = 0;
-//    virtual void info(std::string_view message) = 0;
-//    virtual void success(std::string_view message) = 0;
-//    virtual void warning(std::string_view message) = 0;
-//    virtual void error(std::string_view message) = 0;
-//#else
-//    virtual void debug(std::string message) = 0;
-//    virtual void info(const std::string &message) = 0;
-//    virtual void success(const std::string &message) = 0;
-//    virtual void warning(const std::string &message) = 0;
-//    virtual void error(const std::string &message) = 0;
-//#endif
 
 };
 

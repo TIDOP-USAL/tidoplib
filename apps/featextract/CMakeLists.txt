@@ -1,7 +1,7 @@
 ##########################################################################
 #                                                                        #
 # Copyright (C) 2021 by Tidop Research Group                             #
-# Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       #
+# Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       #
 #                                                                        #
 # This file is part of TidopLib                                          #
 #                                                                        #
@@ -22,12 +22,9 @@
 #                                                                        #
 ##########################################################################
 
-if(TL_HAVE_GEOSPATIAL)
-    
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-    #include_directories(${CMAKE_SOURCE_DIR}/src)
-    
-    project(crstransform LANGUAGES CXX)
+if(BUILD_TL_FEAT_MATCH)
+
+    project(featextract LANGUAGES CXX)
     
     if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
@@ -35,10 +32,10 @@ if(TL_HAVE_GEOSPATIAL)
     endif()
     
       
-    add_executable(${PROJECT_NAME} crstransform.cpp)
+    add_executable(${PROJECT_NAME} featextract.cpp)
     
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
-    
+        
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
@@ -48,34 +45,20 @@ if(TL_HAVE_GEOSPATIAL)
                           TidopLib::Math
                           TidopLib::Geom
                           TidopLib::Geospatial
+                          TidopLib::FeatMatch
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-    					  
-    if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} 
-                              ${OpenCV_LIBS})
-    endif(HAVE_OPENCV)
-   
-    
-    #if (UNIX)
-    #    target_link_libraries(${PROJECT_NAME} 
-    #                          -lpthread 
-    #                          -ldl 
-    #                          -lexpat 
-    #                          -ljasper 
-    #                          -ljpeg 
-    #                          -ltiff 
-    #                          -lpng 
-    #                          -lm 
-    #                          -lrt 
-    #                          -lpcre)
-    #endif()
+                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>
+                          ${OpenCV_LIBS})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
-                          OUTPUT_NAME ${PROJECT_NAME}
-                          PROJECT_LABEL ${PROJECT_NAME}
-                          FOLDER "apps/crstransform")
+                          OUTPUT_NAME "${PROJECT_NAME}"
+                          PROJECT_LABEL "${PROJECT_NAME}"
+                          FOLDER "apps/featextract")
+    
+    if(ENABLE_SOLUTION_FOLDERS)
+      set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/featextract")
+    endif()
     
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)

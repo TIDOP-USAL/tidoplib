@@ -277,13 +277,6 @@ Console &Console::error()
     return console;
 }
 
-//Console &Console::clear()
-//{
-//    auto &console = Console::instance();
-//    console.reset();
-//    return console;
-//}
-
 void Console::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);

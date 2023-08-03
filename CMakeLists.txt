@@ -308,7 +308,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE
 #OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  ON)
 OPTION (WITH_GDAL   "Include GDAL Support"                    ON)
-OPTION (WITH_PROJ4  "Include PROJ4 Support"                   ON)
+OPTION (WITH_PROJ  "Include PROJ Support"                     ON)
 cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
 cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
@@ -424,23 +424,23 @@ endif(WITH_GDAL)
 
 
 ##########################################################################
-# PROJ4 (optional)                                                       #
+# PROJ (optional)                                                       #
 ##########################################################################
 
-if(WITH_PROJ4)
+if(WITH_PROJ)
 
   set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
   find_package(PROJ QUIET)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
   if(NOT PROJ_FOUND)
-    set(TL_HAVE_PROJ4 NO)
+    set(TL_HAVE_PROJ NO)
   else()
-    set(TL_HAVE_PROJ4 YES)
+    set(TL_HAVE_PROJ YES)
     #include_directories(${PROJ_INCLUDE_DIRS})
     message(STATUS "  PROJ version: ${PROJ_VERSION}")
   endif()
-endif(WITH_PROJ4)
+endif(WITH_PROJ)
 
 ##########################################################################
 # LibRaw (optional)                                                      #

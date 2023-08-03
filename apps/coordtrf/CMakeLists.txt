@@ -51,7 +51,7 @@ if(TL_HAVE_CORE AND TL_HAVE_GEOMETRY)
                           TidopLib::Img
                           TidopLib::Geospatial
                           $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           ${OpenCV_LIBS}
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
     					  

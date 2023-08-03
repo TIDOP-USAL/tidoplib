@@ -60,7 +60,7 @@
 // GDAL
 #cmakedefine TL_HAVE_GDAL
 
-#cmakedefine TL_HAVE_PROJ4
+#cmakedefine TL_HAVE_PROJ
 
 // libraw: Lectura de formato raw
 #cmakedefine TL_HAVE_LIBRAW

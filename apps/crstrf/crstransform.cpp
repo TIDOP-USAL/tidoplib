@@ -40,7 +40,7 @@ using namespace tl;
 int main(int argc, char **argv)
 {
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
 
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();

@@ -24,7 +24,7 @@
 
 #include "tidop/geospatial/crs.h"
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
 
 #include "tidop/core/exception.h"
 
@@ -238,4 +238,4 @@ void Crs::initGeoid()
 
 } // End namespace tl
 
-#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ

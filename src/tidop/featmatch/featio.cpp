@@ -107,7 +107,7 @@ class FeaturesReaderBinary
 public:
 
     explicit FeaturesReaderBinary(tl::Path file);
-    ~FeaturesReaderBinary() override = default;
+    ~FeaturesReaderBinary() override;
 
 // FeaturesReader interface
 
@@ -127,7 +127,6 @@ private:
 
 private:
 
-    //FILE *mFile;
     std::fstream *stream;
     int32_t size{0};
     int32_t rows{0};
@@ -138,10 +137,17 @@ private:
 
 FeaturesReaderBinary::FeaturesReaderBinary(tl::Path file)
   : FeaturesReader(std::move(file)),
-    //mFile(nullptr)
-    stream(nullptr)
+    stream(new std::fstream())
 {
 
+}
+
+FeaturesReaderBinary::~FeaturesReaderBinary()
+{
+    if (stream) {
+        delete stream;
+        stream = nullptr;
+    }
 }
 
 void FeaturesReaderBinary::read()
@@ -163,8 +169,7 @@ void FeaturesReaderBinary::read()
 void FeaturesReaderBinary::open()
 {
     try {
-        stream = new std::fstream(mFilePath.toString(), std::ios_base::in | std::ios_base::binary);
-        //mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+        stream->open(mFilePath.toString(), std::ios_base::in | std::ios_base::binary);
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -172,7 +177,6 @@ void FeaturesReaderBinary::open()
 
 bool FeaturesReaderBinary::isOpen()
 {
-    //return mFile;
     return stream->is_open();
 }
 
@@ -180,23 +184,14 @@ void FeaturesReaderBinary::readHeader()
 {
     try {
 
-        //std::vector<char> h(24);
-        //std::fread(&h[0], sizeof(char), 24, mFile);
-        //std::fread(&mSize, sizeof(int32_t), 1, mFile);
-        //std::fread(&mRows, sizeof(int32_t), 1, mFile);
-        //std::fread(&mCols, sizeof(int32_t), 1, mFile);
-        //std::fread(&mType, sizeof(int32_t), 1, mFile);
-        //std::vector<char> extra_head(200);  // Reserva de espacio para futuros usos
-        //std::fread(&extra_head[0], sizeof(char), extra_head.size(), mFile);
-
         std::array<char, 24> header{};
         stream->read(header.data(), sizeof(char)*24);
         stream->read(reinterpret_cast<char *>(&size), sizeof(int32_t));
         stream->read(reinterpret_cast<char *>(&rows), sizeof(int32_t));
         stream->read(reinterpret_cast<char *>(&cols), sizeof(int32_t));
         stream->read(reinterpret_cast<char *>(&type), sizeof(int32_t));
-        std::array<char, 20> extra_head; // Reserva de espacio para futuros usos
-        stream->read(extra_head.data(), sizeof(int32_t));
+        std::array<char, 200> extra_head{}; // Reserva de espacio para futuros usos
+        stream->read(extra_head.data(), sizeof(char)*200);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -215,14 +210,6 @@ void FeaturesReaderBinary::readKeypoints()
 
         mKeyPoints.resize(static_cast<size_t>(size));
         for (auto &keypoint : mKeyPoints) {
-        //    std::fread(&keypoint.pt.x, sizeof(float), 1, mFile);
-        //    std::fread(&keypoint.pt.y, sizeof(float), 1, mFile);
-        //    std::fread(&keypoint.size, sizeof(float), 1, mFile);
-        //    std::fread(&keypoint.angle, sizeof(float), 1, mFile);
-        //    std::fread(&keypoint.response, sizeof(float), 1, mFile);
-        //    std::fread(&keypoint.octave, sizeof(float), 1, mFile);
-        //    std::fread(&keypoint.class_id, sizeof(float), 1, mFile);
-
             stream->read(reinterpret_cast<char *>(&keypoint.pt.x), sizeof(float));
             stream->read(reinterpret_cast<char *>(&keypoint.pt.y), sizeof(float));
             stream->read(reinterpret_cast<char *>(&keypoint.size), sizeof(float));
@@ -242,7 +229,6 @@ void FeaturesReaderBinary::readDescriptors()
     try {
 
         cv::Mat aux(static_cast<int>(rows), static_cast<int>(cols), type);
-        //std::fread(aux.data, sizeof(float), static_cast<size_t>(mRows) * static_cast<size_t>(mCols), mFile);
         stream->read(reinterpret_cast<char *>(aux.data), sizeof(float) * static_cast<size_t>(rows * cols));
         aux.copyTo(mDescriptors);
         aux.release();
@@ -254,7 +240,6 @@ void FeaturesReaderBinary::readDescriptors()
 
 void FeaturesReaderBinary::close()
 {
-    //std::fclose(mFile);
     if (stream->is_open()) stream->close();
 }
 
@@ -271,9 +256,9 @@ class FeaturesWriterBinary
 public:
 
     explicit FeaturesWriterBinary(tl::Path file);
-    ~FeaturesWriterBinary() override = default;
+    ~FeaturesWriterBinary() override;
 
-    // FeaturesWriter interface
+// FeaturesWriter interface
 
 public:
 
@@ -289,17 +274,23 @@ private:
 
 private:
 
-    //FILE *mFile;
     std::fstream *stream;
 };
 
 
 FeaturesWriterBinary::FeaturesWriterBinary(tl::Path file)
   : FeaturesWriter(std::move(file)),
-    //mFile(nullptr)
-    stream(nullptr)
+    stream(new std::fstream())
 {
 
+}
+
+FeaturesWriterBinary::~FeaturesWriterBinary()
+{
+    if (stream) {
+        delete stream;
+        stream = nullptr;
+    }
 }
 
 void FeaturesWriterBinary::write()
@@ -321,7 +312,6 @@ void FeaturesWriterBinary::write()
 void FeaturesWriterBinary::open()
 {
     try {
-        //mFile = std::fopen(filePath().toString().c_str(), "wb");
         stream->open(filePath().toString(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -330,7 +320,6 @@ void FeaturesWriterBinary::open()
 
 bool FeaturesWriterBinary::isOpen()
 {
-    //return mFile;
     return stream->is_open();
 }
 
@@ -342,13 +331,6 @@ void FeaturesWriterBinary::writeHeader()
         int32_t rows = static_cast<int32_t>(descriptors().rows);
         int32_t cols = static_cast<int32_t>(descriptors().cols);
         int32_t type = descriptors().type();
-        //std::fwrite("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"), 1, mFile);
-        //std::fwrite(&size, sizeof(int32_t), 1, mFile);
-        //std::fwrite(&rows, sizeof(int32_t), 1, mFile);
-        //std::fwrite(&cols, sizeof(int32_t), 1, mFile);
-        //std::fwrite(&type, sizeof(int32_t), 1, mFile);
-        //std::array<char, 200> extra_head{};  // Reserva de espacio para futuros usos
-        //std::fwrite(extra_head.data(), sizeof(char), extra_head.size(), mFile);
 
         stream->write("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"));
         stream->write(reinterpret_cast<char *>(&size), sizeof(int32_t));
@@ -368,14 +350,6 @@ void FeaturesWriterBinary::writeBody()
     try {
 
         for (auto &keyPoint : keyPoints()) {
-            //std::fwrite(&keyPoint.pt.x, sizeof(float), 1, mFile);
-            //std::fwrite(&keyPoint.pt.y, sizeof(float), 1, mFile);
-            //std::fwrite(&keyPoint.size, sizeof(float), 1, mFile);
-            //std::fwrite(&keyPoint.angle, sizeof(float), 1, mFile);
-            //std::fwrite(&keyPoint.response, sizeof(float), 1, mFile);
-            //std::fwrite(&keyPoint.octave, sizeof(float), 1, mFile);
-            //std::fwrite(&keyPoint.class_id, sizeof(float), 1, mFile);
-
             stream->write(reinterpret_cast<const char *>(&keyPoint.pt.x), sizeof(float));
             stream->write(reinterpret_cast<const char *>(&keyPoint.pt.y), sizeof(float));
             stream->write(reinterpret_cast<const char *>(&keyPoint.size), sizeof(float));
@@ -387,7 +361,6 @@ void FeaturesWriterBinary::writeBody()
 
         size_t rows = static_cast<size_t>(descriptors().rows);
         size_t cols = static_cast<size_t>(descriptors().cols);
-        //std::fwrite(descriptors().data, sizeof(float), rows * cols, mFile);
         stream->write(reinterpret_cast<char *>(descriptors().data), sizeof(float) * rows * cols);
 
     } catch (...) {
@@ -397,7 +370,6 @@ void FeaturesWriterBinary::writeBody()
 
 void FeaturesWriterBinary::close()
 {
-    //std::fclose(mFile);
     stream->close();
 }
 

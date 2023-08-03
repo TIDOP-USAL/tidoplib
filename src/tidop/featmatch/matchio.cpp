@@ -115,7 +115,7 @@ public:
     explicit MatchesReaderBinary(tl::Path file);
     ~MatchesReaderBinary() override = default;
 
-    // MatchesReader interface
+// MatchesReader interface
 
 public:
 
@@ -133,7 +133,6 @@ private:
 
 private:
 
-    //FILE *mFile;
     std::fstream *stream;
     uint64_t goodMatchesCount{0};
     uint64_t wrongMatchesCount{0};
@@ -143,8 +142,7 @@ private:
 
 MatchesReaderBinary::MatchesReaderBinary(tl::Path file)
   : MatchesReader(std::move(file)),
-    //mFile(nullptr)
-    stream(nullptr)
+    stream(new std::fstream())
 {
 
 }
@@ -171,8 +169,7 @@ void MatchesReaderBinary::read()
 void MatchesReaderBinary::open()
 {
     try {
-        //mFile = std::fopen(filePath().toString().c_str(), "rb");
-        stream = new std::fstream(filePath().toString(), std::ios_base::in | std::ios_base::binary);
+        stream->open(filePath().toString(), std::ios_base::in | std::ios_base::binary);
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -180,7 +177,6 @@ void MatchesReaderBinary::open()
 
 bool MatchesReaderBinary::isOpen()
 {
-    //return mFile != nullptr;
     return stream->is_open();
 }
 
@@ -188,12 +184,6 @@ void MatchesReaderBinary::readHeader()
 {
     try {
 
-        //char h[22];
-        //char extraHead[100];
-        //std::fread(h, sizeof(char), 22, mFile);
-        //std::fread(&mSizeGoodMatches, sizeof(uint64_t), 1, mFile);
-        //std::fread(&mSizeWrongMatches, sizeof(uint64_t), 1, mFile);
-        //std::fread(&extraHead, sizeof(char), 100, mFile);
         std::array<char, 22> header{};
         std::array<char, 100> extraHead{};
         stream->read(header.data(), sizeof(char) * 22);
@@ -211,11 +201,6 @@ void MatchesReaderBinary::readMatches(std::vector<cv::DMatch> *matches)
     try {
 
         for (auto &match : *matches) {
-            //std::fread(&match.queryIdx, sizeof(int32_t), 1, mFile);
-            //std::fread(&match.trainIdx, sizeof(int32_t), 1, mFile);
-            //std::fread(&match.imgIdx, sizeof(int32_t), 1, mFile);
-            //std::fread(&match.distance, sizeof(float), 1, mFile);
-
             stream->read(reinterpret_cast<char *>(&match.queryIdx), sizeof(int32_t));
             stream->read(reinterpret_cast<char *>(&match.trainIdx), sizeof(int32_t));
             stream->read(reinterpret_cast<char *>(&match.imgIdx), sizeof(int32_t));
@@ -253,7 +238,6 @@ void MatchesReaderBinary::readWrongMatches()
 
 void MatchesReaderBinary::close()
 {
-    //std::fclose(mFile);
     stream->close();
 }
 
@@ -382,7 +366,7 @@ public:
     explicit MatchesWriterBinary(Path file);
     ~MatchesWriterBinary() override = default;
 
-    // MatchesWriter interface
+// MatchesWriter interface
 
 public:
 
@@ -400,14 +384,12 @@ private:
 
 private:
 
-    //FILE *mFile;
     std::fstream *stream;
 };
 
 MatchesWriterBinary::MatchesWriterBinary(Path file)
   : MatchesWriter(std::move(file)),
-    //mFile(nullptr)
-    stream(nullptr)
+    stream(new std::fstream())
 {
 }
 
@@ -432,7 +414,6 @@ void MatchesWriterBinary::open()
 {
     try {
 
-        //mFile = std::fopen(filePath().toString().c_str(), "wb");
         stream->open(filePath().toString(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 
     } catch (...) {
@@ -442,7 +423,6 @@ void MatchesWriterBinary::open()
 
 bool MatchesWriterBinary::isOpen() const
 {
-    //return mFile != nullptr;
     return stream->is_open();
 }
 
@@ -452,11 +432,6 @@ void MatchesWriterBinary::writeHeader() const
 
         uint64_t size = goodMatches().size();
         uint64_t size_wm = wrongMatches().size();
-        //std::fwrite("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"), 1, mFile);
-        //std::fwrite(&size, sizeof(uint64_t), 1, mFile);
-        //std::fwrite(&size_wm, sizeof(uint64_t), 1, mFile);
-        //char extraHead[100]; // Reserva de espacio para futuros usos
-        //std::fwrite(&extraHead, sizeof(char), 100, mFile);
 
         stream->write("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"));
         stream->write(reinterpret_cast<char *>(&size), sizeof(uint64_t));
@@ -496,10 +471,6 @@ void MatchesWriterBinary::writeMatches(const std::vector<cv::DMatch> &matches) c
     try {
 
         for (size_t i = 0; i < matches.size(); i++) {
-            //std::fwrite(&matches[i].queryIdx, sizeof(int32_t), 1, mFile);
-            //std::fwrite(&matches[i].trainIdx, sizeof(int32_t), 1, mFile);
-            //std::fwrite(&matches[i].imgIdx, sizeof(int32_t), 1, mFile);
-            //std::fwrite(&matches[i].distance, sizeof(float), 1, mFile);
             stream->write(reinterpret_cast<const char *>(&matches[i].queryIdx), sizeof(int32_t));
             stream->write(reinterpret_cast<const char *>(&matches[i].trainIdx), sizeof(int32_t));
             stream->write(reinterpret_cast<const char *>(&matches[i].imgIdx), sizeof(int32_t));
@@ -513,7 +484,6 @@ void MatchesWriterBinary::writeMatches(const std::vector<cv::DMatch> &matches) c
 
 void MatchesWriterBinary::close()
 {
-    //std::fclose(mFile);
     stream->close();
 }
 

@@ -36,7 +36,7 @@ namespace tl
 {
 
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
 
 /*!
  * \addtogroup geospatial

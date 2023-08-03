@@ -44,9 +44,9 @@ if(@TL_HAVE_GDAL@)
   find_dependency(GDAL QUIET)
 endif()
 
-if(@TL_HAVE_PROJ4@)
-  set(PROJ4_DIR "@PROJ4_DIR@" CACHE PATH "The directory containing PROJ4Config.cmake")
-  find_dependency(PROJ4 QUIET)
+if(@TL_HAVE_PROJ@)
+  set(PROJ_DIR "@PROJ_DIR@" CACHE PATH "The directory containing PROJConfig.cmake")
+  find_dependency(PROJ QUIET)
 endif()
 
 if(@TL_HAVE_OPENCV@)
