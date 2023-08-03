@@ -76,7 +76,6 @@ public:
 
     void addMessageHandler(MessageHandler *messageHandler)
     {
-        // Se comprueba que no este añadido
         bool added = false;
         for (auto handler : messageHandlers) {
             if (handler == messageHandler) {
@@ -100,12 +99,6 @@ public:
     }
 
     /*!
-     * \brief Devuelve la fecha y hora del mensaje
-     * \return Fecha y hora del mensaje
-     */
-    std::string date() const;
-
-    /*!
      * \brief Devuelve el mensaje como cadena de texto
      * \return Mensaje
      */
@@ -114,15 +107,6 @@ public:
     {
         return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
     }
-
-    /*!
-     * \brief setTimeLogFormat
-     * \code
-     * Message::setTimeLogFormat( "%d - %b - %Y (%H:%M:%S)" );
-     * \endcode
-     * \param[in] timeTemplate
-     */
-    //static void setTimeLogFormat(const std::string &timeTemplate);
 
     static void debug(String message);
     static void info(String message);
@@ -170,27 +154,6 @@ public:
 #endif
 
   private:
-
-    /*!
-     * \brief Mensaje
-     */
-    std::string mMessage;
-
-    /*!
-     * \brief Fecha y hora en la que se emitio el mensaje
-     */
-    std::string mDate;
-
-    /*!
-     * \brief Plantilla para el formateo de fecha y hora de los mensajes.
-     *
-     * Por defecto la plantilla es:
-     * \code
-     * std::string Message::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
-     * \endcode
-     * \see setTimeLogFormat
-     */
-    static std::string sTimeLogFormat;
 
     static std::list<MessageHandler *> messageHandlers;
     static bool stopHandler;

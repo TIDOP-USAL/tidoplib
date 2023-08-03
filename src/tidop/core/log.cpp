@@ -56,38 +56,6 @@ bool Log::isOpen() const
     return _stream.is_open();
 }
 
-Log &Log::operator <<(MessageLevel level)
-{
-    switch (level) {
-    case MessageLevel::debug:
-        _stream << "Debug:   ";
-        break;
-    case MessageLevel::info:
-        _stream << "Info:    ";
-        break;
-    case MessageLevel::success:
-        _stream << "Succes:  ";
-        break;
-    case MessageLevel::warning:
-        _stream << "Warning: ";
-        break;
-    case MessageLevel::error:
-        _stream << "Error:   ";
-        break;
-    case MessageLevel::all:
-        _stream << "Info:    ";
-        break;
-    }
-
-    return *this;
-}
-
-Log &Log::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
-{
-    _stream << _endl;
-    return *this;
-}
-
 auto Log::messageLevel() -> EnumFlags<MessageLevel>
 {
     return messageLevelFlags;
@@ -98,79 +66,54 @@ void Log::setMessageLevel(MessageLevel level)
     messageLevelFlags = level;
 }
 
-Log &Log::debug()
-{
-    auto &log = Log::instance();
-    log << MessageLevel::debug;
-    return log;
-}
-
-Log &Log::info()
-{
-    auto &log = Log::instance();
-    log << MessageLevel::info;
-    return log;
-}
-
-Log &Log::success()
-{
-    auto &log = Log::instance();
-    log << MessageLevel::success;
-    return log;
-}
-
-Log &Log::warning()
-{
-    auto &log = Log::instance();
-    log << MessageLevel::warning;
-    return log;
-}
-
-Log &Log::error()
-{
-    auto &log = Log::instance();
-    log << MessageLevel::error;
-    return log;
-}
-
 void Log::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::debug))
-        Log::instance() << MessageLevel::debug << message << std::endl;
+        _stream << date << "Debug:   " << message << std::endl;
 }
 
 void Log::info(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::info))
-        Log::instance() << MessageLevel::info << message << std::endl;
+        _stream << date << " - Info:    " << message << std::endl;
 }
 
 void Log::success(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::success))
-        Log::instance() << MessageLevel::success << message << std::endl;
+        _stream << date << "Succes:  " << message << std::endl;
 }
 
 void Log::warning(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
 
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::warning)) 
-        Log::instance() << MessageLevel::warning << message << std::endl;
+        _stream << date << "Warning: " << message << std::endl;
 }
 
 void Log::error(String message)
 {
     std::lock_guard<std::mutex> lck(Log::mtx);
     
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::error))
-        Log::instance() << MessageLevel::error << message << std::endl;
+        _stream << date << "Error:   " << message << std::endl;
 }
 
 } // End mamespace tl

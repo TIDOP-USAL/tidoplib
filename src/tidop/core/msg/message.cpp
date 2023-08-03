@@ -31,53 +31,11 @@ namespace tl
 bool Message::stopHandler = false;
 std::list<MessageHandler *> Message::messageHandlers;
 
-//Message::Message(const char *message, ...)
-//{
-//  TL_TODO("revisar")
-//  try {
-//
-//    mDate = formatTimeToString("%d/%b/%Y %H:%M:%S");
-//
-//    char buf[500];
-//    memset(buf, 0, sizeof(buf));
-//    std::string aux(message);
-//    replaceString(&aux, "% ", "%% ");
-//    replaceString(&aux, "%(\\s)", "%%");
-//    va_list args;
-//    va_start(args, message);
-//#ifdef _MSC_VER
-//  vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-//#else
-//  vsnprintf(buf, sizeof(buf), aux.c_str(), args);
-//#endif
-//    va_end(args);
-//    mMessage = buf;
-//  } catch (...) {
-//
-//    // Por evitar un error en la constructora... 
-//  }
-//}
-
 Message &Message::instance()
 {
     static Message message;
     return message;
 }
-
-std::string Message::date() const
-{
-  return mDate;
-}
-
-//std::string Message::message() const
-//{
-//  return mMessage;
-//}
-//
-//void Message::setTimeLogFormat(const std::string &timeTemplate)
-//{
-//  sTimeLogFormat = timeTemplate;
-//}
 
 void Message::debug(String message)
 {
