@@ -46,10 +46,10 @@ public:
 
     Image();
     Image(int rows, int cols, DataType type, int channels);
-    Image(int rows, int cols, DataType type, int channels, const graph::Color &color);
+    Image(int rows, int cols, DataType type, int channels, const Color &color);
     Image(int rows, int cols, DataType type, int channels, void *data);
     Image(const SizeI &size, DataType type, int channels);
-    Image(const SizeI &size, DataType type, int channels, const graph::Color &color);
+    Image(const SizeI &size, DataType type, int channels, const Color &color);
     Image(const SizeI &size, DataType type, int channels, void *data);
     Image(const Image &image);
     ~Image();

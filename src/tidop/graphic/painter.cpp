@@ -36,20 +36,14 @@
 namespace tl
 {
 
-namespace graph
-{
-
-
-/* ---------------------------------------------------------------------------------- */
-
 Painter::Painter()
-    : mTrf(nullptr),
+  : mTrf(nullptr),
     mCanvas(nullptr)
 {
 }
 
 Painter::Painter(Canvas *canvas)
-    : mTrf(nullptr),
+  : mTrf(nullptr),
     mCanvas(canvas)
 {
 }
@@ -218,7 +212,5 @@ void Painter::setTransform(Transform *trf)
 }
 
 
-
-} // Fin namespace graph
 
 } // End namespace tl

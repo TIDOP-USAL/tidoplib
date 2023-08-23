@@ -107,7 +107,7 @@ void Resize::setScale(double scaleX, double scaleY)
 
 ResizeCanvas::ResizeCanvas(int width,
                            int height,
-                           const graph::Color &color,
+                           const Color &color,
                            const Position &position)
   : ImageProcess(ProcessType::resize_canvas),
     mWidth(width),
@@ -122,7 +122,7 @@ ResizeCanvas::ResizeCanvas(int width,
 ResizeCanvas::ResizeCanvas(int width,
                            int height,
                            const cv::Point &point,
-                           const graph::Color &color)
+                           const Color &color)
   : ImageProcess(ProcessType::resize_canvas),
     mWidth(width),
     mHeight(height),
@@ -147,7 +147,7 @@ void ResizeCanvas::run(const cv::Mat &matIn, cv::Mat &matOut) const
     }
 }
 
-void ResizeCanvas::setParameters(int width, int height, const graph::Color &color, const Position &position)
+void ResizeCanvas::setParameters(int width, int height, const Color &color, const Position &position)
 {
     mWidth = width;
     mHeight = height;

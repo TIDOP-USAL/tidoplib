@@ -35,14 +35,10 @@
 namespace tl
 {
 
-namespace graph
-{
 
-
-/* ---------------------------------------------------------------------------------- */
 
 Canvas::Canvas()
-    : mPainter(nullptr)
+  : mPainter(nullptr)
 {
 }
 
@@ -52,12 +48,11 @@ void Canvas::setPainter(Painter *painter)
 }
 
 
-/* ---------------------------------------------------------------------------------- */
 
 #ifdef TL_HAVE_OPENCV
 
 CanvasCV::CanvasCV()
-    : Canvas(),
+  : Canvas(),
     mSize(100, 100),
     mBgColor(Color::Name::white)
 {
@@ -65,7 +60,7 @@ CanvasCV::CanvasCV()
 }
 
 CanvasCV::CanvasCV(const CanvasCV &canvas)
-    : Canvas(),
+  : Canvas(),
     mSize(canvas.mSize),
     mBgColor(canvas.mBgColor)
 {
@@ -393,9 +388,5 @@ cv::Mat CanvasCV::bmp()
 #endif // TL_HAVE_OPENCV
 
 
-/* ---------------------------------------------------------------------------------- */
-
-
-} // Fin namespace graph
 
 } // End namespace tl

@@ -43,10 +43,10 @@ struct GPointTest
   {
   }
 
-  graph::GPoint point;
-  graph::GPoint3D point_3d;
-  graph::GMultiPoint multi_point;
-  graph::GMultiPoint3D multi_point_3d;
+  GPoint point;
+  GPoint3D point_3d;
+  GMultiPoint multi_point;
+  GMultiPoint3D multi_point_3d;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, GPointTest)

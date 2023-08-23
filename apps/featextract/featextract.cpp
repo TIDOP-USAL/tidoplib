@@ -83,7 +83,7 @@ int main(int argc, char **argv)
     arg_akaze_diffusivity->setValidator(std::make_shared<ValuesValidator<std::string>>(diffusivity));
     auto arg_kaze_octaves = Argument::make<int>("octaves", "Octaves", 4);
     auto arg_kaze_octave_layers = Argument::make<int>("octave_layers", "Octave layers", 4);
-    auto arg_kaze_threshold = Argument::make<int>("threshold", "Threshold", 0.001);
+    auto arg_kaze_threshold = Argument::make<double>("threshold", "Threshold", 0.001);
 
     auto cmd_akaze = Command::create("akaze", "AKAZE", {
             arg_input,
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
             arg_format,
             arg_features_number,
             Argument::make<double>("scale_factor", "Scale Factor", 1.2),
-            Argument::make<int>("levels_number", "Levels Number", 0.04),
+            Argument::make<int>("levels_number", "Levels Number", 8),
             Argument::make<int>("edge_threshold", "Edge threshold", 31),
             Argument::make<int>("first_level", "First Level", 0),
             Argument::make<int>("wta_k", "WTA K", 2),
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
 
         std::vector<cv::KeyPoint> key_points = keypoint_detector->detect(img);
 
-        uint64_t time = chrono.stop();
+        double time = chrono.stop();
         Message::info("{} Keypoints detected in image {} [Time: {} seconds]", key_points.size(), input_path.fileName().toString(), time);
 
         Message::info("Computing keypoints descriptors for image {}", input_path.fileName().toString());

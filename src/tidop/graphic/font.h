@@ -36,9 +36,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
-
 /*!
  * \brief Clase Fuente
  */
@@ -214,8 +211,6 @@ private:
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)
-
-} // End namespace graph
 
 /*! \} */ // end of GraphicEntities
 

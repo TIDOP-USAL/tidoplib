@@ -188,7 +188,7 @@ public:
     virtual void setNoDataValue(double nodata) = 0;
 
     //#ifdef TL_HAVE_GRAPHIC
-    //  virtual void setNoDataValue(const graph::Color &nodata) = 0;
+    //  virtual void setNoDataValue(const Color &nodata) = 0;
     //#endif
 
 protected:

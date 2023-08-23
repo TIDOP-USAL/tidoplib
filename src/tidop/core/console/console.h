@@ -245,14 +245,14 @@ public:
 
     //Console &operator <<(MessageLevel level);
 
-    //Console &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
+    Console &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
 
-    //template<typename T>
-    //Console &operator <<(T value)
-    //{
-	   // _stream << value;
-	   // return *this;
-    //}
+    template<typename T>
+    Console &operator <<(T value)
+    {
+	    _stream << value;
+	    return *this;
+    }
 
     /*!
      * \brief Message levels

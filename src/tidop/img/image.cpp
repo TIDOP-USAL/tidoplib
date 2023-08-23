@@ -47,7 +47,7 @@ Image::Image(int rows,
              int cols,
              DataType type,
              int channels,
-             const graph::Color &color)
+             const Color &color)
   : mRows(rows),
     mCols(cols),
     mType(type),
@@ -87,7 +87,7 @@ Image::Image(const SizeI &size,
 Image::Image(const SizeI &size,
              DataType type,
              int channels,
-             const graph::Color &color)
+             const Color &color)
   : mRows(size.height),
     mCols(size.width),
     mType(type),

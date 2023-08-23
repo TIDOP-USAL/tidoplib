@@ -41,8 +41,6 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-using namespace graph;
-
 VectorWriter::VectorWriter(Path file)
   : mFile(std::move(file))
 {

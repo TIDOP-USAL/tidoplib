@@ -193,7 +193,7 @@ public:
     virtual double noDataValue(bool *exist = nullptr) const = 0;
 
     //#ifdef TL_HAVE_GRAPHIC
-    //  virtual graph::Color noDataValue() const = 0;
+    //  virtual Color noDataValue() const = 0;
     //#endif
 
 protected:

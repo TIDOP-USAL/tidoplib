@@ -28,7 +28,6 @@
 #include <tidop/core/utils.h>
 
 using namespace tl;
-using namespace graph;
 
 ////Datos para los test
 std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 }  };
@@ -158,9 +157,9 @@ BOOST_AUTO_TEST_SUITE(ColorTestSuite)
 struct ColorTest
 {
   ColorTest()
-    : color_name(new graph::Color(graph::Color::Name::azure)),
-      color_int(new graph::Color(3050327 /*sea_green*/)),
-      color_string(new graph::Color("40e0d0" /*turquoise*/))
+    : color_name(new Color(Color::Name::azure)),
+      color_int(new Color(3050327 /*sea_green*/)),
+      color_string(new Color("40e0d0" /*turquoise*/))
   {
   }
 
@@ -190,10 +189,10 @@ struct ColorTest
   {
   }
 
-  graph::Color color1;
-  graph::Color *color_name;
-  graph::Color *color_int;
-  graph::Color *color_string;
+  Color color1;
+  Color *color_name;
+  Color *color_int;
+  Color *color_string;
 };
 
 
@@ -243,21 +242,21 @@ BOOST_FIXTURE_TEST_CASE(string_constructor, ColorTest)
 
 BOOST_FIXTURE_TEST_CASE(equal, ColorTest)
 {
-  graph::Color azure(graph::Color::Name::azure);
+  Color azure(Color::Name::azure);
   BOOST_CHECK(azure == *color_name);
 }
 
 BOOST_FIXTURE_TEST_CASE(color_from_color_rgb, ColorTest)
 {
-  graph::ColorRGB rgb(10, 25, 30);
-  graph::Color color(rgb);
+  ColorRGB rgb(10, 25, 30);
+  Color color(rgb);
   BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
 }
 
 BOOST_FIXTURE_TEST_CASE(color_from_color_rgba, ColorTest)
 {
-  graph::ColorRGBA rgba(10, 25, 30, 0);
-  graph::Color color(rgba);
+  ColorRGBA rgba(10, 25, 30, 0);
+  Color color(rgba);
   BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
 }
 
@@ -276,7 +275,7 @@ BOOST_AUTO_TEST_SUITE(ColorRGBTestSuite)
 struct ColorRGBTest
 {
   ColorRGBTest()
-    : rgb(new graph::ColorRGB(10, 25, 30))
+    : rgb(new ColorRGB(10, 25, 30))
   {
   }
 
@@ -296,8 +295,8 @@ struct ColorRGBTest
   {
   }
 
-  graph::ColorRGB rgb_def;
-  graph::ColorRGB *rgb;
+  ColorRGB rgb_def;
+  ColorRGB *rgb;
 };
 
 
@@ -306,7 +305,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, ColorRGBTest)
   BOOST_CHECK_EQUAL(0, rgb_def.red());
   BOOST_CHECK_EQUAL(0, rgb_def.green());
   BOOST_CHECK_EQUAL(0, rgb_def.blue());
-  BOOST_CHECK(graph::Color(graph::Color::Name::black) == rgb_def.toColor());
+  BOOST_CHECK(Color(Color::Name::black) == rgb_def.toColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, ColorRGBTest)
@@ -326,14 +325,14 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, ColorRGBTest)
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setRed)
 {
-  graph::ColorRGB rgb;
+  ColorRGB rgb;
   rgb.setRed(45);
   BOOST_CHECK_EQUAL(45, rgb.red());
 }
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setRedOutRange)
 {
-  graph::ColorRGB rgb;
+  ColorRGB rgb;
   rgb.setRed(300);
   BOOST_CHECK_EQUAL(255, rgb.red());
   rgb.setRed(-4);
@@ -342,14 +341,14 @@ BOOST_AUTO_TEST_CASE(ColorRGB_setRedOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setGreen)
 {
-  graph::ColorRGB rgb;
+  ColorRGB rgb;
   rgb.setGreen(45);
   BOOST_CHECK_EQUAL(45, rgb.green());
 }
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setGreenOutRange)
 {
-  graph::ColorRGB rgb;
+  ColorRGB rgb;
   rgb.setGreen(300);
   BOOST_CHECK_EQUAL(255, rgb.green());
   rgb.setGreen(-4);
@@ -358,14 +357,14 @@ BOOST_AUTO_TEST_CASE(ColorRGB_setGreenOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setBlue)
 {
-  graph::ColorRGB rgb;
+  ColorRGB rgb;
   rgb.setBlue(45);
   BOOST_CHECK_EQUAL(45, rgb.blue());
 }
 
 BOOST_AUTO_TEST_CASE(ColorRGB_setBlueOutRange)
 {
-  graph::ColorRGB rgb;
+  ColorRGB rgb;
   rgb.setBlue(300);
   BOOST_CHECK_EQUAL(255, rgb.blue());
   rgb.setBlue(-4);
@@ -374,15 +373,15 @@ BOOST_AUTO_TEST_CASE(ColorRGB_setBlueOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorRGB_toColor)
 {
-  graph::ColorRGB rgb(255, 0, 0);
-  BOOST_CHECK(graph::Color(16711680) == rgb.toColor());
+  ColorRGB rgb(255, 0, 0);
+  BOOST_CHECK(Color(16711680) == rgb.toColor());
 
 }
 
 BOOST_AUTO_TEST_CASE(ColorRGB_fromColor)
 {
-  graph::Color color(graph::Color::Name::deep_sky_blue);
-  graph::ColorRGB rgb;
+  Color color(Color::Name::deep_sky_blue);
+  ColorRGB rgb;
   rgb.fromColor(color);
   BOOST_CHECK_EQUAL(0, rgb.red());
   BOOST_CHECK_EQUAL(191, rgb.green());
@@ -424,8 +423,8 @@ struct ColorRGBATest
   {
   }
 
-  graph::ColorRGBA rgba_def;
-  graph::ColorRGBA *rgba;
+  ColorRGBA rgba_def;
+  ColorRGBA *rgba;
 };
 
 
@@ -435,7 +434,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, ColorRGBATest)
   BOOST_CHECK_EQUAL(0, rgba_def.green());
   BOOST_CHECK_EQUAL(0, rgba_def.blue());
   BOOST_CHECK_EQUAL(0, rgba_def.alpha());
-  BOOST_CHECK(graph::Color(graph::Color::Name::black) == rgba_def.toColor());
+  BOOST_CHECK(Color(Color::Name::black) == rgba_def.toColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, ColorRGBATest)
@@ -527,7 +526,7 @@ BOOST_AUTO_TEST_CASE(ColorRGB_toColor)
 
 BOOST_AUTO_TEST_CASE(ColorRGB_fromColor)
 {
-  Color color(graph::Color::Name::deep_sky_blue);
+  Color color(Color::Name::deep_sky_blue);
   ColorRGBA rgba;
   rgba.fromColor(color);
   BOOST_CHECK_EQUAL(0, rgba.red());
@@ -571,8 +570,8 @@ struct ColorCMYKTest
   {
   }
 
-  graph::ColorCMYK cmyk_def;
-  graph::ColorCMYK *cmyk;
+  ColorCMYK cmyk_def;
+  ColorCMYK *cmyk;
 };
 
 
@@ -729,7 +728,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, ColorHSVTest)
   BOOST_CHECK_EQUAL(0, hsv_def.hue());
   BOOST_CHECK_EQUAL(0, hsv_def.saturation());
   BOOST_CHECK_EQUAL(0, hsv_def.value());
-  BOOST_CHECK(graph::Color(graph::Color::Name::black) == hsv_def.toColor());
+  BOOST_CHECK(Color(Color::Name::black) == hsv_def.toColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, ColorHSVTest)
@@ -749,14 +748,14 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, ColorHSVTest)
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setHue)
 {
-  graph::ColorHSV color_hsv;
+  ColorHSV color_hsv;
   color_hsv.setHue(45);
   BOOST_CHECK_EQUAL(45, color_hsv.hue());
 }
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setHueOutRange)
 {
-  graph::ColorHSV color_hsv;
+  ColorHSV color_hsv;
   color_hsv.setHue(400);
   BOOST_CHECK_EQUAL(360., color_hsv.hue());
   color_hsv.setHue(-4);
@@ -765,14 +764,14 @@ BOOST_AUTO_TEST_CASE(ColorHSV_setHueOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setSaturation)
 {
-  graph::ColorHSV color_hsv;
+  ColorHSV color_hsv;
   color_hsv.setSaturation(45);
   BOOST_CHECK_EQUAL(45, color_hsv.saturation());
 }
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setSaturationOutRange)
 {
-  graph::ColorHSV color_hsv;
+  ColorHSV color_hsv;
   color_hsv.setSaturation(300);
   BOOST_CHECK_EQUAL(100, color_hsv.saturation());
   color_hsv.setSaturation(-4);
@@ -781,14 +780,14 @@ BOOST_AUTO_TEST_CASE(ColorHSV_setSaturationOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setValue)
 {
-  graph::ColorHSV color_hsv;
+  ColorHSV color_hsv;
   color_hsv.setValue(45);
   BOOST_CHECK_EQUAL(45, color_hsv.value());
 }
 
 BOOST_AUTO_TEST_CASE(ColorHSV_setValueOutRange)
 {
-  graph::ColorHSV color_hsv;
+  ColorHSV color_hsv;
   color_hsv.setValue(400);
   BOOST_CHECK_EQUAL(100, color_hsv.value());
   color_hsv.setValue(-4);
@@ -820,14 +819,14 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(ColorHSL_setHue)
 {
-  graph::ColorHSL color_hsl;
+  ColorHSL color_hsl;
   color_hsl.setHue(45);
   BOOST_CHECK_EQUAL(45, color_hsl.hue());
 }
 
 BOOST_AUTO_TEST_CASE(ColorHSL_setHueOutRange)
 {
-  graph::ColorHSL color_hsl;
+  ColorHSL color_hsl;
   color_hsl.setHue(400);
   BOOST_CHECK_EQUAL(360., color_hsl.hue());
   color_hsl.setHue(-4);
@@ -836,14 +835,14 @@ BOOST_AUTO_TEST_CASE(ColorHSL_setHueOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorHSL_setSaturation)
 {
-  graph::ColorHSL color_hsl;
+  ColorHSL color_hsl;
   color_hsl.setSaturation(45);
   BOOST_CHECK_EQUAL(45, color_hsl.saturation());
 }
 
 BOOST_AUTO_TEST_CASE(ColorHSL_setSaturationOutRange)
 {
-  graph::ColorHSL color_hsl;
+  ColorHSL color_hsl;
   color_hsl.setSaturation(300);
   BOOST_CHECK_EQUAL(100, color_hsl.saturation());
   color_hsl.setSaturation(-4);
@@ -852,14 +851,14 @@ BOOST_AUTO_TEST_CASE(ColorHSL_setSaturationOutRange)
 
 BOOST_AUTO_TEST_CASE(ColorHSL_setValue)
 {
-  graph::ColorHSL color_hsl;
+  ColorHSL color_hsl;
   color_hsl.setLightness(45);
   BOOST_CHECK_EQUAL(45, color_hsl.lightness());
 }
 
 BOOST_AUTO_TEST_CASE(ColorHSL_setValueOutRange)
 {
-  graph::ColorHSL color_hsl;
+  ColorHSL color_hsl;
   color_hsl.setLightness(300);
   BOOST_CHECK_EQUAL(100, color_hsl.lightness());
   color_hsl.setLightness(-4);
@@ -873,10 +872,10 @@ struct TrfColorModelTest
 {
 
   TrfColorModelTest()
-    : rgb(new graph::ColorRGB(0, 255, 0)),
-      cmyk(new graph::ColorCMYK(1, 1, 0, 0)),
-      hsl(new graph::ColorHSL(338.298, 88.679, 58.431)),
-      hsv(new graph::ColorHSV(259.592, 57.647, 33.333))
+    : rgb(new ColorRGB(0, 255, 0)),
+      cmyk(new ColorCMYK(1, 1, 0, 0)),
+      hsl(new ColorHSL(338.298, 88.679, 58.431)),
+      hsv(new ColorHSV(259.592, 57.647, 33.333))
   {}
 
   ~TrfColorModelTest()
@@ -914,17 +913,17 @@ struct TrfColorModelTest
     
   }
 
-  graph::Color color1;
-  graph::ColorRGB *rgb;
-  graph::ColorCMYK *cmyk;
-  graph::ColorHSL *hsl;
-  graph::ColorHSV *hsv;
+  Color color1;
+  ColorRGB *rgb;
+  ColorCMYK *cmyk;
+  ColorHSL *hsl;
+  ColorHSV *hsv;
 
 };
 
 //BOOST_FIXTURE_TEST_CASE(TrfColorModel, rgbToCMYK)
 //{
-//  TrfColorModel<graph::ColorRGB, graph::ColorCMYK> rgbToCmyk;
+//  TrfColorModel<ColorRGB, ColorCMYK> rgbToCmyk;
 //  rgbToCmyk
 //}
 

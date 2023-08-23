@@ -27,37 +27,33 @@
 namespace tl
 {
 
-namespace graph
-{
-
-/* ---------------------------------------------------------------------------------- */
 
 GPoint::GPoint()
-    : Point<double>(),
+  : Point<double>(),
     GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
 GPoint::GPoint(double x, double y)
-    : Point<double>(x, y),
+  : Point<double>(x, y),
     GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
 GPoint::GPoint(const Point<double> &pt)
-    : Point<double>(pt),
+  : Point<double>(pt),
     GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
 GPoint::GPoint(const GPoint &pt)
-    : Point<double>(pt),
+  : Point<double>(pt),
     GraphicEntity(pt)
 {
 }
 
 GPoint::GPoint(GPoint &&pt) TL_NOEXCEPT
-    : Point<double>(std::forward<Point<double>>(pt)),
+  : Point<double>(std::forward<Point<double>>(pt)),
     GraphicEntity(std::forward<GraphicEntity>(pt))
 {
 }
@@ -94,34 +90,37 @@ bool GPoint::isSimpleEntity() const
     return true;
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
+
+
 
 GPoint3D::GPoint3D()
-    : Point3<double>(),
+  : Point3<double>(),
     GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
 GPoint3D::GPoint3D(double x, double y, double z)
-    : Point3<double>(x, y, z),
+  : Point3<double>(x, y, z),
     GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
 GPoint3D::GPoint3D(const Point3<double> &pt)
-    : Point3<double>(pt),
+  : Point3<double>(pt),
     GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
 GPoint3D::GPoint3D(const GPoint3D &pt)
-    : Point3<double>(pt),
+  : Point3<double>(pt),
     GraphicEntity(pt)
 {
 }
 
 GPoint3D::GPoint3D(GPoint &&pt) TL_NOEXCEPT
-    : Point3<double>(std::forward<Point3<double>>(pt)),
+  : Point3<double>(std::forward<Point3<double>>(pt)),
     GraphicEntity(std::forward<GraphicEntity>(pt))
 {
 }
@@ -158,23 +157,24 @@ bool GPoint3D::isSimpleEntity() const
     return true;
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
 
 
 GMultiPoint::GMultiPoint()
-    : MultiPoint<Point<double>>(),
+  : MultiPoint<Point<double>>(),
     GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
 GMultiPoint::GMultiPoint(const MultiPoint<Point<double>> &multiPoint)
-    : MultiPoint<Point<double>>(multiPoint),
+  : MultiPoint<Point<double>>(multiPoint),
     GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
 GMultiPoint::GMultiPoint(const GMultiPoint &gMultiPoint)
-    : MultiPoint<Point<double>>(gMultiPoint),
+  : MultiPoint<Point<double>>(gMultiPoint),
     GraphicEntity(gMultiPoint)
 {
 }
@@ -203,23 +203,24 @@ bool GMultiPoint::isSimpleEntity() const
 }
 
 
-/* ---------------------------------------------------------------------------------- */
+
+
 
 
 GMultiPoint3D::GMultiPoint3D()
-    : MultiPoint3D<Point3<double>>(),
+  : MultiPoint3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
 GMultiPoint3D::GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint)
-    : MultiPoint3D<Point3<double>>(multiPoint),
+  : MultiPoint3D<Point3<double>>(multiPoint),
     GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
 GMultiPoint3D::GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D)
-    : MultiPoint3D<Point3<double>>(gMultiPoint3D),
+  : MultiPoint3D<Point3<double>>(gMultiPoint3D),
     GraphicEntity(gMultiPoint3D)
 {
 }
@@ -248,9 +249,5 @@ bool GMultiPoint3D::isSimpleEntity() const
 }
 
 
-/* ---------------------------------------------------------------------------------- */
-
-
-} // Fin namespace graph
 
 } // End namespace tl

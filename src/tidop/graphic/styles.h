@@ -42,8 +42,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
 
 /*!
  * \brief Estilo de pluma
@@ -982,9 +980,6 @@ private:
 
 };
 
-
-
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

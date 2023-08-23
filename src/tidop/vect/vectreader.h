@@ -37,11 +37,7 @@
 namespace tl
 {
 
-namespace graph
-{
 class GLayer;
-}
-
 
 class TL_EXPORT VectorReader
 {
@@ -67,8 +63,8 @@ public:
     virtual void close() = 0;
 
     virtual int layersCount() const = 0;
-    virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
-    virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
+    virtual std::shared_ptr<GLayer> read(int layerId) = 0;
+    virtual std::shared_ptr<GLayer> read(const std::string &layerName) = 0;
 
     /*!
      * \brief Sistema de referencia en formato WKT

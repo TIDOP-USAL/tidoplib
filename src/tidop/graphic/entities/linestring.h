@@ -35,8 +35,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
 
 /*!
  * \brief Clase gráfica polilínea
@@ -258,7 +256,6 @@ public:
 
 };
 
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

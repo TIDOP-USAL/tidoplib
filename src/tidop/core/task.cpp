@@ -856,12 +856,17 @@ void TaskList::execute(Progress *progressBar)
 
 /* Task Queue */
 
+std::mutex TaskQueue::mtx;
+
 TaskQueue::TaskQueue()
   : TaskBase()
 {
 }
 
-TaskQueue::~TaskQueue() = default;
+TaskQueue::~TaskQueue() 
+{ 
+    stop();
+}
 
 void TaskQueue::push(std::shared_ptr<Task> task)
 {
@@ -882,12 +887,12 @@ void TaskQueue::pop() TL_NOEXCEPT
     mQueue.pop();
 }
 
-size_t tl::TaskQueue::size() const TL_NOEXCEPT
+size_t TaskQueue::size() const TL_NOEXCEPT
 {
     return mQueue.size();
 }
 
-bool tl::TaskQueue::empty() const TL_NOEXCEPT
+bool TaskQueue::empty() const TL_NOEXCEPT
 {
     return mQueue.empty();
 }
@@ -895,21 +900,19 @@ bool tl::TaskQueue::empty() const TL_NOEXCEPT
 void TaskQueue::stop()
 {
     TaskBase::stop();
-
-    if (status() == Status::stopping) {
-        mQueue.front()->stop();
-    }
 }
 
 void TaskQueue::execute(Progress */*progressBar*/)
 {
     while (!mQueue.empty()) {
+        
+        if (status() == Status::stopping || status() == Status::stopped) {
 
-        //if (status() == Status::stopping) return;
+        } else {
+            std::lock_guard<std::mutex> lck(TaskQueue::mtx);
+            mQueue.front()->run();
+        }
 
-        mQueue.front()->run();
-
-        //if (progressBar) (*progressBar)();
         mQueue.pop();
     }
 }

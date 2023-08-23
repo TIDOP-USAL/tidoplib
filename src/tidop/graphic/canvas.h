@@ -47,8 +47,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
 
 class Painter;
 
@@ -220,7 +218,6 @@ private:
 
 #endif // TL_HAVE_OPENCV
 
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

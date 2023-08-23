@@ -27,31 +27,29 @@
 namespace tl
 {
 
-namespace graph
-{
 
 /* ---------------------------------------------------------------------------------- */
 
 GLineString::GLineString()
-    : LineString<Point<double>>(),
+  : LineString<Point<double>>(),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
 GLineString::GLineString(const LineString<Point<double>> &lineString)
-    : LineString<Point<double>>(lineString),
+  : LineString<Point<double>>(lineString),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
 GLineString::GLineString(const GLineString &lineString)
-    : LineString<Point<double>>(lineString),
+  : LineString<Point<double>>(lineString),
     GraphicEntity(lineString)
 {
 }
 
 GLineString::GLineString(GLineString &&lineString) TL_NOEXCEPT
-    : LineString<Point<double>>(std::forward<LineString<Point<double>>>(lineString)),
+  : LineString<Point<double>>(std::forward<LineString<Point<double>>>(lineString)),
     GraphicEntity(std::forward<GraphicEntity>(lineString))
 {
 }
@@ -92,25 +90,25 @@ bool GLineString::isSimpleEntity() const
 /* ---------------------------------------------------------------------------------- */
 
 GLineString3D::GLineString3D()
-    : LineString3D<Point3<double>>(),
+  : LineString3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
 GLineString3D::GLineString3D(const LineString3D<Point3<double>> &gLineString3D)
-    : LineString3D<Point3<double>>(gLineString3D),
+  : LineString3D<Point3<double>>(gLineString3D),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
 GLineString3D::GLineString3D(const GLineString3D &gLineString3D)
-    : LineString3D<Point3<double>>(gLineString3D),
+  : LineString3D<Point3<double>>(gLineString3D),
     GraphicEntity(gLineString3D)
 {
 }
 
 GLineString3D::GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT
-    : LineString3D<Point3<double>>(std::forward<LineString3D<Point3<double>>>(gLineString3D)),
+  : LineString3D<Point3<double>>(std::forward<LineString3D<Point3<double>>>(gLineString3D)),
     GraphicEntity(std::forward<GraphicEntity>(gLineString3D))
 {
 }
@@ -152,25 +150,25 @@ bool GLineString3D::isSimpleEntity() const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString::GMultiLineString()
-    : MultiLineString<Point<double>>(),
+  : MultiLineString<Point<double>>(),
     GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
 GMultiLineString::GMultiLineString(const MultiLineString<Point<double>> &multiLineString)
-    : MultiLineString<Point<double>>(multiLineString),
+  : MultiLineString<Point<double>>(multiLineString),
     GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
 GMultiLineString::GMultiLineString(const GMultiLineString &gMultiLineString)
-    : MultiLineString<Point<double>>(gMultiLineString),
+  : MultiLineString<Point<double>>(gMultiLineString),
     GraphicEntity(gMultiLineString)
 {
 }
 
 GMultiLineString::GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT
-    : MultiLineString<Point<double>>(std::forward<MultiLineString<Point<double>>>(gMultiLineString)),
+  : MultiLineString<Point<double>>(std::forward<MultiLineString<Point<double>>>(gMultiLineString)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiLineString))
 {
 }
@@ -211,25 +209,25 @@ bool GMultiLineString::isSimpleEntity() const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString3D::GMultiLineString3D()
-    : MultiLineString3D<Point3<double>>(),
+  : MultiLineString3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &multiLineString)
-    : MultiLineString3D<Point3<double>>(multiLineString),
+  : MultiLineString3D<Point3<double>>(multiLineString),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D)
-    : MultiLineString3D<Point3<double>>(gMultiLineString3D),
+  : MultiLineString3D<Point3<double>>(gMultiLineString3D),
     GraphicEntity(gMultiLineString3D)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT
-    : MultiLineString3D<Point3<double>>(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D)),
+  : MultiLineString3D<Point3<double>>(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiLineString3D))
 {
 }
@@ -267,8 +265,5 @@ bool GMultiLineString3D::isSimpleEntity() const
 }
 
 
-/* ---------------------------------------------------------------------------------- */
-
-} // Fin namespace graph
 
 } // End namespace TL

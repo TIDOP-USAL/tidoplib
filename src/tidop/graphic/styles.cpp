@@ -28,13 +28,9 @@
 namespace tl
 {
 
-namespace graph
-{
-
-/* ---------------------------------------------------------------------------------- */
 
 Pen::Pen()
-    : mColor(0),
+  : mColor(0),
     mWidth(1),
     mPattern(""),
     mName(Name::solid),
@@ -46,7 +42,7 @@ Pen::Pen()
 }
 
 Pen::Pen(const Pen &pen)
-    : mColor(pen.mColor),
+  : mColor(pen.mColor),
     mWidth(pen.mWidth),
     mPattern(pen.mPattern),
     mName(pen.mName),
@@ -658,10 +654,5 @@ GraphicStyle &GraphicStyle::operator = (const GraphicStyle &graphicStyle)
     return *this;
 }
 
-
-/* ---------------------------------------------------------------------------------- */
-
-
-} // Fin namespace graph
 
 } // End namespace tl

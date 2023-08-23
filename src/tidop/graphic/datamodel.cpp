@@ -32,7 +32,7 @@ namespace tl
 TableField::TableField(const std::string &name,
                        Type type,
                        int size)
-    : mName(name),
+  : mName(name),
     mType(type),
     mSize(size)
 {
@@ -60,20 +60,20 @@ int TableField::size() const
 
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 
 
 
 RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field)
-    : mField(field),
+  : mField(field),
     mValue("")
 {
 }
 
 RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field,
                              const std::string &value)
-    : mField(field),
+  : mField(field),
     mValue(value)
 {
 }
@@ -93,7 +93,9 @@ void RegisterValue::setValue(const std::string &value)
         mValue = value;
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
+
 
 
 TableRegister::TableRegister(const std::vector<std::shared_ptr<TableField>> &fields)
@@ -106,15 +108,9 @@ TableRegister::TableRegister(const std::vector<std::shared_ptr<TableField>> &fie
 }
 
 TableRegister::TableRegister(const TableRegister &_register)
-    : mRegisterValues(_register.mRegisterValues)
+  : mRegisterValues(_register.mRegisterValues)
 {
 }
-
-//TableRegister::TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields)
-//  : mRegisterValues(registerFields)
-//{
-//
-//}
 
 TableRegister::~TableRegister()
 {
@@ -138,12 +134,14 @@ size_t TableRegister::size() const
     return mRegisterValues.size();
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
+
 
 
 DataTable::DataTable(const std::string &tableName,
                      const std::vector<std::shared_ptr<TableField>> &TableField)
-    : mTableName(tableName),
+  : mTableName(tableName),
     mTableFields(TableField)
 {
 }
@@ -216,7 +214,9 @@ size_t DataTable::size()
 }
 
 
-/* ---------------------------------------------------------------------------------- */
+
+
+
 
 DataModel::DataModel()
 {

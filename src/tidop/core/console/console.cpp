@@ -225,12 +225,12 @@ void Console::reset()
 //    return *this;
 //}
 
-//Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
-//{
-//    _stream << _endl;
-//    reset();
-//    return *this;
-//}
+Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
+{
+    _stream << _endl;
+    reset();
+    return *this;
+}
 
 auto Console::messageLevel() -> EnumFlags<MessageLevel>
 {
@@ -300,6 +300,7 @@ void Console::success(String message)
     if (messageLevelFlags.isEnabled(MessageLevel::success)) {
         setForegroundColor(Color::green, Intensity::normal);
         _stream << "Succes:  " << message << std::endl;
+        reset();
     }
 }
 
@@ -310,6 +311,7 @@ void Console::warning(String message)
     if (messageLevelFlags.isEnabled(MessageLevel::warning)) {
         setForegroundColor(Color::magenta, Intensity::normal);
         _stream << "Warning: " << message << std::endl;
+        reset();
     }
 }
 
@@ -320,6 +322,7 @@ void Console::error(String message)
     if (messageLevelFlags.isEnabled(MessageLevel::error)) {
         setForegroundColor(Color::red, Intensity::normal);
         _stream << "Error:   " << message << std::endl;
+        reset();
     }
 }
 

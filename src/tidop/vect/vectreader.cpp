@@ -47,8 +47,6 @@ constexpr auto inches_to_meters = 39.37;
 constexpr auto cm_to_m = 0.01;
 constexpr auto mm_to_m = 0.001;
 
-using namespace graph;
-
 VectorReader::VectorReader(Path file)
   : mFile(std::move(file))
 {
@@ -117,9 +115,9 @@ public:
         return size;
     }
 
-    std::shared_ptr<graph::GLayer> read(int layerId) override
+    std::shared_ptr<GLayer> read(int layerId) override
     {
-        std::shared_ptr<graph::GLayer> layer;
+        std::shared_ptr<GLayer> layer;
     
         try {
     
@@ -137,9 +135,9 @@ public:
         return layer;
     }
 
-    std::shared_ptr<graph::GLayer> read(const std::string &layerName) override
+    std::shared_ptr<GLayer> read(const std::string &layerName) override
     {
-        std::shared_ptr<graph::GLayer> layer;
+        std::shared_ptr<GLayer> layer;
     
         try {
     
@@ -238,21 +236,21 @@ public:
 
 private:
 
-    std::shared_ptr<graph::GLayer> read(OGRLayer *ogrLayer);
-    std::shared_ptr<graph::GraphicEntity> readEntity(OGRGeometry *ogrGeometry);
-    std::shared_ptr<graph::GPoint> readPoint(OGRPoint *ogrPoint);
-    std::shared_ptr<graph::GPoint3D> readPoint3D(OGRPoint *ogrPoint);
-    std::shared_ptr<graph::GLineString> readLineString(OGRLineString *ogrLineString);
-    std::shared_ptr<graph::GLineString3D> readLineString3D(OGRLineString *ogrLineString);
-    std::shared_ptr<graph::GPolygon> readPolygon(OGRPolygon *ogrPolygon);
-    std::shared_ptr<graph::GPolygon3D> readPolygon3D(OGRPolygon *ogrPolygon);
-    std::shared_ptr<graph::GMultiPoint> readMultiPoint(OGRMultiPoint *ogrMultiPoint);
-    std::shared_ptr<graph::GMultiPoint3D> readMultiPoint3D(OGRMultiPoint *ogrMultiPoint);
-    std::shared_ptr<graph::GMultiLineString> readMultiLineString(OGRMultiLineString *ogrMultiLineString);
-    std::shared_ptr<graph::GMultiLineString3D> readMultiLineString3D(OGRMultiLineString *ogrMultiLineString);
-    std::shared_ptr<graph::GMultiPolygon> readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon);
-    std::shared_ptr<graph::GMultiPolygon3D> readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon);
-    void readStyles(OGRStyleMgr *ogrStyle, graph::GraphicEntity *gStyle);
+    std::shared_ptr<GLayer> read(OGRLayer *ogrLayer);
+    std::shared_ptr<GraphicEntity> readEntity(OGRGeometry *ogrGeometry);
+    std::shared_ptr<GPoint> readPoint(OGRPoint *ogrPoint);
+    std::shared_ptr<GPoint3D> readPoint3D(OGRPoint *ogrPoint);
+    std::shared_ptr<GLineString> readLineString(OGRLineString *ogrLineString);
+    std::shared_ptr<GLineString3D> readLineString3D(OGRLineString *ogrLineString);
+    std::shared_ptr<GPolygon> readPolygon(OGRPolygon *ogrPolygon);
+    std::shared_ptr<GPolygon3D> readPolygon3D(OGRPolygon *ogrPolygon);
+    std::shared_ptr<GMultiPoint> readMultiPoint(OGRMultiPoint *ogrMultiPoint);
+    std::shared_ptr<GMultiPoint3D> readMultiPoint3D(OGRMultiPoint *ogrMultiPoint);
+    std::shared_ptr<GMultiLineString> readMultiLineString(OGRMultiLineString *ogrMultiLineString);
+    std::shared_ptr<GMultiLineString3D> readMultiLineString3D(OGRMultiLineString *ogrMultiLineString);
+    std::shared_ptr<GMultiPolygon> readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon);
+    std::shared_ptr<GMultiPolygon3D> readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon);
+    void readStyles(OGRStyleMgr *ogrStyle, GraphicEntity *gStyle);
     std::shared_ptr<Pen> readPen(OGRStylePen *ogrStylePen);
     void readPenColor(OGRStylePen *ogrStylePen, Pen *pen);
     void readPenCap(OGRStylePen *ogrStylePen, Pen *pen);
@@ -262,7 +260,7 @@ private:
     void readPenWidth(OGRStylePen *ogrStylePen, Pen *pen);
     void readPenPerpendicularOffset(OGRStylePen *ogrStylePen, Pen *pen);
     void readPenPriorityLevel(OGRStylePen *ogrStylePen, Pen *pen);
-    std::shared_ptr<graph::Brush> readBrush(OGRStyleBrush *ogrStyleBrush);
+    std::shared_ptr<Brush> readBrush(OGRStyleBrush *ogrStyleBrush);
     void readBrushAngle(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     void readBrushBackColor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     void readBrushForeColor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
@@ -270,7 +268,7 @@ private:
     void readBrushPriorityLevel(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     void readBrushScalingFactor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     void readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *brush);
-    std::shared_ptr<graph::Symbol> readSymbol(OGRStyleSymbol *ogrStyleSymbol);
+    std::shared_ptr<Symbol> readSymbol(OGRStyleSymbol *ogrStyleSymbol);
     void readSymbolAngle(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
     void readSymbolColor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
     void readSymbolName(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
@@ -300,9 +298,9 @@ private:
 };
 
 
-std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
+std::shared_ptr<GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 {
-    std::shared_ptr<graph::GLayer> layer(new graph::GLayer);
+    std::shared_ptr<GLayer> layer(new GLayer);
 
     ////////////////////////////////////////////////////////////////////
     // Definición de campos asociados a las entidades
@@ -348,7 +346,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 
             OGRStyleMgr *ogrStyleMgr = nullptr;
             try {
-                std::shared_ptr<graph::GraphicEntity> entity = readEntity(pGeometry);
+                std::shared_ptr<GraphicEntity> entity = readEntity(pGeometry);
                 ogrStyleMgr = new OGRStyleMgr();
                 ogrStyleMgr->GetStyleString(ogrFeature);
                 readStyles(ogrStyleMgr, entity.get());
@@ -376,9 +374,9 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
     return layer;
 }
 
-std::shared_ptr<graph::GraphicEntity> VectorReaderGdal::readEntity(OGRGeometry *ogrGeometry)
+std::shared_ptr<GraphicEntity> VectorReaderGdal::readEntity(OGRGeometry *ogrGeometry)
 {
-    std::shared_ptr<graph::GraphicEntity> gEntity;
+    std::shared_ptr<GraphicEntity> gEntity;
     OGRwkbGeometryType type;
     if (wkbHasZ(ogrGeometry->getGeometryType()))
         type = wkbFlatten(ogrGeometry->getGeometryType());
@@ -683,7 +681,7 @@ std::shared_ptr<GMultiPoint3D> VectorReaderGdal::readMultiPoint3D(OGRMultiPoint 
     return multiPoint;
 }
 
-std::shared_ptr<graph::GMultiLineString> VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineString)
+std::shared_ptr<GMultiLineString> VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineString)
 {
     size_t size = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
     std::shared_ptr<GMultiLineString> multiLineString = std::make_shared<GMultiLineString>(size);
@@ -708,7 +706,7 @@ std::shared_ptr<graph::GMultiLineString> VectorReaderGdal::readMultiLineString(O
     return multiLineString;
 }
 
-std::shared_ptr<graph::GMultiLineString3D> VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineString)
+std::shared_ptr<GMultiLineString3D> VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineString)
 {
     size_t size = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
     std::shared_ptr<GMultiLineString3D> multiLineString = std::make_shared<GMultiLineString3D>(size);
@@ -734,7 +732,7 @@ std::shared_ptr<graph::GMultiLineString3D> VectorReaderGdal::readMultiLineString
     return multiLineString;
 }
 
-std::shared_ptr<graph::GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon)
+std::shared_ptr<GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon)
 {
     size_t size = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
     std::shared_ptr<GMultiPolygon> multiPolygon = std::make_shared<GMultiPolygon>(size);
@@ -762,7 +760,7 @@ std::shared_ptr<graph::GMultiPolygon> VectorReaderGdal::readMultiPolygon(OGRMult
     return multiPolygon;
 }
 
-std::shared_ptr<graph::GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon)
+std::shared_ptr<GMultiPolygon3D> VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon)
 {
     size_t size = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
     std::shared_ptr<GMultiPolygon3D> multiPolygon = std::make_shared <GMultiPolygon3D>(size);
@@ -844,7 +842,7 @@ void VectorReaderGdal::readPenColor(OGRStylePen *ogrStylePen,
     GBool bDefault = false;
     const char *hexColor = ogrStylePen->Color(bDefault);
     if (!bDefault) {
-        pen->setColor(tl::graph::Color(hexColor + 1));
+        pen->setColor(Color(hexColor + 1));
     }
 }
 
@@ -1005,7 +1003,7 @@ void VectorReaderGdal::readBrushBackColor(OGRStyleBrush *ogrStyleBrush,
     GBool bDefault = false;
     const char *hexColor = ogrStyleBrush->BackColor(bDefault);
     if (!bDefault) {
-        brush->setBackgroundColor(graph::Color(hexColor + 1));
+        brush->setBackgroundColor(Color(hexColor + 1));
     }
 }
 
@@ -1015,7 +1013,7 @@ void VectorReaderGdal::readBrushForeColor(OGRStyleBrush *ogrStyleBrush,
     GBool bDefault = false;
     const char *hexColor = ogrStyleBrush->ForeColor(bDefault);
     if (!bDefault) {
-        brush->setForegroundColor(graph::Color(hexColor + 1));
+        brush->setForegroundColor(Color(hexColor + 1));
     }
 }
 
@@ -1113,7 +1111,7 @@ void VectorReaderGdal::readSymbolColor(OGRStyleSymbol *ogrStyleSymbol,
     GBool bDefault = false;
     const char *hexColor = ogrStyleSymbol->Color(bDefault);
     if (!bDefault) {
-        symbol->setColor(tl::graph::Color(hexColor + 1));
+        symbol->setColor(Color(hexColor + 1));
     }
 }
 
@@ -1172,7 +1170,7 @@ void VectorReaderGdal::readSymbolOutlineColor(OGRStyleSymbol *ogrStyleSymbol,
     GBool bDefault = false;
     const char *hexColor = ogrStyleSymbol->OColor(bDefault);
     if (!bDefault) {
-        symbol->setOutlineColor(graph::Color(hexColor + 1));
+        symbol->setOutlineColor(Color(hexColor + 1));
     }
 }
 
@@ -1280,7 +1278,7 @@ void VectorReaderGdal::readLabelBackgroundColor(OGRStyleLabel *ogrStyleLabel,
     GBool bDefault = false;
     const char *hexColor = ogrStyleLabel->BackColor(bDefault);
     if (!bDefault) {
-        label->setBackgroundColor(graph::Color(hexColor + 1));
+        label->setBackgroundColor(Color(hexColor + 1));
     }
 }
 
@@ -1290,7 +1288,7 @@ void VectorReaderGdal::readLabelForegroundColor(OGRStyleLabel *ogrStyleLabel,
     GBool bDefault = false;
     const char *hexColor = ogrStyleLabel->ForeColor(bDefault);
     if (!bDefault) {
-        label->setForegroundColor(graph::Color(hexColor + 1));
+        label->setForegroundColor(Color(hexColor + 1));
     }
 }
 
@@ -1300,7 +1298,7 @@ void VectorReaderGdal::readLabelOutlineColor(OGRStyleLabel *ogrStyleLabel,
     GBool bDefault = false;
     const char *hexColor = ogrStyleLabel->OutlineColor(bDefault);
     if (!bDefault) {
-        label->setOutlineColor(graph::Color(hexColor + 1));
+        label->setOutlineColor(Color(hexColor + 1));
     }
 }
 
@@ -1310,7 +1308,7 @@ void VectorReaderGdal::readLabelShadowColor(OGRStyleLabel *ogrStyleLabel,
     GBool bDefault = false;
     const char *hexColor = ogrStyleLabel->ShadowColor(bDefault);
     if (!bDefault) {
-        label->setShadowColor(graph::Color(hexColor + 1));
+        label->setShadowColor(Color(hexColor + 1));
     }
 }
 
