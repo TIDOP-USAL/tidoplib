@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <vector>
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
@@ -67,6 +68,133 @@ public:
 
     Umeyama(const Matrix_t<T, _rows, _cols> &src,
             const Matrix_t<T, _rows, _cols> &dst)
+    {
+        this->compute(src, dst);
+        /*size_t size = src.rows();
+        size_t dimension = dst.cols();
+        Vector<double> mean_src(dimension);
+        Vector<double> mean_dst(dimension);
+
+        for (size_t c = 0; c < dimension; c++) {
+            auto src_col = src.col(c);
+            mean_src[c] = mean(src_col.begin(), src_col.end());
+            auto dst_col = dst.col(c);
+            mean_dst[c] = mean(dst_col.begin(), dst_col.end());
+        }
+
+        Matrix<double> src_demean = src;
+        Matrix<double> dst_demean = dst;
+        for (size_t c = 0; c < dimension; c++) {
+            for (size_t r = 0; r < size; r++) {
+                src_demean[r][c] -= mean_src[c];
+                dst_demean[r][c] -= mean_dst[c];
+            }
+        }
+
+        auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
+        SingularValueDecomposition<Matrix<double>> svd(sigma);
+        transformMatrix = Matrix<double>::identity(dimension + 1, dimension + 1);
+        Matrix<double> S = Matrix<double>::identity(dimension, dimension);
+        if (sigma.determinant() < 0) {
+            S[dimension - 1][dimension - 1] = -1;
+        }
+
+        if (sigma.rank() == dimension - 1) {
+            if (svd.u().determinant() * svd.v().determinant() < 0)
+                S[dimension - 1][dimension - 1] = -1;
+        }
+
+        auto block = transformMatrix.block(0, dimension - 1, 0, dimension - 1);
+        block = svd.u() * S * svd.v().transpose();
+
+        double src_var{};
+        double module{};
+        for (size_t c = 0; c < src_demean.cols(); c++) {
+            auto vector = src_demean.col(c);
+            module = vector.module();
+            src_var += module * module;
+        }
+
+        src_var /= size;
+
+        double scale = 1 / src_var * svd.w().dotProduct(S.diagonal());
+
+        transformMatrix.col(dimension)[0] = mean_dst[0];
+        transformMatrix.col(dimension)[1] = mean_dst[1];
+        transformMatrix.col(dimension)[2] = mean_dst[2];
+
+        transformMatrix.block(0, dimension - 1, 0, dimension - 1) *= scale;
+        auto aux = transformMatrix.block(0, dimension - 1, 0, dimension - 1) * mean_src;
+        transformMatrix.col(dimension)[0] -= aux[0];
+        transformMatrix.col(dimension)[1] -= aux[1];
+        transformMatrix.col(dimension)[2] -= aux[2];*/
+
+    }
+
+    Umeyama(const std::vector<Point3<double>> &src,
+            const std::vector<Point3<double>> &dst)
+    {
+        TL_ASSERT(src.size() == dst.size(), "");
+        Matrix<T> src_mat(src.size(), 3);
+        Matrix<T> dst_mat(dst.size(), 3);
+
+        for (size_t r = 0; r < src_mat.rows(); r++) {
+            src_mat[r][0] = src[r].x;
+            src_mat[r][1] = src[r].y;
+            src_mat[r][2] = src[r].z;
+                      
+            dst_mat[r][0] = dst[r].x;
+            dst_mat[r][1] = dst[r].y;
+            dst_mat[r][2] = dst[r].z;
+        }
+
+        this->compute(src_mat, dst_mat);
+    }
+
+    ~Umeyama()
+    {
+    }
+
+    Matrix<T/*, _cols + 1, _cols + 1*/> transform() const
+    {
+        return transformMatrix;
+    }
+
+    Matrix<T, _cols, _cols> rotation() const
+    {
+        size_t dimension = transformMatrix.cols();
+        Matrix<T, _cols, _cols> rotation(dimension, dimension);
+
+        for (size_t r = 0; r < dimension; r++) {
+            for (size_t c = 0; c < dimension; c++) {
+                rotation(r, c) = transformMatrix(r, c);
+            }
+        }
+
+        return rotation / scale();
+    }
+
+    //Vector<T, _cols> scale() const
+    //{
+    //  return Vector<T>{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
+    //}
+
+    T scale() const
+    {
+        Vector<T> scale{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
+        return mean(scale.begin(), scale.end());
+    }
+
+    Vector<T, _cols> translation() const
+    {
+        size_t col = transformMatrix.cols() - 1;
+        return Vector<T>{transformMatrix[0][col], transformMatrix[1][col], transformMatrix[2][col]};
+    }
+
+private:
+
+    void compute(const Matrix_t<T, _rows, _cols> &src,
+                 const Matrix_t<T, _rows, _cols> &dst)
     {
         size_t size = src.rows();
         size_t dimension = dst.cols();
@@ -127,46 +255,6 @@ public:
         transformMatrix.col(dimension)[1] -= aux[1];
         transformMatrix.col(dimension)[2] -= aux[2];
 
-    }
-
-    ~Umeyama()
-    {
-    }
-
-    Matrix<T/*, _cols + 1, _cols + 1*/> transform() const
-    {
-        return transformMatrix;
-    }
-
-    Matrix<T, _cols, _cols> rotation() const
-    {
-        size_t dimension = transformMatrix.cols();
-        Matrix<T, _cols, _cols> rotation(dimension, dimension);
-
-        for (size_t r = 0; r < dimension; r++) {
-            for (size_t c = 0; c < dimension; c++) {
-                rotation(r, c) = transformMatrix(r, c);
-            }
-        }
-
-        return rotation / scale();
-    }
-
-    //Vector<T, _cols> scale() const
-    //{
-    //  return Vector<T>{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
-    //}
-
-    T scale() const
-    {
-        Vector<T> scale{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
-        return mean(scale.begin(), scale.end());
-    }
-
-    Vector<T, _cols> translation() const
-    {
-        size_t col = transformMatrix.cols() - 1;
-        return Vector<T>{transformMatrix[0][col], transformMatrix[1][col], transformMatrix[2][col]};
     }
 
 private:
