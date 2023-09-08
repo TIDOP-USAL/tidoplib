@@ -72,7 +72,7 @@ VertexArray::Ptr vertexArray;
 VertexBuffer::Ptr vertexBuffer;
 ShaderProgram::Ptr shaderProgram;
 
-Matrix4x4f model = Matrices::scale(0.5f, 0.5f, 0.5f) * Matrices::rotationX(TO_RADIANS 45) * Matrices::rotationY(TO_RADIANS 45);
+Matrix4x4f model = Matrices::scale(0.5f, 0.5f, 0.5f);
 
 double aspectRatio = static_cast<double>(WINDOW_WIDTH) / WINDOW_HEIGHT;
 TrackballCamera camera = TrackballCamera::perspectiveCamera(TO_RADIANS 45.0, aspectRatio, 0.1, 1000);
