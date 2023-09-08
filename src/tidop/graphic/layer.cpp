@@ -33,36 +33,33 @@
 namespace tl
 {
 
-namespace graph
-{
-
 
 /* ---------------------------------------------------------------------------------- */
 
 
 GLayer::GLayer()
-    : mName(""),
+  : mName(""),
     mEntities(0),
     mSelectEntity(nullptr)
 {
 }
 
 GLayer::GLayer(const GLayer &gLayer)
-    : mName(gLayer.mName),
+  : mName(gLayer.mName),
     mEntities(gLayer.mEntities),
     mSelectEntity(gLayer.mSelectEntity)
 {
 }
 
 GLayer::GLayer(GLayer &&gLayer) TL_NOEXCEPT
-    : mName(std::move(gLayer.mName)),
+  : mName(std::move(gLayer.mName)),
     mEntities(std::move(gLayer.mEntities)),
     mSelectEntity(std::move(gLayer.mSelectEntity))
 {
 }
 
 GLayer::GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities)
-    : mName(""),
+  : mName(""),
     mEntities(entities),
     mSelectEntity(nullptr)
 {
@@ -169,7 +166,7 @@ std::vector<std::shared_ptr<TableField>> GLayer::tableFields() const
     return mTableFields;
 }
 
-Window<Point<double>> tl::graph::GLayer::window() const
+Window<Point<double>> GLayer::window() const
 {
     Window<Point<double>> w;
 
@@ -223,7 +220,5 @@ Window<Point<double>> tl::graph::GLayer::window() const
 
     return w;
 }
-
-} // Fin namespace graph
 
 } // End namespace tl

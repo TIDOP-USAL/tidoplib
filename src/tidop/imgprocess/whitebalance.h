@@ -115,7 +115,7 @@ class TL_EXPORT WhitePatch
 
 private:
 
-    graph::Color mWhite;
+    Color mWhite;
 
 public:
 
@@ -123,7 +123,7 @@ public:
      * \brief Constructora WhitePatch
      * \param[in] white Luz blanca. Por defecto (255, 255, 255)
      */
-    WhitePatch(const graph::Color &white = graph::Color(graph::Color::Name::white));
+    WhitePatch(const Color &white = Color(Color::Name::white));
 
     /*!
      * \brief Ejecuta el proceso
@@ -136,7 +136,7 @@ public:
      * \brief Establece la luz blanca
      * \param[in] white Luz blanca. Por defecto (255, 255, 255)
      */
-    void setWhite(const graph::Color &white = graph::Color(graph::Color::Name::white));
+    void setWhite(const Color &white = Color(Color::Name::white));
 
 private:
 

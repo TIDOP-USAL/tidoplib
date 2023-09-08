@@ -44,9 +44,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
-
 
 /*!
  * \brief Datos que pueden ir asociados a una entidad.
@@ -184,8 +181,6 @@ protected:
     std::shared_ptr<TableRegister> mData;
 };
 
-
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

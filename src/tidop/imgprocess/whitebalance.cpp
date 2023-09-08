@@ -69,7 +69,7 @@ void Grayworld::run(const cv::Mat &matIn, cv::Mat &matOut) const
 
 /* ---------------------------------------------------------------------------------- */
 
-WhitePatch::WhitePatch(const graph::Color &white)
+WhitePatch::WhitePatch(const Color &white)
   : ImageProcess(ProcessType::whitepatch),
     mWhite(white)
 {
@@ -109,7 +109,7 @@ void WhitePatch::run(const cv::Mat &matIn, cv::Mat &matOut) const
     }
 }
 
-void WhitePatch::setWhite(const graph::Color &white)
+void WhitePatch::setWhite(const Color &white)
 {
     mWhite = white;
 }

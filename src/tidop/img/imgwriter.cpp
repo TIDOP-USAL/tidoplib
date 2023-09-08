@@ -600,7 +600,7 @@ public:
     }
 
     //#ifdef TL_HAVE_GRAPHIC
-    //  void setColor(const graph::Color &nodata)
+    //  void setColor(const Color &nodata)
     //  {
     //    int channels = this->channels();
     //    if (channels == 1) {

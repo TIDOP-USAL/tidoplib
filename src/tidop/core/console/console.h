@@ -243,7 +243,7 @@ public:
      */
     void reset();
 
-    Console &operator <<(MessageLevel level);
+    //Console &operator <<(MessageLevel level);
 
     Console &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
 
@@ -275,11 +275,11 @@ public:
      */
     static void setMessageLevel(MessageLevel level);
 
-    static Console &debug();
-    static Console &info();
-    static Console &success();
-    static Console &warning();
-    static Console &error();
+    //static Console &debug();
+    //static Console &info();
+    //static Console &success();
+    //static Console &warning();
+    //static Console &error();
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 

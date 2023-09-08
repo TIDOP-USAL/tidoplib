@@ -28,7 +28,6 @@
 
 
 using namespace tl;
-using namespace graph;
 
 BOOST_AUTO_TEST_SUITE(GLineStringTestSuite)
 

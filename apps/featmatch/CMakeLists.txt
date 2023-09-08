@@ -47,7 +47,7 @@ if(TL_HAVE_FEAT_MATCH)
                           TidopLib::Geospatial
                           TidopLib::FeatMatch
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>
                           ${OpenCV_LIBS})
     

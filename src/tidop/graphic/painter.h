@@ -46,9 +46,6 @@ class Transform;
  *  \{
  */
 
-namespace graph
-{
-
 class Canvas;
 class GraphicStyle;
 
@@ -57,7 +54,7 @@ class GraphicStyle;
 
 
 class TL_EXPORT Painter
-    : public GraphicStyle
+  : public GraphicStyle
 {
 
 public:
@@ -177,8 +174,6 @@ protected:
 
 };
 
-
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

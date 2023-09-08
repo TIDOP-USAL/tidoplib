@@ -32,9 +32,6 @@
 namespace tl
 {
 
-namespace math
-{
-
 /*! \addtogroup math
  *  \{
  */
@@ -816,27 +813,24 @@ inline void AngleConverter<T>::convert(const Radians<T> &radians,
 }
 
 
-Radians<double> operator""_rad(long double radians)
-{
-    return Radians<double>(radians);
-}
-
-Gradians<double> operator""_grad(long double gradians)
-{
-    return Gradians<double>(gradians);
-}
-
-Degrees<double> operator""_deg(long double degrees)
-{
-    return Degrees<double>(degrees);
-}
+//Radians<double> operator""_rad(long double radians)
+//{
+//    return Radians<double>(radians);
+//}
+//
+//Gradians<double> operator""_grad(long double gradians)
+//{
+//    return Gradians<double>(gradians);
+//}
+//
+//Degrees<double> operator""_deg(long double degrees)
+//{
+//    return Degrees<double>(degrees);
+//}
 
 /*! \} */ // end of angleConversion  
   
 /*! \} */ // end of Math
 
-
-
-} // Fin namespace math
 
 } // Fin namespace tl

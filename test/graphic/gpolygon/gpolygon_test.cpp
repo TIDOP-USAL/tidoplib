@@ -28,7 +28,6 @@
 
 
 using namespace tl;
-using namespace graph;
 
 BOOST_AUTO_TEST_SUITE(GPolygonTestSuite)
 
@@ -43,10 +42,10 @@ struct GPolygonTest
   {
   }
 
-  graph::GPolygon polygon;
-  graph::GPolygon3D polygon_3d;
-  graph::GMultiPolygon multi_polygon;
-  graph::GMultiPolygon3D multi_polygon_3d;
+  GPolygon polygon;
+  GPolygon3D polygon_3d;
+  GMultiPolygon multi_polygon;
+  GMultiPolygon3D multi_polygon_3d;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, GPolygonTest)

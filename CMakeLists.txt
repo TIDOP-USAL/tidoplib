@@ -199,7 +199,6 @@ cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
-cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
 
@@ -309,7 +308,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE
 #OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  ON)
 OPTION (WITH_GDAL   "Include GDAL Support"                    ON)
-OPTION (WITH_PROJ4  "Include PROJ4 Support"                   ON)
+OPTION (WITH_PROJ  "Include PROJ Support"                     ON)
 cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
 cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
@@ -330,7 +329,6 @@ unset(TL_HAVE_GRAPHIC CACHE)
 unset(TL_HAVE_GEOSPATIAL CACHE)
 unset(TL_HAVE_VECT CACHE)
 unset(TL_HAVE_EXPERIMENTAL CACHE)
-unset(TL_HAVE_VIEWER CACHE)
 
 
 message(STATUS "\nDependency loading:\n")
@@ -340,9 +338,10 @@ message(STATUS "\nDependency loading:\n")
 # fmt (REQUIRED C++ Version < 20)                                        #
 ##########################################################################
 
+
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
-    AND ((CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND ${CMAKE_CXX_COMPILER_VERSION} GREATER_EQUAL 17.5)
-         OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} GREATER_EQUAL 13.1)))
+    AND ((CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND MSVC_TOOLSET_VERSION GREATER_EQUAL 143) 
+         OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 13.1)))
     set(TL_HAVE_FMT NO)
     add_compile_definitions("FORMAT_NAMESPACE=std::")
 else()
@@ -384,44 +383,6 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
 
 endif()
 
-if(BUILD_TL_VIEWER)
-
-	##########################################################################
-	# GLEW                                                      			 #
-	##########################################################################
-
-	find_package(GLEW REQUIRED)
-
-	##########################################################################
-	# Qt                                                                     #
-	##########################################################################
-	find_package(Qt6 REQUIRED 
-				 COMPONENTS 
-				 Core
-				 Concurrent
-				 OpenGL  
-				 Widgets
-				 OpenGLWidgets)
-	  
-	if (Qt6_POSITION_INDEPENDENT_CODE)
-	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
-	endif()
-
-	if(Qt6_FOUND)
-		message(STATUS "Found Qt")
-		message(STATUS "  Module : ${Qt6Core_DIR}")
-		message(STATUS "  Module : ${Qt6Concurrent_DIR}")
-		message(STATUS "  Module : ${Qt6OpenGL_DIR}")
-		message(STATUS "  Module : ${Qt6Widgets_DIR}")
-		message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
-
-		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
-		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
-		set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
-		set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
-	endif()
-
-endif()
 
 ##########################################################################
 # OpenCV  (optional)                                                     #
@@ -463,23 +424,23 @@ endif(WITH_GDAL)
 
 
 ##########################################################################
-# PROJ4 (optional)                                                       #
+# PROJ (optional)                                                       #
 ##########################################################################
 
-if(WITH_PROJ4)
+if(WITH_PROJ)
 
   set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
   find_package(PROJ QUIET)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
   if(NOT PROJ_FOUND)
-    set(TL_HAVE_PROJ4 NO)
+    set(TL_HAVE_PROJ NO)
   else()
-    set(TL_HAVE_PROJ4 YES)
+    set(TL_HAVE_PROJ YES)
     #include_directories(${PROJ_INCLUDE_DIRS})
     message(STATUS "  PROJ version: ${PROJ_VERSION}")
   endif()
-endif(WITH_PROJ4)
+endif(WITH_PROJ)
 
 ##########################################################################
 # LibRaw (optional)                                                      #

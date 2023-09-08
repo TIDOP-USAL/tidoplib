@@ -41,9 +41,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
-
 class GraphicEntity;
 
 /*!
@@ -262,8 +259,6 @@ protected:
     std::vector<std::shared_ptr<TableField>> mTableFields;
 };
 
-
-} // namespace graph
 
 /*! \} */ //  GraphicEntities
 

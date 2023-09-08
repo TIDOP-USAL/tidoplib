@@ -44,26 +44,26 @@ BOOST_AUTO_TEST_SUITE(MessageTestSuite)
 
 struct MessageTest
 {
-  MessageTest()
-  {
-    //Console &console = App::console();
-    //console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
-    //App::messageManager().addListener(&console);
-  }
+    MessageTest()
+    {
+        //Console &console = App::console();
+        //console.setMessageLevel(MessageLevel::msg_error | MessageLevel::msg_warning | MessageLevel::msg_info | MessageLevel::msg_debug);
+        //App::messageManager().addListener(&console);
+    }
 
-  ~MessageTest()
-  {
-  }
+    ~MessageTest()
+    {
+    }
 
-  void setup()
-  {
+    void setup()
+    {
 
-  }
+    }
 
-  void teardown()
-  {
+    void teardown()
+    {
 
-  }
+    }
 
 };
 

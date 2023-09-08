@@ -35,8 +35,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
 
 /*!
  * \brief Clase gráfica polígono
@@ -229,9 +227,6 @@ public:
     bool isSimpleEntity() const override;
 };
 
-
-
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

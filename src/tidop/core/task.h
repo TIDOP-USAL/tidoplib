@@ -380,7 +380,7 @@ private:
 private:
 
     std::queue<std::shared_ptr<Task>> mQueue;
-
+    static std::mutex mtx;
 };
 
 

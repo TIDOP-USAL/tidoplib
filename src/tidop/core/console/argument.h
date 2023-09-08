@@ -46,6 +46,7 @@ namespace tl
   *  \{
   */
 
+template <typename T> class Argument_;
 
 /*!
  * \brief The Argument class
@@ -188,6 +189,14 @@ public:
      * \return
      */
     virtual bool isValid() = 0;
+
+public:
+
+    template<typename T, typename... Arg>
+    static auto make(Arg&&... arg) -> std::shared_ptr<Argument_<T>>
+    {
+        return std::make_shared<Argument_<T>>(std::forward<Arg>(arg)...);
+    }
 
 private:
 
@@ -576,12 +585,6 @@ auto Argument_<T>::isValid() -> bool
 }
 
 
-
-template<typename T, typename... Arg>
-auto makeArgument(Arg&&... arg) -> std::shared_ptr<Argument_<T>>
-{
-    return std::make_shared<Argument_<T>>(std::forward<Arg>(arg)...);
-}
 
 /*! \} */ // end of Console
 

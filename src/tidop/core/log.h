@@ -100,16 +100,6 @@ public:
     void close();
     bool isOpen() const;
 
-    Log &operator <<(MessageLevel level);
-    Log &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
-
-    template<typename T>
-    Log &operator <<(T value)
-    {
-	    _stream << value;
-	    return *this;
-    }
-
     /*!
      * \brief Message levels
      * \return Flag with message levels activated
@@ -130,12 +120,6 @@ public:
      * \param[in] level Message level.
      */
     static void setMessageLevel(MessageLevel level);
-
-    static Log &debug();
-    static Log &info();
-    static Log &success();
-    static Log &warning();
-    static Log &error();
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 

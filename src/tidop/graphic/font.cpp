@@ -27,15 +27,13 @@
 namespace tl
 {
 
-namespace graph
-{
 
 /* ---------------------------------------------------------------------------------- */
 /*                                     Clase Font                                    */
 /* ---------------------------------------------------------------------------------- */
 
 Font::Font()
-    : mName("Arial"),
+  : mName("Arial"),
     mSize(10),
     mStyle(Style::normal),
     mUnderline(false),
@@ -44,7 +42,7 @@ Font::Font()
 }
 
 Font::Font(const Font &font)
-    : mName(font.mName),
+  : mName(font.mName),
     mSize(font.mSize),
     mStyle(font.mStyle),
     mUnderline(font.mUnderline),
@@ -53,7 +51,7 @@ Font::Font(const Font &font)
 }
 
 Font::Font(Font &&font) TL_NOEXCEPT
-    : mName(std::move(font.mName)),
+  : mName(std::move(font.mName)),
     mSize(std::move(font.mSize)),
     mStyle(std::move(font.mStyle)),
     mUnderline(std::move(font.mUnderline)),
@@ -62,7 +60,7 @@ Font::Font(Font &&font) TL_NOEXCEPT
 }
 
 Font::Font(const std::string name, int size, Style style, bool underline, bool strikethrough)
-    : mName(name),
+  : mName(name),
     mSize(size),
     mStyle(style),
     mUnderline(underline),
@@ -158,7 +156,5 @@ Font &Font::operator = (Font &&font) TL_NOEXCEPT
     }
     return *this;
 }
-
-} // End namespace graph
 
 } // End namespace tl

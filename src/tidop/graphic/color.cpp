@@ -320,11 +320,6 @@ void chromaticityCoordinates(int red, int green, int blue, double *r, double *g,
 //  return static_cast<int>(color1) != static_cast<int>(color2);
 //}
 
-namespace graph
-{
-
-
-/* ---------------------------------------------------------------------------------- */
 
 
 ColorSpace::ColorSpace()
@@ -336,7 +331,7 @@ ColorSpace::~ColorSpace()
 }
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 
 Color::Color()
@@ -430,22 +425,22 @@ Color &Color::operator =(const Color &color)
   return *this;
 }
 
-bool operator == (const tl::graph::Color &color1, const tl::graph::Color &color2)
+bool operator == (const Color &color1, const Color &color2)
 {
   return static_cast<int>(color1) == static_cast<int>(color2);
 }
 
-bool operator != (const tl::graph::Color &color1, const tl::graph::Color &color2)
+bool operator != (const Color &color1, const Color &color2)
 {
   return static_cast<int>(color1) != static_cast<int>(color2);
 }
 
-/* ---------------------------------------------------------------------------------- */
+
+
 
 
 ColorModel::ColorModel() {}
 ColorModel::~ColorModel() {}
-
 
 ColorRGB::ColorRGB()
   : mRed(0),
@@ -633,7 +628,8 @@ void ColorRGBA::adjustRangeAlpha()
 }
 
 
-/* ---------------------------------------------------------------------------------- */
+
+
 
 
 ColorCMYK::ColorCMYK()
@@ -789,7 +785,7 @@ void ColorCMYK::adjustRangeKey()
 
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 ColorHSV::ColorHSV()
   : mHue(0.),
@@ -964,7 +960,7 @@ void ColorHSV::adjustRangeValue()
 }
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 
 ColorHSL::ColorHSL()
@@ -1142,12 +1138,5 @@ void ColorHSL::adjustRangeLightness()
   if (mLightness < mRangeMin) mLightness = mRangeMin;
   else if (mLightness > mRangeMax) mLightness = mRangeMax;
 }
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-
-} // fin namespace graph
 
 } // End namespace tl

@@ -218,9 +218,6 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 //TL_EXPORT bool operator == (const Color &color1, const Color &color2);
 //TL_EXPORT bool operator != (const Color &color1, const Color &color2);
 
-namespace graph
-{
-
 /*!
  * \brief Clase espacio de color
  *
@@ -499,8 +496,8 @@ private:
 
 };
 
-TL_EXPORT bool operator == (const tl::graph::Color &color1, const tl::graph::Color &color2);
-TL_EXPORT bool operator != (const tl::graph::Color &color1, const tl::graph::Color &color2);
+TL_EXPORT bool operator == (const Color &color1, const Color &color2);
+TL_EXPORT bool operator != (const Color &color1, const Color &color2);
 
 
 
@@ -1078,8 +1075,6 @@ void TrfColorModel<T1, T2>::aply()
 {
 
 }
-
-} // fin namespace graph
 
 /*! \} */ // end of GraphicEntities
 

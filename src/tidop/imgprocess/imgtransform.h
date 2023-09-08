@@ -150,7 +150,7 @@ private:
     int mWidth;
     int mHeight;
     cv::Point mTopLeft;
-    graph::Color mColor;
+    Color mColor;
     Position mPosition;
 
 public:
@@ -165,7 +165,7 @@ public:
      */
     ResizeCanvas(int width,
                  int height,
-                 const graph::Color &color = graph::Color(),
+                 const Color &color = Color(),
                  const Position &position = Position::top_left);
 
     /*!
@@ -179,7 +179,7 @@ public:
     ResizeCanvas(int width,
                  int height,
                  const cv::Point &point,
-                 const graph::Color &color = graph::Color());
+                 const Color &color = Color());
 
 
     /*!
@@ -199,7 +199,7 @@ public:
      */
     void setParameters(int width,
                        int height,
-                       const graph::Color &color = graph::Color(),
+                       const Color &color = Color(),
                        const Position &position = Position::top_left);
 private:
 

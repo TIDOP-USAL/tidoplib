@@ -145,7 +145,7 @@ std::pair<int, char> utmZoneFromLonLat(double longitude, double latitude)
 //}
 
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
 
 
 

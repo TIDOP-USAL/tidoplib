@@ -35,8 +35,6 @@ namespace tl
  *  \{
  */
 
-namespace graph
-{
 
 class TL_EXPORT GPoint
   : public Point<double>,
@@ -198,8 +196,6 @@ public:
     bool isMultiEntity() const override;
     bool isSimpleEntity() const override;
 };
-
-} // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 

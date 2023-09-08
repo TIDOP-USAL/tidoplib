@@ -27,7 +27,7 @@
 
 #include "tidop/core/defs.h"
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
 
 #include <string>
 
@@ -134,4 +134,4 @@ private:
 
 } // End namespace tl
 
-#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ

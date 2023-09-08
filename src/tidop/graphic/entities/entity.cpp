@@ -34,28 +34,24 @@
 namespace tl
 {
 
-namespace graph
-{
-
-/* ---------------------------------------------------------------------------------- */
 
 
 GraphicEntity::GraphicEntity(Type type)
-    : GraphicStyle(),
+  : GraphicStyle(),
     //GData(),
     mEntityType(type)
 {
 }
 
 GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
-    : GraphicStyle(graphicEntity),
+  : GraphicStyle(graphicEntity),
     //GData(graphicEntity),
     mEntityType(graphicEntity.mEntityType)
 {
 }
 
 GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
-    : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
+  : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
     //GData(std::forward<GData>(graphicEntity)),
     mEntityType(std::move(graphicEntity.mEntityType))
 {
@@ -90,7 +86,7 @@ GraphicEntity::Type GraphicEntity::type() const
     return mEntityType;
 }
 
-std::shared_ptr<TableRegister> graph::GraphicEntity::data() const
+std::shared_ptr<TableRegister> GraphicEntity::data() const
 {
     return mData;
 }
@@ -100,7 +96,5 @@ void GraphicEntity::setData(std::shared_ptr<TableRegister> &data)
     mData = data;
 }
 
-
-} // Fin namespace graph
 
 } // End namespace tl

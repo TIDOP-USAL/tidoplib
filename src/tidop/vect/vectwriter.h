@@ -37,10 +37,7 @@
 namespace tl
 {
 
-namespace graph
-{
 class GLayer;
-}
 
 class TL_EXPORT VectorWriter
 {
@@ -67,7 +64,7 @@ public:
 
     virtual void create() = 0;
 
-    virtual void write(const graph::GLayer &layer) = 0;
+    virtual void write(const GLayer &layer) = 0;
 
     /*!
      * \brief Set the Coordinate Reference System
