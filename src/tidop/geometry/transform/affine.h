@@ -452,6 +452,7 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
         if (error) {
             if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
         }
+
     } catch (std::exception &e) {
         printException(e);
         status = Transform::Status::failure;

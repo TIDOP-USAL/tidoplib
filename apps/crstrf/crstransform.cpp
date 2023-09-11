@@ -61,6 +61,7 @@ int main(int argc, char **argv)
     cmd.addArgument<char>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", ';');
     cmd.addArgument<std::string>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", "");
     cmd.addArgument<std::string>("log", 'l', "Fichero de log", "");
+    cmd.addArgument<int>("skip","Skip lines", 0);
 
     cmd.addExample(cmd_name + " --epsg_in EPSG:25830 --epsg_out EPSG:4258 --coord 281815.044;4827675.243;123.35");
     cmd.addExample(cmd_name + " -iEPSG:25830 -oEPSG:4258 --coord utm.txt");
@@ -81,6 +82,7 @@ int main(int argc, char **argv)
     auto separator = cmd.value<char>("separator");
     auto coord_trf = cmd.value<std::string>("coord_trf");
     auto log_file = cmd.value<std::string>("log");
+    auto skip_lines = cmd.value<int>("skip");
 
     if(!log_file.empty()) {
         Log &log = App::log();
@@ -106,15 +108,26 @@ int main(int argc, char **argv)
 
                 std::string line;
                 while(std::getline(ifs, line)) {
+
+                    if (skip_lines > 0) {
+                        if (ofs.is_open())
+                            ofs << line << std::endl;
+                        skip_lines--;
+                        continue;
+                    }
+
                     std::vector<double> vector = split<double>(line, separator);
+                    TL_ASSERT(vector.size() >= 3, "");
                     Point3<double> pt_in(vector[0], vector[1], vector[2]);
                     Point3<double> pt_out;
                     crs.transform(pt_in, pt_out);
-                    Message::info("{};{};{} -> {};{};{}", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
+                    //Message::info("{};{};{} -> {};{};{}", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
 
                     if(ofs.is_open()) {
-                        ofs << vector[0] << separator << vector[1] << separator << vector[2] << separator << " -> "
-                            << pt_out.x << separator << pt_out.y << separator << pt_out.z << std::endl;
+                        ofs << std::fixed << pt_out.x << separator << pt_out.y << separator << pt_out.z << separator;
+                        for (size_t i = 3; i < vector.size(); i++)
+                            ofs << vector[i] << separator;
+                        ofs << std::endl;
                     }
                 }
                 ifs.close();

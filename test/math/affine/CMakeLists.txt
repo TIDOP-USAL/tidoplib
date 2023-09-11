@@ -22,23 +22,35 @@
 #                                                                        #
 ##########################################################################
  
-# Math tests
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-if(TL_HAVE_MATH)
-add_subdirectory(utils)
-add_subdirectory(matrix)
-add_subdirectory(quaternion)
-add_subdirectory(vector)
-add_subdirectory(angle_conversion)
-add_subdirectory(rotation_converter)
-add_subdirectory(statistics)
-add_subdirectory(statistic)
-add_subdirectory(qr)
-add_subdirectory(lu)
-add_subdirectory(cholesky)
-add_subdirectory(svd)
-add_subdirectory(simd)
-add_subdirectory(umeyama)
-add_subdirectory(transform)
-add_subdirectory(affine)
-endif()
+project(test)
+
+set(test_filename affine2_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+set(test_target "${test_name}")
+
+add_executable(${test_target} 
+               ${test_filename})
+
+target_link_libraries(${test_target}
+                      TidopLib::Core
+                      TidopLib::Math
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+
+if(HAVE_OPENBLAS)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_OPENBLAS)
+
+set_target_properties(${test_target} PROPERTIES
+                      OUTPUT_NAME ${test_target}
+                      PROJECT_LABEL "(TEST) ${test_name}")
+
+set_target_properties(${test_target} PROPERTIES 
+                      FOLDER "test/math")
+
+add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)

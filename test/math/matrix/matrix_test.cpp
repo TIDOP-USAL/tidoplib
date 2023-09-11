@@ -1855,6 +1855,28 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
   BOOST_CHECK_EQUAL(42, mat2[1][1]);
   BOOST_CHECK_EQUAL(69, mat2[1][2]);
 
+  // Matriz estática por dinámica
+
+  Matrix<int> mat4 = _mat_2x3_i * (*_cofactor_matrix_dyn);
+
+  BOOST_CHECK_EQUAL(12, mat4[0][0]);
+  BOOST_CHECK_EQUAL(44, mat4[0][1]);
+  BOOST_CHECK_EQUAL(94, mat4[0][2]);
+  BOOST_CHECK_EQUAL(11, mat4[1][0]);
+  BOOST_CHECK_EQUAL(42, mat4[1][1]);
+  BOOST_CHECK_EQUAL(69, mat4[1][2]);
+
+  // Matriz dinámica por estática
+
+  Matrix<int> mat5 = (*_mat_dyn_2x3_i) * _cofactor_matrix;
+
+  BOOST_CHECK_EQUAL(12, mat5[0][0]);
+  BOOST_CHECK_EQUAL(44, mat5[0][1]);
+  BOOST_CHECK_EQUAL(94, mat5[0][2]);
+  BOOST_CHECK_EQUAL(11, mat5[1][0]);
+  BOOST_CHECK_EQUAL(42, mat5[1][1]);
+  BOOST_CHECK_EQUAL(69, mat5[1][2]);
+    
   //Matrix<double> mat3 = mulmat3(matrix1, matrix2);
   Matrix<double> mat3 = matrix1 * matrix2;
   BOOST_CHECK_CLOSE(mat3[0][0], 150.46129999999997, 0.01);
@@ -3150,7 +3172,7 @@ BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixColTest)
   BOOST_CHECK_EQUAL(5 / 10., v[3]);
   BOOST_CHECK_EQUAL(5 / 10., v[4]);
 
-  a.col(1) /= 10;
+  a.col(1) /= 10.;
 
   BOOST_CHECK_EQUAL(8 / 10., a.col(1)[0]);
   BOOST_CHECK_EQUAL(6 / 10., a.col(1)[1]);
