@@ -107,6 +107,7 @@ private:
 
     Unit mUnit;
     T mValue;
+    template<typename> friend class AngleBase;
 
 public:
 
@@ -132,7 +133,7 @@ public:
         return AngleDerived2<T2>(angle.value());
     }
 
-public:
+private:
 
     auto derived() -> AngleDerived<T> &
     {

@@ -27,6 +27,8 @@
 #include <tidop/math/algebra/transform.h>
 #include <tidop/math/algebra/matrix.h>
 
+#include <tidop/math/algebra/scaling.h>
+#include <tidop/math/algebra/translation.h>
 
 using namespace tl;
 using namespace tl::math;
@@ -414,7 +416,7 @@ BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_3d, TransformTest)
     BOOST_CHECK_EQUAL(11., translate[2]);
 }
 
-BOOST_FIXTURE_TEST_CASE(translation_constructor_inverse, TransformTest)
+BOOST_FIXTURE_TEST_CASE(translation_inverse, TransformTest)
 {
     Translation<double, 3> translate({25., 36., 11.});
     auto translate_inv = translate.inverse();
@@ -570,6 +572,210 @@ BOOST_FIXTURE_TEST_CASE(scaling_default_constructor, TransformTest)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(scaling_constructor_uniform_scale, TransformTest)
+{
+    Scaling<double, 2> scaling(1.5);
 
+    BOOST_CHECK_EQUAL(1.5, scaling.x());
+    BOOST_CHECK_EQUAL(1.5, scaling.y());
+
+    BOOST_CHECK_EQUAL(1.5, scaling.toVector()[0]);
+    BOOST_CHECK_EQUAL(1.5, scaling.toVector()[1]);
+
+    BOOST_CHECK_EQUAL(1.5, scaling.at(0));
+    BOOST_CHECK_EQUAL(1.5, scaling.at(1));
+
+    BOOST_CHECK_EQUAL(1.5, scaling[0]);
+    BOOST_CHECK_EQUAL(1.5, scaling[1]);
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_constructor_sx_sy, TransformTest)
+{
+    Scaling<double, 2> scaling(1.2, 1.5);
+
+    BOOST_CHECK_EQUAL(1.2, scaling.x());
+    BOOST_CHECK_EQUAL(1.5, scaling.y());
+
+    BOOST_CHECK_EQUAL(1.2, scaling.toVector()[0]);
+    BOOST_CHECK_EQUAL(1.5, scaling.toVector()[1]);
+
+    BOOST_CHECK_EQUAL(1.2, scaling.at(0));
+    BOOST_CHECK_EQUAL(1.5, scaling.at(1));
+
+    BOOST_CHECK_EQUAL(1.2, scaling[0]);
+    BOOST_CHECK_EQUAL(1.5, scaling[1]);
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_constructor_sx_sy_sz, TransformTest)
+{
+    Scaling<double, 3> scaling(-1., -1., 1.);
+
+    BOOST_CHECK_EQUAL(-1., scaling.x());
+    BOOST_CHECK_EQUAL(-1., scaling.y());
+    BOOST_CHECK_EQUAL(1., scaling.z());
+
+    BOOST_CHECK_EQUAL(-1., scaling.toVector()[0]);
+    BOOST_CHECK_EQUAL(-1., scaling.toVector()[1]);
+    BOOST_CHECK_EQUAL(1., scaling.toVector()[2]);
+
+    BOOST_CHECK_EQUAL(-1., scaling.at(0));
+    BOOST_CHECK_EQUAL(-1., scaling.at(1));
+    BOOST_CHECK_EQUAL(1., scaling.at(2));
+    
+    BOOST_CHECK_EQUAL(-1., scaling[0]);
+    BOOST_CHECK_EQUAL(-1., scaling[1]);
+    BOOST_CHECK_EQUAL(1., scaling[2]);
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_constructor_vector_2d, TransformTest)
+{
+    Scaling<double, 2> scaling({1.2, 1.5});
+
+    BOOST_CHECK_EQUAL(1.2, scaling.x());
+    BOOST_CHECK_EQUAL(1.5, scaling.y());
+
+    BOOST_CHECK_EQUAL(1.2, scaling.toVector()[0]);
+    BOOST_CHECK_EQUAL(1.5, scaling.toVector()[1]);
+
+    BOOST_CHECK_EQUAL(1.2, scaling.at(0));
+    BOOST_CHECK_EQUAL(1.5, scaling.at(1));
+
+    BOOST_CHECK_EQUAL(1.2, scaling[0]);
+    BOOST_CHECK_EQUAL(1.5, scaling[1]);
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_constructor_vector_3d, TransformTest)
+{
+    Scaling<double, 3> scaling({-1., -1., 1.});
+
+    BOOST_CHECK_EQUAL(-1., scaling.x());
+    BOOST_CHECK_EQUAL(-1., scaling.y());
+    BOOST_CHECK_EQUAL(1., scaling.z());
+
+    BOOST_CHECK_EQUAL(-1., scaling.toVector()[0]);
+    BOOST_CHECK_EQUAL(-1., scaling.toVector()[1]);
+    BOOST_CHECK_EQUAL(1., scaling.toVector()[2]);
+
+    BOOST_CHECK_EQUAL(-1., scaling.at(0));
+    BOOST_CHECK_EQUAL(-1., scaling.at(1));
+    BOOST_CHECK_EQUAL(1., scaling.at(2));
+    
+    BOOST_CHECK_EQUAL(-1., scaling[0]);
+    BOOST_CHECK_EQUAL(-1., scaling[1]);
+    BOOST_CHECK_EQUAL(1., scaling[2]);
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_inverse, TransformTest)
+{
+    Scaling<double, 3> scaling({1.2, 1.2, 1.2});
+    auto scaling_inv = scaling.inverse();
+
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.z(), 0.01);
+
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.toVector()[0], 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.toVector()[1], 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.toVector()[2], 0.01);
+
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.at(0), 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.at(1), 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv.at(2), 0.01);
+
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv[0], 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv[1], 0.01);
+    BOOST_CHECK_CLOSE(0.83333333, scaling_inv[2], 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_transform_point2d, TransformTest)
+{
+    {
+        Scaling<double, 2> scaling(0.25);
+
+        auto point2 = scaling.transform(src_points_utm[0]);
+
+        BOOST_CHECK_CLOSE(1039305.636, point2.x, 0.01);
+        BOOST_CHECK_CLOSE(166197.327, point2.y, 0.01);
+    }
+
+    {
+        Point<double> point(23.5, 21.1);
+        auto point2 = Scaling<double, 2>(1.5, 2.0) * point;
+
+        BOOST_CHECK_CLOSE(35.25, point2.x, 0.01);
+        BOOST_CHECK_CLOSE(42.2, point2.y, 0.01);
+    }
+
+}
+
+BOOST_FIXTURE_TEST_CASE(scaling_transform_vector, TransformTest)
+{
+    {
+        Scaling<double, 3> scaling(0.25);
+
+        Vector<double, 3> vector{23.5, 21.1, 63.8};
+        auto vector2 = scaling.transform(vector);
+
+        BOOST_CHECK_CLOSE(5.875, vector2[0], 0.01);
+        BOOST_CHECK_CLOSE(5.275, vector2[1], 0.01);
+        BOOST_CHECK_CLOSE(15.95, vector2[2], 0.01);
+    }
+
+    {
+        Vector<double, 3> vector{1., 1., 1.};
+        auto vector2 = Scaling<double, 3>(0.5, 1.0, 1.5) * vector;
+
+        BOOST_CHECK_CLOSE(0.5, vector2[0], 0.01);
+        BOOST_CHECK_CLOSE(1.0, vector2[1], 0.01);
+        BOOST_CHECK_CLOSE(1.5, vector2[2], 0.01);
+    }
+
+}
+
+
+
+BOOST_FIXTURE_TEST_CASE(scaling_transform_matrix, TransformTest)
+{
+    {
+        Scaling<double, 2> scaling(0.25);
+
+        auto out = scaling.transform(src_matrix_utm);
+
+        BOOST_CHECK_CLOSE(1039305.636, out[0][0], 0.1);
+        BOOST_CHECK_CLOSE(166197.327, out[0][1], 0.1);
+        BOOST_CHECK_CLOSE(1037260.834, out[1][0], 0.1);
+        BOOST_CHECK_CLOSE(172209.111, out[1][1], 0.1);
+        BOOST_CHECK_CLOSE(1043200.878, out[2][0], 0.1);
+        BOOST_CHECK_CLOSE(172585.020, out[2][1], 0.1);
+        BOOST_CHECK_CLOSE(1044287.094, out[3][0], 0.1);
+        BOOST_CHECK_CLOSE(160749.409, out[3][1], 0.1);
+        BOOST_CHECK_CLOSE(1034253.048, out[4][0], 0.1);
+        BOOST_CHECK_CLOSE(167952.007, out[4][1], 0.1);
+        BOOST_CHECK_CLOSE(1036573.182, out[5][0], 0.1);
+        BOOST_CHECK_CLOSE(166738.222, out[5][1], 0.1);
+        BOOST_CHECK_CLOSE(1034689.976, out[6][0], 0.1);
+        BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.1);
+    }
+
+    {
+        auto out = Scaling<double, 2>(0.25) * src_matrix_utm;
+
+        BOOST_CHECK_CLOSE(1039305.636, out[0][0], 0.1);
+        BOOST_CHECK_CLOSE(166197.327, out[0][1], 0.1);
+        BOOST_CHECK_CLOSE(1037260.834, out[1][0], 0.1);
+        BOOST_CHECK_CLOSE(172209.111, out[1][1], 0.1);
+        BOOST_CHECK_CLOSE(1043200.878, out[2][0], 0.1);
+        BOOST_CHECK_CLOSE(172585.020, out[2][1], 0.1);
+        BOOST_CHECK_CLOSE(1044287.094, out[3][0], 0.1);
+        BOOST_CHECK_CLOSE(160749.409, out[3][1], 0.1);
+        BOOST_CHECK_CLOSE(1034253.048, out[4][0], 0.1);
+        BOOST_CHECK_CLOSE(167952.007, out[4][1], 0.1);
+        BOOST_CHECK_CLOSE(1036573.182, out[5][0], 0.1);
+        BOOST_CHECK_CLOSE(166738.222, out[5][1], 0.1);
+        BOOST_CHECK_CLOSE(1034689.976, out[6][0], 0.1);
+        BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.1);
+    }
+
+}
 
 BOOST_AUTO_TEST_SUITE_END()

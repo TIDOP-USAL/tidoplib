@@ -597,7 +597,7 @@ double Square<T>::area() const
  */
 template<typename T>
 class Rectangle
-    : public Entity,
+  : public Entity,
     public Shape
 {
 
