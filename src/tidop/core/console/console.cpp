@@ -299,7 +299,7 @@ void Console::success(String message)
 
     if (messageLevelFlags.isEnabled(MessageLevel::success)) {
         setForegroundColor(Color::green, Intensity::normal);
-        _stream << "Succes:  " << message << std::endl;
+        _stream << "Success: " << message << std::endl;
         reset();
     }
 }

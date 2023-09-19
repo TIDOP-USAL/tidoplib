@@ -93,7 +93,7 @@ void Log::success(String message)
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::success))
-        _stream << date << "Succes:  " << message << std::endl;
+        _stream << date << "Success: " << message << std::endl;
 }
 
 void Log::warning(String message)
