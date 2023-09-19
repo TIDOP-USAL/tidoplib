@@ -466,7 +466,7 @@ DescriptiveStatistics<T>::DescriptiveStatistics(Series<T> data,
 
 template<typename T>
 DescriptiveStatistics<T>::DescriptiveStatistics(const DescriptiveStatistics<T> &object)
-    : mData(object.mData),
+  : mData(object.mData),
     mConfig(object.mConfig),
     mSkewnessMethod(object.mSkewnessMethod)
 {

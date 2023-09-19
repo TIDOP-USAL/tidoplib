@@ -47,34 +47,31 @@ namespace tl
  *  \{
  */
 
+enum Axes
+{
+    //Euler angles
+    zxz,
+    xyx,
+    yzy,
+    zyz,
+    xzx,
+    yxy,
+    //TaitBryan angles
+    xyz,
+    yzx,
+    zxy,
+    xzy,
+    zyx,
+    yxz
+};
 
 /*!
  * \brief Ángulos de Euler
  */
-template<typename T>
+template<typename T, int _axes = Axes::xyz>
 class EulerAngles
-    : public OrientationBase<T>
+    : public OrientationBase<EulerAngles<T, _axes>>
 {
-
-public:
-
-    enum class Axes
-    {
-        //Euler angles
-        zxz,
-        xyx,
-        yzy,
-        zyz,
-        xzx,
-        yxy,
-        //TaitBryan angles
-        xyz,
-        yzx,
-        zxy,
-        xzy,
-        zyx,
-        yxz
-    };
 
 public:
 
@@ -86,83 +83,79 @@ public:
 public:
 
     EulerAngles();
-    EulerAngles(double x, double y, double z, Axes axes);
-    EulerAngles(const EulerAngles<T> &eulerAngles);
-    EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT;
+    EulerAngles(double x, double y, double z);
+    EulerAngles(const EulerAngles<T, _axes> &eulerAngles);
+    EulerAngles(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT;
     ~EulerAngles() override = default;
 
-    auto operator = (const EulerAngles<T> &eulerAngles) -> EulerAngles&;
-    auto operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
-    
+    auto operator = (const EulerAngles<T, _axes> &eulerAngles) -> EulerAngles&;
+    auto operator = (EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
+
     /* Unary arithmetic operators */
 
-    auto operator+() -> EulerAngles<T>;
-    auto operator-() -> EulerAngles<T>;
+    auto operator+() -> EulerAngles<T, _axes>;
+    auto operator-() -> EulerAngles<T, _axes>;
 };
 
-template<typename T>
-EulerAngles<T>::EulerAngles()
-  : OrientationBase<T>(Orientation::Type::euler_angles),
+
+template<typename T, int _axes>
+EulerAngles<T, _axes>::EulerAngles()
+  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
     x{0},
     y{0},
     z{0},
-    axes(Axes::xyz)
+    axes(static_cast<Axes>(_axes))
 {
 }
 
-template<typename T>
-EulerAngles<T>::EulerAngles(double x,
-                            double y,
-                            double z,
-                            Axes axes)
-  : OrientationBase<T>(Orientation::Type::euler_angles),
+template<typename T, int _axes>
+EulerAngles<T, _axes>::EulerAngles(double x, double y, double z)
+  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
     x(x),
     y(y),
     z(z),
-    axes(axes)
+    axes(static_cast<Axes>(_axes))
 {
 }
 
-template<typename T>
-EulerAngles<T>::EulerAngles(const EulerAngles<T> &eulerAngles)
-  : OrientationBase<T>(Orientation::Type::euler_angles),
+template<typename T, int _axes>
+EulerAngles<T, _axes>::EulerAngles(const EulerAngles<T, _axes> &eulerAngles)
+  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
     x(eulerAngles.x),
     y(eulerAngles.y),
     z(eulerAngles.z),
-    axes(eulerAngles.axes)
+    axes(static_cast<Axes>(_axes))
 {
 }
 
-template<typename T>
-EulerAngles<T>::EulerAngles(EulerAngles<T> &&eulerAngles) TL_NOEXCEPT
-  : OrientationBase<T>(Orientation::Type::euler_angles),
+template<typename T, int _axes>
+EulerAngles<T, _axes>::EulerAngles(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT
+  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
     x(std::exchange(eulerAngles.x, 0)),
     y(std::exchange(eulerAngles.y, 0)),
     z(std::exchange(eulerAngles.z, 0)),
-    axes(std::exchange(eulerAngles.axes, Axes::xyz))
+    axes(static_cast<Axes>(_axes))
 {
 }
 
-template<typename T>
-auto EulerAngles<T>::operator = (const EulerAngles &eulerAngles) -> EulerAngles<T>&
+template<typename T, int _axes>
+auto EulerAngles<T, _axes>::operator = (const EulerAngles<T, _axes> &eulerAngles) -> EulerAngles<T, _axes>&
 {
     if (this != &eulerAngles) {
         x = eulerAngles.x;
         y = eulerAngles.y;
         z = eulerAngles.z;
-        axes = eulerAngles.axes;
     }
     return *this;
 }
 
-template<typename T>
-auto EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> EulerAngles<T>&
+template<typename T, int _axes>
+auto EulerAngles<T, _axes>::operator = (EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT -> EulerAngles<T, _axes>&
 {
     if (this != &eulerAngles) {
         x = std::exchange(eulerAngles.x, 0);
         y = std::exchange(eulerAngles.y, 0);
         z = std::exchange(eulerAngles.z, 0);
-        axes = std::exchange(eulerAngles.axes, Axes::xyz);
     }
 
     return *this;
@@ -170,19 +163,16 @@ auto EulerAngles<T>::operator = (EulerAngles<T> &&eulerAngles) TL_NOEXCEPT -> Eu
 
 /* Operaciones unarias */
 
-template<typename T>
-inline auto EulerAngles<T>::operator+() -> EulerAngles<T>
+template<typename T, int _axes>
+inline auto EulerAngles<T, _axes>::operator+() -> EulerAngles<T, _axes>
 {
     return *this;
 }
 
-template <typename T>
-inline auto EulerAngles<T>::operator-() -> EulerAngles
+template <typename T, int _axes>
+inline auto EulerAngles<T, _axes>::operator-() -> EulerAngles<T, _axes>
 {
-    return EulerAngles<T>(-this->x,
-                          -this->y,
-                          -this->z,
-                          this->axes);
+    return EulerAngles<T, _axes>(-this->x,-this->y,-this->z);
 }
 
 

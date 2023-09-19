@@ -40,7 +40,6 @@ struct UmeyamaTest
 {
 
     UmeyamaTest() {}
-
     ~UmeyamaTest() {}
 
     void setup()
@@ -157,11 +156,9 @@ struct UmeyamaTest
 };
 
 
-BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
+BOOST_FIXTURE_TEST_CASE(estimate, UmeyamaTest)
 {
-
-    Umeyama<Matrix<double>> umeyama(src_mat, dst_mat);
-    auto transform = umeyama.transform();
+    auto transform = Umeyama<double, 3>::estimate(src_mat, dst_mat);
 
     BOOST_CHECK_CLOSE(1, transform[0][0], 0.1);
     BOOST_CHECK_CLOSE(-3.80747e-05, transform[0][1], 0.1);
@@ -180,31 +177,11 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
     BOOST_CHECK_CLOSE(0, transform[3][2], 0.1);
     BOOST_CHECK_CLOSE(1, transform[3][3], 0.1);
 
-    auto rotation = umeyama.rotation();
-    BOOST_CHECK_CLOSE(1., rotation[0][0], 0.1);
-    BOOST_CHECK_CLOSE(-3.80747e-05, rotation[0][1], 0.1);
-    BOOST_CHECK_CLOSE(-8.79539e-06, rotation[0][2], 0.1);
-    BOOST_CHECK_CLOSE(3.80748e-05, rotation[1][0], 0.1);
-    BOOST_CHECK_CLOSE(1., rotation[1][1], 0.1);
-    BOOST_CHECK_CLOSE(4.1215e-06, rotation[1][2], 0.1);
-    BOOST_CHECK_CLOSE(8.79523e-06, rotation[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-4.12183e-06, rotation[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1., rotation[2][2], 0.1);
-
-    auto scale = umeyama.scale();
-    BOOST_CHECK_CLOSE(1., scale, 0.1);
-
-    auto translation = umeyama.translation();
-    BOOST_CHECK_CLOSE(-419.568, translation[0], 0.1);
-    BOOST_CHECK_CLOSE(-99.246, translation[1], 0.1);
-    BOOST_CHECK_CLOSE(-591.456, translation[2], 0.1);
-
 }
 
-BOOST_FIXTURE_TEST_CASE(compute2, UmeyamaTest)
+BOOST_FIXTURE_TEST_CASE(estimate2, UmeyamaTest)
 {
-    Umeyama<Matrix<double>> umeyama(src_mat2, dst_mat2);
-    auto transform = umeyama.transform();
+    auto transform = Umeyama<double, 3>::estimate(src_mat2, dst_mat2);
 
     BOOST_CHECK_CLOSE(1.7837, transform[0][0], 0.1);
     BOOST_CHECK_CLOSE(1.42329e-15, transform[0][1], 0.1);
@@ -226,10 +203,9 @@ BOOST_FIXTURE_TEST_CASE(compute2, UmeyamaTest)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(compute_points, UmeyamaTest)
+BOOST_FIXTURE_TEST_CASE(estimate_points, UmeyamaTest)
 {
-    Umeyama<Matrix<double>> umeyama(src_points, dst_points);
-    auto transform = umeyama.transform();
+    auto transform = Umeyama<double, 3>::estimate(src_points, dst_points);
 
     BOOST_CHECK_CLOSE(1, transform[0][0], 0.1);
     BOOST_CHECK_CLOSE(-3.80747e-05, transform[0][1], 0.1);

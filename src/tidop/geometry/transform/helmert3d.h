@@ -603,9 +603,8 @@ void Helmert3D<Point_t>::setKappa(double kappa)
 template<typename Point_t> inline
 void Helmert3D<Point_t>::update()
 {
-    EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa,
-                                    EulerAngles<double>::Axes::xyz);
-    RotationConverter<double>::convert(eulerAngles, mR);
+    EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa);
+    mR = eulerAngles;
     mRinv = mR.inverse();
 }
 

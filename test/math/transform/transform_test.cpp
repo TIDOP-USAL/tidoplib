@@ -29,6 +29,7 @@
 
 #include <tidop/math/algebra/scaling.h>
 #include <tidop/math/algebra/translation.h>
+#include <tidop/math/algebra/umeyama.h>
 
 using namespace tl;
 using namespace tl::math;
@@ -277,27 +278,6 @@ BOOST_FIXTURE_TEST_CASE(setTranslation, TransformTest)
     BOOST_CHECK_CLOSE(10., translation[0], 0.1);
     BOOST_CHECK_CLOSE(30., translation[1], 0.1);
     BOOST_CHECK_CLOSE(26., translation[2], 0.1);
-}
-
-BOOST_FIXTURE_TEST_CASE(umeyama_compute, TransformTest)
-{
-    Transform<double, 3> transform = Umeyama<double,3>::compute(src_mat, dst_mat);
-    BOOST_CHECK_CLOSE(1, transform[0][0], 0.1);
-    BOOST_CHECK_CLOSE(-3.80747e-05, transform[0][1], 0.1);
-    BOOST_CHECK_CLOSE(-8.79539e-06, transform[0][2], 0.1);
-    BOOST_CHECK_CLOSE(-419.568, transform[0][3], 0.1);
-    BOOST_CHECK_CLOSE(3.80748e-05, transform[1][0], 0.1);
-    BOOST_CHECK_CLOSE(1, transform[1][1], 0.1);
-    BOOST_CHECK_CLOSE(4.1215e-06, transform[1][2], 0.1);
-    BOOST_CHECK_CLOSE(-99.246, transform[1][3], 0.1);
-    BOOST_CHECK_CLOSE(8.79523e-06, transform[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-4.12183e-06, transform[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1, transform[2][2], 0.1);
-    BOOST_CHECK_CLOSE(-591.456, transform[2][3], 0.1);
-    BOOST_CHECK_CLOSE(0, transform[3][0], 0.1);
-    BOOST_CHECK_CLOSE(0, transform[3][1], 0.1);
-    BOOST_CHECK_CLOSE(0, transform[3][2], 0.1);
-    BOOST_CHECK_CLOSE(1, transform[3][3], 0.1);
 }
 
 /* Translation */
@@ -776,6 +756,168 @@ BOOST_FIXTURE_TEST_CASE(scaling_transform_matrix, TransformTest)
         BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.1);
     }
 
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(ScalingEstimatorTestSuite)
+
+struct ScalingTest
+{
+
+    ScalingTest()
+    {
+
+    }
+
+    ~ScalingTest()
+    {
+    }
+
+    void setup()
+    {
+        src_points = {
+          Point<double>(4157222.543, 664789.307),
+          Point<double>(4149043.336, 688836.443),
+          Point<double>(4172803.511, 690340.078),
+          Point<double>(4177148.376, 642997.635),
+          Point<double>(4137012.190, 671808.029),
+          Point<double>(4146292.729, 666952.887),
+          Point<double>(4138759.902, 702670.738)};
+
+        dst_points = {
+          Point<double>(1039305.636,  166197.327),
+          Point<double>(1037260.834,  172209.111),
+          Point<double>(1043200.878,  172585.020),
+          Point<double>(1044287.094,  160749.409),
+          Point<double>(1034253.048,  167952.007),
+          Point<double>(1036573.182,  166738.222),
+          Point<double>(1034689.976,  175667.685)};
+
+        src_mat = {{4157222.543, 664789.307},
+                   {4149043.336, 688836.443},
+                   {4172803.511, 690340.078},
+                   {4177148.376, 642997.635},
+                   {4137012.190, 671808.029},
+                   {4146292.729, 666952.887},
+                   {4138759.902, 702670.738}};
+
+        dst_mat = {{1039305.636, 166197.327},
+                   {1037260.834, 172209.111},
+                   {1043200.878, 172585.020},
+                   {1044287.094, 160749.409},
+                   {1034253.048, 167952.007},
+                   {1036573.182, 166738.222},
+                   {1034689.976, 175667.685}};
+    }
+
+    void teardown()
+    {
+    }
+
+    std::vector<Point<double>> src_points;
+    std::vector<Point<double>> dst_points;
+    Matrix<double> src_mat;
+    Matrix<double> dst_mat;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(estimate_points, ScalingTest)
+{
+    auto transform = ScalingEstimator<double, 2>::estimate(src_points, dst_points);
+
+    BOOST_CHECK_CLOSE(0.25, transform[0][0], 0.1);
+    BOOST_CHECK_CLOSE(0.25, transform[1][1], 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(estimate_matrix, ScalingTest)
+{
+    auto transform = ScalingEstimator<double, 2>::estimate(src_mat, dst_mat);
+
+    BOOST_CHECK_CLOSE(0.25, transform[0][0], 0.1);
+    BOOST_CHECK_CLOSE(0.25, transform[1][1], 0.1);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(TranslationEstimatorTestSuite)
+
+struct TranslationTest
+{
+
+    TranslationTest()
+    {
+
+    }
+
+    ~TranslationTest()
+    {
+    }
+
+    void setup()
+    {
+        src_points = {
+          Point<double>(4157222.543, 664789.307),
+          Point<double>(4149043.336, 688836.443),
+          Point<double>(4172803.511, 690340.078),
+          Point<double>(4177148.376, 642997.635),
+          Point<double>(4137012.190, 671808.029),
+          Point<double>(4146292.729, 666952.887),
+          Point<double>(4138759.902, 702670.738)};
+
+        dst_points = {
+          Point<double>(4157372.543, 664864.307),
+          Point<double>(4149193.336, 688911.443),
+          Point<double>(4172953.511, 690415.078),
+          Point<double>(4177298.376, 643072.635),
+          Point<double>(4137162.19, 671883.029),
+          Point<double>(4146442.729, 667027.887),
+          Point<double>(4138909.902, 702745.738)};
+
+        src_mat = {{4157222.543, 664789.307},
+                   {4149043.336, 688836.443},
+                   {4172803.511, 690340.078},
+                   {4177148.376, 642997.635},
+                   {4137012.190, 671808.029},
+                   {4146292.729, 666952.887},
+                   {4138759.902, 702670.738}};
+
+        dst_mat = {{4157372.543, 664864.307},
+                   {4149193.336, 688911.443},
+                   {4172953.511, 690415.078},
+                   {4177298.376, 643072.635},
+                   {4137162.19, 671883.029},
+                   {4146442.729, 667027.887},
+                   {4138909.902, 702745.738}};
+    }
+
+    void teardown()
+    {
+    }
+
+    std::vector<Point<double>> src_points;
+    std::vector<Point<double>> dst_points;
+    Matrix<double> src_mat;
+    Matrix<double> dst_mat;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(estimate_points, TranslationTest)
+{
+    auto transform = TranslationEstimator<double, 2>::estimate(src_points, dst_points);
+
+    BOOST_CHECK_CLOSE(150.0, transform[0][2], 0.1);
+    BOOST_CHECK_CLOSE(75.0, transform[1][2], 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(estimate_matrix, TranslationTest)
+{
+    auto transform = TranslationEstimator<double, 2>::estimate(src_mat, dst_mat);
+
+    BOOST_CHECK_CLOSE(150.0, transform[0][2], 0.1);
+    BOOST_CHECK_CLOSE(75.0, transform[1][2], 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -66,6 +66,7 @@ if(BUILD_TL_MATH)
                              algebra/transform.h
                              algebra/translation.h
                              algebra/scaling.h
+							 algebra/affine.h
                              lapack.h
                              blas.h)
                 
