@@ -39,10 +39,13 @@ if(BUILD_TL_VIEWER)
 							opengl/buffer/IndexBuffer.cpp
 							opengl/buffer/VertexArray.cpp
 							opengl/shader/Shader.cpp
-							group/ModelBase.cpp
 							group/PointCloud.cpp
 							renderer/Camera.cpp
 							renderer/TrackballCamera.cpp
+                            renderer/Renderer.cpp
+                            io/ModelReader.cpp
+                            io/ModelWriter.cpp
+                            io/ASCIIReader.cpp
                          HEADER_FILES
                             opengl/buffer/Buffer.h
 							opengl/buffer/IndexBuffer.h
@@ -53,7 +56,11 @@ if(BUILD_TL_VIEWER)
 							group/PointCloud.h
 							renderer/Camera.h
 							renderer/TrackballCamera.h
+                            renderer/Renderer.h
 							Vertex.h
+                            io/ModelReader.h
+                            io/ModelWriter.h
+                            io/ASCIIReader.h
 							 )
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}

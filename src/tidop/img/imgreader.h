@@ -36,6 +36,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/path.h"
+#include "tidop/core/ptr.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
@@ -52,6 +53,7 @@ class ImageMetadata;
  */
 class TL_EXPORT ImageReader
 {
+    GENERATE_UNIQUE_PTR(ImageReader)
 
 public:
 
@@ -221,9 +223,7 @@ private:
 
 public:
 
-    static std::unique_ptr<ImageReader> create(const Path &file);
-    TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<ImageReader> createReader(const Path &file);
+    static ImageReader::Ptr create(const Path &file);
 };
 
 } // End namespace tl

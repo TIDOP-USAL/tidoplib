@@ -9,8 +9,11 @@
 #include <tidop/viewer/opengl/buffer/VertexArray.h>
 #include <tidop/viewer/opengl/shader/Shader.h>
 #include <tidop/viewer/renderer/TrackballCamera.h>
+#include <tidop/viewer/group/PointCloud.h>
 
 #include <tidop/math/algebra/matrices.h>
+
+#include <tidop/viewer/io/ASCIIReader.h>
 
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -72,7 +75,15 @@ VertexArray::Ptr vertexArray;
 VertexBuffer::Ptr vertexBuffer;
 ShaderProgram::Ptr shaderProgram;
 
+PointCloud::Ptr pointCloud;
+
 Matrix4x4f model = Matrices::scale(0.5f, 0.5f, 0.5f);
+
+PointCloud::Ptr asciiCloud;
+
+
+
+
 
 double aspectRatio = static_cast<double>(WINDOW_WIDTH) / WINDOW_HEIGHT;
 TrackballCamera camera = TrackballCamera::perspectiveCamera(TO_RADIANS 45.0, aspectRatio, 0.1, 1000);
@@ -96,12 +107,20 @@ void drawScene()
     shaderProgram->uniformMat4("view", camera.getViewMatrix());
     shaderProgram->uniformMat4("projection", camera.getProjectionMatrix());
 
+    // Draw mesh
+    /*
     vertexArray->bind();
 
     if (!vertexBuffer->hasIndexBuffer()) glDrawArrays(GL_TRIANGLES, 0, vertices.size());
     else    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     vertexArray->unbind();
+    */
+
+    pointCloud->setPointSize(3.0f);
+    pointCloud->draw();
+
+    asciiCloud->draw();
 }
 
 void ViewerWidget::initializeGL()
@@ -121,6 +140,16 @@ void ViewerWidget::initializeGL()
     vertexBuffer = VertexBuffer::New(vertices, indices);
     vertexBuffer->bind();
     vertexArray->unbind();
+
+    pointCloud = tl::PointCloud::New(vertices);
+
+    Path modelPath("C:/Users/EquipoTidop/Desktop/torus.txt");
+    ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
+    reader->open();
+    ModelBase::Ptr model = reader->getModelBase();
+
+    asciiCloud = std::dynamic_pointer_cast<PointCloud>(model);
+    asciiCloud->scale(0.01, 0.01, 0.01);
 
     // Camera
     camera.zoom(-2.0f);
@@ -147,9 +176,6 @@ void ViewerWidget::paintGL()
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //model = model * Matrices::rotationX(TO_RADIANS 1.0f);
-    //camera.rotate(0.0f, 0.01f);
-
     // Draw scene
     drawScene();
 
@@ -157,20 +183,21 @@ void ViewerWidget::paintGL()
     update();
 }
 
-void ViewerWidget::mousePressEvent(QMouseEvent* event) {
+void ViewerWidget::mousePressEvent(QMouseEvent* event) 
+{
     mousePressed = true;
     previousMouse[0] = event->x();
     previousMouse[1] = event->y();
     button = event->button();
 }
 
-void ViewerWidget::mouseReleaseEvent(QMouseEvent* event) {
+void ViewerWidget::mouseReleaseEvent(QMouseEvent* event) 
+{
     mousePressed = false;
 }
 
-void ViewerWidget::mouseMoveEvent(QMouseEvent* event) {
-
-
+void ViewerWidget::mouseMoveEvent(QMouseEvent* event) 
+{
     if (mousePressed && button == Qt::LeftButton) {
 
         float dTheta = (event->x() - previousMouse.x()) / static_cast<float>(WINDOW_WIDTH);
@@ -194,7 +221,8 @@ void ViewerWidget::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-void ViewerWidget::wheelEvent(QWheelEvent* event) {
+void ViewerWidget::wheelEvent(QWheelEvent* event) 
+{
     float dr = 0.1f;
     if (event->angleDelta().y() < 0) dr *= -1.0f;
     camera.zoom(dr);

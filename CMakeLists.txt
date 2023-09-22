@@ -384,6 +384,46 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
 endif()
 
 
+if(BUILD_TL_VIEWER)
+
+	##########################################################################
+	# GLEW                                                      			 #
+	##########################################################################
+
+	find_package(GLEW REQUIRED)
+
+	##########################################################################
+	# Qt                                                                     #
+	##########################################################################
+	find_package(Qt6 REQUIRED 
+				 COMPONENTS 
+				 Core
+				 Concurrent
+				 OpenGL  
+				 Widgets
+				 OpenGLWidgets)
+	  
+	if (Qt6_POSITION_INDEPENDENT_CODE)
+	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	endif()
+
+	if(Qt6_FOUND)
+		message(STATUS "Found Qt")
+		message(STATUS "  Module : ${Qt6Core_DIR}")
+		message(STATUS "  Module : ${Qt6Concurrent_DIR}")
+		message(STATUS "  Module : ${Qt6OpenGL_DIR}")
+		message(STATUS "  Module : ${Qt6Widgets_DIR}")
+		message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+
+		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
+		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
+		set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
+		set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+	endif()
+
+endif()
+
+
 ##########################################################################
 # OpenCV  (optional)                                                     #
 ##########################################################################

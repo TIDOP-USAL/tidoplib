@@ -9,25 +9,31 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 
+#include "tidop/viewer/group/ModelBase.h"
 
 namespace tl 
 {
 
 class PointCloud
-{
+	: public ModelBase {
 
-protected:
+	GENERATE_SHARED_PTR(PointCloud)
 
-	VertexArray::Ptr vertexArray;
-	VertexBuffer::Ptr vertexBuffer;
+private:
 
-	Matrix4x4f modelMatrix;
-
-	unsigned int pointSize;
+	size_t size;
 
 public:
 
 	PointCloud(std::vector<Vertex>& points);
+	PointCloud(size_t _size);
+	PointCloud() = default;
+	~PointCloud() = default;
+
+public:
+
+	void draw() override;
+
 };
 
 }

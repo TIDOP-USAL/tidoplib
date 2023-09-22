@@ -143,6 +143,7 @@ tl::Path ImageReader::file() const
 class ImageReaderGdal
   : public ImageReader
 {
+    GENERATE_UNIQUE_PTR(ImageReaderGdal)
 
 public:
 
@@ -811,6 +812,7 @@ private:
 class ImageReaderCanon
   : public ImageReader
 {
+    GENERATE_UNIQUE_PTR(ImageReaderCanon)
 
 public:
 
@@ -1008,21 +1010,21 @@ private:
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<ImageReader> ImageReaderFactory::create(const Path &file)
+ImageReader::Ptr ImageReaderFactory::create(const Path &file)
 {
-    std::unique_ptr<ImageReader> image_reader;
+    ImageReader::Ptr image_reader;
 
     try {
 
         std::string extension = file.extension().toString();
 #ifdef TL_HAVE_GDAL
         if (gdalValidExtensions(extension)) {
-            image_reader = std::make_unique<ImageReaderGdal>(file);
+            image_reader = ImageReaderGdal::New(file);
         } else
 #endif
 #ifdef TL_HAVE_EDSDK
         if (compareInsensitiveCase(extension, ".CR2")) {
-            image_reader = std::make_unique<ImageReaderCanon>(file);
+            image_reader = ImageReaderCanon::New(file);
         } else
 #endif
         {
@@ -1034,11 +1036,6 @@ std::unique_ptr<ImageReader> ImageReaderFactory::create(const Path &file)
     }
 
     return image_reader;
-}
-
-std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
-{
-    return ImageReaderFactory::create(file);
 }
 
 } // End namespace tl
