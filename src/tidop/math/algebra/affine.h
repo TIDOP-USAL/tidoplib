@@ -30,6 +30,9 @@
 #include <array>
 
 #include "tidop/math/algebra/transform.h"
+#include "tidop/math/algebra/translation.h"
+#include "tidop/math/algebra/scaling.h"
+
 
 namespace tl
 {
@@ -75,6 +78,7 @@ public:
     Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa);
     Affine(const Point<T> &translation, const Vector<T, 2> &scale, T angle);
     Affine(const Point3<T> &translation, const Vector<T, 3> &scale, const RotationMatrix<double> &rotation);
+    //Affine(const Translation<T, Dim> &translation, const Scaling<T, Dim> &scale, const Rotation<T, Dim> &rotation);
     ~Affine() override = default;
 
 private:
@@ -140,7 +144,9 @@ inline Affine<T, Dim>::Affine(const Point<T> &translation, const Vector<T, 2> &s
 }
 
 template<typename T, size_t Dim>
-inline Affine<T, Dim>::Affine(const Point3<T> &translation, const Vector<T, 3> &scale, const RotationMatrix<double> &rotation)
+inline Affine<T, Dim>::Affine(const Point3<T> &translation, 
+                              const Vector<T, 3> &scale,
+                              const RotationMatrix<double> &rotation)
 {
 }
 

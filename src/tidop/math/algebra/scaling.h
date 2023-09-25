@@ -31,6 +31,7 @@
 
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 #include "tidop/geometry/entities/point.h"
 
 namespace tl
@@ -88,9 +89,9 @@ public:
 
     auto toVector() -> Vector<T, Dim>;
 
-    auto x() -> T;
-    auto y() -> T;
-    auto z() -> T;
+    auto x() const -> T;
+    auto y() const -> T;
+    auto z() const -> T;
 
     auto at(size_type position) -> reference;
     auto at(size_type position) const -> const_reference;
@@ -100,6 +101,7 @@ public:
 
     auto inverse() -> Scaling;
 
+    /// Clases que deberían ser virtuales
     auto transform(const Point<T> &point) -> Point<T>;
     auto transform(const Point3<T> &point) -> Point3<T>;
     template<size_t _size>
@@ -114,6 +116,7 @@ public:
     template<size_t _row, size_t _col>
     auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
 
+    auto operator * (const Scaling<T, Dim> &scaling) -> Scaling<T, Dim>;
 };
 
 
@@ -135,69 +138,11 @@ public:
     ~ScalingEstimator() = default;
 
     template<size_t rows, size_t cols>
-    static Matrix<T, matrix_size, matrix_size> estimate(const Matrix<T, rows, cols> &src,
-                                                        const Matrix<T, rows, cols> &dst)
-    {
-        static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
+    static auto estimate(const Matrix<T, rows, cols> &src,
+                         const Matrix<T, rows, cols> &dst) -> Matrix<T, matrix_size, matrix_size>;
 
-        auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
-
-        try {
-
-            TL_ASSERT(src.cols() == dimensions, "Invalid matrix columns size");
-            TL_ASSERT(dst.cols() == dimensions, "Invalid matrix columns size");
-            TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes. Size src = {} and size dst = {}", src.rows(), dst.rows());
-
-            size_t size = src.rows() * dimensions;
-
-            Matrix<double> A(size, 4, 0);
-            Vector<double> B(size);
-
-            for (size_t i = 0, r = 0; i < src.rows(); i++, r++) {
-
-                A(r, 0) = src(i, 0);
-                //A(r, 1) = 0;
-                B[r] = dst(i, 0);
-
-                r++;
-
-                //A(r, 0) = 0;
-                A(r, 1) = src(i, 1);
-                B[r] = dst(i, 1);
-
-            }
-
-            SingularValueDecomposition<Matrix<double>> svd(A);
-            Vector<double> C = svd.solve(B);
-
-            transformMatrix(0, 0) = C[0];
-            transformMatrix(1, 1) = C[1];
-
-        } catch (...) {
-            TL_THROW_EXCEPTION_WITH_NESTED("");
-        }
-
-        return transformMatrix;
-    }
-
-    static Matrix<T, matrix_size, matrix_size> estimate(const std::vector<Point<T>> &src,
-                                                        const std::vector<Point<T>> &dst)
-    {
-        TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
-
-        Matrix<T> src_mat(src.size(), dimensions);
-        Matrix<T> dst_mat(dst.size(), dimensions);
-
-        for (size_t r = 0; r < src_mat.rows(); r++) {
-            src_mat[r][0] = src[r].x;
-            src_mat[r][1] = src[r].y;
-                      
-            dst_mat[r][0] = dst[r].x;
-            dst_mat[r][1] = dst[r].y;
-        }
-
-        return ScalingEstimator<T, dimensions>::estimate(src_mat, dst_mat);
-    }
+    static auto estimate(const std::vector<Point<T>> &src,
+                         const std::vector<Point<T>> &dst) -> Matrix<T, matrix_size, matrix_size>;
 
 };
 
@@ -282,19 +227,19 @@ inline auto Scaling<T, Dim>::toVector() -> Vector<T, Dim>
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::x() -> T
+inline auto Scaling<T, Dim>::x() const -> T
 {
     return this->scale[0];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::y() -> T
+inline auto Scaling<T, Dim>::y() const -> T
 {
     return this->scale[1];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::z() -> T
+inline auto Scaling<T, Dim>::z() const -> T
 {
     static_assert(dimensions == 3, "Method not valid for 2D Scaling");
     return this->scale[2];
@@ -401,6 +346,84 @@ auto Scaling<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) -> Matrix
 {
     return this->transform(matrix);
 }
+
+template<typename T, size_t Dim>
+inline auto Scaling<T, Dim>::operator*(const Scaling<T, Dim> &scaling) -> Scaling<T, Dim>
+{
+    return this->scale * scaling.scale;
+}
+
+
+
+
+/* ScalingEstimator implementation */
+
+template<typename T, size_t Dim>
+template<size_t rows, size_t cols>
+inline auto ScalingEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
+                                               const Matrix<T, rows, cols> &dst) -> Matrix<T, matrix_size, matrix_size>
+{
+    static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
+
+    auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
+
+    try {
+
+        TL_ASSERT(src.cols() == dimensions, "Invalid matrix columns size");
+        TL_ASSERT(dst.cols() == dimensions, "Invalid matrix columns size");
+        TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes. Size src = {} and size dst = {}", src.rows(), dst.rows());
+
+        size_t size = src.rows() * dimensions;
+
+        Matrix<double> A(size, 4, 0);
+        Vector<double> B(size);
+
+        for (size_t i = 0, r = 0; i < src.rows(); i++, r++) {
+
+            A(r, 0) = src(i, 0);
+            //A(r, 1) = 0;
+            B[r] = dst(i, 0);
+
+            r++;
+
+            //A(r, 0) = 0;
+            A(r, 1) = src(i, 1);
+            B[r] = dst(i, 1);
+
+        }
+
+        SingularValueDecomposition<Matrix<double>> svd(A);
+        Vector<double> C = svd.solve(B);
+
+        transformMatrix(0, 0) = C[0];
+        transformMatrix(1, 1) = C[1];
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return transformMatrix;
+}
+
+template<typename T, size_t Dim>
+inline auto ScalingEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, const std::vector<Point<T>> &dst) -> Matrix<T, matrix_size, matrix_size>
+{
+    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+
+    Matrix<T> src_mat(src.size(), dimensions);
+    Matrix<T> dst_mat(dst.size(), dimensions);
+
+    for (size_t r = 0; r < src_mat.rows(); r++) {
+        src_mat[r][0] = src[r].x;
+        src_mat[r][1] = src[r].y;
+
+        dst_mat[r][0] = dst[r].x;
+        dst_mat[r][1] = dst[r].y;
+    }
+
+    return ScalingEstimator<T, dimensions>::estimate(src_mat, dst_mat);
+}
+
 
 /*! \} */ // end of Algebra
 

@@ -2004,6 +2004,11 @@ BOOST_FIXTURE_TEST_CASE(matrix_scalar, MatrixTest)
   BOOST_CHECK_EQUAL(60, _mat_2x3_i[1][1]);
   BOOST_CHECK_EQUAL(20, _mat_2x3_i[1][2]);
 
+  _mat_2x3_i[1] *= -1;
+  BOOST_CHECK_EQUAL(-90, _mat_2x3_i[1][0]);
+  BOOST_CHECK_EQUAL(-60, _mat_2x3_i[1][1]);
+  BOOST_CHECK_EQUAL(-20, _mat_2x3_i[1][2]);
+
   Matrix<int> mat2 = (*_mat_dyn_2x3_i) * 10;
   
   BOOST_CHECK_EQUAL(60, mat2[0][0]);
@@ -2021,6 +2026,11 @@ BOOST_FIXTURE_TEST_CASE(matrix_scalar, MatrixTest)
   BOOST_CHECK_EQUAL(90, _mat_dyn_2x3_i->at(1, 0));
   BOOST_CHECK_EQUAL(60, _mat_dyn_2x3_i->at(1, 1));
   BOOST_CHECK_EQUAL(20, _mat_dyn_2x3_i->at(1, 2));
+
+  (*_mat_dyn_2x3_i)[0] *= -1;
+  BOOST_CHECK_EQUAL(-60, _mat_dyn_2x3_i->at(0, 0));
+  BOOST_CHECK_EQUAL(-80, _mat_dyn_2x3_i->at(0, 1));
+  BOOST_CHECK_EQUAL(-60, _mat_dyn_2x3_i->at(0, 2));
 
   Matrix<int, 2, 2> mat3 = Matrix<int, 2, 2>::ones() * 10;
   BOOST_CHECK_EQUAL(10, mat3[0][0]);
