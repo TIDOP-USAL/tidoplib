@@ -45,6 +45,7 @@ target_link_libraries(${PROJECT_NAME}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
                       $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                      $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                       $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                       ${OpenCV_LIBS})
 					 

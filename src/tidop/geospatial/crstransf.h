@@ -50,7 +50,7 @@ namespace internal
 class CoordinateTransformation;
 }
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 

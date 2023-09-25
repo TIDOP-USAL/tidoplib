@@ -31,7 +31,7 @@ namespace geospatial
 {
 
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 
 std::unique_ptr<CrsCache> CrsCache::sCrsCache;
