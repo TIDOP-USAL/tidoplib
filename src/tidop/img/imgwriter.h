@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oï¿½a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -25,7 +25,7 @@
 #ifndef TL_IMAGE_WRITER_H
 #define TL_IMAGE_WRITER_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #ifdef TL_HAVE_OPENCV
 
@@ -81,7 +81,7 @@ public:
   virtual void close() = 0;
 
   /*!
-   * \brief Establece las opciones de creación del formato imagen
+   * \brief Establece las opciones de creaciï¿½n del formato imagen
    */
   virtual void setImageOptions(ImageOptions *imageOptions) = 0;
 
@@ -92,9 +92,9 @@ public:
 
   /*!
    * \brief Crea una imagen
-   * \param[in] rows Número de filas de la imagen
-   * \param[in] cols Número de columnas de la imagen
-   * \param[in] bands Número de bandas de la imagen
+   * \param[in] rows Nï¿½mero de filas de la imagen
+   * \param[in] cols Nï¿½mero de columnas de la imagen
+   * \param[in] bands Nï¿½mero de bandas de la imagen
    * \param[in] type Tipo de dato
    * \see DataType
    */
@@ -122,7 +122,7 @@ public:
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen.
+   * \param[in] trf Transformaciï¿½n entre el bloque y la imagen.
    */
   virtual void write(const cv::Mat &image, 
                      const Affine<PointI> &trf) = 0;
@@ -138,25 +138,25 @@ public:
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \param[in] trf Transformaciï¿½n entre el bloque y la imagen. Si es nula no se aplica transformaciï¿½n
    */
   //virtual void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) = 0;
 
   /*!
-   * \brief Devuelve el número de filas de la imagen
-   * \return Número de filas de la imagen
+   * \brief Devuelve el nï¿½mero de filas de la imagen
+   * \return Nï¿½mero de filas de la imagen
    */
   virtual int rows() const = 0;
 
   /*!
-   * \brief Devuelve el número de columnas de la imagen
-   * \return Número de columnas de la imagen
+   * \brief Devuelve el nï¿½mero de columnas de la imagen
+   * \return Nï¿½mero de columnas de la imagen
    */
   virtual int cols() const = 0;
 
   /*!
-   * \brief Devuelve el número de canales o bandas de la imagen
-   * \return Número de bandas de la imagen
+   * \brief Devuelve el nï¿½mero de canales o bandas de la imagen
+   * \return Nï¿½mero de bandas de la imagen
    */
   virtual int channels() const = 0;
 
@@ -214,7 +214,7 @@ protected:
 
 
 /*!
- * \brief Clase factoría para la escritura de diferentes formatos de imagen
+ * \brief Clase factorï¿½a para la escritura de diferentes formatos de imagen
  */
 class TL_EXPORT ImageWriterFactory
 {

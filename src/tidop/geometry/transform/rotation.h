@@ -25,8 +25,6 @@
 #ifndef TL_GEOMETRY_TRANSFORM_ROTATION_H
 #define TL_GEOMETRY_TRANSFORM_ROTATION_H
 
-#include "config_tl.h"
-
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/geometry/transform/translation.h"
 #include "tidop/geometry/transform/helmert2d.h"

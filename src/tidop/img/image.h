@@ -25,9 +25,6 @@
 #ifndef TL_IMAGE_H
 #define TL_IMAGE_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/img/img.h"
 #include "tidop/geometry/size.h"
 #include "tidop/graphic/color.h"

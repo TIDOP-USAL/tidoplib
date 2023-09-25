@@ -25,9 +25,6 @@
 #ifndef TL_MATH_UTILS_BLAS_H
 #define TL_MATH_UTILS_BLAS_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/math/math.h"
 
 #ifdef TL_HAVE_OPENBLAS

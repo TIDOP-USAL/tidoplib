@@ -29,8 +29,6 @@
 #include <list>
 #include <string>
 
-#include "config_tl.h"
-
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
 //#ifdef TL_HAVE_GEOSPATIAL 

@@ -25,8 +25,6 @@
 #ifndef TL_FEATMATCH_MSER_DETECTOR_H
 #define TL_FEATMATCH_MSER_DETECTOR_H
 
-#include "config_tl.h"
-
 #include "tidop/featmatch/features.h"
 
 namespace tl

@@ -25,8 +25,6 @@
 #ifndef TL_GRAPHIC_ENTITIES_POINT_H
 #define TL_GRAPHIC_ENTITIES_POINT_H
 
-#include "config_tl.h"
-
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/multipoint.h"
 #include "tidop/graphic/entities/entity.h"

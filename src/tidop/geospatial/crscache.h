@@ -25,8 +25,6 @@
 #ifndef TL_GEOSPATIAL_CRS_CACHE_H
 #define TL_GEOSPATIAL_CRS_CACHE_H
 
-#include "config_tl.h"
-
 #include <vector>
 #include <memory>
 #include <mutex>

@@ -25,9 +25,6 @@
 #ifndef TL_GEOMETRY_POINT_H
 #define TL_GEOMETRY_POINT_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/math/algebra/vector.h"

@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "vectwriter.h"
+#include "tidop/vect/vectwriter.h"
 
 #include "tidop/core/utils.h"
 #include "tidop/core/gdalreg.h"

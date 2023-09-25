@@ -25,7 +25,7 @@
 #ifndef TL_IMGPROCESS_PROCESSING_H
 #define TL_IMGPROCESS_PROCESSING_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <list>
 #include <memory>

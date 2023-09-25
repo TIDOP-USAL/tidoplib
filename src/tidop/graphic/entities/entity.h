@@ -25,8 +25,6 @@
 #ifndef TL_GRAPHIC_ENTITY_H
 #define TL_GRAPHIC_ENTITY_H
 
-#include "config_tl.h"
-
 #include <string>
 #include <vector>
 #include <list>

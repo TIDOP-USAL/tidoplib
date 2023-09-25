@@ -22,8 +22,6 @@
 #                                                                        #
 ##########################################################################
 
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 add_subdirectory(tidop/core)
 add_subdirectory(tidop/math)
 add_subdirectory(tidop/geometry)
@@ -33,4 +31,3 @@ add_subdirectory(tidop/graphic)
 add_subdirectory(tidop/imgprocess)
 add_subdirectory(tidop/vect)
 add_subdirectory(tidop/geospatial)
-add_subdirectory(tidop/experimental)

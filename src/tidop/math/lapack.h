@@ -25,8 +25,6 @@
 #ifndef TL_MATH_UTILS_LAPACK_H
 #define TL_MATH_UTILS_LAPACK_H
 
-#include "config_tl.h"
-
 #ifdef TL_HAVE_OPENBLAS
 
 #include "tidop/core/defs.h"

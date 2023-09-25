@@ -25,11 +25,7 @@
 #ifndef TL_GEOMETRY_POLYGON_H
 #define TL_GEOMETRY_POLYGON_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
-
 #include "tidop/geometry/entities/entities2d.h"
 #include "tidop/geometry/entities/entities3d.h"
 #include "tidop/geometry/entities/point.h"

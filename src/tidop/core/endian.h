@@ -25,7 +25,7 @@
 #ifndef TL_CORE_ENDIANNESS_H
 #define TL_CORE_ENDIANNESS_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #include <string>
 #include <memory>
@@ -49,7 +49,7 @@ enum class endianness
   native = little_endian
 #else
   little_endian = __ORDER_LITTLE_ENDIAN__,
-  little_endian = __ORDER_BIG_ENDIAN__,
+  big_endian = __ORDER_BIG_ENDIAN__,
   native = __BYTE_ORDER__
 #endif
 };

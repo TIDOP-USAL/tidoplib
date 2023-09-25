@@ -25,9 +25,9 @@
 #ifndef TL_MATH_ANGLES_H
 #define TL_MATH_ANGLES_H
 
-#include "tidop/math/math.h"
-
 #include <utility>
+
+#include "tidop/math/math.h"
 
 namespace tl
 {

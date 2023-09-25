@@ -120,6 +120,45 @@ BOOST_FIXTURE_TEST_CASE(compute, UmeyamaTest)
   BOOST_CHECK_CLOSE(0, transform[3][2], 0.1);
   BOOST_CHECK_CLOSE(1, transform[3][3], 0.1);
 
+  auto rotation = umeyama.rotation();
+  BOOST_CHECK_CLOSE(1., rotation[0][0], 0.1);
+  BOOST_CHECK_CLOSE(-3.80747e-05, rotation[0][1], 0.1);
+  BOOST_CHECK_CLOSE(-8.79539e-06, rotation[0][2], 0.1);
+  BOOST_CHECK_CLOSE(3.80748e-05, rotation[1][0], 0.1);
+  BOOST_CHECK_CLOSE(1., rotation[1][1], 0.1);
+  BOOST_CHECK_CLOSE(4.1215e-06, rotation[1][2], 0.1);
+  BOOST_CHECK_CLOSE(8.79523e-06, rotation[2][0], 0.1);
+  BOOST_CHECK_CLOSE(-4.12183e-06, rotation[2][1], 0.1);
+  BOOST_CHECK_CLOSE(1., rotation[2][2], 0.1);
+
+  auto scale = umeyama.scale();
+  BOOST_CHECK_CLOSE(1., scale, 0.1);
+  //BOOST_CHECK_CLOSE(1., scale[0], 0.1);
+  //BOOST_CHECK_CLOSE(1., scale[1], 0.1);
+  //BOOST_CHECK_CLOSE(1., scale[2], 0.1);
+
+  auto translation = umeyama.translation();
+  BOOST_CHECK_CLOSE(-419.568, translation[0], 0.1);
+  BOOST_CHECK_CLOSE(-99.246,  translation[1], 0.1);
+  BOOST_CHECK_CLOSE(-591.456, translation[2], 0.1);
+
+  //{
+  //  Matrix<double> src_mat2 = {{74.19025779187848, 8.749411901636444, -18.612330072771144},
+  //             {74.36043674951422,8.749411901636464, -2.045092574570816},
+  //             {91.2480433111534, 8.749411901636464, -1.961327929447604},
+  //             {91.60235952827264, 8.749411901636464, -19.02572480319629}};
+
+  //  Matrix<double> dst_mat2 = {{65.76787270674683, -2.842170943040401e-14, -24.428301993342885},
+  //              {70.61906389289197, 0, 6.908026593137352},
+  //              {99.47031667189891, 0, 3.111022232462366},
+  //              {95.375769367781, -2.842170943040401e-14, -28.312814463968905}};
+
+  //  Umeyama<Matrix<double>> umeyama(src_mat2, dst_mat2);
+  //  auto transform = umeyama.transform();
+  //  std::cout << transform << std::endl;
+
+  //}
+
 }
 
 

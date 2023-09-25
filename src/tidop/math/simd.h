@@ -25,9 +25,6 @@
 #ifndef TL_MATH_UTILS_SIMD_H
 #define TL_MATH_UTILS_SIMD_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/math/math.h"
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
@@ -804,7 +801,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
   __m256i mulodd = _mm256_mullo_epi16(aodd, bodd);           // product of odd  numbered elements
   mulodd = _mm256_slli_epi16(mulodd, 8);                     // put odd numbered elements back in place
   __m256i mask = _mm256_set1_epi32(0x00FF00FF);              // mask for even positions
-  r = _mm256_blendv_epi8(mask, muleven, mulodd);             // interleave even and odd
+  r = _mm256_blendv_epi8(mulodd, muleven, mask);             // interleave even and odd
 #elif defined TL_HAVE_SSE2
   /// Copy from 'vector class library':
   /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
@@ -887,7 +884,19 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
   typename PackedTraits<Packed<T>>::simd_type r;
 
 #ifdef TL_HAVE_AVX2
-  r = _mm256_mullo_epi64(packed1, packed2);
+  /// Copy from 'vector class library':
+  /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori256.h
+  /// (c) Copyright 2012-2021 Agner Fog.
+  /// Apache License version 2.0 or later.
+  // Split into 32-bit multiplies
+  __m256i bswap   = _mm256_shuffle_epi32(packed2,0xB1);  // swap H<->L
+  __m256i prodlh  = _mm256_mullo_epi32(packed1,bswap);   // 32 bit L*H products
+  __m256i zero    = _mm256_setzero_si256();              // 0
+  __m256i prodlh2 = _mm256_hadd_epi32(prodlh,zero);      // a0Lb0H+a0Hb0L,a1Lb1H+a1Hb1L,0,0
+  __m256i prodlh3 = _mm256_shuffle_epi32(prodlh2,0x73);  // 0, a0Lb0H+a0Hb0L, 0, a1Lb1H+a1Hb1L
+  __m256i prodll  = _mm256_mul_epu32(packed1,packed2);   // a0Lb0L,a1Lb1L, 64 bit unsigned products
+  __m256i prod    = _mm256_add_epi64(prodll,prodlh3);    // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
+  r = prod;
 #elif defined TL_HAVE_SSE2
   /// Copy from 'vector class library':
   /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
@@ -1178,6 +1187,239 @@ horizontal_sum(const Packed<T> &packed)
   return sum;
 }
 
+/// Unary minus
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, T>::value, 
+  Packed<T>>::type
+changeSign(const Packed<T> &packet)
+{
+#ifdef TL_HAVE_AVX2
+  return _mm256_xor_ps(packet, Packed<T>(-0.0f));
+#elif defined TL_HAVE_SSE2
+  return _mm_xor_ps(packet, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)));
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, T>::value, 
+  Packed<T>>::type
+changeSign(const Packed<T> &packet)
+{
+#ifdef TL_HAVE_AVX2
+  __m256d sign_mask = _mm256_set1_pd(-0.0); // Set all 256 bits to -0.0
+  return _mm256_xor_pd(packet, sign_mask);  // Change sign of the 4 double values
+  //return _mm256_xor_pd(packet, _mm256_castps_pd(_mm256_castsi256_ps(_mm256_setr_epi32(0u,0x80000000u,0u,0x80000000u,0u,0x80000000u,0u,0x80000000u))));
+#elif defined TL_HAVE_SSE2
+  return _mm_xor_pd(packet, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value,
+  Packed<T>>::type
+changeSign(const Packed<T> &packet)
+{
+#ifdef TL_HAVE_AVX2
+  return _mm256_sub_epi8(_mm256_setzero_si256(), packet);
+#elif defined TL_HAVE_SSE2
+  return _mm_sub_epi8(_mm_setzero_si128(), packet);
+#endif
+}
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value,
+  typename Packed<T>::simd_type>::type
+changeSign(const Packed<T> &packet)
+{
+#ifdef TL_HAVE_AVX2
+  return _mm256_sub_epi16(_mm256_setzero_si256(), packet);
+#elif defined TL_HAVE_SSE2
+  return _mm_sub_epi16(_mm_setzero_si128(), packet);
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value,
+  typename Packed<T>::simd_type>::type
+changeSign(const Packed<T> &packet)
+{
+#ifdef TL_HAVE_AVX2
+  return _mm256_sub_epi32(_mm256_setzero_si256(), packet);
+#elif defined TL_HAVE_SSE2
+  return _mm_sub_epi32(_mm_setzero_si128(), packet);
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value,
+  typename Packed<T>::simd_type>::type
+changeSign(const Packed<T> &packet)
+{
+#ifdef TL_HAVE_AVX2
+  return _mm256_sub_epi64(_mm256_setzero_si256(), packet);
+#elif defined TL_HAVE_SSE2
+  return _mm_sub_epi64(_mm_setzero_si128(), packet);
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, T>::value, 
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256 compare_result = _mm256_cmp_ps(packed1, packed2, _CMP_EQ_OQ);
+  return _mm256_movemask_ps(compare_result) == 0b11111111;
+#elif defined TL_HAVE_SSE
+  __m128 compare_result = _mm_cmpeq_ps(packed1, packed2);
+  return _mm_movemask_ps(compare_result) == 0b1111;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, T>::value, 
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256d compare_result = _mm256_cmp_pd(packed1, packed2, _CMP_EQ_OQ);
+  return _mm256_movemask_pd(compare_result) == 0b1111;
+#elif defined TL_HAVE_SSE2
+  __m128d compare_result = _mm_cmpeq_pd(packed1, packed2);
+  return _mm_movemask_pd(compare_result) == 0b11;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi8(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE2
+  __m128i compare_result = _mm_cmpeq_epi8(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi16(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE2
+  __m128i compare_result = _mm_cmpeq_epi16(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi32(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE2
+  __m128i compare_result = _mm_cmpeq_epi32(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
+  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
+  bool>::type
+equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi64(packed1, packed2);
+  return _mm256_movemask_epi8(compare_result) == 0xffffffff;
+#elif defined TL_HAVE_SSE4_1
+  __m128i compare_result = _mm_cmpeq_epi64(packed1, packed2);
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#else
+  __m128i com32 = _mm_cmpeq_epi32(packed1, packed2);                 // 32 bit compares
+  __m128i com32s = _mm_shuffle_epi32(com32, 0xB1);       // swap low and high dwords
+  __m128i test = _mm_and_si128(com32, com32s);           // low & high
+  __m128i teste = _mm_srai_epi32(test, 31);              // extend sign bit to 32 bits
+  __m128i compare_result = _mm_shuffle_epi32(teste, 0xF5);       // extend sign bit to 64 bits
+  return _mm_movemask_epi8(compare_result) == 0xffff;
+#endif
+}
+
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, T>::value, 
+  bool>::type
+notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256 compare_result = _mm256_cmp_ps(packed1, packed2, _CMP_NEQ_UQ);
+  return _mm256_movemask_ps(compare_result) != 0;
+#elif defined TL_HAVE_SSE
+  __m128 compare_result = _mm_cmpneq_ps(packed1, packed2);
+  return _mm_movemask_ps(compare_result) != 0;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, T>::value, 
+  bool>::type
+notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX
+  __m256d compare_result = _mm256_cmp_pd(packed1, packed2, _CMP_NEQ_UQ);
+  return _mm256_movemask_pd(compare_result) != 0;
+#elif defined TL_HAVE_SSE2
+  __m128d compare_result = _mm_cmpneq_pd(packed1, packed2);
+  return _mm_movemask_pd(compare_result) != 0;
+#endif
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_integral<T>::value,
+  bool>::type
+notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+{
+#ifdef TL_HAVE_AVX2
+  __m256i compare_result = _mm256_cmpeq_epi64(packed1, packed2);
+  __m256i xor_value = _mm256_xor_si256(compare_result, _mm256_set1_epi32(-1));
+  return _mm256_movemask_epi8(xor_value) != 0;
+#elif defined TL_HAVE_SSE2
+  //__m128d compare_result = _mm_xor_si128(packed1 == packed2, _mm_set1_epi32(-1));
+  //return _mm_movemask_epi8(compare_result) == 0xffff;
+  __m128i compare_result = _mm_cmpeq_epi32(packed1, packed2);
+  __m128i xor_value = _mm_xor_si128(compare_result, _mm_set1_epi32(-1));
+  return _mm_movemask_epi8(xor_value) != 0;
+#endif
+}
+
+
 } // namespace internal 
 
 /// \endcond
@@ -1189,52 +1431,40 @@ horizontal_sum(const Packed<T> &packed)
 
 /* Packed overload operators */
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, T>::value,
-  Packed<T>>::type
-operator - (const Packed<T> &packet)
+template<typename T>
+inline Packed<T> operator - (const Packed<T> &packet)
 {
-  return _mm_xor_ps(packet, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)));
+  return internal::changeSign(packet);
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  Packed<T>>::type
-operator - (const Packed<T> &packet)
-{
-  return _mm_xor_pd(packet, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
-}
-
-template<typename T> inline
-Packed<T> operator+(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+template<typename T>
+inline Packed<T> operator+(const Packed<T> &packed1,
+                           const Packed<T> &packed2)
 {
   return internal::add(packed1, packed2);
 }
 
-template<typename T> inline
-Packed<T> operator+(const Packed<T> &packed, T scalar)
+template<typename T>
+inline Packed<T> operator+(const Packed<T> &packed, T scalar)
 {
   return packed + Packed<T>(scalar);
 }
 
-template<typename T> inline
-Packed<T> operator+(T scalar, const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> operator+(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) + packed;
 }
 
-template<typename T> inline
-Packed<T> operator-(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+template<typename T> 
+inline Packed<T> operator-(const Packed<T> &packed1,
+                           const Packed<T> &packed2)
 {
   return internal::sub(packed1, packed2);
 }
 
-template<typename T> inline
-Packed<T> operator-(const Packed<T> &packed, T scalar)
+template<typename T> 
+inline Packed<T> operator-(const Packed<T> &packed, T scalar)
 {
   return packed - Packed<T>(scalar);
 }
@@ -1245,120 +1475,139 @@ Packed<T> operator-(T scalar, const Packed<T> &packed)
   return Packed<T>(scalar) - packed;
 }
 
-template<typename T> inline
-Packed<T> operator*(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+template<typename T> 
+inline Packed<T> operator*(const Packed<T> &packed1,
+                           const Packed<T> &packed2)
 {
   return internal::mul(packed1, packed2);
 }
 
-template<typename T> inline
-Packed<T> operator*(const Packed<T> &packed, T scalar)
+template<typename T> 
+inline Packed<T> operator*(const Packed<T> &packed, T scalar)
 {
   return packed * Packed<T>(scalar);
 }
 
-template<typename T> inline
-Packed<T> operator*(T scalar, const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> operator*(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) * packed;
 }
 
-template<typename T> inline
-Packed<T> operator/(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+template<typename T> 
+inline Packed<T> operator/(const Packed<T> &packed1,
+                           const Packed<T> &packed2)
 {
   return internal::div(packed1, packed2);
 }
 
-template<typename T> inline
-Packed<T> operator/(const Packed<T> &packed, T scalar)
+template<typename T> 
+inline Packed<T> operator/(const Packed<T> &packed, T scalar)
 {
   return packed / Packed<T>(scalar);
 }
 
-template<typename T> inline
-Packed<T> operator/(T scalar, const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> operator/(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) / packed;
 }
 
+/* Comparison Operators */
 
-template<typename T> inline
-Packed<T>::Packed(const Packed &packed)
+
+template<typename T> 
+static inline bool operator == (const Packed<T> &packed1,
+                                     const Packed<T> &packed2) 
+{
+  return internal::equalTo(packed1, packed2);
+}
+
+template<typename T> 
+static inline bool operator != (const Packed<T> &packed1,
+                                     const Packed<T> &packed2) 
+{
+  return internal::notEqual(packed1, packed2);
+}
+
+
+
+
+template<typename T> 
+inline Packed<T>::Packed(const Packed &packed)
   : mValue(packed.mValue)
 {
 }
 
-template<typename T> inline
-Packed<T>::Packed(Packed &&packed) TL_NOEXCEPT
+template<typename T> 
+inline Packed<T>::Packed(Packed &&packed) TL_NOEXCEPT
   : mValue(std::move(packed.mValue))
 {
 }
 
-template<typename T> inline
-Packed<T>::Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
+template<typename T> 
+inline Packed<T>::Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
   : mValue(packed)
 {
 }
 
-template<typename T> inline
-Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
+template<typename T> 
+inline Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
   : mValue(internal::set(scalar))
 {
 }
 
-template<typename T> inline
-void Packed<T>::loadAligned(const value_type *src)
+template<typename T> 
+inline void Packed<T>::loadAligned(const value_type *src)
 {
   mValue = internal::loadPackedAligned(src);
 }
 
-template<typename T> inline
-void Packed<T>::loadUnaligned(const value_type *src)
+template<typename T> 
+inline void Packed<T>::loadUnaligned(const value_type *src)
 {
   mValue = internal::loadPackedUnaligned(src);
 }
 
-template<typename T> inline
-void Packed<T>::storeAligned(value_type *dst) const
+template<typename T> 
+inline void Packed<T>::storeAligned(value_type *dst) const
 {
   internal::storePackedAligned(dst, mValue);
 }
 
-template<typename T> inline
-void Packed<T>::storeUnaligned(value_type *dst) const
+template<typename T> 
+inline void Packed<T>::storeUnaligned(value_type *dst) const
 {
   internal::storePackedUnaligned(dst, mValue);
 }
 
-template<typename T> inline
-void Packed<T>::setScalar(value_type value)
+template<typename T> 
+inline void Packed<T>::setScalar(value_type value)
 {
   mValue = internal::set(value);
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator=(const typename Packed<T>::simd_type &packed)
+template<typename T> 
+inline Packed<T> &Packed<T>::operator=(const typename Packed<T>::simd_type &packed)
 {
   mValue = packed;
   return *this;
 }
 
-template<typename T> inline
-constexpr size_t Packed<T>::size()
+template<typename T> 
+inline constexpr size_t Packed<T>::size()
 {
   return PackedTraits<Packed<T>>::size;
 }
 
-template<typename T> inline
-Packed<T>::operator simd_type() const
+template<typename T> 
+inline Packed<T>::operator simd_type() const
 {
   return mValue;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
 {
   if(this != &packed) {
     mValue = packed;
@@ -1367,8 +1616,8 @@ Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
   return *this;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
+template<typename T> 
+inline Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
 {
   if(this != &packed) {
     mValue = std::move(packed);
@@ -1377,66 +1626,66 @@ Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
   return *this;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator+=(const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> &Packed<T>::operator+=(const Packed<T> &packed)
 {
   *this = *this + packed;
   return *this;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator-=(const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> &Packed<T>::operator-=(const Packed<T> &packed)
 {
   *this = *this - packed;
   return *this;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator*=(const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> &Packed<T>::operator*=(const Packed<T> &packed)
 {
   *this = *this * packed;
   return *this;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator/=(const Packed<T> &packed)
+template<typename T> 
+inline Packed<T> &Packed<T>::operator/=(const Packed<T> &packed)
 {
   *this = *this / packed;
   return *this;
 }
 
-template<typename T> inline
-Packed<T> Packed<T>::operator++(int)
+template<typename T> 
+inline Packed<T> Packed<T>::operator++(int)
 {
   Packed<T> packet = *this;
   *this += consts::one<T>;
   return *packet;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator++()
+template<typename T> 
+inline Packed<T> &Packed<T>::operator++()
 {
   *this += consts::one<T>;
   return *this;
 }
 
-template<typename T> inline
-Packed<T> Packed<T>::operator--(int)
+template<typename T> 
+inline Packed<T> Packed<T>::operator--(int)
 {
   Packed<T> packet = *this;
   *this -= consts::one<T>;
   return *packet;
 }
 
-template<typename T> inline
-Packed<T> &Packed<T>::operator--()
+template<typename T> 
+inline Packed<T> &Packed<T>::operator--()
 {
   *this -= consts::one<T>;
   return *this;
 }
 
-template<typename T> inline
-T Packed<T>::sum()
+template<typename T> 
+inline T Packed<T>::sum()
 {
   return internal::horizontal_sum(*this);
 }

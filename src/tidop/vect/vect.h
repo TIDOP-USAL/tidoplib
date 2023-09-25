@@ -25,7 +25,6 @@
 #ifndef TL_VECT_H
 #define TL_VECT_H
 
-#include "config_tl.h"
 #include "tidop/core/defs.h"
 
 #ifdef TL_HAVE_GDAL

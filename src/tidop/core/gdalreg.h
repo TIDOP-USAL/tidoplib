@@ -25,13 +25,12 @@
 #ifndef TL_CORE_UTILS_GDAL_H
 #define TL_CORE_UTILS_GDAL_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
+#include "tidop/config.h"
 
 #include <memory>
 #include <mutex>
 
+#include "tidop/core/defs.h"
 
 namespace tl
 {

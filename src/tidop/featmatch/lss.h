@@ -25,11 +25,9 @@
 #ifndef TL_LSS_DESCRIPTOR_H
 #define TL_LSS_DESCRIPTOR_H
 
-#include "config_tl.h"
+#include "tidop/featmatch/features.h"
 
 #include <memory>
-
-#include "tidop/featmatch/features.h"
 
 class LSS;
 

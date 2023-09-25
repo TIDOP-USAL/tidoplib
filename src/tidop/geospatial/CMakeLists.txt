@@ -61,7 +61,8 @@ if (BUILD_TL_GEOSPATIAL)
                           TidopLib::Img
                           TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          #$<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ4}>:PROJ::proj>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 
@@ -77,9 +78,9 @@ if (BUILD_TL_GEOSPATIAL)
             
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
-            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib)
 
     install(DIRECTORY . 
             DESTINATION include/tidop/geospatial

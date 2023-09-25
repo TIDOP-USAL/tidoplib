@@ -25,8 +25,6 @@
 #ifndef TL_GEOMETRY_TRANSFORM_AFFINE_H
 #define TL_GEOMETRY_TRANSFORM_AFFINE_H
 
-#include "config_tl.h"
-
 #include "tidop/core/messages.h"
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/math/algebra/rotation_matrix.h"

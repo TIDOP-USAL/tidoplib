@@ -25,10 +25,10 @@
 #ifndef TL_MATH_DATA_STORAGE_H
 #define TL_MATH_DATA_STORAGE_H
 
-#include "config_tl.h"
-
 #include <vector>
 #include <array>
+
+#include "tidop/math/math.h"
 
 
 namespace tl

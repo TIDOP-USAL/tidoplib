@@ -25,7 +25,6 @@
 #ifndef TL_MATH_ROTATIONS_H
 #define TL_MATH_ROTATIONS_H
 
-#include "config_tl.h"
 #include "tidop/core/defs.h"
 
 namespace tl

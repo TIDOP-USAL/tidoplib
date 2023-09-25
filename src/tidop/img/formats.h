@@ -25,9 +25,8 @@
 #ifndef TL_IMG_FORMATS_H
 #define TL_IMG_FORMATS_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 #include "tidop/core/defs.h"
-#include "tidop/core/flags.h"
 
 #include <vector>
 #include <map>
@@ -38,6 +37,7 @@ TL_SUPPRESS_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL
 
+#include "tidop/core/flags.h"
 #include "tidop/core/utils.h"
 
 

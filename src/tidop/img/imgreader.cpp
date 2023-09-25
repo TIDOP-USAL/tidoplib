@@ -24,9 +24,9 @@
 
 #include "tidop/img/imgreader.h"
 
-#include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
+#include "tidop/img/metadata.h"
 
 #ifdef TL_HAVE_OPENCV
 

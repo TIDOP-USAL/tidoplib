@@ -25,8 +25,6 @@
 #ifndef TL_GRAPHIC_STYLES_H
 #define TL_GRAPHIC_STYLES_H
 
-#include "config_tl.h"
-
 #include <string>
 #include <array>
 #include <memory>

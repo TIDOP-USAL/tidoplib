@@ -25,13 +25,12 @@
 #ifndef TL_GRAPHIC_LAYER_H
 #define TL_GRAPHIC_LAYER_H
 
-#include "config_tl.h"
-#include "tidop/core/defs.h"
 
 #include <list>
 #include <memory>
 #include <string>
 
+#include "tidop/core/defs.h"
 #include "tidop/graphic/datamodel.h"
 #include "tidop/geometry/entities/window.h"
 

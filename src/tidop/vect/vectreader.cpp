@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "vectreader.h"
-
+#include "tidop/vect/vectreader.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"

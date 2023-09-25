@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oï¿½a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -25,7 +25,7 @@
 #ifndef TL_IMGPROCESS_FILTERS_H
 #define TL_IMGPROCESS_FILTERS_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -33,9 +33,9 @@
 
 #include "tidop/core/defs.h"
 //#include "graphic_entities/color.h"
-#include "tidop/img_process/img_processing.h"
+#include "tidop/imgprocess/imgprocess.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup ImgProc
@@ -43,13 +43,13 @@ namespace TL
  */
 
 
-/*! \defgroup Correlation Correlación en imagenes
+/*! \defgroup Correlation Correlaciï¿½n en imagenes
  *  
  *  \{
  */
 
 /*!
- * \brief Correlación o correspondencia de imagenes
+ * \brief Correlaciï¿½n o correspondencia de imagenes
  *
  *
  */
@@ -104,7 +104,7 @@ namespace TL
 
 /*! \} */ // end of ImgProc
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_HAVE_OPENCV
 

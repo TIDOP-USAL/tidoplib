@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "metadata.h"
+#include "tidop/img/metadata.h"
 
 #include "tidop/core/messages.h"
 

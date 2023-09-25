@@ -25,9 +25,6 @@
 #ifndef TL_GEOMETRY_ALGORITHMS_VECTOR_H
 #define TL_GEOMETRY_ALGORITHMS_VECTOR_H
 
-#include "config_tl.h"
-
-#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/point.h"
 
 namespace tl

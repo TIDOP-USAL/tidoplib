@@ -25,8 +25,6 @@
 #ifndef TL_GRAPHIC_LINE_ALGORITHMS_H
 #define TL_GRAPHIC_LINE_ALGORITHMS_H
 
-#include "config_tl.h"
-
 #include <vector>
 
 #include "tidop/geometry/entities/point.h"

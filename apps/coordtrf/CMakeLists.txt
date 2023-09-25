@@ -49,25 +49,26 @@ if(TL_HAVE_CORE AND TL_HAVE_GEOMETRY)
                           TidopLib::Math
                           TidopLib::Geom
                           TidopLib::Img
+                          TidopLib::Geospatial
                           $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           ${OpenCV_LIBS}
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
     					  
     
-    if (UNIX)
-        target_link_libraries(${PROJECT_NAME} 
-                              -lpthread 
-                              -ldl 
-                              -lexpat 
-                              -ljasper 
-                              -ljpeg 
-                              -ltiff 
-                              -lpng 
-                              -lm 
-                              -lrt 
-                              -lpcre)
-    endif()
+    #if (UNIX)
+    #    target_link_libraries(${PROJECT_NAME} 
+    #                          -lpthread 
+    #                          -ldl 
+    #                          -lexpat 
+    #                          #-ljasper 
+    #                          -ljpeg 
+    #                          -ltiff 
+    #                          -lpng 
+    #                          -lm 
+    #                          -lrt 
+    #                          -lpcre)
+    #endif()
 
     
 

@@ -25,7 +25,7 @@
 #ifndef TL_CORE_MESSAGES_H
 #define TL_CORE_MESSAGES_H
 
-#include "config_tl.h"
+#include "tidop/config.h"
 #include "tidop/core/defs.h"
 
 #include <iostream>
@@ -33,7 +33,6 @@
 #include <list>
 #include <mutex>
 
-//#include "tidop/core/utils.h"
 #include "tidop/core/flags.h"
 
 namespace tl
@@ -60,8 +59,6 @@ enum class MessageLevel : int8_t {
   msg_info    = 1 << 3,                               /*!< Otra información. */
   msg_verbose = msg_error | msg_warning | msg_info    /*!< Todos los mensajes. */
 };
-
-/// Se permiten operaciones a nivel de bit para el enum MessageOutput
 ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
 #ifdef TL_MESSAGE_HANDLER

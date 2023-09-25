@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oï¿½a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -22,10 +22,10 @@
  *                                                                        *
  **************************************************************************/
 
-#include "img.h"
+#include "tidop/img/img.h"
 
-#include <tidop/core/flags.h>
-#include <tidop/core/utils.h>
+#include "tidop/core/flags.h"
+#include "tidop/core/utils.h"
 
 #ifdef TL_HAVE_EDSDK
 #include "EDSDK.h"
@@ -193,9 +193,9 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
 }
 
 /*!
- * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
- * Si la extensión no se correspondo con un driver disponible devuelve nulo.
- * \param ext Extensión del archivo
+ * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensiï¿½n de archivo
+ * Si la extensiï¿½n no se correspondo con un driver disponible devuelve nulo.
+ * \param ext Extensiï¿½n del archivo
  * \return Nombre del Driver de GDAL
  */
 std::string gdalDriverFromExtension(const std::string &extension)
@@ -428,7 +428,7 @@ std::vector<int> gdalBandOrder(int channels)
 /*!
  * \brief Obtiene el tipo de dato de OpenCV
  * \param gdalType Tipo de GDAL
- * \param channels Número de canales
+ * \param channels Nï¿½mero de canales
  * \return Tipo de OpenCV
  */
 //int gdalToOpenCv(GDALDataType gdalType, int channels)

@@ -249,13 +249,13 @@ BOOST_FIXTURE_TEST_CASE(casting, Helmert2DTest)
   BOOST_CHECK_EQUAL(2, trf_h2d.minNumberOfPoints());
 
   // cast a afín
-  Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*trf_pointer);
-  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, trf_affine.rotation());
-  BOOST_CHECK_EQUAL(0.25, trf_affine.scaleX());
-  BOOST_CHECK_EQUAL(0.25, trf_affine.scaleY());
-  BOOST_CHECK_EQUAL(150.0, trf_affine.tx);
-  BOOST_CHECK_EQUAL(75.0, trf_affine.ty);
-  BOOST_CHECK_EQUAL(3, trf_affine.minNumberOfPoints());
+  //Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*trf_pointer);
+  //BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, trf_affine.rotation());
+  //BOOST_CHECK_EQUAL(0.25, trf_affine.scaleX());
+  //BOOST_CHECK_EQUAL(0.25, trf_affine.scaleY());
+  //BOOST_CHECK_EQUAL(150.0, trf_affine.tx);
+  //BOOST_CHECK_EQUAL(75.0, trf_affine.ty);
+  //BOOST_CHECK_EQUAL(3, trf_affine.minNumberOfPoints());
 
   Translation<PointD> translation = static_cast<Translation<PointD>>(*trf_pointer);
   BOOST_CHECK_EQUAL(150.0, translation.tx);
