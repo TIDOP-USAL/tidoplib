@@ -51,8 +51,9 @@ class CoordinateTransformation;
 
 /// \endcond
 
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
+
 
 /*!
  * \addtogroup geospatial

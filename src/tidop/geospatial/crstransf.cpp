@@ -35,7 +35,7 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 /// \cond
 namespace internal
