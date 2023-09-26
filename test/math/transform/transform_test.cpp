@@ -275,3 +275,5 @@ BOOST_FIXTURE_TEST_CASE(setTranslation, TransformTest)
     BOOST_CHECK_CLOSE(30., translation[1], 0.1);
     BOOST_CHECK_CLOSE(26., translation[2], 0.1);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
