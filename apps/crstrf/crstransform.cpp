@@ -26,6 +26,11 @@
 #include <memory>
 #include <fstream>
 
+#include <cpl_conv.h>
+#include <ogr_core.h>
+#include <gdal.h>
+#include <ogr_srs_api.h>
+
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/msg/message.h>
@@ -40,10 +45,21 @@ using namespace tl;
 int main(int argc, char **argv)
 {
 
-#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
-
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();
+
+    tl::Path graphos_path = app_path.parentPath().parentPath();
+    tl::Path gdal_data_path(graphos_path);
+    gdal_data_path.append("gdal\\data");
+    tl::Path proj_data_path(graphos_path);
+    proj_data_path.append("proj");
+    CPLSetConfigOption( "GDAL_DATA", gdal_data_path.toString().c_str());
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
+    CPLSetConfigOption( "PROJ_DATA", proj_data_path.toString().c_str());
+#else
+    const char *proj_data[] {proj_data_path.toString().c_str(), nullptr};
+    OSRSetPROJSearchPaths(proj_data);
+#endif
 
     // Consola
     Console &console = App::console();
@@ -154,8 +170,6 @@ int main(int argc, char **argv)
         printException(e);
         return 1;
     }
-
-#endif
 
     return 0;
 }

@@ -62,7 +62,14 @@ public:
     Point3<double> transform(const Point3<double> &ptIn)
     {
         Point3<double> ptOut = ptIn;
-        mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+
+        try {
+            TL_ASSERT(mTransform != nullptr, "");
+            mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
         return ptOut;
     }
 
@@ -154,17 +161,17 @@ auto CrsTransform::transform(const Point3<double> &ptIn,
     if (trfOrder == Transform::Order::direct) {
       if (mCoordinateTransformation)
         ptOut = mCoordinateTransformation->transform(ptIn);
-      else
-        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+      //else
+      //  Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     } else {
       if (mCoordinateTransformationInv)
         ptOut = mCoordinateTransformationInv->transform(ptIn);
-      else
-        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+      //else
+      //  Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     }
 
   } catch (...) {
-    throw;
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return Transform::Status::success;
