@@ -72,14 +72,38 @@ public:
 public:
 
     Affine();
-    //Affine(const Transform<T, Dim> &matrix);
+    Affine(const Affine &affine);
+    Affine(Affine &&affine) TL_NOEXCEPT;
     Affine(const Matrix<T, Dim, Dim + 1> &matrix);
     Affine(T sx, T sy, T tx, T ty, T angle);
     Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa);
-    Affine(const Point<T> &translation, const Vector<T, 2> &scale, T angle);
-    Affine(const Point3<T> &translation, const Vector<T, 3> &scale, const RotationMatrix<double> &rotation);
+    Affine(const Vector<T, 2> &scale, const Vector<T, 2> &translation, T angle);
+    Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const EulerAngles<T> &rotation);
+    Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const RotationMatrix<double> &rotation);
     //Affine(const Translation<T, Dim> &translation, const Scaling<T, Dim> &scale, const Rotation<T, Dim> &rotation);
-    ~Affine() override = default;
+    ~Affine() = default;
+
+    auto operator=(const Affine &affine) -> Affine&;
+    auto operator=(Affine &&affine) TL_NOEXCEPT -> Affine &;
+
+    auto operator()(size_t r, size_t c) -> reference;
+    auto operator()(size_t r, size_t c) const -> const_reference;
+
+
+    /// Clases que deberían ser virtuales
+    auto transform(const Point<T> &point) -> Point<T>;
+    auto transform(const Point3<T> &point) -> Point3<T>;
+    template<size_t _size>
+    auto transform(const Vector<T, _size> &vector) -> Vector<T, Dim>;
+    template<size_t _row, size_t _col>
+    auto transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+
+    //auto operator * (const Point<T> &point) -> Point<T>;
+    //auto operator * (const Point3<T> &point) -> Point3<T>;
+    //template<size_t _size>
+    //auto operator * (const Vector<T, _size> &vector) -> Vector<T, _size>;
+    //template<size_t _row, size_t _col>
+    //auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
 
 private:
 
@@ -88,13 +112,45 @@ private:
 
 
 
+template <typename T>
+class Affine2DEstimator
+{
 
+public:
+
+    Affine2DEstimator() = default;
+    ~Affine2DEstimator() = default;
+
+    template<size_t rows, size_t cols>
+    static auto estimate(const Matrix<T, rows, cols> &src,
+                         const Matrix<T, rows, cols> &dst) -> Affine<T, 2>;
+
+    static auto estimate(const std::vector<Point<T>> &src,
+                         const std::vector<Point<T>> &dst) -> Affine<T, 2>;
+
+};
+
+
+
+/* Affine implementation */
 
 template <typename T, size_t Dim> inline
 Affine<T, Dim>::Affine()
-  : _transform(Matrix<T, Dim, Dim + 1>::indentity())
+  : _transform(Matrix<T, Dim, Dim + 1>::identity())
 {
     static_assert(dimensions == 2 || dimensions == 3, "Only 2 or 3 dimensions allowed");
+}
+
+template<typename T, size_t Dim>
+inline Affine<T, Dim>::Affine(const Affine &affine)
+    : _transform(affine._transform)
+{
+}
+
+template<typename T, size_t Dim>
+inline Affine<T, Dim>::Affine(Affine &&affine) TL_NOEXCEPT
+    : _transform(std::move(affine._transform))
+{
 }
 
 //template <typename T, size_t dim> inline
@@ -116,12 +172,12 @@ inline Affine<T, Dim>::Affine(T sx, T sy, T tx, T ty, T angle)
 {
     static_assert(dimensions == 2, "Constructor for 2D Affine. Use the 3D Affine constructor: Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa).");
 
-    _transform[0][0] = sx * cos(angle);
-    _transform[0][1] = -sy * sin(angle);
-    _transform[0][2] = tx;
-    _transform[1][0] = sx * sin(angle);
-    _transform[1][1] = sy * cos(angle);
-    _transform[1][2] = ty;
+    this->_transform[0][0] = sx * cos(angle);
+    this->_transform[0][1] = -sy * sin(angle);
+    this->_transform[0][2] = tx;
+    this->_transform[1][0] = sx * sin(angle);
+    this->_transform[1][1] = sy * cos(angle);
+    this->_transform[1][2] = ty;
 }
 
 template<typename T, size_t Dim>
@@ -130,30 +186,219 @@ inline Affine<T, Dim>::Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi
     static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
 
     EulerAngles<T> eulerAngles(omega, phi, kappa);
-    auto block = _transform.block(0, dimensions - 1, 0, dimensions - 1);
-    block = eulerAngles;
-    block *= Vector<T>{sx, sy, sz};
-    _transform[0][3] = tx;
-    _transform[1][3] = ty;
-    _transform[2][3] = tz;
+    RotationMatrix<T> rt = eulerAngles;
+    auto block = this->_transform.block(0, dimensions - 1, 0, dimensions - 1);
+    //rt *= Vector<T, 3>{sx, sy, sz};
+    block = rt;
+    //block *= Vector<T, 3>{sx, sy, sz};
+    this->_transform[0][0] *= sx;
+    this->_transform[0][1] *= sy;
+    this->_transform[0][2] *= sz;
+    this->_transform[1][0] *= sx ;
+    this->_transform[1][1] *= sy;
+    this->_transform[1][2] *= sz;
+    this->_transform[2][0] *= sx;
+    this->_transform[2][1] *= sy;
+    this->_transform[2][2] *= sz;
+    this->_transform[0][3] = tx;
+    this->_transform[1][3] = ty;
+    this->_transform[2][3] = tz;
 }
 
 template<typename T, size_t Dim>
-inline Affine<T, Dim>::Affine(const Point<T> &translation, const Vector<T, 2> &scale, T angle)
+inline Affine<T, Dim>::Affine(const Vector<T, 2> &scale, const Vector<T, 2> &translation, T angle)
 {
+    static_assert(dimensions == 2, "Constructor for 2D Affine. Use the 3D Affine constructor: Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa).");
+
+    this->_transform[0][0] = scale[0] * cos(angle);
+    this->_transform[0][1] = -scale[1] * sin(angle);
+    this->_transform[0][2] = translation[0];
+    this->_transform[1][0] = scale[0] * sin(angle);
+    this->_transform[1][1] = scale[1] * cos(angle);
+    this->_transform[1][2] = translation[1];
 }
 
 template<typename T, size_t Dim>
-inline Affine<T, Dim>::Affine(const Point3<T> &translation, 
-                              const Vector<T, 3> &scale,
+inline Affine<T, Dim>::Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const EulerAngles<T> &rotation)
+{
+    static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
+
+    auto block = this->_transform.block(0, dimensions - 1, 0, dimensions - 1);
+    block = rotation;
+    block *= scale;
+    this->_transform[0][3] = translation[0];
+    this->_transform[1][3] = translation[1];
+    this->_transform[2][3] = translation[2];
+}
+
+template<typename T, size_t Dim>
+inline Affine<T, Dim>::Affine(const Vector<T, 3> &scale, 
+                              const Vector<T, 3> &translation,
                               const RotationMatrix<double> &rotation)
 {
+    static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
+
+    auto block = this->_transform.block(0, dimensions - 1, 0, dimensions - 1);
+    block = rotation;
+    block *= scale;
+    this->_transform[0][3] = translation[0];
+    this->_transform[1][3] = translation[1];
+    this->_transform[2][3] = translation[2];
 }
 
-  
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator=(const Affine &affine) -> Affine&
+{
+    if (this != &affine) {
+        this->_transform = affine._transform;
+    }
+
+    return (*this);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator()(size_t r, size_t c) -> reference
+{
+    return this->_transform(r, c);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator()(size_t r, size_t c) const -> const_reference
+{
+    return this->_transform(r, c);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator=(Affine &&affine) TL_NOEXCEPT -> Affine &
+{
+    if (this != &affine) {
+        this->_transform = std::move(affine._transform);
+    }
+
+    return (*this);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::transform(const Point<T> &point) -> Point<T>
+{
+    static_assert(dimensions == 2, "Transformation not allowed for 2D points");
+
+    return Point<T>(this->_transform(0, 0) * point.x + this->_transform(0, 1) * point.y + this->_transform(0, 2),
+                    this->_transform(1, 0) * point.x + this->_transform(1, 1) * point.y + this->_transform(1, 2));
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
+{
+    static_assert(dimensions == 3, "Transformation not allowed for 3D points");
+
+    return Point3<T>(this->_transform(0, 0) * point.x + this->_transform(0, 1) * point.y + this->_transform(0, 2) * point.z + this->_transform(0, 3),
+                     this->_transform(1, 0) * point.x + this->_transform(1, 1) * point.y + this->_transform(1, 2) * point.z + this->_transform(1, 3),
+                     this->_transform(2, 0) * point.x + this->_transform(2, 1) * point.y + this->_transform(2, 2) * point.z + this->_transform(2, 3));
+}
+
+template<typename T, size_t Dim>
+template<size_t _size>
+inline auto Affine<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<T, Dim>
+{
+    TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
+    
+    Vector<T, Dim> vector = this->_transform * vector;
+    return vector;
+}
+
+template<typename T, size_t Dim>
+template<size_t _row, size_t _col>
+inline auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+{
+    TL_ASSERT(dimensions == matrix.cols(), "Invalid matrix dimensions");
+
+    return matrix * this->_transform;
+}
+
+
+
+/* Affine2DEstimator implementation */
+
+template<typename T>
+template<size_t rows, size_t cols>
+inline auto Affine2DEstimator<T>::estimate(const Matrix<T, rows, cols> &src, 
+                                           const Matrix<T, rows, cols> &dst) -> Affine<T, 2>
+{
+
+    Affine<T, 2> affine;
+
+    try {
+
+        TL_ASSERT(src.cols() == 2, "Invalid matrix columns size");
+        TL_ASSERT(dst.cols() == 2, "Invalid matrix columns size");
+        TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes. Size src = {} and size dst = {}", src.rows(), dst.rows());
+        TL_ASSERT(src.rows() >= 3 , "Invalid number of points: {} < {}", src.rows(), 3);
+
+        size_t size = src.rows() * 2;
+
+        Matrix<double> A(size, 6, 0);
+        Vector<double> B(size);
+
+        for (size_t i = 0, r = 0; i < src.rows(); i++, r++) {
+            A(r, 0) = src(i, 0);
+            A(r, 1) = src(i, 1);
+            A(r, 4) = 1;
+            B[r] = dst(i,0);
+
+            r++;
+            
+            A(r, 2) = src(i, 0);
+            A(r, 3) = src(i, 1);
+            A(r, 5) = 1;
+
+            B[r] = dst(i,1);
+        }
+
+        SingularValueDecomposition<Matrix<double>> svd(A);
+        Vector<double> C = svd.solve(B);
+
+        affine(0, 0) = C[0];
+        affine(0, 0) = C[0];
+        affine(0, 1) = C[1];
+        affine(0, 2) = C[4];
+        affine(1, 0) = C[2];
+        affine(1, 1) = C[3];
+        affine(1, 2) = C[5];
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return affine;
+}
+
+template<typename T>
+inline auto Affine2DEstimator<T>::estimate(const std::vector<Point<T>> &src, 
+                                           const std::vector<Point<T>> &dst) -> Affine<T, 2>
+{
+    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+
+    Matrix<T> src_mat(src.size(), 2);
+    Matrix<T> dst_mat(dst.size(), 2);
+
+    for (size_t r = 0; r < src_mat.rows(); r++) {
+        src_mat[r][0] = src[r].x;
+        src_mat[r][1] = src[r].y;
+
+        dst_mat[r][0] = dst[r].x;
+        dst_mat[r][1] = dst[r].y;
+    }
+
+    return Affine2DEstimator<T>::estimate(src_mat, dst_mat);
+}
+
+
 /*! \} */ // end of Algebra
 
 /*! \} */ // end of Math
+
+
 
 } // End namespace tl
 

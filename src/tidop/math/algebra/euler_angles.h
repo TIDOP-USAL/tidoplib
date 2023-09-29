@@ -29,6 +29,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations.h"
+#include "tidop/math/algebra/vector.h"
 
 
 namespace tl
@@ -84,6 +85,7 @@ public:
 
     EulerAngles();
     EulerAngles(double x, double y, double z);
+    EulerAngles(const Vector<T, 3> &angles);
     EulerAngles(const EulerAngles<T, _axes> &eulerAngles);
     EulerAngles(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT;
     ~EulerAngles() override = default;
@@ -114,6 +116,16 @@ EulerAngles<T, _axes>::EulerAngles(double x, double y, double z)
     x(x),
     y(y),
     z(z),
+    axes(static_cast<Axes>(_axes))
+{
+}
+
+template<typename T, int _axes>
+inline EulerAngles<T, _axes>::EulerAngles(const Vector<T, 3> &angles)
+  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
+    x(angles[0]),
+    y(angles[1]),
+    z(angles[2]),
     axes(static_cast<Axes>(_axes))
 {
 }

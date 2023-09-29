@@ -429,18 +429,18 @@ struct ScalingTest
 
 BOOST_FIXTURE_TEST_CASE(estimate_points, ScalingTest)
 {
-    auto transform = ScalingEstimator<double, 2>::estimate(src_points, dst_points);
+    auto scaling = ScalingEstimator<double, 2>::estimate(src_points, dst_points);
 
-    BOOST_CHECK_CLOSE(0.25, transform[0][0], 0.1);
-    BOOST_CHECK_CLOSE(0.25, transform[1][1], 0.1);
+    BOOST_CHECK_CLOSE(0.25, scaling.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.25, scaling.y(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(estimate_matrix, ScalingTest)
 {
-    auto transform = ScalingEstimator<double, 2>::estimate(src_mat, dst_mat);
+    auto scaling = ScalingEstimator<double, 2>::estimate(src_mat, dst_mat);
 
-    BOOST_CHECK_CLOSE(0.25, transform[0][0], 0.1);
-    BOOST_CHECK_CLOSE(0.25, transform[1][1], 0.1);
+    BOOST_CHECK_CLOSE(0.25, scaling.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.25, scaling.y(), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

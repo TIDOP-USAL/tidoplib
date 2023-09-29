@@ -345,18 +345,18 @@ BOOST_FIXTURE_TEST_CASE(translation_transform_matrix, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(estimate_points, TranslationTest)
 {
-    auto transform = TranslationEstimator<double, 2>::estimate(src_points_utm, dst_points_utm);
+    auto translation = TranslationEstimator<double, 2>::estimate(src_points_utm, dst_points_utm);
 
-    BOOST_CHECK_CLOSE(150.0, transform[0][2], 0.1);
-    BOOST_CHECK_CLOSE(75.0, transform[1][2], 0.1);
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(estimate_matrix, TranslationTest)
 {
-    auto transform = TranslationEstimator<double, 2>::estimate(src_matrix_utm, dst_matrix_utm);
+    auto translation = TranslationEstimator<double, 2>::estimate(src_matrix_utm, dst_matrix_utm);
 
-    BOOST_CHECK_CLOSE(150.0, transform[0][2], 0.1);
-    BOOST_CHECK_CLOSE(75.0, transform[1][2], 0.1);
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

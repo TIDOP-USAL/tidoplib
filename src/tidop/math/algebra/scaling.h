@@ -139,10 +139,10 @@ public:
 
     template<size_t rows, size_t cols>
     static auto estimate(const Matrix<T, rows, cols> &src,
-                         const Matrix<T, rows, cols> &dst) -> Matrix<T, matrix_size, matrix_size>;
+                         const Matrix<T, rows, cols> &dst) -> Scaling<T, Dim>;
 
     static auto estimate(const std::vector<Point<T>> &src,
-                         const std::vector<Point<T>> &dst) -> Matrix<T, matrix_size, matrix_size>;
+                         const std::vector<Point<T>> &dst) -> Scaling<T, Dim>;
 
 };
 
@@ -361,11 +361,11 @@ inline auto Scaling<T, Dim>::operator*(const Scaling<T, Dim> &scaling) -> Scalin
 template<typename T, size_t Dim>
 template<size_t rows, size_t cols>
 inline auto ScalingEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
-                                               const Matrix<T, rows, cols> &dst) -> Matrix<T, matrix_size, matrix_size>
+                                               const Matrix<T, rows, cols> &dst) -> Scaling<T, Dim>
 {
     static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
 
-    auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
+    Scaling<T, Dim> scaling;
 
     try {
 
@@ -395,18 +395,18 @@ inline auto ScalingEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
         SingularValueDecomposition<Matrix<double>> svd(A);
         Vector<double> C = svd.solve(B);
 
-        transformMatrix(0, 0) = C[0];
-        transformMatrix(1, 1) = C[1];
+        scaling[0] = C[0];
+        scaling[1] = C[1];
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
-    return transformMatrix;
+    return scaling;
 }
 
 template<typename T, size_t Dim>
-inline auto ScalingEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, const std::vector<Point<T>> &dst) -> Matrix<T, matrix_size, matrix_size>
+inline auto ScalingEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, const std::vector<Point<T>> &dst) -> Scaling<T, Dim>
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 

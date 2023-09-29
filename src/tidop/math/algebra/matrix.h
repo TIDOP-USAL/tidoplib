@@ -1009,7 +1009,7 @@ public:
      * double value = matrix(0, 0);
      * \endcode
      */
-    auto operator()(size_t r, size_t c)->reference;
+    auto operator()(size_t r, size_t c) -> reference;
 
     /*!
      * \brief Referencia constante al elemento en la posición fila (r) y columna (c)

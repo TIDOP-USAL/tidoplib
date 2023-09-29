@@ -138,10 +138,10 @@ public:
 
     template<size_t rows, size_t cols>
     static auto estimate(const Matrix<T, rows, cols> &src,
-                         const Matrix<T, rows, cols> &dst) -> Matrix<T, matrix_size, matrix_size>;
+                         const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>;
 
     static auto estimate(const std::vector<Point<T>> &src,
-                         const std::vector<Point<T>> &dst) -> Matrix<T, matrix_size, matrix_size>;
+                         const std::vector<Point<T>> &dst) -> Translation<T, Dim>;
 
 };
 
@@ -351,11 +351,11 @@ auto Translation<T, Dim>::operator * (const Translation<T, Dim> &translation) ->
 template<typename T, size_t Dim>
 template<size_t rows, size_t cols>
 inline auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
-                                                   const Matrix<T, rows, cols> &dst) -> Matrix<T, matrix_size, matrix_size>
+                                                   const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>
 {
     static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
 
-    auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
+    Translation<T, Dim> translation;
 
     try {
 
@@ -389,19 +389,19 @@ inline auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &
         SingularValueDecomposition<Matrix<double>> svd(A);
         Vector<double> C = svd.solve(B);
 
-        transformMatrix(0, dimensions) = C[2];
-        transformMatrix(1, dimensions) = C[3];
+        translation[0] = C[2];
+        translation[1] = C[3];
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
-    return transformMatrix;
+    return translation;
 }
 
 template<typename T, size_t Dim>
 inline auto TranslationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
-                                                   const std::vector<Point<T>> &dst) -> Matrix<T, matrix_size, matrix_size>
+                                                   const std::vector<Point<T>> &dst) -> Translation<T, Dim>
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 
