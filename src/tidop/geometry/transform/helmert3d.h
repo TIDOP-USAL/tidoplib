@@ -59,7 +59,7 @@ namespace tl
  * </BLOCKQUOTE>
  */
 template<typename Point_t>
-class Helmert3D
+class TL_DEPRECATED("Affine<T, 3>", "3.0") Helmert3D
   : public Transform3D<Point_t>
 {
 public:

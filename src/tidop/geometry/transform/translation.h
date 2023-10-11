@@ -53,7 +53,7 @@ namespace tl
  * Transformación que aplica una traslación en el plano a un conjunto de puntos
  */
 template<typename Point_t>
-class Translation
+class TL_DEPRECATED("Translation<T, 2>", "3.0") Translation
     : public Transform2D<Point_t>
 {
 

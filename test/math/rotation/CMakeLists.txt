@@ -26,7 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 project(test)
 
-set(test_filename affine_test.cpp)
+set(test_filename rotation_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
 set(test_target "${test_name}")
 

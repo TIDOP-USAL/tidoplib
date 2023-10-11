@@ -29,6 +29,7 @@
 
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/rect.h"
 
 namespace tl
 {
@@ -50,6 +51,7 @@ public:
     virtual ~Shape() = default;
 
     virtual double area() const = 0;
+
 };
 
 
@@ -137,6 +139,8 @@ public:
      */
     double length() const;
 
+    Rect<T> rect() const;
+
 };
 
 typedef Circle<int> CircleI;
@@ -218,6 +222,12 @@ double Circle<T>::length() const
     return consts::two_pi<double> * radius;
 }
 
+template<typename T>
+inline Rect<T> tl::Circle<T>::rect() const
+{
+    return Rect<T>(tl::Point<T>(center.x - radius, center.y - radius), radius * 2., radius * 2.);
+}
+
 
 
 /*!
@@ -227,7 +237,7 @@ double Circle<T>::length() const
 template<typename T>
 class Ellipse
     : public Entity,
-    public Shape
+      public Shape
 {
 
 public:
@@ -312,6 +322,7 @@ public:
      */
     double length() const;
 
+    Rect<T> rect() const;
 };
 
 typedef Ellipse<int> EllipseI;
@@ -404,6 +415,12 @@ template<typename T> inline
 double Ellipse<T>::length() const
 {
     return consts::pi<double> * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
+}
+
+template<typename T>
+inline Rect<T> Ellipse<T>::rect() const
+{
+    return Rect<T>(tl::Point<T>(center.x - a, center.y - b), a * 2., b * 2.);
 }
 
 

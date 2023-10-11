@@ -29,9 +29,10 @@
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
-#include <tidop/math/statistics.h>
-#include <tidop/math/algebra/svd.h>
-#include <tidop/math/algebra/transform.h>
+#include "tidop/math/statistics.h"
+#include "tidop/math/algebra/svd.h"
+#include "tidop/math/algebra/transform.h"
+#include "tidop/math/algebra/affine.h"
 
 namespace tl
 {
@@ -74,18 +75,18 @@ public:
     ~Umeyama() = default;
 
     template<size_t rows, size_t cols>
-    static Matrix<T, matrix_size, matrix_size> estimate(const Matrix<T, rows, cols> &src,
-                                                        const Matrix<T, rows, cols> &dst)
+    static auto estimate(const Matrix<T, rows, cols> &src,
+                         const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>
     {     
+        Affine<T, Dim> affine;
         
-        auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
-
         try {
 
             TL_ASSERT(src.cols() == dimensions, "Invalid matrix columns size");
             TL_ASSERT(dst.cols() == dimensions, "Invalid matrix columns size");
             TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes");
 
+            auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
 
             size_t size = src.rows();
             Vector<double> mean_src(dimensions);
@@ -145,17 +146,19 @@ public:
             transformMatrix.col(dimensions)[1] -= aux[1];
             transformMatrix.col(dimensions)[2] -= aux[2];
 
+            affine = Affine<T, Dim>(transformMatrix.block(0, dimensions - 1, 0, dimensions));
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("");
         }
 
-        return transformMatrix;
+        return affine;
     }
 
-    static Matrix<T, matrix_size, matrix_size> estimate(const std::vector<Point3<T>> &src,
-                                                        const std::vector<Point3<T>> &dst)
+    static auto estimate(const std::vector<Point3<T>> &src,
+                         const std::vector<Point3<T>> &dst) -> Affine<T, Dim>
     {
-        Matrix<double, matrix_size, matrix_size> transformMatrix;
+        Affine<T, Dim> affine;
 
         try {
 
@@ -174,19 +177,19 @@ public:
                 dst_mat[r][2] = dst[r].z;
             }
 
-            transformMatrix = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);
+            affine = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("");
         }
 
-        return transformMatrix;
+        return affine;
     }
 
-    static Matrix<T, matrix_size, matrix_size> estimate(const std::vector<Point<T>> &src,
-                                                        const std::vector<Point<T>> &dst)
+    static auto estimate(const std::vector<Point<T>> &src,
+                         const std::vector<Point<T>> &dst) -> Affine<T, Dim>
     {
-        Matrix<double, matrix_size, matrix_size> transformMatrix;
+        Affine<T, Dim> affine;
 
         try {
 
@@ -203,13 +206,13 @@ public:
                 dst_mat[r][1] = dst[r].y;
             }
 
-            transformMatrix = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);
+            affine = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("");
         }
 
-        return transformMatrix;
+        return affine;
     }
 };
 

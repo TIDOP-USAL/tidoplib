@@ -88,7 +88,7 @@ mean(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 mean(It first, It last)
 {
     using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
@@ -139,7 +139,7 @@ quantile(It first, It last, double p)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 quantile(It first, It last, double p)
 {
     using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
@@ -186,7 +186,7 @@ median(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 median(It first, It last)
 {
     return tl::quantile(first, last, 0.5);
@@ -202,15 +202,16 @@ median(It first, It last)
 template<typename It> inline
 typename std::iterator_traits<It>::value_type mode(It first, It last)
 {
-    using value_type = typename std::iterator_traits<It>::value_type;
-    std::map<value_type, int> h;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+
+    std::map<T, int> h;
     while (first != last) {
         h[*first++]++;
     }
 
     auto max = std::max_element(h.begin(), h.end(),
-                                [](const std::pair<value_type, int> &p1,
-                                const std::pair<value_type, int> &p2) {
+                                [](const std::pair<T, int> &p1,
+                                const std::pair<T, int> &p2) {
                                     return p1.second < p2.second;
                                 });
 
@@ -277,10 +278,10 @@ variance(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 variance(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     auto n = std::distance(first, last);
     if (n <= 1) return consts::one<T>;
@@ -335,10 +336,10 @@ populationVariance(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 populationVariance(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     auto n = std::distance(first, last);
     if (n <= 1) return consts::one<T>;
@@ -430,10 +431,10 @@ interquartileRange(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 interquartileRange(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     T q1 = tl::quantile(first, last, 0.25);
     T q3 = tl::quantile(first, last, 0.75);
@@ -468,10 +469,10 @@ meanAbsoluteDeviation(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 meanAbsoluteDeviation(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<T>;
@@ -515,10 +516,10 @@ medianAbsoluteDeviation(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 medianAbsoluteDeviation(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<T>;
@@ -614,10 +615,10 @@ quartileCoefficientOfDispersion(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 quartileCoefficientOfDispersion(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     T q1 = quantile(first, last, 0.25);
     T q3 = quantile(first, last, 0.75);
@@ -647,10 +648,10 @@ quartileDeviation(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 quartileDeviation(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     T q1 = quantile(first, last, 0.25);
     T q3 = quantile(first, last, 0.75);
@@ -699,10 +700,10 @@ biweightMidvariance(It first, It last)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 biweightMidvariance(It first, It last)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     size_t n = std::distance(first, last);
     if (n <= 2) return consts::zero<T>;
@@ -770,10 +771,10 @@ covariance(It first_x, It last_x, It first_y, It last_y)
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 covariance(It first_x, It last_x, It first_y, It last_y)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     auto n_x = std::distance(first_x, last_x);
     auto n_y = std::distance(first_y, last_y);
@@ -820,11 +821,11 @@ pearsonCorrelationCoefficient(It first_x, It last_x,
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
 pearsonCorrelationCoefficient(It first_x, It last_x,
                               It first_y, It last_y)
 {
-    using T = typename std::iterator_traits<It>::value_type;
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     auto n_x = std::distance(first_x, last_x);
     auto n_y = std::distance(first_y, last_y);

@@ -68,7 +68,7 @@ namespace tl
  * \f$ y' = a * y - b * x + Y0\f$
  */
 template<typename Point_t>
-class Helmert2D
+class TL_DEPRECATED("Affine<T, 2>", "3.0") Helmert2D
   : public Transform2D<Point_t>
 {
 

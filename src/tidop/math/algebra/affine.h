@@ -51,7 +51,24 @@ namespace tl
 
 
 /*!
- * \brief 
+ * \brief Affine transformation
+ * 
+ * The Affine Transformation expresses the relationship that exists 
+ * (or the transformation that needs to be performed) between two 
+ * Cartesian systems that differ in the location of the origin, in 
+ * the orientation of the axes and in the unit of measurement along
+ * the axes.
+ *
+ * 2D transformation:
+ * 
+ * \f[ a =  scaleX * cos(rotation)\f]
+ * \f[ b = -scaleY * sin(rotation)\f]
+ * \f[ c =  scaleX * sin(rotation)\f]
+ * \f[ d =  scaleY * cos(rotation)\f]
+ *
+ * \f[ x' = a * x + b * y + x0\f]
+ * \f[ y' = c * x + d * y + y0\f]
+ * 
  */
 template <typename T, size_t Dim>
 class Affine
@@ -89,21 +106,25 @@ public:
     auto operator()(size_t r, size_t c) -> reference;
     auto operator()(size_t r, size_t c) const -> const_reference;
 
+    Scaling<T, Dim> scale() const;
+    Translation<T, Dim> translation() const;
+    Matrix<T, Dim, Dim> rotation() const;
+    auto inverse() const -> Affine<T, Dim>;
 
     /// Clases que deberían ser virtuales
     auto transform(const Point<T> &point) -> Point<T>;
     auto transform(const Point3<T> &point) -> Point3<T>;
     template<size_t _size>
-    auto transform(const Vector<T, _size> &vector) -> Vector<T, Dim>;
+    auto transform(const Vector<T, _size> &vector) -> Vector<T, _size>;
     template<size_t _row, size_t _col>
     auto transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
 
-    //auto operator * (const Point<T> &point) -> Point<T>;
-    //auto operator * (const Point3<T> &point) -> Point3<T>;
-    //template<size_t _size>
-    //auto operator * (const Vector<T, _size> &vector) -> Vector<T, _size>;
-    //template<size_t _row, size_t _col>
-    //auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto operator * (const Point<T> &point) -> Point<T>;
+    auto operator * (const Point3<T> &point) -> Point3<T>;
+    template<size_t _size>
+    auto operator * (const Vector<T, _size> &vector) -> Vector<T, _size>;
+    template<size_t _row, size_t _col>
+    auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
 
 private:
 
@@ -269,6 +290,52 @@ inline auto Affine<T, Dim>::operator()(size_t r, size_t c) const -> const_refere
 }
 
 template<typename T, size_t Dim>
+inline Scaling<T, Dim> Affine<T, Dim>::scale() const
+{
+    Scaling<T, dimensions> scale;
+
+    for (size_t i = 0; i < dimensions; i++)
+        scale[i] = this->_transform.col(i).module();
+
+    return scale;
+}
+
+template<typename T, size_t Dim>
+inline Translation<T, Dim> Affine<T, Dim>::translation() const
+{
+    Translation<T, dimensions> translation;
+
+    for (size_t i = 0; i < dimensions; i++)
+        translation[i] = this->_transform(i, dimensions);
+
+    return translation;
+}
+
+template<typename T, size_t Dim>
+inline Matrix<T, Dim, Dim> Affine<T, Dim>::rotation() const
+{
+    Matrix<T, Dim, Dim> _rotation;
+    auto _scale = scale().toVector();
+    for (size_t c = 0; c < dimensions; c++) {
+        T s = _scale[c];
+        for (size_t r = 0; r < dimensions; r++)
+            _rotation[r][c] = this->_transform(r, c) / s;
+    }
+    return _rotation;
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::inverse() const -> Affine<T, Dim>
+{
+    //Matrix<T, Dim, Dim> matrix = _transform.block(0, Dim - 1, 0, Dim - 1);
+    Matrix<T, Dim, Dim + 1> transform_inverse;
+    //transform_inverse.block(0, Dim - 1, 0, Dim - 1) = matrix.inverse();
+    /*transform_inverse.col(Dim) =*/ _transform.col(Dim);
+    return Affine<T, Dim>(/*transform_inverse*/);
+}
+
+
+template<typename T, size_t Dim>
 inline auto Affine<T, Dim>::operator=(Affine &&affine) TL_NOEXCEPT -> Affine &
 {
     if (this != &affine) {
@@ -299,12 +366,22 @@ inline auto Affine<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Affine<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<T, Dim>
+inline auto Affine<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<T, _size>
 {
     TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
     
-    Vector<T, Dim> vector = this->_transform * vector;
-    return vector;
+    //Vector<T, _size> _vector;
+    //for (size_t r = 0; r < dimensions; r++) {
+    //    _vector[r] = _transform(r, dimensions);
+    //    for (size_t c = 0; c < dimensions; c++) {
+    //        _vector[r] += _transform(r, c) * vector[c];
+    //    }
+    //}
+
+    Vector<T> _vector = this->_transform.block(0, dimensions - 1, 0, dimensions - 1) * vector;
+    _vector += this->_transform.col(dimensions);
+
+    return _vector;
 }
 
 template<typename T, size_t Dim>
@@ -312,10 +389,43 @@ template<size_t _row, size_t _col>
 inline auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
 {
     TL_ASSERT(dimensions == matrix.cols(), "Invalid matrix dimensions");
+        
+    Matrix<T, _row, _col> _matrix(matrix);
 
-    return matrix * this->_transform;
+    Vector<T> v(dimensions);
+    for (size_t r = 0; r < _matrix.rows(); r++) {
+        v = _matrix[r];
+        _matrix[r] = *this * v;
+    }
+
+    return _matrix;
 }
 
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator*(const Point<T> &point) -> Point<T>
+{
+    return this->transform(point);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator*(const Point3<T> &point) -> Point3<T>
+{
+    return this->transform(point);
+}
+
+template<typename T, size_t Dim>
+template<size_t _size>
+inline auto Affine<T, Dim>::operator*(const Vector<T, _size> &vector) -> Vector<T, _size>
+{
+    return this->transform(vector);
+}
+
+template<typename T, size_t Dim>
+template<size_t _row, size_t _col>
+inline auto Affine<T, Dim>::operator*(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+{
+    return this->transform(matrix);
+}
 
 
 /* Affine2DEstimator implementation */

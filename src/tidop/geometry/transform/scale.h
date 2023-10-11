@@ -55,7 +55,7 @@ namespace tl
  * Transformación que aplica un cambio de escala
  */
 template<typename Point_t>
-class Scaling
+class TL_DEPRECATED("Scaling<T, 2>", "3.0") Scaling
   : public Transform2D<Point_t>
 {
 

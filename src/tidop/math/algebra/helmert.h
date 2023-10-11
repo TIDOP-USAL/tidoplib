@@ -67,7 +67,7 @@ void helmert(const Matrix<T, rows, cols> &src,
 
         size_t size = src.rows() * 2;
 
-        Matrix<double> A(size, 6, 0);
+        Matrix<double> A(size, 4, 0);
         Vector<double> B(size);
 
         for (size_t i = 0, r = 0; i < src.rows(); i++, r++) {
@@ -78,11 +78,11 @@ void helmert(const Matrix<T, rows, cols> &src,
 
             r++;
             
-            A(r, 0) = src(i, 0);
-            A(r, 1) = src(i, 1);
+            A(r, 0) = src(i, 1);
+            A(r, 1) = src(i, 0);
             A(r, 3) = 1;
 
-            B[r] = dst(i,1);
+            B[r] = dst(i, 1);
         }
 
         SingularValueDecomposition<Matrix<double>> svd(A);
@@ -107,6 +107,7 @@ void helmert(const Matrix<T, rows, cols> &src,
     try {
 
         TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes. Size src = {} and size dst = {}", src.rows(), dst.rows());
+        TL_ASSERT(src.cols() == 3 && dst.cols() == 3, "");
         TL_ASSERT(src.rows() >= 3 , "Invalid number of points: {} < {}", src.rows(), 3);
 
         size_t size = src.rows() * 3;
@@ -118,9 +119,9 @@ void helmert(const Matrix<T, rows, cols> &src,
 
             A(r, 0) = src(i, 0);
             A(r, 2) = -src(i, 2);
-            A(r, 3) = -src(i, 1);
+            A(r, 3) = src(i, 1);
             A(r, 4) = 1;
-            B[r] = dst(i,0);
+            B[r] = dst(i, 0);
 
             r++;
             
@@ -128,7 +129,7 @@ void helmert(const Matrix<T, rows, cols> &src,
             A(r, 1) = src(i, 2);
             A(r, 3) = -src(i, 0);
             A(r, 5) = 1;
-            B[r] = dst(i,1);
+            B[r] = dst(i, 1);
 
             r++;
 
@@ -136,7 +137,7 @@ void helmert(const Matrix<T, rows, cols> &src,
             A(r, 1) = -src(i, 1);
             A(r, 2) = src(i, 0);
             A(r, 6) = 1;
-            B[r] = dst(i, 3);
+            B[r] = dst(i, 2);
         }
 
         SingularValueDecomposition<Matrix<double>> svd(A);
@@ -225,15 +226,17 @@ inline auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point3<T>> &src
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 
-    Matrix<T> src_mat(src.size(), 2);
-    Matrix<T> dst_mat(dst.size(), 2);
+    Matrix<T> src_mat(src.size(), 3);
+    Matrix<T> dst_mat(dst.size(), 3);
 
     for (size_t r = 0; r < src_mat.rows(); r++) {
         src_mat[r][0] = src[r].x;
         src_mat[r][1] = src[r].y;
+        src_mat[r][2] = src[r].z;
 
         dst_mat[r][0] = dst[r].x;
         dst_mat[r][1] = dst[r].y;
+        dst_mat[r][2] = dst[r].z;
     }
 
     return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);

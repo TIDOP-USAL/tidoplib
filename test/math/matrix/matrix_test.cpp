@@ -499,7 +499,7 @@ BOOST_FIXTURE_TEST_CASE(assing, MatrixTest)
   BOOST_CHECK_EQUAL(4, mat6[4][3]);
   BOOST_CHECK_EQUAL(7, mat6[4][4]);
 
-  // Bloque a matriz dinámica
+  // Bloque a matriz estática
 
   Matrix<int, 3, 3> mat7 = mat1.block(0, 2, 0, 2);
    
@@ -513,7 +513,7 @@ BOOST_FIXTURE_TEST_CASE(assing, MatrixTest)
   BOOST_CHECK_EQUAL(3, mat7[2][1]);
   BOOST_CHECK_EQUAL(2, mat7[2][2]);
 
-  // Bloque a matriz estática
+  // Bloque a matriz dinámica
 
   Matrix<int> mat8 = mat1.block(0, 2, 0, 2);
    
@@ -2084,55 +2084,91 @@ BOOST_FIXTURE_TEST_CASE(scalar_matrix, MatrixTest)
 
 BOOST_FIXTURE_TEST_CASE(vector_matrix, MatrixTest)
 {
-  Vector<int, 3> vect{ 1, 2, 3 };
-  Vector<int, 2> vect2 = _mat_2x3_i * vect;
+    Vector<int, 3> vect{ 1, 2, 3 };
+    Vector<int, 2> vect2 = _mat_2x3_i * vect;
 
-  BOOST_CHECK_EQUAL(40, vect2[0]);
-  BOOST_CHECK_EQUAL(27, vect2[1]);
+    BOOST_CHECK_EQUAL(40, vect2[0]);
+    BOOST_CHECK_EQUAL(27, vect2[1]);
 
-  Vector<int> vect3{ 1, 2, 3 };
-  Vector<int> vect4 = (*_mat_dyn_2x3_i) * vect3;
+    Vector<int> vect3{ 1, 2, 3 };
+    Vector<int> vect4 = (*_mat_dyn_2x3_i) * vect3;
 
-  BOOST_CHECK_EQUAL(40, vect4[0]);
-  BOOST_CHECK_EQUAL(27, vect4[1]);
+    BOOST_CHECK_EQUAL(40, vect4[0]);
+    BOOST_CHECK_EQUAL(27, vect4[1]);
 
-  Vector<double, 5> vect5{ 1, 2, 3 , 4, 5};
-  Vector<double, 5> vect6 = _mat_5x5_d * vect5;
+    Vector<double, 5> vect5{ 1, 2, 3, 4, 5};
+    Vector<double, 5> vect6 = _mat_5x5_d * vect5;
 
-  BOOST_CHECK_EQUAL(83., vect6[0]);
-  BOOST_CHECK_EQUAL(54., vect6[1]);
-  BOOST_CHECK_EQUAL(47., vect6[2]);
-  BOOST_CHECK_EQUAL(78., vect6[3]);
-  BOOST_CHECK_EQUAL(87., vect6[4]);
+    BOOST_CHECK_EQUAL(83., vect6[0]);
+    BOOST_CHECK_EQUAL(54., vect6[1]);
+    BOOST_CHECK_EQUAL(47., vect6[2]);
+    BOOST_CHECK_EQUAL(78., vect6[3]);
+    BOOST_CHECK_EQUAL(87., vect6[4]);
 
-  Vector<double> vect7{ 1, 2, 3 , 4, 5};
-  Vector<double> vect8 = *_mat_dyn_5x5_d * vect7;
+    Vector<double> vect7{ 1, 2, 3, 4, 5};
+    Vector<double> vect8 = *_mat_dyn_5x5_d * vect7;
 
-  BOOST_CHECK_EQUAL(83., vect8[0]);
-  BOOST_CHECK_EQUAL(54., vect8[1]);
-  BOOST_CHECK_EQUAL(47., vect8[2]);
-  BOOST_CHECK_EQUAL(78., vect8[3]);
-  BOOST_CHECK_EQUAL(87., vect8[4]);
+    BOOST_CHECK_EQUAL(83., vect8[0]);
+    BOOST_CHECK_EQUAL(54., vect8[1]);
+    BOOST_CHECK_EQUAL(47., vect8[2]);
+    BOOST_CHECK_EQUAL(78., vect8[3]);
+    BOOST_CHECK_EQUAL(87., vect8[4]);
 
-  Matrix<float, 8, 8> matrix_f{1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8,
-                               1, 2, 3, 4, 5, 6, 7, 8};
-  Vector<float, 8> vectf{ 1, 2, 3 , 4, 5, 6, 7, 8};
-  Vector<float, 8> vect_result = matrix_f * vectf;
+    Matrix<float, 8, 8> matrix_f{1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        1, 2, 3, 4, 5, 6, 7, 8};
+    Vector<float, 8> vectf{ 1, 2, 3, 4, 5, 6, 7, 8};
+    Vector<float, 8> vect_result = matrix_f * vectf;
 
-  BOOST_CHECK_EQUAL(204.f, vect_result[0]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[1]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[2]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[3]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[4]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[5]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[6]);
-  BOOST_CHECK_EQUAL(204.f, vect_result[7]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[0]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[1]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[2]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[3]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[4]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[5]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[6]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[7]);
+
+    // Matriz estática por vector dinámico
+
+    Vector<float> vectf2{ 1, 2, 3, 4, 5, 6, 7, 8};
+    vect_result = matrix_f * vectf2;
+
+    BOOST_CHECK_EQUAL(204.f, vect_result[0]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[1]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[2]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[3]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[4]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[5]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[6]);
+    BOOST_CHECK_EQUAL(204.f, vect_result[7]);
+
+    // Matriz dinámica por vector estático
+
+    Matrix<float> matrix_din{{1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8},
+                             {1, 2, 3, 4, 5, 6, 7, 8}};
+
+    auto vect_result_2 = matrix_din * vectf;
+
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[0]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[1]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[2]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[3]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[4]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[5]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[6]);
+    BOOST_CHECK_EQUAL(204.f, vect_result_2[7]);
 }
 
 
