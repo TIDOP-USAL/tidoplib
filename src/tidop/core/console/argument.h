@@ -81,144 +81,146 @@ public:
 
     using SharedPtr = std::shared_ptr<Argument>;
 
+private:
+
+    std::string mName;
+    std::string mDescription;
+    char mShortName;
+    Type mType;
+    std::shared_ptr<Validator> mValidator;
+
 public:
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] name Nombre del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Constructor
+     * \param[in] name Name of the argument
+     * \param[in] description Description of the argument
+     * \param[in] type Type of the argument
+     * \see Type
      */
     Argument(std::string name, std::string description, Type type);
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] shortName Nombre corto del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Constructor
+     * \param[in] shortName Short name of the argument
+     * \param[in] description Description of the argument
+     * \param[in] type Type of the argument
      */
     Argument(const char &shortName, std::string description, Type type);
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] name Nombre del argumento
-     * \param[in] shortName Nombre corto del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Constructor
+     * \param[in] name Name of the argument
+     * \param[in] shortName Short name of the argument
+     * \param[in] description Description of the argument
+     * \param[in] type Type of the argument
      */
     Argument(std::string name, const char &shortName, std::string description, Type type);
 
-    /*!
-     * \brief Constructora de copia
-     * \param[in] argument Objeto que se copia
-     */
     Argument(const Argument &argument);
-
-    /*!
-     * \brief Constructora de movimiento
-     * \param[in] argument Objeto que se mueve
-     */
     Argument(Argument &&argument) TL_NOEXCEPT;
 
-    /*!
-     * \brief Destructora
-     */
     virtual ~Argument() = default;
 
     auto operator = (const Argument &argument) -> Argument &;
     auto operator = (Argument &&argument) TL_NOEXCEPT -> Argument &;
 
     /*!
-     * \brief Devuelve el nombre del argumento
-     * \return Nombre del argumento
+     * \brief Returns the name of the argument
+     * \return Name of the argument
      */
     auto name() const -> std::string;
 
     /*!
-     * \brief Establece el nombre del argumento
-     * \param[in] name Nombre del argumento
+     * \brief Sets the name of the argument
+     * \param[in] name Name of the argument
      */
     void setName(const std::string &name);
 
     /*!
-     * \brief Devuelve la descripción del argumento
-     * \return Descripción del argumento
+     * \brief Returns the description of the argument
+     * \return Description of the argument
      */
     virtual auto description() const -> std::string;
 
     /*!
-     * \brief Establece la descripción del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Sets the description of the argument
+     * \param[in] description Description of the argument
      */
     void setDescription(const std::string &description);
 
     /*!
-     * \brief Devuelve el nombre corto del argumento
-     * \return Nombre corto
+     * \brief Returns the short name of the argument
+     * \return Short name of the argument
      */
     auto shortName() const -> char;
 
     /*!
-     * \brief Establece el nombre corto del argumento
-     * \param[in] shortName Nombre corto
+     * \brief Sets the short name of the argument
+     * \param[in] shortName Short name of the argument
      */
     void setShortName(const char &shortName);
 
+    /*!
+     * \brief Returns the type of the argument
+     * \return Type of the argument
+     * \see Type 
+     */
     auto type() const -> Type;
 
+    /*!
+     * \brief Returns the validator of the argument
+     * \see Validator 
+     */
     auto validator() const -> std::shared_ptr<Validator>;
+
+    /*!
+     * \brief Sets the validator of the argument
+     * \param[in] validator Validator
+     */
     void setValidator(const std::shared_ptr<Validator> &validator);
 
     /*!
-     * \brief Devuelve una cadena de texto con el tipo del argumento
+     * \brief Returns a string of text with the type of the argument
      * \return
      */
     virtual auto typeName() const -> std::string = 0;
 
     /*!
-     * \brief Comprueba si el argumento es obligatorio
-     * \return true si es obligatorio
+     * \brief Check if the argument is mandatory
+     * \return true if mandatory
      */
     virtual auto isRequired() const -> bool = 0;
 
     /*!
-     * \brief Establece el valor del argumento a partir de una cadena de texto
-     * \param[in] value Valor del argumento como cadena de texto
+     * \brief Sets the value of the argument from a text string
+     * \param[in] value Argument value as a text string
      */
     virtual void fromString(const std::string &value) = 0;
 
     /*!
-     * \brief Comprueba si el valor pasado al argumento es valido
+     * \brief Checks if the value passed to the argument is valid
      * \return
      */
     virtual bool isValid() = 0;
 
-public:
-
+    /*!
+     * \brief Construct an argument
+     * 
+     * Example of use:
+     * \code
+     * auto input = Argument::make<std::string>("input", "Input data");
+     * auto option = Argument::make<std::string>("option", 'o', "Option 1", false);
+     * \endcode
+     * 
+     * \return
+     */
     template<typename T, typename... Arg>
     static auto make(Arg&&... arg) -> std::shared_ptr<Argument_<T>>
     {
         return std::make_shared<Argument_<T>>(std::forward<Arg>(arg)...);
     }
 
-private:
-
-    /*!
-     * \brief Nombre del argumento
-     */
-    std::string mName;
-
-    /*!
-     * \brief Descripción del argumento
-     */
-    std::string mDescription;
-
-    /*!
-     * \brief Nombre corto del argumento (Opcional)
-     * Es un único caracter
-     */
-    char mShortName;
-
-    Type mType;
-
-    std::shared_ptr<Validator> mValidator;
 };
 
 
@@ -322,7 +324,7 @@ struct ArgTraits<std::string>
 
 
 /*!
- * \brief Template para gestionar diferentes tipos de argumentos
+ * \brief Template class to manage different types of arguments
  */
 template <typename T>
 class Argument_
@@ -332,112 +334,87 @@ class Argument_
 public:
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] name Nombre del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Constructor
+     * \param[in] name Name of the argument
+     * \param[in] description Description of the argument
      */
     Argument_(const std::string &name,
               const std::string &description);
 
     /*!
-     * \brief Constructora argumento opcional
-     * \param[in] name Nombre del argumento
-     * \param[in] description Descripción del argumento
-     * \param[in] default Valor por defecto del argumento.
+     * \brief Constructor
+     * \param[in] name Name of the argument
+     * \param[in] description Description of the argument
+     * \param[in] value Value of the argument
      */
     Argument_(const std::string &name,
               const std::string &description,
               T value);
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] shortName Nombre corto del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Constructor
+     * \param[in] shortName Short name of the argument
+     * \param[in] description Description of the argument
      */
     Argument_(const char &shortName,
               const std::string &description);
 
     /*!
-     * \brief Constructora argumento opcional
-     * \param[in] shortName Nombre corto del argumento
-     * \param[in] description Descripción del argumento
-     * \param[in] value Valor por defecto del argumento.
+     * \brief Constructor
+     * \param[in] shortName Short name of the argument
+     * \param[in] description Description of the argument
+     * \param[in] value Value of the argument
      */
     Argument_(const char &shortName,
               const std::string &description,
               T value);
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] name Nombre del argumento
-     * \param[in] shortName Nombre corto del argumento
-     * \param[in] description Descripción del argumento
+     * \brief Constructor
+     * \param[in] name Name of the argument
+     * \param[in] shortName Short name of the argument
+     * \param[in] description Description of the argument
      */
     Argument_(const std::string &name,
               const char &shortName,
               const std::string &description);
 
     /*!
-     * \brief Constructora argumento
-     * \param[in] name Nombre del argumento
-     * \param[in] shortName Nombre corto del argumento
-     * \param[in] description Descripción del argumento
-     * \param[in] value Valor por defecto del argumento.
+     * \brief Constructor
+     * \param[in] name Name of the argument
+     * \param[in] shortName Short name of the argument
+     * \param[in] description Description of the argument
+     * \param[in] value Value of the argument
      */
     Argument_(const std::string &name,
               const char &shortName,
               const std::string &description,
               T value);
 
-    /*!
-     * \brief Destructora
-     */
     ~Argument_() override = default;
 
     TL_DISABLE_COPY(Argument_)
     TL_DISABLE_MOVE(Argument_)
 
-    /*!
-     * \brief Devuelve una cadena de texto con el tipo del argumento
-     * \return
-     */
-    auto typeName() const -> std::string override;
+public:
 
     /*!
-     * \brief Comprueba si el argumento es obligatorio
-     * \return true si es obligatorio
-     */
-    auto isRequired() const -> bool override ;
-
-    /*!
-     * \brief Convierte el valor del argumento a cadena de texto
-     * \return Cadena de texto con el valor del argumento
-     */
-     //std::string toString() const override;
-
-     /*!
-      * \brief Establece el valor del argumento a partir de una cadena de texto
-      * \param[in] value Valor del argumento como cadena de texto
-      */
-    void fromString(const std::string &value) override;
-
-    /*!
-     * \brief Valor del argumento
-     * \return Valor del argumento
-     */
-    auto value() const -> T;
-
-    /*!
-     * \brief Establece el valor del argumento
-     * \param[in] value Valor del argumento
+     * \brief Sets the value of the argument
+     * \param[in] value Value of the argument
      */
     virtual void setValue(const T &value);
 
+// Argument interface
+
+public:
+
+    auto typeName() const -> std::string override;
+    auto isRequired() const -> bool override;
+    void fromString(const std::string &value) override;
+    auto value() const -> T;
     auto isValid() -> bool override;
 
-protected:
 
-    //void setValid(bool valid);
 
 private:
 
@@ -447,7 +424,7 @@ private:
 };
 
 
-/* Definición de unos alias para los tipos mas frecuentes */
+/* Definition of aliases for the most frequent types */
 
 using ArgumentInteger = Argument_<int>;
 using ArgumentDouble = Argument_<double>;
@@ -458,7 +435,7 @@ using ArgumentCharRequired = Argument_<char>;
 
 
 
-/* Implementación */
+/* Argument_ Implementation */
 
 template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,

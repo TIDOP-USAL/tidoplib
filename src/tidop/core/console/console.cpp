@@ -100,7 +100,7 @@ void Console::setBackgroundColor(Color backgroundColor,
     else
         this->backgroundIntensity = BACKGROUND_INTENSITY;
 #else
-        this->mBackgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity) * 60;
+        this->backgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity) * 60;
 #endif
 
     update();
@@ -196,35 +196,6 @@ void Console::reset()
 #endif
 }
 
-//Console &Console::operator <<(MessageLevel level)
-//{
-//    switch(level) {
-//    case MessageLevel::debug:
-//        _stream << "Debug:   ";
-//        break;
-//    case MessageLevel::info:
-//        _stream << "Info:    ";
-//        break;
-//    case MessageLevel::warning:
-//        setForegroundColor(Color::magenta, Intensity::normal);
-//        _stream << "Warning: ";
-//        break;
-//    case MessageLevel::success:
-//        setForegroundColor(Color::green, Intensity::normal);
-//        _stream << "Succes:  ";
-//        break;
-//    case MessageLevel::error:
-//        setForegroundColor(Color::red, Intensity::normal);
-//        _stream << "Error:   ";
-//        break;
-//    case MessageLevel::all:
-//        _stream << "Info:    ";
-//        break;
-//    }
-//
-//    return *this;
-//}
-
 Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
 {
     _stream << _endl;
@@ -241,41 +212,6 @@ void Console::setMessageLevel(MessageLevel level)
 {
     messageLevelFlags = level;
 }
-
-//Console &Console::debug()
-//{
-//    auto &console = Console::instance();
-//    console << MessageLevel::debug;
-//    return console;
-//}
-//
-//Console &Console::info()
-//{
-//    auto &console = Console::instance();
-//    console << MessageLevel::info;
-//    return console;
-//}
-//
-//Console &Console::success()
-//{
-//    auto &console = Console::instance();
-//    console << MessageLevel::success;
-//    return console;
-//}
-//
-//Console &Console::warning()
-//{
-//    auto &console = Console::instance();
-//    console << MessageLevel::warning;
-//    return console;
-//}
-//
-//Console &Console::error()
-//{
-//    auto &console = Console::instance();
-//    console << MessageLevel::error;
-//    return console;
-//}
 
 void Console::debug(String message)
 {
@@ -361,7 +297,7 @@ void Console::init(FILE *stream)
 {
   mStream = stream;
   mForegroundColor = 0;
-  mBackgroundColor = 0;
+  backgroundColor = 0;
   mBold = 21;
 }
 

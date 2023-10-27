@@ -46,11 +46,10 @@ class App;
  *  \{
  */
 
- /*! \defgroup Console Utilidades de consola
+ /*! \defgroup Console Console tools
   *
-  * Utilidades para aplicaciones en modo consola que comprenden la apariencia de
-  * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso
-  * para procesos
+  * Tools for console mode applications comprising console appearance (text 
+  * size, colour, etc.), command parsing and progress bar for processes.
   *
   *  \{
   */
@@ -58,11 +57,11 @@ class App;
 
 
 /*!
- * \brief Clase para gestionar la configuración de la ventana de comandos
+ * \brief Class for managing the console configuration
  *
- * Permite modificar el color e intensidad de caracter y de fondo,
- * poner la consola en modo Unicode y cambiar el modo de consola (entrada,
- * salida, error)
+ * Allows you to change the character and background colour and intensity, 
+ * set the console to Unicode mode and change the console mode (input, 
+ * output, error).
  */
 class TL_EXPORT Console
     : public MessageHandler
@@ -71,37 +70,37 @@ class TL_EXPORT Console
 public:
 
     /*!
-     * \brief Valores de intensidad de color
+     * \brief Colour intensity values
      */
     enum class Intensity : int8_t
     {
-        normal,            /*!< Normal */
-        bright             /*!< Brillante */
+        normal,            /*!< Normal colour */
+        bright             /*!< Bright colour */
     };
 
     /*!
-     * \brief Tipos de color de fondo y caracter.
+     * \brief Background and Foreground colour types
      */
     enum class Color : int8_t
     {
-        black,    /*!< Negro */
-        red,      /*!< Rojo */
-        green,    /*!< Verde */
-        yellow,   /*!< Amarillo */
-        blue,     /*!< Azul */
-        magenta,  /*!< Magenta */
-        cyan,     /*!< Cian */
-        white     /*!< Blanco */
+        black,
+        red,
+        green,
+        yellow,
+        blue,
+        magenta,
+        cyan,
+        white
     };
 
     /*!
-     * \brief Modo de consola
+     * \brief Console mode
      */
     enum class Mode : int8_t
     {
-        input,          /*!< Consola en modo entrada */
-        output,         /*!< Consola en modo salida */
-        output_error    /*!< Consola en modo salida de errores */
+        input,          /*!< Console in input mode */
+        output,         /*!< Console in output mode */
+        output_error    /*!< Console in error output mode */
     };
 
 private:
@@ -112,63 +111,21 @@ private:
 
 #ifdef TL_OS_WINDOWS
 
-    /*!
-     * \brief Manejador de la consola
-     */
     HANDLE handle;
-    
-    /*!
-     * \brief Configuración de la consola al iniciar.
-     *
-     * La configuración inicial se recupera al salir o
-     * con el método reset
-     */
     WORD oldColorAttrs;
-    
-    /*!
-     * \brief Intensidad de caracter
-     */
     WORD foregroundIntensity;
-    
-    /*!
-     * \brief Color de caracteres
-     */
     WORD foregroundColor;
-    
-    /*!
-     * \brief Intensidad de fondo
-     */
     WORD backgroundIntensity;
-    
-    /*!
-     * \brief Color de fondo
-     */
     WORD backgroundColor;
-    
     CONSOLE_FONT_INFOEX mIniFont;
     CONSOLE_FONT_INFOEX mCurrentFont;
 
 #else
 
-    /*!
-     * \brief mStream
-     */
     FILE *mStream;
-    
-    /*!
-     * \brief mCommand
-     */
     char mCommand[13];
-    
-    /*!
-     * \brief Color de caracteres
-     */
-    int mForegroundColor;
-    
-    /*!
-     * \brief Color de fondo
-     */
-    int mBackgroundColor;
+    int foregroundColor;
+    int backgroundColor;
     int mBold;
 
 #endif
@@ -185,7 +142,6 @@ public:
 
     static Console &instance();
 
-
 // MessageHandler
 
 public:
@@ -199,51 +155,50 @@ public:
 public:
 
     /*!
-     * \brief Establece el título de la consola
-     * \param[in] title Titulo de la consola
+     * \brief Sets the title of the console
+     * \param[in] title Console title
      */
     void setTitle(const std::string &title);
 
     /*!
-     * \brief Establece el color de fondo
-     * \param[in] backgroundColor Color de fondo
-     * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+     * \brief Sets the background colour
+     * \param[in] backgroundColor Background colour
+     * \param[in] intensity Colour intensity. The default value is Intensity::normal
+     * \see Console::Color, Console::Intensity
      */
     void setBackgroundColor(Color backgroundColor,
                             Intensity intensity = Intensity::normal);
     
     /*!
-     * \brief Establece el color de caracter
-     * \param[in] foregroundColor Color de caracter
-     * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+     * \brief Sets the foregroun colour
+     * \param[in] foregroundColor Foreground colour
+     * \param[in] intensity Colour intensity. The default value is Intensity::normal
      * \see Console::Color, Console::Intensity
      */
     void setForegroundColor(Color foregroundColor,
                             Intensity intensity = Intensity::normal);
     
     /*!
-     * \brief Establece la consola como modo Unicode
+     * \brief Set the console to Unicode mode
      */
     void setConsoleUnicode();
     
     /*!
-     * \brief Establece la fuente como negrita
-     * \param[in] bBold 
+     * \brief Sets the font to bold
+     * \param[in] bold 
      */
     void setFontBold(bool bold);
     
     /*!
-     * \brief Establece el tamaño de la fuente
-     * \param[in] fontHeight Tamaño de la fuente
+     * \brief Sets the font size
+     * \param[in] fontHeight Font size
      */
     void setFontHeight(int16_t fontHeight);
 
     /*!
-     * \brief Recupera los valores iniciales
+     * \brief Restores the initial console configuration
      */
     void reset();
-
-    //Console &operator <<(MessageLevel level);
 
     Console &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
 
@@ -268,18 +223,12 @@ public:
      *
      * \code
      * Console console;
-     * console.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
+     * console.setMessageLevel(MessageLevel::warning | MessageLevel::error);
      * \endcode
      *
      * \param[in] level Message level.
      */
     static void setMessageLevel(MessageLevel level);
-
-    //static Console &debug();
-    //static Console &info();
-    //static Console &success();
-    //static Console &warning();
-    //static Console &error();
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
@@ -319,24 +268,14 @@ private:
 
 #ifdef TL_OS_WINDOWS
 
-    /*!
-     * \brief Inicializa la consola guardando la configuración  actual.
-     * \param handle
-     */
     void init(DWORD handle);
 
 #else
 
-    /*!
-     * \brief Inicializa la consola guardando la configuración  actual.
-     */
     void init(FILE *stream);
 
 #endif
 
-    /*!
-     * \brief Actualiza la consola
-     */
     void update()
     {
 #ifdef TL_OS_WINDOWS
@@ -345,10 +284,10 @@ private:
 #else
         std::stringstream ss;
         ss << "\x1B[" << mBold;
-        if(mForegroundColor != 0)
-            ss << ";" << mForegroundColor;
-        if(mBackgroundColor != 0)
-            ss << ";" << mBackgroundColor;
+        if(foregroundColor != 0)
+            ss << ";" << foregroundColor;
+        if(backgroundColor != 0)
+            ss << ";" << backgroundColor;
         ss << "m";
         fprintf(mStream, "%s", ss.str().c_str());
 #endif

@@ -42,20 +42,23 @@ App::App()
     init();
 }
 
-App &App::instance()
+auto App::instance() -> App&
 {
     static App app;
     return app;
 }
 
-tl::Path App::path() const
+auto App::path() const -> Path
 {
     static std::array<char, TL_MAX_PATH> runfile;
 
 #ifdef TL_OS_WINDOWS
+
     ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
-    return tl::Path(std::string(runfile.data()));
+    return Path(std::string(runfile.data()));
+
 #elif defined TL_OS_LINUX
+
     std::array<char, 32> _path{};
     sprintf(_path.data(), "/proc/%d/exe", getpid());
     long len = readlink(_path.data(), runfile.data(), runfile.size());
@@ -63,20 +66,21 @@ tl::Path App::path() const
         runfile.at(static_cast<size_t>(len)) = '\0';
 
     return tl::Path(std::string(runfile.data()));
+
 #endif
 }
 
-std::string App::version() const
+auto App::version() const -> std::string
 {
     return std::string();
 }
 
-Console &App::console()
+auto App::console() -> Console&
 {
     return Console::instance();
 }
 
-Log &App::log()
+auto App::log() -> Log&
 {
     return Log::instance();
 }

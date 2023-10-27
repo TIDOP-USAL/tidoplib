@@ -78,7 +78,7 @@ void ProgressBase::setRange(size_t min, size_t max)
     updateScale();
 }
 
-size_t ProgressBase::minimum() const
+auto ProgressBase::minimum() const -> size_t
 {
     return mMinimum;
 }
@@ -89,7 +89,7 @@ void ProgressBase::setMinimum(size_t min)
     updateScale();
 }
 
-size_t ProgressBase::maximum() const
+auto ProgressBase::maximum() const -> size_t
 {
     return mMaximum;
 }
@@ -126,7 +126,7 @@ void ProgressBase::updateScale()
     else mScale = 100. / static_cast<double>(mMaximum - mMinimum);
 }
 
-int ProgressBase::percent()
+auto ProgressBase::percent() -> int
 {
     return mPercent;
 }

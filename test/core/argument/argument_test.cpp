@@ -45,13 +45,12 @@ BOOST_AUTO_TEST_CASE(ArgumentIntegerRequired_constructor)
     BOOST_CHECK_EQUAL("int", arg_int.typeName());
     BOOST_CHECK_EQUAL(true, arg_int.isRequired());
 
-    Argument_<int> arg_int2("int", "integer argument");
-
-    BOOST_CHECK_EQUAL("int", arg_int2.name());
-    BOOST_CHECK_EQUAL("integer argument", arg_int2.description());
-    BOOST_CHECK_EQUAL(char(), arg_int2.shortName());
-    BOOST_CHECK_EQUAL("int", arg_int2.typeName());
-    BOOST_CHECK_EQUAL(true, arg_int2.isRequired());
+    auto arg_int2 = Argument::make<int>("int", "integer argument");
+    BOOST_CHECK_EQUAL("int", arg_int2->name());
+    BOOST_CHECK_EQUAL("integer argument", arg_int2->description());
+    BOOST_CHECK_EQUAL(char(), arg_int2->shortName());
+    BOOST_CHECK_EQUAL("int", arg_int2->typeName());
+    BOOST_CHECK_EQUAL(true, arg_int2->isRequired());
 
     Argument_<int> arg_int3('i', "integer argument");
 
@@ -84,13 +83,13 @@ BOOST_AUTO_TEST_CASE(ArgumentDoubleRequired_constructor)
     BOOST_CHECK_EQUAL("double", arg_double.typeName());
     BOOST_CHECK_EQUAL(true, arg_double.isRequired());
 
-    Argument_<double> arg_double2("double", "double argument");
+    auto arg_double2 = Argument::make<double>("double", "double argument");
 
-    BOOST_CHECK_EQUAL("double", arg_double2.name());
-    BOOST_CHECK_EQUAL("double argument", arg_double2.description());
-    BOOST_CHECK_EQUAL(char(), arg_double2.shortName());
-    BOOST_CHECK_EQUAL("double", arg_double2.typeName());
-    BOOST_CHECK_EQUAL(true, arg_double2.isRequired());
+    BOOST_CHECK_EQUAL("double", arg_double2->name());
+    BOOST_CHECK_EQUAL("double argument", arg_double2->description());
+    BOOST_CHECK_EQUAL(char(), arg_double2->shortName());
+    BOOST_CHECK_EQUAL("double", arg_double2->typeName());
+    BOOST_CHECK_EQUAL(true, arg_double2->isRequired());
 
     Argument_<double> arg_double3('d', "double argument");
 
@@ -230,8 +229,7 @@ BOOST_AUTO_TEST_CASE(ArgumentStringOptional_constructor)
 BOOST_AUTO_TEST_CASE(ArgumentList_constructor)
 {
     Argument_<int> arg_list("list", "lista de argumentos", 10);
-    std::vector<int> list{0, 10, 20, 30, 40};
-    arg_list.setValidator(std::make_shared<ValuesValidator<int>>(list));
+    arg_list.setValidator(ValuesValidator<int>::create({0, 10, 20, 30, 40}));
     BOOST_CHECK_EQUAL("list", arg_list.name());
     BOOST_CHECK_EQUAL("lista de argumentos", arg_list.description());
     BOOST_CHECK_EQUAL(char(), arg_list.shortName());
@@ -252,15 +250,14 @@ struct ArgumentTest
 
     void setup()
     {
-        arg_int = std::make_shared<Argument_<int>>("int", 'i', "integer");
-        arg_double = std::make_shared<Argument_<double>>("double", 'd', "double", 2.5);
-        arg_float = std::make_shared<Argument_<float>>("float", 'f', "coma flotante", 0.567f);
-        arg_string = std::make_shared<Argument_<std::string>>("string", 's', "Cadena de texto", "string");
-        arg_bool = std::make_shared<Argument_<bool>>("bool", 'b', "boolean", false);
+        arg_int = Argument::make<int>("int", 'i', "integer");
+        arg_double = Argument::make<double>("double", 'd', "double", 2.5);
+        arg_float = Argument::make<float>("float", 'f', "coma flotante", 0.567f);
+        arg_string = Argument::make<std::string>("string", 's', "Cadena de texto", "string");
+        arg_bool = Argument::make<bool>("bool", 'b', "boolean", false);
 
-        arg_list = std::make_shared<Argument_<int>>("list", "lista de argumentos", 20);
-        std::vector<int> list{0, 10, 20, 30, 40};
-        arg_list->setValidator(std::make_shared<ValuesValidator<int>>(list));
+        arg_list = Argument::make<int>("list", "lista de argumentos", 20);
+        arg_list->setValidator(ValuesValidator<int>::create({0, 10, 20, 30, 40}));
     }
 
     void teardown() {}
@@ -359,7 +356,7 @@ struct CommandTest
       : file(),
         cmd_arg_posix(new Command),
         cmd_arg_posix2(new Command("cmd_name", "cmd description")),
-        cmd_arg_posix3(new Command("name", "Lista de inicializadores", {std::make_shared<Argument_<std::string>>("input", 'i', "Fichero de entrada")})),
+        cmd_arg_posix3(new Command("name", "Lista de inicializadores", {Argument::make<std::string>("input", 'i', "Fichero de entrada")})),
         cmd_arg_list(new Command)
     {
     }
@@ -374,22 +371,28 @@ struct CommandTest
 
     void setup()
     {
-        auto arg_int = std::make_shared<Argument_<int>>("int", 'i', "integer");
-        arg_int->setValidator(std::make_shared<RangeValidator<int>>(0, 10));
-        cmd_arg_posix2->push_back(arg_int);
-        cmd_arg_posix2->push_back(std::make_shared<Argument_<double>>("par", 'p', "Parámetro", 3.46));
-        cmd_arg_posix2->push_back(std::make_shared<Argument_<float>>("float", 'f', "Parámetro float", 2.23f));
-        cmd_arg_posix2->push_back(std::make_shared<Argument_<bool>>("bool", 'b', "boolean", false));
-        cmd_arg_posix2->push_back(std::make_shared<Argument_<bool>>("option", 'o', "Option", false));
-        
-        auto arg_list = std::make_shared<Argument_<int>>("list", "lista de argumentos", 20);
-        std::vector<int> list{0, 10, 20, 30, 40};
-        arg_list->setValidator(std::make_shared<ValuesValidator<int>>(list));
-        cmd_arg_list->push_back(arg_list);
+        /* addArgument with range validator */
+        auto arg_int = Argument::make<int>("int", 'i', "integer");
+        arg_int->setValidator(RangeValidator<int>::create(0, 10));
+        cmd_arg_posix2->addArgument(arg_int);
 
-        auto arg_options = std::make_shared<Argument_<std::string>>("options", "lista de opciones", "OPT0");
-        std::vector<std::string> options{"OPT0", "OPT1", "OPT2", "OPT3", "OPT4"};
-        arg_options->setValidator(std::make_shared<ValuesValidator<std::string>>(options));
+        /* addArgument with Argument::make() */
+        cmd_arg_posix2->addArgument(Argument::make<double>("par", 'p', "Parámetro", 3.46));
+
+        /* addArgument */
+        cmd_arg_posix2->addArgument<float>("float", 'f', "Parámetro float", 2.23f);
+        cmd_arg_posix2->addArgument<bool>("bool", 'b', "boolean", false);
+
+        /* Alternative to addArgument with push_back */
+        cmd_arg_posix2->push_back(Argument::make<bool>("option", 'o', "Option", false));
+        
+        /* addArgument with list validator */
+        auto arg_list = Argument::make<int>("list", "lista de argumentos", 20);
+        arg_list->setValidator(ValuesValidator<int>::create({0, 10, 20, 30, 40}));
+        cmd_arg_list->addArgument(arg_list);
+
+        auto arg_options = Argument::make<std::string>("options", "lista de opciones", "OPT0");
+        arg_options->setValidator(ValuesValidator<std::string>::create({"OPT0", "OPT1", "OPT2", "OPT3", "OPT4"}));
         cmd_arg_list->push_back(arg_options);
     }
 
@@ -562,5 +565,145 @@ BOOST_FIXTURE_TEST_CASE(parseTextWithHyphen, CommandTest)
     BOOST_CHECK(cmd_arg_posix3->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+/* CommandList Test */
+
+BOOST_AUTO_TEST_SUITE(CommandListTestSuite)
+
+struct CommandListTest
+{
+
+    CommandListTest()
+        : cmd_list_transform(new CommandList("transform", "Transform description"))
+    {
+    }
+
+    ~CommandListTest()
+    {
+        if (cmd_list_transform) delete cmd_list_transform;
+    }
+
+    void setup()
+    {
+        auto arg_compute = Argument::make<bool>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
+        auto arg_transform = Argument::make<bool>("transform", "Aplica la transformación a un listado de puntos", true);
+        auto arg_tx = Argument::make<double>("tx", "Traslación en X", 0.0);
+        auto arg_ty = Argument::make<double>("ty", "Traslación en Y", 0.0);
+        auto arg_rotation = Argument::make<double>("rotation", "Rotación", 0.);
+        auto arg_scale = Argument::make<double>("scale", "Escala", 1.);
+        arg_scale->setValidator(RangeValidator<double>::create(0., 100));
+        auto arg_scale_x = Argument::make<double>("scale_x", "Escala X", 1.);
+        auto arg_scale_y = Argument::make<double>("scale_y", "Escala Y", 1.);
+
+
+        auto cmd_translation = Command::create("Translation", "Translation transform", {
+                                                             arg_compute,
+                                                             arg_transform,
+                                                             arg_tx,
+                                                             arg_ty});
+
+        auto cmd_rotation = Command::create("Rotation", "Rotation transform");
+        cmd_rotation->addArgument(arg_compute);
+        cmd_rotation->addArgument(arg_transform);
+        cmd_rotation->addArgument(arg_rotation);
+
+        cmd_list_transform->addCommand(cmd_translation);
+        cmd_list_transform->addCommand(cmd_rotation);
+    }
+
+    void teardown() {}
+
+    CommandList *cmd_list_transform;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(DefaultConstructor, CommandListTest)
+{
+    CommandList cmd_list;
+    BOOST_CHECK(cmd_list.name().empty());
+    BOOST_CHECK(cmd_list.description().empty());
+    BOOST_CHECK_EQUAL("0.0.0", cmd_list.version());
+    BOOST_CHECK(cmd_list.empty());
+}
+
+BOOST_FIXTURE_TEST_CASE(Constructor, CommandListTest)
+{
+    BOOST_CHECK_EQUAL("transform", cmd_list_transform->name());
+    BOOST_CHECK_EQUAL("Transform description", cmd_list_transform->description());
+}
+
+BOOST_FIXTURE_TEST_CASE(set_and_get_name, CommandListTest)
+{
+    cmd_list_transform->setName("new_name");
+    BOOST_CHECK_EQUAL("new_name", cmd_list_transform->name());
+}
+
+BOOST_FIXTURE_TEST_CASE(set_and_get_description, CommandListTest)
+{
+    cmd_list_transform->setDescription("New description");
+    BOOST_CHECK_EQUAL("New description", cmd_list_transform->description());
+}
+
+BOOST_FIXTURE_TEST_CASE(set_and_get_version, CommandListTest)
+{
+    cmd_list_transform->setVersion("1.0.0");
+    BOOST_CHECK_EQUAL("1.0.0", cmd_list_transform->version());
+}
+
+
+BOOST_FIXTURE_TEST_CASE(parseHelp, CommandListTest)
+{
+    std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("-h")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::show_help);
+
+    std::array<char *, 3> argv2{const_cast<char *>(""), const_cast<char *>("Translation"), const_cast<char *>("-h")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_help);
+}
+
+BOOST_FIXTURE_TEST_CASE(parseVersion, CommandListTest)
+{
+    std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("--version")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::show_version);
+}
+
+BOOST_FIXTURE_TEST_CASE(parseLicence, CommandListTest)
+{
+    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--licence")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_licence);
+}
+
+BOOST_FIXTURE_TEST_CASE(parseCommand, CommandListTest)
+{
+    std::array<char *, 4> argv2{const_cast<char *>(""), const_cast<char *>("Rotation"), const_cast<char *>("--compute"), const_cast<char *>("1")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::parse_success);
+
+    BOOST_CHECK_EQUAL("Rotation", cmd_list_transform->commandName());
+}
+
+
+BOOST_FIXTURE_TEST_CASE(parse_error, CommandListTest)
+{
+    std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("-b")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_error);
+}
+
+BOOST_FIXTURE_TEST_CASE(size, CommandListTest)
+{
+    BOOST_CHECK_EQUAL(2, cmd_list_transform->size());
+}
+
+BOOST_FIXTURE_TEST_CASE(clear, CommandListTest)
+{
+    cmd_list_transform->clear();
+    BOOST_CHECK_EQUAL(0, cmd_list_transform->size());
+}
+
+BOOST_FIXTURE_TEST_CASE(empty, CommandListTest)
+{
+    BOOST_CHECK(false == cmd_list_transform->empty());
+}
 
 BOOST_AUTO_TEST_SUITE_END()

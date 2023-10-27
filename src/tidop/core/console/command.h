@@ -62,10 +62,10 @@ T ArgValue<T>::value(const Argument::SharedPtr &arg)
 {
     Argument::Type type = arg->type();
     Argument::Type return_type = ArgTraits<T>::property_type;
-    if(type != return_type) {
+    if (type != return_type) {
         TL_ASSERT(type != Argument::Type::arg_string,
                   "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
-        if(type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
+        if (type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
             Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), ArgTraits<T>::type_name);
         }
     }
@@ -73,7 +73,7 @@ T ArgValue<T>::value(const Argument::SharedPtr &arg)
     T value{};
     switch(type) {
     case Argument::Type::arg_unknown:
-        // Exception
+        TL_THROW_EXCEPTION("Unknown argument type");
         break;
     case Argument::Type::arg_bool:
         value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
@@ -136,25 +136,24 @@ std::string ArgValue<std::string>::value(const Argument::SharedPtr &arg)
 
 
 /*!
- * \brief Clase para la gestión de comandos por consola
- * La clase establece los argumentos del comando, parsea la entrada del comando
- * y comprueba que el mismo sea correcto
+ * \brief Class for console command management
+ * The class sets the command arguments, parses the command input 
+ * and checks that the command is correct.
  *
- * La estructura de un comando es:
+ * The structure of a command is:
  *
  * cmdName [--param1|-p] [Value] [--option|-o]
  *
- * Ejemplo de uso:
+ * Example of use:
  *
  * \code
  *
- *  Command cmd(name, "Ejemplo de aplicación de consola");
- *  cmd.addArgument(std::make_shared<Argument_<std::string>>("file", 'f', "Ejemplo de parámetro obligatorio. Ruta de un fichero."));
- *  cmd.addArgument(std::make_shared<Argument_<int>>("int", 'i', "Valor entero obligatorio"));
- *  cmd.addArgument(std::make_shared<Argument_<bool>>("bool", 'b', "boolean", false));
- *  cmd.addArgument(std::make_shared<Argument_<double>>("double", "Parámetro doble opcional. Si se omite se toma el valor por defecto", 0.5));
+ *  Command cmd(command_name, "Example of a console application");
+ *  cmd.addArgument<std::string>("file", 'f', "Example of a mandatory parameter of type string");
+ *  cmd.addArgument<int>>("int", 'i', "Required integer value");
+ *  cmd.addArgument<bool>("bool", 'b', "boolean", false);
+ *  cmd.addArgument<double>("double", "Optional double parameter. If omitted, the default value is taken", 0.5);
  *
- *  // Parseo de los argumentos y comprobación de los mismos
  *  Command::Status status = cmd.parse(argc, argv);
  *  if (status == Command::Status::parse_error ) {
  *    return 1;
@@ -175,61 +174,65 @@ std::string ArgValue<std::string>::value(const Argument::SharedPtr &arg)
  */
 class TL_EXPORT Command
 {
-public:
-
-    using SharedPtr = std::shared_ptr<Command>;
 
 public:
 
     /*!
-     * \brief Estado de salida del parseo del comando
+     * \brief Parsing Status
      */
     enum class Status
     {
-        parse_success,  /*!< El parseo se ejecuto correctamente */
-        parse_error,    /*!< Ocurrio un error al ejecutar el comando */
-        show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-        show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-        show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+        parse_success,  /*!< The command was parsed correctly */
+        parse_error,    /*!< Error parsing the command */
+        show_help,      /*!< Displays command help */
+        show_version,   /*!< Displays command version */
+        show_licence    /*!< Displays license information */
     };
 
-    using allocator_type = std::list<Argument::SharedPtr>::allocator_type;
     using value_type = std::list<Argument::SharedPtr>::value_type;
     using size_type = std::list<Argument::SharedPtr>::size_type;
-    using difference_type = std::list<Argument::SharedPtr>::difference_type;
     using pointer = std::list<Argument::SharedPtr>::pointer;
     using const_pointer = std::list<Argument::SharedPtr>::const_pointer;
     using reference = std::list<Argument::SharedPtr>::reference;
     using const_reference = std::list<Argument::SharedPtr>::const_reference;
     using iterator = std::list<Argument::SharedPtr>::iterator;
     using const_iterator = std::list<Argument::SharedPtr>::const_iterator;
+    using SharedPtr = std::shared_ptr<Command>;
+
+private:
+
+    std::string mName;
+    std::string mDescription;
+    std::list<Argument::SharedPtr> mArguments;
+    std::string mVersion;
+    std::list<std::string> mExamples;
+    Licence mLicence;
 
 public:
 
     /*!
-     * \brief Constructora por defecto
+     * \brief Constructor
      */
     Command();
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] command Objeto que se copia
+     * \brief Copy constructor
      */
     Command(const Command &command);
 
     /*!
-     * \brief Constructor comando tipo POSIX
-     * \param[in] name Nombre del comando
-     * \param[in] description Descripción del comando
+     * \brief Constructor
+     * \param[in] name Command name
+     * \param[in] description Command description
      */
     Command(std::string name,
             std::string description);
 
     /*!
-     * \brief Constructora de lista
-     * \param[in] name Nombre del comando
-     * \param[in] description Descripción del comando
-     * \param[in] arguments listado de argumentos
+     * \brief Constructor with argument list
+     * \param[in] name Command name
+     * \param[in] description Command description
+     * \param[in] arguments Argument list
      */
     Command(std::string name,
             std::string description,
@@ -238,167 +241,178 @@ public:
     ~Command() = default;
 
     /*!
-     * \brief Devuelve el nombre del comando
-     * \return Nombre del comando
+     * \brief Returns the name of the command
+     * \return Command name
      */
     auto name() const -> std::string;
 
     /*!
-     * \brief Establece el nombre del comando
-     * \param[in] name Nombre del comando
+     * \brief Sets the name of the command
+     * \param[in] name Command name
      */
     auto setName(const std::string &name) -> void;
 
     /*!
-     * \brief Devuelve la descripción del comando
-     * \return Descripción del comando
+     * \brief Returns the description of the command
+     * \return Command description
      */
     auto description() const -> std::string;
 
     /*!
-     * \brief Establece la descripción del comando
-     * \param[in] description Descripción del comando
+     * \brief Sets the description of the command
+     * \param[in] description Command description
      */
     auto setDescription(const std::string &description) -> void;
 
     /*!
-     * \brief Versión del programa
+     * \brief Program version
      * \return
      */
     auto version() const -> std::string;
 
     /*!
-     * \brief Establece la versión del programa
-     * \param[in] version Versión del programa
+     * \brief Sets the program version
+     * \param[in] version Program version
      */
     auto setVersion(const std::string &version) -> void;
 
     /*!
-     * \brief parsea los argumentos de entrada
+     * \brief Parse the input arguments
      * \param[in] argc
      * \param[in] argv
-     * \return Devuelve el estado. 'parse_error' en caso de error y 'parse_success' cuando el parseo se ha hecho correctamente
-     * \see CmdParser::Status
+     * \return Returns Status::parse_error in case of error and Status::parse_success when the parse was successful.
+     * \see Status
      */
     auto parse(int argc, char **argv) -> Status;
 
-    /*!
-     * \brief Devuelve un iterador al inicio
-     * \return Iterador al primer elemento
-     */
     auto begin() TL_NOEXCEPT -> iterator;
-
-    /*!
-     * \brief Devuelve un iterador constante al inicio
-     * \return Iterador al primer elemento
-     */
     auto begin() const TL_NOEXCEPT -> const_iterator;
-
-    /*!
-     * \brief Devuelve un iterador al siguiente elemento después del último argumento
-     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-     * \return Iterador al siguiente elemento después del último argumento
-     */
     auto end() TL_NOEXCEPT -> iterator;
-
-    /*!
-     * \brief Devuelve un iterador constante al siguiente elemento después del último argumento
-     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-     * \return Iterador al siguiente elemento después del último argumento
-     */
     auto end() const TL_NOEXCEPT -> const_iterator;
 
-    /*!
-     * \brief Agrega un argumento mediante copia al final
-     * \param[in] argument Argumento que se añade
-     */
+
     auto push_back(const Argument::SharedPtr &argument) -> void;
     auto addArgument(const Argument::SharedPtr &argument) -> void;
 
-    /*!
-     * \brief Agrega un argumento mediante movimiento al final
-     * \param[in] argument Argumento que se añade
-     */
     auto push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
     auto addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
 
     template<typename type, typename... Arg>
     auto addArgument(Arg&&... arg) TL_NOEXCEPT -> void
     {
-        auto argument = std::make_shared<Argument_<type>>(std::forward<Arg>(arg)...);
-        mArguments.push_back(argument);
+        mArguments.push_back(Argument::make<type>(std::forward<Arg>(arg)...));
     }
 
     /*!
-     * \brief Elimina los argumentos
+     * \brief Removes arguments
      */
     auto clear() TL_NOEXCEPT -> void;
 
     /*!
-     * \brief Comprueba si no hay argumentos
-     * \return true si el contenedor está vacío y false en caso contrario
+     * \brief Check if there are no arguments
      */
     auto empty() const TL_NOEXCEPT -> bool;
 
     /*!
-     * \brief Devuelve el tamaño del contenedor
-     * \return Tamaño
+     * \brief Returns the number of arguments
      */
     auto size() const TL_NOEXCEPT -> size_t;
 
-    /*!
-     * \brief Asignación de copia
-     */
-    auto operator=(const Command &command) -> Command &;
 
-    /*!
-     * \brief Asignación de movimiento
-     */
+    auto operator=(const Command &command) -> Command &;
     auto operator=(Command &&command) TL_NOEXCEPT -> Command &;
 
     /*!
-     * \brief Elimina el intervalo
+     * \brief Removes the interval
      */
     auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
-     * \brief Muestra la ayuda en la consola
+     * \brief Displays help in the console
      */
     auto showHelp() const -> void;
 
     /*!
-     * \brief Muestra la versión en la consola
+     * \brief Displays the version in the console
      */
     auto showVersion() const -> void;
 
     /*!
-     * \brief Muestra la licencia en la consola
+     * \brief Display the licence on the console
      */
     auto showLicence() const -> void;
 
     /*!
-     * \brief Añade un ejemplo de uso
+     * \brief Add an example of how to use the command
+     * \param[in] example Example of use
      */
     auto addExample(const std::string &example) -> void;
 
+    /*!
+     * \brief Sets the licence
+     * \param[in] licence Licence
+     * \see Licence
+     */
     auto setLicence(const Licence &licence) -> void;
+
+    /*!
+     * \brief Returns the argument from its name
+     * If the argument does not exist, an exception is returned.
+     * \param[in] name Argument name
+     * \return Argument
+     */
     auto argument(const std::string &name) const -> Argument::SharedPtr;
+
+    /*!
+     * \brief Returns the argument from its short name
+     * If the argument does not exist, an exception is returned.
+     * \param[in] shortName Argument short name
+     * \return Argument
+     */
     auto argument(const char &shortName) const -> Argument::SharedPtr;
 
+    /*!
+     * \brief Returns the argument value from its name
+     * If the argument does not exist, an exception is returned.
+     * \param[in] name Argument name
+     * \return Argument
+     */
     template<typename T>
     T value(const std::string &name) const
     {
-        auto arg = argument(name);
-        internal::ArgValue<T> arg_value;
-        return arg_value.value(arg);
+        T _value{};
+
+        try {
+            auto arg = argument(name);
+            internal::ArgValue<T> arg_value;
+            _value = arg_value.value(arg);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+        }
+
+        return _value;
     }
 
+    /*!
+     * \brief Returns the argument value from its short name
+     * If the argument does not exist, an exception is returned.
+     * \param[in] shortName Argument short name
+     * \return Argument
+     */
     template<typename T>
-    T value(const char &short_name) const
+    T value(const char &shortName) const
     {
-        auto arg = argument(short_name);
-        internal::ArgValue<T> arg_value;
-        return arg_value.value(arg);
+        T _value{};
+
+        try {
+            auto arg = argument(shortName);
+            internal::ArgValue<T> arg_value;
+            _value = arg_value.value(arg);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+        }
+
+        return _value;
     }
 
 public:
@@ -406,53 +420,19 @@ public:
     static auto create(std::string name,
                        std::string description) TL_NOEXCEPT -> std::shared_ptr<Command>
     {
-        std::shared_ptr<Command> cmd(new Command(name, description));
-        return cmd;
+        return std::make_shared<Command>(name, description);
     }
 
     static auto create(std::string name,
                        std::string description,
                        std::initializer_list<Argument::SharedPtr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
     {
-        std::shared_ptr<Command> cmd(new Command(name, description, arguments));
-        return cmd;
+        return std::make_shared<Command>(name, description, arguments);
     }
 
 protected:
 
     auto init() -> void;
-
-private:
-
-    /*!
-     * \brief Nombre del comando
-     */
-    std::string mName;
-
-    /*!
-     * \brief Descripción del comando
-     */
-    std::string mDescription;
-
-    /*!
-     * \brief Listado de los argumentos del comando
-     */
-    std::list<Argument::SharedPtr> mArguments;
-
-    /*!
-     * \brief Listado de los argumentos por defecto comando
-     * Comandos como ayuda [-h | --help] o versión [--version]
-     */
-     //std::list<std::shared_ptr<Argument>> mDefaultArgs;
-
-     /*!
-      * \brief Versión del programa
-      */
-    std::string mVersion;
-
-    std::list<std::string> mExamples;
-
-    Licence mLicence;
 
 };
 
@@ -467,77 +447,55 @@ class TL_EXPORT CommandList
 
 public:
 
-    /*!
-     * \brief Estado de salida del parseo del comando
-     */
-    enum class Status
-    {
-        parse_success,  /*!< El parséo se ejecutó correctamente */
-        parse_error,    /*!< Ocurrio un error al ejecutar el comando */
-        show_help,      /*!< Se pasa como parámetro: help. Muestra la ayuda del programa */
-        show_version,   /*!< Se pasa como parámetro: version. Se muestra la versión del programa */
-        show_licence    /*!< Se pasa como parámetro: licence. Se muestra la información de licencia */
-    };
-
-    using allocator_type = std::list<Command::SharedPtr>::allocator_type;
     using value_type = std::list<Command::SharedPtr>::value_type;
     using size_type = std::list<Command::SharedPtr>::size_type;
-    using difference_type = std::list<Command::SharedPtr>::difference_type;
     using pointer = std::list<Command::SharedPtr>::pointer;
     using const_pointer = std::list<Command::SharedPtr>::const_pointer;
-
-    /*!
-     * \brief value_type&
-     */
     using reference = std::list<Command::SharedPtr>::reference;
-
-    /*!
-     * \brief const value_type&
-     */
     using const_reference = std::list<Command::SharedPtr>::const_reference;
-
-    /*!
-     * \brief Iterador de acceso aleatorio
-     */
     using iterator = std::list<Command::SharedPtr>::iterator;
-
-    /*!
-     * \brief Iterador constante de acceso aleatorio
-     */
     using const_iterator = std::list<Command::SharedPtr>::const_iterator;
+
+
+private:
+
+    std::string mName;
+    std::string mDescription;
+    std::list<Command::SharedPtr> mCommands;
+    Command::SharedPtr mCommand;
+    std::string mVersion;
+    Licence mLicence;
 
 public:
 
     /*!
-     * \brief Constructora
+     * \brief Constructor
      */
     CommandList();
 
     /*!
-     * \brief Constructora
-     * \param[in] name Nombre del comando
-     * \param[in] description Descripción del comando
+     * \brief Constructor
+     * \param[in] name Command name
+     * \param[in] description Command description
      */
     CommandList(std::string name,
                 std::string description);
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] commandList Objeto CommandList que se copia
+     * \brief Copy constructor
      */
     CommandList(const CommandList &commandList);
 
     /*!
-     * \brief Constructor de movimiento
-     * \param[in] commandList Objeto CommandList que se mueve
+     * \brief Move constructor
      */
     CommandList(CommandList &&commandList) TL_NOEXCEPT;
 
     /*!
-     * \brief Constructora de lista
-     * \param[in] name Nombre del comando
-     * \param[in] description Descripción del comando
-     * \param[in] commands listado de comandos
+     * \brief Constructor with argument list
+     * \param[in] name Command name
+     * \param[in] description Command description
+     * \param[in] arguments Argument list
      */
     CommandList(std::string name,
                 std::string description,
@@ -546,165 +504,105 @@ public:
     ~CommandList() = default;
 
     /*!
-     * \brief Devuelve el nombre del programa
-     * \return Nombre del programa
+     * \brief Returns the name of the command
+     * \return Command name
      */
     auto name() const -> std::string;
 
     /*!
-     * \brief Establece el nombre del programa
-     * \param[in] name Nombre del programa
+     * \brief Sets the name of the command
+     * \param[in] name Command name
      */
     auto setName(const std::string &name) -> void;
 
     /*!
-     * \brief Devuelve la descripción del comando
-     * \return Descripción del comando
+     * \brief Returns the description of the command
+     * \return Command description
      */
     auto description() const -> std::string;
 
     /*!
-     * \brief Establece la descripción del comando
-     * \param[in] description Descripción del comando
+     * \brief Sets the description of the command
+     * \param[in] description Command description
      */
     auto setDescription(const std::string &description) -> void;
 
     /*!
-     * \brief Versión del programa
+     * \brief Program version
      * \return
      */
     auto version() const -> std::string;
 
     /*!
-     * \brief Establece la versión del programa
-     * \param[in] version Versión del programa
+     * \brief Sets the program version
+     * \param[in] version Program version
      */
     auto setVersion(const std::string &version) -> void;
 
     /*!
-     * \brief parsea los argumentos de entrada
+     * \brief Parse the input arguments
      * \param[in] argc
      * \param[in] argv
-     * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
-     * \see CmdParser::Status
+     * \return Returns Command::Status::parse_error in case of error and Command::Status::parse_success when the parse was successful.
+     * \see Command::Status
      */
-    auto parse(int argc, char **argv) -> Status;
+    auto parse(int argc, char **argv) -> Command::Status;
 
-    /*!
-     * \brief Devuelve un iterador al inicio
-     * \return Iterador al primer elemento
-     */
     auto begin() TL_NOEXCEPT -> iterator;
-
-    /*!
-     * \brief Devuelve un iterador constante al inicio
-     * \return Iterador al primer elemento
-     */
     auto begin() const TL_NOEXCEPT -> const_iterator;
-
-    /*!
-     * \brief Devuelve un iterador al siguiente elemento después del último comando
-     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-     * \return Iterador al siguiente elemento después del último comando
-     */
     auto end() TL_NOEXCEPT -> iterator;
-
-    /*!
-     * \brief Devuelve un iterador constante al siguiente elemento después del último comando
-     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-     * \return Iterador al siguiente elemento después del último comando
-     */
     auto end() const TL_NOEXCEPT -> const_iterator;
 
-    /*!
-     * \brief Agrega un comando mediante copia al final
-     * \param[in] command Comando que se añade
-     */
+
     auto push_back(const Command::SharedPtr &command) -> void;
     auto addCommand(const Command::SharedPtr &command) -> void;
 
-    /*!
-     * \brief Agrega un comando mediante movimiento al final
-     * \param[in] command Comando que se añade
-     */
     auto push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void;
     auto addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> void;
 
     /*!
-     * \brief Elimina los comandos
+     * \brief Removes commands
      */
     auto clear() TL_NOEXCEPT -> void;
 
     /*!
-     * \brief Comprueba si no hay comandos
-     * \return true si el contenedor está vacío y false en caso contrario
+     * \brief Check if there are no commands
      */
     auto empty() const TL_NOEXCEPT -> bool;
 
     /*!
-     * \brief Devuelve el número de comandos
-     * \return Número de comandos
+     * \brief Returns the number of commands
      */
     auto size() const TL_NOEXCEPT -> size_type;
 
-    /*!
-     * \brief Asignación de copia
-     */
     auto operator=(const CommandList &cmdList) -> CommandList &;
-
-    /*!
-     * \brief Asignación de movimiento
-     */
     auto operator=(CommandList &&cmdList) TL_NOEXCEPT -> CommandList &;
 
     /*!
-     * \brief Elimina el intervalo
+     * \brief Removes the interval
      */
     auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
-     * \brief Muestra la ayuda en la consola
+     * \brief Displays help in the console
      */
     auto showHelp() const -> void;
 
     /*!
-     * \brief Muestra la versión en la consola
+     * \brief Displays the version in the console
      */
     auto showVersion() const -> void;
 
     /*!
-     * \brief Muestra la licencia en la consola
+     * \brief Display the licence on the console
      */
     auto showLicence() const -> void;
 
+    /*!
+     * \brief Displays the name of the command parsed
+     */
     auto commandName() const -> std::string;
 
-
-private:
-
-    /*!
-     * \brief Nombre del comando
-     */
-    std::string mName;
-
-    /*!
-     * \brief Descripción del comando
-     */
-    std::string mDescription;
-
-    /*!
-     * \brief Listado de los argumentos del comando
-     */
-    std::list<Command::SharedPtr> mCommands;
-
-    Command::SharedPtr mCommand;
-
-    /*!
-     * \brief Versión del programa
-     */
-    std::string mVersion;
-
-    Licence mLicence;
 };
 
 

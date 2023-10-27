@@ -568,12 +568,12 @@ auto CommandList::setVersion(const std::string &version) -> void
     mVersion = version;
 }
 
-auto CommandList::parse(int argc, char **argv) -> Status
+auto CommandList::parse(int argc, char **argv) -> Command::Status
 {
     if(argc <= 1) {
         Message::error("No command found");
         showHelp();
-        return Status::parse_error;
+        return Command::Status::parse_error;
     }
 
     std::string arg_cmd_name = std::string(argv[1]);
@@ -587,39 +587,32 @@ auto CommandList::parse(int argc, char **argv) -> Status
 
     if(arg_cmd_name == "h" || arg_cmd_name == "help") {
         showHelp();
-        return Status::show_help;
+        return Command::Status::show_help;
     }
 
     if(arg_cmd_name == "version") {
         showVersion();
-        return Status::show_version;
+        return Command::Status::show_version;
     }
 
     if(arg_cmd_name == "licence") {
         showLicence();
-        return Status::show_licence;
+        return Command::Status::show_licence;
     }
 
     for(auto &command : mCommands) {
+
         if(command->name().compare(arg_cmd_name) == 0) {
+
             mCommand = command;
             std::vector<char *> cmd_argv;
             for(size_t i = 0; i < static_cast<size_t>(argc); ++i) {
                 if(i != 1)
                     cmd_argv.push_back(argv[i]);
             }
-            Command::Status status = command->parse(argc - 1, cmd_argv.data());
-            if(status == Command::Status::parse_error) {
-                return Status::parse_error;
-            } else if(status == Command::Status::show_help) {
-                return Status::show_help;
-            } else if(status == Command::Status::show_licence) {
-                return Status::show_licence;
-            } else if(status == Command::Status::show_version) {
-                return Status::show_version;
-            } else {
-                return Status::parse_success;
-            }
+            
+            return command->parse(argc - 1, cmd_argv.data());
+
         }
     }
 
@@ -629,7 +622,7 @@ auto CommandList::parse(int argc, char **argv) -> Status
         showHelp();
     }
 
-    return Status::parse_error;
+    return Command::Status::parse_error;
 }
 
 auto CommandList::begin() TL_NOEXCEPT -> iterator

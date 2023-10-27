@@ -21,20 +21,26 @@
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
 ##########################################################################
+ 
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-# Test modulo Core
+set(test_filename validator_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
 
+project(${test_name} LANGUAGES CXX)
 
-if(TL_HAVE_CORE)
-add_subdirectory(argument)
-add_subdirectory(console)
-add_subdirectory(concurrency)
-add_subdirectory(flag)
-add_subdirectory(licence)
-add_subdirectory(messages)
-add_subdirectory(path)
-add_subdirectory(process)
-add_subdirectory(utils)
-add_subdirectory(xml)
-add_subdirectory(validator)
-endif()
+add_executable(${PROJECT_NAME} 
+               ${test_filename})
+
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+                      FOLDER "test/core")
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

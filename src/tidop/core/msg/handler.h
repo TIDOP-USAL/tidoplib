@@ -44,7 +44,7 @@ namespace tl
  *  \{
  */
 
-/*! \defgroup Messages Gestión de mensajes
+/*! \defgroup Messages Message handling
  *
  *  \{
  */
@@ -62,6 +62,7 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
 class MessageHandler
 {
+
 public:
 
 #if CPP_VERSION >= 17

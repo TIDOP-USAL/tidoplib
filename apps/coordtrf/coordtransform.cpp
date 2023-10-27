@@ -48,7 +48,8 @@ int main(int argc, char **argv)
     auto arg_ty = Argument::make<double>("ty", "Traslación en Y", 0.0);
     auto arg_rotation = Argument::make<double>("rotation", "Rotación", 0.);
     auto arg_scale = Argument::make<double>("scale", "Escala", 1.);
-    arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
+    //arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
+    arg_scale->setValidator(RangeValidator<double>::create(0., 100));
     auto arg_scale_x = Argument::make<double>("scale_x", "Escala X", 1.);
     auto arg_scale_y = Argument::make<double>("scale_y", "Escala Y", 1.);
 
@@ -88,14 +89,14 @@ int main(int argc, char **argv)
     cmd_list_transform.addCommand(cmd_affine);
 
     // Parseo de los argumentos y comprobación de los mismos
-    CommandList::Status status = cmd_list_transform.parse(argc, argv);
-    if(status == CommandList::Status::parse_error) {
+    Command::Status status = cmd_list_transform.parse(argc, argv);
+    if(status == Command::Status::parse_error) {
         return 1;
-    } else if(status == CommandList::Status::show_help) {
+    } else if(status == Command::Status::show_help) {
         return 0;
-    } else if(status == CommandList::Status::show_licence) {
+    } else if(status == Command::Status::show_licence) {
         return 0;
-    } else if(status == CommandList::Status::show_version) {
+    } else if(status == Command::Status::show_version) {
         return 0;
     }
 

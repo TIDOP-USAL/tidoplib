@@ -53,17 +53,12 @@ public:
 
 	Progress() = default;
 
-	/*!
-	 * \brief Operador de llamada.
-	 *
-	 * Se llama cada vez que se quiera avanzar en la función de progreso
-	 */
-	virtual bool operator() (size_t increment = 1.) = 0;
 
+	virtual bool operator() (size_t increment = 1.) = 0;
 	virtual void setRange(size_t min, size_t max) = 0;
-	virtual size_t minimum() const = 0;
+	virtual auto minimum() const -> size_t = 0;
 	virtual void setMinimum(size_t min) = 0;
-	virtual size_t maximum() const = 0;
+	virtual auto maximum() const -> size_t = 0;
 	virtual void setMaximum(size_t max) = 0;
 	virtual void setText(const std::string &text) = 0;
 
@@ -86,29 +81,10 @@ class TL_EXPORT ProgressBase
 
 private:
 
-	/*!
-	 * \brief Valor mínimo
-	 */
 	size_t mMinimum{0};
-
-	/*!
-	 * \brief Valor máximo
-	 */
 	size_t mMaximum{0};
-
-	/*!
-	 * \brief Mensaje que se puede añadir con información del proceso.
-	 */
 	std::string mMessage;
-
-	/*!
-	 * \brief Valor actual
-	 */
 	double mProgress{0};
-
-	/*!
-	 * \brief Valor actual en tanto por ciento
-	 */
 	int mPercent{-1};
 
 	double mScale{1.};
@@ -120,24 +96,33 @@ public:
 	ProgressBase(size_t min, size_t max);
 	virtual ~ProgressBase() = default;
 
-	// Progress
-
-	bool operator()(size_t increment = 1) override;
-	void setRange(size_t min, size_t max) override;
-	size_t minimum() const override;
-	void setMinimum(size_t min) override;
-	size_t maximum() const override;
-	void setMaximum(size_t max) override;
-	void setText(const std::string &text) override;
-	void reset() override;
-
 protected:
 
 	virtual void initialize();
 	void updateScale();
-	int percent();
+
+	/*!
+	 * \brief Progress as a percentage
+	 */
+	auto percent() -> int;
+
+	/*!
+	 * \brief Update the progress bar
+	 */
 	virtual void updateProgress() = 0;
+
 	virtual void terminate();
+
+// Progress
+
+	bool operator()(size_t increment = 1) override;
+	void setRange(size_t min, size_t max) override;
+	auto minimum() const -> size_t override;
+	void setMinimum(size_t min) override;
+	auto maximum() const -> size_t override;
+	void setMaximum(size_t max) override;
+	void setText(const std::string &text) override;
+	void reset() override;
 
 };
 
@@ -180,9 +165,6 @@ public:
 
 private:
 
-	/*!
-	 * \brief Actualiza la barra de progreso
-	 */
 	void updateProgress() override;
 
 };
@@ -230,9 +212,6 @@ public:
 
 private:
 
-	/*!
-	 * \brief Actualiza la barra de progreso
-	 */
 	void updateProgress() override;
 
 };
@@ -244,7 +223,7 @@ private:
 
 
 /*!
- * \brief Progreso en porcentaje
+ * \brief Progress as a percentage
  */
 class TL_EXPORT ProgressPercent
 	: public ProgressBase
@@ -253,27 +232,21 @@ class TL_EXPORT ProgressPercent
 public:
 
 	/*!
-	 * \brief Constructora ProgressPercent
+	 * \brief Default constructor
 	 */
 	ProgressPercent();
 
 	/*!
-	 * \brief Constructora
-	 * \param min Valor mínimo
-	 * \param max Valor máximo
+	 * \brief Constructor
+	 * \param min Minimum value
+	 * \param max Maximum value
 	 */
 	ProgressPercent(size_t min, size_t max);
 
-	/*!
-	 * \brief Destructora
-	 */
 	~ProgressPercent() override = default;
 
 private:
 
-	/*!
-	 * \brief Actualiza la barra de progreso
-	 */
 	void updateProgress() override;
 
 };

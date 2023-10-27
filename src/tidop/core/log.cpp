@@ -35,7 +35,7 @@ namespace tl
 std::mutex Log::mtx;
 EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
 
-Log &Log::instance()
+auto Log::instance() -> Log &
 {
     static Log log;
     return log;
@@ -51,7 +51,7 @@ void Log::close()
     _stream.close();
 }
 
-bool Log::isOpen() const
+auto Log::isOpen() const -> bool
 {
     return _stream.is_open();
 }

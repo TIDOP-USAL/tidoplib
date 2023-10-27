@@ -45,13 +45,30 @@ namespace tl
  *  \{
  */
 
-/*! \defgroup Messages Gestión de mensajes
+/*! \addtogroup Messages
  *
  *  \{
  */
 
 
-
+/*! 
+ * \brief Message class
+ * 
+ * <h4>Example:</h4>
+ * 
+ * \code
+ * // Add the Console as a message handler
+ * Console &console = App::console();
+ * console.setTitle("Transform Example");
+ * console.setMessageLevel(MessageLevel::all);
+ * Message::instance().addMessageHandler(&console);
+ * 
+ * Message::warning("This is a {} message", "warning");
+ * Message::info("{} + {} = {}", 1, 1, 2);
+ * 
+ * \endcode
+ * 
+ */
 class TL_EXPORT Message
 {
 
@@ -63,13 +80,15 @@ class TL_EXPORT Message
 
 private:
 
+    static std::list<MessageHandler *> messageHandlers;
+    static bool stopHandler;
+
+private:
+
     Message(){}
 
 public:
    
-    /*!
-     * \brief Destructora
-     */
     ~Message() = default;
 
     static Message &instance();
@@ -98,10 +117,6 @@ public:
         stopHandler = false;
     }
 
-    /*!
-     * \brief Devuelve el mensaje como cadena de texto
-     * \return Mensaje
-     */
     template<typename... Args>
     static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -153,10 +168,6 @@ public:
 
 #endif
 
-  private:
-
-    static std::list<MessageHandler *> messageHandlers;
-    static bool stopHandler;
 };
 
 
