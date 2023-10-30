@@ -115,6 +115,8 @@ protected:
 
 // Progress
 
+public:
+
 	bool operator()(size_t increment = 1) override;
 	void setRange(size_t min, size_t max) override;
 	auto minimum() const -> size_t override;
