@@ -48,16 +48,17 @@ int main(int argc, char **argv)
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();
 
-    tl::Path graphos_path = app_path.parentPath().parentPath();
-    tl::Path gdal_data_path(graphos_path);
+    tl::Path _path = app_path.parentPath().parentPath();
+    tl::Path gdal_data_path(_path);
     gdal_data_path.append("gdal\\data");
-    tl::Path proj_data_path(graphos_path);
+    tl::Path proj_data_path(_path);
     proj_data_path.append("proj");
     CPLSetConfigOption( "GDAL_DATA", gdal_data_path.toString().c_str());
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
     CPLSetConfigOption( "PROJ_DATA", proj_data_path.toString().c_str());
 #else
-    const char *proj_data[] {proj_data_path.toString().c_str(), nullptr};
+    std::string s_proj = proj_data_path.toString();
+    const char *proj_data[] {s_proj.c_str(), nullptr};
     OSRSetPROJSearchPaths(proj_data);
 #endif
 

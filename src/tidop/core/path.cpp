@@ -190,6 +190,11 @@ auto Path::parentPath() const -> Path
     return parent_path;
 }
 
+auto Path::absolutePath() const -> Path
+{
+    return Path(fs::absolute(mPath->ref()).native());
+}
+
 auto Path::isDirectory() const -> bool
 {
     return mPath->isDirectory();
@@ -198,6 +203,11 @@ auto Path::isDirectory() const -> bool
 auto Path::isFile() const -> bool
 {
     return mPath->isFile();
+}
+
+auto Path::isAbsolutePath() const -> bool
+{
+    return mPath->ref().is_absolute();
 }
 
 auto Path::empty() const -> bool
@@ -481,6 +491,11 @@ auto Path::hash(const Path &path) -> size_t
 void tl::Path::copy(const Path &from, const Path &to)
 {
     fs::copy(from.toWString(), to.toWString());
+}
+
+auto Path::currentPath() -> Path
+{
+    return Path(fs::current_path().wstring());
 }
 
 /* Override operators */

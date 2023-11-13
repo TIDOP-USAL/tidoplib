@@ -72,7 +72,7 @@ swapEndian(T val)
 
 
 template<typename T>
-void read(std::fstream *stream, T &value, bool littleEndian)
+void read(std::fstream *stream, T &value, bool littleEndian = true)
 {
     stream->read(reinterpret_cast<char *>(&value), sizeof(T));
     if ((littleEndian && endianness::native == endianness::big_endian) ||
@@ -80,9 +80,27 @@ void read(std::fstream *stream, T &value, bool littleEndian)
         value = swapEndian(value);
 }
 
+template<typename T>
+void read(std::ifstream *stream, T &value, bool littleEndian = true)
+{
+    stream->read(reinterpret_cast<char *>(&value), sizeof(T));
+    if ((littleEndian && endianness::native == endianness::big_endian) ||
+        (!littleEndian && endianness::native == endianness::little_endian))
+        value = swapEndian(value);
+}
 
 template<typename T>
-void write(std::fstream *stream, const T &value, bool littleEndian)
+void write(std::fstream *stream, const T &value, bool littleEndian = true)
+{
+    T _value = value;
+    if ((littleEndian && endianness::native == endianness::big_endian) ||
+        (!littleEndian && endianness::native == endianness::little_endian))
+        _value = swapEndian(_value);
+    stream->write(reinterpret_cast<char *>(&_value), sizeof(T));
+}
+
+template<typename T>
+void write(std::ofstream *stream, const T &value, bool littleEndian = true)
 {
     T _value = value;
     if ((littleEndian && endianness::native == endianness::big_endian) ||

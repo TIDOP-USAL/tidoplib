@@ -679,7 +679,7 @@ public:
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
     
             std::array<double, 6> geotransform{};
-            georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
+            georeferenced = mDataset->GetGeoTransform(geotransform.data()) == CE_None;
     
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
