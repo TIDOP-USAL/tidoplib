@@ -217,16 +217,20 @@ void Console::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
-    if (messageLevelFlags.isEnabled(MessageLevel::debug))
+    if (messageLevelFlags.isEnabled(MessageLevel::debug)) {
+        Progress::cleanConsole();
         _stream << "Debug:   " << message << std::endl;
+    }
 }
 
 void Console::info(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
-    if (messageLevelFlags.isEnabled(MessageLevel::info))
+    if (messageLevelFlags.isEnabled(MessageLevel::info)) {
+        Progress::cleanConsole();
         _stream << "Info:    " << message << std::endl;
+    }
 }
 
 void Console::success(String message)
@@ -234,6 +238,7 @@ void Console::success(String message)
     std::lock_guard<std::mutex> lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::success)) {
+        Progress::cleanConsole();
         setForegroundColor(Color::green, Intensity::normal);
         _stream << "Success: " << message << std::endl;
         reset();
@@ -245,6 +250,7 @@ void Console::warning(String message)
     std::lock_guard<std::mutex> lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::warning)) {
+        Progress::cleanConsole();
         setForegroundColor(Color::magenta, Intensity::normal);
         _stream << "Warning: " << message << std::endl;
         reset();
@@ -256,6 +262,7 @@ void Console::error(String message)
     std::lock_guard<std::mutex> lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::error)) {
+        Progress::cleanConsole();
         setForegroundColor(Color::red, Intensity::normal);
         _stream << "Error:   " << message << std::endl;
         reset();
