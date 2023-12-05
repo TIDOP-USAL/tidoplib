@@ -49,7 +49,7 @@ namespace lapack
 template<typename T> inline
 typename std::enable_if<
     std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    getrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
+getrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
 {
     lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
     return info;
@@ -58,7 +58,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    getrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
+getrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
 {
     lapack_int info = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
     return info;
@@ -67,7 +67,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
+getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
 {
     lapack_int info = LAPACKE_sgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
     return info;
@@ -76,7 +76,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
+getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
 {
     lapack_int info = LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
     return info;
@@ -88,7 +88,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    potrf(lapack_int rows, T *a, lapack_int lda)
+potrf(lapack_int rows, T *a, lapack_int lda)
 {
     lapack_int info = LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
     return info;
@@ -97,7 +97,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    potrf(lapack_int rows, T *a, lapack_int lda)
+potrf(lapack_int rows, T *a, lapack_int lda)
 {
     lapack_int info = LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
     return info;
@@ -109,7 +109,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    gesvd(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+gesvd(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
 {
     lapack_int info = LAPACKE_sgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
     return info;
@@ -118,7 +118,7 @@ typename std::enable_if<
 template<typename T> inline
 typename std::enable_if<
     std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-    gesvd(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+gesvd(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
 {
     lapack_int info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
     return info;

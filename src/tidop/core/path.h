@@ -84,11 +84,14 @@ public:
     auto baseName() const -> Path;
     auto extension() const -> Path;
     auto parentPath() const -> Path;
+    auto absolutePath() const -> Path;
+    //TODO: Deberian ser métodos estáticos
     auto list(const std::string &extension) -> std::list<Path>;
     auto list(const std::regex &filter) -> std::list<Path>;
 
     auto isDirectory() const -> bool;
     auto isFile() const -> bool;
+    auto isAbsolutePath() const -> bool;
     auto empty() const -> bool;
     auto exists() const -> bool;
 
@@ -131,6 +134,7 @@ public:
     static void removeFile(const Path &file);
     static auto hash(const Path &path) -> size_t;
     static void copy(const Path &from, const Path &to);
+    static auto currentPath() -> Path;
 
     /* Override operators */
 
