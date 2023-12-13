@@ -65,7 +65,7 @@ public:
 	virtual void reset() = 0;
 
 	static bool isRunning();
-
+	static void cleanConsole();
 };
 
 
