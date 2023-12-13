@@ -66,6 +66,8 @@ public:
         arg_uint16,
         arg_int32,
         arg_uin32,
+        arg_int64,
+        arg_uint64,
         arg_float32,
         arg_float64,
         arg_string,
@@ -306,6 +308,22 @@ struct ArgTraits<unsigned int>
     using value_type = unsigned int;
     static constexpr auto property_type = Argument::Type::arg_uint;
     static constexpr auto type_name = "uint";
+};
+
+template<>
+struct ArgTraits<long long>
+{
+    using value_type = long long;
+    static constexpr auto property_type = Argument::Type::arg_int64;
+    static constexpr auto type_name = "int64";
+};
+
+template<>
+struct ArgTraits<unsigned long long>
+{
+    using value_type = unsigned long;
+    static constexpr auto property_type = Argument::Type::arg_uint64;
+    static constexpr auto type_name = "uint64";
 };
 
 template<>

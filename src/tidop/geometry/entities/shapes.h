@@ -323,6 +323,8 @@ public:
     double length() const;
 
     Rect<T> rect() const;
+
+    bool isInner(const Point<T> &point) const;
 };
 
 typedef Ellipse<int> EllipseI;
@@ -421,6 +423,19 @@ template<typename T>
 inline Rect<T> Ellipse<T>::rect() const
 {
     return Rect<T>(tl::Point<T>(center.x - a, center.y - b), a * 2., b * 2.);
+}
+
+template<typename T>
+inline bool Ellipse<T>::isInner(const Point<T> &point) const
+{
+    if (!this->rect().contains(point)) return false;
+    
+    T x = (point.x - this->center.x);
+    T y = (point.y - this->center.y);
+    T check = (x * x) / (this->a * this->a) + (y * y) / (this->b * this->b);
+    if (check <= 1) return true; // the point is inner
+    //else if (check == 1) return true; // the point is on the boundary of the region
+    else return false;
 }
 
 
