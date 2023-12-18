@@ -26,6 +26,12 @@
 
 #include <vector>
 #include <array>
+#include <list>
+#ifdef TL_HAVE_FMT
+#include <fmt/format.h>
+#else
+#include <format>
+#endif
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations.h"
@@ -612,6 +618,25 @@ std::ostream &operator<< (std::ostream &os, const Quaternion<T> *q)
 
     return os;
 }
+
+#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
+
+template <typename T>
+struct FORMAT_NAMESPACE formatter<tl::Quaternion<T>> 
+{
+
+    constexpr auto parse(FORMAT_NAMESPACE format_parse_context &context) 
+    {
+        return context.begin();
+    }
+
+    auto format(const tl::Quaternion<T> &q, FORMAT_NAMESPACE format_context &ctx) 
+    {
+        return FORMAT_NAMESPACE format_to(ctx.out(), "[w:{}, x:{}, y:{}, z:{}]", q.w, q.x, q.y, q.z);
+    }
+};
+
+#endif
 
 /*! \} */ // end of rotations
 

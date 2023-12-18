@@ -107,11 +107,18 @@ public:
             messageHandlers.push_back(messageHandler);
     }
 
+    /*!
+    * \brief Pause messages
+    * When activated, messages are stopped until resumeMessages is called.
+    */
     void pauseMessages()
     {
         stopHandler = true;
     }
 
+    /*!
+     * \brief Resume message sending
+     */
     void resumeMessages()
     {
         stopHandler = false;
@@ -123,14 +130,36 @@ public:
         return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
     }
 
+    /*!
+     * \brief Send a debug message
+     */
     static void debug(String message);
+
+    /*!
+     * \brief Send an info message
+     */
     static void info(String message);
+    
+    /*!
+     * \brief Send a success message
+     */
     static void success(String message);
+   
+    /*!
+     * \brief Send a warning message
+     */
     static void warning(String message);
+    
+    /*!
+     * \brief Send an error message
+     */
     static void error(String message);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
+    /*!
+     * \brief Send a debug message
+     */
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -138,6 +167,9 @@ public:
         Message::debug(message);
     }
 
+    /*!
+     * \brief Send an info message
+     */
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -145,6 +177,9 @@ public:
         Message::info(message);
     }
 
+    /*!
+     * \brief Send a warning message
+     */
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -152,6 +187,9 @@ public:
         Message::warning(message);
     }
 
+    /*!
+     * \brief Send a success message
+     */
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   
@@ -159,6 +197,9 @@ public:
         Message::success(message);
     }
 
+    /*!
+     * \brief Send an error message
+     */
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   

@@ -354,7 +354,7 @@ private:
 
 
 
-class TaskQueue
+class TL_EXPORT TaskQueue
   : public TaskBase
 {
 

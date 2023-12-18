@@ -181,7 +181,7 @@ public:
  *   } // The time is stopped and printed on the console
  * \endcode
  */
-class ChronoAuto
+class TL_EXPORT ChronoAuto
   : private Chrono
 {
 

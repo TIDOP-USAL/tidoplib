@@ -142,16 +142,6 @@ public:
 
     static Console &instance();
 
-// MessageHandler
-
-public:
-
-    void debug(String message) override;
-    void info(String message) override;
-    void success(String message) override;
-    void warning(String message) override;
-    void error(String message) override;
-
 public:
 
     /*!
@@ -293,6 +283,15 @@ private:
 #endif
     }
 
+// MessageHandler interface
+
+public:
+
+    void debug(String message) override;
+    void info(String message) override;
+    void success(String message) override;
+    void warning(String message) override;
+    void error(String message) override;
 
 };
 

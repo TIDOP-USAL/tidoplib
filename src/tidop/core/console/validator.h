@@ -48,7 +48,7 @@ namespace tl
  *  \{
  */
 
-class Validator
+class TL_EXPORT Validator
 {
 
 public:

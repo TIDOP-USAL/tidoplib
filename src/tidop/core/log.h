@@ -60,7 +60,7 @@ namespace tl
  * This class can operate individually, writing messages directly to 
  * a file, or receiving messages from the Message class.
  */
-class Log
+class TL_EXPORT Log
     : public MessageHandler
 {
 

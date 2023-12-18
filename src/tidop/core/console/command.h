@@ -318,8 +318,14 @@ public:
      */
     auto size() const TL_NOEXCEPT -> size_t;
 
-
+    /*!
+     * \brief Assignment operator
+     */
     auto operator=(const Command &command) -> Command &;
+
+    /*!
+     * \brief Move assignment operator
+     */
     auto operator=(Command &&command) TL_NOEXCEPT -> Command &;
 
     /*!

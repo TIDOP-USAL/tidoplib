@@ -42,11 +42,12 @@ namespace tl
  *  \{
  */
 
- /*! \addtogroup Console
-  *  \{
-  */
+/*! \addtogroup Console
+ *  \{
+ */
 
 template <typename T> class Argument_;
+
 
 /*!
  * \brief The Argument class
@@ -119,12 +120,26 @@ public:
      */
     Argument(std::string name, const char &shortName, std::string description, Type type);
 
+    /*!
+     * \brief Copy constructor
+     */
     Argument(const Argument &argument);
+
+    /*!
+     * \brief Move constructor
+     */
     Argument(Argument &&argument) TL_NOEXCEPT;
 
     virtual ~Argument() = default;
 
+    /*!
+     * \brief Assignment operator
+     */
     auto operator = (const Argument &argument) -> Argument &;
+
+    /*!
+     * \brief Move assignment operator
+     */
     auto operator = (Argument &&argument) TL_NOEXCEPT -> Argument &;
 
     /*!
@@ -431,8 +446,6 @@ public:
     void fromString(const std::string &value) override;
     auto value() const -> T;
     auto isValid() -> bool override;
-
-
 
 private:
 
