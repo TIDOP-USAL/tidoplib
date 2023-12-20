@@ -28,6 +28,7 @@
 
 #include <map>
 #include <iomanip>
+#include "console.h"
 
 namespace tl
 {
@@ -41,7 +42,7 @@ Console::Console()
 #ifdef TL_OS_WINDOWS
     init(STD_OUTPUT_HANDLE);
 #else
-    init(stdout);
+    init(/*stdout*/);
 #endif
 }
 
@@ -147,7 +148,7 @@ void Console::setForegroundColor(Color foregroundColor,
     else
         this->foregroundIntensity = FOREGROUND_INTENSITY;
 #else
-    mForegroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity) * 60;
+    this->foregroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity) * 60;
 #endif
 
     update();
@@ -167,7 +168,55 @@ void Console::setFontBold(bool bold)
 #ifdef TL_OS_WINDOWS
     mCurrentFont.FontWeight = bold ? FW_BOLD : FW_NORMAL;
 #else
-    mBold = bold ? 1 : 21;
+    fontBold = bold ? 1 : 21;
+#endif
+    update();
+}
+
+void Console::setFontFaint(bool faint)
+{
+#ifndef TL_OS_WINDOWS    
+    fontFaint = faint ? 2 : 22;
+#endif
+    update();
+}
+
+void Console::setFontItalic(bool italic)
+{
+#ifndef TL_OS_WINDOWS    
+    fontItalic = italic ? 3 : 23;
+#endif
+    update();
+}
+
+void Console::setFontUnderline(bool underline)
+{
+#ifndef TL_OS_WINDOWS    
+    fontUnderline = underline ? 4 : 24;
+#endif
+    update();
+}
+
+void Console::setFontBlink(bool blink)
+{
+#ifndef TL_OS_WINDOWS    
+    fontBlink = blink ? 5 : 25;
+#endif
+    update();
+}
+
+void Console::setFontReverse(bool reverse)
+{
+#ifndef TL_OS_WINDOWS    
+    fontReverse = reverse ? 7 : 27;
+#endif
+    update();
+}
+
+void Console::setFontStrikethrough(bool strikethrough)
+{
+#ifndef TL_OS_WINDOWS    
+    fontStrikethrough = strikethrough ? 9 : 29;
 #endif
     update();
 }
@@ -189,11 +238,21 @@ void Console::reset()
     foregroundIntensity = (oldColorAttrs & 0x0008);
     backgroundColor = (oldColorAttrs & 0x0070);
     backgroundIntensity = (oldColorAttrs & 0x0080);
-    update();
 #else
-    sprintf(mCommand, "%c[0;m", 0x1B);
-    fprintf(mStream, "%s", mCommand);
+    //sprintf(mCommand, "%c[0;m", 0x1B);
+    //fprintf(mStream, "%s", mCommand);
+    foregroundColor = 39;
+    backgroundColor = 49;
+    fontBold = 21;
+    fontFaint = 22;
+    fontItalic = 23;
+    fontUnderline = 24;
+    fontBlink = 25;
+    fontReverse = 27;
+    fontStrikethrough = 29;
+
 #endif
+    update();
 }
 
 Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
@@ -300,12 +359,10 @@ void Console::init(DWORD handle)
 
 #else
 
-void Console::init(FILE *stream)
+void Console::init(/*FILE *stream*/)
 {
-  mStream = stream;
-  mForegroundColor = 0;
-  backgroundColor = 0;
-  mBold = 21;
+    //mStream = stream;
+    reset();
 }
 
 #endif

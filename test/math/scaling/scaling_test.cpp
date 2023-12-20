@@ -205,7 +205,7 @@ BOOST_FIXTURE_TEST_CASE(scaling_constructor_sx_sy_sz, ScalingTest)
 
 BOOST_FIXTURE_TEST_CASE(scaling_constructor_vector_2d, ScalingTest)
 {
-    Scaling<double, 2> scaling({1.2, 1.5});
+    Scaling<double, 2> scaling{1.2, 1.5};
 
     BOOST_CHECK_EQUAL(1.2, scaling.x());
     BOOST_CHECK_EQUAL(1.5, scaling.y());
@@ -222,7 +222,7 @@ BOOST_FIXTURE_TEST_CASE(scaling_constructor_vector_2d, ScalingTest)
 
 BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_3d, ScalingTest)
 {
-    Scaling<double, 3> scaling({-1., -1., 1.});
+    Scaling<double, 3> scaling{-1., -1., 1.};
 
     BOOST_CHECK_EQUAL(-1., scaling.x());
     BOOST_CHECK_EQUAL(-1., scaling.y());
@@ -243,7 +243,7 @@ BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_3d, ScalingTest)
 
 BOOST_FIXTURE_TEST_CASE(scaling_inverse, ScalingTest)
 {
-    Scaling<double, 3> scaling({1.2, 1.2, 1.2});
+    Scaling<double, 3> scaling{1.2, 1.2, 1.2};
     auto scaling_inv = scaling.inverse();
 
     BOOST_CHECK_CLOSE(0.83333333, scaling_inv.x(), 0.01);
@@ -266,7 +266,7 @@ BOOST_FIXTURE_TEST_CASE(scaling_inverse, ScalingTest)
 BOOST_FIXTURE_TEST_CASE(scaling_per_scaling, ScalingTest)
 {
     Scaling<double, 3> scaling_d3(1., 1., 1.);
-    Scaling<double, 3> scaling_v3({1., 2., 3.});
+    Scaling<double, 3> scaling_v3{1., 2., 3.};
     auto scaling_concatenate = scaling_d3 * scaling_v3;
     BOOST_CHECK_EQUAL(scaling_concatenate.x(), 1.);
     BOOST_CHECK_EQUAL(scaling_concatenate.y(), 2.);

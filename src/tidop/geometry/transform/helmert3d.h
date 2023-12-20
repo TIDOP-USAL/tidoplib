@@ -335,7 +335,7 @@ Helmert3D<Point_t>::Helmert3D(double tx,
     mR(rotation)
 {
     EulerAngles<double> eulerAngles;
-    eulerAngles.axes = EulerAngles<double>::Axes::xyz;
+    eulerAngles.axes = Axes::xyz;
     RotationConverter<double>::convert(rotation, eulerAngles);
     mOmega = eulerAngles.x;
     mPhi = eulerAngles.y;

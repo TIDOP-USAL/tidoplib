@@ -185,7 +185,7 @@ BOOST_FIXTURE_TEST_CASE(translation_constructor_tx_ty_tz, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_2d, TranslationTest)
 {
-    Translation<double, 2> translate({25., 36.});
+    Translation<double, 2> translate{25., 36.};
 
     BOOST_CHECK_EQUAL(25., translate.x());
     BOOST_CHECK_EQUAL(36., translate.y());
@@ -202,7 +202,7 @@ BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_2d, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_3d, TranslationTest)
 {
-    Translation<double, 3> translate({25., 36., 11.});
+    Translation<double, 3> translate{25., 36., 11.};
 
     BOOST_CHECK_EQUAL(25., translate.x());
     BOOST_CHECK_EQUAL(36., translate.y());
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(translation_constructor_vector_3d, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(translation_inverse, TranslationTest)
 {
-    Translation<double, 3> translate({25., 36., 11.});
+    Translation<double, 3> translate{25., 36., 11.};
     auto translate_inv = translate.inverse();
 
     BOOST_CHECK_EQUAL(-25., translate_inv.x());
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE(translation_inverse, TranslationTest)
 BOOST_FIXTURE_TEST_CASE(translation_per_translation, TranslationTest)
 {
     Translation<double, 3> translation_d3(10., 5., -15.);
-    Translation<double, 3> translation_v3({1., 2., 3.});
+    Translation<double, 3> translation_v3{1., 2., 3.};
     auto translation_concatenate = translation_d3 * translation_v3;
     BOOST_CHECK_EQUAL(translation_concatenate.x(), 11.);
     BOOST_CHECK_EQUAL(translation_concatenate.y(), 7.);

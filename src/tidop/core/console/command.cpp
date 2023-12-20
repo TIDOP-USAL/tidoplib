@@ -40,7 +40,7 @@ Command::Command()
     mArguments(0),
     mVersion("0.0.0")
 {
-  init();
+    init();
 }
 
 Command::Command(const Command &command)
@@ -59,7 +59,7 @@ Command::Command(std::string name, std::string description)
     mArguments(0),
     mVersion("0.0.0")
 {
-  init();
+    init();
 }
 
 Command::Command(std::string name, 
@@ -713,9 +713,11 @@ auto CommandList::showHelp() const -> void
 {
 
     Console &console = App::console();
+
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "\nUsage: " << mName << " [--version] [-h | --help] [--licence] <command> [<args>] \n\n";
+    
     console.reset();
 
     std::cout << mDescription << " \n\n";

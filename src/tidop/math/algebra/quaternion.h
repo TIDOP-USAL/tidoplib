@@ -619,6 +619,16 @@ std::ostream &operator<< (std::ostream &os, const Quaternion<T> *q)
     return os;
 }
 
+
+
+/*! \} */ // end of rotations
+
+/*! \} */ // end of algebra
+
+/*! \} */ // end of math
+
+} // End namespace tl
+
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
 template <typename T>
@@ -637,11 +647,3 @@ struct FORMAT_NAMESPACE formatter<tl::Quaternion<T>>
 };
 
 #endif
-
-/*! \} */ // end of rotations
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
-
-} // End namespace tl

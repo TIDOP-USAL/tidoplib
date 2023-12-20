@@ -35,6 +35,7 @@
 #include <format>
 #endif
 #include <mutex>
+#include <ostream>
 
 namespace tl
 {
@@ -122,11 +123,17 @@ private:
 
 #else
 
-    FILE *mStream;
-    char mCommand[13];
+    //FILE *mStream;
+    //char mCommand[13];
     int foregroundColor;
     int backgroundColor;
-    int mBold;
+    int fontBold;
+    int fontFaint;
+    int fontItalic;
+    int fontUnderline;
+    int fontBlink;
+    int fontReverse;
+    int fontStrikethrough;
 
 #endif
 
@@ -178,6 +185,18 @@ public:
      * \param[in] bold 
      */
     void setFontBold(bool bold);
+    
+    /*!
+     * \brief Decreased intensity
+     * \param[in] faint 
+     */
+    void setFontFaint(bool faint);
+
+    void setFontItalic(bool italic);
+    void setFontUnderline(bool underline);
+    void setFontBlink(bool blink);
+    void setFontReverse(bool reverse);
+    void setFontStrikethrough(bool strikethrough);
     
     /*!
      * \brief Sets the font size
@@ -262,7 +281,7 @@ private:
 
 #else
 
-    void init(FILE *stream);
+    void init(/*FILE *stream*/);
 
 #endif
 
@@ -272,14 +291,27 @@ private:
         SetConsoleTextAttribute(handle, foregroundColor | backgroundColor | foregroundIntensity | backgroundIntensity);
         SetCurrentConsoleFontEx(handle, FALSE, &mCurrentFont);
 #else
-        std::stringstream ss;
-        ss << "\x1B[" << mBold;
-        if(foregroundColor != 0)
-            ss << ";" << foregroundColor;
-        if(backgroundColor != 0)
-            ss << ";" << backgroundColor;
-        ss << "m";
-        fprintf(mStream, "%s", ss.str().c_str());
+        // std::stringstream ss;
+        // ss << "\x1B[" << this->fontBold;
+        // ss << ";" << this->underline;
+        // //if(this->foregroundColor != 0)
+        //     ss << ";" << this->foregroundColor;
+        // if(this->backgroundColor != 0)
+        //     ss << ";" << this->backgroundColor;
+        // ss << "m";
+        // fprintf(mStream, "%s", ss.str().c_str());
+        //std::cout << static_cast<char>(0x1b) << '[' << this->fontBold << ';' << this->underline << ';' << this->foregroundColor << ';' << this->backgroundColor << 'm' << 0 /*<< std::flush*/;
+        //char mmmm[] = {0x1b, '[', '0', ';', '3', '1', 'm', 0} ;
+        //std::cout << mmmm << "sdfsdf";
+        std::cout << static_cast<char>(0x1b) << '['
+                  << this->fontBold << ';'
+                  << this->fontFaint << ';'
+                  << this->fontItalic << ';'
+                  << this->fontUnderline << ';'
+                  << this->fontReverse << ';'
+                  << this->fontStrikethrough << ';' 
+                  << this->foregroundColor << ';' 
+                  << this->backgroundColor << 'm';
 #endif
     }
 
