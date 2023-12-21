@@ -402,10 +402,10 @@ auto Command::showHelp() const -> void
     console.reset();
 
     std::cout << "  - Arguments are options if they begin with a hyphen delimiter (-).\n";
-    std::cout << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. ‘-abc’ is equivalent to ‘-a -b -c’.\n";
+    std::cout << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. '-abc' is equivalent to '-a -b -c'.\n";
     std::cout << "  - Option names are single alphanumeric characters.\n";
-    std::cout << "  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n";
-    std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n";
+    std::cout << "  - An option and its argument may or may not appear as separate tokens. '-o foo' and '-ofoo' are equivalent.\n";
+    std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  '--name=value' is equivalent to '--name value'.\n\n";
 
     if(!mExamples.empty()) {
         console.setForegroundColor(Console::Color::green, Console::Intensity::bright);

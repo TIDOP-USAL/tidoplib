@@ -76,7 +76,7 @@ public:
     enum class Intensity : int8_t
     {
         normal,            /*!< Normal colour */
-        bright             /*!< Bright colour */
+        bright = 60        /*!< Bright colour */
     };
 
     /*!
@@ -109,22 +109,6 @@ private:
     std::ostream &_stream;
     static std::mutex mtx;
     static EnumFlags<MessageLevel> messageLevelFlags;
-
-#ifdef TL_OS_WINDOWS
-
-    HANDLE handle;
-    WORD oldColorAttrs;
-    WORD foregroundIntensity;
-    WORD foregroundColor;
-    WORD backgroundIntensity;
-    WORD backgroundColor;
-    CONSOLE_FONT_INFOEX mIniFont;
-    CONSOLE_FONT_INFOEX mCurrentFont;
-
-#else
-
-    //FILE *mStream;
-    //char mCommand[13];
     int foregroundColor;
     int backgroundColor;
     int fontBold;
@@ -134,8 +118,6 @@ private:
     int fontBlink;
     int fontReverse;
     int fontStrikethrough;
-
-#endif
 
     friend class App;
 
@@ -202,7 +184,7 @@ public:
      * \brief Sets the font size
      * \param[in] fontHeight Font size
      */
-    void setFontHeight(int16_t fontHeight);
+    //void setFontHeight(int16_t fontHeight);
 
     /*!
      * \brief Restores the initial console configuration
@@ -275,34 +257,10 @@ public:
 
 private:
 
-#ifdef TL_OS_WINDOWS
-
-    void init(DWORD handle);
-
-#else
-
-    void init(/*FILE *stream*/);
-
-#endif
+    void init();
 
     void update()
     {
-#ifdef TL_OS_WINDOWS
-        SetConsoleTextAttribute(handle, foregroundColor | backgroundColor | foregroundIntensity | backgroundIntensity);
-        SetCurrentConsoleFontEx(handle, FALSE, &mCurrentFont);
-#else
-        // std::stringstream ss;
-        // ss << "\x1B[" << this->fontBold;
-        // ss << ";" << this->underline;
-        // //if(this->foregroundColor != 0)
-        //     ss << ";" << this->foregroundColor;
-        // if(this->backgroundColor != 0)
-        //     ss << ";" << this->backgroundColor;
-        // ss << "m";
-        // fprintf(mStream, "%s", ss.str().c_str());
-        //std::cout << static_cast<char>(0x1b) << '[' << this->fontBold << ';' << this->underline << ';' << this->foregroundColor << ';' << this->backgroundColor << 'm' << 0 /*<< std::flush*/;
-        //char mmmm[] = {0x1b, '[', '0', ';', '3', '1', 'm', 0} ;
-        //std::cout << mmmm << "sdfsdf";
         std::cout << static_cast<char>(0x1b) << '['
                   << this->fontBold << ';'
                   << this->fontFaint << ';'
@@ -312,7 +270,6 @@ private:
                   << this->fontStrikethrough << ';' 
                   << this->foregroundColor << ';' 
                   << this->backgroundColor << 'm';
-#endif
     }
 
 // MessageHandler interface
