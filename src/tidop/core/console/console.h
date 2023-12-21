@@ -35,7 +35,7 @@
 #include <format>
 #endif
 #include <mutex>
-#include <ostream>
+#include <iostream>
 
 namespace tl
 {

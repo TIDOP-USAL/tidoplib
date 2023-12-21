@@ -22,13 +22,12 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/console.h"
+#include "tidop/core/console/console.h"
 
 #include "tidop/core/progress.h"
 
 #include <map>
 #include <iomanip>
-#include "console.h"
 
 namespace tl
 {
