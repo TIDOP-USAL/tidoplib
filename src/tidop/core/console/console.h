@@ -156,7 +156,7 @@ public:
      */
     void setForegroundColor(Color foregroundColor,
                             Intensity intensity = Intensity::normal);
-    
+
     /*!
      * \brief Set the console to Unicode mode
      */
@@ -220,6 +220,29 @@ public:
      * \param[in] level Message level.
      */
     static void setMessageLevel(MessageLevel level);
+
+    static std::ostream &red(std::ostream &os);
+    static std::ostream &green(std::ostream &os);
+    static std::ostream &blue(std::ostream &os);
+    static std::ostream &cyan(std::ostream &os);
+    static std::ostream &magenta(std::ostream &os);
+    static std::ostream &yellow(std::ostream &os);
+    static std::ostream &black(std::ostream &os);
+    static std::ostream &white(std::ostream &os);
+    static std::ostream &bg_red(std::ostream &os);
+    static std::ostream &bg_green(std::ostream &os);
+    static std::ostream &bg_blue(std::ostream &os);
+    static std::ostream &bg_cyan(std::ostream &os);
+    static std::ostream &bg_magenta(std::ostream &os);
+    static std::ostream &bg_yellow(std::ostream &os);
+    static std::ostream &bg_black(std::ostream &os);
+    static std::ostream &bg_white(std::ostream &os);
+    static std::ostream &bold(std::ostream &os);
+    static std::ostream &faint(std::ostream &os);
+    static std::ostream &italic(std::ostream &os);
+    static std::ostream &underline(std::ostream &os);
+    static std::ostream &reverse(std::ostream &os);
+    static std::ostream &strikethrough(std::ostream &os);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 

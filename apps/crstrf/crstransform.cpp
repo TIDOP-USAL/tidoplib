@@ -66,7 +66,6 @@ int main(int argc, char **argv)
     Console &console = App::console();
     console.setTitle(cmd_name);
     console.setConsoleUnicode();
-    console.setFontHeight(14);
     console.setMessageLevel(MessageLevel::all);
     Message::instance().addMessageHandler(&console);
 

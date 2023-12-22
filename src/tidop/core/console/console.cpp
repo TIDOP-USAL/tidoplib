@@ -157,6 +157,139 @@ void Console::setMessageLevel(MessageLevel level)
     messageLevelFlags = level;
 }
 
+inline std::ostream &Console::red(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::red);
+    return os;
+}
+
+inline std::ostream &Console::green(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::green);
+    return os;
+}
+
+inline std::ostream &Console::blue(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::blue);
+    return os;
+}
+
+inline std::ostream &Console::cyan(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::cyan);
+    return os;
+}
+
+inline std::ostream &Console::magenta(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::magenta);
+    return os;
+}
+
+inline std::ostream &Console::yellow(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::yellow);
+    return os;
+}
+
+inline std::ostream &Console::black(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::black);
+    return os;
+}
+
+inline std::ostream &Console::white(std::ostream &os)
+{
+    Console::instance().setForegroundColor(Color::white);
+    return os;
+}
+
+std::ostream &Console::bg_red(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::red);
+    return os;
+}
+
+std::ostream &Console::bg_green(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::green);
+    return os;
+}
+
+std::ostream &Console::bg_blue(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::blue);
+    return os;
+}
+
+std::ostream &Console::bg_cyan(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::cyan);
+    return os;
+}
+
+std::ostream &Console::bg_magenta(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::magenta);
+    return os;
+}
+
+std::ostream &Console::bg_yellow(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::yellow);
+    return os;
+}
+
+std::ostream &Console::bg_black(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::black);
+    return os;
+}
+
+std::ostream &Console::bg_white(std::ostream &os)
+{
+    Console::instance().setBackgroundColor(Color::white);
+    return os;
+}
+
+inline std::ostream &Console::bold(std::ostream &os)
+{
+    Console::instance().setFontBold(true);
+    return os;
+}
+
+inline std::ostream &Console::faint(std::ostream &os)
+{
+    Console::instance().setFontFaint(true);
+    return os;
+}
+
+inline std::ostream &Console::italic(std::ostream &os)
+{
+    Console::instance().setFontItalic(true);
+    return os;
+}
+
+inline std::ostream &Console::underline(std::ostream &os)
+{
+    Console::instance().setFontUnderline(true);
+    return os;
+}
+
+std::ostream &Console::reverse(std::ostream &os)
+{
+    Console::instance().setFontReverse(true);
+    return os;
+}
+
+std::ostream &Console::strikethrough(std::ostream &os)
+{
+    Console::instance().setFontStrikethrough(true);
+    return os;
+}
+
+
 void Console::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
