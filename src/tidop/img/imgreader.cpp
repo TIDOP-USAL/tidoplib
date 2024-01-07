@@ -209,7 +209,7 @@ public:
     
     cv::Mat read(const RectI &rect,
                  const Size<int> &size,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
         cv::Mat image;
 
@@ -272,7 +272,7 @@ public:
     cv::Mat read(double scaleX,
                  double scaleY,
                  const RectI &rect,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
         cv::Mat image;
 
@@ -328,7 +328,7 @@ public:
     cv::Mat read(const WindowI &window,
                  double scaleX,
                  double scaleY,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
 
         int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
@@ -350,11 +350,11 @@ public:
     cv::Mat read(const Window<Point<double>> &terrainWindow,
                  double scaleX,
                  double scaleY,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
         Window<Point<double>> wLoad;
-        wLoad.pt1 = mAffine.transform(terrainWindow.pt1, Transform::Order::inverse);
-        wLoad.pt2 = mAffine.transform(terrainWindow.pt2, Transform::Order::inverse);
+        wLoad.pt1 = mAffine.transform(terrainWindow.pt1, geom::Transform::Order::inverse);
+        wLoad.pt2 = mAffine.transform(terrainWindow.pt2, geom::Transform::Order::inverse);
         wLoad.normalized();
 
         WindowI wRead(wLoad);
@@ -688,7 +688,7 @@ public:
         return georeferenced;
     }
 
-    Affine<Point<double>> georeference() const override
+    geom::Affine<Point<double>> georeference() const override
     {
         return mAffine;
     }
@@ -799,7 +799,7 @@ protected:
 private:
 
     GDALDataset *mDataset;
-    Affine<Point<double>> mAffine;
+    geom::Affine<Point<double>> mAffine;
 };
 
 #endif // TL_HAVE_GDAL

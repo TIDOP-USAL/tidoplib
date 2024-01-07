@@ -39,8 +39,10 @@
 namespace tl
 {
 
+namespace geom
+{
 template<typename Point_t> class Transform3D;
-
+}
 
 /// \cond
 
@@ -68,7 +70,7 @@ class CoordinateTransformation;
  * \brief transformación entre sistemas de referencia
  */
 class TL_EXPORT CrsTransform
-    : public Transform3D<Point3<double>>
+    : public geom::Transform3D<Point3<double>>
 {
 
 protected:
@@ -112,7 +114,7 @@ public:
     auto compute(const std::vector<Point3<double>> &pts1,
                  const std::vector<Point3<double>> &pts2,
                  std::vector<double> *error = nullptr,
-                 double *rmse = nullptr) -> Transform::Status override;
+                 double *rmse = nullptr) -> geom::Transform::Status override;
 
     /*!
      * \brief Transforma un conjunto de puntos a otro sistema de referencia
@@ -123,7 +125,7 @@ public:
      */
     auto transform(const std::vector<Point3<double>> &ptsIn,
                    std::vector<Point3<double>> &ptsOut,
-                   Transform::Order trfOrder = Transform::Order::direct) const -> Transform::Status override;
+                   geom::Transform::Order trfOrder = geom::Transform::Order::direct) const -> Transform::Status override;
 
     /*!
      * \brief Transforma un punto a otro sistema de referencia
@@ -134,7 +136,7 @@ public:
      */
     auto transform(const Point3<double> &ptIn,
                    Point3<double> &ptOut,
-                   Transform::Order trfOrder = Transform::Order::direct) const -> Transform::Status override;
+                   geom::Transform::Order trfOrder = geom::Transform::Order::direct) const -> Transform::Status override;
 
     /*!
      * \brief Transforma un punto a otro sistema de referencia
@@ -144,7 +146,7 @@ public:
      * \see Transform::Order
      */
     auto transform(const Point3<double> &ptIn,
-                   Transform::Order trfOrder = Transform::Order::direct) const -> Point3<double> override;
+                   geom::Transform::Order trfOrder = geom::Transform::Order::direct) const -> Point3<double> override;
 
     auto isNull() const -> bool override;
 

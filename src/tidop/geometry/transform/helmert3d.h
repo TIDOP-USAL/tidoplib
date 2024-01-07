@@ -32,6 +32,8 @@
 namespace tl
 {
 
+namespace geom
+{
 /*! \addtogroup geometry
  *  \{
  */
@@ -637,5 +639,7 @@ Helmert3D<Point_t> operator*(Helmert3D<Point_t> &trf1,
 /*! \} */ // end of trfGroup
 
 /*! \} */ // end of geometry
+
+} // End namespace geom
 
 } // End namespace tl

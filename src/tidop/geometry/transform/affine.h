@@ -33,6 +33,9 @@
 namespace tl
 {
 
+namespace geom
+{
+
 /*! \addtogroup geometry
  *  \{
  */
@@ -684,5 +687,7 @@ void Affine<Point_t>::updateInv()
 /*! \} */ // end of trfGroup
 
 /*! \} */ // end of geometry
+
+} // End namespace geom
 
 } // End namespace tl

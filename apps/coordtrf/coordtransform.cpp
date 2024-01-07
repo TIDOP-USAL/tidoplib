@@ -121,7 +121,7 @@ int main(int argc, char **argv)
       Point<double>(4138759.902, 702670.738)};
 
 
-    std::shared_ptr<TransformBase<Point<double>>> transformation;
+    std::shared_ptr<geom::TransformBase<Point<double>>> transformation;
 
     Chrono chrono("Translation");
     chrono.run();
@@ -139,13 +139,13 @@ int main(int argc, char **argv)
           Point<double>(726807.795,	766227.040)};
 
         if(transform_name.compare("Translation") == 0) {
-            transformation = std::make_shared<Translation<Point<double>>>();
+            transformation = std::make_shared<geom::Translation<Point<double>>>();
         } else if(transform_name.compare("Rotation") == 0) {
-            transformation = std::make_shared<Rotation<Point<double>>>();
+            transformation = std::make_shared<geom::Rotation<Point<double>>>();
         } else if(transform_name.compare("Helmert2D") == 0) {
-            transformation = std::make_shared<Helmert2D<Point<double>>>();
+            transformation = std::make_shared<geom::Helmert2D<Point<double>>>();
         } else if(transform_name.compare("Affine") == 0) {
-            transformation = std::make_shared<Affine<Point<double>>>();
+            transformation = std::make_shared<geom::Affine<Point<double>>>();
         }
 
         transformation->compute(pts_in, pts_out);
@@ -153,13 +153,13 @@ int main(int argc, char **argv)
     } else {
 
         if(transform_name.compare("Translation") == 0) {
-            transformation = std::make_shared<Translation<Point<double>>>(tx, ty);
+            transformation = std::make_shared<geom::Translation<Point<double>>>(tx, ty);
         } else if(transform_name.compare("Rotation") == 0) {
-            transformation = std::make_shared<Rotation<Point<double>>>(rotation_angle);
+            transformation = std::make_shared<geom::Rotation<Point<double>>>(rotation_angle);
         } else if(transform_name.compare("Helmert2D") == 0) {
-            transformation = std::make_shared<Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
+            transformation = std::make_shared<geom::Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
         } else if(transform_name.compare("Affine") == 0) {
-            transformation = std::make_shared<Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
+            transformation = std::make_shared<geom::Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
         }
 
         std::vector<Point<double>> pts_out;

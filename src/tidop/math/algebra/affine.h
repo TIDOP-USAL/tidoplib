@@ -327,11 +327,26 @@ inline Matrix<T, Dim, Dim> Affine<T, Dim>::rotation() const
 template<typename T, size_t Dim>
 inline auto Affine<T, Dim>::inverse() const -> Affine<T, Dim>
 {
-    //Matrix<T, Dim, Dim> matrix = _transform.block(0, Dim - 1, 0, Dim - 1);
-    Matrix<T, Dim, Dim + 1> transform_inverse;
+    auto _rotation = this->rotation();
+    auto _scale = this->scale();
+    auto rotation_inverse = _rotation.inverse();
+    Matrix<T, Dim, Dim + 1> transform_inverse = Matrix<T, Dim, Dim + 1>::zero();
+    for (size_t r = 0; r < rotation_inverse.rows(); r++){
+        for (size_t c = 0; c < rotation_inverse.rows(); c++){
+            transform_inverse(r, c) = rotation_inverse(r, c) / _scale[r];
+        }
+    }
+
+    for (size_t r = 0; r < _transform.rows(); r++){
+        for (size_t c = 0; c < _transform.rows(); c++){
+            transform_inverse(r, dimensions) -= transform_inverse(r, c) * _transform(c, dimensions);
+        }
+    }
+
+    //Matrix<T, Dim, Dim + 1> transform_inverse;
     //transform_inverse.block(0, Dim - 1, 0, Dim - 1) = matrix.inverse();
-    /*transform_inverse.col(Dim) =*/ _transform.col(Dim);
-    return Affine<T, Dim>(/*transform_inverse*/);
+    /*transform_inverse.col(Dim) = _transform.col(Dim);*/
+    return Affine<T, Dim>(transform_inverse);
 }
 
 

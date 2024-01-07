@@ -35,7 +35,6 @@
 namespace tl
 {
 
-
 /*! \addtogroup geometry
  *  \{
  */
@@ -45,6 +44,8 @@ namespace tl
  *  \{
  */
 
+namespace geom
+{
 
 template<typename Point_t> class Helmert2D;
 template<typename Point_t> class Rotation;
@@ -822,5 +823,7 @@ public:
 /*! \} */ // end of trfGroup
 
 /*! \} */ // end of geometry
+
+} // End namespace geom
 
 } // End namespace tl

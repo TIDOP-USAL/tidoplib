@@ -169,7 +169,7 @@ public:
      * \brief Establece la georeferencia de la imagen
      * \param[in] georeference Georeferencia
      */
-    virtual void setGeoreference(const Affine<Point<double>> &georeference) = 0;
+    virtual void setGeoreference(const geom::Affine<Point<double>> &georeference) = 0;
 
     /*!
      * \brief Set the Coordinate Reference System
@@ -199,7 +199,7 @@ protected:
 protected:
 
     Path mFile;
-    Affine<Point<double>> mAffine;
+    geom::Affine<Point<double>> mAffine;
     //#ifdef TL_HAVE_GEOSPATIAL
     //  geospatial::Crs mCRS;
     //#endif

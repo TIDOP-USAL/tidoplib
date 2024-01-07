@@ -33,7 +33,8 @@
 
 namespace tl
 {
-
+namespace geom
+{
 /*! \addtogroup geometry
  *  \{
  */
@@ -346,5 +347,6 @@ Translation<Point_t>::operator Affine<Point_t2>() const
 
 /*! \} */ // end of geometry
 
+} // End namespace geom
 } // End namespace tl
 

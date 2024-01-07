@@ -38,6 +38,8 @@
 namespace tl
 {
 
+namespace geom
+{
 /*! \addtogroup geometry
  *  \{
  */
@@ -667,4 +669,5 @@ void Helmert2D<Point_t>::updateInv()
 
 /*! \} */ // end of geometry
 
+} // End namespace geom
 } // End namespace tl

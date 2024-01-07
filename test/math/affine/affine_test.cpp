@@ -251,6 +251,18 @@ BOOST_FIXTURE_TEST_CASE(affine_inverse, AffineTest)
 {
     Affine<double, 2> affine(0.25, 0.3, 150., 75., consts::deg_to_rad<double> * 35.);
     auto inverse = affine.inverse();
+
+    auto point = inverse.transform(Point<double>(737107.092, 759565.279));
+    BOOST_CHECK_CLOSE(4157222.543, point.x, 0.1);
+    BOOST_CHECK_CLOSE(664789.307, point.y, 0.1);
+
+    point = inverse.transform(Point<double>(731294.227, 764301.907));
+    BOOST_CHECK_CLOSE(4149043.336, point.x, 0.1);
+    BOOST_CHECK_CLOSE(688836.443, point.y, 0.1);
+
+    point = inverse.transform(Point<double>(735901.291, 768078.488));
+    BOOST_CHECK_CLOSE(4172803.511, point.x, 0.1);
+    BOOST_CHECK_CLOSE(690340.078, point.y, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(transform_point2d, AffineTest)
