@@ -9,13 +9,13 @@ namespace tl
 
 class TrackballCamera
 	: public Camera {
-
+	GENERATE_SHARED_PTR(TrackballCamera)
 private:
 
 	float theta, phi;
 	float radius;
 
-private:
+public:
 
 	TrackballCamera(const tl::Matrix4x4f& projectionMatrix, const tl::Matrix4x4f& viewMatrix);
 
@@ -26,10 +26,10 @@ private:
 
 public:
 
-	static TrackballCamera orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar);
-	static TrackballCamera orthoCamera(const Rectf& rect, float zNear, float zFar);
+	static TrackballCamera::Ptr orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar);
+	static TrackballCamera::Ptr orthoCamera(const Rectf& rect, float zNear, float zFar);
 
-	static TrackballCamera perspectiveCamera(float fovy, float aspect, float zNear, float zFar);
+	static TrackballCamera::Ptr perspectiveCamera(float fovy, float aspect, float zNear, float zFar);
 
 	virtual tl::Matrix4x4f& getViewMatrix() override;
 

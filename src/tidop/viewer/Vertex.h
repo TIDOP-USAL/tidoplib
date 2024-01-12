@@ -7,9 +7,6 @@ namespace tl
 
 struct Vertex
 {
-    using Vector3f = tl::Vector3f;
-    using Vector4f = tl::Vector4f;
-
     Vector3f position;
     Vector4f color;
 

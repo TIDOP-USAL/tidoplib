@@ -9,22 +9,27 @@ TrackballCamera::TrackballCamera(const tl::Matrix4x4f& projectionMatrix, const t
     : Camera(projectionMatrix, viewMatrix), theta(tl::consts::pi<float>), phi(tl::consts::two_pi<float>), radius(1.0f) {
 }
 
-TrackballCamera TrackballCamera::orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar) {
+TrackballCamera::Ptr TrackballCamera::orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar)
+{
     tl::Matrix4x4f projection = tl::Matrix4x4f::identity();
     tl::Matrix4x4f view = tl::Matrix4x4f::identity();
-    TrackballCamera camera(projection, view);
-    return camera;
+
+    return TrackballCamera::New(projection, view);
 }
 
-TrackballCamera TrackballCamera::orthoCamera(const Rectf& rect, float zNear, float zFar) {
+TrackballCamera::Ptr TrackballCamera::orthoCamera(const Rectf& rect, float zNear, float zFar)
+{
     return orthoCamera(rect.x, rect.x + rect.width, rect.y + rect.height, rect.y, zNear, zFar);
 }
 
-TrackballCamera TrackballCamera::perspectiveCamera(float fovy, float aspect, float zNear, float zFar) {
+TrackballCamera::Ptr TrackballCamera::perspectiveCamera(float fovy, float aspect, float zNear, float zFar)
+{
     tl::Matrix4x4f projection = tl::Matrices::perspective(fovy, aspect, zNear, zFar);
     tl::Matrix4x4f view = tl::Matrix4x4f::identity();
-    TrackballCamera camera(projection, view);
-    camera.lookAt(tl::Vector3f({ 0.0f, 0.0f, -1.0f }), tl::Vector3f({ 0.0f, 0.0f, 0.0f }), tl::Vector3f({ 0.0f, 1.0f, 0.0f }));
+
+    TrackballCamera::Ptr camera = TrackballCamera::New(projection, view);
+    camera->lookAt(tl::Vector3f({ 0.0f, 0.0f, -1.0f }), tl::Vector3f({ 0.0f, 0.0f, 0.0f }), tl::Vector3f({ 0.0f, 1.0f, 0.0f }));
+
     return camera;
 }
 

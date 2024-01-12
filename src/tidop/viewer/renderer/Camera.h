@@ -4,12 +4,14 @@
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/matrices.h"
 
+#include "tidop/core/ptr.h"
+
 namespace tl
 {
 
 class Camera
 {
-
+	GENERATE_SHARED_PTR(Camera)
 protected:
 
 	Matrix4x4f projectionMatrix;

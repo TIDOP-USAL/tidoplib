@@ -5,9 +5,6 @@
 
 #include "ViewerWidget/ViewerWidget.h"
 
-#define WINDOW_WIDTH 600
-#define WINDOW_HEIGHT 600
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -15,11 +12,15 @@ class MainWindow : public QMainWindow
 private:
 
     Ui::MainWindowClass ui;
-    ViewerWidget* viewerWidget;
+    tl::ViewerWidget* viewerWidget;
 
 public:
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+public:
+
+    void test();
 
 };

@@ -8,12 +8,23 @@
 
 #include <QOpenglWidget>
 
-class ViewerWidget : public QOpenGLWidget 
+#include "tidop/viewer/renderer/Renderer.h"
+
+namespace tl
 {
+
+class ViewerWidget : public QOpenGLWidget
+{
+protected:
+
+	int button;
+	bool mousePressed, first;
+	
+	Renderer::Ptr renderer;
 
 public:
 
-	ViewerWidget(QWidget* parent = nullptr) : QOpenGLWidget(parent) { }
+	ViewerWidget(QWidget* parent = nullptr);
 	~ViewerWidget() = default;
 
 private:
@@ -29,4 +40,7 @@ public:
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
 
+	Renderer::Ptr getRenderer() { return renderer; }
 };
+
+}
