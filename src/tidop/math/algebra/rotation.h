@@ -32,6 +32,10 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/svd.h"
+#include "tidop/math/algebra/rotation_convert.h"
+#include "tidop/math/algebra/euler_angles.h"
+#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/rotations.h"
 #include "tidop/geometry/entities/point.h"
 
 namespace tl
@@ -78,6 +82,9 @@ public:
     Rotation(T omega, T phi, T kappa);
     explicit Rotation(const Matrix<T, Dim, Dim> &rotation);
     explicit Rotation(const Rotation &rotation);
+    explicit Rotation(const EulerAngles<T> &rotation);
+    explicit Rotation(const AxisAngle<T> &rotation);
+    explicit Rotation(const Quaternion<T> &rotation);
     Rotation(Rotation &&rotation) TL_NOEXCEPT;
 
     ~Rotation() = default;
@@ -85,15 +92,8 @@ public:
     auto operator=(const Rotation &rotation) -> Rotation&;
     auto operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation &;
 
-    //auto x() const -> T;
-    //auto y() const -> T;
-    //auto z() const -> T;
-
-    //auto at(size_type position) -> reference;
-    //auto at(size_type position) const -> const_reference;
-
-    //auto operator[](size_t position) -> reference;
-    //auto operator[](size_t position) const -> const_reference;
+    auto angle() const->T;
+    auto toMatrix() const -> Matrix<T, Dim, Dim>;
 
     auto inverse() -> Rotation;
 
@@ -150,7 +150,7 @@ public:
 
 template<typename T, size_t Dim>
 inline Rotation<T, Dim>::Rotation()
-    : rotation(Matrix<T, Dim, Dim>::zero())
+    : rotation(Matrix<T, Dim, Dim>::identity())
 {
     static_assert(dimensions == 2 || dimensions == 3, "Only 2 or 3 dimensions allowed");
 }
@@ -190,6 +190,27 @@ inline Rotation<T, Dim>::Rotation(const Rotation &rotation)
 }
 
 template<typename T, size_t Dim>
+inline Rotation<T, Dim>::Rotation(const EulerAngles<T> &rotation)
+{
+    RotationMatrix<T> rt = rotation;
+    this->rotation = rt;
+}
+
+template<typename T, size_t Dim>
+inline Rotation<T, Dim>::Rotation(const AxisAngle<T> &rotation)
+{
+    RotationMatrix<T> rt = rotation;
+    this->rotation = rt;
+}
+
+template<typename T, size_t Dim>
+inline Rotation<T, Dim>::Rotation(const Quaternion<T> &rotation)
+{
+    RotationMatrix<T> rt = rotation;
+    this->rotation = rt;
+}
+
+template<typename T, size_t Dim>
 inline Rotation<T, Dim>::Rotation(Rotation &&rotation) TL_NOEXCEPT
     : rotation(std::move(rotation.rotation))
 {
@@ -216,53 +237,16 @@ inline auto Rotation<T, Dim>::operator=(Rotation &&rotation) TL_NOEXCEPT -> Rota
 }
 
 template<typename T, size_t Dim>
-inline auto Rotation<T, Dim>::toVector() -> Vector<T, Dim>
+inline auto Rotation<T, Dim>::angle() const -> T
+{
+    return acos(this->rotation(0,0));
+}
+
+template<typename T, size_t Dim>
+inline auto Rotation<T, Dim>::toMatrix() const -> Matrix<T, Dim, Dim>
 {
     return this->rotation;
 }
-
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::x() const -> T
-//{
-//    return this->rotation[0];
-//}
-//
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::y() const -> T
-//{
-//    return this->rotation[1];
-//}
-//
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::z() const -> T
-//{
-//    static_assert(dimensions == 3, "Method not valid for 2D translations");
-//    return this->rotation[2];
-//}
-
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::at(size_type position) -> reference
-//{
-//    return this->rotation.at(position);
-//}
-//
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::at(size_type position) const -> const_reference
-//{
-//    return this->rotation.at(position);
-//}
-//
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::operator[](size_t position) -> reference
-//{
-//    return this->rotation[position];
-//}
-//
-//template<typename T, size_t Dim>
-//inline auto Rotation<T, Dim>::operator[](size_t position) const -> const_reference
-//{
-//    return this->rotation[position];
-//}
 
 template<typename T, size_t Dim>
 inline auto Rotation<T, Dim>::inverse() -> Rotation
