@@ -160,7 +160,7 @@ void TaskErrorEvent::clear()
 /* Image Change Event */
 
 ImageChangeEvent::ImageChangeEvent()
-  : EventBase(Event::Type::task_error),
+  : EventBase(Event::Type::image_change),
     mImage("")
 {
 }

@@ -286,9 +286,10 @@ auto Command::push_back(const Argument::SharedPtr &argument) -> void
     mArguments.push_back(argument);
 }
 
-auto Command::addArgument(const Argument::SharedPtr &argument) -> void
+auto Command::addArgument(const Argument::SharedPtr &argument) -> Command &
 {
     mArguments.push_back(argument);
+    return (*this);
 }
 
 auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
@@ -296,9 +297,10 @@ auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
     mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
 }
 
-auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
+auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &
 {
     mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
+    return (*this);
 }
 
 auto Command::clear() TL_NOEXCEPT -> void
@@ -423,40 +425,41 @@ auto Command::showHelp() const -> void
 
 auto Command::showVersion() const -> void
 {
-  Console &console = App::console();
-  console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-  console.setFontBold(true);
+    Console &console = App::console();
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setFontBold(true);
 
-  std::cout << "Version: " << mVersion << "\n";
+    std::cout << "Version: " << mVersion << "\n";
 
-  console.reset();
+    console.reset();
 }
 
 auto Command::showLicence() const -> void
 {
-  Console &console = App::console();
-  console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-  console.setFontBold(true);
-  std::cout << "Licence\n\n";
-  console.reset();
+    Console &console = App::console();
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setFontBold(true);
+    std::cout << "Licence\n\n";
+    console.reset();
 
-  std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
+    std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
 
-  //mLicence.productName();
-  //mLicence.version();
-  //mLicence.autor();
-  //mLicence.autorEmail();
-  //mLicence.type();
+    //mLicence.productName();
+    //mLicence.version();
+    //mLicence.autor();
+    //mLicence.autorEmail();
+    //mLicence.type();
 }
 
-auto Command::addExample(const std::string &example) -> void
+auto Command::addExample(const std::string &example) -> Command &
 {
-  mExamples.push_back(example);
+    mExamples.push_back(example);
+    return *this;
 }
 
 auto Command::setLicence(const Licence &licence) -> void
 {
-  mLicence = licence;
+    mLicence = licence;
 }
 
 auto Command::argument(const std::string &name) const -> Argument::SharedPtr
@@ -650,9 +653,10 @@ auto CommandList::push_back(const Command::SharedPtr &command) -> void
     mCommands.push_back(command);
 }
 
-auto CommandList::addCommand(const Command::SharedPtr &command) -> void
+auto CommandList::addCommand(const Command::SharedPtr &command) -> CommandList &
 {
     mCommands.push_back(command);
+    return *this;
 }
 
 auto CommandList::push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void
@@ -660,9 +664,10 @@ auto CommandList::push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void
     mCommands.push_back(std::forward<Command::SharedPtr>(command));
 }
 
-auto CommandList::addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> void
+auto CommandList::addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> CommandList &
 {
     mCommands.push_back(std::forward<Command::SharedPtr>(command));
+    return *this;
 }
 
 auto CommandList::clear() TL_NOEXCEPT -> void

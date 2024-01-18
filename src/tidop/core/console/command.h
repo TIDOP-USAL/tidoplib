@@ -292,15 +292,16 @@ public:
 
 
     auto push_back(const Argument::SharedPtr &argument) -> void;
-    auto addArgument(const Argument::SharedPtr &argument) -> void;
+    auto addArgument(const Argument::SharedPtr &argument) -> Command &;
 
     auto push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
-    auto addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
+    auto addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &;
 
     template<typename type, typename... Arg>
-    auto addArgument(Arg&&... arg) TL_NOEXCEPT -> void
+    auto addArgument(Arg&&... arg) TL_NOEXCEPT -> Command&
     {
         mArguments.push_back(Argument::make<type>(std::forward<Arg>(arg)...));
+        return *this;
     }
 
     /*!
@@ -352,7 +353,7 @@ public:
      * \brief Add an example of how to use the command
      * \param[in] example Example of use
      */
-    auto addExample(const std::string &example) -> void;
+    auto addExample(const std::string &example) -> Command &;
 
     /*!
      * \brief Sets the licence
@@ -561,10 +562,10 @@ public:
 
 
     auto push_back(const Command::SharedPtr &command) -> void;
-    auto addCommand(const Command::SharedPtr &command) -> void;
+    auto addCommand(const Command::SharedPtr &command) -> CommandList &;
 
     auto push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void;
-    auto addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> void;
+    auto addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> CommandList &;
 
     /*!
      * \brief Removes commands
