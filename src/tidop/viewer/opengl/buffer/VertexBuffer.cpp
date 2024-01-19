@@ -7,8 +7,7 @@ namespace tl
 
 constexpr unsigned int stride = 7 * sizeof(float);
 
-VertexBuffer::VertexBuffer() : Buffer() { }
-
+VertexBuffer::VertexBuffer() : Buffer(), hasIdxBuffer(false) { }
 
 VertexBuffer::VertexBuffer(std::vector<Vertex>& vertices)
     : Buffer(), hasIdxBuffer(false)
@@ -25,22 +24,26 @@ VertexBuffer::VertexBuffer(std::vector<Vertex>& vertices, const std::vector<unsi
 VertexBuffer::VertexBuffer(const VertexBuffer& vertexBuffer)
 {
     id = vertexBuffer.id;
+    hasIdxBuffer = vertexBuffer.hasIdxBuffer;
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& vertexBuffer) noexcept
 {
     id = vertexBuffer.id;
+    hasIdxBuffer = vertexBuffer.hasIdxBuffer;
 }
 
 VertexBuffer& VertexBuffer::operator=(const VertexBuffer& vertexBuffer)
 {
     id = vertexBuffer.id;
+    hasIdxBuffer = vertexBuffer.hasIdxBuffer;
     return *this;
 }
 
 VertexBuffer& VertexBuffer::operator=(VertexBuffer&& vertexBuffer) noexcept
 {
     id = vertexBuffer.id;
+    hasIdxBuffer = vertexBuffer.hasIdxBuffer;
     return *this;
 }
 

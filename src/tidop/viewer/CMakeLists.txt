@@ -24,7 +24,7 @@
  
 
 ##########################################################################
-#  TidopLib Core module                                                  #
+#  TidopLib Viewer module                                                  #
 ##########################################################################
 
 include(TidopUtils)
@@ -46,6 +46,7 @@ if(BUILD_TL_VIEWER)
                             io/ModelReader.cpp
                             io/ModelWriter.cpp
                             io/ASCIIReader.cpp
+                            io/LASReader.cpp
                          HEADER_FILES
                             opengl/buffer/Buffer.h
 							opengl/buffer/IndexBuffer.h
@@ -61,6 +62,7 @@ if(BUILD_TL_VIEWER)
                             io/ModelReader.h
                             io/ModelWriter.h
                             io/ASCIIReader.h
+                            io/LASReader.h
 							 )
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
@@ -83,11 +85,23 @@ if(BUILD_TL_VIEWER)
 							${Qt6OpenGLWidgets_INCLUDE_DIRS})
 	endif()
 
+    #[[
+    if(LASzip_FOUND)
+        include_directories(${LASzip_INCLUDE_DIR})
+    endif()
+    ]]
+
+    if(LASLib_FOUND)
+        include_directories(${LASLib_INCLUDE_DIR})
+    endif()
+
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${UNIX}>:-lpthread>
+                          #${LASzip_LIBRARIES}
+                          ${LASLib_LIBRARIES}
                           TidopLib::Core
                           TidopLib::Geom
 						  GLEW::GLEW

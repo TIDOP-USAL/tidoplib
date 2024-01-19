@@ -1,5 +1,6 @@
 #include "ModelReader.h"
 #include "ASCIIReader.h"
+#include "LASReader.h"
 
 namespace tl
 {
@@ -14,8 +15,11 @@ ModelReader::Ptr ModelReaderFactory::create(const Path& path)
 
 	std::string extension = path.extension().toString();
 
-	if (compareInsensitiveCase(extension, ".txt")) {
+	if (compareInsensitiveCase(extension, ".txt") || compareInsensitiveCase(extension, ".asc")) {
 		modelReader = ASCIIReader::New(path);
+	}
+	else if (compareInsensitiveCase(extension, ".las") || compareInsensitiveCase(extension, ".laz")) {
+		modelReader = LASReader::New(path);
 	}
 
 	return modelReader;

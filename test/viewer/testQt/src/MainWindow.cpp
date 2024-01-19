@@ -2,6 +2,7 @@
 
 #include <tidop/viewer/group/PointCloud.h>
 #include <tidop/viewer/io/ASCIIReader.h>
+#include <tidop/viewer/io/LASReader.h>
 
 #include <thread>
 
@@ -14,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui.setupUi(this);
 
     setCentralWidget(viewerWidget);
-
 }
 
 MainWindow::~MainWindow()
@@ -41,9 +41,8 @@ void MainWindow::test()
     pointCloud->setPointSize(4);
     viewerWidget->getRenderer()->addModel(pointCloud);
 
-
-
-    // Load from file
+    /*
+    // Load from ASCII file
     Path modelPath("E:/PointClouds/ASCII/torus.txt");
 
     ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
@@ -55,4 +54,19 @@ void MainWindow::test()
     asciiCloud->scale(0.1, 0.1, 0.1);
 
     viewerWidget->getRenderer()->addModel(asciiCloud);
+    */
+
+    // Load from ASCII file
+    Path modelPath("E:/PointClouds/MMS.las");
+
+    ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
+    reader->open();
+
+    ModelBase::Ptr model = reader->getModelBase();
+
+    PointCloud::Ptr lasCloud = std::dynamic_pointer_cast<PointCloud>(model);
+    lasCloud->scale(0.1, 0.1, 0.1);
+
+    viewerWidget->getRenderer()->addModel(lasCloud);
+
 }
