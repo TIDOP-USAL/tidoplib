@@ -221,28 +221,28 @@ public:
      */
     static void setMessageLevel(MessageLevel level);
 
-    static std::ostream &red(std::ostream &os);
-    static std::ostream &green(std::ostream &os);
-    static std::ostream &blue(std::ostream &os);
-    static std::ostream &cyan(std::ostream &os);
-    static std::ostream &magenta(std::ostream &os);
-    static std::ostream &yellow(std::ostream &os);
-    static std::ostream &black(std::ostream &os);
-    static std::ostream &white(std::ostream &os);
-    static std::ostream &bg_red(std::ostream &os);
-    static std::ostream &bg_green(std::ostream &os);
-    static std::ostream &bg_blue(std::ostream &os);
-    static std::ostream &bg_cyan(std::ostream &os);
-    static std::ostream &bg_magenta(std::ostream &os);
-    static std::ostream &bg_yellow(std::ostream &os);
-    static std::ostream &bg_black(std::ostream &os);
-    static std::ostream &bg_white(std::ostream &os);
-    static std::ostream &bold(std::ostream &os);
-    static std::ostream &faint(std::ostream &os);
-    static std::ostream &italic(std::ostream &os);
-    static std::ostream &underline(std::ostream &os);
-    static std::ostream &reverse(std::ostream &os);
-    static std::ostream &strikethrough(std::ostream &os);
+    static auto red(std::ostream &os) -> std::ostream &;
+    static auto green(std::ostream &os) -> std::ostream &;
+    static auto blue(std::ostream &os) -> std::ostream &;
+    static auto cyan(std::ostream &os) -> std::ostream &;
+    static auto magenta(std::ostream &os) -> std::ostream &;
+    static auto yellow(std::ostream &os) -> std::ostream &;
+    static auto black(std::ostream &os) -> std::ostream &;
+    static auto white(std::ostream &os) -> std::ostream &;
+    static auto bg_red(std::ostream &os) -> std::ostream &;
+    static auto bg_green(std::ostream &os) -> std::ostream &;
+    static auto bg_blue(std::ostream &os) -> std::ostream &;
+    static auto bg_cyan(std::ostream &os) -> std::ostream &;
+    static auto bg_magenta(std::ostream &os) -> std::ostream &;
+    static auto bg_yellow(std::ostream &os) -> std::ostream &;
+    static auto bg_black(std::ostream &os) -> std::ostream &;
+    static auto bg_white(std::ostream &os) -> std::ostream &;
+    static auto bold(std::ostream &os) -> std::ostream &;
+    static auto faint(std::ostream &os) -> std::ostream &;
+    static auto italic(std::ostream &os) -> std::ostream &;
+    static auto underline(std::ostream &os) -> std::ostream &;
+    static auto reverse(std::ostream &os) -> std::ostream &;
+    static auto strikethrough(std::ostream &os) -> std::ostream &;
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 

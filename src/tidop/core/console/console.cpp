@@ -157,133 +157,133 @@ void Console::setMessageLevel(MessageLevel level)
     messageLevelFlags = level;
 }
 
-inline std::ostream &Console::red(std::ostream &os)
+auto Console::red(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::red);
     return os;
 }
 
-inline std::ostream &Console::green(std::ostream &os)
+auto Console::green(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::green);
     return os;
 }
 
-inline std::ostream &Console::blue(std::ostream &os)
+auto Console::blue(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::blue);
     return os;
 }
 
-inline std::ostream &Console::cyan(std::ostream &os)
+auto Console::cyan(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::cyan);
     return os;
 }
 
-inline std::ostream &Console::magenta(std::ostream &os)
+auto Console::magenta(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::magenta);
     return os;
 }
 
-inline std::ostream &Console::yellow(std::ostream &os)
+auto Console::yellow(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::yellow);
     return os;
 }
 
-inline std::ostream &Console::black(std::ostream &os)
+auto Console::black(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::black);
     return os;
 }
 
-inline std::ostream &Console::white(std::ostream &os)
+auto Console::white(std::ostream &os) -> std::ostream &
 {
     Console::instance().setForegroundColor(Color::white);
     return os;
 }
 
-std::ostream &Console::bg_red(std::ostream &os)
+auto Console::bg_red(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::red);
     return os;
 }
 
-std::ostream &Console::bg_green(std::ostream &os)
+auto Console::bg_green(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::green);
     return os;
 }
 
-std::ostream &Console::bg_blue(std::ostream &os)
+auto Console::bg_blue(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::blue);
     return os;
 }
 
-std::ostream &Console::bg_cyan(std::ostream &os)
+auto Console::bg_cyan(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::cyan);
     return os;
 }
 
-std::ostream &Console::bg_magenta(std::ostream &os)
+auto Console::bg_magenta(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::magenta);
     return os;
 }
 
-std::ostream &Console::bg_yellow(std::ostream &os)
+auto Console::bg_yellow(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::yellow);
     return os;
 }
 
-std::ostream &Console::bg_black(std::ostream &os)
+auto Console::bg_black(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::black);
     return os;
 }
 
-std::ostream &Console::bg_white(std::ostream &os)
+auto Console::bg_white(std::ostream &os) -> std::ostream &
 {
     Console::instance().setBackgroundColor(Color::white);
     return os;
 }
 
-inline std::ostream &Console::bold(std::ostream &os)
+auto Console::bold(std::ostream &os) -> std::ostream &
 {
     Console::instance().setFontBold(true);
     return os;
 }
 
-inline std::ostream &Console::faint(std::ostream &os)
+auto Console::faint(std::ostream &os) -> std::ostream &
 {
     Console::instance().setFontFaint(true);
     return os;
 }
 
-inline std::ostream &Console::italic(std::ostream &os)
+auto Console::italic(std::ostream &os) -> std::ostream &
 {
     Console::instance().setFontItalic(true);
     return os;
 }
 
-inline std::ostream &Console::underline(std::ostream &os)
+auto Console::underline(std::ostream &os) -> std::ostream &
 {
     Console::instance().setFontUnderline(true);
     return os;
 }
 
-std::ostream &Console::reverse(std::ostream &os)
+auto Console::reverse(std::ostream &os) -> std::ostream &
 {
     Console::instance().setFontReverse(true);
     return os;
 }
 
-std::ostream &Console::strikethrough(std::ostream &os)
+auto Console::strikethrough(std::ostream &os) -> std::ostream &
 {
     Console::instance().setFontStrikethrough(true);
     return os;
