@@ -52,6 +52,7 @@ if(BUILD_TL_CORE)
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
+                             console/menu.cpp
                              msg/message.cpp
                          HEADER_FILES
                              defs.h
@@ -75,6 +76,7 @@ if(BUILD_TL_CORE)
                              console/argument.h
                              console/command.h
                              console/validator.h
+                             console/menu.h
                              messages.h
                              msg/handler.h
                              msg/message.h)

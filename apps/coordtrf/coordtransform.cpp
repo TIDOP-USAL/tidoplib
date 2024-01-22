@@ -31,6 +31,7 @@
 #include <tidop/geometry/transform/rotation.h>
 #include <tidop/geometry/transform/helmert2d.h>
 #include <tidop/geometry/entities/point.h>
+#include <tidop/core/console/menu.h>
 
 using namespace tl;
 

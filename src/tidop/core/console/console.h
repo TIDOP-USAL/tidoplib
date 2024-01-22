@@ -36,6 +36,7 @@
 #endif
 #include <mutex>
 #include <iostream>
+#include <functional>
 
 namespace tl
 {
@@ -243,6 +244,7 @@ public:
     static auto underline(std::ostream &os) -> std::ostream &;
     static auto reverse(std::ostream &os) -> std::ostream &;
     static auto strikethrough(std::ostream &os) -> std::ostream &;
+    static std::ostream &clear(std::ostream& os);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
@@ -277,6 +279,26 @@ public:
     }
 
 #endif
+
+    template<typename T>
+    auto prompt(const std::string &question) -> T
+    {
+        T answer{};
+
+        std::cout << question;
+        std::cin >> answer;
+        
+        return answer;
+    }
+
+    template<typename T>
+    auto prompt(const std::string &question, std::function<void(T)> f) -> void
+    {
+        T answer{};
+        std::cout << question;
+        std::cin >> answer;
+        f(answer);
+    }
 
 private:
 

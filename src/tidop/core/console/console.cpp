@@ -289,6 +289,11 @@ auto Console::strikethrough(std::ostream &os) -> std::ostream &
     return os;
 }
 
+std::ostream& Console::clear(std::ostream &os)
+{
+    Console::instance().reset();
+    return os;
+}
 
 void Console::debug(String message)
 {
