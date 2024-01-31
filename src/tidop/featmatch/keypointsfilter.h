@@ -61,8 +61,8 @@ public:
      * \brief type of keypoints filter
      * \return filter type
      */
-    virtual Type type() const = 0;
-    virtual std::string name() const = 0;
+    virtual auto type() const -> Type = 0;
+    virtual auto name() const -> std::string = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(KeyPointsFilter::Type)
@@ -70,8 +70,12 @@ ALLOW_BITWISE_FLAG_OPERATIONS(KeyPointsFilter::Type)
 
 
 class TL_EXPORT KeyPointsFilterBase
-    : public KeyPointsFilter
+  : public KeyPointsFilter
 {
+
+protected:
+
+    tl::EnumFlags<Type> mFilterType;
 
 public:
 
@@ -82,14 +86,11 @@ public:
      * \brief type of keypoints filter
      * \return filter type
      */
-    Type type() const override
+    auto type() const -> Type override
     {
         return mFilterType.flags();
     }
 
-protected:
-
-    tl::EnumFlags<Type> mFilterType;
 };
 
 
@@ -110,7 +111,8 @@ public:
      * \param[in] keypoints
      * \return Filtered Keypoints
      */
-    virtual std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) = 0;
+    virtual auto filter(const std::vector<cv::KeyPoint> &keypoints) -> std::vector<cv::KeyPoint> = 0;
+
 };
 
 
@@ -118,8 +120,12 @@ public:
 
 
 class TL_EXPORT KeyPointsFilterNBestProperties
-    : public KeyPointsFilterBase
+  : public KeyPointsFilterBase
 {
+
+private:
+
+    int mPointsNumber;
 
 public:
 
@@ -130,7 +136,7 @@ public:
      * \brief Number of points to retain
      * \return Number of points
      */
-    virtual int nPoints() const;
+    virtual auto nPoints() const -> int;
 
     /*!
      * \brief Set the number of points to retain
@@ -143,11 +149,8 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
-private:
-
-    int mPointsNumber;
 };
 
 
@@ -181,7 +184,7 @@ public:
 
 public:
 
-    std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
+    auto filter(const std::vector<cv::KeyPoint> &keypoints) -> std::vector<cv::KeyPoint> override;
 
 };
 
@@ -193,6 +196,11 @@ class TL_EXPORT KeyPointsFilterBySizeProperties
   : public KeyPointsFilterBase
 {
 
+private:
+
+    double mMinSize;
+    double mMaxSize;
+
 public:
 
     KeyPointsFilterBySizeProperties();
@@ -202,7 +210,7 @@ public:
      * \brief Minimum size
      * \return Minimum size
      */
-    virtual double minSize() const;
+    virtual auto minSize() const -> double;
 
     /*!
      * \brief set minimum size
@@ -214,7 +222,7 @@ public:
      * \brief maximum size
      * \return maximum size
      */
-    virtual double maxSize() const;
+    virtual auto maxSize() const -> double;
 
     /*!
      * \brief Set maximum size
@@ -227,12 +235,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
-
-private:
-
-    double mMinSize;
-    double mMaxSize;
+    auto name() const -> std::string final;
 
 };
 
@@ -262,7 +265,7 @@ public:
 
 public:
 
-    std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
+    auto filter(const std::vector<cv::KeyPoint> &keypoints) -> std::vector<cv::KeyPoint> override;
 
 // KeyPointsFilter interface
 
@@ -290,7 +293,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -313,7 +316,7 @@ public:
 
 public:
 
-    std::vector<cv::KeyPoint> filter(const std::vector<cv::KeyPoint> &keypoints) override;
+    auto filter(const std::vector<cv::KeyPoint> &keypoints) -> std::vector<cv::KeyPoint> override;
 
 // KeyPointsFilter interface
 

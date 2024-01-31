@@ -47,14 +47,14 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 // FlannMatcher interface
 
 public:
 
-    Index index() const override;
-    virtual void setIndex(Index index) override;
+    auto index() const -> Index override;
+    void setIndex(Index index) override;
 
 };
 

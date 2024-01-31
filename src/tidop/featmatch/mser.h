@@ -66,15 +66,15 @@ public:
 
 public:
 
-    int delta() const override;
-    int minArea() const override;
-    int maxArea() const override;
-    double maxVariation() const override;
-    double minDiversity() const override;
-    int maxEvolution() const override;
-    double areaThreshold() const override;
-    double minMargin() const override;
-    int edgeBlurSize() const override;
+    auto delta() const -> int override;
+    auto minArea() const -> int override;
+    auto maxArea() const -> int override;
+    auto maxVariation() const -> double override;
+    auto minDiversity() const -> double override;
+    auto maxEvolution() const -> int override;
+    auto areaThreshold() const -> double override;
+    auto minMargin() const -> double override;
+    auto edgeBlurSize() const -> int override;
     void setDelta(int delta) override;
     void setMinArea(int minArea) override;
     void setMaxArea(int maxArea) override;
@@ -90,7 +90,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -130,8 +130,8 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, 
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Mser interface
 

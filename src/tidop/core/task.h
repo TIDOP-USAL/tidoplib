@@ -36,6 +36,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/event.h"
+#include "tidop/core/chrono.h"
 
 namespace tl
 {
@@ -116,6 +117,8 @@ public:
      */
     virtual void stop() = 0;
     
+    virtual auto time() const -> double = 0;
+
     virtual void subscribe(Event::Type eventType,
                            const EventHandler &eventHandler) = 0;
     virtual void subscribe(const EventHandler &eventHandler) = 0;
@@ -159,6 +162,7 @@ private:
     std::list<TaskRunningEventHandler> mTaskRunningEventHandler;
     std::list<TaskStoppedEventHandler> mTaskStoppedEventHandler;
     std::list<TaskStoppingEventHandler> mTaskStoppingEventHandler;
+    mutable Chrono chrono;
 
 public:
 
@@ -215,7 +219,8 @@ public:
     void reset() override;
     void resume() override;
     void stop() override;
-   
+    auto time() const -> double override;
+
     void subscribe(Event::Type eventType,
                    const EventHandler &eventHandler) override;
     void subscribe(const EventHandler &eventHandler) override;

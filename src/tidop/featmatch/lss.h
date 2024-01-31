@@ -48,7 +48,7 @@ public:
 public:
 
     virtual void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -78,8 +78,8 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img,
+                 std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Feature interface
 

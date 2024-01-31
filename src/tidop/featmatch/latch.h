@@ -64,9 +64,9 @@ public:
 
 public:
 
-    std::string bytes() const override;
-    bool rotationInvariance() const override;
-    int halfSsdSize() const override;
+    auto bytes() const -> std::string override;
+    auto rotationInvariance() const -> bool override;
+    auto halfSsdSize() const -> int override;
     void setBytes(const std::string &bytes) override;
     void setRotationInvariance(bool rotationInvariance) override;
     void setHalfSsdSize(int halfSsdSize) override;
@@ -76,7 +76,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -111,8 +111,7 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Latch interface
 

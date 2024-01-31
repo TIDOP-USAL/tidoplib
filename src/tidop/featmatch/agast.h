@@ -51,8 +51,8 @@ class TL_EXPORT AgastProperties
 
 private:
 
-    int mThreshold{agast_default_value_threshold};
-    bool mNonmaxSuppression{agast_default_value_nonmax_suppression};
+    int mThreshold;
+    bool mNonmaxSuppression;
     std::string mDetectorType;
 
 public:
@@ -62,16 +62,16 @@ public:
     AgastProperties(AgastProperties &&agast) TL_NOEXCEPT;
     ~AgastProperties() override;
 
-    AgastProperties &operator =(const AgastProperties &agast);
-    AgastProperties &operator =(AgastProperties &&agast) TL_NOEXCEPT;
+    auto operator =(const AgastProperties &agast) -> AgastProperties&;
+    auto operator =(AgastProperties &&agast) TL_NOEXCEPT  -> AgastProperties&;
 
 // Agast interface
 
 public:
 
-    int threshold() const override;
-    bool nonmaxSuppression() const override;
-    std::string detectorType() const override;
+    auto threshold() const -> int override;
+    auto nonmaxSuppression() const -> bool override;
+    auto detectorType() const -> std::string override;
     void setThreshold(int threshold) override;
     void setNonmaxSuppression(bool nonmaxSuppression) override;
     void setDetectorType(const std::string &detectorType) override;
@@ -81,7 +81,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -107,15 +107,16 @@ public:
                   bool nonmaxSuppression,
                   const std::string &detectorType);
     ~AgastDetector() override;
-    AgastDetector &operator =(const AgastDetector &agastDetector);
-    AgastDetector &operator =(AgastDetector &&agastDetector) TL_NOEXCEPT;
+    
+    auto operator =(const AgastDetector &agastDetector) -> AgastDetector &;
+    auto operator =(AgastDetector &&agastDetector) TL_NOEXCEPT -> AgastDetector&;
 
 private:
 
 #if CV_VERSION_MAJOR >= 4
-    cv::AgastFeatureDetector::DetectorType convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> cv::AgastFeatureDetector::DetectorType;
 #else
-    int convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> int;
 #endif
 
     void initAgastFromProperties();
@@ -124,8 +125,8 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img,
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Agast interface
 

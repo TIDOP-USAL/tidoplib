@@ -80,13 +80,13 @@ public:
      * \brief Type of match method (flann or brute force)
      * \return
      */
-    virtual Type type() const = 0;
+    virtual auto type() const -> Type = 0;
 
     /*!
      * \brief Name of match method
      * \return
      */
-    virtual std::string name() const = 0;
+    virtual auto name() const -> std::string = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MatchingMethod::Type)
@@ -97,7 +97,7 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MatchingMethod::Type)
 
 
 class TL_EXPORT MatchingMethodBase
-    : public MatchingMethod
+  : public MatchingMethod
 {
 
 private:
@@ -113,7 +113,7 @@ public:
 
 public:
 
-    Type type() const override
+    auto type() const -> Type override
     {
         return mMatchType.flags();
     }
@@ -186,7 +186,7 @@ public:
     FlannMatcher() : MatchingMethodBase(MatchingMethod::Type::flann) {}
     ~FlannMatcher() override = default;
 
-    virtual Index index() const = 0;
+    virtual auto index() const -> Index = 0;
     virtual void setIndex(Index index) = 0;
 
 };
@@ -198,8 +198,9 @@ public:
 
 
 class TL_EXPORT BruteForceMatcher
-    : public MatchingMethodBase
+  : public MatchingMethodBase
 {
+
 public:
 
     enum class Norm
@@ -215,7 +216,7 @@ public:
     BruteForceMatcher() : MatchingMethodBase(MatchingMethod::Type::brute_force) {}
     ~BruteForceMatcher() override = default;
 
-    virtual Norm normType() const = 0;
+    virtual auto normType() const -> Norm = 0;
     virtual void setNormType(Norm normType) = 0;
 
 };
@@ -245,8 +246,8 @@ public:
      */
     virtual void reset() = 0;
 
-    virtual Strategy strategy() const = 0;
-    virtual std::string name() const = 0;
+    virtual auto strategy() const -> Strategy = 0;
+    virtual auto name() const -> std::string = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MatchingStrategy::Strategy)
@@ -256,26 +257,26 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MatchingStrategy::Strategy)
 
 
 class TL_EXPORT MatchingStrategyBase
-    : public MatchingStrategy
+  : public MatchingStrategy
 {
+
+protected:
+
+    tl::EnumFlags<Strategy> mStrategy;
 
 public:
 
     MatchingStrategyBase(Strategy strategy) : mStrategy(strategy) {}
     ~MatchingStrategyBase() override = default;
 
-    // MatchingStrategy interface
+// MatchingStrategy interface
 
 public:
 
-    Strategy strategy() const override
+    auto strategy() const -> Strategy override
     {
         return mStrategy.flags();
     }
-
-protected:
-
-    tl::EnumFlags<Strategy> mStrategy;
 
 };
 
@@ -314,7 +315,7 @@ public:
  * http://docs.opencv.org/3.1.0/dc/d2c/tutorial_real_time_pose.html
  */
 class TL_EXPORT RobustMatcher
-    : public MatchingStrategyBase
+  : public MatchingStrategyBase
 {
 
 public:
@@ -325,13 +326,13 @@ public:
     }
     ~RobustMatcher() override = default;
 
-    virtual double ratio() const = 0;
+    virtual auto ratio() const -> double = 0;
     virtual void setRatio(double ratio) = 0;
 
-    virtual bool crossCheck() const = 0;
+    virtual auto crossCheck() const -> bool = 0;
     virtual void setCrossCheck(bool crossCheck) = 0;
 
-    virtual std::shared_ptr<GeometricTest> geometricTest() const = 0;
+    virtual auto geometricTest() const -> std::shared_ptr<GeometricTest> = 0;
     virtual void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) = 0;
 
 };
@@ -342,7 +343,7 @@ public:
 
 
 class TL_EXPORT Gms
-    : public MatchingStrategyBase
+  : public MatchingStrategyBase
 {
 
 public:
@@ -350,13 +351,13 @@ public:
     Gms() : MatchingStrategyBase(Strategy::gms) {}
     ~Gms() override = default;
 
-    virtual bool rotation() const = 0;
+    virtual auto rotation() const -> bool = 0;
     virtual void setRotation(bool rotation) = 0;
 
-    virtual bool scale() const = 0;
+    virtual auto scale() const -> bool = 0;
     virtual void setScale(bool scale) = 0;
 
-    virtual double threshold() const = 0;
+    virtual auto threshold() const -> double = 0;
     virtual void setThreshold(double threshold) = 0;
 };
 

@@ -351,12 +351,16 @@ auto TaskBase::stoppingEvent() -> TaskStoppingEvent*
 void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
 {
     if (mStatus != Status::start) return;
-
+       
     try {
+
+        chrono.run();
 
         setStatus(Status::running);
 
         execute(progressBar);
+
+        chrono.stop();
 
         if (mStatus == Status::stopping)
             setStatus(Status::stopped);
@@ -428,6 +432,11 @@ void TaskBase::stop()
         setStatus(Status::stopping);
 
     }
+}
+
+auto TaskBase::time() const -> double
+{
+    return chrono.currentTime();
 }
 
 void TaskBase::subscribe(Event::Type eventType,
@@ -618,16 +627,16 @@ void Process::execute(Progress *)
         if (ret == WAIT_OBJECT_0) {
 
             unsigned long exitCode;
+
             if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode) == 0) {
                 TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
                                    GetLastError(),
                                    formatErrorMsg(GetLastError()),
                                    mCommandText);
+            } else if (exitCode == 0){
+                eventTriggered(Event::Type::task_finalized);
             } else {
-                if (exitCode == 0)
-                    eventTriggered(Event::Type::task_finalized);
-                else
-                    eventTriggered(Event::Type::task_error);
+                eventTriggered(Event::Type::task_error);
             }
 
         } else if (ret == WAIT_FAILED) {
@@ -722,13 +731,12 @@ std::wstring string_to_wide_string(const std::string &string)
         return L"";
     }
 
-    const auto size_needed = MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), nullptr, 0);
-    if (size_needed <= 0) {
-        throw std::runtime_error("MultiByteToWideChar() failed: " + std::to_string(size_needed));
-    }
+    auto size_needed = MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), nullptr, 0);
+    TL_ASSERT(size_needed > 0, "MultiByteToWideChar() failed: {}", size_needed);
 
     std::wstring result(size_needed, 0);
     MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), &result.at(0), size_needed);
+    
     return result;
 }
 
@@ -739,20 +747,19 @@ std::string wide_string_to_string(const std::wstring &wide_string)
     }
 
     const auto size_needed = WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), nullptr, 0, nullptr, nullptr);
-    if (size_needed <= 0) {
-        throw std::runtime_error("WideCharToMultiByte() failed: " + std::to_string(size_needed));
-    }
+    TL_ASSERT(size_needed > 0, "WideCharToMultiByte() failed: {}", size_needed);
 
     std::string result(size_needed, 0);
     WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), &result.at(0), size_needed, nullptr, nullptr);
+    
     return result;
 }
 
 auto Process::formatErrorMsg(unsigned long errorCode) -> std::string
 {
     DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS |
-        FORMAT_MESSAGE_MAX_WIDTH_MASK;
+                  FORMAT_MESSAGE_IGNORE_INSERTS |
+                  FORMAT_MESSAGE_MAX_WIDTH_MASK;
 
     TCHAR errorMessage[1024] = TEXT("");
 
@@ -941,6 +948,7 @@ void TaskTree::addTask(const std::shared_ptr<Task> &task,
 
 void TaskTree::stop()
 {
+    TaskBase::stop();
 }
 
 void TaskTree::execute(Progress *progressBar)
