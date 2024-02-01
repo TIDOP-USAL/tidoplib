@@ -66,9 +66,9 @@ public:
 
 public:
 
-    int threshold() const override;
-    int octaves() const override;
-    double patternScale() const override;
+    auto threshold() const -> int override;
+    auto octaves() const -> int override;
+    auto patternScale() const -> double override;
     void setThreshold(int threshold) override;
     void setOctaves(int octaves) override;
     void setPatternScale(double patternScale) override;
@@ -78,7 +78,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -114,15 +114,13 @@ protected:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // DescriptorExtractor interface
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Brisk interface
 

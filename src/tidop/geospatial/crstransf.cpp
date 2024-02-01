@@ -35,7 +35,7 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 /// \cond
 namespace internal
@@ -62,7 +62,14 @@ public:
     Point3<double> transform(const Point3<double> &ptIn)
     {
         Point3<double> ptOut = ptIn;
-        mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+
+        try {
+            TL_ASSERT(mTransform != nullptr, "");
+            mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
         return ptOut;
     }
 
@@ -77,7 +84,7 @@ private:
 
 CrsTransform::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
                            const std::shared_ptr<Crs> &epsgOut)
-  : Transform3D<Point3<double>>(Transform::Type::crs),
+  : geom::Transform3D<Point3<double>>(geom::Transform::Type::crs),
     mEpsgIn(epsgIn),
     mEpsgOut(epsgOut),
     mCoordinateTransformation(nullptr),
@@ -106,7 +113,7 @@ CrsTransform::~CrsTransform()
 auto CrsTransform::compute(const std::vector<Point3<double>> &pts1,
                            const std::vector<Point3<double>> &pts2,
                            std::vector<double> *error,
-                           double *rmse) -> Transform::Status
+                           double *rmse) -> geom::Transform::Status
 {
     unusedParameter(pts1);
     unusedParameter(pts2);
@@ -114,12 +121,12 @@ auto CrsTransform::compute(const std::vector<Point3<double>> &pts1,
     unusedParameter(rmse);
     Message::error("'compute' is not supported for CrsTransform");
     //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
-    return Transform::Status::failure;
+    return geom::Transform::Status::failure;
 }
 
 auto CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
                              std::vector<Point3<double>> &ptsOut,
-                             Transform::Order trfOrder) const -> Transform::Status
+                             geom::Transform::Order trfOrder) const -> geom::Transform::Status
 {
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
@@ -141,43 +148,43 @@ auto CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
       transform(ptsIn[i], ptsOut[i], trfOrder);
   }
 
-  return Transform::Status::success;
+  return geom::Transform::Status::success;
 }
 
 auto CrsTransform::transform(const Point3<double> &ptIn,
                              Point3<double> &ptOut,
-                             Transform::Order trfOrder) const -> Transform::Status
+                             geom::Transform::Order trfOrder) const -> geom::Transform::Status
 {
 
   try {
 
-    if (trfOrder == Transform::Order::direct) {
+    if (trfOrder == geom::Transform::Order::direct) {
       if (mCoordinateTransformation)
         ptOut = mCoordinateTransformation->transform(ptIn);
-      else
-        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+      //else
+      //  Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     } else {
       if (mCoordinateTransformationInv)
         ptOut = mCoordinateTransformationInv->transform(ptIn);
-      else
-        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+      //else
+      //  Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     }
 
   } catch (...) {
-    throw;
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
-  return Transform::Status::success;
+  return geom::Transform::Status::success;
 }
 
 
 auto CrsTransform::transform(const Point3<double> &ptIn, 
-                             Transform::Order trfOrder) const -> Point3<double>
+                             geom::Transform::Order trfOrder) const -> Point3<double>
 {
     Point3<double> r_pt;
     try {
 
-        if (trfOrder == Transform::Order::direct)
+        if (trfOrder == geom::Transform::Order::direct)
             r_pt = mCoordinateTransformation->transform(ptIn);
         else
             r_pt = mCoordinateTransformationInv->transform(ptIn);

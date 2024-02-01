@@ -110,63 +110,63 @@ public:
      * \brief Copy assignment operator
      * \param[in] rect Rect object to copy
      */
-    Rect &operator = (const Rect &rect);
+    auto operator = (const Rect &rect) -> Rect &;
     
     /*!
      * \brief Move assignment operator
      * \param[in] rect Rect object to move
      */
-    Rect &operator = (Rect &&rect) TL_NOEXCEPT;
+    auto operator = (Rect &&rect) TL_NOEXCEPT -> Rect&;
     
     /*!
      * \brief Return top-left corner
      */
-    Point<T> topLeft() const;
+    auto topLeft() const -> Point<T>;
     
     /*!
      * \brief Return top-right corner
      */
-    Point<T> topRight() const;
+     auto topRight() const -> Point<T>;
     
     /*!
      * \brief Return bottom-right corner
      */
-    Point<T> bottomRight() const;
+    auto bottomRight() const -> Point<T>;
     
     /*!
      * \brief Return bottom-left corner
      */
-    Point<T> bottomLeft() const;
+    auto bottomLeft() const -> Point<T>;
     
     /*!
      * \brief Returns the size of the rectangle.
      */
-    Size<T> size() const;
+    auto size() const -> Size<T>;
     
     /*!
      * \brief Check if Rect object is empty. 
      * \return Returns true if the rectangle is empty, otherwise returns false. 
      */
-    bool isEmpty() const;
+    auto isEmpty() const -> bool;
     
     /*!
      * \brief Check if Rect object is valid.
      * \return Returns true if the rectangle is valid, otherwise returns false.
      */
-    bool isValid() const;
+    auto isValid() const -> bool;
     
     /*!
      * \brief Check if a point is contained in the rectangle.
      * \param[in] pt Point to check if is contained.
      * \return Returns true if the rectangle contains the point.
     */
-    bool contains(const Point<T> &pt) const;
+    auto contains(const Point<T> &pt) const -> bool;
     
     /*!
      * \brief Transform a Rect object to a Window object
      * \return Window
      */
-    Window<Point<T>> window() const;
+    auto window() const -> Window<Point<T>>;
     
     /*!
      * \brief Normalize the rectangle.
@@ -180,10 +180,10 @@ public:
 
 public:
 
-  T x;
-  T y;
-  T width;
-  T height;
+    T x;
+    T y;
+    T width;
+    T height;
 };
 
 
@@ -258,8 +258,8 @@ Rect<T>::Rect(Rect &&rect) TL_NOEXCEPT
 {
 }
 
-template<typename T> inline
-Rect<T> &Rect<T>::operator = (const Rect &rect)
+template<typename T> 
+inline auto Rect<T>::operator = (const Rect &rect) -> Rect<T>&
 {
     if (this != &rect) {
         this->x = rect.x;
@@ -271,8 +271,8 @@ Rect<T> &Rect<T>::operator = (const Rect &rect)
     return *this;
 }
 
-template<typename T> inline
-Rect<T> &Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT
+template<typename T> 
+inline auto Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT -> Rect<T>&
 {
     if (this != &rect) {
         this->x = rect.x;
@@ -284,51 +284,51 @@ Rect<T> &Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT
     return *this;
 }
 
-template<typename T> inline
-Point<T> Rect<T>::topLeft() const
+template<typename T> 
+inline auto Rect<T>::topLeft() const -> Point<T>
 {
     return Point<T>(this->x, this->y);
 }
 
-template<typename T> inline
-Point<T> Rect<T>::topRight() const
+template<typename T> 
+inline auto Rect<T>::topRight() const -> Point<T>
 {
     return Point<T>(this->x + this->width, this->y);
 }
 
 template<typename T>
-inline Point<T> Rect<T>::bottomRight() const
+inline auto Rect<T>::bottomRight() const -> Point<T>
 {
     return Point<T>(this->x + this->width, 
                     this->y + this->height);
 }
 
 template<typename T>
-inline Point<T> Rect<T>::bottomLeft() const
+inline auto Rect<T>::bottomLeft() const -> Point<T>
 {
     return Point<T>(this->x, this->y + this->height);
 }
 
-template<typename T> inline
-Size<T> tl::Rect<T>::size() const
+template<typename T> 
+inline auto Rect<T>::size() const -> Size<T>
 {
     return Size<T>(this->width, this->height);
 }
 
 template<typename T>
-inline bool tl::Rect<T>::isEmpty() const
+inline auto tl::Rect<T>::isEmpty() const -> bool
 {
     return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
-inline bool tl::Rect<T>::isValid() const
+inline auto tl::Rect<T>::isValid() const -> bool
 {
     return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
 template<typename T>
-inline bool Rect<T>::contains(const Point<T> &pt) const
+inline auto Rect<T>::contains(const Point<T> &pt) const -> bool
 {
     return (this->x <= pt.x &&
             pt.x < this->x + this->width &&
@@ -336,8 +336,8 @@ inline bool Rect<T>::contains(const Point<T> &pt) const
             pt.y < this->y + this->height);
 }
 
-template<typename T> inline
-Window<Point<T>> Rect<T>::window() const
+template<typename T> 
+inline auto Rect<T>::window() const -> Window<Point<T>>
 {
     return Window<Point<T>>(Point<T>(this->x, this->y),
                             Point<T>(this->x + this->width,
@@ -359,8 +359,8 @@ inline void tl::Rect<T>::normalized()
     }
 }
 
-template<typename T> template<typename T2> inline 
-Rect<T>::operator Rect<T2>() const
+template<typename T> template<typename T2> 
+inline Rect<T>::operator Rect<T2>() const
 {
     Rect<T2> rect(numberCast<T2>(this->x),
                   numberCast<T2>(this->y),

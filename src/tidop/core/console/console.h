@@ -35,6 +35,8 @@
 #include <format>
 #endif
 #include <mutex>
+#include <iostream>
+#include <functional>
 
 namespace tl
 {
@@ -46,11 +48,10 @@ class App;
  *  \{
  */
 
- /*! \defgroup Console Utilidades de consola
+ /*! \defgroup Console Console tools
   *
-  * Utilidades para aplicaciones en modo consola que comprenden la apariencia de
-  * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso
-  * para procesos
+  * Tools for console mode applications comprising console appearance (text 
+  * size, colour, etc.), command parsing and progress bar for processes.
   *
   *  \{
   */
@@ -58,11 +59,11 @@ class App;
 
 
 /*!
- * \brief Clase para gestionar la configuración de la ventana de comandos
+ * \brief Class for managing the console configuration
  *
- * Permite modificar el color e intensidad de caracter y de fondo,
- * poner la consola en modo Unicode y cambiar el modo de consola (entrada,
- * salida, error)
+ * Allows you to change the character and background colour and intensity, 
+ * set the console to Unicode mode and change the console mode (input, 
+ * output, error).
  */
 class TL_EXPORT Console
     : public MessageHandler
@@ -71,37 +72,37 @@ class TL_EXPORT Console
 public:
 
     /*!
-     * \brief Valores de intensidad de color
+     * \brief Colour intensity values
      */
     enum class Intensity : int8_t
     {
-        normal,            /*!< Normal */
-        bright             /*!< Brillante */
+        normal,            /*!< Normal colour */
+        bright = 60        /*!< Bright colour */
     };
 
     /*!
-     * \brief Tipos de color de fondo y caracter.
+     * \brief Background and Foreground colour types
      */
     enum class Color : int8_t
     {
-        black,    /*!< Negro */
-        red,      /*!< Rojo */
-        green,    /*!< Verde */
-        yellow,   /*!< Amarillo */
-        blue,     /*!< Azul */
-        magenta,  /*!< Magenta */
-        cyan,     /*!< Cian */
-        white     /*!< Blanco */
+        black,
+        red,
+        green,
+        yellow,
+        blue,
+        magenta,
+        cyan,
+        white
     };
 
     /*!
-     * \brief Modo de consola
+     * \brief Console mode
      */
     enum class Mode : int8_t
     {
-        input,          /*!< Consola en modo entrada */
-        output,         /*!< Consola en modo salida */
-        output_error    /*!< Consola en modo salida de errores */
+        input,          /*!< Console in input mode */
+        output,         /*!< Console in output mode */
+        output_error    /*!< Console in error output mode */
     };
 
 private:
@@ -109,69 +110,15 @@ private:
     std::ostream &_stream;
     static std::mutex mtx;
     static EnumFlags<MessageLevel> messageLevelFlags;
-
-#ifdef TL_OS_WINDOWS
-
-    /*!
-     * \brief Manejador de la consola
-     */
-    HANDLE handle;
-    
-    /*!
-     * \brief Configuración de la consola al iniciar.
-     *
-     * La configuración inicial se recupera al salir o
-     * con el método reset
-     */
-    WORD oldColorAttrs;
-    
-    /*!
-     * \brief Intensidad de caracter
-     */
-    WORD foregroundIntensity;
-    
-    /*!
-     * \brief Color de caracteres
-     */
-    WORD foregroundColor;
-    
-    /*!
-     * \brief Intensidad de fondo
-     */
-    WORD backgroundIntensity;
-    
-    /*!
-     * \brief Color de fondo
-     */
-    WORD backgroundColor;
-    
-    CONSOLE_FONT_INFOEX mIniFont;
-    CONSOLE_FONT_INFOEX mCurrentFont;
-
-#else
-
-    /*!
-     * \brief mStream
-     */
-    FILE *mStream;
-    
-    /*!
-     * \brief mCommand
-     */
-    char mCommand[13];
-    
-    /*!
-     * \brief Color de caracteres
-     */
-    int mForegroundColor;
-    
-    /*!
-     * \brief Color de fondo
-     */
-    int mBackgroundColor;
-    int mBold;
-
-#endif
+    int foregroundColor;
+    int backgroundColor;
+    int fontBold;
+    int fontFaint;
+    int fontItalic;
+    int fontUnderline;
+    int fontBlink;
+    int fontReverse;
+    int fontStrikethrough;
 
     friend class App;
 
@@ -185,65 +132,65 @@ public:
 
     static Console &instance();
 
-
-// MessageHandler
-
-public:
-
-    void debug(String message) override;
-    void info(String message) override;
-    void success(String message) override;
-    void warning(String message) override;
-    void error(String message) override;
-
 public:
 
     /*!
-     * \brief Establece el título de la consola
-     * \param[in] title Titulo de la consola
+     * \brief Sets the title of the console
+     * \param[in] title Console title
      */
     void setTitle(const std::string &title);
 
     /*!
-     * \brief Establece el color de fondo
-     * \param[in] backgroundColor Color de fondo
-     * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+     * \brief Sets the background colour
+     * \param[in] backgroundColor Background colour
+     * \param[in] intensity Colour intensity. The default value is Intensity::normal
+     * \see Console::Color, Console::Intensity
      */
     void setBackgroundColor(Color backgroundColor,
                             Intensity intensity = Intensity::normal);
     
     /*!
-     * \brief Establece el color de caracter
-     * \param[in] foregroundColor Color de caracter
-     * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+     * \brief Sets the foregroun colour
+     * \param[in] foregroundColor Foreground colour
+     * \param[in] intensity Colour intensity. The default value is Intensity::normal
      * \see Console::Color, Console::Intensity
      */
     void setForegroundColor(Color foregroundColor,
                             Intensity intensity = Intensity::normal);
-    
+
     /*!
-     * \brief Establece la consola como modo Unicode
+     * \brief Set the console to Unicode mode
      */
     void setConsoleUnicode();
     
     /*!
-     * \brief Establece la fuente como negrita
-     * \param[in] bBold 
+     * \brief Sets the font to bold
+     * \param[in] bold 
      */
     void setFontBold(bool bold);
     
     /*!
-     * \brief Establece el tamaño de la fuente
-     * \param[in] fontHeight Tamaño de la fuente
+     * \brief Decreased intensity
+     * \param[in] faint 
      */
-    void setFontHeight(int16_t fontHeight);
+    void setFontFaint(bool faint);
+
+    void setFontItalic(bool italic);
+    void setFontUnderline(bool underline);
+    void setFontBlink(bool blink);
+    void setFontReverse(bool reverse);
+    void setFontStrikethrough(bool strikethrough);
+    
+    /*!
+     * \brief Sets the font size
+     * \param[in] fontHeight Font size
+     */
+    //void setFontHeight(int16_t fontHeight);
 
     /*!
-     * \brief Recupera los valores iniciales
+     * \brief Restores the initial console configuration
      */
     void reset();
-
-    //Console &operator <<(MessageLevel level);
 
     Console &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
 
@@ -268,18 +215,36 @@ public:
      *
      * \code
      * Console console;
-     * console.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
+     * console.setMessageLevel(MessageLevel::warning | MessageLevel::error);
      * \endcode
      *
      * \param[in] level Message level.
      */
     static void setMessageLevel(MessageLevel level);
 
-    //static Console &debug();
-    //static Console &info();
-    //static Console &success();
-    //static Console &warning();
-    //static Console &error();
+    static auto red(std::ostream &os) -> std::ostream &;
+    static auto green(std::ostream &os) -> std::ostream &;
+    static auto blue(std::ostream &os) -> std::ostream &;
+    static auto cyan(std::ostream &os) -> std::ostream &;
+    static auto magenta(std::ostream &os) -> std::ostream &;
+    static auto yellow(std::ostream &os) -> std::ostream &;
+    static auto black(std::ostream &os) -> std::ostream &;
+    static auto white(std::ostream &os) -> std::ostream &;
+    static auto bg_red(std::ostream &os) -> std::ostream &;
+    static auto bg_green(std::ostream &os) -> std::ostream &;
+    static auto bg_blue(std::ostream &os) -> std::ostream &;
+    static auto bg_cyan(std::ostream &os) -> std::ostream &;
+    static auto bg_magenta(std::ostream &os) -> std::ostream &;
+    static auto bg_yellow(std::ostream &os) -> std::ostream &;
+    static auto bg_black(std::ostream &os) -> std::ostream &;
+    static auto bg_white(std::ostream &os) -> std::ostream &;
+    static auto bold(std::ostream &os) -> std::ostream &;
+    static auto faint(std::ostream &os) -> std::ostream &;
+    static auto italic(std::ostream &os) -> std::ostream &;
+    static auto underline(std::ostream &os) -> std::ostream &;
+    static auto reverse(std::ostream &os) -> std::ostream &;
+    static auto strikethrough(std::ostream &os) -> std::ostream &;
+    static std::ostream &clear(std::ostream& os);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
@@ -315,45 +280,51 @@ public:
 
 #endif
 
-private:
-
-#ifdef TL_OS_WINDOWS
-
-    /*!
-     * \brief Inicializa la consola guardando la configuración  actual.
-     * \param handle
-     */
-    void init(DWORD handle);
-
-#else
-
-    /*!
-     * \brief Inicializa la consola guardando la configuración  actual.
-     */
-    void init(FILE *stream);
-
-#endif
-
-    /*!
-     * \brief Actualiza la consola
-     */
-    void update()
+    template<typename T>
+    auto prompt(const std::string &question) -> T
     {
-#ifdef TL_OS_WINDOWS
-        SetConsoleTextAttribute(handle, foregroundColor | backgroundColor | foregroundIntensity | backgroundIntensity);
-        SetCurrentConsoleFontEx(handle, FALSE, &mCurrentFont);
-#else
-        std::stringstream ss;
-        ss << "\x1B[" << mBold;
-        if(mForegroundColor != 0)
-            ss << ";" << mForegroundColor;
-        if(mBackgroundColor != 0)
-            ss << ";" << mBackgroundColor;
-        ss << "m";
-        fprintf(mStream, "%s", ss.str().c_str());
-#endif
+        T answer{};
+
+        std::cin >> answer;
+        
+        return answer;
     }
 
+    template<typename T>
+    auto prompt(const std::string &question, std::function<void(T)> f) -> void
+    {
+        T answer{};
+        std::cout << question;
+        std::cin >> answer;
+        f(answer);
+    }
+
+private:
+
+    void init();
+
+    void update()
+    {
+        std::cout << static_cast<char>(0x1b) << '['
+                  << this->fontBold << ';'
+                  << this->fontFaint << ';'
+                  << this->fontItalic << ';'
+                  << this->fontUnderline << ';'
+                  << this->fontReverse << ';'
+                  << this->fontStrikethrough << ';' 
+                  << this->foregroundColor << ';' 
+                  << this->backgroundColor << 'm';
+    }
+
+// MessageHandler interface
+
+public:
+
+    void debug(String message) override;
+    void info(String message) override;
+    void success(String message) override;
+    void warning(String message) override;
+    void error(String message) override;
 
 };
 

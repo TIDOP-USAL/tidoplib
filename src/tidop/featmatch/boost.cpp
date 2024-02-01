@@ -48,7 +48,7 @@ BoostProperties::BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT
 
 BoostProperties::~BoostProperties() = default;
 
-BoostProperties &BoostProperties::operator =(const BoostProperties &boostProperties)
+auto BoostProperties::operator =(const BoostProperties &boostProperties) -> BoostProperties&
 {
     if (this != &boostProperties) {
         mDescriptorType = boostProperties.mDescriptorType;
@@ -59,7 +59,7 @@ BoostProperties &BoostProperties::operator =(const BoostProperties &boostPropert
     return *this;
 }
 
-BoostProperties &BoostProperties::operator =(BoostProperties &&boostProperties) TL_NOEXCEPT
+auto BoostProperties::operator =(BoostProperties &&boostProperties) TL_NOEXCEPT -> BoostProperties&
 {
     if (this != &boostProperties) {
         mDescriptorType = std::exchange(boostProperties.mDescriptorType, "");
@@ -70,17 +70,17 @@ BoostProperties &BoostProperties::operator =(BoostProperties &&boostProperties) 
     return *this;
 }
 
-std::string BoostProperties::descriptorType() const
+auto BoostProperties::descriptorType() const -> std::string
 {
     return mDescriptorType;
 }
 
-bool BoostProperties::useOrientation() const
+auto BoostProperties::useOrientation() const -> bool
 {
     return bUseOrientation;
 }
 
-double BoostProperties::scaleFactor() const
+auto BoostProperties::scaleFactor() const -> double
 {
     return mScaleFactor;
 }
@@ -115,7 +115,7 @@ void BoostProperties::reset()
     mScaleFactor = boost_default_value_scale_factor;
 }
 
-std::string BoostProperties::name() const
+auto BoostProperties::name() const -> std::string
 {
     return std::string("BOOST");
 }
@@ -151,7 +151,7 @@ BoostDescriptor::BoostDescriptor(const std::string &descriptorType,
     update();
 }
 
-BoostDescriptor &BoostDescriptor::operator =(const BoostDescriptor &boostDescriptor)
+auto BoostDescriptor::operator =(const BoostDescriptor &boostDescriptor) -> BoostDescriptor&
 {
     if (this != &boostDescriptor) {
         BoostProperties::operator=(boostDescriptor);
@@ -161,7 +161,7 @@ BoostDescriptor &BoostDescriptor::operator =(const BoostDescriptor &boostDescrip
     return *this;
 }
 
-BoostDescriptor &BoostDescriptor::operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT
+auto BoostDescriptor::operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT -> BoostDescriptor&
 {
     if (this != &boostDescriptor) {
         BoostProperties::operator=(std::forward<BoostProperties>(boostDescriptor));
@@ -244,8 +244,7 @@ void BoostDescriptor::setScaleFactor(double scaleFactor)
     update();
 }
 
-cv::Mat BoostDescriptor::extract(const cv::Mat &img,
-                                 std::vector<cv::KeyPoint> &keyPoints)
+auto BoostDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

@@ -55,11 +55,10 @@ Exception makeException(const std::string &error,
 void printException(const std::exception &e, int level)
 {
     if (level == 0) {
-        Message::error("{}Exception: {}", std::string(level, ' '), e.what());
         Message::error("Exception trace:");
-    } else {
-        Message::error(">>{} {}", std::string(level, ' '), e.what());
     }
+
+    Message::error(">>{} {}", std::string(level, ' '), e.what());
 
     try {
         std::rethrow_if_nested(e);

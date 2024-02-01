@@ -32,6 +32,8 @@
 namespace tl
 {
 
+namespace geom
+{
 /*! \addtogroup geometry
  *  \{
  */
@@ -59,7 +61,7 @@ namespace tl
  * </BLOCKQUOTE>
  */
 template<typename Point_t>
-class Helmert3D
+class TL_DEPRECATED("Affine<T, 3>", "3.0") Helmert3D
   : public Transform3D<Point_t>
 {
 public:
@@ -335,7 +337,7 @@ Helmert3D<Point_t>::Helmert3D(double tx,
     mR(rotation)
 {
     EulerAngles<double> eulerAngles;
-    eulerAngles.axes = EulerAngles<double>::Axes::xyz;
+    eulerAngles.axes = Axes::xyz;
     RotationConverter<double>::convert(rotation, eulerAngles);
     mOmega = eulerAngles.x;
     mPhi = eulerAngles.y;
@@ -603,9 +605,8 @@ void Helmert3D<Point_t>::setKappa(double kappa)
 template<typename Point_t> inline
 void Helmert3D<Point_t>::update()
 {
-    EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa,
-                                    EulerAngles<double>::Axes::xyz);
-    RotationConverter<double>::convert(eulerAngles, mR);
+    EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa);
+    mR = eulerAngles;
     mRinv = mR.inverse();
 }
 
@@ -638,5 +639,7 @@ Helmert3D<Point_t> operator*(Helmert3D<Point_t> &trf1,
 /*! \} */ // end of trfGroup
 
 /*! \} */ // end of geometry
+
+} // End namespace geom
 
 } // End namespace tl

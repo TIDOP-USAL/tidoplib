@@ -62,11 +62,9 @@ protected:
       for (size_t i = 0; i < 100; i++) {
         _count++;
       }
-      eventTriggered(Event::Type::task_finalized);
 
-    } catch (std::exception &e) {
-      TaskBase::errorEvent()->setErrorMessage(e.what());
-      eventTriggered(Event::Type::task_error);
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -82,34 +80,58 @@ BOOST_AUTO_TEST_SUITE(TaskTestSuite)
 
 struct TaskTest
 {
-  TaskTest()
-  {
-  }
+    TaskTest()
+    {
+    }
 
-  ~TaskTest()
-  {
-  }
+    ~TaskTest()
+    {
+    }
 
-  void setup()
-  {
-  }
+    void setup()
+    {
+    }
 
-  void teardown()
-  {
-  }
+    void teardown()
+    {
+    }
 
-  Task1 task1;
-}; 
+    Task1 task1;
+
+};
 
 BOOST_FIXTURE_TEST_CASE(DefaultConstructor, TaskTest)
 {
-  BOOST_CHECK_EQUAL(0, task1.count());
+    BOOST_CHECK_EQUAL(0, task1.count());
 }
 
 BOOST_FIXTURE_TEST_CASE(run, TaskTest)
 {
-  task1.run();
-  BOOST_CHECK_EQUAL(100, task1.count());
+    BOOST_CHECK_EQUAL(0, task1.count());
+
+    task1.run();
+
+    BOOST_CHECK_EQUAL(100, task1.count());
+}
+
+BOOST_FIXTURE_TEST_CASE(running_event, TaskTest)
+{
+
+    task1.subscribe([&](TaskRunningEvent *event) {
+        BOOST_CHECK_EQUAL(0, task1.count());
+    });
+
+    task1.run();
+}
+
+BOOST_FIXTURE_TEST_CASE(finalized_event, TaskTest)
+{
+
+    task1.subscribe([&](TaskFinalizedEvent *event) {
+        BOOST_CHECK_EQUAL(100, task1.count());
+    });
+
+    task1.run();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -210,7 +210,7 @@ public:
     
     cv::Mat read(const RectI &rect,
                  const Size<int> &size,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
         cv::Mat image;
 
@@ -273,7 +273,7 @@ public:
     cv::Mat read(double scaleX,
                  double scaleY,
                  const RectI &rect,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
         cv::Mat image;
 
@@ -329,7 +329,7 @@ public:
     cv::Mat read(const WindowI &window,
                  double scaleX,
                  double scaleY,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
 
         int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
@@ -351,11 +351,11 @@ public:
     cv::Mat read(const Window<Point<double>> &terrainWindow,
                  double scaleX,
                  double scaleY,
-                 Affine<Point<int>> *trf) override
+                 geom::Affine<Point<int>> *trf) override
     {
         Window<Point<double>> wLoad;
-        wLoad.pt1 = mAffine.transform(terrainWindow.pt1, Transform::Order::inverse);
-        wLoad.pt2 = mAffine.transform(terrainWindow.pt2, Transform::Order::inverse);
+        wLoad.pt1 = mAffine.transform(terrainWindow.pt1, geom::Transform::Order::inverse);
+        wLoad.pt2 = mAffine.transform(terrainWindow.pt2, geom::Transform::Order::inverse);
         wLoad.normalized();
 
         WindowI wRead(wLoad);
@@ -680,7 +680,7 @@ public:
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
     
             std::array<double, 6> geotransform{};
-            georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
+            georeferenced = mDataset->GetGeoTransform(geotransform.data()) == CE_None;
     
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -689,7 +689,7 @@ public:
         return georeferenced;
     }
 
-    Affine<Point<double>> georeference() const override
+    geom::Affine<Point<double>> georeference() const override
     {
         return mAffine;
     }
@@ -800,7 +800,7 @@ protected:
 private:
 
     GDALDataset *mDataset;
-    Affine<Point<double>> mAffine;
+    geom::Affine<Point<double>> mAffine;
 };
 
 #endif // TL_HAVE_GDAL

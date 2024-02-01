@@ -120,7 +120,7 @@ template<typename Point_t> inline
 double azimut(const Point_t &pt1, const Point_t &pt2)
 {
     double azimut = 0.;
-    Point_t v;
+    Point_t v{};
     v.x = pt2.x - pt1.x;
     v.y = pt2.y - pt1.y;
     if (v.x == 0 && v.y == 0) return azimut;

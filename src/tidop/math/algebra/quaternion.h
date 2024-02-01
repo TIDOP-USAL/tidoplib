@@ -26,6 +26,12 @@
 
 #include <vector>
 #include <array>
+#include <list>
+#ifdef TL_HAVE_FMT
+#include <fmt/format.h>
+#else
+#include <format>
+#endif
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations.h"
@@ -60,7 +66,7 @@ namespace tl
  */
 template<typename T>
 class Quaternion
-    : public OrientationBase<T>
+    : public OrientationBase<Quaternion<T>>
 {
 
 public:
@@ -100,13 +106,13 @@ public:
      * \brief Operador de asignación
      * \param[in] quaternion Objeto que se copia
      */
-    auto operator = (const Quaternion<T> &quaternion)->Quaternion &;
+    auto operator = (const Quaternion<T> &quaternion) -> Quaternion &;
 
     /*!
      * \brief Operador de movimiento
      * \param[in] quaternion Objeto Quaternion que se mueve
      */
-    auto operator = (Quaternion<T> &&quaternion) TL_NOEXCEPT->Quaternion &;
+    auto operator = (Quaternion<T> &&quaternion) TL_NOEXCEPT -> Quaternion &;
 
     /*!
      * \brief Conjugado de un cuaternión
@@ -114,31 +120,31 @@ public:
      * "agregados" del cuaternión:
      * \f[ q = w-xi-yj-zk \f]
      */
-    auto conjugate() const->Quaternion<T>;
+    auto conjugate() const -> Quaternion<T>;
 
     /*!
      * \brief Norma
      * \f[ q = w+xi+yj+zk \f]
      * \f[ n(q) = sqrt{q.q} = sqrt{w^2+x^2+y^2+z^2} \f]
      */
-    auto norm() const->T;
+    auto norm() const -> T;
 
     /*!
      * \brief Normaliza el cuaternión
      */
-    auto normalize() -> void;
+    auto normalize() -> Quaternion&;
 
     // For a nonzero quaternion q = (x,y,z,w), inv(q) = (-x,-y,-z,w)/|q|^2, where
     // |q| is the length of the quaternion.  When q is zero, the function returns
     // zero, which is considered to be an improbable case.
-    auto inverse() const->Quaternion<T>;
+    auto inverse() const -> Quaternion;
 
-    auto operator *=(const Quaternion &quaternion)->Quaternion &;
-    auto operator +=(const Quaternion &quaternion)->Quaternion &;
-    auto operator -=(const Quaternion &quaternion)->Quaternion &;
+    auto operator *=(const Quaternion &quaternion) -> Quaternion&;
+    auto operator +=(const Quaternion &quaternion) -> Quaternion&;
+    auto operator -=(const Quaternion &quaternion) -> Quaternion&;
 
-    auto operator *=(T scalar)->Quaternion &;
-    auto operator /=(T scalar)->Quaternion &;
+    auto operator *=(T scalar) -> Quaternion&;
+    auto operator /=(T scalar) -> Quaternion&;
 
     /* Factory methods */
 
@@ -191,7 +197,7 @@ using Quaterniond = Quaternion<double>;
 
 template<typename T>
 Quaternion<T>::Quaternion()
-  : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<Quaternion<T>>(Orientation::Type::quaternion),
     x(-std::numeric_limits<T>().max()),
     y(-std::numeric_limits<T>().max()),
     z(-std::numeric_limits<T>().max()),
@@ -201,7 +207,7 @@ Quaternion<T>::Quaternion()
 
 template<typename T>
 Quaternion<T>::Quaternion(T x, T y, T z, T w)
-  : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<Quaternion<T>>(Orientation::Type::quaternion),
     x(x),
     y(y),
     z(z),
@@ -211,7 +217,7 @@ Quaternion<T>::Quaternion(T x, T y, T z, T w)
 
 template<typename T>
 Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
-  : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<Quaternion<T>>(Orientation::Type::quaternion),
     x(quaternion.x),
     y(quaternion.y),
     z(quaternion.z),
@@ -221,7 +227,7 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 
 template<typename T>
 Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT
-  : OrientationBase<T>(Orientation::Type::quaternion),
+  : OrientationBase<Quaternion<T>>(Orientation::Type::quaternion),
     x(std::exchange(quaternion.x, -std::numeric_limits<T>().max())),
     y(std::exchange(quaternion.y, -std::numeric_limits<T>().max())),
     z(std::exchange(quaternion.z, -std::numeric_limits<T>().max())),
@@ -273,10 +279,11 @@ auto Quaternion<T>::norm() const -> T
 }
 
 template<typename T>
-auto Quaternion<T>::normalize() -> void
+auto Quaternion<T>::normalize() -> Quaternion<T>&
 {
     T length = this->norm();
     *this /= length;
+    return *this;
 }
 
 template <typename T>
@@ -612,6 +619,8 @@ std::ostream &operator<< (std::ostream &os, const Quaternion<T> *q)
     return os;
 }
 
+
+
 /*! \} */ // end of rotations
 
 /*! \} */ // end of algebra
@@ -619,3 +628,22 @@ std::ostream &operator<< (std::ostream &os, const Quaternion<T> *q)
 /*! \} */ // end of math
 
 } // End namespace tl
+
+#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
+
+template <typename T>
+struct FORMAT_NAMESPACE formatter<tl::Quaternion<T>> 
+{
+
+    constexpr auto parse(FORMAT_NAMESPACE format_parse_context &context) 
+    {
+        return context.begin();
+    }
+
+    auto format(const tl::Quaternion<T> &q, FORMAT_NAMESPACE format_context &ctx) 
+    {
+        return FORMAT_NAMESPACE format_to(ctx.out(), "[w:{}, x:{}, y:{}, z:{}]", q.w, q.x, q.y, q.z);
+    }
+};
+
+#endif

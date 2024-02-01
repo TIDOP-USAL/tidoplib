@@ -63,6 +63,12 @@ if(BUILD_TL_MATH)
                              algebra/qr.h
                              algebra/cholesky.h
                              algebra/umeyama.h
+                             algebra/transform.h
+                             algebra/translation.h
+                             algebra/scaling.h
+                             algebra/rotation.h
+							 algebra/affine.h
+							 algebra/helmert.h
                              lapack.h
                              blas.h)
                 

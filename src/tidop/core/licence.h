@@ -39,7 +39,17 @@ namespace tl
  */
 
 /*!
- * \brief Licencia asociada a una programa o librería
+ * \brief Licence associated with a programme or library
+ * 
+ * <h4>Example</h4>
+ * 
+ * \code
+ * Licence licence("TidopLib", "GNU Lesser General Public License v3.0");
+ * licence2.setUrl("https://github.com/TIDOP-USAL/tidoplib");
+ * licence2.setAutor("TIDOP Research Group");
+ * licence2.setAutorEmail("email@email.com");
+ * licence2.setVersion("3.0.0");
+ * \endcode
  */
 class TL_EXPORT Licence
 {
@@ -56,8 +66,7 @@ private:
 public:
 
     Licence();
-    Licence(std::string name,
-            std::string text);
+    Licence(std::string name, std::string text);
 
     auto productName() const -> std::string;
     auto setProductName(const std::string &productName) -> void;
@@ -78,10 +87,9 @@ public:
 
 
 /*!
- * \brief Licencia de una aplicación
+ * \brief Application licence
  *
- * Contiene la información de licencia del programa y las licencias
- * de terceros
+ * Contains licensing information for the software and third-party licenses.
  */
 class TL_EXPORT AppLicence
     : public Licence
@@ -89,54 +97,16 @@ class TL_EXPORT AppLicence
 
 public:
 
-    /*!
-     * \brief Allocator
-     */
+
     using allocator_type = std::list<Licence>::allocator_type;
-
-    /*!
-     * \brief value_type
-     */
     using value_type = std::list<Licence>::value_type;
-
-    /*!
-     * \brief Tipo entero sin signo (por lo general size_t)
-     */
     using size_type = std::list<Licence>::size_type;
-
-    /*!
-     * \brief Tipo entero con signo (por lo general ptrdiff_t)
-     */
     using difference_type = std::list<Licence>::difference_type;
-
-    /*!
-     * \brief std::allocator_traits<Allocator>::pointer
-     */
     using pointer = std::list<Licence>::pointer;
-
-    /*!
-     * \brief std::allocator_traits<Allocator>::const_pointer
-     */
     using const_pointer = std::list<Licence>::const_pointer;
-
-    /*!
-     * \brief value_type&
-     */
     using reference = std::list<Licence>::reference;
-
-    /*!
-     * \brief const value_type&
-     */
     using const_reference = std::list<Licence>::const_reference;
-
-    /*!
-     * \brief Iterador de acceso aleatorio
-     */
     using iterator = std::list<Licence>::iterator;
-
-    /*!
-     * \brief Iterador constante de acceso aleatorio
-     */
     using const_iterator = std::list<Licence>::const_iterator;
 
 private:

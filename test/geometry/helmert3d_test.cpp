@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_SUITE(Helmert3DTestSuite)
 struct Helmert3DTest
 {
   Helmert3DTest()
-    : trf2(new Helmert3D<Point3<double>>(1027871.7679,
+    : trf2(new geom::Helmert3D<Point3<double>>(1027871.7679,
                                          72364.1120, 
                                          941534.6321,
                                          -266.6595, 
@@ -138,10 +138,10 @@ struct Helmert3DTest
 
   std::vector<Point3<double>> ptsIn;
   std::vector<Point3<double>> ptsOut;
-  Helmert3D<Point3<double>> trf;
+  geom::Helmert3D<Point3<double>> trf;
   std::vector<Point3<double>> ptsIn2;
   std::vector<Point3<double>> ptsOut2;
-  Helmert3D<Point3<double>> *trf2;
+  geom::Helmert3D<Point3<double>> *trf2;
 };
 
 //BOOST_FIXTURE_TEST_CASE(default_constructor, Helmert3DTest)
@@ -270,7 +270,7 @@ BOOST_FIXTURE_TEST_CASE(compute, Helmert3DTest)
 
 BOOST_FIXTURE_TEST_CASE(transformType, Helmert3DTest)
 {
-  BOOST_CHECK(Transform::Type::helmert_3d == trf.transformType());
+  BOOST_CHECK(geom::Transform::Type::helmert_3d == trf.transformType());
 }
 
 //BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, Helmert3DTest)

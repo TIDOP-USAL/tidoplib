@@ -128,11 +128,11 @@ public:
     operator AngleDerived2<T2>()
     {
         AngleDerived2<T> angle;
-        AngleConverter<T>::convert(derived(), angle.derived());
+        AngleConverter<T>::convert(derived(), angle);
         return AngleDerived2<T2>(angle.value());
     }
 
-public:
+private:
 
     auto derived() -> AngleDerived<T> &
     {

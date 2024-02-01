@@ -69,20 +69,20 @@ public:
     AkazeProperties(AkazeProperties &&akazeProperties) TL_NOEXCEPT;
     ~AkazeProperties() override;
 
-    AkazeProperties &operator =(const AkazeProperties &akazeProperties);
-    AkazeProperties &operator =(AkazeProperties &&akazeProperties) TL_NOEXCEPT;
+    auto operator =(const AkazeProperties &akazeProperties) -> AkazeProperties&;
+    auto operator =(AkazeProperties &&akazeProperties) TL_NOEXCEPT -> AkazeProperties&;
 
 // Akaze interface
 
 public:
 
-    std::string descriptorType() const override;
-    int descriptorSize() const override;
-    int descriptorChannels() const override;
-    double threshold() const override;
-    int octaves() const override;
-    int octaveLayers() const override;
-    std::string diffusivity() const override;
+    auto descriptorType() const -> std::string override;
+    auto descriptorSize() const -> int override;
+    auto descriptorChannels() const -> int override;
+    auto threshold() const -> double override;
+    auto octaves() const -> int override;
+    auto octaveLayers() const -> int override;
+    auto diffusivity() const -> std::string override;
     void setDescriptorType(const std::string &descriptorType) override;
     void setDescriptorSize(int descriptorSize) override;
     void setDescriptorChannels(int channels) override;
@@ -96,7 +96,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -129,17 +129,17 @@ public:
 
     ~AkazeDetectorDescriptor() override = default;
 
-    AkazeDetectorDescriptor &operator =(const AkazeDetectorDescriptor &akazeDetectorDescriptor);
-    AkazeDetectorDescriptor &operator =(AkazeDetectorDescriptor &&akazeDetectorDescriptor) TL_NOEXCEPT;
+    auto operator =(const AkazeDetectorDescriptor &akazeDetectorDescriptor) -> AkazeDetectorDescriptor &;
+    auto operator =(AkazeDetectorDescriptor &&akazeDetectorDescriptor) TL_NOEXCEPT -> AkazeDetectorDescriptor &;
 
 private:
 
 #if CV_VERSION_MAJOR >= 4
-    cv::AKAZE::DescriptorType convertDescriptorType(const std::string &descriptorType);
-    cv::KAZE::DiffusivityType convertDiffusivity(const std::string &diffusivity);
+    auto convertDescriptorType(const std::string &descriptorType) -> cv::AKAZE::DescriptorType;
+    auto convertDiffusivity(const std::string &diffusivity) -> cv::KAZE::DiffusivityType;
 #else
-    int convertDescriptorType(const std::string &descriptorType);
-    int convertDiffusivity(const std::string &diffusivity);
+    auto convertDescriptorType(const std::string &descriptorType) -> int;
+    auto convertDiffusivity(const std::string &diffusivity) -> int;
 #endif
 
     void initAkazeFromProperties();
@@ -148,16 +148,13 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
-    // DescriptorExtractor interface
+// DescriptorExtractor interface
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
-
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Akaze interface
 

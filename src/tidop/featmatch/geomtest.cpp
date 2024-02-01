@@ -48,7 +48,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -59,8 +59,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -108,7 +108,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -119,8 +119,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -167,7 +167,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -178,8 +178,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -227,7 +227,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -238,8 +238,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -288,7 +288,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -299,8 +299,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -361,7 +361,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return nullptr;
     }
@@ -370,8 +370,8 @@ public:
     {
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -412,7 +412,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return nullptr;
     }
@@ -422,8 +422,8 @@ public:
 
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -464,7 +464,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -475,8 +475,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -524,7 +524,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -535,8 +535,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -583,7 +583,7 @@ public:
 
 public:
 
-    const Properties *properties() const override
+    auto properties() const -> const Properties* override
     {
         return &mProperties;
     }
@@ -594,8 +594,8 @@ public:
             mProperties = *_properties;
     }
 
-    std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                    const std::vector<cv::Point2f> &points2) override
+    auto exec(const std::vector<cv::Point2f> &points1,
+              const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> override
     {
         std::vector<unsigned char> inliers;
 
@@ -635,7 +635,7 @@ private:
 
 };
 
-std::shared_ptr<GeometricTest> GeometricTestFactory::create(GeometricTest::Type type)
+auto GeometricTestFactory::create(GeometricTest::Type type) -> std::shared_ptr<GeometricTest>
 {
     std::shared_ptr<GeometricTest> test;
 
@@ -687,8 +687,8 @@ std::shared_ptr<GeometricTest> GeometricTestFactory::create(GeometricTest::Type 
     return test;
 }
 
-std::shared_ptr<GeometricTest> GeometricTestFactory::create(GeometricTest::Type type,
-                                                            const GeometricTest::Properties *properties)
+auto GeometricTestFactory::create(GeometricTest::Type type,
+                                  const GeometricTest::Properties *properties) -> std::shared_ptr<GeometricTest>
 {
     std::shared_ptr<GeometricTest> test;
 

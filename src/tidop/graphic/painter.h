@@ -39,8 +39,10 @@
 namespace tl
 {
 
+namespace geom
+{
 class Transform;
-
+}
 
 /*! \addtogroup GraphicEntities
  *  \{
@@ -162,14 +164,14 @@ public:
      * \brief Establece la transformación que se aplica para dibujar el en canvas
      * \param[in] trf Transformación
      */
-    void setTransform(Transform *trf);
+    void setTransform(geom::Transform *trf);
 
     //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
     //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
 protected:
 
-    Transform *mTrf;
+    geom::Transform *mTrf;
     Canvas *mCanvas;
 
 };

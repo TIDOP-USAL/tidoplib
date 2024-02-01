@@ -75,17 +75,17 @@ public:
 
 public:
 
-    std::string descriptorType() const override;
+    auto descriptorType() const -> std::string override;
     void setDescriptorType(const std::string &descriptorType) override;
-    double scaleFactor() const override;
+    auto scaleFactor() const -> double override;
     void setScaleFactor(double scaleFactor) override;
-    double sigma() const override;
+    auto sigma() const -> double override;
     void setSigma(double sigma) override;
-    bool useNormalizeDescriptor() const override;
+    auto useNormalizeDescriptor() const -> bool override;
     void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
-    bool useNormalizeImage() const override;
+    auto useNormalizeImage() const -> bool override;
     void setUseNormalizeImage(bool useNormalizeImage) override;
-    bool useScaleOrientation() const override;
+    auto useScaleOrientation() const -> bool override;
     void setUseScaleOrientation(bool useScaleOrientation) override;
 
 // Feature interface
@@ -93,7 +93,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const override;
+    auto name() const ->std::string override;
 
 };
 
@@ -152,8 +152,8 @@ public:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img,
+                 std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 
 };

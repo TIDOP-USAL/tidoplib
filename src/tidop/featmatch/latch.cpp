@@ -43,17 +43,17 @@ LatchProperties::LatchProperties(const LatchProperties &latchProperties)
 {
 }
 
-std::string LatchProperties::bytes() const
+auto LatchProperties::bytes() const -> std::string
 {
     return mBytes;
 }
 
-bool LatchProperties::rotationInvariance() const
+auto LatchProperties::rotationInvariance() const -> bool
 {
     return mRotationInvariance;
 }
 
-int LatchProperties::halfSsdSize() const
+auto LatchProperties::halfSsdSize() const -> int
 {
     return mHalfSsdSize;
 }
@@ -88,7 +88,7 @@ void LatchProperties::reset()
     mHalfSsdSize = 3;
 }
 
-std::string LatchProperties::name() const
+auto LatchProperties::name() const -> std::string
 {
     return std::string("LATCH");
 }
@@ -112,7 +112,7 @@ LatchDescriptor::LatchDescriptor(const LatchDescriptor &latchDescriptor)
 LatchDescriptor::LatchDescriptor(const std::string &bytes,
                                  bool rotationInvariance,
                                  int halfSsdSize)
-    : LatchProperties()
+  : LatchProperties()
 {
     LatchProperties::setBytes(bytes);
     LatchProperties::setRotationInvariance(rotationInvariance);
@@ -129,7 +129,7 @@ void LatchDescriptor::update()
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
-cv::Mat LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

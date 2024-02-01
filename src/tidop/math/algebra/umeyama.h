@@ -24,13 +24,15 @@
 
 #pragma once
 
+#include <vector>
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
-#include <tidop/math/statistics.h>
-#include <tidop/math/algebra/svd.h>
-
+#include "tidop/math/statistics.h"
+#include "tidop/math/algebra/svd.h"
+#include "tidop/math/algebra/transform.h"
+#include "tidop/math/algebra/affine.h"
 
 namespace tl
 {
@@ -47,133 +49,173 @@ namespace tl
  *  \{
  */
 
-
-// S. Umeyama, "Least-squares estimation of transformation parameters 
-// between two point patterns," in IEEE Transactions on Pattern Analysis 
-// and Machine Intelligence, vol. 13, no. 4, pp. 376-380, April 1991, 
-// doi: 10.1109/34.88573.
-// https://web.stanford.edu/class/cs273/refs/umeyama.pdf
-
-template<typename T>
-class Umeyama;
-
-template<
-    template<typename, size_t, size_t>
-    class Matrix_t, typename T, size_t _rows, size_t _cols>
-class Umeyama<Matrix_t<T, _rows, _cols>>
+/*!
+ * \brief Umeyama Similarity transform estimator
+ * S. Umeyama, "Least-squares estimation of transformation parameters 
+ * between two point patterns," in IEEE Transactions on Pattern Analysis 
+ * and Machine Intelligence, vol. 13, no. 4, pp. 376-380, April 1991,
+ * doi: 10.1109/34.88573.
+ * https://web.stanford.edu/class/cs273/refs/umeyama.pdf
+ */
+template <typename T, size_t Dim>
+class Umeyama
 {
 
 public:
 
-    Umeyama(const Matrix_t<T, _rows, _cols> &src,
-            const Matrix_t<T, _rows, _cols> &dst)
+    enum
     {
-        size_t size = src.rows();
-        size_t dimension = dst.cols();
-        Vector<double> mean_src(dimension);
-        Vector<double> mean_dst(dimension);
+        dimensions = Dim,
+        matrix_size
+    };
 
-        for (size_t c = 0; c < dimension; c++) {
-            auto src_col = src.col(c);
-            mean_src[c] = mean(src_col.begin(), src_col.end());
-            auto dst_col = dst.col(c);
-            mean_dst[c] = mean(dst_col.begin(), dst_col.end());
-        }
+public:
 
-        Matrix<double> src_demean = src;
-        Matrix<double> dst_demean = dst;
-        for (size_t c = 0; c < dimension; c++) {
-            for (size_t r = 0; r < size; r++) {
-                src_demean[r][c] -= mean_src[c];
-                dst_demean[r][c] -= mean_dst[c];
+    Umeyama() = default;
+    ~Umeyama() = default;
+
+    template<size_t rows, size_t cols>
+    static auto estimate(const Matrix<T, rows, cols> &src,
+                         const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>
+    {     
+        Affine<T, Dim> affine;
+        
+        try {
+
+            TL_ASSERT(src.cols() == dimensions, "Invalid matrix columns size");
+            TL_ASSERT(dst.cols() == dimensions, "Invalid matrix columns size");
+            TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes");
+
+            auto transformMatrix = Matrix<double, matrix_size, matrix_size>::identity();
+
+            size_t size = src.rows();
+            Vector<double> mean_src(dimensions);
+            Vector<double> mean_dst(dimensions);
+
+            for (size_t c = 0; c < dimensions; c++) {
+                auto src_col = src.col(c);
+                mean_src[c] = mean(src_col.begin(), src_col.end());
+                auto dst_col = dst.col(c);
+                mean_dst[c] = mean(dst_col.begin(), dst_col.end());
             }
-        }
 
-        auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
-        SingularValueDecomposition<Matrix<double>> svd(sigma);
-        transformMatrix = Matrix<double>::identity(dimension + 1, dimension + 1);
-        Matrix<double> S = Matrix<double>::identity(dimension, dimension);
-        if (sigma.determinant() < 0) {
-            S[dimension - 1][dimension - 1] = -1;
-        }
-
-        if (sigma.rank() == dimension - 1) {
-            if (svd.u().determinant() * svd.v().determinant() < 0)
-                S[dimension - 1][dimension - 1] = -1;
-        }
-
-        auto block = transformMatrix.block(0, dimension - 1, 0, dimension - 1);
-        block = svd.u() * S * svd.v().transpose();
-
-        double src_var{};
-        double module{};
-        for (size_t c = 0; c < src_demean.cols(); c++) {
-            auto vector = src_demean.col(c);
-            module = vector.module();
-            src_var += module * module;
-        }
-
-        src_var /= size;
-
-        double scale = 1 / src_var * svd.w().dotProduct(S.diagonal());
-
-        transformMatrix.col(dimension)[0] = mean_dst[0];
-        transformMatrix.col(dimension)[1] = mean_dst[1];
-        transformMatrix.col(dimension)[2] = mean_dst[2];
-
-        transformMatrix.block(0, dimension - 1, 0, dimension - 1) *= scale;
-        auto aux = transformMatrix.block(0, dimension - 1, 0, dimension - 1) * mean_src;
-        transformMatrix.col(dimension)[0] -= aux[0];
-        transformMatrix.col(dimension)[1] -= aux[1];
-        transformMatrix.col(dimension)[2] -= aux[2];
-
-    }
-
-    ~Umeyama()
-    {
-    }
-
-    Matrix<T/*, _cols + 1, _cols + 1*/> transform() const
-    {
-        return transformMatrix;
-    }
-
-    Matrix<T, _cols, _cols> rotation() const
-    {
-        size_t dimension = transformMatrix.cols();
-        Matrix<T, _cols, _cols> rotation(dimension, dimension);
-
-        for (size_t r = 0; r < dimension; r++) {
-            for (size_t c = 0; c < dimension; c++) {
-                rotation(r, c) = transformMatrix(r, c);
+            Matrix<double> src_demean = src;
+            Matrix<double> dst_demean = dst;
+            for (size_t c = 0; c < dimensions; c++) {
+                for (size_t r = 0; r < size; r++) {
+                    src_demean[r][c] -= mean_src[c];
+                    dst_demean[r][c] -= mean_dst[c];
+                }
             }
+
+            auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
+            SingularValueDecomposition<Matrix<double>> svd(sigma);
+            
+            Matrix<double, dimensions, dimensions> S = Matrix<double, dimensions, dimensions>::identity();
+            if (sigma.determinant() < 0) {
+                S[dimensions - 1][dimensions - 1] = -1;
+            }
+
+            if (sigma.rank() == dimensions - 1) {
+                if (svd.u().determinant() * svd.v().determinant() < 0)
+                    S[dimensions - 1][dimensions - 1] = -1;
+            }
+
+            auto block = transformMatrix.block(0, dimensions - 1, 0, dimensions - 1);
+            block = svd.u() * S * svd.v().transpose();
+
+            double src_var{};
+            double module{};
+            for (size_t c = 0; c < src_demean.cols(); c++) {
+                auto vector = src_demean.col(c);
+                module = vector.module();
+                src_var += module * module;
+            }
+
+            src_var /= size;
+
+            double scale = 1 / src_var * svd.w().dotProduct(S.diagonal());
+
+            transformMatrix.col(dimensions)[0] = mean_dst[0];
+            transformMatrix.col(dimensions)[1] = mean_dst[1];
+            transformMatrix.col(dimensions)[2] = mean_dst[2];
+
+            transformMatrix.block(0, dimensions - 1, 0, dimensions - 1) *= scale;
+            auto aux = transformMatrix.block(0, dimensions - 1, 0, dimensions - 1) * mean_src;
+            transformMatrix.col(dimensions)[0] -= aux[0];
+            transformMatrix.col(dimensions)[1] -= aux[1];
+            transformMatrix.col(dimensions)[2] -= aux[2];
+
+            affine = Affine<T, Dim>(transformMatrix.block(0, dimensions - 1, 0, dimensions));
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
         }
 
-        return rotation / scale();
+        return affine;
     }
 
-    //Vector<T, _cols> scale() const
-    //{
-    //  return Vector<T>{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
-    //}
-
-    T scale() const
+    static auto estimate(const std::vector<Point3<T>> &src,
+                         const std::vector<Point3<T>> &dst) -> Affine<T, Dim>
     {
-        Vector<T> scale{transformMatrix[0][0], transformMatrix[1][1], transformMatrix[2][2]};
-        return mean(scale.begin(), scale.end());
+        Affine<T, Dim> affine;
+
+        try {
+
+            TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+
+            Matrix<T> src_mat(src.size(), dimensions);
+            Matrix<T> dst_mat(dst.size(), dimensions);
+
+            for (size_t r = 0; r < src_mat.rows(); r++) {
+                src_mat[r][0] = src[r].x;
+                src_mat[r][1] = src[r].y;
+                src_mat[r][2] = src[r].z;
+
+                dst_mat[r][0] = dst[r].x;
+                dst_mat[r][1] = dst[r].y;
+                dst_mat[r][2] = dst[r].z;
+            }
+
+            affine = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return affine;
     }
 
-    Vector<T, _cols> translation() const
+    static auto estimate(const std::vector<Point<T>> &src,
+                         const std::vector<Point<T>> &dst) -> Affine<T, Dim>
     {
-        size_t col = transformMatrix.cols() - 1;
-        return Vector<T>{transformMatrix[0][col], transformMatrix[1][col], transformMatrix[2][col]};
+        Affine<T, Dim> affine;
+
+        try {
+
+            TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+
+            Matrix<T> src_mat(src.size(), dimensions);
+            Matrix<T> dst_mat(dst.size(), dimensions);
+
+            for (size_t r = 0; r < src_mat.rows(); r++) {
+                src_mat[r][0] = src[r].x;
+                src_mat[r][1] = src[r].y;
+
+                dst_mat[r][0] = dst[r].x;
+                dst_mat[r][1] = dst[r].y;
+            }
+
+            affine = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);
+
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
+
+        return affine;
     }
-
-private:
-
-    Matrix<T/*, _cols + 1, _cols + 1*/> transformMatrix;
-
 };
+
 
 
 /*! \} */ // end of algebra

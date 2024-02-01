@@ -41,7 +41,7 @@ namespace tl
 {
 
 MsdProperties::MsdProperties()
-    : Msd(),
+  : Msd(),
     mThresholdSaliency(250),
     mPatchRadius(3),
     mKNN(4),
@@ -57,8 +57,23 @@ MsdProperties::MsdProperties()
 }
 
 MsdProperties::MsdProperties(const MsdProperties &msd)
-    : Msd(msd),
+  : Msd(msd),
     mThresholdSaliency(msd.mThresholdSaliency),
+    mPatchRadius(msd.mPatchRadius),
+    mKNN(msd.mKNN),
+    mAreaRadius(msd.mAreaRadius),
+    mScaleFactor(msd.mScaleFactor),
+    mNMSRadius(msd.mNMSRadius),
+    mNScales(msd.mNScales),
+    mNMSScaleR(msd.mNMSScaleR),
+    mComputeOrientations(msd.mComputeOrientations),
+    mAffineMSD(msd.mAffineMSD),
+    mAffineTilts(msd.mAffineTilts)
+{
+}
+
+MsdProperties::MsdProperties(MsdProperties &&msd) TL_NOEXCEPT
+  : mThresholdSaliency(msd.mThresholdSaliency),
     mPatchRadius(msd.mPatchRadius),
     mKNN(msd.mKNN),
     mAreaRadius(msd.mAreaRadius),
@@ -77,7 +92,25 @@ MsdProperties::~MsdProperties()
 
 }
 
-MsdProperties &MsdProperties::operator =(const MsdProperties &msd)
+auto MsdProperties::operator =(const MsdProperties &msd) -> MsdProperties&
+{
+    if (this != &msd) {
+        mThresholdSaliency = msd.mThresholdSaliency;
+        mPatchRadius = msd.mPatchRadius;
+        mKNN = msd.mKNN;
+        mAreaRadius = msd.mAreaRadius;
+        mScaleFactor = msd.mScaleFactor;
+        mNMSRadius = msd.mNMSRadius;
+        mNScales = msd.mNScales;
+        mNMSScaleR = msd.mNMSScaleR;
+        mComputeOrientations = msd.mComputeOrientations;
+        mAffineMSD = msd.mAffineMSD;
+        mAffineTilts = msd.mAffineTilts;
+    }
+    return *this;
+}
+
+auto MsdProperties::operator =(MsdProperties &&msd) TL_NOEXCEPT -> MsdProperties&
 {
     if (this != &msd) {
         mThresholdSaliency = msd.mThresholdSaliency;
@@ -252,7 +285,7 @@ MsdDetector::MsdDetector(double thresholdSaliency,
                          bool computeOrientations,
                          bool affineMSD,
                          int affineTilts)
-    : MsdProperties(),
+  : MsdProperties(),
     KeypointDetector()
 {
 #if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)  || !defined HAVE_OPENCV_XFEATURES2D
@@ -304,8 +337,7 @@ void MsdDetector::update()
 #endif
 }
 
-std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
-                                              cv::InputArray &mask)
+auto MsdDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 

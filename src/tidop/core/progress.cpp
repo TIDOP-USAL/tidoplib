@@ -37,6 +37,11 @@ bool Progress::isRunning()
     return sIsRunning;
 }
 
+void Progress::cleanConsole()
+{
+    std::cout << "\r";
+}
+
 std::mutex ProgressBase::sMutex;
 
 ProgressBase::ProgressBase()
@@ -78,7 +83,7 @@ void ProgressBase::setRange(size_t min, size_t max)
     updateScale();
 }
 
-size_t ProgressBase::minimum() const
+auto ProgressBase::minimum() const -> size_t
 {
     return mMinimum;
 }
@@ -89,7 +94,7 @@ void ProgressBase::setMinimum(size_t min)
     updateScale();
 }
 
-size_t ProgressBase::maximum() const
+auto ProgressBase::maximum() const -> size_t
 {
     return mMaximum;
 }
@@ -126,7 +131,7 @@ void ProgressBase::updateScale()
     else mScale = 100. / static_cast<double>(mMaximum - mMinimum);
 }
 
-int ProgressBase::percent()
+auto ProgressBase::percent() -> int
 {
     return mPercent;
 }
@@ -157,7 +162,7 @@ ProgressBar::ProgressBar(size_t min, size_t max)
 
 void ProgressBar::updateProgress()
 {
-    std::cout << "\r";
+    Progress::cleanConsole();// std::cout << "\r";
 
     int posInBar = roundToInteger(static_cast<double>(percent()) *
                                   static_cast<double>(mProgressBarSize) / 100.);
@@ -205,7 +210,8 @@ void ProgressBarColor::setRemainigColor(Console::Color color)
 
 void ProgressBarColor::updateProgress()
 {
-    std::cout << "\r";
+    //std::cout << "\r";
+    Progress::cleanConsole();
 
     Console &console = App::console();
     int posInBar = roundToInteger(static_cast<double>(percent()) * static_cast<double>(mProgressBarSize) / 100.);
@@ -268,7 +274,8 @@ ProgressPercent::ProgressPercent(size_t min, size_t max)
 
 void ProgressPercent::updateProgress()
 {
-    std::cout << "\r";
+    //std::cout << "\r";
+    Progress::cleanConsole();
     std::cout << " " << percent() << "%  completed" << std::flush;
 }
 

@@ -40,20 +40,20 @@ namespace tl
  */
 
 
- /*! \addtogroup algebra
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
 
-  /*! \addtogroup rotations
-   *  \{
-   */
+/*! \addtogroup rotations
+*  \{
+*/
 
-   /*!
-    * \brief Notación axial-angular
-    */
+/*!
+* \brief Notación axial-angular
+*/
 template<typename T>
 class AxisAngle
-  : public OrientationBase<T>
+  : public OrientationBase<AxisAngle<T>>
 {
 
 private:
@@ -112,7 +112,7 @@ public:
 
 template<typename T>
 AxisAngle<T>::AxisAngle()
-  : OrientationBase<T>(Orientation::Type::axis_angle),
+  : OrientationBase<AxisAngle<T>>(Orientation::Type::axis_angle),
     mAngle(0),
     mAxis{1,0,0}
 {
@@ -121,7 +121,7 @@ AxisAngle<T>::AxisAngle()
 
 template<typename T>
 AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
-  : OrientationBase<T>(Orientation::Type::axis_angle),
+  : OrientationBase<AxisAngle<T>>(Orientation::Type::axis_angle),
     mAngle(axisAngle.mAngle),
     mAxis(axisAngle.mAxis)
 {
@@ -130,16 +130,16 @@ AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
 
 template<typename T>
 AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT
-  : OrientationBase<T>(std::forward<OrientationBase<T>>(axisAngle)),
+  : OrientationBase<AxisAngle<T>>(std::forward<OrientationBase<AxisAngle<T>>>(axisAngle)),
     mAngle(axisAngle.mAngle),
-    mAxis(std::forward<Vector<T, 3>>(axisAngle))
+    mAxis(std::forward<Vector<T, 3>>(axisAngle.mAxis))
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
-  : OrientationBase<T>(Orientation::Type::axis_angle),
+  : OrientationBase<AxisAngle<T>>(Orientation::Type::axis_angle),
     mAngle(angle),
     mAxis(axis)
 {
@@ -152,7 +152,6 @@ template <typename T>
 inline auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngle &
 {
     if (this != &axisAngle) {
-        OrientationBase<T>::operator = (axisAngle);
         mAngle = axisAngle.mAngle;
         mAxis = axisAngle.mAxis;
     }
@@ -164,7 +163,6 @@ template <typename T>
 inline auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle &
 {
     if (this != &axisAngle) {
-        OrientationBase<T>::operator = (std::forward<OrientationBase<T>>(axisAngle));
         mAngle = axisAngle.mAngle;
         mAxis = std::forward<Vector<T, 3>>(axisAngle.mAxis);
     }

@@ -39,27 +39,27 @@ MatchesReader::MatchesReader(tl::Path file)
 
 }
 
-std::vector<cv::DMatch> MatchesReader::goodMatches() const
+auto MatchesReader::goodMatches() const -> std::vector<cv::DMatch>
 {
     return mGoodMatches;
 }
 
-std::vector<cv::DMatch> MatchesReader::wrongMatches() const
+auto MatchesReader::wrongMatches() const -> std::vector<cv::DMatch>
 {
     return mWrongMatches;
 }
 
-const Path &MatchesReader::filePath() const
+auto MatchesReader::filePath() const -> const Path&
 {
     return mFilePath;
 }
 
-std::vector<cv::DMatch> &MatchesReader::good_matches()
+auto MatchesReader::good_matches() -> std::vector<cv::DMatch>&
 {
     return mGoodMatches;
 }
 
-std::vector<cv::DMatch> &MatchesReader::wrong_matches()
+auto MatchesReader::wrong_matches() -> std::vector<cv::DMatch>&
 {
     return mWrongMatches;
 }
@@ -71,7 +71,7 @@ std::vector<cv::DMatch> &MatchesReader::wrong_matches()
 
 
 MatchesWriter::MatchesWriter(tl::Path file)
-    : mFilePath(std::move(file))
+  : mFilePath(std::move(file))
 {
 
 }
@@ -86,17 +86,17 @@ void MatchesWriter::setWrongMatches(const std::vector<cv::DMatch> &wrongMatches)
     mWrongMatches = wrongMatches;
 }
 
-const tl::Path &MatchesWriter::filePath() const
+auto MatchesWriter::filePath() const -> const tl::Path&
 {
     return mFilePath;
 }
 
-const std::vector<cv::DMatch> &MatchesWriter::goodMatches() const
+auto MatchesWriter::goodMatches() const -> const std::vector<cv::DMatch>&
 {
     return mGoodMatches;
 }
 
-const std::vector<cv::DMatch> &MatchesWriter::wrongMatches() const
+auto MatchesWriter::wrongMatches() const -> const std::vector<cv::DMatch>&
 {
     return mWrongMatches;
 }
@@ -107,7 +107,7 @@ const std::vector<cv::DMatch> &MatchesWriter::wrongMatches() const
 
 
 class MatchesReaderBinary
-    : public MatchesReader
+  : public MatchesReader
 {
 
 public:
@@ -501,7 +501,7 @@ public:
     explicit MatchesWriterOpenCV(Path file);
     ~MatchesWriterOpenCV() override;
 
-    // MatchesWriter interface
+// MatchesWriter interface
 
 public:
 
@@ -612,12 +612,12 @@ void MatchesWriterOpenCV::close()
 
 
 
-std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path &file)
+auto MatchesReaderFactory::createReader(const tl::Path &file) -> std::unique_ptr<MatchesReader>
 {
     return MatchesReaderFactory::create(file);
 }
 
-std::unique_ptr<MatchesReader> MatchesReaderFactory::create(const tl::Path &file)
+auto MatchesReaderFactory::create(const tl::Path &file) -> std::unique_ptr<MatchesReader>
 {
     std::unique_ptr<MatchesReader> matches_reader;
 
@@ -646,12 +646,12 @@ std::unique_ptr<MatchesReader> MatchesReaderFactory::create(const tl::Path &file
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path &file)
+auto MatchesWriterFactory::createWriter(const tl::Path &file) -> std::unique_ptr<MatchesWriter>
 {
     return MatchesWriterFactory::create(file);
 }
 
-std::unique_ptr<MatchesWriter> MatchesWriterFactory::create(const tl::Path &file)
+auto MatchesWriterFactory::create(const tl::Path &file) -> std::unique_ptr<MatchesWriter>
 {
     std::unique_ptr<MatchesWriter> matches_writer;
 

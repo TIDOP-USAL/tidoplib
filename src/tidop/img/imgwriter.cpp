@@ -349,7 +349,7 @@ public:
             cv::Mat image_to_write;
 
             if (crop_image) {
-                Affine<Point<double>> affine;
+                geom::Affine<Point<double>> affine;
                 std::vector<Point<double>> image_points{
                     Point<double>(0, 0),
                         Point<double>(image.cols, 0),
@@ -371,8 +371,8 @@ public:
                 RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
                 RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-                Point<double> tl = affine.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
-                Point<double> br = affine.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
+                Point<double> tl = affine.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()), geom::Transform::Order::inverse);
+                Point<double> br = affine.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()), geom::Transform::Order::inverse);
 
                 rect_to_crop_image = RectI(tl, br);
                 image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
@@ -567,7 +567,7 @@ public:
         return depth;
     }
 
-    void setGeoreference(const Affine<Point<double>> &georeference) override
+    void setGeoreference(const geom::Affine<Point<double>> &georeference) override
     {
         mAffine = georeference;
 

@@ -69,12 +69,12 @@ public:
 
 public:
 
-    Size<int> winSize() const override;
-    Size<int> blockSize() const override;
-    Size<int> blockStride() const override;
-    Size<int> cellSize() const override;
-    int nbins() const override;
-    int derivAperture() const override;
+    auto winSize() const -> Size<int> override;
+    auto blockSize() const -> Size<int> override;
+    auto blockStride() const -> Size<int> override;
+    auto cellSize() const -> Size<int> override;
+    auto nbins() const -> int override;
+    auto derivAperture() const -> int override;
     void setWinSize(const Size<int> &winSize) override;
     void setBlockSize(const Size<int> &blockSize) override;
     void setBlockStride(const Size<int> &blockStride) override;
@@ -87,7 +87,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -127,8 +127,7 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Hog interface
 

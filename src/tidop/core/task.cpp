@@ -180,152 +180,6 @@ TaskBase &TaskBase::operator=(TaskBase &&task) TL_NOEXCEPT
     return *this;
 }
 
-void TaskBase::run(Progress *progressBar)
-{
-    mThread = std::thread(&TaskBase::executeTask, this, progressBar);
-    mThread.join();
-}
-
-void TaskBase::runAsync(Progress *progressBar)
-{
-    mThread = std::thread(&TaskBase::executeTask, this, progressBar);
-    mThread.detach();
-}
-
-void TaskBase::pause()
-{
-    if (mStatus == Status::running) {
-
-        setStatus(Status::pausing);
-
-        eventTriggered(Event::Type::task_paused);
-    }
-}
-
-void TaskBase::reset()
-{
-    mStatus = Status::start;
-    mTaskErrorEventHandler.clear();
-    mTaskFinalizedEventHandler.clear();
-    mTaskPauseEventHandler.clear();
-    mTaskPausingEventHandler.clear();
-    mTaskResumedEventHandler.clear();
-    mTaskRunningEventHandler.clear();
-    mTaskStoppedEventHandler.clear();
-    mTaskStoppingEventHandler.clear();
-}
-
-void TaskBase::resume()
-{
-    eventTriggered(Event::Type::task_resumed);
-
-    if (mStatus == Status::paused || mStatus == Status::pausing) {
-        setStatus(Status::running);
-    }
-}
-
-void TaskBase::stop()
-{
-    if (mStatus == Status::running ||
-        mStatus == Status::paused ||
-        mStatus == Status::pausing) {
-
-        setStatus(Status::stopping);
-
-    }
-}
-
-void TaskBase::subscribe(Event::Type eventType,
-                         const EventHandler &eventHandler)
-{
-    switch (eventType) {
-    case Event::Type::task_error:
-        mTaskErrorEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_paused:
-        mTaskPauseEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_pausing:
-        mTaskPausingEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_resumed:
-        mTaskResumedEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_running:
-        mTaskRunningEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_stopped:
-        mTaskStoppedEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_stopping:
-        mTaskStoppingEventHandler.emplace_back(eventHandler);
-        break;
-    case Event::Type::task_finalized:
-        mTaskFinalizedEventHandler.emplace_back(eventHandler);
-        break;
-    default:
-        break;
-    }
-
-}
-
-void TaskBase::subscribe(const EventHandler &eventHandler)
-{
-    mTaskErrorEventHandler.emplace_back(eventHandler);
-    mTaskFinalizedEventHandler.emplace_back(eventHandler);
-    mTaskPauseEventHandler.emplace_back(eventHandler);
-    mTaskPausingEventHandler.emplace_back(eventHandler);
-    mTaskResumedEventHandler.emplace_back(eventHandler);
-    mTaskRunningEventHandler.emplace_back(eventHandler);
-    mTaskStoppedEventHandler.emplace_back(eventHandler);
-    mTaskStoppingEventHandler.emplace_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskErrorEventHandler &eventHandler)
-{
-    mTaskErrorEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskFinalizedEventHandler &eventHandler)
-{
-    mTaskFinalizedEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskPauseEventHandler &eventHandler)
-{
-    mTaskPauseEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskPausingEventHandler &eventHandler)
-{
-    mTaskPausingEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskResumedEventHandler &eventHandler)
-{
-    mTaskResumedEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskRunningEventHandler &eventHandler)
-{
-    mTaskRunningEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskStoppedEventHandler &eventHandler)
-{
-    mTaskStoppedEventHandler.push_back(eventHandler);
-}
-
-void TaskBase::subscribe(const TaskStoppingEventHandler &eventHandler)
-{
-    mTaskStoppingEventHandler.push_back(eventHandler);
-}
-
-Task::Status TaskBase::status() const
-{
-    return mStatus;
-}
-
 void TaskBase::setStatus(Status status)
 {
     mStatus = status;
@@ -454,17 +308,17 @@ void TaskBase::eventTaskStoppingTriggered()
     }
 }
 
-TaskErrorEvent *TaskBase::errorEvent()
+auto TaskBase::errorEvent() -> TaskErrorEvent*
 {
     return mTaskErrorEvent.get();
 }
 
-TaskFinalizedEvent *TaskBase::finalizedEvent()
+auto TaskBase::finalizedEvent() -> TaskFinalizedEvent*
 {
     return mTaskFinalizedEvent.get();
 }
 
-TaskPauseEvent *TaskBase::pauseEvent()
+auto TaskBase::pauseEvent() -> TaskPauseEvent*
 {
     return mTaskPauseEvent.get();
 }
@@ -474,22 +328,22 @@ TaskPausingEvent *TaskBase::pausingEvent()
     return mTaskPausingEvent.get();
 }
 
-TaskResumedEvent *TaskBase::resumedEvent()
+auto TaskBase::resumedEvent() -> TaskResumedEvent*
 {
     return mTaskResumedEvent.get();
 }
 
-TaskRunningEvent *TaskBase::runningEvent()
+auto TaskBase::runningEvent() -> TaskRunningEvent*
 {
     return mTaskRunningEvent.get();
 }
 
-TaskStoppedEvent *TaskBase::stoppedEvent()
+auto TaskBase::stoppedEvent() -> TaskStoppedEvent*
 {
     return mTaskStoppedEvent.get();
 }
 
-TaskStoppingEvent *TaskBase::stoppingEvent()
+auto TaskBase::stoppingEvent() -> TaskStoppingEvent*
 {
     return mTaskStoppingEvent.get();
 }
@@ -497,12 +351,16 @@ TaskStoppingEvent *TaskBase::stoppingEvent()
 void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
 {
     if (mStatus != Status::start) return;
-
+       
     try {
+
+        chrono.run();
 
         setStatus(Status::running);
 
         execute(progressBar);
+
+        chrono.stop();
 
         if (mStatus == Status::stopping)
             setStatus(Status::stopped);
@@ -520,6 +378,159 @@ void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
     }
 
 }
+
+void TaskBase::run(Progress *progressBar)
+{
+    mThread = std::thread(&TaskBase::executeTask, this, progressBar);
+    mThread.join();
+}
+
+void TaskBase::runAsync(Progress *progressBar)
+{
+    mThread = std::thread(&TaskBase::executeTask, this, progressBar);
+    mThread.detach();
+}
+
+void TaskBase::pause()
+{
+    if (mStatus == Status::running) {
+
+        setStatus(Status::pausing);
+
+        eventTriggered(Event::Type::task_paused);
+    }
+}
+
+void TaskBase::reset()
+{
+    mStatus = Status::start;
+    mTaskErrorEventHandler.clear();
+    mTaskFinalizedEventHandler.clear();
+    mTaskPauseEventHandler.clear();
+    mTaskPausingEventHandler.clear();
+    mTaskResumedEventHandler.clear();
+    mTaskRunningEventHandler.clear();
+    mTaskStoppedEventHandler.clear();
+    mTaskStoppingEventHandler.clear();
+}
+
+void TaskBase::resume()
+{
+    eventTriggered(Event::Type::task_resumed);
+
+    if (mStatus == Status::paused || mStatus == Status::pausing) {
+        setStatus(Status::running);
+    }
+}
+
+void TaskBase::stop()
+{
+    if (mStatus == Status::running ||
+        mStatus == Status::paused ||
+        mStatus == Status::pausing) {
+
+        setStatus(Status::stopping);
+
+    }
+}
+
+auto TaskBase::time() const -> double
+{
+    return chrono.currentTime();
+}
+
+void TaskBase::subscribe(Event::Type eventType,
+                         const EventHandler &eventHandler)
+{
+    switch (eventType) {
+    case Event::Type::task_error:
+        mTaskErrorEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_paused:
+        mTaskPauseEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_pausing:
+        mTaskPausingEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_resumed:
+        mTaskResumedEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_running:
+        mTaskRunningEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_stopped:
+        mTaskStoppedEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_stopping:
+        mTaskStoppingEventHandler.emplace_back(eventHandler);
+        break;
+    case Event::Type::task_finalized:
+        mTaskFinalizedEventHandler.emplace_back(eventHandler);
+        break;
+    default:
+        break;
+    }
+
+}
+
+void TaskBase::subscribe(const EventHandler &eventHandler)
+{
+    mTaskErrorEventHandler.emplace_back(eventHandler);
+    mTaskFinalizedEventHandler.emplace_back(eventHandler);
+    mTaskPauseEventHandler.emplace_back(eventHandler);
+    mTaskPausingEventHandler.emplace_back(eventHandler);
+    mTaskResumedEventHandler.emplace_back(eventHandler);
+    mTaskRunningEventHandler.emplace_back(eventHandler);
+    mTaskStoppedEventHandler.emplace_back(eventHandler);
+    mTaskStoppingEventHandler.emplace_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskErrorEventHandler &eventHandler)
+{
+    mTaskErrorEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskFinalizedEventHandler &eventHandler)
+{
+    mTaskFinalizedEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskPauseEventHandler &eventHandler)
+{
+    mTaskPauseEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskPausingEventHandler &eventHandler)
+{
+    mTaskPausingEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskResumedEventHandler &eventHandler)
+{
+    mTaskResumedEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskRunningEventHandler &eventHandler)
+{
+    mTaskRunningEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskStoppedEventHandler &eventHandler)
+{
+    mTaskStoppedEventHandler.push_back(eventHandler);
+}
+
+void TaskBase::subscribe(const TaskStoppingEventHandler &eventHandler)
+{
+    mTaskStoppingEventHandler.push_back(eventHandler);
+}
+
+auto TaskBase::status() const -> Status
+{
+    return mStatus;
+}
+
+
 
 
 
@@ -616,16 +627,16 @@ void Process::execute(Progress *)
         if (ret == WAIT_OBJECT_0) {
 
             unsigned long exitCode;
+
             if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode) == 0) {
                 TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
                                    GetLastError(),
                                    formatErrorMsg(GetLastError()),
                                    mCommandText);
+            } else if (exitCode == 0){
+                eventTriggered(Event::Type::task_finalized);
             } else {
-                if (exitCode == 0)
-                    eventTriggered(Event::Type::task_finalized);
-                else
-                    eventTriggered(Event::Type::task_error);
+                eventTriggered(Event::Type::task_error);
             }
 
         } else if (ret == WAIT_FAILED) {
@@ -690,7 +701,7 @@ void Process::execute(Progress *)
 }
 
 
-Process::Priority Process::priority() const
+auto Process::priority() const -> Priority
 {
 #ifdef TL_OS_WINDOWS
     return static_cast<Priority>(GetPriorityClass(mProcessInformation.hProcess));
@@ -720,13 +731,12 @@ std::wstring string_to_wide_string(const std::string &string)
         return L"";
     }
 
-    const auto size_needed = MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), nullptr, 0);
-    if (size_needed <= 0) {
-        throw std::runtime_error("MultiByteToWideChar() failed: " + std::to_string(size_needed));
-    }
+    auto size_needed = MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), nullptr, 0);
+    TL_ASSERT(size_needed > 0, "MultiByteToWideChar() failed: {}", size_needed);
 
     std::wstring result(size_needed, 0);
     MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), &result.at(0), size_needed);
+    
     return result;
 }
 
@@ -737,20 +747,19 @@ std::string wide_string_to_string(const std::wstring &wide_string)
     }
 
     const auto size_needed = WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), nullptr, 0, nullptr, nullptr);
-    if (size_needed <= 0) {
-        throw std::runtime_error("WideCharToMultiByte() failed: " + std::to_string(size_needed));
-    }
+    TL_ASSERT(size_needed > 0, "WideCharToMultiByte() failed: {}", size_needed);
 
     std::string result(size_needed, 0);
     WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), &result.at(0), size_needed, nullptr, nullptr);
+    
     return result;
 }
 
-std::string Process::formatErrorMsg(unsigned long errorCode)
+auto Process::formatErrorMsg(unsigned long errorCode) -> std::string
 {
     DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS |
-        FORMAT_MESSAGE_MAX_WIDTH_MASK;
+                  FORMAT_MESSAGE_IGNORE_INSERTS |
+                  FORMAT_MESSAGE_MAX_WIDTH_MASK;
 
     TCHAR errorMessage[1024] = TEXT("");
 
@@ -768,7 +777,7 @@ std::string Process::formatErrorMsg(unsigned long errorCode)
 }
 
 
-bool Process::createPipe()
+auto Process::createPipe() -> bool
 {
     if (!CreatePipe(&pipeReadHandle, &pipeWriteHandle, &mSecurityAttributes, 0)) {
         Message::error("CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
@@ -796,19 +805,19 @@ bool Process::createPipe()
 
 TaskList::TaskList()
   : TaskBase(),
-    mTasks(0)
+    tasks(0)
 {
 }
 
 TaskList::TaskList(const TaskList &taskList)
   : TaskBase(),
-    mTasks(taskList.mTasks)
+    tasks(taskList.tasks)
 {
 }
 
 TaskList::TaskList(std::initializer_list<std::shared_ptr<Task>> tasks)
   : TaskBase(),
-    mTasks(tasks)
+    tasks(tasks)
 {
 }
 
@@ -816,17 +825,17 @@ TaskList::~TaskList() = default;
 
 void TaskList::push_back(const std::shared_ptr<Task> &task)
 {
-    mTasks.push_back(task);
+    this->tasks.push_back(task);
 }
 
-size_t tl::TaskList::size() const TL_NOEXCEPT
+auto TaskList::size() const TL_NOEXCEPT -> size_t
 {
-    return mTasks.size();
+    return tasks.size();
 }
 
-bool tl::TaskList::empty() const TL_NOEXCEPT
+auto TaskList::empty() const TL_NOEXCEPT -> bool
 {
-    return mTasks.empty();
+    return tasks.empty();
 }
 
 void TaskList::stop()
@@ -834,7 +843,7 @@ void TaskList::stop()
     TaskBase::stop();
 
     if (status() == Status::stopping) {
-        for (const auto &task : mTasks) {
+        for (const auto &task : tasks) {
             task->stop();
         }
     }
@@ -842,7 +851,7 @@ void TaskList::stop()
 
 void TaskList::execute(Progress *progressBar)
 {
-    for (const auto &task : mTasks) {
+    for (const auto &task : tasks) {
 
         if (status() == Status::stopping) return;
 
@@ -852,6 +861,8 @@ void TaskList::execute(Progress *progressBar)
 
     }
 }
+
+
 
 
 /* Task Queue */
@@ -870,7 +881,7 @@ TaskQueue::~TaskQueue()
 
 void TaskQueue::push(std::shared_ptr<Task> task)
 {
-    mQueue.push(task);
+    queue.push(task);
 
     if (status() == Status::finalized ||
         status() == Status::stopped) {
@@ -884,17 +895,17 @@ void TaskQueue::push(std::shared_ptr<Task> task)
 
 void TaskQueue::pop() TL_NOEXCEPT
 {
-    mQueue.pop();
+    queue.pop();
 }
 
-size_t TaskQueue::size() const TL_NOEXCEPT
+auto TaskQueue::size() const TL_NOEXCEPT -> size_t
 {
-    return mQueue.size();
+    return queue.size();
 }
 
-bool TaskQueue::empty() const TL_NOEXCEPT
+auto TaskQueue::empty() const TL_NOEXCEPT -> bool
 {
-    return mQueue.empty();
+    return queue.empty();
 }
 
 void TaskQueue::stop()
@@ -904,18 +915,20 @@ void TaskQueue::stop()
 
 void TaskQueue::execute(Progress */*progressBar*/)
 {
-    while (!mQueue.empty()) {
+    while (!queue.empty()) {
         
         if (status() == Status::stopping || status() == Status::stopped) {
 
         } else {
             std::lock_guard<std::mutex> lck(TaskQueue::mtx);
-            mQueue.front()->run();
+            queue.front()->run();
         }
 
-        mQueue.pop();
+        queue.pop();
     }
 }
+
+
 
 
 /* Task Tree */
@@ -935,6 +948,7 @@ void TaskTree::addTask(const std::shared_ptr<Task> &task,
 
 void TaskTree::stop()
 {
+    TaskBase::stop();
 }
 
 void TaskTree::execute(Progress *progressBar)

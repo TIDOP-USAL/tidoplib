@@ -64,48 +64,54 @@ public:
     Path(Path &&path) TL_NOEXCEPT;
     ~Path();
 
-    Path &operator = (const Path &path);
-    Path &operator = (Path &&path) TL_NOEXCEPT;
+    auto operator = (const Path &path) -> Path&;
+    auto operator = (Path &&path) TL_NOEXCEPT -> Path&;
 
     void setPath(const std::string &path);
     void setPath(const std::wstring &path);
 
     /*!
-     * \brief Convierte el path en una cadena
-     * \return
+     * \brief Converts the path to a std::string
      */
-    std::string toString() const;
-    std::wstring toWString() const;
+    auto toString() const -> std::string;
 
-    Path fileName() const;
-    Path baseName() const;
-    Path extension() const;
-    Path parentPath() const;
-    std::list<Path> list(const std::string &extension);
-    std::list<Path> list(const std::regex &filter);
+    /*!
+     * \brief Converts the path to a std::wstring
+     */
+    auto toWString() const -> std::wstring;
 
-    bool isDirectory() const;
-    bool isFile() const;
-    bool empty() const;
-    bool exists() const;
+    auto fileName() const -> Path;
+    auto baseName() const -> Path;
+    auto extension() const -> Path;
+    auto parentPath() const -> Path;
+    auto absolutePath() const -> Path;
+    //TODO: Deberian ser métodos estáticos
+    auto list(const std::string &extension) -> std::list<Path>;
+    auto list(const std::regex &filter) -> std::list<Path>;
 
-    Path &replaceFileName(const std::string &fileName);
-    Path &replaceFileName(const std::wstring &fileName);
-    Path &replaceFileName(const Path &fileName);
-    Path &replaceBaseName(const std::string &baseName);
-    Path &replaceBaseName(const std::wstring &baseName);
-    Path &replaceBaseName(const Path &baseName);
-    Path &replaceExtension(const std::string &extension);
-    Path &replaceExtension(const std::wstring &extension);
-    Path &replaceExtension(const Path &extension);
-    Path &append(const std::string &text);
-    Path &append(const std::wstring &text);
-    Path &append(const Path &text);
+    auto isDirectory() const -> bool;
+    auto isFile() const -> bool;
+    auto isAbsolutePath() const -> bool;
+    auto empty() const -> bool;
+    auto exists() const -> bool;
 
-    int compare(const Path &path) const;
-    bool equivalent(const Path &path) const;
-    bool createDirectory() const;
-    bool createDirectories() const;
+    auto replaceFileName(const std::string &fileName) -> Path&;
+    auto replaceFileName(const std::wstring &fileName) -> Path&;
+    auto replaceFileName(const Path &fileName) -> Path&;
+    auto replaceBaseName(const std::string &baseName) -> Path&;
+    auto replaceBaseName(const std::wstring &baseName) -> Path&;
+    auto replaceBaseName(const Path &baseName) -> Path&;
+    auto replaceExtension(const std::string &extension) -> Path&;
+    auto replaceExtension(const std::wstring &extension) -> Path&;
+    auto replaceExtension(const Path &extension) -> Path&;
+    auto append(const std::string &text) -> Path&;
+    auto append(const std::wstring &text) -> Path&;
+    auto append(const Path &text) -> Path&;
+
+    auto compare(const Path &path) const -> int;
+    auto equivalent(const Path &path) const -> bool;
+    auto createDirectory() const -> bool;
+    auto createDirectories() const -> bool;
     void removeDirectory() const;
     void normalize();
 
@@ -113,32 +119,33 @@ public:
 
     /* Static methods */
 
-    static bool exists(const Path &path);
-    static Path tempPath();
-    static Path tempDirectory();
-    static bool createDirectory(const Path &directory);
-    static bool createDirectory(const std::string &directory);
-    static bool createDirectory(const std::wstring &directory);
-    static bool createDirectories(const Path &directory);
-    static bool createDirectories(const std::string &directory);
-    static bool createDirectories(const std::wstring &directory);
+    static auto exists(const Path &path) -> bool;
+    static auto tempPath() -> Path;
+    static auto tempDirectory() -> Path;
+    static auto createDirectory(const Path &directory) -> bool;
+    static auto createDirectory(const std::string &directory) -> bool;
+    static auto createDirectory(const std::wstring &directory) -> bool;
+    static auto createDirectories(const Path &directory) -> bool;
+    static auto createDirectories(const std::string &directory) -> bool;
+    static auto createDirectories(const std::wstring &directory) -> bool;
     static void removeDirectory(const Path &directory);
     static void removeDirectory(const std::string &directory);
     static void removeDirectory(const std::wstring &directory);
     static void removeFile(const Path &file);
-    static size_t hash(const Path &path);
+    static auto hash(const Path &path) -> size_t;
     static void copy(const Path &from, const Path &to);
+    static auto currentPath() -> Path;
 
     /* Override operators */
 
-    bool operator == (const Path &path) const;
-    bool operator != (const Path &path) const;
+    auto operator == (const Path &path) const -> bool;
+    auto operator != (const Path &path) const -> bool;
 
 };
 
 
 /*!
- * /brief Crea un directorio temporal que por defecto se borra automaticamente
+ * /brief Creates a temporary directory that is automatically deleted by destructor.
  * 
  */
 class TL_EXPORT TemporalDir
@@ -163,7 +170,7 @@ public:
     TemporalDir &operator=(const TemporalDir &) = delete;
     TemporalDir &operator=(TemporalDir &&) = delete;
 
-    Path path() const;
+    auto path() const -> Path;
 
 };
 

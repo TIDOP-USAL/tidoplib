@@ -105,23 +105,23 @@ constexpr auto minutes_to_seconds = 60;
 constexpr auto degrees_to_seconds = 3600;
 
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_deg = static_cast<T>(180) / pi<T>;
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_deg = static_cast<T>(half_circle_deg) / pi<T>;
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_rad = pi<T> / static_cast<T>(180);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_rad = pi<T> / static_cast<T>(half_circle_deg);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_arcminute = static_cast<T>(60);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_arcminute = static_cast<T>(degrees_to_minutes);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type arcminute_to_deg = one<T> / static_cast<T>(60);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type arcminute_to_deg = one<T> / static_cast<T>(degrees_to_minutes);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_arcsecond = static_cast<T>(3600);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_arcsecond = static_cast<T>(degrees_to_seconds);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type arcsecond_to_deg = one<T> / static_cast<T>(3600);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type arcsecond_to_deg = one<T> / static_cast<T>(degrees_to_seconds);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_grad = static_cast<T>(200) / pi<T>;
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_grad = static_cast<T>(half_circle_grad) / pi<T>;
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type grad_to_rad = pi<T> / static_cast<T>(200);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type grad_to_rad = pi<T> / static_cast<T>(half_circle_grad);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_grad = static_cast<T>(200) / static_cast<T>(180);
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_grad = static_cast<T>(half_circle_grad) / static_cast<T>(half_circle_deg);
 template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type grad_to_deg = static_cast<T>(0.9);
 

@@ -33,6 +33,9 @@
 namespace tl
 {
 
+namespace geom
+{
+
 /*! \addtogroup geometry
  *  \{
  */
@@ -62,9 +65,11 @@ namespace tl
  *
  * \f[ x' = a * x + b * y + x0\f]
  * \f[ y' = c * x + d * y + y0\f]
+ * 
+ * \deprecated Use 'Affine<T, 2>()' from math module instead
  */
 template<typename Point_t>
-class Affine
+class TL_DEPRECATED("Affine<T, 2>", "3.0") Affine
   : public Transform2D<Point_t>
 {
 
@@ -452,6 +457,7 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
         if (error) {
             if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
         }
+
     } catch (std::exception &e) {
         printException(e);
         status = Transform::Status::failure;
@@ -681,5 +687,7 @@ void Affine<Point_t>::updateInv()
 /*! \} */ // end of trfGroup
 
 /*! \} */ // end of geometry
+
+} // End namespace geom
 
 } // End namespace tl

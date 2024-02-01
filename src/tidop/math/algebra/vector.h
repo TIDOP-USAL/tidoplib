@@ -44,9 +44,9 @@ namespace tl
  */
 
 
-/*! \addtogroup algebra
- *  \{
- */
+ /*! \addtogroup algebra
+  *  \{
+  */
 
 
 template<typename T>
@@ -64,40 +64,68 @@ class VectorBase<VectorDerived<T, _size>>
 
 public:
 
-    VectorBase() = default;
+    enum class Properties
+    {
+        contiguous_memory = 0x01
+    };
+
+public:
+
+    EnumFlags<Properties> properties;
+
+public:
+
+    VectorBase() { this->properties.enable(Properties::contiguous_memory); }
     ~VectorBase() = default;
 
     auto module() const -> double;
     auto normalize() -> void;
-    auto dotProduct(const VectorDerived<T, _size> &vector) const -> double;
+    template<typename VectorDerived2>
+    auto dotProduct(const VectorDerived2 &vector) const -> double;
+
+    template<typename VectorDerived2>
+    operator VectorDerived2() const
+    {
+        VectorDerived2 v;
+        v = this->derived();
+        return v;
+    }
 
     /* Unary arithmetic operators */
 
     /*!
      * \brief Operator unary plus
      */
-    auto operator+()->Vector<T, _size>;
+    auto operator+() -> Vector<T, _size>;
 
     /*!
      * \brief Operator unary minus
      */
-    auto operator-()->Vector<T, _size>;
-
+    auto operator-() -> Vector<T, _size>;
 
     /* Binary arithmetic operators */
 
-    auto operator+(const VectorDerived<T, _size> &vector2)->Vector<T, _size>;
-    auto operator-(const VectorDerived<T, _size> &vector2)->Vector<T, _size>;
-    auto operator*(const VectorDerived<T, _size> &vector2)->Vector<T, _size>;
-    auto operator/(const VectorDerived<T, _size> &vector2)->Vector<T, _size>;
+    auto operator+(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
+    auto operator-(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
+    auto operator*(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
+    auto operator/(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
     auto operator*(T scalar)->Vector<T, _size>;
     auto operator/(T scalar)->Vector<T, _size>;
-    auto operator+=(const VectorDerived<T, _size> &vector)->VectorDerived<T, _size> &;
-    auto operator-=(const VectorDerived<T, _size> &vector)->VectorDerived<T, _size> &;
-    auto operator*=(const VectorDerived<T, _size> &vector)->VectorDerived<T, _size> &;
-    auto operator/=(const VectorDerived<T, _size> &vector)->VectorDerived<T, _size> &;
-    auto operator*=(T scalar)->VectorDerived<T, _size> &;
-    auto operator/=(T scalar)->VectorDerived<T, _size> &;
+    template<typename VectorDerived2>
+    auto operator+=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    template<typename VectorDerived2>
+    auto operator-=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    template<typename VectorDerived2>
+    auto operator*=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    template<typename VectorDerived2>
+    auto operator/=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    auto operator*=(T scalar) -> VectorDerived<T, _size> &;
+    auto operator/=(T scalar) -> VectorDerived<T, _size> &;
+
+protected:
+
+    template<typename VectorDerived2>
+    void set(const VectorDerived2 &vector);
 
 private:
 
@@ -109,7 +137,7 @@ private:
 
 template<typename T, size_t _size = DynamicData>
 class Vector
-  : public VectorBase<Vector<T, _size>>
+    : public VectorBase<Vector<T, _size>>
 {
 
 public:
@@ -137,14 +165,16 @@ public:
     ~Vector() = default;
 
     auto operator=(const Vector &vector)->Vector &;
-    auto operator=(Vector &&vector) TL_NOEXCEPT->Vector &;
+    auto operator=(Vector &&vector) TL_NOEXCEPT -> Vector &;
+    template<typename VectorDerived>
+    auto operator=(const VectorDerived &vector) -> Vector &;
 
 public:
 
     void resize(size_t size);
     void resize(size_t size, T value);
 
-    auto size() const TL_NOEXCEPT->size_t;
+    auto size() const TL_NOEXCEPT -> size_t;
 
     auto at(size_type position) -> reference;
     auto at(size_type position) const->const_reference;
@@ -235,7 +265,8 @@ auto VectorBase<VectorDerived<T, _size>>::normalize() -> void
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived<T, _size> &vector) const -> double
+template<typename VectorDerived2>
+auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived2 &vector) const -> double
 {
     auto &derived = this->derived();
 
@@ -341,7 +372,8 @@ auto VectorBase<VectorDerived<T, _size>>::operator/(T scalar) -> Vector<T, _size
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived<T, _size> &vector) -> VectorDerived<T, _size> &
+template<typename VectorDerived2>
+auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
 {
     auto &derived = this->derived();
 
@@ -357,14 +389,18 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived<
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    for (; i < max_vector; i += packed_size) {
+    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
 
-        packed_a.loadUnaligned(&derived[i]);
-        packed_b.loadUnaligned(&vector[i]);
+        for (; i < max_vector; i += packed_size) {
 
-        packed_a += packed_b;
-        packed_a.storeUnaligned(&derived[i]);
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
 
+            packed_a += packed_b;
+            packed_a.storeUnaligned(&derived[i]);
+
+        }
     }
 
 #endif
@@ -379,7 +415,8 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived<
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived<T, _size> &vector) -> VectorDerived<T, _size> &
+template<typename VectorDerived2>
+inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
 {
     auto &derived = this->derived();
 
@@ -395,13 +432,18 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived<
     constexpr size_t packed_size = packed_a.size();
 
     size_t max_vector = (derived.size() / packed_size) * packed_size;
-    for (; i < max_vector; i += packed_size) {
 
-        packed_a.loadUnaligned(&derived[i]);
-        packed_b.loadUnaligned(&vector[i]);
-        packed_a -= packed_b;
-        packed_a.storeUnaligned(&derived[i]);
+    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
 
+        for (; i < max_vector; i += packed_size) {
+
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
+            packed_a -= packed_b;
+            packed_a.storeUnaligned(&derived[i]);
+
+        }
     }
 
 #endif
@@ -416,7 +458,8 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived<
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived<T, _size> &vector) -> VectorDerived<T, _size> &
+template<typename VectorDerived2>
+inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
 {
     auto &derived = this->derived();
 
@@ -431,14 +474,18 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived<
 
     constexpr size_t packed_size = packed_a.size();
 
-    size_t max_vector = (derived.size() / packed_size) * packed_size;
-    for (; i < max_vector; i += packed_size) {
+    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
 
-        packed_a.loadUnaligned(&derived[i]);
-        packed_b.loadUnaligned(&vector[i]);
-        packed_a *= packed_b;
-        packed_a.storeUnaligned(&derived[i]);
+        size_t max_vector = (derived.size() / packed_size) * packed_size;
+        for (; i < max_vector; i += packed_size) {
 
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
+            packed_a *= packed_b;
+            packed_a.storeUnaligned(&derived[i]);
+
+        }
     }
 
 #endif
@@ -455,7 +502,8 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived<
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived<T, _size> &vector) -> VectorDerived<T, _size> &
+template<typename VectorDerived2>
+inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
 {
     auto &derived = this->derived();
 
@@ -471,13 +519,17 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived<
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    for (; i < max_vector; i += packed_size) {
+    if (this->properties.isEnabled(Properties::contiguous_memory) &&
+        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
 
-        packed_a.loadUnaligned(&derived[i]);
-        packed_b.loadUnaligned(&vector[i]);
-        packed_a /= packed_b;
-        packed_a.storeUnaligned(&derived[i]);
+        for (; i < max_vector; i += packed_size) {
 
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
+            packed_a /= packed_b;
+            packed_a.storeUnaligned(&derived[i]);
+
+        }
     }
 
 #endif
@@ -487,6 +539,50 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived<
     }
 
     return derived;
+}
+
+template<
+    template<typename, size_t _size = DynamicData>
+class VectorDerived, typename T, size_t _size>
+template<typename VectorDerived2>
+inline void VectorBase<VectorDerived<T, _size>>::set(const VectorDerived2 &vector)
+{
+    auto &derived = this->derived();
+
+    if(_size == DynamicData) {
+        derived = VectorDerived<T, _size>(vector.size());
+    }
+
+    TL_ASSERT(derived.size() == vector.size(), "Static vector cannot be resized");
+
+    size_t i{0};
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+
+    if (this->properties.isEnabled(Properties::contiguous_memory) &&
+        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+
+        for (; i < max_vector; i += packed_size) {
+
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
+            packed_a = packed_b;
+            packed_a.storeUnaligned(&derived[i]);
+
+        }
+    }
+
+#endif
+
+    for (; i < derived.size(); ++i) {
+        derived[i] = vector[i];
+    }
 }
 
 template<
@@ -506,12 +602,14 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*=(T scalar) -> VectorD
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    for (; i < max_vector; i += packed_size) {
+    if (this->properties.isEnabled(Properties::contiguous_memory)) {
+        for (; i < max_vector; i += packed_size) {
 
-        packed_a.loadUnaligned(&derived[i]);
-        packed_a *= packed_b;
-        packed_a.storeUnaligned(&derived[i]);
+            packed_a.loadUnaligned(&derived[i]);
+            packed_a *= packed_b;
+            packed_a.storeUnaligned(&derived[i]);
 
+        }
     }
 
 #endif
@@ -542,12 +640,14 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorD
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    for (; i < max_vector; i += packed_size) {
+    if (this->properties.isEnabled(Properties::contiguous_memory)) {
+        for (; i < max_vector; i += packed_size) {
 
-        packed_a.loadUnaligned(&derived[i]);
-        packed_a /= packed_b;
-        packed_a.storeUnaligned(&derived[i]);
+            packed_a.loadUnaligned(&derived[i]);
+            packed_a /= packed_b;
+            packed_a.storeUnaligned(&derived[i]);
 
+        }
     }
 
 #endif
@@ -555,8 +655,6 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorD
     for (; i < derived.size(); ++i) {
         derived[i] /= scalar;
     }
-
-
 
     return derived;
 }
@@ -638,6 +736,14 @@ inline auto Vector<T, _size>::operator=(Vector &&vector) TL_NOEXCEPT -> Vector &
         this->_data = std::forward<Data<T, _size>>(vector._data);
     }
 
+    return (*this);
+}
+
+template<typename T, size_t _size>
+template<typename VectorDerived>
+inline auto Vector<T, _size>::operator=(const VectorDerived &vector) -> Vector &
+{
+    VectorBase<Vector<T, _size>>::set(vector);
     return (*this);
 }
 
@@ -1063,7 +1169,12 @@ inline Vector<T, _size> operator / (Vector<T, _size> &&vector, T scalar)
     return vector;
 }
 
-
+//template<typename T, size_t _size>
+//inline Vector<T, _size> operator / (const Vector<T, _size> &vector, T scalar)
+//{
+//    vector /= scalar;
+//    return vector;
+//}
 
 
 template<typename T, size_t _size> 
@@ -1078,9 +1189,6 @@ double dotProduct(const Vector<T, _size> &v1,
     }
     return dot;
 }
-
-
-
 
 template<typename T, size_t _size>
 std::ostream &operator<< (std::ostream &os, const Vector<T, _size> &vector)

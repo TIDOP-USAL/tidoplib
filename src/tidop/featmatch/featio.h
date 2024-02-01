@@ -90,9 +90,9 @@ public:
 
 protected:
 
-    const tl::Path &filePath() const;
-    const std::vector<cv::KeyPoint> &keyPoints() const;
-    const cv::Mat &descriptors() const;
+    auto filePath() const -> const tl::Path&;
+    auto keyPoints() const -> const std::vector<cv::KeyPoint>&;
+    auto descriptors() const -> const cv::Mat&;
     //const FeaturesMetadata &metadata() const;
 
 };
@@ -121,10 +121,10 @@ public:
 
     virtual void read() = 0;
 
-    std::vector<cv::KeyPoint> keyPoints() const;
-    cv::Mat descriptors() const;
+    auto keyPoints() const -> std::vector<cv::KeyPoint>;
+    auto descriptors() const -> cv::Mat;
     //FeaturesMetadata metadata() const;
-    tl::Path file() const;
+    auto file() const -> tl::Path;
 
 };
 
@@ -146,9 +146,9 @@ private:
 
 public:
 
-    static std::unique_ptr<FeaturesReader> create(const tl::Path &file);
+    static auto create(const tl::Path &file) -> std::unique_ptr<FeaturesReader>;
     TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<FeaturesReader> createReader(const tl::Path &file);
+    static auto createReader(const tl::Path &file) -> std::unique_ptr<FeaturesReader>;
 };
 
 /*!
@@ -163,9 +163,9 @@ private:
 
 public:
 
-    static std::unique_ptr<FeaturesWriter> create(const tl::Path &file);
+    static auto create(const tl::Path &file) -> std::unique_ptr<FeaturesWriter>;
     TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<FeaturesWriter> createWriter(const tl::Path &file);
+    static auto createWriter(const tl::Path &file) -> std::unique_ptr<FeaturesWriter>;
 };
 
 

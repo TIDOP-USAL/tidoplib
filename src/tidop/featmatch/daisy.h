@@ -75,13 +75,13 @@ public:
 
 public:
 
-    double radius() const override;
-    int qRadius() const override;
-    int qTheta() const override;
-    int qHist() const override;
-    std::string norm() const override;
-    bool interpolation() const override;
-    bool useOrientation() const override;
+    auto radius() const -> double override;
+    auto qRadius() const -> int override;
+    auto qTheta() const -> int override;
+    auto qHist() const -> int override;
+    auto norm() const -> std::string override;
+    auto interpolation() const -> bool override;
+    auto useOrientation() const -> bool override;
     void setRadius(double radius) override;
     void setQRadius(int qRadius) override;
     void setQTheta(int qTheta) override;
@@ -135,8 +135,7 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 
 // Daisy interface

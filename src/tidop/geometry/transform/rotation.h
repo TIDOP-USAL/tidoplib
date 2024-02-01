@@ -36,6 +36,8 @@ namespace tl
 {
 
 
+namespace geom
+{
 
 /*! \addtogroup geometry
  *  \{
@@ -456,5 +458,7 @@ void Rotation<Point_t>::update()
 /*! \} */ // end of trf2DGroup
 
 /*! \} */ // end of geometry
+
+} // End namespace geom
 
 } // End namespace tl

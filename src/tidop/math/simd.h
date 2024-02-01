@@ -1734,6 +1734,45 @@ auto Packed<T>::zero() -> Packed
     return internal::setZero<T>();
 }
 
+
+/* Transpose */
+
+template<typename T>
+typename std::enable_if<
+    std::is_same<float, T>::value,
+    void>::type
+transposeMatrix4x4(Packed<T> &r1,
+                   Packed<T> &r2,
+                   Packed<T> &r3,
+                   Packed<T> &r4) 
+{
+    __m128 tmp1 = _mm_unpacklo_ps(r1, r2);
+    __m128 tmp2 = _mm_unpackhi_ps(r1, r2);
+    __m128 tmp3 = _mm_unpacklo_ps(r3, r4);
+    __m128 tmp4 = _mm_unpackhi_ps(r3, r4);
+
+    r1 = _mm_movelh_ps(tmp1, tmp3);
+    r2 = _mm_movehl_ps(tmp3, tmp1);
+    r3 = _mm_movelh_ps(tmp2, tmp4);
+    r4 = _mm_movehl_ps(tmp4, tmp2);
+
+
+/// _MM_TRANSPOSE4_PS lo hace:
+//    __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          
+//        
+//        _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          
+//        _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          
+//        _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          
+//        _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          
+//        
+//        (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              
+//        (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              
+//        (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              
+//        (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD); 
+}
+
+
+
 /*! \} */ // end of Math
 
 } // End namespace tl

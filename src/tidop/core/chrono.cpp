@@ -56,71 +56,84 @@ uint64_t tickCount()
 
 
 Chrono::Chrono()
-  : mMessage("")
+  : message("")
 {
 }
 
 Chrono::Chrono(std::string message)
-  : mMessage(std::move(message)),
-    bWriteMessage(true)
+  : message(std::move(message)),
+    writeMessage(true)
 {
 }
 
-double Chrono::pause()
+auto Chrono::pause() -> double
 {
-    if (mStatus == Status::running) {
-        mAccumulated += std::chrono::steady_clock::now() - mTimeIni;
-        mStatus = Status::pause;
+    if (status == Status::running) {
+        accumulatedTime += std::chrono::steady_clock::now() - initialTime;
+        status = Status::pause;
     }
-    return mAccumulated.count();
+
+    return accumulatedTime.count();
 }
 
 void Chrono::reset()
 {
-    mAccumulated = std::chrono::seconds::zero();
-    mStatus = Status::start;
-    mMessage = "";
+    accumulatedTime = std::chrono::seconds::zero();
+    status = Status::start;
+    message = "";
 }
 
 void Chrono::resume()
 {
-    if (mStatus == Status::pause) {
-        mTimeIni = std::chrono::steady_clock::now();
-        mStatus = Status::running;
+    if (status == Status::pause) {
+        initialTime = std::chrono::steady_clock::now();
+        status = Status::running;
     }
 }
 
 void Chrono::run()
 {
-    mTimeIni = std::chrono::steady_clock::now();
-    mAccumulated = std::chrono::seconds::zero();
-    mStatus = Status::running;
+    initialTime = std::chrono::steady_clock::now();
+    accumulatedTime = std::chrono::seconds::zero();
+    status = Status::running;
 }
 
-double Chrono::stop()
+auto Chrono::stop() -> double
 {
-    std::chrono::duration<double> time = mAccumulated;
+    //std::chrono::duration<double> time = accumulatedTime;
 
-    if (mStatus == Status::running) {
-        time += std::chrono::steady_clock::now() - mTimeIni;
-        mStatus = Status::stopped;
-    } else if (mStatus == Status::pause) {
-        mStatus = Status::stopped;
+    if (status == Status::running) {
+        accumulatedTime += std::chrono::steady_clock::now() - initialTime;
+    } /*else if (status == Status::pause) {
+        status = Status::stopped;
     } else {
         time = std::chrono::seconds::zero();
+    }*/
+
+    status = Status::stopped;
+
+    if (writeMessage) {
+        Message::info("{} [Time: {} seconds]", message, accumulatedTime.count());
     }
 
-    if (bWriteMessage) {
-        Message::info("{} [Time: {} seconds]", mMessage, time.count());
-    }
+    return accumulatedTime.count();
+}
 
-    return time.count();
+auto Chrono::currentTime() const -> double
+{
+    if (status == Status::running) {
+        auto time = accumulatedTime;
+        time += std::chrono::steady_clock::now() - initialTime;
+        return time.count();
+    } else {
+        return accumulatedTime.count();
+    }
 }
 
 void Chrono::setMessage(const std::string &message)
 {
-    mMessage = message;
-    bWriteMessage = true;
+    this->message = message;
+    writeMessage = true;
 }
 
 

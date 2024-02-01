@@ -31,6 +31,7 @@
 #include <tidop/geometry/transform/rotation.h>
 #include <tidop/geometry/transform/helmert2d.h>
 #include <tidop/geometry/entities/point.h>
+#include <tidop/core/console/menu.h>
 
 using namespace tl;
 
@@ -48,7 +49,8 @@ int main(int argc, char **argv)
     auto arg_ty = Argument::make<double>("ty", "Traslación en Y", 0.0);
     auto arg_rotation = Argument::make<double>("rotation", "Rotación", 0.);
     auto arg_scale = Argument::make<double>("scale", "Escala", 1.);
-    arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
+    //arg_scale->setValidator(std::make_shared<RangeValidator<double>>(0., 100));
+    arg_scale->setValidator(RangeValidator<double>::create(0., 100));
     auto arg_scale_x = Argument::make<double>("scale_x", "Escala X", 1.);
     auto arg_scale_y = Argument::make<double>("scale_y", "Escala Y", 1.);
 
@@ -88,14 +90,14 @@ int main(int argc, char **argv)
     cmd_list_transform.addCommand(cmd_affine);
 
     // Parseo de los argumentos y comprobación de los mismos
-    CommandList::Status status = cmd_list_transform.parse(argc, argv);
-    if(status == CommandList::Status::parse_error) {
+    Command::Status status = cmd_list_transform.parse(argc, argv);
+    if(status == Command::Status::parse_error) {
         return 1;
-    } else if(status == CommandList::Status::show_help) {
+    } else if(status == Command::Status::show_help) {
         return 0;
-    } else if(status == CommandList::Status::show_licence) {
+    } else if(status == Command::Status::show_licence) {
         return 0;
-    } else if(status == CommandList::Status::show_version) {
+    } else if(status == Command::Status::show_version) {
         return 0;
     }
 
@@ -120,7 +122,7 @@ int main(int argc, char **argv)
       Point<double>(4138759.902, 702670.738)};
 
 
-    std::shared_ptr<TransformBase<Point<double>>> transformation;
+    std::shared_ptr<geom::TransformBase<Point<double>>> transformation;
 
     Chrono chrono("Translation");
     chrono.run();
@@ -138,13 +140,13 @@ int main(int argc, char **argv)
           Point<double>(726807.795,	766227.040)};
 
         if(transform_name.compare("Translation") == 0) {
-            transformation = std::make_shared<Translation<Point<double>>>();
+            transformation = std::make_shared<geom::Translation<Point<double>>>();
         } else if(transform_name.compare("Rotation") == 0) {
-            transformation = std::make_shared<Rotation<Point<double>>>();
+            transformation = std::make_shared<geom::Rotation<Point<double>>>();
         } else if(transform_name.compare("Helmert2D") == 0) {
-            transformation = std::make_shared<Helmert2D<Point<double>>>();
+            transformation = std::make_shared<geom::Helmert2D<Point<double>>>();
         } else if(transform_name.compare("Affine") == 0) {
-            transformation = std::make_shared<Affine<Point<double>>>();
+            transformation = std::make_shared<geom::Affine<Point<double>>>();
         }
 
         transformation->compute(pts_in, pts_out);
@@ -152,13 +154,13 @@ int main(int argc, char **argv)
     } else {
 
         if(transform_name.compare("Translation") == 0) {
-            transformation = std::make_shared<Translation<Point<double>>>(tx, ty);
+            transformation = std::make_shared<geom::Translation<Point<double>>>(tx, ty);
         } else if(transform_name.compare("Rotation") == 0) {
-            transformation = std::make_shared<Rotation<Point<double>>>(rotation_angle);
+            transformation = std::make_shared<geom::Rotation<Point<double>>>(rotation_angle);
         } else if(transform_name.compare("Helmert2D") == 0) {
-            transformation = std::make_shared<Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
+            transformation = std::make_shared<geom::Helmert2D<Point<double>>>(tx, ty, scale, rotation_angle);
         } else if(transform_name.compare("Affine") == 0) {
-            transformation = std::make_shared<Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
+            transformation = std::make_shared<geom::Affine<Point<double>>>(tx, ty, scale_x, scale_y, rotation_angle);
         }
 
         std::vector<Point<double>> pts_out;

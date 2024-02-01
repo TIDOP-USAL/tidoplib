@@ -45,27 +45,27 @@ SiftProperties::SiftProperties(const SiftProperties &siftProperties)
 {
 }
 
-int SiftProperties::featuresNumber() const
+auto SiftProperties::featuresNumber() const -> int
 {
     return mFeaturesNumber;
 }
 
-int SiftProperties::octaveLayers() const
+auto SiftProperties::octaveLayers() const -> int
 {
     return mOctaveLayers;
 }
 
-double SiftProperties::contrastThreshold() const
+auto SiftProperties::contrastThreshold() const -> double
 {
     return mContrastThreshold;
 }
 
-double SiftProperties::edgeThreshold() const
+auto SiftProperties::edgeThreshold() const -> double
 {
     return mEdgeThreshold;
 }
 
-double SiftProperties::sigma() const
+auto SiftProperties::sigma() const -> double
 {
     return mSigma;
 }
@@ -104,7 +104,7 @@ void SiftProperties::reset()
     mSigma = sift_default_value_sigma;
 }
 
-std::string SiftProperties::name() const
+auto SiftProperties::name() const -> std::string
 {
     return std::string("SIFT");
 }
@@ -157,7 +157,7 @@ void SiftDetectorDescriptor::update()
 #endif
 }
 
-std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
+auto SiftDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -177,7 +177,7 @@ std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv:
     return keyPoints;
 }
 
-cv::Mat SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

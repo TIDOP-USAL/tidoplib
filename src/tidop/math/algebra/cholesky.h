@@ -117,7 +117,6 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
-    /// Resolver con matrices...
     TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
 
     T sum;

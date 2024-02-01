@@ -84,7 +84,7 @@ public:
      */
     virtual cv::Mat read(const Rect<int> &rect = Rect<int>(),
                          const Size<int> &size = Size<int>(),
-                         Affine<Point<int>> *trf = nullptr) = 0;
+                         geom::Affine<Point<int>> *trf = nullptr) = 0;
 
     /*!
      * \brief Lee el fragmento de imagen correspondiente a una región
@@ -97,7 +97,7 @@ public:
     virtual cv::Mat read(double scaleX,
                          double scaleY,
                          const Rect<int> &rect = Rect<int>(),
-                         Affine<Point<int>> *trf = nullptr) = 0;
+                         geom::Affine<Point<int>> *trf = nullptr) = 0;
 
     /*!
      * \brief Lee el fragmento de imagen correspondiente a una ventana
@@ -109,7 +109,7 @@ public:
     virtual cv::Mat read(const WindowI &window,
                          double scaleX = 1.,
                          double scaleY = 1.,
-                         Affine<Point<int>> *trf = nullptr) = 0;
+                         geom::Affine<Point<int>> *trf = nullptr) = 0;
 
     /*!
      * \brief Lee el fragmento de imagen correspondiente a una ventana en coordenadas terreno
@@ -121,7 +121,7 @@ public:
     virtual cv::Mat read(const Window<Point<double>> &terrainWindow,
                          double scaleX = 1.,
                          double scaleY = 1.,
-                         Affine<Point<int>> *trf = nullptr) = 0;
+                         geom::Affine<Point<int>> *trf = nullptr) = 0;
 
     /*!
      * \brief Devuelve el número de filas de la imagen
@@ -171,7 +171,7 @@ public:
      * 6 - Resolución en y.
      * \return Georeferencia
      */
-    virtual Affine<Point<double>> georeference() const = 0;
+    virtual geom::Affine<Point<double>> georeference() const = 0;
 
     /*!
      * \brief Sistema de referencia en formato WKT

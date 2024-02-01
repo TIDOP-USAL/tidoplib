@@ -43,12 +43,12 @@ void GmsProperties::reset()
     mThreshold = gms_default_value_threshold;
 }
 
-std::string GmsProperties::name() const
+auto GmsProperties::name() const -> std::string
 {
     return std::string("GMS");
 }
 
-bool GmsProperties::rotation() const
+auto GmsProperties::rotation() const -> bool
 {
     return mRotation;
 }
@@ -58,7 +58,7 @@ void GmsProperties::setRotation(bool rotation)
     mRotation = rotation;
 }
 
-bool GmsProperties::scale() const
+auto GmsProperties::scale() const -> bool
 {
     return mScale;
 }
@@ -68,7 +68,7 @@ void GmsProperties::setScale(bool scale)
     mScale = scale;
 }
 
-double GmsProperties::threshold() const
+auto GmsProperties::threshold() const -> double
 {
     return mThreshold;
 }
@@ -77,6 +77,8 @@ void GmsProperties::setThreshold(double threshold)
 {
     mThreshold = threshold;
 }
+
+
 
 /*----------------------------------------------------------------*/
 
@@ -91,7 +93,7 @@ GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
                bool rotation,
                bool scale,
                double threshold)
-    : GmsProperties(),
+  : GmsProperties(),
     mDescriptorMatcher(std::move(descriptorMatcher))
 {
     this->setRotation(rotation);
@@ -99,14 +101,14 @@ GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
     this->setThreshold(threshold);
 }
 
-bool GsmImp::compute(const cv::Mat &queryDescriptor,
+auto GsmImp::compute(const cv::Mat &queryDescriptor,
                      const cv::Mat &trainDescriptor,
                      const std::vector<cv::KeyPoint> &keypoints1,
                      const std::vector<cv::KeyPoint> &keypoints2,
                      std::vector<cv::DMatch> *goodMatches,
                      std::vector<cv::DMatch> *wrongMatches,
                      const cv::Size &queryImageSize,
-                     const cv::Size &trainImageSize)
+                     const cv::Size &trainImageSize) -> bool
 {
     try {
 

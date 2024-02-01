@@ -49,6 +49,7 @@ if(TL_HAVE_GEOSPATIAL)
                           TidopLib::Geom
                           TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
     					  
