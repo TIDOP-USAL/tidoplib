@@ -1297,7 +1297,7 @@ public:
     auto col(size_t col) const -> const internal::MatrixCol<const T>;
     auto col(size_t col) -> internal::MatrixCol<T>;
 
-    auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) const -> const internal::MatrixBlock<const T, DynamicData, DynamicData>;
+    auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) const -> const internal::MatrixBlock<const T>;
     auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) -> internal::MatrixBlock<T>;
 
     auto rowBlock(size_t iniRow, size_t endRow) const -> const internal::MatrixBlock<const T, DynamicData, DynamicData>;
@@ -3547,7 +3547,7 @@ inline auto Matrix<T, _rows, _cols>::operator[](size_t position)  -> internal::M
 template<typename T, size_t _rows, size_t _cols>
 inline  auto Matrix<T, _rows, _cols>::row(size_t row) const -> const internal::MatrixRow<const T>
 {
-    return internal::MatrixRow<const T>(this, row);
+    return internal::MatrixRow<const T>(this->data(), row);
 }
 
 template<typename T, size_t _rows, size_t _cols>
@@ -3572,18 +3572,18 @@ template<typename T, size_t _rows, size_t _cols>
 inline  auto Matrix<T, _rows, _cols>::block(size_t iniRow, 
                                             size_t endRow,
                                             size_t iniCol, 
-                                            size_t endCol) const -> const internal::MatrixBlock<const T, DynamicData, DynamicData>
+                                            size_t endCol) const -> const internal::MatrixBlock<const T>
 {
     TL_ASSERT(iniRow >= 0 && endRow > iniRow && endRow < this->rows() &&
               iniCol >= 0 && endCol > iniCol && endCol < this->cols(), "Matrix block out of range");
 
-    return internal::MatrixBlock<const T, DynamicData, DynamicData>(this->data(),
-                                                          this->rows(),
-                                                          this->cols(),
-                                                           iniRow,
-                                                           endRow,
-                                                           iniCol,
-                                                           endCol);
+    return internal::MatrixBlock<const T>(this->data(),
+                                          this->rows(),
+                                          this->cols(),
+                                          iniRow,
+                                          endRow,
+                                          iniCol,
+                                          endCol);
 }
 
 template<typename T, size_t _rows, size_t _cols>
