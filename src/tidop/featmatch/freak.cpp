@@ -43,22 +43,22 @@ FreakProperties::FreakProperties(const FreakProperties &freakProperties)
 {
 }
 
-bool FreakProperties::orientationNormalized() const
+auto FreakProperties::orientationNormalized() const -> bool
 {
     return mOrientationNormalized;
 }
 
-bool FreakProperties::scaleNormalized() const
+auto FreakProperties::scaleNormalized() const -> bool
 {
     return mScaleNormalized;
 }
 
-double FreakProperties::patternScale() const
+auto FreakProperties::patternScale() const -> double
 {
     return mPatternScale;
 }
 
-int FreakProperties::octaves() const
+auto FreakProperties::octaves() const -> int
 {
     return mOctaves;
 }
@@ -91,7 +91,7 @@ void FreakProperties::reset()
     mOctaves = 4;
 }
 
-std::string FreakProperties::name() const
+auto FreakProperties::name() const -> std::string
 {
     return std::string("FREAK");
 }
@@ -134,8 +134,7 @@ void FreakDescriptor::update()
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
-cv::Mat FreakDescriptor::extract(const cv::Mat &img,
-                                 std::vector<cv::KeyPoint> &keyPoints)
+auto FreakDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

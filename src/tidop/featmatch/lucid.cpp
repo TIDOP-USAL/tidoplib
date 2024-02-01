@@ -34,12 +34,12 @@ LucidProperties::LucidProperties()
 {
 }
 
-int LucidProperties::lucidKernel() const
+auto LucidProperties::lucidKernel() const -> int
 {
     return mLucidKernel;
 }
 
-int LucidProperties::blurKernel() const
+auto LucidProperties::blurKernel() const -> int
 {
     return mBlurKernel;
 }
@@ -75,7 +75,7 @@ LucidDescriptor::LucidDescriptor()
 }
 
 LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
-    : LucidProperties()
+  : LucidProperties()
 {
     LucidProperties::setLucidKernel(lucidKernel);
     LucidProperties::setBlurKernel(blurKernel);
@@ -90,8 +90,8 @@ void LucidDescriptor::update()
 #endif
 }
 
-cv::Mat LucidDescriptor::extract(const cv::Mat &img,
-                                 std::vector<cv::KeyPoint> &keyPoints)
+auto LucidDescriptor::extract(const cv::Mat &img,
+                              std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

@@ -37,37 +37,37 @@ DaisyProperties::DaisyProperties()
 
 DaisyProperties::DaisyProperties(const DaisyProperties &daisyProperties) = default;
 
-double DaisyProperties::radius() const
+auto DaisyProperties::radius() const -> double
 {
     return mRadius;
 }
 
-int DaisyProperties::qRadius() const
+auto DaisyProperties::qRadius() const -> int
 {
     return mQRadius;
 }
 
-int DaisyProperties::qTheta() const
+auto DaisyProperties::qTheta() const -> int
 {
     return mQTheta;
 }
 
-int DaisyProperties::qHist() const
+auto DaisyProperties::qHist() const -> int
 {
     return mQHist;
 }
 
-std::string DaisyProperties::norm() const
+auto DaisyProperties::norm() const -> std::string
 {
     return mNorm;
 }
 
-bool DaisyProperties::interpolation() const
+auto DaisyProperties::interpolation() const -> bool
 {
     return mInterpolation;
 }
 
-bool DaisyProperties::useOrientation() const
+auto DaisyProperties::useOrientation() const -> bool
 {
     return mUseOrientation;
 }
@@ -123,7 +123,7 @@ void DaisyProperties::reset()
     mUseOrientation = daisy_default_value_use_orientation;
 }
 
-std::string DaisyProperties::name() const
+auto DaisyProperties::name() const -> std::string
 {
     return std::string("DAISY");
 }
@@ -193,7 +193,7 @@ void DaisyDescriptor::update()
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
-cv::Mat DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

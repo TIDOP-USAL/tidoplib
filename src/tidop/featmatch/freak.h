@@ -65,10 +65,10 @@ public:
 
 public:
 
-    bool orientationNormalized() const override;
-    bool scaleNormalized() const override;
-    double patternScale() const override;
-    int octaves() const override;
+    auto orientationNormalized() const -> bool override;
+    auto scaleNormalized() const -> bool override;
+    auto patternScale() const -> double override;
+    auto octaves() const -> int override;
     void setOrientationNormalized(bool orientationNormalized) override;
     void setScaleNormalized(bool scaleNormalized) override;
     void setPatternScale(double patternScale) override;
@@ -79,7 +79,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -116,8 +116,7 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Freak interface
 

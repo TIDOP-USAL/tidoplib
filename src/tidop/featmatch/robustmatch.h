@@ -30,7 +30,7 @@ namespace tl
 {
 
 class TL_EXPORT RobustMatchingProperties
-    : public RobustMatcher
+  : public RobustMatcher
 {
 
 private:
@@ -48,11 +48,11 @@ public:
 
 public:
 
-    double ratio() const override;
+    auto ratio() const -> double override;
     void setRatio(double ratio) override;
-    bool crossCheck() const override;
+    auto crossCheck() const -> bool override;
     void setCrossCheck(bool crossCheck) override;
-    std::shared_ptr<GeometricTest> geometricTest() const override;
+    auto geometricTest() const -> std::shared_ptr<GeometricTest> override;
     void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) override;
 
 // MatchingStrategy interface
@@ -60,7 +60,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const override;
+    auto name() const -> std::string override;
 
 };
 
@@ -99,9 +99,9 @@ public:
      * \param[out] goodMatches
      * \param[out] wrongMatches
      */
-    static std::vector<std::vector<cv::DMatch>> ratioTest(const std::vector<std::vector<cv::DMatch>> &matches,
-                                                          double ratio,
-                                                          std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr)
+    static auto ratioTest(const std::vector<std::vector<cv::DMatch>> &matches,
+                          double ratio,
+                          std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr) -> std::vector<std::vector<cv::DMatch>>
     {
         std::vector<std::vector<cv::DMatch>> goodMatches;
 
@@ -131,9 +131,9 @@ public:
      * \param[out] goodMatches
      * \param[out] wrongMatches
      */
-    static std::vector<cv::DMatch> crossCheckTest(const std::vector<std::vector<cv::DMatch>> &matches12,
-                                                  const std::vector<std::vector<cv::DMatch>> &matches21,
-                                                  std::vector<cv::DMatch> *wrongMatches = nullptr)
+    static auto crossCheckTest(const std::vector<std::vector<cv::DMatch>> &matches12,
+                               const std::vector<std::vector<cv::DMatch>> &matches21,
+                               std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>
     {
         std::vector<cv::DMatch> goodMatches;
 
@@ -165,10 +165,10 @@ public:
         return goodMatches;
     }
 
-    std::vector<cv::DMatch> geometricFilter(const std::vector<cv::DMatch> &matches,
-                                            const std::vector<cv::KeyPoint> &keypoints1,
-                                            const std::vector<cv::KeyPoint> &keypoints2,
-                                            std::vector<cv::DMatch> *wrongMatches = nullptr);
+    auto geometricFilter(const std::vector<cv::DMatch> &matches,
+                         const std::vector<cv::KeyPoint> &keypoints1,
+                         const std::vector<cv::KeyPoint> &keypoints2,
+                         std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>;
 
     /*!
      * \brief Matching
@@ -177,9 +177,9 @@ public:
      * \param[out] wrongMatches Wrong matches
      * \return Good matches
      */
-    std::vector<cv::DMatch> match(const cv::Mat &queryDescriptor,
-                                  const cv::Mat &trainDescriptor,
-                                  std::vector<cv::DMatch> *wrongMatches = nullptr);
+    auto match(const cv::Mat &queryDescriptor,
+               const cv::Mat &trainDescriptor,
+               std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>;
 
 private:
 
@@ -191,9 +191,9 @@ private:
      * \param[out] wrongMatches Wrong matches
      * \return Good matches
      */
-    std::vector<cv::DMatch> robustMatch(const cv::Mat &queryDescriptor,
-                                        const cv::Mat &trainDescriptor,
-                                        std::vector<cv::DMatch> *wrongMatches);
+    auto robustMatch(const cv::Mat &queryDescriptor,
+                     const cv::Mat &trainDescriptor,
+                     std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>;
 
     /*!
      * \brief Robust matching
@@ -203,12 +203,12 @@ private:
      * \param[out] wrongMatches Wrong matches
      * \return Good matches
      */
-    std::vector<cv::DMatch> fastRobustMatch(const cv::Mat &queryDescriptor,
-                                            const cv::Mat &trainDescriptor,
-                                            std::vector<cv::DMatch> *wrongMatches);
+    auto fastRobustMatch(const cv::Mat &queryDescriptor,
+                         const cv::Mat &trainDescriptor,
+                         std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>;
 
 
-    // MatchingAlgorithm interface
+// MatchingAlgorithm interface
 
 public:
 

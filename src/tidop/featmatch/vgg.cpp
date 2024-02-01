@@ -31,12 +31,12 @@ namespace tl
 
 
 VggProperties::VggProperties()
-    : mDescriptorType(vgg_default_value_descriptor_type)
+  : mDescriptorType(vgg_default_value_descriptor_type)
 {
 }
 
 VggProperties::VggProperties(const VggProperties &vggProperties)
-    : Vgg(vggProperties),
+  : Vgg(vggProperties),
     mDescriptorType(vggProperties.mDescriptorType),
     mScaleFactor(vggProperties.mScaleFactor),
     mSigma(vggProperties.mSigma),
@@ -46,7 +46,7 @@ VggProperties::VggProperties(const VggProperties &vggProperties)
 {
 }
 
-std::string VggProperties::descriptorType() const
+auto VggProperties::descriptorType() const -> std::string
 {
     return mDescriptorType;
 }
@@ -61,7 +61,7 @@ void VggProperties::setDescriptorType(const std::string &descriptorType)
     }
 }
 
-double VggProperties::scaleFactor() const
+auto VggProperties::scaleFactor() const -> double
 {
     return mScaleFactor;
 }
@@ -71,7 +71,7 @@ void VggProperties::setScaleFactor(double scaleFactor)
     mScaleFactor = scaleFactor;
 }
 
-double VggProperties::sigma() const
+auto VggProperties::sigma() const -> double
 {
     return mSigma;
 }
@@ -81,7 +81,7 @@ void VggProperties::setSigma(double sigma)
     mSigma = sigma;
 }
 
-bool VggProperties::useNormalizeDescriptor() const
+auto VggProperties::useNormalizeDescriptor() const -> bool
 {
     return bUseNormalizeDescriptor;
 }
@@ -91,7 +91,7 @@ void VggProperties::setUseNormalizeDescriptor(bool useNormalizeDescriptor)
     bUseNormalizeDescriptor = useNormalizeDescriptor;
 }
 
-bool VggProperties::useNormalizeImage() const
+auto VggProperties::useNormalizeImage() const -> bool
 {
     return bUseNormalizeImage;
 }
@@ -101,7 +101,7 @@ void VggProperties::setUseNormalizeImage(bool useNormalizeImage)
     bUseNormalizeImage = useNormalizeImage;
 }
 
-bool VggProperties::useScaleOrientation() const
+auto VggProperties::useScaleOrientation() const -> bool
 {
     return bUseScaleOrientation;
 }
@@ -121,7 +121,7 @@ void VggProperties::reset()
     bUseScaleOrientation = vgg_default_value_useScale_orientation;
 }
 
-std::string VggProperties::name() const
+auto VggProperties::name() const -> std::string
 {
     return std::string("VGG");
 }
@@ -227,7 +227,7 @@ void VggDescriptor::setUseScaleOrientation(bool useScaleOrientation)
     update();
 }
 
-cv::Mat VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

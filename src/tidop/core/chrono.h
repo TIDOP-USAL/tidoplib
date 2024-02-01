@@ -152,6 +152,8 @@ public:
      */
     auto stop() -> double;
   
+    auto currentTime() const -> double;
+
     /*!
      * \brief Stops the chronometer
      * \param[in] message Message displayed when chronometer is stopped

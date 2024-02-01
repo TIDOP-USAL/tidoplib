@@ -63,8 +63,8 @@ public:
 
 public:
 
-    int lucidKernel() const override;
-    int blurKernel() const override;
+    auto lucidKernel() const -> int override;
+    auto blurKernel() const -> int override;
     void setLucidKernel(int lucidKernel) override;
     void setBlurKernel(int blurKernel) override;
 
@@ -82,7 +82,7 @@ public:
 
 
 class TL_EXPORT LucidDescriptor
-    : public LucidProperties,
+  : public LucidProperties,
     public DescriptorExtractor
 {
 
@@ -106,9 +106,7 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
-
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Lucid interface
 

@@ -85,25 +85,25 @@ public:
      * \brief Copy assignment operator
      * \param[in] size Size object to copy
      */
-    Size &operator = (const Size &size);
+    auto operator = (const Size &size) -> Size&;
 
     /*!
      * \brief Move assignment operator
      * \param[in] size Size object to move
      */
-    Size &operator = (Size &&size) TL_NOEXCEPT;
+    auto operator = (Size &&size) TL_NOEXCEPT -> Size&;
 
     /*!
      * \brief Check if Size object is empty
      * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
      */
-    bool isEmpty() const;
+    auto isEmpty() const -> bool;
 
     /*!
      * \brief Check if Size object is valid
      * \return Returns true if both the width and height is equal to or greater than 0; otherwise returns false.
      */
-    bool isValid() const;
+    auto isValid() const -> bool;
 
     /*!
      * \brief Type conversion
@@ -144,26 +144,15 @@ Size<T>::Size(const Size &size)
 {
 }
 
-template<typename T> inline
-Size<T>::Size(Size &&size) TL_NOEXCEPT
+template<typename T> 
+inline Size<T>::Size(Size &&size) TL_NOEXCEPT
   : width(size.width),
     height(size.height)
 {
 }
 
-template<typename T> inline
-Size<T> &Size<T>::operator = (const Size &size)
-{
-    if (this != &size) {
-        this->width = size.width;
-        this->height = size.height;
-    }
-
-    return *this;
-}
-
-template<typename T> inline
-Size<T> &Size<T>::operator = (Size &&size) TL_NOEXCEPT
+template<typename T> 
+inline auto Size<T>::operator = (const Size &size) -> Size<T>&
 {
     if (this != &size) {
         this->width = size.width;
@@ -174,13 +163,24 @@ Size<T> &Size<T>::operator = (Size &&size) TL_NOEXCEPT
 }
 
 template<typename T>
-inline bool tl::Size<T>::isEmpty() const
+inline auto Size<T>::operator = (Size &&size) TL_NOEXCEPT -> Size<T>&
+{
+    if (this != &size) {
+        this->width = size.width;
+        this->height = size.height;
+    }
+
+    return *this;
+}
+
+template<typename T>
+inline auto Size<T>::isEmpty() const -> bool
 {
     return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
-inline bool tl::Size<T>::isValid() const
+inline auto Size<T>::isValid() const -> bool
 {
     return width > static_cast<T>(0) && height > static_cast<T>(0);
 }

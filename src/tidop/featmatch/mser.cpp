@@ -58,47 +58,47 @@ MserProperties::MserProperties(const MserProperties &mserProperties)
 }
 
 
-int MserProperties::delta() const
+auto MserProperties::delta() const -> int
 {
     return mDelta;
 }
 
-int MserProperties::minArea() const
+auto MserProperties::minArea() const -> int
 {
     return mMinArea;
 }
 
-int MserProperties::maxArea() const
+auto MserProperties::maxArea() const -> int
 {
     return mMaxArea;
 }
 
-double MserProperties::maxVariation() const
+auto MserProperties::maxVariation() const -> double
 {
     return mMaxVariation;
 }
 
-double MserProperties::minDiversity() const
+auto MserProperties::minDiversity() const -> double
 {
     return mMinDiversity;
 }
 
-int MserProperties::maxEvolution() const
+auto MserProperties::maxEvolution() const -> int
 {
     return mMaxEvolution;
 }
 
-double MserProperties::areaThreshold() const
+auto MserProperties::areaThreshold() const -> double
 {
     return mAreaThreshold;
 }
 
-double MserProperties::minMargin() const
+auto MserProperties::minMargin() const -> double
 {
     return mMinMargin;
 }
 
-int MserProperties::edgeBlurSize() const
+auto MserProperties::edgeBlurSize() const -> int
 {
     return mEdgeBlurSize;
 }
@@ -161,7 +161,7 @@ void MserProperties::reset()
     mEdgeBlurSize = 5;
 }
 
-std::string MserProperties::name() const
+auto MserProperties::name() const -> std::string
 {
     return std::string("MSER");
 }
@@ -176,7 +176,7 @@ MserDetector::MserDetector()
 }
 
 MserDetector::MserDetector(const MserDetector &mserDetector)
-    : MserProperties(mserDetector),
+  : MserProperties(mserDetector),
     KeypointDetector(mserDetector)
 {
     update();
@@ -217,7 +217,7 @@ void MserDetector::update()
                              MserProperties::edgeBlurSize());
 }
 
-std::vector<cv::KeyPoint> MserDetector::detect(const cv::Mat &img, cv::InputArray &mask)
+auto MserDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 

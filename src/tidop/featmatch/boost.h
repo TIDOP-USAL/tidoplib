@@ -64,16 +64,16 @@ public:
     BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT;
     ~BoostProperties() override;
 
-    BoostProperties &operator =(const BoostProperties &boostProperties);
-    BoostProperties &operator =(BoostProperties &&boostProperties) TL_NOEXCEPT;
+    auto operator =(const BoostProperties &boostProperties) -> BoostProperties&;
+    auto operator =(BoostProperties &&boostProperties) TL_NOEXCEPT -> BoostProperties&;
 
 // Boost interface
 
 public:
 
-    std::string descriptorType() const override;
-    bool useOrientation() const override;
-    double scaleFactor() const override;
+    auto descriptorType() const -> std::string override;
+    auto useOrientation() const -> bool override;
+    auto scaleFactor() const -> double override;
     void setDescriptorType(const std::string &descriptorType) override;
     void setUseOrientation(bool useOrientation) override;
     void setScaleFactor(double scaleFactor) override;
@@ -83,7 +83,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const override;
+    auto name() const -> std::string override;
 
 };
 
@@ -113,8 +113,8 @@ public:
                     double scaleFactor);
     ~BoostDescriptor() override = default;
 
-    BoostDescriptor &operator =(const BoostDescriptor &boostDescriptor);
-    BoostDescriptor &operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT;
+    auto operator =(const BoostDescriptor &boostDescriptor) -> BoostDescriptor&;
+    auto operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT -> BoostDescriptor&;
 
 private:
 
@@ -138,8 +138,7 @@ public:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 };
 

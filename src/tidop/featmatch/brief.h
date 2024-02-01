@@ -64,15 +64,15 @@ public:
     BriefProperties(BriefProperties &&briefProperties) TL_NOEXCEPT;
     ~BriefProperties() override;
 
-    BriefProperties &operator =(const BriefProperties &briefProperties);
-    BriefProperties &operator =(BriefProperties &&briefProperties) TL_NOEXCEPT;
+    auto operator =(const BriefProperties &briefProperties) -> BriefProperties&;
+    auto operator =(BriefProperties &&briefProperties) TL_NOEXCEPT -> BriefProperties&;
 
 // Brief interface
 
 public:
 
-    std::string bytes() const override;
-    bool useOrientation() const override;
+    auto bytes() const -> std::string override;
+    auto useOrientation() const -> bool override;
     void setBytes(const std::string &bytes) override;
     void setUseOrientation(bool useOrientation) override;
 
@@ -81,7 +81,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -109,8 +109,8 @@ public:
                     bool useOrientation);
     ~BriefDescriptor() override;
 
-    BriefDescriptor &operator =(const BriefDescriptor &briefDescriptor);
-    BriefDescriptor &operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT;
+    auto operator =(const BriefDescriptor &briefDescriptor) -> BriefDescriptor&;
+    auto operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT -> BriefDescriptor&;
 
 private:
 
@@ -120,8 +120,7 @@ private:
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 
 // Brief interface

@@ -59,47 +59,47 @@ OrbProperties::OrbProperties(const OrbProperties &orbProperties)
 {
 }
 
-int OrbProperties::featuresNumber() const
+auto OrbProperties::featuresNumber() const -> int
 {
     return mFeaturesNumber;
 }
 
-double OrbProperties::scaleFactor() const
+auto OrbProperties::scaleFactor() const -> double
 {
     return mScaleFactor;
 }
 
-int OrbProperties::levelsNumber() const
+auto OrbProperties::levelsNumber() const -> int
 {
     return mLevelsNumber;
 }
 
-int OrbProperties::edgeThreshold() const
+auto OrbProperties::edgeThreshold() const -> int
 {
     return mEdgeThreshold;
 }
 
-int OrbProperties::firstLevel() const
+auto OrbProperties::firstLevel() const -> int
 {
     return mFirstLevel;
 }
 
-int OrbProperties::wta_k() const
+auto OrbProperties::wta_k() const -> int
 {
     return mWTA_K;
 }
 
-std::string OrbProperties::scoreType() const
+auto OrbProperties::scoreType() const -> std::string
 {
     return mScoreType;
 }
 
-int OrbProperties::patchSize() const
+auto OrbProperties::patchSize() const -> int
 {
     return mPatchSize;
 }
 
-int OrbProperties::fastThreshold() const
+auto OrbProperties::fastThreshold() const -> int
 {
     return mFastThreshold;
 }
@@ -162,7 +162,7 @@ void OrbProperties::reset()
     mFastThreshold = 20;
 }
 
-std::string OrbProperties::name() const
+auto OrbProperties::name() const -> std::string
 {
     return std::string("ORB");
 }
@@ -222,7 +222,7 @@ OrbDetectorDescriptor::OrbDetectorDescriptor(int featuresNumber,
 
 #if CV_VERSION_MAJOR >= 4
 
-cv::ORB::ScoreType OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
+auto OrbDetectorDescriptor::convertScoreType(const std::string &scoreType) -> cv::ORB::ScoreType
 {
     cv::ORB::ScoreType score = cv::ORB::ScoreType::HARRIS_SCORE;
 
@@ -237,7 +237,7 @@ cv::ORB::ScoreType OrbDetectorDescriptor::convertScoreType(const std::string &sc
 
 #else
 
-int OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
+auto OrbDetectorDescriptor::convertScoreType(const std::string &scoreType) -> int
 {
     int score = cv::ORB::HARRIS_SCORE;
 
@@ -252,7 +252,7 @@ int OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
 
 #endif
 
-std::vector<cv::KeyPoint> OrbDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
+auto OrbDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -267,7 +267,7 @@ std::vector<cv::KeyPoint> OrbDetectorDescriptor::detect(const cv::Mat &img, cv::
     return keyPoints;
 }
 
-cv::Mat OrbDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto OrbDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 
@@ -388,7 +388,7 @@ OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(int featuresNumber,
     setFastThreshold(fastThreshold);
 }
 
-int OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType)
+auto OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType) -> int
 {
     int score = cv::ORB::HARRIS_SCORE;
 
@@ -416,8 +416,7 @@ void OrbCudaDetectorDescriptor::update()
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 }
 
-std::vector<cv::KeyPoint> OrbCudaDetectorDescriptor::detect(const cv::Mat &img,
-                                                            cv::InputArray &mask)
+auto OrbCudaDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -439,8 +438,7 @@ std::vector<cv::KeyPoint> OrbCudaDetectorDescriptor::detect(const cv::Mat &img,
     return keyPoints;
 }
 
-cv::Mat OrbCudaDetectorDescriptor::extract(const cv::Mat &img,
-                                           std::vector<cv::KeyPoint> &keyPoints)
+auto OrbCudaDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

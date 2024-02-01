@@ -100,22 +100,34 @@ void Chrono::run()
 
 auto Chrono::stop() -> double
 {
-    std::chrono::duration<double> time = accumulatedTime;
+    //std::chrono::duration<double> time = accumulatedTime;
 
     if (status == Status::running) {
-        time += std::chrono::steady_clock::now() - initialTime;
-        status = Status::stopped;
-    } else if (status == Status::pause) {
+        accumulatedTime += std::chrono::steady_clock::now() - initialTime;
+    } /*else if (status == Status::pause) {
         status = Status::stopped;
     } else {
         time = std::chrono::seconds::zero();
-    }
+    }*/
+
+    status = Status::stopped;
 
     if (writeMessage) {
-        Message::info("{} [Time: {} seconds]", message, time.count());
+        Message::info("{} [Time: {} seconds]", message, accumulatedTime.count());
     }
 
-    return time.count();
+    return accumulatedTime.count();
+}
+
+auto Chrono::currentTime() const -> double
+{
+    if (status == Status::running) {
+        auto time = accumulatedTime;
+        time += std::chrono::steady_clock::now() - initialTime;
+        return time.count();
+    } else {
+        return accumulatedTime.count();
+    }
 }
 
 void Chrono::setMessage(const std::string &message)

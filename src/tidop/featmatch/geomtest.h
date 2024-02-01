@@ -73,12 +73,12 @@ public:
 
 public:
 
-    virtual const Properties *properties() const = 0;
+    virtual auto properties() const -> const Properties* = 0;
     virtual void setProperties(const Properties *properties) = 0;
-    virtual std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                            const std::vector<cv::Point2f> &points2) = 0;
+    virtual auto exec(const std::vector<cv::Point2f> &points1,
+                      const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> = 0;
 
-    Type type()
+    auto type() -> Type
     {
         return mType;
     }
@@ -145,9 +145,9 @@ private:
 
 public:
 
-    static std::shared_ptr<GeometricTest> create(GeometricTest::Type type);
-    static std::shared_ptr<GeometricTest> create(GeometricTest::Type type,
-                                                 const GeometricTest::Properties *properties);
+    static auto create(GeometricTest::Type type) -> std::shared_ptr<GeometricTest>;
+    static auto create(GeometricTest::Type type,
+                       const GeometricTest::Properties *properties) -> std::shared_ptr<GeometricTest>;
 
 };
 

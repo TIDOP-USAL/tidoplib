@@ -285,7 +285,6 @@ public:
     {
         T answer{};
 
-        std::cout << question;
         std::cin >> answer;
         
         return answer;

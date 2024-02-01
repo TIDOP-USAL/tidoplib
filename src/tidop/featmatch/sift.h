@@ -73,11 +73,11 @@ public:
 
 public:
 
-    int featuresNumber() const override;
-    int octaveLayers() const override;
-    double contrastThreshold() const override;
-    double edgeThreshold() const override;
-    double sigma() const override;
+    auto featuresNumber() const -> int override;
+    auto octaveLayers() const -> int override;
+    auto contrastThreshold() const -> double override;
+    auto edgeThreshold() const -> double override;
+    auto sigma() const -> double override;
     void setFeaturesNumber(int featuresNumber) override;
     void setOctaveLayers(int octaveLayers) override;
     void setContrastThreshold(double contrastThreshold) override;
@@ -89,7 +89,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -131,15 +131,13 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // DescriptorExtractor interface
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Sift interface
 
