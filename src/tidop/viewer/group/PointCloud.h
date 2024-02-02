@@ -34,6 +34,10 @@ public:
 
 	void draw() override;
 
+public:
+
+	size_t getSize() const { return size; }
+
 };
 
 }
