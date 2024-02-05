@@ -72,7 +72,7 @@ Image::Image(int rows,
 
 }
 
-Image::Image(const SizeI &size,
+Image::Image(const Size<int> &size,
              DataType type,
              int channels)
   : mRows(size.height),
@@ -84,7 +84,7 @@ Image::Image(const SizeI &size,
     init();
 }
 
-Image::Image(const SizeI &size,
+Image::Image(const Size<int> &size,
              DataType type,
              int channels,
              const Color &color)
@@ -98,7 +98,7 @@ Image::Image(const SizeI &size,
     init();
 }
 
-Image::Image(const SizeI &size,
+Image::Image(const Size<int> &size,
              DataType type,
              int channels,
              void *data)

@@ -26,6 +26,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/ptr.h"
 
 #include <memory>
 #include <map>
@@ -104,6 +105,8 @@ public:
 
 class TL_EXPORT ImageMetadata
 {
+
+    GENERATE_SHARED_PTR(ImageMetadata)
 
 public:
 

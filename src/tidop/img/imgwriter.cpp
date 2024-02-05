@@ -111,7 +111,7 @@ GDALDataType openCvToGdal(int cvdt)
 
 
 ImageWriter::ImageWriter(tl::Path file)
-    : mFile(std::move(file))
+  : mFile(std::move(file))
 {
 
 }
@@ -134,7 +134,7 @@ void ImageWriter::windowWrite(const WindowI &window,
 #ifdef TL_HAVE_GDAL
 
 class ImageWriterGdal
-    : public ImageWriter
+  : public ImageWriter
 {
 
 public:
@@ -228,8 +228,8 @@ public:
                     for (const auto &[name, value] : options) {
 #else
                     for (const auto &option : options) {
-                        auto name = option.first;
-                        auto value = option.second;
+                        auto &name = option.first;
+                        auto &value = option.second;
 #endif
                         gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
                     }
@@ -292,8 +292,8 @@ public:
                 for (const auto &[name, value] : options) {
 #else
                 for (const auto &option : options) {
-                    auto name = option.first;
-                    auto value = option.second;
+                    auto &name = option.first;
+                    auto &value = option.second;
 #endif
                     gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
                 }
@@ -311,15 +311,16 @@ public:
                 for (const auto &[name, value] : active_metadata) {
 #else
                 for (const auto &metadata : active_metadata) {
-                    auto name = metadata.first;
-                    auto value = metadata.second;
+                    auto &name = metadata.first;
+                    auto &value = metadata.second;
 #endif
                     gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
                 }
             }
             mDataset->SetMetadata(gdalMetadata);
 
-            if (!mAffine.isNull()) {
+            //if (!mAffine.isNull()) {
+            if (!this->affine.isEmpty()) {
                 this->setGdalGeoTransform();
             }
 
@@ -328,15 +329,15 @@ public:
         }
     }
 
-    void write(const cv::Mat & image,
+    void write(const cv::Mat &image,
                const Rect<int> &rect)
     {
         try {
 
             TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
-            RectI rect_full_image(0, 0, this->cols(), this->rows());
-            RectI rect_to_write;
+            Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
+            Rect<int> rect_to_write;
 
             bool crop_image = false;
             if (rect.isEmpty()) {
@@ -349,32 +350,33 @@ public:
             cv::Mat image_to_write;
 
             if (crop_image) {
-                geom::Affine<Point<double>> affine;
+
                 std::vector<Point<double>> image_points{
                     Point<double>(0, 0),
-                        Point<double>(image.cols, 0),
-                        Point<double>(image.cols, image.rows),
-                        Point<double>(0, image.rows)
+                    Point<double>(image.cols, 0),
+                    Point<double>(image.cols, image.rows),
+                    Point<double>(0, image.rows)
                 };
 
                 std::vector<Point<double>> image_rect{
                     static_cast<Point<double>>(rect.topLeft()),
-                        static_cast<Point<double>>(rect.topRight()),
-                        static_cast<Point<double>>(rect.bottomRight()),
-                        static_cast<Point<double>>(rect.bottomLeft())
+                    static_cast<Point<double>>(rect.topRight()),
+                    static_cast<Point<double>>(rect.bottomRight()),
+                    static_cast<Point<double>>(rect.bottomLeft())
                 };
 
-                affine.compute(image_points, image_rect);
+                auto _affine = Affine2DEstimator<double>::estimate(image_points, image_rect);
 
                 std::vector<Point<double>> image_points_transform;
-                affine.transform(image_points, image_points_transform);
-                RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
-                RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
+                std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
+                Rect<int> rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+                Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-                Point<double> tl = affine.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()), geom::Transform::Order::inverse);
-                Point<double> br = affine.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()), geom::Transform::Order::inverse);
+                auto transform_inverse = _affine.inverse();
+                Point<double> tl = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()));
+                Point<double> br = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()));
 
-                rect_to_crop_image = RectI(tl, br);
+                rect_to_crop_image = Rect<int>(tl, br);
                 image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
                     .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
                     .clone();
@@ -451,12 +453,12 @@ public:
         }
     }
 
-    void write(const cv::Mat & image,
-               const WindowI & window) override
+    void write(const cv::Mat &image,
+               const WindowI &window) override
     {
         try {
 
-            RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
+            Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1, window.pt2);
             write(image, rect);
 
         } catch (...) {
@@ -464,7 +466,7 @@ public:
         }
     }
 
-    // void write(const cv::Mat & image,
+    // void write(const cv::Mat &image,
     //            const Affine<Point<int>> &trf) override
     // {
         //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
@@ -495,7 +497,7 @@ public:
         //}
     // }
 
-    int rows() const override
+    auto rows() const -> int override
     {
         int rows = 0;
 
@@ -512,7 +514,7 @@ public:
         return rows;
     }
 
-    int cols() const override
+    auto cols() const -> int override
     {
         int cols = 0;
 
@@ -529,7 +531,7 @@ public:
         return cols;
     }
 
-    int channels() const override
+    auto channels() const -> int override
     {
         int channels = 0;
 
@@ -546,12 +548,12 @@ public:
         return channels;
     }
 
-    DataType dataType() const override
+    auto dataType() const -> DataType override
     {
         return mDataType;
     }
 
-    int depth() const override
+    auto depth() const -> int override
     {
         int depth = 0;
 
@@ -567,30 +569,21 @@ public:
         return depth;
     }
 
-    void setGeoreference(const geom::Affine<Point<double>> &georeference) override
+    void setGeoreference(const Affine<double, 2> &georeference) override
     {
-        mAffine = georeference;
+        this->affine = georeference;
 
-        if (mDataset && !mAffine.isNull()) {
+        if (mDataset && !this->affine.isEmpty()) {
             this->setGdalGeoTransform();
         }
     }
 
-    void setCRS(const std::string & crs) override
+    void setCRS(const std::string &crs) override
     {
         if (mDataset) {
             this->setGdalProjection(crs);
         }
     }
-
-    //#ifdef TL_HAVE_GEOSPATIAL
-    //  void setCRS(const geospatial::Crs &crs) override
-    //  {
-    //    if (mDataset && crs.isValid()) {
-    //      this->setGdalProjection(crs.toWktFormat());
-    //    }
-    //  }
-    //#endif
 
     void setNoDataValue(double nodata) override
     {
@@ -623,17 +616,17 @@ private:
     void setGdalGeoTransform()
     {
         std::array<double, 6> geotransform{};
-        Matrix<double, 2, 3> parameters = mAffine.parameters();
-        geotransform[1] = parameters.at(0, 0);
-        geotransform[2] = parameters.at(0, 1);
-        geotransform[4] = parameters.at(1, 0);
-        geotransform[5] = parameters.at(1, 1);
-        geotransform[0] = parameters.at(0, 2);
-        geotransform[3] = parameters.at(1, 2);
+        geotransform[1] = affine(0, 0);
+        geotransform[2] = affine(0, 1);
+        geotransform[4] = affine(1, 0);
+        geotransform[5] = affine(1, 1);
+        geotransform[0] = affine(0, 2);
+        geotransform[3] = affine(1, 2);
+
         mDataset->SetGeoTransform(geotransform.data());
     }
 
-    void setGdalProjection(const std::string & crs)
+    void setGdalProjection(const std::string &crs)
     {
         OGRErr err = mSpatialReference->importFromWkt(crs.c_str());
         if (err != 0) {
@@ -727,9 +720,9 @@ public:
 
 
 
-std::unique_ptr<ImageWriter> ImageWriterFactory::create(const Path & file)
+auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
 {
-    std::unique_ptr<ImageWriter> image_writer;
+    ImageWriter::Ptr image_writer;
 
     try {
 
@@ -754,11 +747,6 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::create(const Path & file)
     }
 
     return image_writer;
-}
-
-std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path & file)
-{
-    return ImageWriterFactory::create(file);
 }
 
 } // End namespace tl

@@ -121,22 +121,26 @@ void ImageReader::windowRead(const WindowI &wLoad,
                              WindowI *wRead, 
                              Point<int> *offset) const
 {
-  WindowI wAll(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
+  WindowI image_window(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));
+  
   if (wLoad.isEmpty()) {
-    *wRead = wAll;  // Se lee toda la ventana
+    *wRead = image_window;
   } else {
-    *wRead = windowIntersection(wAll, wLoad);
+    *wRead = windowIntersection(image_window, wLoad);
     *offset = wRead->pt1 - wLoad.pt1;
   }
 }
 
-tl::Path ImageReader::file() const
+auto ImageReader::file() const -> tl::Path
 {
   return mFile;
 }
 
 
+
 /* ---------------------------------------------------------------------------------- */
+
+
 
 #ifdef TL_HAVE_GDAL
 
@@ -181,12 +185,12 @@ public:
                     geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
                 }
 
-                mAffine.setParameters(geotransform[1],
-                                      geotransform[2],
-                                      geotransform[4],
-                                      geotransform[5],
-                                      geotransform[0],
-                                      geotransform[3]);
+                mAffine(0, 0) = geotransform[1];
+                mAffine(0, 1) = geotransform[2];
+                mAffine(0, 2) = geotransform[0];
+                mAffine(1, 0) = geotransform[4];
+                mAffine(1, 1) = geotransform[5];
+                mAffine(1, 2) = geotransform[3];
 
             }
 
@@ -195,7 +199,7 @@ public:
         }
     }
     
-    bool isOpen() const override
+    auto isOpen() const -> bool override
     {
         return mDataset != nullptr;
     }
@@ -208,20 +212,18 @@ public:
         }
     }
     
-    cv::Mat read(const RectI &rect,
-                 const Size<int> &size,
-                 geom::Affine<Point<int>> *trf) override
+    auto read(const Rect<int> &rect,
+              const Size<int> &size) -> cv::Mat override
     {
         cv::Mat image;
 
         try {
 
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
-            //TL_ASSERT(rect.isValid(), "Image Rect to read invalid")
 
-            RectI rect_to_read;
+            Rect<int> rect_to_read;
             Point<int> offset;
-            RectI rect_full_image(0, 0, this->cols(), this->rows());
+            Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
 
 
             if (rect.isEmpty()) {
@@ -242,7 +244,6 @@ public:
             double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
             offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
             offset.y = roundToInteger(offset.y * scaleY);
-            if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
             image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
 
@@ -270,10 +271,9 @@ public:
         return image;
     }
     
-    cv::Mat read(double scaleX,
-                 double scaleY,
-                 const RectI &rect,
-                 geom::Affine<Point<int>> *trf) override
+    auto read(double scaleX,
+              double scaleY,
+              const Rect<int> &rect) -> cv::Mat override
     {
         cv::Mat image;
 
@@ -281,9 +281,9 @@ public:
 
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
-            RectI rect_to_read;
+            Rect<int> rect_to_read;
             Point<int> offset;
-            RectI rect_full_image(0, 0, this->cols(), this->rows());
+            Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
             if (rect.isEmpty()) {
                 rect_to_read = rect_full_image;
             } else {
@@ -292,16 +292,16 @@ public:
             }
 
             TL_ASSERT(rect_to_read.width > 0 && rect_to_read.height > 0, "");
+
             offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
             offset.y = roundToInteger(offset.y * scaleY);
 
             cv::Size size;
             size.width = roundToInteger(rect_to_read.width * scaleX);
             size.height = roundToInteger(rect_to_read.height * scaleY);
-            if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
             image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-            //if (image.empty()) throw std::runtime_error("");
+
             TL_ASSERT(!image.empty(), "Image empty");
 
             uchar *buff = image.ptr();
@@ -326,21 +326,22 @@ public:
         return image;
     }
     
-    cv::Mat read(const WindowI &window,
-                 double scaleX,
-                 double scaleY,
-                 geom::Affine<Point<int>> *trf) override
+    auto read(const WindowI &window,
+              double scaleX,
+              double scaleY) -> cv::Mat override
     {
 
         int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
         int y = window.pt1.y < window.pt2.y ? window.pt1.y : window.pt2.y;
 
-        RectI rect = window.isEmpty() ? RectI() : RectI(x, y, std::abs(window.width()), std::abs(window.height()));
+        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(x, y, std::abs(window.width()), std::abs(window.height()));
 
         cv::Mat image;
 
         try {
-            image = this->read(scaleX, scaleY, rect, trf);
+
+            image = this->read(scaleX, scaleY, rect);
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
@@ -348,14 +349,14 @@ public:
         return image;
     }
     
-    cv::Mat read(const Window<Point<double>> &terrainWindow,
+    auto read(const Window<Point<double>> &terrainWindow,
                  double scaleX,
-                 double scaleY,
-                 geom::Affine<Point<int>> *trf) override
+                 double scaleY) -> cv::Mat override
     {
         Window<Point<double>> wLoad;
-        wLoad.pt1 = mAffine.transform(terrainWindow.pt1, geom::Transform::Order::inverse);
-        wLoad.pt2 = mAffine.transform(terrainWindow.pt2, geom::Transform::Order::inverse);
+        auto transform_inverse = mAffine.inverse();
+        wLoad.pt1 = transform_inverse.transform(terrainWindow.pt1);
+        wLoad.pt2 = transform_inverse.transform(terrainWindow.pt2);
         wLoad.normalized();
 
         WindowI wRead(wLoad);
@@ -363,7 +364,9 @@ public:
         cv::Mat image;
 
         try {
-            image = read(wRead, scaleX, scaleY, trf);
+
+            image = read(wRead, scaleX, scaleY);
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
@@ -371,7 +374,7 @@ public:
         return image;
     }
     
-    int rows() const override
+    auto rows() const -> int override
     {
         int rows = 0;
 
@@ -388,7 +391,7 @@ public:
         return rows;
     }
     
-    int cols() const override
+    auto cols() const -> int override
     {
         int cols = 0;
 
@@ -405,7 +408,7 @@ public:
         return cols;
     }
     
-    int channels() const override
+    auto channels() const -> int override
     {
         int channels = 0;
 
@@ -422,7 +425,7 @@ public:
         return channels;
     }
     
-    DataType dataType() const override
+    auto dataType() const -> DataType override
     {
         DataType data_type = DataType::TL_8U;
 
@@ -438,7 +441,7 @@ public:
         return data_type;
     }
 
-    int depth() const override
+    auto depth() const -> int override
     {
         int depth = 0;
 
@@ -454,7 +457,7 @@ public:
         return depth;
     }
   
-    std::shared_ptr<ImageMetadata> metadata() const override
+    auto metadata() const -> std::shared_ptr<ImageMetadata> override
     {
         std::shared_ptr<ImageMetadata> metadata;
     
@@ -477,8 +480,6 @@ public:
                     char **gdalMetadata = mDataset->GetMetadata(domain);
     
                     if (std::string("xml:XMP").compare(domain) == 0) {
-    
-                        //std::cout << *gdalMetadata << std::endl;
     
                         /// Sacar a función parseXMP
                         {
@@ -651,19 +652,6 @@ public:
     
             }
     
-            //char **gdalMetadata = mDataset->GetMetadata("xml:XMP");
-            //if (gdalMetadata != nullptr && *gdalMetadata != nullptr) {
-            //  for (int i = 0; gdalMetadata[i] != nullptr; i++) {
-            //    char *key = nullptr;
-            //    const char *value = CPLParseNameValue(gdalMetadata[i], &key);
-            //    if (key) {
-            //      std::cout << key << ": " << value << std::endl;
-            //      metadata->setMetadata(key, value);
-            //      CPLFree(key);
-            //    }
-            //  }
-            //}
-    
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
@@ -671,7 +659,7 @@ public:
         return metadata;
     }
 
-    bool isGeoreferenced() const override
+    auto isGeoreferenced() const -> bool override
     {
         bool georeferenced = false;
     
@@ -689,12 +677,12 @@ public:
         return georeferenced;
     }
 
-    geom::Affine<Point<double>> georeference() const override
+    auto georeference() const -> Affine<double, 2> override
     {
         return mAffine;
     }
 
-    std::string crsWkt() const override
+    auto crsWkt() const -> std::string override
     {
         std::string crs_wkt;
 
@@ -721,34 +709,7 @@ public:
         return crs_wkt;
     }
 
-//#ifdef TL_HAVE_GEOSPATIAL
-//  geospatial::Crs crs() const override
-//  {
-//    geospatial::Crs crs;
-//
-//    try {
-//
-//      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
-//
-//#if GDAL_VERSION_MAJOR >= 3
-//      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-//        char *wkt = nullptr;
-//        spatialReference->exportToWkt(&wkt);
-//        crs.fromWktFormat(wkt);
-//        CPLFree(wkt);
-//      }
-//#else
-//      crs.fromWktFormat(mDataset->GetProjectionRef());
-//#endif
-//    } catch (...) {
-//      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-//    }
-//
-//    return crs;
-//  }
-//#endif
-
-    WindowD window() const override
+    auto window() const -> WindowD override
     {
         Point<double> p1 = mAffine.transform(Point<double>(0, 0));
         Point<double> p2 = mAffine.transform(Point<double>(cols(), rows()));
@@ -757,7 +718,7 @@ public:
         return window;
     }
     
-    double noDataValue(bool *exist) const
+    auto noDataValue(bool *exist) const -> double
     {
         double nodata{};
 
@@ -800,7 +761,7 @@ protected:
 private:
 
     GDALDataset *mDataset;
-    geom::Affine<Point<double>> mAffine;
+    Affine<double, 2> mAffine;
 };
 
 #endif // TL_HAVE_GDAL
@@ -1010,7 +971,7 @@ private:
 /* ---------------------------------------------------------------------------------- */
 
 
-ImageReader::Ptr ImageReaderFactory::create(const Path &file)
+auto ImageReaderFactory::create(const Path &file) -> ImageReader::Ptr
 {
     ImageReader::Ptr image_reader;
 

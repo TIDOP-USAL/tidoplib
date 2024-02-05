@@ -110,21 +110,27 @@ public:
     Translation<T, Dim> translation() const;
     Matrix<T, Dim, Dim> rotation() const;
     auto inverse() const -> Affine<T, Dim>;
+    auto toMatrix() const -> Matrix<T, Dim, Dim + 1>;
 
     /// Clases que deberían ser virtuales
-    auto transform(const Point<T> &point) -> Point<T>;
-    auto transform(const Point3<T> &point) -> Point3<T>;
+    auto transform(const Point<T> &point) const -> Point<T>;
+    auto transform(const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
-    auto transform(const Vector<T, _size> &vector) -> Vector<T, _size>;
+    auto transform(const Vector<T, _size> &vector) const -> Vector<T, _size>;
     template<size_t _row, size_t _col>
-    auto transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
-    auto operator * (const Point<T> &point) -> Point<T>;
-    auto operator * (const Point3<T> &point) -> Point3<T>;
+    auto operator * (const Point<T> &point) const -> Point<T>;
+    auto operator * (const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
-    auto operator * (const Vector<T, _size> &vector) -> Vector<T, _size>;
+    auto operator * (const Vector<T, _size> &vector) const-> Vector<T, _size>;
     template<size_t _row, size_t _col>
-    auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto operator * (const Matrix<T, _row, _col> &matrix) const-> Matrix<T, _row, _col>;
+
+    auto operator()(const Point<T> &point) const -> Point<T>;
+    auto operator()(const Point3<T> &point) const -> Point3<T>;
+
+    auto isEmpty() const;
 
 private:
 
@@ -349,6 +355,12 @@ inline auto Affine<T, Dim>::inverse() const -> Affine<T, Dim>
     return Affine<T, Dim>(transform_inverse);
 }
 
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::toMatrix() const -> Matrix<T, Dim, Dim + 1>
+{
+    return this->_transform;
+}
+
 
 template<typename T, size_t Dim>
 inline auto Affine<T, Dim>::operator=(Affine &&affine) TL_NOEXCEPT -> Affine &
@@ -361,7 +373,7 @@ inline auto Affine<T, Dim>::operator=(Affine &&affine) TL_NOEXCEPT -> Affine &
 }
 
 template<typename T, size_t Dim>
-inline auto Affine<T, Dim>::transform(const Point<T> &point) -> Point<T>
+inline auto Affine<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 {
     static_assert(dimensions == 2, "Transformation not allowed for 2D points");
 
@@ -370,7 +382,7 @@ inline auto Affine<T, Dim>::transform(const Point<T> &point) -> Point<T>
 }
 
 template<typename T, size_t Dim>
-inline auto Affine<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
+inline auto Affine<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
 {
     static_assert(dimensions == 3, "Transformation not allowed for 3D points");
 
@@ -381,19 +393,19 @@ inline auto Affine<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Affine<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<T, _size>
+inline auto Affine<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, _size>
 {
     TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
     
-    //Vector<T, _size> _vector;
-    //for (size_t r = 0; r < dimensions; r++) {
-    //    _vector[r] = _transform(r, dimensions);
-    //    for (size_t c = 0; c < dimensions; c++) {
-    //        _vector[r] += _transform(r, c) * vector[c];
-    //    }
-    //}
+    Vector<T, _size> _vector(vector);
+    for (size_t r = 0; r < dimensions; r++) {
+        _vector[r] = 0;// _transform(r, dimensions);
+        for (size_t c = 0; c < dimensions; c++) {
+            _vector[r] += _transform(r, c) * vector[c];
+        }
+    }
 
-    Vector<T> _vector = this->_transform.block(0, dimensions - 1, 0, dimensions - 1) * vector;
+    //Vector<T> _vector = this->_transform.block(0, dimensions - 1, 0, dimensions - 1) * vector;
     _vector += this->_transform.col(dimensions);
 
     return _vector;
@@ -401,7 +413,7 @@ inline auto Affine<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+inline auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     TL_ASSERT(dimensions == matrix.cols(), "Invalid matrix dimensions");
         
@@ -417,29 +429,47 @@ inline auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> Ma
 }
 
 template<typename T, size_t Dim>
-inline auto Affine<T, Dim>::operator*(const Point<T> &point) -> Point<T>
+inline auto Affine<T, Dim>::operator*(const Point<T> &point) const -> Point<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
-inline auto Affine<T, Dim>::operator*(const Point3<T> &point) -> Point3<T>
+inline auto Affine<T, Dim>::operator*(const Point3<T> &point) const -> Point3<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Affine<T, Dim>::operator*(const Vector<T, _size> &vector) -> Vector<T, _size>
+inline auto Affine<T, Dim>::operator*(const Vector<T, _size>& vector) const -> Vector<T, _size>
 {
     return this->transform(vector);
 }
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Affine<T, Dim>::operator*(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+inline auto Affine<T, Dim>::operator*(const Matrix<T, _row, _col>& matrix) const -> Matrix<T, _row, _col>
 {
     return this->transform(matrix);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator()(const Point<T> &point) const -> Point<T>
+{
+    return this->transform(point);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
+{
+    return this->transform(point);
+}
+
+template<typename T, size_t Dim>
+inline auto Affine<T, Dim>::isEmpty() const
+{
+    return this->_transform == Matrix<T, Dim, Dim + 1>::identity();
 }
 
 

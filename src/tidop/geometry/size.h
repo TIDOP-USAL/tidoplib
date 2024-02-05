@@ -117,9 +117,9 @@ public:
 };
 
 
-using SizeI = Size<int>;
-using SizeF = Size<float>;
-using SizeD = Size<double>;
+using Sizei = Size<int>;
+using Sizef = Size<float>;
+using Sized = Size<double>;
 
 
 

@@ -63,17 +63,17 @@ struct SizeTest
 
   void setup()
   {
-    size_integer = new SizeI(100, 100);
-    size_double = new SizeD(100.4, 100.2);
-    size_float = new SizeF(100.4f, 100.2f);
+    size_integer = new Size<int>(100, 100);
+    size_double = new Size<double>(100.4, 100.2);
+    size_float = new Size<float>(100.4f, 100.2f);
 
-    size_integer_copy = new SizeI(*size_integer);
-    size_double_copy = new SizeD(*size_double);
-    size_float_copy = new SizeF(*size_float);
+    size_integer_copy = new Size<int>(*size_integer);
+    size_double_copy = new Size<double>(*size_double);
+    size_float_copy = new Size<float>(*size_float);
 
-    size_constructor_integer_width_height = new SizeI(100, 100);
-    size_constructor_double_width_height = new SizeD(100.4, 100.2);
-    size_constructor_float_width_height = new SizeF(100.4f, 100.2f);
+    size_constructor_integer_width_height = new Size<int>(100, 100);
+    size_constructor_double_width_height = new Size<double>(100.4, 100.2);
+    size_constructor_float_width_height = new Size<float>(100.4f, 100.2f);
 
   }
  
@@ -82,20 +82,20 @@ struct SizeTest
 
   }
 
-  SizeI size_default_constructor_integer;
-  SizeD size_default_constructor_double;
-  SizeF size_default_constructor_float;
+  Size<int> size_default_constructor_integer;
+  Size<double> size_default_constructor_double;
+  Size<float> size_default_constructor_float;
 
-  SizeI *size_integer;
-  SizeD *size_double;
-  SizeF *size_float;
-  SizeI *size_integer_copy;
-  SizeD *size_double_copy;
-  SizeF *size_float_copy;
+  Size<int> *size_integer;
+  Size<double> *size_double;
+  Size<float> *size_float;
+  Size<int> *size_integer_copy;
+  Size<double> *size_double_copy;
+  Size<float> *size_float_copy;
 
-  SizeI *size_constructor_integer_width_height;
-  SizeD *size_constructor_double_width_height;
-  SizeF *size_constructor_float_width_height;
+  Size<int> *size_constructor_integer_width_height;
+  Size<double> *size_constructor_double_width_height;
+  Size<float> *size_constructor_float_width_height;
 };
 
 
@@ -127,16 +127,16 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, SizeTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, SizeTest) 
 {
-  SizeI size(100, 100);
-  SizeI size2(std::move(size));
+  Size<int> size(100, 100);
+  Size<int> size2(std::move(size));
   BOOST_CHECK_EQUAL(100, size2.width);
   BOOST_CHECK_EQUAL(100, size2.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_assignment, SizeTest)
 {
-  SizeI size(100, 100);
-  SizeI size2(50, 50);
+  Size<int> size(100, 100);
+  Size<int> size2(50, 50);
   size2 = size;
   BOOST_CHECK_EQUAL(100, size2.width);
   BOOST_CHECK_EQUAL(100, size2.height);
@@ -144,8 +144,8 @@ BOOST_FIXTURE_TEST_CASE(copy_assignment, SizeTest)
 
 BOOST_FIXTURE_TEST_CASE(move_assignment, SizeTest)
 {
-  SizeI size2;
-  size2 = SizeI(100, 100);
+  Size<int> size2;
+  size2 = Size<int>(100, 100);
   BOOST_CHECK_EQUAL(100, size2.width);
   BOOST_CHECK_EQUAL(100, size2.height);
 }
@@ -174,40 +174,40 @@ BOOST_FIXTURE_TEST_CASE(isEmpty, SizeTest)
 
 BOOST_FIXTURE_TEST_CASE(cast, SizeTest)
 {
-  SizeI size = static_cast<SizeI>(*size_double);
+  Size<int> size = static_cast<Size<int>>(*size_double);
   BOOST_CHECK_EQUAL(100, size.width);
   BOOST_CHECK_EQUAL(100, size.height);
 
-  SizeD size2 = static_cast<SizeD>(*size_integer);
+  Size<double> size2 = static_cast<Size<double>>(*size_integer);
   BOOST_CHECK_EQUAL(100., size2.width);
   BOOST_CHECK_EQUAL(100., size2.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(is_equal, SizeTest)
 {
-  SizeI size = *size_integer;
+  Size<int> size = *size_integer;
   BOOST_CHECK(size == *size_integer);
 }
 
 BOOST_FIXTURE_TEST_CASE(is_not_equal, SizeTest)
 {
-  SizeI size(50, 50);
+  Size<int> size(50, 50);
   BOOST_CHECK(size != *size_integer);
 }
 
 BOOST_FIXTURE_TEST_CASE(add1, SizeTest)
 {
-  SizeI size1(50, 50);
-  SizeI size2(20, 30);
-  SizeI size3 = size1 + size2;
+  Size<int> size1(50, 50);
+  Size<int> size2(20, 30);
+  Size<int> size3 = size1 + size2;
   BOOST_CHECK_EQUAL(70, size3.width);
   BOOST_CHECK_EQUAL(80, size3.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(add2, SizeTest)
 {
-  SizeI size1(50, 50);
-  SizeI size2(20, 30);
+  Size<int> size1(50, 50);
+  Size<int> size2(20, 30);
   size2 += size1;
   BOOST_CHECK_EQUAL(70, size2.width);
   BOOST_CHECK_EQUAL(80, size2.height);
@@ -215,17 +215,17 @@ BOOST_FIXTURE_TEST_CASE(add2, SizeTest)
 
 BOOST_FIXTURE_TEST_CASE(minus1, SizeTest)
 {
-  SizeI size1(50, 50);
-  SizeI size2(20, 30);
-  SizeI size3 = size1 - size2;
+  Size<int> size1(50, 50);
+  Size<int> size2(20, 30);
+  Size<int> size3 = size1 - size2;
   BOOST_CHECK_EQUAL(30, size3.width);
   BOOST_CHECK_EQUAL(20, size3.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(minus2, SizeTest)
 {
-  SizeI size1(50, 50);
-  SizeI size2(20, 30);
+  Size<int> size1(50, 50);
+  Size<int> size2(20, 30);
   size2 -= size1;
   BOOST_CHECK_EQUAL(-30, size2.width);
   BOOST_CHECK_EQUAL(-20, size2.height);
@@ -233,15 +233,15 @@ BOOST_FIXTURE_TEST_CASE(minus2, SizeTest)
 
 BOOST_FIXTURE_TEST_CASE(mul1, SizeTest)
 {
-  SizeI size1(14, 23);
-  SizeI size2 = size1 * 10;
+  Size<int> size1(14, 23);
+  Size<int> size2 = size1 * 10;
   BOOST_CHECK_EQUAL(140, size2.width);
   BOOST_CHECK_EQUAL(230, size2.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(mul2, SizeTest)
 {
-  SizeI size1(14, 23);
+  Size<int> size1(14, 23);
   size1 *= 10;
   BOOST_CHECK_EQUAL(140, size1.width);
   BOOST_CHECK_EQUAL(230, size1.height);
@@ -249,15 +249,15 @@ BOOST_FIXTURE_TEST_CASE(mul2, SizeTest)
 
 BOOST_FIXTURE_TEST_CASE(div1, SizeTest)
 {
-  SizeD size1(14., 23.);
-  SizeD size2 = size1 / 10.;
+  Size<double> size1(14., 23.);
+  Size<double> size2 = size1 / 10.;
   BOOST_CHECK_EQUAL(1.4, size2.width);
   BOOST_CHECK_EQUAL(2.3, size2.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(div2, SizeTest)
 {
-  SizeD size1(14., 23.);
+  Size<double> size1(14., 23.);
   size1 /= 10.;
   BOOST_CHECK_EQUAL(1.4, size1.width);
   BOOST_CHECK_EQUAL(2.3, size1.height);

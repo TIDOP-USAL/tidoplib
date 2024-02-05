@@ -150,7 +150,7 @@ std::string ArgValue<std::string>::value(const Argument::SharedPtr &arg)
  *
  *  Command cmd(command_name, "Example of a console application");
  *  cmd.addArgument<std::string>("file", 'f', "Example of a mandatory parameter of type string");
- *  cmd.addArgument<int>>("int", 'i', "Required integer value");
+ *  cmd.addArgument<int>("int", 'i', "Required integer value");
  *  cmd.addArgument<bool>("bool", 'b', "boolean", false);
  *  cmd.addArgument<double>("double", "Optional double parameter. If omitted, the default value is taken", 0.5);
  *

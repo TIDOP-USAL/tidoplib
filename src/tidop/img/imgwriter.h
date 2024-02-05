@@ -36,10 +36,11 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/path.h"
+#include "tidop/core/ptr.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
+#include "tidop/math/algebra/affine.h"
 
 namespace tl
 {
@@ -48,47 +49,50 @@ class ImageOptions;
 class ImageMetadata;
 
 /*!
- * \brief Clase para la escritura de distintos formatos imagen
+ * \brief Class for writing different image formats
  */
 class TL_EXPORT ImageWriter
 {
 
+    GENERATE_UNIQUE_PTR(ImageWriter)
+        
 public:
 
     ImageWriter(tl::Path file);
     virtual ~ImageWriter() = default;
 
     /*!
-     * \brief Abre el fichero
+     * \brief Open the image file
      */
     virtual void open() = 0;
 
     /*!
-     * \brief Comprueba si el fichero se ha cargado correctamente
+     * \brief Check if the file has been loaded correctly
      */
-    virtual bool isOpen() const = 0;
+    virtual auto isOpen() const -> bool = 0;
 
     /*!
-     * \brief Cierra el fichero
+     * \brief Close the file
      */
     virtual void close() = 0;
 
     /*!
-     * \brief Establece las opciones de creaci�n del formato imagen
+     * \brief Sets the options for the creation of the image format
+     * \param[in] imageOptions Image options
      */
     virtual void setImageOptions(ImageOptions *imageOptions) = 0;
 
     /*!
-     * \brief Establece los metadatos de la imagen
+     * \brief Sets the image metadata
      */
     virtual void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
 
     /*!
-     * \brief Crea una imagen
-     * \param[in] rows N�mero de filas de la imagen
-     * \param[in] cols N�mero de columnas de la imagen
-     * \param[in] bands N�mero de bandas de la imagen
-     * \param[in] type Tipo de dato
+     * \brief Create an image
+     * \param[in] rows Number of rows in the image
+     * \param[in] cols Number of columns of the image
+     * \param[in] bands Number of bands in the picture
+     * \param[in] type Data type
      * \see DataType
      */
     virtual void create(int rows,
@@ -97,7 +101,7 @@ public:
                         DataType type) = 0;
 
     /*!
-     * \brief Escribe en la imagen
+     * \brief Write on the image
      * \param[in] image Bloque de imagen que se escribe
      * \param[in] window Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
      */
@@ -105,7 +109,7 @@ public:
                        const Rect<int> &rect = Rect<int>()) = 0;
 
     /*!
-     * \brief Escribe en la imagen
+     * \brief Write on the image
      * \param[in] image Bloque de imagen que se escribe
      * \param[in] window Ventana del bloque de imagen que se escribe.
      */
@@ -139,37 +143,37 @@ public:
        * \brief Devuelve el n�mero de filas de la imagen
        * \return N�mero de filas de la imagen
        */
-    virtual int rows() const = 0;
+    virtual auto rows() const -> int = 0;
 
     /*!
-     * \brief Devuelve el n�mero de columnas de la imagen
-     * \return N�mero de columnas de la imagen
+     * \brief Returns the number of columns in the image
+     * \return Number of columns of the image
      */
-    virtual int cols() const = 0;
+    virtual auto cols() const -> int = 0;
 
     /*!
-     * \brief Devuelve el n�mero de canales o bandas de la imagen
-     * \return N�mero de bandas de la imagen
+     * \brief Returns the number of channels or bands in the image.
+     * \return Number of bands in the picture
      */
-    virtual int channels() const = 0;
+    virtual auto channels() const -> int = 0;
 
     /*!
-     * \brief Devuelve el tipo de dato
-     * \return
+     * \brief Returns the data type
+     * \return Data type
      */
-    virtual DataType dataType() const = 0;
+    virtual auto dataType() const -> DataType = 0;
 
     /*!
-     * \brief Devuelve la profundidad de color o bits por pixel de una imagen
-     * \return Profundidad de color
+     * \brief Returns the colour depth or bits per pixel of an image.
+     * \return Colour depth
      */
-    virtual int depth() const = 0;
+    virtual auto depth() const -> int = 0;
 
     /*!
-     * \brief Establece la georeferencia de la imagen
-     * \param[in] georeference Georeferencia
+     * \brief Sets the georeference of the image
+     * \param[in] georeference Georeference
      */
-    virtual void setGeoreference(const geom::Affine<Point<double>> &georeference) = 0;
+    virtual void setGeoreference(const Affine<double, 2> &georeference) = 0;
 
     /*!
      * \brief Set the Coordinate Reference System
@@ -199,7 +203,7 @@ protected:
 protected:
 
     Path mFile;
-    geom::Affine<Point<double>> mAffine;
+    Affine<double, 2> affine;
     //#ifdef TL_HAVE_GEOSPATIAL
     //  geospatial::Crs mCRS;
     //#endif
@@ -207,7 +211,7 @@ protected:
 
 
 /*!
- * \brief Clase factor�a para la escritura de diferentes formatos de imagen
+ * \brief Factory class for writing different image formats
  */
 class TL_EXPORT ImageWriterFactory
 {
@@ -219,9 +223,7 @@ private:
 
 public:
 
-    static std::unique_ptr<ImageWriter> create(const Path &fileName);
-    TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
+    static auto create(const Path &fileName) -> ImageWriter::Ptr;
 };
 
 

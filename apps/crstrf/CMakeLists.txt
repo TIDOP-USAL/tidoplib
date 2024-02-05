@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(TL_HAVE_GEOSPATIAL)
+if(TL_HAVE_GEOSPATIAL AND TL_HAVE_GDAL)
     
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     #include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -37,7 +37,8 @@ if(TL_HAVE_GEOSPATIAL)
       
     add_executable(${PROJECT_NAME} crstransform.cpp)
     
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
