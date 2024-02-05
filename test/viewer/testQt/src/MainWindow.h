@@ -21,6 +21,12 @@ public:
 
 public:
 
-    void test();
+    void initSignalsAndSlots();
 
+    void loadFromMemory();
+    void loadFromFile(const std::string& path);
+   
+private slots:
+
+    void open();
 };

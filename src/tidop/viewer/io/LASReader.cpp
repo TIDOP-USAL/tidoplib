@@ -40,9 +40,9 @@ namespace tl
 
 			Vertex vertex(
 				Vector3f{ 
-						static_cast<float>(laspoint.get_x() - offset.x), 
-						static_cast<float>(laspoint.get_y() - offset.y), 
-						static_cast<float>(laspoint.get_z() - offset.z) 
+					static_cast<float>(laspoint.get_x() - offset.x), 
+					static_cast<float>(laspoint.get_y() - offset.y), 
+					static_cast<float>(laspoint.get_z() - offset.z) 
 				}, Vector4f{
 					static_cast<float>(laspoint.rgb[0] / 65536.), 
 					static_cast<float>(laspoint.rgb[1] / 65536.),
@@ -52,7 +52,6 @@ namespace tl
 			);
 
 			points.push_back(vertex);
-
 		}
 
 		modelBase = PointCloud::New(points);

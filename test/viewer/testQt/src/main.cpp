@@ -10,7 +10,9 @@ int main(int argc, char* argv[])
     MainWindow w;
     w.show();
 
-    w.test();
+    //w.loadFromMemory();
+    //w.loadFromFile("E:/PointClouds/ASCII/torus.txt");
+    w.loadFromFile("C:/Users/EquipoTidop/Desktop/output.las");
 
     return a.exec();
 }

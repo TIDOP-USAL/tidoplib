@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 
+#include <QFileDialog>
+
 #include <tidop/viewer/group/PointCloud.h>
 #include <tidop/viewer/io/ASCIIReader.h>
 #include <tidop/viewer/io/LASReader.h>
@@ -15,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui.setupUi(this);
 
     setCentralWidget(viewerWidget);
+
+    initSignalsAndSlots();
 }
 
 MainWindow::~MainWindow()
@@ -22,9 +26,12 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::test() 
-{
+void MainWindow::initSignalsAndSlots() {
+    connect(ui.actionOpen, &QAction::triggered, this, &MainWindow::open);
+}
 
+void MainWindow::loadFromMemory()
+{
     // Load
     std::vector<Vertex> vertices = {
         Vertex(Vector3f{-0.5, -0.5,  0.5}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
@@ -40,33 +47,29 @@ void MainWindow::test()
     PointCloud::Ptr pointCloud = PointCloud::New(vertices);
     pointCloud->setPointSize(4);
     viewerWidget->getRenderer()->addModel(pointCloud);
+}
 
-    /*
-    // Load from ASCII file
-    Path modelPath("E:/PointClouds/ASCII/torus.txt");
+void MainWindow::loadFromFile(const std::string& path) {
 
-    ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
-    reader->open();
-
-    ModelBase::Ptr model = reader->getModelBase();
-
-    PointCloud::Ptr asciiCloud = std::dynamic_pointer_cast<PointCloud>(model);
-    asciiCloud->scale(0.1, 0.1, 0.1);
-
-    viewerWidget->getRenderer()->addModel(asciiCloud);
-    */
-
-    // Load from ASCII file
-    Path modelPath("E:/PointClouds/MMS.las");
+    Path modelPath(path);
 
     ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
     reader->open();
 
     ModelBase::Ptr model = reader->getModelBase();
 
-    PointCloud::Ptr lasCloud = std::dynamic_pointer_cast<PointCloud>(model);
-    lasCloud->scale(0.1, 0.1, 0.1);
+    PointCloud::Ptr cloud = std::dynamic_pointer_cast<PointCloud>(model);
+    cloud->scale(0.1, 0.1, 0.1);
 
-    viewerWidget->getRenderer()->addModel(lasCloud);
+    viewerWidget->getRenderer()->addModel(cloud);
+}
 
+void MainWindow::open() {
+
+    QString file = QFileDialog::getOpenFileName(Q_NULLPTR, tr("Open Cloud Point File"), "", tr("PLY (*.ply);;PCD (*.pcd);;LAS (*.las);;ASCII (*.txt)"));
+
+    if (!file.isEmpty()) {
+        loadFromFile(file.toStdString());
+    }
+        
 }
