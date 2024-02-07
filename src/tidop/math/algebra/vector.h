@@ -96,21 +96,21 @@ public:
     /*!
      * \brief Operator unary plus
      */
-    auto operator+() -> Vector<T, _size>;
+    auto operator+() const -> Vector<T, _size>;
 
     /*!
      * \brief Operator unary minus
      */
-    auto operator-() -> Vector<T, _size>;
+    auto operator-() const -> Vector<T, _size>;
 
     /* Binary arithmetic operators */
 
-    auto operator+(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
-    auto operator-(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
-    auto operator*(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
-    auto operator/(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>;
-    auto operator*(T scalar)->Vector<T, _size>;
-    auto operator/(T scalar)->Vector<T, _size>;
+    auto operator+(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    auto operator-(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    auto operator*(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    auto operator/(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    auto operator*(T scalar) const -> Vector<T, _size>;
+    auto operator/(T scalar) const -> Vector<T, _size>;
     template<typename VectorDerived2>
     auto operator+=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
     template<typename VectorDerived2>
@@ -177,32 +177,32 @@ public:
     auto size() const TL_NOEXCEPT -> size_t;
 
     auto at(size_type position) -> reference;
-    auto at(size_type position) const->const_reference;
+    auto at(size_type position) const -> const_reference;
 
-    auto operator[](size_t position)->reference;
-    auto operator[](size_t position) const->const_reference;
+    auto operator[](size_t position) -> reference;
+    auto operator[](size_t position) const -> const_reference;
 
     auto front() -> reference;
-    auto front() const->const_reference;
+    auto front() const -> const_reference;
     auto back() -> reference;
-    auto back() const->const_reference;
-    auto begin() TL_NOEXCEPT->iterator;
-    auto begin() const TL_NOEXCEPT->const_iterator;
-    auto end() TL_NOEXCEPT->iterator;
-    auto end() const TL_NOEXCEPT->const_iterator;
+    auto back() const -> const_reference;
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
 
     auto data() -> pointer;
-    auto data() const->const_pointer;
+    auto data() const -> const_pointer;
 
-    auto x() const->T;
-    auto y() const->T;
-    auto z() const->T;
-    auto w() const->T;
+    auto x() const -> T;
+    auto y() const -> T;
+    auto z() const -> T;
+    auto w() const -> T;
 
-    auto x() -> T &;
-    auto y() -> T &;
-    auto z() -> T &;
-    auto w() -> T &;
+    auto x() -> reference;
+    auto y() -> reference;
+    auto z() -> reference;
+    auto w() -> reference;
 
     bool operator == (const Vector &vector) const;
     bool operator != (const Vector &vector) const;
@@ -285,7 +285,7 @@ auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived2 &vecto
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator+() -> Vector<T, _size>
+auto VectorBase<VectorDerived<T, _size>>::operator+() const -> Vector<T, _size>
 {
     return this->derived();
 }
@@ -293,7 +293,7 @@ auto VectorBase<VectorDerived<T, _size>>::operator+() -> Vector<T, _size>
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator-() -> Vector<T, _size>
+auto VectorBase<VectorDerived<T, _size>>::operator-() const -> Vector<T, _size>
 {
     static_assert(std::is_signed<T>::value, "Requires signed type");
 
@@ -312,7 +312,7 @@ auto VectorBase<VectorDerived<T, _size>>::operator-() -> Vector<T, _size>
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator+(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>
+inline auto VectorBase<VectorDerived<T, _size>>::operator+(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
 {
     Vector<T, _size> vector = this->derived();
     vector += vector2;
@@ -322,7 +322,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator+(const VectorDerived<T
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator-(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>
+inline auto VectorBase<VectorDerived<T, _size>>::operator-(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
 {
     Vector<T, _size> vector = this->derived();
     vector -= vector2;
@@ -332,7 +332,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator-(const VectorDerived<T
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator*(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>
+inline auto VectorBase<VectorDerived<T, _size>>::operator*(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
 {
     Vector<T, _size> vector = this->derived();
     vector *= vector2;
@@ -342,7 +342,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*(const VectorDerived<T
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator/(const VectorDerived<T, _size> &vector2) -> Vector<T, _size>
+inline auto VectorBase<VectorDerived<T, _size>>::operator/(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
 {
     Vector<T, _size> vector = this->derived();
     vector /= vector2;
@@ -352,7 +352,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator/(const VectorDerived<T
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-inline auto VectorBase<VectorDerived<T, _size>>::operator*(T scalar) -> Vector<T, _size>
+inline auto VectorBase<VectorDerived<T, _size>>::operator*(T scalar) const -> Vector<T, _size>
 {
     Vector<T, _size> vector = this->derived();
     vector *= scalar;
@@ -362,7 +362,7 @@ inline auto VectorBase<VectorDerived<T, _size>>::operator*(T scalar) -> Vector<T
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator/(T scalar) -> Vector<T, _size>
+auto VectorBase<VectorDerived<T, _size>>::operator/(T scalar) const -> Vector<T, _size>
 {
     Vector<T, _size> vector = this->derived();
     vector /= scalar;
@@ -886,7 +886,7 @@ inline auto Vector<T, _size>::w() const -> T
 }
 
 template<typename T, size_t _size>
-inline auto Vector<T, _size>::x() -> T &
+inline auto Vector<T, _size>::x() -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -894,7 +894,7 @@ inline auto Vector<T, _size>::x() -> T &
 }
 
 template<typename T, size_t _size>
-inline auto Vector<T, _size>::y() -> T &
+inline auto Vector<T, _size>::y() -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -902,7 +902,7 @@ inline auto Vector<T, _size>::y() -> T &
 }
 
 template<typename T, size_t _size>
-inline auto Vector<T, _size>::z() -> T &
+inline auto Vector<T, _size>::z() -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -910,7 +910,7 @@ inline auto Vector<T, _size>::z() -> T &
 }
 
 template<typename T, size_t _size>
-inline auto Vector<T, _size>::w() -> T &
+inline auto Vector<T, _size>::w() -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");

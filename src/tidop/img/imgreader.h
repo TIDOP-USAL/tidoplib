@@ -40,7 +40,7 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-#include "tidop/math/algebra/affine.h"
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {

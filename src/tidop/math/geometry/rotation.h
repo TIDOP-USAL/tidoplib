@@ -68,8 +68,8 @@ public:
 
     using value_type = T;
     using size_type = size_t;
-    using reference = T &;
-    using const_reference = const T &;
+    using reference = T&;
+    using const_reference = const T&;
 
 private:
 
@@ -90,29 +90,32 @@ public:
     ~Rotation() = default;
 
     auto operator=(const Rotation &rotation) -> Rotation&;
-    auto operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation &;
+    auto operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation&;
 
-    auto angle() const->T;
+    auto angle() const -> T;
     auto toMatrix() const -> Matrix<T, Dim, Dim>;
 
-    auto inverse() -> Rotation;
+    auto inverse() const -> Rotation;
 
     /// Clases que deberían ser virtuales
-    auto transform(const Point<T> &point) -> Point<T>;
-    auto transform(const Point3<T> &point) -> Point3<T>;
+    auto transform(const Point<T> &point) const -> Point<T>;
+    auto transform(const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
-    auto transform(const Vector<T, _size> &vector) -> Vector<T, Dim>;
+    auto transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>;
     template<size_t _row, size_t _col>
-    auto transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
-    auto operator * (const Point<T> &point) -> Point<T>;
-    auto operator * (const Point3<T> &point) -> Point3<T>;
+    auto operator * (const Point<T> &point) const -> Point<T>;
+    auto operator * (const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
-    auto operator * (const Vector<T, _size> &vector) -> Vector<T, _size>;
+    auto operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>;
     template<size_t _row, size_t _col>
-    auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
-    auto operator * (const Rotation<T, Dim> &rotation) -> Rotation<T, Dim>;
+    auto operator() (const Point<T> &point) const -> Point<T>;
+    auto operator() (const Point3<T> &point) const -> Point3<T>;
+
+    auto operator * (const Rotation<T, Dim> &rotation) const -> Rotation<T, Dim>;
 };
 
 
@@ -249,13 +252,13 @@ inline auto Rotation<T, Dim>::toMatrix() const -> Matrix<T, Dim, Dim>
 }
 
 template<typename T, size_t Dim>
-inline auto Rotation<T, Dim>::inverse() -> Rotation
+inline auto Rotation<T, Dim>::inverse() const -> Rotation
 {
     return Rotation(rotation->inverse());
 }
 
 template<typename T, size_t Dim>
-inline auto Rotation<T, Dim>::transform(const Point<T> &point) -> Point<T>
+inline auto Rotation<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 {
     static_assert(dimensions == 2, "Transformation not allowed for 2D points");
 
@@ -264,7 +267,7 @@ inline auto Rotation<T, Dim>::transform(const Point<T> &point) -> Point<T>
 }
 
 template<typename T, size_t Dim>
-inline auto Rotation<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
+inline auto Rotation<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
 {
     static_assert(dimensions == 3, "Transformation not allowed for 3D points");
 
@@ -275,7 +278,7 @@ inline auto Rotation<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Rotation<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<T, Dim>
+inline auto Rotation<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
 {
     TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
 
@@ -284,7 +287,7 @@ inline auto Rotation<T, Dim>::transform(const Vector<T, _size> &vector) -> Vecto
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Rotation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+inline auto Rotation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     TL_ASSERT(dimensions == matrix.cols(), "Invalid matrix dimensions");
 
@@ -292,33 +295,45 @@ inline auto Rotation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> 
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator * (const Point<T> &point) -> Point<T>
+inline auto Rotation<T, Dim>::operator * (const Point<T> &point) const -> Point<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator * (const Point3<T> &point) -> Point3<T>
+inline auto Rotation<T, Dim>::operator * (const Point3<T> &point) const -> Point3<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
 template<size_t _size>
-auto Rotation<T, Dim>::operator * (const Vector<T, _size> &vector) -> Vector<T, _size>
+inline auto Rotation<T, Dim>::operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>
 {
     return this->transform(vector);
 }
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-auto Rotation<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+inline auto Rotation<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     return this->transform(matrix);
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator * (const Rotation<T, Dim> &rotation) -> Rotation<T, Dim>
+inline auto Rotation<T, Dim>::operator()(const Point<T> &point) const -> Point<T>
+{
+    return this->transform(point);
+}
+
+template<typename T, size_t Dim>
+inline auto Rotation<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
+{
+    return this->transform(point);
+}
+
+template<typename T, size_t Dim>
+inline auto Rotation<T, Dim>::operator * (const Rotation<T, Dim> &rotation) const -> Rotation<T, Dim>
 {
     return Rotation<T, Dim>( this->rotation + rotation.rotation);
 }

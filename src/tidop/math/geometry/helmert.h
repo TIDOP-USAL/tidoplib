@@ -29,7 +29,7 @@
 #include <vector>
 #include <array>
 
-#include "tidop/math/algebra/affine.h"
+#include "tidop/math/geometry/affine.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/svd.h"
 

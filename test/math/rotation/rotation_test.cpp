@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop rotation test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/rotation.h>
+#include <tidop/math/geometry/rotation.h>
 #include <tidop/math/algebra/matrix.h>
 
 

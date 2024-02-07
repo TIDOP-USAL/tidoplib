@@ -42,15 +42,13 @@ namespace tl
  */
 
 
-/*! \addtogroup Algebra
- *
- * Algebra
- *
+/*! \addtogroup Geometry
  *  \{
  */
 
-/* Translation */
-
+/*!
+ * /brief Translation
+ */
 template <typename T, size_t Dim>
 class Translation
 {
@@ -64,8 +62,8 @@ public:
 
     using value_type = T;
     using size_type = size_t;
-    using reference = T &;
-    using const_reference = const T &;
+    using reference = T&;
+    using const_reference = const T&;
 
 private:
 
@@ -83,13 +81,16 @@ public:
     ~Translation() = default;
 
     auto operator=(const Translation &translate) -> Translation&;
-    auto operator=(Translation &&translate) TL_NOEXCEPT -> Translation &;
+    auto operator=(Translation &&translate) TL_NOEXCEPT -> Translation&;
 
-    auto toVector() -> Vector<T, Dim>;
+    auto toVector() const -> Vector<T, Dim>;
 
     auto x() const -> T;
+    auto x() -> reference;
     auto y() const -> T;
+    auto y() -> reference;
     auto z() const -> T;
+    auto z() -> reference;
 
     auto at(size_type position) -> reference;
     auto at(size_type position) const -> const_reference;
@@ -97,24 +98,24 @@ public:
     auto operator[](size_t position) -> reference;
     auto operator[](size_t position) const -> const_reference;
 
-    auto inverse() -> Translation;
+    auto inverse() const -> Translation;
 
     /// Clases que deberían ser virtuales
-    auto transform(const Point<T> &point) -> Point<T>;
-    auto transform(const Point3<T> &point) -> Point3<T>;
+    auto transform(const Point<T> &point) const -> Point<T>;
+    auto transform(const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
-    auto transform(const Vector<T, _size> &vector) -> Vector<T, Dim>;
+    auto transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>;
     template<size_t _row, size_t _col>
-    auto transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
-    auto operator * (const Point<T> &point) -> Point<T>;
-    auto operator * (const Point3<T> &point) -> Point3<T>;
+    auto operator * (const Point<T> &point) const -> Point<T>;
+    auto operator * (const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
-    auto operator * (const Vector<T, _size> &vector) -> Vector<T, _size>;
+    auto operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>;
     template<size_t _row, size_t _col>
-    auto operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>;
+    auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
-    auto operator * (const Translation<T, Dim> &translation) -> Translation<T, Dim>;
+    auto operator * (const Translation<T, Dim> &translation) const -> Translation<T, Dim>;
 };
 
 
@@ -216,7 +217,7 @@ inline auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT 
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::toVector() -> Vector<T, Dim>
+inline auto Translation<T, Dim>::toVector() const -> Vector<T, Dim>
 {
     return this->translation;
 }
@@ -228,13 +229,32 @@ inline auto Translation<T, Dim>::x() const -> T
 }
 
 template<typename T, size_t Dim>
+inline auto Translation<T, Dim>::x() -> T&
+{
+    return this->translation[0];
+}
+
+template<typename T, size_t Dim>
 inline auto Translation<T, Dim>::y() const -> T
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
+inline auto Translation<T, Dim>::y() -> reference
+{
+    return this->translation[1];
+}
+
+template<typename T, size_t Dim>
 inline auto Translation<T, Dim>::z() const -> T
+{
+    static_assert(dimensions == 3, "Method not valid for 2D translations");
+    return this->translation[2];
+}
+
+template<typename T, size_t Dim>
+inline auto Translation<T, Dim>::z() -> reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
@@ -265,13 +285,13 @@ inline auto Translation<T, Dim>::operator[](size_t position) const -> const_refe
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::inverse() -> Translation
+inline auto Translation<T, Dim>::inverse() const -> Translation
 {
     return Translation(-this->translation);
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::transform(const Point<T> &point) -> Point<T>
+inline auto Translation<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 {
     static_assert(dimensions == 2, "Transformation not allowed for 2D points");
 
@@ -280,7 +300,7 @@ inline auto Translation<T, Dim>::transform(const Point<T> &point) -> Point<T>
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
+inline auto Translation<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
 {
     static_assert(dimensions == 3, "Transformation not allowed for 3D points");
 
@@ -291,7 +311,7 @@ inline auto Translation<T, Dim>::transform(const Point3<T> &point) -> Point3<T>
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) -> Vector<T, Dim>
+inline auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
 {
     TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
 
@@ -300,7 +320,7 @@ inline auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) -> Ve
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Translation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+inline auto Translation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     TL_ASSERT(dimensions == matrix.cols(), "Invalid matrix dimensions");
 
@@ -313,33 +333,33 @@ inline auto Translation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) 
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator * (const Point<T> &point) -> Point<T>
+auto Translation<T, Dim>::operator * (const Point<T> &point) const -> Point<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator * (const Point3<T> &point) -> Point3<T>
+auto Translation<T, Dim>::operator * (const Point3<T> &point) const -> Point3<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
 template<size_t _size>
-auto Translation<T, Dim>::operator * (const Vector<T, _size> &vector) -> Vector<T, _size>
+auto Translation<T, Dim>::operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>
 {
     return this->transform(vector);
 }
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-auto Translation<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) -> Matrix<T, _row, _col>
+auto Translation<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     return this->transform(matrix);
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator * (const Translation<T, Dim> &translation) -> Translation<T, Dim>
+auto Translation<T, Dim>::operator * (const Translation<T, Dim> &translation) const -> Translation<T, Dim>
 {
     return Translation<T, Dim>( this->translation + translation.translation);
 }
@@ -420,7 +440,7 @@ inline auto TranslationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &
 }
 
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of Geometry
 
 /*! \} */ // end of Math
 

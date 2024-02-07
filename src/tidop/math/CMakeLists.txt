@@ -44,11 +44,6 @@ if(BUILD_TL_MATH)
                              mathutils.h
                              simd.h
                              data.h
-                             statistic/series.h
-                             statistic/descriptive.h
-                             statistic/confmat.h
-		                     statistic/covariance.h
-                             statistic/tukeyfences.h
                              algebra/quaternion.h
                              algebra/euler_angles.h
                              algebra/rotations.h
@@ -62,13 +57,18 @@ if(BUILD_TL_MATH)
                              algebra/lu.h
                              algebra/qr.h
                              algebra/cholesky.h
-                             algebra/umeyama.h
-                             algebra/transform.h
-                             algebra/translation.h
-                             algebra/scaling.h
-                             algebra/rotation.h
-							 algebra/affine.h
-							 algebra/helmert.h
+							 geometry/affine.h
+							 geometry/helmert.h
+                             geometry/rotation.h
+                             geometry/scaling.h
+                             geometry/transform.h
+                             geometry/translation.h
+                             geometry/umeyama.h
+                             statistic/series.h
+                             statistic/descriptive.h
+                             statistic/confmat.h
+		                     statistic/covariance.h
+                             statistic/tukeyfences.h
                              lapack.h
                              blas.h)
                 

@@ -25,8 +25,8 @@
 #define BOOST_TEST_MODULE Tidop affine test
 
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/affine.h>
-#include <tidop/math/algebra/helmert.h>
+#include <tidop/math/geometry/affine.h>
+#include <tidop/math/geometry/helmert.h>
 #include <tidop/math/algebra/matrix.h>
 
 

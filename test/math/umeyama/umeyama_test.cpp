@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop umeyama test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/umeyama.h>
+#include <tidop/math/geometry/umeyama.h>
 #include <tidop/math/algebra/matrix.h>
 #include <tidop/math/algebra/rotation_matrix.h>
 #include <tidop/math/algebra/euler_angles.h>

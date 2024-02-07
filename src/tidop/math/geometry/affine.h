@@ -29,9 +29,9 @@
 #include <vector>
 #include <array>
 
-#include "tidop/math/algebra/transform.h"
-#include "tidop/math/algebra/translation.h"
-#include "tidop/math/algebra/scaling.h"
+#include "tidop/math/geometry/transform.h"
+#include "tidop/math/geometry/translation.h"
+#include "tidop/math/geometry/scaling.h"
 
 
 namespace tl

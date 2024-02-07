@@ -407,7 +407,7 @@ public:
     /*!
      * \brief Operator unary plus
      */
-    auto operator+() -> Matrix<T, _rows, _cols>;
+    auto operator+() const -> Matrix<T, _rows, _cols>;
     
     /*!
      * \brief Operator unary minus
@@ -431,7 +431,7 @@ public:
      *
      * \return Matriz con todos los elementos de la matriz de entrada cambiados de signo
      */
-    auto operator-() -> Matrix<T, _rows, _cols>;
+    auto operator-() const -> Matrix<T, _rows, _cols>;
 
     /* Binary arithmetic operators */
     
@@ -473,10 +473,10 @@ public:
      * Matrix2x2i C = A + B;
      * \endcode
      */
-    auto operator +(const MatrixDerived<T, _rows, _cols> &matrix2) -> Matrix<T, _rows, _cols>;
+    auto operator +(const MatrixDerived<T, _rows, _cols> &matrix2) const-> Matrix<T, _rows, _cols>;
     
     template<typename MatrixDerived2>
-    auto operator +(const MatrixDerived2 &matrix2) -> MatrixDerived<T, _rows, _cols>;
+    auto operator +(const MatrixDerived2 &matrix2) const -> MatrixDerived<T, _rows, _cols>;
 
     /*!
      * \brief Adición a una matriz
@@ -557,10 +557,10 @@ public:
      * Matrix2x2i C = A - B;
      * \endcode
      */
-    auto operator -(const MatrixDerived<T, _rows, _cols> &matrix2) -> Matrix<T, _rows, _cols>;
+    auto operator -(const MatrixDerived<T, _rows, _cols> &matrix2) const -> Matrix<T, _rows, _cols>;
     
     template<typename MatrixDerived2>
-    auto operator -(const MatrixDerived2 &matrix2) -> MatrixDerived<T, _rows, _cols>;
+    auto operator -(const MatrixDerived2 &matrix2) const -> MatrixDerived<T, _rows, _cols>;
 
     /*!
      * \brief Resta de una matriz por otra
@@ -684,7 +684,7 @@ public:
      * Matrix2x2f C = A / s;
      * \endcode
      */
-    auto operator /(T scalar) -> Matrix<T, _rows, _cols>;
+    auto operator /(T scalar) const -> Matrix<T, _rows, _cols>;
 
     /*!
      * \brief División de un escalar por una matriz
@@ -2090,7 +2090,7 @@ inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::determinant() const -> T
 template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
-inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator+() -> Matrix<T, _rows, _cols>
+inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator+() const -> Matrix<T, _rows, _cols>
 {
     return this->derived();
 }
@@ -2098,7 +2098,7 @@ inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator+() -> Matrix<T,
 template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
-auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator-() -> Matrix<T, _rows, _cols>
+auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator-() const -> Matrix<T, _rows, _cols>
 {
     static_assert(std::is_signed<T>::value, "Requires signed type");
 
@@ -2133,7 +2133,7 @@ auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator-() -> Matrix<T, _rows,
 template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
-inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator +(const MatrixDerived<T, _rows, _cols> &matrix2) -> Matrix<T, _rows, _cols>
+inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator +(const MatrixDerived<T, _rows, _cols> &matrix2) const -> Matrix<T, _rows, _cols>
 {
     Matrix<T, _rows, _cols> matrix = this->derived();
     matrix += matrix2;
@@ -2144,7 +2144,7 @@ template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
 template<typename MatrixDerived2>
-inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator +(const MatrixDerived2 &matrix2) -> MatrixDerived<T, _rows, _cols>
+inline auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator +(const MatrixDerived2 &matrix2) const -> MatrixDerived<T, _rows, _cols>
 {
     MatrixDerived<T, _rows, _cols> matrix = this->derived();
     matrix += matrix2;
@@ -2199,7 +2199,7 @@ auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator +=(const MatrixDerived
 template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
-auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator -(const MatrixDerived<T, _rows, _cols> &matrix2) -> Matrix<T, _rows, _cols>
+auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator -(const MatrixDerived<T, _rows, _cols> &matrix2) const -> Matrix<T, _rows, _cols>
 {
     Matrix<T, _rows, _cols> matrix = this->derived();
     matrix -= matrix2;
@@ -2210,7 +2210,7 @@ template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
 template<typename MatrixDerived2>
-auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator -(const MatrixDerived2 &matrix2) -> MatrixDerived<T, _rows, _cols>
+auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator -(const MatrixDerived2 &matrix2) const -> MatrixDerived<T, _rows, _cols>
 {
     MatrixDerived<T, _rows, _cols> matrix = this->derived();
     matrix -= matrix2;
@@ -2311,7 +2311,7 @@ auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator *=(T scalar) -> Matrix
 template<
   template<typename, size_t _rows = DynamicData, size_t _cols = DynamicData>
   class MatrixDerived, typename T, size_t _rows, size_t _cols>
-auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator /(T scalar) -> Matrix<T, _rows, _cols>
+auto MatrixBase<MatrixDerived<T, _rows, _cols>>::operator /(T scalar) const -> Matrix<T, _rows, _cols>
 {
     Matrix<T, _rows, _cols> _matrix = this->derived();
     _matrix /= scalar;

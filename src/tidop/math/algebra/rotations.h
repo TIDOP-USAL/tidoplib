@@ -119,7 +119,7 @@ public:
     operator OrientationDerived2<T>()
     {
         OrientationDerived2<T> orientation;
-        RotationConverter<T, P...>::convert(this->_derived(), orientation);
+        RotationConverter<T, P...>::convert(this->derived(), orientation);
         return orientation;
     }
         
@@ -129,17 +129,17 @@ public:
     operator OrientationDerived2<T, Q...>()
     {
         OrientationDerived2<T, Q...> orientation;
-        RotationConverter<T, Q...>::convert(this->_derived(), orientation);
+        RotationConverter<T, Q...>::convert(this->derived(), orientation);
         return orientation;
     }
 private:
 
-    auto _derived() -> OrientationDerived<T, P...> &
+    auto derived() -> OrientationDerived<T, P...> &
     {
         return *static_cast<OrientationDerived<T, P...> *>(this);
     }
 
-    auto _derived() const -> const OrientationDerived<T, P...> &
+    auto derived() const -> const OrientationDerived<T, P...> &
     {
         return *static_cast<const OrientationDerived<T, P...> *>(this);
     }

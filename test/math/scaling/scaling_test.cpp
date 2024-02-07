@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop scaling test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/scaling.h>
+#include <tidop/math/geometry/scaling.h>
 #include <tidop/math/algebra/matrix.h>
 
 

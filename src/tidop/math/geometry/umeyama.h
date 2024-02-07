@@ -31,8 +31,8 @@
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/statistics.h"
 #include "tidop/math/algebra/svd.h"
-#include "tidop/math/algebra/transform.h"
-#include "tidop/math/algebra/affine.h"
+#include "tidop/math/geometry/transform.h"
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
