@@ -82,6 +82,11 @@ numberCast(T2 /*b*/)
     return T1{0};
 }
 
+template <typename T>
+bool inline isInRange(T value, T min, T max)
+{
+    return (value < max) && (value > min);
+}
 
 
 template <typename T> inline

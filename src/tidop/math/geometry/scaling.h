@@ -37,12 +37,12 @@
 namespace tl
 {
 
-/*! \addtogroup Geometry
+/*! \addtogroup Math
  *  \{
  */
 
 
-/*! \addtogroup Algebra
+/*! \addtogroup Geometry
  *  \{
  */
 

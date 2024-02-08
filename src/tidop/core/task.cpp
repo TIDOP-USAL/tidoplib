@@ -942,8 +942,7 @@ TaskTree::~TaskTree() = default;
 void TaskTree::addTask(const std::shared_ptr<Task> &task,
                        const std::list<std::shared_ptr<Task>> &parentTasks)
 {
-    unusedParameter(task);
-    unusedParameter(parentTasks);
+    unusedParameter(task, parentTasks);
 }
 
 void TaskTree::stop()

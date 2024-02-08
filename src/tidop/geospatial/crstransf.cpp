@@ -115,10 +115,7 @@ auto CrsTransform::compute(const std::vector<Point3<double>> &pts1,
                            std::vector<double> *error,
                            double *rmse) -> geom::Transform::Status
 {
-    unusedParameter(pts1);
-    unusedParameter(pts2);
-    unusedParameter(error);
-    unusedParameter(rmse);
+    unusedParameter(pts1, pts2, error, rmse);
     Message::error("'compute' is not supported for CrsTransform");
     //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
     return geom::Transform::Status::failure;

@@ -242,8 +242,7 @@ bool RobustMatchingImp::compute(const cv::Mat &queryDescriptor,
                                 const cv::Size &queryImageSize,
                                 const cv::Size &trainImageSize)
 {
-    unusedParameter(queryImageSize);
-    unusedParameter(trainImageSize);
+    unusedParameter(queryImageSize, trainImageSize);
 
     try {
         *goodMatches = this->match(queryDescriptor, trainDescriptor, wrongMatches);

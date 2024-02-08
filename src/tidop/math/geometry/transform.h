@@ -46,12 +46,34 @@ namespace tl
  */
 
 
-/*! \addtogroup Algebra
- *
- * Algebra
+/*! \addtogroup Geometry
  *
  *  \{
  */
+
+template <typename T, size_t Dim>
+class TransformBase
+{
+
+public:
+
+    virtual auto transform(const Point<T> &point) const = 0 -> Point<T>;
+    virtual auto transform(const Point3<T> &point) const = 0 -> Point3<T>;
+    template<size_t _size>
+    virtual auto transform(const Vector<T, _size> &vector) const = 0 -> Vector<T, Dim>;
+    template<size_t _row, size_t _col>
+    virtual auto transform(const Matrix<T, _row, _col> &matrix) const = 0 -> Matrix<T, _row, _col>;
+
+    virtual auto operator * (const Point<T> &point) const = 0 -> Point<T>;
+    virtual auto operator * (const Point3<T> &point) const = 0 -> Point3<T>;
+    template<size_t _size>
+    virtual auto operator * (const Vector<T, _size> &vector) const = 0 -> Vector<T, _size>;
+    template<size_t _row, size_t _col>
+    virtual auto operator * (const Matrix<T, _row, _col> &matrix) const = 0 -> Matrix<T, _row, _col>;
+
+    virtual auto operator() (const Point<T> &point) const = 0 -> Point<T>;
+    virtual auto operator() (const Point3<T> &point) const = 0 -> Point3<T>;
+};
 
 
 /*!
@@ -218,181 +240,11 @@ inline auto Transform<T, Dim>::inverse() const -> Transform<T, Dim>
 }
 
 
-
-namespace math
-{
-
-/* Rotation */
-
-template <typename T, size_t Dim>
-class Rotation
-  : public Transform<T, Dim> 
-{
-
-public:
-
-    Rotation() : Transform<T, Dim>() {}
-    
-    Rotation(T angle) : Transform<T, Dim>() 
-    {
-        static_assert(Dim == 2, "Constructor for 2D Rotation. Use the 3D Rotation constructor.");
-
-        this->transformMatrix[0][0] = cos(angle);
-        this->transformMatrix[0][1] = -sin(angle);
-        this->transformMatrix[1][0] = sin(angle);
-        this->transformMatrix[1][1] = cos(angle);
-    }
-    
-    Rotation(const RotationMatrix<double> &rotation) : Transform<T, Dim>() 
-    {
-        static_assert(Dim == 2, "Constructor for 3D Rotation. Use the 2D Rotation constructor.");
-
-        auto block = this->transformMatrix.block(0, 2, 0, 2);
-        block = rotation;
-    }
-
-    ~Rotation() override = default;
-
-private:
-
-};
-
-
-
-//template <typename T, size_t Dim>
-//class TransformEstimator
-//{
-//
-//protected:
-//
-//    int minimumSample;
-//
-//public:
-//
-//    TransformEstimator() = default;
-//    ~TransformEstimator() = default;
-//
-//    template<size_t rows, size_t cols>
-//    virtual Transform estimate(const Matrix<T, rows, cols> &src,
-//                               const Matrix<T, rows, cols> &dst) = 0;
-//    template<size_t rows, size_t cols>
-//    virtual Transform estimate(const std::vector<Point3<double>> &src,
-//                               const std::vector<Point3<double>> &dst) = 0;
-//
-//};
-
-
-
-//template <typename T>
-//class Affine2D
-//  : public Transform<T, 2>
-//{
-//
-//public:
-//
-//    Affine2D() {}
-//
-//    Affine2D(T tx, T ty, T scaleX, T scaleY, T rotation)
-//    {
-//        this->transformMatrix(0, 0) = scaleX * cos(rotation);
-//        this->transformMatrix(0, 1) = -scaleX * sin(rotation);
-//        this->transformMatrix(1, 0) = scaleX * sin(rotation);
-//        this->transformMatrix(1, 0) = scaleX * cos(rotation);
-//        this->transformMatrix(0, 2) = tx;
-//        this->transformMatrix(1, 2) = ty;
-//    }
-//
-//    Affine2D(const Matrix<double, 3, 3> &matrix) 
-//      : Transform<T, 2>(matrix)
-//    {
-//    }
-//
-//    template<size_t rows, size_t cols>
-//    static Matrix<double, 3, 3> compute(const Matrix<T, rows, cols> &src,
-//                                        const Matrix<T, rows, cols> &dst)
-//    {
-//        TL_ASSERT(src.cols() == 2, "Invalid matrix columns size");
-//        TL_ASSERT(dst.cols() == 2, "Invalid matrix columns size");
-//        TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes");
-//        TL_ASSERT(src.rows() >= 3 , "Invalid number of points: {} < {}", src.rows(), 3);
-//
-//        size_t size = src.rows() * 2;
-//
-//        Matrix<double> A(size, 6, 0);
-//        Vector<double> B(size);
-//
-//        for (size_t i = 0, r = 0; i < src.rows(); i++, r++) {
-//            A(r, 0) = src(i, 0);
-//            A(r, 1) = src(i, 1);
-//            A(r, 4) = 1;
-//            B[r] = dst(i,0);
-//
-//            r++;
-//            
-//            A(r, 2) = src(i, 0);
-//            A(r, 3) = src(i, 1);
-//            A(r, 5) = 1;
-//
-//            B[r] = dst(i,1);
-//        }
-//
-//        SingularValueDecomposition<Matrix<double>> svd(A);
-//        Vector<double> C = svd.solve(B);
-//
-//        Matrix<double, 3, 3> transformMatrix = Matrix<double>::identity(3, 3);
-//        transformMatrix(0, 0) = C[0];
-//        transformMatrix(0, 1) = C[1];
-//        transformMatrix(0, 2) = C[4];
-//        transformMatrix(1, 0) = C[2];
-//        transformMatrix(1, 1) = C[3];
-//        transformMatrix(1, 2) = C[5];
-//
-//        return transformMatrix;
-//    }
-//};
-//
-//
-//
-//template <typename T>
-//class Affine3D
-//  : public Transform<T, 3>
-//{
-//
-//public:
-//
-//    Affine3D() { }
-//    Affine3D(T tx, T ty, T tz, T scale, T omega, T phi, T kappa)
-//    { 
-//        EulerAngles<T> eulerAngles(omega, phi, kappa, EulerAngles<T>::Axes::xyz);
-//        RotationMatrix<T> rotation_matrix;
-//        RotationConverter<T>::convert(eulerAngles, rotation_matrix);
-//        this->transformMatrix.block(0, 2, 0, 2) = rotation_matrix * scale;
-//        this->transformMatrix(0, 3) = tx;
-//        this->transformMatrix(1, 3) = ty;
-//        this->transformMatrix(2, 3) = tz;
-//    }
-//
-//    Affine3D(T tx, T ty, T tz, T scale, const RotationMatrix<T> &rotation)
-//    {
-//        this->transformMatrix.block(0, 2, 0, 2) = rotation * scale;
-//        this->transformMatrix(0, 3) = tx;
-//        this->transformMatrix(1, 3) = ty;
-//        this->transformMatrix(2, 3) = tz;
-//    }
-//
-//    Affine3D(const Matrix<double, 4, 4> &matrix) 
-//      : Transform<T, 3>(matrix)
-//    {
-//    }
-//
-//};
-
-
-/*! \} */ // end of Algebra
+/*! \} */ // end of Geometry
 
 /*! \} */ // end of Math
 
-} // Fin namespace math
+
 
 } // End namespace tl
 

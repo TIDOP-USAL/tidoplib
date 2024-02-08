@@ -344,26 +344,26 @@ namespace tl
  * and ensures that it rounds correctly.
  */
 template<typename T>
-constexpr auto roundToInteger(T n) {
-  return static_cast<int>(round(n));
+constexpr auto roundToInteger(T n) 
+{
+    return static_cast<int>(round(n));
 }
 
 template<typename ...Args>
 constexpr size_t args_size(Args&&...)
 {
-  return sizeof...(Args);
+    return sizeof...(Args);
 }
 
 template<typename ...Args>
 constexpr size_t args_empty(Args&&...)
 {
-  return sizeof...(Args) == 0;
+    return sizeof...(Args) == 0;
 }
 
-template<typename T>
-constexpr auto unusedParameter(T param)
+template <typename... T>
+constexpr void unusedParameter(const T&...)
 {
-  return (void)param;
 }
 
 

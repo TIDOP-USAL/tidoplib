@@ -128,3 +128,11 @@ BOOST_AUTO_TEST_CASE(convert_string_to)
   bool out6 = convertStringTo<bool>("0");
   BOOST_CHECK_EQUAL(false, out6);
 }
+
+BOOST_AUTO_TEST_CASE(is_in_range)
+{
+	BOOST_CHECK(isInRange(1, 0, 2));
+	BOOST_CHECK(isInRange(0.5, -1., 2.));
+	BOOST_CHECK(!isInRange(-0.5, 0., 2.));
+
+}
