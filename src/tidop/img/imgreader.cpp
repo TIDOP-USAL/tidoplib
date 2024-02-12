@@ -213,7 +213,8 @@ public:
     }
     
     auto read(const Rect<int> &rect,
-              const Size<int> &size) -> cv::Mat override
+              const Size<int> &size,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
         cv::Mat image;
 
@@ -245,6 +246,10 @@ public:
             offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
             offset.y = roundToInteger(offset.y * scaleY);
 
+            if (affine) {
+                *affine = Affine<int,2>(scaleX, scaleY, offset.x, offset.y, 0);
+            }
+
             image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
 
             TL_ASSERT(!image.empty(), "Image empty");
@@ -273,7 +278,8 @@ public:
     
     auto read(double scaleX,
               double scaleY,
-              const Rect<int> &rect) -> cv::Mat override
+              const Rect<int> &rect,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
         cv::Mat image;
 
@@ -299,6 +305,10 @@ public:
             cv::Size size;
             size.width = roundToInteger(rect_to_read.width * scaleX);
             size.height = roundToInteger(rect_to_read.height * scaleY);
+
+            if (affine) {
+                *affine = Affine<int,2>(scaleX, scaleY, offset.x, offset.y, 0);
+            }
 
             image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
 
@@ -328,7 +338,8 @@ public:
     
     auto read(const WindowI &window,
               double scaleX,
-              double scaleY) -> cv::Mat override
+              double scaleY,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
 
         int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
@@ -340,7 +351,7 @@ public:
 
         try {
 
-            image = this->read(scaleX, scaleY, rect);
+            image = this->read(scaleX, scaleY, rect, affine);
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -350,8 +361,9 @@ public:
     }
     
     auto read(const Window<Point<double>> &terrainWindow,
-                 double scaleX,
-                 double scaleY) -> cv::Mat override
+              double scaleX,
+              double scaleY,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
         Window<Point<double>> wLoad;
         auto transform_inverse = mAffine.inverse();
@@ -365,7 +377,7 @@ public:
 
         try {
 
-            image = read(wRead, scaleX, scaleY);
+            image = read(wRead, scaleX, scaleY, affine);
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");

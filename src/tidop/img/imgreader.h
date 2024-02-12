@@ -81,7 +81,8 @@ public:
      * \return Image
      */
     virtual auto read(const Rect<int> &rect = Rect<int>(),
-                      const Size<int> &size = Size<int>()) -> cv::Mat = 0;
+                      const Size<int> &size = Size<int>(),
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
      * \brief Reads an image area corresponding to a rectangle
@@ -92,7 +93,8 @@ public:
      */
     virtual auto read(double scaleX,
                       double scaleY,
-                      const Rect<int> &rect = Rect<int>()) -> cv::Mat = 0;
+                      const Rect<int> &rect = Rect<int>(),
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
      * \brief Reads the image area corresponding to a window
@@ -103,7 +105,8 @@ public:
      */
     virtual auto read(const WindowI &window,
                       double scaleX = 1.,
-                      double scaleY = 1.) -> cv::Mat = 0;
+                      double scaleY = 1.,
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
      * \brief Reads the image area corresponding to a window in terrestrial coordinates
@@ -114,7 +117,8 @@ public:
      */
     virtual auto read(const Window<Point<double>> &terrainWindow,
                       double scaleX = 1.,
-                      double scaleY = 1.) -> cv::Mat = 0;
+                      double scaleY = 1.,
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
      * \brief Returns the number of rows in the image
