@@ -65,7 +65,8 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/angle.h
                             algorithms/projection.h
                             algorithms/buffer.h
-                            algorithms/intersect.h)
+                            algorithms/intersect.h
+							algorithms/dbscan.h)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

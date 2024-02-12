@@ -51,29 +51,21 @@ namespace tl
  *  \{
  */
 
-template <typename T, size_t Dim>
-class TransformBase
-{
-
-public:
-
-    virtual auto transform(const Point<T> &point) const = 0 -> Point<T>;
-    virtual auto transform(const Point3<T> &point) const = 0 -> Point3<T>;
-    template<size_t _size>
-    virtual auto transform(const Vector<T, _size> &vector) const = 0 -> Vector<T, Dim>;
-    template<size_t _row, size_t _col>
-    virtual auto transform(const Matrix<T, _row, _col> &matrix) const = 0 -> Matrix<T, _row, _col>;
-
-    virtual auto operator * (const Point<T> &point) const = 0 -> Point<T>;
-    virtual auto operator * (const Point3<T> &point) const = 0 -> Point3<T>;
-    template<size_t _size>
-    virtual auto operator * (const Vector<T, _size> &vector) const = 0 -> Vector<T, _size>;
-    template<size_t _row, size_t _col>
-    virtual auto operator * (const Matrix<T, _row, _col> &matrix) const = 0 -> Matrix<T, _row, _col>;
-
-    virtual auto operator() (const Point<T> &point) const = 0 -> Point<T>;
-    virtual auto operator() (const Point3<T> &point) const = 0 -> Point3<T>;
-};
+//template <typename T, size_t Dim>
+//class TransformBase
+//{
+//
+//public:
+//
+//    virtual auto transform(const Point<T> &point) const  -> Point<T> = 0;
+//    virtual auto transform(const Point3<T> &point) const  -> Point3<T> = 0;
+//
+//    virtual auto operator * (const Point<T> &point) const -> Point<T> = 0;
+//    virtual auto operator * (const Point3<T> &point) const -> Point3<T> = 0;
+//
+//    virtual auto operator() (const Point<T> &point) const -> Point<T> = 0;
+//    virtual auto operator() (const Point3<T> &point) const -> Point3<T> = 0;
+//};
 
 
 /*!
