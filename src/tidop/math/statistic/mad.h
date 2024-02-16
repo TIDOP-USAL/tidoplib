@@ -25,7 +25,8 @@
 #pragma once
 
 #include "tidop/core/defs.h"
-#include "tidop/math/statistic/descriptive.h"
+#include "tidop/math/statistic/mean.h"
+#include "tidop/math/statistic/median.h"
 
 namespace tl
 {
@@ -35,129 +36,103 @@ namespace tl
  */
 
 
-
 /*! \addtogroup statistics Statistics
  *  \{
  */
 
-
 /*!
- * \brief covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- * \param first
- * \param last
- * \return
+ * \brief Mean Absolute Deviation
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
  */
 template<typename It> inline
 typename std::enable_if<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
     double>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+meanAbsoluteDeviation(It first, It last)
 {
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
-    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
+    size_t n = std::distance(first, last);
+    if (n <= 1) return consts::zero<double>;
 
-    double mean_x = mean(first_x, last_x);
-    double mean_y = mean(first_y, last_y);
+    double _mean = mean(first, last);
     double sum{};
-    double x{};
-    double y{};
 
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
-        sum += x * y;
+    while (first != last) {
+        sum += std::abs(static_cast<double>(*first++) - _mean);
     }
-
-    return sum / n_x;
+    return sum / n;
 }
 
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
     typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+meanAbsoluteDeviation(It first, It last)
 {
     using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
-    if (n_x != n_y || n_x <= 1) return consts::zero<T>;
+    size_t n = std::distance(first, last);
+    if (n <= 1) return consts::zero<T>;
 
-    T mean_x = mean(first_x, last_x);
-    T mean_y = mean(first_y, last_y);
+    T _mean = mean(first, last);
     T sum{};
-    T x{};
-    T y{};
 
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
-        sum += x * y;
+    while (first != last) {
+        sum += std::abs(*first++ - _mean);
     }
-
-    return sum / n_x;
+    return sum / n;
 }
 
 
 /*!
- * /brief Covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
+ * \brief Median Absolute Deviation
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
  */
-template<typename T>
-class Covariance
+template<typename It> inline
+typename std::enable_if<
+    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+    double>::type
+medianAbsoluteDeviation(It first, It last)
 {
+    size_t n = std::distance(first, last);
+    if (n <= 1) return consts::zero<double>;
 
-public:
+    double _median = median(first, last);
 
-    Covariance();
-    ~Covariance();
+    std::vector<double> x(n);
+    auto x_it = x.begin();
 
-    double eval(const Series<T> &data1,
-                const Series<T> &data2);
-
-};
-
-
-/* Implementation */
-
-template<typename T>
-Covariance<T>::Covariance()
-{
-}
-
-template<typename T>
-Covariance<T>::~Covariance()
-{
-}
-
-template<typename T> inline
-double Covariance<T>::eval(const Series<T> &series1,
-                           const Series<T> &series2)
-{
-    DescriptiveStatistics<T> stat1(series1);
-    DescriptiveStatistics<T> stat2(series2);
-
-    auto n_x = stat1.size();
-    auto n_y = stat2.size();
-    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
-
-    double mean_x = stat1.mean();
-    double mean_y = stat2.mean();
-    double sum{};
-    double x{};
-    double y{};
-
-    auto it1 = series1.begin();
-    auto it2 = series2.begin();
-    while (it1 != series1.end()) {
-        x = static_cast<double>(*it1++) - mean_x;
-        y = static_cast<double>(*it2++) - mean_y;
-        sum += x * y;
+    while (first != last) {
+        *x_it++ = std::abs(static_cast<double>(*first++) - _median);
     }
 
-    return sum / n_x;
+    return median(x.begin(), x.end());
+}
+
+template<typename It> inline
+typename std::enable_if<
+    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
+medianAbsoluteDeviation(It first, It last)
+{
+    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+
+    size_t n = std::distance(first, last);
+    if (n <= 1) return consts::zero<T>;
+
+    T _median = median(first, last);
+    T sum{};
+
+    std::vector<T> x(n);
+    auto x_it = x.begin();
+
+
+    while (first != last) {
+        *x_it++ = std::abs(*first++ - _median);
+    }
+
+    return median(x.begin(), x.end());
 }
 
 

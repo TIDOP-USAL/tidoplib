@@ -181,6 +181,27 @@ TL_EXPORT std::ostream &operator<< (std::ostream &os, const Path &path);
 
 /*! \} */ // end of core
 
+
+
+
+//class TL_EXPORT FileStatus
+//{
+//
+//private:
+//
+//    Path path;
+//
+//public:
+//
+//    FileStatus(Path path);
+//    ~FileStatus();
+//
+//    bool isBlock() const;
+//
+//};
+
+
+
 } // End namespace tl
 
 

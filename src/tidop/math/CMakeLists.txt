@@ -64,11 +64,26 @@ if(BUILD_TL_MATH)
                              geometry/transform.h
                              geometry/translation.h
                              geometry/umeyama.h
-                             statistic/series.h
+                             statistic/algorithm.h
+                             statistic/biweightmidvariance.h
                              statistic/descriptive.h
+                             statistic/iqr.h
+                             statistic/mad.h
+                             statistic/mean.h
+                             statistic/median.h
+                             statistic/mode.h
+                             statistic/pearson.h
+                             statistic/quantile.h
+                             statistic/range.h
+                             statistic/rms.h
+                             statistic/series.h
                              statistic/confmat.h
 		                     statistic/covariance.h
+                             statistic/skewness.h
+                             statistic/skewness.impl.h
+                             statistic/stddev.h
                              statistic/tukeyfences.h
+                             statistic/variance.h
                              lapack.h
                              blas.h)
                 

@@ -25,7 +25,9 @@
 #pragma once
 
 #include "tidop/core/defs.h"
-#include "tidop/math/statistic/descriptive.h"
+#include "tidop/math/statistic/covariance.h"
+#include "tidop/math/statistic/stddev.h"
+
 
 namespace tl
 {
@@ -35,129 +37,44 @@ namespace tl
  */
 
 
-
 /*! \addtogroup statistics Statistics
  *  \{
  */
 
-
-/*!
- * \brief covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- * \param first
- * \param last
- * \return
- */
+ /*!
+  * \brief pearsonCorrelationCoefficient
+  * \param[in] first_x
+  * \param[in] last_x
+  * \param[in] first_y
+  * \param[in] last_y
+  * \return
+  */
 template<typename It> inline
 typename std::enable_if<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
     double>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+pearsonCorrelationCoefficient(It first_x, It last_x, It first_y, It last_y)
 {
     auto n_x = std::distance(first_x, last_x);
     auto n_y = std::distance(first_y, last_y);
     if (n_x != n_y || n_x <= 1) return consts::zero<double>;
-
-    double mean_x = mean(first_x, last_x);
-    double mean_y = mean(first_y, last_y);
-    double sum{};
-    double x{};
-    double y{};
-
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
-        sum += x * y;
-    }
-
-    return sum / n_x;
+    return covariance(first_x, last_x, first_y, last_y) /
+        (standarDeviation(first_x, last_x) * standarDeviation(first_y, last_y));
 }
 
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
     typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+pearsonCorrelationCoefficient(It first_x, It last_x, It first_y, It last_y)
 {
     using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
     auto n_x = std::distance(first_x, last_x);
     auto n_y = std::distance(first_y, last_y);
     if (n_x != n_y || n_x <= 1) return consts::zero<T>;
-
-    T mean_x = mean(first_x, last_x);
-    T mean_y = mean(first_y, last_y);
-    T sum{};
-    T x{};
-    T y{};
-
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
-        sum += x * y;
-    }
-
-    return sum / n_x;
-}
-
-
-/*!
- * /brief Covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- */
-template<typename T>
-class Covariance
-{
-
-public:
-
-    Covariance();
-    ~Covariance();
-
-    double eval(const Series<T> &data1,
-                const Series<T> &data2);
-
-};
-
-
-/* Implementation */
-
-template<typename T>
-Covariance<T>::Covariance()
-{
-}
-
-template<typename T>
-Covariance<T>::~Covariance()
-{
-}
-
-template<typename T> inline
-double Covariance<T>::eval(const Series<T> &series1,
-                           const Series<T> &series2)
-{
-    DescriptiveStatistics<T> stat1(series1);
-    DescriptiveStatistics<T> stat2(series2);
-
-    auto n_x = stat1.size();
-    auto n_y = stat2.size();
-    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
-
-    double mean_x = stat1.mean();
-    double mean_y = stat2.mean();
-    double sum{};
-    double x{};
-    double y{};
-
-    auto it1 = series1.begin();
-    auto it2 = series2.begin();
-    while (it1 != series1.end()) {
-        x = static_cast<double>(*it1++) - mean_x;
-        y = static_cast<double>(*it2++) - mean_y;
-        sum += x * y;
-    }
-
-    return sum / n_x;
+    return covariance(first_x, last_x, first_y, last_y) /
+        (standarDeviation(first_x, last_x) * standarDeviation(first_y, last_y));
 }
 
 

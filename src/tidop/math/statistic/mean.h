@@ -25,7 +25,6 @@
 #pragma once
 
 #include "tidop/core/defs.h"
-#include "tidop/math/statistic/descriptive.h"
 
 namespace tl
 {
@@ -35,131 +34,63 @@ namespace tl
  */
 
 
-
 /*! \addtogroup statistics Statistics
  *  \{
  */
 
+/*! \addtogroup CentralTendency Measures of central tendency
+ *  \{
+ */
 
 /*!
- * \brief covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- * \param first
- * \param last
- * \return
+ * \brief La media es la suma de todos los datos partido del número de datos.
+ * Se representa como:
+ * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n}  \f]
+ * La medida de dispersión más utilizada para la media es la desviación típica o
+ * desviación estándar, pero tambień puede ser otra como el recorrido, coeficiente
+ * de variación, etc.
+ * Es muy sensible a datos discordantes (outliers)
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Valor de la media
  */
 template<typename It> inline
 typename std::enable_if<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
     double>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+mean(It first, It last)
 {
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
-    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
+    double x{0};
+    double i{1};
 
-    double mean_x = mean(first_x, last_x);
-    double mean_y = mean(first_y, last_y);
-    double sum{};
-    double x{};
-    double y{};
-
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
-        sum += x * y;
+    while (first != last) {
+        x += (static_cast<double>(*first++) - x) / i++;
     }
 
-    return sum / n_x;
+    return x;
 }
 
 template<typename It> inline
 typename std::enable_if<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
     typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+mean(It first, It last)
 {
     using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
 
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
-    if (n_x != n_y || n_x <= 1) return consts::zero<T>;
+    T x{0};
+    T i{1};
 
-    T mean_x = mean(first_x, last_x);
-    T mean_y = mean(first_y, last_y);
-    T sum{};
-    T x{};
-    T y{};
-
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
-        sum += x * y;
+    while (first != last) {
+        x += (*first++ - x) / i++;
     }
 
-    return sum / n_x;
-}
+    return x;
+} 
+ 
 
 
-/*!
- * /brief Covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- */
-template<typename T>
-class Covariance
-{
-
-public:
-
-    Covariance();
-    ~Covariance();
-
-    double eval(const Series<T> &data1,
-                const Series<T> &data2);
-
-};
-
-
-/* Implementation */
-
-template<typename T>
-Covariance<T>::Covariance()
-{
-}
-
-template<typename T>
-Covariance<T>::~Covariance()
-{
-}
-
-template<typename T> inline
-double Covariance<T>::eval(const Series<T> &series1,
-                           const Series<T> &series2)
-{
-    DescriptiveStatistics<T> stat1(series1);
-    DescriptiveStatistics<T> stat2(series2);
-
-    auto n_x = stat1.size();
-    auto n_y = stat2.size();
-    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
-
-    double mean_x = stat1.mean();
-    double mean_y = stat2.mean();
-    double sum{};
-    double x{};
-    double y{};
-
-    auto it1 = series1.begin();
-    auto it2 = series2.begin();
-    while (it1 != series1.end()) {
-        x = static_cast<double>(*it1++) - mean_x;
-        y = static_cast<double>(*it2++) - mean_y;
-        sum += x * y;
-    }
-
-    return sum / n_x;
-}
-
+/*! \} */ // end of CentralTendency
 
 /*! \} */ // end of statistic
 

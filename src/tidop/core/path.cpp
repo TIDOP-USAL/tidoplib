@@ -539,5 +539,25 @@ std::ostream &operator<< (std::ostream &os, const Path &path)
     return os;
 }
 
+
+
+
+//FileStatus::FileStatus(Path path)
+//    : path(path)
+//{
+//}
+//
+//FileStatus::~FileStatus()
+//{
+//}
+//
+//inline bool FileStatus::isBlock() const
+//{
+//#if (BOOST_VERSION_NUMBER_MAJOR > 8 && BOOST_VERSION_NUMBER_MINOR >=3)
+//    fs::is_block_file(path.toString());
+//#endif
+//}
+
+
 } // End namespace tl
 

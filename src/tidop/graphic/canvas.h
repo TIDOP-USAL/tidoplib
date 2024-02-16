@@ -178,6 +178,14 @@ public:
     void setBackgroundColor(const Color &color) override;
 
     cv::Mat bmp();
+    void setPicture(const cv::Mat &bmp);
+
+    /*!
+     * \brief operador asignación
+     * \param[in] canvas Objeto canvas que se copia por asignación
+     * \return
+     */
+    CanvasCV &operator =(const CanvasCV &canvas);
 
 protected:
 
@@ -189,17 +197,6 @@ protected:
     void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
     //void drawText(const Point<double> &point, const std::string &text) override;
     void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) override;
-
-    void setPicture(const cv::Mat &bmp);
-
-
-
-    /*!
-     * \brief operador asignación
-     * \param[in] canvas Objeto canvas que se copia por asignación
-     * \return
-     */
-    CanvasCV &operator =(const CanvasCV &canvas);
 
 private:
 
