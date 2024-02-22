@@ -367,7 +367,7 @@ public:
 
                 auto _affine = Affine2DEstimator<double>::estimate(image_points, image_rect);
 
-                std::vector<Point<double>> image_points_transform;
+                std::vector<Point<double>> image_points_transform(image_points.size());
                 std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
                 Rect<int> rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
                 Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
