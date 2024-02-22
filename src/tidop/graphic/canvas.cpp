@@ -175,7 +175,7 @@ void CanvasCV::drawPoint(const Point<double> &point, const GraphicStyle &style)
     }
 
     Label *style_label = style.label();
-    if (!style_label->text().empty()) {
+    if (style_label && !style_label->text().empty()) {
         //Font font = style_label->font();
         Color foregroundColor = style_label->foregroundColor();
         //cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
@@ -269,11 +269,22 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
         }
     }
 
+    
+    Label *style_label = style.label();
+    if (style_label && !style_label->text().empty()) {
+
+        Color foregroundColor = style_label->foregroundColor();
+
+        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+        double fontScale = 2;
+        int thickness = 3;
+        int baseline = 0;
+        auto point = polygon.window().pt1;
+        cv::putText(mCanvas, style_label->text(), cv::Point(roundToInteger(point.x), roundToInteger(point.y)), fontFace, fontScale,
+                    colorToCvScalar(foregroundColor), thickness, 8);
+    }
+
     /// TODO: completar
-    //if (Label *style_label = style.label()) {
-    //  ...
-    //}
-    //
     //if (Symbol *style_symbol = style.symbol()) {
     //  ...
     //}

@@ -880,7 +880,7 @@ ALLOW_BITWISE_FLAG_OPERATIONS(Label::AnchorPosition)
  *
  * Estilos de una entidad, de un layer o de un archivo
  */
-    class TL_EXPORT GraphicStyle
+class TL_EXPORT GraphicStyle
 {
 
 public:
