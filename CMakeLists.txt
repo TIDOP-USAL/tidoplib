@@ -29,6 +29,9 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 
+if(POLICY CMP0146) 
+cmake_policy(SET CMP0146 OLD) 
+endif()
 
 project(TidopLib
         VERSION 3.0.0

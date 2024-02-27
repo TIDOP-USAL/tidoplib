@@ -37,14 +37,12 @@ namespace tl
 {
 
 Painter::Painter()
-  : mTrf(nullptr),
-    mCanvas(nullptr)
+  : mCanvas(nullptr)
 {
 }
 
 Painter::Painter(Canvas *canvas)
-  : mTrf(nullptr),
-    mCanvas(canvas)
+  : mCanvas(canvas)
 {
 }
 
@@ -56,10 +54,9 @@ void Painter::drawPoint(const GPoint &point)
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
 
-            Point<double> point_transform = dynamic_cast<geom::TransformBase<Point<double>> *>(mTrf)->transform(point, geom::Transform::Order::direct);
-
+            Point<double> point_transform = mTransform.transform(point);
             mCanvas->drawPoint(point_transform, point);
 
         } else {
@@ -85,12 +82,12 @@ void Painter::drawLineString(const GLineString &lineString)
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
 
             LineString<Point<double>> linestring_transform(lineString.size());
 
             for (size_t i = 0; i < lineString.size(); i++) {
-                linestring_transform[i] = dynamic_cast<geom::TransformBase<Point<double>> *>(mTrf)->transform(lineString[i], geom::Transform::Order::direct);
+                linestring_transform[i] = mTransform.transform(lineString[i]);
             }
 
             mCanvas->drawLineString(linestring_transform, lineString);
@@ -119,11 +116,11 @@ void Painter::drawPolygon(const GPolygon &polygon)
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
             Polygon<Point<double>> polygon_transform(polygon.size());
 
             for (size_t i = 0; i < polygon.size(); i++) {
-                polygon_transform[i] = dynamic_cast<geom::TransformBase<Point<double>> *>(mTrf)->transform(polygon[i], geom::Transform::Order::direct);
+                polygon_transform[i] = mTransform.transform(polygon[i]);
             }
 
             mCanvas->drawPolygon(polygon_transform, polygon);
@@ -140,11 +137,11 @@ void Painter::drawPolygon(const PolygonD &polygon)
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
             Polygon<Point<double>> polygon_transform(polygon.size());
 
             for (size_t i = 0; i < polygon.size(); i++) {
-                polygon_transform[i] = dynamic_cast<geom::TransformBase<Point<double>> *>(mTrf)->transform(polygon[i], geom::Transform::Order::direct);
+                polygon_transform[i] = mTransform.transform(polygon[i]);
             }
 
             mCanvas->drawPolygon(polygon_transform, *this);
@@ -184,21 +181,16 @@ void Painter::drawText(const Point<double> &point, const std::string &text)
 {
     if (mCanvas) {
 
-        if (mTrf) {
-
-            Point<double> point_transform = dynamic_cast<geom::TransformBase<Point<double>> *>(mTrf)->transform(point, geom::Transform::Order::direct);
-
+        if (!mTransform.isEmpty()) {
+            Point<double> point_transform = mTransform.transform(point);
             mCanvas->drawText(point_transform, text, *this);
-
         } else {
-
             mCanvas->drawText(point, text, *this);
         }
 
     } else {
         Message::error("Canvas not defined");
     }
-
 }
 
 void Painter::setCanvas(Canvas *canvas)
@@ -206,9 +198,9 @@ void Painter::setCanvas(Canvas *canvas)
     mCanvas = canvas;
 }
 
-void Painter::setTransform(geom::Transform *trf)
+void Painter::setTransform(const Affine<double, 2> &affine)
 {
-    mTrf = trf;
+    mTransform = affine;
 }
 
 

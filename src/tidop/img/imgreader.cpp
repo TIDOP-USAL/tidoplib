@@ -36,12 +36,15 @@ TL_DISABLE_WARNINGS
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+#endif TL_HAVE_GDAL
+
 
 #include <utility>
 
 namespace tl
 {
+
+#ifdef TL_HAVE_GDAL
 
 DataType gdalConvertDataType(GDALDataType dataType)
 {
@@ -110,6 +113,8 @@ int gdalToOpenCv(GDALDataType gdalType, int channels)
     depth = -1;
   return(CV_MAKETYPE(depth, channels));
 }
+
+#endif TL_HAVE_GDAL
 
 ImageReader::ImageReader(tl::Path file)
   : mFile(std::move(file))

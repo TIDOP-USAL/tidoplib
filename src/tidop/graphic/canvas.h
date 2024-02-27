@@ -189,13 +189,9 @@ public:
 
 protected:
 
-    //void drawPoint(const GPoint &point) override;
     void drawPoint(const Point<double> &point, const GraphicStyle &style) override;
-    //void drawLineString(const GLineString &lineString) override;
     void drawLineString(const LineStringD &lineString, const GraphicStyle &style) override;
-    //void drawPolygon(const GPolygon &polygon) override;
     void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
-    //void drawText(const Point<double> &point, const std::string &text) override;
     void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) override;
 
 private:

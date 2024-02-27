@@ -35,6 +35,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
@@ -164,14 +165,14 @@ public:
      * \brief Establece la transformación que se aplica para dibujar el en canvas
      * \param[in] trf Transformación
      */
-    void setTransform(geom::Transform *trf);
+    void setTransform(const Affine<double, 2> &affine);
 
     //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
     //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
 protected:
 
-    geom::Transform *mTrf;
+    Affine<double, 2> mTransform;
     Canvas *mCanvas;
 
 };

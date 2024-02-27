@@ -43,6 +43,9 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+
+#ifdef TL_HAVE_GDAL
+
 GDALDataType dataTypeToGdalDataType(DataType dataType)
 {
     GDALDataType ret = GDT_Unknown;
@@ -107,7 +110,7 @@ GDALDataType openCvToGdal(int cvdt)
     return(ret);
 }
 
-
+#endif TL_HAVE_GDAL
 
 
 ImageWriter::ImageWriter(tl::Path file)
