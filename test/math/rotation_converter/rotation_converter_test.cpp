@@ -195,6 +195,7 @@ BOOST_FIXTURE_TEST_CASE(quaternion_to_matrix, RotationConverterTest)
     BOOST_CHECK_CLOSE(-0.2857143, rot_mat.at(2, 0), 0.1);
     BOOST_CHECK_CLOSE(-0.4285714, rot_mat.at(2, 1), 0.1);
     BOOST_CHECK_CLOSE(0.8571429, rot_mat.at(2, 2), 0.1);
+
 }
 
 

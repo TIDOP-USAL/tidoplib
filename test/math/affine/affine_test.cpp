@@ -27,6 +27,9 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/geometry/affine.h>
 #include <tidop/math/geometry/helmert.h>
+#include <tidop/math/geometry/scaling.h>
+#include <tidop/math/geometry/rotation.h>
+#include <tidop/math/geometry/translation.h>
 #include <tidop/math/algebra/matrix.h>
 
 
@@ -240,11 +243,96 @@ BOOST_FIXTURE_TEST_CASE(constructor_affine_2d, AffineTest)
         BOOST_CHECK_CLOSE(0.24574561328669753, affine_2d(1, 1), 0.1);
         BOOST_CHECK_CLOSE(75.0, affine_2d(1, 2), 0.1);
     }
+
+    {
+        Scaling<double, 2> scale{0.25, 0.30};
+        Translation<double, 2> translation{150.0, 75.0};
+        Rotation<double, 2> rotation(consts::deg_to_rad<double> *35.);
+
+        Affine<double, 2> affine_2d(scale, translation, rotation);
+        BOOST_CHECK_CLOSE(0.20478801107224795, affine_2d(0, 0), 0.1);
+        BOOST_CHECK_CLOSE(-0.17207293090531381, affine_2d(0, 1), 0.1);
+        BOOST_CHECK_CLOSE(150.0, affine_2d(0, 2), 0.1);
+        BOOST_CHECK_CLOSE(0.14339410908776151, affine_2d(1, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.24574561328669753, affine_2d(1, 1), 0.1);
+        BOOST_CHECK_CLOSE(75.0, affine_2d(1, 2), 0.1);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_affine_3d, AffineTest)
 {
+    {
+        Affine<double, 3> affine_3d(0.25, 0.30, 0.25, 150.0, 75.0, 5., consts::deg_to_rad<double> *35., consts::deg_to_rad<double> *3., consts::deg_to_rad<double> *5.);
+        BOOST_CHECK_CLOSE(0.24870736197008325, affine_3d(0, 0), 0.1);
+        BOOST_CHECK_CLOSE(-0.0261108896493849, affine_3d(0, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.01308398906073595, affine_3d(0, 2), 0.1);
+        BOOST_CHECK_CLOSE(150.0, affine_3d(0, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.02532456150275905, affine_3d(1, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.24402558715813524, affine_3d(1, 1), 0.1);
+        BOOST_CHECK_CLOSE(-0.1431975924448578, affine_3d(1, 2), 0.1);
+        BOOST_CHECK_CLOSE(75.0, affine_3d(1, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.00182062807156191, affine_3d(2, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.17253908036686927, affine_3d(2, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.20450735622039348, affine_3d(2, 2), 0.1);
+        BOOST_CHECK_CLOSE(5., affine_3d(2, 3), 0.1);
+    }
 
+
+    {
+        Vector<double, 3> scale{0.25, 0.30, 0.25};
+        Vector<double, 3> translation{150.0, 75.0, 5.0};
+        EulerAngles<double> euler_angles(consts::deg_to_rad<double> *35., consts::deg_to_rad<double> *3., consts::deg_to_rad<double> *5.);
+
+        Affine<double, 3> affine_3d(scale, translation, euler_angles);
+        BOOST_CHECK_CLOSE(0.24870736197008325, affine_3d(0, 0), 0.1);
+        BOOST_CHECK_CLOSE(-0.0261108896493849, affine_3d(0, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.01308398906073595, affine_3d(0, 2), 0.1);
+        BOOST_CHECK_CLOSE(150.0, affine_3d(0, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.02532456150275905, affine_3d(1, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.24402558715813524, affine_3d(1, 1), 0.1);
+        BOOST_CHECK_CLOSE(-0.1431975924448578, affine_3d(1, 2), 0.1);
+        BOOST_CHECK_CLOSE(75.0, affine_3d(1, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.00182062807156191, affine_3d(2, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.17253908036686927, affine_3d(2, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.20450735622039348, affine_3d(2, 2), 0.1);
+        BOOST_CHECK_CLOSE(5., affine_3d(2, 3), 0.1);
+
+        RotationMatrix<double> rotation_matrix = euler_angles;
+        Affine<double, 3> affine_3d_2(scale, translation, rotation_matrix);
+        BOOST_CHECK_CLOSE(0.24870736197008325, affine_3d_2(0, 0), 0.1);
+        BOOST_CHECK_CLOSE(-0.0261108896493849, affine_3d_2(0, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.01308398906073595, affine_3d_2(0, 2), 0.1);
+        BOOST_CHECK_CLOSE(150.0, affine_3d_2(0, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.02532456150275905, affine_3d_2(1, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.24402558715813524, affine_3d_2(1, 1), 0.1);
+        BOOST_CHECK_CLOSE(-0.1431975924448578, affine_3d_2(1, 2), 0.1);
+        BOOST_CHECK_CLOSE(75.0, affine_3d_2(1, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.00182062807156191, affine_3d_2(2, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.17253908036686927, affine_3d_2(2, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.20450735622039348, affine_3d_2(2, 2), 0.1);
+        BOOST_CHECK_CLOSE(5., affine_3d_2(2, 3), 0.1);
+    }
+
+    {
+        Scaling<double, 3> scale{0.25, 0.30, 0.25};
+        Translation<double, 3> translation{150.0, 75.0, 5.0};
+        EulerAngles<double> euler_angles(consts::deg_to_rad<double> *35., consts::deg_to_rad<double> *3., consts::deg_to_rad<double> *5.);
+        Rotation<double, 3> rotation(euler_angles);
+
+        Affine<double, 3> affine_3d(scale, translation, rotation);
+        BOOST_CHECK_CLOSE(0.24870736197008325, affine_3d(0, 0), 0.1);
+        BOOST_CHECK_CLOSE(-0.0261108896493849, affine_3d(0, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.01308398906073595, affine_3d(0, 2), 0.1);
+        BOOST_CHECK_CLOSE(150.0, affine_3d(0, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.02532456150275905, affine_3d(1, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.24402558715813524, affine_3d(1, 1), 0.1);
+        BOOST_CHECK_CLOSE(-0.1431975924448578, affine_3d(1, 2), 0.1);
+        BOOST_CHECK_CLOSE(75.0, affine_3d(1, 3), 0.1);
+        BOOST_CHECK_CLOSE(0.00182062807156191, affine_3d(2, 0), 0.1);
+        BOOST_CHECK_CLOSE(0.17253908036686927, affine_3d(2, 1), 0.1);
+        BOOST_CHECK_CLOSE(0.20450735622039348, affine_3d(2, 2), 0.1);
+        BOOST_CHECK_CLOSE(5., affine_3d(2, 3), 0.1);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(affine_inverse, AffineTest)
@@ -362,8 +450,8 @@ BOOST_FIXTURE_TEST_CASE(estimate_points, AffineTest)
     BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
 
     auto rotation = affine.rotation();
-    double rotation1 = atan2(rotation[1][0], rotation[0][0]);
-    double rotation2 = atan2(-rotation[0][1], rotation[1][1]);
+    double rotation1 = atan2(rotation(1,0), rotation(0,0));
+    double rotation2 = atan2(-rotation(0,1), rotation(1,1));
     BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation1, 0.1);
     BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation2, 0.1);
 }
@@ -386,6 +474,12 @@ BOOST_FIXTURE_TEST_CASE(estimate_matrix, AffineTest)
     auto translation = affine.translation();
     BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
     BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
+
+    auto rotation = affine.rotation();
+    BOOST_CHECK_CLOSE(0.81915201023177586, rotation(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(-0.57357643671769476, rotation(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(0.57357648498978797, rotation(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.81915204403226161, rotation(1, 1), 0.1);
 }
 
 
@@ -437,6 +531,7 @@ BOOST_FIXTURE_TEST_CASE(helmert3d_estimate_points, AffineTest)
     //BOOST_CHECK_CLOSE(0.8502, omega, 0.1);
     //BOOST_CHECK_CLOSE(1.8141, phi, 0.01);
     //BOOST_CHECK_CLOSE(-7.8535, kappa, 0.1);
+
     BOOST_CHECK_CLOSE(-419.5684, affine(0, 3), 0.1);
     BOOST_CHECK_CLOSE(-99.2460, affine(1, 3), 0.1);
     BOOST_CHECK_CLOSE(-591.4559, affine(2, 3), 0.1);

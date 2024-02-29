@@ -95,6 +95,9 @@ public:
     auto angle() const -> T;
     auto toMatrix() const -> Matrix<T, Dim, Dim>;
 
+    auto operator()(size_t r, size_t c) -> reference;
+    auto operator()(size_t r, size_t c) const -> const_reference;
+
     auto inverse() const -> Rotation;
 
     /// Clases que deberían ser virtuales
@@ -193,23 +196,29 @@ inline Rotation<T, Dim>::Rotation(const Rotation &rotation)
 }
 
 template<typename T, size_t Dim>
-inline Rotation<T, Dim>::Rotation(const EulerAngles<T> &rotation)
+inline Rotation<T, Dim>::Rotation(const EulerAngles<T> &_rotation)
 {
-    RotationMatrix<T> rt = rotation;
+    static_assert(dimensions == 3, "Constructor for 3D Rotation. Use the 2D Rotation constructor: Rotation(T angle).");
+
+    RotationMatrix<T> rt = const_cast<EulerAngles<T> &>(_rotation);
     this->rotation = rt;
 }
 
 template<typename T, size_t Dim>
-inline Rotation<T, Dim>::Rotation(const AxisAngle<T> &rotation)
+inline Rotation<T, Dim>::Rotation(const AxisAngle<T> &_rotation)
 {
-    RotationMatrix<T> rt = rotation;
+    static_assert(dimensions == 3, "Constructor for 3D Rotation. Use the 2D Rotation constructor: Rotation(T angle).");
+
+    RotationMatrix<T> rt = const_cast<AxisAngle<T> &>(_rotation);
     this->rotation = rt;
 }
 
 template<typename T, size_t Dim>
-inline Rotation<T, Dim>::Rotation(const Quaternion<T> &rotation)
+inline Rotation<T, Dim>::Rotation(const Quaternion<T> &_rotation)
 {
-    RotationMatrix<T> rt = rotation;
+    static_assert(dimensions == 3, "Constructor for 3D Rotation. Use the 2D Rotation constructor: Rotation(T angle).");
+
+    RotationMatrix<T> rt = const_cast<Quaternion<T> &>(_rotation);
     this->rotation = rt;
 }
 
@@ -249,6 +258,18 @@ template<typename T, size_t Dim>
 inline auto Rotation<T, Dim>::toMatrix() const -> Matrix<T, Dim, Dim>
 {
     return this->rotation;
+}
+
+template<typename T, size_t Dim>
+inline auto Rotation<T, Dim>::operator()(size_t r, size_t c) -> reference
+{
+    return this->rotation.at(r, c);
+}
+
+template<typename T, size_t Dim>
+inline auto Rotation<T, Dim>::operator()(size_t r, size_t c) const -> const_reference
+{
+    return this->rotation.at(r, c);
 }
 
 template<typename T, size_t Dim>

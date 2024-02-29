@@ -132,6 +132,7 @@ public:
         RotationConverter<T, Q...>::convert(this->derived(), orientation);
         return orientation;
     }
+
 private:
 
     auto derived() -> OrientationDerived<T, P...> &

@@ -41,10 +41,10 @@ namespace tl
  */
 
 /*!
- * \brief Devuelve el ángulo entre dos vectores
+ * \brief Returns the angle between two vectors
  * \param[in] v1 Vector 1
  * \param[in] v2 Vector 2
- * \return Ángulo en radianes
+ * \return Angle in radians
  */
 template<typename Point_t> inline
 double vectorAngle(const Point_t &v1, const Point_t &v2)
@@ -73,10 +73,10 @@ double vectorAngleOY(const Point_t &v)
 }
 
 /*!
- * \brief Ángulo entre línea y plano
- * \param[in] line Línea
- * \param[in] plane Vector normal al plano
- * \return Ángulo
+ * \brief Angle between line and plane
+ * \param[in] line Line
+ * \param[in] plane Plane defined by its normal
+ * \return Angle in radians
  * http://www.vitutor.com/geometry/distance/line_plane.html
  */
 template<typename Point3_t> inline
@@ -89,10 +89,10 @@ double angleBetweenLineAndPlane(const Segment3D<Point3_t> &line, const Point3_t 
 }
 
 /*!
- * \brief Ángulo entre dos planos
- * \param[in] plane1 Ecuación del primer plano
- * \param[in] plane2 Ecuación del segundo plano
- * \return Ángulo
+ * \brief Angle between two planes
+ * \param[in] plane1 Equation of the first plane
+ * \param[in] plane2 Equation of the second plane
+ * \return Angle in radians
  * http://www.vitutor.com/geometry/distance/angle_planes.html
  */
 template<typename T> inline
@@ -102,10 +102,10 @@ double angleBetweenPlanes(const std::array<T, 4> &plane1, const std::array<T, 4>
 }
 
 /*!
- * \brief Ángulo entre dos planos
- * \param[in] plane1 Vector normal al primer plano
- * \param[in] plane2 Vector normal al segundo plano
- * \return Ángulo
+ * \brief Angle between two planes
+ * \param[in] plane1 Vector normal to the first plane
+ * \param[in] plane2 Vector normal to the second plane
+ * \return Angle in radians
  * http://www.vitutor.com/geometry/distance/angle_planes.html
  */
 template<typename Vect_t> inline

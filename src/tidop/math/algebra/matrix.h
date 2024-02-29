@@ -24,8 +24,6 @@
 
 #pragma once
 
-#include <iomanip>
-
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
@@ -38,6 +36,7 @@
 #include "tidop/geometry/rect.h"
 
 #include <type_traits>
+#include <iomanip>
 
 namespace tl
 {
@@ -366,6 +365,7 @@ public:
     auto cols() const -> size_t;
     
     operator Matrix<T, DynamicData, DynamicData>();
+
 
 };
 
@@ -997,7 +997,7 @@ public:
      * double value = matrix.at(0, 0);
      * \endcode
      */
-    auto at(size_t r, size_t c) const->const_reference;
+    auto at(size_t r, size_t c) const -> const_reference;
 
     /*!
      * \brief Referencia al elemento en la posición fila (r) y columna (c)
@@ -1023,7 +1023,7 @@ public:
      * double value = matrix(0, 0);
      * \endcode
      */
-    auto operator()(size_t r, size_t c) const->const_reference;
+    auto operator()(size_t r, size_t c) const -> const_reference;
 
     /*!
      * \brief Referencia al elemento
@@ -1868,7 +1868,7 @@ inline auto MatrixCol<T, _size_>::operator = (const Vector<T2, _size2> &vector) 
     TL_ASSERT(this->size() == vector.size(), "A size != B size");
 
     for(size_t i = 0; i < this->size(); i++) {
-        (*this)(i) = static_cast<T>(vector(i));
+        (*this)[i] = static_cast<T>(vector[i]);
     }
 
     return *this;
@@ -2039,7 +2039,6 @@ MatrixBlock<T, _rows, _cols>::operator Matrix<T>()
 
     return matrix;
 }
-
 
 
 } // namespace internal 
@@ -3519,7 +3518,7 @@ inline auto Matrix<T, _rows, _cols>::data() const -> const_pointer
 
 /* Casos especiales de suma */
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
                                     const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3527,7 +3526,7 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
     return matrix1;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix1,
                                     Matrix<T, _rows, _cols> &&matrix2)
 {
@@ -3535,7 +3534,7 @@ Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix1,
     return matrix2;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
                                     Matrix<T, _rows, _cols> &&matrix2)
 {
@@ -3543,7 +3542,7 @@ Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
     return matrix1;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator + (const internal::MatrixBlock<T> &matrix1,
                                     const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3554,7 +3553,7 @@ Matrix<T, _rows, _cols> operator + (const internal::MatrixBlock<T> &matrix1,
 
 /* Casos especiales de resta de matrices */
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
                                     const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3562,7 +3561,7 @@ Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
     return matrix1;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
                                     Matrix<T, _rows, _cols> &&matrix2)
 {
@@ -3570,7 +3569,7 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
     return -matrix2;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
                                     Matrix<T, _rows, _cols> &&matrix2)
 {
@@ -3578,7 +3577,7 @@ Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
     return matrix1;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator - (const internal::MatrixBlock<T> &matrix1,
                                     const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3628,7 +3627,7 @@ Matrix<T, _rows, _cols> operator - (const internal::MatrixBlock<T> &matrix1,
  * Matrix2x2i C = A * B;
  * \endcode
  */
-template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
+template<typename T, size_t _rows, size_t _dim, size_t _cols>
 Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
                                     const Matrix<T, _dim, _cols> &matrix2)
 {
@@ -3639,7 +3638,7 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
     return matrix;
 }
 
-template<typename T> inline
+template<typename T>
 Matrix<T> operator * (const Matrix<T> &matrix1,
                       const Matrix<T> &matrix2)
 {
@@ -3651,7 +3650,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
     return matrix;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T> operator * (const Matrix<T, _rows, _cols> &matrix1,
                       const Matrix<T> &matrix2)
 {
@@ -3663,7 +3662,7 @@ Matrix<T> operator * (const Matrix<T, _rows, _cols> &matrix1,
     return matrix;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T> operator * (const Matrix<T> &matrix1,
                       const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3675,7 +3674,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
     return matrix;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator * (Matrix<T, _rows, _cols> &&matrix,
                                     T scalar)
 {
@@ -3758,14 +3757,14 @@ inline static Matrix<T, _rows, _cols> operator * (T scalar, Matrix<T, _rows, _co
  * Matrix2x2f C = A / s;
  * \endcode
  */
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _rows, _cols> operator / (Matrix<T, _rows, _cols> &&matrix, T scalar)
 {
     matrix /= scalar;
     return matrix;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 bool operator == (const Matrix<T, _rows, _cols> &matrix1,
                   const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3784,7 +3783,7 @@ bool operator == (const Matrix<T, _rows, _cols> &matrix1,
     return true;
 }
 
-template<typename T, size_t _rows, size_t _cols> inline static
+template<typename T, size_t _rows, size_t _cols>
 bool operator != (const Matrix<T, _rows, _cols> &matrix1,
                   const Matrix<T, _rows, _cols> &matrix2)
 {
@@ -3979,7 +3978,7 @@ inline Vector<T> operator * (const Matrix<T> &matrix,
 //  return vect;
 //}
 
-template<typename T, size_t _dim> inline
+template<typename T, size_t _dim>
 Vector<T> operator * (const internal::MatrixBlock<T> &matrix,
                       const Vector<T, _dim> &vector)
 {
@@ -4002,8 +4001,8 @@ Vector<T> operator * (const internal::MatrixBlock<T> &matrix,
 
 
 template<typename T, size_t _rows, size_t _dim> 
-inline  Vector<T, _rows> operator * (const Vector<T, _dim> &vector,
-                                     const Matrix<T, _rows, _dim> &matrix)
+Vector<T, _rows> operator * (const Vector<T, _dim> &vector,
+                             const Matrix<T, _rows, _dim> &matrix)
 {
     return matrix * vector;
 }

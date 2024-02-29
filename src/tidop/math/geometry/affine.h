@@ -32,7 +32,7 @@
 #include "tidop/math/geometry/transform.h"
 #include "tidop/math/geometry/translation.h"
 #include "tidop/math/geometry/scaling.h"
-
+#include "tidop/math/geometry/rotation.h"
 
 namespace tl
 {
@@ -86,6 +86,10 @@ public:
     using reference = T &;
     using const_reference = const T &;
 
+private:
+
+    Matrix<T, Dim, Dim + 1> _transform;
+
 public:
 
     Affine();
@@ -97,7 +101,7 @@ public:
     Affine(const Vector<T, 2> &scale, const Vector<T, 2> &translation, T angle);
     Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const EulerAngles<T> &rotation);
     Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const RotationMatrix<double> &rotation);
-    //Affine(const Translation<T, Dim> &translation, const Scaling<T, Dim> &scale, const Rotation<T, Dim> &rotation);
+    Affine(const Scaling<T, Dim> &scale, const Translation<T, Dim> &translation, const Rotation<T, Dim> &rotation);
     ~Affine() = default;
 
     auto operator=(const Affine &affine) -> Affine&;
@@ -106,13 +110,13 @@ public:
     auto operator()(size_t r, size_t c) -> reference;
     auto operator()(size_t r, size_t c) const -> const_reference;
 
-    Scaling<T, Dim> scale() const;
-    Translation<T, Dim> translation() const;
-    Matrix<T, Dim, Dim> rotation() const;
+    auto scale() const -> Scaling<T, Dim>;
+    auto translation() const -> Translation<T, Dim>;
+    auto rotation() const -> Rotation<T, Dim>;
+
     auto inverse() const -> Affine<T, Dim>;
     auto toMatrix() const -> Matrix<T, Dim, Dim + 1>;
 
-    /// Clases que deberían ser virtuales
     auto transform(const Point<T> &point) const -> Point<T>;
     auto transform(const Point3<T> &point) const -> Point3<T>;
     template<size_t _size>
@@ -132,9 +136,6 @@ public:
 
     auto isEmpty() const;
 
-private:
-
-    Matrix<T, Dim, Dim + 1> _transform;
 };
 
 
@@ -233,7 +234,9 @@ inline Affine<T, Dim>::Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi
 }
 
 template<typename T, size_t Dim>
-inline Affine<T, Dim>::Affine(const Vector<T, 2> &scale, const Vector<T, 2> &translation, T angle)
+inline Affine<T, Dim>::Affine(const Vector<T, 2> &scale, 
+                              const Vector<T, 2> &translation, 
+                              T angle)
 {
     static_assert(dimensions == 2, "Constructor for 2D Affine. Use the 3D Affine constructor: Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa).");
 
@@ -246,31 +249,50 @@ inline Affine<T, Dim>::Affine(const Vector<T, 2> &scale, const Vector<T, 2> &tra
 }
 
 template<typename T, size_t Dim>
-inline Affine<T, Dim>::Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const EulerAngles<T> &rotation)
+inline Affine<T, Dim>::Affine(const Vector<T, 3> &scale,
+                              const Vector<T, 3> &translation, 
+                              const EulerAngles<T> &rotation)
 {
     static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
 
     auto block = this->_transform.block(0, dimensions - 1, 0, dimensions - 1);
-    block = rotation;
-    block *= scale;
-    this->_transform[0][3] = translation[0];
-    this->_transform[1][3] = translation[1];
-    this->_transform[2][3] = translation[2];
+    Rotation<T, dimensions> rot(rotation);
+    block = rot.toMatrix();
+    
+    for (size_t i = 0; i < dimensions; i++)
+        this->_transform.col(i) *= scale[i];
+
+    this->_transform.col(dimensions) = translation;
 }
 
 template<typename T, size_t Dim>
-inline Affine<T, Dim>::Affine(const Vector<T, 3> &scale, 
-                              const Vector<T, 3> &translation,
-                              const RotationMatrix<double> &rotation)
+Affine<T, Dim>::Affine(const Vector<T, 3> &scale, 
+                       const Vector<T, 3> &translation,
+                       const RotationMatrix<double> &rotation)
 {
     static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
 
     auto block = this->_transform.block(0, dimensions - 1, 0, dimensions - 1);
     block = rotation;
-    block *= scale;
-    this->_transform[0][3] = translation[0];
-    this->_transform[1][3] = translation[1];
-    this->_transform[2][3] = translation[2];
+
+    for (size_t i = 0; i < dimensions; i++)
+        this->_transform.col(i) *= scale[i];
+
+    this->_transform.col(dimensions) = translation;
+}
+
+template<typename T, size_t Dim>
+Affine<T, Dim>::Affine(const Scaling<T, Dim> &scale, 
+                       const Translation<T, Dim> &translation, 
+                       const Rotation<T, Dim> &rotation)
+{
+    auto block = this->_transform.block(0, dimensions - 1, 0, dimensions - 1);
+    block = rotation.toMatrix();
+
+    for (size_t i = 0; i < dimensions; i++)
+        this->_transform.col(i) *= scale[i];
+
+    this->_transform.col(dimensions) = translation.toVector();
 }
 
 template<typename T, size_t Dim>
@@ -296,7 +318,7 @@ inline auto Affine<T, Dim>::operator()(size_t r, size_t c) const -> const_refere
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim> Affine<T, Dim>::scale() const
+inline auto Affine<T, Dim>::scale() const -> Scaling<T, Dim>
 {
     Scaling<T, dimensions> scale;
 
@@ -307,7 +329,7 @@ inline Scaling<T, Dim> Affine<T, Dim>::scale() const
 }
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim> Affine<T, Dim>::translation() const
+inline auto Affine<T, Dim>::translation() const -> Translation<T, Dim>
 {
     Translation<T, dimensions> translation;
 
@@ -318,7 +340,7 @@ inline Translation<T, Dim> Affine<T, Dim>::translation() const
 }
 
 template<typename T, size_t Dim>
-inline Matrix<T, Dim, Dim> Affine<T, Dim>::rotation() const
+inline auto Affine<T, Dim>::rotation() const -> Rotation<T, Dim>
 {
     Matrix<T, Dim, Dim> _rotation;
     auto _scale = scale().toVector();
@@ -327,7 +349,7 @@ inline Matrix<T, Dim, Dim> Affine<T, Dim>::rotation() const
         for (size_t r = 0; r < dimensions; r++)
             _rotation[r][c] = this->_transform(r, c) / s;
     }
-    return _rotation;
+    return Rotation<T, Dim>(_rotation);
 }
 
 template<typename T, size_t Dim>
@@ -335,7 +357,7 @@ inline auto Affine<T, Dim>::inverse() const -> Affine<T, Dim>
 {
     auto _rotation = this->rotation();
     auto _scale = this->scale();
-    auto rotation_inverse = _rotation.inverse();
+    auto rotation_inverse = _rotation.toMatrix().inverse();
     Matrix<T, Dim, Dim + 1> transform_inverse = Matrix<T, Dim, Dim + 1>::zero();
     for (size_t r = 0; r < rotation_inverse.rows(); r++){
         for (size_t c = 0; c < rotation_inverse.rows(); c++){
