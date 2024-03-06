@@ -50,7 +50,7 @@ template<typename T> class Polygon3D;
  * \param[in] pt2 Punto 2
  * \return Distancia
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double distance(const Point_t &pt1, const Point_t &pt2)
 {
     Point_t v;
@@ -59,7 +59,7 @@ double distance(const Point_t &pt1, const Point_t &pt2)
     return module(v);
 }
 
-template<typename Point3_t> inline
+template<typename Point3_t>
 double distance3D(const Point3_t &pt1, const Point3_t &pt2)
 {
     Point3_t v;
@@ -75,7 +75,7 @@ double distance3D(const Point3_t &pt1, const Point3_t &pt2)
  * \param[in] ln Linea
  * \return Distancia de un punto a una segmento de linea
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
 {
     Point_t ptp;
@@ -86,7 +86,7 @@ double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
     return distance(pt, ptp);
 }
 
-template<typename Point3_t> inline
+template<typename Point3_t>
 double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)
 {
     Point3_t ptp;
@@ -103,7 +103,7 @@ double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)
  * \param[in] ln
  * \return
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double distPointToLine(const Point_t &pt, const Segment<Point_t> &ln)
 {
     Point_t v1 = vector2D(ln.pt1, pt);
@@ -121,7 +121,7 @@ double distPointToLine(const Point_t &pt, const Segment<Point_t> &ln)
  * \param[in] ln2 Segmento 2
  * \return Distancia entre segmentos
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2)
 {
     std::array<double, 4> dist{};
@@ -138,7 +138,7 @@ double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &
  * \param[in] polygon Poligono
  * \return Distancia de un punto a un poligono
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double distPointToPolygon(const Point_t &pt, const Polygon<Point_t> &polygon)
 {
     double max_dist = TL_DOUBLE_MAX;
@@ -162,7 +162,7 @@ double distPointToPolygon(const Point_t &pt, const Polygon<Point_t> &polygon)
  * \param[in] polygon Poligono
  * \return Distancia de un punto a un poligono
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
 {
     double max_dist = TL_DOUBLE_MAX;
@@ -188,7 +188,7 @@ double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
  * \param[in] it_end Iterador al final del poligono
  * \return Distancia de un punto a un poligono
  */
-template<typename Point_t, typename Polygon_it_t> inline
+template<typename Point_t, typename Polygon_it_t>
 double distPointToPolygon(const Point_t &pt, Polygon_it_t it_begin, Polygon_it_t it_end)
 {
     double max_dist = TL_DOUBLE_MAX;
@@ -211,7 +211,7 @@ double distPointToPolygon(const Point_t &pt, Polygon_it_t it_begin, Polygon_it_t
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
  * \return Distancia del punto al plano. + si está por encima y - si está por debajo.
  */
-template<typename Point_t> inline
+template<typename Point_t>
 double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plane)
 {
     double num = plane[0] * pt.x + plane[1] * pt.y + plane[2] * pt.z + plane[3];

@@ -67,10 +67,9 @@ class Circle
 
 public:
 
-    /*!
-     * \brief type
-     */
     typedef T value_type;
+
+public:
 
     /*!
      * \brief Circle center
@@ -114,13 +113,13 @@ public:
      * \brief Copy assignment operator
      * \param[in] circle Circle object to copy
      */
-    Circle<T> &operator = (const Circle<T> &circle);
+    auto operator = (const Circle<T> &circle) -> Circle<T> &;
 
     /*!
      * \brief Move assignment operator
      * \param[in] circle Circle object to move
      */
-    Circle<T> &operator = (Circle<T> &&circle) TL_NOEXCEPT;
+    auto operator = (Circle<T> &&circle) TL_NOEXCEPT -> Circle<T> &;
 
     /*!
      * \brief Type conversion
@@ -131,15 +130,17 @@ public:
      * \brief Circle area
      * \return Area
      */
-    double area() const override;
+    auto area() const -> double override;
 
     /*!
      * \brief Circumference (Distance around the perimeter of a circle)
      * \return length
      */
-    double length() const;
+    auto length() const -> double;
 
-    Rect<T> rect() const;
+    auto rect() const -> Rect<T>;
+
+    bool operator==(const Circle &other) const;
 
 };
 
@@ -148,85 +149,6 @@ typedef Circle<double> CircleD;
 typedef Circle<float> CircleF;
 
 
-template<typename T> inline
-Circle<T>::Circle()
-  : Entity(Entity::Type::circle),
-    center(Point<T>()),
-    radius(static_cast<T>(1))
-{
-}
-
-template<typename T> inline
-Circle<T>::Circle(const Point<T> &center, T radius)
-  : Entity(Entity::Type::circle),
-    center(center),
-    radius(radius)
-{
-}
-
-template<typename T> inline
-Circle<T>::Circle(const Circle<T> &circle)
-  : Entity(Entity::Type::circle),
-    center(circle.center),
-    radius(circle.radius)
-{
-}
-
-template<typename T> inline
-Circle<T>::Circle(Circle<T> &&circle) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(circle)),
-    center(std::move(circle.center)),
-    radius(circle.radius)
-{
-}
-
-template<typename T> inline
-Circle<T> &Circle<T>::operator = (const Circle &circle)
-{
-    if (this != &circle) {
-        Entity::operator = (circle);
-        this->center = circle.center;
-        this->radius = circle.radius;
-    }
-
-    return *this;
-}
-
-template<typename T> inline
-Circle<T> &Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT
-{
-    if (this != &circle) {
-        Entity::operator = (std::forward<Entity>(circle));
-        this->center = std::move(circle.center);
-        this->radius = circle.radius;
-    }
-
-    return *this;
-}
-
-template<typename T> template<typename T2> inline
-Circle<T>::operator Circle<T2>() const
-{
-    return Circle<T2>(this->center, numberCast<T2>(this->radius));
-}
-
-template<typename T> inline
-double Circle<T>::area() const
-{
-    return consts::pi<double> * radius * radius;
-}
-
-template<typename T> inline
-double Circle<T>::length() const
-{
-    return consts::two_pi<double> * radius;
-}
-
-template<typename T>
-inline Rect<T> tl::Circle<T>::rect() const
-{
-    return Rect<T>(tl::Point<T>(center.x - radius, center.y - radius), radius * 2., radius * 2.);
-}
 
 
 
@@ -242,10 +164,9 @@ class Ellipse
 
 public:
 
-    /*!
-     * \brief type
-     */
     typedef T value_type;
+
+public:
 
     /*!
      * \brief Center
@@ -297,13 +218,13 @@ public:
      * \brief Copy assignment operator
      * \param[in] ellipse Ellipse object to copy
      */
-    Ellipse<T> &operator = (const Ellipse<T> &ellipse);
+    auto operator = (const Ellipse<T> &ellipse) -> Ellipse<T> &;
 
     /*!
      * \brief Move assignment operator
      * \param[in] ellipse Ellipse object to move
      */
-    Ellipse<T> &operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT;
+    auto operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT -> Ellipse<T> &;
 
     /*!
      * \brief Type conversion
@@ -314,22 +235,210 @@ public:
      * \brief Ellipse area
      * \return Area
      */
-    double area() const override;
+    auto area() const -> double override;
 
     /*!
      * \brief Circumference
      * \return length
      */
-    double length() const;
+    auto length() const -> double;
 
-    Rect<T> rect() const;
+    auto rect() const -> Rect<T>;
 
-    bool isInner(const Point<T> &point) const;
+    auto isInner(const Point<T> &point) const -> bool;
+
+    auto operator==(const Ellipse &other) const -> bool;
 };
 
 typedef Ellipse<int> EllipseI;
 typedef Ellipse<double> EllipseD;
 typedef Ellipse<float> EllipseF;
+
+
+
+/*!
+ * \brief Triangle class
+ *
+ */
+template<typename T>
+class Triangle
+  : public Entity,
+    public Shape
+{
+
+public:
+
+    typedef T value_type;
+
+protected:
+
+    Point<T> mPt1;
+    Point<T> mPt2;
+    Point<T> mPt3;
+
+public:
+
+    Triangle();
+    Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
+    Triangle(const Triangle<T> &triangle);
+    Triangle(Triangle<T> &&triangle) TL_NOEXCEPT;
+
+    ~Triangle() override = default;
+
+    auto operator = (const Triangle<T> &circle) -> Triangle<T> &;
+    auto operator = (Triangle<T> &&triangle) TL_NOEXCEPT -> Triangle<T> &;
+
+    auto area() const -> double override;
+
+    auto operator==(const Triangle &other) const -> bool;
+};
+
+
+
+
+/*!
+ * \brief Square class
+ *
+ */
+template<typename T>
+class Square
+  : public Entity,
+    public Shape
+{
+
+public:
+
+    /*!
+     * \brief type
+     */
+    typedef T value_type;
+
+public:
+
+    Square();
+
+    /*!
+     * \brief Area
+     * \return Area
+     */
+    auto area() const -> double override;
+
+};
+
+
+/*!
+ * \brief Clase rectangulo
+ *
+ */
+template<typename T>
+class Rectangle
+  : public Entity,
+    public Shape
+{
+
+public:
+
+    typedef T value_type;
+
+public:
+
+    Rectangle();
+
+    auto area() const -> double override;
+
+};
+
+
+
+
+
+template<typename T> inline
+Circle<T>::Circle()
+  : Entity(Entity::Type::circle),
+    center(Point<T>()),
+    radius(static_cast<T>(1))
+{
+}
+
+template<typename T> inline
+Circle<T>::Circle(const Point<T> &center, T radius)
+  : Entity(Entity::Type::circle),
+    center(center),
+    radius(radius)
+{
+}
+
+template<typename T> inline
+Circle<T>::Circle(const Circle<T> &circle)
+  : Entity(Entity::Type::circle),
+    center(circle.center),
+    radius(circle.radius)
+{
+}
+
+template<typename T> inline
+Circle<T>::Circle(Circle<T> &&circle) TL_NOEXCEPT
+  : Entity(std::forward<Entity>(circle)),
+    center(std::move(circle.center)),
+    radius(circle.radius)
+{
+}
+
+template<typename T> inline
+auto Circle<T>::operator = (const Circle &circle) -> Circle<T> &
+{
+    if (this != &circle) {
+        Entity::operator = (circle);
+        this->center = circle.center;
+        this->radius = circle.radius;
+    }
+
+    return *this;
+}
+
+template<typename T> inline
+auto Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT -> Circle<T> &
+{
+    if (this != &circle) {
+        Entity::operator = (std::forward<Entity>(circle));
+        this->center = std::move(circle.center);
+        this->radius = circle.radius;
+    }
+
+    return *this;
+}
+
+template<typename T> template<typename T2> inline
+Circle<T>::operator Circle<T2>() const
+{
+    return Circle<T2>(this->center, numberCast<T2>(this->radius));
+}
+
+template<typename T> inline
+auto Circle<T>::area() const -> double
+{
+    return consts::pi<double> * radius * radius;
+}
+
+template<typename T> inline
+auto Circle<T>::length() const -> double
+{
+    return consts::two_pi<double> * radius;
+}
+
+template<typename T> inline 
+auto Circle<T>::rect() const -> Rect<T>
+{
+    return Rect<T>(Point<T>(center.x - radius, center.y - radius), radius * 2., radius * 2.);
+}
+
+template<typename T> inline 
+bool Circle<T>::operator==(const Circle &other) const
+{
+    return center == other.center && radius == other.radius;
+}
+
+
 
 
 template<typename T> inline
@@ -374,7 +483,7 @@ Ellipse<T>::Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT
 }
 
 template<typename T> inline
-Ellipse<T> &Ellipse<T>::operator = (const Ellipse &ellipse)
+auto Ellipse<T>::operator = (const Ellipse &ellipse) -> Ellipse<T> &
 {
     if (this != &ellipse) {
         Entity::operator = (ellipse);
@@ -387,7 +496,7 @@ Ellipse<T> &Ellipse<T>::operator = (const Ellipse &ellipse)
 }
 
 template<typename T> inline
-Ellipse<T> &Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT
+auto Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT -> Ellipse<T> &
 {
     if (this != &ellipse) {
         Entity::operator = (std::forward<Entity>(ellipse));
@@ -408,25 +517,25 @@ Ellipse<T>::operator Ellipse<T2>() const
 }
 
 template<typename T> inline
-double Ellipse<T>::area() const
+auto Ellipse<T>::area() const -> double
 {
     return consts::pi<double> * a * b;
 }
 
 template<typename T> inline
-double Ellipse<T>::length() const
+auto Ellipse<T>::length() const -> double
 {
     return consts::pi<double> * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
 }
 
-template<typename T>
-inline Rect<T> Ellipse<T>::rect() const
+template<typename T> inline 
+auto Ellipse<T>::rect() const -> Rect<T>
 {
     return Rect<T>(tl::Point<T>(center.x - a, center.y - b), a * 2., b * 2.);
 }
 
 template<typename T>
-inline bool Ellipse<T>::isInner(const Point<T> &point) const
+inline auto Ellipse<T>::isInner(const Point<T> &point) const -> bool
 {
     if (!this->rect().contains(point)) return false;
     
@@ -438,72 +547,12 @@ inline bool Ellipse<T>::isInner(const Point<T> &point) const
     else return false;
 }
 
-
-/*!
- * \brief Clase triangulo
- *
- */
 template<typename T>
-class Triangle
-  : public Entity,
-    public Shape
+inline auto Ellipse<T>::operator==(const Ellipse &other) const -> bool
 {
+    return center == other.center && a == other.a && b == other.b;
+}
 
-public:
-
-    /*!
-     * \brief type
-     */
-    typedef T value_type;
-
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Triangle();
-
-    Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] triangle Objeto Triangle que se copia
-     */
-    Triangle(const Triangle<T> &triangle);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] triangle Objeto Triangle que se mueve
-     */
-    Triangle(Triangle<T> &&triangle) TL_NOEXCEPT;
-
-    ~Triangle() override = default;
-
-    /*!
-     * \brief Operador de asignación
-     * \param[in] triangle Objeto Triangle que se copia
-     */
-    Triangle<T> &operator = (const Triangle<T> &circle);
-
-    /*!
-     * \brief Operador de asignación de movimiento
-     * \param[in] triangle Objeto Triangle que se mueve
-     */
-    Triangle<T> &operator = (Triangle<T> &&triangle) TL_NOEXCEPT;
-
-    /*!
-     * \brief Area de un circulo
-     * \return Area
-     */
-    double area() const override;
-
-protected:
-
-    Point<T> mPt1;
-    Point<T> mPt2;
-    Point<T> mPt3;
-
-};
 
 
 template<typename T> inline
@@ -545,7 +594,7 @@ Triangle<T>::Triangle(Triangle<T> &&triangle) TL_NOEXCEPT
 }
 
 template<typename T> inline
-Triangle<T> &Triangle<T>::operator = (const Triangle &triangle)
+auto Triangle<T>::operator = (const Triangle &triangle) -> Triangle<T> &
 {
     if (this != &triangle) {
         Entity::operator = (triangle);
@@ -558,7 +607,7 @@ Triangle<T> &Triangle<T>::operator = (const Triangle &triangle)
 }
 
 template<typename T> inline
-Triangle<T> &Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT
+auto Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT -> Triangle<T> &
 {
     if (this != &triangle) {
         Entity::operator = (std::forward<Entity>(triangle));
@@ -571,43 +620,19 @@ Triangle<T> &Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT
 }
 
 template<typename T> inline
-double Triangle<T>::area() const
+auto Triangle<T>::area() const -> double
 {
     return 0;
 }
 
-
-/*!
- * \brief Clase cuadrado
- *
- */
-template<typename T>
-class Square
-  : public Entity,
-    public Shape
+template<typename T> inline
+auto Triangle<T>::operator==(const Triangle &other) const -> bool
 {
+    return mPt1 == other.mPt1 && mPt2 == other.mPt2 && mPt3 == other.mPt3;
+}
 
-public:
 
-    /*!
-     * \brief type
-     */
-    typedef T value_type;
 
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Square();
-
-    /*!
-     * \brief Area
-     * \return Area
-     */
-    double area() const override;
-
-};
 
 
 template<typename T> inline
@@ -617,43 +642,13 @@ Square<T>::Square()
 
 
 template<typename T> inline
-double Square<T>::area() const
+auto Square<T>::area() const -> double
 {
     return 0;
 }
 
 
-/*!
- * \brief Clase rectangulo
- *
- */
-template<typename T>
-class Rectangle
-  : public Entity,
-    public Shape
-{
 
-public:
-
-    /*!
-     * \brief type
-     */
-    typedef T value_type;
-
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Rectangle();
-
-    /*!
-     * \brief Area
-     * \return Area
-     */
-    double area() const override;
-
-};
 
 
 template<typename T> inline
@@ -663,7 +658,7 @@ Rectangle<T>::Rectangle()
 
 
 template<typename T> inline
-double Rectangle<T>::area() const
+auto Rectangle<T>::area() const -> double
 {
     return 0;
 }

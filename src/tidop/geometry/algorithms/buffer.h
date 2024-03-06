@@ -46,7 +46,7 @@ namespace tl
  * \param[in] size Tamaño de buffer
  * \return Buffer
  */
-template<typename Point_t> inline
+template<typename Point_t>
 Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
 {
     Polygon<Point_t> buff(4);

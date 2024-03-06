@@ -54,6 +54,246 @@ public:
 
 };
 
+
+
+/*!
+ * \brief 2D polygon class
+ */
+template<typename Point_t>
+class Polygon
+  : public Entity,
+    public Entities2D<Point_t>
+{
+
+public:
+
+    using size_type = typename Polygon<Point_t>::size_type;
+
+protected:
+
+    std::vector<PolygonHole<Point_t>> polygonHoles;
+
+public:
+
+    Polygon();
+    Polygon(size_type size);
+    Polygon(const Polygon &polygon);
+    Polygon(Polygon &&polygon) TL_NOEXCEPT;
+    Polygon(const std::vector<Point_t> &points);
+    Polygon(std::initializer_list<Point_t> pointList);
+
+    ~Polygon() override = default;
+
+    /*!
+     * \brief Polygon Area
+     * http://mathworld.wolfram.com/PolygonArea.html
+     *
+     */
+    auto area() const -> double;
+
+    /*!
+     * \brief Check if a point is inside the polygon
+     * \param[in] point Point
+     */
+    auto isInner(const Point_t &point) const -> bool;
+
+    /*!
+     * \brief Polygon perimeter
+     */
+    auto length() const -> double;
+
+    /*!
+     * \brief Copy assignment operator
+     */
+    auto operator = (const Polygon<Point_t> &polygon) -> Polygon<Point_t> &;
+
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator = (Polygon<Point_t> &&polygon) TL_NOEXCEPT -> Polygon<Point_t> &;
+
+    /*!
+     * \brief Window
+     */
+    auto window() const -> Window<Point_t>;
+
+    auto holes() const -> size_t;
+    auto hole(size_t id) const -> PolygonHole<Point_t>;
+    void addHole(const PolygonHole<Point_t> &polygonHole);
+
+};
+
+
+using PolygonI = Polygon<Point<int>>;
+using PolygonD = Polygon<Point<double>>;
+using PolygonF = Polygon<Point<float>>;
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+template<typename Point3_t>
+class Polygon3DHole
+    : public Entities3D<Point3_t>
+{
+
+public:
+
+    using size_type = typename Polygon3DHole<Point3_t>::size_type;
+
+public:
+
+    Polygon3DHole();
+    Polygon3DHole(size_type size);
+    Polygon3DHole(std::initializer_list<Point3_t> pointList);
+    ~Polygon3DHole() override = default;
+
+};
+
+
+
+/*!
+ * \brief 3D polygon class
+ *
+ */
+template<typename Point3_t>
+class Polygon3D
+  : public Entity,
+    public Entities3D<Point3_t>
+{
+
+public:
+
+    using size_type = typename Polygon3D<Point3_t>::size_type;
+
+protected:
+
+    std::vector<Polygon3DHole<Point3_t>> polygonHoles;
+
+public:
+
+    Polygon3D();
+    Polygon3D(size_type size);
+    Polygon3D(const Polygon3D &polygon);
+    Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT;
+    Polygon3D(const std::vector<Point3_t> &points);
+    Polygon3D(std::initializer_list<Point3_t> listPoints);
+
+    /*!
+     * \brief Polygon perimeter
+     */
+    auto length() const -> double;
+
+    /*!
+     * \brief Copy assignment operator
+     */
+    auto operator = (const Polygon3D<Point3_t> &polygon) -> Polygon3D<Point3_t> &;
+
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator = (Polygon3D<Point3_t> &&polygon) TL_NOEXCEPT -> Polygon3D<Point3_t> &;
+
+    /*!
+     * \brief Bounding Box
+     */
+    auto boundingBox() const -> BoundingBox<Point3_t>;
+
+    auto holes() const -> size_t;
+    auto hole(size_t id) const -> Polygon3DHole<Point3_t>;
+    void addHole(const Polygon3DHole<Point3_t> &polygonHole);
+
+
+};
+
+using Polygon3dI = Polygon3D<Point3<int>>;
+using Polygon3dD = Polygon3D<Point3<double>>;
+using Polygon3dF = Polygon3D<Point3<float>>;
+
+
+/* ---------------------------------------------------------------------------------- */
+
+template <typename Point_t>
+class MultiPolygon
+  : public Entity,
+    public Entities2D<Polygon<Point_t>>
+{
+
+public:
+
+    using size_type = typename MultiPolygon<Point_t>::size_type;
+
+public:
+
+    MultiPolygon();
+    MultiPolygon(size_type size);
+    MultiPolygon(const MultiPolygon &multiPolygon);
+    MultiPolygon(MultiPolygon &&multiPolygon) TL_NOEXCEPT;
+
+    ~MultiPolygon() override = default;
+
+    /*!
+     * \brief Copy assignment operator
+     */
+    MultiPolygon<Point_t> &operator = (const MultiPolygon &multiPolygon);
+
+    /*!
+     * \brief Move assignment operator
+     */
+    MultiPolygon<Point_t> &operator = (MultiPolygon &&multiPolygon) TL_NOEXCEPT;
+
+    Window<Point_t> window() const;
+};
+
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+template <typename Point3_t>
+class MultiPolygon3D
+  : public Entity,
+    public Entities3D<Polygon3D<Point3_t>>
+{
+public:
+
+    using size_type = typename MultiPolygon3D<Point3_t>::size_type;
+
+public:
+
+    MultiPolygon3D();
+    MultiPolygon3D(size_type size);
+    MultiPolygon3D(const MultiPolygon3D &multiPolygon);
+    MultiPolygon3D(MultiPolygon3D &&multiPolygon) TL_NOEXCEPT;
+
+    ~MultiPolygon3D() override = default;
+
+    /*!
+     * \brief Copy assignment operator
+     */
+    MultiPolygon3D<Point3_t> &operator = (const MultiPolygon3D &multiPolygon);
+
+    /*!
+     * \brief Move assignment operator
+     */
+    MultiPolygon3D<Point3_t> &operator = (MultiPolygon3D &&multiPolygon) TL_NOEXCEPT;
+
+    /*!
+     * \brief Bounding box
+     */
+    BoundingBox<Point3_t> boundingBox() const;
+};
+
+
+
+
+
+/* PolygonHole */
+
+
 template<typename Point_t> inline
 PolygonHole<Point_t>::PolygonHole() 
   : Entities2D<Point_t>()
@@ -72,129 +312,23 @@ PolygonHole<Point_t>::PolygonHole(std::initializer_list<Point_t> pointList)
 {
 }
 
-/*!
- * \brief Clase poligono 2D
- *
- * Se han definido los siguientes alias para facilitar el acceso:
- * \code
- * typedef Polygon<Point<int>> PolygonI;
- * typedef Polygon<Point<double>> PolygonD;
- * typedef Polygon<Point<float>> PolygonF;
- * \endcode
- */
-template<typename Point_t>
-class Polygon
-  : public Entity,
-    public Entities2D<Point_t>
-{
 
-public:
 
-    /*!
-     * \brief Constructora por defecto
-     */
-    Polygon();
-
-    /*!
-     * \brief Constructor que establece el tamaño del poligono
-     */
-    Polygon(typename Polygon<Point_t>::size_type size);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] polygon Objeto Polygon que se copia
-     */
-    Polygon(const Polygon &polygon);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] polygon Objeto Polygon que se mueve
-     */
-    Polygon(Polygon &&polygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Constructor
-     * \param[in] points
-     */
-    Polygon(const std::vector<Point_t> &points);
-
-    /*!
-     * \brief Constructor lista de inicialización
-     * \param[in] pointList Inicializador de lista con los puntos
-     */
-    Polygon(std::initializer_list<Point_t> pointList);
-
-    /*!
-     * \brief Destructora
-     */
-    ~Polygon() override = default;
-
-    /*!
-     * \brief Area de un poligono simple
-     * http://mathworld.wolfram.com/PolygonArea.html
-     *
-     * \return Area
-     */
-    double area() const;
-
-    /*!
-     * \brief Comprueba si un punto esta dentro del poligono
-     * \param[in] point Punto
-     */
-    bool isInner(const Point_t &point) const;
-
-    /*!
-     * \brief Perimetro del poligono
-     * \return Perimetro del poligono
-     */
-    double length() const;
-
-    /*!
-     * \brief Operador de asignación
-     * \param[in] polygon Objeto Polygon que se mueve
-     */
-    Polygon<Point_t> &operator = (const Polygon<Point_t> &polygon);
-
-    /*!
-     * \brief Operador de asignación de movimiento
-     * \param[in] polygon Objeto Polygon que se mueve
-     */
-    Polygon<Point_t> &operator = (Polygon<Point_t> &&polygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Ventana envolvente
-     * \return Ventana envolvente de los puntos
-     */
-    Window<Point_t> window() const;
-
-    size_t holes() const;
-    PolygonHole<Point_t> hole(size_t id) const;
-    void addHole(const PolygonHole<Point_t> &polygonHole);
-
-protected:
-
-    /*!
-     * \brief Anillos interiores
-     */
-    std::vector<PolygonHole<Point_t>> mPolygonHole;
-
-};
-
-// Definición de métodos
+/* Polygon */
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon() 
   : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(),
-    mPolygonHole(0)
+    polygonHoles(0)
 {
 }
 
 template<typename Point_t> inline
-Polygon<Point_t>::Polygon(typename Polygon<Point_t>::size_type size)
+Polygon<Point_t>::Polygon(size_type size)
   : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(size),
-    mPolygonHole(0)
+    polygonHoles(0)
 {
 }
 
@@ -202,7 +336,7 @@ template<typename Point_t> inline
 Polygon<Point_t>::Polygon(const Polygon &polygon) 
   : Entity(polygon), 
     Entities2D<Point_t>(polygon),
-    mPolygonHole(polygon.mPolygonHole)
+    polygonHoles(polygon.polygonHoles)
 {
 }
 
@@ -210,7 +344,7 @@ template<typename Point_t> inline
 Polygon<Point_t>::Polygon(Polygon &&polygon) TL_NOEXCEPT
   : Entity(std::forward<Entity>(polygon)), 
     Entities2D<Point_t>(std::forward<Entities2D<Point_t>>(polygon)),
-    mPolygonHole(std::forward<std::vector<PolygonHole<Point_t>>>(polygon.mPolygonHole))
+    polygonHoles(std::forward<std::vector<PolygonHole<Point_t>>>(polygon.polygonHoles))
 {
 }
 
@@ -219,7 +353,7 @@ template<typename Point_t> inline
 Polygon<Point_t>::Polygon(const std::vector<Point_t> &points) 
   : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(points),
-    mPolygonHole(0)
+    polygonHoles(0)
 {
 }
 
@@ -227,12 +361,12 @@ template<typename Point_t> inline
 Polygon<Point_t>::Polygon(std::initializer_list<Point_t> pointList) 
   : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(pointList),
-    mPolygonHole(0)
+    polygonHoles(0)
 {
 }
 
-template<typename Point_t> inline
-bool Polygon<Point_t>::isInner(const Point_t &point) const
+template<typename Point_t>
+auto Polygon<Point_t>::isInner(const Point_t &point) const -> bool
 {
     Window<Point_t> w = this->window();
     // Comprueba si esta dentro de la ventana envolvente.
@@ -334,8 +468,8 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
 
 }
 
-template<typename Point_t> inline
-double Polygon<Point_t>::length()  const
+template<typename Point_t>
+auto Polygon<Point_t>::length() const -> double
 {
     double perimeter = 0.;
 
@@ -346,8 +480,8 @@ double Polygon<Point_t>::length()  const
     return perimeter;
 }
 
-template<typename Point_t> inline
-double Polygon<Point_t>::area() const
+template<typename Point_t>
+auto Polygon<Point_t>::area() const -> double
 {
     TL_TODO("Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo")
     double area = 0.;
@@ -363,31 +497,31 @@ double Polygon<Point_t>::area() const
 }
 
 template<typename Point_t> inline
-Polygon<Point_t> &Polygon<Point_t>::operator = (const Polygon<Point_t> &polygon)
+auto Polygon<Point_t>::operator = (const Polygon<Point_t> &polygon) -> Polygon<Point_t> &
 {
     if (this != &polygon) {
         Entity::operator = (polygon);
         Entities2D<Point_t>::operator = (polygon);
-        mPolygonHole = polygon.mPolygonHole;
+        polygonHoles = polygon.polygonHoles;
     }
 
     return *this;
 }
 
 template<typename Point_t> inline
-Polygon<Point_t> &Polygon<Point_t>::operator = (Polygon<Point_t> &&polygon) TL_NOEXCEPT
+auto Polygon<Point_t>::operator = (Polygon<Point_t> &&polygon) TL_NOEXCEPT -> Polygon<Point_t> &
 {
     if (this != &polygon) {
         Entity::operator = (std::forward<Entity>(polygon));
         Entities2D<Point_t>::operator = (std::forward<Entities2D<Point_t>>(polygon));
-        mPolygonHole = std::forward<std::vector<PolygonHole<Point_t>>>(polygon.mPolygonHole);
+        polygonHoles = std::forward<std::vector<PolygonHole<Point_t>>>(polygon.polygonHoles);
     }
 
     return *this;
 }
 
-template<typename Point_t> inline
-Window<Point_t> Polygon<Point_t>::window() const
+template<typename Point_t>
+auto Polygon<Point_t>::window() const -> Window<Point_t>
 {
     Window<Point_t> w;
 
@@ -401,47 +535,26 @@ Window<Point_t> Polygon<Point_t>::window() const
     return w;
 }
 
-template<typename Point_t>
-inline size_t tl::Polygon<Point_t>::holes() const
+template<typename Point_t> inline 
+auto Polygon<Point_t>::holes() const -> size_t
 {
-    return mPolygonHole.size();
+    return polygonHoles.size();
 }
 
-template<typename Point_t>
-inline PolygonHole<Point_t> tl::Polygon<Point_t>::hole(size_t id) const
+template<typename Point_t> inline
+auto tl::Polygon<Point_t>::hole(size_t id) const -> PolygonHole<Point_t>
 {
-    return mPolygonHole.at(id);
+    return polygonHoles.at(id);
 }
 
 template<typename Point_t> inline 
 void Polygon<Point_t>::addHole(const PolygonHole<Point_t> &polygonHole)
 {
-    mPolygonHole.push_back(polygonHole);
+    polygonHoles.push_back(polygonHole);
 }
 
 
-using PolygonI = Polygon<Point<int>>;
-using PolygonD = Polygon<Point<double>>;
-using PolygonF = Polygon<Point<float>>;
 
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-template<typename Point3_t>
-class Polygon3DHole
-    : public Entities3D<Point3_t>
-{
-
-public:
-
-    Polygon3DHole();
-    Polygon3DHole(typename Polygon3DHole<Point3_t>::size_type size);
-    Polygon3DHole(std::initializer_list<Point3_t> pointList);
-    ~Polygon3DHole() override = default;
-
-};
 
 template<typename Point3_t> inline
 Polygon3DHole<Point3_t>::Polygon3DHole() 
@@ -461,108 +574,21 @@ Polygon3DHole<Point3_t>::Polygon3DHole(std::initializer_list<Point3_t> pointList
 {
 }
 
-/*!
- * \brief Clase poligono 3D
- *
- * Se han definido los siguientes alias para facilitar el acceso:
- *
- * typedef Polygon3D<int> Polygon3dI;
- * typedef Polygon3D<double> Polygon3dD;
- * typedef Polygon3D<float> Polygon3dF;
- *
- */
-template<typename Point3_t>
-class Polygon3D
-  : public Entity,
-    public Entities3D<Point3_t>
-{
 
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Polygon3D();
-
-    /*!
-     * \brief Constructor que establece el tamaño del poligono
-     */
-    Polygon3D(typename Polygon3D<Point3_t>::size_type size);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] polygon Objeto Polygon3D que se copia
-     */
-    Polygon3D(const Polygon3D &polygon);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] polygon Objeto Polygon3D que se mueve
-     */
-    Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Constructor
-     * \param[in] points
-     */
-    Polygon3D(const std::vector<Point3_t> &points);
-
-    /*!
-     * \brief Constructor lista de inicialización
-     * \param[in] listPoints Inicializador de lista con los puntos
-     */
-    Polygon3D(std::initializer_list<Point3_t> listPoints);
-
-    /*!
-     * \brief Perimetro del poligono
-     * \return Perimetro del poligono
-     */
-    double length() const;
-
-    /*!
-     * \brief Operador de asignación
-     * \param[in] polygon Objeto Polygon3D que se copia
-     */
-    Polygon3D<Point3_t> &operator = (const Polygon3D<Point3_t> &polygon);
-
-    /*!
-     * \brief Operador de asignación
-     * \param[in] polygon Objeto Polygon3D que se mueve
-     */
-    Polygon3D<Point3_t> &operator = (Polygon3D<Point3_t> &&polygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Caja envolvente
-     * \return Caja envolvente del polígono
-     */
-    BoundingBox<Point3_t> boundingBox() const;
-
-    size_t holes() const;
-    Polygon3DHole<Point3_t> hole(size_t id) const;
-    void addHole(const Polygon3DHole<Point3_t> &polygonHole);
-
-protected:
-
-    /*!
-     * \brief Anillos interiores
-     */
-    std::vector<Polygon3DHole<Point3_t>> mPolygonHole;
-
-};
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D() 
   : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(),
-    mPolygonHole(0) 
+    polygonHoles(0) 
 {
 }
 
 template<typename Point3_t> inline
-Polygon3D<Point3_t>::Polygon3D(typename Polygon3D<Point3_t>::size_type size)
+Polygon3D<Point3_t>::Polygon3D(size_type size)
   : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(size),
-    mPolygonHole(0) 
+    polygonHoles(0) 
 {
 }
 
@@ -570,7 +596,7 @@ template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon) 
   : Entity(polygon), 
     Entities3D<Point3_t>(polygon),
-    mPolygonHole(polygon.mPolygonHole)
+    polygonHoles(polygon.polygonHoles)
 {
 }
 
@@ -578,7 +604,7 @@ template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT
   : Entity(std::forward<Entity>(polygon)), 
     Entities3D<Point3_t>(std::forward<Entities3D<Point3_t>>(polygon)),
-    mPolygonHole(std::forward<std::vector<Polygon3DHole<Point3_t>>>(polygon.mPolygonHole))
+    polygonHoles(std::forward<std::vector<Polygon3DHole<Point3_t>>>(polygon.polygonHoles))
 {
 }
 
@@ -586,7 +612,7 @@ template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const std::vector<Point3_t> &points) 
   : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(points),
-    mPolygonHole(0)
+    polygonHoles(0)
 {
 }
 
@@ -594,12 +620,12 @@ template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(std::initializer_list<Point3_t> listPoints) 
   : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(listPoints),
-    mPolygonHole(0) 
+    polygonHoles(0) 
 {
 }
 
-template<typename Point3_t> inline
-double Polygon3D<Point3_t>::length()  const
+template<typename Point3_t>
+auto Polygon3D<Point3_t>::length() const -> double
 {
     double perimeter = 0.;
 
@@ -611,31 +637,31 @@ double Polygon3D<Point3_t>::length()  const
 }
 
 template<typename Point3_t> inline
-Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (const Polygon3D<Point3_t> &polygon)
+auto Polygon3D<Point3_t>::operator = (const Polygon3D<Point3_t> &polygon) -> Polygon3D<Point3_t> &
 {
     if (this != &polygon) {
         Entity::operator = (polygon);
         Entities3D<Point3_t>::operator = (polygon);
-        mPolygonHole = polygon.mPolygonHole;
+        polygonHoles = polygon.polygonHoles;
     }
 
     return *this;
 }
 
 template<typename Point3_t> inline
-Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&polygon) TL_NOEXCEPT
+auto Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&polygon) TL_NOEXCEPT -> Polygon3D<Point3_t> &
 {
     if (this != &polygon) {
         Entity::operator = (std::forward<Entity>(polygon));
         Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
-        mPolygonHole = std::forward<std::vector<Polygon3DHole<Point3_t>>>(polygon.mPolygonHole);
+        polygonHoles = std::forward<std::vector<Polygon3DHole<Point3_t>>>(polygon.polygonHoles);
     }
 
     return *this;
 }
 
-template<typename Point3_t> inline
-BoundingBox<Point3_t> Polygon3D<Point3_t>::boundingBox() const
+template<typename Point3_t>
+auto Polygon3D<Point3_t>::boundingBox() const -> BoundingBox<Point3_t>
 {
     BoundingBox<Point3_t> bounding_box;
 
@@ -652,80 +678,26 @@ BoundingBox<Point3_t> Polygon3D<Point3_t>::boundingBox() const
 }
 
 template<typename Point3_t> inline 
-size_t Polygon3D<Point3_t>::holes() const
+auto Polygon3D<Point3_t>::holes() const -> size_t
 {
-    return mPolygonHole.size();
+    return polygonHoles.size();
 }
 
 template<typename Point3_t> inline 
-Polygon3DHole<Point3_t> Polygon3D<Point3_t>::hole(size_t id) const
+auto Polygon3D<Point3_t>::hole(size_t id) const -> Polygon3DHole<Point3_t>
 {
-    return mPolygonHole.at(id);
+    return polygonHoles.at(id);
 }
 
 template<typename Point3_t> inline 
 void Polygon3D<Point3_t>::addHole(const Polygon3DHole<Point3_t> &polygonHole)
 {
-    mPolygonHole.push_back(polygonHole);
+    polygonHoles.push_back(polygonHole);
 }
 
 
-using Polygon3dI = Polygon3D<Point3<int>>;
-using Polygon3dD = Polygon3D<Point3<double>>;
-using Polygon3dF = Polygon3D<Point3<float>>;
 
 
-/* ---------------------------------------------------------------------------------- */
-
-template <typename Point_t>
-class MultiPolygon
-  : public Entity,
-    public Entities2D<Polygon<Point_t>>
-{
-
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    MultiPolygon();
-
-    /*!
-     * \brief Constructor que reserva tamaño para n poligonos
-     */
-    MultiPolygon(typename MultiPolygon<Point_t>::size_type size);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] multiPolygon Objeto MultiPolygon que se copia
-     */
-    MultiPolygon(const MultiPolygon &multiPolygon);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] multiPolygon Objeto MultiPolygon que se mueve
-     */
-    MultiPolygon(MultiPolygon &&multiPolygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Destructora
-     */
-    ~MultiPolygon() override = default;
-
-    /*!
-     * \brief Operador de asignación
-     * \return lineString Objeto que se asigna
-     */
-    MultiPolygon<Point_t> &operator = (const MultiPolygon &multiPolygon);
-
-    /*!
-     * \brief Operador de asignación de movimiento
-     * \return lineString Objeto que se mueve
-     */
-    MultiPolygon<Point_t> &operator = (MultiPolygon &&multiPolygon) TL_NOEXCEPT;
-
-    Window<Point_t> window() const;
-};
 
 template <typename Point_t>
 MultiPolygon<Point_t>::MultiPolygon()
@@ -735,7 +707,7 @@ MultiPolygon<Point_t>::MultiPolygon()
 }
 
 template<typename Point_t> inline
-MultiPolygon<Point_t>::MultiPolygon(typename MultiPolygon<Point_t>::size_type size)
+MultiPolygon<Point_t>::MultiPolygon(size_type size)
   : Entity(Entity::Type::multipolygon2d),
     Entities2D<Polygon<Point_t>>(size) 
 {
@@ -756,7 +728,7 @@ MultiPolygon<Point_t>::MultiPolygon(MultiPolygon &&multiPolygon) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (const MultiPolygon &multiPolygon)
+auto MultiPolygon<Point_t>::operator = (const MultiPolygon &multiPolygon) -> MultiPolygon<Point_t> &
 {
     if (this != &multiPolygon) {
         Entity::operator = (multiPolygon);
@@ -767,7 +739,7 @@ MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (const MultiPolygon &mu
 }
 
 template<typename Point_t> inline
-MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (MultiPolygon &&multiPolygon) TL_NOEXCEPT
+auto MultiPolygon<Point_t>::operator = (MultiPolygon &&multiPolygon) TL_NOEXCEPT -> MultiPolygon<Point_t> &
 {
     if (this != &multiPolygon) {
         Entity::operator = (std::forward<Entity>(multiPolygon));
@@ -777,8 +749,8 @@ MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (MultiPolygon &&multiPo
     return *this;
 }
 
-template<typename Point_t> inline
-Window<Point_t> MultiPolygon<Point_t>::window() const
+template<typename Point_t>
+auto MultiPolygon<Point_t>::window() const -> Window<Point_t>
 {
     Window<Point_t> w;
 
@@ -789,61 +761,8 @@ Window<Point_t> MultiPolygon<Point_t>::window() const
     return w;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-template <typename Point3_t>
-class MultiPolygon3D
-  : public Entity,
-    public Entities3D<Polygon3D<Point3_t>>
-{
 
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    MultiPolygon3D();
-
-    /*!
-     * \brief Constructor que reserva tamaño para n poligonos
-     */
-    MultiPolygon3D(typename MultiPolygon3D<Point3_t>::size_type size);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] multiPolygon Objeto MultiPolygon que se copia
-     */
-    MultiPolygon3D(const MultiPolygon3D &multiPolygon);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] multiPolygon Objeto MultiPolygon que se mueve
-     */
-    MultiPolygon3D(MultiPolygon3D &&multiPolygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Destructora
-     */
-    ~MultiPolygon3D() override = default;
-
-    /*!
-     * \brief Operador de asignación
-     * \return lineString Objeto que se asigna
-     */
-    MultiPolygon3D<Point3_t> &operator = (const MultiPolygon3D &multiPolygon);
-
-    /*!
-     * \brief Operador de asignación
-     * \return lineString Objeto que se asigna
-     */
-    MultiPolygon3D<Point3_t> &operator = (MultiPolygon3D &&multiPolygon) TL_NOEXCEPT;
-
-    /*!
-     * \brief Caja envolvente
-     * \return Caja envolvente de los poligonos
-     */
-    BoundingBox<Point3_t> boundingBox() const;
-};
 
 template <typename Point3_t>
 MultiPolygon3D<Point3_t>::MultiPolygon3D()
@@ -853,7 +772,7 @@ MultiPolygon3D<Point3_t>::MultiPolygon3D()
 }
 
 template<typename Point3_t> inline
-MultiPolygon3D<Point3_t>::MultiPolygon3D(typename MultiPolygon3D<Point3_t>::size_type size)
+MultiPolygon3D<Point3_t>::MultiPolygon3D(size_type size)
   : Entity(Entity::Type::multipoygon3d),
     Entities3D<Polygon3D<Point3_t>>(size) 
 {
@@ -874,7 +793,7 @@ MultiPolygon3D<Point3_t>::MultiPolygon3D(MultiPolygon3D &&multiPolygon) TL_NOEXC
 }
 
 template<typename Point3_t> inline
-MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (const MultiPolygon3D &multiPolygon)
+auto MultiPolygon3D<Point3_t>::operator = (const MultiPolygon3D &multiPolygon) -> MultiPolygon3D<Point3_t> &
 {
     if (this != &multiPolygon) {
         Entity::operator = (multiPolygon);
@@ -885,7 +804,7 @@ MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (const MultiPolyg
 }
 
 template<typename Point3_t> inline
-MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (MultiPolygon3D &&multiPolygon) TL_NOEXCEPT
+auto MultiPolygon3D<Point3_t>::operator = (MultiPolygon3D &&multiPolygon) TL_NOEXCEPT -> MultiPolygon3D<Point3_t> &
 {
     if (this != &multiPolygon) {
         Entity::operator = (std::forward<Entity>(multiPolygon));
@@ -896,8 +815,8 @@ MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (MultiPolygon3D &
 }
 
 
-template<typename Point3_t> inline
-BoundingBox<Point3_t> MultiPolygon3D<Point3_t>::boundingBox() const
+template<typename Point3_t>
+auto MultiPolygon3D<Point3_t>::boundingBox() const -> BoundingBox<Point3_t>
 {
     BoundingBox<Point3_t> bounding_box;
 

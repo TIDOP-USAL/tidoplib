@@ -38,10 +38,10 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Class for 2D rectangles.
-  *
-  */
+/*!
+ * \brief Class for 2D rectangles.
+ *
+ */
 template<typename T>
 class Rect
 {
@@ -49,6 +49,13 @@ class Rect
 public:
 
     using value_type = T;
+
+public:
+
+    T x;
+    T y;
+    T width;
+    T height;
 
 public:
 
@@ -178,12 +185,6 @@ public:
      */
     template<typename T2> operator Rect<T2>() const;
 
-public:
-
-    T x;
-    T y;
-    T width;
-    T height;
 };
 
 
@@ -192,7 +193,7 @@ using Rectf = Rect<float>;
 using Rectd = Rect<double>;
 
 
-template<typename T> inline
+template<typename T> 
 Rect<T>::Rect()
   : x{0},
     y{0},
@@ -201,7 +202,7 @@ Rect<T>::Rect()
 {
 }
 
-template<typename T> inline
+template<typename T> 
 Rect<T>::Rect(T x, T y, T width, T height)
   : x(x), 
     y(y), 
@@ -210,7 +211,7 @@ Rect<T>::Rect(T x, T y, T width, T height)
 {
 }
 
-template<typename T> inline 
+template<typename T> 
 Rect<T>::Rect(const Point<T> &topLeft, 
               const Point<T> &bottomRight)
   : x(topLeft.x), 
@@ -220,7 +221,7 @@ Rect<T>::Rect(const Point<T> &topLeft,
 {
 }
 
-template<typename T> inline
+template<typename T> 
 Rect<T>::Rect(const Point<T> &topLeft, 
               const Size<T> &size)
   : x(topLeft.x), 
@@ -230,7 +231,7 @@ Rect<T>::Rect(const Point<T> &topLeft,
 {
 }
 
-template<typename T> inline
+template<typename T> 
 Rect<T>::Rect(const Point<T> &topLeft,
               T width, T height)
   : x(topLeft.x), 
@@ -240,7 +241,7 @@ Rect<T>::Rect(const Point<T> &topLeft,
 {
 }
 
-template<typename T> inline
+template<typename T> 
 Rect<T>::Rect(const Rect &rect)
   : x(rect.x), 
     y(rect.y), 
@@ -249,7 +250,7 @@ Rect<T>::Rect(const Rect &rect)
 {
 }
 
-template<typename T> inline
+template<typename T> 
 Rect<T>::Rect(Rect &&rect) TL_NOEXCEPT
   : x(rect.x), 
     y(rect.y), 
@@ -370,9 +371,8 @@ inline Rect<T>::operator Rect<T2>() const
     return rect;
 }
 
-template<typename T> static inline
-bool operator == (const Rect<T> &rect1,
-                  const Rect<T> &rect2)
+template<typename T>
+auto operator == (const Rect<T> &rect1, const Rect<T> &rect2) -> bool
 {
     return (rect1.x == rect2.x &&
             rect1.y == rect2.y &&
@@ -380,9 +380,8 @@ bool operator == (const Rect<T> &rect1,
             rect1.height == rect2.height);
 }
 
-template<typename T> static inline
-bool operator != (const Rect<T> &rect1,
-                  const Rect<T> &rect2)
+template<typename T>
+auto operator != (const Rect<T> &rect1, const Rect<T> &rect2) -> bool
 {
     return (rect1.x != rect2.x ||
             rect1.y != rect2.y ||
@@ -390,9 +389,8 @@ bool operator != (const Rect<T> &rect1,
             rect1.height != rect2.height);
 }
 
-template<typename T> static inline
-Rect<T> intersect(const Rect<T> &rect1,
-                  const Rect<T> &rect2)
+template<typename T> 
+auto intersect(const Rect<T> &rect1, const Rect<T> &rect2) -> Rect<T>
 {
     Rect<T> rect;
 

@@ -50,7 +50,7 @@ template<typename T> class Segment3D;
  * \param[out] ptp Punto proyectado
  * \return -1, 0, 1
  */
-template<typename Point_t> inline
+template<typename Point_t>
 int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 {
     int iret = 0;
@@ -77,7 +77,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
     return iret;
 }
 
-template<typename Point_t> inline
+template<typename Point_t>
 int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 {
     int iret = 0;

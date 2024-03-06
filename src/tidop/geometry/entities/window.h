@@ -51,142 +51,42 @@ class Window
 
 public:
 
-    /*!
-     * \brief type
-     */
     using value_type = Point_t;
-    
-    /*!
-     * \brief Punto 1
-     */
+    using scalar = typename Point_t::value_type;
+
+public:
+
     Point_t pt1;
-    
-    /*!
-     * \brief Punto 2
-     */
     Point_t pt2;
 
 public:
 
-    /*!
-     * \brief Constructor por defecto
-     */
     Window();
-    
-    /*!
-     * \brief Constructor de copia
-     * \param[in] window Objeto Window que se copia
-     */
     Window(const Window &window);
-    
-    /*!
-     * \brief Constructor de movimiento Window
-     */
     Window(Window &&window) TL_NOEXCEPT;
-    
-    /*!
-     * \brief Constructor Window
-     * \param[in] pt1 Primer punto
-     * \param[in] pt2 Segundo punto
-     */
-    Window(Point_t pt1, 
-           Point_t pt2);
-
-    /*!
-     * \brief Constructor Window
-     * \param[in] pt Punto central
-     * \param[in] width Ancho de la ventana
-     * \param[in] szy Alto de la ventana
-     */
-    template<typename T> Window(const Point_t &pt, 
-                                T width, T height);
-    
-    /*!
-     * \brief Constructor Window
-     * \param[in] pt Punto central
-     * \param[in] side Tamaño del lado de una ventana cuadrada
-     */
-    template<typename T> 
-    Window(const Point_t &pt, T side);
-    
-    /*!
-     * \brief Constructor Window
-     * Crea una ventana que envuelve a un conjunto de puntos
-     *
-     * \param[in] vector vector de puntos
-     */
+    Window(Point_t pt1, Point_t pt2);
+    template<typename T> Window(const Point_t &point, T width, T height);
+    template<typename T> Window(const Point_t &pt, T side);
     Window(const std::vector<Point_t> &window);
-    
-    /*!
-     * \brief 
-     * \param[in] vector Ventana
-     */
     template<typename Point_t2> Window(const std::vector<Point_t2> &window);
     
     ~Window() override = default;
     
-    /*!
-     * \brief Sobrecarga del operador  de asignación
-     * \param[in] window Ventana que se asigna
-     * \return Referencia a la ventana
-     */
     Window &operator = (const Window &window);
-    
-    /*!
-     * \brief Sobrecarga del operador de asignación de movimiento
-     * \param[in] window Ventana que se mueve
-     * \return Referencia a la ventana
-     */
     Window &operator = (Window &&window) TL_NOEXCEPT;
     
-    /*!
-     * \brief Sobrecarga del operador 'igual que'
-     * \param[in] window Ventana con la que se compara
-     * \return true si ambas ventanas son iguales
-     */
     bool operator == (const Window &window) const;
     
-    /*!
-     * \brief Conversión a una ventana de un tipo diferente
-     */
     template<typename Point_t2> operator Window<Point_t2>() const;
     
-    /*!
-     * \brief Devuelve el ancho de la ventana
-     * \return Ancho
-     */
-    typename Point_t::value_type width() const;
-    
-    /*!
-     * \brief Devuelve el alto de la ventana
-     * \return Alto
-     */
-    typename Point_t::value_type height() const;
-    
-    /*!
-     * \brief Devuelve centro de la ventana
-     * \return Centro de la ventana
-     */
-    Point_t center() const;
-    
-    /*!
-     * \brief Comprueba si la ventana esta vacia
-     * \return True si la ventana es nula
-     */
-    bool isEmpty() const;
-    bool isValid() const;
+    auto width() const -> scalar;
+    auto height() const -> scalar;
+    auto center() const -> Point_t;
+    auto isEmpty() const -> bool;
+    auto isValid() const -> bool;
     void normalized();
     
-    /*!
-     * \brief Comprueba si un punto está contenido dentro de la ventana
-     * \param[in] pt Punto
-     * \return True si el punto esta dentro de la ventana
-     */
     template<typename Point_t2> bool containsPoint(const Point_t2 &pt) const;
-    
-    /*!
-     * \brief La ventana contiene la ventana
-     */
     template<typename Point_t2> bool containsWindow(const Window<Point_t2> &w) const;
  
 };
@@ -325,7 +225,7 @@ Window<Point_t>::Window(const std::vector<Point_t2> &window)
 }
 
 template<typename Point_t> inline
-Window<Point_t> &Window<Point_t>::operator = (const Window &window)
+auto Window<Point_t>::operator = (const Window &window) -> Window<Point_t> &
 {
     if (this != &window) {
         Entity::operator = (window);
@@ -337,7 +237,7 @@ Window<Point_t> &Window<Point_t>::operator = (const Window &window)
 }
 
 template<typename Point_t> inline
-Window<Point_t> &Window<Point_t>::operator = (Window &&window) TL_NOEXCEPT
+auto Window<Point_t>::operator = (Window &&window) TL_NOEXCEPT -> Window<Point_t> &
 {
     if (this != &window) {
         Entity::operator = (std::forward<Entity>(window));
@@ -349,7 +249,7 @@ Window<Point_t> &Window<Point_t>::operator = (Window &&window) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-bool Window<Point_t>::operator == (const Window &window) const
+auto Window<Point_t>::operator == (const Window &window) const -> bool
 {
     return (pt1 == window.pt1 && pt2 == window.pt2);
 }
@@ -369,32 +269,29 @@ Window<Point_t>::operator Window<Point_t2>() const
 }
 
 template<typename Point_t> inline
-typename Point_t::value_type Window<Point_t>::width() const
+auto Window<Point_t>::width() const -> scalar
 {
-    return this->isEmpty() ?
-        static_cast<typename Point_t::value_type>(0) :
-        pt2.x - pt1.x;
+    //return this->isEmpty() ? static_cast<scalar>(0) : pt2.x - pt1.x;
+    return this->isEmpty() ? consts::zero<scalar> : pt2.x - pt1.x;
 }
 
 template<typename Point_t> inline
-typename Point_t::value_type Window<Point_t>::height() const
+auto Window<Point_t>::height() const -> scalar
 {
-    return this->isEmpty() ?
-        static_cast<typename Point_t::value_type>(0) :
-        pt2.y - pt1.y;
+    return this->isEmpty() ? consts::zero<scalar> : pt2.y - pt1.y;
 }
 
 template<typename Point_t> inline
-Point_t Window<Point_t>::center() const
+auto Window<Point_t>::center() const -> Point_t
 {
     typename Point_t::value_type two{2};
 
-    return Point_t((pt1.x + pt2.x) / two,
-                   (pt1.y + pt2.y) / two);
+    return Point_t((pt1.x + pt2.x) / consts::two<scalar>,
+                   (pt1.y + pt2.y) / consts::two<scalar>);
 }
 
 template<typename Point_t> inline
-bool Window<Point_t>::isEmpty() const
+auto Window<Point_t>::isEmpty() const -> bool
 {
     return (pt1.x == std::numeric_limits<typename Point_t::value_type>().max() &&
             pt1.y == std::numeric_limits<typename Point_t::value_type>().max() &&
@@ -402,15 +299,15 @@ bool Window<Point_t>::isEmpty() const
             pt2.y == -std::numeric_limits<typename Point_t::value_type>().max());
 }
 
-template<typename Point_t>
-inline bool tl::Window<Point_t>::isValid() const
+template<typename Point_t> inline
+auto Window<Point_t>::isValid() const -> bool
 {
     return this->width() > static_cast<typename Point_t::value_type>(0) &&
            this->height() > static_cast<typename Point_t::value_type>(0);
 }
 
-template<typename Point_t>
-inline void tl::Window<Point_t>::normalized()
+template<typename Point_t> inline 
+void Window<Point_t>::normalized()
 {
     if (!this->isValid()) {
         if (this->pt1.x > this->pt2.x) std::swap(this->pt1.x, this->pt2.x);
@@ -419,7 +316,7 @@ inline void tl::Window<Point_t>::normalized()
 }
 
 template<typename Point_t> template<typename Point_t2> inline
-bool Window<Point_t>::containsPoint(const Point_t2 &pt) const
+auto Window<Point_t>::containsPoint(const Point_t2 &pt) const -> bool
 {
     Point_t _pt(pt.x, pt.y);
     return ((pt2.x >= _pt.x) && (pt2.y >= _pt.y) &&
@@ -427,7 +324,7 @@ bool Window<Point_t>::containsPoint(const Point_t2 &pt) const
 }
 
 template<typename Point_t> template<typename Point_t2> inline
-bool Window<Point_t>::containsWindow(const Window<Point_t2> &w) const
+auto Window<Point_t>::containsWindow(const Window<Point_t2> &w) const -> bool
 {
     Window<Point_t> w2 = w;
     return pt1.x <= w2.pt1.x &&

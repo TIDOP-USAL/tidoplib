@@ -87,7 +87,7 @@ public:
     ~RobustMatchingImp() override = default;
 
     /*!
-     * \brief Establece el metodo de matching
+     * \brief Sets the matching method
      * \param[in] matcher
      */
     void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
@@ -124,8 +124,8 @@ public:
     }
 
     /*!
-     * \brief test cruzado
-     * Busqueda de matches simétricos
+     * \brief Cross test
+     * Search for symmetrical matches
      * \param[in] matches12
      * \param[in] matches21
      * \param[out] goodMatches

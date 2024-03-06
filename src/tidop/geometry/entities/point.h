@@ -95,7 +95,7 @@ public:
     ~Point() override = default;
 
     /*!
-     * \brief Assignment operator
+     * \brief Copy assignment operator
      * \param[in] point Point object to be copied
      */
     auto operator = (const Point<T> &point) -> Point<T>&;

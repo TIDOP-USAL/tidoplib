@@ -53,6 +53,11 @@ public:
 
 public:
 
+    T width;
+    T height;
+
+public:
+
     /*!
      * \brief Default constructor.
      * Constructs a empty Size object. isValid() returns false
@@ -110,10 +115,6 @@ public:
      */
     template<typename T2> operator Size<T2>() const;
 
-public:
-
-    T width;
-    T height;
 };
 
 
@@ -123,21 +124,21 @@ using Sized = Size<double>;
 
 
 
-template<typename T> inline
+template<typename T>
 Size<T>::Size()
   : width{0},
     height{0}
 {
 }
 
-template<typename T> inline
+template<typename T>
 Size<T>::Size(T width, T height)
   : width(width),
     height(height)
 {
 }
 
-template<typename T> inline
+template<typename T>
 Size<T>::Size(const Size &size)
   : width(size.width),
     height(size.height)
@@ -145,7 +146,7 @@ Size<T>::Size(const Size &size)
 }
 
 template<typename T> 
-inline Size<T>::Size(Size &&size) TL_NOEXCEPT
+Size<T>::Size(Size &&size) TL_NOEXCEPT
   : width(size.width),
     height(size.height)
 {
