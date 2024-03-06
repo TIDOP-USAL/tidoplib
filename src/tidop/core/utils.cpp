@@ -63,8 +63,6 @@ int stringToInteger(const std::string &text, Base base)
     case Base::hexadecimal:
         ss.setf(std::ios_base::hex, std::ios::basefield);
         break;
-    default:
-        break;
     }
     int number;
     return ss >> number ? number : 0;

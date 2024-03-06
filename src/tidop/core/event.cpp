@@ -45,7 +45,7 @@ EventBase::Type EventBase::type() const
 /* Task Running Event */
 
 TaskRunningEvent::TaskRunningEvent()
-  : EventBase(Event::Type::task_running)
+  : EventBase(Type::task_running)
 {
 }
 
@@ -57,7 +57,7 @@ void TaskRunningEvent::clear()
 /* Task Pausing Event */
 
 TaskPausingEvent::TaskPausingEvent()
-  : EventBase(Event::Type::task_pausing)
+  : EventBase(Type::task_pausing)
 {
 }
 
@@ -69,7 +69,7 @@ void TaskPausingEvent::clear()
 /* Task Pause Event */
 
 TaskPauseEvent::TaskPauseEvent()
-  : EventBase(Event::Type::task_paused)
+  : EventBase(Type::task_paused)
 {
 }
 
@@ -81,7 +81,7 @@ void TaskPauseEvent::clear()
 /* Task Resumed Event */
 
 TaskResumedEvent::TaskResumedEvent()
-  : EventBase(Event::Type::task_resumed)
+  : EventBase(Type::task_resumed)
 {
 }
 
@@ -93,7 +93,7 @@ void TaskResumedEvent::clear()
 /* Task Stopping Event */
 
 TaskStoppingEvent::TaskStoppingEvent()
-  : EventBase(Event::Type::task_stopping)
+  : EventBase(Type::task_stopping)
 {
 }
 
@@ -105,7 +105,7 @@ void TaskStoppingEvent::clear()
 /* Task Stopped Event */
 
 TaskStoppedEvent::TaskStoppedEvent()
-  : EventBase(Event::Type::task_stopped)
+  : EventBase(Type::task_stopped)
 {
 }
 
@@ -117,7 +117,7 @@ void TaskStoppedEvent::clear()
 /* Task Finalized Event */
 
 TaskFinalizedEvent::TaskFinalizedEvent(Task const *task)
-  : EventBase(Event::Type::task_finalized),
+  : EventBase(Type::task_finalized),
     mTask(task)
 {
 }
@@ -135,8 +135,7 @@ void TaskFinalizedEvent::clear()
 /* Task Error Event */
 
 TaskErrorEvent::TaskErrorEvent()
-  : EventBase(Event::Type::task_error),
-    mErrorMessage("")
+  : EventBase(Type::task_error)
 {
 }
 
@@ -160,8 +159,7 @@ void TaskErrorEvent::clear()
 /* Image Change Event */
 
 ImageChangeEvent::ImageChangeEvent()
-  : EventBase(Event::Type::image_change),
-    mImage("")
+  : EventBase(Type::image_change)
 {
 }
 

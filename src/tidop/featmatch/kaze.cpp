@@ -32,8 +32,7 @@ namespace tl
 
 
 KazeProperties::KazeProperties()
-  : Kaze(),
-    mExtended(false),
+  : mExtended(false),
     mUpright(false),
     mThreshold(0.001),
     mOctaves(4),
@@ -161,12 +160,12 @@ KazeDetectorDescriptor::KazeDetectorDescriptor(bool extendedDescriptor,
                                                const std::string &diffusivity)
   : mKaze(cv::KAZE::create())
 {
-    setExtendedDescriptor(extendedDescriptor);
-    setUprightDescriptor(uprightDescriptor);
-    setThreshold(threshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setDiffusivity(diffusivity);
+	KazeDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
+	KazeDetectorDescriptor::setUprightDescriptor(uprightDescriptor);
+	KazeDetectorDescriptor::setThreshold(threshold);
+	KazeDetectorDescriptor::setOctaves(octaves);
+	KazeDetectorDescriptor::setOctaveLayers(octaveLayers);
+	KazeDetectorDescriptor::setDiffusivity(diffusivity);
 }
 
 #if CV_VERSION_MAJOR >= 4

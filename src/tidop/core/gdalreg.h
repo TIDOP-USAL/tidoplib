@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_UTILS_GDAL_H
-#define TL_CORE_UTILS_GDAL_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -69,5 +68,3 @@ public:
 
 } // End namespace tl
 
-
-#endif // TL_CORE_UTILS_GDAL_H

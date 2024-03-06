@@ -71,28 +71,28 @@ public:
 
 public:
 
-    virtual auto thresholdSaliency() const -> double override;
-    virtual auto patchRadius() const -> int override;
-    virtual auto knn() const -> int override;
-    virtual auto searchAreaRadius() const -> int override;
-    virtual auto scaleFactor() const -> double override;
-    virtual auto NMSRadius() const -> int override;
-    virtual auto nScales() const ->int override;
-    virtual auto NMSScaleRadius() const -> int override;
-    virtual auto computeOrientation() const -> bool override;
-    virtual auto affineMSD() const -> bool override;
-    virtual auto affineTilts() const -> int override;
-    virtual void setThresholdSaliency(double thresholdSaliency) override;
-    virtual void setPatchRadius(int patchRadius) override;
-    virtual void setKNN(int knn) override;
-    virtual void setSearchAreaRadius(int searchAreaRadius) override;
-    virtual void setScaleFactor(double scaleFactor) override;
-    virtual void setNMSRadius(int NMSRadius) override;
-    virtual void setNScales(int nScales) override;
-    virtual void setNMSScaleRadius(int NMSScaleR) override;
-    virtual void setComputeOrientation(bool computeOrientation) override;
-    virtual void setAffineMSD(bool affineMSD) override;
-    virtual void setAffineTilts(int affineTilts) override;
+    auto thresholdSaliency() const -> double override;
+    auto patchRadius() const -> int override;
+    auto knn() const -> int override;
+    auto searchAreaRadius() const -> int override;
+    auto scaleFactor() const -> double override;
+    auto NMSRadius() const -> int override;
+    auto nScales() const ->int override;
+    auto NMSScaleRadius() const -> int override;
+    auto computeOrientation() const -> bool override;
+    auto affineMSD() const -> bool override;
+    auto affineTilts() const -> int override;
+    void setThresholdSaliency(double thresholdSaliency) override;
+    void setPatchRadius(int patchRadius) override;
+    void setKNN(int knn) override;
+    void setSearchAreaRadius(int searchAreaRadius) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setNMSRadius(int NMSRadius) override;
+    void setNScales(int nScales) override;
+    void setNMSScaleRadius(int NMSScaleR) override;
+    void setComputeOrientation(bool computeOrientation) override;
+    void setAffineMSD(bool affineMSD) override;
+    void setAffineTilts(int affineTilts) override;
 
 // Feature interface
 

@@ -25,8 +25,6 @@
 #pragma once
 
 #include "tidop/geometry/entities/entity.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/bbox.h"
 
 namespace tl
 {
@@ -47,6 +45,10 @@ class Entities3D
 
 public:
 
+    using size_type = typename EntityContainer<Entity_t>::size_type;
+
+public:
+
     /*!
      * \brief Constructora por defecto
      */
@@ -57,7 +59,7 @@ public:
      * \param[in] size Tamaño que se reserva
      * \see entity_type
      */
-    Entities3D(typename EntityContainer<Entity_t>::size_type size);
+    explicit Entities3D(size_type size);
 
     /*!
      * \brief Constructor de copia
@@ -100,43 +102,43 @@ public:
 };
 
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D() 
   : EntityContainer<Entity_t>() 
 {
 }
 
-template<typename Entity_t> inline
-Entities3D<Entity_t>::Entities3D(typename EntityContainer<Entity_t>::size_type size)
+template<typename Entity_t>
+Entities3D<Entity_t>::Entities3D(size_type size)
   : EntityContainer<Entity_t>(size) 
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(const Entities3D &entities) 
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(Entities3D &&entities) TL_NOEXCEPT
   : EntityContainer<Entity_t>(std::forward<EntityContainer<Entity_t>>(entities))
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(const std::vector<Entity_t> &entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t> &entities)
 {
     if (this != &entities) {
@@ -146,7 +148,7 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t>
     return (*this);
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT
 {
     if (this != &entities) {

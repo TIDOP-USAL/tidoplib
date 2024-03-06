@@ -119,7 +119,7 @@ private:
 public:
   
     Chrono();
-    Chrono(std::string message);
+    explicit Chrono(std::string message);
     virtual ~Chrono() = default;
   
     TL_DISABLE_COPY(Chrono)
@@ -183,8 +183,8 @@ public:
  *   } // The time is stopped and printed on the console
  * \endcode
  */
-class TL_EXPORT ChronoAuto
-  : private Chrono
+class TL_EXPORT ChronoAuto final
+	: private Chrono
 {
 
 public:

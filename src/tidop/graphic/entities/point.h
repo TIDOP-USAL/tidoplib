@@ -60,7 +60,7 @@ public:
      * \param[in] pt Punto
      * \see Point
      */
-    GPoint(const Point<double> &pt);
+    explicit GPoint(const Point<double> &pt);
 
     /*!
      * \brief Constructor de copia
@@ -84,17 +84,17 @@ public:
      * \param gPoint Objeto GPoint que se asigna
      * \return Referencia al objeto
      */
-    GPoint &operator = (const GPoint &gPoint);
+    auto operator =(const GPoint& gPoint) -> GPoint&;
 
     /*!
      * \brief Operador de asignación de movimiento
      * \param gPoint Objeto GPoint que se mueve
      * \return Referencia al objeto
      */
-    GPoint &operator = (GPoint &&gPoint) TL_NOEXCEPT;
+    auto operator =(GPoint&& gPoint) TL_NOEXCEPT -> GPoint&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
@@ -123,7 +123,7 @@ public:
      * \param[in] pt Punto
      * \see Point3
      */
-    GPoint3D(const Point3<double> &pt);
+    explicit GPoint3D(const Point3<double> &pt);
 
     /*!
      * \brief Constructor de copia
@@ -147,16 +147,16 @@ public:
      * \param gPoint Objeto GPoint3D que se copia
      * \return Referencia al objeto
      */
-    GPoint3D &operator = (const GPoint3D &gPoint);
+    auto operator =(const GPoint3D& gPoint) -> GPoint3D&;
 
     /*!
      * \brief Operador de asignación de movimiento
      * \param[in] gPoint Objeto GPoint3D que se mueve
      */
-    GPoint3D &operator = (GPoint3D &&gPoint) TL_NOEXCEPT;
+    auto operator =(GPoint3D&& gPoint) TL_NOEXCEPT -> GPoint3D&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
@@ -172,10 +172,10 @@ public:
     GMultiPoint(const GMultiPoint &gMultiPoint);
     ~GMultiPoint() override;
 
-    GMultiPoint &operator = (const GMultiPoint &gMultiPoint);
+    auto operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
@@ -187,14 +187,14 @@ class TL_EXPORT GMultiPoint3D
 public:
 
     GMultiPoint3D();
-    GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint);
+    explicit GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint);
     GMultiPoint3D(const GMultiPoint3D &gMultiPoint);
     ~GMultiPoint3D() override;
 
-    GMultiPoint3D &operator = (const GMultiPoint3D &gMultiPoint);
+    auto operator =(const GMultiPoint3D& gMultiPoint) -> GMultiPoint3D&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 /*! \} */ // Fin GraphicEntities

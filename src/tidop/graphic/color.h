@@ -560,7 +560,7 @@ public:
      */
     ColorRGB(const ColorRGB &color);
     
-    ~ColorRGB();
+    ~ColorRGB() override;
     
     /*!
      * \brief Componente roja
@@ -690,8 +690,8 @@ public:
      */
     void setAlpha(int alpha);
 
-    virtual Color toColor() const override;
-    virtual void fromColor(const Color &color) override;
+    Color toColor() const override;
+    void fromColor(const Color &color) override;
 
     ColorRGBA &operator =(const ColorRGBA &color);
 
@@ -801,9 +801,9 @@ public:
      * \param[in] max Valor máximo (por defecto 255)
      */
     void setRange(double min, double max);
-    
-    virtual Color toColor() const override;
-    virtual void fromColor(const Color &color) override;
+
+    Color toColor() const override;
+    void fromColor(const Color &color) override;
 
 protected:
 

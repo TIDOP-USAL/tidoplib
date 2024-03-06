@@ -31,10 +31,7 @@
 
 namespace tl
 {
-MenuAction::MenuAction()
-  : title("")
-{
-}
+
 MenuAction::MenuAction(std::string title)
   : title(std::move(title))
 {
@@ -48,12 +45,12 @@ MenuAction::MenuAction(std::string title, std::string description)
 }
 
 MenuAction::MenuAction(std::string title, 
-                       std::string description, 
-                       std::function<void(void)> funct)
+                       std::string description,
+                       const std::function<void(void)> &funct)
   : title(std::move(title)),
     description(std::move(description)),
     funct(funct)
-{
+{   
 }
 
 auto MenuAction::text() const -> std::string
@@ -67,12 +64,12 @@ void MenuAction::exec() const
     funct();
 
     // Aqui devolver el control al menu
-    char key_press;
-    int ascii_value;
+    char key_press{};
+    int ascii_value{};
 
     while (true) {
-        key_press = _getch();
-        ascii_value = key_press;
+        key_press = static_cast<char>(_getch());
+        ascii_value = static_cast<int>(key_press);
         if (ascii_value == 27) {
             // For ESC
             system("cls");
@@ -88,8 +85,9 @@ void MenuAction::exec() const
 
 
 Menu::Menu(std::string title, std::string description)
-  : title(title),
-    description(description)
+	: title(std::move(title)),
+	  description(std::move(description)),
+	  parent(nullptr)
 {
 }
 
@@ -116,25 +114,25 @@ void Menu::activeOption(int currentOption) const
         counter++;
     }
 
-    char key_press;
-    int ascii_value;
+    char key_press{};
+    int ascii_value{};
 
-    bool changeOption = false;
-    while (!changeOption) {
-        key_press = _getch();
-        ascii_value = key_press;
+    bool change_option = false;
+    while (!change_option) {
+        key_press = static_cast<char>(_getch());
+        ascii_value = static_cast<int>(key_press);
         //std::cout << "\n" << key_press << " -> " << ascii_value << "\n";
         if (ascii_value == 27) {
             // For ESC
             system("cls");
             return;
         } else if (ascii_value == 80) {
-            changeOption = true;
-            if ((static_cast<size_t>(currentOption)) == items.size()) currentOption = 1;
+            change_option = true;
+            if (currentOption == static_cast<int>(items.size())) currentOption = 1;
             else currentOption += 1;
         } else if (ascii_value == 72) {
-            changeOption = true;
-            if (currentOption == 1) currentOption = items.size();
+            change_option = true;
+            if (currentOption == 1) currentOption = static_cast<int>(items.size());
             else currentOption -=1;
         } else if (ascii_value == 13) {
             itemClick(currentOption);
@@ -146,7 +144,7 @@ void Menu::activeOption(int currentOption) const
         }
     }
 
-    if (changeOption) activeOption(currentOption);
+    if (change_option) activeOption(currentOption);
 }
 
 void Menu::itemClick(int currentOption) const

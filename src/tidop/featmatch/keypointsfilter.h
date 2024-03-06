@@ -75,7 +75,7 @@ class TL_EXPORT KeyPointsFilterBase
 
 protected:
 
-    tl::EnumFlags<Type> mFilterType;
+	EnumFlags<Type> mFilterType;
 
 public:
 
@@ -168,12 +168,6 @@ public:
     explicit KeyPointsFilterNBest(int nPoints);
     ~KeyPointsFilterNBest() override = default;
 
-// KeyPointsFilterNBestProperties interface
-
-public:
-
-    void setNPoints(int nPoints) override;
-
 // KeyPointsFilter interface
 
 public:
@@ -253,13 +247,6 @@ public:
     KeyPointsFilterBySize();
     KeyPointsFilterBySize(double minSize, double maxSize);
     ~KeyPointsFilterBySize() override = default;
-
-// KeyPointsFilterBySizeProperties interface
-
-public:
-
-    void setMinSize(double minSize) override;
-    void setMaxSize(double maxSize) override;
 
 // KeyPointsFilterProcess interface
 

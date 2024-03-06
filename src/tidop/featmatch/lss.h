@@ -47,7 +47,7 @@ public:
 
 public:
 
-    virtual void reset() override;
+    void reset() override;
     auto name() const -> std::string final;
 
 };

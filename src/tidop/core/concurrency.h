@@ -195,7 +195,7 @@ void parallel_for_each_3(Iterator first,
     unsigned long const length = std::distance(first, last);
     if (!length) return;
 
-    unsigned long const min_per_thread = 25;
+    constexpr unsigned long min_per_thread = 25;
     if (length < (2 * min_per_thread)) {
         std::for_each(first, last, f);
     } else {
@@ -237,7 +237,7 @@ public:
      * \brief Constructor with queue capacity
      * \param[in] capacity Queue capacity
      */
-    Queue(size_t capacity);
+    explicit Queue(size_t capacity);
     
     virtual ~Queue() = default;
     
@@ -311,9 +311,9 @@ public:
      * \brief Constructor with queue capacity
      * \param[in] capacity Queue capacity
      */
-    QueueSPSC(size_t capacity);
+    explicit QueueSPSC(size_t capacity);
   
-    ~QueueSPSC() = default;
+    ~QueueSPSC() override = default;
   
     TL_DISABLE_COPY(QueueSPSC)
     TL_DISABLE_MOVE(QueueSPSC)
@@ -349,7 +349,7 @@ public:
      * \brief Constructor with queue capacity
      * \param[in] capacity Queue capacity
      */
-    QueueMPMC(size_t capacity);
+    explicit QueueMPMC(size_t capacity);
     
     ~QueueMPMC() = default;
     
@@ -374,7 +374,10 @@ class Producer
 public:
 
     explicit Producer(Queue<T> *queue) : mQueue(queue) {}
-    ~Producer() = default;
+    virtual ~Producer() = default;
+
+    TL_DISABLE_COPY(Producer)
+    TL_DISABLE_MOVE(Producer)
 
     virtual void operator() () = 0;
     virtual void operator() (size_t ini, size_t end) = 0;
@@ -403,7 +406,10 @@ class Consumer
 public:
 
     explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
-    ~Consumer() = default;
+    virtual ~Consumer() = default;
+
+	TL_DISABLE_COPY(Consumer)
+    TL_DISABLE_MOVE(Consumer)
 
     virtual void operator() () = 0;
 

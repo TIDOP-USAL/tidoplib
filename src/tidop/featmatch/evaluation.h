@@ -70,98 +70,98 @@ public:
      * \param[in] threshold
      * \return Confussion Matrix
      */
-    std::map<Classification, size_t> confusionMatrix(T threshold) const;
+    auto confusionMatrix(T threshold) const -> std::map<Classification, size_t>;
 
     /*!
      * \brief positives
      * positives = TP + FN
      * \return
      */
-    size_t positives() const;
+    auto positives() const -> size_t;
     
     /*!
      * \brief negatives
      * negatives = FP + TN
      * \return
      */
-    size_t negatives() const;
+    auto negatives() const -> size_t;
     
     /*!
      * \brief True Positives
      * \param[in] threshold
      * \return
      */
-    size_t truePositives(T threshold) const;
+    auto truePositives(T threshold) const -> size_t;
     
     /*!
      * \brief False Positives
      * \param[in] threshold
      * \return
      */
-    size_t falsePositives(T threshold) const;
+    auto falsePositives(T threshold) const -> size_t;
     
     /*!
      * \brief True Negatives
      * \param[in] threshold
      * \return
      */
-    size_t trueNegatives(T threshold) const;
+    auto trueNegatives(T threshold) const -> size_t;
     
     /*!
      * \brief False Negatives
      * \param[in] threshold
      * \return
      */
-    size_t falseNegatives(T threshold) const;
+    auto falseNegatives(T threshold) const -> size_t;
     
     /*!
      * \brief accuracy
      * \param[in] threshold
      * \return
      */
-    double accuracy(T threshold) const;
+    auto accuracy(T threshold) const -> double;
     
     /*!
      * \brief Precision or Positive Predictive Value
      * \param[in] threshold
      * \return
      */
-    double positivePredictiveValue(T threshold) const;
+    auto positivePredictiveValue(T threshold) const -> double;
 
     /*!
      * \brief Negative Predictive Value
      * \param[in] threshold
      * \return
      */
-    double negativePredictiveValue(T threshold) const;
+    auto negativePredictiveValue(T threshold) const -> double;
     
     /*!
      * \brief True Positive Rate, Recall or Sensitivity
      * \param[in] threshold
      * \return
      */
-    double truePositiveRate(T threshold) const;
+    auto truePositiveRate(T threshold) const -> double;
     
     /*!
      * \brief False Positive Rate or Fall-out
      * \param[in] threshold
      * \return
      */
-    double falsePositiveRate(T threshold) const;
+    auto falsePositiveRate(T threshold) const -> double;
     
     /*!
      * \brief True Negative Rate or Specificity
      * \param[in] threshold
      * \return
      */
-    double trueNegativeRate(T threshold) const;
+    auto trueNegativeRate(T threshold) const -> double;
     
     /*!
      * \brief False Negative Rate
      * \param[in] threshold
      * \return
      */    
-    double falseNegativeRate(T threshold) const;
+    auto falseNegativeRate(T threshold) const -> double;
     
     /*!
      * \brief Compute curve
@@ -170,22 +170,21 @@ public:
     virtual void compute(size_t steeps) = 0;
     virtual void compute() = 0;
     
-    std::vector<Point<double>> curve() const;
+    auto curve() const -> std::vector<Point<double>>;
     
     /*!
      * \brief auc
      * \return
      */
-    double auc() const;
+    auto auc() const -> double;
 
-    static double truePositiveRate(size_t tp, size_t fn);
-    static double falsePositiveRate(size_t fp, size_t tn);
-    static double trueNegativeRate(size_t tn, size_t fp);
-    static double falseNegativeRate(size_t fn, size_t tp);
-    static double positivePredictiveValue(size_t tp, size_t fp);
-    static double negativePredictiveValue(size_t fn, size_t tn);
-    static double accuracy(size_t tp, size_t tn, size_t positives, size_t negatives);
-
+    static auto truePositiveRate(size_t tp, size_t fn) -> double;
+    static auto falsePositiveRate(size_t fp, size_t tn) -> double;
+    static auto trueNegativeRate(size_t tn, size_t fp) -> double;
+    static auto falseNegativeRate(size_t fn, size_t tp) -> double;
+    static auto positivePredictiveValue(size_t tp, size_t fp) -> double;
+    static auto negativePredictiveValue(size_t fn, size_t tn) -> double;
+    static auto accuracy(size_t tp, size_t tn, size_t positives, size_t negatives) -> double;
 
 };
 
@@ -279,8 +278,8 @@ Curve<T>::Curve(const std::vector<std::pair<T, int>> &data)
 
 }
 
-template<typename T> inline
-std::map<typename Curve<T>::Classification, size_t> Curve<T>::confusionMatrix(T threshold) const
+template<typename T> 
+auto Curve<T>::confusionMatrix(T threshold) const -> std::map<Curve<T>::Classification, size_t>
 {
     size_t true_positives = 0;
     size_t false_positives = 0;
@@ -303,57 +302,57 @@ std::map<typename Curve<T>::Classification, size_t> Curve<T>::confusionMatrix(T 
 
     }
 
-    std::map<Classification, size_t> confussionMatrix;
-    confussionMatrix[Classification::true_positives] = true_positives;
-    confussionMatrix[Classification::false_positives] = false_positives;
-    confussionMatrix[Classification::true_negatives] = true_negatives;
-    confussionMatrix[Classification::false_negatives] = false_negatives;
+    std::map<Classification, size_t> confussion_matrix;
+    confussion_matrix[Classification::true_positives] = true_positives;
+    confussion_matrix[Classification::false_positives] = false_positives;
+    confussion_matrix[Classification::true_negatives] = true_negatives;
+    confussion_matrix[Classification::false_negatives] = false_negatives;
 
-    return confussionMatrix;
+    return confussion_matrix;
 }
 
-template<typename T> inline
-size_t Curve<T>::positives() const
+template<typename T> 
+auto Curve<T>::positives() const -> size_t
 {
     return mPositives;
 }
 
-template<typename T> inline
-size_t Curve<T>::negatives() const
+template<typename T>
+auto Curve<T>::negatives() const -> size_t
 {
     return mNegatives;
 }
 
-template<typename T> inline
-size_t Curve<T>::truePositives(T threshold) const
+template<typename T>
+auto Curve<T>::truePositives(T threshold) const -> size_t
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     return confussionMatrix[Classification::true_positives];
 }
 
-template<typename T> inline
-size_t Curve<T>::falsePositives(T threshold) const
+template<typename T>
+auto Curve<T>::falsePositives(T threshold) const -> size_t
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     return confussionMatrix[Classification::false_positives];
 }
 
-template<typename T> inline
-size_t Curve<T>::trueNegatives(T threshold) const
+template<typename T>
+auto Curve<T>::trueNegatives(T threshold) const -> size_t
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     return confussionMatrix[Classification::true_negatives];
 }
 
-template<typename T> inline
-size_t Curve<T>::falseNegatives(T threshold) const
+template<typename T>
+auto Curve<T>::falseNegatives(T threshold) const -> size_t
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     return confussionMatrix[Classification::false_negatives];
 }
 
-template<typename T> inline
-double Curve<T>::accuracy(T threshold) const
+template<typename T>
+auto Curve<T>::accuracy(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
 
@@ -362,8 +361,8 @@ double Curve<T>::accuracy(T threshold) const
         / static_cast<double>(mPositives + mNegatives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::positivePredictiveValue(T threshold) const
+template<typename T> 
+auto Curve<T>::positivePredictiveValue(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     double tp = static_cast<double>(confussionMatrix[Classification::true_positives]);
@@ -371,8 +370,8 @@ double Curve<T>::positivePredictiveValue(T threshold) const
     return ((tp + fp) > 0.) ? tp / (tp + fp) : -1.;
 }
 
-template<typename T> inline
-double Curve<T>::negativePredictiveValue(T threshold) const
+template<typename T>
+auto Curve<T>::negativePredictiveValue(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     double fn = static_cast<double>(confussionMatrix[Classification::false_negatives]);
@@ -380,8 +379,8 @@ double Curve<T>::negativePredictiveValue(T threshold) const
     return (fn + tn > 0.) ? tn / (fn + tn) : -1.;
 }
 
-template<typename T> inline
-double Curve<T>::truePositiveRate(T threshold) const
+template<typename T>
+auto Curve<T>::truePositiveRate(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     size_t tp = confussionMatrix[Classification::true_positives];
@@ -390,24 +389,24 @@ double Curve<T>::truePositiveRate(T threshold) const
     return positives > 0 ? tp / static_cast<double>(positives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::falsePositiveRate(T threshold) const
+template<typename T>
+auto Curve<T>::falsePositiveRate(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     size_t fp = confussionMatrix[Classification::false_positives];
     return mNegatives ? static_cast<double>(fp) / static_cast<double>(mNegatives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::trueNegativeRate(T threshold) const
+template<typename T>
+auto Curve<T>::trueNegativeRate(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     size_t tn = confussionMatrix[Classification::true_negatives];
     return mNegatives ? static_cast<double>(tn) / static_cast<double>(mNegatives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::falseNegativeRate(T threshold) const
+template<typename T>
+auto Curve<T>::falseNegativeRate(T threshold) const -> double
 {
     std::map<Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
     size_t fn = confussionMatrix[Classification::false_negatives];
@@ -415,59 +414,59 @@ double Curve<T>::falseNegativeRate(T threshold) const
 }
 
 template<typename T>
-std::vector<Point<double>> Curve<T>::curve() const
+auto Curve<T>::curve() const -> std::vector<Point<double>>
 {
     return mCurve;
 }
 
 template<typename T>
-double Curve<T>::auc() const
+auto Curve<T>::auc() const -> double
 {
     return mAuc;
 }
 
-template<typename T> inline
-double Curve<T>::truePositiveRate(size_t tp, size_t fn)
+template<typename T>
+auto Curve<T>::truePositiveRate(size_t tp, size_t fn) -> double
 {
     size_t positives = tp + fn;
     return positives > 0 ? static_cast<double>(tp) / static_cast<double>(positives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::falsePositiveRate(size_t fp, size_t tn)
+template<typename T>
+auto Curve<T>::falsePositiveRate(size_t fp, size_t tn) -> double
 {
     size_t negatives = fp + tn;
     return negatives > 0 ? static_cast<double>(fp) / static_cast<double>(negatives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::trueNegativeRate(size_t tn, size_t fp)
+template<typename T>
+auto Curve<T>::trueNegativeRate(size_t tn, size_t fp) -> double
 {
     size_t negatives = fp + tn;
     return negatives > 0. ? static_cast<double>(tn) / static_cast<double>(negatives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::falseNegativeRate(size_t fn, size_t tp)
+template<typename T>
+auto Curve<T>::falseNegativeRate(size_t fn, size_t tp) -> double
 {
     size_t positives = fn + tp;
     return positives > 0 ? static_cast<double>(fn) / static_cast<double>(positives) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::positivePredictiveValue(size_t tp, size_t fp)
+template<typename T>
+auto Curve<T>::positivePredictiveValue(size_t tp, size_t fp) -> double
 {
     return ((tp + fp) > static_cast<size_t>(0)) ? tp / static_cast<double>(tp + fp) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::negativePredictiveValue(size_t fn, size_t tn)
+template<typename T>
+auto Curve<T>::negativePredictiveValue(size_t fn, size_t tn) -> double
 {
     return (fn + tn > static_cast<size_t>(0)) ? tn / static_cast<double>(fn + tn) : -1;
 }
 
-template<typename T> inline
-double Curve<T>::accuracy(size_t tp, size_t tn, size_t positives, size_t negatives)
+template<typename T>
+auto Curve<T>::accuracy(size_t tp, size_t tn, size_t positives, size_t negatives) -> double
 {
 
     return (positives + negatives) ?
@@ -488,7 +487,7 @@ PRCurve<T>::PRCurve(const std::vector<std::pair<T, int>> &data)
 {
 }
 
-template<typename T> inline
+template<typename T>
 void PRCurve<T>::compute(size_t steeps)
 {
     TL_TODO("para enteros habria que especializar la plantilla")
@@ -507,12 +506,12 @@ void PRCurve<T>::compute(size_t steeps)
 
     for (size_t i = 0; i < steeps; i++) {
 
-        std::map<typename PRCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
+        auto confussion_matrix = this->confusionMatrix(threshold);
 
-        double recall = this->truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives],
-                                               confussionMatrix[PRCurve<T>::Classification::false_negatives]);
-        double precision = this->positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
-                                                         confussionMatrix[PRCurve<T>::Classification::false_positives]);
+        double recall = this->truePositiveRate(confussion_matrix[PRCurve<T>::Classification::true_positives],
+                                               confussion_matrix[PRCurve<T>::Classification::false_negatives]);
+        double precision = this->positivePredictiveValue(confussion_matrix[PRCurve<T>::Classification::true_positives],
+                                                         confussion_matrix[PRCurve<T>::Classification::false_positives]);
         this->mCurve.emplace_back(recall, precision);
         threshold += step;
     }
@@ -534,7 +533,7 @@ void PRCurve<T>::compute(size_t steeps)
 
 }
 
-template<typename T> inline
+template<typename T>
 void PRCurve<T>::compute()
 {
     if (this->mData.empty()) return;
@@ -543,7 +542,7 @@ void PRCurve<T>::compute()
 
     for (auto &data : this->mData) {
 
-        std::map<typename PRCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
+        auto confussionMatrix = this->confusionMatrix(data.first);
 
         double recall = this->truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives],
                                                confussionMatrix[PRCurve<T>::Classification::false_negatives]);
@@ -581,7 +580,7 @@ ROCCurve<T>::ROCCurve(const std::vector<std::pair<T, int>> &data)
 {
 }
 
-template<typename T> inline
+template<typename T>
 void ROCCurve<T>::compute(size_t steeps)
 {
     TL_TODO("para enteros habria que especializar la plantilla")
@@ -596,11 +595,11 @@ void ROCCurve<T>::compute(size_t steeps)
     T threshold = min;
     for (size_t i = 0; i < steeps; i++) {
 
-        std::map<typename ROCCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
-        double fpr = this->falsePositiveRate(confussionMatrix[ROCCurve<T>::Classification::false_positives],
-                                             confussionMatrix[ROCCurve<T>::Classification::true_negatives]);
-        double tpr = this->truePositiveRate(confussionMatrix[ROCCurve<T>::Classification::true_positives],
-                                            confussionMatrix[ROCCurve<T>::Classification::false_negatives]);
+        auto confussion_matrix = this->confusionMatrix(threshold);
+        double fpr = this->falsePositiveRate(confussion_matrix[ROCCurve<T>::Classification::false_positives],
+                                             confussion_matrix[ROCCurve<T>::Classification::true_negatives]);
+        double tpr = this->truePositiveRate(confussion_matrix[ROCCurve<T>::Classification::true_positives],
+                                            confussion_matrix[ROCCurve<T>::Classification::false_negatives]);
         this->mCurve.emplace_back(fpr, tpr);
         threshold += step;
     }
@@ -622,7 +621,7 @@ void ROCCurve<T>::compute(size_t steeps)
     }
 }
 
-template<typename T> inline
+template<typename T>
 void ROCCurve<T>::compute()
 {
     if (this->mData.empty()) return;
@@ -630,11 +629,12 @@ void ROCCurve<T>::compute()
     this->mCurve.resize(0);
 
     for (auto &data : this->mData) {
-        std::map<typename ROCCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
-        double fpr = this->falsePositiveRate(confussionMatrix[ROCCurve<T>::Classification::false_positives],
-                                             confussionMatrix[ROCCurve<T>::Classification::true_negatives]);
-        double tpr = this->truePositiveRate(confussionMatrix[ROCCurve<T>::Classification::true_positives],
-                                            confussionMatrix[ROCCurve<T>::Classification::false_negatives]);
+
+        auto confussion_matrix = this->confusionMatrix(data.first);
+        double fpr = this->falsePositiveRate(confussion_matrix[ROCCurve<T>::Classification::false_positives],
+                                             confussion_matrix[ROCCurve<T>::Classification::true_negatives]);
+        double tpr = this->truePositiveRate(confussion_matrix[ROCCurve<T>::Classification::true_positives],
+                                            confussion_matrix[ROCCurve<T>::Classification::false_negatives]);
         this->mCurve.emplace_back(fpr, tpr);
     }
 
@@ -666,7 +666,7 @@ DETCurve<T>::DETCurve(const std::vector<std::pair<T, int>> &data)
 {
 }
 
-template<typename T> inline
+template<typename T>
 void DETCurve<T>::compute(size_t steeps)
 {
     TL_TODO("para enteros habría que especializar la plantilla")
@@ -683,11 +683,11 @@ void DETCurve<T>::compute(size_t steeps)
     T threshold = min;
     for (size_t i = 0; i < steeps; i++) {
 
-        std::map<typename DETCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(threshold);
-        double fpr = this->falsePositiveRate(confussionMatrix[DETCurve<T>::Classification::false_positives],
-                                             confussionMatrix[DETCurve<T>::Classification::true_negatives]);
-        double fnr = this->falseNegativeRate(confussionMatrix[DETCurve<T>::Classification::false_negatives],
-                                             confussionMatrix[DETCurve<T>::Classification::true_positives]);
+        auto confussion_matrix = this->confusionMatrix(threshold);
+        double fpr = this->falsePositiveRate(confussion_matrix[DETCurve<T>::Classification::false_positives],
+                                             confussion_matrix[DETCurve<T>::Classification::true_negatives]);
+        double fnr = this->falseNegativeRate(confussion_matrix[DETCurve<T>::Classification::false_negatives],
+                                             confussion_matrix[DETCurve<T>::Classification::true_positives]);
         this->mCurve.emplace_back(fpr, fnr);
         threshold += step;
     }
@@ -708,7 +708,7 @@ void DETCurve<T>::compute(size_t steeps)
     //}
 }
 
-template<typename T> inline
+template<typename T>
 void DETCurve<T>::compute()
 {
     if (this->mData.empty()) return;
@@ -716,11 +716,11 @@ void DETCurve<T>::compute()
     this->mCurve.resize(0);
 
     for (auto &data : this->mData) {
-        std::map<typename DETCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
-        double fpr = this->falsePositiveRate(confussionMatrix[DETCurve<T>::Classification::false_positives],
-                                             confussionMatrix[DETCurve<T>::Classification::true_negatives]);
-        double fnr = this->falseNegativeRate(confussionMatrix[DETCurve<T>::Classification::false_negatives],
-                                             confussionMatrix[DETCurve<T>::Classification::true_positives]);
+        auto confussion_matrix = this->confusionMatrix(data.first);
+        double fpr = this->falsePositiveRate(confussion_matrix[DETCurve<T>::Classification::false_positives],
+                                             confussion_matrix[DETCurve<T>::Classification::true_negatives]);
+        double fnr = this->falseNegativeRate(confussion_matrix[DETCurve<T>::Classification::false_negatives],
+                                             confussion_matrix[DETCurve<T>::Classification::true_positives]);
         this->mCurve.emplace_back(fpr, fnr);
     }
 

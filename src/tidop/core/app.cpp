@@ -25,7 +25,6 @@
 #include "tidop/core/app.h"
 
 #include "tidop/core/console/console.h"
-#include "tidop/core/msg/handler.h"
 #include "tidop/core/log.h"
 
 #ifdef TL_OS_LINUX

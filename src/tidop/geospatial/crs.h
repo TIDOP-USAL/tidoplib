@@ -95,16 +95,16 @@ public:
      * \brief Devuelve el código EPSG del sistema de referencia
      * \return
      */
-    std::string epsgCode() const;
+    auto epsgCode() const -> std::string;
     void setEpsgCode(const std::string &epsg);
-    std::string toProjFormat() const;
+    auto toProjFormat() const -> std::string;
     void fromProjFormat(const std::string &proj);
-    std::string toWktFormat() const;
+    auto toWktFormat() const -> std::string;
     void fromWktFormat(const std::string &wkt);
 
-    bool isGeocentric() const;
-    bool isGeographic() const;
-    bool isValid() const;
+    auto isGeocentric() const -> bool;
+    auto isGeographic() const -> bool;
+    auto isValid() const -> bool;
 
 protected:
 

@@ -144,15 +144,15 @@ Size<T>::Size(const Size &size)
 {
 }
 
-template<typename T> 
-inline Size<T>::Size(Size &&size) TL_NOEXCEPT
+template<typename T>
+Size<T>::Size(Size &&size) TL_NOEXCEPT
   : width(size.width),
     height(size.height)
 {
 }
 
-template<typename T> 
-inline auto Size<T>::operator = (const Size &size) -> Size<T>&
+template<typename T>
+auto Size<T>::operator = (const Size &size) -> Size<T>&
 {
     if (this != &size) {
         this->width = size.width;
@@ -163,7 +163,7 @@ inline auto Size<T>::operator = (const Size &size) -> Size<T>&
 }
 
 template<typename T>
-inline auto Size<T>::operator = (Size &&size) TL_NOEXCEPT -> Size<T>&
+auto Size<T>::operator = (Size &&size) TL_NOEXCEPT -> Size<T>&
 {
     if (this != &size) {
         this->width = size.width;
@@ -174,18 +174,18 @@ inline auto Size<T>::operator = (Size &&size) TL_NOEXCEPT -> Size<T>&
 }
 
 template<typename T>
-inline auto Size<T>::isEmpty() const -> bool
+auto Size<T>::isEmpty() const -> bool
 {
     return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
-inline auto Size<T>::isValid() const -> bool
+auto Size<T>::isValid() const -> bool
 {
     return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
-template<typename T> template<typename T2> inline
+template<typename T> template<typename T2>
 Size<T>::operator Size<T2>() const
 {
     Size<T2> size;
@@ -196,21 +196,21 @@ Size<T>::operator Size<T2>() const
     return size;
 }
 
-template<typename T> static inline
+template<typename T>
 bool operator == (const Size<T> &size1, const Size<T> &size2)
 {
     return (size1.width == size2.width &&
             size1.height == size2.height);
 }
 
-template<typename T> static inline
+template<typename T>
 bool operator != (const Size<T> &size1, const Size<T> &size2)
 {
     return (size1.width != size2.width ||
             size1.height != size2.height);
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> &operator += (Size<T> &size1, const Size<T> &size2)
 {
     size1.width += size2.width;
@@ -219,7 +219,7 @@ Size<T> &operator += (Size<T> &size1, const Size<T> &size2)
     return size1;
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> &operator -= (Size<T> &size1, const Size<T> &size2)
 {
     size1.width -= size2.width;
@@ -228,28 +228,28 @@ Size<T> &operator -= (Size<T> &size1, const Size<T> &size2)
     return size1;
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> operator + (const Size<T> &size1, const Size<T> &size2)
 {
     return Size<T>(size1.width + size2.width,
                    size1.height + size2.height);
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
 {
     return Size<T>(size1.width - size2.width,
                    size1.height - size2.height);
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> operator * (const Size<T> &size, T scalar)
 {
     return Size<T>(size.width * scalar,
                    size.height * scalar);
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> &operator *= (Size<T> &size, T scalar)
 {
     size.width *= scalar;
@@ -258,7 +258,7 @@ Size<T> &operator *= (Size<T> &size, T scalar)
     return size;
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> &operator /= (Size<T> &size, T scalar)
 {
     size.width /= scalar;
@@ -267,7 +267,7 @@ Size<T> &operator /= (Size<T> &size, T scalar)
     return size;
 }
 
-template<typename T> static inline
+template<typename T>
 Size<T> operator / (const Size<T> &size, T scalar)
 {
     return Size<T>(size.width / scalar,

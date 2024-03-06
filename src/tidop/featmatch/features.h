@@ -195,7 +195,7 @@ class TL_EXPORT Agast
 
 public:
 
-    Agast() : FeatureBase(Feature::Type::agast) {}
+    Agast() : FeatureBase(Type::agast) {}
     ~Agast() override = default;
 
     /*!
@@ -1418,7 +1418,7 @@ public:
 
     /*!
      * \brief compute orientation of features
-     * \param[in] rotatedFeatures false for compute orientation
+     * \param[in] upright false for compute orientation
      */
     virtual void setUpright(bool upright) = 0;
 

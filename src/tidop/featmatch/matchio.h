@@ -122,8 +122,8 @@ private:
 public:
 
     TL_DEPRECATED("create", "2.1")
-    static auto createReader(const tl::Path &file) -> std::unique_ptr<MatchesReader>;
-    static auto create(const tl::Path &file) -> std::unique_ptr<MatchesReader>;
+    static auto createReader(const Path &file) -> std::unique_ptr<MatchesReader>;
+    static auto create(const Path &file) -> std::unique_ptr<MatchesReader>;
 };
 
 
@@ -142,8 +142,8 @@ private:
 public:
 
     TL_DEPRECATED("create", "2.1")
-    static auto createWriter(const tl::Path &file) -> std::unique_ptr<MatchesWriter>;
-    static auto create(const tl::Path &file) -> std::unique_ptr<MatchesWriter>;
+    static auto createWriter(const Path &file) -> std::unique_ptr<MatchesWriter>;
+    static auto create(const Path &file) -> std::unique_ptr<MatchesWriter>;
 };
 
 

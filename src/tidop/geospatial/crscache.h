@@ -58,62 +58,20 @@ private:
 
 public:
 
-    /*!
-     * \brief Allocator
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::allocator_type allocator_type;
-    
-    /*!
-     * \brief value_type
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::value_type value_type;
-    
-    /*!
-     * \brief Tipo entero sin signo (por lo general size_t) 
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::size_type size_type;
-    
-    /*!
-     * \brief Tipo entero con signo (por lo general ptrdiff_t)
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::difference_type difference_type;
-    
-    /*!
-     * \brief std::allocator_traits<Allocator>::pointer
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::pointer pointer;
-    
-    /*!
-     * \brief std::allocator_traits<Allocator>::const_pointer 
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::const_pointer const_pointer;
-    
-    /*!
-     * \brief value_type&
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::reference reference;
-    
-    /*!
-     * \brief const value_type&
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::const_reference const_reference;
-    
-    /*!
-     * \brief Iterador de acceso aleatorio
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::iterator iterator;
-    
-    /*!
-     * \brief Iterador constante de acceso aleatorio
-     */
-    typedef std::vector<std::shared_ptr<Crs>>::const_iterator const_iterator;
+    using allocator_type = std::vector<std::shared_ptr<Crs>>::allocator_type;
+    using value_type = std::vector<std::shared_ptr<Crs>>::value_type;
+    using size_type = std::vector<std::shared_ptr<Crs>>::size_type;
+    using difference_type = std::vector<std::shared_ptr<Crs>>::difference_type;
+    using pointer = std::vector<std::shared_ptr<Crs>>::pointer;
+    using const_pointer = std::vector<std::shared_ptr<Crs>>::const_pointer;
+    using reference = std::vector<std::shared_ptr<Crs>>::reference;
+    using const_reference = std::vector<std::shared_ptr<Crs>>::const_reference;
+    using iterator = std::vector<std::shared_ptr<Crs>>::iterator;
+    using const_iterator = std::vector<std::shared_ptr<Crs>>::const_iterator;
     
 
 private:
 
-    /*!
-     * \brief Constructor privado
-     */
     CrsCache();
 
 public:
@@ -148,7 +106,7 @@ public:
      * \brief Devuelve el tamaño reservado para la cache
      * \return Numero de elementos almacenados
      */
-    size_t capacity() const;
+    auto capacity() const -> size_t;
     
     /*!
      * \brief Limpia el cache de sistemas de referencia
@@ -159,13 +117,13 @@ public:
      * \brief Devuelve el numero de elementos del buffer
      * \return Numero de elementos almacenados
      */
-    size_t size() const;
+    auto size() const -> size_t;
     
     /*!
      * \brief Comprueba si la cache esta llena
      * \return Verdadero si la cache esta llena
      */
-    bool isCacheFull() const;
+    auto isCacheFull() const -> bool;
     
     //std::shared_ptr<Crs> crs();
     
@@ -173,13 +131,13 @@ public:
      * \brief Devuelve un iterador al inicio del contenedor
      * \return Iterador al primer elemento
      */
-    virtual iterator begin();
+    virtual auto begin() -> iterator;
     
     /*!
      * \brief Devuelve un iterador constante al inicio del contenedor
      * \return Iterador al primer elemento
      */
-    virtual const_iterator begin() const;
+    virtual auto begin() const -> const_iterator;
     
     /*!
      * \brief Devuelve un iterador al siguiente elemento después del final del contenedor
@@ -199,19 +157,19 @@ public:
      * \brief Devuelve una referencia constante al elemento de la posición indicada
      * return Referencia constante al elemento
      */
-    const_reference at(size_type position) const;
+    auto at(size_type position) const -> const_reference;
     
     /*!
      * \brief Devuelve una referencia al elemento de la posición indicada
      * return Referencia al elemento
      */
-    reference at(size_type position);
+    auto at(size_type position) -> reference;
     
     /*!
      * \brief Comprueba si el cache de sistemas de referencia esta vacio
      * \return true si el cache de sistemas de referencia está vacío y false en caso contrario
      */
-    bool empty() const;
+    auto empty() const -> bool;
     
     /*!
      * \brief Establece el tamaño de la cache de sistemas de referencia

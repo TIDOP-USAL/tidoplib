@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     console.setTitle(cmd_name);
     console.setConsoleUnicode();
     console.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
 
     Command cmd(cmd_name, "Ejemplo de transformación de coordenadas");
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
         Log &log = App::log();
         log.setMessageLevel(MessageLevel::all);
         log.open(log_file);
-        Message::instance().addMessageHandler(&log);
+        Message::addMessageHandler(&log);
     }
 
     try {

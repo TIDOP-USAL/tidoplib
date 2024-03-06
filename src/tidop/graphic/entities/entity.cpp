@@ -37,8 +37,7 @@ namespace tl
 
 
 GraphicEntity::GraphicEntity(Type type)
-  : GraphicStyle(),
-    //GData(),
+  : //GData(),
     mEntityType(type)
 {
 }
@@ -53,11 +52,7 @@ GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
 GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
   : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
     //GData(std::forward<GData>(graphicEntity)),
-    mEntityType(std::move(graphicEntity.mEntityType))
-{
-}
-
-GraphicEntity::~GraphicEntity()
+    mEntityType(graphicEntity.mEntityType)
 {
 }
 
@@ -68,6 +63,7 @@ GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
         //GData::operator=(graphicEntity);
         mEntityType = graphicEntity.mEntityType;
     }
+
     return *this;
 }
 
@@ -76,8 +72,9 @@ GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEX
     if (this != &graphicEntity) {
         GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
         //GData::operator=(std::forward<GData>(graphicEntity));
-        mEntityType = std::move(graphicEntity.mEntityType);
+        mEntityType = graphicEntity.mEntityType;
     }
+
     return *this;
 }
 

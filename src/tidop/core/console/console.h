@@ -107,9 +107,9 @@ public:
 
 private:
 
-    std::ostream &_stream;
+    std::ostream &outputStream;
     static std::mutex mtx;
-    static EnumFlags<MessageLevel> messageLevelFlags;
+    EnumFlags<MessageLevel> messageLevelFlags;
     int foregroundColor;
     int backgroundColor;
     int fontBold;
@@ -127,8 +127,6 @@ private:
     Console();
 
 public:
-
-    ~Console() = default;
 
     static Console &instance();
 
@@ -150,7 +148,7 @@ public:
                             Intensity intensity = Intensity::normal);
     
     /*!
-     * \brief Sets the foregroun colour
+     * \brief Sets the foreground colour
      * \param[in] foregroundColor Foreground colour
      * \param[in] intensity Colour intensity. The default value is Intensity::normal
      * \see Console::Color, Console::Intensity
@@ -197,7 +195,7 @@ public:
     template<typename T>
     Console &operator <<(T value)
     {
-	    _stream << value;
+	    outputStream << value;
 	    return *this;
     }
 
@@ -206,7 +204,7 @@ public:
      * \return Flag with message levels activated
      * \see EnumFlags
      */
-    static auto messageLevel() -> EnumFlags<MessageLevel>;
+    auto messageLevel() -> EnumFlags<MessageLevel>;
 
     /*!
      * \brief Sets the message level
@@ -220,7 +218,7 @@ public:
      *
      * \param[in] level Message level.
      */
-    static void setMessageLevel(MessageLevel level);
+    void setMessageLevel(MessageLevel level);
 
     static auto red(std::ostream &os) -> std::ostream &;
     static auto green(std::ostream &os) -> std::ostream &;

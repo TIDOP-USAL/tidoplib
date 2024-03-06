@@ -27,14 +27,13 @@
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 
-#include <stdexcept>
 #include <fstream>
 
 namespace tl
 {
 
 MatchesReader::MatchesReader(tl::Path file)
-    : mFilePath(std::move(file))
+  : mFilePath(std::move(file))
 {
 
 }
@@ -124,7 +123,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    bool isOpen() const;
     void readHeader();
     void readMatches(std::vector<cv::DMatch> *matches);
     void readGoodMatches();
@@ -175,7 +174,7 @@ void MatchesReaderBinary::open()
     }
 }
 
-bool MatchesReaderBinary::isOpen()
+bool MatchesReaderBinary::isOpen() const
 {
     return stream->is_open();
 }
@@ -216,7 +215,7 @@ void MatchesReaderBinary::readGoodMatches()
 {
     try {
 
-        good_matches().resize(static_cast<size_t>(goodMatchesCount));
+        good_matches().resize(goodMatchesCount);
         readMatches(&good_matches());
 
     } catch (...) {
@@ -228,7 +227,7 @@ void MatchesReaderBinary::readWrongMatches()
 {
     try {
 
-        wrong_matches().resize(static_cast<size_t>(wrongMatchesCount));
+        wrong_matches().resize(wrongMatchesCount);
         readMatches(&wrong_matches());
 
     } catch (...) {
@@ -255,7 +254,7 @@ public:
     explicit MatchesReaderOpenCV(Path file);
     ~MatchesReaderOpenCV() override;
 
-    // MatchesReader interface
+// MatchesReader interface
 
 public:
 
@@ -264,7 +263,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    bool isOpen() const;
     void readGoodMatches();
     void readWrongMatches();
     void close();
@@ -317,7 +316,7 @@ void MatchesReaderOpenCV::open()
     }
 }
 
-bool MatchesReaderOpenCV::isOpen()
+bool MatchesReaderOpenCV::isOpen() const
 {
     if (mFileStorage == nullptr) return false;
     return mFileStorage->isOpened();
@@ -510,7 +509,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    bool isOpen() const;
     void writeGoodMatches();
     void writeWrongMatches();
     void close();
@@ -570,7 +569,7 @@ void MatchesWriterOpenCV::open()
     }
 }
 
-bool MatchesWriterOpenCV::isOpen()
+bool MatchesWriterOpenCV::isOpen() const
 {
     if (mFileStorage == nullptr) return false;
     return mFileStorage->isOpened();
@@ -612,12 +611,12 @@ void MatchesWriterOpenCV::close()
 
 
 
-auto MatchesReaderFactory::createReader(const tl::Path &file) -> std::unique_ptr<MatchesReader>
+auto MatchesReaderFactory::createReader(const Path&file) -> std::unique_ptr<MatchesReader>
 {
     return MatchesReaderFactory::create(file);
 }
 
-auto MatchesReaderFactory::create(const tl::Path &file) -> std::unique_ptr<MatchesReader>
+auto MatchesReaderFactory::create(const Path&file) -> std::unique_ptr<MatchesReader>
 {
     std::unique_ptr<MatchesReader> matches_reader;
 
@@ -646,12 +645,12 @@ auto MatchesReaderFactory::create(const tl::Path &file) -> std::unique_ptr<Match
 /* ---------------------------------------------------------------------------------- */
 
 
-auto MatchesWriterFactory::createWriter(const tl::Path &file) -> std::unique_ptr<MatchesWriter>
+auto MatchesWriterFactory::createWriter(const Path&file) -> std::unique_ptr<MatchesWriter>
 {
     return MatchesWriterFactory::create(file);
 }
 
-auto MatchesWriterFactory::create(const tl::Path &file) -> std::unique_ptr<MatchesWriter>
+auto MatchesWriterFactory::create(const Path&file) -> std::unique_ptr<MatchesWriter>
 {
     std::unique_ptr<MatchesWriter> matches_writer;
 

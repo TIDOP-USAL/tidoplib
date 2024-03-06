@@ -29,8 +29,7 @@ namespace tl
 
 
 GPoint::GPoint()
-  : Point<double>(),
-    GraphicEntity(GraphicEntity::Type::point_2d)
+  : GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
@@ -62,7 +61,7 @@ GPoint::~GPoint()
 {
 }
 
-GPoint &GPoint::operator = (const GPoint &gPoint)
+auto GPoint::operator =(const GPoint& gPoint) -> GPoint&
 {
     if (this != &gPoint) {
         Point<double>::operator=(gPoint);
@@ -71,7 +70,7 @@ GPoint &GPoint::operator = (const GPoint &gPoint)
     return *this;
 }
 
-GPoint &GPoint::operator =(GPoint &&gPoint) TL_NOEXCEPT
+auto GPoint::operator =(GPoint&& gPoint) TL_NOEXCEPT -> GPoint&
 {
     if (this != &gPoint) {
         Point<double>::operator=(std::forward<Point<double>>(gPoint));
@@ -80,12 +79,12 @@ GPoint &GPoint::operator =(GPoint &&gPoint) TL_NOEXCEPT
     return *this;
 }
 
-bool GPoint::isMultiEntity() const
+auto GPoint::isMultiEntity() const -> bool
 {
     return false;
 }
 
-bool GPoint::isSimpleEntity() const
+auto GPoint::isSimpleEntity() const -> bool
 {
     return true;
 }
@@ -96,8 +95,7 @@ bool GPoint::isSimpleEntity() const
 
 
 GPoint3D::GPoint3D()
-  : Point3<double>(),
-    GraphicEntity(GraphicEntity::Type::point_3d)
+  : GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
@@ -129,7 +127,7 @@ GPoint3D::~GPoint3D()
 {
 }
 
-GPoint3D &GPoint3D::operator = (const GPoint3D &gPoint)
+auto GPoint3D::operator =(const GPoint3D& gPoint) -> GPoint3D&
 {
     if (this != &gPoint) {
         Point3<double>::operator=(gPoint);
@@ -138,7 +136,7 @@ GPoint3D &GPoint3D::operator = (const GPoint3D &gPoint)
     return *this;
 }
 
-GPoint3D &GPoint3D::operator =(GPoint3D &&gPoint) TL_NOEXCEPT
+auto GPoint3D::operator =(GPoint3D&& gPoint) TL_NOEXCEPT -> GPoint3D&
 {
     if (this != &gPoint) {
         Point3<double>::operator=(std::forward<Point3<double>>(gPoint));
@@ -147,12 +145,12 @@ GPoint3D &GPoint3D::operator =(GPoint3D &&gPoint) TL_NOEXCEPT
     return *this;
 }
 
-bool GPoint3D::isMultiEntity() const
+auto GPoint3D::isMultiEntity() const -> bool
 {
     return false;
 }
 
-bool GPoint3D::isSimpleEntity() const
+auto GPoint3D::isSimpleEntity() const -> bool
 {
     return true;
 }
@@ -162,8 +160,7 @@ bool GPoint3D::isSimpleEntity() const
 
 
 GMultiPoint::GMultiPoint()
-  : MultiPoint<Point<double>>(),
-    GraphicEntity(GraphicEntity::Type::multipoint_2d)
+  : GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
@@ -183,7 +180,7 @@ GMultiPoint::~GMultiPoint()
 {
 }
 
-GMultiPoint &GMultiPoint::operator = (const GMultiPoint &gMultiPoint)
+auto GMultiPoint::operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint&
 {
     if (this != &gMultiPoint) {
         MultiPoint<Point<double>>::operator=(gMultiPoint);
@@ -192,12 +189,12 @@ GMultiPoint &GMultiPoint::operator = (const GMultiPoint &gMultiPoint)
     return *this;
 }
 
-bool GMultiPoint::isMultiEntity() const
+auto GMultiPoint::isMultiEntity() const -> bool
 {
     return true;
 }
 
-bool GMultiPoint::isSimpleEntity() const
+auto GMultiPoint::isSimpleEntity() const -> bool
 {
     return false;
 }
@@ -208,8 +205,7 @@ bool GMultiPoint::isSimpleEntity() const
 
 
 GMultiPoint3D::GMultiPoint3D()
-  : MultiPoint3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::multipoint_3d)
+  : GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
@@ -229,7 +225,7 @@ GMultiPoint3D::~GMultiPoint3D()
 {
 }
 
-GMultiPoint3D &GMultiPoint3D::operator = (const GMultiPoint3D &gMultiPoint3D)
+auto GMultiPoint3D::operator =(const GMultiPoint3D& gMultiPoint3D) -> GMultiPoint3D&
 {
     if (this != &gMultiPoint3D) {
         MultiPoint3D<Point3<double>>::operator=(gMultiPoint3D);
@@ -238,12 +234,12 @@ GMultiPoint3D &GMultiPoint3D::operator = (const GMultiPoint3D &gMultiPoint3D)
     return *this;
 }
 
-bool GMultiPoint3D::isMultiEntity() const
+auto GMultiPoint3D::isMultiEntity() const -> bool
 {
     return true;
 }
 
-bool GMultiPoint3D::isSimpleEntity() const
+auto GMultiPoint3D::isSimpleEntity() const -> bool
 {
     return false;
 }

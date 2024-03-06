@@ -46,7 +46,7 @@ constexpr auto agast_default_value_detector_type{"OAST_9_16"};
 
 
 class TL_EXPORT AgastProperties
-    : public Agast
+  : public Agast
 {
 
 private:

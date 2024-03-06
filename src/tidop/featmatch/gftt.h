@@ -41,7 +41,7 @@ namespace tl
 
 
 class TL_EXPORT GfttProperties
-    : public Gftt
+  : public Gftt
 {
 
 private:

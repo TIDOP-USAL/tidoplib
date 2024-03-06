@@ -46,13 +46,11 @@ namespace internal
 
 template<typename T>
 class ArgValue
-
 {
 
 public:
 
     ArgValue(/* args */) {}
-    ~ArgValue() {}
 
     T value(const Argument::SharedPtr &arg);
 };
@@ -60,8 +58,9 @@ public:
 template<typename T> inline
 T ArgValue<T>::value(const Argument::SharedPtr &arg)
 {
-    Argument::Type type = arg->type();
-    Argument::Type return_type = ArgTraits<T>::property_type;
+    auto type = arg->type();
+    auto return_type = ArgTraits<T>::property_type;
+
     if (type != return_type) {
         TL_ASSERT(type != Argument::Type::arg_string,
                   "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
@@ -74,7 +73,6 @@ T ArgValue<T>::value(const Argument::SharedPtr &arg)
     switch(type) {
     case Argument::Type::arg_unknown:
         TL_THROW_EXCEPTION("Unknown argument type");
-        break;
     case Argument::Type::arg_bool:
         value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
         break;
@@ -112,12 +110,12 @@ T ArgValue<T>::value(const Argument::SharedPtr &arg)
 template<> inline
 std::string ArgValue<std::string>::value(const Argument::SharedPtr &arg)
 {
-     Argument::Type type = arg->type();
-     Argument::Type return_type = ArgTraits<std::string>::property_type;
-     TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
-               "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
-     std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
-     return value;
+	const auto type = arg->type();
+    constexpr auto return_type = ArgTraits<std::string>::property_type;
+    TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
+              "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
+    std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
+    return value;
 }
 
 } // namespace internal 
@@ -219,6 +217,11 @@ public:
      * \brief Copy constructor
      */
     Command(const Command &command);
+
+	/*!
+     * \brief Move constructor
+     */
+    Command(Command &&command) TL_NOEXCEPT;
 
     /*!
      * \brief Constructor
@@ -424,14 +427,14 @@ public:
 
 public:
 
-    static auto create(std::string name,
-                       std::string description) TL_NOEXCEPT -> std::shared_ptr<Command>
+    static auto create(const std::string &name,
+                       const std::string &description) TL_NOEXCEPT -> std::shared_ptr<Command>
     {
         return std::make_shared<Command>(name, description);
     }
 
-    static auto create(std::string name,
-                       std::string description,
+    static auto create(const std::string &name,
+                       const std::string &description,
                        std::initializer_list<Argument::SharedPtr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
     {
         return std::make_shared<Command>(name, description, arguments);
@@ -502,7 +505,7 @@ public:
      * \brief Constructor with argument list
      * \param[in] name Command name
      * \param[in] description Command description
-     * \param[in] arguments Argument list
+     * \param[in] commands Argument list
      */
     CommandList(std::string name,
                 std::string description,

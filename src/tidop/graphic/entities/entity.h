@@ -26,7 +26,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
 #include <array>
 #include <memory>
 
@@ -73,7 +72,6 @@ public:
         return *this;
     }
 
-private:
 
 };
 
@@ -84,8 +82,8 @@ private:
  * \see GraphicStyle, GData
  */
 class TL_EXPORT GraphicEntity
-    : public GraphicStyle/*,
-      public GData*/
+  : public GraphicStyle/*,
+    public GData*/
 {
 
 public:
@@ -115,61 +113,6 @@ public:
         ellipse                     /*!< Elipse */
     };
 
-
-public:
-
-    /*!
-     * \brief GraphicEntity
-     * \param type
-     */
-    GraphicEntity(Type type);
-
-    /*!
-     * \brief Constructor de copia
-     * \param graphicEntity Entidad gráfica que se copia
-     */
-    GraphicEntity(const GraphicEntity &graphicEntity);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param graphicEntity Entidad gráfica que se mueve
-     */
-    GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
-
-    virtual ~GraphicEntity();
-
-    /*!
-     * \brief Operador de asignación
-     * \param graphicEntity Entidad gráfica que se asigna
-     */
-    GraphicEntity &operator = (const GraphicEntity &graphicEntity);
-
-    /*!
-     * \brief Operador de asignación de movimiento
-     * \param graphicEntity Entidad gráfica que se mueve
-     */
-    GraphicEntity &operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT;
-
-    /*!
-     * \brief Devuelve el tipo de entidad
-     */
-    Type type() const;
-
-    /*!
-     * \brief Multi-entidad
-     * \return
-     */
-    virtual bool isMultiEntity() const = 0;
-
-    /*!
-     * \brief Entidad simple
-     * \return
-     */
-    virtual bool isSimpleEntity() const = 0;
-
-    std::shared_ptr<TableRegister> data() const;
-    void setData(std::shared_ptr<TableRegister> &data);
-
 protected:
 
     /*!
@@ -179,9 +122,39 @@ protected:
     Type mEntityType;
 
     std::shared_ptr<TableRegister> mData;
+
+public:
+
+    explicit GraphicEntity(Type type);
+    GraphicEntity(const GraphicEntity &graphicEntity);
+    GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
+
+    ~GraphicEntity() override = default;;
+
+    auto operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&;
+    auto operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&;
+
+    /*!
+     * \brief Returns the entity type
+     */
+    auto type() const -> Type;
+
+    /*!
+     * \brief Check if it is a Multi-entity
+     */
+    virtual auto isMultiEntity() const -> bool = 0;
+
+    /*!
+     * \brief Check if it is a simple entity
+     */
+    virtual auto isSimpleEntity() const -> bool = 0;
+
+    auto data() const -> std::shared_ptr<TableRegister>;
+    void setData(std::shared_ptr<TableRegister> &data);
+
 };
 
 
-/*! \} */ // Fin GraphicEntities
+/*! \} */ // End GraphicEntities
 
-} // Fin namespace tl
+} // End namespace tl

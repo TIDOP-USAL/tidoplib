@@ -41,8 +41,7 @@ namespace tl
 {
 
 MsdProperties::MsdProperties()
-  : Msd(),
-    mThresholdSaliency(250),
+  : mThresholdSaliency(250),
     mPatchRadius(3),
     mKNN(4),
     mAreaRadius(5),
@@ -87,10 +86,7 @@ MsdProperties::MsdProperties(MsdProperties &&msd) TL_NOEXCEPT
 {
 }
 
-MsdProperties::~MsdProperties()
-{
-
-}
+MsdProperties::~MsdProperties() = default;
 
 auto MsdProperties::operator =(const MsdProperties &msd) -> MsdProperties&
 {
@@ -264,8 +260,7 @@ std::string MsdProperties::name() const
 
 
 MsdDetector::MsdDetector()
-    : MsdProperties(),
-    KeypointDetector()
+  : KeypointDetector()
 {
 #if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1) || !defined HAVE_OPENCV_XFEATURES2D
     mMSD = std::make_shared<::MsdDetector>();
@@ -285,8 +280,7 @@ MsdDetector::MsdDetector(double thresholdSaliency,
                          bool computeOrientations,
                          bool affineMSD,
                          int affineTilts)
-  : MsdProperties(),
-    KeypointDetector()
+  : KeypointDetector()
 {
 #if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)  || !defined HAVE_OPENCV_XFEATURES2D
     mMSD = std::make_shared<::MsdDetector>();
@@ -307,10 +301,7 @@ MsdDetector::MsdDetector(double thresholdSaliency,
     update();
 }
 
-MsdDetector::~MsdDetector()
-{
-
-}
+MsdDetector::~MsdDetector() = default;
 
 void MsdDetector::update()
 {
@@ -339,13 +330,13 @@ void MsdDetector::update()
 
 auto MsdDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
-    std::vector<cv::KeyPoint> keyPoints;
+    std::vector<cv::KeyPoint> key_points;
 
     try {
 
 #if (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1)) && defined HAVE_OPENCV_XFEATURES2D
 
-        mMSD->detect(img, keyPoints, mask);
+        mMSD->detect(img, key_points, mask);
 
 #else
     tl::unusedParameter(mask);
@@ -381,7 +372,7 @@ auto MsdDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vecto
                             if (kps[i].pt.y > maxY) {
                                 maxY = kps[i].pt.y;
                             }
-                            keyPoints.push_back(kps[i]);
+                            key_points.push_back(kps[i]);
                         }
                         kpt_t.release();
                     }
@@ -397,7 +388,7 @@ auto MsdDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vecto
 
             cv::Mat img2;
             img.copyTo(img2);
-            keyPoints = mMSD->detect(img2);
+            key_points = mMSD->detect(img2);
 
         }
 
@@ -407,7 +398,7 @@ auto MsdDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vecto
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
-    return keyPoints;
+    return key_points;
 }
 
 #if (CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)) || !defined HAVE_OPENCV_XFEATURES2D

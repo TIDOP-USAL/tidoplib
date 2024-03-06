@@ -25,7 +25,6 @@
 #include "tidop/core/path.h"
 
 #include "tidop/core/console.h"
-#include "tidop/core/exception.h"
 
 // filesystem
 #if (CPP_VERSION >= 17)

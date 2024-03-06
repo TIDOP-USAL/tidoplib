@@ -898,9 +898,7 @@ public:
     /*!
      * \brief Destructora
      */
-    ~GraphicStyle()
-    {
-    }
+    virtual ~GraphicStyle() = default;
 
     /*!
      * \brief Estilo de pluma

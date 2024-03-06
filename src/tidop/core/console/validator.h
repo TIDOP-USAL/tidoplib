@@ -33,7 +33,6 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
-#include "tidop/core/path.h"
 #include "tidop/core/msg/message.h"
 
 
@@ -66,7 +65,7 @@ class ValidatorBase
 public:
 
     ValidatorBase() = default;
-    virtual ~ValidatorBase() = default;
+    ~ValidatorBase() override = default;
 
     virtual bool validate(T value) = 0;
 };
@@ -84,8 +83,8 @@ public:
  * \endcode
  */
 template <typename T>
-class RangeValidator
-    : public ValidatorBase<T>
+class RangeValidator final
+  : public ValidatorBase<T>
 {
 
 public:
@@ -152,7 +151,7 @@ public:
         return mMax;
     }
 
-    void print() const
+    void print() const override
     {
         std::cout << "Valid range [" << mMin << " - " << mMax << "]";
     }
@@ -181,8 +180,8 @@ private:
  * \endcode
  */
 template <typename T>
-class ValuesValidator
-    : public ValidatorBase<T>
+class ValuesValidator final
+  : public ValidatorBase<T>
 {
 
 public:
@@ -237,7 +236,7 @@ public:
         this->values = values;
     }
 
-    void print() const
+    void print() const override
     {
         std::cout << "Allowable values: [ ";
         for (const auto &values : this->values)

@@ -217,13 +217,13 @@ AkazeDetectorDescriptor::AkazeDetectorDescriptor(const std::string &descriptorTy
                                                  const std::string &diffusivity)
   : mAkaze(cv::AKAZE::create())
 {
-    setDescriptorType(descriptorType);
-    setDescriptorSize(descriptorSize);
-    setDescriptorChannels(descriptorChannels);
-    setThreshold(threshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setDiffusivity(diffusivity);
+	AkazeDetectorDescriptor::setDescriptorType(descriptorType);
+    AkazeDetectorDescriptor::setDescriptorSize(descriptorSize);
+    AkazeDetectorDescriptor::setDescriptorChannels(descriptorChannels);
+    AkazeDetectorDescriptor::setThreshold(threshold);
+    AkazeDetectorDescriptor::setOctaves(octaves);
+    AkazeDetectorDescriptor::setOctaveLayers(octaveLayers);
+    AkazeDetectorDescriptor::setDiffusivity(diffusivity);
 }
 
 auto AkazeDetectorDescriptor::operator =(const AkazeDetectorDescriptor &akazeDetectorDescriptor) -> AkazeDetectorDescriptor &

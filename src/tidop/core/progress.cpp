@@ -131,7 +131,7 @@ void ProgressBase::updateScale()
     else mScale = 100. / static_cast<double>(mMaximum - mMinimum);
 }
 
-auto ProgressBase::percent() -> int
+auto ProgressBase::percent() const -> int
 {
     return mPercent;
 }

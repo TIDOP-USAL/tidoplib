@@ -205,14 +205,14 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
             pt.x = static_cast<float>(cvRound(input.cols / 2.0));
             pt.y = static_cast<float>(cvRound(input.rows / 2.0));
         } else if ((input.cols % 4) == 0) {
-            pt.x = (input.cols / 2.0f) - 0.5f;
-            pt.y = (input.rows / 2.0f) - 0.5f;
+            pt.x = (static_cast<float>(input.cols) / 2.0f) - 0.5f;
+            pt.y = (static_cast<float>(input.rows) / 2.0f) - 0.5f;
         } else if ((input.cols % 4) == 2) {
-            pt.x = (input.cols / 2.0f) - 0.5f;
-            pt.y = (input.rows / 2.0f) - 0.5f;
+            pt.x = (static_cast<float>(input.cols) / 2.0f) - 0.5f;
+            pt.y = (static_cast<float>(input.rows) / 2.0f) - 0.5f;
         } else if ((input.cols % 4) == 3) {
-            pt.x = (input.cols / 2.0f) - 0.5f;
-            pt.y = (input.rows / 2.0f) - 0.5f;
+            pt.x = (static_cast<float>(input.cols) / 2.0f) - 0.5f;
+            pt.y = (static_cast<float>(input.rows) / 2.0f) - 0.5f;
         }
         // to calculate the scale, is the size of the keypoint between
         // the scale is related to the diagonal of both pathces

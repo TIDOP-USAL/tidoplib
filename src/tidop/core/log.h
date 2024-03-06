@@ -68,15 +68,15 @@ private:
 
     std::ofstream _stream;
     static std::mutex mtx;
-    static EnumFlags<MessageLevel> messageLevelFlags;
+    EnumFlags<MessageLevel> messageLevelFlags;
 
 private:
 
-    Log() = default;
+    Log();
 
 public:
 
-    ~Log() = default;
+    ~Log() override = default;
 
     TL_DISABLE_COPY(Log)
     TL_DISABLE_MOVE(Log)
@@ -106,7 +106,7 @@ public:
      * \return Flag with message levels activated
      * \see EnumFlags
      */
-    static auto messageLevel() -> EnumFlags<MessageLevel>;
+    auto messageLevel() -> EnumFlags<MessageLevel>;
 
     /*!
      * \brief Sets the message level
@@ -120,7 +120,7 @@ public:
      *
      * \param[in] level Message level.
      */
-    static void setMessageLevel(MessageLevel level);
+    void setMessageLevel(MessageLevel level);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 

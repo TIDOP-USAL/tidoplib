@@ -85,18 +85,16 @@ private:
 
 private:
 
-    Message(){}
+    //Message(){}
 
 public:
-   
-    ~Message() = default;
 
-    static Message &instance();
+    //static Message &instance();
 
-    void addMessageHandler(MessageHandler *messageHandler)
+    static void addMessageHandler(MessageHandler *messageHandler)
     {
         bool added = false;
-        for (auto handler : messageHandlers) {
+        for (const auto handler : messageHandlers) {
             if (handler == messageHandler) {
                 added = true;
                 break;
@@ -111,7 +109,7 @@ public:
     * \brief Pause messages
     * When activated, messages are stopped until resumeMessages is called.
     */
-    void pauseMessages()
+    static void pauseMessages()
     {
         stopHandler = true;
     }
@@ -119,7 +117,7 @@ public:
     /*!
      * \brief Resume message sending
      */
-    void resumeMessages()
+    static void resumeMessages()
     {
         stopHandler = false;
     }

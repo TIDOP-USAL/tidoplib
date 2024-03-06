@@ -79,11 +79,11 @@ protected:
 
 public:
 
-    explicit RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
-    RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
+    explicit RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+    RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
                       double ratio,
                       bool crossCheck,
-                      std::shared_ptr<GeometricTest> geometricTest);
+                      std::shared_ptr<GeometricTest> &geometricTest);
     ~RobustMatchingImp() override = default;
 
     /*!

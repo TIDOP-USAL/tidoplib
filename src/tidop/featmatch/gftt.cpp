@@ -154,27 +154,27 @@ GfttDetector::GfttDetector(int maxFeatures,
                            double k)
     : mGFTT(cv::GFTTDetector::create())
 {
-    setMaxFeatures(maxFeatures);
-    setQualityLevel(qualityLevel);
-    setMinDistance(minDistance);
-    setBlockSize(blockSize);
-    setHarrisDetector(harrisDetector);
-    setK(k);
+	GfttDetector::setMaxFeatures(maxFeatures);
+	GfttDetector::setQualityLevel(qualityLevel);
+	GfttDetector::setMinDistance(minDistance);
+	GfttDetector::setBlockSize(blockSize);
+	GfttDetector::setHarrisDetector(harrisDetector);
+	GfttDetector::setK(k);
 }
 
 auto GfttDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
-    std::vector<cv::KeyPoint> keyPoints;
+    std::vector<cv::KeyPoint> key_points;
 
     try {
 
-        mGFTT->detect(img, keyPoints, mask);
+        mGFTT->detect(img, key_points, mask);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
-    return keyPoints;
+    return key_points;
 }
 
 void GfttDetector::setMaxFeatures(int maxFeatures)

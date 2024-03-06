@@ -25,7 +25,6 @@
 #pragma once
 
 #include <limits>
-#include <numeric>
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/window.h"
@@ -105,7 +104,9 @@ public:
      * \param[in] rect Rect object to move
      */
     Rect(Rect &&rect) TL_NOEXCEPT;
-    
+
+    ~Rect() = default;
+
     /*!
      * \brief Copy assignment operator
      * \param[in] rect Rect object to copy

@@ -250,7 +250,7 @@ void FeaturesReaderBinary::close()
 
 
 class FeaturesWriterBinary
-    : public FeaturesWriter
+  : public FeaturesWriter
 {
 
 public:

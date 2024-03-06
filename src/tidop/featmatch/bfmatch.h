@@ -41,7 +41,7 @@ class TL_EXPORT BruteForceMatcherProperties
 
 private:
 
-    Norm mNormType{BruteForceMatcherProperties::Norm::l2};
+    Norm mNormType{Norm::l2};
 
 public:
 

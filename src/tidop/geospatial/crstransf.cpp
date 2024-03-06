@@ -59,7 +59,7 @@ public:
         }
     }
 
-    Point3<double> transform(const Point3<double> &ptIn)
+    auto transform(const Point3<double> &ptIn) const -> Point3<double>
     {
         Point3<double> ptOut = ptIn;
 
@@ -84,7 +84,7 @@ private:
 
 CrsTransform::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
                            const std::shared_ptr<Crs> &epsgOut)
-  : geom::Transform3D<Point3<double>>(geom::Transform::Type::crs),
+  : Transform3D<Point3<double>>(Type::crs),
     mEpsgIn(epsgIn),
     mEpsgOut(epsgOut),
     mCoordinateTransformation(nullptr),
@@ -113,17 +113,17 @@ CrsTransform::~CrsTransform()
 auto CrsTransform::compute(const std::vector<Point3<double>> &pts1,
                            const std::vector<Point3<double>> &pts2,
                            std::vector<double> *error,
-                           double *rmse) -> geom::Transform::Status
+                           double *rmse) -> Status
 {
     unusedParameter(pts1, pts2, error, rmse);
     Message::error("'compute' is not supported for CrsTransform");
     //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
-    return geom::Transform::Status::failure;
+    return Status::failure;
 }
 
 auto CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
                              std::vector<Point3<double>> &ptsOut,
-                             geom::Transform::Order trfOrder) const -> geom::Transform::Status
+                             Order trfOrder) const -> Status
 {
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
@@ -145,17 +145,17 @@ auto CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
       transform(ptsIn[i], ptsOut[i], trfOrder);
   }
 
-  return geom::Transform::Status::success;
+  return Status::success;
 }
 
 auto CrsTransform::transform(const Point3<double> &ptIn,
                              Point3<double> &ptOut,
-                             geom::Transform::Order trfOrder) const -> geom::Transform::Status
+                             Order trfOrder) const -> Status
 {
 
   try {
 
-    if (trfOrder == geom::Transform::Order::direct) {
+    if (trfOrder == Order::direct) {
       if (mCoordinateTransformation)
         ptOut = mCoordinateTransformation->transform(ptIn);
       //else
@@ -171,17 +171,17 @@ auto CrsTransform::transform(const Point3<double> &ptIn,
     TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
-  return geom::Transform::Status::success;
+  return Status::success;
 }
 
 
-auto CrsTransform::transform(const Point3<double> &ptIn, 
-                             geom::Transform::Order trfOrder) const -> Point3<double>
+auto CrsTransform::transform(const Point3<double> &ptIn,
+                             Order trfOrder) const -> Point3<double>
 {
     Point3<double> r_pt;
     try {
 
-        if (trfOrder == geom::Transform::Order::direct)
+        if (trfOrder == Order::direct)
             r_pt = mCoordinateTransformation->transform(ptIn);
         else
             r_pt = mCoordinateTransformationInv->transform(ptIn);

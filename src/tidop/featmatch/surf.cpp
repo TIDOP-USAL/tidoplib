@@ -143,11 +143,11 @@ SurfDetectorDescriptor::SurfDetectorDescriptor(double hessianThreshold,
     : mSurf(cv::xfeatures2d::SURF::create())
 #endif // HAVE_OPENCV_XFEATURES2D
 {
-    setHessianThreshold(hessianThreshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setExtendedDescriptor(extendedDescriptor);
-    setUpright(upright);
+	SurfDetectorDescriptor::setHessianThreshold(hessianThreshold);
+	SurfDetectorDescriptor::setOctaves(octaves);
+    SurfDetectorDescriptor::setOctaveLayers(octaveLayers);
+    SurfDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
+    SurfDetectorDescriptor::setUpright(upright);
 }
 
 auto SurfDetectorDescriptor::detect(const cv::Mat &img,
@@ -286,11 +286,11 @@ SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(double hessianThreshold,
 {
 #if defined HAVE_OPENCV_CUDAFEATURES2D
     mSurf = std::make_unique<cv::cuda::SURF_CUDA>();
-    setHessianThreshold(hessianThreshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setExtendedDescriptor(extendedDescriptor);
-    setUpright(upright);
+    SurfCudaDetectorDescriptor::setHessianThreshold(hessianThreshold);
+    SurfCudaDetectorDescriptor::setOctaves(octaves);
+    SurfCudaDetectorDescriptor::setOctaveLayers(octaveLayers);
+    SurfCudaDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
+    SurfCudaDetectorDescriptor::setUpright(upright);
 #endif
 }
 

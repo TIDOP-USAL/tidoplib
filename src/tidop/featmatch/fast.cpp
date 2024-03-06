@@ -97,7 +97,7 @@ FastDetector::FastDetector()
 }
 
 FastDetector::FastDetector(const FastDetector &fastDetector)
-    : FastProperties(fastDetector),
+  : FastProperties(fastDetector),
     KeypointDetector(fastDetector)
 {
     mFast = cv::FastFeatureDetector::create(FastProperties::threshold(),
@@ -110,14 +110,14 @@ FastDetector::FastDetector(int threshold,
                            const std::string &detectorType)
     : mFast(cv::FastFeatureDetector::create())
 {
-    this->setThreshold(threshold);
-    this->setNonmaxSuppression(nonmaxSuppression);
-    this->setDetectorType(detectorType);
+	FastDetector::setThreshold(threshold);
+	FastDetector::setNonmaxSuppression(nonmaxSuppression);
+	FastDetector::setDetectorType(detectorType);
 }
 
 #if CV_VERSION_MAJOR >= 4
 
-cv::FastFeatureDetector::DetectorType FastDetector::convertDetectorType(const std::string &detectorType)
+auto FastDetector::convertDetectorType(const std::string& detectorType) -> cv::FastFeatureDetector::DetectorType
 {
     cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::DetectorType::TYPE_9_16;
 
@@ -150,7 +150,7 @@ int FastDetector::convertDetectorType(const std::string &detectorType)
 }
 #endif
 
-std::vector<cv::KeyPoint> FastDetector::detect(const cv::Mat &img, cv::InputArray &mask)
+auto FastDetector::detect(const cv::Mat& img, cv::InputArray& mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -202,7 +202,7 @@ FastDetectorCuda::FastDetectorCuda()
 }
 
 FastDetectorCuda::FastDetectorCuda(const FastDetectorCuda &fastDetector)
-    : FastProperties(fastDetector),
+  : FastProperties(fastDetector),
     KeypointDetector(fastDetector)
 {
     this->update();
@@ -218,7 +218,7 @@ FastDetectorCuda::FastDetectorCuda(int threshold,
     this->update();
 }
 
-int FastDetectorCuda::convertDetectorType(const std::string &detectorType)
+auto FastDetectorCuda::convertDetectorType(const std::string& detectorType) -> int
 {
     int type = cv::FastFeatureDetector::TYPE_9_16;
 
@@ -243,7 +243,7 @@ void FastDetectorCuda::update()
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 }
 
-std::vector<cv::KeyPoint> FastDetectorCuda::detect(const cv::Mat &img, cv::InputArray &mask)
+auto FastDetectorCuda::detect(const cv::Mat& img, cv::InputArray& mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 

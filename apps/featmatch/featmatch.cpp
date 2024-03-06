@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     Console &console = App::console();
     console.setTitle("Feature Matching");
     console.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
     auto arg_query = Argument::make<std::string>("query", 'q', "Features query");
     auto arg_train = Argument::make<std::string>("train", 't', "Features train");

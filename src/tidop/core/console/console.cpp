@@ -33,10 +33,10 @@ namespace tl
 {
 
 std::mutex Console::mtx;
-EnumFlags<MessageLevel> Console::messageLevelFlags = MessageLevel::all;
+//EnumFlags<MessageLevel> Console::messageLevelFlags = MessageLevel::all;
 
 Console::Console()
-  : _stream(std::cout) 
+  : outputStream(std::cout) 
 {
     init();
 }
@@ -127,6 +127,7 @@ void Console::setFontStrikethrough(bool strikethrough)
 
 void Console::reset()
 {
+    messageLevelFlags = MessageLevel::all;
     foregroundColor = 39;
     backgroundColor = 49;
     fontBold = 21;
@@ -142,7 +143,7 @@ void Console::reset()
 
 Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
 {
-    _stream << _endl;
+    outputStream << _endl;
     reset();
     return *this;
 }
@@ -301,7 +302,7 @@ void Console::debug(String message)
 
     if (messageLevelFlags.isEnabled(MessageLevel::debug)) {
         Progress::cleanConsole();
-        _stream << "Debug:   " << message << std::endl;
+        outputStream << "Debug:   " << message << std::endl;
     }
 }
 
@@ -311,7 +312,7 @@ void Console::info(String message)
 
     if (messageLevelFlags.isEnabled(MessageLevel::info)) {
         Progress::cleanConsole();
-        _stream << "Info:    " << message << std::endl;
+        outputStream << "Info:    " << message << std::endl;
     }
 }
 
@@ -322,7 +323,7 @@ void Console::success(String message)
     if (messageLevelFlags.isEnabled(MessageLevel::success)) {
         Progress::cleanConsole();
         setForegroundColor(Color::green, Intensity::normal);
-        _stream << "Success: " << message << std::endl;
+        outputStream << "Success: " << message << std::endl;
         reset();
     }
 }
@@ -334,7 +335,7 @@ void Console::warning(String message)
     if (messageLevelFlags.isEnabled(MessageLevel::warning)) {
         Progress::cleanConsole();
         setForegroundColor(Color::magenta, Intensity::normal);
-        _stream << "Warning: " << message << std::endl;
+        outputStream << "Warning: " << message << std::endl;
         reset();
     }
 }
@@ -346,7 +347,7 @@ void Console::error(String message)
     if (messageLevelFlags.isEnabled(MessageLevel::error)) {
         Progress::cleanConsole();
         setForegroundColor(Color::red, Intensity::normal);
-        _stream << "Error:   " << message << std::endl;
+        outputStream << "Error:   " << message << std::endl;
         reset();
     }
 }

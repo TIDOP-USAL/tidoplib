@@ -119,7 +119,7 @@ SiftDetectorDescriptor::SiftDetectorDescriptor()
 }
 
 SiftDetectorDescriptor::SiftDetectorDescriptor(const SiftDetectorDescriptor &siftDetectorDescriptor)
-    : SiftProperties(siftDetectorDescriptor),
+  : SiftProperties(siftDetectorDescriptor),
     KeypointDetector(siftDetectorDescriptor),
     DescriptorExtractor(siftDetectorDescriptor)
 {

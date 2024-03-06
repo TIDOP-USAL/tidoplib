@@ -104,13 +104,13 @@ public:
     
     /*!
      * \brief Copy constructor
-     * \param[in] flag Flags
+     * \param[in] enumFlag Flags
      */
     EnumFlags(const EnumFlags<T> &enumFlag);
     
     /*!
      * \brief Move constructor
-     * \param[in] flag Flags
+     * \param[in] enumFlag Flags
      */
     EnumFlags(EnumFlags<T> &&enumFlag) TL_NOEXCEPT;
     
@@ -118,7 +118,7 @@ public:
      * \brief Constructor
      * \param[in] flag Flags
      */
-    EnumFlags(T flag);
+    explicit EnumFlags(T flag);
     
     /*!
      * \brief Destructor
@@ -195,20 +195,20 @@ public:
 };
 
 template<typename T>
-inline EnumFlags<T>::EnumFlags() 
+EnumFlags<T>::EnumFlags() 
   : flag(0) 
 {
 }
 
 template<typename T>
-inline EnumFlags<T>::EnumFlags(const EnumFlags<T> &enumFlag)
+EnumFlags<T>::EnumFlags(const EnumFlags<T> &enumFlag)
   : flag(enumFlag.flag) 
 {
 
 }
 
 template<typename T>
-inline EnumFlags<T>::EnumFlags(EnumFlags<T> &&enumFlag) TL_NOEXCEPT
+EnumFlags<T>::EnumFlags(EnumFlags<T> &&enumFlag) TL_NOEXCEPT
   : flag(std::move(enumFlag.flag)) 
 {
 
@@ -216,13 +216,13 @@ inline EnumFlags<T>::EnumFlags(EnumFlags<T> &&enumFlag) TL_NOEXCEPT
 
 
 template<typename T>
-inline EnumFlags<T>::EnumFlags(T flag) 
+EnumFlags<T>::EnumFlags(T flag) 
   : flag(static_cast<Type>(flag))
 {
 }
 
 template<typename T>
-inline auto EnumFlags<T>::operator = (const EnumFlags<T> &enumFlag) -> EnumFlags&
+auto EnumFlags<T>::operator = (const EnumFlags<T> &enumFlag) -> EnumFlags&
 {
     if (this != &enumFlag) {
         this->flag = enumFlag.flag;
@@ -232,7 +232,7 @@ inline auto EnumFlags<T>::operator = (const EnumFlags<T> &enumFlag) -> EnumFlags
 }
 
 template<typename T>
-inline auto EnumFlags<T>::operator = (EnumFlags<T> &&enumFlag) TL_NOEXCEPT -> EnumFlags&
+auto EnumFlags<T>::operator = (EnumFlags<T> &&enumFlag) TL_NOEXCEPT -> EnumFlags&
 {
     if (this != &enumFlag) {
         this->flag = std::move(enumFlag.flag);
@@ -242,56 +242,56 @@ inline auto EnumFlags<T>::operator = (EnumFlags<T> &&enumFlag) TL_NOEXCEPT -> En
 }
 
 template<typename T>
-inline auto EnumFlags<T>::operator = (T flag) -> EnumFlags&
+auto EnumFlags<T>::operator = (T flag) -> EnumFlags&
 {
     this->flag = static_cast<Type>(flag);
     return *this;
 }
 
 template<typename T>
-inline auto EnumFlags<T>::isEnabled(T flag) const -> bool
+auto EnumFlags<T>::isEnabled(T flag) const -> bool
 {
     return 0 != (this->flag & static_cast<Type>(flag));
 }
 
 template<typename T>
-inline auto EnumFlags<T>::isDisabled(T flag) const -> bool
+auto EnumFlags<T>::isDisabled(T flag) const -> bool
 {
     return 0 == (this->flag & static_cast<Type>(flag));
 }
 
 template<typename T>
-inline void tl::EnumFlags<T>::enable(T flag)
+void tl::EnumFlags<T>::enable(T flag)
 {
     this->flag |= static_cast<Type>(flag);
 }
 
 template<typename T>
-inline void EnumFlags<T>::disable(T flag)
+void EnumFlags<T>::disable(T flag)
 {
     this->flag &= ~static_cast<Type>(flag);
 }
 
 template<typename T>
-inline void EnumFlags<T>::activeFlag(T flag, bool active)
+void EnumFlags<T>::activeFlag(T flag, bool active)
 {
     active ? enable(flag) : disable(flag);
 }
 
 template<typename T>
-inline void EnumFlags<T>::switchFlag(T flag)
+void EnumFlags<T>::switchFlag(T flag)
 {
     isEnabled(flag) ? disable(flag) : enable(flag);
 }
 
 template<typename T>
-inline void EnumFlags<T>::clear()
+void EnumFlags<T>::clear()
 {
     this->flag = static_cast<Type>(0);
 }
 
 template<typename T>
-inline auto EnumFlags<T>::flags() const -> T
+auto EnumFlags<T>::flags() const -> T
 {
     return static_cast<T>(this->flag);
 }
@@ -462,28 +462,28 @@ using Flags_64 = Flags<uint64_t>;
 
 
 template<typename T>
-inline Flags<T>::Flags()
+Flags<T>::Flags()
   : _flags(0)
 {
     static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T> 
-inline Flags<T>::Flags(const Flags &flags) 
+Flags<T>::Flags(const Flags &flags) 
   : _flags(flags._flags)
 {
     static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T>
-inline Flags<T>::Flags(Flags &&flags) TL_NOEXCEPT
+Flags<T>::Flags(Flags &&flags) TL_NOEXCEPT
   : _flags(flags._flags)
 {
     static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
 }
 
 template<typename T> 
-inline Flags<T>::Flags(std::initializer_list<T> flags)
+Flags<T>::Flags(std::initializer_list<T> flags)
     : _flags(0)
 {
     static_assert(std::is_integral<T>::value, "Float point type not supported");
@@ -493,7 +493,7 @@ inline Flags<T>::Flags(std::initializer_list<T> flags)
 }
 
 template<typename T>
-inline auto Flags<T>::operator = (const Flags<T> &flags) -> Flags&
+auto Flags<T>::operator = (const Flags<T> &flags) -> Flags&
 {
     if (this != &flags) {
         this->_flags = flags._flags;
@@ -503,7 +503,7 @@ inline auto Flags<T>::operator = (const Flags<T> &flags) -> Flags&
 }
 
 template<typename T>
-inline auto Flags<T>::operator = (Flags<T> &&flags) TL_NOEXCEPT -> Flags&
+auto Flags<T>::operator = (Flags<T> &&flags) TL_NOEXCEPT -> Flags&
 {
     if (this != &flags) {
         this->_flags = flags._flags;
@@ -513,49 +513,49 @@ inline auto Flags<T>::operator = (Flags<T> &&flags) TL_NOEXCEPT -> Flags&
 }
 
 template<typename T>
-inline auto Flags<T>::isEnabled(T flag) const -> bool
+auto Flags<T>::isEnabled(T flag) const -> bool
 {
     return 0 != (this->_flags & T{1} << flag);
 }
 
 template<typename T>
-inline auto Flags<T>::isDisabled(T flag) const -> bool
+auto Flags<T>::isDisabled(T flag) const -> bool
 {
     return 0 == (this->_flags & T{1} << flag);
 }
 
 template<typename T>
-inline void Flags<T>::enable(T flag)
+void Flags<T>::enable(T flag)
 {
     this->_flags |= (T{1} << flag);
 }
 
 template<typename T> 
-inline void Flags<T>::disable(T flag)
+void Flags<T>::disable(T flag)
 {
     this->_flags &= ~(T{1} << flag);
 }
 
 template<typename T> 
-inline void Flags<T>::activeFlag(T flag, bool active)
+void Flags<T>::activeFlag(T flag, bool active)
 {
     active ? enable(flag) : disable(flag);
 }
 
 template<typename T> 
-inline void Flags<T>::switchFlag(T flag)
+void Flags<T>::switchFlag(T flag)
 {
     isEnabled(flag) ? disable(flag) : enable(flag);
 }
 
 template<typename T> 
-inline void Flags<T>::clear()
+void Flags<T>::clear()
 {
     this->_flags = T{0};
 }
 
 template<typename T> 
-inline auto Flags<T>::flags() const -> T
+auto Flags<T>::flags() const -> T
 {
     return this->_flags;
 }

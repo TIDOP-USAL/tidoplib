@@ -27,8 +27,6 @@
 #include "tidop/config.h"
 
 #include <string>
-#include <memory>
-#include <mutex>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"

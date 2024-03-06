@@ -46,7 +46,7 @@ namespace tl
 
 
 class TL_EXPORT LucidProperties
-    : public Lucid
+  : public Lucid
 {
 
 private:

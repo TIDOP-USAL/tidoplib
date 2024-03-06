@@ -35,9 +35,7 @@ namespace tl
   
 
 Command::Command()
-  : mName(""),
-    mDescription(""),
-    mArguments(0),
+  : mArguments(0),
     mVersion("0.0.0")
 {
     init();
@@ -51,6 +49,15 @@ Command::Command(const Command &command)
     mExamples(command.mExamples)
 {
 
+}
+
+Command::Command(Command &&command) TL_NOEXCEPT
+  : mName(std::move(command.mName)),
+    mDescription(std::move(command.mDescription)),
+    mArguments(std::move(command.mArguments)),
+    mVersion(std::move(command.mVersion)),
+    mExamples(std::move(command.mExamples))
+{
 }
 
 Command::Command(std::string name, std::string description)
@@ -343,8 +350,8 @@ auto Command::operator=(Command &&command) TL_NOEXCEPT -> Command &
     return (*this);
 }
 
-auto Command::erase(const_iterator first,
-                    const_iterator last) -> iterator
+auto Command::erase(const const_iterator first,
+                    const const_iterator last) -> iterator
 {
     return mArguments.erase(first, last);
 }
@@ -603,9 +610,9 @@ auto CommandList::parse(int argc, char **argv) -> Command::Status
         return Command::Status::show_licence;
     }
 
-    for(auto &command : mCommands) {
+    for(const auto &command : mCommands) {
 
-        if(command->name().compare(arg_cmd_name) == 0) {
+        if(command->name() == arg_cmd_name) {
 
             mCommand = command;
             std::vector<char *> cmd_argv;

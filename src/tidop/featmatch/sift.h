@@ -52,7 +52,7 @@ constexpr auto sift_default_value_sigma{1.6};
 
 
 class TL_EXPORT SiftProperties
-    : public Sift
+  : public Sift
 {
 
 private:

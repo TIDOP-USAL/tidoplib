@@ -56,7 +56,7 @@ public:
      * \param polygon Objeto de la clase Polygon
      * \see Polygon
      */
-    GPolygon(const Polygon<Point<double>> &polygon);
+    explicit GPolygon(const Polygon<Point<double>> &polygon);
 
     /*!
      * \brief Constructor de copia
@@ -77,16 +77,16 @@ public:
      * \param gPolygon Objeto GPolygon que se copia
      * \return Referencia al objeto
      */
-    GPolygon &operator = (const GPolygon &gPolygon);
+    auto operator =(const GPolygon& gPolygon) -> GPolygon&;
 
     /*!
      * \brief Operador de asignación de movimiento
      * \param[in] gPolygon Objeto GPolygon que se mueve
      */
-    GPolygon &operator = (GPolygon &&gPolygon) TL_NOEXCEPT;
+    auto operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
@@ -110,7 +110,7 @@ public:
      * \param polygon Objeto de la clase Polygon
      * \see Polygon
      */
-    GPolygon3D(const Polygon3D<Point3<double>> &polygon);
+    explicit GPolygon3D(const Polygon3D<Point3<double>> &polygon);
 
     /*!
      * \brief Constructor de copia
@@ -131,16 +131,16 @@ public:
      * \param gPolygon3D Objeto GPolygon3D que se copia
      * \return Referencia al objeto
      */
-    GPolygon3D &operator = (const GPolygon3D &gPolygon3D);
+    auto operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&;
 
     /*!
      * \brief Operador de asignación de movimiento
      * \param[in] gPolygon3D Objeto que se mueve
      */
-    GPolygon3D &operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT;
+    auto operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
@@ -164,7 +164,7 @@ public:
      * \param multiPolygon Objeto de la clase MultiPolygon
      * \see MultiPolygon
      */
-    GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon);
+    explicit GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon);
 
     /*!
      * \brief Constructor de copia
@@ -179,10 +179,10 @@ public:
      * \param gMultiPolygon Objeto GMultiPolygon que se copia
      * \return Referencia al objeto
      */
-    GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
+    auto operator =(const GMultiPolygon& gMultiPolygon) -> GMultiPolygon&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
@@ -206,7 +206,7 @@ public:
      * \param multiPolygon Objeto de la clase MultiPolygon
      * \see MultiPolygon
      */
-    GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon);
+    explicit GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon);
 
     /*!
      * \brief Constructor de copia
@@ -221,10 +221,10 @@ public:
      * \param gMultiPolygon3D Objeto GMultiPolygon3D que se copia
      * \return Referencia al objeto
      */
-    GMultiPolygon3D &operator = (const GMultiPolygon3D &gMultiPolygon3D);
+    auto operator =(const GMultiPolygon3D& gMultiPolygon3D) -> GMultiPolygon3D&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 

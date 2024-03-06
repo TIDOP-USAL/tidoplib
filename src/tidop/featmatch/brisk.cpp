@@ -82,7 +82,6 @@ std::string BriskProperties::name() const
 
 
 BriskDetectorDescriptor::BriskDetectorDescriptor()
-  : BriskProperties()
 {
     update();
 }
@@ -99,7 +98,6 @@ BriskDetectorDescriptor::BriskDetectorDescriptor(const BriskDetectorDescriptor &
 BriskDetectorDescriptor::BriskDetectorDescriptor(int threshold,
                                                  int octaves,
                                                  double patternScale)
-  : BriskProperties()
 {
     BriskProperties::setThreshold(threshold);
     BriskProperties::setOctaves(octaves);

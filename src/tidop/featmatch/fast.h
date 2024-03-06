@@ -142,7 +142,7 @@ public:
 
 
 class TL_EXPORT FastDetectorCuda
-    : public FastProperties,
+  : public FastProperties,
     public KeypointDetector
 {
 

@@ -31,7 +31,7 @@ namespace tl
 
 
 KeyPointsFilterNBestProperties::KeyPointsFilterNBestProperties()
-    : KeyPointsFilterBase(KeyPointsFilter::Type::n_best),
+  : KeyPointsFilterBase(Type::n_best),
     mPointsNumber(5000)
 {
 }
@@ -51,7 +51,7 @@ void KeyPointsFilterNBestProperties::reset()
     mPointsNumber = 5000;
 }
 
-std::string KeyPointsFilterNBestProperties::name() const
+auto KeyPointsFilterNBestProperties::name() const -> std::string
 {
     return std::string("N Best");
 }
@@ -62,21 +62,14 @@ std::string KeyPointsFilterNBestProperties::name() const
 
 
 
-KeyPointsFilterNBest::KeyPointsFilterNBest()
-{
-}
+KeyPointsFilterNBest::KeyPointsFilterNBest() = default;
 
 KeyPointsFilterNBest::KeyPointsFilterNBest(int nPoints)
-{
-    this->setNPoints(nPoints);
-}
-
-void KeyPointsFilterNBest::setNPoints(int nPoints)
 {
     KeyPointsFilterNBestProperties::setNPoints(nPoints);
 }
 
-std::vector<cv::KeyPoint> KeyPointsFilterNBest::filter(const std::vector<cv::KeyPoint> &keypoints)
+auto KeyPointsFilterNBest::filter(const std::vector<cv::KeyPoint>& keypoints) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> filteredKeypoints = keypoints;
 
@@ -145,7 +138,7 @@ void KeyPointsFilterBySizeProperties::reset()
     mMaxSize = TL_DOUBLE_MAX;
 }
 
-std::string KeyPointsFilterBySizeProperties::name() const
+auto KeyPointsFilterBySizeProperties::name() const -> std::string
 {
     return std::string("Filter By Size");
 }
@@ -154,29 +147,15 @@ std::string KeyPointsFilterBySizeProperties::name() const
 /*----------------------------------------------------------------*/
 
 
-KeyPointsFilterBySize::KeyPointsFilterBySize()
-{
-
-}
+KeyPointsFilterBySize::KeyPointsFilterBySize() = default;
 
 KeyPointsFilterBySize::KeyPointsFilterBySize(double minSize, double maxSize)
-    : KeyPointsFilterBySizeProperties()
-{
-    this->setMinSize(minSize);
-    this->setMaxSize(maxSize);
-}
-
-void KeyPointsFilterBySize::setMinSize(double minSize)
 {
     KeyPointsFilterBySizeProperties::setMinSize(minSize);
-}
-
-void KeyPointsFilterBySize::setMaxSize(double maxSize)
-{
     KeyPointsFilterBySizeProperties::setMaxSize(maxSize);
 }
 
-std::vector<cv::KeyPoint> KeyPointsFilterBySize::filter(const std::vector<cv::KeyPoint> &keypoints)
+auto KeyPointsFilterBySize::filter(const std::vector<cv::KeyPoint>& keypoints) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> filteredKeypoints = keypoints;
 
@@ -209,7 +188,7 @@ void KeyPointsFilterBySize::reset()
 
 
 KeyPointsFilterRemoveDuplicatedProperties::KeyPointsFilterRemoveDuplicatedProperties()
-    : KeyPointsFilterBase(KeyPointsFilter::Type::remove_duplicated)
+    : KeyPointsFilterBase(Type::remove_duplicated)
 {
 }
 
@@ -229,7 +208,6 @@ std::string KeyPointsFilterRemoveDuplicatedProperties::name() const
 
 
 KeyPointsFilterRemoveDuplicated::KeyPointsFilterRemoveDuplicated()
-    : KeyPointsFilterRemoveDuplicatedProperties()
 {
 
 }

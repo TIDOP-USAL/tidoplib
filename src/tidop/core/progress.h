@@ -29,7 +29,6 @@
 #include <mutex>
 
 #include "tidop/core/defs.h"
-#include "tidop/core/event.h"
 #include "tidop/core/console.h"
 
 namespace tl
@@ -52,7 +51,7 @@ protected:
 public:
 
 	Progress() = default;
-
+    virtual ~Progress() = default;
 
 	virtual bool operator() (size_t increment = 1.) = 0;
 	virtual void setRange(size_t min, size_t max) = 0;
@@ -94,7 +93,7 @@ public:
 
 	ProgressBase();
 	ProgressBase(size_t min, size_t max);
-	virtual ~ProgressBase() = default;
+	~ProgressBase() override = default;
 
 protected:
 
@@ -104,7 +103,7 @@ protected:
 	/*!
 	 * \brief Progress as a percentage
 	 */
-	auto percent() -> int;
+	auto percent() const -> int;
 
 	/*!
 	 * \brief Update the progress bar

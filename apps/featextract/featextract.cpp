@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     Console &console = App::console();
     console.setTitle("Feature Extractor");
     console.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
     auto arg_input = Argument::make<std::string>("input", 'i', "Image");
     auto arg_output = Argument::make<std::string>("output", 'o', "Output path");

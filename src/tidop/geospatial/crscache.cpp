@@ -70,7 +70,7 @@ void CrsCache::add(std::shared_ptr<Crs> &&crs)
     }
 }
 
-size_t CrsCache::capacity() const
+auto CrsCache::capacity() const -> size_t
 {
     return mCrs.capacity();
 }
@@ -81,47 +81,47 @@ void CrsCache::clear()
     mCacheIdx = 0;
 }
 
-size_t CrsCache::size() const
+auto CrsCache::size() const -> size_t
 {
     return mCrs.size();
 }
 
-bool CrsCache::isCacheFull() const
+auto CrsCache::isCacheFull() const -> bool
 {
     return (mCrs.size() == mCrs.capacity());
 }
 
-CrsCache::iterator CrsCache::begin()
+auto CrsCache::begin() -> iterator
 {
     return mCrs.begin();
 }
 
-CrsCache::const_iterator CrsCache::begin() const
+auto CrsCache::begin() const -> const_iterator
 {
     return mCrs.begin();
 }
 
-CrsCache::iterator CrsCache::end()
+auto CrsCache::end() -> iterator
 {
     return mCrs.end();
 }
 
-CrsCache::const_iterator CrsCache::end() const
+auto CrsCache::end() const -> const_iterator
 {
     return mCrs.end();
 }
 
-CrsCache::const_reference CrsCache::at(size_type position) const
+auto CrsCache::at(size_type position) const -> const_reference
 {
     return mCrs.at(position);
 }
 
-CrsCache::reference CrsCache::at(size_type position)
+auto CrsCache::at(size_type position) -> reference
 {
     return mCrs.at(position);
 }
 
-bool CrsCache::empty() const
+auto CrsCache::empty() const -> bool
 {
     return mCrs.empty();
 }

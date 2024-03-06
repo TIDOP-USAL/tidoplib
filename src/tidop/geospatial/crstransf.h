@@ -33,7 +33,6 @@
 #include "tidop/core/exception.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/transform.h"
-#include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 
 namespace tl
@@ -114,7 +113,7 @@ public:
     auto compute(const std::vector<Point3<double>> &pts1,
                  const std::vector<Point3<double>> &pts2,
                  std::vector<double> *error = nullptr,
-                 double *rmse = nullptr) -> geom::Transform::Status override;
+                 double *rmse = nullptr) -> Status override;
 
     /*!
      * \brief Transforma un conjunto de puntos a otro sistema de referencia
@@ -125,7 +124,7 @@ public:
      */
     auto transform(const std::vector<Point3<double>> &ptsIn,
                    std::vector<Point3<double>> &ptsOut,
-                   geom::Transform::Order trfOrder = geom::Transform::Order::direct) const -> Transform::Status override;
+                   Order trfOrder = Order::direct) const -> Status override;
 
     /*!
      * \brief Transforma un punto a otro sistema de referencia
@@ -136,7 +135,7 @@ public:
      */
     auto transform(const Point3<double> &ptIn,
                    Point3<double> &ptOut,
-                   geom::Transform::Order trfOrder = geom::Transform::Order::direct) const -> Transform::Status override;
+                   Order trfOrder = Order::direct) const -> Status override;
 
     /*!
      * \brief Transforma un punto a otro sistema de referencia
@@ -146,7 +145,7 @@ public:
      * \see Transform::Order
      */
     auto transform(const Point3<double> &ptIn,
-                   geom::Transform::Order trfOrder = geom::Transform::Order::direct) const -> Point3<double> override;
+                   Order trfOrder = Order::direct) const -> Point3<double> override;
 
     auto isNull() const -> bool override;
 

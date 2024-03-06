@@ -55,10 +55,7 @@ uint64_t tickCount()
 
 
 
-Chrono::Chrono()
-  : message("")
-{
-}
+Chrono::Chrono() = default;
 
 Chrono::Chrono(std::string message)
   : message(std::move(message)),

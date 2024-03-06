@@ -33,7 +33,12 @@ namespace tl
 {
 
 std::mutex Log::mtx;
-EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
+//EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
+
+Log::Log()
+  : messageLevelFlags(MessageLevel::all)
+{
+}
 
 auto Log::instance() -> Log &
 {

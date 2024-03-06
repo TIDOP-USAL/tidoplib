@@ -28,7 +28,6 @@
 #include "tidop/config.h"
 
 #include <string>
-#include <vector>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"

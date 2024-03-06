@@ -31,9 +31,7 @@ namespace tl
 {
 
 
-StarProperties::StarProperties()
-{
-}
+StarProperties::StarProperties() = default;
 
 StarProperties::StarProperties(const StarProperties &starProperties)
   : Star(starProperties),

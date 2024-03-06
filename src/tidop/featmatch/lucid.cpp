@@ -75,7 +75,6 @@ LucidDescriptor::LucidDescriptor()
 }
 
 LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
-  : LucidProperties()
 {
     LucidProperties::setLucidKernel(lucidKernel);
     LucidProperties::setBlurKernel(blurKernel);

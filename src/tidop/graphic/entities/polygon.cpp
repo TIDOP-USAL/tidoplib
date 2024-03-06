@@ -30,8 +30,7 @@ namespace tl
 
 
 GPolygon::GPolygon()
-  : Polygon<Point<double>>(),
-    GraphicEntity(GraphicEntity::Type::polygon_2d)
+  : GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
@@ -57,7 +56,7 @@ GPolygon::~GPolygon()
 {
 }
 
-GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
+auto GPolygon::operator =(const GPolygon& gPolygon) -> GPolygon&
 {
     if (this != &gPolygon) {
         Polygon<Point<double>>::operator=(gPolygon);
@@ -66,7 +65,7 @@ GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
     return *this;
 }
 
-GPolygon &GPolygon::operator = (GPolygon &&gPolygon) TL_NOEXCEPT
+auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
 {
     if (this != &gPolygon) {
         Polygon<Point<double>>::operator=(std::forward<Polygon<Point<double>>>(gPolygon));
@@ -75,12 +74,12 @@ GPolygon &GPolygon::operator = (GPolygon &&gPolygon) TL_NOEXCEPT
     return *this;
 }
 
-bool GPolygon::isMultiEntity() const
+auto GPolygon::isMultiEntity() const -> bool
 {
     return false;
 }
 
-bool GPolygon::isSimpleEntity() const
+auto GPolygon::isSimpleEntity() const -> bool
 {
     return true;
 }
@@ -91,8 +90,7 @@ bool GPolygon::isSimpleEntity() const
 
 
 GPolygon3D::GPolygon3D()
-  : Polygon3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::polygon_3d)
+  : GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
 
@@ -118,7 +116,7 @@ GPolygon3D::~GPolygon3D()
 {
 }
 
-GPolygon3D &GPolygon3D::operator = (const GPolygon3D &gPolygon3D)
+auto GPolygon3D::operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&
 {
     if (this != &gPolygon3D) {
         Polygon3D<Point3<double>>::operator=(gPolygon3D);
@@ -127,7 +125,7 @@ GPolygon3D &GPolygon3D::operator = (const GPolygon3D &gPolygon3D)
     return *this;
 }
 
-GPolygon3D &GPolygon3D::operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT
+auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
 {
     if (this != &gPolygon3D) {
         Polygon3D<Point3<double>>::operator=(std::forward<Polygon3D<Point3<double>>>(gPolygon3D));
@@ -136,12 +134,12 @@ GPolygon3D &GPolygon3D::operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT
     return *this;
 }
 
-bool GPolygon3D::isMultiEntity() const
+auto GPolygon3D::isMultiEntity() const -> bool
 {
     return false;
 }
 
-bool GPolygon3D::isSimpleEntity() const
+auto GPolygon3D::isSimpleEntity() const -> bool
 {
     return true;
 }
@@ -151,8 +149,7 @@ bool GPolygon3D::isSimpleEntity() const
 
 
 GMultiPolygon::GMultiPolygon()
-  : MultiPolygon<Point<double>>(),
-    GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+  : GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
@@ -172,7 +169,7 @@ GMultiPolygon::~GMultiPolygon()
 {
 }
 
-GMultiPolygon &GMultiPolygon::operator = (const GMultiPolygon &gMultiPolygon)
+auto GMultiPolygon::operator =(const GMultiPolygon& gMultiPolygon) -> GMultiPolygon&
 {
     if (this != &gMultiPolygon) {
         MultiPolygon<Point<double>>::operator=(gMultiPolygon);
@@ -181,12 +178,12 @@ GMultiPolygon &GMultiPolygon::operator = (const GMultiPolygon &gMultiPolygon)
     return *this;
 }
 
-bool GMultiPolygon::isMultiEntity() const
+auto GMultiPolygon::isMultiEntity() const -> bool
 {
     return true;
 }
 
-bool GMultiPolygon::isSimpleEntity() const
+auto GMultiPolygon::isSimpleEntity() const -> bool
 {
     return false;
 }
@@ -196,8 +193,7 @@ bool GMultiPolygon::isSimpleEntity() const
 
 
 GMultiPolygon3D::GMultiPolygon3D()
-  : MultiPolygon3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+  : GraphicEntity(GraphicEntity::Type::multipolygon_3d)
 {
 }
 
@@ -217,7 +213,7 @@ GMultiPolygon3D::~GMultiPolygon3D()
 {
 }
 
-GMultiPolygon3D &GMultiPolygon3D::operator = (const GMultiPolygon3D &gMultiPolygon3D)
+auto GMultiPolygon3D::operator =(const GMultiPolygon3D& gMultiPolygon3D) -> GMultiPolygon3D&
 {
     if (this != &gMultiPolygon3D) {
         MultiPolygon3D<Point3<double>>::operator=(gMultiPolygon3D);
@@ -226,12 +222,12 @@ GMultiPolygon3D &GMultiPolygon3D::operator = (const GMultiPolygon3D &gMultiPolyg
     return *this;
 }
 
-bool GMultiPolygon3D::isMultiEntity() const
+auto GMultiPolygon3D::isMultiEntity() const -> bool
 {
     return true;
 }
 
-bool GMultiPolygon3D::isSimpleEntity() const
+auto GMultiPolygon3D::isSimpleEntity() const -> bool
 {
     return false;
 }

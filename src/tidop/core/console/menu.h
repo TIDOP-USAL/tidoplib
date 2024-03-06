@@ -58,11 +58,10 @@ private:
 
 public:
 
-    MenuAction();
-	MenuAction(std::string text);
-	MenuAction(std::string text, std::string description);
-	MenuAction(std::string text, std::string description, std::function<void(void)> funct);
-	~MenuAction() = default;
+    MenuAction() = default;
+    explicit MenuAction(std::string title);
+	MenuAction(std::string title, std::string description);
+	MenuAction(std::string title, std::string description, const std::function<void(void)> &funct);
 
     auto text() const -> std::string;
     void exec() const;
@@ -91,19 +90,18 @@ private:
 public:
 
     Menu(std::string title, std::string description);
-    ~Menu() = default;
 
     void addAction(const MenuAction &action)
     {
         items.push_back(action.text());
-        actions[items.size()] = action;
+        actions[static_cast<int>(items.size())] = action;
     }
 
     void addMenu(Menu *menu)
     {
         menu->parent = this;
         items.push_back(menu->text());
-        subMenus[items.size()] = menu;
+        subMenus[static_cast<int>(items.size())] = menu;
     }
 
     void show() const;

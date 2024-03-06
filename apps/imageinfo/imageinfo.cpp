@@ -54,11 +54,11 @@ int main(int argc, char **argv)
     console.setTitle("Image Metadata");
     console.setMessageLevel(MessageLevel::all);
     console.setConsoleUnicode();
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
     Log &log = App::log();
     log.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&log);
+    Message::addMessageHandler(&log);
 
     Command cmd(cmd_name, "Image Metadata");
     cmd.addArgument<std::string>("img", 'i', "Image");

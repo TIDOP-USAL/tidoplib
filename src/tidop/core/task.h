@@ -29,7 +29,6 @@
 #include <thread>
 #include <mutex>
 #include <functional>
-#include <map>
 #include <list>
 #include <queue>
 #include <memory>
@@ -167,35 +166,35 @@ private:
 public:
 
     TaskBase();
-    TaskBase(const TaskBase &process);
-    TaskBase(TaskBase &&process) TL_NOEXCEPT;
+    TaskBase(const TaskBase &task);
+    TaskBase(TaskBase &&task) TL_NOEXCEPT;
     ~TaskBase() override;
    
-    TaskBase &operator=(const TaskBase &process);
-    TaskBase &operator=(TaskBase &&process) TL_NOEXCEPT;
+    auto operator=(const TaskBase &task) -> TaskBase &;
+    auto operator=(TaskBase &&task) TL_NOEXCEPT -> TaskBase &;
 
 protected:
 
     void setStatus(Status status);
     
-    void eventTriggered(Event::Type type);
-    void eventTaskErrorTriggered();
-    void eventTaskFinalizedTriggered();
-    void eventTaskPauseTriggered();
-    void eventTaskPausingTriggered();
-    void eventTaskResumedTriggered();
-    void eventTaskRunningTriggered();
-    void eventTaskStoppedTriggered();
-    void eventTaskStoppingTriggered();
+    void eventTriggered(Event::Type type) const;
+    void eventTaskErrorTriggered() const;
+    void eventTaskFinalizedTriggered() const;
+    void eventTaskPauseTriggered() const;
+    void eventTaskPausingTriggered() const;
+    void eventTaskResumedTriggered() const;
+    void eventTaskRunningTriggered() const;
+    void eventTaskStoppedTriggered() const;
+    void eventTaskStoppingTriggered() const;
 
-    auto errorEvent() -> TaskErrorEvent*;
-    auto finalizedEvent() -> TaskFinalizedEvent*;
-    auto pauseEvent() -> TaskPauseEvent*;
-    auto pausingEvent() -> TaskPausingEvent*;
-    auto resumedEvent() -> TaskResumedEvent*;
-    auto runningEvent() -> TaskRunningEvent*;
-    auto stoppedEvent() -> TaskStoppedEvent*;
-    auto stoppingEvent() -> TaskStoppingEvent*;
+    auto errorEvent() const -> TaskErrorEvent*;
+    auto finalizedEvent() const -> TaskFinalizedEvent*;
+    auto pauseEvent() const -> TaskPauseEvent*;
+    auto pausingEvent() const -> TaskPausingEvent*;
+    auto resumedEvent() const -> TaskResumedEvent*;
+    auto runningEvent() const -> TaskRunningEvent*;
+    auto stoppedEvent() const -> TaskStoppedEvent*;
+    auto stoppingEvent() const -> TaskStoppingEvent*;
 
 private:
 
@@ -273,13 +272,13 @@ private:
     STARTUPINFO mStartUpInfo;
     PROCESS_INFORMATION mProcessInformation;
     SECURITY_ATTRIBUTES mSecurityAttributes;
-    HANDLE mThreadHandle;
+    //HANDLE mThreadHandle;
 #endif
 
 public:
 
-    Process(std::string commandText,
-            Priority priority = Priority::normal);
+    explicit Process(std::string commandText,
+                     Priority priority = Priority::normal);
     ~Process() override;
    
    
@@ -353,7 +352,7 @@ public:
 
 private:
 
-    virtual void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar = nullptr) override;
 
 };
 
@@ -366,7 +365,7 @@ class TL_EXPORT TaskQueue
 public:
 
     TaskQueue();
-    ~TaskQueue();
+    ~TaskQueue() override;
     
     void push(std::shared_ptr<Task> task);
     void pop() TL_NOEXCEPT;
@@ -383,7 +382,7 @@ public:
 
 private:
 
-    virtual void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar = nullptr) override;
 
 private:
 
@@ -401,7 +400,7 @@ class TL_EXPORT TaskTree
 public:
 
     TaskTree();
-    ~TaskTree();
+    ~TaskTree() override;
 
     void addTask(const std::shared_ptr<Task> &task, 
                  const std::list<std::shared_ptr<Task>> &parentTasks);
@@ -416,7 +415,7 @@ public:
 
 private:
 
-    virtual void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar = nullptr) override;
 
 private:
 

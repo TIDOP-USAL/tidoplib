@@ -52,7 +52,7 @@ public:
 
     void setup()
     {   
-        Message::instance().addMessageHandler(this);
+        Message::addMessageHandler(this);
     }
 
     void teardown()

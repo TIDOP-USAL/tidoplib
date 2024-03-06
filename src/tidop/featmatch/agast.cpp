@@ -150,9 +150,9 @@ AgastDetector::AgastDetector(int threshold,
                              const std::string &detectorType)
   : mAgast(cv::AgastFeatureDetector::create())
 {
-    setThreshold(threshold);
-    setNonmaxSuppression(nonmaxSuppression);
-    setDetectorType(detectorType);
+	AgastDetector::setThreshold(threshold);
+	AgastDetector::setNonmaxSuppression(nonmaxSuppression);
+	AgastDetector::setDetectorType(detectorType);
 }
 
 AgastDetector::~AgastDetector()

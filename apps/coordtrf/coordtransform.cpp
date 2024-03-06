@@ -31,7 +31,6 @@
 #include <tidop/geometry/transform/rotation.h>
 #include <tidop/geometry/transform/helmert2d.h>
 #include <tidop/geometry/entities/point.h>
-#include <tidop/core/console/menu.h>
 
 using namespace tl;
 
@@ -41,7 +40,7 @@ int main(int argc, char **argv)
     Console &console = App::console();
     console.setTitle("Transform Example");
     console.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
     auto arg_compute = Argument::make<bool>("compute", "Calcula la transformación a partir de dos listas de puntos", false);
     auto arg_transform = Argument::make<bool>("transform", "Aplica la transformación a un listado de puntos", true);

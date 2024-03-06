@@ -49,7 +49,7 @@ constexpr auto akaze_default_value_diffusivity{"DIFF_PM_G2"};
 
 
 class TL_EXPORT AkazeProperties
-    : public Akaze
+  : public Akaze
 {
 
 private:

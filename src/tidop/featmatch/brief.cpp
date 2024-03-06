@@ -107,7 +107,6 @@ auto BriefProperties::name() const -> std::string
 
 
 BriefDescriptor::BriefDescriptor()
-  : BriefProperties()
 {
     update();
 }
@@ -145,7 +144,6 @@ auto BriefDescriptor::operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT 
 }
 
 BriefDescriptor::BriefDescriptor(const std::string &bytes, bool useOrientation)
-  : BriefProperties()
 {
     BriefProperties::setBytes(bytes);
     BriefProperties::setUseOrientation(useOrientation);
@@ -161,6 +159,7 @@ void BriefDescriptor::update()
         mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(BriefProperties::bytes()),
                                                                    BriefProperties::useOrientation());
     } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 #endif // HAVE_OPENCV_XFEATURES2D
 }

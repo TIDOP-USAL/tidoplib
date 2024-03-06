@@ -46,6 +46,10 @@ class Entities2D
 
 public:
 
+    using size_type = typename Entities2D<Entity_t>::size_type;
+
+public:
+
     /*!
      * \brief Constructora por defecto
      */
@@ -55,7 +59,7 @@ public:
      * \brief Constructor que reserva tamaño para n puntos
      * \param[in] size Tamaños que se reserva
      */
-    Entities2D(typename Entities2D<Entity_t>::size_type size);
+    explicit Entities2D(size_type size);
 
     /*!
      * \brief Constructor de copia
@@ -104,43 +108,43 @@ public:
 };
 
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t>::Entities2D() 
   : EntityContainer<Entity_t>(0)
 {
 }
 
-template<typename Entity_t> inline
-Entities2D<Entity_t>::Entities2D(typename Entities2D<Entity_t>::size_type size)
+template<typename Entity_t>
+Entities2D<Entity_t>::Entities2D(size_type size)
   : EntityContainer<Entity_t>(size) 
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t>::Entities2D(const Entities2D &entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t>::Entities2D(Entities2D &&entities) TL_NOEXCEPT
   : EntityContainer<Entity_t>(std::forward<EntityContainer<Entity_t>>(entities))
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t>::Entities2D(const std::vector<Entity_t> &entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> template<typename Window_t> inline
+template<typename Entity_t> template<typename Window_t>
 std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &window) const
 {
     std::vector<Entity_t> r_points(this->mEntities.size());
@@ -159,7 +163,7 @@ std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &win
     return r_points;
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t> &entities)
 {
     if (this != &entities) {
@@ -169,7 +173,7 @@ Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t>
     return (*this);
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT
 {
     if (this != &entities) {

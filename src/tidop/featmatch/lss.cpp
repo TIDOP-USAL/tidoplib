@@ -33,20 +33,16 @@ namespace tl
 
 
 LssProperties::LssProperties()
-    : Lss()
 {
 }
 
-LssProperties::~LssProperties()
-{
-
-}
+LssProperties::~LssProperties() = default;
 
 void LssProperties::reset()
 {
 }
 
-std::string LssProperties::name() const
+auto LssProperties::name() const -> std::string
 {
     return std::string("LSS");
 }
@@ -55,24 +51,20 @@ std::string LssProperties::name() const
 
 
 LssDescriptor::LssDescriptor()
-    : LssProperties(),
-    DescriptorExtractor(),
+  : DescriptorExtractor(),
     mLSS(new LSS)
 {
     update();
 }
 
-LssDescriptor::~LssDescriptor()
-{
-
-}
+LssDescriptor::~LssDescriptor() = default;
 
 void LssDescriptor::update()
 {
 }
 
-cv::Mat LssDescriptor::extract(const cv::Mat &img,
-                               std::vector<cv::KeyPoint> &keyPoints)
+auto LssDescriptor::extract(const cv::Mat& img,
+                            std::vector<cv::KeyPoint>& keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

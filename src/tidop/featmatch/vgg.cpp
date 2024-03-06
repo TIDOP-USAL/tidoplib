@@ -138,7 +138,7 @@ VggDescriptor::VggDescriptor()
 }
 
 VggDescriptor::VggDescriptor(const VggDescriptor &vggDescriptor)
-    : VggProperties(vggDescriptor)
+  : VggProperties(vggDescriptor)
 {
     update();
 }

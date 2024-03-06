@@ -84,8 +84,7 @@ void GmsProperties::setThreshold(double threshold)
 
 
 GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher)
-  : GmsProperties(),
-    mDescriptorMatcher(std::move(descriptorMatcher))
+  : mDescriptorMatcher(std::move(descriptorMatcher))
 {
 }
 
@@ -93,12 +92,11 @@ GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
                bool rotation,
                bool scale,
                double threshold)
-  : GmsProperties(),
-    mDescriptorMatcher(std::move(descriptorMatcher))
+  : mDescriptorMatcher(std::move(descriptorMatcher))
 {
-    this->setRotation(rotation);
-    this->setScale(scale);
-    this->setThreshold(threshold);
+    GmsProperties::setRotation(rotation);
+    GmsProperties::setScale(scale);
+    GmsProperties::setThreshold(threshold);
 }
 
 auto GsmImp::compute(const cv::Mat &queryDescriptor,
@@ -125,15 +123,15 @@ auto GsmImp::compute(const cv::Mat &queryDescriptor,
         cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, *goodMatches);
 
         for (size_t i = 0; i < matches.size(); i++) {
-            bool bWrong = true;
+            bool wrong = true;
             for (size_t j = 0; j < goodMatches->size(); j++) {
                 if (matches[i].queryIdx == (*goodMatches)[j].queryIdx &&
                     matches[i].trainIdx == (*goodMatches)[j].trainIdx) {
-                    bWrong = false;
+                    wrong = false;
                     break;
                 }
             }
-            if (bWrong) {
+            if (wrong) {
                 wrongMatches->push_back(matches[i]);
             }
         }

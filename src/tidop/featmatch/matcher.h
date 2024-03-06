@@ -106,7 +106,7 @@ private:
 
 public:
 
-    MatchingMethodBase(Type type) : mMatchType(type) {}
+    explicit MatchingMethodBase(Type type) : mMatchType(type) {}
     ~MatchingMethodBase() override = default;
 
     // MatchingMethod interface
@@ -183,7 +183,7 @@ public:
 
 public:
 
-    FlannMatcher() : MatchingMethodBase(MatchingMethod::Type::flann) {}
+    FlannMatcher() : MatchingMethodBase(Type::flann) {}
     ~FlannMatcher() override = default;
 
     virtual auto index() const -> Index = 0;
@@ -213,7 +213,7 @@ public:
 
 public:
 
-    BruteForceMatcher() : MatchingMethodBase(MatchingMethod::Type::brute_force) {}
+    BruteForceMatcher() : MatchingMethodBase(Type::brute_force) {}
     ~BruteForceMatcher() override = default;
 
     virtual auto normType() const -> Norm = 0;
