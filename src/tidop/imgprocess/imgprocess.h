@@ -32,10 +32,8 @@
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
 
 #include "tidop/core/defs.h"
-#include "tidop/graphic/color.h"
 
 namespace tl
 {

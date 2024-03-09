@@ -34,10 +34,8 @@
 #include "opencv2/core/core.hpp"
 
 #include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
 #include "tidop/core/path.h"
 #include "tidop/core/ptr.h"
-#include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
 #include "tidop/math/geometry/affine.h"
@@ -102,47 +100,24 @@ public:
 
     /*!
      * \brief Write on the image
-     * \param[in] image Bloque de imagen que se escribe
-     * \param[in] window Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+     * \param[in] image Image block to be written
+     * \param[in] rect area where the image is written
      */
     virtual void write(const cv::Mat &image,
                        const Rect<int> &rect = Rect<int>()) = 0;
 
     /*!
      * \brief Write on the image
-     * \param[in] image Bloque de imagen que se escribe
-     * \param[in] window Ventana del bloque de imagen que se escribe.
+     * \param[in] image Image block to be written
+     * \param[in] window area where the image is written
      */
     virtual void write(const cv::Mat &image,
                        const WindowI &window) = 0;
 
     /*!
-     * \brief Escribe en la imagen
-     * \param[in] image Bloque de imagen que se escribe
-     * \param[in] trf Transformaci�n entre el bloque y la imagen.
+     * \brief Returns the number of rows of the image.
+     * \return Number of rows of the image
      */
-    // virtual void write(const cv::Mat &image,
-    //                    const Affine<Point<int>> &trf) = 0;
-
-    /*!
-     * \brief Escribe en la imagen
-     * \param[in] image Bloque de imagen que se escribe
-     * \param[in] w Ventana del bloque de imagen que se escribe
-     */
-     //virtual void write(const unsigned char *buff, 
-     //                   const WindowI &w) = 0;
-
-     /*!
-      * \brief Escribe en la imagen
-      * \param[in] image Bloque de imagen que se escribe
-      * \param[in] trf Transformaci�n entre el bloque y la imagen. Si es nula no se aplica transformaci�n
-      */
-      //virtual void write(const unsigned char *buff, const Helmert2D<geometry::Point<int>> *trf = nullptr) = 0;
-
-      /*!
-       * \brief Devuelve el n�mero de filas de la imagen
-       * \return N�mero de filas de la imagen
-       */
     virtual auto rows() const -> int = 0;
 
     /*!
@@ -181,19 +156,8 @@ public:
      */
     virtual void setCRS(const std::string &crs) = 0;
 
-    //#ifdef TL_HAVE_GEOSPATIAL
-    //  /*!
-    //   * \brief Set the Coordinate Reference System
-    //   * \param[in] crs geospatial::Crs object
-    //   */
-    //  virtual void setCRS(const geospatial::Crs &crs) = 0;
-    //#endif
-
     virtual void setNoDataValue(double nodata) = 0;
 
-    //#ifdef TL_HAVE_GRAPHIC
-    //  virtual void setNoDataValue(const Color &nodata) = 0;
-    //#endif
 
 protected:
 
@@ -204,9 +168,7 @@ protected:
 
     Path mFile;
     Affine<double, 2> affine;
-    //#ifdef TL_HAVE_GEOSPATIAL
-    //  geospatial::Crs mCRS;
-    //#endif
+
 };
 
 

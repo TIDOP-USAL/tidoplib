@@ -29,7 +29,6 @@
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #endif
 
 namespace tl
@@ -52,29 +51,26 @@ void Canvas::setPainter(Painter *painter)
 #ifdef TL_HAVE_OPENCV
 
 CanvasCV::CanvasCV()
-  : Canvas(),
-    mSize(100, 100),
+  : mSize(100, 100),
     mBgColor(Color::Name::white)
 {
     update();
 }
 
 CanvasCV::CanvasCV(const CanvasCV &canvas)
-  : Canvas(),
+  : Canvas(canvas),
     mSize(canvas.mSize),
     mBgColor(canvas.mBgColor)
 {
     update();
 }
 
-CanvasCV::~CanvasCV()
-{
-}
+CanvasCV::~CanvasCV() = default;
 
 void CanvasCV::drawPoint(const Point<double> &point, const GraphicStyle &style)
 {
-    Symbol *style_symbol = style.symbol();
-    Pen *style_pen = style.pen();
+    const Symbol *style_symbol = style.symbol();
+    const Pen *style_pen = style.pen();
     Color c = style_pen->color();
     cv::Scalar color = colorToCvScalar(c);
     Point<double> pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
@@ -158,7 +154,7 @@ void CanvasCV::drawLineString(const LineStringD &lineString, const GraphicStyle 
     //  const cv::Point *cpts = (const cv::Point*) cv::Mat(pts).data;
     //  int npts = cv::Mat(pts).rows;
 
-    Pen *style_pen = style.pen();
+    const Pen *style_pen = style.pen();
     if (!style_pen->pattern().empty()) {
         ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
     } else {
@@ -177,12 +173,12 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
         pts[0][i].y = static_cast<int>(polygon[i].y);
     }
 
-    if (Brush *style_brush = style.brush()) {
+    if (const Brush *style_brush = style.brush()) {
         Color fore_color = style_brush->foregroundColor();
         cv::fillPoly(mCanvas, pts, colorToCvScalar(fore_color));
     }
 
-    if (Pen *style_pen = style.pen()) {
+    if (const Pen *style_pen = style.pen()) {
         Color color = style_pen->color();
         uint8_t width = style_pen->width();
         if (!style_pen->pattern().empty()) {
@@ -270,68 +266,7 @@ void CanvasCV::update()
     mCanvas = cv::Mat(mSize.height, mSize.width, CV_MAKETYPE(CV_8U, 3), colorToCvScalar(mBgColor));
 }
 
-cv::Scalar CanvasCV::colorToCvScalar(const Color &color)
-{
-    return cv::Scalar(static_cast<double>(color.blue()),
-                      static_cast<double>(color.green()),
-                      static_cast<double>(color.red()));
-}
 
-int CanvasCV::width() const
-{
-    return mSize.width;
-}
-
-int CanvasCV::height() const
-{
-    return mSize.height;
-}
-
-Color CanvasCV::backgroundColor() const
-{
-    return mBgColor;
-}
-
-void CanvasCV::setWidth(int width)
-{
-    mSize.width = width;
-    update();
-}
-
-void CanvasCV::setHeight(int height)
-{
-    mSize.height = height;
-    update();
-}
-
-void CanvasCV::setSize(int width, int height)
-{
-    mSize.width = width;
-    mSize.height = height;
-    update();
-}
-
-inline void CanvasCV::setSize(const Size<int> &size)
-{
-    mSize = size;
-    update();
-}
-
-Size<int> CanvasCV::size() const
-{
-    return mSize;
-}
-
-void CanvasCV::setBackgroundColor(const Color &color)
-{
-    mBgColor = color;
-    update();
-}
-
-cv::Mat CanvasCV::bmp()
-{
-    return mCanvas;
-}
 
 
 #endif // TL_HAVE_OPENCV

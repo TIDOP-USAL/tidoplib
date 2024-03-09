@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/mean.h"
 
 
@@ -45,20 +44,19 @@ namespace tl
  */
 
 
-/*!
- * \brief Sample Variance
- *
- * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
- *
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Varianza del conjunto de datos
- */
-template<typename It> inline
-typename std::enable_if<
+ /*!
+  * \brief Sample Variance
+  *
+  * \f[ \sigma^2 = \frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}  \f]
+  *
+  * \param[in] first Iterator to the beginning
+  * \param[in] last Iterator to the end
+  * \return Sample variance of the dataset
+  */
+template<typename It>
+auto variance(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-variance(It first, It last)
+    double>
 {
     auto n = std::distance(first, last);
     if (n <= 1) return consts::one<double>;
@@ -77,13 +75,12 @@ variance(It first, It last)
     return (sum - ep * ep / n) / (n - 1);
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto variance(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-variance(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     auto n = std::distance(first, last);
     if (n <= 1) return consts::one<T>;
@@ -104,19 +101,18 @@ variance(It first, It last)
 
 
 /*!
- * \brief Varianza
+ * \brief Variance
  *
- * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
+ * \f[ \sigma^2 = \frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}  \f]
  *
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Varianza del conjunto de datos
+ * \param[in] first Iterator to the beginning
+ * \param[in] last Iterator to the end
+ * \return Variance of the dataset
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto populationVariance(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-populationVariance(It first, It last)
+    double>
 {
     auto n = std::distance(first, last);
     if (n <= 1) return consts::one<double>;
@@ -135,13 +131,12 @@ populationVariance(It first, It last)
     return (sum - ep * ep / n) / n;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto populationVariance(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-populationVariance(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     auto n = std::distance(first, last);
     if (n <= 1) return consts::one<T>;

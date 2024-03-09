@@ -27,7 +27,6 @@
 #include "tidop/config.h"
 
 #include <vector>
-#include <array>
 
 #include "tidop/math/geometry/affine.h"
 #include "tidop/math/algebra/matrix.h"
@@ -184,8 +183,8 @@ public:
 
 template<typename T, size_t Dim>
 template<size_t rows, size_t cols>
-inline auto HelmertEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
-                                               const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>
+auto HelmertEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
+                                        const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>
 {
     Affine<T, Dim> affine;
 
@@ -201,8 +200,8 @@ inline auto HelmertEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
 }
 
 template<typename T, size_t Dim>
-inline auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
-                                               const std::vector<Point<T>> &dst) -> Affine<T, Dim>
+auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
+                                        const std::vector<Point<T>> &dst) -> Affine<T, Dim>
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 
@@ -221,8 +220,8 @@ inline auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src,
 }
 
 template<typename T, size_t Dim>
-inline auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point3<T>> &src, 
-                                               const std::vector<Point3<T>> &dst) -> Affine<T, Dim>
+auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point3<T>> &src, 
+                                        const std::vector<Point3<T>> &dst) -> Affine<T, Dim>
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 

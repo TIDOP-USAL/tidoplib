@@ -79,15 +79,6 @@ auto GPoint::operator =(GPoint&& gPoint) TL_NOEXCEPT -> GPoint&
     return *this;
 }
 
-auto GPoint::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-auto GPoint::isSimpleEntity() const -> bool
-{
-    return true;
-}
 
 
 
@@ -117,7 +108,7 @@ GPoint3D::GPoint3D(const GPoint3D &pt)
 {
 }
 
-GPoint3D::GPoint3D(GPoint &&pt) TL_NOEXCEPT
+GPoint3D::GPoint3D(GPoint3D &&pt) TL_NOEXCEPT
   : Point3<double>(std::forward<Point3<double>>(pt)),
     GraphicEntity(std::forward<GraphicEntity>(pt))
 {
@@ -127,7 +118,7 @@ GPoint3D::~GPoint3D()
 {
 }
 
-auto GPoint3D::operator =(const GPoint3D& gPoint) -> GPoint3D&
+auto GPoint3D::operator =(const GPoint3D &gPoint) -> GPoint3D&
 {
     if (this != &gPoint) {
         Point3<double>::operator=(gPoint);
@@ -136,7 +127,7 @@ auto GPoint3D::operator =(const GPoint3D& gPoint) -> GPoint3D&
     return *this;
 }
 
-auto GPoint3D::operator =(GPoint3D&& gPoint) TL_NOEXCEPT -> GPoint3D&
+auto GPoint3D::operator =(GPoint3D &&gPoint) TL_NOEXCEPT -> GPoint3D&
 {
     if (this != &gPoint) {
         Point3<double>::operator=(std::forward<Point3<double>>(gPoint));
@@ -145,15 +136,6 @@ auto GPoint3D::operator =(GPoint3D&& gPoint) TL_NOEXCEPT -> GPoint3D&
     return *this;
 }
 
-auto GPoint3D::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-auto GPoint3D::isSimpleEntity() const -> bool
-{
-    return true;
-}
 
 
 
@@ -161,6 +143,12 @@ auto GPoint3D::isSimpleEntity() const -> bool
 
 GMultiPoint::GMultiPoint()
   : GraphicEntity(GraphicEntity::Type::multipoint_2d)
+{
+}
+
+GMultiPoint::GMultiPoint(size_t size)
+  : MultiPoint<Point<double>>(size),
+    GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
@@ -173,6 +161,12 @@ GMultiPoint::GMultiPoint(const MultiPoint<Point<double>> &multiPoint)
 GMultiPoint::GMultiPoint(const GMultiPoint &gMultiPoint)
   : MultiPoint<Point<double>>(gMultiPoint),
     GraphicEntity(gMultiPoint)
+{
+}
+
+GMultiPoint::GMultiPoint(GMultiPoint &&gMultiPoint) TL_NOEXCEPT
+  : MultiPoint<Point<double>>(std::forward<MultiPoint<Point<double>>>(gMultiPoint)),
+    GraphicEntity(std::forward<GraphicEntity>(gMultiPoint))
 {
 }
 
@@ -189,23 +183,24 @@ auto GMultiPoint::operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint&
     return *this;
 }
 
-auto GMultiPoint::isMultiEntity() const -> bool
+auto GMultiPoint::operator=(GMultiPoint&& gMultiPoint) TL_NOEXCEPT -> GMultiPoint&
 {
-    return true;
+    if (this != &gMultiPoint) {
+        MultiPoint<Point<double>>::operator=(std::forward<MultiPoint<Point<double>>>(gMultiPoint));
+        GraphicEntity::operator=(gMultiPoint);
+    }
+    return *this;
 }
-
-auto GMultiPoint::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
-
-
-
 
 
 GMultiPoint3D::GMultiPoint3D()
   : GraphicEntity(GraphicEntity::Type::multipoint_3d)
+{
+}
+
+GMultiPoint3D::GMultiPoint3D(size_t size)
+  : MultiPoint3D<Point3<double>>(size),
+    GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
@@ -221,11 +216,16 @@ GMultiPoint3D::GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D)
 {
 }
 
+GMultiPoint3D::GMultiPoint3D(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT
+  : MultiPoint3D<Point3<double>>(std::forward<MultiPoint3D<Point3<double>>>(gMultiPoint3D)),
+    GraphicEntity(std::forward<GraphicEntity>(gMultiPoint3D)){
+}
+
 GMultiPoint3D::~GMultiPoint3D()
 {
 }
 
-auto GMultiPoint3D::operator =(const GMultiPoint3D& gMultiPoint3D) -> GMultiPoint3D&
+auto GMultiPoint3D::operator =(const GMultiPoint3D &gMultiPoint3D) -> GMultiPoint3D&
 {
     if (this != &gMultiPoint3D) {
         MultiPoint3D<Point3<double>>::operator=(gMultiPoint3D);
@@ -234,16 +234,14 @@ auto GMultiPoint3D::operator =(const GMultiPoint3D& gMultiPoint3D) -> GMultiPoin
     return *this;
 }
 
-auto GMultiPoint3D::isMultiEntity() const -> bool
+auto GMultiPoint3D::operator=(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT -> GMultiPoint3D&
 {
-    return true;
+    if (this != &gMultiPoint3D) {
+        MultiPoint3D<Point3<double>>::operator=(std::forward<MultiPoint3D<Point3<double>>>(gMultiPoint3D));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiPoint3D));
+    }
+    return *this;
 }
-
-auto GMultiPoint3D::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
 
 
 } // End namespace tl

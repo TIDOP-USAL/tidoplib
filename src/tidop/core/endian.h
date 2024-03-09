@@ -24,10 +24,6 @@
 
 #pragma once
 
-#include "tidop/config.h"
-
-#include <string>
-#include <memory>
 #include <mutex>
 #include <fstream>
 
@@ -56,8 +52,7 @@ enum class endianness
 
 
 template <typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, T>::type
-swapEndian(T val)
+auto swapEndian(T val) -> std::enable_if_t<std::is_arithmetic<T>::value, T>
 {
     union U
     {

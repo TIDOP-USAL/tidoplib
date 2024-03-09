@@ -27,7 +27,6 @@
 #include <algorithm>
 
 #include "tidop/math/math.h"
-#include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/lapack.h"
@@ -78,10 +77,10 @@ public:
 
     QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-    Vector<T, _rows> solve(const Vector<T, _rows> &b);
+    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
 
-    Matrix<T, _rows, _cols> q() const;
-    Matrix<T, _rows, _cols> r() const;
+    auto q() const -> Matrix<T, _rows, _cols>;
+    auto r() const -> Matrix<T, _rows, _cols>;
     //Matrix<T, _rows, _cols> qr() const;
 
 private:
@@ -223,7 +222,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
 {
     TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
     TL_ASSERT(!singular, "Singular");
@@ -247,7 +246,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const -> Matrix<T, _rows, _cols>
 {
     return Q_t.transpose();
 }
@@ -265,7 +264,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const -> Matrix<T, _rows, _cols>
 {
     return R;
 }

@@ -36,16 +36,16 @@ namespace tl
  *  \{
  */
 
-/*!
- * \brief Clase Fuente
- */
+ /*!
+  * \brief Font class 
+  */
 class TL_EXPORT Font
 {
 
 public:
 
     /*!
-     * \brief Estilo de fuente
+     * \brief Font style
      */
     enum class Style : uint8_t
     {
@@ -54,160 +54,142 @@ public:
         italic = 1 << 1
     };
 
+private:
+
+    std::string mName;
+    int mSize;
+    EnumFlags<Style> mStyle;
+    bool mUnderline;
+    bool mStrikethrough;
+
 public:
 
     /*!
-     * \brief Constructora por defecto
+     * \brief Default constructor
      */
     Font();
 
     /*!
-     * \brief Constructora de copia
-     * \param[in] font Fuente
+     * \brief Copy constructor
+     * \param[in] font Font
      */
     Font(const Font &font);
 
     /*!
-     * \brief Constructora de movimiento
-     * \param[in] font Fuente
+     * \brief Move constructor
+     * \param[in] font Font
      */
     Font(Font &&font) TL_NOEXCEPT;
 
     /*!
-     * \brief Constructora
-     * \param[in] name Nombre de la fuente
-     * \param[in] size Tamaño de la fuente
-     * \param[in] style Estilo de la fuente
-     * \param[in] underline Subrayado. Por defecto desactivado
-     * \param[in] strikethrough Tachado. Por defecto desactivado
+     * \brief Constructor
+     * \param[in] name Font name
+     * \param[in] size Font size
+     * \param[in] style Font style
+     * \param[in] underline Underline. Default is off
+     * \param[in] strikethrough Strikethrough. Default is off
      * \see Style
      */
-    Font(const std::string name, int size = 10, Style style = Style::normal, bool underline = false, bool strikethrough = false);
+    explicit Font(std::string name, 
+                  int size = 10, 
+                  Style style = Style::normal, 
+                  bool underline = false, 
+                  bool strikethrough = false);
+
+    ~Font() = default;
 
     /*!
-     * \brief Destructora
+     * \brief Returns the font name
+     * \return Font name
      */
-    ~Font() {}
+    auto name() const -> std::string;
 
     /*!
-     * \brief Devuelve el nombre de la fuente
-     * \return Nombre de la fuente
-     */
-    std::string name() const;
-
-    /*!
-     * \brief Establece el nombre de la fuente
-     * \param[in] name Nombre de la fuente
+     * \brief Sets the font name
+     * \param[in] name Font name
      */
     void setName(const std::string &name);
 
     /*!
-     * \brief Devuelve el tamaño de la fuente
-     * \return Tamaño de la fuente
+     * \brief Returns the font size
+     * \return Font size
      */
-    int size() const;
+    auto size() const -> int;
 
     /*!
-     * \brief Establece el tamaño de la fuente
-     * \param[in] size Tamaño de la fuente
+     * \brief Sets the font size
+     * \param[in] size Font size
      */
     void setSize(int size);
 
     /*!
-     * \brief Fuente en negrita
-     * \return Verdadero si la fuente está en negrita
+     * \brief Bold font
+     * \return True if the font is bold
      */
-    bool isBold() const;
+    auto isBold() const -> bool;
 
     /*!
-     * \brief Fuente en negrita
-     * \param[in] active Activa opcion
+     * \brief Bold font
+     * \param[in] active Activate option
      */
     void setBold(bool active);
 
     /*!
-     * \brief Fuente en cursiva
-     * \return Verdadero si la fuente está en cursiva
+     * \brief Italic font
+     * \return True if the font is italic
      */
-    bool isItalic() const;
+    auto isItalic() const -> bool;
 
     /*!
-     * \brief Fuente cursiva
-     * \param[in] active Activa opcion
+     * \brief Italic font
+     * \param[in] active Activate option
      */
     void setItalic(bool active);
 
     /*!
-     * \brief Fuente con subrayado
-     * \return Verdadero si la fuente subrayada
+     * \brief Underlined font
+     * \return True if the font is underlined
      */
-    bool isUnderline() const;
+    auto isUnderline() const -> bool;
 
     /*!
-     * \brief Fuente con subrayado
-     * \param[in] active Activa opcion
+     * \brief Underlined font
+     * \param[in] active Activate option
      */
     void setUnderline(bool active);
 
     /*!
-     * \brief Fuente tachada
-     * \return Verdadero si la fuente está tachada
+     * \brief Strikethrough font
+     * \return True if the font is strikethrough
      */
-    bool isStrikethrough() const;
+    auto isStrikethrough() const -> bool;
 
     /*!
-     * \brief setStrikethrough
-     * \param[in] active Activa opcion
+     * \brief Strikethrough font
+     * \param[in] active Activate option
      */
     void setStrikethrough(bool active);
 
     /*!
-     * \brief setStyle
+     * \brief Set the style
      * \param[in] style
      */
     void setStyle(Style style);
 
     /*!
-     * \brief Operador de asignacion
-     * \param[in] font Objeto Font que se asigna
+     * \brief Assignment operator
+     * \param[in] font Font object being assigned
      * \return
      */
-    Font &operator = (const Font &font);
+    auto operator =(const Font& font) -> Font&;
 
     /*!
-     * \brief Operador de asignacion de movimiento
-     * \param[in] font Objeto Font que se mueve
+     * \brief Move assignment operator
+     * \param[in] font Font object being moved
      * \return
      */
-    Font &operator = (Font &&font) TL_NOEXCEPT;
+    auto operator =(Font&& font) TL_NOEXCEPT -> Font&;
 
-private:
-
-    /*!
-     * \brief Nombre de fuente
-     */
-    std::string mName;
-
-    /*!
-     * \brief Tamaño de fuente
-     */
-    int mSize;
-
-    /*!
-     * \brief Estilo
-     * \see Style
-     */
-    EnumFlags<Style> mStyle;
-
-    /*!
-     * \brief Subrayado de fuente
-     */
-    bool mUnderline;
-
-    /*!
-     * \brief Tachado de fuente
-     */
-    bool mStrikethrough;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)

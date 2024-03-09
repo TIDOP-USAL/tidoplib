@@ -52,28 +52,29 @@ class TL_EXPORT MetadataItemBase
     : public MetadataItem
 {
 
-public:
-
-    MetadataItemBase(const std::string &name,
-                     const std::string &defValue = "");
-    ~MetadataItemBase() override = default;
-
-    std::string value() const;
-    void setValue(const std::string &value);
-    std::string defaultValue() const;
-    void setDefaultValue(const std::string &defValue);
-    bool isActive() const;
-
 private:
 
     std::string mName;
     std::string mDefaultValue;
     std::string mValue;
     bool bActive;
+
+public:
+
+    MetadataItemBase(std::string name,
+                     std::string defValue = "");
+    ~MetadataItemBase() override = default;
+
+    auto value() const -> std::string;
+    void setValue(const std::string &value);
+    auto defaultValue() const -> std::string;
+    void setDefaultValue(const std::string &defValue);
+    auto isActive() const -> bool;
+
 };
 
 
-class MetadataItemNumber
+class MetadataItemNumber  // NOLINT(cppcoreguidelines-special-member-functions)
     : public MetadataItemBase
 {
 
@@ -120,25 +121,25 @@ public:
         gif
     };
 
-    typedef std::map<std::string, std::string>::iterator metadata_iterator;
-    typedef std::map<std::string, std::string>::const_iterator metadata_const_iterator;
+    //using iterator = std::map<std::string, std::string>::iterator;
+    //using const_iterator = std::map<std::string, std::string>::const_iterator;
+
+protected:
+
+    Format mFormat;
 
 public:
 
     ImageMetadata(Format format);
     virtual ~ImageMetadata();
 
-    Format format();
+    Format format() const;
 
-    virtual std::string metadata(const std::string &name, bool &active) const = 0;
+    virtual auto metadata(const std::string& name, bool &active) const -> std::string = 0;
     virtual void setMetadata(const std::string &name, const std::string &value) = 0;
-    virtual std::map<std::string, std::string> metadata() const = 0;
-    virtual std::map<std::string, std::string> activeMetadata() const = 0;
+    virtual auto metadata() const -> std::map<std::string, std::string> = 0;
+    virtual auto activeMetadata() const -> std::map<std::string, std::string> = 0;
     virtual void reset() = 0;
-
-protected:
-
-    Format mFormat;
 
 };
 
@@ -155,7 +156,7 @@ private:
 
 public:
 
-    static std::shared_ptr<ImageMetadata> create(const std::string &format);
+    static auto create(const std::string &format) -> std::shared_ptr<ImageMetadata>;
 };
 
 

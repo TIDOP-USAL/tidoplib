@@ -36,7 +36,7 @@ TL_DISABLE_WARNINGS
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
-#endif TL_HAVE_GDAL
+#endif //TL_HAVE_GDAL
 
 
 #include <utility>
@@ -48,41 +48,48 @@ namespace tl
 
 DataType gdalConvertDataType(GDALDataType dataType)
 {
-  DataType ret;
-  switch (dataType) {
-  case GDT_Byte:
-    ret = DataType::TL_8U;
-    break;
-  case GDT_UInt16:
-    ret = DataType::TL_16U;
-    break;
-  case GDT_Int16:
-    ret = DataType::TL_16S;
-    break;
-  case GDT_UInt32:
-    ret = DataType::TL_32U;
-    break;
-  case GDT_Int32:
-    ret = DataType::TL_32S;
-    break;
-  case GDT_Float32:
-    ret = DataType::TL_32F;
-    break;
-  case GDT_Float64:
-    ret = DataType::TL_64F;
-    break;
-  default:
-    ret = DataType::TL_8U;
-    break;
-  }
-  return ret;
+    DataType ret = DataType::TL_8U;
+
+    switch (dataType) {
+    case GDT_Unknown:
+        TL_THROW_EXCEPTION("Unknow data type");
+    case GDT_Byte:
+        ret = DataType::TL_8U;
+        break;
+    case GDT_UInt16:
+        ret = DataType::TL_16U;
+        break;
+    case GDT_Int16:
+        ret = DataType::TL_16S;
+        break;
+    case GDT_UInt32:
+        ret = DataType::TL_32U;
+        break;
+    case GDT_Int32:
+        ret = DataType::TL_32S;
+        break;
+    case GDT_Float32:
+        ret = DataType::TL_32F;
+        break;
+    case GDT_Float64:
+        ret = DataType::TL_64F;
+        break;
+    case GDT_CInt16:
+    case GDT_CInt32:
+    case GDT_CFloat32:
+    case GDT_CFloat64:
+    case GDT_TypeCount:
+        TL_THROW_EXCEPTION("Data type not supported");
+    }
+
+    return ret;
 }
 
 /*!
- * \brief Obtiene el tipo de dato de OpenCV
- * \param gdalType Tipo de GDAL
- * \param channels Número de canales
- * \return Tipo de OpenCV
+ * \brief Gets the OpenCV data type corresponding to a GDAL data type.
+ * \param gdalType GDAL data type
+ * \param channels Number of channels
+ * \return OpenCV data type
  */
 int gdalToOpenCv(GDALDataType gdalType, int channels)
 {
@@ -93,28 +100,25 @@ int gdalToOpenCv(GDALDataType gdalType, int channels)
     depth = CV_16U;
   else if(gdalType == GDT_Int16)
     depth = CV_16S;
-  else if(gdalType == GDT_UInt32)
-    depth = CV_32S;
-  else if(gdalType == GDT_Int32)
+  else if(gdalType == GDT_UInt32 || 
+          gdalType == GDT_Int32)
     depth = CV_32S;
   else if(gdalType == GDT_Float32)
     depth = CV_32F;
   else if(gdalType == GDT_Float64)
     depth = CV_64F;
-  //else if (gdalType == GDT_CInt16)
-  //  depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
-  //else if (gdalType == GDT_CInt32)
-  //  depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
-  //else if (gdalType == GDT_CFloat32)
-  //  depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
-  //else if (gdalType == GDT_CFloat64)
-  //  depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
+  else if (gdalType == GDT_CInt16 || 
+           gdalType == GDT_CInt32 ||  
+           gdalType == GDT_CFloat32 ||
+           gdalType == GDT_CFloat64)
+      TL_THROW_EXCEPTION("Data type not supported");
   else
     depth = -1;
+
   return(CV_MAKETYPE(depth, channels));
 }
 
-#endif TL_HAVE_GDAL
+#endif //TL_HAVE_GDAL
 
 ImageReader::ImageReader(tl::Path file)
   : mFile(std::move(file))
@@ -149,7 +153,7 @@ auto ImageReader::file() const -> tl::Path
 
 #ifdef TL_HAVE_GDAL
 
-class ImageReaderGdal
+class ImageReaderGdal final
   : public ImageReader
 {
     GENERATE_UNIQUE_PTR(ImageReaderGdal)
@@ -165,7 +169,7 @@ public:
     
     ~ImageReaderGdal() override
     {
-        this->close();
+        ImageReaderGdal::close();
     }
 
 // Heredado vía ImageReader
@@ -252,7 +256,7 @@ public:
             offset.y = roundToInteger(offset.y * scaleY);
 
             if (affine) {
-                *affine = Affine<int,2>(scaleX, scaleY, offset.x, offset.y, 0);
+                *affine = Affine<int,2>(roundToInteger(scaleX), roundToInteger(scaleY), offset.x, offset.y, 0);
             }
 
             image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
@@ -260,19 +264,17 @@ public:
             TL_ASSERT(!image.empty(), "Image empty");
 
             uchar *buff = image.ptr();
-            int nPixelSpace = static_cast<int>(image.elemSize());
-            int nLineSpace = nPixelSpace * image.cols;
-            int nBandSpace = static_cast<int>(image.elemSize1());
+            int pixel_space = static_cast<int>(image.elemSize());
+            int line_space = pixel_space * image.cols;
+            int band_space = static_cast<int>(image.elemSize1());
 
             CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
                                              rect_to_read.width, rect_to_read.height,
                                              buff, size_to_read.width, size_to_read.height, this->gdalDataType(),
-                                             this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
-                                             nLineSpace, nBandSpace);
+                                             this->channels(), gdalBandOrder(this->channels()).data(), pixel_space,
+                                             line_space, band_space);
 
-            if (cerr != 0) {
-                throw std::runtime_error(Message::format("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg()));
-            }
+            TL_ASSERT(cerr == CE_None, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -312,7 +314,7 @@ public:
             size.height = roundToInteger(rect_to_read.height * scaleY);
 
             if (affine) {
-                *affine = Affine<int,2>(scaleX, scaleY, offset.x, offset.y, 0);
+                *affine = Affine<int,2>(roundToInteger(scaleX), roundToInteger(scaleY), offset.x, offset.y, 0);
             }
 
             image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
@@ -330,9 +332,7 @@ public:
                                              this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
                                              nLineSpace, nBandSpace);
 
-            if (cerr != 0) {
-                throw std::runtime_error(Message::format("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg()));
-            }
+            TL_ASSERT(cerr == CE_None, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -393,7 +393,7 @@ public:
     
     auto rows() const -> int override
     {
-        int rows = 0;
+        int rows;
 
         try {
 
@@ -410,7 +410,7 @@ public:
     
     auto cols() const -> int override
     {
-        int cols = 0;
+        int cols;
 
         try {
 
@@ -427,7 +427,7 @@ public:
     
     auto channels() const -> int override
     {
-        int channels = 0;
+        int channels;
 
         try {
 
@@ -496,104 +496,104 @@ public:
                     const char *domain = gdalMetadataDomainList[i];
                     char **gdalMetadata = mDataset->GetMetadata(domain);
     
-                    if (std::string("xml:XMP").compare(domain) == 0) {
+                    if (std::string("xml:XMP") == domain) {
     
                         /// Sacar a función parseXMP
                         {
     
                             CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
                             while (xml_node) {
-                                if (std::string(xml_node->pszValue).compare("xpacket") == 0) {
+                                if (std::string(xml_node->pszValue) == "xpacket") {
     
-                                } else if (std::string(xml_node->pszValue).compare("x:xmpmeta") == 0) {
+                                } else if (std::string(xml_node->pszValue) == "x:xmpmeta") {
     
                                     CPLXMLNode *child_node = xml_node->psChild;
                                     while (child_node) {
-                                        if (std::string(child_node->pszValue).compare("rdf:RDF") == 0) {
+                                        if (std::string(child_node->pszValue) == "rdf:RDF") {
     
                                             CPLXMLNode *rdf_node = child_node->psChild;
     
                                             while (rdf_node) {
     
-                                                if (std::string(rdf_node->pszValue).compare("rdf:Description") == 0) {
+                                                if (std::string(rdf_node->pszValue) == "rdf:Description") {
     
                                                     CPLXMLNode *rdfdescription_node = rdf_node->psChild;
                                                     while (rdfdescription_node) {
     
-                                                        if (std::string(rdfdescription_node->pszValue).compare("xmlns:drone-dji") == 0) {
+                                                        if (std::string(rdfdescription_node->pszValue) == "xmlns:drone-dji") {
                                                             /// Camara DJI
                                                             metadata->setMetadata("EXIF_Make", "DJI");
     
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:AbsoluteAltitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:AbsoluteAltitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_AbsoluteAltitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RelativeAltitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RelativeAltitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RelativeAltitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLatitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GpsLatitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GpsLatitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLongitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GpsLongitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GpsLongitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLongtitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GpsLongtitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GpsLongitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalRollDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalRollDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalRollDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalYawDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalYawDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalYawDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalPitchDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalPitchDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalPitchDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightRollDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightRollDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightRollDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYawDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightYawDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightYawDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightPitchDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightPitchDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightPitchDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightXSpeed") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightXSpeed") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightXSpeed", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYSpeed") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightYSpeed") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightYSpeed", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightZSpeed") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightZSpeed") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightZSpeed", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CamReverse") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CamReverse") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CamReverse", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalReverse") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalReverse") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalReverse", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedFocalLength") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedFocalLength") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CalibratedFocalLength", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedOpticalCenterX") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedOpticalCenterX") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("CalibratedOpticalCenterX", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedOpticalCenterY") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedOpticalCenterY") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CalibratedOpticalCenterY", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkFlag") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkFlag") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkFlag", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdLon") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkStdLon") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkStdLon", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdLat") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkStdLat") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkStdLat", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdHgt") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkStdHgt") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkStdHgt", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("xmpDM:cameraModel") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("EXIF_Model", value);
                                                         }
@@ -735,7 +735,7 @@ public:
         return window;
     }
     
-    auto noDataValue(bool *exist) const -> double
+    auto noDataValue(bool *exist) const -> double override
     {
         double nodata{};
 
@@ -985,7 +985,9 @@ private:
 
 #endif // TL_HAVE_EDSDK
 
-/* ---------------------------------------------------------------------------------- */
+
+
+
 
 
 auto ImageReaderFactory::create(const Path &file) -> ImageReader::Ptr

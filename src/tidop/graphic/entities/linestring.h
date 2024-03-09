@@ -51,6 +51,8 @@ public:
      */
     GLineString();
 
+    explicit GLineString(size_t size);
+
     /*!
      * \brief Constructor from a polyline
      * Represents a polyline without style
@@ -77,19 +79,22 @@ public:
      * \param[in] gLineString GLineString object to be copied
      * \return Object reference
      */
-    auto operator =(const GLineString& gLineString) -> GLineString&;
+    auto operator =(const GLineString &gLineString) -> GLineString&;
 
     /*!
      * \brief Assignment move operator
      * \param[in] gLineString GLineString object that moves
      * \return Object reference
      */
-    auto operator =(GLineString&& gLineString) TL_NOEXCEPT -> GLineString&;
+    auto operator =(GLineString &&gLineString) TL_NOEXCEPT -> GLineString&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 
 };
+
+
+
 
 
 /*!
@@ -105,6 +110,8 @@ public:
      * \brief Default constructor
      */
     GLineString3D();
+
+    explicit GLineString3D(size_t size);
 
     /*!
      * \brief Constructor from a 3D polyline
@@ -128,21 +135,23 @@ public:
 
     /*!
      * \brief Assignment copy operator
-     * \param[in] gLineString GLineString3D object to be copied
+     * \param[in] gLineString3D GLineString3D object to be copied
      * \return Object reference
      */
-    auto operator =(const GLineString3D& gLineString) -> GLineString3D&;
+    auto operator =(const GLineString3D& gLineString3D) -> GLineString3D&;
 
     /*!
      * \brief Assignment move operator
-     * \param[in] gLineString GLineString3D object that moves
+     * \param[in] gLineString3D GLineString3D object that moves
      * \return Object reference
      */
-    auto operator =(GLineString3D&& gLineString) TL_NOEXCEPT -> GLineString3D&;
+    auto operator =(GLineString3D&& gLineString3D) TL_NOEXCEPT -> GLineString3D&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 };
+
+
 
 
 /*!
@@ -158,6 +167,8 @@ public:
      * \brief Default constructor
      */
     GMultiLineString();
+
+    explicit GMultiLineString(size_t size);
 
     /*!
      * \brief Constructor from a MultiLineString
@@ -180,16 +191,18 @@ public:
     /*!
      * \brief Assignment copy operator
      */
-    auto operator =(const GMultiLineString& gMultiLineString) -> GMultiLineString&;
+    auto operator =(const GMultiLineString &gMultiLineString) -> GMultiLineString&;
 
     /*!
      * \brief Assignment move operator
      */
-    auto operator =(GMultiLineString&& gMultiLineString) TL_NOEXCEPT -> GMultiLineString&;
+    auto operator =(GMultiLineString &&gMultiLineString) TL_NOEXCEPT -> GMultiLineString&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 };
+
+
 
 /*!
  * \brief 3D multi-polyline graphic class
@@ -204,6 +217,8 @@ public:
      * \brief Default constructor
      */
     GMultiLineString3D();
+
+    explicit GMultiLineString3D(size_t size);
 
     explicit GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D);
 
@@ -222,17 +237,72 @@ public:
     /*!
      * \brief Assignment copy operator
      */
-    auto operator =(const GMultiLineString3D& gMultiLineString3D) -> GMultiLineString3D&;
+    auto operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D&;
 
     /*!
      * \brief Assignment move operator
      */
-    auto operator =(GMultiLineString3D&& gMultiLineString3D) TL_NOEXCEPT -> GMultiLineString3D&;
+    auto operator =(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT -> GMultiLineString3D&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 
 };
+
+
+
+
+
+
+inline bool GLineString::isMultiEntity() const
+{
+    return false;
+}
+
+inline bool GLineString::isSimpleEntity() const
+{
+    return true;
+}
+
+
+
+inline auto GLineString3D::isMultiEntity() const -> bool
+{
+    return false;
+}
+
+inline auto GLineString3D::isSimpleEntity() const -> bool
+{
+    return true;
+}
+
+
+
+
+inline auto GMultiLineString::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiLineString::isSimpleEntity() const -> bool
+{
+    return false;
+}
+
+
+
+
+inline auto GMultiLineString3D::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiLineString3D::isSimpleEntity() const -> bool
+{
+    return false;
+}
+
+
 
 
 /*! \} */ // Fin GraphicEntities

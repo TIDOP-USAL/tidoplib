@@ -8,7 +8,7 @@ namespace tl
 struct Matrices 
 {
 
-    static Matrix4x4f scale(float sx, float sy, float sz)
+    static auto scale(float sx, float sy, float sz) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -19,7 +19,7 @@ struct Matrices
         };
     }
 
-    static Matrix4x4f translate(float tx, float ty, float tz)
+    static auto translate(float tx, float ty, float tz) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -30,7 +30,7 @@ struct Matrices
         };
     }
 
-    static Matrix4x4f rotationX(float angle)
+    static auto rotationX(float angle) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -41,7 +41,7 @@ struct Matrices
         };
     }
 
-    static Matrix4x4f rotationY(float angle)
+    static auto rotationY(float angle) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -52,7 +52,7 @@ struct Matrices
         };
     }
 
-    static Matrix4x4f rotationZ(float angle)
+    static auto rotationZ(float angle) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -64,7 +64,7 @@ struct Matrices
     }
 
     // Right handed perspective projection matrix
-    static Matrix4x4f perspective(float fovy, float aspect, float nearZ, float farZ) 
+    static auto perspective(float fovy, float aspect, float nearZ, float farZ) -> Matrix4x4f
     {
         float a = 1 / (aspect * tan(fovy / 2));
         float b = 1 / tan(fovy / 2);
@@ -93,7 +93,7 @@ struct Matrices
     }
 
     // Right handed look at matrix
-    static Matrix4x4f lookAt(const Vector3f& position, const Vector3f& target, const Vector3f& up) 
+    static auto lookAt(const Vector3f& position, const Vector3f& target, const Vector3f& up) -> Matrix4x4f
     {
         auto dot = [&](const Vector3f& u, const Vector3f& v) {
             return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();

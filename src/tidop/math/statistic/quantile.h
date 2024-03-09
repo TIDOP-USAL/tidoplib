@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/math.h"
 
 namespace tl
@@ -46,11 +45,10 @@ namespace tl
  * \param[in] p [0,1]
  * \return
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto quantile(It first, It last, double p) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-quantile(It first, It last, double p)
+    double>
 {
     double q;
 
@@ -72,13 +70,12 @@ quantile(It first, It last, double p)
     return q;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto quantile(It first, It last, double p) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-quantile(It first, It last, double p)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     T q;
 
@@ -107,11 +104,10 @@ quantile(It first, It last, double p)
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto quartileCoefficientOfDispersion(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-quartileCoefficientOfDispersion(It first, It last)
+    double>
 {
     double q1 = quantile(first, last, 0.25);
     double q3 = quantile(first, last, 0.75);
@@ -119,13 +115,12 @@ quartileCoefficientOfDispersion(It first, It last)
     return (q3 - q1) / (q3 + q1);
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto quartileCoefficientOfDispersion(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-quartileCoefficientOfDispersion(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     T q1 = quantile(first, last, 0.25);
     T q3 = quantile(first, last, 0.75);
@@ -140,11 +135,10 @@ quartileCoefficientOfDispersion(It first, It last)
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto quartileDeviation(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-quartileDeviation(It first, It last)
+    double>
 {
     double q1 = quantile(first, last, 0.25);
     double q3 = quantile(first, last, 0.75);
@@ -152,13 +146,12 @@ quartileDeviation(It first, It last)
     return (q3 - q1) / consts::two<double>;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto quartileDeviation(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-quartileDeviation(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     T q1 = quantile(first, last, 0.25);
     T q3 = quantile(first, last, 0.75);

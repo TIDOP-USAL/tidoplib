@@ -45,11 +45,10 @@ namespace tl
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto biweightMidvariance(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-biweightMidvariance(It first, It last)
+    double>
 {
     size_t n = std::distance(first, last);
     if (n <= 2) return consts::zero<double>;
@@ -77,13 +76,12 @@ biweightMidvariance(It first, It last)
     return n * num / (den * den);
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto biweightMidvariance(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-biweightMidvariance(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     size_t n = std::distance(first, last);
     if (n <= 2) return consts::zero<T>;

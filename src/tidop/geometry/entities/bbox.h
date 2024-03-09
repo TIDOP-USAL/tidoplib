@@ -47,10 +47,8 @@ class BoundingBox final
 
 public:
 
-    /*!
-     * \brief type
-     */
     using value_type = Point3_t;
+    using scalar = typename Point3_t::value_type;
 
 public:
 
@@ -146,17 +144,17 @@ public:
     /*!
      * \brief Bounding Box width
      */
-    auto width() const -> typename Point3_t::value_type;
+    auto width() const -> scalar;
     
     /*!
      * \brief Bounding Box height
      */
-    auto height() const -> typename Point3_t::value_type;
+    auto height() const -> scalar;
     
     /*!
      * \brief Bounding Box depth
      */
-    auto depth() const -> typename Point3_t::value_type;
+    auto depth() const -> scalar;
     
     /*!
      * \brief Check if Bounding Box is empty
@@ -192,19 +190,19 @@ public:
 
 template<typename Point3_t> 
 BoundingBox<Point3_t>::BoundingBox()
-  : Entity(Entity::Type::bounding_box),
-    pt1(std::numeric_limits<typename Point3_t::value_type>().max(),
-        std::numeric_limits<typename Point3_t::value_type>().max(),
-        std::numeric_limits<typename Point3_t::value_type>().max()),
-    pt2(-std::numeric_limits<typename Point3_t::value_type>().max(),
-        -std::numeric_limits<typename Point3_t::value_type>().max(),
-        -std::numeric_limits<typename Point3_t::value_type>().max())
+  : Entity(Type::bounding_box),
+    pt1(std::numeric_limits<scalar>().max(),
+        std::numeric_limits<scalar>().max(),
+        std::numeric_limits<scalar>().max()),
+    pt2(-std::numeric_limits<scalar>().max(),
+        -std::numeric_limits<scalar>().max(),
+        -std::numeric_limits<scalar>().max())
 {
 }
 
 template<typename Point3_t> 
 BoundingBox<Point3_t>::BoundingBox(const BoundingBox &bbox) 
-  : Entity(Entity::Type::bounding_box), 
+  : Entity(Type::bounding_box), 
     pt1(bbox.pt1), 
     pt2(bbox.pt2) 
 {
@@ -221,7 +219,7 @@ BoundingBox<Point3_t>::BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT
 template<typename Point3_t>
 BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1, 
                                    const Point3_t &pt2) 
-  : Entity(Entity::Type::bounding_box),
+  : Entity(Type::bounding_box),
     pt1(std::move(pt1)),
     pt2(std::move(pt2))
 {
@@ -230,17 +228,16 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1,
 template<typename Point3_t> template<typename T> 
 BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
                                    T width, T depth, T height)
-  : Entity(Entity::Type::bounding_box)
+  : Entity(Type::bounding_box)
 {
-    typename Point3_t::value_type two{2};
-    auto half_width = width / two;
-    auto half_depth = depth / two;
-    auto half_height = height / two;
+    auto half_width = width / consts::two<scalar>;
+    auto half_depth = depth / consts::two<scalar>;
+    auto half_height = height / consts::two<scalar>;
 
 #if (CPP_VERSION >= 17)
-    if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
+    if constexpr (std::is_integral<scalar>::value) {
 #else
-    if (std::is_integral<typename Point3_t::value_type>::value) {
+    if (std::is_integral<scalar>::value) {
 #endif
 
         int dx = static_cast<int>(width) % 2;
@@ -266,15 +263,14 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
 template<typename Point3_t> template<typename T> 
 BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
                                    T side)
-  : Entity(Entity::Type::bounding_box)
+  : Entity(Type::bounding_box)
 {
-    typename Point3_t::value_type two{2};
-    auto half_side = side / two;
+    auto half_side = side / consts::two<scalar>;
 
 #if (CPP_VERSION >= 17)
-    if constexpr (std::is_integral<typename Point3_t::value_type>::value) {
+    if constexpr (std::is_integral<scalar>::value) {
 #else
-    if (std::is_integral<typename Point3_t::value_type>::value) {
+    if (std::is_integral<scalar>::value) {
 #endif
 
         int dxyz = static_cast<int>(side) % 2;
@@ -338,51 +334,50 @@ auto BoundingBox<Point3_t>::center() const -> Point3_t
     Point3_t pt_center;
 
     if (!this->isEmpty()) {
-        typename Point3_t::value_type two{2};
 
-        pt_center.x = (pt1.x + pt2.x) / two;
-        pt_center.y = (pt1.y + pt2.y) / two;
-        pt_center.z = (pt1.z + pt2.z) / two;
+        pt_center.x = (pt1.x + pt2.x) / consts::two<scalar>;
+        pt_center.y = (pt1.y + pt2.y) / consts::two<scalar>;
+        pt_center.z = (pt1.z + pt2.z) / consts::two<scalar>;
     }
 
     return pt_center;
 }
 
 template<typename Point3_t>
-auto BoundingBox<Point3_t>::width() const -> typename Point3_t::value_type
+auto BoundingBox<Point3_t>::width() const -> scalar
 {
-    return this->isEmpty() ?  static_cast<typename Point3_t::value_type>(0) : pt2.x - pt1.x;
+    return this->isEmpty() ? consts::zero<scalar> : pt2.x - pt1.x;
 }
 
 template<typename Point3_t>
-auto BoundingBox<Point3_t>::height() const -> typename Point3_t::value_type
+auto BoundingBox<Point3_t>::height() const -> scalar
 {
-    return this->isEmpty() ?  static_cast<typename Point3_t::value_type>(0) : pt2.y - pt1.y;
+    return this->isEmpty() ? consts::zero<scalar> : pt2.y - pt1.y;
 }
 
 template<typename Point3_t>
-auto BoundingBox<Point3_t>::depth() const -> typename Point3_t::value_type
+auto BoundingBox<Point3_t>::depth() const -> scalar
 {
-    return this->isEmpty() ?  static_cast<typename Point3_t::value_type>(0) : pt2.z - pt1.z;
+    return this->isEmpty() ? consts::zero<scalar> : pt2.z - pt1.z;
 }
 
 template<typename Point3_t>
 auto BoundingBox<Point3_t>::isEmpty() const -> bool
 {
-    return (pt1.x == std::numeric_limits<typename Point3_t::value_type>().max() &&
-            pt1.y == std::numeric_limits<typename Point3_t::value_type>().max() &&
-            pt1.z == std::numeric_limits<typename Point3_t::value_type>().max() &&
-            pt2.x == -std::numeric_limits<typename Point3_t::value_type>().max() &&
-            pt2.y == -std::numeric_limits<typename Point3_t::value_type>().max() &&
-            pt2.z == -std::numeric_limits<typename Point3_t::value_type>().max());
+    return (pt1.x == std::numeric_limits<scalar>().max() &&
+            pt1.y == std::numeric_limits<scalar>().max() &&
+            pt1.z == std::numeric_limits<scalar>().max() &&
+            pt2.x == -std::numeric_limits<scalar>().max() &&
+            pt2.y == -std::numeric_limits<scalar>().max() &&
+            pt2.z == -std::numeric_limits<scalar>().max());
 }
 
 template<typename Point3_t>
 auto BoundingBox<Point3_t>::isValid() const -> bool
 {
-    return this->width() > static_cast<typename Point3_t::value_type>(0) &&
-           this->height() > static_cast<typename Point3_t::value_type>(0) &&
-           this->depth() > static_cast<typename Point3_t::value_type>(0);
+    return this->width() > consts::zero<scalar> &&
+           this->height() > consts::zero<scalar> &&
+           this->depth() > consts::zero<scalar>;
 }
 
 template<typename Point3_t>

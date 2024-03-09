@@ -112,6 +112,12 @@ Image::Image(const Size<int> &size,
 }
 
 Image::Image(const Image &image) = default;
+
+Image::Image(Image &&image) TL_NOEXCEPT
+{
+
+}
+
 Image::~Image() = default;
 
 Image &Image::operator=(const Image &image)
@@ -121,37 +127,40 @@ Image &Image::operator=(const Image &image)
         mCols = image.mCols;
         mType = image.mType;
         mChannels = image.mChannels;
-        mData = image.mData;
+        auto size = mRows * mCols * mChannels * this->depth();
+        mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(size)));
+        memcpy(mData, image.mData, size);
     }
+
     return *this;
 }
 
-int Image::rows() const
+auto Image::rows() const -> int
 {
     return mRows;
 }
 
-int Image::cols() const
+auto Image::cols() const -> int
 {
     return mCols;
 }
 
-DataType Image::type() const
+auto Image::type() const -> DataType
 {
     return mType;
 }
 
-int Image::channels() const
+auto Image::channels() const -> int
 {
     return mChannels;
 }
 
-unsigned char *Image::data()
+unsigned char *Image::data() const
 {
     return mData;
 }
 
-int Image::depth()
+auto Image::depth() const -> int
 {
     int bits = 0;
     TL_TODO("Completar")
@@ -183,7 +192,7 @@ int Image::depth()
     return bits;
 }
 
-bool Image::isEmpty()
+auto Image::isEmpty() const -> bool
 {
     return false;
 }

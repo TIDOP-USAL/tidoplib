@@ -48,10 +48,10 @@ namespace tl
  * \param[in] last Iterador al final
  * \return Valor de la moda
  */
-template<typename It> inline
-typename std::iterator_traits<It>::value_type mode(It first, It last)
+template<typename It>
+auto mode(It first, It last) -> typename std::iterator_traits<It>::value_type
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     std::map<T, int> h;
     while (first != last) {
@@ -72,8 +72,8 @@ typename std::iterator_traits<It>::value_type mode(It first, It last)
  * \param[in] container Objeto contenedor
  * \return Valor de la moda
  */
-template<typename T> inline
-typename T::value_type mode(const T &container)
+template<typename T>
+auto mode(const T& container) -> typename T::value_type
 {
     return mode(container.begin(), container.end());
 }

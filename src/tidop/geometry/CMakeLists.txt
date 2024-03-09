@@ -37,15 +37,6 @@ if(BUILD_TL_GEOMETRY)
                         SOURCE_FILES 
                             entities/segment.cpp
                         HEADER_FILES
-                            transform/transform.h
-                            transform/affine.h
-                            transform/helmert2d.h
-                            transform/helmert3d.h
-                            transform/polynomial.h
-                            transform/projective.h
-                            transform/rotation.h
-                            transform/scale.h
-                            transform/translation.h
                             rect.h
                             size.h
                             entities/bbox.h

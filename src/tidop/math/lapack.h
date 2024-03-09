@@ -46,37 +46,35 @@ namespace lapack
 
 /* Factorización LU */
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-getrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
+template<typename T>
+auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> std::enable_if_t<
+    std::is_same<float, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
     return info;
 }
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-getrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda, lapack_int *ipiv)
+template<typename T>
+auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> std::enable_if_t<
+    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
     return info;
 }
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
+template<typename T> 
+auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda, 
+           lapack_int* ipiv, T* b, lapack_int ldb) -> std::enable_if_t<
+    std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>
 {
     lapack_int info = LAPACKE_sgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
     return info;
 }
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, T *b, lapack_int ldb)
+template<typename T> 
+auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda, 
+           lapack_int* ipiv, T* b, lapack_int ldb) -> std::enable_if_t<
+    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
     return info;
@@ -85,19 +83,17 @@ getrs(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int *ipiv, 
 
 /* Factorización Cholesky */
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-potrf(lapack_int rows, T *a, lapack_int lda)
+template<typename T>
+auto potrf(lapack_int rows, T* a, lapack_int lda) -> std::enable_if_t<
+    std::is_same<float, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
     return info;
 }
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-potrf(lapack_int rows, T *a, lapack_int lda)
+template<typename T> 
+auto potrf(lapack_int rows, T* a, lapack_int lda) -> std::enable_if_t<
+    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
     return info;
@@ -106,19 +102,19 @@ potrf(lapack_int rows, T *a, lapack_int lda)
 
 /* SVD (Singular value decomposition) */
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>::type
-gesvd(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+template<typename T> 
+auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
+           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> std::enable_if_t<
+    std::is_same<float, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_sgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
     return info;
 }
 
-template<typename T> inline
-typename std::enable_if<
-    std::is_same<double, typename std::remove_cv<T>::type>::value, lapack_int>::type
-gesvd(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+template<typename T> 
+auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
+           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> std::enable_if_t<
+    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
 {
     lapack_int info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
     return info;

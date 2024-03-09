@@ -327,7 +327,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
   BOOST_CHECK(color == def_style.outlineColor());
   BOOST_CHECK(color == def_style.shadowColor());
   BOOST_CHECK_EQUAL(100., def_style.stretch());
-  BOOST_CHECK(Label::Placement::p == def_style.placement());
+  BOOST_CHECK(Label::Placement::point == def_style.placement());
   BOOST_CHECK((Label::AnchorPosition::vertical_baseline | Label::AnchorPosition::horizontal_left) ==
             def_style.anchorPosition());
   BOOST_CHECK_EQUAL(0., def_style.offsetX());
@@ -383,8 +383,8 @@ BOOST_FIXTURE_TEST_CASE(setStretch, StyleLabelTest)
 
 BOOST_FIXTURE_TEST_CASE(setPlacement, StyleLabelTest)
 {
-  style->setPlacement(Label::Placement::l);
-  BOOST_CHECK(Label::Placement::l == style->placement());
+  style->setPlacement(Label::Placement::last_vertex);
+  BOOST_CHECK(Label::Placement::last_vertex == style->placement());
 }
 
 BOOST_FIXTURE_TEST_CASE(setAnchorPosition, StyleLabelTest)

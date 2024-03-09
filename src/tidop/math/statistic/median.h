@@ -24,8 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
-
 #include "tidop/math/statistic/quantile.h"
 
 namespace tl
@@ -45,29 +43,26 @@ namespace tl
  */
 
 /*!
- * \brief La Mediana es el valor de la variable que toma la posición central de la distribución.
- * Es el valor que verifica que el 50% de las variables son mayores o iguales
- * que él y que el otro 50% son menores.
- * La mediana tiene que ir acompañada de una medida de dispersión (por lo general por el Recorrido
- * Intercuartílico)
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor de la mediana
+ * \brief The median is the value of the variable that occupies the central position in the distribution.
+ * It is the value that verifies that 50% of the variables are greater than or equal to it,
+ * and the other 50% are smaller.
+ * The median should be accompanied by a measure of dispersion (usually the interquartile range).
+ * \param[in] first Iterator to the beginning
+ * \param[in] last Iterator to the end
+ * \return Value of the median
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto median(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-median(It first, It last)
+    double>
 {
     return tl::quantile(first, last, 0.5);
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto median(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-median(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
     return tl::quantile(first, last, 0.5);
 }

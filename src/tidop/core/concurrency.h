@@ -35,7 +35,6 @@
 #include <algorithm>
 
 #include "tidop/core/defs.h"
-#include "tidop/math/math.h"
 
 namespace tl
 {
@@ -254,35 +253,35 @@ public:
      * \brief Extact the first item from the queue
      * \param[out] value Extact element
      */
-    virtual bool pop(T &value) = 0;
+    virtual auto pop(T& value) -> bool = 0;
     
     /*!
      * \brief Returns the number of elements
      * \return Size of the queue
      */
-    size_t size() const;
+    auto size() const -> size_t;
     
     /*!
      * \brief Returns the capacity of the queue
      * \return Maximun number of elements in queue
      */
-    size_t capacity() const;
+    auto capacity() const -> size_t;
     
     /*!
      * \brief checks whether the queue is empty
      */
-    bool empty() const;
+    auto empty() const -> bool;
 
     /*!
      * \brief checks whether the queue is full
      */
-    bool full() const;
+    auto full() const -> bool;
 
 
 protected:
 
     std::queue<T> &buffer();
-    std::mutex &mutex();
+    std::mutex &mutex() const;
 
 };
 
@@ -351,7 +350,7 @@ public:
      */
     explicit QueueMPMC(size_t capacity);
     
-    ~QueueMPMC() = default;
+    ~QueueMPMC() override = default;
     
     TL_DISABLE_COPY(QueueMPMC)
     TL_DISABLE_MOVE(QueueMPMC)
@@ -376,15 +375,12 @@ public:
     explicit Producer(Queue<T> *queue) : mQueue(queue) {}
     virtual ~Producer() = default;
 
-    TL_DISABLE_COPY(Producer)
-    TL_DISABLE_MOVE(Producer)
-
     virtual void operator() () = 0;
     virtual void operator() (size_t ini, size_t end) = 0;
 
 protected:
 
-    Queue<T> *queue()
+    auto queue() -> Queue<T>*
     {
         return mQueue;
     }
@@ -408,14 +404,11 @@ public:
     explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
     virtual ~Consumer() = default;
 
-	TL_DISABLE_COPY(Consumer)
-    TL_DISABLE_MOVE(Consumer)
-
     virtual void operator() () = 0;
 
 protected:
 
-    Queue<T> *queue()
+    auto queue() -> Queue<T>*
     {
         return mQueue;
     }
@@ -441,40 +434,40 @@ Queue<T>::Queue(size_t capacity)
 }
 
 template<typename T>
-inline size_t Queue<T>::size() const
+auto Queue<T>::size() const -> size_t
 {
     std::lock_guard<std::mutex> locker(_mutex);
     return queueBuffer.size();
 }
 
 template<typename T>
-inline size_t Queue<T>::capacity() const
+auto Queue<T>::capacity() const -> size_t
 {
     return queueCapacity;
 }
 
 template<typename T>
-inline bool Queue<T>::empty() const
+bool Queue<T>::empty() const
 {
     std::lock_guard<std::mutex> locker(_mutex);
     return queueBuffer.empty();
 }
 
 template<typename T>
-inline bool Queue<T>::full() const
+auto Queue<T>::full() const -> bool
 {
     std::lock_guard<std::mutex> locker(_mutex);
     return queueBuffer.size() < queueCapacity;
 }
 
 template<typename T>
-inline std::queue<T> &Queue<T>::buffer()
+auto Queue<T>::buffer() -> std::queue<T>&
 {
     return queueBuffer;
 }
 
 template<typename T>
-inline std::mutex &Queue<T>::mutex()
+auto Queue<T>::mutex() const -> std::mutex&
 {
     return _mutex;
 }
@@ -503,7 +496,7 @@ void QueueSPSC<T>::push(const T &value)
 }
 
 template<typename T>
-inline bool QueueSPSC<T>::pop(T &value)
+auto QueueSPSC<T>::pop(T& value) -> bool
 {
     std::unique_lock<std::mutex> locker(this->mutex());
 
@@ -553,7 +546,7 @@ void QueueMPMC<T>::push(const T &value)
 }
 
 template<typename T>
-inline bool QueueMPMC<T>::pop(T &value)
+bool QueueMPMC<T>::pop(T &value)
 {
     std::unique_lock<std::mutex> locker(this->mutex());
 
@@ -575,7 +568,7 @@ inline bool QueueMPMC<T>::pop(T &value)
 }
 
 template<typename T>
-inline void QueueMPMC<T>::stop()
+void QueueMPMC<T>::stop()
 {
     std::unique_lock<std::mutex> locker(this->mutex());
     queueStop = true;

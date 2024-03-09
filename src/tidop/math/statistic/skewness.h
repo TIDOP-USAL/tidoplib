@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/algorithm.h"
 
 namespace tl

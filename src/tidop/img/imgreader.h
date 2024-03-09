@@ -34,7 +34,6 @@
 #include <opencv2/core/core.hpp>
 
 #include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
 #include "tidop/core/path.h"
 #include "tidop/core/ptr.h"
 #include "tidop/geometry/entities/point.h"
@@ -78,6 +77,7 @@ public:
      * \brief Reads an image area corresponding to a rectangle
      * \param[in] rect Rectangle of the image to be loaded. By default the whole image
      * \param[in] size Output image size. By default the size of the reading area
+     * \param[in] affine
      * \return Image
      */
     virtual auto read(const Rect<int> &rect = Rect<int>(),
@@ -89,6 +89,7 @@ public:
      * \param[in] scaleX Horizontal scale that applies to the area read. Default 1
      * \param[in] scaleY Vertical scale that applies to the area read. Default 1
      * \param[in] rect Area of the image to be loaded. By default the whole image
+     * \param[in] affine
      * \return Image
      */
     virtual auto read(double scaleX,
@@ -101,6 +102,7 @@ public:
      * \param[in] window Window of the image to be loaded
      * \param[in] scaleX Horizontal scale that applies to the region read. Default 1
      * \param[in] scaleY Vertical scale that applies to the region read. Default 1
+     * \param[in] affine
      * \return Image
      */
     virtual auto read(const WindowI &window,
@@ -113,7 +115,7 @@ public:
      * \param[in] terrainWindow Window in terrain coordinates of the image to be loaded
      * \param[in] scaleX Horizontal scale that applies to the region read. Default 1
      * \param[in] scaleY Vertical scale that applies to the region read. Default 1
-     * \param[out] trf Transformation to be applied to the returned image
+     * \param[out] affine Transformation to be applied to the returned image
      */
     virtual auto read(const Window<Point<double>> &terrainWindow,
                       double scaleX = 1.,

@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/quantile.h"
 
 
@@ -41,19 +40,18 @@ namespace tl
  */
 
 /*!
- * \brief Rango o recorrido intercuartilico
- * El RI es la diferencia entre el tercer quartil (percentil 75) y el
- * primer cuartil (percentil 25)
- * \f[ RI=Q_3-Q_1 \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor del rango para el conjunto de datos
+ * \brief Interquartile range (IQR)
+ * The IQR is the difference between the third quartile (75th percentile) and the
+ * first quartile (25th percentile).
+ * \f[ IQR = Q_3 - Q_1 \f]
+ * \param[in] first Iterator to the beginning
+ * \param[in] last Iterator to the end
+ * \return Value of the interquartile range for the dataset
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto interquartileRange(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-interquartileRange(It first, It last)
+    double>
 {
     double q1 = tl::quantile(first, last, 0.25);
     double q3 = tl::quantile(first, last, 0.75);
@@ -61,13 +59,12 @@ interquartileRange(It first, It last)
     return q3 - q1;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto interquartileRange(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-interquartileRange(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     T q1 = tl::quantile(first, last, 0.25);
     T q3 = tl::quantile(first, last, 0.75);

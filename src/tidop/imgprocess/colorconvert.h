@@ -28,7 +28,6 @@
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 
 #include "tidop/core/defs.h"
 #include "tidop/imgprocess/imgprocess.h"
@@ -42,77 +41,77 @@ namespace tl
  */
 
 
-/*!
- * \brief Convierte una matriz de RGB a CMYK
- * \param[in] rgb Imagen cmyk
- * \param[out] cmyk Imagen rgb
- */
+ /*!
+  * \brief Converts an RGB matrix to CMYK
+  * \param[in] rgb RGB image
+  * \param[out] cmyk CMYK image
+  */
 TL_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk);
 
 
 /*!
- * \brief Convierte una matriz de CMYK a RGB
- * \param[in] cmyk Imagen cmyk
- * \param[out] rgb Imagen rgb
+ * \brief Converts a CMYK matrix to RGB
+ * \param[in] cmyk CMYK image
+ * \param[out] rgb RGB image
  */
 TL_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat &rgb);
 
 
 /*!
- * \brief Convierte una matriz de RGB a HSL
- * \param[in] rgb
- * \param[out] hsl
+ * \brief Converts an RGB matrix to HSL
+ * \param[in] rgb RGB image
+ * \param[out] hsl HSL image
  */
 TL_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl);
 
 
 /*!
- * \brief Convierte una matriz de HSL a RGB
- * \param[in] hsl
- * \param[out] rgb
+ *\brief Converts an HSL matrix to RGB
+ *\param[in] hsl HSL image
+ *\param[out] rgb RGB image
  */
 TL_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat &rgb);
 
 
 /*!
- * \brief Convierte una matriz de RGB a HSV
- * \param[in] rgb
- * \param[out] hsv
+ * \brief Converts an RGB matrix to HSV
+ * \param[in] rgb RGB image
+ * \param[out] hsv HSV image
  */
 TL_EXPORT void rgbToHSV(const cv::Mat &rgb, cv::Mat &hsv);
 
 
 /*!
- * \brief Convierte una matriz de HSV a RGB
- * \param[in] hsv
- * \param[out] rgb
+ * \brief Converts an HSV matrix to RGB
+ * \param[in] hsv HSV image
+ * \param[out] rgb RGB image
  */
 TL_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat &rgb);
 
 
 /*!
- * \brief Convierte una matriz de RGB a escala de grises
- * \param[in] rgb
- * \param[out] gray
+ * \brief Converts an RGB matrix to grayscale
+ * \param[in] rgb RGB image
+ * \param[out] gray Grayscale image
  */
 TL_EXPORT void rgbToLuminance(const cv::Mat &rgb, cv::Mat &gray);
 
 
 /*!
- * \brief Conversión de una imagen a coordenadas cromáticas
- * \param[in] rgb Imagen RGB
- * \param[out] chromaCoord Imagen en coordenadas cromaticas
+ * \brief Converts an image to chromaticity coordinates
+ * \param[in] rgb RGB image
+ * \param[out] chromaCoord Chromaticity coordinates image
  */
 TL_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord);
 
 
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 /*!
- * \brief Conversión del modo de color.
- * Conversión entre distintos tipos de modos de color
+ * \brief Color mode conversion.
+ * Conversion between different color modes.
  */
 class TL_EXPORT ColorConversion
   : public ImageProcess
@@ -120,7 +119,7 @@ class TL_EXPORT ColorConversion
 public:
 
     /*!
-     * Modelos de color
+     * Color models
      */
     enum class ColorModel
     {
@@ -144,21 +143,21 @@ public:
     ~ColorConversion() override = default;
 
     /*!
-     * \brief Ejecuta el proceso.
-     * \param[in] matIn Imagen de entrada.
-     * \param[out] matOut Imagen de salida.
+     * \brief Executes the process.
+     * \param[in] matIn Input image.
+     * \param[out] matOut Output image.
      */
     void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
     /*!
-     * \brief Establece el modelo de color de entrada
-     * \param[in] modelIn Modelo de color de entrada
+     * \brief Sets the input color model.
+     * \param[in] modelIn Input color model.
      */
     void setInputColorModel(ColorModel modelIn);
 
     /*!
-     * \brief Establece el modelo de color de salida
-     * \param[in] modelOut Modelo de color de salida
+     * \brief Sets the output color model.
+     * \param[in] modelOut Output color model.
      */
     void setOutputColorModel(ColorModel modelOut);
 

@@ -24,10 +24,7 @@
 
 #pragma once
 
-#include "tidop/config.h"
-
 #include <vector>
-#include <array>
 
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
@@ -75,8 +72,8 @@ public:
     Translation(T tx, T ty);
     Translation(T tx, T ty, T tz);
     Translation(const Vector<T, Dim> &vector);
-    Translation(const Translation &translation);
-    Translation(Translation &&translation) TL_NOEXCEPT;
+    Translation(const Translation &translate);
+    Translation(Translation &&translate) TL_NOEXCEPT;
 
     ~Translation() = default;
 
@@ -152,15 +149,14 @@ public:
 /* Translation implementation */
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim>::Translation()
-    : translation(Vector<T, Dim>::zero())
+Translation<T, Dim>::Translation()
+  : translation(Vector<T, Dim>::zero())
 {
     static_assert(dimensions == 2 || dimensions == 3, "Only 2 or 3 dimensions allowed");
 }
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim>::Translation(T tx, T ty)
-
+Translation<T, Dim>::Translation(T tx, T ty)
 {
     static_assert(dimensions == 2, "Constructor for 2D Translation. Use the 3D Translation constructor: Translation(T tx, T ty, T tz).");
 
@@ -169,7 +165,7 @@ inline Translation<T, Dim>::Translation(T tx, T ty)
 }
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim>::Translation(T tx, T ty, T tz)
+Translation<T, Dim>::Translation(T tx, T ty, T tz)
 {
     static_assert(dimensions == 3, "Constructor for 3D Translation. Use the 2D Translation constructor: Translation(T tx, T ty).");
 
@@ -179,25 +175,25 @@ inline Translation<T, Dim>::Translation(T tx, T ty, T tz)
 }
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim>::Translation(const Vector<T, Dim> &vector)
+Translation<T, Dim>::Translation(const Vector<T, Dim> &vector)
 {
     this->translation = vector;
 }
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim>::Translation(const Translation &translate)
+Translation<T, Dim>::Translation(const Translation &translate)
     : translation(translate.translation)
 {
 }
 
 template<typename T, size_t Dim>
-inline Translation<T, Dim>::Translation(Translation &&translate) TL_NOEXCEPT
+Translation<T, Dim>::Translation(Translation &&translate) TL_NOEXCEPT
     : translation(std::move(translate.translation))
 {
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::operator=(const Translation &translate) -> Translation &
+auto Translation<T, Dim>::operator=(const Translation &translate) -> Translation &
 {
     if (this != &translate) {
         this->translation = translate.translation;
@@ -207,7 +203,7 @@ inline auto Translation<T, Dim>::operator=(const Translation &translate) -> Tran
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT -> Translation &
+auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT -> Translation &
 {
     if (this != &translate) {
         this->translation = std::move(translate.translation);
@@ -217,81 +213,81 @@ inline auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT 
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::toVector() const -> Vector<T, Dim>
+auto Translation<T, Dim>::toVector() const -> Vector<T, Dim>
 {
     return this->translation;
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::x() const -> T
+auto Translation<T, Dim>::x() const -> T
 {
     return this->translation[0];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::x() -> T&
+auto Translation<T, Dim>::x() -> T&
 {
     return this->translation[0];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::y() const -> T
+auto Translation<T, Dim>::y() const -> T
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::y() -> reference
+auto Translation<T, Dim>::y() -> reference
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::z() const -> T
+auto Translation<T, Dim>::z() const -> T
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::z() -> reference
+auto Translation<T, Dim>::z() -> reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::at(size_type position) -> reference
+auto Translation<T, Dim>::at(size_type position) -> reference
 {
     return this->translation.at(position);
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::at(size_type position) const -> const_reference
+auto Translation<T, Dim>::at(size_type position) const -> const_reference
 {
     return this->translation.at(position);
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::operator[](size_t position) -> reference
+auto Translation<T, Dim>::operator[](size_t position) -> reference
 {
     return this->translation[position];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::operator[](size_t position) const -> const_reference
+auto Translation<T, Dim>::operator[](size_t position) const -> const_reference
 {
     return this->translation[position];
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::inverse() const -> Translation
+auto Translation<T, Dim>::inverse() const -> Translation
 {
     return Translation(-this->translation);
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::transform(const Point<T> &point) const -> Point<T>
+auto Translation<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 {
     static_assert(dimensions == 2, "Transformation not allowed for 2D points");
 
@@ -300,7 +296,7 @@ inline auto Translation<T, Dim>::transform(const Point<T> &point) const -> Point
 }
 
 template<typename T, size_t Dim>
-inline auto Translation<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
+auto Translation<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
 {
     static_assert(dimensions == 3, "Transformation not allowed for 3D points");
 
@@ -311,7 +307,7 @@ inline auto Translation<T, Dim>::transform(const Point3<T> &point) const -> Poin
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
+auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
 {
     TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
 
@@ -320,7 +316,7 @@ inline auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) const
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Translation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
+auto Translation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     TL_ASSERT(dimensions == matrix.cols(), "Invalid matrix dimensions");
 
@@ -370,8 +366,8 @@ auto Translation<T, Dim>::operator * (const Translation<T, Dim> &translation) co
 
 template<typename T, size_t Dim>
 template<size_t rows, size_t cols>
-inline auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
-                                                   const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>
+auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
+                                            const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>
 {
     static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
 
@@ -420,8 +416,8 @@ inline auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &
 }
 
 template<typename T, size_t Dim>
-inline auto TranslationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
-                                                   const std::vector<Point<T>> &dst) -> Translation<T, Dim>
+auto TranslationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
+                                            const std::vector<Point<T>> &dst) -> Translation<T, Dim>
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 

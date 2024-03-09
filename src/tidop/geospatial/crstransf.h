@@ -32,7 +32,6 @@
 #include "tidop/geospatial/crs.h"
 #include "tidop/core/exception.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/transform/transform.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 
 namespace tl
@@ -66,11 +65,18 @@ class CoordinateTransformation;
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
 /*!
- * \brief transformación entre sistemas de referencia
+ * \brief Transformation between reference systems
  */
 class TL_EXPORT CrsTransform
-    : public geom::Transform3D<Point3<double>>
 {
+
+public:
+
+    enum class Order
+    {
+        direct,   /*!< Direct transformation. */
+        inverse,  /*!< Inverse transformation. */
+    };
 
 protected:
 
@@ -102,40 +108,26 @@ public:
     ~CrsTransform();
 
     /*!
-     * \brief Operación no soportada para CrsTransform
-     * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
-     * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-     * \param[out] error Vector con los errores para cada punto
-     * \param[out] rmse Root Mean Square Error
-     * \return Transform::Status
-     * \see Transform::Status
+     * \brief Transforms a set of points to another reference system
+     * \param[in] ptsIn Input points
+     * \param[out] ptsOut Output points
+     * \param[in] trfOrder Transformation order, direct (by default) or inverse
+     * \see Order
      */
-    auto compute(const std::vector<Point3<double>> &pts1,
-                 const std::vector<Point3<double>> &pts2,
-                 std::vector<double> *error = nullptr,
-                 double *rmse = nullptr) -> Status override;
-
-    /*!
-     * \brief Transforma un conjunto de puntos a otro sistema de referencia
-     * \param[in] ptsIn Puntos de entrada
-     * \param[out] ptsOut Puntos de salida
-     * \param[in] trfOrder Transformación directa (por defecto) o inversa
-     * \see Transform::Order
-     */
-    auto transform(const std::vector<Point3<double>> &ptsIn,
+    void transform(const std::vector<Point3<double>> &ptsIn,
                    std::vector<Point3<double>> &ptsOut,
-                   Order trfOrder = Order::direct) const -> Status override;
+                   Order trfOrder = Order::direct) const;
 
     /*!
-     * \brief Transforma un punto a otro sistema de referencia
-     * \param[in] ptIn Punto de entrada
-     * \param[out] ptOut Punto de salida
-     * \param[in] trfOrder Transformación directa (por defecto) o inversa
-     * \see Transform::Order
+     * \brief Transforms coordinates to another reference system
+     * \param[in] ptIn Input coordinates
+     * \param[out] ptOut Output coordinates
+     * \param[in] trfOrder Transformation order, direct (by default) or inverse
+     * \see Order
      */
-    auto transform(const Point3<double> &ptIn,
+    void transform(const Point3<double> &ptIn,
                    Point3<double> &ptOut,
-                   Order trfOrder = Order::direct) const -> Status override;
+                   Order trfOrder = Order::direct) const;
 
     /*!
      * \brief Transforma un punto a otro sistema de referencia
@@ -145,9 +137,9 @@ public:
      * \see Transform::Order
      */
     auto transform(const Point3<double> &ptIn,
-                   Order trfOrder = Order::direct) const -> Point3<double> override;
+                   Order trfOrder = Order::direct) const -> Point3<double>;
 
-    auto isNull() const -> bool override;
+    auto isNull() const -> bool;
 
 private:
 
@@ -294,8 +286,8 @@ public:
 
 private:
 
-    auto rotationMatrixToEnu(double longitude,
-                             double latitude) -> RotationMatrix<double>;
+    static auto rotationMatrixToEnu(double longitude,
+                                    double latitude) -> RotationMatrix<double>;
 
 };
 

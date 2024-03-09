@@ -26,7 +26,6 @@
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/algorithms/distance.h"
-#include "tidop/math/math.h"
 #include "tidop/math/algebra/matrix.h"
 
 #include <map>
@@ -50,16 +49,16 @@ class DbScan
 
 public:
 
-    std::map<int, int> labels;
+    std::map<size_t, int> labels;
     std::vector<Point<T>> mData;
     int C;
     double eps;
-    int mnpts;
+    size_t mnpts;
     Matrix<double> dp;
 
 public:
 
-    DbScan(const std::vector<Point<T>> &data, double _eps, int _mnpts)
+    DbScan(const std::vector<Point<T>> &data, double _eps, size_t _mnpts)
         : mData(data), 
           C(-1),
           eps(_eps),
@@ -67,7 +66,7 @@ public:
           dp(Matrix<double>(mData.size(), mData.size(), -1.))
     {
 
-        for (int i = 0; i < mData.size(); i++) {
+        for (size_t i = 0; i < mData.size(); i++) {
             labels[i] = -99;
         }
 
@@ -75,13 +74,13 @@ public:
 
     void run()
     {
-        for (int i = 0; i < mData.size(); i++) {
-            dp.at(i, i) = 0;
+        for (size_t i = 0; i < mData.size(); i++) {
+            dp.at(i, i) = 0.;
         }
 
-        for (int i = 0; i < mData.size(); i++) {
+        for (size_t i = 0; i < mData.size(); i++) {
             if (!isVisited(i)) {
-                std::vector<int> neighbours = regionQuery(i);
+                std::vector<size_t> neighbours = regionQuery(i);
                 if (neighbours.size() < mnpts) {
                     labels[i] = -1;
                 } else {
@@ -92,30 +91,31 @@ public:
         }
     }
 
-    void expandCluster(int p, std::vector<int> neighbours)
+    void expandCluster(size_t p, const std::vector<size_t> &neighbours)
     {
         labels[p] = C;
-        for (int i = 0; i < neighbours.size(); i++) {
-            if (!isVisited(neighbours[i])) {
-                labels[neighbours[i]] = C;
-                std::vector<int> neighbours_p = regionQuery(neighbours[i]);
+
+        for (auto neighbour : neighbours) {
+            if (!isVisited(neighbour)) {
+                labels[neighbour] = C;
+                std::vector<size_t> neighbours_p = regionQuery(neighbour);
                 if (neighbours_p.size() >= mnpts) {
-                    expandCluster(neighbours[i], neighbours_p);
+                    expandCluster(neighbour, neighbours_p);
                 }
             }
         }
     }
 
-    bool isVisited(int i)
+    bool isVisited(size_t i)
     {
         return labels[i] != -99;
     }
 
-    std::vector<int> regionQuery(int p)
+    std::vector<size_t> regionQuery(size_t p)
     {
-        std::vector<int> res;
+        std::vector<size_t> res;
 
-        for (int i = 0; i < mData.size(); i++) {
+        for (size_t i = 0; i < mData.size(); i++) {
             if (distanceFunc(p, i) <= eps) {
                 res.push_back(i);
             }
@@ -124,14 +124,9 @@ public:
         return res;
     }
 
-    //double dist2d(cv::Point2d a, cv::Point2d b)
-    //{
-    //    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
-    //}
-
-    double distanceFunc(int ai, int bi)
+    double distanceFunc(size_t ai, size_t bi)
     {
-        if (dp.at(ai, bi) != -1)
+        if (dp.at(ai, bi) > -1)
             return dp.at(ai, bi);
         
         double dist = distance(mData[ai], mData[bi]);
@@ -142,12 +137,12 @@ public:
         return dp.at(ai, bi);
     }
 
-    std::vector<std::vector<tl::Point<T>> > groups()
+    std::vector<std::vector<Point<T>> > groups()
     {
-        std::vector<std::vector<tl::Point<T>>> ret(C+1, std::vector<tl::Point<T>>());
+        std::vector<std::vector<Point<T>>> ret(C+1, std::vector<Point<T>>());
 
         for (int i = 0; i <= C; i++) {
-            for (int j = 0; j < mData.size(); j++) {
+            for (size_t j = 0; j < mData.size(); j++) {
                 if (labels[j] == i) {
                     ret[i].push_back(mData[j]);
                 }

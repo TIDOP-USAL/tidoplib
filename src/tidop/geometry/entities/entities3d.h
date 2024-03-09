@@ -36,7 +36,7 @@ namespace tl
 
 
 /*!
- * \brief Entidades 3D
+ * \brief 3D entities
  */
 template<typename Entity_t>
 class Entities3D
@@ -49,55 +49,24 @@ public:
 
 public:
 
-    /*!
-     * \brief Constructora por defecto
-     */
     Entities3D();
-
-    /*!
-     * \brief Constructor que reserva tamaño para n puntos
-     * \param[in] size Tamaño que se reserva
-     * \see entity_type
-     */
     explicit Entities3D(size_type size);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] entities Entidad que se copia
-     * \see entity_type
-     */
     Entities3D(const Entities3D &entities);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] entities Entidad que se copia
-     * \see entity_type
-     */
     Entities3D(Entities3D &&entities) TL_NOEXCEPT;
-
-    /*!
-     * \brief Constructor a partir de un vector de entidades
-     * \param[in] entities Vector de entidades
-     */
-    Entities3D(const std::vector<Entity_t> &entities);
-
-    /*!
-     * \brief Constructor lista de inicialización
-     * \param[in] entities Entidades
-     */
+    explicit Entities3D(const std::vector<Entity_t> &entities);
     Entities3D(std::initializer_list<Entity_t> entities);
 
     ~Entities3D() override = default;
 
     /*!
-     * \brief Asignación de copia
+     * \brief Copy assignment operator
      */
-    Entities3D<Entity_t> &operator=(const Entities3D<Entity_t> &entities);
+    auto operator=(const Entities3D<Entity_t>& entities) -> Entities3D<Entity_t>&;
 
     /*!
-     * \brief Asignación de movimiento
+     * \brief Move assignment operator
      */
-    Entities3D<Entity_t> &operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT;
+    auto operator=(Entities3D<Entity_t>&& entities) TL_NOEXCEPT -> Entities3D<Entity_t>&;
 
 };
 
@@ -139,7 +108,7 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 }
 
 template<typename Entity_t>
-Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t> &entities)
+auto Entities3D<Entity_t>::operator=(const Entities3D<Entity_t>& entities) -> Entities3D<Entity_t>&
 {
     if (this != &entities) {
         EntityContainer<Entity_t>::operator=(entities);
@@ -149,7 +118,7 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t>
 }
 
 template<typename Entity_t>
-Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT
+auto Entities3D<Entity_t>::operator=(Entities3D<Entity_t>&& entities) TL_NOEXCEPT -> Entities3D<Entity_t>&
 {
     if (this != &entities) {
         EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));

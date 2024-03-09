@@ -81,7 +81,7 @@ public:
     Data(const Data &matrix);
     Data(Data &&matrix) TL_NOEXCEPT;
     Data(std::initializer_list<T> values);
-    Data(const T *data, size_t size = 0);
+    explicit Data(const T *data, size_t size = 0);
     virtual ~Data() = default;
 
     auto operator = (const Data &matrix) -> Data &;

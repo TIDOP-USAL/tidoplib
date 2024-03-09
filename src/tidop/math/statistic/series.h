@@ -26,7 +26,6 @@
 
 #include <vector> 
 #include <string> 
-#include <tuple>
 #include <iomanip>
 
 #include <tidop/core/defs.h>
@@ -157,9 +156,9 @@ Series<T>::Series(std::initializer_list<std::pair<std::string, T>> data)
     size_t n = data.size();
     mStringIndex.reserve(n);
     mData.reserve(n);
-    for (auto it = data.begin(); it != data.end(); it++) {
-        mStringIndex.push_back(it->first);
-        mData.push_back(it->second);
+    for (const auto &pair : data) {
+        mStringIndex.push_back(pair.first);
+        mData.push_back(pair.second);
     }
 }
 
@@ -171,9 +170,10 @@ Series<T>::Series(std::initializer_list<std::pair<size_t, T>> data)
     size_t n = data.size();
     mIndex.reserve(n);
     mData.reserve(n);
-    for (auto it = data.begin(); it != data.end(); it++) {
-        mIndex.push_back(it->first);
-        mData.push_back(it->second);
+
+    for (const auto &pair : data) {
+        mIndex.push_back(pair.first);
+        mData.push_back(pair.second);
     }
 }
 

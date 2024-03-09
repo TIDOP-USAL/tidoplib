@@ -79,20 +79,18 @@ namespace tl
  * \param[in] last Iterador al final
  * \return Coeficiente de variación para el conjunto de datos
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto coefficientOfVariation(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-coefficientOfVariation(It first, It last)
+    double>
 {
     return standarDeviation(first, last) / std::abs(mean(first, last));
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto coefficientOfVariation(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
-coefficientOfVariation(It first, It last)
+    typename std::iterator_traits<It>::value_type>
 {
     return standarDeviation(first, last) / std::abs(mean(first, last));
 }
@@ -101,11 +99,11 @@ coefficientOfVariation(It first, It last)
 /*! \} */ // end of Dispersion
 
 
-template<typename itIn, typename itOut> inline
-double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
+template<typename itIn, typename itOut>
+auto rootMeanSquareError(itIn inFirst, itIn inLast, itOut outFirst) -> double
 {
     double rms = 0.;
-    while (in_first != in_last) {
+    while (inFirst != inLast) {
         //  rms
         //  trf->transform(*in_first++, &(*out_first++), trfOrder);
     }
@@ -113,14 +111,14 @@ double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
 }
 
 
-template<typename itIn, typename itOut> inline
-void zScore(itIn in_first, itIn in_last, itOut out_first)
+template<typename itIn, typename itOut>
+void zScore(itIn inFirst, itIn inLast, itOut outFirst)
 {
-    double _mean = mean(in_first, in_last);
-    double standar_deviation = standarDeviation(in_first, in_last);
+    double _mean = mean(inFirst, inLast);
+    double standar_deviation = standarDeviation(inFirst, inLast);
 
-    while (in_first != in_last) {
-        *out_first++ = (*in_first++ - _mean) / standar_deviation;
+    while (inFirst != inLast) {
+        *outFirst++ = (*inFirst++ - _mean) / standar_deviation;
     }
 }
 

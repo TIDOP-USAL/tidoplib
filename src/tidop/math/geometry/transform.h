@@ -26,12 +26,7 @@
 
 #include "tidop/config.h"
 
-#include <vector>
-#include <array>
-
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/rotation_matrix.h"
-#include "tidop/math/algebra/svd.h"
 #include <tidop/math/statistics.h>
 #include <tidop/math/algebra/vector.h>
 #include "tidop/math/algebra/rotation_convert.h"
@@ -163,21 +158,21 @@ protected:
 };
 
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 Transform<T, Dim>::Transform()
   : transformMatrix(Matrix<T, matrix_size, matrix_size>::identity())
 {
     static_assert(Dim == 2 || Dim == 3, "Only 2 or 3 dimensions allowed");
 }
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 Transform<T, Dim>::Transform(const Transform<T, Dim> &matrix)
   : transformMatrix(matrix.transformMatrix)
 {
     static_assert(Dim == 2 || Dim == 3, "Only 2 or 3 dimensions allowed");
 }
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 Transform<T, Dim>::Transform(const Matrix<T, matrix_size, matrix_size> &matrix)
   : transformMatrix(matrix)
 {
@@ -194,7 +189,7 @@ Transform<T, Dim>::Transform(const Matrix<T, matrix_size, matrix_size> &matrix)
 //{
 //}
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 auto Transform<T, Dim>::translation() const -> Vector<T, Dim>
 {
     Vector<T, Dim> translation;
@@ -202,7 +197,7 @@ auto Transform<T, Dim>::translation() const -> Vector<T, Dim>
     return translation;
 }
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 void Transform<T, Dim>::setTranslation(const Vector<T, Dim> &translation)
 {
     auto col = transformMatrix.col(Dim);
@@ -210,7 +205,7 @@ void Transform<T, Dim>::setTranslation(const Vector<T, Dim> &translation)
         col[i] = translation[i];
 }
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 auto Transform<T, Dim>::scale() const -> Vector<T, Dim>
 {
     Vector<T, Dim> _scale;
@@ -218,7 +213,7 @@ auto Transform<T, Dim>::scale() const -> Vector<T, Dim>
     return _scale;
 }
 
-template <typename T, size_t Dim> inline
+template <typename T, size_t Dim>
 void Transform<T, Dim>::setScale(T scale)
 {
     for (size_t i = 0; i < Dim; i++)
@@ -226,7 +221,7 @@ void Transform<T, Dim>::setScale(T scale)
 }
 
 template<typename T, size_t Dim>
-inline auto Transform<T, Dim>::inverse() const -> Transform<T, Dim>
+auto Transform<T, Dim>::inverse() const -> Transform<T, Dim>
 {
     return transformMatrix.inverse();
 }

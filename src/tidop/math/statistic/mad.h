@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/mean.h"
 #include "tidop/math/statistic/median.h"
 
@@ -45,11 +44,10 @@ namespace tl
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto meanAbsoluteDeviation(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-meanAbsoluteDeviation(It first, It last)
+    double>
 {
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<double>;
@@ -63,13 +61,12 @@ meanAbsoluteDeviation(It first, It last)
     return sum / n;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto meanAbsoluteDeviation(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-meanAbsoluteDeviation(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<T>;
@@ -89,11 +86,10 @@ meanAbsoluteDeviation(It first, It last)
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto medianAbsoluteDeviation(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-medianAbsoluteDeviation(It first, It last)
+    double>
 {
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<double>;
@@ -110,13 +106,12 @@ medianAbsoluteDeviation(It first, It last)
     return median(x.begin(), x.end());
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto medianAbsoluteDeviation(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-medianAbsoluteDeviation(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<T>;

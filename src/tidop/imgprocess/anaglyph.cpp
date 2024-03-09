@@ -118,12 +118,10 @@ StereoImage::StereoImage(Mode mode)
 {
 }
 
-StereoImage::~StereoImage()
-{
-}
+StereoImage::~StereoImage() = default;
 
-cv::Mat StereoImage::run(const cv::Mat &left,
-                         const cv::Mat &right)
+auto StereoImage::run(const cv::Mat& left,
+                      const cv::Mat& right) -> cv::Mat
 {
     cv::Mat stereo;
 
@@ -159,7 +157,7 @@ cv::Mat StereoImage::run(const cv::Mat &left,
         } else {
             stereo.create(height, width, type);
 
-            parallel_for(static_cast<size_t>(0), static_cast<size_t>(height), [&](size_t r) {
+            parallel_for(0, static_cast<size_t>(height), [&](size_t r) {
                 cv::Vec3b bgrPxL, bgrPxR;
                 int imode = static_cast<int>(mMode) - 1;
                 for (int c = 0; c < width; c++) {
@@ -179,7 +177,7 @@ cv::Mat StereoImage::run(const cv::Mat &left,
     return stereo;
 }
 
-StereoImage::Mode StereoImage::mode() const
+auto StereoImage::mode() const -> Mode
 {
     return mMode;
 }

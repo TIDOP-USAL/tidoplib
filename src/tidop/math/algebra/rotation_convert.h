@@ -59,7 +59,7 @@ private:
 public:
 
     /*!
-     * \brief Convierte una matriz de rotación a cuaterniones
+     * \brief Converts a rotation matrix to quaternions
      * \f[ x^2 = \frac{+r_{00} - r_{11} - r_{22} + 1}{4}  \f]
      * \f[ y^2 = \frac{-r_{00} + r_{11} - r_{22} + 1}{4}  \f]
      * \f[ z^2 = \frac{-r_{00} - r_{11} + r_{22} + 1}{4}  \f]
@@ -75,7 +75,7 @@ public:
      * \f[ y*w = \frac{r_{02} - r_{20}}{4} \f]
      * \f[ z*w = \frac{r_{10} - r_{01}}{4} \f]
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   RotationMatrix<double> rotationMatrix;
      *   rot[0][0] = -0.8888889;
@@ -91,14 +91,14 @@ public:
      *   RotationConverter<double>::convert(rotationMatrix, quaternion);
      * \endcode
      *
-     * \param[in] rotationMatrix Matriz de rotación
-     * \param[out] quaternion Rotación como cuaterniones
+     * \param[in] rotationMatrix Rotation matrix
+     * \param[out] quaternion Rotation as quaternions
      */
     static void convert(const RotationMatrix<T> &rotationMatrix,
                         Quaternion<T> &quaternion);
 
     /*!
-     * \brief Convierte una rotación como cuaterniones a matriz de rotación
+     * \brief Converts a rotation as quaternions to a rotation matrix
      *
      * \f[ r_{00} = 1 - 2 * y² - 2 * z \f]
      * \f[ r_{01} = 2 * x * y - 2 * z * w  \f]
@@ -110,55 +110,55 @@ public:
      * \f[ r_{21} = 2 * y * z + 2 * x * w \f]
      * \f[ r_{22} = 1 - 2 * x² - 2 * y² \f]
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   Quaterniond quaternion(0., 1., -3., 2.);
      *   RotationMatrix<double> rotationMatrix;
      *   RotationConverter<double>::convert(quaternion, rotationMatrix);
      * \endcode
      *
-     * \param[in] quaternion Rotación como cuaterniones
-     * \param[out] rotationMatrix Matriz de rotación
+     * \param[in] quaternion Rotation as quaternions
+     * \param[out] rotationMatrix Rotation matrix
      */
     static void convert(const Quaternion<T> &quaternion,
                         RotationMatrix<T> &rotationMatrix);
 
     /*!
-     * \brief Convierte una rotación como coordendas a notación axial-angular
+     * \brief Converts a quaternion rotation to axial-angular notation
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   Quaterniond quaternion(0., 1., -3., 2.);
      *   AxisAngle<double> axis_angle;
      *   RotationConverter<double>::convert(quaternion, axis_angle);
      * \endcode
      *
-     * \param[in] quaternion Rotación como cuaterniones
-     * \param[out] axisAngle Rotación en notación axial-angular
+     * \param[in] quaternion Rotation as quaternions
+     * \param[out] axisAngle Rotation in axial-angular notation
      */
     static void convert(const Quaternion<T> &quaternion,
                         AxisAngle<T> &axisAngle);
 
     /*!
-     * \brief Convierte una rotación en notación axial-angular a quaterniones
+     * \brief Converts a rotation in axial-angular notation to quaternions
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   AxisAngle<double> axis_angle(3.4764888, {-0.1690308, -0.5070926, 0.8451542});
      *   Quaterniond quaternion;
      *   RotationConverter<double>::convert(axis_angle, quaternion);
      * \endcode
      *
-     * \param[in] axisAngle Rotación en notación axial-angular
-     * \param[out] quaternion Rotación como cuaterniones
+     * \param[in] axisAngle Rotation in axial-angular notation
+     * \param[out] quaternion Rotation as quaternions
      */
     static void convert(const AxisAngle<T> &axisAngle,
                         Quaternion<T> &quaternion);
 
     /*!
-     * Convierte una matriz de rotacion a notación axial-angular
+     * Converts a rotation matrix to axial-angular notation
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   RotationMatrix<double> rotationMatrix;
      *   rot[0][0] = -0.8888889;
@@ -174,32 +174,32 @@ public:
      *   RotationConverter<double>::convert(rotationMatrix, axis_angle);
      * \endcode
      *
-     * \param[in] rotationMatrix Matriz de rotación
-     * \param[out] axisAngle Rotación en notación axial-angular
+     * \param[in] rotationMatrix Rotation matrix
+     * \param[out] axisAngle Rotation in axial-angular notation
      */
     static void convert(const RotationMatrix<T> &rotationMatrix,
                         AxisAngle<T> &axisAngle);
 
     /*!
-     * \brief Convierte una rotación en notación axial-angular a una matriz de rotación
+     * \brief Converts a rotation in axial-angular notation to a rotation matrix
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   AxisAngle<double> axis_angle(3.4764888, {-0.1690308, -0.5070926, 0.8451542});
      *   RotationMatrix<double> rotationMatrix;
      *   RotationConverter<double>::convert(axis_angle, rotationMatrix);
      * \endcode
      *
-     * \param[in] axisAngle Rotación en notación axial-angular
-     * \param[out] rotationMatrix Matriz de rotación
+     * \param[in] axisAngle Rotation in axial-angular notation
+     * \param[out] rotationMatrix Rotation matrix
      */
     static void convert(const AxisAngle<T> &axisAngle,
                         RotationMatrix<T> &rotationMatrix);
 
     /*!
-     * Convierte una matriz de rotacion a ángulos de Euler
+     * \brief Convert a rotation matrix to Euler Angles
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   RotationMatrix<double> rotationMatrix;
      *   rot[0][0] = -0.8888889;
@@ -215,16 +215,16 @@ public:
      *   RotationConverter<double>::convert(rotationMatrix, eulerAngles);
      * \endcode
      *
-     * \param[in] rotationMatrix Matriz de rotación
-     * \param[out] axisAngle Rotación en notación axial-angular
+     * \param[in] rotationMatrix Rotation matrix
+     * \param[out] eulerAngles Rotation in axial-angular notation
      */
     static void convert(const RotationMatrix<T> &rotationMatrix,
                         EulerAngles<T, P...> &eulerAngles);
 
     /*!
-     * \brief Convierte una rotación como ángulos de Euler a matriz de rotación
+     * \brief Converts a rotation as Euler angles to rotation matrix
      * https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      * EulerAngles<double> eulerAngles(2.356194490192345,
      *                                 2.5261129449194057,
@@ -233,30 +233,30 @@ public:
      * RotationMatrix<double> rotationMatrix;
      * RotationConverter<double>::convert(eulerAngles, rotationMatrix);
      * \endcode
-     * \param[in] eulerAngles Rotación como ángulos de euler
-     * \param[out] rotationMatrix Matriz de rotación
+     * \param[in] eulerAngles Rotation as euler angles
+     * \param[out] rotationMatrix Rotation matrix
      */
     static void convert(const EulerAngles<T, P...> &eulerAngles,
                         RotationMatrix<T> &rotationMatrix);
 
     /*!
-     * \brief Convierte una rotación como cuaterniones a ángulos de Euler
-     * <h4>Ejemplo</h4>
+     * \brief Converts a rotation as quaternions to Euler angles
+     * <h4>Example</h4>
      * \code
      * Quaterniond quaternion(0., 1., -3., 2.);
      * EulerAngles<double> eulerAngles;
      * RotationConverter<double>::convert(quaternion, eulerAngles);
      * \endcode
-     * \param[in] quaternion Rotación como cuaterniones
-     * \param[out] eulerAngles Rotación como ángulos de Euler
+     * \param[in] quaternion Rotation as quaternions
+     * \param[out] eulerAngles Rotation as euler angles
      */
     static void convert(const Quaternion<T> &quaternion,
                         EulerAngles<T, P...> &eulerAngles);
 
     /*!
-     * \brief Convierte una rotación como ángulos de Euler a cuaterniones
+     * \brief Converts a rotation as Eeuler angles to quaternions
      * https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      * EulerAngles<double> eulerAngles(2.356194490192345,
      *                                 2.5261129449194057,
@@ -265,16 +265,16 @@ public:
      * Quaterniond quaternion;
      * RotationConverter<double>::convert(eulerAngles, quaternion);
      * \endcode
-     * \param[in] eulerAngles Rotación como ángulos de euler
-     * \param[out] quaternion Rotación como cuaterniones
+     * \param[in] eulerAngles Rotation as euler angles
+     * \param[out] quaternion Rotation as quaternions
      */
     static void convert(const EulerAngles<T, P...> &eulerAngles,
                         Quaternion<T> &quaternion);
 
     /*!
-     * \brief Convierte una rotación como ángulos de Euler a notación axial-angular
+     * \brief Converts a rotation as Euler angles to axial-angular notation
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      * EulerAngles<double> eulerAngles(2.356194490192345,
      *                                 2.5261129449194057,
@@ -283,24 +283,24 @@ public:
      * AxisAngle<double> axisAngle;
      * RotationConverter<double>::convert(eulerAngles, axisAngle);
      * \endcode
-     * \param[in] eulerAngles Rotación como ángulos de euler
-     * \param[out] axisAngle Rotación en notación axial-angular
+     * \param[in] eulerAngles Rotation as euler angles
+     * \param[out] axisAngle Rotation in axial-angular notation
      */
     static void convert(const EulerAngles<T, P...> &eulerAngles,
                         AxisAngle<T> &axisAngle);
 
     /*!
-     * \brief Convierte una rotación en notación axial-angular a ángulos de Euler
+     * \brief Converts a rotation in axial-angular notation to Euler angles
      *
-     * <h4>Ejemplo</h4>
+     * <h4>Example</h4>
      * \code
      *   AxisAngle<double> axis_angle(3.4764888, {-0.1690308, -0.5070926, 0.8451542});
      *   EulerAngles<double> eulerAngles;
      *   RotationConverter<double>::convert(axis_angle, eulerAngles);
      * \endcode
      *
-     * \param[in] axisAngle Rotación en notación axial-angular
-     * \param[out] eulerAngles Rotación como ángulos de euler
+     * \param[in] axisAngle Rotation in axial-angular notation
+     * \param[out] eulerAngles Rotation as euler angles
      */
     static void convert(const AxisAngle<T> &axisAngle,
                         EulerAngles<T, P...> &eulerAngles);

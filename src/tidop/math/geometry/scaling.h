@@ -24,10 +24,7 @@
 
 #pragma once
 
-#include "tidop/config.h"
-
 #include <vector>
-#include <array>
 
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
@@ -73,10 +70,10 @@ private:
 public:
 
     Scaling();
-    Scaling(T scale);
+    explicit Scaling(T scale);
     Scaling(T sx, T sy);
     Scaling(T sx, T sy, T sz);
-    Scaling(const Vector<T, Dim> &vector);
+    explicit Scaling(const Vector<T, Dim> &vector);
     Scaling(const Scaling &scaling);
     Scaling(Scaling &&scaling) TL_NOEXCEPT;
 
@@ -156,19 +153,19 @@ public:
 
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling() 
-    : scale(Vector<T, Dim>::unit()) 
+Scaling<T, Dim>::Scaling() 
+  : scale(Vector<T, Dim>::unit()) 
 {
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling(T scale)
-    : scale(Dim, scale)
+Scaling<T, Dim>::Scaling(T scale)
+  : scale(Dim, scale)
 {
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling(T sx, T sy)
+Scaling<T, Dim>::Scaling(T sx, T sy)
 {
     static_assert(dimensions == 2, "Constructor for 2D Scaling. Use the 3D Scaling constructor: Scaling(T sx, T sy, T sz).");
 
@@ -177,7 +174,7 @@ inline Scaling<T, Dim>::Scaling(T sx, T sy)
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling(T sx, T sy, T sz)
+Scaling<T, Dim>::Scaling(T sx, T sy, T sz)
 {
     static_assert(dimensions == 3, "Constructor for 3D Scaling. Use the 2D Scaling constructor: Scaling(T sx, T sy).");
 
@@ -187,25 +184,25 @@ inline Scaling<T, Dim>::Scaling(T sx, T sy, T sz)
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling(const Vector<T, Dim> &vector)
+Scaling<T, Dim>::Scaling(const Vector<T, Dim> &vector)
 {
     this->scale = vector;
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling(const Scaling &scaling)
+Scaling<T, Dim>::Scaling(const Scaling &scaling)
     : scale(scaling)
 {
 }
 
 template<typename T, size_t Dim>
-inline Scaling<T, Dim>::Scaling(Scaling &&scaling) TL_NOEXCEPT
+Scaling<T, Dim>::Scaling(Scaling &&scaling) TL_NOEXCEPT
     : scale(std::move(scaling.scale))
 {
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator=(const Scaling &scaling) -> Scaling&
+auto Scaling<T, Dim>::operator=(const Scaling &scaling) -> Scaling&
 {
     if (this != &scaling) {
         this->scale = scaling.scale;
@@ -215,7 +212,7 @@ inline auto Scaling<T, Dim>::operator=(const Scaling &scaling) -> Scaling&
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator=(Scaling &&scaling) TL_NOEXCEPT -> Scaling &
+auto Scaling<T, Dim>::operator=(Scaling &&scaling) TL_NOEXCEPT -> Scaling &
 {
     if (this != &scaling) {
         this->scale = std::move(scaling.scale);
@@ -225,75 +222,75 @@ inline auto Scaling<T, Dim>::operator=(Scaling &&scaling) TL_NOEXCEPT -> Scaling
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::toVector() const -> Vector<T, Dim>
+auto Scaling<T, Dim>::toVector() const -> Vector<T, Dim>
 {
     return this->scale;
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::x() const -> T
+auto Scaling<T, Dim>::x() const -> T
 {
     return this->scale[0];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::x() -> reference
+auto Scaling<T, Dim>::x() -> reference
 {
     return this->scale[0];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::y() const -> T
+auto Scaling<T, Dim>::y() const -> T
 {
     return this->scale[1];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::y() -> reference
+auto Scaling<T, Dim>::y() -> reference
 {
     return this->scale[1];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::z() const -> T
+auto Scaling<T, Dim>::z() const -> T
 {
     static_assert(dimensions == 3, "Method not valid for 2D Scaling");
     return this->scale[2];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::z() -> reference
+auto Scaling<T, Dim>::z() -> reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D Scaling");
     return this->scale[2];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::at(size_type position) -> reference
+auto Scaling<T, Dim>::at(size_type position) -> reference
 {
     return this->scale.at(position);
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::at(size_type position) const -> const_reference
+auto Scaling<T, Dim>::at(size_type position) const -> const_reference
 {
     return this->scale.at(position);
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator[](size_t position) -> reference
+auto Scaling<T, Dim>::operator[](size_t position) -> reference
 {
     return this->scale[position];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator[](size_t position) const -> const_reference
+auto Scaling<T, Dim>::operator[](size_t position) const -> const_reference
 {
     return this->scale[position];
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::inverse() const -> Scaling<T, Dim>
+auto Scaling<T, Dim>::inverse() const -> Scaling<T, Dim>
 {
     Scaling<T, Dim> _scale;
     for (size_t i = 0; i < dimensions; i++)
@@ -303,7 +300,7 @@ inline auto Scaling<T, Dim>::inverse() const -> Scaling<T, Dim>
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::transform(const Point<T> &point) const -> Point<T>
+auto Scaling<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 {
     static_assert(dimensions == 2, "");
 
@@ -312,7 +309,7 @@ inline auto Scaling<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
+auto Scaling<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
 {
     static_assert(dimensions == 3, "");
 
@@ -323,7 +320,7 @@ inline auto Scaling<T, Dim>::transform(const Point3<T> &point) const -> Point3<T
 
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Scaling<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
+auto Scaling<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
 {
     TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
 
@@ -332,7 +329,7 @@ inline auto Scaling<T, Dim>::transform(const Vector<T, _size> &vector) const -> 
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Scaling<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
+auto Scaling<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     TL_ASSERT(Dim == matrix.cols(), "Invalid matrix dimensions");
 
@@ -345,45 +342,45 @@ inline auto Scaling<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) cons
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator * (const Point<T> &point) const -> Point<T>
+auto Scaling<T, Dim>::operator * (const Point<T> &point) const -> Point<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator * (const Point3<T> &point) const -> Point3<T>
+auto Scaling<T, Dim>::operator * (const Point3<T> &point) const -> Point3<T>
 {
     return this->transform(point);
 }
  
 template<typename T, size_t Dim>
 template<size_t _size>
-inline auto Scaling<T, Dim>::operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>
+auto Scaling<T, Dim>::operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>
 {
     return this->transform(vector);
 }
 
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
-inline auto Scaling<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
+auto Scaling<T, Dim>::operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
 {
     return this->transform(matrix);
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator()(const Point<T> &point) const -> Point<T>
+auto Scaling<T, Dim>::operator()(const Point<T> &point) const -> Point<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
+auto Scaling<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
 {
     return this->transform(point);
 }
 
 template<typename T, size_t Dim>
-inline auto Scaling<T, Dim>::operator*(const Scaling<T, Dim> &scaling) const -> Scaling<T, Dim>
+auto Scaling<T, Dim>::operator*(const Scaling<T, Dim> &scaling) const -> Scaling<T, Dim>
 {
     return this->scale * scaling.scale;
 }
@@ -395,8 +392,8 @@ inline auto Scaling<T, Dim>::operator*(const Scaling<T, Dim> &scaling) const -> 
 
 template<typename T, size_t Dim>
 template<size_t rows, size_t cols>
-inline auto ScalingEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
-                                               const Matrix<T, rows, cols> &dst) -> Scaling<T, Dim>
+auto ScalingEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
+                                        const Matrix<T, rows, cols> &dst) -> Scaling<T, Dim>
 {
     static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
 
@@ -441,7 +438,7 @@ inline auto ScalingEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
 }
 
 template<typename T, size_t Dim>
-inline auto ScalingEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, const std::vector<Point<T>> &dst) -> Scaling<T, Dim>
+auto ScalingEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, const std::vector<Point<T>> &dst) -> Scaling<T, Dim>
 {
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 

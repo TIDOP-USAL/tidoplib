@@ -25,9 +25,7 @@
 #pragma once
 
 
-#include <tidop/core/defs.h>
-#include <tidop/core/messages.h>
-#include <tidop/math/statistic/descriptive.h>
+#include "tidop/math/statistic/descriptive.h"
 
 
 namespace tl
@@ -63,7 +61,7 @@ public:
     TukeyFences();
     ~TukeyFences();
 
-    std::vector<bool> eval(const Series<T> &data, K k = K::outlier);
+    auto eval(const Series<T>& series, K k = K::outlier) -> std::vector<bool>;
 
 };
 
@@ -80,8 +78,8 @@ TukeyFences<T>::~TukeyFences()
 {
 }
 
-template<typename T> inline
-std::vector<bool> TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k)
+template<typename T>
+auto TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k) -> std::vector<bool>
 {
     DescriptiveStatistics<T> stat(series);
 

@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/polygon.h"
 #include "tidop/geometry/algorithms/angle.h"
 #include "tidop/math/math.h"
@@ -46,7 +45,7 @@ namespace tl
  * \param[in] size Tamaño de buffer
  * \return Buffer
  */
-template<typename Point_t> inline
+template<typename Point_t>
 Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
 {
     Polygon<Point_t> buff(4);

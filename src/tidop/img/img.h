@@ -52,10 +52,10 @@ TL_EXPORT bool gdalValidExtensions(const std::string &extension);
 TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
 
 /*!
- * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
- * Si la extensión no se correspondo con un driver disponible devuelve nulo.
- * \param ext Extensión del archivo
- * \return Nombre del Driver de GDAL
+ * \brief Returns the GDAL driver name corresponding to a file extension.
+ * If the extension does not match an available driver, it returns nullptr.
+ * \param[in] extension File extension
+ * \return GDAL driver name
  */
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 

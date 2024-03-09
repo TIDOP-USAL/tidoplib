@@ -250,7 +250,7 @@ public:
     FileOptions() = default;
     virtual ~FileOptions() = default;
 
-    virtual const char *options() = 0;
+    virtual auto options() const -> const char* = 0;
 };
 
 /*!

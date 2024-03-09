@@ -400,14 +400,14 @@ DescriptiveStatistics<T>::~DescriptiveStatistics()
 {
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::data() const -> Series<T>
+template<typename T>
+auto DescriptiveStatistics<T>::data() const -> Series<T>
 {
     return mData;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::min() const -> T
+template<typename T>
+auto DescriptiveStatistics<T>::min() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::min)) {
         computeMinMax();
@@ -416,8 +416,8 @@ inline auto DescriptiveStatistics<T>::min() const -> T
     return mMin;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::max() const -> T
+template<typename T>
+auto DescriptiveStatistics<T>::max() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::max)) {
         computeMinMax();
@@ -425,8 +425,8 @@ inline auto DescriptiveStatistics<T>::max() const -> T
     return mMax;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::sum() const -> T
+template<typename T>
+auto DescriptiveStatistics<T>::sum() const -> T
 {
     T summation{};
 
@@ -449,8 +449,8 @@ inline auto DescriptiveStatistics<T>::sum() const -> T
     return summation;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::mean() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::mean() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::mean)) {
         computeMean();
@@ -459,8 +459,8 @@ inline auto DescriptiveStatistics<T>::mean() const -> double
     return mMean;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::median() const -> T
+template<typename T>
+auto DescriptiveStatistics<T>::median() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::median)) {
         computeSecondQuartile();
@@ -469,8 +469,8 @@ inline auto DescriptiveStatistics<T>::median() const -> T
     return mMedian;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::variance() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::variance() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::variance)) {
         computeVariance();
@@ -480,7 +480,7 @@ inline auto DescriptiveStatistics<T>::variance() const -> double
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::standarDeviation() const -> double
+auto DescriptiveStatistics<T>::standarDeviation() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::standar_deviation)) {
         computeStandarDeviation();
@@ -490,7 +490,7 @@ inline auto DescriptiveStatistics<T>::standarDeviation() const -> double
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::mode() const -> double
+auto DescriptiveStatistics<T>::mode() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::mode)) {
         computeMode();
@@ -500,7 +500,7 @@ inline auto DescriptiveStatistics<T>::mode() const -> double
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::range() const -> T
+auto DescriptiveStatistics<T>::range() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::range)) {
         computeRange();
@@ -510,13 +510,13 @@ inline auto DescriptiveStatistics<T>::range() const -> T
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::quantile(double p) const -> double
+auto DescriptiveStatistics<T>::quantile(double p) const -> double
 {
     return tl::quantile(mData.begin(), mData.end(), p);
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::firstQuartile() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::firstQuartile() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::first_quartile)) {
         computeFirstQuartile();
@@ -525,8 +525,8 @@ inline auto DescriptiveStatistics<T>::firstQuartile() const -> double
     return mQ1;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::secondQuartile() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::secondQuartile() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::second_quartile)) {
         computeSecondQuartile();
@@ -536,7 +536,7 @@ inline auto DescriptiveStatistics<T>::secondQuartile() const -> double
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::thirdQuartile() const -> double
+auto DescriptiveStatistics<T>::thirdQuartile() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::third_quartile)) {
         computeThirdQuartile();
@@ -546,13 +546,13 @@ inline auto DescriptiveStatistics<T>::thirdQuartile() const -> double
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::quartiles() const -> std::array<double, 3>
+auto DescriptiveStatistics<T>::quartiles() const -> std::array<double, 3>
 {
     return std::array<double, 3> {firstQuartile(), secondQuartile(), thirdQuartile()};
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::quintiles() const -> std::array<double, 4>
+auto DescriptiveStatistics<T>::quintiles() const -> std::array<double, 4>
 {
     double q1 = quantile(0.2);
     double q2 = quantile(0.4);
@@ -563,7 +563,7 @@ inline auto DescriptiveStatistics<T>::quintiles() const -> std::array<double, 4>
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::deciles() const -> std::array<double, 9>
+auto DescriptiveStatistics<T>::deciles() const -> std::array<double, 9>
 {
     std::array<double, 9> _deciles{};
 
@@ -573,7 +573,7 @@ inline auto DescriptiveStatistics<T>::deciles() const -> std::array<double, 9>
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::percentiles() const -> std::array<double, 99>
+auto DescriptiveStatistics<T>::percentiles() const -> std::array<double, 99>
 {
     std::array<double, 99> _percentiles{};
 
@@ -583,13 +583,13 @@ inline auto DescriptiveStatistics<T>::percentiles() const -> std::array<double, 
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::interquartileRange() const -> double
+auto DescriptiveStatistics<T>::interquartileRange() const -> double
 {
     return thirdQuartile() - firstQuartile();
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::meanAbsoluteDeviation() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::meanAbsoluteDeviation() const -> double
 {
     size_t n = size();
     if (n <= 1) return consts::zero<double>;
@@ -604,8 +604,8 @@ inline auto DescriptiveStatistics<T>::meanAbsoluteDeviation() const -> double
     return sum / n;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::medianAbsoluteDeviation() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::medianAbsoluteDeviation() const -> double
 {
     size_t n = size();
     if (n <= 1) return consts::zero<double>;
@@ -622,8 +622,8 @@ inline auto DescriptiveStatistics<T>::medianAbsoluteDeviation() const -> double
     return tl::median(x.begin(), x.end());
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::sumOfSquares() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::sumOfSquares() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::sum_of_squares)) {
         computeSumOfSquares();
@@ -632,8 +632,8 @@ inline auto DescriptiveStatistics<T>::sumOfSquares() const -> double
     return mSumOfSquares;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::rootMeanSquare() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::rootMeanSquare() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::rms)) {
         computeRootMeanSquare();
@@ -642,14 +642,14 @@ inline auto DescriptiveStatistics<T>::rootMeanSquare() const -> double
     return mRootMeanSquare;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::skewness() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::skewness() const -> double
 {
     return mSkewnessMethod->eval(*this);
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::kurtosis() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::kurtosis() const -> double
 {
     size_t n = size();
 
@@ -682,7 +682,7 @@ inline auto DescriptiveStatistics<T>::kurtosis() const -> double
 }
 
 template<typename T>
-inline auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
+auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
 {
     size_t n = size();
     double kurtosis_excess{};
@@ -696,14 +696,14 @@ inline auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
     return kurtosis_excess;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::coefficientOfVariation() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::coefficientOfVariation() const -> double
 {
     return this->standarDeviation() / std::abs(this->mean());
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::quartileCoefficientOfDispersion() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::quartileCoefficientOfDispersion() const -> double
 {
     double q1 = this->firstQuartile();
     double q3 = this->thirdQuartile();
@@ -711,14 +711,14 @@ inline auto DescriptiveStatistics<T>::quartileCoefficientOfDispersion() const ->
     return (q3 - q1) / (q3 + q1);
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::quartileDeviation() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::quartileDeviation() const -> double
 {
     return this->interquartileRange() / consts::two<double>;
 }
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::biweightMidvariance() const -> double
+template<typename T>
+auto DescriptiveStatistics<T>::biweightMidvariance() const -> double
 {
     size_t n = this->size();
     if (n <= 2) return consts::zero<double>;
@@ -747,20 +747,20 @@ inline auto DescriptiveStatistics<T>::biweightMidvariance() const -> double
 }
 
 
-template<typename T> 
-inline auto DescriptiveStatistics<T>::size() const -> size_t
+template<typename T>
+auto DescriptiveStatistics<T>::size() const -> size_t
 {
     return mData.size();
 }
 
 template<typename T>
-inline bool DescriptiveStatistics<T>::isSample() const
+bool DescriptiveStatistics<T>::isSample() const
 {
     return mConfig.sample;
 }
 
 template<typename T>
-inline bool DescriptiveStatistics<T>::isPopulation() const
+bool DescriptiveStatistics<T>::isPopulation() const
 {
     return !mConfig.sample;
 }
@@ -780,7 +780,7 @@ void DescriptiveStatistics<T>::configure()
 }
 
 template<typename T>
-inline void DescriptiveStatistics<T>::computeMinMax() const
+void DescriptiveStatistics<T>::computeMinMax() const
 {
     auto min_max = std::minmax_element(mData.begin(), mData.end());
     mMin = *min_max.first;
@@ -789,16 +789,16 @@ inline void DescriptiveStatistics<T>::computeMinMax() const
     mStatus.enable(InternalStatus::max);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeMean() const
+template<typename T>
+void DescriptiveStatistics<T>::computeMean() const
 {
     mMean = tl::mean(mData.begin(), mData.end());
 
     mStatus.enable(InternalStatus::mean);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeSumOfSquares() const
+template<typename T>
+void DescriptiveStatistics<T>::computeSumOfSquares() const
 {   
     double _mean = mean();
 
@@ -810,8 +810,8 @@ inline void DescriptiveStatistics<T>::computeSumOfSquares() const
     mStatus.enable(InternalStatus::sum_of_squares);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeRootMeanSquare() const
+template<typename T>
+void DescriptiveStatistics<T>::computeRootMeanSquare() const
 {
     mRootMeanSquare = tl::rootMeanSquare(mData.begin(), mData.end());
 
@@ -819,7 +819,7 @@ inline void DescriptiveStatistics<T>::computeRootMeanSquare() const
 }
 
 template<typename T>
-inline void DescriptiveStatistics<T>::computeVariance() const
+void DescriptiveStatistics<T>::computeVariance() const
 {
     size_t n = mData.size();
     TL_TODO("¿Devolver error?")
@@ -843,36 +843,36 @@ inline void DescriptiveStatistics<T>::computeVariance() const
     mStatus.enable(InternalStatus::variance);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeStandarDeviation() const
+template<typename T>
+void DescriptiveStatistics<T>::computeStandarDeviation() const
 {
     mStandarDeviation = sqrt(variance());
     mStatus.enable(InternalStatus::standar_deviation);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeMode() const
+template<typename T>
+void DescriptiveStatistics<T>::computeMode() const
 {
     mMode = tl::mode(mData.begin(), mData.end());
     mStatus.enable(InternalStatus::mode);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeRange() const
+template<typename T>
+void DescriptiveStatistics<T>::computeRange() const
 {
     mRange = max() - min();
     mStatus.enable(InternalStatus::range);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeFirstQuartile() const
+template<typename T>
+void DescriptiveStatistics<T>::computeFirstQuartile() const
 {
     mQ1 = tl::quantile(mData.begin(), mData.end(), 0.25);
     mStatus.enable(InternalStatus::first_quartile);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeSecondQuartile() const
+template<typename T>
+void DescriptiveStatistics<T>::computeSecondQuartile() const
 {
     mQ2 = tl::quantile(mData.begin(), mData.end(), 0.5);
     mMedian = static_cast<T>(mQ2);
@@ -880,8 +880,8 @@ inline void DescriptiveStatistics<T>::computeSecondQuartile() const
     mStatus.enable(InternalStatus::median);
 }
 
-template<typename T> 
-inline void DescriptiveStatistics<T>::computeThirdQuartile() const
+template<typename T>
+void DescriptiveStatistics<T>::computeThirdQuartile() const
 {
     mQ3 = tl::quantile(mData.begin(), mData.end(), 0.75);
     mStatus.enable(InternalStatus::third_quartile);
@@ -890,7 +890,7 @@ inline void DescriptiveStatistics<T>::computeThirdQuartile() const
 
 template<typename T>
 template<typename It>
-inline void DescriptiveStatistics<T>::quantile(It &first, It &last) const
+void DescriptiveStatistics<T>::quantile(It &first, It &last) const
 {
     auto n = std::distance(first, last);
 

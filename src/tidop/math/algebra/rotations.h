@@ -25,10 +25,6 @@
 #pragma once
 
 #include "tidop/core/defs.h"
-#include "tidop/core/exception.h"
-
-
-
 
 namespace tl
 {
@@ -76,7 +72,7 @@ public:
      * \brief Rotation type
      * \see Rotation::Type
      */
-    virtual Type type() const = 0;
+    virtual auto type() const -> Type = 0;
 
 };
 
@@ -204,7 +200,7 @@ auto OrientationBase<OrientationDerived<T, P...>>::operator=(OrientationBase &&r
 template<
   template<typename, int... P>
   class OrientationDerived, typename T, int... P>
-inline auto OrientationBase<OrientationDerived<T, P...>>::type() const -> Type
+auto OrientationBase<OrientationDerived<T, P...>>::type() const -> Type
 {
     return rotationType;
 }

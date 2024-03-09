@@ -40,14 +40,12 @@ namespace tl
  *  \{
  */
 
-
-/*! \defgroup skeleton Topological skeleton
- * Skeleton o Topological skeleton comprende una serie de algoritmos cuya finalidad
- * es reducir una forma a un 'esqueleto' que conserve la geometría y las propiedades
- * topológicas de la forma original
- *  \{
- */
-
+ /*! \defgroup skeleton Topological skeleton
+  * Skeleton or Topological skeleton comprises a series of algorithms whose purpose
+  * is to reduce a shape to a 'skeleton' that preserves the geometry and the topological
+  * properties of the original shape.
+  *  \{
+  */
 
 
 //void thinning(const cv::Mat &image, 
@@ -61,8 +59,7 @@ namespace tl
 
 
 /*!
- * \brief Adelgazamiento (thinning) es la transformación de una imagen en una imagen simplificada pero topológicamente equivalente.
- *
+ * \brief Thinning is the transformation of an image into a simplified but topologically equivalent image.
  */
 class TL_EXPORT Thinning
     : public ImageProcess
@@ -83,8 +80,8 @@ private:
 public:
 
     /*!
-     * \brief Constructora
-     * Se puede utilizar uno de los dos métodos siguientes:
+     * \brief Constructor
+     * One of the following methods can be used:
      * - Zhang-Suen algorithm: The algorithm is explained in “A fast parallel algorithm
      * for thinning digital patterns” by T.Y. Zhang and C.Y. Suen.
      * - Guo-Hall algorithm: The algorithm is explained in “Parallel thinning with two
@@ -94,20 +91,20 @@ public:
      * https://web.archive.org/web/20160322113207/http://opencv-code.com/quick-tips/implementation-of-thinning-algorithm-in-opencv/
      * https://web.archive.org/web/20160314104646/http://opencv-code.com/quick-tips/implementation-of-guo-hall-thinning-algorithm/
      *
-     * \param[in] type Tipo de algoritmo empleado. Por defecto zhang_suen
+     * \param[in] type Algorithm type. By default zhang_suen
      * \see Type
      */
     Thinning(Type type = Type::zhang_suen);
 
     /*!
-     * \brief Ejecuta el proceso
-     * \param[in] matIn Imagen de entrada
-     * \param[out] matOut Imagen de salida
+     * \brief Execute the process
+     * \param[in] matIn Input image
+     * \param[out] matOut Output image
      */
     void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
     /*!
-     * \brief Establece el tipo de algoritmo de adelgazamiento usado
+     * \brief Set the type of thinning algorithm used
      */
     void setType(Type type);
 

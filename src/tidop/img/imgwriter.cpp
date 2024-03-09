@@ -51,8 +51,6 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
     GDALDataType ret = GDT_Unknown;
     switch (dataType) {
     case DataType::TL_8U:
-        ret = GDT_Byte;
-        break;
     case DataType::TL_8S:
         ret = GDT_Byte;
         break;
@@ -74,10 +72,8 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
     case DataType::TL_64F:
         ret = GDT_Float64;
         break;
-    default:
-        ret = GDT_Unknown;
-        break;
     }
+
     return ret;
 }
 
@@ -90,10 +86,9 @@ GDALDataType openCvToGdal(int cvdt)
 {
     GDALDataType ret;
 
-    if (cvdt == CV_8U)
-        ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
-    else if (cvdt == CV_8S)
-        ret = GDT_Byte;      //  CV_8S  == 1     GDT_Byte == 1
+    if (cvdt == CV_8U ||  //  CV_8U  == 0     GDT_Byte == 1
+        cvdt == CV_8S)    //  CV_8S  == 1     GDT_Byte == 1
+        ret = GDT_Byte;
     else if (cvdt == CV_16U)
         ret = GDT_UInt16;    //  CV_16U == 2     GDT_UInt16 == 2
     else if (cvdt == CV_16S)
@@ -110,7 +105,7 @@ GDALDataType openCvToGdal(int cvdt)
     return(ret);
 }
 
-#endif TL_HAVE_GDAL
+#endif //TL_HAVE_GDAL
 
 
 ImageWriter::ImageWriter(tl::Path file)
@@ -153,7 +148,7 @@ public:
         mImageOptions(nullptr),
         mImageMetadata(nullptr),
 #ifdef _DEBUG
-        mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+        mSpatialReference(static_cast<OGRSpatialReference*>(OSRNewSpatialReference(nullptr)))
 #else
         mSpatialReference(new OGRSpatialReference(nullptr))
 #endif
@@ -163,7 +158,7 @@ public:
 
     ~ImageWriterGdal() override
     {
-        this->close();
+        ImageWriterGdal::close();
 
         if (mSpatialReference) {
 #ifdef _DEBUG
@@ -218,9 +213,6 @@ public:
     void close() override
     {
         if (mDataset) {
-
-            char **tmp = nullptr;
-
             if (bTempFile) {
 
                 GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(mFile.extension().toString()).c_str());
@@ -246,14 +238,17 @@ public:
 
             }
 
-            tmp = mDataset->GetFileList();
+            char** tmp = mDataset->GetFileList();
 
             GDALClose(mDataset);
             mDataset = nullptr;
 
             if (bTempFile) {
-                for (size_t i = 0; i < sizeof(**tmp); i++)
-                    std::remove(tmp[i]);
+                for (size_t i = 0; i < sizeof(**tmp); i++) {
+                    Path::removeFile(Path(tmp[i]));
+                    //std::remove(tmp[i]);
+                }
+                    
             }
         }
 
@@ -333,7 +328,7 @@ public:
     }
 
     void write(const cv::Mat &image,
-               const Rect<int> &rect)
+               const Rect<int> &rect) override
     {
         try {
 
@@ -469,37 +464,6 @@ public:
         }
     }
 
-    // void write(const cv::Mat &image,
-    //            const Affine<Point<int>> &trf) override
-    // {
-        //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
-
-        ////TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
-        ////anteriormente a create y asignar los valores correctos.
-        //// De hecho debería utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
-
-        ////if (!image.isContinuous()) image = image.clone();
-        ////uchar *buff = image.ptr();
-        //uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
-
-        //int nPixelSpace = static_cast<int>(image.elemSize());
-        //int nLineSpace = nPixelSpace * image.cols;
-        //int nBandSpace = static_cast<int>(image.elemSize1());
-
-        //TL_TODO("Aplicar transformación a la región a leer")
-        //CPLErr cerr = mDataset->RasterIO(GF_Write, static_cast<int>(trf.tx), 
-        //                                 static_cast<int>(trf.ty), 
-        //                                 image.cols, image.rows, buff, 
-        //                                 image.cols, image.rows, 
-        //                                 openCvToGdal(image.depth()), this->channels(), 
-        //                                 gdalBandOrder(this->channels()).data(), nPixelSpace,
-        //                                 nLineSpace, nBandSpace);
-
-        //if (cerr != 0) {
-        //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-        //}
-    // }
-
     auto rows() const -> int override
     {
         int rows = 0;
@@ -595,23 +559,9 @@ public:
         }
     }
 
-    //#ifdef TL_HAVE_GRAPHIC
-    //  void setColor(const Color &nodata)
-    //  {
-    //    int channels = this->channels();
-    //    if (channels == 1) {
-    //      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.luminance());
-    //    } else {
-    //      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.red());
-    //      mDataset->GetRasterBand(2)->SetNoDataValue(nodata.green());
-    //      mDataset->GetRasterBand(3)->SetNoDataValue(nodata.blue());
-    //    }
-    //  }
-    //#endif
-
 private:
 
-    bool checkDataType()
+    bool checkDataType() const
     {
         return mValidDataTypes.isEnabled(mDataType);
     }

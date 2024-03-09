@@ -26,12 +26,9 @@
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #endif
 
 #include "tidop/graphic/canvas.h"
-#include "tidop/geometry/transform/transform.h"
 
 namespace tl
 {
@@ -46,9 +43,7 @@ Painter::Painter(Canvas *canvas)
 {
 }
 
-Painter::~Painter()
-{
-}
+Painter::~Painter() = default;
 
 void Painter::drawPoint(const GPoint &point)
 {
@@ -69,7 +64,7 @@ void Painter::drawPoint(const GPoint &point)
     }
 }
 
-void Painter::drawPoint(const Point<double> &point)
+void Painter::drawPoint(const Point<double> &point) const
 {
     if (mCanvas) {
         mCanvas->drawPoint(point, *this);
@@ -78,7 +73,7 @@ void Painter::drawPoint(const Point<double> &point)
     }
 }
 
-void Painter::drawLineString(const GLineString &lineString)
+void Painter::drawLineString(const GLineString &lineString) const
 {
     if (mCanvas) {
 
@@ -103,7 +98,7 @@ void Painter::drawLineString(const GLineString &lineString)
     }
 }
 
-void Painter::drawLineString(const LineStringD &lineString)
+void Painter::drawLineString(const LineStringD &lineString) const
 {
     if (mCanvas) {
         mCanvas->drawLineString(lineString, *this);
@@ -112,7 +107,7 @@ void Painter::drawLineString(const LineStringD &lineString)
     }
 }
 
-void Painter::drawPolygon(const GPolygon &polygon)
+void Painter::drawPolygon(const GPolygon &polygon) const
 {
     if (mCanvas) {
 
@@ -133,7 +128,7 @@ void Painter::drawPolygon(const GPolygon &polygon)
     }
 }
 
-void Painter::drawPolygon(const PolygonD &polygon)
+void Painter::drawPolygon(const PolygonD &polygon) const
 {
     if (mCanvas) {
 
@@ -154,30 +149,30 @@ void Painter::drawPolygon(const PolygonD &polygon)
     }
 }
 
-void Painter::drawMultiPoint(const GMultiPoint &multipoint)
+void Painter::drawMultiPoint(const GMultiPoint &multipoint) const
 {
     unusedParameter(multipoint);
 }
 
-void Painter::drawMultiLineString(const GMultiLineString &multiLineString)
+void Painter::drawMultiLineString(const GMultiLineString &multiLineString) const
 {
     unusedParameter(multiLineString);
 }
 
-void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon)
+void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon) const
 {
     unusedParameter(multiPolygon);
 }
 
 #ifdef TL_HAVE_OPENCV
-void Painter::drawPicture(const cv::Mat &bmp)
+void Painter::drawPicture(const cv::Mat &bmp) const
 {
     ///mCanvas->
     unusedParameter(bmp);
 }
 #endif // TL_HAVE_OPENCV
 
-void Painter::drawText(const Point<double> &point, const std::string &text)
+void Painter::drawText(const Point<double> &point, const std::string &text) const
 {
     if (mCanvas) {
 

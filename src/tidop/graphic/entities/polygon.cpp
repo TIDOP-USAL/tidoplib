@@ -34,6 +34,12 @@ GPolygon::GPolygon()
 {
 }
 
+GPolygon::GPolygon(size_t size)
+  : Polygon<Point<double>>(size),
+    GraphicEntity(GraphicEntity::Type::polygon_2d)
+{
+}
+
 GPolygon::GPolygon(const Polygon<Point<double>> &polygon)
   : Polygon<Point<double>>(polygon),
     GraphicEntity(GraphicEntity::Type::polygon_2d)
@@ -74,16 +80,6 @@ auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
     return *this;
 }
 
-auto GPolygon::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-auto GPolygon::isSimpleEntity() const -> bool
-{
-    return true;
-}
-
 
 
 
@@ -91,6 +87,12 @@ auto GPolygon::isSimpleEntity() const -> bool
 
 GPolygon3D::GPolygon3D()
   : GraphicEntity(GraphicEntity::Type::polygon_3d)
+{
+}
+
+GPolygon3D::GPolygon3D(size_t size)
+  : Polygon3D<Point3<double>>(size),
+    GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
 
@@ -134,16 +136,6 @@ auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
     return *this;
 }
 
-auto GPolygon3D::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-auto GPolygon3D::isSimpleEntity() const -> bool
-{
-    return true;
-}
-
 
 
 
@@ -153,15 +145,27 @@ GMultiPolygon::GMultiPolygon()
 {
 }
 
+GMultiPolygon::GMultiPolygon(size_t size)
+  : MultiPolygon<Point<double>>(size),
+    GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+{
+}
+
 GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon)
   : MultiPolygon<Point<double>>(multiPolygon),
     GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
-GMultiPolygon::GMultiPolygon(const GMultiPolygon &gMultiPolygon)
-  : MultiPolygon<Point<double>>(gMultiPolygon),
-    GraphicEntity(gMultiPolygon)
+GMultiPolygon::GMultiPolygon(const GMultiPolygon &multiPolygon)
+  : MultiPolygon<Point<double>>(multiPolygon),
+    GraphicEntity(multiPolygon)
+{
+}
+
+GMultiPolygon::GMultiPolygon(GMultiPolygon&& multiPolygon) TL_NOEXCEPT
+  : MultiPolygon<Point<double>>(std::forward<MultiPolygon<Point<double>>>(multiPolygon)),
+    GraphicEntity(std::forward<GraphicEntity>(multiPolygon))
 {
 }
 
@@ -169,27 +173,25 @@ GMultiPolygon::~GMultiPolygon()
 {
 }
 
-auto GMultiPolygon::operator =(const GMultiPolygon& gMultiPolygon) -> GMultiPolygon&
+auto GMultiPolygon::operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon&
 {
-    if (this != &gMultiPolygon) {
-        MultiPolygon<Point<double>>::operator=(gMultiPolygon);
-        GraphicEntity::operator=(gMultiPolygon);
+    if (this != &multiPolygon) {
+        MultiPolygon<Point<double>>::operator=(multiPolygon);
+        GraphicEntity::operator=(multiPolygon);
     }
+
     return *this;
 }
 
-auto GMultiPolygon::isMultiEntity() const -> bool
+auto GMultiPolygon::operator=(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon&
 {
-    return true;
+    if (this != &multiPolygon) {
+        MultiPolygon<Point<double>>::operator=(std::forward<MultiPolygon<Point<double>>>(multiPolygon));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon));
+    }
+
+    return *this;
 }
-
-auto GMultiPolygon::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
-
-
 
 
 GMultiPolygon3D::GMultiPolygon3D()
@@ -203,34 +205,37 @@ GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPoly
 {
 }
 
-GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &gMultiPolygon3D)
-  : MultiPolygon3D<Point3<double>>(gMultiPolygon3D),
-    GraphicEntity(gMultiPolygon3D)
+GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D)
+  : MultiPolygon3D<Point3<double>>(multiPolygon3D),
+    GraphicEntity(multiPolygon3D)
 {
+}
+
+GMultiPolygon3D::GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT
+  : MultiPolygon3D<Point3<double>>(std::forward<MultiPolygon3D<Point3<double>>>(multiPolygon3D)),
+    GraphicEntity(multiPolygon3D){
 }
 
 GMultiPolygon3D::~GMultiPolygon3D()
 {
 }
 
-auto GMultiPolygon3D::operator =(const GMultiPolygon3D& gMultiPolygon3D) -> GMultiPolygon3D&
+auto GMultiPolygon3D::operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D&
 {
-    if (this != &gMultiPolygon3D) {
-        MultiPolygon3D<Point3<double>>::operator=(gMultiPolygon3D);
-        GraphicEntity::operator=(gMultiPolygon3D);
+    if (this != &multiPolygon3D) {
+        MultiPolygon3D<Point3<double>>::operator=(multiPolygon3D);
+        GraphicEntity::operator=(multiPolygon3D);
     }
     return *this;
 }
 
-auto GMultiPolygon3D::isMultiEntity() const -> bool
+auto GMultiPolygon3D::operator=(GMultiPolygon3D &&multiPolygon3D) noexcept -> GMultiPolygon3D&
 {
-    return true;
+    if (this != &multiPolygon3D) {
+        MultiPolygon3D<Point3<double>>::operator=(std::forward<MultiPolygon3D<Point3<double>>>(multiPolygon3D));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon3D));
+    }
+    return *this;
 }
-
-auto GMultiPolygon3D::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
 
 } // End namespace tl

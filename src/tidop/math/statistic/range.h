@@ -40,24 +40,24 @@ namespace tl
  */
 
 /*!
- * \brief Rango o recorrido
- * El Rango es la diferencia entre el valor mayor y el menor del conjunto de datos
- * \f[ R=x_{max}-x_{min} \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor del rango para el conjunto de datos
+ * \brief Range
+ * The range is the difference between the maximum and minimum values in the dataset.
+ * \f[ R = x_{\text{max}} - x_{\text{min}} \f]
+ * \param[in] first Iterator to the beginning
+ * \param[in] last Iterator to the end
+ * \return The value of the range for the dataset.
  */
-template<typename It> inline
-typename std::iterator_traits<It>::value_type range(It first, It last)
+template<typename It>
+auto range(It first, It last) -> typename std::iterator_traits<It>::value_type
 {
-    typename std::iterator_traits<It>::value_type _r{0};
+    typename std::iterator_traits<It>::value_type r{0};
 
     if (first != last) {
         auto result = std::minmax_element(first, last);
-        _r = *result.second - *result.first;
+        r = *result.second - *result.first;
     }
 
-    return _r;
+    return r;
 }
 
 

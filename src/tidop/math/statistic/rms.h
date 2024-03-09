@@ -42,8 +42,8 @@ namespace tl
 /*!
  * \brief Root Mean Square (RMS)
  */
-template<typename It> inline
-double rootMeanSquare(It first, It last)
+template<typename It>
+auto rootMeanSquare(It first, It last) -> double
 {
     double sum{};
     double i{1};

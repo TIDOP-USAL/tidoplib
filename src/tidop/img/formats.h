@@ -27,7 +27,6 @@
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
 
-#include <vector>
 #include <map>
 
 #ifdef TL_HAVE_GDAL
@@ -44,11 +43,8 @@ namespace tl
 {
 
 
-//enum class DataType : int8_t;
-
-
 /*!
- * \brief Opciones del formato
+ * \brief Format options
  */
 class TL_EXPORT ImageOptions
 {
@@ -71,7 +67,7 @@ public:
 public:
 
     ImageOptions();
-    //virtual ~ImageOptions();
+    virtual ~ImageOptions() = default;
 
     virtual Format format() const = 0;
 
@@ -93,21 +89,21 @@ private:
 public:
 
     ImageOptionsBase(Format format);
-    virtual ~ImageOptionsBase();
+    ~ImageOptionsBase() override;
 
-    Format format() const override;
-    std::map<std::string, std::string> options() const override;
-    std::map<std::string, std::string> activeOptions() const override;
+    auto format() const -> Format override;
+    auto options() const -> std::map<std::string, std::string> override;
+    auto activeOptions() const -> std::map<std::string, std::string> override;
 
 protected:
 
-    virtual std::map<std::string, std::string> options(bool all) const = 0;
+    virtual auto options(bool all) const -> std::map<std::string, std::string> = 0;
 
 };
 
 
 /*!
- * \brief Opciones del formato TIFF
+ * \brief TIFF format options
  */
 class TL_EXPORT TiffOptions
   : public ImageOptionsBase
@@ -116,18 +112,18 @@ class TL_EXPORT TiffOptions
 public:
 
     /*!
-     * \brief Propiedades de BIGTIFF
+     * \brief BigTIFF properties
      */
     enum class BigTiff : uint8_t
     {
-        yes,            /*!< Fuerza BigTiff. */
-        no,             /*!< Fuerza tiff normal. */
-        if_needed,      /*!< BigTiff si es necesario. */
+        yes,            /*!< Force BigTiff. */
+        no,             /*!< Force normal TIFF. */
+        if_needed,      /*!< BigTiff if needed. */
         if_safer        /*!< . */
     };
 
     /*!
-     * \brief Tipo de compresión
+     * \brief Compression type
      */
     enum class Compress : uint8_t
     {
@@ -219,70 +215,70 @@ public:
 
     void reset() override;
 
-    bool isEnableTFW() const;
+    auto isEnableTFW() const -> bool;
     void enableTFW(bool value = true);
 
-    bool isEnableRPB() const;
+    auto isEnableRPB() const -> bool;
     void enableRPB(bool value = true);
 
-    bool isEnableRPCTX() const;
+    auto isEnableRPCTX() const -> bool;
     void enableRPCTX(bool value = true);
 
-    bool isEnableTiled() const;
+    auto isEnableTiled() const -> bool;
     void enableTiled(bool value = true);
 
-    int blockXSize() const;
+    auto blockXSize() const -> int;
     void setBlockXSize(int blockXSize);
 
-    int blockYSize() const;
+    auto blockYSize() const -> int;
     void setBlockYSize(int blockYSize);
 
     /*!
-     * \brief Número de bits
+     * \brief Number of bits
      */
-    int nBits() const;
+    auto nBits() const -> int;
     void setNBits(int nBits);
 
-    uint8_t jpegQuality() const;
+    auto jpegQuality() const -> uint8_t;
     void setJpegQuality(uint8_t jpegQuality);
 
-    uint8_t zLevel() const;
+    auto zLevel() const -> uint8_t;
     void setZLevel(uint8_t zLevel);
 
-    BigTiff bigTiff() const;
+    auto bigTiff() const -> BigTiff;
     void setBigTiff(BigTiff bigTiff);
 
-    Compress compress() const;
+    auto compress() const -> Compress;
     void setCompress(Compress compress);
 
-    Photometric photometric() const;
+    auto photometric() const -> Photometric;
     void setPhotometric(Photometric photometric);
 
-    Alpha alpha() const;
+    auto alpha() const -> Alpha;
     void setAlpha(Alpha alpha);
 
-    Profile profile() const;
+    auto profile() const -> Profile;
     void setProfile(Profile profile);
 
-    PixelType pixelType() const;
+    auto pixelType() const -> PixelType;
     void setPixelType(PixelType pixelType);
 
-    GeotiffKeysFlavor geotiffKeysFlavor() const;
+    auto geotiffKeysFlavor() const -> GeotiffKeysFlavor;
     void setGeotiffKeysFlavor(GeotiffKeysFlavor geotiffKeysFlavor);
 
-    bool internalMask() const;
+    auto internalMask() const -> bool;
     void setInternalMask(bool internalMask);
 
 private:
 
     void init();
-    std::map<std::string, std::string> options(bool all) const override;
+    auto options(bool all) const -> std::map<std::string, std::string> override;
 
 };
 
 
 /*!
- * \brief Clase que gestiona las opciones del formato PNG
+ * \brief  Class that manages PNG format options
  */
 class TL_EXPORT PngOptions
   : public ImageOptionsBase
@@ -311,32 +307,32 @@ public:
 
     void reset() override;
 
-    bool isEnableWorldFile() const;
+    auto isEnableWorldFile() const -> bool;
     void setEnableWorldFile(bool enable);
 
-    uint8_t zLevel() const;
+    auto zLevel() const -> uint8_t;
     void setZLevel(uint8_t zLevel);
 
 #ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
 
-    std::string title() const;
+    auto title() const -> std::string;
     void setTitle(const std::string &title);
 
-    std::string description() const;
+    auto description() const -> std::string;
     void setDescription(const std::string &description);
 
-    std::string copyright() const;
+    auto copyright() const -> std::string;
     void setCopyright(const std::string &copyright);
 
-    std::string comment() const;
+    auto comment() const -> std::string;
     void setComment(const std::string &comment);
 
 #endif
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
 
-    int nBits() const;
+    auto nBits() const -> int;
     void setNBits(int nBits);
 
 #endif
@@ -345,13 +341,14 @@ public:
 private:
 
     void init();
-    std::map<std::string, std::string> options(bool all) const override;
+    auto options(bool all) const -> std::map<std::string, std::string> override;
 
 };
 
 
+
 /*!
- * \brief Clase que gestiona las opciones del formato Jpeg
+ * \brief Class that manages the Jpeg format options
  */
 class TL_EXPORT JpegOptions
     : public ImageOptionsBase
@@ -428,7 +425,7 @@ private:
 
 
 /*!
- * \brief Clase que gestiona las opciones del formato bmp
+ * \brief Class that manages the bmp format options.
  */
 class TL_EXPORT BmpOptions
     : public ImageOptionsBase
@@ -457,7 +454,7 @@ private:
 
 
 /*!
- * \brief Clase que gestiona las opciones del formato gif
+ * \brief Class handling the gif format options
  */
 class TL_EXPORT GifOptions
   : public ImageOptionsBase

@@ -45,35 +45,6 @@ namespace tl
 
 
 
-//std::vector<std::string> gdalValidExtensions()
-//{
-//  std::vector<std::string> extensions {
-//    "bmp",    // Microsoft Windows Device Independent Bitmap (.bmp)
-//    "png",    // Portable Network Graphics (.png)
-//    "jpg",    // JPEG JFIF (.jpg)
-//    "tif",    // TIFF / BigTIFF / GeoTIFF (.tif)
-//    "gif",    // Graphics Interchange Format (.gif)
-//    "gtx",    // NOAA .gtx vertical datum shift
-//    "grd",    // Arc/Info ASCII Grid
-//    "asc",    // Arc/Info ASCII Grid
-//    "gsb",    // NTv2 Datum Grid Shift
-//    "ecw",    // ERDAS Compressed Wavelets (.ecw)
-//    "jp2",    // JPEG2000 (.jp2, .j2k)
-//    "lan",    // Erdas 7.x .LAN and .GIS
-//    "hdr",    // ENVI .hdr Labelled Raster
-//    "img",    // Erdas Imagine (.img)
-//    "blx",    // Magellan BLX Topo (.blx, .xlb)
-//    "xlb",    // Magellan BLX Topo (.blx, .xlb)
-//    "map",    // OziExplorer .MAP
-//    "e00",    // Arc/Info Export E00 GRID
-//    "hdr",    // Vexcel MFF
-//    "img",    // Erdas Imagine (.img)
-//    "wms"
-//  };
-//
-//  return extensions;
-//}
-
 bool gdalValidExtensions(const std::string &extension)
 {
     std::vector<std::string> extensions {
@@ -112,14 +83,14 @@ bool gdalValidExtensions(const std::string &extension)
 EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
 {
     EnumFlags<DataType> flag;
-    if (format.compare("BMP") == 0) {
+    if (format == "BMP") {
         flag.enable(DataType::TL_8U);
-    } else if (format.compare("PNG") == 0) {
+    } else if (format == "PNG") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_16U);
-    } else if (format.compare("JPEG") == 0) {
+    } else if (format == "JPEG") {
         flag.enable(DataType::TL_8U);
-    } else if (format.compare("GTiff") == 0) {
+    } else if (format == "GTiff") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_16U);
         flag.enable(DataType::TL_16S);
@@ -127,25 +98,25 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
         flag.enable(DataType::TL_32S);
         flag.enable(DataType::TL_32F);
         flag.enable(DataType::TL_64F);
-    } else if (format.compare("GIF") == 0) {
+    } else if (format == "GIF") {
         flag.enable(DataType::TL_8U);
-    } else if (format.compare("GTX") == 0) {
+    } else if (format == "GTX") {
         flag.enable(DataType::TL_32F);
-    } else if (format.compare("AAIGrid") == 0) {
+    } else if (format == "AAIGrid") {
         flag.enable(DataType::TL_32U);
         flag.enable(DataType::TL_32F);
         flag.enable(DataType::TL_64F);
-    } else if (format.compare("NTv2") == 0) {
+    } else if (format == "NTv2") {
         flag.enable(DataType::TL_32F);
-    } else if (format.compare("ECW") == 0) {
+    } else if (format == "ECW") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_16U);
-    } else if (format.compare("JP2OpenJPEG") == 0) {
+    } else if (format == "JP2OpenJPEG") {
 
-    } else if (format.compare("LAN") == 0) {
+    } else if (format == "LAN") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_16S);
-    } else if (format.compare("ENVI") == 0) {
+    } else if (format == "ENVI") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_16U);
         flag.enable(DataType::TL_16S);
@@ -153,7 +124,7 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
         flag.enable(DataType::TL_32S);
         flag.enable(DataType::TL_32F);
         flag.enable(DataType::TL_64F);
-    } else if (format.compare("HFA") == 0) {
+    } else if (format == "HFA") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_8S);
         flag.enable(DataType::TL_16U);
@@ -162,13 +133,13 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
         flag.enable(DataType::TL_32S);
         flag.enable(DataType::TL_32F);
         flag.enable(DataType::TL_64F);
-    } else if (format.compare("BLX") == 0) {
+    } else if (format == "BLX") {
         flag.enable(DataType::TL_16U);
-    } else if (format.compare("MAP") == 0) {
+    } else if (format == "MAP") {
 
-    } else if (format.compare("E00GRID") == 0) {
+    } else if (format == "E00GRID") {
 
-    } else if (format.compare("MFF") == 0) {
+    } else if (format == "MFF") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_8S);
         flag.enable(DataType::TL_16U);
@@ -177,7 +148,7 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
         flag.enable(DataType::TL_32S);
         flag.enable(DataType::TL_32F);
         flag.enable(DataType::TL_64F);
-    } else if (format.compare("HFA") == 0) {
+    } else if (format == "HFA") {
         flag.enable(DataType::TL_8U);
         flag.enable(DataType::TL_8S);
         flag.enable(DataType::TL_16U);
@@ -186,7 +157,7 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
         flag.enable(DataType::TL_32S);
         flag.enable(DataType::TL_32F);
         flag.enable(DataType::TL_64F);
-    } else if (format.compare("WMS") == 0) {
+    } else if (format == "WMS") {
 
     }
 
@@ -256,76 +227,6 @@ std::string gdalDriverFromExtension(const std::string &extension)
 }
 
 
-#ifdef TL_HAVE_GDAL
-
-//DataType gdalConvertDataType(GDALDataType dataType)
-//{
-//  DataType ret;
-//  switch (dataType) {
-//  case GDT_Byte:
-//    ret = DataType::TL_8U;
-//    break;
-//  case GDT_UInt16:
-//    ret = DataType::TL_16U;
-//    break;
-//  case GDT_Int16:
-//    ret = DataType::TL_16S;
-//    break;
-//  case GDT_UInt32:
-//    ret = DataType::TL_32U;
-//    break;
-//  case GDT_Int32:
-//    ret = DataType::TL_32S;
-//    break;
-//  case GDT_Float32:
-//    ret = DataType::TL_32F;
-//    break;
-//  case GDT_Float64:
-//    ret = DataType::TL_64F;
-//    break;
-//  default:
-//    ret = DataType::TL_8U;
-//    break;
-//  }
-//  return ret;
-//}
-
-//GDALDataType dataTypeToGdalDataType(DataType dataType)
-//{ 
-//  GDALDataType ret = GDT_Unknown;
-//  switch (dataType) {
-//  case DataType::TL_8U:
-//    ret = GDT_Byte;
-//    break;
-//  case DataType::TL_8S:
-//    ret = GDT_Byte;
-//    break;
-//  case DataType::TL_16U:
-//    ret = GDT_UInt16;
-//    break;
-//  case DataType::TL_16S:
-//    ret = GDT_Int16;
-//    break;
-//  case DataType::TL_32U:
-//    ret = GDT_UInt32;
-//    break;
-//  case DataType::TL_32S:
-//    ret = GDT_Int32;
-//    break;
-//  case DataType::TL_32F:
-//    ret = GDT_Float32;
-//    break;
-//  case DataType::TL_64F:
-//    ret = GDT_Float64;
-//    break;
-//  default:
-//    ret = GDT_Unknown;
-//    break;
-//  }
-//  return ret;
-//}
-
-#endif // TL_HAVE_GDAL
 
 #ifdef TL_HAVE_OPENCV
 
@@ -423,76 +324,6 @@ std::vector<int> gdalBandOrder(int channels)
 
     return panBandMap;
 }
-
-#if defined TL_HAVE_OPENCV && defined TL_HAVE_GDAL
-
-/*!
- * \brief Obtiene el tipo de dato de OpenCV
- * \param gdalType Tipo de GDAL
- * \param channels N�mero de canales
- * \return Tipo de OpenCV
- */
-//int gdalToOpenCv(GDALDataType gdalType, int channels)
-//{
-//  int depth;
-//  if (gdalType == GDT_Byte)
-//    depth = CV_8U;
-//  else if (gdalType == GDT_UInt16)
-//    depth = CV_16U;
-//  else if (gdalType == GDT_Int16)
-//    depth = CV_16S;
-//  else if (gdalType == GDT_UInt32)
-//    depth = CV_32S;
-//  else if (gdalType == GDT_Int32)
-//    depth = CV_32S;
-//  else if (gdalType == GDT_Float32)
-//    depth = CV_32F;  
-//  else if (gdalType == GDT_Float64)
-//    depth = CV_64F; 
-//  //else if (gdalType == GDT_CInt16)
-//  //  depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
-//  //else if (gdalType == GDT_CInt32)
-//  //  depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
-//  //else if (gdalType == GDT_CFloat32)
-//  //  depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
-//  //else if (gdalType == GDT_CFloat64)
-//  //  depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
-//  else
-//    depth = -1;
-//  return(CV_MAKETYPE(depth, channels));
-//}
-
-
-///*!
-// * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
-// * \param cvdt Profundidad de bits
-// * \return GDALDataType
-// */
-//GDALDataType openCvToGdal(int cvdt)
-//{
-//  GDALDataType ret;
-//  
-//  if (cvdt == CV_8U)  
-//    ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
-//  else if (cvdt == CV_8S)  
-//    ret = GDT_Byte;      //  CV_8S  == 1     GDT_Byte == 1
-//  else if (cvdt == CV_16U)  
-//    ret = GDT_UInt16;    //  CV_16U == 2     GDT_UInt16 == 2
-//  else if (cvdt == CV_16S)  
-//    ret = GDT_Int16;     //  CV_16S == 3     GDT_Int16 == 3
-//  else if (cvdt == CV_32S)  
-//    ret = GDT_Int32;     //  CV_32S == 4     GDT_Int32 == 5
-//  else if (cvdt == CV_32F)  
-//    ret = GDT_Float32;   //  CV_32F == 5     GDT_Float32 == 6
-//  else if (cvdt == CV_64F)  
-//    ret = GDT_Float64;   //  CV_64F == 6     GDT_Float64 == 7
-//  else                        
-//    ret = GDT_Unknown;   //                  GDT_Unknown == 0
-//  
-//  return(ret);
-//}
-
-#endif // TL_HAVE_OPENCV
 
 
 #ifdef TL_HAVE_EDSDK

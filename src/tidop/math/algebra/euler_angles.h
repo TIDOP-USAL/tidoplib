@@ -24,10 +24,6 @@
 
 #pragma once
 
-#include <vector>
-#include <array>
-
-#include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations.h"
 #include "tidop/math/algebra/vector.h"
 
@@ -67,7 +63,7 @@ enum Axes
 };
 
 /*!
- * \brief Ángulos de Euler
+ * \brief Euler Angles
  */
 template<typename T, int _axes = Axes::xyz>
 class EulerAngles
@@ -121,7 +117,7 @@ EulerAngles<T, _axes>::EulerAngles(double x, double y, double z)
 }
 
 template<typename T, int _axes>
-inline EulerAngles<T, _axes>::EulerAngles(const Vector<T, 3> &angles)
+EulerAngles<T, _axes>::EulerAngles(const Vector<T, 3> &angles)
   : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
     x(angles[0]),
     y(angles[1]),
@@ -176,13 +172,13 @@ auto EulerAngles<T, _axes>::operator = (EulerAngles<T, _axes> &&eulerAngles) TL_
 /* Operaciones unarias */
 
 template<typename T, int _axes>
-inline auto EulerAngles<T, _axes>::operator+() -> EulerAngles<T, _axes>
+auto EulerAngles<T, _axes>::operator+() -> EulerAngles<T, _axes>
 {
     return *this;
 }
 
 template <typename T, int _axes>
-inline auto EulerAngles<T, _axes>::operator-() -> EulerAngles<T, _axes>
+auto EulerAngles<T, _axes>::operator-() -> EulerAngles<T, _axes>
 {
     return EulerAngles<T, _axes>(-this->x,-this->y,-this->z);
 }

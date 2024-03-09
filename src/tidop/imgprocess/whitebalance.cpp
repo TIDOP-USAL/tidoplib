@@ -32,13 +32,9 @@
 
 #include <cstdarg>
 #include <cstdio>
-#include <thread>
 
 namespace tl
 {
-
-
-
 #ifdef  HAVE_OPENCV_XPHOTO
 #if defined CV_VERSION_MAJOR && CV_VERSION_MAJOR >= 3
 #if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
@@ -69,9 +65,9 @@ void Grayworld::run(const cv::Mat &matIn, cv::Mat &matOut) const
 
 /* ---------------------------------------------------------------------------------- */
 
-WhitePatch::WhitePatch(const Color &white)
+WhitePatch::WhitePatch(Color white)
   : ImageProcess(ProcessType::whitepatch),
-    mWhite(white)
+    mWhite(std::move(white))
 {
 }
 
@@ -96,9 +92,9 @@ void WhitePatch::run(const cv::Mat &matIn, cv::Mat &matOut) const
             int r = static_cast<int>(row);
             const uchar *rgb_ptr = matIn.ptr<uchar>(r);
             for (int c = 0; c < matIn.cols; c++) {
-                aux.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(rgb_ptr[3 * c] * scale_red);
-                aux.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(rgb_ptr[3 * c + 1] * scale_green);
-                aux.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(rgb_ptr[3 * c + 2] * scale_blue);
+                aux.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(rgb_ptr[3 * static_cast<size_t>(c)] * scale_red);
+                aux.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(rgb_ptr[3 * static_cast<size_t>(c) + 1] * scale_green);
+                aux.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(rgb_ptr[3 * static_cast<size_t>(c) + 2] * scale_blue);
             }
                      });
 
@@ -114,7 +110,7 @@ void WhitePatch::setWhite(const Color &white)
     mWhite = white;
 }
 
-double WhitePatch::scaleRed(const cv::Mat &red) const
+auto WhitePatch::scaleRed(const cv::Mat& red) const -> double
 {
     double max_red;
     cv::minMaxLoc(red, nullptr, &max_red);
@@ -122,7 +118,7 @@ double WhitePatch::scaleRed(const cv::Mat &red) const
     return sr;
 }
 
-double WhitePatch::scaleGreen(const cv::Mat &green) const
+auto WhitePatch::scaleGreen(const cv::Mat& green) const -> double
 {
     double max_green;
     cv::minMaxLoc(green, nullptr, &max_green);
@@ -130,7 +126,7 @@ double WhitePatch::scaleGreen(const cv::Mat &green) const
     return sg;
 }
 
-double WhitePatch::scaleBlue(const cv::Mat &blue) const
+auto WhitePatch::scaleBlue(const cv::Mat& blue) const -> double
 {
     double max_blue;
     cv::minMaxLoc(blue, nullptr, &max_blue);

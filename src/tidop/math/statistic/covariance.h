@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/descriptive.h"
 
 namespace tl
@@ -44,56 +43,56 @@ namespace tl
 /*!
  * \brief covariance
  * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- * \param first
- * \param last
+ * \param firstX
+ * \param lastX
+ * \param firstY
+ * \param lastY
  * \return
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto covariance(It firstX, It lastX, It firstY, It lastY) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+    double>
 {
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
+    auto n_x = std::distance(firstX, lastX);
+    auto n_y = std::distance(firstY, lastY);
     if (n_x != n_y || n_x <= 1) return consts::zero<double>;
 
-    double mean_x = mean(first_x, last_x);
-    double mean_y = mean(first_y, last_y);
+    double mean_x = mean(firstX, lastX);
+    double mean_y = mean(firstY, lastY);
     double sum{};
     double x{};
     double y{};
 
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
+    while (firstX != lastX) {
+        x = *firstX++ - mean_x;
+        y = *firstY++ - mean_y;
         sum += x * y;
     }
 
     return sum / n_x;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto covariance(It firstX, It lastX, It firstY, It lastY) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-covariance(It first_x, It last_x, It first_y, It last_y)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
+    auto n_x = std::distance(firstX, lastX);
+    auto n_y = std::distance(firstY, lastY);
     if (n_x != n_y || n_x <= 1) return consts::zero<T>;
 
-    T mean_x = mean(first_x, last_x);
-    T mean_y = mean(first_y, last_y);
+    T mean_x = mean(firstX, lastX);
+    T mean_y = mean(firstY, lastY);
     T sum{};
     T x{};
     T y{};
 
-    while (first_x != last_x) {
-        x = *first_x++ - mean_x;
-        y = *first_y++ - mean_y;
+    while (firstX != lastX) {
+        x = *firstX++ - mean_x;
+        y = *firstY++ - mean_y;
         sum += x * y;
     }
 
@@ -114,8 +113,8 @@ public:
     Covariance();
     ~Covariance();
 
-    double eval(const Series<T> &data1,
-                const Series<T> &data2);
+    auto eval(const Series<T> &series1,
+              const Series<T> &series2) -> double;
 
 };
 
@@ -132,9 +131,9 @@ Covariance<T>::~Covariance()
 {
 }
 
-template<typename T> inline
-double Covariance<T>::eval(const Series<T> &series1,
-                           const Series<T> &series2)
+template<typename T>
+auto Covariance<T>::eval(const Series<T> &series1,
+                         const Series<T> &series2) -> double
 {
     DescriptiveStatistics<T> stat1(series1);
     DescriptiveStatistics<T> stat2(series2);

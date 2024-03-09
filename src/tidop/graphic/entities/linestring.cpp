@@ -28,10 +28,14 @@ namespace tl
 {
 
 
-/* ---------------------------------------------------------------------------------- */
 
 GLineString::GLineString()
-  : LineString<Point<double>>(),
+  : GraphicEntity(GraphicEntity::Type::linestring_2d)
+{
+}
+
+GLineString::GLineString(size_t size)
+  : LineString<Point<double>>(size),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
@@ -76,21 +80,17 @@ GLineString &GLineString::operator = (GLineString &&gLineString) TL_NOEXCEPT
     return *this;
 }
 
-bool GLineString::isMultiEntity() const
-{
-    return false;
-}
-
-bool GLineString::isSimpleEntity() const
-{
-    return true;
-}
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 GLineString3D::GLineString3D()
-  : LineString3D<Point3<double>>(),
+  : GraphicEntity(GraphicEntity::Type::linestring_3d)
+{
+}
+
+GLineString3D::GLineString3D(size_t size)
+  : LineString3D<Point3<double>>(size),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
@@ -117,7 +117,7 @@ GLineString3D::~GLineString3D()
 {
 }
 
-auto GLineString3D::operator =(const GLineString3D& gLineString3D) -> GLineString3D&
+auto GLineString3D::operator =(const GLineString3D &gLineString3D) -> GLineString3D&
 {
     if (this != &gLineString3D) {
         LineString3D<Point3<double>>::operator=(gLineString3D);
@@ -126,7 +126,7 @@ auto GLineString3D::operator =(const GLineString3D& gLineString3D) -> GLineStrin
     return *this;
 }
 
-auto GLineString3D::operator =(GLineString3D&& gLineString3D) TL_NOEXCEPT -> GLineString3D&
+auto GLineString3D::operator =(GLineString3D &&gLineString3D) TL_NOEXCEPT -> GLineString3D&
 {
     if (this != &gLineString3D) {
         LineString3D<Point3<double>>::operator=(std::forward<LineString3D<Point3<double>>>(gLineString3D));
@@ -135,22 +135,19 @@ auto GLineString3D::operator =(GLineString3D&& gLineString3D) TL_NOEXCEPT -> GLi
     return *this;
 }
 
-auto GLineString3D::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-auto GLineString3D::isSimpleEntity() const -> bool
-{
-    return true;
-}
 
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 GMultiLineString::GMultiLineString()
   : GraphicEntity(GraphicEntity::Type::multiline_2d)
+{
+}
+
+GMultiLineString::GMultiLineString(size_t size)
+  : MultiLineString<Point<double>>(size),
+	GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
@@ -176,7 +173,7 @@ GMultiLineString::~GMultiLineString()
 {
 }
 
-auto GMultiLineString::operator =(const GMultiLineString& gMultiLineString) -> GMultiLineString&
+auto GMultiLineString::operator =(const GMultiLineString &gMultiLineString) -> GMultiLineString&
 {
     if (this != &gMultiLineString) {
         MultiLineString<Point<double>>::operator=(gMultiLineString);
@@ -185,7 +182,7 @@ auto GMultiLineString::operator =(const GMultiLineString& gMultiLineString) -> G
     return *this;
 }
 
-auto GMultiLineString::operator =(GMultiLineString&& gMultiLineString) TL_NOEXCEPT -> GMultiLineString&
+auto GMultiLineString::operator =(GMultiLineString &&gMultiLineString) TL_NOEXCEPT -> GMultiLineString&
 {
     if (this != &gMultiLineString) {
         MultiLineString<Point<double>>::operator=(std::forward<MultiLineString<Point<double>>>(gMultiLineString));
@@ -194,26 +191,24 @@ auto GMultiLineString::operator =(GMultiLineString&& gMultiLineString) TL_NOEXCE
     return *this;
 }
 
-auto GMultiLineString::isMultiEntity() const -> bool
-{
-    return true;
-}
-
-auto GMultiLineString::isSimpleEntity() const -> bool
-{
-    return false;
-}
 
 
-/* ---------------------------------------------------------------------------------- */
+
+
 
 GMultiLineString3D::GMultiLineString3D()
   : GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
-GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &multiLineString)
-  : MultiLineString3D<Point3<double>>(multiLineString),
+GMultiLineString3D::GMultiLineString3D(size_t size)
+  : MultiLineString3D<Point3<double>>(size),
+    GraphicEntity(GraphicEntity::Type::multiline_3d)
+{
+}
+
+GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D)
+  : MultiLineString3D<Point3<double>>(gMultiLineString3D),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
@@ -234,7 +229,7 @@ GMultiLineString3D::~GMultiLineString3D()
 {
 }
 
-auto GMultiLineString3D::operator =(const GMultiLineString3D& gMultiLineString3D) -> GMultiLineString3D&
+auto GMultiLineString3D::operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D&
 {
     if (this != &gMultiLineString3D) {
         MultiLineString3D<Point3<double>>::operator=(gMultiLineString3D);
@@ -243,23 +238,13 @@ auto GMultiLineString3D::operator =(const GMultiLineString3D& gMultiLineString3D
     return *this;
 }
 
-auto GMultiLineString3D::operator =(GMultiLineString3D&& gMultiLineString3D) TL_NOEXCEPT -> GMultiLineString3D&
+auto GMultiLineString3D::operator =(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT -> GMultiLineString3D&
 {
     if (this != &gMultiLineString3D) {
         MultiLineString3D<Point3<double>>::operator=(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString3D));
     }
     return *this;
-}
-
-auto GMultiLineString3D::isMultiEntity() const -> bool
-{
-    return true;
-}
-
-auto GMultiLineString3D::isSimpleEntity() const -> bool
-{
-    return false;
 }
 
 

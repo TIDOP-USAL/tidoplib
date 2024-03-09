@@ -42,23 +42,21 @@ namespace tl
  *  \{
  */
 
-/*!
- * \brief La media es la suma de todos los datos partido del número de datos.
- * Se representa como:
- * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n}  \f]
- * La medida de dispersión más utilizada para la media es la desviación típica o
- * desviación estándar, pero tambień puede ser otra como el recorrido, coeficiente
- * de variación, etc.
- * Es muy sensible a datos discordantes (outliers)
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor de la media
- */
-template<typename It> inline
-typename std::enable_if<
+ /*!
+  * \brief The mean is the sum of all the data divided by the number of data points.
+  * It is represented as:
+  * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n} \f]
+  * The most commonly used measure of dispersion for the mean is the standard deviation,
+  * but it can also be another measure such as the range, coefficient of variation, etc.
+  * It is very sensitive to outliers.
+  * \param[in] first Iterator to the beginning
+  * \param[in] last Iterator to the end
+  * \return Value of the mean
+  */
+template<typename It>
+auto mean(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-mean(It first, It last)
+    double>
 {
     double x{0};
     double i{1};
@@ -70,13 +68,12 @@ mean(It first, It last)
     return x;
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto mean(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-mean(It first, It last)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
     T x{0};
     T i{1};

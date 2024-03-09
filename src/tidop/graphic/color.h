@@ -27,7 +27,6 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 #include <typeinfo>
 #include <functional>
 
@@ -47,102 +46,106 @@ namespace tl
 
 
 
-/*! \defgroup colorConversion Conversión de color
+/*! \defgroup colorConversion Color conversion
  *  
- * Conversiones entre los modulos de color mas habituales
+ * Conversions between the most common color modules
  * \{
  */
 
 
 /*!
- * \brief Convierte un color entero a RGB
- * \param[in] color Color como entero
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
+ * \brief Converts an integer color to RGB
+ * \param[in] color Integer color
+ * \param[out] red Red component
+ * \param[out] green Green component
+ * \param[out] blue Blue component
  */
 TL_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
 
 
 /*!
- * \brief Convierte un color RGB a entero
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \return Color como entero
+ * \brief Converts an RGB color to an integer
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \return Color as an integer
  */
 TL_EXPORT int rgbToInt(int red, int green, int blue);
 
+
 /*!
- * \brief Convierte un color RGB+alpha a entero
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[in] alpha Canal alfa
- * \return Color como entero
+ * \brief Converts an RGB+alpha color to an integer
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \param[in] alpha Alpha channel
+ * \return Color as an integer
  */
 TL_EXPORT int rgbaToInt(int red, int green, int blue, int alpha);
 
+
 /*!
- * \brief Convierte un color de hexadecimal (como cadena) a entero
- * \param[in] colorhex Color en hexadecimal
- * \return Color como entero
+ * \brief Converts a hexadecimal color (as a string) to an integer
+ * \param[in] colorhex Color in hexadecimal
+ * \return Color as an integer
  */
 TL_EXPORT int hexToInt(const std::string &colorhex);
 
+
 /*!
- * \brief Convierte un color como entero a hexadecimal
- * \param[in] color Color como entero
- * \return Color en hexadecimal
+ * \brief Converts an integer color to hexadecimal
+ * \param[in] color Color as an integer
+ * \return Color in hexadecimal
  */
 TL_EXPORT std::string intToHex(int color);
 
+
 /*!
- * \brief Convierte un color de RGB a CMYK
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[out] cyan Cian
+ * \brief Converts an RGB color to CMYK
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \param[out] cyan Cyan
  * \param[out] magenta Magenta
- * \param[out] yellow Amarillo
- * \param[out] key Negro
+ * \param[out] yellow Yellow
+ * \param[out] key Black
  */
 TL_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
 
 
 /*!
- * \brief Convierte un color de CMYK a RGB
- * \param[in] cyan Cian
+ * \brief Converts a CMYK color to RGB
+ * \param[in] cyan Cyan
  * \param[in] magenta Magenta
- * \param[in] yellow Amarillo
- * \param[in] key Negro
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
+ * \param[in] yellow Yellow
+ * \param[in] key Black
+ * \param[out] red Red component
+ * \param[out] green Green component
+ * \param[out] blue Blue component
  */
 TL_EXPORT void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red, int *green, int *blue);
 
 
 /*!
- * \brief Convierte un color de RGB a HSL
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[out] hue Matiz
- * \param[out] saturation Saturación
- * \param[out] lightness Luminosidad
+ * \brief Converts an RGB color to HSL
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \param[out] hue Hue
+ * \param[out] saturation Saturation
+ * \param[out] lightness Lightness
  */
 TL_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
 
 
 /*!
- * \brief Convierte un color de a HSL a RGB
- * \param[in] hue Matiz
- * \param[in] saturation Saturación
- * \param[in] lightness Luminosidad
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
+ * \brief Converts a color from HSL to RGB
+ * \param[in] hue Hue
+ * \param[in] saturation Saturation
+ * \param[in] lightness Lightness
+ * \param[out] red Red component
+ * \param[out] green Green component
+ * \param[out] blue Blue component
  */
 TL_EXPORT void hslToRgb(double hue, double saturation, double lightness, int *red, int *green, int *blue);
 
@@ -160,54 +163,53 @@ TL_EXPORT void rgbToHSV(int red, int green, int blue, double *hue, double *satur
 
 
 /*!
- * \brief Convierte un color de a HSV a RGB
- * \param[in] hue Matiz
- * \param[in] saturation Saturación
- * \param[in] value Valor
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
+ * \brief Converts an RGB color to HSV
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \param[out] hue Hue
+ * \param[out] saturation Saturation
+ * \param[out] value Value
  */
 TL_EXPORT void hsvToRgb(double hue, double saturation, double value, int *red, int *green, int *blue);
 
 
 /*!
- * \brief Convierte un color de RGB a escala de grises
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \return Luminancia
+ * \brief Converts an RGB color to grayscale
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \return Luminance
  */
 TL_EXPORT int rgbToLuminance(int red, int green, int blue);
 
 
 /*!
- * \brief Conversión a coordenadas cromáticas
+ * \brief Conversion to chromaticity coordinates
  *
- * Cuando una imagen presenta cambios de intensidad, luz mas tenue, etc. una solución 
- * pasa por eliminar los efectos de la intensidad en la imagen. Para ello se pasa a 
- * un espacio de color invariante a la intensidad como las coordenadas cromáticas.
- * La cromaticidad especifica el matiz y la saturación de un color pero no su luminosidad.
-
- * Paso a coordenadas cromáticas (división por la Intensidad)
- * (R, G, B) -> (R/(R+G+B), G/(R+G+B), B/(R+G+B)) 
+ * When an image exhibits changes in intensity, dimmer light, etc., one solution
+ * involves eliminating the effects of intensity in the image. This is achieved by
+ * converting to a color space invariant to intensity, such as chromaticity coordinates.
+ * Chromaticity specifies the hue and saturation of a color but not its luminance.
+ * Conversion to chromaticity coordinates (division by Intensity)
+ * (R, G, B) -> (R/(R+G+B), G/(R+G+B), B/(R+G+B))
  *
- * Un cambio de intensidad en la imagen es un producto con un escalar
+ * A change in intensity in the image is a scalar product
  * (R, G, B) -> s.(R, G, B) -> (s.R, s.G, s.B)
  *
- * La intensidad se cancelará y el nuevo descriptor es invariante a la intensidad
- * El nuevo descriptor es de dimensión 2, es una proyección sobre el plano:
+ * Intensity cancels out and the new descriptor is invariant to intensity
+ * The new descriptor is of dimension 2, it's a projection onto the plane:
  *
  * R +G + B = 1
  *
  * https://engineering.purdue.edu/~bouman/ece637/notes/pdf/ColorSpaces.pdf
- * 
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[out] r Componente roja en coordenadas cromáticas
- * \param[out] g Componente verde en coordenadas cromáticas
- * \param[out] b Componente azul en coordenadas cromáticas
+ *
+ * \param[in] red Red component
+ * \param[in] green Green component
+ * \param[in] blue Blue component
+ * \param[out] r Red component in chromaticity coordinates
+ * \param[out] g Green component in chromaticity coordinates
+ * \param[out] b Blue component in chromaticity coordinates
  */
 TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
 
@@ -218,8 +220,11 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 //TL_EXPORT bool operator == (const Color &color1, const Color &color2);
 //TL_EXPORT bool operator != (const Color &color1, const Color &color2);
 
+
+
+
 /*!
- * \brief Clase espacio de color
+ * \brief Color space class
  *
  */
 class TL_EXPORT ColorSpace
@@ -233,10 +238,13 @@ private:
 
 };
 
+
+
+
 class ColorModel;
 
 /*!
- * \brief Clase que representa un color
+ * \brief Class Color
  */
 class TL_EXPORT Color
 {
@@ -244,7 +252,7 @@ class TL_EXPORT Color
 public:
 
     /*!
-     * Nombres de color html
+     * html color names
      * http://www.w3schools.com/colors/colors_names.asp
      */
     enum class Name
@@ -399,91 +407,109 @@ public:
 public:
 
     /*!
-     * \brief Constructora por defecto
+     * \brief Default constructor
      */
     Color();
     
     /*!
-     * \brief Constructora de copia
-     * \param[in] color Color como entero
+     * \brief Copy constructor
+     * \param[in] color Color object
      */
     Color(const Color &color);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] color Color object
+     */
+    Color(Color &&color) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor
+     * \param[in] color Color as an integer
+     */
+    explicit Color(uint32_t color);
     
     /*!
-     * \brief Constructora
-     * \param[in] color Color como entero
+     * \brief Constructor
+     * \param[in] color Color as a string (hexadecimal)
      */
-    Color(uint32_t color);
+    explicit Color(const std::string &color);
     
     /*!
-     * \brief Constructora
-     * \param[in] color Color como cadena (hexadecimal)
+     * \brief Constructor
+     * \param[in] color Name of the color
+     * \see Name
      */
-    Color(const std::string &color);
-    
+    explicit Color(const Name &color);
+
     /*!
-     * \brief Constructora
-     * \param[in] color Nombre del color
-     * \see NAME
+     * \brief Constructor
+     * \param[in] colorModel Color model
+     * \see Name
      */
-    Color(const Color::Name &color);
-    
-    Color(const ColorModel &colorModel);
+    explicit Color(const ColorModel &colorModel);
     
     ~Color();
     
     /*!
-     * \brief Devuelve la componente azul
-     * \return Componente azul
+     * \brief Returns the blue component
+     * \return Blue component
      */
-    int blue() const;
+    auto blue() const -> int;
     
     /*!
-     * \brief Devuelve la componente verde
-     * \return Componente verde
+     * \brief Returns the green component
+     * \return Green component
      */
-    int green() const;
+    auto green() const -> int;
     
     /*!
-     * \brief Devuelve la componente roja
-     * \return Componente rojo
+     * \brief Returns the red component
+     * \return Red component
      */
-    int red() const;
+    auto red() const -> int;
     
     /*!
-     * \brief Devuelve el canal alfa
-     * \return Canal alfa
+     * \brief Returns the opacity
+     * \return Opacity
      */
-    uint8_t opacity() const;
+    auto opacity() const -> uint8_t;
     
     void setOpacity(uint8_t opacity);
     
     /*!
-     * \brief Valor de luminancia de un color a luminancia
-     * \return Valor de la luminancia
+     * \brief Luminance value of a color as luminance
+     * \return Luminance value
      */
-    int luminance() const;
+    auto luminance() const -> int;
     
     /*!
-     * \brief Convierte un color a hexadecimal
-     * \return Cadena con el valor hexadecimal del color
+     * \brief Converts a color to hexadecimal
+     * \return String with the hexadecimal value of the color
      */
-    std::string toHex() const;
+    auto toHex() const -> std::string;
     
     /*!
-     * \brief Genera un color aleatorio
+     * \brief Generates a random color
      */
-    static Color randomColor();
+    static auto randomColor() -> Color;
     
     operator unsigned int() const { return mColor; }
     operator int() const { return static_cast<int>(mColor); }
     
     /*!
-     * \brief operador de asignación
+     * \brief Assignment operator
      * \param color Color
-     * \return Referencia al color
+     * \return Reference to the color
      */
-    Color &operator = (const Color &color);
+    auto operator =(const Color& color) -> Color&;
+
+    /*!
+     * \brief Assignment move operator
+     * \param color Color
+     * \return Reference to the color
+     */
+    auto operator =(Color &&color) TL_NOEXCEPT -> Color&;
 
 private:
 
@@ -518,7 +544,7 @@ public:
      * \brief toColor
      * \return
      */
-    virtual Color toColor() const = 0;
+    virtual auto toColor() const -> Color = 0;
 
     /*!
      * \brief fromColor
@@ -530,86 +556,92 @@ public:
 
 
 /*!
- * \brief Modelo de color RGB
- * El modelo de color RGB esta basado en la síntesis aditiva de los tres
- * colores primarios, es decir del rojo, el verde y el azul.
- *
+ * \brief RGB color model
+ * The RGB color model is based on the additive synthesis of the three
+ * primary colors, namely red, green, and blue.
  */
 class TL_EXPORT ColorRGB 
   : public ColorModel
 {
 
+protected:
+
+    int mRed;
+    int mGreen;
+    int mBlue;
+    int mRangeMin;
+    int mRangeMax;
+
 public:
 
     /*!
-     * \brief Constructora por defecto color RGB
+     * \brief Default constructor for RGB color
      */
     ColorRGB();
 
     /*!
-     * \brief Constructor ColorRGB
-     * \param[in] red Componente roja
-     * \param[in] green Componente verde
-     * \param[in] blue Componente azul
+     * \brief Constructor for ColorRGB
+     * \param[in] red Red component
+     * \param[in] green Green component
+     * \param[in] blue Blue component
      */
     ColorRGB(int red, int green, int blue);
     
     /*!
-     * \brief Constructor de copia ColorRGB
-     * \param[in] color Objeto que se copia
+     * \brief Copy constructor for ColorRGB
+     * \param[in] color Object to copy from
      */
     ColorRGB(const ColorRGB &color);
-    
+
+    /*!
+     * \brief Move constructor for ColorRGB
+     * \param[in] color Object to move
+     */
+    ColorRGB(ColorRGB &&color) TL_NOEXCEPT;
+
     ~ColorRGB() override;
     
     /*!
-     * \brief Componente roja
-     * \return
+     * \brief Red component
+     * \return Red component
      */
-    int red() const;
+    auto red() const -> int;
     
     /*!
-     * \brief Establece la componente roja
-     * \param[in] red Componente roja
+     * \brief Sets the red component
+     * \param[in] red Red component
      */
     void setRed(int red);
     
     /*!
-     * \brief Componente verde
-     * \return Componente verde
+     * \brief Green component
+     * \return Green component
      */
-    int green() const;
+    auto green() const -> int;
     
     /*!
-     * \brief Establece la componente verde
-     * \param[in] green Componente verde
+     * \brief Sets the green component
+     * \param[in] green Green component
      */
     void setGreen(int green);
     
     /*!
-     * \brief Componente azul
-     * \return
+     * \brief Blue component
+     * \return Blue component
      */
-    int blue() const;
+    auto blue() const -> int;
     
     /*!
-     * \brief Establece la componente azul
-     * \param[in] blue
+     * \brief Sets the blue component
+     * \param[in] blue Blue component
      */
     void setBlue(int blue);
     
-    /*!
-     * \brief Establece el rango mínimo y máximo
-     * \param[in] min Valor minimo (por defecto 0)
-     * \param[in] max Valor máximo (por defecto 255)
-     */
-    ///TODO: Por ahora lo desactivo
-    //void setRange(int min, int max);
+    auto operator =(const ColorRGB& color) -> ColorRGB&;
+    auto operator =(ColorRGB &&color) TL_NOEXCEPT -> ColorRGB&;
     
-    ColorRGB &operator =(const ColorRGB &color);
-    
-    virtual Color toColor() const override;
-    virtual void fromColor(const Color &color) override;
+    auto toColor() const -> Color override;
+    void fromColor(const Color &color) override;
 
 protected:
 
@@ -617,94 +649,72 @@ protected:
     void adjustRangeGreen();
     void adjustRangeBlue();
 
-protected:
-
-    /*!
-     * \brief Componente roja
-     */
-    int mRed;
-    
-    /*!
-     * \brief Componente verde
-     */
-    int mGreen;
-    
-    /*!
-     * \brief Componente azul
-     */
-    int mBlue;
-    
-    /*!
-     * \brief Rango inferior
-     */
-    int mRangeMin;
-    
-    /*!
-     * \brief Rango superior
-     */
-    int mRangeMax;
 };
 
 
 /*!
- * \brief Modelo de color RGB + canal alfa
- * El modelo de color RGB esta basado en la síntesis aditiva de los tres
- * colores primarios, es decir del rojo, el verde y el azul.
- * El canal alfa representa la opacidad.
+ * \brief RGB color model + alpha channel
+ * The RGB color model is based on the additive synthesis of the three
+ * primary colors, namely red, green, and blue.
  */
 class TL_EXPORT ColorRGBA
     : public ColorRGB
 {
 
+protected:
+
+    int mAlpha;
+
 public:
 
     /*!
-     * \brief Constructora por defecto color RGB + canal alfa
+     * \brief Default constructor for RGBA color
      */
     ColorRGBA();
 
     /*!
-     * \brief Constructor ColorRGBA
-     * \param[in] red Componente roja
-     * \param[in] green Componente verde
-     * \param[in] blue Componente azul
-     * \param[in] alpha Canal alfa
+     * \brief Constructor for ColorRGBA
+     * \param[in] red Red component
+     * \param[in] green Green component
+     * \param[in] blue Blue component
+     * \param[in] alpha Alpha channel
      */
     ColorRGBA(int red, int green, int blue, int alpha = 255);
 
     /*!
-     * \brief Constructor de copia ColorRGBA
-     * \param[in] color Objeto que se copia
+     * \brief Copy constructor for ColorRGBA
+     * \param[in] color Object to copy from
      */
     ColorRGBA(const ColorRGBA &color);
 
     /*!
-     * \brief Devuelve el canal alfa
-     * \return Canal alfa
+     * \brief Move constructor for ColorRGBA
+     * \param[in] color Object to move
      */
-    int alpha() const;
+    ColorRGBA(ColorRGBA &&color) TL_NOEXCEPT;
 
     /*!
-     * \brief Establece el canal alfa
-     * \param[in] alpha Canal alfa
+     * \brief Returns the alpha channel
+     * \return Alpha channel
+     */
+    auto alpha() const -> int;
+
+    /*!
+     * \brief Sets the alpha channel
+     * \param[in] alpha Alpha channel
      */
     void setAlpha(int alpha);
 
-    Color toColor() const override;
+    auto toColor() const -> Color override;
     void fromColor(const Color &color) override;
 
-    ColorRGBA &operator =(const ColorRGBA &color);
+    auto operator =(const ColorRGBA &color) -> ColorRGBA&;
+    auto operator =(ColorRGBA &&color) TL_NOEXCEPT -> ColorRGBA&;
 
 protected:
 
     void adjustRangeAlpha();
 
-protected:
-
-    /*!
-     * \brief Canal alfa
-     */
-    int mAlpha;
 };
 
 
@@ -718,100 +728,6 @@ class TL_EXPORT ColorCMYK
   : public ColorModel
 {
 
-public:
-
-    /*!
-     * \brief Constructora por defecto Color CMYK
-     */
-    ColorCMYK();
-    
-    /*!
-     * \brief ColorCMYK
-     * \param[in] cyan Color cian
-     * \param[in] magenta Color magenta
-     * \param[in] yellow Color amarillo
-     * \param[in] key Color negro
-     */
-    ColorCMYK(double cyan, double magenta, double yellow, double key);
-    
-    /*!
-     * \brief Constructor de copia
-     * \param[in] color Objeto ColorCMYK que se copia
-     */
-    ColorCMYK(const ColorCMYK &color);
-    
-    /*!
-     * \brief cyan
-     * \return
-     */
-    double cyan() const;
-    
-    /*!
-     * \brief setCyan
-     * \param cyan
-     */
-    void setCyan(double cyan);
-    
-    /*!
-     * \brief magenta
-     * \return
-     */
-    double magenta() const;
-    
-    /*!
-     * \brief setMagenta
-     * \param magenta
-     */
-    void setMagenta(double magenta);
-    
-    /*!
-     * \brief yellow
-     * \return
-     */
-    double yellow() const;
-    
-    /*!
-     * \brief setYellow
-     * \param yellow
-     */
-    void setYellow(double yellow);
-    
-    /*!
-     * \brief key
-     * \return
-     */
-    double key() const;
-    
-    /*!
-     * \brief setKey
-     * \param key
-     */
-    void setKey(double key);
-    
-    /*!
-     * \brief operador de asignación
-     * \param[in] color Objeto asignado
-     * \return Referencia al objeto
-     */
-    ColorCMYK &operator =(const ColorCMYK &color);
-    
-    /*!
-     * \brief Establece el rango mínimo y máximo
-     * \param[in] min Valor minimo (por defecto 0)
-     * \param[in] max Valor máximo (por defecto 255)
-     */
-    void setRange(double min, double max);
-
-    Color toColor() const override;
-    void fromColor(const Color &color) override;
-
-protected:
-
-    void adjustRangeCyan();
-    void adjustRangeMagenta();
-    void adjustRangeYellow();
-    void adjustRangeKey();
-
 protected:
 
     double mCyan;
@@ -821,48 +737,171 @@ protected:
     double mRangeMin;
     double mRangeMax;
 
+public:
+
+    /*!
+     * \brief Default constructor for CMYK Color
+     */
+    ColorCMYK();
+    
+    /*!
+     * \brief ColorCMYK constructor
+     * \param[in] cyan Cyan color
+     * \param[in] magenta Magenta color
+     * \param[in] yellow Yellow color
+     * \param[in] key Black color
+     */
+    ColorCMYK(double cyan, double magenta, double yellow, double key);
+    
+    /*!
+     * \brief Copy constructor
+     * \param[in] color ColorCMYK object to copy
+     */
+    ColorCMYK(const ColorCMYK &color);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] color ColorCMYK object to move
+     */
+    ColorCMYK(ColorCMYK &&color) TL_NOEXCEPT;
+
+    /*!
+     * \brief cyan
+     * \return cyan
+     */
+    auto cyan() const -> double;
+    
+    /*!
+     * \brief Sets Cyan
+     * \param cyan
+     */
+    void setCyan(double cyan);
+    
+    /*!
+     * \brief magenta
+     * \return
+     */
+    auto magenta() const -> double;
+    
+    /*!
+     * \brief Sets magenta
+     * \param magenta
+     */
+    void setMagenta(double magenta);
+    
+    /*!
+     * \brief yellow
+     * \return
+     */
+    auto yellow() const -> double;
+    
+    /*!
+     * \brief Sets Yellow
+     * \param yellow
+     */
+    void setYellow(double yellow);
+    
+    /*!
+     * \brief key
+     * \return
+     */
+    auto key() const -> double;
+    
+    /*!
+     * \brief Sets Key
+     * \param key
+     */
+    void setKey(double key);
+    
+    /*!
+     * \brief Assignment operator
+     * \param[in] color Assigned object
+     * \return Reference to the object
+     */
+    auto operator =(const ColorCMYK &color) -> ColorCMYK&;
+
+    /*!
+     * \brief Move assignment operator
+     * \param[in] color Assigned object
+     * \return Reference to the object
+     */
+    auto operator =(ColorCMYK &&color) TL_NOEXCEPT -> ColorCMYK &;
+
+    /*!
+     * \brief Sets the minimum and maximum range
+     * \param[in] min Minimum value (default 0.)
+     * \param[in] max Maximum value (default 1.)
+     */
+    void setRange(double min, double max);
+
+    auto toColor() const -> Color override;
+    void fromColor(const Color &color) override;
+
+protected:
+
+    void adjustRangeCyan();
+    void adjustRangeMagenta();
+    void adjustRangeYellow();
+    void adjustRangeKey();
+
+
 };
 
 
 
 /*!
- * \brief Modelo de color HSV
- * El espacio de color HSV (Hue/Matiz, Saturation/Saturación, Value/Valor) se basa en el modo de percibir
- * los colores que tenemos los humanos. Se denomina también HSB (Brightness).
+ * \brief HSV color model
+ * The HSV (Hue, Saturation, Value) color space is based on how humans perceive colors. It is also known as HSB (Brightness).
  */
 class TL_EXPORT ColorHSV
   : public ColorModel
 {
 
+private:
+
+    double mHue;
+    double mSaturation;
+    double mValue;
+    double mRangeMinHue;
+    double mRangeMaxHue;
+    double mRangeMin;
+    double mRangeMax;
+
 public:
 
     /*!
-     * \brief Constructor por defecto
+     * \brief Default constructor
      */
     ColorHSV();
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] hue Matiz es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
-     * \param[in] saturation Saturación
-     * \param[in] value Valor
+     * \brief Copy constructor
+     * \param[in] hue Hue is the degree to which a stimulus can be described as similar or different from stimuli such as red, yellow, and blue.
+     * \param[in] saturation Saturation
+     * \param[in] value Value
      */
     ColorHSV(double hue, double saturation, double value);
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] color Objeto ColorHSV que se copia
+     * \brief Copy constructor
+     * \param[in] color ColorHSV object to copy
      */
     ColorHSV(const ColorHSV &color);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] color ColorHSV object to move
+     */
+    ColorHSV(ColorHSV &&color) TL_NOEXCEPT;
 
     /*!
      * \brief hue
      * \return
      */
-    double hue() const;
+    auto hue() const -> double;
 
     /*!
-     * \brief setHue
+     * \brief Sets Hue
      * \param hue
      */
     void setHue(double hue);
@@ -871,10 +910,10 @@ public:
      * \brief saturation
      * \return
      */
-    double saturation() const;
+    auto saturation() const -> double;
 
     /*!
-     * \brief setSaturation
+     * \brief Sets saturation
      * \param saturation
      */
     void setSaturation(double saturation);
@@ -883,23 +922,30 @@ public:
      * \brief value
      * \return
      */
-    double value() const;
+    auto value() const -> double;
 
     /*!
-     * \brief setValue
+     * \brief Sets value
      * \param value
      */
     void setValue(double value);
 
     /*!
-     * \brief operator =
-     * \param color
-     * \return
+     * \brief Assignment operator
+     * \param[in] color Assigned object
+     * \return Reference to the object
      */
-    ColorHSV &operator =(const ColorHSV &color);
+    auto operator =(const ColorHSV &color) -> ColorHSV&;
 
-    Color toColor() const override;
-void fromColor(const Color &color) override;
+    /*!
+     * \brief Assignment move operator
+     * \param[in] color Assigned object
+     * \return Reference to the object
+     */
+    auto operator =(ColorHSV &&color) TL_NOEXCEPT -> ColorHSV&;
+
+    auto toColor() const -> Color override;
+    void fromColor(const Color &color) override;
 
 protected:
 
@@ -907,35 +953,8 @@ protected:
     void adjustRangeSaturation();
     void adjustRangeValue();
 
-private:
-
-    /*!
-     * \brief Matiz del color
-     * Se representa como un grado de ángulo cuyos valores posibles van de 0 a 360°
-     */
-    double mHue;
-    
-    /*!
-     * \brief Saturación, tono o tinte de un color
-     * Se representa como la distancia al eje de brillo negro-blanco. Los valores
-     * posibles van del 0 al 100%.
-     */
-    double mSaturation;
-    
-    /*!
-     * \brief Valor
-     * Representa la altura en el eje blanco-negro. Los valores posibles van de 0 al 100%
-     * siendo el 0 el negro.
-     */
-    double mValue;
-    
-    double mRangeMinHue;
-    double mRangeMaxHue;
-    
-    double mRangeMin;
-    double mRangeMax;
-
 };
+
 
 
 /*!
@@ -948,36 +967,43 @@ class TL_EXPORT ColorHSL
 public:
 
     /*!
-     * \brief Constructor por defecto
+     * \brief Default constructor
      */
     ColorHSL();
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] hue Matiz es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
-     * \param[in] saturation Saturación
-     * \param[in] lightness Luminosidad
+     * \brief Copy constructor
+     * \param[in] hue Hue is the degree to which a stimulus can be described as similar or different from stimuli such as red, yellow, and blue.
+     * \param[in] saturation Saturation
+     * \param[in] lightness Lightness
      */
     ColorHSL(double hue, double saturation, double lightness);
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] color Objeto ColorHSV que se copia
+     * \brief Copy constructor
+     * \param[in] color ColorHSL object to copy
      */
     ColorHSL(const ColorHSL &color);
 
-    double hue() const;
+    /*!
+     * \brief Move constructor
+     * \param[in] color ColorHSL object to move
+     */
+    ColorHSL(ColorHSL &&color) TL_NOEXCEPT;
+
+    auto hue() const -> double;
     void setHue(double hue);
 
-    double saturation() const;
+    auto saturation() const -> double;
     void setSaturation(double saturation);
 
-    double lightness() const;
+    auto lightness() const -> double;
     void setLightness(double lightness);
 
-    ColorHSL &operator =(const ColorHSL &color);
+    auto operator =(const ColorHSL &color) -> ColorHSL&;
+    auto operator =(ColorHSL &&color) TL_NOEXCEPT -> ColorHSL &;
 
-    Color toColor() const override;
+    auto toColor() const -> Color override;
     void fromColor(const Color &color) override;
 
 protected:
@@ -1040,8 +1066,10 @@ private:
 //  void aply(const IColorModel &colorIn, IColorModel &out);
 //};
 
+
+
 /*!
- * \brief Clase que define una conversión entre dos modelos de color
+ * \brief Class that defines a conversion between two color models
  */
 template <typename T1, typename T2>
 class TrfColorModel
@@ -1056,7 +1084,7 @@ public:
 private:
 
     /*!
-     * \brief Transformación que se aplica
+     * \brief Transformation applied
      */
     std::function<void(T1, T2)> mTrf;
 

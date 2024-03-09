@@ -33,12 +33,12 @@ namespace tl
 /*                        Algoritmos de trazado de lineas                             */
 /* ---------------------------------------------------------------------------------- */
 
-Point<int> &BresenhamLine::operator*()
+auto BresenhamLine::operator*() -> Point<int>&
 {
     return mPos;
 }
 
-BresenhamLine &BresenhamLine::operator ++()
+auto BresenhamLine::operator ++() -> BresenhamLine&
 {
     if (dx > dy) {
         _next(&mPos.x, &mPos.y, mPt2.x, mStepX, mStepY);
@@ -48,14 +48,14 @@ BresenhamLine &BresenhamLine::operator ++()
     return *this;
 }
 
-BresenhamLine BresenhamLine::operator ++(int)
+auto BresenhamLine::operator ++(int) -> BresenhamLine
 {
     BresenhamLine it = *this;
     ++(*this);
     return it;
 }
 
-BresenhamLine &BresenhamLine::operator --()
+auto BresenhamLine::operator --() -> BresenhamLine&
 {
     if (dx > dy) {
         _next(&mPos.x, &mPos.y, mPt2.x, -mStepX, -mStepY);
@@ -65,28 +65,28 @@ BresenhamLine &BresenhamLine::operator --()
     return *this;
 }
 
-BresenhamLine BresenhamLine::operator --(int)
+auto BresenhamLine::operator --(int) -> BresenhamLine
 {
     BresenhamLine it = *this;
     --(*this);
     return it;
 }
 
-BresenhamLine BresenhamLine::begin()
+BresenhamLine BresenhamLine::begin() const
 {
     BresenhamLine it = *this;
     it.mPos = mPt1;
     return it;
 }
 
-BresenhamLine BresenhamLine::end()
+auto BresenhamLine::end() const -> BresenhamLine
 {
     BresenhamLine it = *this;
     it.mPos = mPt2;
     return it;
 }
 
-Point<int> BresenhamLine::position(int id)
+auto BresenhamLine::position(int id) -> Point<int>
 {
     if (id == -1) {
         return mPos;
@@ -191,13 +191,12 @@ void BresenhamLine::_next(int *max, int *min, /*int dMax, int dMin,*/ int endMax
     }
 }
 
-int BresenhamLine::size() const
+auto BresenhamLine::size() const -> int
 {
     return mCount;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-std::vector<Point<int>> BresenhamLine::getPoints()
+auto BresenhamLine::points() -> std::vector<Point<int>>
 {
     std::vector<Point<int>> pts;
     while (mPos != mPt2) {
@@ -206,27 +205,28 @@ std::vector<Point<int>> BresenhamLine::getPoints()
     }
     return pts;
 }
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
-std::vector<Point<int>> BresenhamLine::points()
-{
-    std::vector<Point<int>> pts;
-    while (mPos != mPt2) {
-        this->operator++();
-        pts.push_back(mPos);
-    }
-    return pts;
-}
+
+
+
 
 /* ---------------------------------------------------------------------------------- */
 
-Point<int> &DDA::operator*()
+
+DDA::DDA(const Point<int> &pt1, const Point<int> &pt2)
+  : LineAlgorithms(Type::dda, pt1, pt2)
+{
+    init();
+}
+
+
+auto DDA::operator*() -> Point<int>&
 {
     return mPos;
 }
 
 
-DDA &DDA::operator ++()
+auto DDA::operator ++() -> DDA&
 {
     if (dx > dy) {
         _next(&mPos.x, &mPos.y, dy, mPt2.x, mStepX);
@@ -236,14 +236,14 @@ DDA &DDA::operator ++()
     return *this;
 }
 
-DDA DDA::operator ++(int)
+auto DDA::operator ++(int) -> DDA
 {
     DDA it = *this;
     ++(*this);
     return it;
 }
 
-DDA &DDA::operator --()
+auto DDA::operator --() -> DDA&
 {
     if (dx > dy) {
         _next(&mPos.x, &mPos.y, dy, mPt2.x, mStepX);
@@ -253,46 +253,46 @@ DDA &DDA::operator --()
     return *this;
 }
 
-DDA DDA::operator --(int)
+auto DDA::operator --(int) -> DDA
 {
     DDA it = *this;
     --(*this);
     return it;
 }
 
-DDA DDA::begin()
+DDA DDA::begin() const
 {
     DDA it = *this;
     it.mPos = mPt1;
     return it;
 }
 
-DDA DDA::end()
+DDA DDA::end() const
 {
     DDA it = *this;
     it.mPos = mPt2;
     return it;
 }
 
-Point<int> DDA::position(int id)
+auto DDA::position(int id) -> Point<int>
 {
     if (id == -1) {
         return mPos;
-    } else {
-        DDA it = begin();
-        for (int i = 0; i < id; i++) ++it;
-        return it.mPos;
     }
+
+    DDA it = begin();
+    for (int i = 0; i < id; i++) ++it;
+    return it.mPos;
 }
 
 void DDA::init()
 {
     if (dx > dy) {
-        m = dy / static_cast<float>(dx);
-        b = mPt1.y - m * mPt1.x;
+        m = static_cast<float>(dy) / static_cast<float>(dx);
+        b = static_cast<float>(mPt1.y) - m * static_cast<float>(mPt1.x);
     } else {
-        m = dx / static_cast<float>(dy);
-        b = mPt1.x - m * mPt1.y;
+        m = static_cast<float>(dx) / static_cast<float>(dy);
+        b = static_cast<float>(mPt1.x) - m * static_cast<float>(mPt1.y);
     }
 
     if (dy < 0) {
@@ -315,28 +315,16 @@ void DDA::_next(int *max, int *min, int dMin, int endMax, int step)
     if (*max < endMax) {
         *max += step;
         if (dMin != 0)
-            *min = roundToInteger(m * *max + b);
+            *min = roundToInteger(m * static_cast<float>(*max) + b);
     }
 }
 
-int DDA::size() const
+auto DDA::size() const -> int
 {
     return mCount;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-std::vector<Point<int>> DDA::getPoints()
-{
-    std::vector<Point<int>> pts;
-    while (mPos != mPt2) {
-        this->operator++();
-        pts.push_back(mPos);
-    }
-    return pts;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-std::vector<Point<int>> DDA::points()
+auto DDA::points() -> std::vector<Point<int>>
 {
     std::vector<Point<int>> pts;
     while (mPos != mPt2) {
@@ -346,6 +334,5 @@ std::vector<Point<int>> DDA::points()
     return pts;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
 }

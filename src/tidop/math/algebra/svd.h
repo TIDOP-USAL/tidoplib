@@ -27,7 +27,6 @@
 
 #include <algorithm>
 
-#include "tidop/core/exception.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/lapack.h"
@@ -67,21 +66,21 @@ class SingularValueDecomposition;
 
 template<
     template<typename, size_t, size_t>
-    class Matrix_t, typename T, size_t _rows, size_t _cols>
-class SingularValueDecomposition<Matrix_t<T, _rows, _cols>>
+    class Matrix_t, typename T, size_t Rows, size_t Cols>
+class SingularValueDecomposition<Matrix_t<T, Rows, Cols>>
 {
 
 public:
 
-    SingularValueDecomposition(const Matrix_t<T, _rows, _cols> &a);
+    SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a);
 
-    Vector<T, _cols> solve(const Vector<T, _rows> &b);
+    auto solve(const Vector<T, Rows>& b) -> Vector<T, Cols>;
 
-    Matrix<T, _rows, _cols> u() const;
-    Matrix<T, _cols, _cols> v() const;
-    Vector<T, _cols> w() const;
+    auto u() const -> Matrix<T, Rows, Cols>;
+    auto v() const -> Matrix<T, Cols, Cols>;
+    auto w() const -> Vector<T, Cols>;
 
-    int maxIterations() const;
+    auto maxIterations() const -> int;
     void setMaxIterations(int maxIterations);
 
 private:
@@ -94,10 +93,10 @@ private:
 
 private:
 
-    Matrix<T, _rows, _cols> A;
-    Matrix<T, _rows, _cols> U;
-    Matrix<T, _cols, _cols> V;
-    Vector<T, _cols> W;
+    Matrix<T, Rows, Cols> A;
+    Matrix<T, Rows, Cols> U;
+    Matrix<T, Cols, Cols> V;
+    Vector<T, Cols> W;
     int mIterationMax;
     T eps;
     T tsh;
@@ -108,9 +107,9 @@ private:
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecomposition(const Matrix_t<T, _rows, _cols> &a)
+SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a)
     : A(a),
     mIterationMax(30),
     mRows(a.rows()),
@@ -118,9 +117,9 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-    U = Matrix<T, _rows, _cols>(mRows, mCols);
-    V = Matrix<T, _cols, _cols>(mCols, mCols);
-    W = Vector<T, _cols>(mCols);
+    U = Matrix<T, Rows, Cols>(mRows, mCols);
+    V = Matrix<T, Cols, Cols>(mCols, mCols);
+    W = Vector<T, Cols>(mCols);
 
 #ifdef TL_HAVE_OPENBLAS
     this->lapackeDecompose();
@@ -136,14 +135,14 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &B)
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, Rows>& B) -> Vector<T, Cols>
 {
-    Vector<T, _cols> C(mCols);
+    Vector<T, Cols> C(mCols);
 
     T s;
-    Vector<T, _cols> tmp(mCols);
+    Vector<T, Cols> tmp(mCols);
 
     for (size_t j = 0; j < mCols; j++) {
         s = consts::zero<T>;
@@ -167,12 +166,12 @@ Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::solve(co
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
+void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 {
     this->U = this->A;
-    Vector<T, _cols> rv1(mCols);
+    Vector<T, Cols> rv1(mCols);
     int i;
     int j;
     int k;
@@ -399,9 +398,9 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
+void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
 {
     int i;
     int j;
@@ -409,8 +408,8 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
 
     int inc = 1;
     T sw;
-    Vector<T, _rows> su(mRows);
-    Vector<T, _cols> sv(mCols);
+    Vector<T, Rows> su(mRows);
+    Vector<T, Cols> sv(mCols);
 
     do { inc *= 3; inc++; } while (inc <= mCols);
 
@@ -458,9 +457,9 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+inline void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackeDecompose()
 {
     lapack_int info;
     lapack_int lda = static_cast<int>(mCols);
@@ -480,45 +479,45 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecomp
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline Matrix<T, _rows, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::u() const
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::u() const -> Matrix<T, Rows, Cols>
 {
     return U;
 }
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline Matrix<T, _cols, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::v() const
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::v() const -> Matrix<T, Cols, Cols>
 {
     return V;
 }
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::w() const
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::w() const -> Vector<T, Cols>
 {
     return W;
 }
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline int SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::maxIterations() const
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::maxIterations() const -> int
 {
     return mIterationMax;
 }
 
 template<
     template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::setMaxIterations(int maxIterations)
+void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::setMaxIterations(int maxIterations)
 {
     mIterationMax = maxIterations;
 }

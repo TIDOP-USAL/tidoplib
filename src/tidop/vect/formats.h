@@ -41,7 +41,7 @@ namespace tl
 
 
 /*!
- * \brief Opciones del formato
+ * \brief Format options
  */
 class TL_EXPORT VectorOptions
   : public FileOptions
@@ -63,15 +63,15 @@ protected:
 public:
 
     VectorOptions(Format format);
-    virtual ~VectorOptions();
+    ~VectorOptions() override;
 
-    Format getFormat();
+    auto format() const -> Format;
 
-    virtual const char *getOptions() = 0;
+    //auto options() -> const char* override = 0;
 };
 
 /*!
- * \brief Clase que gestiona las opciones del formato Shape
+ * \brief Class that manages the options of the Shape format
  */
 class TL_EXPORT ShapeOptions
   : public VectorOptions
@@ -80,50 +80,41 @@ class TL_EXPORT ShapeOptions
 public:
 
     /*!
-     * \brief Modos de ajuste de geometría
+     * \brief Geometry adjustment modes
      */
-    enum class ADJUST_GEOM_TYPE : uint8_t
+    enum class AdjustGeomType : uint8_t
     {
-        NO,
-        FIRST_SHAPE,
-        ALL_SHAPES
+        no,
+        first_shape,
+        all_shapes
     };
 
 protected:
 
     /*!
-     * \brief Codificación
+     * \brief Encoding
      */
     std::string mEncoding;
 
     /*!
-     * \brief Fecha de modificación para escribir en el encabezado DBF con el formato año-mes-día.
-     * Si no se especifica, se usa la fecha actual.
+     * \brief Modification date to write in the DBF header with the format year-month-day.
+     * If not specified, the current date is used.
      */
     std::string mDbfDateLastUpdate;
 
-    /*!
-     * \brief
-     * Por defecto es false
-     */
     bool bAdjustType;
 
     /*!
-     * \brief Ajuste del tipo de geometría
-     * Define cómo se calcula el tipo de geometría de capa, en particular para distinguir shapefiles que tienen formas con valores significativos en la dimensión M desde los que los valores M se establecen en el valor nodata
-     * El valor por defecto es FIRST_SHAPE
-     * \see ADJUST_GEOM_TYPE
+     * \brief Adjustment of geometry type
+     * Defines how the layer geometry type is calculated, particularly to distinguish shapefiles
+     * that have shapes with meaningful values in the M dimension from those where M values are
+     * set to nodata.
+     * The default value is FIRST_SHAPE.
+     * \see AdjustGeomType
      */
-    ADJUST_GEOM_TYPE mAdjustGeomType;
+    AdjustGeomType mAdjustGeomType;
 
-    /*!
-     * \brief
-     */
     bool bAutoRepack;
-
-    /*!
-     * \brief
-     */
     bool bDbfEofChar;
 
 public:
@@ -131,20 +122,20 @@ public:
     ShapeOptions();
     ~ShapeOptions() override;
 
-    const char *getOptions() override;
+    auto options() const -> const char* override;
 
     void enableAdjustType(bool value = true);
     void enableAutoRepac(bool value = true);
     void enableDbfEofChar(bool value = true);
 
-    std::string getEncoding() const;
+    auto encoding() const -> std::string;
     void setEncoding(const std::string &encoding);
 
-    std::string getDbfDateLastUpdate() const;
+    auto dbfDateLastUpdate() const -> std::string;
     void setDbfDateLastUpdate(const std::string &date);
 
-    ADJUST_GEOM_TYPE getAdjustGeomType() const;
-    void setAdjustGeomType(ADJUST_GEOM_TYPE type);
+    auto adjustGeomType() const -> AdjustGeomType;
+    void setAdjustGeomType(AdjustGeomType type);
 
 };
 

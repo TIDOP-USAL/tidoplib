@@ -34,13 +34,13 @@
 namespace tl
 {
 
-/*! \defgroup Features Caracteristicas (Features)
+/*! \defgroup Features Features
  * 
  *  \{
  */
 
 
-/*! \defgroup FeatureDetectorAndDescriptor Detección y extracción de caracteristicas
+/*! \defgroup FeatureDetectorAndDescriptor Feature detection and extraction
  * 
  *  \{
  */

@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/covariance.h"
 #include "tidop/math/statistic/stddev.h"
 
@@ -43,38 +42,37 @@ namespace tl
 
  /*!
   * \brief pearsonCorrelationCoefficient
-  * \param[in] first_x
-  * \param[in] last_x
-  * \param[in] first_y
-  * \param[in] last_y
+  * \param[in] firstX
+  * \param[in] lastX
+  * \param[in] firstY
+  * \param[in] lastY
   * \return
   */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto pearsonCorrelationCoefficient(It firstX, It lastX, 
+                                   It firstY, It lastY) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-pearsonCorrelationCoefficient(It first_x, It last_x, It first_y, It last_y)
+    double>
 {
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
+    auto n_x = std::distance(firstX, lastX);
+    auto n_y = std::distance(firstY, lastY);
     if (n_x != n_y || n_x <= 1) return consts::zero<double>;
-    return covariance(first_x, last_x, first_y, last_y) /
-        (standarDeviation(first_x, last_x) * standarDeviation(first_y, last_y));
+    return covariance(firstX, lastX, firstY, lastY) /
+        (standarDeviation(firstX, lastX) * standarDeviation(firstY, lastY));
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type>::type
-pearsonCorrelationCoefficient(It first_x, It last_x, It first_y, It last_y)
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
 {
-    using T = typename std::remove_cv<typename std::iterator_traits<It>::value_type>::type;
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
 
-    auto n_x = std::distance(first_x, last_x);
-    auto n_y = std::distance(first_y, last_y);
+    auto n_x = std::distance(firstX, lastX);
+    auto n_y = std::distance(firstY, lastY);
     if (n_x != n_y || n_x <= 1) return consts::zero<T>;
-    return covariance(first_x, last_x, first_y, last_y) /
-        (standarDeviation(first_x, last_x) * standarDeviation(first_y, last_y));
+    return covariance(firstX, lastX, firstY, lastY) /
+        (standarDeviation(firstX, lastX) * standarDeviation(firstY, lastY));
 }
 
 

@@ -29,7 +29,6 @@
 #ifdef TL_HAVE_OPENCV
 TL_DISABLE_WARNINGS
 #include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
 TL_DEFAULT_WARNINGS
 
 

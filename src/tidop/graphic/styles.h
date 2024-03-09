@@ -51,216 +51,227 @@ class TL_EXPORT Pen
 public:
 
     /*!
-     * \brief Nombres de pluma
+     * \brief Pen names
      */
     enum class Name : uint8_t
     {
-        solid,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */
-        null,              /*!< Pluma nula (invisible) */
+        solid,             /*!< Solid (the default value when no ID is provided) */
+        null,              /*!< Null pen (invisible) */
         dash,              /*!<  */
         short_dash,        /*!<  */
         long_dash,         /*!<  */
-        dot_line,          /*!< Línea de puntos */
-        dash_dot_line,     /*!< Línea de puntos y trazos */
-        dash_dot_dot_line, /*!< Línea de puntos y rayas y puntos */
-        alternate_line     /*!< Línea alterna */
+        dot_line,          /*!< Dotted line */
+        dash_dot_line,     /*!< Dash-dot line */
+        dash_dot_dot_line, /*!< Dash-dot-dot line */
+        alternate_line     /*!< Alternate line */
     };
 
     /*!
-     * \brief Forma de puntos extremos de las líneas.
+     * \brief End point shapes of lines.
      */
     enum class Cap : uint8_t
     {
-        butt,           /*!< Los extremos de la línea no se extienden más allá de los puntos finales. Este es el valor predeterminado. */
-        round,          /*!< Terminar líneas con un círculo cuyo diámetro es igual a la anchura de la línea. */
-        projective      /*!<  Similar a Butt, pero los extremos de la línea se extiende a la mitad de la anchura de la línea más allá de los puntos finales.*/
+        butt,           /*!< The ends of the line do not extend beyond the endpoints. This is the default value. */
+        round,          /*!< End lines with a circle whose diameter is equal to the width of the line. */
+        projective      /*!< Similar to Butt, but the ends of the line extend halfway past the endpoints.*/
     };
 
     /*!
-     * \brief Forma del punto de unión (vértice) de líneas.
+     * \brief Join point shape (vertex) of lines.
      */
     enum class Join : uint8_t
     {
-        miter,      /*!< Extender el borde exterior de las líneas hasta que se toquen. Este es el valor predeterminado */
-        rounded,    /*!< Une la líneas con un arco cuyo centro está en el punto de unión y cuyo diámetro es igual a la anchura de la línea */
-        bevel       /*!< Unión biselada */
+        miter,      /*!< Extend the outer edge of the lines until they touch. This is the default value */
+        rounded,    /*!< Join lines with an arc whose center is at the junction point and whose diameter is equal to the width of the line */
+        bevel       /*!< Beveled join */
     };
-
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Pen();
-
-    /*!
-     * \brief Constructora de copia
-     * \param[in] pen Clase estilo de pluma que se copia
-     */
-    Pen(const Pen &pen);
-
-    /*!
-     * \brief destructora
-     */
-    ~Pen();
-
-    /*!
-     * \brief Devuelve el color de Pluma
-     * \return Color de pluma
-     * \see Color
-     */
-    Color color() const;
-
-    /*!
-     * \brief Establece el color de Pluma
-     * \param[in] color Color de Pluma
-     * \see Color
-     */
-    void setColor(const Color &color);
-
-    /*!
-     * \brief Devuelve el ancho de pluma
-     * \return Ancho de pluma
-     */
-    uint8_t width() const;
-
-    /*!
-     * \brief Establece el ancho de pluma
-     * \param[in] width Ancho de pluma
-     */
-    void setWidth(uint8_t width);
-
-    /*!
-     * \brief Devuelve el patrón de pluma
-     * \return Patrón de pluma
-     */
-    std::string pattern() const;
-
-    /*!
-     * \brief Establece el patrón de pluma
-     * \param[in] pattern Patrón de pluma
-     */
-    void setPattern(std::string pattern);
-
-    /*!
-     * \brief Devuelve el nombre o id de pluma
-     * \return Nombre o id de pluma
-     */
-    Name name() const;
-
-    /*!
-     * \brief Establece el nombre o id de pluma
-     * \param[in] name Nombre o id de pluma
-     */
-    void setName(Name name);
-
-    /*!
-     * \brief Devuelve la forma de puntos extremos de las líneas
-     * \return Forma de puntos extremos de las líneas
-     */
-    Cap cap() const;
-
-    /*!
-     * \brief Establece la forma de puntos extremos de las líneas
-     * \param[in] pencap Forma de puntos extremos de las líneas
-     */
-    void setCap(Cap pencap);
-
-    /*!
-     * \brief Devuelve la forma del punto de unión (vértice) de líneas
-     * \return Forma del punto de unión (vértice) de líneas
-     */
-    Join join() const;
-
-    /*!
-     * \brief Establece la forma del punto de unión (vértice) de líneas
-     * \param[in] join Forma del punto de unión (vértice) de líneas
-     */
-    void setJoin(Join join);
-
-    /*!
-     * \brief Devuelve el desplazamiento desde el centro de la línea.
-     * \return Desplazamiento desde el centro de la línea.
-     */
-    int32_t perpendicularOffset() const;
-
-    /*!
-     * \brief Establece el desplazamiento desde el centro de la línea.
-     * Si es negativo se dibuja a la izquierda
-     * \param[in] perpendicularoffset Desplazamiento desde el centro de la línea.
-     */
-    void setPerpendicularOffset(int32_t perpendicularoffset);
-
-    /*!
-     * \brief getPriorityLevel
-     * \return
-     */
-    uint32_t priorityLevel() const;
-
-    /*!
-     * \brief setPriorityLevel
-     * \param priorityLevel
-     */
-    void setPriorityLevel(uint32_t priorityLevel);
-
-    /*!
-     * \brief operador de asignación
-     * \param pen Estilo de pluma
-     * \return Referencia al estilo de pluma
-     */
-    Pen &operator = (const Pen &stylePen);
-
 private:
 
     /*!
-     * \brief Color de Pluma
+     * \brief Pen color
      * \see Color
      */
     Color mColor;
 
     /*!
-     * \brief Ancho de pluma
+     * \brief Pen width
      */
     uint8_t mWidth;
 
     /*!
-     * \brief Patrón
+     * \brief Pattern
      */
     std::string mPattern;
 
     /*!
-     * \brief Nombre o id de pluma
+     * \brief Pen name or id
      * \see Name
      */
     Name mName;
 
     /*!
-     * \brief Forma de puntos extremos de las líneas
+     * \brief End point shape of lines
      * \see Cap
      */
     Cap mCap;
 
     /*!
-     * \brief Forma del punto de unión (vértice) de líneas
+     * \brief Join point shape (vertex) of lines
      * \see Join
      */
     Join mJoin;
 
     /*!
-     * \brief Desplazamiento desde el centro de la línea.
-     * Si es negativo se dibuja a la izquierda
+     * \brief Offset from the center of the line.
+     * If negative, it is drawn to the left.
      */
     int32_t mPerpendicularOffset;
 
     /*!
-     * \brief mPriorityLevel
+     * \brief Priority level
      */
     uint32_t mPriorityLevel;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    Pen();
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] pen Pen style class being copied
+     */
+    Pen(const Pen &pen);
+
+    /*!
+     * \brief Move constructor
+     */
+    Pen(Pen &&pen) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor
+     */
+    ~Pen();
+
+    /*!
+     * \brief Get the pen color
+     * \return Pen color
+     * \see Color
+     */
+    auto color() const -> Color;
+
+    /*!
+     * \brief Set the pen color
+     * \param[in] color Pen color
+     * \see Color
+     */
+    void setColor(const Color &color);
+
+    /*!
+     * \brief Get the pen width
+     * \return Pen width
+     */
+    auto width() const -> uint8_t;
+
+    /*!
+     * \brief Set the pen width
+     * \param[in] width Pen width
+     */
+    void setWidth(uint8_t width);
+
+    /*!
+     * \brief Get the pen pattern
+     * \return Pen pattern
+     */
+    auto pattern() const -> std::string;
+
+    /*!
+     * \brief Set the pen pattern
+     * \param[in] pattern Pen pattern
+     */
+    void setPattern(const std::string& pattern);
+
+    /*!
+     * \brief Get the pen name or ID
+     * \return Pen name or ID
+     */
+    auto name() const -> Name;
+
+    /*!
+     * \brief Set the pen name or ID
+     * \param[in] name Pen name or ID
+     */
+    void setName(Name name);
+
+    /*!
+     * \brief Get the shape of line endpoints
+     * \return Shape of line endpoints
+     */
+    auto cap() const -> Cap;
+
+    /*!
+     * \brief Set the shape of line endpoints
+     * \param[in] pencap Shape of line endpoints
+     */
+    void setCap(Cap pencap);
+
+    /*!
+     * \brief Get the shape of line junction points (vertices)
+     * \return Shape of line junction points (vertices)
+     */
+    auto join() const -> Join;
+
+    /*!
+     * \brief Set the shape of line junction points (vertices)
+     * \param[in] join Shape of line junction points (vertices)
+     */
+    void setJoin(Join join);
+
+    /*!
+     * \brief Get the perpendicular offset from the center of the line
+     * \return Perpendicular offset from the center of the line
+     */
+    auto perpendicularOffset() const -> int32_t;
+
+    /*!
+     * \brief Set the perpendicular offset from the center of the line
+     * If negative, it draws to the left
+     * \param[in] perpendicularoffset Perpendicular offset from the center of the line
+     */
+    void setPerpendicularOffset(int32_t perpendicularoffset);
+
+    /*!
+     * \brief Get the priority level
+     * \return Priority level
+     */
+    auto priorityLevel() const -> uint32_t;
+
+    /*!
+     * \brief Set the priority level
+     * \param priorityLevel Priority level
+     */
+    void setPriorityLevel(uint32_t priorityLevel);
+
+    /*!
+     * \brief Assignment operator
+     * \param[in] stylePen Pen style
+     * \return Reference to the pen style
+     */
+    auto operator =(const Pen& stylePen) -> Pen&;
+
+    /*!
+     * \brief Assignment move operator
+     * \param[in] stylePen Pen style
+     * \return Reference to the pen style
+     */
+    auto operator =(Pen &&stylePen) TL_NOEXCEPT -> Pen &;
 };
 
 
 /*!
- * \brief Clase estilo de pincel
+ * \brief Brush style class
  */
 class TL_EXPORT Brush
 {
@@ -268,162 +279,48 @@ public:
 
     enum class Name : uint8_t
     {
-        solid,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */
-        null,        /*!< Pincel nulo (invisible) */
-        horizontal_hatch,  /*!<  ------ */
-        vertical_hatch,    /*!< ||||||  */
-        fdiagonal_hatch,   /*!< \\\\\\  */
+        solid,             /*!< Solid (default value when no id is provided) */
+        null,              /*!< Null brush (invisible) */
+        horizontal_hatch,  /*!< ------ */
+        vertical_hatch,    /*!< |||||| */
+        fdiagonal_hatch,   /*!< \\\\\\ */
         bdiagonal_hatch,   /*!< ////// */
-        cross_hatch,       /*!<  ++++++*/
-        diagcross_hatch    /*!<  xxxxxx*/
+        cross_hatch,       /*!< ++++++ */
+        diagcross_hatch    /*!< xxxxxx */
     };
-
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Brush();
-
-    /*!
-     * \brief Constructora de copia
-     * \param[in] brush Objeto Brush que se copia
-     */
-    Brush(const Brush &brush);
-
-    /*!
-     * \brief Destructora
-     */
-    ~Brush();
-
-    /*!
-     * \brief Devuelve el color
-     * \return Color
-     * \see Foreground color
-     */
-    Color foregroundColor() const;
-
-    /*!
-     * \brief Establece el color
-     * \param[in] foregroundColor Foreground color
-     * \see Color
-     */
-    void setForegroundColor(Color foregroundColor);
-
-    /*!
-   * \brief Devuelve el color de fondo
-   * \return Color de fondo
-   * \see Color
-   */
-    Color backgroundColor() const;
-
-    /*!
-     * \brief Establece el color de fondo
-     * \param[in] backgroundColor Color de fondo
-     * \see Color
-     */
-    void setBackgroundColor(Color backgroundColor);
-
-    /*!
-     * \brief Devuelve el nombre o id de pincel
-     * \return Nombre o id de pincel
-     */
-    Name name() const;
-
-    /*!
-     * \brief Establece el nombre o id de pincel
-     * \param[in] name Nombre o id de pincel
-     */
-    void setName(Name name);
-
-    /*!
-     * \brief Devuelve el ángulo de rotación
-     * \return Ángulo de rotación en grados sexagesimales en notación decimal
-     * \see angleConversion
-     */
-    double angle() const;
-
-    /*!
-     * \brief Establece el ángulo de rotación
-     * \param[in] angle Ángulo de rotación en grados sexagesimales en notación decimal
-     * \see angleConversion
-     */
-    void setAngle(double angle);
-
-    /*!
-     * \brief Devuelve el factor de escala
-     * \return Factor de escala
-     */
-    double scalingFactor() const;
-
-    /*!
-     * \brief Establece el factor de escala
-     * \param[in] scalingFactor Factor de escala
-     */
-    void setScalingFactor(double scalingFactor);
-
-    /*!
-     * \brief Devuelve el espaciado en X
-     * \return Espaciado en X
-     */
-    double spacingX() const;
-
-    /*!
-     * \brief Devuelve el espaciado en Y
-     * \return Espaciado en Y
-     */
-    double spacingY() const;
-
-    /*!
-     * \brief Establece el espaciado en x e y
-     * \param[in] spacingX Espaciado en X
-     * \param[in] spacingY Espaciado en Y
-     */
-    void setSpacing(double spacingX, double spacingY);
-
-    uint32_t priorityLevel() const;
-
-    void setPriorityLevel(uint32_t priorityLevel);
-
-    /*!
-     * \brief operador de asignación
-     * \param brush Estilo de pincel
-     * \return Referencia al estilo de pluma
-     */
-    Brush &operator = (const Brush &brush);
 
 private:
 
     /*!
-     * \brief Color de primer plano
+     * \brief Foreground color
      * \see Color
      */
     Color mForeColor;
 
     /*!
-     * \brief Color de fondo
+     * \brief Background color
      * \see Color
      */
     Color mBackColor;
 
     /*!
-     * \brief Nombre de pincel
+     * \brief Brush name
      */
     Name mName;
 
     /*!
-     * \brief Ángulo de rotación en grados sexagesimales en notación decimal
+     * \brief Rotation angle in decimal sexagesimal degrees
      * \see angleConversion
      */
     double mAngle;
 
     /*!
-     * \brief Factor de escala
+     * \brief Scaling factor
      */
     double mScalingFactor;
 
     /*!
-     * \brief Espaciado entre simbolos
+     * \brief Spacing between symbols
      */
     std::array<double, 2> mSpacing;
 
@@ -431,11 +328,147 @@ private:
      * \brief mPriorityLevel
      */
     uint32_t mPriorityLevel;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    Brush();
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] brush Brush object being copied
+     */
+    Brush(const Brush &brush);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] brush Brush object being copied
+     */
+    Brush(Brush &&brush) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor
+     */
+    ~Brush();
+
+    /*!
+     * \brief Returns the foreground color
+     * \return Foreground color
+     * \see Color
+     */
+    auto foregroundColor() const -> Color;
+
+    /*!
+     * \brief Sets the foreground color
+     * \param[in] foregroundColor Foreground color
+     * \see Color
+     */
+    void setForegroundColor(const Color &foregroundColor);
+
+    /*!
+     * \brief Returns the background color
+     * \return Background color
+     * \see Color
+     */
+    auto backgroundColor() const -> Color;
+
+    /*!
+     * \brief Sets the background color
+     * \param[in] backgroundColor Background color
+     * \see Color
+     */
+    void setBackgroundColor(const Color& backgroundColor);
+
+    /*!
+     * \brief Returns the name or ID of the brush
+     * \return Name or ID of the brush
+     */
+    auto name() const -> Name;
+
+    /*!
+     * \brief Sets the name or ID of the brush
+     * \param[in] name Name or ID of the brush
+     */
+    void setName(Name name);
+
+    /*!
+     * \brief Returns the rotation angle
+     * \return Rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    auto angle() const -> double;
+
+    /*!
+     * \brief Sets the rotation angle
+     * \param[in] angle Rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    void setAngle(double angle);
+
+    /*!
+     * \brief Returns the scaling factor
+     * \return Scaling factor
+     */
+    auto scalingFactor() const -> double;
+
+    /*!
+     * \brief Sets the scaling factor
+     * \param[in] scalingFactor Scaling factor
+     */
+    void setScalingFactor(double scalingFactor);
+
+    /*!
+     * \brief Returns the spacing in the X direction
+     * \return Spacing in X
+     */
+    auto spacingX() const -> double;
+
+    /*!
+     * \brief Returns the spacing in the Y direction
+     * \return Spacing in Y
+     */
+    auto spacingY() const -> double;
+
+    /*!
+     * \brief Sets the spacing in the X and Y directions
+     * \param[in] spacingX Spacing in X
+     * \param[in] spacingY Spacing in Y
+     */
+    void setSpacing(double spacingX, double spacingY);
+
+    /*!
+     * \brief Returns the priority level
+     * \return Priority level
+     */
+    auto priorityLevel() const -> uint32_t;
+
+    /*!
+     * \brief Sets the priority level
+     * \param priorityLevel Priority level
+     */
+    void setPriorityLevel(uint32_t priorityLevel);
+
+    /*!
+     * \brief Assignment operator
+     * \param brush Brush style
+     * \return Reference to the brush style
+     */
+    auto operator =(const Brush& brush) -> Brush&;
+
+    /*!
+     * \brief Assignment move operator
+     * \param brush Brush style
+     * \return Reference to the brush style
+     */
+    auto operator =(Brush&& brush) TL_NOEXCEPT -> Brush&;
+
 };
 
 
 /*!
- * \brief Clase estilo simbolo
+ * \brief Symbol style class
  */
 class TL_EXPORT Symbol
 {
@@ -446,138 +479,26 @@ public:
     {
         cross,             /*!< + */
         diagonal_cross,    /*!< x */
-        circle,            /*!< Circulo */
-        circle_filled,     /*!< Circulo relleno */
-        square,            /*!< Cuadrado */
-        square_filled,     /*!< Cuadrado relleno */
-        triangle,          /*!< Triangulo */
-        triangle_filled,   /*!< Triangulo relleno */
-        star,              /*!< Estrella */
-        star_filled,       /*!< Estrella rellena */
+        circle,            /*!< Circle */
+        circle_filled,     /*!< Filled circle */
+        square,            /*!< Square */
+        square_filled,     /*!< Filled square */
+        triangle,          /*!< Triangle */
+        triangle_filled,   /*!< Filled triangle */
+        star,              /*!< Star */
+        star_filled,       /*!< Filled star */
         vertical_bar       /*!< | */
     };
-
-public:
-
-    /*!
-     * \brief Constructora por defecto
-     */
-    Symbol();
-
-    /*!
-     * \brief Constructora de copia
-     * \param[in] symbol Clase Estilo de símbolo que se copia
-     */
-    Symbol(const Symbol &symbol);
-
-    /*!
-     * \brief Destructora
-     */
-    ~Symbol();
-
-    /*!
-     * \brief Devuelve el ángulo de rotación
-     * \return Ángulo de rotación en grados sexagesimales en notación decimal
-     * \see angleConversion
-     */
-    double angle() const;
-
-    /*!
-     * \brief Establece el ángulo de rotación
-     * \param[in] angle Ángulo de rotación en grados sexagesimales en notación decimal
-     * \see angleConversion
-     */
-    void setAngle(double angle);
-
-    /*!
-     * \brief Devuelve el nombre o id del simbolo
-     * \return Nombre o id del simbolo
-     */
-    Name name() const;
-
-    /*!
-     * \brief Establece el nombre o id del simbolo
-     * \param[in] name Nombre o id del simbolo
-     */
-    void setName(Name name);
-
-    /*!
-     * \brief Devuelve el color
-     * \return Color
-     * \see Color
-     */
-    Color color() const;
-
-    /*!
-     * \brief Establece el color
-     * \param[in] color Color
-     * \see Color
-     */
-    void setColor(const Color &color);
-
-    /*!
-   * \brief Devuelve el color de borde
-   * \return Color de borde
-   * \see Color
-   */
-    Color outlineColor() const;
-
-    /*!
-     * \brief Establece el color de borde
-     * \param[in] outlinecolor Color de borde
-     * \see Color
-     */
-    void setOutlineColor(const Color &outlinecolor);
-
-    /*!
-     * \brief Devuelve el factor de escala
-     * \return Factor de escala
-     */
-    double scalingFactor() const;
-
-    /*!
-     * \brief Establece el factor de escala
-     * \param[in] scalingFactor Factor de escala
-     */
-    void setScalingFactor(double scalingFactor);
-
-    /*!
-     * \brief Desplazamiento X del punto de inserción del símbolo.
-     */
-    double offsetX() const;
-
-    /*!
-     * \brief Desplazamiento Y del punto de inserción del símbolo.
-     */
-    double offsetY() const;
-
-    /*!
-     * \brief Establece el desplazamiento (Offset) del punto de inserción del simbolo
-     * \param[in] dx Desplazamiento X del punto de inserción del símbolo.
-     * \param[in] dy Desplazamiento Y del punto de inserción del símbolo.
-     */
-    void setOffset(double dx, double dy);
-
-    uint32_t priorityLevel() const;
-
-    void setPriorityLevel(uint32_t priorityLevel);
-
-    /*!
-     * \brief operador de asignación
-     * \param symbol Estilo de simbolo
-     * \return Referencia al estilo de simbolo
-     */
-    Symbol &operator = (const Symbol &symbol);
 
 private:
 
     /*!
-     * \brief Nombre o identificador del simbolo
+     * \brief Name or identifier of the symbol
      */
     Name mName;
 
     /*!
-     * \brief Ángulo de rotación en grados sexagesimales en notación decimal
+     * \brief Rotation angle in decimal sexagesimal degrees
      * \see angleConversion
      */
     double mAngle;
@@ -589,18 +510,18 @@ private:
     Color mColor;
 
     /*!
-     * \brief Color de borde
+     * \brief Outline color
      * \see Color
      */
     Color mOutlineColor;
 
     /*!
-     * \brief Factor de escala
+     * \brief Scaling factor
      */
     double mScalingFactor;
 
     /*!
-     * \brief Desplazamiento X e Y del punto de inserción del símbolo.
+     * \brief X and Y offset of the symbol insertion point.
      */
     std::array<double, 2> mOffset;
 
@@ -609,29 +530,156 @@ private:
      */
     uint32_t mPriorityLevel;
 
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    Symbol();
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] symbol Symbol style object to copy
+     */
+    Symbol(const Symbol &symbol);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] symbol Symbol style object to move
+     */
+    Symbol(Symbol &&symbol) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor
+     */
+    ~Symbol();
+
+    /*!
+     * \brief Get the rotation angle
+     * \return Rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    auto angle() const -> double;
+
+    /*!
+     * \brief Set the rotation angle
+     * \param[in] angle Rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    void setAngle(double angle);
+
+    /*!
+     * \brief Get the name or id of the symbol
+     * \return Name or id of the symbol
+     */
+    auto name() const -> Name;
+
+    /*!
+     * \brief Set the name or id of the symbol
+     * \param[in] name Name or id of the symbol
+     */
+    void setName(Name name);
+
+    /*!
+     * \brief Get the color
+     * \return Color
+     * \see Color
+     */
+    auto color() const -> Color;
+
+    /*!
+     * \brief Set the color
+     * \param[in] color Color
+     * \see Color
+     */
+    void setColor(const Color &color);
+
+    /*!
+     * \brief Get the outline color
+     * \return Outline color
+     * \see Color
+     */
+    auto outlineColor() const -> Color;
+
+    /*!
+     * \brief Set the outline color
+     * \param[in] outlinecolor Outline color
+     * \see Color
+     */
+    void setOutlineColor(const Color &outlinecolor);
+
+    /*!
+     * \brief Get the scaling factor
+     * \return Scaling factor
+     */
+    auto scalingFactor() const -> double;
+
+    /*!
+     * \brief Set the scaling factor
+     * \param[in] scalingFactor Scaling factor
+     */
+    void setScalingFactor(double scalingFactor);
+
+    /*!
+     * \brief Get the X offset of the symbol insertion point.
+     */
+    auto offsetX() const -> double;
+
+    /*!
+     * \brief Get the Y offset of the symbol insertion point.
+     */
+    auto offsetY() const -> double;
+
+    /*!
+     * \brief Set the offset of the symbol insertion point
+     * \param[in] dx X offset of the symbol insertion point.
+     * \param[in] dy Y offset of the symbol insertion point.
+     */
+    void setOffset(double dx, double dy);
+
+    auto priorityLevel() const -> uint32_t;
+
+    void setPriorityLevel(uint32_t priorityLevel);
+
+    /*!
+     * \brief Assignment operator
+     * \param symbol Symbol style
+     * \return Reference to the symbol style
+     */
+    auto operator =(const Symbol& symbol) -> Symbol&;
+
+    /*!
+     * \brief Assignment operator
+     * \param symbol Symbol style
+     * \return Reference to the symbol style
+     */
+    auto operator =(Symbol&& symbol) TL_NOEXCEPT -> Symbol&;
 };
 
 
 /*!
- * \brief Clase estilo de texto
+ * \brief Text style class
  */
 class TL_EXPORT Label
 {
 public:
 
+    /*!
+     * \brief How the text is drawn relative to the feature's geometry
+     */
     enum class Placement : uint8_t
     {
-        p,     /*!< Etiqueta asociada a un punto o al primer vértice de una polilínea */
-        l,     /*!< Etiqueta asociada al último vértice de una polilínea */
-        s,     /*!< Estira la cadena de texto a lo largo de la polilínea, con un espaciado igual entre cada carácter */
-        m,     /*!< Texto en el centro de la polilínea */
-        w,     /*!< Una palabra por segmento de línea en una polilínea */
-        h,     /*!<  */
-        a      /*!<  */
+        point,                /*!< A simple label is attached to a point or to the first vertex of a polyline. */
+        last_vertex,          /*!< Text is attached to the last vertex of a polyline. A PEN tool can be combined with this LABEL tool to draw the polyline as a leader to the label. */
+        stretched,            /*!< Stretch the text string along a polyline, with an equal spacing between each character. */
+        middle,               /*!< Place text as a single label at the middle of a polyline (based on total line length). */
+        word_per_segment,     /*!< One word per line segment in a polyline. */
+        horizontal,           /*!< Every word of text attached to polyline is placed horizontally in its segment, anchor point is a center of segment. */
+        stretched_to_segment  /*!< Every word of text attached to polyline is stretched to fit the segment of polyline and placed along that segment. The anchor point is a start of a segment. */
     };
 
     /*!
-     * \brief Posición de la etiqueta respecto al punto de inserción
+     * \brief Position of the label relative to the insertion point
      */
     enum class AnchorPosition : uint8_t
     {
@@ -644,337 +692,369 @@ public:
         horizontal_right = 1 << 6     /*!<  */
     };
 
-public:
-
-    Label();
-    Label(const Label &label);
-    ~Label();
-
-    /*!
-     * \brief Devuelve el texto de la etiqueta
-     */
-    std::string text() const;
-
-    /*!
-     * \brief Establece el texto de la etiqueta
-     * \param[in] text Texto de la etiqueta
-     */
-    void setText(const std::string &text);
-
-    /*!
-     * \brief Devuelve el ángulo de rotación
-     * \return Ángulo de rotación en grados sexagesimales en notación decimal
-     * \see angleConversion
-     */
-    double angle() const;
-
-    /*!
-     * \brief Establece el ángulo de rotación
-     * \param[in] angle Ángulo de rotación en grados sexagesimales en notación decimal
-     * \see angleConversion
-     */
-    void setAngle(double angle);
-
-    /*!
-     * \brief Color de primer plano
-     * \see Color
-     */
-    Color foregroundColor() const;
-
-    /*!
-     * \brief Establece el color de primer plano
-     * \param[in] color
-     * \see Color
-     */
-    void setForegroundColor(const Color &color);
-
-    /*!
-     * \brief Color de fondo
-     * \see Color
-     */
-    Color backgroundColor() const;
-
-    /*!
-     * \brief Establece el color de primer plano
-     * \param[in] color
-     * \see Color
-     */
-    void setBackgroundColor(const Color &color);
-
-    /*!
-     * \brief Color de contorno
-     * \see Color
-     */
-    Color outlineColor() const;
-
-    /*!
-     * \brief Establece el color de contorno
-     * \param[in] color
-     * \see Color
-     */
-    void setOutlineColor(const Color &color);
-
-    /*!
-     * \brief Color de la sombra
-     * \see Color
-     */
-    Color shadowColor() const;
-
-    /*!
-     * \brief Establece el color de la sombra
-     * \param[in] color
-     * \see Color
-     */
-    void setShadowColor(const Color &color);
-
-    /*!
-     * \brief Escalado en tanto por ciento
-     */
-    double stretch() const;
-
-    /*!
-     * \brief Escalado en tanto por ciento
-     * \param[in] stretch
-     */
-    void setStretch(double stretch);
-
-    /*!
-     * \brief Modo de colocación de la etiqueta en las entidades
-     * \see Placement
-     */
-    Placement placement() const;
-
-    /*!
-     * \brief Modo de colocación de la etiqueta en las entidades
-     * \param[in] placement
-     * \see Placement
-     */
-    void setPlacement(Placement placement);
-
-    /*!
-     * \brief Posición de anclaje de la etiqueta
-     * \see AnchorPosition
-     */
-    AnchorPosition anchorPosition() const;
-
-    /*!
-     * \brief Posición de anclaje de la etiqueta
-     * \param[in] anchorPosition
-     * \see AnchorPosition
-     */
-    void setAnchorPosition(AnchorPosition anchorPosition);
-
-    /*!
-     * \brief Desplazamiento X del punto de inserción de la etiqueta.
-     */
-    double offsetX() const;
-
-    /*!
-     * \brief Desplazamiento Y del punto de inserción de la etiqueta
-     */
-    double offsetY() const;
-
-    /*!
-     * \brief Establece el desplazamiento (Offset) del punto de inserción de la etiqueta
-     * \param[in] dx Desplazamiento X del punto de inserción del símbolo.
-     * \param[in] dy Desplazamiento Y del punto de inserción del símbolo.
-     */
-    void setOffset(double dx, double dy);
-
-    /*!
-     * \brief operador de asignación
-     * \param label Estilo de etiqueta
-     * \return Referencia al estilo de etiqueta
-     */
-    Label &operator = (const Label &label);
-    void setFont(const Font &font);
-    Font font() const;
-    int perpendicularOffset() const;
-    void setPerpendicularOffset(int perpendicularOffset);
-
 private:
 
     /*!
-     * \brief Fuente
+     * \brief Font
      */
     Font mFont;
 
     /*!
-     * \brief Texto de la etiqueta
+     * \brief Label text
      */
     std::string mText;
 
     /*!
-     * \brief Angulo de rotación  en grados sexagesimales en notación decimal
+     * \brief Rotation angle in decimal sexagesimal degrees
      * \see angleConversion
      */
     double mAngle;
 
     /*!
-     * \brief Color de primer plano
+     * \brief Foreground color
      * \see Color
      */
     Color mForegroundColor;
 
     /*!
-     * \brief Color de fondo
+     * \brief Background color
      * \see Color
      */
     Color mBackgroundColor;
 
     /*!
-     * \brief Color de contorno
+     * \brief Outline color
      * \see Color
      */
     Color mOutlineColor;
 
     /*!
-     * \brief Color de la sombra
+     * \brief Shadow color
      * \see Color
      */
     Color mShadowColor;
 
     /*!
-     * \brief Escalado en tanto por ciento
+     * \brief Scaling in percentage
      */
     double mStretch;
 
     /*!
-     * \brief Modo de colocación de la etiqueta en las entidades
+     * \brief Label placement mode in entities
      * \see Placement
      */
     Placement mPlacement;
 
     /*!
-     * \brief Posición de anclaje de la etiqueta
+     * \brief Anchor position of the label
      * \see AnchorPosition
      */
     AnchorPosition mAnchorPosition;
 
     /*!
-     * \brief Desplazamiento X e Y del punto de inserción de la etiqueta
+     * \brief X and Y offset of the label insertion point
      */
     std::array<double, 2> mOffset;
 
     /*!
-     * \brief Distancia perpendicular entre la etiqueta y la línea a lo largo de la cual se coloca
+     * \brief Perpendicular distance between the label and the line along which it is placed
      */
     int mPerpendicularOffset;
 
     /*!
-     * \brief Tachado
+     * \brief Strikethrough
      */
-    bool bStrikeout;
+    bool mStrikeout;
 
     /*!
      * \brief mPriorityLevel
      */
     uint32_t mPriorityLevel;
 
-};
+public:
 
+    Label();
+    Label(const Label &label);
+    Label(Label &&label) TL_NOEXCEPT;
+    ~Label();
+
+    /*!
+     * \brief Get the label text
+     * \return The label text
+     */
+    auto text() const -> std::string;
+
+    /*!
+     * \brief Set the label text
+     * \param[in] text The label text
+     */
+    void setText(const std::string &text);
+
+    /*!
+     * \brief Get the rotation angle
+     * \return The rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    auto angle() const -> double;
+
+    /*!
+     * \brief Set the rotation angle
+     * \param[in] angle The rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    void setAngle(double angle);
+
+    /*!
+     * \brief Get the foreground color
+     * \return The foreground color
+     * \see Color
+     */
+    auto foregroundColor() const -> Color;
+
+    /*!
+     * \brief Set the foreground color
+     * \param[in] color The foreground color
+     * \see Color
+     */
+    void setForegroundColor(const Color &color);
+
+    /*!
+     * \brief Get the background color
+     * \return The background color
+     * \see Color
+     */
+    auto backgroundColor() const -> Color;
+
+    /*!
+     * \brief Set the background color
+     * \param[in] color The background color
+     * \see Color
+     */
+    void setBackgroundColor(const Color &color);
+
+    /*!
+     * \brief Get the outline color
+     * \return The outline color
+     * \see Color
+     */
+    auto outlineColor() const -> Color;
+
+    /*!
+     * \brief Set the outline color
+     * \param[in] color The outline color
+     * \see Color
+     */
+    void setOutlineColor(const Color &color);
+
+    /*!
+     * \brief Get the shadow color
+     * \return The shadow color
+     * \see Color
+     */
+    auto shadowColor() const -> Color;
+
+    /*!
+     * \brief Set the shadow color
+     * \param[in] color The shadow color
+     * \see Color
+     */
+    void setShadowColor(const Color &color);
+
+    /*!
+     * \brief Get the stretch factor
+     * \return The stretch factor
+     */
+    auto stretch() const -> double;
+
+    /*!
+     * \brief Set the stretch factor
+     * \param[in] stretch The stretch factor
+     */
+    void setStretch(double stretch);
+
+    /*!
+     * \brief Get the label placement mode
+     * \return The label placement mode
+     * \see Placement
+     */
+    auto placement() const -> Placement;
+
+    /*!
+     * \brief Set the label placement mode
+     * \param[in] placement The label placement mode
+     * \see Placement
+     */
+    void setPlacement(Placement placement);
+
+    /*!
+     * \brief Get the label anchor position
+     * \return The label anchor position
+     * \see AnchorPosition
+     */
+    auto anchorPosition() const -> AnchorPosition;
+
+    /*!
+     * \brief Set the label anchor position
+     * \param[in] anchorPosition The label anchor position
+     * \see AnchorPosition
+     */
+    void setAnchorPosition(AnchorPosition anchorPosition);
+
+    /*!
+     * \brief Get the X offset of the label insertion point
+     * \return The X offset of the label insertion point
+     */
+    auto offsetX() const -> double;
+
+    /*!
+     * \brief Get the Y offset of the label insertion point
+     * \return The Y offset of the label insertion point
+     */
+    auto offsetY() const -> double;
+
+    /*!
+     * \brief Set the offset of the label insertion point
+     * \param[in] dx The X offset of the label insertion point
+     * \param[in] dy The Y offset of the label insertion point
+     */
+    void setOffset(double dx, double dy);
+
+    /*!
+     * \brief Assignment operator
+     * \param label The label style
+     * \return Reference to the label style
+     */
+    auto operator =(const Label& label) -> Label&;
+
+    /*!
+     * \brief Assignment move operator
+     * \param label The label style
+     * \return Reference to the label style
+     */
+    auto operator =(Label &&label) TL_NOEXCEPT -> Label &;
+
+    void setFont(const Font &font);
+    auto font() const -> Font;
+    auto perpendicularOffset() const -> int;
+    void setPerpendicularOffset(int perpendicularOffset);
+
+
+
+};
 ALLOW_BITWISE_FLAG_OPERATIONS(Label::AnchorPosition)
 
+
+
+
+
+
 /*!
- * \brief Clase estilos
+ * \brief Class for styles
  *
- * Estilos de una entidad, de un layer o de un archivo
+ * Styles for an entity, a layer, or a file
  */
 class TL_EXPORT GraphicStyle
 {
 
-public:
-
-    /*!
-     * \brief Constructora
-     */
-    GraphicStyle();
-
-    /*!
-     * \brief Constructora de copia
-     */
-    GraphicStyle(const GraphicStyle &graphicStyle);
-
-    /*!
-     * \brief Destructora
-     */
-    virtual ~GraphicStyle() = default;
-
-    /*!
-     * \brief Estilo de pluma
-     * \return
-     */
-    Pen *pen() const;
-
-    /*!
-     * \brief Establece el estilo de pluma
-     * \param[in] pen Estilo de pluma
-     */
-    void setPen(const std::shared_ptr<Pen> &pen);
-
-    /*!
-     * \brief Estilo de pincel
-     * \return
-     */
-    Brush *brush() const;
-
-    /*!
-     * \brief Establece el estilo de pincel
-     * \param[in] brush Estilo de pincel
-     */
-    void setBrush(const std::shared_ptr<Brush> &brush);
-
-    /*!
-     * \brief Estilo simbolo
-     * \return
-     */
-    Symbol *symbol() const;
-
-    /*!
-     * \brief Establece el estilo de simbolos
-     * \param[in] symbol Estilo simbolos
-     */
-    void setSymbol(const std::shared_ptr<Symbol> &symbol);
-
-    /*!
-     * \brief Estilo etiqueta
-     * \return
-     */
-    Label *label() const;
-
-    /*!
-     * \brief Establece el estilo de etiqueta
-     * \param[in] label Estilo de etiqueta
-     */
-    void setLabel(const std::shared_ptr<Label> &label);
-
-    /*!
-     * \brief Operador de asignación
-     * \param[in] graphicStyle Estilo
-     */
-    GraphicStyle &operator = (const GraphicStyle &graphicStyle);
-
 private:
 
     /*!
-     * \brief Estilo de pluma
+     * \brief Pen style
      */
     std::shared_ptr<Pen> mPen;
 
     /*!
-     * \brief Estilo de pincel
+     * \brief Brush style
      */
     std::shared_ptr<Brush> mBrush;
 
     /*!
-     * \brief Estilo de simbolos
+     * \brief Symbol style
      */
     std::shared_ptr<Symbol> mSymbol;
 
     /*!
-     * \brief Estilo de etiqueta
+     * \brief Label style
      */
     std::shared_ptr<Label> mLabel;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    GraphicStyle();
+
+    /*!
+     * \brief Copy constructor
+     */
+    GraphicStyle(const GraphicStyle &graphicStyle);
+    GraphicStyle(GraphicStyle&& graphicStyle) noexcept;
+
+    /*!
+     * \brief Destructor
+     */
+    virtual ~GraphicStyle() = default;
+
+    /*!
+     * \brief Get the pen style
+     * \return Pointer to the pen style
+     */
+    auto pen() const -> Pen*;
+
+    /*!
+     * \brief Set the pen style
+     * \param[in] pen Pointer to the pen style
+     */
+    void setPen(const std::shared_ptr<Pen> &pen);
+
+    /*!
+     * \brief Get the brush style
+     * \return Pointer to the brush style
+     */
+    auto brush() const -> Brush*;
+
+    /*!
+     * \brief Set the brush style
+     * \param[in] brush Pointer to the brush style
+     */
+    void setBrush(const std::shared_ptr<Brush> &brush);
+
+    /*!
+     * \brief Get the symbol style
+     * \return Pointer to the symbol style
+     */
+    auto symbol() const -> Symbol*;
+
+    /*!
+     * \brief Set the symbol style
+     * \param[in] symbol Pointer to the symbol style
+     */
+    void setSymbol(const std::shared_ptr<Symbol> &symbol);
+
+    /*!
+     * \brief Get the label style
+     * \return Pointer to the label style
+     */
+    auto label() const -> Label*;
+
+    /*!
+     * \brief Set the label style
+     * \param[in] label Pointer to the label style
+     */
+    void setLabel(const std::shared_ptr<Label> &label);
+
+    /*!
+     * \brief Assignment operator
+     * \param[in] graphicStyle The graphic style
+     */
+    auto operator =(const GraphicStyle& graphicStyle) -> GraphicStyle&;
+
+    /*!
+     * \brief Assignment copy operator
+     * \param[in] graphicStyle The graphic style
+     */
+    auto operator =(GraphicStyle &&graphicStyle) TL_NOEXCEPT -> GraphicStyle &;
 
 };
 

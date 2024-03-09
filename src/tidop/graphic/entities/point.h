@@ -35,7 +35,9 @@ namespace tl
  *  \{
  */
 
-
+ /*!
+  * \brief Point graphic class
+  */
 class TL_EXPORT GPoint
   : public Point<double>,
     public GraphicEntity
@@ -44,52 +46,49 @@ class TL_EXPORT GPoint
 public:
 
     /*!
-     * \brief Constructora por defecto
+     * \brief Default constructor
      */
     GPoint();
 
     /*!
-     * \brief Constructora
-     * \param[in] x Coordenada x
-     * \param[in] y Coordenada y
+     * \brief Constructor
+     * \param[in] x x coordinate
+     * \param[in] y y coordinate
      */
     GPoint(double x, double y);
 
     /*!
-     * \brief Constructor a partir de un punto
-     * \param[in] pt Punto
+     * \brief Constructor from a Point
+     * \param[in] pt Point
      * \see Point
      */
     explicit GPoint(const Point<double> &pt);
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] pt Objeto GPoint que se copia
+     * \brief Copy constructor
+     * \param[in] pt Objeto GPoint to be copied
      */
     GPoint(const GPoint &pt);
 
     /*!
-     * \brief Constructor de movimiento
-     * \param[in] pt Objeto GPoint que se mueve
+     * \brief Move Constructor
+     * \param[in] pt Objeto GPoint object that moves
      */
     GPoint(GPoint &&pt) TL_NOEXCEPT;
 
-    /*!
-     * \brief Destructora
-     */
     ~GPoint() override;
 
     /*!
-     * \brief Operador de asignación
-     * \param gPoint Objeto GPoint que se asigna
-     * \return Referencia al objeto
+     * \brief Copy assignment operator
+     * \param gPoint GPoint object to be assigned
+     * \return Object reference
      */
-    auto operator =(const GPoint& gPoint) -> GPoint&;
+    auto operator =(const GPoint &gPoint) -> GPoint&;
 
     /*!
-     * \brief Operador de asignación de movimiento
-     * \param gPoint Objeto GPoint que se mueve
-     * \return Referencia al objeto
+     * \brief Move assignment operator
+     * \param gPoint GPoint object that moves
+     * \return Object reference
      */
     auto operator =(GPoint&& gPoint) TL_NOEXCEPT -> GPoint&;
 
@@ -97,7 +96,9 @@ public:
     auto isSimpleEntity() const -> bool override;
 };
 
-
+/*!
+ * \brief 3D Point graphics class
+ */
 class TL_EXPORT GPoint3D
   : public Point3<double>,
     public GraphicEntity
@@ -106,60 +107,62 @@ class TL_EXPORT GPoint3D
 public:
 
     /*!
-     * \brief Constructora por defecto
+     * \brief Default constructor
      */
     GPoint3D();
 
     /*!
-     * \brief Constructora
-     * \param[in] x Coordenada x
-     * \param[in] y Coordenada y
-     * \param[in] z Coordenada z
+     * \brief Constructor
+     * \param[in] x Coordinate x
+     * \param[in] y Coordinate y
+     * \param[in] z Coordinate z
      */
     GPoint3D(double x, double y, double z);
 
     /*!
-     * \brief Constructor a partir de un punto
-     * \param[in] pt Punto
+     * \brief Constructor from a Point
+     * \param[in] pt Point
      * \see Point3
      */
     explicit GPoint3D(const Point3<double> &pt);
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] pt Objeto GPoint3D que se copia
+     * \brief Copy constructor
+     * \param[in] pt GPoint3D object to be copied
      */
     GPoint3D(const GPoint3D &pt);
 
     /*!
-     * \brief Constructor de movimiento
-     * \param[in] pt Objeto GPoint3D que se mueve
+     * \brief Move Constructor
+     * \param[in] pt Objeto GPoint3D object that moves
      */
-    GPoint3D(GPoint &&pt) TL_NOEXCEPT;
+    GPoint3D(GPoint3D &&pt) TL_NOEXCEPT;
 
-    /*!
-     * \brief Destructora
-     */
+
     ~GPoint3D() override;
 
     /*!
-     * \brief Operador de asignación
-     * \param gPoint Objeto GPoint3D que se copia
-     * \return Referencia al objeto
+     * \brief Copy assignment operator
+     * \param gPoint GPoint3D object to be copied
+     * \return Object reference
      */
-    auto operator =(const GPoint3D& gPoint) -> GPoint3D&;
+    auto operator =(const GPoint3D &gPoint) -> GPoint3D&;
 
     /*!
-     * \brief Operador de asignación de movimiento
-     * \param[in] gPoint Objeto GPoint3D que se mueve
+     * \brief Move assignment operator
+     * \param[in] gPoint GPoint3D object that moves
+     * \return Object reference
      */
-    auto operator =(GPoint3D&& gPoint) TL_NOEXCEPT -> GPoint3D&;
+    auto operator =(GPoint3D &&gPoint) TL_NOEXCEPT -> GPoint3D&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 };
 
 
+/*!
+ * \brief Multi-point graphic class
+ */
 class TL_EXPORT GMultiPoint
   : public MultiPoint<Point<double>>,
     public GraphicEntity
@@ -168,17 +171,25 @@ class TL_EXPORT GMultiPoint
 public:
 
     GMultiPoint();
-    GMultiPoint(const MultiPoint<Point<double>> &multiPoint);
+    explicit GMultiPoint(size_t size);
+    explicit GMultiPoint(const MultiPoint<Point<double>> &multiPoint);
     GMultiPoint(const GMultiPoint &gMultiPoint);
+    GMultiPoint(GMultiPoint &&gMultiPoint) TL_NOEXCEPT;
     ~GMultiPoint() override;
 
     auto operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint&;
+    auto operator =(GMultiPoint &&gMultiPoint) TL_NOEXCEPT -> GMultiPoint&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 };
 
 
+
+
+/*!
+ * \brief Multi-point 3D graphic class
+ */
 class TL_EXPORT GMultiPoint3D
   : public MultiPoint3D<Point3<double>>,
     public GraphicEntity
@@ -187,15 +198,69 @@ class TL_EXPORT GMultiPoint3D
 public:
 
     GMultiPoint3D();
+    explicit GMultiPoint3D(size_t size);
     explicit GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint);
-    GMultiPoint3D(const GMultiPoint3D &gMultiPoint);
+    GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D);
+    GMultiPoint3D(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT;
     ~GMultiPoint3D() override;
 
-    auto operator =(const GMultiPoint3D& gMultiPoint) -> GMultiPoint3D&;
+    auto operator =(const GMultiPoint3D &gMultiPoint3D) -> GMultiPoint3D&;
+    auto operator =(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT -> GMultiPoint3D&;
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 };
+
+
+
+
+inline auto GPoint::isMultiEntity() const -> bool
+{
+    return false;
+}
+
+inline auto GPoint::isSimpleEntity() const -> bool
+{
+    return true;
+}
+
+
+
+inline auto GPoint3D::isMultiEntity() const -> bool
+{
+    return false;
+}
+
+inline auto GPoint3D::isSimpleEntity() const -> bool
+{
+    return true;
+}
+
+
+
+inline auto GMultiPoint::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiPoint::isSimpleEntity() const -> bool
+{
+    return false;
+}
+
+
+
+
+inline auto GMultiPoint3D::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiPoint3D::isSimpleEntity() const -> bool
+{
+    return false;
+}
+
 
 /*! \} */ // Fin GraphicEntities
 

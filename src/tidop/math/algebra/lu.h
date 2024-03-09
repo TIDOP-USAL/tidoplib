@@ -24,8 +24,6 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include "tidop/math/math.h"
 #include "tidop/core/exception.h"
 #include "tidop/math/algebra/vector.h"
@@ -70,17 +68,17 @@ public:
     LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
     ~LuDecomposition();
 
-    Vector<T, _rows> solve(const Vector<T, _rows> &b);
-    Matrix_t<T, _rows, _cols> solve(const Matrix_t<T, _rows, _cols> &b);
-    Matrix_t<T, _rows, _cols> lu() const;
+    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
+    auto solve(const Matrix_t<T, _rows, _cols>& b) -> Matrix_t<T, _rows, _cols>;
+    auto lu() const -> Matrix_t<T, _rows, _cols>;
 
-    T determinant() const;
+    auto determinant() const -> T;
     //Matrix_t<T, _rows, _cols> inverse();
 
 private:
 
     void decompose();
-    Vector<T, _rows> findMaxElementsByRows();
+    auto findMaxElementsByRows() -> Vector<T, _rows>;
 #ifdef TL_HAVE_OPENBLAS
     void lapackeDecompose();
 #endif // TL_HAVE_OPENBLAS
@@ -138,7 +136,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
 {
     TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
 
@@ -195,7 +193,8 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Matrix_t<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix_t<T, _rows, _cols> &b) ///Por ahora solo funciona con matrizes dinamicas
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix_t<T, _rows, _cols>& b) -> Matrix_t<T, _rows, _cols>
+///Por ahora solo funciona con matrizes dinamicas
 {
     TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
 
@@ -289,7 +288,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxElementsByRows()
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxElementsByRows() -> Vector<T, _rows>
 {
     Vector<T, _rows> max_elements(mRows, 0);
     T element;
@@ -319,7 +318,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 {
     lapack_int info;
     lapack_int lda = mRows;
@@ -336,7 +335,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Matrix_t<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const -> Matrix_t<T, _rows, _cols>
 {
     return LU;
 }
@@ -345,7 +344,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-T LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
 {
     T det = this->d;
 

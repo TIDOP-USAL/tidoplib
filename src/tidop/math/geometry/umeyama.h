@@ -26,12 +26,10 @@
 
 #include <vector>
 
-#include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/statistics.h"
 #include "tidop/math/algebra/svd.h"
-#include "tidop/math/geometry/transform.h"
 #include "tidop/math/geometry/affine.h"
 
 namespace tl
@@ -121,8 +119,7 @@ public:
                     S[dimensions - 1][dimensions - 1] = -1;
             }
 
-            auto block = transformMatrix.block(0, dimensions - 1, 0, dimensions - 1);
-            block = svd.u() * S * svd.v().transpose();
+            transformMatrix.block(0, dimensions - 1, 0, dimensions - 1) = svd.u() * S * svd.v().transpose();
 
             double src_var{};
             double module{};

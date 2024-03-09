@@ -44,219 +44,135 @@ namespace tl
 class GraphicEntity;
 
 /*!
- * Capa. Puede contener elementos de uno o varios tipos. Pueden
- * ser entidades gráficas o simples
+ * Layer. Can contain elements of one or several types. They can
+ * be graphical entities or simple ones.
  */
 class TL_EXPORT GLayer
 {
 
 public:
 
-    /*!
-     * \brief Allocator
-     */
     using allocator_type = std::list<std::shared_ptr<GraphicEntity> >::allocator_type;
-
-    /*!
-     * \brief value_type
-     */
     using value_type = std::list<std::shared_ptr<GraphicEntity> >::value_type;
-
-    /*!
-     * \brief Tipo entero sin signo (por lo general size_t)
-     */
     using size_type = std::list<std::shared_ptr<GraphicEntity> >::size_type;
-
-    /*!
-     * \brief Tipo entero con signo (por lo general ptrdiff_t)
-     */
     using difference_type = std::list<std::shared_ptr<GraphicEntity> >::difference_type;
-
-    /*!
-     * \brief std::allocator_traits<Allocator>::pointer
-     */
     using pointer = std::list<std::shared_ptr<GraphicEntity> >::pointer;
-
-    /*!
-     * \brief std::allocator_traits<Allocator>::const_pointer
-     */
     using const_pointer = std::list<std::shared_ptr<GraphicEntity> >::const_pointer;
-
-    /*!
-     * \brief value_type&
-     */
     using reference = std::list<std::shared_ptr<GraphicEntity> >::reference;
-
-    /*!
-     * \brief const value_type&
-     */
     using const_reference = std::list<std::shared_ptr<GraphicEntity> >::const_reference;
-
-    /*!
-     * \brief Iterador de acceso aleatorio
-     */
     using iterator = std::list<std::shared_ptr<GraphicEntity> >::iterator;
-
-    /*!
-     * \brief Iterador constante de acceso aleatorio
-     */
     using const_iterator = std::list<std::shared_ptr<GraphicEntity> >::const_iterator;
+
+protected:
+
+    std::string mName;
+    std::list<std::shared_ptr<GraphicEntity>> mEntities;
+    std::shared_ptr<GraphicEntity> mSelectEntity;
+    std::vector<std::shared_ptr<TableField>> mTableFields;
 
 public:
 
     /*!
-     * \brief Constructora por defecto
+     * \brief Default constructor
      */
     GLayer();
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] gLayer Objeto que se copia
+     * \brief Copy constructor
+     * \param[in] gLayer Object being copied
      */
     GLayer(const GLayer &gLayer);
 
     /*!
-     * \brief Constructor de movimiento
-     * \param[in] gLayer Objeto que se copia
+     * \brief Move constructor
+     * \param[in] gLayer Object being moved
      */
     GLayer(GLayer &&gLayer) TL_NOEXCEPT;
 
-
     /*!
-     * \brief Constructora de lista
-     * \param[in] entities listado de entidades
+     * \brief List constructor
+     * \param[in] entities List of entities
      */
     GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities);
 
-    /*!
-     * \brief Destructora
-     */
     ~GLayer() = default;
 
-    /*!
-     * \brief Devuelve un iterador al inicio de la capa
-     * \return Iterador al primer elemento
-     */
-    iterator begin() TL_NOEXCEPT;
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
 
-    /*!
-     * \brief Devuelve un iterador constante al inicio de la capa
-     * \return Iterador al primer elemento
-     */
-    const_iterator begin() const TL_NOEXCEPT;
-
-    /*!
-     * \brief Devuelve un iterador al siguiente elemento después de la última entidad
-     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-     * \return Iterador al siguiente elemento después de la última entidad
-     */
-    iterator end() TL_NOEXCEPT;
-
-    /*!
-     * \brief Devuelve un iterador constante al siguiente elemento después de la última entidad
-     * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-     * \return Iterador al siguiente elemento después de la última entidad
-     */
-    const_iterator end() const TL_NOEXCEPT;
-
-    /*!
-     * \brief Agrega una entidad mediante copia al final del contenedor
-     * \param[in] entity Entidad que se añade
-     */
     void push_back(const std::shared_ptr<GraphicEntity> &entity);
-
-    /*!
-     * \brief Agrega una entidad mediante movimiento al final del contenedor
-     * \param[in] entity Entidad que se añade
-     */
     void push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT;
 
     /*!
-     * \brief Elimina los elementos del recipiente
+     * \brief Clears the container
      */
     void clear() TL_NOEXCEPT;
 
     /*!
-     * \brief Comprueba si el contenedor esta vacio
-     * \return true si el contenedor está vacío y false en caso contrario
+     * \brief Checks if the container is empty
+     * \return true if the container is empty and false otherwise
      */
-    bool empty() const TL_NOEXCEPT;
+    auto empty() const TL_NOEXCEPT -> bool;
 
     /*!
-     * \brief Modifica el tamaño del contenedor
-     * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual
-     * es mayor que count el contenedor se trunca al número de elementos indicados.
-     * \param[in] count Nuevo tamaño del contenedor
+     * \brief Modifies the container size
+     * If the current size is less than count, additional elements are added. If the current size
+     * is greater than count, the container is truncated to the specified number of elements.
+     * \param[in] count New container size
      */
     void resize(size_type count);
 
     /*!
-     * \brief Modifica el tamaño del contenedor
-     * Si el tamaño actual es menor que count, se añaden elementos adicionales y se inicializan con value.
-     * Si el tamaño actual es mayor que count el contenedor se trunca al número de elementos indicados.
-     * \param[in] count Nuevo tamaño del contenedor
-     * \param[in] value Valor que se asigna a los nuevos elementos
+     * \brief Modifies the container size
+     * If the current size is less than count, additional elements are added and initialized with value.
+     * If the current size is greater than count, the container is truncated to the specified number of elements.
+     * \param[in] count New container size
+     * \param[in] value Value assigned to the new elements
      */
     void resize(size_type count,
-                const std::shared_ptr<GraphicEntity> &value);
+        const std::shared_ptr<GraphicEntity> &value);
 
     /*!
-     * \brief Devuelve el tamaño del contenedor
-     * \return Tamaño
+     * \brief Returns the container size
+     * \return Size
      */
-    size_type size() const TL_NOEXCEPT;
+    auto size() const TL_NOEXCEPT -> size_type;
 
     /*!
-     * \brief Asignación de copia
+     * \brief Copy assignment
      */
-    GLayer &operator=(const GLayer &entity);
+    auto operator=(const GLayer &entity) -> GLayer &;
 
     /*!
-     * \brief Asignación de movimiento
+     * \brief Move assignment
      */
-    GLayer &operator=(GLayer &&entity) TL_NOEXCEPT;
+    auto operator=(GLayer &&entity) TL_NOEXCEPT -> GLayer &;
 
     /*!
-     * \brief Elimina el intervalo
+     * \brief Erases the range
      */
-    iterator erase(const_iterator first, const_iterator last);
+    auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
-     * \brief Devuelve el nombre de la capa
-     * \return Nombre de la capa
+     * \brief Returns the layer name
+     * \return Layer name
      */
-    std::string name() const;
+    auto name() const->std::string;
 
     /*!
-     * \brief Establece el nombre de la capa
-     * \param[in] name Nombre de la capa
+     * \brief Sets the layer name
+     * \param[in] name Layer name
      */
     void setName(const std::string &name);
 
     void addDataField(const std::shared_ptr<TableField> &field);
 
-    std::vector<std::shared_ptr<TableField>> tableFields() const;
+    auto tableFields() const -> std::vector<std::shared_ptr<TableField>>;
 
-    Window<Point<double>> window() const;
+    auto window() const -> Window<Point<double>>;
 
-protected:
-
-    /*!
-     * \brief Nombre de la capa
-     */
-    std::string mName;
-
-    /*!
-     * \brief Listado de entidades
-     */
-    std::list<std::shared_ptr<GraphicEntity>> mEntities;
-
-    /*!
-     * \brief Entidades seleccionadas
-     */
-    std::shared_ptr<GraphicEntity> mSelectEntity;
-
-    std::vector<std::shared_ptr<TableField>> mTableFields;
 };
 
 

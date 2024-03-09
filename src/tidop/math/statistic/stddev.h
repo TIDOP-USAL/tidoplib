@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
 #include "tidop/math/statistic/variance.h"
 
 
@@ -45,28 +44,26 @@ namespace tl
  */
 
 /*!
- * \brief Desviación típica
+ * \brief Standard Deviation
  *
- * \f[ \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}}  \f]
+ * \f[ \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}}  \f]
  *
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Desviación típica del conjunto de datos
+ * \param[in] first Iterator to the beginning
+ * \param[in] last Iterator to the end
+ * \return Standard deviation of the dataset
  */
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto standarDeviation(It first, It last) -> std::enable_if_t<
     std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>::type
-standarDeviation(It first, It last)
+    double>
 {
     return sqrt(variance(first, last));
 }
 
-template<typename It> inline
-typename std::enable_if<
+template<typename It>
+auto standarDeviation(It first, It last) -> std::enable_if_t<
     std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>::type
-standarDeviation(It first, It last)
+    typename std::iterator_traits<It>::value_type>
 {
     return sqrt(variance(first, last));
 }

@@ -25,7 +25,6 @@
 #pragma once
 
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/segment.h"
 #include "tidop/geometry/algorithms/vector.h"
 #include "tidop/math/math.h"
 
