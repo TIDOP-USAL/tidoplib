@@ -27,14 +27,14 @@
 #include "tidop/core/console/console.h"
 
 
+#ifdef TL_OS_WINDOWS
+#include <conio.h>
+#else
+
 #include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream> 
-
-#ifdef TL_OS_WINDOWS
-#include <conio.h>
-#else
 /* reads from keypress, doesn't echo */
 int getch(void)
 {
