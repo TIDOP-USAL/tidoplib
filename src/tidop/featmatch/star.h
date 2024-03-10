@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_STAR_DETECTOR_H
-#define TL_FEATMATCH_STAR_DETECTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -54,41 +53,43 @@ constexpr auto star_default_value_suppress_nonmax_size{5};
 class TL_EXPORT StarProperties
   : public Star
 {
+
+private:
+
+    int mMaxSize{star_default_value_max_size};
+    int mResponseThreshold{star_default_value_response_threshold};
+    int mLineThresholdProjected{star_default_value_line_threshold_projected};
+    int mLineThresholdBinarized{star_default_value_line_threshold_binarized};
+    int mSuppressNonmaxSize{star_default_value_suppress_nonmax_size};
+
 public:
 
-  StarProperties();
-  StarProperties(const StarProperties &starProperties);
-  ~StarProperties() override = default;
+    StarProperties();
+    StarProperties(const StarProperties &starProperties);
+    ~StarProperties() override = default;
 
 // Star interface
 
 public:
 
-  int maxSize() const override;
-  int responseThreshold() const override;
-  int lineThresholdProjected() const override;
-  int lineThresholdBinarized() const override;
-  int suppressNonmaxSize() const override;
-  void setMaxSize(int maxSize) override;
-  void setResponseThreshold(int responseThreshold) override;
-  void setLineThresholdProjected(int lineThresholdProjected) override;
-  void setLineThresholdBinarized(int lineThresholdBinarized) override;
-  void setSuppressNonmaxSize(int suppressNonmaxSize) override;
+    auto maxSize() const -> int override;
+    auto responseThreshold() const -> int override;
+    auto lineThresholdProjected() const -> int override;
+    auto lineThresholdBinarized() const -> int override;
+    auto suppressNonmaxSize() const -> int override;
+    void setMaxSize(int maxSize) override;
+    void setResponseThreshold(int responseThreshold) override;
+    void setLineThresholdProjected(int lineThresholdProjected) override;
+    void setLineThresholdBinarized(int lineThresholdBinarized) override;
+    void setSuppressNonmaxSize(int suppressNonmaxSize) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    auto name() const -> std::string final;
 
-private:
-
-  int mMaxSize{star_default_value_max_size};
-  int mResponseThreshold{star_default_value_response_threshold};
-  int mLineThresholdProjected{star_default_value_line_threshold_projected};
-  int mLineThresholdBinarized{star_default_value_line_threshold_binarized};
-  int mSuppressNonmaxSize{star_default_value_suppress_nonmax_size};
 };
 
 
@@ -101,49 +102,50 @@ class TL_EXPORT StarDetector
     public KeypointDetector
 {
 
+private:
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    cv::Ptr<cv::xfeatures2d::StarDetector> mSTAR;
+#endif // HAVE_OPENCV_XFEATURES2D
+
 public:
 
-  StarDetector();
-  StarDetector(const StarDetector &starDetector);
-  StarDetector(int maxSize,
-               int responseThreshold,
-               int lineThresholdProjected,
-               int lineThresholdBinarized,
-               int suppressNonmaxSize);
-  ~StarDetector() override = default;
+    StarDetector();
+    StarDetector(const StarDetector &starDetector);
+    StarDetector(int maxSize,
+                 int responseThreshold,
+                 int lineThresholdProjected,
+                 int lineThresholdBinarized,
+                 int suppressNonmaxSize);
+    ~StarDetector() override = default;
 
 private:
 
-  void update();
+    void update();
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img,
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Star interface
 
 public:
 
-  void setMaxSize(int maxSize) override;
-  void setResponseThreshold(int responseThreshold) override;
-  void setLineThresholdProjected(int lineThresholdProjected) override;
-  void setLineThresholdBinarized(int lineThresholdBinarized) override;
-  void setSuppressNonmaxSize(int suppressNonmaxSize) override;
+    void setMaxSize(int maxSize) override;
+    void setResponseThreshold(int responseThreshold) override;
+    void setLineThresholdProjected(int lineThresholdProjected) override;
+    void setLineThresholdBinarized(int lineThresholdBinarized) override;
+    void setSuppressNonmaxSize(int suppressNonmaxSize) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-  cv::Ptr<cv::xfeatures2d::StarDetector> mSTAR;
-#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 
@@ -152,5 +154,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_STAR_DETECTOR_H

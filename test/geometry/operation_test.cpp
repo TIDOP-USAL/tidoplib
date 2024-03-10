@@ -48,15 +48,15 @@ struct GeometricOperations
 
   void setup()
   {
-    pt_int = PointI(10, 50);
+    pt_int = Point<int>(10, 50);
 
-    pt1 = PointD(21.45, 34.67);
-    pt2 = PointD(234.54, 45.76);
+    pt1 = Point<double>(21.45, 34.67);
+    pt2 = Point<double>(234.54, 45.76);
 
-    pt1d = Point3D(3423.56, 345.78, 34.8);
-    pt2d = Point3D(1234.45, 456.98, 45.9);
+    pt1d = Point3<double>(3423.56, 345.78, 34.8);
+    pt2d = Point3<double>(1234.45, 456.98, 45.9);
 
-    segment = Segment<PointI>(PointI(0, 0), PointI(50, 50));
+    segment = Segment<Point<int>>(Point<int>(0, 0), Point<int>(50, 50));
   }
 
   void teardown()
@@ -64,12 +64,12 @@ struct GeometricOperations
 
   }
 
-  PointI pt_int;
-  PointD pt1;
-  PointD pt2;
-  Point3D pt1d;
-  Point3D pt2d;
-  Segment<PointI> segment;
+  Point<int> pt_int;
+  Point<double> pt1;
+  Point<double> pt2;
+  Point3<double> pt1d;
+  Point3<double> pt2d;
+  Segment<Point<int>> segment;
   LineStringI line;
 };
 

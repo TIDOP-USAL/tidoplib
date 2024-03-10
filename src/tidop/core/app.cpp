@@ -24,7 +24,10 @@
 
 #include "tidop/core/app.h"
 
-#if defined __linux__ || defined __GNUC__
+#include "tidop/core/console/console.h"
+#include "tidop/core/log.h"
+
+#ifdef TL_OS_LINUX
 #include <unistd.h>
 #endif
 
@@ -35,40 +38,55 @@ namespace tl
 
 App::App()
 {
-  init();
+    init();
 }
 
-App &App::instance()
+auto App::instance() -> App&
 {
-  static App app;
-  return app;
+    static App app;
+    return app;
 }
 
-tl::Path App::path() const
+auto App::path() const -> Path
 {
-  static std::array<char, TL_MAX_PATH> runfile;
+    static std::array<char, TL_MAX_PATH> runfile;
 
-#ifdef WIN32
-  ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
-  return tl::Path(std::string(runfile.data()));
-#else
-  std::array<char, 32> _path{};
-  sprintf(_path.data(), "/proc/%d/exe", getpid());
-  long len = readlink(_path.data(), runfile.data(), runfile.size());
-  if (len >= 0)
-    runfile.at(static_cast<size_t>(len)) = '\0';
+#ifdef TL_OS_WINDOWS
 
-  return tl::Path(std::string(runfile.data()));
+    ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
+    return Path(std::string(runfile.data()));
+
+#elif defined TL_OS_LINUX
+
+    std::array<char, 32> _path{};
+    sprintf(_path.data(), "/proc/%d/exe", getpid());
+    long len = readlink(_path.data(), runfile.data(), runfile.size());
+    if (len >= 0)
+        runfile.at(static_cast<size_t>(len)) = '\0';
+
+    return tl::Path(std::string(runfile.data()));
+
 #endif
 }
 
-std::string App::version() const
+auto App::version() const -> std::string
 {
-  return std::string();
+    return std::string();
+}
+
+auto App::console() -> Console&
+{
+    return Console::instance();
+}
+
+auto App::log() -> Log&
+{
+    return Log::instance();
 }
 
 void App::init()
 {
+    Console::instance();
 }
 
 } // namespace tl

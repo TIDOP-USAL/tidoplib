@@ -22,15 +22,13 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_PROGRESS_H
-#define TL_CORE_PROGRESS_H
+#pragma once
 
 #include "tidop/config.h"
 
 #include <mutex>
 
 #include "tidop/core/defs.h"
-#include "tidop/core/event.h"
 #include "tidop/core/console.h"
 
 namespace tl
@@ -46,32 +44,27 @@ constexpr auto ProgressBarSize = 50;
 
 class TL_EXPORT Progress
 {
+protected:
+
+	static bool sIsRunning;
 
 public:
 
 	Progress() = default;
+    virtual ~Progress() = default;
 
-  /*!
-   * \brief Operador de llamada.
-   *
-   * Se llama cada vez que se quiera avanzar en la función de progreso
-   */
-  virtual bool operator() (size_t increment = 1.) = 0;
-  
-  virtual void setRange(size_t min, size_t max) = 0;
-  virtual size_t minimum() const = 0;
-  virtual void setMinimum(size_t min) = 0;
-  virtual size_t maximum() const = 0;
-  virtual void setMaximum(size_t max) = 0;
-  virtual void setText(const std::string &text) = 0;
+	virtual bool operator() (size_t increment = 1.) = 0;
+	virtual void setRange(size_t min, size_t max) = 0;
+	virtual auto minimum() const -> size_t = 0;
+	virtual void setMinimum(size_t min) = 0;
+	virtual auto maximum() const -> size_t = 0;
+	virtual void setMaximum(size_t max) = 0;
+	virtual void setText(const std::string &text) = 0;
 
-  virtual void reset() = 0;
+	virtual void reset() = 0;
 
-  static bool isRunning();
-
-protected:
-
-  static bool sIsRunning;
+	static bool isRunning();
+	static void cleanConsole();
 };
 
 
@@ -82,63 +75,56 @@ protected:
 
 
 class TL_EXPORT ProgressBase
-  : public Progress
+	: public Progress
 {
+
+private:
+
+	size_t mMinimum{0};
+	size_t mMaximum{0};
+	std::string mMessage;
+	double mProgress{0};
+	int mPercent{-1};
+
+	double mScale{1.};
+	static std::mutex sMutex;
 
 public:
 
 	ProgressBase();
-  ProgressBase(size_t min, size_t max);
-  virtual ~ProgressBase() = default;
-
-// Progress
-
-  bool operator()(size_t increment = 1) override;
-  void setRange(size_t min, size_t max) override;
-  size_t minimum() const override;
-  void setMinimum(size_t min) override;
-  size_t maximum() const override;
-  void setMaximum(size_t max) override;
-  void setText(const std::string &text) override;
-  void reset() override;
+	ProgressBase(size_t min, size_t max);
+	~ProgressBase() override = default;
 
 protected:
 
-  virtual void initialize();
-  void updateScale();
-  int percent();
-  virtual void updateProgress() = 0;
-  virtual void terminate();
+	virtual void initialize();
+	void updateScale();
 
-private:
+	/*!
+	 * \brief Progress as a percentage
+	 */
+	auto percent() const -> int;
 
-  /*!
-   * \brief Valor mínimo
-   */
-  size_t mMinimum{0};
+	/*!
+	 * \brief Update the progress bar
+	 */
+	virtual void updateProgress() = 0;
 
-  /*!
-   * \brief Valor máximo
-   */
-  size_t mMaximum{0};
+	virtual void terminate();
 
-  /*!
-   * \brief Mensaje que se puede añadir con información del proceso.
-   */
-  std::string mMessage;
+// Progress
 
-  /*!
-   * \brief Valor actual
-   */
-  double mProgress{0};
+public:
 
-  /*!
-   * \brief Valor actual en tanto por ciento
-   */
-  int mPercent{-1};
+	bool operator()(size_t increment = 1) override;
+	void setRange(size_t min, size_t max) override;
+	auto minimum() const -> size_t override;
+	void setMinimum(size_t min) override;
+	auto maximum() const -> size_t override;
+	void setMaximum(size_t max) override;
+	void setText(const std::string &text) override;
+	void reset() override;
 
-  double mScale{1.};
-  static std::mutex sMutex;
 };
 
 
@@ -152,38 +138,35 @@ private:
  * \brief Barra de progreso de consola
  */
 class TL_EXPORT ProgressBar
-  : public ProgressBase
+	: public ProgressBase
 {
+
+private:
+
+	int mProgressBarSize{ ProgressBarSize };
 
 public:
 
-  /*!
-   * \brief Constructora
-   */
-  ProgressBar();
+	/*!
+	 * \brief Constructora
+	 */
+	ProgressBar();
 
-  /*!
-   * \brief Constructora
-   * \param min Valor mínimo
-   * \param max Valor máximo
-   */
-  ProgressBar(size_t min, size_t max);
+	/*!
+	 * \brief Constructora
+	 * \param min Valor mínimo
+	 * \param max Valor máximo
+	 */
+	ProgressBar(size_t min, size_t max);
 
-  /*!
-   * \brief Destructora
-   */
-  ~ProgressBar() override = default;
-
-private:
-
-  /*!
-   * \brief Actualiza la barra de progreso
-   */
-  void updateProgress() override;
+	/*!
+	 * \brief Destructora
+	 */
+	~ProgressBar() override = default;
 
 private:
 
-  int mProgressBarSize{ ProgressBarSize };
+	void updateProgress() override;
 
 };
 
@@ -197,43 +180,41 @@ private:
  * \brief Barra de progreso de consola
  */
 class TL_EXPORT ProgressBarColor
-  : public ProgressBase
+	: public ProgressBase
 {
+
+private:
+
+	int mProgressBarSize{ ProgressBarSize };
+	Console::Color mCompleteColor{Console::Color::green};
+	Console::Color mRemainigColor{Console::Color::yellow};
 
 public:
 
-  /*!
-   * \brief Constructora
-   */
-  ProgressBarColor();
+	/*!
+	 * \brief Constructora
+	 */
+	ProgressBarColor();
 
-  /*!
-   * \brief Constructora
-   * \param min Valor mínimo
-   * \param max Valor máximo
-   */
-  ProgressBarColor(size_t min, size_t max);
+	/*!
+	 * \brief Constructora
+	 * \param min Valor mínimo
+	 * \param max Valor máximo
+	 */
+	ProgressBarColor(size_t min, size_t max);
 
-  /*!
-   * \brief Destructora
-   */
-  ~ProgressBarColor() override = default;
+	/*!
+	 * \brief Destructora
+	 */
+	~ProgressBarColor() override = default;
 
-  void setCompleteColor(Console::Color color);
-  void setRemainigColor(Console::Color color);
-
-private:
-
-  /*!
-   * \brief Actualiza la barra de progreso
-   */
-  void updateProgress() override;
+	void setCompleteColor(Console::Color color);
+	void setRemainigColor(Console::Color color);
 
 private:
 
-  int mProgressBarSize{ ProgressBarSize };
-  Console::Color mCompleteColor{Console::Color::green};
-  Console::Color mRemainigColor{Console::Color::yellow};
+	void updateProgress() override;
+
 };
 
 
@@ -243,37 +224,31 @@ private:
 
 
 /*!
- * \brief Progreso en porcentaje
+ * \brief Progress as a percentage
  */
 class TL_EXPORT ProgressPercent
-  : public ProgressBase
+	: public ProgressBase
 {
 
 public:
 
-  /*!
-   * \brief Constructora ProgressPercent
-   */
-  ProgressPercent();
+	/*!
+	 * \brief Default constructor
+	 */
+	ProgressPercent();
 
-  /*!
-   * \brief Constructora
-   * \param min Valor mínimo
-   * \param max Valor máximo
-   */
-  ProgressPercent(size_t min, size_t max);
+	/*!
+	 * \brief Constructor
+	 * \param min Minimum value
+	 * \param max Maximum value
+	 */
+	ProgressPercent(size_t min, size_t max);
 
-  /*!
-   * \brief Destructora
-   */
-  ~ProgressPercent() override = default;
+	~ProgressPercent() override = default;
 
 private:
 
-  /*!
-   * \brief Actualiza la barra de progreso
-   */
-  void updateProgress() override;
+	void updateProgress() override;
 
 };
 
@@ -281,5 +256,3 @@ private:
 /*! \} */ // end of core
 
 } // End namespace tl
-
-#endif // TL_CORE_PROGRESS_H

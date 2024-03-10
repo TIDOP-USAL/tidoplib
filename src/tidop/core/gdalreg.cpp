@@ -24,12 +24,11 @@
 
 #include "tidop/core/gdalreg.h"
 
-#include "tidop/core/messages.h"
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
 #ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL
@@ -45,11 +44,11 @@ namespace tl
 
 void RegisterGdal::init()
 {
-  static std::once_flag init_flag;
+    static std::once_flag init_flag;
 
-  std::call_once(init_flag, []() {
-    GDALAllRegister(); 
-  });
+    std::call_once(init_flag, []() {
+        GDALAllRegister();
+                   });
 }
 
 #endif

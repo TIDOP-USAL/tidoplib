@@ -27,14 +27,12 @@
 namespace tl
 {
 
-namespace graph
-{
 
 /* ---------------------------------------------------------------------------------- */
 /*                                     Clase Font                                    */
 /* ---------------------------------------------------------------------------------- */
 
-Font::Font() 
+Font::Font()
   : mName("Arial"),
     mSize(10),
     mStyle(Style::normal),
@@ -43,7 +41,7 @@ Font::Font()
 {
 }
 
-Font::Font(const Font &font) 
+Font::Font(const Font &font)
   : mName(font.mName),
     mSize(font.mSize),
     mStyle(font.mStyle),
@@ -54,15 +52,15 @@ Font::Font(const Font &font)
 
 Font::Font(Font &&font) TL_NOEXCEPT
   : mName(std::move(font.mName)),
-    mSize(std::move(font.mSize)),
+    mSize(font.mSize),
     mStyle(std::move(font.mStyle)),
-    mUnderline(std::move(font.mUnderline)),
-    mStrikethrough(std::move(font.mStrikethrough))
+    mUnderline(font.mUnderline),
+    mStrikethrough(font.mStrikethrough)
 {
 }
 
-Font::Font(const std::string name, int size, Style style, bool underline, bool strikethrough)
-  : mName(name),
+Font::Font(std::string name, int size, Style style, bool underline, bool strikethrough)
+  : mName(std::move(name)),
     mSize(size),
     mStyle(style),
     mUnderline(underline),
@@ -70,95 +68,93 @@ Font::Font(const std::string name, int size, Style style, bool underline, bool s
 {
 }
 
-std::string Font::name() const
+auto Font::name() const -> std::string
 {
-  return mName;
+    return mName;
 }
 
 void Font::setName(const std::string &name)
 {
-  mName = name;
+    mName = name;
 }
 
-int Font::size() const
+auto Font::size() const -> int
 {
-  return mSize;
+    return mSize;
 }
 
 void Font::setSize(int size)
 {
-  mSize = size;
+    mSize = size;
 }
 
-bool Font::isBold() const
+auto Font::isBold() const -> bool
 {
-  return mStyle.isEnabled(Style::bold);
+    return mStyle.isEnabled(Style::bold);
 }
 
 void Font::setBold(bool active)
 {
-  mStyle.activeFlag(Style::bold, active);
+    mStyle.activeFlag(Style::bold, active);
 }
 
-bool Font::isItalic() const
+auto Font::isItalic() const -> bool
 {
-  return mStyle.isEnabled(Style::italic);
+    return mStyle.isEnabled(Style::italic);
 }
 
 void Font::setItalic(bool active)
 {
-  mStyle.activeFlag(Style::italic, active);
+    mStyle.activeFlag(Style::italic, active);
 }
 
-bool Font::isUnderline() const
+auto Font::isUnderline() const -> bool
 {
-  return mUnderline;
+    return mUnderline;
 }
 
 void Font::setUnderline(bool active)
 {
-  mUnderline = active;
+    mUnderline = active;
 }
 
-bool Font::isStrikethrough() const
+auto Font::isStrikethrough() const -> bool
 {
-  return mStrikethrough;
+    return mStrikethrough;
 }
 
 void Font::setStrikethrough(bool active)
 {
-  mStrikethrough = active;
+    mStrikethrough = active;
 }
 
 void Font::setStyle(Style style)
 {
-  mStyle = style;
+    mStyle = style;
 }
 
-Font &Font::operator = (const Font &font)
+auto Font::operator =(const Font &font) -> Font&
 {
-  if (this != &font) {
-    this->mName = font.mName;
-    this->mSize = font.mSize;
-    this->mStyle = font.mStyle;
-    this->mUnderline = font.mUnderline;
-    this->mStrikethrough = font.mStrikethrough;
-  }
-  return *this;
+    if (this != &font) {
+        this->mName = font.mName;
+        this->mSize = font.mSize;
+        this->mStyle = font.mStyle;
+        this->mUnderline = font.mUnderline;
+        this->mStrikethrough = font.mStrikethrough;
+    }
+    return *this;
 }
 
-Font &Font::operator = (Font &&font) TL_NOEXCEPT
+auto Font::operator =(Font&& font) TL_NOEXCEPT -> Font&
 {
-  if (this != &font) {
-    this->mName = std::move(font.mName);
-    this->mSize = std::move(font.mSize);
-    this->mStyle = std::move(font.mStyle);
-    this->mUnderline = std::move(font.mUnderline);
-    this->mStrikethrough = std::move(font.mStrikethrough);
-  }
-  return *this;
+    if (this != &font) {
+        this->mName = std::move(font.mName);
+        this->mSize = font.mSize;
+        this->mStyle = std::move(font.mStyle);
+        this->mUnderline = font.mUnderline;
+        this->mStrikethrough = font.mStrikethrough;
+    }
+    return *this;
 }
 
-} // End namespace graph
-
-} // End namespace TL
+} // End namespace tl

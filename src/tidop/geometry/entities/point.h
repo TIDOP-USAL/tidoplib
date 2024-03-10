@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_POINT_H
-#define TL_GEOMETRY_POINT_H
+#pragma once
 
 #include "tidop/core/utils.h"
 #include "tidop/geometry/entities/entity.h"
@@ -38,479 +37,470 @@ namespace tl
 
 
 /*!
- * \brief Clase punto 2D
- *
- * Se han definido los siguientes alias para facilitar el acceso:
- * \code
- * typedef Point<int> PointI;
- * typedef Point<double> PointD;
- * typedef Point<float> PointF;
- * \endcode
+ * \brief 2D point class
  */
 template<typename T>
-class Point 
+class Point
   : public Entity
 {
 
 public:
 
-  /*!
-   * \brief type
-   */
-  using value_type = T;
+    /*!
+     * \brief type
+     */
+    using value_type = T;
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  Point();
+    /*!
+     * \brief Coordinate X
+     */
+    T x;
 
-  /*!
-   * \brief Constructor
-   * \param[in] x Coordenada x
-   * \param[in] y Coordenada y
-   */
-  Point(T x, T y);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] point Objeto Point que se copia
-   */
-  Point(const Point<T> &point);
-
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] point Objeto Point que se mueve
-   */
-  Point(Point<T> &&point) TL_NOEXCEPT;
-
-  /*!
-   * \brief Constructor
-   * \param[in] v Objeto Point que se copia
-   */
-  Point(const std::array<T, 2> &v);
-
-  Point(const math::Vector<T, 2> &vector);
-
-  ~Point() override = default;
-
-  /*!
-   * \brief Operador de asignación
-   * \param[in] point Objeto Point que se copia
-   */
-  Point<T> &operator = (const Point<T> &point);
-
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] point Objeto Point que se mueve
-   */
-  Point<T> &operator = (Point<T> &&point) TL_NOEXCEPT;
-
-  /*!
-   * \brief Conversión de tipo
-   */
-  template<typename T2> operator Point<T2>() const;
-
-  /*!
-   * \brief Conversión a un punto 3D
-   */
-  template<typename T2> operator Point3<T2>() const;
-
-  math::Vector<T, 2> vector() const;
-  math::Vector<T> dynVector() const;
+    /*!
+     * \brief Coordinate Y
+     */
+    T y;
 
 public:
 
-  /*!
-   * \brief Coordenada X
-   */
-  T x;
+    /*!
+     * \brief Default constructor
+     */
+    Point();
 
-  /*!
-   * \brief Coordenada Y
-   */
-  T y;
+    /*!
+     * \brief Constructor
+     * \param[in] x Coordinate x
+     * \param[in] y Coordinate y
+     */
+    Point(T x, T y);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] point Point object to be copied
+     */
+    Point(const Point<T> &point);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] point Point object to move
+     */
+    Point(Point<T> &&point) TL_NOEXCEPT;
+
+    Point(const std::array<T, 2> &array);
+    Point(const Vector<T, 2> &vector);
+
+    ~Point() override = default;
+
+    /*!
+     * \brief Copy assignment operator
+     * \param[in] point Point object to be copied
+     */
+    auto operator = (const Point<T> &point) -> Point<T>&;
+
+    /*!
+     * \brief Move assignment operator
+     * \param[in] point Point object to move
+     */
+    auto operator = (Point<T> &&point) TL_NOEXCEPT -> Point<T>&;
+
+    /*!
+     * \brief Type conversion
+     */
+    template<typename T2> 
+    operator Point<T2>() const;
+
+    /*!
+     * \brief Conversion to a 3D point
+     */
+    template<typename T2> 
+    operator Point3<T2>() const;
+
+    /*!
+     * \brief Conversion to static Vector
+     */
+    auto vector() const -> Vector<T, 2>;
+
+    /*!
+     * \brief Conversion to dynamic Vector
+     */
+    auto dynVector() const -> Vector<T>;
 
 };
 
 
-/* Definición de alias Point */
+/*!
+ * \brief 3D point class
+ *
+ */
+template<typename T>
+class Point3
+  : public Entity
+{
 
-using PointI = Point<int>;
-using PointD = Point<double>;
-using PointF = Point<float>;
+public:
+
+    /*!
+     * \brief type
+     */
+    using value_type = T;
+
+public:
+
+    /*!
+     * \brief Coordinate X
+     */
+    T x;
+
+    /*!
+     * \brief Coordinate Y
+     */
+    T y;
+
+    /*!
+     * \brief Coordinate Z
+     */
+    T z;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    Point3();
+
+    /*!
+     * \brief Constructor
+     * \param[in] x Coordinate x
+     * \param[in] y Coordinate y
+     * \param[in] z Coordinate z
+     */
+    Point3(T x, T y, T z);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] point Objeto Point object to be copied
+     */
+    Point3(const Point3<T> &point);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] point Objeto Point object to move
+     */
+    Point3(Point3<T> &&point) TL_NOEXCEPT;
+
+    Point3(const std::array<T, 3> &v);
+    Point3(const Vector<T, 3> &vector);
+
+    ~Point3() override = default;
+
+    /*!
+     * \brief Assignment operator
+     * \param[in] point Point object to be copied
+     */
+    auto operator = (const Point3<T> &point) -> Point3<T> &;
+
+    /*!
+     * \brief Move assignment operator
+     * \param[in] point Point object to move
+     */
+    auto operator = (Point3<T> &&point) TL_NOEXCEPT -> Point3<T> &;
+
+    /*!
+     * \brief Type conversion
+     */
+    template<typename T2> operator Point3<T2>() const;
+
+    /*!
+     * \brief Conversion to a 2D point
+     */
+    template<typename T2> operator Point<T2>() const;
+
+    /*!
+     * \brief Conversion to static Vector
+     */
+    auto vector() const -> Vector<T, 3>;
+
+    /*!
+     * \brief Conversion to dynamic Vector
+     */
+    auto dynVector() const -> Vector<T>;
+
+};
 
 
-/* Implementación Point */
 
-template<typename T> inline
+
+
+
+using Point2i = Point<int>;
+using Point2d = Point<double>;
+using Point2f = Point<float>;
+
+
+template<typename T>
 Point<T>::Point()
-  : Entity(Entity::Type::point2d),
-    x(math::consts::zero<T>), 
-    y(math::consts::zero<T>)
+  : Entity(Type::point2d),
+    x(consts::zero<T>), 
+    y(consts::zero<T>)
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point<T>::Point(T x, T y)
-  : Entity(Entity::Type::point2d),
+  : Entity(Type::point2d),
     x(x), 
     y(y) 
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point<T>::Point(const Point<T> &point)
-  : Entity(Entity::Type::point2d),
+  : Entity(Type::point2d),
     x(point.x),
     y(point.y)
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point<T>::Point(Point<T> &&point) TL_NOEXCEPT
   : Entity(std::forward<Entity>(point)),
-    x(std::exchange(point.x, math::consts::zero<T>)),
-    y(std::exchange(point.y, math::consts::zero<T>))
+    x(std::exchange(point.x, consts::zero<T>)),
+    y(std::exchange(point.y, consts::zero<T>))
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point<T>::Point(const std::array<T, 2> &v)
-  : Entity(Entity::Type::point2d),
+  : Entity(Type::point2d),
     x(v[0]), 
     y(v[1]) 
 {
 }
 
-template<typename T> inline
-Point<T>::Point(const math::Vector<T, 2> &vector)
-  : Entity(Entity::Type::point2d),
+template<typename T>
+Point<T>::Point(const Vector<T, 2> &vector)
+  : Entity(Type::point2d),
     x(vector[0]),
     y(vector[1])
 {
 }
 
-template<typename T> inline
-Point<T> &Point<T>::operator = (const Point<T> &point)
+template<typename T>
+auto Point<T>::operator = (const Point<T> &point) -> Point<T>&
 {
-  if (this != &point) {
+    if (this != &point) {
 
-    Entity::operator = (point);
-    this->x = point.x;
-    this->y = point.y;
+        Entity::operator = (point);
+        this->x = point.x;
+        this->y = point.y;
 
-  }
+    }
 
-  return *this;
+    return *this;
 }
 
-template<typename T> inline
-Point<T> &Point<T>::operator = (Point<T> &&point) TL_NOEXCEPT
+template<typename T>
+auto Point<T>::operator = (Point<T> &&point) TL_NOEXCEPT -> Point<T>&
 {
-  if (this != &point) {
+    if (this != &point) {
 
-    Entity::operator = (std::forward<Entity>(point));
-    this->x = std::exchange(point.x, math::consts::zero<T>);
-    this->y = std::exchange(point.y, math::consts::zero<T>);
+        Entity::operator = (std::forward<Entity>(point));
+        this->x = std::exchange(point.x, consts::zero<T>);
+        this->y = std::exchange(point.y, consts::zero<T>);
 
-  }
+    }
 
-  return *this;
+    return *this;
 }
 
-template<typename T> template<typename T2> inline
+template<typename T> template<typename T2>
 Point<T>::operator Point<T2>() const
 {
-  Point<T2> point;
+    Point<T2> point;
 
-  point.x = numberCast<T2>(this->x);
-  point.y = numberCast<T2>(this->y);
+    point.x = numberCast<T2>(this->x);
+    point.y = numberCast<T2>(this->y);
 
-  return point;
+    return point;
 }
 
-template<typename T> template<typename T2> inline
+template<typename T> template<typename T2>
 Point<T>::operator Point3<T2>() const
 {
-  Point3<T2> point;
+    Point3<T2> point;
 
-  point.x = numberCast<T2>(this->x);
-  point.y = numberCast<T2>(this->y);
-  point.z = numberCast<T2>(0);
+    point.x = numberCast<T2>(this->x);
+    point.y = numberCast<T2>(this->y);
+    point.z = numberCast<T2>(0);
 
-  return point;
+    return point;
 }
 
-template<typename T> inline
-math::Vector<T, 2> Point<T>::vector() const
+template<typename T>
+auto Point<T>::vector() const -> Vector<T, 2>
 {
-  return math::Vector<T, 2>{this->x, this->y};
+    return Vector<T, 2>{this->x, this->y};
 }
 
-template<typename T> inline
-math::Vector<T> tl::Point<T>::dynVector() const
+template<typename T>
+auto Point<T>::dynVector() const -> Vector<T>
 {
-  return math::Vector<T>{this->x, this->y};
+    return Vector<T>{this->x, this->y};
 }
 
-template<typename T> static inline
-Point<T>& operator += (Point<T> &pt1, const Point<T> &pt2)
+template<typename T> 
+auto operator += (Point<T> &pt1, const Point<T> &pt2) -> Point<T>&
 {
-  pt1.x += pt2.x;
-  pt1.y += pt2.y;
+    pt1.x += pt2.x;
+    pt1.y += pt2.y;
 
-  return pt1;
+    return pt1;
 }
 
-template<typename T1, typename T2> static inline
-Point<T1>& operator += (Point<T1> &pt1, const Point<T2> &pt2)
+template<typename T1, typename T2>
+auto operator += (Point<T1> &pt1, const Point<T2> &pt2) -> Point<T1>&
 {
   pt1 += static_cast<Point<T1>>(pt2);
 
   return pt1;
 }
 
-template<typename T> static inline
-Point<T>& operator -= (Point<T> &pt1, const Point<T> &pt2)
+template<typename T>
+auto operator -= (Point<T> &pt1, const Point<T> &pt2) -> Point<T>&
 {
-  pt1.x -= pt2.x;
-  pt1.y -= pt2.y;
+    pt1.x -= pt2.x;
+    pt1.y -= pt2.y;
 
-  return pt1;
+    return pt1;
 }
 
-template<typename T1, typename T2> static inline
-Point<T1>& operator -= (Point<T1> &pt1, const Point<T2> &pt2)
+template<typename T1, typename T2>
+auto operator -= (Point<T1> &pt1, const Point<T2> &pt2) -> Point<T1>&
 {
-  pt1 -= static_cast<Point<T1>>(pt2);
+    pt1 -= static_cast<Point<T1>>(pt2);
 
-  return pt1;
+    return pt1;
 }
 
-template<typename T1, typename T2> static inline
-Point<T1> &operator *= (Point<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator *= (Point<T1> &pt, T2 b) -> Point<T1>&
 {
-  pt.x = numberCast<T1>(pt.x * b);
-  pt.y = numberCast<T1>(pt.y * b);
+    pt.x = numberCast<T1>(pt.x * b);
+    pt.y = numberCast<T1>(pt.y * b);
 
-  return pt;
+    return pt;
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  std::is_integral<T1>::value,
-  Point<T1>&>::type
-operator /= (Point<T1>& pt, T2 b)
+template<typename T1, typename T2>
+auto operator /=(Point<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,Point<T1>&>
 {
-  pt.x = numberCast<T1>(pt.x / static_cast<double>(b));
-  pt.y = numberCast<T1>(pt.y / static_cast<double>(b));
+    pt.x = numberCast<T1>(pt.x / static_cast<double>(b));
+    pt.y = numberCast<T1>(pt.y / static_cast<double>(b));
 
-  return pt;
+    return pt;
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  !std::is_integral<T1>::value,
-  Point<T1>&>::type
-operator /= (Point<T1>& pt, T2 b)
+template<typename T1, typename T2>
+auto operator /=(Point<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point<T1>&>
 {
-  pt.x = numberCast<T1>(pt.x / b);
-  pt.y = numberCast<T1>(pt.y / b);
+    pt.x = numberCast<T1>(pt.x / b);
+    pt.y = numberCast<T1>(pt.y / b);
 
-  return pt;
+    return pt;
 }
 
-template<typename T> static inline
-bool operator == (const Point<T> &pt1, const Point<T> &pt2)
+template<typename T>
+auto operator == (const Point<T> &pt1, const Point<T> &pt2) -> bool
 {
-  return pt1.x == pt2.x && pt1.y == pt2.y;
+    return pt1.x == pt2.x && pt1.y == pt2.y;
 }
 
-template<typename T> static inline
-bool operator != (const Point<T> &pt1, const Point<T> &pt2)
+template<typename T>
+auto operator != (const Point<T> &pt1, const Point<T> &pt2) -> bool
 {
-  return pt1.x != pt2.x || pt1.y != pt2.y;
+    return pt1.x != pt2.x || pt1.y != pt2.y;
 }
 
-template<typename T> static inline
-Point<T> operator + (const Point<T> &pt1, const Point<T> &pt2)
+template<typename T>
+auto operator + (const Point<T> &pt1, const Point<T> &pt2) -> Point<T>
 {
-  return Point<T>(pt1.x + pt2.x, pt1.y + pt2.y);
+    return Point<T>(pt1.x + pt2.x, pt1.y + pt2.y);
 }
 
-template<typename T> static inline
-Point<T> operator - (const Point<T> &pt1, const Point<T> &pt2)
+template<typename T>
+auto operator - (const Point<T> &pt1, const Point<T> &pt2) -> Point<T>
 {
-  return Point<T>(pt1.x - pt2.x, pt1.y - pt2.y);
+    return Point<T>(pt1.x - pt2.x, pt1.y - pt2.y);
 }
 
-template<typename T> static inline
-Point<T> operator - (const Point<T> &pt1)
+template<typename T>
+auto operator - (const Point<T> &pt1) -> Point<T>
 {
-  return Point<T>(-pt1.x, -pt1.y);
+    return Point<T>(-pt1.x, -pt1.y);
 }
 
-template<typename T1, typename T2> static inline
-Point<T1> operator * (const Point<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator * (const Point<T1> &pt, T2 b) -> Point<T1>
 {
-  return Point<T1>(numberCast<T1>(pt.x * b),
-                   numberCast<T1>(pt.y * b));
+    return Point<T1>(numberCast<T1>(pt.x * b),
+                     numberCast<T1>(pt.y * b));
 }
 
-template<typename T1, typename T2> static inline
-Point<T2> operator * (T1 a, const Point<T2> &b)
+template<typename T1, typename T2>
+auto operator * (T1 a, const Point<T2> &b) -> Point<T2>
 {
-  return Point<T2>(numberCast<T2>(b.x * a),
-                   numberCast<T2>(b.y * a));
+    return Point<T2>(numberCast<T2>(b.x * a),
+                     numberCast<T2>(b.y * a));
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  std::is_integral<T1>::value,
-  Point<T1>>::type
-operator / (const Point<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator /(const Point<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,	Point<T1>>
 {
-  return Point<T1>(numberCast<T1>(pt.x / static_cast<double>(b)),
-                   numberCast<T1>(pt.y / static_cast<double>(b)));
+    return Point<T1>(numberCast<T1>(pt.x / static_cast<double>(b)),
+                     numberCast<T1>(pt.y / static_cast<double>(b)));
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  !std::is_integral<T1>::value,
-  Point<T1>>::type
-operator / (const Point<T1>& pt, T2 b)
+template<typename T1, typename T2>
+auto operator /(const Point<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point<T1>>
 {
-  return Point<T1>(numberCast<T1>(pt.x / b),
-                   numberCast<T1>(pt.y / b));
+    return Point<T1>(numberCast<T1>(pt.x / b),
+                     numberCast<T1>(pt.y / b));
 }
+
 
 
 /* ---------------------------------------------------------------------------------- */
 
 
-/*!
- * \brief Clase punto 3D
- *
- * Se han definido los siguientes alias para facilitar el acceso:
- * \code
- * typedef Point<int> Point3I;
- * typedef Point<double> Point3D;
- * typedef Point<float> Point3F;
- * \endcode
- */
+
+
+using Point3i = Point3<int>;
+using Point3d = Point3<double>;
+using Point3f = Point3<float>;
+
+
 template<typename T>
-class Point3 
-  : public Entity
-{
-
-public:
-
-  /*!
-   * \brief type
-   */
-  using value_type = T;
-
-  /*!
-   * \brief Coordenada X
-   */
-  T x;
-
-  /*!
-   * \brief Coordenada Y
-   */
-  T y;
-
-  /*!
-   * \brief Coordenada Z
-   */ 
-  T z;
-
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  Point3();
-
-  /*!
-   * \brief Constructor
-   * \param[in] x Coordenada x
-   * \param[in] y Coordenada y
-   * \param[in] z Coordenada z
-   */
-  Point3(T x, T y, T z);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] point Objeto Point3 que se copia
-   */
-  Point3(const Point3<T> &point);
-
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] point Objeto Point que se mueve
-   */
-  Point3(Point3<T> &&point) TL_NOEXCEPT;
-
-  /*!
-   * \brief Constructor vector
-   * \param[in] v Vector de coordenadas
-   */
-  Point3(const std::array<T, 3> &v);
-
-  Point3(const math::Vector<T, 3> &vector);
-
-  ~Point3() override = default;
-
-  /*!
-   * \brief Operador de asignación
-   * \param[in] point Objeto Point3 que se copia
-   */
-  Point3<T> &operator = (const Point3<T> &point);
-
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] point Objeto Point3 que se mueve
-   */
-  Point3<T> &operator = (Point3<T> &&point) TL_NOEXCEPT;
-
-  /*!
-   * \brief Conversión de tipo
-   */
-  template<typename T2> operator Point3<T2>() const;
-  template<typename T2> operator Point<T2>() const;
-
-  math::Vector<T, 3> vector() const;
-  math::Vector<T> dynVector() const;
-
-};
-
-using Point3I = Point3<int>;
-using Point3D = Point3<double>;
-using Point3F = Point3<float>;
-
-
-template<typename T> inline
 Point3<T>::Point3()
-  : Entity(Entity::Type::point3d),
-    x(math::consts::zero<T>), 
-    y(math::consts::zero<T>), 
-    z(math::consts::zero<T>)
+  : Entity(Type::point3d),
+    x(consts::zero<T>), 
+    y(consts::zero<T>), 
+    z(consts::zero<T>)
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point3<T>::Point3(T x, T y, T z)
-  : Entity(Entity::Type::point3d),
+  : Entity(Type::point3d),
     x(x), 
     y(y), 
     z(z)
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point3<T>::Point3(const Point3<T> &point)
   : Entity(point),
     x(point.x),
@@ -519,252 +509,240 @@ Point3<T>::Point3(const Point3<T> &point)
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point3<T>::Point3(Point3<T> &&point) TL_NOEXCEPT
   : Entity(std::forward<Entity>(point)),
-    x(std::exchange(point.x, math::consts::zero<T>)),
-    y(std::exchange(point.y, math::consts::zero<T>)),
-    z(std::exchange(point.z, math::consts::zero<T>))
+    x(std::exchange(point.x, consts::zero<T>)),
+    y(std::exchange(point.y, consts::zero<T>)),
+    z(std::exchange(point.z, consts::zero<T>))
 {
 }
 
-template<typename T> inline
+template<typename T>
 Point3<T>::Point3(const std::array<T, 3> &v)
-  : Entity(Entity::Type::point3d),
+  : Entity(Type::point3d),
     x(v[0]), 
     y(v[1]),
     z(v[2])
 {
 }
 
-template<typename T> inline
-Point3<T>::Point3(const math::Vector<T, 3> &vector)
-  : Entity(Entity::Type::point3d),
+template<typename T>
+Point3<T>::Point3(const Vector<T, 3> &vector)
+  : Entity(Type::point3d),
     x(vector[0]),
     y(vector[1]),
     z(vector[2])
 {
 }
 
-template<typename T> inline
-Point3<T> &Point3<T>::operator = (const Point3<T> &point)
+template<typename T>
+auto Point3<T>::operator = (const Point3<T> &point) -> Point3<T>&
 {
-  if (this != &point) {
+    if (this != &point) {
 
-    Entity::operator = (point);
-    this->x = point.x;
-    this->y = point.y;
-    this->z = point.z;
+        Entity::operator = (point);
+        this->x = point.x;
+        this->y = point.y;
+        this->z = point.z;
 
-  }
+    }
 
-  return *this;
+    return *this;
 }
 
-template<typename T> inline
-Point3<T> &Point3<T>::operator = (Point3 &&point) TL_NOEXCEPT
+template<typename T>
+auto Point3<T>::operator = (Point3 &&point) TL_NOEXCEPT -> Point3<T>&
 {
-  if (this != &point) {
+    if (this != &point) {
 
-    Entity::operator = (std::forward<Entity>(point));
-    this->x = std::exchange(point.x, math::consts::zero<T>);
-    this->y = std::exchange(point.y, math::consts::zero<T>);
-    this->z = std::exchange(point.z, math::consts::zero<T>);
+        Entity::operator = (std::forward<Entity>(point));
+        this->x = std::exchange(point.x, consts::zero<T>);
+        this->y = std::exchange(point.y, consts::zero<T>);
+        this->z = std::exchange(point.z, consts::zero<T>);
 
-  }
+    }
 
-  return *this;
+    return *this;
 }
 
-template<typename T> template<typename T2> inline
+template<typename T> template<typename T2>
 Point3<T>::operator Point3<T2>() const
 {
-  Point3<T2> point;
+    Point3<T2> point;
 
-  point.x = numberCast<T2>(this->x);
-  point.y = numberCast<T2>(this->y);
-  point.z = numberCast<T2>(this->z);
+    point.x = numberCast<T2>(this->x);
+    point.y = numberCast<T2>(this->y);
+    point.z = numberCast<T2>(this->z);
 
-  return point;
+    return point;
 }
 
-template<typename T> template<typename T2> inline
+template<typename T> template<typename T2>
 Point3<T>::operator Point<T2>() const
 {
-  Point<T2> point;
+    Point<T2> point;
 
-  point.x = numberCast<T2>(this->x);
-  point.y = numberCast<T2>(this->y);
+    point.x = numberCast<T2>(this->x);
+    point.y = numberCast<T2>(this->y);
 
-  return point;
+    return point;
 }
 
-template<typename T> inline
-math::Vector<T, 3> Point3<T>::vector() const
+template<typename T>
+auto Point3<T>::vector() const -> Vector<T, 3>
 {
-  return math::Vector<T, 3>{this->x, this->y, this->z};
+    return Vector<T, 3>{this->x, this->y, this->z};
 }
 
-template<typename T> inline
-math::Vector<T> Point3<T>::dynVector() const
+template<typename T>
+auto Point3<T>::dynVector() const -> Vector<T>
 {
-  return math::Vector<T>{this->x, this->y, this->z};
+    return Vector<T>{this->x, this->y, this->z};
 }
 
-template<typename T> static inline
-Point3<T>& operator += (Point3<T>& pt1, const Point3<T>& pt2)
-{
-  pt1.x += pt2.x;
-  pt1.y += pt2.y;
-  pt1.z += pt2.z;
 
-  return pt1;
+
+template<typename T>
+auto operator += (Point3<T> &pt1, const Point3<T> &pt2) -> Point3<T> &
+{
+    pt1.x += pt2.x;
+    pt1.y += pt2.y;
+    pt1.z += pt2.z;
+
+    return pt1;
 }
 
-template<typename T1, typename T2> static inline
-Point3<T1>& operator += (Point3<T1>& pt1, const Point3<T2>& pt2)
+template<typename T1, typename T2>
+auto operator += (Point3<T1> &pt1, const Point3<T2> &pt2) -> Point3<T1> &
 {
-  pt1 += static_cast<Point3<T1>>(pt2);
+    pt1 += static_cast<Point3<T1>>(pt2);
 
-  return pt1;
+    return pt1;
 }
 
-template<typename T> static inline
-Point3<T>& operator -= (Point3<T>& pt1, const Point3<T>& pt2)
+template<typename T>
+auto operator -= (Point3<T> &pt1, const Point3<T> &pt2) -> Point3<T> &
 {
-  pt1.x -= pt2.x;
-  pt1.y -= pt2.y;
-  pt1.z -= pt2.z;
+    pt1.x -= pt2.x;
+    pt1.y -= pt2.y;
+    pt1.z -= pt2.z;
 
-  return pt1;
+    return pt1;
 }
 
-template<typename T1, typename T2> static inline
-Point3<T1>& operator -= (Point3<T1>& pt1, const Point3<T2>& pt2)
+template<typename T1, typename T2>
+auto operator -= (Point3<T1> &pt1, const Point3<T2> &pt2) -> Point3<T1> &
 {
-  pt1 -= static_cast<Point3<T1>>(pt2);
+    pt1 -= static_cast<Point3<T1>>(pt2);
 
-  return pt1;
+    return pt1;
 }
 
-template<typename T1, typename T2> static inline
-Point3<T1> &operator *= (Point3<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator *= (Point3<T1> &pt, T2 b) -> Point3<T1>&
 {
-  pt.x = numberCast<T1>(pt.x * b);
-  pt.y = numberCast<T1>(pt.y * b);
-  pt.z = numberCast<T1>(pt.z * b);
+    pt.x = numberCast<T1>(pt.x * b);
+    pt.y = numberCast<T1>(pt.y * b);
+    pt.z = numberCast<T1>(pt.z * b);
 
-  return pt;
+    return pt;
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  std::is_integral<T1>::value,
-  Point3<T1>&>::type
-operator /= (Point3<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator /=(Point3<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,	Point3<T1>&>
 {
-  pt.x = numberCast<T1>(pt.x / static_cast<double>(b));
-  pt.y = numberCast<T1>(pt.y / static_cast<double>(b));
-  pt.z = numberCast<T1>(pt.z / static_cast<double>(b));
+    pt.x = numberCast<T1>(pt.x / static_cast<double>(b));
+    pt.y = numberCast<T1>(pt.y / static_cast<double>(b));
+    pt.z = numberCast<T1>(pt.z / static_cast<double>(b));
 
-  return pt;
+    return pt;
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  !std::is_integral<T1>::value,
-  Point3<T1>&>::type
-operator /= (Point3<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator /=(Point3<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point3<T1>&>
 {
-  pt.x = static_cast<T1>(pt.x / static_cast<T1>(b));
-  pt.y = static_cast<T1>(pt.y / static_cast<T1>(b));
-  pt.z = static_cast<T1>(pt.z / static_cast<T1>(b));
+    pt.x = static_cast<T1>(pt.x / static_cast<T1>(b));
+    pt.y = static_cast<T1>(pt.y / static_cast<T1>(b));
+    pt.z = static_cast<T1>(pt.z / static_cast<T1>(b));
 
-  return pt;
+    return pt;
 }
 
-template<typename T> static inline
-bool operator == (const Point3<T> &pt1,
-                  const Point3<T> &pt2)
+template<typename T>
+auto operator == (const Point3<T> &pt1,
+                  const Point3<T> &pt2) -> bool
 {
-  return pt1.x == pt2.x && 
-         pt1.y == pt2.y && 
-         pt1.z == pt2.z;
+    return pt1.x == pt2.x &&
+           pt1.y == pt2.y &&
+           pt1.z == pt2.z;
 }
 
-template<typename T> static inline
-bool operator != (const Point3<T>& pt1, 
-                  const Point3<T>& pt2)
+template<typename T>
+auto operator != (const Point3<T> &pt1,
+                  const Point3<T> &pt2) -> bool
 {
-  return pt1.x != pt2.x || 
-         pt1.y != pt2.y ||
-         pt1.z != pt2.z;
+    return pt1.x != pt2.x ||
+           pt1.y != pt2.y ||
+           pt1.z != pt2.z;
 }
 
-template<typename T> static inline
-Point3<T> operator + (const Point3<T> &pt1, 
-                      const Point3<T> &pt2)
+template<typename T>
+auto operator + (const Point3<T> &pt1,
+                 const Point3<T> &pt2) -> Point3<T>
 {
-  return Point3<T>(pt1.x + pt2.x, 
-                   pt1.y + pt2.y, 
-                   pt1.z + pt2.z);
+    return Point3<T>(pt1.x + pt2.x,
+                     pt1.y + pt2.y,
+                     pt1.z + pt2.z);
 }
 
-template<typename T> static inline
-Point3<T> operator - (const Point3<T> &pt1, 
-                      const Point3<T> &pt2)
+template<typename T>
+auto operator - (const Point3<T> &pt1,
+                 const Point3<T> &pt2) -> Point3<T>
 {
-  return Point3<T>(pt1.x - pt2.x, 
-                   pt1.y - pt2.y, 
-                   pt1.z - pt2.z);
+    return Point3<T>(pt1.x - pt2.x,
+                     pt1.y - pt2.y,
+                     pt1.z - pt2.z);
 }
 
-template<typename T> static inline
-Point3<T> operator - (const Point3<T> &pt1)
+template<typename T>
+auto operator - (const Point3<T> &pt1) -> Point3<T>
 {
-  return Point3<T>(-pt1.x, -pt1.y, -pt1.z);
+    return Point3<T>(-pt1.x, -pt1.y, -pt1.z);
 }
 
-template<typename T1, typename T2> static inline
-Point3<T1> operator * (const Point3<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator * (const Point3<T1> &pt, T2 b) -> Point3<T1>
 {
-  return Point3<T1>(numberCast<T1>(pt.x * b),
-                    numberCast<T1>(pt.y * b),
-                    numberCast<T1>(pt.z * b));
+    return Point3<T1>(numberCast<T1>(pt.x * b),
+                      numberCast<T1>(pt.y * b),
+                      numberCast<T1>(pt.z * b));
 }
 
-template<typename T1, typename T2> static inline
-Point3<T2> operator * (T1 a, const Point3<T2> &pt)
+template<typename T1, typename T2>
+auto operator * (T1 a, const Point3<T2> &pt) -> Point3<T2>
 {
-  return Point3<T2>(numberCast<T2>(pt.x * a),
-                    numberCast<T2>(pt.y * a),
-                    numberCast<T2>(pt.z * a));
+    return Point3<T2>(numberCast<T2>(pt.x * a),
+                      numberCast<T2>(pt.y * a),
+                      numberCast<T2>(pt.z * a));
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  std::is_integral<T1>::value,
-  Point3<T1>>::type
-operator / (const Point3<T1> &pt, T2 b)
+template<typename T1, typename T2>
+auto operator /(const Point3<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,Point3<T1>>
 {
-  return Point3<T1>(numberCast<T1>(pt.x / static_cast<double>(b)), 
-                    numberCast<T1>(pt.y / static_cast<double>(b)), 
-                    numberCast<T1>(pt.z / static_cast<double>(b)));
+    return Point3<T1>(numberCast<T1>(pt.x / static_cast<double>(b)),
+                      numberCast<T1>(pt.y / static_cast<double>(b)),
+                      numberCast<T1>(pt.z / static_cast<double>(b)));
 }
 
-template<typename T1, typename T2> static inline
-typename std::enable_if<
-  !std::is_integral<T1>::value,
-  Point3<T1>>::type
-operator / (const Point3<T1>& pt, T2 b)
+template<typename T1, typename T2>
+auto operator /(const Point3<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point3<T1>>
 {
-  return Point3<T1>(static_cast<T1>(pt.x / b),
-                    static_cast<T1>(pt.y / b),
-                    static_cast<T1>(pt.z / b));
+    return Point3<T1>(static_cast<T1>(pt.x / b),
+                      static_cast<T1>(pt.y / b),
+                      static_cast<T1>(pt.z / b));
 }
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_POINT_H

@@ -25,7 +25,125 @@
 #define BOOST_TEST_MODULE Tidop messages test
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/messages.h>
+#include "tidop/core/app.h"
+#include "tidop/core/msg/handler.h"
+#include "tidop/core/console.h"
+#include "tidop/core/log.h"
+#include "tidop/core/chrono.h"
+#include "tidop/core/msg/message.h"
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <thread>
 
 using namespace tl;
 
 
+BOOST_AUTO_TEST_SUITE(MessageTestSuite)
+
+class MessageTest
+    : public MessageHandler 
+{
+
+public:
+
+    MessageTest() {}
+    ~MessageTest() {}
+
+    void setup()
+    {   
+        Message::addMessageHandler(this);
+    }
+
+    void teardown()
+    {
+
+    }
+
+
+// Heredado vía MessageHandler
+
+    virtual void debug(String message) override
+    {
+        debugMessage = message;
+    }
+
+    virtual void info(String message) override
+    {
+        infoMessage = message;
+    }
+
+    virtual void success(String message) override
+    {
+        successMessage = message;
+    }
+
+    virtual void warning(String message) override
+    {
+        warningMessage = message;
+    }
+
+    virtual void error(String message) override
+    {
+        errorMessage = message;
+    }
+
+    std::string debugMessage;
+    std::string infoMessage;
+    std::string successMessage;
+    std::string warningMessage;
+    std::string errorMessage;
+};
+
+BOOST_FIXTURE_TEST_CASE(debug_message, MessageTest)
+{
+    Message::debug("This is a single debug message");
+    BOOST_CHECK_EQUAL(debugMessage, "This is a single debug message");
+
+    Message::debug("This is a debug message {} {}", "more", "complex");
+    BOOST_CHECK_EQUAL(debugMessage, "This is a debug message more complex");
+
+    Message::debug("DEBUG: {} > {}", 2, 1);
+    BOOST_CHECK_EQUAL(debugMessage, "DEBUG: 2 > 1");
+}
+
+BOOST_FIXTURE_TEST_CASE(info_message, MessageTest)
+{
+    Message::info("This is a single info message");
+    BOOST_CHECK_EQUAL(infoMessage, "This is a single info message");
+
+    Message::info("This is a info message {} {}", "more", "complex");
+    BOOST_CHECK_EQUAL(infoMessage, "This is a info message more complex");
+
+    Message::info("INFO: {} > {}", 2, 1);
+    BOOST_CHECK_EQUAL(infoMessage, "INFO: 2 > 1");
+}
+
+BOOST_FIXTURE_TEST_CASE(success_message, MessageTest)
+{
+    Message::success("The command has finished successfully");
+    BOOST_CHECK_EQUAL(successMessage, "The command has finished successfully");
+
+    Message::success("Processed {} of {} images", 450, 500);
+    BOOST_CHECK_EQUAL(successMessage, "Processed 450 of 500 images");
+}
+
+BOOST_FIXTURE_TEST_CASE(warning_message, MessageTest)
+{
+    Message::warning("This is a single warning message");
+    BOOST_CHECK_EQUAL(warningMessage, "This is a single warning message");
+
+    Message::warning("WARNING: {} > {}", 2, 1);
+    BOOST_CHECK_EQUAL(warningMessage, "WARNING: 2 > 1");
+}
+
+BOOST_FIXTURE_TEST_CASE(error_message, MessageTest)
+{
+    Message::error("This is a single error message");
+    BOOST_CHECK_EQUAL(errorMessage, "This is a single error message");
+
+    Message::error("ERROR: {} > {}", 2, 1);
+    BOOST_CHECK_EQUAL(errorMessage, "ERROR: 2 > 1");
+}
+
+BOOST_AUTO_TEST_SUITE_END()

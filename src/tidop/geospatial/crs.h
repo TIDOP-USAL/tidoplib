@@ -22,12 +22,12 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOSPATIAL_CRS_H
-#define TL_GEOSPATIAL_CRS_H
+#pragma once
+
 
 #include "tidop/core/defs.h"
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 #include <string>
 
@@ -36,12 +36,12 @@ class OGRSpatialReference;
 namespace tl
 {
 
-namespace geospatial
-{
+/*!
+ * \addtogroup geospatial
+ *
+ * \{
+ */
 
-
-
-//template<typename Point_t> class CrsTransform;
 
 class CrsTransform;
 
@@ -51,74 +51,75 @@ class CrsTransform;
 class TL_EXPORT Crs
 {
 
+private:
+
+    /*!
+     * \brief Código EPSG del sistema de referencia
+     */
+    std::string mEpsg;
+
+    /*!
+     * \brief Rejilla de transformación de sistema de coordenadas
+     */
+    std::string mGrid;
+
+    /*!
+     * \brief Geoide
+     */
+    std::string mGeoid;
+
+    /*!
+     * \brief Objeto OGRSpatialReference de Gdal
+     */
+    OGRSpatialReference *mCrs;
+
 public:
 
-  Crs();
+    Crs();
 
-  /*!
-   * \brief Constructor
-   * \param[in] epsg Sistema de referencia como código EPSG
-   * \param[in] grid Rejilla de transformación de sistema de coordenadas
-   * \param[in] geoid Fichero de ondulación del geoide
-   */
-  Crs(const std::string &epsg, 
-      const std::string &grid = "", 
-      const std::string &geoid = "");
+    /*!
+     * \brief Constructor
+     * \param[in] epsg Sistema de referencia como código EPSG
+     * \param[in] grid Rejilla de transformación de sistema de coordenadas
+     * \param[in] geoid Fichero de ondulación del geoide
+     */
+    Crs(const std::string &epsg,
+        const std::string &grid = "",
+        const std::string &geoid = "");
 
-  Crs(const Crs &crs);
+    Crs(const Crs &crs);
 
-  ~Crs();
+    ~Crs();
 
-  /*!
-   * \brief Devuelve el código EPSG del sistema de referencia
-   * \return
-   */
-  std::string epsgCode() const;
-  void setEpsgCode(const std::string &epsg);
-  std::string toProjFormat() const;
-  void fromProjFormat(const std::string &proj);
-  std::string toWktFormat() const;
-  void fromWktFormat(const std::string &wkt);
+    /*!
+     * \brief Devuelve el código EPSG del sistema de referencia
+     * \return
+     */
+    auto epsgCode() const -> std::string;
+    void setEpsgCode(const std::string &epsg);
+    auto toProjFormat() const -> std::string;
+    void fromProjFormat(const std::string &proj);
+    auto toWktFormat() const -> std::string;
+    void fromWktFormat(const std::string &wkt);
 
-  bool isGeocentric() const;
-  bool isGeographic() const;
-  bool isValid() const;
+    auto isGeocentric() const -> bool;
+    auto isGeographic() const -> bool;
+    auto isValid() const -> bool;
 
 protected:
 
-  OGRSpatialReference *getOGRSpatialReference( );
-  friend class CrsTransform;
+    OGRSpatialReference *getOGRSpatialReference();
+    friend class CrsTransform;
 
 private:
 
-  /*!
-   * \brief inicializador de la clase
-   */
-  void initFromEpsg();
-  void initGrid();
-  void initGeoid();
+    /*!
+     * \brief inicializador de la clase
+     */
+    void initFromEpsg();
+    void initGrid();
+    void initGeoid();
 
-private:
-  
-  /*!
-   * \brief Código EPSG del sistema de referencia
-   */
-  std::string mEpsg;
-
-  /*!
-   * \brief Rejilla de transformación de sistema de coordenadas
-   */
-  std::string mGrid;
-
-  /*!
-   * \brief Geoide
-   */
-  std::string mGeoid;
-
-  /*!
-   * \brief Objeto OGRSpatialReference de Gdal
-   */
-  OGRSpatialReference *mCrs;
 };
 
 
@@ -128,12 +129,9 @@ private:
 ///      Deberian mostrarse los códigos EPSG, tipo de proyección, permitir busqueda por nombre y por zona
 
 
-/* ---------------------------------------------------------------------------------- */
 
-} // End namespace geospatial
+/*! \} */ // end of geospatial
 
 } // End namespace tl
 
-#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ4
-
-#endif // TL_GEOSPATIAL_CRS_H
+#endif // TL_HAVE_GDAL && defined TL_HAVE_PROJ

@@ -22,14 +22,13 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GRAPHIC_LINE_ALGORITHMS_H
-#define TL_GRAPHIC_LINE_ALGORITHMS_H
+#pragma once
 
 #include <vector>
 
 #include "tidop/geometry/entities/point.h"
 
-namespace tl 
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -44,369 +43,285 @@ class TL_EXPORT LineAlgorithms
 {
 public:
 
-  enum class Type
-  {
-    bresenham,
-    dda
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    BRESENHAM,
-    DDA
-    //XiaolinWu
-#endif
-  };
-
-public:
-
-  /*!
-   * \brief Constructora
-   */
-  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2)
-    : mType(type), mPt1(pt1), mPt2(pt2)
-  {
-    dx = pt2.x - pt1.x;
-    dy = pt2.y - pt1.y;
-    mPos = pt1;
-  }
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~LineAlgorithms() {}
-
-  /*!
-   * \brief Determina la posición actual
-   * \param[in] id Identificador de la posición
-   * \return Posición actual
-   */
-  virtual PointI position(int id = -1) = 0;
- 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief devuelve un vector con los puntos de la recta
-   * \deprecated Use 'points()' en su lugar
-   */
-  TL_DEPRECATED("LineAlgorithms::points()", "2.0")
-  virtual std::vector<geometry::PointI> getPoints() = 0;
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief devuelve un vector con los puntos de la recta
-   */
-  virtual std::vector<PointI> points() = 0;
+    enum class Type
+    {
+        bresenham,
+        dda
+    };
 
 protected:
 
-  /*!
-   * \brief
-   */
-  Type mType;
+    Type mType;
+    Point<int> mPt1;
+    Point<int> mPt2;
+    int mStepX;
+    int mStepY;
+    Point<int> mPos;
+    int dx;
+    int dy;
+    int mCount;
 
-  /*!
-   * \brief Punto inicial
-   */
-  PointI mPt1;
+public:
 
-  /*!
-   * \brief Punto final
-   */
-  PointI mPt2;
+    /*!
+     * \brief Constructor
+     */
+    LineAlgorithms(Type type, const Point<int> &pt1, const Point<int> &pt2)
+        : mType(type), mPt1(pt1), mPt2(pt2)
+    {
+        dx = pt2.x - pt1.x;
+        dy = pt2.y - pt1.y;
+        mPos = pt1;
+    }
 
-  /*!
-   * \brief Paso en X
-   */
-  int mStepX;
+    virtual ~LineAlgorithms() = default;
 
-  /*!
-   * \brief Paso en Y
-   */
-  int mStepY;
+    /*!
+     * \brief Determines the current position
+     * \param[in] id Position identifier
+     * \return Current position
+     */
+    virtual auto position(int id = -1) -> Point<int> = 0;
 
-  /*!
-   * \brief Posición actual
-   */
-  PointI mPos;
+    /*!
+     * \brief Returns a vector with the points of the line
+     */
+    virtual auto points() -> std::vector<Point<int>> = 0;
 
-  /*!
-   * \brief Incremento en X
-   */
-  int dx;
 
-  /*!
-   * \brief Incremento en Y
-   */
-  int dy;
-
-  /*!
-   * \brief número de puntos
-   */
-  int mCount;
 
 };
 
+
+
+
 /*!
- * \brief Algoritmo de Bresenham para líneas
+ * \brief Bresenham's algorithm for lines
  *
- * Un algoritmo preciso y efectivo para la generación de líneas de rastreo,
- * desarrollado por Bresenham (1965), convierte mediante rastreo las líneas
- * utilizando solo cálculos incrementales con enteros que se pueden adaptar para
- * desplegar también curvas.
- * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
- * trayectoria de la línea.
+ * An accurate and efficient algorithm for line drawing,
+ * developed by Bresenham (1965), converts lines by scanning
+ * using only incremental calculations with integers that can be adapted for
+ * also displaying curves.
+ * The algorithm determines which of two pixels is closer according to the
+ * path of the line.
  */
-class TL_EXPORT BresenhamLine 
-  : public LineAlgorithms
+class TL_EXPORT BresenhamLine
+    : public LineAlgorithms
 {
 
 public:
 
-  using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = int;
-  using difference_type = std::ptrdiff_t;
-  using pointer = int *;
-  using reference = int &;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = int;
+    using difference_type = std::ptrdiff_t;
+    using pointer = int *;
+    using reference = int &;
+
+private:
+
+    int p;
+    int incE;
+    int incNE;
 
 public:
 
-  /*!
-   * \brief Constructora
-   * tl::BresenhamLine lineIter1(_line.pt1, _line.pt2);
-   * std::vector<cv::Point> v1 = lineIter1.getPoints();
-   */
-  BresenhamLine(const PointI &pt1, const PointI &pt2)
-    : LineAlgorithms(LineAlgorithms::Type::bresenham, pt1, pt2)
-  {
-    init();
-  }
+    /*!
+     * \brief Constructor
+     * BresenhamLine lineIter1(_line.pt1, _line.pt2);
+     * std::vector<cv::Point> v1 = lineIter1.getPoints();
+     */
+    BresenhamLine(const Point<int> &pt1, const Point<int> &pt2)
+        : LineAlgorithms(Type::bresenham, pt1, pt2)
+    {
+        init();
+    }
 
-  /*!
-   * \brief Destructora
-   */
-  ~BresenhamLine() override {}
+    ~BresenhamLine() override = default;
 
-  /*!
-   * \brief Punto actual
-   */
-  PointI &operator*();
+    /*!
+     * \brief Current point
+     */
+    auto operator*()->Point<int> &;
 
-  /*!
-   * \brief Incrementa una posición
-   */
-  BresenhamLine &operator ++();
+    /*!
+     * \brief Increments a position
+     */
+    auto operator ++()->BresenhamLine &;
 
-  /*!
-   * \brief Incrementa una posición
-   */
-  BresenhamLine operator ++(int);
+    /*!
+     * \brief Increments a position
+     */
+    auto operator ++(int)->BresenhamLine;
 
-  /*!
-   * \brief Decrementa una posición
-   */
-  BresenhamLine &operator --();
+    /*!
+     * \brief Decrements a position
+     */
+    auto operator --()->BresenhamLine &;
 
-  /*!
-   * \brief Decrementa una posición
-   */
-  BresenhamLine operator --(int);
+    /*!
+     * \brief Decrements a position
+     */
+    auto operator --(int)->BresenhamLine;
 
-  /*!
-   * \brief Operador igual que
-   */
-  bool operator==(const BresenhamLine& bl) {return mPos==bl.mPos;}
+    /*!
+     * \brief Equal to operator
+     */
+    auto operator==(const BresenhamLine &bl) const -> bool { return mPos == bl.mPos; }
 
-  /*!
-   * \brief Operador distinto que
-   */
-  bool operator!=(const BresenhamLine& bl) {return mPos!=bl.mPos;}
+    /*!
+     * \brief Not equal to operator
+     */
+    auto operator!=(const BresenhamLine &bl) const -> bool { return mPos != bl.mPos; }
 
-  /*!
-   * \brief Iterador al primer punto
-   */
-  BresenhamLine begin();
+    /*!
+     * \brief Iterator to the first point
+     */
+    auto begin() const -> BresenhamLine;
 
-  /*!
-   * \brief Iterador al último punto
-   */
-  BresenhamLine end();
+    /*!
+     * \brief Iterator to the last point
+     */
+    auto end() const -> BresenhamLine;
 
-  /*!
-   * \brief Determina la posición actual o la posición correspondiente al indice
-   * El indice es la coordenada x o y del punto en función de que dx > dy o dx < dy
-   * \param[in] id Indice del punto
-   * \return Posición actual
-   */
-  PointI position(int id = -1) override;
+    /*!
+     * \brief Determines the current position or the position corresponding to the index
+     * The index is the x or y coordinate of the point depending on whether dx > dy or dx < dy
+     * \param[in] id Index of the point
+     * \return Current position
+     */
+    auto position(int id = -1) -> Point<int> override;
 
-  /*!
-   * \brief Tamaño de la linea
-   */
-  int size() const;
+    /*!
+     * \brief Line size
+     */
+    auto size() const -> int;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief devuelve un vector con los puntos de la recta
-   */
-  std::vector<geometry::PointI> getPoints() override;
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief devuelve un vector con los puntos de la recta
-   */
-  std::vector<PointI> points() override;
+    /*!
+     * \brief returns a vector with the points of the line
+     */
+    std::vector<Point<int>> points() override;
 
 private:
 
-  void init();
+    void init();
+    void _next(int *max, int *min, int endMax, int stepMax, int stepMin);
 
-  void _next(int *max, int *min, int endMax, int stepMax, int stepMin);
-
-private:
-
-  int p;
-  int incE;
-  int incNE;
 };
 
 
 
 /*!
- * \brief Algoritmo DDA (analizador diferenciador digital)
+ * \brief DDA Algorithm (Digital Differential Analyzer)
  *
- * El algoritmo DDA (Digital Differential Analyzer) es un algoritmo
- * de conversion de rastreo que se basa en el calculo ya sea de Dy
- * o Dx por medio de una de las ecuaciones:
+ * The DDA (Digital Differential Analyzer) algorithm is a
+ * rasterization conversion algorithm based on the calculation of either Dy
+ * or Dx using one of the equations:
  * \f$ Dy = m * Dx \f$<BR>
  * \f$ Dx = Dy / m \f$<BR>
- * Se efectúa un muestreo de la línea en intervalos unitarios en una
- * coordenada y se determina los valores enteros correspondientes mas
- * próximos a la trayectoria de la línea para la otra coordenada.
+ * Sampling of the line is performed at unit intervals in one
+ * coordinate, and the closest integer values to the line's trajectory
+ * are determined for the other coordinate.
  */
 class TL_EXPORT DDA
-  : public LineAlgorithms
+    : public LineAlgorithms
 {
 
 public:
 
-  using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = int;
-  using difference_type = std::ptrdiff_t;
-  using pointer = int *;
-  using reference = int &;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = int;
+    using difference_type = std::ptrdiff_t;
+    using pointer = int *;
+    using reference = int &;
+
+private:
+
+    /*!
+     * \brief Slope of the line
+     */
+    float m;
+
+    /*!
+     * \brief Y-intercept
+     */
+    float b;
 
 public:
 
-  /*!
-   *
-   * tl::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
-   * std::vector<cv::Point> v2 = lineIter2.getPoints();
-   */
-  DDA(const PointI &pt1, const PointI &pt2)
-    : LineAlgorithms(LineAlgorithms::Type::dda, pt1, pt2)
-  {
-    init();
-  }
+    DDA(const Point<int> &pt1, const Point<int> &pt2);
 
-  ~DDA() override {}
+    ~DDA() override = default;
 
-  /*!
-   * \brief Punto actual
-   */
-  PointI &operator*();
+    /*!
+     * \brief Current point
+     */
+    auto operator*() -> Point<int>&;
 
-  /*!
-   * \brief Incrementa una posición
-   */
-  DDA &operator ++();
+    /*!
+     * \brief Increments a position
+     */
+    auto operator ++() -> DDA&;
 
-  /*!
-   * \brief Incrementa una posición
-   */
-  DDA operator ++(int);
+    /*!
+     * \brief Increments a position
+     */
+    auto operator ++(int) -> DDA;
 
-  /*!
-   * \brief Decrementa una posición
-   */
-  DDA &operator --();
+    /*!
+     * \brief Decrements a position
+     */
+    auto operator --() -> DDA&;
 
-  /*!
-   * \brief Decrementa una posición
-   */
-  DDA operator --(int);
+    /*!
+     * \brief Decrements a position
+     */
+    auto operator --(int) -> DDA;
 
-  /*!
-   * \brief Operador igual que
-   */
-  bool operator==(const DDA &bl) { return mPos == bl.mPos; }
+    /*!
+     * \brief Equal to operator
+     */
+    bool operator==(const DDA &bl) const { return mPos == bl.mPos; }
 
-  /*!
-   * \brief Operador distinto que
-   */
-  bool operator!=(const DDA& bl) { return mPos != bl.mPos; }
+    /*!
+     * \brief Not equal to operator
+     */
+    bool operator!=(const DDA &bl) const { return mPos != bl.mPos; }
 
-  /*!
-   * \brief Iterador al primer punto
-   */
-  DDA begin();
+    /*!
+     * \brief Iterator to the first point
+     */
+    auto begin() const -> DDA;
 
-  /*!
-   * \brief Iterador al último punto
-   */
-  DDA end();
+    /*!
+     * \brief Iterator to the last point
+     */
+    auto end() const -> DDA;
 
-  /*!
-   * \brief Determina la posición actual o la posición correspondiente al indice
-   * El indice es la coordenada x o y del punto en función de que dx > dy o dx < dy
-   * \param[in] id Indice del punto
-   * \return Posición actual
-   */
-  PointI position(int id = -1) override;
+    /*!
+     * \brief Determines the current position or the position corresponding to the index
+     * The index is the x or y coordinate of the point depending on whether dx > dy or dx < dy
+     * \param[in] id Index of the point
+     * \return Current position
+     */
+    auto position(int id = -1) -> Point<int> override;
 
-  /*!
-   * \brief Tamaño de la linea
-   */
-  int size() const;
+    /*!
+     * \brief Line size
+     */
+    auto size() const -> int;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief devuelve un vector con los puntos de la recta
-   */
-  std::vector<geometry::PointI> getPoints() override;
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief devuelve un vector con los puntos de la recta
-   */
-  std::vector<PointI> points() override;
+    /*!
+     * \brief returns a vector with the points of the line
+     */
+    std::vector<Point<int>> points() override;
 
 private:
 
-  void init();
+    void init();
 
-  void _next(int *max, int *min, int dMin, int endMax, int step);
-
-
-private:
-
-  /*!
-   * \brief Pendiente de la recta
-   */
-  float m;
-
-  /*!
-   * \brief Ordenada en el origen
-   */
-  float b;
-
+    void _next(int *max, int *min, int dMin, int endMax, int step);
 
 };
 
 
 } // End namespace tl
-
-#endif // TL_GRAPHIC_LINE_ALGORITHMS_H

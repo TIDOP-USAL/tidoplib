@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/vector.h>
 
-using namespace tl::math;
+using namespace tl;
 
 
 BOOST_AUTO_TEST_SUITE(VectorTestSuite)
@@ -161,6 +161,39 @@ BOOST_FIXTURE_TEST_CASE(initializer_list, VectorTest)
   BOOST_CHECK_EQUAL(2., vect2[1]);
   BOOST_CHECK_EQUAL(3., vect2[2]);
   BOOST_CHECK_EQUAL(4., vect2[3]);
+}
+
+BOOST_FIXTURE_TEST_CASE(assing, VectorTest)
+{
+  // Asignación de vector estático a dinámico
+    
+  Vector<double, 4> vect{1.,2.,3.,4.};
+  Vector<double> vect2 = vect;
+  BOOST_CHECK_EQUAL(1., vect2[0]);
+  BOOST_CHECK_EQUAL(2., vect2[1]);
+  BOOST_CHECK_EQUAL(3., vect2[2]);
+  BOOST_CHECK_EQUAL(4., vect2[3]);
+
+  Vector<double, 4> vect3{5.,6.,7.,8.};
+  Vector<double> vect4 = vect3;
+  BOOST_CHECK_EQUAL(5., vect4[0]);
+  BOOST_CHECK_EQUAL(6., vect4[1]);
+  BOOST_CHECK_EQUAL(7., vect4[2]);
+  BOOST_CHECK_EQUAL(8., vect4[3]);
+
+  // Asignación de vector dinámico a estático
+
+  Vector<double, 4> vect5 = vect2;
+  BOOST_CHECK_EQUAL(1., vect5[0]);
+  BOOST_CHECK_EQUAL(2., vect5[1]);
+  BOOST_CHECK_EQUAL(3., vect5[2]);
+  BOOST_CHECK_EQUAL(4., vect5[3]);
+
+  Vector<double, 4> vect6 = vect4;
+  BOOST_CHECK_EQUAL(5., vect6[0]);
+  BOOST_CHECK_EQUAL(6., vect6[1]);
+  BOOST_CHECK_EQUAL(7., vect6[2]);
+  BOOST_CHECK_EQUAL(8., vect6[3]);
 }
 
 BOOST_FIXTURE_TEST_CASE(size, VectorTest)

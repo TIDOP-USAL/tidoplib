@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_EVENT_H
-#define TL_CORE_EVENT_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -46,31 +45,31 @@ class TL_EXPORT Event
 
 public:
 
-  enum class Type
-  {
-    /* Task events*/
+    enum class Type
+    {
+        /* Task events*/
 
-    task_running,
-    task_pausing,
-    task_paused,
-    task_resumed,
-    task_stopping,
-    task_stopped,
-    task_finalized,
-    task_error,
+        task_running,
+        task_pausing,
+        task_paused,
+        task_resumed,
+        task_stopping,
+        task_stopped,
+        task_finalized,
+        task_error,
 
-    /* Image events */
+        /* Image events */
 
-    image_change
-  };
+        image_change
+    };
 
 public:
 
-  Event() = default;
-  virtual ~Event() = default;
+    Event() = default;
+    virtual ~Event() = default;
 
-  virtual Type type() const = 0;
-  virtual void clear() = 0;
+    virtual Type type() const = 0;
+    virtual void clear() = 0;
 
 };
 
@@ -81,13 +80,13 @@ class TL_EXPORT EventBase
 
 public:
 
-  EventBase(Type type);
+	explicit EventBase(Type type);
 
-  Type type() const override;
+    Type type() const override;
 
 private:
 
-  Type mType;
+    Type mType;
 
 };
 
@@ -96,146 +95,145 @@ private:
 /* Task Running Event */
 
 class TL_EXPORT TaskRunningEvent
-  : public EventBase
+    : public EventBase
 {
 
 public:
 
-  TaskRunningEvent();
+    TaskRunningEvent();
 
-  void clear() override;
+    void clear() override;
 };
 
 
 /* Task Pausing Event */
 
-class TL_EXPORT TaskPausingEvent
-  : public EventBase
+class TL_EXPORT TaskPausingEvent final
+    : public EventBase
 {
 
 public:
 
-  TaskPausingEvent();
+    TaskPausingEvent();
 
-  void clear() override;
+    void clear() override;
 };
 
 
 /* Task Pause Event */
 
-class TL_EXPORT TaskPauseEvent
-  : public EventBase
+class TL_EXPORT TaskPauseEvent final
+	: public EventBase
 {
 
 public:
 
-  TaskPauseEvent();
+    TaskPauseEvent();
 
-  void clear() override;
+    void clear() override;
 };
 
 
 /* Task Resumed Event */
 
-class TL_EXPORT TaskResumedEvent
-  : public EventBase
+class TL_EXPORT TaskResumedEvent final
+	: public EventBase
 {
 
 public:
 
-  TaskResumedEvent();
+    TaskResumedEvent();
 
-  void clear() override;
+    void clear() override;
 };
 
 
 /* Task Stopping Event */
 
-class TL_EXPORT TaskStoppingEvent
-  : public EventBase
+class TL_EXPORT TaskStoppingEvent final
+    : public EventBase
 {
 
 public:
 
-  TaskStoppingEvent();
+    TaskStoppingEvent();
 
-  void clear() override;
+    void clear() override;
 };
 
 
 /* Task Stopped Event */
 
-class TL_EXPORT TaskStoppedEvent
-  : public EventBase
+class TL_EXPORT TaskStoppedEvent final
+    : public EventBase
 {
 
 public:
 
-  TaskStoppedEvent();
+    TaskStoppedEvent();
 
-  void clear() override;
+    void clear() override;
 };
 
 
 /* Task Finalized Event */
 
-class TL_EXPORT TaskFinalizedEvent
-  : public EventBase
+class TL_EXPORT TaskFinalizedEvent final
+    : public EventBase
 {
 
 public:
 
-  TaskFinalizedEvent(Task const *task = nullptr);
+	explicit TaskFinalizedEvent(Task const *task = nullptr);
 
-  Task const *task() const;
+    Task const *task() const;
 
-  void clear() override;
+    void clear() override;
 
 private:
 
-  Task const *mTask;
+    Task const *mTask;
 };
 
 
 /* Task Error Event */
 
-class TL_EXPORT TaskErrorEvent
-  : public EventBase
+class TL_EXPORT TaskErrorEvent final
+    : public EventBase
 {
 
 public:
 
-  TaskErrorEvent();
+    TaskErrorEvent();
 
-  std::string errorMessage() const;
-  void setErrorMessage(const std::string &error);
+    std::string errorMessage() const;
+    void setErrorMessage(const std::string &error);
 
-  void clear() override;
+    void clear() override;
 
 private:
 
-  std::string mErrorMessage;
+    std::string mErrorMessage;
 };
 
 
 /* Image Change Event */
 
-class TL_EXPORT ImageChangeEvent
-  : public EventBase
+class TL_EXPORT ImageChangeEvent final
+    : public EventBase
 {
+private:
+
+    std::string mImage;
 
 public:
 
-  ImageChangeEvent();
+    ImageChangeEvent();
 
-  std::string image() const;
-  void setImage(const std::string &image);
+    std::string image() const;
+    void setImage(const std::string &image);
 
-  void clear() override;
-
-private:
-
-  std::string mImage;
+    void clear() override;
 
 };
 
@@ -243,5 +241,3 @@ private:
 
 } // namespace tl
 
-
-#endif // TL_CORE_EVENT_H

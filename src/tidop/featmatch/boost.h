@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_BOOST_DESCRIPTOR_H
-#define TL_FEATMATCH_BOOST_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -49,42 +48,42 @@ constexpr auto boost_default_value_scale_factor = 6.25;
 
 
 class TL_EXPORT BoostProperties
-  : public Boost
+    : public Boost
 {
+
+private:
+
+    std::string mDescriptorType;
+    bool bUseOrientation{boost_default_value_use_orientation};
+    double mScaleFactor{boost_default_value_scale_factor};
 
 public:
 
-  BoostProperties();
-  BoostProperties(const BoostProperties &boostProperties);
-  BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT;
-  ~BoostProperties() override;
+    BoostProperties();
+    BoostProperties(const BoostProperties &boostProperties);
+    BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT;
+    ~BoostProperties() override;
 
-  BoostProperties &operator =(const BoostProperties &boostProperties);
-  BoostProperties &operator =(BoostProperties &&boostProperties) TL_NOEXCEPT;
+    auto operator =(const BoostProperties &boostProperties) -> BoostProperties&;
+    auto operator =(BoostProperties &&boostProperties) TL_NOEXCEPT -> BoostProperties&;
 
 // Boost interface
 
 public:
 
-  std::string descriptorType() const override;
-  bool useOrientation() const override;
-  double scaleFactor() const override;
-  void setDescriptorType(const std::string &descriptorType) override;
-  void setUseOrientation(bool useOrientation) override;
-  void setScaleFactor(double scaleFactor) override;
+    auto descriptorType() const -> std::string override;
+    auto useOrientation() const -> bool override;
+    auto scaleFactor() const -> double override;
+    void setDescriptorType(const std::string &descriptorType) override;
+    void setUseOrientation(bool useOrientation) override;
+    void setScaleFactor(double scaleFactor) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const override;
-
-private:
-
-  std::string mDescriptorType;
-  bool bUseOrientation{boost_default_value_use_orientation};
-  double mScaleFactor{boost_default_value_scale_factor};
+    void reset() override;
+    auto name() const -> std::string override;
 
 };
 
@@ -96,51 +95,50 @@ class TL_EXPORT BoostDescriptor
     public DescriptorExtractor
 {
 
+private:
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
+#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
+    cv::Ptr<cv::xfeatures2d::BoostDesc> mBoost;
+#endif
+#endif // HAVE_OPENCV_XFEATURES2D
+
 public:
 
-  BoostDescriptor();
-  BoostDescriptor(const BoostDescriptor &boostDescriptor);
-  BoostDescriptor(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT;
-  BoostDescriptor(const std::string &descriptorType,
-                  bool useOrientation,
-                  double scaleFactor);
-  ~BoostDescriptor() override = default;
+    BoostDescriptor();
+    BoostDescriptor(const BoostDescriptor &boostDescriptor);
+    BoostDescriptor(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT;
+    BoostDescriptor(const std::string &descriptorType,
+                    bool useOrientation,
+                    double scaleFactor);
+    ~BoostDescriptor() override = default;
 
-  BoostDescriptor &operator =(const BoostDescriptor &boostDescriptor);
-  BoostDescriptor &operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT;
+    auto operator =(const BoostDescriptor &boostDescriptor) -> BoostDescriptor&;
+    auto operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT -> BoostDescriptor&;
 
 private:
 
-  void update();
+    void update();
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
 // Boost interface
 
 public:
 
-  void setDescriptorType(const std::string &descriptorType) override;
-  void setUseOrientation(bool useOrientation) override;
-  void setScaleFactor(double scaleFactor) override;
+    void setDescriptorType(const std::string &descriptorType) override;
+    void setUseOrientation(bool useOrientation) override;
+    void setScaleFactor(double scaleFactor) override;
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
-
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
-  cv::Ptr<cv::xfeatures2d::BoostDesc> mBoost;
-#endif
-#endif // HAVE_OPENCV_XFEATURES2D
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 };
 
@@ -149,5 +147,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_BOOST_DESCRIPTOR_H

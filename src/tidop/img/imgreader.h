@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMAGE_READER_H
-#define TL_IMAGE_READER_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -35,205 +34,188 @@
 #include <opencv2/core/core.hpp>
 
 #include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
 #include "tidop/core/path.h"
+#include "tidop/core/ptr.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
-//#ifdef TL_HAVE_GRAPHIC
-//#include "tidop/graphic/color.h"
-//#endif
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
+
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 class ImageMetadata;
 
 /*!
- * \brief Clase para la lectura de diferentes formatos de imagen
+ * \brief Class for reading different image formats
  */
 class TL_EXPORT ImageReader
 {
+    GENERATE_UNIQUE_PTR(ImageReader)
 
 public:
 
-  ImageReader(tl::Path file);
-  virtual ~ImageReader() = default;
+    ImageReader(tl::Path file);
+    virtual ~ImageReader() = default;
 
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
+    /*!
+     * \brief Open the file
+     */
+    virtual void open() = 0;
 
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
+    /*!
+     * \brief Check if the file has been loaded correctly.
+     */
+    virtual auto isOpen() const -> bool = 0;
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+    /*!
+     * \brief Close the file
+     */
+    virtual void close() = 0;
 
-  /*!
-   * \brief Lee un fragmento de imagen correspondiente a una región
-   * \param[in] rect Región de la imagen que se carga. Por defecto toda la imagen
-   * \param[in] size Tamaño de la imagen de salida. Por defecto el tamaño de la región de lectura
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   * \return imagen
-   */
-  virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
-                       const Size<int> &size = Size<int>(), 
-                       Affine<PointI> *trf = nullptr) = 0;
+    /*!
+     * \brief Reads an image area corresponding to a rectangle
+     * \param[in] rect Rectangle of the image to be loaded. By default the whole image
+     * \param[in] size Output image size. By default the size of the reading area
+     * \param[in] affine
+     * \return Image
+     */
+    virtual auto read(const Rect<int> &rect = Rect<int>(),
+                      const Size<int> &size = Size<int>(),
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una región
-   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
-   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
-   * \param[in] rect Región de la imagen que se carga
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   * \return imagen
-   */
-  virtual cv::Mat read(double scaleX,
-                       double scaleY, 
-                       const Rect<int> &rect = Rect<int>(), 
-                       Affine<PointI> *trf = nullptr) = 0;
+    /*!
+     * \brief Reads an image area corresponding to a rectangle
+     * \param[in] scaleX Horizontal scale that applies to the area read. Default 1
+     * \param[in] scaleY Vertical scale that applies to the area read. Default 1
+     * \param[in] rect Area of the image to be loaded. By default the whole image
+     * \param[in] affine
+     * \return Image
+     */
+    virtual auto read(double scaleX,
+                      double scaleY,
+                      const Rect<int> &rect = Rect<int>(),
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[in] window Ventana de la imagen que se quiere cargar
-   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
-   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  virtual cv::Mat read(const WindowI &window, 
-                       double scaleX = 1.,
-                       double scaleY = 1., 
-                       Affine<PointI> *trf = nullptr) = 0;
- 
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana en coordenadas terreno
-   * \param[in] terrainWindow Ventana en coordenadas terreno de la imagen que se quiere cargar
-   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
-   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  virtual cv::Mat read(const Window<PointD> &terrainWindow, 
-                       double scaleX = 1.,
-                       double scaleY = 1., 
-                       Affine<PointI> *trf = nullptr) = 0;
+    /*!
+     * \brief Reads the image area corresponding to a window
+     * \param[in] window Window of the image to be loaded
+     * \param[in] scaleX Horizontal scale that applies to the region read. Default 1
+     * \param[in] scaleY Vertical scale that applies to the region read. Default 1
+     * \param[in] affine
+     * \return Image
+     */
+    virtual auto read(const WindowI &window,
+                      double scaleX = 1.,
+                      double scaleY = 1.,
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
-  /*!
-   * \brief Devuelve el número de filas de la imagen
-   * \return Número de filas de la imagen
-   */
-  virtual int rows() const = 0;
+    /*!
+     * \brief Reads the image area corresponding to a window in terrestrial coordinates
+     * \param[in] terrainWindow Window in terrain coordinates of the image to be loaded
+     * \param[in] scaleX Horizontal scale that applies to the region read. Default 1
+     * \param[in] scaleY Vertical scale that applies to the region read. Default 1
+     * \param[out] affine Transformation to be applied to the returned image
+     */
+    virtual auto read(const Window<Point<double>> &terrainWindow,
+                      double scaleX = 1.,
+                      double scaleY = 1.,
+                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
-  /*!
-   * \brief Devuelve el número de columnas de la imagen
-   * \return Número de columnas de la imagen
-   */
-  virtual int cols() const = 0;
+    /*!
+     * \brief Returns the number of rows in the image
+     * \return Number of rows in the image
+     */
+    virtual auto rows() const -> int = 0;
 
-  /*!
-   * \brief Devuelve el número de canales o bandas de la imagen
-   * \return Número de bandas de la imagen
-   */
-  virtual int channels() const = 0;
+    /*!
+     * \brief Returns the number of columns in the image
+     * \return Number of columns in the image
+     */
+    virtual auto cols() const -> int = 0;
 
-  /*!
-   * \brief Devuelve el tipo de dato
-   * \return 
-   */
-  virtual DataType dataType() const = 0;
+    /*!
+     * \brief Returns the number of channels or bands in the image.
+     * \return Number of image bands
+     */
+    virtual auto channels() const -> int = 0;
 
-  /*!
-   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
-   * \return Profundidad de color
-   */
-  virtual int depth() const = 0;
+    /*!
+     * \brief Returns the data type
+     * \return
+     */
+    virtual auto dataType() const -> DataType = 0;
 
-  virtual std::shared_ptr<ImageMetadata> metadata() const = 0;
+    /*!
+     * \brief Devuelve la profundidad de color o bits por pixel de una imagen
+     * \return Colour depth
+     */
+    virtual auto depth() const -> int = 0;
 
-  /*!
-   * \brief Imagen georeferenciada
-   */
-  virtual bool isGeoreferenced() const = 0;
-  
-  /*!
-   * \brief Georeferencia de la imagen
-   * Los valores del array se corresponden con:
-   * 1 - Coordenada X de la esquina superior izquierda
-   * 2 - Resolución en x
-   * 3 - Giro x
-   * 4 - Coordenada Y de la esquina superior izquierda
-   * 5 - Giro y
-   * 6 - Resolución en y.
-   * \return Georeferencia
-   */
-  virtual Affine<PointD> georeference() const = 0;
+    virtual auto metadata() const -> std::shared_ptr<ImageMetadata> = 0;
 
-  /*!
-   * \brief Sistema de referencia en formato WKT
-   */
-  virtual std::string crsWkt() const = 0;
+    /*!
+     * \brief Check if the image is geo-referenced.
+     */
+    virtual auto isGeoreferenced() const -> bool = 0;
 
-//#ifdef TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Sistema de referencia
-//   */
-//  virtual geospatial::Crs crs() const = 0;
-//#endif
+    /*!
+     * \brief Georeference of the image
+     */
+    virtual auto georeference() const -> Affine<double, 2> = 0;
 
-  /*!
-   * \brief Ventana envolvente de la imagen en coordenadas terreno
-   */
-  virtual WindowD window() const = 0;
+    /*!
+     * \brief Reference system in WKT format
+     */
+    virtual auto crsWkt() const -> std::string = 0;
 
-  tl::Path file() const;
+    /*!
+     * \brief Image bounding box in terrain coordinates
+     */
+    virtual auto window() const -> WindowD = 0;
 
-  virtual double noDataValue(bool *exist = nullptr) const = 0;
+    auto file() const -> tl::Path;
 
-//#ifdef TL_HAVE_GRAPHIC
-//  virtual graph::Color noDataValue() const = 0;
-//#endif
+    virtual auto noDataValue(bool *exist = nullptr) const-> double = 0;
 
 protected:
-  
-  void windowRead(const WindowI &wLoad,
-                  WindowI *wRead, 
-                  PointI *offset) const;
+
+    void windowRead(const WindowI &wLoad,
+                    WindowI *wRead,
+                    Point<int> *offset) const;
 
 private:
 
-  Path mFile;
+    Path mFile;
 
 };
 
 
 /*!
- * \brief Factoria de clases para la lectura de formatos de imagen
+ * \brief Class factory for reading image formats
  */
 class TL_EXPORT ImageReaderFactory
 {
 
 private:
 
-  ImageReaderFactory() = default;
+    ImageReaderFactory() = default;
 
 public:
 
-  static std::unique_ptr<ImageReader> create(const Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<ImageReader> createReader(const Path &file);
+    static auto create(const Path &file) -> ImageReader::Ptr;
 };
+
+
+/*! \} */ // end of raster
+
 
 } // End namespace tl
 
 #endif // TL_HAVE_OPENCV
-
-#endif // TL_IMAGE_READER_H

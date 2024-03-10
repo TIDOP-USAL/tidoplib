@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECTOR_READER_H
-#define TL_VECTOR_READER_H
+#pragma once
 
 #include <memory>
 #include <list>
@@ -31,61 +30,58 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
+#include "tidop/core/ptr.h"
+
 
 namespace tl
 {
 
-namespace graph
-{
+
 class GLayer;
-}
+
+
+/*! \addtogroup vector
+ *  \{
+ */
 
 
 class TL_EXPORT VectorReader
 {
 
-public:
-
-	VectorReader(Path file);
-	virtual ~VectorReader() = default;
-
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
-
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
-
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
-
-  virtual int layersCount() const = 0;
-  virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
-  virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
-
-  /*!
-   * \brief Sistema de referencia en formato WKT
-   */
-  virtual std::string crsWkt() const = 0;
-
-//#if defined TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Sistema de referencia
-//   */
-//  virtual geospatial::Crs crs() const = 0;
-//#endif
+    GENERATE_UNIQUE_PTR(VectorReader)
 
 protected:
 
-  Path mFile;
+    Path mFile;
+
+public:
+
+    VectorReader(Path file);
+    virtual ~VectorReader() = default;
+
+    /*!
+     * \brief Opens the file
+     */
+    virtual void open() = 0;
+
+    /*!
+     * \brief Checks if the file has been loaded correctly
+     */
+    virtual auto isOpen() const -> bool = 0;
+
+    /*!
+     * \brief Closes the file
+     */
+    virtual void close() = 0;
+
+    virtual auto layersCount() const -> int = 0;
+    virtual auto read(int layerId) -> std::shared_ptr<GLayer> = 0;
+    virtual auto read(const std::string& layerName) -> std::shared_ptr<GLayer> = 0;
+
+    /*!
+     * \brief Reference system in WKT format
+     */
+    virtual auto crsWkt() const -> std::string = 0;
 
 };
 
@@ -98,18 +94,16 @@ class TL_EXPORT VectorReaderFactory
 
 private:
 
-  VectorReaderFactory() = default;
+    VectorReaderFactory() = default;
 
 public:
 
-  static std::unique_ptr<VectorReader> create(const Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<VectorReader> createReader(const Path &file);
+    static auto create(const Path &file) -> VectorReader::Ptr;
+    TL_DEPRECATED("create", "2.1")
+    static auto createReader(const Path &file) -> VectorReader::Ptr;
 };
 
 
+/*! \} */ // end of vector
 
 } // End namespace tl
-
-
-#endif // TL_VECTOR_READER_H

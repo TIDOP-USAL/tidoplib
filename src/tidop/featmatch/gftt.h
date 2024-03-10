@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_GFTT_DETECTOR_H
-#define TL_FEATMATCH_GFTT_DETECTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -44,44 +43,45 @@ namespace tl
 class TL_EXPORT GfttProperties
   : public Gftt
 {
+
+private:
+
+    int mMaxFeatures{1000};
+    double mQualityLevel{0.01};
+    double mMinDistance{1};
+    int mBlockSize{3};
+    bool mHarrisDetector{false};
+    double mK{0.04};
+
 public:
 
-  GfttProperties();
-  GfttProperties(const GfttProperties &gfttProperties);
-  ~GfttProperties() override = default;
+    GfttProperties();
+    GfttProperties(const GfttProperties &gfttProperties);
+    ~GfttProperties() override = default;
 
 // Gftt interface
 
 public:
 
-  int maxFeatures() const override;
-  double qualityLevel() const override;
-  double minDistance() const override;
-  int blockSize() const override;
-  bool harrisDetector() const override;
-  double k() const override;
-  void setMaxFeatures(int maxFeatures) override;
-  void setQualityLevel(double qlevel) override;
-  void setMinDistance(double minDistance) override;
-  void setBlockSize(int blockSize) override;
-  void setHarrisDetector(bool value) override;
-  void setK(double k) override;
+    auto maxFeatures() const -> int override;
+    auto qualityLevel() const -> double override;
+    auto minDistance() const -> double override;
+    auto blockSize() const -> int override;
+    auto harrisDetector() const -> bool override;
+    auto k() const -> double override;
+    void setMaxFeatures(int maxFeatures) override;
+    void setQualityLevel(double qlevel) override;
+    void setMinDistance(double minDistance) override;
+    void setBlockSize(int blockSize) override;
+    void setHarrisDetector(bool value) override;
+    void setK(double k) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
-
-private:
-
-  int mMaxFeatures{1000};
-  double mQualityLevel{0.01};
-  double mMinDistance{1};
-  int mBlockSize{3};
-  bool mHarrisDetector{false};
-  double mK{0.04};
+    void reset() override;
+    auto name() const -> std::string final;
 
 };
 
@@ -94,45 +94,44 @@ class TL_EXPORT GfttDetector
     public KeypointDetector
 {
 
+private:
+
+    cv::Ptr<cv::GFTTDetector> mGFTT;
+
 public:
 
-  GfttDetector();
-  GfttDetector(const GfttDetector &gfttDetector);
-  GfttDetector(int maxFeatures,
-               double qualityLevel,
-               double minDistance,
-               int blockSize,
-               bool harrisDetector,
-               double k);
-  ~GfttDetector() override = default;
+    GfttDetector();
+    GfttDetector(const GfttDetector &gfttDetector);
+    GfttDetector(int maxFeatures,
+                 double qualityLevel,
+                 double minDistance,
+                 int blockSize,
+                 bool harrisDetector,
+                 double k);
+    ~GfttDetector() override = default;
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Gftt interface
 
 public:
 
-  void setMaxFeatures(int maxFeatures) override;
-  void setQualityLevel(double qlevel) override;
-  void setMinDistance(double minDistance) override;
-  void setBlockSize(int blockSize) override;
-  void setHarrisDetector(bool value) override;
-  void setK(double k) override;
+    void setMaxFeatures(int maxFeatures) override;
+    void setQualityLevel(double qlevel) override;
+    void setMinDistance(double minDistance) override;
+    void setBlockSize(int blockSize) override;
+    void setHarrisDetector(bool value) override;
+    void setK(double k) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-  cv::Ptr<cv::GFTTDetector> mGFTT;
+    void reset() override;
 
 };
 
@@ -141,5 +140,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_GFTT_DETECTOR_H

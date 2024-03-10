@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_MATCHER_H
-#define TL_FEATMATCH_MATCHER_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -61,33 +60,33 @@ class TL_EXPORT MatchingMethod
 
 public:
 
-  enum class Type
-  {
-    flann,
-    brute_force
-  };
+    enum class Type
+    {
+        flann,
+        brute_force
+    };
 
 public:
 
-  MatchingMethod() {}
-  virtual ~MatchingMethod() = default;
+    MatchingMethod() {}
+    virtual ~MatchingMethod() = default;
 
-  /*!
-   * \brief Recover the default values
-   */
-  virtual void reset() = 0;
+    /*!
+     * \brief Recover the default values
+     */
+    virtual void reset() = 0;
 
-  /*!
-   * \brief Type of match method (flann or brute force)
-   * \return
-   */
-  virtual Type type() const = 0;
+    /*!
+     * \brief Type of match method (flann or brute force)
+     * \return
+     */
+    virtual auto type() const -> Type = 0;
 
-  /*!
-   * \brief Name of match method
-   * \return
-   */
-  virtual std::string name() const = 0;
+    /*!
+     * \brief Name of match method
+     * \return
+     */
+    virtual auto name() const -> std::string = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MatchingMethod::Type)
@@ -101,23 +100,24 @@ class TL_EXPORT MatchingMethodBase
   : public MatchingMethod
 {
 
-public:
-
-  MatchingMethodBase(Type type) : mMatchType(type) {}
-  ~MatchingMethodBase() override = default;
-
-// MatchingMethod interface
-
-public:
-
-  Type type() const override 
-  { 
-    return mMatchType.flags(); 
-  }
-
 private:
 
-  tl::EnumFlags<Type> mMatchType;
+    tl::EnumFlags<Type> mMatchType;
+
+public:
+
+    explicit MatchingMethodBase(Type type) : mMatchType(type) {}
+    ~MatchingMethodBase() override = default;
+
+    // MatchingMethod interface
+
+public:
+
+    auto type() const -> Type override
+    {
+        return mMatchType.flags();
+    }
+
 };
 
 
@@ -130,36 +130,36 @@ class TL_EXPORT DescriptorMatcher
 
 public:
 
-  DescriptorMatcher() {}
-  virtual ~DescriptorMatcher() = default;
+    DescriptorMatcher() {}
+    virtual ~DescriptorMatcher() = default;
 
 public:
 
-  /*!
-   * \brief Compute matching
-   * \param[in] queryDescriptors Query descriptors
-   * \param[in] trainDescriptors Train descriptors
-   * \param[out] matches Matches 1 to 2
-   * \param[in] mask
-   * \return
-   */
-  virtual void match(const cv::Mat &queryDescriptors,
-                     const cv::Mat &trainDescriptors,
-                     std::vector<cv::DMatch> &matches,
-                     const cv::Mat mask = cv::Mat()) = 0;
+    /*!
+     * \brief Compute matching
+     * \param[in] queryDescriptors Query descriptors
+     * \param[in] trainDescriptors Train descriptors
+     * \param[out] matches Matches 1 to 2
+     * \param[in] mask
+     * \return
+     */
+    virtual void match(const cv::Mat &queryDescriptors,
+                       const cv::Mat &trainDescriptors,
+                       std::vector<cv::DMatch> &matches,
+                       const cv::Mat mask = cv::Mat()) = 0;
 
-  /*!
-   * \brief Compute matching
-   * \param[in] queryDescriptors Query descriptors
-   * \param[in] trainDescriptors Train descriptors
-   * \param[out] matches Matches 1 to 2 and 2 to 1
-   * \param[in] mask
-   * \return 
-   */
-  virtual void match(const cv::Mat &queryDescriptors,
-                     const cv::Mat &trainDescriptors,
-                     std::vector<std::vector<cv::DMatch>> &matches,
-                     const cv::Mat mask = cv::Mat()) = 0;
+    /*!
+     * \brief Compute matching
+     * \param[in] queryDescriptors Query descriptors
+     * \param[in] trainDescriptors Train descriptors
+     * \param[out] matches Matches 1 to 2 and 2 to 1
+     * \param[in] mask
+     * \return
+     */
+    virtual void match(const cv::Mat &queryDescriptors,
+                       const cv::Mat &trainDescriptors,
+                       std::vector<std::vector<cv::DMatch>> &matches,
+                       const cv::Mat mask = cv::Mat()) = 0;
 
 };
 
@@ -168,26 +168,26 @@ public:
 
 
 class TL_EXPORT FlannMatcher
-  : public MatchingMethodBase
+    : public MatchingMethodBase
 {
 
 public:
 
-  /// TODO: Por ahora valores por defecto
-  enum class Index
-  {
-    kdtree,
-    lsh
-    ///TODO: https://docs.opencv.org/4.1.1/db/df4/structcv_1_1flann_1_1IndexParams.html
-  };
+    /// TODO: Por ahora valores por defecto
+    enum class Index
+    {
+        kdtree,
+        lsh
+        ///TODO: https://docs.opencv.org/4.1.1/db/df4/structcv_1_1flann_1_1IndexParams.html
+    };
 
 public:
 
-  FlannMatcher() : MatchingMethodBase(MatchingMethod::Type::flann) {}
-  ~FlannMatcher() override = default;
+    FlannMatcher() : MatchingMethodBase(Type::flann) {}
+    ~FlannMatcher() override = default;
 
-  virtual Index index() const = 0;
-  virtual void setIndex(Index index) = 0;
+    virtual auto index() const -> Index = 0;
+    virtual void setIndex(Index index) = 0;
 
 };
 
@@ -200,23 +200,24 @@ public:
 class TL_EXPORT BruteForceMatcher
   : public MatchingMethodBase
 {
-public:
-
-  enum class Norm
-  {
-    l1,
-    l2,
-    hamming,
-    hamming2
-  };
 
 public:
 
-  BruteForceMatcher() : MatchingMethodBase(MatchingMethod::Type::brute_force) {}
-  ~BruteForceMatcher() override = default;
+    enum class Norm
+    {
+        l1,
+        l2,
+        hamming,
+        hamming2
+    };
 
-  virtual Norm normType() const = 0;
-  virtual void setNormType(Norm normType) = 0;
+public:
+
+    BruteForceMatcher() : MatchingMethodBase(Type::brute_force) {}
+    ~BruteForceMatcher() override = default;
+
+    virtual auto normType() const -> Norm = 0;
+    virtual void setNormType(Norm normType) = 0;
 
 };
 
@@ -229,24 +230,24 @@ class TL_EXPORT MatchingStrategy
 {
 public:
 
-  enum class Strategy
-  {
-    robust_matching,
-    gms
-  };
+    enum class Strategy
+    {
+        robust_matching,
+        gms
+    };
 
 public:
 
-  MatchingStrategy() {}
-  virtual ~MatchingStrategy() = default;
+    MatchingStrategy() {}
+    virtual ~MatchingStrategy() = default;
 
-  /*!
-   * \brief Recover the default values
-   */
-  virtual void reset() = 0;
+    /*!
+     * \brief Recover the default values
+     */
+    virtual void reset() = 0;
 
-  virtual Strategy strategy() const = 0;
-  virtual std::string name() const = 0;
+    virtual auto strategy() const -> Strategy = 0;
+    virtual auto name() const -> std::string = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MatchingStrategy::Strategy)
@@ -259,23 +260,23 @@ class TL_EXPORT MatchingStrategyBase
   : public MatchingStrategy
 {
 
+protected:
+
+    tl::EnumFlags<Strategy> mStrategy;
+
 public:
-  
-  MatchingStrategyBase(Strategy strategy) : mStrategy(strategy) {}
-  ~MatchingStrategyBase() override = default;
+
+    MatchingStrategyBase(Strategy strategy) : mStrategy(strategy) {}
+    ~MatchingStrategyBase() override = default;
 
 // MatchingStrategy interface
 
 public:
 
-  Strategy strategy() const override
-  { 
-    return mStrategy.flags(); 
-  }
-
-protected:
-
-  tl::EnumFlags<Strategy> mStrategy;
+    auto strategy() const -> Strategy override
+    {
+        return mStrategy.flags();
+    }
 
 };
 
@@ -288,17 +289,17 @@ class TL_EXPORT MatchingAlgorithm
 
 public:
 
-  MatchingAlgorithm() {}
-  virtual ~MatchingAlgorithm() = default;
+    MatchingAlgorithm() {}
+    virtual ~MatchingAlgorithm() = default;
 
-  virtual bool compute(const cv::Mat &queryDescriptor,
-                       const cv::Mat &trainDescriptor,
-                       const std::vector<cv::KeyPoint> &keypoints1,
-                       const std::vector<cv::KeyPoint> &keypoints2,
-                       std::vector<cv::DMatch> *goodMatches,
-                       std::vector<cv::DMatch> *wrongMatches = nullptr,
-                       const cv::Size &queryImageSize = cv::Size(),
-                       const cv::Size &trainImageSize = cv::Size()) = 0;
+    virtual bool compute(const cv::Mat &queryDescriptor,
+                         const cv::Mat &trainDescriptor,
+                         const std::vector<cv::KeyPoint> &keypoints1,
+                         const std::vector<cv::KeyPoint> &keypoints2,
+                         std::vector<cv::DMatch> *goodMatches,
+                         std::vector<cv::DMatch> *wrongMatches = nullptr,
+                         const cv::Size &queryImageSize = cv::Size(),
+                         const cv::Size &trainImageSize = cv::Size()) = 0;
 };
 
 
@@ -319,18 +320,20 @@ class TL_EXPORT RobustMatcher
 
 public:
 
-  RobustMatcher()
-    : MatchingStrategyBase(Strategy::robust_matching) {}
-  ~RobustMatcher() override = default;
+    RobustMatcher()
+        : MatchingStrategyBase(Strategy::robust_matching)
+    {
+    }
+    ~RobustMatcher() override = default;
 
-  virtual double ratio() const = 0;
-  virtual void setRatio(double ratio) = 0;
+    virtual auto ratio() const -> double = 0;
+    virtual void setRatio(double ratio) = 0;
 
-  virtual bool crossCheck() const = 0;
-  virtual void setCrossCheck(bool crossCheck) = 0;
+    virtual auto crossCheck() const -> bool = 0;
+    virtual void setCrossCheck(bool crossCheck) = 0;
 
-  virtual std::shared_ptr<GeometricTest> geometricTest() const = 0;
-  virtual void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) = 0;
+    virtual auto geometricTest() const -> std::shared_ptr<GeometricTest> = 0;
+    virtual void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) = 0;
 
 };
 
@@ -345,19 +348,18 @@ class TL_EXPORT Gms
 
 public:
 
-  Gms() : MatchingStrategyBase(Strategy::gms) {}
-  ~Gms() override = default;
+    Gms() : MatchingStrategyBase(Strategy::gms) {}
+    ~Gms() override = default;
 
-  virtual bool rotation() const = 0;
-  virtual void setRotation(bool rotation) = 0;
+    virtual auto rotation() const -> bool = 0;
+    virtual void setRotation(bool rotation) = 0;
 
-  virtual bool scale() const  = 0;
-  virtual void setScale(bool scale) = 0;
+    virtual auto scale() const -> bool = 0;
+    virtual void setScale(bool scale) = 0;
 
-  virtual double threshold() const = 0;
-  virtual void setThreshold(double threshold) = 0;
+    virtual auto threshold() const -> double = 0;
+    virtual void setThreshold(double threshold) = 0;
 };
-
 
 
 /*! \} */ // end of FeatureMatching
@@ -365,6 +367,3 @@ public:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-
-#endif // TL_FEATMATCH_MATCHER_H

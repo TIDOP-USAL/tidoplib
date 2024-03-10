@@ -72,13 +72,13 @@ struct PolygonTest
   void setup()
   {
     polygon_initializer_list_constructor = new PolygonI{
-      PointI(4157222, 664789),
-      PointI(4149043, 688836),
-      PointI(4172803, 690340),
-      PointI(4177148, 642997),
-      PointI(4137012, 671808),
-      PointI(4146292, 666953),
-      PointI(4138759, 702670) };
+      Point<int>(4157222, 664789),
+      Point<int>(4149043, 688836),
+      Point<int>(4172803, 690340),
+      Point<int>(4177148, 642997),
+      Point<int>(4137012, 671808),
+      Point<int>(4146292, 666953),
+      Point<int>(4138759, 702670) };
              
     polygon_reserve_constructor = new PolygonD(10);
 
@@ -236,8 +236,8 @@ BOOST_FIXTURE_TEST_CASE(area, PolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(isInner, PolygonTest)
 {
-  BOOST_CHECK(false == polygon_initializer_list_constructor->isInner(PointI(0,0)));
-  BOOST_CHECK(polygon_initializer_list_constructor->isInner(PointI(4160000, 675000)));
+  BOOST_CHECK(false == polygon_initializer_list_constructor->isInner(Point<int>(0,0)));
+  BOOST_CHECK(polygon_initializer_list_constructor->isInner(Point<int>(4160000, 675000)));
 }
 
 BOOST_FIXTURE_TEST_CASE(holes, PolygonTest)
@@ -262,13 +262,13 @@ struct Polygon3DTest
     : polygon_holes(nullptr)
   {
     polygon_initializer_list_constructor = new Polygon3dI {
-      Point3I(4157222, 664789, 10),
-      Point3I(4149043, 688836, 20),
-      Point3I(4172803, 690340, 30),
-      Point3I(4177148, 642997, 25),
-      Point3I(4137012, 671808, 20),
-      Point3I(4146292, 666953, 15),
-      Point3I(4138759, 702670, 10) };
+      Point3<int>(4157222, 664789, 10),
+      Point3<int>(4149043, 688836, 20),
+      Point3<int>(4172803, 690340, 30),
+      Point3<int>(4177148, 642997, 25),
+      Point3<int>(4137012, 671808, 20),
+      Point3<int>(4146292, 666953, 15),
+      Point3<int>(4138759, 702670, 10) };
              
     polygon_reserve_constructor = new Polygon3dD(10);
   }
@@ -474,13 +474,13 @@ struct MultiPolygonTest
   void setup()
   {
     PolygonI polygon {
-      PointI(4157222, 664789),
-      PointI(4149043, 688836),
-      PointI(4172803, 690340),
-      PointI(4177148, 642997),
-      PointI(4137012, 671808),
-      PointI(4146292, 666953),
-      PointI(4138759, 702670) 
+      Point<int>(4157222, 664789),
+      Point<int>(4149043, 688836),
+      Point<int>(4172803, 690340),
+      Point<int>(4177148, 642997),
+      Point<int>(4137012, 671808),
+      Point<int>(4146292, 666953),
+      Point<int>(4138759, 702670) 
     };
 
     multipolygon2.push_back(polygon);
@@ -491,8 +491,8 @@ struct MultiPolygonTest
 
   }
 
-  MultiPolygon<PointI> multipolygon1;
-  MultiPolygon<PointI> multipolygon2;
+  MultiPolygon<Point<int>> multipolygon1;
+  MultiPolygon<Point<int>> multipolygon2;
 
 };
 
@@ -512,7 +512,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygonTest) 
 {
-  MultiPolygon<PointI> multipolygon(10);
+  MultiPolygon<Point<int>> multipolygon(10);
 
   BOOST_CHECK_EQUAL(10, multipolygon.size());
   BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon2d);
@@ -528,7 +528,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygonTest)
 {
-	MultiPolygon<PointI> multipolygon_copy(multipolygon2);
+	MultiPolygon<Point<int>> multipolygon_copy(multipolygon2);
   BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
   BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
   BOOST_CHECK(false == multipolygon_copy.is3D());
@@ -543,7 +543,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygonTest)
 {
-  MultiPolygon<PointI> multipolygon_copy;
+  MultiPolygon<Point<int>> multipolygon_copy;
   multipolygon_copy = multipolygon2;
   BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
   BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
@@ -576,13 +576,13 @@ struct MultiPolygon3DTest
   void setup()
   {
     Polygon3dI polygon_initializer_list_constructor{
-      Point3I(4157222, 664789, 10),
-      Point3I(4149043, 688836, 20),
-      Point3I(4172803, 690340, 30),
-      Point3I(4177148, 642997, 25),
-      Point3I(4137012, 671808, 20),
-      Point3I(4146292, 666953, 15),
-      Point3I(4138759, 702670, 10) 
+      Point3<int>(4157222, 664789, 10),
+      Point3<int>(4149043, 688836, 20),
+      Point3<int>(4172803, 690340, 30),
+      Point3<int>(4177148, 642997, 25),
+      Point3<int>(4137012, 671808, 20),
+      Point3<int>(4146292, 666953, 15),
+      Point3<int>(4138759, 702670, 10) 
     };
     multipolygon2.push_back(polygon_initializer_list_constructor);
   }
@@ -592,8 +592,8 @@ struct MultiPolygon3DTest
 
   }
 
-  MultiPolygon3D<Point3I> multipolygon1;
-  MultiPolygon3D<Point3I> multipolygon2;
+  MultiPolygon3D<Point3<int>> multipolygon1;
+  MultiPolygon3D<Point3<int>> multipolygon2;
 };
 
 /* Constructor por defecto */
@@ -617,7 +617,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygon3DTest) 
 {
-  MultiPolygon3D<Point3D> multipolygon(10);
+  MultiPolygon3D<Point3<double>> multipolygon(10);
   BoundingBoxD box = multipolygon.boundingBox();
   
   BOOST_CHECK_EQUAL(10, multipolygon.size());
@@ -634,7 +634,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygon3DTest) 
 {
-  MultiPolygon3D<Point3I> multipolygon_copy(multipolygon2);
+  MultiPolygon3D<Point3<int>> multipolygon_copy(multipolygon2);
   
   BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);
   BOOST_CHECK(multipolygon_copy.is3D());
@@ -652,7 +652,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygon3DTest)
 {
-  MultiPolygon3D<Point3I> multipolygon_copy;
+  MultiPolygon3D<Point3<int>> multipolygon_copy;
   multipolygon_copy = multipolygon2;
   
   BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);

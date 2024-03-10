@@ -24,7 +24,6 @@
 
 #include "tidop/core/utils.h"
 
-#include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
 #ifdef TL_HAVE_BOOST
@@ -44,31 +43,29 @@ namespace tl
 
 void replaceString(std::string *str, const std::string &str_old, const std::string &str_new)
 {
-  std::size_t ini = str->find(str_old);
-  while (ini != std::string::npos) {
-    str->replace(ini, str_old.size(), str_new);
-    ini = str->find(str_old, str_new.size() + ini);
-  }
+    std::size_t ini = str->find(str_old);
+    while (ini != std::string::npos) {
+        str->replace(ini, str_old.size(), str_new);
+        ini = str->find(str_old, str_new.size() + ini);
+    }
 }
 
 int stringToInteger(const std::string &text, Base base)
 {
-  std::istringstream ss(text);
-  switch (base) {
-  case Base::octal:
-    ss.setf(std::ios_base::oct, std::ios::basefield);
-    break;
-  case Base::decimal:
-    ss.setf(std::ios_base::dec, std::ios::basefield);
-    break;
-  case Base::hexadecimal:
-    ss.setf(std::ios_base::hex, std::ios::basefield);
-    break;
-  default:
-    break;
-  }
-  int number;
-  return ss >> number ? number : 0;
+    std::istringstream ss(text);
+    switch (base) {
+    case Base::octal:
+        ss.setf(std::ios_base::oct, std::ios::basefield);
+        break;
+    case Base::decimal:
+        ss.setf(std::ios_base::dec, std::ios::basefield);
+        break;
+    case Base::hexadecimal:
+        ss.setf(std::ios_base::hex, std::ios::basefield);
+        break;
+    }
+    int number;
+    return ss >> number ? number : 0;
 }
 
 #if CPP_VERSION >= 17
@@ -78,23 +75,23 @@ bool compareInsensitiveCase(const std::string &source, const std::string &compar
 #endif
 {
 #ifdef TL_HAVE_BOOST
-  return boost::iequals(source, compare);
+    return boost::iequals(source, compare);
 #elif CPP_VERSION >= 14
-  //https://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
-  return std::equal(source.begin(), source.end(),
-                    compare.begin(), compare.end(),
-                    [](char a, char b) {
-                      return tolower(a) == tolower(b);
-                    });
+    //https://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
+    return std::equal(source.begin(), source.end(),
+                      compare.begin(), compare.end(),
+                      [](char a, char b) {
+                          return tolower(a) == tolower(b);
+                      });
 #else
-   
-  unsigned int sz = source.size();
-  if (compare.size() != sz)
-    return false;
-  for (unsigned int i = 0; i < sz; ++i)
-    if (tolower(source[i]) != tolower(compare[i]))
-      return false;
- return true;
+
+    unsigned int sz = source.size();
+    if (compare.size() != sz)
+        return false;
+    for (unsigned int i = 0; i < sz; ++i)
+        if (tolower(source[i]) != tolower(compare[i]))
+            return false;
+    return true;
 #endif
 }
 

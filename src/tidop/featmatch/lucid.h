@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_LUCID_DESCRIPTOR_H
-#define TL_FEATMATCH_LUCID_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -49,31 +48,33 @@ namespace tl
 class TL_EXPORT LucidProperties
   : public Lucid
 {
+
+private:
+
+    int mLucidKernel{1};
+    int mBlurKernel{2};
+
 public:
 
-  LucidProperties();
-  ~LucidProperties() override = default;
+    LucidProperties();
+    ~LucidProperties() override = default;
 
 // Lucid interface
 
 public:
 
-  int lucidKernel() const override;
-  int blurKernel() const override;
-  void setLucidKernel(int lucidKernel) override;
-  void setBlurKernel(int blurKernel) override;
+    auto lucidKernel() const -> int override;
+    auto blurKernel() const -> int override;
+    void setLucidKernel(int lucidKernel) override;
+    void setBlurKernel(int blurKernel) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  int mLucidKernel{1};
-  int mBlurKernel{2};
 };
 
 
@@ -81,46 +82,45 @@ private:
 
 
 class TL_EXPORT LucidDescriptor
-    : public LucidProperties,
-      public DescriptorExtractor
+  : public LucidProperties,
+    public DescriptorExtractor
 {
-
-public:
-
-  LucidDescriptor();
-  LucidDescriptor(int lucidKernel, int blurKernel);
-  ~LucidDescriptor() override = default;
 
 private:
 
-  void update();
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    cv::Ptr<cv::xfeatures2d::LUCID> mLUCID;
+#endif // HAVE_OPENCV_XFEATURES2D
+
+public:
+
+    LucidDescriptor();
+    LucidDescriptor(int lucidKernel, int blurKernel);
+    ~LucidDescriptor() override = default;
+
+private:
+
+    void update();
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
-
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Lucid interface
 
 public:
 
-  void setLucidKernel(int lucidKernel) override;
-  void setBlurKernel(int blurKernel) override;
+    void setLucidKernel(int lucidKernel) override;
+    void setBlurKernel(int blurKernel) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-  cv::Ptr<cv::xfeatures2d::LUCID> mLUCID;
-#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
@@ -128,5 +128,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_LUCID_DESCRIPTOR_H

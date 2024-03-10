@@ -22,12 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_MULTI_POINT_H
-#define TL_GEOMETRY_MULTI_POINT_H
-
-#include <limits>
-#include <numeric>
-#include <array>
+#pragma once
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/entities2d.h"
@@ -42,339 +37,274 @@ namespace tl
 
 
 /*!
- * \brief Clase multi-punto
+ * \brief Multi-point class
  *
- * Esta template representa un conjunto de puntos relaccionados que se agrupan
- * en una misma entidad multipunto.
+ * This template represents a set of related points which are grouped 
+ * together into a single multi-point entity.
  *
- * Se han definido los siguientes alias para facilitar el acceso:
- * \code
- * typedef MultiPoint<int> MultiPointI;
- * typedef MultiPoint<double> MultiPointD;
- * typedef MultiPoint<float> MultiPointF;
- * \endcode
  */
 template<typename Point_t>
-class MultiPoint 
-  : public Entity, 
+class MultiPoint
+  : public Entity,
     public Entities2D<Point_t>
 {
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  MultiPoint();
+    using size_type = typename MultiPoint<Point_t>::size_type;
+public:
 
-  /*!
-   * \brief Constructor que reserva tamaño para n puntos
-   * \param[in] size Tamaño que se reserva para el contenedor
-   */
-  MultiPoint(typename MultiPoint<Point_t>::size_type size);
+    MultiPoint();
+    explicit MultiPoint(size_type size);
+    MultiPoint(const MultiPoint &multiPoint);
+    MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT;
+    explicit MultiPoint(const std::vector<Point_t> &points);
+    MultiPoint(std::initializer_list<Point_t> points);
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] multiPoint Objeto MultiPoint que se copia
-   */
-  MultiPoint(const MultiPoint &multiPoint);
+    ~MultiPoint() override = default;
 
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] multiPoint Objeto MultiPoint que se mueve
-   */
-  MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT;
+    /*!
+     * \brief Copy assignment operator
+     */
+    auto operator = (const MultiPoint &multiPoint) -> MultiPoint<Point_t> &;
 
-  /*!
-   * \brief Constructor
-   * \param[in] vPoint vector de puntos
-   */
-  MultiPoint(const std::vector<Point_t> &vPoint);
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator = (MultiPoint &&multiPoint) TL_NOEXCEPT -> MultiPoint<Point_t> &;
 
-  /*!
-   * \brief Constructor lista de inicialización
-   * \param[in] listPoints Inicializador de lista con los puntos
-   */
-  MultiPoint(std::initializer_list<Point_t> listPoints);
+    /*!
+     * \brief Ventana envolvente
+     */
+    auto window() const -> Window<Point_t>;
 
-  /*!
-   * \brief Destructora
-   */
-  ~MultiPoint() override = default;
-
-  /*!
-   * \brief Operador asignación
-   * \param[in] multiPoint Objeto MultiPoint que se copia
-   */
-  MultiPoint<Point_t> &operator = (const MultiPoint &multiPoint);
-
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] multiPoint Objeto MultiPoint que se mueve
-   */
-  MultiPoint<Point_t> &operator = (MultiPoint &&multiPoint) TL_NOEXCEPT; 
-
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente de los puntos
-   */
-  Window<Point_t> window() const;
 };
 
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint() 
-  : Entity(Entity::Type::multipoint2d),
-    Entities2D<Point_t>() 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(typename MultiPoint<Point_t>::size_type size)
-  : Entity(Entity::Type::multipoint2d),
-    Entities2D<Point_t>(size) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
-  : Entity(Entity::Type::multipoint2d),
-    Entities2D<Point_t>(multiPoint) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(multiPoint)), 
-    Entities2D<Point_t>(std::forward<Entities2D<Point_t>>(multiPoint)) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::Type::multipoint2d),
-    Entities2D<Point_t>(vPoint) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::multipoint2d),
-    Entities2D<Point_t>(listPoints)
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (const MultiPoint &multiPoint)
-{
-  if (this != &multiPoint) {
-    Entity::operator = (multiPoint);
-    Entities2D<Point_t>::operator = (multiPoint);
-  }
-  return *this;
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (MultiPoint &&multiPoint) TL_NOEXCEPT
-{
-  if (this != &multiPoint) {
-    Entity::operator = (std::forward<Entity>(multiPoint));
-    Entities2D<Point_t>::operator = (std::forward<Entities2D<Point_t>>(multiPoint));
-  }
-  return *this;
-}
-
-template<typename Point_t> inline
-Window<Point_t> MultiPoint<Point_t>::window() const
-{
-  Window<Point_t> w;
-
-  for (size_t i = 0; i < this->size(); i++) {
-    if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
-    if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
-    if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
-    if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
-  }
-
-  return w;
-}
 
 using MultiPointI = MultiPoint<Point<int> >;
 using MultiPointD = MultiPoint<Point<double> >;
 using MultiPointF = MultiPoint<Point<float> >;
 
+
+
 /* ---------------------------------------------------------------------------------- */
 
+
 /*!
- * \brief Clase multi-punto 3D
+ * \brief Multi-point 3D class
  *
- * Esta template representa un conjunto de puntos relaccionados que se agrupan
- * en una misma entidad multipunto.
- *
- * Se han definido los siguientes alias para facilitar el acceso:
- * \code
- * typedef MultiPoint3D<int> MultiPoint3dI;
- * typedef MultiPoint3D<double> MultiPoint3dD;
- * typedef MultiPoint3D<float> MultiPoint3dF;
- * \endcode
  */
 template<typename Point_t>
 class MultiPoint3D
   : public Entity,
     public Entities3D<Point_t>
 {
-  
+
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  MultiPoint3D();
+    using size_type = typename MultiPoint3D<Point_t>::size_type;
 
-  /*!
-   * \brief Constructor que reserva tamaño para n puntos
-   * \param[in] size Tamaño que se reserva para el contenedor
-   */
-  MultiPoint3D(typename MultiPoint3D<Point_t>::size_type size);
+public:
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] multiPoint Objeto MultiPoint que se copia
-   */
-  MultiPoint3D(const MultiPoint3D &multiPoint);
+    MultiPoint3D();
+    explicit MultiPoint3D(size_type size);
+    MultiPoint3D(const MultiPoint3D &multiPoint);
+    MultiPoint3D(MultiPoint3D &&multiPoint) TL_NOEXCEPT;
+    explicit MultiPoint3D(const std::vector<Point_t> &vPoint);
+    MultiPoint3D(std::initializer_list<Point_t> listPoints);
 
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] multiPoint Objeto MultiPoint3D que se mueve
-   */
-  MultiPoint3D(MultiPoint3D &&multiPoint) TL_NOEXCEPT;
+    ~MultiPoint3D() override = default;
 
-  /*!
-   * \brief Constructor
-   * \param[in] vPoint vector de puntos
-   */
-  MultiPoint3D(const std::vector<Point_t> &vPoint);
+    /*!
+     * \brief Copy assignment operator
+     */
+    auto operator = (const MultiPoint3D &multiPoint) -> MultiPoint3D<Point_t> &;
 
-  /*!
-   * \brief Constructor lista de inicialización
-   * \param[in] listPoints Inicializador de lista con los puntos
-   */
-  MultiPoint3D(std::initializer_list<Point_t> listPoints);
-  
-  /*!
-   * \brief Destructora
-   */
-  ~MultiPoint3D() override = default;
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator = (MultiPoint3D &&multiPoint) TL_NOEXCEPT -> MultiPoint3D<Point_t> &;
 
-  /*!
-   * \brief Operador asignación
-   * \param[in] multiPoint Objeto MultiPoint3D que se copia
-   */
-  MultiPoint3D<Point_t> &operator = (const MultiPoint3D &multiPoint);
+    /*!
+     * \brief Bounding Box
+     */
+    auto boundingBox() const -> BoundingBox<Point_t>;
 
-  /*!
-   * \brief Operador de asignación de movimiento
-   * \param[in] multiPoint Objeto MultiPoint3D que se mueve
-   */
-  MultiPoint3D<Point_t> &operator = (MultiPoint3D &&multiPoint) TL_NOEXCEPT;
-
-  /*!
-   * \brief Caja envolvente
-   * \return Caja envolvente de los puntos
-   */
-  BoundingBox<Point_t> boundingBox() const;
 };
 
-template<typename Point_t> inline
+
+
+/* MultiPoint implementation */
+
+template<typename Point_t>
+MultiPoint<Point_t>::MultiPoint() 
+  : Entity(Type::multipoint2d),
+    Entities2D<Point_t>() 
+{
+}
+
+template<typename Point_t>
+MultiPoint<Point_t>::MultiPoint(size_type size)
+  : Entity(Type::multipoint2d),
+    Entities2D<Point_t>(size) 
+{
+}
+
+template<typename Point_t>
+MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
+  : Entity(Type::multipoint2d),
+    Entities2D<Point_t>(multiPoint) 
+{
+}
+
+template<typename Point_t>
+MultiPoint<Point_t>::MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT
+  : Entity(std::forward<Entity>(multiPoint)), 
+    Entities2D<Point_t>(std::forward<Entities2D<Point_t>>(multiPoint)) 
+{
+}
+
+template<typename Point_t>
+MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
+  : Entity(Type::multipoint2d),
+    Entities2D<Point_t>(vPoint) 
+{
+}
+
+template<typename Point_t>
+MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
+  : Entity(Type::multipoint2d),
+    Entities2D<Point_t>(listPoints)
+{
+}
+
+template<typename Point_t>
+auto MultiPoint<Point_t>::operator = (const MultiPoint &multiPoint) -> MultiPoint<Point_t> &
+{
+    if (this != &multiPoint) {
+        Entity::operator = (multiPoint);
+        Entities2D<Point_t>::operator = (multiPoint);
+    }
+
+    return *this;
+}
+
+template<typename Point_t>
+auto MultiPoint<Point_t>::operator = (MultiPoint &&multiPoint) TL_NOEXCEPT -> MultiPoint<Point_t> &
+{
+    if (this != &multiPoint) {
+        Entity::operator = (std::forward<Entity>(multiPoint));
+        Entities2D<Point_t>::operator = (std::forward<Entities2D<Point_t>>(multiPoint));
+    }
+
+    return *this;
+}
+
+template<typename Point_t>
+auto MultiPoint<Point_t>::window() const -> Window<Point_t>
+{
+    Window<Point_t> w;
+
+    for (size_t i = 0; i < this->size(); i++) {
+        if (w.pt1.x > this->at(i).x) w.pt1.x = this->at(i).x;
+        if (w.pt1.y > this->at(i).y) w.pt1.y = this->at(i).y;
+        if (w.pt2.x < this->at(i).x) w.pt2.x = this->at(i).x;
+        if (w.pt2.y < this->at(i).y) w.pt2.y = this->at(i).y;
+    }
+
+    return w;
+}
+
+
+
+/* MultiPoint3D implementation */
+
+template<typename Point_t>
 MultiPoint3D<Point_t>::MultiPoint3D() 
-  : Entity(Entity::Type::multipoint3d),
+  : Entity(Type::multipoint3d),
     Entities3D<Point_t>() 
 {
 }
 
-template<typename Point_t> inline
-MultiPoint3D<Point_t>::MultiPoint3D(typename MultiPoint3D<Point_t>::size_type size)
-  : Entity(Entity::Type::multipoint3d),
+template<typename Point_t>
+MultiPoint3D<Point_t>::MultiPoint3D(size_type size)
+  : Entity(Type::multipoint3d),
     Entities3D<Point_t>(size) 
 {
 }
 
-template<typename Point_t> inline
+template<typename Point_t>
 MultiPoint3D<Point_t>::MultiPoint3D(const MultiPoint3D &multiPoint) 
   : Entity(multiPoint),
     Entities3D<Point_t>(multiPoint) 
 {
 }
 
-template<typename Point_t> inline
+template<typename Point_t>
 MultiPoint3D<Point_t>::MultiPoint3D(MultiPoint3D &&multiPoint) TL_NOEXCEPT
   : Entity(std::forward<Entity>(multiPoint)),
     Entities3D<Point_t>(std::forward<MultiPoint3D<Point_t>>(multiPoint)) 
 {
 }
 
-template<typename Point_t> inline
+template<typename Point_t>
 MultiPoint3D<Point_t>::MultiPoint3D(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::Type::multipoint3d),
+  : Entity(Type::multipoint3d),
     Entities3D<Point_t>(vPoint) 
 {
 }
 
-template<typename Point_t> inline
+template<typename Point_t>
 MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::multipoint3d),
+  : Entity(Type::multipoint3d),
     Entities3D<Point_t>(listPoints)
 {
 }
 
-template<typename Point_t> inline
-MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint)
+template<typename Point_t>
+auto MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint) -> MultiPoint3D<Point_t> &
 {
-  if (this != &multiPoint) {
-    Entity::operator=(multiPoint);
-    Entities3D<Point_t>::operator = (multiPoint);
-  }
+    if (this != &multiPoint) {
+        Entity::operator=(multiPoint);
+        Entities3D<Point_t>::operator = (multiPoint);
+    }
 
-  return *this;
+    return *this;
 }
 
-template<typename Point_t> inline
-MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPoint) TL_NOEXCEPT
+template<typename Point_t>
+auto MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPoint) TL_NOEXCEPT -> MultiPoint3D<Point_t> &
 {
-  if (this != &multiPoint) {
-    Entity::operator = (std::forward<Entity>(multiPoint));
-    Entities3D<Point_t>::operator = (std::forward<Entities3D<Point_t>>(multiPoint));
-  }
+    if (this != &multiPoint) {
+        Entity::operator = (std::forward<Entity>(multiPoint));
+        Entities3D<Point_t>::operator = (std::forward<Entities3D<Point_t>>(multiPoint));
+    }
 
-  return *this;
+    return *this;
 }
 
-template<typename Point_t> inline
-BoundingBox<Point_t> MultiPoint3D<Point_t>::boundingBox() const
+template<typename Point_t>
+auto MultiPoint3D<Point_t>::boundingBox() const -> BoundingBox<Point_t>
 {
-  BoundingBox<Point_t> bounding_box;
+    BoundingBox<Point_t> bounding_box;
 
-  for (size_t i = 0; i < this->size(); i++) {
-    if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
-    if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
-    if (bounding_box.pt1.z > this->at(i).z) bounding_box.pt1.z = this->at(i).z;
-    if (bounding_box.pt2.x < this->at(i).x) bounding_box.pt2.x = this->at(i).x;
-    if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
-    if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
-  }
+    for (size_t i = 0; i < this->size(); i++) {
+        if (bounding_box.pt1.x > this->at(i).x) bounding_box.pt1.x = this->at(i).x;
+        if (bounding_box.pt1.y > this->at(i).y) bounding_box.pt1.y = this->at(i).y;
+        if (bounding_box.pt1.z > this->at(i).z) bounding_box.pt1.z = this->at(i).z;
+        if (bounding_box.pt2.x < this->at(i).x) bounding_box.pt2.x = this->at(i).x;
+        if (bounding_box.pt2.y < this->at(i).y) bounding_box.pt2.y = this->at(i).y;
+        if (bounding_box.pt2.z < this->at(i).z) bounding_box.pt2.z = this->at(i).z;
+    }
 
-  return bounding_box;
+    return bounding_box;
 }
 
 using MultiPoint3dI = MultiPoint3D<Point3<int> >;
 using MultiPoint3dD = MultiPoint3D<Point3<double> >;
 using MultiPoint3dF = MultiPoint3D<Point3<float> >;
 
-/* ---------------------------------------------------------------------------------- */
-
-
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_MULTI_POINT_H

@@ -22,13 +22,12 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECT_H
-#define TL_VECT_H
+#pragma once
 
 #include "tidop/core/defs.h"
 
 #ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "ogrsf_frmts.h"
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL
@@ -38,13 +37,19 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+/*! \defgroup vector Vector
+ *  \{
+ */
+
+
 #ifdef TL_HAVE_GDAL
 TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
 TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
 #endif // TL_HAVE_GDAL
 
+
+/*! \} */ // end of vector
+
+
 } // End namespace tl
 
-
-
-#endif // TL_VECT_H

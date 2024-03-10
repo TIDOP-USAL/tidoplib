@@ -27,126 +27,114 @@
 namespace tl
 {
 
-namespace geospatial
-{
 
-
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
-
-
-std::unique_ptr<CrsCache> CrsCache::sCrsCache;
-std::mutex CrsCache::sMutex;
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 CrsCache::CrsCache()
   : mCacheIdx(0)
 {
-  mCrs.reserve(100); // Tamaño reservado por defecto
+    mCrs.reserve(100); // Tamaño reservado por defecto
 }
 
 CrsCache &CrsCache::instance()
 {
-  if (sCrsCache.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(CrsCache::sMutex);
-    if (sCrsCache.get() == nullptr) {
-      sCrsCache.reset(new CrsCache());
-    }
-  }
-  return *sCrsCache;
+  static CrsCache crs_cache;
+  return crs_cache;
 }
 
 void CrsCache::add(const std::string &epsg)
 {
-  add(std::make_shared<Crs>(epsg));
+    add(std::make_shared<Crs>(epsg));
 }
 
 void CrsCache::add(const std::shared_ptr<Crs> &crs)
 {
-  if (isCacheFull()) {
-    if (mCacheIdx >= mCrs.capacity()) mCacheIdx = 0;
-    mCrs[mCacheIdx++] = crs;
-  } else {
-    mCrs.push_back(crs);
-    mCacheIdx++;
-  }
+    if (isCacheFull()) {
+        if (mCacheIdx >= mCrs.capacity()) mCacheIdx = 0;
+        mCrs[mCacheIdx++] = crs;
+    } else {
+        mCrs.push_back(crs);
+        mCacheIdx++;
+    }
 }
 
 
 void CrsCache::add(std::shared_ptr<Crs> &&crs)
 {
-  if (isCacheFull()) {
-    if (mCacheIdx >= mCrs.capacity()) mCacheIdx = 0;
-    mCrs[mCacheIdx++] = crs;
-  } else {
-    mCrs.push_back(crs);
-    mCacheIdx++;
-  }
+    if (isCacheFull()) {
+        if (mCacheIdx >= mCrs.capacity()) mCacheIdx = 0;
+        mCrs[mCacheIdx++] = crs;
+    } else {
+        mCrs.push_back(crs);
+        mCacheIdx++;
+    }
 }
 
-size_t CrsCache::capacity() const
+auto CrsCache::capacity() const -> size_t
 {
-  return mCrs.capacity();
+    return mCrs.capacity();
 }
 
 void CrsCache::clear()
 {
-  mCrs.clear();
-  mCacheIdx = 0;
+    mCrs.clear();
+    mCacheIdx = 0;
 }
 
-size_t CrsCache::size() const
+auto CrsCache::size() const -> size_t
 {
-  return mCrs.size();
+    return mCrs.size();
 }
 
-bool CrsCache::isCacheFull() const
+auto CrsCache::isCacheFull() const -> bool
 {
-  return (mCrs.size() == mCrs.capacity());
+    return (mCrs.size() == mCrs.capacity());
 }
 
-CrsCache::iterator CrsCache::begin()
+auto CrsCache::begin() -> iterator
 {
-  return mCrs.begin();
+    return mCrs.begin();
 }
 
-CrsCache::const_iterator CrsCache::begin() const
+auto CrsCache::begin() const -> const_iterator
 {
-  return mCrs.begin();
+    return mCrs.begin();
 }
 
-CrsCache::iterator CrsCache::end()
+auto CrsCache::end() -> iterator
 {
-  return mCrs.end();
+    return mCrs.end();
 }
 
-CrsCache::const_iterator CrsCache::end() const
+auto CrsCache::end() const -> const_iterator
 {
-  return mCrs.end();
+    return mCrs.end();
 }
 
-CrsCache::const_reference CrsCache::at(size_type position) const
+auto CrsCache::at(size_type position) const -> const_reference
 {
-  return mCrs.at(position);
+    return mCrs.at(position);
 }
 
-CrsCache::reference CrsCache::at(size_type position)
+auto CrsCache::at(size_type position) -> reference
 {
-  return mCrs.at(position);
+    return mCrs.at(position);
 }
 
-bool CrsCache::empty() const
+auto CrsCache::empty() const -> bool
 {
-  return mCrs.empty();
+    return mCrs.empty();
 }
 
 void CrsCache::reserve(size_type size)
 {
-  mCrs.reserve(size);
+    mCrs.reserve(size);
 }
 
 void CrsCache::resize(size_type count)
 {
-  mCrs.resize(count);
-  if (mCacheIdx > count) mCacheIdx = count;
+    mCrs.resize(count);
+    if (mCacheIdx > count) mCacheIdx = count;
 }
 
 
@@ -169,6 +157,5 @@ void CrsCache::resize(size_type count)
 
 #endif // TL_HAVE_GDAL
 
-} // End namespace  geospatial
 
 } // End namespace tl

@@ -75,13 +75,13 @@ struct RectTest
 
   void setup()
   {
-    rect_integer = new RectI(5, 10, 100, 100);
-    rect_double = new RectD(5.5, 10.6, 100.4, 100.2);
-    rect_float = new RectF(5.5f, 10.6f, 100.4f, 100.2f);
+    rect_integer = new Recti(5, 10, 100, 100);
+    rect_double = new Rectd(5.5, 10.6, 100.4, 100.2);
+    rect_float = new Rectf(5.5f, 10.6f, 100.4f, 100.2f);
 
-    rect_integer_copy = new RectI(*rect_integer);
-    rect_double_copy = new RectD(*rect_double);
-    rect_float_copy = new RectF(*rect_float);
+    rect_integer_copy = new Recti(*rect_integer);
+    rect_double_copy = new Rectd(*rect_double);
+    rect_float_copy = new Rectf(*rect_float);
 
     topLeft_integer = Point<int>(5, 10);
     bottomRight_integer = Point<int>(105, 110);
@@ -90,17 +90,17 @@ struct RectTest
     topLeft_float = Point<float>(5.5f, 10.6f);
     bottomRight_float = Point<float>(105.9f, 110.8f);
 
-    rect_constructor_integer_top_left_botton_right = new RectI(topLeft_integer, bottomRight_integer);
-    rect_constructor_double_top_left_botton_right = new RectD(topLeft_double, bottomRight_double);
-    rect_constructor_float_top_left_botton_right = new RectF(topLeft_float, bottomRight_float);
+    rect_constructor_integer_top_left_botton_right = new Recti(topLeft_integer, bottomRight_integer);
+    rect_constructor_double_top_left_botton_right = new Rectd(topLeft_double, bottomRight_double);
+    rect_constructor_float_top_left_botton_right = new Rectf(topLeft_float, bottomRight_float);
 
-    rect_constructor_integer_top_left_size = new RectI(topLeft_integer, Size<int>(100, 100));
-    rect_constructor_double_top_left_size = new RectD(topLeft_double, Size<double>(100.4, 100.2));
-    rect_constructor_float_top_left_size = new RectF(topLeft_float, Size<float>(100.4f, 100.2f));
+    rect_constructor_integer_top_left_size = new Recti(topLeft_integer, Size<int>(100, 100));
+    rect_constructor_double_top_left_size = new Rectd(topLeft_double, Size<double>(100.4, 100.2));
+    rect_constructor_float_top_left_size = new Rectf(topLeft_float, Size<float>(100.4f, 100.2f));
 
-    rect_constructor_integer_top_left_width_height = new RectI(topLeft_integer, 100, 100);
-    rect_constructor_double_top_left_width_height = new RectD(topLeft_double, 100.4, 100.2);
-    rect_constructor_float_top_left_width_height = new RectF(topLeft_float, 100.4f, 100.2f);
+    rect_constructor_integer_top_left_width_height = new Recti(topLeft_integer, 100, 100);
+    rect_constructor_double_top_left_width_height = new Rectd(topLeft_double, 100.4, 100.2);
+    rect_constructor_float_top_left_width_height = new Rectf(topLeft_float, 100.4f, 100.2f);
 
   }
  
@@ -109,16 +109,16 @@ struct RectTest
 
   }
 
-  RectI rect_default_constructor_integer;
-  RectD rect_default_constructor_double;
-  RectF rect_default_constructor_float;
+  Recti rect_default_constructor_integer;
+  Rectd rect_default_constructor_double;
+  Rectf rect_default_constructor_float;
 
-  RectI *rect_integer;
-  RectD *rect_double;
-  RectF *rect_float;
-  RectI *rect_integer_copy;
-  RectD *rect_double_copy;
-  RectF *rect_float_copy;
+  Recti *rect_integer;
+  Rectd *rect_double;
+  Rectf *rect_float;
+  Recti *rect_integer_copy;
+  Rectd *rect_double_copy;
+  Rectf *rect_float_copy;
 
   Point<int> topLeft_integer;
   Point<int> bottomRight_integer;
@@ -126,15 +126,15 @@ struct RectTest
   Point<double> bottomRight_double;
   Point<float> topLeft_float;
   Point<float> bottomRight_float;
-  RectI *rect_constructor_integer_top_left_botton_right;
-  RectD *rect_constructor_double_top_left_botton_right;
-  RectF *rect_constructor_float_top_left_botton_right;
-  RectI *rect_constructor_integer_top_left_size;
-  RectD *rect_constructor_double_top_left_size;
-  RectF *rect_constructor_float_top_left_size;
-  RectI *rect_constructor_integer_top_left_width_height;
-  RectD *rect_constructor_double_top_left_width_height;
-  RectF *rect_constructor_float_top_left_width_height;
+  Recti *rect_constructor_integer_top_left_botton_right;
+  Rectd *rect_constructor_double_top_left_botton_right;
+  Rectf *rect_constructor_float_top_left_botton_right;
+  Recti *rect_constructor_integer_top_left_size;
+  Rectd *rect_constructor_double_top_left_size;
+  Rectf *rect_constructor_float_top_left_size;
+  Recti *rect_constructor_integer_top_left_width_height;
+  Rectd *rect_constructor_double_top_left_width_height;
+  Rectf *rect_constructor_float_top_left_width_height;
 };
 
 
@@ -230,8 +230,8 @@ BOOST_FIXTURE_TEST_CASE(constructor_top_left_width_height, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, RectTest) 
 {
-  RectI rect(5, 10, 100, 100);
-  RectI rect2(std::move(rect));
+  Recti rect(5, 10, 100, 100);
+  Recti rect2(std::move(rect));
   BOOST_CHECK_EQUAL(5, rect2.x);
   BOOST_CHECK_EQUAL(10, rect2.y);
   BOOST_CHECK_EQUAL(100, rect2.width);
@@ -240,8 +240,8 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_assignment, RectTest)
 {
-  RectI rect(5, 10, 100, 100);
-  RectI rect2;
+  Recti rect(5, 10, 100, 100);
+  Recti rect2;
   rect2 = rect;
   BOOST_CHECK_EQUAL(5, rect2.x);
   BOOST_CHECK_EQUAL(10, rect2.y);
@@ -251,8 +251,8 @@ BOOST_FIXTURE_TEST_CASE(copy_assignment, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(move_assignment, RectTest)
 {
-  RectI rect2;
-  rect2 = RectI(5, 10, 100, 100);
+  Recti rect2;
+  rect2 = Recti(5, 10, 100, 100);
   BOOST_CHECK_EQUAL(5, rect2.x);
   BOOST_CHECK_EQUAL(10, rect2.y);
   BOOST_CHECK_EQUAL(100, rect2.width);
@@ -368,21 +368,21 @@ BOOST_FIXTURE_TEST_CASE(normalized, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(contains, RectTest)
 {
-  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(PointI(50, 50)));
-  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(PointI(0, 0)));
-  BOOST_CHECK(rect_integer->contains(PointI(50, 50)));
-  BOOST_CHECK_EQUAL(false, rect_integer->contains(PointI(0, 0)));
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(Point<int>(50, 50)));
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(Point<int>(0, 0)));
+  BOOST_CHECK(rect_integer->contains(Point<int>(50, 50)));
+  BOOST_CHECK_EQUAL(false, rect_integer->contains(Point<int>(0, 0)));
 }
 
 BOOST_FIXTURE_TEST_CASE(cast, RectTest)
 {
-  RectI recti = static_cast<RectI>(*rect_double);
+  Recti recti = static_cast<Recti>(*rect_double);
   BOOST_CHECK_EQUAL(6, recti.x);
   BOOST_CHECK_EQUAL(11, recti.y);
   BOOST_CHECK_EQUAL(100, recti.width);
   BOOST_CHECK_EQUAL(100, recti.height);
 
-  RectD rectd = static_cast<RectD>(*rect_integer);
+  Rectd rectd = static_cast<Rectd>(*rect_integer);
   BOOST_CHECK_EQUAL(5., rectd.x);
   BOOST_CHECK_EQUAL(10., rectd.y);
   BOOST_CHECK_EQUAL(100., rectd.width);
@@ -391,21 +391,21 @@ BOOST_FIXTURE_TEST_CASE(cast, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(is_equal, RectTest)
 {
-  RectI rect(5, 10, 100, 100);
+  Recti rect(5, 10, 100, 100);
   BOOST_CHECK(rect == *rect_integer);
 }
 
 BOOST_FIXTURE_TEST_CASE(is_not_equal, RectTest)
 {
-  RectI rect(8, 2, 45, 78);
+  Recti rect(8, 2, 45, 78);
   BOOST_CHECK(rect != *rect_integer);
 }
 
 BOOST_FIXTURE_TEST_CASE(intersection, RectTest)
 {
-  RectI rect1(50, 50, 100, 100);
-  RectI rect2(75, 75, 150, 150);
-  RectI rect3 = intersect(rect1, rect2);
+  Recti rect1(50, 50, 100, 100);
+  Recti rect2(75, 75, 150, 150);
+  Recti rect3 = intersect(rect1, rect2);
   BOOST_CHECK_EQUAL(75, rect3.x);
   BOOST_CHECK_EQUAL(75, rect3.y);
   BOOST_CHECK_EQUAL(75, rect3.width);

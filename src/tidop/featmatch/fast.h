@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_FAST_DETECTOR_H
-#define TL_FEATMATCH_FAST_DETECTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -53,35 +52,37 @@ constexpr auto fast_default_value_detector_type{"TYPE_9_16"};
 class TL_EXPORT FastProperties
   : public Fast
 {
+
+private:
+
+    int mThreshold{fast_default_value_threshold};
+    bool mNonmaxSuppression{fast_default_value_nonmax_suppression};
+    std::string mDetectorType;
+
 public:
 
-  FastProperties();
-  FastProperties(const FastProperties &fastProperties);
-  ~FastProperties() override = default;
+    FastProperties();
+    FastProperties(const FastProperties &fastProperties);
+    ~FastProperties() override = default;
 
 // Fast interface
 
 public:
 
-  int threshold() const override;
-  bool nonmaxSuppression() const override;
-  std::string detectorType() const override;
-  void setThreshold(int threshold) override;
-  void setNonmaxSuppression(bool nonmaxSuppression) override;
-  void setDetectorType(const std::string &detectorType) override;
+    auto threshold() const -> int override;
+    auto nonmaxSuppression() const -> bool override;
+    auto detectorType() const -> std::string override;
+    void setThreshold(int threshold) override;
+    void setNonmaxSuppression(bool nonmaxSuppression) override;
+    void setDetectorType(const std::string &detectorType) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    auto name() const -> std::string final;
 
-private:
-
-  int mThreshold{fast_default_value_threshold};
-  bool mNonmaxSuppression{fast_default_value_nonmax_suppression};
-  std::string mDetectorType;
 };
 
 
@@ -93,47 +94,46 @@ class TL_EXPORT FastDetector
     public KeypointDetector
 {
 
+private:
+
+  cv::Ptr<cv::FastFeatureDetector> mFast;
+
 public:
 
-  FastDetector();
-  FastDetector(const FastDetector &fastDetector);
-  FastDetector(int threshold, 
-               bool nonmaxSuppression, 
-               const std::string &detectorType);
-  ~FastDetector() override = default;
+    FastDetector();
+    FastDetector(const FastDetector &fastDetector);
+    FastDetector(int threshold,
+                 bool nonmaxSuppression,
+                 const std::string &detectorType);
+    ~FastDetector() override = default;
 
 private:
 
 #if CV_VERSION_MAJOR >= 4
-  cv::FastFeatureDetector::DetectorType convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> cv::FastFeatureDetector::DetectorType;
 #else
-  int convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> int;
 #endif
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Fast interface
 
 public:
 
-  void setThreshold(int threshold) override;
-  void setNonmaxSuppression(bool nonmaxSuppression) override;
-  void setDetectorType(const std::string &detectorType) override;
+    void setThreshold(int threshold) override;
+    void setNonmaxSuppression(bool nonmaxSuppression) override;
+    void setDetectorType(const std::string &detectorType) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-  cv::Ptr<cv::FastFeatureDetector> mFast;
+    void reset() override;
 
 };
 
@@ -146,47 +146,46 @@ class TL_EXPORT FastDetectorCuda
     public KeypointDetector
 {
 
+private:
+
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
+    cv::Ptr<cv::cuda::FastFeatureDetector> mFast;
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+
 public:
 
-  FastDetectorCuda();
-  FastDetectorCuda(const FastDetectorCuda &fastDetector);
-  FastDetectorCuda(int threshold, 
-                   bool nonmaxSuppression, 
-                   const std::string &detectorType);
-  ~FastDetectorCuda() override = default;
+    FastDetectorCuda();
+    FastDetectorCuda(const FastDetectorCuda &fastDetector);
+    FastDetectorCuda(int threshold,
+                     bool nonmaxSuppression,
+                     const std::string &detectorType);
+    ~FastDetectorCuda() override = default;
 
 private:
 
-  int convertDetectorType(const std::string &detectorType);
-  
-  void update();
-  
+    auto convertDetectorType(const std::string &detectorType) -> int;
+
+    void update();
+
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Fast interface
 
 public:
 
-  void setThreshold(int threshold) override;
-  void setNonmaxSuppression(bool nonmaxSuppression) override;
-  void setDetectorType(const std::string &detectorType) override;
+    void setThreshold(int threshold) override;
+    void setNonmaxSuppression(bool nonmaxSuppression) override;
+    void setDetectorType(const std::string &detectorType) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
-  cv::Ptr<cv::cuda::FastFeatureDetector> mFast;
-#endif // HAVE_OPENCV_CUDAFEATURES2D
+    void reset() override;
 
 };
 
@@ -197,5 +196,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_AGAST_DETECTOR_H

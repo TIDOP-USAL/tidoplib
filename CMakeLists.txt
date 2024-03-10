@@ -29,9 +29,12 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 
+if(POLICY CMP0146) 
+cmake_policy(SET CMP0146 OLD) 
+endif()
 
 project(TidopLib
-        VERSION 2.2.0
+        VERSION 3.0.0
         DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
@@ -145,7 +148,7 @@ endif()
 if(MSVC)
     add_compile_options("/W3" "/EHsc" "/permissive-" "-D_SCL_SECURE_NO_WARNINGS" "-D_CRT_SECURE_NO_DEPRECATE")
 else()
-    add_compile_options("-Wall" "-Wextra" #[["-Werror"]])
+    add_compile_options("-Wall" "-Wextra" "-Wpedantic" "-ftrack-macro-expansion=0" "-fno-diagnostics-show-caret")
 endif()
 
 
@@ -199,18 +202,18 @@ cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
+cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
 
 OPTION (BUILD_APPS                    "Build Apps"             OFF)
 OPTION (BUILD_SHARED_LIBS             "Build Shared Libraries" OFF)
 OPTION (BUILD_TEST                    "Build test"             OFF)
-OPTION (BUILD_DOC                     "Build documentation"    OFF)
+OPTION (BUILD_DOC                     "Build documentation"    ON)
 
 # Configuración de la librería
 
 OPTION (TIDOPLIB_USE_SIMD_INTRINSICS    "Use SIMD intrinsics"               ON )
-OPTION (TIDOPLIB_MESSAGE_HANDLER        "Active message handle"             ON )
 OPTION (TIDOPLIB_DEPRECATED_METHODS     "Use deprecated methods and class"  OFF)
 
 OPTION (TIDOPLIB_WARNING_DEPRECATED_METHODS     "Active deprecated method warning"  OFF)
@@ -235,14 +238,6 @@ if (TIDOPLIB_USE_SIMD_INTRINSICS)
 else(TIDOPLIB_USE_SIMD_INTRINSICS)
     unset(TIDOPLIB_SIMD CACHE)
 endif(TIDOPLIB_USE_SIMD_INTRINSICS)
-
-if(TIDOPLIB_MESSAGE_HANDLER)
-  set(TL_MESSAGE_HANDLER YES)
-  message(STATUS "  [TidopLib] Message manager enabled")
-else()
-  set(TL_MESSAGE_HANDLER NO)
-  message(STATUS "  [TidopLib] Message manager disabled")
-endif()
 
 if(TIDOPLIB_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
@@ -312,12 +307,12 @@ endif()
 #   variarán.                                                            #
 ##########################################################################
 
-#set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  ON)
 OPTION (WITH_GDAL   "Include GDAL Support"                    ON)
-OPTION (WITH_PROJ4  "Include PROJ4 Support"                   ON)
+OPTION (WITH_PROJ  "Include PROJ Support"                     ON)
 cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
 cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
@@ -342,8 +337,33 @@ unset(TL_HAVE_EXPERIMENTAL CACHE)
 
 message(STATUS "\nDependency loading:\n")
 
+
 ##########################################################################
-# BOOST (REQUIRED)                                                       #
+# fmt (REQUIRED C++ Version < 20)                                        #
+##########################################################################
+
+
+if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
+    AND ((CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND MSVC_TOOLSET_VERSION GREATER_EQUAL 143) 
+         OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 13.1)))
+    set(TL_HAVE_FMT NO)
+    add_compile_definitions("FORMAT_NAMESPACE=std::")
+else()
+    find_package(fmt REQUIRED)
+
+    if(fmt_FOUND)
+        message(STATUS "  fmt version: ${fmt_VERSION}")
+        set(TL_HAVE_FMT YES)
+        add_compile_definitions(TL_HAVE_FMT)
+        add_compile_definitions("FORMAT_NAMESPACE=fmt::")
+    else()
+        set(TL_HAVE_FMT NO)
+        add_compile_definitions("FORMAT_NAMESPACE=std::")
+    endif()
+endif()
+
+##########################################################################
+# BOOST (REQUIRED C++ Version < 17)                                      #
 ##########################################################################
 
 if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
@@ -364,6 +384,59 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
     else()
         set(TL_HAVE_BOOST NO)
     endif()
+
+endif()
+
+
+if(BUILD_TL_VIEWER)
+
+	##########################################################################
+	# GLEW                                                      			 #
+	##########################################################################
+
+	find_package(GLEW REQUIRED)
+
+	##########################################################################
+	# Qt                                                                     #
+	##########################################################################
+	find_package(Qt6 REQUIRED 
+				 COMPONENTS 
+				 Core
+				 Concurrent
+				 OpenGL  
+				 Widgets
+				 OpenGLWidgets)
+	  
+	if (Qt6_POSITION_INDEPENDENT_CODE)
+	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	endif()
+
+	if(Qt6_FOUND)
+		message(STATUS "Found Qt")
+		message(STATUS "  Module : ${Qt6Core_DIR}")
+		message(STATUS "  Module : ${Qt6Concurrent_DIR}")
+		message(STATUS "  Module : ${Qt6OpenGL_DIR}")
+		message(STATUS "  Module : ${Qt6Widgets_DIR}")
+		message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+
+		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
+		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
+		set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
+		set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+	endif()
+
+    
+    ##########################################################################
+	# LASzip                                                                 #
+	##########################################################################
+    # find_package(LASzip REQUIRED)
+
+
+    ##########################################################################
+	# LASLib                                                                 #
+	##########################################################################
+    find_package(LASLib REQUIRED)
+
 
 endif()
 
@@ -391,8 +464,9 @@ endif(WITH_OPENCV)
 # GDAL (optional)                                                        #
 ##########################################################################
 
-if(WITH_GDAL)
 
+
+if(WITH_GDAL) 
   find_package(GDAL QUIET)
 
   if(NOT GDAL_FOUND)
@@ -407,23 +481,34 @@ endif(WITH_GDAL)
 
 
 ##########################################################################
-# PROJ4 (optional)                                                       #
+# PROJ (optional)                                                       #
 ##########################################################################
 
-if(WITH_PROJ4)
+if(WITH_PROJ)
 
   set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
   find_package(PROJ QUIET)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
   if(NOT PROJ_FOUND)
-    set(TL_HAVE_PROJ4 NO)
+    unset(PROJ_DIR CACHE)
+    set(TL_HAVE_PROJ NO)
+	set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(PROJ4 QUIET)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
+    if(NOT PROJ4_FOUND)
+      set(TL_HAVE_PROJ4 NO)
+    else()
+      set(TL_HAVE_PROJ4 YES)
+      include_directories(${PROJ4_INCLUDE_DIRS})
+      message(STATUS "  PROJ version: ${PROJ4_VERSION}")
+    endif()
   else()
-    set(TL_HAVE_PROJ4 YES)
+    set(TL_HAVE_PROJ YES)
     #include_directories(${PROJ_INCLUDE_DIRS})
     message(STATUS "  PROJ version: ${PROJ_VERSION}")
   endif()
-endif(WITH_PROJ4)
+endif(WITH_PROJ)
 
 ##########################################################################
 # LibRaw (optional)                                                      #

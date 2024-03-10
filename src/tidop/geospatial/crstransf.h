@@ -22,128 +22,128 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOSPATIAL_CRS_TRANSFORM_H
-#define TL_GEOSPATIAL_CRS_TRANSFORM_H
+#pragma once
+
 
 #include "tidop/core/defs.h"
 
 #include <memory>
 
 #include "tidop/geospatial/crs.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/transform/transform.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 
 namespace tl
 {
 
-template<typename Point_t> class Transform3D;
-
-namespace geospatial
+namespace geom
 {
+template<typename Point_t> class Transform3D;
+}
+
+/// \cond
 
 namespace internal
 {
 class CoordinateTransformation;
 }
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+/// \endcond
+
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
+
+
+
+/*!
+ * \addtogroup geospatial
+ *
+ * \{
+ */
+
 
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
 /*!
- * \brief transformación entre sistemas de referencia
+ * \brief Transformation between reference systems
  */
 class TL_EXPORT CrsTransform
-  : public Transform3D<Point3<double>>
 {
 
 public:
 
-  /*!
-   * \brief Constructor
-   */
-  CrsTransform(const std::shared_ptr<Crs> &epsgIn, 
-               const std::shared_ptr<Crs> &epsgOut);
-  
-  //CrsTransform(const char *epsgIn, const char *epsgOut);
-
-  ~CrsTransform();
-
-  /*!
-   * \brief Operación no soportada para CrsTransform
-   * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
-   * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[out] error Vector con los errores para cada punto
-   * \param[out] rmse Root Mean Square Error
-   * \return Transform::Status
-   * \see Transform::Status
-   */
-  Transform::Status compute(const std::vector<Point3<double>> &pts1,
-                            const std::vector<Point3<double>> &pts2,
-                            std::vector<double> *error = nullptr,
-                            double *rmse = nullptr) override;
-
-  /*!
-   * \brief Transforma un conjunto de puntos a otro sistema de referencia
-   * \param[in] ptsIn Puntos de entrada
-   * \param[out] ptsOut Puntos de salida
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \see Transform::Order
-   */
-  Transform::Status transform(const std::vector<Point3<double>> &ptsIn,
-                              std::vector<Point3<double>> &ptsOut,
-                              Transform::Order trfOrder = Transform::Order::direct) const override;
-
-  /*!
-   * \brief Transforma un punto a otro sistema de referencia
-   * \param[in] ptIn Punto de entrada
-   * \param[out] ptOut Punto de salida
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \see Transform::Order
-   */
-  Transform::Status transform(const Point3<double> &ptIn,
-                              Point3<double> &ptOut,
-                              Transform::Order trfOrder = Transform::Order::direct) const override;
-
-  /*!
-   * \brief Transforma un punto a otro sistema de referencia
-   * \param[in] ptIn Punto de entrada
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return Punto de salida
-   * \see Transform::Order
-   */
-  Point3<double> transform(const Point3<double> &ptIn,
-                           Transform::Order trfOrder = Transform::Order::direct) const override;
-
-  bool isNull() const override;
-
-private:
-
-  void init();
+    enum class Order
+    {
+        direct,   /*!< Direct transformation. */
+        inverse,  /*!< Inverse transformation. */
+    };
 
 protected:
-  
-  /*!
-   * \brief Sistema de referencia de entrada
-   */
-  std::shared_ptr<Crs> mEpsgIn;
 
-  /*!
-   * \brief Sistema de referencia de salida
-   */
-  std::shared_ptr<Crs> mEpsgOut;
+    /*!
+     * \brief Sistema de referencia de entrada
+     */
+    std::shared_ptr<Crs> mEpsgIn;
+
+    /*!
+     * \brief Sistema de referencia de salida
+     */
+    std::shared_ptr<Crs> mEpsgOut;
 
 private:
 
-  internal::CoordinateTransformation *mCoordinateTransformation;
-  internal::CoordinateTransformation *mCoordinateTransformationInv;
+    internal::CoordinateTransformation *mCoordinateTransformation;
+    internal::CoordinateTransformation *mCoordinateTransformationInv;
 
-  //OGRCoordinateTransformation *pCoordinateTransformation;
-  //OGRCoordinateTransformation *pCoordinateTransformationInv;
+public:
+
+    /*!
+     * \brief Constructor
+     */
+    CrsTransform(const std::shared_ptr<Crs> &epsgIn,
+                 const std::shared_ptr<Crs> &epsgOut);
+
+    //CrsTransform(const char *epsgIn, const char *epsgOut);
+
+    ~CrsTransform();
+
+    /*!
+     * \brief Transforms a set of points to another reference system
+     * \param[in] ptsIn Input points
+     * \param[out] ptsOut Output points
+     * \param[in] trfOrder Transformation order, direct (by default) or inverse
+     * \see Order
+     */
+    void transform(const std::vector<Point3<double>> &ptsIn,
+                   std::vector<Point3<double>> &ptsOut,
+                   Order trfOrder = Order::direct) const;
+
+    /*!
+     * \brief Transforms coordinates to another reference system
+     * \param[in] ptIn Input coordinates
+     * \param[out] ptOut Output coordinates
+     * \param[in] trfOrder Transformation order, direct (by default) or inverse
+     * \see Order
+     */
+    void transform(const Point3<double> &ptIn,
+                   Point3<double> &ptOut,
+                   Order trfOrder = Order::direct) const;
+
+    /*!
+     * \brief Transforma un punto a otro sistema de referencia
+     * \param[in] ptIn Punto de entrada
+     * \param[in] trfOrder Transformación directa (por defecto) o inversa
+     * \return Punto de salida
+     * \see Transform::Order
+     */
+    auto transform(const Point3<double> &ptIn,
+                   Order trfOrder = Order::direct) const -> Point3<double>;
+
+    auto isNull() const -> bool;
+
+private:
+
+    void init();
 
 };
 
@@ -264,38 +264,35 @@ private:
 class EcefToEnu
 {
 
+private:
+
+    Point3<double> center;
+
 public:
 
-  EcefToEnu(const Point3<double> &center)
-    : mCenter(center)
-  {
-  }
+    EcefToEnu(const Point3<double> &center)
+        : center(center)
+    {
+    }
 
-  ~EcefToEnu()
-  {
-  }
+    ~EcefToEnu() = default;
 
-  Point3<double> direct(const Point3<double> &ecef,
-                        double longitude,
-                        double latitude);
-  Point3<double> inverse(const Point3<double> &enu,
-                         double longitude,
-                         double latitude);
+    auto direct(const Point3<double> &ecef,
+                double longitude,
+                double latitude) -> Point3<double>;
+    auto inverse(const Point3<double> &enu,
+                 double longitude,
+                 double latitude) -> Point3<double>;
 
 private:
 
-  math::RotationMatrix<double> rotationMatrixToEnu(double longitude,
-                                                   double latitude);
-
-private:
-
-  Point3<double> mCenter;
+    static auto rotationMatrixToEnu(double longitude,
+                                    double latitude) -> RotationMatrix<double>;
 
 };
 
-
-} // End namespace geospatial
+/*! \} */ // end of geospatial
 
 } // End namespace tl
 
-#endif // TL_GEOSPATIAL_CRS_TRANSFORM_H
+

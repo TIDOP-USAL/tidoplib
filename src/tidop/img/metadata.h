@@ -22,11 +22,11 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMAGE_METADATA_H
-#define TL_IMAGE_METADATA_H
+#pragma once
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/ptr.h"
 
 #include <memory>
 #include <map>
@@ -35,69 +35,75 @@ namespace tl
 {
 
 
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 class TL_EXPORT MetadataItem
 {
 
 public:
 
-  MetadataItem() = default;
-  virtual ~MetadataItem() = default;
+    MetadataItem() = default;
+    virtual ~MetadataItem() = default;
 
-  virtual void parseValue(const std::string &value) = 0;
+    virtual void parseValue(const std::string &value) = 0;
 
 };
 
 
 class TL_EXPORT MetadataItemBase
-  : public MetadataItem
+    : public MetadataItem
 {
-
-public:
-
-  MetadataItemBase(const std::string &name, 
-                   const std::string &defValue = "");
-  ~MetadataItemBase() override = default;
-
-  std::string value() const;
-  void setValue(const std::string &value);
-  std::string defaultValue() const;
-  void setDefaultValue(const std::string &defValue);
-  bool isActive() const;
 
 private:
 
-  std::string mName;
-  std::string mDefaultValue;
-  std::string mValue;
-  bool bActive;
+    std::string mName;
+    std::string mDefaultValue;
+    std::string mValue;
+    bool bActive;
+
+public:
+
+    MetadataItemBase(std::string name,
+                     std::string defValue = "");
+    ~MetadataItemBase() override = default;
+
+    auto value() const -> std::string;
+    void setValue(const std::string &value);
+    auto defaultValue() const -> std::string;
+    void setDefaultValue(const std::string &defValue);
+    auto isActive() const -> bool;
+
 };
 
 
-class MetadataItemNumber
-  : public MetadataItemBase
+class MetadataItemNumber  // NOLINT(cppcoreguidelines-special-member-functions)
+    : public MetadataItemBase
 {
 
 public:
 
-  MetadataItemNumber(const std::string &name,
-                     const std::string &defValue = "");
-  ~MetadataItemNumber() override = default;
+    MetadataItemNumber(const std::string &name,
+                       const std::string &defValue = "");
+    ~MetadataItemNumber() override = default;
 
-  void parseValue(const std::string &value) override;
+    void parseValue(const std::string &value) override;
 
 };
 
 class MetadataItemText
-  : public MetadataItemBase
+    : public MetadataItemBase
 {
 
 public:
 
-  MetadataItemText(const std::string &name,
+    MetadataItemText(const std::string &name,
                      const std::string &defValue = "");
-  ~MetadataItemText() override = default;
+    ~MetadataItemText() override = default;
 
-  void parseValue(const std::string &value) override;
+    void parseValue(const std::string &value) override;
 
 };
 
@@ -106,37 +112,39 @@ public:
 class TL_EXPORT ImageMetadata
 {
 
-public:
-
-  enum class Format
-  {
-    tiff,
-    jpeg,
-    jp2000,
-    png,
-    bmp,
-    gif
-  };
-
-  typedef std::map<std::string, std::string>::iterator metadata_iterator;
-  typedef std::map<std::string, std::string>::const_iterator metadata_const_iterator;
+    GENERATE_SHARED_PTR(ImageMetadata)
 
 public:
 
-  ImageMetadata(Format format);
-  virtual ~ImageMetadata();
+    enum class Format
+    {
+        tiff,
+        jpeg,
+        jp2000,
+        png,
+        bmp,
+        gif
+    };
 
-  Format format();
-
-  virtual std::string metadata(const std::string &name, bool &active) const = 0;
-  virtual void setMetadata(const std::string &name, const std::string &value) = 0;
-  virtual std::map<std::string, std::string> metadata() const = 0;
-  virtual std::map<std::string, std::string> activeMetadata() const = 0;
-  virtual void reset() = 0;
+    //using iterator = std::map<std::string, std::string>::iterator;
+    //using const_iterator = std::map<std::string, std::string>::const_iterator;
 
 protected:
 
-  Format mFormat;
+    Format mFormat;
+
+public:
+
+    ImageMetadata(Format format);
+    virtual ~ImageMetadata();
+
+    Format format() const;
+
+    virtual auto metadata(const std::string& name, bool &active) const -> std::string = 0;
+    virtual void setMetadata(const std::string &name, const std::string &value) = 0;
+    virtual auto metadata() const -> std::map<std::string, std::string> = 0;
+    virtual auto activeMetadata() const -> std::map<std::string, std::string> = 0;
+    virtual void reset() = 0;
 
 };
 
@@ -149,15 +157,13 @@ class TL_EXPORT ImageMetadataFactory
 
 private:
 
-  ImageMetadataFactory() {}
+    ImageMetadataFactory() {}
 
 public:
 
-  static std::shared_ptr<ImageMetadata> create(const std::string &format);
+    static auto create(const std::string &format) -> std::shared_ptr<ImageMetadata>;
 };
 
-
+/*! \} */ // end of raster
 
 }  // End namespace tl
-
-#endif // TL_IMAGE_METADATA_H

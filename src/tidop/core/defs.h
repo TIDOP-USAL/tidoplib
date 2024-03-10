@@ -24,8 +24,47 @@
 
 /* Archivo para definir macros y constantes de tipo general */
 
-#ifndef TL_CORE_DEFS_H
-#define TL_CORE_DEFS_H
+#pragma once
+
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#define TL_OS_WINDOWS
+#elif defined(linux) || defined(__linux) || defined(__linux__)
+#define TL_OS_LINUX
+#elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
+#define TL_OS_MACOSX
+#elif defined(__FreeBSD__)
+#define TL_OS_FREEBSD
+#elif defined(__NetBSD__)
+# define TL_OS_NETBSD
+#elif defined(__OpenBSD__)
+#define TL_OS_OPENBSD
+#else
+#endif
+
+
+#if defined __GNUC__ || (defined(__cplusplus) && (__cplusplus >= 201103))
+#  define TL_FUNCTION __func__
+#elif defined __clang__ && (__clang_minor__ * 100 + __clang_major__ >= 305)
+#define TL_FUNCTION __func__
+#elif defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901)
+# define TL_FUNCTION __func__
+#elif defined _MSC_VER
+#  define TL_FUNCTION __FUNCTION__
+#else
+#  define TL_FUNCTION ""
+#endif
+
+
+#ifdef _MSC_VER
+#  define TL_PRAGMA(...) __pragma(__VA_ARGS__)
+#elif defined __clang__
+#  define TL_PRAGMA(...) _Pragma(#__VA_ARGS__)
+#elif defined __GNUC__
+#  define TL_PRAGMA(...) _Pragma(#__VA_ARGS__)
+#endif
+
+
 
 #include "tidop/config.h"
 
@@ -63,7 +102,7 @@
   #include <cstdint>
 #endif
 
-#if defined WIN32
+#if defined TL_OS_WINDOWS
 // Para que no den problemas std::numeric_limits<T>().max()
 #  ifndef NOMINMAX
 #    define NOMINMAX
@@ -93,7 +132,7 @@
 
 
 
-#if defined WIN32 || defined _WIN32
+#if defined TL_OS_WINDOWS
 #  ifdef _MSC_VER
 #    define TL_MAX_PATH   _MAX_PATH
 #    define TL_MAX_DRIVE  _MAX_DRIVE
@@ -102,7 +141,7 @@
 #    define TL_MAX_EXT    _MAX_EXT
 #  else //__GNUC__ No encuentra _MAX_DRIVE, _MAX_DIR, _MAX_FNAME y _MAX_EXT
 #    ifdef __GNUC__
-#      define TL_MAX_PATH   MAX_PATH
+#      define TL_MAX_PATH   PATH_MAX
 #    else
 #      define TL_MAX_PATH  260
 #    endif
@@ -202,28 +241,13 @@
 // /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 //                                                                                                                   ^
-#  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
-#  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+//#  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
+#  define TL_COMPILER_WARNING(msg) TL_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
 
 
-// __FUNCTION__ no es estandar (Es de Visual Studio).
-// __func__ es valida a partir de C99 / C++11
-#if defined (__GNUC__)
-#  define TL_FUNCTION __PRETTY_FUNCTION__
-#elif defined(__FUNCSIG__)
-# define TL_FUNCTION __FUNCSIG__
-#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
-# define TL_FUNCTION __func__
-#elif defined(__cplusplus) && (__cplusplus >= 201103)
-#  define TL_FUNCTION __func__
-#elif defined _MSC_VER
-#  define TL_FUNCTION __FUNCTION__
-#else
-#  define TL_FUNCTION ""
-#endif
-//__FUNCSIG__
+
 
 #if CPP_VERSION >= 11
 #  define TL_NOEXCEPT noexcept
@@ -233,105 +257,66 @@
 #  define TL_NOEXCEPT_OP(x)
 #endif
 
+
+
 /*-----------------------------------------------------------------------------------*/
 /*                                       WARNIGS                                     */
 /*-----------------------------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#  define TL_WARNING_DEPRECATED 4996
-#  define TL_UNREFERENCED_FORMAL_PARAMETER 4100
-#  define TL_UNREFERENCED_LOCAL_VARIABLE 4101
-#  define TL_WARNING_C4244 4244
-#  define TL_FORCEINLINE_NOT_INLINED 4714
+
+
+#if defined __clang__
+#  define TL_WARNING_PUSH TL_PRAGMA(clang diagnostic push)
+#  define TL_WARNING_POP TL_PRAGMA(clang diagnostic push)
+#  define TL_DISABLE_WARNING_CLANG(warn) TL_PRAGMA(clang diagnostic ignored warn)
+#  define TL_DISABLE_WARNING_GCC(warn)
+#  define TL_DISABLE_WARNING_MSVC(warn)
+#  define TL_ENABLE_WARNING_CLANG(warn) TL_PRAGMA(clang diagnostic warning warn) 
+#  define TL_ENABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNINGS TL_DISABLE_WARNING_CLANG("-Wall")
+#elif defined __GNUC__ && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
+#  define TL_WARNING_PUSH TL_PRAGMA(GCC diagnostic push)
+#  define TL_WARNING_POP TL_PRAGMA(GCC diagnostic pop)
+#  define TL_DISABLE_WARNING_GCC(warn) TL_PRAGMA(GCC diagnostic ignored warn)
+#  define TL_DISABLE_WARNING_CLANG(warn)
+#  define TL_DISABLE_WARNING_MSVC(warn)
+#  define TL_ENABLE_WARNING_GCC(warn) TL_PRAGMA(GCC diagnostic warning warn)
+#  define TL_ENABLE_WARNING_CLANG(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNINGS TL_DISABLE_WARNING_GCC("-Wall")
+#elif defined _MSC_VER
+#  define TL_WARNING_PUSH TL_PRAGMA(warning(push))
+#  define TL_WARNING_POP TL_PRAGMA(warning(pop))
+#  define TL_DISABLE_WARNING_MSVC(warn) TL_PRAGMA(warning(disable : warn))
+#  define TL_DISABLE_WARNING_CLANG(warn)
+#  define TL_DISABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn) TL_PRAGMA(warning(default : warn))
+#  define TL_ENABLE_WARNING_CLANG(warn)
+#  define TL_ENABLE_WARNING_GCC(warn)
+#  define TL_DISABLE_WARNINGS TL_PRAGMA(warning(push, 0))
 #else
-#  define TL_WARNING_DEPRECATED "-Wdeprecated-declarations"
-#  define TL_UNREFERENCED_FORMAL_PARAMETER "-Wunused-variable"
-#  define TL_UNREFERENCED_LOCAL_VARIABLE "-Wunused-variable"
-#  define TL_WARNING_C4244 "-W"
-#  define TL_FORCEINLINE_NOT_INLINED 4714 "-W"
+#  define TL_WARNING_PUSH 
+#  define TL_WARNING_POP
+#  define TL_DISABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNING_CLANG(warn)
+#  define TL_DISABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_CLANG(warn)
+#  define TL_ENABLE_WARNING_GCC(warn)
+#  define TL_ENABLE_WARNING_MSVC(warn)
+#  define TL_DISABLE_WARNINGS
 #endif
 
-
-#ifdef __GNUC__
-#define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
-#define DIAG_PRAGMA(x) MAKE_LINUX_PRAGMA(GCC diagnostic x)
-#endif
-
-
-
-/*!
- * \brief Se suprimen todos los mensajes de advertencia
- *
- * <h4>Ejemplo</h4>
- * \code
- * TL_SUPPRESS_WARNINGS
- * bool f(int v) {      // warning C4100: 'v' : parámetro formal sin referencia
- *   int b = 0;         // warning C4189: 'b' : la variable local se ha inicializado pero no se hace referencia a ella
- *   double d = 1.0;
- *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
- *   return true;
- * }
- * \endcode
- */
-#ifdef _MSC_VER
-#  define TL_SUPPRESS_WARNINGS __pragma(warning(push, 0))
-#elif defined __GNUC__
-#  define TL_SUPPRESS_WARNINGS DIAG_PRAGMA(push) DIAG_PRAGMA(ignored "-Wall")
-#endif
-
-/*!
- * \brief Se pone por defecto la configuración de mensajes de advertencia
- */
-#ifdef _MSC_VER
-#  define TL_DEFAULT_WARNINGS __pragma(warning(pop))
-#elif defined __GNUC__
-#  define TL_DEFAULT_WARNINGS DIAG_PRAGMA(pop)
-#endif
-
-/*!
- * \brief Se desactiva un mensaje de advertencia especifico
- *
- * <h4>Ejemplo</h4>
- * \code
- * TL_DISABLE_WARNING(4244)
- * bool f(double d) {
- *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
- *   return true;
- * }
- * TL_ENABLE_WARNING(4244)
- * \endcode
- */
-#ifdef _MSC_VER
-#  define TL_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
-#elif defined __GNUC__
-#  define TL_DISABLE_WARNING(warn) DIAG_PRAGMA(push) DIAG_PRAGMA(ignored warn)
-#endif
-
-/*!
- * \brief Se activa un mensaje de advertencia especifico
- *
- * <h4>Ejemplo</h4>
- * \code
- * TL_DISABLE_WARNING(4244)
- * bool f(double d) {
- *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
- *   return true;
- * }
- * TL_ENABLE_WARNING(4244)
- * \endcode
- */
-#ifdef _MSC_VER
-#  define TL_ENABLE_WARNING(warn) __pragma(warning(default : warn))
-#elif defined __GNUC__
-#  define TL_ENABLE_WARNING(warn) DIAG_PRAGMA(pop)
-#endif
+#define TL_DEFAULT_WARNINGS TL_WARNING_POP
 
 
 #ifdef TL_WARNING_TODO
 #  ifdef _MSC_VER
-#    define TL_TODO(msg) __pragma(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
-#  elif defined __GNUC__
-#    define TL_TODO(x) MAKE_LINUX_PRAGMA(message ("TODO: " #x))
+#    define TL_TODO(msg) TL_PRAGMA(message( __FILE__ "(" TL_CONVERT_TO_STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#  elif defined __GNUC__ || defined __clang__
+#    define TL_TODO(x) TL_PRAGMA(message ("TODO: " #x))
+#  else
+#    define TL_TODO(msg)
 #  endif
 #else
 #  define TL_TODO(msg)
@@ -354,31 +339,31 @@ namespace tl
  
   
 /*!
- * \brief Redondea un doble o float y ademas convierte a entero
- * De esta forma se evita el warning C4244 (conversión de 'double' a 'int')
- * y nos aseguramos de que redondee de la forma correcta.
+ * \brief Rounds a double or float and also converts to an integer
+ * This avoids the C4244 warning (conversion from 'double' to 'int') 
+ * and ensures that it rounds correctly.
  */
 template<typename T>
-constexpr auto roundToInteger(T n) {
-  return static_cast<int>(round(n));
+constexpr auto roundToInteger(T n) 
+{
+    return static_cast<int>(round(n));
 }
 
 template<typename ...Args>
 constexpr size_t args_size(Args&&...)
 {
-  return sizeof...(Args);
+    return sizeof...(Args);
 }
 
 template<typename ...Args>
 constexpr size_t args_empty(Args&&...)
 {
-  return sizeof...(Args) == 0;
+    return sizeof...(Args) == 0;
 }
 
-template<typename T>
-constexpr auto unusedParameter(T param)
+template <typename... T>
+constexpr void unusedParameter(const T&...)
 {
-  return (void)param;
 }
 
 
@@ -388,5 +373,3 @@ constexpr auto unusedParameter(T param)
 #define TL_ROUND_TO_INT(n)  tl::roundToInteger(n)
 
 /*! \} */ // end of core
-
-#endif // TL_CORE_DEFS_H

@@ -28,7 +28,6 @@
 #include <tidop/geometry/entities/point.h>
 
 using namespace tl;
-using namespace tl::geospatial;
 
 /* CrsTransformTest */
 

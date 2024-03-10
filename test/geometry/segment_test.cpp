@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(Segment_DefaultConstructor)
 
 BOOST_AUTO_TEST_CASE(Segment_ConstructorPointIniEnd)
 {
-  Segment<Point<double>> segment(PointD(5.5, 93.2), PointD(25.3, 654.4));
+  Segment<Point<double>> segment(Point<double>(5.5, 93.2), Point<double>(25.3, 654.4));
   BOOST_CHECK_EQUAL(5.5, segment.pt1.x);
   BOOST_CHECK_EQUAL(93.2, segment.pt1.y);
   BOOST_CHECK_EQUAL(25.3, segment.pt2.x);
@@ -60,13 +60,13 @@ BOOST_AUTO_TEST_CASE(Segment_ConstructorPointIniEnd)
 
 BOOST_AUTO_TEST_CASE(Segment_ConstructorCenterAngleLenghtCenter)
 {
-  Segment<Point<double>> segment(PointD(5., 10.), 45. * math::consts::deg_to_rad<double>, 10.);
+  Segment<Point<double>> segment(Point<double>(5., 10.), 45. * consts::deg_to_rad<double>, 10.);
   BOOST_CHECK_CLOSE(8.5355339059327378, segment.pt1.x, 0.1);
   BOOST_CHECK_CLOSE(6.4644660940672622, segment.pt1.y, 0.1);
   BOOST_CHECK_CLOSE(1.4644660940672622, segment.pt2.x, 0.1);
   BOOST_CHECK_CLOSE(13.535533905932738, segment.pt2.y, 0.1);
 
-  Segment<Point<int>> segment2(Point<int>(5, 10), 45. * math::consts::deg_to_rad<double>, 10.);
+  Segment<Point<int>> segment2(Point<int>(5, 10), 45. * consts::deg_to_rad<double>, 10.);
   BOOST_CHECK_EQUAL(9, segment2.pt1.x);
   BOOST_CHECK_EQUAL(6, segment2.pt1.y);
   BOOST_CHECK_EQUAL(1, segment2.pt2.x);
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(Segment_ConstructorCenterAngleLenghtCenter)
 
 BOOST_AUTO_TEST_CASE(Segment_CopyConstructor)
 {
-  Segment<Point<double>> segment(PointD(5.5, 93.2), PointD(25.3, 654.4));
+  Segment<Point<double>> segment(Point<double>(5.5, 93.2), Point<double>(25.3, 654.4));
   Segment<Point<double>> segment_c(segment);
   BOOST_CHECK_EQUAL(5.5, segment_c.pt1.x);
   BOOST_CHECK_EQUAL(93.2, segment_c.pt1.y);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(Segment_CopyConstructor)
 
 BOOST_AUTO_TEST_CASE(Segment_assignment)
 {
-  Segment<Point<double>> segment(PointD(5.5, 93.2), PointD(25.3, 654.4));
+  Segment<Point<double>> segment(Point<double>(5.5, 93.2), Point<double>(25.3, 654.4));
 
   SegmentD segment_a = segment;
 
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(Segment_assignment)
 
 BOOST_AUTO_TEST_CASE(Segment_conversion)
 {
-  Segment<Point<double>> segment(PointD(5.5, 93.2), PointD(25.3, 654.4));
+  Segment<Point<double>> segment(Point<double>(5.5, 93.2), Point<double>(25.3, 654.4));
   Segment<Point<int>> segment_int = static_cast<Segment<Point<int>>>(segment);
   BOOST_CHECK_EQUAL(6, segment_int.pt1.x);
   BOOST_CHECK_EQUAL(93, segment_int.pt1.y);
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(Segment_conversion)
 
 BOOST_AUTO_TEST_CASE(Segment_angleOX)
 {
-  Segment<Point<double>> segment(PointD(5.5, 93.2), PointD(25.3, 654.4));
+  Segment<Point<double>> segment(Point<double>(5.5, 93.2), Point<double>(25.3, 654.4));
   BOOST_CHECK_CLOSE(1.5355294, segment.angleOX(), 0.001);
 }
 
@@ -130,16 +130,16 @@ BOOST_AUTO_TEST_CASE(Segment_angleOX)
 
 BOOST_AUTO_TEST_CASE(Segment_angleOY)
 {
-  Segment<Point<double>> segment(PointD(5.5, 93.2), PointD(25.3, 654.4));
+  Segment<Point<double>> segment(Point<double>(5.5, 93.2), Point<double>(25.3, 654.4));
   BOOST_CHECK_CLOSE(0.0352669, segment.angleOY(), 0.001);
 }
 
 /* Ventana envolvente */
 BOOST_AUTO_TEST_CASE(Segment_window)
 {
-  Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
+  Segment<Point<double>> segment(Point<double>(56.23, 123.5), Point<double>(96.2, 34.4));
   WindowD w_s = segment.window();
-  WindowD w(PointD(56.23, 34.4), PointD(96.2, 123.5));
+  WindowD w(Point<double>(56.23, 34.4), Point<double>(96.2, 123.5));
   BOOST_CHECK_EQUAL(w.pt1.x, w_s.pt1.x);
   BOOST_CHECK_EQUAL(w.pt1.y, w_s.pt1.y);
   BOOST_CHECK_EQUAL(w.pt2.x, w_s.pt2.x);
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(Segment_window)
 
 BOOST_AUTO_TEST_CASE(Segment_empty)
 {
-  Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
+  Segment<Point<double>> segment(Point<double>(56.23, 123.5), Point<double>(96.2, 34.4));
 
   BOOST_CHECK(false == segment.isEmpty());
 
@@ -160,13 +160,13 @@ BOOST_AUTO_TEST_CASE(Segment_empty)
 
 BOOST_AUTO_TEST_CASE(Segment_length)
 {
-  Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
+  Segment<Point<double>> segment(Point<double>(56.23, 123.5), Point<double>(96.2, 34.4));
   BOOST_CHECK_CLOSE(97.6545, segment.length(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(Segment_vector)
 {
-  Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
+  Segment<Point<double>> segment(Point<double>(56.23, 123.5), Point<double>(96.2, 34.4));
   Point<double> v = segment.vector();
   BOOST_CHECK_CLOSE(39.97, v.x, 0.1);
   BOOST_CHECK_CLOSE(-89.099, v.y, 0.1);
@@ -177,7 +177,7 @@ TL_TODO("Falta test Segment::isParallel()")
 
 BOOST_AUTO_TEST_CASE(Segment_split)
 {
-  Segment<Point<double>> segment_horizontal(PointD(0, 0), PointD(100, 0));
+  Segment<Point<double>> segment_horizontal(Point<double>(0, 0), Point<double>(100, 0));
   std::vector<Segment<Point<double>>> horizontal_segments = segment_horizontal.split(2);
   BOOST_CHECK_CLOSE(0., horizontal_segments[0].pt1.x, 0.1);
   BOOST_CHECK_CLOSE(0., horizontal_segments[0].pt1.y, 0.1);
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(Segment_split)
   BOOST_CHECK_CLOSE(100., horizontal_segments[1].pt2.x, 0.1);
   BOOST_CHECK_CLOSE(0., horizontal_segments[1].pt2.y, 0.1);
 
-  Segment<Point<double>> segment_vertical(PointD(0, 0), PointD(0, 100));
+  Segment<Point<double>> segment_vertical(Point<double>(0, 0), Point<double>(0, 100));
   std::vector<Segment<Point<double>>> vertical_segments = segment_vertical.split(2);
   BOOST_CHECK_CLOSE(0., vertical_segments[0].pt1.x, 0.1);
   BOOST_CHECK_CLOSE(0., vertical_segments[0].pt1.y, 0.1);
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(Segment_split)
   BOOST_CHECK_CLOSE(0., vertical_segments[1].pt2.x, 0.1);
   BOOST_CHECK_CLOSE(100., vertical_segments[1].pt2.y, 0.1);
 
-  Segment<Point<double>> segment(PointD(0, 0), PointD(100, 100));
+  Segment<Point<double>> segment(Point<double>(0, 0), Point<double>(100, 100));
   std::vector<Segment<Point<double>>> segments = segment.split(2);
   BOOST_CHECK_CLOSE(0., segments[0].pt1.x, 0.1);
   BOOST_CHECK_CLOSE(0., segments[0].pt1.y, 0.1);
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(Segment_split)
   BOOST_CHECK_CLOSE(100., segments[1].pt2.x, 0.1);
   BOOST_CHECK_CLOSE(100., segments[1].pt2.y, 0.1);
 
-  Segment<Point<double>> segment3(PointD(0, 0), PointD(100, 100));
+  Segment<Point<double>> segment3(Point<double>(0, 0), Point<double>(100, 100));
   std::vector<Segment<Point<double>>> segments3 = segment3.split(3);
   BOOST_CHECK_CLOSE(0., segments3[0].pt1.x, 0.1);
   BOOST_CHECK_CLOSE(0., segments3[0].pt1.y, 0.1);
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_DefaultConstructor)
 
 BOOST_AUTO_TEST_CASE(Segment3D_ConstructorPointIniEnd)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
   BOOST_CHECK(segment.type() == Entity::Type::segment3d);
   BOOST_CHECK_EQUAL(5.5, segment.pt1.x);
   BOOST_CHECK_EQUAL(93.2, segment.pt1.y);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_ConstructorPointIniEnd)
 
 BOOST_AUTO_TEST_CASE(Segment3D_CopyConstructor)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
   Segment3D<Point3<double>> segment_c(segment);
   BOOST_CHECK(segment_c.type() == Entity::Type::segment3d);
   BOOST_CHECK_EQUAL(5.5, segment_c.pt1.x);
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_CopyConstructor)
 
 BOOST_AUTO_TEST_CASE(Segment3D_assignment)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
   Segment3D<Point3<double>> segment_a = segment;
   BOOST_CHECK(segment_a.type() == Entity::Type::segment3d);
   BOOST_CHECK_EQUAL(5.5, segment_a.pt1.x);
@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_assignment)
 
 BOOST_AUTO_TEST_CASE(Segment3D_bbox)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
   BoundingBox<Point3<double>> bbox = segment.boundingBox();
 
   BOOST_CHECK_EQUAL(5.5, bbox.pt1.x);
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_bbox)
 
 BOOST_AUTO_TEST_CASE(Segment3D_isEmpty)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
   BOOST_CHECK(false == segment.isEmpty());
 
   Segment3D<Point3<double>> segment2;
@@ -314,14 +314,14 @@ BOOST_AUTO_TEST_CASE(Segment3D_isEmpty)
 
 BOOST_AUTO_TEST_CASE(Segment3D_length)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
   BOOST_CHECK_CLOSE(561.55, segment.length(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(Segment3D_vector)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 10.1), Point3D(25.3, 654.4, 15.6));
-  Point3D v = segment.vector();
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 10.1), Point3<double>(25.3, 654.4, 15.6));
+  Point3<double> v = segment.vector();
   BOOST_CHECK_CLOSE(19.8, v.x, 0.1);
   BOOST_CHECK_CLOSE(561.19, v.y, 0.1);
   BOOST_CHECK_CLOSE(5.5, v.z, 0.1);
@@ -331,7 +331,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_vector)
 
 BOOST_AUTO_TEST_CASE(Segment3D_conversion)
 {
-  Segment3D<Point3<double>> segment(Point3D(5.5, 93.2, 2.3), Point3D(25.3, 654.4, 52.6));
+  Segment3D<Point3<double>> segment(Point3<double>(5.5, 93.2, 2.3), Point3<double>(25.3, 654.4, 52.6));
   Segment3D<Point3<int>> segment_int = static_cast<Segment3D<Point3<int>>>(segment);
   BOOST_CHECK_EQUAL(6, segment_int.pt1.x);
   BOOST_CHECK_EQUAL(93, segment_int.pt1.y);

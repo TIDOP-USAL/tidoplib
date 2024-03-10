@@ -22,11 +22,9 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOSPATIAL_DIFFERENTIAL_RECTIFICATION_H
-#define TL_GEOSPATIAL_DIFFERENTIAL_RECTIFICATION_H
+#pragma once
 
-#include "tidop/core/messages.h"
-#include "tidop/geometry/transform/transform.h"
+
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/mathutils.h"
@@ -34,41 +32,42 @@
 namespace tl
 {
 
-namespace geospatial
-{
+/*!
+ * \addtogroup geospatial
+ *
+ * \{
+ */
+
 
 class TL_EXPORT DifferentialRectification
 {
 
-public:
-
-  DifferentialRectification();
-  DifferentialRectification(const math::RotationMatrix<double> &rotationMatrix,
-                            const Point3<double> &cameraPosition,
-                            double focal);
-	~DifferentialRectification();
-
-  math::RotationMatrix<double> rotationMatrix() const;
-  void setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix);
-  Point3<double> cameraPosition() const;
-  void setCameraPosition(const Point3<double> &cameraPosition);
-  double focal() const;
-  void setFocal(double focal);
-
-  Point3<double> forwardProjection(const Point<double> &imagePoint, double z) const;
-  Point<double> backwardProjection(const Point3<double> &groundPoint) const;
-
 private:
 
-  math::RotationMatrix<double> mRotationMatrix;
-  Point3<double> mCameraPosition;
-  double mFocal;
+    RotationMatrix<double> mRotationMatrix;
+    Point3<double> mCameraPosition;
+    double mFocal;
+
+public:
+
+    DifferentialRectification();
+    DifferentialRectification(const RotationMatrix<double> &rotationMatrix,
+                              const Point3<double> &cameraPosition,
+                              double focal);
+    ~DifferentialRectification();
+
+    auto rotationMatrix() const -> RotationMatrix<double>;
+    auto setRotationMatrix(const RotationMatrix<double> &rotationMatrix) -> void;
+    auto cameraPosition() const -> Point3<double>;
+    auto setCameraPosition(const Point3<double> &cameraPosition) -> void;
+    auto focal() const -> double;
+    auto setFocal(double focal) -> void;
+
+    auto forwardProjection(const Point<double> &imagePoint, double z) const -> Point3<double>;
+    auto backwardProjection(const Point3<double> &groundPoint) const -> Point<double>;
 
 };
 
-
-} // End namespace geospatial
+/*! \} */ // end of geospatial
 
 } // End namespace tl
-
-#endif // TL_GEOSPATIAL_DIFFERENTIAL_RECTIFICATION_H

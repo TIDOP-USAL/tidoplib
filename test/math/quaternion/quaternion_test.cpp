@@ -27,7 +27,7 @@
 #include <tidop/math/algebra/quaternion.h>
 #include <tidop/math/algebra/rotation_matrix.h>
 
-using namespace tl::math;
+using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(QuaternionTestSuite)
 
@@ -127,15 +127,15 @@ BOOST_FIXTURE_TEST_CASE(k, QuaternionTest)
   BOOST_CHECK_EQUAL(1.f, q_k.z);
 }
 
-BOOST_FIXTURE_TEST_CASE(rotationType, QuaternionTest)
+BOOST_FIXTURE_TEST_CASE(type, QuaternionTest)
 {
-  BOOST_CHECK(Rotation::Type::quaternion == q_uninitialized.rotationType());
-  BOOST_CHECK(Rotation::Type::quaternion == q_d_uninitialized.rotationType());
-  BOOST_CHECK(Rotation::Type::quaternion == q_cero.rotationType());
-  BOOST_CHECK(Rotation::Type::quaternion == q_identity.rotationType());
-  BOOST_CHECK(Rotation::Type::quaternion == q_i.rotationType());
-  BOOST_CHECK(Rotation::Type::quaternion == q_j.rotationType());
-  BOOST_CHECK(Rotation::Type::quaternion == q_k.rotationType());
+  BOOST_CHECK(Orientation::Type::quaternion == q_uninitialized.type());
+  BOOST_CHECK(Orientation::Type::quaternion == q_d_uninitialized.type());
+  BOOST_CHECK(Orientation::Type::quaternion == q_cero.type());
+  BOOST_CHECK(Orientation::Type::quaternion == q_identity.type());
+  BOOST_CHECK(Orientation::Type::quaternion == q_i.type());
+  BOOST_CHECK(Orientation::Type::quaternion == q_j.type());
+  BOOST_CHECK(Orientation::Type::quaternion == q_k.type());
 }
 
 BOOST_FIXTURE_TEST_CASE(parameters, QuaternionTest)

@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_UTILS_BLAS_H
-#define TL_MATH_UTILS_BLAS_H
+#pragma once
+
 
 #include "tidop/math/math.h"
 
@@ -31,9 +31,6 @@
 #include <cblas.h>
 
 namespace tl
-{
-
-namespace math
 {
 
 
@@ -46,59 +43,53 @@ namespace blas
 
 /* Multiplicación matrices */
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, void>::type
-gemm(size_t m, size_t n, size_t k,
-     const T *a, const T *b, T *c)
+template<typename T>
+auto gemm(size_t m, size_t n, size_t k,
+          const T* a, const T* b, T* c) -> std::enable_if_t<
+    std::is_same<float, std::remove_cv_t<T>>::value, void>
 {
-  T alpha = 1.f;
-  T beta = 0.f;
-  blasint lda = static_cast<blasint>(k);
-  blasint ldb = static_cast<blasint>(n);
-  blasint ldc = static_cast<blasint>(n);
+    T alpha = 1.f;
+    T beta = 0.f;
+    blasint lda = static_cast<blasint>(k);
+    blasint ldb = static_cast<blasint>(n);
+    blasint ldc = static_cast<blasint>(n);
 
-  cblas_sgemm(CBLAS_ORDER::CblasRowMajor,
-              CBLAS_TRANSPOSE::CblasNoTrans,
-              CBLAS_TRANSPOSE::CblasNoTrans,
-              static_cast<blasint>(m),
-              static_cast<blasint>(n), 
-              static_cast<blasint>(k),
-              alpha, a, lda, b, ldb,
-              beta, c, ldc);
+    cblas_sgemm(CBLAS_ORDER::CblasRowMajor,
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                static_cast<blasint>(m),
+                static_cast<blasint>(n),
+                static_cast<blasint>(k),
+                alpha, a, lda, b, ldb,
+                beta, c, ldc);
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, void>::type
-gemm(size_t m, size_t n, size_t k,
-     const T *a, const T *b, T *c)
+template<typename T>
+auto gemm(size_t m, size_t n, size_t k,
+          const T* a, const T* b, T* c) -> std::enable_if_t<
+    std::is_same<double, std::remove_cv_t<T>>::value, void>
 {
-  T alpha = 1.;
-  T beta = 0.;
-  blasint lda = static_cast<blasint>(k);
-  blasint ldb = static_cast<blasint>(n);
-  blasint ldc = static_cast<blasint>(n);
+    T alpha = 1.;
+    T beta = 0.;
+    blasint lda = static_cast<blasint>(k);
+    blasint ldb = static_cast<blasint>(n);
+    blasint ldc = static_cast<blasint>(n);
 
-  cblas_dgemm(CBLAS_ORDER::CblasRowMajor,
-              CBLAS_TRANSPOSE::CblasNoTrans, 
-              CBLAS_TRANSPOSE::CblasNoTrans, 
-              static_cast<blasint>(m),
-              static_cast<blasint>(n), 
-              static_cast<blasint>(k),
-              alpha, a, lda, b, ldb,
-              beta, c, ldc);
+    cblas_dgemm(CBLAS_ORDER::CblasRowMajor,
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                static_cast<blasint>(m),
+                static_cast<blasint>(n),
+                static_cast<blasint>(k),
+                alpha, a, lda, b, ldb,
+                beta, c, ldc);
 }
 
 } // End namespace blas
 
 /*! \} */ // end of Math
 
-} // End namespace math
-
 } // End namespace tl
 
 #endif // TL_HAVE_OPENBLAS
-
-#endif // TL_MATH_UTILS_BLAS_H
 

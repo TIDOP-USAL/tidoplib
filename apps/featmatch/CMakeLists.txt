@@ -22,14 +22,9 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_FEAT_MATCH AND HAVE_OPENCV AND HAVE_GDAL AND TL_HAVE_PROJ4)
+if(TL_HAVE_FEAT_MATCH)
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-    include_directories(${CMAKE_SOURCE_DIR}/src)
-    
-    
     project(featmatch LANGUAGES CXX)
-    
     
     if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
@@ -46,42 +41,20 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_FEAT_MATCH AND HAVE_OPENCV A
                                $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} 
-                          tl_img
-                          tl_core
-                          tl_math
-                          tl_geom
-                          tl_geospatial
-                          tl_featmatch
+                          TidopLib::Core
+                          TidopLib::Math
+                          TidopLib::Geom
+                          TidopLib::Geospatial
+                          TidopLib::FeatMatch
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
-                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-    
-    if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} 
-                              ${OpenCV_LIBS})
-    endif(HAVE_OPENCV)
-    
- 
-    
-    if (UNIX)
-        target_link_libraries(${PROJECT_NAME} 
-                              -lpthread 
-                              -ldl 
-                              -lexpat 
-                              -ljasper 
-                              -ljpeg 
-                              -ltiff 
-                              -lpng 
-                              -lm 
-                              -lrt 
-                              -lpcre)
-    endif()
-    
-    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/featmatch")
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
+                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>
+                          ${OpenCV_LIBS})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           OUTPUT_NAME "${PROJECT_NAME}"
-                          PROJECT_LABEL "${PROJECT_NAME}")
+                          PROJECT_LABEL "${PROJECT_NAME}"
+                          FOLDER "apps/featmatch")
     
     if(ENABLE_SOLUTION_FOLDERS)
       set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/featmatch")

@@ -28,91 +28,86 @@
 namespace tl
 {
 
-/* --------------------------------------------------------------------------- */
 
 
-VectorOptions::VectorOptions(Format format) 
+VectorOptions::VectorOptions(Format format)
   : FileOptions(),
     mFormat(format)
-{}
-
-VectorOptions::~VectorOptions()
-{}
-
-VectorOptions::Format VectorOptions::getFormat()
 {
-  return mFormat;
+}
+
+VectorOptions::~VectorOptions() = default;
+
+auto VectorOptions::format() const -> Format
+{
+    return mFormat;
 }
 
 
-/* --------------------------------------------------------------------------- */
 
 
-ShapeOptions::ShapeOptions() 
-  : VectorOptions(VectorOptions::Format::shp),
-    mEncoding(""),
-    mDbfDateLastUpdate(""),
+ShapeOptions::ShapeOptions()
+  : VectorOptions(Format::shp),
     bAdjustType(false),
-    mAdjustGeomType(ADJUST_GEOM_TYPE::FIRST_SHAPE),
+    mAdjustGeomType(AdjustGeomType::first_shape),
     bAutoRepack(true),
     bDbfEofChar(true)
 {
 }
 
-ShapeOptions::~ShapeOptions()
-{}
+ShapeOptions::~ShapeOptions() = default;
 
-const char *ShapeOptions::getOptions()
+auto ShapeOptions::options() const -> const char*
 {
-  return nullptr;
+    return nullptr;
 }
 
 void ShapeOptions::enableAdjustType(bool value)
 {
 #if  GDAL_VERSION_MAJOR >= 2
-  bAdjustType = value;
+    bAdjustType = value;
 #endif
 }
 
 void ShapeOptions::enableAutoRepac(bool value)
 {
-  bAutoRepack = value;
+    bAutoRepack = value;
 }
 
 void ShapeOptions::enableDbfEofChar(bool value)
 {
-  bDbfEofChar = value;
+    bDbfEofChar = value;
 }
 
 
-std::string ShapeOptions::getEncoding() const
+auto ShapeOptions::encoding() const -> std::string
 {
-  return mEncoding;
+    return mEncoding;
 }
 
 void ShapeOptions::setEncoding(const std::string &encoding)
 {
-  mEncoding = encoding;
+    mEncoding = encoding;
 }
 
-std::string ShapeOptions::getDbfDateLastUpdate() const
+auto ShapeOptions::dbfDateLastUpdate() const -> std::string
 {
-  return mDbfDateLastUpdate;
+    return mDbfDateLastUpdate;
 }
 
 void ShapeOptions::setDbfDateLastUpdate(const std::string &date)
 {
-  mDbfDateLastUpdate = date;
+    mDbfDateLastUpdate = date;
 }
 
-ShapeOptions::ADJUST_GEOM_TYPE ShapeOptions::getAdjustGeomType() const
+auto ShapeOptions::adjustGeomType() const -> AdjustGeomType
 {
-  return mAdjustGeomType;
+    return mAdjustGeomType;
 }
 
-void ShapeOptions::setAdjustGeomType(ADJUST_GEOM_TYPE type)
+void ShapeOptions::setAdjustGeomType(AdjustGeomType type)
 {
-  mAdjustGeomType = type;
+    mAdjustGeomType = type;
 }
 
 }

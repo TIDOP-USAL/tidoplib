@@ -27,6 +27,7 @@
 #include <boost/test/tools/output_test_stream.hpp>
 #include <tidop/core/console.h>
 #include <tidop/core/log.h>
+#include <tidop/core/app.h>
 
 using namespace tl;
 
@@ -56,31 +57,31 @@ private:
 
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
-  Console &console = Console::instance();
+  Console &console = App::console();
   EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::msg_error));
+  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
 }
 
 BOOST_AUTO_TEST_CASE(messageLevel)
 {
-  Console &console = Console::instance();
-  console.setMessageLevel(MessageLevel::msg_debug);
+  Console &console = App::console();
+  console.setMessageLevel(MessageLevel::debug);
   EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::msg_debug));
+  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
 }
 
 BOOST_AUTO_TEST_CASE(printMessage)
 {
-  Console &console = Console::instance();
+  Console &console = App::console();
 
   boost::test_tools::output_test_stream output;
   {
     cout_redirect guard(output.rdbuf());
 
-    console.printMessage("Test");
+    console << "Test";
   }
 
-  BOOST_CHECK( output.is_equal( "Test\n" ) );
+  BOOST_CHECK( output.is_equal( "Test" ) );
 }
 
 

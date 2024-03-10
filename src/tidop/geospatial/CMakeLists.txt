@@ -27,27 +27,37 @@
 #  TidopLib geospatial module                                            #
 ##########################################################################
 
+include(TidopUtils)
 
 if (BUILD_TL_GEOSPATIAL)
 
     project(Geospatial)
-  
+    
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES
+                             crs.cpp
+                             crscache.cpp
+                             crstransf.cpp
+                             util.cpp
+                             diffrect.cpp
+                         HEADER_FILES
+                             constants.h
+                             crs.h
+                             crscache.h
+                             crstransf.h
+                             util.h
+                             diffrect.h
+                             ellipsoid.h)
+
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                crs.cpp
-                crs.h
-                crscache.cpp
-                crscache.h
-                crstransf.cpp
-                crstransf.h
-                util.cpp
-                util.h
-                diffrect.cpp
-                diffrect.h)
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
 
     add_library(TidopLib::${PROJECT_NAME} 
                 ALIAS ${PROJECT_NAME})
 
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
@@ -61,8 +71,8 @@ if (BUILD_TL_GEOSPATIAL)
                           TidopLib::Img
                           TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          #$<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
-                          $<$<BOOL:${TL_HAVE_PROJ4}>:PROJ::proj>
+                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 

@@ -27,18 +27,49 @@
 #include <tidop/geospatial/util.h>
 
 using namespace tl;
-using namespace geospatial;
 
 
 BOOST_AUTO_TEST_CASE(TEST_utmZoneFromLongitude)
 {
-  BOOST_TEST(30, utmZoneFromLongitude(0));
-  BOOST_TEST(30, utmZoneFromLongitude(-3.5));
-  BOOST_TEST(30, utmZoneFromLongitude(-6));
-  BOOST_TEST(31, utmZoneFromLongitude(3.5));
-  BOOST_TEST(31, utmZoneFromLongitude(6));
-  BOOST_TEST(60, utmZoneFromLongitude(179));
-  BOOST_TEST(60, utmZoneFromLongitude(180));
-  BOOST_TEST(1, utmZoneFromLongitude(-180));
-  BOOST_TEST(1, utmZoneFromLongitude(-179));
+  BOOST_CHECK_EQUAL(1, utmZoneFromLongitude(-180));
+  BOOST_CHECK_EQUAL(1, utmZoneFromLongitude(-179));
+  BOOST_CHECK_EQUAL(2, utmZoneFromLongitude(-174));
+  BOOST_CHECK_EQUAL(2, utmZoneFromLongitude(-170));
+  BOOST_CHECK_EQUAL(3, utmZoneFromLongitude(-168));
+  BOOST_CHECK_EQUAL(4, utmZoneFromLongitude(-162));
+  BOOST_CHECK_EQUAL(29, utmZoneFromLongitude(-7));
+  BOOST_CHECK_EQUAL(30, utmZoneFromLongitude(-6));
+  BOOST_CHECK_EQUAL(30, utmZoneFromLongitude(-3.5));
+  BOOST_CHECK_EQUAL(31, utmZoneFromLongitude(0));
+  BOOST_CHECK_EQUAL(31, utmZoneFromLongitude(3.5));
+  BOOST_CHECK_EQUAL(32, utmZoneFromLongitude(6));
+  BOOST_CHECK_EQUAL(60, utmZoneFromLongitude(179));
+  BOOST_CHECK_EQUAL(1, utmZoneFromLongitude(180));
+
+}
+
+BOOST_AUTO_TEST_CASE(TEST_utmZoneFromLonLat)
+{
+  auto zone_band = utmZoneFromLonLat(0, 0);
+  BOOST_CHECK_EQUAL(31, zone_band.first);
+  BOOST_CHECK_EQUAL('N', zone_band.second);
+  zone_band = utmZoneFromLonLat(0, 10);
+  BOOST_CHECK_EQUAL(31, zone_band.first);
+  BOOST_CHECK_EQUAL('P', zone_band.second);
+  zone_band = utmZoneFromLonLat(0, -10);
+  BOOST_CHECK_EQUAL(31, zone_band.first);
+  BOOST_CHECK_EQUAL('L', zone_band.second);
+  zone_band = utmZoneFromLonLat(-3.5, 20);
+  BOOST_CHECK_EQUAL(30, zone_band.first);
+  BOOST_CHECK_EQUAL('Q', zone_band.second);
+  zone_band = utmZoneFromLonLat(-6, -35);
+  BOOST_CHECK_EQUAL(30, zone_band.first);
+  BOOST_CHECK_EQUAL('H', zone_band.second);
+  zone_band = utmZoneFromLonLat(3.5, -8);
+  BOOST_CHECK_EQUAL(31, zone_band.first);
+  BOOST_CHECK_EQUAL('M', zone_band.second);
+  zone_band = utmZoneFromLonLat(6, -53);
+  BOOST_CHECK_EQUAL(32, zone_band.first);
+  BOOST_CHECK_EQUAL('F', zone_band.second);
+
 }

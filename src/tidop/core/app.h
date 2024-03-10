@@ -22,58 +22,68 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_APP_H
-#define TL_CORE_APP_H
+#pragma once
 
 #include "tidop/config.h"
 
 #include <string>
-#include <memory>
-#include <mutex>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
+#include "tidop/core/log.h"
+#include "tidop/core/console.h"
 
 namespace tl
 {
+
+class Console;
+class Log;
 
 /*! \addtogroup core
  *  \{
  */
 
 /*!
- * \brief Información de la aplicación 
+ * \brief Application information
  */
 class TL_EXPORT App
 {
 
 private:
 
-  App();
+    App();
 
 public:
 
-  ~App() = default;
+    ~App() = default;
 
-  TL_DISABLE_COPY(App)
-  TL_DISABLE_MOVE(App)
+    TL_DISABLE_COPY(App)
+    TL_DISABLE_MOVE(App)
 
-  /*!
-   * \brief Singleton
-   */
-  static App &instance();
+    /*!
+     * \brief Application instance
+     */
+    static auto instance() -> App&;
 
-  tl::Path path() const;
-  std::string version() const;
+    /*!
+     * \brief Path to the executable
+     */
+    auto path() const -> Path;
+
+    /*!
+     * \brief Application version
+     */
+    auto version() const -> std::string;
+
+    static auto console() -> Console&;
+    static auto log() -> Log&;
 
 private:
 
-  void init();
+    void init();
 
 };
 
 /*! \} */ // end of core
 
 } // namespace tl
-
-#endif // TL_CORE_EVENT_H

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
  
-#ifndef TL_FEATMATCH_MSD_DETECTOR_H
-#define TL_FEATMATCH_MSD_DETECTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -43,64 +42,65 @@ namespace tl
 class TL_EXPORT MsdProperties
   : public Msd
 {
+
+private:
+
+    double mThresholdSaliency;
+    int mPatchRadius;
+    int mKNN;
+    int mAreaRadius;
+    double mScaleFactor;
+    int mNMSRadius;
+    int mNScales;
+    int mNMSScaleR;
+    bool mComputeOrientations;
+    bool mAffineMSD;
+    int mAffineTilts;
+
 public:
 
-  MsdProperties();
-  MsdProperties(const MsdProperties &msd);
-  ~MsdProperties() override;
+    MsdProperties();
+    MsdProperties(const MsdProperties &msd);
+    MsdProperties(MsdProperties &&msd) TL_NOEXCEPT;
+    ~MsdProperties() override;
 
-  MsdProperties &operator =(const MsdProperties &msd);
+    auto operator =(const MsdProperties &msd) -> MsdProperties &;
+    auto operator =(MsdProperties &&msd) TL_NOEXCEPT -> MsdProperties &;
 
 // Msd interface
 
 public:
 
-  virtual double thresholdSaliency() const override;
-  virtual int patchRadius() const override;
-  virtual int knn() const override;
-  virtual int searchAreaRadius() const override;
-  virtual double scaleFactor() const override;
-  virtual int NMSRadius() const override;
-  virtual int nScales() const override;
-  virtual int NMSScaleRadius() const override;
-  virtual bool computeOrientation() const override;
-  virtual bool affineMSD() const override;
-  virtual int affineTilts() const override;
-  //virtual int tilts() const override;
-  virtual void setThresholdSaliency(double thresholdSaliency) override;
-  virtual void setPatchRadius(int patchRadius) override;
-  virtual void setKNN(int knn) override;
-  virtual void setSearchAreaRadius(int searchAreaRadius) override;
-  virtual void setScaleFactor(double scaleFactor) override;
-  virtual void setNMSRadius(int NMSRadius) override;
-  virtual void setNScales(int nScales) override;
-  virtual void setNMSScaleRadius(int NMSScaleR) override;
-  virtual void setComputeOrientation(bool computeOrientation) override;
-  virtual void setAffineMSD(bool affineMSD) override;
-  //virtual void setTilts(int tilts) override;
-  virtual void setAffineTilts(int affineTilts) override;
+    auto thresholdSaliency() const -> double override;
+    auto patchRadius() const -> int override;
+    auto knn() const -> int override;
+    auto searchAreaRadius() const -> int override;
+    auto scaleFactor() const -> double override;
+    auto NMSRadius() const -> int override;
+    auto nScales() const ->int override;
+    auto NMSScaleRadius() const -> int override;
+    auto computeOrientation() const -> bool override;
+    auto affineMSD() const -> bool override;
+    auto affineTilts() const -> int override;
+    void setThresholdSaliency(double thresholdSaliency) override;
+    void setPatchRadius(int patchRadius) override;
+    void setKNN(int knn) override;
+    void setSearchAreaRadius(int searchAreaRadius) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setNMSRadius(int NMSRadius) override;
+    void setNScales(int nScales) override;
+    void setNMSScaleRadius(int NMSScaleR) override;
+    void setComputeOrientation(bool computeOrientation) override;
+    void setAffineMSD(bool affineMSD) override;
+    void setAffineTilts(int affineTilts) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  double mThresholdSaliency;
-  int mPatchRadius;
-  int mKNN;
-  int mAreaRadius;
-  double mScaleFactor;
-  int mNMSRadius;
-  int mNScales;
-  int mNMSScaleR;
-  bool mComputeOrientations;
-  bool mAffineMSD;
-  //int mTilts;
-  int mAffineTilts;
 };
 
 
@@ -112,31 +112,39 @@ class MsdDetector
     public KeypointDetector
 {
 
+protected:
+
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1))
+    cv::Ptr<cv::xfeatures2d::MSDDetector> mMSD;
+#else
+    std::shared_ptr<::MsdDetector> mMSD;
+#endif
+
 public:
 
-  MsdDetector();
-  MsdDetector(double thresholdSaliency,
-              int patchRadius,
-              int knn,
-              int searchAreaRadius,
-              double scaleFactor,
-              int NMSRadius,
-              int nScales,
-              int NMSScaleR,
-              bool computeOrientation,
-              bool affineMSD,
-              int affineTilts);
-  ~MsdDetector() override;
+    MsdDetector();
+    MsdDetector(double thresholdSaliency,
+                int patchRadius,
+                int knn,
+                int searchAreaRadius,
+                double scaleFactor,
+                int NMSRadius,
+                int nScales,
+                int NMSScaleR,
+                bool computeOrientation,
+                bool affineMSD,
+                int affineTilts);
+    ~MsdDetector() override;
 
 private:
 
-  void update();
+    void update();
 
 #if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1) || !defined HAVE_OPENCV_XFEATURES2D
 
-  bool pointIsAcceptable(const cv::KeyPoint &vl_keypoint, int width, int height);
-  void compensate_affine_coor1(float *x0, float *y0, int w1, int h1, float t1, float t2, float Rtheta);
-  void affineSkew(double tilt, double phi, cv::Mat &img, cv::Mat &mask, cv::Mat &Ai);
+    bool pointIsAcceptable(const cv::KeyPoint &vl_keypoint, int width, int height);
+    void compensate_affine_coor1(float *x0, float *y0, int w1, int h1, float t1, float t2, float Rtheta);
+    void affineSkew(double tilt, double phi, cv::Mat &img, cv::Mat &mask, cv::Mat &Ai);
 
 #endif
 
@@ -144,41 +152,32 @@ private:
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Msd interface
 
 public:
 
-  void setThresholdSaliency(double thresholdSaliency) override;
-  void setPatchRadius(int patchRadius) override;
-  void setKNN(int knn) override;
-  void setSearchAreaRadius(int searchAreaRadius) override;
-  void setScaleFactor(double scaleFactor) override;
-  void setNMSRadius(int NMSRadius) override;
-  void setNScales(int nScales) override;
-  void setNMSScaleRadius(int NMSScaleR) override;
-  void setComputeOrientation(bool computeOrientation) override;
-  void setAffineMSD(bool affineMSD) override;
-  void setAffineTilts(int affineTilts) override;
+    void setThresholdSaliency(double thresholdSaliency) override;
+    void setPatchRadius(int patchRadius) override;
+    void setKNN(int knn) override;
+    void setSearchAreaRadius(int searchAreaRadius) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setNMSRadius(int NMSRadius) override;
+    void setNScales(int nScales) override;
+    void setNMSScaleRadius(int NMSScaleR) override;
+    void setComputeOrientation(bool computeOrientation) override;
+    void setAffineMSD(bool affineMSD) override;
+    void setAffineTilts(int affineTilts) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-protected:
-
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1))
-  cv::Ptr<cv::xfeatures2d::MSDDetector> mMSD;
-#else
-  std::shared_ptr<::MsdDetector> mMSD;
-#endif
 };
 
 
 } // namespace tl
 
-#endif // TL_FEATMATCH_MSD_DETECTOR_H

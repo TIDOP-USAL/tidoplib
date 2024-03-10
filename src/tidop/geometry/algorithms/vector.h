@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_ALGORITHMS_VECTOR_H
-#define TL_GEOMETRY_ALGORITHMS_VECTOR_H
+#pragma once
 
 #include "tidop/geometry/entities/point.h"
 
@@ -47,20 +46,20 @@ namespace tl
 template<typename Point_t> inline
 Point_t vector2D(const Point_t &pt1, const Point_t &pt2)
 {
-  Point_t v;
-  v.x = pt2.x - pt1.x;
-  v.y = pt2.y - pt1.y;
-  return v;
+    Point_t v;
+    v.x = pt2.x - pt1.x;
+    v.y = pt2.y - pt1.y;
+    return v;
 }
 
 template<typename Point_t> inline
 Point_t vector3D(const Point_t &pt1, const Point_t &pt2)
 {
-  Point_t v;
-  v.x = pt2.x - pt1.x;
-  v.y = pt2.y - pt1.y;
-  v.z = pt2.z - pt1.z;
-  return v;
+    Point_t v;
+    v.x = pt2.x - pt1.x;
+    v.y = pt2.y - pt1.y;
+    v.z = pt2.z - pt1.z;
+    return v;
 }
 
 /*!
@@ -72,7 +71,7 @@ Point_t vector3D(const Point_t &pt1, const Point_t &pt2)
 template<typename Point_t> inline
 double crossProduct(const Point_t &pt1, const Point_t &pt2)
 {
-  return static_cast<double>(pt1.x * pt2.y - pt1.y * pt2.x);
+    return static_cast<double>(pt1.x * pt2.y - pt1.y * pt2.x);
 }
 
 /*!
@@ -84,9 +83,9 @@ double crossProduct(const Point_t &pt1, const Point_t &pt2)
 template<typename Point3_t> inline
 Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
-  return Point3_t(pt1.y * pt2.z - pt1.z * pt2.y,
-                  pt1.z * pt2.x - pt1.x * pt2.z,
-                  pt1.x * pt2.y - pt1.y * pt2.x);
+    return Point3_t(pt1.y * pt2.z - pt1.z * pt2.y,
+                    pt1.z * pt2.x - pt1.x * pt2.z,
+                    pt1.x * pt2.y - pt1.y * pt2.x);
 }
 
 /*!
@@ -98,8 +97,8 @@ Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 double dotProduct(const Point_t &pt1, const Point_t &pt2)
 {
-  return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
-         static_cast<double>(pt1.y) * static_cast<double>(pt2.y);
+    return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
+           static_cast<double>(pt1.y) * static_cast<double>(pt2.y);
 }
 
 /*!
@@ -111,9 +110,9 @@ double dotProduct(const Point_t &pt1, const Point_t &pt2)
 template<typename Point3_t> inline
 double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
-  return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
-         static_cast<double>(pt1.y) * static_cast<double>(pt2.y) +
-         static_cast<double>(pt1.z) * static_cast<double>(pt2.z);
+    return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
+           static_cast<double>(pt1.y) * static_cast<double>(pt2.y) +
+           static_cast<double>(pt1.z) * static_cast<double>(pt2.z);
 }
 
 /*!
@@ -123,7 +122,7 @@ double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 double module(const Point_t &v)
 {
-  return math::module(v.x, v.y);
+    return module(v.x, v.y);
 }
 
 /*!
@@ -133,11 +132,10 @@ double module(const Point_t &v)
 template<typename Point3_t> inline
 double module3D(const Point3_t &v)
 {
-  return sqrt(dotProduct3D(v, v));
+    return sqrt(dotProduct3D(v, v));
 }
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
 
-#endif // TL_GEOMETRY_ALGORITHMS_VECTOR_H

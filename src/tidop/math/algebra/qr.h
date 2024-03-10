@@ -22,21 +22,16 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_QR_DECOMPOSITION_H
-#define TL_MATH_QR_DECOMPOSITION_H
+#pragma once
 
 #include <algorithm>
 
 #include "tidop/math/math.h"
-#include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/lapack.h"
 
 namespace tl
-{
-
-namespace math
 {
 
 /*! \addtogroup math
@@ -53,207 +48,207 @@ namespace math
 
 /*!
  * \brief Factorización QR
- * 
- * La descomposición o factorización QR de una matriz es una descomposición 
- * de la misma como producto de una matriz ortogonal por una triangular 
+ *
+ * La descomposición o factorización QR de una matriz es una descomposición
+ * de la misma como producto de una matriz ortogonal por una triangular
  * superior.
  *
  * La descomposición QR de una matriz cuadrada T A es:
- * 
+ *
  * \f[ A = Q*R \f]
  *
  * donde Q es una matriz ortogonal:
- * 
+ *
  * \f[ Q^t*Q = I \f]
- * 
+ *
  * y R es una matriz triangular superior.
  */
 template<typename T>
 class QRDecomposition;
 
 template<
-  template<typename, size_t, size_t> 
-  class Matrix_t, typename T, size_t _rows, size_t _cols
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 class QRDecomposition<Matrix_t<T, _rows, _cols>>
 {
 
 public:
 
-  QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
+    QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-  Vector<T, _rows> solve(const Vector<T, _rows> &b);
+    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
 
-  Matrix<T, _rows, _cols> q() const;
-  Matrix<T, _rows, _cols> r() const;
-  //Matrix<T, _rows, _cols> qr() const;
-
-private:
-
-  //Householder
-  void decompose();
-
-//#ifdef TL_HAVE_OPENBLAS
-//  void lapackeDecompose();
-//#endif // TL_HAVE_OPENBLAS
+    auto q() const -> Matrix<T, _rows, _cols>;
+    auto r() const -> Matrix<T, _rows, _cols>;
+    //Matrix<T, _rows, _cols> qr() const;
 
 private:
 
-  Matrix<T, _rows, _cols> Q_t;
-  Matrix<T, _rows, _cols> R;
-//#ifdef TL_HAVE_OPENBLAS
-//  Matrix<T, _rows, _cols> QR;
-//#endif // TL_HAVE_OPENBLAS
-  bool singular;
-  size_t mRows;
+    //Householder
+    void decompose();
+
+    //#ifdef TL_HAVE_OPENBLAS
+    //  void lapackeDecompose();
+    //#endif // TL_HAVE_OPENBLAS
+
+private:
+
+    Matrix<T, _rows, _cols> Q_t;
+    Matrix<T, _rows, _cols> R;
+    //#ifdef TL_HAVE_OPENBLAS
+    //  Matrix<T, _rows, _cols> QR;
+    //#endif // TL_HAVE_OPENBLAS
+    bool singular;
+    size_t mRows;
 };
 
 
 template<
-  template<typename, size_t, size_t> 
-  class Matrix_t, typename T, size_t _rows, size_t _cols
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _rows, _cols> &a)
   : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
     R(a),
-//#ifdef TL_HAVE_OPENBLAS
-//    QR(a),
-//#endif
+    //#ifdef TL_HAVE_OPENBLAS
+    //    QR(a),
+    //#endif
     singular(false),
     mRows(a.rows())
 {
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-//#ifdef TL_HAVE_OPENBLAS
-//  this->lapackeDecompose();
-//#else
-  this->decompose();
-//#endif // TL_HAVE_OPENBLAS
+    //#ifdef TL_HAVE_OPENBLAS
+    //  this->lapackeDecompose();
+    //#else
+    this->decompose();
+    //#endif // TL_HAVE_OPENBLAS
 
 }
 
 template<
-  template<typename, size_t, size_t>
-  class Matrix_t, typename T, size_t _rows, size_t _cols
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
 
-  Vector<T, _rows> c(mRows);
-  Vector<T, _rows> diagonal(mRows);
+    Vector<T, _rows> c(mRows);
+    Vector<T, _rows> diagonal(mRows);
 
-  for (size_t k = 0; k < mRows - 1; k++) {
+    for (size_t k = 0; k < mRows - 1; k++) {
 
-    T scale = consts::zero<T>;
-
-    for (size_t i = k; i < mRows; i++) {
-      scale = std::max(scale, std::abs(R[i][k]));
-    }
-
-    if (scale == consts::zero<T>) {
-
-      singular = true;
-      c[k] = diagonal[k] = consts::zero<T>;
-
-    } else {
-
-      for (size_t i = k; i < mRows; i++) {
-        R[i][k] /= scale; 
-      }
-
-      T aux{0};
-
-      for (size_t i = k; i < mRows; i++) { 
-        aux += R[i][k] * R[i][k];
-      }
-
-      T sigma = std::copysign(sqrt(aux), R[k][k]);
-      R.at(k, k) += sigma;
-      c[k] = sigma * R[k][k];
-      diagonal[k] = -scale * sigma;
-
-      for (size_t j = k + 1; j < mRows; j++) {
-
-        T aux{0};
+        T scale = consts::zero<T>;
 
         for (size_t i = k; i < mRows; i++) {
-          aux += R[i][k] * R[i][j];
+            scale = std::max(scale, std::abs(R[i][k]));
         }
 
-        T tau = aux / c[k];
-        
-        for (size_t i = k; i < mRows; i++) {
-          R[i][j] -= tau * R[i][k];
+        if (scale == consts::zero<T>) {
+
+            singular = true;
+            c[k] = diagonal[k] = consts::zero<T>;
+
+        } else {
+
+            for (size_t i = k; i < mRows; i++) {
+                R[i][k] /= scale;
+            }
+
+            T aux{0};
+
+            for (size_t i = k; i < mRows; i++) {
+                aux += R[i][k] * R[i][k];
+            }
+
+            T sigma = std::copysign(sqrt(aux), R[k][k]);
+            R.at(k, k) += sigma;
+            c[k] = sigma * R[k][k];
+            diagonal[k] = -scale * sigma;
+
+            for (size_t j = k + 1; j < mRows; j++) {
+
+                T aux{0};
+
+                for (size_t i = k; i < mRows; i++) {
+                    aux += R[i][k] * R[i][j];
+                }
+
+                T tau = aux / c[k];
+
+                for (size_t i = k; i < mRows; i++) {
+                    R[i][j] -= tau * R[i][k];
+                }
+
+            }
         }
-
-      }
     }
-  }
 
-  diagonal[mRows - 1] = R[mRows - 1][mRows - 1];
+    diagonal[mRows - 1] = R[mRows - 1][mRows - 1];
 
-  singular = (diagonal[mRows - 1] == consts::zero<T>);
+    singular = (diagonal[mRows - 1] == consts::zero<T>);
 
-  for (size_t k = 0; k < mRows - 1; k++) {
+    for (size_t k = 0; k < mRows - 1; k++) {
 
-    if (c[k] != consts::zero<T>) {
+        if (c[k] != consts::zero<T>) {
 
-      for (size_t j = 0; j < mRows; j++) {
+            for (size_t j = 0; j < mRows; j++) {
 
-        T aux{ 0 };
-        for (size_t i = k; i < mRows; i++)
-          aux += R[i][k] * Q_t[i][j];
+                T aux{0};
+                for (size_t i = k; i < mRows; i++)
+                    aux += R[i][k] * Q_t[i][j];
 
-        aux /= c[k];
+                aux /= c[k];
 
-        for (size_t i = k; i < mRows; i++)
-          Q_t[i][j] -= aux * R[i][k];
-      }
+                for (size_t i = k; i < mRows; i++)
+                    Q_t[i][j] -= aux * R[i][k];
+            }
+
+        }
+    }
+
+    for (size_t r = 0; r < mRows; r++) {
+
+        R[r][r] = diagonal[r];
+
+        for (size_t c = 0; c < r; c++)
+            R[r][c] = consts::zero<T>;
 
     }
-  }
-
-  for (size_t r = 0; r < mRows; r++) {
-
-    R[r][r] = diagonal[r];
-
-    for (size_t c = 0; c < r; c++)
-      R[r][c] = consts::zero<T>;
-
-  }
 }
 
 template<
-  template<typename, size_t, size_t>
+    template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
 {
-  TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
-  TL_ASSERT(!singular, "Singular");
+    TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
+    TL_ASSERT(!singular, "Singular");
 
-  Vector<T, _rows> x = Q_t * b;
+    Vector<T, _rows> x = Q_t * b;
 
-  T aux;
+    T aux;
 
-  for (size_t i = mRows; i > 0; i--) {
-    size_t r = i - 1;
-    aux = x[r];
-    for (size_t c = i; c < mRows; c++)
-      aux -= R[r][c] * x[c];
-    x[r] = aux / R[r][r];
-  }
+    for (size_t i = mRows; i > 0; i--) {
+        size_t r = i - 1;
+        aux = x[r];
+        for (size_t c = i; c < mRows; c++)
+            aux -= R[r][c] * x[c];
+        x[r] = aux / R[r][r];
+    }
 
-  return x;
+    return x;
 }
 
 template<
-  template<typename, size_t, size_t>
+    template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const -> Matrix<T, _rows, _cols>
 {
-  return Q_t.transpose();
+    return Q_t.transpose();
 }
 
 //template<
@@ -266,12 +261,12 @@ inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::q() c
 //}
 
 template<
-  template<typename, size_t, size_t>
+    template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const -> Matrix<T, _rows, _cols>
 {
-  return R;
+    return R;
 }
 
 //#ifdef TL_HAVE_OPENBLAS
@@ -306,10 +301,4 @@ inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() c
 
 /*! \} */ // end of math
 
-} // Fin namespace math
-
-
 } // End namespace tl
-
-
-#endif // TL_MATH_QR_DECOMPOSITION_H

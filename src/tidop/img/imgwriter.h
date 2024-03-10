@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMAGE_WRITER_H
-#define TL_IMAGE_WRITER_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -35,18 +34,11 @@
 #include "opencv2/core/core.hpp"
 
 #include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
 #include "tidop/core/path.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/transform/affine.h"
+#include "tidop/core/ptr.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
-//#ifdef TL_HAVE_GRAPHIC
-//#include "tidop/graphic/color.h"
-//#endif
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
@@ -54,167 +46,140 @@ namespace tl
 class ImageOptions;
 class ImageMetadata;
 
+
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 /*!
- * \brief Clase para la escritura de distintos formatos imagen
+ * \brief Class for writing different image formats
  */
 class TL_EXPORT ImageWriter
 {
 
+    GENERATE_UNIQUE_PTR(ImageWriter)
+        
 public:
 
-  ImageWriter(tl::Path file);
-  virtual ~ImageWriter() = default;
+    ImageWriter(tl::Path file);
+    virtual ~ImageWriter() = default;
 
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
+    /*!
+     * \brief Open the image file
+     */
+    virtual void open() = 0;
 
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
+    /*!
+     * \brief Check if the file has been loaded correctly
+     */
+    virtual auto isOpen() const -> bool = 0;
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+    /*!
+     * \brief Close the file
+     */
+    virtual void close() = 0;
 
-  /*!
-   * \brief Establece las opciones de creaci�n del formato imagen
-   */
-  virtual void setImageOptions(ImageOptions *imageOptions) = 0;
+    /*!
+     * \brief Sets the options for the creation of the image format
+     * \param[in] imageOptions Image options
+     */
+    virtual void setImageOptions(ImageOptions *imageOptions) = 0;
 
-  /*!
-   * \brief Establece los metadatos de la imagen
-   */
-  virtual void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
+    /*!
+     * \brief Sets the image metadata
+     */
+    virtual void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
 
-  /*!
-   * \brief Crea una imagen
-   * \param[in] rows N�mero de filas de la imagen
-   * \param[in] cols N�mero de columnas de la imagen
-   * \param[in] bands N�mero de bandas de la imagen
-   * \param[in] type Tipo de dato
-   * \see DataType
-   */
-  virtual void create(int rows, 
-                      int cols, 
-                      int bands, 
-                      DataType type) = 0;
+    /*!
+     * \brief Create an image
+     * \param[in] rows Number of rows in the image
+     * \param[in] cols Number of columns of the image
+     * \param[in] bands Number of bands in the picture
+     * \param[in] type Data type
+     * \see DataType
+     */
+    virtual void create(int rows,
+                        int cols,
+                        int bands,
+                        DataType type) = 0;
 
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] window Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
-   */
-  virtual void write(const cv::Mat &image, 
-                     const Rect<int> &rect = Rect<int>()) = 0;
+    /*!
+     * \brief Write on the image
+     * \param[in] image Image block to be written
+     * \param[in] rect area where the image is written
+     */
+    virtual void write(const cv::Mat &image,
+                       const Rect<int> &rect = Rect<int>()) = 0;
 
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] window Ventana del bloque de imagen que se escribe.
-   */
-  virtual void write(const cv::Mat &image, 
-                     const WindowI &window) = 0;
+    /*!
+     * \brief Write on the image
+     * \param[in] image Image block to be written
+     * \param[in] window area where the image is written
+     */
+    virtual void write(const cv::Mat &image,
+                       const WindowI &window) = 0;
 
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformaci�n entre el bloque y la imagen.
-   */
-  virtual void write(const cv::Mat &image, 
-                     const Affine<PointI> &trf) = 0;
+    /*!
+     * \brief Returns the number of rows of the image.
+     * \return Number of rows of the image
+     */
+    virtual auto rows() const -> int = 0;
 
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   */
-  //virtual void write(const unsigned char *buff, 
-  //                   const WindowI &w) = 0;
+    /*!
+     * \brief Returns the number of columns in the image
+     * \return Number of columns of the image
+     */
+    virtual auto cols() const -> int = 0;
 
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformaci�n entre el bloque y la imagen. Si es nula no se aplica transformaci�n
-   */
-  //virtual void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) = 0;
+    /*!
+     * \brief Returns the number of channels or bands in the image.
+     * \return Number of bands in the picture
+     */
+    virtual auto channels() const -> int = 0;
 
-  /*!
-   * \brief Devuelve el n�mero de filas de la imagen
-   * \return N�mero de filas de la imagen
-   */
-  virtual int rows() const = 0;
+    /*!
+     * \brief Returns the data type
+     * \return Data type
+     */
+    virtual auto dataType() const -> DataType = 0;
 
-  /*!
-   * \brief Devuelve el n�mero de columnas de la imagen
-   * \return N�mero de columnas de la imagen
-   */
-  virtual int cols() const = 0;
+    /*!
+     * \brief Returns the colour depth or bits per pixel of an image.
+     * \return Colour depth
+     */
+    virtual auto depth() const -> int = 0;
 
-  /*!
-   * \brief Devuelve el n�mero de canales o bandas de la imagen
-   * \return N�mero de bandas de la imagen
-   */
-  virtual int channels() const = 0;
+    /*!
+     * \brief Sets the georeference of the image
+     * \param[in] georeference Georeference
+     */
+    virtual void setGeoreference(const Affine<double, 2> &georeference) = 0;
 
-  /*!
-   * \brief Devuelve el tipo de dato
-   * \return 
-   */
-  virtual DataType dataType() const = 0;
+    /*!
+     * \brief Set the Coordinate Reference System
+     * \param[in] crs Coordinate Reference System in WKT format
+     */
+    virtual void setCRS(const std::string &crs) = 0;
 
-  /*!
-   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
-   * \return Profundidad de color
-   */
-  virtual int depth() const = 0;
+    virtual void setNoDataValue(double nodata) = 0;
 
-  /*!
-   * \brief Establece la georeferencia de la imagen
-   * \param[in] georeference Georeferencia
-   */
-  virtual void setGeoreference(const Affine<PointD> &georeference) = 0;
-
-  /*!
-   * \brief Set the Coordinate Reference System
-   * \param[in] crs Coordinate Reference System in WKT format
-   */
-  virtual void setCRS(const std::string &crs) = 0;
-
-//#ifdef TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Set the Coordinate Reference System
-//   * \param[in] crs geospatial::Crs object
-//   */
-//  virtual void setCRS(const geospatial::Crs &crs) = 0;
-//#endif
-  
-  virtual void setNoDataValue(double nodata) = 0;
-
-//#ifdef TL_HAVE_GRAPHIC
-//  virtual void setNoDataValue(const graph::Color &nodata) = 0;
-//#endif
 
 protected:
-  
-  void windowWrite(const WindowI &window, 
-                   WindowI *windowWrite, 
-                   PointI *offset) const;
+
+    void windowWrite(const WindowI &window,
+                     WindowI *windowWrite,
+                     Point<int> *offset) const;
 protected:
 
-  Path mFile;
-  Affine<PointD> mAffine;
-//#ifdef TL_HAVE_GEOSPATIAL
-//  geospatial::Crs mCRS;
-//#endif
+    Path mFile;
+    Affine<double, 2> affine;
+
 };
 
 
 /*!
- * \brief Clase factor�a para la escritura de diferentes formatos de imagen
+ * \brief Factory class for writing different image formats
  */
 class TL_EXPORT ImageWriterFactory
 {
@@ -222,18 +187,16 @@ public:
 
 private:
 
-  ImageWriterFactory() {}
+    ImageWriterFactory() {}
 
 public:
 
-  static std::unique_ptr<ImageWriter> create(const Path &fileName);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
+    static auto create(const Path &fileName) -> ImageWriter::Ptr;
 };
+
+/*! \} */ // end of raster
 
 
 } // End namespace tl
 
 #endif // TL_HAVE_OPENCV
-
-#endif // TL_IMAGE_WRITER_H

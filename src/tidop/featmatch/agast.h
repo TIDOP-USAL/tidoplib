@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_AGAST_DETECTOR_H
-#define TL_FEATMATCH_AGAST_DETECTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -50,39 +49,39 @@ class TL_EXPORT AgastProperties
   : public Agast
 {
 
+private:
+
+    int mThreshold;
+    bool mNonmaxSuppression;
+    std::string mDetectorType;
+
 public:
 
-  AgastProperties();
-  AgastProperties(const AgastProperties &agast);
-  AgastProperties(AgastProperties &&agast) TL_NOEXCEPT;
-  ~AgastProperties() override;
+    AgastProperties();
+    AgastProperties(const AgastProperties &agast);
+    AgastProperties(AgastProperties &&agast) TL_NOEXCEPT;
+    ~AgastProperties() override;
 
-  AgastProperties &operator =(const AgastProperties &agast);
-  AgastProperties &operator =(AgastProperties &&agast) TL_NOEXCEPT;
+    auto operator =(const AgastProperties &agast) -> AgastProperties&;
+    auto operator =(AgastProperties &&agast) TL_NOEXCEPT  -> AgastProperties&;
 
 // Agast interface
 
 public:
 
-  int threshold() const override;
-  bool nonmaxSuppression() const override;
-  std::string detectorType() const override;
-  void setThreshold(int threshold) override;
-  void setNonmaxSuppression(bool nonmaxSuppression) override;
-  void setDetectorType(const std::string &detectorType) override;
+    auto threshold() const -> int override;
+    auto nonmaxSuppression() const -> bool override;
+    auto detectorType() const -> std::string override;
+    void setThreshold(int threshold) override;
+    void setNonmaxSuppression(bool nonmaxSuppression) override;
+    void setDetectorType(const std::string &detectorType) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
-
-private:
-
-  int mThreshold{agast_default_value_threshold};
-  bool mNonmaxSuppression{agast_default_value_nonmax_suppression};
-  std::string mDetectorType;
+    void reset() override;
+    auto name() const -> std::string final;
 
 };
 
@@ -95,52 +94,53 @@ class TL_EXPORT AgastDetector
     public KeypointDetector
 {
 
+private:
+
+    cv::Ptr<cv::AgastFeatureDetector> mAgast;
+
 public:
 
-  AgastDetector();
-  AgastDetector(const AgastDetector &agastDetector);
-  AgastDetector(AgastDetector &&agastDetector) TL_NOEXCEPT;
-  AgastDetector(int threshold, 
-                bool nonmaxSuppression, 
-                const std::string &detectorType);
-  ~AgastDetector() override;
-  AgastDetector &operator =(const AgastDetector &agastDetector);
-  AgastDetector &operator =(AgastDetector &&agastDetector) TL_NOEXCEPT;
+    AgastDetector();
+    AgastDetector(const AgastDetector &agastDetector);
+    AgastDetector(AgastDetector &&agastDetector) TL_NOEXCEPT;
+    AgastDetector(int threshold,
+                  bool nonmaxSuppression,
+                  const std::string &detectorType);
+    ~AgastDetector() override;
+    
+    auto operator =(const AgastDetector &agastDetector) -> AgastDetector &;
+    auto operator =(AgastDetector &&agastDetector) TL_NOEXCEPT -> AgastDetector&;
 
 private:
 
 #if CV_VERSION_MAJOR >= 4
-  cv::AgastFeatureDetector::DetectorType convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> cv::AgastFeatureDetector::DetectorType;
 #else
-  int convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> int;
 #endif
 
-  void initAgastFromProperties();
+    void initAgastFromProperties();
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img,
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Agast interface
 
 public:
 
-  void setThreshold(int threshold) override;
-  void setNonmaxSuppression(bool nonmaxSuppression) override;
-  void setDetectorType(const std::string &detectorType) override;
+    void setThreshold(int threshold) override;
+    void setNonmaxSuppression(bool nonmaxSuppression) override;
+    void setDetectorType(const std::string &detectorType) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-
-private:
-
-  cv::Ptr<cv::AgastFeatureDetector> mAgast;
+    void reset() override;
 
 };
 
@@ -150,5 +150,3 @@ private:
 
 } // namespace tl
 
-
-#endif // TL_FEATMATCH_AGAST_DETECTOR_H

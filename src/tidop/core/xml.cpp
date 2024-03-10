@@ -26,11 +26,10 @@
 
 #ifdef TL_HAVE_GDAL
 
-#include "tidop/core/messages.h"
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-TL_SUPPRESS_WARNINGS
+TL_DISABLE_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
 
@@ -128,7 +127,7 @@ XmlNodeValue XmlNode::value() const
 
 XmlNode::Type XmlNode::type() const
 {
-	Type type; 
+	Type type = XmlNode::Type::element; 
 
 	switch(mNode->node->eType) {
 		case CPLXMLNodeType::CXT_Element:

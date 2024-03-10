@@ -31,7 +31,7 @@
 #include <array>
 #include <list>
 
-using namespace tl::math;
+using namespace tl;
 
 
 BOOST_AUTO_TEST_SUITE(StatisticsTestSuite)
@@ -101,149 +101,149 @@ struct StatisticsTest
   std::list<double> x;
   std::list<double> y;
 
-  tl::math::Vector<double, 9> tl_vector;
+  tl::Vector<double, 9> tl_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(7.695, tl::math::mean(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(14, tl::math::mean(vi2.begin(), vi2.end()), 0.1);
-  BOOST_CHECK_CLOSE(7.695, tl::math::mean(tl_vector.begin(), tl_vector.end()), 0.1);
+  BOOST_CHECK_CLOSE(7.695, tl::mean(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.142857143, tl::mean(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(14, tl::mean(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(7.695, tl::mean(tl_vector.begin(), tl_vector.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(median, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(8, tl::math::median(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1, tl::math::median(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(14, tl::math::median(vi2.begin(), vi2.end()), 0.1);
-  BOOST_CHECK_CLOSE(4.5, tl::math::median(l.begin(), l.end()), 0.1);
-  BOOST_CHECK_CLOSE(8, tl::math::median(tl_vector.begin(), tl_vector.end()), 0.1);
+  BOOST_CHECK_CLOSE(8, tl::median(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1, tl::median(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(14, tl::median(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(4.5, tl::median(l.begin(), l.end()), 0.1);
+  BOOST_CHECK_CLOSE(8, tl::median(tl_vector.begin(), tl_vector.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(mode, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(8.5, tl::math::mode(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_EQUAL(1, tl::math::mode(vi.begin(), vi.end()));
-  BOOST_CHECK_EQUAL(7, tl::math::mode(vi2.begin(), vi2.end()));
-  BOOST_CHECK_EQUAL(1, tl::math::mode(vi));
+  BOOST_CHECK_CLOSE(8.5, tl::mode(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_EQUAL(1, tl::mode(vi.begin(), vi.end()));
+  BOOST_CHECK_EQUAL(7, tl::mode(vi2.begin(), vi2.end()));
+  BOOST_CHECK_EQUAL(1, tl::mode(vi));
   /// TODO: si hay mas de un valor mas repetido???
 }
 
 BOOST_FIXTURE_TEST_CASE(range, StatisticsTest)
 {
-  BOOST_CHECK_EQUAL(3.5, tl::math::range(vd.begin(), vd.end()));
-  BOOST_CHECK_EQUAL(3, tl::math::range(vi.begin(), vi.end()));
-  BOOST_CHECK_EQUAL(16, tl::math::range(vi2.begin(), vi2.end()));
+  BOOST_CHECK_EQUAL(3.5, tl::range(vd.begin(), vd.end()));
+  BOOST_CHECK_EQUAL(3, tl::range(vi.begin(), vi.end()));
+  BOOST_CHECK_EQUAL(16, tl::range(vi2.begin(), vi2.end()));
 }
 
 BOOST_FIXTURE_TEST_CASE(interquartileRange, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(1.625, tl::math::interquartileRange(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(2, tl::math::interquartileRange(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(10, tl::math::interquartileRange(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.625, tl::interquartileRange(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(2, tl::interquartileRange(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(10, tl::interquartileRange(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(variance, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(1.3402777777778, tl::math::variance(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1.1428571428571, tl::math::variance(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(33.2, tl::math::variance(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.3402777777778, tl::variance(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.1428571428571, tl::variance(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(33.2, tl::variance(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(populationVariance, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(1.1913580246914, tl::math::populationVariance(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(0.97959183673469, tl::math::populationVariance(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(27.666666666667, tl::math::populationVariance(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.1913580246914, tl::populationVariance(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.97959183673469, tl::populationVariance(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(27.666666666667, tl::populationVariance(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(standarDeviation, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(1.1577036657875, tl::math::standarDeviation(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1.0690449676497, tl::math::standarDeviation(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(5.7619441163552, tl::math::standarDeviation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.1577036657875, tl::standarDeviation(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.0690449676497, tl::standarDeviation(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(5.7619441163552, tl::standarDeviation(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(coefficientOfVariation, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(0.411567, tl::math::coefficientOfVariation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.411567, tl::coefficientOfVariation(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(covariance, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(-33.06, tl::math::covariance(x.begin(), x.end(), y.begin(), y.end()), 0.1);
+  BOOST_CHECK_CLOSE(-33.06, tl::covariance(x.begin(), x.end(), y.begin(), y.end()), 0.1);
 }
 
 //Pearson correlation coefficient
 
 BOOST_FIXTURE_TEST_CASE(pearsonCorrelationCoefficient, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(-0.8459, tl::math::pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end()), 0.1);
+  BOOST_CHECK_CLOSE(-0.8459, tl::pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(meanAbsoluteDeviation, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(0.89506172839506, tl::math::meanAbsoluteDeviation(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(0.77551020408163, tl::math::meanAbsoluteDeviation(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(4.3333333333333, tl::math::meanAbsoluteDeviation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.89506172839506, tl::meanAbsoluteDeviation(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.77551020408163, tl::meanAbsoluteDeviation(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(4.3333333333333, tl::meanAbsoluteDeviation(vi2.begin(), vi2.end()), 0.1);
   std::vector<int> data{ 2, 2, 3, 4, 14 };
-  BOOST_CHECK_EQUAL(3.6, tl::math::meanAbsoluteDeviation(data.begin(), data.end()));
+  BOOST_CHECK_EQUAL(3.6, tl::meanAbsoluteDeviation(data.begin(), data.end()));
 }
 
 BOOST_FIXTURE_TEST_CASE(medianAbsoluteDeviation, StatisticsTest)
 {
   std::vector<int> data{ 2, 2, 3, 4, 14 };
-  BOOST_CHECK_EQUAL(1, tl::math::medianAbsoluteDeviation(data.begin(), data.end()));
+  BOOST_CHECK_EQUAL(1, tl::medianAbsoluteDeviation(data.begin(), data.end()));
   Vector<int> data2{ 1, 1, 2, 2, 4, 6, 9 };
-  BOOST_CHECK_EQUAL(1, tl::math::medianAbsoluteDeviation(data2.begin(), data2.end()));
+  BOOST_CHECK_EQUAL(1, tl::medianAbsoluteDeviation(data2.begin(), data2.end()));
   Vector<double> data3{ 6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3 };
-  BOOST_CHECK_EQUAL(0.5, tl::math::medianAbsoluteDeviation(data3.begin(), data3.end()));
+  BOOST_CHECK_EQUAL(0.5, tl::medianAbsoluteDeviation(data3.begin(), data3.end()));
 }
 
 BOOST_FIXTURE_TEST_CASE(biweightMidvariance, StatisticsTest)
 {
   std::vector<int> data{ 2, 2 };
-  BOOST_CHECK_EQUAL(0., tl::math::biweightMidvariance(data.begin(), data.end()));
+  BOOST_CHECK_EQUAL(0., tl::biweightMidvariance(data.begin(), data.end()));
   Vector<double> data2{ 6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3 };
-  BOOST_CHECK_CLOSE(0.677818, tl::math::biweightMidvariance(data2.begin(), data2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.677818, tl::biweightMidvariance(data2.begin(), data2.end()), 0.1);
   Vector<int> data3{ 1, 2, 3, 4 };
-  BOOST_CHECK_CLOSE(1.36477, tl::math::biweightMidvariance(data3.begin(), data3.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.36477, tl::biweightMidvariance(data3.begin(), data3.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(first_quartile, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(6.875, tl::math::quantile(vd.begin(), vd.end(), 0.25), 0.1);
-  BOOST_CHECK_CLOSE(0, tl::math::quantile(vi.begin(), vi.end(), 0.25), 0.1);
-  BOOST_CHECK_CLOSE(8.5, tl::math::quantile(vi2.begin(), vi2.end(), 0.25), 0.1);
+  BOOST_CHECK_CLOSE(6.875, tl::quantile(vd.begin(), vd.end(), 0.25), 0.1);
+  BOOST_CHECK_CLOSE(0, tl::quantile(vi.begin(), vi.end(), 0.25), 0.1);
+  BOOST_CHECK_CLOSE(8.5, tl::quantile(vi2.begin(), vi2.end(), 0.25), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(third_quartile, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(8.5, tl::math::quantile(vd.begin(), vd.end(), 0.75), 0.1);
-  BOOST_CHECK_CLOSE(2, tl::math::quantile(vi.begin(), vi.end(), 0.75), 0.1);
-  BOOST_CHECK_CLOSE(18.5, tl::math::quantile(vi2.begin(), vi2.end(), 0.75), 0.1);
+  BOOST_CHECK_CLOSE(8.5, tl::quantile(vd.begin(), vd.end(), 0.75), 0.1);
+  BOOST_CHECK_CLOSE(2, tl::quantile(vi.begin(), vi.end(), 0.75), 0.1);
+  BOOST_CHECK_CLOSE(18.5, tl::quantile(vi2.begin(), vi2.end(), 0.75), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(quantile, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(8, tl::math::quantile(vd.begin(), vd.end(), 0.5), 0.1);
-  BOOST_CHECK_CLOSE(4.5, tl::math::quantile(l.begin(), l.end(), 0.5), 0.1);
-  BOOST_CHECK_CLOSE(14, tl::math::quantile(vi2.begin(), vi2.end(), 0.5), 0.1);
+  BOOST_CHECK_CLOSE(8, tl::quantile(vd.begin(), vd.end(), 0.5), 0.1);
+  BOOST_CHECK_CLOSE(4.5, tl::quantile(l.begin(), l.end(), 0.5), 0.1);
+  BOOST_CHECK_CLOSE(14, tl::quantile(vi2.begin(), vi2.end(), 0.5), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartileCoefficientOfDispersion, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(0.10569, tl::math::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1, tl::math::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(0.37037037037037, tl::math::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.10569, tl::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1, tl::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.37037037037037, tl::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartileDeviation, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(0.8125, tl::math::quartileDeviation(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1, tl::math::quartileDeviation(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(5, tl::math::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.8125, tl::quartileDeviation(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1, tl::quartileDeviation(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(5, tl::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_GSM_H
-#define TL_FEATMATCH_GSM_H
+#pragma once
 
 #include "tidop/featmatch/matcher.h"
 
@@ -36,38 +35,38 @@ constexpr auto gms_default_value_threshold{6.};
 
 
 class TL_EXPORT GmsProperties
-  : public Gms
+    : public Gms
 {
+
+private:
+
+    bool mRotation{gms_default_value_rotation};
+    bool mScale{gms_default_value_scale};
+    double mThreshold{gms_default_value_threshold};
 
 public:
 
-  GmsProperties();
-  ~GmsProperties() override = default;
-
+    GmsProperties();
+    ~GmsProperties() override = default;
 
 // MatchingStrategy interface
 
 public:
 
-  void reset() override;
-  std::string name() const override;
+    void reset() override;
+    auto name() const -> std::string override;
 
-// IGms interface
+// Gms interface
 
 public:
 
-  bool rotation() const override;
-  void setRotation(bool rotation) override;
-  bool scale() const override;
-  void setScale(bool scale) override;
-  double threshold() const override;
-  void setThreshold(double threshold) override;
+    auto rotation() const -> bool override;
+    void setRotation(bool rotation) override;
+    auto scale() const -> bool override;
+    void setScale(bool scale) override;
+    auto threshold() const -> double override;
+    void setThreshold(double threshold) override;
 
-private:
-
-  bool mRotation{gms_default_value_rotation};
-  bool mScale{gms_default_value_scale};
-  double mThreshold{gms_default_value_threshold};
 };
 
 
@@ -79,34 +78,33 @@ class TL_EXPORT GsmImp
     public MatchingAlgorithm
 {
 
+private:
+
+    std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+
 public:
 
-  explicit GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
-  GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
-         bool rotation,
-         bool scale,
-         double threshold);
-  ~GsmImp() override = default;
+    explicit GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
+    GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
+           bool rotation,
+           bool scale,
+           double threshold);
+    ~GsmImp() override = default;
 
 // MatchingAlgorithm interface
 
 public:
 
-  bool compute(const cv::Mat &queryDescriptor,
-               const cv::Mat &trainDescriptor,
-               const std::vector<cv::KeyPoint> &keypoints1,
-               const std::vector<cv::KeyPoint> &keypoints2,
-               std::vector<cv::DMatch> *goodMatches,
-               std::vector<cv::DMatch> *wrongMatches = nullptr,
-               const cv::Size &queryImageSize = cv::Size(),
-               const cv::Size &trainImageSize = cv::Size()) override;
-
-private:
-
-  std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+    auto compute(const cv::Mat &queryDescriptor,
+                 const cv::Mat &trainDescriptor,
+                 const std::vector<cv::KeyPoint> &keypoints1,
+                 const std::vector<cv::KeyPoint> &keypoints2,
+                 std::vector<cv::DMatch> *goodMatches,
+                 std::vector<cv::DMatch> *wrongMatches = nullptr,
+                 const cv::Size &queryImageSize = cv::Size(),
+                 const cv::Size &trainImageSize = cv::Size()) -> bool override;
 
 };
 
 } // namespace tl
 
-#endif // TL_FEATMATCH_GSM_H

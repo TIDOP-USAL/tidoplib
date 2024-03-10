@@ -27,44 +27,64 @@
 #  TidopLib Core module                                                  #
 ##########################################################################
 
+include(TidopUtils)
+
 if(BUILD_TL_CORE)
 
     project(Core)
-
+    
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES 
+                             app.cpp
+                             exception.cpp
+                             #messages.cpp
+                             log.cpp
+                             utils.cpp
+                             task.cpp
+                             progress.cpp
+                             event.cpp
+                             licence.cpp
+                             gdalreg.cpp
+                             chrono.cpp
+                             concurrency.cpp
+                             path.cpp
+                             xml.cpp
+                             console/console.cpp
+                             console/argument.cpp
+                             console/command.cpp
+                             console/menu.cpp
+                             msg/message.cpp
+                         HEADER_FILES
+                             defs.h
+							 ptr.h
+                             app.h
+                             exception.h
+                             flags.h
+                             log.h
+                             utils.h
+                             task.h
+                             progress.h
+                             event.h
+                             licence.h
+                             gdalreg.h
+                             chrono.h
+                             concurrency.h
+                             path.h
+                             xml.h
+                             endian.h
+                             console.h
+                             console/console.h
+                             console/argument.h
+                             console/command.h
+                             console/validator.h
+                             console/menu.h
+                             messages.h
+                             msg/handler.h
+                             msg/message.h)
+                         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
-                app.cpp
-                app.h
-                console.cpp
-                console.h
-                defs.h
-                exception.cpp
-                exception.h
-                flags.h
-                messages.cpp
-                messages.h
-                log.cpp
-                log.h
-                utils.cpp
-                utils.h
-                task.cpp
-                task.h
-                progress.cpp
-                progress.h
-                event.cpp
-                event.h
-                licence.cpp
-                licence.h
-                gdalreg.cpp
-                gdalreg.h
-                chrono.cpp
-                chrono.h
-                concurrency.cpp
-                concurrency.h
-                path.cpp
-                path.h
-                xml.cpp
-                xml.h
-                endian.h)
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
 
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
@@ -72,14 +92,18 @@ if(BUILD_TL_CORE)
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
+
+    #target_compile_definitions(${PROJECT_NAME} PUBLIC TL_HAVE_CORE)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${UNIX}>:-lpthread>)
+                          $<$<BOOL:${UNIX}>:-lpthread>
+                          $<$<BOOL:${TL_HAVE_FMT}>:fmt::fmt>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"
@@ -103,7 +127,7 @@ if(BUILD_TL_CORE)
     
     
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-    
+
     set(TL_HAVE_CORE YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::Core enabled")
     

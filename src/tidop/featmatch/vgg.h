@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
  
-#ifndef TL_FEATMATCH_VGG_DESCRIPTOR_H
-#define TL_FEATMATCH_VGG_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -57,44 +56,44 @@ class TL_EXPORT VggProperties
   : public Vgg
 {
 
+private:
+
+    std::string mDescriptorType;
+    double mScaleFactor{vgg_default_value_scale_factor};
+    double mSigma{vgg_default_value_sigma};
+    bool bUseNormalizeDescriptor{vgg_default_value_use_normalize_descriptor};
+    bool bUseNormalizeImage{vgg_default_value_use_normalize_image};
+    bool bUseScaleOrientation{vgg_default_value_useScale_orientation};
+
 public:
 
-  VggProperties();
-  VggProperties(const VggProperties &vggProperties);
-  ~VggProperties() override = default;
+    VggProperties();
+    VggProperties(const VggProperties &vggProperties);
+    ~VggProperties() override = default;
 
 // Vgg interface
 
 public:
 
-  std::string descriptorType() const override;
-  void setDescriptorType(const std::string &descriptorType) override;
-  double scaleFactor() const override;
-  void setScaleFactor(double scaleFactor) override;
-  double sigma() const override;
-  void setSigma(double sigma) override;
-  bool useNormalizeDescriptor() const override;
-  void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
-  bool useNormalizeImage() const override;
-  void setUseNormalizeImage(bool useNormalizeImage) override;
-  bool useScaleOrientation() const override;
-  void setUseScaleOrientation(bool useScaleOrientation) override;
+    auto descriptorType() const -> std::string override;
+    void setDescriptorType(const std::string &descriptorType) override;
+    auto scaleFactor() const -> double override;
+    void setScaleFactor(double scaleFactor) override;
+    auto sigma() const -> double override;
+    void setSigma(double sigma) override;
+    auto useNormalizeDescriptor() const -> bool override;
+    void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
+    auto useNormalizeImage() const -> bool override;
+    void setUseNormalizeImage(bool useNormalizeImage) override;
+    auto useScaleOrientation() const -> bool override;
+    void setUseScaleOrientation(bool useScaleOrientation) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const override;
-
-private:
-
-  std::string mDescriptorType;
-  double mScaleFactor{vgg_default_value_scale_factor};
-  double mSigma{vgg_default_value_sigma};
-  bool bUseNormalizeDescriptor{vgg_default_value_use_normalize_descriptor};
-  bool bUseNormalizeImage{vgg_default_value_use_normalize_image};
-  bool bUseScaleOrientation{vgg_default_value_useScale_orientation};
+    void reset() override;
+    auto name() const ->std::string override;
 
 };
 
@@ -108,53 +107,55 @@ class TL_EXPORT VggDescriptor
     public DescriptorExtractor
 {
 
+private:
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
+#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
+    cv::Ptr<cv::xfeatures2d::VGG> mVGG;
+#endif
+#endif // HAVE_OPENCV_XFEATURES2D
+
 public:
 
-  VggDescriptor();
-  VggDescriptor(const VggDescriptor &vggDescriptor);
-  VggDescriptor(const std::string& descriptorType,
-                double scaleFactor,
-                double sigma,
-                bool useNormalizeDescriptor,
-                bool useNormalizeImage,
-                bool useScaleOrientation);
-  ~VggDescriptor() override = default;
+    VggDescriptor();
+    VggDescriptor(const VggDescriptor &vggDescriptor);
+    VggDescriptor(const std::string &descriptorType,
+                  double scaleFactor,
+                  double sigma,
+                  bool useNormalizeDescriptor,
+                  bool useNormalizeImage,
+                  bool useScaleOrientation);
+    ~VggDescriptor() override = default;
 
 private:
 
-  void update();
+    void update();
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
 // Vgg interface
 
 public:
 
-  void setDescriptorType(const std::string &descriptorType) override;
-  void setScaleFactor(double scaleFactor) override;
-  void setSigma(double sigma) override;
-  void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
-  void setUseNormalizeImage(bool useNormalizeImage) override;
-  void setUseScaleOrientation(bool useScaleOrientation) override;
+    void setDescriptorType(const std::string &descriptorType) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setSigma(double sigma) override;
+    void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
+    void setUseNormalizeImage(bool useNormalizeImage) override;
+    void setUseScaleOrientation(bool useScaleOrientation) override;
 
 // DescriptorExtractor interface
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img,
+                 std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
-private:
 
-#ifdef HAVE_OPENCV_XFEATURES2D 
-#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
-  cv::Ptr<cv::xfeatures2d::VGG> mVGG;
-#endif
-#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
@@ -162,5 +163,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_VGG_DESCRIPTOR_H

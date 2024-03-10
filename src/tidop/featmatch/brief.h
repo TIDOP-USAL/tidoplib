@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_BRIEF_DESCRIPTOR_H
-#define TL_FEATMATCH_BRIEF_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -50,38 +49,40 @@ constexpr auto brief_default_value_use_orientation = false;
 
 
 class TL_EXPORT BriefProperties
-  : public Brief
+    : public Brief
 {
+
+private:
+
+    std::string mBytes;
+    bool mUseOrientation{brief_default_value_use_orientation};
+
 public:
 
-  BriefProperties();
-  BriefProperties(const BriefProperties &briefProperties);
-  BriefProperties(BriefProperties &&briefProperties) TL_NOEXCEPT;
-  ~BriefProperties() override;
+    BriefProperties();
+    BriefProperties(const BriefProperties &briefProperties);
+    BriefProperties(BriefProperties &&briefProperties) TL_NOEXCEPT;
+    ~BriefProperties() override;
 
-  BriefProperties &operator =(const BriefProperties &briefProperties);
-  BriefProperties &operator =(BriefProperties &&briefProperties) TL_NOEXCEPT;
+    auto operator =(const BriefProperties &briefProperties) -> BriefProperties&;
+    auto operator =(BriefProperties &&briefProperties) TL_NOEXCEPT -> BriefProperties&;
 
 // Brief interface
 
 public:
 
-  std::string bytes() const override;
-  bool useOrientation() const override;
-  void setBytes(const std::string &bytes) override;
-  void setUseOrientation(bool useOrientation) override;
+    auto bytes() const -> std::string override;
+    auto useOrientation() const -> bool override;
+    void setBytes(const std::string &bytes) override;
+    void setUseOrientation(bool useOrientation) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    auto name() const -> std::string final;
 
-private:
-
-  std::string mBytes;
-  bool mUseOrientation{brief_default_value_use_orientation};
 };
 
 
@@ -89,52 +90,52 @@ private:
 
 
 class TL_EXPORT BriefDescriptor
-    : public BriefProperties,
-      public DescriptorExtractor
+  : public BriefProperties,
+    public DescriptorExtractor
 {
-
-public:
-
-  BriefDescriptor();
-  BriefDescriptor(const BriefDescriptor &briefDescriptor);
-  BriefDescriptor(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT;
-  BriefDescriptor(const std::string &bytes,
-                  bool useOrientation);
-  ~BriefDescriptor() override;
-
-  BriefDescriptor &operator =(const BriefDescriptor &briefDescriptor);
-  BriefDescriptor &operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT;
 
 private:
 
-  void update();
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> mBrief;
+#endif // HAVE_OPENCV_XFEATURES2D
+
+public:
+
+    BriefDescriptor();
+    BriefDescriptor(const BriefDescriptor &briefDescriptor);
+    BriefDescriptor(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT;
+    BriefDescriptor(const std::string &bytes,
+                    bool useOrientation);
+    ~BriefDescriptor() override;
+
+    auto operator =(const BriefDescriptor &briefDescriptor) -> BriefDescriptor&;
+    auto operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT -> BriefDescriptor&;
+
+private:
+
+    void update();
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 
 // Brief interface
 
 public:
 
-  void setBytes(const std::string &bytes) override;
-  void setUseOrientation(bool useOrientation) override;
+    void setBytes(const std::string &bytes) override;
+    void setUseOrientation(bool useOrientation) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-  cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> mBrief;
-#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
@@ -142,5 +143,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_BRIEF_DESCRIPTOR_H

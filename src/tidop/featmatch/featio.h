@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_FEAT_IO_H
-#define TL_FEATMATCH_FEAT_IO_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -71,30 +70,31 @@ namespace tl
 class TL_EXPORT FeaturesWriter
 {
 
+private:
+
+    tl::Path mFilePath;
+    std::vector<cv::KeyPoint> mKeyPoints;
+    cv::Mat mDescriptors;
+    //FeaturesMetadata mMetadata;
+
 public:
 
-  FeaturesWriter(tl::Path file);
-  virtual ~FeaturesWriter() = default;
+    FeaturesWriter(tl::Path file);
+    virtual ~FeaturesWriter() = default;
 
-  virtual void write() = 0;
+    virtual void write() = 0;
 
-  void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
-  void setDescriptors(const cv::Mat &descriptors);
-  //void setMetadata(const FeaturesMetadata &metadata);
+    void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
+    void setDescriptors(const cv::Mat &descriptors);
+    //void setMetadata(const FeaturesMetadata &metadata);
 
 protected:
 
-  const tl::Path &filePath() const;
-  const std::vector<cv::KeyPoint> &keyPoints() const;
-  const cv::Mat &descriptors() const;
-  //const FeaturesMetadata &metadata() const;
+    auto filePath() const -> const tl::Path&;
+    auto keyPoints() const -> const std::vector<cv::KeyPoint>&;
+    auto descriptors() const -> const cv::Mat&;
+    //const FeaturesMetadata &metadata() const;
 
-private:
-
-  tl::Path mFilePath;
-  std::vector<cv::KeyPoint> mKeyPoints;
-  cv::Mat mDescriptors;
-  //FeaturesMetadata mMetadata;
 };
 
 
@@ -107,24 +107,25 @@ private:
 class TL_EXPORT FeaturesReader
 {
 
-public:
-
-  FeaturesReader(tl::Path file);
-  virtual ~FeaturesReader() = default;
-
-  virtual void read() = 0;
-
-  std::vector<cv::KeyPoint> keyPoints() const;
-  cv::Mat descriptors() const;
-  //FeaturesMetadata metadata() const;
-  tl::Path file() const;
-
 protected:
 
-  tl::Path mFilePath;
-  std::vector<cv::KeyPoint> mKeyPoints;
-  cv::Mat mDescriptors;
-  //FeaturesMetadata mMetadata;
+    tl::Path mFilePath;
+    std::vector<cv::KeyPoint> mKeyPoints;
+    cv::Mat mDescriptors;
+    //FeaturesMetadata mMetadata;
+
+public:
+
+    FeaturesReader(tl::Path file);
+    virtual ~FeaturesReader() = default;
+
+    virtual void read() = 0;
+
+    auto keyPoints() const -> std::vector<cv::KeyPoint>;
+    auto descriptors() const -> cv::Mat;
+    //FeaturesMetadata metadata() const;
+    auto file() const -> tl::Path;
+
 };
 
 
@@ -141,13 +142,13 @@ class TL_EXPORT FeaturesReaderFactory
 
 private:
 
-  FeaturesReaderFactory() {}
+    FeaturesReaderFactory() {}
 
 public:
 
-  static std::unique_ptr<FeaturesReader> create(const tl::Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<FeaturesReader> createReader(const tl::Path &file);
+    static auto create(const tl::Path &file) -> std::unique_ptr<FeaturesReader>;
+    TL_DEPRECATED("create", "2.1")
+    static auto createReader(const tl::Path &file) -> std::unique_ptr<FeaturesReader>;
 };
 
 /*!
@@ -155,17 +156,16 @@ public:
  */
 class TL_EXPORT FeaturesWriterFactory
 {
-public:
 
 private:
 
-  FeaturesWriterFactory() {}
+    FeaturesWriterFactory() {}
 
 public:
 
-  static std::unique_ptr<FeaturesWriter> create(const tl::Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<FeaturesWriter> createWriter(const tl::Path &file);
+    static auto create(const tl::Path &file) -> std::unique_ptr<FeaturesWriter>;
+    TL_DEPRECATED("create", "2.1")
+    static auto createWriter(const tl::Path &file) -> std::unique_ptr<FeaturesWriter>;
 };
 
 
@@ -177,27 +177,25 @@ public:
 class TL_EXPORT FeaturesIOHandler
 {
 
-public:
-
-  FeaturesIOHandler();
-  virtual ~FeaturesIOHandler() = default;
-
-  void read(const tl::Path &file);
-  void write(const tl::Path &file);
-//  std::vector<cv::KeyPoint> keyPoints() const;
-//  cv::Mat descriptors() const;
-//  void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
-//  void setDescriptors(const cv::Mat &descriptors);
-
 private:
 
-  std::unique_ptr<FeaturesReader> mReader;
-  std::unique_ptr<FeaturesWriter> mWriter;
+    std::unique_ptr<FeaturesReader> mReader;
+    std::unique_ptr<FeaturesWriter> mWriter;
+
+public:
+
+    FeaturesIOHandler();
+    virtual ~FeaturesIOHandler() = default;
+
+    void read(const tl::Path &file);
+    void write(const tl::Path &file);
+    //  std::vector<cv::KeyPoint> keyPoints() const;
+    //  cv::Mat descriptors() const;
+    //  void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
+    //  void setDescriptors(const cv::Mat &descriptors);
+
 };
 
 /*! \} */ // end of Features
 
 } // namespace tl
-
-
-#endif // TL_FEATMATCH_FEAT_IO_H

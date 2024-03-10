@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_ALGORITHMS_H
-#define TL_GEOMETRY_ALGORITHMS_H
+#pragma once
 
 #include "tidop/geometry/algorithms/distance.h"
 #include "tidop/geometry/algorithms/angle.h"
@@ -43,19 +42,16 @@
 template<typename Point_t> inline
 int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
 {
-  int r_value{ 0 };
+    int r_value{0};
 
-  double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
-    - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
-  if (aux > 0) r_value = 1;
-  else if (aux < 0) r_value = -1;
+    double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
+        - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
+    if (aux > 0) r_value = 1;
+    else if (aux < 0) r_value = -1;
 
-  return r_value;
+    return r_value;
 }
 
 /*! \} */ // end of geometry_algorithms
 
 /*! \} */ // end of geometry
-
-
-#endif // TL_GEOMETRY_ALGORITHMS_H

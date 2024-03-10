@@ -24,7 +24,7 @@
 
 #include "daisy.h"
 
-#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 
 namespace tl
@@ -32,99 +32,100 @@ namespace tl
 
 DaisyProperties::DaisyProperties()
   : mNorm(daisy_default_value_norm)
-{}
+{
+}
 
 DaisyProperties::DaisyProperties(const DaisyProperties &daisyProperties) = default;
 
-double DaisyProperties::radius() const
+auto DaisyProperties::radius() const -> double
 {
-  return mRadius;
+    return mRadius;
 }
 
-int DaisyProperties::qRadius() const
+auto DaisyProperties::qRadius() const -> int
 {
-  return mQRadius;
+    return mQRadius;
 }
 
-int DaisyProperties::qTheta() const
+auto DaisyProperties::qTheta() const -> int
 {
-  return mQTheta;
+    return mQTheta;
 }
 
-int DaisyProperties::qHist() const
+auto DaisyProperties::qHist() const -> int
 {
-  return mQHist;
+    return mQHist;
 }
 
-std::string DaisyProperties::norm() const
+auto DaisyProperties::norm() const -> std::string
 {
-  return mNorm;
+    return mNorm;
 }
 
-bool DaisyProperties::interpolation() const
+auto DaisyProperties::interpolation() const -> bool
 {
-  return mInterpolation;
+    return mInterpolation;
 }
 
-bool DaisyProperties::useOrientation() const
+auto DaisyProperties::useOrientation() const -> bool
 {
-  return mUseOrientation;
+    return mUseOrientation;
 }
 
 void DaisyProperties::setRadius(double radius)
 {
-  mRadius = radius;
+    mRadius = radius;
 }
 
 void DaisyProperties::setQRadius(int qRadius)
 {
-  mQRadius = qRadius;
+    mQRadius = qRadius;
 }
 
 void DaisyProperties::setQTheta(int qTheta)
 {
-  mQTheta = qTheta;
+    mQTheta = qTheta;
 }
 
 void DaisyProperties::setQHist(int qHist)
 {
-  mQHist = qHist;
+    mQHist = qHist;
 }
 
 void DaisyProperties::setNorm(const std::string &norm)
 {
-  if (norm == "NRM_NONE" ||
-      norm == "NRM_PARTIAL" ||
-      norm == "NRM_FULL" ||
-      norm == "NRM_SIFT") {
-    mNorm = norm;
-  }
+    if (norm == "NRM_NONE" ||
+        norm == "NRM_PARTIAL" ||
+        norm == "NRM_FULL" ||
+        norm == "NRM_SIFT") {
+        mNorm = norm;
+    }
 }
 
 void DaisyProperties::setInterpolation(bool interpolation)
 {
-  mInterpolation = interpolation;
+    mInterpolation = interpolation;
 }
 
 void DaisyProperties::setUseOrientation(bool useOrientation)
 {
-  mUseOrientation = useOrientation;
+    mUseOrientation = useOrientation;
 }
 
 void DaisyProperties::reset()
 {
-  mRadius = daisy_default_value_radius;
-  mQRadius = daisy_default_value_qradius;
-  mQTheta = daisy_default_value_qtheta;
-  mQHist = daisy_default_value_qhist;
-  mNorm = daisy_default_value_norm;
-  mInterpolation = daisy_default_value_interpolation;
-  mUseOrientation = daisy_default_value_use_orientation;
+    mRadius = daisy_default_value_radius;
+    mQRadius = daisy_default_value_qradius;
+    mQTheta = daisy_default_value_qtheta;
+    mQHist = daisy_default_value_qhist;
+    mNorm = daisy_default_value_norm;
+    mInterpolation = daisy_default_value_interpolation;
+    mUseOrientation = daisy_default_value_use_orientation;
 }
 
-std::string DaisyProperties::name() const
+auto DaisyProperties::name() const -> std::string
 {
-  return std::string("DAISY");
+    return std::string("DAISY");
 }
 
 
@@ -133,14 +134,14 @@ std::string DaisyProperties::name() const
 
 DaisyDescriptor::DaisyDescriptor()
 {
-  update();
+    update();
 }
 
 DaisyDescriptor::DaisyDescriptor(const DaisyDescriptor &daisyDescriptor)
   : DaisyProperties(daisyDescriptor),
     DescriptorExtractor(daisyDescriptor)
 {
-  update();
+    update();
 }
 
 DaisyDescriptor::DaisyDescriptor(double radius,
@@ -151,14 +152,14 @@ DaisyDescriptor::DaisyDescriptor(double radius,
                                  bool interpolation,
                                  bool useOrientation)
 {
-  DaisyProperties::setRadius(radius);
-  DaisyProperties::setQRadius(qRadius);
-  DaisyProperties::setQTheta(qTheta);
-  DaisyProperties::setQHist(qHist);
-  DaisyProperties::setNorm(norm);
-  DaisyProperties::setInterpolation(interpolation);
-  DaisyProperties::setUseOrientation(useOrientation);
-  update();
+    DaisyProperties::setRadius(radius);
+    DaisyProperties::setQRadius(qRadius);
+    DaisyProperties::setQTheta(qTheta);
+    DaisyProperties::setQHist(qHist);
+    DaisyProperties::setNorm(norm);
+    DaisyProperties::setInterpolation(interpolation);
+    DaisyProperties::setUseOrientation(useOrientation);
+    update();
 }
 
 void DaisyDescriptor::update()
@@ -166,99 +167,99 @@ void DaisyDescriptor::update()
 #ifdef HAVE_OPENCV_XFEATURES2D
 
 #if CV_VERSION_MAJOR >= 4
-  cv::xfeatures2d::DAISY::NormalizationType daisy_norm = cv::xfeatures2d::DAISY::NormalizationType::NRM_NONE;
+    cv::xfeatures2d::DAISY::NormalizationType daisy_norm = cv::xfeatures2d::DAISY::NormalizationType::NRM_NONE;
 #else
-  int daisy_norm = cv::xfeatures2d::DAISY::NRM_NONE;
+    int daisy_norm = cv::xfeatures2d::DAISY::NRM_NONE;
 #endif
 
-  std::string norm = DaisyProperties::norm();
-  if (norm == "NRM_NONE" ) {
-    daisy_norm = cv::xfeatures2d::DAISY::NRM_NONE;
-  } else if (norm == "NRM_PARTIAL"){
-    daisy_norm = cv::xfeatures2d::DAISY::NRM_PARTIAL;
-  } else if (norm == "NRM_FULL"){
-    daisy_norm = cv::xfeatures2d::DAISY::NRM_FULL;
-  } else if (norm == "NRM_SIFT"){
-    daisy_norm = cv::xfeatures2d::DAISY::NRM_SIFT;
-  }
-  mDAISY = cv::xfeatures2d::DAISY::create(static_cast<float>(DaisyProperties::radius()),
-                                          DaisyProperties::qRadius(),
-                                          DaisyProperties::qTheta(),
-                                          DaisyProperties::qHist(),
-                                          daisy_norm, cv::noArray(),
-                                          DaisyProperties::interpolation(),
-                                          DaisyProperties::useOrientation());
+    std::string norm = DaisyProperties::norm();
+    if (norm == "NRM_NONE") {
+        daisy_norm = cv::xfeatures2d::DAISY::NRM_NONE;
+    } else if (norm == "NRM_PARTIAL") {
+        daisy_norm = cv::xfeatures2d::DAISY::NRM_PARTIAL;
+    } else if (norm == "NRM_FULL") {
+        daisy_norm = cv::xfeatures2d::DAISY::NRM_FULL;
+    } else if (norm == "NRM_SIFT") {
+        daisy_norm = cv::xfeatures2d::DAISY::NRM_SIFT;
+    }
+
+    mDAISY = cv::xfeatures2d::DAISY::create(static_cast<float>(DaisyProperties::radius()),
+                                            DaisyProperties::qRadius(),
+                                            DaisyProperties::qTheta(),
+                                            DaisyProperties::qHist(),
+                                            daisy_norm, cv::noArray(),
+                                            DaisyProperties::interpolation(),
+                                            DaisyProperties::useOrientation());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
-cv::Mat DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
-  cv::Mat descriptors;
+    cv::Mat descriptors;
 
-  try {
+    try {
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
-    mDAISY->compute(img, keyPoints, descriptors);
+        mDAISY->compute(img, keyPoints, descriptors);
 #else
-    TL_COMPILER_WARNING("OpenCV not built with extra modules. Daisy Descriptor not supported")
-    throw TL_ERROR("OpenCV not built with extra modules. Daisy Descriptor not supported");
+        TL_COMPILER_WARNING("OpenCV not built with extra modules. Daisy Descriptor not supported")
+            throw TL_ERROR("OpenCV not built with extra modules. Daisy Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-  return descriptors;
+    return descriptors;
 }
 
 void DaisyDescriptor::setRadius(double radius)
 {
-  DaisyProperties::setRadius(radius);
-  update();
+    DaisyProperties::setRadius(radius);
+    update();
 }
 
 void DaisyDescriptor::setQRadius(int qRadius)
 {
-  DaisyProperties::setQRadius(qRadius);
-  update();
+    DaisyProperties::setQRadius(qRadius);
+    update();
 }
 
 void DaisyDescriptor::setQTheta(int qTheta)
 {
-  DaisyProperties::setQTheta(qTheta);
-  update();
+    DaisyProperties::setQTheta(qTheta);
+    update();
 }
 
 void DaisyDescriptor::setQHist(int qHist)
 {
-  DaisyProperties::setQHist(qHist);
-  update();
+    DaisyProperties::setQHist(qHist);
+    update();
 }
 
 void DaisyDescriptor::setNorm(const std::string &norm)
 {
-  DaisyProperties::setNorm(norm);
-  update();
+    DaisyProperties::setNorm(norm);
+    update();
 }
 
 void DaisyDescriptor::setInterpolation(bool interpolation)
 {
-  DaisyProperties::setInterpolation(interpolation);
-  update();
+    DaisyProperties::setInterpolation(interpolation);
+    update();
 }
 
 void DaisyDescriptor::setUseOrientation(bool useOrientation)
 {
-  DaisyProperties::setUseOrientation(useOrientation);
-  update();
+    DaisyProperties::setUseOrientation(useOrientation);
+    update();
 }
 
 void DaisyDescriptor::reset()
 {
-  DaisyProperties::reset();
-  update();
+    DaisyProperties::reset();
+    update();
 }
 
-/*----------------------------------------------------------------*/
 
 } // namespace tl

@@ -26,7 +26,6 @@
 
 #include <utility>
 
-#include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
 namespace tl
@@ -39,118 +38,118 @@ GmsProperties::GmsProperties()
 
 void GmsProperties::reset()
 {
-  mRotation = gms_default_value_rotation;
-  mScale = gms_default_value_scale;
-  mThreshold = gms_default_value_threshold;
+    mRotation = gms_default_value_rotation;
+    mScale = gms_default_value_scale;
+    mThreshold = gms_default_value_threshold;
 }
 
-std::string GmsProperties::name() const
+auto GmsProperties::name() const -> std::string
 {
-  return std::string("GMS");
+    return std::string("GMS");
 }
 
-bool GmsProperties::rotation() const
+auto GmsProperties::rotation() const -> bool
 {
-  return mRotation;
+    return mRotation;
 }
 
 void GmsProperties::setRotation(bool rotation)
 {
-  mRotation = rotation;
+    mRotation = rotation;
 }
 
-bool GmsProperties::scale() const
+auto GmsProperties::scale() const -> bool
 {
-  return mScale;
+    return mScale;
 }
 
 void GmsProperties::setScale(bool scale)
 {
-  mScale = scale;
+    mScale = scale;
 }
 
-double GmsProperties::threshold() const
+auto GmsProperties::threshold() const -> double
 {
-  return mThreshold;
+    return mThreshold;
 }
 
 void GmsProperties::setThreshold(double threshold)
 {
-  mThreshold = threshold;
+    mThreshold = threshold;
 }
+
+
 
 /*----------------------------------------------------------------*/
 
 
 GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher)
-  : GmsProperties(),
-    mDescriptorMatcher(std::move(descriptorMatcher))
+  : mDescriptorMatcher(std::move(descriptorMatcher))
 {
 }
 
 GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
-                         bool rotation,
-                         bool scale,
-                         double threshold)
-  : GmsProperties(),
-    mDescriptorMatcher(std::move(descriptorMatcher))
+               bool rotation,
+               bool scale,
+               double threshold)
+  : mDescriptorMatcher(std::move(descriptorMatcher))
 {
-  this->setRotation(rotation);
-  this->setScale(scale);
-  this->setThreshold(threshold);
+    GmsProperties::setRotation(rotation);
+    GmsProperties::setScale(scale);
+    GmsProperties::setThreshold(threshold);
 }
 
-bool GsmImp::compute(const cv::Mat &queryDescriptor,
+auto GsmImp::compute(const cv::Mat &queryDescriptor,
                      const cv::Mat &trainDescriptor,
                      const std::vector<cv::KeyPoint> &keypoints1,
                      const std::vector<cv::KeyPoint> &keypoints2,
                      std::vector<cv::DMatch> *goodMatches,
                      std::vector<cv::DMatch> *wrongMatches,
                      const cv::Size &queryImageSize,
-                     const cv::Size &trainImageSize)
-{  
-  try {
+                     const cv::Size &trainImageSize) -> bool
+{
+    try {
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 4 && CV_VERSION_REVISION >= 1 )
 
 
-    if (goodMatches == nullptr) return true;
+        if (goodMatches == nullptr) return true;
 
-    std::vector<cv::DMatch> matches;
-    mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
+        std::vector<cv::DMatch> matches;
+        mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
 
-    cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, *goodMatches);
+        cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, *goodMatches);
 
-    for (size_t i = 0; i < matches.size(); i++) {
-      bool bWrong = true;
-      for (size_t j = 0; j < goodMatches->size(); j++) {
-        if (matches[i].queryIdx == (*goodMatches)[j].queryIdx &&
-            matches[i].trainIdx == (*goodMatches)[j].trainIdx) {
-          bWrong = false;
-          break;
+        for (size_t i = 0; i < matches.size(); i++) {
+            bool wrong = true;
+            for (size_t j = 0; j < goodMatches->size(); j++) {
+                if (matches[i].queryIdx == (*goodMatches)[j].queryIdx &&
+                    matches[i].trainIdx == (*goodMatches)[j].trainIdx) {
+                    wrong = false;
+                    break;
+                }
+            }
+            if (wrong) {
+                wrongMatches->push_back(matches[i]);
+            }
         }
-      }
-      if (bWrong) {
-        wrongMatches->push_back(matches[i]);
-      }
-    }
 
 #  else
-    TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
-    throw TL_ERROR("'matchGMS' not supported in OpenCV versions < 3.3.1");
+        TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
+        throw TL_ERROR("'matchGMS' not supported in OpenCV versions < 3.3.1");
 #endif
 #else
-    TL_COMPILER_WARNING("OpenCV not built with extra modules. 'matchGMS' not supported")
-    throw TL_ERROR("OpenCV not built with extra modules. 'matchGMS' not supported");
+        TL_COMPILER_WARNING("OpenCV not built with extra modules. 'matchGMS' not supported")
+        throw TL_ERROR("OpenCV not built with extra modules. 'matchGMS' not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-  } catch (...) {
-    TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-  }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-  return false;
+    return false;
 }
 
 } // namespace tl

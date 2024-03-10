@@ -36,7 +36,7 @@ if(BUILD_TL_MATH)
     
     add_files_to_project(${PROJECT_NAME} 
                          SOURCE_FILES 
-                             angles.cpp
+
                          HEADER_FILES
                              math.h
                              angles.h
@@ -44,11 +44,6 @@ if(BUILD_TL_MATH)
                              mathutils.h
                              simd.h
                              data.h
-                             statistic/series.h
-                             statistic/descriptive.h
-                             statistic/confmat.h
-		                     statistic/covariance.h
-                             statistic/tukeyfences.h
                              algebra/quaternion.h
                              algebra/euler_angles.h
                              algebra/rotations.h
@@ -56,16 +51,43 @@ if(BUILD_TL_MATH)
                              algebra/rotation_convert.h
                              algebra/axis_angle.h
                              algebra/matrix.h
+							 algebra/matrices.h
                              algebra/vector.h
                              algebra/svd.h
                              algebra/lu.h
                              algebra/qr.h
                              algebra/cholesky.h
-                             algebra/umeyama.h
+							 geometry/affine.h
+							 geometry/helmert.h
+                             geometry/rotation.h
+                             geometry/scaling.h
+                             geometry/transform.h
+                             geometry/translation.h
+                             geometry/umeyama.h
+                             statistic/algorithm.h
+                             statistic/biweightmidvariance.h
+                             statistic/descriptive.h
+                             statistic/iqr.h
+                             statistic/mad.h
+                             statistic/mean.h
+                             statistic/median.h
+                             statistic/mode.h
+                             statistic/pearson.h
+                             statistic/quantile.h
+                             statistic/range.h
+                             statistic/rms.h
+                             statistic/series.h
+                             statistic/confmat.h
+		                     statistic/covariance.h
+                             statistic/skewness.h
+                             statistic/skewness.impl.h
+                             statistic/stddev.h
+                             statistic/tukeyfences.h
+                             statistic/variance.h
                              lapack.h
                              blas.h)
                 
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
+    add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
                 ${PROJECT_HEADER_FILES})
     
@@ -73,14 +95,14 @@ if(BUILD_TL_MATH)
                 ALIAS ${PROJECT_NAME})
 
     if(MSVC)
-        target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
+        target_compile_options(${PROJECT_NAME} INTERFACE "/bigobj")
     endif(MSVC)
 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC
+    target_compile_definitions(${PROJECT_NAME} INTERFACE
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} PUBLIC 
+    target_link_libraries(${PROJECT_NAME} INTERFACE 
                           TidopLib::Core
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        

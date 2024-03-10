@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_GEOMETRIC_TEST_H
-#define TL_FEATMATCH_GEOMETRIC_TEST_H
+#pragma once
 
 #include "tidop/core/defs.h"
 
@@ -36,52 +35,53 @@ namespace tl
 
 class TL_EXPORT GeometricTest
 {
+
 public:
 
-  struct Properties
-  {
+    struct Properties
+    {
 
-  };
+    };
 
-  enum class Type
-  {
-    homography_all_points,
-    homography_ransac,
-    homography_lmeds,
-    homography_rho,
+    enum class Type
+    {
+        homography_all_points,
+        homography_ransac,
+        homography_lmeds,
+        homography_rho,
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
-    homography_usac,
+        homography_usac,
 #endif
-    fundamental_seven_points,
-    fundamental_eight_points,
-    fundamental_ransac,
-    fundamental_lmeds
+        fundamental_seven_points,
+        fundamental_eight_points,
+        fundamental_ransac,
+        fundamental_lmeds
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
-    ,
-    fundamental_usac
+        ,
+        fundamental_usac
 #endif
-  };
-
-public:
-
-  GeometricTest(Type type) : mType(type){}
-  virtual ~GeometricTest() = default;
-
-public:
-
-  virtual const Properties *properties() const = 0;
-  virtual void setProperties(const Properties *properties) = 0;
-  virtual std::vector<unsigned char> exec(const std::vector<cv::Point2f> &points1,
-                                          const std::vector<cv::Point2f> &points2) = 0;
-
-  Type type()
-  {
-    return mType;
-  }
+    };
 
 private:
 
-  Type mType;
+    Type mType;
+
+public:
+
+    GeometricTest(Type type) : mType(type) {}
+    virtual ~GeometricTest() = default;
+
+public:
+
+    virtual auto properties() const -> const Properties* = 0;
+    virtual void setProperties(const Properties *properties) = 0;
+    virtual auto exec(const std::vector<cv::Point2f> &points1,
+                      const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> = 0;
+
+    auto type() -> Type
+    {
+        return mType;
+    }
 
 };
 
@@ -90,29 +90,29 @@ private:
 struct TL_EXPORT AllPointsTestProperties
   : GeometricTest::Properties
 {
-  double confidence{0.999};
+    double confidence{0.999};
 };
 
 struct TL_EXPORT RANSACTestProperties
   : GeometricTest::Properties
 {
-  double distance{0.7};
-  double confidence{0.999};
-  int iterations{2000};
+    double distance{0.7};
+    double confidence{0.999};
+    int iterations{2000};
 };
 
 struct TL_EXPORT LMedsTestProperties
   : GeometricTest::Properties
 {
-  double confidence{0.999};
-  int iterations{2000};
+    double confidence{0.999};
+    int iterations{2000};
 };
 
 struct TL_EXPORT RHOTestProperties
   : GeometricTest::Properties
 {
-  double distance{0.7};
-  double confidence{0.999};
+    double distance{0.7};
+    double confidence{0.999};
 };
 
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
@@ -120,17 +120,17 @@ struct TL_EXPORT RHOTestProperties
 struct TL_EXPORT UsacTestProperties
   : GeometricTest::Properties
 {
-  double confidence{0.99};
-  bool isParallel{false};
-  int	loIterations{5};
-  cv::LocalOptimMethod loMethod{cv::LocalOptimMethod::LOCAL_OPTIM_INNER_LO};
-  int loSampleSize{14};
-  int maxIterations{5000};
-  cv::NeighborSearchMethod neighborsSearch{cv::NeighborSearchMethod::NEIGH_GRID};
-  int randomGeneratorState{0};
-  cv::SamplingMethod sampler{cv::SamplingMethod::SAMPLING_UNIFORM};
-  cv::ScoreMethod score{cv::ScoreMethod::SCORE_METHOD_MSAC};
-  double threshold{1.5};
+    double confidence{0.99};
+    bool isParallel{false};
+    int	loIterations{5};
+    cv::LocalOptimMethod loMethod{cv::LocalOptimMethod::LOCAL_OPTIM_INNER_LO};
+    int loSampleSize{14};
+    int maxIterations{5000};
+    cv::NeighborSearchMethod neighborsSearch{cv::NeighborSearchMethod::NEIGH_GRID};
+    int randomGeneratorState{0};
+    cv::SamplingMethod sampler{cv::SamplingMethod::SAMPLING_UNIFORM};
+    cv::ScoreMethod score{cv::ScoreMethod::SCORE_METHOD_MSAC};
+    double threshold{1.5};
 };
 
 #endif
@@ -141,16 +141,14 @@ class TL_EXPORT GeometricTestFactory
 
 private:
 
-  GeometricTestFactory() = default;
+    GeometricTestFactory() = default;
 
 public:
 
-  static std::shared_ptr<GeometricTest> create(GeometricTest::Type type);
-  static std::shared_ptr<GeometricTest> create(GeometricTest::Type type,
-                                               const GeometricTest::Properties *properties);
+    static auto create(GeometricTest::Type type) -> std::shared_ptr<GeometricTest>;
+    static auto create(GeometricTest::Type type,
+                       const GeometricTest::Properties *properties) -> std::shared_ptr<GeometricTest>;
 
 };
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_GEOMETRIC_TEST_H

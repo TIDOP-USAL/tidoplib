@@ -22,21 +22,23 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_LOG_H
-#define TL_CORE_LOG_H
+#pragma once
 
 
 #include "tidop/config.h"
 #include "tidop/core/defs.h"
 
-#include <iostream>
-#include <memory>
-#include <list>
 #include <mutex>
+#include <fstream>
+#ifdef TL_HAVE_FMT
+#include <fmt/format.h>
+#else
+#include <format>
+#endif
 
 #include "tidop/core/utils.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/flags.h"
+#include "tidop/core/msg/handler.h"
 
 namespace tl
 {
@@ -46,191 +48,131 @@ namespace tl
  */
 
 
-/*! \defgroup Log Fichero log
+/*! \defgroup Log Log file
  *
  *  \{
  */
 
 
 /*!
- * \brief Clase para gestionar ficheros log
+ * \brief Log file class
  *
- * Esta clase puede funcionar individualmente o si se subscribe a
- * al gestor de mensajes (MessageManager) recibe automaticamente
- * los mensajes
+ * This class can operate individually, writing messages directly to 
+ * a file, or receiving messages from the Message class.
  */
 class TL_EXPORT Log
-#ifdef TL_MESSAGE_HANDLER
-  : public MessageManager::Listener
-#endif
+    : public MessageHandler
 {
 
 private:
 
-  /*!
-   * \brief Constructora privada
-   */
-  Log();
-
-public:
-
-  /*!
-   * \brief Destructora
-   */
-  ~Log() override;
-
-  TL_DISABLE_COPY(Log)
-  TL_DISABLE_MOVE(Log)
-
-  /*!
-   * \brief Singleton para obtener una referencia única
-   */
-  static Log &instance();
-
-  /*!
-   * \brief Niveles de log activados
-   * \return Flag con los niveles de mensajes aceptados por el log
-   * \see EnumFlags
-   */
-  static EnumFlags<MessageLevel> logLevel();
-
-  /*!
-   * \brief Establece el nivel de log
-   *
-   * Se pueden combinar varios niveles de log:
-   *
-   * \code
-   * Log log;
-   * log.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
-   * \endcode
-   *
-   * \param[in] level Niveles de log.
-   */
-  static void setMessageLevel(MessageLevel level);
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  static void setLogLevel(MessageLevel level);
-#endif
-
-  /*!
-   * \brief Establece el nombre del fichero log
-   * \param[in] file fichero log
-   */
-  void setLogFile(const std::string &file);
-
-  /*!
-   * \brief Escribe una linea en el log
-   * \param[in] message Mensaje que se escribe en el log
-   */
-  void write(const std::string &message);
-
-#ifdef TL_MESSAGE_HANDLER
-
-  static void pauseListener();
-  static void resumeListener();
-
-protected:
-
-  /*!
-   * \brief Mensaje de depuración
-   * \param message Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-#if CPP_VERSION >= 17
-  void onMsgDebug(std::string_view message, 
-                  std::string_view date) override;
-#else
-  void onMsgDebug(const std::string &message, 
-                  const std::string &date) override;
-#endif
-
-  /*!
-   * \brief Mensaje de información
-   * \param message Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-#if CPP_VERSION >= 17
-  void onMsgInfo(std::string_view message, 
-                 std::string_view date) override;
-#else
-  void onMsgInfo(const std::string &message, 
-                 const std::string &date) override;
-#endif
-
-  /*!
-   * \brief Mensaje de advertencia
-   * \param message Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-#if CPP_VERSION >= 17
-  void onMsgWarning(std::string_view message, 
-                    std::string_view date) override;
-#else
-  void onMsgWarning(const std::string &message, 
-                    const std::string &date) override;
-#endif
-
-  /*!
-   * \brief Mensaje de error
-   * \param message Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-#if CPP_VERSION >= 17
-  void onMsgError(std::string_view message, 
-                  std::string_view date) override;
-#else
-  void onMsgError(const std::string &message, 
-                  const std::string &date) override;
-#endif
-
-  /*!
-   * \brief Escribe una linea en el log
-   * \param message Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-#if CPP_VERSION >= 17
-  void _write(std::string_view message, 
-              std::string_view date);
-#else
-  void _write(const std::string &message, 
-              const std::string &date);
-#endif
-
-#endif // TL_MESSAGE_HANDLER
-
+    std::ofstream _stream;
+    static std::mutex mtx;
+    EnumFlags<MessageLevel> messageLevelFlags;
 
 private:
 
-  /*!
-   * \brief Fichero log
-   */
-  static std::string sLogFile;
+    Log();
 
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto msg_error
-   * \see MessageLevel
-   */
-  static EnumFlags<MessageLevel> sLevel;
+public:
 
-  /*!
-   * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
-   *
-   * Por defecto la plantilla es:
-   * \code
-   * std::string MessageManager::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
-   * \endcode
-   * \see setTimeLogFormat
-   */
-  static std::string sTimeLogFormat;
+    ~Log() override = default;
 
-  static std::mutex mtx;
+    TL_DISABLE_COPY(Log)
+    TL_DISABLE_MOVE(Log)
 
-#ifdef TL_MESSAGE_HANDLER
-  static bool sPauseListener;
+    static auto instance() -> Log&;
+
+public:
+
+    /*!
+     * \brief Open the log file
+     * \param[in] file Log file
+     */
+    void open(const std::string &file);
+
+    /*!
+     * \brief Close the log file
+     */
+    void close();
+
+    /*!
+     * \brief Check if the log is open
+     */
+    auto isOpen() const -> bool;
+
+    /*!
+     * \brief Message levels
+     * \return Flag with message levels activated
+     * \see EnumFlags
+     */
+    auto messageLevel() -> EnumFlags<MessageLevel>;
+
+    /*!
+     * \brief Sets the message level
+     *
+     * Several log levels can be combined:
+     *
+     * \code
+     * Log log;
+     * log.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
+     * \endcode
+     *
+     * \param[in] level Message level.
+     */
+    void setMessageLevel(MessageLevel level);
+
+#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
+
+    template<typename... Args>
+    static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        if (Log::instance().isOpen())
+            Log::instance().debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        if (Log::instance().isOpen())
+            Log::instance().info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        if (Log::instance().isOpen())
+            Log::instance().success(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        if (Log::instance().isOpen())
+            Log::instance().warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
+    template<typename... Args>
+    static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        if (Log::instance().isOpen())
+            Log::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+    }
+
 #endif
 
+// MessageHandler
+
+public:
+
+    void debug(String message) override;
+    void info(String message) override;
+    void success(String message) override;
+    void warning(String message) override;
+    void error(String message) override;
+
 };
+
 
 
 /*! \} */ // end of Log
@@ -239,4 +181,3 @@ private:
 
 } // End namespace tl
 
-#endif // TL_CORE_LOG_H

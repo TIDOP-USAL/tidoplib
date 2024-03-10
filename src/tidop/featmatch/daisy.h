@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_DAISY_DESCRIPTOR_H
-#define TL_FEATMATCH_DAISY_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -55,47 +54,49 @@ constexpr auto daisy_default_value_use_orientation{false};
 class TL_EXPORT DaisyProperties
   : public Daisy
 {
+
+private:
+
+    double mRadius{daisy_default_value_radius};
+    int mQRadius{daisy_default_value_qradius};
+    int mQTheta{daisy_default_value_qtheta};
+    int mQHist{daisy_default_value_qhist};
+    std::string mNorm;
+    bool mInterpolation{daisy_default_value_interpolation};
+    bool mUseOrientation{daisy_default_value_use_orientation};
+
 public:
 
-  DaisyProperties();
-  DaisyProperties(const DaisyProperties &daisyProperties);
-  ~DaisyProperties() override = default;
+    DaisyProperties();
+    DaisyProperties(const DaisyProperties &daisyProperties);
+    ~DaisyProperties() override = default;
 
 // Daisy interface
 
 public:
 
-  double radius() const override;
-  int qRadius() const override;
-  int qTheta() const override;
-  int qHist() const override;
-  std::string norm() const override;
-  bool interpolation() const override;
-  bool useOrientation() const override;
-  void setRadius(double radius) override;
-  void setQRadius(int qRadius) override;
-  void setQTheta(int qTheta) override;
-  void setQHist(int qHist) override;
-  void setNorm(const std::string &norm) override;
-  void setInterpolation(bool interpolation) override;
-  void setUseOrientation(bool useOrientation) override;
+    auto radius() const -> double override;
+    auto qRadius() const -> int override;
+    auto qTheta() const -> int override;
+    auto qHist() const -> int override;
+    auto norm() const -> std::string override;
+    auto interpolation() const -> bool override;
+    auto useOrientation() const -> bool override;
+    void setRadius(double radius) override;
+    void setQRadius(int qRadius) override;
+    void setQTheta(int qTheta) override;
+    void setQHist(int qHist) override;
+    void setNorm(const std::string &norm) override;
+    void setInterpolation(bool interpolation) override;
+    void setUseOrientation(bool useOrientation) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    std::string name() const final;
 
-private:
-
-  double mRadius{daisy_default_value_radius};
-  int mQRadius{daisy_default_value_qradius};
-  int mQTheta{daisy_default_value_qtheta};
-  int mQHist{daisy_default_value_qhist};
-  std::string mNorm;
-  bool mInterpolation{daisy_default_value_interpolation};
-  bool mUseOrientation{daisy_default_value_use_orientation};
 };
 
 
@@ -103,58 +104,58 @@ private:
 
 
 class TL_EXPORT DaisyDescriptor
-    : public DaisyProperties,
-      public DescriptorExtractor
+  : public DaisyProperties,
+    public DescriptorExtractor
 {
-
-public:
-
-  DaisyDescriptor();
-  DaisyDescriptor(const DaisyDescriptor &daisyDescriptor);
-  DaisyDescriptor(double radius,
-                  int qRadius,
-                  int qTheta,
-                  int qHist,
-                  const std::string &norm,
-                  bool interpolation,
-                  bool useOrientation);
-  ~DaisyDescriptor() override = default;
 
 private:
 
-  void update();
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    cv::Ptr<cv::xfeatures2d::DAISY> mDAISY;
+#endif // HAVE_OPENCV_XFEATURES2D
+
+public:
+
+    DaisyDescriptor();
+    DaisyDescriptor(const DaisyDescriptor &daisyDescriptor);
+    DaisyDescriptor(double radius,
+                    int qRadius,
+                    int qTheta,
+                    int qHist,
+                    const std::string &norm,
+                    bool interpolation,
+                    bool useOrientation);
+    ~DaisyDescriptor() override = default;
+
+private:
+
+    void update();
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 
 // Daisy interface
 
 public:
 
-  void setRadius(double radius) override;
-  void setQRadius(int qRadius) override;
-  void setQTheta(int qTheta) override;
-  void setQHist(int qHist) override;
-  void setNorm(const std::string &norm) override;
-  void setInterpolation(bool interpolation) override;
-  void setUseOrientation(bool useOrientation) override;
+    void setRadius(double radius) override;
+    void setQRadius(int qRadius) override;
+    void setQTheta(int qTheta) override;
+    void setQHist(int qHist) override;
+    void setNorm(const std::string &norm) override;
+    void setInterpolation(bool interpolation) override;
+    void setUseOrientation(bool useOrientation) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-private:
-
-#ifdef HAVE_OPENCV_XFEATURES2D 
-  cv::Ptr<cv::xfeatures2d::DAISY> mDAISY;
-#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
@@ -162,5 +163,3 @@ private:
 /*! \} */ // end of Features
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_DAISY_DESCRIPTOR_H

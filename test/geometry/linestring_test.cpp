@@ -34,26 +34,26 @@ using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(LineStringTestSuite)
 
-std::initializer_list<PointI> initializer_list_line_string_integer 
+std::initializer_list<Point<int>> initializer_list_line_string_integer 
 {
-  PointI(34, 34),
-  PointI(45, 54),
-  PointI(51, 45),
-  PointI(12, 47),
-  PointI(95, 25),
-  PointI(15, 36),
-  PointI(18, 82)
+  Point<int>(34, 34),
+  Point<int>(45, 54),
+  Point<int>(51, 45),
+  Point<int>(12, 47),
+  Point<int>(95, 25),
+  Point<int>(15, 36),
+  Point<int>(18, 82)
 };
 
-std::initializer_list<PointD> initializer_list_line_string_double 
+std::initializer_list<Point<double>> initializer_list_line_string_double 
 {
-  PointD(41572.22, 6647.89),
-  PointD(41490.43, 6888.36),
-  PointD(41728.03, 6903.40),
-  PointD(41771.48, 6429.97),
-  PointD(41370.12, 6718.08),
-  PointD(41462.92, 6669.53),
-  PointD(41387.59, 7026.70)
+  Point<double>(41572.22, 6647.89),
+  Point<double>(41490.43, 6888.36),
+  Point<double>(41728.03, 6903.40),
+  Point<double>(41771.48, 6429.97),
+  Point<double>(41370.12, 6718.08),
+  Point<double>(41462.92, 6669.53),
+  Point<double>(41387.59, 7026.70)
 };
 
 
@@ -89,25 +89,25 @@ struct LineStringTest
   void setup()
   {
 
-    v_d.push_back(PointD(41572.22, 6647.89));
-    v_d.push_back(PointD(41490.43, 6888.36));
-    v_d.push_back(PointD(41728.03, 6903.40));
-    v_d.push_back(PointD(41771.48, 6429.97));
-    v_d.push_back(PointD(41370.12, 6718.08));
-    v_d.push_back(PointD(41462.92, 6669.53));
-    v_d.push_back(PointD(41387.59, 7026.70));
+    v_d.push_back(Point<double>(41572.22, 6647.89));
+    v_d.push_back(Point<double>(41490.43, 6888.36));
+    v_d.push_back(Point<double>(41728.03, 6903.40));
+    v_d.push_back(Point<double>(41771.48, 6429.97));
+    v_d.push_back(Point<double>(41370.12, 6718.08));
+    v_d.push_back(Point<double>(41462.92, 6669.53));
+    v_d.push_back(Point<double>(41387.59, 7026.70));
 
-    line_string_integer = new LineString<PointI>(initializer_list_line_string_integer);
-    line_string_double = new LineString<PointD>(initializer_list_line_string_double);
-    line_string_float = new LineString<PointF>();
+    line_string_integer = new LineString<Point<int>>(initializer_list_line_string_integer);
+    line_string_double = new LineString<Point<double>>(initializer_list_line_string_double);
+    line_string_float = new LineString<Point<float>>();
 
-    line_string_integer_copy = new LineString<PointI>(*line_string_integer);
-    line_string_double_copy = new LineString<PointD>(*line_string_double);
-    line_string_float_copy = new LineString<PointF>(*line_string_float);
+    line_string_integer_copy = new LineString<Point<int>>(*line_string_integer);
+    line_string_double_copy = new LineString<Point<double>>(*line_string_double);
+    line_string_float_copy = new LineString<Point<float>>(*line_string_float);
     
-    line_string_constructor_reserve = new LineString<PointI>(10);
+    line_string_constructor_reserve = new LineString<Point<int>>(10);
 
-    line_string_constructor_vector = new LineString<PointD>(v_d);
+    line_string_constructor_vector = new LineString<Point<double>>(v_d);
   }
  
   void teardown()
@@ -115,22 +115,22 @@ struct LineStringTest
 
   }
 
-  std::vector<PointD> v_d;
+  std::vector<Point<double>> v_d;
 
-  LineString<PointI> line_string_default_constructor_integer;
-  LineString<PointD> line_string_default_constructor_double;
-  LineString<PointF> line_string_default_constructor_float;
+  LineString<Point<int>> line_string_default_constructor_integer;
+  LineString<Point<double>> line_string_default_constructor_double;
+  LineString<Point<float>> line_string_default_constructor_float;
 
-  LineString<PointI> *line_string_integer;
-  LineString<PointD> *line_string_double;
-  LineString<PointF> *line_string_float;
-  LineString<PointI> *line_string_integer_copy;
-  LineString<PointD> *line_string_double_copy;
-  LineString<PointF> *line_string_float_copy;
+  LineString<Point<int>> *line_string_integer;
+  LineString<Point<double>> *line_string_double;
+  LineString<Point<float>> *line_string_float;
+  LineString<Point<int>> *line_string_integer_copy;
+  LineString<Point<double>> *line_string_double_copy;
+  LineString<Point<float>> *line_string_float_copy;
 
-  LineString<PointI> *line_string_constructor_reserve;
+  LineString<Point<int>> *line_string_constructor_reserve;
 
-  LineString<PointD> *line_string_constructor_vector;
+  LineString<Point<double>> *line_string_constructor_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, LineStringTest)
@@ -352,10 +352,10 @@ struct LineString3DTest
   void setup()
   {
 
-    v_d.push_back(Point3D(23.6, 94.4, 0.36));
-    v_d.push_back(Point3D(75.36, 246.33, 454.3));
-    v_d.push_back(Point3D(256.6, 619.3, 26.21));
-    v_d.push_back(Point3D(62.36, 6.60, 62.61));
+    v_d.push_back(Point3<double>(23.6, 94.4, 0.36));
+    v_d.push_back(Point3<double>(75.36, 246.33, 454.3));
+    v_d.push_back(Point3<double>(256.6, 619.3, 26.21));
+    v_d.push_back(Point3<double>(62.36, 6.60, 62.61));
 
     line_string_integer = new LineString3D<Point3<int>>(initializer_list_line_string_3d_integer);
     line_string_double = new LineString3D<Point3<double>>(v_d);
@@ -572,23 +572,23 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(MultiLineStringTestSuite)
 
-std::initializer_list<PointI> points1
+std::initializer_list<Point<int>> points1
 {
-  PointI(34, 34),
-  PointI(45, 54),
-  PointI(51, 45),
-  PointI(12, 47),
-  PointI(95, 25),
-  PointI(15, 36),
-  PointI(18, 82)
+  Point<int>(34, 34),
+  Point<int>(45, 54),
+  Point<int>(51, 45),
+  Point<int>(12, 47),
+  Point<int>(95, 25),
+  Point<int>(15, 36),
+  Point<int>(18, 82)
 };
 
-std::initializer_list<PointI> points2
+std::initializer_list<Point<int>> points2
 {
-  PointI(76, 70),
-  PointI(26, 35),
-  PointI(55, 25),
-  PointI(82, 21)
+  Point<int>(76, 70),
+  Point<int>(26, 35),
+  Point<int>(55, 25),
+  Point<int>(82, 21)
 };
 
 
@@ -624,28 +624,28 @@ struct MultiLineStringTest
   void setup()
   {
 
-    //v_d.push_back(PointD(41572.22, 6647.89));
-    //v_d.push_back(PointD(41490.43, 6888.36));
-    //v_d.push_back(PointD(41728.03, 6903.40));
-    //v_d.push_back(PointD(41771.48, 6429.97));
-    //v_d.push_back(PointD(41370.12, 6718.08));
-    //v_d.push_back(PointD(41462.92, 6669.53));
-    //v_d.push_back(PointD(41387.59, 7026.70));
+    //v_d.push_back(Point<double>(41572.22, 6647.89));
+    //v_d.push_back(Point<double>(41490.43, 6888.36));
+    //v_d.push_back(Point<double>(41728.03, 6903.40));
+    //v_d.push_back(Point<double>(41771.48, 6429.97));
+    //v_d.push_back(Point<double>(41370.12, 6718.08));
+    //v_d.push_back(Point<double>(41462.92, 6669.53));
+    //v_d.push_back(Point<double>(41387.59, 7026.70));
 
-    multiline_string_integer = new MultiLineString<PointI>();
+    multiline_string_integer = new MultiLineString<Point<int>>();
     multiline_string_integer->push_back(LineStringI(points1));
     multiline_string_integer->push_back(LineStringI(points2));
 
-    //line_string_double = new LineString<PointD>(initializer_list_line_string_double);
-    //line_string_float = new LineString<PointF>();
+    //line_string_double = new LineString<Point<double>>(initializer_list_line_string_double);
+    //line_string_float = new LineString<Point<float>>();
 
-    //line_string_integer_copy = new LineString<PointI>(*line_string_integer);
-    //line_string_double_copy = new LineString<PointD>(*line_string_double);
-    //line_string_float_copy = new LineString<PointF>(*line_string_float);
+    //line_string_integer_copy = new LineString<Point<int>>(*line_string_integer);
+    //line_string_double_copy = new LineString<Point<double>>(*line_string_double);
+    //line_string_float_copy = new LineString<Point<float>>(*line_string_float);
 
-    //line_string_constructor_reserve = new LineString<PointI>(10);
+    //line_string_constructor_reserve = new LineString<Point<int>>(10);
 
-    //line_string_constructor_vector = new LineString<PointD>(v_d);
+    //line_string_constructor_vector = new LineString<Point<double>>(v_d);
   }
 
   void teardown()
@@ -653,20 +653,20 @@ struct MultiLineStringTest
 
   }
 
-  //std::vector<PointD> v_d;
+  //std::vector<Point<double>> v_d;
 
-  MultiLineString<PointD> multiline_default_constructor;
+  MultiLineString<Point<double>> multiline_default_constructor;
 
-  MultiLineString<PointI> *multiline_string_integer;
-  //LineString<PointD> *line_string_double;
-  //LineString<PointF> *line_string_float;
-  //LineString<PointI> *line_string_integer_copy;
-  //LineString<PointD> *line_string_double_copy;
-  //LineString<PointF> *line_string_float_copy;
+  MultiLineString<Point<int>> *multiline_string_integer;
+  //LineString<Point<double>> *line_string_double;
+  //LineString<Point<float>> *line_string_float;
+  //LineString<Point<int>> *line_string_integer_copy;
+  //LineString<Point<double>> *line_string_double_copy;
+  //LineString<Point<float>> *line_string_float_copy;
 
-  //LineString<PointI> *line_string_constructor_reserve;
+  //LineString<Point<int>> *line_string_constructor_reserve;
 
-  //LineString<PointD> *line_string_constructor_vector;
+  //LineString<Point<double>> *line_string_constructor_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, MultiLineStringTest)
@@ -693,7 +693,7 @@ BOOST_FIXTURE_TEST_CASE(push_back, MultiLineStringTest)
 
 BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve)
 {
-  MultiLineString<PointD> multiline(10);
+  MultiLineString<Point<double>> multiline(10);
   WindowD w = multiline.window();
 
   BOOST_CHECK_EQUAL(10, multiline.size());
@@ -707,7 +707,7 @@ BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
 {
-  MultiLineString<PointI> multiline(*multiline_string_integer);
+  MultiLineString<Point<int>> multiline(*multiline_string_integer);
   BOOST_CHECK_EQUAL(2, multiline.size());
   BOOST_CHECK_EQUAL(7, multiline.at(0).size());
   BOOST_CHECK_EQUAL(4, multiline.at(1).size());
@@ -716,33 +716,33 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
 
 //BOOST_AUTO_TEST_CASE(MultiLineString_copy_constructor) 
 //{
-//  std::vector<PointI> vect1
+//  std::vector<Point<int>> vect1
 //  {
-//    PointI(34, 34),
-//    PointI(45, 54),
-//    PointI(51, 45),
-//    PointI(12, 47),
-//    PointI(95, 25),
-//    PointI(15, 36),
-//    PointI(18, 82)
+//    Point<int>(34, 34),
+//    Point<int>(45, 54),
+//    Point<int>(51, 45),
+//    Point<int>(12, 47),
+//    Point<int>(95, 25),
+//    Point<int>(15, 36),
+//    Point<int>(18, 82)
 //  };
 //  LineStringI  line1(vect1);
 //
-//  std::vector<PointI> vect2{
-//	  PointI(4150653, 668925),
-//	  PointI(4148532, 688836),
-//	  PointI(4120568, 693696),
-//	  PointI(4153569, 643656),
-//	  PointI(4152639, 665658),
-//	  PointI(4156305, 636996),
-//	  PointI(4139568, 653366) };
+//  std::vector<Point<int>> vect2{
+//	  Point<int>(4150653, 668925),
+//	  Point<int>(4148532, 688836),
+//	  Point<int>(4120568, 693696),
+//	  Point<int>(4153569, 643656),
+//	  Point<int>(4152639, 665658),
+//	  Point<int>(4156305, 636996),
+//	  Point<int>(4139568, 653366) };
 //  LineStringI  line2(vect2);
 //
-//  MultiLineString<PointI> multiline;
+//  MultiLineString<Point<int>> multiline;
 //  multiline.push_back(line1);
 //  multiline.push_back(line2);
 //
-//	MultiLineString<PointI> multiline_copy(multiline);
+//	MultiLineString<Point<int>> multiline_copy(multiline);
 //  WindowI w = multiline_copy.window();
 //
 //  BOOST_CHECK(multiline_copy.type() == Entity::Type::multiline2d);
@@ -759,21 +759,21 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
 //BOOST_AUTO_TEST_CASE(MultiLineString_assing_operator)
 //{
 //  LineStringI  line1(ptsIn);
-//  std::vector<PointI> vect{
-//	  PointI(4150653, 668925),
-//	  PointI(4148532, 688836),
-//	  PointI(4120568, 693696),
-//	  PointI(4153569, 643656),
-//	  PointI(4152639, 665658),
-//	  PointI(4156305, 636996),
-//	  PointI(4139568, 653366) };
+//  std::vector<Point<int>> vect{
+//	  Point<int>(4150653, 668925),
+//	  Point<int>(4148532, 688836),
+//	  Point<int>(4120568, 693696),
+//	  Point<int>(4153569, 643656),
+//	  Point<int>(4152639, 665658),
+//	  Point<int>(4156305, 636996),
+//	  Point<int>(4139568, 653366) };
 //  LineStringI  line2(vect);
 //
-//  MultiLineString<PointI> multiline;
+//  MultiLineString<Point<int>> multiline;
 //  multiline.push_back(line1);
 //  multiline.push_back(line2);
 //
-//  MultiLineString<PointI> multiline_copy = multiline;
+//  MultiLineString<Point<int>> multiline_copy = multiline;
 //  WindowI w = multiline_copy.window();
 //
 //  BOOST_CHECK(multiline_copy.type() == Entity::Type::multiline2d);
@@ -784,7 +784,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
 //  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
 //  BOOST_CHECK_EQUAL(702670, w.pt2.y);
 //
-//  LineString<PointI> linestring = multiline_copy[1];
+//  LineString<Point<int>> linestring = multiline_copy[1];
 //  for (size_t i = 0; i < linestring.size(); i++) {
 //    BOOST_CHECK_EQUAL(vect[i].x, linestring[i].x);
 //    BOOST_CHECK_EQUAL(vect[i].y, linestring[i].y);
@@ -797,7 +797,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 //BOOST_AUTO_TEST_CASE(MultiLineString3D_default_constructor) 
 //{
-//  MultiLineString3D<Point3D> multiline_3d;
+//  MultiLineString3D<Point3<double>> multiline_3d;
 //  BoundingBoxD box = multiline_3d.boundingBox();
 //  
 //  BOOST_CHECK_EQUAL(0, multiline_3d.size());
@@ -813,7 +813,7 @@ BOOST_AUTO_TEST_SUITE_END()
 //
 //BOOST_AUTO_TEST_CASE(MultiLineString3D_constructor_reserve) 
 //{
-//  MultiLineString3D<Point3D> multiline_3d(10);
+//  MultiLineString3D<Point3<double>> multiline_3d(10);
 //  BoundingBoxD box = multiline_3d.boundingBox();
 //  
 //  BOOST_CHECK_EQUAL(10, multiline_3d.size());
@@ -828,19 +828,19 @@ BOOST_AUTO_TEST_SUITE_END()
 //
 //BOOST_AUTO_TEST_CASE(MultiLineString3D_copy_constructor) 
 //{
-//  std::vector<Point3D> vector{
-//    Point3D(23.6, 94.4, 0.36),
-//    Point3D(75.36, 246.33, 454.3),
-//    Point3D(256.6, 619.3, 26.21),
-//    Point3D(62.36, 6.60, 62.61) 
+//  std::vector<Point3<double>> vector{
+//    Point3<double>(23.6, 94.4, 0.36),
+//    Point3<double>(75.36, 246.33, 454.3),
+//    Point3<double>(256.6, 619.3, 26.21),
+//    Point3<double>(62.36, 6.60, 62.61) 
 //  };
 //
 //  LineString3dD linestring(vector);
 //
-//  MultiLineString3D<Point3D> multiline;
+//  MultiLineString3D<Point3<double>> multiline;
 //  multiline.push_back(linestring);
 //
-//	MultiLineString3D<Point3D> multiline_copy(multiline);
+//	MultiLineString3D<Point3<double>> multiline_copy(multiline);
 //  
 //  BOOST_CHECK(multiline_copy.type() == Entity::Type::multiline3d);
 //  BOOST_CHECK(multiline_copy.is3D());
@@ -857,19 +857,19 @@ BOOST_AUTO_TEST_SUITE_END()
 //
 //BOOST_AUTO_TEST_CASE(MultiLineString3D_assing_operator)
 //{
-//  std::vector<Point3D> vector{
-//    Point3D(23.6, 94.4, 0.36),
-//    Point3D(75.36, 246.33, 454.3),
-//    Point3D(256.6, 619.3, 26.21),
-//    Point3D(62.36, 6.60, 62.61) 
+//  std::vector<Point3<double>> vector{
+//    Point3<double>(23.6, 94.4, 0.36),
+//    Point3<double>(75.36, 246.33, 454.3),
+//    Point3<double>(256.6, 619.3, 26.21),
+//    Point3<double>(62.36, 6.60, 62.61) 
 //  };
 //
 //  LineString3dD linestring(vector);
 //
-//  MultiLineString3D<Point3D> multiline;
+//  MultiLineString3D<Point3<double>> multiline;
 //  multiline.push_back(linestring);
 //
-//  MultiLineString3D<Point3D> multiline_copy = multiline;
+//  MultiLineString3D<Point3<double>> multiline_copy = multiline;
 //
 //  BOOST_CHECK(multiline_copy.type() == Entity::Type::multiline3d);
 //  BOOST_CHECK(multiline_copy.is3D());

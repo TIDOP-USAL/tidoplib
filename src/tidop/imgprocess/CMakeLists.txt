@@ -32,30 +32,53 @@ if (BUILD_TL_IMG_PROCESS)
 
     project(ImgProcess)
   
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
-                anaglyph.cpp
-                anaglyph.h
-                colorconvert.cpp
-                colorconvert.h
-                correlation.h
-                filters.cpp
-                filters.h
-                fourier.cpp
-                fourier.h
-                imgprocess.cpp
-                imgprocess.h
-                imgtransform.cpp
-                imgtransform.h
-                linedetector.cpp
-                linedetector.h
-                skeleton.cpp
-                skeleton.h
-                whitebalance.cpp
-                whitebalance.h
-                morphologicaloper.cpp
-                morphologicaloper.h)
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES 
+                            anaglyph.cpp
+                            colorconvert.cpp
+                            fourier.cpp
+                            imgprocess.cpp
+                            imgtransform.cpp
+                            linedetector.cpp
+                            skeleton.cpp
+                            whitebalance.cpp
+                            morphologicaloper.cpp
+                            filter/bilateral.cpp
+                            filter/blur.cpp
+                            filter/box.cpp
+                            filter/canny.cpp
+                            filter/convolution.cpp
+                            filter/gaussblur.cpp
+                            filter/laplacian.cpp
+                            filter/medianblur.cpp
+                            filter/sobel.cpp
+                         HEADER_FILES
+                            anaglyph.h
+                            colorconvert.h
+                            filters.h
+                            fourier.h
+                            imgprocess.h
+                            imgtransform.h
+                            linedetector.h
+                            skeleton.h
+                            whitebalance.h
+                            morphologicaloper.h
+                            filter/bilateral.h
+                            filter/blur.h
+                            filter/box.h
+                            filter/canny.h
+                            filter/convolution.h
+                            filter/gaussblur.h
+                            filter/laplacian.h
+                            filter/medianblur.h
+                            filter/sobel.h)
 
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
+
+    add_library(TidopLib::${PROJECT_NAME}
+                ALIAS ${PROJECT_NAME})
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
                           TidopLib::Core

@@ -26,14 +26,14 @@
 
 unset(VLD_FOUND)
 
-SET(VLD_DIR "" CACHE PATH "Root folder of VLD dependency")
+SET(VLD_ROOT "" CACHE PATH "Root folder of VLD dependency")
 
-list(APPEND VLD_LIBRARY_PATHS ${VLD_DIR}/lib)
+list(APPEND VLD_LIBRARY_PATHS ${VLD_ROOT}/lib)
      
 if(CMAKE_CL_64)
-    list(APPEND VLD_LIBRARY_PATHS ${VLD_DIR}/lib/Win64)
+    list(APPEND VLD_LIBRARY_PATHS ${VLD_ROOT}/lib/Win64)
 else()
-    list(APPEND VLD_LIBRARY_PATHS ${VLD_DIR}/lib/Win32)
+    list(APPEND VLD_LIBRARY_PATHS ${VLD_ROOT}/lib/Win32)
 endif()
 
 
@@ -41,7 +41,7 @@ find_path(VLD_INCLUDE_DIR
           NAMES 
 		    vld.h
           PATHS 
-		    ${VLD_DIR}/include)
+		    ${VLD_ROOT}/include)
 
 find_library(VLD_LIBRARY
              NAMES 

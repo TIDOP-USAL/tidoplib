@@ -27,26 +27,27 @@
 namespace tl
 {
 
-namespace graph
-{ 
-
-/* ---------------------------------------------------------------------------------- */
 
 
-GPolygon::GPolygon() 
-  : Polygon<Point<double>>(), 
+GPolygon::GPolygon()
+  : GraphicEntity(GraphicEntity::Type::polygon_2d)
+{
+}
+
+GPolygon::GPolygon(size_t size)
+  : Polygon<Point<double>>(size),
     GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
-GPolygon::GPolygon(const Polygon<Point<double>> &polygon) 
-  : Polygon<Point<double>>(polygon), 
+GPolygon::GPolygon(const Polygon<Point<double>> &polygon)
+  : Polygon<Point<double>>(polygon),
     GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
-GPolygon::GPolygon(const GPolygon &gPolygon) 
-  : Polygon<Point<double>>(gPolygon), 
+GPolygon::GPolygon(const GPolygon &gPolygon)
+  : Polygon<Point<double>>(gPolygon),
     GraphicEntity(gPolygon)
 {
 }
@@ -61,40 +62,36 @@ GPolygon::~GPolygon()
 {
 }
 
-GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
+auto GPolygon::operator =(const GPolygon& gPolygon) -> GPolygon&
 {
-  if (this != &gPolygon) {
-    Polygon<Point<double>>::operator=(gPolygon);
-    GraphicEntity::operator=(gPolygon);
-  }
-  return *this;
+    if (this != &gPolygon) {
+        Polygon<Point<double>>::operator=(gPolygon);
+        GraphicEntity::operator=(gPolygon);
+    }
+    return *this;
 }
 
-GPolygon &GPolygon::operator = (GPolygon &&gPolygon) TL_NOEXCEPT
+auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
 {
-  if (this != &gPolygon) {
-    Polygon<Point<double>>::operator=(std::forward<Polygon<Point<double>>>(gPolygon));
-    GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon));
-  }
-  return *this;
-}
-
-bool GPolygon::isMultiEntity() const
-{
-  return false;
-}
-
-bool GPolygon::isSimpleEntity() const
-{
-  return true;
+    if (this != &gPolygon) {
+        Polygon<Point<double>>::operator=(std::forward<Polygon<Point<double>>>(gPolygon));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon));
+    }
+    return *this;
 }
 
 
-/* ---------------------------------------------------------------------------------- */
 
 
-GPolygon3D::GPolygon3D() 
-  : Polygon3D<Point3<double>>(),
+
+
+GPolygon3D::GPolygon3D()
+  : GraphicEntity(GraphicEntity::Type::polygon_3d)
+{
+}
+
+GPolygon3D::GPolygon3D(size_t size)
+  : Polygon3D<Point3<double>>(size),
     GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
@@ -105,7 +102,7 @@ GPolygon3D::GPolygon3D(const Polygon3D<Point3<double>> &polygon)
 {
 }
 
-GPolygon3D::GPolygon3D(const GPolygon3D &gPolygon3D) 
+GPolygon3D::GPolygon3D(const GPolygon3D &gPolygon3D)
   : Polygon3D<Point3<double>>(gPolygon3D),
     GraphicEntity(gPolygon3D)
 {
@@ -121,52 +118,54 @@ GPolygon3D::~GPolygon3D()
 {
 }
 
-GPolygon3D &GPolygon3D::operator = (const GPolygon3D &gPolygon3D)
+auto GPolygon3D::operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&
 {
-  if (this != &gPolygon3D) {
-    Polygon3D<Point3<double>>::operator=(gPolygon3D);
-    GraphicEntity::operator=(gPolygon3D);
-  }
-  return *this;
+    if (this != &gPolygon3D) {
+        Polygon3D<Point3<double>>::operator=(gPolygon3D);
+        GraphicEntity::operator=(gPolygon3D);
+    }
+    return *this;
 }
 
-GPolygon3D &GPolygon3D::operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT
+auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
 {
-  if (this != &gPolygon3D) {
-    Polygon3D<Point3<double>>::operator=(std::forward<Polygon3D<Point3<double>>>(gPolygon3D));
-    GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon3D));
-  }
-  return *this;
-}
-
-bool GPolygon3D::isMultiEntity() const
-{
-  return false;
-}
-
-bool GPolygon3D::isSimpleEntity() const
-{
-  return true;
+    if (this != &gPolygon3D) {
+        Polygon3D<Point3<double>>::operator=(std::forward<Polygon3D<Point3<double>>>(gPolygon3D));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon3D));
+    }
+    return *this;
 }
 
 
-/* ---------------------------------------------------------------------------------- */
+
+
 
 GMultiPolygon::GMultiPolygon()
-  : MultiPolygon<Point<double>>(), 
+  : GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+{
+}
+
+GMultiPolygon::GMultiPolygon(size_t size)
+  : MultiPolygon<Point<double>>(size),
     GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
 GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon)
-  : MultiPolygon<Point<double>>(multiPolygon), 
+  : MultiPolygon<Point<double>>(multiPolygon),
     GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
-GMultiPolygon::GMultiPolygon(const GMultiPolygon &gMultiPolygon)
-  : MultiPolygon<Point<double>>(gMultiPolygon), 
-    GraphicEntity(gMultiPolygon)
+GMultiPolygon::GMultiPolygon(const GMultiPolygon &multiPolygon)
+  : MultiPolygon<Point<double>>(multiPolygon),
+    GraphicEntity(multiPolygon)
+{
+}
+
+GMultiPolygon::GMultiPolygon(GMultiPolygon&& multiPolygon) TL_NOEXCEPT
+  : MultiPolygon<Point<double>>(std::forward<MultiPolygon<Point<double>>>(multiPolygon)),
+    GraphicEntity(std::forward<GraphicEntity>(multiPolygon))
 {
 }
 
@@ -174,32 +173,29 @@ GMultiPolygon::~GMultiPolygon()
 {
 }
 
-GMultiPolygon &GMultiPolygon::operator = (const GMultiPolygon &gMultiPolygon)
+auto GMultiPolygon::operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon&
 {
-  if (this != &gMultiPolygon) {
-    MultiPolygon<Point<double>>::operator=(gMultiPolygon);
-    GraphicEntity::operator=(gMultiPolygon);
-  }
-  return *this;
+    if (this != &multiPolygon) {
+        MultiPolygon<Point<double>>::operator=(multiPolygon);
+        GraphicEntity::operator=(multiPolygon);
+    }
+
+    return *this;
 }
 
-bool GMultiPolygon::isMultiEntity() const
+auto GMultiPolygon::operator=(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon&
 {
-  return true;
+    if (this != &multiPolygon) {
+        MultiPolygon<Point<double>>::operator=(std::forward<MultiPolygon<Point<double>>>(multiPolygon));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon));
+    }
+
+    return *this;
 }
-
-bool GMultiPolygon::isSimpleEntity() const
-{
-  return false;
-}
-
-
-/* ---------------------------------------------------------------------------------- */
 
 
 GMultiPolygon3D::GMultiPolygon3D()
-  : MultiPolygon3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+  : GraphicEntity(GraphicEntity::Type::multipolygon_3d)
 {
 }
 
@@ -209,40 +205,37 @@ GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPoly
 {
 }
 
-GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &gMultiPolygon3D)
-  : MultiPolygon3D<Point3<double>>(gMultiPolygon3D),
-    GraphicEntity(gMultiPolygon3D)
+GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D)
+  : MultiPolygon3D<Point3<double>>(multiPolygon3D),
+    GraphicEntity(multiPolygon3D)
 {
+}
+
+GMultiPolygon3D::GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT
+  : MultiPolygon3D<Point3<double>>(std::forward<MultiPolygon3D<Point3<double>>>(multiPolygon3D)),
+    GraphicEntity(multiPolygon3D){
 }
 
 GMultiPolygon3D::~GMultiPolygon3D()
 {
 }
 
-GMultiPolygon3D &GMultiPolygon3D::operator = (const GMultiPolygon3D &gMultiPolygon3D)
+auto GMultiPolygon3D::operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D&
 {
-  if (this != &gMultiPolygon3D) {
-    MultiPolygon3D<Point3<double>>::operator=(gMultiPolygon3D);
-    GraphicEntity::operator=(gMultiPolygon3D);
-  }
-  return *this;
+    if (this != &multiPolygon3D) {
+        MultiPolygon3D<Point3<double>>::operator=(multiPolygon3D);
+        GraphicEntity::operator=(multiPolygon3D);
+    }
+    return *this;
 }
 
-bool GMultiPolygon3D::isMultiEntity() const
+auto GMultiPolygon3D::operator=(GMultiPolygon3D &&multiPolygon3D) noexcept -> GMultiPolygon3D&
 {
-  return true;
+    if (this != &multiPolygon3D) {
+        MultiPolygon3D<Point3<double>>::operator=(std::forward<MultiPolygon3D<Point3<double>>>(multiPolygon3D));
+        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon3D));
+    }
+    return *this;
 }
-
-bool GMultiPolygon3D::isSimpleEntity() const
-{
-  return false;
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-} // Fin namespace graph
 
 } // End namespace tl

@@ -25,82 +25,66 @@
 #include "tidop/graphic/entities/entity.h"
 
 #ifdef TL_HAVE_OPENCV
-#include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #endif
 
 
 namespace tl
 {
 
-namespace graph
-{ 
-
-/* ---------------------------------------------------------------------------------- */
 
 
 GraphicEntity::GraphicEntity(Type type)
-  : GraphicStyle(),
-    //GData(),
-    mEntityType(type)
+  : mEntityType(type)
 {
 }
 
 GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
   : GraphicStyle(graphicEntity),
-    //GData(graphicEntity),
     mEntityType(graphicEntity.mEntityType)
 {
 }
 
 GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
   : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
-    //GData(std::forward<GData>(graphicEntity)),
-    mEntityType(std::move(graphicEntity.mEntityType))
+    mEntityType(graphicEntity.mEntityType)
 {
 }
 
-GraphicEntity::~GraphicEntity()
+auto GraphicEntity::operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&
 {
+    if (this != &graphicEntity) {
+        GraphicStyle::operator=(graphicEntity);
+        mEntityType = graphicEntity.mEntityType;
+    }
+
+    return *this;
 }
 
-GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
-{ 
-  if (this != &graphicEntity) {
-    GraphicStyle::operator=(graphicEntity);
-    //GData::operator=(graphicEntity);
-    mEntityType = graphicEntity.mEntityType;
-  }
-  return *this;
-}
-
-GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT
-{ 
-  if (this != &graphicEntity) {
-    GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
-    //GData::operator=(std::forward<GData>(graphicEntity));
-    mEntityType = std::move(graphicEntity.mEntityType);
-  }
-  return *this;
-}
-
-GraphicEntity::Type GraphicEntity::type() const
+auto GraphicEntity::operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&
 {
-  return mEntityType;
+    if (this != &graphicEntity) {
+        GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
+        mEntityType = graphicEntity.mEntityType;
+    }
+
+    return *this;
 }
 
-std::shared_ptr<TableRegister> graph::GraphicEntity::data() const
+auto GraphicEntity::type() const -> Type
 {
-  return mData;
+    return mEntityType;
 }
 
-void GraphicEntity::setData(std::shared_ptr<TableRegister> &data)
+auto GraphicEntity::data() const -> std::shared_ptr<TableRegister>
 {
-  mData = data;
+    return mData;
+}
+
+void GraphicEntity::setData(const std::shared_ptr<TableRegister> &data)
+{
+    mData = data;
 }
 
 
-} // Fin namespace graph
-
-} // End namespace TL
+} // End namespace tl

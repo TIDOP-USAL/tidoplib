@@ -24,169 +24,101 @@
 
 #include "tidop/core/log.h"
 #include "tidop/core/app.h"
-#include "tidop/core/messages.h"
 #include "tidop/core/chrono.h"
 #include "tidop/core/path.h"
 
-#include <fstream>
+
 
 namespace tl
 {
 
-std::string Log::sLogFile;
-EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
-std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
-
-#ifdef TL_MESSAGE_HANDLER
-bool Log::sPauseListener = false;
-#endif
+//EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
 
 Log::Log()
-#ifdef TL_MESSAGE_HANDLER
-  : MessageManager::Listener(false)
-#endif
+  : messageLevelFlags(MessageLevel::all)
 {
 }
 
-Log::~Log() = default;
-
-Log &Log::instance()
+auto Log::instance() -> Log &
 {
-  static Log log;
-  return log;
+    static Log log;
+    return log;
 }
 
-EnumFlags<MessageLevel> Log::logLevel()
+void Log::open(const std::string &file)
 {
-  return sLevel;
+    _stream.open(file, std::ofstream::app);
+}
+
+void Log::close()
+{
+    _stream.close();
+}
+
+auto Log::isOpen() const -> bool
+{
+    return _stream.is_open();
+}
+
+auto Log::messageLevel() -> EnumFlags<MessageLevel>
+{
+    return messageLevelFlags;
 }
 
 void Log::setMessageLevel(MessageLevel level)
 {
-  sLevel = level;
-}
-  
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-void Log::setLogLevel(MessageLevel level)
-{
-  sLevel = level;
-}
-#endif
-
-void Log::setLogFile(const std::string &file)
-{
-  sLogFile = file;
+    messageLevelFlags = level;
 }
 
-void Log::write(const std::string &message)
+void Log::debug(String message)
 {
-
-  std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-  this->_write(message, date);
-}
-
-#ifdef TL_MESSAGE_HANDLER
-
-void Log::pauseListener()
-{
-  sPauseListener = true;
-}
-
-void Log::resumeListener()
-{
-  sPauseListener = false;
-}
-
-#if CPP_VERSION >= 17
-void Log::onMsgDebug(std::string_view message, 
-                     std::string_view date)
-#else
-void Log::onMsgDebug(const std::string &message, 
-                     const std::string &date)
-#endif
-{
-  if (sLevel.isEnabled(MessageLevel::msg_debug)) {
-    _write(message, date);
-  }
-}
-
-#if CPP_VERSION >= 17
-void Log::onMsgInfo(std::string_view message, 
-                    std::string_view date)
-#else
-void Log::onMsgInfo(const std::string &message, 
-                    const std::string &date) 
-#endif
-{
-  if (sLevel.isEnabled(MessageLevel::msg_info)) {
-    _write(message, date);
-  }
-}
-
-#if CPP_VERSION >= 17
-void Log::onMsgWarning(std::string_view message, 
-                       std::string_view date)
-#else
-void Log::onMsgWarning(const std::string &message, 
-                       const std::string &date)
-#endif
-{
-  if (sLevel.isEnabled(MessageLevel::msg_warning)) {
-    _write(message, date);
-  }
-}
-
-#if CPP_VERSION >= 17
-void Log::onMsgError(std::string_view message, 
-                     std::string_view date)
-#else
-void Log::onMsgError(const std::string &message, 
-                     const std::string &date)
-#endif
-{
-  if (sLevel.isEnabled(MessageLevel::msg_error)) {
-    _write(message, date);
-  }
-}
-
-#if CPP_VERSION >= 17
-void Log::_write(std::string_view message, 
-                 std::string_view date)
-#else
-
-void Log::_write(const std::string &message, 
-                 const std::string &date)
-#endif
-{
-  if (sLogFile.empty()) {
-    // Log por defecto
-    Path log_path(App::instance().path());
-    log_path.replaceExtension(".log");
-    sLogFile = log_path.toString();
-  }
-  
-  Path log_parent_path = Path(sLogFile).parentPath();
-  if (!log_parent_path.exists()) {
-    int err = log_parent_path.createDirectories();
-    if (err == -1) {
-      MessageManager::instance().removeListener(this);
-      return;
-    }
-  }
-
-  std::ofstream hLog(sLogFile,std::ofstream::app);
-  if (hLog.is_open()) {
     std::lock_guard<std::mutex> lck(Log::mtx);
-    hLog << date << " - " << message << "\n";
-    hLog.close();
-  } else {
-    MessageManager::instance().removeListener(this);
-  }
+
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::debug))
+        _stream << date << " - Debug:   " << message << std::endl;
 }
 
+void Log::info(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
 
-#endif // TL_MESSAGE_HANDLER
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::info))
+        _stream << date << " - Info:    " << message << std::endl;
+}
+
+void Log::success(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
+
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::success))
+        _stream << date << " - Success: " << message << std::endl;
+}
+
+void Log::warning(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
+
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::warning)) 
+        _stream << date << " - Warning: " << message << std::endl;
+}                          
+
+void Log::error(String message)
+{
+    std::lock_guard<std::mutex> lck(Log::mtx);
+    
+    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+
+    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::error))
+        _stream << date << " - Error:   " << message << std::endl;
+}
 
 } // End mamespace tl

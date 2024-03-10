@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GRAPHIC_PAINTER_H
-#define TL_GRAPHIC_PAINTER_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -32,23 +31,22 @@
 #endif // TL_HAVE_OPENCV
 
 #include "tidop/core/defs.h"
-#include "tidop/geometry/entities/point.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
+namespace geom
+{
 class Transform;
-
+}
 
 /*! \addtogroup GraphicEntities
  *  \{
  */
-
-namespace graph
-{
 
 class Canvas;
 class GraphicStyle;
@@ -63,126 +61,119 @@ class TL_EXPORT Painter
 
 public:
 
-  /*!
-   * \brief Constructora Painter
-   */
-  Painter();
+    /*!
+     * \brief Constructora Painter
+     */
+    Painter();
 
-  /*!
-   * \brief Constructor que recibe el canvas como parámetro
-   * \param[in] canvas Canvas
-   */
-  Painter(Canvas *canvas);
+    /*!
+     * \brief Constructor que recibe el canvas como parámetro
+     * \param[in] canvas Canvas
+     */
+    Painter(Canvas *canvas);
 
-  Painter(const Painter &painter) = delete;
-  Painter(Painter &&painter) = delete;
-  Painter &operator = (const Painter &painter) = delete;
-  Painter &operator = (Painter &&painter) = delete;
+    Painter(const Painter &painter) = delete;
+    Painter(Painter &&painter) = delete;
+    Painter &operator = (const Painter &painter) = delete;
+    Painter &operator = (Painter &&painter) = delete;
 
-  /*!
-   * \brief Destructora
-   */
-  ~Painter();
+    ~Painter();
 
-  void begin(Canvas *canvas){ unusedParameter(canvas); }
-  void end(){ }
+    void begin(Canvas *canvas) { unusedParameter(canvas); }
+    void end() {}
 
-  /*!
-   * \brief Dibuja un punto en el canvas
-   * \param[in] point Punto
-   */
-  void drawPoint(const GPoint &point);
-  void drawPoint(const PointD &point);
+    /*!
+     * \brief Dibuja un punto en el canvas
+     * \param[in] point Punto
+     */
+    void drawPoint(const GPoint &point);
+    void drawPoint(const Point<double> &point) const;
 
-  /*!
-   * \brief Dibuja una polilinea
-   * \param[in] lineString Polilinea
-   */
-  void drawLineString(const GLineString &lineString);
-  void drawLineString(const LineStringD &lineString);
+    /*!
+     * \brief Dibuja una polilinea
+     * \param[in] lineString Polilinea
+     */
+    void drawLineString(const GLineString &lineString) const;
+    void drawLineString(const LineStringD &lineString) const;
 
-  /*!
-   * \brief Dibuja un poligono
-   * \param[in] polygon Poligono
-   */
-  void drawPolygon(const GPolygon &polygon);
-  void drawPolygon(const PolygonD &polygon);
+    /*!
+     * \brief Dibuja un poligono
+     * \param[in] polygon Poligono
+     */
+    void drawPolygon(const GPolygon &polygon) const;
+    void drawPolygon(const PolygonD &polygon) const;
 
-  /*!
-   * \brief Dibuja un multipunto
-   * \param[in] multipoint Multipunto
-   */
-  void drawMultiPoint(const GMultiPoint &multipoint);
+    /*!
+     * \brief Dibuja un multipunto
+     * \param[in] multipoint Multipunto
+     */
+    void drawMultiPoint(const GMultiPoint &multipoint) const;
 
-  /*!
-   * \brief Dibuja una multipolilinea
-   * \param[in] multiLineString multipolilinea
-   */
-  void drawMultiLineString(const GMultiLineString &multiLineString);
+    /*!
+     * \brief Dibuja una multipolilinea
+     * \param[in] multiLineString multipolilinea
+     */
+    void drawMultiLineString(const GMultiLineString &multiLineString) const;
 
-  /*!
-   * \brief Dibuja un multipoligono
-   * \param[in] multiPolygon Multipoligono
-   */
-  void drawMultiPolygon(const GMultiPolygon &multiPolygon);
+    /*!
+     * \brief Dibuja un multipoligono
+     * \param[in] multiPolygon Multipoligono
+     */
+    void drawMultiPolygon(const GMultiPolygon &multiPolygon) const;
 
 #ifdef TL_HAVE_OPENCV
-  void drawPicture(const cv::Mat &bmp);
+    void drawPicture(const cv::Mat &bmp) const;
 #endif // TL_HAVE_OPENCV
 
-  void drawText(const PointD &point, const std::string &text);
+    void drawText(const Point<double> &point, const std::string &text) const;
 
-  /*!
-   * \brief Establece el canvas
-   * \param[in] canvas Canvas
-   */
-  void setCanvas(Canvas *canvas);
+    /*!
+     * \brief Establece el canvas
+     * \param[in] canvas Canvas
+     */
+    void setCanvas(Canvas *canvas);
 
-  ///*!
-  // * \brief Establece el estilo de pluma
-  // * \param[in] pen Estilo pluma
-  // */
-  //void setPen(const std::shared_ptr<Pen> &pen);
+    ///*!
+    // * \brief Establece el estilo de pluma
+    // * \param[in] pen Estilo pluma
+    // */
+    //void setPen(const std::shared_ptr<Pen> &pen);
 
-  ///*!
-  // * \brief Establece el estilo de pincel
-  // * \param[in] brush Estilo pincel
-  // */
-  //void setBrush(const std::shared_ptr<Brush> &brush);
+    ///*!
+    // * \brief Establece el estilo de pincel
+    // * \param[in] brush Estilo pincel
+    // */
+    //void setBrush(const std::shared_ptr<Brush> &brush);
 
-  ///*!
-  // * \brief Establece el estilo de simbolo
-  // * \param[in] symbol Estilo simbolo
-  // */
-  //void setSymbol(const std::shared_ptr<Symbol> &symbol);
+    ///*!
+    // * \brief Establece el estilo de simbolo
+    // * \param[in] symbol Estilo simbolo
+    // */
+    //void setSymbol(const std::shared_ptr<Symbol> &symbol);
 
-  ///*!
-  // * \brief Establece el estilo de etiqueta
-  // * \param[in] label Estilo de etiqueta
-  // */
-  //void setLabel(const std::shared_ptr<Label> &label);
+    ///*!
+    // * \brief Establece el estilo de etiqueta
+    // * \param[in] label Estilo de etiqueta
+    // */
+    //void setLabel(const std::shared_ptr<Label> &label);
 
-  /*!
-   * \brief Establece la transformación que se aplica para dibujar el en canvas
-   * \param[in] trf Transformación
-   */
-  void setTransform(Transform *trf);
+    /*!
+     * \brief Establece la transformación que se aplica para dibujar el en canvas
+     * \param[in] trf Transformación
+     */
+    void setTransform(const Affine<double, 2> &affine);
 
-  //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
-  //void drawImage(const RasterGraphics &image, Helmert2D<geometry::PointI> *trf);
+    //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
+    //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
 protected:
 
-  Transform *mTrf;
-  Canvas *mCanvas;
+    Affine<double, 2> mTransform;
+    Canvas *mCanvas;
 
 };
 
 
-} // Fin namespace graph
-
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
-
-#endif // TL_GRAPHIC_PAINTER_H
+} // Fin namespace tl

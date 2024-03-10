@@ -6,7 +6,27 @@
 
 TidopLib is an open-source C++ library developed by [Tidop Research Group](http://tidop.usal.es)
 
-## Build from sources
+## Getting Started
+
+### Prerequisites
+
+
+* **[CMake](https://cmake.org/) v3.10+**
+* **C++ Compiler** with support for C++14
+* Git
+
+### Dependencies
+
+- [Boost](https://www.boost.org) > 1.50 (REQUIRED C++ Version < 17)
+- [GDAL](https://gdal.org)
+- [PROJ](https://proj.org/en/9.4/index.html)
+- [OpenCV](https://opencv.org)
+- [fmt](https://fmt.dev/latest/index.html) (REQUIRED C++ Version < 20)
+- [OpenBLAS](https://www.openblas.net) (optional)
+- [OpenMP](https://www.openmp.org) (optional)
+- [Visual Leak Detector](https://marketplace.visualstudio.com/items?itemName=ArkadyShapkin.VisualLeakDetectorforVisualC) (optional)
+
+### Installing
 
 ### Clone 
 
@@ -35,4 +55,5 @@ cmake --build .
 ```
 
 ## License
-View [LICENSE](LICENSE)
+
+TidopLib is distributed under the GNU Lesser General Public License Version 3 (LGPL 3). Please see the [LICENSE](LICENSE) file for more information.

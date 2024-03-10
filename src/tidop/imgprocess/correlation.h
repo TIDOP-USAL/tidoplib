@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_IMGPROCESS_FILTERS_H
-#define TL_IMGPROCESS_FILTERS_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -44,7 +43,7 @@ namespace tl
 
 
 /*! \defgroup Correlation Correlaci�n en imagenes
- *  
+ *
  *  \{
  */
 
@@ -107,5 +106,3 @@ namespace tl
 } // End namespace tl
 
 #endif // TL_HAVE_OPENCV
-
-#endif // TL_IMGPROCESS_FILTERS_H

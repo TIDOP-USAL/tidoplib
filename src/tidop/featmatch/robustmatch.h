@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_ROBUST_MATCHING_H
-#define TL_FEATMATCH_ROBUST_MATCHING_H
+#pragma once
 
 #include "tidop/featmatch/matcher.h"
 
@@ -34,34 +33,34 @@ class TL_EXPORT RobustMatchingProperties
   : public RobustMatcher
 {
 
+private:
+
+    double mRatio;
+    bool mCrossCheck;
+    std::shared_ptr<GeometricTest> mGeometricTest;
+
 public:
 
-  RobustMatchingProperties();
-  ~RobustMatchingProperties() override = default;
+    RobustMatchingProperties();
+    ~RobustMatchingProperties() override = default;
 
 // RobustMatcher interface
 
 public:
 
-  double ratio() const override;
-  void setRatio(double ratio) override;
-  bool crossCheck() const override;
-  void setCrossCheck(bool crossCheck) override;
-  std::shared_ptr<GeometricTest> geometricTest() const override;
-  void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) override;
+    auto ratio() const -> double override;
+    void setRatio(double ratio) override;
+    auto crossCheck() const -> bool override;
+    void setCrossCheck(bool crossCheck) override;
+    auto geometricTest() const -> std::shared_ptr<GeometricTest> override;
+    void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) override;
 
 // MatchingStrategy interface
 
 public:
 
-  void reset() override;
-  std::string name() const override;
-
-private:
-
-  double mRatio;
-  bool mCrossCheck;
-  std::shared_ptr<GeometricTest> mGeometricTest;
+    void reset() override;
+    auto name() const -> std::string override;
 
 };
 
@@ -74,156 +73,154 @@ class TL_EXPORT RobustMatchingImp
     public MatchingAlgorithm
 {
 
+protected:
+
+    std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+
 public:
 
-  explicit RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
-  RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
-                    double ratio,
-                    bool crossCheck,
-                    std::shared_ptr<GeometricTest> geometricTest);
-  ~RobustMatchingImp() override = default;
+    explicit RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+    RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+                      double ratio,
+                      bool crossCheck,
+                      std::shared_ptr<GeometricTest> &geometricTest);
+    ~RobustMatchingImp() override = default;
 
-  /*!
-   * \brief Establece el metodo de matching
-   * \param[in] matcher
-   */
-  void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+    /*!
+     * \brief Sets the matching method
+     * \param[in] matcher
+     */
+    void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
 
-  /*!
-   * \brief Ratio test
-   * \param[in] matches
-   * \param[in] ratio
-   * \param[out] goodMatches
-   * \param[out] wrongMatches
-   */
-  static std::vector<std::vector<cv::DMatch>> ratioTest(const std::vector<std::vector<cv::DMatch>> &matches,
-                                                        double ratio,
-                                                        std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr)
-  {
-    std::vector<std::vector<cv::DMatch>> goodMatches;
+    /*!
+     * \brief Ratio test
+     * \param[in] matches
+     * \param[in] ratio
+     * \param[out] goodMatches
+     * \param[out] wrongMatches
+     */
+    static auto ratioTest(const std::vector<std::vector<cv::DMatch>> &matches,
+                          double ratio,
+                          std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr) -> std::vector<std::vector<cv::DMatch>>
+    {
+        std::vector<std::vector<cv::DMatch>> goodMatches;
 
-    for (size_t i = 0; i < matches.size(); i++){
+        for (size_t i = 0; i < matches.size(); i++) {
 
-      if (matches[i].size() > 1){
-        // check distance ratio
-        if (matches[i][0].distance / matches[i][1].distance <= static_cast<float>(ratio)) {
-            goodMatches.push_back(matches[i]);
-        } else {
-          if (wrongMatches){
-            wrongMatches->push_back(matches[i]);
-          }
-        }
-      }
+            if (matches[i].size() > 1) {
+                // check distance ratio
+                if (matches[i][0].distance / matches[i][1].distance <= static_cast<float>(ratio)) {
+                    goodMatches.push_back(matches[i]);
+                } else {
+                    if (wrongMatches) {
+                        wrongMatches->push_back(matches[i]);
+                    }
+                }
+            }
 
-    }
-
-    return goodMatches;
-  }
-
-  /*!
-   * \brief test cruzado
-   * Busqueda de matches simétricos
-   * \param[in] matches12
-   * \param[in] matches21
-   * \param[out] goodMatches
-   * \param[out] wrongMatches
-   */
-  static std::vector<cv::DMatch> crossCheckTest(const std::vector<std::vector<cv::DMatch>> &matches12,
-                                                const std::vector<std::vector<cv::DMatch>> &matches21,
-                                                std::vector<cv::DMatch> *wrongMatches = nullptr)
-  {
-    std::vector<cv::DMatch> goodMatches;
-
-    for (size_t i = 0; i < matches12.size(); i++){
-
-      if (matches12[i].empty() || matches12[i].size() < 2)
-        continue;
-
-      bool findGoodMatch = false;
-      for (size_t j = 0; j < matches21.size(); j++){
-
-        if (matches21[j].empty() || matches21[j].size() < 2)
-          continue;
-
-        if (matches12[i][0].queryIdx == matches21[j][0].trainIdx &&
-            matches21[j][0].queryIdx == matches12[i][0].trainIdx) {
-            goodMatches.push_back(matches12[i][0]);
-          findGoodMatch = true;
-          break;
         }
 
-      }
-
-      if (findGoodMatch == false && wrongMatches)
-        wrongMatches->push_back(matches12[i][0]);
-
+        return goodMatches;
     }
 
-    return goodMatches;
-  }
+    /*!
+     * \brief Cross test
+     * Search for symmetrical matches
+     * \param[in] matches12
+     * \param[in] matches21
+     * \param[out] goodMatches
+     * \param[out] wrongMatches
+     */
+    static auto crossCheckTest(const std::vector<std::vector<cv::DMatch>> &matches12,
+                               const std::vector<std::vector<cv::DMatch>> &matches21,
+                               std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>
+    {
+        std::vector<cv::DMatch> goodMatches;
 
-  std::vector<cv::DMatch> geometricFilter(const std::vector<cv::DMatch> &matches,
-                                          const std::vector<cv::KeyPoint>& keypoints1,
-                                          const std::vector<cv::KeyPoint>& keypoints2,
-                                          std::vector<cv::DMatch> *wrongMatches = nullptr);
+        for (size_t i = 0; i < matches12.size(); i++) {
 
-  /*!
-   * \brief Matching
-   * \param[in] queryDescriptor Query descriptor
-   * \param[in] trainDescriptor Train descriptor
-   * \param[out] wrongMatches Wrong matches
-   * \return Good matches
-   */
-  std::vector<cv::DMatch> match(const cv::Mat &queryDescriptor,
-                                const cv::Mat &trainDescriptor,
-                                std::vector<cv::DMatch> *wrongMatches = nullptr);
+            if (matches12[i].empty() || matches12[i].size() < 2)
+                continue;
+
+            bool findGoodMatch = false;
+            for (size_t j = 0; j < matches21.size(); j++) {
+
+                if (matches21[j].empty() || matches21[j].size() < 2)
+                    continue;
+
+                if (matches12[i][0].queryIdx == matches21[j][0].trainIdx &&
+                    matches21[j][0].queryIdx == matches12[i][0].trainIdx) {
+                    goodMatches.push_back(matches12[i][0]);
+                    findGoodMatch = true;
+                    break;
+                }
+
+            }
+
+            if (findGoodMatch == false && wrongMatches)
+                wrongMatches->push_back(matches12[i][0]);
+
+        }
+
+        return goodMatches;
+    }
+
+    auto geometricFilter(const std::vector<cv::DMatch> &matches,
+                         const std::vector<cv::KeyPoint> &keypoints1,
+                         const std::vector<cv::KeyPoint> &keypoints2,
+                         std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>;
+
+    /*!
+     * \brief Matching
+     * \param[in] queryDescriptor Query descriptor
+     * \param[in] trainDescriptor Train descriptor
+     * \param[out] wrongMatches Wrong matches
+     * \return Good matches
+     */
+    auto match(const cv::Mat &queryDescriptor,
+               const cv::Mat &trainDescriptor,
+               std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>;
 
 private:
 
-  /*!
-   * \brief Robust matching
-   * Feature matching using ratio and symmetry tests
-   * \param[in] queryDescriptor Query descriptor
-   * \param[in] trainDescriptor Train descriptor
-   * \param[out] wrongMatches Wrong matches
-   * \return Good matches
-   */
-  std::vector<cv::DMatch> robustMatch(const cv::Mat &queryDescriptor,
-                                      const cv::Mat &trainDescriptor,
-                                      std::vector<cv::DMatch> *wrongMatches);
+    /*!
+     * \brief Robust matching
+     * Feature matching using ratio and symmetry tests
+     * \param[in] queryDescriptor Query descriptor
+     * \param[in] trainDescriptor Train descriptor
+     * \param[out] wrongMatches Wrong matches
+     * \return Good matches
+     */
+    auto robustMatch(const cv::Mat &queryDescriptor,
+                     const cv::Mat &trainDescriptor,
+                     std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>;
 
-  /*!
-   * \brief Robust matching
-   * Feature matching using ratio test
-   * \param[in] queryDescriptor Query descriptor
-   * \param[in] trainDescriptor Train descriptor
-   * \param[out] wrongMatches Wrong matches
-   * \return Good matches
-   */
-  std::vector<cv::DMatch> fastRobustMatch(const cv::Mat &queryDescriptor,
-                                          const cv::Mat &trainDescriptor,
-                                          std::vector<cv::DMatch> *wrongMatches);
+    /*!
+     * \brief Robust matching
+     * Feature matching using ratio test
+     * \param[in] queryDescriptor Query descriptor
+     * \param[in] trainDescriptor Train descriptor
+     * \param[out] wrongMatches Wrong matches
+     * \return Good matches
+     */
+    auto fastRobustMatch(const cv::Mat &queryDescriptor,
+                         const cv::Mat &trainDescriptor,
+                         std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>;
 
 
 // MatchingAlgorithm interface
 
 public:
 
-  bool compute(const cv::Mat &queryDescriptor,
-               const cv::Mat &trainDescriptor,
-               const std::vector<cv::KeyPoint> &keypoints1,
-               const std::vector<cv::KeyPoint> &keypoints2,
-               std::vector<cv::DMatch> *goodMatches,
-               std::vector<cv::DMatch> *wrongMatches = nullptr,
-               const cv::Size &queryImageSize = cv::Size(),
-               const cv::Size &trainImageSize = cv::Size()) override;
-
-protected:
-
-  std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+    bool compute(const cv::Mat &queryDescriptor,
+                 const cv::Mat &trainDescriptor,
+                 const std::vector<cv::KeyPoint> &keypoints1,
+                 const std::vector<cv::KeyPoint> &keypoints2,
+                 std::vector<cv::DMatch> *goodMatches,
+                 std::vector<cv::DMatch> *wrongMatches = nullptr,
+                 const cv::Size &queryImageSize = cv::Size(),
+                 const cv::Size &trainImageSize = cv::Size()) override;
 
 };
 
 } // namespace tl
-
-#endif // TL_FEATMATCH_ROBUST_MATCHING_H

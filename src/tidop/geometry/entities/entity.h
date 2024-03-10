@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOMETRY_ENTITY_H
-#define TL_GEOMETRY_ENTITY_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -44,9 +43,6 @@ namespace tl
  *  \{
  */
 
-
-// forward declaration
-
 template<typename T> class Point;
 template<typename T> class Point3;
 template<typename T> class Window;
@@ -54,151 +50,97 @@ template<typename T> class BoundingBox;
 
 
 /*!
- * \brief Clase base para entidades geometricas
+ * \brief Base class for geometric entities
  */
 class TL_EXPORT Entity
 {
 
 public:
 
-  /*!
-   * \brief tipos de entidades geométricas
-   */
-  enum class Type
-  {
-    /* Dimensión */
-    geom2d    = (0 << 0),                        /*!< Geometría 2D */
-    geom3d    = (1 << 0),                        /*!< Geometría 3D */
-    geom4d    = (1 << 1),                        /*!< Geometría 4D */
+    /*!
+     * \brief Types of geometric entities
+     */
+    enum class Type
+    {
+        /* Dimension */
+        geom2d = (0 << 0),                        /*!< 2D Geometry */
+        geom3d = (1 << 0),                        /*!< 3D Geometry */
+        geom4d = (1 << 1),                        /*!< 4D Geometry */
 
-    /* multientidad */
-    multi_entity = (1 << 2),                     /*!< Multientidad */
+        /* Multi-entity */
+        multi_entity = (1 << 2),                  /*!< Multi-entity */
 
-    /* Entidades 2D */
-    point2d      = (1 << 3),                     /*!< Punto */
-    linestring2d = (1 << 4),                     /*!< Polilinea */
-    polygon2d    = (1 << 5),                     /*!< Poligono */
-    segment2d    = (1 << 6),                     /*!< Segmento */
-    circle       = (1 << 7),                     /*!< Circulo */
-    ellipse      = (1 << 8),                     /*!< Elipse */
-    triangle     = (1 << 9),                     /*!< Triangle */
+        /* 2D entities */
+        point2d = (1 << 3),                       /*!< 2D Point */
+        linestring2d = (1 << 4),                  /*!< 2D Polyline */
+        polygon2d = (1 << 5),                     /*!< 2D Polygon */
+        segment2d = (1 << 6),                     /*!< 2D Segment */
+        circle = (1 << 7),                        /*!< Circle */
+        ellipse = (1 << 8),                       /*!< Ellipse */
+        triangle = (1 << 9),                      /*!< Triangle */
+        square = (1 << 10),                       /*!< Square */
+        rectangle = (1 << 11),                    /*!< Rectangle */
 
-    /* Entidades 3D*/
-    point3d      = point2d | geom3d,             /*!< Punto 3D */
-    linestring3d = linestring2d | geom3d,        /*!< Polilinea 3D */
-    polygon3d    = polygon2d | geom3d,           /*!< Poligono 3D */
-    segment3d    = segment2d | geom3d,           /*!< Segmento 3D */
+        /* 3D entities */
+        point3d = point2d | geom3d,               /*!< 3D Point */
+        linestring3d = linestring2d | geom3d,     /*!< 3D Polyline */
+        polygon3d = polygon2d | geom3d,           /*!< 3D Polygon */
+        segment3d = segment2d | geom3d,           /*!< 3D Segment */
 
-    /* multientidades */
-    multipoint2d   = point2d | multi_entity,      /*!< Multipunto 2D */
-    multipoint3d   = point3d | multi_entity,      /*!< Multipunto 3D */
-    multiline2d    = linestring2d | multi_entity, /*!< Multi-línea 2D */
-    multiline3d    = linestring3d | multi_entity, /*!< Multi-línea 3D */
-    multipolygon2d = polygon2d | multi_entity,    /*!< Multi-polígono 2D */
-    multipoygon3d  = polygon3d | multi_entity,    /*!< Multi-polígono 3D */
+        /* multientidades */
+        multipoint2d = point2d | multi_entity,      /*!< 2D Multipoint */
+        multipoint3d = point3d | multi_entity,      /*!< 3D Multipoint */
+        multiline2d = linestring2d | multi_entity,  /*!< 2D Multi-line */
+        multiline3d = linestring3d | multi_entity,  /*!< 3D Multi-line */
+        multipolygon2d = polygon2d | multi_entity,  /*!< 2D Multi-polygon */
+        multipoygon3d = polygon3d | multi_entity,   /*!< 3D Multi-polygon */
 
-    /* Tipos especiales */
-    envelope = (1 << 20),                         /*!< Envolvente */
-    window   = envelope,                          /*!< Ventana */
-    bounding_box = envelope | geom3d              /*!< Cuadro delimitador */
-  };
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] type Tipo de entidad
-   */
-  Entity(Type type)
-    : mEntityType(type)
-  {}
-   
-  /*!
-   * \brief Constructor de copia
-   * \param[in] entity Objeto que se copia
-   */
-  Entity(const Entity &entity) = default;
-  
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] entity Objeto que se copia
-   */
-  Entity(Entity &&entity) TL_NOEXCEPT 
-    : mEntityType(std::move(entity.mEntityType))
-  {}
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~Entity() = default;
-
-  /*!
-   * \brief Devuelve el tipo de entidad 
-   */
-  Type type() const { return mEntityType.flags(); }
-
-  /*!
-   * \brief Operador de asignación
-   */
-  Entity &operator = (const Entity &entity) 
-  {
-    if (this != &entity) {
-      mEntityType = entity.mEntityType;
-    }
-    return *this;
-  }
-
-  /*!
-   * \brief Operador de asignación de movimiento
-   */
-  Entity &operator = (Entity &&entity) TL_NOEXCEPT
-  {
-    if (this != &entity) {
-      mEntityType = std::move(entity.mEntityType);
-    }
-    return *this;
-  }
-
-  /*!
-   * \brief La dimensión inherente del objeto geométrico
-   * Debe ser menor o igual a la dimensión de coordenadas.
-   */
-  //virtual size_t dimension() const = 0;
-
-  //virtual size_t coordinateDimension() const = 0;
-  //virtual size_t spatialDimension() const = 0;
-
-  /*!
-   * \brief Comprueba si una entidad geométrica esta vacía.
-   * \return Devuelve true si la entidad geométrica esta vacía.
-   */
-  //virtual bool isEmpty() const = 0;
-
-  /*!
-   * \brief Devuelve verdadero si la entidad geométrica no presenta una geométria anómala 
-   * como auto-intersección.
-   */
-  //virtual bool isSimple() const = 0;
-
-  /*!
-   * \brief Comprueba si una entidad es 3D
-   * \return Verdadero si es una entidad 3D
-   */
-  bool is3D() const
-  {
-    return mEntityType.isEnabled(Type::geom3d);
-  }
+        /* Special types */
+        envelope = (1 << 20),                       /*!< Envelope */
+        window = envelope,                          /*!< Window */
+        bounding_box = envelope | geom3d            /*!< Bounding box */
+    };
 
 private:
 
-  /*!
-   * \brief Tipo de entidad
-   * \see type
-   */
-  EnumFlags<Type> mEntityType;
+    /*!
+     * \brief Type of entity
+     * \see type
+     */
+    EnumFlags<Type> mEntityType;
+
+public:
+
+    Entity(Type type) : mEntityType(type) {}
+    Entity(const Entity &entity) = default;
+    Entity(Entity &&entity) TL_NOEXCEPT : mEntityType(std::move(entity.mEntityType)) {}
+    virtual ~Entity() = default;
+    
+    /*!
+     * \brief Returns the type of entity
+     */
+    auto type() const -> Type;
+
+    /*!
+     * \brief Copy assignment operator
+     */
+    auto operator = (const Entity &entity) -> Entity &;
+    
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator = (Entity &&entity) TL_NOEXCEPT -> Entity &;
+
+    /*!
+     * \brief Checks if an entity is 3D
+     * \return True if it is a 3D entity
+     */
+    auto is3D() const -> bool;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Entity::Type)
+
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -216,402 +158,323 @@ class EntityContainer
 
 public:
 
-  /*!
-   * \brief Allocator
-   */
-  using allocator_type = typename std::vector<Entity_t>::allocator_type;
-
-  /*!
-   * \brief value_type
-   */
-  using value_type = typename std::vector<Entity_t>::value_type;
-
-  /*!
-   * \brief Tipo entero sin signo (por lo general size_t) 
-   */
-  using size_type = typename std::vector<Entity_t>::size_type;
-
-  /*!
-   * \brief Tipo entero con signo (por lo general ptrdiff_t)
-   */
-  using difference_type = typename std::vector<Entity_t>::difference_type;
-
-  /*!
-   * \brief std::allocator_traits<Allocator>::pointer
-   */
-  using pointer = typename std::vector<Entity_t>::pointer;
-
-  /*!
-   * \brief std::allocator_traits<Allocator>::const_pointer 
-   */
-  using const_pointer = typename std::vector<Entity_t>::const_pointer;
-
-  /*!
-   * \brief value_type&
-   */
-  using reference = typename std::vector<Entity_t>::reference;
-
-  /*!
-   * \brief const value_type&
-   */
-  using const_reference = typename std::vector<Entity_t>::const_reference;
-
-  /*!
-   * \brief Iterador de acceso aleatorio
-   */
-  using iterator = typename std::vector<Entity_t>::iterator;
-
-  /*!
-   * \brief Iterador constante de acceso aleatorio
-   */
-  using const_iterator = typename std::vector<Entity_t>::const_iterator;
-
-public:
-  
-  /*!
-   * \brief Constructora por defecto
-   */
-  EntityContainer();
-
-  /*!
-   * \brief Constructora
-   * \param[in] size Tamaño que se reserva para el contenedor
-   */
-  EntityContainer(size_type size);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] entity Objeto que se copia
-   */
-  EntityContainer(const EntityContainer &entity);
-
-  /*!
-   * \brief Constructor de movimiento
-   * \param[in] entity Objeto que se mueve
-   */
-  EntityContainer(EntityContainer &&entity) TL_NOEXCEPT;
-
-  /*!
-   * \brief Constructor
-   * \param[in] entities
-   */
-  EntityContainer(std::vector<Entity_t> entities);
-
-  /*!
-   * \brief Constructora de lista
-   * \param[in] entities listado de entidades
-   */
-  EntityContainer(std::initializer_list<Entity_t> entities);
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~EntityContainer() = default;
-
-
-  /*!
-   * \brief Devuelve un iterador al inicio del contenedor
-   * \return Iterador al primer elemento
-   */
-  virtual iterator begin();
-
-  /*!
-   * \brief Devuelve un iterador constante al inicio del contenedor
-   * \return Iterador al primer elemento
-   */
-  virtual const_iterator begin() const;
-
-  /*!
-   * \brief Devuelve un iterador al siguiente elemento después del final del contenedor
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-   * \return Iterador al siguiente elemento después del final del contenedor
-   */
-  virtual iterator end();
-
-  /*!
-   * \brief Devuelve un iterador constante al siguiente elemento después del final del contenedor
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
-   * \return Iterador al siguiente elemento después del final del contenedor
-   */
-  virtual const_iterator end() const;
-
-  /*!
-   * \brief Agrega un elemento al final del contenedor
-   * \param[in] entity Entidad que se añade
-   */
-  void push_back(const Entity_t &entity);
-
-  /*!
-   * \brief Agrega un elemento mediante movimiento al final del contenedor
-   * \param[in] entity Entidad que se añade
-   */
-  void push_back(Entity_t &&entity) TL_NOEXCEPT;
-
-  /*!
-   * \brief Devuelve una referencia constante al elemento de la posición indicada
-   * return Referencia constante al elemento
-   */
-  const_reference at(size_type position) const;
-
-  /*!
-   * \brief Devuelve una referencia al elemento de la posición indicada
-   * return Referencia al elemento
-   */
-  reference at(size_type position);
-
-  /*!
-   * \brief Elimina los elementos del recipiente
-   */
-  void clear();
-    
-  /*!
-   * \brief Comprueba si el contenedor esta vacio
-   * \return true si el contenedor está vacío y false en caso contrario
-   */
-  bool empty() const;
-
-  /*!
-   * \brief Establece el tamaño del contenedor
-   * \param[in] size
-   */
-  void reserve(size_type size);
-
-  /*!
-   * \brief Modifica el tamaño del contenedor
-   * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual 
-   * es mayor que count el contenedor se trunca al número de elementos indicados.
-   * \param[in] count Nuevo tamaño del contenedor
-   */
-  void resize(size_type count);
-
-  /*!
-   * \brief Modifica el tamaño del contenedor
-   * Si el tamaño actual es menor que count, se añaden elementos adicionales y se inicializan con value.
-   * Si el tamaño actual es mayor que count el contenedor se trunca al número de elementos indicados.
-   * \param[in] count Nuevo tamaño del contenedor
-   * \param[in] value Valor que se asigna a los nuevos elementos
-   */
-  void resize(size_type count, const Entity_t &value);
-
-  /*!
-   * \brief Devuelve el tamaño del contenedor
-   * \return Tamaño
-   */
-  size_type size() const;
-
-  /*!
-   * \brief Devuelve una referencia al elemento de la posición indicada
-   * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
-   * return Referencia constante al elemento
-   */
-  const_reference operator[](size_type position) const;
-
-  /*!
-   * \brief Devuelve una referencia al elemento de la posición indicada
-   * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
-   * return Referencia al elemento
-   */
-  reference operator[](size_type position);
-
-  /*!
-   * \brief Asignación de copia
-   */
-  EntityContainer<Entity_t>& operator=(const EntityContainer<Entity_t> &entity);
-
-  /*!
-   * \brief Asignación de movimiento
-   */
-  EntityContainer<Entity_t>& operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT;
-
-  /*!
-   * \brief Elimina el intervalo
-   */
-  iterator erase(const_iterator first, const_iterator last);
-
-  //TODO: insert (para insertar nuevos valores en una posición)
+    using allocator_type = typename std::vector<Entity_t>::allocator_type;
+    using value_type = typename std::vector<Entity_t>::value_type;
+    using size_type = typename std::vector<Entity_t>::size_type;
+    using difference_type = typename std::vector<Entity_t>::difference_type;
+    using pointer = typename std::vector<Entity_t>::pointer;
+    using const_pointer = typename std::vector<Entity_t>::const_pointer;
+    using reference = typename std::vector<Entity_t>::reference;
+    using const_reference = typename std::vector<Entity_t>::const_reference;
+    using iterator = typename std::vector<Entity_t>::iterator;
+    using const_iterator = typename std::vector<Entity_t>::const_iterator;
 
 private:
 
-  /*!
-   * \brief Conjunto de puntos
-   */
-  std::vector<Entity_t> mEntities;
+    /*!
+     * \brief Conjunto de puntos
+     */
+    std::vector<Entity_t> mEntities;
+
+public:
+
+    EntityContainer();
+    EntityContainer(size_type size);
+    EntityContainer(const EntityContainer &entity);
+    EntityContainer(EntityContainer &&entity) TL_NOEXCEPT;
+    EntityContainer(std::vector<Entity_t> entities);
+    EntityContainer(std::initializer_list<Entity_t> entities);
+   
+    virtual ~EntityContainer() = default;
+    
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
+
+    void push_back(const Entity_t &entity);
+    void push_back(Entity_t &&entity);
+    
+    /*!
+     * \brief Returns a constant reference to the element at the specified position.
+     * return Constant reference to the element
+     */
+    auto at(size_type position) const -> const_reference;
+    
+    /*!
+     * \brief Returns a reference to the element at the specified position.
+     * return Reference to the element
+     */
+    auto at(size_type position) -> reference;
+    
+    /*!
+     * \brief Removes the elements from the container
+     */
+    void clear();
+      
+    /*!
+     * \brief Check if the container is empty
+     * \return true if the container is empty, false otherwise
+     */
+    auto empty() const -> bool;
+    
+    /*!
+     * \brief Sets the size of the container
+     * \param[in] size Size of the container
+     */
+    void reserve(size_type size);
+    
+    /*!
+     * \brief Resizing of the container
+     * If the current size is less than count, additional elements are added. If the current 
+     * size is greater than count the container is truncated to the specified number of elements.
+     * \param[in] count New container size
+     */
+    void resize(size_type count);
+    
+    /*!
+     * \brief Resizing of the container
+     * If the current size is less than count, additional elements are added and initialised with value.
+     * If the current size is greater than count the container is truncated to the specified number of elements.
+     * \param[in] count New container size
+     * \param[in] value Value to be assigned to the new elements
+     */
+    void resize(size_type count, const Entity_t &value);
+    
+    /*!
+     * \brief Size of the container
+     */
+    auto size() const -> size_type;
+    
+    /*!
+     * \brief Returns a reference to the element at the specified position.
+     * No check is made to see if the element to be accessed is within the limits.
+     * return Constant reference to the element
+     */
+    auto operator[](size_type position) const -> const_reference;
+    
+    /*!
+     * \brief Returns a reference to the element at the specified position.
+     * No check is made to see if the element to be accessed is within the limits.
+     * return Reference to the element
+     */
+    auto operator[](size_type position) -> reference;
+    
+    /*!
+     * \brief Copy assignment operator
+     */
+    auto operator=(const EntityContainer<Entity_t> &entity) -> EntityContainer<Entity_t>&;
+    
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT -> EntityContainer<Entity_t>&;
+    
+    /*!
+     * \brief Delete the interval
+     */
+    auto erase(const_iterator first, const_iterator last) -> iterator;
 
 };
 
+
+
+
+// Entity Implementation
+
+
+inline auto Entity::type() const -> Type 
+{
+    return mEntityType.flags(); 
+}
+
+inline auto Entity::operator = (const Entity &entity) -> Entity &
+{
+    if (this != &entity) {
+        mEntityType = entity.mEntityType;
+    }
+
+    return *this;
+}
+    
+inline auto Entity::operator = (Entity &&entity) TL_NOEXCEPT -> Entity &
+{
+    if (this != &entity) {
+        mEntityType = std::move(entity.mEntityType);
+    }
+
+    return *this;
+}
+
+inline auto Entity::is3D() const -> bool
+{
+    return mEntityType.isEnabled(Type::geom3d);
+}
+
+
+
 // Implementación EntityContainer
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 EntityContainer<Entity_t>::EntityContainer() 
   : mEntities(0)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 EntityContainer<Entity_t>::EntityContainer(size_type size)
   : mEntities(size)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 EntityContainer<Entity_t>::EntityContainer(const EntityContainer &entity)
   : mEntities(entity.mEntities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity) TL_NOEXCEPT
   : mEntities(std::move(entity.mEntities))
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 EntityContainer<Entity_t>::EntityContainer(std::vector<Entity_t> entities)
   : mEntities(std::move(entities))
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 EntityContainer<Entity_t>::EntityContainer(std::initializer_list<Entity_t> entities)
   : mEntities(entities)
 {
 }
 
-template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::begin() 
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::begin() TL_NOEXCEPT -> iterator
 {
-  return mEntities.begin();
+    return mEntities.begin();
 }
 
-template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::const_iterator
-EntityContainer<Entity_t>::begin() const 
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::begin() const TL_NOEXCEPT -> const_iterator
 {
-  return mEntities.cbegin();
+    return mEntities.cbegin();
 }
 
-template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::iterator
-EntityContainer<Entity_t>::end()
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::end() TL_NOEXCEPT -> iterator 
 {
-  return mEntities.end();
+    return mEntities.end();
 }
 
-template<typename Entity_t> inline 
-typename EntityContainer<Entity_t>::const_iterator 
-EntityContainer<Entity_t>::end() const 
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::end() const TL_NOEXCEPT -> const_iterator 
 {
-  return mEntities.cend();
+    return mEntities.cend();
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
 {
-  mEntities.push_back(entity);
+    mEntities.push_back(entity);
 }
 
-template<typename Entity_t> inline
-void EntityContainer<Entity_t>::push_back(Entity_t &&entity) TL_NOEXCEPT
+template<typename Entity_t>
+void EntityContainer<Entity_t>::push_back(Entity_t &&entity)
 {
-  mEntities.push_back(std::forward<Entity_t>(entity));
+    mEntities.push_back(std::forward<Entity_t>(entity));
 }
 
-template<typename Entity_t> inline
-typename std::vector<Entity_t>::const_reference 
-EntityContainer<Entity_t>::at(size_type position) const
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::at(size_type position) const -> const_reference 
 {
-  return mEntities.at(position);
+    return mEntities.at(position);
 }
 
-template<typename Entity_t> inline
-typename std::vector<Entity_t>::reference 
-EntityContainer<Entity_t>::at(size_type position)
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::at(size_type position) -> reference 
 {
-  return mEntities.at(position);
+    return mEntities.at(position);
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 void EntityContainer<Entity_t>::clear() 
 { 
-  mEntities.clear();
+    mEntities.clear();
 }
 
-template<typename Entity_t> inline
-bool EntityContainer<Entity_t>::empty() const
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::empty() const -> bool
 {
-  return mEntities.empty();
+    return mEntities.empty();
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 void EntityContainer<Entity_t>::reserve(size_type size)
 {
-  mEntities.reserve(size);
+    mEntities.reserve(size);
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 void EntityContainer<Entity_t>::resize(size_type count)
 {
-  mEntities.resize(count);
+    mEntities.resize(count);
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 void EntityContainer<Entity_t>::resize(size_type count, const Entity_t &value)
 {
-  mEntities.resize(count, value);
+    mEntities.resize(count, value);
 }
 
-template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::size_type EntityContainer<Entity_t>::size() const
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::size() const -> size_type
 { 
-  return mEntities.size();
+    return mEntities.size();
 }
 
-template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::const_reference 
-EntityContainer<Entity_t>::operator[](size_type position) const
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::operator[](size_type position) const -> const_reference 
 {
-  return mEntities[position];
+    return mEntities[position];
 }
   
-template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::reference 
-EntityContainer<Entity_t>::operator[](size_type position)
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::operator[](size_type position) -> reference 
 {
-  return mEntities[position];
+    return mEntities[position];
 }
 
-template<typename Entity_t> inline
-EntityContainer<Entity_t>
-&EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entity) 
+
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entity) -> EntityContainer<Entity_t>&
 {
-  if (this != &entity) {
-    this->mEntities = entity.mEntities;
-  }
-  return (*this);
+    if (this != &entity) {
+        this->mEntities = entity.mEntities;
+    }
+
+    return (*this);
 }
 
-template<typename Entity_t> inline
-EntityContainer<Entity_t> 
-&EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT -> EntityContainer<Entity_t>&
 {
-  if (this != &entity) {
-    this->mEntities.clear();
-    this->mEntities = std::move(entity.mEntities);
-    //entity = 0;
-  }
-  return (*this);
+    if (this != &entity) {
+        this->mEntities.clear();
+        this->mEntities = std::move(entity.mEntities);
+    }
+
+    return (*this);
 }
 
-template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::iterator
-EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last)
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last) -> iterator
 {
-  return mEntities.erase(first, last);
+    return mEntities.erase(first, last);
 }
-
 
 /*! \} */ // end of geometry
 
 } // End namespace tl
-
-#endif // TL_GEOMETRY_ENTITY_H

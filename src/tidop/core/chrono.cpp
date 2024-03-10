@@ -24,7 +24,7 @@
 
 #include "tidop/core/chrono.h"
 
-#include "tidop/core/messages.h"
+#include "tidop/core/msg/message.h"
 
 #include <iomanip>
 #include <sstream>
@@ -35,92 +35,102 @@ namespace tl
 
 std::string formatTimeToString(const std::string &templ)
 {
-  auto now = std::chrono::system_clock::now();
-  auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-  std::stringstream ss;
-  ss << std::put_time(std::localtime(&in_time_t), templ.c_str());
-  return ss.str();
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), templ.c_str());
+    return ss.str();
 }
 
 
 uint64_t tickCount()
 {
 #if defined _MSC_VER
-  return GetTickCount64();
+    return GetTickCount64();
 #else
-  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 #endif
 }
 
 
 
-Chrono::Chrono()
-  : mMessage("")
-{
-}
+Chrono::Chrono() = default;
 
 Chrono::Chrono(std::string message)
-  : mMessage(std::move(message)),
-    bWriteMessage(true)
+  : message(std::move(message)),
+    writeMessage(true)
 {
 }
 
-double Chrono::pause()
+auto Chrono::pause() -> double
 {
-  if (mStatus == Status::running) {
-    mAccumulated += std::chrono::steady_clock::now() - mTimeIni;
-    mStatus = Status::pause;
-  }
-  return mAccumulated.count();
+    if (status == Status::running) {
+        accumulatedTime += std::chrono::steady_clock::now() - initialTime;
+        status = Status::pause;
+    }
+
+    return accumulatedTime.count();
 }
 
 void Chrono::reset()
 {
-  mAccumulated = std::chrono::seconds::zero();
-  mStatus = Status::start;
-  mMessage = "";
+    accumulatedTime = std::chrono::seconds::zero();
+    status = Status::start;
+    message = "";
 }
 
 void Chrono::resume()
 {
-  if (mStatus == Status::pause) {
-    mTimeIni = std::chrono::steady_clock::now();
-    mStatus = Status::running;
-  }
+    if (status == Status::pause) {
+        initialTime = std::chrono::steady_clock::now();
+        status = Status::running;
+    }
 }
 
 void Chrono::run()
 {
-  mTimeIni = std::chrono::steady_clock::now();
-  mAccumulated = std::chrono::seconds::zero();
-  mStatus = Status::running;
+    initialTime = std::chrono::steady_clock::now();
+    accumulatedTime = std::chrono::seconds::zero();
+    status = Status::running;
 }
 
-double Chrono::stop()
+auto Chrono::stop() -> double
 {
-  std::chrono::duration<double> time = mAccumulated;
+    //std::chrono::duration<double> time = accumulatedTime;
 
-  if (mStatus == Status::running) {
-    time += std::chrono::steady_clock::now() - mTimeIni;
-    mStatus = Status::stopped;
-  } else if (mStatus == Status::pause) {
-    mStatus = Status::stopped;
-  } else{
-    time = std::chrono::seconds::zero();
-  }
+    if (status == Status::running) {
+        accumulatedTime += std::chrono::steady_clock::now() - initialTime;
+    } /*else if (status == Status::pause) {
+        status = Status::stopped;
+    } else {
+        time = std::chrono::seconds::zero();
+    }*/
 
-  if (bWriteMessage){
-    msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time.count());
-  }
+    status = Status::stopped;
 
-  return time.count();
+    if (writeMessage) {
+        Message::info("{} [Time: {} seconds]", message, accumulatedTime.count());
+    }
+
+    return accumulatedTime.count();
+}
+
+auto Chrono::currentTime() const -> double
+{
+    if (status == Status::running) {
+        auto time = accumulatedTime;
+        time += std::chrono::steady_clock::now() - initialTime;
+        return time.count();
+    } else {
+        return accumulatedTime.count();
+    }
 }
 
 void Chrono::setMessage(const std::string &message)
 {
-  mMessage = message;
-  bWriteMessage = true;
+    this->message = message;
+    writeMessage = true;
 }
 
 
@@ -130,12 +140,12 @@ void Chrono::setMessage(const std::string &message)
 ChronoAuto::ChronoAuto(const std::string &message)
   : Chrono(message)
 {
-  run();
+    run();
 }
 
 ChronoAuto::~ChronoAuto()
 {
-  stop();
+    stop();
 }
 
 

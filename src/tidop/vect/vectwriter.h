@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_VECTOR_WRITER_H
-#define TL_VECTOR_WRITER_H
+#pragma once
 
 #include <memory>
 #include <list>
@@ -31,86 +30,83 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
+#include "tidop/core/ptr.h"
 
 namespace tl
 {
 
-namespace graph
-{
 class GLayer;
-}
+
+/*! \addtogroup vector
+ *  \{
+ */
 
 class TL_EXPORT VectorWriter
 {
 
+    GENERATE_UNIQUE_PTR(VectorWriter)
+
 public:
 
-  VectorWriter(Path file);
-  virtual ~VectorWriter() = default;
+    VectorWriter(Path file);
+    virtual ~VectorWriter() = default;
 
-  /*!
-   * \brief Abre el fichero
-   */
-  virtual void open() = 0;
+    /*!
+     * \brief Open the file
+     */
+    virtual void open() = 0;
 
-  /*!
-   * \brief Comprueba si el fichero se ha cargado correctamente
-   */
-  virtual bool isOpen() const = 0;
+    /*!
+     * \brief Check if the file has been loaded correctly
+     */
+    virtual auto isOpen() const -> bool = 0;
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+    /*!
+     * \brief Close the file
+     */
+    virtual void close() = 0;
 
-  virtual void create() = 0;
+    /*!
+     * \brief Create the file
+     */
+    virtual void create() = 0;
 
-  virtual void write(const graph::GLayer &layer) = 0;
+    /*!
+     * \brief Write the layer to the file
+     * \param[in] layer The layer to be written
+     */
+    virtual void write(const GLayer &layer) = 0;
 
-  /*!
-   * \brief Set the Coordinate Reference System
-   * \param[in] crs Coordinate Reference System in WKT format
-   */
-  virtual void setCRS(const std::string &epsgCode) = 0;
-
-//#ifdef TL_HAVE_GEOSPATIAL
-//  /*!
-//   * \brief Set the Coordinate Reference System
-//   * \param[in] crs geospatial::Crs object
-//   */
-//  virtual void setCRS(const geospatial::Crs &crs) = 0;
-//#endif
+    /*!
+     * \brief Set the Coordinate Reference System
+     * \param[in] epsgCode Coordinate Reference System in EPSG code format
+     */
+    virtual void setCRS(const std::string &epsgCode) = 0;
 
 protected:
 
-  Path mFile;
+    Path mFile;
 
 };
 
 
 /*!
- * \brief Factoria de clases para la escritura de diferentes formatos vectoriales
+ * \brief Factory class for writing various vector formats
  */
 class TL_EXPORT VectorWriterFactory
 {
-public:
 
 private:
 
-  VectorWriterFactory() = default;
+    VectorWriterFactory() = default;
 
 public:
 
-  static std::unique_ptr<VectorWriter> create(const Path &file);
-  TL_DEPRECATED("create", "2.1")
-  static std::unique_ptr<VectorWriter> createWriter(const Path &file);
+    static auto create(const Path &file) -> VectorWriter::Ptr;
+    TL_DEPRECATED("create", "2.1")
+    static auto createWriter(const Path &file) -> VectorWriter::Ptr;
 };
 
+/*! \} */ // end of vector
 
 } // End namespace tl
-
-
-#endif // TL_VECTOR_WRITER_H

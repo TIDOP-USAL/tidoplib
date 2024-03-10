@@ -28,13 +28,12 @@
 
 
 using namespace tl;
-using namespace graph;
 
 struct StylePenTest
 {
   StylePenTest()
   {
-    style = new graph::Pen;
+    style = new Pen;
   }
     
   ~StylePenTest()
@@ -53,14 +52,14 @@ struct StylePenTest
   {
   }
 
-  graph::Pen def_style;
-  graph::Pen *style;
+  Pen def_style;
+  Pen *style;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, StylePenTest)
 {
-  graph::Color color;
+  Color color;
   BOOST_CHECK(color == def_style.color());
   BOOST_CHECK_EQUAL(1, def_style.width());
   BOOST_CHECK_EQUAL("", def_style.pattern());
@@ -73,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StylePenTest)
 
 BOOST_FIXTURE_TEST_CASE(setColor, StylePenTest)
 {
-  graph::Color color(graph::Color::Name::beige);
+  Color color(Color::Name::beige);
   style->setColor(color);
   BOOST_CHECK(color == style->color());
 }
@@ -147,7 +146,7 @@ struct StyleBrushTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, StyleBrushTest)
 {
-  graph::Color color;
+  Color color;
   BOOST_CHECK(color == def_style.foregroundColor());
   BOOST_CHECK(color == def_style.backgroundColor());
   BOOST_CHECK(Brush::Name::solid == def_style.name());
@@ -160,14 +159,14 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleBrushTest)
 
 BOOST_FIXTURE_TEST_CASE(setForegroundColor, StyleBrushTest)
 {
-  graph::Color color(graph::Color::Name::indigo);
+  Color color(Color::Name::indigo);
   def_style.setForegroundColor(color);
   BOOST_CHECK(color == def_style.foregroundColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(setBackgroundColor, StyleBrushTest)
 {
-  graph::Color color(graph::Color::Name::indigo);
+  Color color(Color::Name::indigo);
   def_style.setBackgroundColor(color);
   BOOST_CHECK(color == def_style.backgroundColor());
 }
@@ -237,7 +236,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleSymbolTest)
 {
   BOOST_CHECK_EQUAL(0., def_style.angle());
   BOOST_CHECK(Symbol::Name::cross == def_style.name());
-  graph::Color color;
+  Color color;
   BOOST_CHECK(color == def_style.color());
   BOOST_CHECK(color == def_style.outlineColor());
   BOOST_CHECK_EQUAL(1., def_style.scalingFactor());
@@ -260,14 +259,14 @@ BOOST_FIXTURE_TEST_CASE(setName, StyleSymbolTest)
 
 BOOST_FIXTURE_TEST_CASE(setColor, StyleSymbolTest)
 {
-  graph::Color color(graph::Color::Name::gainsboro);
+  Color color(Color::Name::gainsboro);
   style->setColor(color);
   BOOST_CHECK(color == style->color());
 }
 
 BOOST_FIXTURE_TEST_CASE(setOutlineColor, StyleSymbolTest)
 {
-  graph::Color color(graph::Color::Name::dark_slate_gray);
+  Color color(Color::Name::dark_slate_gray);
   style->setOutlineColor(color);
   BOOST_CHECK(color == style->outlineColor());
 }
@@ -322,13 +321,13 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
 {
   BOOST_CHECK_EQUAL("", def_style.text());
   BOOST_CHECK_EQUAL(0., def_style.angle());
-  graph::Color color;
+  Color color;
   BOOST_CHECK(color == def_style.foregroundColor());
   BOOST_CHECK(color == def_style.backgroundColor());
   BOOST_CHECK(color == def_style.outlineColor());
   BOOST_CHECK(color == def_style.shadowColor());
   BOOST_CHECK_EQUAL(100., def_style.stretch());
-  BOOST_CHECK(Label::Placement::p == def_style.placement());
+  BOOST_CHECK(Label::Placement::point == def_style.placement());
   BOOST_CHECK((Label::AnchorPosition::vertical_baseline | Label::AnchorPosition::horizontal_left) ==
             def_style.anchorPosition());
   BOOST_CHECK_EQUAL(0., def_style.offsetX());
@@ -350,28 +349,28 @@ BOOST_FIXTURE_TEST_CASE(setAngle, StyleLabelTest)
 
 BOOST_FIXTURE_TEST_CASE(setForegroundColor, StyleLabelTest)
 {
-  graph::Color color(graph::Color::Name::fire_brick);
+  Color color(Color::Name::fire_brick);
   style->setForegroundColor(color);
   BOOST_CHECK(color == style->foregroundColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(setBackgroundColor, StyleLabelTest)
 {
-  graph::Color color(graph::Color::Name::indigo);
+  Color color(Color::Name::indigo);
   style->setBackgroundColor(color);
   BOOST_CHECK(color == style->backgroundColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(setOutlineColor, StyleLabelTest)
 {
-  graph::Color color(graph::Color::Name::saddle_brown);
+  Color color(Color::Name::saddle_brown);
   style->setOutlineColor(color);
   BOOST_CHECK(color == style->outlineColor());
 }
 
 BOOST_FIXTURE_TEST_CASE(setShadowColor, StyleLabelTest)
 {
-  graph::Color color(graph::Color::Name::azure);
+  Color color(Color::Name::azure);
   style->setShadowColor(color);
   BOOST_CHECK(color == style->shadowColor());
 }
@@ -384,8 +383,8 @@ BOOST_FIXTURE_TEST_CASE(setStretch, StyleLabelTest)
 
 BOOST_FIXTURE_TEST_CASE(setPlacement, StyleLabelTest)
 {
-  style->setPlacement(Label::Placement::l);
-  BOOST_CHECK(Label::Placement::l == style->placement());
+  style->setPlacement(Label::Placement::last_vertex);
+  BOOST_CHECK(Label::Placement::last_vertex == style->placement());
 }
 
 BOOST_FIXTURE_TEST_CASE(setAnchorPosition, StyleLabelTest)

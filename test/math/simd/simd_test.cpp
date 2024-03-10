@@ -30,8 +30,7 @@
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-using namespace tl::math;
-using namespace simd;
+using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(PackedTestSuite)
 
@@ -2892,7 +2891,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
 //      for (size_t c = 0; c < max_vector; c++) {
 //
 //        double b1 = matrix2[i][c];
-//        tl::math::simd::Packed<double> packed_b1(b1);
+//        tl::simd::Packed<double> packed_b1(b1);
 //        packed_c.loadUnaligned(&mat[r][c]);
 //        packed_c += packed_a * packed_b_d;
 //        packed_c.storeUnaligned(&mat[r][c]);
@@ -3034,7 +3033,7 @@ BOOST_FIXTURE_TEST_CASE(tl_multi_matrix_intri_block_10, PackedTest)
 //
 //
 //
-//        std::array<double, tl::math::simd::PackedTraits<tl::math::simd::Packed<double>>::size> b;
+//        std::array<double, tl::simd::PackedTraits<tl::simd::Packed<double>>::size> b;
 //        for (size_t k = 0; k < packed_b_d.size(); k++) {
 //          b[k] = matrix2[i + k][c];
 //        }
@@ -3221,7 +3220,7 @@ void transpose(Matrix<double> &A, Matrix<double> &B)
     }
 
     // Recorre las columnas no alineadas
-    for (int c = max_cols; c < cols; c++) {
+    for (size_t c = max_cols; c < cols; c++) {
       B(c, r) = A(r, c);
     }
   }
@@ -4173,6 +4172,74 @@ BOOST_FIXTURE_TEST_CASE(change_sign, PackedTest)
   }
 
 }
+
+
+double calculate_mean(std::vector<double> &data, int size)
+{
+    //__m256d sum = _mm256_setzero_pd();
+    //int i = 0;
+
+    //for (; i + 4 <= size; i += 4) {
+    //    __m256d vec = _mm256_loadu_pd(data + i);
+    //    sum = _mm256_add_pd(sum, vec);
+    //}
+
+    //__m128d sum_hi = _mm256_extractf128_pd(sum, 1);
+    //__m128d sum_lo = _mm256_castpd256_pd128(sum);
+    //sum_lo = _mm_add_pd(sum_lo, sum_hi);
+
+    //double total_sum;
+    //_mm_store_sd(&total_sum, sum_lo);
+
+    //for (; i < size; i++) {
+    //    total_sum += data[i];
+    //}
+
+    //return total_sum / size;
+
+  size_t i{0};
+
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+  double x{0};
+
+  Packed<double> packed_a;
+  Packed<double> packed_x = Packed<double>::zero();
+
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = (data.size() / packed_size) * packed_size;
+
+  for (; i < max_vector; i += packed_size) {
+
+    packed_a.loadUnaligned(&data[i]);
+    
+    packed_x += packed_a;
+
+  }
+
+  x = packed_x.sum();
+  x /= (i);
+
+#endif
+
+  for (; i < data.size(); i++) {
+    x += (data[i] - x)/(i+1);
+  }
+
+  return x;
+}
+
+BOOST_FIXTURE_TEST_CASE(mean, PackedTest)
+{
+  std::vector<double> data = {8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5};
+
+  // Calcular la media del vector
+  double mean = calculate_mean(data, 8);
+
+  BOOST_CHECK_CLOSE(7.695, mean, 0.1);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

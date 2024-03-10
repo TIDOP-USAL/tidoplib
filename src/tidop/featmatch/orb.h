@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_FEATMATCH_ORB_DETECTOR_DESCRIPTOR_H
-#define TL_FEATMATCH_ORB_DETECTOR_DESCRIPTOR_H
+#pragma once
 
 #include "tidop/featmatch/features.h"
 
@@ -49,53 +48,55 @@ namespace tl
 class TL_EXPORT OrbProperties
   : public Orb
 {
+
+private:
+
+    int mFeaturesNumber;
+    double mScaleFactor;
+    int mLevelsNumber;
+    int mEdgeThreshold;
+    int mFirstLevel;
+    int mWTA_K;
+    std::string mScoreType;
+    int mPatchSize;
+    int mFastThreshold;
+
 public:
 
-  OrbProperties();
-  OrbProperties(const OrbProperties &orbProperties);
-  ~OrbProperties() override = default;
+    OrbProperties();
+    OrbProperties(const OrbProperties &orbProperties);
+    ~OrbProperties() override = default;
 
 // Orb interface
 
 public:
 
-  int featuresNumber() const override;
-  double scaleFactor() const override;
-  int levelsNumber() const override;
-  int edgeThreshold() const override;
-  int firstLevel() const override;
-  int wta_k() const override;
-  std::string scoreType() const override;
-  int patchSize() const override;
-  int fastThreshold() const override;
-  void setFeaturesNumber(int featuresNumber) override;
-  void setScaleFactor(double scaleFactor) override;
-  void setLevelsNumber(int levelsNumber) override;
-  void setEdgeThreshold(int edgeThreshold) override;
-  void setFirstLevel(int firstLevel) override;
-  void setWTA_K(int WTA_K) override;
-  void setScoreType(const std::string &scoreType) override;
-  void setPatchSize(int patchSize) override;
-  void setFastThreshold(int fastThreshold) override;
+    auto featuresNumber() const -> int override;
+    auto scaleFactor() const -> double override;
+    auto levelsNumber() const -> int override;
+    auto edgeThreshold() const -> int override;
+    auto firstLevel() const -> int override;
+    auto wta_k() const -> int override;
+    auto scoreType() const -> std::string override;
+    auto patchSize() const -> int override;
+    auto fastThreshold() const -> int override;
+    void setFeaturesNumber(int featuresNumber) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setLevelsNumber(int levelsNumber) override;
+    void setEdgeThreshold(int edgeThreshold) override;
+    void setFirstLevel(int firstLevel) override;
+    void setWTA_K(int WTA_K) override;
+    void setScoreType(const std::string &scoreType) override;
+    void setPatchSize(int patchSize) override;
+    void setFastThreshold(int fastThreshold) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
-  std::string name() const final;
+    void reset() override;
+    auto name() const -> std::string final;
 
-private:
-
-  int mFeaturesNumber;
-  double mScaleFactor;
-  int mLevelsNumber;
-  int mEdgeThreshold;
-  int mFirstLevel;
-  int mWTA_K;
-  std::string mScoreType;
-  int mPatchSize;
-  int mFastThreshold;
 };
 
 
@@ -108,66 +109,67 @@ class TL_EXPORT OrbDetectorDescriptor
     public DescriptorExtractor
 {
 
+protected:
+
+    cv::Ptr<cv::ORB> mOrb;
+
 public:
 
-  OrbDetectorDescriptor();
-  OrbDetectorDescriptor(const OrbDetectorDescriptor &orbDetectorDescriptor);
-  OrbDetectorDescriptor(int featuresNumber,
-                        double scaleFactor,
-                        int levelsNumber,
-                        int edgeThreshold,
-                        int wta_k,
-                        const std::string &scoreType,
-                        int patchSize,
-                        int fastThreshold);
+    OrbDetectorDescriptor();
+    OrbDetectorDescriptor(const OrbDetectorDescriptor &orbDetectorDescriptor);
+    OrbDetectorDescriptor(int featuresNumber,
+                          double scaleFactor,
+                          int levelsNumber,
+                          int edgeThreshold,
+                          int wta_k,
+                          const std::string &scoreType,
+                          int patchSize,
+                          int fastThreshold);
 
-  ~OrbDetectorDescriptor() override = default;
+    ~OrbDetectorDescriptor() override = default;
 
 private:
 
 #if CV_VERSION_MAJOR >= 4
-  cv::ORB::ScoreType convertScoreType(const std::string &scoreType);
+    auto convertScoreType(const std::string &scoreType) -> cv::ORB::ScoreType;
 #else
-  int convertScoreType(const std::string &scoreType);
+    auto convertScoreType(const std::string &scoreType) -> int;
 #endif
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, 
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img,
+                 std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Orb interface
 
 public:
 
-  void setFeaturesNumber(int featuresNumber) override;
-  void setScaleFactor(double scaleFactor) override;
-  void setLevelsNumber(int levelsNumber) override;
-  void setEdgeThreshold(int edgeThreshold) override;
-  void setFirstLevel(int firstLevel) override;
-  void setWTA_K(int WTA_K) override;
-  void setScoreType(const std::string &scoreType) override;
-  void setPatchSize(int patchSize) override;
-  void setFastThreshold(int fastThreshold) override;
+    void setFeaturesNumber(int featuresNumber) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setLevelsNumber(int levelsNumber) override;
+    void setEdgeThreshold(int edgeThreshold) override;
+    void setFirstLevel(int firstLevel) override;
+    void setWTA_K(int WTA_K) override;
+    void setScoreType(const std::string &scoreType) override;
+    void setPatchSize(int patchSize) override;
+    void setFastThreshold(int fastThreshold) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-protected:
-
-  cv::Ptr<cv::ORB> mOrb;
 };
 
 
@@ -181,66 +183,67 @@ class TL_EXPORT OrbCudaDetectorDescriptor
     public DescriptorExtractor
 {
 
+protected:
+
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
+    cv::Ptr<cv::cuda::ORB> mOrb;
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+
 public:
 
-  OrbCudaDetectorDescriptor();
-  OrbCudaDetectorDescriptor(const OrbCudaDetectorDescriptor &orbCudaDetectorDescriptor);
-  OrbCudaDetectorDescriptor(int featuresNumber,
-                            double scaleFactor,
-                            int levelsNumber,
-                            int edgeThreshold,
-                            int wta_k,
-                            const std::string &scoreType,
-                            int patchSize,
-                            int fastThreshold);
+    OrbCudaDetectorDescriptor();
+    OrbCudaDetectorDescriptor(const OrbCudaDetectorDescriptor &orbCudaDetectorDescriptor);
+    OrbCudaDetectorDescriptor(int featuresNumber,
+                              double scaleFactor,
+                              int levelsNumber,
+                              int edgeThreshold,
+                              int wta_k,
+                              const std::string &scoreType,
+                              int patchSize,
+                              int fastThreshold);
 
-  ~OrbCudaDetectorDescriptor() override = default;
+    ~OrbCudaDetectorDescriptor() override = default;
 
 private:
 
-  int convertScoreType(const std::string &scoreType);
+    int convertScoreType(const std::string &scoreType);
 
-  void update();
+    void update();
 
 // KeypointDetector interface
 
 public:
 
-  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                   cv::InputArray &mask = cv::noArray()) override;
+    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                     cv::InputArray &mask = cv::noArray()) override;
 
 // DescriptorExtractor interface
 
 public:
 
-  cv::Mat extract(const cv::Mat &img,
-                  std::vector<cv::KeyPoint> &keyPoints) override;
+    cv::Mat extract(const cv::Mat &img,
+                    std::vector<cv::KeyPoint> &keyPoints) override;
 
 // Orb interface
 
 public:
 
-  void setFeaturesNumber(int featuresNumber) override;
-  void setScaleFactor(double scaleFactor) override;
-  void setLevelsNumber(int levelsNumber) override;
-  void setEdgeThreshold(int edgeThreshold) override;
-  void setFirstLevel(int firstLevel) override;
-  void setWTA_K(int WTA_K) override;
-  void setScoreType(const std::string &scoreType) override;
-  void setPatchSize(int patchSize) override;
-  void setFastThreshold(int fastThreshold) override;
+    void setFeaturesNumber(int featuresNumber) override;
+    void setScaleFactor(double scaleFactor) override;
+    void setLevelsNumber(int levelsNumber) override;
+    void setEdgeThreshold(int edgeThreshold) override;
+    void setFirstLevel(int firstLevel) override;
+    void setWTA_K(int WTA_K) override;
+    void setScoreType(const std::string &scoreType) override;
+    void setPatchSize(int patchSize) override;
+    void setFastThreshold(int fastThreshold) override;
 
 // Feature interface
 
 public:
 
-  void reset() override;
+    void reset() override;
 
-protected:
-
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
-  cv::Ptr<cv::cuda::ORB> mOrb;
-#endif // HAVE_OPENCV_CUDAFEATURES2D
 };
 
 
@@ -251,6 +254,3 @@ protected:
 
 } // namespace tl
 
-
-
-#endif // TL_FEATMATCH_ORB_DETECTOR_DESCRIPTOR_H

@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(TL_HAVE_GEOSPATIAL)
+if(TL_HAVE_GEOSPATIAL AND TL_HAVE_GDAL)
     
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     #include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -37,7 +37,8 @@ if(TL_HAVE_GEOSPATIAL)
       
     add_executable(${PROJECT_NAME} crstransform.cpp)
     
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
@@ -49,7 +50,8 @@ if(TL_HAVE_GEOSPATIAL)
                           TidopLib::Geom
                           TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
     					  
     if(HAVE_OPENCV)
