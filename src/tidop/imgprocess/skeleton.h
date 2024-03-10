@@ -41,9 +41,11 @@ namespace tl
  */
 
  /*! \defgroup skeleton Topological skeleton
+ * 
   * Skeleton or Topological skeleton comprises a series of algorithms whose purpose
   * is to reduce a shape to a 'skeleton' that preserves the geometry and the topological
   * properties of the original shape.
+  * 
   *  \{
   */
 

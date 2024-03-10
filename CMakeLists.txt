@@ -202,14 +202,14 @@ cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
-cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
+cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
 
 OPTION (BUILD_APPS                    "Build Apps"             OFF)
 OPTION (BUILD_SHARED_LIBS             "Build Shared Libraries" OFF)
 OPTION (BUILD_TEST                    "Build test"             OFF)
-OPTION (BUILD_DOC                     "Build documentation"    OFF)
+OPTION (BUILD_DOC                     "Build documentation"    ON)
 
 # Configuración de la librería
 

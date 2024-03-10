@@ -44,6 +44,12 @@
 namespace tl
 {
 
+
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 class ImageMetadata;
 
 /*!
@@ -205,6 +211,10 @@ public:
 
     static auto create(const Path &file) -> ImageReader::Ptr;
 };
+
+
+/*! \} */ // end of raster
+
 
 } // End namespace tl
 

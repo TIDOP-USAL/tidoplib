@@ -32,6 +32,10 @@
 namespace tl
 {
 
+/*! \defgroup raster Raster
+ *  \{
+ */
+
 template<typename T> class EnumFlags;
 
 enum class DataType : int16_t
@@ -71,26 +75,6 @@ TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
 
 TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 
-#if defined TL_HAVE_OPENCV && defined TL_HAVE_GDAL
-
-/*!
- * \brief Obtiene el tipo de dato de OpenCV
- * \param gdalType Tipo de GDAL
- * \param channels Número de canales
- * \return Tipo de OpenCV
- */
- //int gdalToOpenCv(GDALDataType gdalType, int channels);
-
-
- /*!
-  * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
-  * \param cvdt Profundidad de bits
-  * \return GDALDataType
-  */
-  //GDALDataType openCvToGdal(int cvdt);
-
-#endif
-
 
 
 #ifdef TL_HAVE_EDSDK
@@ -128,6 +112,8 @@ private:
 };
 
 #endif // TL_HAVE_EDSDK
+
+/*! \} */ // end of raster
 
 
 } // End namespace tl

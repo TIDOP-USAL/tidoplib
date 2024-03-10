@@ -37,10 +37,19 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+/*! \defgroup vector Vector
+ *  \{
+ */
+
+
 #ifdef TL_HAVE_GDAL
 TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
 TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
 #endif // TL_HAVE_GDAL
+
+
+/*! \} */ // end of vector
+
 
 } // End namespace tl
 

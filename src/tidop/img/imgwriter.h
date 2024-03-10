@@ -46,6 +46,12 @@ namespace tl
 class ImageOptions;
 class ImageMetadata;
 
+
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 /*!
  * \brief Class for writing different image formats
  */
@@ -187,6 +193,8 @@ public:
 
     static auto create(const Path &fileName) -> ImageWriter::Ptr;
 };
+
+/*! \} */ // end of raster
 
 
 } // End namespace tl

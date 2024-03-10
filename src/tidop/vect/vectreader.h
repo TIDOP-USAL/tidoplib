@@ -36,7 +36,14 @@
 namespace tl
 {
 
+
 class GLayer;
+
+
+/*! \addtogroup vector
+ *  \{
+ */
+
 
 class TL_EXPORT VectorReader
 {
@@ -97,5 +104,6 @@ public:
 };
 
 
+/*! \} */ // end of vector
 
 } // End namespace tl

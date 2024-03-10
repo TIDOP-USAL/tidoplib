@@ -42,6 +42,10 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+/*! \addtogroup raster
+ *  \{
+ */
+
 
 /*!
  * \brief Format options
@@ -483,5 +487,9 @@ private:
     std::map<std::string, std::string> options(bool all) const override;
 
 };
+
+
+/*! \} */ // end of raster
+
 
 } // namespace tl

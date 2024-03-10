@@ -35,6 +35,11 @@ namespace tl
 {
 
 
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 class TL_EXPORT MetadataItem
 {
 
@@ -159,6 +164,6 @@ public:
     static auto create(const std::string &format) -> std::shared_ptr<ImageMetadata>;
 };
 
-
+/*! \} */ // end of raster
 
 }  // End namespace tl

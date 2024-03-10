@@ -32,9 +32,6 @@ namespace tl
 {
 
 
-/// Clase Intersection que a partir de dos geometrias calcule su intersección
-
-
 /*! \addtogroup geometry
  *  \{
  */

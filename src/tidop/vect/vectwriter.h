@@ -37,6 +37,10 @@ namespace tl
 
 class GLayer;
 
+/*! \addtogroup vector
+ *  \{
+ */
+
 class TL_EXPORT VectorWriter
 {
 
@@ -103,5 +107,6 @@ public:
     static auto createWriter(const Path &file) -> VectorWriter::Ptr;
 };
 
+/*! \} */ // end of vector
 
 } // End namespace tl

@@ -31,6 +31,11 @@
 namespace tl
 {
 
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 class TL_EXPORT Image
 {
 
@@ -71,5 +76,9 @@ private:
     void init();
 
 };
+
+
+/*! \} */ // end of raster
+
 
 } // End namespace tl

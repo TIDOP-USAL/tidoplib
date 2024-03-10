@@ -39,6 +39,9 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+/*! \addtogroup vector
+ *  \{
+ */
 
 /*!
  * \brief Format options
@@ -139,5 +142,6 @@ public:
 
 };
 
+/*! \} */ // end of vector
 
 }

@@ -40,10 +40,10 @@ namespace tl
  */
 
 
- /*! \addtogroup Filters Image Filters
-  *
-  *  \{
-  */
+/*! \addtogroup Filters
+ *
+ *  \{
+ */
 
 
 

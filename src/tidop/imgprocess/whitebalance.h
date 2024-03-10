@@ -48,10 +48,10 @@ namespace tl
  */
 
 
- /*! \defgroup WhiteBalance White Balance
-  *
-  *  \{
-  */
+/*! \defgroup WhiteBalance White Balance
+ *
+ *  \{
+ */
 
 
 #ifdef HAVE_OPENCV_XPHOTO
