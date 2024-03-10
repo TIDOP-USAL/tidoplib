@@ -719,7 +719,7 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
     for (size_t i = 0; i < size; i++) {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,3,0)
-        const OGRPolygon *ogrPolygon = ogrMultiPolygon->getGeometryRef(static_cast<int>(i));
+        const OGRPolygon *ogr_polygon = ogrMultiPolygon->getGeometryRef(static_cast<int>(i));
 #else
         const OGRPolygon *ogr_polygon = dynamic_cast<OGRPolygon *>(ogrMultiPolygon->getGeometryRef(static_cast<int>(i)));
 #endif

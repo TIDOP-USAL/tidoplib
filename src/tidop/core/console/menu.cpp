@@ -24,10 +24,46 @@
 
 #include "tidop/core/console/menu.h"
 
-#include <conio.h>
+#include "tidop/core/console/console.h"
+
+
+#include <termios.h>
+#include <unistd.h>
+#include <stdio.h>
 #include <iostream> 
 
-#include "tidop/core/console/console.h"
+#ifdef TL_OS_WINDOWS
+#include <conio.h>
+#else
+/* reads from keypress, doesn't echo */
+int getch(void)
+{
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr( STDIN_FILENO, &oldattr );
+    newattr = oldattr;
+    newattr.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    ch = getchar();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    return ch;
+}
+
+/* reads from keypress, echoes */
+int getche(void)
+{
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr( STDIN_FILENO, &oldattr );
+    newattr = oldattr;
+    newattr.c_lflag &= ~( ICANON );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    ch = getchar();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    return ch;
+}
+#endif // TL_OS_WINDOWS
+
 
 namespace tl
 {
@@ -68,7 +104,11 @@ void MenuAction::exec() const
     int ascii_value{};
 
     while (true) {
+#ifdef TL_OS_WINDOWS
         key_press = static_cast<char>(_getch());
+#else
+        key_press = static_cast<char>(getch());
+#endif
         ascii_value = static_cast<int>(key_press);
         if (ascii_value == 27) {
             // For ESC
@@ -119,7 +159,11 @@ void Menu::activeOption(int currentOption) const
 
     bool change_option = false;
     while (!change_option) {
+#ifdef TL_OS_WINDOWS
         key_press = static_cast<char>(_getch());
+#else
+        key_press = static_cast<char>(getch());
+#endif
         ascii_value = static_cast<int>(key_press);
         //std::cout << "\n" << key_press << " -> " << ascii_value << "\n";
         if (ascii_value == 27) {
