@@ -1,34 +1,54 @@
-name: Doxygen Action
+name: 'Doxygen GitHub Pages Deploy Action'
+author: 'Jonah Lawrence'
+description: 'Make docs with Doxygen then deploy the generated HTML to GitHub pages'
+branding:
+  icon: "upload-cloud"
+  color: "purple"
 
-on:
-  push:
-    branches: [ main ]
+inputs:
+  github_token:
+    description: 'A GitHub token for pushing to the repo. Example: https://git.io/passing-token'
+    required: true
+  branch:
+    description: 'Branch name for pushing GitHub pages files'
+    required: true
+    default: "gh-pages"
+  folder:
+    description: 'Folder where Doxygen will generate the HTML build files'
+    required: true
+    default: "html"
+  config_file:
+    description: 'Path of the Doxygen configuration file'
+    required: true
+    default: "doc/Doxyfile"
+  target_folder:
+    description: 'Directory on the deployment branch for pushing the build files'
+    required: false
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-        
-    - name: Doxygen Action
-      uses: mattnotmitt/doxygen-action@v1.9.5
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
       with:
-        # Path to Doxyfile
-        doxyfile-path: "./doc/Doxyfile.in" # default is ./Doxyfile
-        # Working directory
-        working-directory: "." # default is .
-        enable-latex: true
-        
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+        submodules: "true"
+
+    - name: Install Doxygen
+      run: sudo apt-get install doxygen graphviz -y
+      shell: bash
+
+    - name: Generate Doxygen Documentation
+      run: doxygen ${{ inputs.config_file }}
+      shell: bash
+      
+    - name: Create .nojekyll (ensures pages with underscores work on gh pages)
+      run: touch ${{ inputs.folder }}/.nojekyll
+      shell: bash
+
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        # Default Doxyfile build documentation to html directory. 
-        # Change the directory if changes in Doxyfile
-        publish_dir: ./html
+        token: ${{ inputs.github_token }}
+        branch: ${{ inputs.branch }}
+        folder: ${{ inputs.folder }}
+        target-folder: ${{ inputs.target_folder }}
