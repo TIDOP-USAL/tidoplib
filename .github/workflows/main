@@ -16,7 +16,7 @@ inputs:
   folder:
     description: 'Folder where Doxygen will generate the HTML build files'
     required: true
-    default: "docs/html"
+    default: "html"
   config_file:
     description: 'Path of the Doxygen configuration file'
     required: true
