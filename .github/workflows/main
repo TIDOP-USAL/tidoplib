@@ -25,9 +25,9 @@ jobs:
         # Working directory
         working-directory: "." # default is .
         enable-latex: true
-        
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+                      
+    - name: GitHub Pages action
+      uses: peaceiris/actions-gh-pages@v3.9.3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # Default Doxyfile build documentation to html directory. 
