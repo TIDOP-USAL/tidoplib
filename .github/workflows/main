@@ -1,4 +1,4 @@
-name: Doxygen Action
+loyname: Doxygen Action
 
 on:
   push:
@@ -21,12 +21,12 @@ jobs:
       uses: mattnotmitt/doxygen-action@v1.9.5
       with:
         # Path to Doxyfile
-        doxyfile-path: "./doc/Doxyfile" # default is ./Doxyfile
+        doxyfile-path: "./Doxyfile" # default is ./Doxyfile
         # Working directory
         working-directory: "." # default is .
         enable-latex: true
                       
-    - name: GitHub Pages action
+    - name: Deploy
       uses: peaceiris/actions-gh-pages@v3.9.3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
