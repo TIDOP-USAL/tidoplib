@@ -351,7 +351,7 @@ auto Rotation<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
 template<typename T, size_t Dim>
 auto Rotation<T, Dim>::operator * (const Rotation<T, Dim> &rotation) const -> Rotation<T, Dim>
 {
-    return Rotation<T, Dim>( this->rotation + rotation.rotation);
+    return Rotation<T, Dim>( this->rotation * rotation.rotation);
 }
 
 

@@ -1,8 +1,10 @@
-[](http://)# TidopLib
+# TidopLib 3.0.0
 
 <p align="center">
 <img src="tidop_logo.png" />
 </p>
+
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 TidopLib is an open-source C++ library developed by [Tidop Research Group](http://tidop.usal.es)
 
@@ -17,11 +19,11 @@ TidopLib is an open-source C++ library developed by [Tidop Research Group](http:
 
 ### Dependencies
 
-- [Boost](https://www.boost.org) > 1.50 (REQUIRED C++ Version < 17)
+- [Boost](https://www.boost.org) > 1.70
 - [GDAL](https://gdal.org)
 - [PROJ](https://proj.org/en/9.4/index.html)
 - [OpenCV](https://opencv.org)
-- [fmt](https://fmt.dev/latest/index.html) (REQUIRED C++ Version < 20)
+- [fmt](https://fmt.dev/latest/index.html) (REQUIRED for C++ Version < 20)
 - [OpenBLAS](https://www.openblas.net) (optional)
 - [OpenMP](https://www.openmp.org) (optional)
 - [Visual Leak Detector](https://marketplace.visualstudio.com/items?itemName=ArkadyShapkin.VisualLeakDetectorforVisualC) (optional)
