@@ -538,15 +538,6 @@ auto TaskBase::status() const -> Status
 
 #ifdef TL_OS_WINDOWS
 
-WCHAR *toWCHAR(const char *str)
-{
-    size_t length = strlen(str);
-    WCHAR *buffer = static_cast<WCHAR*>(malloc(sizeof(WCHAR) * length));
-    int nChars = MultiByteToWideChar(CP_ACP, 0, str, -1, nullptr, 0);
-    MultiByteToWideChar(CP_ACP, 0, str, -1, (LPWSTR)buffer, nChars);
-    return buffer;
-}
-
 
 constexpr auto process_bufsize = 4096;
 HANDLE pipeReadHandle = nullptr;
@@ -606,21 +597,22 @@ void Process::execute(Progress *)
 
         unsigned long priority = static_cast<unsigned long>(mPriority);
 
-        if (!CreateProcess(nullptr,
-            toWCHAR(mCommandText.c_str()),
-            nullptr,
-            nullptr,
-            false, //true,
-            CREATE_NO_WINDOW | priority,
-            nullptr,
-            nullptr,
-            &mStartUpInfo,
-            &mProcessInformation)) {
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring command = converter.from_bytes(mCommandText);
 
-            TL_THROW_EXCEPTION("CreateProcess failed ({}) {}",
-                               GetLastError(),
-                               formatErrorMsg(GetLastError()));
-        }
+        bool success = CreateProcess(nullptr,
+                                     const_cast<LPWSTR>(command.c_str()),
+                                     nullptr,
+                                     nullptr,
+                                     false, //true,
+                                     CREATE_NO_WINDOW | priority,
+                                     nullptr,
+                                     nullptr,
+                                     &mStartUpInfo,
+                                     &mProcessInformation);
+
+
+        TL_ASSERT(success, "CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
 
         //mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
 
@@ -634,7 +626,9 @@ void Process::execute(Progress *)
                                    GetLastError(),
                                    formatErrorMsg(GetLastError()),
                                    mCommandText);
-            } else if (exitCode == 0){
+            }
+
+            if (exitCode == 0){
                 eventTriggered(Event::Type::task_finalized);
             } else {
                 eventTriggered(Event::Type::task_error);
