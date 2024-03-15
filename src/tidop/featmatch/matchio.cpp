@@ -379,7 +379,7 @@ private:
     void writeGoodMatches() const;
     void writeWrongMatches() const;
     void writeMatches(const std::vector<cv::DMatch> &matches) const;
-    void close();
+    void close() const;
 
 private:
 
@@ -436,7 +436,7 @@ void MatchesWriterBinary::writeHeader() const
         stream->write(reinterpret_cast<char *>(&size), sizeof(uint64_t));
         stream->write(reinterpret_cast<char *>(&size_wm), sizeof(uint64_t));
         std::array<char, 100> extra_head{}; 
-        stream->write(reinterpret_cast<char *>(extra_head.data()), sizeof(char) * 100);
+        stream->write(extra_head.data(), sizeof(char) * 100);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -481,7 +481,7 @@ void MatchesWriterBinary::writeMatches(const std::vector<cv::DMatch> &matches) c
     }
 }
 
-void MatchesWriterBinary::close()
+void MatchesWriterBinary::close() const
 {
     stream->close();
 }
