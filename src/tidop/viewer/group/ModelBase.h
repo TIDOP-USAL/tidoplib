@@ -31,8 +31,8 @@ protected:
 
 	tl::Matrix4x4f modelMatrix;
 
-	unsigned int pointSize;
-	unsigned int lineSize;
+	float pointSize;
+	float lineSize;
 
 public:
 

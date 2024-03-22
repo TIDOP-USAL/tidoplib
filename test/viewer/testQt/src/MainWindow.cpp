@@ -3,10 +3,7 @@
 #include <QFileDialog>
 
 #include <tidop/viewer/group/PointCloud.h>
-#include <tidop/viewer/io/ASCIIReader.h>
 #include <tidop/viewer/io/LASReader.h>
-
-#include <thread>
 
 using namespace tl;
 
@@ -51,6 +48,8 @@ void MainWindow::loadFromMemory()
 
 void MainWindow::loadFromFile(const std::string& path) {
 
+    viewerWidget->makeCurrent();
+
     Path modelPath(path);
 
     ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
@@ -59,7 +58,7 @@ void MainWindow::loadFromFile(const std::string& path) {
     ModelBase::Ptr model = reader->getModelBase();
 
     PointCloud::Ptr cloud = std::dynamic_pointer_cast<PointCloud>(model);
-    cloud->scale(0.1, 0.1, 0.1);
+    cloud->scale(0.1f, 0.1f, 0.1f);
 
     viewerWidget->getRenderer()->addModel(cloud);
 }

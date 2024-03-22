@@ -61,7 +61,6 @@ void Renderer::render()
 {
 	//glEnable(GL_BLEND);
 	//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -74,7 +73,7 @@ void Renderer::render()
 	shaderProgram->uniformMat4("view", camera->getViewMatrix());
 	shaderProgram->uniformMat4("projection", camera->getProjectionMatrix());
 
-	for (auto& model : models) {
+	for (const auto& model : models) {
 
 		shaderProgram->uniformMat4("model", model->getModelMatrix());
 		model->draw();
@@ -86,7 +85,7 @@ void Renderer::pan(int mouseX, int mouseY)
 	float dx = (mouseX - previousMouse.x()) / (static_cast<float>(viewportWidth) / 2);
 	float dy = (mouseY - previousMouse.y()) / (static_cast<float>(viewportHeight) / 2);
 
-	const float panSensitivity = 1.0f;
+	constexpr float panSensitivity = 1.0f;
 	previousMouse = Vector2i({ mouseX, mouseY });
 
 	camera->pan(dx * panSensitivity, dy * panSensitivity);
@@ -105,7 +104,7 @@ void Renderer::rotate(int mouseX, int mouseY)
 
 void Renderer::zoom(int delta)
 {
-	float sensitivity = 1.0f;
+	constexpr float sensitivity = 1.0f;
 	camera->zoom(sensitivity * delta);
 }
 

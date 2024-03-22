@@ -1,8 +1,6 @@
 #pragma once
 
 #include "tidop/core/path.h"
-#include "tidop/core/ptr.h"
-
 #include "tidop/viewer/group/ModelBase.h"
 
 namespace tl
@@ -20,8 +18,7 @@ protected:
     Path path;
 
 public:
-
-	ModelReader(Path _path);
+    explicit ModelReader(Path _path);
     ModelReader() = default;
     virtual ~ModelReader() = default;
 
