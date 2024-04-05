@@ -32,7 +32,9 @@ namespace tl
 
 
 AgastProperties::AgastProperties()
-  : mDetectorType(agast_default_value_detector_type)
+  : mThreshold(agast_default_value_threshold),
+    mNonmaxSuppression(agast_default_value_nonmax_suppression),
+    mDetectorType(agast_default_value_detector_type)
 {
 }
 
@@ -53,7 +55,7 @@ AgastProperties::AgastProperties(AgastProperties &&agast) TL_NOEXCEPT
 
 AgastProperties::~AgastProperties() = default;
 
-AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
+auto AgastProperties::operator =(const AgastProperties &agast) -> AgastProperties&
 {
     if (this != &agast) {
         mThreshold = agast.mThreshold;
@@ -64,7 +66,7 @@ AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
     return *this;
 }
 
-AgastProperties &AgastProperties::operator =(AgastProperties &&agast) TL_NOEXCEPT
+auto AgastProperties::operator =(AgastProperties &&agast) TL_NOEXCEPT -> AgastProperties&
 {
     if (this != &agast) {
         mThreshold = agast.mThreshold;
@@ -75,17 +77,17 @@ AgastProperties &AgastProperties::operator =(AgastProperties &&agast) TL_NOEXCEP
     return *this;
 }
 
-int AgastProperties::threshold() const
+auto AgastProperties::threshold() const -> int
 {
     return mThreshold;
 }
 
-bool AgastProperties::nonmaxSuppression() const
+auto AgastProperties::nonmaxSuppression() const -> bool
 {
     return mNonmaxSuppression;
 }
 
-std::string AgastProperties::detectorType() const
+auto AgastProperties::detectorType() const -> std::string
 {
     return mDetectorType;
 }
@@ -117,7 +119,7 @@ void AgastProperties::reset()
     mDetectorType = agast_default_value_detector_type;
 }
 
-std::string AgastProperties::name() const
+auto AgastProperties::name() const -> std::string
 {
     return std::string("AGAST");
 }
@@ -148,9 +150,9 @@ AgastDetector::AgastDetector(int threshold,
                              const std::string &detectorType)
   : mAgast(cv::AgastFeatureDetector::create())
 {
-    setThreshold(threshold);
-    setNonmaxSuppression(nonmaxSuppression);
-    setDetectorType(detectorType);
+	AgastDetector::setThreshold(threshold);
+	AgastDetector::setNonmaxSuppression(nonmaxSuppression);
+	AgastDetector::setDetectorType(detectorType);
 }
 
 AgastDetector::~AgastDetector()
@@ -158,7 +160,7 @@ AgastDetector::~AgastDetector()
     mAgast.reset();
 }
 
-AgastDetector &AgastDetector::operator =(const AgastDetector &agastDetector)
+auto AgastDetector::operator =(const AgastDetector &agastDetector) -> AgastDetector&
 {
     if (this != &agastDetector) {
         AgastProperties::operator=(agastDetector);
@@ -168,7 +170,7 @@ AgastDetector &AgastDetector::operator =(const AgastDetector &agastDetector)
     return *this;
 }
 
-AgastDetector &AgastDetector::operator =(AgastDetector &&agastDetector) TL_NOEXCEPT
+auto AgastDetector::operator =(AgastDetector &&agastDetector) TL_NOEXCEPT -> AgastDetector&
 {
     if (this != &agastDetector) {
         AgastProperties::operator=(std::forward<AgastProperties>(agastDetector));
@@ -179,7 +181,7 @@ AgastDetector &AgastDetector::operator =(AgastDetector &&agastDetector) TL_NOEXC
 }
 
 #if CV_VERSION_MAJOR >= 4
-cv::AgastFeatureDetector::DetectorType AgastDetector::convertDetectorType(const std::string &detectorType)
+auto AgastDetector::convertDetectorType(const std::string &detectorType) -> cv::AgastFeatureDetector::DetectorType
 {
     cv::AgastFeatureDetector::DetectorType detector_type = cv::AgastFeatureDetector::DetectorType::OAST_9_16;
 
@@ -194,7 +196,7 @@ cv::AgastFeatureDetector::DetectorType AgastDetector::convertDetectorType(const 
     return detector_type;
 }
 #else
-int AgastDetector::convertDetectorType(const std::string &detectorType)
+auto AgastDetector::convertDetectorType(const std::string &detectorType) -> int
 {
     int detector_type = cv::AgastFeatureDetector::OAST_9_16;
     if (detectorType.compare("AGAST_5_8") == 0) {
@@ -216,8 +218,7 @@ void AgastDetector::initAgastFromProperties()
                                               convertDetectorType(AgastProperties::detectorType()));
 }
 
-std::vector<cv::KeyPoint> AgastDetector::detect(const cv::Mat &img,
-                                                cv::InputArray &mask)
+auto AgastDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 

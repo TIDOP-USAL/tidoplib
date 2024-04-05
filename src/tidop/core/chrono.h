@@ -41,30 +41,35 @@ namespace tl
 
 
 /*!
- * \brief Genera una cadena con el tiempo actual en el formato especificado
+ * \brief Generates a string with the current time in the specified format.
  */
 TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H:%M:%S");
 
 /*!
- * \brief tiempo actual
+ * \brief current time.
  *
- * <h4>Ejemplo</h4>
+ * <h4>Example</h4>
+ * 
  * \code
  * uint64_t time_ini = tickCount();
  * ...
  * double time = (tickCount() - time_ini) / 1000.;
  * Message::info("Time {}", time);
  * \endcode
+ * 
  */
 TL_EXPORT uint64_t tickCount();
 
 
 /*!
- * \brief Clase para medir tiempos.
+ * \brief Class to measure times.
  * 
- * <b>Ejemplo</b>
+ * If a message is set, when the stop method is called, a message is printed to the console.
+ * Otherwise, the stop method only returns the time in seconds.
  * 
- * <h3>Medición de tiempos con mensaje</h3>
+ * <h4>Example:</h4>
+ * 
+ * <b>Time measurement with message:</b>
  * 
  * 
  * \code
@@ -73,10 +78,10 @@ TL_EXPORT uint64_t tickCount();
  * 
  *   /// ....
  *   
- *   chrono.stop(); // Print time in console
+ *   chrono.stop(); // Print time in console with a message and returns time in seconds
  * \endcode
  * 
- * <h3>Medición de tiempos</h3>
+ * <b>Time measurement:</b>
  * 
  * \code
  *   Chrono chrono;
@@ -84,7 +89,7 @@ TL_EXPORT uint64_t tickCount();
  * 
  *   /// ....
  *   
- *   double time = chrono.stop(); // Tiempo en segundos
+ *   double time = chrono.stop(); // Returns time in seconds
  * \endcode
  */
 class TL_EXPORT Chrono
@@ -92,62 +97,68 @@ class TL_EXPORT Chrono
 public:
 
     /*!
-     * \brief Posibles estados del cronómetro
+     * \brief Chrono status
      */
     enum class Status
     {
-        start,      /*!< Inicio */
-        running,    /*!< Corriendo */
-        pause,      /*!< Pausado */
-        stopped,    /*!< Detenido */
-        finalized   /*!< Finalizado */
+        start,
+        running,
+        pause,
+        stopped,
+        finalized
     };
+
+private:
+
+    std::chrono::steady_clock::time_point initialTime;
+    std::chrono::duration<double> accumulatedTime{};
+    Status status{Chrono::Status::start};
+    std::string message;
+    bool writeMessage{false};
 
 public:
   
     Chrono();
-    Chrono(std::string message);
+    explicit Chrono(std::string message);
     virtual ~Chrono() = default;
   
     TL_DISABLE_COPY(Chrono)
     TL_DISABLE_MOVE(Chrono)
   
     /*!
-     * \brief Pausa el cronómetro
-     * \return Tiempo transcurrido en segundos
+     * \brief Pause the timer
+     * \return Elapsed time in seconds
      */
-    double pause();
+    auto pause() -> double;
   
     /*!
-     * \brief Reinicio del cronómetro
+     * \brief Restarting time
      */
     void reset();
   
     /*!
-     * \brief Continua corriendo el cronómetro cuando estaba pausado
+     * \brief Continues to run the chronometer when it was paused.
      */
     void resume();
   
     /*!
-     * \brief Arranca el cronómetro
+     * \brief Start the chronometer
      */
     void run();
   
     /*!
-     * \brief Detiene el cronómetro
-     * \return Tiempo transcurrido en segundos
+     * \brief Stops the chronometer
+     * \return Elapsed time in seconds
      */
-    double stop();
+    auto stop() -> double;
   
-    void setMessage(const std::string &message);
-  
-private:
+    auto currentTime() const -> double;
 
-    std::chrono::steady_clock::time_point mTimeIni;
-    std::chrono::duration<double> mAccumulated{};
-    Status mStatus{Chrono::Status::start};
-    std::string mMessage;
-    bool bWriteMessage{false};
+    /*!
+     * \brief Stops the chronometer
+     * \param[in] message Message displayed when chronometer is stopped
+     */
+    void setMessage(const std::string &message);
 
 };
 
@@ -155,35 +166,34 @@ private:
 
 
 /*!
- * \brief Clase para medir tiempos en un bloque de código.
+ * \brief Class to measure times in a block of code.
  * 
- * En la constructora se inicia la medición de tiempos y en la destructora 
- * se detiene el cronómetro
+ * In the constructor, the time measurement starts and in the destructor, 
+ * the time is stopped.
  * 
- * <b>Ejemplo</b>
+ * <h4>Example</h4>
  *
  * \code
  *   void foo()
  *   {
- *     ChronoAuto chrono("foo function finished");
+ *     ChronoAuto chrono("foo function finished"); // the time measurement starts
  *     
- *     /// ....
- *   }
+ *      ....
+ * 
+ *   } // The time is stopped and printed on the console
  * \endcode
  */
-class ChronoAuto
-  : private Chrono
+class TL_EXPORT ChronoAuto final
+	: private Chrono
 {
 
 public:
 
-  explicit ChronoAuto(const std::string &message);
-  ~ChronoAuto() override;
+    explicit ChronoAuto(const std::string &message);
+    ~ChronoAuto() override;
 
-  TL_DISABLE_COPY(ChronoAuto)
-  TL_DISABLE_MOVE(ChronoAuto)
-
-private:
+    TL_DISABLE_COPY(ChronoAuto)
+    TL_DISABLE_MOVE(ChronoAuto)
 
 };
 

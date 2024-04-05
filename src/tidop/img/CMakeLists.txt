@@ -52,7 +52,8 @@ if(BUILD_TL_IMG)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
     endif(MSVC)
 
-    target_include_directories(${PROJECT_NAME} PUBLIC ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PUBLIC 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>

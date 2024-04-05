@@ -41,7 +41,7 @@ RobustMatchingProperties::RobustMatchingProperties()
 {
 }
 
-double RobustMatchingProperties::ratio() const
+auto RobustMatchingProperties::ratio() const -> double
 {
     return mRatio;
 }
@@ -51,7 +51,7 @@ void RobustMatchingProperties::setRatio(double ratio)
     mRatio = ratio;
 }
 
-bool RobustMatchingProperties::crossCheck() const
+auto RobustMatchingProperties::crossCheck() const -> bool
 {
     return mCrossCheck;
 }
@@ -61,7 +61,7 @@ void RobustMatchingProperties::setCrossCheck(bool crossCheck)
     mCrossCheck = crossCheck;
 }
 
-std::shared_ptr<GeometricTest> RobustMatchingProperties::geometricTest() const
+auto RobustMatchingProperties::geometricTest() const -> std::shared_ptr<GeometricTest>
 {
     return mGeometricTest;
 }
@@ -78,7 +78,7 @@ void RobustMatchingProperties::reset()
     mGeometricTest.reset();
 }
 
-std::string RobustMatchingProperties::name() const
+auto RobustMatchingProperties::name() const -> std::string
 {
     return std::string("Robust Matcher");
 }
@@ -89,16 +89,16 @@ std::string RobustMatchingProperties::name() const
 
 
 
-RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher)
-    : mDescriptorMatcher(descriptorMatcher)
+RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
+  : mDescriptorMatcher(descriptorMatcher)
 {
 
 }
 
-RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
+RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
                                      double ratio,
                                      bool crossCheck,
-                                     std::shared_ptr<GeometricTest> geometricTest/*,
+                                     std::shared_ptr<GeometricTest> &geometricTest/*,
                                      GeometricTest geometricTest,
                                      HomographyComputeMethod homographyComputeMethod,
                                      FundamentalComputeMethod fundamentalComputeMethod,
@@ -106,11 +106,11 @@ RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descript
                                      double distance,
                                      double confidence,
                                      int maxIter*/)
-    : mDescriptorMatcher(descriptorMatcher)
+  : mDescriptorMatcher(descriptorMatcher)
 {
-    setRatio(ratio);
-    setCrossCheck(crossCheck);
-    setGeometricTest(geometricTest);
+	RobustMatchingProperties::setRatio(ratio);
+	RobustMatchingProperties::setCrossCheck(crossCheck);
+	RobustMatchingProperties::setGeometricTest(geometricTest);
     //this->setGeometricTest(geometricTest);
     //this->setHomographyComputeMethod(homographyComputeMethod);
     //this->setFundamentalComputeMethod(fundamentalComputeMethod);
@@ -125,10 +125,10 @@ void RobustMatchingImp::setDescriptorMatcher(const std::shared_ptr<DescriptorMat
     mDescriptorMatcher = descriptorMatcher;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::geometricFilter(const std::vector<cv::DMatch> &matches,
-                                                           const std::vector<cv::KeyPoint> &keypoints1,
-                                                           const std::vector<cv::KeyPoint> &keypoints2,
-                                                           std::vector<cv::DMatch> *wrongMatches)
+auto RobustMatchingImp::geometricFilter(const std::vector<cv::DMatch> &matches,
+                                        const std::vector<cv::KeyPoint> &keypoints1,
+                                        const std::vector<cv::KeyPoint> &keypoints2,
+                                        std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>
 {
     std::vector<cv::DMatch> filter_matches;
 
@@ -154,9 +154,9 @@ std::vector<cv::DMatch> RobustMatchingImp::geometricFilter(const std::vector<cv:
     return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::match(const cv::Mat &queryDescriptor,
-                                                 const cv::Mat &trainDescriptor,
-                                                 std::vector<cv::DMatch> *wrongMatches)
+auto RobustMatchingImp::match(const cv::Mat &queryDescriptor,
+                              const cv::Mat &trainDescriptor,
+                              std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>
 {
     if (this->crossCheck()) {
         return this->robustMatch(queryDescriptor, trainDescriptor, wrongMatches);
@@ -165,9 +165,9 @@ std::vector<cv::DMatch> RobustMatchingImp::match(const cv::Mat &queryDescriptor,
     }
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescriptor,
-                                                       const cv::Mat &trainDescriptor,
-                                                       std::vector<cv::DMatch> *wrongMatches)
+auto RobustMatchingImp::robustMatch(const cv::Mat &queryDescriptor,
+                                    const cv::Mat &trainDescriptor,
+                                    std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>
 {
     std::vector<cv::DMatch> goodMatches;
 
@@ -181,8 +181,8 @@ std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescr
 
         std::vector<std::vector<cv::DMatch>> wrong_matches12;
         std::vector<std::vector<cv::DMatch>> wrong_matches21;
-        std::vector<std::vector<cv::DMatch>> good_matches12 = RobustMatchingImp::ratioTest(matches12, this->ratio(), &wrong_matches12);
-        std::vector<std::vector<cv::DMatch>> good_matches21 = RobustMatchingImp::ratioTest(matches21, this->ratio(), &wrong_matches21);
+        std::vector<std::vector<cv::DMatch>> good_matches12 = ratioTest(matches12, this->ratio(), &wrong_matches12);
+        std::vector<std::vector<cv::DMatch>> good_matches21 = ratioTest(matches21, this->ratio(), &wrong_matches21);
 
         matches12.clear();
         matches21.clear();
@@ -193,7 +193,7 @@ std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescr
             }
         }
 
-        goodMatches = RobustMatchingImp::crossCheckTest(good_matches12, good_matches21, wrongMatches);
+        goodMatches = crossCheckTest(good_matches12, good_matches21, wrongMatches);
 
     } catch (...) {
         std::throw_with_nested(std::runtime_error("RobustMatchingImp::robustMatch() failed"));
@@ -202,9 +202,9 @@ std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescr
     return goodMatches;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor,
-                                                           const cv::Mat &trainDescriptor,
-                                                           std::vector<cv::DMatch> *wrongMatches)
+auto RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor,
+                                        const cv::Mat &trainDescriptor,
+                                        std::vector<cv::DMatch> *wrongMatches) -> std::vector<cv::DMatch>
 {
     std::vector<cv::DMatch> goodMatches;
 
@@ -214,7 +214,7 @@ std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryD
         mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
 
         std::vector<std::vector<cv::DMatch>> ratio_test_wrong_matches;
-        std::vector<std::vector<cv::DMatch>> ratio_test_matches = RobustMatchingImp::ratioTest(matches, this->ratio(), &ratio_test_wrong_matches);
+        std::vector<std::vector<cv::DMatch>> ratio_test_matches = ratioTest(matches, this->ratio(), &ratio_test_wrong_matches);
 
         for (auto &match : ratio_test_matches) {
             goodMatches.push_back(match[0]);
@@ -242,8 +242,7 @@ bool RobustMatchingImp::compute(const cv::Mat &queryDescriptor,
                                 const cv::Size &queryImageSize,
                                 const cv::Size &trainImageSize)
 {
-    unusedParameter(queryImageSize);
-    unusedParameter(trainImageSize);
+    unusedParameter(queryImageSize, trainImageSize);
 
     try {
         *goodMatches = this->match(queryDescriptor, trainDescriptor, wrongMatches);

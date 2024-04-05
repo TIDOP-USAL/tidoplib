@@ -52,6 +52,7 @@ if(BUILD_TL_CORE)
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
+                             console/menu.cpp
                              msg/message.cpp
                          HEADER_FILES
                              defs.h
@@ -76,6 +77,7 @@ if(BUILD_TL_CORE)
                              console/argument.h
                              console/command.h
                              console/validator.h
+                             console/menu.h
                              messages.h
                              msg/handler.h
                              msg/message.h)
@@ -90,7 +92,8 @@ if(BUILD_TL_CORE)
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
 
     #target_compile_definitions(${PROJECT_NAME} PUBLIC TL_HAVE_CORE)
 

@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -121,8 +121,8 @@ auto DifferentialRectification::backwardProjection(const Point3<double> &groundP
         double dy = groundPoint.y - mCameraPosition.y;
         double dz = groundPoint.z - mCameraPosition.z;
         double div = mRotationMatrix.at(2, 0) * dx +
-            mRotationMatrix.at(2, 1) * dy +
-            mRotationMatrix.at(2, 2) * (groundPoint.z - mCameraPosition.z);
+                     mRotationMatrix.at(2, 1) * dy +
+                     mRotationMatrix.at(2, 2) * dz;
 
 
         photo_coordinates.x = -mFocal * (mRotationMatrix.at(0, 0) * dx +

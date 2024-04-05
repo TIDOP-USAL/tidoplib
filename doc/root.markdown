@@ -5,14 +5,26 @@ Modules
 ------------
 
   - @ref core
-  - @ref featmatch
+    - @ref Console
+    - @ref Messages
+    - @ref concurrency
+  - @ref Features
   - @ref geometry
+    - @ref geometry_algorithms
   - @ref geospatial
-  - @ref graphic
-  - @ref img
-  - @ref img_process
+  - @ref GraphicEntities
+  - @ref raster
+  - @ref ImgProc
+	- @ref Filters
+	- @ref imgTransf
+	- @ref skeleton
+	- @ref WhiteBalance
+	- @ref MorphOper
   - @ref math
-  - @ref vect
+    - @ref algebra
+	- @ref statistics
+	- @ref angleConversion
+  - @ref vector
 
 
 #### Dependencies
@@ -21,30 +33,3 @@ Modules
 - OpenCV (Optional)
 - Cuda (Optional)
 - GDAL (Optional)
-
-#### Install
-
-##### Windows
-
-
-```
-https://github.com/estebanrdo/tidoplib.git
-```
-
-
-```
-cd D:/desarrollo
-git clone https://github.com/estebanrdo/tidoplib.git
-cd tidoplib
-mkdir build
-```
-
-
-##### Linux
-
-```
-cd ~/desarrollo
-git clone https://github.com/estebanrdo/tidoplib.git
-```
-
-

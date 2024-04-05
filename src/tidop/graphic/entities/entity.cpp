@@ -25,9 +25,7 @@
 #include "tidop/graphic/entities/entity.h"
 
 #ifdef TL_HAVE_OPENCV
-#include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #endif
 
 
@@ -37,61 +35,53 @@ namespace tl
 
 
 GraphicEntity::GraphicEntity(Type type)
-  : GraphicStyle(),
-    //GData(),
-    mEntityType(type)
+  : mEntityType(type)
 {
 }
 
 GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
   : GraphicStyle(graphicEntity),
-    //GData(graphicEntity),
     mEntityType(graphicEntity.mEntityType)
 {
 }
 
 GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
   : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
-    //GData(std::forward<GData>(graphicEntity)),
-    mEntityType(std::move(graphicEntity.mEntityType))
+    mEntityType(graphicEntity.mEntityType)
 {
 }
 
-GraphicEntity::~GraphicEntity()
-{
-}
-
-GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
+auto GraphicEntity::operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&
 {
     if (this != &graphicEntity) {
         GraphicStyle::operator=(graphicEntity);
-        //GData::operator=(graphicEntity);
         mEntityType = graphicEntity.mEntityType;
     }
+
     return *this;
 }
 
-GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT
+auto GraphicEntity::operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&
 {
     if (this != &graphicEntity) {
         GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
-        //GData::operator=(std::forward<GData>(graphicEntity));
-        mEntityType = std::move(graphicEntity.mEntityType);
+        mEntityType = graphicEntity.mEntityType;
     }
+
     return *this;
 }
 
-GraphicEntity::Type GraphicEntity::type() const
+auto GraphicEntity::type() const -> Type
 {
     return mEntityType;
 }
 
-std::shared_ptr<TableRegister> GraphicEntity::data() const
+auto GraphicEntity::data() const -> std::shared_ptr<TableRegister>
 {
     return mData;
 }
 
-void GraphicEntity::setData(std::shared_ptr<TableRegister> &data)
+void GraphicEntity::setData(const std::shared_ptr<TableRegister> &data)
 {
     mData = data;
 }

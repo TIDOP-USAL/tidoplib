@@ -24,6 +24,8 @@
 
 #include "tidop/vect/vect.h"
 
+#include "tidop/core/exception.h"
+
 namespace tl
 {
 
@@ -46,6 +48,27 @@ TableField::Type typeFromGdal(OGRFieldType ogrType)
     case OFTString:
         type = TableField::Type::STRING;
         break;
+    case OFTIntegerList:
+        //break;
+    case OFTRealList:
+        //break;
+    case OFTStringList:
+        //break;
+    case OFTWideString:
+        //break;
+    case OFTWideStringList:
+        //break;
+    case OFTBinary:
+        //break;
+    case OFTDate:
+        //break;
+    case OFTTime:
+        //break;
+    case OFTDateTime:
+        //break;
+    case OFTInteger64List:
+        //break;
+        TL_THROW_EXCEPTION("Unsupported type");
     }
 
     return type;

@@ -57,7 +57,13 @@ macro(find_supported_architecture architecture)
             
             if(vendor_id STREQUAL "GenuineIntel")
                 if(cpu_family EQUAL 6)
-                    if(cpu_model EQUAL 87) # Knights Landing
+                    if(cpu_model EQUAL 183 OR cpu_model EQUAL 186)  # Raptor Lake
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND AVX2 FMA BMI2)
+                    elseif(cpu_model EQUAL 151 OR cpu_model EQUAL 154)  # Alder Lake
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND AVX2 FMA)
+                    elseif(cpu_model EQUAL 167)  # Rocket Lake
+                        set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND AVX2 FMA)
+                    elseif(cpu_model EQUAL 87) # Knights Landing
                         set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 AVX512F AVX512PF AVX512ER AVX512CD)
                     elseif(cpu_model EQUAL 92) # Knights Mill
                         set(architecture_instructions SSE SSE2 SSE3 SSSE3 SSE4_1 SSE4_2 AVX RDRND F16C AVX2 FMA BMI BMI2 AVX512F AVX512CD AVX512DQ AVX512BW AVX512VL AVX512IFMA AVX512VBMI AVX512_4FMAPS)

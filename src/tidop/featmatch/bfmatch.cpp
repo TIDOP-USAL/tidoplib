@@ -34,7 +34,7 @@ BruteForceMatcherProperties::BruteForceMatcherProperties() = default;
 
 void BruteForceMatcherProperties::reset()
 {
-    mNormType = BruteForceMatcherProperties::Norm::l2;
+    mNormType = Norm::l2;
 }
 
 std::string BruteForceMatcherProperties::name() const
@@ -47,7 +47,7 @@ BruteForceMatcherProperties::Norm BruteForceMatcherProperties::normType() const
     return mNormType;
 }
 
-void BruteForceMatcherProperties::setNormType(BruteForceMatcher::Norm normType)
+void BruteForceMatcherProperties::setNormType(Norm normType)
 {
     mNormType = normType;
 }
@@ -60,7 +60,7 @@ BruteForceMatcherImp::BruteForceMatcherImp()
     update();
 }
 
-BruteForceMatcherImp::BruteForceMatcherImp(BruteForceMatcher::Norm normType)
+BruteForceMatcherImp::BruteForceMatcherImp(Norm normType)
 {
     BruteForceMatcherProperties::setNormType(normType);
     update();
@@ -69,14 +69,14 @@ BruteForceMatcherImp::BruteForceMatcherImp(BruteForceMatcher::Norm normType)
 void BruteForceMatcherImp::update()
 {
     int norm = cv::NORM_L2;
-    BruteForceMatcherProperties::Norm norm_type = BruteForceMatcherProperties::normType();
-    if (norm_type == BruteForceMatcherProperties::Norm::l1) {
+    Norm norm_type = BruteForceMatcherProperties::normType();
+    if (norm_type == Norm::l1) {
         norm = cv::NORM_L1;
-    } else if (norm_type == BruteForceMatcherProperties::Norm::l2) {
+    } else if (norm_type == Norm::l2) {
         norm = cv::NORM_L2;
-    } else if (norm_type == BruteForceMatcherProperties::Norm::hamming) {
+    } else if (norm_type == Norm::hamming) {
         norm = cv::NORM_HAMMING;
-    } else if (norm_type == BruteForceMatcherProperties::Norm::hamming2) {
+    } else if (norm_type == Norm::hamming2) {
         norm = cv::NORM_HAMMING2;
     }
 
@@ -121,7 +121,7 @@ void BruteForceMatcherImp::reset()
     update();
 }
 
-void BruteForceMatcherImp::setNormType(BruteForceMatcher::Norm normType)
+void BruteForceMatcherImp::setNormType(Norm normType)
 {
     BruteForceMatcherProperties::setNormType(normType);
     update();
@@ -136,7 +136,7 @@ BruteForceMatcherCuda::BruteForceMatcherCuda()
     update();
 }
 
-BruteForceMatcherCuda::BruteForceMatcherCuda(BruteForceMatcher::Norm normType)
+BruteForceMatcherCuda::BruteForceMatcherCuda(Norm normType)
 {
     BruteForceMatcherProperties::setNormType(normType);
     update();
@@ -145,12 +145,12 @@ BruteForceMatcherCuda::BruteForceMatcherCuda(BruteForceMatcher::Norm normType)
 void BruteForceMatcherCuda::update()
 {
     int norm = cv::NORM_L2;
-    BruteForceMatcherProperties::Norm norm_type = BruteForceMatcherProperties::normType();
-    if (norm_type == BruteForceMatcherProperties::Norm::l1) {
+    Norm norm_type = BruteForceMatcherProperties::normType();
+    if (norm_type == Norm::l1) {
         norm = cv::NORM_L1;
-    } else if (norm_type == BruteForceMatcherProperties::Norm::l2) {
+    } else if (norm_type == Norm::l2) {
         norm = cv::NORM_L2;
-    } else if (norm_type == BruteForceMatcherProperties::Norm::hamming) {
+    } else if (norm_type == Norm::hamming) {
         norm = cv::NORM_HAMMING;
     }
     ///La implementación de BFMatcher con Cuda no incluye NORM_HAMMING2
@@ -174,11 +174,11 @@ void BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
 {
     try {
 
-        cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
-        cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
-        cv::cuda::GpuMat gMask;
-        if (!mask.empty()) gMask.upload(mask);
-        mBFMatcher->match(gQueryDescriptors, gTrainDescriptors, matches, gMask);
+        cv::cuda::GpuMat query_descriptors(queryDescriptors);
+        cv::cuda::GpuMat train_descriptors(trainDescriptors);
+        cv::cuda::GpuMat gpu_mask;
+        if (!mask.empty()) gpu_mask.upload(mask);
+        mBFMatcher->match(query_descriptors, train_descriptors, matches, gpu_mask);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -192,11 +192,11 @@ void BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
 {
     try {
 
-        cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
-        cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
-        cv::cuda::GpuMat gMask;
-        if (!mask.empty()) gMask.upload(mask);
-        mBFMatcher->knnMatch(gQueryDescriptors, gTrainDescriptors, matches, 2, gMask);
+        cv::cuda::GpuMat query_descriptors(queryDescriptors);
+        cv::cuda::GpuMat train_descriptors(trainDescriptors);
+        cv::cuda::GpuMat gpu_mask;
+        if (!mask.empty()) gpu_mask.upload(mask);
+        mBFMatcher->knnMatch(query_descriptors, train_descriptors, matches, 2, gpu_mask);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -209,7 +209,7 @@ void BruteForceMatcherCuda::reset()
     update();
 }
 
-void BruteForceMatcherCuda::setNormType(BruteForceMatcher::Norm normType)
+void BruteForceMatcherCuda::setNormType(Norm normType)
 {
     BruteForceMatcherProperties::setNormType(normType);
     update();

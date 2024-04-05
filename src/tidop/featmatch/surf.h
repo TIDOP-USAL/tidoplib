@@ -75,11 +75,11 @@ public:
 
 public:
 
-    double hessianThreshold() const override;
-    int octaves() const override;
-    int octaveLayers() const override;
-    bool extendedDescriptor() const override;
-    bool upright() const override;
+    auto hessianThreshold() const -> double override;
+    auto octaves() const -> int override;
+    auto octaveLayers() const -> int override;
+    auto extendedDescriptor() const -> bool override;
+    auto upright() const -> bool override;
     void setHessianThreshold(double hessianThreshold) override;
     void setOctaves(int octaves) override;
     void setOctaveLayers(int octaveLayers) override;
@@ -91,7 +91,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -127,15 +127,15 @@ public:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img,
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // DescriptorExtractor interface
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img,
+                 std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Surf interface
 

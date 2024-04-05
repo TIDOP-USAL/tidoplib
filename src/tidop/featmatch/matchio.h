@@ -62,14 +62,14 @@ public:
 
     virtual void read() = 0;
 
-    std::vector<cv::DMatch> goodMatches() const;
-    std::vector<cv::DMatch> wrongMatches() const;
+    auto goodMatches() const -> std::vector<cv::DMatch>;
+    auto wrongMatches() const -> std::vector<cv::DMatch>;
 
 protected:
 
-    const tl::Path &filePath() const;
-    std::vector<cv::DMatch> &good_matches();
-    std::vector<cv::DMatch> &wrong_matches();
+    auto filePath() const -> const tl::Path&;
+    auto good_matches() -> std::vector<cv::DMatch>&;
+    auto wrong_matches() -> std::vector<cv::DMatch>&;
 
 };
 
@@ -100,9 +100,9 @@ public:
 
 protected:
 
-    const tl::Path &filePath() const;
-    const std::vector<cv::DMatch> &goodMatches() const;
-    const std::vector<cv::DMatch> &wrongMatches() const;
+    auto filePath() const -> const tl::Path&;
+    auto goodMatches() const -> const std::vector<cv::DMatch>&;
+    auto wrongMatches() const -> const std::vector<cv::DMatch>&;
 
 };
 
@@ -122,8 +122,8 @@ private:
 public:
 
     TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<MatchesReader> createReader(const tl::Path &file);
-    static std::unique_ptr<MatchesReader> create(const tl::Path &file);
+    static auto createReader(const Path &file) -> std::unique_ptr<MatchesReader>;
+    static auto create(const Path &file) -> std::unique_ptr<MatchesReader>;
 };
 
 
@@ -142,8 +142,8 @@ private:
 public:
 
     TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<MatchesWriter> createWriter(const tl::Path &file);
-    static std::unique_ptr<MatchesWriter> create(const tl::Path &file);
+    static auto createWriter(const Path &file) -> std::unique_ptr<MatchesWriter>;
+    static auto create(const Path &file) -> std::unique_ptr<MatchesWriter>;
 };
 
 

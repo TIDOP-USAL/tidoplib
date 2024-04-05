@@ -26,7 +26,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
 #include <array>
 #include <memory>
 
@@ -73,115 +72,83 @@ public:
         return *this;
     }
 
-private:
 
 };
 
 
 
 /*!
- * \brief Clase base para las entidades gráficas
- * \see GraphicStyle, GData
+ * \brief Base class for graphical entities
+ * \see GraphicStyle
  */
 class TL_EXPORT GraphicEntity
-    : public GraphicStyle/*,
-      public GData*/
+  : public GraphicStyle
 {
 
 public:
 
     /*!
-     * \brief Tipos de entidades gráficas
+     * \brief Types of graphical entities
      */
     enum class Type
     {
-        point_2d,                   /*!< Punto 2D */
-        point_3d,                   /*!< Punto 3D */
-        linestring_2d,              /*!< Polilinea 2D */
-        linestring_3d,              /*!< Polilinea 3D */
-        polygon_2d,                 /*!< Poligono 2D */
-        polygon_3d,                 /*!< Poligono 3D */
-        segment_2d,                 /*!< Segmento 2D */
-        segment_3d,                 /*!< Segmento 3D */
-        window,                     /*!< Ventana */
-        box,                        /*!< Caja */
-        multipoint_2d,              /*!< Multipunto 2D */
-        multipoint_3d,              /*!< Multipunto 3D */
-        multiline_2d,               /*!< Multi-línea 2D */
-        multiline_3d,               /*!< Multi-línea 3D */
-        multipolygon_2d,            /*!< Multi-polígono 2D */
-        multipolygon_3d,            /*!< Multi-polígono 3D */
-        circle,                     /*!< Circulo */
-        ellipse                     /*!< Elipse */
+        point_2d,                   /*!< Point 2D */
+        point_3d,                   /*!< 3D Point */
+        linestring_2d,              /*!< 2D Polyline */
+        linestring_3d,              /*!< 3D Polyline */
+        polygon_2d,                 /*!< 2D Polygon */
+        polygon_3d,                 /*!< 3D Polygon */
+        segment_2d,                 /*!< 2D Segment */
+        segment_3d,                 /*!< 3D Segment */
+        window,                     /*!< Window */
+        box,                        /*!< Box */
+        multipoint_2d,              /*!< Multipoint 2D */
+        multipoint_3d,              /*!< Multi-point 3D */
+        multiline_2d,               /*!< Multi-line 2D */
+        multiline_3d,               /*!< Multi-line 3D */
+        multipolygon_2d,            /*!< Multi-polygon 2D */
+        multipolygon_3d,            /*!< Multi-polygon 3D */
+        circle,                     /*!< Circle */
+        ellipse                     /*!< Ellipse */
     };
-
-
-public:
-
-    /*!
-     * \brief GraphicEntity
-     * \param type
-     */
-    GraphicEntity(Type type);
-
-    /*!
-     * \brief Constructor de copia
-     * \param graphicEntity Entidad gráfica que se copia
-     */
-    GraphicEntity(const GraphicEntity &graphicEntity);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param graphicEntity Entidad gráfica que se mueve
-     */
-    GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
-
-    virtual ~GraphicEntity();
-
-    /*!
-     * \brief Operador de asignación
-     * \param graphicEntity Entidad gráfica que se asigna
-     */
-    GraphicEntity &operator = (const GraphicEntity &graphicEntity);
-
-    /*!
-     * \brief Operador de asignación de movimiento
-     * \param graphicEntity Entidad gráfica que se mueve
-     */
-    GraphicEntity &operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT;
-
-    /*!
-     * \brief Devuelve el tipo de entidad
-     */
-    Type type() const;
-
-    /*!
-     * \brief Multi-entidad
-     * \return
-     */
-    virtual bool isMultiEntity() const = 0;
-
-    /*!
-     * \brief Entidad simple
-     * \return
-     */
-    virtual bool isSimpleEntity() const = 0;
-
-    std::shared_ptr<TableRegister> data() const;
-    void setData(std::shared_ptr<TableRegister> &data);
 
 protected:
 
-    /*!
-     * \brief Tipo de entidad
-     * \see Type
-     */
     Type mEntityType;
-
     std::shared_ptr<TableRegister> mData;
+
+public:
+
+    explicit GraphicEntity(Type type);
+    GraphicEntity(const GraphicEntity &graphicEntity);
+    GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
+
+    ~GraphicEntity() override = default;
+
+    auto operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&;
+    auto operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&;
+
+    /*!
+     * \brief Returns the entity type
+     */
+    auto type() const -> Type;
+
+    /*!
+     * \brief Check if it is a Multi-entity
+     */
+    virtual auto isMultiEntity() const -> bool = 0;
+
+    /*!
+     * \brief Check if it is a simple entity
+     */
+    virtual auto isSimpleEntity() const -> bool = 0;
+
+    auto data() const -> std::shared_ptr<TableRegister>;
+    void setData(const std::shared_ptr<TableRegister> &data);
+
 };
 
 
-/*! \} */ // Fin GraphicEntities
+/*! \} */ // End GraphicEntities
 
-} // Fin namespace tl
+} // End namespace tl

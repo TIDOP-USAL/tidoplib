@@ -31,16 +31,18 @@
 #endif // TL_HAVE_OPENCV
 
 #include "tidop/core/defs.h"
-#include "tidop/geometry/entities/point.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"
+#include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
+namespace geom
+{
 class Transform;
-
+}
 
 /*! \addtogroup GraphicEntities
  *  \{
@@ -75,9 +77,6 @@ public:
     Painter &operator = (const Painter &painter) = delete;
     Painter &operator = (Painter &&painter) = delete;
 
-    /*!
-     * \brief Destructora
-     */
     ~Painter();
 
     void begin(Canvas *canvas) { unusedParameter(canvas); }
@@ -88,45 +87,45 @@ public:
      * \param[in] point Punto
      */
     void drawPoint(const GPoint &point);
-    void drawPoint(const Point<double> &point);
+    void drawPoint(const Point<double> &point) const;
 
     /*!
      * \brief Dibuja una polilinea
      * \param[in] lineString Polilinea
      */
-    void drawLineString(const GLineString &lineString);
-    void drawLineString(const LineStringD &lineString);
+    void drawLineString(const GLineString &lineString) const;
+    void drawLineString(const LineStringD &lineString) const;
 
     /*!
      * \brief Dibuja un poligono
      * \param[in] polygon Poligono
      */
-    void drawPolygon(const GPolygon &polygon);
-    void drawPolygon(const PolygonD &polygon);
+    void drawPolygon(const GPolygon &polygon) const;
+    void drawPolygon(const PolygonD &polygon) const;
 
     /*!
      * \brief Dibuja un multipunto
      * \param[in] multipoint Multipunto
      */
-    void drawMultiPoint(const GMultiPoint &multipoint);
+    void drawMultiPoint(const GMultiPoint &multipoint) const;
 
     /*!
      * \brief Dibuja una multipolilinea
      * \param[in] multiLineString multipolilinea
      */
-    void drawMultiLineString(const GMultiLineString &multiLineString);
+    void drawMultiLineString(const GMultiLineString &multiLineString) const;
 
     /*!
      * \brief Dibuja un multipoligono
      * \param[in] multiPolygon Multipoligono
      */
-    void drawMultiPolygon(const GMultiPolygon &multiPolygon);
+    void drawMultiPolygon(const GMultiPolygon &multiPolygon) const;
 
 #ifdef TL_HAVE_OPENCV
-    void drawPicture(const cv::Mat &bmp);
+    void drawPicture(const cv::Mat &bmp) const;
 #endif // TL_HAVE_OPENCV
 
-    void drawText(const Point<double> &point, const std::string &text);
+    void drawText(const Point<double> &point, const std::string &text) const;
 
     /*!
      * \brief Establece el canvas
@@ -162,14 +161,14 @@ public:
      * \brief Establece la transformación que se aplica para dibujar el en canvas
      * \param[in] trf Transformación
      */
-    void setTransform(Transform *trf);
+    void setTransform(const Affine<double, 2> &affine);
 
     //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
     //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
 protected:
 
-    Transform *mTrf;
+    Affine<double, 2> mTransform;
     Canvas *mCanvas;
 
 };

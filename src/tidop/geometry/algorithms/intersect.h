@@ -32,9 +32,6 @@ namespace tl
 {
 
 
-/// Clase Intersection que a partir de dos geometrias calcule su intersección
-
-
 /*! \addtogroup geometry
  *  \{
  */
@@ -51,7 +48,7 @@ namespace tl
  * \return
  */
 template <typename Point_t>
-inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
+int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
 {
     int iret = 0;
     Point_t vs1;
@@ -87,7 +84,7 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
  * \return
  */
 template<typename Point_t>
-inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
+int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
 {
     int iret = 0;
     Point_t vs1;

@@ -43,7 +43,7 @@ namespace tl
 
 
 class TL_EXPORT KazeProperties
-    : public Kaze
+  : public Kaze
 {
 
 private:
@@ -65,12 +65,12 @@ public:
 
 public:
 
-    bool extendedDescriptor() const override;
-    bool uprightDescriptor() const override;
-    double threshold() const override;
-    int octaves() const override;
-    int octaveLayers() const override;
-    std::string diffusivity() const override;
+    auto extendedDescriptor() const -> bool override;
+    auto uprightDescriptor() const -> bool  override;
+    auto threshold() const -> double override;
+    auto octaves() const -> int override;
+    auto octaveLayers() const -> int override;
+    auto diffusivity() const -> std::string override;
     void setExtendedDescriptor(bool extended) override;
     void setUprightDescriptor(bool uprightDescriptor) override;
     void setThreshold(double threshold) override;
@@ -83,7 +83,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -116,9 +116,9 @@ public:
 private:
 
 #if CV_VERSION_MAJOR >= 4
-    cv::KAZE::DiffusivityType convertDiffusivity(const std::string &diffusivity);
+    auto convertDiffusivity(const std::string &diffusivity) -> cv::KAZE::DiffusivityType;
 #else
-    int convertDiffusivity(const std::string &diffusivity);
+    auto convertDiffusivity(const std::string &diffusivity) -> int;
 #endif
     void updateCvKaze();
 
@@ -126,15 +126,13 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // DescriptorExtractor interface
 
 public:
 
-    cv::Mat extract(const cv::Mat &img,
-                    std::vector<cv::KeyPoint> &keyPoints) override;
+    auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
 // Kaze interface
 

@@ -24,11 +24,8 @@
 
 #pragma once
 
-#include "tidop/config.h"
-
-#include <string>
-#include <memory>
 #include <mutex>
+#include <fstream>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
@@ -55,8 +52,7 @@ enum class endianness
 
 
 template <typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, T>::type
-swapEndian(T val)
+auto swapEndian(T val) -> std::enable_if_t<std::is_arithmetic<T>::value, T>
 {
     union U
     {
@@ -69,8 +65,44 @@ swapEndian(T val)
     return dst.val;
 }
 
-//template <> int8_t swapEndian<int8_t>(int8_t val) { return val; }
-//template <> uint8_t swapEndian<uint8_t>(uint8_t val) { return val; }
+
+template<typename T>
+void read(std::fstream *stream, T &value, bool littleEndian = true)
+{
+    stream->read(reinterpret_cast<char *>(&value), sizeof(T));
+    if ((littleEndian && endianness::native == endianness::big_endian) ||
+        (!littleEndian && endianness::native == endianness::little_endian))
+        value = swapEndian(value);
+}
+
+template<typename T>
+void read(std::ifstream *stream, T &value, bool littleEndian = true)
+{
+    stream->read(reinterpret_cast<char *>(&value), sizeof(T));
+    if ((littleEndian && endianness::native == endianness::big_endian) ||
+        (!littleEndian && endianness::native == endianness::little_endian))
+        value = swapEndian(value);
+}
+
+template<typename T>
+void write(std::fstream *stream, const T &value, bool littleEndian = true)
+{
+    T _value = value;
+    if ((littleEndian && endianness::native == endianness::big_endian) ||
+        (!littleEndian && endianness::native == endianness::little_endian))
+        _value = swapEndian(_value);
+    stream->write(reinterpret_cast<char *>(&_value), sizeof(T));
+}
+
+template<typename T>
+void write(std::ofstream *stream, const T &value, bool littleEndian = true)
+{
+    T _value = value;
+    if ((littleEndian && endianness::native == endianness::big_endian) ||
+        (!littleEndian && endianness::native == endianness::little_endian))
+        _value = swapEndian(_value);
+    stream->write(reinterpret_cast<char *>(&_value), sizeof(T));
+}
 
 /*! \} */ // end of core
 

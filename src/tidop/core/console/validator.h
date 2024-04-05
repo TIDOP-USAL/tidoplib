@@ -33,7 +33,6 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
-#include "tidop/core/path.h"
 #include "tidop/core/msg/message.h"
 
 
@@ -44,11 +43,11 @@ namespace tl
  *  \{
  */
 
- /*! \addtogroup Console
-  *  \{
-  */
+/*! \addtogroup Console
+ *  \{
+ */
 
-class Validator
+class TL_EXPORT Validator
 {
 
 public:
@@ -66,15 +65,26 @@ class ValidatorBase
 public:
 
     ValidatorBase() = default;
-    virtual ~ValidatorBase() = default;
+    ~ValidatorBase() override = default;
 
     virtual bool validate(T value) = 0;
 };
 
 
+/*!
+ * \brief Validator to check if the value passed to an argument is within the expected range.
+ * 
+ * This class is used internally in Command::parse() to check if the parsed argument is valid.
+ *
+ * <h4>Example:</h4>
+ * \code
+ * // Set a validator to an argument
+ * arg_format->setValidator(RangeValidator<std::string>::create(0, 100));
+ * \endcode
+ */
 template <typename T>
-class RangeValidator
-    : public ValidatorBase<T>
+class RangeValidator final
+  : public ValidatorBase<T>
 {
 
 public:
@@ -86,6 +96,11 @@ public:
         static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
     }
 
+    /*!
+     * \brief constructor
+     * \param[in] min Minimum value of the range
+     * \param[in] max Maximum value of the range
+     */
     RangeValidator(T min, T max)
       : mMin(min),
         mMax(max)
@@ -93,9 +108,14 @@ public:
         static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
     }
 
+    /*!
+     * \brief Check if the value is valid
+     * \param[in] value Value to check
+     * \return True if the passed value is within the range
+     */
     bool validate(T value) override
     {
-        bool valid = (value > mMin && value < mMax);
+        bool valid = (value >= mMin && value <= mMax);
         
         if(!valid) {
             Message::error("The value '{}' is out of valid range [{}-{}]", value, mMin, mMax);
@@ -104,23 +124,34 @@ public:
         return valid;
     }
 
+    /*!
+     * \brief Minimum value of the range
+     * \param[in] min Minimum value of the range
+     * \param[in] max Maximum value of the range
+     */
     void setRange(T min, T max)
     {
         mMin = min;
         mMax = max;
     }
 
+    /*!
+     * \brief Minimum value of the range
+     */
     T min() const
     {
         return mMin;
     }
 
+    /*!
+     * \brief Maximum value of the range
+     */
     T max() const
     {
         return mMax;
     }
 
-    void print() const
+    void print() const override
     {
         std::cout << "Valid range [" << mMin << " - " << mMax << "]";
     }
@@ -138,9 +169,19 @@ private:
 };
 
 
+/*!
+ * \brief Validator to check if the value passed to an argument is within the expected values.
+ * 
+ * This class is used internally in Command::parse() to check if the parsed argument is valid.
+ * <h4>Example:</h4>
+ * \code
+ * // Set a validator to an argument
+ * arg_format->setValidator(ValuesValidator<std::string>::({"XML", "YML", "TXT", "BIN"}));
+ * \endcode
+ */
 template <typename T>
-class ValuesValidator
-    : public ValidatorBase<T>
+class ValuesValidator final
+  : public ValidatorBase<T>
 {
 
 public:
@@ -149,16 +190,25 @@ public:
     {
     }
 
+    /*!
+     * \brief Constructor
+     * \param[in] values Valid values
+     */
     ValuesValidator(std::vector<T> values)
-      : mValues(values)
+      : values(values)
     {
     }
 
+    /*!
+     * \brief Check if the value is valid
+     * \param[in] value Value to check
+     * \return True if the passed value is within the expected values
+     */
     bool validate(T value) override
     {
         bool valid = false;
 
-        for(auto &_value : mValues) {
+        for(auto &_value : values) {
             if(value == _value) {
                 valid = true;
                 break;
@@ -168,7 +218,7 @@ public:
         if(!valid) {
             std::ostringstream stream;
             stream << "Invalid value: '" << value << "'. Valid values are: ";
-            for (const auto &values : mValues)
+            for (const auto &values : values)
                 stream << values << " ";
             
             Message::error(stream.str());
@@ -177,15 +227,19 @@ public:
         return valid;
     }
 
-    void setVallues(const std::vector<T> &values)
+    /*!
+     * \brief Set valid values
+     * \param[in] values Valid values
+     */
+    void setValues(const std::vector<T> &values)
     {
-        mValues = values;
+        this->values = values;
     }
 
-    void print() const
+    void print() const override
     {
         std::cout << "Allowable values: [ ";
-        for (const auto &values : mValues)
+        for (const auto &values : this->values)
             std::cout << values << " ";
         std::cout << "]";
     }
@@ -197,7 +251,7 @@ public:
 
 private:
 
-    std::vector<T> mValues;
+    std::vector<T> values;
 
 };
 

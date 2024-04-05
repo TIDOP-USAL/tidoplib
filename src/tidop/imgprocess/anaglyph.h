@@ -29,8 +29,6 @@
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 
-#include "tidop/core/defs.h"
-
 namespace tl
 {
 
@@ -75,10 +73,10 @@ public:
     StereoImage(Mode mode = Mode::normal);
     ~StereoImage();
 
-    cv::Mat run(const cv::Mat &left,
-                const cv::Mat &right);
+    auto run(const cv::Mat &left,
+             const cv::Mat &right) -> cv::Mat;
 
-    Mode mode() const;
+    auto mode() const -> Mode;
     void setMode(Mode mode);
 
 };

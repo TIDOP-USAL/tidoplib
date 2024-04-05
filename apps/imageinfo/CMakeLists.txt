@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND TL_HAVE_GDAL AND TL_HAVE_PROJ AND TL_HAVE_OPENCV)
+if(BUILD_TL_CORE AND BUILD_TL_IMG)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)

@@ -25,8 +25,6 @@
 #pragma once
 
 #include "tidop/geometry/entities/entity.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/bbox.h"
 
 namespace tl
 {
@@ -38,7 +36,7 @@ namespace tl
 
 
 /*!
- * \brief Entidades 3D
+ * \brief 3D entities
  */
 template<typename Entity_t>
 class Entities3D
@@ -47,97 +45,70 @@ class Entities3D
 
 public:
 
-    /*!
-     * \brief Constructora por defecto
-     */
+    using size_type = typename EntityContainer<Entity_t>::size_type;
+
+public:
+
     Entities3D();
-
-    /*!
-     * \brief Constructor que reserva tamaño para n puntos
-     * \param[in] size Tamaño que se reserva
-     * \see entity_type
-     */
-    Entities3D(typename EntityContainer<Entity_t>::size_type size);
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] entities Entidad que se copia
-     * \see entity_type
-     */
+    explicit Entities3D(size_type size);
     Entities3D(const Entities3D &entities);
-
-    /*!
-     * \brief Constructor de movimiento
-     * \param[in] entities Entidad que se copia
-     * \see entity_type
-     */
     Entities3D(Entities3D &&entities) TL_NOEXCEPT;
-
-    /*!
-     * \brief Constructor a partir de un vector de entidades
-     * \param[in] entities Vector de entidades
-     */
-    Entities3D(const std::vector<Entity_t> &entities);
-
-    /*!
-     * \brief Constructor lista de inicialización
-     * \param[in] entities Entidades
-     */
+    explicit Entities3D(const std::vector<Entity_t> &entities);
     Entities3D(std::initializer_list<Entity_t> entities);
 
     ~Entities3D() override = default;
 
     /*!
-     * \brief Asignación de copia
+     * \brief Copy assignment operator
      */
-    Entities3D<Entity_t> &operator=(const Entities3D<Entity_t> &entities);
+    auto operator=(const Entities3D<Entity_t>& entities) -> Entities3D<Entity_t>&;
 
     /*!
-     * \brief Asignación de movimiento
+     * \brief Move assignment operator
      */
-    Entities3D<Entity_t> &operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT;
+    auto operator=(Entities3D<Entity_t>&& entities) TL_NOEXCEPT -> Entities3D<Entity_t>&;
 
 };
 
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D() 
   : EntityContainer<Entity_t>() 
 {
 }
 
-template<typename Entity_t> inline
-Entities3D<Entity_t>::Entities3D(typename EntityContainer<Entity_t>::size_type size)
+template<typename Entity_t>
+Entities3D<Entity_t>::Entities3D(size_type size)
   : EntityContainer<Entity_t>(size) 
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(const Entities3D &entities) 
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(Entities3D &&entities) TL_NOEXCEPT
   : EntityContainer<Entity_t>(std::forward<EntityContainer<Entity_t>>(entities))
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(const std::vector<Entity_t> &entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
+template<typename Entity_t>
 Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
 
-template<typename Entity_t> inline
-Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t> &entities)
+template<typename Entity_t>
+auto Entities3D<Entity_t>::operator=(const Entities3D<Entity_t>& entities) -> Entities3D<Entity_t>&
 {
     if (this != &entities) {
         EntityContainer<Entity_t>::operator=(entities);
@@ -146,8 +117,8 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(const Entities3D<Entity_t>
     return (*this);
 }
 
-template<typename Entity_t> inline
-Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&entities) TL_NOEXCEPT
+template<typename Entity_t>
+auto Entities3D<Entity_t>::operator=(Entities3D<Entity_t>&& entities) TL_NOEXCEPT -> Entities3D<Entity_t>&
 {
     if (this != &entities) {
         EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entities));

@@ -40,7 +40,7 @@ GroupLines::GroupLines()
 GroupLines::GroupLines(const std::vector<Line> &lines)
 {
     linesgroup = lines;
-    for (auto &i : linesgroup) {
+    for (const auto &i : linesgroup) {
         if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
         if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
         if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
@@ -70,13 +70,13 @@ void GroupLines::add(const Line &line)
 //
 //#endif
 
-double GroupLines::angleMean()
+double GroupLines::angleMean() const
 {
     double angle = 0.0;
     for (auto &line : linesgroup) {
         angle += line.angleOX();
     }
-    angle /= linesgroup.size();
+    angle /= static_cast<double>(linesgroup.size());
     return angle;
 }
 

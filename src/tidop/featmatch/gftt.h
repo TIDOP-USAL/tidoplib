@@ -41,7 +41,7 @@ namespace tl
 
 
 class TL_EXPORT GfttProperties
-    : public Gftt
+  : public Gftt
 {
 
 private:
@@ -63,12 +63,12 @@ public:
 
 public:
 
-    int maxFeatures() const override;
-    double qualityLevel() const override;
-    double minDistance() const override;
-    int blockSize() const override;
-    bool harrisDetector() const override;
-    double k() const override;
+    auto maxFeatures() const -> int override;
+    auto qualityLevel() const -> double override;
+    auto minDistance() const -> double override;
+    auto blockSize() const -> int override;
+    auto harrisDetector() const -> bool override;
+    auto k() const -> double override;
     void setMaxFeatures(int maxFeatures) override;
     void setQualityLevel(double qlevel) override;
     void setMinDistance(double minDistance) override;
@@ -81,7 +81,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -114,8 +114,7 @@ public:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Gftt interface
 

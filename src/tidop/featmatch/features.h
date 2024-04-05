@@ -34,13 +34,13 @@
 namespace tl
 {
 
-/*! \defgroup Features Caracteristicas (Features)
+/*! \defgroup Features Features
  * 
  *  \{
  */
 
 
-/*! \defgroup FeatureDetectorAndDescriptor Detección y extracción de caracteristicas
+/*! \defgroup FeatureDetectorAndDescriptor Feature detection and extraction
  * 
  *  \{
  */
@@ -89,8 +89,8 @@ public:
      */
     virtual void reset() = 0;
 
-    virtual Type type() const = 0;
-    virtual std::string name() const = 0;
+    virtual auto type() const -> Type = 0;
+    virtual auto name() const -> std::string = 0;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Feature::Type)
@@ -110,7 +110,7 @@ public:
     FeatureBase(Type type) : mFeatType(type) {}
     ~FeatureBase() override = default;
 
-    Type type() const override
+    auto type() const -> Type override
     {
         return mFeatType.flags();
     }
@@ -144,8 +144,7 @@ public:
      * \param[in] mask Optional mask
      * \return key points detected
      */
-    virtual std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                             cv::InputArray &mask = cv::noArray()) = 0;
+    virtual auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> = 0;
 
 };
 
@@ -172,8 +171,7 @@ public:
      * \param[out] descriptors Computed descriptors
      * \return Computed descriptors
      */
-    virtual cv::Mat extract(const cv::Mat &img,
-                            std::vector<cv::KeyPoint> &keyPoints) = 0;
+    virtual auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat = 0;
 
 };
 
@@ -197,7 +195,7 @@ class TL_EXPORT Agast
 
 public:
 
-    Agast() : FeatureBase(Feature::Type::agast) {}
+    Agast() : FeatureBase(Type::agast) {}
     ~Agast() override = default;
 
     /*!
@@ -211,13 +209,13 @@ public:
      * corners with smoother gradients.
      * \return
      */
-    virtual int threshold() const = 0;
+    virtual auto threshold() const -> int = 0;
 
     /*!
      * \brief Non Maximal Suppression for removing adjacent corners
      * \return
      */
-    virtual bool nonmaxSuppression() const = 0;
+    virtual auto nonmaxSuppression() const -> bool = 0;
 
     /*!
      * \brief Detector Types
@@ -227,7 +225,7 @@ public:
      * - OAST_9_16: OAST-9 (Optimal AST) decision tree whith the 16 pixels mask
      * \return Detector Type
      */
-    virtual std::string detectorType() const = 0;
+    virtual auto detectorType() const -> std::string = 0;
 
     /*!
      * \brief Set Threshold
@@ -272,43 +270,43 @@ public:
      * \brief Type of the extracted descriptor
      * \return KAZE, KAZE_UPRIGHT, MLDB or MLDB_UPRIGHT
      */
-    virtual std::string descriptorType() const = 0;
+    virtual auto descriptorType() const -> std::string = 0;
 
     /*!
      * \brief Size of the descriptor in bits. 0 -\> Full size
      * \return Descriptor size
      */
-    virtual int descriptorSize() const = 0;
+    virtual auto descriptorSize() const -> int = 0;
 
     /*!
      * \brief Number of channels in the descriptor [1, 2, 3 (default)]
      * \return Number of channels
      */
-    virtual int descriptorChannels() const = 0;
+    virtual auto descriptorChannels() const -> int = 0;
 
     /*!
      * \brief Detector response threshold to accept point
      * \return threshold
      */
-    virtual double threshold() const = 0;
+    virtual auto threshold() const -> double = 0;
 
     /*!
      * \brief Maximum octave evolution of the image
      * \return
      */
-    virtual int octaves() const = 0;
+    virtual auto octaves() const -> int = 0;
 
     /*!
      * \brief Default number of sublevels per scale level
      * \return
      */
-    virtual int octaveLayers() const = 0;
+    virtual auto octaveLayers() const -> int = 0;
 
     /*!
      * \brief Diffusivity type
      * \return DIFF_PM_G1, DIFF_PM_G2 (default), DIFF_WEICKERT or DIFF_CHARBONNIER
      */
-    virtual std::string diffusivity() const = 0;
+    virtual auto diffusivity() const -> std::string = 0;
 
     /*!
      * \brief Set the type of the extracted descriptor
@@ -376,19 +374,19 @@ public:
      * BGM_BILINEAR, LBGM, BINBOOST_64, BINBOOST_128, BINBOOST_256
      * \return Descriptor type
      */
-    virtual std::string descriptorType() const = 0;
+    virtual auto descriptorType() const -> std::string = 0;
 
     /*!
      * \brief Sample patterns using keypoints orientation
      * \return true if use keypoints orientation
      */
-    virtual bool useOrientation() const = 0;
+    virtual auto useOrientation() const -> bool = 0;
 
     /*!
      * \brief Scale factor for adjust the sampling window of detected keypoints
      * \return Scale factor
      */
-    virtual double scaleFactor() const = 0;
+    virtual auto scaleFactor() const -> double = 0;
 
     /*!
      * \brief Set the type of descriptor to use
@@ -439,13 +437,13 @@ public:
      * Valid values are: 16, 32 (default) or 64
      * \return Legth of the descriptor
      */
-    virtual std::string bytes() const = 0;
+    virtual auto bytes() const -> std::string = 0;
 
     /*!
      * \brief useOrientation
      * \return
      */
-    virtual bool useOrientation() const = 0;
+    virtual auto useOrientation() const -> bool = 0;
 
     /*!
      * \brief Set the legth of the descriptor in bytes
@@ -486,19 +484,19 @@ public:
      * \brief AGAST detection threshold score (Default=30)
      * \return Threshold
      */
-    virtual int threshold() const = 0;
+    virtual auto threshold() const -> int = 0;
 
     /*!
      * \brief Detection octaves (Default=3)
      * \return
      */
-    virtual int octaves() const = 0;
+    virtual auto octaves() const -> int = 0;
 
     /*!
      * \brief Pattern Scale (Default=1.0)
      * \return
      */
-    virtual double patternScale() const = 0;
+    virtual auto patternScale() const -> double = 0;
 
     /*!
      * \brief Set the AGAST detection threshold score
@@ -544,25 +542,25 @@ public:
      * \brief Radius of the descriptor at the initial scale (Default=15.)
      * \return
      */
-    virtual double radius() const = 0;
+    virtual auto radius() const -> double = 0;
     
     /*!
      * \brief Amount of radial range division quantity (Default=3)
      * \return
      */
-    virtual int qRadius() const = 0;
+    virtual auto qRadius() const -> int = 0;
     
     /*!
      * \brief Amount of angular range division quantity (Default=8)
      * \return
      */
-    virtual int qTheta() const = 0;
+    virtual auto qTheta() const -> int = 0;
     
     /*!
      * \brief Amount of gradient orientations range division quantity (Default=8)
      * \return
      */
-    virtual int qHist() const = 0;
+    virtual auto qHist() const -> int = 0;
     
     /*!
      * \brief Descriptor normalization type
@@ -573,7 +571,7 @@ public:
      * - NRM_SIFT: mean that descriptors are normalized for L2 norm equal to 1.0 but no individual one is bigger than 0.154 as in SIFT
      * \return
      */
-    virtual std::string norm() const = 0;
+    virtual auto norm() const -> std::string = 0;
     
     //virtual homography() const = 0;
     
@@ -581,13 +579,13 @@ public:
      * \brief Interpolation disabled or enabled (Default)
      * \return
      */
-    virtual bool interpolation() const = 0;
+    virtual auto interpolation() const -> bool = 0;
     
     /*!
      * \brief Using orientation (Default=false)
      * \return
      */
-    virtual bool useOrientation() const = 0;
+    virtual auto useOrientation() const -> bool = 0;
     
     /*!
      * \brief Set the radius of the descriptor at the initial scale
@@ -661,13 +659,13 @@ public:
      * \brief threshold (Default=10)
      * \return
      */
-    virtual int threshold() const = 0;
+    virtual auto threshold() const -> int = 0;
 
     /*!
      * \brief Non Maximal Suppression for removing adjacent corners (default=true)
      * \return
      */
-    virtual bool nonmaxSuppression() const = 0;
+    virtual auto nonmaxSuppression() const -> bool = 0;
 
     /*!
      * \brief Detector Types
@@ -676,7 +674,7 @@ public:
      * - TYPE_9_16: FAST-9 decision tree whith the 16 pixels mask (default)
      * \return Detector Type
      */
-    virtual std::string detectorType() const = 0;
+    virtual auto detectorType() const -> std::string = 0;
 
     /*!
      * \brief Set the threshold
@@ -726,25 +724,25 @@ public:
      * \brief Orientation normalization (Default=true)
      * \return
      */
-    virtual bool orientationNormalized() const = 0;
+    virtual auto orientationNormalized() const -> bool = 0;
 
     /*!
      * \brief Scale normalization (Default=true)
      * \return
      */
-    virtual bool scaleNormalized() const = 0;
+    virtual auto scaleNormalized() const -> bool = 0;
 
     /*!
      * \brief Scaling of the description pattern (Default=22.)
      * \return
      */
-    virtual double patternScale() const = 0;
+    virtual auto patternScale() const -> double = 0;
 
     /*!
      * \brief Number of octaves covered by the detected keypoints (Default=4)
      * \return Number of octaves
      */
-    virtual int octaves() const = 0;
+    virtual auto octaves() const -> int = 0;
 
     /*!
      * \brief Enable/disable orientation normalization
@@ -785,12 +783,12 @@ public:
     Gftt() : FeatureBase(Feature::Type::gftt) {}
     ~Gftt() override = default;
 
-    virtual int maxFeatures() const = 0;
-    virtual double qualityLevel() const = 0;
-    virtual double minDistance() const = 0;
-    virtual int blockSize() const = 0;
-    virtual bool harrisDetector() const = 0;
-    virtual double k() const = 0;
+    virtual auto maxFeatures() const -> int = 0;
+    virtual auto qualityLevel() const -> double = 0;
+    virtual auto minDistance() const -> double = 0;
+    virtual auto blockSize() const -> int = 0;
+    virtual auto harrisDetector() const -> bool = 0;
+    virtual auto k() const -> double = 0;
 
     virtual void setMaxFeatures(int maxFeatures) = 0;
     virtual void setQualityLevel(double qlevel) = 0;
@@ -818,12 +816,12 @@ public:
     Hog() : FeatureBase(Feature::Type::hog) {}
     ~Hog() override = default;
 
-    virtual Size<int> winSize() const = 0;
-    virtual Size<int> blockSize() const = 0;
-    virtual Size<int> blockStride() const = 0;
-    virtual Size<int> cellSize() const = 0;
-    virtual int nbins() const = 0;
-    virtual int derivAperture() const = 0;
+    virtual auto winSize() const -> Size<int> = 0;
+    virtual auto blockSize() const -> Size<int> = 0;
+    virtual auto blockStride() const -> Size<int> = 0;
+    virtual auto cellSize() const -> Size<int> = 0;
+    virtual auto nbins() const -> int = 0;
+    virtual auto derivAperture() const -> int = 0;
     //  virtual double winSigma() const = 0;
     //  virtual std::string histogramNormType() const = 0;
     //  virtual double l2HysThreshold() const = 0;
@@ -877,37 +875,37 @@ public:
      * \brief Extended descriptor
      * \return true if use extended 128-element descriptors or false if use 64-element descriptors (Default)
      */
-    virtual bool extendedDescriptor() const = 0;
+    virtual auto extendedDescriptor() const -> bool = 0;
 
     /*!
      * \brief Use of upright descriptors (non rotation-invariant)
      * \return true if use upright descriptors (Default=false)
      */
-    virtual bool uprightDescriptor() const = 0;
+    virtual auto uprightDescriptor() const -> bool = 0;
 
     /*!
      * \brief Detector response threshold to accept point
      * \return threshold
      */
-    virtual double threshold() const = 0;
+    virtual auto threshold() const -> double = 0;
 
     /*!
      * \brief Maximum octave evolution of the image
      * \return octaves
      */
-    virtual int octaves() const = 0;
+    virtual auto octaves() const -> int = 0;
 
     /*!
      * \brief Default number of sublevels per scale level
      * \return
      */
-    virtual int octaveLayers() const = 0;
+    virtual auto octaveLayers() const -> int = 0;
 
     /*!
      * \brief Diffusivity type
      * \return DIFF_PM_G1, DIFF_PM_G2 (default), DIFF_WEICKERT or DIFF_CHARBONNIER
      */
-    virtual std::string diffusivity() const = 0;
+    virtual auto diffusivity() const -> std::string = 0;
 
     /*!
      * \brief Set extended descriptor
@@ -960,9 +958,9 @@ public:
     Latch() : FeatureBase(Feature::Type::latch) {}
     ~Latch() override = default;
 
-    virtual std::string bytes() const = 0;
-    virtual bool rotationInvariance() const = 0;
-    virtual int halfSsdSize() const = 0;
+    virtual auto bytes() const -> std::string = 0;
+    virtual auto rotationInvariance() const -> bool = 0;
+    virtual auto halfSsdSize() const -> int = 0;
 
     virtual void setBytes(const std::string &bytes) = 0;
     virtual void setRotationInvariance(bool rotationInvariance) = 0;
@@ -992,14 +990,14 @@ public:
      * 1=3x3, 2=5x5, 3=7x7 and so forth. Default=1
      * \return
      */
-    virtual int lucidKernel() const = 0;
+    virtual auto lucidKernel() const -> int = 0;
 
     /*!
      * \brief kernel for blurring image prior to descriptor construction
      * 1=3x3, 2=5x5, 3=7x7 and so forth. Default=2
      * \return
      */
-    virtual int blurKernel() const = 0;
+    virtual auto blurKernel() const -> int = 0;
 
     /*!
      * \brief Set the kernel for descriptor construction
@@ -1042,18 +1040,18 @@ public:
     Msd() : FeatureBase(Feature::Type::msd) {}
     ~Msd() override = default;
 
-    virtual double thresholdSaliency() const = 0;
-    virtual int patchRadius() const = 0;
-    virtual int knn() const = 0;
-    virtual int searchAreaRadius() const = 0;
-    virtual double scaleFactor() const = 0;
-    virtual int NMSRadius() const = 0;
-    virtual int nScales() const = 0;
-    virtual int NMSScaleRadius() const = 0;
-    virtual bool computeOrientation() const = 0;
-    virtual bool affineMSD() const = 0;
+    virtual auto thresholdSaliency() const -> double = 0;
+    virtual auto patchRadius() const -> int = 0;
+    virtual auto knn() const -> int = 0;
+    virtual auto searchAreaRadius() const -> int= 0;
+    virtual auto scaleFactor() const -> double = 0;
+    virtual auto NMSRadius() const -> int = 0;
+    virtual auto nScales() const -> int = 0;
+    virtual auto NMSScaleRadius() const -> int = 0;
+    virtual auto computeOrientation() const -> bool = 0;
+    virtual auto affineMSD() const -> bool = 0;
     //virtual int tilts() const = 0;
-    virtual int affineTilts() const = 0;
+    virtual auto affineTilts() const -> int = 0;
 
     virtual void setThresholdSaliency(double thresholdSaliency) = 0;
     virtual void setPatchRadius(int patchRadius) = 0;
@@ -1081,15 +1079,15 @@ public:
     Mser() : FeatureBase(Feature::Type::mser) {}
     ~Mser() override = default;
 
-    virtual int delta() const = 0;
-    virtual int minArea() const = 0;
-    virtual int maxArea() const = 0;
-    virtual double maxVariation() const = 0;
-    virtual double minDiversity() const = 0;
-    virtual int maxEvolution() const = 0;
-    virtual double areaThreshold() const = 0;
-    virtual double minMargin() const = 0;
-    virtual int edgeBlurSize() const = 0;
+    virtual auto delta() const -> int = 0;
+    virtual auto minArea() const -> int = 0;
+    virtual auto maxArea() const -> int = 0;
+    virtual auto maxVariation() const -> double = 0;
+    virtual auto minDiversity() const -> double = 0;
+    virtual auto maxEvolution() const -> int = 0;
+    virtual auto areaThreshold() const -> double = 0;
+    virtual auto minMargin() const -> double = 0;
+    virtual auto edgeBlurSize() const -> int = 0;
 
     virtual void setDelta(int delta) = 0;
     virtual void setMinArea(int minArea) = 0;
@@ -1123,7 +1121,7 @@ public:
      * \brief The maximum number of features to retain
      * \return Number of features to retain
      */
-    virtual int featuresNumber() const = 0;
+    virtual auto featuresNumber() const -> int = 0;
     
     /*!
      * \brief Pyramid decimation ratio
@@ -1135,7 +1133,7 @@ public:
      * so the speed will suffer.
      * \return
      */
-    virtual double scaleFactor() const = 0;
+    virtual auto scaleFactor() const -> double = 0;
     
     /*!
      * \brief Returns the number of pyramid levels
@@ -1143,43 +1141,43 @@ public:
      * input_image_linear_size/pow(scaleFactor, nlevels - firstLevel)
      * \return
      */
-    virtual int levelsNumber() const = 0;
+    virtual auto levelsNumber() const -> int = 0;
     
     /*!
      * \brief Size of the border where the features are not detected
      * \return
      */
-    virtual int edgeThreshold() const = 0;
+    virtual auto edgeThreshold() const -> int = 0;
     
     /*!
      * \brief The level of pyramid to put source image to
      * \return
      */
-    virtual int firstLevel() const = 0;
+    virtual auto firstLevel() const -> int = 0;
     
     /*!
      * \brief The number of points that produce each element of the oriented BRIEF descriptor
      * \return
      */
-    virtual int wta_k() const = 0;
+    virtual auto wta_k() const -> int = 0;
     
     /*!
      * \brief scoreType
      * \return
      */
-    virtual std::string scoreType() const = 0;
+    virtual auto scoreType() const -> std::string = 0;
     
     /*!
      * \brief Size of the patch used by the oriented BRIEF descriptor
      * \return
      */
-    virtual int patchSize() const = 0;
+    virtual auto patchSize() const -> int = 0;
     
     /*!
      * \brief Returns the fast threshold
      * \return
      */
-    virtual int fastThreshold() const = 0;
+    virtual auto fastThreshold() const -> int = 0;
     
     /*!
      * \brief setScaleFactor
@@ -1258,7 +1256,7 @@ public:
      * SIFT algorithm as the local contrast)
      * \return
      */
-    virtual int featuresNumber() const = 0;
+    virtual auto featuresNumber() const -> int = 0;
 
     /*!
      * \brief The number of layers in each octave.
@@ -1266,14 +1264,14 @@ public:
      * is computed automatically from the image resolution.
      * \return
      */
-    virtual int octaveLayers() const = 0;
+    virtual auto octaveLayers() const -> int = 0;
 
     /*!
      * \brief The contrast threshold used to filter out weak features in semi-uniform (low-contrast) regions.
      * The larger the threshold, the less features are produced by the detector.
      * \return
      */
-    virtual double contrastThreshold() const = 0;
+    virtual auto contrastThreshold() const -> double = 0;
 
     /*!
      * \brief The threshold used to filter out edge-like features
@@ -1281,14 +1279,14 @@ public:
      * the edgeThreshold, the less features are filtered out (more features are retained).
      * \return
      */
-    virtual double edgeThreshold() const = 0;
+    virtual auto edgeThreshold() const -> double = 0;
 
     /*!
      * \brief The sigma of the Gaussian applied to the input image at the octave 0.
      * If your image is captured with a weak camera with soft lenses, you might want to reduce the number.
      * \return
      */
-    virtual double sigma() const = 0;
+    virtual auto sigma() const -> double = 0;
 
     /*!
      * \brief Set the number of best features to retain
@@ -1335,11 +1333,11 @@ public:
     Star() : FeatureBase(Feature::Type::star) {}
     ~Star() override = default;
 
-    virtual int maxSize() const = 0;
-    virtual int responseThreshold() const = 0;
-    virtual int lineThresholdProjected() const = 0;
-    virtual int lineThresholdBinarized() const = 0;
-    virtual int suppressNonmaxSize() const = 0;
+    virtual auto maxSize() const -> int = 0;
+    virtual auto responseThreshold() const -> int = 0;
+    virtual auto lineThresholdProjected() const -> int = 0;
+    virtual auto lineThresholdBinarized() const -> int = 0;
+    virtual auto suppressNonmaxSize() const -> int = 0;
 
     virtual void setMaxSize(int maxSize) = 0;
     virtual void setResponseThreshold(int responseThreshold) = 0;
@@ -1366,7 +1364,7 @@ public:
      * \brief Threshold for hessian keypoint detector used in SURF
      * \return Threshold
      */
-    virtual double hessianThreshold() const = 0;
+    virtual auto hessianThreshold() const -> double = 0;
 
     /*!
      * \brief Threshold for hessian keypoint detector used in SURF
@@ -1378,7 +1376,7 @@ public:
      * \brief Number of a gaussian pyramid octaves that the detector uses.
      * \return Number of octaves
      */
-    virtual int octaves() const = 0;
+    virtual auto octaves() const -> int = 0;
 
     /*!
      * \brief Set the number of a gaussian pyramid octaves that the detector uses.
@@ -1392,7 +1390,7 @@ public:
      * \brief Number of octave layers within each octave
      * \return
      */
-    virtual int octaveLayers() const = 0;
+    virtual auto octaveLayers() const -> int = 0;
 
     /*!
      * \brief Set the number of octave layers
@@ -1404,7 +1402,7 @@ public:
      * \brief Extended descriptor
      * \return true (use extended 128-element descriptors) or false (use 64-element descriptors)
      */
-    virtual bool extendedDescriptor() const = 0;
+    virtual auto extendedDescriptor() const -> bool = 0;
 
     /*!
      * \brief setExtendedDescriptor
@@ -1416,11 +1414,11 @@ public:
      * \brief Up-right or rotated features
      * \return true (do not compute orientation of features) or false (compute orientation)
      */
-    virtual bool upright() const = 0;
+    virtual auto upright() const -> bool = 0;
 
     /*!
      * \brief compute orientation of features
-     * \param[in] rotatedFeatures false for compute orientation
+     * \param[in] upright false for compute orientation
      */
     virtual void setUpright(bool upright) = 0;
 
@@ -1451,7 +1449,7 @@ public:
      * Available types are VGG_120 (default), VGG_80, VGG_64, VGG_48
      * \return Type of descriptor
      */
-    virtual std::string descriptorType() const = 0;
+    virtual auto descriptorType() const -> std::string = 0;
 
     /*!
      * \brief Set the type of descriptor to use
@@ -1460,29 +1458,29 @@ public:
      */
     virtual void setDescriptorType(const std::string &descriptorType) = 0;
 
-    virtual double scaleFactor() const = 0;
-    virtual void 	setScaleFactor(double scaleFactor) = 0;
+    virtual auto scaleFactor() const -> double = 0;
+    virtual void setScaleFactor(double scaleFactor) = 0;
 
     /*!
      * \brief Gaussian kernel value for image blur
      * \return Gaussian kernel value
      */
-    virtual double sigma() const = 0;
+    virtual auto sigma() const -> double = 0;
 
     /*!
      * \brief Set gaussian kernel value for image blur (default is 1.4f)
      * \param[in] sigma
      */
-    virtual void 	setSigma(double sigma) = 0;
+    virtual void setSigma(double sigma) = 0;
 
-    virtual bool 	useNormalizeDescriptor() const = 0;
-    virtual void 	setUseNormalizeDescriptor(bool useNormalizeDescriptor) = 0;
+    virtual auto useNormalizeDescriptor() const -> bool = 0;
+    virtual void setUseNormalizeDescriptor(bool useNormalizeDescriptor) = 0;
 
-    virtual bool 	useNormalizeImage() const = 0;
-    virtual void 	setUseNormalizeImage(bool useNormalizeImage) = 0;
+    virtual auto useNormalizeImage() const -> bool = 0;
+    virtual void setUseNormalizeImage(bool useNormalizeImage) = 0;
 
-    virtual bool 	useScaleOrientation() const = 0;
-    virtual void 	setUseScaleOrientation(bool useScaleOrientation) = 0;
+    virtual auto useScaleOrientation() const -> bool = 0;
+    virtual void setUseScaleOrientation(bool useScaleOrientation) = 0;
 };
 
 

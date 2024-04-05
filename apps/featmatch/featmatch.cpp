@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     Console &console = App::console();
     console.setTitle("Feature Matching");
     console.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
     auto arg_query = Argument::make<std::string>("query", 'q', "Features query");
     auto arg_train = Argument::make<std::string>("train", 't', "Features train");
@@ -103,14 +103,14 @@ int main(int argc, char **argv)
     cmd.addCommand(cmd_flann);
     cmd.addCommand(cmd_brute_force);
 
-    CommandList::Status status = cmd.parse(argc, argv);
-    if(status == CommandList::Status::parse_error) {
+    Command::Status status = cmd.parse(argc, argv);
+    if(status == Command::Status::parse_error) {
         return 1;
-    } else if(status == CommandList::Status::show_help) {
+    } else if(status == Command::Status::show_help) {
         return 0;
-    } else if(status == CommandList::Status::show_licence) {
+    } else if(status == Command::Status::show_licence) {
         return 0;
-    } else if(status == CommandList::Status::show_version) {
+    } else if(status == Command::Status::show_version) {
         return 0;
     }
 

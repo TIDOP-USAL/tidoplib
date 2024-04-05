@@ -75,12 +75,12 @@ public:
 
 
 class TL_EXPORT EventBase
-    : public Event
+  : public Event
 {
 
 public:
 
-    EventBase(Type type);
+	explicit EventBase(Type type);
 
     Type type() const override;
 
@@ -108,7 +108,7 @@ public:
 
 /* Task Pausing Event */
 
-class TL_EXPORT TaskPausingEvent
+class TL_EXPORT TaskPausingEvent final
     : public EventBase
 {
 
@@ -122,8 +122,8 @@ public:
 
 /* Task Pause Event */
 
-class TL_EXPORT TaskPauseEvent
-    : public EventBase
+class TL_EXPORT TaskPauseEvent final
+	: public EventBase
 {
 
 public:
@@ -136,8 +136,8 @@ public:
 
 /* Task Resumed Event */
 
-class TL_EXPORT TaskResumedEvent
-    : public EventBase
+class TL_EXPORT TaskResumedEvent final
+	: public EventBase
 {
 
 public:
@@ -150,7 +150,7 @@ public:
 
 /* Task Stopping Event */
 
-class TL_EXPORT TaskStoppingEvent
+class TL_EXPORT TaskStoppingEvent final
     : public EventBase
 {
 
@@ -164,7 +164,7 @@ public:
 
 /* Task Stopped Event */
 
-class TL_EXPORT TaskStoppedEvent
+class TL_EXPORT TaskStoppedEvent final
     : public EventBase
 {
 
@@ -178,13 +178,13 @@ public:
 
 /* Task Finalized Event */
 
-class TL_EXPORT TaskFinalizedEvent
+class TL_EXPORT TaskFinalizedEvent final
     : public EventBase
 {
 
 public:
 
-    TaskFinalizedEvent(Task const *task = nullptr);
+	explicit TaskFinalizedEvent(Task const *task = nullptr);
 
     Task const *task() const;
 
@@ -198,7 +198,7 @@ private:
 
 /* Task Error Event */
 
-class TL_EXPORT TaskErrorEvent
+class TL_EXPORT TaskErrorEvent final
     : public EventBase
 {
 
@@ -219,7 +219,7 @@ private:
 
 /* Image Change Event */
 
-class TL_EXPORT ImageChangeEvent
+class TL_EXPORT ImageChangeEvent final
     : public EventBase
 {
 private:

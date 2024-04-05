@@ -81,15 +81,15 @@ public:
     Data(const Data &matrix);
     Data(Data &&matrix) TL_NOEXCEPT;
     Data(std::initializer_list<T> values);
-    Data(const T *data, size_t size = 0);
+    explicit Data(const T *data, size_t size = 0);
     virtual ~Data() = default;
 
-    auto operator = (const Data &matrix)->Data &;
-    auto operator = (Data &&matrix) TL_NOEXCEPT->Data &;
+    auto operator = (const Data &matrix) -> Data &;
+    auto operator = (Data &&matrix) TL_NOEXCEPT -> Data &;
 
     auto at(size_t position) -> reference;
-    auto at(size_t position) const->const_reference;
-    auto operator[](size_t position)->reference;
+    auto at(size_t position) const -> const_reference;
+    auto operator[](size_t position) -> reference;
     auto operator[](size_t position) const->const_reference;
 
     void operator=(T value);
@@ -97,14 +97,14 @@ public:
     auto front() -> reference;
     auto front() const->const_reference;
     auto back() -> reference;
-    auto back() const->const_reference;
-    auto begin() TL_NOEXCEPT->iterator;
-    auto begin() const TL_NOEXCEPT->const_iterator;
-    auto end() TL_NOEXCEPT->iterator;
-    auto end() const TL_NOEXCEPT->const_iterator;
+    auto back() const -> const_reference;
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
 
     auto data() -> pointer;
-    auto data() const->const_pointer;
+    auto data() const -> const_pointer;
 
     size_t size() const { return mData.size(); }
 
@@ -153,23 +153,23 @@ public:
     auto operator = (Data &&matrix) TL_NOEXCEPT->Data &;
 
     auto at(size_t position) -> reference;
-    auto at(size_t position) const->const_reference;
-    auto operator[](size_t position)->reference;
-    auto operator[](size_t position) const->const_reference;
+    auto at(size_t position) const -> const_reference;
+    auto operator[](size_t position) -> reference;
+    auto operator[](size_t position) const -> const_reference;
 
     void operator=(T value);
 
     auto front() -> reference;
-    auto front() const->const_reference;
+    auto front() const -> const_reference;
     auto back() -> reference;
-    auto back() const->const_reference;
-    auto begin() TL_NOEXCEPT->iterator;
-    auto begin() const TL_NOEXCEPT->const_iterator;
-    auto end() TL_NOEXCEPT->iterator;
-    auto end() const TL_NOEXCEPT->const_iterator;
+    auto back() const -> const_reference;
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
 
     auto data() -> pointer;
-    auto data() const->const_pointer;
+    auto data() const -> const_pointer;
 
     size_t size() const { return mData.size(); }
 

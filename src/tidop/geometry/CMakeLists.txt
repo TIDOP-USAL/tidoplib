@@ -37,15 +37,6 @@ if(BUILD_TL_GEOMETRY)
                         SOURCE_FILES 
                             entities/segment.cpp
                         HEADER_FILES
-                            transform/transform.h
-                            transform/affine.h
-                            transform/helmert2d.h
-                            transform/helmert3d.h
-                            transform/polynomial.h
-                            transform/projective.h
-                            transform/rotation.h
-                            transform/scale.h
-                            transform/translation.h
                             rect.h
                             size.h
                             entities/bbox.h
@@ -65,7 +56,8 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/angle.h
                             algorithms/projection.h
                             algorithms/buffer.h
-                            algorithms/intersect.h)
+                            algorithms/intersect.h
+							algorithms/dbscan.h)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

@@ -78,10 +78,10 @@ BOOST_AUTO_TEST_CASE(printMessage)
   {
     cout_redirect guard(output.rdbuf());
 
-    console << "Test" << std::endl;
+    console << "Test";
   }
 
-  BOOST_CHECK( output.is_equal( "Test\n" ) );
+  BOOST_CHECK( output.is_equal( "Test" ) );
 }
 
 

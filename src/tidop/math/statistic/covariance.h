@@ -24,9 +24,7 @@
 
 #pragma once
 
-#include <tidop/core/defs.h>
-#include <tidop/core/messages.h>
-#include <tidop/math/statistic/descriptive.h>
+#include "tidop/math/statistic/descriptive.h"
 
 namespace tl
 {
@@ -36,14 +34,76 @@ namespace tl
  */
 
 
- /*! \defgroup statistics Statistics
-  *  \{
-  */
 
-  /*!
-   * /brief Covariance
-   *
-   */
+/*! \addtogroup statistics Statistics
+ *  \{
+ */
+
+
+/*!
+ * \brief covariance
+ * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
+ * \param firstX
+ * \param lastX
+ * \param firstY
+ * \param lastY
+ * \return
+ */
+template<typename It>
+auto covariance(It firstX, It lastX, It firstY, It lastY) -> std::enable_if_t<
+    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+    double>
+{
+    auto n_x = std::distance(firstX, lastX);
+    auto n_y = std::distance(firstY, lastY);
+    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
+
+    double mean_x = mean(firstX, lastX);
+    double mean_y = mean(firstY, lastY);
+    double sum{};
+    double x{};
+    double y{};
+
+    while (firstX != lastX) {
+        x = *firstX++ - mean_x;
+        y = *firstY++ - mean_y;
+        sum += x * y;
+    }
+
+    return sum / n_x;
+}
+
+template<typename It>
+auto covariance(It firstX, It lastX, It firstY, It lastY) -> std::enable_if_t<
+    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+{
+    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+
+    auto n_x = std::distance(firstX, lastX);
+    auto n_y = std::distance(firstY, lastY);
+    if (n_x != n_y || n_x <= 1) return consts::zero<T>;
+
+    T mean_x = mean(firstX, lastX);
+    T mean_y = mean(firstY, lastY);
+    T sum{};
+    T x{};
+    T y{};
+
+    while (firstX != lastX) {
+        x = *firstX++ - mean_x;
+        y = *firstY++ - mean_y;
+        sum += x * y;
+    }
+
+    return sum / n_x;
+}
+
+
+/*!
+ * /brief Covariance
+ * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
+ */
 template<typename T>
 class Covariance
 {
@@ -53,8 +113,8 @@ public:
     Covariance();
     ~Covariance();
 
-    double eval(const Series<T> &data1,
-                const Series<T> &data2);
+    auto eval(const Series<T> &series1,
+              const Series<T> &series2) -> double;
 
 };
 
@@ -71,9 +131,9 @@ Covariance<T>::~Covariance()
 {
 }
 
-template<typename T> inline
-double Covariance<T>::eval(const Series<T> &series1,
-                           const Series<T> &series2)
+template<typename T>
+auto Covariance<T>::eval(const Series<T> &series1,
+                         const Series<T> &series2) -> double
 {
     DescriptiveStatistics<T> stat1(series1);
     DescriptiveStatistics<T> stat2(series2);

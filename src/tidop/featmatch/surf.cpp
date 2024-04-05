@@ -45,7 +45,7 @@ SurfProperties::SurfProperties(const SurfProperties &surfProperties)
 {
 }
 
-double SurfProperties::hessianThreshold() const
+auto SurfProperties::hessianThreshold() const -> double
 {
     return mHessianThreshold;
 }
@@ -55,7 +55,7 @@ void SurfProperties::setHessianThreshold(double hessianThreshold)
     mHessianThreshold = hessianThreshold;
 }
 
-int SurfProperties::octaves() const
+auto SurfProperties::octaves() const -> int
 {
     return mOctaves;
 }
@@ -65,7 +65,7 @@ void SurfProperties::setOctaves(int octaves)
     mOctaves = octaves;
 }
 
-int SurfProperties::octaveLayers() const
+auto SurfProperties::octaveLayers() const -> int
 {
     return mOctaveLayers;
 }
@@ -75,7 +75,7 @@ void SurfProperties::setOctaveLayers(int octaveLayers)
     mOctaveLayers = octaveLayers;
 }
 
-bool SurfProperties::extendedDescriptor() const
+auto SurfProperties::extendedDescriptor() const -> bool
 {
     return mExtendedDescriptor;
 }
@@ -85,7 +85,7 @@ void SurfProperties::setExtendedDescriptor(bool extendedDescriptor)
     mExtendedDescriptor = extendedDescriptor;
 }
 
-bool SurfProperties::upright() const
+auto SurfProperties::upright() const -> bool
 {
     return mUpright;
 }
@@ -104,7 +104,7 @@ void SurfProperties::reset()
     mUpright = surf_default_value_upright;
 }
 
-std::string SurfProperties::name() const
+auto SurfProperties::name() const -> std::string
 {
     return std::string("SURF");
 }
@@ -143,14 +143,15 @@ SurfDetectorDescriptor::SurfDetectorDescriptor(double hessianThreshold,
     : mSurf(cv::xfeatures2d::SURF::create())
 #endif // HAVE_OPENCV_XFEATURES2D
 {
-    setHessianThreshold(hessianThreshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setExtendedDescriptor(extendedDescriptor);
-    setUpright(upright);
+	SurfDetectorDescriptor::setHessianThreshold(hessianThreshold);
+	SurfDetectorDescriptor::setOctaves(octaves);
+    SurfDetectorDescriptor::setOctaveLayers(octaveLayers);
+    SurfDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
+    SurfDetectorDescriptor::setUpright(upright);
 }
 
-std::vector<cv::KeyPoint> SurfDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
+auto SurfDetectorDescriptor::detect(const cv::Mat &img,
+                                    cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -170,8 +171,8 @@ std::vector<cv::KeyPoint> SurfDetectorDescriptor::detect(const cv::Mat &img, cv:
     return keyPoints;
 }
 
-cv::Mat SurfDetectorDescriptor::extract(const cv::Mat &img,
-                                        std::vector<cv::KeyPoint> &keyPoints)
+auto SurfDetectorDescriptor::extract(const cv::Mat &img, 
+                                     std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 
@@ -252,7 +253,7 @@ void SurfDetectorDescriptor::reset()
 
 SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor()
 #if defined HAVE_OPENCV_CUDAFEATURES2D
-    : mSurf(new cv::cuda::SURF_CUDA())
+  : mSurf(new cv::cuda::SURF_CUDA())
 #endif
 {
 #if defined HAVE_OPENCV_CUDAFEATURES2D
@@ -265,7 +266,7 @@ SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor()
 }
 
 SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(const SurfCudaDetectorDescriptor &surfDetectorDescriptor)
-    : SurfProperties(surfDetectorDescriptor)
+  : SurfProperties(surfDetectorDescriptor)
 {
 #if defined HAVE_OPENCV_CUDAFEATURES2D
     mSurf = std::make_unique<cv::cuda::SURF_CUDA>();
@@ -285,16 +286,16 @@ SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(double hessianThreshold,
 {
 #if defined HAVE_OPENCV_CUDAFEATURES2D
     mSurf = std::make_unique<cv::cuda::SURF_CUDA>();
-    setHessianThreshold(hessianThreshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setExtendedDescriptor(extendedDescriptor);
-    setUpright(upright);
+    SurfCudaDetectorDescriptor::setHessianThreshold(hessianThreshold);
+    SurfCudaDetectorDescriptor::setOctaves(octaves);
+    SurfCudaDetectorDescriptor::setOctaveLayers(octaveLayers);
+    SurfCudaDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
+    SurfCudaDetectorDescriptor::setUpright(upright);
 #endif
 }
 
-std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
-                                                             cv::InputArray &mask)
+auto SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
+                                        cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -316,8 +317,8 @@ std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
     return keyPoints;
 }
 
-cv::Mat SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
-                                            std::vector<cv::KeyPoint> &keyPoints)
+auto SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
+                                         std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

@@ -52,32 +52,32 @@ HogProperties::HogProperties(const HogProperties &hogProperties)
 {
 }
 
-Size<int> HogProperties::winSize() const
+auto HogProperties::winSize() const -> Size<int>
 {
     return mWinSize;
 }
 
-Size<int> HogProperties::blockSize() const
+auto HogProperties::blockSize() const -> Size<int>
 {
     return mBlockSize;
 }
 
-Size<int> HogProperties::blockStride() const
+auto HogProperties::blockStride() const -> Size<int>
 {
     return mBlockStride;
 }
 
-Size<int> HogProperties::cellSize() const
+auto HogProperties::cellSize() const -> Size<int>
 {
     return mCellSize;
 }
 
-int HogProperties::nbins() const
+auto HogProperties::nbins() const -> int
 {
     return mNbins;
 }
 
-int HogProperties::derivAperture() const
+auto HogProperties::derivAperture() const -> int
 {
     return mDerivAperture;
 }
@@ -122,7 +122,7 @@ void HogProperties::reset()
     mDerivAperture = 1;
 }
 
-std::string HogProperties::name() const
+auto HogProperties::name() const -> std::string
 {
     return std::string("HOG");
 }
@@ -137,7 +137,7 @@ HogDescriptor::HogDescriptor()
 }
 
 HogDescriptor::HogDescriptor(const HogDescriptor &hogDescriptor)
-    : HogProperties(hogDescriptor),
+  : HogProperties(hogDescriptor),
     DescriptorExtractor(hogDescriptor)
 {
     update();
@@ -205,14 +205,14 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
             pt.x = static_cast<float>(cvRound(input.cols / 2.0));
             pt.y = static_cast<float>(cvRound(input.rows / 2.0));
         } else if ((input.cols % 4) == 0) {
-            pt.x = (input.cols / 2.0f) - 0.5f;
-            pt.y = (input.rows / 2.0f) - 0.5f;
+            pt.x = (static_cast<float>(input.cols) / 2.0f) - 0.5f;
+            pt.y = (static_cast<float>(input.rows) / 2.0f) - 0.5f;
         } else if ((input.cols % 4) == 2) {
-            pt.x = (input.cols / 2.0f) - 0.5f;
-            pt.y = (input.rows / 2.0f) - 0.5f;
+            pt.x = (static_cast<float>(input.cols) / 2.0f) - 0.5f;
+            pt.y = (static_cast<float>(input.rows) / 2.0f) - 0.5f;
         } else if ((input.cols % 4) == 3) {
-            pt.x = (input.cols / 2.0f) - 0.5f;
-            pt.y = (input.rows / 2.0f) - 0.5f;
+            pt.x = (static_cast<float>(input.cols) / 2.0f) - 0.5f;
+            pt.y = (static_cast<float>(input.rows) / 2.0f) - 0.5f;
         }
         // to calculate the scale, is the size of the keypoint between
         // the scale is related to the diagonal of both pathces
@@ -234,7 +234,7 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
     }
 }
 
-cv::Mat HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+auto HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 
@@ -259,7 +259,7 @@ cv::Mat HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &ke
     return descriptors;
 }
 
-void tl::HogDescriptor::setWinSize(const Size<int> &winSize)
+void HogDescriptor::setWinSize(const Size<int> &winSize)
 {
     HogProperties::setWinSize(winSize);
     update();

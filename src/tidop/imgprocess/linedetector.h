@@ -200,7 +200,7 @@ public:
     /*!
      * \brief Destructora  de la clase ldHouh
      */
-    ~ldHouh() {}
+    ~ldHouh() override = default;
 
     /*!
      * \brief Calcula la transformada de Hough para lineas
@@ -275,7 +275,7 @@ public:
     /*!
      * \brief Destructora de la clase ldHouhP
      */
-    ~ldHouhP() {}
+    ~ldHouhP() override = default;
 
     /*!
      * \brief Calcula la transformada de Hough probabilistica para lineas
@@ -334,7 +334,7 @@ public:
     /*!
      * \brief Destructora de la clase ldHouhP
      */
-    ~ldHouhFast() {}
+    ~ldHouhFast() override = default;
 
     /*!
      * \brief Calcula la transformada de Hough probabilistica para lineas
@@ -407,12 +407,12 @@ public:
         : LineDetector(Type::LSD, angletol)
     {
         lineSegmentDetector = createLineSegmentDetector(cv::LSD_REFINE_STD/*cv::LSD_REFINE_ADV*/);
-    };
+    }
 
     /*!
      * \brief Destructora de la clase ldLSD
      */
-    ~ldLSD() {}
+    ~ldLSD() override = default;
 
     /*!
      * \brief Ejecuta el detector de lineas LSD

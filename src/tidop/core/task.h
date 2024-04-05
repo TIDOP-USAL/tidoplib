@@ -29,13 +29,13 @@
 #include <thread>
 #include <mutex>
 #include <functional>
-#include <map>
 #include <list>
 #include <queue>
 #include <memory>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/event.h"
+#include "tidop/core/chrono.h"
 
 namespace tl
 {
@@ -53,16 +53,19 @@ class TL_EXPORT Task
 
 public:
 
+    /*!
+     * \brief Task status
+     */
     enum class Status
     {
-        start,             /*!< Inicio */
-        running,           /*!< Corriendo */
-        pausing,           /*!< Pausando */
-        paused,            /*!< Pausado */
-        stopping,
-        stopped,           /*!< Detenido por el usuario */
-        finalized,         /*!< Finalizado */
-        error              /*!< Terminado con error */
+        start,             /*!< Init status */
+        running,           /*!< Running task */
+        pausing,           /*!< Task pausing */
+        paused,            /*!< Paused task */
+        stopping,          /*!< Task stopping */
+        stopped,           /*!< Task stopped by user */
+        finalized,         /*!< Task completed */
+        error              /*!< Task finished with error */
     };
     
     using EventHandler = typename std::function<void (Event *)>;
@@ -80,10 +83,8 @@ public:
     Task();
     virtual ~Task();
     
-    Task(const Task &) = delete;
-    Task(Task &&) = delete;
-    void operator=(const Task &) = delete;
-    void operator=(Task &&) = delete;
+    TL_DISABLE_COPY(Task)
+    TL_DISABLE_MOVE(Task)
     
     /*!
      * \brief Start the process
@@ -115,6 +116,8 @@ public:
      */
     virtual void stop() = 0;
     
+    virtual auto time() const -> double = 0;
+
     virtual void subscribe(Event::Type eventType,
                            const EventHandler &eventHandler) = 0;
     virtual void subscribe(const EventHandler &eventHandler) = 0;
@@ -127,7 +130,7 @@ public:
     virtual void subscribe(const TaskStoppedEventHandler &eventHandler) = 0;
     virtual void subscribe(const TaskStoppingEventHandler &eventHandler) = 0;
     
-    virtual Status status() const = 0;
+    virtual auto status() const -> Status = 0;
 };
 
 
@@ -158,23 +161,52 @@ private:
     std::list<TaskRunningEventHandler> mTaskRunningEventHandler;
     std::list<TaskStoppedEventHandler> mTaskStoppedEventHandler;
     std::list<TaskStoppingEventHandler> mTaskStoppingEventHandler;
+    mutable Chrono chrono;
 
 public:
 
     TaskBase();
-    TaskBase(const TaskBase &process);
-    TaskBase(TaskBase &&process) TL_NOEXCEPT;
+    TaskBase(const TaskBase &task);
+    TaskBase(TaskBase &&task) TL_NOEXCEPT;
     ~TaskBase() override;
    
-    TaskBase &operator=(const TaskBase &process);
-    TaskBase &operator=(TaskBase &&process) TL_NOEXCEPT;
+    auto operator=(const TaskBase &task) -> TaskBase &;
+    auto operator=(TaskBase &&task) TL_NOEXCEPT -> TaskBase &;
+
+protected:
+
+    void setStatus(Status status);
+    
+    void eventTriggered(Event::Type type) const;
+    void eventTaskErrorTriggered() const;
+    void eventTaskFinalizedTriggered() const;
+    void eventTaskPauseTriggered() const;
+    void eventTaskPausingTriggered() const;
+    void eventTaskResumedTriggered() const;
+    void eventTaskRunningTriggered() const;
+    void eventTaskStoppedTriggered() const;
+    void eventTaskStoppingTriggered() const;
+
+    auto errorEvent() const -> TaskErrorEvent*;
+    auto finalizedEvent() const -> TaskFinalizedEvent*;
+    auto pauseEvent() const -> TaskPauseEvent*;
+    auto pausingEvent() const -> TaskPausingEvent*;
+    auto resumedEvent() const -> TaskResumedEvent*;
+    auto runningEvent() const -> TaskRunningEvent*;
+    auto stoppedEvent() const -> TaskStoppedEvent*;
+    auto stoppingEvent() const -> TaskStoppingEvent*;
+
+private:
+
+    void executeTask(Progress *progressBar) TL_NOEXCEPT;
 
 protected:
 
     /*!
-     * \brief Ejecuta el proceso
+     * \brief Execute the task
      */
     virtual void execute(Progress *progressBar = nullptr) = 0;
+
 
 // Task interface
 
@@ -186,7 +218,8 @@ public:
     void reset() override;
     void resume() override;
     void stop() override;
-   
+    auto time() const -> double override;
+
     void subscribe(Event::Type eventType,
                    const EventHandler &eventHandler) override;
     void subscribe(const EventHandler &eventHandler) override;
@@ -199,34 +232,7 @@ public:
     void subscribe(const TaskStoppedEventHandler &eventHandler) override;
     void subscribe(const TaskStoppingEventHandler &eventHandler) override;
    
-    Status status() const override;
-
-protected:
-
-    void setStatus(Status status);
-    
-    void eventTriggered(Event::Type type);
-    void eventTaskErrorTriggered();
-    void eventTaskFinalizedTriggered();
-    void eventTaskPauseTriggered();
-    void eventTaskPausingTriggered();
-    void eventTaskResumedTriggered();
-    void eventTaskRunningTriggered();
-    void eventTaskStoppedTriggered();
-    void eventTaskStoppingTriggered();
-
-    TaskErrorEvent *errorEvent();
-    TaskFinalizedEvent *finalizedEvent();
-    TaskPauseEvent *pauseEvent();
-    TaskPausingEvent *pausingEvent();
-    TaskResumedEvent *resumedEvent();
-    TaskRunningEvent *runningEvent();
-    TaskStoppedEvent *stoppedEvent();
-    TaskStoppingEvent *stoppingEvent();
-
-private:
-
-    void executeTask(Progress *progressBar) TL_NOEXCEPT;
+    auto status() const -> Status override;
 
 };
 
@@ -266,17 +272,17 @@ private:
     STARTUPINFO mStartUpInfo;
     PROCESS_INFORMATION mProcessInformation;
     SECURITY_ATTRIBUTES mSecurityAttributes;
-    HANDLE mThreadHandle;
+    //HANDLE mThreadHandle;
 #endif
 
 public:
 
-    Process(std::string commandText,
-            Priority priority = Priority::normal);
+    explicit Process(std::string commandText,
+                     Priority priority = Priority::normal);
     ~Process() override;
    
    
-    Priority priority() const;
+    auto priority() const -> Priority;
    
     /*!
      * \brief Establece la prioridad del proceso
@@ -287,8 +293,8 @@ public:
 #ifdef TL_OS_WINDOWS
 private:
 
-    std::string formatErrorMsg(unsigned long errorCode);
-    bool createPipe();
+    auto formatErrorMsg(unsigned long errorCode) -> std::string;
+    auto createPipe() -> bool;
 #endif
 
 private:
@@ -306,6 +312,10 @@ private:
 class TL_EXPORT TaskList
   : public TaskBase
 {
+
+private:
+
+    std::list<std::shared_ptr<Task>> tasks;
 
 public:
 
@@ -329,8 +339,8 @@ public:
     ~TaskList() override;
     
     void push_back(const std::shared_ptr<Task> &task);
-    size_t size() const TL_NOEXCEPT;
-    bool empty() const TL_NOEXCEPT;
+    auto size() const TL_NOEXCEPT -> size_t;
+    auto empty() const TL_NOEXCEPT -> bool;
 
 // Task interface
 
@@ -342,28 +352,25 @@ public:
 
 private:
 
-    virtual void execute(Progress *progressBar = nullptr) override;
-
-private:
-
-    std::list<std::shared_ptr<Task>> mTasks;
+    void execute(Progress *progressBar = nullptr) override;
 
 };
 
 
-class TaskQueue
+
+class TL_EXPORT TaskQueue
   : public TaskBase
 {
 
 public:
 
     TaskQueue();
-    ~TaskQueue();
+    ~TaskQueue() override;
     
     void push(std::shared_ptr<Task> task);
     void pop() TL_NOEXCEPT;
-    size_t size() const TL_NOEXCEPT;
-    bool empty() const TL_NOEXCEPT;
+    auto size() const TL_NOEXCEPT -> size_t;
+    auto empty() const TL_NOEXCEPT -> bool;
 
 // Task interface
 
@@ -375,11 +382,11 @@ public:
 
 private:
 
-    virtual void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar = nullptr) override;
 
 private:
 
-    std::queue<std::shared_ptr<Task>> mQueue;
+    std::queue<std::shared_ptr<Task>> queue;
     static std::mutex mtx;
 };
 
@@ -393,7 +400,7 @@ class TL_EXPORT TaskTree
 public:
 
     TaskTree();
-    ~TaskTree();
+    ~TaskTree() override;
 
     void addTask(const std::shared_ptr<Task> &task, 
                  const std::list<std::shared_ptr<Task>> &parentTasks);
@@ -408,7 +415,7 @@ public:
 
 private:
 
-    virtual void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar = nullptr) override;
 
 private:
 

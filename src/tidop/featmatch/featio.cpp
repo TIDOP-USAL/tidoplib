@@ -50,17 +50,17 @@ void FeaturesWriter::setDescriptors(const cv::Mat &descriptors)
     mDescriptors = descriptors;
 }
 
-const tl::Path &FeaturesWriter::filePath() const
+auto FeaturesWriter::filePath() const -> const tl::Path&
 {
     return mFilePath;
 }
 
-const std::vector<cv::KeyPoint> &FeaturesWriter::keyPoints() const
+auto FeaturesWriter::keyPoints() const -> const std::vector<cv::KeyPoint>&
 {
     return mKeyPoints;
 }
 
-const cv::Mat &FeaturesWriter::descriptors() const
+auto FeaturesWriter::descriptors() const -> const cv::Mat&
 {
     return mDescriptors;
 }
@@ -77,17 +77,17 @@ FeaturesReader::FeaturesReader(tl::Path file)
 
 }
 
-std::vector<cv::KeyPoint> FeaturesReader::keyPoints() const
+auto FeaturesReader::keyPoints() const -> std::vector<cv::KeyPoint>
 {
     return mKeyPoints;
 }
 
-cv::Mat FeaturesReader::descriptors() const
+auto FeaturesReader::descriptors() const -> cv::Mat
 {
     return mDescriptors;
 }
 
-tl::Path FeaturesReader::file() const
+auto FeaturesReader::file() const -> tl::Path
 {
     return mFilePath;
 }
@@ -118,7 +118,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    auto isOpen() -> bool;
     void readHeader();
     void readBody();
     void readKeypoints();
@@ -175,7 +175,7 @@ void FeaturesReaderBinary::open()
     }
 }
 
-bool FeaturesReaderBinary::isOpen()
+auto FeaturesReaderBinary::isOpen() -> bool
 {
     return stream->is_open();
 }
@@ -250,7 +250,7 @@ void FeaturesReaderBinary::close()
 
 
 class FeaturesWriterBinary
-    : public FeaturesWriter
+  : public FeaturesWriter
 {
 
 public:
@@ -882,7 +882,7 @@ void FeaturesWriterTxt::close()
 
 /* ---------------------------------------------------------------------------------- */
 
-std::unique_ptr<FeaturesReader> FeaturesReaderFactory::create(const tl::Path &file)
+auto FeaturesReaderFactory::create(const tl::Path &file) -> std::unique_ptr<FeaturesReader>
 {
     std::unique_ptr<FeaturesReader> features_reader;
 
@@ -908,7 +908,7 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::create(const tl::Path &fi
     return features_reader;
 }
 
-std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Path &file)
+auto FeaturesReaderFactory::createReader(const tl::Path &file) -> std::unique_ptr<FeaturesReader>
 {
     return FeaturesReaderFactory::create(file);
 }
@@ -919,7 +919,7 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Pa
 
 
 
-std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::create(const tl::Path &file)
+auto FeaturesWriterFactory::create(const tl::Path &file) -> std::unique_ptr<FeaturesWriter>
 {
     std::unique_ptr<FeaturesWriter> features_writer;
 
@@ -945,7 +945,7 @@ std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::create(const tl::Path &fi
     return features_writer;
 }
 
-std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Path &file)
+auto FeaturesWriterFactory::createWriter(const tl::Path &file) -> std::unique_ptr<FeaturesWriter>
 {
     return FeaturesWriterFactory::create(file);
 }

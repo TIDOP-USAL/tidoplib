@@ -36,50 +36,60 @@ TL_DISABLE_WARNINGS
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+#endif //TL_HAVE_GDAL
+
 
 #include <utility>
 
 namespace tl
 {
 
+#ifdef TL_HAVE_GDAL
+
 DataType gdalConvertDataType(GDALDataType dataType)
 {
-  DataType ret;
-  switch (dataType) {
-  case GDT_Byte:
-    ret = DataType::TL_8U;
-    break;
-  case GDT_UInt16:
-    ret = DataType::TL_16U;
-    break;
-  case GDT_Int16:
-    ret = DataType::TL_16S;
-    break;
-  case GDT_UInt32:
-    ret = DataType::TL_32U;
-    break;
-  case GDT_Int32:
-    ret = DataType::TL_32S;
-    break;
-  case GDT_Float32:
-    ret = DataType::TL_32F;
-    break;
-  case GDT_Float64:
-    ret = DataType::TL_64F;
-    break;
-  default:
-    ret = DataType::TL_8U;
-    break;
-  }
-  return ret;
+    DataType ret = DataType::TL_8U;
+
+    switch (dataType) {
+    case GDT_Unknown:
+        TL_THROW_EXCEPTION("Unknow data type");
+    case GDT_Byte:
+        ret = DataType::TL_8U;
+        break;
+    case GDT_UInt16:
+        ret = DataType::TL_16U;
+        break;
+    case GDT_Int16:
+        ret = DataType::TL_16S;
+        break;
+    case GDT_UInt32:
+        ret = DataType::TL_32U;
+        break;
+    case GDT_Int32:
+        ret = DataType::TL_32S;
+        break;
+    case GDT_Float32:
+        ret = DataType::TL_32F;
+        break;
+    case GDT_Float64:
+        ret = DataType::TL_64F;
+        break;
+    case GDT_CInt16:
+    case GDT_CInt32:
+    case GDT_CFloat32:
+    case GDT_CFloat64:
+    case GDT_TypeCount:
+        TL_THROW_EXCEPTION("Data type not supported");
+    }
+
+    return ret;
 }
 
 /*!
- * \brief Obtiene el tipo de dato de OpenCV
- * \param gdalType Tipo de GDAL
- * \param channels Número de canales
- * \return Tipo de OpenCV
+ * \brief Gets the OpenCV data type corresponding to a GDAL data type.
+ * \param gdalType GDAL data type
+ * \param channels Number of channels
+ * \return OpenCV data type
  */
 int gdalToOpenCv(GDALDataType gdalType, int channels)
 {
@@ -90,26 +100,25 @@ int gdalToOpenCv(GDALDataType gdalType, int channels)
     depth = CV_16U;
   else if(gdalType == GDT_Int16)
     depth = CV_16S;
-  else if(gdalType == GDT_UInt32)
-    depth = CV_32S;
-  else if(gdalType == GDT_Int32)
+  else if(gdalType == GDT_UInt32 || 
+          gdalType == GDT_Int32)
     depth = CV_32S;
   else if(gdalType == GDT_Float32)
     depth = CV_32F;
   else if(gdalType == GDT_Float64)
     depth = CV_64F;
-  //else if (gdalType == GDT_CInt16)
-  //  depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
-  //else if (gdalType == GDT_CInt32)
-  //  depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
-  //else if (gdalType == GDT_CFloat32)
-  //  depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
-  //else if (gdalType == GDT_CFloat64)
-  //  depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
+  else if (gdalType == GDT_CInt16 || 
+           gdalType == GDT_CInt32 ||  
+           gdalType == GDT_CFloat32 ||
+           gdalType == GDT_CFloat64)
+      TL_THROW_EXCEPTION("Data type not supported");
   else
     depth = -1;
+
   return(CV_MAKETYPE(depth, channels));
 }
+
+#endif //TL_HAVE_GDAL
 
 ImageReader::ImageReader(tl::Path file)
   : mFile(std::move(file))
@@ -121,26 +130,30 @@ void ImageReader::windowRead(const WindowI &wLoad,
                              WindowI *wRead, 
                              Point<int> *offset) const
 {
-  WindowI wAll(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
+  WindowI image_window(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));
+  
   if (wLoad.isEmpty()) {
-    *wRead = wAll;  // Se lee toda la ventana
+    *wRead = image_window;
   } else {
-    *wRead = windowIntersection(wAll, wLoad);
+    *wRead = windowIntersection(image_window, wLoad);
     *offset = wRead->pt1 - wLoad.pt1;
   }
 }
 
-tl::Path ImageReader::file() const
+auto ImageReader::file() const -> tl::Path
 {
   return mFile;
 }
 
 
+
 /* ---------------------------------------------------------------------------------- */
+
+
 
 #ifdef TL_HAVE_GDAL
 
-class ImageReaderGdal
+class ImageReaderGdal final
   : public ImageReader
 {
     GENERATE_UNIQUE_PTR(ImageReaderGdal)
@@ -156,7 +169,7 @@ public:
     
     ~ImageReaderGdal() override
     {
-        this->close();
+        ImageReaderGdal::close();
     }
 
 // Heredado vía ImageReader
@@ -181,12 +194,12 @@ public:
                     geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
                 }
 
-                mAffine.setParameters(geotransform[1],
-                                      geotransform[2],
-                                      geotransform[4],
-                                      geotransform[5],
-                                      geotransform[0],
-                                      geotransform[3]);
+                mAffine(0, 0) = geotransform[1];
+                mAffine(0, 1) = geotransform[2];
+                mAffine(0, 2) = geotransform[0];
+                mAffine(1, 0) = geotransform[4];
+                mAffine(1, 1) = geotransform[5];
+                mAffine(1, 2) = geotransform[3];
 
             }
 
@@ -195,7 +208,7 @@ public:
         }
     }
     
-    bool isOpen() const override
+    auto isOpen() const -> bool override
     {
         return mDataset != nullptr;
     }
@@ -208,20 +221,19 @@ public:
         }
     }
     
-    cv::Mat read(const RectI &rect,
-                 const Size<int> &size,
-                 Affine<Point<int>> *trf) override
+    auto read(const Rect<int> &rect,
+              const Size<int> &size,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
         cv::Mat image;
 
         try {
 
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
-            //TL_ASSERT(rect.isValid(), "Image Rect to read invalid")
 
-            RectI rect_to_read;
+            Rect<int> rect_to_read;
             Point<int> offset;
-            RectI rect_full_image(0, 0, this->cols(), this->rows());
+            Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
 
 
             if (rect.isEmpty()) {
@@ -242,26 +254,27 @@ public:
             double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
             offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
             offset.y = roundToInteger(offset.y * scaleY);
-            if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
+
+            if (affine) {
+                *affine = Affine<int,2>(roundToInteger(scaleX), roundToInteger(scaleY), offset.x, offset.y, 0);
+            }
 
             image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
 
             TL_ASSERT(!image.empty(), "Image empty");
 
             uchar *buff = image.ptr();
-            int nPixelSpace = static_cast<int>(image.elemSize());
-            int nLineSpace = nPixelSpace * image.cols;
-            int nBandSpace = static_cast<int>(image.elemSize1());
+            int pixel_space = static_cast<int>(image.elemSize());
+            int line_space = pixel_space * image.cols;
+            int band_space = static_cast<int>(image.elemSize1());
 
             CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
                                              rect_to_read.width, rect_to_read.height,
                                              buff, size_to_read.width, size_to_read.height, this->gdalDataType(),
-                                             this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
-                                             nLineSpace, nBandSpace);
+                                             this->channels(), gdalBandOrder(this->channels()).data(), pixel_space,
+                                             line_space, band_space);
 
-            if (cerr != 0) {
-                throw std::runtime_error(Message::format("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg()));
-            }
+            TL_ASSERT(cerr == CE_None, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -270,10 +283,10 @@ public:
         return image;
     }
     
-    cv::Mat read(double scaleX,
-                 double scaleY,
-                 const RectI &rect,
-                 Affine<Point<int>> *trf) override
+    auto read(double scaleX,
+              double scaleY,
+              const Rect<int> &rect,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
         cv::Mat image;
 
@@ -281,9 +294,9 @@ public:
 
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
-            RectI rect_to_read;
+            Rect<int> rect_to_read;
             Point<int> offset;
-            RectI rect_full_image(0, 0, this->cols(), this->rows());
+            Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
             if (rect.isEmpty()) {
                 rect_to_read = rect_full_image;
             } else {
@@ -292,16 +305,20 @@ public:
             }
 
             TL_ASSERT(rect_to_read.width > 0 && rect_to_read.height > 0, "");
+
             offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
             offset.y = roundToInteger(offset.y * scaleY);
 
             cv::Size size;
             size.width = roundToInteger(rect_to_read.width * scaleX);
             size.height = roundToInteger(rect_to_read.height * scaleY);
-            if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
+
+            if (affine) {
+                *affine = Affine<int,2>(roundToInteger(scaleX), roundToInteger(scaleY), offset.x, offset.y, 0);
+            }
 
             image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-            //if (image.empty()) throw std::runtime_error("");
+
             TL_ASSERT(!image.empty(), "Image empty");
 
             uchar *buff = image.ptr();
@@ -315,9 +332,7 @@ public:
                                              this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
                                              nLineSpace, nBandSpace);
 
-            if (cerr != 0) {
-                throw std::runtime_error(Message::format("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg()));
-            }
+            TL_ASSERT(cerr == CE_None, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -326,21 +341,23 @@ public:
         return image;
     }
     
-    cv::Mat read(const WindowI &window,
-                 double scaleX,
-                 double scaleY,
-                 Affine<Point<int>> *trf) override
+    auto read(const WindowI &window,
+              double scaleX,
+              double scaleY,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
 
         int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
         int y = window.pt1.y < window.pt2.y ? window.pt1.y : window.pt2.y;
 
-        RectI rect = window.isEmpty() ? RectI() : RectI(x, y, std::abs(window.width()), std::abs(window.height()));
+        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(x, y, std::abs(window.width()), std::abs(window.height()));
 
         cv::Mat image;
 
         try {
-            image = this->read(scaleX, scaleY, rect, trf);
+
+            image = this->read(scaleX, scaleY, rect, affine);
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
@@ -348,14 +365,15 @@ public:
         return image;
     }
     
-    cv::Mat read(const Window<Point<double>> &terrainWindow,
-                 double scaleX,
-                 double scaleY,
-                 Affine<Point<int>> *trf) override
+    auto read(const Window<Point<double>> &terrainWindow,
+              double scaleX,
+              double scaleY,
+              Affine<int, 2> *affine = nullptr) -> cv::Mat override
     {
         Window<Point<double>> wLoad;
-        wLoad.pt1 = mAffine.transform(terrainWindow.pt1, Transform::Order::inverse);
-        wLoad.pt2 = mAffine.transform(terrainWindow.pt2, Transform::Order::inverse);
+        auto transform_inverse = mAffine.inverse();
+        wLoad.pt1 = transform_inverse.transform(terrainWindow.pt1);
+        wLoad.pt2 = transform_inverse.transform(terrainWindow.pt2);
         wLoad.normalized();
 
         WindowI wRead(wLoad);
@@ -363,7 +381,9 @@ public:
         cv::Mat image;
 
         try {
-            image = read(wRead, scaleX, scaleY, trf);
+
+            image = read(wRead, scaleX, scaleY, affine);
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
@@ -371,9 +391,9 @@ public:
         return image;
     }
     
-    int rows() const override
+    auto rows() const -> int override
     {
-        int rows = 0;
+        int rows;
 
         try {
 
@@ -388,9 +408,9 @@ public:
         return rows;
     }
     
-    int cols() const override
+    auto cols() const -> int override
     {
-        int cols = 0;
+        int cols;
 
         try {
 
@@ -405,9 +425,9 @@ public:
         return cols;
     }
     
-    int channels() const override
+    auto channels() const -> int override
     {
-        int channels = 0;
+        int channels;
 
         try {
 
@@ -422,7 +442,7 @@ public:
         return channels;
     }
     
-    DataType dataType() const override
+    auto dataType() const -> DataType override
     {
         DataType data_type = DataType::TL_8U;
 
@@ -438,7 +458,7 @@ public:
         return data_type;
     }
 
-    int depth() const override
+    auto depth() const -> int override
     {
         int depth = 0;
 
@@ -454,7 +474,7 @@ public:
         return depth;
     }
   
-    std::shared_ptr<ImageMetadata> metadata() const override
+    auto metadata() const -> std::shared_ptr<ImageMetadata> override
     {
         std::shared_ptr<ImageMetadata> metadata;
     
@@ -476,106 +496,104 @@ public:
                     const char *domain = gdalMetadataDomainList[i];
                     char **gdalMetadata = mDataset->GetMetadata(domain);
     
-                    if (std::string("xml:XMP").compare(domain) == 0) {
-    
-                        //std::cout << *gdalMetadata << std::endl;
+                    if (std::string("xml:XMP") == domain) {
     
                         /// Sacar a función parseXMP
                         {
     
                             CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
                             while (xml_node) {
-                                if (std::string(xml_node->pszValue).compare("xpacket") == 0) {
+                                if (std::string(xml_node->pszValue) == "xpacket") {
     
-                                } else if (std::string(xml_node->pszValue).compare("x:xmpmeta") == 0) {
+                                } else if (std::string(xml_node->pszValue) == "x:xmpmeta") {
     
                                     CPLXMLNode *child_node = xml_node->psChild;
                                     while (child_node) {
-                                        if (std::string(child_node->pszValue).compare("rdf:RDF") == 0) {
+                                        if (std::string(child_node->pszValue) == "rdf:RDF") {
     
                                             CPLXMLNode *rdf_node = child_node->psChild;
     
                                             while (rdf_node) {
     
-                                                if (std::string(rdf_node->pszValue).compare("rdf:Description") == 0) {
+                                                if (std::string(rdf_node->pszValue) == "rdf:Description") {
     
                                                     CPLXMLNode *rdfdescription_node = rdf_node->psChild;
                                                     while (rdfdescription_node) {
     
-                                                        if (std::string(rdfdescription_node->pszValue).compare("xmlns:drone-dji") == 0) {
+                                                        if (std::string(rdfdescription_node->pszValue) == "xmlns:drone-dji") {
                                                             /// Camara DJI
                                                             metadata->setMetadata("EXIF_Make", "DJI");
     
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:AbsoluteAltitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:AbsoluteAltitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_AbsoluteAltitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RelativeAltitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RelativeAltitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RelativeAltitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLatitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GpsLatitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GpsLatitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLongitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GpsLongitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GpsLongitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GpsLongtitude") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GpsLongtitude") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GpsLongitude", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalRollDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalRollDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalRollDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalYawDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalYawDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalYawDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalPitchDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalPitchDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalPitchDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightRollDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightRollDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightRollDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYawDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightYawDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightYawDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightPitchDegree") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightPitchDegree") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightPitchDegree", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightXSpeed") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightXSpeed") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightXSpeed", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightYSpeed") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightYSpeed") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightYSpeed", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:FlightZSpeed") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:FlightZSpeed") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_FlightZSpeed", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CamReverse") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CamReverse") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CamReverse", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:GimbalReverse") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:GimbalReverse") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_GimbalReverse", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedFocalLength") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedFocalLength") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CalibratedFocalLength", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedOpticalCenterX") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedOpticalCenterX") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("CalibratedOpticalCenterX", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:CalibratedOpticalCenterY") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedOpticalCenterY") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CalibratedOpticalCenterY", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkFlag") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkFlag") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkFlag", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdLon") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkStdLon") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkStdLon", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdLat") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkStdLat") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkStdLat", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("drone-dji:RtkStdHgt") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:RtkStdHgt") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_RtkStdHgt", value);
-                                                        } else if (std::string(rdfdescription_node->pszValue).compare("xmpDM:cameraModel") == 0) {
+                                                        } else if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("EXIF_Model", value);
                                                         }
@@ -651,19 +669,6 @@ public:
     
             }
     
-            //char **gdalMetadata = mDataset->GetMetadata("xml:XMP");
-            //if (gdalMetadata != nullptr && *gdalMetadata != nullptr) {
-            //  for (int i = 0; gdalMetadata[i] != nullptr; i++) {
-            //    char *key = nullptr;
-            //    const char *value = CPLParseNameValue(gdalMetadata[i], &key);
-            //    if (key) {
-            //      std::cout << key << ": " << value << std::endl;
-            //      metadata->setMetadata(key, value);
-            //      CPLFree(key);
-            //    }
-            //  }
-            //}
-    
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
@@ -671,7 +676,7 @@ public:
         return metadata;
     }
 
-    bool isGeoreferenced() const override
+    auto isGeoreferenced() const -> bool override
     {
         bool georeferenced = false;
     
@@ -680,7 +685,7 @@ public:
             TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
     
             std::array<double, 6> geotransform{};
-            georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
+            georeferenced = mDataset->GetGeoTransform(geotransform.data()) == CE_None;
     
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -689,12 +694,12 @@ public:
         return georeferenced;
     }
 
-    Affine<Point<double>> georeference() const override
+    auto georeference() const -> Affine<double, 2> override
     {
         return mAffine;
     }
 
-    std::string crsWkt() const override
+    auto crsWkt() const -> std::string override
     {
         std::string crs_wkt;
 
@@ -721,34 +726,7 @@ public:
         return crs_wkt;
     }
 
-//#ifdef TL_HAVE_GEOSPATIAL
-//  geospatial::Crs crs() const override
-//  {
-//    geospatial::Crs crs;
-//
-//    try {
-//
-//      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
-//
-//#if GDAL_VERSION_MAJOR >= 3
-//      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-//        char *wkt = nullptr;
-//        spatialReference->exportToWkt(&wkt);
-//        crs.fromWktFormat(wkt);
-//        CPLFree(wkt);
-//      }
-//#else
-//      crs.fromWktFormat(mDataset->GetProjectionRef());
-//#endif
-//    } catch (...) {
-//      TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-//    }
-//
-//    return crs;
-//  }
-//#endif
-
-    WindowD window() const override
+    auto window() const -> WindowD override
     {
         Point<double> p1 = mAffine.transform(Point<double>(0, 0));
         Point<double> p2 = mAffine.transform(Point<double>(cols(), rows()));
@@ -757,7 +735,7 @@ public:
         return window;
     }
     
-    double noDataValue(bool *exist) const
+    auto noDataValue(bool *exist) const -> double override
     {
         double nodata{};
 
@@ -800,7 +778,7 @@ protected:
 private:
 
     GDALDataset *mDataset;
-    Affine<Point<double>> mAffine;
+    Affine<double, 2> mAffine;
 };
 
 #endif // TL_HAVE_GDAL
@@ -1007,10 +985,12 @@ private:
 
 #endif // TL_HAVE_EDSDK
 
-/* ---------------------------------------------------------------------------------- */
 
 
-ImageReader::Ptr ImageReaderFactory::create(const Path &file)
+
+
+
+auto ImageReaderFactory::create(const Path &file) -> ImageReader::Ptr
 {
     ImageReader::Ptr image_reader;
 

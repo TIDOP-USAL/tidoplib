@@ -32,6 +32,10 @@
 namespace tl
 {
 
+/*! \defgroup raster Raster
+ *  \{
+ */
+
 template<typename T> class EnumFlags;
 
 enum class DataType : int16_t
@@ -52,10 +56,10 @@ TL_EXPORT bool gdalValidExtensions(const std::string &extension);
 TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
 
 /*!
- * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
- * Si la extensión no se correspondo con un driver disponible devuelve nulo.
- * \param ext Extensión del archivo
- * \return Nombre del Driver de GDAL
+ * \brief Returns the GDAL driver name corresponding to a file extension.
+ * If the extension does not match an available driver, it returns nullptr.
+ * \param[in] extension File extension
+ * \return GDAL driver name
  */
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 
@@ -70,26 +74,6 @@ TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
 
 TL_EXPORT std::vector<int> gdalBandOrder(int channels);
-
-#if defined TL_HAVE_OPENCV && defined TL_HAVE_GDAL
-
-/*!
- * \brief Obtiene el tipo de dato de OpenCV
- * \param gdalType Tipo de GDAL
- * \param channels Número de canales
- * \return Tipo de OpenCV
- */
- //int gdalToOpenCv(GDALDataType gdalType, int channels);
-
-
- /*!
-  * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
-  * \param cvdt Profundidad de bits
-  * \return GDALDataType
-  */
-  //GDALDataType openCvToGdal(int cvdt);
-
-#endif
 
 
 
@@ -128,6 +112,8 @@ private:
 };
 
 #endif // TL_HAVE_EDSDK
+
+/*! \} */ // end of raster
 
 
 } // End namespace tl

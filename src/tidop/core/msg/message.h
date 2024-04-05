@@ -45,13 +45,30 @@ namespace tl
  *  \{
  */
 
-/*! \defgroup Messages Gestión de mensajes
+/*! \addtogroup Messages
  *
  *  \{
  */
 
 
-
+/*! 
+ * \brief Message class
+ * 
+ * <h4>Example:</h4>
+ * 
+ * \code
+ * // Add the Console as a message handler
+ * Console &console = App::console();
+ * console.setTitle("Transform Example");
+ * console.setMessageLevel(MessageLevel::all);
+ * Message::instance().addMessageHandler(&console);
+ * 
+ * Message::warning("This is a {} message", "warning");
+ * Message::info("{} + {} = {}", 1, 1, 2);
+ * 
+ * \endcode
+ * 
+ */
 class TL_EXPORT Message
 {
 
@@ -63,21 +80,21 @@ class TL_EXPORT Message
 
 private:
 
-    Message(){}
+    static std::list<MessageHandler *> messageHandlers;
+    static bool stopHandler;
+
+private:
+
+    //Message(){}
 
 public:
-   
-    /*!
-     * \brief Destructora
-     */
-    ~Message() = default;
 
-    static Message &instance();
+    //static Message &instance();
 
-    void addMessageHandler(MessageHandler *messageHandler)
+    static void addMessageHandler(MessageHandler *messageHandler)
     {
         bool added = false;
-        for (auto handler : messageHandlers) {
+        for (const auto handler : messageHandlers) {
             if (handler == messageHandler) {
                 added = true;
                 break;
@@ -88,34 +105,59 @@ public:
             messageHandlers.push_back(messageHandler);
     }
 
-    void pauseMessages()
+    /*!
+    * \brief Pause messages
+    * When activated, messages are stopped until resumeMessages is called.
+    */
+    static void pauseMessages()
     {
         stopHandler = true;
     }
 
-    void resumeMessages()
+    /*!
+     * \brief Resume message sending
+     */
+    static void resumeMessages()
     {
         stopHandler = false;
     }
 
-    /*!
-     * \brief Devuelve el mensaje como cadena de texto
-     * \return Mensaje
-     */
     template<typename... Args>
     static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
     }
 
+    /*!
+     * \brief Send a debug message
+     */
     static void debug(String message);
+
+    /*!
+     * \brief Send an info message
+     */
     static void info(String message);
+    
+    /*!
+     * \brief Send a success message
+     */
     static void success(String message);
+   
+    /*!
+     * \brief Send a warning message
+     */
     static void warning(String message);
+    
+    /*!
+     * \brief Send an error message
+     */
     static void error(String message);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
+    /*!
+     * \brief Send a debug message
+     */
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -123,6 +165,9 @@ public:
         Message::debug(message);
     }
 
+    /*!
+     * \brief Send an info message
+     */
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -130,6 +175,9 @@ public:
         Message::info(message);
     }
 
+    /*!
+     * \brief Send a warning message
+     */
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
@@ -137,6 +185,9 @@ public:
         Message::warning(message);
     }
 
+    /*!
+     * \brief Send a success message
+     */
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   
@@ -144,6 +195,9 @@ public:
         Message::success(message);
     }
 
+    /*!
+     * \brief Send an error message
+     */
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {   
@@ -153,10 +207,6 @@ public:
 
 #endif
 
-  private:
-
-    static std::list<MessageHandler *> messageHandlers;
-    static bool stopHandler;
 };
 
 

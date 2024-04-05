@@ -35,7 +35,7 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 /// \cond
 namespace internal
@@ -55,14 +55,21 @@ public:
     {
         if (mTransform) {
             OGRCoordinateTransformation::DestroyCT(mTransform);
-            mTransform = 0;
+            mTransform = nullptr;
         }
     }
 
-    Point3<double> transform(const Point3<double> &ptIn)
+    auto transform(const Point3<double> &ptIn) const -> Point3<double>
     {
         Point3<double> ptOut = ptIn;
-        mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+
+        try {
+            TL_ASSERT(mTransform != nullptr, "");
+            mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
         return ptOut;
     }
 
@@ -77,8 +84,7 @@ private:
 
 CrsTransform::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
                            const std::shared_ptr<Crs> &epsgOut)
-  : Transform3D<Point3<double>>(Transform::Type::crs),
-    mEpsgIn(epsgIn),
+  : mEpsgIn(epsgIn),
     mEpsgOut(epsgOut),
     mCoordinateTransformation(nullptr),
     mCoordinateTransformationInv(nullptr)
@@ -89,13 +95,11 @@ CrsTransform::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
 CrsTransform::~CrsTransform()
 {
     if (mCoordinateTransformation) {
-        //OGRCoordinateTransformation::DestroyCT(mCoordinateTransformation);
         delete mCoordinateTransformation;
         mCoordinateTransformation = nullptr;
     }
 
     if (mCoordinateTransformationInv) {
-        //OGRCoordinateTransformation::DestroyCT(mCoordinateTransformationInv);
         delete mCoordinateTransformation;
         mCoordinateTransformationInv = nullptr;
     }
@@ -103,87 +107,57 @@ CrsTransform::~CrsTransform()
     OSRCleanup();
 }
 
-auto CrsTransform::compute(const std::vector<Point3<double>> &pts1,
-                           const std::vector<Point3<double>> &pts2,
-                           std::vector<double> *error,
-                           double *rmse) -> Transform::Status
-{
-    unusedParameter(pts1);
-    unusedParameter(pts2);
-    unusedParameter(error);
-    unusedParameter(rmse);
-    Message::error("'compute' is not supported for CrsTransform");
-    //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
-    return Transform::Status::failure;
-}
-
-auto CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
+void CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
                              std::vector<Point3<double>> &ptsOut,
-                             Transform::Order trfOrder) const -> Transform::Status
+                             Order trfOrder) const
 {
-  this->formatVectorOut(ptsIn, ptsOut);
-  for (int i = 0; i < ptsIn.size(); i++) {
-    TL_TODO("Debería ser mas rapido hacer ...")
-      // size_t n = ptsIn.size();
-      // double *x = new double[n], *p_x = x;
-      // double *y = new double[n], *p_y = y;
-      // double *z = new double[n], *p_z = z;
-      // for (int i = 0; i < n; i++) {
-      //  *p_x++ = ptsIn[i].x;
-      //  *p_y++ = ptsIn[i].y;
-      //  *p_z++ = ptsIn[i].z;
-      //}
-      // if (trfOrder == Transform::Order::direct){
-      //   pCoordinateTransformation->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
-      // } else {
-      //   pCoordinateTransformationInv->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
-      //}
-      transform(ptsIn[i], ptsOut[i], trfOrder);
-  }
-
-  return Transform::Status::success;
-}
-
-auto CrsTransform::transform(const Point3<double> &ptIn,
-                             Point3<double> &ptOut,
-                             Transform::Order trfOrder) const -> Transform::Status
-{
-
-  try {
-
-    if (trfOrder == Transform::Order::direct) {
-      if (mCoordinateTransformation)
-        ptOut = mCoordinateTransformation->transform(ptIn);
-      else
-        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-    } else {
-      if (mCoordinateTransformationInv)
-        ptOut = mCoordinateTransformationInv->transform(ptIn);
-      else
-        Message::error("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-    }
-
-  } catch (...) {
-    throw;
-  }
-
-  return Transform::Status::success;
-}
-
-
-auto CrsTransform::transform(const Point3<double> &ptIn, 
-                             Transform::Order trfOrder) const -> Point3<double>
-{
-    Point3<double> r_pt;
     try {
 
-        if (trfOrder == Transform::Order::direct)
+        ptsOut.resize(ptsIn.size());
+        for (int i = 0; i < ptsIn.size(); i++) {
+            transform(ptsIn[i], ptsOut[i], trfOrder);
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+}
+
+void CrsTransform::transform(const Point3<double> &ptIn,
+                             Point3<double> &ptOut,
+                             Order trfOrder) const
+{
+
+    try {
+
+        if (trfOrder == Order::direct) {
+            if (mCoordinateTransformation)
+                ptOut = mCoordinateTransformation->transform(ptIn);
+        } else {
+            if (mCoordinateTransformationInv)
+                ptOut = mCoordinateTransformationInv->transform(ptIn);
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+}
+
+
+auto CrsTransform::transform(const Point3<double> &ptIn,
+                             Order trfOrder) const -> Point3<double>
+{
+    Point3<double> r_pt;
+
+    try {
+
+        if (trfOrder == Order::direct)
             r_pt = mCoordinateTransformation->transform(ptIn);
         else
             r_pt = mCoordinateTransformationInv->transform(ptIn);
 
-    } catch (std::exception &e) {
-        throw std::runtime_error(e.what());
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return r_pt;
@@ -198,10 +172,7 @@ void CrsTransform::init()
 {
     OGRSpatialReference *spatialReferenceIn = mEpsgIn->getOGRSpatialReference();
     OGRSpatialReference *spatialReferenceOut = mEpsgOut->getOGRSpatialReference();
-    //mCoordinateTransformation = OGRCreateCoordinateTransformation(spatialReferenceIn,
-    //                                                              spatialReferenceOut);
-    //mCoordinateTransformationInv = OGRCreateCoordinateTransformation(spatialReferenceOut,
-    //                                                                 spatialReferenceIn);
+
     mCoordinateTransformation = new internal::CoordinateTransformation(spatialReferenceIn,
                                                                        spatialReferenceOut);
     mCoordinateTransformationInv = new internal::CoordinateTransformation(spatialReferenceOut,
@@ -221,7 +192,7 @@ auto EcefToEnu::direct(const Point3<double> &ecef,
 
     Vector<double, 3> enu = rotation * dif.vector();
 
-    return Point3<double>(enu[0], enu[1], enu[2]);
+    return {enu[0], enu[1], enu[2]};
 }
 
 auto EcefToEnu::inverse(const Point3<double> &enu,

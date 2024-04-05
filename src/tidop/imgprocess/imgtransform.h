@@ -24,7 +24,10 @@
 
 #pragma once
 
+#include <opencv2/imgproc.hpp>
+
 #include "tidop/config.h"
+#include "tidop/graphic/color.h"
 
 #ifdef TL_HAVE_OPENCV
 
@@ -32,7 +35,6 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/imgprocess/imgprocess.h"
-#include "tidop/geometry/transform/transform.h"
 #include "tidop/geometry/size.h"
 
 namespace tl
@@ -215,80 +217,79 @@ private:
  * \param[in] in Imagen de entrada
  * \param[out] out Imagen de salida
  * \param[in] trf Transformación que se aplica a la imagen
- * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::DIRECT
  */
-template<typename Point_t> inline
-void transform(const cv::Mat &in, cv::Mat out, TransformBase<Point_t> *trf, Transform::Order trfOrder)
-{
-    Transform::Type type = trf->transformType();
-    if (type == tl::Transform::Type::translation) {
-        Translation<Point_t> *transTrf = dynamic_cast<Translation<Point_t> *>(trf);
-        cv::Mat translateMat(2, 3, CV_32FC1);
-        translateMat.at<float>(0, 0) = 1.f;
-        translateMat.at<float>(0, 1) = 0.f;
-        translateMat.at<float>(0, 2) = static_cast<float>(transTrf->tx);
-        translateMat.at<float>(1, 0) = 0.f;
-        translateMat.at<float>(1, 1) = 1.f;
-        translateMat.at<float>(1, 2) = static_cast<float>(transTrf->ty);
-        if (trfOrder == Transform::Order::direct)
-            cv::warpAffine(in, out, translateMat, in.size(), cv::INTER_LINEAR);
-        else
-            cv::warpAffine(in, out, translateMat.inv(), in.size(), cv::INTER_LINEAR);
-    } else if (type == tl::Transform::Type::rotation) {
-        Rotation<Point_t> *rotTrf = dynamic_cast<Rotation<Point_t> *>(trf);
-        cv::Mat rotMat(2, 3, CV_32FC1);
-        double r1 = cos(rotTrf->angle());
-        double r2 = sin(rotTrf->angle());
-        rotMat.at<float>(0, 0) = static_cast<float>(r1);
-        rotMat.at<float>(0, 1) = static_cast<float>(r2);
-        rotMat.at<float>(0, 2) = 0.f;
-        rotMat.at<float>(1, 0) = static_cast<float>(r2);
-        rotMat.at<float>(1, 1) = static_cast<float>(r1);
-        rotMat.at<float>(1, 2) = 0.f;
-        if (trfOrder == Transform::Order::direct)
-            cv::warpAffine(in, out, rotMat, in.size(), cv::INTER_LINEAR);
-        else
-            cv::warpAffine(in, out, rotMat.inv(), in.size(), cv::INTER_LINEAR);
-    } else if (type == tl::Transform::Type::helmert_2d) {
-        Helmert2D<Point_t> *h2dTrf = dynamic_cast<Helmert2D<Point_t> *>(trf);
-        cv::Mat h2DMat(2, 3, CV_32FC1);
-        double rotation = h2dTrf->rotation();
-        double scale = h2dTrf->scale();
-        double a = scale * cos(rotation);
-        double b = scale * sin(rotation);
-        h2DMat.at<float>(0, 0) = static_cast<float>(a);
-        h2DMat.at<float>(0, 1) = static_cast<float>(b);
-        h2DMat.at<float>(0, 2) = static_cast<float>(h2dTrf->tx);
-        h2DMat.at<float>(1, 0) = static_cast<float>(b);
-        h2DMat.at<float>(1, 1) = static_cast<float>(a);
-        h2DMat.at<float>(1, 2) = static_cast<float>(h2dTrf->ty);
-        if (trfOrder == Transform::Order::direct)
-            cv::warpAffine(in, out, h2DMat, in.size(), cv::INTER_LINEAR);
-        else
-            cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
-    } else if (type == tl::Transform::Type::affine) {
-        Affine<Point_t> *affineTrf = dynamic_cast<Affine<Point_t> *>(trf);
-        double r00, r10, r01, r11;
-        affineTrf->parameters(&r00, &r10, &r01, &r11, nullptr, nullptr);
-        cv::Mat affMat(2, 3, CV_32FC1);
-        affMat.at<float>(0, 0) = static_cast<float>(r00);
-        affMat.at<float>(0, 1) = static_cast<float>(r10);
-        affMat.at<float>(0, 2) = static_cast<float>(affineTrf->tx);
-        affMat.at<float>(1, 0) = static_cast<float>(r01);
-        affMat.at<float>(1, 1) = static_cast<float>(r11);
-        affMat.at<float>(1, 2) = static_cast<float>(affineTrf->ty);
-        if (trfOrder == Transform::Order::direct)
-            cv::warpAffine(in, out, affMat, in.size(), cv::INTER_LINEAR);
-        else
-            cv::warpAffine(in, out, affMat.inv(), in.size(), cv::INTER_LINEAR);
-    } else if (type == tl::Transform::Type::perspective) {
-        Perspective<Point_t> *perspTrf = dynamic_cast<Perspective<Point_t> *>(trf);
-        if (trfOrder == Transform::Order::direct)
-            cv::warpPerspective(in, out, perspTrf->H, in.size(), cv::INTER_LINEAR);
-        else
-            cv::warpPerspective(in, out, perspTrf->H.inv(), in.size(), cv::INTER_LINEAR);
-    }
-}
+//template<typename Point_t> inline
+//void transform(const cv::Mat &in, cv::Mat out, geom::TransformBase<Point_t> *trf, geom::Transform::Order trfOrder)
+//{
+//    geom::Transform::Type type = trf->transformType();
+//    if (type == geom::Transform::Type::translation) {
+//        geom::Translation<Point_t> *transTrf = dynamic_cast<geom::Translation<Point_t> *>(trf);
+//        cv::Mat translateMat(2, 3, CV_32FC1);
+//        translateMat.at<float>(0, 0) = 1.f;
+//        translateMat.at<float>(0, 1) = 0.f;
+//        translateMat.at<float>(0, 2) = static_cast<float>(transTrf->tx);
+//        translateMat.at<float>(1, 0) = 0.f;
+//        translateMat.at<float>(1, 1) = 1.f;
+//        translateMat.at<float>(1, 2) = static_cast<float>(transTrf->ty);
+//        if (trfOrder == geom::Transform::Order::direct)
+//            cv::warpAffine(in, out, translateMat, in.size(), cv::INTER_LINEAR);
+//        else
+//            cv::warpAffine(in, out, translateMat.inv(), in.size(), cv::INTER_LINEAR);
+//    } else if (type == geom::Transform::Type::rotation) {
+//        geom::Rotation<Point_t> *rotTrf = dynamic_cast<geom::Rotation<Point_t> *>(trf);
+//        cv::Mat rotMat(2, 3, CV_32FC1);
+//        double r1 = cos(rotTrf->angle());
+//        double r2 = sin(rotTrf->angle());
+//        rotMat.at<float>(0, 0) = static_cast<float>(r1);
+//        rotMat.at<float>(0, 1) = static_cast<float>(r2);
+//        rotMat.at<float>(0, 2) = 0.f;
+//        rotMat.at<float>(1, 0) = static_cast<float>(r2);
+//        rotMat.at<float>(1, 1) = static_cast<float>(r1);
+//        rotMat.at<float>(1, 2) = 0.f;
+//        if (trfOrder == geom::Transform::Order::direct)
+//            cv::warpAffine(in, out, rotMat, in.size(), cv::INTER_LINEAR);
+//        else
+//            cv::warpAffine(in, out, rotMat.inv(), in.size(), cv::INTER_LINEAR);
+//    } else if (type == geom::Transform::Type::helmert_2d) {
+//        geom::Helmert2D<Point_t> *h2dTrf = dynamic_cast<geom::Helmert2D<Point_t> *>(trf);
+//        cv::Mat h2DMat(2, 3, CV_32FC1);
+//        double rotation = h2dTrf->rotation();
+//        double scale = h2dTrf->scale();
+//        double a = scale * cos(rotation);
+//        double b = scale * sin(rotation);
+//        h2DMat.at<float>(0, 0) = static_cast<float>(a);
+//        h2DMat.at<float>(0, 1) = static_cast<float>(b);
+//        h2DMat.at<float>(0, 2) = static_cast<float>(h2dTrf->tx);
+//        h2DMat.at<float>(1, 0) = static_cast<float>(b);
+//        h2DMat.at<float>(1, 1) = static_cast<float>(a);
+//        h2DMat.at<float>(1, 2) = static_cast<float>(h2dTrf->ty);
+//        if (trfOrder == geom::Transform::Order::direct)
+//            cv::warpAffine(in, out, h2DMat, in.size(), cv::INTER_LINEAR);
+//        else
+//            cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
+//    } else if (type == geom::Transform::Type::affine) {
+//        geom::Affine<Point_t> *affineTrf = dynamic_cast<geom::Affine<Point_t> *>(trf);
+//        double r00, r10, r01, r11;
+//        affineTrf->parameters(&r00, &r10, &r01, &r11, nullptr, nullptr);
+//        cv::Mat affMat(2, 3, CV_32FC1);
+//        affMat.at<float>(0, 0) = static_cast<float>(r00);
+//        affMat.at<float>(0, 1) = static_cast<float>(r10);
+//        affMat.at<float>(0, 2) = static_cast<float>(affineTrf->tx);
+//        affMat.at<float>(1, 0) = static_cast<float>(r01);
+//        affMat.at<float>(1, 1) = static_cast<float>(r11);
+//        affMat.at<float>(1, 2) = static_cast<float>(affineTrf->ty);
+//        if (trfOrder == geom::Transform::Order::direct)
+//            cv::warpAffine(in, out, affMat, in.size(), cv::INTER_LINEAR);
+//        else
+//            cv::warpAffine(in, out, affMat.inv(), in.size(), cv::INTER_LINEAR);
+//    } else if (type == geom::Transform::Type::perspective) {
+//        geom::Perspective<Point_t> *perspTrf = dynamic_cast<geom::Perspective<Point_t> *>(trf);
+//        if (trfOrder == geom::Transform::Order::direct)
+//            cv::warpPerspective(in, out, perspTrf->H, in.size(), cv::INTER_LINEAR);
+//        else
+//            cv::warpPerspective(in, out, perspTrf->H.inv(), in.size(), cv::INTER_LINEAR);
+//    }
+//}
 
 /*! \} */ // end of imgTransf
 

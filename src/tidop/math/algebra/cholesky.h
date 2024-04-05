@@ -24,10 +24,7 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include "tidop/math/math.h"
-#include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/lapack.h"
@@ -71,8 +68,8 @@ public:
 
     CholeskyDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-    Vector<T, _rows> solve(const Vector<T, _rows> &b);
-    Matrix<T, _rows, _cols> l() const;
+    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
+    auto l() const -> Matrix<T, _rows, _cols>;
 
 private:
 
@@ -115,9 +112,8 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
 {
-    /// Resolver con matrices...
     TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
 
     T sum;
@@ -152,7 +148,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
+void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
 
     for (size_t i = 0; i < mRows; i++) {
@@ -182,7 +178,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 {
     lapack_int info;
 
@@ -198,7 +194,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-inline Matrix<T, _rows, _cols> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::l() const
+auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::l() const -> Matrix<T, _rows, _cols>
 {
     return L;
 }

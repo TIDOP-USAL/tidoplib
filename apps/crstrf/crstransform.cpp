@@ -26,6 +26,11 @@
 #include <memory>
 #include <fstream>
 
+#include <cpl_conv.h>
+#include <ogr_core.h>
+#include <gdal.h>
+#include <ogr_srs_api.h>
+
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/msg/message.h>
@@ -40,18 +45,29 @@ using namespace tl;
 int main(int argc, char **argv)
 {
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
-
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();
+
+    tl::Path _path = app_path.parentPath().parentPath();
+    tl::Path gdal_data_path(_path);
+    gdal_data_path.append("gdal\\data");
+    tl::Path proj_data_path(_path);
+    proj_data_path.append("proj");
+    CPLSetConfigOption( "GDAL_DATA", gdal_data_path.toString().c_str());
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
+    CPLSetConfigOption( "PROJ_DATA", proj_data_path.toString().c_str());
+#else
+    std::string s_proj = proj_data_path.toString();
+    const char *proj_data[] {s_proj.c_str(), nullptr};
+    OSRSetPROJSearchPaths(proj_data);
+#endif
 
     // Consola
     Console &console = App::console();
     console.setTitle(cmd_name);
     console.setConsoleUnicode();
-    console.setFontHeight(14);
     console.setMessageLevel(MessageLevel::all);
-    Message::instance().addMessageHandler(&console);
+    Message::addMessageHandler(&console);
 
 
     Command cmd(cmd_name, "Ejemplo de transformación de coordenadas");
@@ -61,6 +77,7 @@ int main(int argc, char **argv)
     cmd.addArgument<char>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", ';');
     cmd.addArgument<std::string>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", "");
     cmd.addArgument<std::string>("log", 'l', "Fichero de log", "");
+    cmd.addArgument<int>("skip","Skip lines", 0);
 
     cmd.addExample(cmd_name + " --epsg_in EPSG:25830 --epsg_out EPSG:4258 --coord 281815.044;4827675.243;123.35");
     cmd.addExample(cmd_name + " -iEPSG:25830 -oEPSG:4258 --coord utm.txt");
@@ -81,12 +98,13 @@ int main(int argc, char **argv)
     auto separator = cmd.value<char>("separator");
     auto coord_trf = cmd.value<std::string>("coord_trf");
     auto log_file = cmd.value<std::string>("log");
+    auto skip_lines = cmd.value<int>("skip");
 
     if(!log_file.empty()) {
         Log &log = App::log();
         log.setMessageLevel(MessageLevel::all);
         log.open(log_file);
-        Message::instance().addMessageHandler(&log);
+        Message::addMessageHandler(&log);
     }
 
     try {
@@ -106,15 +124,26 @@ int main(int argc, char **argv)
 
                 std::string line;
                 while(std::getline(ifs, line)) {
+
+                    if (skip_lines > 0) {
+                        if (ofs.is_open())
+                            ofs << line << std::endl;
+                        skip_lines--;
+                        continue;
+                    }
+
                     std::vector<double> vector = split<double>(line, separator);
+                    TL_ASSERT(vector.size() >= 3, "");
                     Point3<double> pt_in(vector[0], vector[1], vector[2]);
                     Point3<double> pt_out;
                     crs.transform(pt_in, pt_out);
-                    Message::info("{};{};{} -> {};{};{}", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
+                    //Message::info("{};{};{} -> {};{};{}", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
 
                     if(ofs.is_open()) {
-                        ofs << vector[0] << separator << vector[1] << separator << vector[2] << separator << " -> "
-                            << pt_out.x << separator << pt_out.y << separator << pt_out.z << std::endl;
+                        ofs << std::fixed << pt_out.x << separator << pt_out.y << separator << pt_out.z << separator;
+                        for (size_t i = 3; i < vector.size(); i++)
+                            ofs << vector[i] << separator;
+                        ofs << std::endl;
                     }
                 }
                 ifs.close();
@@ -141,8 +170,6 @@ int main(int argc, char **argv)
         printException(e);
         return 1;
     }
-
-#endif
 
     return 0;
 }

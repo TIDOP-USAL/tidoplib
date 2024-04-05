@@ -33,9 +33,13 @@ namespace tl
 {
 
 std::mutex Log::mtx;
-EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
 
-Log &Log::instance()
+Log::Log()
+  : messageLevelFlags(MessageLevel::all)
+{
+}
+
+auto Log::instance() -> Log &
 {
     static Log log;
     return log;
@@ -43,6 +47,7 @@ Log &Log::instance()
 
 void Log::open(const std::string &file)
 {
+    if (isOpen()) close();
     _stream.open(file, std::ofstream::app);
 }
 
@@ -51,7 +56,7 @@ void Log::close()
     _stream.close();
 }
 
-bool Log::isOpen() const
+auto Log::isOpen() const -> bool
 {
     return _stream.is_open();
 }
@@ -73,7 +78,7 @@ void Log::debug(String message)
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::debug))
-        _stream << date << "Debug:   " << message << std::endl;
+        _stream << date << " - Debug:   " << message << std::endl;
 }
 
 void Log::info(String message)
@@ -93,7 +98,7 @@ void Log::success(String message)
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::success))
-        _stream << date << "Succes:  " << message << std::endl;
+        _stream << date << " - Success: " << message << std::endl;
 }
 
 void Log::warning(String message)
@@ -103,8 +108,8 @@ void Log::warning(String message)
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::warning)) 
-        _stream << date << "Warning: " << message << std::endl;
-}
+        _stream << date << " - Warning: " << message << std::endl;
+}                          
 
 void Log::error(String message)
 {
@@ -113,7 +118,7 @@ void Log::error(String message)
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::error))
-        _stream << date << "Error:   " << message << std::endl;
+        _stream << date << " - Error:   " << message << std::endl;
 }
 
 } // End mamespace tl

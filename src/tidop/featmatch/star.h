@@ -51,7 +51,7 @@ constexpr auto star_default_value_suppress_nonmax_size{5};
 
 
 class TL_EXPORT StarProperties
-    : public Star
+  : public Star
 {
 
 private:
@@ -72,11 +72,11 @@ public:
 
 public:
 
-    int maxSize() const override;
-    int responseThreshold() const override;
-    int lineThresholdProjected() const override;
-    int lineThresholdBinarized() const override;
-    int suppressNonmaxSize() const override;
+    auto maxSize() const -> int override;
+    auto responseThreshold() const -> int override;
+    auto lineThresholdProjected() const -> int override;
+    auto lineThresholdBinarized() const -> int override;
+    auto suppressNonmaxSize() const -> int override;
     void setMaxSize(int maxSize) override;
     void setResponseThreshold(int responseThreshold) override;
     void setLineThresholdProjected(int lineThresholdProjected) override;
@@ -88,7 +88,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -127,8 +127,8 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img,
+                cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Star interface
 

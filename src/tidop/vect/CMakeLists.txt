@@ -43,7 +43,8 @@ if (BUILD_TL_VECT)
 
     add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})   
     
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>

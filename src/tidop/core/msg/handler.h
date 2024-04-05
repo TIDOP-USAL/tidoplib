@@ -44,7 +44,7 @@ namespace tl
  *  \{
  */
 
-/*! \defgroup Messages Gestión de mensajes
+/*! \defgroup Messages Message handling
  *
  *  \{
  */
@@ -60,8 +60,19 @@ enum class MessageLevel : int8_t
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
-class MessageHandler
+/*!
+ * \brief Interface MessageHandler
+ * Classes implementing this interface can receive messages 
+ * emitted by the Message class.
+ * 
+ * \code
+ *   Console &console = App::console();
+ *   Message::instance().addMessageHandler(&console);
+ * \endcode
+ */
+class TL_EXPORT MessageHandler
 {
+
 public:
 
 #if CPP_VERSION >= 17
@@ -75,10 +86,34 @@ public:
     MessageHandler() = default;
 	virtual ~MessageHandler() = default;
 
+    /*!
+     * \brief Debug message emited by Message class
+     * \param[in] message Message string
+     */
     virtual void debug(String message) = 0;
+
+    /*!
+     * \brief Information message emited by Message class
+     * \param[in] message Message string
+     */
     virtual void info(String message) = 0;
+
+    /*!
+     * \brief Success message emited by Message class
+     * \param[in] message Message string
+     */
     virtual void success(String message) = 0;
+
+    /*!
+     * \brief Warning message emited by Message class
+     * \param[in] message Message string
+     */
     virtual void warning(String message) = 0;
+
+    /*!
+     * \brief Error message emited by Message class
+     * \param[in] message Message string
+     */
     virtual void error(String message) = 0;
 
 };

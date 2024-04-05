@@ -22,24 +22,24 @@
  *                                                                        *
  **************************************************************************/
 
+#include <utility>
+
 #include "tidop/graphic/layer.h"
 
 #include "tidop/graphic/entities/entity.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-
+#include "tidop/geometry/entities/bbox.h"
 
 namespace tl
 {
 
 
-/* ---------------------------------------------------------------------------------- */
 
 
 GLayer::GLayer()
-  : mName(""),
-    mEntities(0),
+  : mEntities(0),
     mSelectEntity(nullptr)
 {
 }
@@ -59,28 +59,27 @@ GLayer::GLayer(GLayer &&gLayer) TL_NOEXCEPT
 }
 
 GLayer::GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities)
-  : mName(""),
-    mEntities(entities),
+  : mEntities(entities),
     mSelectEntity(nullptr)
 {
 }
 
-GLayer::iterator GLayer::begin() TL_NOEXCEPT
+auto GLayer::begin() TL_NOEXCEPT -> iterator
 {
     return mEntities.begin();
 }
 
-GLayer::const_iterator GLayer::begin() const TL_NOEXCEPT
+auto GLayer::begin() const TL_NOEXCEPT -> const_iterator
 {
     return mEntities.cbegin();
 }
 
-GLayer::iterator GLayer::end() TL_NOEXCEPT
+auto GLayer::end() TL_NOEXCEPT -> iterator
 {
     return mEntities.end();
 }
 
-GLayer::const_iterator GLayer::end() const TL_NOEXCEPT
+auto GLayer::end() const TL_NOEXCEPT -> const_iterator
 {
     return mEntities.cend();
 }
@@ -115,12 +114,12 @@ void GLayer::resize(size_type count, const std::shared_ptr<GraphicEntity> &value
     mEntities.resize(count, value);
 }
 
-GLayer::size_type GLayer::size() const TL_NOEXCEPT
+auto GLayer::size() const TL_NOEXCEPT -> size_type
 {
     return mEntities.size();
 }
 
-GLayer &GLayer::operator=(const GLayer &entity)
+auto GLayer::operator=(const GLayer& entity) -> GLayer&
 {
     if (this != &entity) {
         this->mName = entity.mName;
@@ -130,7 +129,7 @@ GLayer &GLayer::operator=(const GLayer &entity)
     return (*this);
 }
 
-GLayer &GLayer::operator=(GLayer &&entity) TL_NOEXCEPT
+auto GLayer::operator=(GLayer&& entity) TL_NOEXCEPT -> GLayer&
 {
     if (this != &entity) {
         this->mName = std::move(entity.mName);
@@ -141,12 +140,12 @@ GLayer &GLayer::operator=(GLayer &&entity) TL_NOEXCEPT
     return (*this);
 }
 
-GLayer::iterator GLayer::erase(GLayer::const_iterator first, GLayer::const_iterator last)
+auto GLayer::erase(const_iterator first, const_iterator last) -> iterator
 {
-    return mEntities.erase(first, last);
+    return mEntities.erase(std::move(first), std::move(last));
 }
 
-std::string GLayer::name() const
+auto GLayer::name() const -> std::string
 {
     return mName;
 }
@@ -161,12 +160,12 @@ void GLayer::addDataField(const std::shared_ptr<TableField> &field)
     mTableFields.push_back(field);
 }
 
-std::vector<std::shared_ptr<TableField>> GLayer::tableFields() const
+auto GLayer::tableFields() const -> std::vector<std::shared_ptr<TableField>>
 {
     return mTableFields;
 }
 
-Window<Point<double>> GLayer::window() const
+auto GLayer::window() const -> Window<Point<double>>
 {
     Window<Point<double>> w;
 

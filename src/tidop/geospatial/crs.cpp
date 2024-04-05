@@ -24,7 +24,7 @@
 
 #include "tidop/geospatial/crs.h"
 
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 #include "tidop/core/exception.h"
 

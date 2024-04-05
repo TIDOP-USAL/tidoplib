@@ -43,13 +43,14 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+
+#ifdef TL_HAVE_GDAL
+
 GDALDataType dataTypeToGdalDataType(DataType dataType)
 {
     GDALDataType ret = GDT_Unknown;
     switch (dataType) {
     case DataType::TL_8U:
-        ret = GDT_Byte;
-        break;
     case DataType::TL_8S:
         ret = GDT_Byte;
         break;
@@ -71,10 +72,8 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
     case DataType::TL_64F:
         ret = GDT_Float64;
         break;
-    default:
-        ret = GDT_Unknown;
-        break;
     }
+
     return ret;
 }
 
@@ -87,10 +86,9 @@ GDALDataType openCvToGdal(int cvdt)
 {
     GDALDataType ret;
 
-    if (cvdt == CV_8U)
-        ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
-    else if (cvdt == CV_8S)
-        ret = GDT_Byte;      //  CV_8S  == 1     GDT_Byte == 1
+    if (cvdt == CV_8U ||  //  CV_8U  == 0     GDT_Byte == 1
+        cvdt == CV_8S)    //  CV_8S  == 1     GDT_Byte == 1
+        ret = GDT_Byte;
     else if (cvdt == CV_16U)
         ret = GDT_UInt16;    //  CV_16U == 2     GDT_UInt16 == 2
     else if (cvdt == CV_16S)
@@ -107,11 +105,11 @@ GDALDataType openCvToGdal(int cvdt)
     return(ret);
 }
 
-
+#endif //TL_HAVE_GDAL
 
 
 ImageWriter::ImageWriter(tl::Path file)
-    : mFile(std::move(file))
+  : mFile(std::move(file))
 {
 
 }
@@ -134,7 +132,7 @@ void ImageWriter::windowWrite(const WindowI &window,
 #ifdef TL_HAVE_GDAL
 
 class ImageWriterGdal
-    : public ImageWriter
+  : public ImageWriter
 {
 
 public:
@@ -150,7 +148,7 @@ public:
         mImageOptions(nullptr),
         mImageMetadata(nullptr),
 #ifdef _DEBUG
-        mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+        mSpatialReference(static_cast<OGRSpatialReference*>(OSRNewSpatialReference(nullptr)))
 #else
         mSpatialReference(new OGRSpatialReference(nullptr))
 #endif
@@ -160,7 +158,7 @@ public:
 
     ~ImageWriterGdal() override
     {
-        this->close();
+        ImageWriterGdal::close();
 
         if (mSpatialReference) {
 #ifdef _DEBUG
@@ -215,9 +213,6 @@ public:
     void close() override
     {
         if (mDataset) {
-
-            char **tmp = nullptr;
-
             if (bTempFile) {
 
                 GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(mFile.extension().toString()).c_str());
@@ -228,8 +223,8 @@ public:
                     for (const auto &[name, value] : options) {
 #else
                     for (const auto &option : options) {
-                        auto name = option.first;
-                        auto value = option.second;
+                        auto &name = option.first;
+                        auto &value = option.second;
 #endif
                         gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
                     }
@@ -243,14 +238,17 @@ public:
 
             }
 
-            tmp = mDataset->GetFileList();
+            char** tmp = mDataset->GetFileList();
 
             GDALClose(mDataset);
             mDataset = nullptr;
 
             if (bTempFile) {
-                for (size_t i = 0; i < sizeof(**tmp); i++)
-                    std::remove(tmp[i]);
+                for (size_t i = 0; i < sizeof(**tmp); i++) {
+                    Path::removeFile(Path(tmp[i]));
+                    //std::remove(tmp[i]);
+                }
+                    
             }
         }
 
@@ -292,8 +290,8 @@ public:
                 for (const auto &[name, value] : options) {
 #else
                 for (const auto &option : options) {
-                    auto name = option.first;
-                    auto value = option.second;
+                    auto &name = option.first;
+                    auto &value = option.second;
 #endif
                     gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
                 }
@@ -311,15 +309,16 @@ public:
                 for (const auto &[name, value] : active_metadata) {
 #else
                 for (const auto &metadata : active_metadata) {
-                    auto name = metadata.first;
-                    auto value = metadata.second;
+                    auto &name = metadata.first;
+                    auto &value = metadata.second;
 #endif
                     gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
                 }
             }
             mDataset->SetMetadata(gdalMetadata);
 
-            if (!mAffine.isNull()) {
+            //if (!mAffine.isNull()) {
+            if (!this->affine.isEmpty()) {
                 this->setGdalGeoTransform();
             }
 
@@ -328,15 +327,15 @@ public:
         }
     }
 
-    void write(const cv::Mat & image,
-               const Rect<int> &rect)
+    void write(const cv::Mat &image,
+               const Rect<int> &rect) override
     {
         try {
 
             TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
-            RectI rect_full_image(0, 0, this->cols(), this->rows());
-            RectI rect_to_write;
+            Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
+            Rect<int> rect_to_write;
 
             bool crop_image = false;
             if (rect.isEmpty()) {
@@ -349,32 +348,33 @@ public:
             cv::Mat image_to_write;
 
             if (crop_image) {
-                Affine<Point<double>> affine;
+
                 std::vector<Point<double>> image_points{
                     Point<double>(0, 0),
-                        Point<double>(image.cols, 0),
-                        Point<double>(image.cols, image.rows),
-                        Point<double>(0, image.rows)
+                    Point<double>(image.cols, 0),
+                    Point<double>(image.cols, image.rows),
+                    Point<double>(0, image.rows)
                 };
 
                 std::vector<Point<double>> image_rect{
                     static_cast<Point<double>>(rect.topLeft()),
-                        static_cast<Point<double>>(rect.topRight()),
-                        static_cast<Point<double>>(rect.bottomRight()),
-                        static_cast<Point<double>>(rect.bottomLeft())
+                    static_cast<Point<double>>(rect.topRight()),
+                    static_cast<Point<double>>(rect.bottomRight()),
+                    static_cast<Point<double>>(rect.bottomLeft())
                 };
 
-                affine.compute(image_points, image_rect);
+                auto _affine = Affine2DEstimator<double>::estimate(image_points, image_rect);
 
-                std::vector<Point<double>> image_points_transform;
-                affine.transform(image_points, image_points_transform);
-                RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
-                RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
+                std::vector<Point<double>> image_points_transform(image_points.size());
+                std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
+                Rect<int> rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+                Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-                Point<double> tl = affine.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
-                Point<double> br = affine.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
+                auto transform_inverse = _affine.inverse();
+                Point<double> tl = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()));
+                Point<double> br = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()));
 
-                rect_to_crop_image = RectI(tl, br);
+                rect_to_crop_image = Rect<int>(tl, br);
                 image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
                     .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
                     .clone();
@@ -451,12 +451,12 @@ public:
         }
     }
 
-    void write(const cv::Mat & image,
-               const WindowI & window) override
+    void write(const cv::Mat &image,
+               const WindowI &window) override
     {
         try {
 
-            RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
+            Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1, window.pt2);
             write(image, rect);
 
         } catch (...) {
@@ -464,38 +464,7 @@ public:
         }
     }
 
-    // void write(const cv::Mat & image,
-    //            const Affine<Point<int>> &trf) override
-    // {
-        //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
-
-        ////TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
-        ////anteriormente a create y asignar los valores correctos.
-        //// De hecho debería utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
-
-        ////if (!image.isContinuous()) image = image.clone();
-        ////uchar *buff = image.ptr();
-        //uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
-
-        //int nPixelSpace = static_cast<int>(image.elemSize());
-        //int nLineSpace = nPixelSpace * image.cols;
-        //int nBandSpace = static_cast<int>(image.elemSize1());
-
-        //TL_TODO("Aplicar transformación a la región a leer")
-        //CPLErr cerr = mDataset->RasterIO(GF_Write, static_cast<int>(trf.tx), 
-        //                                 static_cast<int>(trf.ty), 
-        //                                 image.cols, image.rows, buff, 
-        //                                 image.cols, image.rows, 
-        //                                 openCvToGdal(image.depth()), this->channels(), 
-        //                                 gdalBandOrder(this->channels()).data(), nPixelSpace,
-        //                                 nLineSpace, nBandSpace);
-
-        //if (cerr != 0) {
-        //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-        //}
-    // }
-
-    int rows() const override
+    auto rows() const -> int override
     {
         int rows = 0;
 
@@ -512,7 +481,7 @@ public:
         return rows;
     }
 
-    int cols() const override
+    auto cols() const -> int override
     {
         int cols = 0;
 
@@ -529,7 +498,7 @@ public:
         return cols;
     }
 
-    int channels() const override
+    auto channels() const -> int override
     {
         int channels = 0;
 
@@ -546,12 +515,12 @@ public:
         return channels;
     }
 
-    DataType dataType() const override
+    auto dataType() const -> DataType override
     {
         return mDataType;
     }
 
-    int depth() const override
+    auto depth() const -> int override
     {
         int depth = 0;
 
@@ -567,30 +536,21 @@ public:
         return depth;
     }
 
-    void setGeoreference(const Affine<Point<double>> &georeference) override
+    void setGeoreference(const Affine<double, 2> &georeference) override
     {
-        mAffine = georeference;
+        this->affine = georeference;
 
-        if (mDataset && !mAffine.isNull()) {
+        if (mDataset && !this->affine.isEmpty()) {
             this->setGdalGeoTransform();
         }
     }
 
-    void setCRS(const std::string & crs) override
+    void setCRS(const std::string &crs) override
     {
         if (mDataset) {
             this->setGdalProjection(crs);
         }
     }
-
-    //#ifdef TL_HAVE_GEOSPATIAL
-    //  void setCRS(const geospatial::Crs &crs) override
-    //  {
-    //    if (mDataset && crs.isValid()) {
-    //      this->setGdalProjection(crs.toWktFormat());
-    //    }
-    //  }
-    //#endif
 
     void setNoDataValue(double nodata) override
     {
@@ -599,23 +559,9 @@ public:
         }
     }
 
-    //#ifdef TL_HAVE_GRAPHIC
-    //  void setColor(const Color &nodata)
-    //  {
-    //    int channels = this->channels();
-    //    if (channels == 1) {
-    //      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.luminance());
-    //    } else {
-    //      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.red());
-    //      mDataset->GetRasterBand(2)->SetNoDataValue(nodata.green());
-    //      mDataset->GetRasterBand(3)->SetNoDataValue(nodata.blue());
-    //    }
-    //  }
-    //#endif
-
 private:
 
-    bool checkDataType()
+    bool checkDataType() const
     {
         return mValidDataTypes.isEnabled(mDataType);
     }
@@ -623,17 +569,17 @@ private:
     void setGdalGeoTransform()
     {
         std::array<double, 6> geotransform{};
-        Matrix<double, 2, 3> parameters = mAffine.parameters();
-        geotransform[1] = parameters.at(0, 0);
-        geotransform[2] = parameters.at(0, 1);
-        geotransform[4] = parameters.at(1, 0);
-        geotransform[5] = parameters.at(1, 1);
-        geotransform[0] = parameters.at(0, 2);
-        geotransform[3] = parameters.at(1, 2);
+        geotransform[1] = affine(0, 0);
+        geotransform[2] = affine(0, 1);
+        geotransform[4] = affine(1, 0);
+        geotransform[5] = affine(1, 1);
+        geotransform[0] = affine(0, 2);
+        geotransform[3] = affine(1, 2);
+
         mDataset->SetGeoTransform(geotransform.data());
     }
 
-    void setGdalProjection(const std::string & crs)
+    void setGdalProjection(const std::string &crs)
     {
         OGRErr err = mSpatialReference->importFromWkt(crs.c_str());
         if (err != 0) {
@@ -727,9 +673,9 @@ public:
 
 
 
-std::unique_ptr<ImageWriter> ImageWriterFactory::create(const Path & file)
+auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
 {
-    std::unique_ptr<ImageWriter> image_writer;
+    ImageWriter::Ptr image_writer;
 
     try {
 
@@ -754,11 +700,6 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::create(const Path & file)
     }
 
     return image_writer;
-}
-
-std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path & file)
-{
-    return ImageWriterFactory::create(file);
 }
 
 } // End namespace tl

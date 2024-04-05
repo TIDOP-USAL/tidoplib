@@ -30,17 +30,21 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
+#include "tidop/core/ptr.h"
 
 namespace tl
 {
 
 class GLayer;
 
+/*! \addtogroup vector
+ *  \{
+ */
+
 class TL_EXPORT VectorWriter
 {
+
+    GENERATE_UNIQUE_PTR(VectorWriter)
 
 public:
 
@@ -48,37 +52,36 @@ public:
     virtual ~VectorWriter() = default;
 
     /*!
-     * \brief Abre el fichero
+     * \brief Open the file
      */
     virtual void open() = 0;
 
     /*!
-     * \brief Comprueba si el fichero se ha cargado correctamente
+     * \brief Check if the file has been loaded correctly
      */
-    virtual bool isOpen() const = 0;
+    virtual auto isOpen() const -> bool = 0;
 
     /*!
-     * \brief Cierra el fichero
+     * \brief Close the file
      */
     virtual void close() = 0;
 
+    /*!
+     * \brief Create the file
+     */
     virtual void create() = 0;
 
+    /*!
+     * \brief Write the layer to the file
+     * \param[in] layer The layer to be written
+     */
     virtual void write(const GLayer &layer) = 0;
 
     /*!
      * \brief Set the Coordinate Reference System
-     * \param[in] crs Coordinate Reference System in WKT format
+     * \param[in] epsgCode Coordinate Reference System in EPSG code format
      */
     virtual void setCRS(const std::string &epsgCode) = 0;
-
-    //#ifdef TL_HAVE_GEOSPATIAL
-    //  /*!
-    //   * \brief Set the Coordinate Reference System
-    //   * \param[in] crs geospatial::Crs object
-    //   */
-    //  virtual void setCRS(const geospatial::Crs &crs) = 0;
-    //#endif
 
 protected:
 
@@ -88,11 +91,10 @@ protected:
 
 
 /*!
- * \brief Factoria de clases para la escritura de diferentes formatos vectoriales
+ * \brief Factory class for writing various vector formats
  */
 class TL_EXPORT VectorWriterFactory
 {
-public:
 
 private:
 
@@ -100,10 +102,11 @@ private:
 
 public:
 
-    static std::unique_ptr<VectorWriter> create(const Path &file);
+    static auto create(const Path &file) -> VectorWriter::Ptr;
     TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<VectorWriter> createWriter(const Path &file);
+    static auto createWriter(const Path &file) -> VectorWriter::Ptr;
 };
 
+/*! \} */ // end of vector
 
 } // End namespace tl

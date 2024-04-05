@@ -44,11 +44,6 @@ if(BUILD_TL_MATH)
                              mathutils.h
                              simd.h
                              data.h
-                             statistic/series.h
-                             statistic/descriptive.h
-                             statistic/confmat.h
-		                     statistic/covariance.h
-                             statistic/tukeyfences.h
                              algebra/quaternion.h
                              algebra/euler_angles.h
                              algebra/rotations.h
@@ -62,7 +57,33 @@ if(BUILD_TL_MATH)
                              algebra/lu.h
                              algebra/qr.h
                              algebra/cholesky.h
-                             algebra/umeyama.h
+							 geometry/affine.h
+							 geometry/helmert.h
+                             geometry/rotation.h
+                             geometry/scaling.h
+                             geometry/transform.h
+                             geometry/translation.h
+                             geometry/umeyama.h
+                             statistic/algorithm.h
+                             statistic/biweightmidvariance.h
+                             statistic/descriptive.h
+                             statistic/iqr.h
+                             statistic/mad.h
+                             statistic/mean.h
+                             statistic/median.h
+                             statistic/mode.h
+                             statistic/pearson.h
+                             statistic/quantile.h
+                             statistic/range.h
+                             statistic/rms.h
+                             statistic/series.h
+                             statistic/confmat.h
+		                     statistic/covariance.h
+                             statistic/skewness.h
+                             statistic/skewness.impl.h
+                             statistic/stddev.h
+                             statistic/tukeyfences.h
+                             statistic/variance.h
                              lapack.h
                              blas.h)
                 

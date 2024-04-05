@@ -52,29 +52,20 @@ TL_EXPORT bool compareInsensitiveCase(const std::string &source,
                                       const std::string &compare);
 #endif
 
-template<typename T1, typename T2> static inline
-  typename std::enable_if<
-  std::is_integral<T1>::value,
-  T1>::type
-numberCast(T2 number)
+template<typename T1, typename T2>
+auto numberCast(T2 number) -> std::enable_if_t<std::is_integral<T1>::value, T1>
 {
     return static_cast<T1>(std::round(number));
 }
 
-template<typename T1, typename T2> static inline
-  typename std::enable_if<
-  std::is_floating_point<T1>::value,
-  T1>::type
-numberCast(T2 number)
+template<typename T1, typename T2>
+auto numberCast(T2 number) -> std::enable_if_t<std::is_floating_point<T1>::value,T1>
 {
     return static_cast<T1>(number);
 }
 
-template<typename T1, typename T2> static inline
-  typename std::enable_if<
-  !std::is_arithmetic<T1>::value,
-  T1>::type
-numberCast(T2 /*b*/)
+template<typename T1, typename T2>
+auto numberCast(T2 /*b*/) -> std::enable_if_t<!std::is_arithmetic<T1>::value,T1>
 {
     //En linux me sale siempre el error aunque no se llame a la función.
     //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
@@ -82,13 +73,15 @@ numberCast(T2 /*b*/)
     return T1{0};
 }
 
+template <typename T>
+bool isInRange(T value, T min, T max)
+{
+    return (value < max) && (value > min);
+}
 
 
-template <typename T> inline
-typename std::enable_if<
-  std::is_arithmetic<T>::value && !std::is_same<T, bool>::value,
-  T>::type
-convertStringTo(const std::string &str)
+template <typename T>
+auto convertStringTo(const std::string &str) -> std::enable_if_t<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value,T>
 {
     T value{};
 
@@ -98,22 +91,16 @@ convertStringTo(const std::string &str)
     return value;
 } 
 
-template <typename T> inline
-typename std::enable_if<
-  std::is_same<T, bool>::value,
-  T>::type
-convertStringTo(const std::string &str)
+template <typename T>
+auto convertStringTo(const std::string& str) -> std::enable_if_t<std::is_same<T, bool>::value,T>
 {
     T value = (compareInsensitiveCase(str, "true") || str == "1");
 
     return value;
 }
 
-template <typename T> inline
-typename std::enable_if<
-  !std::is_arithmetic<T>::value,
-  T>::type
-convertStringTo(const std::string &/*str*/)
+template <typename T>
+auto convertStringTo(const std::string &/*str*/) -> std::enable_if_t<!std::is_arithmetic<T>::value,T>
 {
     //En linux me sale siempre el error aunque no se llame a la función.
     //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
@@ -132,11 +119,9 @@ convertStringTo(const std::string &/*str*/)
  */
 
 
-template <typename T> inline
-typename std::enable_if<
-  std::is_same<T, std::string>::value,
-  std::vector<T>>::type
-split(const std::string &string, char separator = ',')
+template <typename T>
+auto split(const std::string& string,
+           char separator = ',') -> std::enable_if_t<std::is_same<T, std::string>::value, std::vector<T>>
 {
     std::vector<T> out;
 
@@ -149,11 +134,11 @@ split(const std::string &string, char separator = ',')
     return out;
 }
 
-template <typename T> inline
-typename std::enable_if<
-  std::is_arithmetic<T>::value && !std::is_same<T, bool>::value,
-  std::vector<T>>::type
-split(const std::string &string, char separator = ',')
+template <typename T>
+auto split(const std::string& string,
+           char separator = ',') -> std::enable_if_t<std::is_arithmetic<T>::value && 
+                                                     !std::is_same<T, bool>::value,
+	                                                 std::vector<T>>
 {
     std::vector<T> out;
 
@@ -265,7 +250,7 @@ public:
     FileOptions() = default;
     virtual ~FileOptions() = default;
 
-    virtual const char *options() = 0;
+    virtual auto options() const -> const char* = 0;
 };
 
 /*!

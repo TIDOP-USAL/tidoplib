@@ -23,6 +23,9 @@
  **************************************************************************/
 
 #include "tidop/imgprocess/fourier.h"
+
+#include <opencv2/imgproc.hpp>
+
 #include "tidop/core/utils.h"
 #include "tidop/math/mathutils.h"
 

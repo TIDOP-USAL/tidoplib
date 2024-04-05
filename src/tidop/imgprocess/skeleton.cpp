@@ -95,16 +95,16 @@ void Thinning::thinningIteration(cv::Mat &image, int iter, Type type) const
             }
         };
 
-        int num_threads = optimalNumberOfThreads();
+        auto num_threads = optimalNumberOfThreads();
         std::vector<std::thread> threads(num_threads);
 
-        int _size = image.rows / num_threads;
-        int ini = 0;
-        int end = 1;
-        for (int i = 0; i < num_threads; i++) {
+        uint32_t _size = image.rows / num_threads;
+        uint32_t ini = 0;
+        uint32_t end = 1;
+        for (uint32_t i = 0; i < num_threads; i++) {
             ini = end;
             end = ini + _size;
-            if (i == (num_threads - 1) && end != image.rows - 1) end = image.rows - 1;
+            if (i == (num_threads - 1) && end != static_cast<uint32_t>(image.rows - 1)) end = image.rows - 1;
             threads[i] = std::thread(iteration, ini, end);
         }
 

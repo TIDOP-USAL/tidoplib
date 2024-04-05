@@ -37,7 +37,7 @@ namespace tl
 
 
 /*!
- * \brief Clase gráfica polígono
+ * \brief Polygon graphic class
  */
 class TL_EXPORT GPolygon
   : public Polygon<Point<double>>,
@@ -46,52 +46,54 @@ class TL_EXPORT GPolygon
 public:
 
     /*!
-     * \brief Constructor por defecto
+     * \brief Default constructor
      */
     GPolygon();
 
-    /*!
-     * \brief Constructora a partir de un poligono
-     * Representa un poligono sin estilo
-     * \param polygon Objeto de la clase Polygon
-     * \see Polygon
-     */
-    GPolygon(const Polygon<Point<double>> &polygon);
+    explicit GPolygon(size_t size);
 
     /*!
-     * \brief Constructor de copia
-     * \param gPolygon Objeto que se copia
+     * \brief Constructor from a polygon
+     * \param[in] polygon Polygon class object
+     * \see Polygon
+     */
+    explicit GPolygon(const Polygon<Point<double>> &polygon);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] gPolygon Object to be copied
      */
     GPolygon(const GPolygon &gPolygon);
 
     /*!
-     * \brief Constructor de movimiento
-     * \param[in] gPolygon Objeto Polygon que se mueve
+     * \brief Move Constructor
+     * \param[in] gPolygon GPolygon object that moves
      */
     GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT;
 
     ~GPolygon() override;
 
     /*!
-     * \brief Operador de asignación
-     * \param gPolygon Objeto GPolygon que se copia
-     * \return Referencia al objeto
+     * \brief Copy assignment operator
+     * \param[in] gPolygon Object to be copied
+     * \return Object reference
      */
-    GPolygon &operator = (const GPolygon &gPolygon);
+    auto operator =(const GPolygon& gPolygon) -> GPolygon&;
 
     /*!
-     * \brief Operador de asignación de movimiento
-     * \param[in] gPolygon Objeto GPolygon que se mueve
+     * \brief Move assignment operator
+     * \param[in] gPolygon GPolygon object that moves
+     * \return Object reference
      */
-    GPolygon &operator = (GPolygon &&gPolygon) TL_NOEXCEPT;
+    auto operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
 /*!
- * \brief Clase gráfica polígono 3D
+ * \brief 3D polygon graphics class
  */
 class TL_EXPORT GPolygon3D
   : public Polygon3D<Point3<double>>,
@@ -100,52 +102,54 @@ class TL_EXPORT GPolygon3D
 public:
 
     /*!
-     * \brief Constructor por defecto
+     * \brief Default constructor
      */
     GPolygon3D();
 
-    /*!
-     * \brief Constructora a partir de un poligono
-     * Representa un poligono sin estilo
-     * \param polygon Objeto de la clase Polygon
-     * \see Polygon
-     */
-    GPolygon3D(const Polygon3D<Point3<double>> &polygon);
+    explicit GPolygon3D(size_t size);
 
     /*!
-     * \brief Constructor de copia
-     * \param gPolygon3D Objeto que se copia
+     * \brief Constructor from a 3D polygon
+     * \param[in] polygon Polygon object
+     * \see Polygon3D
+     */
+    explicit GPolygon3D(const Polygon3D<Point3<double>> &polygon);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] gPolygon3D Object to be copied
      */
     GPolygon3D(const GPolygon3D &gPolygon3D);
 
     /*!
-     * \brief Constructor de movimiento
-     * \param[in] gPolygon3D Objeto que se mueve
+     * \brief Move Constructor
+     * \param[in] gPolygon3D GPolygon object that moves
      */
     GPolygon3D(GPolygon3D &&gPolygon3D) TL_NOEXCEPT;
 
     ~GPolygon3D() override;
 
     /*!
-     * \brief Operador de asignación
-     * \param gPolygon3D Objeto GPolygon3D que se copia
-     * \return Referencia al objeto
+     * \brief Copy assignment operator
+     * \param[in] gPolygon3D Object to be copied
+     * \return Object reference
      */
-    GPolygon3D &operator = (const GPolygon3D &gPolygon3D);
+    auto operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&;
 
     /*!
-     * \brief Operador de asignación de movimiento
-     * \param[in] gPolygon3D Objeto que se mueve
+     * \brief Move assignment operator
+     * \param[in] gPolygon3D GPolygon object that moves
+     * \return Object reference
      */
-    GPolygon3D &operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT;
+    auto operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
 /*!
- * \brief Clase gráfica multi-polígono
+ * \brief Multi-polygon graphic class
  */
 class TL_EXPORT GMultiPolygon
   : public MultiPolygon<Point<double>>,
@@ -154,40 +158,54 @@ class TL_EXPORT GMultiPolygon
 public:
 
     /*!
-     * \brief Constructor por defecto
+     * \brief Default constructor
      */
     GMultiPolygon();
 
-    /*!
-     * \brief Constructora a partir de un multi-polígono
-     * Representa un multi-polígono sin estilo
-     * \param multiPolygon Objeto de la clase MultiPolygon
-     * \see MultiPolygon
-     */
-    GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon);
+    explicit GMultiPolygon(size_t size);
 
     /*!
-     * \brief Constructor de copia
-     * \param gMultiPolygon Objeto que se copia
+     * \brief Constructor from a multi-polygon
+     * \param multiPolygon MultiPolygon object
+     * \see MultiPolygon
      */
-    GMultiPolygon(const GMultiPolygon &gMultiPolygon);
+    explicit GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] multiPolygon Object to be copied
+     */
+    GMultiPolygon(const GMultiPolygon &multiPolygon);
+
+    /*!
+     * \brief Move Constructor
+     * \param[in] multiPolygon GMultiPolygon object that moves
+     */
+    GMultiPolygon(GMultiPolygon &&multiPolygon) TL_NOEXCEPT;
 
     ~GMultiPolygon() override;
 
     /*!
-     * \brief Operador de asignación
-     * \param gMultiPolygon Objeto GMultiPolygon que se copia
-     * \return Referencia al objeto
+     * \brief Copy assignment operator
+     * \param[in] multiPolygon Object to be copied
+     * \return Object reference
      */
-    GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
+    auto operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    /*!
+     * \brief Move assignment operator
+     * \param[in] multiPolygon GPolygon object that moves
+     * \return Object reference
+     */
+    auto operator =(GMultiPolygon &&multiPolygon) TL_NOEXCEPT -> GMultiPolygon&;
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
 
 
 /*!
- * \brief Clase gráfica multi-polígono 3D
+ * \brief Multi-polygon 3D graphic class
  */
 class TL_EXPORT GMultiPolygon3D
   : public MultiPolygon3D<Point3<double>>,
@@ -196,36 +214,102 @@ class TL_EXPORT GMultiPolygon3D
 public:
 
     /*!
-     * \brief Constructor por defecto
+     * \brief Default constructor
      */
     GMultiPolygon3D();
 
     /*!
-     * \brief Constructora a partir de un multi-polígono 3D
-     * Representa un multi-polígono 3D sin estilo
-     * \param multiPolygon Objeto de la clase MultiPolygon
+     * \brief Constructor from a MultiPolygon3D
+     * \param multiPolygon MultiPolygon3D object
      * \see MultiPolygon
      */
-    GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon);
+    explicit GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon);
 
     /*!
-     * \brief Constructor de copia
-     * \param gMultiPolygon3D Objeto que se copia
+     * \brief Copy constructor
+     * \param multiPolygon3D Object to be copied
      */
-    GMultiPolygon3D(const GMultiPolygon3D &gMultiPolygon3D);
+    GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D);
+
+    /*!
+     * \brief Move Constructor
+     * \param[in] multiPolygon3D GPolygon object that moves
+     */
+    GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT;
 
     ~GMultiPolygon3D() override;
 
     /*!
      * \brief Operador de asignación
-     * \param gMultiPolygon3D Objeto GMultiPolygon3D que se copia
+     * \param multiPolygon3D Objeto GMultiPolygon3D que se copia
      * \return Referencia al objeto
      */
-    GMultiPolygon3D &operator = (const GMultiPolygon3D &gMultiPolygon3D);
+    auto operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D&;
 
-    bool isMultiEntity() const override;
-    bool isSimpleEntity() const override;
+    /*!
+     * \brief Move assignment operator
+     * \param[in] multiPolygon3D GMultiPolygon3D object that moves
+     * \return Object reference
+     */
+    auto operator =(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT -> GMultiPolygon3D &;
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
 };
+
+
+
+
+inline auto GPolygon::isMultiEntity() const -> bool
+{
+    return false;
+}
+
+inline auto GPolygon::isSimpleEntity() const -> bool
+{
+    return true;
+}
+
+
+
+
+
+inline auto GPolygon3D::isMultiEntity() const -> bool
+{
+    return false;
+}
+
+inline auto GPolygon3D::isSimpleEntity() const -> bool
+{
+    return true;
+}
+
+
+
+
+
+inline auto GMultiPolygon::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiPolygon::isSimpleEntity() const -> bool
+{
+    return false;
+}
+
+
+
+
+inline auto GMultiPolygon3D::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiPolygon3D::isSimpleEntity() const -> bool
+{
+    return false;
+}
 
 
 /*! \} */ // Fin GraphicEntities

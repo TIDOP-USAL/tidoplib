@@ -27,39 +27,38 @@
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 
-#include <stdexcept>
 #include <fstream>
 
 namespace tl
 {
 
 MatchesReader::MatchesReader(tl::Path file)
-    : mFilePath(std::move(file))
+  : mFilePath(std::move(file))
 {
 
 }
 
-std::vector<cv::DMatch> MatchesReader::goodMatches() const
+auto MatchesReader::goodMatches() const -> std::vector<cv::DMatch>
 {
     return mGoodMatches;
 }
 
-std::vector<cv::DMatch> MatchesReader::wrongMatches() const
+auto MatchesReader::wrongMatches() const -> std::vector<cv::DMatch>
 {
     return mWrongMatches;
 }
 
-const Path &MatchesReader::filePath() const
+auto MatchesReader::filePath() const -> const Path&
 {
     return mFilePath;
 }
 
-std::vector<cv::DMatch> &MatchesReader::good_matches()
+auto MatchesReader::good_matches() -> std::vector<cv::DMatch>&
 {
     return mGoodMatches;
 }
 
-std::vector<cv::DMatch> &MatchesReader::wrong_matches()
+auto MatchesReader::wrong_matches() -> std::vector<cv::DMatch>&
 {
     return mWrongMatches;
 }
@@ -71,7 +70,7 @@ std::vector<cv::DMatch> &MatchesReader::wrong_matches()
 
 
 MatchesWriter::MatchesWriter(tl::Path file)
-    : mFilePath(std::move(file))
+  : mFilePath(std::move(file))
 {
 
 }
@@ -86,17 +85,17 @@ void MatchesWriter::setWrongMatches(const std::vector<cv::DMatch> &wrongMatches)
     mWrongMatches = wrongMatches;
 }
 
-const tl::Path &MatchesWriter::filePath() const
+auto MatchesWriter::filePath() const -> const tl::Path&
 {
     return mFilePath;
 }
 
-const std::vector<cv::DMatch> &MatchesWriter::goodMatches() const
+auto MatchesWriter::goodMatches() const -> const std::vector<cv::DMatch>&
 {
     return mGoodMatches;
 }
 
-const std::vector<cv::DMatch> &MatchesWriter::wrongMatches() const
+auto MatchesWriter::wrongMatches() const -> const std::vector<cv::DMatch>&
 {
     return mWrongMatches;
 }
@@ -107,7 +106,7 @@ const std::vector<cv::DMatch> &MatchesWriter::wrongMatches() const
 
 
 class MatchesReaderBinary
-    : public MatchesReader
+  : public MatchesReader
 {
 
 public:
@@ -124,7 +123,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    bool isOpen() const;
     void readHeader();
     void readMatches(std::vector<cv::DMatch> *matches);
     void readGoodMatches();
@@ -175,7 +174,7 @@ void MatchesReaderBinary::open()
     }
 }
 
-bool MatchesReaderBinary::isOpen()
+bool MatchesReaderBinary::isOpen() const
 {
     return stream->is_open();
 }
@@ -216,7 +215,7 @@ void MatchesReaderBinary::readGoodMatches()
 {
     try {
 
-        good_matches().resize(static_cast<size_t>(goodMatchesCount));
+        good_matches().resize(goodMatchesCount);
         readMatches(&good_matches());
 
     } catch (...) {
@@ -228,7 +227,7 @@ void MatchesReaderBinary::readWrongMatches()
 {
     try {
 
-        wrong_matches().resize(static_cast<size_t>(wrongMatchesCount));
+        wrong_matches().resize(wrongMatchesCount);
         readMatches(&wrong_matches());
 
     } catch (...) {
@@ -255,7 +254,7 @@ public:
     explicit MatchesReaderOpenCV(Path file);
     ~MatchesReaderOpenCV() override;
 
-    // MatchesReader interface
+// MatchesReader interface
 
 public:
 
@@ -264,7 +263,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    bool isOpen() const;
     void readGoodMatches();
     void readWrongMatches();
     void close();
@@ -317,7 +316,7 @@ void MatchesReaderOpenCV::open()
     }
 }
 
-bool MatchesReaderOpenCV::isOpen()
+bool MatchesReaderOpenCV::isOpen() const
 {
     if (mFileStorage == nullptr) return false;
     return mFileStorage->isOpened();
@@ -380,7 +379,7 @@ private:
     void writeGoodMatches() const;
     void writeWrongMatches() const;
     void writeMatches(const std::vector<cv::DMatch> &matches) const;
-    void close();
+    void close() const;
 
 private:
 
@@ -437,7 +436,7 @@ void MatchesWriterBinary::writeHeader() const
         stream->write(reinterpret_cast<char *>(&size), sizeof(uint64_t));
         stream->write(reinterpret_cast<char *>(&size_wm), sizeof(uint64_t));
         std::array<char, 100> extra_head{}; 
-        stream->write(reinterpret_cast<char *>(extra_head.data()), sizeof(char) * 100);
+        stream->write(extra_head.data(), sizeof(char) * 100);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -482,7 +481,7 @@ void MatchesWriterBinary::writeMatches(const std::vector<cv::DMatch> &matches) c
     }
 }
 
-void MatchesWriterBinary::close()
+void MatchesWriterBinary::close() const
 {
     stream->close();
 }
@@ -501,7 +500,7 @@ public:
     explicit MatchesWriterOpenCV(Path file);
     ~MatchesWriterOpenCV() override;
 
-    // MatchesWriter interface
+// MatchesWriter interface
 
 public:
 
@@ -510,7 +509,7 @@ public:
 private:
 
     void open();
-    bool isOpen();
+    bool isOpen() const;
     void writeGoodMatches();
     void writeWrongMatches();
     void close();
@@ -570,7 +569,7 @@ void MatchesWriterOpenCV::open()
     }
 }
 
-bool MatchesWriterOpenCV::isOpen()
+bool MatchesWriterOpenCV::isOpen() const
 {
     if (mFileStorage == nullptr) return false;
     return mFileStorage->isOpened();
@@ -612,12 +611,12 @@ void MatchesWriterOpenCV::close()
 
 
 
-std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path &file)
+auto MatchesReaderFactory::createReader(const Path&file) -> std::unique_ptr<MatchesReader>
 {
     return MatchesReaderFactory::create(file);
 }
 
-std::unique_ptr<MatchesReader> MatchesReaderFactory::create(const tl::Path &file)
+auto MatchesReaderFactory::create(const Path&file) -> std::unique_ptr<MatchesReader>
 {
     std::unique_ptr<MatchesReader> matches_reader;
 
@@ -646,12 +645,12 @@ std::unique_ptr<MatchesReader> MatchesReaderFactory::create(const tl::Path &file
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path &file)
+auto MatchesWriterFactory::createWriter(const Path&file) -> std::unique_ptr<MatchesWriter>
 {
     return MatchesWriterFactory::create(file);
 }
 
-std::unique_ptr<MatchesWriter> MatchesWriterFactory::create(const tl::Path &file)
+auto MatchesWriterFactory::create(const Path&file) -> std::unique_ptr<MatchesWriter>
 {
     std::unique_ptr<MatchesWriter> matches_writer;
 

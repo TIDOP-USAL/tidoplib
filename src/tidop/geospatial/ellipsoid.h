@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -76,7 +76,7 @@ public:
      * axis (a) and either semi-minor axis (b) or inverse flattening (1/f). 
      * If semi-minor axis is used as the second defining parameter the value
      * for inverse flattening to be shown in the WKT string should be calculated 
-     * from 1/f  =  a / (a – b).
+     * from 1/f  =  a / (a â€“ b).
      *
      * ISO 19111 also allows for the earth model to be a sphere, for which
      * 1/f is infinite. In this document if the earth model is a sphere 

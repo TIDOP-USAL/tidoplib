@@ -26,40 +26,32 @@
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #endif
 
 #include "tidop/graphic/canvas.h"
-#include "tidop/geometry/transform/transform.h"
 
 namespace tl
 {
 
 Painter::Painter()
-  : mTrf(nullptr),
-    mCanvas(nullptr)
+  : mCanvas(nullptr)
 {
 }
 
 Painter::Painter(Canvas *canvas)
-  : mTrf(nullptr),
-    mCanvas(canvas)
+  : mCanvas(canvas)
 {
 }
 
-Painter::~Painter()
-{
-}
+Painter::~Painter() = default;
 
 void Painter::drawPoint(const GPoint &point)
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
 
-            Point<double> point_transform = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(point, Transform::Order::direct);
-
+            Point<double> point_transform = mTransform.transform(point);
             mCanvas->drawPoint(point_transform, point);
 
         } else {
@@ -72,7 +64,7 @@ void Painter::drawPoint(const GPoint &point)
     }
 }
 
-void Painter::drawPoint(const Point<double> &point)
+void Painter::drawPoint(const Point<double> &point) const
 {
     if (mCanvas) {
         mCanvas->drawPoint(point, *this);
@@ -81,16 +73,16 @@ void Painter::drawPoint(const Point<double> &point)
     }
 }
 
-void Painter::drawLineString(const GLineString &lineString)
+void Painter::drawLineString(const GLineString &lineString) const
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
 
             LineString<Point<double>> linestring_transform(lineString.size());
 
             for (size_t i = 0; i < lineString.size(); i++) {
-                linestring_transform[i] = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(lineString[i], Transform::Order::direct);
+                linestring_transform[i] = mTransform.transform(lineString[i]);
             }
 
             mCanvas->drawLineString(linestring_transform, lineString);
@@ -106,7 +98,7 @@ void Painter::drawLineString(const GLineString &lineString)
     }
 }
 
-void Painter::drawLineString(const LineStringD &lineString)
+void Painter::drawLineString(const LineStringD &lineString) const
 {
     if (mCanvas) {
         mCanvas->drawLineString(lineString, *this);
@@ -115,15 +107,15 @@ void Painter::drawLineString(const LineStringD &lineString)
     }
 }
 
-void Painter::drawPolygon(const GPolygon &polygon)
+void Painter::drawPolygon(const GPolygon &polygon) const
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
             Polygon<Point<double>> polygon_transform(polygon.size());
 
             for (size_t i = 0; i < polygon.size(); i++) {
-                polygon_transform[i] = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
+                polygon_transform[i] = mTransform.transform(polygon[i]);
             }
 
             mCanvas->drawPolygon(polygon_transform, polygon);
@@ -136,15 +128,15 @@ void Painter::drawPolygon(const GPolygon &polygon)
     }
 }
 
-void Painter::drawPolygon(const PolygonD &polygon)
+void Painter::drawPolygon(const PolygonD &polygon) const
 {
     if (mCanvas) {
 
-        if (mTrf) {
+        if (!mTransform.isEmpty()) {
             Polygon<Point<double>> polygon_transform(polygon.size());
 
             for (size_t i = 0; i < polygon.size(); i++) {
-                polygon_transform[i] = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(polygon[i], Transform::Order::direct);
+                polygon_transform[i] = mTransform.transform(polygon[i]);
             }
 
             mCanvas->drawPolygon(polygon_transform, *this);
@@ -157,48 +149,43 @@ void Painter::drawPolygon(const PolygonD &polygon)
     }
 }
 
-void Painter::drawMultiPoint(const GMultiPoint &multipoint)
+void Painter::drawMultiPoint(const GMultiPoint &multipoint) const
 {
     unusedParameter(multipoint);
 }
 
-void Painter::drawMultiLineString(const GMultiLineString &multiLineString)
+void Painter::drawMultiLineString(const GMultiLineString &multiLineString) const
 {
     unusedParameter(multiLineString);
 }
 
-void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon)
+void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon) const
 {
     unusedParameter(multiPolygon);
 }
 
 #ifdef TL_HAVE_OPENCV
-void Painter::drawPicture(const cv::Mat &bmp)
+void Painter::drawPicture(const cv::Mat &bmp) const
 {
     ///mCanvas->
     unusedParameter(bmp);
 }
 #endif // TL_HAVE_OPENCV
 
-void Painter::drawText(const Point<double> &point, const std::string &text)
+void Painter::drawText(const Point<double> &point, const std::string &text) const
 {
     if (mCanvas) {
 
-        if (mTrf) {
-
-            Point<double> point_transform = dynamic_cast<TransformBase<Point<double>> *>(mTrf)->transform(point, Transform::Order::direct);
-
+        if (!mTransform.isEmpty()) {
+            Point<double> point_transform = mTransform.transform(point);
             mCanvas->drawText(point_transform, text, *this);
-
         } else {
-
             mCanvas->drawText(point, text, *this);
         }
 
     } else {
         Message::error("Canvas not defined");
     }
-
 }
 
 void Painter::setCanvas(Canvas *canvas)
@@ -206,9 +193,9 @@ void Painter::setCanvas(Canvas *canvas)
     mCanvas = canvas;
 }
 
-void Painter::setTransform(Transform *trf)
+void Painter::setTransform(const Affine<double, 2> &affine)
 {
-    mTrf = trf;
+    mTransform = affine;
 }
 
 

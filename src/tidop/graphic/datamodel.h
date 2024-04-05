@@ -49,54 +49,44 @@ public:
         INT,
         INT64,
         DOUBLE,
-        FLOAT,
         STRING
         //....
     };
+
+private:
+
+    std::string mName;
+    Type mType;
+    int mSize;
 
 public:
 
     /*!
      * \brief Constructor
-     * \param[in] name Nombre del campo
-     * \param[in] type Tipo
-     * \param[in] size Tamaño
+     * \param[in] name Field name
+     * \param[in] type Type
+     * \param[in] size Size
      */
     TableField(const std::string &name, Type type, int size);
 
     ~TableField();
 
     /*!
-     * \brief Devuelve el nombre del campo
+     * \brief Returns the field name
      */
-    std::string name() const;
+    auto name() const->std::string;
 
     /*!
-     * \brief Devuelve el tipo del campo
+     * \brief Returns the field type
      */
-    Type type() const;
+    auto type() const->Type;
 
     /*!
-     * \brief Devuelve el tamaño del campo
+     * \brief Returns the field size
      */
-    int size() const;
+    auto size() const -> int;
 
-private:
 
-    /*!
-     * \brief Nombre del campo
-     */
-    std::string mName;
-
-    /*!
-     * \brief Tipo del campo
-     */
-    Type mType;
-
-    /*!
-     * \brief Tamaño
-     */
-    int mSize;
 };
 
 
@@ -108,10 +98,10 @@ public:
 
     RegisterValue(const std::shared_ptr<TableField> &field);
     RegisterValue(const std::shared_ptr<TableField> &field,
-                  const std::string &value);
+                  std::string value);
     ~RegisterValue();
 
-    std::string value() const;
+    auto value() const -> std::string;
     void setValue(const std::string &value);
 
 private:
@@ -125,42 +115,33 @@ private:
 
 
 /*!
- * \brief Clase que representa un registro de una tabla
+ * \brief Class representing a record of a table
  */
 class TL_EXPORT TableRegister
 {
 
+protected:
+
+    std::vector<RegisterValue> mRegisterValues;
+
 public:
 
-    /*!
-     * \brief Constructora por defecto
-     */
     TableRegister(const std::vector<std::shared_ptr<TableField>> &fields);
 
     /*!
-     * \brief Constructor de copia
-     * \param[in] _register Objeto que se copia
+     * \brief Copy constructor
+     * \param[in] _register Object to copy
      */
     TableRegister(const TableRegister &_register);
 
     //TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields);
 
-    /*!
-     * \brief Destructora
-     */
     ~TableRegister();
 
-    std::string value(size_t idx) const;
+    auto value(size_t idx) const -> std::string;
     void setValue(size_t idx, const std::string &field);
 
-    size_t size() const;
-
-protected:
-
-    /*!
-     * \brief Campos de la tabla
-     */
-    std::vector<RegisterValue> mRegisterValues;
+    auto size() const -> size_t;
 
 };
 
@@ -172,84 +153,40 @@ class TL_EXPORT DataTable
 {
 public:
 
-    /*!
-     * \brief Iterador sobre los registros de la tabla
-     */
     typedef std::list<std::shared_ptr<TableRegister>>::iterator iterator;
+
+private:
+
+    std::string mTableName;
+    std::vector<std::shared_ptr<TableField>> mTableFields;
+    std::list<std::shared_ptr<TableRegister>> mRegister;
 
 public:
 
     DataTable(const std::string &tableName,
-              const std::vector<std::shared_ptr<TableField>> &TableField);
-    ~DataTable() {}
+              const std::vector<std::shared_ptr<TableField>> &tableField);
+    ~DataTable() = default;
+
+    auto begin() -> iterator;
+    auto end() -> iterator;
 
     /*!
-     * \brief Iterador al primer registro
+     * \brief Table name
+     * \return Table name
      */
-    iterator begin();
+    auto name() const -> std::string;
+
+    auto createRegister(int index) const -> std::shared_ptr<TableRegister>;
+
+    auto fields() const -> std::vector<std::shared_ptr<TableField>>;
 
     /*!
-     * \brief Iterador al último registro
-     */
-    iterator end();
-
-    ///*!
-    // * \brief Añade un registro al final
-    // * \param[in] _register Registro que se añade
-    // */
-    //void addRegister(std::shared_ptr<TableRegister> _register);
-
-    ///*!
-    // * \brief Borra un registro
-    // * \param[in] index Indice del registro que se borra
-    // */
-    //void deleteRegister(int index);
-
-    /*!
-     * \brief Nombre de la tabla
-     * \return Nombre de la tabla
-     */
-    std::string name() const;
-
-
-    std::shared_ptr<TableRegister> createRegister(int index);
-
-    std::vector<std::shared_ptr<TableField>> fields() const;
-
-    //size_t getFieldCount() const;
-
-    /*!
-     * \brief Establece el nombre de la tabla
-     * \param[in] name Nombre de la tabla
+     * \brief Sets the table name
+     * \param[in] name Table name
      */
     void setName(const char *name);
 
-    /*!
-     * \brief Establece la cabecera de la tabla
-     * \param[in] tableHeader Cabecera de la tabla
-     */
-     //void setTableHeader(std::shared_ptr<TableHeader> tableHeader);
-
-    size_t size();
-
-private:
-
-    /*!
-     * \brief Nombre de la tabla
-     */
-    std::string mTableName;
-
-    /*!
-     * \brief Campos de la tabla
-     */
-    std::vector<std::shared_ptr<TableField>> mTableFields;
-
-    /*!
-     * \brief Registros de la tabla
-     */
-    std::list<std::shared_ptr<TableRegister>> mRegister;
-
-    //size_t index;
+    auto size() const -> size_t;
 
 };
 
@@ -262,60 +199,22 @@ class TL_EXPORT DataModel
 
 public:
 
-    /*!
-     * \brief Constructor por defecto
-     */
     DataModel();
-
-    /*!
-     * \brief Destructor
-     */
     ~DataModel();
-
     /*!
-     * \brief create
+     * \brief Creates a new table in the data model
+     * \param[in] tableName Table name
+     * \param[in] fields Table fields
+     * \see TableField
      */
-     //void create();
-
-     /*!
-      * \brief Crea una tabla nueva en el modelo de datos
-      * \param[in] tableName Nombre de la tabla
-      * \param[in] tableHeader Cabecera de la tabla
-      * \see TableField
-      */
     void createTable(const std::string &tableName,
                      const std::vector<std::shared_ptr<TableField>> &fields);
 
     /*!
-     * \brief Añade una tabla al modelo de datos
-     * \param[in] table Tabla que se añade
+     * \brief Adds a table to the data model
+     * \param[in] table Table to be added
      */
-    void addTable(std::shared_ptr<DataTable> table);
-
-    /*!
-     * \brief drop
-     */
-     //void drop();
-
-    /*!
-     * \brief open
-     */
-     //void open(std::string file);
-
-    /*!
-     * \brief read
-     */
-     //void read();
-
-    /*!
-     * \brief write
-     */
-     //void write();
-
-    /*!
-     * \brief save
-     */
-     //void save();
+    void addTable(const std::shared_ptr<DataTable>& table);
 
 private:
 

@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_CORE_UTILS_GDAL_H
-#define TL_CORE_UTILS_GDAL_H
+#pragma once
 
 #include "tidop/config.h"
 
@@ -42,7 +41,7 @@ namespace tl
 #ifdef TL_HAVE_GDAL
 
 /*!
- * \brief Clase para registrar los drivers de GDAL
+ * \brief Class to register GDAL drivers
  *
  */
 class TL_EXPORT RegisterGdal
@@ -50,9 +49,6 @@ class TL_EXPORT RegisterGdal
 
 private:
 
-  /*!
-   * \brief Constructor privado
-   */
   RegisterGdal() = default;
 
 public:
@@ -62,9 +58,6 @@ public:
   TL_DISABLE_COPY(RegisterGdal)
   TL_DISABLE_MOVE(RegisterGdal)
 
-  /*!
-   * \brief Método para iniciar GDAL una unica vez
-   */
   static void init();
 
 };
@@ -75,5 +68,3 @@ public:
 
 } // End namespace tl
 
-
-#endif // TL_CORE_UTILS_GDAL_H

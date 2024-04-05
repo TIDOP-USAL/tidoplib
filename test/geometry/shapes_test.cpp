@@ -238,6 +238,15 @@ BOOST_AUTO_TEST_CASE(EllipseD_length)
   BOOST_CHECK_CLOSE(15.87, ellipse.length(), 0.1);
 }
 
+BOOST_AUTO_TEST_CASE(ellipsed_isInner)
+{
+  EllipseD ellipse(Point<double>(50., 50.), 3., 2.);
+  BOOST_CHECK(ellipse.isInner(tl::Point<double>(50., 50.)));
+  BOOST_CHECK(ellipse.isInner(tl::Point<double>(51., 51.)));
+  BOOST_CHECK(ellipse.isInner(tl::Point<double>(49., 49.)));
+  BOOST_CHECK(!ellipse.isInner(tl::Point<double>(53., 52.)));
+
+}
 
 /* Triangle */
 

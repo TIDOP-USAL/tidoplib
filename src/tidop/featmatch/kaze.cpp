@@ -32,8 +32,7 @@ namespace tl
 
 
 KazeProperties::KazeProperties()
-  : Kaze(),
-    mExtended(false),
+  : mExtended(false),
     mUpright(false),
     mThreshold(0.001),
     mOctaves(4),
@@ -53,32 +52,32 @@ KazeProperties::KazeProperties(const KazeProperties &kazeProperties)
 {
 }
 
-bool KazeProperties::extendedDescriptor() const
+auto KazeProperties::extendedDescriptor() const -> bool
 {
     return mExtended;
 }
 
-bool KazeProperties::uprightDescriptor() const
+auto KazeProperties::uprightDescriptor() const -> bool
 {
     return mUpright;
 }
 
-double KazeProperties::threshold() const
+auto KazeProperties::threshold() const -> double
 {
     return mThreshold;
 }
 
-int KazeProperties::octaves() const
+auto KazeProperties::octaves() const -> int
 {
     return mOctaves;
 }
 
-int KazeProperties::octaveLayers() const
+auto KazeProperties::octaveLayers() const -> int
 {
     return mOctaveLayers;
 }
 
-std::string KazeProperties::diffusivity() const
+auto KazeProperties::diffusivity() const -> std::string
 {
     return mDiffusivity;
 }
@@ -128,17 +127,18 @@ void KazeProperties::reset()
     mDiffusivity = "DIFF_PM_G2";
 }
 
-std::string KazeProperties::name() const
+auto KazeProperties::name() const -> std::string
 {
     return std::string("KAZE");
 }
+
 
 /*----------------------------------------------------------------*/
 
 
 
 KazeDetectorDescriptor::KazeDetectorDescriptor()
-    : mKaze(cv::KAZE::create())
+  : mKaze(cv::KAZE::create())
 {
     this->updateCvKaze();
 }
@@ -160,19 +160,20 @@ KazeDetectorDescriptor::KazeDetectorDescriptor(bool extendedDescriptor,
                                                const std::string &diffusivity)
   : mKaze(cv::KAZE::create())
 {
-    setExtendedDescriptor(extendedDescriptor);
-    setUprightDescriptor(uprightDescriptor);
-    setThreshold(threshold);
-    setOctaves(octaves);
-    setOctaveLayers(octaveLayers);
-    setDiffusivity(diffusivity);
+	KazeDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
+	KazeDetectorDescriptor::setUprightDescriptor(uprightDescriptor);
+	KazeDetectorDescriptor::setThreshold(threshold);
+	KazeDetectorDescriptor::setOctaves(octaves);
+	KazeDetectorDescriptor::setOctaveLayers(octaveLayers);
+	KazeDetectorDescriptor::setDiffusivity(diffusivity);
 }
 
 #if CV_VERSION_MAJOR >= 4
 
-cv::KAZE::DiffusivityType KazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity)
+auto KazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity) -> cv::KAZE::DiffusivityType
 {
     cv::KAZE::DiffusivityType diff = cv::KAZE::DIFF_PM_G1;
+
     if (diffusivity.compare("DIFF_PM_G1") == 0) {
         diff = cv::KAZE::DIFF_PM_G1;
     } else if (diffusivity.compare("DIFF_PM_G2") == 0) {
@@ -182,14 +183,16 @@ cv::KAZE::DiffusivityType KazeDetectorDescriptor::convertDiffusivity(const std::
     } else if (diffusivity.compare("DIFF_CHARBONNIER") == 0) {
         diff = cv::KAZE::DIFF_CHARBONNIER;
     }
+
     return diff;
 }
 
 #else
 
-int KazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity)
+auto KazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity) -> int
 {
     int diff = cv::KAZE::DIFF_PM_G1;
+
     if (diffusivity.compare("DIFF_PM_G1") == 0) {
         diff = cv::KAZE::DIFF_PM_G1;
     } else if (diffusivity.compare("DIFF_PM_G2") == 0) {
@@ -199,6 +202,7 @@ int KazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity)
     } else if (diffusivity.compare("DIFF_CHARBONNIER") == 0) {
         diff = cv::KAZE::DIFF_CHARBONNIER;
     }
+
     return diff;
 }
 
@@ -214,8 +218,8 @@ void KazeDetectorDescriptor::updateCvKaze()
     mKaze->setDiffusivity(convertDiffusivity(KazeProperties::diffusivity()));
 }
 
-std::vector<cv::KeyPoint> KazeDetectorDescriptor::detect(const cv::Mat &img,
-                                                         cv::InputArray &mask)
+auto KazeDetectorDescriptor::detect(const cv::Mat &img,
+                                    cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 
@@ -230,8 +234,8 @@ std::vector<cv::KeyPoint> KazeDetectorDescriptor::detect(const cv::Mat &img,
     return keyPoints;
 }
 
-cv::Mat KazeDetectorDescriptor::extract(const cv::Mat &img,
-                                        std::vector<cv::KeyPoint> &keyPoints)
+auto KazeDetectorDescriptor::extract(const cv::Mat &img,
+                                     std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat
 {
     cv::Mat descriptors;
 

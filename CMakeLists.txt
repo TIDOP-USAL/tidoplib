@@ -29,6 +29,9 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 
+if(POLICY CMP0146) 
+cmake_policy(SET CMP0146 OLD) 
+endif()
 
 project(TidopLib
         VERSION 3.0.0
@@ -199,13 +202,14 @@ cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
+cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
 
 OPTION (BUILD_APPS                    "Build Apps"             OFF)
 OPTION (BUILD_SHARED_LIBS             "Build Shared Libraries" OFF)
 OPTION (BUILD_TEST                    "Build test"             OFF)
-OPTION (BUILD_DOC                     "Build documentation"    OFF)
+OPTION (BUILD_DOC                     "Build documentation"    ON)
 
 # Configuración de la librería
 
@@ -487,7 +491,18 @@ if(WITH_PROJ)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
   if(NOT PROJ_FOUND)
+    unset(PROJ_DIR CACHE)
     set(TL_HAVE_PROJ NO)
+	set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(PROJ4 QUIET)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
+    if(NOT PROJ4_FOUND)
+      set(TL_HAVE_PROJ4 NO)
+    else()
+      set(TL_HAVE_PROJ4 YES)
+      include_directories(${PROJ4_INCLUDE_DIRS})
+      message(STATUS "  PROJ version: ${PROJ4_VERSION}")
+    endif()
   else()
     set(TL_HAVE_PROJ YES)
     #include_directories(${PROJ_INCLUDE_DIRS})

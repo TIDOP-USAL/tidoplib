@@ -30,17 +30,29 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-//#ifdef TL_HAVE_GEOSPATIAL 
-//#include "tidop/geospatial/crs.h"
-//#endif
+#include "tidop/core/ptr.h"
+
 
 namespace tl
 {
 
+
 class GLayer;
+
+
+/*! \addtogroup vector
+ *  \{
+ */
+
 
 class TL_EXPORT VectorReader
 {
+
+    GENERATE_UNIQUE_PTR(VectorReader)
+
+protected:
+
+    Path mFile;
 
 public:
 
@@ -48,39 +60,28 @@ public:
     virtual ~VectorReader() = default;
 
     /*!
-     * \brief Abre el fichero
+     * \brief Opens the file
      */
     virtual void open() = 0;
 
     /*!
-     * \brief Comprueba si el fichero se ha cargado correctamente
+     * \brief Checks if the file has been loaded correctly
      */
-    virtual bool isOpen() const = 0;
+    virtual auto isOpen() const -> bool = 0;
 
     /*!
-     * \brief Cierra el fichero
+     * \brief Closes the file
      */
     virtual void close() = 0;
 
-    virtual int layersCount() const = 0;
-    virtual std::shared_ptr<GLayer> read(int layerId) = 0;
-    virtual std::shared_ptr<GLayer> read(const std::string &layerName) = 0;
+    virtual auto layersCount() const -> int = 0;
+    virtual auto read(int layerId) -> std::shared_ptr<GLayer> = 0;
+    virtual auto read(const std::string& layerName) -> std::shared_ptr<GLayer> = 0;
 
     /*!
-     * \brief Sistema de referencia en formato WKT
+     * \brief Reference system in WKT format
      */
-    virtual std::string crsWkt() const = 0;
-
-    //#if defined TL_HAVE_GEOSPATIAL
-    //  /*!
-    //   * \brief Sistema de referencia
-    //   */
-    //  virtual geospatial::Crs crs() const = 0;
-    //#endif
-
-protected:
-
-    Path mFile;
+    virtual auto crsWkt() const -> std::string = 0;
 
 };
 
@@ -97,11 +98,12 @@ private:
 
 public:
 
-    static std::unique_ptr<VectorReader> create(const Path &file);
+    static auto create(const Path &file) -> VectorReader::Ptr;
     TL_DEPRECATED("create", "2.1")
-    static std::unique_ptr<VectorReader> createReader(const Path &file);
+    static auto createReader(const Path &file) -> VectorReader::Ptr;
 };
 
 
+/*! \} */ // end of vector
 
 } // End namespace tl

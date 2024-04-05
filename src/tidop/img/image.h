@@ -31,6 +31,11 @@
 namespace tl
 {
 
+/*! \addtogroup raster
+ *  \{
+ */
+
+
 class TL_EXPORT Image
 {
 
@@ -48,27 +53,32 @@ public:
     Image(int rows, int cols, DataType type, int channels);
     Image(int rows, int cols, DataType type, int channels, const Color &color);
     Image(int rows, int cols, DataType type, int channels, void *data);
-    Image(const SizeI &size, DataType type, int channels);
-    Image(const SizeI &size, DataType type, int channels, const Color &color);
-    Image(const SizeI &size, DataType type, int channels, void *data);
+    Image(const Size<int> &size, DataType type, int channels);
+    Image(const Size<int> &size, DataType type, int channels, const Color &color);
+    Image(const Size<int> &size, DataType type, int channels, void *data);
     Image(const Image &image);
+    Image(Image &&image) TL_NOEXCEPT;
     ~Image();
 
-    Image &operator = (const Image &image);
+    auto operator =(const Image& image) -> Image&;
 
     int rows() const;
     int cols() const;
     DataType type() const;
     int channels() const;
-    unsigned char *data();
-    int depth();
+    unsigned char *data() const;
+    int depth() const;
 
-    bool isEmpty();
+    bool isEmpty() const;
 
 private:
 
     void init();
 
 };
+
+
+/*! \} */ // end of raster
+
 
 } // End namespace tl

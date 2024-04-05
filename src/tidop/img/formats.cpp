@@ -34,29 +34,25 @@ ImageOptions::ImageOptions()
 {
 }
 
-//ImageOptions::~ImageOptions() = default;
-
-
 
 ImageOptionsBase::ImageOptionsBase(Format format)
-  : ImageOptions(),
-    mFormat(format)
+  : mFormat(format)
 {
 }
 
 ImageOptionsBase::~ImageOptionsBase() = default;
 
-ImageOptionsBase::Format ImageOptionsBase::format() const
+auto ImageOptionsBase::format() const -> Format
 {
     return mFormat;
 }
 
-std::map<std::string, std::string> ImageOptionsBase::options() const
+auto ImageOptionsBase::options() const -> std::map<std::string, std::string>
 {
     return this->options(true);
 }
 
-std::map<std::string, std::string> ImageOptionsBase::activeOptions() const
+auto ImageOptionsBase::activeOptions() const -> std::map<std::string, std::string>
 {
     return this->options(false);
 }
@@ -68,16 +64,6 @@ std::map<std::string, std::string> ImageOptionsBase::activeOptions() const
 TiffOptions::TiffOptions()
   : ImageOptionsBase(Format::tiff)
 {
-    //mDataTypes = { 
-    //  DataType::TL_8U, 
-    //  DataType::TL_16U, 
-    //  DataType::TL_16S, 
-    //  DataType::TL_32U, 
-    //  DataType::TL_32S, 
-    //  DataType::TL_32F, 
-    //  DataType::TL_64F 
-    //};
-
     this->init();
 }
 
@@ -89,7 +75,7 @@ void TiffOptions::reset()
 }
 
 
-bool TiffOptions::isEnableTFW() const
+auto TiffOptions::isEnableTFW() const -> bool
 {
     return bTFW.second;
 }
@@ -99,7 +85,7 @@ void TiffOptions::enableTFW(bool value)
     bTFW.second = value;
 }
 
-bool TiffOptions::isEnableRPB() const
+auto TiffOptions::isEnableRPB() const -> bool
 {
     return bRPB.second;
 }
@@ -109,7 +95,7 @@ void TiffOptions::enableRPB(bool value)
     bRPB.second = value;
 }
 
-bool TiffOptions::isEnableRPCTX() const
+auto TiffOptions::isEnableRPCTX() const -> bool
 {
 #if GDAL_VERSION_MAJOR < 2
     TL_COMPILER_WARNING("Option 'RPCTX' not supported for this version of GDAL");
@@ -125,7 +111,7 @@ void TiffOptions::enableRPCTX(bool value)
     bRPCTX.second = value;
 }
 
-bool TiffOptions::isEnableTiled() const
+auto TiffOptions::isEnableTiled() const -> bool
 {
     return bTiled.second;
 }
@@ -135,7 +121,7 @@ void TiffOptions::enableTiled(bool value)
     bTiled.second = value;
 }
 
-int TiffOptions::blockXSize() const
+auto TiffOptions::blockXSize() const -> int
 {
     return mBlockXSize.second;
 }
@@ -150,12 +136,12 @@ void TiffOptions::setBlockYSize(int blockYSize)
     mBlockYSize.second = blockYSize;
 }
 
-int TiffOptions::blockYSize()  const
+auto TiffOptions::blockYSize() const -> int
 {
     return mBlockYSize.second;
 }
 
-int TiffOptions::nBits() const
+auto TiffOptions::nBits() const -> int
 {
     return mNBits.second;
 }
@@ -165,7 +151,7 @@ void TiffOptions::setNBits(int nBits)
     mNBits.second = nBits;
 }
 
-uint8_t TiffOptions::jpegQuality() const
+auto TiffOptions::jpegQuality() const -> uint8_t
 {
     return mJpegQuality.second;
 }
@@ -176,7 +162,7 @@ void TiffOptions::setJpegQuality(uint8_t jpegQuality)
     else mJpegQuality.second = jpegQuality;
 }
 
-uint8_t TiffOptions::zLevel() const
+auto TiffOptions::zLevel() const -> uint8_t
 {
     return mZLevel.second;
 }
@@ -187,7 +173,7 @@ void TiffOptions::setZLevel(uint8_t zLevel)
     else mZLevel.second = zLevel;
 }
 
-TiffOptions::BigTiff TiffOptions::bigTiff() const
+auto TiffOptions::bigTiff() const -> BigTiff
 {
     return mBigTiff.second;
 }
@@ -197,7 +183,7 @@ void TiffOptions::setBigTiff(BigTiff bigTiff)
     mBigTiff.second = bigTiff;
 }
 
-TiffOptions::Compress TiffOptions::compress() const
+auto TiffOptions::compress() const -> Compress
 {
     return mCompress.second;
 }
@@ -207,7 +193,7 @@ void TiffOptions::setCompress(Compress compress)
     mCompress.second = compress;
 }
 
-TiffOptions::Photometric TiffOptions::photometric() const
+auto TiffOptions::photometric() const -> Photometric
 {
     return mPhotometric.second;
 }
@@ -217,7 +203,7 @@ void TiffOptions::setPhotometric(Photometric photometric)
     mPhotometric.second = photometric;
 }
 
-TiffOptions::Alpha TiffOptions::alpha() const
+auto TiffOptions::alpha() const -> Alpha
 {
     return mAlpha.second;
 }
@@ -227,7 +213,7 @@ void TiffOptions::setAlpha(Alpha alpha)
     mAlpha.second = alpha;
 }
 
-TiffOptions::Profile TiffOptions::profile() const
+auto TiffOptions::profile() const -> Profile
 {
     return mProfile.second;
 }
@@ -237,7 +223,7 @@ void TiffOptions::setProfile(Profile profile)
     mProfile.second = profile;
 }
 
-TiffOptions::PixelType TiffOptions::pixelType() const
+auto TiffOptions::pixelType() const -> PixelType
 {
     return mPixelType.second;
 }
@@ -247,7 +233,7 @@ void TiffOptions::setPixelType(PixelType pixelType)
     mPixelType.second = pixelType;
 }
 
-TiffOptions::GeotiffKeysFlavor TiffOptions::geotiffKeysFlavor() const
+auto TiffOptions::geotiffKeysFlavor() const -> GeotiffKeysFlavor
 {
     return mGeotiffKeysFlavor.second;
 }
@@ -257,7 +243,7 @@ void TiffOptions::setGeotiffKeysFlavor(GeotiffKeysFlavor geotiffKeysFlavor)
     mGeotiffKeysFlavor.second = geotiffKeysFlavor;
 }
 
-bool TiffOptions::internalMask() const
+auto TiffOptions::internalMask() const -> bool
 {
     return mInternalMask.second;
 }
@@ -287,7 +273,7 @@ void TiffOptions::init()
     mGeotiffKeysFlavor = std::make_pair(GeotiffKeysFlavor::standard, GeotiffKeysFlavor::standard);
 }
 
-std::map<std::string, std::string> TiffOptions::options(bool all) const
+auto TiffOptions::options(bool all) const -> std::map<std::string, std::string>
 {
     std::map<std::string, std::string> options;
 
@@ -329,16 +315,16 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 
     if (all || mBigTiff.first != mBigTiff.second) {
         switch (mBigTiff.second) {
-        case tl::TiffOptions::BigTiff::yes:
+        case BigTiff::yes:
             options["BigTiff"] = "YES";
             break;
-        case tl::TiffOptions::BigTiff::no:
+        case BigTiff::no:
             options["BigTiff"] = "NO";
             break;
-        case tl::TiffOptions::BigTiff::if_needed:
+        case BigTiff::if_needed:
             options["BigTiff"] = "IF_NEEDED";
             break;
-        case tl::TiffOptions::BigTiff::if_safer:
+        case BigTiff::if_safer:
             options["BigTiff"] = "IF_SAFER";
             break;
         }
@@ -347,52 +333,52 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
     if (all || mCompress.first != mCompress.second) {
 
         switch (mCompress.second) {
-        case tl::TiffOptions::Compress::jpeg:
+        case Compress::jpeg:
             options["COMPRESS"] = "JPEG";
             break;
-        case tl::TiffOptions::Compress::lzw:
+        case Compress::lzw:
             options["COMPRESS"] = "LZW";
             break;
-        case tl::TiffOptions::Compress::packbits:
+        case Compress::packbits:
             options["COMPRESS"] = "PACKBITS";
             break;
-        case tl::TiffOptions::Compress::deflate:
+        case Compress::deflate:
             options["COMPRESS"] = "DEFLATE";
             break;
-        case tl::TiffOptions::Compress::ccittrle:
+        case Compress::ccittrle:
             options["COMPRESS"] = "CCITTRLE";
             break;
-        case tl::TiffOptions::Compress::ccittfax3:
+        case Compress::ccittfax3:
             options["COMPRESS"] = "CCITTFAX3";
             break;
-        case tl::TiffOptions::Compress::ccittfax4:
+        case Compress::ccittfax4:
             options["COMPRESS"] = "CCITTFAX4";
             break;
-        case tl::TiffOptions::Compress::lzma:
+        case Compress::lzma:
             options["COMPRESS"] = "LZMA";
             break;
 #ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
-        case tl::TiffOptions::Compress::zstd:
+        case Compress::zstd:
             options["COMPRESS"] = "ZSTD";
             break;
 #endif
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,4,0)
-        case tl::TiffOptions::Compress::lerc:
+        case Compress::lerc:
             options["COMPRESS"] = "LERC";
             break;
-        case tl::TiffOptions::Compress::lerc_deflate:
+        case Compress::lerc_deflate:
             options["COMPRESS"] = "LERC_DEFLATE";
             break;
-        case tl::TiffOptions::Compress::lerc_zstd:
+        case Compress::lerc_zstd:
             options["COMPRESS"] = "LERC_ZSTD";
             break;
 #endif
 #endif // TL_HAVE_GDAL
-        case tl::TiffOptions::Compress::webp:
+        case Compress::webp:
             options["COMPRESS"] = "WEBP";
             break;
-        case tl::TiffOptions::Compress::none:
+        case Compress::none:
             options["COMPRESS"] = "NONE";
             break;
         }
@@ -401,28 +387,28 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
     if (all || mPhotometric.first != mPhotometric.second) {
 
         switch (mPhotometric.second) {
-        case tl::TiffOptions::Photometric::minisblack:
+        case Photometric::minisblack:
             options["PHOTOMETRIC"] = "MINISBLACK";
             break;
-        case tl::TiffOptions::Photometric::miniswhite:
+        case Photometric::miniswhite:
             options["PHOTOMETRIC"] = "MINISWHITE";
             break;
-        case tl::TiffOptions::Photometric::rgb:
+        case Photometric::rgb:
             options["PHOTOMETRIC"] = "RGB";
             break;
-        case tl::TiffOptions::Photometric::cmyk:
+        case Photometric::cmyk:
             options["PHOTOMETRIC"] = "CMYK";
             break;
-        case tl::TiffOptions::Photometric::ycbcr:
+        case Photometric::ycbcr:
             options["PHOTOMETRIC"] = "YCBCR";
             break;
-        case tl::TiffOptions::Photometric::cielab:
+        case Photometric::cielab:
             options["PHOTOMETRIC"] = "CIELAB";
             break;
-        case tl::TiffOptions::Photometric::icclab:
+        case Photometric::icclab:
             options["PHOTOMETRIC"] = "ICCLAB";
             break;
-        case tl::TiffOptions::Photometric::itulab:
+        case Photometric::itulab:
             options["PHOTOMETRIC"] = "ITULAB";
             break;
         }
@@ -431,16 +417,16 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
     if (all || mAlpha.first != mAlpha.second) {
 
         switch (mAlpha.second) {
-        case tl::TiffOptions::Alpha::yes:
+        case Alpha::yes:
             options["ALPHA"] = "YES";
             break;
-        case tl::TiffOptions::Alpha::non_premultiplied:
+        case Alpha::non_premultiplied:
             options["ALPHA"] = "NON-PREMULTIPLIED";
             break;
-        case tl::TiffOptions::Alpha::premultiplied:
+        case Alpha::premultiplied:
             options["ALPHA"] = "PREMULTIPLIED";
             break;
-        case tl::TiffOptions::Alpha::unspecified:
+        case Alpha::unspecified:
             options["ALPHA"] = "UNSPECIFIED";
             break;
         }
@@ -448,13 +434,13 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 
     if (all || mProfile.first != mProfile.second) {
         switch (mProfile.second) {
-        case tl::TiffOptions::Profile::gdal_geotiff:
+        case Profile::gdal_geotiff:
             options["PROFILE"] = "GDALGeoTIFF";
             break;
-        case tl::TiffOptions::Profile::geotiff:
+        case Profile::geotiff:
             options["PROFILE"] = "GeoTIFF";
             break;
-        case tl::TiffOptions::Profile::baseline:
+        case Profile::baseline:
             options["PROFILE"] = "BASELINE";
             break;
         }
@@ -462,10 +448,10 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 
     if (all || mPixelType.first != mPixelType.second) {
         switch (mPixelType.second) {
-        case tl::TiffOptions::PixelType::def:
+        case PixelType::def:
             options["PIXELTYPE"] = "DEFAULT";
             break;
-        case tl::TiffOptions::PixelType::signedbyte:
+        case PixelType::signedbyte:
             options["PIXELTYPE"] = "SIGNEDBYTE";
             break;
         }
@@ -473,10 +459,10 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 
     if (all || mGeotiffKeysFlavor.first != mGeotiffKeysFlavor.second) {
         switch (mGeotiffKeysFlavor.second) {
-        case tl::TiffOptions::GeotiffKeysFlavor::standard:
+        case GeotiffKeysFlavor::standard:
             options["GEOTIFF_KEYS_FLAVOR"] = "STANDARD";
             break;
-        case tl::TiffOptions::GeotiffKeysFlavor::esri_pe:
+        case GeotiffKeysFlavor::esri_pe:
             options["GEOTIFF_KEYS_FLAVOR"] = "ESRI_PE";
             break;
         }
@@ -496,7 +482,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 PngOptions::PngOptions()
   : ImageOptionsBase(Format::png)
 {
-    //mDataTypes = { DataType::TL_8U, DataType::TL_16U };
     this->init();
 }
 
@@ -507,7 +492,7 @@ void PngOptions::reset()
     this->init();
 }
 
-bool PngOptions::isEnableWorldFile() const
+auto PngOptions::isEnableWorldFile() const -> bool
 {
     return bWorldFile.second;
 }
@@ -517,7 +502,7 @@ void PngOptions::setEnableWorldFile(bool enable)
     bWorldFile.second = enable;
 }
 
-uint8_t PngOptions::zLevel() const
+auto PngOptions::zLevel() const -> uint8_t
 {
     return mZLevel.second;
 }
@@ -530,7 +515,7 @@ void PngOptions::setZLevel(uint8_t zLevel)
 
 #if GDAL_VERSION_MAJOR >= 2
 
-std::string PngOptions::title() const
+auto PngOptions::title() const -> std::string
 {
     return mTitle.second;
 }
@@ -540,7 +525,7 @@ void PngOptions::setTitle(const std::string &title)
     mTitle.second = title;
 }
 
-std::string PngOptions::description() const
+auto PngOptions::description() const -> std::string
 {
     return mDescription.second;
 }
@@ -550,7 +535,7 @@ void PngOptions::setDescription(const std::string &description)
     mDescription.second = description;
 }
 
-std::string PngOptions::copyright() const
+auto PngOptions::copyright() const -> std::string
 {
     return mCopyright.second;
 }
@@ -560,7 +545,7 @@ void PngOptions::setCopyright(const std::string &copyright)
     mCopyright.second = copyright;
 }
 
-std::string PngOptions::comment() const
+auto PngOptions::comment() const -> std::string
 {
     return mComment.second;
 }
@@ -575,7 +560,7 @@ void PngOptions::setComment(const std::string &comment)
 #ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
 
-int PngOptions::nBits() const
+auto PngOptions::nBits() const -> int
 {
     return mNBits.second;
 }
@@ -605,7 +590,7 @@ void PngOptions::init()
 #endif // TL_HAVE_GDAL
 }
 
-std::map<std::string, std::string> PngOptions::options(bool all) const
+auto PngOptions::options(bool all) const -> std::map<std::string, std::string>
 {
     std::map<std::string, std::string> options;
 
@@ -658,7 +643,6 @@ std::map<std::string, std::string> PngOptions::options(bool all) const
 JpegOptions::JpegOptions()
   : ImageOptionsBase(Format::jpeg)
 {
-    //mDataTypes = { DataType::TL_8U };
     this->init();
 }
 
@@ -670,7 +654,7 @@ void JpegOptions::reset()
     this->init();
 }
 
-bool JpegOptions::isEnableWorldFile() const
+auto JpegOptions::isEnableWorldFile() const -> bool
 {
     return bWorldFile.second;
 }
@@ -680,7 +664,7 @@ void JpegOptions::setEnableWorldFile(bool enable)
     bWorldFile.second = enable;
 }
 
-uint8_t JpegOptions::quality() const
+auto JpegOptions::quality() const -> uint8_t
 {
     return mQuality.second;
 }
@@ -692,7 +676,7 @@ void JpegOptions::setQuality(uint8_t quality)
     else mQuality.second = quality;
 }
 
-bool JpegOptions::internalMask() const
+auto JpegOptions::internalMask() const -> bool
 {
     return bInternalMask.second;
 }
@@ -702,7 +686,7 @@ void JpegOptions::setInternalMask(bool internalMask)
     bInternalMask.second = internalMask;
 }
 
-std::string JpegOptions::iccProfile() const
+auto JpegOptions::iccProfile() const -> std::string
 {
     return mIccProfile.second;
 }
@@ -712,7 +696,7 @@ void JpegOptions::setIccProfile(const std::string &iccProfile)
     mIccProfile.second = iccProfile;
 }
 
-std::string JpegOptions::comment() const
+auto JpegOptions::comment() const -> std::string
 {
     return mComment.second;
 }
@@ -722,7 +706,7 @@ void JpegOptions::setComment(const std::string &comment)
     mComment.second = comment;
 }
 
-bool JpegOptions::exifThumbnail() const
+auto JpegOptions::exifThumbnail() const -> bool
 {
     return bExifThumbnail.second;
 }
@@ -732,7 +716,7 @@ void JpegOptions::setExifThumbnail(bool exifThumbnail)
     bExifThumbnail.second = exifThumbnail;
 }
 
-int JpegOptions::thumbnailWidth() const
+auto JpegOptions::thumbnailWidth() const -> int
 {
     return mThumbnailWidth.second;
 }
@@ -742,7 +726,7 @@ void JpegOptions::setThumbnailWidth(int thumbnailWidth)
     mThumbnailWidth.second = thumbnailWidth;
 }
 
-int JpegOptions::thumbnailHeight() const
+auto JpegOptions::thumbnailHeight() const -> int
 {
     return mThumbnailHeight.second;
 }
@@ -754,7 +738,7 @@ void JpegOptions::setThumbnailHeight(int thumbnailHeight)
 
 #ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
-bool JpegOptions::writeExifMetadata() const
+auto JpegOptions::writeExifMetadata() const -> bool
 {
     return mWriteExifMetadata.second;
 }
@@ -779,7 +763,7 @@ void JpegOptions::init()
     mWriteExifMetadata = std::make_pair(true, true);
 }
 
-std::map<std::string, std::string> JpegOptions::options(bool all) const
+auto JpegOptions::options(bool all) const -> std::map<std::string, std::string>
 {
     std::map<std::string, std::string> options;
 
@@ -829,7 +813,6 @@ std::map<std::string, std::string> JpegOptions::options(bool all) const
 BmpOptions::BmpOptions()
   : ImageOptionsBase(Format::bmp)
 {
-    //mDataTypes = {DataType::TL_8U};
     this->init();
 }
 
@@ -840,7 +823,7 @@ void BmpOptions::reset()
     this->init();
 }
 
-bool BmpOptions::isEnableWorldFile() const
+auto BmpOptions::isEnableWorldFile() const -> bool
 {
     return bWorldFile.second;
 }
@@ -855,7 +838,7 @@ void BmpOptions::init()
     bWorldFile = std::make_pair(false, false);
 }
 
-std::map<std::string, std::string> BmpOptions::options(bool all) const
+auto BmpOptions::options(bool all) const -> std::map<std::string, std::string>
 {
     std::map<std::string, std::string> options;
 
@@ -883,7 +866,7 @@ void GifOptions::reset()
 {
 }
 
-bool GifOptions::isEnableWorldFile() const
+auto GifOptions::isEnableWorldFile() const -> bool
 {
     return mWorldFile.second;
 }
@@ -893,7 +876,7 @@ void GifOptions::setEnableWorldFile(bool enable)
     mWorldFile.second = enable;
 }
 
-bool GifOptions::interlacing() const
+auto GifOptions::interlacing() const -> bool
 {
     return mInterlacing.second;
 }
@@ -909,7 +892,7 @@ void GifOptions::init()
     mInterlacing = std::make_pair(false, false);
 }
 
-std::map<std::string, std::string> GifOptions::options(bool all) const
+auto GifOptions::options(bool all) const -> std::map<std::string, std::string>
 {
     std::map<std::string, std::string> options;
 

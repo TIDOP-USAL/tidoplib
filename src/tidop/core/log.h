@@ -48,20 +48,19 @@ namespace tl
  */
 
 
-/*! \defgroup Log Fichero log
+/*! \defgroup Log Log file
  *
  *  \{
  */
 
 
 /*!
- * \brief Clase para gestionar ficheros log
+ * \brief Log file class
  *
- * Esta clase puede funcionar individualmente o si se subscribe a
- * al gestor de mensajes (MessageManager) recibe automaticamente
- * los mensajes
+ * This class can operate individually, writing messages directly to 
+ * a file, or receiving messages from the Message class.
  */
-class Log
+class TL_EXPORT Log
     : public MessageHandler
 {
 
@@ -69,43 +68,45 @@ private:
 
     std::ofstream _stream;
     static std::mutex mtx;
-    static EnumFlags<MessageLevel> messageLevelFlags;
+    EnumFlags<MessageLevel> messageLevelFlags;
 
 private:
 
-    Log() = default;
+    Log();
 
 public:
 
-    ~Log() = default;
+    ~Log() override = default;
 
     TL_DISABLE_COPY(Log)
     TL_DISABLE_MOVE(Log)
 
-    static Log &instance();
-
-// MessageHandler
+    static auto instance() -> Log&;
 
 public:
 
-    void debug(String message) override;
-    void info(String message) override;
-    void success(String message) override;
-    void warning(String message) override;
-    void error(String message) override;
-
-public:
-
+    /*!
+     * \brief Open the log file
+     * \param[in] file Log file
+     */
     void open(const std::string &file);
+
+    /*!
+     * \brief Close the log file
+     */
     void close();
-    bool isOpen() const;
+
+    /*!
+     * \brief Check if the log is open
+     */
+    auto isOpen() const -> bool;
 
     /*!
      * \brief Message levels
      * \return Flag with message levels activated
      * \see EnumFlags
      */
-    static auto messageLevel() -> EnumFlags<MessageLevel>;
+    auto messageLevel() -> EnumFlags<MessageLevel>;
 
     /*!
      * \brief Sets the message level
@@ -119,7 +120,7 @@ public:
      *
      * \param[in] level Message level.
      */
-    static void setMessageLevel(MessageLevel level);
+    void setMessageLevel(MessageLevel level);
 
 #if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
 
@@ -159,6 +160,16 @@ public:
     }
 
 #endif
+
+// MessageHandler
+
+public:
+
+    void debug(String message) override;
+    void info(String message) override;
+    void success(String message) override;
+    void warning(String message) override;
+    void error(String message) override;
 
 };
 

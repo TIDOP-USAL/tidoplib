@@ -54,17 +54,17 @@ public:
 public:
 
     void reset() override;
-    std::string name() const override;
+    auto name() const -> std::string override;
 
 // Gms interface
 
 public:
 
-    bool rotation() const override;
+    auto rotation() const -> bool override;
     void setRotation(bool rotation) override;
-    bool scale() const override;
+    auto scale() const -> bool override;
     void setScale(bool scale) override;
-    double threshold() const override;
+    auto threshold() const -> double override;
     void setThreshold(double threshold) override;
 
 };
@@ -74,7 +74,7 @@ public:
 
 
 class TL_EXPORT GsmImp
-    : public GmsProperties,
+  : public GmsProperties,
     public MatchingAlgorithm
 {
 
@@ -95,14 +95,14 @@ public:
 
 public:
 
-    bool compute(const cv::Mat &queryDescriptor,
+    auto compute(const cv::Mat &queryDescriptor,
                  const cv::Mat &trainDescriptor,
                  const std::vector<cv::KeyPoint> &keypoints1,
                  const std::vector<cv::KeyPoint> &keypoints2,
                  std::vector<cv::DMatch> *goodMatches,
                  std::vector<cv::DMatch> *wrongMatches = nullptr,
                  const cv::Size &queryImageSize = cv::Size(),
-                 const cv::Size &trainImageSize = cv::Size()) override;
+                 const cv::Size &trainImageSize = cv::Size()) -> bool override;
 
 };
 

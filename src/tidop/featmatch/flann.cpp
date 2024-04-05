@@ -30,25 +30,23 @@ namespace tl
 {
 
 FlannMatcherProperties::FlannMatcherProperties()
-    : mIndex(FlannMatcherProperties::Index::kdtree)
+  : mIndex(Index::kdtree)
 {
 }
 
-FlannMatcherProperties::~FlannMatcherProperties()
-{
-}
+FlannMatcherProperties::~FlannMatcherProperties() = default;
 
 void FlannMatcherProperties::reset()
 {
     mIndex = FlannMatcherProperties::Index::kdtree;
 }
 
-std::string FlannMatcherProperties::name() const
+auto FlannMatcherProperties::name() const -> std::string
 {
     return std::string("Flann Based Matching");
 }
 
-FlannMatcher::Index FlannMatcherProperties::index() const
+auto FlannMatcherProperties::index() const -> FlannMatcher::Index
 {
     return mIndex;
 }

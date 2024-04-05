@@ -31,9 +31,7 @@ namespace tl
 {
 
 
-StarProperties::StarProperties()
-{
-}
+StarProperties::StarProperties() = default;
 
 StarProperties::StarProperties(const StarProperties &starProperties)
   : Star(starProperties),
@@ -45,27 +43,27 @@ StarProperties::StarProperties(const StarProperties &starProperties)
 {
 }
 
-int StarProperties::maxSize() const
+auto StarProperties::maxSize() const -> int
 {
     return mMaxSize;
 }
 
-int StarProperties::responseThreshold() const
+auto StarProperties::responseThreshold() const -> int
 {
     return mResponseThreshold;
 }
 
-int StarProperties::lineThresholdProjected() const
+auto StarProperties::lineThresholdProjected() const -> int
 {
     return mLineThresholdProjected;
 }
 
-int StarProperties::lineThresholdBinarized() const
+auto StarProperties::lineThresholdBinarized() const -> int
 {
     return mLineThresholdBinarized;
 }
 
-int StarProperties::suppressNonmaxSize() const
+auto StarProperties::suppressNonmaxSize() const -> int
 {
     return mSuppressNonmaxSize;
 }
@@ -104,7 +102,7 @@ void StarProperties::reset()
     mSuppressNonmaxSize = star_default_value_suppress_nonmax_size;
 }
 
-std::string StarProperties::name() const
+auto StarProperties::name() const -> std::string
 {
     return std::string("STAR");
 }
@@ -149,7 +147,7 @@ void StarDetector::update()
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
-std::vector<cv::KeyPoint> StarDetector::detect(const cv::Mat &img, cv::InputArray &mask)
+auto StarDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
 

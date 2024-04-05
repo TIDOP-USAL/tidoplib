@@ -24,6 +24,8 @@
 
 #include "tidop/imgprocess/imgprocess.h"
 
+#include <opencv2/imgproc.hpp>
+
 #include "tidop/core/exception.h"
 
 #ifdef TL_HAVE_OPENCV

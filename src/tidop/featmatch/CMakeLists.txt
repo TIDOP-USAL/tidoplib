@@ -110,7 +110,7 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                 ALIAS ${PROJECT_NAME})
 
     target_include_directories(${PROJECT_NAME} PRIVATE 
-                               ${GDAL_INCLUDE_DIR} 
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}> 
                                ${CMAKE_SOURCE_DIR}/third_party)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC

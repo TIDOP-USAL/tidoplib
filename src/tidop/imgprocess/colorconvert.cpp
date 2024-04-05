@@ -23,6 +23,9 @@
  **************************************************************************/
 
 #include "tidop/imgprocess/colorconvert.h"
+
+#include <opencv2/imgproc.hpp>
+
 #include "tidop/graphic/color.h"
 #include "tidop/core/concurrency.h"
 
@@ -52,9 +55,9 @@ void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk)
 
             for (int c = 0; c < rgb.cols; c++) {
 
-                rgbToCmyk(rgb_ptr[3 * c + 2],
-                          rgb_ptr[3 * c + 1],
-                          rgb_ptr[3 * c],
+                rgbToCmyk(rgb_ptr[3 * static_cast<size_t>(c) + 2],
+                          rgb_ptr[3 * static_cast<size_t>(c) + 1],
+                          rgb_ptr[3 * static_cast<size_t>(c)],
                           &cyan,
                           &magenta,
                           &yellow,
@@ -135,9 +138,9 @@ void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl)
 
             for (int c = 0; c < rgb.cols; c++) {
 
-                rgbToHSL(rgb_ptr[3 * c + 2],
-                         rgb_ptr[3 * c + 1],
-                         rgb_ptr[3 * c],
+                rgbToHSL(rgb_ptr[3 * static_cast<size_t>(c) + 2],
+                         rgb_ptr[3 * static_cast<size_t>(c) + 1],
+                         rgb_ptr[3 * static_cast<size_t>(c)],
                          &hue,
                          &saturation,
                          &lightness);
@@ -311,9 +314,9 @@ void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord)
 
             for (int c = 0; c < rgb.cols; c++) {
 
-                chromaticityCoordinates(rgb_ptr[3 * c + 2],
-                                        rgb_ptr[3 * c + 1],
-                                        rgb_ptr[3 * c],
+                chromaticityCoordinates(rgb_ptr[3 * static_cast<size_t>(c) + 2],
+                                        rgb_ptr[3 * static_cast<size_t>(c) + 1],
+                                        rgb_ptr[3 * static_cast<size_t>(c)],
                                         &chroma_red,
                                         &chroma_green,
                                         &chroma_blue);
@@ -350,26 +353,26 @@ void ColorConversion::run(const cv::Mat &matIn, cv::Mat &matOut) const
 
         TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
 
-        if (mModelIn == ColorConversion::ColorModel::rgb &&
-            mModelOut == ColorConversion::ColorModel::hsl) {
+        if (mModelIn == ColorModel::rgb &&
+            mModelOut == ColorModel::hsl) {
             rgbToHSL(matIn, matOut);
-        } else if (mModelIn == ColorConversion::ColorModel::hsl &&
-                   mModelOut == ColorConversion::ColorModel::rgb) {
+        } else if (mModelIn == ColorModel::hsl &&
+                   mModelOut == ColorModel::rgb) {
             hslToRgb(matIn, matOut);
-        } else if (mModelIn == ColorConversion::ColorModel::rgb &&
-                   mModelOut == ColorConversion::ColorModel::hsv) {
+        } else if (mModelIn == ColorModel::rgb &&
+                   mModelOut == ColorModel::hsv) {
             rgbToHSV(matIn, matOut);
-        } else if (mModelIn == ColorConversion::ColorModel::hsv &&
-                   mModelOut == ColorConversion::ColorModel::rgb) {
+        } else if (mModelIn == ColorModel::hsv &&
+                   mModelOut == ColorModel::rgb) {
             hsvToRgb(matIn, matOut);
-        } else if (mModelIn == ColorConversion::ColorModel::rgb &&
-                   mModelOut == ColorConversion::ColorModel::cmyk) {
+        } else if (mModelIn == ColorModel::rgb &&
+                   mModelOut == ColorModel::cmyk) {
             rgbToCmyk(matIn, matOut);
-        } else if (mModelIn == ColorConversion::ColorModel::cmyk &&
-                   mModelOut == ColorConversion::ColorModel::rgb) {
+        } else if (mModelIn == ColorModel::cmyk &&
+                   mModelOut == ColorModel::rgb) {
             cmykToRgb(matIn, matOut);
-        } else if (mModelIn == ColorConversion::ColorModel::rgb &&
-                   mModelOut == ColorConversion::ColorModel::luminance) {
+        } else if (mModelIn == ColorModel::rgb &&
+                   mModelOut == ColorModel::luminance) {
             rgbToLuminance(matIn, matOut);
         } else {
             throw TL_ERROR("Color conversion not available");

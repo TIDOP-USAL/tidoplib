@@ -26,7 +26,6 @@
 
 #include <vector> 
 #include <string> 
-#include <tuple>
 #include <iomanip>
 
 #include <tidop/core/defs.h>
@@ -61,6 +60,13 @@ public:
     using const_iterator = typename std::vector<T>::const_iterator;
     using reverse_iterator = typename std::vector<T>::reverse_iterator;
     using const_reverse_iterator = typename std::vector<T>::const_reverse_iterator;
+
+private:
+
+    std::vector<size_t> mIndex;
+    std::vector<std::string> mStringIndex;
+    std::vector<T> mData;
+    template<typename Scalar> friend  std::ostream& operator<<(std::ostream&, const Series<Scalar>&);
 
 public:
 
@@ -103,46 +109,35 @@ public:
      * \brief Copy assignment operator
      * \param[in] series Series object to copy
      */
-    Series<T> &operator = (const Series<T> &series);
+    auto operator = (const Series<T> &series) -> Series &;
 
     /*!
      * \brief Move assignment operator
      * \param[in] series Series object to move
      */
-    Series<T> &operator = (Series<T> &&series) TL_NOEXCEPT;
+    auto operator = (Series<T> &&series) TL_NOEXCEPT -> Series &;
 
-    size_t size() const;
+    auto size() const -> size_t;
 
-    T operator[](size_t idx);
-    T operator[](const std::string &idx);
+    auto operator[](size_t idx) -> T;
+    auto operator[](const std::string &idx) -> T;
 
     //void setData(std::initializer_list<T> data);
     //void setData(std::initializer_list<std::pair<std::string, T>> data);
     //void setData(std::initializer_list<std::pair<size_t, T>> data);
 
-    reference front();
-    const_reference front() const;
-    reference back();
-    const_reference back() const;
-    iterator begin() TL_NOEXCEPT;
-    const_iterator begin() const TL_NOEXCEPT;
-    iterator end() TL_NOEXCEPT;
-    const_iterator end() const TL_NOEXCEPT;
-    reverse_iterator rbegin() TL_NOEXCEPT;
-    const_reverse_iterator rbegin() const TL_NOEXCEPT;
-    reverse_iterator rend() TL_NOEXCEPT;
-    const_reverse_iterator rend() const TL_NOEXCEPT;
-
-private:
-
-#ifdef DATA_USE_VAL_ARRAY
-    std::valarray<size_t> mIndex;
-    std::valarray<T> mData;
-#else
-    std::vector<size_t> mIndex;
-    std::vector<std::string> mStringIndex;
-    std::vector<T> mData;
-#endif
+    auto front() -> reference;
+    auto front() const -> const_reference;
+    auto back()  -> reference;
+    auto back() const -> const_reference;
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
+    auto rbegin() TL_NOEXCEPT -> reverse_iterator;
+    auto rbegin() const TL_NOEXCEPT -> const_reverse_iterator;
+    auto rend() TL_NOEXCEPT -> reverse_iterator;
+    auto rend() const TL_NOEXCEPT -> const_reverse_iterator;
 
 };
 
@@ -158,12 +153,12 @@ Series<T>::Series(std::initializer_list<std::pair<std::string, T>> data)
 {
     TL_TODO("En c++ 17 se puede utilizar tuple")
 
-        size_t n = data.size();
+    size_t n = data.size();
     mStringIndex.reserve(n);
     mData.reserve(n);
-    for (auto it = data.begin(); it != data.end(); it++) {
-        mStringIndex.push_back(it->first);
-        mData.push_back(it->second);
+    for (const auto &pair : data) {
+        mStringIndex.push_back(pair.first);
+        mData.push_back(pair.second);
     }
 }
 
@@ -172,35 +167,29 @@ Series<T>::Series(std::initializer_list<std::pair<size_t, T>> data)
 {
     TL_TODO("En c++ 17 se puede utilizar tuple")
 
-        size_t n = data.size();
+    size_t n = data.size();
     mIndex.reserve(n);
     mData.reserve(n);
-    for (auto it = data.begin(); it != data.end(); it++) {
-        mIndex.push_back(it->first);
-        mData.push_back(it->second);
+
+    for (const auto &pair : data) {
+        mIndex.push_back(pair.first);
+        mData.push_back(pair.second);
     }
 }
 
 template<typename T> inline
 Series<T>::Series(const Series<T> &series)
-    : mIndex(series.mIndex),
-#ifndef DATA_USE_VAL_ARRAY
+  : mIndex(series.mIndex),
     mStringIndex(series.mStringIndex),
-#endif
     mData(series.mData)
 {
 }
 
 template<typename T> inline
 Series<T>::Series(Series<T> &&series) TL_NOEXCEPT
-#ifdef DATA_USE_VAL_ARRAY
-    : mIndex(std::forward<std::valarray<size_t>>(series.mIndex)),
-    mData(std::forward<std::valarray<T>>(series.mData))
-#else
-    : mIndex(std::forward<std::vector<size_t>>(series.mIndex)),
+  : mIndex(std::forward<std::vector<size_t>>(series.mIndex)),
     mStringIndex(std::forward<std::vector<std::string>>(series.mStringIndex)),
     mData(std::forward<std::vector<T>>(series.mData))
-#endif
 {
 }
 
@@ -210,43 +199,36 @@ Series<T>::~Series()
 }
 
 template<typename T> inline
-Series<T> &Series<T>::operator = (const Series &series)
+auto Series<T>::operator = (const Series &series) -> Series&
 {
     if (this != &series) {
         this->mIndex = series.mIndex;
-#ifndef DATA_USE_VAL_ARRAY
         this->mStringIndex = series.mStringIndex;
-#endif
         this->mData = series.mData;
     }
     return *this;
 }
 
 template<typename T> inline
-Series<T> &Series<T>::operator = (Series &&series) TL_NOEXCEPT
+auto Series<T>::operator = (Series &&series) TL_NOEXCEPT -> Series&
 {
     if (this != &series) {
-#ifdef DATA_USE_VAL_ARRAY
-        this->mIndex = std::forward<std::valarray<size_t>>(series.mIndex);
-        this->mData = std::forward<std::valarray<T>>(series.mData);
-#else
         this->mIndex = std::forward<std::vector<size_t>>(series.mIndex);
         this->mStringIndex = std::forward<std::vector<std::string>>(series.mStringIndex);
         this->mData = std::forward<std::vector<T>>(series.mData);
-#endif
     }
     return *this;
 }
 
 
 template<typename T> inline
-size_t Series<T>::size() const
+auto Series<T>::size() const -> size_t
 {
     return mData.size();
 }
 
 template<typename T>
-T Series<T>::operator[](size_t idx)
+auto Series<T>::operator[](size_t idx) -> T
 {
     T value{};
 
@@ -266,7 +248,7 @@ T Series<T>::operator[](size_t idx)
 }
 
 template<typename T>
-T Series<T>::operator[](const std::string &idx)
+auto Series<T>::operator[](const std::string &idx) -> T
 {
     T value{};
 
@@ -335,73 +317,73 @@ T Series<T>::operator[](const std::string &idx)
 //}
 
 template<typename T> inline
-typename Series<T>::reference Series<T>::front()
+auto Series<T>::front() -> reference
 {
     return mData.front();
 }
 
 template<typename T> inline
-typename Series<T>::const_reference Series<T>::front() const
+auto Series<T>::front() const -> const_reference
 {
     return mData.front();
 }
 
 template<typename T> inline
-typename Series<T>::reference Series<T>::back()
+auto Series<T>::back() -> reference
 {
     return mData.back();
 }
 
 template<typename T> inline
-typename Series<T>::const_reference Series<T>::back() const
+auto Series<T>::back() const -> const_reference
 {
     return mData.back();
 }
 
 template<typename T> inline
-typename Series<T>::iterator Series<T>::begin() TL_NOEXCEPT
+auto Series<T>::begin() TL_NOEXCEPT -> iterator
 {
     return mData.begin();
 }
 
 template<typename T> inline
-typename Series<T>::const_iterator Series<T>::begin() const TL_NOEXCEPT
+auto Series<T>::begin() const TL_NOEXCEPT -> const_iterator
 {
     return mData.begin();
 }
 
 template<typename T> inline
-typename Series<T>::iterator Series<T>::end() TL_NOEXCEPT
+auto Series<T>::end() TL_NOEXCEPT -> iterator
 {
     return mData.end();
 }
 
 template<typename T> inline
-typename Series<T>::const_iterator Series<T>::end() const TL_NOEXCEPT
+auto Series<T>::end() const TL_NOEXCEPT -> const_iterator
 {
     return mData.end();
 }
 
 template<typename T> inline
-typename Series<T>::reverse_iterator Series<T>::rbegin() TL_NOEXCEPT
+auto Series<T>::rbegin() TL_NOEXCEPT -> reverse_iterator
 {
     return mData.rbegin();
 }
 
 template<typename T> inline
-typename Series<T>::const_reverse_iterator Series<T>::rbegin() const TL_NOEXCEPT
+auto Series<T>::rbegin() const TL_NOEXCEPT -> const_reverse_iterator
 {
     return mData.rbegin();
 }
 
 template<typename T> inline
-typename Series<T>::reverse_iterator Series<T>::rend() TL_NOEXCEPT
+auto Series<T>::rend() TL_NOEXCEPT -> reverse_iterator
 {
     return mData.rend();
 }
 
 template<typename T> inline
-typename Series<T>::const_reverse_iterator Series<T>::rend() const TL_NOEXCEPT
+auto Series<T>::rend() const TL_NOEXCEPT -> const_reverse_iterator
 {
     return mData.rend();
 }
@@ -409,10 +391,22 @@ typename Series<T>::const_reverse_iterator Series<T>::rend() const TL_NOEXCEPT
 
 /* Print */
 
-template<typename T>
-std::ostream &operator<< (std::ostream &os, const Series<T> &serie)
+template<typename Scalar>
+std::ostream &operator<< (std::ostream &os, const Series<Scalar> &serie)
 {
-    os << std::flush;
+    os << "Index           Value\n";
+    //os << "---------------------\n";
+    for (size_t i = 0; i < serie.mData.size(); i++) {
+        os << std::left << std::setw(16);
+        if (!serie.mIndex.empty())
+            os << serie.mIndex[i];
+        else if (!serie.mStringIndex.empty())
+            os << serie.mStringIndex[i];
+        else
+            os << i;
+        os << serie.mData[i] << std::endl;
+    }
+    //os << "---------------------" << std::endl;;
     return os;
 }
 

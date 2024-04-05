@@ -38,21 +38,19 @@ TableField::TableField(const std::string &name,
 {
 }
 
-TableField::~TableField()
-{
-}
+TableField::~TableField() = default;
 
-std::string TableField::name() const
+auto TableField::name() const -> std::string
 {
     return mName;
 }
 
-TableField::Type TableField::type() const
+auto TableField::type() const -> TableField::Type
 {
     return mType;
 }
 
-int TableField::size() const
+auto TableField::size() const -> int
 {
     return mSize;
 }
@@ -66,23 +64,20 @@ int TableField::size() const
 
 
 RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field)
-  : mField(field),
-    mValue("")
+  : mField(field)
 {
 }
 
 RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field,
-                             const std::string &value)
+                             std::string value)
   : mField(field),
-    mValue(value)
+    mValue(std::move(value))
 {
 }
 
-RegisterValue::~RegisterValue()
-{
-}
+RegisterValue::~RegisterValue() = default;
 
-std::string  RegisterValue::value() const
+auto RegisterValue::value() const -> std::string
 {
     return mValue;
 }
@@ -112,15 +107,14 @@ TableRegister::TableRegister(const TableRegister &_register)
 {
 }
 
-TableRegister::~TableRegister()
-{
-}
+TableRegister::~TableRegister() = default;
 
-std::string TableRegister::value(size_t idx) const
+auto TableRegister::value(size_t idx) const -> std::string
 {
     if (idx < mRegisterValues.size())
         return mRegisterValues[idx].value();
-    else return std::string();
+
+    return std::string{};
 }
 
 void TableRegister::setValue(size_t idx, const std::string &field)
@@ -129,7 +123,7 @@ void TableRegister::setValue(size_t idx, const std::string &field)
         mRegisterValues[idx].setValue(field);
 }
 
-size_t TableRegister::size() const
+auto TableRegister::size() const -> size_t
 {
     return mRegisterValues.size();
 }
@@ -140,75 +134,46 @@ size_t TableRegister::size() const
 
 
 DataTable::DataTable(const std::string &tableName,
-                     const std::vector<std::shared_ptr<TableField>> &TableField)
+                     const std::vector<std::shared_ptr<TableField>> &tableField)
   : mTableName(tableName),
-    mTableFields(TableField)
+    mTableFields(tableField)
 {
 }
 
-DataTable::iterator DataTable::begin()
+auto DataTable::begin() -> iterator
 {
     return mRegister.begin();
 }
 
-DataTable::iterator DataTable::end()
+auto DataTable::end() -> iterator
 {
     return mRegister.end();
 }
 
-//void DataTable::addRegister(std::shared_ptr<TableRegister> _register)
-//{
-//  mRegister.push_back(_register);
-//}
-//
-//void DataTable::deleteRegister(int index)
-//{
-//  iterator it = mRegister.begin();
-//  std::advance(it, index);
-//  mRegister.erase(it);
-//}
-
-std::string DataTable::name() const
+auto DataTable::name() const -> std::string
 {
     return mTableName;
 }
 
-//std::shared_ptr<TableRegister> DataTable::getRegister(int index)
-//{
-//  iterator it = mRegister.begin();
-//  std::advance(it, index);
-//  return *it;
-//}
-
-TL_TODO("¿Mejor como estatica?")
-std::shared_ptr<TableRegister> DataTable::createRegister(int index)
+auto DataTable::createRegister(int index) const -> std::shared_ptr<TableRegister>
 {
     ///TODO: Completar
     unusedParameter(index);
-    return std::shared_ptr<TableRegister>(new TableRegister(mTableFields));
+    return std::make_shared<TableRegister>(mTableFields);
 }
 
-std::vector<std::shared_ptr<TableField>> DataTable::fields() const
+auto DataTable::fields() const -> std::vector<std::shared_ptr<TableField>>
 {
     return mTableFields;
 }
-//
-//size_t DataTable::getFieldCount() const
-//{
-//  return mTableHeader->getFieldCount();
-//}
+
 
 void DataTable::setName(const char *name)
 {
     mTableName = name;
 }
 
-//void DataTable::setTableHeader(std::shared_ptr<TableHeader> tableHeader)
-//{
-//  mTableHeader = tableHeader;
-//}
-
-size_t DataTable::size()
+auto DataTable::size() const -> size_t
 {
     return mRegister.size();
 }
@@ -220,12 +185,9 @@ size_t DataTable::size()
 
 DataModel::DataModel()
 {
-
 }
 
-DataModel::~DataModel()
-{
-}
+DataModel::~DataModel() = default;
 
 void DataModel::createTable(const std::string &tableName,
                             const std::vector<std::shared_ptr<TableField>> &fields)
@@ -233,7 +195,7 @@ void DataModel::createTable(const std::string &tableName,
     mDataTables.push_back(std::make_shared<DataTable>(tableName, fields));
 }
 
-void DataModel::addTable(std::shared_ptr<DataTable> table)
+void DataModel::addTable(const std::shared_ptr<DataTable> &table)
 {
     mDataTables.push_back(table);
 }

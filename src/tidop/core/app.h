@@ -27,8 +27,6 @@
 #include "tidop/config.h"
 
 #include <string>
-#include <memory>
-#include <mutex>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
@@ -46,7 +44,7 @@ class Log;
  */
 
 /*!
- * \brief Información de la aplicación 
+ * \brief Application information
  */
 class TL_EXPORT App
 {
@@ -63,15 +61,22 @@ public:
     TL_DISABLE_MOVE(App)
 
     /*!
-     * \brief Singleton
+     * \brief Application instance
      */
-    static App &instance();
+    static auto instance() -> App&;
 
-    Path path() const;
-    std::string version() const;
+    /*!
+     * \brief Path to the executable
+     */
+    auto path() const -> Path;
 
-    static Console &console();
-    static Log &log();
+    /*!
+     * \brief Application version
+     */
+    auto version() const -> std::string;
+
+    static auto console() -> Console&;
+    static auto log() -> Log&;
 
 private:
 

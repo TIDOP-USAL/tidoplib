@@ -35,12 +35,10 @@ namespace tl
   
 
 Command::Command()
-  : mName(""),
-    mDescription(""),
-    mArguments(0),
+  : mArguments(0),
     mVersion("0.0.0")
 {
-  init();
+    init();
 }
 
 Command::Command(const Command &command)
@@ -53,13 +51,22 @@ Command::Command(const Command &command)
 
 }
 
+Command::Command(Command &&command) TL_NOEXCEPT
+  : mName(std::move(command.mName)),
+    mDescription(std::move(command.mDescription)),
+    mArguments(std::move(command.mArguments)),
+    mVersion(std::move(command.mVersion)),
+    mExamples(std::move(command.mExamples))
+{
+}
+
 Command::Command(std::string name, std::string description)
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mArguments(0),
     mVersion("0.0.0")
 {
-  init();
+    init();
 }
 
 Command::Command(std::string name, 
@@ -286,9 +293,10 @@ auto Command::push_back(const Argument::SharedPtr &argument) -> void
     mArguments.push_back(argument);
 }
 
-auto Command::addArgument(const Argument::SharedPtr &argument) -> void
+auto Command::addArgument(const Argument::SharedPtr &argument) -> Command &
 {
     mArguments.push_back(argument);
+    return (*this);
 }
 
 auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
@@ -296,9 +304,10 @@ auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
     mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
 }
 
-auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
+auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &
 {
     mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
+    return (*this);
 }
 
 auto Command::clear() TL_NOEXCEPT -> void
@@ -341,8 +350,8 @@ auto Command::operator=(Command &&command) TL_NOEXCEPT -> Command &
     return (*this);
 }
 
-auto Command::erase(const_iterator first,
-                    const_iterator last) -> iterator
+auto Command::erase(const const_iterator first,
+                    const const_iterator last) -> iterator
 {
     return mArguments.erase(first, last);
 }
@@ -402,10 +411,10 @@ auto Command::showHelp() const -> void
     console.reset();
 
     std::cout << "  - Arguments are options if they begin with a hyphen delimiter (-).\n";
-    std::cout << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. ‘-abc’ is equivalent to ‘-a -b -c’.\n";
+    std::cout << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. '-abc' is equivalent to '-a -b -c'.\n";
     std::cout << "  - Option names are single alphanumeric characters.\n";
-    std::cout << "  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n";
-    std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n";
+    std::cout << "  - An option and its argument may or may not appear as separate tokens. '-o foo' and '-ofoo' are equivalent.\n";
+    std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  '--name=value' is equivalent to '--name value'.\n\n";
 
     if(!mExamples.empty()) {
         console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
@@ -423,40 +432,41 @@ auto Command::showHelp() const -> void
 
 auto Command::showVersion() const -> void
 {
-  Console &console = App::console();
-  console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-  console.setFontBold(true);
+    Console &console = App::console();
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setFontBold(true);
 
-  std::cout << "Version: " << mVersion << "\n";
+    std::cout << "Version: " << mVersion << "\n";
 
-  console.reset();
+    console.reset();
 }
 
 auto Command::showLicence() const -> void
 {
-  Console &console = App::console();
-  console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-  console.setFontBold(true);
-  std::cout << "Licence\n\n";
-  console.reset();
+    Console &console = App::console();
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setFontBold(true);
+    std::cout << "Licence\n\n";
+    console.reset();
 
-  std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
+    std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
 
-  //mLicence.productName();
-  //mLicence.version();
-  //mLicence.autor();
-  //mLicence.autorEmail();
-  //mLicence.type();
+    //mLicence.productName();
+    //mLicence.version();
+    //mLicence.autor();
+    //mLicence.autorEmail();
+    //mLicence.type();
 }
 
-auto Command::addExample(const std::string &example) -> void
+auto Command::addExample(const std::string &example) -> Command &
 {
-  mExamples.push_back(example);
+    mExamples.push_back(example);
+    return *this;
 }
 
 auto Command::setLicence(const Licence &licence) -> void
 {
-  mLicence = licence;
+    mLicence = licence;
 }
 
 auto Command::argument(const std::string &name) const -> Argument::SharedPtr
@@ -568,12 +578,12 @@ auto CommandList::setVersion(const std::string &version) -> void
     mVersion = version;
 }
 
-auto CommandList::parse(int argc, char **argv) -> Status
+auto CommandList::parse(int argc, char **argv) -> Command::Status
 {
     if(argc <= 1) {
         Message::error("No command found");
         showHelp();
-        return Status::parse_error;
+        return Command::Status::parse_error;
     }
 
     std::string arg_cmd_name = std::string(argv[1]);
@@ -587,39 +597,32 @@ auto CommandList::parse(int argc, char **argv) -> Status
 
     if(arg_cmd_name == "h" || arg_cmd_name == "help") {
         showHelp();
-        return Status::show_help;
+        return Command::Status::show_help;
     }
 
     if(arg_cmd_name == "version") {
         showVersion();
-        return Status::show_version;
+        return Command::Status::show_version;
     }
 
     if(arg_cmd_name == "licence") {
         showLicence();
-        return Status::show_licence;
+        return Command::Status::show_licence;
     }
 
-    for(auto &command : mCommands) {
-        if(command->name().compare(arg_cmd_name) == 0) {
+    for(const auto &command : mCommands) {
+
+        if(command->name() == arg_cmd_name) {
+
             mCommand = command;
             std::vector<char *> cmd_argv;
             for(size_t i = 0; i < static_cast<size_t>(argc); ++i) {
                 if(i != 1)
                     cmd_argv.push_back(argv[i]);
             }
-            Command::Status status = command->parse(argc - 1, cmd_argv.data());
-            if(status == Command::Status::parse_error) {
-                return Status::parse_error;
-            } else if(status == Command::Status::show_help) {
-                return Status::show_help;
-            } else if(status == Command::Status::show_licence) {
-                return Status::show_licence;
-            } else if(status == Command::Status::show_version) {
-                return Status::show_version;
-            } else {
-                return Status::parse_success;
-            }
+            
+            return command->parse(argc - 1, cmd_argv.data());
+
         }
     }
 
@@ -629,7 +632,7 @@ auto CommandList::parse(int argc, char **argv) -> Status
         showHelp();
     }
 
-    return Status::parse_error;
+    return Command::Status::parse_error;
 }
 
 auto CommandList::begin() TL_NOEXCEPT -> iterator
@@ -657,9 +660,10 @@ auto CommandList::push_back(const Command::SharedPtr &command) -> void
     mCommands.push_back(command);
 }
 
-auto CommandList::addCommand(const Command::SharedPtr &command) -> void
+auto CommandList::addCommand(const Command::SharedPtr &command) -> CommandList &
 {
     mCommands.push_back(command);
+    return *this;
 }
 
 auto CommandList::push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void
@@ -667,9 +671,10 @@ auto CommandList::push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void
     mCommands.push_back(std::forward<Command::SharedPtr>(command));
 }
 
-auto CommandList::addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> void
+auto CommandList::addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> CommandList &
 {
     mCommands.push_back(std::forward<Command::SharedPtr>(command));
+    return *this;
 }
 
 auto CommandList::clear() TL_NOEXCEPT -> void
@@ -720,9 +725,11 @@ auto CommandList::showHelp() const -> void
 {
 
     Console &console = App::console();
+
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     std::cout << "\nUsage: " << mName << " [--version] [-h | --help] [--licence] <command> [<args>] \n\n";
+    
     console.reset();
 
     std::cout << mDescription << " \n\n";

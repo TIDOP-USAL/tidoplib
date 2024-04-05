@@ -32,7 +32,6 @@
 
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
-#include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
 
@@ -51,92 +50,100 @@ namespace tl
 class Painter;
 
 /*!
- * \brief Clase Canvas
+ * \brief Canvas class
  */
 class TL_EXPORT Canvas
 {
 
 public:
 
-    /*!
-     * \brief Constructora canvas
-     */
     Canvas();
-
-    virtual ~Canvas() {}
+    virtual ~Canvas() = default;
 
     /*!
-     * \brief Ancho del canvas
-     * \return Ancho en pixeles
+     * \brief Canvas width
+     * \return Width in pixels
      */
-    virtual int width() const = 0;
+    virtual auto width() const -> int = 0;
 
     /*!
-     * \brief Alto del canvas
-     * \return Alto del canvas en pixeles
-     */
-    virtual int height() const = 0;
-
-    /*!
-     * \brief Color de fondo del canvas
-     * \return Color de fondo
-     */
-    virtual Color backgroundColor() const = 0;
-
-    /*!
-     * \brief Establece el ancho del canvas
-     * \param width Ancho del canvas
+     * \brief Sets the width of the canvas
+     * \param[in] width Canvas width
      */
     virtual void setWidth(int width) = 0;
 
     /*!
-     * \brief Establece el alto del canvas
-     * \param height Alto
+     * \brief Canvas height
+     * \return Height of the canvas in pixels
+     */
+    virtual auto height() const -> int = 0;
+
+    /*!
+     * \brief Set the height of the canvas
+     * \param[in] height Canvas height
      */
     virtual void setHeight(int height) = 0;
 
     /*!
-     * \brief Establece el tamaño del canvas
-     * \param width Ancho
-     * \param height Alto
+     * \brief Background color of the canvas
+     * \return Background color
      */
-    virtual void setSize(int width, int height) = 0;
-
-    virtual void setSize(const Size<int> &size) = 0;
-    virtual Size<int> size() const = 0;
+    virtual auto backgroundColor() const -> Color = 0;
 
     /*!
-     * \brief Establece el color de fondo del canvas
-     * \param color Color
+     * \brief Sets the background color of the canvas
+     * \param[in] color Background color
      * \see Color
      */
     virtual void setBackgroundColor(const Color &color) = 0;
 
+    /*!
+     * \brief  Canvas Size
+     */
+    virtual auto size() const -> Size<int> = 0;
+
+    /*!
+     * \brief Set the canvas size
+     * \param[in] size Canvas Size
+     */
+    virtual void setSize(const Size<int> &size) = 0;
+
+    /*!
+     * \brief Set the canvas size
+     * \param[in] width Canvas width
+     * \param[in] height Canvas height
+     */
+    virtual void setSize(int width, int height) = 0;
+
 protected:
 
     /*!
-     * \brief Dibuja un punto en el canvas
-     * \param point Punto
+     * \brief Draw a point on the canvas
+     * \param[in] point Point
+     * \param[in] style Style
      */
-     //virtual void drawPoint(const GPoint &point) = 0;
     virtual void drawPoint(const Point<double> &point, const GraphicStyle &style) = 0;
 
     /*!
-     * \brief Dibuja una polilinea en el canvas
-     * \param lineString Polilinea
+     * \brief Draw a polyline on the canvas
+     * \param[in] lineString Polyline
+     * \param[in] style Style
      */
-     //virtual void drawLineString(const GLineString &lineString) = 0;
     virtual void drawLineString(const LineStringD &lineString, const GraphicStyle &style) = 0;
 
     /*!
-     * \brief Dibuja un poligono en el canvas
-     * \param polygon Poligono
+     * \brief Draw a polygon on the canvas
+     * \param[in] polygon Polygon
+     * \param[in] style Style
      */
-     //virtual void drawPolygon(const GPolygon &polygon) = 0;
     virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
 
-
-    //virtual void drawText(const Point<double> &point, const std::string &text) = 0;
+    /*!
+     * \brief Draw a text on the canvas
+     * \param[in] point Insertion point
+     * \param[in] text Text
+     * \param[in] style Style
+     */
     virtual void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) = 0;
 
     void setPainter(Painter *painter);
@@ -147,6 +154,8 @@ private:
     Painter *mPainter;
 };
 
+
+
 #ifdef TL_HAVE_OPENCV
 
 class TL_EXPORT CanvasCV
@@ -155,57 +164,37 @@ class TL_EXPORT CanvasCV
 
 public:
 
-    /*!
-     * \brief CanvasCV
-     */
     CanvasCV();
-
-    /*!
-     * \brief Constructor de copia
-     * \param[in] canvas Objeto canvas que se copia
-     */
     CanvasCV(const CanvasCV &canvas);
     ~CanvasCV() override;
 
-    int width() const override;
-    int height() const override;
-    Color backgroundColor() const override;
+    auto width() const -> int override;
     void setWidth(int width) override;
+    auto height() const -> int override;
     void setHeight(int height) override;
-    void setSize(int width, int height) override;
+    auto backgroundColor() const -> Color override;
+    void setBackgroundColor(const Color &color) override;    
+    auto size() const->Size<int> override;
     void setSize(const Size<int> &size) override;
-    Size<int> size() const override;
-    void setBackgroundColor(const Color &color) override;
+    void setSize(int width, int height) override;
 
-    cv::Mat bmp();
+    auto bmp() -> cv::Mat;
+    void setPicture(const cv::Mat &bmp);
+
+    auto operator =(const CanvasCV &canvas) -> CanvasCV&;
 
 protected:
 
-    //void drawPoint(const GPoint &point) override;
     void drawPoint(const Point<double> &point, const GraphicStyle &style) override;
-    //void drawLineString(const GLineString &lineString) override;
     void drawLineString(const LineStringD &lineString, const GraphicStyle &style) override;
-    //void drawPolygon(const GPolygon &polygon) override;
     void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
-    //void drawText(const Point<double> &point, const std::string &text) override;
     void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) override;
-
-    void setPicture(const cv::Mat &bmp);
-
-
-
-    /*!
-     * \brief operador asignación
-     * \param[in] canvas Objeto canvas que se copia por asignación
-     * \return
-     */
-    CanvasCV &operator =(const CanvasCV &canvas);
 
 private:
 
     void update();
 
-    cv::Scalar colorToCvScalar(const Color &color);
+    static auto colorToCvScalar(const Color &color) -> cv::Scalar;
 
 private:
 
@@ -215,6 +204,75 @@ private:
 
 };
 
+
+
+
+
+
+inline auto CanvasCV::width() const -> int
+{
+    return mSize.width;
+}
+
+inline void CanvasCV::setWidth(int width)
+{
+    mSize.width = width;
+    update();
+}
+
+inline auto CanvasCV::height() const -> int
+{
+    return mSize.height;
+}
+
+inline void CanvasCV::setHeight(int height)
+{
+    mSize.height = height;
+    update();
+}
+
+inline auto CanvasCV::backgroundColor() const -> Color
+{
+    return mBgColor;
+}
+
+inline void CanvasCV::setBackgroundColor(const Color &color)
+{
+    mBgColor = color;
+    update();
+}
+
+inline auto CanvasCV::size() const -> Size<int>
+{
+    return mSize;
+}
+
+inline void CanvasCV::setSize(const Size<int> &size)
+{
+    mSize = size;
+    update();
+}
+
+inline void CanvasCV::setSize(int width, int height)
+{
+    mSize.width = width;
+    mSize.height = height;
+    update();
+}
+
+inline auto CanvasCV::bmp() -> cv::Mat
+{
+    return mCanvas;
+}
+
+inline auto CanvasCV::colorToCvScalar(const Color &color) -> cv::Scalar
+{
+    return {
+        static_cast<double>(color.blue()),
+        static_cast<double>(color.green()),
+        static_cast<double>(color.red())
+    };
+}
 
 #endif // TL_HAVE_OPENCV
 

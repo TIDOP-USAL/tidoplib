@@ -69,9 +69,9 @@ public:
 
 public:
 
-    int threshold() const override;
-    bool nonmaxSuppression() const override;
-    std::string detectorType() const override;
+    auto threshold() const -> int override;
+    auto nonmaxSuppression() const -> bool override;
+    auto detectorType() const -> std::string override;
     void setThreshold(int threshold) override;
     void setNonmaxSuppression(bool nonmaxSuppression) override;
     void setDetectorType(const std::string &detectorType) override;
@@ -81,7 +81,7 @@ public:
 public:
 
     void reset() override;
-    std::string name() const final;
+    auto name() const -> std::string final;
 
 };
 
@@ -110,17 +110,16 @@ public:
 private:
 
 #if CV_VERSION_MAJOR >= 4
-    cv::FastFeatureDetector::DetectorType convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> cv::FastFeatureDetector::DetectorType;
 #else
-    int convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> int;
 #endif
 
 // KeypointDetector interface
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Fast interface
 
@@ -143,7 +142,7 @@ public:
 
 
 class TL_EXPORT FastDetectorCuda
-    : public FastProperties,
+  : public FastProperties,
     public KeypointDetector
 {
 
@@ -164,7 +163,7 @@ public:
 
 private:
 
-    int convertDetectorType(const std::string &detectorType);
+    auto convertDetectorType(const std::string &detectorType) -> int;
 
     void update();
 
@@ -172,8 +171,7 @@ private:
 
 public:
 
-    std::vector<cv::KeyPoint> detect(const cv::Mat &img,
-                                     cv::InputArray &mask = cv::noArray()) override;
+    auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
 
 // Fast interface
 

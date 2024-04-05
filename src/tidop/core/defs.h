@@ -263,20 +263,6 @@
 /*                                       WARNIGS                                     */
 /*-----------------------------------------------------------------------------------*/
 
-//#ifdef _MSC_VER
-//#  define TL_WARNING_DEPRECATED 4996
-//#  define TL_UNREFERENCED_FORMAL_PARAMETER 4100
-//#  define TL_UNREFERENCED_LOCAL_VARIABLE 4101
-//#  define TL_WARNING_C4244 4244
-//#  define TL_FORCEINLINE_NOT_INLINED 4714
-//#else
-//#  define TL_WARNING_DEPRECATED "-Wdeprecated-declarations"
-//#  define TL_UNREFERENCED_FORMAL_PARAMETER "-Wunused-variable"
-//#  define TL_UNREFERENCED_LOCAL_VARIABLE "-Wunused-variable"
-//#  define TL_WARNING_C4244 "-W"
-//#  define TL_FORCEINLINE_NOT_INLINED 4714 "-W"
-//#endif
-
 
 
 #if defined __clang__
@@ -321,56 +307,7 @@
 #  define TL_DISABLE_WARNINGS
 #endif
 
-
-
-/*!
- * \brief Se suprimen todos los mensajes de advertencia
- *
- * <h4>Ejemplo</h4>
- * \code
- * TL_SUPPRESS_WARNINGS
- * bool f(int v) {      // warning C4100: 'v' : parámetro formal sin referencia
- *   int b = 0;         // warning C4189: 'b' : la variable local se ha inicializado pero no se hace referencia a ella
- *   double d = 1.0;
- *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
- *   return true;
- * }
- * TL_DEFAULT_WARNINGS
- * \endcode
- */
-//#ifdef _MSC_VER
-//#  define TL_SUPPRESS_WARNINGS TL_PRAGMA(warning(push, 0))
-//#elif defined __clang__
-//#  define TL_SUPPRESS_WARNINGS TL_PRAGMA(clang diagnostic ignored "-Wall")
-//#elif defined __GNUC__
-//#  define TL_SUPPRESS_WARNINGS TL_PRAGMA(GCC diagnostic ignored "-Wall")
-//#endif
-
-/*!
- * \brief Se pone por defecto la configuración de mensajes de advertencia
- */
 #define TL_DEFAULT_WARNINGS TL_WARNING_POP
-
-/*!
- * \brief Se activa un mensaje de advertencia especifico
- *
- * <h4>Ejemplo</h4>
- * \code
- * TL_DISABLE_WARNING(4244)
- * bool f(double d) {
- *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
- *   return true;
- * }
- * TL_ENABLE_WARNING(4244)
- * \endcode
- */
-//#ifdef _MSC_VER
-//#  define TL_ENABLE_WARNING(warn) TL_PRAGMA(warning(default : warn))
-//#elif defined __clang__
-//#  define TL_ENABLE_WARNING(warn) TL_PRAGMA(clang diagnostic warning warn) 
-//#elif defined __GNUC__
-//#  define TL_ENABLE_WARNING(warn) TL_PRAGMA(GCC diagnostic warning warn)
-//#endif
 
 
 #ifdef TL_WARNING_TODO
@@ -402,31 +339,31 @@ namespace tl
  
   
 /*!
- * \brief Redondea un doble o float y ademas convierte a entero
- * De esta forma se evita el warning C4244 (conversión de 'double' a 'int')
- * y nos aseguramos de que redondee de la forma correcta.
+ * \brief Rounds a double or float and also converts to an integer
+ * This avoids the C4244 warning (conversion from 'double' to 'int') 
+ * and ensures that it rounds correctly.
  */
 template<typename T>
-constexpr auto roundToInteger(T n) {
-  return static_cast<int>(round(n));
+constexpr auto roundToInteger(T n) 
+{
+    return static_cast<int>(round(n));
 }
 
 template<typename ...Args>
 constexpr size_t args_size(Args&&...)
 {
-  return sizeof...(Args);
+    return sizeof...(Args);
 }
 
 template<typename ...Args>
 constexpr size_t args_empty(Args&&...)
 {
-  return sizeof...(Args) == 0;
+    return sizeof...(Args) == 0;
 }
 
-template<typename T>
-constexpr auto unusedParameter(T param)
+template <typename... T>
+constexpr void unusedParameter(const T&...)
 {
-  return (void)param;
 }
 
 

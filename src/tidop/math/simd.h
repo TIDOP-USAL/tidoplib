@@ -219,8 +219,8 @@ public:
     Packed() = default;
     Packed(const Packed &packed);
     Packed(Packed &&packed) TL_NOEXCEPT;
-    Packed(const typename PackedTraits<Packed<T>>::simd_type &packed);
-    Packed(typename PackedTraits<Packed<T>>::value_type scalar);
+    Packed(simd_type packed);
+    Packed(value_type scalar);
 
     void loadAligned(const value_type *src);
     void loadUnaligned(const value_type *src);
@@ -233,7 +233,7 @@ public:
      * \brief  Assignment operator
      * Assign from intrinsic type
      */
-    Packed<T> &operator=(const simd_type &packed);
+    Packed<T> &operator=(simd_type packed);
 
     /*!
      * \brief Type cast operator to convert to intrinsic type
@@ -242,23 +242,23 @@ public:
 
     static constexpr size_t size();
 
-    Packed<T> &operator=(const Packed<T> &packed);
-    Packed<T> &operator=(Packed<T> &&packed) TL_NOEXCEPT;
+    auto operator=(const Packed<T> &packed) -> Packed<T>&;
+    auto operator=(Packed<T> &&packed) TL_NOEXCEPT -> Packed<T>&;
 
-    Packed<T> &operator+=(const Packed<T> &packed);
-    Packed<T> &operator-=(const Packed<T> &packed);
-    Packed<T> &operator*=(const Packed<T> &packed);
-    Packed<T> &operator/=(const Packed<T> &packed);
+    auto operator+=(const Packed<T> &packed) -> Packed<T>&;
+    auto operator-=(const Packed<T> &packed) -> Packed<T>&;
+    auto operator*=(const Packed<T> &packed) -> Packed<T>&;
+    auto operator/=(const Packed<T> &packed) -> Packed<T>&;
 
-    Packed<T> operator++(int);
-    Packed<T> &operator++();
-    Packed<T> operator--(int);
-    Packed<T> &operator--();
+    auto operator++(int) -> Packed<T>;
+    auto operator++() -> Packed<T>&;
+    auto operator--(int) -> Packed<T>;
+    auto operator--() -> Packed<T>&;
 
     /*!
-     * \brief Suma de los elementos de un vector
+     * \brief Sum of the elements of a vector
      */
-    T sum();
+    auto sum() -> T;
 
     static auto zero() -> Packed;
 
@@ -273,11 +273,10 @@ private:
 namespace internal
 {
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, T>::value,
-  typename Packed<T>::simd_type>::type
-loadPackedAligned(const T *data)
+template<typename T>
+auto loadPackedAligned(const T *data) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_load_ps(data);
@@ -286,11 +285,10 @@ loadPackedAligned(const T *data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  typename Packed<T>::simd_type>::type
-loadPackedAligned(const T *data)
+template<typename T>
+auto loadPackedAligned(const T *data) -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_load_pd(data);
@@ -299,11 +297,10 @@ loadPackedAligned(const T *data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_integral<T>::value,
-  typename Packed<T>::simd_type>::type
-loadPackedAligned(const T *data)
+template<typename T>
+auto loadPackedAligned(const T *data) -> std::enable_if_t<
+    std::is_integral<T>::value,
+    typename Packed<T>::simd_type>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -314,11 +311,10 @@ loadPackedAligned(const T *data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, T>::value,
-  typename Packed<T>::simd_type>::type
-loadPackedUnaligned(const T *data)
+template<typename T>
+auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_loadu_ps(data);
@@ -327,11 +323,10 @@ loadPackedUnaligned(const T *data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  typename Packed<T>::simd_type>::type
-loadPackedUnaligned(const T *data)
+template<typename T>
+auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_loadu_pd(data);
@@ -340,11 +335,10 @@ loadPackedUnaligned(const T *data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_integral<T>::value,
-  typename Packed<T>::simd_type>::type
-loadPackedUnaligned(const T *data)
+template<typename T>
+auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
+    std::is_integral<T>::value,
+    typename Packed<T>::simd_type>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -356,10 +350,9 @@ loadPackedUnaligned(const T *data)
 }
 
 
-template<typename T, typename U> inline
-typename std::enable_if<
-  std::is_same<float, T>::value, void>::type
-storePackedAligned(T *data, U &result)
+template<typename T, typename U>
+auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
+    std::is_same<float, T>::value, void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_store_ps(data, result);
@@ -368,10 +361,9 @@ storePackedAligned(T *data, U &result)
 #endif
 }
 
-template<typename T, typename U> inline
-typename std::enable_if<
-  std::is_same<double, T>::value, void>::type
-storePackedAligned(T *data, U &result)
+template<typename T, typename U>
+auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
+    std::is_same<double, T>::value, void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_store_pd(data, result);
@@ -380,11 +372,10 @@ storePackedAligned(T *data, U &result)
 #endif
 }
 
-template<typename T, typename U> inline
-typename std::enable_if<
-  std::is_integral<T>::value,
-  void>::type
-storePackedAligned(T *data, U &result)
+template<typename T, typename U>
+auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
+    std::is_integral<T>::value,
+    void>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -395,11 +386,10 @@ storePackedAligned(T *data, U &result)
 #endif
 }
 
-template<typename T, typename U> inline
-typename std::enable_if<
-  std::is_same<float, T>::value,
-  void>::type
-storePackedUnaligned(T *data, U &result)
+template<typename T, typename U>
+auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_storeu_ps(data, result);
@@ -408,11 +398,10 @@ storePackedUnaligned(T *data, U &result)
 #endif
 }
 
-template<typename T, typename U> inline
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  void>::type
-storePackedUnaligned(T *data, U &result)
+template<typename T, typename U>
+auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_storeu_pd(data, result);
@@ -421,11 +410,10 @@ storePackedUnaligned(T *data, U &result)
 #endif
 }
 
-template<typename T, typename U> inline
-typename std::enable_if<
-  std::is_integral<T>::value,
-  void>::type
-storePackedUnaligned(T *data, U &result)
+template<typename T, typename U>
+auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
+    std::is_integral<T>::value,
+    void>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -437,11 +425,10 @@ storePackedUnaligned(T *data, U &result)
 }
 
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  typename Packed<T>::simd_type>::type
-set(T data)
+template<typename T>
+auto set(T data) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_set1_ps(data);
@@ -450,11 +437,10 @@ set(T data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  typename Packed<T>::simd_type>::type
-set(T data)
+template<typename T>
+auto set(T data) -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_set1_pd(data);
@@ -463,12 +449,11 @@ set(T data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
-  typename Packed<T>::simd_type>::type
-set(T data)
+template<typename T>
+auto set(T data) -> std::enable_if_t<
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_set1_epi8(data);
@@ -477,12 +462,11 @@ set(T data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
-  typename Packed<T>::simd_type>::type
-set(T data)
+template<typename T>
+auto set(T data) -> std::enable_if_t<
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_set1_epi16(data);
@@ -491,12 +475,11 @@ set(T data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
-  typename Packed<T>::simd_type>::type
-set(T data)
+template<typename T>
+auto set(T data) -> std::enable_if_t<
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_set1_epi32(data);
@@ -505,12 +488,11 @@ set(T data)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
-  typename Packed<T>::simd_type>::type
-set(T data)
+template<typename T>
+auto set(T data) -> std::enable_if_t<
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_set1_epi64x(data);
@@ -520,11 +502,10 @@ set(T data)
 }
 
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  typename Packed<T>::simd_type>::type
-setZero()
+template<typename T>
+auto setZero() -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_setzero_ps();
@@ -533,11 +514,10 @@ setZero()
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  typename Packed<T>::simd_type>::type
-setZero()
+template<typename T>
+auto setZero() -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_setzero_pd();
@@ -549,11 +529,10 @@ setZero()
 }
 
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_integral<T>::value,
-  void>::type
-setZero()
+template<typename T>
+auto setZero() -> std::enable_if_t<
+    std::is_integral<T>::value,
+    void>
 {
 
 #ifdef TL_HAVE_AVX
@@ -565,11 +544,10 @@ setZero()
 
 /// Addition
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  Packed<T>>::type
-add(const Packed<T> &packed1, const Packed<T> &packed2)
+template<typename T>
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_add_ps(packed1, packed2);
@@ -578,11 +556,10 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<double, T>::value, 
-  Packed<T>>::type
-add(const Packed<T> &packed1, const Packed<T> &packed2)
+template<typename T>
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_add_pd(packed1, packed2);
@@ -591,12 +568,11 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
-  Packed<T>>::type
-add(const Packed<T> &packed1, const Packed<T> &packed2)
+template<typename T>
+auto add(const Packed<T>& packed1, const Packed<T>& packed2) -> std::enable_if_t<
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
+    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_add_epi8(packed1, packed2);
@@ -605,7 +581,7 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
@@ -619,7 +595,7 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
@@ -633,7 +609,7 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
@@ -649,7 +625,7 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 
 /// Subtract
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value,
   Packed<T>>::type
@@ -666,7 +642,7 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value,
   Packed<T>>::type
@@ -683,7 +659,7 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value,
   Packed<T>>::type
@@ -700,7 +676,7 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value,
   Packed<T>>::type
@@ -717,7 +693,7 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value,
   Packed<T>>::type
@@ -734,7 +710,7 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value,
   Packed<T>>::type
@@ -784,7 +760,7 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 
 /// Multiplication
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value, 
   Packed<T>>::type
@@ -801,7 +777,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value,
   Packed<T>>::type
@@ -819,7 +795,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
@@ -863,7 +839,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
@@ -881,7 +857,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
@@ -913,7 +889,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
@@ -964,7 +940,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value, 
   Packed<T>>::type
@@ -981,7 +957,7 @@ div(const Packed<T> &packed1, const Packed<T> &packed2)
     return r;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value, 
   Packed<T>>::type
@@ -1001,7 +977,7 @@ div(const Packed<T> &packed1, const Packed<T> &packed2)
 /// División entre enteros no permitida
 
 /// Suma de todos los elementos de un vector
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value,
   T>::type
@@ -1036,7 +1012,7 @@ horizontal_sum(const Packed<T> &packed)
 }
 
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value,
   T>::type
@@ -1068,7 +1044,7 @@ horizontal_sum(const Packed<T> &packed)
     return sum;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
@@ -1099,7 +1075,7 @@ horizontal_sum(const Packed<T> &packed)
     return sum;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
@@ -1139,7 +1115,7 @@ horizontal_sum(const Packed<T> &packed)
     return sum;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
@@ -1176,7 +1152,7 @@ horizontal_sum(const Packed<T> &packed)
     return sum;
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
@@ -1228,7 +1204,7 @@ horizontal_sum(const Packed<T> &packed)
 
 /// Unary minus
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value, 
   Packed<T>>::type
@@ -1242,7 +1218,7 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value, 
   Packed<T>>::type
@@ -1256,7 +1232,7 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value,
   Packed<T>>::type
@@ -1269,7 +1245,7 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value,
   typename Packed<T>::simd_type>::type
@@ -1282,7 +1258,7 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value,
   typename Packed<T>::simd_type>::type
@@ -1295,7 +1271,7 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value,
   typename Packed<T>::simd_type>::type
@@ -1308,7 +1284,7 @@ changeSign(const Packed<T> &packet)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value, 
   bool>::type
@@ -1323,7 +1299,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value, 
   bool>::type
@@ -1338,7 +1314,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
@@ -1354,7 +1330,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
@@ -1370,7 +1346,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
@@ -1386,7 +1362,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
   std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
@@ -1402,7 +1378,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 #else
     __m128i com32 = _mm_cmpeq_epi32(packed1, packed2);                 // 32 bit compares
     __m128i com32s = _mm_shuffle_epi32(com32, 0xB1);       // swap low and high dwords
-    __m128i test = _mm_and_si128(com32, com32s);           // low & high
+    __m128i test = _mm_and_si128(com32, com32s);           // low  &high
     __m128i teste = _mm_srai_epi32(test, 31);              // extend sign bit to 32 bits
     __m128i compare_result = _mm_shuffle_epi32(teste, 0xF5);       // extend sign bit to 64 bits
     return _mm_movemask_epi8(compare_result) == 0xffff;
@@ -1410,7 +1386,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<float, T>::value, 
   bool>::type
@@ -1425,7 +1401,7 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_same<double, T>::value, 
   bool>::type
@@ -1440,7 +1416,7 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
 #endif
 }
 
-template<typename T> inline
+template<typename T>
 typename std::enable_if<
   std::is_integral<T>::value,
   bool>::type
@@ -1470,83 +1446,83 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
 /* Packed overload operators */
 
 template<typename T>
-inline Packed<T> operator - (const Packed<T> &packet)
+Packed<T> operator - (const Packed<T> &packet)
 {
     return internal::changeSign(packet);
 }
 
 template<typename T>
-inline Packed<T> operator+(const Packed<T> &packed1,
-                           const Packed<T> &packed2)
+Packed<T> operator+(const Packed<T> &packed1,
+                    const Packed<T> &packed2)
 {
     return internal::add(packed1, packed2);
 }
 
 template<typename T>
-inline Packed<T> operator+(const Packed<T> &packed, T scalar)
+Packed<T> operator+(const Packed<T> &packed, T scalar)
 {
     return packed + Packed<T>(scalar);
 }
 
-template<typename T> 
-inline Packed<T> operator+(T scalar, const Packed<T> &packed)
+template<typename T>
+Packed<T> operator+(T scalar, const Packed<T> &packed)
 {
     return Packed<T>(scalar) + packed;
 }
 
-template<typename T> 
-inline Packed<T> operator-(const Packed<T> &packed1,
-                           const Packed<T> &packed2)
+template<typename T>
+Packed<T> operator-(const Packed<T> &packed1,
+                    const Packed<T> &packed2)
 {
     return internal::sub(packed1, packed2);
 }
 
-template<typename T> 
-inline Packed<T> operator-(const Packed<T> &packed, T scalar)
+template<typename T>
+Packed<T> operator-(const Packed<T> &packed, T scalar)
 {
     return packed - Packed<T>(scalar);
 }
 
-template<typename T> inline
+template<typename T>
 Packed<T> operator-(T scalar, const Packed<T> &packed)
 {
     return Packed<T>(scalar) - packed;
 }
 
-template<typename T> 
-inline Packed<T> operator*(const Packed<T> &packed1,
-                           const Packed<T> &packed2)
+template<typename T>
+Packed<T> operator*(const Packed<T> &packed1,
+                    const Packed<T> &packed2)
 {
     return internal::mul(packed1, packed2);
 }
 
-template<typename T> 
-inline Packed<T> operator*(const Packed<T> &packed, T scalar)
+template<typename T>
+Packed<T> operator*(const Packed<T> &packed, T scalar)
 {
     return packed * Packed<T>(scalar);
 }
 
-template<typename T> 
-inline Packed<T> operator*(T scalar, const Packed<T> &packed)
+template<typename T>
+Packed<T> operator*(T scalar, const Packed<T> &packed)
 {
     return Packed<T>(scalar) * packed;
 }
 
-template<typename T> 
-inline Packed<T> operator/(const Packed<T> &packed1,
-                           const Packed<T> &packed2)
+template<typename T>
+Packed<T> operator/(const Packed<T> &packed1,
+                    const Packed<T> &packed2)
 {
     return internal::div(packed1, packed2);
 }
 
-template<typename T> 
-inline Packed<T> operator/(const Packed<T> &packed, T scalar)
+template<typename T>
+Packed<T> operator/(const Packed<T> &packed, T scalar)
 {
     return packed / Packed<T>(scalar);
 }
 
-template<typename T> 
-inline Packed<T> operator/(T scalar, const Packed<T> &packed)
+template<typename T>
+Packed<T> operator/(T scalar, const Packed<T> &packed)
 {
     return Packed<T>(scalar) / packed;
 }
@@ -1571,81 +1547,81 @@ static inline bool operator != (const Packed<T> &packed1,
 
 
 
-template<typename T> 
-inline Packed<T>::Packed(const Packed &packed)
+template<typename T>
+Packed<T>::Packed(const Packed &packed)
   : mValue(packed.mValue)
 {
 }
 
-template<typename T> 
-inline Packed<T>::Packed(Packed &&packed) TL_NOEXCEPT
+template<typename T>
+Packed<T>::Packed(Packed &&packed) TL_NOEXCEPT
   : mValue(std::move(packed.mValue))
 {
 }
 
-template<typename T> 
-inline Packed<T>::Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
+template<typename T>
+Packed<T>::Packed(simd_type packed)
   : mValue(packed)
 {
 }
 
-template<typename T> 
-inline Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
+template<typename T>
+Packed<T>::Packed(value_type scalar)
     : mValue(internal::set(scalar))
 {
 }
 
-template<typename T> 
-inline void Packed<T>::loadAligned(const value_type *src)
+template<typename T>
+void Packed<T>::loadAligned(const value_type *src)
 {
     mValue = internal::loadPackedAligned(src);
 }
 
-template<typename T> 
-inline void Packed<T>::loadUnaligned(const value_type *src)
+template<typename T>
+void Packed<T>::loadUnaligned(const value_type *src)
 {
     mValue = internal::loadPackedUnaligned(src);
 }
 
-template<typename T> 
-inline void Packed<T>::storeAligned(value_type *dst) const
+template<typename T>
+void Packed<T>::storeAligned(value_type *dst) const
 {
     internal::storePackedAligned(dst, mValue);
 }
 
-template<typename T> 
-inline void Packed<T>::storeUnaligned(value_type *dst) const
+template<typename T>
+void Packed<T>::storeUnaligned(value_type *dst) const
 {
     internal::storePackedUnaligned(dst, mValue);
 }
 
-template<typename T> 
-inline void Packed<T>::setScalar(value_type value)
+template<typename T>
+void Packed<T>::setScalar(value_type value)
 {
     mValue = internal::set(value);
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator=(const typename Packed<T>::simd_type &packed)
+template<typename T>
+auto Packed<T>::operator=(simd_type packed) -> Packed<T>&
 {
     mValue = packed;
     return *this;
 }
 
-template<typename T> 
-inline constexpr size_t Packed<T>::size()
+template<typename T>
+constexpr auto Packed<T>::size() -> size_t
 {
     return PackedTraits<Packed<T>>::size;
 }
 
-template<typename T> 
-inline Packed<T>::operator simd_type() const
+template<typename T>
+Packed<T>::operator simd_type() const
 {
     return mValue;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
+template<typename T>
+auto Packed<T>::operator=(const Packed<T>& packed) -> Packed<T>&
 {
     if (this != &packed) {
         mValue = packed;
@@ -1654,8 +1630,8 @@ inline Packed<T> &Packed<T>::operator=(const Packed<T> &packed)
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
+template<typename T>
+auto Packed<T>::operator=(Packed<T>&& packed) TL_NOEXCEPT -> Packed<T>&
 {
     if (this != &packed) {
         mValue = std::move(packed);
@@ -1664,66 +1640,66 @@ inline Packed<T> &Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator+=(const Packed<T> &packed)
+template<typename T>
+auto Packed<T>::operator+=(const Packed<T> &packed) -> Packed<T>&
 {
     *this = *this + packed;
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator-=(const Packed<T> &packed)
+template<typename T>
+auto Packed<T>::operator-=(const Packed<T>& packed) -> Packed<T>&
 {
     *this = *this - packed;
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator*=(const Packed<T> &packed)
+template<typename T>
+auto Packed<T>::operator*=(const Packed<T>& packed) -> Packed<T>&
 {
     *this = *this * packed;
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator/=(const Packed<T> &packed)
+template<typename T>
+auto Packed<T>::operator/=(const Packed<T>& packed) -> Packed<T>&
 {
     *this = *this / packed;
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> Packed<T>::operator++(int)
+template<typename T>
+auto Packed<T>::operator++(int) -> Packed<T>
 {
     Packed<T> packet = *this;
     *this += consts::one<T>;
     return *packet;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator++()
+template<typename T>
+auto Packed<T>::operator++() -> Packed<T>&
 {
     *this += consts::one<T>;
     return *this;
 }
 
-template<typename T> 
-inline Packed<T> Packed<T>::operator--(int)
+template<typename T>
+auto Packed<T>::operator--(int) -> Packed<T>
 {
     Packed<T> packet = *this;
     *this -= consts::one<T>;
     return *packet;
 }
 
-template<typename T> 
-inline Packed<T> &Packed<T>::operator--()
+template<typename T>
+auto Packed<T>::operator--() -> Packed<T>&
 {
     *this -= consts::one<T>;
     return *this;
 }
 
-template<typename T> 
-inline T Packed<T>::sum()
+template<typename T>
+auto Packed<T>::sum() -> T
 {
     return internal::horizontal_sum(*this);
 }
@@ -1733,6 +1709,44 @@ auto Packed<T>::zero() -> Packed
 {
     return internal::setZero<T>();
 }
+
+
+/* Transpose */
+
+template<typename T>
+auto transposeMatrix4x4(Packed<T>& r1,
+                        Packed<T>& r2,
+                        Packed<T>& r3,
+                        Packed<T>& r4) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    void>
+{
+    __m128 tmp1 = _mm_unpacklo_ps(r1, r2);
+    __m128 tmp2 = _mm_unpackhi_ps(r1, r2);
+    __m128 tmp3 = _mm_unpacklo_ps(r3, r4);
+    __m128 tmp4 = _mm_unpackhi_ps(r3, r4);
+
+    r1 = _mm_movelh_ps(tmp1, tmp3);
+    r2 = _mm_movehl_ps(tmp3, tmp1);
+    r3 = _mm_movelh_ps(tmp2, tmp4);
+    r4 = _mm_movehl_ps(tmp4, tmp2);
+
+
+/// _MM_TRANSPOSE4_PS lo hace:
+//    __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          
+//        
+//        _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          
+//        _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          
+//        _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          
+//        _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          
+//        
+//        (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              
+//        (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              
+//        (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              
+//        (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD); 
+}
+
+
 
 /*! \} */ // end of Math
 

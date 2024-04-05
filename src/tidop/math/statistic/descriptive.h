@@ -27,10 +27,15 @@
 #include <vector> 
 #include <string> 
 
-#include <tidop/core/defs.h>
-#include <tidop/core/flags.h>
-#include <tidop/math/statistic/series.h>
-#include <tidop/math/statistics.h>
+#include "tidop/core/defs.h"
+#include "tidop/core/flags.h"
+#include "tidop/math/statistic/mean.h"
+#include "tidop/math/statistic/median.h"
+#include "tidop/math/statistic/mode.h"
+#include "tidop/math/statistic/quantile.h"
+#include "tidop/math/statistic/rms.h"
+#include "tidop/math/statistic/series.h"
+#include "tidop/math/statistic/skewness.h"
 
 namespace tl
 {
@@ -39,105 +44,9 @@ namespace tl
  *  \{
  */
 
-
-enum class SkewnessMethod
-{
-    fisher_pearson, //adjusted Fisher - Pearson standardized moment coefficient
-    pearson_mode,
-    bowley,
-    momental
-};
-
-enum class KurtosisMethod
-{
-
-};
-
-template<typename T> class DescriptiveStatistics;
-
-
 /*! \defgroup statistics Statistics
  *  \{
  */
-
-template<typename T>
-class Algorithm
-{
-
-public:
-
-    Algorithm() = default;
-    virtual ~Algorithm() = default;
-
-    virtual double eval(DescriptiveStatistics<T> *stat) = 0;
-    ////virtual double eval(const Series<T> &data) = 0;
-};
-
-
-template<typename T>
-class Skewness
-    : public Algorithm<T>
-{
-
-public:
-
-    Skewness()
-    {
-    }
-    ~Skewness() override
-    {
-    }
-
-};
-
-template<typename T>
-class SkewnessFactory
-{
-
-private:
-
-    SkewnessFactory() = default;
-
-public:
-
-    /*!
-     * \brief
-     * \param[in] method
-     * \see SkewnessMethod
-     * \return
-    */
-    static std::shared_ptr<Skewness<T>> create(SkewnessMethod method);
-};
-
-
-//template<typename T>
-//class Kurtosis
-//  : public Algorithm<T>
-//{
-//
-//public:
-//
-//  Kurtosis()
-//  {
-//  }
-//  ~Kurtosis() override
-//  {
-//  }
-//
-//};
-//
-//template<typename T>
-//class KurtosisFactory
-//{
-//
-//private:
-//
-//  KurtosisFactory() = default;
-//
-//public:
-//
-//  static std::shared_ptr<Kurtosis<T>> create(KurtosisMethod method);
-//};
 
 
 template<typename T>
@@ -158,254 +67,6 @@ public:
         SkewnessMethod skewness_method = SkewnessMethod::fisher_pearson;
     };
 
-public:
-
-    DescriptiveStatistics(Config config = Config());
-    DescriptiveStatistics(Series<T> data,
-                          Config config = Config());
-    DescriptiveStatistics(const DescriptiveStatistics<T> &object);
-    ~DescriptiveStatistics();
-
-    Series<T> data();
-
-    /*!
-     * \brief Return the smallest value
-     * \f[ \text{min} = \text{min}(x_i)_{i=1}^{n} \f]
-     * \return Minimun value
-     */
-    T min();
-
-    /*!
-     * \brief Returns the greatest value
-     * \f[ \text{max} = \text{max}(x_i)_{i=1}^{n} \f]
-     * \return Maximum value
-     */
-    T max();
-
-    /*!
-     * \brief Total of all data values
-     * \f[ \text{sum} = \sum_{i=1}^{n}x_i \f]
-     * \return
-     */
-    T sum();
-
-    /*!
-     * \brief The arithmetic mean or arithmetic average,
-     * or simply just the mean or the average, is the sum
-     * of a collection of numbers divided by the count of
-     * numbers in the collection.
-     *
-     * For a population:
-     *
-     * \f[ \mu = \frac{\sum_{i=1}^{n}x_i}{n} \f]
-     *
-     * For a sample:
-     *
-     * \f[ \overline{x} = \frac{\sum_{i=1}^{n}x_i}{n} \f]
-     *
-     * \return
-     */
-    double mean();
-
-    /*!
-     * \brief The median is the value separating the higher half from
-     * the lower half of a data sample, a population, or a probability
-     * distribution.
-     * \return
-     */
-    T median();
-
-    /*!
-     * \brief Variance measures dispersion of data from the mean.
-     * The formula for variance is the sum of squared differences from the
-     * mean divided by the size of the data set.
-     *
-     * For a population:
-     *
-     * \f[ \sigma^{2} = \frac{\sum_{i=1}^{n}(x_i - \mu)^{2}}{n} \f]
-     *
-     * For a sample:
-     *
-     * \f[ s^{2} = \frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1} \f]
-     *
-     * \return
-     */
-    double variance();
-
-    /*!
-     * \brief The standard deviation is a measure of the amount of variation
-     * or dispersion of a set of values.
-     *
-     * For a population:
-     *
-     * \f[ \sigma = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \mu)^{2}}{n}} \f]
-     *
-     * For a sample:
-     *
-     * \f[ s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1}} \f]
-     *
-     * \return
-     */
-    double standarDeviation();
-
-    /*!
-     * \brief mode
-     * \return
-     */
-    double mode();
-
-    /*!
-     * \brief The range of a set of data is the difference between
-     * the largest and smallest values.
-     * \f[ \text{range} = x_n - x_1 \f]
-     * \return Range
-     * \see min, max
-     */
-    T range();
-
-    /*!
-     * \brief firstQuartile
-     * \return
-     */
-    double firstQuartile();
-
-    /*!
-     * \brief secondQuartile
-     * \return
-     */
-    double secondQuartile();
-
-    /*!
-     * \brief thirdQuartile
-     * \return
-     */
-    double thirdQuartile();
-
-    /*!
-     * \brief Interquartile Range
-     * \f[ IQR = Q_3 - Q_1 \f]
-     * \return
-     */
-    double interquartileRange();
-
-    /*!
-     * \brief Mean Absolute Deviation
-     *
-     * For a Population:
-     *
-     * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \mu|}{n} \f]
-     *
-     * For a Sample:
-     *
-     * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \overline{x}|}{n}  \f]
-     *
-     * \return
-     */
-    double meanAbsoluteDeviation();
-
-    /*!
-     * \brief Median Absolute Deviation
-     * \return
-     */
-    double medianAbsoluteDeviation();
-
-    /*!
-     * \brief Sum of Squares
-     * The sum of squares is the sum of the squared differences between
-     * data values and the mean.
-     *
-     * For a Population:
-     *
-     * \f[ SS = \sum_{i=1}^{n}(x_i - \mu)^{2} \f]
-     *
-     * For a Sample:
-     *
-     * \f[ SS = \sum_{i=1}^{n}(x_i - \overline{x})^{2}  \f]
-     *
-     * \return
-     */
-    double sumOfSquares();
-
-    /*!
-     * \brief Root Mean Square
-     *
-     * The root mean square describes the magnitude of a set of numbers.
-     * The formula for root mean square is the square root of the sum of
-     * the squared data values divided by n.
-     *
-     * \f[ RMS = \sqrt{\frac{\sum_{i=1}^{n}x_i^{2}}{n}} \f]
-     *
-     * \return
-     */
-    double rootMeanSquare();
-
-    /*!
-     * \brief Skewness
-     * \return
-     */
-    double skewness();
-
-    /*!
-     * \brief Kurtosis
-     * \return
-     */
-    double kurtosis();
-
-    double kurtosisExcess();
-
-    /*!
-     * \brief Coefficient of Variation (CV) or Relative Standard Deviation (RSD)
-     * The coefficient of variation describes dispersion of data around the mean.
-     * It is the ratio of the standard deviation to the mean. The coefficient of
-     * variation is calculated as the standard deviation divided by the mean.
-     *
-     * For a Population:
-     *
-     * \f[ C_V = \frac{\sigma}{\mu} \f]
-     *
-     * For a Sample:
-     *
-     * \f[ C_V = \frac{\sigma}{\bar{x}} \f]
-     *
-     * \return
-     */
-    double coefficientOfVariation();
-
-    /*!
-     * \brief Quartile coefficient of dispersion
-     * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
-     * \return
-     */
-    double quartileCoefficientOfDispersion();
-
-    /*!
-     * \brief Quartile Deviation
-     * \f[ \frac{Q_3-Q_1}{2} \f]
-     */
-    double quartileDeviation();
-
-    double biweightMidvariance();
-
-    size_t size() const;
-    bool isSample() const;
-    bool isPopulation() const;
-
-private:
-
-    void configure();
-
-    void computeMinMax();
-    void computeMean();
-    void computeSumOfSquares();
-    void computeRootMeanSquare();
-    void computeVariance();
-    void computeStandarDeviation();
-    void computeMode();
-    void computeRange();
-    void computeFirstQuartile();
-    void computeSecondQuartile();
-    void computeThirdQuartile();
-
 private:
 
     enum class InternalStatus
@@ -425,24 +86,285 @@ private:
         standar_deviation = (1 << 12)
     };
 
-    tl::EnumFlags<InternalStatus> mStatus;
+    mutable tl::EnumFlags<InternalStatus> mStatus;
     Series<T> mData;
     Config mConfig;
     std::shared_ptr<Skewness<T>> mSkewnessMethod;
-    T mMin{};
-    T mMax{};
-    double mMean{};
-    T mMedian{};
-    T mMode{};
-    T mRange{};
-    double mVariance{};
-    double mStandarDeviation{};
-    double mQ1{};
-    double mQ2{};
-    double mQ3{};
-    double mSumOfSquares{};
-    double mRootMeanSquare{};
+    mutable T mMin{};
+    mutable T mMax{};
+    mutable double mMean{};
+    mutable T mMedian{};
+    mutable T mMode{};
+    mutable T mRange{};
+    mutable double mVariance{};
+    mutable double mStandarDeviation{};
+    mutable double mQ1{};
+    mutable double mQ2{};
+    mutable double mQ3{};
+    mutable double mSumOfSquares{};
+    mutable double mRootMeanSquare{};
 
+
+public:
+
+    DescriptiveStatistics(Config config = Config());
+    DescriptiveStatistics(Series<T> data,
+                          Config config = Config());
+    DescriptiveStatistics(const DescriptiveStatistics<T> &object);
+    ~DescriptiveStatistics();
+
+    auto data() const -> Series<T>;
+
+    /*!
+     * \brief Return the smallest value
+     * \f[ \text{min} = \text{min}(x_i)_{i=1}^{n} \f]
+     * \return Minimun value
+     */
+    auto min() const -> T;
+
+    /*!
+     * \brief Returns the greatest value
+     * \f[ \text{max} = \text{max}(x_i)_{i=1}^{n} \f]
+     * \return Maximum value
+     */
+    auto max() const -> T;
+
+    /*!
+     * \brief Total of all data values
+     * \f[ \text{sum} = \sum_{i=1}^{n}x_i \f]
+     * \return
+     */
+    auto sum() const -> T;
+
+    /*!
+     * \brief The arithmetic mean or arithmetic average,
+     * or simply just the mean or the average, is the sum
+     * of a collection of numbers divided by the count of
+     * numbers in the collection.
+     *
+     * For a population:
+     *
+     * \f[ \mu = \frac{\sum_{i=1}^{n}x_i}{n} \f]
+     *
+     * For a sample:
+     *
+     * \f[ \overline{x} = \frac{\sum_{i=1}^{n}x_i}{n} \f]
+     *
+     * \return
+     */
+    auto mean() const -> double;
+
+    /*!
+     * \brief The median is the value separating the higher half from
+     * the lower half of a data sample, a population, or a probability
+     * distribution.
+     * \return
+     */
+    auto median() const -> T;
+
+    /*!
+     * \brief Variance measures dispersion of data from the mean.
+     * The formula for variance is the sum of squared differences from the
+     * mean divided by the size of the data set.
+     *
+     * For a population:
+     *
+     * \f[ \sigma^{2} = \frac{\sum_{i=1}^{n}(x_i - \mu)^{2}}{n} \f]
+     *
+     * For a sample:
+     *
+     * \f[ s^{2} = \frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1} \f]
+     *
+     * \return
+     */
+    auto variance() const -> double;
+
+    /*!
+     * \brief The standard deviation is a measure of the amount of variation
+     * or dispersion of a set of values.
+     *
+     * For a population:
+     *
+     * \f[ \sigma = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \mu)^{2}}{n}} \f]
+     *
+     * For a sample:
+     *
+     * \f[ s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1}} \f]
+     *
+     * \return
+     */
+    auto standarDeviation() const -> double;
+
+    /*!
+     * \brief mode
+     * \return
+     */
+    auto mode() const -> double;
+
+    /*!
+     * \brief The range of a set of data is the difference between
+     * the largest and smallest values.
+     * \f[ \text{range} = x_n - x_1 \f]
+     * \return Range
+     * \see min, max
+     */
+    auto range() const -> T;
+
+    /*!
+     * \brief Quantile
+     * \return
+     */
+    auto quantile(double p) const -> double;
+
+    /*!
+     * \brief firstQuartile
+     * \return
+     */
+    auto firstQuartile() const -> double;
+
+    /*!
+     * \brief secondQuartile
+     * \return
+     */
+    auto secondQuartile() const -> double;
+
+    /*!
+     * \brief thirdQuartile
+     * \return
+     */
+    auto thirdQuartile() const -> double;
+
+    auto quartiles() const -> std::array<double, 3>;
+    auto quintiles() const -> std::array<double, 4>;
+    auto deciles() const -> std::array<double, 9>;
+    auto percentiles() const -> std::array<double, 99>;
+
+    /*!
+     * \brief Interquartile Range
+     * \f[ IQR = Q_3 - Q_1 \f]
+     * \return
+     */
+    auto interquartileRange() const -> double;
+
+    /*!
+     * \brief Mean Absolute Deviation
+     *
+     * For a Population:
+     *
+     * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \mu|}{n} \f]
+     *
+     * For a Sample:
+     *
+     * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \overline{x}|}{n}  \f]
+     *
+     * \return
+     */
+    auto meanAbsoluteDeviation() const -> double;
+
+    /*!
+     * \brief Median Absolute Deviation
+     * \return
+     */
+    auto medianAbsoluteDeviation() const -> double;
+
+    /*!
+     * \brief Sum of Squares
+     * The sum of squares is the sum of the squared differences between
+     * data values and the mean.
+     *
+     * For a Population:
+     *
+     * \f[ SS = \sum_{i=1}^{n}(x_i - \mu)^{2} \f]
+     *
+     * For a Sample:
+     *
+     * \f[ SS = \sum_{i=1}^{n}(x_i - \overline{x})^{2}  \f]
+     *
+     * \return
+     */
+    auto sumOfSquares() const -> double;
+
+    /*!
+     * \brief Root Mean Square
+     *
+     * The root mean square describes the magnitude of a set of numbers.
+     * The formula for root mean square is the square root of the sum of
+     * the squared data values divided by n.
+     *
+     * \f[ RMS = \sqrt{\frac{\sum_{i=1}^{n}x_i^{2}}{n}} \f]
+     *
+     * \return
+     */
+    auto rootMeanSquare() const -> double;
+
+    /*!
+     * \brief Skewness
+     * \return
+     */
+    auto skewness() const -> double;
+
+    /*!
+     * \brief Kurtosis
+     * \return
+     */
+    auto kurtosis() const -> double;
+
+    auto kurtosisExcess() const -> double;
+
+    /*!
+     * \brief Coefficient of Variation (CV) or Relative Standard Deviation (RSD)
+     * The coefficient of variation describes dispersion of data around the mean.
+     * It is the ratio of the standard deviation to the mean. The coefficient of
+     * variation is calculated as the standard deviation divided by the mean.
+     *
+     * For a Population:
+     *
+     * \f[ C_V = \frac{\sigma}{\mu} \f]
+     *
+     * For a Sample:
+     *
+     * \f[ C_V = \frac{\sigma}{\bar{x}} \f]
+     *
+     * \return
+     */
+    auto coefficientOfVariation() const -> double;
+
+    /*!
+     * \brief Quartile coefficient of dispersion
+     * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
+     * \return
+     */
+    auto quartileCoefficientOfDispersion() const -> double;
+
+    /*!
+     * \brief Quartile Deviation
+     * \f[ \frac{Q_3-Q_1}{2} \f]
+     */
+    auto quartileDeviation() const -> double;
+
+    auto biweightMidvariance() const -> double;
+
+    auto size() const -> size_t;
+    auto isSample() const -> bool;
+    auto isPopulation() const -> bool;
+
+private:
+
+    void configure();
+
+    void computeMinMax() const;
+    void computeMean() const;
+    void computeSumOfSquares() const;
+    void computeRootMeanSquare() const;
+    void computeVariance() const;
+    void computeStandarDeviation() const;
+    void computeMode() const;
+    void computeRange() const;
+    void computeFirstQuartile() const;
+    void computeSecondQuartile() const;
+    void computeThirdQuartile() const;
+    template<typename It>
+    void quantile(It &first, It &last) const;
 };
 
 
@@ -450,7 +372,7 @@ private:
 
 template<typename T>
 DescriptiveStatistics<T>::DescriptiveStatistics(Config config)
-    : mConfig(std::move(config))
+  : mConfig(std::move(config))
 {
     this->configure();
 }
@@ -458,7 +380,7 @@ DescriptiveStatistics<T>::DescriptiveStatistics(Config config)
 template<typename T>
 DescriptiveStatistics<T>::DescriptiveStatistics(Series<T> data,
                                                 Config config)
-    : mData(std::move(data)),
+  : mData(std::move(data)),
     mConfig(std::move(config))
 {
     this->configure();
@@ -466,7 +388,7 @@ DescriptiveStatistics<T>::DescriptiveStatistics(Series<T> data,
 
 template<typename T>
 DescriptiveStatistics<T>::DescriptiveStatistics(const DescriptiveStatistics<T> &object)
-    : mData(object.mData),
+  : mData(object.mData),
     mConfig(object.mConfig),
     mSkewnessMethod(object.mSkewnessMethod)
 {
@@ -478,23 +400,24 @@ DescriptiveStatistics<T>::~DescriptiveStatistics()
 {
 }
 
-template<typename T> inline
-Series<T> DescriptiveStatistics<T>::data()
+template<typename T>
+auto DescriptiveStatistics<T>::data() const -> Series<T>
 {
     return mData;
 }
 
-template<typename T> inline
-T DescriptiveStatistics<T>::min()
+template<typename T>
+auto DescriptiveStatistics<T>::min() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::min)) {
         computeMinMax();
     }
+
     return mMin;
 }
 
-template<typename T> inline
-T DescriptiveStatistics<T>::max()
+template<typename T>
+auto DescriptiveStatistics<T>::max() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::max)) {
         computeMinMax();
@@ -502,8 +425,8 @@ T DescriptiveStatistics<T>::max()
     return mMax;
 }
 
-template<typename T> inline
-T DescriptiveStatistics<T>::sum()
+template<typename T>
+auto DescriptiveStatistics<T>::sum() const -> T
 {
     T summation{};
 
@@ -526,95 +449,147 @@ T DescriptiveStatistics<T>::sum()
     return summation;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::mean()
+template<typename T>
+auto DescriptiveStatistics<T>::mean() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::mean)) {
         computeMean();
     }
+
     return mMean;
 }
 
-template<typename T> inline
-T DescriptiveStatistics<T>::median()
+template<typename T>
+auto DescriptiveStatistics<T>::median() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::median)) {
         computeSecondQuartile();
     }
+
     return mMedian;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::variance()
+template<typename T>
+auto DescriptiveStatistics<T>::variance() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::variance)) {
         computeVariance();
     }
+
     return mVariance;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::standarDeviation()
+template<typename T>
+auto DescriptiveStatistics<T>::standarDeviation() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::standar_deviation)) {
         computeStandarDeviation();
     }
+
     return mStandarDeviation;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::mode()
+template<typename T>
+auto DescriptiveStatistics<T>::mode() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::mode)) {
         computeMode();
     }
+
     return mMode;
 }
 
-template<typename T> inline
-T DescriptiveStatistics<T>::range()
+template<typename T>
+auto DescriptiveStatistics<T>::range() const -> T
 {
     if (!mStatus.isEnabled(InternalStatus::range)) {
         computeRange();
     }
+
     return mRange;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::firstQuartile()
+template<typename T>
+auto DescriptiveStatistics<T>::quantile(double p) const -> double
+{
+    return tl::quantile(mData.begin(), mData.end(), p);
+}
+
+template<typename T>
+auto DescriptiveStatistics<T>::firstQuartile() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::first_quartile)) {
         computeFirstQuartile();
     }
+
     return mQ1;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::secondQuartile()
+template<typename T>
+auto DescriptiveStatistics<T>::secondQuartile() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::second_quartile)) {
         computeSecondQuartile();
     }
+
     return mQ2;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::thirdQuartile()
+template<typename T>
+auto DescriptiveStatistics<T>::thirdQuartile() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::third_quartile)) {
         computeThirdQuartile();
     }
+
     return mQ3;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::interquartileRange()
+template<typename T>
+auto DescriptiveStatistics<T>::quartiles() const -> std::array<double, 3>
+{
+    return std::array<double, 3> {firstQuartile(), secondQuartile(), thirdQuartile()};
+}
+
+template<typename T>
+auto DescriptiveStatistics<T>::quintiles() const -> std::array<double, 4>
+{
+    double q1 = quantile(0.2);
+    double q2 = quantile(0.4);
+    double q3 = quantile(0.6);
+    double q4 = quantile(0.8);
+    
+    return std::array<double, 4>{q1, q2, q3, q4};
+}
+
+template<typename T>
+auto DescriptiveStatistics<T>::deciles() const -> std::array<double, 9>
+{
+    std::array<double, 9> _deciles{};
+
+    quantile(_deciles.begin(), _deciles.end());
+
+    return _deciles;
+}
+
+template<typename T>
+auto DescriptiveStatistics<T>::percentiles() const -> std::array<double, 99>
+{
+    std::array<double, 99> _percentiles{};
+
+    quantile(_percentiles.begin(), _percentiles.end());
+
+    return _percentiles;
+}
+
+template<typename T>
+auto DescriptiveStatistics<T>::interquartileRange() const -> double
 {
     return thirdQuartile() - firstQuartile();
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::meanAbsoluteDeviation()
+template<typename T>
+auto DescriptiveStatistics<T>::meanAbsoluteDeviation() const -> double
 {
     size_t n = size();
     if (n <= 1) return consts::zero<double>;
@@ -629,8 +604,8 @@ double DescriptiveStatistics<T>::meanAbsoluteDeviation()
     return sum / n;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::medianAbsoluteDeviation()
+template<typename T>
+auto DescriptiveStatistics<T>::medianAbsoluteDeviation() const -> double
 {
     size_t n = size();
     if (n <= 1) return consts::zero<double>;
@@ -647,8 +622,8 @@ double DescriptiveStatistics<T>::medianAbsoluteDeviation()
     return tl::median(x.begin(), x.end());
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::sumOfSquares()
+template<typename T>
+auto DescriptiveStatistics<T>::sumOfSquares() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::sum_of_squares)) {
         computeSumOfSquares();
@@ -657,8 +632,8 @@ double DescriptiveStatistics<T>::sumOfSquares()
     return mSumOfSquares;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::rootMeanSquare()
+template<typename T>
+auto DescriptiveStatistics<T>::rootMeanSquare() const -> double
 {
     if (!mStatus.isEnabled(InternalStatus::rms)) {
         computeRootMeanSquare();
@@ -667,14 +642,14 @@ double DescriptiveStatistics<T>::rootMeanSquare()
     return mRootMeanSquare;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::skewness()
+template<typename T>
+auto DescriptiveStatistics<T>::skewness() const -> double
 {
-    return mSkewnessMethod->eval(this);
+    return mSkewnessMethod->eval(*this);
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::kurtosis()
+template<typename T>
+auto DescriptiveStatistics<T>::kurtosis() const -> double
 {
     size_t n = size();
 
@@ -707,7 +682,7 @@ double DescriptiveStatistics<T>::kurtosis()
 }
 
 template<typename T>
-inline double DescriptiveStatistics<T>::kurtosisExcess()
+auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
 {
     size_t n = size();
     double kurtosis_excess{};
@@ -721,14 +696,14 @@ inline double DescriptiveStatistics<T>::kurtosisExcess()
     return kurtosis_excess;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::coefficientOfVariation()
+template<typename T>
+auto DescriptiveStatistics<T>::coefficientOfVariation() const -> double
 {
     return this->standarDeviation() / std::abs(this->mean());
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::quartileCoefficientOfDispersion()
+template<typename T>
+auto DescriptiveStatistics<T>::quartileCoefficientOfDispersion() const -> double
 {
     double q1 = this->firstQuartile();
     double q3 = this->thirdQuartile();
@@ -736,14 +711,14 @@ double DescriptiveStatistics<T>::quartileCoefficientOfDispersion()
     return (q3 - q1) / (q3 + q1);
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::quartileDeviation()
+template<typename T>
+auto DescriptiveStatistics<T>::quartileDeviation() const -> double
 {
     return this->interquartileRange() / consts::two<double>;
 }
 
-template<typename T> inline
-double DescriptiveStatistics<T>::biweightMidvariance()
+template<typename T>
+auto DescriptiveStatistics<T>::biweightMidvariance() const -> double
 {
     size_t n = this->size();
     if (n <= 2) return consts::zero<double>;
@@ -761,7 +736,7 @@ double DescriptiveStatistics<T>::biweightMidvariance()
             double y = consts::one<double> -u2;
             double y2 = y * y;
             num += x * x * y2 * y2;
-            den += y * (consts::one<double> -static_cast<double>(5) * u2);
+            den += y * (consts::one<double> -5. * u2);
         }
     }
 
@@ -772,20 +747,20 @@ double DescriptiveStatistics<T>::biweightMidvariance()
 }
 
 
-template<typename T> inline
-size_t DescriptiveStatistics<T>::size() const
+template<typename T>
+auto DescriptiveStatistics<T>::size() const -> size_t
 {
     return mData.size();
 }
 
 template<typename T>
-inline bool DescriptiveStatistics<T>::isSample() const
+bool DescriptiveStatistics<T>::isSample() const
 {
     return mConfig.sample;
 }
 
 template<typename T>
-inline bool DescriptiveStatistics<T>::isPopulation() const
+bool DescriptiveStatistics<T>::isPopulation() const
 {
     return !mConfig.sample;
 }
@@ -804,8 +779,8 @@ void DescriptiveStatistics<T>::configure()
 
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeMinMax()
+template<typename T>
+void DescriptiveStatistics<T>::computeMinMax() const
 {
     auto min_max = std::minmax_element(mData.begin(), mData.end());
     mMin = *min_max.first;
@@ -814,24 +789,29 @@ void DescriptiveStatistics<T>::computeMinMax()
     mStatus.enable(InternalStatus::max);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeMean()
+template<typename T>
+void DescriptiveStatistics<T>::computeMean() const
 {
     mMean = tl::mean(mData.begin(), mData.end());
 
     mStatus.enable(InternalStatus::mean);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeSumOfSquares()
-{
-    mSumOfSquares = tl::sumOfSquares(mData.begin(), mData.end());
+template<typename T>
+void DescriptiveStatistics<T>::computeSumOfSquares() const
+{   
+    double _mean = mean();
+
+    for (const auto &data : mData) {
+        double dif = static_cast<double>(data) - _mean;
+        mSumOfSquares += dif * dif;
+    }
 
     mStatus.enable(InternalStatus::sum_of_squares);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeRootMeanSquare()
+template<typename T>
+void DescriptiveStatistics<T>::computeRootMeanSquare() const
 {
     mRootMeanSquare = tl::rootMeanSquare(mData.begin(), mData.end());
 
@@ -839,13 +819,13 @@ void DescriptiveStatistics<T>::computeRootMeanSquare()
 }
 
 template<typename T>
-void DescriptiveStatistics<T>::computeVariance()
+void DescriptiveStatistics<T>::computeVariance() const
 {
     size_t n = mData.size();
     TL_TODO("¿Devolver error?")
-        //if (n <= 1) return consts::one<T>;
+    //if (n <= 1) return consts::one<T>;
 
-        double sum{};
+    double sum{};
     double ep{};
     double aux{};
 
@@ -863,36 +843,36 @@ void DescriptiveStatistics<T>::computeVariance()
     mStatus.enable(InternalStatus::variance);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeStandarDeviation()
+template<typename T>
+void DescriptiveStatistics<T>::computeStandarDeviation() const
 {
     mStandarDeviation = sqrt(variance());
     mStatus.enable(InternalStatus::standar_deviation);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeMode()
+template<typename T>
+void DescriptiveStatistics<T>::computeMode() const
 {
     mMode = tl::mode(mData.begin(), mData.end());
     mStatus.enable(InternalStatus::mode);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeRange()
+template<typename T>
+void DescriptiveStatistics<T>::computeRange() const
 {
     mRange = max() - min();
     mStatus.enable(InternalStatus::range);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeFirstQuartile()
+template<typename T>
+void DescriptiveStatistics<T>::computeFirstQuartile() const
 {
     mQ1 = tl::quantile(mData.begin(), mData.end(), 0.25);
     mStatus.enable(InternalStatus::first_quartile);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeSecondQuartile()
+template<typename T>
+void DescriptiveStatistics<T>::computeSecondQuartile() const
 {
     mQ2 = tl::quantile(mData.begin(), mData.end(), 0.5);
     mMedian = static_cast<T>(mQ2);
@@ -900,176 +880,33 @@ void DescriptiveStatistics<T>::computeSecondQuartile()
     mStatus.enable(InternalStatus::median);
 }
 
-template<typename T> inline
-void DescriptiveStatistics<T>::computeThirdQuartile()
+template<typename T>
+void DescriptiveStatistics<T>::computeThirdQuartile() const
 {
     mQ3 = tl::quantile(mData.begin(), mData.end(), 0.75);
     mStatus.enable(InternalStatus::third_quartile);
 }
 
 
-/// \cond
-
-namespace internal
-{
-
 template<typename T>
-class SkewnessFisherPearson
-  : public Skewness<T>
+template<typename It>
+void DescriptiveStatistics<T>::quantile(It &first, It &last) const
 {
+    auto n = std::distance(first, last);
 
-public:
-
-  SkewnessFisherPearson() : Skewness<T>()
-  {
-  }
-  ~SkewnessFisherPearson() override = default;
-
-  double eval(DescriptiveStatistics<T> *stat) override
-  {
-    size_t n = stat->size();
-
-    if(n <= 1) return consts::zero<double>;
-
-    double _mean = stat->mean();
-    double dif{};
-    double skew{};
-
-    for(const auto &data : stat->data()) {
-      dif = static_cast<double>(data) - _mean;
-      skew += dif * dif * dif;
+    double step = (static_cast<double>(n) + 1.) / 10.;
+    double p = 0.;
+    for (size_t i = 0; i < n; i++) {
+        p += step;
+        *first++ = quantile(p);
     }
-
-    double _variance = stat->variance();
-
-    if(_variance == consts::zero<double>) return consts::zero<double>;
-
-    if(stat->isSample()) {
-      return skew * n / ((n - 1) * (n - 2) * _variance * stat->standarDeviation());
-    } else {
-      return skew / (n * _variance * stat->standarDeviation());
-    }
-  }
-
-};
-
-
-template<typename T>
-class SkewnessPearson
-  : public Skewness<T>
-{
-
-public:
-
-  SkewnessPearson() : Skewness<T>() {}
-  ~SkewnessPearson() override = default;
-
-  double eval(DescriptiveStatistics<T> *stat) override
-  {
-    return (stat->mean() - stat->mode()) / stat->standarDeviation();
-  }
-
-};
-
-
-template<typename T>
-class SkewnessBowley
-  : public Skewness<T>
-{
-
-public:
-
-  SkewnessBowley() : Skewness<T>() {}
-  ~SkewnessBowley() override = default;
-
-  double eval(DescriptiveStatistics<T> *stat) override
-  {
-    return (stat->thirdQuartile() + stat->firstQuartile() - 2 * stat->secondQuartile()) /
-      stat->interquartileRange();
-  }
-
-};
-
-
-template<typename T>
-class SkewnessMomental
-  : public Skewness<T>
-{
-
-public:
-
-  SkewnessMomental() : Skewness<T>()
-  {
-  }
-  ~SkewnessMomental() override = default;
-
-  double eval(DescriptiveStatistics<T> *stat) override
-  {
-    return 0.0;
-  }
-
-};
-
-
-//template<typename T>
-//class KurtosisB2
-//  : public Kurtosis<T>
-//{
-//
-//public:
-//
-//  KurtosisB2() : Kurtosis<T>()
-//  {
-//  }
-//  ~KurtosisB2() override = default;
-//
-//  double eval(DescriptiveStatistics<T> *stat) override
-//  {
-//    return 0.0;
-//  }
-//
-//};
-
-
-} // internal
-
-/// \endcond
-
-template<typename T> inline
-std::shared_ptr<Skewness<T>> SkewnessFactory<T>::create(SkewnessMethod method)
-{
-    std::shared_ptr<Skewness<T>> skew;
-
-    switch (method) {
-        case SkewnessMethod::fisher_pearson:
-            skew = std::make_shared<internal::SkewnessFisherPearson<T>>();
-            break;
-        case SkewnessMethod::pearson_mode:
-            skew = std::make_shared<internal::SkewnessPearson<T>>();
-            break;
-        case SkewnessMethod::bowley:
-            skew = std::make_shared<internal::SkewnessBowley<T>>();
-            break;
-        case SkewnessMethod::momental:
-            skew = std::make_shared<internal::SkewnessMomental<T>>();
-            break;
-    }
-
-    return skew;
 }
-
-
-//template<typename T> inline
-//std::shared_ptr<Kurtosis<T>> KurtosisFactory<T>::create(KurtosisMethod method)
-//{
-//  std::shared_ptr<Kurtosis<T>> skew;
-//
-//  return skew;
-//}
 
 
 /*! \} */ // end of statistic
 
 /*! \} */ // end of math
+
+
 
 } // End namespace tl

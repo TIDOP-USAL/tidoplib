@@ -30,16 +30,16 @@ namespace tl
 {
 
 
-MetadataItemBase::MetadataItemBase(const std::string &name,
-                                   const std::string &defValue)
+MetadataItemBase::MetadataItemBase(std::string name,
+                                   std::string defValue)
   : MetadataItem(),
-    mName(name),
-    mDefaultValue(defValue),
+    mName(std::move(name)),
+    mDefaultValue(std::move(defValue)),
     bActive(false)
 {
 }
 
-std::string MetadataItemBase::value() const
+auto MetadataItemBase::value() const -> std::string
 {
     return mValue;
 }
@@ -50,7 +50,7 @@ void MetadataItemBase::setValue(const std::string &value)
     mValue = value;
 }
 
-std::string MetadataItemBase::defaultValue() const
+auto MetadataItemBase::defaultValue() const -> std::string
 {
     return mDefaultValue;
 }
@@ -60,7 +60,7 @@ void MetadataItemBase::setDefaultValue(const std::string &defValue)
     mDefaultValue = defValue;
 }
 
-bool MetadataItemBase::isActive() const
+auto MetadataItemBase::isActive() const -> bool
 {
     return bActive;
 }
@@ -75,8 +75,8 @@ MetadataItemNumber::MetadataItemNumber(const std::string &name,
 
 void MetadataItemNumber::parseValue(const std::string &value)
 {
-    size_t pos1 = value.find("(");
-    size_t pos2 = value.find(")");
+    size_t pos1 = value.find('(');
+    size_t pos2 = value.find(')');
 
     if (pos1 != std::string::npos && pos2 != std::string::npos) {
         setValue(value.substr(pos1 + 1, pos2 - pos1 + 1));
@@ -105,11 +105,9 @@ ImageMetadata::ImageMetadata(Format format)
 {
 }
 
-ImageMetadata::~ImageMetadata()
-{
-}
+ImageMetadata::~ImageMetadata() = default;
 
-ImageMetadata::Format ImageMetadata::format()
+auto ImageMetadata::format() const -> Format
 {
     return mFormat;
 }
@@ -123,6 +121,10 @@ class TL_EXPORT ImageMetadataBase
     : public ImageMetadata
 {
 
+protected:
+
+    std::map<std::string, std::pair<std::string, bool>> mMetadata;
+
 public:
 
     ImageMetadataBase(Format format)
@@ -130,27 +132,24 @@ public:
     {
     }
 
-    ~ImageMetadataBase() override
-    {
+    ~ImageMetadataBase() override = default;
 
-    }
-
-    std::string metadata(const std::string &name,
-                         bool &active) const override;
+    auto metadata(const std::string& name,
+                  bool &active) const -> std::string override;
     void setMetadata(const std::string &name,
                      const std::string &value) override;
 
-    std::map<std::string, std::string> metadata() const override
+    auto metadata() const -> std::map<std::string, std::string> override
     {
         return this->metadata(true);
     }
 
-    std::map<std::string, std::string> activeMetadata() const override
+    auto activeMetadata() const -> std::map<std::string, std::string> override
     {
         return this->metadata(false);
     }
 
-    virtual void reset() override
+    void reset() override
     {
         this->init();
     }
@@ -161,16 +160,12 @@ private:
     {
     }
 
-    std::map<std::string, std::string> metadata(bool all) const;
-
-protected:
-
-    std::map<std::string, std::pair<std::string, bool>> mMetadata;
+    auto metadata(bool all) const -> std::map<std::string, std::string>;
 
 };
 
 
-std::string ImageMetadataBase::metadata(const std::string &name, bool &active) const
+auto ImageMetadataBase::metadata(const std::string& name, bool& active) const -> std::string
 {
     std::string value;
     active = false;
@@ -197,13 +192,13 @@ void ImageMetadataBase::setMetadata(const std::string &name, const std::string &
     }*/
 }
 
-std::map<std::string, std::string> ImageMetadataBase::ImageMetadataBase::metadata(bool all) const
+auto ImageMetadataBase::metadata(bool all) const -> std::map<std::string, std::string>
 {
     std::map<std::string, std::string> metadata;
 
-    for (auto it = mMetadata.begin(); it != mMetadata.end(); it++) {
-        if (all || it->second.second == true)
-            metadata[it->first] = it->second.first;
+    for (auto &pair : mMetadata) {
+        if (all || pair.second.second == true)
+            metadata[pair.first] = pair.second.first;
     }
 
     return metadata;
@@ -221,7 +216,7 @@ public:
     ExifMetadata(Format format)
         : ImageMetadataBase(format)
     {
-        this->init();
+        ExifMetadata::init();
     }
 
     ~ExifMetadata() override
@@ -385,46 +380,6 @@ void ExifMetadata::init()
 }
 
 
-//class XMPMetadata
-//  : public ImageMetadataBase
-//{
-//
-//public:
-//
-//  XMPMetadata(Format format)
-//    : ImageMetadataBase(format)
-//  {
-//    this->init();
-//  }
-//
-//  ~XMPMetadata() override
-//  {
-//  }
-//
-//private:
-//
-//  void init() override;
-//
-//};
-//
-//
-//void XMPMetadata::init()
-//{
-//  mMetadata["XMP_About"] = std::make_pair("", false);
-//  mMetadata["XMP_AbsoluteAltitude"] = std::make_pair("", false);
-//  mMetadata["XMP_RelativeAltitude"] = std::make_pair("", false);
-//  mMetadata["XMP_GimbalRollDegree"] = std::make_pair("", false);
-//  mMetadata["XMP_GimbalYawDegree"] = std::make_pair("", false);
-//  mMetadata["XMP_GimbalPitchDegree"] = std::make_pair("", false);
-//  mMetadata["XMP_FlightRollDegree"] = std::make_pair("", false);
-//  mMetadata["XMP_FlightYawDegree"] = std::make_pair("", false);
-//  mMetadata["XMP_FlightPitchDegree"] = std::make_pair("", false);
-//  mMetadata["XMP_CamReverse"] = std::make_pair("", false);
-//  mMetadata["XMP_GimbalReverse"] = std::make_pair("", false);
-//  mMetadata["XMP_RtkFlag"] = std::make_pair("", false);
-//}
-
-
 
 class TL_EXPORT JpegMetadata
     : public ExifMetadata
@@ -447,9 +402,7 @@ JpegMetadata::JpegMetadata()
     this->init();
 }
 
-JpegMetadata::~JpegMetadata()
-{
-}
+JpegMetadata::~JpegMetadata() = default;
 
 void JpegMetadata::init()
 {
@@ -586,12 +539,10 @@ public:
     TiffMetadata()
         : ExifMetadata(Format::tiff)
     {
-        this->init();
+        TiffMetadata::init();
     }
 
-    ~TiffMetadata() override
-    {
-    }
+    ~TiffMetadata() override = default;
 
 private:
 
@@ -631,9 +582,7 @@ public:
     {
     }
 
-    ~PngMetadata() override
-    {
-    }
+    ~PngMetadata() override = default;
 
 private:
 
@@ -666,9 +615,7 @@ public:
     {
     }
 
-    ~BmpMetadata() override
-    {
-    }
+    ~BmpMetadata() override = default;
 
 private:
 
@@ -689,9 +636,7 @@ public:
     {
     }
 
-    ~GifMetadata() override
-    {
-    }
+    ~GifMetadata() override = default;
 
 private:
 
@@ -708,15 +653,15 @@ std::shared_ptr<ImageMetadata> ImageMetadataFactory::create(const std::string &f
 {
     std::shared_ptr<ImageMetadata> imageMetadata;
 
-    if (format.compare("JPEG") == 0) {
+    if (format == "JPEG") {
         imageMetadata = std::make_shared<JpegMetadata>();
-    } else if (format.compare("GTiff") == 0) {
+    } else if (format == "GTiff") {
         imageMetadata = std::make_shared<TiffMetadata>();
-    } else if (format.compare("PNG") == 0) {
+    } else if (format == "PNG") {
         imageMetadata = std::make_shared<PngMetadata>();
-    } else if (format.compare("BMP") == 0) {
+    } else if (format == "BMP") {
         imageMetadata = std::make_shared<BmpMetadata>();
-    } else if (format.compare("GIF") == 0) {
+    } else if (format == "GIF") {
         imageMetadata = std::make_shared<GifMetadata>();
     } else {
         throw std::runtime_error("Invalid Image Format");

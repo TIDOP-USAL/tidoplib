@@ -25,7 +25,6 @@
 #pragma once
 
 
-#include "tidop/geometry/transform/transform.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/mathutils.h"
