@@ -314,6 +314,8 @@ private:
                   << this->backgroundColor << 'm';
     }
 
+    bool enableVTMode();
+
 // MessageHandler interface
 
 public:

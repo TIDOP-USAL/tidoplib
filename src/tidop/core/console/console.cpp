@@ -296,6 +296,27 @@ std::ostream& Console::clear(std::ostream &os)
     return os;
 }
 
+//https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#example-of-enabling-virtual-terminal-processing
+bool Console::enableVTMode()
+{
+    // Set output mode to handle virtual terminal sequences
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode)) {
+        return false;
+    }
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode)) {
+        return false;
+    }
+    return true;
+}
+
 void Console::debug(String message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
@@ -355,6 +376,7 @@ void Console::error(String message)
 void Console::init()
 {
     reset();
+    enableVTMode();
 }
 
 } // End mamespace tl
