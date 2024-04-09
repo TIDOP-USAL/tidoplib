@@ -82,7 +82,7 @@ public:
     /*!
      * \brief Error description
      */
-    const char *what() const TL_NOEXCEPT override
+    auto what() const TL_NOEXCEPT -> const char* override
     {
         return mMessage.c_str();
     }
@@ -90,7 +90,7 @@ public:
     /*!
      * \brief Source file where the error occurred
      */
-    std::string file() const
+    auto file() const -> std::string
     {
         return mFile;
     }
@@ -98,7 +98,7 @@ public:
     /*!
      * \brief Name of the function where the error occurred
      */
-    std::string function() const
+    auto function() const -> std::string
     {
         return mFunction;
     }
@@ -106,7 +106,7 @@ public:
     /*!
      * \brief Line number where the error occurred
      */
-    int line() const
+    auto line() const -> int
     {
         return mLine;
     }

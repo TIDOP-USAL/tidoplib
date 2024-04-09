@@ -147,7 +147,6 @@ constexpr auto clamp(const T& value, const T& min, const T& max) -> T
 
 /*!
  * \brief 2D Vector module
- * \param[in] v Vector
  */
 template<typename T>
 auto module(T a, T b) -> std::enable_if_t<

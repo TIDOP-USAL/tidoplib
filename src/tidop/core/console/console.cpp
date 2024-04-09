@@ -299,6 +299,7 @@ std::ostream& Console::clear(std::ostream &os)
 //https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#example-of-enabling-virtual-terminal-processing
 bool Console::enableVTMode()
 {
+#ifdef TL_OS_WINDOWS
     // Set output mode to handle virtual terminal sequences
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut == INVALID_HANDLE_VALUE) {
@@ -314,6 +315,7 @@ bool Console::enableVTMode()
     if (!SetConsoleMode(hOut, dwMode)) {
         return false;
     }
+#endif
     return true;
 }
 
