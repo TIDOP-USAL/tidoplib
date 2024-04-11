@@ -29,6 +29,8 @@
 
 #include <string>
 
+#include "tidop/math/angles.h"
+
 namespace tl
 {
 
@@ -41,32 +43,34 @@ namespace tl
 class Ellipsoid
 {
 
-public:
+private:
 
     std::string name;
     double a; // semi-major axis;
     double b; // semi-minor axis;
+    double f; // flattening;
 
 public:
 
     Ellipsoid(std::string ellipsoidName,
               double semiMajorAxis,
-              double semiMinorAxis)
+              double flattening)
       : name(std::move(ellipsoidName)),
         a(semiMajorAxis),
-        b(semiMinorAxis)
+        b(semiMajorAxis * (1 - flattening)),
+        f(flattening)
     {
     }
+
+    auto semiMajorAxis() const -> double;
+    auto semiMinorAxis() const -> double;
 
     /*!
      * \brief Flattening
      * \f[ f = \frac{a - b}{a} \f]
      */
-    double flattening() const
-    {
-        return (a - b) / a;
-    }
-    
+    auto flattening() const -> double;
+
     /*!
      * \brief Inverse flattening
      * \f[ 1/f = \frac{a}{a - b} \f]
@@ -82,58 +86,112 @@ public:
      * 1/f is infinite. In this document if the earth model is a sphere 
      * <inverse flattening> shall be given an artificial value of zero.
      */
-    double inverseFlattening() const
-    {
-        if (a == b) return 0.;
-        return a / (a - b);
-    }
-    
+    auto inverseFlattening() const -> double;
+
     /*!
      * \brief Second flattening
-     * \f[ f^{'} = \frac{a - b}{b} \f]
+     * \f[ e^{'} = \frac{a - b}{b} \f]
      */
-    double secondFlattening() const
-    {
-        return (a - b) / b;
-    }
-    
+    auto secondFlattening() const -> double;
+
     /*!
      * \brief Third flattening
      * \f[ n = \frac{a - b}{a + b} \f]
      */
-    double thirdFlattening() const
-    {
-        return (a - b) / (a + b);
-    }
-    
+    auto thirdFlattening() const -> double;
+
     /*!
      * \brief Eccentricity
      * \f[ e = \sqrt{\frac{a^2 - b^2}{a^2}} \f]
      */
-    double eccentricity() const
-    {
-        return std::sqrt((a * a - b * b) / (a * a));
-    }
-    
+    auto eccentricity() const -> double;
+
     /*!
      * \brief Second eccentricity
      * \f[ e^{'} = \sqrt{\frac{a^2 - b^2}{b^2}} \f]
      */
-    double secondEccentricity() const
-    {
-        return std::sqrt((a * a - b * b) / (b * b));
-    }
-    
+    auto secondEccentricity() const -> double;
+
     /*!
      * \brief Third eccentricity
      * \f[ e^{''} = \sqrt{\frac{a^2 - b^2}{a^2 + b^2}} \f]
      */
-    double thirdEccentricity() const
-    {
-        return std::sqrt(a * a - b * b) / std::sqrt(a * a + b * b);
-    }
+    auto thirdEccentricity() const -> double;
 
+    auto authalicLatitude(double lat) const -> double;
+
+    /*!
+     * \brief Geocentric Radius
+     * \param[in] lat Latidude in degrees
+     * \return 
+     */
+    auto geocentricRadius(double lat) const -> double;
 };
+
+
+
+
+
+inline auto Ellipsoid::semiMajorAxis() const -> double
+{
+    return a;
+}
+
+inline auto Ellipsoid::semiMinorAxis() const -> double
+{
+    return b;
+}
+
+inline auto Ellipsoid::flattening() const -> double
+{
+    return f;
+}
+
+inline auto Ellipsoid::inverseFlattening() const -> double
+{
+    if (f == 0.) return 0.;
+    return 1. / f;
+}
+
+inline auto Ellipsoid::secondFlattening() const -> double
+{
+    return (a - b) / b;
+}
+
+inline auto Ellipsoid::thirdFlattening() const -> double
+{
+    return f / (consts::two<double> - f);
+}
+
+inline auto Ellipsoid::eccentricity() const -> double
+{
+    return std::sqrt(f * (2 - f));
+}
+
+inline auto Ellipsoid::secondEccentricity() const -> double
+{
+    auto b_2 = b * b;
+    return std::sqrt((a * a - b_2) / (b_2));
+}
+
+inline auto Ellipsoid::thirdEccentricity() const -> double
+{
+    auto a_2 = a * a;
+    auto b_2 = b * b;
+    return std::sqrt(a_2 - b_2) / std::sqrt(a_2 + b_2);
+}
+
+inline auto Ellipsoid::geocentricRadius(double lat) const -> double
+{
+    double lat_rad = lat * consts::deg_to_rad<double>;
+    double cos_lat = cos(lat_rad);
+    double sin_lat = sin(lat_rad);
+
+    return std::sqrt((std::pow(a * a * cos_lat, 2) + std::pow(b * b * sin_lat, 2)) /
+        (std::pow(a * cos_lat, 2) + std::pow(b * sin_lat, 2)));
+        
+}
+
 
 /*! \} */ // end of geospatial
 

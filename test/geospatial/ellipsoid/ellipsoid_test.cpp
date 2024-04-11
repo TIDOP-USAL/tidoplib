@@ -34,50 +34,117 @@ BOOST_AUTO_TEST_SUITE(EllipsoidTestSuite)
 
 struct EllipsoidTest
 {
-  EllipsoidTest()
-  {
+    EllipsoidTest()
+    {
 
-  }
-
-  ~EllipsoidTest()
-  {
-    if (wgs84) {
-      delete wgs84;
-      wgs84 = nullptr;
     }
 
-    if (sphere) {
-      delete sphere;
-      sphere = nullptr;
+    ~EllipsoidTest()
+    {
+        if (wgs84) {
+            delete wgs84;
+            wgs84 = nullptr;
+        }
+        if (ed50) {
+            delete ed50;
+            ed50 = nullptr;
+        }
+        if (sphere) {
+            delete sphere;
+            sphere = nullptr;
+        }
     }
-  }
 
-  virtual void setup()
-  {
-    wgs84 = new Ellipsoid("WGS84", 6378137.0, 6356752.3142451793);
-    sphere = new Ellipsoid("sphere", 6370997., 6370997.);
-  }
+    virtual void setup()
+    {
+        wgs84 = new Ellipsoid("WGS84", 6378137.0, 1./ 298.257/**/);
+        ed50 = new Ellipsoid("ED50", 6378388.0, 1. / 297/**/);
+        sphere = new Ellipsoid("sphere", 6370997., 0.);
+    }
 
-  virtual void teardown()
-  {
+    virtual void teardown()
+    {
 
-  }
+    }
 
-  Ellipsoid *wgs84;
-  Ellipsoid *sphere;
+    Ellipsoid *wgs84;
+    Ellipsoid *ed50;
+    Ellipsoid *sphere;
 };
 
+BOOST_FIXTURE_TEST_CASE(a, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(6378137.0, wgs84->semiMajorAxis(), 0.01);
+    BOOST_CHECK_CLOSE(6378388.0, ed50->semiMajorAxis(), 0.01);
+    BOOST_CHECK_EQUAL(6370997., sphere->semiMajorAxis());
+}
+
+BOOST_FIXTURE_TEST_CASE(b, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(6356752.3142451793, wgs84->semiMinorAxis(), 0.01);
+    BOOST_CHECK_CLOSE(6356911.946127946, ed50->semiMinorAxis(), 0.01);
+    BOOST_CHECK_EQUAL(6370997., sphere->semiMinorAxis());
+}
 
 BOOST_FIXTURE_TEST_CASE(flattening, EllipsoidTest)
-{ 
-  BOOST_CHECK_CLOSE(0.0033528106647475126, wgs84->flattening(), 0.01);
-  BOOST_CHECK_EQUAL(0., sphere->flattening());
+{
+    BOOST_CHECK_CLOSE(0.0033528106647475126, wgs84->flattening(), 0.01);
+    BOOST_CHECK_CLOSE(0.0033670033670034, ed50->flattening(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->flattening());
 }
 
 BOOST_FIXTURE_TEST_CASE(inverse_flattening, EllipsoidTest)
 {
-  BOOST_CHECK_CLOSE(298.257223563, wgs84->inverseFlattening(), 0.01);
-  BOOST_CHECK_EQUAL(0., sphere->inverseFlattening());
+    BOOST_CHECK_CLOSE(298.257222101, wgs84->inverseFlattening(), 0.01);
+    BOOST_CHECK_CLOSE(297., ed50->inverseFlattening(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->inverseFlattening());
+}
+
+BOOST_FIXTURE_TEST_CASE(second_flattening, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(0.0033640923510633012, wgs84->secondFlattening(), 0.01);
+    BOOST_CHECK_CLOSE(0.0033783783783783213, ed50->secondFlattening(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->secondFlattening());
+}
+
+BOOST_FIXTURE_TEST_CASE(third_flattening, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(0.001679221647182138, wgs84->thirdFlattening(), 0.01);
+    BOOST_CHECK_CLOSE(0.001686340640809415, ed50->thirdFlattening(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->thirdFlattening());
+}
+
+BOOST_FIXTURE_TEST_CASE(eccentricity, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(0.081819221455524407, wgs84->eccentricity(), 0.01);
+    BOOST_CHECK_CLOSE(0.081991889979029189, ed50->eccentricity(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->eccentricity());
+}
+
+BOOST_FIXTURE_TEST_CASE(second_eccentricity, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(0.082094468872592891, wgs84->secondEccentricity(), 0.01);
+    BOOST_CHECK_CLOSE(0.08226888960733672, ed50->secondEccentricity(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->secondEccentricity());
+}
+
+BOOST_FIXTURE_TEST_CASE(third_eccentricity, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(0.057951995861245623, wgs84->thirdEccentricity(), 0.01);
+    BOOST_CHECK_CLOSE(0.058074707839139428, ed50->thirdEccentricity(), 0.01);
+    BOOST_CHECK_EQUAL(0., sphere->thirdEccentricity());
+}
+
+BOOST_FIXTURE_TEST_CASE(geocentric_radius, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(6378137.0, wgs84->geocentricRadius(0.), 0.01);
+    BOOST_CHECK_CLOSE(6356752.3142451793, wgs84->geocentricRadius(90.), 0.01);
+
+    BOOST_CHECK_CLOSE(6378388.0, ed50->geocentricRadius(0.), 0.01);
+    BOOST_CHECK_CLOSE(6356911.946127946, ed50->geocentricRadius(90.), 0.01);
+
+    BOOST_CHECK_CLOSE(6370997., sphere->geocentricRadius(0.), 0.01);
+    BOOST_CHECK_CLOSE(6370997., sphere->geocentricRadius(90.), 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
