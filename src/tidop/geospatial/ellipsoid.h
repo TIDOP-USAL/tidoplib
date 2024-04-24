@@ -118,6 +118,20 @@ public:
      */
     auto thirdEccentricity() const -> double;
 
+    /*!
+     * \brief Linear eccentricity
+     * The linear eccentricity is the distance between the center point of the ellipse and either foci.
+     *
+     * \f[ E = \sqrt{a^2 - b^2} \f]
+     *
+     */
+    auto linearEccentricity() const -> double;
+
+    /*!
+     * \brief Authalic Latitude
+     * \param[in] lat Latitude in degrees
+     * \return The authalic latitude corresponding to the given latitude
+     */
     auto authalicLatitude(double lat) const -> double;
 
     /*!
@@ -181,6 +195,11 @@ inline auto Ellipsoid::thirdEccentricity() const -> double
     return std::sqrt(a_2 - b_2) / std::sqrt(a_2 + b_2);
 }
 
+inline auto Ellipsoid::linearEccentricity() const -> double
+{
+    return std::sqrt(a * a - b * b);
+}
+
 inline auto Ellipsoid::geocentricRadius(double lat) const -> double
 {
     double lat_rad = lat * consts::deg_to_rad<double>;
@@ -188,7 +207,7 @@ inline auto Ellipsoid::geocentricRadius(double lat) const -> double
     double sin_lat = sin(lat_rad);
 
     return std::sqrt((std::pow(a * a * cos_lat, 2) + std::pow(b * b * sin_lat, 2)) /
-        (std::pow(a * cos_lat, 2) + std::pow(b * sin_lat, 2)));
+                     (std::pow(a * cos_lat, 2) + std::pow(b * sin_lat, 2)));
         
 }
 

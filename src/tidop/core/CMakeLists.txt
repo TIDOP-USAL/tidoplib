@@ -80,7 +80,11 @@ if(BUILD_TL_CORE)
                              console/menu.h
                              messages.h
                              msg/handler.h
-                             msg/message.h)
+                             msg/message.h
+                             units/length.h
+                             units/mass.h
+                             units/si.h
+                             units/imperial.h)
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
