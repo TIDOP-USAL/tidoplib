@@ -89,6 +89,8 @@ public:
     auto operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation&;
 
     auto angle() const -> T;
+    auto toEulerAngles() const -> EulerAngles<T, xyz>;
+    auto toQuaternions() const -> Quaternion<T>;
     auto toMatrix() const -> Matrix<T, Dim, Dim>;
 
     auto operator()(size_t r, size_t c) -> reference;
@@ -246,7 +248,22 @@ auto Rotation<T, Dim>::operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation &
 template<typename T, size_t Dim>
 auto Rotation<T, Dim>::angle() const -> T
 {
+    static_assert(dimensions == 2, "Method valid only for 2D.");
+
     return acos(this->rotation(0,0));
+}
+
+template <typename T, size_t Dim>
+auto Rotation<T, Dim>::toEulerAngles() const -> EulerAngles<T>
+{
+    EulerAngles<T> euler_angles = RotationMatrix<T>(this->rotation);
+    return euler_angles;
+}
+
+template<typename T, size_t Dim>
+auto Rotation<T, Dim>::toQuaternions() const -> Quaternion<T>
+{
+    return Quaternion<T>(RotationMatrix<T>(this->rotation));
 }
 
 template<typename T, size_t Dim>

@@ -565,10 +565,11 @@ unsigned long readFromPipe(void *)
 
 Process::Process(std::string commandText,
                  Priority priority)
-  : mCommandText(std::move(commandText))
-//#ifdef TL_OS_WINDOWS
-//    , mThreadHandle(nullptr)
-//#endif
+  : mCommandText(std::move(commandText)),
+    outputHandle(false)
+#ifdef TL_OS_WINDOWS
+    , mThreadHandle(nullptr)
+#endif
 {
     setPriority(priority);
 #ifdef TL_OS_WINDOWS
@@ -593,7 +594,7 @@ void Process::execute(Progress *)
 
 #ifdef TL_OS_WINDOWS
 
-        //if (!createPipe()) return;
+        if (outputHandle && !createPipe()) return;
 
         unsigned long priority = static_cast<unsigned long>(mPriority);
 
@@ -601,10 +602,10 @@ void Process::execute(Progress *)
         std::wstring command = converter.from_bytes(mCommandText);
 
         bool success = CreateProcess(nullptr,
-                                     const_cast<LPWSTR>(command.c_str()),
+                                     const_cast<wchar_t *>(command.c_str()),
                                      nullptr,
                                      nullptr,
-                                     false, //true,
+                                     /*false,*/ true,
                                      CREATE_NO_WINDOW | priority,
                                      nullptr,
                                      nullptr,
@@ -614,7 +615,11 @@ void Process::execute(Progress *)
 
         TL_ASSERT(success, "CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
 
-        //mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
+        // Cerrar el extremo de escritura de la tubería del proceso hijo, ya que no lo necesitamos
+        if (outputHandle) {
+            CloseHandle(pipeWriteHandle);
+            mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
+        }
 
         DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
         if (ret == WAIT_OBJECT_0) {
@@ -634,36 +639,21 @@ void Process::execute(Progress *)
                 eventTriggered(Event::Type::task_error);
             }
 
-        } else if (ret == WAIT_FAILED) {
+        } else {
 
             TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
                                GetLastError(),
                                formatErrorMsg(GetLastError()),
                                mCommandText);
 
-        } else if (ret == WAIT_ABANDONED) {
-
-            TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
-                               GetLastError(),
-                               formatErrorMsg(GetLastError()),
-                               mCommandText);
-
-        } else if (ret == WAIT_TIMEOUT) {
-
-            TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
-                               GetLastError(),
-                               formatErrorMsg(GetLastError()),
-                               mCommandText);
-
-        } /*else {
-
-        }*/
+        }
 
         CloseHandle(mProcessInformation.hProcess);
         CloseHandle(mProcessInformation.hThread);
-        //CloseHandle(mThreadHandle);
-        //CloseHandle(pipeWriteHandle);
-        //CloseHandle(pipeReadHandle);
+        if (outputHandle) {
+            CloseHandle(mThreadHandle);
+            CloseHandle(pipeReadHandle);
+        }
 
 #else
         pid_t pid;

@@ -268,11 +268,12 @@ private:
 
     std::string mCommandText; 
     Priority mPriority;
+    bool outputHandle;
 #ifdef TL_OS_WINDOWS
     STARTUPINFO mStartUpInfo;
     PROCESS_INFORMATION mProcessInformation;
     SECURITY_ATTRIBUTES mSecurityAttributes;
-    //HANDLE mThreadHandle;
+    HANDLE mThreadHandle;
 #endif
 
 public:

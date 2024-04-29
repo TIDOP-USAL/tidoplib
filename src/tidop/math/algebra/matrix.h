@@ -418,9 +418,8 @@ public:
      * 4 & 5 & 6 \\
      * 7 & 8 & 9 \\
      * \end{bmatrix}
-     * \f]
      *
-     * \f[ B = -A \f]
+     * B = -A
      *
      * B=\begin{bmatrix}
      * -1 & -2 & -3 \\
@@ -2473,41 +2472,41 @@ template<
   class MatrixDerived, typename T, size_t Rows, size_t Cols>
 auto MatrixBase<MatrixDerived<T, Rows, Cols>>::determinant4x4() const -> T
 {
-  auto &derived = this->derived();
+    auto &derived = this->derived();
 
-  T m00 = derived(0, 0);
-  T m01 = derived(0, 1);
-  T m02 = derived(0, 2);
-  T m03 = derived(0, 3);
-  T m10 = derived(1, 0);
-  T m11 = derived(1, 1);
-  T m12 = derived(1, 2);
-  T m13 = derived(1, 3);
-  T m20 = derived(2, 0);
-  T m21 = derived(2, 1);
-  T m22 = derived(2, 2);
-  T m23 = derived(2, 3);
-  T m30 = derived(3, 0);
-  T m31 = derived(3, 1);
-  T m32 = derived(3, 2);
-  T m33 = derived(3, 3);
+    T m00 = derived(0, 0);
+    T m01 = derived(0, 1);
+    T m02 = derived(0, 2);
+    T m03 = derived(0, 3);
+    T m10 = derived(1, 0);
+    T m11 = derived(1, 1);
+    T m12 = derived(1, 2);
+    T m13 = derived(1, 3);
+    T m20 = derived(2, 0);
+    T m21 = derived(2, 1);
+    T m22 = derived(2, 2);
+    T m23 = derived(2, 3);
+    T m30 = derived(3, 0);
+    T m31 = derived(3, 1);
+    T m32 = derived(3, 2);
+    T m33 = derived(3, 3);
 
-  T a0 = m00 * m11 - m01 * m10;
-  T a1 = m00 * m12 - m02 * m10;
-  T a2 = m00 * m13 - m03 * m10;
-  T a3 = m01 * m12 - m02 * m11;
-  T a4 = m01 * m13 - m03 * m11;
-  T a5 = m02 * m13 - m03 * m12;
-  T b0 = m20 * m31 - m21 * m30;
-  T b1 = m20 * m32 - m22 * m30;
-  T b2 = m20 * m33 - m23 * m30;
-  T b3 = m21 * m32 - m22 * m31;
-  T b4 = m21 * m33 - m23 * m31;
-  T b5 = m22 * m33 - m23 * m32;
+    T a0 = m00 * m11 - m01 * m10;
+    T a1 = m00 * m12 - m02 * m10;
+    T a2 = m00 * m13 - m03 * m10;
+    T a3 = m01 * m12 - m02 * m11;
+    T a4 = m01 * m13 - m03 * m11;
+    T a5 = m02 * m13 - m03 * m12;
+    T b0 = m20 * m31 - m21 * m30;
+    T b1 = m20 * m32 - m22 * m30;
+    T b2 = m20 * m33 - m23 * m30;
+    T b3 = m21 * m32 - m22 * m31;
+    T b4 = m21 * m33 - m23 * m31;
+    T b5 = m22 * m33 - m23 * m32;
 
-  T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+    T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
 
-  return det;
+    return det;
 }
 
 template<
@@ -2515,44 +2514,44 @@ template<
   class MatrixDerived, typename T, size_t Rows, size_t Cols>
 auto MatrixBase<MatrixDerived<T, Rows, Cols>>::determinantnxn() const -> T
 {
-  auto &derived = this->derived();
+    auto &derived = this->derived();
 
-  T d = consts::one<T>;
-  size_t rows = derived.rows();
-  size_t cols = derived.cols();
+    T d = consts::one<T>;
+    size_t rows = derived.rows();
+    size_t cols = derived.cols();
 
-  Matrix<T, DynamicData, DynamicData> matrix = derived;
+    Matrix<T, DynamicData, DynamicData> matrix = derived;
 
-  for (size_t i = 0; i < rows; ++i) {
-    T pivotElement = matrix(i, i);
-    size_t pivotRow = i;
-    for (size_t r = i + 1; r < rows; ++r) {
-      if (std::abs(matrix(r, i)) > std::abs(pivotElement)) {
-        pivotElement = matrix(r, i);
-        pivotRow = r;
-      }
+    for (size_t i = 0; i < rows; ++i) {
+        T pivotElement = matrix(i, i);
+        size_t pivotRow = i;
+        for (size_t r = i + 1; r < rows; ++r) {
+            if (std::abs(matrix(r, i)) > std::abs(pivotElement)) {
+                pivotElement = matrix(r, i);
+                pivotRow = r;
+            }
+        }
+
+        if (pivotElement == consts::zero<T>) {
+            d = consts::zero<T>;
+            break;
+        }
+
+        if (pivotRow != i) {
+            matrix.swapRows(i, pivotRow);
+            d = -d;
+        }
+
+        d *= pivotElement;
+
+        for (size_t r = i + 1; r < rows; ++r) {
+            for (size_t c = i + 1; c < cols; ++c) {
+                matrix(r, c) -= matrix(r, i) * matrix(i, c) / pivotElement;
+            }
+        }
     }
 
-    if (pivotElement == consts::zero<T>) {
-      d = consts::zero<T>;
-      break;
-    }
-
-    if (pivotRow != i) {
-      matrix.swapRows(i, pivotRow);
-      d = -d;
-    }
-
-    d *= pivotElement;
-
-    for (size_t r = i + 1; r < rows; ++r) {
-      for (size_t c = i + 1; c < cols; ++c) {
-        matrix(r, c) -= matrix(r, i) * matrix(i, c) / pivotElement;
-      }
-    }
-  }
-
-  return d;
+    return d;
 }
 
 
@@ -3348,9 +3347,9 @@ auto Matrix<T, Rows, Cols>::col(size_t col) -> internal::MatrixCol<T>
 
 template<typename T, size_t Rows, size_t Cols>
 auto Matrix<T, Rows, Cols>::block(size_t iniRow, 
-                                    size_t endRow,
-                                    size_t iniCol, 
-                                    size_t endCol) const -> const internal::MatrixBlock<const T>
+                                  size_t endRow,
+                                  size_t iniCol, 
+                                  size_t endCol) const -> const internal::MatrixBlock<const T>
 {
     TL_ASSERT(iniRow >= 0 && endRow > iniRow && endRow < this->rows() &&
               iniCol >= 0 && endCol > iniCol && endCol < this->cols(), "Matrix block out of range");

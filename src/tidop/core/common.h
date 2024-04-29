@@ -24,12 +24,17 @@
  
 #pragma once
 
-#include "tidop/core/defs.h"
-#include "tidop/core/common.h"
-#include "tidop/core/console.h"
-#include "tidop/core/messages.h"
-#include "tidop/core/utils.h"
-#include "tidop/core/flags.h"
-#include "tidop/core/exception.h"
-#include "tidop/core/process.h"
 
+namespace tl
+{
+	
+template <typename T, class R = void>
+using enableIntegral = std::enable_if_t<std::is_integral<T>::value, R>;
+
+template <typename T, class R = void>
+using enableFloating = std::enable_if_t<std::is_floating_point<T>::value, R>;
+
+template <typename T, class R = void>
+using enableArithmetic = std::enable_if_t<std::is_arithmetic<T>::value, R>;
+
+}

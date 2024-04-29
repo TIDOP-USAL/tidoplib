@@ -55,7 +55,9 @@ if(BUILD_TL_CORE)
                              console/menu.cpp
                              msg/message.cpp
                          HEADER_FILES
+                             core.h
                              defs.h
+                             common.h
 							 ptr.h
                              app.h
                              exception.h
