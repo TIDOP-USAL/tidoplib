@@ -34,6 +34,7 @@
 namespace tl
 {
 
+
 /*!
  * \addtogroup geospatial
  *
@@ -54,15 +55,22 @@ public:
 
     Ellipsoid(std::string ellipsoidName,
               double semiMajorAxis,
-              double flattening)
+              double inverseFlattening)
       : name(std::move(ellipsoidName)),
         a(semiMajorAxis),
-        b(semiMajorAxis * (1 - flattening)),
-        f(flattening)
+        f(inverseFlattening == 0. ? 0. : 1./inverseFlattening)
     {
+        b = a * (1 - f);
     }
 
+    /*!
+     * \brief Equatorial radius
+     */
     auto semiMajorAxis() const -> double;
+
+    /*!
+     * \brief Polar radius
+     */
     auto semiMinorAxis() const -> double;
 
     /*!
@@ -128,20 +136,38 @@ public:
     auto linearEccentricity() const -> double;
 
     /*!
-     * \brief Authalic Latitude
-     * \param[in] lat Latitude in degrees
-     * \return The authalic latitude corresponding to the given latitude
-     */
-    auto authalicLatitude(double lat) const -> double;
-
-    /*!
      * \brief Geocentric Radius
      * \param[in] lat Latidude in degrees
      * \return 
      */
     auto geocentricRadius(double lat) const -> double;
+
+    auto primeVertical(double lat) const -> double;
+    auto meridionalRadiusOfCurvature(double lat) const -> double;
+    auto authalicRadius() const -> double;
+
+
+
+    auto geodeticToGeocentricLatitude(double lat, double h = 0.) -> double;
+
+    /*!
+     * \brief Parametric latitude or reduced latitude
+     */
+    auto geodeticToParametricLatitude(double lat) -> double;
+
+    /*!
+     * \brief Authalic Latitude
+     * \param[in] lat Latitude in degrees
+     * \return The authalic latitude corresponding to the given latitude
+     */
+    auto geodeticToAuthalicLatitude(double lat) const -> double;
+
 };
 
+
+
+const auto GRS80 = Ellipsoid("GRS 80", 6378388., 297.);
+const auto WGS84 = Ellipsoid("WGS 84", 6378137., 298.257222101);
 
 
 
@@ -200,6 +226,33 @@ inline auto Ellipsoid::linearEccentricity() const -> double
     return std::sqrt(a * a - b * b);
 }
 
+inline auto Ellipsoid::geodeticToGeocentricLatitude(double lat, double h) -> double
+{   
+    double lat_rad = lat * consts::deg_to_rad<double>;
+    double geocentric_latitude;
+    if (h != 0.) {
+        double N = primeVertical(lat);
+        geocentric_latitude = atan(tan(lat_rad)*(N*(1-f)*(1-f)+h)/(N+h));
+    } else {
+        geocentric_latitude = atan((1-f) * (1-f) * tan(lat_rad));
+    }
+    
+    return geocentric_latitude * consts::rad_to_deg<double>;
+}
+
+inline auto Ellipsoid::geodeticToParametricLatitude(double lat) -> double
+{
+    double lat_rad = lat * consts::deg_to_rad<double>;
+    double e = eccentricity();
+
+    return atan(sqrt(1-e*e) * tan(lat_rad));
+}
+
+inline auto Ellipsoid::geodeticToAuthalicLatitude(double lat) const -> double
+{
+    return 0.0;
+}
+
 inline auto Ellipsoid::geocentricRadius(double lat) const -> double
 {
     double lat_rad = lat * consts::deg_to_rad<double>;
@@ -211,6 +264,27 @@ inline auto Ellipsoid::geocentricRadius(double lat) const -> double
         
 }
 
+inline auto Ellipsoid::primeVertical(double lat) const -> double
+{
+    double e = eccentricity();
+    double sin_lat = sin(lat * consts::deg_to_rad<double>);
+    return a / std::sqrt(1 - e*e * sin_lat*sin_lat);
+}
+
+inline auto Ellipsoid::meridionalRadiusOfCurvature(double lat) const -> double
+{
+    double e = eccentricity();
+    double N = primeVertical(lat);
+    return (1 - e*e)*std::pow(N,3)/(a*a);
+}
+
+inline auto Ellipsoid::authalicRadius() const -> double
+{
+    double e = eccentricity();
+    double second_eccentricity = secondEccentricity();
+
+    return sqrt(a*a/2. + b * b * std::atanh(e) / (2. * e));
+}
 
 /*! \} */ // end of geospatial
 

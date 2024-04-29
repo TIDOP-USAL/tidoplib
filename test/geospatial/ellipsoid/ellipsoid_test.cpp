@@ -57,8 +57,8 @@ struct EllipsoidTest
 
     virtual void setup()
     {
-        wgs84 = new Ellipsoid("WGS84", 6378137.0, 1./ 298.257/**/);
-        ed50 = new Ellipsoid("ED50", 6378388.0, 1. / 297/**/);
+        wgs84 = new Ellipsoid("WGS84", 6378137.0, 298.257);
+        ed50 = new Ellipsoid("ED50", 6378388.0, 297);
         sphere = new Ellipsoid("sphere", 6370997., 0.);
     }
 
@@ -146,6 +146,54 @@ BOOST_FIXTURE_TEST_CASE(geocentric_radius, EllipsoidTest)
     BOOST_CHECK_CLOSE(6370997., sphere->geocentricRadius(0.), 0.01);
     BOOST_CHECK_CLOSE(6370997., sphere->geocentricRadius(90.), 0.01);
 }
+
+BOOST_FIXTURE_TEST_CASE(prime_vertical, EllipsoidTest)
+{
+    Degrees<double> lat(40, 39, 3.6396);
+    double N = ed50->primeVertical(lat.value());
+
+    BOOST_CHECK_CLOSE(6387506.3307531672, N, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(meridional_radius_of_curvature, EllipsoidTest)
+{
+    Degrees<double> lat(40, 39, 3.6396);
+    double M = ed50->meridionalRadiusOfCurvature(lat.value());
+
+    BOOST_CHECK_CLOSE(6362718.1572734, M, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(authalic_radius, EllipsoidTest)
+{
+    BOOST_CHECK_CLOSE(6371007.2, wgs84->authalicRadius(), 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(geodetic_to_geocentric_latitude, EllipsoidTest)
+{
+    Degrees<double> lat(40, 39, 3.6396);
+    Degrees<double> geocentric_latitude(wgs84->geodeticToGeocentricLatitude(lat.value()));
+
+    BOOST_CHECK_EQUAL(40, geocentric_latitude.degrees());
+    BOOST_CHECK_EQUAL(27, geocentric_latitude.minutes());
+    BOOST_CHECK_CLOSE(39.2299049, geocentric_latitude.seconds(), 0.01);
+
+    geocentric_latitude = wgs84->geodeticToGeocentricLatitude(lat.value(), 100.);
+
+    BOOST_CHECK_EQUAL(40, geocentric_latitude.degrees());
+    BOOST_CHECK_EQUAL(27, geocentric_latitude.minutes());
+    BOOST_CHECK_CLOSE(39.2406506, geocentric_latitude.seconds(), 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(geodetic_to_parametric_latitude, EllipsoidTest)
+{
+    Degrees<double> lat(40, 39, 3.6396);
+    Degrees<double> parametric_latitude(wgs84->geodeticToParametricLatitude(lat.value()));
+
+    BOOST_CHECK_EQUAL(40, parametric_latitude.degrees());
+    BOOST_CHECK_EQUAL(27, parametric_latitude.minutes());
+    BOOST_CHECK_CLOSE(39.2299049, parametric_latitude.seconds(), 0.01);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 
