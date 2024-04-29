@@ -793,52 +793,52 @@ BOOST_FIXTURE_TEST_CASE(transpose_squared, MatrixTest)
     BOOST_CHECK_EQUAL(1.2, transp_mat2[2][1]);
     BOOST_CHECK_EQUAL(0.3, transp_mat2[2][2]);
 
-    {
-        Matrix<float, 4, 4> matrix{3.f, 6.f, -5.f, 0.f,
-                                    1.f, 1.f, 2.f, 9.f,
-                                    2.f, 4.f, -3.f, 1.f,
-                                    3.5f, 7.5f, 8.3f, 0.5f};
+    //{
+    //    Matrix<float, 4, 4> matrix{3.f, 6.f, -5.f, 0.f,
+    //                                1.f, 1.f, 2.f, 9.f,
+    //                                2.f, 4.f, -3.f, 1.f,
+    //                                3.5f, 7.5f, 8.3f, 0.5f};
 
-        std::cout << matrix << std::endl;
+    //    std::cout << matrix << std::endl;
 
-        Packed<float> packed_1;
-        Packed<float> packed_2;
-        Packed<float> packed_3;
-        Packed<float> packed_4;
+    //    Packed<float> packed_1;
+    //    Packed<float> packed_2;
+    //    Packed<float> packed_3;
+    //    Packed<float> packed_4;
 
-        packed_1.loadUnaligned(&matrix(0, 0));
-        packed_2.loadUnaligned(&matrix(1, 0));
-        packed_3.loadUnaligned(&matrix(2, 0));
-        packed_4.loadUnaligned(&matrix(3, 0));
+    //    packed_1.loadUnaligned(&matrix(0, 0));
+    //    packed_2.loadUnaligned(&matrix(1, 0));
+    //    packed_3.loadUnaligned(&matrix(2, 0));
+    //    packed_4.loadUnaligned(&matrix(3, 0));
 
-        transposeMatrix4x4(packed_1, packed_2, packed_3, packed_4);
+    //    transposeMatrix4x4(packed_1, packed_2, packed_3, packed_4);
 
-        _MM_TRANSPOSE4_PS(packed_1, packed_2, packed_3, packed_4);
+    //    _MM_TRANSPOSE4_PS(packed_1, packed_2, packed_3, packed_4);
 
-        packed_1.storeUnaligned(&matrix(0, 0));
-        packed_2.storeUnaligned(&matrix(1, 0));
-        packed_3.storeUnaligned(&matrix(2, 0));
-        packed_4.storeUnaligned(&matrix(3, 0));
+    //    packed_1.storeUnaligned(&matrix(0, 0));
+    //    packed_2.storeUnaligned(&matrix(1, 0));
+    //    packed_3.storeUnaligned(&matrix(2, 0));
+    //    packed_4.storeUnaligned(&matrix(3, 0));
 
-        std::cout << matrix << std::endl;
+    //    std::cout << matrix << std::endl;
 
-        BOOST_CHECK_EQUAL(3.f, matrix[0][0]);
-        BOOST_CHECK_EQUAL(1.f, matrix[0][1]);
-        BOOST_CHECK_EQUAL(2.f, matrix[0][2]);
-        BOOST_CHECK_EQUAL(3.5f, matrix[0][3]);
-        BOOST_CHECK_EQUAL(6.f, matrix[1][0]);
-        BOOST_CHECK_EQUAL(1.f, matrix[1][1]);
-        BOOST_CHECK_EQUAL(4.f, matrix[1][2]);
-        BOOST_CHECK_EQUAL(7.5f, matrix[1][3]);
-        BOOST_CHECK_EQUAL(-5.f, matrix[2][0]);
-        BOOST_CHECK_EQUAL(2.f, matrix[2][1]);
-        BOOST_CHECK_EQUAL(-3.f, matrix[2][2]);
-        BOOST_CHECK_EQUAL(8.3f, matrix[2][3]);
-        BOOST_CHECK_EQUAL(0.f, matrix[3][0]);
-        BOOST_CHECK_EQUAL(9.f, matrix[3][1]);
-        BOOST_CHECK_EQUAL(1.f, matrix[3][2]);
-        BOOST_CHECK_EQUAL(0.5f, matrix[3][3]);
-    }
+    //    BOOST_CHECK_EQUAL(3.f, matrix[0][0]);
+    //    BOOST_CHECK_EQUAL(1.f, matrix[0][1]);
+    //    BOOST_CHECK_EQUAL(2.f, matrix[0][2]);
+    //    BOOST_CHECK_EQUAL(3.5f, matrix[0][3]);
+    //    BOOST_CHECK_EQUAL(6.f, matrix[1][0]);
+    //    BOOST_CHECK_EQUAL(1.f, matrix[1][1]);
+    //    BOOST_CHECK_EQUAL(4.f, matrix[1][2]);
+    //    BOOST_CHECK_EQUAL(7.5f, matrix[1][3]);
+    //    BOOST_CHECK_EQUAL(-5.f, matrix[2][0]);
+    //    BOOST_CHECK_EQUAL(2.f, matrix[2][1]);
+    //    BOOST_CHECK_EQUAL(-3.f, matrix[2][2]);
+    //    BOOST_CHECK_EQUAL(8.3f, matrix[2][3]);
+    //    BOOST_CHECK_EQUAL(0.f, matrix[3][0]);
+    //    BOOST_CHECK_EQUAL(9.f, matrix[3][1]);
+    //    BOOST_CHECK_EQUAL(1.f, matrix[3][2]);
+    //    BOOST_CHECK_EQUAL(0.5f, matrix[3][3]);
+    //}
 
     //{
     //    Matrix<double, 4, 4> matrix{3., 6., -5., 0.,

@@ -382,7 +382,7 @@ auto Scaling<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
 template<typename T, size_t Dim>
 auto Scaling<T, Dim>::operator*(const Scaling<T, Dim> &scaling) const -> Scaling<T, Dim>
 {
-    return this->scale * scaling.scale;
+    return Scaling<T, Dim>(this->scale * scaling.scale);
 }
 
 
