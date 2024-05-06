@@ -49,10 +49,7 @@ namespace tl
   * \return
   */
 template<typename It>
-auto pearsonCorrelationCoefficient(It firstX, It lastX, 
-                                   It firstY, It lastY) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> enableIfIntegral<iteratorValueType<It>,double>
 {
     auto n_x = std::distance(firstX, lastX);
     auto n_y = std::distance(firstY, lastY);
@@ -62,11 +59,10 @@ auto pearsonCorrelationCoefficient(It firstX, It lastX,
 }
 
 template<typename It>
-auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> enableIfFloating<iteratorValueType<It>,
+                                                                                std::remove_cv_t<iteratorValueType<It>>>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     auto n_x = std::distance(firstX, lastX);
     auto n_y = std::distance(firstY, lastY);

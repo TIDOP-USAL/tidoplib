@@ -30,6 +30,8 @@
 #include <type_traits>
 #include <algorithm>
 
+#include "tidop/core/common.h"
+
 namespace tl
 {
 
@@ -53,32 +55,32 @@ constexpr T one = static_cast<T>(1);
 template<typename T>
 constexpr T two = static_cast<T>(2);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> one_half = static_cast<T>(0.5L);
+constexpr enableIfFloating<T,T> one_half = static_cast<T>(0.5L);
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pi = static_cast<T>(3.141592653589793238462643383279502884L);
+constexpr enableIfFloating<T,T> pi = static_cast<T>(3.141592653589793238462643383279502884L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> half_pi = static_cast<T>(1.570796326794896619231321691639751442L);
+constexpr enableIfFloating<T,T> half_pi = static_cast<T>(1.570796326794896619231321691639751442L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> two_pi = static_cast<T>(6.283185307179586476925286766559005768L);
+constexpr enableIfFloating<T,T> two_pi = static_cast<T>(6.283185307179586476925286766559005768L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> inv_pi = static_cast<T>(1.L / 3.141592653589793238462643383279502884L);
+constexpr enableIfFloating<T,T> inv_pi = static_cast<T>(1.L / 3.141592653589793238462643383279502884L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> sqrt2 = static_cast<T>(1.414213562373095048801688724209698079L);
+constexpr enableIfFloating<T,T> sqrt2 = static_cast<T>(1.414213562373095048801688724209698079L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> sqrt3 = static_cast<T>(1.7320508075688772935274463415059L);
+constexpr enableIfFloating<T,T> sqrt3 = static_cast<T>(1.7320508075688772935274463415059L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> inv_sqrt2 = static_cast<T>(1.L / 1.414213562373095048801688724209698079L);
+constexpr enableIfFloating<T,T> inv_sqrt2 = static_cast<T>(1.L / 1.414213562373095048801688724209698079L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> e = static_cast<T>(2.718281828459045235360287471352662498L);
+constexpr enableIfFloating<T,T> e = static_cast<T>(2.718281828459045235360287471352662498L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> log2e = static_cast<T>(1.442695040888963407359924681001892137L);
+constexpr enableIfFloating<T,T> log2e = static_cast<T>(1.442695040888963407359924681001892137L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> log10e = static_cast<T>(0.4342944819032518276511289189166050823L);
+constexpr enableIfFloating<T,T> log10e = static_cast<T>(0.4342944819032518276511289189166050823L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> ln2 = static_cast<T>(0.6931471805599453094172321214581765681L);
+constexpr enableIfFloating<T,T> ln2 = static_cast<T>(0.6931471805599453094172321214581765681L);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> ln10 = static_cast<T>(2.302585092994045684017991454684364208L);
+constexpr enableIfFloating<T,T> ln10 = static_cast<T>(2.302585092994045684017991454684364208L);
 
 
 
@@ -104,25 +106,25 @@ constexpr auto minutes_to_seconds = 60;
 constexpr auto degrees_to_seconds = 3600;
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> rad_to_deg = static_cast<T>(half_circle_deg) / pi<T>;
+constexpr enableIfFloating<T,T> rad_to_deg = static_cast<T>(half_circle_deg) / pi<T>;
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> deg_to_rad = pi<T> / static_cast<T>(half_circle_deg);
+constexpr enableIfFloating<T,T> deg_to_rad = pi<T> / static_cast<T>(half_circle_deg);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> deg_to_arcminute = static_cast<T>(degrees_to_minutes);
+constexpr enableIfFloating<T,T> deg_to_arcminute = static_cast<T>(degrees_to_minutes);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> arcminute_to_deg = one<T> / static_cast<T>(degrees_to_minutes);
+constexpr enableIfFloating<T,T> arcminute_to_deg = one<T> / static_cast<T>(degrees_to_minutes);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> deg_to_arcsecond = static_cast<T>(degrees_to_seconds);
+constexpr enableIfFloating<T,T> deg_to_arcsecond = static_cast<T>(degrees_to_seconds);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> arcsecond_to_deg = one<T> / static_cast<T>(degrees_to_seconds);
+constexpr enableIfFloating<T,T> arcsecond_to_deg = one<T> / static_cast<T>(degrees_to_seconds);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> rad_to_grad = static_cast<T>(half_circle_grad) / pi<T>;
+constexpr enableIfFloating<T,T> rad_to_grad = static_cast<T>(half_circle_grad) / pi<T>;
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> grad_to_rad = pi<T> / static_cast<T>(half_circle_grad);
+constexpr enableIfFloating<T,T> grad_to_rad = pi<T> / static_cast<T>(half_circle_grad);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> deg_to_grad = static_cast<T>(half_circle_grad) / static_cast<T>(half_circle_deg);
+constexpr enableIfFloating<T,T> deg_to_grad = static_cast<T>(half_circle_grad) / static_cast<T>(half_circle_deg);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> grad_to_deg = static_cast<T>(0.9);
+constexpr enableIfFloating<T,T> grad_to_deg = static_cast<T>(0.9);
 
 
 }

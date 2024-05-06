@@ -26,59 +26,61 @@
 
 #include <type_traits>
 
+#include "tidop/core/common.h"
+
 namespace tl
 {
 
 /* Lenght */
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> foot_to_inches = static_cast<T>(12);
+constexpr enableIfFloating<T,T> foot_to_inches = static_cast<T>(12);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> inch_to_feet = static_cast<T>(1./12.);
+constexpr enableIfFloating<T,T> inch_to_feet = static_cast<T>(1./12.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> foot_to_yards = static_cast<T>(1./3.);
+constexpr enableIfFloating<T,T> foot_to_yards = static_cast<T>(1./3.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> yard_to_feet = static_cast<T>(3);
+constexpr enableIfFloating<T,T> yard_to_feet = static_cast<T>(3);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> foot_to_chains = static_cast<T>(1. / 66.);
+constexpr enableIfFloating<T,T> foot_to_chains = static_cast<T>(1. / 66.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> chain_to_feet = static_cast<T>(66);
+constexpr enableIfFloating<T,T> chain_to_feet = static_cast<T>(66);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> foot_to_furlongs = static_cast<T>(1. / 660.);
+constexpr enableIfFloating<T,T> foot_to_furlongs = static_cast<T>(1. / 660.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> furlong_to_feet = static_cast<T>(660);
+constexpr enableIfFloating<T,T> furlong_to_feet = static_cast<T>(660);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> foot_to_mile = static_cast<T>(1. / 5280.);
+constexpr enableIfFloating<T,T> foot_to_mile = static_cast<T>(1. / 5280.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> mile_to_feet = static_cast<T>(5280);
+constexpr enableIfFloating<T,T> mile_to_feet = static_cast<T>(5280);
 
 
 /* Mass */
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_ounces = static_cast<T>(16);
+constexpr enableIfFloating<T,T> pound_to_ounces = static_cast<T>(16);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> ounce_to_pounds = static_cast<T>(1. / 16.);
+constexpr enableIfFloating<T,T> ounce_to_pounds = static_cast<T>(1. / 16.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_grains = static_cast<T>(7000);
+constexpr enableIfFloating<T,T> pound_to_grains = static_cast<T>(7000);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> grain_to_pounds = static_cast<T>(1. / 7000.);
+constexpr enableIfFloating<T,T> grain_to_pounds = static_cast<T>(1. / 7000.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_stone = static_cast<T>(1. / 14.);
+constexpr enableIfFloating<T,T> pound_to_stone = static_cast<T>(1. / 14.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> stone_to_pounds = static_cast<T>(14);
+constexpr enableIfFloating<T,T> stone_to_pounds = static_cast<T>(14);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_quarter = static_cast<T>(1. / 28.);
+constexpr enableIfFloating<T,T> pound_to_quarter = static_cast<T>(1. / 28.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> quarter_to_pounds = static_cast<T>(28);
+constexpr enableIfFloating<T,T> quarter_to_pounds = static_cast<T>(28);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_hundredweights = static_cast<T>(1. / 112.);
+constexpr enableIfFloating<T,T> pound_to_hundredweights = static_cast<T>(1. / 112.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> hundredweight_to_pounds = static_cast<T>(112);
+constexpr enableIfFloating<T,T> hundredweight_to_pounds = static_cast<T>(112);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_ton = static_cast<T>(1. / 2240.);
+constexpr enableIfFloating<T,T> pound_to_ton = static_cast<T>(1. / 2240.);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> ton_to_pounds = static_cast<T>(2240);
+constexpr enableIfFloating<T,T> ton_to_pounds = static_cast<T>(2240);
 
 
 /* Area */

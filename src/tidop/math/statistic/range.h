@@ -48,9 +48,9 @@ namespace tl
  * \return The value of the range for the dataset.
  */
 template<typename It>
-auto range(It first, It last) -> typename std::iterator_traits<It>::value_type
+auto range(It first, It last) -> iteratorValueType<It>
 {
-    typename std::iterator_traits<It>::value_type r{0};
+    iteratorValueType<It> r{0};
 
     if (first != last) {
         auto result = std::minmax_element(first, last);

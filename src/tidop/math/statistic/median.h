@@ -52,17 +52,13 @@ namespace tl
  * \return Value of the median
  */
 template<typename It>
-auto median(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto median(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     return tl::quantile(first, last, 0.5);
 }
 
 template<typename It>
-auto median(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto median(It first, It last) -> enableIfFloating<iteratorValueType<It>, std::remove_cv_t<iteratorValueType<It>>>
 {
     return tl::quantile(first, last, 0.5);
 }

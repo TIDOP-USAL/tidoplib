@@ -26,6 +26,8 @@
 
 #include <type_traits>
 
+#include "tidop/core/common.h"
+
 namespace tl
 {
 
@@ -51,36 +53,36 @@ constexpr double square_kilometre = 1.e6;
 }
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_kilo = static_cast<T>(si::metre / si::kilo);
+constexpr enableIfFloating<T,T> to_kilo = static_cast<T>(si::metre / si::kilo);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_kilo = static_cast<T>(si::kilo);
+constexpr enableIfFloating<T,T> from_kilo = static_cast<T>(si::kilo);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_hecto = static_cast<T>(si::metre / si::hecto);
+constexpr enableIfFloating<T,T> to_hecto = static_cast<T>(si::metre / si::hecto);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_hecto = static_cast<T>(si::hecto);
+constexpr enableIfFloating<T,T> from_hecto = static_cast<T>(si::hecto);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_deca = static_cast<T>(si::metre / si::deca);
+constexpr enableIfFloating<T,T> to_deca = static_cast<T>(si::metre / si::deca);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_deca = static_cast<T>(si::deca);
+constexpr enableIfFloating<T,T> from_deca = static_cast<T>(si::deca);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_deci = static_cast<T>(si::metre / si::deci);
+constexpr enableIfFloating<T,T> to_deci = static_cast<T>(si::metre / si::deci);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_deci = static_cast<T>(si::deci);
+constexpr enableIfFloating<T,T> from_deci = static_cast<T>(si::deci);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_centi = static_cast<T>(si::metre / si::centi);
+constexpr enableIfFloating<T,T> to_centi = static_cast<T>(si::metre / si::centi);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_centi = static_cast<T>(si::centi);
+constexpr enableIfFloating<T,T> from_centi = static_cast<T>(si::centi);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_milli = static_cast<T>(si::metre / si::milli);
+constexpr enableIfFloating<T,T> to_milli = static_cast<T>(si::metre / si::milli);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_milli = static_cast<T>(si::milli);
+constexpr enableIfFloating<T,T> from_milli = static_cast<T>(si::milli);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_micro = static_cast<T>(si::metre / si::micro);
+constexpr enableIfFloating<T,T> to_micro = static_cast<T>(si::metre / si::micro);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_micro = static_cast<T>(si::micro);
+constexpr enableIfFloating<T,T> from_micro = static_cast<T>(si::micro);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_nano = static_cast<T>(1.e+9);
+constexpr enableIfFloating<T,T> to_nano = static_cast<T>(1.e+9);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_nano = static_cast<T>(si::nano);
+constexpr enableIfFloating<T,T> from_nano = static_cast<T>(si::nano);
 
 }

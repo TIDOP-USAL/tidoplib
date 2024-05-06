@@ -35,9 +35,9 @@ namespace tl
 {
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> metre_to_feets = static_cast<T>(3.28084);
+constexpr enableIfFloating<T,T> metre_to_feets = static_cast<T>(3.28084);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> foot_to_metres = static_cast<T>(0.3048);
+constexpr enableIfFloating<T,T> foot_to_metres = static_cast<T>(0.3048);
 
 
 class LengthConverter

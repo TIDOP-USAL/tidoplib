@@ -31,5 +31,4 @@
 #include "tidop/core/utils.h"
 #include "tidop/core/flags.h"
 #include "tidop/core/exception.h"
-#include "tidop/core/process.h"
 

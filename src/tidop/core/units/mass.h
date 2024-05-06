@@ -28,14 +28,15 @@
 #include "tidop/core/flags.h"
 #include "tidop/core/units/si.h"
 #include "tidop/core/units/imperial.h"
+#include "tidop/core/common.h"
 
 namespace tl
 {
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> gram_to_pounds = static_cast<T>(0.00220462);
+constexpr enableIfFloating<T,T> gram_to_pounds = static_cast<T>(0.00220462);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> pound_to_grams = static_cast<T>(453.59237);
+constexpr enableIfFloating<T,T> pound_to_grams = static_cast<T>(453.59237);
 
 
 class MassConverter

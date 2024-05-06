@@ -34,6 +34,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/exception.h"
+#include "tidop/core/common.h"
 
 namespace tl
 {
@@ -53,19 +54,19 @@ TL_EXPORT bool compareInsensitiveCase(const std::string &source,
 #endif
 
 template<typename T1, typename T2>
-auto numberCast(T2 number) -> std::enable_if_t<std::is_integral<T1>::value, T1>
+auto numberCast(T2 number) -> enableIfIntegral<T1,T1>
 {
     return static_cast<T1>(std::round(number));
 }
 
 template<typename T1, typename T2>
-auto numberCast(T2 number) -> std::enable_if_t<std::is_floating_point<T1>::value,T1>
+auto numberCast(T2 number) -> enableIfFloating<T1,T1>
 {
     return static_cast<T1>(number);
 }
 
 template<typename T1, typename T2>
-auto numberCast(T2 /*b*/) -> std::enable_if_t<!std::is_arithmetic<T1>::value,T1>
+auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1,T1>
 {
     //En linux me sale siempre el error aunque no se llame a la función.
     //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
@@ -100,7 +101,7 @@ auto convertStringTo(const std::string& str) -> std::enable_if_t<std::is_same<T,
 }
 
 template <typename T>
-auto convertStringTo(const std::string &/*str*/) -> std::enable_if_t<!std::is_arithmetic<T>::value,T>
+auto convertStringTo(const std::string &/*str*/) -> enableIfNotArithmetic<T,T>
 {
     //En linux me sale siempre el error aunque no se llame a la función.
     //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")

@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/core/utils.h"
+#include "tidop/core/common.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/math/algebra/vector.h"
 
@@ -395,7 +396,7 @@ auto operator *= (Point<T1> &pt, T2 b) -> Point<T1>&
 }
 
 template<typename T1, typename T2>
-auto operator /=(Point<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,Point<T1>&>
+auto operator /=(Point<T1> &pt, T2 b) -> enableIfIntegral<T1,Point<T1>&>
 {
     pt.x = numberCast<T1>(pt.x / static_cast<double>(b));
     pt.y = numberCast<T1>(pt.y / static_cast<double>(b));
@@ -404,7 +405,7 @@ auto operator /=(Point<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::
 }
 
 template<typename T1, typename T2>
-auto operator /=(Point<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point<T1>&>
+auto operator /=(Point<T1> &pt, T2 b) -> enableIfNotIntegral<T1,Point<T1>&>
 {
     pt.x = numberCast<T1>(pt.x / b);
     pt.y = numberCast<T1>(pt.y / b);
@@ -457,14 +458,14 @@ auto operator * (T1 a, const Point<T2> &b) -> Point<T2>
 }
 
 template<typename T1, typename T2>
-auto operator /(const Point<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,	Point<T1>>
+auto operator /(const Point<T1> &pt, T2 b) -> enableIfIntegral<T1,Point<T1>>
 {
     return Point<T1>(numberCast<T1>(pt.x / static_cast<double>(b)),
                      numberCast<T1>(pt.y / static_cast<double>(b)));
 }
 
 template<typename T1, typename T2>
-auto operator /(const Point<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point<T1>>
+auto operator /(const Point<T1> &pt, T2 b) -> enableIfNotIntegral<T1,Point<T1>>
 {
     return Point<T1>(numberCast<T1>(pt.x / b),
                      numberCast<T1>(pt.y / b));
@@ -650,7 +651,7 @@ auto operator *= (Point3<T1> &pt, T2 b) -> Point3<T1>&
 }
 
 template<typename T1, typename T2>
-auto operator /=(Point3<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,	Point3<T1>&>
+auto operator /=(Point3<T1> &pt, T2 b) -> enableIfIntegral<T1,Point3<T1>&>
 {
     pt.x = numberCast<T1>(pt.x / static_cast<double>(b));
     pt.y = numberCast<T1>(pt.y / static_cast<double>(b));
@@ -660,7 +661,7 @@ auto operator /=(Point3<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>:
 }
 
 template<typename T1, typename T2>
-auto operator /=(Point3<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point3<T1>&>
+auto operator /=(Point3<T1> &pt, T2 b) -> enableIfNotIntegral<T1,Point3<T1>&>
 {
     pt.x = static_cast<T1>(pt.x / static_cast<T1>(b));
     pt.y = static_cast<T1>(pt.y / static_cast<T1>(b));
@@ -728,7 +729,7 @@ auto operator * (T1 a, const Point3<T2> &pt) -> Point3<T2>
 }
 
 template<typename T1, typename T2>
-auto operator /(const Point3<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral<T1>::value,Point3<T1>>
+auto operator /(const Point3<T1>& pt, T2 b) -> enableIfIntegral<T1,Point3<T1>>
 {
     return Point3<T1>(numberCast<T1>(pt.x / static_cast<double>(b)),
                       numberCast<T1>(pt.y / static_cast<double>(b)),
@@ -736,7 +737,7 @@ auto operator /(const Point3<T1>& pt, T2 b) -> std::enable_if_t<std::is_integral
 }
 
 template<typename T1, typename T2>
-auto operator /(const Point3<T1>& pt, T2 b) -> std::enable_if_t<!std::is_integral<T1>::value,Point3<T1>>
+auto operator /(const Point3<T1>& pt, T2 b) -> enableIfNotIntegral<T1,Point3<T1>>
 {
     return Point3<T1>(static_cast<T1>(pt.x / b),
                       static_cast<T1>(pt.y / b),

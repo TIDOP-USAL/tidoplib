@@ -24,17 +24,32 @@
  
 #pragma once
 
+#include <tidop/config.h>
 
 namespace tl
 {
 	
-template <typename T, class R = void>
-using enableIntegral = std::enable_if_t<std::is_integral<T>::value, R>;
+template<typename T, class R = void>
+using enableIfIntegral = std::enable_if_t<std::is_integral<T>::value, R>;
+
+template<typename T, class R = void>
+using enableIfFloating = std::enable_if_t<std::is_floating_point<T>::value, R>;
+
+template<typename T, class R = void>
+using enableIfArithmetic = std::enable_if_t<std::is_arithmetic<T>::value, R>;
+
+
+template<typename T, class R = void>
+using enableIfNotIntegral = std::enable_if_t<!std::is_integral<T>::value, R>;
 
 template <typename T, class R = void>
-using enableFloating = std::enable_if_t<std::is_floating_point<T>::value, R>;
+using enableIfNotFloating = std::enable_if_t<!std::is_floating_point<T>::value, R>;
 
-template <typename T, class R = void>
-using enableArithmetic = std::enable_if_t<std::is_arithmetic<T>::value, R>;
+template<typename T, class R = void>
+using enableIfNotArithmetic = std::enable_if_t<!std::is_arithmetic<T>::value, R>;
+
+
+template<typename It>
+using iteratorValueType = typename std::iterator_traits<It>::value_type;
 
 }
