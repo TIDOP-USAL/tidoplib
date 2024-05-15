@@ -274,9 +274,7 @@ namespace internal
 {
 
 template<typename T>
-auto loadPackedAligned(const T *data) -> std::enable_if_t<
-    std::is_same<float, T>::value,
-    typename Packed<T>::simd_type>
+auto loadPackedAligned(const T *data) -> enableIfFloat<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_load_ps(data);
@@ -286,9 +284,7 @@ auto loadPackedAligned(const T *data) -> std::enable_if_t<
 }
 
 template<typename T>
-auto loadPackedAligned(const T *data) -> std::enable_if_t<
-    std::is_same<double, T>::value,
-    typename Packed<T>::simd_type>
+auto loadPackedAligned(const T *data) -> enableIfDouble<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_load_pd(data);
@@ -298,9 +294,7 @@ auto loadPackedAligned(const T *data) -> std::enable_if_t<
 }
 
 template<typename T>
-auto loadPackedAligned(const T *data) -> std::enable_if_t<
-    std::is_integral<T>::value,
-    typename Packed<T>::simd_type>
+auto loadPackedAligned(const T *data) -> enableIfIntegral<T, typename Packed<T>::simd_type>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -312,9 +306,7 @@ auto loadPackedAligned(const T *data) -> std::enable_if_t<
 }
 
 template<typename T>
-auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
-    std::is_same<float, T>::value,
-    typename Packed<T>::simd_type>
+auto loadPackedUnaligned(const T *data) -> enableIfFloat<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_loadu_ps(data);
@@ -324,9 +316,7 @@ auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
 }
 
 template<typename T>
-auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
-    std::is_same<double, T>::value,
-    typename Packed<T>::simd_type>
+auto loadPackedUnaligned(const T *data) -> enableIfDouble<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_loadu_pd(data);
@@ -336,9 +326,7 @@ auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
 }
 
 template<typename T>
-auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
-    std::is_integral<T>::value,
-    typename Packed<T>::simd_type>
+auto loadPackedUnaligned(const T *data) -> enableIfIntegral<T, typename Packed<T>::simd_type>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -351,8 +339,7 @@ auto loadPackedUnaligned(const T *data) -> std::enable_if_t<
 
 
 template<typename T, typename U>
-auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
-    std::is_same<float, T>::value, void>
+auto storePackedAligned(T *data, U &result) -> enableIfFloat<T, void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_store_ps(data, result);
@@ -362,8 +349,7 @@ auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
 }
 
 template<typename T, typename U>
-auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
-    std::is_same<double, T>::value, void>
+auto storePackedAligned(T *data, U &result) -> enableIfDouble<T, void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_store_pd(data, result);
@@ -373,9 +359,7 @@ auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
 }
 
 template<typename T, typename U>
-auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
-    std::is_integral<T>::value,
-    void>
+auto storePackedAligned(T *data, U &result) -> enableIfIntegral<T, void>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -387,9 +371,7 @@ auto storePackedAligned(T *data, U &result) -> std::enable_if_t<
 }
 
 template<typename T, typename U>
-auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
-    std::is_same<float, T>::value,
-    void>
+auto storePackedUnaligned(T *data, U &result) -> enableIfFloat<T, void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_storeu_ps(data, result);
@@ -399,9 +381,7 @@ auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
 }
 
 template<typename T, typename U>
-auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
-    std::is_same<double, T>::value,
-    void>
+auto storePackedUnaligned(T *data, U &result) -> enableIfDouble<T, void>
 {
 #ifdef TL_HAVE_AVX
     _mm256_storeu_pd(data, result);
@@ -411,9 +391,7 @@ auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
 }
 
 template<typename T, typename U>
-auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
-    std::is_integral<T>::value,
-    void>
+auto storePackedUnaligned(T *data, U &result) -> enableIfIntegral<T, void>
 {
     using simd_type = typename Packed<T>::simd_type;
 
@@ -426,9 +404,7 @@ auto storePackedUnaligned(T *data, U &result) -> std::enable_if_t<
 
 
 template<typename T>
-auto set(T data) -> std::enable_if_t<
-    std::is_same<float, T>::value,
-    typename Packed<T>::simd_type>
+auto set(T data) -> enableIfFloat<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_set1_ps(data);
@@ -438,9 +414,7 @@ auto set(T data) -> std::enable_if_t<
 }
 
 template<typename T>
-auto set(T data) -> std::enable_if_t<
-    std::is_same<double, T>::value,
-    typename Packed<T>::simd_type>
+auto set(T data) -> enableIfDouble<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_set1_pd(data);
@@ -451,8 +425,8 @@ auto set(T data) -> std::enable_if_t<
 
 template<typename T>
 auto set(T data) -> std::enable_if_t<
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
     typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
@@ -464,8 +438,8 @@ auto set(T data) -> std::enable_if_t<
 
 template<typename T>
 auto set(T data) -> std::enable_if_t<
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
     typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
@@ -477,8 +451,8 @@ auto set(T data) -> std::enable_if_t<
 
 template<typename T>
 auto set(T data) -> std::enable_if_t<
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
     typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
@@ -490,8 +464,8 @@ auto set(T data) -> std::enable_if_t<
 
 template<typename T>
 auto set(T data) -> std::enable_if_t<
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
     typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
@@ -503,9 +477,7 @@ auto set(T data) -> std::enable_if_t<
 
 
 template<typename T>
-auto setZero() -> std::enable_if_t<
-    std::is_same<float, T>::value,
-    typename Packed<T>::simd_type>
+auto setZero() -> enableIfFloat<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_setzero_ps();
@@ -515,9 +487,7 @@ auto setZero() -> std::enable_if_t<
 }
 
 template<typename T>
-auto setZero() -> std::enable_if_t<
-    std::is_same<double, T>::value,
-    typename Packed<T>::simd_type>
+auto setZero() -> enableIfDouble<T, typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_setzero_pd();
@@ -530,9 +500,7 @@ auto setZero() -> std::enable_if_t<
 
 
 template<typename T>
-auto setZero() -> std::enable_if_t<
-    std::is_integral<T>::value,
-    void>
+auto setZero() -> enableIfIntegral<T, void>
 {
 
 #ifdef TL_HAVE_AVX
@@ -545,9 +513,7 @@ auto setZero() -> std::enable_if_t<
 /// Addition
 
 template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<float, T>::value,
-    Packed<T>>
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_add_ps(packed1, packed2);
@@ -557,9 +523,7 @@ auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 }
 
 template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<double, T>::value,
-    Packed<T>>
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_add_pd(packed1, packed2);
@@ -569,9 +533,9 @@ auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 }
 
 template<typename T>
-auto add(const Packed<T>& packed1, const Packed<T>& packed2) -> std::enable_if_t<
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-    std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
     Packed<T>>
 {
 #ifdef TL_HAVE_AVX2
@@ -582,11 +546,10 @@ auto add(const Packed<T>& packed1, const Packed<T>& packed2) -> std::enable_if_t
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
-  Packed<T>>::type
-add(const Packed<T> &packed1, const Packed<T> &packed2)
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_add_epi16(packed1, packed2);
@@ -596,11 +559,10 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
-  Packed<T>>::type
-add(const Packed<T> &packed1, const Packed<T> &packed2)
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_add_epi32(packed1, packed2);
@@ -610,11 +572,10 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
-  Packed<T>>::type
-add(const Packed<T> &packed1, const Packed<T> &packed2)
+auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_add_epi64(packed1, packed2);
@@ -626,105 +587,95 @@ add(const Packed<T> &packed1, const Packed<T> &packed2)
 /// Subtract
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value,
-  Packed<T>>::type
-sub(const Packed<T> &packed1, const Packed<T> &packed2)
+auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX
-    r = _mm256_sub_ps(packed1, packed2);
+    packed = _mm256_sub_ps(packed1, packed2);
 #elif defined TL_HAVE_SSE
-    r = _mm_sub_ps(packed1, packed2);
+    packed = _mm_sub_ps(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  Packed<T>>::type
-sub(const Packed<T> &packed1, const Packed<T> &packed2)
+auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX
-    r = _mm256_sub_pd(packed1, packed2);
+    packed = _mm256_sub_pd(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_sub_pd(packed1, packed2);
+    packed = _mm_sub_pd(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value,
-  Packed<T>>::type
-sub(const Packed<T> &packed1, const Packed<T> &packed2)
+auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
-    r = _mm256_sub_epi8(packed1, packed2);
+    packed = _mm256_sub_epi8(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_sub_epi8(packed1, packed2);
+    packed = _mm_sub_epi8(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value,
-  Packed<T>>::type
-sub(const Packed<T> &packed1, const Packed<T> &packed2)
+auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
-    r = _mm256_sub_epi16(packed1, packed2);
+    packed = _mm256_sub_epi16(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_sub_epi16(packed1, packed2);
+    packed = _mm_sub_epi16(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value,
-  Packed<T>>::type
-sub(const Packed<T> &packed1, const Packed<T> &packed2)
+auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
-    r = _mm256_sub_epi32(packed1, packed2);
+    packed = _mm256_sub_epi32(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_sub_epi32(packed1, packed2);
+    packed = _mm_sub_epi32(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value,
-  Packed<T>>::type
-sub(const Packed<T> &packed1, const Packed<T> &packed2)
+auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
-    r = _mm256_sub_epi64(packed1, packed2);
+    packed = _mm256_sub_epi64(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_sub_epi64(packed1, packed2);
+    packed = _mm_sub_epi64(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 //template<typename T> inline
@@ -761,48 +712,41 @@ sub(const Packed<T> &packed1, const Packed<T> &packed2)
 /// Multiplication
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  Packed<T>>::type
-mul(const Packed<T> &packed1, const Packed<T> &packed2)
+auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX
-    r = _mm256_mul_ps(packed1, packed2);
+    packed = _mm256_mul_ps(packed1, packed2);
 #elif defined TL_HAVE_SSE
-    r = _mm_mul_ps(packed1, packed2);
+    packed = _mm_mul_ps(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  Packed<T>>::type
-mul(const Packed<T> &packed1, const Packed<T> &packed2)
+auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX
-    r = _mm256_mul_pd(packed1, packed2);
+    packed = _mm256_mul_pd(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_mul_pd(packed1, packed2);
+    packed = _mm_mul_pd(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
-  Packed<T>>::type
-mul(const Packed<T> &packed1, const Packed<T> &packed2)
+auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
     /// Copy from 'vector class library':
@@ -816,7 +760,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     __m256i mulodd = _mm256_mullo_epi16(aodd, bodd);           // product of odd  numbered elements
     mulodd = _mm256_slli_epi16(mulodd, 8);                     // put odd numbered elements back in place
     __m256i mask = _mm256_set1_epi32(0x00FF00FF);              // mask for even positions
-    r = _mm256_blendv_epi8(mulodd, muleven, mask);             // interleave even and odd
+    packed = _mm256_blendv_epi8(mulodd, muleven, mask);             // interleave even and odd
 #elif defined TL_HAVE_SSE2
     /// Copy from 'vector class library':
     /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
@@ -830,51 +774,49 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     mulodd = _mm_slli_epi16(mulodd, 8);          // put odd numbered elements back in place
     __m128i mask = _mm_set1_epi32(0x00FF00FF);   // mask for even positions
 #ifdef TL_HAVE_SSE4_1
-    r = _mm_blendv_epi8(mulodd, muleven, mask);
+    packed = _mm_blendv_epi8(mulodd, muleven, mask);
 #else
-    r = _mm_or_si128(_mm_and_si128(mask, muleven), _mm_andnot_si128(mask, mulodd));
+    packed = _mm_or_si128(_mm_and_si128(mask, muleven), _mm_andnot_si128(mask, mulodd));
 #endif
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
-  Packed<T>>::type
-mul(const Packed<T> &packed1, const Packed<T> &packed2)
+auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
-    r = _mm256_mullo_epi16(packed1, packed2);
+    packed = _mm256_mullo_epi16(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_mullo_epi16(packed1, packed2);
+    packed = _mm_mullo_epi16(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
-  Packed<T>>::type
-mul(const Packed<T> &packed1, const Packed<T> &packed2)
+auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
-    r = _mm256_mullo_epi32(packed1, packed2);
+    packed = _mm256_mullo_epi32(packed1, packed2);
 #elif defined TL_HAVE_SSE2
     /// Copy from 'vector class library':
     /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
     /// (c) Copyright 2012-2021 Agner Fog.
     /// Apache License version 2.0 or later.
 #  if defined TL_HAVE_SSE4_1
-    r = _mm_mullo_epi32(packed1, packed2);
+    packed = _mm_mullo_epi32(packed1, packed2);
 #  else
     __m128i a13 = _mm_shuffle_epi32(packed1, 0xF5);
     __m128i b13 = _mm_shuffle_epi32(packed2, 0xF5);
@@ -882,21 +824,20 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     __m128i prod13 = _mm_mul_epu32(a13, b13);
     __m128i prod01 = _mm_unpacklo_epi32(prod02, prod13);
     __m128i prod23 = _mm_unpackhi_epi32(prod02, prod13);
-    r = _mm_unpacklo_epi64(prod01, prod23);
+    packed = _mm_unpacklo_epi64(prod01, prod23);
 #  endif
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
-  Packed<T>>::type
-mul(const Packed<T> &packed1, const Packed<T> &packed2)
+auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX2
     /// Copy from 'vector class library':
@@ -911,7 +852,7 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     __m256i prodlh3 = _mm256_shuffle_epi32(prodlh2, 0x73);  // 0, a0Lb0H+a0Hb0L, 0, a1Lb1H+a1Hb1L
     __m256i prodll = _mm256_mul_epu32(packed1, packed2);   // a0Lb0L,a1Lb1L, 64 bit unsigned products
     __m256i prod = _mm256_add_epi64(prodll, prodlh3);    // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
-    r = prod;
+    packed = prod;
 #elif defined TL_HAVE_SSE2
     /// Copy from 'vector class library':
     /// https://github.com/vectorclass/version2/blob/d1e06dd3fa86a3ac052dde8f711f722f6d5c9762/vectori128.h
@@ -926,62 +867,53 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     __m128i prodlh3 = _mm_shuffle_epi32(prodlh2, 0x73);    // 0, a0Lb0H+a0Hb0L, 0, a1Lb1H+a1Hb1L
     __m128i prodll = _mm_mul_epu32(packed1, packed2);      // a0Lb0L,a1Lb1L, 64 bit unsigned products
     __m128i prod = _mm_add_epi64(prodll, prodlh3);         // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
-    r = prod;
+    packed = prod;
 #  else
     ///TODO: Error
     int64_t aa[2], bb[2];
     packed1.storeUnaligned(&aa[0]);                                     // split into elements
     packed2.storeUnaligned(&bb[0]);
-    r = _mm_set_epi64x(aa[1] * bb[1], aa[0] * bb[0]);     // multiply elements separetely
+    packed = _mm_set_epi64x(aa[1] * bb[1], aa[0] * bb[0]);     // multiply elements separetely
 #  endif
 #endif
 
-    return r;
+    return packed;
 }
 
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  Packed<T>>::type
-div(const Packed<T> &packed1, const Packed<T> &packed2)
+auto div(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX
-    r = _mm256_div_ps(packed1, packed2);
+    packed = _mm256_div_ps(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_div_ps(packed1, packed2);
+    packed = _mm_div_ps(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value, 
-  Packed<T>>::type
-div(const Packed<T> &packed1, const Packed<T> &packed2)
+auto div(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
 {
-    typename PackedTraits<Packed<T>>::simd_type r;
+    Packed<T> packed;
 
 #ifdef TL_HAVE_AVX
-    r = _mm256_div_pd(packed1, packed2);
+    packed = _mm256_div_pd(packed1, packed2);
 #elif defined TL_HAVE_SSE2
-    r = _mm_div_pd(packed1, packed2);
+    packed = _mm_div_pd(packed1, packed2);
 #endif
 
-    return r;
+    return packed;
 }
 
 /// División entre enteros no permitida
 
 /// Suma de todos los elementos de un vector
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value,
-  T>::type
-horizontal_sum(const Packed<T> &packed)
+auto horizontal_sum(const Packed<T> &packed) -> enableIfFloat<T, T>
 {
     T sum{};
 
@@ -1013,10 +945,7 @@ horizontal_sum(const Packed<T> &packed)
 
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value,
-  T>::type
-horizontal_sum(const Packed<T> &packed)
+auto horizontal_sum(const Packed<T> &packed) -> enableIfDouble<T, T>
 {
     T sum{};
 
@@ -1045,11 +974,10 @@ horizontal_sum(const Packed<T> &packed)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
-  T>::type
-horizontal_sum(const Packed<T> &packed)
+auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
+    T>
 {
     T sum{};
 
@@ -1076,11 +1004,10 @@ horizontal_sum(const Packed<T> &packed)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
-  T>::type
-horizontal_sum(const Packed<T> &packed)
+auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    T>
 {
     T sum{};
 
@@ -1116,11 +1043,10 @@ horizontal_sum(const Packed<T> &packed)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
-  T>::type
-horizontal_sum(const Packed<T> &packed)
+auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    T>
 {
     T sum{};
 
@@ -1153,11 +1079,10 @@ horizontal_sum(const Packed<T> &packed)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
-  T>::type
-horizontal_sum(const Packed<T> &packed)
+auto horizontal_sum(const Packed<T>& packed) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    T>
 {
     T sum{};
 
@@ -1205,10 +1130,7 @@ horizontal_sum(const Packed<T> &packed)
 /// Unary minus
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  Packed<T>>::type
-changeSign(const Packed<T> &packet)
+auto changeSign(const Packed<T> &packet) -> enableIfFloat<T, Packed<T>>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_xor_ps(packet, Packed<T>(-0.0f));
@@ -1219,10 +1141,7 @@ changeSign(const Packed<T> &packet)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value, 
-  Packed<T>>::type
-changeSign(const Packed<T> &packet)
+auto changeSign(const Packed<T> &packet) -> enableIfDouble<T, Packed<T>>
 {
 #ifdef TL_HAVE_AVX
     return _mm256_xor_pd(packet, Packed<T>(-0.0));
@@ -1233,10 +1152,9 @@ changeSign(const Packed<T> &packet)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value,
-  Packed<T>>::type
-changeSign(const Packed<T> &packet)
+auto changeSign(const Packed<T> &packet) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value,
+    Packed<T>>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_sub_epi8(_mm256_setzero_si256(), packet);
@@ -1246,10 +1164,9 @@ changeSign(const Packed<T> &packet)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value,
-  typename Packed<T>::simd_type>::type
-changeSign(const Packed<T> &packet)
+auto changeSign(const Packed<T> &packet) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_sub_epi16(_mm256_setzero_si256(), packet);
@@ -1259,10 +1176,9 @@ changeSign(const Packed<T> &packet)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value,
-  typename Packed<T>::simd_type>::type
-changeSign(const Packed<T> &packet)
+auto changeSign(const Packed<T> &packet) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_sub_epi32(_mm256_setzero_si256(), packet);
@@ -1272,10 +1188,9 @@ changeSign(const Packed<T> &packet)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value,
-  typename Packed<T>::simd_type>::type
-changeSign(const Packed<T> &packet)
+auto changeSign(const Packed<T> &packet) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value,
+    typename Packed<T>::simd_type>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_sub_epi64(_mm256_setzero_si256(), packet);
@@ -1285,10 +1200,9 @@ changeSign(const Packed<T> &packet)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  bool>::type
-equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+auto equalTo(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<float, T>::value,
+    bool>
 {
 #ifdef TL_HAVE_AVX
     __m256 compare_result = _mm256_cmp_ps(packed1, packed2, _CMP_EQ_OQ);
@@ -1300,10 +1214,9 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value, 
-  bool>::type
-equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+auto equalTo(const Packed<T>& packed1, const Packed<T>& packed2) -> std::enable_if_t<
+    std::is_same<double, T>::value,
+    bool>
 {
 #ifdef TL_HAVE_AVX
     __m256d compare_result = _mm256_cmp_pd(packed1, packed2, _CMP_EQ_OQ);
@@ -1315,11 +1228,10 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int8_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint8_t>::value,
-  bool>::type
-equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+auto equalTo(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
+    bool>
 {
 #ifdef TL_HAVE_AVX2
     __m256i compare_result = _mm256_cmpeq_epi8(packed1, packed2);
@@ -1331,11 +1243,10 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int16_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint16_t>::value,
-  bool>::type
-equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+auto equalTo(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    bool>
 {
 #ifdef TL_HAVE_AVX2
     __m256i compare_result = _mm256_cmpeq_epi16(packed1, packed2);
@@ -1347,11 +1258,10 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int32_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint32_t>::value,
-  bool>::type
-equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+auto equalTo(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    bool>
 {
 #ifdef TL_HAVE_AVX2
     __m256i compare_result = _mm256_cmpeq_epi32(packed1, packed2);
@@ -1363,11 +1273,10 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, int64_t>::value ||
-  std::is_same<typename PackedTraits<Packed<T>>::value_type, uint64_t>::value,
-  bool>::type
-equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
+auto equalTo(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    bool>
 {
 #ifdef TL_HAVE_AVX2
     __m256i compare_result = _mm256_cmpeq_epi64(packed1, packed2);
@@ -1387,10 +1296,7 @@ equalTo(const Packed<T> &packed1, const Packed<T> &packed2)
 
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<float, T>::value, 
-  bool>::type
-notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+auto notEqual(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, bool>
 {
 #ifdef TL_HAVE_AVX
     __m256 compare_result = _mm256_cmp_ps(packed1, packed2, _CMP_NEQ_UQ);
@@ -1402,10 +1308,7 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_same<double, T>::value, 
-  bool>::type
-notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+auto notEqual(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, bool>
 {
 #ifdef TL_HAVE_AVX
     __m256d compare_result = _mm256_cmp_pd(packed1, packed2, _CMP_NEQ_UQ);
@@ -1417,10 +1320,7 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
 }
 
 template<typename T>
-typename std::enable_if<
-  std::is_integral<T>::value,
-  bool>::type
-notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
+auto notEqual(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfIntegral<T, bool>
 {
 #ifdef TL_HAVE_AVX2
     __m256i compare_result = _mm256_cmpeq_epi64(packed1, packed2);
@@ -1446,83 +1346,83 @@ notEqual(const Packed<T> &packed1, const Packed<T> &packed2)
 /* Packed overload operators */
 
 template<typename T>
-Packed<T> operator - (const Packed<T> &packet)
+auto operator -(const Packed<T> &packet) -> Packed<T>
 {
     return internal::changeSign(packet);
 }
 
 template<typename T>
-Packed<T> operator+(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+auto operator+(const Packed<T> &packed1,
+               const Packed<T> &packed2) -> Packed<T>
 {
     return internal::add(packed1, packed2);
 }
 
 template<typename T>
-Packed<T> operator+(const Packed<T> &packed, T scalar)
+auto operator+(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed + Packed<T>(scalar);
 }
 
 template<typename T>
-Packed<T> operator+(T scalar, const Packed<T> &packed)
+auto operator+(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) + packed;
 }
 
 template<typename T>
-Packed<T> operator-(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+auto operator-(const Packed<T> &packed1,
+               const Packed<T> &packed2) -> Packed<T>
 {
     return internal::sub(packed1, packed2);
 }
 
 template<typename T>
-Packed<T> operator-(const Packed<T> &packed, T scalar)
+auto operator-(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed - Packed<T>(scalar);
 }
 
 template<typename T>
-Packed<T> operator-(T scalar, const Packed<T> &packed)
+auto operator-(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) - packed;
 }
 
 template<typename T>
-Packed<T> operator*(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+auto operator*(const Packed<T> &packed1,
+               const Packed<T> &packed2) -> Packed<T>
 {
     return internal::mul(packed1, packed2);
 }
 
 template<typename T>
-Packed<T> operator*(const Packed<T> &packed, T scalar)
+auto operator*(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed * Packed<T>(scalar);
 }
 
 template<typename T>
-Packed<T> operator*(T scalar, const Packed<T> &packed)
+auto operator*(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) * packed;
 }
 
 template<typename T>
-Packed<T> operator/(const Packed<T> &packed1,
-                    const Packed<T> &packed2)
+auto operator/(const Packed<T> &packed1,
+               const Packed<T> &packed2) -> Packed<T>
 {
     return internal::div(packed1, packed2);
 }
 
 template<typename T>
-Packed<T> operator/(const Packed<T> &packed, T scalar)
+auto operator/(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed / Packed<T>(scalar);
 }
 
 template<typename T>
-Packed<T> operator/(T scalar, const Packed<T> &packed)
+auto operator/(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) / packed;
 }
@@ -1531,15 +1431,15 @@ Packed<T> operator/(T scalar, const Packed<T> &packed)
 
 
 template<typename T> 
-static inline bool operator == (const Packed<T> &packed1,
-                                const Packed<T> &packed2)
+static auto operator ==(const Packed<T> &packed1,
+                        const Packed<T> &packed2) -> bool
 {
     return internal::equalTo(packed1, packed2);
 }
 
 template<typename T> 
-static inline bool operator != (const Packed<T> &packed1,
-                                const Packed<T> &packed2)
+static auto operator !=(const Packed<T> &packed1,
+                        const Packed<T> &packed2) -> bool
 {
     return internal::notEqual(packed1, packed2);
 }
@@ -1621,7 +1521,7 @@ Packed<T>::operator simd_type() const
 }
 
 template<typename T>
-auto Packed<T>::operator=(const Packed<T>& packed) -> Packed<T>&
+auto Packed<T>::operator=(const Packed<T> &packed) -> Packed<T>&
 {
     if (this != &packed) {
         mValue = packed;
@@ -1631,7 +1531,7 @@ auto Packed<T>::operator=(const Packed<T>& packed) -> Packed<T>&
 }
 
 template<typename T>
-auto Packed<T>::operator=(Packed<T>&& packed) TL_NOEXCEPT -> Packed<T>&
+auto Packed<T>::operator=(Packed<T> &&packed) TL_NOEXCEPT -> Packed<T>&
 {
     if (this != &packed) {
         mValue = std::move(packed);
@@ -1714,11 +1614,11 @@ auto Packed<T>::zero() -> Packed
 /* Transpose */
 
 template<typename T>
-auto transposeMatrix4x4(Packed<T>& r1,
-                        Packed<T>& r2,
-                        Packed<T>& r3,
-                        Packed<T>& r4) -> std::enable_if_t<
-    std::is_same<float, T>::value,
+auto transposeMatrix4x4(Packed<T> &r1,
+                        Packed<T> &r2,
+                        Packed<T> &r3,
+                        Packed<T> &r4) -> std::enable_if_t<
+    std::is_same<float, std::remove_cv_t<T>>::value,
     void>
 {
     __m128 tmp1 = _mm_unpacklo_ps(r1, r2);

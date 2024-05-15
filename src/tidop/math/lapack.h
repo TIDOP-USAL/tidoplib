@@ -47,16 +47,14 @@ namespace lapack
 /* Factorización LU */
 
 template<typename T>
-auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> std::enable_if_t<
-    std::is_same<float, std::remove_cv_t<T>>::value, lapack_int>
+auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> enableIfFloat<T, lapack_int>
 {
     lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
     return info;
 }
 
 template<typename T>
-auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> std::enable_if_t<
-    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
+auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> enableIfDouble<T, lapack_int>
 {
     lapack_int info = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
     return info;
@@ -64,8 +62,7 @@ auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* i
 
 template<typename T> 
 auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda, 
-           lapack_int* ipiv, T* b, lapack_int ldb) -> std::enable_if_t<
-    std::is_same<float, typename std::remove_cv<T>::type>::value, lapack_int>
+           lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfFloat<T, lapack_int>
 {
     lapack_int info = LAPACKE_sgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
     return info;
@@ -73,8 +70,7 @@ auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
 
 template<typename T> 
 auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda, 
-           lapack_int* ipiv, T* b, lapack_int ldb) -> std::enable_if_t<
-    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
+           lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfDouble<T, lapack_int>
 {
     lapack_int info = LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
     return info;
@@ -84,16 +80,14 @@ auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
 /* Factorización Cholesky */
 
 template<typename T>
-auto potrf(lapack_int rows, T* a, lapack_int lda) -> std::enable_if_t<
-    std::is_same<float, std::remove_cv_t<T>>::value, lapack_int>
+auto potrf(lapack_int rows, T* a, lapack_int lda) -> enableIfFloat<T, lapack_int>
 {
     lapack_int info = LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
     return info;
 }
 
 template<typename T> 
-auto potrf(lapack_int rows, T* a, lapack_int lda) -> std::enable_if_t<
-    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
+auto potrf(lapack_int rows, T* a, lapack_int lda) -> enableIfDouble<T, lapack_int>
 {
     lapack_int info = LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
     return info;
@@ -104,8 +98,7 @@ auto potrf(lapack_int rows, T* a, lapack_int lda) -> std::enable_if_t<
 
 template<typename T> 
 auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
-           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> std::enable_if_t<
-    std::is_same<float, std::remove_cv_t<T>>::value, lapack_int>
+           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> enableIfFloat<T, lapack_int>
 {
     lapack_int info = LAPACKE_sgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
     return info;
@@ -113,8 +106,7 @@ auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
 
 template<typename T> 
 auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
-           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> std::enable_if_t<
-    std::is_same<double, std::remove_cv_t<T>>::value, lapack_int>
+           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> enableIfDouble<T, lapack_int>
 {
     lapack_int info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
     return info;

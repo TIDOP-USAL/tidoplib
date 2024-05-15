@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     cmd.addArgument<std::string>("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto");
     cmd.addArgument<char>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", ';');
     cmd.addArgument<std::string>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", "");
-    cmd.addArgument<std::string>("log", 'l', "Fichero de log", "");
+    cmd.addArgument<Path>("log", 'l', "Fichero de log", Path{});
     cmd.addArgument<int>("skip","Skip lines", 0);
 
     cmd.addExample(cmd_name + " --epsg_in EPSG:25830 --epsg_out EPSG:4258 --coord 281815.044;4827675.243;123.35");
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     auto coord = cmd.value<std::string>("coord");
     auto separator = cmd.value<char>("separator");
     auto coord_trf = cmd.value<std::string>("coord_trf");
-    auto log_file = cmd.value<std::string>("log");
+    auto log_file = cmd.value<Path>("log");
     auto skip_lines = cmd.value<int>("skip");
 
     if(!log_file.empty()) {

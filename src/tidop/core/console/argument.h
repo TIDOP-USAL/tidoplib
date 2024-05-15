@@ -71,6 +71,7 @@ public:
         arg_float32,
         arg_float64,
         arg_string,
+        arg_path,
         arg_char = arg_int8,
         arg_uchar = arg_uint8,
         arg_short = arg_int16,
@@ -348,6 +349,13 @@ struct ArgTraits<std::string>
     static constexpr auto type_name = "std::string";
 };
 
+template<>
+struct ArgTraits<tl::Path>
+{
+    using value_type = tl::Path;
+    static constexpr auto property_type = Argument::Type::arg_path;
+    static constexpr auto type_name = "tl::Path";
+};
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -564,7 +572,7 @@ void Argument_<std::string>::fromString(const std::string &value)
 template<> inline
 void Argument_<Path>::fromString(const std::string &value)
 {
-    mValue = value;
+    mValue = Path::fromLocal8Bit(value);
     bValid = true;
 }
 
@@ -586,9 +594,9 @@ auto Argument_<T>::isValid() -> bool
 {
     if(validator() != nullptr) {
         return std::dynamic_pointer_cast<ValidatorBase<T>>(validator())->validate(mValue);
-    } else {
-        return bValid;
     }
+
+    return bValid;
 }
 
 

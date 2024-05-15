@@ -406,7 +406,7 @@ public:
     void addTask(const std::shared_ptr<Task> &task, 
                  const std::list<std::shared_ptr<Task>> &parentTasks);
  
-  // Task interface
+// Task interface
 
 public:
 

@@ -38,6 +38,15 @@ using enableIfFloating = std::enable_if_t<std::is_floating_point<T>::value, R>;
 template<typename T, class R = void>
 using enableIfArithmetic = std::enable_if_t<std::is_arithmetic<T>::value, R>;
 
+template<typename T, class R = void>
+using enableIfFloat = std::enable_if_t<std::is_same<float, std::remove_cv_t<T>>::value, R>;
+
+template<typename T, class R = void>
+using enableIfDouble = std::enable_if_t<std::is_same<double, std::remove_cv_t<T>>::value, R>;
+
+template<typename T, class R = void>
+using enableIfBool = std::enable_if_t<std::is_same<bool, std::remove_cv_t<T>>::value, R>;
+
 
 template<typename T, class R = void>
 using enableIfNotIntegral = std::enable_if_t<!std::is_integral<T>::value, R>;
