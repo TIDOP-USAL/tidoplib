@@ -73,10 +73,10 @@ public:
     ImageOptions();
     virtual ~ImageOptions() = default;
 
-    virtual Format format() const = 0;
+    virtual auto format() const -> Format = 0;
 
-    virtual std::map<std::string, std::string> options() const = 0;
-    virtual std::map<std::string, std::string> activeOptions() const = 0;
+    virtual auto options() const -> std::map<std::string, std::string> = 0;
+    virtual auto activeOptions() const -> std::map<std::string, std::string> = 0;
     virtual void reset() = 0;
 
 };

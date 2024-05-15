@@ -89,7 +89,7 @@ public:
      * \brief Open the log file
      * \param[in] file Log file
      */
-    void open(const std::string &file);
+    void open(const Path &file);
 
     /*!
      * \brief Close the log file

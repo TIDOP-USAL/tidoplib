@@ -55,8 +55,8 @@ public:
     T value(const Argument::SharedPtr &arg);
 };
 
-template<typename T> inline
-T ArgValue<T>::value(const Argument::SharedPtr &arg)
+template<typename T> 
+auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
 {
     auto type = arg->type();
     auto return_type = ArgTraits<T>::property_type;
@@ -107,14 +107,25 @@ T ArgValue<T>::value(const Argument::SharedPtr &arg)
     return value;
 }
 
-template<> inline
-std::string ArgValue<std::string>::value(const Argument::SharedPtr &arg)
+template<>
+inline auto ArgValue<std::string>::value(const Argument::SharedPtr &arg) -> std::string
 {
 	const auto type = arg->type();
     constexpr auto return_type = ArgTraits<std::string>::property_type;
     TL_ASSERT(return_type == Argument::Type::arg_string && type == Argument::Type::arg_string,
               "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<std::string>::type_name);
     std::string value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
+    return value;
+}
+
+template<> inline
+auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Path
+{
+    const auto type = arg->type();
+    constexpr auto return_type = ArgTraits<tl::Path>::property_type;
+    TL_ASSERT(return_type == Argument::Type::arg_path && type == Argument::Type::arg_path,
+        "Conversion from \"{}\" to \"{}\" is not allowed", arg->typeName(), ArgTraits<tl::Path>::type_name);
+    tl::Path value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value();
     return value;
 }
 

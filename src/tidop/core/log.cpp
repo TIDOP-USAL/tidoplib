@@ -45,10 +45,10 @@ auto Log::instance() -> Log &
     return log;
 }
 
-void Log::open(const std::string &file)
+void Log::open(const tl::Path &file)
 {
     if (isOpen()) close();
-    _stream.open(file, std::ofstream::app);
+    _stream.open(file.toWString(), std::ofstream::app);
 }
 
 void Log::close()

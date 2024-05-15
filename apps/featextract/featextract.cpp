@@ -53,8 +53,8 @@ int main(int argc, char **argv)
     console.setMessageLevel(MessageLevel::all);
     Message::addMessageHandler(&console);
 
-    auto arg_input = Argument::make<std::string>("input", 'i', "Image");
-    auto arg_output = Argument::make<std::string>("output", 'o', "Output path");
+    auto arg_input = Argument::make<Path>("input", 'i', "Image");
+    auto arg_output = Argument::make<Path>("output", 'o', "Output path");
     auto arg_format = Argument::make<std::string>("format", 'f', "Format", "XML");
     std::vector<std::string> options{"XML", "YML", "TXT", "BIN"};
     arg_format->setValidator(std::make_shared<ValuesValidator<std::string>>(options));

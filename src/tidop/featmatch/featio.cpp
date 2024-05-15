@@ -169,7 +169,7 @@ void FeaturesReaderBinary::read()
 void FeaturesReaderBinary::open()
 {
     try {
-        stream->open(mFilePath.toString(), std::ios_base::in | std::ios_base::binary);
+        stream->open(mFilePath.toWString(), std::ios_base::in | std::ios_base::binary);
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -312,7 +312,7 @@ void FeaturesWriterBinary::write()
 void FeaturesWriterBinary::open()
 {
     try {
-        stream->open(filePath().toString(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+        stream->open(filePath().toWString(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -661,7 +661,7 @@ void FeaturesReaderTxt::open()
 {
     try {
 
-        ifs = std::ifstream(mFilePath.toString());
+        ifs = std::ifstream(mFilePath.toWString());
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -803,7 +803,7 @@ void FeaturesWriterTxt::open()
 {
     try {
 
-        ofs = std::ofstream(filePath().toString(), std::ofstream::trunc);
+        ofs = std::ofstream(filePath().toWString(), std::ofstream::trunc);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");

@@ -75,9 +75,9 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    Path img = cmd.value<std::string>("img");
+    Path img = cmd.value<Path>("img");
 
-    log.open(Path(img).replaceExtension(".log").toString());
+    log.open(Path(img).replaceExtension(".log"));
 
     Chrono chrono("Image read");
     chrono.run();

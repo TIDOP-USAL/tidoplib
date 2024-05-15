@@ -53,20 +53,27 @@ TL_EXPORT bool compareInsensitiveCase(const std::string &source,
                                       const std::string &compare);
 #endif
 
+/*!
+ * \brief Performs a cast from one numeric type to another, rounding if necessary.
+ * \tparam T1 The type to cast to.
+ * \tparam T2 The type of the number to cast.
+ * \param[in] number The number to be cast.
+ * \return The number cast to type T1, rounded if necessary.
+ */
 template<typename T1, typename T2>
-auto numberCast(T2 number) -> enableIfIntegral<T1,T1>
+auto numberCast(T2 number) -> enableIfIntegral<T1, T1>
 {
     return static_cast<T1>(std::round(number));
 }
 
 template<typename T1, typename T2>
-auto numberCast(T2 number) -> enableIfFloating<T1,T1>
+auto numberCast(T2 number) -> enableIfFloating<T1, T1>
 {
     return static_cast<T1>(number);
 }
 
 template<typename T1, typename T2>
-auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1,T1>
+auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1, T1>
 {
     //En linux me sale siempre el error aunque no se llame a la función.
     //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
@@ -74,8 +81,16 @@ auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1,T1>
     return T1{0};
 }
 
+
+/*!
+ * \brief Checks if a value is within a specified range.
+ * \param[in] value The value to be checked.
+ * \param[in] min The minimum value of the range.
+ * \param[in] max The maximum value of the range.
+ * \return True if the value is within the range defined by min and max, false otherwise.
+ */
 template <typename T>
-bool isInRange(T value, T min, T max)
+auto isInRange(T value, T min, T max) -> bool
 {
     return (value < max) && (value > min);
 }
@@ -93,7 +108,7 @@ auto convertStringTo(const std::string &str) -> std::enable_if_t<std::is_arithme
 } 
 
 template <typename T>
-auto convertStringTo(const std::string& str) -> std::enable_if_t<std::is_same<T, bool>::value,T>
+auto convertStringTo(const std::string &str) -> enableIfBool<T,T>
 {
     T value = (compareInsensitiveCase(str, "true") || str == "1");
 
@@ -236,92 +251,6 @@ std::vector<int> sortIdx(const std::vector<T> &v)
     
     return idx;
 }
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Opciones del formato
- */
-class TL_EXPORT FileOptions
-{
-public:
-
-    FileOptions() = default;
-    virtual ~FileOptions() = default;
-
-    virtual auto options() const -> const char* = 0;
-};
-
-/*!
- * \brief Clase base para manejo de ficheros.
- *
- * Esta clase define la interfaz básica para lectura, creación y escritura de ficheros
- */
-class TL_EXPORT File
-{
-public:
-
-    //TODO: Revisar los modos. Igual es mejor utilizar flags
-    /*!
-     * \brief Modos de apertura de ficheros
-     */
-    enum class Mode : int8_t
-    {
-        read,      /*!< Lectura */
-        update,    /*!< Lectura y escritura. */
-        create     /*!< Creación */
-    };
-
-    /*!
-     * \brief Estado
-     */
-    enum class Status : int8_t
-    {
-        open_ok,
-        open_fail,
-        save_ok,
-        success,
-        failure
-    };
-
-protected:
-
-    /*!
-     * \brief Fichero
-     */
-    std::string mFile;
-
-    Mode mMode;
-
-public:
-
-    File() : mFile(""), mMode(Mode::read) {}
-    File(std::string file, Mode mode = Mode::update) : mFile(std::move(file)), mMode(mode) {}
-    virtual ~File() = default;
-
-    /*!
-     * \brief Abre un fichero especificando las opciones del formato
-     * \param[in] file Fichero
-     * \param[in] mode Modo de apertura
-     * \param[in] options Opciones del formato
-     * \return
-     * \see Mode
-     */
-    virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
-
-    /*!
-     * \brief Cierra el fichero
-     */
-    virtual void close() = 0;
-
-    /*!
-     * \brief Guarda una copia con otro nonbre
-     */
-    virtual Status createCopy(const std::string &fileOut) = 0;
-};
-
 
 
 /*! \} */ // end of core
