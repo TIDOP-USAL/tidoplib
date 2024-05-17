@@ -27,8 +27,8 @@ namespace tl
 
 		BoundingBox<Point3<double>> bbox(min, max);
 
-		tl::Point3d scale_factor(lasreader.header.x_scale_factor, lasreader.header.y_scale_factor, lasreader.header.z_scale_factor);
-		tl::Point3d offset = bbox.center();
+		Point3d scale_factor(lasreader.header.x_scale_factor, lasreader.header.y_scale_factor, lasreader.header.z_scale_factor);
+		Vector3d offset = bbox.center().vector();
 
 		std::vector<Vertex> points;
 		while (lasreader.read_point()) {
@@ -37,9 +37,9 @@ namespace tl
 
 			Vertex vertex(
 				Vector3f{ 
-					static_cast<float>(laspoint.get_x() - offset.x), 
-					static_cast<float>(laspoint.get_y() - offset.y), 
-					static_cast<float>(laspoint.get_z() - offset.z) 
+					static_cast<float>(laspoint.get_x() - offset.x()),
+					static_cast<float>(laspoint.get_y() - offset.y()),
+					static_cast<float>(laspoint.get_z() - offset.z())
 				}, Vector4f{
 					static_cast<float>(laspoint.rgb[0] / 65536.), 
 					static_cast<float>(laspoint.rgb[1] / 65536.),
@@ -52,6 +52,7 @@ namespace tl
 		}
 
 		modelBase = PointCloud::New(points);
+		modelBase->setOffset(offset);
 
 		close();
 	}

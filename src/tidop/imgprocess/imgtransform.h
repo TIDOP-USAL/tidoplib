@@ -24,12 +24,11 @@
 
 #pragma once
 
-#include <opencv2/imgproc.hpp>
-
 #include "tidop/config.h"
 #include "tidop/graphic/color.h"
 
 #ifdef TL_HAVE_OPENCV
+#include <opencv2/imgproc.hpp>
 
 #include <opencv2/core.hpp>
 

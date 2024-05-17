@@ -63,6 +63,8 @@ if(BUILD_TL_VIEWER)
                             io/ModelWriter.h
                             io/ASCIIReader.h
                             io/LASReader.h
+                            raycasting/RayCaster.h
+                            raycasting/Picker.h
 							 )
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}

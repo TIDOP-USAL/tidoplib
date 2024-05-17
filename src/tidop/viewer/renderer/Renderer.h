@@ -47,9 +47,12 @@ public:
 public:
 
 	void addModel(const ModelBase::Ptr& model) { models.push_back(model); }
+	std::vector<ModelBase::Ptr> getModels() const { return models; }
 
 	void setPreviousMouse(const Vector2i& previousMouse) { this->previousMouse = previousMouse; }
 	Vector2i getPreviousMouse() { return previousMouse; }
+
+	Camera::Ptr getCamera() { return std::dynamic_pointer_cast<Camera>(camera); }
 };
 
 }

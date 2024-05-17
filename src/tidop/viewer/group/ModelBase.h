@@ -20,30 +20,37 @@ class ModelBase
 
 public:
 	enum class Type {
-		Mesh = GL_TRIANGLES, PointCloud = GL_POINTS
+		Mesh = GL_TRIANGLES, PointCloud = GL_POINTS, MultiLine = GL_LINES
 	};
 protected:
 
-	tl::VertexArray::Ptr vertexArray;
-	tl::VertexBuffer::Ptr vertexBuffer;
+	std::vector<Vertex> points;
+	std::vector<unsigned int> indices;
+
+	VertexArray::Ptr vertexArray;
+	VertexBuffer::Ptr vertexBuffer;
 
 	Type type;
 
-	tl::Matrix4x4f modelMatrix;
+	Matrix4x4f modelMatrix;
+	Vector3d offset;
+
 
 	float pointSize;
 	float lineSize;
 
 public:
 
-	ModelBase(std::vector<Vertex>& points, Type _type = Type::Mesh)
-		:  type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
+	ModelBase(const std::vector<Vertex>& _points, Type _type = Type::Mesh)
+		:  points(_points), type(_type), modelMatrix(tl::Matrix4x4f::identity()),
+		pointSize(1.0f), lineSize(1.0f), offset(Vector3d::zero())  {
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points);
 	}
 
-	ModelBase(std::vector<Vertex>& points, const std::vector<unsigned int> indices, Type _type = Type::Mesh)
-		: type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
+	ModelBase(const std::vector<Vertex>& _points, const std::vector<unsigned int>& _indices, Type _type = Type::Mesh)
+		: points(_points), indices(_indices), type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f),
+		lineSize(1.0f), offset(Vector3d::zero()) {
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points, indices);
 	}
@@ -70,6 +77,7 @@ public:
 		modelMatrix = modelBase.modelMatrix;
 		lineSize = modelBase.lineSize;
 		pointSize = modelBase.pointSize;
+		offset = modelBase.offset;
 		return *this;
 	}
 
@@ -94,9 +102,20 @@ public:
 		modelMatrix = modelMatrix * Matrices::scale(sx, sy, sz);
 	}
 
+	void setOffset(const Vector3d& offset)
+	{
+		this->offset = offset;
+	}
+
+	Vector3d getOffset() const { return offset; }
+
 	void setPointSize(float pointSize) { this->pointSize = pointSize; }
 
 	void setLineSize(float lineSize) { this->lineSize = lineSize; }
+
+	std::vector<Vertex> getPoints() const { return points; }
+
+	std::vector<unsigned int> getIndices() const { return indices; }
 
 	Type getType() const { return type; }
 

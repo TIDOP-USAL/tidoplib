@@ -1195,6 +1195,18 @@ auto dotProduct(const Vector<T, _size>& v1,
     return dot;
 }
 
+
+template<typename T, size_t _size = 3>
+auto crossProduct(const Vector<T, _size>& pt1,
+                  const Vector<T, _size>& pt2) -> Vector<T, _size>
+{
+    return Vector<T, _size>({
+    	pt1.y() * pt2.z() - pt1.z() * pt2.y(),
+        pt1.z() * pt2.x() - pt1.x() * pt2.z(),
+        pt1.x() * pt2.y() - pt1.y() * pt2.x()
+    });
+}
+
 template<typename T, size_t _size>
 auto operator<<(std::ostream& os, const Vector<T, _size>& vector) -> std::ostream&
 {

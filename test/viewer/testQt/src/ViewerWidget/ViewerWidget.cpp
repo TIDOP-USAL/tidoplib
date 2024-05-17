@@ -26,6 +26,7 @@ ViewerWidget::ViewerWidget(QWidget* parent)
     : QOpenGLWidget(parent), button(0), mousePressed(false),
     first(false),
     renderer(Renderer::New(width(), height())) {
+    pickerListener = [&](const Picker::Result& result) {};
 }
 
 void ViewerWidget::initializeGL()
@@ -34,11 +35,16 @@ void ViewerWidget::initializeGL()
         Message::error("Couldn't initialize GLEW");
 
     renderer->init();
+
+    // Picker
+    picker = Picker::New(renderer->getCamera(), width(), height(), 1.0f);
+    picker->setListener(pickerListener);
 }
 
 void ViewerWidget::resizeGL(int w, int h)
 {
     renderer->resize(w, h);
+    picker->setCamera(renderer->getCamera());
 }
 
 void ViewerWidget::paintGL()
@@ -57,6 +63,7 @@ void ViewerWidget::mousePressEvent(QMouseEvent* event)
     mousePressed = true;
     renderer->setPreviousMouse(Vector2i({ event->x(), event->y() }));
     button = event->button();
+    picker->pick(renderer->getModels(),Vector2i({ event->x(), event->y() }));
 }
 
 void ViewerWidget::mouseReleaseEvent(QMouseEvent* event)
