@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(clear, PathTest)
 
 BOOST_FIXTURE_TEST_CASE(japanese, PathTest)
 {
-    Path path(L"こんにちは世界");
+    Path path("こんにちは世界");
     std::cout << path << std::endl;
 }
 

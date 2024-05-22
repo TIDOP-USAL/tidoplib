@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -50,7 +50,7 @@ struct LicenceTest
   {
     licence2 = new Licence("PhotoMatch", "GNU Lesser General Public License v3.0");
     licence2->setUrl("https://github.com/TIDOP-USAL/photomatch");
-    licence2->setAutor("Esteban Ruiz de Oña Crespo");
+    licence2->setAutor("Esteban Ruiz de OÃ±a Crespo");
     licence2->setAutorEmail("estebanrdo@gmail.com");
     licence2->setVersion("1.0.0");
   }
@@ -91,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE(version, LicenceTest)
 
 BOOST_FIXTURE_TEST_CASE(setAutor, LicenceTest)
 {
-  BOOST_CHECK_EQUAL("Esteban Ruiz de Oña Crespo", licence2->autor());
+  BOOST_CHECK_EQUAL("Esteban Ruiz de OÃ±a Crespo", licence2->autor());
 }
 
 BOOST_FIXTURE_TEST_CASE(url, LicenceTest)

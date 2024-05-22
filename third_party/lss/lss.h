@@ -3,7 +3,7 @@
 
 #include <opencv2/core.hpp>
 
-// ¿Es Local Self - Similarity????
+// Â¿Es Local Self - Similarity????
 
 class LSS
 {
