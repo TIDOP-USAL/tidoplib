@@ -82,8 +82,8 @@ private:
     std::string title;
     std::string description;
     std::list<std::string> items;
-    std::map<int, MenuAction> actions;
-    std::map<int, Menu *> subMenus;
+    std::map<unsigned int, MenuAction> actions;
+    std::map<unsigned int, Menu *> subMenus;
     Menu *parent;
     friend class Menu;
 
@@ -94,14 +94,14 @@ public:
     void addAction(const MenuAction &action)
     {
         items.push_back(action.text());
-        actions[static_cast<int>(items.size())] = action;
+        actions[static_cast<unsigned int>(items.size())] = action;
     }
 
     void addMenu(Menu *menu)
     {
         menu->parent = this;
         items.push_back(menu->text());
-        subMenus[static_cast<int>(items.size())] = menu;
+        subMenus[static_cast<unsigned int>(items.size())] = menu;
     }
 
     void show() const;
@@ -113,8 +113,8 @@ public:
 
 protected:
 
-    void activeOption(int currentOption = 1) const;
-    void itemClick(int currentOption) const;
+    void activeOption(unsigned int currentOption = 1) const;
+    void itemClick(unsigned int currentOption) const;
 };
 
 

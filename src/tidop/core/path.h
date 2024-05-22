@@ -79,7 +79,7 @@ public:
      */
     auto toWString() const -> std::wstring;
 
-    auto toLocal8Bit() const -> std::string;
+    //auto toLocal8Bit() const -> std::string;
 
     auto fileName() const -> Path;
     auto baseName() const -> Path;
@@ -136,7 +136,7 @@ public:
     static auto hash(const Path &path) -> size_t;
     static void copy(const Path &from, const Path &to);
     static auto currentPath() -> Path;
-    static auto fromLocal8Bit(const std::string &s) -> Path;
+    //static auto fromLocal8Bit(const std::string &s) -> Path;
 
     /* Override operators */
 
