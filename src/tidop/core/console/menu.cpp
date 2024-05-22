@@ -136,7 +136,7 @@ void Menu::show() const
     activeOption();
 }
 
-void Menu::activeOption(int currentOption) const
+void Menu::activeOption(unsigned int currentOption) const
 {
     system("cls");
 
@@ -150,7 +150,7 @@ void Menu::activeOption(int currentOption) const
 
     for (auto& item : items) {
         std::cout << Console::blue << "  > " << Console::green << counter << ". ";
-        std::cout << (currentOption == counter ? Console::blue : Console::white) << item << "\n";
+        std::cout << (static_cast<size_t>(currentOption) == counter ? Console::blue : Console::white) << item << "\n";
         counter++;
     }
 
@@ -172,11 +172,11 @@ void Menu::activeOption(int currentOption) const
             return;
         } else if (ascii_value == 80) {
             change_option = true;
-            if (currentOption == static_cast<int>(items.size())) currentOption = 1;
+            if (static_cast<size_t>(currentOption) == items.size()) currentOption = 1;
             else currentOption += 1;
         } else if (ascii_value == 72) {
             change_option = true;
-            if (currentOption == 1) currentOption = static_cast<int>(items.size());
+            if (currentOption == 1) currentOption = static_cast<unsigned int>(items.size());
             else currentOption -=1;
         } else if (ascii_value == 13) {
             itemClick(currentOption);
@@ -191,7 +191,7 @@ void Menu::activeOption(int currentOption) const
     if (change_option) activeOption(currentOption);
 }
 
-void Menu::itemClick(int currentOption) const
+void Menu::itemClick(unsigned int currentOption) const
 {
     if (actions.find(currentOption) != actions.end()) {
         auto action = actions.find(currentOption);

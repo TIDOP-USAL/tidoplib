@@ -572,7 +572,8 @@ void Argument_<std::string>::fromString(const std::string &value)
 template<> inline
 void Argument_<Path>::fromString(const std::string &value)
 {
-    mValue = Path::fromLocal8Bit(value);
+    //mValue = Path::fromLocal8Bit(value);
+    mValue = Path(value);
     bValid = true;
 }
 

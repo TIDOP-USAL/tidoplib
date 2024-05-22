@@ -48,7 +48,7 @@ auto Log::instance() -> Log &
 void Log::open(const tl::Path &file)
 {
     if (isOpen()) close();
-    _stream.open(file.toWString(), std::ofstream::app);
+    _stream.open(file.toString(), std::ofstream::app);
 }
 
 void Log::close()

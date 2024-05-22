@@ -794,7 +794,8 @@ TaskList::TaskList()
 }
 
 TaskList::TaskList(const TaskList &taskList)
-  : tasks(taskList.tasks)
+  : TaskBase(),
+    tasks(taskList.tasks)
 {
 }
 

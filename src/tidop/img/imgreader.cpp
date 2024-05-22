@@ -56,6 +56,9 @@ DataType gdalConvertDataType(GDALDataType dataType)
     case GDT_Byte:
         ret = DataType::TL_8U;
         break;
+    case GDT_Int8:
+        ret = DataType::TL_8S;
+        break;        
     case GDT_UInt16:
         ret = DataType::TL_16U;
         break;
