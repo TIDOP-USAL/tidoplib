@@ -657,8 +657,10 @@ void Process::execute(Progress *)
 
 #else
         pid_t pid;
-        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), mCommandText.data(), nullptr};
-        
+        char *command = strdup(mCommandText.data());
+        //char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), mCommandText.data(), nullptr};
+        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), command, nullptr};
+
         int status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
         
         TL_ASSERT(status == 0, "Error({}: {}) when executing the command : {}", status, strerror(status), mCommandText);
@@ -677,6 +679,8 @@ void Process::execute(Progress *)
         //                  char *const argv[], char *const envp[]);
           /// Para escribir en un log la salida
           /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+          
+        free(command);
 
 #endif
     } catch (...) {

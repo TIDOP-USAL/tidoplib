@@ -168,7 +168,7 @@ void MatchesReaderBinary::read()
 void MatchesReaderBinary::open()
 {
     try {
-        stream->open(filePath().toWString(), std::ios_base::in | std::ios_base::binary);
+        stream->open(filePath().toString(), std::ios_base::in | std::ios_base::binary);
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -413,7 +413,7 @@ void MatchesWriterBinary::open()
 {
     try {
 
-        stream->open(filePath().toWString(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+        stream->open(filePath().toString(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
