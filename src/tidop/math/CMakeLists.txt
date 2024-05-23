@@ -35,8 +35,6 @@ if(BUILD_TL_MATH)
     project(Math)
     
     add_files_to_project(${PROJECT_NAME} 
-                         SOURCE_FILES 
-
                          HEADER_FILES
                              math.h
                              angles.h
@@ -88,13 +86,9 @@ if(BUILD_TL_MATH)
                              blas.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
-                #${PROJECT_SOURCE_FILES}
-                #${PROJECT_HEADER_FILES}
-    )
-
-    target_sources(${PROJECT_NAME} INTERFACE
-                   ${PROJECT_HEADER_FILES})
-
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
+    
     add_library(TidopLib::${PROJECT_NAME} 
                 ALIAS ${PROJECT_NAME})
 
@@ -110,9 +104,9 @@ if(BUILD_TL_MATH)
                           TidopLib::Core
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        
-    #set_target_properties(${PROJECT_NAME} PROPERTIES
-    #                      FOLDER "modules"
-    #                      OUTPUT_NAME "tl_math")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+                          FOLDER "modules"
+                          OUTPUT_NAME "tl_math")
 
     if(BUILD_SHARED_LIBS)	
         set_target_properties(${PROJECT_NAME} PROPERTIES
