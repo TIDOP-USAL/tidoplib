@@ -110,9 +110,9 @@ if(BUILD_TL_MATH)
                           TidopLib::Core
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-                          FOLDER "modules"
-                          OUTPUT_NAME "tl_math")
+    #set_target_properties(${PROJECT_NAME} PROPERTIES
+    #                      FOLDER "modules"
+    #                      OUTPUT_NAME "tl_math")
 
     if(BUILD_SHARED_LIBS)	
         set_target_properties(${PROJECT_NAME} PROPERTIES
