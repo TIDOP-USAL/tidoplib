@@ -89,8 +89,12 @@ if(BUILD_TL_MATH)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 #${PROJECT_SOURCE_FILES}
-                ${PROJECT_HEADER_FILES})
-    
+                #${PROJECT_HEADER_FILES}
+    )
+
+    target_sources(${PROJECT_NAME} INTERFACE
+                   ${PROJECT_HEADER_FILES})
+
     add_library(TidopLib::${PROJECT_NAME} 
                 ALIAS ${PROJECT_NAME})
 
