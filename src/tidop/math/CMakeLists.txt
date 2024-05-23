@@ -88,7 +88,7 @@ if(BUILD_TL_MATH)
                              blas.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
-                ${PROJECT_SOURCE_FILES}
+                #${PROJECT_SOURCE_FILES}
                 ${PROJECT_HEADER_FILES})
     
     add_library(TidopLib::${PROJECT_NAME} 
