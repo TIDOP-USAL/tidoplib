@@ -54,21 +54,27 @@ Image::Image(int rows,
 {
     init();
 
-    int pixelSize = depth() / channels;
+    int pixelSize = depth() / 8; // depth() devuelve bits, convertir a bytes
+    unsigned char r = static_cast<unsigned char>(color.red());
+    unsigned char g = static_cast<unsigned char>(color.green());
+    unsigned char b = static_cast<unsigned char>(color.blue());
+    unsigned char a = color.opacity();
 
     for (int i = 0; i < mRows; ++i) {
         for (int j = 0; j < mCols; ++j) {
-            int index = (i * mCols + j) * depth();
+            int index = (i * mCols + j) * pixelSize * mChannels;
             if (channels == 1) {
+                mData[index] = r;
             } else if (channels == 3) {
-                
+                mData[index] = r;
+                mData[index + 1] = g;
+                mData[index + 2] = b;
             } else if (channels == 4) {
-                
+                mData[index] = r;
+                mData[index + 1] = g;
+                mData[index + 2] = b;
+                mData[index + 3] = a;
             }
-
-            //for (int c = 0; c < channels; ++c) {
-            //    memcpy(mData + index + c * pixelSize, &color[c], pixelSize);
-            //}
         }
     }
 }
@@ -84,8 +90,8 @@ Image::Image(int rows,
     mChannels(channels)
 {
     init();
-    auto data_size = mRows * mCols * mChannels * this->depth();
-    memcpy(mData, data, data_size);
+    auto data_size = static_cast<size_t>(mRows) * mCols * mChannels * (depth() / 8);
+    std::memcpy(mData, data, data_size);
 }
 
 Image::Image(const Size<int> &size,
@@ -117,9 +123,9 @@ Image::Image(const Image &image)
     mType(image.mType),
     mChannels(image.mChannels)
 {
-    auto size = mRows * mCols * mChannels * this->depth();
-    mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(size)));
-    memcpy(mData, image.mData, size);
+    auto size = static_cast<size_t>(mRows) * mCols * mChannels * (depth() / 8);
+    mData = static_cast<unsigned char *>(std::malloc(size));
+    std::memcpy(mData, image.mData, size);
 }
 
 Image::Image(Image &&image) TL_NOEXCEPT
@@ -153,8 +159,8 @@ auto Image::operator=(const Image& image) -> Image&
         mCols = image.mCols;
         mType = image.mType;
         mChannels = image.mChannels;
-        auto size = mRows * mCols * mChannels * this->depth();
-        mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(size)));
+        auto size = static_cast<size_t>(mRows) * mCols * mChannels * (depth() / 8);
+        mData = static_cast<unsigned char *>(std::malloc(size));
         memcpy(mData, image.mData, size);
     }
 
@@ -238,10 +244,17 @@ auto Image::isEmpty() const -> bool
 
 void Image::init()
 {
-    mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
-                                                     static_cast<size_t>(mCols) *
-                                                     static_cast<size_t>(mChannels) *
-                                                     static_cast<size_t>(this->depth())));
+    //mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
+    //                                                 static_cast<size_t>(mCols) *
+    //                                                 static_cast<size_t>(mChannels) *
+    //                                                 static_cast<size_t>(this->depth())));
+    auto size = static_cast<size_t>(mRows) * static_cast<size_t>(mCols) *
+                static_cast<size_t>(mChannels) * static_cast<size_t>(depth() / 8);
+    mData = static_cast<unsigned char *>(std::malloc(size));
+    std::memset(mData, 0, size);
+    if (mData == nullptr) {
+        throw std::bad_alloc();
+    }
 }
 
 } // End namespace tl

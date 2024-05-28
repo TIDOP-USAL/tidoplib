@@ -113,6 +113,6 @@ if (BUILD_TL_IMG_PROCESS)
 
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
-    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
+    message(STATUS "  TidopLib::ImgProcess disabled")
 
 endif(BUILD_TL_IMG_PROCESS)
