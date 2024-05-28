@@ -46,14 +46,12 @@ namespace tl
  * \return
  */
 template<typename It>
-auto quantile(It first, It last, double p) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto quantile(It first, It last, double p) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     double q;
 
     auto n = std::distance(first, last);
-    std::vector<typename std::iterator_traits<It>::value_type> sort_vector(n);
+    std::vector<iteratorValueType<It>> sort_vector(n);
     std::copy(first, last, sort_vector.begin());
     std::sort(sort_vector.begin(), sort_vector.end());
 
@@ -71,11 +69,9 @@ auto quantile(It first, It last, double p) -> std::enable_if_t<
 }
 
 template<typename It>
-auto quantile(It first, It last, double p) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto quantile(It first, It last, double p) -> enableIfFloating<iteratorValueType<It>, std::remove_cv_t<iteratorValueType<It>>>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     T q;
 
@@ -105,9 +101,7 @@ auto quantile(It first, It last, double p) -> std::enable_if_t<
  * \param[in] last Iterador al final
  */
 template<typename It>
-auto quartileCoefficientOfDispersion(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto quartileCoefficientOfDispersion(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     double q1 = quantile(first, last, 0.25);
     double q3 = quantile(first, last, 0.75);
@@ -116,11 +110,9 @@ auto quartileCoefficientOfDispersion(It first, It last) -> std::enable_if_t<
 }
 
 template<typename It>
-auto quartileCoefficientOfDispersion(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto quartileCoefficientOfDispersion(It first, It last) -> enableIfFloating<iteratorValueType<It>, std::remove_cv_t<iteratorValueType<It>>>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     T q1 = quantile(first, last, 0.25);
     T q3 = quantile(first, last, 0.75);
@@ -136,9 +128,7 @@ auto quartileCoefficientOfDispersion(It first, It last) -> std::enable_if_t<
  * \param[in] last Iterador al final
  */
 template<typename It>
-auto quartileDeviation(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto quartileDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     double q1 = quantile(first, last, 0.25);
     double q3 = quantile(first, last, 0.75);
@@ -147,11 +137,9 @@ auto quartileDeviation(It first, It last) -> std::enable_if_t<
 }
 
 template<typename It>
-auto quartileDeviation(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto quartileDeviation(It first, It last) -> enableIfFloating<iteratorValueType<It>, std::remove_cv_t<iteratorValueType<It>>>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     T q1 = quantile(first, last, 0.25);
     T q3 = quantile(first, last, 0.75);

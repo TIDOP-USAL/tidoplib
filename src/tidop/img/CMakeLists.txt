@@ -95,7 +95,7 @@ if(BUILD_TL_IMG)
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)  
 
-    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
+    message(STATUS "  TidopLib::Img disabled")
     message(STATUS "  TidopLib::Geospatial disabled [Module dependent on TidopLib::${PROJECT_NAME} that is deactivated]") 
 
 endif(BUILD_TL_IMG)

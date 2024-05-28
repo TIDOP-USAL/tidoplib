@@ -45,8 +45,7 @@ namespace blas
 
 template<typename T>
 auto gemm(size_t m, size_t n, size_t k,
-          const T* a, const T* b, T* c) -> std::enable_if_t<
-    std::is_same<float, std::remove_cv_t<T>>::value, void>
+          const T* a, const T* b, T* c) -> enableIfFloat<T, void>
 {
     T alpha = 1.f;
     T beta = 0.f;
@@ -66,8 +65,7 @@ auto gemm(size_t m, size_t n, size_t k,
 
 template<typename T>
 auto gemm(size_t m, size_t n, size_t k,
-          const T* a, const T* b, T* c) -> std::enable_if_t<
-    std::is_same<double, std::remove_cv_t<T>>::value, void>
+          const T* a, const T* b, T* c) -> enableIfDouble<T, void>
 {
     T alpha = 1.;
     T beta = 0.;

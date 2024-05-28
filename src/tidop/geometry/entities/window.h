@@ -338,7 +338,7 @@ using WindowF = Window<Point<float> >;
  * \return Verdadero si intersectan
  */
 template<typename T1, typename T2>
-bool intersectWindows(const T1 &w1, const T2 &w2)
+auto intersectWindows(const T1 &w1, const T2 &w2) -> bool
 {
     return (w1.pt2.x >= w2.pt1.x &&
             w1.pt2.y >= w2.pt1.y &&
@@ -353,7 +353,7 @@ bool intersectWindows(const T1 &w1, const T2 &w2)
  * \return Ventana interseción
  */
 template<typename T>
-T windowIntersection(const T &w1, const T &w2)
+auto windowIntersection(const T &w1, const T &w2) -> T
 {
     T w;
     if (intersectWindows(w1, w2)) {
@@ -372,7 +372,7 @@ T windowIntersection(const T &w1, const T &w2)
  * \return Ventana unión
  */
 template<typename T>
-T joinWindow(const T &w1, const T &w2)
+auto joinWindow(const T &w1, const T &w2) -> T
 {
     T w;
     w.pt1.x = std::min(w1.pt1.x, w2.pt1.x);
@@ -390,7 +390,7 @@ T joinWindow(const T &w1, const T &w2)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-T1 expandWindow(const T1 &w, T2 szx, T2 szy)
+auto expandWindow(const T1 &w, T2 szx, T2 szy) -> T1
 {
     T1 _w;
     _w.pt1.x = w.pt1.x - szx;
@@ -408,13 +408,13 @@ T1 expandWindow(const T1 &w, T2 szx, T2 szy)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-T1 expandWindow(const T1 &w, T2 sz)
+auto expandWindow(const T1 &w, T2 sz) -> T1
 {
     return expandWindow(w, sz, sz);
 }
 
 template<typename Point_t, typename T>
-Window<Point_t> moveWindow(const Window<Point_t> &w, T dx, T dy)
+auto moveWindow(const Window<Point_t> &w, T dx, T dy) -> Window<Point_t>
 {
     Window<Point_t> w_return = w;
     Point<T> t(dx, dy);
@@ -424,23 +424,23 @@ Window<Point_t> moveWindow(const Window<Point_t> &w, T dx, T dy)
 }
 
 template<typename Point_t> static inline
-bool operator == (const Window<Point_t> &window1, const Window<Point_t> &window2)
+auto operator == (const Window<Point_t> &window1, const Window<Point_t> &window2) -> bool
 {
     return (window1.pt1 == window2.pt1 &&
             window1.pt2 == window2.pt2);
 }
 
 template<typename Point_t> static inline
-bool operator != (const Window<Point_t> &window1, const Window<Point_t> &window2)
+auto operator != (const Window<Point_t> &window1, const Window<Point_t> &window2) -> bool
 {
     return (window1.pt1 != window2.pt1 ||
             window1.pt2 != window2.pt2);
 }
 
 template<typename It>
-Window<typename std::iterator_traits<It>::value_type> boundingWindow(It begin, It end)
+auto boundingWindow(It begin, It end) -> Window<iteratorValueType<It>>
 {
-    using Point_t = typename std::iterator_traits<It>::value_type;
+    using Point_t = iteratorValueType<It>;
     Window<Point_t> window;
 
     while (begin != end) {

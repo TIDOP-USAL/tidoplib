@@ -33,7 +33,6 @@ namespace tl
 {
 
 std::mutex Log::mtx;
-//EnumFlags<MessageLevel> Log::messageLevelFlags = MessageLevel::all;
 
 Log::Log()
   : messageLevelFlags(MessageLevel::all)
@@ -46,9 +45,10 @@ auto Log::instance() -> Log &
     return log;
 }
 
-void Log::open(const std::string &file)
+void Log::open(const tl::Path &file)
 {
-    _stream.open(file, std::ofstream::app);
+    if (isOpen()) close();
+    _stream.open(file.toString(), std::ofstream::app);
 }
 
 void Log::close()

@@ -35,8 +35,6 @@ if(BUILD_TL_MATH)
     project(Math)
     
     add_files_to_project(${PROJECT_NAME} 
-                         SOURCE_FILES 
-
                          HEADER_FILES
                              math.h
                              angles.h

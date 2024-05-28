@@ -267,7 +267,7 @@ BOOST_FIXTURE_TEST_CASE(scaling_per_scaling, ScalingTest)
 {
     Scaling<double, 3> scaling_d3(1., 1., 1.);
     Scaling<double, 3> scaling_v3{1., 2., 3.};
-    auto scaling_concatenate = scaling_d3 * scaling_v3;
+    Scaling<double, 3> scaling_concatenate = scaling_d3 * scaling_v3;
     BOOST_CHECK_EQUAL(scaling_concatenate.x(), 1.);
     BOOST_CHECK_EQUAL(scaling_concatenate.y(), 2.);
     BOOST_CHECK_EQUAL(scaling_concatenate.z(), 3.);

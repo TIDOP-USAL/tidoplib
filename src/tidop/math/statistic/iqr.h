@@ -49,9 +49,7 @@ namespace tl
  * \return Value of the interquartile range for the dataset
  */
 template<typename It>
-auto interquartileRange(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto interquartileRange(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     double q1 = tl::quantile(first, last, 0.25);
     double q3 = tl::quantile(first, last, 0.75);
@@ -60,11 +58,10 @@ auto interquartileRange(It first, It last) -> std::enable_if_t<
 }
 
 template<typename It>
-auto interquartileRange(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto interquartileRange(It first, It last) -> enableIfFloating<iteratorValueType<It>,
+                                                               std::remove_cv_t<iteratorValueType<It>>>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     T q1 = tl::quantile(first, last, 0.25);
     T q3 = tl::quantile(first, last, 0.75);

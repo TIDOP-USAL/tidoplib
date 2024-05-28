@@ -49,9 +49,9 @@ namespace tl
  * \return Valor de la moda
  */
 template<typename It>
-auto mode(It first, It last) -> typename std::iterator_traits<It>::value_type
+auto mode(It first, It last) -> iteratorValueType<It>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     std::map<T, int> h;
     while (first != last) {

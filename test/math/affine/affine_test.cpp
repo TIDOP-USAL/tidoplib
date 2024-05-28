@@ -526,12 +526,6 @@ BOOST_FIXTURE_TEST_CASE(helmert3d_estimate_points, AffineTest)
 {
     auto affine = HelmertEstimator<double, 3>::estimate(src_3d_points, dst_3d_points);
 
-    //Por ahora no se devuelve la escala
-    //BOOST_CHECK_CLOSE(1.0237, affine.scale(), 0.1);
-    //BOOST_CHECK_CLOSE(0.8502, omega, 0.1);
-    //BOOST_CHECK_CLOSE(1.8141, phi, 0.01);
-    //BOOST_CHECK_CLOSE(-7.8535, kappa, 0.1);
-
     BOOST_CHECK_CLOSE(-419.5684, affine(0, 3), 0.1);
     BOOST_CHECK_CLOSE(-99.2460, affine(1, 3), 0.1);
     BOOST_CHECK_CLOSE(-591.4559, affine(2, 3), 0.1);
@@ -545,6 +539,12 @@ BOOST_FIXTURE_TEST_CASE(helmert3d_estimate_points, AffineTest)
     BOOST_CHECK_CLOSE(-419.5684, translation.x(), 0.1);
     BOOST_CHECK_CLOSE(-99.2460, translation.y(), 0.1);
     BOOST_CHECK_CLOSE(-591.4559, translation.z(), 0.1);
+
+    auto rotation = affine.rotation();
+    auto euler_angles = rotation.toEulerAngles();
+    BOOST_CHECK_CLOSE(4.1218e-06, euler_angles.x, 0.01);
+    BOOST_CHECK_CLOSE(8.7949e-06, euler_angles.y, 0.01);
+    BOOST_CHECK_CLOSE(-3.8075e-05, euler_angles.z, 0.01);
 
 }
 

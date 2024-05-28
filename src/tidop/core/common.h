@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -22,82 +22,43 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop licence test
-#include <boost/test/unit_test.hpp>
-#include <tidop/core/licence.h>
+#pragma once
 
-using namespace tl;
+#include <tidop/config.h>
 
-BOOST_AUTO_TEST_SUITE(LicenceTestSuite)
-
-struct LicenceTest
+namespace tl
 {
+	
+template<typename T, class R = void>
+using enableIfIntegral = std::enable_if_t<std::is_integral<T>::value, R>;
 
-  LicenceTest()
-    : licence2(nullptr)
-  { 
-  }
+template<typename T, class R = void>
+using enableIfFloating = std::enable_if_t<std::is_floating_point<T>::value, R>;
 
-  ~LicenceTest()
-  {
-    if (licence2){
-      delete licence2;
-      licence2 = nullptr;
-    }
-  }
+template<typename T, class R = void>
+using enableIfArithmetic = std::enable_if_t<std::is_arithmetic<T>::value, R>;
 
-  void setup()
-  {
-    licence2 = new Licence("PhotoMatch", "GNU Lesser General Public License v3.0");
-    licence2->setUrl("https://github.com/TIDOP-USAL/photomatch");
-    licence2->setAutor("Esteban Ruiz de Oña Crespo");
-    licence2->setAutorEmail("estebanrdo@gmail.com");
-    licence2->setVersion("1.0.0");
-  }
+template<typename T, class R = void>
+using enableIfFloat = std::enable_if_t<std::is_same<float, std::remove_cv_t<T>>::value, R>;
 
-  void teardown()
-  {
+template<typename T, class R = void>
+using enableIfDouble = std::enable_if_t<std::is_same<double, std::remove_cv_t<T>>::value, R>;
 
-  }
+template<typename T, class R = void>
+using enableIfBool = std::enable_if_t<std::is_same<bool, std::remove_cv_t<T>>::value, R>;
 
-  Licence licence;
-  Licence *licence2;
-};
 
-BOOST_FIXTURE_TEST_CASE(default_constructor, LicenceTest)
-{
-  BOOST_CHECK_EQUAL(true, licence.empty());
+template<typename T, class R = void>
+using enableIfNotIntegral = std::enable_if_t<!std::is_integral<T>::value, R>;
+
+template <typename T, class R = void>
+using enableIfNotFloating = std::enable_if_t<!std::is_floating_point<T>::value, R>;
+
+template<typename T, class R = void>
+using enableIfNotArithmetic = std::enable_if_t<!std::is_arithmetic<T>::value, R>;
+
+
+template<typename It>
+using iteratorValueType = typename std::iterator_traits<It>::value_type;
+
 }
-
-BOOST_FIXTURE_TEST_CASE(constructor, LicenceTest)
-{
-  BOOST_CHECK_EQUAL(false, licence2->empty());
-}
-
-BOOST_FIXTURE_TEST_CASE(product_name, LicenceTest)
-{
-  BOOST_CHECK_EQUAL("PhotoMatch", licence2->productName());
-}
-
-BOOST_FIXTURE_TEST_CASE(text, LicenceTest)
-{
-  BOOST_CHECK_EQUAL("GNU Lesser General Public License v3.0", licence2->text());
-}
-
-BOOST_FIXTURE_TEST_CASE(version, LicenceTest)
-{
-  BOOST_CHECK_EQUAL("1.0.0", licence2->version());
-}
-
-BOOST_FIXTURE_TEST_CASE(setAutor, LicenceTest)
-{
-  BOOST_CHECK_EQUAL("Esteban Ruiz de Oña Crespo", licence2->autor());
-}
-
-BOOST_FIXTURE_TEST_CASE(url, LicenceTest)
-{
-  BOOST_CHECK_EQUAL("https://github.com/TIDOP-USAL/photomatch", licence2->url());
-}
-
-
-BOOST_AUTO_TEST_SUITE_END()

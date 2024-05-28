@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -47,8 +47,8 @@ int main(int argc, char **argv)
     console.setMessageLevel(MessageLevel::all);
     Message::addMessageHandler(&console);
 
-    auto arg_query = Argument::make<std::string>("query", 'q', "Features query");
-    auto arg_train = Argument::make<std::string>("train", 't', "Features train");
+    auto arg_query = Argument::make<Path>("query", 'q', "Features query");
+    auto arg_train = Argument::make<Path>("train", 't', "Features train");
     auto arg_output = Argument::make<std::string>("output", 'o', "Output path");
     auto arg_format = Argument::make<std::string>("format", 'f', "Format", "XML");
     std::vector<std::string> format_options{"XML", "YML", "BIN"};

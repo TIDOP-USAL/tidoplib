@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/core/defs.h"
+#include "tidop/core/common.h"
 
 namespace tl
 {
@@ -54,9 +55,7 @@ namespace tl
   * \return Value of the mean
   */
 template<typename It>
-auto mean(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto mean(It first, It last) -> enableIfIntegral<iteratorValueType<It>,double>
 {
     double x{0};
     double i{1};
@@ -69,11 +68,10 @@ auto mean(It first, It last) -> std::enable_if_t<
 }
 
 template<typename It>
-auto mean(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    std::remove_cv_t<typename std::iterator_traits<It>::value_type>>
+auto mean(It first, It last) -> enableIfFloating<iteratorValueType<It>,
+                                std::remove_cv_t<iteratorValueType<It>>>
 {
-    using T = std::remove_cv_t<typename std::iterator_traits<It>::value_type>;
+    using T = std::remove_cv_t<iteratorValueType<It>>;
 
     T x{0};
     T i{1};

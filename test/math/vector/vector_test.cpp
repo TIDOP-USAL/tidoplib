@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -165,7 +165,7 @@ BOOST_FIXTURE_TEST_CASE(initializer_list, VectorTest)
 
 BOOST_FIXTURE_TEST_CASE(assing, VectorTest)
 {
-  // Asignación de vector estático a dinámico
+  // AsignaciÃ³n de vector estÃ¡tico a dinÃ¡mico
     
   Vector<double, 4> vect{1.,2.,3.,4.};
   Vector<double> vect2 = vect;
@@ -181,7 +181,7 @@ BOOST_FIXTURE_TEST_CASE(assing, VectorTest)
   BOOST_CHECK_EQUAL(7., vect4[2]);
   BOOST_CHECK_EQUAL(8., vect4[3]);
 
-  // Asignación de vector dinámico a estático
+  // AsignaciÃ³n de vector dinÃ¡mico a estÃ¡tico
 
   Vector<double, 4> vect5 = vect2;
   BOOST_CHECK_EQUAL(1., vect5[0]);
@@ -332,7 +332,7 @@ BOOST_FIXTURE_TEST_CASE(minus, VectorTest)
   BOOST_CHECK_EQUAL( 3.4, v4_dyn[2]);
   BOOST_CHECK_EQUAL(-5.4, v4_dyn[3]);
 
-  // Prueba de que da error de compilación con unsigned
+  // Prueba de que da error de compilaciÃ³n con unsigned
   //Vector<unsigned int> vui = -Vector<unsigned int>{1, 2, 3}; // error C2338: Requires signed type
 
 }
@@ -623,7 +623,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication_float, VectorTest)
   BOOST_CHECK_EQUAL(6.f, v1_dyn[2]);
 }
 
-/// División
+/// DivisiÃ³n
 
 BOOST_FIXTURE_TEST_CASE(division_double, VectorTest)
 {

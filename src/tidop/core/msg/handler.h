@@ -58,7 +58,7 @@ enum class MessageLevel : int8_t
 	info = 1 << 4,
     all = error | warning | success | info
 };
-ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
+ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel)
 
 /*!
  * \brief Interface MessageHandler

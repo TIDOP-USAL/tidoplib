@@ -22,12 +22,9 @@
 #                                                                        #
 ##########################################################################
 
-cmake_minimum_required(VERSION 3.10.0...3.22)
+cmake_minimum_required(VERSION 3.19)
 
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
-
+message(STATUS "\nCMake Version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}\n")
 
 if(POLICY CMP0146) 
 cmake_policy(SET CMP0146 OLD) 
@@ -144,6 +141,9 @@ endif()
 
 
 # Compile options 
+
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 if(MSVC)
     add_compile_options("/W3" "/EHsc" "/permissive-" "-D_SCL_SECURE_NO_WARNINGS" "-D_CRT_SECURE_NO_DEPRECATE")

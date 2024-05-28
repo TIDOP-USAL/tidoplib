@@ -565,10 +565,11 @@ unsigned long readFromPipe(void *)
 
 Process::Process(std::string commandText,
                  Priority priority)
-  : mCommandText(std::move(commandText))
-//#ifdef TL_OS_WINDOWS
-//    , mThreadHandle(nullptr)
-//#endif
+  : mCommandText(std::move(commandText)),
+    outputHandle(false)
+#ifdef TL_OS_WINDOWS
+    , mThreadHandle(nullptr)
+#endif
 {
     setPriority(priority);
 #ifdef TL_OS_WINDOWS
@@ -593,7 +594,7 @@ void Process::execute(Progress *)
 
 #ifdef TL_OS_WINDOWS
 
-        //if (!createPipe()) return;
+        if (outputHandle && !createPipe()) return;
 
         unsigned long priority = static_cast<unsigned long>(mPriority);
 
@@ -601,10 +602,10 @@ void Process::execute(Progress *)
         std::wstring command = converter.from_bytes(mCommandText);
 
         bool success = CreateProcess(nullptr,
-                                     const_cast<LPWSTR>(command.c_str()),
+                                     const_cast<wchar_t *>(command.c_str()),
                                      nullptr,
                                      nullptr,
-                                     false, //true,
+                                     /*false,*/ true,
                                      CREATE_NO_WINDOW | priority,
                                      nullptr,
                                      nullptr,
@@ -614,7 +615,11 @@ void Process::execute(Progress *)
 
         TL_ASSERT(success, "CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
 
-        //mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
+        // Cerrar el extremo de escritura de la tubería del proceso hijo, ya que no lo necesitamos
+        if (outputHandle) {
+            CloseHandle(pipeWriteHandle);
+            mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
+        }
 
         DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
         if (ret == WAIT_OBJECT_0) {
@@ -634,41 +639,28 @@ void Process::execute(Progress *)
                 eventTriggered(Event::Type::task_error);
             }
 
-        } else if (ret == WAIT_FAILED) {
+        } else {
 
             TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
                                GetLastError(),
                                formatErrorMsg(GetLastError()),
                                mCommandText);
 
-        } else if (ret == WAIT_ABANDONED) {
-
-            TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
-                               GetLastError(),
-                               formatErrorMsg(GetLastError()),
-                               mCommandText);
-
-        } else if (ret == WAIT_TIMEOUT) {
-
-            TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
-                               GetLastError(),
-                               formatErrorMsg(GetLastError()),
-                               mCommandText);
-
-        } /*else {
-
-        }*/
+        }
 
         CloseHandle(mProcessInformation.hProcess);
         CloseHandle(mProcessInformation.hThread);
-        //CloseHandle(mThreadHandle);
-        //CloseHandle(pipeWriteHandle);
-        //CloseHandle(pipeReadHandle);
+        if (outputHandle) {
+            CloseHandle(mThreadHandle);
+            CloseHandle(pipeReadHandle);
+        }
 
 #else
         pid_t pid;
-        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), mCommandText.data(), nullptr};
-        
+        char *command = strdup(mCommandText.data());
+        //char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), mCommandText.data(), nullptr};
+        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), command, nullptr};
+
         int status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
         
         TL_ASSERT(status == 0, "Error({}: {}) when executing the command : {}", status, strerror(status), mCommandText);
@@ -687,6 +679,8 @@ void Process::execute(Progress *)
         //                  char *const argv[], char *const envp[]);
           /// Para escribir en un log la salida
           /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+          
+        free(command);
 
 #endif
     } catch (...) {
@@ -730,7 +724,7 @@ std::wstring string_to_wide_string(const std::string &string)
     TL_ASSERT(size_needed > 0, "MultiByteToWideChar() failed: {}", size_needed);
 
     std::wstring result(size_needed, 0);
-    MultiByteToWideChar(CP_UTF8, 0, &string.at(0), (int)string.size(), &result.at(0), size_needed);
+    MultiByteToWideChar(CP_UTF8, 0, &string.at(0), static_cast<int>(string.size()), &result.at(0), size_needed);
     
     return result;
 }
@@ -741,11 +735,11 @@ std::string wide_string_to_string(const std::wstring &wide_string)
         return "";
     }
 
-    const auto size_needed = WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), nullptr, 0, nullptr, nullptr);
+    const auto size_needed = WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), static_cast<int>(wide_string.size()), nullptr, 0, nullptr, nullptr);
     TL_ASSERT(size_needed > 0, "WideCharToMultiByte() failed: {}", size_needed);
 
     std::string result(size_needed, 0);
-    WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), (int)wide_string.size(), &result.at(0), size_needed, nullptr, nullptr);
+    WideCharToMultiByte(CP_UTF8, 0, &wide_string.at(0), static_cast<int>(wide_string.size()), &result.at(0), size_needed, nullptr, nullptr);
     
     return result;
 }
@@ -804,7 +798,8 @@ TaskList::TaskList()
 }
 
 TaskList::TaskList(const TaskList &taskList)
-  : tasks(taskList.tasks)
+  : TaskBase(),
+    tasks(taskList.tasks)
 {
 }
 

@@ -31,8 +31,7 @@ namespace tl
 
 
 VectorOptions::VectorOptions(Format format)
-  : FileOptions(),
-    mFormat(format)
+  : mFormat(format)
 {
 }
 

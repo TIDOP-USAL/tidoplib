@@ -80,17 +80,13 @@ namespace tl
  * \return Coeficiente de variación para el conjunto de datos
  */
 template<typename It>
-auto coefficientOfVariation(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto coefficientOfVariation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     return standarDeviation(first, last) / std::abs(mean(first, last));
 }
 
 template<typename It>
-auto coefficientOfVariation(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>
+auto coefficientOfVariation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
 {
     return standarDeviation(first, last) / std::abs(mean(first, last));
 }

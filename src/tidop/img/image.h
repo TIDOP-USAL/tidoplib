@@ -60,16 +60,17 @@ public:
     Image(Image &&image) TL_NOEXCEPT;
     ~Image();
 
-    auto operator =(const Image& image) -> Image&;
+    auto operator =(const Image &image) -> Image&;
+    auto operator =(Image &&image) TL_NOEXCEPT-> Image&;
 
-    int rows() const;
-    int cols() const;
-    DataType type() const;
-    int channels() const;
-    unsigned char *data() const;
-    int depth() const;
+    auto rows() const -> int;
+    auto cols() const -> int;
+    auto type() const -> DataType;
+    auto channels() const -> int;
+    auto data() const -> unsigned char*;
+    auto depth() const -> int;
 
-    bool isEmpty() const;
+    auto isEmpty() const -> bool;
 
 private:
 

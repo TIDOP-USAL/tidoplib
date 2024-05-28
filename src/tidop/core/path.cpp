@@ -35,6 +35,7 @@
 #include <boost/functional/hash.hpp> 
 #endif
 
+#include <codecvt>
 #include <ostream>
 
 
@@ -51,6 +52,33 @@ namespace tl
 
 namespace internal
 {
+
+// std::string toUtf8(const std::wstring &wstr)
+// {
+//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+//     return converter.to_bytes(wstr);
+// }
+
+// std::wstring fromUtf8(const std::string &utf8str)
+// {
+//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+//     return converter.from_bytes(utf8str);
+// }
+
+// std::string toLocal8Bit(const std::wstring &wstr)
+// {
+//     // Configurar la codificación local
+//     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
+
+//     // Convertir a std::string utilizando la codificación local
+//     return converter.to_bytes(wstr);
+// }
+
+// std::wstring fromLocal8Bit(const std::string &wstr)
+// {
+//     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
+//     return converter.from_bytes(wstr);
+// }
 
 class Path
 {
@@ -113,6 +141,7 @@ Path::Path()
 
 Path::Path(const std::string &path)
   : mPath(new internal::Path(path))
+  //: mPath(new internal::Path(internal::fromUtf8(path)))  
 {
 }
 
@@ -151,6 +180,7 @@ auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
 void Path::setPath(const std::string &path)
 {
     mPath = std::make_unique<internal::Path>(path);
+    //mPath = std::make_unique<internal::Path>(internal::fromUtf8(path));
 }
 
 void Path::setPath(const std::wstring &path)
@@ -160,6 +190,7 @@ void Path::setPath(const std::wstring &path)
 
 auto Path::toString() const -> std::string
 {
+    //return internal::toUtf8(mPath->ref().wstring());
     return mPath->ref().string();
 }
 
@@ -167,6 +198,11 @@ auto Path::toWString() const -> std::wstring
 {
     return mPath->ref().wstring();
 }
+
+// auto Path::toLocal8Bit() const -> std::string
+// {
+//     return internal::toLocal8Bit(mPath->ref().wstring());
+// }
 
 auto Path::fileName() const -> Path
 {
@@ -271,6 +307,7 @@ auto Path::replaceFileName(const std::string &fileName) -> Path&
 
     if (_path.has_filename()) {
         _path.remove_filename();
+        //_path.append(internal::fromUtf8(fileName));
         _path.append(fileName);
     }
 
@@ -302,6 +339,7 @@ auto Path::replaceBaseName(const std::string &baseName) -> Path&
         std::string ext = _path.extension().string();
         std::string file_name = baseName + ext;
         _path.remove_filename();
+        //_path.append(internal::fromUtf8(file_name));
         _path.append(file_name);
     }
 
@@ -347,6 +385,7 @@ auto Path::replaceExtension(const Path &extension) -> Path&
 auto Path::append(const std::string &text) -> Path&
 {
     mPath->ref().append(text);
+    //mPath->ref().append(internal::fromUtf8(text));
     return *this;
 }
 
@@ -424,7 +463,7 @@ auto Path::tempDirectory() -> Path
 
 auto Path::compare(const Path &path) const -> int
 {
-    return mPath->ref().compare(path.toString());
+    return mPath->ref().compare(path.toWString());
 }
 
 auto tl::Path::equivalent(const Path &path) const -> bool
@@ -497,14 +536,19 @@ auto Path::currentPath() -> Path
     return Path(fs::current_path().wstring());
 }
 
+// auto Path::fromLocal8Bit(const std::string &s) -> Path
+// {
+//     return Path(internal::fromLocal8Bit(s));
+// }
+
 /* Override operators */
 
-auto Path::operator==(const Path& path) const -> bool
+auto Path::operator==(const Path &path) const -> bool
 {
     return this->compare(path) == 0;
 }
 
-auto Path::operator!=(const Path& path) const -> bool
+auto Path::operator!=(const Path &path) const -> bool
 {
     return this->compare(path) != 0;
 }
@@ -534,10 +578,10 @@ auto TemporalDir::path() const -> Path
 
 std::ostream &operator<< (std::ostream &os, const Path &path)
 {
+    //os << path.toLocal8Bit() << std::flush;
     os << path.toString() << std::flush;
     return os;
 }
-
 
 
 

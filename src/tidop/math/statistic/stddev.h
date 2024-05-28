@@ -53,17 +53,13 @@ namespace tl
  * \return Standard deviation of the dataset
  */
 template<typename It>
-auto standarDeviation(It first, It last) -> std::enable_if_t<
-    std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-    double>
+auto standarDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     return sqrt(variance(first, last));
 }
 
 template<typename It>
-auto standarDeviation(It first, It last) -> std::enable_if_t<
-    std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-    typename std::iterator_traits<It>::value_type>
+auto standarDeviation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
 {
     return sqrt(variance(first, last));
 }

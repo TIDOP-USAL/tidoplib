@@ -268,11 +268,12 @@ private:
 
     std::string mCommandText; 
     Priority mPriority;
+    bool outputHandle;
 #ifdef TL_OS_WINDOWS
     STARTUPINFO mStartUpInfo;
     PROCESS_INFORMATION mProcessInformation;
     SECURITY_ATTRIBUTES mSecurityAttributes;
-    //HANDLE mThreadHandle;
+    HANDLE mThreadHandle;
 #endif
 
 public:
@@ -405,7 +406,7 @@ public:
     void addTask(const std::shared_ptr<Task> &task, 
                  const std::list<std::shared_ptr<Task>> &parentTasks);
  
-  // Task interface
+// Task interface
 
 public:
 

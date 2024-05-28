@@ -55,7 +55,9 @@ if(BUILD_TL_CORE)
                              console/menu.cpp
                              msg/message.cpp
                          HEADER_FILES
+                             core.h
                              defs.h
+                             common.h
 							 ptr.h
                              app.h
                              exception.h
@@ -80,7 +82,11 @@ if(BUILD_TL_CORE)
                              console/menu.h
                              messages.h
                              msg/handler.h
-                             msg/message.h)
+                             msg/message.h
+                             units/length.h
+                             units/mass.h
+                             units/si.h
+                             units/imperial.h)
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

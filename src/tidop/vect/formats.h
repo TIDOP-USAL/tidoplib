@@ -47,7 +47,6 @@ namespace tl
  * \brief Format options
  */
 class TL_EXPORT VectorOptions
-  : public FileOptions
 {
 
 public:
@@ -66,11 +65,11 @@ protected:
 public:
 
     VectorOptions(Format format);
-    ~VectorOptions() override;
+    virtual ~VectorOptions();
 
     auto format() const -> Format;
 
-    //auto options() -> const char* override = 0;
+    virtual auto options() const -> const char * = 0;
 };
 
 /*!

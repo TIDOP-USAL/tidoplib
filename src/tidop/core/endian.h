@@ -29,6 +29,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
+#include "tidop/core/common.h"
 
 namespace tl
 {
@@ -52,7 +53,7 @@ enum class endianness
 
 
 template <typename T>
-auto swapEndian(T val) -> std::enable_if_t<std::is_arithmetic<T>::value, T>
+auto swapEndian(T val) -> enableIfArithmetic<T, T>
 {
     union U
     {

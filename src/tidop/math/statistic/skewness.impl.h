@@ -100,7 +100,7 @@ public:
 
 
 template<typename T>
-inline auto SkewnessFactory<T>::create(SkewnessMethod method) -> std::shared_ptr<Skewness<T>>
+auto SkewnessFactory<T>::create(SkewnessMethod method) -> std::shared_ptr<Skewness<T>>
 {
     std::shared_ptr<Skewness<T>> skew;
 

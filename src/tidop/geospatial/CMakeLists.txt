@@ -103,6 +103,6 @@ if (BUILD_TL_GEOSPATIAL)
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
 
-    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
+    message(STATUS "  TidopLib::Geospatial disabled")
 
 endif()

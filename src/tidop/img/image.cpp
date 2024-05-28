@@ -37,8 +37,7 @@ Image::Image(int rows,
   : mRows(rows),
     mCols(cols),
     mType(type),
-    mChannels(channels),
-    mData(nullptr)
+    mChannels(channels)
 {
     init();
 }
@@ -51,11 +50,33 @@ Image::Image(int rows,
   : mRows(rows),
     mCols(cols),
     mType(type),
-    mChannels(channels),
-    mData(nullptr)
+    mChannels(channels)
 {
-    unusedParameter(color); /// Para inicializar la imagen con ese color
     init();
+
+    int pixelSize = depth() / 8; // depth() devuelve bits, convertir a bytes
+    unsigned char r = static_cast<unsigned char>(color.red());
+    unsigned char g = static_cast<unsigned char>(color.green());
+    unsigned char b = static_cast<unsigned char>(color.blue());
+    unsigned char a = color.opacity();
+
+    for (int i = 0; i < mRows; ++i) {
+        for (int j = 0; j < mCols; ++j) {
+            int index = (i * mCols + j) * pixelSize * mChannels;
+            if (channels == 1) {
+                mData[index] = r;
+            } else if (channels == 3) {
+                mData[index] = r;
+                mData[index + 1] = g;
+                mData[index + 2] = b;
+            } else if (channels == 4) {
+                mData[index] = r;
+                mData[index + 1] = g;
+                mData[index + 2] = b;
+                mData[index + 3] = a;
+            }
+        }
+    }
 }
 
 Image::Image(int rows,
@@ -66,70 +87,100 @@ Image::Image(int rows,
   : mRows(rows),
     mCols(cols),
     mType(type),
-    mChannels(channels),
-    mData(static_cast<unsigned char *>(data))
+    mChannels(channels)
 {
-
+    init();
+    auto data_size = static_cast<size_t>(mRows) * mCols * mChannels * (depth() / 8);
+    std::memcpy(mData, data, data_size);
 }
 
 Image::Image(const Size<int> &size,
              DataType type,
              int channels)
-  : mRows(size.height),
-    mCols(size.width),
-    mType(type),
-    mChannels(channels),
-    mData(nullptr)
+  : Image(size.height, size.width, type, channels)
 {
-    init();
 }
 
 Image::Image(const Size<int> &size,
              DataType type,
              int channels,
              const Color &color)
-  : mRows(size.height),
-    mCols(size.width),
-    mType(type),
-    mChannels(channels),
-    mData(nullptr)
+  : Image(size.height, size.width, type, channels, color)
 {
-    unusedParameter(color); /// Para inicializar la imagen con ese color
-    init();
 }
 
 Image::Image(const Size<int> &size,
              DataType type,
              int channels,
              void *data)
-  : mRows(size.height),
-    mCols(size.width),
-    mType(type),
-    mChannels(channels),
-    mData(static_cast<unsigned char *>(data))
+  : Image(size.height, size.width, type, channels, data)
 {
-
 }
 
-Image::Image(const Image &image) = default;
+Image::Image(const Image &image)
+  : mRows(image.mRows),
+    mCols(image.mCols),
+    mType(image.mType),
+    mChannels(image.mChannels)
+{
+    auto size = static_cast<size_t>(mRows) * mCols * mChannels * (depth() / 8);
+    mData = static_cast<unsigned char *>(std::malloc(size));
+    std::memcpy(mData, image.mData, size);
+}
 
 Image::Image(Image &&image) TL_NOEXCEPT
+  : mRows(std::exchange(image.mRows,0)),
+    mCols(std::exchange(image.mCols,0)),
+    mType(std::exchange(image.mType, DataType::TL_8U)),
+    mChannels(std::exchange(image.mChannels, 0)),
+    mData(std::exchange(image.mData, nullptr))
 {
 
 }
 
-Image::~Image() = default;
+Image::~Image()
+{
+    if (mData != nullptr) {
+        delete[] mData;
+        mData = nullptr;
+    }
+};
 
-Image &Image::operator=(const Image &image)
+auto Image::operator=(const Image& image) -> Image&
 {
     if (this != &image) {
+
+        if (mData != nullptr) {
+            delete[] mData;
+            mData = nullptr;
+        }
+
         mRows = image.mRows;
         mCols = image.mCols;
         mType = image.mType;
         mChannels = image.mChannels;
-        auto size = mRows * mCols * mChannels * this->depth();
-        mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(size)));
+        auto size = static_cast<size_t>(mRows) * mCols * mChannels * (depth() / 8);
+        mData = static_cast<unsigned char *>(std::malloc(size));
         memcpy(mData, image.mData, size);
+    }
+
+    return *this;
+}
+
+auto Image::operator=(Image&& image) noexcept -> Image&
+{
+    if (this != &image) {
+
+        if (mData != nullptr) {
+            delete[] mData;
+            mData = nullptr;
+        }
+
+        mRows = std::exchange(image.mRows, 0);
+        mCols = std::exchange(image.mCols, 0);
+        mType = std::exchange(image.mType, DataType::TL_8U);
+        mChannels = std::exchange(image.mChannels, 1);
+        mData = std::exchange(image.mData, nullptr);
     }
 
     return *this;
@@ -166,21 +217,15 @@ auto Image::depth() const -> int
     TL_TODO("Completar")
     switch (mType) {
     case tl::DataType::TL_8U:
-        bits = 8;
-        break;
     case tl::DataType::TL_8S:
         bits = 8;
         break;
     case tl::DataType::TL_16U:
-        bits = 16;
-        break;
     case tl::DataType::TL_16S:
         bits = 16;
         break;
     case tl::DataType::TL_32U:
-        break;
     case tl::DataType::TL_32S:
-        break;
     case tl::DataType::TL_32F:
         bits = 32;
         break;
@@ -194,15 +239,22 @@ auto Image::depth() const -> int
 
 auto Image::isEmpty() const -> bool
 {
-    return false;
+    return (mData == nullptr) || (mRows == 0) || (mCols == 0);
 }
 
 void Image::init()
 {
-    mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
-                                         static_cast<size_t>(mCols) *
-                                         static_cast<size_t>(mChannels) *
-                                         static_cast<size_t>(this->depth())));
+    //mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
+    //                                                 static_cast<size_t>(mCols) *
+    //                                                 static_cast<size_t>(mChannels) *
+    //                                                 static_cast<size_t>(this->depth())));
+    auto size = static_cast<size_t>(mRows) * static_cast<size_t>(mCols) *
+                static_cast<size_t>(mChannels) * static_cast<size_t>(depth() / 8);
+    mData = static_cast<unsigned char *>(std::malloc(size));
+    std::memset(mData, 0, size);
+    if (mData == nullptr) {
+        throw std::bad_alloc();
+    }
 }
 
 } // End namespace tl
