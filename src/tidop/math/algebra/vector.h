@@ -925,37 +925,37 @@ auto Vector<T, _size>::w() -> reference
 template<typename T, size_t _size>
 bool Vector<T, _size>::operator == (const Vector<T, _size> &vector) const
 {
-    return this->_data == vector.mData;
+    return this->_data == vector._data;
 }
 
 template<typename T, size_t _size>
 bool Vector<T, _size>::operator != (const Vector<T, _size> &vector) const
 {
-    return this->_data != vector.mData;
+    return this->_data != vector._data;
 }
 
 template<typename T, size_t _size>
 bool Vector<T, _size>::operator <  (const Vector<T, _size> &vector) const
 {
-    return this->_data < vector.mData;
+    return this->_data < vector._data;
 }
 
 template<typename T, size_t _size>
 bool Vector<T, _size>::operator <= (const Vector<T, _size> &vector) const
 {
-    return this->_data <= vector.mData;
+    return this->_data <= vector._data;
 }
 
 template<typename T, size_t _size>
 bool Vector<T, _size>::operator >  (const Vector<T, _size> &vector) const
 {
-    return this->_data > vector.mData;
+    return this->_data > vector._data;
 }
 
 template<typename T, size_t _size>
 bool Vector<T, _size>::operator >= (const Vector<T, _size> &vector) const
 {
-    return this->_data > vector.mData;
+    return this->_data >= vector._data;
 }
 
 template<typename T, size_t _size>
@@ -1214,6 +1214,28 @@ auto operator<<(std::ostream& os, const Vector<T, _size>* vector) -> std::ostrea
     os << std::flush;
     return os;
 }
+
+
+
+template<typename T>
+T vectorAngle(const Vector<T, 2> &v1, const Vector<T, 2> &v2) 
+{
+    if (v1 == v2) return 0.;
+
+    T magV1 = v1.module();
+    T magV2 = v2.module();
+    
+    if (magV1 == 0 || magV2 == 0) {
+        throw std::invalid_argument("El ángulo no está definido para vectores de magnitud cero.");
+    }
+    
+    T cosTheta = dotProduct(v1, v2) / (magV1 * magV2);
+    // Asegurarse de que el valor esté en el rango [-1, 1] debido a posibles errores numéricos
+    cosTheta = tl::clamp(cosTheta, static_cast<T>(-1), static_cast<T>(1));
+    
+    return std::acos(cosTheta);
+}
+
 
 /*! \} */ // end of algebra
 

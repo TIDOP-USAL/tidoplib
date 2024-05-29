@@ -911,3 +911,77 @@ BOOST_FIXTURE_TEST_CASE(dotProduct, VectorTest)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_CASE(test_equal_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 1.0};
+    Vector<double, 2> v2 = {1.0, 1.0};
+    
+    BOOST_CHECK(v1 == v2);
+}
+
+BOOST_AUTO_TEST_CASE(test_not_equal_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 1.0};
+    Vector<double, 2> v2 = {0.0, 1.0};
+    
+    BOOST_CHECK(v1 != v2);
+}
+
+BOOST_AUTO_TEST_CASE(test_greater_than_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 1.0};
+    Vector<double, 2> v2 = {0.0, 1.0};
+    
+    BOOST_CHECK(v1 > v2);
+}
+
+BOOST_AUTO_TEST_CASE(test_greater_than_or_equal_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 1.0};
+    Vector<double, 2> v2 = {0.0, 1.0};
+    
+    BOOST_CHECK(v1 >= v2);
+    BOOST_CHECK(!(v2 >= v1));
+
+    Vector<double, 2> v3 = {1.0, 1.0};
+    
+    BOOST_CHECK(v1 >= v3);
+    BOOST_CHECK(v3 >= v1);
+}
+
+BOOST_AUTO_TEST_CASE(test_less_than_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 1.0};
+    Vector<double, 2> v2 = {0.0, 1.0};
+    
+    BOOST_CHECK(v2 < v1);
+    BOOST_CHECK(!(v1 < v2));
+}
+
+BOOST_AUTO_TEST_CASE(test_less_than_or_equal_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 1.0};
+    Vector<double, 2> v2 = {0.0, 1.0};
+    
+    BOOST_CHECK(v2 <= v1);
+    BOOST_CHECK(!(v1 <= v2));
+
+    Vector<double, 2> v3 = {1.0, 1.0};
+    
+    BOOST_CHECK(v1 <= v3);
+    BOOST_CHECK(v3 <= v1);
+}
+
+BOOST_AUTO_TEST_CASE(test_angle_between_vectors) 
+{
+    Vector<double, 2> v1 = {1.0, 0.0};
+    Vector<double, 2> v2 = {0.0, 1.0};
+    double angle = vectorAngle(v1, v2);
+    BOOST_CHECK_CLOSE(angle, tl::consts::half_pi<double>, 1e-9);
+
+    Vector<double, 2> v3 = {1.0, 1.0};
+    Vector<double, 2> v4 = {1.0, 1.0};
+    angle = vectorAngle(v3, v4);
+    BOOST_CHECK_CLOSE(angle, 0.0, 1e-9);
+}
