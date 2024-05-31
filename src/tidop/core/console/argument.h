@@ -28,6 +28,7 @@
 #include "tidop/config.h"
 
 #include <string>
+#include <memory>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
@@ -358,9 +359,6 @@ struct ArgTraits<tl::Path>
 };
 
 
-/* ---------------------------------------------------------------------------------- */
-
-
 
 
 /*!
@@ -605,6 +603,155 @@ auto Argument_<T>::isValid() -> bool
 /*! \} */ // end of Console
 
 /*! \} */ // end of core
+
+
+
+
+/// \cond
+
+namespace internal
+{
+
+
+template<typename T>
+class ArgValue
+{
+
+public:
+
+    ArgValue(/* args */) {}
+
+    T value(const Argument::SharedPtr &arg);
+};
+
+template<typename T>
+auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
+{
+    T value{};
+
+    try {
+
+        TL_ASSERT(arg, "Argument pointer is null");
+
+        auto type = arg->type();
+        auto return_type = ArgTraits<T>::property_type;
+
+        if (type != return_type) {
+            TL_ASSERT(type != Argument::Type::arg_string, "Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
+            if (type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
+                std::string type_name = ArgTraits<T>::type_name;
+                Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), type_name);
+            }
+        }
+
+        switch (type) {
+        case Argument::Type::arg_unknown:
+            TL_THROW_EXCEPTION("Unknown argument type");
+        case Argument::Type::arg_bool:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
+            break;
+        case Argument::Type::arg_int8:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
+            break;
+        case Argument::Type::arg_uint8:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
+            break;
+        case Argument::Type::arg_int16:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
+            break;
+        case Argument::Type::arg_uint16:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
+            break;
+        case Argument::Type::arg_int32:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
+            break;
+        case Argument::Type::arg_uin32:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
+            break;
+        case Argument::Type::arg_float32:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
+            break;
+        case Argument::Type::arg_float64:
+            value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
+            break;
+        default:
+            break;
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+
+    return value;
+}
+
+template<>
+inline auto ArgValue<std::string>::value(const Argument::SharedPtr &arg) -> std::string
+{
+    std::string value;
+
+    try {
+
+        TL_ASSERT(arg, "Argument pointer is null");
+
+        const auto type = arg->type();
+
+        switch (type) {
+        case Argument::Type::arg_unknown:
+            TL_THROW_EXCEPTION("Unknown argument type");
+        case Argument::Type::arg_string:
+            value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
+            break;
+        case Argument::Type::arg_path:
+            value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value().toString();
+            break;
+        default:
+            TL_THROW_EXCEPTION("Conversion from \"{}\" to \"tl::Path\" is not allowed", arg->typeName());
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+
+    return value;
+}
+
+template<>
+inline auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Path
+{
+    tl::Path value;
+
+    try {
+
+        TL_ASSERT(arg, "Argument pointer is null");
+
+        const auto type = arg->type();
+
+        switch (type) {
+        case Argument::Type::arg_unknown:
+            TL_THROW_EXCEPTION("Unknown argument type");
+        case Argument::Type::arg_string:
+            value = tl::Path(std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value());
+            break;
+        case Argument::Type::arg_path:
+            value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value();
+            break;
+        default:
+            TL_THROW_EXCEPTION("Conversion from \"{}\" to \"tl::Path\" is not allowed", arg->typeName());
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+
+    return value;
+}
+
+} // namespace internal 
+
+/// \endcond
+
+
 
 
 } // End namespace tl

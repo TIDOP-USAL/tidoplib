@@ -66,4 +66,7 @@ if(TL_HAVE_FEAT_MATCH)
       endif()
     endif()
 
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin)  
 endif()
