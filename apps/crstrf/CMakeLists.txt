@@ -25,7 +25,6 @@
 if(TL_HAVE_GEOSPATIAL AND TL_HAVE_GDAL)
     
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-    #include_directories(${CMAKE_SOURCE_DIR}/src)
     
     project(crstransform LANGUAGES CXX)
     
@@ -58,21 +57,6 @@ if(TL_HAVE_GEOSPATIAL AND TL_HAVE_GDAL)
         target_link_libraries(${PROJECT_NAME} 
                               ${OpenCV_LIBS})
     endif(HAVE_OPENCV)
-   
-    
-    #if (UNIX)
-    #    target_link_libraries(${PROJECT_NAME} 
-    #                          -lpthread 
-    #                          -ldl 
-    #                          -lexpat 
-    #                          -ljasper 
-    #                          -ljpeg 
-    #                          -ltiff 
-    #                          -lpng 
-    #                          -lm 
-    #                          -lrt 
-    #                          -lpcre)
-    #endif()
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           OUTPUT_NAME ${PROJECT_NAME}
@@ -84,5 +68,9 @@ if(TL_HAVE_GEOSPATIAL AND TL_HAVE_GDAL)
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
     endif()
+
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
 
 endif()

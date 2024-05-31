@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     cmd.addArgument<std::string>("epsg_out", 'o', "Sistema de referencia de salida");
     cmd.addArgument<std::string>("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto");
     cmd.addArgument<char>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", ';');
-    cmd.addArgument<std::string>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", "");
+    cmd.addArgument<Path>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", "");
     cmd.addArgument<Path>("log", 'l', "Fichero de log", Path{});
     cmd.addArgument<int>("skip","Skip lines", 0);
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     auto epsg_out = cmd.value<std::string>("epsg_out");
     auto coord = cmd.value<std::string>("coord");
     auto separator = cmd.value<char>("separator");
-    auto coord_trf = cmd.value<std::string>("coord_trf");
+    auto coord_trf = cmd.value<Path>("coord_trf");
     auto log_file = cmd.value<Path>("log");
     auto skip_lines = cmd.value<int>("skip");
 
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
         CrsTransform crs(epsgIn, epsgOut);
 
         std::ofstream ofs;
-        ofs.open(coord_trf, std::ofstream::out | std::ofstream::trunc);
+        ofs.open(coord_trf.toString(), std::ofstream::out | std::ofstream::trunc);
 
         if(Path::exists(coord)) {
 

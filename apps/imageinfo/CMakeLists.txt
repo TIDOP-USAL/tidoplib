@@ -37,8 +37,6 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
     
       
     add_executable(${PROJECT_NAME} imageinfo.cpp)
-
-    #target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
     target_compile_definitions(${PROJECT_NAME} PRIVATE
                                $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
@@ -65,4 +63,7 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
       endif()
     endif()
 
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin)
 endif()

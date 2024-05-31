@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     Message::addMessageHandler(&log);
 
     Command cmd(cmd_name, "Image Metadata");
-    cmd.addArgument<std::string>("img", 'i', "Image");
+    cmd.addArgument<Path>("img", 'i', "Image");
 
     Command::Status status = cmd.parse(argc, argv);
 
