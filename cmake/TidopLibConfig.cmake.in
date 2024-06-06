@@ -28,6 +28,8 @@ include(CMakeFindDependencyMacro)
 
 set(TidopLib_INCLUDE_DIRS "@INCLUDE_DIRS_TIDOP@")
 
+message(STATUS "Find TidopLib dependencies")
+
 
 if(@TL_HAVE_BOOST@)
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
@@ -40,8 +42,14 @@ endif()
 
 if(@TL_HAVE_GDAL@)
     set(GDAL_DIR "@GDAL_DIR@" CACHE PATH "The directory containing GDALConfig.cmake")
-  #get_filename_component(GDAL_ROOT "@GDAL_INCLUDE_DIR@" PATH)
     find_dependency(GDAL QUIET)
+    if(NOT GDAL_FOUND)
+        set(TL_HAVE_GDAL NO)
+        message(STATUS "  GDAL not found")
+    else()
+        message(STATUS "  GDAL version: ${GDAL_VERSION}")
+        set(TL_HAVE_GDAL YES)
+    endif()		
 endif()
 
 if(@TL_HAVE_PROJ@)

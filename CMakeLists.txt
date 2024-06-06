@@ -448,7 +448,9 @@ endif()
 
 if(WITH_OPENCV)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
     find_package(OpenCV QUIET)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
     if(NOT OPENCV_FOUND)
       set(TL_HAVE_OPENCV NO)
