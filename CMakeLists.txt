@@ -449,7 +449,9 @@ endif()
 
 if(WITH_OPENCV)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
     find_package(OpenCV QUIET)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
     if(NOT OPENCV_FOUND)
       set(TL_HAVE_OPENCV NO)
@@ -609,11 +611,14 @@ endif(WITH_VLD)
 
 if(WITH_CUDA)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
     find_package(CUDA)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
     if(NOT CUDA_FOUND)
         set(TL_HAVE_CUDA NO)
     else()
+        message(STATUS "  Cuda version: ${CUDA_VERSION}")
         include_directories(${CUDA_INCLUDE_DIRS})
         set(TL_HAVE_CUDA YES)
     endif()

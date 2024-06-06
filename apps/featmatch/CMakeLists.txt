@@ -56,10 +56,6 @@ if(TL_HAVE_FEAT_MATCH)
                           PROJECT_LABEL "${PROJECT_NAME}"
                           FOLDER "apps/featmatch")
     
-    if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/featmatch")
-    endif()
-    
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
