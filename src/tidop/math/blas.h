@@ -41,11 +41,11 @@ namespace tl
 namespace blas
 {
 
-/* Multiplicación matrices */
+/* Matrix multiplication */
 
 template<typename T>
 auto gemm(size_t m, size_t n, size_t k,
-          const T* a, const T* b, T* c) -> enableIfFloat<T, void>
+          const T *a, const T *b, T *c) -> enableIfFloat<T, void>
 {
     T alpha = 1.f;
     T beta = 0.f;
@@ -65,7 +65,7 @@ auto gemm(size_t m, size_t n, size_t k,
 
 template<typename T>
 auto gemm(size_t m, size_t n, size_t k,
-          const T* a, const T* b, T* c) -> enableIfDouble<T, void>
+          const T *a, const T *b, T *c) -> enableIfDouble<T, void>
 {
     T alpha = 1.;
     T beta = 0.;
@@ -82,6 +82,43 @@ auto gemm(size_t m, size_t n, size_t k,
                 alpha, a, lda, b, ldb,
                 beta, c, ldc);
 }
+
+
+
+/* Matrix x Vector */
+
+template<typename T>
+auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfFloat<T, void>
+{
+    T alpha = 1.;
+    T beta = 0.;
+
+    cblas_sgemv(CBLAS_ORDER::CblasRowMajor, 
+                CBLAS_TRANSPOSE::CblasNoTrans, 
+                static_cast<blasint>(m),
+                static_cast<blasint>(n), 
+                alpha, matrix,
+                static_cast<blasint>(n), 
+                vector, 1, 
+                beta, vector_out, 1);
+}
+
+template<typename T>
+auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfDouble<T, void>
+{
+    T alpha = 1.;
+    T beta = 0.;
+
+    cblas_dgemv(CBLAS_ORDER::CblasRowMajor, 
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                static_cast<blasint>(m),
+                static_cast<blasint>(n), 
+                alpha, matrix, 
+                static_cast<blasint>(n),
+                vector, 1, 
+                beta, vector_out, 1);
+}
+
 
 } // End namespace blas
 

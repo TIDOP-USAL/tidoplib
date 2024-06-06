@@ -84,6 +84,7 @@
 #cmakedefine TL_HAVE_MINIZIP
 
 #cmakedefine TL_HAVE_OPENBLAS
+#cmakedefine TL_HAVE_CUDA
 
 
 // SIMD INTRINSICS

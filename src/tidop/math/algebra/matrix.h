@@ -31,8 +31,10 @@
 #include "tidop/core/concurrency.h"
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
+#include "tidop/math/cuda.h"
 #include "tidop/math/data.h"
 #include "tidop/math/algebra/lu.h"
+#include "tidop/math/algebra/matrix/operations.h"
 #include "tidop/geometry/rect.h"
 
 #include <type_traits>
@@ -375,6 +377,34 @@ public:
 
 /// \endcond
 
+class TL_EXPORT MatrixConfig
+{
+
+public:
+
+    enum class Product
+    {
+#ifdef TL_HAVE_CUDA
+        CuBLAS,
+#endif
+#ifdef TL_HAVE_OPENBLAS
+        BLAS,
+#endif
+#ifdef TL_HAVE_SIMD_INTRINSICS
+        SIMD,
+#endif
+        CPP
+    };
+
+    Product product =
+#ifdef TL_HAVE_SIMD_INTRINSICS
+        Product::SIMD;
+#else
+        Product::CPP;
+#endif
+};
+
+static MatrixConfig config;
 
 
 template<
@@ -1176,9 +1206,6 @@ void mulmat_simd(const Matrix<T, _rows1, _col1> &matrix1,
                  const Matrix<T, _rows2, _cols2> &matrix2,
                  Matrix<T, _rows3, _cols3> &matrix)
 {
-    TL_ASSERT(matrix1.cols() == matrix2.rows(), "A columns != B rows");
-    TL_ASSERT(matrix1.rows() == matrix.rows(), "C rows != A rows");
-    TL_ASSERT(matrix2.cols() == matrix.cols(), "B columns != C columns");
 
     size_t rows = matrix1.rows();
     size_t dim = matrix1.cols();
@@ -1297,219 +1324,219 @@ void mulmat_simd_parallel(const Matrix<T, Rows, _dim> &matrix1,
                           Matrix<T, Rows, Cols> &matrix)
 {
 
-  size_t rows = matrix1.rows();
-  size_t dim = matrix1.cols();
-  size_t cols = matrix2.cols();
+    size_t rows = matrix1.rows();
+    size_t dim = matrix1.cols();
+    size_t cols = matrix2.cols();
 
-  Packed<T> packed_a;
-  Packed<T> packed_b;
-  Packed<T> packed_c;
-  Packed<T> packed_a1;
-  Packed<T> packed_a2;
-  Packed<T> packed_a3;
-  Packed<T> packed_a4;
-  Packed<T> packed_a5;
-  Packed<T> packed_a6;
-  Packed<T> packed_a7;
-  Packed<T> packed_a8;
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+    Packed<T> packed_c;
+    Packed<T> packed_a1;
+    Packed<T> packed_a2;
+    Packed<T> packed_a3;
+    Packed<T> packed_a4;
+    Packed<T> packed_a5;
+    Packed<T> packed_a6;
+    Packed<T> packed_a7;
+    Packed<T> packed_a8;
 
-  constexpr size_t packed_size = packed_a.size();
-  size_t max_vector = cols - cols % packed_size;
-  size_t iter = rows - rows % 8;
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = cols - cols % packed_size;
+    size_t iter = rows - rows % 8;
 
-  auto f_aux = [&](size_t ini, size_t end) {
+    auto f_aux = [&](size_t ini, size_t end) {
 
-    T b{};
+        T b{};
 
-    for (size_t r = ini; r < end; r += 8) {
-      for (size_t i = 0; i < dim; i++) {
+        for (size_t r = ini; r < end; r += 8) {
+            for (size_t i = 0; i < dim; i++) {
 
-        packed_a1.setScalar(matrix1(r, i));
-        packed_a2.setScalar(matrix1(r + 1, i));
-        packed_a3.setScalar(matrix1(r + 2, i));
-        packed_a4.setScalar(matrix1(r + 3, i));
-        packed_a5.setScalar(matrix1(r + 4, i));
-        packed_a6.setScalar(matrix1(r + 5, i));
-        packed_a7.setScalar(matrix1(r + 6, i));
-        packed_a8.setScalar(matrix1(r + 7, i));
+                packed_a1.setScalar(matrix1(r, i));
+                packed_a2.setScalar(matrix1(r + 1, i));
+                packed_a3.setScalar(matrix1(r + 2, i));
+                packed_a4.setScalar(matrix1(r + 3, i));
+                packed_a5.setScalar(matrix1(r + 4, i));
+                packed_a6.setScalar(matrix1(r + 5, i));
+                packed_a7.setScalar(matrix1(r + 6, i));
+                packed_a8.setScalar(matrix1(r + 7, i));
 
-        for (size_t c = 0; c < max_vector; c += packed_size) {
+                for (size_t c = 0; c < max_vector; c += packed_size) {
 
-          packed_b.loadUnaligned(&matrix2(i, c));
+                    packed_b.loadUnaligned(&matrix2(i, c));
 
-          packed_c.loadUnaligned(&matrix(r, c));
-          packed_c += packed_a1 * packed_b;
-          packed_c.storeUnaligned(&matrix(r, c));
+                    packed_c.loadUnaligned(&matrix(r, c));
+                    packed_c += packed_a1 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r, c));
 
-          packed_c.loadUnaligned(&matrix(r + 1, c));
-          packed_c += packed_a2 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 1, c));
+                    packed_c.loadUnaligned(&matrix(r + 1, c));
+                    packed_c += packed_a2 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 1, c));
 
-          packed_c.loadUnaligned(&matrix(r + 2, c));
-          packed_c += packed_a3 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 2, c));
+                    packed_c.loadUnaligned(&matrix(r + 2, c));
+                    packed_c += packed_a3 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 2, c));
 
-          packed_c.loadUnaligned(&matrix(r + 3, c));
-          packed_c += packed_a4 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 3, c));
+                    packed_c.loadUnaligned(&matrix(r + 3, c));
+                    packed_c += packed_a4 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 3, c));
 
-          packed_c.loadUnaligned(&matrix(r + 4, c));
-          packed_c += packed_a5 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 4, c));
+                    packed_c.loadUnaligned(&matrix(r + 4, c));
+                    packed_c += packed_a5 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 4, c));
 
-          packed_c.loadUnaligned(&matrix(r + 5, c));
-          packed_c += packed_a6 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 5, c));
+                    packed_c.loadUnaligned(&matrix(r + 5, c));
+                    packed_c += packed_a6 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 5, c));
 
-          packed_c.loadUnaligned(&matrix(r + 6, c));
-          packed_c += packed_a7 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 6, c));
+                    packed_c.loadUnaligned(&matrix(r + 6, c));
+                    packed_c += packed_a7 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 6, c));
 
-          packed_c.loadUnaligned(&matrix(r + 7, c));
-          packed_c += packed_a8 * packed_b;
-          packed_c.storeUnaligned(&matrix(r + 7, c));
+                    packed_c.loadUnaligned(&matrix(r + 7, c));
+                    packed_c += packed_a8 * packed_b;
+                    packed_c.storeUnaligned(&matrix(r + 7, c));
+
+                }
+
+                for (size_t c = max_vector; c < cols; c++) {
+
+                    b = matrix2(i, c);
+                    matrix(r, c) += matrix1(r, i) * b;
+                    matrix(r + 1, c) += matrix1(r + 1, i) * b;
+                    matrix(r + 2, c) += matrix1(r + 2, i) * b;
+                    matrix(r + 3, c) += matrix1(r + 3, i) * b;
+                    matrix(r + 4, c) += matrix1(r + 4, i) * b;
+                    matrix(r + 5, c) += matrix1(r + 5, i) * b;
+                    matrix(r + 6, c) += matrix1(r + 6, i) * b;
+                    matrix(r + 7, c) += matrix1(r + 7, i) * b;
+                }
+
+            }
+        }
+    };
+
+    /// iter es el número ideal de hilos
+    size_t one_thread_per_block = iter / 8;
+    size_t num_threads = optimalNumberOfThreads();
+    size_t block_size = one_thread_per_block / num_threads;
+    if (block_size > 0) {
+        block_size *= 8;
+    } else {
+        num_threads = one_thread_per_block;
+    }
+
+    std::vector<std::thread> threads(num_threads);
+
+    // El tamaño del bloque tiene que ser siempre multiplo de 8
+
+    size_t block_ini = 0;
+    size_t block_end = 0;
+
+    for (size_t i = 0; i < num_threads; i++) {
+
+        if (i == num_threads - 1) block_end = iter;
+        else block_end = block_ini + block_size;
+
+        threads[i] = std::thread(f_aux, block_ini, block_end);
+
+        block_ini = block_end;
+    }
+
+    /// Lo puedo sacar fuera e incluir en otro hilo el proceso sin SIMD
+    for (auto &_thread : threads) {
+        if (_thread.joinable())
+            _thread.join();
+    }
+
+    //T b{};
+
+    //for (size_t r = 0; r < iter; r += 8) {
+    //  for (size_t i = 0; i < dim; i++) {
+
+    //    packed_a1.setScalar(matrix1(r, i));
+    //    packed_a2.setScalar(matrix1(r + 1, i));
+    //    packed_a3.setScalar(matrix1(r + 2, i));
+    //    packed_a4.setScalar(matrix1(r + 3, i));
+    //    packed_a5.setScalar(matrix1(r + 4, i));
+    //    packed_a6.setScalar(matrix1(r + 5, i));
+    //    packed_a7.setScalar(matrix1(r + 6, i));
+    //    packed_a8.setScalar(matrix1(r + 7, i));
+
+    //    for (size_t c = 0; c < max_vector; c += packed_size) {
+
+    //      packed_b.loadUnaligned(&matrix2(i, c));
+
+    //      packed_c.loadUnaligned(&matrix(r, c));
+    //      packed_c += packed_a1 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 1, c));
+    //      packed_c += packed_a2 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 1, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 2, c));
+    //      packed_c += packed_a3 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 2, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 3, c));
+    //      packed_c += packed_a4 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 3, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 4, c));
+    //      packed_c += packed_a5 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 4, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 5, c));
+    //      packed_c += packed_a6 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 5, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 6, c));
+    //      packed_c += packed_a7 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 6, c));
+
+    //      packed_c.loadUnaligned(&matrix(r + 7, c));
+    //      packed_c += packed_a8 * packed_b;
+    //      packed_c.storeUnaligned(&matrix(r + 7, c));
+
+    //    }
+
+    //    for (size_t c = max_vector; c < cols; c++) {
+
+    //      b = matrix2(i, c);
+    //      matrix(r, c) += matrix1(r, i) * b;
+    //      matrix(r + 1, c) += matrix1(r + 1, i) * b;
+    //      matrix(r + 2, c) += matrix1(r + 2, i) * b;
+    //      matrix(r + 3, c) += matrix1(r + 3, i) * b;
+    //      matrix(r + 4, c) += matrix1(r + 4, i) * b;
+    //      matrix(r + 5, c) += matrix1(r + 5, i) * b;
+    //      matrix(r + 6, c) += matrix1(r + 6, i) * b;
+    //      matrix(r + 7, c) += matrix1(r + 7, i) * b;
+    //    }
+
+    //  }
+    //}
+
+    for (size_t r = iter; r < rows; r++) {
+        for (size_t i = 0; i < dim; i++) {
+
+            T a = matrix1(r, i);
+            packed_a.setScalar(a);
+
+            for (size_t c = 0; c < max_vector; c += packed_size) {
+
+                packed_b.loadUnaligned(&matrix2(i, c));
+
+                packed_c.loadUnaligned(&matrix(r, c));
+                packed_c += packed_a * packed_b;
+                packed_c.storeUnaligned(&matrix(r, c));
+            }
+
+            for (size_t c = max_vector; c < cols; c++) {
+                matrix(r, c) += a * matrix2(i, c);
+            }
 
         }
-
-        for (size_t c = max_vector; c < cols; c++) {
-
-          b = matrix2(i, c);
-          matrix(r, c) += matrix1(r, i) * b;
-          matrix(r + 1, c) += matrix1(r + 1, i) * b;
-          matrix(r + 2, c) += matrix1(r + 2, i) * b;
-          matrix(r + 3, c) += matrix1(r + 3, i) * b;
-          matrix(r + 4, c) += matrix1(r + 4, i) * b;
-          matrix(r + 5, c) += matrix1(r + 5, i) * b;
-          matrix(r + 6, c) += matrix1(r + 6, i) * b;
-          matrix(r + 7, c) += matrix1(r + 7, i) * b;
-        }
-
-      }
     }
-  };
-
-  /// iter es el número ideal de hilos
-  size_t one_thread_per_block = iter / 8;
-  size_t num_threads = optimalNumberOfThreads();
-  size_t block_size = one_thread_per_block / num_threads;
-  if (block_size > 0) {
-    block_size *= 8;
-  } else {
-    num_threads = one_thread_per_block;
-  }
-
-  std::vector<std::thread> threads(num_threads);
-
-  // El tamaño del bloque tiene que ser siempre multiplo de 8
-
-  size_t block_ini = 0;
-  size_t block_end = 0;
-
-  for (size_t i = 0; i < num_threads; i++) {
-
-    if (i == num_threads - 1) block_end = iter;
-    else block_end = block_ini + block_size;
-
-    threads[i] = std::thread(f_aux, block_ini, block_end);
-
-    block_ini = block_end;
-  }
-
-  /// Lo puedo sacar fuera e incluir en otro hilo el proceso sin SIMD
-  for (auto &_thread : threads) {
-    if (_thread.joinable())
-      _thread.join();
-  }
-
-  //T b{};
-
-  //for (size_t r = 0; r < iter; r += 8) {
-  //  for (size_t i = 0; i < dim; i++) {
-
-  //    packed_a1.setScalar(matrix1(r, i));
-  //    packed_a2.setScalar(matrix1(r + 1, i));
-  //    packed_a3.setScalar(matrix1(r + 2, i));
-  //    packed_a4.setScalar(matrix1(r + 3, i));
-  //    packed_a5.setScalar(matrix1(r + 4, i));
-  //    packed_a6.setScalar(matrix1(r + 5, i));
-  //    packed_a7.setScalar(matrix1(r + 6, i));
-  //    packed_a8.setScalar(matrix1(r + 7, i));
-
-  //    for (size_t c = 0; c < max_vector; c += packed_size) {
-
-  //      packed_b.loadUnaligned(&matrix2(i, c));
-
-  //      packed_c.loadUnaligned(&matrix(r, c));
-  //      packed_c += packed_a1 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 1, c));
-  //      packed_c += packed_a2 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 1, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 2, c));
-  //      packed_c += packed_a3 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 2, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 3, c));
-  //      packed_c += packed_a4 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 3, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 4, c));
-  //      packed_c += packed_a5 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 4, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 5, c));
-  //      packed_c += packed_a6 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 5, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 6, c));
-  //      packed_c += packed_a7 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 6, c));
-
-  //      packed_c.loadUnaligned(&matrix(r + 7, c));
-  //      packed_c += packed_a8 * packed_b;
-  //      packed_c.storeUnaligned(&matrix(r + 7, c));
-
-  //    }
-
-  //    for (size_t c = max_vector; c < cols; c++) {
-
-  //      b = matrix2(i, c);
-  //      matrix(r, c) += matrix1(r, i) * b;
-  //      matrix(r + 1, c) += matrix1(r + 1, i) * b;
-  //      matrix(r + 2, c) += matrix1(r + 2, i) * b;
-  //      matrix(r + 3, c) += matrix1(r + 3, i) * b;
-  //      matrix(r + 4, c) += matrix1(r + 4, i) * b;
-  //      matrix(r + 5, c) += matrix1(r + 5, i) * b;
-  //      matrix(r + 6, c) += matrix1(r + 6, i) * b;
-  //      matrix(r + 7, c) += matrix1(r + 7, i) * b;
-  //    }
-
-  //  }
-  //}
-
-  for (size_t r = iter; r < rows; r++) {
-    for (size_t i = 0; i < dim; i++) {
-
-      T a = matrix1(r, i);
-      packed_a.setScalar(a);
-
-      for (size_t c = 0; c < max_vector; c += packed_size) {
-
-        packed_b.loadUnaligned(&matrix2(i, c));
-
-        packed_c.loadUnaligned(&matrix(r, c));
-        packed_c += packed_a * packed_b;
-        packed_c.storeUnaligned(&matrix(r, c));
-      }
-
-      for (size_t c = max_vector; c < cols; c++) {
-        matrix(r, c) += a * matrix2(i, c);
-      }
-
-    }
-  }
 }
 
 #endif // TL_HAVE_SIMD_INTRINSICS
@@ -1519,10 +1546,6 @@ void mulmat_cpp(const Matrix<T, _rows1, _col1> &matrix1,
                 const Matrix<T, _rows2, _cols2> &matrix2,
                 Matrix<T, _rows3, _cols3> &matrix)
 {
-    TL_ASSERT(matrix1.cols() == matrix2.rows(), "A columns != B rows");
-    TL_ASSERT(matrix1.rows() == matrix.rows(), "C rows != A rows");
-    TL_ASSERT(matrix2.cols() == matrix.cols(), "B columns != C columns");
-
     for (size_t r = 0; r < matrix1.rows(); r++) {
         for (size_t i = 0; i < matrix1.cols(); i++) {
             T a = matrix1(r, i);
@@ -1533,49 +1556,200 @@ void mulmat_cpp(const Matrix<T, _rows1, _col1> &matrix1,
     }
 }
 
-//template<typename T, size_t Rows, size_t _dim, size_t Cols> inline
 template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
-auto mulmat(const Matrix<T, _rows1, _col1>& matrix1,
-            const Matrix<T, _rows2, _cols2>& matrix2,
-            Matrix<T, _rows3, _cols3>& matrix) -> std::enable_if_t<std::is_integral<T>::value, void>
+auto mulmat(const Matrix<T, _rows1, _col1> &matrix1,
+            const Matrix<T, _rows2, _cols2> &matrix2,
+            Matrix<T, _rows3, _cols3> &matrix) -> std::enable_if_t<std::is_integral<T>::value, void>
 {
-#if defined TL_HAVE_SIMD_INTRINSICS
+//#if defined TL_HAVE_SIMD_INTRINSICS
+//
+//    mulmat_simd(matrix1, matrix2, matrix);
+//    //mulmat_simd_parallel(matrix1, matrix2, matrix);
+//
+//#else 
+//
+//    mulmat_cpp(matrix1, matrix2, matrix);
+//
+//#endif
+    TL_ASSERT(matrix1.cols() == matrix2.rows(), "A columns != B rows");
+    TL_ASSERT(matrix1.rows() == matrix.rows(), "C rows != A rows");
+    TL_ASSERT(matrix2.cols() == matrix.cols(), "B columns != C columns");
 
-    mulmat_simd(matrix1, matrix2, matrix);
-    //mulmat_simd_parallel(matrix1, matrix2, matrix);
-
-#else 
-
-    mulmat_cpp(matrix1, matrix2, matrix);
-
+    switch (config.product) {
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    case tl::MatrixConfig::Product::SIMD:
+        mulmat_simd(matrix1, matrix2, matrix);
+        break;
 #endif
+    case tl::MatrixConfig::Product::CPP:
+    default:
+        mulmat_cpp(matrix1, matrix2, matrix);
+        break;
+    }
 }
 
-template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
-auto mulmat(const Matrix<T, _rows1, _col1>& matrix1,
-            const Matrix<T, _rows2, _cols2>& matrix2,
-            Matrix<T, _rows3, _cols3>& matrix) -> std::enable_if_t<std::is_floating_point<T>::value, void>
+template<typename T, size_t _rows1, size_t _cols1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
+auto mulmat(const Matrix<T, _rows1, _cols1> &matrix1,
+            const Matrix<T, _rows2, _cols2> &matrix2,
+            Matrix<T, _rows3, _cols3> &matrix) -> std::enable_if_t<std::is_floating_point<T>::value, void>
 {
 
+    switch (config.product) {
+#ifdef TL_HAVE_CUDA
+    case tl::MatrixConfig::Product::CuBLAS:
+        cuda::gemm(matrix1.rows(),
+                   matrix2.cols(),
+                   matrix1.cols(),
+                   matrix1.data(), 
+                   matrix2.data(), 
+                   matrix.data());
+        break;
+#endif
 #ifdef TL_HAVE_OPENBLAS
-
-    blas::gemm(static_cast<int>(matrix1.rows()),
-               static_cast<int>(matrix1.cols()),
-               static_cast<int>(matrix1.cols()),
-               matrix1.data(), matrix2.data(), matrix.data());
-
-#elif defined TL_HAVE_SIMD_INTRINSICS
-
-    mulmat_simd(matrix1, matrix2, matrix);
-    //mulmat_simd_parallel(matrix1, matrix2, matrix);
-
-#else 
-
-    mulmat_cpp(matrix1, matrix2, matrix);
-
+    case tl::MatrixConfig::Product::BLAS:
+        blas::gemm(matrix1.rows(),
+                   matrix2.cols(),
+                   matrix1.cols(),
+                   matrix1.data(), 
+                   matrix2.data(), 
+                   matrix.data());
+        break;
 #endif
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    case tl::MatrixConfig::Product::SIMD:
+        mulmat_simd(matrix1, matrix2, matrix);
+        break;
+#endif
+    case tl::MatrixConfig::Product::CPP:
+        //mulmat_cpp(matrix1, matrix2, matrix);
+        //break;
+    default:
+        mulmat_cpp(matrix1, matrix2, matrix);
+        break;
+    }
 }
 
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+template<typename T, size_t Rows, size_t Cols, size_t _size>
+void matrix_per_vector_simd(const Matrix<T, Rows, Cols> &matrix,
+                            const Vector<T, _size> &vector,
+                            Vector<T, Rows> &vectorOut)
+{
+    size_t rows = matrix.rows();
+    size_t cols = matrix.cols();
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+    Packed<T> packed_c;
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = cols - cols % packed_size;
+
+    for(size_t r = 0; r < rows; r++) {
+        for(size_t i = 0; i < max_vector; i += packed_size) {
+
+            packed_a.loadUnaligned(&vector[i]);
+            packed_b.loadUnaligned(&matrix(r, i));
+            packed_c = packed_a * packed_b;
+            vectorOut[r] += packed_c.sum();
+        }
+
+        for(size_t i = max_vector; i < cols; i++) {
+            vectorOut[r] += matrix(r, i) * vector[i];
+        }
+    }
+}
+#endif // TL_HAVE_SIMD_INTRINSICS
+
+template<typename T, size_t Rows, size_t Cols, size_t _size>
+void matrix_per_vector_cpp(const Matrix<T, Rows, Cols> &matrix, 
+                           const Vector<T, _size> &vector, 
+                           Vector<T, Rows> &vectorOut)
+{
+    size_t rows = matrix.rows();
+    size_t cols = matrix.cols();
+
+    for(size_t r = 0; r < rows; r++) {
+        for(size_t c = 0; c < cols; c++) {
+            vectorOut[r] += matrix(r, c) * vector[c];
+        }
+    }
+}
+
+
+template<typename T, size_t Rows, size_t Cols, size_t _size>
+auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, 
+                       const Vector<T, _size> &vector, 
+                       Vector<T, Rows> &vectorOut) -> std::enable_if_t<std::is_integral<T>::value, void>
+{
+    TL_ASSERT(matrix.cols() == vector.size(), "Matrix columns != Vector size");
+
+//#ifndef TL_HAVE_SIMD_INTRINSICS
+//
+//    matrix_per_vector_cpp(matrix, vector, vectorOut);
+//
+//#else
+//
+//    matrix_per_vector_simd(matrix, vector, vectorOut);
+//
+//#endif
+
+    switch (config.product) {
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    case tl::MatrixConfig::Product::SIMD:
+        matrix_per_vector_simd(matrix, vector, vectorOut);
+        break;
+#endif
+    case tl::MatrixConfig::Product::CPP:
+        //matrix_per_vector_cpp(matrix, vector, vectorOut);
+        //break;
+    default:
+        matrix_per_vector_cpp(matrix, vector, vectorOut);
+        break;
+    }
+}
+
+
+template<typename T, size_t Rows, size_t Cols, size_t _size>
+auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, 
+                       const Vector<T, _size> &vector, 
+                       Vector<T, Rows> &vectorOut) -> std::enable_if_t<std::is_floating_point<T>::value, void>
+{       
+    TL_ASSERT(matrix.cols() == vector.size(), "Matrix columns != Vector size");
+
+    switch (config.product) {
+#ifdef TL_HAVE_CUDA
+    case tl::MatrixConfig::Product::CuBLAS:
+        cuda::gemv(matrix.rows(),
+                   matrix.cols(),
+                   matrix.data(), 
+                   vector.data(), 
+                   vectorOut.data());
+        break;
+#endif
+#ifdef TL_HAVE_OPENBLAS
+    case tl::MatrixConfig::Product::BLAS:
+        blas::gemv(matrix.rows(),
+                   matrix.cols(),
+                   matrix.data(), 
+                   vector.data(), 
+                   vectorOut.data());
+        break;
+#endif
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    case tl::MatrixConfig::Product::SIMD:
+        matrix_per_vector_simd(matrix, vector, vectorOut);
+        break;
+#endif
+    case tl::MatrixConfig::Product::CPP:
+        //matrix_per_vector_cpp(matrix, vector, vectorOut);
+        //break;
+    default:
+        matrix_per_vector_cpp(matrix, vector, vectorOut);
+        break;
+    }
+}
 
 
 
@@ -3874,59 +4048,6 @@ auto operator<<(std::ostream& os, const internal::MatrixBlock<T, Rows, Cols>* ma
 
 /*------------------------------------------------------------------------*/
 
-/// \cond
-
-namespace internal
-{
-
-template<typename T, size_t Rows, size_t Cols, size_t _size>
-void matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, const Vector<T, _size> &vector, Vector<T, Rows> &vectorOut)
-{
-        
-    size_t rows = matrix.rows();
-    size_t cols = matrix.cols();
-    size_t size = vector.size();
-
-    TL_ASSERT(cols == size, "Matrix columns != Vector size");
-
-
-#ifndef TL_HAVE_SIMD_INTRINSICS
-
-    for(size_t r = 0; r < rows; r++) {
-        for(size_t c = 0; c < cols; c++) {
-            vectorOut[r] += matrix(r, c) * vector[c];
-        }
-    }
-
-#else
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-    Packed<T> packed_c;
-
-    constexpr size_t packed_size = packed_a.size();
-    size_t max_vector = cols - cols % packed_size;
-
-    for(size_t r = 0; r < rows; r++) {
-        for(size_t i = 0; i < max_vector; i += packed_size) {
-
-            packed_a.loadUnaligned(&vector[i]);
-            packed_b.loadUnaligned(&matrix(r, i));
-            packed_c = packed_a * packed_b;
-            vectorOut[r] += packed_c.sum();
-        }
-
-        for(size_t i = max_vector; i < cols; i++) {
-            vectorOut[r] += matrix(r, i) * vector[i];
-        }
-    }
-
-#endif
-}
-
-} // namespace internal 
-
-/// \endcond
 
 
 template<typename T, size_t Rows, size_t Cols>
@@ -4021,7 +4142,6 @@ auto operator *(const Vector<T, _dim>& vector,
 /*! \} */ // end of algebra
 
 /*! \} */ // end of math
-
 
 } // End namespace tl
 

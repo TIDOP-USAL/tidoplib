@@ -320,6 +320,7 @@ OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 cmake_dependent_option(WITH_OpenBLAS "Include OpenBLAS" OFF "BUILD_TL_MATH" OFF)
 OPTION (WITH_OPENMP   "Include OpenMP"                        OFF)
+OPTION (WITH_CUDA     "Include CUDA"                        OFF)
 
 
 
@@ -600,6 +601,24 @@ if(WITH_VLD)
 endif(WITH_VLD)
 
 ##########################################################################
+
+
+##########################################################################
+# CUDA (optional)                                                        #
+##########################################################################
+
+if(WITH_CUDA)
+
+    find_package(CUDA)
+
+    if(NOT CUDA_FOUND)
+        set(TL_HAVE_CUDA NO)
+    else()
+        include_directories(${CUDA_INCLUDE_DIRS})
+        set(TL_HAVE_CUDA YES)
+    endif()
+
+endif(WITH_CUDA)
 
 # Directorio con la documentación
 add_subdirectory(doc)

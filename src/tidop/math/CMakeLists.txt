@@ -83,7 +83,8 @@ if(BUILD_TL_MATH)
                              statistic/tukeyfences.h
                              statistic/variance.h
                              lapack.h
-                             blas.h)
+                             blas.h
+                             cuda.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
@@ -102,7 +103,9 @@ if(BUILD_TL_MATH)
 
     target_link_libraries(${PROJECT_NAME} INTERFACE 
                           TidopLib::Core
-                          $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+                          $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_LIBRARIES}>
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>)
        
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           FOLDER "modules"
