@@ -55,6 +55,10 @@ if(BUILD_TL_MATH)
                              algebra/lu.h
                              algebra/qr.h
                              algebra/cholesky.h
+                             algebra/matrix/base.h
+                             algebra/matrix/block.h
+                             algebra/matrix/col.h
+                             algebra/matrix/row.h
 							 geometry/affine.h
 							 geometry/helmert.h
                              geometry/rotation.h
