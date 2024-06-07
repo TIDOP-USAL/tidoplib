@@ -40,6 +40,7 @@ if(BUILD_TL_VIEWER)
 							opengl/buffer/VertexArray.cpp
 							opengl/shader/Shader.cpp
 							group/PointCloud.cpp
+                            group/Grid.cpp
 							renderer/Camera.cpp
 							renderer/TrackballCamera.cpp
                             renderer/Renderer.cpp
@@ -55,6 +56,7 @@ if(BUILD_TL_VIEWER)
 							opengl/shader/Shader.h
 							group/ModelBase.h
 							group/PointCloud.h
+                            group/Grid.h
 							renderer/Camera.h
 							renderer/TrackballCamera.h
                             renderer/Renderer.h

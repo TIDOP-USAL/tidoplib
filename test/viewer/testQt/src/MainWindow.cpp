@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 
+#include <QAction>
 #include <QFileDialog>
 
 #include <tidop/viewer/group/PointCloud.h>
@@ -18,13 +19,21 @@ MainWindow::MainWindow(QWidget *parent)
 
     initSignalsAndSlots();
 
+
+    QAction* actionPicker = new QAction("Picker", this);
+    actionPicker->setCheckable(true);
+    ui.mainToolBar->addAction(actionPicker);
+    connect(actionPicker, &QAction::toggled, this, &MainWindow::togglePicker);
+
+
     Picker::Listener listener = [&](const Picker::Result& result) -> void
     {
         static Vector3f previousPoint{ 0.0, 0.0, 0.0 };
 
         if(result.intersects)
         {
-            std::cout << "Selected point:\n" << result.point << "\nOffset:\n" << result.modelBase->getOffset() << "\n" << std::endl;
+            std::cout << "Selected point:\n" << result.point << "\nOffset:\n" << result.modelBase->getOffset() << std::endl;
+            std::cout << "Color: " << result.vertices[0].color << std::endl;
             rayModelBase->translate(-previousPoint.x(), -previousPoint.y(), -previousPoint.z());
             rayModelBase->translate(result.point.x(), result.point.y(), result.point.z());
             previousPoint = result.point;
@@ -99,4 +108,10 @@ void MainWindow::open() {
         loadFromFile(file.toStdString());
     }
         
+}
+
+void MainWindow::togglePicker(bool enable)
+{
+    std::cout << "picker enabled: " << enable <<std::endl;
+    viewerWidget->enablePicker(enable);
 }

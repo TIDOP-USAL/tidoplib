@@ -21,8 +21,12 @@ public:
 	struct Result
 	{
 		ModelBase::Ptr modelBase;
+
 		Vector3f point;
+		std::vector<Vertex> vertices;
 		bool intersects;
+
+		float cameraDistance;
 	};
 
 	using Listener = std::function<void(const Result& result)>;
@@ -53,53 +57,56 @@ public:
 		this->camera = camera;
 	}
 
+	void updatePointCloudResult(Line<float>& ray, const PointCloud::Ptr& pointcloud, Result& result)
+	{
+
+		for (auto& vertex : pointcloud->getPoints())
+		{
+			float distance = ray.distance(vertex.position);
+
+			if (distance <= radius)
+			{
+				Vector3f eye = camera->getEye();
+				Vector3f pointToEye = vertex.position - eye;
+
+				//if(pointToEye.dotProduct(ray.getDirection()) > 0.0)
+				//{
+				float _cameraDistance = pointToEye.module();
+
+				if (_cameraDistance < result.cameraDistance)
+				{
+					result.cameraDistance = _cameraDistance;
+					result.point = vertex.position;
+					result.modelBase = pointcloud;
+
+					result.vertices.resize(1);
+					result.vertices[0] = vertex;
+				}
+
+				result.intersects = true;
+				//}
+			}
+		}
+	}
+
 	void pick(const std::vector<ModelBase::Ptr>& models, const Vector2i& mousePosition)
 	{
-		Vector3f point{ 0.0f, 0.0f, 0.0f };
-		bool intersects = false;
-
 		RayCaster raycaster(camera, width, height);
-		Line ray = raycaster.ray(mousePosition);
+		Line<float> ray = raycaster.ray(mousePosition);
 
-		float cameraDistance = std::numeric_limits<float>::max();
-
-		ModelBase::Ptr modelBase = nullptr;
+		Result result;
+		result.point = { 0.0f, 0.0f, 0.0f };
+		result.intersects = false;
+		result.cameraDistance = std::numeric_limits<float>::max();
 
 		for(auto& model : models)
 		{
 			if(instanceof<PointCloud>(model.get()))
 			{
 				PointCloud::Ptr pointcloud = std::dynamic_pointer_cast<PointCloud>(model);
-
-				for(auto& vertex : pointcloud->getPoints())
-				{
-					float distance = ray.distance(vertex.position);
-
-					if(distance <= radius)
-					{
-						Vector3f eye = camera->getEye();
-						Vector3f pointToEye = vertex.position - eye;
-
-						//if(pointToEye.dotProduct(ray.getDirection()) > 0.0)
-						//{
-							float _cameraDistance = pointToEye.module();
-							if(_cameraDistance < cameraDistance)
-							{
-								cameraDistance = _cameraDistance;
-								point = vertex.position;
-								modelBase = model;
-							}
-							intersects = true;
-						//}
-					}
-				}
+				updatePointCloudResult(ray, pointcloud, result);
 			}
 		}
-
-		Result result;
-		result.modelBase = modelBase;
-		result.point = point;
-		result.intersects = intersects;
 
 		listener(result);
 	}

@@ -33,4 +33,5 @@ public:
 private slots:
 
     void open();
+    void togglePicker(bool enable);
 };

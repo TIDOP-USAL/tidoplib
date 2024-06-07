@@ -61,10 +61,8 @@ public:
 		//vertexBuffer = VertexBuffer::New(length);
 	}
 
-	ModelBase()
-		: type(Type::Mesh), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
-		//vertexArray = VertexArray::New();
-		//vertexBuffer = VertexBuffer::New();
+	ModelBase(Type _type = Type::Mesh)
+		: type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
 	}
 
 	virtual ~ModelBase() = default;

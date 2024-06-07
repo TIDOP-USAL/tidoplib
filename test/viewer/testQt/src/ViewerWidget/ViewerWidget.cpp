@@ -8,6 +8,7 @@
 
 #include "tidop/viewer/group/PointCloud.h"
 #include <tidop/viewer/io/ASCIIReader.h>
+#include "tidop/viewer/group/Grid.h"
 
 // Draw mesh
 /*
@@ -25,7 +26,8 @@ namespace tl
 ViewerWidget::ViewerWidget(QWidget* parent)
     : QOpenGLWidget(parent), button(0), mousePressed(false),
     first(false),
-    renderer(Renderer::New(width(), height())) {
+    renderer(Renderer::New(width(), height())),
+	pickerEnabled(false) {
     pickerListener = [&](const Picker::Result& result) {};
 }
 
@@ -39,6 +41,12 @@ void ViewerWidget::initializeGL()
     // Picker
     picker = Picker::New(renderer->getCamera(), width(), height(), 1.0f);
     picker->setListener(pickerListener);
+
+
+    Grid::Ptr grid = Grid::New(Vector3f::zero(), Size<int>(400, 400), 0.5f);
+    grid->scale(100, 100, 100);
+    grid->setLineSize(2.0);
+    renderer->addModel(grid);
 }
 
 void ViewerWidget::resizeGL(int w, int h)
@@ -63,7 +71,17 @@ void ViewerWidget::mousePressEvent(QMouseEvent* event)
     mousePressed = true;
     renderer->setPreviousMouse(Vector2i({ event->x(), event->y() }));
     button = event->button();
-    picker->pick(renderer->getModels(),Vector2i({ event->x(), event->y() }));
+
+    if(pickerEnabled)
+		picker->pick(renderer->getModels(),Vector2i({ event->x(), event->y() }));
+}
+
+void ViewerWidget::mouseDoubleClickEvent(QMouseEvent* e)
+{
+    if (e->button() == Qt::LeftButton)
+    {
+
+    }
 }
 
 void ViewerWidget::mouseReleaseEvent(QMouseEvent* event)

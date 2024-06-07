@@ -17,21 +17,21 @@ private:
 
 public:
 
-	TrackballCamera(const tl::Matrix4x4f& projectionMatrix, const tl::Matrix4x4f& viewMatrix);
+	TrackballCamera(const Matrix4x4f& projectionMatrix, const Matrix4x4f& viewMatrix);
 
 private:
 
-	tl::Vector4f toCartesianCoords();
-	tl::Vector3f getCameraPosition();
+	Vector4f toCartesianCoords();
+	Vector3f getCameraPosition();
 
 public:
 
-	static TrackballCamera::Ptr orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar);
-	static TrackballCamera::Ptr orthoCamera(const Rectf& rect, float zNear, float zFar);
+	static Ptr orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar);
+	static Ptr orthoCamera(const Rectf& rect, float zNear, float zFar);
 
-	static TrackballCamera::Ptr perspectiveCamera(float fovy, float aspect, float zNear, float zFar);
+	static Ptr perspectiveCamera(float fovy, float aspect, float zNear, float zFar);
 
-	virtual tl::Matrix4x4f& getViewMatrix() override;
+	Matrix4x4f& getViewMatrix() override;
 
 	void rotate(float dTheta, float dPhi);
 	void pan(float dx, float dy);

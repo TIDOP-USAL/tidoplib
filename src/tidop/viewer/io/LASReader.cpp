@@ -36,10 +36,15 @@ namespace tl
 			const LASpoint& laspoint = lasreader.point;
 
 			Vertex vertex(
-				Vector3f{ 
+				Vector3f{
 					static_cast<float>(laspoint.get_x() - offset.x()),
 					static_cast<float>(laspoint.get_y() - offset.y()),
 					static_cast<float>(laspoint.get_z() - offset.z())
+					/*
+					-static_cast<float>(laspoint.get_x() - offset.x()),
+					static_cast<float>(laspoint.get_z() - offset.z()),
+					static_cast<float>(laspoint.get_y() - offset.y())
+					*/
 				}, Vector4f{
 					static_cast<float>(laspoint.rgb[0] / 65536.), 
 					static_cast<float>(laspoint.rgb[1] / 65536.),

@@ -36,7 +36,7 @@ void Renderer::init()
 	shaderProgram = ShaderProgram::New(vertexShader, fragmentShader);
 
 	double aspectRatio = static_cast<double>(viewportWidth) / viewportHeight;
-	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 0.1f, 1000.f);
+	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 2.0f, 1000.f);
 }
 
 void Renderer::resize(int w, int h)
@@ -85,7 +85,7 @@ void Renderer::pan(int mouseX, int mouseY)
 	float dx = (mouseX - previousMouse.x()) / (static_cast<float>(viewportWidth) / 2);
 	float dy = (mouseY - previousMouse.y()) / (static_cast<float>(viewportHeight) / 2);
 
-	constexpr float panSensitivity = 1.0f;
+	constexpr float panSensitivity = 100.0f;
 	previousMouse = Vector2i({ mouseX, mouseY });
 
 	camera->pan(dx * panSensitivity, dy * panSensitivity);
@@ -104,7 +104,7 @@ void Renderer::rotate(int mouseX, int mouseY)
 
 void Renderer::zoom(int delta)
 {
-	constexpr float sensitivity = 1.0f;
+	constexpr float sensitivity = 10.0f;
 	camera->zoom(sensitivity * delta);
 }
 
