@@ -5,6 +5,8 @@
 
 #include "ViewerWidget/ViewerWidget.h"
 
+#include <tidop/viewer/group/PointCloud.h>
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -13,6 +15,8 @@ private:
 
     Ui::MainWindowClass ui;
     tl::ViewerWidget* viewerWidget;
+
+    tl::PointCloud::Ptr rayModelBase;
 
 public:
 
@@ -29,4 +33,5 @@ public:
 private slots:
 
     void open();
+    void togglePicker(bool enable);
 };

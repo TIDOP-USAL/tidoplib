@@ -17,6 +17,14 @@ struct Vertex
     Vertex() = default;
 
     ~Vertex() = default;
+
+    void swapYZ()
+    {
+        const float y0 = position.y();
+        position.x() *= -1;
+        position.y() = position.z();
+        position.z() = y0;
+    }
 };
 
 }
