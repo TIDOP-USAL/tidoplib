@@ -793,18 +793,21 @@ auto Process::createPipe() -> bool
 /* Task List */
 
 TaskList::TaskList()
-  : tasks(0)
+  : tasks(0),
+    cancelOnError(false)
 {
 }
 
 TaskList::TaskList(const TaskList &taskList)
   : TaskBase(),
-    tasks(taskList.tasks)
+    tasks(taskList.tasks),
+    cancelOnError(false)
 {
 }
 
 TaskList::TaskList(std::initializer_list<std::shared_ptr<Task>> tasks)
-  : tasks(tasks)
+  : tasks(tasks),
+    cancelOnError(false)
 {
 }
 
@@ -813,6 +816,11 @@ TaskList::~TaskList() = default;
 void TaskList::push_back(const std::shared_ptr<Task> &task)
 {
     this->tasks.push_back(task);
+}
+
+void TaskList::setCancelTaskOnError(bool cancel)
+{
+    this->cancelOnError = cancel;
 }
 
 auto TaskList::size() const TL_NOEXCEPT -> size_t
@@ -843,6 +851,11 @@ void TaskList::execute(Progress *progressBar)
         if (status() == Status::stopping) return;
 
         task->run();
+
+        if (task->status() == Status::error && this->cancelOnError){
+            setStatus(Status::error);
+            break;
+        }
 
         if (progressBar) (*progressBar)();
 
