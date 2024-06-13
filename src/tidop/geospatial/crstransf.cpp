@@ -114,7 +114,7 @@ void CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
     try {
 
         ptsOut.resize(ptsIn.size());
-        for (int i = 0; i < ptsIn.size(); i++) {
+        for (size_t i = 0; i < ptsIn.size(); i++) {
             transform(ptsIn[i], ptsOut[i], trfOrder);
         }
 

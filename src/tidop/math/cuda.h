@@ -172,6 +172,9 @@ auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -
     cublasDestroy(handle);
 }
 
+
+
+
 } // End namespace blas
 
 /*! \} */ // end of Math

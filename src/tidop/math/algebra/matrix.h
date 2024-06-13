@@ -102,9 +102,13 @@ public:
 #else
         Product::CPP;
 #endif
-};
 
-static MatrixConfig config;
+    static MatrixConfig &instance()
+    {
+        static MatrixConfig _config;
+        return _config;
+    }
+};
 
 
 template<typename T, size_t Rows = DynamicData, size_t Cols = DynamicData>
@@ -910,7 +914,7 @@ auto mulmat(const Matrix<T, _rows1, _col1> &matrix1,
     TL_ASSERT(matrix1.rows() == matrix.rows(), "C rows != A rows");
     TL_ASSERT(matrix2.cols() == matrix.cols(), "B columns != C columns");
 
-    switch (config.product) {
+    switch (MatrixConfig::instance().product) {
 #ifdef TL_HAVE_SIMD_INTRINSICS
     case tl::MatrixConfig::Product::SIMD:
         mulmat_simd(matrix1, matrix2, matrix);
@@ -929,7 +933,7 @@ auto mulmat(const Matrix<T, _rows1, _cols1> &matrix1,
             Matrix<T, _rows3, _cols3> &matrix) -> std::enable_if_t<std::is_floating_point<T>::value, void>
 {
 
-    switch (config.product) {
+    switch (MatrixConfig::instance().product) {
 #ifdef TL_HAVE_CUDA
     case tl::MatrixConfig::Product::CuBLAS:
         cuda::gemm(matrix1.rows(),
@@ -1030,7 +1034,7 @@ auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
 //
 //#endif
 
-    switch (config.product) {
+    switch (MatrixConfig::instance().product) {
 #ifdef TL_HAVE_SIMD_INTRINSICS
     case tl::MatrixConfig::Product::SIMD:
         matrix_per_vector_simd(matrix, vector, vectorOut);
@@ -1053,7 +1057,7 @@ auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
 {       
     TL_ASSERT(matrix.cols() == vector.size(), "Matrix columns != Vector size");
 
-    switch (config.product) {
+    switch (MatrixConfig::instance().product) {
 #ifdef TL_HAVE_CUDA
     case tl::MatrixConfig::Product::CuBLAS:
         cuda::gemv(matrix.rows(),

@@ -1070,7 +1070,6 @@ void VectorReaderGdal::readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *bru
 
 auto VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> std::shared_ptr<Symbol>
 {
-    GBool bDefault = false;
     auto symbol = std::make_shared<Symbol>();
 
     readSymbolAngle(ogrStyleSymbol, symbol.get());

@@ -57,12 +57,17 @@ if(TL_HAVE_FEAT_MATCH)
                           FOLDER "apps/featmatch")
     
     if(WIN32)
-      if (MSVC AND NOT BUILD_SHARED_LIBS)
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
-      endif()
+        if (MSVC AND NOT BUILD_SHARED_LIBS)
+            set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
+        endif()
     endif()
 
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
+
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    endif(MSVC)
+
 endif()
