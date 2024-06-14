@@ -317,6 +317,7 @@ class TL_EXPORT TaskList
 private:
 
     std::list<std::shared_ptr<Task>> tasks;
+    bool cancelOnError;
 
 public:
 
@@ -342,6 +343,7 @@ public:
     void push_back(const std::shared_ptr<Task> &task);
     auto size() const TL_NOEXCEPT -> size_t;
     auto empty() const TL_NOEXCEPT -> bool;
+    void setCancelTaskOnError(bool cancel);
 
 // Task interface
 
