@@ -80,3 +80,47 @@ function(add_files_to_project TARGET)
 
 endfunction()
 
+
+
+
+# Function to read .env file and set environment variables
+function(read_env_file filepath)
+    if(EXISTS ${filepath})
+        file(READ ${filepath} env_content)
+        string(REPLACE ";" "," env_content "${env_content}")
+        string(REPLACE "\n" ";" env_content ${env_content})
+
+        foreach(line ${env_content})
+            if(line MATCHES "^[^#]+=[^#]*$")
+                string(REGEX REPLACE "(.+)=([^#]*)" "\\1" var ${line})
+                string(REGEX REPLACE "(.+)=([^#]*)" "\\2" value ${line})
+				string(REPLACE "," ";" value "${value}")
+				set(ENV{${var}} "${value}")
+            endif()
+        endforeach()
+    else()
+        message(WARNING ".env file not found at ${filepath}")
+    endif()
+endfunction()
+
+
+# Set the environment variables
+function(set_user_enviroment_path project_name environment_path)
+
+    set(USER_FILE "${PROJECT_BINARY_DIR}/${project_name}.vcxproj.user")
+
+    file(WRITE ${USER_FILE}
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+        "<Project ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n"
+        "  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|x64'\">\n"
+        "    <LocalDebuggerEnvironment>PATH=%PATH%;${environment_path}</LocalDebuggerEnvironment>\n"
+        "    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n"
+        "  </PropertyGroup>\n"
+        "  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\">\n"
+        "    <LocalDebuggerEnvironment>PATH=%PATH%;${environment_path}</LocalDebuggerEnvironment>\n"
+        "    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n"
+        "  </PropertyGroup>\n"
+        "</Project>\n"
+    )
+					 
+endfunction()

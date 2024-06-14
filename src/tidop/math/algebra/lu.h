@@ -107,8 +107,8 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
 #else
     mPivotIndex(new lapack_int[a.rows()]),
 #endif
-    mRows(a.rows()), 
-    d(consts::one<T>)
+    d(consts::one<T>),
+    mRows(a.rows()) 
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
@@ -282,7 +282,6 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 auto LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxElementsByRows() const -> Vector<T, _rows>
 {
     Vector<T, _rows> max_elements(mRows, consts::zero<T>);
-    T element;
 
     for (size_t r = 0; r < mRows; r++) {
 

@@ -22,18 +22,19 @@
 #                                                                        #
 ##########################################################################
  
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include(TidopUtils)
 
-project(test)
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 set(test_filename transform_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
-set(test_target "${test_name}")
 
-add_executable(${test_target} 
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
                ${test_filename})
 
-target_link_libraries(${test_target}
+target_link_libraries(${PROJECT_NAME}
                       TidopLib::Core
                       TidopLib::Math
                       ${Boost_FILESYSTEM_LIBRARY}
@@ -46,11 +47,18 @@ if(HAVE_OPENBLAS)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
 endif(HAVE_OPENBLAS)
 
-set_target_properties(${test_target} PROPERTIES
-                      OUTPUT_NAME ${test_target}
-                      PROJECT_LABEL "(TEST) ${test_name}")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
 
-set_target_properties(${test_target} PROPERTIES 
+set_target_properties(${PROJECT_NAME} PROPERTIES 
                       FOLDER "test/math")
 
-add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)
+if(MSVC)
+    set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+endif(MSVC)
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+
+set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+

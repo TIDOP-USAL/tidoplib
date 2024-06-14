@@ -31,7 +31,7 @@ cmake_policy(SET CMP0146 OLD)
 endif()
 
 project(TidopLib
-        VERSION 3.0.0
+        VERSION 3.1.0
         DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
@@ -178,6 +178,7 @@ include(CMakeDependentOption)
 include(CompilerInfo)
 include(OperatingSystemInfo)
 include(TidopLibSIMDSupport)
+include(TidopUtils)
 
 
 ##########################################################################
@@ -354,13 +355,14 @@ else()
     find_package(fmt REQUIRED)
 
     if(fmt_FOUND)
-        message(STATUS "  fmt version: ${fmt_VERSION}")
+        message(STATUS "  fmt ${fmt_VERSION} found")
         set(TL_HAVE_FMT YES)
         add_compile_definitions(TL_HAVE_FMT)
         add_compile_definitions("FORMAT_NAMESPACE=fmt::")
     else()
         set(TL_HAVE_FMT NO)
         add_compile_definitions("FORMAT_NAMESPACE=std::")
+        message(STATUS "  fmt not found")
     endif()
 endif()
 
@@ -374,23 +376,28 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
     set(Boost_USE_MULTITHREADED      ON)
     set(Boost_USE_STATIC_RUNTIME     OFF)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
     find_package(Boost 1.50 COMPONENTS REQUIRED
                 filesystem 
                 system 
                 unit_test_framework)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
     if(Boost_FOUND)
-        message(STATUS "  Boost version: ${Boost_VERSION}")
+        message(STATUS "  Boost ${Boost_VERSION} found")
         include_directories(${Boost_INCLUDE_DIRS})
         set(TL_HAVE_BOOST YES)
     else()
         set(TL_HAVE_BOOST NO)
+        message(STATUS "  Boost not found.")
     endif()
 
 endif()
 
 
 if(BUILD_TL_VIEWER)
+
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
 
 	##########################################################################
 	# GLEW                                                      			 #
@@ -408,23 +415,28 @@ if(BUILD_TL_VIEWER)
 				 OpenGL  
 				 Widgets
 				 OpenGLWidgets)
-	  
+
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
+    
 	if (Qt6_POSITION_INDEPENDENT_CODE)
 	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 	endif()
 
 	if(Qt6_FOUND)
-		message(STATUS "Found Qt")
-		message(STATUS "  Module : ${Qt6Core_DIR}")
-		message(STATUS "  Module : ${Qt6Concurrent_DIR}")
-		message(STATUS "  Module : ${Qt6OpenGL_DIR}")
-		message(STATUS "  Module : ${Qt6Widgets_DIR}")
-		message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+        message(STATUS "  Qt ${Qt6_VERSION} found")
+		#message(STATUS "Found Qt")
+		#message(STATUS "  Module : ${Qt6Core_DIR}")
+		#message(STATUS "  Module : ${Qt6Concurrent_DIR}")
+		#message(STATUS "  Module : ${Qt6OpenGL_DIR}")
+		#message(STATUS "  Module : ${Qt6Widgets_DIR}")
+		#message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
 
 		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
 		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
 		set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
 		set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+    else()
+        message(STATUS "  Qt not found")
 	endif()
 
     
@@ -436,9 +448,18 @@ if(BUILD_TL_VIEWER)
     ##########################################################################
 	# LASLib                                                                 #
 	##########################################################################
+
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+
     find_package(LASLib REQUIRED)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
+	if(LASLib_FOUND)
+        message(STATUS "  LASLib found")
+    else()
+        message(STATUS "  LASLib not found")
+    endif()
 endif()
 
 
@@ -453,10 +474,11 @@ if(WITH_OPENCV)
     set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
     if(NOT OPENCV_FOUND)
-      set(TL_HAVE_OPENCV NO)
+        set(TL_HAVE_OPENCV NO)
+        message(STATUS "  OpenCV not found")
     else()
-      message(STATUS "  OpenCV version: ${OpenCV_VERSION}")
-      set(TL_HAVE_OPENCV YES)
+        message(STATUS "  OpenCV ${OpenCV_VERSION} found")
+        set(TL_HAVE_OPENCV YES)
     endif()
 
 endif(WITH_OPENCV)
@@ -471,15 +493,15 @@ endif(WITH_OPENCV)
 
 if(WITH_GDAL) 
 
-  find_package(GDAL 3.5 QUIET)
+    find_package(GDAL 3.5 QUIET)
 
-  if(NOT GDAL_FOUND)
-    set(TL_HAVE_GDAL NO)
-    message(STATUS "  GDAL not found")
-  else()
-    message(STATUS "  GDAL version: ${GDAL_VERSION}")
-    set(TL_HAVE_GDAL YES)
-  endif()
+    if(NOT GDAL_FOUND)
+        set(TL_HAVE_GDAL NO)
+        message(STATUS "  GDAL not found")
+    else()
+        message(STATUS "  GDAL ${GDAL_VERSION} found")
+        set(TL_HAVE_GDAL YES)
+    endif()
 
 endif(WITH_GDAL)
 
@@ -490,18 +512,19 @@ endif(WITH_GDAL)
 
 if(WITH_PROJ)
 
-  set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    
+    find_package(PROJ QUIET)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
+    
+    if(NOT PROJ_FOUND)
+        set(TL_HAVE_PROJ NO)
+	    message(STATUS "  PROJ not found")
+    else()
+        set(TL_HAVE_PROJ YES)
+        message(STATUS "  PROJ ${PROJ_VERSION} found")
+    endif()
 
-  find_package(PROJ QUIET)
-  set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
-
-  if(NOT PROJ_FOUND)
-    set(TL_HAVE_PROJ NO)
-	message(STATUS "  PROJ not found")
-  else()
-    set(TL_HAVE_PROJ YES)
-    message(STATUS "  PROJ version: ${PROJ_VERSION}")
-  endif()
 endif(WITH_PROJ)
 
 ##########################################################################
@@ -510,14 +533,14 @@ endif(WITH_PROJ)
 
 if(WITH_LIBRAW)
 
-  find_package(LIBRAW QUIET)
+    find_package(LIBRAW QUIET)
 
-  if(NOT LIBRAW_FOUND)
-    set(TL_HAVE_LIBRAW NO)
-  else()
-    set(TL_HAVE_LIBRAW YES)
-    include_directories(${LIBRAW_INCLUDE_DIR})
-  endif()
+    if(NOT LIBRAW_FOUND)
+        set(TL_HAVE_LIBRAW NO)
+    else()
+        set(TL_HAVE_LIBRAW YES)
+        include_directories(${LIBRAW_INCLUDE_DIR})
+    endif()
 
 endif(WITH_LIBRAW)
 
@@ -530,16 +553,16 @@ if(WITH_EDSDK)
 
 #TODO: Esto no esta bien hecho...
 
-  find_path(EDSDK_INCLUDE_DIR EDSDK.h )
-
-  find_library(EDSDK_LIBRARY NAMES EDSDK )
-
-  if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
-    set(TL_HAVE_EDSDK NO)
-  else()
-    set(TL_HAVE_EDSDK YES)
-    include_directories(${EDSDK_INCLUDE_DIR})
-  endif()
+    find_path(EDSDK_INCLUDE_DIR EDSDK.h )
+    
+    find_library(EDSDK_LIBRARY NAMES EDSDK )
+    
+    if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
+        set(TL_HAVE_EDSDK NO)
+    else()
+        set(TL_HAVE_EDSDK YES)
+        include_directories(${EDSDK_INCLUDE_DIR})
+    endif()
   
 endif()
 
@@ -553,14 +576,16 @@ endif()
 
 if(WITH_OpenBLAS)
        
-  find_package(OpenBLAS QUIET)
+    find_package(OpenBLAS QUIET)
   
-  if(NOT OpenBLAS_FOUND)
-    set(TL_HAVE_OPENBLAS NO)
-  else()
-    set(TL_HAVE_OPENBLAS YES)
-    include_directories(${OpenBLAS_INCLUDE_DIRS})
-  endif()
+    if(NOT OpenBLAS_FOUND)
+        set(TL_HAVE_OPENBLAS NO)
+        message(STATUS "  OpenBLAS not found")
+    else()
+        set(TL_HAVE_OPENBLAS YES)
+        include_directories(${OpenBLAS_INCLUDE_DIRS})
+        message(STATUS "  OpenBLAS ${OpenBLAS_VERSION} found")
+    endif()
   
 endif(WITH_OpenBLAS)
   
@@ -573,14 +598,15 @@ endif(WITH_OpenBLAS)
 
 if(WITH_OPENMP)
 
-  find_package(OpenMP)
+    find_package(OpenMP)
   
-  if(OpenMP_FOUND)
-    set(TL_HAVE_OPENMP YES)
-    message(STATUS "  OpenMP enable")
-  else()
-    set(TL_HAVE_OPENMP NO)
-  endif()
+    if(OpenMP_FOUND)
+        set(TL_HAVE_OPENMP YES)
+        message(STATUS "  OpenMP ${OpenMP_VERSION} found")
+    else()
+        set(TL_HAVE_OPENMP NO)
+        message(STATUS "  OpenMP not found")
+    endif()
   
 endif()
 
@@ -616,8 +642,9 @@ if(WITH_CUDA)
 
     if(NOT CUDA_FOUND)
         set(TL_HAVE_CUDA NO)
+         message(STATUS "  Cuda not found")
     else()
-        message(STATUS "  Cuda version: ${CUDA_VERSION}")
+        message(STATUS "  Cuda ${CUDA_VERSION} found")
         include_directories(${CUDA_INCLUDE_DIRS})
         set(TL_HAVE_CUDA YES)
     endif()
@@ -628,6 +655,17 @@ endif(WITH_CUDA)
 add_subdirectory(doc)
 
 
+
+# TidopLib enviroment file
+set(TL_ENV_FILE "${CMAKE_SOURCE_DIR}/.env")
+
+if(NOT EXISTS ${TL_ENV_FILE})
+    configure_file("${CMAKE_SOURCE_DIR}/.env.in" ${TL_ENV_FILE} COPYONLY)
+endif()
+
+
+# Read the .env file
+read_env_file(${TL_ENV_FILE})
 
 message(STATUS "\nTidop modules:\n")
 

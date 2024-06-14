@@ -51,8 +51,14 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
     GDALDataType ret = GDT_Unknown;
     switch (dataType) {
     case DataType::TL_8U:
-    case DataType::TL_8S:
         ret = GDT_Byte;
+        break;
+    case DataType::TL_8S:
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
+        ret = GDT_Int8;
+#else
+        ret = GDT_Int16;
+#endif
         break;
     case DataType::TL_16U:
         ret = GDT_UInt16;

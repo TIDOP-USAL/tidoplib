@@ -58,7 +58,7 @@ struct MatrixTest
 
     void setup()
     {
-        //config.product = MatrixConfig::Product::CPP;
+        //MatrixConfig::instance().product = MatrixConfig::Product::CPP;
 
         _mat_2x2[0][0] = 2.;
         _mat_2x2[0][1] = 3.;

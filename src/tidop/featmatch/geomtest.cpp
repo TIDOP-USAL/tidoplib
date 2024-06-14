@@ -368,6 +368,7 @@ public:
 
     void setProperties(const GeometricTest::Properties *properties) override
     {
+        unusedParameter(properties);
     }
 
     auto exec(const std::vector<cv::Point2f> &points1,
@@ -419,7 +420,7 @@ public:
 
     void setProperties(const GeometricTest::Properties *properties = nullptr) override
     {
-
+        unusedParameter(properties);
     }
 
     auto exec(const std::vector<cv::Point2f> &points1,

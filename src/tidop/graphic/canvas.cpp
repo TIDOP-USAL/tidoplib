@@ -206,7 +206,7 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
         int fontFace = cv::FONT_HERSHEY_SIMPLEX;
         double fontScale = 2;
         int thickness = 3;
-        int baseline = 0;
+        //int baseline = 0;
         
         cv::putText(mCanvas, style_label->text(), cv::Point(roundToInteger(point.x), roundToInteger(point.y)), fontFace, fontScale,
             colorToCvScalar(foregroundColor), thickness, 8);
