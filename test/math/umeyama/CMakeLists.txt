@@ -51,7 +51,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME ${PROJECT_NAME}
                       PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
 
-set_target_properties(${test_target} PROPERTIES 
+set_target_properties(${PROJECT_NAME} PROPERTIES 
                       FOLDER "test/math")
 
 if(MSVC)
