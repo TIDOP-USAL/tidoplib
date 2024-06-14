@@ -19,14 +19,14 @@ TidopLib is an open-source C++ library developed by [Tidop Research Group](http:
 
 ### Dependencies
 
-- [Boost](https://www.boost.org) > 1.70
-- [GDAL](https://gdal.org)
-- [PROJ](https://proj.org/en/9.4/index.html)
-- [OpenCV](https://opencv.org)
+- [Boost](https://www.boost.org) > 1.70 [![License](https://img.shields.io/badge/License-Boost_1.0-lightblue.svg)](https://www.boost.org/LICENSE_1_0.txt)
+- [GDAL](https://gdal.org) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+- [PROJ](https://proj.org/en/9.4/index.html)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+- [OpenCV](https://opencv.org)[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 - [fmt](https://fmt.dev/latest/index.html) (REQUIRED for C++ Version < 20)
-- [OpenBLAS](https://www.openblas.net) (optional)
+- [OpenBLAS](https://www.openblas.net) (optional) [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 - [OpenMP](https://www.openmp.org) (optional)
-- [Visual Leak Detector](https://marketplace.visualstudio.com/items?itemName=ArkadyShapkin.VisualLeakDetectorforVisualC) (optional)
+- [Visual Leak Detector](https://marketplace.visualstudio.com/items?itemName=ArkadyShapkin.VisualLeakDetectorforVisualC) (optional) [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 
 ### Installing
 
