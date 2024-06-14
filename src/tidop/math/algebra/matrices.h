@@ -72,16 +72,6 @@ struct Matrices
         float d = -1.0f;
         float e = (-2.0f * farZ * nearZ) / (farZ - nearZ);
 
-        /*// Column-major order
-        return Matrix4x4f
-        {
-            a , 0.0f, 0.0f, 0.0f,
-            0.0f, b,  0.0f, 0.0f,
-            0.0f, 0.0f, c,   d,
-            0.0f, 0.0f, e,  0.0f
-        };
-        */
-
         // Row-major order
         return Matrix4x4f
         {
@@ -89,7 +79,7 @@ struct Matrices
             0.0f, b,  0.0f, 0.0f,
             0.0f, 0.0f, c,   e,
             0.0f, 0.0f, d,  0.0f
-        };
+        };  
     }
 
     // Right handed look at matrix

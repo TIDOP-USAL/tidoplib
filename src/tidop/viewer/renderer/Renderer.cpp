@@ -35,8 +35,8 @@ void Renderer::init()
 	Shader fragmentShader = Shader::fromCode(fragmentShaderSource, Shader::ShaderType::Fragment);
 	shaderProgram = ShaderProgram::New(vertexShader, fragmentShader);
 
-	double aspectRatio = static_cast<double>(viewportWidth) / viewportHeight;
-	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 2.0f, 1000.f);
+	float aspectRatio = static_cast<float>(viewportWidth) / static_cast<float>(viewportHeight);
+	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 0.1f, 1000.f);
 }
 
 void Renderer::resize(int w, int h)
@@ -50,7 +50,7 @@ void Renderer::resize(int w, int h)
 	float radius = camera->getRadius();
 
 	double aspectRatio = static_cast<double>(w) / h;
-	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 0.1, 1000);
+	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 0.1, 10000);
 
 	camera->setTheta(theta);
 	camera->setPhi(phi);
@@ -62,6 +62,7 @@ void Renderer::render()
 	//glEnable(GL_BLEND);
 	//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_CULL_FACE);

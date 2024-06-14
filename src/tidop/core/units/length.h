@@ -25,7 +25,7 @@
 #pragma once
 
 
-#include <fmt/core.h>
+//#include <fmt/core.h>
 
 #include "tidop/core/flags.h"
 #include "tidop/core/units/si.h"

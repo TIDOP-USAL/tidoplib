@@ -2,6 +2,7 @@
 
 #include "tidop/geometry/entities/bbox.h"
 #include "tidop/viewer/group/PointCloud.h"
+#include "tidop/viewer/widget/ViewerWidget.h"
 
 #include <lasreader_las.hpp>
 
@@ -35,24 +36,28 @@ namespace tl
 
 			const LASpoint& laspoint = lasreader.point;
 
-			Vertex vertex(
-				Vector3f{
-					static_cast<float>(laspoint.get_x() - offset.x()),
-					static_cast<float>(laspoint.get_y() - offset.y()),
-					static_cast<float>(laspoint.get_z() - offset.z())
-					/*
+			Vector3f position = {
+				static_cast<float>(laspoint.get_x() - offset.x()),
+				static_cast<float>(laspoint.get_y() - offset.y()),
+				static_cast<float>(laspoint.get_z() - offset.z())
+			};
+
+			if(ViewerWidget::isEnabledSwitchAxis()) {
+				position = {
 					-static_cast<float>(laspoint.get_x() - offset.x()),
 					static_cast<float>(laspoint.get_z() - offset.z()),
 					static_cast<float>(laspoint.get_y() - offset.y())
-					*/
-				}, Vector4f{
-					static_cast<float>(laspoint.rgb[0] / 65536.), 
-					static_cast<float>(laspoint.rgb[1] / 65536.),
-					static_cast<float>(laspoint.rgb[2] / 65536.),
-					static_cast<float>(laspoint.rgb[3] / 65536.)
-				}
-			);
+				};
+			}
 
+			Vector4f color = {
+				static_cast<float>(laspoint.rgb[0] / 65536.),
+				static_cast<float>(laspoint.rgb[1] / 65536.),
+				static_cast<float>(laspoint.rgb[2] / 65536.),
+				static_cast<float>(laspoint.rgb[3] / 65536.)
+			};
+
+			Vertex vertex(position, color);
 			points.push_back(vertex);
 		}
 

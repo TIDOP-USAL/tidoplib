@@ -23,6 +23,8 @@ vertexArray->unbind();
 namespace tl
 {
 
+bool ViewerWidget::switchAxis = false;
+
 ViewerWidget::ViewerWidget(QWidget* parent)
     : QOpenGLWidget(parent), button(0), mousePressed(false),
     first(false),
@@ -44,8 +46,8 @@ void ViewerWidget::initializeGL()
 
 
     Grid::Ptr grid = Grid::New(Vector3f::zero(), Size<int>(400, 400), 0.5f);
-    grid->scale(100, 100, 100);
-    grid->setLineSize(2.0);
+    grid->scale(10, 10, 10);
+    grid->setLineSize(1.5);
     renderer->addModel(grid);
 }
 

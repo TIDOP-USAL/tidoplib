@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui.setupUi(this);
 
+    ViewerWidget::enableSwitchAxis();
     setCentralWidget(viewerWidget);
 
     initSignalsAndSlots();
@@ -50,25 +51,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::initSignalsAndSlots() {
     connect(ui.actionOpen, &QAction::triggered, this, &MainWindow::open);
-}
-
-void MainWindow::loadFromMemory()
-{
-    // Load
-    std::vector<Vertex> vertices = {
-        Vertex(Vector3f{-0.5, -0.5,  0.5}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5, -0.5,  0.5}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5,  0.5,  0.5}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
-        Vertex(Vector3f{-0.5,  0.5,  0.5}, Vector4f{0.0f, 1.0f, 0.5f, 1.0f}),
-        Vertex(Vector3f{-0.5, -0.5, -0.5}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5, -0.5, -0.5}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5,  0.5, -0.5}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
-        Vertex(Vector3f{-0.5,  0.5, -0.5}, Vector4f{0.0f, 1.0f, 0.5f, 1.0f})
-    };
-
-    PointCloud::Ptr pointCloud = PointCloud::New(vertices);
-    pointCloud->setPointSize(4);
-    viewerWidget->getRenderer()->addModel(pointCloud);
 }
 
 void MainWindow::loadFromFile(const std::string& path) {

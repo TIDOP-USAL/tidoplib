@@ -48,6 +48,7 @@ if(BUILD_TL_VIEWER)
                             io/ModelWriter.cpp
                             io/ASCIIReader.cpp
                             io/LASReader.cpp
+                            widget/ViewerWidget.cpp
                          HEADER_FILES
                             opengl/buffer/Buffer.h
 							opengl/buffer/IndexBuffer.h
@@ -67,6 +68,7 @@ if(BUILD_TL_VIEWER)
                             io/LASReader.h
                             raycasting/RayCaster.h
                             raycasting/Picker.h
+                            widget/ViewerWidget.h
 							 )
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
@@ -75,6 +77,10 @@ if(BUILD_TL_VIEWER)
 
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
+
+    if(MSVC)
+        target_compile_options(${PROJECT_NAME} PUBLIC "/Zc:__cplusplus")
+    endif(MSVC)
 
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
@@ -89,12 +95,6 @@ if(BUILD_TL_VIEWER)
 							${Qt6OpenGLWidgets_INCLUDE_DIRS})
 	endif()
 
-    #[[
-    if(LASzip_FOUND)
-        include_directories(${LASzip_INCLUDE_DIR})
-    endif()
-    ]]
-
     if(LASLib_FOUND)
         include_directories(${LASLib_INCLUDE_DIR})
     endif()
@@ -104,7 +104,6 @@ if(BUILD_TL_VIEWER)
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${UNIX}>:-lpthread>
-                          #${LASzip_LIBRARIES}
                           ${LASLib_LIBRARIES}
                           TidopLib::Core
                           TidopLib::Geom

@@ -28,6 +28,8 @@ protected:
 
 	PointCloud::Ptr rayModelBase;
 
+	static bool switchAxis;
+
 public:
 
 	ViewerWidget(QWidget* parent = nullptr);
@@ -46,6 +48,10 @@ public:
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
+
+	static void enableSwitchAxis() { switchAxis = true; }
+	static void disableSwitchAxis() { switchAxis = false; }
+	static bool isEnabledSwitchAxis() { return switchAxis; }
 
 	void setPickerListener(const Picker::Listener& listener) { pickerListener = listener; }
 	void enablePicker(bool enable) { pickerEnabled = enable; }

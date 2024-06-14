@@ -3,8 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_MainWindow.h"
 
-#include "ViewerWidget/ViewerWidget.h"
-
+#include <tidop/viewer/widget/ViewerWidget.h>
 #include <tidop/viewer/group/PointCloud.h>
 
 class MainWindow : public QMainWindow
@@ -27,7 +26,6 @@ public:
 
     void initSignalsAndSlots();
 
-    void loadFromMemory();
     void loadFromFile(const std::string& path);
    
 private slots:
