@@ -144,7 +144,7 @@ Image::~Image()
         delete[] mData;
         mData = nullptr;
     }
-};
+}
 
 auto Image::operator=(const Image& image) -> Image&
 {

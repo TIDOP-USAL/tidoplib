@@ -217,7 +217,7 @@ auto MatrixBlock<T, Rows, Cols>::operator=(const MatrixBlock &block) -> MatrixBl
 
     if(this->matrixData == block.matrixData && intersect.isValid()) {
 
-        Matrix<T> mat = block;
+        Matrix<T, Rows, Cols> mat = block;
 
         for(size_t r = 0; r < this->rows(); r++) {
             for(size_t c = 0; c < this->cols(); c++) {

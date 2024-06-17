@@ -255,7 +255,7 @@ auto FastDetectorCuda::detect(const cv::Mat& img, cv::InputArray& mask) -> std::
         mFast->detect(g_img, keyPoints, g_mask);
 #else
         TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported")
-        throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported");
+        throw TL_ERROR("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported");
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 
     } catch (...) {
