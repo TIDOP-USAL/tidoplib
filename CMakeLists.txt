@@ -656,6 +656,7 @@ endif(WITH_CUDA)
 add_subdirectory(doc)
 
 
+if(MSVC)
 
 # TidopLib enviroment file
 set(TL_ENV_FILE "${CMAKE_SOURCE_DIR}/.env")
@@ -664,9 +665,10 @@ if(NOT EXISTS ${TL_ENV_FILE})
     configure_file("${CMAKE_SOURCE_DIR}/.env.in" ${TL_ENV_FILE} COPYONLY)
 endif()
 
-
 # Read the .env file
 read_env_file(${TL_ENV_FILE})
+
+endif(MSVC)
 
 message(STATUS "\nTidop modules:\n")
 

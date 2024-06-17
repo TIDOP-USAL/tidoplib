@@ -57,11 +57,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set_target_properties(${PROJECT_NAME} PROPERTIES 
                       FOLDER "test/math")
 
-if(MSVC)
-    set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
-endif(MSVC)
-
-
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
-set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+if(MSVC)
+    set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+endif(MSVC)
+
