@@ -65,7 +65,7 @@ class CoordinateTransformation;
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
 /*!
- * \brief Transformation between reference systems
+ * \brief Transformation between coordinate reference systems
  */
 class TL_EXPORT CrsTransform
 {
@@ -81,12 +81,12 @@ public:
 protected:
 
     /*!
-     * \brief Sistema de referencia de entrada
+     * \brief Input coordinate reference system
      */
     std::shared_ptr<Crs> mEpsgIn;
 
     /*!
-     * \brief Sistema de referencia de salida
+     * \brief Output coordinate reference system
      */
     std::shared_ptr<Crs> mEpsgOut;
 
@@ -94,6 +94,7 @@ private:
 
     internal::CoordinateTransformation *mCoordinateTransformation;
     internal::CoordinateTransformation *mCoordinateTransformationInv;
+    mutable std::mutex mMutex;
 
 public:
 
@@ -103,9 +104,10 @@ public:
     CrsTransform(const std::shared_ptr<Crs> &epsgIn,
                  const std::shared_ptr<Crs> &epsgOut);
 
-    //CrsTransform(const char *epsgIn, const char *epsgOut);
-
     ~CrsTransform();
+
+    TL_DISABLE_COPY(CrsTransform)
+    TL_DISABLE_MOVE(CrsTransform)
 
     /*!
      * \brief Transforms a set of points to another reference system
@@ -266,30 +268,32 @@ class EcefToEnu
 
 private:
 
-    Point3<double> center;
+    Point3<double> mCenter;
+    RotationMatrix<double> mRotation;
 
 public:
 
-    EcefToEnu(const Point3<double> &center)
-        : center(center)
-    {
-    }
+    EcefToEnu(const Point3<double> &center,
+              const RotationMatrix<double> &rotation);
 
     ~EcefToEnu() = default;
 
-    auto direct(const Point3<double> &ecef,
-                double longitude,
-                double latitude) -> Point3<double>;
-    auto inverse(const Point3<double> &enu,
-                 double longitude,
-                 double latitude) -> Point3<double>;
+    auto direct(const Point3<double> &ecef) const -> Point3<double>;
+    auto inverse(const Point3<double> &enu) const -> Point3<double>;
 
-private:
+    auto center() const -> Point3<double>
+    {
+        return mCenter;
+    }
 
-    static auto rotationMatrixToEnu(double longitude,
-                                    double latitude) -> RotationMatrix<double>;
-
+    auto rotation() const -> RotationMatrix<double>
+    {
+        return mRotation;
+    }
 };
+
+auto rotationEnutoEcef(double longitude, double latitude) -> RotationMatrix<double>;
+
 
 /*! \} */ // end of geospatial
 
