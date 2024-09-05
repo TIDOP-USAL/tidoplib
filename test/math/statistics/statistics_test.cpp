@@ -39,77 +39,83 @@ BOOST_AUTO_TEST_SUITE(StatisticsTestSuite)
 struct StatisticsTest
 {
 
-  StatisticsTest() {}
-  ~StatisticsTest() {}
+    StatisticsTest() {}
+    ~StatisticsTest() {}
 
-  void setup()
-  {
-    vd.push_back(8.0);
-    vd.push_back(8.5);
-    vd.push_back(7.5);
-    vd.push_back(9.0);
-    vd.push_back(6.25);
-    vd.push_back(5.5);
-    vd.push_back(8.5);
-    vd.push_back(7.5);
-    vd.push_back(8.5);
+    void setup()
+    {
+        vd.push_back(8.0);
+        vd.push_back(8.5);
+        vd.push_back(7.5);
+        vd.push_back(9.0);
+        vd.push_back(6.25);
+        vd.push_back(5.5);
+        vd.push_back(8.5);
+        vd.push_back(7.5);
+        vd.push_back(8.5);
 
-    vi.push_back(1);
-    vi.push_back(0);
-    vi.push_back(1);
-    vi.push_back(3);
-    vi.push_back(2);
-    vi.push_back(0);
-    vi.push_back(1);
+        vi.push_back(1);
+        vi.push_back(0);
+        vi.push_back(1);
+        vi.push_back(3);
+        vi.push_back(2);
+        vi.push_back(0);
+        vi.push_back(1);
 
-    vi2.push_back(17);
-    vi2.push_back(15);
-    vi2.push_back(23);
-    vi2.push_back(7);
-    vi2.push_back(9);
-    vi2.push_back(13);
+        vi2.push_back(17);
+        vi2.push_back(15);
+        vi2.push_back(23);
+        vi2.push_back(7);
+        vi2.push_back(9);
+        vi2.push_back(13);
 
-    l = { 1, 3, 4, 2, 6, 5, 8, 7};
+        l = {1, 3, 4, 2, 6, 5, 8, 7};
 
-    x = { 0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
-    y = { 92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
+        x = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
+        y = {92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
 
-    tl_vector[0] = 8.0;
-    tl_vector[1] = 8.5;
-    tl_vector[2] = 7.5;
-    tl_vector[3] = 9.0;
-    tl_vector[4] = 6.25;
-    tl_vector[5] = 5.5;
-    tl_vector[6] = 8.5;
-    tl_vector[7] = 7.5;
-    tl_vector[8] = 8.5;
-  }
+        tl_vector[0] = 8.0;
+        tl_vector[1] = 8.5;
+        tl_vector[2] = 7.5;
+        tl_vector[3] = 9.0;
+        tl_vector[4] = 6.25;
+        tl_vector[5] = 5.5;
+        tl_vector[6] = 8.5;
+        tl_vector[7] = 7.5;
+        tl_vector[8] = 8.5;
+    }
 
-  void teardown()
-  {
+    void teardown()
+    {
 
-  }
+    }
 
-  std::vector<double> vd;
-  std::vector<int> vi;
-  std::vector<int> vi2;
-  std::vector<float> vf;
+    std::vector<double> vd;
+    std::vector<int> vi;
+    std::vector<int> vi2;
+    std::vector<float> vf;
 
-  std::array<double, 3> a;
-  std::list<int> l;
+    std::array<double, 3> a;
+    std::list<int> l;
 
-  std::list<double> x;
-  std::list<double> y;
+    std::list<double> x;
+    std::list<double> y;
 
-  tl::Vector<double, 9> tl_vector;
+    tl::Vector<double, 9> tl_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(7.695, tl::mean(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1.142857143, tl::mean(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(14, tl::mean(vi2.begin(), vi2.end()), 0.1);
-  BOOST_CHECK_CLOSE(7.695, tl::mean(tl_vector.begin(), tl_vector.end()), 0.1);
+    BOOST_CHECK_CLOSE(7.695, tl::mean(vd.begin(), vd.end()), 0.1);
+    BOOST_CHECK_CLOSE(1.142857143, tl::mean(vi.begin(), vi.end()), 0.1);
+    BOOST_CHECK_CLOSE(14, tl::mean(vi2.begin(), vi2.end()), 0.1);
+    BOOST_CHECK_CLOSE(7.695, tl::mean(tl_vector.begin(), tl_vector.end()), 0.1);
+
+    /// SIMD
+    BOOST_CHECK_CLOSE(7.695, tl::mean(vd.begin(), vd.end(), true), 0.1);
+    BOOST_CHECK_CLOSE(1.142857143, tl::mean(vi.begin(), vi.end(), true), 0.1);
+    BOOST_CHECK_CLOSE(14, tl::mean(vi2.begin(), vi2.end(), true), 0.1);
+    BOOST_CHECK_CLOSE(7.695, tl::mean(tl_vector.begin(), tl_vector.end(), true), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(median, StatisticsTest)

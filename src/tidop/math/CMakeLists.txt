@@ -49,7 +49,7 @@ if(BUILD_TL_MATH)
                              algebra/rotation_convert.h
                              algebra/axis_angle.h
                              algebra/matrix.h
-							 algebra/matrices.h
+                             algebra/matrices.h
                              algebra/vector.h
                              algebra/svd.h
                              algebra/lu.h
@@ -59,8 +59,8 @@ if(BUILD_TL_MATH)
                              algebra/matrix/block.h
                              algebra/matrix/col.h
                              algebra/matrix/row.h
-							 geometry/affine.h
-							 geometry/helmert.h
+                             geometry/affine.h
+                             geometry/helmert.h
                              geometry/rotation.h
                              geometry/scaling.h
                              geometry/transform.h
@@ -109,7 +109,9 @@ if(BUILD_TL_MATH)
                           TidopLib::Core
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_LIBRARIES}>
-                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>)
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>
+                          #$<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cusolver_LIBRARY}>
+                          )
        
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           FOLDER "modules"

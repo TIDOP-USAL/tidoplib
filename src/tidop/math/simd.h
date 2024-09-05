@@ -871,7 +871,7 @@ auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 #  else
     ///TODO: Error
     int64_t aa[2], bb[2];
-    packed1.storeUnaligned(&aa[0]);                                     // split into elements
+    packed1.storeUnaligned(&aa[0]);                            // split into elements
     packed2.storeUnaligned(&bb[0]);
     packed = _mm_set_epi64x(aa[1] * bb[1], aa[0] * bb[0]);     // multiply elements separetely
 #  endif
@@ -1127,6 +1127,186 @@ auto horizontal_sum(const Packed<T>& packed) -> std::enable_if_t<
     return sum;
 }
 
+
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+{
+    Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+    packed = _mm256_min_ps(packed1, packed2);
+#else
+    packed = _mm_min_ps(packed1, packed2);
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
+{
+    Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+    packed = _mm256_min_pd(packed1, packed2);
+#else
+    packed = _mm_min_pd(packed1, packed2);
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value,
+    Packed<T>>
+{
+   Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+   packed = _mm256_min_epi8(packed1, packed2);
+#elif TL_HAVE_SSE4_1
+   packed = _mm_min_epi8(packed1, packed2);
+#else  // SSE2
+    __m128i signbit = _mm_set1_epi32(0x80808080);
+    __m128i a1 = _mm_xor_si128(packed1, signbit);          // add 0x80
+    __m128i b1 = _mm_xor_si128(packed2, signbit);          // add 0x80
+    __m128i m1 = _mm_min_epu8(a1, b1);                     // unsigned min
+    return  _mm_xor_si128(m1, signbit);                    // sub 0x80
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
+    Packed<T>>
+{
+   Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+   packed = _mm256_min_epu8(packed1, packed2);
+#else
+    packed = _mm_min_epu8(packed1, packed2);
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value,
+    Packed<T>>
+{
+   Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+   packed = _mm256_min_epi16(packed1, packed2);
+#else
+    packed = _mm_min_epi16(packed1, packed2);
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    Packed<T>>
+{
+   Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+   packed = _mm256_min_epu16(packed1, packed2);
+#elif TL_HAVE_SSE4_1
+    packed = _mm_min_epu16(packed1, packed2);
+#else  // SSE2
+    __m128i signbit = _mm_set1_epi32(0x80008000);
+    __m128i a1 = _mm_xor_si128(packed1, signbit);          // add 0x8000
+    __m128i b1 = _mm_xor_si128(packed2, signbit);          // add 0x8000
+    __m128i m1 = _mm_min_epi16(a1, b1);                    // signed min
+    packed = _mm_xor_si128(m1, signbit);                   // sub 0x8000
+#endif
+
+    return packed;
+}
+
+// Compare packed signed 32-bit integers in packed1 and packed2, and return packed minimum values
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value,
+    Packed<T>>
+{
+    Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+    packed = _mm256_min_epi32(packed1, packed2);
+#elif TL_HAVE_SSE4_1
+    packed = _mm_min_epi32(packed1, packed2);
+#elif defined TL_HAVE_SSE2
+    // Compares the 4 signed 32-bit integers in packed1 and the 4 signed 32-bit integers in packed2 for greater than.
+    __m128i greater = _mm_cmpgt_epi32(packed1, packed2);
+    packed = _mm_or_si128(_mm_and_si128(greater, packed2), _mm_andnot_si128(greater, packed1));
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    Packed<T>>
+{
+    Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+    packed = _mm256_min_epu32(packed1, packed2);
+#elif TL_HAVE_SSE4_1
+    packed = _mm_min_epu32(packed1, packed2);
+#elif defined TL_HAVE_SSE2
+    __m128i signbit = _mm_set1_epi32(0x80000000);
+    __m128i greater = _mm_cmpgt_epi32(_mm_xor_si128(packed1, signbit), _mm_xor_si128(packed2, signbit));
+    packed = _mm_or_si128(_mm_and_si128(greater, packed2), _mm_andnot_si128(greater, packed1));
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value,
+    Packed<T>>
+{
+    Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+    packed = _mm256_blendv_epi8(packed2, packed1, _mm256_cmpgt_epi64(packed1, packed2));
+#else
+
+#endif
+
+    return packed;
+}
+
+template<typename T>
+auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    Packed<T>>
+{
+    Packed<T> packed;
+
+#ifdef TL_HAVE_AVX2
+    __m256i offset = _mm256_set1_epi64x(0x8000000000000000);
+    packed = _mm256_blendv_epi8(packed2, packed1, _mm256_cmpgt_epi64(_mm256_xor_si256(packed2, offset), _mm256_xor_si256(packed1, offset)));
+#else
+
+#endif
+
+    return packed;
+}
+
 /// Unary minus
 
 template<typename T>
@@ -1334,6 +1514,97 @@ auto notEqual(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfInt
 }
 
 
+// Greater than
+
+template<typename T>
+auto greaterThan(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_ps(packed2, packed1, 1);
+#elif defined TL_HAVE_SSE
+    return _mm_cmplt_ps(packed2, packed1);
+#endif
+}
+
+template<typename T>
+auto greaterThan(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_pd(packed2, packed1, 1);
+#elif defined TL_HAVE_SSE2
+    return _mm_cmplt_pd(packed2, packed1);
+#endif
+}
+
+
+// Less than
+
+template<typename T>
+auto lessThan(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_ps(packed1, packed2, 1);
+#elif defined TL_HAVE_SSE
+    return _mm_cmplt_ps(packed1, packed2);
+#endif
+}
+
+template<typename T>
+auto lessThan(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_pd(packed1, packed2, 1);
+#elif defined TL_HAVE_SSE2
+    return _mm_cmplt_pd(packed1, packed2);
+#endif
+}
+
+
+// Greater than or equal to
+
+template<typename T>
+auto greaterThanOrEqualTo(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_ps(packed2, packed1, 2);
+#elif defined TL_HAVE_SSE
+    return _mm_cmple_ps(packed2, packed1);
+#endif
+}
+
+template<typename T>
+auto greaterThanOrEqualTo(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_pd(packed2, packed1, 2);
+#elif defined TL_HAVE_SSE2
+    return _mm_cmple_pd(packed2, packed1);
+#endif
+}
+
+
+// Less than or equal to
+
+template<typename T>
+auto lessThanOrEqualTo(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_ps(packed1, packed2, 2);
+#elif defined TL_HAVE_SSE
+    return _mm_cmple_ps(packed1, packed2);
+#endif
+}
+
+template<typename T>
+auto lessThanOrEqualTo(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
+{
+#ifdef TL_HAVE_AVX
+    return _mm256_cmp_pd(packed1, packed2, 2);
+#elif defined TL_HAVE_SSE2
+    return _mm_cmple_pd(packed1, packed2);
+#endif
+}
+
 } // namespace internal 
 
 /// \endcond
@@ -1444,6 +1715,40 @@ static auto operator !=(const Packed<T> &packed1,
     return internal::notEqual(packed1, packed2);
 }
 
+/*!
+ * \brief Compare packed in packed1 and packed2 for greater-than, and return the results.
+ */
+template<typename T> 
+static auto operator > (const Packed<T> &packed1, 
+                        const Packed<T> &packed2) -> Packed<T>
+{
+    return internal::greaterThan(packed1, packed2);
+}
+
+
+/*!
+ * \brief Compare packed elements in packed1 and packed2 for 
+ */
+template<typename T> 
+static auto operator < (const Packed<T> &packed1, 
+                        const Packed<T> &packed2) -> Packed<T>
+{
+    return internal::lessThan(packed1, packed2);
+}
+
+template<typename T> 
+static auto operator >= (const Packed<T> &packed1, 
+                         const Packed<T> &packed2) -> Packed<T>
+{
+    return internal::greaterThanOrEqualTo(packed1, packed2);
+}
+
+template<typename T> 
+static auto operator <= (const Packed<T> &packed1, 
+                         const Packed<T> &packed2) -> Packed<T>
+{
+    return internal::lessThanOrEqualTo(packed1, packed2);
+}
 
 
 
@@ -1645,7 +1950,6 @@ auto transposeMatrix4x4(Packed<T> &r1,
 //        (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              
 //        (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD); 
 }
-
 
 
 /*! \} */ // end of Math

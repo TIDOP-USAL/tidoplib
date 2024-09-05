@@ -133,28 +133,46 @@ template<typename T>
 auto Covariance<T>::eval(const Series<T> &series1,
                          const Series<T> &series2) -> double
 {
+
+    auto data1_size = series1.size();
+    auto data2_size = series2.size();
+
+    TL_ASSERT(data1_size == data2_size && data1_size >= 1, "Invalid data");
+
     DescriptiveStatistics<T> stat1(series1);
     DescriptiveStatistics<T> stat2(series2);
-
-    auto n_x = stat1.size();
-    auto n_y = stat2.size();
-    if (n_x != n_y || n_x <= 1) return consts::zero<double>;
 
     double mean_x = stat1.mean();
     double mean_y = stat2.mean();
     double sum{};
-    double x{};
-    double y{};
+    size_t i{0};
 
-    auto it1 = series1.begin();
-    auto it2 = series2.begin();
-    while (it1 != series1.end()) {
-        x = static_cast<double>(*it1++) - mean_x;
-        y = static_cast<double>(*it2++) - mean_y;
-        sum += x * y;
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+    Packed<T> packed_mean_x(mean_x);
+    Packed<T> packed_mean_y(mean_y);
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = (data1_size / packed_size) * packed_size;
+    
+    for (i = 0; i < max_vector; i += packed_size) {
+
+        packed_a.loadUnaligned(&series1[i]);
+        packed_b.loadUnaligned(&series2[i]);
+
+        sum += ((packed_a - packed_mean_x) * (packed_b - packed_mean_y)).sum();
+
     }
 
-    return sum / n_x;
+#endif
+
+    for (; i < data1_size; i++) {
+        sum += (series1[i] - mean_x) * (series2[i] - mean_y);
+    }
+
+    return sum / data1_size;
 }
 
 

@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop matrix test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/matrix/determinant.h>
 
 using namespace tl;
 
@@ -94,6 +95,11 @@ struct MatrixTest
         _mat_4x4_d[1][0] = 1.36;   _mat_4x4_d[1][1] = 7.62;	_mat_4x4_d[1][2] = 78.3; _mat_4x4_d[1][3] = 45.5;
         _mat_4x4_d[2][0] = 14.3;   _mat_4x4_d[2][1] = 45.3;	_mat_4x4_d[2][2] = 5.;   _mat_4x4_d[2][3] = 45.;
         _mat_4x4_d[3][0] = 12.374; _mat_4x4_d[3][1] = 41.6;	_mat_4x4_d[3][2] = 1.3;  _mat_4x4_d[3][3] = 12.7;
+
+        _mat_4x4_f[0][0] = 48.8862f; _mat_4x4_f[0][1] = 15.5612f; _mat_4x4_f[0][2] = 5.74045f; _mat_4x4_f[0][3] = 1.15225f;
+        _mat_4x4_f[1][0] = 81.2285f; _mat_4x4_f[1][1] = 23.3914f; _mat_4x4_f[1][2] = 46.0156f; _mat_4x4_f[1][3] = 61.918f;
+        _mat_4x4_f[2][0] = 40.8717f; _mat_4x4_f[2][1] = 42.1616f; _mat_4x4_f[2][2] =  1.2700f; _mat_4x4_f[2][3] = 57.0358f;
+        _mat_4x4_f[3][0] = 72.7691f; _mat_4x4_f[3][1] = 45.0433f; _mat_4x4_f[3][2] = 61.8650f; _mat_4x4_f[3][3] = 35.6954f;
 
         _mat_dyn_4x4_d->at(0, 0) = 4.5;    _mat_dyn_4x4_d->at(0, 1) = 2.7;  _mat_dyn_4x4_d->at(0, 2) = 5.5;  _mat_dyn_4x4_d->at(0, 3) = 4.98;
         _mat_dyn_4x4_d->at(1, 0) = 1.36;   _mat_dyn_4x4_d->at(1, 1) = 7.62;	_mat_dyn_4x4_d->at(1, 2) = 78.3; _mat_dyn_4x4_d->at(1, 3) = 45.5;
@@ -251,12 +257,15 @@ struct MatrixTest
     Matrix<double> *_mat_dyn_2x2_constructor;
 
     Matrix<double, 2, 2> _mat_2x2;
+    Matrix<float, 2, 2> _mat_2x2_f;
     Matrix<double> *_mat_dyn_2x2;
 
     Matrix<double, 3, 3> _mat_3x3_d;
+    Matrix<float, 3, 3> _mat_3x3_f;
     Matrix<double> *_mat_dyn_3x3_d;
 
     Matrix<double, 4, 4> _mat_4x4_d;
+    Matrix<float, 4, 4> _mat_4x4_f;
     Matrix<double> *_mat_dyn_4x4_d;
 
     Matrix<double, 5, 5> _mat_5x5_d;
@@ -609,6 +618,9 @@ BOOST_FIXTURE_TEST_CASE(determinant4x4, MatrixTest)
 {
     BOOST_CHECK_CLOSE(353100.53, _mat_4x4_d.determinant(), 0.1);
     BOOST_CHECK_CLOSE(353100.53, _mat_dyn_4x4_d->determinant(), 0.1);
+
+    BOOST_CHECK_CLOSE(5582044.477f, _mat_4x4_f.determinant(), 0.1);
+
 }
 
 BOOST_FIXTURE_TEST_CASE(determinantnxn, MatrixTest)
