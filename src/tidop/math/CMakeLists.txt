@@ -101,6 +101,9 @@ if(BUILD_TL_MATH)
         target_compile_options(${PROJECT_NAME} INTERFACE "/bigobj")
     endif(MSVC)
 
+    target_include_directories(${PROJECT_NAME} INTERFACE 
+                               $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_INCLUDE_DIRS}>)
+
     target_compile_definitions(${PROJECT_NAME} INTERFACE
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
