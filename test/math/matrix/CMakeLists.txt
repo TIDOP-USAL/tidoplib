@@ -29,7 +29,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 set(test_filename matrix_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
 
-project(${test_name} LANGUAGES CXX CUDA)
+project(${test_name} LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME} 
                ${test_filename})
@@ -41,8 +41,7 @@ target_link_libraries(${PROJECT_NAME}
                       ${Boost_SYSTEM_LIBRARY}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
-                      $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
-                      $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                      $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_LIBRARIES}>
                       $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>)
 
 if(HAVE_OPENBLAS)

@@ -25,7 +25,6 @@
 #define BOOST_TEST_MODULE Tidop matrix test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/matrix.h>
-#include <tidop/math/algebra/matrix/determinant.h>
 
 using namespace tl;
 
