@@ -64,8 +64,10 @@ public:
         Point3<double> ptOut = ptIn;
 
         try {
-            TL_ASSERT(mTransform != nullptr, "");
+
+            TL_ASSERT(mTransform != nullptr, "NULL transform");
             mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
         }
@@ -94,17 +96,19 @@ CrsTransform::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
 
 CrsTransform::~CrsTransform()
 {
+    std::lock_guard<std::mutex> lock(mMutex);
+
     if (mCoordinateTransformation) {
         delete mCoordinateTransformation;
         mCoordinateTransformation = nullptr;
     }
 
     if (mCoordinateTransformationInv) {
-        delete mCoordinateTransformation;
+        delete mCoordinateTransformationInv;
         mCoordinateTransformationInv = nullptr;
     }
 
-    OSRCleanup();
+    //OSRCleanup();
 }
 
 void CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
@@ -112,6 +116,8 @@ void CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
                              Order trfOrder) const
 {
     try {
+
+        std::lock_guard<std::mutex> lock(mMutex);
 
         ptsOut.resize(ptsIn.size());
         for (size_t i = 0; i < ptsIn.size(); i++) {
@@ -129,6 +135,8 @@ void CrsTransform::transform(const Point3<double> &ptIn,
 {
 
     try {
+
+        std::lock_guard<std::mutex> lock(mMutex);
 
         if (trfOrder == Order::direct) {
             if (mCoordinateTransformation)
@@ -151,6 +159,8 @@ auto CrsTransform::transform(const Point3<double> &ptIn,
 
     try {
 
+        std::lock_guard<std::mutex> lock(mMutex);
+
         if (trfOrder == Order::direct)
             r_pt = mCoordinateTransformation->transform(ptIn);
         else
@@ -170,6 +180,8 @@ auto CrsTransform::isNull() const -> bool
 
 void CrsTransform::init()
 {
+    std::lock_guard<std::mutex> lock(mMutex);
+
     OGRSpatialReference *spatialReferenceIn = mEpsgIn->getOGRSpatialReference();
     OGRSpatialReference *spatialReferenceOut = mEpsgOut->getOGRSpatialReference();
 
@@ -177,41 +189,40 @@ void CrsTransform::init()
                                                                        spatialReferenceOut);
     mCoordinateTransformationInv = new internal::CoordinateTransformation(spatialReferenceOut,
                                                                           spatialReferenceIn);
-    OSRCleanup();
+    //OSRCleanup();
 }
+
+
 
 #endif // TL_HAVE_GDAL
 
 
-auto EcefToEnu::direct(const Point3<double> &ecef,
-                       double longitude,
-                       double latitude) -> Point3<double>
+EcefToEnu::EcefToEnu(const Point3<double>& center, const RotationMatrix<double>& rotation): mCenter(center),
+    mRotation(rotation)
 {
-    RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
-    Point3<double> dif = ecef - center;
 
-    Vector<double, 3> enu = rotation * dif.vector();
+}
+auto EcefToEnu::direct(const Point3<double> &ecef) const -> Point3<double>
+{
+    Point3<double> dif = ecef - mCenter;
+    Vector<double, 3> enu = mRotation * dif.vector();
 
     return {enu[0], enu[1], enu[2]};
 }
 
-auto EcefToEnu::inverse(const Point3<double> &enu,
-                        double longitude,
-                        double latitude) -> Point3<double>
+auto EcefToEnu::inverse(const Point3<double> &enu) const -> Point3<double>
 {
-    RotationMatrix<double> rotation = rotationMatrixToEnu(longitude, latitude);
-    Vector<double, 3> d = rotation.transpose() * enu.vector();
+    Vector<double, 3> d = mRotation.transpose() * enu.vector();
 
     Point3<double> ecef;
-    ecef.x = center.x + d[0];
-    ecef.y = center.y + d[1];
-    ecef.z = center.z + d[2];
+    ecef.x = mCenter.x + d[0];
+    ecef.y = mCenter.y + d[1];
+    ecef.z = mCenter.z + d[2];
 
     return ecef;
 }
 
-auto EcefToEnu::rotationMatrixToEnu(double longitude,
-                                    double latitude) -> RotationMatrix<double>
+auto rotationEnutoEcef(double longitude, double latitude) -> RotationMatrix<double>
 {
     RotationMatrix<double> rotation_enu;
 
