@@ -222,7 +222,7 @@ auto EcefToEnu::inverse(const Point3<double> &enu) const -> Point3<double>
     return ecef;
 }
 
-auto rotationEnutoEcef(double longitude, double latitude) -> RotationMatrix<double>
+auto rotationEnuToEcef(double longitude, double latitude) -> RotationMatrix<double>
 {
     RotationMatrix<double> rotation_enu;
 

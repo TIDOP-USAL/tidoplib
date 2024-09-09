@@ -292,7 +292,7 @@ public:
     }
 };
 
-auto rotationEnutoEcef(double longitude, double latitude) -> RotationMatrix<double>;
+auto rotationEnuToEcef(double longitude, double latitude) -> RotationMatrix<double>;
 
 
 /*! \} */ // end of geospatial
