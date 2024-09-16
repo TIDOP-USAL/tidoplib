@@ -31,6 +31,7 @@
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/vect/vect.h"
+#include "tidop/vect/formats.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
@@ -90,6 +91,7 @@ private:
     GDALDataset *mDataset;
     GDALDriver *mDriver;
     OGRSpatialReference *mSpatialReference;
+    //VectorOptions *mVectorOptions; // Sin probar
 };
 
 
@@ -162,6 +164,20 @@ void VectorWriterGdal::create()
             GDALClose(mDataset);
             mDataset = nullptr;
         }
+
+//        char **gdalOpt = nullptr;
+//        if (mVectorOptions) {
+//            auto options = mVectorOptions->activeOptions();
+//#if CPP_VERSION >= 17
+//            for (const auto &[name, value] : options) {
+//#else
+//            for (const auto &option : options) {
+//                auto &name = option.first;
+//                auto &value = option.second;
+//#endif
+//                gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
+//            }
+//        }
 
         mDataset = mDriver->Create(mFile.toString().c_str(), 0, 0, 0, GDT_Unknown, nullptr);
 

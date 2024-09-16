@@ -30,10 +30,6 @@
 namespace tl
 {
 
-ImageOptions::ImageOptions()
-{
-}
-
 
 ImageOptionsBase::ImageOptionsBase(Format format)
   : mFormat(format)

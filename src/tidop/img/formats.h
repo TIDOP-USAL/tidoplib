@@ -70,7 +70,7 @@ public:
 
 public:
 
-    ImageOptions();
+    ImageOptions() = default;
     virtual ~ImageOptions() = default;
 
     virtual auto format() const -> Format = 0;
