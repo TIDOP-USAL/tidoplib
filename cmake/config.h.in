@@ -98,6 +98,7 @@
 #cmakedefine TL_HAVE_AVX512
 #cmakedefine TL_HAVE_SIMD_INTRINSICS
 
+#define TL_DATA_PATH "${CMAKE_SOURCE_DIR}\\test\\data"
 
 /// https://philippegroarke.com/blog/2017/11/20/simplifying-compile-time-options-with-if-constexpr/
 

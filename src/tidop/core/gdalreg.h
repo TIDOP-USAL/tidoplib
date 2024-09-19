@@ -30,6 +30,9 @@
 #include <mutex>
 
 #include "tidop/core/defs.h"
+#include "tidop/core/path.h"
+
+class GDALDriver;
 
 namespace tl
 {
@@ -61,6 +64,9 @@ public:
   static void init();
 
 };
+
+GDALDriver *gdalDriver(const tl::Path &filename);
+bool driverAvailable(const tl::Path &filename);
 
 #endif // TL_HAVE_GDAL
 

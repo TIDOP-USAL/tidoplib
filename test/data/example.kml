@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Folder>
+	<name>example</name>
+	<open>1</open>
+	<Placemark>
+		<name>Ubicación de ejemplo</name>
+		<Point>
+			<coordinates>-105.01621,39.57422,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Línea de ejemplo</name>
+		<Style>
+			<LineStyle>
+				<color>ff0000ff</color>
+			</LineStyle>
+			<PolyStyle>
+				<fill>0</fill>
+			</PolyStyle>
+		</Style>
+		<LineString>
+			<coordinates>
+				-105.01621,39.57422,0 -105.00376,39.59931,0 
+			</coordinates>
+		</LineString>
+	</Placemark>
+	<Placemark>
+		<name>Polígono de ejemplo</name>
+		<Style>
+			<LineStyle>
+				<color>ff0000ff</color>
+			</LineStyle>
+			<PolyStyle>
+				<fill>0</fill>
+			</PolyStyle>
+		</Style>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-105.02311,39.60058,0 -105.01431,39.59781,0 -105.01114,39.60235,0 -105.02311,39.60058,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>	
+</Folder>
+</kml>
