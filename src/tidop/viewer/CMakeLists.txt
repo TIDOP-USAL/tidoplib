@@ -39,6 +39,7 @@ if(BUILD_TL_VIEWER)
 							opengl/buffer/IndexBuffer.cpp
 							opengl/buffer/VertexArray.cpp
 							opengl/shader/Shader.cpp
+                            group/Mesh.cpp
 							group/PointCloud.cpp
                             group/Grid.cpp
 							renderer/Camera.cpp
@@ -56,6 +57,7 @@ if(BUILD_TL_VIEWER)
 							opengl/buffer/VertexArray.h
 							opengl/shader/Shader.h
 							group/ModelBase.h
+                            group/Mesh.h
 							group/PointCloud.h
                             group/Grid.h
 							renderer/Camera.h

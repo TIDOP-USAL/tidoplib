@@ -9,16 +9,8 @@
 #include "tidop/viewer/group/PointCloud.h"
 #include <tidop/viewer/io/ASCIIReader.h>
 #include "tidop/viewer/group/Grid.h"
+#include "tidop/viewer/group/Mesh.h"
 
-// Draw mesh
-/*
-vertexArray->bind();
-
-if (!vertexBuffer->hasIndexBuffer()) glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-else    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
-vertexArray->unbind();
-*/
 
 namespace tl
 {
@@ -44,11 +36,68 @@ void ViewerWidget::initializeGL()
     picker = Picker::New(renderer->getCamera(), width(), height(), 1.0f);
     picker->setListener(pickerListener);
 
-
+    // Grid
     Grid::Ptr grid = Grid::New(Vector3f::zero(), Size<int>(400, 400), 0.5f);
     grid->scale(10, 10, 10);
     grid->setLineSize(1.5);
     renderer->addModel(grid);
+
+    // Cube test
+    std::vector<Vertex> cubeVertices =
+    {
+        // Cara trasera (Rojo)
+        Vertex(Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 0.0f, 1.0f}),
+
+        // Cara delantera (Verde)
+        Vertex(Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 0.0f, 1.0f}),
+
+        // Cara izquierda (Azul)
+        Vertex(Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 0.0f, 1.0f, 1.0f}),
+
+        // Cara derecha (Amarillo)
+        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 0.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 0.0f, 1.0f}),
+
+        // Cara inferior (Magenta)
+        Vertex(Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 0.0f, 1.0f, 1.0f}),
+
+        // Cara superior (Cian)
+        Vertex(Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{0.0f, 1.0f, 1.0f, 1.0f}),
+        Vertex(Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{0.0f, 1.0f, 1.0f, 1.0f})
+    };
+
+
+    Mesh::Ptr mesh = Mesh::New(cubeVertices);
+    mesh->scale(5.f, 5.f, 5.f);
+    renderer->addModel(mesh);
 }
 
 void ViewerWidget::resizeGL(int w, int h)
