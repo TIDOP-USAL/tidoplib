@@ -39,7 +39,7 @@
 
 /* TidopLib Modules */
 
-//#cmakedefine TL_HAVE_CORE
+#cmakedefine TL_HAVE_CORE
 #cmakedefine TL_HAVE_MATH
 #cmakedefine TL_HAVE_GEOMETRY
 #cmakedefine TL_HAVE_IMG
