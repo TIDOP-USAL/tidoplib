@@ -43,17 +43,6 @@ namespace tl
 TL_EXPORT int utmZoneFromLongitude(double longitude);
 TL_EXPORT std::pair<int, char> utmZoneFromLonLat(double longitude, double latitude);
 
-//TL_EXPORT Point3<double> projectPhotoToTerrain(const tl::RotationMatrix<double> &rotation_matrix,
-//                                        const Point3<double> &camera_position,
-//                                        const Point<double> &coordinates_image,
-//                                        double focal,
-//                                        double z);
-//
-//TL_EXPORT Point<double> projectTerrainToPhoto(const tl::RotationMatrix<double> &rotation_matrix,
-//                                       const Point3<double> &camera_position,
-//                                       const Point3<double> &coordinates_terrain,
-//                                       double focal);
-
 
 //TODO: En https://github.com/omtinez/CenterPolygon estas variables las da como enteros
 //pero aqui la definimos como double para evitar un problema de perdida de precisión al dividir

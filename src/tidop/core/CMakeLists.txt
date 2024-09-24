@@ -109,7 +109,7 @@ if(BUILD_TL_CORE)
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${UNIX}>:-lpthread>
-                          $<$<BOOL:${TL_HAVE_FMT}>:fmt::fmt>)
+                          $<$<BOOL:${TL_HAVE_FMT}>:fmt::fmt-header-only>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

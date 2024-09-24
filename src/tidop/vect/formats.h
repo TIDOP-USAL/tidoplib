@@ -55,8 +55,12 @@ public:
     {
         shp,
         dxf,
-        dgn
+        dgn,
+        geojson
     };
+
+    using option_iterator = std::map<std::string, std::string>::iterator;
+    using option_const_iterator = std::map<std::string, std::string>::const_iterator;
 
 protected:
 
@@ -64,82 +68,118 @@ protected:
 
 public:
 
-    VectorOptions(Format format);
-    virtual ~VectorOptions();
+    VectorOptions() = default;
+    virtual ~VectorOptions() = default;
 
-    auto format() const -> Format;
+    virtual auto format() const -> Format = 0;
 
-    virtual auto options() const -> const char * = 0;
+    virtual auto options() const -> std::map<std::string, std::string> = 0;
+    virtual auto activeOptions() const -> std::map<std::string, std::string> = 0;
+    virtual void reset() = 0;
+
 };
+
+
+class TL_EXPORT VectorOptionsBase
+  : public VectorOptions
+{
+
+private:
+
+    Format mFormat;
+
+public:
+
+    VectorOptionsBase(Format format);
+    ~VectorOptionsBase() override;
+
+    auto format() const -> Format override;
+    auto options() const -> std::map<std::string, std::string> override;
+    auto activeOptions() const -> std::map<std::string, std::string> override;
+
+protected:
+
+    virtual auto options(bool all) const -> std::map<std::string, std::string> = 0;
+
+};
+
 
 /*!
  * \brief Class that manages the options of the Shape format
  */
-class TL_EXPORT ShapeOptions
-  : public VectorOptions
-{
+//class TL_EXPORT ShapeOptions
+//  : public VectorOptionsBase
+//{
+//
+//public:
+//
+//    /*!
+//     * \brief Geometry adjustment modes
+//     */
+//    enum class AdjustGeomType : uint8_t
+//    {
+//        no,
+//        first_shape,
+//        all_shapes
+//    };
+//
+//protected:
+//
+//    /*!
+//     * \brief Encoding
+//     */
+//    std::pair<std::string, std::string> mEncoding;
+//
+//    /*!
+//     * \brief Modification date to write in the DBF header with the format year-month-day.
+//     * If not specified, the current date is used.
+//     */
+//    std::pair<std::string, std::string> mDbfDateLastUpdate;
+//
+//    std::pair<bool, bool> bAdjustType;
+//
+//    /*!
+//     * \brief Adjustment of geometry type
+//     * Defines how the layer geometry type is calculated, particularly to distinguish shapefiles
+//     * that have shapes with meaningful values in the M dimension from those where M values are
+//     * set to nodata.
+//     * The default value is FIRST_SHAPE.
+//     * \see AdjustGeomType
+//     */
+//    std::pair<AdjustGeomType, AdjustGeomType> mAdjustGeomType;
+//
+//    std::pair<bool, bool> bAutoRepack;
+//    std::pair<bool, bool> bDbfEofChar;
+//
+//public:
+//
+//    ShapeOptions();
+//    ~ShapeOptions() override;
+//
+//    void reset() override;
+//
+//    void enableAdjustType(bool value = true);
+//    void enableAutoRepac(bool value = true);
+//    void enableDbfEofChar(bool value = true);
+//
+//    auto encoding() const -> std::string;
+//    void setEncoding(const std::string &encoding);
+//
+//    auto dbfDateLastUpdate() const -> std::string;
+//    void setDbfDateLastUpdate(const std::string &date);
+//
+//    auto adjustGeomType() const -> AdjustGeomType;
+//    void setAdjustGeomType(AdjustGeomType type);
+//
+//private:
+//
+//    void init();
+//    auto options(bool all) const -> std::map<std::string, std::string> override;
+//
+//};
 
-public:
 
-    /*!
-     * \brief Geometry adjustment modes
-     */
-    enum class AdjustGeomType : uint8_t
-    {
-        no,
-        first_shape,
-        all_shapes
-    };
 
-protected:
-
-    /*!
-     * \brief Encoding
-     */
-    std::string mEncoding;
-
-    /*!
-     * \brief Modification date to write in the DBF header with the format year-month-day.
-     * If not specified, the current date is used.
-     */
-    std::string mDbfDateLastUpdate;
-
-    bool bAdjustType;
-
-    /*!
-     * \brief Adjustment of geometry type
-     * Defines how the layer geometry type is calculated, particularly to distinguish shapefiles
-     * that have shapes with meaningful values in the M dimension from those where M values are
-     * set to nodata.
-     * The default value is FIRST_SHAPE.
-     * \see AdjustGeomType
-     */
-    AdjustGeomType mAdjustGeomType;
-
-    bool bAutoRepack;
-    bool bDbfEofChar;
-
-public:
-
-    ShapeOptions();
-    ~ShapeOptions() override;
-
-    auto options() const -> const char* override;
-
-    void enableAdjustType(bool value = true);
-    void enableAutoRepac(bool value = true);
-    void enableDbfEofChar(bool value = true);
-
-    auto encoding() const -> std::string;
-    void setEncoding(const std::string &encoding);
-
-    auto dbfDateLastUpdate() const -> std::string;
-    void setDbfDateLastUpdate(const std::string &date);
-
-    auto adjustGeomType() const -> AdjustGeomType;
-    void setAdjustGeomType(AdjustGeomType type);
-
-};
 
 /*! \} */ // end of vector
 
