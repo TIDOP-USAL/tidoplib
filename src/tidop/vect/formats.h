@@ -34,6 +34,8 @@ TL_DISABLE_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL
 
+#include <map>
+
 #include "tidop/core/utils.h"
 
 namespace tl
