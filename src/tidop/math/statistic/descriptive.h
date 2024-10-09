@@ -656,14 +656,11 @@ auto DescriptiveStatistics<T>::kurtosis() const -> double
     if (n <= 1) return consts::zero<double>;
 
     double _mean = mean();
-    double dif{};
-    double dif2{};
     double _kurtosis{};
 
     for (const auto &data : mData) {
-        dif = static_cast<double>(data) - _mean;
-        dif2 = dif * dif;
-        _kurtosis += dif2 * dif2;
+        double dif = static_cast<double>(data) - _mean;
+        _kurtosis += std::pow(dif, 4);
     }
 
     double _variance = variance();
@@ -685,6 +682,9 @@ template<typename T>
 auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
 {
     size_t n = size();
+
+    if (n < (mConfig.sample ? 4 : 1)) return consts::zero<double>;
+
     double kurtosis_excess{};
 
     if (mConfig.sample) {
