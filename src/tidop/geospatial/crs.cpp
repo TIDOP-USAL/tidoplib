@@ -168,14 +168,34 @@ void Crs::fromWktFormat(const std::string &wkt)
     }
 }
 
-bool Crs::isGeocentric() const
+auto Crs::isGeocentric() const -> bool
 {
     return mCrs->IsGeocentric() != 0;
 }
 
-bool Crs::isGeographic() const
+auto Crs::isGeographic() const -> bool
 {
     return mCrs->IsGeographic() != 0;
+}
+
+auto Crs::isProjected() const -> bool
+{
+    return mCrs->IsProjected();
+}
+
+auto Crs::isLocal() const -> bool
+{
+    return mCrs->IsLocal();
+}
+
+auto Crs::isVertical() const -> bool
+{
+    return mCrs->IsVertical();
+}
+
+auto Crs::isCompound() const -> bool
+{
+    return mCrs->IsVertical();
 }
 
 bool Crs::isValid() const

@@ -79,8 +79,14 @@ BOOST_FIXTURE_TEST_CASE(isGeocentric, CrsTest)
 
 BOOST_FIXTURE_TEST_CASE(isGeographic, CrsTest)
 {
-  BOOST_CHECK(false ==epsg25830->isGeographic());
+  BOOST_CHECK(false == epsg25830->isGeographic());
   BOOST_CHECK(epsg4258->isGeographic());
+}
+
+BOOST_FIXTURE_TEST_CASE(isProjected, CrsTest)
+{
+    BOOST_CHECK(epsg25830->isProjected());
+    BOOST_CHECK(!epsg4258->isProjected());
 }
 
 BOOST_FIXTURE_TEST_CASE(epsgCode, CrsTest)
