@@ -5,8 +5,8 @@ on:
     branches:
       - main
       - gh-pages
-    tags:
-      - '*.*.*'  # Ejecutar el workflow cuando se empuje un tag que siga el patrón de versiones (X.X.X)
+    #tags:
+    #  - '*.*.*'  # Ejecutar el workflow cuando se empuje un tag que siga el patrón de versiones (X.X.X)
 jobs:
   doxygen:
     runs-on: ubuntu-latest
@@ -16,17 +16,17 @@ jobs:
       uses: actions/checkout@v3
       
     - name: Install dependencies
-      if: startsWith(github.ref, 'refs/tags/')
+      #if: startsWith(github.ref, 'refs/tags/')
       run: |
         sudo apt-get update
         sudo apt-get install -y libfmt-dev libopencv-dev libgdal-dev libproj-dev libboost-all-dev
         
     - name: Install Doxygen
-      if: startsWith(github.ref, 'refs/tags/')
+      #if: startsWith(github.ref, 'refs/tags/')
       run: sudo apt-get install doxygen graphviz -y
 
     - name: Generate Doxyfile with CMake
-      if: startsWith(github.ref, 'refs/tags/')
+      #if: startsWith(github.ref, 'refs/tags/')
       run: |
         mkdir build
         cd build
@@ -39,7 +39,7 @@ jobs:
         cmake --build . --target doc
 
     - name: Generate Doxygen documentation
-      if: startsWith(github.ref, 'refs/tags/')
+      #if: startsWith(github.ref, 'refs/tags/')
       run: doxygen ./build/doc/Doxyfile
 
     - name: Deploy to GitHub Pages
