@@ -4,7 +4,14 @@ on:
   push:
     tags:
       - '*.*.*'  # Ejecutar el workflow cuando se empuje un tag que siga el patrón de versiones (X.X.X)
-jobs:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+ 
+ jobs:
   doxygen:
     runs-on: ubuntu-latest
 
