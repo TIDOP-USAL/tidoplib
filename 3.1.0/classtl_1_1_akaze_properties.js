@@ -1,0 +1,25 @@
+var classtl_1_1_akaze_properties =
+[
+    [ "AkazeProperties", "classtl_1_1_akaze_properties.html#a3c512b6faad9196af3e620a4fd8fd469", null ],
+    [ "AkazeProperties", "classtl_1_1_akaze_properties.html#aaafcaa54308d11b7183088c8135820fc", null ],
+    [ "AkazeProperties", "classtl_1_1_akaze_properties.html#a51d0809259f26b0963149fb4833ce7d3", null ],
+    [ "~AkazeProperties", "classtl_1_1_akaze_properties.html#aaf96fc9434ae08b7313e7ea5074f19cd", null ],
+    [ "descriptorChannels", "classtl_1_1_akaze_properties.html#ad30986a3745e31a02f8e6b9e436ebcb1", null ],
+    [ "descriptorSize", "classtl_1_1_akaze_properties.html#a2508996102101d21a0463145fcc1480a", null ],
+    [ "descriptorType", "classtl_1_1_akaze_properties.html#a457492fadecab3723b3bbce257936a45", null ],
+    [ "diffusivity", "classtl_1_1_akaze_properties.html#a009a4baf4faf04108331633e799f6077", null ],
+    [ "name", "classtl_1_1_akaze_properties.html#ad36583301f4520ff13ce5627abe39979", null ],
+    [ "octaveLayers", "classtl_1_1_akaze_properties.html#aca9002d329af7ba6e631d6218f7c7940", null ],
+    [ "octaves", "classtl_1_1_akaze_properties.html#a9c6a62f79a9e33ff0050d27faf183186", null ],
+    [ "operator=", "classtl_1_1_akaze_properties.html#ad0304db01296b42ed0f621ffba5ed816", null ],
+    [ "operator=", "classtl_1_1_akaze_properties.html#ae6c82b8ecb5e98a26d67d8b62d05885c", null ],
+    [ "reset", "classtl_1_1_akaze_properties.html#aa94d54ee79714efcd75486028db78c4f", null ],
+    [ "setDescriptorChannels", "classtl_1_1_akaze_properties.html#acae593eca317a37ab539fbd527e8dd8d", null ],
+    [ "setDescriptorSize", "classtl_1_1_akaze_properties.html#ab7e080fe0f21a68574ee4bb2ab6062b6", null ],
+    [ "setDescriptorType", "classtl_1_1_akaze_properties.html#a1a7fbe67e7b0f5eab379a9b3dde2e74c", null ],
+    [ "setDiffusivity", "classtl_1_1_akaze_properties.html#a4c6d1241acf31cd871332aa194edc81b", null ],
+    [ "setOctaveLayers", "classtl_1_1_akaze_properties.html#ab92d57e1cdb9e9c11ffccb7e0332ab65", null ],
+    [ "setOctaves", "classtl_1_1_akaze_properties.html#a8e8748c65e76a94a85a141231e64e5d3", null ],
+    [ "setThreshold", "classtl_1_1_akaze_properties.html#ad9d55f4989a6a385c9e1cb76b9fd8f2b", null ],
+    [ "threshold", "classtl_1_1_akaze_properties.html#a2313a2b1cb76be0fcd9868f782121ee5", null ]
+];

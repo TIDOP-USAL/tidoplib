@@ -1,0 +1,26 @@
+var classtl_1_1_orb_properties =
+[
+    [ "OrbProperties", "classtl_1_1_orb_properties.html#a70d4485f28b82615b4ae3ba5e8476837", null ],
+    [ "OrbProperties", "classtl_1_1_orb_properties.html#a49ccdc3b35f8a406d015db83bbfb155f", null ],
+    [ "~OrbProperties", "classtl_1_1_orb_properties.html#a11c1ab00a896416a623a13913b972e39", null ],
+    [ "edgeThreshold", "classtl_1_1_orb_properties.html#a55fc71e1f20d2b8a750cbc8385d8f1a5", null ],
+    [ "fastThreshold", "classtl_1_1_orb_properties.html#aba57a4452e9ead85f5e5266d4a8412f7", null ],
+    [ "featuresNumber", "classtl_1_1_orb_properties.html#a40ba66c3510db7ba3b8c5ede3176cdd0", null ],
+    [ "firstLevel", "classtl_1_1_orb_properties.html#aefecf4735b82b51fc0bf354363152a0f", null ],
+    [ "levelsNumber", "classtl_1_1_orb_properties.html#a569b12adb39ca4e0d08102f238089442", null ],
+    [ "name", "classtl_1_1_orb_properties.html#ac01a50de7f8282bc486fe5d6878bd9b4", null ],
+    [ "patchSize", "classtl_1_1_orb_properties.html#ad085de2d7f951b5c67b7c330be6fb067", null ],
+    [ "reset", "classtl_1_1_orb_properties.html#a872e3f7e7159827243e8b5a14095e0fa", null ],
+    [ "scaleFactor", "classtl_1_1_orb_properties.html#ab49444102a00b32ae34beaacb893185f", null ],
+    [ "scoreType", "classtl_1_1_orb_properties.html#ad2076b1425027b0119976a9c2f115bbf", null ],
+    [ "setEdgeThreshold", "classtl_1_1_orb_properties.html#a367ea72c9b27264a16fb54546fa3fe66", null ],
+    [ "setFastThreshold", "classtl_1_1_orb_properties.html#ad55effcc264b07cd3bbb026ebd28bfe3", null ],
+    [ "setFeaturesNumber", "classtl_1_1_orb_properties.html#ab246bcd17fd3d71f01642ecb6c070f5f", null ],
+    [ "setFirstLevel", "classtl_1_1_orb_properties.html#a3f2cf16866fd35fcd5807a5d5cd81a51", null ],
+    [ "setLevelsNumber", "classtl_1_1_orb_properties.html#abd896fdbdd861e5071edb7cfe8755707", null ],
+    [ "setPatchSize", "classtl_1_1_orb_properties.html#af6e18ad060a44b4b6eb786f62b191ac0", null ],
+    [ "setScaleFactor", "classtl_1_1_orb_properties.html#abc6358d5f50ed38c66ea14fa6c2f8d7e", null ],
+    [ "setScoreType", "classtl_1_1_orb_properties.html#a790121943c4d1c3661a7f60d028948f9", null ],
+    [ "setWTA_K", "classtl_1_1_orb_properties.html#a8bd6d1f856a08d7c1ed05c5afd2b3586", null ],
+    [ "wta_k", "classtl_1_1_orb_properties.html#a87ef9d4397cb2f6ba38f17582a3e7bbb", null ]
+];
