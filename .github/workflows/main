@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - gh-pages
     tags:
       - '*.*.*'  # Ejecutar el workflow cuando se empuje un tag que siga el patrón de versiones (X.X.X)
 jobs:
