@@ -1,24 +1,50 @@
 #include "Renderer.h"
 
+#include <boost/smart_ptr/shared_ptr.hpp>
+
+#include "group/Mesh.h"
+
 const char* vertexShaderSource = "#version 330 core\n"
+"\n"
 "layout (location = 0) in vec3 aPos;\n"
 "layout (location = 1) in vec4 aColor;\n"
-"out vec4 color;\n"
+"layout (location = 2) in vec3 aNormal;\n"
+"layout (location = 3) in vec2 aTexCoord;\n"
+"\n"
+"out vec4 Color;\n"
+"out vec3 Normal;\n"
+"out vec2 TexCoord;\n"
+"\n"
 "uniform mat4 model;\n"
 "uniform mat4 view;\n"
 "uniform mat4 projection;\n"
+"\n"
 "void main()\n"
 "{\n"
 "   gl_Position = projection * view * model * vec4(aPos.xyz, 1.0);\n"
-"color = aColor;\n"
+"	Color = aColor;\n"
+"	Normal = aNormal;\n"
+"	TexCoord = aTexCoord;\n"
 "}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
+"\n"
 "out vec4 FragColor;\n"
-"in vec4 color;\n"
+"\n"
+"in vec4 Color;\n"
+"in vec3 Normal;\n"
+"in vec2 TexCoord;\n"
+"\n"
+"uniform sampler2D tex;\n"
+"uniform bool hasTexture;\n"
+"\n"
 "void main()\n"
 "{\n"
-"   FragColor = color;\n"
+"   vec4 color = Color;\n"
+"	if(hasTexture) {\n"
+"		color = texture(tex, TexCoord);\n"
+"   }\n"
+"	FragColor = color;\n"
 "}\n\0";
 
 namespace tl
@@ -75,6 +101,38 @@ void Renderer::render()
 	shaderProgram->uniformMat4("projection", camera->getProjectionMatrix());
 
 	for (const auto& model : models) {
+
+		// Mesh uniforms
+		if(model->getType() == ModelBase::Type::Mesh) {
+
+			Mesh::Ptr mesh = std::static_pointer_cast<Mesh>(model);
+
+			//Texture uniforms
+			shaderProgram->uniformInt("hasTexture", false);
+			for(auto& texture : mesh->getTextures()) {
+			
+				if (texture->getType() == Texture::Type::TextureDiffuse) {
+			
+					texture->bind();
+					//shaderProgram->uniformInt("tex", texture->getID() - 1);
+					shaderProgram->uniformInt("tex", texture->getSlot() - 0x84C0);
+					shaderProgram->uniformInt("hasTexture", true);
+				}
+			}
+
+			/*
+			const auto texture = mesh->getTextures()[0];
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture->getID());
+
+			shaderProgram->uniformInt("hasTexture", true);
+			shaderProgram->uniformInt("tex", 0);
+			*/
+
+		}else {
+			shaderProgram->uniformInt("hasTexture", false);
+		}
 
 		shaderProgram->uniformMat4("model", model->getModelMatrix());
 		model->draw();

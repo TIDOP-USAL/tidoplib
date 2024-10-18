@@ -9,9 +9,15 @@ struct Vertex
 {
     Vector3f position;
     Vector4f color;
+    Vector3f normal;
+    Vector2f uvs;
 
     Vertex(const Vector3f& _position, const Vector4f& _color)
         : position(_position), color(_color) {
+    }
+
+    Vertex(const Vector3f& _position, const Vector4f& _color, const Vector3f& _normal, const Vector2f& _uvs)
+        : position(_position), color(_color), normal(_normal), uvs(_uvs) {
     }
 
     Vertex() = default;

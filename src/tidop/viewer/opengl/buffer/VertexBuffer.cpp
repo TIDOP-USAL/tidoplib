@@ -5,7 +5,7 @@
 namespace tl
 {
 
-constexpr unsigned int stride = 7 * sizeof(float);
+constexpr unsigned int stride = 12 * sizeof(float);
 
 VertexBuffer::VertexBuffer() : Buffer(), hasIdxBuffer(false) { }
 
@@ -62,21 +62,29 @@ void VertexBuffer::vertexAttributes()
     // color attribute
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+
+    // normal attribute
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));
+
+    // uvs attribute
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (void*)(10 * sizeof(float)));
 }
 
 void VertexBuffer::initBuffer(std::vector<Vertex>& vertices, const std::vector<unsigned int> indices)
 {
     // Load vertices
     unsigned int index = 0;
-    float* glVertices = new float[vertices.size() * 7];
+    float* glVertices = new float[vertices.size() * 12];
 
     for (Vertex& vertex : vertices) {
 
         glVertices[index] = vertex.position[0];       glVertices[index + 1] = vertex.position[1];   glVertices[index + 2] = vertex.position[2];
-        glVertices[index + 3] = vertex.color[0];      glVertices[index + 4] = vertex.color[1];   glVertices[index + 5] = vertex.color[2];
-        glVertices[index + 6] = vertex.color[3];
-
-        index += 7;
+        glVertices[index + 3] = vertex.color[0]; glVertices[index + 4] = vertex.color[1];  glVertices[index + 5] = vertex.color[2];  glVertices[index + 6] = vertex.color[3];
+        glVertices[index + 7] = vertex.normal[0]; glVertices[index + 8] = vertex.normal[1]; glVertices[index + 9] = vertex.normal[2];
+        glVertices[index + 10] = vertex.uvs[0]; glVertices[index + 11] = vertex.uvs[1];
+        index += 12;
     }
 
     // Vertex buffer

@@ -42,6 +42,7 @@ if(BUILD_TL_VIEWER)
                             group/Mesh.cpp
 							group/PointCloud.cpp
                             group/Grid.cpp
+                            texture/Texture.cpp
 							renderer/Camera.cpp
 							renderer/TrackballCamera.cpp
                             renderer/Renderer.cpp
@@ -60,6 +61,8 @@ if(BUILD_TL_VIEWER)
                             group/Mesh.h
 							group/PointCloud.h
                             group/Grid.h
+                            texture/Texture.h
+                            texture/vendor/stb_image.h
 							renderer/Camera.h
 							renderer/TrackballCamera.h
                             renderer/Renderer.h
@@ -111,7 +114,8 @@ if(BUILD_TL_VIEWER)
                           TidopLib::Geom
 						  GLEW::GLEW
 						  opengl32
-						  glu32)
+						  glu32
+                          ${OpenCV_LIBS})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

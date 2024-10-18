@@ -11,6 +11,8 @@
 
 #include "tidop/viewer/group/ModelBase.h"
 
+#include "tidop/viewer/texture/Texture.h"
+
 namespace tl
 {
 
@@ -22,6 +24,7 @@ namespace tl
 	private:
 
 		size_t size;
+		std::vector<Texture::Ptr> textures;
 
 	public:
 
@@ -36,6 +39,12 @@ namespace tl
 		void draw() override;
 
 	public:
+
+		void addTexture(const Texture::Ptr& texture) { textures.push_back(texture); }
+
+		void removeTexture(int index) { textures.erase(textures.begin() + index); }
+
+		std::vector<Texture::Ptr> getTextures() const { return textures; }
 
 		size_t getSize() const { return size; }
 
