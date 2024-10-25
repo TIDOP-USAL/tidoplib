@@ -25,7 +25,7 @@
 if(BUILD_APPS)
 
 add_subdirectory(crstrf)
-add_subdirectory(imageinfo)
+add_subdirectory(ImageManager)
 add_subdirectory(featextract)
 add_subdirectory(featmatch)
 endif()
