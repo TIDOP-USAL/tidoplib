@@ -85,7 +85,7 @@ void imageInfo(const Command::SharedPtr &command)
         }
 
     } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("'imageInfo()' exception");
+        TL_THROW_EXCEPTION_WITH_NESTED("Exception caught when retrieving the image information");
     }
 }
 
@@ -127,7 +127,7 @@ void convertImageFormat(const Command::SharedPtr &command)
         chrono.stop();
 
     } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("'imageInfo()' exception");
+        TL_THROW_EXCEPTION_WITH_NESTED("Exception caught on image format conversion");
     }
 }
 
