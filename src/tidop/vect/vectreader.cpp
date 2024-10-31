@@ -1462,6 +1462,8 @@ auto VectorReaderFactory::create(const Path &file) -> VectorReader::Ptr
 
     try {
 
+        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
+
         std::string extension = file.extension().toString();
 #ifdef TL_HAVE_GDAL
         if (driverAvailable(file)){

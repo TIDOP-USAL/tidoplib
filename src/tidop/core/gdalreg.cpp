@@ -57,7 +57,7 @@ GDALDriver* gdalDriver(const tl::Path &filename)
 {
     RegisterGdal::init();
 
-    if (!filename.exists()) return nullptr;
+    //if (!filename.exists()) return nullptr;
 
     auto file = filename.toString();
     GDALDriverH driver = GDALIdentifyDriver(file.c_str(), nullptr);

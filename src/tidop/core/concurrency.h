@@ -488,7 +488,7 @@ void QueueSPSC<T>::push(const T &value)
 
     conditionVariable.wait(locker, [this]() {
         return this->buffer().size() < this->capacity();
-                            });
+    });
 
     this->buffer().push(value);
     locker.unlock();
@@ -502,7 +502,7 @@ auto QueueSPSC<T>::pop(T& value) -> bool
 
     conditionVariable.wait(locker, [this]() {
         return !this->buffer().empty();
-                            });
+    });
 
     value = this->buffer().front();
     this->buffer().pop();
@@ -552,7 +552,7 @@ bool QueueMPMC<T>::pop(T &value)
 
     conditionVariable.wait(locker, [this]() {
         return !this->buffer().empty() || queueStop;
-                            });
+    });
 
     bool read_buffer = !this->buffer().empty();
 
