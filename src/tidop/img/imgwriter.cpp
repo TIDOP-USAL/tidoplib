@@ -307,8 +307,8 @@ public:
             }
 
             char **gdalOpt = nullptr;
-            if (imageOptions && !bTempFile) {
-                mImageOptions = imageOptions;
+            mImageOptions = imageOptions;
+            if (mImageOptions && !bTempFile) {
                 auto options = mImageOptions->activeOptions();
 #if CPP_VERSION >= 17
                 for (const auto &[name, value] : options) {
