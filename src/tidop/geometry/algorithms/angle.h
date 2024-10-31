@@ -50,7 +50,7 @@ double vectorAngle(const Point_t &v1, const Point_t &v2)
 {
     if (v1 == Point_t() || v2 == Point_t())
         return 0.0;
-    return acos((v1.x * v2.x + v1.y * v2.y) / (module(v1.x, v1.y) * module(v2.x, v2.y)));
+    return std::acos((v1.x * v2.x + v1.y * v2.y) / (module(v1.x, v1.y) * module(v2.x, v2.y)));
 }
 
 template<typename Point_t> inline

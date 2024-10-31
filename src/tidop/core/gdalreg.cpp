@@ -29,7 +29,8 @@
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
-#include "gdal.h"
+#include <gdal.h>
+#include <gdal_priv.h>
 TL_DEFAULT_WARNINGS
 #endif // TL_HAVE_GDAL
 
@@ -48,7 +49,32 @@ void RegisterGdal::init()
 
     std::call_once(init_flag, []() {
         GDALAllRegister();
-                   });
+    });
+}
+
+
+GDALDriver* gdalDriver(const tl::Path &filename)
+{
+    RegisterGdal::init();
+
+    //if (!filename.exists()) return nullptr;
+
+    auto file = filename.toString();
+    GDALDriverH driver = GDALIdentifyDriver(file.c_str(), nullptr);
+
+    //if (driver) {
+    //    std::cout << "Driver encontrado: " << GDALGetDriverShortName(driver)
+    //              << " - " << GDALGetDriverLongName(driver) << std::endl;
+    //} else {
+    //    std::cerr << "No se encontró un driver para el archivo: " << filename << std::endl;
+    //}
+
+    return (GDALDriver*)driver;
+}
+
+bool driverAvailable(const tl::Path &filename)
+{
+    return gdalDriver(filename) != nullptr;
 }
 
 #endif

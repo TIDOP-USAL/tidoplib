@@ -257,7 +257,7 @@ struct ArgTraits
 template<>
 struct ArgTraits<bool>
 {
-    using value_type = float;
+    using value_type = bool;
     static constexpr auto property_type = Argument::Type::arg_bool;
     static constexpr auto type_name = "bool";
 };

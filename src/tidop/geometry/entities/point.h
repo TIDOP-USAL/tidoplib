@@ -129,6 +129,17 @@ public:
      */
     auto dynVector() const -> Vector<T>;
 
+    friend std::ostream &operator<<(std::ostream &os, const Point<T> &p)
+    {
+        os << p.x << " " << p.y;
+        return os;
+    }
+
+    friend std::istream &operator>>(std::istream &is, Point<T> &p)
+    {
+        is >> p.x >> p.y;
+        return is;
+    }
 };
 
 
@@ -229,6 +240,17 @@ public:
      */
     auto dynVector() const -> Vector<T>;
 
+    friend std::ostream &operator<<(std::ostream &os, const Point3<T> &p)
+    {
+        os << p.x << " " << p.y << " " << p.z;
+        return os;
+    }
+
+    friend std::istream &operator>>(std::istream &is, Point3<T> &p)
+    {
+        is >> p.x >> p.y >> p.z;
+        return is;
+    }
 };
 
 

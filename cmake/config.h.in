@@ -39,7 +39,7 @@
 
 /* TidopLib Modules */
 
-//#cmakedefine TL_HAVE_CORE
+#cmakedefine TL_HAVE_CORE
 #cmakedefine TL_HAVE_MATH
 #cmakedefine TL_HAVE_GEOMETRY
 #cmakedefine TL_HAVE_IMG
@@ -84,6 +84,7 @@
 #cmakedefine TL_HAVE_MINIZIP
 
 #cmakedefine TL_HAVE_OPENBLAS
+#cmakedefine TL_HAVE_CUDA
 
 
 // SIMD INTRINSICS
@@ -97,6 +98,7 @@
 #cmakedefine TL_HAVE_AVX512
 #cmakedefine TL_HAVE_SIMD_INTRINSICS
 
+#define TL_DATA_PATH "${CMAKE_SOURCE_DIR}\\test\\data"
 
 /// https://philippegroarke.com/blog/2017/11/20/simplifying-compile-time-options-with-if-constexpr/
 

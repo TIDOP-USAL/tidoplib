@@ -172,9 +172,10 @@ void Thinning::thinningGuoHall(cv::Mat &image,
                 uchar p7 = image.at<uchar>(i + 1, j - 1);
                 uchar p8 = image.at<uchar>(i, j - 1);
                 uchar p9 = image.at<uchar>(i - 1, j - 1);
-
+TL_DISABLE_WARNING_GCC("-Wparentheses")
                 int C = (!p2 & (p3 | p4)) + (!p4 & (p5 | p6)) +
                     (!p6 & (p7 | p8)) + (!p8 & (p9 | p2));
+TL_ENABLE_WARNING_GCC("-Wparentheses")
                 int N1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
                 int N2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
                 int N = N1 < N2 ? N1 : N2;

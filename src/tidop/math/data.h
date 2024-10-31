@@ -94,6 +94,13 @@ public:
 
     auto operator=(T value) -> Data&;
 
+    auto operator == (const Data &data) const -> bool;
+    auto operator != (const Data &data) const -> bool;
+    auto operator < (const Data &data) const -> bool;
+    auto operator <= (const Data &data) const -> bool;
+    auto operator > (const Data &data) const -> bool;
+    auto operator >= (const Data &data) const -> bool;
+
     auto front() -> reference;
     auto front() const->const_reference;
     auto back() -> reference;
@@ -289,6 +296,42 @@ auto Data<T, _size>::operator=(T value) -> Data &
 {
     mData.fill(value);
     return *this;
+}
+
+template<typename T, size_t _size>
+auto Data<T, _size>::operator == (const Data &data) const -> bool
+{
+    return this->mData == data.mData;
+}
+
+template<typename T, size_t _size>
+auto Data<T, _size>::operator != (const Data &data) const -> bool
+{
+    return this->mData != data.mData;
+}
+
+template<typename T, size_t _size>
+auto Data<T, _size>::operator < (const Data &data) const -> bool
+{
+    return this->mData < data.mData;
+}
+
+template<typename T, size_t _size>
+auto Data<T, _size>::operator <= (const Data &data) const -> bool
+{
+    return this->mData <= data.mData;
+}
+
+template<typename T, size_t _size>
+auto Data<T, _size>::operator > (const Data &data) const -> bool
+{
+    return this->mData > data.mData;
+}
+
+template<typename T, size_t _size>
+auto Data<T, _size>::operator >= (const Data &data) const -> bool
+{
+    return this->mData >= data.mData;
 }
 
 template<typename T, size_t _size>

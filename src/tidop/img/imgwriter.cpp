@@ -51,8 +51,14 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
     GDALDataType ret = GDT_Unknown;
     switch (dataType) {
     case DataType::TL_8U:
-    case DataType::TL_8S:
         ret = GDT_Byte;
+        break;
+    case DataType::TL_8S:
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
+        ret = GDT_Int8;
+#else
+        ret = GDT_Int16;
+#endif
         break;
     case DataType::TL_16U:
         ret = GDT_UInt16;
@@ -132,13 +138,13 @@ void ImageWriter::windowWrite(const WindowI &window,
 #ifdef TL_HAVE_GDAL
 
 class ImageWriterGdal
-  : public ImageWriter
+    : public ImageWriter
 {
 
 public:
 
     ImageWriterGdal(tl::Path file)
-      : ImageWriter(std::move(file)),
+        : ImageWriter(std::move(file)),
         mDataset(nullptr),
         mDriver(nullptr),
         mValidDataTypes(DataType::TL_8U),
@@ -148,7 +154,7 @@ public:
         mImageOptions(nullptr),
         mImageMetadata(nullptr),
 #ifdef _DEBUG
-        mSpatialReference(static_cast<OGRSpatialReference*>(OSRNewSpatialReference(nullptr)))
+        mSpatialReference(static_cast<OGRSpatialReference *>(OSRNewSpatialReference(nullptr)))
 #else
         mSpatialReference(new OGRSpatialReference(nullptr))
 #endif
@@ -229,16 +235,16 @@ public:
                         gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
                     }
                 }
-                GDALDataset *tempDataSet = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
-                if (!tempDataSet) {
+                GDALDataset *temp_data_set = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
+                if (!temp_data_set) {
                     Message::error("No se pudo crear la imagen");
                 } else {
-                    GDALClose(static_cast<GDALDatasetH>(tempDataSet));
+                    GDALClose(static_cast<GDALDatasetH>(temp_data_set));
                 }
 
             }
 
-            char** tmp = mDataset->GetFileList();
+            char **tmp = mDataset->GetFileList();
 
             GDALClose(mDataset);
             mDataset = nullptr;
@@ -248,7 +254,7 @@ public:
                     Path::removeFile(Path(tmp[i]));
                     //std::remove(tmp[i]);
                 }
-                    
+
             }
         }
 
@@ -256,20 +262,37 @@ public:
         mTempFile.clear();
     }
 
-    void setImageOptions(ImageOptions * imageOptions) override
-    {
-        mImageOptions = imageOptions;
-    }
-
-    void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) override
+    void setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) override
     {
         mImageMetadata = imageMetadata;
+
+        if (mDataset) {
+
+            char **gdalMetadata = nullptr;
+
+            if (mImageMetadata) {
+                std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+#if CPP_VERSION >= 17
+                for (const auto &[name, value] : active_metadata) {
+#else
+                for (const auto &metadata : active_metadata) {
+                    auto &name = metadata.first;
+                    auto &value = metadata.second;
+#endif
+                    gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
+                }
+            }
+
+            mDataset->SetMetadata(gdalMetadata);
+        }
+
     }
 
     void create(int rows,
                 int cols,
                 int bands,
-                DataType type) override
+                DataType type,
+                const std::shared_ptr<ImageOptions> &imageOptions) override
     {
         try {
 
@@ -284,6 +307,7 @@ public:
             }
 
             char **gdalOpt = nullptr;
+            mImageOptions = imageOptions;
             if (mImageOptions && !bTempFile) {
                 auto options = mImageOptions->activeOptions();
 #if CPP_VERSION >= 17
@@ -387,10 +411,20 @@ public:
             GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
             TL_ASSERT(gdal_data_type_in == gdal_data_type, "Input image depth is different to output image depth");
 
-            uchar *buff = const_cast<uchar *>(image_to_write.isContinuous() ? image_to_write.ptr() : image_to_write.clone().ptr());
-            int nPixelSpace = static_cast<int>(image_to_write.elemSize());
-            int nLineSpace = nPixelSpace * image_to_write.cols;
-            int nBandSpace = static_cast<int>(image_to_write.elemSize1());
+            // Esto me da problemas con un TIFF
+            //uchar *buff;
+            //if (image_to_write.isContinuous()){
+            //    buff = image_to_write.ptr();
+            //} else {
+            //    cv::Mat m = image_to_write.clone();
+            //    buff = m.ptr();
+            //}
+            uchar *buff = image_to_write.ptr();
+
+
+            int pixel_space = static_cast<int>(image_to_write.elemSize());
+            int line_space = pixel_space * image_to_write.cols;
+            int band_space = static_cast<int>(image_to_write.elemSize1());
 
             //GDALRasterBand *band = nullptr;
 
@@ -437,8 +471,8 @@ public:
                                              rect_to_write.width, rect_to_write.height, buff,
                                              image_to_write.cols, image_to_write.rows,
                                              gdal_data_type, image_to_write.channels(),
-                                             gdalBandOrder(image_to_write.channels()).data(), nPixelSpace,
-                                             nLineSpace, nBandSpace);
+                                             gdalBandOrder(image_to_write.channels()).data(), pixel_space,
+                                             line_space, band_space);
 
             if (cerr != 0) {
                 throw TL_ERROR("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
@@ -602,7 +636,7 @@ private:
     bool bTempFile;
     Path mTempFile;
     DataType mDataType;
-    ImageOptions *mImageOptions;
+    std::shared_ptr<ImageOptions> mImageOptions;
     std::shared_ptr<ImageMetadata> mImageMetadata;
     OGRSpatialReference *mSpatialReference;
 };

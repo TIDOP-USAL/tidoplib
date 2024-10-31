@@ -656,14 +656,11 @@ auto DescriptiveStatistics<T>::kurtosis() const -> double
     if (n <= 1) return consts::zero<double>;
 
     double _mean = mean();
-    double dif{};
-    double dif2{};
     double _kurtosis{};
 
     for (const auto &data : mData) {
-        dif = static_cast<double>(data) - _mean;
-        dif2 = dif * dif;
-        _kurtosis += dif2 * dif2;
+        double dif = static_cast<double>(data) - _mean;
+        _kurtosis += std::pow(dif, 4);
     }
 
     double _variance = variance();
@@ -685,6 +682,9 @@ template<typename T>
 auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
 {
     size_t n = size();
+
+    if (n < (mConfig.sample ? 4 : 1)) return consts::zero<double>;
+
     double kurtosis_excess{};
 
     if (mConfig.sample) {
@@ -792,7 +792,11 @@ void DescriptiveStatistics<T>::computeMinMax() const
 template<typename T>
 void DescriptiveStatistics<T>::computeMean() const
 {
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    mMean = tl::mean(mData.begin(), mData.end(), true);
+#else
     mMean = tl::mean(mData.begin(), mData.end());
+#endif
 
     mStatus.enable(InternalStatus::mean);
 }
@@ -801,11 +805,33 @@ template<typename T>
 void DescriptiveStatistics<T>::computeSumOfSquares() const
 {   
     double _mean = mean();
+    size_t i{0};
 
-    for (const auto &data : mData) {
-        double dif = static_cast<double>(data) - _mean;
+//#ifdef TL_HAVE_SIMD_INTRINSICS
+//
+//    Packed<T> packed;
+//    Packed<T> packed_mean(_mean);
+//
+//    constexpr size_t packed_size = packed.size();
+//    size_t max_vector = (mData.size() / packed_size) * packed_size;
+//
+//    for (i = 0; i < max_vector; i += packed_size) {
+//        packed.loadUnaligned(&mData[i]);
+//        auto dif = packed - packed_mean;
+//        mSumOfSquares += (dif * dif).sum();
+//    }
+//
+//#endif
+
+    for (; i < mData.size(); i++) {
+        double dif = static_cast<double>(mData[i]) - _mean;
         mSumOfSquares += dif * dif;
     }
+
+    //for (const auto &data : mData) {
+    //    double dif = static_cast<double>(data) - _mean;
+    //    mSumOfSquares += dif * dif;
+    //}
 
     mStatus.enable(InternalStatus::sum_of_squares);
 }

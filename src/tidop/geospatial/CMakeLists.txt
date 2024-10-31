@@ -71,7 +71,7 @@ if (BUILD_TL_GEOSPATIAL)
                           TidopLib::Img
                           TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          #$<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})

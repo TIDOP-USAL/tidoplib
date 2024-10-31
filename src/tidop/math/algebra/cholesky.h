@@ -74,9 +74,6 @@ public:
 private:
 
     void decompose();
-#ifdef TL_HAVE_OPENBLAS
-    void lapackeDecompose();
-#endif // TL_HAVE_OPENBLAS
 
 protected:
 
@@ -95,11 +92,7 @@ CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::CholeskyDecomposition(const Ma
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-#ifdef TL_HAVE_OPENBLAS
-    this->lapackeDecompose();
-#else
     this->decompose();
-#endif // TL_HAVE_OPENBLAS
 
     for (size_t i = 0; i < mRows; i++) {
         for (size_t j = 0; j < i; j++) {
@@ -150,7 +143,13 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+#ifdef TL_HAVE_OPENBLAS
+    lapack_int info;
 
+    info = lapack::potrf(L.rows(), L.data(), L.cols());
+
+    TL_ASSERT(info >= 0, "Cholesky decomposition failed");
+#else
     for (size_t i = 0; i < mRows; i++) {
 
         for (size_t j = i; j < mRows; j++) {
@@ -162,7 +161,7 @@ void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
             }
 
             if (i == j) {
-                TL_ASSERT(sum > 0.0, "Cholesky failed");
+                TL_ASSERT(sum > 0.0, "Cholesky decomposition failed");
                 L[i][i] = sqrt(sum);
             } else {
                 L[j][i] = sum / L[i][i];
@@ -170,25 +169,8 @@ void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
         }
     }
+#endif
 }
-
-#ifdef TL_HAVE_OPENBLAS
-
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
-{
-    lapack_int info;
-
-    info = lapack::potrf(L.rows(), L.data(), L.cols());
-
-    TL_ASSERT(info >= 0, "Cholesky Decomposition failed");
-
-}
-
-#endif // TL_HAVE_OPENBLAS
 
 template<
     template<typename, size_t, size_t>

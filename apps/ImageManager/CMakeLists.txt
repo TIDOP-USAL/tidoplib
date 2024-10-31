@@ -28,7 +28,7 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
     include_directories(${CMAKE_SOURCE_DIR}/src)
 
 
-    project(imageinfo LANGUAGES CXX)
+    project(ImageManager LANGUAGES CXX)
     
     if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
@@ -36,7 +36,7 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
     endif()
     
       
-    add_executable(${PROJECT_NAME} imageinfo.cpp)
+    add_executable(${PROJECT_NAME} image_manager.cpp)
     
     target_compile_definitions(${PROJECT_NAME} PRIVATE
                                $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
@@ -53,17 +53,22 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
-                          OUTPUT_NAME ${PROJECT_NAME}
+                          OUTPUT_NAME image_manager
                           PROJECT_LABEL ${PROJECT_NAME}
-                          FOLDER "apps/imageinfo")
+                          FOLDER "apps/ImageManager")
     
     if(WIN32)
-      if (MSVC AND NOT BUILD_SHARED_LIBS)
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
-      endif()
+        if (MSVC AND NOT BUILD_SHARED_LIBS)
+            set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
+        endif()
     endif()
 
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin)
+
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    endif(MSVC)
+
 endif()

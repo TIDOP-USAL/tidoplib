@@ -119,7 +119,8 @@ public:
 
     auto size() const -> size_t;
 
-    auto operator[](size_t idx) -> T;
+    auto operator[](size_t idx) -> reference;
+    auto operator[](size_t idx) const -> const_reference;
     auto operator[](const std::string &idx) -> T;
 
     //void setData(std::initializer_list<T> data);
@@ -228,23 +229,35 @@ auto Series<T>::size() const -> size_t
 }
 
 template<typename T>
-auto Series<T>::operator[](size_t idx) -> T
+auto Series<T>::operator[](size_t idx) -> reference
 {
-    T value{};
-
     if (mIndex.empty()) {
-        value = mData[idx];
+        return mData[idx];
     } else {
-
         for (size_t i = 0; i < mIndex.size(); i++) {
             if (idx == mIndex[i]) {
-                value = mData[i];
-                break;
+                return mData[i];
             }
         }
     }
 
-    return value;
+    TL_THROW_EXCEPTION("");
+}
+
+template<typename T>
+auto Series<T>::operator[](size_t idx) const -> const_reference
+{
+    if (mIndex.empty()) {
+        return mData[idx];
+    } else {
+        for (size_t i = 0; i < mIndex.size(); i++) {
+            if (idx == mIndex[i]) {
+                return mData[i];
+            }
+        }
+    }
+
+    TL_THROW_EXCEPTION("");
 }
 
 template<typename T>

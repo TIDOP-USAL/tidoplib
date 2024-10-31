@@ -94,6 +94,29 @@ auto potrf(lapack_int rows, T* a, lapack_int lda) -> enableIfDouble<T, lapack_in
 }
 
 
+/* Descomposición QR */
+
+template<typename T>
+auto geqrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda) -> enableIfFloat<T, lapack_int>
+{
+    std::vector<double> tau(std::min(rows, cols)); 
+
+    lapack_int info = LAPACKE_sgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, tau.data());
+    return info;
+}
+
+template<typename T> 
+auto geqrf(lapack_int rows, lapack_int cols, T *a, lapack_int lda) -> enableIfDouble<T, lapack_int>
+{
+    std::vector<double> tau(std::min(rows, cols)); 
+
+    lapack_int info = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, tau.data());
+    return info;
+}
+
+
+
+
 /* SVD (Singular value decomposition) */
 
 template<typename T> 

@@ -305,7 +305,7 @@ public:
      * \return Argument
      */
     template<typename T>
-    T value(const std::string &name) const
+    auto value(const std::string &name) const -> T
     {
         T _value{};
 
@@ -327,7 +327,7 @@ public:
      * \return Argument
      */
     template<typename T>
-    T value(const char &shortName) const
+    auto value(const char &shortName) const -> T
     {
         T _value{};
 

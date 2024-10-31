@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-105.01621, 39.57422]
+      },
+      "properties": {
+        "name": "Ubicación de ejemplo"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-105.01621, 39.57422],
+          [-105.00376, 39.59931]
+        ]
+      },
+      "properties": {
+        "name": "Línea de ejemplo"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-105.02311, 39.60058],
+            [-105.01431, 39.59781],
+            [-105.01114, 39.60235],
+            [-105.02311, 39.60058]
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Polígono de ejemplo"
+      }
+    }
+  ]
+}

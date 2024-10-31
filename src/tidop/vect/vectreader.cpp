@@ -189,24 +189,34 @@ public:
         return crs_wkt;
     }
 
-    static auto isExtensionSupported(const std::string& extension) -> bool
-    {
-      bool bSupported = false;
-    
-      if (compareInsensitiveCase(extension, ".dxf") ||
-          compareInsensitiveCase(extension, ".dwg") ||
-          compareInsensitiveCase(extension, ".dgn") ||
-          compareInsensitiveCase(extension, ".shp") ||
-          compareInsensitiveCase(extension, ".gml") ||
-          compareInsensitiveCase(extension, ".kml") ||
-          compareInsensitiveCase(extension, ".kmz") ||
-          compareInsensitiveCase(extension, ".json") ||
-          compareInsensitiveCase(extension, ".osm")) {
-        bSupported = true;
-      }
-    
-      return bSupported;
-    }
+    //static auto isExtensionSupported(const std::string &extension) -> bool
+    //{
+    //    RegisterGdal::init();
+
+    //    if (compareInsensitiveCase(extension, ".dxf") ||
+    //        compareInsensitiveCase(extension, ".dwg") ||
+    //        compareInsensitiveCase(extension, ".dgn") ||
+    //        compareInsensitiveCase(extension, ".shp") ||
+    //        compareInsensitiveCase(extension, ".osm")) {
+    //        return true;
+    //    } else if (compareInsensitiveCase(extension, ".gml") && 
+    //               GetGDALDriverManager()->GetDriverByName("GML")) {
+    //        return true;
+    //    } else if ((compareInsensitiveCase(extension, ".json") ||
+    //               compareInsensitiveCase(extension, ".geojson")) && 
+    //               GetGDALDriverManager()->GetDriverByName("GeoJSON")) {
+    //        return true;
+    //    } else if (compareInsensitiveCase(extension, ".kml") && 
+    //               (GetGDALDriverManager()->GetDriverByName("KML") || 
+    //                GetGDALDriverManager()->GetDriverByName("LIBKML"))) {
+    //        return true;
+    //    } else if (compareInsensitiveCase(extension, ".kmz") && 
+    //               GetGDALDriverManager()->GetDriverByName("LIBKML")) {
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
 
 private:
 
@@ -276,6 +286,8 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
 {
     std::shared_ptr<GLayer> layer(new GLayer);
 
+    ogrLayer->ResetReading();
+
     ////////////////////////////////////////////////////////////////////
     // Definición de campos asociados a las entidades
 
@@ -299,11 +311,7 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
 
     OGRFeature *ogr_feature = nullptr;
 
-    for (int i = 0; i < ogrLayer->GetFeatureCount(); i++) {
-        ogr_feature = ogrLayer->GetFeature(i);
-        //}
-        //
-        //while ((ogrFeature = ogrLayer->GetNextFeature()) != nullptr) {
+    while ((ogr_feature = ogrLayer->GetNextFeature()) != nullptr) {
 
         const char *driver_name = mDataset->GetDriverName();
         const char *layer_name;
@@ -505,13 +513,13 @@ auto VectorReaderGdal::readEntity(OGRGeometry *ogrGeometry) -> std::shared_ptr<G
             graphic_entity = readMultiPoint3D(dynamic_cast<OGRMultiPoint *>(ogrGeometry));
         break;
     case wkbMultiLineString25D:
-        if (dim == 0)
+        if (dim == 2)
             graphic_entity = readMultiLineString(dynamic_cast<OGRMultiLineString *>(ogrGeometry));
         else
             graphic_entity = readMultiLineString3D(dynamic_cast<OGRMultiLineString *>(ogrGeometry));
         break;
     case wkbMultiPolygon25D:
-        if (dim == 0)
+        if (dim == 2)
             graphic_entity = readMultiPolygon(dynamic_cast<OGRMultiPolygon *>(ogrGeometry));
         else
             graphic_entity = readMultiPolygon3D(dynamic_cast<OGRMultiPolygon *>(ogrGeometry));
@@ -728,22 +736,23 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
         auto np = static_cast<size_t>(ogr_linear_ring->getNumPoints());
         (*multi_polygon)[i].resize(np);
 
-        for (size_t j = 0; j < size; j++) {
+        for (size_t j = 0; j < np; j++) {
             (*multi_polygon)[i][j].x = ogr_linear_ring->getX(static_cast<int>(j));
             (*multi_polygon)[i][j].y = ogr_linear_ring->getY(static_cast<int>(j));
         }
 
-        //int nir = ogr_polygon->getNumInteriorRings();
-        for (size_t k = 0; k < size; k++) {
-            ogr_linear_ring = ogr_polygon->getInteriorRing(static_cast<int>(k));
-            int nr = ogr_linear_ring->getNumPoints();
+        int nir = ogr_polygon->getNumInteriorRings();
+        for (size_t k = 0; k < nir; k++) {
+            const OGRLinearRing *ogr_interior_ring = ogr_polygon->getInteriorRing(static_cast<int>(k));
+            int nr = ogr_interior_ring->getNumPoints();
             PolygonHole<Point<double>> hole(nr);
             for (int j = 0; j < nr; j++) {
-                hole[j] = Point<double>(ogr_linear_ring->getX(j),
-                                        ogr_linear_ring->getY(j));
+                hole[j] = Point<double>(ogr_interior_ring->getX(j),
+                                        ogr_interior_ring->getY(j));
             }
             (*multi_polygon)[i].addHole(hole);
         }
+        //}
 
     }
 
@@ -773,8 +782,8 @@ auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> s
             (*multi_polygon)[i][j].z = ogr_linear_ring->getZ(static_cast<int>(j));
         }
 
-        //int nir = ogr_polygon->getNumInteriorRings();
-        for (size_t k = 0; k < size; k++) {
+        int nir = ogr_polygon->getNumInteriorRings();
+        for (size_t k = 0; k < nir; k++) {
             ogr_linear_ring = ogr_polygon->getInteriorRing(static_cast<int>(k));
             auto nr = static_cast<size_t>(ogr_linear_ring->getNumPoints());
             Polygon3DHole<Point3<double>> hole(nr);
@@ -1070,7 +1079,6 @@ void VectorReaderGdal::readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *bru
 
 auto VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> std::shared_ptr<Symbol>
 {
-    GBool bDefault = false;
     auto symbol = std::make_shared<Symbol>();
 
     readSymbolAngle(ogrStyleSymbol, symbol.get());
@@ -1454,9 +1462,12 @@ auto VectorReaderFactory::create(const Path &file) -> VectorReader::Ptr
 
     try {
 
+        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
+
         std::string extension = file.extension().toString();
 #ifdef TL_HAVE_GDAL
-        if (VectorReaderGdal::isExtensionSupported(extension)) {
+        if (driverAvailable(file)){
+        //if (VectorReaderGdal::isExtensionSupported(extension)) {
             vector_reader = VectorReaderGdal::New(file);
         } else
 #endif

@@ -88,7 +88,7 @@ private:
     void decompose();
     void reorder();
 #ifdef TL_HAVE_OPENBLAS
-    void lapackeDecompose();
+    void lapackDecompose();
 #endif // TL_HAVE_OPENBLAS
 
 private:
@@ -122,7 +122,7 @@ SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(
     W = Vector<T, Cols>(mCols);
 
 #ifdef TL_HAVE_OPENBLAS
-    this->lapackeDecompose();
+    this->lapackDecompose();
 #else
     eps = std::numeric_limits<T>::epsilon();
     this->decompose();
@@ -459,7 +459,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-inline void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackeDecompose()
+inline void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackDecompose()
 {
     lapack_int info;
     lapack_int lda = static_cast<int>(mCols);

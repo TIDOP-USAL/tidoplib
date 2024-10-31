@@ -31,7 +31,7 @@ cmake_policy(SET CMP0146 OLD)
 endif()
 
 project(TidopLib
-        VERSION 3.0.0
+        VERSION 3.1.0
         DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
@@ -178,7 +178,7 @@ include(CMakeDependentOption)
 include(CompilerInfo)
 include(OperatingSystemInfo)
 include(TidopLibSIMDSupport)
-
+include(TidopUtils)
 
 ##########################################################################
 #  Modulos TidopLib                                                      #
@@ -321,7 +321,7 @@ OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 cmake_dependent_option(WITH_OpenBLAS "Include OpenBLAS" OFF "BUILD_TL_MATH" OFF)
 OPTION (WITH_OPENMP   "Include OpenMP"                        OFF)
-
+OPTION (WITH_CUDA     "Include CUDA"                        OFF)
 
 
 
@@ -374,11 +374,13 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
     set(Boost_USE_STATIC_LIBS        ON) # only find static libs
     set(Boost_USE_MULTITHREADED      ON)
     set(Boost_USE_STATIC_RUNTIME     OFF)
-
+       
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
     find_package(Boost 1.50 COMPONENTS REQUIRED
                 filesystem 
                 system 
                 unit_test_framework)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
     if(Boost_FOUND)
         message(STATUS "  Boost version: ${Boost_VERSION}")
@@ -392,6 +394,8 @@ endif()
 
 
 if(BUILD_TL_VIEWER)
+
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
 
 	##########################################################################
 	# GLEW                                                      			 #
@@ -409,23 +413,27 @@ if(BUILD_TL_VIEWER)
 				 OpenGL  
 				 Widgets
 				 OpenGLWidgets)
-	  
+
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
+
 	if (Qt6_POSITION_INDEPENDENT_CODE)
 	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 	endif()
 
 	if(Qt6_FOUND)
-		message(STATUS "Found Qt")
-		message(STATUS "  Module : ${Qt6Core_DIR}")
-		message(STATUS "  Module : ${Qt6Concurrent_DIR}")
-		message(STATUS "  Module : ${Qt6OpenGL_DIR}")
-		message(STATUS "  Module : ${Qt6Widgets_DIR}")
-		message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+		message(STATUS "  Qt version: ${Qt6_VERSION}")
+		#message(STATUS "  Module : ${Qt6Core_DIR}")
+		#message(STATUS "  Module : ${Qt6Concurrent_DIR}")
+		#message(STATUS "  Module : ${Qt6OpenGL_DIR}")
+		#message(STATUS "  Module : ${Qt6Widgets_DIR}")
+		#message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
 
 		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
 		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
 		set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
 		set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+    else()
+        message(STATUS "  Qt not found")
 	endif()
 
     
@@ -438,8 +446,9 @@ if(BUILD_TL_VIEWER)
     ##########################################################################
 	# LASLib                                                                 #
 	##########################################################################
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
     find_package(LASLib REQUIRED)
-
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
 endif()
 
@@ -588,7 +597,7 @@ if(WITH_OPENMP)
   
   if(OpenMP_FOUND)
     set(TL_HAVE_OPENMP YES)
-    message(STATUS "  OpenMP enable")
+    message(STATUS "  OpenMP ${OpenMP_VERSION} found")
   else()
     set(TL_HAVE_OPENMP NO)
   endif()
@@ -613,10 +622,47 @@ if(WITH_VLD)
 endif(WITH_VLD)
 
 ##########################################################################
+# CUDA (optional)                                                        #
+##########################################################################
+
+if(WITH_CUDA)
+
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(CUDA)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
+
+    if(NOT CUDA_FOUND)
+        set(TL_HAVE_CUDA NO)
+         message(STATUS "  Cuda not found")
+    else()
+        message(STATUS "  Cuda version: ${CUDA_VERSION}")
+        include_directories(${CUDA_INCLUDE_DIRS})
+        set(TL_HAVE_CUDA YES)
+    endif()
+
+endif(WITH_CUDA)
+
+##########################################################################
+
+
 
 # Directorio con la documentación
 add_subdirectory(doc)
 
+
+if(MSVC)
+
+# TidopLib enviroment file
+set(TL_ENV_FILE "${CMAKE_SOURCE_DIR}/.env")
+
+if(NOT EXISTS ${TL_ENV_FILE})
+    configure_file("${CMAKE_SOURCE_DIR}/.env.in" ${TL_ENV_FILE} COPYONLY)
+endif()
+
+# Read the .env file
+read_env_file(${TL_ENV_FILE})
+
+endif(MSVC)
 
 
 message(STATUS "\nTidop modules:\n")

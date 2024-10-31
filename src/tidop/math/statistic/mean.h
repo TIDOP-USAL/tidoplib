@@ -26,6 +26,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/common.h"
+#include "tidop/math/simd.h"
 
 namespace tl
 {
@@ -52,32 +53,75 @@ namespace tl
   * It is very sensitive to outliers.
   * \param[in] first Iterator to the beginning
   * \param[in] last Iterator to the end
+  * \param[in] isContiguousContainer For contiguous containers (std::vector, std::array) the calculation is done with simd 
   * \return Value of the mean
   */
 template<typename It>
-auto mean(It first, It last) -> enableIfIntegral<iteratorValueType<It>,double>
+auto mean(It first, It last, bool isContiguousContainer = false) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     double x{0};
-    double i{1};
+    double i{0};
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    using T = std::remove_cv_t<iteratorValueType<It>>;
+
+    if (isContiguousContainer) {
+
+        Packed<T> packed_a;
+
+        constexpr size_t packed_size = packed_a.size();
+        size_t dist = std::distance(first, last);
+        i = static_cast<double>(dist - dist % packed_size);
+
+        while (std::distance(first, last) >= packed_size) {
+
+            packed_a.loadUnaligned(&(*first));
+            x += static_cast<double>(packed_a.sum()) / i;
+            first = std::next(first, packed_size);
+        }
+    }
+
+#endif
 
     while (first != last) {
-        x += (static_cast<double>(*first++) - x) / i++;
+        x += (static_cast<double>(*first++) - x) / ++i;
     }
 
     return x;
+
 }
 
 template<typename It>
-auto mean(It first, It last) -> enableIfFloating<iteratorValueType<It>,
-                                std::remove_cv_t<iteratorValueType<It>>>
+auto mean(It first, It last, bool isContiguousContainer = false) -> enableIfFloating<iteratorValueType<It>, 
+                                                                    std::remove_cv_t<iteratorValueType<It>>>
 {
     using T = std::remove_cv_t<iteratorValueType<It>>;
-
     T x{0};
-    T i{1};
+    T i{0};
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    if (isContiguousContainer) {
+
+        Packed<T> packed_a;
+
+        constexpr size_t packed_size = packed_a.size();
+        size_t dist = std::distance(first, last);
+        i = static_cast<T>(dist - dist % packed_size);
+
+        while (std::distance(first, last) >= packed_size) {
+
+            packed_a.loadUnaligned(&(*first));
+            x += (packed_a / i).sum();
+            first = std::next(first, packed_size);
+        }
+    }
+
+#endif
 
     while (first != last) {
-        x += (*first++ - x) / i++;
+        x += (*first++ - x) / ++i;
     }
 
     return x;

@@ -104,6 +104,10 @@ public:
 
     auto isGeocentric() const -> bool;
     auto isGeographic() const -> bool;
+    auto isProjected() const -> bool;
+    auto isLocal() const -> bool;
+    auto isVertical() const -> bool;
+    auto isCompound() const -> bool;
     auto isValid() const -> bool;
 
 protected:

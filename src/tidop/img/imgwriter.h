@@ -81,15 +81,9 @@ public:
     virtual void close() = 0;
 
     /*!
-     * \brief Sets the options for the creation of the image format
-     * \param[in] imageOptions Image options
-     */
-    virtual void setImageOptions(ImageOptions *imageOptions) = 0;
-
-    /*!
      * \brief Sets the image metadata
      */
-    virtual void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
+    virtual void setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
 
     /*!
      * \brief Create an image
@@ -97,12 +91,14 @@ public:
      * \param[in] cols Number of columns of the image
      * \param[in] bands Number of bands in the picture
      * \param[in] type Data type
+     * \param[in] imageOptions Image options
      * \see DataType
      */
     virtual void create(int rows,
                         int cols,
                         int bands,
-                        DataType type) = 0;
+                        DataType type,
+                        const std::shared_ptr<ImageOptions> &imageOptions = nullptr) = 0;
 
     /*!
      * \brief Write on the image

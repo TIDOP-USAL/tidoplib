@@ -24,23 +24,22 @@
  
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-project(test)
-
 set(test_filename vector_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
-set(test_target "${test_name}")
 
-add_executable(${test_target} 
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
                ${test_filename}
                ${CMAKE_SOURCE_DIR}/src/tidop/math/algebra/vector.h)
 
-target_link_libraries(${test_target}
+target_link_libraries(${PROJECT_NAME}
                       TidopLib::Core
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
-set_target_properties(${test_target} PROPERTIES
-                      OUTPUT_NAME ${test_target}
-                      PROJECT_LABEL "(TEST) ${test_name}" 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}" 
                       FOLDER "test/math")
 
-add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

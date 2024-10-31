@@ -26,9 +26,10 @@
 
 #include "tidop/math/math.h"
 #include "tidop/core/exception.h"
+#include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/lapack.h"
-
+#include "tidop/math/cuda.h"
 
 namespace tl
 {
@@ -68,28 +69,25 @@ public:
     LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
     ~LuDecomposition();
 
-    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
-    auto solve(const Matrix_t<T, _rows, _cols>& b) -> Matrix_t<T, _rows, _cols>;
+    auto solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>;
+    auto solve(const Matrix_t<T, _rows, _cols> &b) const -> Matrix_t<T, _rows, _cols>;
     auto lu() const -> Matrix_t<T, _rows, _cols>;
 
     auto determinant() const -> T;
-    //Matrix_t<T, _rows, _cols> inverse();
 
 private:
 
     void decompose();
-    auto findMaxElementsByRows() -> Vector<T, _rows>;
-#ifdef TL_HAVE_OPENBLAS
-    void lapackeDecompose();
-#endif // TL_HAVE_OPENBLAS
+    auto findMaxElementsByRows() const -> Vector<T, _rows>;
 
 private:
 
     Matrix_t<T, _rows, _cols> LU;
-#ifndef TL_HAVE_OPENBLAS 
-    Vector<size_t, _rows> mPivotIndex;
+//#if defined(TL_HAVE_OPENBLAS) || defined(TL_HAVE_CUDA) 
+#if defined(TL_HAVE_OPENBLAS)
+    int *mPivotIndex;
 #else
-    lapack_int *mPivotIndex;
+    Vector<size_t, _rows> mPivotIndex;
 #endif
     T d;
     size_t mRows;
@@ -102,20 +100,18 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _rows, _cols> &a)
     : LU(a),
-#ifndef TL_HAVE_OPENBLAS 
-    mPivotIndex(a.rows()),
+//#if defined(TL_HAVE_OPENBLAS) || defined(TL_HAVE_CUDA) 
+#if defined(TL_HAVE_OPENBLAS)
+    mPivotIndex(new int[a.rows()]),
 #else
-    mPivotIndex(new lapack_int[a.rows()]),
+    mPivotIndex(a.rows()),
 #endif
-    mRows(a.rows())
+    d(consts::one<T>),
+    mRows(a.rows()) 
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-#ifdef TL_HAVE_OPENBLAS
-    this->lapackeDecompose();
-#else
     this->decompose();
-#endif // TL_HAVE_OPENBLAS
 
 }
 
@@ -125,7 +121,8 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 LuDecomposition<Matrix_t<T, _rows, _cols>>::~LuDecomposition()
 {
-#ifdef TL_HAVE_OPENBLAS 
+//#if defined(TL_HAVE_OPENBLAS) || defined(TL_HAVE_CUDA) 
+#if defined(TL_HAVE_OPENBLAS)
     if (mPivotIndex) {
         delete[] mPivotIndex;
     }
@@ -136,35 +133,39 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) const -> Vector<T, _rows>
 {
     TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
 
     Vector<T, _rows> x(b);
 
+//#ifdef TL_HAVE_CUDA
+//
+//    int nrhs = 1;
+//    int lda = static_cast<int>(mRows);
+//    int ldb = 1;
+//    cuda::getrs(static_cast<int>(mRows), nrhs, const_cast<T *>(LU.data()), lda, mPivotIndex, x.data(), ldb, nullptr);
+//
+//#elif defined TL_HAVE_OPENBLAS 
 #ifdef TL_HAVE_OPENBLAS 
-
     lapack_int nrhs = 1;
-    lapack_int lda = mRows;
+    lapack_int lda = static_cast<int>(mRows);
     lapack_int ldb = 1;
-
-    lapack_int info = lapack::getrs(mRows, nrhs, LU.data(), lda, mPivotIndex, x.data(), ldb);
+    lapack_int info = lapack::getrs(static_cast<int>(mRows), nrhs, const_cast<T*>(LU.data()), lda, mPivotIndex, x.data(), ldb);
 
 #else
 
     T sum;
     size_t ii = 0;
-    size_t j;
-    size_t ip;
     for (size_t i = 0; i < mRows; i++) {
 
-        ip = mPivotIndex[i];
-        sum = x[ip];
-        x[ip] = x[i];
+        size_t pivot_index = mPivotIndex[i];
+        sum = x[pivot_index];
+        x[pivot_index] = x[i];
 
         if (ii != 0) {
-            for (j = ii - 1; j < i; j++) {
-                sum -= LU[i][j] * x[j];
+            for (size_t j = ii - 1; j < i; j++) {
+                sum -= LU(i,j) * x[j];
             }
         } else if (sum != consts::zero<T>) {
             ii = i + 1;
@@ -173,15 +174,14 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b
         x[i] = sum;
     }
 
-    for (int i = static_cast<int>(mRows) - consts::one<int>; i >= 0; i--) {
+    for (int i = static_cast<int>(mRows-1); i >= 0; i--) {
 
         sum = x[i];
-        T luii = LU[i][i];
 
-        for (j = static_cast<size_t>(i) + consts::one<size_t>; j < mRows; j++)
-            sum -= LU[i][j] * x[j];
+        for (size_t j = static_cast<size_t>(i+1); j < mRows; j++)
+            sum -= LU(i,j) * x[j];
 
-        x[i] = sum / luii;
+        x[i] = sum / LU(i,i);
     }
 
 #endif
@@ -193,21 +193,28 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix_t<T, _rows, _cols>& b) -> Matrix_t<T, _rows, _cols>
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix_t<T, _rows, _cols> &b) const -> Matrix_t<T, _rows, _cols>
 ///Por ahora solo funciona con matrizes dinamicas
 {
     TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
 
     Matrix_t<T, _rows, _cols> x(b);
 
-#ifdef TL_HAVE_OPENBLAS    
-
+//#ifdef TL_HAVE_CUDA
+//
+//    int nrhs = b.cols();
+//    int lda = mRows;
+//    int ldb = b.cols();
+//    cuda::getrs(mRows, nrhs, const_cast<T *>(LU.data()), lda, mPivotIndex, x.data(), ldb, nullptr);
+//
+//#elif defined TL_HAVE_OPENBLAS 
+#ifdef TL_HAVE_OPENBLAS
     lapack_int info;
     lapack_int nrhs = b.cols();
     lapack_int lda = mRows;
     lapack_int ldb = b.cols();
 
-    info = lapack::getrs(mRows, nrhs, LU.data(), lda, mPivotIndex, x.data(), ldb);
+    info = lapack::getrs(mRows, nrhs, const_cast<T*>(LU.data()), lda, mPivotIndex, x.data(), ldb);
 
 #else
 
@@ -237,23 +244,32 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+    
+//#ifdef TL_HAVE_CUDA
+//
+//    int lda = mRows;
+//    cuda::getrf(mRows, mRows, LU.data(), lda, mPivotIndex, nullptr);
+//
+//#elif defined TL_HAVE_OPENBLAS 
+#ifdef TL_HAVE_OPENBLAS 
+    lapack_int info;
+    lapack_int lda = mRows;
 
-    T big;
-    T temp;
+    info = lapack::getrf(mRows, mRows, LU.data(), lda, mPivotIndex);
 
-    this->d = consts::one<T>;
+    TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.");
 
+#else
+    
     Vector<T, _rows> max_elements = findMaxElementsByRows();
-
-    size_t pivot_row = 0;
 
     for (size_t k = 0; k < mRows; k++) {
 
-        big = consts::zero<T>;
-        pivot_row = k;
+        T big = consts::zero<T>;
+        size_t pivot_row = k;
 
         for (size_t i = k; i < mRows; i++) {
-            temp = std::abs(LU[i][k]) / max_elements[i];
+            T temp = std::abs(LU[i][k]) / max_elements[i];
             if (temp > big) {
                 big = temp;
                 pivot_row = i;
@@ -263,12 +279,11 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         if (k != pivot_row) {
             LU.swapRows(pivot_row, k);
             this->d = -this->d;
-            max_elements[pivot_row] = max_elements[k];
+            std::swap(max_elements[pivot_row], max_elements[k]);
         }
 
         mPivotIndex[k] = pivot_row;
 
-        //if (LU[k][k] == consts::zero<T>)
         if (isNearlyZero(LU[k][k]))
             LU[k][k] = std::numeric_limits<T>().min();
 
@@ -276,60 +291,42 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
         for (size_t i = k + 1; i < mRows; i++) {
 
-            temp = LU[i][k] /= llkk;
+            T temp = LU[i][k] /= llkk;
 
             for (size_t j = k + 1; j < mRows; j++)
                 LU[i][j] -= temp * LU[k][j];
         }
     }
+
+#endif // TL_HAVE_OPENBLAS
 }
 
 template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxElementsByRows() -> Vector<T, _rows>
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxElementsByRows() const -> Vector<T, _rows>
 {
-    Vector<T, _rows> max_elements(mRows, 0);
-    T element;
-    T max;
+    Vector<T, _rows> max_elements(mRows, consts::zero<T>);
 
     for (size_t r = 0; r < mRows; r++) {
 
-        max = consts::zero<T>;
+        T max = consts::zero<T>;
 
-        for (size_t c = 0; c < mRows; c++) {
-            if ((element = std::abs(LU[r][c])) > max) {
-                max = element;
+        for (const auto& elem : LU[r]) {
+            T abs_elem = std::abs(elem);
+            if (abs_elem > max) {
+                max = abs_elem;
             }
         }
 
-        TL_ASSERT(max != consts::zero<T>, "Singular matrix");
+        TL_ASSERT(!isNearlyZero(max), "Singular matrix");
 
         max_elements[r] = max;
     }
 
     return max_elements;
 }
-
-#ifdef TL_HAVE_OPENBLAS
-
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
-{
-    lapack_int info;
-    lapack_int lda = mRows;
-
-    info = lapack::getrf(mRows, mRows, LU.data(), lda, mPivotIndex);
-
-    TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.");
-
-}
-
-#endif // TL_HAVE_OPENBLAS
 
 template<
     template<typename, size_t, size_t>
@@ -353,18 +350,6 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
 
     return det;
 }
-
-//template<
-//  template<typename, size_t, size_t> 
-//  class Matrix_t, typename T, size_t _rows, size_t _cols
-//> 
-//Matrix_t<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse()
-//{
-//  Matrix_t<T, _rows, _cols> matrix = Matrix_t<T, _rows, _cols>::identity(mRows, mRows);
-//
-//  Matrix_t<T, _rows, _cols> inv = this->solve(matrix);
-//  return inv;
-//}
 
 
 /*! \} */ // end of algebra

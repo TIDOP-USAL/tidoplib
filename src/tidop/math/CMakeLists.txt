@@ -49,14 +49,18 @@ if(BUILD_TL_MATH)
                              algebra/rotation_convert.h
                              algebra/axis_angle.h
                              algebra/matrix.h
-							 algebra/matrices.h
+                             algebra/matrices.h
                              algebra/vector.h
                              algebra/svd.h
                              algebra/lu.h
                              algebra/qr.h
                              algebra/cholesky.h
-							 geometry/affine.h
-							 geometry/helmert.h
+                             algebra/matrix/base.h
+                             algebra/matrix/block.h
+                             algebra/matrix/col.h
+                             algebra/matrix/row.h
+                             geometry/affine.h
+                             geometry/helmert.h
                              geometry/rotation.h
                              geometry/scaling.h
                              geometry/transform.h
@@ -83,7 +87,8 @@ if(BUILD_TL_MATH)
                              statistic/tukeyfences.h
                              statistic/variance.h
                              lapack.h
-                             blas.h)
+                             blas.h
+                             cuda.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
@@ -96,13 +101,20 @@ if(BUILD_TL_MATH)
         target_compile_options(${PROJECT_NAME} INTERFACE "/bigobj")
     endif(MSVC)
 
+    target_include_directories(${PROJECT_NAME} INTERFACE 
+                               $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_INCLUDE_DIRS}>)
+
     target_compile_definitions(${PROJECT_NAME} INTERFACE
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} INTERFACE 
                           TidopLib::Core
-                          $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+                          $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_LIBRARIES}>
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>
+                          #$<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cusolver_LIBRARY}>
+                          )
        
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           FOLDER "modules"

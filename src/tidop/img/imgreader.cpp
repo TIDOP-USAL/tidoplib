@@ -73,6 +73,11 @@ DataType gdalConvertDataType(GDALDataType dataType)
     case GDT_Int32:
         ret = DataType::TL_32S;
         break;
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,5,0)
+    case GDT_UInt64:
+    case GDT_Int64:
+        TL_THROW_EXCEPTION("Data type not supported");
+#endif
     case GDT_Float32:
         ret = DataType::TL_32F;
         break;
@@ -98,29 +103,29 @@ DataType gdalConvertDataType(GDALDataType dataType)
  */
 int gdalToOpenCv(GDALDataType gdalType, int channels)
 {
-  int depth;
-  if(gdalType == GDT_Byte)
-    depth = CV_8U;
-  else if(gdalType == GDT_UInt16)
-    depth = CV_16U;
-  else if(gdalType == GDT_Int16)
-    depth = CV_16S;
-  else if(gdalType == GDT_UInt32 || 
-          gdalType == GDT_Int32)
-    depth = CV_32S;
-  else if(gdalType == GDT_Float32)
-    depth = CV_32F;
-  else if(gdalType == GDT_Float64)
-    depth = CV_64F;
-  else if (gdalType == GDT_CInt16 || 
-           gdalType == GDT_CInt32 ||  
-           gdalType == GDT_CFloat32 ||
-           gdalType == GDT_CFloat64)
-      TL_THROW_EXCEPTION("Data type not supported");
-  else
-    depth = -1;
+    int depth;
+    if (gdalType == GDT_Byte)
+        depth = CV_8U;
+    else if (gdalType == GDT_UInt16)
+        depth = CV_16U;
+    else if (gdalType == GDT_Int16)
+        depth = CV_16S;
+    else if (gdalType == GDT_UInt32 ||
+             gdalType == GDT_Int32)
+        depth = CV_32S;
+    else if (gdalType == GDT_Float32)
+        depth = CV_32F;
+    else if (gdalType == GDT_Float64)
+        depth = CV_64F;
+    else if (gdalType == GDT_CInt16 ||
+             gdalType == GDT_CInt32 ||
+             gdalType == GDT_CFloat32 ||
+             gdalType == GDT_CFloat64)
+        TL_THROW_EXCEPTION("Data type not supported");
+    else
+        depth = -1;
 
-  return(CV_MAKETYPE(depth, channels));
+    return(CV_MAKETYPE(depth, channels));
 }
 
 #endif //TL_HAVE_GDAL
@@ -131,23 +136,23 @@ ImageReader::ImageReader(tl::Path file)
 
 }
 
-void ImageReader::windowRead(const WindowI &wLoad, 
-                             WindowI *wRead, 
+void ImageReader::windowRead(const WindowI &wLoad,
+                             WindowI *wRead,
                              Point<int> *offset) const
 {
-  WindowI image_window(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));
-  
-  if (wLoad.isEmpty()) {
-    *wRead = image_window;
-  } else {
-    *wRead = windowIntersection(image_window, wLoad);
-    *offset = wRead->pt1 - wLoad.pt1;
-  }
+    WindowI image_window(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));
+
+    if (wLoad.isEmpty()) {
+        *wRead = image_window;
+    } else {
+        *wRead = windowIntersection(image_window, wLoad);
+        *offset = wRead->pt1 - wLoad.pt1;
+    }
 }
 
 auto ImageReader::file() const -> tl::Path
 {
-  return mFile;
+    return mFile;
 }
 
 
@@ -1000,6 +1005,8 @@ auto ImageReaderFactory::create(const Path &file) -> ImageReader::Ptr
     ImageReader::Ptr image_reader;
 
     try {
+
+        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
 
         std::string extension = file.extension().toString();
 #ifdef TL_HAVE_GDAL

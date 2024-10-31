@@ -99,70 +99,76 @@ BOOST_AUTO_TEST_SUITE(DescriptiveStatisticsTestSuite)
 
 struct DescriptiveStatisticsTest
 {
-  DescriptiveStatisticsTest()
-  { }
+    DescriptiveStatisticsTest()
+    {
+    }
 
-  ~DescriptiveStatisticsTest()
-  {
-  }
+    ~DescriptiveStatisticsTest()
+    {
+    }
 
-  void setup()
-  {
-    Series<double> s_1({8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5});
-    stat_1 = DescriptiveStatistics<double>(s_1);
+    void setup()
+    {
+        Series<double> s_1({8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5});
+        stat_1 = DescriptiveStatistics<double>(s_1);
 
-    Series<int> s_2({1, 0, 1, 3, 2, 0, 1});
-    stat_2 = DescriptiveStatistics<int>(s_2);
+        Series<int> s_2({1, 0, 1, 3, 2, 0, 1});
+        stat_2 = DescriptiveStatistics<int>(s_2);
 
-    Series<int> s_3({17, 15, 23, 7, 9, 13});
-    stat_3 = DescriptiveStatistics<int>(s_3);
+        Series<int> s_3({17, 15, 23, 7, 9, 13});
+        stat_3 = DescriptiveStatistics<int>(s_3);
 
-    Series<float> s_4({8.f, 8.5f, 7.5f, 9.f, 6.25f, 5.5f, 8.5f, 7.5f, 8.5f});
-    stat_4 = DescriptiveStatistics<float>(s_4);
+        Series<float> s_4({8.f, 8.5f, 7.5f, 9.f, 6.25f, 5.5f, 8.5f, 7.5f, 8.5f});
+        stat_4 = DescriptiveStatistics<float>(s_4);
 
 #if (CPP_VERSION < 20)
-    DescriptiveStatistics<double>::Config config{};
-    config.skewness_method = SkewnessMethod::fisher_pearson;
-    config.sample = false;
-    stat_1_population = DescriptiveStatistics<double>(s_1, config);
+        DescriptiveStatistics<double>::Config config{};
+        config.skewness_method = SkewnessMethod::fisher_pearson;
+        config.sample = false;
+        stat_1_population = DescriptiveStatistics<double>(s_1, config);
 #else
-    stat_1_population = DescriptiveStatistics<double>(s_1, {.sample = false, 
-                                                            .skewness_method = SkewnessMethod::fisher_pearson });
+        stat_1_population = DescriptiveStatistics<double>(s_1, {.sample = false,
+                                                                .skewness_method = SkewnessMethod::fisher_pearson});
 #endif
 
-    x = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
-    y = {92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
-  }
+        x = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
+        y = {92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
 
-  void teardown()
-  {
-  }
+        x1 = {0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f};
+        y1 = {92.8f, 92.3f, 80.f, 89.1f, 83.5f, 68.9f, 69.2f, 67.1f, 58.3f};
+    }
 
-  DescriptiveStatistics<double> stat_1;
-  DescriptiveStatistics<int> stat_2;
-  DescriptiveStatistics<int> stat_3;
-  DescriptiveStatistics<float> stat_4;
+    void teardown()
+    {
+    }
 
-  DescriptiveStatistics<double> stat_1_population;
+    DescriptiveStatistics<double> stat_1;
+    DescriptiveStatistics<int> stat_2;
+    DescriptiveStatistics<int> stat_3;
+    DescriptiveStatistics<float> stat_4;
 
-  Series<double> x;
-  Series<double> y;
+    DescriptiveStatistics<double> stat_1_population;
+
+    Series<double> x;
+    Series<double> y;
+    Series<float> x1;
+    Series<float> y1;
 };
 
 BOOST_FIXTURE_TEST_CASE(min, DescriptiveStatisticsTest)
 {
-  BOOST_CHECK_EQUAL(5.5, stat_1.min());
-  BOOST_CHECK_EQUAL(0, stat_2.min());
-  BOOST_CHECK_EQUAL(7, stat_3.min());
-  BOOST_CHECK_EQUAL(5.5, stat_1_population.min());
+    BOOST_CHECK_EQUAL(5.5, stat_1.min());
+    BOOST_CHECK_EQUAL(0, stat_2.min());
+    BOOST_CHECK_EQUAL(7, stat_3.min());
+    BOOST_CHECK_EQUAL(5.5, stat_1_population.min());
 }
 
 BOOST_FIXTURE_TEST_CASE(max, DescriptiveStatisticsTest)
 {
-  BOOST_CHECK_EQUAL(9.0, stat_1.max());
-  BOOST_CHECK_EQUAL(3, stat_2.max());
-  BOOST_CHECK_EQUAL(23, stat_3.max());
-  BOOST_CHECK_EQUAL(9.0, stat_1_population.max());
+    BOOST_CHECK_EQUAL(9.0, stat_1.max());
+    BOOST_CHECK_EQUAL(3, stat_2.max());
+    BOOST_CHECK_EQUAL(23, stat_3.max());
+    BOOST_CHECK_EQUAL(9.0, stat_1_population.max());
 }
 
 BOOST_FIXTURE_TEST_CASE(size, DescriptiveStatisticsTest)
@@ -355,9 +361,12 @@ BOOST_FIXTURE_TEST_CASE(quartileDeviation, DescriptiveStatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(covariance, DescriptiveStatisticsTest)
 {
-  tl::Covariance<double> covariance;
-  
-  BOOST_CHECK_CLOSE(-33.06, covariance.eval(x, y), 0.1);
+    tl::Covariance<double> covariance;
+
+    BOOST_CHECK_CLOSE(-33.06, covariance.eval(x, y), 0.1);
+
+    tl::Covariance<float> covariancef;
+    BOOST_CHECK_CLOSE(-28.3777809f, covariancef.eval(x1, y1), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
