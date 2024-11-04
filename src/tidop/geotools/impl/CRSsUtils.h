@@ -36,6 +36,7 @@
 namespace tl {
     TL_EXPORT bool findCaseInsensitiveRegex(const std::string& completeString, const std::string& toSearch);
     TL_EXPORT std::vector<std::string> split(std::string str, char delim);
+    TL_EXPORT std::string to_string(int a_value);
     TL_EXPORT std::string to_string_with_precision(double a_value, const int n);
     TL_EXPORT std::string pjTypeToString(PJ_TYPE type);
     TL_EXPORT PJ_TYPE stringToPjType(std::string strType);

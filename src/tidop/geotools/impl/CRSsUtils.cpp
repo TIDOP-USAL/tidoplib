@@ -27,6 +27,13 @@ namespace tl
         return result;
     }
 
+    std::string to_string(int a_value)
+    {
+        std::ostringstream out;
+        out << a_value;
+        return std::move(out).str();
+    }
+
     std::string to_string_with_precision(double a_value, const int n)
     {
         std::ostringstream out;

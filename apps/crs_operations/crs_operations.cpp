@@ -128,22 +128,60 @@ int main(int argc, char **argv)
         ptrGeoTools->ptrCRSsTools()->getCRSsInfo(mapCRSsInfo);
         std::string crssInfoFileName = "D:/dev/sources/tidoplib/apps/crs_operations/CRSsInfo.csv";
         ptrGeoTools->ptrCRSsTools()->dumpCRSsInfoToFile(crssInfoFileName);
-        std::map<std::string, CRSInfo> crssFor2dApplications;
-        ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications(crssFor2dApplications);
-        std::string crsId_1 = "EPSG:25830";
-        std::map<std::string, CRSInfo> crssVertical_1;
-        ptrGeoTools->ptrCRSsTools()->getCRSsVertical(crsId_1, crssVertical_1);
-        // test 1
-        std::string outputFileName_1 = "D:/dev/sources/tidoplib/apps/crs_operations/CrsOperationsTest1.txt";
-        if (!test_1(ptrGeoTools, outputFileName_1, strError))
+        //// test getENUCrs
         {
-
+            std::string crsEnuBaseId2D = "EPSG:4258";
+            std::string crsEnuId = "ENU:4937;-4.495021180808;36.756413127079;142.1590";
+            std::string crs25830Id = "EPSG:25830";
+            double fc4258 = -4.495021180808;
+            double sc4258 = 36.756413127079;
+            double tcElip = 142.1590;
+            double tcHOrth = 94.2172;
+            double fc25830 = fc4258;
+            double sc25830 = sc4258;
+            double tc25830 = tcElip;
+            ptrGeoTools->ptrCRSsTools()->crsOperation(crsEnuBaseId2D, crs25830Id, fc25830, sc25830, tc25830);
+            std::string crsEnuFrom25830 = ptrGeoTools->ptrCRSsTools()->getCRSEnu(crs25830Id, fc25830, sc25830, tc25830);
+            std::string crs25830_5782Id = "EPSG:25830+5782";
+            std::string crsEnuFrom25830_5782 = ptrGeoTools->ptrCRSsTools()->getCRSEnu(crs25830_5782Id, fc25830, sc25830, tcHOrth);
+            double fc4258FromEnuHElip = 0.;
+            double sc4258FromEnuHElip = 0.;
+            double tc4258FromEnuHElip = 0.;
+            ptrGeoTools->ptrCRSsTools()->crsOperation(crsEnuFrom25830, crsEnuBaseId2D, 
+                fc4258FromEnuHElip, sc4258FromEnuHElip, tc4258FromEnuHElip);
+            double fc4258FromEnuHOrth = 0.;
+            double sc4258FromEnuHOrth = 0.;
+            double tc4258FromEnuHOrth = 0.;
+            ptrGeoTools->ptrCRSsTools()->crsOperation(crsEnuFrom25830, crsEnuBaseId2D,
+                fc4258FromEnuHOrth, sc4258FromEnuHOrth, tc4258FromEnuHOrth);
+            int yo = 1;
         }
-        // test 2
-        std::string outputFileName_2 = "D:/dev/sources/tidoplib/apps/crs_operations/CrsOperationsTest2.txt";
-        if (!test_2(ptrGeoTools, outputFileName_2, strError))
+        
+        // test CRSsVertical
         {
+            std::map<std::string, CRSInfo> crssFor2dApplications;
+            ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications(crssFor2dApplications);
+            std::string crsId_1 = "EPSG:25830";
+            std::map<std::string, CRSInfo> crssVertical_1;
+            ptrGeoTools->ptrCRSsTools()->getCRSsVertical(crsId_1, crssVertical_1);
+        }
 
+        // test 1
+        {
+            std::string outputFileName_1 = "D:/dev/sources/tidoplib/apps/crs_operations/CrsOperationsTest1.txt";
+            if (!test_1(ptrGeoTools, outputFileName_1, strError))
+            {
+
+            }
+        }
+
+        // test 2
+        {
+            std::string outputFileName_2 = "D:/dev/sources/tidoplib/apps/crs_operations/CrsOperationsTest2.txt";
+            if (!test_2(ptrGeoTools, outputFileName_2, strError))
+            {
+
+            }
         }
         int yo = 1;
     }
@@ -743,6 +781,11 @@ bool test_2(GeoTools* ptrGeoTools, std::string outputFileName, std::string& strE
         if (sourceCrsId == targetCrsId)
         {
             continue;
+        }
+        if (nt == 4)
+        {
+            int yo = 1;
+            yo++;
         }
         ptrGeoTools->ptrCRSsTools()->crsOperation(sourceCrsId, targetCrsId, points, true);
         if (!strAuxError.empty())

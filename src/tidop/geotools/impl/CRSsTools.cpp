@@ -456,6 +456,52 @@ void CRSsToolsImpl::dumpCRSsInfoToFile(std::string fileName)
     }
 }
 
+std::string CRSsToolsImpl::getCRSEnu(std::string crsId, double& fc, double& sc, double& tc)
+{
+    std::string crsEnuId;
+    try {
+        CRS* ptrCRS = NULL;
+        if (mPtrCRSs.find(crsId) == mPtrCRSs.end())
+        {
+            if (crsId.rfind(CRS_USER_EPSGCODE_TAG, 0) == 0)
+            {
+                ptrCRS = new CRS(crsId, mCRSsInfo, mOamsTraditionalGisOrder);
+            }
+            else if (crsId.rfind(CRS_USER_PROJ4STRING_PREFIX, 0) == 0)
+            {
+                ptrCRS = new CRS(crsId, mOamsTraditionalGisOrder);
+            }
+            else
+            {
+                TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
+                //strError = functionName;
+                //strError += "\n";
+                //return(NULL);
+            }
+            mPtrCRSs[crsId] = ptrCRS;
+        }
+        std::string baseCrsId = mPtrCRSs[crsId]->getBaseCrsId(mProjContext);
+        int baseCrsEpsgCode = mPtrCRSs[baseCrsId]->getEpsgCode();
+        std::string baseCrsEpsgCodeStr=to_string(baseCrsEpsgCode);
+        double fcCrsBase = fc;
+        double scCrsBase = sc;
+        double tcCrsBase = tc;
+        crsOperation(crsId, baseCrsId, fcCrsBase, scCrsBase, tcCrsBase);
+        std::string fcStr = to_string_with_precision(fcCrsBase, CRS_TYPE_GEODETIC_PRECISION);
+        std::string scStr = to_string_with_precision(scCrsBase, CRS_TYPE_GEODETIC_PRECISION);
+        std::string tcStr = to_string_with_precision(tcCrsBase, CRS_TYPE_HEIGHT_PRECISION);
+        crsEnuId = std::string(CRS_ID_STRING_ENU_PREFIX);
+        crsEnuId += baseCrsEpsgCodeStr;
+        crsEnuId += (';' + fcStr);
+        crsEnuId += (';' + scStr);
+        crsEnuId += (';' + tcStr);
+    }
+    catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    };
+    return crsEnuId;
+}
+
 CRS* CRSsToolsImpl::getCRS(std::string crsId)
 {
     try {
