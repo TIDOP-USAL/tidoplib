@@ -224,6 +224,13 @@ public:
         return *this;
     }
 
+    template<typename... Arg>
+    auto addOption(Arg&&... arg) TL_NOEXCEPT -> Command &
+    {
+        mArguments.push_back(Argument::make<bool>(std::forward<Arg>(arg)...));
+        return *this;
+    }
+
     /*!
      * \brief Removes arguments
      */
