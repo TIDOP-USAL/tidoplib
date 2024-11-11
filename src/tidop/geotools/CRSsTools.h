@@ -28,6 +28,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include "tidop/core/defs.h"
 
 #include "GeoToolsDefinitions.h"
