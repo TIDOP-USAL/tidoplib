@@ -402,6 +402,7 @@ auto Path::append(const Path &text) -> Path&
 
 auto Path::createDirectory() const -> bool
 {
+    if (mPath->exists()) return true;
     return fs::create_directory(mPath->ref());
 }
 
@@ -473,32 +474,12 @@ auto tl::Path::equivalent(const Path &path) const -> bool
 
 auto Path::createDirectory(const Path &directory) -> bool
 {
-    return fs::create_directory(directory.toWString());
-}
-
-auto Path::createDirectory(const std::string &directory) -> bool
-{
-    return fs::create_directory(directory);
-}
-
-auto Path::createDirectory(const std::wstring &directory) -> bool
-{
-    return fs::create_directory(directory);
+    return directory.createDirectory();
 }
 
 auto Path::createDirectories(const Path &directory) -> bool
 {
-    return fs::create_directories(directory.toWString());
-}
-
-auto Path::createDirectories(const std::string &directory) -> bool
-{
-    return fs::create_directories(directory);
-}
-
-auto Path::createDirectories(const std::wstring &directory) -> bool
-{
-    return fs::create_directories(directory);
+    return directory.createDirectories();
 }
 
 void Path::removeDirectory(const Path &directory)

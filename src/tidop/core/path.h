@@ -124,11 +124,7 @@ public:
     static auto tempPath() -> Path;
     static auto tempDirectory() -> Path;
     static auto createDirectory(const Path &directory) -> bool;
-    static auto createDirectory(const std::string &directory) -> bool;
-    static auto createDirectory(const std::wstring &directory) -> bool;
     static auto createDirectories(const Path &directory) -> bool;
-    static auto createDirectories(const std::string &directory) -> bool;
-    static auto createDirectories(const std::wstring &directory) -> bool;
     static void removeDirectory(const Path &directory);
     static void removeDirectory(const std::string &directory);
     static void removeDirectory(const std::wstring &directory);
