@@ -9,6 +9,7 @@
 #include <QOpenglWidget>
 
 #include "tidop/viewer/renderer/Renderer.h"
+#include "tidop/viewer/raycasting/Picker.h"
 
 namespace tl
 {
@@ -21,6 +22,13 @@ protected:
 	bool mousePressed, first;
 	
 	Renderer::Ptr renderer;
+	Picker::Listener pickerListener;
+	Picker::Ptr picker;
+	bool pickerEnabled;
+
+	PointCloud::Ptr rayModelBase;
+
+	static bool switchAxis;
 
 public:
 
@@ -30,6 +38,7 @@ public:
 private:
 
 	void mousePressEvent(QMouseEvent* event) override;
+	void mouseDoubleClickEvent(QMouseEvent* e) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void wheelEvent(QWheelEvent* event) override;
@@ -40,7 +49,16 @@ public:
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
 
+	static void enableSwitchAxis() { switchAxis = true; }
+	static void disableSwitchAxis() { switchAxis = false; }
+	static bool isEnabledSwitchAxis() { return switchAxis; }
+
+	void setPickerListener(const Picker::Listener& listener) { pickerListener = listener; }
+	void enablePicker(bool enable) { pickerEnabled = enable; }
+
 	Renderer::Ptr getRenderer() { return renderer; }
+
+	PointCloud::Ptr getRayModelBase() { return rayModelBase; }
 };
 
 }

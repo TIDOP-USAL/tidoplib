@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 
     //w.loadFromMemory();
     //w.loadFromFile("E:/PointClouds/ASCII/torus.txt");
-    w.loadFromFile("C:/Users/EquipoTidop/Desktop/output.las");
+    //w.loadFromFile("C:/Users/EquipoTidop/Desktop/output.las");
 
     return a.exec();
 }

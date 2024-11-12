@@ -66,6 +66,9 @@ if(BUILD_TL_MATH)
                              geometry/transform.h
                              geometry/translation.h
                              geometry/umeyama.h
+                             geometry/analytic/line.h
+                             geometry/analytic/plane.h
+                             geometry/analytic/sphere.h
                              statistic/algorithm.h
                              statistic/biweightmidvariance.h
                              statistic/descriptive.h

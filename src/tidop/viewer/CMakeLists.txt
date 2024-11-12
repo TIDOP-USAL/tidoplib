@@ -39,7 +39,10 @@ if(BUILD_TL_VIEWER)
 							opengl/buffer/IndexBuffer.cpp
 							opengl/buffer/VertexArray.cpp
 							opengl/shader/Shader.cpp
+                            group/Mesh.cpp
 							group/PointCloud.cpp
+                            group/Grid.cpp
+                            texture/Texture.cpp
 							renderer/Camera.cpp
 							renderer/TrackballCamera.cpp
                             renderer/Renderer.cpp
@@ -47,6 +50,8 @@ if(BUILD_TL_VIEWER)
                             io/ModelWriter.cpp
                             io/ASCIIReader.cpp
                             io/LASReader.cpp
+                            io/AssimpReader.cpp
+                            widget/ViewerWidget.cpp
                          HEADER_FILES
                             opengl/buffer/Buffer.h
 							opengl/buffer/IndexBuffer.h
@@ -54,7 +59,11 @@ if(BUILD_TL_VIEWER)
 							opengl/buffer/VertexArray.h
 							opengl/shader/Shader.h
 							group/ModelBase.h
+                            group/Mesh.h
 							group/PointCloud.h
+                            group/Grid.h
+                            texture/Texture.h
+                            texture/vendor/stb_image.h
 							renderer/Camera.h
 							renderer/TrackballCamera.h
                             renderer/Renderer.h
@@ -63,6 +72,10 @@ if(BUILD_TL_VIEWER)
                             io/ModelWriter.h
                             io/ASCIIReader.h
                             io/LASReader.h
+                            io/AssimpReader.h
+                            raycasting/RayCaster.h
+                            raycasting/Picker.h
+                            widget/ViewerWidget.h
 							 )
                          
     add_library(${PROJECT_NAME} ${LIB_TYPE}
@@ -71,6 +84,10 @@ if(BUILD_TL_VIEWER)
 
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
+
+    if(MSVC)
+        target_compile_options(${PROJECT_NAME} PUBLIC "/Zc:__cplusplus")
+    endif(MSVC)
 
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
@@ -85,12 +102,6 @@ if(BUILD_TL_VIEWER)
 							${Qt6OpenGLWidgets_INCLUDE_DIRS})
 	endif()
 
-    #[[
-    if(LASzip_FOUND)
-        include_directories(${LASzip_INCLUDE_DIR})
-    endif()
-    ]]
-
     if(LASLib_FOUND)
         include_directories(${LASLib_INCLUDE_DIR})
     endif()
@@ -100,13 +111,14 @@ if(BUILD_TL_VIEWER)
                           ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${UNIX}>:-lpthread>
-                          #${LASzip_LIBRARIES}
                           ${LASLib_LIBRARIES}
                           TidopLib::Core
                           TidopLib::Geom
 						  GLEW::GLEW
 						  opengl32
-						  glu32)
+						  glu32
+                          assimp::assimp
+                          ${OpenCV_LIBS})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

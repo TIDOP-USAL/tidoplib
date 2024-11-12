@@ -19,24 +19,12 @@ class PointCloud
 
 	GENERATE_SHARED_PTR(PointCloud)
 
-private:
-
-	size_t size;
-
 public:
 
-	PointCloud(std::vector<Vertex>& points);
+	PointCloud(const std::vector<Vertex>& points);
 	PointCloud(size_t _size);
 	PointCloud() = default;
 	~PointCloud() = default;
-
-public:
-
-	void draw() override;
-
-public:
-
-	size_t getSize() const { return size; }
 
 };
 

@@ -6,7 +6,7 @@ namespace tl
 {
 
 TrackballCamera::TrackballCamera(const tl::Matrix4x4f& projectionMatrix, const tl::Matrix4x4f& viewMatrix)
-    : Camera(projectionMatrix, viewMatrix), theta(tl::consts::pi<float>), phi(tl::consts::two_pi<float>), radius(1.0f) {
+    : Camera(projectionMatrix, viewMatrix), theta(0.001f), phi(tl::consts::half_pi<float>), radius(1.0f) {
 }
 
 TrackballCamera::Ptr TrackballCamera::orthoCamera(float left, float right, float bottom, float top, float zNear, float zFar)
