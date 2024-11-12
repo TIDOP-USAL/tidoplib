@@ -20,32 +20,44 @@ class ModelBase
 
 public:
 	enum class Type {
-		Mesh = GL_TRIANGLES, PointCloud = GL_POINTS
+		Mesh = GL_TRIANGLES, PointCloud = GL_POINTS, MultiLine = GL_LINES
 	};
 protected:
 
-	tl::VertexArray::Ptr vertexArray;
-	tl::VertexBuffer::Ptr vertexBuffer;
+	std::vector<Vertex> points;
+	std::vector<unsigned int> indices;
+
+	VertexArray::Ptr vertexArray;
+	VertexBuffer::Ptr vertexBuffer;
 
 	Type type;
 
-	tl::Matrix4x4f modelMatrix;
+	Matrix4x4f modelMatrix;
+	Vector3d offset;
 
-	unsigned int pointSize;
-	unsigned int lineSize;
+	float pointSize;
+	float lineSize;
+
+	size_t length;
 
 public:
 
-	ModelBase(std::vector<Vertex>& points, Type _type = Type::Mesh)
-		:  type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
+	ModelBase(const std::vector<Vertex>& _points, Type _type = Type::Mesh)
+		: points(_points), type(_type), modelMatrix(tl::Matrix4x4f::identity()),
+		pointSize(1.0f), lineSize(1.0f), offset(Vector3d::zero()) {
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points);
+
+		initLength();
 	}
 
-	ModelBase(std::vector<Vertex>& points, const std::vector<unsigned int> indices, Type _type = Type::Mesh)
-		: type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
+	ModelBase(const std::vector<Vertex>& _points, const std::vector<unsigned int>& _indices, Type _type = Type::Mesh)
+		: points(_points), indices(_indices), type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f),
+		lineSize(1.0f), offset(Vector3d::zero()) {
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points, indices);
+
+		initLength();
 	}
 
 	ModelBase(size_t length, Type _type = Type::Mesh)
@@ -54,10 +66,8 @@ public:
 		//vertexBuffer = VertexBuffer::New(length);
 	}
 
-	ModelBase()
-		: type(Type::Mesh), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
-		//vertexArray = VertexArray::New();
-		//vertexBuffer = VertexBuffer::New();
+	ModelBase(Type _type = Type::Mesh)
+		: type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
 	}
 
 	virtual ~ModelBase() = default;
@@ -70,12 +80,43 @@ public:
 		modelMatrix = modelBase.modelMatrix;
 		lineSize = modelBase.lineSize;
 		pointSize = modelBase.pointSize;
+		offset = modelBase.offset;
 		return *this;
 	}
 
 public:
 	
-	virtual void draw() = 0;
+	virtual void draw()
+	{
+		glPointSize(pointSize);
+		glLineWidth(lineSize);
+
+		vertexArray->bind();
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		if (!vertexBuffer->hasIndexBuffer()) glDrawArrays(static_cast<int>(type), 0, static_cast<int>(points.size()));
+		else    glDrawElements(static_cast<int>(type), static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
+
+		vertexArray->unbind();
+	}
+
+private:
+
+	void initLength()
+	{
+		switch (type)
+		{
+		case Type::Mesh:
+			length = points.size() / 3;
+			break;
+		case Type::MultiLine:
+			length = points.size() / 2;
+			break;
+		case Type::PointCloud:
+			length = points.size();
+			break;
+		}
+	}
 
 public:
 
@@ -94,12 +135,25 @@ public:
 		modelMatrix = modelMatrix * Matrices::scale(sx, sy, sz);
 	}
 
+	void setOffset(const Vector3d& offset)
+	{
+		this->offset = offset;
+	}
+
+	Vector3d getOffset() const { return offset; }
+
 	void setPointSize(float pointSize) { this->pointSize = pointSize; }
 
 	void setLineSize(float lineSize) { this->lineSize = lineSize; }
 
+	std::vector<Vertex> getPoints() const { return points; }
+
+	std::vector<unsigned int> getIndices() const { return indices; }
+
 	Type getType() const { return type; }
 
 	tl::Matrix4x4f getModelMatrix() { return modelMatrix; }
+
+	size_t getLength() const { return length; }
 };
 }

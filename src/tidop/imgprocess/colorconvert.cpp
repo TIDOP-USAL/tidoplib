@@ -24,13 +24,12 @@
 
 #include "tidop/imgprocess/colorconvert.h"
 
-#include <opencv2/imgproc.hpp>
-
 #include "tidop/graphic/color.h"
 #include "tidop/core/concurrency.h"
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 namespace tl
 {

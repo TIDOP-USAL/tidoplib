@@ -32,12 +32,10 @@ project(TestQt)
 set(TestQt_SOURCES 
     src/main.cpp
     src/MainWindow.cpp
-    src/ViewerWidget/ViewerWidget.cpp
     )
 
 set(TestQt_HEADERS
     src/MainWindow.h
-    src/ViewerWidget/ViewerWidget.h
     )
 
 set(TestQt_FORMS
