@@ -4,18 +4,18 @@
 #include <fstream>
 #include <map>
 #include <vector>
-
+//
 #include <iostream>
 #include <iomanip>
-
+//
 #include <algorithm>
 #include <string>
-
+//
 #include <cpl_conv.h>
 #include <ogr_core.h>
 #include <gdal.h>
 #include <ogr_srs_api.h>
-
+//
 #include <tidop/core/app.h>
 #include <tidop/core/console.h>
 #include <tidop/core/msg/message.h>
@@ -23,12 +23,12 @@
 #include <tidop/core/log.h>
 #include <tidop/geotools/GeoTools.h>
 
-#include <pdal/Stage.hpp>
-#include <pdal/StageFactory.hpp>
-#include <pdal/PipelineManager.hpp>
-#include <pdal/util/FileUtils.hpp>
+#include <pdal/stage.hpp>
+#include <pdal/stagefactory.hpp>
+#include <pdal/pipelinemanager.hpp>
+#include <pdal/util/fileutils.hpp>
 
-using namespace pdal;
+//using namespace pdal;
 using namespace tl;
 
 
