@@ -36,10 +36,6 @@ namespace tl
 
 	public:
 
-		void draw() override;
-
-	public:
-
 		void addTexture(const Texture::Ptr& texture) { textures.push_back(texture); }
 
 		void removeTexture(int index) { textures.erase(textures.begin() + index); }

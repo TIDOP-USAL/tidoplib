@@ -86,7 +86,19 @@ public:
 
 public:
 	
-	virtual void draw() = 0;
+	virtual void draw()
+	{
+		glPointSize(pointSize);
+		glLineWidth(lineSize);
+
+		vertexArray->bind();
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		if (!vertexBuffer->hasIndexBuffer()) glDrawArrays(static_cast<int>(type), 0, static_cast<int>(points.size()));
+		else    glDrawElements(static_cast<int>(type), static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
+
+		vertexArray->unbind();
+	}
 
 private:
 

@@ -50,6 +50,7 @@ if(BUILD_TL_VIEWER)
                             io/ModelWriter.cpp
                             io/ASCIIReader.cpp
                             io/LASReader.cpp
+                            io/AssimpReader.cpp
                             widget/ViewerWidget.cpp
                          HEADER_FILES
                             opengl/buffer/Buffer.h
@@ -71,6 +72,7 @@ if(BUILD_TL_VIEWER)
                             io/ModelWriter.h
                             io/ASCIIReader.h
                             io/LASReader.h
+                            io/AssimpReader.h
                             raycasting/RayCaster.h
                             raycasting/Picker.h
                             widget/ViewerWidget.h
@@ -115,6 +117,7 @@ if(BUILD_TL_VIEWER)
 						  GLEW::GLEW
 						  opengl32
 						  glu32
+                          assimp::assimp
                           ${OpenCV_LIBS})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 

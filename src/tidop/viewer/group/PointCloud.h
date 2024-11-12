@@ -26,10 +26,6 @@ public:
 	PointCloud() = default;
 	~PointCloud() = default;
 
-public:
-
-	void draw() override;
-
 };
 
 }

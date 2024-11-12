@@ -39,6 +39,10 @@ public:
 
     ModelReaderFactory() = default;
 
+private:
+
+    static bool assimpValidExtensions(const std::string& extension);
+
 public:
 
    static ModelReader::Ptr create(const Path& path);

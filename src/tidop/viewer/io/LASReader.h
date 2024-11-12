@@ -7,25 +7,25 @@
 namespace tl
 {
 
-	class LASReader : public ModelReader
-	{
-		GENERATE_UNIQUE_PTR(LASReader)
+class LASReader : public ModelReader
+{
+	GENERATE_UNIQUE_PTR(LASReader)
 
-	private:
+private:
 
-		std::ifstream file;
+	std::ifstream file;
 
-	public:
+public:
 
-		LASReader(const Path& path);
-		LASReader() = default;
-		~LASReader() = default;
+	LASReader(const Path& path);
+	LASReader() = default;
+	~LASReader() = default;
 
-	public:
+public:
 
-		void open() override;
-		bool isOpen() const override;
-		void close() override;
-	};
+	void open() override;
+	bool isOpen() const override;
+	void close() override;
+};
 
 }

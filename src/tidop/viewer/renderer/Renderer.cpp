@@ -41,7 +41,11 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "void main()\n"
 "{\n"
 "   vec4 color = Color;\n"
+"   vec3 lightPos = vec3(1.0, 0.5, 0.75);\n"
+"   vec4 light = vec4(1.0, 1.0, 0.85, 1.0);\n"
+"	vec4 ambient = vec4(0.3);\n"
 "	if(hasTexture) {\n"
+"		// color = texture(tex, TexCoord) * dot(lightPos, Normal) * light;\n"
 "		color = texture(tex, TexCoord);\n"
 "   }\n"
 "	FragColor = color;\n"
@@ -163,7 +167,7 @@ void Renderer::rotate(int mouseX, int mouseY)
 
 void Renderer::zoom(int delta)
 {
-	constexpr float sensitivity = 10.0f;
+	constexpr float sensitivity = 1.0f;
 	camera->zoom(sensitivity * delta);
 }
 

@@ -46,61 +46,48 @@ void ViewerWidget::initializeGL()
     // Cube test
     std::vector<Vertex> cubeVertices =
     {
-        // Cara trasera (Rojo)
-        Vertex(Vector3f{-0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, -1.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, -1.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, -1.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, -1.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, -1.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{-0.5f,  0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, -1.0f}, Vector2f{0.0f, 1.0f}),
-
-        // Cara delantera (Verde)
-        Vertex(Vector3f{-0.5f, -0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, 1.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, 1.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, 1.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, 1.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, 1.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 0.0f, 1.0f}, Vector3f{0.0f, 0.0f, 1.0f}, Vector2f{0.0f, 0.0f}),
-
-        // Cara izquierda (Azul)
-        Vertex(Vector3f{-0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}, Vector3f{-1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f,  0.5f, -0.5f}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}, Vector3f{-1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f, -0.5f}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}, Vector3f{-1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f, -0.5f}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}, Vector3f{-1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f,  0.5f}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}, Vector3f{-1.0f, 0.0f, 0.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{-0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 0.0f, 1.0f, 1.0f}, Vector3f{-1.0f, 0.0f, 0.0f}, Vector2f{1.0f, 1.0f}),
-
-        // Cara derecha (Amarillo)
-        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f}, Vector4f{1.0f, 1.0f, 0.0f, 1.0f}, Vector3f{1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 1.0f, 0.0f, 1.0f}, Vector3f{1.0f, 0.0f, 0.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f}, Vector4f{1.0f, 1.0f, 0.0f, 1.0f}, Vector3f{1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 1.0f, 0.0f, 1.0f}, Vector3f{1.0f, 0.0f, 0.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f}, Vector4f{1.0f, 1.0f, 0.0f, 1.0f}, Vector3f{1.0f, 0.0f, 0.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f}, Vector4f{1.0f, 1.0f, 0.0f, 1.0f}, Vector3f{1.0f, 0.0f, 0.0f}, Vector2f{1.0f, 0.0f}),
-
-        // Cara inferior (Magenta)
-        Vertex(Vector3f{-0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}, Vector3f{0.0f, -1.0f, 0.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}, Vector3f{0.0f, -1.0f, 0.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}, Vector3f{0.0f, -1.0f, 0.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f, -0.5f,  0.5f}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}, Vector3f{0.0f, -1.0f, 0.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f,  0.5f}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}, Vector3f{0.0f, -1.0f, 0.0f}, Vector2f{0.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f, -0.5f, -0.5f}, Vector4f{1.0f, 0.0f, 1.0f, 1.0f}, Vector3f{0.0f, -1.0f, 0.0f}, Vector2f{0.0f, 0.0f}),
-
-        // Cara superior (Cian)
-        Vertex(Vector3f{-0.5f,  0.5f, -0.5f}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}, Vector3f{0.0f, 1.0f, 0.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}, Vector3f{0.0f, 1.0f, 0.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f, -0.5f}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}, Vector3f{0.0f, 1.0f, 0.0f}, Vector2f{1.0f, 0.0f}),
-        Vertex(Vector3f{ 0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}, Vector3f{0.0f, 1.0f, 0.0f}, Vector2f{1.0f, 1.0f}),
-        Vertex(Vector3f{-0.5f,  0.5f, -0.5f}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}, Vector3f{0.0f, 1.0f, 0.0f}, Vector2f{0.0f, 0.0f}),
-        Vertex(Vector3f{-0.5f,  0.5f,  0.5f}, Vector4f{0.0f, 1.0f, 1.0f, 1.0f}, Vector3f{0.0f, 1.0f, 0.0f}, Vector2f{0.0f, 1.0f})
+		 Vertex(    Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, 0.0f, -1.0f},   Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f, -1.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f},  Vector3f{  0.0f,  0.0f, -1.0f}, Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f, -1.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f, -1.0f},  Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f, -1.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f,  1.0f},  Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f,  1.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f,  1.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f,  1.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f,  1.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  0.0f,  1.0f},  Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{ - 1.0f,  0.0f, 0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{ - 1.0f,  0.0f, 0.0f},  Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{ - 1.0f,  0.0f, 0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{ - 1.0f,  0.0f, 0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{ - 1.0f,  0.0f, 0.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{ - 1.0f,  0.0f, 0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  1.0f,  0.0f,  0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  1.0f,  0.0f,  0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  1.0f,  0.0f,  0.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  1.0f,  0.0f,  0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  1.0f,  0.0f,  0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  1.0f,  0.0f,  0.0f},  Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, -1.0f,  0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, -1.0f,  0.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, -1.0f,  0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, -1.0f,  0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, -1.0f,  0.0f},  Vector2f{ 0.0f, 0.0f}),
+		 Vertex(    Vector3f{-0.5f, -0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f, -1.0f,  0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  1.0f,  0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  1.0f,  0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  1.0f,  0.0f},  Vector2f{ 1.0f, 1.0f}),
+		 Vertex(    Vector3f{ 0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  1.0f,  0.0f},  Vector2f{ 1.0f, 0.0f}),
+		 Vertex(     Vector3f{-0.5f,  0.5f, -0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  1.0f,  0.0f},  Vector2f{ 0.0f, 1.0f}),
+		 Vertex(    Vector3f{-0.5f,  0.5f,  0.5f},  Vector4f{1.0f, 1.0f, 1.0f, 1.0f}, Vector3f{  0.0f,  1.0f,  0.0f},  Vector2f{ 0.0f, 0.0f})
     };
-
-
 
     Mesh::Ptr mesh = Mesh::New(cubeVertices);
     mesh->scale(5.f, 5.f, 5.f);
 
-    Texture::Ptr texture = Texture::New("C:/Users/EquipoTidop/Desktop/texture.jpg");
+    Texture::Ptr texture = Texture::New("C:/Users/EquipoTidop/Desktop/albedo.png");
     mesh->addTexture(texture);
 
     renderer->addModel(mesh);
