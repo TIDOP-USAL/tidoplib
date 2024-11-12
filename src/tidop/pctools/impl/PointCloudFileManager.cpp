@@ -22,45 +22,56 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_CRSTOOLS_INTERFACE_H
-#define GEOTOOLS_CRSTOOLS_INTERFACE_H
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 
-#pragma once
+#include "tidop/core/exception.h"
 
-#include <vector>
-#include <map>
-#include "tidop/core/defs.h"
+#include "tidop/geotools/GeoTools.h"
+#include "tidop/geotools/CRSsTools.h"
 
-#include "GeoToolsDefinitions.h"
+#include "PointCloudFileManager.h"
 
-#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
+#include <proj.h>
 
-#include <string>
+using namespace tl;
 
-namespace tl{
-
-/*!
- * \brief CRSsTools class
- */
-class TL_EXPORT CRSsTools{
-public:
-    inline CRSsTools(){};
-    ~CRSsTools() {};
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        double& fc, double&sc, double& tc) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::vector<std::vector<double> >& points, bool byPoint=false) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
-    virtual void dumpCRSsInfoToFile(std::string fileName) = 0;
-    virtual std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) = 0;
-    virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
-    virtual void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) = 0;
-    virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;
-    virtual void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) = 0;
-
-};
-
+PointCloudFileManagerImpl::PointCloudFileManagerImpl()
+    : mPtrGeoTools(NULL)
+{
+    try {
+        PointCloudFileManagerImpl::initialize();
+    }
+    catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
-#endif 
-#endif // GEOTOOLS_CRSTOOLS_INTERFACE_H
+
+PointCloudFileManagerImpl::~PointCloudFileManagerImpl() 
+{
+    clear();
+}
+
+void PointCloudFileManagerImpl::addPointCloudFile(std::string fileName)
+{
+	
+}
+
+
+void PointCloudFileManagerImpl::clear() 
+{
+}
+
+void PointCloudFileManagerImpl::initialize()
+{
+    try {
+        mPtrGeoTools = GeoTools::getInstance();
+        if (mPtrGeoTools->ptrCRSsTools() == NULL)
+            TL_ASSERT(false, "CRSsTools is not initialized");
+    }
+    catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+}
+

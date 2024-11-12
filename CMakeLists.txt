@@ -204,6 +204,7 @@ cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" O
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
+cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 
 
 # Activación/desactivación de otros componentes de la libreria
@@ -336,6 +337,7 @@ unset(TL_HAVE_GEOSPATIAL CACHE)
 unset(TL_HAVE_VECT CACHE)
 unset(TL_HAVE_EXPERIMENTAL CACHE)
 unset(TL_HAVE_GEOTOOLS CACHE)
+unset(TL_HAVE_PCTOOLS CACHE)
 
 
 message(STATUS "\nDependency loading:\n")

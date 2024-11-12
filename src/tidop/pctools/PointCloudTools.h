@@ -22,45 +22,39 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_CRSTOOLS_INTERFACE_H
-#define GEOTOOLS_CRSTOOLS_INTERFACE_H
-
-#pragma once
+#ifndef PCTOOLS_PCTOOLS_INTERFACE_H
+#define PCTOOLS_PCTOOLS_INTERFACE_H
 
 #include <vector>
-#include <map>
+
 #include "tidop/core/defs.h"
-
-#include "GeoToolsDefinitions.h"
-
-#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
-
-#include <string>
+#include "PointCloudToolsDefinitions.h"
 
 namespace tl{
 
 /*!
- * \brief CRSsTools class
+ * \brief PointCloudTools class
  */
-class TL_EXPORT CRSsTools{
+class TL_EXPORT PointCloudTools{
 public:
-    inline CRSsTools(){};
-    ~CRSsTools() {};
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        double& fc, double&sc, double& tc) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::vector<std::vector<double> >& points, bool byPoint=false) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
-    virtual void dumpCRSsInfoToFile(std::string fileName) = 0;
-    virtual std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) = 0;
-    virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
-    virtual void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) = 0;
-    virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;
-    virtual void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) = 0;
-
+    static inline PointCloudTools* getInstance(void )
+    {
+        if (mInstance==0) mInstance = new PointCloudTools;
+        return mInstance;
+    };
+    ~PointCloudTools();
+// public:
+    // void initializeCRSsTools(bool ignoreDeprecatedCRSs = true);
+    // CRSsTools* ptrCRSsTools();
+protected:
+    inline PointCloudTools() { };
+    //void getCRSsInfo(std::vector<CRSInfo>&);
+private:
+    void clear();
+    void initialize();
+    static PointCloudTools* mInstance;
+	// CRSsTools* mPtrCRSsTools;
 };
 
 }
-#endif 
-#endif // GEOTOOLS_CRSTOOLS_INTERFACE_H
+#endif

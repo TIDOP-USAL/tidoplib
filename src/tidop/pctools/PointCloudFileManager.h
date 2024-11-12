@@ -22,16 +22,15 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_CRSTOOLS_INTERFACE_H
-#define GEOTOOLS_CRSTOOLS_INTERFACE_H
+#ifndef PCTOOLS_POINTCLOUDFILEMANAGER_H
+#define PCTOOLS_POINTCLOUDFILEMANAGER_H
 
 #pragma once
 
 #include <vector>
-#include <map>
 #include "tidop/core/defs.h"
 
-#include "GeoToolsDefinitions.h"
+#include "PointCloudToolsDefinitions.h"
 
 #if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
@@ -40,27 +39,16 @@
 namespace tl{
 
 /*!
- * \brief CRSsTools class
+ * \brief PointCloudFileManager class
  */
-class TL_EXPORT CRSsTools{
+class TL_EXPORT PointCloudFileManager{
 public:
-    inline CRSsTools(){};
-    ~CRSsTools() {};
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        double& fc, double&sc, double& tc) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::vector<std::vector<double> >& points, bool byPoint=false) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
-    virtual void dumpCRSsInfoToFile(std::string fileName) = 0;
-    virtual std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) = 0;
-    virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
-    virtual void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) = 0;
-    virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;
-    virtual void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) = 0;
+    inline PointCloudFileManager(){};
+    ~PointCloudFileManager() {};
+    virtual void addPointCloudFile(std::string fileName) = 0;
 
 };
 
 }
 #endif 
-#endif // GEOTOOLS_CRSTOOLS_INTERFACE_H
+#endif // PCTOOLS_POINTCLOUDFILEMANAGER_H
