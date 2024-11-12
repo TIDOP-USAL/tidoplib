@@ -48,7 +48,7 @@ public:
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::vector<std::vector<double> >& points, bool byPoint = false) override;
     void dumpCRSsInfoToFile(std::string fileName) override;
-    std::string getCRSEnu(std::string crsId, double& fc, double& sc, double& tc) override;
+    std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) override;
     void getCRSsInfo(std::map<std::string, CRSInfo>&) override;
     void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) override;
     void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) override;

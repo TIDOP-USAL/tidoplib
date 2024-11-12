@@ -21,15 +21,44 @@
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
 ##########################################################################
+ 
 
-if(BUILD_TEST)
-add_subdirectory(core)
-add_subdirectory(featmatch)
-add_subdirectory(geometry)
-add_subdirectory(geospatial)
-add_subdirectory(GeoTools)
-add_subdirectory(graphic)  
-add_subdirectory(math)
-add_subdirectory(viewer)
-add_subdirectory(vect)
-endif(BUILD_TEST)
+include_directories(${CMAKE_BUILD_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+set(test_filename CRSsTools.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
+               ${test_filename})
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+							   
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core 
+                      TidopLib::GeoTools
+                      $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
+                      $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                      $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+                      FOLDER "test/GeoTools")
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+
+if(MSVC)
+    set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+endif(MSVC)

@@ -456,7 +456,7 @@ void CRSsToolsImpl::dumpCRSsInfoToFile(std::string fileName)
     }
 }
 
-std::string CRSsToolsImpl::getCRSEnu(std::string crsId, double& fc, double& sc, double& tc)
+std::string CRSsToolsImpl::getCRSEnu(std::string crsId, double fc, double sc, double tc)
 {
     std::string crsEnuId;
     try {
