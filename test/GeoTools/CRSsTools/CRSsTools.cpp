@@ -32,6 +32,7 @@
 #include <gdal.h>
 #include <cpl_conv.h>
 
+#include "tidop/core/app.h"
 #include "tidop/geometry/entities/point.h"
 
 using namespace tl;
@@ -69,7 +70,7 @@ struct CRSsToolsTest
             OSRSetPROJSearchPaths(proj_data);
     #   endif
     #else
-        tl::Path _path = app_path.parentPath().parentPath();
+        tl::Path _path = App::instance().path().parentPath().parentPath();
         tl::Path gdal_data_path(_path);
         gdal_data_path.append("gdal\\data");
         tl::Path proj_data_path(_path);

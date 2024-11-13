@@ -107,9 +107,8 @@
 #  ifndef NOMINMAX
 #    define NOMINMAX
 #  endif
-#  ifdef HAVE_RAW
-#    include <Winsock2.h> // Necesario para libraw. Incluir antes de windows.h por que si no da error
-#  endif
+// Necesario para libraw y para PDAL. Incluir antes de windows.h por que si no da error
+#  include <Winsock2.h>
 #  include <windows.h>
 #endif
 

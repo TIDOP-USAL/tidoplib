@@ -53,7 +53,7 @@ auto App::path() const -> Path
 
 #ifdef TL_OS_WINDOWS
 
-    ::GetModuleFileNameA(NULL, runfile.data(), TL_MAX_PATH);
+    ::GetModuleFileNameA(nullptr, runfile.data(), TL_MAX_PATH);
     return Path(std::string(runfile.data()));
 
 #elif defined TL_OS_LINUX
