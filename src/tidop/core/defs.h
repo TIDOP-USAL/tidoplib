@@ -108,8 +108,9 @@
 #    define NOMINMAX
 #  endif
 // Necesario para libraw y para PDAL. Incluir antes de windows.h por que si no da error
-#  include <Winsock2.h>
-#  include <windows.h>
+//#  include <Winsock2.h>
+#define WIN32_LEAN_AND_MEAN
+#  include <Windows.h>
 #endif
 
 

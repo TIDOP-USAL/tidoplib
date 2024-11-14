@@ -636,6 +636,9 @@ void CRSsToolsImpl::initialize()
         //mCRSBaseIdByCRSId.clear();
         mCRSsVerticalIdByBaseCRSId.clear();
         mProjContext = proj_context_create();
+
+        auto proj_lib = CPLGetConfigOption("PROJ_LIB", "Not Set");
+        proj_context_set_search_paths(mProjContext, 1, &proj_lib);
         int crs_count;
         PROJ_CRS_INFO** crs_info_list = proj_get_crs_info_list_from_database(mProjContext, "EPSG", nullptr, &crs_count);
         TL_ASSERT(crs_info_list !=NULL, "Error getting CRSs list using PROJ");
