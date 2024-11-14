@@ -93,14 +93,23 @@ if(BUILD_TL_VIEWER)
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
 							   
-	if(Qt6_FOUND)
-		include_directories(${Qt6Core_INCLUDE_DIRS}
-							${Qt6Concurrent_INCLUDE_DIRS}
-							${Qt6OpenGL_INCLUDE_DIRS}
-							${Qt6Widgets_INCLUDE_DIRS}
-							${Qt6LinguistTools_INCLUDE_DIRS}
-							${Qt6OpenGLWidgets_INCLUDE_DIRS})
+	if(Qt5_FOUND)
+		include_directories(${Qt5Core_INCLUDE_DIRS}
+							${Qt5Concurrent_INCLUDE_DIRS}
+							${Qt5OpenGL_INCLUDE_DIRS}
+							${Qt5Widgets_INCLUDE_DIRS}
+							${Qt5LinguistTools_INCLUDE_DIRS}
+							${Qt5OpenGLWidgets_INCLUDE_DIRS})
 	endif()
+
+	# if(Qt6_FOUND)
+		# include_directories(${Qt6Core_INCLUDE_DIRS}
+							# ${Qt6Concurrent_INCLUDE_DIRS}
+							# ${Qt6OpenGL_INCLUDE_DIRS}
+							# ${Qt6Widgets_INCLUDE_DIRS}
+							# ${Qt6LinguistTools_INCLUDE_DIRS}
+							# ${Qt6OpenGLWidgets_INCLUDE_DIRS})
+	# endif()
 
     if(LASLib_FOUND)
         include_directories(${LASLib_INCLUDE_DIR})

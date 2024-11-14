@@ -414,27 +414,54 @@ if(BUILD_TL_VIEWER)
 	##########################################################################
 	# Qt                                                                     #
 	##########################################################################
-	find_package(Qt6 REQUIRED 
+	# find_package(Qt6 REQUIRED 
+				 # COMPONENTS 
+				 # Core
+				 # Concurrent
+				 # OpenGL  
+				 # Widgets
+				 # OpenGLWidgets)
+	find_package(Qt5 REQUIRED 
 				 COMPONENTS 
 				 Core
 				 Concurrent
 				 OpenGL  
 				 Widgets
-				 OpenGLWidgets)
+				 OpenGLExtensions)
 
     set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
 
-	if (Qt6_POSITION_INDEPENDENT_CODE)
+	# if (Qt6_POSITION_INDEPENDENT_CODE)
+	  # SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	# endif()
+
+	# if(Qt6_FOUND)
+		# message(STATUS "  Qt version: ${Qt6_VERSION}")
+		# #message(STATUS "  Module : ${Qt6Core_DIR}")
+		# #message(STATUS "  Module : ${Qt6Concurrent_DIR}")
+		# #message(STATUS "  Module : ${Qt6OpenGL_DIR}")
+		# #message(STATUS "  Module : ${Qt6Widgets_DIR}")
+		# #message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+
+		# set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
+		# set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
+		# set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
+		# set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+    # else()
+        # message(STATUS "  Qt not found")
+	# endif()
+
+	if (Qt5_POSITION_INDEPENDENT_CODE)
 	  SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 	endif()
 
-	if(Qt6_FOUND)
-		message(STATUS "  Qt version: ${Qt6_VERSION}")
-		#message(STATUS "  Module : ${Qt6Core_DIR}")
-		#message(STATUS "  Module : ${Qt6Concurrent_DIR}")
-		#message(STATUS "  Module : ${Qt6OpenGL_DIR}")
-		#message(STATUS "  Module : ${Qt6Widgets_DIR}")
-		#message(STATUS "  Module : ${Qt6OpenGLWidgets_DIR}")
+	if(Qt5_FOUND)
+		message(STATUS "  Qt version: ${Qt5_VERSION}")
+		#message(STATUS "  Module : ${Qt5Core_DIR}")
+		#message(STATUS "  Module : ${Qt5Concurrent_DIR}")
+		#message(STATUS "  Module : ${Qt5OpenGL_DIR}")
+		#message(STATUS "  Module : ${Qt5Widgets_DIR}")
+		#message(STATUS "  Module : ${Qt5OpenGLWidgets_DIR}")
 
 		set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
 		set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed

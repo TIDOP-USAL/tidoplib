@@ -50,11 +50,11 @@ add_executable(${PROJECT_NAME}
 
 # Link libs
 target_link_libraries(${PROJECT_NAME} 
-    Qt6::Core
-    Qt6::Concurrent
-    Qt6::OpenGL
-    Qt6::Widgets
-    Qt6::OpenGLWidgets
+    Qt5::Core
+    Qt5::Concurrent
+    Qt5::OpenGL
+    Qt5::Widgets
+    Qt5::OpenGLExtensions
     Viewer
 )
 
