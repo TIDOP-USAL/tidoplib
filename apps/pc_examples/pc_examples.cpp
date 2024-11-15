@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
     Path proj_data_path("D:/dev/libs/proj/9.2/vc16/share/proj");
 #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
     CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
+    CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
 #   else
     std::string s_proj = proj_data_path.toString();
     const char* proj_data[]{ s_proj.c_str(), nullptr };
@@ -58,6 +59,7 @@ int main(int argc, char* argv[])
     CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
 #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
     CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
+    CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
 #   else
     std::string s_proj = proj_data_path.toString();
     const char* proj_data[]{ s_proj.c_str(), nullptr };

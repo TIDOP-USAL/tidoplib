@@ -32,6 +32,7 @@ include(TidopUtils)
 if (BUILD_TL_PCTOOLS)
 	
 	find_package(PDAL 2.0.0 REQUIRED CONFIG)
+    find_package(COPCLIB REQUIRED)
 
     project(PointCloudTools)
     
@@ -57,23 +58,16 @@ if (BUILD_TL_PCTOOLS)
 							   ${PDAL_INCLUDE_DIRS}
 							   ${PDAL_INCLUDE_DIRS}/pdal)
     
-    target_compile_definitions(${PROJECT_NAME} PUBLIC)
-                               # $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
-                               # $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+    add_definitions(${PDAL_DEFINITIONS})
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core
-                          # TidopLib::Math
-                          # TidopLib::Geom
-                          # TidopLib::Vect
-                          # TidopLib::Img
-                          # TidopLib::Graphic
 						  TidopLib::GeoTools
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
+                          COPCLIB::copc-lib
 						  ${PDAL_LIBRARIES})
-#                          ${OpenCV_LIBS})
 
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
