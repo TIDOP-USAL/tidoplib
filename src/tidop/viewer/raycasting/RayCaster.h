@@ -61,7 +61,7 @@ public:
 		Vector4f clipCoords = homogeneousClipCoords(normalizedDeviceCoords);
 		Vector4f eye = eyeCoords(clipCoords);
 		Vector3f world = worldCoords(eye);
-		return Line(camera->getEye(), world);
+		return Line<float>(camera->getEye(), world);
 	}
 
 public:

@@ -24,7 +24,7 @@
  
 
 ##########################################################################
-#  TidopLib Viewer module                                                  #
+#  TidopLib Viewer module                                                #
 ##########################################################################
 
 include(TidopUtils)
@@ -92,24 +92,6 @@ if(BUILD_TL_VIEWER)
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
-							   
-	if(Qt5_FOUND)
-		include_directories(${Qt5Core_INCLUDE_DIRS}
-							${Qt5Concurrent_INCLUDE_DIRS}
-							${Qt5OpenGL_INCLUDE_DIRS}
-							${Qt5Widgets_INCLUDE_DIRS}
-							${Qt5LinguistTools_INCLUDE_DIRS}
-							${Qt5OpenGLWidgets_INCLUDE_DIRS})
-	endif()
-
-	# if(Qt6_FOUND)
-		# include_directories(${Qt6Core_INCLUDE_DIRS}
-							# ${Qt6Concurrent_INCLUDE_DIRS}
-							# ${Qt6OpenGL_INCLUDE_DIRS}
-							# ${Qt6Widgets_INCLUDE_DIRS}
-							# ${Qt6LinguistTools_INCLUDE_DIRS}
-							# ${Qt6OpenGLWidgets_INCLUDE_DIRS})
-	# endif()
 
     if(LASLib_FOUND)
         include_directories(${LASLib_INCLUDE_DIR})
@@ -127,7 +109,17 @@ if(BUILD_TL_VIEWER)
 						  opengl32
 						  glu32
                           assimp::assimp
-                          ${OpenCV_LIBS})
+                          ${OpenCV_LIBS}
+                          $<$<BOOL:${Qt6_FOUND}>:Qt6::Core>
+                          $<$<BOOL:${Qt6_FOUND}>:Qt6::Concurrent>
+                          $<$<BOOL:${Qt6_FOUND}>:Qt6::OpenGL>
+                          $<$<BOOL:${Qt6_FOUND}>:Qt6::Widgets>
+                          $<$<BOOL:${Qt6_FOUND}>:Qt6::OpenGLWidgets>
+                          $<$<BOOL:${Qt5_FOUND}>:Qt5::Core>
+                          $<$<BOOL:${Qt5_FOUND}>:Qt5::Concurrent>
+                          $<$<BOOL:${Qt5_FOUND}>:Qt5::OpenGL>
+                          $<$<BOOL:${Qt5_FOUND}>:Qt5::Widgets>
+                          $<$<BOOL:${Qt5_FOUND}>:Qt5::OpenGLExtensions>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

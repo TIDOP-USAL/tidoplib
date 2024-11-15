@@ -25,38 +25,28 @@
 
 include(TidopUtils)
 
-# Project
 project(TestQt)
 
-# Code
-set(TestQt_SOURCES 
-    src/main.cpp
-    src/MainWindow.cpp
-    )
-
-set(TestQt_HEADERS
-    src/MainWindow.h
-    )
+add_files_to_project(${PROJECT_NAME}
+                         SOURCE_FILES 
+                             src/main.cpp
+                             src/MainWindow.cpp
+                         HEADER_FILES
+                             src/MainWindow.h
+                         FORM_FILES
+                             src/MainWindow.ui)
 
 set(TestQt_FORMS
     src/MainWindow.ui
     )
 
 add_executable(${PROJECT_NAME}
-    ${TestQt_SOURCES}
-    ${TestQt_HEADERS}
-    ${TestQt_FORMS}
-)
+               ${PROJECT_SOURCE_FILES}
+               ${PROJECT_HEADER_FILES})
 
 # Link libs
 target_link_libraries(${PROJECT_NAME} 
-    Qt5::Core
-    Qt5::Concurrent
-    Qt5::OpenGL
-    Qt5::Widgets
-    Qt5::OpenGLExtensions
-    Viewer
-)
+                      TidopLib::Viewer)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME ${PROJECT_NAME}
