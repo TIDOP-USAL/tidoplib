@@ -28,10 +28,22 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <algorithm>
 
 #include <proj.h>
 
 #include "tidop/core/defs.h"
+
+namespace tl {
+    TL_EXPORT const auto str_tolower = [](std::string s) {
+        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+        return s;
+    };
+    TL_EXPORT const auto str_toupper = [](std::string s) {
+        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return toupper(c); });
+        return s;
+    };
+}  // namespace std
 
 namespace tl {
     TL_EXPORT bool findCaseInsensitiveRegex(const std::string& completeString, const std::string& toSearch);

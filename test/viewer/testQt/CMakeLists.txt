@@ -22,10 +22,29 @@
 #                                                                        #
 ##########################################################################
 
+#find_package(COPCLIB REQUIRED)
+#find_package(LAZPERF REQUIRED)
 
 include(TidopUtils)
 
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+#include_directories(${CMAKE_SOURCE_DIR}/src)
+
 project(TestQt)
+
+#target_include_directories(${PROJECT_NAME} PUBLIC
+#                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+#                               $<INSTALL_INTERFACE:include>)
+
+#target_include_directories(${PROJECT_NAME} PRIVATE 
+#                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>
+#							   ${PDAL_INCLUDE_DIRS}
+#							   ${PDAL_INCLUDE_DIRS}/pdal)
+
+#target_include_directories(${PROJECT_NAME} PRIVATE 
+#                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>
+#							   ${PDAL_INCLUDE_DIR}
+#							   ${PDAL_INCLUDE_DIRS}/pdal)
 
 add_files_to_project(${PROJECT_NAME}
                          SOURCE_FILES 
@@ -47,6 +66,8 @@ add_executable(${PROJECT_NAME}
 # Link libs
 target_link_libraries(${PROJECT_NAME} 
                       TidopLib::Viewer)
+ #                     COPCLIB::copc-lib 
+ #                     LAZPERF::lazperf)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME ${PROJECT_NAME}

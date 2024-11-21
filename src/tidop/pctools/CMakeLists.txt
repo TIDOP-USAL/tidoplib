@@ -31,20 +31,23 @@ include(TidopUtils)
 
 if (BUILD_TL_PCTOOLS)
 	
+	find_package(COPCLIB REQUIRED)
+	find_package(LAZPERF REQUIRED)
 	find_package(PDAL 2.0.0 REQUIRED CONFIG)
-    find_package(COPCLIB REQUIRED)
 
     project(PointCloudTools)
     
     add_files_to_project(${PROJECT_NAME}
                          SOURCE_FILES
 						     PointCloudTools.cpp
-							 impl/PointCloudFileManager.cpp
+							 impl/PointCloudReader.cpp
+							 impl/PointCloudReaderPDAL.cpp
+							 impl/PointCloudReaderFactory.cpp
                          HEADER_FILES
 						     PointCloudToolsDefinitions.h
 						     PointCloudTools.h
-							 PointCloudFileManager.h
-							 impl/PointCloudFileManager.h)
+                             PointCloudReader.h
+							 impl/PointCloudReaderPDAL.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -67,7 +70,9 @@ if (BUILD_TL_PCTOOLS)
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           COPCLIB::copc-lib
-						  ${PDAL_LIBRARIES})
+						  ${PDAL_LIBRARIES}
+						  COPCLIB::copc-lib 
+						  LAZPERF::lazperf)
 
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 

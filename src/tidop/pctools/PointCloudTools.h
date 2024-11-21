@@ -31,7 +31,7 @@
 #include "PointCloudToolsDefinitions.h"
 
 namespace tl{
-
+    // class PointCloudFileManager;
 /*!
  * \brief PointCloudTools class
  */
@@ -44,16 +44,16 @@ public:
     };
     ~PointCloudTools();
 // public:
-    // void initializeCRSsTools(bool ignoreDeprecatedCRSs = true);
-    // CRSsTools* ptrCRSsTools();
+    // PointCloudFileManager* ptrPointCloudFileManager();
 protected:
-    inline PointCloudTools() { };
-    //void getCRSsInfo(std::vector<CRSInfo>&);
+    inline PointCloudTools() {
+        // mPtrPointCloudFileManager = NULL;
+    };
 private:
     void clear();
     void initialize();
     static PointCloudTools* mInstance;
-	// CRSsTools* mPtrCRSsTools;
+    // PointCloudFileManager* mPtrPointCloudFileManager;
 };
 
 }
