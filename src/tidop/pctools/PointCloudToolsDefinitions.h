@@ -1,7 +1,6 @@
 #ifndef PCTOOLS_DEFINITIONS_H
 #define PCTOOLS_DEFINITIONS_H
 
-#include <string>
-
+#define PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE            -9999.9999
 
 #endif

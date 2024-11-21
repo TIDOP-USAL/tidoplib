@@ -91,7 +91,8 @@ if(BUILD_TL_VIEWER)
 
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include>)
+                               $<INSTALL_INTERFACE:include>
+                               $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
 
     if(LASLib_FOUND)
         include_directories(${LASLib_INCLUDE_DIR})
@@ -119,7 +120,13 @@ if(BUILD_TL_VIEWER)
                           $<$<BOOL:${Qt5_FOUND}>:Qt5::Concurrent>
                           $<$<BOOL:${Qt5_FOUND}>:Qt5::OpenGL>
                           $<$<BOOL:${Qt5_FOUND}>:Qt5::Widgets>
-                          $<$<BOOL:${Qt5_FOUND}>:Qt5::OpenGLExtensions>)
+                          $<$<BOOL:${Qt5_FOUND}>:Qt5::OpenGLExtensions>
+                          TidopLib::GeoTools
+                      TidopLib::PointCloudTools
+                      $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
+                      $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                      $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
+                      ${PDAL_LIBRARIES})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

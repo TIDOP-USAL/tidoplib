@@ -25,6 +25,8 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include <cctype>
 
 #include "tidop/core/exception.h"
 
@@ -530,6 +532,102 @@ CRS* CRSsToolsImpl::getCRS(std::string crsId)
         TL_THROW_EXCEPTION_WITH_NESTED("");
     };
     return(mPtrCRSs[crsId]);
+}
+
+void CRSsToolsImpl::setCRSFromWkt(std::string wkt, std::string& crsId)
+{
+    // for error when exists invalid characters at the end
+    size_t last_pos = wkt.find_last_of(']');
+    wkt.erase(last_pos + 1, wkt.length());
+    // for error when compound start with "CS" and not "COMPD_CS"
+    std::string wktUpper = str_toupper(wkt);
+    bool isCompound = false;
+    if (wktUpper.find(CRSSTOOLS_WKT_VERTICAL_CRS_TAG) != std::string::npos)
+    {
+        if (wktUpper.find(CRSSTOOLS_WKT_PROJECTED_CRS_TAG) != std::string::npos
+            || wktUpper.find(CRSSTOOLS_WKT_GEODETIC_CRS_TAG) != std::string::npos)
+        {
+            isCompound = true;
+        }
+    }
+    std::string horizontalCrsString;
+    if (wktUpper.find(CRSSTOOLS_WKT_PROJECTED_CRS_TAG) != std::string::npos)
+    {
+        horizontalCrsString = wktUpper;
+        horizontalCrsString.erase(0, horizontalCrsString.find(CRSSTOOLS_WKT_PROJECTED_CRS_TAG));
+    }
+    else if(wktUpper.find(CRSSTOOLS_WKT_GEODETIC_CRS_TAG) != std::string::npos)
+    {
+        horizontalCrsString = wktUpper;
+        horizontalCrsString.erase(0, horizontalCrsString.find(CRSSTOOLS_WKT_GEODETIC_CRS_TAG));
+    }
+    if (!horizontalCrsString.empty()
+        && horizontalCrsString.find(CRSSTOOLS_WKT_VERTICAL_CRS_TAG) != std::string::npos)
+    {
+        horizontalCrsString.erase(horizontalCrsString.find(CRSSTOOLS_WKT_VERTICAL_CRS_TAG)-1,
+            horizontalCrsString.size()- horizontalCrsString.find(CRSSTOOLS_WKT_VERTICAL_CRS_TAG)+1);
+    }
+    std::string verticalCrsString;
+    if (wktUpper.find(CRSSTOOLS_WKT_VERTICAL_CRS_TAG) != std::string::npos)
+    {
+        verticalCrsString = wktUpper;
+        verticalCrsString.erase(0, wktUpper.find(CRSSTOOLS_WKT_VERTICAL_CRS_TAG));
+        verticalCrsString.erase(verticalCrsString.size()-1, verticalCrsString.size());
+    }
+    int horizontalEpsgCode = -1;
+    if (!horizontalCrsString.empty())
+    {
+        const char* pszWkt_tmp = horizontalCrsString.c_str();
+        char* wkt_char = (char*)pszWkt_tmp;
+        OGRSpatialReference horizontalCrs;
+        horizontalCrs.importFromWkt(&wkt_char);
+        const char* pszAuthorityCode = horizontalCrs.GetAuthorityCode(NULL);
+        int epsgCode;
+        try
+        {
+            epsgCode = std::stoi(pszAuthorityCode);
+        }
+        catch (...)
+        {
+            TL_ASSERT(false, "Invalid EPSG code from horizontal WKT CRS: {}", horizontalCrsString);
+        }
+        horizontalEpsgCode = epsgCode;
+    }
+    int verticalEpsgCode = -1;
+    if (!verticalCrsString.empty())
+    {
+        const char* pszWkt_tmp = verticalCrsString.c_str();
+        char* wkt_char = (char*)pszWkt_tmp;
+        OGRSpatialReference verticalCrs;
+        verticalCrs.importFromWkt(&wkt_char);
+        const char* pszAuthorityCode = verticalCrs.GetAuthorityCode(NULL);
+        int epsgCode;
+        try
+        {
+            epsgCode = std::stoi(pszAuthorityCode);
+        }
+        catch (...)
+        {
+            TL_ASSERT(false, "Invalid EPSG code from vertical WKT CRS: {}", verticalCrsString);
+        }
+        verticalEpsgCode = epsgCode;
+    }
+    std::string id(CRS_USER_EPSGCODE_TAG);
+    id += (':');
+    if (horizontalEpsgCode > -1)
+    {
+        id += to_string(horizontalEpsgCode);
+        if (verticalEpsgCode > -1)
+        {
+            id += ('+');
+        }
+    }
+    if (verticalEpsgCode > -1)
+    {
+        id += to_string(verticalEpsgCode);
+    }
+    CRS* ptrCRS = getCRS(id);
+    crsId = ptrCRS->getId();
 }
 
 void CRSsToolsImpl::getCRSsInfo(std::map<std::string,CRSInfo>& values)

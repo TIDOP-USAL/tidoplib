@@ -24,6 +24,9 @@
 
 if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     
+	find_package(COPCLIB REQUIRED)
+	find_package(LAZPERF REQUIRED)
+
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     
     project(pc_examples LANGUAGES CXX)
@@ -55,7 +58,9 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-						  ${PDAL_LIBRARIES})
+						  ${PDAL_LIBRARIES}
+						  COPCLIB::copc-lib 
+						  LAZPERF::lazperf)
                           # $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
     					  
     if(HAVE_OPENCV)

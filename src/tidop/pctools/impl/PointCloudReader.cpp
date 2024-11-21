@@ -22,33 +22,37 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef PCTOOLS_POINTCLOUDFILEMANAGER_H
-#define PCTOOLS_POINTCLOUDFILEMANAGER_H
-
-#pragma once
-
-#include <vector>
-#include "tidop/core/defs.h"
-
-#include "PointCloudToolsDefinitions.h"
-
-#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
-
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 #include <string>
 
-namespace tl{
+#include "tidop/core/exception.h"
+#include "tidop/core/utils.h"
 
-/*!
- * \brief PointCloudFileManager class
- */
-class TL_EXPORT PointCloudFileManager{
-public:
-    inline PointCloudFileManager(){};
-    ~PointCloudFileManager() {};
-    virtual void addPointCloudFile(std::string fileName) = 0;
+#include "tidop/geotools/GeoTools.h"
+#include "tidop/geotools/CRSsTools.h"
 
-};
+#include "./PointCloudReader.h"
+
+#include <proj.h>
+
+#include <copc-lib/las/header.hpp>
+#include <lazperf/readers.hpp>
+#include <copc-lib/io/copc_reader.hpp>
+#include <copc-lib/laz/decompressor.hpp>
+
+
+namespace tl
+{
+    PointCloudReader::PointCloudReader(tl::Path file)
+        : mFile(std::move(file))
+    {
+
+    }
+    auto PointCloudReader::file() const -> tl::Path
+    {
+        return mFile;
+    }
 
 }
-#endif 
-#endif // PCTOOLS_POINTCLOUDFILEMANAGER_H

@@ -21,6 +21,7 @@ namespace tl {
         std::string getBaseCrsId(PJ_CONTEXT* projContext);
         std::string getEllipsoidString() { return(mEllipsoidString); };
         int getEpsgCode() { return(mEpsgCode); };
+        std::string getId() { return(mId); };
         int getPrecision() { return(mPrecision); };
         int getVerticalEpsgCode() { return(mVerticalEpsgCode); };
         int getVerticalPrecision() { return(mVerticalPrecision); };
