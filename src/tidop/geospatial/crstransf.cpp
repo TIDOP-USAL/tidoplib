@@ -197,7 +197,8 @@ void CrsTransform::init()
 #endif // TL_HAVE_GDAL
 
 
-EcefToEnu::EcefToEnu(const Point3<double>& center, const RotationMatrix<double>& rotation): mCenter(center),
+EcefToEnu::EcefToEnu(const Point3<double>& center, const RotationMatrix<double>& rotation)
+  : mCenter(center),
     mRotation(rotation)
 {
 
