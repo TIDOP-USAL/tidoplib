@@ -504,6 +504,33 @@ std::string CRSsToolsImpl::getCRSEnu(std::string crsId, double fc, double sc, do
     return crsEnuId;
 }
 
+std::string CRSsToolsImpl::getCRSIdEllipsoidHeightsForPDAL(std::string crsId)
+{
+    std::string crsIdEllipsoidHeightsForPDAL;
+    try {
+        CRS* ptrCRS = getCRS(crsId);
+        if (ptrCRS->IsGeographic())
+            return(crsIdEllipsoidHeightsForPDAL);
+        if(ptrCRS->IsCompound())
+            return(crsIdEllipsoidHeightsForPDAL);
+        if (ptrCRS->IsGeocentric())
+            return(crsIdEllipsoidHeightsForPDAL);
+        if (ptrCRS->IsProjected())
+        {
+            std::string baseCrsId=ptrCRS->getBaseCrsId(mProjContext);
+            CRS* ptrBaseCRS = getCRS(baseCrsId);
+            int baseCRSEpsgCode = ptrBaseCRS->getEpsgCode();
+            crsIdEllipsoidHeightsForPDAL = crsId;
+            crsIdEllipsoidHeightsForPDAL += '+';
+            crsIdEllipsoidHeightsForPDAL += to_string(baseCRSEpsgCode);
+        }
+    }
+    catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    };
+    return(crsIdEllipsoidHeightsForPDAL);
+}
+
 CRS* CRSsToolsImpl::getCRS(std::string crsId)
 {
     try {

@@ -54,6 +54,7 @@ public:
         std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
     virtual void dumpCRSsInfoToFile(std::string fileName) = 0;
     virtual std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) = 0;
+    virtual std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) = 0;
     virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
     virtual void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) = 0;
     virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;

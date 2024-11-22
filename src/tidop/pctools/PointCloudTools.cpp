@@ -62,7 +62,9 @@ bool PointCloudTools::assignCRS(std::string fileName, std::string crsId, std::st
     {
         TL_ASSERT(false, "Invalid CRS Id: {}", crsId);
     }
-    std::string pdalCrsId = "25830+4258";
+    std::string pdalCrsId = mPtrGeoTools->ptrCRSsTools()->getCRSIdEllipsoidHeightsForPDAL(crsId);
+    if (pdalCrsId.empty()) // "EPSG:25830" -> "EPSG:25830+4258", emtpy when is not needed
+        pdalCrsId = crsId;
     tl::Path inputFile(fileName);
     if (!inputFile.exists())
     {
@@ -108,32 +110,57 @@ bool PointCloudTools::assignCRS(std::string fileName, std::string crsId, std::st
             bool isCopc = false;
             try
             {
-                copc::FileReader copcFile(fileName); // error if file is not copc
-                isCopc = true;
-                auto las_header = copcFile.CopcConfig().LasHeader();
-                auto copc_info = copcFile.CopcConfig().CopcInfo();
-                crsWKT = copcFile.CopcConfig().Wkt();
+                {// for close
+                    copc::FileReader copcFile(fileName); // error if file is not copc
+                    isCopc = true;
+                    auto las_header = copcFile.CopcConfig().LasHeader();
+                    auto copc_info = copcFile.CopcConfig().CopcInfo();
+                    crsWKT = copcFile.CopcConfig().Wkt();
+                }
                 pdal::Stage& reader = pdalPipeline.addReader("readers.copc");
-                pdal::Options optsWriter;
-                optsWriter.add("a_srs",crsId);
-                pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                reader.setOptions(optsReader);
+                if (crsWKT.empty())
+                {
+                    pdal::Options optsWriter;
+                    optsWriter.add("a_srs", crsId);
+                    optsWriter.add("extra_dims", "all");
+                    pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                }
+                else
+                {
+                    std::string inputFileCrsId;
+                    mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, inputFileCrsId);
+                    pdal::Stage& filterCrsOperation = pdalPipeline.makeFilter("filters.reprojection", reader);
+                    pdal::Options optsFilterCrsOperation;
+                    optsFilterCrsOperation.add("in_srs", inputFileCrsId);
+                    optsFilterCrsOperation.add("out_srs", pdalCrsId);// crsId);
+                    filterCrsOperation.setOptions(optsFilterCrsOperation);
+                    pdal::Options optsWriter;
+                    optsWriter.add("a_srs", crsId);
+                    optsWriter.add("extra_dims", "all");
+                    pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", filterCrsOperation, optsWriter);
+                }
             }
             catch (...)
             {
-                pdal::LasReader lasReader;
-                pdal::Options options;
-                options.add("filename", fileName);
-                lasReader.setOptions(options);
-                lasReader.prepare(pointTable);
-                const pdal::LasHeader& h = lasReader.header();
-                pdal::SpatialReference crs = h.srs();
-                crsWKT = crs.getWKT1();
+                {// for close
+                    pdal::LasReader lasReader;
+                    pdal::Options options;
+                    options.add("filename", fileName);
+                    lasReader.setOptions(options);
+                    lasReader.prepare(pointTable);
+                    const pdal::LasHeader& h = lasReader.header();
+                    pdal::SpatialReference crs = h.srs();
+                    crsWKT = crs.getWKT1();
+                }
                 pdal::Stage& reader = pdalPipeline.addReader("readers.las");
                 reader.setOptions(optsReader);
                 if (crsWKT.empty())
                 {
                     pdal::Options optsWriter;
                     optsWriter.add("a_srs", crsId);
+                    optsWriter.add("extra_dims", "all");
+                    optsWriter.add("minor_version", "4");
                     pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.las", reader, optsWriter);
                 }
                 else
@@ -147,15 +174,12 @@ bool PointCloudTools::assignCRS(std::string fileName, std::string crsId, std::st
                     filterCrsOperation.setOptions(optsFilterCrsOperation);
                     pdal::Options optsWriter;
                     optsWriter.add("a_srs", crsId);
+                    optsWriter.add("extra_dims", "all");
+                    optsWriter.add("minor_version", "4");
                     pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.las", filterCrsOperation, optsWriter);
                 }
             }
-            try {
-                pdal::point_count_t np = pdalPipeline.execute();
-            }
-            catch (...) {
-                TL_THROW_EXCEPTION_WITH_NESTED("");
-            };
+            pdal::point_count_t np = pdalPipeline.execute();
             succesFull = !std::ifstream(outputFileName).fail();
         }
         else
@@ -182,12 +206,16 @@ bool PointCloudTools::toCOPC(std::string fileName, std::string outputFileName, s
     {
         TL_ASSERT(false, "GeoTools is not defined");
     }
+    std::string pdalCrsId;
     if (!crsId.empty())
     {
         if (!mPtrGeoTools->ptrCRSsTools()->getIsCRSValid(crsId))
         {
             TL_ASSERT(false, "Invalid CRS Id: {}", crsId);
         }
+        std::string pdalCrsId = mPtrGeoTools->ptrCRSsTools()->getCRSIdEllipsoidHeightsForPDAL(crsId);
+        if (pdalCrsId.empty()) // "EPSG:25830" -> "EPSG:25830+4258", emtpy when is not needed
+            pdalCrsId = crsId;
     }
     tl::Path inputFile(fileName);
     if (!inputFile.exists())
@@ -234,26 +262,92 @@ bool PointCloudTools::toCOPC(std::string fileName, std::string outputFileName, s
             bool isCopc = false;
             try
             {
-                copc::FileReader copcFile(fileName); // error if file is not copc
-                isCopc = true;
-                auto las_header = copcFile.CopcConfig().LasHeader();
-                auto copc_info = copcFile.CopcConfig().CopcInfo();
-                crsWKT = copcFile.CopcConfig().Wkt();
+                {
+                    copc::FileReader copcFile(fileName); // error if file is not copc
+                    isCopc = true;
+                    auto las_header = copcFile.CopcConfig().LasHeader();
+                    auto copc_info = copcFile.CopcConfig().CopcInfo();
+                    crsWKT = copcFile.CopcConfig().Wkt();
+                }
                 pdal::Stage& reader = pdalPipeline.addReader("readers.copc");
-                pdal::Options optsWriter;
-                optsWriter.add("a_srs", crsId);
-                pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                reader.setOptions(optsReader);
+                if (crsWKT.empty())
+                {
+                    pdal::Options optsWriter;
+                    if(!crsId.empty())
+                        optsWriter.add("a_srs", crsId);
+                    optsWriter.add("extra_dims", "all");
+                    pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                }
+                else
+                {
+                    if (!crsId.empty())
+                    {
+                        std::string inputFileCrsId;
+                        mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, inputFileCrsId);
+                        pdal::Stage& filterCrsOperation = pdalPipeline.makeFilter("filters.reprojection", reader);
+                        pdal::Options optsFilterCrsOperation;
+                        optsFilterCrsOperation.add("in_srs", inputFileCrsId);
+                        optsFilterCrsOperation.add("out_srs", pdalCrsId);// crsId);
+                        filterCrsOperation.setOptions(optsFilterCrsOperation);
+                        pdal::Options optsWriter;
+                        optsWriter.add("a_srs", crsId);
+                        optsWriter.add("extra_dims", "all");
+                        pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", filterCrsOperation, optsWriter);
+                    }
+                    else
+                    {
+                        pdal::Options optsWriter;
+                        optsWriter.add("extra_dims", "all");
+                        pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                    }
+                }
             }
             catch (...)
             {
+                {// for close
+                    pdal::LasReader lasReader;
+                    pdal::Options options;
+                    options.add("filename", fileName);
+                    lasReader.setOptions(options);
+                    lasReader.prepare(pointTable);
+                    const pdal::LasHeader& h = lasReader.header();
+                    pdal::SpatialReference crs = h.srs();
+                    crsWKT = crs.getWKT1();
+                }
                 pdal::Stage& reader = pdalPipeline.addReader("readers.las");
                 reader.setOptions(optsReader);
-                pdal::Options optsWriter;
-                //optsWriter.add("filename", outputFileName);
-                optsWriter.add("a_srs", crsId);
-                pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.las", reader, optsWriter);
-                //pdal::Stage& writer = pdalPipeline.addWriter("writers.las");
-                //writer.setOptions(optsWriter);
+                if (crsWKT.empty())
+                {
+                    pdal::Options optsWriter;
+                    if (!crsId.empty())
+                        optsWriter.add("a_srs", crsId);
+                    optsWriter.add("extra_dims", "all");
+                    pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                }
+                else
+                {
+                    if (!crsId.empty())
+                    {
+                        std::string inputFileCrsId;
+                        mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, inputFileCrsId);
+                        pdal::Stage& filterCrsOperation = pdalPipeline.makeFilter("filters.reprojection", reader);
+                        pdal::Options optsFilterCrsOperation;
+                        optsFilterCrsOperation.add("in_srs", inputFileCrsId);
+                        optsFilterCrsOperation.add("out_srs", pdalCrsId);// crsId);
+                        filterCrsOperation.setOptions(optsFilterCrsOperation);
+                        pdal::Options optsWriter;
+                        optsWriter.add("a_srs", crsId);
+                        optsWriter.add("extra_dims", "all");
+                        pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", filterCrsOperation, optsWriter);
+                    }
+                    else
+                    {
+                        pdal::Options optsWriter;
+                        optsWriter.add("extra_dims", "all");
+                        pdal::Stage& writer = pdalPipeline.makeWriter(outputFileName, "writers.copc", reader, optsWriter);
+                    }
+                }
             }
             pdal::point_count_t np = pdalPipeline.execute();
             succesFull = !std::ifstream(outputFileName).fail();
