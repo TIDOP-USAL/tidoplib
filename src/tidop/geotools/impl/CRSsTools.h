@@ -53,6 +53,7 @@ public:
     void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) override;
     void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) override;
     void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) override;
+    bool getIsCRSValid(std::string crsId) override;
     void setCRSFromWkt(std::string wkt, std::string& crsId) override;
 
 

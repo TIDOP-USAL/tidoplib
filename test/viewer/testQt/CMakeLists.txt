@@ -65,7 +65,8 @@ add_executable(${PROJECT_NAME}
 
 # Link libs
 target_link_libraries(${PROJECT_NAME} 
-                      TidopLib::Viewer)
+                      TidopLib::Viewer
+                      TidopLib::GeoTools)
  #                     COPCLIB::copc-lib 
  #                     LAZPERF::lazperf)
 

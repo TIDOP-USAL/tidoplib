@@ -65,7 +65,7 @@ void MainWindow::loadFromFile(const std::string& path) {
     ModelBase::Ptr model = reader->getModelBase();
 
     PointCloud::Ptr cloud = std::dynamic_pointer_cast<PointCloud>(model);
-    //cloud->scale(0.1f, 0.1f, 0.1f);
+    cloud->scale(0.01f, 0.01f, 0.01f);
 
     viewerWidget->getRenderer()->addModel(cloud);
 

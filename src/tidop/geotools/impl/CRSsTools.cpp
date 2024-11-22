@@ -727,6 +727,39 @@ void CRSsToolsImpl::getCRSsVertical(std::string crsId, std::map<std::string, CRS
     };
 }
 
+bool CRSsToolsImpl::getIsCRSValid(std::string crsId)
+{
+    if (mPtrCRSs.find(crsId) == mPtrCRSs.end())
+    {
+        CRS* ptrCRS = NULL;
+        try
+        {
+            if (crsId.rfind(CRS_USER_EPSGCODE_TAG, 0) == 0)
+            {
+                ptrCRS = new CRS(crsId, mCRSsInfo, mOamsTraditionalGisOrder);
+            }
+            else if (crsId.rfind(CRS_USER_PROJ4STRING_PREFIX, 0) == 0)
+            {
+                ptrCRS = new CRS(crsId, mOamsTraditionalGisOrder);
+            }
+            else
+            {
+                TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
+                //strError = functionName;
+                //strError += "\n";
+                //return(NULL);
+            }
+            mPtrCRSs[crsId] = ptrCRS;
+        }
+        catch (...)
+        {
+            return(false);
+            //TL_THROW_EXCEPTION("Invalid CRS id: {}", crsId);
+        }
+    }
+    return(true);
+}
+
 void CRSsToolsImpl::initialize()
 {
     try {

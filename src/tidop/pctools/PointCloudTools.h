@@ -26,34 +26,31 @@
 #define PCTOOLS_PCTOOLS_INTERFACE_H
 
 #include <vector>
+#include <string>
 
 #include "tidop/core/defs.h"
 #include "PointCloudToolsDefinitions.h"
 
 namespace tl{
-    // class PointCloudFileManager;
-/*!
- * \brief PointCloudTools class
- */
+    class GeoTools;
 class TL_EXPORT PointCloudTools{
 public:
-    static inline PointCloudTools* getInstance(void )
+    static inline PointCloudTools* getInstance()
     {
         if (mInstance==0) mInstance = new PointCloudTools;
         return mInstance;
     };
     ~PointCloudTools();
-// public:
+    bool assignCRS(std::string fileName, std::string crsI, std::string outputFileName);
+    bool toCOPC(std::string fileName, std::string outputFileName, std::string crsId="");
+    // public:
     // PointCloudFileManager* ptrPointCloudFileManager();
 protected:
-    inline PointCloudTools() {
-        // mPtrPointCloudFileManager = NULL;
-    };
+    PointCloudTools();
 private:
     void clear();
-    void initialize();
     static PointCloudTools* mInstance;
-    // PointCloudFileManager* mPtrPointCloudFileManager;
+    GeoTools* mPtrGeoTools;
 };
 
 }
