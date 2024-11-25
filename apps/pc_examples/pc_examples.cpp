@@ -103,6 +103,73 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // assign CRS
+    //std::string assignCrsInputFileName = "D:/dev/pnoa_lidar_2009_25830_5782.laz";
+    std::string assignCrsInputFileName = "D:/dev/pnoa_lidar_2009.laz";
+    std::string assignCrsOutputFileName = "D:/dev/pnoa_lidar_2009_test_25830_5782.laz";
+    std::string assignCrs_crsId = "EPSG:25830+5782";
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    bool succesFull = ptrPointCloudTools->assignCRS(assignCrsInputFileName,
+    //        assignCrs_crsId, assignCrsOutputFileName);
+    //}
+    //catch (...) {
+    //    TL_THROW_EXCEPTION_WITH_NESTED("");
+    //};
+    //assignCrsInputFileName = "D:/dev/pnoa_lidar_2009_test_25830_5782.laz";
+    //assignCrsOutputFileName = "D:/dev/pnoa_lidar_2009_test_25830.laz";
+    //assignCrs_crsId = "EPSG:25830";
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    bool succesFull = ptrPointCloudTools->assignCRS(assignCrsInputFileName,
+    //        assignCrs_crsId, assignCrsOutputFileName);
+    //}
+    //catch (...) {
+    //    TL_THROW_EXCEPTION_WITH_NESTED("");
+    //};
+
+    //std::string toCopcInputFileName = "D:/dev/pnoa_lidar_2009.laz";
+    //std::string toCopcOutputFileName = "D:/dev/pnoa_lidar_2009_test.copc.laz";
+    //std::string toCopcCrs_crsId;
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    bool succesFull = ptrPointCloudTools->toCOPC(toCopcInputFileName,
+    //        toCopcOutputFileName, toCopcCrs_crsId);
+    //}
+    //catch (...) {
+    //    TL_THROW_EXCEPTION_WITH_NESTED("");
+    //};
+
+    //toCopcInputFileName = "D:/dev/pnoa_lidar_2009.laz";
+    //toCopcOutputFileName = "D:/dev/pnoa_lidar_2009_test_25830_5782.copc.laz";
+    //toCopcCrs_crsId = "EPSG:25830+5782";
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    bool succesFull = ptrPointCloudTools->toCOPC(toCopcInputFileName,
+    //        toCopcOutputFileName, toCopcCrs_crsId);
+    //}
+    //catch (...) {
+    //    TL_THROW_EXCEPTION_WITH_NESTED("");
+    //};
+
+    assignCrsInputFileName = "D:/dev/pnoa_lidar_2009_test.copc.laz";
+    assignCrsOutputFileName = "D:/dev/pnoa_lidar_2009_test_25830_5782.copc.laz";
+    assignCrs_crsId = "EPSG:25830+5782";
+    try
+    {
+        PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+        bool succesFull = ptrPointCloudTools->assignCRS(assignCrsInputFileName,
+            assignCrs_crsId, assignCrsOutputFileName);
+    }
+    catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    };
+
+
     //try {
     //    ReaderExample();
     //}
@@ -110,6 +177,7 @@ int main(int argc, char* argv[])
     //    printException(e);
     //    return 1;
     //}
+
     std::string crsId_25830_5782 = "EPSG:25830+5782";
     std::string crsId_4937 = "EPSG:4937";
     std::string crsId_4258_5782 = "EPSG:4258+5782";

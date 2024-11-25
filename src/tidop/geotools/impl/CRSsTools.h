@@ -49,10 +49,12 @@ public:
         std::vector<std::vector<double> >& points, bool byPoint = false) override;
     void dumpCRSsInfoToFile(std::string fileName) override;
     std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) override;
+    std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) override;
     void getCRSsInfo(std::map<std::string, CRSInfo>&) override;
     void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) override;
     void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) override;
     void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) override;
+    bool getIsCRSValid(std::string crsId) override;
     void setCRSFromWkt(std::string wkt, std::string& crsId) override;
 
 
