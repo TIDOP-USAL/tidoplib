@@ -59,6 +59,8 @@ public:
     virtual void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) = 0;
     virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;
     virtual void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) = 0;
+    virtual bool getIsCRSEnu(std::string crsId) = 0;
+    virtual bool getIsCRSGeographic(std::string crsId) = 0;
     virtual bool getIsCRSValid(std::string crsId) = 0;
     virtual void setCRSFromWkt(std::string wkt, std::string& crsId) = 0;
 
