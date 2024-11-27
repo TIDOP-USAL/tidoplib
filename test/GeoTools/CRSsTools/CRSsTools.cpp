@@ -45,7 +45,8 @@ struct CRSsToolsTest
     CRSsToolsTest()
       : ptrGeoTools(nullptr),
         crs25830("EPSG:25830"),
-        crs4258("EPSG:4258")
+        crs4258("EPSG:4258"),
+        crs25830_5782("EPSG:25830+5782")
     {
     }
 
@@ -64,6 +65,7 @@ struct CRSsToolsTest
         Path proj_data_path("D:/dev/libs/proj/9.2/vc16/share/proj");
     #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
            CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
+           CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
     #   else
             std::string s_proj = proj_data_path.toString();
             const char* proj_data[]{ s_proj.c_str(), nullptr };
@@ -78,6 +80,7 @@ struct CRSsToolsTest
         CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
     #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
             CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
+            CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
     #   else
             std::string s_proj = proj_data_path.toString();
             const char* proj_data[]{ s_proj.c_str(), nullptr };
@@ -106,6 +109,7 @@ struct CRSsToolsTest
     GeoTools *ptrGeoTools;
     std::string crs25830;
     std::string crs4258;
+    std::string crs25830_5782;
     std::map<std::string, std::vector<double> > coor_4937;
 };
 
@@ -117,6 +121,59 @@ BOOST_FIXTURE_TEST_CASE(transform, CRSsToolsTest)
     BOOST_CHECK_CLOSE(-5.701905, point.x, 0.1);
     BOOST_CHECK_CLOSE(43.570113, point.y, 0.1);
     BOOST_CHECK_CLOSE(0., point.z, 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(getCRSEnu, CRSsToolsTest)
+{
+    double tcElip = 142.1590;
+    double tcHOrth = 94.2172;
+    tl::Point3d point(-4.495021180808, 36.756413127079, tcElip);
+    ptrGeoTools->ptrCRSsTools()->crsOperation(crs4258, crs25830, point.x, point.y, point.z);
+
+    std::string crsEnuFrom25830 = ptrGeoTools->ptrCRSsTools()->getCRSEnu(crs25830, point.x, point.y, point.z);
+    BOOST_CHECK_EQUAL("ENU:4258;-4.495021181;36.756413127;142.1590", crsEnuFrom25830);
+
+    std::string crsEnuFrom25830_5782 = ptrGeoTools->ptrCRSsTools()->getCRSEnu(crs25830_5782, point.x, point.y, tcHOrth);
+    BOOST_CHECK_EQUAL("ENU:4258;-4.495021181;36.756413127;94.2172", crsEnuFrom25830_5782);
+
+    double fc4258FromEnuHElip = 0.;
+    double sc4258FromEnuHElip = 0.;
+    double tc4258FromEnuHElip = 0.;
+    ptrGeoTools->ptrCRSsTools()->crsOperation(crsEnuFrom25830, crs4258,
+                                              fc4258FromEnuHElip, sc4258FromEnuHElip, tc4258FromEnuHElip);
+    BOOST_CHECK_CLOSE(-4.495021181, fc4258FromEnuHElip, 0.01);
+    BOOST_CHECK_CLOSE(36.756413127, sc4258FromEnuHElip, 0.01);
+    BOOST_CHECK_CLOSE(142.1590, tc4258FromEnuHElip, 0.01);
+
+    double fc4258FromEnuHOrth = 0.;
+    double sc4258FromEnuHOrth = 0.;
+    double tc4258FromEnuHOrth = 0.;
+    ptrGeoTools->ptrCRSsTools()->crsOperation(crsEnuFrom25830_5782, crs4258,
+                                              fc4258FromEnuHOrth, sc4258FromEnuHOrth, tc4258FromEnuHOrth);
+
+    BOOST_CHECK_CLOSE(-4.495021181, fc4258FromEnuHOrth, 0.01);
+    BOOST_CHECK_CLOSE(36.756413127, sc4258FromEnuHOrth, 0.01);
+    BOOST_CHECK_CLOSE(94.2172, tc4258FromEnuHOrth, 0.01);
+}
+
+// test CRSsVertical
+
+BOOST_FIXTURE_TEST_CASE(getCRSsVertical, CRSsToolsTest)
+{
+    std::map<std::string, CRSInfo> crssFor2dApplications;
+    ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications(crssFor2dApplications);
+    std::string crsId_1 = "EPSG:25830";
+    std::map<std::string, CRSInfo> crssVertical_1;
+    ptrGeoTools->ptrCRSsTools()->getCRSsVertical(crsId_1, crssVertical_1);
+    
+    auto &epsg5782 = crssVertical_1["EPSG:5782"];
+    BOOST_CHECK_EQUAL(epsg5782.name, "Alicante height");
+
+    auto &epsg9392 = crssVertical_1["EPSG:9392"];
+    BOOST_CHECK_EQUAL(epsg9392.name, "Mallorca height");
+
+    auto &epsg9393 = crssVertical_1["EPSG:9393"];
+    BOOST_CHECK_EQUAL(epsg9393.name, "Menorca height");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
