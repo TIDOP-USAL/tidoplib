@@ -584,6 +584,7 @@ void PointCloudReaderPDAL::open()
     std::string crsWKT;
     pdal::StringList dimensionsName;
     pdal::PointTable pointTable;
+    std::string crsId;
     if (compareInsensitiveCase(extension, ".las")
         || compareInsensitiveCase(extension, ".laz"))
     {
@@ -595,6 +596,27 @@ void PointCloudReaderPDAL::open()
             auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
             auto copc_info = mPtrCopcFile->CopcConfig().CopcInfo();
             crsWKT = mPtrCopcFile->CopcConfig().Wkt();
+            pdal::CopcReader copcReader;
+            pdal::Options options;
+            options.add("filename", file().toString());
+            copcReader.setOptions(options);
+            copcReader.prepare(pointTable);
+            pdal::SpatialReference crs = copcReader.getSpatialReference();
+            std::string horizontalCrsEPSG = crs.identifyHorizontalEPSG();
+            std::string verticalCrsEPSG = crs.identifyVerticalEPSG();
+            if (!horizontalCrsEPSG.empty() || !verticalCrsEPSG.empty())
+            {
+                crsId = "EPSG:";
+                if (!horizontalCrsEPSG.empty())
+                {
+                    crsId += horizontalCrsEPSG;
+                    if (!verticalCrsEPSG.empty())
+                        crsId += "+";
+                }
+                if (!verticalCrsEPSG.empty())
+                    crsId += verticalCrsEPSG;
+            }
+            crsWKT = crs.getWKT1();
             mResolutionLastLevel = 100000000.;
             mResolutionFirstLevel = -100000000;
             for (const auto& node : mPtrCopcFile->GetAllChildrenOfPage(copc::VoxelKey::RootKey()))
@@ -648,8 +670,21 @@ void PointCloudReaderPDAL::open()
             //const pdal::point_count_t pointsCount = qi.m_pointCount;
             dimensionsName=pdal::StringList(qi.m_dimNames.begin(), qi.m_dimNames.end());
             pdal::SpatialReference crs = h.srs();
+            std::string horizontalCrsEPSG = crs.identifyHorizontalEPSG();
+            std::string verticalCrsEPSG = crs.identifyVerticalEPSG();
+            if (!horizontalCrsEPSG.empty() || !verticalCrsEPSG.empty())
+            {
+                crsId = "EPSG:";
+                if (!horizontalCrsEPSG.empty())
+                {
+                    crsId += horizontalCrsEPSG;
+                    if (!verticalCrsEPSG.empty())
+                        crsId += "+";
+                }
+                if (!verticalCrsEPSG.empty())
+                    crsId += verticalCrsEPSG;
+            }
             crsWKT = crs.getWKT1();
-
             //TL_THROW_EXCEPTION("Error while opening COPC file: {}", file.fileName().toString());
             //auto f_stream = new std::fstream;
             //f_stream->open(file.toString().c_str(), std::ios::in | std::ios::binary);
@@ -677,8 +712,15 @@ void PointCloudReaderPDAL::open()
             std::string name = dimensionName;
             mDimensionIdByName[name] = dimensionId;
         }
-        std::string crsId;
-        mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, crsId);
+        if (crsId.empty())
+        {
+            if (!crsWKT.empty())
+            {
+                mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, crsId);
+            }
+        }
+        if (crsId.empty())
+            TL_ASSERT(false, "Not exists CRS WKT in file: {}", file().toString());
         mCrsId = crsId;
     }
     catch (...) {
