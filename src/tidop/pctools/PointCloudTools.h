@@ -41,8 +41,13 @@ public:
         return mInstance;
     };
     ~PointCloudTools();
-    bool assignCRS(std::string fileName, std::string crsI, std::string outputFileName);
-    bool toCOPC(std::string fileName, std::string outputFileName, std::string crsId="");
+    bool assignCRS(std::string fileName, std::string crsI, std::string outputFileName, 
+        bool ignoreInternalCrs=true);
+    std::string getCRSId(std::string fileName);
+    void formatFileConversionToCOPC(std::string fileName, std::string outputFileName, 
+        std::string targetCrsId, std::string sourceCrsId ="");
+    //bool formatFileConversionToCOPC(std::string fileName, std::string outputFileName, 
+    //    std::string targetCrsId ="");
     // public:
     // PointCloudFileManager* ptrPointCloudFileManager();
 protected:

@@ -507,6 +507,10 @@ std::string CRSsToolsImpl::getCRSEnu(std::string crsId, double fc, double sc, do
 std::string CRSsToolsImpl::getCRSIdEllipsoidHeightsForPDAL(std::string crsId)
 {
     std::string crsIdEllipsoidHeightsForPDAL;
+    if (crsId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
+    {
+        return(crsIdEllipsoidHeightsForPDAL);
+    }
     try {
         CRS* ptrCRS = getCRS(crsId);
         if (ptrCRS->IsGeographic())
@@ -547,10 +551,15 @@ CRS* CRSsToolsImpl::getCRS(std::string crsId)
             }
             else
             {
-                TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
-                //strError = functionName;
-                //strError += "\n";
-                //return(NULL);
+                if (crsId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
+                {
+                    TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
+                    //strError = functionName;
+                    //strError += "\n";
+                    //return(NULL);
+                }
+                else
+                    return(NULL);
             }
             mPtrCRSs[crsId] = ptrCRS;
         }
@@ -563,6 +572,11 @@ CRS* CRSsToolsImpl::getCRS(std::string crsId)
 
 void CRSsToolsImpl::setCRSFromWkt(std::string wkt, std::string& crsId)
 {
+    if (mCRSIdByCRSWkt.find(wkt) != mCRSIdByCRSWkt.end())
+    {
+        crsId=mCRSIdByCRSWkt[wkt];
+        return;
+    }
     // for error when exists invalid characters at the end
     size_t last_pos = wkt.find_last_of(']');
     wkt.erase(last_pos + 1, wkt.length());
@@ -665,7 +679,8 @@ void CRSsToolsImpl::getCRSsInfo(std::map<std::string,CRSInfo>& values)
 void CRSsToolsImpl::getCRSPrecision(std::string crsId, int& precision,
     int& verticalPrecision)
 {
-    if (mPtrCRSsOperationsEcefToEnuByCRSEnuId.find(crsId) != mPtrCRSsOperationsEcefToEnuByCRSEnuId.end())
+    if ((mPtrCRSsOperationsEcefToEnuByCRSEnuId.find(crsId) != mPtrCRSsOperationsEcefToEnuByCRSEnuId.end())
+        || (crsId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos))
     {
         precision = CRS_TYPE_ENU_PRECISION;
         verticalPrecision = CRS_TYPE_ENU_PRECISION;
@@ -754,6 +769,52 @@ void CRSsToolsImpl::getCRSsVertical(std::string crsId, std::map<std::string, CRS
     };
 }
 
+bool CRSsToolsImpl::getIsCRSEnu(std::string crsId)
+{
+    return(crsId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos);
+}
+
+bool CRSsToolsImpl::getIsCRSGeographic(std::string crsId)
+{
+    if (crsId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
+        return(false);
+    if (mPtrCRSs.find(crsId) == mPtrCRSs.end())
+    {
+        CRS* ptrCRS = NULL;
+        try
+        {
+            if (crsId.rfind(CRS_USER_EPSGCODE_TAG, 0) == 0)
+            {
+                ptrCRS = new CRS(crsId, mCRSsInfo, mOamsTraditionalGisOrder);
+            }
+            else if (crsId.rfind(CRS_USER_PROJ4STRING_PREFIX, 0) == 0)
+            {
+                ptrCRS = new CRS(crsId, mOamsTraditionalGisOrder);
+            }
+            else
+            {
+                if (crsId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
+                {
+                    TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
+                    //strError = functionName;
+                    //strError += "\n";
+                    //return(NULL);
+                }
+            }
+            mPtrCRSs[crsId] = ptrCRS;
+        }
+        catch (...)
+        {
+            return(false);
+            //TL_THROW_EXCEPTION("Invalid CRS id: {}", crsId);
+        }
+    }
+    bool isGeographic = false;
+    CRS* ptrCRS = mPtrCRSs[crsId];
+    isGeographic = ptrCRS->IsGeographic(); // works 4258+5782 -> true
+    return(isGeographic);
+}
+
 bool CRSsToolsImpl::getIsCRSValid(std::string crsId)
 {
     if (mPtrCRSs.find(crsId) == mPtrCRSs.end())
@@ -771,10 +832,13 @@ bool CRSsToolsImpl::getIsCRSValid(std::string crsId)
             }
             else
             {
-                TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
-                //strError = functionName;
-                //strError += "\n";
-                //return(NULL);
+                if (crsId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
+                {
+                    TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
+                    //strError = functionName;
+                    //strError += "\n";
+                    //return(NULL);
+                }
             }
             mPtrCRSs[crsId] = ptrCRS;
         }
@@ -794,6 +858,7 @@ void CRSsToolsImpl::initialize()
         //mCRSBaseIdByCRSId.clear();
         mCRSsVerticalIdByBaseCRSId.clear();
         mProjContext = proj_context_create();
+        mCRSIdByCRSWkt.clear();
 
         auto proj_lib = CPLGetConfigOption("PROJ_LIB", "Not Set");
         proj_context_set_search_paths(mProjContext, 1, &proj_lib);

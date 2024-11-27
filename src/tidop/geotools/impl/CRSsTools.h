@@ -54,6 +54,8 @@ public:
     void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) override;
     void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) override;
     void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) override;
+    bool getIsCRSEnu(std::string crsId) override;
+    bool getIsCRSGeographic(std::string crsId) override;
     bool getIsCRSValid(std::string crsId) override;
     void setCRSFromWkt(std::string wkt, std::string& crsId) override;
 
@@ -77,6 +79,7 @@ private:
     //std::map<std::string, std::string> mCRSBaseIdByCRSId;
     std::map<std::string, std::vector<std::string> > mCRSsVerticalIdByBaseCRSId;
     PJ_CONTEXT* mProjContext;
+    std::map<std::string, std::string> mCRSIdByCRSWkt;
 };
 }
 

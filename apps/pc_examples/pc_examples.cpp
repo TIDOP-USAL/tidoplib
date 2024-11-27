@@ -45,12 +45,14 @@ void ReaderExample();
 
 int main(int argc, char* argv[])
 {
+    std::string inputFileName, outputFileName;
+    
     //std::string pointCloudFileName = "D:/dev/pnoa_lidar_2009.laz";
     //std::string pointCloudFileName = "D:/dev/pnoa_lidar_2009_dhl_writer_crs.copc.laz";
     bool doNoCopc = false;
     std::string pointCloudFileNameNoCopc = "D:/dev/pnoa_lidar_2009_crs_features.laz";
     std::string pointCloudFileName = "D:/dev/pnoa_lidar_2009_crs_features.copc.laz";
-    std::string outputFileName = "D:/dev/pnoa_lidar_2009_dhl_writer_crs.copc.laz.csv";
+    outputFileName = "D:/dev/pnoa_lidar_2009_dhl_writer_crs.copc.laz.csv";
 
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();
@@ -97,6 +99,84 @@ int main(int argc, char* argv[])
     try {
         bool ignoreDeprecatedCRSs = true;
         ptrGeoTools->initializeCRSsTools(ignoreDeprecatedCRSs);
+    }
+    catch (const std::exception& e) {
+        printException(e);
+        return 1;
+    }
+
+    std::string sourceCrsId, targetCrsId;
+    // ply to copc
+    //inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_clipped.ply";
+    //outputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830_5782_bad_crs_25830.laz";
+    //sourceCrsId = "ENU:4326;-4.344685328;36.717412795;146.7191";
+    //targetCrsId = "EPSG:25830";// -> 25830+5782 por graphos
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    ptrPointCloudTools->formatFileConversionToCOPC(inputFileName,
+    //        outputFileName, targetCrsId, sourceCrsId);
+    //    int yo = 1;
+    //}
+    //catch (const std::exception& e) {
+    //    printException(e);
+    //    return 1;
+    //}
+    //std::string assignCrs_crsId = "EPSG:25830+5782";
+    //try
+    //{
+    //    inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830_5782_bad_crs_25830.copc.laz";
+    //    outputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830_5782.copc.laz";
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    bool succesFull = ptrPointCloudTools->assignCRS(inputFileName,
+    //        assignCrs_crsId, outputFileName);
+    //}
+    //catch (...) {
+    //    TL_THROW_EXCEPTION_WITH_NESTED("");
+    //};
+
+    //inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830_5782.copc.laz";
+    //outputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830.laz";
+    //sourceCrsId = "EPSG:25830+5782";
+    //targetCrsId = "EPSG:25830";// -> 25830+5782 por c
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    ptrPointCloudTools->formatFileConversionToCOPC(inputFileName,
+    //        outputFileName, targetCrsId, sourceCrsId);
+    //    int yo = 1;
+    //}
+    //catch (const std::exception& e) {
+    //    printException(e);
+    //    return 1;
+    //}
+
+    //inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830.copc.laz";
+    //outputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_4258_5782.laz";
+    //sourceCrsId = "EPSG:25830";
+    //targetCrsId = "EPSG:4258+5782";
+    //try
+    //{
+    //    PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+    //    ptrPointCloudTools->formatFileConversionToCOPC(inputFileName,
+    //        outputFileName, targetCrsId, sourceCrsId);
+    //    int yo = 1;
+    //}
+    //catch (const std::exception& e) {
+    //    printException(e);
+    //    return 1;
+    //}
+
+    inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_4258_5782.copc.laz";
+    outputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_25830_5782_bis.laz";
+    sourceCrsId = "EPSG:4258+5782";
+    targetCrsId = "EPSG:25830+5782";
+    try
+    {
+        PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+        ptrPointCloudTools->formatFileConversionToCOPC(inputFileName,
+            outputFileName, targetCrsId, sourceCrsId);
+        int yo = 1;
     }
     catch (const std::exception& e) {
         printException(e);
