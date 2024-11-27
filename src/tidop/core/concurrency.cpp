@@ -86,7 +86,7 @@ void parallel_for(size_t ini,
 
     size_t block_size = size / num_threads;
 
-    size_t block_ini = 0;
+    size_t block_ini = ini;
     size_t block_end = 0;
 
     for (size_t i = 0; i < num_threads; i++) {
