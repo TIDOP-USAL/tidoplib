@@ -22,10 +22,87 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
 
-#include "tidop/core/task/process.h"
-#include "tidop/core/task/task.h"
 #include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+#include "tidop/core/progress.h"
+
+namespace tl
+{
+
+
+/* Task List */
+
+TaskList::TaskList()
+  : tasks(0),
+    cancelOnError(false)
+{
+}
+
+TaskList::TaskList(const TaskList &taskList)
+  : TaskBase(),
+    tasks(taskList.tasks),
+    cancelOnError(false)
+{
+}
+
+TaskList::TaskList(std::initializer_list<std::shared_ptr<Task>> tasks)
+  : tasks(tasks),
+    cancelOnError(false)
+{
+}
+
+TaskList::~TaskList() = default;
+
+void TaskList::push_back(const std::shared_ptr<Task> &task)
+{
+    this->tasks.push_back(task);
+}
+
+void TaskList::setCancelTaskOnError(bool cancel)
+{
+    this->cancelOnError = cancel;
+}
+
+auto TaskList::size() const TL_NOEXCEPT -> size_t
+{
+    return tasks.size();
+}
+
+auto TaskList::empty() const TL_NOEXCEPT -> bool
+{
+    return tasks.empty();
+}
+
+void TaskList::stop()
+{
+    TaskBase::stop();
+
+    if (status() == Status::stopping) {
+        for (const auto &task : tasks) {
+            task->stop();
+        }
+    }
+}
+
+void TaskList::execute(Progress *progressBar)
+{
+    for (const auto &task : tasks) {
+
+        if (status() == Status::stopping) return;
+
+        task->run();
+
+        if (task->status() == Status::error && this->cancelOnError){
+            setStatus(Status::error);
+            break;
+        }
+
+        if (progressBar) (*progressBar)();
+
+    }
+}
+
+
+} // End namespace tl
+
+

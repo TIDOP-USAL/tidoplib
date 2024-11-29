@@ -22,10 +22,35 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
 
-#include "tidop/core/task/process.h"
-#include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
 #include "tidop/core/task/tasktree.h"
+#include "tidop/core/progress.h"
+
+namespace tl
+{
+
+
+/* Task Tree */
+
+TaskTree::TaskTree() = default;
+TaskTree::~TaskTree() = default;
+
+void TaskTree::addTask(const std::shared_ptr<Task> &task,
+                       const std::list<std::shared_ptr<Task>> &parentTasks)
+{
+    unusedParameter(task, parentTasks);
+}
+
+void TaskTree::stop()
+{
+    TaskBase::stop();
+}
+
+void TaskTree::execute(Progress *progressBar)
+{
+    unusedParameter(progressBar);
+}
+
+} // End namespace tl
+
+

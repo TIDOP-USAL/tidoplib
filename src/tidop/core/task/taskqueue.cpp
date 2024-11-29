@@ -22,10 +22,76 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
 
-#include "tidop/core/task/process.h"
-#include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
 #include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+#include "tidop/core/progress.h"
+
+namespace tl
+{
+
+
+std::mutex TaskQueue::mtx;
+
+TaskQueue::TaskQueue()
+  : TaskBase()
+{
+}
+
+TaskQueue::~TaskQueue() 
+{
+	TaskQueue::stop();
+}
+
+void TaskQueue::push(std::shared_ptr<Task> task)
+{
+    queue.push(task);
+
+    if (status() == Status::finalized ||
+        status() == Status::stopped) {
+        setStatus(Status::start);
+        //  setStatus(Status::running);
+        //  // Al ser una cola se vuelve a ejecutar cada vez que se añade un elemento
+        //  run();
+    }
+
+}
+
+void TaskQueue::pop() TL_NOEXCEPT
+{
+    queue.pop();
+}
+
+auto TaskQueue::size() const TL_NOEXCEPT -> size_t
+{
+    return queue.size();
+}
+
+auto TaskQueue::empty() const TL_NOEXCEPT -> bool
+{
+    return queue.empty();
+}
+
+void TaskQueue::stop()
+{
+    TaskBase::stop();
+}
+
+void TaskQueue::execute(Progress */*progressBar*/)
+{
+    while (!queue.empty()) {
+        
+        if (status() == Status::stopping || status() == Status::stopped) {
+
+        } else {
+            std::lock_guard<std::mutex> lck(TaskQueue::mtx);
+            queue.front()->run();
+        }
+
+        queue.pop();
+    }
+}
+
+
+} // End namespace tl
+
+

@@ -24,8 +24,52 @@
 
 #pragma once
 
-#include "tidop/core/task/process.h"
+
+#include <list>
+#include <memory>
+
+#include "tidop/config.h"
 #include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+
+namespace tl
+{
+
+class Progress;
+
+
+
+/* Task Tree */
+
+class TL_EXPORT TaskTree
+  : public TaskBase
+{
+
+public:
+
+    TaskTree();
+    ~TaskTree() override;
+
+    void addTask(const std::shared_ptr<Task> &task, 
+                 const std::list<std::shared_ptr<Task>> &parentTasks);
+ 
+// Task interface
+
+public:
+
+    void stop() override;
+
+// TaskBase interface
+
+private:
+
+    void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+};
+
+
+/*! \} */ // end of core
+
+} // End namespace tl
+

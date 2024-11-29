@@ -24,8 +24,77 @@
 
 #pragma once
 
-#include "tidop/core/task/process.h"
+#include <list>
+#include <memory>
+
+#include "tidop/config.h"
 #include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+
+namespace tl
+{
+
+class Progress;
+
+/*!
+ * \addtogroup core
+ * \{
+ */
+
+
+/*!
+ * \brief List of tasks
+ */
+class TL_EXPORT TaskList
+  : public TaskBase
+{
+
+private:
+
+    std::list<std::shared_ptr<Task>> tasks;
+    bool cancelOnError;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    TaskList();
+   
+    /*!
+     * \brief Copy constructor
+     * \param[in] taskList List of tasks
+     */
+    TaskList(const TaskList &taskList);
+   
+    /*!
+     * \brief List constructor
+     * \param[in] tasks List of tasks
+     */
+    TaskList(std::initializer_list<std::shared_ptr<Task>> tasks);
+    
+    ~TaskList() override;
+    
+    void push_back(const std::shared_ptr<Task> &task);
+    auto size() const TL_NOEXCEPT -> size_t;
+    auto empty() const TL_NOEXCEPT -> bool;
+    void setCancelTaskOnError(bool cancel);
+
+// Task interface
+
+public:
+
+    void stop() override;
+
+// TaskBase interface
+
+private:
+
+    void execute(Progress *progressBar = nullptr) override;
+
+};
+
+
+/*! \} */ // end of core
+
+} // End namespace tl
+

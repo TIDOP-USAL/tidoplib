@@ -24,8 +24,56 @@
 
 #pragma once
 
-#include "tidop/core/task/process.h"
+#include <queue>
+#include <memory>
+
+#include "tidop/config.h"
 #include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+
+namespace tl
+{
+
+class Progress;
+
+/*!
+ * \addtogroup core
+ * \{
+ */
+
+class TL_EXPORT TaskQueue
+  : public TaskBase
+{
+
+public:
+
+    TaskQueue();
+    ~TaskQueue() override;
+    
+    void push(std::shared_ptr<Task> task);
+    void pop() TL_NOEXCEPT;
+    auto size() const TL_NOEXCEPT -> size_t;
+    auto empty() const TL_NOEXCEPT -> bool;
+
+// Task interface
+
+public:
+
+    void stop() override;
+
+// TaskBase interface
+
+private:
+
+    void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+    std::queue<std::shared_ptr<Task>> queue;
+    static std::mutex mtx;
+};
+
+
+/*! \} */ // end of core
+
+} // End namespace tl
+

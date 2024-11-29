@@ -36,7 +36,8 @@ namespace tl
 
 Command::Command()
   : mArguments(0),
-    mVersion("0.0.0")
+    mVersion("0.0.0"),
+    mEnableLog(false)
 {
     init();
 }
@@ -46,9 +47,10 @@ Command::Command(const Command &command)
     mDescription(command.mDescription),
     mArguments(command.mArguments),
     mVersion(command.mVersion),
-    mExamples(command.mExamples)
+    mExamples(command.mExamples),
+    mEnableLog(command.mEnableLog)
 {
-
+    init();
 }
 
 Command::Command(Command &&command) TL_NOEXCEPT
@@ -56,15 +58,18 @@ Command::Command(Command &&command) TL_NOEXCEPT
     mDescription(std::move(command.mDescription)),
     mArguments(std::move(command.mArguments)),
     mVersion(std::move(command.mVersion)),
-    mExamples(std::move(command.mExamples))
+    mExamples(std::move(command.mExamples)),
+    mEnableLog(command.mEnableLog)
 {
+    init();
 }
 
 Command::Command(std::string name, std::string description)
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mArguments(0),
-    mVersion("0.0.0")
+    mVersion("0.0.0"),
+    mEnableLog(false)
 {
     init();
 }
@@ -75,8 +80,10 @@ Command::Command(std::string name,
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mArguments(arguments),
-    mVersion("0.0.0")
+    mVersion("0.0.0"),
+    mEnableLog(false)
 {
+    init();
 }
 
 auto Command::name() const -> std::string
@@ -265,6 +272,52 @@ auto Command::parse(int argc, char **argv) -> Status
         }
     }
 
+    for (auto &argument : mDefaultArguments) {
+
+        if(cmd_in.find("log_level") != cmd_in.end() && argument->name() == "log_level") {
+
+            std::string log_level = cmd_in.find("log_level")->second;
+            if(!log_level.empty()) {
+
+                argument->fromString(log_level);
+
+                if (argument->isValid()) {
+
+                    MessageLevel message_level = MessageLevel::all;
+                    if (log_level == "ERROR") message_level = MessageLevel::error;
+                    else if (log_level == "WARNING") message_level = MessageLevel::warning;
+                    else if (log_level == "SUCCESS") message_level = MessageLevel::success;
+                    else if (log_level == "INFO") message_level = MessageLevel::info;
+                    else if (log_level == "ALL") message_level = MessageLevel::all;
+
+                    Console &console = App::console();
+                    console.setMessageLevel(message_level);
+                    Message::addMessageHandler(&console);
+
+                    if (mEnableLog) {
+                        Log &log = App::log();
+                        log.setMessageLevel(message_level);
+                        Message::addMessageHandler(&log);
+                    }
+                }
+            }
+
+        } else if (cmd_in.find("log") != cmd_in.end() && argument->name() == "log") {
+
+            tl::Path log_path = cmd_in.find("log")->second;
+
+            if(!log_path.empty()) {
+
+                log_path.parentPath().createDirectories();
+                argument->fromString(log_path.toString());
+                Log &log = App::log();
+                log.open(log_path);
+                Message::addMessageHandler(&log);
+            }
+
+        }
+    }
+
     return Command::Status::parse_success;
 }
 
@@ -372,6 +425,11 @@ auto Command::showHelp() const -> void
     for(const auto &arg : mArguments) {
         max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
     }
+
+    for (const auto &arg : mDefaultArguments) {
+        max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
+    }
+
     max_name_size += 1;
 
     std::cout << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
@@ -379,24 +437,12 @@ auto Command::showHelp() const -> void
 
     for(const auto &arg : mArguments) {
 
-        if(arg->shortName()) {
-            std::cout << "  -" << arg->shortName() << ", ";
-        } else {
-            std::cout << "    , ";
-        }
+        printArgument(arg, max_name_size);
+    }
 
-        if(!arg->name().empty()) {
-            std::cout << "--" << std::left << std::setw(max_name_size) << arg->name() << (arg->isRequired() ? "[R] " : "[O] ")
-                << arg->description() << ". ";
-            //TODO: Añadir valor por defecto
-            if(arg->validator() != nullptr) arg->validator()->print(); // por ahora...
-        } else {
-            std::cout << "--" << std::left << std::setw(max_name_size) << "" << (arg->isRequired() ? "[R] " : "[O] ")
-                << arg->description() << ". ";
-            if(arg->validator() != nullptr) arg->validator()->print();
-        }
+    for(const auto &arg : mDefaultArguments) {
 
-        std::cout << "\n";
+        printArgument(arg, max_name_size);
     }
 
     std::cout << "\n\n";
@@ -428,6 +474,28 @@ auto Command::showHelp() const -> void
     }
 
     std::cout << std::endl;
+}
+
+void Command::printArgument(const tl::Argument::SharedPtr &arg, int maxNameSize) const
+{
+    if (arg->shortName()) {
+        std::cout << "  -" << arg->shortName() << ", ";
+    } else {
+        std::cout << "    , ";
+    }
+
+    if (!arg->name().empty()) {
+        std::cout << "--" << std::left << std::setw(maxNameSize) << arg->name() << (arg->isRequired() ? "[R] " : "[O] ")
+            << arg->description() << ". ";
+        //TODO: Añadir valor por defecto
+        if (arg->validator() != nullptr) arg->validator()->print(); // por ahora...
+    } else {
+        std::cout << "--" << std::left << std::setw(maxNameSize) << "" << (arg->isRequired() ? "[R] " : "[O] ")
+            << arg->description() << ". ";
+        if (arg->validator() != nullptr) arg->validator()->print();
+    }
+
+    std::cout << "\n";
 }
 
 auto Command::showVersion() const -> void
@@ -462,6 +530,21 @@ auto Command::addExample(const std::string &example) -> Command &
 {
     mExamples.push_back(example);
     return *this;
+}
+
+void Command::enableLogLevel()
+{
+    auto log_level_arg = Argument::make<std::string>("log_level", "Log level (default = ALL)", "ALL");
+    auto log_level_validator = ValuesValidator<std::string>::create({/*"debug",*/ "ERROR", "WARNING", "SUCCESS", "INFO", "ALL"});
+    log_level_arg->setValidator(log_level_validator);
+    mDefaultArguments.push_back(log_level_arg);
+}
+
+void Command::enableLog()
+{
+    mEnableLog = true;
+    auto log_arg = Argument::make<tl::Path>("log", "Log file", Path());
+    mDefaultArguments.push_back(log_arg);
 }
 
 auto Command::setLicence(const Licence &licence) -> void
@@ -501,7 +584,7 @@ auto Command::argument(const char &shortName) const -> Argument::SharedPtr
     return argument;
 }
 
-auto Command::init() -> void
+void Command::init()
 {
 
 }

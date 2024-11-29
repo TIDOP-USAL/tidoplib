@@ -22,44 +22,152 @@
  *                                                                        *
  **************************************************************************/
 
+#pragma once
+
+#include "tidop/config.h"
+
+#include <string>
+
 #include "tidop/core/event.h"
+
 
 namespace tl
 {
 
+class Task;
+
+/*! \addtogroup core
+ *  \{
+ */
 
 
-EventBase::EventBase(Type type)
-  : mType(type)
+
+/* Task Running Event */
+
+class TL_EXPORT TaskRunningEvent
+    : public EventBase
 {
-}
 
-EventBase::Type EventBase::type() const
+public:
+
+    TaskRunningEvent();
+
+    void clear() override;
+};
+
+
+/* Task Pausing Event */
+
+class TL_EXPORT TaskPausingEvent final
+    : public EventBase
 {
-  return mType;
-}
+
+public:
+
+    TaskPausingEvent();
+
+    void clear() override;
+};
 
 
-/* Image Change Event */
+/* Task Pause Event */
 
-ImageChangeEvent::ImageChangeEvent()
-  : EventBase(Type::image_change)
+class TL_EXPORT TaskPauseEvent final
+	: public EventBase
 {
-}
 
-std::string ImageChangeEvent::image() const
-{
-    return mImage;
-}
+public:
 
-void ImageChangeEvent::setImage(const std::string &image)
-{
-    mImage = image;
-}
+    TaskPauseEvent();
 
-void ImageChangeEvent::clear()
+    void clear() override;
+};
+
+
+/* Task Resumed Event */
+
+class TL_EXPORT TaskResumedEvent final
+	: public EventBase
 {
-    mImage.clear();
-}
+
+public:
+
+    TaskResumedEvent();
+
+    void clear() override;
+};
+
+
+/* Task Stopping Event */
+
+class TL_EXPORT TaskStoppingEvent final
+    : public EventBase
+{
+
+public:
+
+    TaskStoppingEvent();
+
+    void clear() override;
+};
+
+
+/* Task Stopped Event */
+
+class TL_EXPORT TaskStoppedEvent final
+    : public EventBase
+{
+
+public:
+
+    TaskStoppedEvent();
+
+    void clear() override;
+};
+
+
+/* Task Finalized Event */
+
+class TL_EXPORT TaskFinalizedEvent final
+    : public EventBase
+{
+
+public:
+
+	explicit TaskFinalizedEvent(Task const *task = nullptr);
+
+    Task const *task() const;
+
+    void clear() override;
+
+private:
+
+    Task const *mTask;
+};
+
+
+/* Task Error Event */
+
+class TL_EXPORT TaskErrorEvent final
+    : public EventBase
+{
+
+public:
+
+    TaskErrorEvent();
+
+    std::string errorMessage() const;
+    void setErrorMessage(const std::string &error);
+
+    void clear() override;
+
+private:
+
+    std::string mErrorMessage;
+};
+
+
+/*! \} */ // end of core
 
 } // namespace tl
+

@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -24,8 +24,57 @@
 
 #pragma once
 
-#include "tidop/core/task/process.h"
-#include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+#include "tidop/config.h"
+#include "tidop/core/defs.h"
+#include "tidop/core/concurrency/queue.h"
+
+namespace tl
+{
+
+
+/*! \addtogroup core
+ *  \{
+ */
+
+/*!
+ * \addtogroup concurrency
+ *
+ * \{
+ */
+ 
+/*!
+ * \brief Producer Interface
+ */
+template<typename T>
+class Producer
+{
+
+public:
+
+    explicit Producer(Queue<T> *queue) : mQueue(queue) {}
+    virtual ~Producer() = default;
+
+    virtual void operator() () = 0;
+    virtual void operator() (size_t ini, size_t end) = 0;
+
+protected:
+
+    auto queue() -> Queue<T>*
+    {
+        return mQueue;
+    }
+
+private:
+
+    Queue<T> *mQueue;
+
+};
+
+
+/*! \} */ // end of concurrency
+
+/*! \} */ // end of core
+
+
+} // End namespace tl
+

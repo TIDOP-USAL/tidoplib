@@ -57,6 +57,7 @@ int main(int argc, char **argv)
     CPLSetConfigOption( "GDAL_DATA", gdal_data_path.toString().c_str());
 #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
         CPLSetConfigOption( "PROJ_DATA", proj_data_path.toString().c_str());
+        CPLSetConfigOption( "PROJ_LIB", proj_data_path.toString().c_str());
 #   else
         std::string s_proj = proj_data_path.toString();
         const char *proj_data[] {s_proj.c_str(), nullptr};
@@ -68,7 +69,6 @@ int main(int argc, char **argv)
     Console &console = App::console();
     console.setTitle(cmd_name);
     console.setConsoleUnicode();
-    console.setMessageLevel(MessageLevel::all);
     Message::addMessageHandler(&console);
 
 
@@ -78,8 +78,10 @@ int main(int argc, char **argv)
     cmd.addArgument<std::string>("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto");
     cmd.addArgument<char>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", ';');
     cmd.addArgument<Path>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", Path());
-    cmd.addArgument<Path>("log", 'l', "Fichero de log", Path());
     cmd.addArgument<int>("skip","Skip lines", 0);
+    
+    cmd.enableLogLevel();
+    //cmd.enableLog();
 
     cmd.addExample(cmd_name + " --epsg_in EPSG:25830 --epsg_out EPSG:4258 --coord 281815.044;4827675.243;123.35");
     cmd.addExample(cmd_name + " -iEPSG:25830 -oEPSG:4258 --coord utm.txt");
@@ -99,15 +101,7 @@ int main(int argc, char **argv)
     auto coord = cmd.value<std::string>("coord");
     auto separator = cmd.value<char>("separator");
     auto coord_trf = cmd.value<Path>("coord_trf");
-    auto log_file = cmd.value<Path>("log");
     auto skip_lines = cmd.value<int>("skip");
-
-    if(!log_file.empty()) {
-        Log &log = App::log();
-        log.setMessageLevel(MessageLevel::all);
-        log.open(log_file);
-        Message::addMessageHandler(&log);
-    }
 
     try {
 

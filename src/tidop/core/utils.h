@@ -296,6 +296,13 @@ std::vector<int> sortIdx(const std::vector<T> &v)
     return idx;
 }
 
+#ifdef TL_OS_WINDOWS
+
+auto stringToWString(const std::string &string) -> std::wstring;
+
+auto wstringToString(const std::wstring &wideString) -> std::string;
+
+#endif // TL_OS_WINDOWS
 
 /*! \} */ // end of core
 

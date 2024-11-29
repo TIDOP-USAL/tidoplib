@@ -277,8 +277,35 @@ auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived2 &vecto
 
     TL_ASSERT(derived.size() == vector.size(), "Different vector size");
 
-    double dot = static_cast<double>(derived[0]) * static_cast<double>(vector[0]);
-    for (size_t i = 1; i < derived.size(); i++) {
+    double dot = 0.0;
+    size_t i = 0;
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    using Scalar = std::remove_cv_t<T>;
+    Packed<Scalar> packed_a;
+    Packed<Scalar> packed_b;
+    Packed<Scalar> packed_result(0);
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+
+    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+
+        for (; i < max_vector; i += packed_size) {
+
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
+
+            packed_result += packed_a * packed_b;
+
+        }
+
+        dot += static_cast<double>(packed_result.sum());
+    }
+#endif
+
+    for (; i < derived.size(); ++i) {
         dot += static_cast<double>(derived[i]) * static_cast<double>(vector[i]);
     }
 
@@ -302,15 +329,32 @@ auto VectorBase<VectorDerived<T, _size>>::operator-() const -> Vector<T, _size>
 {
     static_assert(std::is_signed<T>::value, "Requires signed type");
 
-    Vector<T, _size> vector = this->derived();
+    using Scalar = std::remove_cv_t<T>;
 
-    for (size_t i = 0; i < vector.size(); i++) {
-        vector[i] = -vector[i];
+    Vector<Scalar, _size> result = this->derived();
+    size_t i = 0;
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    Packed<Scalar> packed_value;
+    constexpr size_t packed_size = packed_value.size();
+    size_t max_vector = (result.size() / packed_size) * packed_size;
+
+    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory)) {
+        for (; i < max_vector; i += packed_size) {
+            packed_value.loadUnaligned(&result[i]);
+            packed_value = - packed_value;
+            packed_value.storeUnaligned(&result[i]);
+        }
+    }
+#endif
+
+    // Procesa los elementos restantes de manera escalar
+    for (; i < result.size(); ++i) {
+        result[i] = -result[i];
     }
 
-    return vector;
+    return result;
 }
-
 
 /* Binary arithmetic operators */
 

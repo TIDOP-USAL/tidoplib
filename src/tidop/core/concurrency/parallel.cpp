@@ -22,6 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
+#include "tidop/core/concurrency/parallel.h"
 #include "tidop/core/concurrency.h"
 
 #if defined TL_HAVE_OPENMP
@@ -39,8 +40,6 @@
 namespace tl
 {
 
-
-
 uint32_t optimalNumberOfThreads()
 {
     uint32_t n_threads = 0;
@@ -54,6 +53,7 @@ uint32_t optimalNumberOfThreads()
 #endif
     return n_threads == 0 ? 1 : n_threads;
 }
+
 
 void parallel_for(size_t ini,
                   size_t end,

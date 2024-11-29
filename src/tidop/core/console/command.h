@@ -119,9 +119,11 @@ private:
     std::string mName;
     std::string mDescription;
     std::list<Argument::SharedPtr> mArguments;
+    std::list<Argument::SharedPtr> mDefaultArguments;
     std::string mVersion;
     std::list<std::string> mExamples;
     Licence mLicence;
+    bool mEnableLog;
 
 public:
 
@@ -282,6 +284,9 @@ public:
      */
     auto addExample(const std::string &example) -> Command &;
 
+    void enableLogLevel();
+    void enableLog();
+
     /*!
      * \brief Sets the licence
      * \param[in] licence Licence
@@ -366,7 +371,9 @@ public:
 
 protected:
 
-    auto init() -> void;
+    void init();
+    
+    void printArgument(const tl::Argument::SharedPtr &arg, int maxNameSize) const;
 
 };
 

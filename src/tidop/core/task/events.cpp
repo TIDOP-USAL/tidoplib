@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -22,10 +22,123 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#include "tidop/core/task/events.h"
 
-#include "tidop/core/task/process.h"
-#include "tidop/core/task/task.h"
-#include "tidop/core/task/tasklist.h"
-#include "tidop/core/task/taskqueue.h"
-#include "tidop/core/task/tasktree.h"
+namespace tl
+{
+
+
+/* Task Running Event */
+
+TaskRunningEvent::TaskRunningEvent()
+  : EventBase(Type::task_running)
+{
+}
+
+void TaskRunningEvent::clear()
+{
+}
+
+
+/* Task Pausing Event */
+
+TaskPausingEvent::TaskPausingEvent()
+  : EventBase(Type::task_pausing)
+{
+}
+
+void TaskPausingEvent::clear()
+{
+}
+
+
+/* Task Pause Event */
+
+TaskPauseEvent::TaskPauseEvent()
+  : EventBase(Type::task_paused)
+{
+}
+
+void TaskPauseEvent::clear()
+{
+}
+
+
+/* Task Resumed Event */
+
+TaskResumedEvent::TaskResumedEvent()
+  : EventBase(Type::task_resumed)
+{
+}
+
+void TaskResumedEvent::clear()
+{
+}
+
+
+/* Task Stopping Event */
+
+TaskStoppingEvent::TaskStoppingEvent()
+  : EventBase(Type::task_stopping)
+{
+}
+
+void TaskStoppingEvent::clear()
+{
+}
+
+
+/* Task Stopped Event */
+
+TaskStoppedEvent::TaskStoppedEvent()
+  : EventBase(Type::task_stopped)
+{
+}
+
+void TaskStoppedEvent::clear()
+{
+}
+
+
+/* Task Finalized Event */
+
+TaskFinalizedEvent::TaskFinalizedEvent(Task const *task)
+  : EventBase(Type::task_finalized),
+    mTask(task)
+{
+}
+
+Task const *TaskFinalizedEvent::task() const
+{
+    return mTask;
+}
+
+void TaskFinalizedEvent::clear()
+{
+}
+
+
+/* Task Error Event */
+
+TaskErrorEvent::TaskErrorEvent()
+  : EventBase(Type::task_error)
+{
+}
+
+std::string TaskErrorEvent::errorMessage() const
+{
+    return mErrorMessage;
+}
+
+void TaskErrorEvent::setErrorMessage(const std::string &error)
+{
+    mErrorMessage = error;
+}
+
+void TaskErrorEvent::clear()
+{
+    mErrorMessage.clear();
+}
+
+
+} // namespace tl

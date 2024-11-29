@@ -2982,265 +2982,265 @@ BOOST_AUTO_TEST_SUITE(MatrixColTestSuite)
 
 struct MatrixColTest
 {
-  MatrixColTest()
-    : _mat_dyn_2x2(new Matrix<double>(2, 2))
-  {
-  }
-  ~MatrixColTest()
-  {
-  }
+    MatrixColTest()
+        : _mat_dyn_2x2(new Matrix<double>(2, 2))
+    {
+    }
+    ~MatrixColTest()
+    {
+    }
 
-  void setup()
-  {
-    _mat_dyn_2x2->at(0, 0) = 2.;
-    _mat_dyn_2x2->at(0, 1) = 3.;
-    _mat_dyn_2x2->at(1, 0) = 1.;
-    _mat_dyn_2x2->at(1, 1) = 4.;
+    void setup()
+    {
+        _mat_dyn_2x2->at(0, 0) = 2.;
+        _mat_dyn_2x2->at(0, 1) = 3.;
+        _mat_dyn_2x2->at(1, 0) = 1.;
+        _mat_dyn_2x2->at(1, 1) = 4.;
 
-    _mat_3x3_d[0][0] = 1.5;
-    _mat_3x3_d[0][1] = 0.0;
-    _mat_3x3_d[0][2] = 2.5;
-    _mat_3x3_d[1][0] = 1.0;
-    _mat_3x3_d[1][1] = 1.0;
-    _mat_3x3_d[1][2] = 1.2;
-    _mat_3x3_d[2][0] = 1.3;
-    _mat_3x3_d[2][1] = 2.6;
-    _mat_3x3_d[2][2] = 0.3;
-  }
+        _mat_3x3_d[0][0] = 1.5;
+        _mat_3x3_d[0][1] = 0.0;
+        _mat_3x3_d[0][2] = 2.5;
+        _mat_3x3_d[1][0] = 1.0;
+        _mat_3x3_d[1][1] = 1.0;
+        _mat_3x3_d[1][2] = 1.2;
+        _mat_3x3_d[2][0] = 1.3;
+        _mat_3x3_d[2][1] = 2.6;
+        _mat_3x3_d[2][2] = 0.3;
+    }
 
-  void teardown()
-  {
+    void teardown()
+    {
 
-  }
+    }
 
-  Matrix<double> *_mat_dyn_2x2;
-  Matrix<double, 3, 3> _mat_3x3_d;
+    Matrix<double> *_mat_dyn_2x2;
+    Matrix<double, 3, 3> _mat_3x3_d;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, MatrixColTest)
 {
-  auto v1 = (*_mat_dyn_2x2)[1][0];
-  (*_mat_dyn_2x2)[1][0] = 2.;
-  auto v2 = (*_mat_dyn_2x2)[1][0];
+    auto v1 = (*_mat_dyn_2x2)[1][0];
+    (*_mat_dyn_2x2)[1][0] = 2.;
+    auto v2 = (*_mat_dyn_2x2)[1][0];
 
-  auto v3 = _mat_3x3_d[1][1];
-  _mat_3x3_d[1][1] = 10.;
-  auto v4 = _mat_3x3_d[1][1];
+    auto v3 = _mat_3x3_d[1][1];
+    _mat_3x3_d[1][1] = 10.;
+    auto v4 = _mat_3x3_d[1][1];
 }
 
 BOOST_FIXTURE_TEST_CASE(iterate, MatrixColTest)
 {
-  {
-    auto c0 = _mat_3x3_d.col(0);
-    auto it0 = c0.begin();
-    BOOST_CHECK_EQUAL(1.5, *it0);
-    it0++;
-    BOOST_CHECK_EQUAL(1.0, *it0);
-    it0++;
-    BOOST_CHECK_EQUAL(1.3, *it0);
-    it0++;
-    BOOST_CHECK(it0 == c0.end());
+    {
+        auto c0 = _mat_3x3_d.col(0);
+        auto it0 = c0.begin();
+        BOOST_CHECK_EQUAL(1.5, *it0);
+        it0++;
+        BOOST_CHECK_EQUAL(1.0, *it0);
+        it0++;
+        BOOST_CHECK_EQUAL(1.3, *it0);
+        it0++;
+        BOOST_CHECK(it0 == c0.end());
 
-    auto c1 = _mat_3x3_d.col(1);
-    auto it1 = c1.begin();
-    BOOST_CHECK_EQUAL(0.0, *it1);
-    it1++;
-    BOOST_CHECK_EQUAL(1.0, *it1);
-    it1++;
-    BOOST_CHECK_EQUAL(2.6, *it1);
-    it1++;
-    BOOST_CHECK(it1 == c1.end());
+        auto c1 = _mat_3x3_d.col(1);
+        auto it1 = c1.begin();
+        BOOST_CHECK_EQUAL(0.0, *it1);
+        it1++;
+        BOOST_CHECK_EQUAL(1.0, *it1);
+        it1++;
+        BOOST_CHECK_EQUAL(2.6, *it1);
+        it1++;
+        BOOST_CHECK(it1 == c1.end());
 
-    auto c2 = _mat_3x3_d.col(2);
-    auto it2 = c2.begin();
-    BOOST_CHECK_EQUAL(2.5, *it2);
-    it2++;
-    BOOST_CHECK_EQUAL(1.2, *it2);
-    it2++;
-    BOOST_CHECK_EQUAL(0.3, *it2);
-    it2++;
-    BOOST_CHECK(it2 == c2.end());
+        auto c2 = _mat_3x3_d.col(2);
+        auto it2 = c2.begin();
+        BOOST_CHECK_EQUAL(2.5, *it2);
+        it2++;
+        BOOST_CHECK_EQUAL(1.2, *it2);
+        it2++;
+        BOOST_CHECK_EQUAL(0.3, *it2);
+        it2++;
+        BOOST_CHECK(it2 == c2.end());
 
-  }
+    }
 
-  {
-    auto c0 = _mat_dyn_2x2->col(0);
-    auto it0 = c0.begin();
-    BOOST_CHECK_EQUAL(2., *it0);
-    it0++;
-    BOOST_CHECK_EQUAL(1., *it0);
-    it0++;
-    BOOST_CHECK(it0 == c0.end());
+    {
+        auto c0 = _mat_dyn_2x2->col(0);
+        auto it0 = c0.begin();
+        BOOST_CHECK_EQUAL(2., *it0);
+        it0++;
+        BOOST_CHECK_EQUAL(1., *it0);
+        it0++;
+        BOOST_CHECK(it0 == c0.end());
 
-    auto c1 = _mat_dyn_2x2->col(1);
-    auto it1 = c1.begin();
-    BOOST_CHECK_EQUAL(3.0, *it1);
-    it1++;
-    BOOST_CHECK_EQUAL(4.0, *it1);
-    it1++;
-    BOOST_CHECK(it1 == c1.end());
-  }
+        auto c1 = _mat_dyn_2x2->col(1);
+        auto it1 = c1.begin();
+        BOOST_CHECK_EQUAL(3.0, *it1);
+        it1++;
+        BOOST_CHECK_EQUAL(4.0, *it1);
+        it1++;
+        BOOST_CHECK(it1 == c1.end());
+    }
 
 }
 
 BOOST_FIXTURE_TEST_CASE(size, MatrixColTest)
 {
-  auto c0 = _mat_3x3_d.col(0);
-  BOOST_CHECK_EQUAL(3, c0.size());
-  auto c1 = _mat_3x3_d.col(1);
-  BOOST_CHECK_EQUAL(3, c1.size());
+    auto c0 = _mat_3x3_d.col(0);
+    BOOST_CHECK_EQUAL(3, c0.size());
+    auto c1 = _mat_3x3_d.col(1);
+    BOOST_CHECK_EQUAL(3, c1.size());
 }
 
 BOOST_FIXTURE_TEST_CASE(value_at, MatrixColTest)
 {
-  {
-    auto c0 = _mat_3x3_d.col(0);
+    {
+        auto c0 = _mat_3x3_d.col(0);
 
-    BOOST_CHECK_EQUAL(1.5, c0[0]);
-    BOOST_CHECK_EQUAL(1.0, c0[1]);
-    BOOST_CHECK_EQUAL(1.3, c0[2]);
+        BOOST_CHECK_EQUAL(1.5, c0[0]);
+        BOOST_CHECK_EQUAL(1.0, c0[1]);
+        BOOST_CHECK_EQUAL(1.3, c0[2]);
 
-    auto c1 = _mat_3x3_d.col(1);
+        auto c1 = _mat_3x3_d.col(1);
 
-    BOOST_CHECK_EQUAL(0.0, c1[0]);
-    BOOST_CHECK_EQUAL(1.0, c1[1]);
-    BOOST_CHECK_EQUAL(2.6, c1[2]);
+        BOOST_CHECK_EQUAL(0.0, c1[0]);
+        BOOST_CHECK_EQUAL(1.0, c1[1]);
+        BOOST_CHECK_EQUAL(2.6, c1[2]);
 
-    auto c2 = _mat_3x3_d.col(2);
+        auto c2 = _mat_3x3_d.col(2);
 
-    BOOST_CHECK_EQUAL(2.5, c2[0]);
-    BOOST_CHECK_EQUAL(1.2, c2[1]);
-    BOOST_CHECK_EQUAL(0.3, c2[2]);
+        BOOST_CHECK_EQUAL(2.5, c2[0]);
+        BOOST_CHECK_EQUAL(1.2, c2[1]);
+        BOOST_CHECK_EQUAL(0.3, c2[2]);
 
-  }
+    }
 
-  {
-    auto c0 = _mat_dyn_2x2->col(0);
+    {
+        auto c0 = _mat_dyn_2x2->col(0);
 
-    BOOST_CHECK_EQUAL(2., c0[0]);
-    BOOST_CHECK_EQUAL(1., c0[1]);
+        BOOST_CHECK_EQUAL(2., c0[0]);
+        BOOST_CHECK_EQUAL(1., c0[1]);
 
-    auto c1 = _mat_dyn_2x2->col(1);
+        auto c1 = _mat_dyn_2x2->col(1);
 
-    BOOST_CHECK_EQUAL(3.0, c1[0]);
-    BOOST_CHECK_EQUAL(4.0, c1[1]);
+        BOOST_CHECK_EQUAL(3.0, c1[0]);
+        BOOST_CHECK_EQUAL(4.0, c1[1]);
 
-  }
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(asign, MatrixColTest)
 {
-  Matrix<int, 5, 5> a{ {6, 8,6,7,3},
-                       {9,6,2,3,3},
-                       {8,3,2,3,3},
-                       {5,3,3,7,6},
-                       {5,5,7,4,7} };
+    Matrix<int, 5, 5> a{ {6, 8, 6, 7, 3},
+                        {9,6,2,3,3},
+                        {8,3,2,3,3},
+                        {5,3,3,7,6},
+                        {5,5,7,4,7} };
 
-  a.col(0) = 0;
-  a.col(1) = 1;
-  a.col(2) = 2;
-  a.col(3) = 3;
-  a.col(4) = 4;
+    a.col(0) = 0;
+    a.col(1) = 1;
+    a.col(2) = 2;
+    a.col(3) = 3;
+    a.col(4) = 4;
 
-  BOOST_CHECK_EQUAL(0, a[0][0]);
-  BOOST_CHECK_EQUAL(0, a[1][0]);
-  BOOST_CHECK_EQUAL(0, a[2][0]);
-  BOOST_CHECK_EQUAL(0, a[3][0]);
-  BOOST_CHECK_EQUAL(0, a[4][0]);
-  BOOST_CHECK_EQUAL(1, a[0][1]);
-  BOOST_CHECK_EQUAL(1, a[1][1]);
-  BOOST_CHECK_EQUAL(1, a[2][1]);
-  BOOST_CHECK_EQUAL(1, a[3][1]);
-  BOOST_CHECK_EQUAL(1, a[4][1]);
-  BOOST_CHECK_EQUAL(2, a[0][2]);
-  BOOST_CHECK_EQUAL(2, a[1][2]);
-  BOOST_CHECK_EQUAL(2, a[2][2]);
-  BOOST_CHECK_EQUAL(2, a[3][2]);
-  BOOST_CHECK_EQUAL(2, a[4][2]);
-  BOOST_CHECK_EQUAL(3, a[0][3]);
-  BOOST_CHECK_EQUAL(3, a[1][3]);
-  BOOST_CHECK_EQUAL(3, a[2][3]);
-  BOOST_CHECK_EQUAL(3, a[3][3]);
-  BOOST_CHECK_EQUAL(3, a[4][3]);
-  BOOST_CHECK_EQUAL(4, a[0][4]);
-  BOOST_CHECK_EQUAL(4, a[1][4]);
-  BOOST_CHECK_EQUAL(4, a[2][4]);
-  BOOST_CHECK_EQUAL(4, a[3][4]);
-  BOOST_CHECK_EQUAL(4, a[4][4]);
+    BOOST_CHECK_EQUAL(0, a[0][0]);
+    BOOST_CHECK_EQUAL(0, a[1][0]);
+    BOOST_CHECK_EQUAL(0, a[2][0]);
+    BOOST_CHECK_EQUAL(0, a[3][0]);
+    BOOST_CHECK_EQUAL(0, a[4][0]);
+    BOOST_CHECK_EQUAL(1, a[0][1]);
+    BOOST_CHECK_EQUAL(1, a[1][1]);
+    BOOST_CHECK_EQUAL(1, a[2][1]);
+    BOOST_CHECK_EQUAL(1, a[3][1]);
+    BOOST_CHECK_EQUAL(1, a[4][1]);
+    BOOST_CHECK_EQUAL(2, a[0][2]);
+    BOOST_CHECK_EQUAL(2, a[1][2]);
+    BOOST_CHECK_EQUAL(2, a[2][2]);
+    BOOST_CHECK_EQUAL(2, a[3][2]);
+    BOOST_CHECK_EQUAL(2, a[4][2]);
+    BOOST_CHECK_EQUAL(3, a[0][3]);
+    BOOST_CHECK_EQUAL(3, a[1][3]);
+    BOOST_CHECK_EQUAL(3, a[2][3]);
+    BOOST_CHECK_EQUAL(3, a[3][3]);
+    BOOST_CHECK_EQUAL(3, a[4][3]);
+    BOOST_CHECK_EQUAL(4, a[0][4]);
+    BOOST_CHECK_EQUAL(4, a[1][4]);
+    BOOST_CHECK_EQUAL(4, a[2][4]);
+    BOOST_CHECK_EQUAL(4, a[3][4]);
+    BOOST_CHECK_EQUAL(4, a[4][4]);
 
 }
 
 BOOST_FIXTURE_TEST_CASE(plus, MatrixColTest)
 {
-  {
-    Vector<double> c0 = +_mat_3x3_d.col(0);
+    {
+        Vector<double> c0 = +_mat_3x3_d.col(0);
 
-    BOOST_CHECK_EQUAL(1.5, c0[0]);
-    BOOST_CHECK_EQUAL(1.0, c0[1]);
-    BOOST_CHECK_EQUAL(1.3, c0[2]);
+        BOOST_CHECK_EQUAL(1.5, c0[0]);
+        BOOST_CHECK_EQUAL(1.0, c0[1]);
+        BOOST_CHECK_EQUAL(1.3, c0[2]);
 
-    auto c1 = +_mat_3x3_d.col(1);
+        auto c1 = +_mat_3x3_d.col(1);
 
-    BOOST_CHECK_EQUAL(0.0, c1[0]);
-    BOOST_CHECK_EQUAL(1.0, c1[1]);
-    BOOST_CHECK_EQUAL(2.6, c1[2]);
+        BOOST_CHECK_EQUAL(0.0, c1[0]);
+        BOOST_CHECK_EQUAL(1.0, c1[1]);
+        BOOST_CHECK_EQUAL(2.6, c1[2]);
 
-    auto c2 = +_mat_3x3_d.col(2);
+        auto c2 = +_mat_3x3_d.col(2);
 
-    BOOST_CHECK_EQUAL(2.5, c2[0]);
-    BOOST_CHECK_EQUAL(1.2, c2[1]);
-    BOOST_CHECK_EQUAL(0.3, c2[2]);
+        BOOST_CHECK_EQUAL(2.5, c2[0]);
+        BOOST_CHECK_EQUAL(1.2, c2[1]);
+        BOOST_CHECK_EQUAL(0.3, c2[2]);
 
-  }
+    }
 
-  {
-    auto c0 = +_mat_dyn_2x2->col(0);
+    {
+        auto c0 = +_mat_dyn_2x2->col(0);
 
-    BOOST_CHECK_EQUAL(2., c0[0]);
-    BOOST_CHECK_EQUAL(1., c0[1]);
+        BOOST_CHECK_EQUAL(2., c0[0]);
+        BOOST_CHECK_EQUAL(1., c0[1]);
 
-    auto c1 = +_mat_dyn_2x2->col(1);
+        auto c1 = +_mat_dyn_2x2->col(1);
 
-    BOOST_CHECK_EQUAL(3.0, c1[0]);
-    BOOST_CHECK_EQUAL(4.0, c1[1]);
-  }
+        BOOST_CHECK_EQUAL(3.0, c1[0]);
+        BOOST_CHECK_EQUAL(4.0, c1[1]);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(minus, MatrixColTest)
 {
-  {
-    auto c0 = -_mat_3x3_d.col(0);
+    {
+        auto c0 = -_mat_3x3_d.col(0);
 
-    BOOST_CHECK_EQUAL(-1.5, c0[0]);
-    BOOST_CHECK_EQUAL(-1.0, c0[1]);
-    BOOST_CHECK_EQUAL(-1.3, c0[2]);
+        BOOST_CHECK_EQUAL(-1.5, c0[0]);
+        BOOST_CHECK_EQUAL(-1.0, c0[1]);
+        BOOST_CHECK_EQUAL(-1.3, c0[2]);
 
-    auto c1 = -_mat_3x3_d.col(1);
+        auto c1 = -_mat_3x3_d.col(1);
 
-    BOOST_CHECK_EQUAL(-0.0, c1[0]);
-    BOOST_CHECK_EQUAL(-1.0, c1[1]);
-    BOOST_CHECK_EQUAL(-2.6, c1[2]);
+        BOOST_CHECK_EQUAL(-0.0, c1[0]);
+        BOOST_CHECK_EQUAL(-1.0, c1[1]);
+        BOOST_CHECK_EQUAL(-2.6, c1[2]);
 
-    auto c2 = -_mat_3x3_d.col(2);
+        auto c2 = -_mat_3x3_d.col(2);
 
-    BOOST_CHECK_EQUAL(-2.5, c2[0]);
-    BOOST_CHECK_EQUAL(-1.2, c2[1]);
-    BOOST_CHECK_EQUAL(-0.3, c2[2]);
+        BOOST_CHECK_EQUAL(-2.5, c2[0]);
+        BOOST_CHECK_EQUAL(-1.2, c2[1]);
+        BOOST_CHECK_EQUAL(-0.3, c2[2]);
 
-  }
+    }
 
-  {
-    auto c0 = -_mat_dyn_2x2->col(0);
+    {
+        auto c0 = -_mat_dyn_2x2->col(0);
 
-    BOOST_CHECK_EQUAL(-2., c0[0]);
-    BOOST_CHECK_EQUAL(-1., c0[1]);
+        BOOST_CHECK_EQUAL(-2., c0[0]);
+        BOOST_CHECK_EQUAL(-1., c0[1]);
 
-    auto c1 = -_mat_dyn_2x2->col(1);
+        auto c1 = -_mat_dyn_2x2->col(1);
 
-    BOOST_CHECK_EQUAL(-3.0, c1[0]);
-    BOOST_CHECK_EQUAL(-4.0, c1[1]);
-  }
+        BOOST_CHECK_EQUAL(-3.0, c1[0]);
+        BOOST_CHECK_EQUAL(-4.0, c1[1]);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(addition, MatrixColTest)

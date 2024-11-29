@@ -22,44 +22,108 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/event.h"
+#pragma once
+
+#include "tidop/config.h"
+#include "tidop/core/defs.h"
+#include "tidop/core/concurrency/queue.h"
 
 namespace tl
 {
 
 
+/*! \addtogroup core
+ *  \{
+ */
 
-EventBase::EventBase(Type type)
-  : mType(type)
+/*!
+ * \addtogroup concurrency
+ *
+ * \{
+ */
+ 
+/*!
+ * \brief Single-producer Single-consumer queue
+ */
+template<typename T>
+class QueueSPSC
+  : public Queue<T>
+{
+
+private:
+
+    std::condition_variable conditionVariable;
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    QueueSPSC() = default;
+  
+    /*!
+     * \brief Constructor with queue capacity
+     * \param[in] capacity Queue capacity
+     */
+    explicit QueueSPSC(size_t capacity);
+  
+    ~QueueSPSC() override = default;
+  
+    TL_DISABLE_COPY(QueueSPSC)
+    TL_DISABLE_MOVE(QueueSPSC)
+
+    void push(const T &value) override;
+    bool pop(T &value) override;
+
+};
+
+
+
+/* Implementation */
+
+template<typename T>
+QueueSPSC<T>::QueueSPSC(size_t capacity)
+  : Queue<T>(capacity)
 {
 }
 
-EventBase::Type EventBase::type() const
+template<typename T>
+void QueueSPSC<T>::push(const T &value)
 {
-  return mType;
+    std::unique_lock<std::mutex> locker(this->mutex());
+
+    conditionVariable.wait(locker, [this]() {
+        return this->buffer().size() < this->capacity();
+    });
+
+    this->buffer().push(value);
+    locker.unlock();
+    conditionVariable.notify_one();
+}
+
+template<typename T>
+auto QueueSPSC<T>::pop(T& value) -> bool
+{
+    std::unique_lock<std::mutex> locker(this->mutex());
+
+    conditionVariable.wait(locker, [this]() {
+        return !this->buffer().empty();
+    });
+
+    value = this->buffer().front();
+    this->buffer().pop();
+    locker.unlock();
+    conditionVariable.notify_one();
+
+    return true;
+
 }
 
 
-/* Image Change Event */
+/*! \} */ // end of concurrency
 
-ImageChangeEvent::ImageChangeEvent()
-  : EventBase(Type::image_change)
-{
-}
+/*! \} */ // end of core
 
-std::string ImageChangeEvent::image() const
-{
-    return mImage;
-}
 
-void ImageChangeEvent::setImage(const std::string &image)
-{
-    mImage = image;
-}
+} // End namespace tl
 
-void ImageChangeEvent::clear()
-{
-    mImage.clear();
-}
-
-} // namespace tl

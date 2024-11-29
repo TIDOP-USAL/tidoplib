@@ -37,28 +37,32 @@ if(BUILD_TL_CORE)
                          SOURCE_FILES 
                              app.cpp
                              exception.cpp
-                             #messages.cpp
                              log.cpp
                              utils.cpp
-                             task.cpp
                              progress.cpp
                              event.cpp
                              licence.cpp
                              gdalreg.cpp
                              chrono.cpp
-                             concurrency.cpp
                              path.cpp
                              xml.cpp
+                             concurrency/parallel.cpp
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
                              console/menu.cpp
                              msg/message.cpp
+                             task/events.cpp
+                             task/process.cpp
+                             task/task.cpp
+                             task/tasklist.cpp
+                             task/taskqueue.cpp
+                             task/tasktree.cpp
                          HEADER_FILES
                              core.h
                              defs.h
                              common.h
-							 ptr.h
+                             ptr.h
                              app.h
                              exception.h
                              flags.h
@@ -75,6 +79,12 @@ if(BUILD_TL_CORE)
                              xml.h
                              endian.h
                              console.h
+                             concurrency/consumer.h							 
+                             concurrency/parallel.h							 
+                             concurrency/producer.h							 
+                             concurrency/queue.h							 
+                             concurrency/queue_mpmc.h							 
+                             concurrency/queue_spsc.h							 
                              console/console.h
                              console/argument.h
                              console/command.h
@@ -83,6 +93,12 @@ if(BUILD_TL_CORE)
                              messages.h
                              msg/handler.h
                              msg/message.h
+                             task/events.h
+                             task/process.h
+                             task/task.h
+                             task/tasklist.h
+                             task/taskqueue.h
+                             task/tasktree.h
                              units/length.h
                              units/mass.h
                              units/si.h
