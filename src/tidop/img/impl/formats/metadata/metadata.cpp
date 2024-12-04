@@ -22,65 +22,64 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/img/imgwriter.h"
-
-#ifdef TL_HAVE_OPENCV
-
-#include "tidop/img/formats.h"
-#include "tidop/img/metadata.h"
-#include "tidop/img/impl/io/gdalwriter.h"
-#include "tidop/core/exception.h"
-
+#include "tidop/img/impl/formats/metadata/metadata.h"
 
 namespace tl
 {
 
-
-ImageWriter::ImageWriter(tl::Path file)
-  : mFile(std::move(file))
+auto ImageMetadataBase::metadata(const std::string& name, bool& active) const -> std::string
 {
+    std::string value;
+    active = false;
 
-}
-
-void ImageWriter::windowWrite(const WindowI &window,
-                              WindowI *windowWrite,
-                              Point<int> *offset) const
-{
-    WindowI window_all(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
-    if (window.isEmpty()) {
-        *windowWrite = window_all;  // Se lee toda la ventana
+    auto metadata = mMetadata.find(name);
+    if (metadata != mMetadata.end()) {
+        value = metadata->second.first;
+        active = metadata->second.second;
     } else {
-        *windowWrite = windowIntersection(window_all, window);
-        *offset = windowWrite->pt1 - window.pt1;
+        Message::warning("Metadata '{}' not supported", name);
     }
+
+    return value;
 }
 
-
-
-auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
+void ImageMetadataBase::setMetadata(const std::string &name, const std::string &value)
 {
-    ImageWriter::Ptr image_writer;
+    auto metadata = mMetadata.find(name);
+    if (metadata != mMetadata.end()) {
+        metadata->second.first = value;
+        metadata->second.second = true;
+    } /*else {
+      msgWarning("Metadata '%s' not supported", name.c_str());
+    }*/
+}
 
-    try {
+auto ImageMetadataBase::metadata() const -> std::map<std::string, std::string>
+{
+    return this->metadata(true);
+}
 
-        std::string extension = file.extension().toString();
+auto ImageMetadataBase::activeMetadata() const -> std::map<std::string, std::string>
+{
+    return this->metadata(false);
+}
 
-#ifdef TL_HAVE_GDAL
-        if (gdalValidExtensions(extension)) {
-            image_writer = std::make_unique<ImageWriterGdal>(file);
-        } else
-#endif
-        {
-            TL_THROW_EXCEPTION("Invalid Image Writer: {}", file.fileName().toString());
-        }
+void ImageMetadataBase::reset()
+{
+    this->init();
+}
 
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+auto ImageMetadataBase::metadata(bool all) const -> std::map<std::string, std::string>
+{
+    std::map<std::string, std::string> metadata;
+
+    for (auto &pair : mMetadata) {
+        if (all || pair.second.second == true)
+            metadata[pair.first] = pair.second.first;
     }
 
-    return image_writer;
+    return metadata;
 }
+
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

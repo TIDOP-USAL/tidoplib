@@ -126,9 +126,6 @@ public:
         gif
     };
 
-    //using iterator = std::map<std::string, std::string>::iterator;
-    //using const_iterator = std::map<std::string, std::string>::const_iterator;
-
 protected:
 
     Format mFormat;
