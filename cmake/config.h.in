@@ -48,6 +48,8 @@
 #cmakedefine TL_HAVE_GRAPHIC
 #cmakedefine TL_HAVE_GEOSPATIAL
 #cmakedefine TL_HAVE_VECT
+#cmakedefine TL_HAVE_GEOTOOLS
+#cmakedefine TL_HAVE_PCTOOLS
 
 /* TidopLib dependencies */
 

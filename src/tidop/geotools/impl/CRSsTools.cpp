@@ -138,6 +138,13 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
     };
 }
 
+Point3d CRSsToolsImpl::crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point)
+{
+    Point3d transform_point = point;
+    crsOperation(crsSourceId, crsTargetId, transform_point.x, transform_point.y, transform_point.z);
+    return transform_point;
+}
+
 void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetId,
     std::map<std::string, std::vector<double> >& points, bool byPoint)
 {
@@ -355,6 +362,114 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     };
+}
+
+void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetId,
+    std::vector<Point3d> &points, bool byPoint)
+{
+    try {
+        if (byPoint)
+        {
+            for (auto& point : points)
+            {
+                point = crsOperation(crsSourceId, crsTargetId, point);
+            }
+            return;
+        }
+        std::string strSourceIdInitial = crsSourceId;
+        std::string strTargetIdInitial = crsTargetId;
+        if (crsSourceId == crsTargetId)
+            return;
+        if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
+        {
+            CRS* ptrSourceCRS = getCRS(crsSourceId);
+        }
+        if (crsTargetId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
+        {
+            CRS* ptrTargetCRS = getCRS(crsTargetId);
+        }
+        double* ptosFc;
+        double* ptosSc;
+        double* ptosTc;
+        int nPoints = (int)points.size();
+        ptosFc = (double*)malloc(sizeof(double) * nPoints);
+        ptosSc = (double*)malloc(sizeof(double) * nPoints);
+        ptosTc = (double*)malloc(sizeof(double) * nPoints);
+        int cont = 0;
+        for (auto const& point : points)
+        {
+            ptosFc[cont] = point.x;
+            ptosSc[cont] = point.y;
+            ptosTc[cont] = point.z;
+            //if (x.size() == 3)
+            //    ptosTc[cont] = x[2];
+            //else
+            //    ptosTc[cont] = 0.0;
+            cont++;
+        }
+        std::string crsSourceEnuId;
+        double pi = 4.0 * atan(1.);
+        if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
+        {
+            crsSourceEnuId = crsSourceId;
+            PJ* pj = getCRSOperationEcefToEnu(crsSourceEnuId);
+            for (int np = 0; np < points.size(); np++)
+            {
+                //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
+                PJ_COORD  projPto = proj_coord(ptosFc[np], ptosSc[np], ptosTc[np], 0);
+                PJ_COORD  targetProjPto = proj_trans(pj, PJ_INV, projPto);
+                ptosFc[np] = targetProjPto.lpzt.lam * 180. / pi;
+                ptosSc[np] = targetProjPto.lpzt.phi * 180. / pi;
+                ptosTc[np] = targetProjPto.lpzt.z;
+            }
+            std::string crsSourceEnuBaseId = mCRSGeo3dIdByCRSEnuId[crsSourceEnuId];
+            crsSourceId = crsSourceEnuBaseId;
+        }
+        if (crsSourceId != crsTargetId)
+        {
+            std::string crsTargetEnuId;
+            if (crsTargetId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
+            {
+                crsTargetEnuId = crsTargetId;
+                PJ* pj = getCRSOperationEcefToEnu(crsTargetEnuId);
+                std::string crsTargetEnuBaseId = mCRSGeo3dIdByCRSEnuId[crsTargetEnuId];
+                if (crsSourceId != crsTargetEnuBaseId)
+                {
+                    OGRCoordinateTransformation* ptrCRSOperation = getCRSOperation(crsSourceId, crsTargetEnuBaseId);
+                    bool sucess = ptrCRSOperation->Transform(nPoints, ptosFc, ptosSc, ptosTc);
+                    TL_ASSERT(sucess, "Error in CRSOperation from CRS: {} to target CRS: {}", crsSourceId, crsTargetEnuBaseId);
+                }
+                for (int np = 0; np < points.size(); np++)
+                {
+                    //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
+                    PJ_COORD  projPto = proj_coord(ptosFc[np] * pi / 180., ptosSc[np] * pi / 180., ptosTc[np], 0);
+                    PJ_COORD  targetProjPto = proj_trans(pj, PJ_FWD, projPto);
+                    ptosFc[np] = targetProjPto.enu.e;
+                    ptosSc[np] = targetProjPto.enu.n;
+                    ptosTc[np] = targetProjPto.enu.u;
+                }
+            }
+            else
+            {
+                OGRCoordinateTransformation* ptrCRSOperation = getCRSOperation(crsSourceId, crsTargetId);
+                bool sucess = ptrCRSOperation->Transform(nPoints, ptosFc, ptosSc, ptosTc);
+                TL_ASSERT(sucess, "Error in CRSOperation from CRS: {} to target CRS: {}", crsSourceId, crsTargetId);
+            }
+        }
+        cont = 0;
+        for (auto& point : points)
+        {
+            point.x = ptosFc[cont];
+            point.y = ptosSc[cont];
+            point.z = ptosTc[cont];
+            cont++;
+        }
+        free(ptosFc);
+        free(ptosSc);
+        free(ptosTc);
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
 OGRCoordinateTransformation* CRSsToolsImpl::getCRSOperation(std::string sourceCrsId,

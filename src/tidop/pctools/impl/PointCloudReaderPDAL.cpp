@@ -315,6 +315,50 @@ void PointCloudReaderPDAL::getBoundingBox(double& x_min, double& y_min, double& 
     }
 }
 
+BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId)
+{
+    BoundingBoxd bounding_box;
+
+    try {
+
+        TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+
+        if (mPtrCopcFile)
+        {
+            auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
+            copc::Box box = las_header.Bounds();
+            bounding_box.pt1.x = box.x_min;
+            bounding_box.pt1.y = box.y_min;
+            bounding_box.pt1.z = box.z_min;
+            bounding_box.pt2.x = box.x_max;
+            bounding_box.pt2.y = box.y_max;
+            bounding_box.pt2.z = box.z_max;
+        }
+        else if (mPtrLasReader)
+        {
+            const pdal::LasHeader& h = mPtrLasReader->header();
+            bounding_box.pt1.x = h.minX();
+            bounding_box.pt1.y = h.minY();
+            bounding_box.pt1.z = h.minZ();
+            bounding_box.pt2.x = h.maxX();
+            bounding_box.pt2.y = h.maxY();
+            bounding_box.pt2.z = h.maxZ();
+        }
+
+        if (!crsId.empty()
+            && crsId != mCrsId)
+        {
+            auto vertices = bounding_box.vertices();
+            mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, vertices, true);
+            bounding_box = BoundingBoxd(vertices);
+        }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return bounding_box;
+}
+
 void PointCloudReaderPDAL::getDimensionsNames(std::vector<std::string>& values)
 {
     if (mPtrCopcFile == nullptr

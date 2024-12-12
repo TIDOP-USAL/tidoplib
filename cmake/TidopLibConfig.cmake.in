@@ -85,6 +85,12 @@ else()
     add_compile_definitions("FORMAT_NAMESPACE=std::")
 endif()
 
+if(@TL_HAVE_PCTOOLS@)
+	find_dependency(COPCLIB REQUIRED)
+	find_dependency(LAZPERF REQUIRED)
+	find_dependency(PDAL REQUIRED)
+endif()
+	
 include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
 check_required_components("@PROJECT_NAME@")
 

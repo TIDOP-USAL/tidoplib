@@ -65,8 +65,8 @@ public:
     Window(Point_t pt1, Point_t pt2);
     template<typename T> Window(const Point_t &point, T width, T height);
     template<typename T> Window(const Point_t &pt, T side);
-    explicit Window(const std::vector<Point_t> &window);
-    template<typename Point_t2> Window(const std::vector<Point_t2> &window);
+    explicit Window(const std::vector<Point_t> &vertices);
+    template<typename Point_t2> Window(const std::vector<Point_t2> &vertices);
     
     ~Window() override = default;
     
@@ -131,7 +131,7 @@ Window<Point_t>::Window(Point_t pt1,
 template<typename Point_t> template<typename T>
 Window<Point_t>::Window(const Point_t &pt,
                         T width, T height)
-    : Entity(Type::window)
+  : Entity(Type::window)
 {
     auto half_width = width / consts::two<scalar>;
     auto half_height = height / consts::two<scalar>;
@@ -160,7 +160,7 @@ Window<Point_t>::Window(const Point_t &pt,
 template<typename Point_t> template<typename T>
 Window<Point_t>::Window(const Point_t &pt,
                         T side)
-    : Entity(Type::window)
+  : Entity(Type::window)
 {
     auto half_side = side / consts::two<scalar>;
 
@@ -183,37 +183,37 @@ Window<Point_t>::Window(const Point_t &pt,
 }
 
 template<typename Point_t>
-Window<Point_t>::Window(const std::vector<Point_t> &window)
-    : Entity(Type::window),
+Window<Point_t>::Window(const std::vector<Point_t> &vertices)
+  : Entity(Type::window),
     pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
         -std::numeric_limits<scalar>().max())
 {
-    if (window.size() >= 2) {
-        for (size_t i = 0; i < window.size(); i++) {
-            if (pt1.x > window[i].x) pt1.x = window[i].x;
-            if (pt1.y > window[i].y) pt1.y = window[i].y;
-            if (pt2.x < window[i].x) pt2.x = window[i].x;
-            if (pt2.y < window[i].y) pt2.y = window[i].y;
+    if (vertices.size() >= 2) {
+        for (size_t i = 0; i < vertices.size(); i++) {
+            if (pt1.x > vertices[i].x) pt1.x = vertices[i].x;
+            if (pt1.y > vertices[i].y) pt1.y = vertices[i].y;
+            if (pt2.x < vertices[i].x) pt2.x = vertices[i].x;
+            if (pt2.y < vertices[i].y) pt2.y = vertices[i].y;
         }
     }
 }
 
 template<typename Point_t> template<typename Point_t2>
-Window<Point_t>::Window(const std::vector<Point_t2> &window)
-    : Entity(Type::window),
+Window<Point_t>::Window(const std::vector<Point_t2> &vertices)
+  : Entity(Type::window),
     pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
         -std::numeric_limits<scalar>().max())
 {
-    if (window.size() >= 2) {
-        for (size_t i = 0; i < window.size(); i++) {
-            if (pt1.x > window[i].x) pt1.x = numberCast<scalar>(window[i].x);
-            if (pt1.y > window[i].y) pt1.y = numberCast<scalar>(window[i].y);
-            if (pt2.x < window[i].x) pt2.x = numberCast<scalar>(window[i].x);
-            if (pt2.y < window[i].y) pt2.y = numberCast<scalar>(window[i].y);
+    if (vertices.size() >= 2) {
+        for (size_t i = 0; i < vertices.size(); i++) {
+            if (pt1.x > vertices[i].x) pt1.x = numberCast<scalar>(vertices[i].x);
+            if (pt1.y > vertices[i].y) pt1.y = numberCast<scalar>(vertices[i].y);
+            if (pt2.x < vertices[i].x) pt2.x = numberCast<scalar>(vertices[i].x);
+            if (pt2.y < vertices[i].y) pt2.y = numberCast<scalar>(vertices[i].y);
         }
     }
 }
