@@ -86,8 +86,13 @@ else()
 endif()
 
 if(@TL_HAVE_PCTOOLS@)
+    set(COPCLIB_DIR "@COPCLIB_DIR@" CACHE PATH "The directory containing COPCLIBConfig.cmake")
 	find_dependency(COPCLIB REQUIRED)
+	
+    set(LAZPERF_DIR "@LAZPERF_DIR@" CACHE PATH "The directory containing lazperf-config.cmake")
 	find_dependency(LAZPERF REQUIRED)
+	
+	set(PDAL_DIR "@PDAL_DIR@" CACHE PATH "The directory containing PDALConfig.cmake")
 	find_dependency(PDAL REQUIRED)
 endif()
 	

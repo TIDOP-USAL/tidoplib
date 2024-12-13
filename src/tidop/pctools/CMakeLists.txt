@@ -69,7 +69,6 @@ if (BUILD_TL_PCTOOLS)
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-                          COPCLIB::copc-lib
 						  ${PDAL_LIBRARIES}
 						  COPCLIB::copc-lib 
 						  LAZPERF::lazperf)
