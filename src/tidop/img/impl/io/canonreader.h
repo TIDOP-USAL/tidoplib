@@ -22,65 +22,70 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/img/imgwriter.h"
+#pragma once
 
-#ifdef TL_HAVE_OPENCV
+#include "tidop/config.h"
+#include "tidop/img/imgreader.h"
+#include "tidop/core/path.h"
 
-#include "tidop/img/formats.h"
-#include "tidop/img/metadata.h"
-#include "tidop/img/impl/io/gdalwriter.h"
-#include "tidop/core/exception.h"
+#ifdef TL_HAVE_EDSDK
 
 
 namespace tl
 {
 
+/// \cond
 
-ImageWriter::ImageWriter(tl::Path file)
-  : mFile(std::move(file))
+class ImageReaderCanon final
+  : public ImageReader
 {
+    GENERATE_UNIQUE_PTR(ImageReaderCanon)
 
-}
+public:
 
-void ImageWriter::windowWrite(const WindowI &window,
-                              WindowI *windowWrite,
-                              Point<int> *offset) const
-{
-    WindowI window_all(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
-    if (window.isEmpty()) {
-        *windowWrite = window_all;  // Se lee toda la ventana
-    } else {
-        *windowWrite = windowIntersection(window_all, window);
-        *offset = windowWrite->pt1 - window.pt1;
-    }
-}
+    ImageReaderCanon(tl::Path file);
+    ~ImageReaderCanon();
 
+// ImageReader
 
+    void open() override;
+    auto isOpen() const -> bool override;
+    void close() override;
+    auto read(const Rect<int> &rect,
+              const Size<int> size,
+              Affine<Point<int>> *trf) -> cv::Mat override;
+    auto read(double scaleX,
+              double scaleY,
+              const Rect<int> &rect,
+              Affine<Point<int>> *trf) -> cv::Mat override;
+    auto read(const WindowI &window,
+              double scaleX,
+              double scaleY,
+              Affine<Point<int>> *trf) -> cv::Mat override;
+    auto rows() const -> int override;
+    auto cols() const -> int override;
+    auto channels() const -> int override;
+    auto dataType() const -> DataType override;
+    auto depth() const -> int override;
 
-auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
-{
-    ImageWriter::Ptr image_writer;
+private:
 
-    try {
+    void update();
 
-        std::string extension = file.extension().toString();
+private:
 
-#ifdef TL_HAVE_GDAL
-        if (gdalValidExtensions(extension)) {
-            image_writer = std::make_unique<ImageWriterGdal>(file);
-        } else
-#endif
-        {
-            TL_THROW_EXCEPTION("Invalid Image Writer: {}", file.fileName().toString());
-        }
+    EdsStreamRef mInputStream;
+    EdsImageRef mEdsImage;
+    int mRows;
+    int mCols;
+    int mBands;
+    DataType mDataType;
+    int mColorDepth;
+};
 
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
+/// \endcond
 
-    return image_writer;
-}
 
 } // End namespace tl
 
-#endif // TL_HAVE_OPENCV
+#endif // TL_HAVE_EDSDK

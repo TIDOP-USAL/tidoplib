@@ -39,7 +39,7 @@
 #include <proj.h>
 
 #include "tidop/geotools/GeoTools.h"
-#include "./PointCloudReader.h"
+#include "tidop/pctools/PointCloudReader.h"
 
 #include <pdal/Dimension.hpp>
 
@@ -80,6 +80,7 @@ public:
     void copcGetResolutionByLevel(std::map<int, double>& resolutionByLevel) override;
     void getBoundingBox(double& x_min, double& y_min, double& z_min,
         double& x_max, double& y_max, double& z_max, std::string crsId = "") override;
+    BoundingBoxd getBoundingBox(std::string crsId="") override;
     void getDimensionsNames(std::vector<std::string>& values) override;
     bool getIsCopc() override;
     void getPoints(double& x_o, double& y_o, double& z_o,

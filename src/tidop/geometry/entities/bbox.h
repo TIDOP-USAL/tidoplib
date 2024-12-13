@@ -107,7 +107,11 @@ public:
      */
     template<typename T>
     BoundingBox(const Point3_t &pt, T side);
+ 
+    explicit BoundingBox(const std::vector<Point3_t> &vertices);
+    template<typename Point3_t2> BoundingBox(const std::vector<Point3_t2> &vertices);
     
+
     ~BoundingBox() override = default;
     
     /*!
@@ -141,6 +145,8 @@ public:
      */
     auto center() const -> Point3_t;
     
+    auto vertices() const -> std::vector<Point3_t>;
+
     /*!
      * \brief Bounding Box width
      */
@@ -185,7 +191,9 @@ public:
 };
 
 
-
+using BoundingBoxi = BoundingBox<Point3<int>>;
+using BoundingBoxf = BoundingBox<Point3<float>>;
+using BoundingBoxd = BoundingBox<Point3<double>>;
 
 
 template<typename Point3_t> 
@@ -292,6 +300,50 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
 }
 
 template<typename Point3_t>
+BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t> &vertices)
+  : Entity(Type::bounding_box),
+    pt1(std::numeric_limits<scalar>().max(),
+        std::numeric_limits<scalar>().max(),
+        std::numeric_limits<scalar>().max()),
+    pt2(-std::numeric_limits<scalar>().max(),
+        -std::numeric_limits<scalar>().max(),
+        -std::numeric_limits<scalar>().max())
+{
+    if (vertices.size() >= 2) {
+        for (const auto &vertex : vertices) {
+            if (pt1.x > vertex.x) pt1.x = vertex.x;
+            if (pt1.y > vertex.y) pt1.y = vertex.y;
+            if (pt1.z > vertex.z) pt1.z = vertex.z;
+            if (pt2.x < vertex.x) pt2.x = vertex.x;
+            if (pt2.y < vertex.y) pt2.y = vertex.y;
+            if (pt2.z < vertex.z) pt2.z = vertex.z;
+        }
+    }
+}
+
+template<typename Point3_t> template<typename Point3_t2>
+BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t2> &vertices)
+  : Entity(Type::bounding_box),
+    pt1(std::numeric_limits<scalar>().max(),
+        std::numeric_limits<scalar>().max(),
+        std::numeric_limits<scalar>().max()),
+    pt2(-std::numeric_limits<scalar>().max(),
+        -std::numeric_limits<scalar>().max(),
+        -std::numeric_limits<scalar>().max())
+{
+    if (vertices.size() >= 2) {
+        for (const auto &vertex : vertices) {
+            if (pt1.x > vertex.x) pt1.x = numberCast<scalar>(vertex.x);
+            if (pt1.y > vertex.y) pt1.y = numberCast<scalar>(vertex.y);
+            if (pt1.z > vertex.z) pt1.z = numberCast<scalar>(vertex.z);
+            if (pt2.x < vertex.x) pt2.x = numberCast<scalar>(vertex.x);
+            if (pt2.y < vertex.y) pt2.y = numberCast<scalar>(vertex.y);
+            if (pt2.z < vertex.z) pt2.z = numberCast<scalar>(vertex.z);
+        }
+    }
+}
+
+template<typename Point3_t>
 auto BoundingBox<Point3_t>::operator = (const BoundingBox &bbox) -> BoundingBox<Point3_t>&
 {
     if (this != &bbox) {
@@ -341,6 +393,21 @@ auto BoundingBox<Point3_t>::center() const -> Point3_t
     }
 
     return pt_center;
+}
+
+template<typename Point3_t>
+auto tl::BoundingBox<Point3_t>::vertices() const -> std::vector<Point3_t>
+{
+    return {
+        {pt1.x, pt1.y, pt1.z},
+        {pt1.x, pt2.y, pt1.z},
+        {pt2.x, pt2.y, pt1.z},
+        {pt2.x, pt1.y, pt1.z},
+        {pt1.x, pt1.y, pt2.z},
+        {pt1.x, pt2.y, pt2.z},
+        {pt2.x, pt2.y, pt2.z},
+        {pt2.x, pt1.y, pt2.z}
+    };
 }
 
 template<typename Point3_t>

@@ -30,6 +30,7 @@
 #include <vector>
 #include <map>
 #include "tidop/core/defs.h"
+#include "tidop/geometry/entities/point.h"
 
 #include "GeoToolsDefinitions.h"
 
@@ -48,8 +49,11 @@ public:
     ~CRSsTools() {};
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         double& fc, double&sc, double& tc) = 0;
+    virtual Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) = 0;
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::vector<std::vector<double> >& points, bool byPoint=false) = 0;
+    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
+        std::vector<Point3d> &points, bool byPoint = false) = 0;
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
     virtual void dumpCRSsInfoToFile(std::string fileName) = 0;

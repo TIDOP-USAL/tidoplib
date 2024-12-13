@@ -29,7 +29,7 @@
 
 #include <proj.h>
 
-#include "../CRSsTools.h"
+#include "tidop/geotools/CRSsTools.h"
 
 class OGRCoordinateTransformation;
 
@@ -43,10 +43,13 @@ public:
     ~CRSsToolsImpl();
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         double& fc, double& sc, double& tc) override;
+    Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) override;
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::map<std::string, std::vector<double> >& points, bool byPoint = false) override;
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::vector<std::vector<double> >& points, bool byPoint = false) override;
+    void crsOperation(std::string crsSourceId, std::string crsTargetId,
+        std::vector<Point3d> &points, bool byPoint = false) override;
     void dumpCRSsInfoToFile(std::string fileName) override;
     std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) override;
     std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) override;

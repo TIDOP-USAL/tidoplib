@@ -22,65 +22,36 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/img/imgwriter.h"
-
-#ifdef TL_HAVE_OPENCV
-
-#include "tidop/img/formats.h"
-#include "tidop/img/metadata.h"
-#include "tidop/img/impl/io/gdalwriter.h"
-#include "tidop/core/exception.h"
-
+#include "tidop/img/impl/formats/metadata/tiff.h"
 
 namespace tl
 {
 
-
-ImageWriter::ImageWriter(tl::Path file)
-  : mFile(std::move(file))
+TiffMetadata::TiffMetadata()
+  : ExifMetadata(Format::tiff)
 {
-
+    TiffMetadata::init();
 }
 
-void ImageWriter::windowWrite(const WindowI &window,
-                              WindowI *windowWrite,
-                              Point<int> *offset) const
+TiffMetadata::~TiffMetadata() = default;
+
+void TiffMetadata::init()
 {
-    WindowI window_all(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
-    if (window.isEmpty()) {
-        *windowWrite = window_all;  // Se lee toda la ventana
-    } else {
-        *windowWrite = windowIntersection(window_all, window);
-        *offset = windowWrite->pt1 - window.pt1;
-    }
+    mMetadata["TIFFTAG_DOCUMENTNAME"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_IMAGEDESCRIPTION"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_SOFTWARE"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_DATETIME"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_ARTIST"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_HOSTCOMPUTER"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_COPYRIGHT"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_XRESOLUTION"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_YRESOLUTION"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_RESOLUTIONUNIT"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_MINSAMPLEVALUE"] = std::make_pair("", false);
+    mMetadata["TIFFTAG_MAXSAMPLEVALUE"] = std::make_pair("", false);
+    mMetadata["GEO_METADATA"] = std::make_pair("", false);
+    mMetadata["TIFF_RSID"] = std::make_pair("", false);
 }
 
-
-
-auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
-{
-    ImageWriter::Ptr image_writer;
-
-    try {
-
-        std::string extension = file.extension().toString();
-
-#ifdef TL_HAVE_GDAL
-        if (gdalValidExtensions(extension)) {
-            image_writer = std::make_unique<ImageWriterGdal>(file);
-        } else
-#endif
-        {
-            TL_THROW_EXCEPTION("Invalid Image Writer: {}", file.fileName().toString());
-        }
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-
-    return image_writer;
-}
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

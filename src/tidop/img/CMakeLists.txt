@@ -27,26 +27,54 @@
 #  TidopLib img module                                                   #
 ##########################################################################
 
+include(TidopUtils)
 
 if(BUILD_TL_IMG)
   
     project(Img)
   
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
-                img.h
-                img.cpp
-                image.h
-                image.cpp
-                imgreader.cpp
-                imgreader.h
-                imgwriter.cpp
-                imgwriter.h
-                formats.cpp
-                formats.h
-                metadata.h
-                metadata.cpp)
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES 
+                             img.cpp
+                             image.cpp
+                             imgreader.cpp
+                             imgwriter.cpp
+                             formats.cpp
+                             metadata.cpp
+                             impl/io/gdalreader.cpp
+                             impl/io/gdalwriter.cpp
+                             impl/io/canonreader.cpp
+                             impl/formats/metadata/metadata.cpp
+                             impl/formats/metadata/bmp.cpp
+                             impl/formats/metadata/exif.cpp
+                             impl/formats/metadata/gif.cpp
+                             impl/formats/metadata/jpeg.cpp
+                             impl/formats/metadata/png.cpp
+                             impl/formats/metadata/tiff.cpp
+                         HEADER_FILES
+                             img.h
+                             image.h
+                             imgreader.h
+                             imgwriter.h
+                             formats.h
+                             metadata.h
+                             impl/io/gdalreader.h
+                             impl/io/gdalwriter.h
+                             impl/io/canonreader.h
+                             impl/formats/metadata/metadata.h
+                             impl/formats/metadata/bmp.h
+                             impl/formats/metadata/exif.h
+                             impl/formats/metadata/gif.h
+                             impl/formats/metadata/jpeg.h
+                             impl/formats/metadata/png.h
+                             impl/formats/metadata/tiff.h)
 
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
+
+    add_library(TidopLib::${PROJECT_NAME}
+                ALIAS ${PROJECT_NAME})
 
     if(MSVC)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
@@ -79,14 +107,15 @@ if(BUILD_TL_IMG)
     endif()
 
     install(TARGETS ${PROJECT_NAME}
-          EXPORT "${TARGETS_EXPORT_NAME}"
-          RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin
-          LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib
-          ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib)
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}lib)
 
     install(DIRECTORY . 
             DESTINATION include/tidop/img
-            FILES_MATCHING PATTERN "*.h")
+            FILES_MATCHING PATTERN "*.h"
+            PATTERN "impl" EXCLUDE)
             
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     

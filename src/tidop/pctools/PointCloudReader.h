@@ -35,6 +35,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
 #include "tidop/core/ptr.h"
+#include "tidop/geometry/entities/bbox.h"
 
 #include <proj.h>
 
@@ -81,6 +82,7 @@ namespace tl
 
         virtual void getBoundingBox(double& x_min, double& y_min, double& z_min,
             double& x_max, double& y_max, double& z_max, std::string crsId="") = 0;
+        virtual BoundingBoxd getBoundingBox(std::string crsId="") = 0;
 
         virtual void getDimensionsNames(std::vector<std::string>& values) = 0;
 

@@ -33,7 +33,7 @@
 #include "tidop/geotools/GeoTools.h"
 #include "tidop/geotools/CRSsTools.h"
 
-#include "./PointCloudReader.h"
+#include "tidop/pctools/PointCloudReader.h"
 
 #include <proj.h>
 
@@ -45,14 +45,16 @@
 
 namespace tl
 {
-    PointCloudReader::PointCloudReader(tl::Path file)
-        : mFile(std::move(file))
-    {
 
-    }
-    auto PointCloudReader::file() const -> tl::Path
-    {
-        return mFile;
-    }
+PointCloudReader::PointCloudReader(tl::Path file)
+  : mPtrGeoTools(nullptr),
+    mFile(std::move(file))
+{
+}
+
+auto PointCloudReader::file() const -> tl::Path
+{
+    return mFile;
+}
 
 }

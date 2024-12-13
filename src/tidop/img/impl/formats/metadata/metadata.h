@@ -22,65 +22,45 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/img/imgwriter.h"
+#pragma once
 
-#ifdef TL_HAVE_OPENCV
-
-#include "tidop/img/formats.h"
 #include "tidop/img/metadata.h"
-#include "tidop/img/impl/io/gdalwriter.h"
-#include "tidop/core/exception.h"
-
 
 namespace tl
 {
 
 
-ImageWriter::ImageWriter(tl::Path file)
-  : mFile(std::move(file))
+class TL_EXPORT ImageMetadataBase
+  : public ImageMetadata
 {
 
-}
+protected:
 
-void ImageWriter::windowWrite(const WindowI &window,
-                              WindowI *windowWrite,
-                              Point<int> *offset) const
-{
-    WindowI window_all(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
-    if (window.isEmpty()) {
-        *windowWrite = window_all;  // Se lee toda la ventana
-    } else {
-        *windowWrite = windowIntersection(window_all, window);
-        *offset = windowWrite->pt1 - window.pt1;
-    }
-}
+    std::map<std::string, std::pair<std::string, bool>> mMetadata;
 
+public:
 
-
-auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
-{
-    ImageWriter::Ptr image_writer;
-
-    try {
-
-        std::string extension = file.extension().toString();
-
-#ifdef TL_HAVE_GDAL
-        if (gdalValidExtensions(extension)) {
-            image_writer = std::make_unique<ImageWriterGdal>(file);
-        } else
-#endif
-        {
-            TL_THROW_EXCEPTION("Invalid Image Writer: {}", file.fileName().toString());
-        }
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    ImageMetadataBase(Format format)
+        : ImageMetadata(format)
+    {
     }
 
-    return image_writer;
-}
+    ~ImageMetadataBase() override = default;
 
-} // End namespace tl
+    auto metadata(const std::string& name,
+                  bool &active) const -> std::string override;
+    void setMetadata(const std::string &name,
+                     const std::string &value) override;
+    auto metadata() const -> std::map<std::string, std::string> override;
+    auto activeMetadata() const -> std::map<std::string, std::string> override;
+    void reset() override;
 
-#endif // TL_HAVE_OPENCV
+private:
+
+    virtual void init() {}
+    auto metadata(bool all) const -> std::map<std::string, std::string>;
+
+};
+
+
+}  // End namespace tl
