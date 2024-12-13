@@ -587,7 +587,7 @@ public:
                                                             metadata->setMetadata("XMP_CalibratedFocalLength", value);
                                                         } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedOpticalCenterX") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
-                                                            metadata->setMetadata("CalibratedOpticalCenterX", value);
+                                                            metadata->setMetadata("XMP_CalibratedOpticalCenterX", value);
                                                         } else if (std::string(rdfdescription_node->pszValue) == "drone-dji:CalibratedOpticalCenterY") {
                                                             std::string value = rdfdescription_node->psChild->pszValue;
                                                             metadata->setMetadata("XMP_CalibratedOpticalCenterY", value);

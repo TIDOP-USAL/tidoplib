@@ -27,7 +27,7 @@
 #include "tidop/config.h"
 
 #include "tidop/math/algebra/matrix.h"
-#include <tidop/math/algebra/vector.h>
+#include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/rotation_convert.h"
 
 namespace tl

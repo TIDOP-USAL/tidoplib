@@ -351,8 +351,12 @@ inline T_FLAG operator ~ (T_FLAG flag)                              \
     ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
   );                                                                \
 }                                                                   \
-
-
+                                                                    \
+inline T_FLAG& operator |= (T_FLAG &flag1, T_FLAG flag2)            \
+{                                                                   \
+  flag1 = flag1 | flag2;                                            \
+  return flag1;                                                     \
+}                                                                   \
 
 /*!
  * \brief This class allows the use of an integer type as a flag

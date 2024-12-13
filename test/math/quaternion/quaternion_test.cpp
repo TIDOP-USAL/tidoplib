@@ -370,5 +370,30 @@ BOOST_FIXTURE_TEST_CASE(scalar_divided_by_quaternion, QuaternionTest)
 
 //T dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
 
+BOOST_FIXTURE_TEST_CASE(quaternion_by_point, QuaternionTest)
+{
+    Point3f rotate_point = q * Point3f(1.0, 2.5, -0.5);
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x, 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y, 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z, 0.001);
+
+    rotate_point = Quaternionf(0.f, 1.f, -3.f, 2.f) * Point3f(1.0, 2.5, -0.5);
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x, 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y, 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(quaternion_by_vector, QuaternionTest)
+{
+    auto rotate_point = q * Vector3f{1.0f, 2.5f, -0.5f};
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x(), 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y(), 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z(), 0.001);
+
+    rotate_point = Quaternionf(0.f, 1.f, -3.f, 2.f) * Vector3f{ 1.0, 2.5, -0.5 };
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x(), 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y(), 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z(), 0.001);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

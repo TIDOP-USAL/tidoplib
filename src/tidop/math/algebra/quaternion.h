@@ -33,6 +33,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations.h"
+#include "tidop/geometry/entities/point.h"
 
 namespace tl
 {
@@ -340,10 +341,9 @@ template<typename T>
 auto Quaternion<T>::operator /= (T scalar) -> Quaternion &
 {
     if (scalar != consts::zero<T>) {
-        this->x /= scalar;
-        this->y /= scalar;
-        this->z /= scalar;
-        this->w /= scalar;
+        
+        this->operator*=(consts::one<T> / scalar);
+
     } else {
         //¿Devolver excepción?
         this->x = consts::zero<T>;
@@ -446,6 +446,22 @@ auto operator *(const Quaternion<T>& quat1,
     Quaternion<T> quaternion = quat1;
     quaternion *= quat2;
     return quaternion;
+}
+
+template<typename T>
+auto operator *(Quaternion<T> &&quat1,
+                const Quaternion<T> &quat2) -> Quaternion<T>
+{
+    quat1 *= quat2;
+    return quat1;
+}
+
+template<typename T>
+auto operator *(Quaternion<T> &&quat1,
+                Quaternion<T> &&quat2) -> Quaternion<T>
+{
+    quat1 *= quat2;
+    return quat1;
 }
 
 /*!
@@ -597,6 +613,39 @@ auto operator !=(const Quaternion<T>& q1, const Quaternion<T>& q2) -> bool
     return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
 }
 
+template<typename T>
+auto operator *(const Quaternion<T> &quaternion, const Point3<T> &point) -> Point3<T>
+{
+    Quaternion<T> q1 = quaternion;
+    q1.normalize();
+    auto q3 = q1 * Quaternion<T>(point.x, point.y, point.z, consts::zero<T>) * q1.conjugate();
+    return {q3.x, q3.y, q3.z};
+}
+
+template<typename T>
+auto operator *(Quaternion<T> &&quaternion, const Point3<T> &point) -> Point3<T>
+{
+    quaternion.normalize();
+    auto q2 = quaternion * Quaternion<T>(point.x, point.y, point.z, consts::zero<T>) * quaternion.conjugate();
+    return {q2.x, q2.y, q2.z};
+}
+
+template<typename T>
+auto operator *(const Quaternion<T> &quaternion, const Vector<T, 3> &point) -> Vector<T, 3>
+{
+    Quaternion<T> q1 = quaternion;
+    q1.normalize();
+    auto q3 = q1 * Quaternion<T>(point.x(), point.y(), point.z(), consts::zero<T>) * q1.conjugate();
+    return {q3.x, q3.y, q3.z};
+}
+
+template<typename T>
+auto operator *(Quaternion<T> &&quaternion, const Vector<T, 3> &point) -> Vector<T, 3>
+{
+    quaternion.normalize();
+    auto q2 = quaternion * Quaternion<T>(point.x(), point.y(), point.z(), consts::zero<T>) * quaternion.conjugate();
+    return {q2.x, q2.y, q2.z};
+}
 
 template<typename T>
 auto operator<<(std::ostream& os, const Quaternion<T>& q) -> std::ostream&
