@@ -59,13 +59,14 @@ GDALDataType openCvToGdal(int cvdt);
 class ImageWriterGdal
     : public ImageWriter
 {
+    GENERATE_UNIQUE_PTR(ImageWriterGdal)
 
 public:
 
     ImageWriterGdal(tl::Path file);
     ~ImageWriterGdal() override;
 
-    // ImageWriter
+// ImageWriter
 
     void open() override;
     bool isOpen() const override { return mDriver != nullptr; }

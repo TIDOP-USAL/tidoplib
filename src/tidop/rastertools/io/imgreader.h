@@ -26,8 +26,6 @@
 
 #include "tidop/config.h"
 
-#ifdef TL_HAVE_OPENCV
-
 #include <string>
 #include <memory>
 
@@ -53,7 +51,23 @@ namespace tl
 class ImageMetadata;
 
 /*!
- * \brief Class for reading different image formats
+ * \brief Class for reading different raster image formats.
+ *
+ * The `ImageReader` class provides an abstract interface for reading various types of raster image files.
+ * It supports reading specific regions, scaling, and accessing metadata such as georeferencing information.
+ *
+ * <h4>Usage Example</h4>
+ *
+ * \code
+ * tl::Path imagePath("example.tif");
+ * auto reader = ImageReaderFactory::create(imagePath);
+ * reader->open();
+ * if (reader->isOpen()) {
+ *     cv::Mat image = reader->read();
+ *     // Process the image
+ *     reader->close();
+ * }
+ * \endcode
  */
 class TL_EXPORT ImageReader
 {
@@ -61,42 +75,51 @@ class TL_EXPORT ImageReader
 
 public:
 
+    /*!
+     * \brief Constructs an `ImageReader` with the specified file path.
+     * \param file Path to the image file.
+     */
     ImageReader(tl::Path file);
+
     virtual ~ImageReader() = default;
 
     /*!
-     * \brief Open the file
+     * \brief Opens the image file.
+     * This function must be called before attempting to read the image.
      */
     virtual void open() = 0;
 
     /*!
-     * \brief Check if the file has been loaded correctly.
+     * \brief Checks if the image file is successfully opened.
+     * \return `true` if the file is open; otherwise `false`.
      */
     virtual auto isOpen() const -> bool = 0;
 
     /*!
-     * \brief Close the file
+     * \brief Closes the image file.
      */
     virtual void close() = 0;
 
     /*!
-     * \brief Reads an image area corresponding to a rectangle
-     * \param[in] rect Rectangle of the image to be loaded. By default the whole image
-     * \param[in] size Output image size. By default the size of the reading area
-     * \param[in] affine
-     * \return Image
+     * \brief Reads a specific area of the image defined by a rectangle.
+     * \param[in] rect Rectangle specifying the area to read. Defaults to the entire image.
+     * \param[in] size Desired output image size. Defaults to the size of the reading area.
+     * \param[out] affine Optional affine transformation for the output image.
+     * \return The image data as a `cv::Mat` object.
+     * \see Rect Size Affine
      */
     virtual auto read(const Rect<int> &rect = Rect<int>(),
                       const Size<int> &size = Size<int>(),
                       Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
-     * \brief Reads an image area corresponding to a rectangle
-     * \param[in] scaleX Horizontal scale that applies to the area read. Default 1
-     * \param[in] scaleY Vertical scale that applies to the area read. Default 1
-     * \param[in] rect Area of the image to be loaded. By default the whole image
-     * \param[in] affine
-     * \return Image
+     * \brief Reads a scaled area of the image.
+     * \param[in] scaleX Horizontal scaling factor. Default is 1.
+     * \param[in] scaleY Vertical scaling factor. Default is 1.
+     * \param[in] rect Rectangle specifying the area to read. Defaults to the entire image.
+     * \param[out] affine Optional affine transformation for the output image.
+     * \return The image data as a `cv::Mat` object.
+     * \see Rect Affine
      */
     virtual auto read(double scaleX,
                       double scaleY,
@@ -104,12 +127,13 @@ public:
                       Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
-     * \brief Reads the image area corresponding to a window
-     * \param[in] window Window of the image to be loaded
-     * \param[in] scaleX Horizontal scale that applies to the region read. Default 1
-     * \param[in] scaleY Vertical scale that applies to the region read. Default 1
-     * \param[in] affine
-     * \return Image
+     * \brief Reads a specific window of the image.
+     * \param[in] window The window specifying the image region to load.
+     * \param[in] scaleX Horizontal scaling factor. Default is 1.
+     * \param[in] scaleY Vertical scaling factor. Default is 1.
+     * \param[out] affine Optional affine transformation for the output image.
+     * \return The image data as a `cv::Mat` object.
+     * \see Window Affine
      */
     virtual auto read(const WindowI &window,
                       double scaleX = 1.,
@@ -117,11 +141,13 @@ public:
                       Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
-     * \brief Reads the image area corresponding to a window in terrestrial coordinates
-     * \param[in] terrainWindow Window in terrain coordinates of the image to be loaded
-     * \param[in] scaleX Horizontal scale that applies to the region read. Default 1
-     * \param[in] scaleY Vertical scale that applies to the region read. Default 1
-     * \param[out] affine Transformation to be applied to the returned image
+     * \brief Reads an image area in terrestrial coordinates.
+     * \param[in] terrainWindow Window in terrain coordinates of the area to read.
+     * \param[in] scaleX Horizontal scaling factor. Default is 1.
+     * \param[in] scaleY Vertical scaling factor. Default is 1.
+     * \param[out] affine Optional affine transformation for the output image.
+     * \return The image data as a `cv::Mat` object.
+     * \see Window Affine
      */
     virtual auto read(const Window<Point<double>> &terrainWindow,
                       double scaleX = 1.,
@@ -129,59 +155,79 @@ public:
                       Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
-     * \brief Returns the number of rows in the image
-     * \return Number of rows in the image
+     * \brief Retrieves the number of rows in the image.
+     * \return The number of rows (height) in the image.
      */
     virtual auto rows() const -> int = 0;
 
     /*!
-     * \brief Returns the number of columns in the image
-     * \return Number of columns in the image
+     * \brief Retrieves the number of columns in the image.
+     * \return The number of columns (width) in the image.
      */
     virtual auto cols() const -> int = 0;
 
     /*!
-     * \brief Returns the number of channels or bands in the image.
-     * \return Number of image bands
+     * \brief Retrieves the number of channels in the image.
+     * \return The number of color channels or bands.
      */
     virtual auto channels() const -> int = 0;
 
     /*!
-     * \brief Returns the data type
-     * \return
+     * \brief Retrieves the data type of the image.
+     * \return The data type of the image pixels.
+     * \see DataType
      */
     virtual auto dataType() const -> DataType = 0;
 
     /*!
-     * \brief Devuelve la profundidad de color o bits por pixel de una imagen
-     * \return Colour depth
+     * \brief Retrieves the color depth of the image.
+     * \return The color depth (bits per pixel).
      */
     virtual auto depth() const -> int = 0;
 
+    /*!
+     * \brief Retrieves the metadata associated with the image.
+     * \return A shared pointer to the `ImageMetadata`.
+     */
     virtual auto metadata() const -> std::shared_ptr<ImageMetadata> = 0;
 
     /*!
-     * \brief Check if the image is geo-referenced.
+     * \brief Checks if the image is georeferenced.
+     * \return `true` if the image has georeferencing information; otherwise `false`.
      */
     virtual auto isGeoreferenced() const -> bool = 0;
 
     /*!
-     * \brief Georeference of the image
+     * \brief Retrieves the georeferencing information of the image.
+     * \return The affine transformation representing the georeference.
+     * \see Affine
      */
     virtual auto georeference() const -> Affine<double, 2> = 0;
 
     /*!
-     * \brief Reference system in WKT format
+     * \brief Retrieves the coordinate reference system in WKT format.
+     * \return The WKT string of the image's CRS.
      */
     virtual auto crsWkt() const -> std::string = 0;
 
     /*!
-     * \brief Image bounding box in terrain coordinates
+     * \brief Retrieves the image's bounding box in terrain coordinates.
+     * \return The bounding box as a `WindowD` object.
+     * \see Window
      */
     virtual auto window() const -> WindowD = 0;
 
+    /*!
+     * \brief Retrieves the file path of the image.
+     * \return The file path as a `tl::Path` object.
+     */
     auto file() const -> tl::Path;
 
+    /*!
+     * \brief Retrieves the no-data value of the image.
+     * \param[out] exist Optional pointer to a boolean indicating if no-data value exists.
+     * \return The no-data value if available; otherwise a default value.
+     */
     virtual auto noDataValue(bool *exist = nullptr) const-> double = 0;
 
 protected:
@@ -198,7 +244,24 @@ private:
 
 
 /*!
- * \brief Class factory for reading image formats
+ * \brief Class factory for creating `ImageReader` instances.
+ *
+ * The `ImageReaderFactory` class provides a static method for creating instances of `ImageReader`
+ * based on the file format of the provided image path. It supports various image formats and selects
+ * the appropriate `ImageReader` implementation automatically.
+ *
+ * <h4>Usage Example</h4>
+ *
+ * \code
+ * tl::Path imagePath("example.tif");
+ * auto reader = ImageReaderFactory::create(imagePath);
+ * reader->open();
+ * if (reader->isOpen()) {
+ *     cv::Mat image = reader->read();
+ *     // Process the image
+ *     reader->close();
+ * }
+ * \endcode
  */
 class TL_EXPORT ImageReaderFactory
 {
@@ -209,6 +272,15 @@ private:
 
 public:
 
+    /*!
+     * \brief Creates an `ImageReader` instance for the specified image file.
+     * \param[in] file The path to the image file.
+     * \return A smart pointer to an `ImageReader` suitable for reading the specified file.
+     *
+     * The factory method determines the appropriate `ImageReader` implementation
+     * based on the file extension or content and returns an instance capable of
+     * handling that format.
+     */
     static auto create(const Path &file) -> ImageReader::Ptr;
 };
 
@@ -217,5 +289,3 @@ public:
 
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

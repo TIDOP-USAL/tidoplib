@@ -67,7 +67,7 @@ public:
     ImageReaderGdal(tl::Path file);
     ~ImageReaderGdal() override;
 
-    // ImageReader
+// ImageReader
 
     void open() override;
     auto isOpen() const -> bool override {return mDataset != nullptr; }

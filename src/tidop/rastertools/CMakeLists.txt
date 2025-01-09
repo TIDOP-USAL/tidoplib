@@ -29,7 +29,7 @@
 
 include(TidopUtils)
 
-if(BUILD_TL_RASTER_TOOLS)
+if(BUILD_TL_RASTER_TOOLS AND TL_HAVE_OPENCV)
   
     project(RasterTools)
   
@@ -182,4 +182,4 @@ elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHI
     message(STATUS "  TidopLib::RasterTools disabled")
     message(STATUS "  TidopLib::Geospatial disabled [Module dependent on TidopLib::RasterTools that is deactivated]") 
 
-endif(BUILD_TL_RASTER_TOOLS)
+endif()

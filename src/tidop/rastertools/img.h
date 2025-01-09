@@ -32,11 +32,12 @@
 namespace tl
 {
 
+template<typename T> class EnumFlags;
+
 /*! \addtogroup RasterTools
  *  \{
  */
 
-template<typename T> class EnumFlags;
 
 enum class DataType : int16_t
 {
@@ -62,13 +63,6 @@ TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
  * \return GDAL driver name
  */
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
-
-#ifdef TL_HAVE_GDAL
-
-//TL_EXPORT DataType gdalConvertDataType(GDALDataType dataType);
-//TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
-
-#endif // TL_HAVE_GDAL
 
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 TL_EXPORT DataType openCVDataTypeToDataType(int dataType);

@@ -8,11 +8,11 @@
  *
  * Subgroups within the Core module:
  *
- * - \ref Base: Fundamental utilities and abstractions for the library. This includes 
+ * - \ref Base "Base": Fundamental utilities and abstractions for the library. This includes 
  *   tools for time measurement (\ref Chrono, \ref ChronoAuto), exception handling 
  *   (\ref Exception), flag manipulation (\ref EnumFlags and \ref Flags), and file path operations (\ref Path).
  *
- * - Application Management: Provides classes and utilities for managing application-level 
+ * - \ref AppManagement "Application Management": Provides classes and utilities for managing application-level 
  *   tasks. This includes:
  *   - \ref App: For managing application instances and metadata.
  *   - \ref Log: For logging messages with different levels of severity.
@@ -21,14 +21,14 @@
  *   - \ref Message: For emitting and managing application messages, such as debug 
  *     information, warnings, and errors.
  *
- * - Console tools: A suite of tools designed for console-based applications. This includes 
+ * - \ref Console "Console tools": A suite of tools designed for console-based applications. This includes 
  *   utilities for handling messages, formatting outputs, and managing console displays.
  *
- * - Concurrency: Utilities and abstractions to simplify concurrent programming. This includes 
+ * - \ref concurrency "Concurrency": Utilities and abstractions to simplify concurrent programming. This includes 
  *   thread-safe queues and other tools for managing producer-consumer patterns and thread 
  *   synchronization.
  *
- * - Units: A comprehensive module for handling unit conversions in both the International 
+ * - \ref Units "Units": A comprehensive module for handling unit conversions in both the International 
  *   System of Units (SI) and the Imperial system. This module ensures consistency and accuracy 
  *   in calculations involving units of measurement.
  *

@@ -207,28 +207,35 @@ void ImageWriterGdal::close()
     
 void ImageWriterGdal::setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata)
 {
-    mImageMetadata = imageMetadata;
+    try {
 
-    if (mDataset) {
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
 
-        char **gdalMetadata = nullptr;
+        mImageMetadata = imageMetadata;
 
-        if (mImageMetadata) {
-            std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+        if (mDataset) {
+
+            char **gdalMetadata = nullptr;
+
+            if (mImageMetadata) {
+                std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
 #if CPP_VERSION >= 17
-            for (const auto &[name, value] : active_metadata) {
+                for (const auto &[name, value] : active_metadata) {
 #else
-            for (const auto &metadata : active_metadata) {
-                auto &name = metadata.first;
-                auto &value = metadata.second;
+                for (const auto &metadata : active_metadata) {
+                    auto &name = metadata.first;
+                    auto &value = metadata.second;
 #endif
-                gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
+                    gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
+                }
             }
+
+            mDataset->SetMetadata(gdalMetadata);
         }
 
-        mDataset->SetMetadata(gdalMetadata);
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
-
 }
 
 void ImageWriterGdal::create(int rows,
@@ -239,7 +246,8 @@ void ImageWriterGdal::create(int rows,
 {
     try {
 
-        if (!isOpen()) open(); // Se trata de abrir el archivo si no esta abierto.
+        //if (!isOpen()) open(); // Se trata de abrir el archivo si no esta abierto.
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
 
         mDataType = type;
         TL_ASSERT(checkDataType(), "Data Type not supported");
@@ -298,6 +306,7 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
 {
     try {
 
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
         TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
         Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
@@ -444,7 +453,8 @@ auto ImageWriterGdal::rows() const -> int
     int rows = 0;
 
     try {
-
+        
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
         TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
         rows = mDataset->GetRasterYSize();
@@ -462,6 +472,7 @@ auto ImageWriterGdal::cols() const -> int
 
     try {
 
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
         TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
         cols = mDataset->GetRasterXSize();
@@ -479,6 +490,7 @@ auto ImageWriterGdal::channels() const -> int
 
     try {
 
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
         TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
         channels = mDataset->GetRasterCount();

@@ -67,7 +67,7 @@ auto ImageWriterFactory::create(const Path &file) -> ImageWriter::Ptr
 
 #ifdef TL_HAVE_GDAL
         if (gdalValidExtensions(extension)) {
-            image_writer = std::make_unique<ImageWriterGdal>(file);
+            image_writer = ImageWriterGdal::New(file);
         } else
 #endif
         {

@@ -26,12 +26,10 @@
 
 #include "tidop/config.h"
 
-#ifdef TL_HAVE_OPENCV
-
 #include <string>
 #include <memory>
 
-#include "opencv2/core/core.hpp"
+#include <opencv2/core/core.hpp>
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
@@ -52,9 +50,25 @@ class ImageMetadata;
  */
 
 
-/*!
- * \brief Class for writing different image formats
- */
+ /*!
+  * \brief Class for writing different image formats.
+  *
+  * The `ImageWriter` class provides an abstract interface for writing images to various formats.
+  * It supports setting metadata, creating images, and writing image blocks to specific regions.
+  * Derived classes must implement the pure virtual functions to handle specific image formats.
+  *
+  * <h4>Example Usage</h4>
+  *
+  * \code
+  * tl::Path outputPath("output.tif");
+  * auto writer = ImageWriterFactory::create(outputPath);
+  * writer->open();
+  * writer->create(100, 200, 3, DataType::UInt8);
+  * cv::Mat image = cv::Mat::zeros(100, 200, CV_8UC3);
+  * writer->write(image);
+  * writer->close();
+  * \endcode
+  */
 class TL_EXPORT ImageWriter
 {
 
@@ -62,37 +76,45 @@ class TL_EXPORT ImageWriter
         
 public:
 
+    /*!
+     * \brief Constructor for `ImageWriter`.
+     * \param[in] file Path to the output image file.
+     */
     ImageWriter(tl::Path file);
+
     virtual ~ImageWriter() = default;
 
     /*!
-     * \brief Open the image file
+     * \brief Opens the image file for writing.
      */
     virtual void open() = 0;
 
     /*!
-     * \brief Check if the file has been loaded correctly
+     * \brief Checks if the image file is open and ready for writing.
+     * \return True if the file is open, false otherwise.
      */
     virtual auto isOpen() const -> bool = 0;
 
     /*!
-     * \brief Close the file
+     * \brief Closes the image file.
      */
     virtual void close() = 0;
 
     /*!
-     * \brief Sets the image metadata
+     * \brief Sets the metadata for the image.
+     * \param[in] imageMetadata Shared pointer to the image metadata.
+     * \see ImageMetadata
      */
     virtual void setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
 
     /*!
-     * \brief Create an image
-     * \param[in] rows Number of rows in the image
-     * \param[in] cols Number of columns of the image
-     * \param[in] bands Number of bands in the picture
-     * \param[in] type Data type
-     * \param[in] imageOptions Image options
-     * \see DataType
+     * \brief Creates an image with the specified dimensions and data type.
+     * \param[in] rows Number of rows in the image.
+     * \param[in] cols Number of columns in the image.
+     * \param[in] bands Number of bands (channels) in the image.
+     * \param[in] type %Data type of the image.
+     * \param[in] imageOptions Optional image options.
+     * \see DataType ImageOptions
      */
     virtual void create(int rows,
                         int cols,
@@ -101,63 +123,70 @@ public:
                         const std::shared_ptr<ImageOptions> &imageOptions = nullptr) = 0;
 
     /*!
-     * \brief Write on the image
-     * \param[in] image Image block to be written
-     * \param[in] rect area where the image is written
+     * \brief Writes an image block to a specified rectangular region.
+     * \param[in] image Image block to be written.
+     * \param[in] rect Rectangle defining the area to write. Default is the entire image.
+     * \see Rect
      */
     virtual void write(const cv::Mat &image,
                        const Rect<int> &rect = Rect<int>()) = 0;
 
     /*!
-     * \brief Write on the image
-     * \param[in] image Image block to be written
-     * \param[in] window area where the image is written
+     * \brief Writes an image block to a specified window region.
+     * \param[in] image %Image block to be written.
+     * \param[in] window Window defining the area to write.
+     * \see Window
      */
     virtual void write(const cv::Mat &image,
                        const WindowI &window) = 0;
 
     /*!
-     * \brief Returns the number of rows of the image.
-     * \return Number of rows of the image
+     * \brief Returns the number of rows in the image.
+     * \return Number of rows.
      */
     virtual auto rows() const -> int = 0;
 
     /*!
-     * \brief Returns the number of columns in the image
-     * \return Number of columns of the image
+     * \brief Returns the number of columns in the image.
+     * \return Number of columns.
      */
     virtual auto cols() const -> int = 0;
 
     /*!
-     * \brief Returns the number of channels or bands in the image.
-     * \return Number of bands in the picture
+     * \brief Returns the number of channels (bands) in the image.
+     * \return Number of channels.
      */
     virtual auto channels() const -> int = 0;
 
     /*!
-     * \brief Returns the data type
-     * \return Data type
+     * \brief Returns the data type of the image.
+     * \return %Data type.
+     * \see DataType
      */
     virtual auto dataType() const -> DataType = 0;
 
     /*!
-     * \brief Returns the colour depth or bits per pixel of an image.
-     * \return Colour depth
+     * \brief Returns the color depth or bits per pixel of the image.
+     * \return Color depth.
      */
     virtual auto depth() const -> int = 0;
 
     /*!
-     * \brief Sets the georeference of the image
-     * \param[in] georeference Georeference
+     * \brief Sets the georeference for the image.
+     * \param[in] georeference Georeference transformation.
      */
     virtual void setGeoreference(const Affine<double, 2> &georeference) = 0;
 
     /*!
-     * \brief Set the Coordinate Reference System
-     * \param[in] crs Coordinate Reference System in WKT format
+     * \brief Sets the Coordinate Reference System (CRS) for the image.
+     * \param[in] crs CRS in WKT format.
      */
     virtual void setCRS(const std::string &crs) = 0;
 
+    /*!
+     * \brief Sets the NoData value for the image.
+     * \param[in] nodata NoData value.
+     */
     virtual void setNoDataValue(double nodata) = 0;
 
 
@@ -175,7 +204,21 @@ protected:
 
 
 /*!
- * \brief Factory class for writing different image formats
+ * \brief Factory class for creating `ImageWriter` instances.
+ *
+ * The `ImageWriterFactory` provides a static method for creating instances of `ImageWriter`
+ * based on the file format of the provided path. It automatically selects the appropriate
+ * `ImageWriter` implementation for the specified format.
+ *
+ * <h4>Example Usage</h4>
+ *
+ * \code
+ * tl::Path outputPath("output.tif");
+ * auto writer = ImageWriterFactory::create(outputPath);
+ * writer->open();
+ * // Perform writing operations...
+ * writer->close();
+ * \endcode
  */
 class TL_EXPORT ImageWriterFactory
 {
@@ -187,6 +230,12 @@ private:
 
 public:
 
+    /*!
+     * \brief Private constructor to prevent instantiation.
+     *
+     * `ImageWriterFactory` is designed to be used as a static factory and
+     * should not be instantiated.
+     */
     static auto create(const Path &fileName) -> ImageWriter::Ptr;
 };
 
@@ -194,5 +243,3 @@ public:
 
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV
