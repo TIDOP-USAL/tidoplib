@@ -24,7 +24,8 @@
 
 #include "tidop/core/console/command.h"
 
-#include "tidop/core/app.h"
+#include "tidop/core/app/app.h"
+#include "tidop/core/base/split.h"
 #include "tidop/core/console/console.h"
 
 #include <map>

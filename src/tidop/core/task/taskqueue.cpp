@@ -24,7 +24,7 @@
 
 
 #include "tidop/core/task/taskqueue.h"
-#include "tidop/core/progress.h"
+#include "tidop/core/task/progress.h"
 
 namespace tl
 {

@@ -25,7 +25,7 @@
 #pragma once
 
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/polygon.h"
 #include "tidop/math/algebra/rotation_matrix.h"

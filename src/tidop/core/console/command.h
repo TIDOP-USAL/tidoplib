@@ -30,24 +30,18 @@
 #include <list>
 #include <memory>
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/core/console/argument.h"
-#include "tidop/core/licence.h"
-#include "tidop/core/msg/message.h"
+#include "tidop/core/app/licence.h"
+#include "tidop/core/app/message.h"
 
 namespace tl
 {
 
 
-
-/*! \addtogroup core
- *  \{
- */
-
 /*! \addtogroup Console
  *  \{
  */
-
 
 
 /*!
@@ -128,33 +122,69 @@ private:
 public:
 
     /*!
-     * \brief Constructor
+     * \brief Default constructor.
+     *
+     * Initializes a new instance of the `Command` class with no name, description,
+     * or arguments. This constructor is primarily useful when the command details
+     * will be set up later.
      */
     Command();
 
     /*!
-     * \brief Copy constructor
+     * \brief Copy constructor.
+     *
+     * Creates a new instance of the `Command` class by copying the state of an
+     * existing `Command` object.
+     *
+     * \param[in] command The `Command` object to copy.
      */
     Command(const Command &command);
 
-	/*!
-     * \brief Move constructor
+    /*!
+     * \brief Move constructor.
+     *
+     * Creates a new instance of the `Command` class by transferring ownership
+     * of resources from another `Command` object.
+     *
+     * \param[in] command The `Command` object to move.
      */
     Command(Command &&command) TL_NOEXCEPT;
 
     /*!
-     * \brief Constructor
-     * \param[in] name Command name
-     * \param[in] description Command description
+     * \brief Constructor with name and description.
+     *
+     * Initializes a new instance of the `Command` class with the specified
+     * command name and description. This is useful for defining the basic
+     * properties of the command.
+     *
+     * \param[in] name The name of the command.
+     * \param[in] description A brief description of what the command does.
+     *
+     * Example usage:
+     * \code
+     * Command cmd("convert", "Converts files between formats");
+     * \endcode
      */
     Command(std::string name,
             std::string description);
 
     /*!
-     * \brief Constructor with argument list
-     * \param[in] name Command name
-     * \param[in] description Command description
-     * \param[in] arguments Argument list
+     * \brief Constructor with name, description, and arguments.
+     *
+     * Initializes a new instance of the `Command` class with the specified
+     * command name, description, and a list of predefined arguments.
+     *
+     * \param[in] name The name of the command.
+     * \param[in] description A brief description of what the command does.
+     * \param[in] arguments An initializer list of arguments for the command.
+     *
+     * Example usage:
+     * \code
+     * Command cmd("process", "Processes input files", {
+     *     Argument::make<std::string>("input", 'i', "Input file"),
+     *     Argument::make<bool>("verbose", 'v', "Enable verbose output", false)
+     * });
+     * \endcode
      */
     Command(std::string name,
             std::string description,
@@ -175,34 +205,58 @@ public:
     auto setName(const std::string &name) -> void;
 
     /*!
-     * \brief Returns the description of the command
-     * \return Command description
+     * \brief Returns the description of the command.
+     *
+     * Retrieves the description associated with the command. The description
+     * provides a short explanation of what the command does and is often displayed
+     * in help messages or when the user requests information about the command.
+     *
+     * \return The description of the command as a string.
      */
     auto description() const -> std::string;
 
     /*!
-     * \brief Sets the description of the command
-     * \param[in] description Command description
+     * \brief Sets the description of the command.
+     *
+     * Allows setting or updating the description of the command for this `Command` object.
+     * The description is used to explain the purpose of the command and is typically
+     * displayed in help or documentation outputs.
+     *
+     * \param[in] description The description to assign to the command.
      */
     auto setDescription(const std::string &description) -> void;
 
     /*!
-     * \brief Program version
-     * \return
+     * \brief Returns the version of the program.
+     *
+     * Retrieves the version of the program associated with the command. This version
+     * is typically displayed when the user requests version information with the `--version` argument.
+     *
+     * \return The program's version as a string.
      */
     auto version() const -> std::string;
 
     /*!
-     * \brief Sets the program version
-     * \param[in] version Program version
+     * \brief Sets the program version.
+     *
+     * Allows setting or updating the version information for the program. This version
+     * is shown when the user enters the `--version` argument.
+     *
+     * \param[in] version The version string to assign to the program.
      */
     auto setVersion(const std::string &version) -> void;
 
     /*!
-     * \brief Parse the input arguments
-     * \param[in] argc
-     * \param[in] argv
-     * \return Returns Status::parse_error in case of error and Status::parse_success when the parse was successful.
+     * \brief Parse the input arguments.
+     *
+     * Parses the command line arguments passed to the program, checking for errors
+     * and processing the provided values. The method returns `Status::parse_error`
+     * if there is an error in the arguments, or `Status::parse_success` if parsing was successful.
+     *
+     * \param[in] argc The number of arguments passed to the program.
+     * \param[in] argv The array of arguments passed to the program.
+     * \return Returns `Status::parse_error` in case of an error, and `Status::parse_success`
+     *         when the parsing was successful.
      * \see Status
      */
     auto parse(int argc, char **argv) -> Status;
@@ -212,13 +266,67 @@ public:
     auto end() TL_NOEXCEPT -> iterator;
     auto end() const TL_NOEXCEPT -> const_iterator;
 
-
+    /*!
+     * \brief Adds an argument to the command
+     *
+     * This method adds a shared pointer to an existing `Argument` object to the command.
+     * It is used to add arguments to the command, allowing the user to specify command-line
+     * parameters and their associated behavior.
+     *
+     * \param[in] argument A shared pointer to the `Argument` object to be added.
+     */
     auto push_back(const Argument::SharedPtr &argument) -> void;
+
+    /*!
+     * \brief Adds an argument to the command
+     *
+     * This method adds an argument to the command using a shared pointer to an `Argument`.
+     * It allows chaining multiple arguments to the command for processing in the command line.
+     *
+     * \param[in] argument A shared pointer to the `Argument` object to be added.
+     * \return The current `Command` object, allowing for method chaining.
+     */
     auto addArgument(const Argument::SharedPtr &argument) -> Command &;
 
+    /*!
+     * \brief Adds an argument to the command (move version)
+     *
+     * This method adds a shared pointer to an `Argument` object (moved) to the command.
+     * It is used to add arguments to the command while transferring ownership of the argument.
+     *
+     * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
+     */
     auto push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
+
+    /*!
+     * \brief Adds an argument to the command (move version)
+     *
+     * This method adds an argument to the command using a shared pointer to an `Argument`
+     * (moved). It enables efficient argument management and allows for argument addition
+     * via move semantics.
+     *
+     * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
+     * \return The current `Command` object, allowing for method chaining.
+     */
     auto addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &;
 
+    /*!
+     * \brief Adds a typed argument to the command
+     *
+     * This template method allows adding an argument with a specific type to the command.
+     * The argument is created and added directly to the list of arguments associated with
+     * the command. It simplifies adding arguments by eliminating the need to create the
+     * argument object separately.
+     *
+     * \param[in] arg... The arguments required to construct an `Argument` of the specified type.
+     * \return The current `Command` object, allowing for method chaining.
+     *
+     * Example usage:
+     * \code
+     * cmd.addArgument<std::string>("file", 'f', "File path");
+     * cmd.addArgument<int>("skip", 's', "Number of lines to skip");
+     * \endcode
+     */
     template<typename type, typename... Arg>
     auto addArgument(Arg&&... arg) TL_NOEXCEPT -> Command&
     {
@@ -226,6 +334,22 @@ public:
         return *this;
     }
 
+    /*!
+     * \brief Adds a boolean option to the command
+     *
+     * This template method allows adding an option with a boolean type to the command.
+     * It is useful for adding flags or options that represent true/false states.
+     * The option is created and added directly to the list of arguments associated with
+     * the command.
+     *
+     * \param[in] arg... The arguments required to construct the `Argument` as a boolean option.
+     * \return The current `Command` object, allowing for method chaining.
+     *
+     * Example usage:
+     * \code
+     * cmd.addOption("verbose", 'v', "Enable verbose output");
+     * \endcode
+     */
     template<typename... Arg>
     auto addOption(Arg&&... arg) TL_NOEXCEPT -> Command &
     {
@@ -235,16 +359,32 @@ public:
 
     /*!
      * \brief Removes arguments
+     *
+     * This method removes all arguments that have been added to the `Command` object.
+     * After calling this method, the command will have no arguments, and any
+     * previously added arguments will be cleared.
+     *
+     * \note This operation is irreversible, and the arguments will be lost once cleared.
      */
     auto clear() TL_NOEXCEPT -> void;
 
     /*!
      * \brief Check if there are no arguments
+     *
+     * This method checks if the `Command` object has any arguments. It returns `true`
+     * if no arguments have been added, and `false` otherwise.
+     *
+     * \return `true` if there are no arguments, `false` if there are one or more arguments.
      */
     auto empty() const TL_NOEXCEPT -> bool;
 
     /*!
      * \brief Returns the number of arguments
+     *
+     * This method returns the number of arguments that have been added to the `Command`
+     * object. It provides the count of arguments currently present.
+     *
+     * \return The number of arguments added to the command.
      */
     auto size() const TL_NOEXCEPT -> size_t;
 
@@ -260,31 +400,75 @@ public:
 
     /*!
      * \brief Removes the interval
+     *
+     * This method removes a range of arguments from the command's argument list,
+     * specified by the iterators `first` and `last`.
+     *
+     * \param[in] first The iterator pointing to the first argument to remove.
+     * \param[in] last The iterator pointing to one past the last argument to remove.
+     * \return An iterator pointing to the first element that remains after the removal.
      */
     auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
      * \brief Displays help in the console
+     *
+     * This method outputs the help information to the console, typically including
+     * a description of the command, its arguments, and usage instructions.
+     * It can be triggered by the `--help` or `-h` argument.
      */
     auto showHelp() const -> void;
 
     /*!
      * \brief Displays the version in the console
+     *
+     * This method shows the current version of the command-line application
+     * in the console. It can be triggered by the `--version` argument.
+     *
+     * \note The short form `-v` is not used for the version argument.
      */
     auto showVersion() const -> void;
 
     /*!
      * \brief Display the licence on the console
+     *
+     * This method outputs the license information for the command-line application
+     * to the console. It can be triggered by the `--licence` argument.
      */
     auto showLicence() const -> void;
 
     /*!
      * \brief Add an example of how to use the command
-     * \param[in] example Example of use
+     *
+     * This method allows adding an example of how to use the command.
+     * It provides users with clear instructions on how to invoke the command
+     * along with its arguments, making it easier to understand its usage.
+     *
+     * \param[in] example Example of usage in string format, showing how the command should be used with arguments.
+     * \return Reference to the Command object to allow method chaining.
      */
     auto addExample(const std::string &example) -> Command &;
 
+    /*!
+     * \brief Enables log level selection for the command
+     *
+     * This method allows the command to activate the log level selection feature.
+     * Once enabled, you can set different log levels (e.g., ERROR, WARNING, INFO, SUCCESS, etc.)
+     * for the command's output messages. This functionality works independently
+     * of whether logging to a file is enabled.
+     *
+     * When active, the log level can be specified as a command-line argument using
+     * the "log_level" parameter.
+     */
     void enableLogLevel();
+
+    /*!
+     * \brief Enables logging to a file for the command
+     *
+     * This method enables logging to a file by setting the log file's path using the "log" argument.
+     * Once activated, the command will log output messages to the specified log file.
+     *
+     */
     void enableLog();
 
     /*!
@@ -312,9 +496,24 @@ public:
 
     /*!
      * \brief Returns the argument value from its name
-     * If the argument does not exist, an exception is returned.
-     * \param[in] name Argument name
-     * \return Argument
+     *
+     * This method retrieves the value of an argument based on its name. If the argument
+     * does not exist, an exception is thrown. The value is returned in the specified type.
+     *
+     * \param[in] name Argument name, the string that identifies the argument.
+     * \return The value of the argument of type T.
+     * \throws std::exception if the argument with the given name does not exist.
+     *
+     *
+     * Example usage:
+     * \code
+     * Command cmd("read", "Read file");
+     * cmd.addArgument<Path>("file", 'f', "File to read");
+     * Command::Status status = cmd.parse(argc, argv);
+     * if (status == Command::Status::parse_success){
+     *     auto file = cmd.value<Path>("file");
+     * }
+     * \endcode
      */
     template<typename T>
     auto value(const std::string &name) const -> T
@@ -334,9 +533,25 @@ public:
 
     /*!
      * \brief Returns the argument value from its short name
-     * If the argument does not exist, an exception is returned.
-     * \param[in] shortName Argument short name
-     * \return Argument
+     *
+     * This method retrieves the value of an argument based on its short name. If the argument
+     * does not exist, an exception is thrown. The value is returned in the specified type.
+     *
+     * \param[in] shortName Argument short name, the single character that identifies the argument.
+     * \return The value of the argument of type T.
+     * \throws std::exception if the argument with the given short name does not exist.
+     *
+     * \note The argument must have been previously added to the command with a matching short name.
+     *
+     * Example usage:
+     * \code
+     * Command cmd("read", "Read file");
+     * cmd.addArgument<Path>("file", 'f', "File to read");
+     * Command::Status status = cmd.parse(argc, argv);
+     * if (status == Command::Status::parse_success){
+     *     auto file = cmd.value<Path>('f');
+     * }
+     * \endcode
      */
     template<typename T>
     auto value(const char &shortName) const -> T
@@ -379,10 +594,61 @@ protected:
 
 
 
-/* ---------------------------------------------------------------------------------- */
 
 
 
+/*!
+ * \class CommandList
+ * \brief Represents a collection of commands for command-line interfaces.
+ *
+ * The `CommandList` class is designed to manage a list of commands, enabling applications 
+ * to parse and execute multiple related commands. Each command can have its own arguments 
+ * and functionalities, allowing for complex and hierarchical command structures.
+ *
+ * ### Example
+ * ```cpp
+ * #include <iostream>
+ * #include "tidop/core/console/command.h"
+ * 
+ * int main(int argc, char **argv)
+ * {
+ *     // Define arguments for translation command
+ *     auto arg_compute = Argument::make<bool>("compute", "Calculates the transformation from two point lists", false);
+ *     auto arg_transform = Argument::make<bool>("transform", "Applies the transformation to a point list", true);
+ *     auto arg_tx = Argument::make<double>("tx", "Translation in X", 0.0);
+ *     auto arg_ty = Argument::make<double>("ty", "Translation in Y", 0.0);
+ * 
+ *     // Create a translation command
+ *     auto cmd_translation = Command::create("Translation", "Translation transform", {
+ *         arg_compute,
+ *         arg_transform,
+ *         arg_tx,
+ *         arg_ty
+ *     });
+ * 
+ *     // Define arguments for rotation command
+ *     auto arg_rotation = Argument::make<double>("rotation", "Rotation angle", 0.0);
+ *     auto cmd_rotation = Command::create("Rotation", "Rotation transform");
+ *     cmd_rotation->addArgument(arg_compute);
+ *     cmd_rotation->addArgument(arg_transform);
+ *     cmd_rotation->addArgument(arg_rotation);
+ * 
+ *     // Create a command list for transformations
+ *     CommandList cmd_list_transform("transform", "Transforms a list of points according to the specified transformation");
+ *     cmd_list_transform.addCommand(cmd_translation);
+ *     cmd_list_transform.addCommand(cmd_rotation);
+ * 
+ *     // Parse and execute the command list
+ *     auto status = cmd_list_transform.parse(argc, argv);
+ * 
+ *     if (status == Command::Status::parse_success) {
+ *         std::cout << "Command parsed successfully!" << std::endl;
+ *     } else {
+ *         std::cerr << "Error parsing command!" << std::endl;
+ *     }
+ * }
+ * ```
+ */
 class TL_EXPORT CommandList
 {
 
@@ -410,14 +676,14 @@ private:
 public:
 
     /*!
-     * \brief Constructor
+     * \brief Default constructor.
      */
     CommandList();
 
     /*!
-     * \brief Constructor
-     * \param[in] name Command name
-     * \param[in] description Command description
+     * \brief Constructor with name and description.
+     * \param[in] name The name of the command list.
+     * \param[in] description The description of the command list.
      */
     CommandList(std::string name,
                 std::string description);
@@ -433,10 +699,10 @@ public:
     CommandList(CommandList &&commandList) TL_NOEXCEPT;
 
     /*!
-     * \brief Constructor with argument list
-     * \param[in] name Command name
-     * \param[in] description Command description
-     * \param[in] commands Argument list
+     * \brief Constructor with an initializer list of commands.
+     * \param[in] name The name of the command list.
+     * \param[in] description The description of the command list.
+     * \param[in] commands An initializer list of commands to add to the list.
      */
     CommandList(std::string name,
                 std::string description,
@@ -445,47 +711,46 @@ public:
     ~CommandList() = default;
 
     /*!
-     * \brief Returns the name of the command
-     * \return Command name
+     * \brief Retrieves the name of the command list.
+     * \return The name of the command list.
      */
     auto name() const -> std::string;
 
     /*!
-     * \brief Sets the name of the command
-     * \param[in] name Command name
+     * \brief Sets the name of the command list.
+     * \param[in] name The new name for the command list.
      */
     auto setName(const std::string &name) -> void;
 
     /*!
-     * \brief Returns the description of the command
-     * \return Command description
+     * \brief Retrieves the description of the command list.
+     * \return The description of the command list.
      */
     auto description() const -> std::string;
 
     /*!
-     * \brief Sets the description of the command
-     * \param[in] description Command description
+     * \brief Sets the description of the command list.
+     * \param[in] description The new description for the command list.
      */
     auto setDescription(const std::string &description) -> void;
 
     /*!
-     * \brief Program version
-     * \return
+     * \brief Retrieves the version of the program.
+     * \return The program version.
      */
     auto version() const -> std::string;
 
     /*!
-     * \brief Sets the program version
-     * \param[in] version Program version
+     * \brief Sets the program version.
+     * \param[in] version The new program version.
      */
     auto setVersion(const std::string &version) -> void;
 
     /*!
-     * \brief Parse the input arguments
-     * \param[in] argc
-     * \param[in] argv
-     * \return Returns Command::Status::parse_error in case of error and Command::Status::parse_success when the parse was successful.
-     * \see Command::Status
+     * \brief Parses input arguments for the command list.
+     * \param[in] argc Number of arguments.
+     * \param[in] argv Array of argument strings.
+     * \return The parsing status (`Command::Status::parse_success` or `Command::Status::parse_error`).
      */
     auto parse(int argc, char **argv) -> Command::Status;
 
@@ -494,11 +759,28 @@ public:
     auto end() TL_NOEXCEPT -> iterator;
     auto end() const TL_NOEXCEPT -> const_iterator;
 
-
+    /*!
+     * \brief Adds a command to the list.
+     * \param[in] command A shared pointer to the command to add.
+     */
     auto push_back(const Command::SharedPtr &command) -> void;
+
+    /*!
+     * \brief Adds a command to the list.
+     * \param[in] command A shared pointer to the command to add.
+     */
     auto addCommand(const Command::SharedPtr &command) -> CommandList &;
 
+    /*!
+     * \brief Adds a command to the list (move semantics).
+     * \param[in] command A shared pointer to the command to move into the list.
+     */
     auto push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void;
+
+    /*!
+     * \brief Adds a command to the list (move semantics).
+     * \param[in] command A shared pointer to the command to move into the list.
+     */
     auto addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> CommandList &;
 
     /*!
@@ -507,12 +789,14 @@ public:
     auto clear() TL_NOEXCEPT -> void;
 
     /*!
-     * \brief Check if there are no commands
+     * \brief Checks if the command list is empty.
+     * \return True if the command list is empty, false otherwise.
      */
     auto empty() const TL_NOEXCEPT -> bool;
 
     /*!
-     * \brief Returns the number of commands
+     * \brief Returns the number of commands in the list.
+     * \return The size of the command list.
      */
     auto size() const TL_NOEXCEPT -> size_type;
 
@@ -525,31 +809,30 @@ public:
     auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
-     * \brief Displays help in the console
+     * \brief Displays the help text for the command list.
      */
     auto showHelp() const -> void;
 
     /*!
-     * \brief Displays the version in the console
+     * \brief Displays the version information.
      */
     auto showVersion() const -> void;
 
     /*!
-     * \brief Display the licence on the console
+     * \brief Displays the license information.
      */
     auto showLicence() const -> void;
 
     /*!
-     * \brief Displays the name of the command parsed
+     * \brief Retrieves the name of the command currently being parsed.
+     * \return The command name.
      */
     auto commandName() const -> std::string;
 
 };
 
 
-/*! \} */ // end of Console
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

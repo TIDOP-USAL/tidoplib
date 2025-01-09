@@ -1,8 +1,7 @@
 #include "ASCIIReader.h"
 
-#include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
-
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/split.h"
 #include "tidop/viewer/group/PointCloud.h"
 
 namespace tl

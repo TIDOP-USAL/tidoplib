@@ -30,49 +30,49 @@
 using namespace tl;
 
 class Task1
-  : public TaskBase
+    : public TaskBase
 {
 
 public:
 
-  Task1()
-    : TaskBase()
-  {
-  }
+    Task1()
+        : TaskBase()
+    {
+    }
 
-  ~Task1()
-  {
-  }
+    ~Task1()
+    {
+    }
 
-  size_t count() const
-  {
-    return _count;
-  }
+    size_t count() const
+    {
+        return _count;
+    }
 
-// Heredado vía TaskBase
+    // Heredado vía TaskBase
 
 protected:
 
-  void execute(Progress *progressBar = nullptr) override
-  {
-    _count = 0;
+    void execute(Progress *progressBar = nullptr) override
+    {
+        _count = 0;
 
-    try {
+        try {
 
-      for (size_t i = 0; i < 100; i++) {
-        _count++;
-      }
+            for (size_t i = 0; i < 100; i++) {
+                _count++;
+            }
 
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("");
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("");
+        }
     }
-  }
 
 
 
 private:
 
-  size_t _count{};
+    size_t _count{};
 };
 
 

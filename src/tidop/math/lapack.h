@@ -27,7 +27,7 @@
 
 #ifdef TL_HAVE_OPENBLAS
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/math/math.h"
 
 #include <lapacke.h>

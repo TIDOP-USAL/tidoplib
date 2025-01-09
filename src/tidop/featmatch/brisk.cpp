@@ -24,7 +24,7 @@
 
 #include "brisk.h"
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 
 
 namespace tl

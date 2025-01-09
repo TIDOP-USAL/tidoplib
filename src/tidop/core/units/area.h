@@ -24,33 +24,16 @@
 
 #pragma once
 
-
-#include <fmt/core.h>
-
-#include "tidop/core/flags.h"
-#include "tidop/core/units/si.h"
-#include "tidop/core/units/imperial.h"
+#include "tidop/core/base/flags.h"
+#include "tidop/core/base/common.h"
 
 namespace tl
 {
 
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_square_deca = static_cast<T>(si::square_metre / si::square_decametre);
+constexpr enableIfFloating<T, T> square_metre_to_acres = static_cast<T>(1. / 4046.86);
 template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_square_deca = static_cast<T>(si::square_decametre);
-template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_square_hecto = static_cast<T>(si::square_metre / si::square_hectometre);
-template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_square_hecto = static_cast<T>(si::square_hectometre);
-template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> to_square_kilo = static_cast<T>(si::square_metre / si::square_kilometre);
-template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> from_square_kilo = static_cast<T>(si::square_kilometre);
-
-template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> square_metre_to_acres = static_cast<T>(1. / 4046.86);
-template<typename T>
-constexpr std::enable_if_t<std::is_floating_point<T>::value, T> acre_to_square_metres = static_cast<T>(4046.86);
+constexpr enableIfFloating<T, T> acre_to_square_metres = static_cast<T>(4046.86);
 
 
 class AreaConverter
@@ -58,21 +41,26 @@ class AreaConverter
 
 private:
 
+    /*!
+     * \brief Enum for unit systems
+     */
     enum System
     {
-        si = (1 << 20),
-        imperial = (1 << 21),
+        si = (1 << 20),         /*!< Metric system */
+        imperial = (1 << 21),   /*!< Imperial system */
     };
+
 
     enum AreaUnits
     {
-        square_metre = (0 << 0),
-        square_decametre = (1 << 0),
-        square_hectometre = (1 << 2),
-        square_kilometre = (1 << 3),
-        acre = (1 << 4),
-        square_yard = (1 << 5),
-        square_foot = (1 << 6)
+        square_metre = (0 << 0),       /*!< Base unit for metric */
+        square_decametre = (1 << 0),   /*!< 100 square meters */
+        square_hectometre = (1 << 2),  /*!< 10000 square meters */
+        square_kilometre = (1 << 3),   /*!< 1000000 square meters */
+        acre = (1 << 4),               /*!< Base unit for imperial */
+        square_yard = (1 << 5),        /*!< 0.8361 square meters */
+        square_foot = (1 << 6),        /*!< 0.09290 square meters */
+        hectare = square_hectometre    /*!< 10000 square meters */
     };
 
 public:
@@ -90,125 +78,9 @@ public:
 
 public:
 
-    static auto convert(double length, Units in, Units out) -> double
-    {
-        EnumFlags<Units> input_unit(in);
-        EnumFlags<Units> output_unit(out);
-
-        if (input_unit.flags() == output_unit.flags()) {
-            return length;
-        }
-
-        double convert_factor = convertFactorToBaseUnit(in);
-
-        if (input_unit.isEnabled(static_cast<Units>(System::si)) && 
-            output_unit.isEnabled(static_cast<Units>(System::imperial))) {
-
-            convert_factor *= square_metre_to_acres<double>;
-
-        } else if (input_unit.isEnabled(static_cast<Units>(System::imperial)) &&
-                   output_unit.isEnabled(static_cast<Units>(System::si))){
-
-            convert_factor *= acre_to_square_metres<double>;
-
-        }
-
-        convert_factor *= convertFactorFromBaseUnit(out);
-
-        return length * convert_factor;
-    }
-
-    static auto convertFactorToBaseUnit(Units unit) -> double
-    {
-        EnumFlags<Units> flags(unit);
-
-        double convert_factor = 1.;
-
-        if (flags.isEnabled(static_cast<Units>(System::si))) {
-
-            switch (unit) {
-            case Units::square_metre:
-                convert_factor = 1.;
-                break;
-            case Units::square_decametre:
-                convert_factor = from_deci<double>;
-                break;
-            case Units::square_hectometre:
-                convert_factor = from_centi<double>;
-                break;
-            case Units::square_kilometre:
-                convert_factor = from_milli<double>;
-                break;
-            default: 
-                convert_factor = 1.;
-            }
-
-        } else if (flags.isEnabled(static_cast<Units>(System::imperial))) {
-
-            switch (unit) {
-            case Units::acre:
-                convert_factor = 1.;
-                break;
-            case Units::square_yard:
-                convert_factor = from_square_yard<double>;
-                break;
-            case Units::square_foot:
-                convert_factor = from_square_foot<double>;
-                break;
-            default:
-                convert_factor = 1.;
-            }
-
-        }
-
-        return convert_factor;
-    }
-
-    static auto convertFactorFromBaseUnit(Units unit) -> double
-    {
-        EnumFlags<Units> flags(unit);
-
-        double convert_factor = 1.;
-
-        if (flags.isEnabled(static_cast<Units>(System::si))) {
-
-            switch (unit) {
-            case Units::square_metre:
-                convert_factor = 1.;
-                break;
-            case Units::square_decametre:
-                convert_factor = to_deci<double>;
-                break;
-            case Units::square_hectometre:
-                convert_factor = to_centi<double>;
-                break;
-            case Units::square_kilometre:
-                convert_factor = to_milli<double>;
-                break;
-            default:
-                convert_factor = 1.;
-            }
-
-        } else if (flags.isEnabled(static_cast<Units>(System::imperial))) {
-
-            switch (unit) {
-            case Units::acre:
-                convert_factor = 1.;
-                break;
-            case Units::square_yard:
-                convert_factor = to_square_yard<double>;
-                break;
-            case Units::square_foot:
-                convert_factor = to_square_foot<double>;
-                break;
-            default:
-                convert_factor = 1.;
-            }
-
-        }
-
-        return convert_factor;
-    }
+    static auto convert(double length, Units in, Units out) -> double;
+    static auto convertFactorToBaseUnit(Units unit) -> double;
+    static auto convertFactorFromBaseUnit(Units unit) -> double;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(AreaConverter::Units)

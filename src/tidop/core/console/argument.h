@@ -30,17 +30,14 @@
 #include <string>
 #include <memory>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
-#include "tidop/core/path.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/path.h"
+#include "tidop/core/base/type_conversions.h"
 #include "tidop/core/console/validator.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {
-
-/*! \addtogroup core
- *  \{
- */
 
 /*! \addtogroup Console
  *  \{
@@ -50,13 +47,85 @@ template <typename T> class Argument_;
 
 
 /*!
- * \brief The Argument class
+ * \class Argument
+ * \brief Represents a command-line argument with associated metadata and validation.
+ *
+ * The `Argument` class is an abstraction for command-line arguments. It allows
+ * you to define arguments with a name, short name, description, type, and an optional validator.
+ * This class supports both mandatory and optional arguments, with the ability to validate
+ * and parse their values from strings.
+ *
+ * ### Features
+ * - **Metadata**: Name, short name, description, and type for each argument.
+ * - **Validation**: Validate argument values using custom validators.
+ * - **Dynamic Typing**: Supports various argument types such as integers, floating-point numbers, strings, and more.
+ * - **Extensibility**: Derived classes can implement specific behavior, including mandatory checks, type names, and value parsing.
+ *
+ * ### Argument Types
+ * The `Type` enum defines the supported types for arguments:
+ * - Boolean (`arg_bool`)
+ * - Integer types (`arg_int8`, `arg_uint8`, etc.)
+ * - Floating-point types (`arg_float32`, `arg_float64`)
+ * - String types (`arg_string`, `arg_path`)
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * auto input = Argument::make<std::string>("input", "Path to the input file");
+ * auto option = Argument::make<int>("option", 'o', "Optional parameter", false);
+ * \endcode
+ *
+ * ### Notes
+ * This class is designed to be subclassed to provide specific argument behaviors. Subclasses
+ * must implement the following pure virtual methods:
+ * - `typeName()`: Returns a string representation of the argument's type.
+ * - `isRequired()`: Indicates if the argument is mandatory.
+ * - `fromString()`: Parses the argument's value from a string.
+ * - `isValid()`: Validates the argument's value.
+ *
+ * ### See Also
+ * - `Validator`: For defining custom validation logic.
+ * - `Argument_<T>`: Template subclass for typed arguments.
  */
 class TL_EXPORT Argument
 {
 
 public:
 
+    /*!
+     * \enum Argument::Type
+     * \brief Defines the data types supported by an Argument.
+     *
+     * The `Type` enumeration specifies the types of values that an `Argument` can represent.
+     * It includes standard primitive types, strings, and file paths, along with aliases
+     * for better readability and compatibility with different programming contexts.
+     *
+     * ### Enumerators
+     * - `arg_unknown`: Represents an unknown or unspecified type.
+     * - `arg_bool`: Represents a boolean value (`true` or `false`).
+     * - `arg_int8`: Represents an 8-bit signed integer.
+     * - `arg_uint8`: Represents an 8-bit unsigned integer.
+     * - `arg_int16`: Represents a 16-bit signed integer.
+     * - `arg_uint16`: Represents a 16-bit unsigned integer.
+     * - `arg_int32`: Represents a 32-bit signed integer.
+     * - `arg_uint32`: Represents a 32-bit unsigned integer.
+     * - `arg_int64`: Represents a 64-bit signed integer.
+     * - `arg_uint64`: Represents a 64-bit unsigned integer.
+     * - `arg_float32`: Represents a 32-bit floating-point number.
+     * - `arg_float64`: Represents a 64-bit floating-point number (double precision).
+     * - `arg_string`: Represents a string.
+     * - `arg_path`: Represents a file path or directory path.
+     *
+     * ### Aliases
+     * - `arg_char`: Alias for `arg_int8` (character as an 8-bit signed integer).
+     * - `arg_uchar`: Alias for `arg_uint8` (character as an 8-bit unsigned integer).
+     * - `arg_short`: Alias for `arg_int16` (short integer).
+     * - `arg_ushort`: Alias for `arg_uint16` (unsigned short integer).
+     * - `arg_int`: Alias for `arg_int32` (standard signed integer).
+     * - `arg_uint`: Alias for `arg_uin32` (unsigned integer).
+     * - `arg_float`: Alias for `arg_float32` (standard single-precision floating-point number).
+     * - `arg_double`: Alias for `arg_float64` (double-precision floating-point number).
+     *
+     */
     enum class Type
     {
         arg_unknown,
@@ -66,7 +135,7 @@ public:
         arg_int16,
         arg_uint16,
         arg_int32,
-        arg_uin32,
+        arg_uint32,
         arg_int64,
         arg_uint64,
         arg_float32,
@@ -78,7 +147,7 @@ public:
         arg_short = arg_int16,
         arg_ushort = arg_uint16,
         arg_int = arg_int32,
-        arg_uint = arg_uin32,
+        arg_uint = arg_uint32,
         arg_float = arg_float32,
         arg_double = arg_float64
     };
@@ -96,28 +165,33 @@ private:
 public:
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] type Type of the argument
-     * \see Type
+     * \brief Constructs an Argument with a name, description, and type.
+     * \param[in] name Name of the argument.
+     * \param[in] description Description of the argument, explaining its purpose.
+     * \param[in] type Type of the argument, as defined in \ref Argument::Type.
+     * \see Argument::Type
      */
     Argument(std::string name, std::string description, Type type);
 
     /*!
-     * \brief Constructor
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] type Type of the argument
+     * \brief Constructs an Argument with a short name, description, and type.
+     * \param[in] shortName Short, single-character name for the argument.
+     * \param[in] description Description of the argument, explaining its purpose.
+     * \param[in] type Type of the argument, as defined in \ref Argument::Type.
+     *
+     * This constructor is useful for command-line arguments that are commonly referred
+     * to using a single character, such as `-o`.
      */
     Argument(const char &shortName, std::string description, Type type);
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] type Type of the argument
+     * \brief Constructs an Argument with a name, short name, description, and type.
+     * \param[in] name Name of the argument.
+     * \param[in] shortName Short, single-character name for the argument.
+     * \param[in] description Description of the argument, explaining its purpose.
+     * \param[in] type Type of the argument, as defined in \ref Argument::Type.
+     *
+     * This constructor allows defining both a full name and a shorthand for the argument.
      */
     Argument(std::string name, const char &shortName, std::string description, Type type);
 
@@ -223,15 +297,34 @@ public:
     virtual bool isValid() = 0;
 
     /*!
-     * \brief Construct an argument
-     * 
-     * Example of use:
-     * \code
+     * \brief Creates a new argument instance.
+     *
+     * This static method allows the construction of an argument with the specified
+     * type and parameters. It supports both required and optional arguments.
+     *
+     * - **Required arguments**: These do not have a default value and must always
+     *   be provided by the user.
+     * - **Optional arguments**: These include a default value, making them optional
+     *   to specify during usage.
+     *
+     * \tparam T The type of the argument (e.g., `std::string`, `int`, `bool`).
+     * \tparam Arg The variadic template for additional argument parameters.
+     * \param[in] arg Parameters to initialize the argument (e.g., name, description,
+     * short name, and default value for optional arguments).
+     *
+     * \return A shared pointer to the newly created `Argument_<T>` instance.
+     *
+     * Example usage:
+     * \code{.cpp}
+     * // Required argument (must be provided by the user)
      * auto input = Argument::make<std::string>("input", "Input data");
-     * auto option = Argument::make<std::string>("option", 'o', "Option 1", false);
+     *
+     * // Optional argument (default value provided, user can override)
+     * auto option = Argument::make<std::string>("option", 'o', "Option 1", "default_value");
      * \endcode
-     * 
-     * \return
+     *
+     * In the first example, `input` is a required argument because no default value is provided.
+     * In the second example, `option` is an optional argument because it has a default value (`"default_value"`).
      */
     template<typename T, typename... Arg>
     static auto make(Arg&&... arg) -> std::shared_ptr<Argument_<T>>
@@ -243,9 +336,9 @@ public:
 
 
 
-/* ---------------------------------------------------------------------------------- */
 
 
+/// \cond
 
 template<typename T>
 struct ArgTraits
@@ -358,7 +451,7 @@ struct ArgTraits<tl::Path>
     static constexpr auto type_name = "tl::Path";
 };
 
-
+/// \endcond
 
 
 /*!
@@ -600,10 +693,7 @@ auto Argument_<T>::isValid() -> bool
 
 
 
-/*! \} */ // end of Console
-
-/*! \} */ // end of core
-
+/*! \} */
 
 
 
@@ -665,7 +755,7 @@ auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
         case Argument::Type::arg_int32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
             break;
-        case Argument::Type::arg_uin32:
+        case Argument::Type::arg_uint32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
             break;
         case Argument::Type::arg_float32:
@@ -750,8 +840,6 @@ inline auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Pat
 } // namespace internal 
 
 /// \endcond
-
-
 
 
 } // End namespace tl

@@ -33,33 +33,43 @@ namespace tl
 class Progress;
 
 /*!
- * \addtogroup core
+ * \addtogroup Task
  * \{
  */
 
-
+/*!
+ * \class Process
+ * \brief Represents a task that executes an external process.
+ *
+ * The Process class allows the execution of external processes with configurable priorities
+ * and handles platform-specific details for process management.
+ */
 class TL_EXPORT Process
   : public TaskBase
 {
 
 public:
 
+    /*!
+     * \enum Priority
+     * \brief Defines the priority levels for the process execution.
+     */
     enum class Priority
     {
 #ifdef TL_OS_WINDOWS
-        realtime = REALTIME_PRIORITY_CLASS,
-        high = HIGH_PRIORITY_CLASS,
-        above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
-        normal = NORMAL_PRIORITY_CLASS,
-        below_normal = BELOW_NORMAL_PRIORITY_CLASS,
-        idle = IDLE_PRIORITY_CLASS
+        realtime = REALTIME_PRIORITY_CLASS,         /*!< Real-time priority. */
+        high = HIGH_PRIORITY_CLASS,                 /*!< High priority. */
+        above_normal = ABOVE_NORMAL_PRIORITY_CLASS, /*!< Above normal priority. */
+        normal = NORMAL_PRIORITY_CLASS,             /*!< Normal priority. */
+        below_normal = BELOW_NORMAL_PRIORITY_CLASS, /*!< Below normal priority. */
+        idle = IDLE_PRIORITY_CLASS                  /*!< Idle priority. */
 #else 
-        realtime = -20,
-        high = -15,
-        above_normal = -10,
-        normal = 0,
-        below_normal = 10,
-        idle = 19
+        realtime = -20,         /*!< Real-time priority (highest). */
+        high = -15,             /*!< High priority. */
+        above_normal = -10,     /*!< Above normal priority. */
+        normal = 0,             /*!< Normal priority. */
+        below_normal = 10,      /*!< Below normal priority. */
+        idle = 19               /*!< Idle priority (lowest). */
 #endif
     };
 
@@ -77,23 +87,41 @@ private:
 
 public:
 
+    /*!
+     * \brief Constructs a Process object with a command and priority.
+     * \param[in] commandText The command to execute as a process.
+     * \param[in] priority The priority of the process (default: Priority::normal).
+     */
     explicit Process(std::string commandText,
                      Priority priority = Priority::normal);
     ~Process() override;
    
-   
+    /*!
+     * \brief Gets the priority of the process.
+     * \return The priority of the process.
+     */
     auto priority() const -> Priority;
    
     /*!
-     * \brief Establece la prioridad del proceso
-     * \param[in] priority
+     * \brief Sets the priority of the process.
+     * \param[in] priority The new priority level for the process.
      */
     void setPriority(Priority priority);
 
 #ifdef TL_OS_WINDOWS
 private:
 
+    /*!
+     * \brief Formats an error message based on a given error code (Windows only).
+     * \param[in] errorCode The error code to format.
+     * \return A formatted error message as a string.
+     */
     auto formatErrorMsg(unsigned long errorCode) -> std::string;
+
+    /*!
+     * \brief Creates a pipe for interprocess communication (Windows only).
+     * \return True if the pipe was successfully created, otherwise false.
+     */
     auto createPipe() -> bool;
 #endif
 
@@ -106,7 +134,7 @@ private:
 };
 
 
-/*! \} */ // end of core
+/*! \} */
 
 } // End namespace tl
 

@@ -25,12 +25,12 @@
 #pragma once
 
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 #include <memory>
 
 #include "tidop/geospatial/crs.h"
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 

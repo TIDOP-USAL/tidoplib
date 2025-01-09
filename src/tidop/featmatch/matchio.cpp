@@ -24,8 +24,9 @@
 
 #include "matchio.h"
 
-#include "tidop/core/exception.h"
-#include "tidop/core/utils.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/split.h"
 
 #include <fstream>
 
@@ -721,7 +722,7 @@ void passPointsRead(const std::string &fname, std::vector<std::vector<std::pair<
                     std::vector<std::pair<std::string, int>> pass_point;
                     for (size_t i = 1; i < size; i++) {
                         std::string idImage = list[i];
-                        int idx = stringToNumber<int>(list[++i]);
+                        int idx = convertStringTo<int>(list[++i]);
                         pass_point.emplace_back(idImage, idx);
                     }
                     pass_points.push_back(pass_point);

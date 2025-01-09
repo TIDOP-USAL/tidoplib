@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tidop/featmatch/hog.h>
-#include <tidop/geometry/size.h>
+#include <tidop/core/base/size.h>
 
 using namespace tl;
 

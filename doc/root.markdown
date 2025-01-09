@@ -4,7 +4,7 @@ Main Page {#mainpage}
 Modules
 ------------
 
-  - @ref core
+  - @ref Core
     - @ref Console
     - @ref Messages
     - @ref concurrency
@@ -13,8 +13,7 @@ Modules
     - @ref geometry_algorithms
   - @ref geospatial
   - @ref GraphicEntities
-  - @ref raster
-  - @ref ImgProc
+  - @ref RasterTools
 	- @ref Filters
 	- @ref imgTransf
 	- @ref skeleton
@@ -24,7 +23,7 @@ Modules
     - @ref algebra
 	- @ref statistics
 	- @ref angleConversion
-  - @ref vector
+  - @ref VectorTools
 
 
 #### Dependencies

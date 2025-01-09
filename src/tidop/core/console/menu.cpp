@@ -64,6 +64,22 @@ int getche(void)
 }
 #endif // TL_OS_WINDOWS
 
+void clearScreen() {
+#ifdef TL_OS_WINDOWS
+    std::system("cls");
+#else
+    std::system("clear");
+#endif
+}
+
+
+char getKeyPress() {
+#ifdef TL_OS_WINDOWS
+    return static_cast<char>(_getch());
+#else
+    return static_cast<char>(getch());
+#endif
+}
 
 namespace tl
 {
@@ -96,7 +112,8 @@ auto MenuAction::text() const -> std::string
 
 void MenuAction::exec() const
 {
-    system("cls");
+    clearScreen();
+
     funct();
 
     // Aqui devolver el control al menu
@@ -104,18 +121,14 @@ void MenuAction::exec() const
     int ascii_value{};
 
     while (true) {
-#ifdef TL_OS_WINDOWS
-        key_press = static_cast<char>(_getch());
-#else
-        key_press = static_cast<char>(getch());
-#endif
+        key_press = getKeyPress();
         ascii_value = static_cast<int>(key_press);
         if (ascii_value == 27) {
             // For ESC
-            system("cls");
+            clearScreen();
             return;
         } else if (ascii_value == 98) {
-            system("cls");
+            clearScreen();
             return;
         }
     }
@@ -131,6 +144,19 @@ Menu::Menu(std::string title, std::string description)
 {
 }
 
+void Menu::addAction(const MenuAction &action)
+{
+    items.push_back(action.text());
+    actions[static_cast<unsigned int>(items.size())] = action;
+}
+
+void Menu::addMenu(Menu *menu)
+{
+    menu->parent = this;
+    items.push_back(menu->text());
+    subMenus[static_cast<unsigned int>(items.size())] = menu;
+}
+
 void Menu::show() const
 {
     activeOption();
@@ -138,7 +164,7 @@ void Menu::show() const
 
 void Menu::activeOption(unsigned int currentOption) const
 {
-    system("cls");
+    clearScreen();
 
     std::cout << Console::green << "  ====================================================\n";
     std::cout << Console::white << "    " << this->title << "\n";
@@ -148,7 +174,7 @@ void Menu::activeOption(unsigned int currentOption) const
 
     size_t counter = 1;
 
-    for (auto& item : items) {
+    for (const auto& item : items) {
         std::cout << Console::blue << "  > " << Console::green << counter << ". ";
         std::cout << (static_cast<size_t>(currentOption) == counter ? Console::blue : Console::white) << item << "\n";
         counter++;
@@ -159,16 +185,13 @@ void Menu::activeOption(unsigned int currentOption) const
 
     bool change_option = false;
     while (!change_option) {
-#ifdef TL_OS_WINDOWS
-        key_press = static_cast<char>(_getch());
-#else
-        key_press = static_cast<char>(getch());
-#endif
+        key_press = getKeyPress();
         ascii_value = static_cast<int>(key_press);
+
         //std::cout << "\n" << key_press << " -> " << ascii_value << "\n";
         if (ascii_value == 27) {
             // For ESC
-            system("cls");
+            clearScreen();
             return;
         } else if (ascii_value == 80) {
             change_option = true;

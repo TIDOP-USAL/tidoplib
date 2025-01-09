@@ -24,12 +24,15 @@
 
 #include "featio.h"
 
-#include "tidop/core/path.h"
-#include "tidop/core/exception.h"
-#include "tidop/core/utils.h"
+#include "tidop/core/base/path.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/split.h"
+#include "tidop/core/base/type_conversions.h"
 
 #include <utility>
 #include <fstream>
+
 
 namespace tl
 {
@@ -699,33 +702,33 @@ void FeaturesReaderTxt::readBody()
         while (std::getline(ifs, line)) {
 
             std::vector<std::string> list = split<std::string>(line, ' ');
-            keyPoints()[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
-            keyPoints()[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
-            keyPoints()[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
-            keyPoints()[static_cast<size_t>(r)].angle = stringToNumber<float>(list[3]);
+            keyPoints()[static_cast<size_t>(r)].pt.x = convertStringTo<float>(list[0]);
+            keyPoints()[static_cast<size_t>(r)].pt.y = convertStringTo<float>(list[1]);
+            keyPoints()[static_cast<size_t>(r)].size = convertStringTo<float>(list[2]);
+            keyPoints()[static_cast<size_t>(r)].angle = convertStringTo<float>(list[3]);
 
             for (int c = 0; c < mCols; c++) {
                 switch (mType) {
                 case CV_8U:
-                    mDescriptors.at<uchar>(r, c) = static_cast<uchar>(stringToNumber<int>(list[c + 4]));
+                    mDescriptors.at<uchar>(r, c) = static_cast<uchar>(convertStringTo<int>(list[c + 4]));
                     break;
                 case CV_8S:
-                    mDescriptors.at<schar>(r, c) = static_cast<schar>(stringToNumber<int>(list[c + 4]));
+                    mDescriptors.at<schar>(r, c) = static_cast<schar>(convertStringTo<int>(list[c + 4]));
                     break;
                 case CV_16U:
-                    mDescriptors.at<ushort>(r, c) = static_cast<ushort>(stringToNumber<int>(list[c + 4]));
+                    mDescriptors.at<ushort>(r, c) = static_cast<ushort>(convertStringTo<int>(list[c + 4]));
                     break;
                 case CV_16S:
-                    mDescriptors.at<short>(r, c) = static_cast<short>(stringToNumber<int>(list[c + 4]));
+                    mDescriptors.at<short>(r, c) = static_cast<short>(convertStringTo<int>(list[c + 4]));
                     break;
                 case CV_32S:
-                    mDescriptors.at<int>(r, c) = stringToNumber<int>(list[c + 4]);
+                    mDescriptors.at<int>(r, c) = convertStringTo<int>(list[c + 4]);
                     break;
                 case CV_32F:
-                    mDescriptors.at<float>(r, c) = stringToNumber<float>(list[c + 4]);
+                    mDescriptors.at<float>(r, c) = convertStringTo<float>(list[c + 4]);
                     break;
                 case CV_64F:
-                    mDescriptors.at<double>(r, c) = stringToNumber<double>(list[c + 4]);
+                    mDescriptors.at<double>(r, c) = convertStringTo<double>(list[c + 4]);
                     break;
                 default:
                     break;

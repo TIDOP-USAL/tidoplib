@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>

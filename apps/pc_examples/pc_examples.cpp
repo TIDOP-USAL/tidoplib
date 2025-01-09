@@ -16,11 +16,11 @@
 #include <gdal.h>
 #include <ogr_srs_api.h>
 //
-#include <tidop/core/app.h>
+#include <tidop/core/app/app.h>
 #include <tidop/core/console.h>
-#include <tidop/core/msg/message.h>
-#include <tidop/core/path.h>
-#include <tidop/core/log.h>
+#include <tidop/core/app/message.h>
+#include <tidop/core/base/path.h>
+#include <tidop/core/app/log.h>
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/pctools/PointCloudTools.h>
 //#include <tidop/pctools/PointCloudFileManager.h>

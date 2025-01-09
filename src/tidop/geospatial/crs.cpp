@@ -26,7 +26,7 @@
 
 #if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 
 TL_DISABLE_WARNINGS
 #include "ogr_spatialref.h"

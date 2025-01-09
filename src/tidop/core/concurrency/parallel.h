@@ -34,19 +34,14 @@
 #include <future>
 #include <algorithm>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/concurrency.h"
+#include "tidop/core/base/defs.h"
 
 namespace tl
 {
 
 
-/*! \addtogroup core
- *  \{
- */
-
 /*!
- * \defgroup concurrency Concurrency
+ * \addtogroup concurrency
  *
  * \{
  */
@@ -210,9 +205,7 @@ void parallel_for_each_3(Iterator first,
 
 /// \endcond
 
-/*! \} */ // end of concurrency
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

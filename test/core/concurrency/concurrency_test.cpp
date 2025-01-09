@@ -34,41 +34,41 @@ BOOST_AUTO_TEST_SUITE(ConcurrencyTestSuite)
 
 struct ConcurrencyTest
 {
-  ConcurrencyTest()
-  {
-  }
+    ConcurrencyTest()
+    {
+    }
 
-  ~ConcurrencyTest()
-  {
-  }
+    ~ConcurrencyTest()
+    {
+    }
 
-  void setup()
-  {
-    nums = {3, 4, 2, 8, 15, 267};
-    nums2 = {4, 5, 3, 9, 16, 268};
-  }
+    void setup()
+    {
+        nums = {3, 4, 2, 8, 15, 267};
+        nums2 = {4, 5, 3, 9, 16, 268};
+    }
 
-  void teardown()
-  {
+    void teardown()
+    {
 
-  }
+    }
 
-  std::vector<int> nums;
-  std::vector<int> nums2;
+    std::vector<int> nums;
+    std::vector<int> nums2;
 
 };
 
 
 BOOST_FIXTURE_TEST_CASE(parallel_for_test, ConcurrencyTest)
 {
-  std::vector<int> aux(nums.size());
+    std::vector<int> aux(nums.size());
 
-  parallel_for(0, nums.size(), [&](size_t i) {
-    aux[i] = nums[i] + 1;
-  });
+    parallel_for(0, nums.size(), [&](size_t i) {
+        aux[i] = nums[i] + 1;
+        });
 
-  for(size_t i = 0; i < aux.size(); i++)
-    BOOST_CHECK_EQUAL(nums2[i], aux[i]);
+    for (size_t i = 0; i < aux.size(); i++)
+        BOOST_CHECK_EQUAL(nums2[i], aux[i]);
 }
 
 //BOOST_FIXTURE_TEST_CASE(parallel_for_iterator_test, ConcurrencyTest)
@@ -84,18 +84,18 @@ BOOST_FIXTURE_TEST_CASE(parallel_for_test, ConcurrencyTest)
 
 struct Sum
 {
-  void operator()(int n)
-  {
-    sum += n;
-  }
-  int sum{0};
+    void operator()(int n)
+    {
+        sum += n;
+    }
+    int sum{0};
 };
 
 BOOST_FIXTURE_TEST_CASE(parallel_for_each_test, ConcurrencyTest)
 {
-  Sum sum = parallel_for_each(nums.begin(), nums.end(), Sum());
-  
-  BOOST_CHECK_EQUAL(299, sum.sum);
+    Sum sum = parallel_for_each(nums.begin(), nums.end(), Sum());
+
+    BOOST_CHECK_EQUAL(299, sum.sum);
 }
 
 //BOOST_FIXTURE_TEST_CASE(parallel_for_each_2_test, ConcurrencyTest)

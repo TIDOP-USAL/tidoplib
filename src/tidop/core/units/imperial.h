@@ -26,61 +26,65 @@
 
 #include <type_traits>
 
-#include "tidop/core/common.h"
+#include "tidop/core/base/common.h"
 
 namespace tl
 {
 
+/*! \addtogroup Units
+ *  \{
+ */
+
 /* Lenght */
 
 template<typename T>
-constexpr enableIfFloating<T,T> foot_to_inches = static_cast<T>(12);
+constexpr enableIfFloating<T, T> foot_to_inches = static_cast<T>(12); /*!< Factor to convert 1 foot to inches. */
 template<typename T>
-constexpr enableIfFloating<T,T> inch_to_feet = static_cast<T>(1./12.);
+constexpr enableIfFloating<T, T> inch_to_feet = static_cast<T>(1. / 12.); /*!< Factor to convert 1 inch to feet. */
 template<typename T>
-constexpr enableIfFloating<T,T> foot_to_yards = static_cast<T>(1./3.);
+constexpr enableIfFloating<T, T> foot_to_yards = static_cast<T>(1. / 3.); /*!< Factor to convert 1 foot to yards. */
 template<typename T>
-constexpr enableIfFloating<T,T> yard_to_feet = static_cast<T>(3);
+constexpr enableIfFloating<T, T> yard_to_feet = static_cast<T>(3); /*!< Factor to convert 1 yard to feet. */
 template<typename T>
-constexpr enableIfFloating<T,T> foot_to_chains = static_cast<T>(1. / 66.);
+constexpr enableIfFloating<T, T> foot_to_chains = static_cast<T>(1. / 66.);  /*!< Factor to convert 1 foot to chains. */
 template<typename T>
-constexpr enableIfFloating<T,T> chain_to_feet = static_cast<T>(66);
+constexpr enableIfFloating<T, T> chain_to_feet = static_cast<T>(66); /*!< Factor to convert 1 chain to feet. */
 template<typename T>
-constexpr enableIfFloating<T,T> foot_to_furlongs = static_cast<T>(1. / 660.);
+constexpr enableIfFloating<T, T> foot_to_furlongs = static_cast<T>(1. / 660.); /*!< Factor to convert 1 foot to furlongs. */
 template<typename T>
-constexpr enableIfFloating<T,T> furlong_to_feet = static_cast<T>(660);
+constexpr enableIfFloating<T, T> furlong_to_feet = static_cast<T>(660); /*!< Factor to convert 1 furlong to feet. */
 template<typename T>
-constexpr enableIfFloating<T,T> foot_to_mile = static_cast<T>(1. / 5280.);
+constexpr enableIfFloating<T, T> foot_to_mile = static_cast<T>(1. / 5280.); /*!< Factor to convert 1 foot to miles. */
 template<typename T>
-constexpr enableIfFloating<T,T> mile_to_feet = static_cast<T>(5280);
+constexpr enableIfFloating<T, T> mile_to_feet = static_cast<T>(5280); /*!< Factor to convert 1 mile to feet. */
 
 
 /* Mass */
 
 template<typename T>
-constexpr enableIfFloating<T,T> pound_to_ounces = static_cast<T>(16);
+constexpr enableIfFloating<T, T> pound_to_ounces = static_cast<T>(16); /*!< Factor to convert 1 pound to ounces. */
 template<typename T>
-constexpr enableIfFloating<T,T> ounce_to_pounds = static_cast<T>(1. / 16.);
+constexpr enableIfFloating<T, T> ounce_to_pounds = static_cast<T>(1. / 16.); /*!< Factor to convert 1 ounce to pounds. */
 template<typename T>
-constexpr enableIfFloating<T,T> pound_to_grains = static_cast<T>(7000);
+constexpr enableIfFloating<T, T> pound_to_grains = static_cast<T>(7000); /*!< Factor to convert 1 pound to grains. */
 template<typename T>
-constexpr enableIfFloating<T,T> grain_to_pounds = static_cast<T>(1. / 7000.);
+constexpr enableIfFloating<T, T> grain_to_pounds = static_cast<T>(1. / 7000.); /*!< Factor to convert 1 grain to pounds. */
 template<typename T>
-constexpr enableIfFloating<T,T> pound_to_stone = static_cast<T>(1. / 14.);
+constexpr enableIfFloating<T, T> pound_to_stone = static_cast<T>(1. / 14.); /*!< Factor to convert 1 pound to stones. */
 template<typename T>
-constexpr enableIfFloating<T,T> stone_to_pounds = static_cast<T>(14);
+constexpr enableIfFloating<T, T> stone_to_pounds = static_cast<T>(14); /*!< Factor to convert 1 stone to pounds. */
 template<typename T>
-constexpr enableIfFloating<T,T> pound_to_quarter = static_cast<T>(1. / 28.);
+constexpr enableIfFloating<T, T> pound_to_quarter = static_cast<T>(1. / 28.); /*!< Factor to convert 1 pound to quarters. */
 template<typename T>
-constexpr enableIfFloating<T,T> quarter_to_pounds = static_cast<T>(28);
+constexpr enableIfFloating<T, T> quarter_to_pounds = static_cast<T>(28); /*!< Factor to convert 1 quarter to pounds. */
 template<typename T>
-constexpr enableIfFloating<T,T> pound_to_hundredweights = static_cast<T>(1. / 112.);
+constexpr enableIfFloating<T, T> pound_to_hundredweights = static_cast<T>(1. / 112.); /*!< Factor to convert 1 pound to hundredweights. */
 template<typename T>
-constexpr enableIfFloating<T,T> hundredweight_to_pounds = static_cast<T>(112);
+constexpr enableIfFloating<T, T> hundredweight_to_pounds = static_cast<T>(112); /*!< Factor to convert 1 hundredweight to pounds. */
 template<typename T>
-constexpr enableIfFloating<T,T> pound_to_ton = static_cast<T>(1. / 2240.);
+constexpr enableIfFloating<T, T> pound_to_ton = static_cast<T>(1. / 2240.); /*!< Factor to convert 1 pound to tons. */
 template<typename T>
-constexpr enableIfFloating<T,T> ton_to_pounds = static_cast<T>(2240);
+constexpr enableIfFloating<T, T> ton_to_pounds = static_cast<T>(2240); /*!< Factor to convert 1 ton to pounds. */
 
 
 /* Area */
@@ -90,12 +94,16 @@ constexpr enableIfFloating<T,T> ton_to_pounds = static_cast<T>(2240);
 //acre – 4046.8564224 square meters
 //square mile - 2589988.110336 square meters
 template<typename T>
-constexpr T to_square_yard = static_cast<T>(1. / 0.836127);
+constexpr T to_square_yard = static_cast<T>(1. / 0.836127); /*!< Factor to convert 1 square meter to square yards. */
 template<typename T>
-constexpr T from_square_yard = static_cast<T>(0.836127);
+constexpr T from_square_yard = static_cast<T>(0.836127); /*!< Factor to convert 1 square yard to square meters. */
 template<typename T>
-constexpr T to_square_foot = static_cast<T>(1. / 0.092903);
+constexpr T to_square_foot = static_cast<T>(1. / 0.092903); /*!< Factor to convert 1 square meter to square feet. */
 template<typename T>
-constexpr T from_square_foot = static_cast<T>(0.092903);
+constexpr T from_square_foot = static_cast<T>(0.092903); /*!< Factor to convert 1 square foot to square meters. */
+
+
+/*! \} */
+
 
 }

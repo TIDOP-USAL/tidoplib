@@ -24,7 +24,7 @@
  
 #include "lss.h"
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 
 #include "lss/lss.h"
 

@@ -24,7 +24,8 @@
 
 #include "robustmatch.h"
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/common.h"
 #include "tidop/featmatch/geomtest.h"
 
 #ifdef HAVE_OPENCV_XFEATURES2D

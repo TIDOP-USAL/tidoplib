@@ -24,7 +24,7 @@
  
 #include "msd.h"
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 
 #include <opencv2/imgproc.hpp>
 

@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
-#include "tidop/core/common.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/common.h"
 #include "tidop/math/simd.h"
 
 namespace tl
@@ -40,7 +40,7 @@ namespace tl
  *  \{
  */
 
-/*! \addtogroup CentralTendency Measures of central tendency
+/*! \addtogroup CentralTendency
  *  \{
  */
 

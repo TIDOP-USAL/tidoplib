@@ -22,7 +22,6 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TEST)
 add_subdirectory(core)
 add_subdirectory(featmatch)
 add_subdirectory(geometry)
@@ -31,5 +30,4 @@ add_subdirectory(GeoTools)
 add_subdirectory(graphic)  
 add_subdirectory(math)
 add_subdirectory(viewer)
-add_subdirectory(vect)
-endif(BUILD_TEST)
+add_subdirectory(vectortools)

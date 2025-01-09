@@ -24,8 +24,9 @@
  
 #define BOOST_TEST_MODULE Tidop utils test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/utils.h>
-#include <tidop/core/exception.h>
+#include <tidop/core/base/string_utils.h>
+#include <tidop/core/base/split.h>
+#include <tidop/core/base/type_conversions.h>
 
 using namespace tl;
 

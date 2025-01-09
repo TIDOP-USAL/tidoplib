@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include "tidop/core/ptr.h"
+#include "tidop/core/base/ptr.h"
 
 
 namespace tl

@@ -28,7 +28,7 @@
 #include <string>
 #include <cctype>
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 
 //#include "CRSsToolsDefinitions.h"
 #include "CRSsUtils.h"

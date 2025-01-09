@@ -26,9 +26,8 @@
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
-#include "tidop/core/exception.h"
-#include "tidop/core/utils.h"
-#include "tidop/core/concurrency.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/concurrency/parallel.h"
 #include "tidop/math/simd.h"
 #include "tidop/math/blas.h"
 #include "tidop/math/cuda.h"

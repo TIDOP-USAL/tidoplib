@@ -1,0 +1,423 @@
+/*!
+ * \defgroup Core Core
+ * \brief Core modules and utilities for the library.
+ *
+ * The Core module serves as the foundation of the library, providing a wide range 
+ * of essential tools, utilities, and abstractions that enable efficient and organized 
+ * software development.
+ *
+ * Subgroups within the Core module:
+ *
+ * - \ref Base: Fundamental utilities and abstractions for the library. This includes 
+ *   tools for time measurement (\ref Chrono, \ref ChronoAuto), exception handling 
+ *   (\ref Exception), flag manipulation (\ref EnumFlags and \ref Flags), and file path operations (\ref Path).
+ *
+ * - Application Management: Provides classes and utilities for managing application-level 
+ *   tasks. This includes:
+ *   - \ref App: For managing application instances and metadata.
+ *   - \ref Log: For logging messages with different levels of severity.
+ *   - \ref Licence and \ref AppLicence: For managing licensing information for the 
+ *     application and third-party libraries.
+ *   - \ref Message: For emitting and managing application messages, such as debug 
+ *     information, warnings, and errors.
+ *
+ * - Console tools: A suite of tools designed for console-based applications. This includes 
+ *   utilities for handling messages, formatting outputs, and managing console displays.
+ *
+ * - Concurrency: Utilities and abstractions to simplify concurrent programming. This includes 
+ *   thread-safe queues and other tools for managing producer-consumer patterns and thread 
+ *   synchronization.
+ *
+ * - Units: A comprehensive module for handling unit conversions in both the International 
+ *   System of Units (SI) and the Imperial system. This module ensures consistency and accuracy 
+ *   in calculations involving units of measurement.
+ *
+ * - Task: Classes and utilities for defining, managing, and executing tasks. This includes 
+ *   support for task scheduling, progress tracking, and dependency management.
+ */
+ 
+/*!
+ * \defgroup Base Base
+ * \ingroup Core
+ * \brief Fundamental utilities and abstractions for the library. 
+ *
+ * The Base module provides essential classes and utilities that are 
+ * commonly used throughout the library. These include tools for 
+ * time measurement, exception handling, flag manipulation, and 
+ * file path operations. 
+ */ 
+ 
+/*! 
+ * \defgroup StringUtils String Utilities
+ * \ingroup Base
+ * 
+ * This group contains utility functions for manipulating strings. These functions provide operations such as
+ * case-insensitive string comparison, trimming whitespace, replacing substrings, and converting between string
+ * and wide string formats.
+ * 
+ * Functions include:
+ * - `compareInsensitiveCase`: Case-insensitive comparison of two strings.
+ * - `ltrim`, `rtrim`, `trim`: Functions to trim leading, trailing, or both ends of whitespace from a string.
+ * - `ltrim_copy`, `rtrim_copy`, `trim_copy`: Functions that trim whitespace from a string and return a new string.
+ * - `replaceString`: Replaces a substring with another within a string.
+ * - `stringToWString`: Converts a regular string to a wide string.
+ * - `wstringToString`: Converts a wide string to a regular string.
+ * - `split`: Converts a wide string to a regular string.
+ * 
+ */
+ 
+/*!
+ * \defgroup AppManagement Application Management
+ * \ingroup Core
+ * \brief Provides classes for application management, including logging, licensing, and application details.
+ * 
+ * This module contains utilities to manage application information, logging, and licensing.
+ */
+ 
+/*!
+ * \defgroup Console Console tools
+ * \ingroup Core
+ * \brief Tools for console-based applications.
+ *
+ * This module provides utilities to facilitate the development of console mode applications.
+ * It includes tools for handling console appearance, command-line argument parsing, and process feedback 
+ * through progress bars.
+ *
+ */
+
+/*!
+ * \defgroup concurrency Concurrency
+ * \ingroup Core
+ * \brief Utilities to simplify concurrent programming tasks.
+ *
+ * These tools include multi-threaded operations such as `parallel_for` and `parallel_for_each`, 
+ * as well as support for the Producer-Consumer design pattern.
+ * 
+ * <h3>Key Features:</h3>
+ * - **Parallel For Loops**: Iterate over ranges in parallel with custom functions or lambdas.
+ * - **Parallel For Each**: Process collections in parallel using iterators and function objects.
+ * - **Queues for Producer-Consumer**: Specialized `Queue` implementations (`QueueMPMC` and `QueueSPSC`) for multi-threaded workflows.
+ * 
+ * <h3>Examples:</h3>
+ * 
+ * <h4>Parallel For:</h4>
+ * \code
+ * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
+ * std::vector<int> aux(nums.size());
+ *
+ * parallel_for(0, nums.size(), [&](size_t i) {
+ *   aux[i] = nums[i] + 1;
+ * });
+ * \endcode
+ * 
+ * <h4>Parallel For Each:</h4>
+ * \code
+ * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
+ * struct Sum
+ * {
+ *     void operator()(int n)
+ *     {
+ *         sum += n;
+ *     }
+ * 
+ *     int sum{0};
+ * };
+ *
+ * Sum sum = parallel_for_each(nums.begin(), nums.end(), Sum());
+ * std::cout << "Sum: " << sum.sum << std::endl;
+ * \endcode
+ * 
+ * <h4>Producer-Consumer Pattern:</h4>
+ * The following example demonstrates a typical Producer-Consumer workflow 
+ * using `QueueMPMC` and separate producer and consumer threads.
+ * 
+ * \code
+ * #include <iostream>
+ * #include <vector>
+ * #include <thread>
+ * #include "tidop/core/concurrency/producer.h"
+ * #include "tidop/core/concurrency/queue_mpmc.h"
+ *
+ * // Producer class
+ * class IntProducer : public Producer<int>
+ * {
+ * public:
+ *     explicit IntProducer(Queue<int>* queue, int count) 
+ *         : Producer(queue), mCount(count) {}
+ * 
+ *     void operator()() override
+ *     {
+ *         for (int i = 0; i < mCount; ++i) {
+ *             queue()->push(i);
+ *             std::cout << "Produced: " << i << std::endl;
+ *         }
+ *     }
+ * 
+ * private:
+ *     int mCount;
+ * };
+ * 
+ * // Consumer class
+ * class IntConsumer : public Consumer<int>
+ * {
+ * public:
+ *     explicit IntConsumer(Queue<int>* queue, int stopValue)
+ *         : Consumer(queue), mStopValue(stopValue) {}
+ * 
+ *     void operator()() override
+ *     {
+ *         int value;
+ *         while (queue()->pop(value)) {
+ *             if (value == mStopValue) break;
+ *             std::cout << "Consumed: " << value << std::endl;
+ *         }
+ *     }
+ * 
+ * private:
+ *     int mStopValue;
+ * };
+ * 
+ * int main()
+ * {
+ *     constexpr int itemCount = 100;
+ *     QueueMPMC<int> queue;
+ * 
+ *     IntProducer producer(&queue, itemCount);
+ *     IntConsumer consumer(&queue, itemCount - 1);
+ * 
+ *     std::thread producerThread(std::ref(producer));
+ *     std::thread consumerThread(std::ref(consumer));
+ * 
+ *     producerThread.join();
+ *     consumerThread.join();
+ * 
+ *     return 0;
+ * }
+ * \endcode
+ */
+ 
+  
+/*!
+ * \defgroup Units Units
+ * \ingroup Core
+ *
+ * \brief A comprehensive module for handling unit conversions in both the International System of Units (SI) and the Imperial system.
+ *
+ * This module provides tools for converting between various units of measurement. It supports both the SI and Imperial system.
+ *
+ *
+ * ## Classes
+ * ### MassConverter
+ * A class for converting between various mass units in both the SI and Imperial systems. 
+ * Example units include grams, kilograms, pounds, ounces, and tons.
+ *
+ * #### Example:
+ * ```cpp
+ * double weight_in_grams = MassConverter::convert(10, MassConverter::Units::pound, MassConverter::Units::gram);
+ * double weight_in_pounds = MassConverter::convert(1000, MassConverter::Units::gram, MassConverter::Units::pound);
+ * ```
+ *
+ * ### LengthConverter
+ * A class for converting between length units such as meters, feet, miles, and yards. Supports both SI and Imperial systems.
+ *
+ * #### Example:
+ * ```cpp
+ * double length_in_meters = LengthConverter::convert(5280, LengthConverter::Units::foot, LengthConverter::Units::meter);
+ * double length_in_miles = LengthConverter::convert(1000, LengthConverter::Units::meter, LengthConverter::Units::mile);
+ * ```
+ *
+ * ## Constants
+ * The module provides constants for converting between related units:
+ *
+ * ```cpp
+ * // Convert meters to kilometers
+ * double kilometers = length_in_meters * to_kilo<double>;
+ *
+ * // Convert kilometers to meters
+ * double meters = length_in_kilometers * from_kilo<double>;
+ * ```
+ *
+ *
+ */
+ 
+ 
+/*!
+ * \defgroup Task
+ * \brief Task-related classes and functionality.
+ * \ingroup Core
+ *
+ * This module contains classes and utilities for defining, managing, and executing tasks. 
+ * It provides a base `Task` interface, the `TaskBase` class for common functionality, 
+ * and derived task implementations such as task lists, queues, trees, and more.
+ *
+ * The classes in this group are designed to handle task lifecycles, event management, 
+ * multithreading, and other task-related features, enabling flexible and robust task 
+ * execution.
+ *
+ * Key classes in this group:
+ * - Task: Base interface for tasks.
+ * - TaskBase: Abstract base class with shared task management functionality.
+ * - TaskList: Handles a list of tasks executed sequentially.
+ * - TaskQueue: Handles tasks in a queue executed one after another.
+ * - TaskTree: Handles tasks with parent-child dependencies.
+ * - Process: A task implementation for executing external processes.
+ * - Task events (e.g., TaskRunningEvent, TaskErrorEvent): Handle task-related events.
+ */
+
+ 
+ 
+/*!
+ * \defgroup RasterTools Raster Tools
+ * \brief Comprehensive tools and utilities for working with raster data.
+ *
+ * The Raster Tools module provides a robust set of functionalities for reading,
+ * writing, and processing raster-based image data. It is designed to support a wide
+ * range of image processing tasks, from basic file I/O to advanced image manipulation.
+ *
+ * ## Features
+ * - \ref RasterIO "Raster File I/O":
+ *   - Support for common raster file formats, such as GeoTIFF, PNG, and JPEG.
+ *   - Reading and writing of multi-band raster images.
+ *   - Metadata extraction and manipulation for raster datasets.
+ * 
+ * - \ref ImgProc "Image Processing":
+ *   - Application of image filters for enhancement and transformation.
+ *   - Geometric transformations, such as resizing, cropping, and rotation.
+ *   - Morphological operations for image segmentation and object detection.
+ *   - White balance correction to improve image colors.
+ *   - Histogram equalization and contrast adjustment for visual clarity.
+ *
+ */
+
+/*! 
+ * \defgroup RasterIO Raster File I/O
+ * \ingroup RasterTools
+ * 
+ * \brief This module provides functionalities for reading and writing raster data in various formats.
+ * It supports common raster formats as well as geospatial image formats, ensuring efficient handling
+ * of raster images and their associated metadata.
+ * 
+ * Supported formats include:
+ * - **GeoTIFF:** A format for geographic information system (GIS) data, including raster images with geospatial metadata.
+ * - **PNG:** A popular format for lossless image compression, suitable for storing raster graphics.
+ * - **JPEG:** A commonly used format for compressed images, ideal for photographic images.
+ * - **BMP:** A basic image format used for raster graphics.
+ * - **TIFF:** A flexible format often used in geospatial applications, supporting multiple layers and geospatial metadata.
+ * 
+ * Example usage:
+ * \code 
+ * auto image_reader = ImageReaderFactory::create(img);
+ *
+ * image_reader->open();
+ * if (image_reader->isOpen()) {
+ *
+ *     Message::info("Number of bands: {}", image_reader->channels());
+ *     Message::info("Color depth: {}", image_reader->depth());
+ *     Message::info("Image dimensions: {}x{}", image_reader->cols(), image_reader->rows());
+ *     Message::info("Metadata:");
+ *     
+ *     auto image_metadata = image_reader->metadata();
+ *     auto metadata = image_metadata->activeMetadata();
+ *     
+ *     for (auto it = metadata.begin(); it != metadata.end(); ++it) {
+ *         std::string name = it->first;
+ *         std::string value = it->second;
+ *         Message::info("  {}: {}", name, value);
+ *     }
+ *     
+ *     image_reader->close(); 
+ * }
+ * \endcode
+ * 
+ */
+ 
+/*!
+ * \defgroup ImgProc Image Processing
+ * \ingroup RasterTools
+ * \brief Tools and techniques for image filtering and preprocessing.
+ *
+ * The **%Image Processing module** provides a set of functionalities designed to enhance and transform raster images. 
+ *
+ * ## Features
+ * - \ref Filters "Image Filters":  The module includes various filters for noise reduction, edge detection, and enhancement.
+ * - \ref MorphOper "Morphological Operations": Operations like \ref Erotion "erotion", \ref Dilate "dilation", \ref Opening "opening", and \ref Closing "closing" to manipulate image structures.
+ * - \ref WhiteBalance "White Balance": Methods like \ref Grayworld "Gray World" and \ref WhitePatch "White Patch" white balance for color correction.
+ * - \ref ImgTransf "Geometric Image Transformation": Operations such as \ref Resize "resizing", \ref ResizeCanvas "canvas modification", and \ref AffineTransform "affine transformations".
+ *
+ */
+
+/*!
+ * \defgroup Filters Image Filters
+ * \ingroup ImgProc
+ * \brief Essential tools for noise reduction, edge detection, and image enhancement.
+ *
+ * %Image filters are essential tools used in image processing for tasks such as noise reduction, edge detection,
+ * and image enhancement. These filters operate on an image to alter its properties, enhance certain features,
+ * or suppress unwanted artifacts.
+ *
+ * The following image filters are supported by this library:
+ *
+ * - **BilateralFilter:** A non-linear filter effective in noise reduction while preserving edges.
+ * - **Blur:** Applies a smoothing effect on the image to reduce sharp transitions and details.
+ * - **BoxFilter:** A simple averaging filter that applies a box-shaped kernel for smoothing.
+ * - **Canny:** Performs edge detection using the Canny edge detection algorithm.
+ * - **Convolution:** Applies a custom convolution matrix to perform various transformations like blurring or edge detection.
+ * - **GaussianBlur:** A filter that uses a Gaussian kernel to perform blurring, useful for noise reduction and smoothing.
+ * - **Laplacian:** Computes the Laplacian of an image, commonly used for edge detection.
+ * - **MedianBlur:** A non-linear filter that replaces each pixel with the median value of neighboring pixels, useful for removing salt-and-pepper noise.
+ * - **Sobel:** Applies the Sobel operator to detect edges in the image, calculating the gradient in both x and y directions.
+ *
+ */
+ 
+
+/*!
+ * \defgroup MorphOper Morphological Operations
+ * \ingroup ImgProc
+ * \brief Techniques to modify or extract image features based on their shapes using structuring elements.
+ *
+ * Morphological operations are fundamental image processing techniques that apply a structuring element
+ * to an input image to extract or modify features based on their shapes. These operations are particularly
+ * useful in tasks such as noise removal, shape enhancement, edge detection, and image segmentation.
+ *
+ * Morphological operations can be divided into two categories:
+ *
+ * ### Basic Morphological Operations:
+ * These operations involve the direct application of the structuring element to an image:
+ * - **Erotion:** Shrinks the boundaries of objects, removing small noise and disconnecting narrow connections between objects.
+ * - **Dilate:** Expands the boundaries of objects, filling small holes and connecting nearby objects.
+ *
+ * ### Advanced Morphological Operations (using `cv::morphologyEx`):
+ * These operations are built upon the basic ones and are used for more complex tasks:
+ * - **Opening:** Removes small objects or noise while preserving the shape and size of larger objects.
+ *   It consists of an erosion followed by a dilation.
+ * - **Closing:** Fills small holes and gaps within objects while maintaining their general shape.
+ *   It consists of a dilation followed by an erosion.
+ * - **Gradient:** Highlights the edges or contours of objects by calculating the difference between dilation
+ *   and erosion of the image.
+ * - **TopHat:** Extracts small bright regions or elements that differ in brightness from their surroundings.
+ *   It is the difference between the original image and its morphological opening.
+ * - **BlackHat:** Extracts small dark regions or elements that differ in brightness from their surroundings.
+ *   It is the difference between the morphological closing of the image and the original image.
+ *
+ */ 
+ 
+/*!
+ * \defgroup WhiteBalance White Balance
+ * \ingroup ImgProc
+ * \brief Tools for adjusting the colors in images to appear natural under different lighting conditions.
+ *
+ * This module provides tools for white balance correction, a critical step in image processing to adjust the colors in an image
+ * so that they appear natural under different lighting conditions. Two primary methods are implemented:
+ * - \ref Grayworld "Gray World": Assumes the average color in an image should be gray, adjusting the image colors accordingly.
+ * - \ref WhitePatch "White Patch": Normalizes the image based on the brightest values in the red, green, and blue channels.
+ */
+
+/*!
+ * \defgroup ImgTransf Geometric Image Transformation Operations
+ * \ingroup ImgProc
+ * \brief Classes for performing various geometric transformations on images.
+ *
+ * This module contains classes for performing geometric transformations on images,
+ * such as \ref Resize "resizing", \ref ResizeCanvas "modifying the canvas dimensions", and applying \ref AffineTransform "affine transformations".
+ */
+ 

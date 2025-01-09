@@ -28,16 +28,12 @@
 #include <queue>
 
 #include "tidop/config.h"
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 namespace tl
 {
 
 
-/*! \addtogroup core
- *  \{
- */
- 
 /*!
  * \addtogroup concurrency
  *
@@ -46,6 +42,15 @@ namespace tl
  
 constexpr auto QueueDefaultCapacity = 256;
 
+/*!
+ * \brief Interface for a thread-safe queue with fixed capacity.
+ * 
+ * The `Queue` class defines a generic interface for a thread-safe queue implementation. 
+ * It enforces the implementation of the `push` and `pop` methods in derived classes 
+ * while providing common functionality such as checking size, capacity, and thread-safety 
+ * via mutex locks.
+ *
+ */
 template<typename T>
 class Queue
 {
@@ -59,13 +64,13 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
      */
     Queue() = default;
     
     /*!
-     * \brief Constructor with queue capacity
-     * \param[in] capacity Queue capacity
+     * \brief Constructor with queue capacity.
+     * \param[in] capacity Queue capacity.
      */
     explicit Queue(size_t capacity);
     
@@ -75,44 +80,58 @@ public:
     TL_DISABLE_MOVE(Queue)
     
     /*!
-     * \brief Inserts an element at the end of the queue
-     * \param[in] value Element to insert
+     * \brief Inserts an element at the end of the queue.
+     * \param[in] value Element to insert.
+     * \note This function must be implemented in derived classes.
      */
     virtual void push(const T &value) = 0;
     
     /*!
-     * \brief Extact the first item from the queue
-     * \param[out] value Extact element
+     * \brief Extracts the first item from the queue.
+     * \param[out] value Extracted element.
+     * \return `true` if an element was successfully extracted, `false` if the queue was empty.
+     * \note This function must be implemented in derived classes.
      */
     virtual auto pop(T& value) -> bool = 0;
     
     /*!
-     * \brief Returns the number of elements
-     * \return Size of the queue
+     * \brief Returns the number of elements in the queue.
+     * \return Size of the queue.
      */
     auto size() const -> size_t;
     
     /*!
-     * \brief Returns the capacity of the queue
-     * \return Maximun number of elements in queue
+     * \brief Returns the maximum capacity of the queue.
+     * \return Maximum number of elements the queue can hold.
      */
     auto capacity() const -> size_t;
     
     /*!
-     * \brief checks whether the queue is empty
+     * \brief Checks whether the queue is empty.
+     * \return `true` if the queue is empty, `false` otherwise.
      */
     auto empty() const -> bool;
 
     /*!
-     * \brief checks whether the queue is full
+     * \brief Checks whether the queue is full.
+     * \return `true` if the queue is full, `false` otherwise.
      */
     auto full() const -> bool;
 
 
 protected:
 
-    std::queue<T> &buffer();
-    std::mutex &mutex() const;
+    /*!
+     * \brief Provides access to the internal queue buffer.
+     * \return Reference to the internal queue buffer.
+     */
+    auto buffer() -> std::queue<T>&;
+
+    /*!
+     * \brief Provides access to the internal mutex.
+     * \return Reference to the mutex.
+     */
+    auto mutex() const -> std::mutex&;
 
 };
 
@@ -167,9 +186,7 @@ auto Queue<T>::mutex() const -> std::mutex&
 }
 
 
-/*! \} */ // end of concurrency
-
-/*! \} */ // end of core
+/*! \} */
 
 } // End namespace tl
 

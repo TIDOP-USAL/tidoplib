@@ -27,8 +27,8 @@
 #include <vector> 
 #include <string> 
 
-#include "tidop/core/defs.h"
-#include "tidop/core/flags.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/flags.h"
 #include "tidop/math/statistic/mean.h"
 #include "tidop/math/statistic/median.h"
 #include "tidop/math/statistic/mode.h"

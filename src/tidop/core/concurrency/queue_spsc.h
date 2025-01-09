@@ -25,16 +25,12 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/core/concurrency/queue.h"
 
 namespace tl
 {
 
-
-/*! \addtogroup core
- *  \{
- */
 
 /*!
  * \addtogroup concurrency
@@ -44,6 +40,10 @@ namespace tl
  
 /*!
  * \brief Single-producer Single-consumer queue
+ * 
+ * This class implements a thread-safe queue designed for single-producer, single-consumer (SPSC) scenarios.
+ * It efficiently synchronizes the producer and consumer threads, using blocking push and pop operations.
+ * 
  */
 template<typename T>
 class QueueSPSC
@@ -58,12 +58,16 @@ public:
 
     /*!
      * \brief Default constructor
+     *
+     * Creates an SPSC queue with the default capacity.
      */
     QueueSPSC() = default;
   
     /*!
-     * \brief Constructor with queue capacity
-     * \param[in] capacity Queue capacity
+     * \brief Constructor with specified queue capacity
+     * \param[in] capacity Maximum capacity of the queue
+     *
+     * Creates an SPSC queue with the specified capacity.
      */
     explicit QueueSPSC(size_t capacity);
   
@@ -71,9 +75,22 @@ public:
   
     TL_DISABLE_COPY(QueueSPSC)
     TL_DISABLE_MOVE(QueueSPSC)
-
+    /*!
+     * \brief Inserts an element into the queue
+     * \param[in] value Element to insert into the queue
+     * 
+     * If the queue is full, the producer thread will block until space becomes available.
+     */
     void push(const T &value) override;
-    bool pop(T &value) override;
+
+    /*!
+     * \brief Extracts the first element from the queue
+     * \param[out] value Extracted element from the queue
+     * \return Returns `true` if an element was successfully extracted; `false` if the queue is empty.
+     *
+     * If the queue is empty, the consumer thread will block until an element becomes available.
+     */
+    auto pop(T &value) -> bool override;
 
 };
 
@@ -120,9 +137,7 @@ auto QueueSPSC<T>::pop(T& value) -> bool
 }
 
 
-/*! \} */ // end of concurrency
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

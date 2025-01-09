@@ -28,7 +28,7 @@
 #include <random>
 #include <iomanip>
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 #include "tidop/math/math.h"
 #include "tidop/math/simd.h"
 #include "tidop/math/data.h"

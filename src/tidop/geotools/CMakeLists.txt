@@ -92,7 +92,8 @@ if (BUILD_TL_GEOTOOLS)
 
     install(DIRECTORY . 
             DESTINATION include/tidop/geotools
-            FILES_MATCHING PATTERN "*.h")
+            FILES_MATCHING PATTERN "*.h"
+			PATTERN "impl" EXCLUDE)
             
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     

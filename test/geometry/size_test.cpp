@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_MODULE Tidop Size test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/size.h>
+#include <tidop/core/base/size.h>
 
 using namespace tl;
 

@@ -9,7 +9,7 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 
-#include "tidop/core/ptr.h"
+#include "tidop/core/base/ptr.h"
 
 namespace tl
 {

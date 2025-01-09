@@ -25,7 +25,7 @@
 #pragma once
 
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 
 namespace tl

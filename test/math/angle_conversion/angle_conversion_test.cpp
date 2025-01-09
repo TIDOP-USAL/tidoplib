@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop angle conversion test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/angles.h>
-#include <tidop/core/utils.h>
+#include <tidop/core/base/type_conversions.h>
 
 using namespace tl;
 

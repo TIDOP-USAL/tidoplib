@@ -27,9 +27,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "tidop/core/base/size.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/size.h"
 
 namespace tl
 {

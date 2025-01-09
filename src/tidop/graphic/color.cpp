@@ -30,8 +30,8 @@
 #include <random>
 #include <string>
 
-#include "tidop/core/exception.h"
-#include "tidop/core/utils.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/type_conversions.h"
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"

@@ -24,7 +24,7 @@
 
 
 #include "tidop/core/task/tasktree.h"
-#include "tidop/core/progress.h"
+#include "tidop/core/task/progress.h"
 
 namespace tl
 {
@@ -38,7 +38,7 @@ TaskTree::~TaskTree() = default;
 void TaskTree::addTask(const std::shared_ptr<Task> &task,
                        const std::list<std::shared_ptr<Task>> &parentTasks)
 {
-    unusedParameter(task, parentTasks);
+
 }
 
 void TaskTree::stop()
@@ -48,7 +48,7 @@ void TaskTree::stop()
 
 void TaskTree::execute(Progress *progressBar)
 {
-    unusedParameter(progressBar);
+
 }
 
 } // End namespace tl

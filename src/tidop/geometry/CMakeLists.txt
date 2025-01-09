@@ -38,7 +38,7 @@ if(BUILD_TL_GEOMETRY)
                             entities/segment.cpp
                         HEADER_FILES
                             rect.h
-                            size.h
+                            #size.h
                             entities/bbox.h
                             entities/entity.h
                             entities/entities2d.h

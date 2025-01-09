@@ -30,8 +30,7 @@
 
 #include <opencv2/features2d.hpp>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
+#include "tidop/core/base/path.h"
 
 namespace tl
 {

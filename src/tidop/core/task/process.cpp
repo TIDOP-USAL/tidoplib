@@ -24,7 +24,7 @@
 
 
 #include "tidop/core/task/process.h"
-#include "tidop/core/progress.h"
+#include "tidop/core/task/progress.h"
 
 #ifdef TL_OS_LINUX
 #include <spawn.h>

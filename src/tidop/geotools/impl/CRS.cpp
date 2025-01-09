@@ -3,8 +3,7 @@
 
 #include <proj.h>
 
-#include "tidop/core/utils.h"
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
 
 #include "../GeoToolsDefinitions.h"
 #include "CRSsUtils.h"

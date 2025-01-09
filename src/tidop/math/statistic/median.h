@@ -38,7 +38,7 @@ namespace tl
  *  \{
  */
 
-/*! \addtogroup CentralTendency Measures of central tendency
+/*! \addtogroup CentralTendency
  *  \{
  */
 

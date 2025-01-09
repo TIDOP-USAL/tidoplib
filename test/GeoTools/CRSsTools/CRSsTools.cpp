@@ -27,12 +27,12 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/geotools/CRSsTools.h>
-#include "tidop/core/path.h"
+#include "tidop/core/base/path.h"
 
 #include <gdal.h>
 #include <cpl_conv.h>
 
-#include "tidop/core/app.h"
+#include "tidop/core/app/app.h"
 #include "tidop/geometry/entities/point.h"
 
 using namespace tl;

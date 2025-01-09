@@ -30,7 +30,7 @@
 #include "opencv2/core/core.hpp"
 #endif // TL_HAVE_OPENCV
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"

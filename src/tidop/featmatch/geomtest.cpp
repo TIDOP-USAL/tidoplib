@@ -24,7 +24,8 @@
 
 #include "geomtest.h"
 
-#include "tidop/core/exception.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/common.h"
 
 namespace tl
 {

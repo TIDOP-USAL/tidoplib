@@ -67,11 +67,10 @@ if (BUILD_TL_GEOSPATIAL)
                           TidopLib::Core 
                           TidopLib::Math 
                           TidopLib::Geom
-                          TidopLib::Vect
-                          TidopLib::Img
+                          TidopLib::VectorTools
+                          TidopLib::RasterTools
                           TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          #$<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
@@ -101,7 +100,7 @@ if (BUILD_TL_GEOSPATIAL)
     set(TL_HAVE_GEOSPATIAL YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
-elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
+elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_RASTER_TOOLS AND BUILD_TL_VECTOR_TOOLS)
 
     message(STATUS "  TidopLib::Geospatial disabled")
 

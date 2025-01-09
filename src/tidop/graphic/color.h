@@ -30,8 +30,8 @@
 #include <typeinfo>
 #include <functional>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/exception.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {

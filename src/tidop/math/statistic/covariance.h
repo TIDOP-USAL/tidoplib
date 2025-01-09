@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/core/common.h"
+#include "tidop/core/base/common.h"
 #include "tidop/math/statistic/descriptive.h"
 
 namespace tl

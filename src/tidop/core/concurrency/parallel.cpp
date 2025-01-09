@@ -23,7 +23,6 @@
  **************************************************************************/
 
 #include "tidop/core/concurrency/parallel.h"
-#include "tidop/core/concurrency.h"
 
 #if defined TL_HAVE_OPENMP
 #include <omp.h>  // OpenMP
