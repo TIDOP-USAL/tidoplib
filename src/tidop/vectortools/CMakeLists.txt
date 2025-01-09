@@ -78,7 +78,7 @@ if (BUILD_TL_VECTOR_TOOLS)
             
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
-    set(TL_HAVE_VECT YES CACHE INTERNAL "")
+    set(TL_HAVE_VECTOR_TOOLS YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
  
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)

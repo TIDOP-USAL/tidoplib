@@ -43,7 +43,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
                       PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
-                      FOLDER "test/vect")
+                      FOLDER "test/vectortools")
 
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
