@@ -42,25 +42,27 @@ namespace tl
  * \{
  */
 
- /*!
-  * \brief Splits a string into a vector of substrings based on a specified delimiter.
-  *
-  * This function can split a string into substrings, either returning a vector of `std::string`
-  * or a vector of a numeric type (e.g., `int`, `float`, etc.), depending on the template type `T`.
-  * It uses a specified separator character to split the string. The default separator is a comma (`,`) if not specified.
-  *
-  * \tparam T The type of elements in the resulting vector. It can either be `std::string` or any arithmetic type (excluding `bool`).
-  *
-  * \param[in] string The input string to split.
-  * \param[in] separator The character used to split the string (default is `','`).
-  *
-  * \return A vector containing the substrings, either as `std::string` or as the specified numeric type `T`.
-  *
-  * \example
-  * std::string str = "10,20,30,40";
-  * auto result = split<int>(str, ',');
-  * // result = {10, 20, 30, 40}
-  */
+/*!
+ * \brief Splits a string into a vector of substrings based on a specified delimiter.
+ *
+ * This function can split a string into substrings, either returning a vector of `std::string`
+ * or a vector of a numeric type (e.g., `int`, `float`, etc.), depending on the template type `T`.
+ * It uses a specified separator character to split the string. The default separator is a comma (`,`) if not specified.
+ *
+ * \tparam T The type of elements in the resulting vector. It can either be `std::string` or any arithmetic type (excluding `bool`).
+ *
+ * \param[in] string The input string to split.
+ * \param[in] separator The character used to split the string (default is `','`).
+ *
+ * \return A vector containing the substrings, either as `std::string` or as the specified numeric type `T`.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::string str = "10,20,30,40";
+ * auto result = split<int>(str, ',');
+ * // result = {10, 20, 30, 40}
+ * \endcode
+ */
 template <typename T>
 auto split(const std::string& string,
            char separator = ',') -> std::enable_if_t<std::is_same<T, std::string>::value, std::vector<T>>

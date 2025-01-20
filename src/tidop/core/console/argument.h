@@ -61,7 +61,7 @@ template <typename T> class Argument_;
  * - **Dynamic Typing**: Supports various argument types such as integers, floating-point numbers, strings, and more.
  * - **Extensibility**: Derived classes can implement specific behavior, including mandatory checks, type names, and value parsing.
  *
- * ### Argument Types
+ * ### %Argument Types
  * The `Type` enum defines the supported types for arguments:
  * - Boolean (`arg_bool`)
  * - Integer types (`arg_int8`, `arg_uint8`, etc.)
@@ -92,7 +92,7 @@ class TL_EXPORT Argument
 public:
 
     /*!
-     * \enum Argument::Type
+     * \enum Type
      * \brief Defines the data types supported by an Argument.
      *
      * The `Type` enumeration specifies the types of values that an `Argument` can represent.
@@ -128,28 +128,28 @@ public:
      */
     enum class Type
     {
-        arg_unknown,
-        arg_bool,
-        arg_int8,
-        arg_uint8,
-        arg_int16,
-        arg_uint16,
-        arg_int32,
-        arg_uint32,
-        arg_int64,
-        arg_uint64,
-        arg_float32,
-        arg_float64,
-        arg_string,
-        arg_path,
-        arg_char = arg_int8,
-        arg_uchar = arg_uint8,
-        arg_short = arg_int16,
-        arg_ushort = arg_uint16,
-        arg_int = arg_int32,
-        arg_uint = arg_uint32,
-        arg_float = arg_float32,
-        arg_double = arg_float64
+        arg_unknown,               /*!< Represents an unknown or unspecified type. */
+        arg_bool,                  /*!< Represents a boolean value (`true` or `false`). */
+        arg_int8,                  /*!< Represents an 8-bit signed integer. */
+        arg_uint8,                 /*!< Represents an 8-bit unsigned integer. */
+        arg_int16,                 /*!< Represents a 16-bit signed integer. */
+        arg_uint16,                /*!< Represents a 16-bit unsigned integer. */
+        arg_int32,                 /*!< Represents a 32-bit signed integer. */
+        arg_uint32,                /*!< Represents a 32-bit unsigned integer. */
+        arg_int64,                 /*!< Represents a 64-bit signed integer. */
+        arg_uint64,                /*!< Represents a 64-bit unsigned integer. */
+        arg_float32,               /*!< Represents a 32-bit floating-point number. */
+        arg_float64,               /*!< Represents a 64-bit floating-point number (double precision). */
+        arg_string,                /*!< Represents a string. */
+        arg_path,                  /*!< Represents a file path or directory path. */
+        arg_char = arg_int8,       /*!< Alias for `arg_int8` (character as an 8-bit signed integer). */
+        arg_uchar = arg_uint8,     /*!< Alias for `arg_uint8` (character as an 8-bit unsigned integer). */
+        arg_short = arg_int16,     /*!< Alias for `arg_int16` (short integer). */
+        arg_ushort = arg_uint16,   /*!< Alias for `arg_uint16` (unsigned short integer). */
+        arg_int = arg_int32,       /*!< Alias for `arg_int32` (standard signed integer). */
+        arg_uint = arg_uint32,     /*!< Alias for `arg_uint32` (unsigned integer). */
+        arg_float = arg_float32,   /*!< Alias for `arg_float32` (standard single-precision floating-point number). */
+        arg_double = arg_float64   /*!< Alias for `arg_float64` (double-precision floating-point number). */
     };
 
     using SharedPtr = std::shared_ptr<Argument>;

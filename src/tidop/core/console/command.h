@@ -53,9 +53,8 @@ namespace tl
  *
  * cmdName [--param1|-p] [Value] [--option|-o]
  *
- * Example of use:
- *
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  *
  *  Command cmd(command_name, "Example of a console application");
  *  cmd.addArgument<std::string>("file", 'f', "Example of a mandatory parameter of type string");
@@ -160,8 +159,8 @@ public:
      * \param[in] name The name of the command.
      * \param[in] description A brief description of what the command does.
      *
-     * Example usage:
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * Command cmd("convert", "Converts files between formats");
      * \endcode
      */
@@ -178,8 +177,8 @@ public:
      * \param[in] description A brief description of what the command does.
      * \param[in] arguments An initializer list of arguments for the command.
      *
-     * Example usage:
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * Command cmd("process", "Processes input files", {
      *     Argument::make<std::string>("input", 'i', "Input file"),
      *     Argument::make<bool>("verbose", 'v', "Enable verbose output", false)
@@ -321,8 +320,8 @@ public:
      * \param[in] arg... The arguments required to construct an `Argument` of the specified type.
      * \return The current `Command` object, allowing for method chaining.
      *
-     * Example usage:
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * cmd.addArgument<std::string>("file", 'f', "File path");
      * cmd.addArgument<int>("skip", 's', "Number of lines to skip");
      * \endcode
@@ -345,8 +344,8 @@ public:
      * \param[in] arg... The arguments required to construct the `Argument` as a boolean option.
      * \return The current `Command` object, allowing for method chaining.
      *
-     * Example usage:
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * cmd.addOption("verbose", 'v', "Enable verbose output");
      * \endcode
      */
@@ -505,8 +504,8 @@ public:
      * \throws std::exception if the argument with the given name does not exist.
      *
      *
-     * Example usage:
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * Command cmd("read", "Read file");
      * cmd.addArgument<Path>("file", 'f', "File to read");
      * Command::Status status = cmd.parse(argc, argv);
@@ -543,8 +542,8 @@ public:
      *
      * \note The argument must have been previously added to the command with a matching short name.
      *
-     * Example usage:
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * Command cmd("read", "Read file");
      * cmd.addArgument<Path>("file", 'f', "File to read");
      * Command::Status status = cmd.parse(argc, argv);

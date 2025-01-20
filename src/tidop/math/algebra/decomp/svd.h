@@ -29,41 +29,49 @@
 
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
-#include "tidop/math/lapack.h"
+#include "tidop/math/base/lapack.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-/*! \addtogroup algebra
+/*! \addtogroup Decomposition
  *  \{
  */
 
 
-/*!
- * \brief SVD (Singular value decomposition)
- *
- * En álgebra lineal, la descomposición en valores singulares de una matriz A
- * es una factorización de la misma con muchas aplicaciones, entre ellas
- * la resolución de sistemas lineales.
- *
- * Dada una matriz A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
- * y una matriz diagonal Σ (de tamaño m×n) tales que:
- *
- * \f[ A = UΣV^T  \f]
- *
- * Esta factorización de A se llama descomposición en valores singulares de A.
- *
- *
- * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
- * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
- */
+/// \cond
+
+// http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
+// https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
+
 template<typename T>
 class SingularValueDecomposition;
 
+/// \endcond
+
+/*!
+ * \brief Singular Value Decomposition (SVD)
+ *
+ * In linear algebra, the Singular Value Decomposition (SVD) of a matrix \( A \) is a factorization
+ * of the matrix that has many applications, such as solving linear systems, signal processing, and data
+ * compression. The SVD of a matrix allows it to be expressed as a product of three matrices: an orthogonal
+ * matrix \( U \), a diagonal matrix \( \Sigma \), and the transpose of another orthogonal matrix \( V \).
+ *
+ * Given an \( m \times n \) matrix \( A \), the SVD is given by:
+ * \f[ A = U \cdot \Sigma \cdot V^T \f]
+ * where:
+ * - \( U \) is an orthogonal matrix of size \( m \times m \),
+ * - \( \Sigma \) is a diagonal matrix of size \( m \times n \),
+ * - \( V \) is an orthogonal matrix of size \( n \times n \).
+ *
+ * The SVD provides a powerful tool for analyzing and solving linear systems, especially in cases
+ * where the matrix is non-square or ill-conditioned.
+ *
+ * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
+ * \tparam T The type of the elements in the matrix (e.g., `double`).
+ * \tparam Rows The number of rows in the matrix.
+ * \tparam Cols The number of columns in the matrix.
+ */
 template<
     template<typename, size_t, size_t>
     class Matrix_t, typename T, size_t Rows, size_t Cols>
@@ -72,15 +80,72 @@ class SingularValueDecomposition<Matrix_t<T, Rows, Cols>>
 
 public:
 
+    /*!
+     * \brief Constructs the Singular Value Decomposition (SVD) of a matrix
+     *
+     * This constructor performs the SVD of the matrix \( A \), storing the resulting orthogonal matrices
+     * \( U \) and \( V \), as well as the singular values in the vector \( W \).
+     *
+     * \param[in] a The matrix \( A \) to decompose.
+     */
     SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a);
 
+    /*!
+     * \brief Solves the system of equations \( A \cdot x = b \) using the SVD
+     *
+     * Using the SVD, this method solves the system of linear equations \( A \cdot x = b \), where \( A \)
+     * is the matrix and \( b \) is the right-hand side vector. This is done by using the properties of
+     * the matrices \( U \), \( \Sigma \), and \( V \) from the SVD.
+     *
+     * \param[in] b The right-hand side vector \( b \).
+     * \return The solution vector \( x \).
+     */
     auto solve(const Vector<T, Rows>& b) -> Vector<T, Cols>;
 
+    /*!
+     * \brief Gets the orthogonal matrix \( U \)
+     *
+     * This method returns the orthogonal matrix \( U \) from the SVD decomposition.
+     *
+     * \return The matrix \( U \), which is orthogonal.
+     */
     auto u() const -> Matrix<T, Rows, Cols>;
+
+    /*!
+     * \brief Gets the orthogonal matrix \( V \)
+     *
+     * This method returns the orthogonal matrix \( V \) from the SVD decomposition.
+     *
+     * \return The matrix \( V \), which is orthogonal.
+     */
     auto v() const -> Matrix<T, Cols, Cols>;
+
+    /*!
+     * \brief Gets the singular values as a vector \( W \)
+     *
+     * This method returns the singular values of the matrix as a vector \( W \).
+     *
+     * \return The vector of singular values \( W \).
+     */
     auto w() const -> Vector<T, Cols>;
 
+    /*!
+     * \brief Gets the maximum number of iterations for the decomposition
+     *
+     * This method returns the maximum number of iterations that will be performed during the decomposition.
+     *
+     * \return The maximum number of iterations.
+     */
     auto maxIterations() const -> int;
+
+    /*!
+     * \brief Sets the maximum number of iterations for the decomposition
+     *
+     * This method allows the user to set the maximum number of iterations to be performed during the
+     * decomposition.
+     *
+     * \param[in] maxIterations The maximum number of iterations.
+     */
     void setMaxIterations(int maxIterations);
 
 private:
@@ -523,9 +588,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::setMaxIterations(int m
 }
 
 
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */ 
 
 
 } // End namespace tl

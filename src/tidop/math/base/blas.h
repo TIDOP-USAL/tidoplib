@@ -27,14 +27,17 @@
 
 #include "tidop/math/math.h"
 
+/// \cond
 #ifdef TL_HAVE_OPENBLAS
+/// \endcond
+
 #include <cblas.h>
 
 namespace tl
 {
 
 
-/*! \addtogroup Math
+/*! \addtogroup MathBase
  *  \{
  */
 
@@ -43,6 +46,20 @@ namespace blas
 
 /* Matrix multiplication */
 
+/*!
+ * \brief Matrix-matrix multiplication (gemm) for floating point types.
+ *
+ * This function performs matrix multiplication using the General Matrix Multiply (GEMM) operation
+ * for floating point types (`float` or `double`).
+ *
+ * \tparam T The data type (must be `float` or `double`).
+ * \param[in] m The number of rows of matrix A and matrix C.
+ * \param[in] n The number of columns of matrix B and matrix C.
+ * \param[in] k The number of columns of matrix A and rows of matrix B.
+ * \param[in] a Pointer to the matrix A of size `m x k`.
+ * \param[in] b Pointer to the matrix B of size `k x n`.
+ * \param[out] c Pointer to the matrix C of size `m x n`, where the result will be stored.
+ */
 template<typename T>
 auto gemm(size_t m, size_t n, size_t k,
           const T *a, const T *b, T *c) -> enableIfFloat<T, void>
@@ -87,6 +104,19 @@ auto gemm(size_t m, size_t n, size_t k,
 
 /* Matrix x Vector */
 
+/*!
+ * \brief Matrix-vector multiplication (gemv) for floating point types.
+ *
+ * This function performs matrix-vector multiplication using the General Matrix Vector (GEMV) operation
+ * for floating point types (`float` or `double`).
+ *
+ * \tparam T The data type (must be `float` or `double`).
+ * \param[in] m The number of rows of matrix A.
+ * \param[in] n The number of columns of matrix A and the length of the vector.
+ * \param[in] matrix Pointer to the matrix A of size `m x n`.
+ * \param[in] vector Pointer to the vector B of size `n`.
+ * \param[out] vector_out Pointer to the output vector C of size `m`, where the result will be stored.
+ */
 template<typename T>
 auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfFloat<T, void>
 {
@@ -122,9 +152,10 @@ auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -
 
 } // End namespace blas
 
-/*! \} */ // end of Math
+/*! \} */
 
 } // End namespace tl
 
+/// \cond
 #endif // TL_HAVE_OPENBLAS
-
+/// \endcond

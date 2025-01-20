@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/data.h"
+#include "tidop/math/base/data.h"
 #include "tidop/math/algebra/vector.h"
 
 

@@ -27,7 +27,9 @@
 #include "tidop/config.h"
 #include "tidop/math/math.h"
 
+/// \cond
 #ifdef TL_HAVE_SIMD_INTRINSICS
+/// \endcond
 
 #ifdef TL_HAVE_AVX
 #include <immintrin.h>
@@ -47,7 +49,7 @@ namespace tl
 {
 
 
-/*! \addtogroup Math
+/*! \addtogroup MathBase
  *  \{
  */
 
@@ -65,12 +67,14 @@ namespace tl
  /// Visual Studio X64 
  /// /arch:[AVX|AVX2|AVX512]
 
+/// \cond
 
-template<typename T>
+template<typename _Packed>
 struct PackedTraits;
 
 template<typename T>
 class Packed;
+
 
 template<>
 struct PackedTraits<Packed<float>>
@@ -203,63 +207,191 @@ struct PackedTraits<Packed<uint64_t>>
 #endif
 };
 
+/// \endcond
 
 
+/*!
+ * \class Packed
+ * \brief Encapsulates SIMD operations for different configurations.
+ *
+ * This class provides an abstraction over SIMD intrinsic types. Depending on the project configuration,
+ * different SIMD instructions (AVX, SSE4.2, SSE4.1, SSE3, SSE2) are used. The class supports loading,
+ * storing, and basic arithmetic operations on SIMD-packed data.
+ *
+ * \tparam T The data type of the elements in the packed SIMD type.
+ */
 template<typename T>
 class Packed
 {
 
 public:
 
+    /*!
+     * \brief The type of each element in the SIMD packed type.
+     */
     using value_type = typename PackedTraits<Packed<T>>::value_type;
+
+    /*!
+     * \brief The SIMD intrinsic type used for packed operations.
+     */
     using simd_type = typename PackedTraits<Packed<T>>::simd_type;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Packed() = default;
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] packed The Packed object to copy from.
+     */
     Packed(const Packed &packed);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] packed The Packed object to move from.
+     */
     Packed(Packed &&packed) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor from SIMD intrinsic type.
+     * \param[in] packed The SIMD intrinsic value to initialize with.
+     */
     Packed(simd_type packed);
+
+    /*!
+     * \brief Constructor from scalar value.
+     * \param[in] scalar The scalar value to initialize all elements of the SIMD packed type.
+     */
     Packed(value_type scalar);
 
+    /*!
+     * \brief Load values from aligned memory into the SIMD packed type.
+     * \param[in] src Pointer to the aligned memory source.
+     */
     void loadAligned(const value_type *src);
+
+    /*!
+     * \brief Load values from unaligned memory into the SIMD packed type.
+     * \param[in] src Pointer to the unaligned memory source.
+     */
     void loadUnaligned(const value_type *src);
+
+    /*!
+     * \brief Store the values of the SIMD packed type into aligned memory.
+     * \param[in] dst Pointer to the aligned memory destination.
+     */
     void storeAligned(value_type *dst) const;
+
+    /*!
+     * \brief Store the values of the SIMD packed type into unaligned memory.
+     * \param[in] dst Pointer to the unaligned memory destination.
+     */
     void storeUnaligned(value_type *dst) const;
 
+    /*!
+     * \brief Set all elements of the SIMD packed type to a scalar value.
+     * \param[in] value The scalar value to set.
+     */
     void setScalar(value_type value);
 
     /*!
-     * \brief  Assignment operator
-     * Assign from intrinsic type
+     * \brief Assignment operator for the SIMD intrinsic type.
+     * \param[in] packed The SIMD intrinsic value to assign.
+     * \return Reference to the updated Packed object.
      */
-    Packed<T> &operator=(simd_type packed);
+    auto operator=(simd_type packed) -> Packed<T> &;
 
     /*!
-     * \brief Type cast operator to convert to intrinsic type
+     * \brief Type cast operator to convert to SIMD intrinsic type.
+     * \return The SIMD intrinsic value.
      */
     operator simd_type() const;
 
+    /*!
+     * \brief Get the size of the SIMD packed type.
+     * \return The number of elements in the SIMD packed type.
+     */
     static constexpr size_t size();
 
+    /*!
+     * \brief Assignment operator for copy assignment.
+     * \param[in] packed The Packed object to assign from.
+     * \return Reference to the updated Packed object.
+     */
     auto operator=(const Packed<T> &packed) -> Packed<T>&;
+
+    /*!
+     * \brief Assignment operator for move assignment.
+     * \param[in] packed The Packed object to move from.
+     * \return Reference to the updated Packed object.
+     */
     auto operator=(Packed<T> &&packed) TL_NOEXCEPT -> Packed<T>&;
 
+    /*!
+     * \brief Compound addition assignment operator.
+     * \param[in] packed The Packed object to add.
+     * \return Reference to the updated Packed object.
+     */
     auto operator+=(const Packed<T> &packed) -> Packed<T>&;
+
+    /*!
+     * \brief Compound subtraction assignment operator.
+     * \param[in] packed The Packed object to subtract.
+     * \return Reference to the updated Packed object.
+     */
     auto operator-=(const Packed<T> &packed) -> Packed<T>&;
+
+    /*!
+     * \brief Compound multiplication assignment operator.
+     * \param[in] packed The Packed object to multiply.
+     * \return Reference to the updated Packed object.
+     */
     auto operator*=(const Packed<T> &packed) -> Packed<T>&;
+
+    /*!
+     * \brief Compound division assignment operator.
+     * \param[in] packed The Packed object to divide.
+     * \return Reference to the updated Packed object.
+     */
     auto operator/=(const Packed<T> &packed) -> Packed<T>&;
 
+    /*!
+     * \brief Post-increment operator.
+     * \return The Packed object before incrementing.
+     */
     auto operator++(int) -> Packed<T>;
+
+    /*!
+     * \brief Pre-increment operator.
+     * \return Reference to the updated Packed object.
+     */
     auto operator++() -> Packed<T>&;
+
+    /*!
+     * \brief Post-decrement operator.
+     * \return The Packed object before decrementing.
+     */
     auto operator--(int) -> Packed<T>;
+
+    /*!
+     * \brief Pre-decrement operator.
+     * \return Reference to the updated Packed object.
+     */
     auto operator--() -> Packed<T>&;
 
     /*!
-     * \brief Sum of the elements of a vector
+     * \brief Sum of the elements of the SIMD packed type.
+     * \return The sum of the elements.
      */
     auto sum() -> T;
 
+    /*!
+     * \brief Create a Packed object initialized with zero.
+     * \return A Packed object with all elements set to zero.
+     */
     static auto zero() -> Packed;
 
 private:
@@ -1952,9 +2084,10 @@ auto transposeMatrix4x4(Packed<T> &r1,
 }
 
 
-/*! \} */ // end of Math
+/*! \} */
 
 } // End namespace tl
 
+/// \cond
 #endif // TL_HAVE_SIMD_INTRINSICS
-
+/// \endcond

@@ -32,7 +32,7 @@
 #include "tidop/geospatial/crs.h"
 #include "tidop/core/base/exception.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/rotations/rotation_matrix.h"
 
 namespace tl
 {

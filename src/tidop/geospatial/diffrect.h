@@ -26,7 +26,7 @@
 
 
 #include "tidop/geometry/entities/point.h"
-#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/rotations/rotation_matrix.h"
 #include "tidop/math/mathutils.h"
 
 namespace tl

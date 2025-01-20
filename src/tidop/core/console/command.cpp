@@ -77,7 +77,7 @@ Command::Command(std::string name, std::string description)
 
 Command::Command(std::string name, 
                  std::string description,
-                 std::initializer_list<std::shared_ptr<Argument>> arguments)
+                 std::initializer_list<Argument::SharedPtr> arguments)
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mArguments(arguments),

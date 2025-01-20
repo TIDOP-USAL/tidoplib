@@ -30,22 +30,14 @@
 
 #include "tidop/math/geometry/affine.h"
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/svd.h"
+#include "tidop/math/algebra/decomp/svd.h"
 
 
 namespace tl
 {
 
 
-/*! \addtogroup Math
- *  \{
- */
-
-
-/*! \addtogroup Algebra
- *
- * Algebra
- *
+/*! \addtogroup Estimators
  *  \{
  */
 
@@ -154,6 +146,17 @@ void helmert(const Matrix<T, rows, cols> &src,
 
 /// \endcond
 
+
+
+/*!
+ * \brief Estimator for Helmert transformations (affine transformations with uniform scaling and rotation).
+ *
+ * The `HelmertEstimator` class provides static methods to estimate a Helmert transformation
+ * between two sets of points or matrices representing the source and destination coordinates.
+ *
+ * \tparam T The type of the elements (e.g., float, double).
+ * \tparam Dim The dimensionality of the transformation (e.g., 2 for 2D, 3 for 3D).
+ */
 template <typename T, size_t Dim>
 class HelmertEstimator
 {
@@ -167,15 +170,50 @@ public:
     HelmertEstimator() = default;
     ~HelmertEstimator() = default;
 
+    /*!
+     * \brief Estimate a Helmert transformation between two matrices.
+     *
+     * This method estimates the Helmert transformation that maps points
+     * from the source matrix \p src to the destination matrix \p dst.
+     *
+     * \tparam rows Number of rows in the matrices.
+     * \tparam cols Number of columns in the matrices.
+     * \param[in] src The source matrix of points.
+     * \param[in] dst The destination matrix of points.
+     * \return The estimated Helmert transformation.
+     */
     template<size_t rows, size_t cols>
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>;
 
+    /*!
+     * \brief Estimate a Helmert transformation between two sets of 2D points.
+     *
+     * This method estimates the Helmert transformation that maps points
+     * from the source vector \p src to the destination vector \p dst.
+     *
+     * \param[in] src The source vector of 2D points.
+     * \param[in] dst The destination vector of 2D points.
+     * \return The estimated Helmert transformation.
+     */
     static auto estimate(const std::vector<Point<T>> &src,
                          const std::vector<Point<T>> &dst) -> Affine<T, Dim>;
+
+    /*!
+     * \brief Estimate a Helmert transformation between two sets of 3D points.
+     *
+     * This method estimates the Helmert transformation that maps points
+     * from the source vector \p src to the destination vector \p dst.
+     *
+     * \param[in] src The source vector of 3D points.
+     * \param[in] dst The destination vector of 3D points.
+     * \return The estimated Helmert transformation.
+     */
     static auto estimate(const std::vector<Point3<T>> &src,
                          const std::vector<Point3<T>> &dst) -> Affine<T, Dim>;
 };
+
+/*! \} */
 
 
 
@@ -240,12 +278,6 @@ auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point3<T>> &src,
 
     return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);
 }
-
-
-/*! \} */ // end of Algebra
-
-/*! \} */ // end of Math
-
 
 
 } // End namespace tl

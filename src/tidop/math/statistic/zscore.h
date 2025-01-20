@@ -24,52 +24,38 @@
 
 #pragma once
 
-#include <tidop/core/base/defs.h>
+#include "tidop/math/statistic/mean.h"
+
 
 namespace tl
 {
 
-/*! \addtogroup Statistics
- *  \{
+/*! \addtogrop Statistics
+ * \{
  */
 
- /*!
-  * \brief Calculates the mode of a range of values.
-  * \tparam It Type of the iterator.
-  * \param[in] first Iterator pointing to the beginning of the range.
-  * \param[in] last Iterator pointing to the end of the range.
-  * \return The mode value, which is the most frequently occurring element in the range.
-  *
-  * The mode is the value that appears most frequently in a data set.
-  * If multiple values have the same highest frequency, the function returns the first one encountered.
-  * This function is useful in statistics for identifying the most common value in a sample.
-  *
-  * ### Example Usage
-  * \code{.cpp}
-  * std::vector<int> data = {1, 2, 2, 3, 4, 4, 4, 5};
-  * int modeValue = mode(data.begin(), data.end());
-  * // modeValue is 4
-  * \endcode
-  */
-template<typename It>
-auto mode(It first, It last) -> iteratorValueType<It>
+
+/*!
+ * \brief Z-Score normalization
+ *
+ * The Z-score normalization is a statistical method that transforms a dataset by subtracting
+ * the mean and dividing by the standard deviation for each data point. The Z-score represents
+ * the number of standard deviations a value is from the mean.
+ *
+ * \param[in] inFirst Iterator to the first element in the data range
+ * \param[in] inLast Iterator to the last element in the data range
+ * \param[out] outFirst Iterator to store the normalized Z-scores
+ */
+template<typename itIn, typename itOut>
+void zScore(itIn inFirst, itIn inLast, itOut outFirst)
 {
-    using T = std::remove_cv_t<iteratorValueType<It>>;
+    double _mean = mean(inFirst, inLast);
+    double standar_deviation = standarDeviation(inFirst, inLast);
 
-    std::map<T, int> h;
-    while (first != last) {
-        h[*first++]++;
+    while (inFirst != inLast) {
+        *outFirst++ = (*inFirst++ - _mean) / standar_deviation;
     }
-
-    auto max = std::max_element(h.begin(), h.end(),
-                                [](const std::pair<T, int> &p1,
-                                const std::pair<T, int> &p2) {
-                                    return p1.second < p2.second;
-                                });
-
-    return max->first;
 }
-
 
 /*! \} */
 

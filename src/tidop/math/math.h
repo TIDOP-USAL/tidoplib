@@ -37,7 +37,7 @@ namespace tl
 
 
 /*!
- * \defgroup math Mathematical module
+ * \addtogroup MathTools
  *
  * \{
  */
@@ -174,42 +174,6 @@ constexpr enableIfFloating<T,T> ln10 = static_cast<T>(2.302585092994045684017991
 
 
 
-/*! 
- * \defgroup angleConversion Angle conversion
- * \brief Provides constants and templates for converting between angle formats.
- * 
- * This module defines conversion factors and templates to facilitate angle conversions between degrees, radians, and gradians.
- * 
- * Angle constants for common geometric divisions:
- *
- * - `full_circle_deg`: 360 degrees.
- * - `full_circle_grad`: 400 gradians.
- * - `half_circle_deg`: 180 degrees.
- * - `half_circle_grad`: 200 gradians.
- * - `quarter_circle_deg`: 90 degrees.
- * - `quarter_circle_grad`: 100 gradians.
- * 
- * Conversion factors for degrees, minutes, and seconds:
- *
- * - `degrees_to_minutes`: 60 (1 degree = 60 arcminutes).
- * - `minutes_to_seconds`: 60 (1 arcminute = 60 arcseconds).
- * - `degrees_to_seconds`: 3600 (1 degree = 3600 arcseconds).
- * 
- * Angle conversion templates:
- *
- * - `rad_to_deg<T>`: Converts radians to degrees.
- * - `deg_to_rad<T>`: Converts degrees to radians.
- * - `deg_to_arcminute<T>`: Converts degrees to arcminutes.
- * - `arcminute_to_deg<T>`: Converts arcminutes to degrees.
- * - `deg_to_arcsecond<T>`: Converts degrees to arcseconds.
- * - `arcsecond_to_deg<T>`: Converts arcseconds to degrees.
- * - `rad_to_grad<T>`: Converts radians to gradians.
- * - `grad_to_rad<T>`: Converts gradians to radians.
- * - `deg_to_grad<T>`: Converts degrees to gradians.
- * - `grad_to_deg<T>`: Converts gradians to degrees.
- * \{
- */
-
 /* Angle conversion constants */
 
 constexpr auto full_circle_deg = 360;
@@ -291,8 +255,6 @@ constexpr enableIfFloating<T,T> deg_to_grad = static_cast<T>(half_circle_grad) /
 */
 template<typename T>
 constexpr enableIfFloating<T,T> grad_to_deg = static_cast<T>(0.9);
-
-/*! \} */ 
 
 }
 

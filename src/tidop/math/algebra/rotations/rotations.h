@@ -29,23 +29,17 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Rotations
  *  \{
  */
-
-
-/*! \addtogroup algebra
- *  \{
- */
-
-/*! \defgroup orientation Orientation
- *  \{
- */
-
-
 
 /*!
  * \brief Orientation Interface
+ *
+ * This class serves as an interface for various representations of rotations and orientations
+ * in 3D space. It provides a common interface for different rotation representations such as
+ * axis-angle, Euler angles, rotation matrices, and quaternions. This allows easy manipulation
+ * and conversion between different rotation representations.
  */
 class TL_EXPORT Orientation
 {
@@ -53,29 +47,44 @@ class TL_EXPORT Orientation
 public:
 
     /*!
-     * \brief Rotacion types
+     * \brief Rotation types
+     *
+     * This enum defines the different types of rotation representations supported.
      */
     enum class Type
     {
-        axis_angle,      /*!< Axial-angular */
-        euler_angles,    /*!< Euler/TaitBryan angles*/
-        rotation_matrix, /*!< Rotation matriz */
-        quaternion       /*!< Quaternions */
+        axis_angle,      /*!< Axial-angular representation */
+        euler_angles,    /*!< Euler/Tait-Bryan angles representation */
+        rotation_matrix, /*!< Rotation matrix representation */
+        quaternion       /*!< Quaternion representation */
     };
 
 public:
 
+    /*!
+     * \brief Default constructor
+     */
     Orientation() = default;
+
+    /*!
+     * \brief Virtual destructor
+     * Ensures proper cleanup when derived classes are destructed.
+     */
     virtual ~Orientation() = default;
 
     /*!
      * \brief Rotation type
+     *
+     * Returns the type of the rotation representation used in the derived class.
+     *
      * \see Rotation::Type
+     * \return The rotation type as an enumeration value.
      */
-    virtual auto type() const -> Type = 0;
+    virtual auto type() const->Type = 0;
 
 };
 
+/// \cond
 
 template<typename T, int... P>
 class RotationConverter;
@@ -86,6 +95,24 @@ class RotationConverter;
 template<typename T>
 class OrientationBase;
 
+/// \endcond
+
+
+/*!
+ * \brief Base class for orientations
+ *
+ * This class serves as a base class for different orientation representations. It provides
+ * a common interface for derived classes that represent various types of orientations such as
+ * axis-angle, Euler angles, rotation matrices, and quaternions. It also facilitates type conversion
+ * between different derived orientation types.
+ *
+ * The class is templated to allow various derived types to be used, with the ability to convert
+ * between these types using the `operator` template methods.
+ *
+ * \tparam OrientationDerived The derived class representing a specific orientation type (e.g., AxisAngle, EulerAngles, etc.)
+ * \tparam T The scalar type (e.g., float, double) used for the orientation representation.
+ * \tparam P Additional template parameters that may be used by the derived classes.
+ */
 template<
     template<typename, int... P>
     class OrientationDerived, typename T, int... P>
@@ -99,16 +126,60 @@ private:
 
 public:
 
+    /*!
+     * \brief Constructor
+     * \param type The type of rotation representation.
+     */
     OrientationBase(Type type);
+
+    /*!
+     * \brief Copy constructor
+     * \param rotation The rotation object to copy.
+     */
     OrientationBase(const OrientationBase &rotation);
+
+    /*!
+     * \brief Move constructor
+     * \param rotation The rotation object to move.
+     */
     OrientationBase(OrientationBase &&rotation) TL_NOEXCEPT;
+
+    /*!
+     * \brief Virtual destructor
+     */
     ~OrientationBase() override = default;
 
+    /*!
+     * \brief Copy assignment operator
+     * \param rotation The rotation object to assign.
+     * \return A reference to this object.
+     */
     auto operator=(const OrientationBase &rotation) -> OrientationBase&;
+
+    /*!
+     * \brief Move assignment operator
+     * \param rotation The rotation object to move.
+     * \return A reference to this object.
+     */
     auto operator=(OrientationBase &&rotation) TL_NOEXCEPT -> OrientationBase&;
 
+    /*!
+     * \brief Get the rotation type
+     *
+     * Returns the rotation type used in the derived class.
+     *
+     * \return The rotation type as an enumeration value.
+     */
     auto type() const -> Type override;
 
+    /*!
+     * \brief Conversion operator to another orientation type
+     *
+     * Converts this orientation to a different derived orientation type.
+     *
+     * \tparam OrientationDerived2 The target derived orientation class to convert to.
+     * \return The converted orientation object.
+     */
     template<
         template<typename>
         class OrientationDerived2>
@@ -118,7 +189,16 @@ public:
         RotationConverter<T, P...>::convert(this->derived(), orientation);
         return orientation;
     }
-        
+
+    /*!
+     * \brief Conversion operator to another orientation type with additional template parameters
+     *
+     * Converts this orientation to a different derived orientation type with additional template parameters.
+     *
+     * \tparam OrientationDerived2 The target derived orientation class to convert to.
+     * \tparam Q Additional template parameters for the target orientation class.
+     * \return The converted orientation object.
+     */
     template<
         template<typename, int... Q>
         class OrientationDerived2, int...Q>
@@ -131,11 +211,25 @@ public:
 
 private:
 
+    /*!
+     * \brief Access the derived object
+     *
+     * Returns a reference to the derived object by casting this base class to the derived class.
+     *
+     * \return A reference to the derived orientation object.
+     */
     auto derived() -> OrientationDerived<T, P...> &
     {
         return *static_cast<OrientationDerived<T, P...> *>(this);
     }
 
+    /*!
+     * \brief Access the derived object (const version)
+     *
+     * Returns a reference to the derived object by casting this base class to the derived class.
+     *
+     * \return A reference to the derived orientation object (const version).
+     */
     auto derived() const -> const OrientationDerived<T, P...> &
     {
         return *static_cast<const OrientationDerived<T, P...> *>(this);
@@ -205,10 +299,6 @@ auto OrientationBase<OrientationDerived<T, P...>>::type() const -> Type
     return rotationType;
 }
 
-/*! \} */ // end of rotation
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

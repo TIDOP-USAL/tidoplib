@@ -34,15 +34,52 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
 
-/*! \defgroup statistics Statistics
- *  \{
+/*!
+ * \brief A class template to represent a series of data with optional string or numeric keys.
+ *
+ * The `Series` class allows for storage and access to a series of values indexed by integers, 
+ * strings, or a combination of both. This provides flexibility in accessing elements 
+ * through their position or a user-defined key.
+ *
+ * \tparam T The type of elements stored in the series.
+ *
+ * ### Example Usage
+ *
+ * Example with integer indices:
+ * \code{.cpp}
+ * Series<int> s{1, 2, 2, 3, 3, 3, 4, 4, 4, 4};
+ * // s[0] returns 1, s[1] returns 2, and so on.
+ * \endcode
+ *
+ * Example with string keys:
+ * \code{.cpp}
+ * Series<double> s2{{"A", 2.0}, {"B", 5.0}}; 
+ * // s2[0] and s2["A"] return 2.0.
+ * // s2[1] and s2["B"] return 5.0.
+ * \endcode
+ *
+ * Example with numeric keys:
+ * \code{.cpp}
+ * Series<double> s3{{3, 2.0}, {7, 3.0}};
+ * // s3[3] and s3["3"] return 2.0.
+ * // s3[7] and s3["7"] return 3.0.
+ * \endcode
+ *
+ * Example usage with `DescriptiveStatistics`:
+ * \code{.cpp}
+ * Series<double> s_1{8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5};
+ * DescriptiveStatistics<double> stat_1(s_1);
+ * auto min = stat_1.min(); // 5.5
+ * auto max = stat_1.max(); // 9.0
+ * auto sum = stat_1.sum(); // 69.25
+ * auto mean = stat_1.mean(); // 7.695
+ * \endcode
  */
-
 template<typename T>
 class Series
 {
@@ -70,74 +107,160 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Series() = default;
 
     /*!
-     * \brief Series
-     * \param data
+     * \brief Constructs a series from an initializer list of values.
+     * \param[in] data The list of values to initialize the series with.
      */
     Series(std::initializer_list<T> data);
 
     /*!
-     * \brief Series
-     * \param[in] data
+     * \brief Constructs a series from an initializer list of string-value pairs.
+     * \param[in] data The list of string-value pairs to initialize the series with.
      */
     Series(std::initializer_list<std::pair<std::string, T>> data);
 
     /*!
-     * \brief Series
-     * \param[in] data
+     * \brief Constructs a series from an initializer list of size_t-value pairs.
+     * \param[in] data The list of size_t-value pairs to initialize the series with.
      */
     Series(std::initializer_list<std::pair<size_t, T>> data);
 
     /*!
-     * \brief Copy constructor
-     * \param[in] series Series object to copy
+     * \brief Copy constructor.
+     * \param[in] series The series to copy from.
      */
     Series(const Series<T> &series);
 
     /*!
-     * \brief Move constructor
-     * \param[in] series Series object to move
+     * \brief Move constructor.
+     * \param[in] series The series to move from.
      */
     Series(Series<T> &&series) TL_NOEXCEPT;
 
+    /*!
+     * \brief Destructor.
+     */
     ~Series();
 
-
     /*!
-     * \brief Copy assignment operator
-     * \param[in] series Series object to copy
+     * \brief Copy assignment operator.
+     * \param[in] series The series to copy from.
      */
     auto operator = (const Series<T> &series) -> Series &;
 
     /*!
-     * \brief Move assignment operator
-     * \param[in] series Series object to move
+     * \brief Move assignment operator.
+     * \param[in] series The series to move from.
      */
     auto operator = (Series<T> &&series) TL_NOEXCEPT -> Series &;
 
+    /*!
+     * \brief Returns the size of the series.
+     * \return The number of elements in the series.
+     */
     auto size() const -> size_t;
 
+    /*!
+     * \brief Access element by index.
+     * \param[in] idx The index of the element.
+     * \return Reference to the element at the specified index.
+     */
     auto operator[](size_t idx) -> reference;
+
+    /*!
+     * \brief Access element by index (const version).
+     * \param[in] idx The index of the element.
+     * \return Const reference to the element at the specified index.
+     */
     auto operator[](size_t idx) const -> const_reference;
+
+    /*!
+     * \brief Access element by string key.
+     * \param[in] idx The string key of the element.
+     * \return The element associated with the given key.
+     */
     auto operator[](const std::string &idx) -> T;
 
     //void setData(std::initializer_list<T> data);
     //void setData(std::initializer_list<std::pair<std::string, T>> data);
     //void setData(std::initializer_list<std::pair<size_t, T>> data);
 
+    /*!
+     * \brief Access element by string key.
+     * \param idx The string key of the element.
+     * \return The element associated with the given key.
+     */
     auto front() -> reference;
+
+    /*!
+     * \brief Returns a const reference to the first element in the series.
+     * \return Const reference to the first element.
+     */
     auto front() const -> const_reference;
+
+    /*!
+     * \brief Returns a reference to the last element in the series.
+     * \return Reference to the last element.
+     */
     auto back()  -> reference;
+
+    /*!
+     * \brief Returns a const reference to the last element in the series.
+     * \return Const reference to the last element.
+     */
     auto back() const -> const_reference;
+
+    /*!
+     * \brief Returns an iterator to the beginning of the series.
+     * \return Iterator to the beginning.
+     */
     auto begin() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to the beginning of the series.
+     * \return Const iterator to the beginning.
+     */
     auto begin() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Returns an iterator to the end of the series.
+     * \return Iterator to the end.
+     */
     auto end() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to the end of the series.
+     * \return Const iterator to the end.
+     */
     auto end() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Returns a reverse iterator to the beginning of the reversed series.
+     * \return Reverse iterator to the beginning of the reversed series.
+     */
     auto rbegin() TL_NOEXCEPT -> reverse_iterator;
+
+    /*!
+     * \brief Returns a const reverse iterator to the beginning of the reversed series.
+     * \return Const reverse iterator to the beginning of the reversed series.
+     */
     auto rbegin() const TL_NOEXCEPT -> const_reverse_iterator;
+
+    /*!
+     * \brief Returns a reverse iterator to the end of the reversed series.
+     * \return Reverse iterator to the end of the reversed series.
+     */
     auto rend() TL_NOEXCEPT -> reverse_iterator;
+
+    /*!
+     * \brief Returns a const reverse iterator to the end of the reversed series.
+     * \return Const reverse iterator to the end of the reversed series.
+     */
     auto rend() const TL_NOEXCEPT -> const_reverse_iterator;
 
 };
@@ -423,9 +546,7 @@ std::ostream &operator<< (std::ostream &os, const Series<Scalar> &serie)
     return os;
 }
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

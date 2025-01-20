@@ -27,36 +27,40 @@
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/lapack.h"
+#include "tidop/math/base/lapack.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
+
+/*! \addtogroup Decomposition
  *  \{
  */
 
+/// \cond
 
- /*! \addtogroup algebra
-  *  \{
-  */
-
-
-  /*!
-   * \brief Factorización Cholesky
-   *
-   * Cualquier matriz cuadrada A con pivotes no nulos puede ser escrita como el producto
-   * de una matriz triangular inferior L y una matriz triangular superior U; esto recibe
-   * el nombre de factorización LU. Sin embargo, si A es simétrica y definida positiva,
-   * se pueden escoger los factores tales que U es la transpuesta de L, y esto se llama
-   * la descomposición o factorización de Cholesky.
-   *
-   * La matriz A tiene que ser simétrica y definida positiva.
-   */
 template<typename T>
 class CholeskyDecomposition;
 
+/// \endcond
+
+/*!
+ * \brief Cholesky Decomposition
+ *
+ * This class provides an implementation of the Cholesky decomposition, which is a method
+ * for decomposing a positive-definite, symmetric matrix into the product of a lower triangular
+ * matrix L and its transpose, such that \( A = L L^T \).
+ *
+ * Given a matrix \( A \), if it is symmetric and positive-definite, the Cholesky decomposition
+ * can be used to find \( L \), the lower triangular matrix. The matrix \( A \) must be symmetric
+ * and positive-definite for the decomposition to be applicable.
+ *
+ * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
+ * \tparam T The type of the elements in the matrix (e.g., `double`).
+ * \tparam _rows The number of rows in the matrix.
+ * \tparam _cols The number of columns in the matrix.
+ */
 template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -66,13 +70,45 @@ class CholeskyDecomposition<Matrix_t<T, _rows, _cols>>
 
 public:
 
+    /*!
+     * \brief Constructs a Cholesky Decomposition from a given matrix
+     *
+     * This constructor performs the Cholesky decomposition of the given matrix \( A \) and
+     * stores the resulting lower triangular matrix \( L \).
+     *
+     * \param[in] a The matrix \( A \) to decompose, which must be symmetric and positive-definite.
+     */
     CholeskyDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
+    /*!
+     * \brief Solves the system of equations \( A \cdot x = b \) using the Cholesky decomposition
+     *
+     * Using the decomposed matrix \( L \), this method solves the system of linear equations
+     * \( A \cdot x = b \), where \( A \) is the matrix and \( b \) is the right-hand side vector.
+     * The solution is obtained by first solving \( L \cdot y = b \), and then solving \( L^T \cdot x = y \).
+     *
+     * \param[in] b The right-hand side vector \( b \).
+     * \return The solution vector \( x \).
+     */
+    auto solve(const Vector<T, _rows> &b) -> Vector<T, _rows>;
+
+    /*!
+     * \brief Gets the lower triangular matrix \( L \)
+     *
+     * This method returns the lower triangular matrix \( L \) from the Cholesky decomposition,
+     * such that \( A = L L^T \).
+     *
+     * \return The lower triangular matrix \( L \).
+     */
     auto l() const -> Matrix<T, _rows, _cols>;
 
 private:
 
+    /*!
+     * \brief Performs the Cholesky decomposition
+     *
+     * This private method decomposes the matrix \( A \) into its lower triangular matrix \( L \).
+     */
     void decompose();
 
 protected:
@@ -105,7 +141,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
+auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b) -> Vector<T, _rows>
 {
     TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
 
@@ -181,8 +217,6 @@ auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::l() const -> Matrix<T, _r
     return L;
 }
 
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

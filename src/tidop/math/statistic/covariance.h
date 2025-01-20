@@ -30,25 +30,45 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
 
-
-
-/*! \addtogroup statistics Statistics
+/*! \addtogroup Statistics
  *  \{
  */
 
 
 /*!
- * \brief covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- * \param firstX
- * \param lastX
- * \param firstY
- * \param lastY
- * \return
+ * \brief %Covariance of two datasets
+ * 
+ * The `covariance` function calculates the covariance between two datasets. %Covariance measures
+ * the degree to which two random variables change together. It is a measure of the linear relationship 
+ * between two variables. The formula for covariance is:
+ * 
+ * \f[ S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n} \f]
+ * 
+ * \param firstX Iterator to the beginning of the first dataset
+ * \param lastX Iterator to the end of the first dataset
+ * \param firstY Iterator to the beginning of the second dataset
+ * \param lastY Iterator to the end of the second dataset
+ * \return The covariance between the two datasets
+ * 
+ * \note The function assumes that the two datasets have the same length.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * #include <iostream>
+ * #include <vector>
+ * #include <tidop/math/statistic/covariance.h>
+ *
+ * int main() {
+ *     std::vector<double> dataX = {2.3, 3.5, 4.1, 5.2, 6.3};
+ *     std::vector<double> dataY = {1.1, 2.2, 3.4, 4.6, 5.0};
+ * 
+ *     double cov = covariance(dataX.begin(), dataX.end(), dataY.begin(), dataY.end());
+ *     Message::info("Covariance: {}", cov)
+ * 
+ *     return 0;
+ * }
+ * \endcode
  */
 template<typename It>
 auto covariance(It firstX, It lastX, It firstY, It lastY) -> enableIfIntegral<iteratorValueType<It>,double>
@@ -99,8 +119,35 @@ auto covariance(It firstX, It lastX, It firstY, It lastY) -> enableIfFloating<it
 
 
 /*!
- * /brief Covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
+ * \brief %Covariance class
+ *
+ * The `Covariance` class provides an interface for calculating the covariance between two series of data.
+ * It offers a method to evaluate the covariance between two Series objects. %Covariance measures how two
+ * datasets change together, with a positive covariance indicating that the variables tend to increase together,
+ * and a negative covariance indicating that one increases while the other decreases.
+ *
+ * \tparam T The type of the elements in the series (e.g., `double`, `int`).
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * #include <iostream>
+ * #include <vector>
+ * #include <tidop/math/statistic/covariance.h>
+ *
+ * int main() {
+ *     std::vector<double> dataX = {2.3, 3.5, 4.1, 5.2, 6.3};
+ *     std::vector<double> dataY = {1.1, 2.2, 3.4, 4.6, 5.0};
+ *
+ *     Covariance<double> covarianceCalculator;
+ *     Series<double> seriesX(dataX.begin(), dataX.end());
+ *     Series<double> seriesY(dataY.begin(), dataY.end());
+ *
+ *     double cov = covarianceCalculator.eval(seriesX, seriesY);
+ *     Message::info("Covariance: {}", cov)
+ *
+ *     return 0;
+ * }
+ * \endcode
  */
 template<typename T>
 class Covariance
@@ -108,9 +155,29 @@ class Covariance
 
 public:
 
-    Covariance();
-    ~Covariance();
+    /*!
+     * \brief Default constructor
+     */
+    Covariance() = default;
 
+    /*!
+     * \brief Destructor
+     */
+    ~Covariance() = default;
+
+    /*!
+     * \brief Evaluates the covariance between two Series
+     *
+     * This method calculates the covariance between two series using the formula:
+     *
+     * \f[ S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n} \f]
+     *
+     * \param[in] series1 The first data series
+     * \param[in] series2 The second data series
+     * \return The covariance between the two series
+     *
+     * \note The two series must have the same length.
+     */
     auto eval(const Series<T> &series1,
               const Series<T> &series2) -> double;
 
@@ -118,16 +185,6 @@ public:
 
 
 /* Implementation */
-
-template<typename T>
-Covariance<T>::Covariance()
-{
-}
-
-template<typename T>
-Covariance<T>::~Covariance()
-{
-}
 
 template<typename T>
 auto Covariance<T>::eval(const Series<T> &series1,
@@ -176,8 +233,6 @@ auto Covariance<T>::eval(const Series<T> &series1,
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

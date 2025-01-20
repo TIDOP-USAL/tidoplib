@@ -41,14 +41,14 @@ class Progress;
  * \{
  */
 
- /*!
-  * \class TaskTree
-  * 
-  * \brief Class for managing a task tree with parent-child dependencies.
-  *
-  * This class allows tasks to be organized in a hierarchical structure where tasks can have parent tasks.
-  * The tasks are executed respecting these dependencies. Tasks in the tree can be stopped or executed based on their status.
-  */
+/*!
+ * \class TaskTree
+ * 
+ * \brief Class for managing a task tree with parent-child dependencies.
+ *
+ * This class allows tasks to be organized in a hierarchical structure where tasks can have parent tasks.
+ * The tasks are executed respecting these dependencies. Tasks in the tree can be stopped or executed based on their status.
+ */
 class TL_EXPORT TaskTree
   : public TaskBase
 {

@@ -31,18 +31,29 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
-
-/*! \defgroup statistics Statistics
- *  \{
- */
 
 /*!
- * /brief Tukey's fences
+ * \brief Tukey's fences
  *
+ * Tukey's fences are a statistical method used to identify outliers in a dataset.
+ * They utilize the interquartile range (IQR) to establish cut-off points for determining
+ * outliers and far out points.
+ *
+ * The fences are defined as:
+ * \f[
+ * \text{Lower Fence} = Q_1 - k \times \text{IQR}
+ * \]
+ * \f[
+ * \text{Upper Fence} = Q_3 + k \times \text{IQR}
+ * \]
+ * where \( Q_1 \) is the first quartile, \( Q_3 \) is the third quartile, and \( k \) is a multiplier
+ * that typically takes the values 1.5 for outliers and 3 for far out points.
+ *
+ * \tparam T Type of the elements in the series.
  */
 template<typename T>
 class TukeyFences
@@ -50,33 +61,37 @@ class TukeyFences
 
 public:
 
+    /*!
+     * \enum K
+     * \brief Enum to specify the type of fence to use.
+     * \var outlier Standard outlier detection with \( k = 1.5 \).
+     * \var far_out Detection of far out points with \( k = 3 \).
+     */
     enum class K
     {
-        outlier, /* k = 1.5 */
-        far_out  /* k = 3   */
+        outlier, /*!< \( k = 1.5 \) */
+        far_out  /*!< \( k = 3 \) */
     };
 
 public:
 
-    TukeyFences();
-    ~TukeyFences();
+    TukeyFences() = default;
+    ~TukeyFences() = default;
 
+    /*!
+     * \brief Evaluate a series to determine if each element is within the Tukey fences.
+     * \param[in] series The series of data points to evaluate.
+     * \param[in] k The type of fence to apply (outlier or far_out).
+     * \return A vector of booleans indicating whether each element is within the fences.
+     */
     auto eval(const Series<T>& series, K k = K::outlier) -> std::vector<bool>;
 
 };
 
+/*! \} */
+
 
 /* Implementation */
-
-template<typename T>
-TukeyFences<T>::TukeyFences()
-{
-}
-
-template<typename T>
-TukeyFences<T>::~TukeyFences()
-{
-}
 
 template<typename T>
 auto TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k) -> std::vector<bool>
@@ -106,10 +121,5 @@ auto TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k) -> std::
 
     return inliers;
 }
-
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
 
 } // End namespace tl

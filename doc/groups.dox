@@ -14,11 +14,11 @@
  *
  * - \ref AppManagement "Application Management": Provides classes and utilities for managing application-level 
  *   tasks. This includes:
- *   - \ref App: For managing application instances and metadata.
- *   - \ref Log: For logging messages with different levels of severity.
- *   - \ref Licence and \ref AppLicence: For managing licensing information for the 
+ *   - App: For managing application instances and metadata.
+ *   - Log: For logging messages with different levels of severity.
+ *   - Licence and AppLicence: For managing licensing information for the 
  *     application and third-party libraries.
- *   - \ref Message: For emitting and managing application messages, such as debug 
+ *   - Message: For emitting and managing application messages, such as debug 
  *     information, warnings, and errors.
  *
  * - \ref Console "Console tools": A suite of tools designed for console-based applications. This includes 
@@ -50,7 +50,8 @@
 /*! 
  * \defgroup StringUtils String Utilities
  * \ingroup Base
- * 
+ * \brief Utilities for manipulating strings. 
+ *
  * This group contains utility functions for manipulating strings. These functions provide operations such as
  * case-insensitive string comparison, trimming whitespace, replacing substrings, and converting between string
  * and wide string formats.
@@ -242,7 +243,7 @@
  
  
 /*!
- * \defgroup Task
+ * \defgroup Task Tasks
  * \brief Task-related classes and functionality.
  * \ingroup Core
  *
@@ -421,3 +422,153 @@
  * such as \ref Resize "resizing", \ref ResizeCanvas "modifying the canvas dimensions", and applying \ref AffineTransform "affine transformations".
  */
  
+ 
+ 
+/*!
+ * \defgroup MathTools Mathematical Tools
+ * \brief A collection of utility functions and classes for mathematical operations.
+ *
+ * This module provides a variety of tools for performing common mathematical
+ * tasks such as linear algebra, geometry calculations, numerical methods, and
+ * more. It includes utility functions, constants, and classes that facilitate
+ * the implementation of complex mathematical operations in a simplified manner.
+ *
+ */
+ 
+/*! 
+ * \defgroup Statistics Statistics
+ * \ingroup MathTools
+ * 
+ * \brief Statistical operations and functions
+ * 
+ * This module encompasses mathematical operations related to statistical analysis, 
+ * such as mean, variance, standard deviation, correlation, and more.
+ */
+ 
+/*! 
+ * \defgroup Algebra Algebra
+ * \ingroup MathTools
+ * 
+ * \brief Algebraic operations and structures
+ * 
+ * This module provides fundamental algebraic operations, such as matrix operations, 
+ * vector operations, solving systems of equations, and more.
+ */
+ 
+/*!
+ * \defgroup Matrix Matrix
+ * \ingroup Algebra
+ * 
+ * \brief %Matrix operations and structures
+ * 
+ * This module contains operations related to matrices, including matrix multiplication, 
+ * inversion, determinant computation, and eigenvalue decomposition.
+ */
+
+/*!
+ * \defgroup Vector Vector
+ * \ingroup Algebra
+ * 
+ * \brief %Vector operations and structures
+ * 
+ * This group includes operations on vectors, such as addition, scalar multiplication, 
+ * dot product, cross product, and normalization.
+ */
+ 
+/*!
+ * \defgroup Decomposition Matrix decompositions.
+ * \ingroup Algebra
+ * 
+ * \brief Matrix decompositions are methods that decompose a matrix into products of simpler matrices, 
+ * which can be useful in solving systems of linear equations, eigenvalue problems, and more.
+ * 
+ * ### Available Decompositions:
+ * 
+ * - **LU Decomposition**: 
+ *   - The LU decomposition factors a matrix \( A \) into the product of a lower triangular matrix \( L \) 
+ *     and an upper triangular matrix \( U \).
+ *   - Suitable for square matrices and widely used for solving linear systems, inverting matrices, 
+ *     and computing determinants.
+ *   - \f[ A = LU \f]
+ * 
+ * - **QR Decomposition**:
+ *   - Decomposes a matrix \( A \) into an orthogonal matrix \( Q \) and an upper triangular matrix \( R \).
+ *   - Useful for solving least squares problems, eigenvalue problems, and as a step in other decompositions.
+ *   - \f[ A = QR \f]
+ *   - Where \( Q^T Q = I \), meaning \( Q \) is orthogonal.
+ * 
+ * - **Cholesky Decomposition**:
+ *   - A specialized decomposition for symmetric, positive-definite matrices \( A \), factorized into \( L \) and \( L^T \), 
+ *     where \( L \) is a lower triangular matrix.
+ *   - \f[ A = LL^T \f]
+ *   - It is more efficient than LU decomposition for this class of matrices and is used in numerical simulations, 
+ *     optimizations, and solving linear systems.
+ * 
+ * - **Singular Value Decomposition (SVD)**:
+ *   - Factorizes a matrix \( A \) into three matrices: \( U \), \( \Sigma \), and \( V^T \) such that:
+ *     \f[ A = U \Sigma V^T \f]
+ *   - \( U \) and \( V \) are orthogonal matrices, and \( \Sigma \) is a diagonal matrix with singular values.
+ *   - SVD is widely used in statistics, signal processing, and machine learning for dimensionality reduction, 
+ *     pseudo-inverse computation, and solving ill-posed problems.
+ * 
+ * Each decomposition method provided here is implemented through specialized classes that encapsulate the 
+ * decomposition logic and provide methods for solving linear systems, extracting factors, and more.
+ */
+
+/*! 
+ * \defgroup Rotations Rotations
+ * \ingroup Algebra
+ * 
+ * \brief 3D rotation representation and operations
+ * 
+ * This module provides various mathematical representations for rotations in 3D space:
+ * - **Axis-Angle**: A representation based on a rotation axis and an angle of rotation.
+ * - **Euler Angles**: A sequence of rotations about different axes (e.g., XYZ, ZYX).
+ * - **Rotation Matrices**: A 3x3 matrix that represents a rotation in 3D space.
+ * - **Quaternions**: A more compact and efficient representation of rotations, avoiding issues like gimbal lock.
+ * 
+ * The operations supported in this module allow for the manipulation, combination, and conversion between different rotation representations.
+ */
+ 
+/*! 
+ * \defgroup Geometry Geometry
+ * \ingroup MathTools
+ * 
+ * \brief Geometric transformations and operations.
+ * 
+ * The `Geometry` module encompasses all geometric operations, transformations, and utilities used within the library. This includes operations on points, vectors, and transformations such as scaling, rotation, translation, and affine transformations.
+ * 
+ */
+
+/*! 
+ * \defgroup GeometricTransformations Geometric Transformations
+ * \ingroup Geometry
+ * 
+ * \brief Transformations on geometric objects.
+ * 
+ * The `GeometricTransformations` module includes the fundamental operations that transform geometric objects like points, vectors, and matrices. These transformations are essential for tasks like object scaling, rotation, translation, and affine transformations. 
+ * 
+ * Transformations can be applied in various dimensions (2D, 3D, etc.), and they are implemented using different mathematical constructs like matrices, quaternions, and Euler angles.
+ * 
+ */
+
+/*! 
+ * \defgroup Estimators Estimators
+ * \ingroup GeometricTransformations
+ * 
+ * \brief Estimators for geometric transformations.
+ * 
+ * The `Estimators` module contains the algorithms and classes responsible for estimating transformation parameters between two sets of geometric objects. These estimators include methods for computing transformations such as scaling, rotation, translation, and affine transformations based on point correspondences.
+ * 
+ */
+ 
+/*!
+ * \defgroup MathBase Base
+ * \ingroup MathTools
+ *
+ * \brief Mathematical tools and utilities.
+ *
+ * This module contains various essential components and utilities for mathematical 
+ * computations, including support for BLAS, LAPACK, CUDA, SIMD operations, and data 
+ * structures.
+ */

@@ -54,9 +54,8 @@ TL_EXPORT uint32_t optimalNumberOfThreads();
 /*!
  * \brief Iterates over a range of indices and executes a function in parallel
  * 
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
  * std::vector<int> aux(nums.size());
  *
@@ -77,9 +76,8 @@ TL_EXPORT void parallel_for(size_t ini,
 /*!
  * \brief Iterates over a range and executes a function in parallel
  * 
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
  * struct Sum
  * {

@@ -50,25 +50,24 @@ class ImageMetadata;
  */
 
 
- /*!
-  * \brief Class for writing different image formats.
-  *
-  * The `ImageWriter` class provides an abstract interface for writing images to various formats.
-  * It supports setting metadata, creating images, and writing image blocks to specific regions.
-  * Derived classes must implement the pure virtual functions to handle specific image formats.
-  *
-  * <h4>Example Usage</h4>
-  *
-  * \code
-  * tl::Path outputPath("output.tif");
-  * auto writer = ImageWriterFactory::create(outputPath);
-  * writer->open();
-  * writer->create(100, 200, 3, DataType::UInt8);
-  * cv::Mat image = cv::Mat::zeros(100, 200, CV_8UC3);
-  * writer->write(image);
-  * writer->close();
-  * \endcode
-  */
+/*!
+ * \brief Class for writing different image formats.
+ *
+ * The `ImageWriter` class provides an abstract interface for writing images to various formats.
+ * It supports setting metadata, creating images, and writing image blocks to specific regions.
+ * Derived classes must implement the pure virtual functions to handle specific image formats.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * tl::Path outputPath("output.tif");
+ * auto writer = ImageWriterFactory::create(outputPath);
+ * writer->open();
+ * writer->create(100, 200, 3, DataType::UInt8);
+ * cv::Mat image = cv::Mat::zeros(100, 200, CV_8UC3);
+ * writer->write(image);
+ * writer->close();
+ * \endcode
+ */
 class TL_EXPORT ImageWriter
 {
 
@@ -210,9 +209,8 @@ protected:
  * based on the file format of the provided path. It automatically selects the appropriate
  * `ImageWriter` implementation for the specified format.
  *
- * <h4>Example Usage</h4>
- *
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * tl::Path outputPath("output.tif");
  * auto writer = ImageWriterFactory::create(outputPath);
  * writer->open();

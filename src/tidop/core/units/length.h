@@ -48,9 +48,8 @@ constexpr enableIfFloating<T,T> foot_to_metres = static_cast<T>(0.3048);
  * imperial systems (e.g., feet, inches). Conversion is handled internally by mapping each
  * unit to a base unit (metres for metric, feet for imperial) and applying scaling factors.
  *
- * \h4 Example Usage </h4>
- *
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * double lengthInFeet = LengthConverter::convert(100.0, LengthConverter::Units::metre, LengthConverter::Units::foot);
  * double lengthInKilometres = LengthConverter::convert(lengthInFeet, LengthConverter::Units::foot, LengthConverter::Units::kilometre);
  * \endcode

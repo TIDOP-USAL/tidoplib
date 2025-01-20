@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop cholesky test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/cholesky.h>
+#include <tidop/math/algebra/decomp/cholesky.h>
 
 using namespace tl;
 

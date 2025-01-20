@@ -41,43 +41,22 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
+/*! \addtogrop Statistics
+ * \{
  */
-
-
-/*! \defgroup statistics Statistics
- *  \{
- */
-
-/*! \defgroup CentralTendency Measure of central tendency
- *  \{
- * 
- * - Mean
- * - Median
- * - Mode
- */
-
-/*! \} */ // end of Measure of Central Tendency
-
-
-/*! \defgroup dispersion Statistical dispersion
- *  \{
- * Measures of dispersion
- * - Range
- * - Variance
- * - Standard deviation
- * - Coefficient of variation
- * - Inter-quantile range
- */
-
 
 /*!
  * \brief Coefficient of variation (CV) or Relative Standard Deviation (RSD)
+ *
+ * The coefficient of variation describes the dispersion of a dataset relative to its mean.
+ * It is the ratio of the standard deviation to the absolute value of the mean:
+ *
  * \f[ C_V = \frac{\sigma}{|\bar{x}|} \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Coeficiente de variación para el conjunto de datos
+ *
+ * \param[in] first Iterator to the first element in the data range
+ * \param[in] last Iterator to the last element in the data range
+ * \return Coefficient of variation for the given dataset
+ *
  */
 template<typename It>
 auto coefficientOfVariation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -85,6 +64,20 @@ auto coefficientOfVariation(It first, It last) -> enableIfIntegral<iteratorValue
     return standarDeviation(first, last) / std::abs(mean(first, last));
 }
 
+/*!
+ * \brief Coefficient of variation (CV) or Relative Standard Deviation (RSD)
+ *
+ * The coefficient of variation describes the dispersion of a dataset relative to its mean.
+ * It is the ratio of the standard deviation to the absolute value of the mean:
+ *
+ * \f[ C_V = \frac{\sigma}{|\bar{x}|} \f]
+ *
+ * \param[in] first Iterator to the first element in the data range
+ * \param[in] last Iterator to the last element in the data range
+ * \return Coefficient of variation for the given dataset
+ *
+ * \ingroup dispersion
+ */
 template<typename It>
 auto coefficientOfVariation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
 {
@@ -92,21 +85,17 @@ auto coefficientOfVariation(It first, It last) -> enableIfFloating<iteratorValue
 }
 
 
-/*! \} */ // end of Dispersion
-
-
-template<typename itIn, typename itOut>
-auto rootMeanSquareError(itIn inFirst, itIn inLast, itOut outFirst) -> double
-{
-    double rms = 0.;
-    while (inFirst != inLast) {
-        //  rms
-        //  trf->transform(*in_first++, &(*out_first++), trfOrder);
-    }
-    return rms;
-}
-
-
+/*!
+ * \brief Z-Score normalization
+ *
+ * The Z-score normalization is a statistical method that transforms a dataset by subtracting
+ * the mean and dividing by the standard deviation for each data point. The Z-score represents
+ * the number of standard deviations a value is from the mean.
+ *
+ * \param[in] inFirst Iterator to the first element in the data range
+ * \param[in] inLast Iterator to the last element in the data range
+ * \param[out] outFirst Iterator to store the normalized Z-scores
+ */
 template<typename itIn, typename itOut>
 void zScore(itIn inFirst, itIn inLast, itOut outFirst)
 {
@@ -119,8 +108,6 @@ void zScore(itIn inFirst, itIn inLast, itOut outFirst)
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

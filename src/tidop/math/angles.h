@@ -32,14 +32,43 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup MathTools
  *  \{
  */
 
-/*! \addtogroup angleConversion
+/*!
+ * \defgroup angleConversion Angle conversion
+ *
+ * \brief Functions and classes for converting between different angle units.
+ *
+ * This group contains classes and functions for handling angles in different units
+ * (degrees, radians, and gradians) and converting between these units.
+ *
+ * \section angleConversionExample Example
+ *
+ * The following example demonstrates how to convert an angle from degrees to radians using
+ * the `AngleConverter` class:
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * Degrees<double> degrees(135, 34, 27);
+ * Radians<double> radians = degrees;
+ *
+ * Message::info("The angle in radians is: {}", radians.value());
+ * \endcode
+ *
+ * The output will be:
+ * The angle in radians is: 2.3662161708
+ * 
  * \{
  */
 
+/*!
+ * \brief Determines if a value is negative.
+ * \tparam T The type of the value.
+ * \param t The value to check.
+ * \return -1 if the value is negative, 1 otherwise.
+ */
 template<typename T>
 auto isNegative(T t) -> int
 {
@@ -48,7 +77,10 @@ auto isNegative(T t) -> int
 
 
 /*!
- * \brief Angle interface
+ * \brief Interface for angle representation and manipulation.
+ *
+ * The `Angle` class provides a base interface for representing angles in
+ * different units and includes methods for normalizing these angles.
  */
 class Angle
 {
@@ -56,33 +88,47 @@ class Angle
 public:
 
     /*!
-     * \brief Angle units
+     * \brief Enumeration of supported angle units.
      */
     enum class Unit
     {
-        radians,
-        degrees,
-        gradians
+        radians, /*!< Angle in radians. */
+        degrees, /*!< Angle in degrees. */
+        gradians /*!< Angle in gradians. */
     };
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Angle() = default;
+
+    /*!
+     * \brief Virtual destructor.
+     */
     virtual ~Angle() = default;
 
     /*!
-     * \brief Angle unit
+     * \brief Get the unit of the angle.
+     * \return The unit of the angle.
      * \see Unit
      */
-    virtual auto unit() const -> Unit = 0;
+    virtual auto unit() const->Unit = 0;
 
     /*!
-     * \brief Normalize angle
+     * \brief Normalize the angle.
+     *
+     * This method adjusts the angle to a standard range (typically within
+     * \f$-\pi\f$ to \f$\pi\f$ for radians or \f$-180^\circ\f$ to \f$180^\circ\f$ for degrees).
      */
     virtual void normalize() = 0;
 
     /*!
-     * \brief normalize angle positive
+     * \brief Normalize the angle to a positive range.
+     *
+     * This method adjusts the angle to a positive range (typically within
+     * \f$0\f$ to \f$2\pi\f$ for radians or \f$0^\circ\f$ to \f$360^\circ\f$ for degrees).
      */
     virtual void normalizePositive() = 0;
 };
@@ -96,6 +142,15 @@ template<typename T>
 class AngleBase;
 
 
+/*!
+ * \brief Template class for base angle representation and conversion.
+ *
+ * This class provides a common base for angle representation in various units
+ * and allows for conversions between different derived angle types.
+ *
+ * \tparam AngleDerived The derived angle class template.
+ * \tparam T The type used for the angle value (e.g., `double` or `float`).
+ */
 template<
   template<typename>
   class AngleDerived, typename T>
@@ -105,23 +160,75 @@ class AngleBase<AngleDerived<T>>
 
 private:
 
-    Unit mUnit;
-    T mValue;
+    Unit mUnit; /*!< The unit of the angle (e.g., radians, degrees). */
+    T mValue; /*!< The value of the angle. */
 
 public:
 
+    /*!
+     * \brief Construct an angle with a specific unit.
+     * \param[in] unit The unit of the angle.
+     */
     explicit AngleBase(Unit unit);
+
+    /*!
+     * \brief Construct an angle with a specific unit and value.
+     * \param[in] unit The unit of the angle.
+     * \param[in] value The value of the angle.
+     */
     AngleBase(Unit unit, T value);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] angle The angle to copy.
+     */
     AngleBase(const AngleBase &angle);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] angle The angle to move.
+     */
     AngleBase(AngleBase &&angle) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~AngleBase() override = default;
 
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] angle The angle to copy.
+     * \return A reference to the updated object.
+     */
     auto operator=(const AngleBase &angle) -> AngleBase&;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] angle The angle to move.
+     * \return A reference to the updated object.
+     */
     auto operator=(AngleBase &&angle) TL_NOEXCEPT -> AngleBase&;
 
-    virtual auto value() const -> T;
-    auto unit() const -> Unit override;
+    /*!
+     * \brief Get the value of the angle.
+     * \return The value of the angle.
+     */
+    virtual auto value() const->T;
 
+    /*!
+     * \brief Get the unit of the angle.
+     * \return The unit of the angle.
+     */
+    auto unit() const->Unit override;
+
+    /*!
+     * \brief Conversion operator to another derived angle type.
+     *
+     * Converts the current angle to a different derived angle type.
+     * \tparam AngleDerived2 The target derived angle class template.
+     * \tparam T2 The target value type.
+     * \return An instance of the target angle type.
+     */
     template<
         template<typename>
     class AngleDerived2, typename T2>
@@ -134,11 +241,19 @@ public:
 
 private:
 
+    /*!
+     * \brief Get a reference to the derived class instance.
+     * \return A reference to the derived class instance.
+     */
     auto derived() -> AngleDerived<T> &
     {
         return *static_cast<AngleDerived<T> *>(this);
     }
 
+    /*!
+     * \brief Get a constant reference to the derived class instance.
+     * \return A constant reference to the derived class instance.
+     */
     auto derived() const -> const AngleDerived<T> &
     {
         return *static_cast<const AngleDerived<T> *>(this);
@@ -153,8 +268,12 @@ protected:
 
 
 /*!
- * \brief Radians class
+ * \brief Class representing an angle in radians.
  *
+ * The `Radians` class inherits from `AngleBase` and provides specific
+ * implementations for handling angles in radians.
+ *
+ * \tparam T The type used for the angle value (e.g., `double` or `float`).
  */
 template<typename T>
 class Radians
@@ -163,16 +282,62 @@ class Radians
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes the angle to zero radians.
+     */
     Radians();
+
+    /*!
+     * \brief Constructor with an initial angle value.
+     * \param[in] angle The initial angle value in radians.
+     */
     Radians(T angle);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] radians The `Radians` object to copy.
+     */
     Radians(const Radians &radians);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] radians The `Radians` object to move.
+     */
     Radians(Radians &&radians) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~Radians() override = default;
 
-    auto operator=(const Radians &radians) -> Radians&;
-    auto operator=(Radians &&radians) TL_NOEXCEPT -> Radians &;
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] radians The `Radians` object to copy.
+     * \return A reference to the updated object.
+     */
+    auto operator=(const Radians &radians)->Radians &;
 
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] radians The `Radians` object to move.
+     * \return A reference to the updated object.
+     */
+    auto operator=(Radians &&radians) TL_NOEXCEPT->Radians &;
+
+    /*!
+     * \brief Normalize the angle to the range \f$[-\pi, \pi]\f$.
+     *
+     * Ensures that the angle value is within the standard range for radians.
+     */
     void normalize() override;
+
+    /*!
+     * \brief Normalize the angle to the range \f$[0, 2\pi]\f$.
+     *
+     * Ensures that the angle value is positive and within the range of one full circle.
+     */
     void normalizePositive() override;
 
 };
@@ -180,8 +345,12 @@ public:
 
 
 /*!
- * \brief Gradians class
+ * \brief Class representing an angle in gradians.
  *
+ * The `Gradians` class provides functionality for handling angles in gradians,
+ * allowing for normalization and conversion to and from degrees, minutes, and seconds.
+ *
+ * \tparam T The type used for the angle value, typically a floating-point type like `float` or `double`.
  */
 template<typename T>
 class Gradians
@@ -190,23 +359,98 @@ class Gradians
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Constructs a `Gradians` object with a default angle value of zero.
+     */
     Gradians();
+
+    /*!
+     * \brief Constructor with an initial angle value.
+     * \param[in] value The initial angle value in gradians.
+     */
     Gradians(T value);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] gradians The `Gradians` object to copy from.
+     */
     Gradians(const Gradians &gradians);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] gradians The `Gradians` object to move from.
+     */
     Gradians(Gradians &&gradians) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~Gradians() override = default;
 
-    auto operator=(const Gradians &gradians) -> Gradians&;
-    auto operator=(Gradians &&gradians) TL_NOEXCEPT -> Gradians&;
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] gradians The `Gradians` object to copy from.
+     * \return A reference to this object.
+     */
+    auto operator=(const Gradians &gradians)->Gradians &;
 
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] gradians The `Gradians` object to move from.
+     * \return A reference to this object.
+     */
+    auto operator=(Gradians &&gradians) TL_NOEXCEPT->Gradians &;
+
+    /*!
+     * \brief Normalize the angle to the range \f$[-200, 200]\f$.
+     *
+     * Adjusts the angle value to ensure it is within the standard range for gradians.
+     */
     void normalize() override;
+
+    /*!
+     * \brief Normalize the angle to the range \f$[0, 400]\f$.
+     *
+     * Adjusts the angle value to be positive and within a full circle in gradians.
+     */
     void normalizePositive() override;
 
+    /*!
+     * \brief Get the degree component of the angle.
+     * \return The degree component, as an integer.
+     */
     auto degrees() const -> int;
+
+    /*!
+     * \brief Set the degree component of the angle.
+     * \param[in] degrees The degree value to set.
+     */
     void setDegrees(int degrees);
+
+    /*!
+     * \brief Get the minute component of the angle.
+     * \return The minute component, as an integer.
+     */
     auto minutes() const -> int;
+
+    /*!
+     * \brief Set the minute component of the angle.
+     * \param minutes The minute value to set.
+     */
     void setMinutes(int minutes);
-    auto seconds() const -> T;
+
+    /*!
+     * \brief Get the second component of the angle.
+     * \return The second component, as a value of type `T`.
+     */
+    auto seconds() const->T;
+
+    /*!
+     * \brief Set the second component of the angle.
+     * \param seconds The second value to set.
+     */
     void setSeconds(T seconds);
 
 };
@@ -214,8 +458,13 @@ public:
 
 
 /*!
- * \brief Degrees class
+ * \brief Class representing an angle in degrees.
  *
+ * The `Degrees` class provides functionality for handling angles in degrees,
+ * including methods for normalization and setting/getting the degree, minute,
+ * and second components.
+ *
+ * \tparam T The type used for the angle value, typically a floating-point type like `float` or `double`.
  */
 template<typename T>
 class Degrees
@@ -224,24 +473,106 @@ class Degrees
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Constructs a `Degrees` object with a default angle value of zero.
+     */
     Degrees();
+
+    /*!
+     * \brief Constructor with an initial angle value.
+     * \param value The initial angle value in degrees.
+     */
     Degrees(T value);
+
+    /*!
+     * \brief Copy constructor.
+     * \param degrees The `Degrees` object to copy from.
+     */
     Degrees(const Degrees &degrees);
+
+    /*!
+     * \brief Move constructor.
+     * \param degrees The `Degrees` object to move from.
+     */
     Degrees(Degrees &&degrees) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor with degrees, minutes, and seconds components.
+     * \param degrees The degree component.
+     * \param minutes The minute component.
+     * \param seconds The second component.
+     */
     Degrees(int degrees, int minutes, T seconds);
+
+    /*!
+     * \brief Destructor.
+     */
     ~Degrees() override = default;
 
-    auto operator=(const Degrees &degrees) -> Degrees&;
-    auto operator=(Degrees &&degrees) TL_NOEXCEPT -> Degrees&;
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] degrees The `Degrees` object to copy from.
+     * \return A reference to this object.
+     */
+    auto operator=(const Degrees &degrees)->Degrees &;
 
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] degrees The `Degrees` object to move from.
+     * \return A reference to this object.
+     */
+    auto operator=(Degrees &&degrees) TL_NOEXCEPT->Degrees &;
+
+    /*!
+     * \brief Normalize the angle to the range \f$[-180, 180]\f$.
+     *
+     * Adjusts the angle value to ensure it is within the standard range for degrees.
+     */
     void normalize() override;
+
+    /*!
+     * \brief Normalize the angle to the range \f$[0, 360]\f$.
+     *
+     * Adjusts the angle value to be positive and within a full circle in degrees.
+     */
     void normalizePositive() override;
 
+    /*!
+     * \brief Get the degree component of the angle.
+     * \return The degree component, as an integer.
+     */
     auto degrees() const -> int;
+
+    /*!
+     * \brief Set the degree component of the angle.
+     * \param degrees The degree value to set.
+     */
     void setDegrees(int degrees);
+
+    /*!
+     * \brief Get the minute component of the angle.
+     * \return The minute component, as an integer.
+     */
     auto minutes() const -> int;
+
+    /*!
+     * \brief Set the minute component of the angle.
+     * \param minutes The minute value to set.
+     */
     void setMinutes(int minutes);
-    auto seconds() const -> T;
+
+    /*!
+     * \brief Get the second component of the angle.
+     * \return The second component, as a value of type `T`.
+     */
+    auto seconds() const->T;
+
+    /*!
+     * \brief Set the second component of the angle.
+     * \param seconds The second value to set.
+     */
     void setSeconds(T seconds);
 
 };
@@ -249,8 +580,12 @@ public:
 
 
 /*!
- * \brief AngleConverter class
+ * \brief Class for converting between different angle units.
  *
+ * The `AngleConverter` class provides static methods to convert angles
+ * between degrees, radians, and gradians.
+ *
+ * \tparam T The type used for the angle values, typically a floating-point type like `float` or `double`.
  */
 template <typename T>
 class AngleConverter
@@ -263,49 +598,49 @@ private:
 public:
 
     /*!
-     * \brief Convert from degrees to radians
-     * \param[in] degrees Degrees
-     * \param[ou] radians Radians
+     * \brief Convert an angle from degrees to radians.
+     * \param[in] degrees The angle in degrees.
+     * \param[out] radians The converted angle in radians.
      */
     static void convert(const Degrees<T> &degrees,
                         Radians<T> &radians);
 
     /*!
-     * \brief Convert from degrees to gradians
-     * \param[in] degrees Degrees
-     * \param[ou] gradians Gradians
+     * \brief Convert an angle from degrees to gradians.
+     * \param[in] degrees The angle in degrees.
+     * \param[out] gradians The converted angle in gradians.
      */
     static void convert(const Degrees<T> &degrees,
                         Gradians<T> &gradians);
 
     /*!
-     * \brief Convert from gradians to radians
-     * \param[in] gradians Gradians
-     * \param[ou] radians Radians
+     * \brief Convert an angle from gradians to radians.
+     * \param[in] gradians The angle in gradians.
+     * \param[out] radians The converted angle in radians.
      */
     static void convert(const Gradians<T> &gradians,
                         Radians<T> &radians);
 
     /*!
-     * \brief Convert from gradians to degrees
-     * \param[in] gradians Gradians
-     * \param[ou] degrees Degrees
+     * \brief Convert an angle from gradians to degrees.
+     * \param[in] gradians The angle in gradians.
+     * \param[out] degrees The converted angle in degrees.
      */
     static void convert(const Gradians<T> &gradians,
                         Degrees<T> &degrees);
 
     /*!
-     * \brief Convert from radians to degrees
-     * \param[in] radians Radians
-     * \param[ou] degrees Degrees
+     * \brief Convert an angle from radians to degrees.
+     * \param[in] radians The angle in radians.
+     * \param[out] degrees The converted angle in degrees.
      */
     static void convert(const Radians<T> &radians,
                         Degrees<T> &degrees);
 
     /*!
-     * \brief Convert from radians to gradians
-     * \param[in] radians Radians
-     * \param[ou] gradians Gradians
+     * \brief Convert an angle from radians to gradians.
+     * \param[in] radians The angle in radians.
+     * \param[out] gradians The converted angle in gradians.
      */
     static void convert(const Radians<T> &radians,
                         Gradians<T> &gradians);
@@ -828,9 +1163,9 @@ void AngleConverter<T>::convert(const Radians<T> &radians,
 //    return Degrees<double>(degrees);
 //}
 
-/*! \} */ // end of angleConversion  
+/*! \} */
   
-/*! \} */ // end of Math
+/*! \} */
 
 
 } // Fin namespace tl

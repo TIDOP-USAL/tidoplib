@@ -25,26 +25,23 @@
 #pragma once
 
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/rotations.h"
+#include "tidop/math/algebra/rotations/rotations.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Rotations
  *  \{
  */
-
-/*! \addtogroup algebra
- *  \{
- */
-
-/*! \defgroup rotations Rotations
- *  \{
- */
-
 
 /*!
- * \brief Matriz de rotación
+ * \brief Rotation Matrix
+ *
+ * This class represents a 3x3 rotation matrix used to describe rotations in 3D space.
+ * A rotation matrix is an orthogonal matrix with determinant 1. It can be used to
+ * perform linear transformations such as rotation of vectors in 3D space.
+ * It can be directly used to rotate points and vectors in space, and it is often
+ * used in combination with other rotation representations such as quaternions and Euler angles.
  */
 template <typename T>
 class RotationMatrix
@@ -54,14 +51,48 @@ class RotationMatrix
 
 public:
 
+    /*!
+     * \brief Default constructor
+     * Initializes the rotation matrix to the identity matrix.
+     */
     RotationMatrix();
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] rot The rotation matrix object to copy.
+     */
     RotationMatrix(const RotationMatrix<T> &rot);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] rot The rotation matrix object to move.
+     */
     RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor from a matrix
+     * \param[in] rot A 3x3 matrix to initialize the rotation matrix.
+     */
     RotationMatrix(const Matrix<T, 3, 3> &rot);
+
+    /*!
+     * \brief Destructor
+     */
     ~RotationMatrix() override = default;
 
-    RotationMatrix &operator = (const RotationMatrix<T> &rot);
-    RotationMatrix &operator = (RotationMatrix &&rot) TL_NOEXCEPT;
+    /*!
+     * \brief Assignment operator
+     * \param[in] rot The rotation matrix object to copy.
+     * \return A reference to the current rotation matrix.
+     */
+    RotationMatrix &operator=(const RotationMatrix<T> &rot);
+
+    /*!
+     * \brief Move assignment operator
+     * \param[in] rot The rotation matrix object to move.
+     * \return A reference to the current rotation matrix.
+     */
+    RotationMatrix &operator=(RotationMatrix &&rot) TL_NOEXCEPT;
 
 };
 
@@ -115,11 +146,7 @@ RotationMatrix<T> &RotationMatrix<T>::operator = (RotationMatrix &&rot) TL_NOEXC
     return *this;
 }
 
-/*! \} */ // end of rotation
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

@@ -74,7 +74,7 @@ class TL_EXPORT Console
 public:
 
     /*!
-     * \enum Console::Intensity
+     * \enum Intensity
      * \brief Colour intensity values
      */
     enum class Intensity : int8_t
@@ -84,7 +84,7 @@ public:
     };
 
     /*!
-     * \enum Console::Color
+     * \enum Color
      * \brief Background and Foreground colour types
      */
     enum class Color : int8_t
@@ -100,7 +100,7 @@ public:
     };
 
     /*!
-     * \enum Console::Mode
+     * \enum Mode
      * \brief Console modes
      */
     enum class Mode : int8_t
@@ -148,7 +148,7 @@ public:
      * \param[in] backgroundColor The background color to set.
      * \param[in] intensity The color intensity. Default is Intensity::normal.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setBackgroundColor(Console::Color::red, Console::Intensity::bright);
      * Console::instance() << "Text with red background" << std::endl;
@@ -172,7 +172,7 @@ public:
      * \param[in] foregroundColor The foreground color to set.
      * \param[in] intensity The color intensity. Default is Intensity::normal.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setForegroundColor(Console::Color::blue, Console::Intensity::bright);
      * Console::instance() << "Text in bright blue" << std::endl;
@@ -194,7 +194,7 @@ public:
      * Enables Unicode support for the console, allowing characters from multiple languages
      * and symbols to display correctly.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setConsoleUnicode();
      * Console::instance() << "Unicode characters: ✓ ☺ ♥" << std::endl;
@@ -207,7 +207,7 @@ public:
      *
      * \param[in] bold Set to true to enable bold text, false to disable.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setFontBold(true);
      * Console::instance() << "Bold text example" << std::endl;
@@ -225,7 +225,7 @@ public:
      *
      * \param[in] faint Set to true to enable faint text, false to disable.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setFontFaint(true);
      * Console::instance() << "Faint text example" << std::endl;
@@ -243,7 +243,7 @@ public:
      *
      * \param[in] italic Set to true to enable italic text, false to disable.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setFontItalic(true);
      * Console::instance() << "Italic text example" << std::endl;
@@ -261,7 +261,7 @@ public:
      *
      * \param[in] underline Set to true to enable underlined text, false to disable.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setFontUnderline(true);
      * Console::instance() << "Underlined text example" << std::endl;
@@ -281,7 +281,7 @@ public:
      *
      * \param[in] reverse Set to true to enable reversed text, false to disable.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setFontReverse(true);
      * Console::instance() << "Reversed text example" << std::endl;
@@ -299,7 +299,7 @@ public:
      *
      * \param[in] strikethrough Set to true to enable strikethrough text, false to disable.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::instance().setFontStrikethrough(true);
      * Console::instance() << "Strikethrough text example" << std::endl;
@@ -340,7 +340,8 @@ public:
 
     /*!
      * \brief Sets the message level
-     *
+     * 
+     * ### Example Usage
      * Several console levels can be combined:
      *
      * \code
@@ -360,8 +361,8 @@ public:
      * \param[in] os The output stream where the red color will be applied.
      * \return The output stream with red text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::red << "Test" << std::endl;
      * \endcode
      *
@@ -381,8 +382,8 @@ public:
      * \param[in] os The output stream where the green color will be applied.
      * \return The output stream with green text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::green << "Success" << std::endl;
      * \endcode
      *
@@ -402,8 +403,8 @@ public:
      * \param[in] os The output stream where the blue color will be applied.
      * \return The output stream with blue text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::blue << "Information" << std::endl;
      * \endcode
      *
@@ -423,8 +424,8 @@ public:
      * \param[in] os The output stream where the cyan color will be applied.
      * \return The output stream with cyan text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::cyan << "Note" << std::endl;
      * \endcode
      *
@@ -444,8 +445,8 @@ public:
      * \param[in] os The output stream where the magenta color will be applied.
      * \return The output stream with magenta text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::magenta << "Alert" << std::endl;
      * \endcode
      *
@@ -465,8 +466,8 @@ public:
      * \param[in] os The output stream where the yellow color will be applied.
      * \return The output stream with yellow text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::yellow << "Warning" << std::endl;
      * \endcode
      *
@@ -487,8 +488,8 @@ public:
      * \param[in] os The output stream where the black color will be applied.
      * \return The output stream with black text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::black << "Hidden" << std::endl;
      * \endcode
      *
@@ -508,8 +509,8 @@ public:
      * \param[in] os The output stream where the white color will be applied.
      * \return The output stream with white text color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::white << "Standard" << std::endl;
      * \endcode
      *
@@ -529,8 +530,8 @@ public:
      * \param[in] os The output stream where the red background will be applied.
      * \return The output stream with red background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_red << "Error" << std::endl;
      * \endcode
      *
@@ -552,8 +553,8 @@ public:
      * \param[in] os The output stream where the green background will be applied.
      * \return The output stream with green background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_green << "Success" << std::endl;
      * \endcode
      *
@@ -574,8 +575,8 @@ public:
      * \param[in] os The output stream where the blue background will be applied.
      * \return The output stream with blue background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_blue << "Information" << std::endl;
      * \endcode
      *
@@ -596,8 +597,8 @@ public:
      * \param[in] os The output stream where the cyan background will be applied.
      * \return The output stream with cyan background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_cyan << "Note" << std::endl;
      * \endcode
      *
@@ -618,8 +619,8 @@ public:
      * \param[in] os The output stream where the magenta background will be applied.
      * \return The output stream with magenta background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_magenta << "Alert" << std::endl;
      * \endcode
      *
@@ -640,8 +641,8 @@ public:
      * \param[in] os The output stream where the yellow background will be applied.
      * \return The output stream with yellow background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_yellow << "Warning" << std::endl;
      * \endcode
      *
@@ -662,8 +663,8 @@ public:
      * \param[in] os The output stream where the black background will be applied.
      * \return The output stream with black background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_black << "Hidden" << std::endl;
      * \endcode
      *
@@ -683,8 +684,8 @@ public:
      * \param[in] os The output stream where the white background will be applied.
      * \return The output stream with white background color applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bg_white << "Standard" << std::endl;
      * \endcode
      *
@@ -705,8 +706,8 @@ public:
      * \param[in] os The output stream where bold formatting will be applied.
      * \return The output stream with bold text formatting applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::bold << "Bold Text" << std::endl;
      * \endcode
      *
@@ -726,8 +727,8 @@ public:
      * \param[in] os The output stream where faint formatting will be applied.
      * \return The output stream with faint text formatting applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::faint << "Faint Text" << std::endl;
      * \endcode
      *
@@ -748,8 +749,8 @@ public:
      * \param[in] os The output stream where italic formatting will be applied.
      * \return The output stream with italic text formatting applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::italic << "Italic Text" << std::endl;
      * \endcode
      *
@@ -769,8 +770,8 @@ public:
      * \param[in] os The output stream where underline formatting will be applied.
      * \return The output stream with underline text formatting applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::underline << "Underlined Text" << std::endl;
      * \endcode
      *
@@ -791,8 +792,8 @@ public:
      * \param[in] os The output stream where reverse video formatting will be applied.
      * \return The output stream with reverse video text formatting applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::reverse << "Reverse Text" << std::endl;
      * \endcode
      *
@@ -813,8 +814,8 @@ public:
      * \param[in] os The output stream where strikethrough formatting will be applied.
      * \return The output stream with strikethrough text formatting applied.
      *
+     * ### Example Usage
      * \code{.cpp}
-     * // Example usage:
      * Console::instance() << Console::strikethrough << "Strikethrough Text" << std::endl;
      * \endcode
      *
@@ -847,7 +848,7 @@ public:
      * \param[in] s The format string containing the message and placeholders.
      * \param[in] args The arguments to replace the placeholders in the format string.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::debug("Debug message: value1 = {}, value2 = {}", 42, "example");
      * \endcode
@@ -873,7 +874,7 @@ public:
      * \param[in] s The format string containing the message and placeholders.
      * \param[in] args The arguments to replace the placeholders in the format string.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::info("Info message: User = {}, ID = {}", "Alice", 1234);
      * \endcode
@@ -899,7 +900,7 @@ public:
      * \param[in] s The format string containing the message and placeholders.
      * \param[in] args The arguments to replace the placeholders in the format string.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::success("Operation successful: {} files processed", 15);
      * \endcode
@@ -926,7 +927,7 @@ public:
      * \param[in] s The format string containing the message and placeholders.
      * \param[in] args The arguments to replace the placeholders in the format string.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::warning("Disk space is below {}%", 10);
      * \endcode
@@ -953,7 +954,7 @@ public:
      * \param[in] s The format string containing the message and placeholders.
      * \param[in] args The arguments to replace the placeholders in the format string.
      *
-     * Example usage:
+     * ### Example Usage
      * \code{.cpp}
      * Console::error("{}. Error code: {}", "File not found", 404);
      * \endcode

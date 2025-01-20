@@ -43,9 +43,8 @@ namespace tl
 /*!
  * \brief This class allows the use of an enum as a flag.
  *
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * enum class ePrueba : int8_t {
  *    flag_0 = (0 << 0),
  *    flag_1 = (1 << 0),
@@ -303,9 +302,8 @@ auto EnumFlags<T>::flags() const -> T
  *
  * This macro must be added below the enum declaration.
  *
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * enum class FlagTest : int8_t {
  *    flag01 = (1 << 0),
  *    flag02 = (1 << 1),
@@ -361,9 +359,8 @@ inline T_FLAG& operator |= (T_FLAG &flag1, T_FLAG flag2)            \
 /*!
  * \brief This class allows the use of an integer type as a flag
  *
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  *
  * int main(int argc, char *argv[])
  * {

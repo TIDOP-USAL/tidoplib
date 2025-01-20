@@ -39,10 +39,10 @@ namespace tl
  */
 
 
- /*!
-  * \brief Class for specifying the size of a two-dimensional object.
-  *
-  */
+/*!
+ * \brief Class for specifying the size of a two-dimensional object.
+ *
+ */
 template<typename T>
 class Size
 {

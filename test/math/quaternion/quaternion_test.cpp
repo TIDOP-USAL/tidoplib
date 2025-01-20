@@ -24,8 +24,8 @@
 
 #define BOOST_TEST_MODULE Tidop quaternion test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/quaternion.h>
-#include <tidop/math/algebra/rotation_matrix.h>
+#include <tidop/math/algebra/rotations/quaternion.h>
+#include <tidop/math/algebra/rotations/rotation_matrix.h>
 
 using namespace tl;
 

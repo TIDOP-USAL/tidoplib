@@ -48,9 +48,8 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
 /*!
  * \brief current time.
  *
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * uint64_t time_ini = tickCount();
  * ...
  * double time = (tickCount() - time_ini) / 1000.;
@@ -67,12 +66,12 @@ TL_EXPORT uint64_t tickCount();
  * If a message is set, when the stop method is called, a message is printed to the console.
  * Otherwise, the stop method only returns the time in seconds.
  * 
- * <h4>Example:</h4>
+ * ### Example Usage
  * 
  * <b>Time measurement with message:</b>
  * 
  * 
- * \code
+ * \code{.cpp}
  *   Chrono chrono("Translation");
  *   chrono.run();
  * 
@@ -83,7 +82,7 @@ TL_EXPORT uint64_t tickCount();
  * 
  * <b>Time measurement:</b>
  * 
- * \code
+ * \code{.cpp}
  *   Chrono chrono;
  *   chrono.run();
  * 
@@ -171,9 +170,9 @@ public:
  * In the constructor, the time measurement starts and in the destructor, 
  * the time is stopped.
  * 
- * <h4>Example</h4>
+ * ### Example Usage
  *
- * \code
+ * \code{.cpp}
  *   void foo()
  *   {
  *     ChronoAuto chrono("foo function finished"); // the time measurement starts

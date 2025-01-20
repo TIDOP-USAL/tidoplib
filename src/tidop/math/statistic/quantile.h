@@ -29,21 +29,29 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
+/*! \addtogroup Statistics
  *  \{
  */
  
 /*!
- * \brief Quantile
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \param[in] p [0,1]
- * \return
+ * \brief Computes the quantile of a sorted range of data.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the data range.
+ * \param[in] last Iterator pointing to the end of the data range.
+ * \param[in] p A double value in the range [0,1] representing the desired quantile (e.g., 0.5 for the median).
+ * \return The value of the quantile.
+ * 
+ * The quantile is a statistical measure that indicates the value below which a given percentage of observations fall.
+ * For example, the median is the 0.5 quantile. This function sorts the data and interpolates between values if necessary
+ * to compute the quantile for non-integer positions.
+ * 
+ * This function supports both integral and floating-point data types.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<int> data = {1, 2, 3, 4, 5};
+ * double q = quantile(data.begin(), data.end(), 0.25); // q is 1.5
+ * \endcode
  */
 template<typename It>
 auto quantile(It first, It last, double p) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -95,10 +103,22 @@ auto quantile(It first, It last, double p) -> enableIfFloating<iteratorValueType
 
 
 /*!
- * \brief Quartile coefficient of dispersion
+ * \brief Computes the quartile coefficient of dispersion.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the data range.
+ * \param[in] last Iterator pointing to the end of the data range.
+ * \return The quartile coefficient of dispersion.
+ *
+ * The quartile coefficient of dispersion is a measure of relative dispersion based on the interquartile range.
+ * It is calculated as:
  * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
+ * where \( Q_1 \) is the first quartile and \( Q_3 \) is the third quartile.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+ * double qcd = quartileCoefficientOfDispersion(data.begin(), data.end()); // qcd is 0.2
+ * \endcode
  */
 template<typename It>
 auto quartileCoefficientOfDispersion(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -122,10 +142,21 @@ auto quartileCoefficientOfDispersion(It first, It last) -> enableIfFloating<iter
 
 
 /*!
- * \brief Quartile Deviation
+ * \brief Computes the quartile deviation.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the data range.
+ * \param[in] last Iterator pointing to the end of the data range.
+ * \return The quartile deviation.
+ *
+ * The quartile deviation, also known as the semi-interquartile range, is calculated as:
  * \f[ \frac{Q_3-Q_1}{2} \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
+ * where \( Q_1 \) is the first quartile and \( Q_3 \) is the third quartile.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<double> data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+ * double qd = quartileDeviation(data.begin(), data.end()); // qd is 2.0
+ * \endcode
  */
 template<typename It>
 auto quartileDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -149,8 +180,6 @@ auto quartileDeviation(It first, It last) -> enableIfFloating<iteratorValueType<
 
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

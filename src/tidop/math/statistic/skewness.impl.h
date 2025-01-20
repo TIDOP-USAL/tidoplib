@@ -1,4 +1,5 @@
-﻿
+﻿/// \cond
+
 namespace internal
 {
 
@@ -98,6 +99,7 @@ public:
 
 } // internal
 
+/// \endcond
 
 template<typename T>
 auto SkewnessFactory<T>::create(SkewnessMethod method) -> std::shared_ptr<Skewness<T>>

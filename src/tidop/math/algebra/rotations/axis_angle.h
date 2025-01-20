@@ -25,28 +25,24 @@
 #pragma once
 
 #include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/rotations.h"
+#include "tidop/math/algebra/rotations/rotations.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Rotations
  *  \{
  */
-
-
-/*! \addtogroup algebra
- *  \{
- */
-
-/*! \addtogroup rotations
-*  \{
-*/
 
 /*!
-* \brief Notación axial-angular
-*/
+ * \brief Axis-Angle notation for rotations.
+ *
+ * The `AxisAngle` class represents a rotation in three-dimensional space
+ * using an angle of rotation around a specific axis.
+ *
+ * \tparam T The data type of the angle and axis components (e.g., `float` or `double`).
+ */
 template<typename T>
 class AxisAngle
   : public OrientationBase<AxisAngle<T>>
@@ -54,50 +50,79 @@ class AxisAngle
 
 private:
 
-    T mAngle;
-    Vector<T, 3> mAxis;
+    T mAngle;           /*!< The rotation angle in radians. */
+    Vector<T, 3> mAxis; /*!< The axis of rotation, represented as a 3D vector. */
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     AxisAngle();
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] axisAngle The `AxisAngle` instance to copy.
+     */
     AxisAngle(const AxisAngle &axisAngle);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] axisAngle The `AxisAngle` instance to move.
+     */
     AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor with angle and axis.
+     * \param[in] angle The rotation angle in radians.
+     * \param[in] axis The axis of rotation as a 3D vector.
+     */
     AxisAngle(T angle, const Vector<T, 3> &axis);
+
     ~AxisAngle() override = default;
 
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] axisAngle The `AxisAngle` instance to copy.
+     * \return A reference to the current instance.
+     */
     auto operator = (const AxisAngle &axisAngle) -> AxisAngle &;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] axisAngle The `AxisAngle` instance to move.
+     * \return A reference to the current instance.
+     */
     auto operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle &;
 
     /*!
-     * \brief Angle
-     * \return
+     * \brief Gets the rotation angle.
+     * \return The rotation angle in radians.
      */
     auto angle() const -> T;
 
     /*!
-     * \brief Sets the angle
-     * \param[in] angle
-     * \return
+     * \brief Sets the rotation angle.
+     * \param[in] angle The new rotation angle in radians.
      */
     void setAngle(T angle);
 
     /*!
-     * \brief Axis
-     * \return
+     * \brief Gets the rotation axis.
+     * \return The axis of rotation as a 3D vector.
      */
     auto axis() const -> Vector<T, 3>;
 
     /*!
-     * \brief Sets the Axis
-     * \param[in] i Index
-     * \return
+     * \brief Gets a specific component of the rotation axis.
+     * \param[in] i The index of the component (0, 1, or 2).
+     * \return The value of the specified axis component.
      */
     auto axis(size_t i) const -> T;
 
     /*!
-     * \brief
-     * \param[in] axis
-     * \return
+     * \brief Sets the rotation axis.
+     * \param[in] axis The new axis of rotation as a 3D vector.
      */
     auto setAxis(const Vector<T, 3> &axis) -> void;
 
@@ -214,10 +239,6 @@ static inline bool operator != (const AxisAngle<T> &axisAngle1,
            axisAngle1.mAngle != axisAngle2.mAngle;
 }
 
-/*! \} */ // end of rotations
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

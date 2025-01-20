@@ -28,35 +28,43 @@
 #include "tidop/core/base/exception.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
-#include "tidop/math/lapack.h"
-#include "tidop/math/cuda.h"
+#include "tidop/math/base/lapack.h"
+#include "tidop/math/base/cuda.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Decomposition
  *  \{
  */
 
-/*! \addtogroup algebra
- *  \{
- */
+ /// \cond
 
-
-/*!
- * \brief Factorización o descomposición LU
- *
- * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
- *
- * \f[ A=LU \f]
- *
- * donde L y U son matrices inferiores y superiores triangulares respectivamente.
- *
- */
 template<typename T>
 class LuDecomposition;
 
+/// \endcond
 
+/*!
+ * \brief LU Decomposition
+ *
+ * The LU decomposition is a method for decomposing a matrix \( A \) into two triangular matrices:
+ * a lower triangular matrix \( L \) and an upper triangular matrix \( U \). The LU decomposition
+ * is used to solve systems of linear equations, compute the determinant, and find the inverse of
+ * a matrix.
+ *
+ * For a matrix \( A \), the LU decomposition is given by:
+ * \f[ A = LU \f]
+ * where \( L \) is a lower triangular matrix and \( U \) is an upper triangular matrix.
+ *
+ * This decomposition assumes that the matrix is non-singular, meaning it has an inverse.
+ * If the matrix is singular, the decomposition may not be unique or possible.
+ *
+ * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
+ * \tparam T The type of the elements in the matrix (e.g., `double`).
+ * \tparam _rows The number of rows in the matrix.
+ * \tparam _cols The number of columns in the matrix.
+ */
 template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -66,18 +74,81 @@ class LuDecomposition<Matrix_t<T, _rows, _cols>>
 
 public:
 
+    /*!
+     * \brief Constructs an LU Decomposition from a given matrix
+     *
+     * This constructor performs the LU decomposition of the given matrix \( A \), and stores
+     * the resulting matrices \( L \) and \( U \).
+     *
+     * \param[in] a The matrix \( A \) to decompose.
+     */
     LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
+
+    /*!
+     * \brief Destructor
+     *
+     * The destructor frees the resources used by the LU decomposition.
+     */
     ~LuDecomposition();
 
+    /*!
+     * \brief Solves the system of equations \( A \cdot x = b \) using the LU decomposition
+     *
+     * Using the decomposed matrix \( LU \), this method solves the system of linear equations
+     * \( A \cdot x = b \), where \( A \) is the matrix and \( b \) is the right-hand side vector.
+     *
+     * \param[in] b The right-hand side vector \( b \).
+     * \return The solution vector \( x \).
+     */
     auto solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>;
+
+    /*!
+     * \brief Solves the system of equations \( A \cdot X = B \) using the LU decomposition
+     *
+     * Using the LU decomposition, this method solves the system of linear equations
+     * \( A \cdot X = B \), where \( A \) is the matrix and \( B \) is the matrix of right-hand side vectors.
+     *
+     * \param[in] b The right-hand side matrix \( B \).
+     * \return The solution matrix \( X \).
+     */
     auto solve(const Matrix_t<T, _rows, _cols> &b) const -> Matrix_t<T, _rows, _cols>;
+
+    /*!
+     * \brief Gets the LU decomposition matrix
+     *
+     * This method returns the matrix \( LU \), which contains both the lower triangular matrix \( L \)
+     * and the upper triangular matrix \( U \).
+     *
+     * \return The matrix \( LU \), which contains both \( L \) and \( U \).
+     */
     auto lu() const -> Matrix_t<T, _rows, _cols>;
 
+    /*!
+     * \brief Calculates the determinant of the matrix \( A \)
+     *
+     * This method computes the determinant of the matrix \( A \) using the LU decomposition.
+     *
+     * \return The determinant of the matrix \( A \).
+     */
     auto determinant() const -> T;
 
 private:
 
+    /*!
+     * \brief Performs the LU decomposition
+     *
+     * This private method decomposes the matrix \( A \) into its lower triangular matrix \( L \)
+     * and upper triangular matrix \( U \).
+     */
     void decompose();
+
+    /*!
+     * \brief Finds the pivot elements for the LU decomposition
+     *
+     * This private method finds the maximum element in each row of the matrix to use as a pivot.
+     *
+     * \return A vector containing the pivot elements.
+     */
     auto findMaxElementsByRows() const -> Vector<T, _rows>;
 
 private:
@@ -352,8 +423,6 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
 }
 
 
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

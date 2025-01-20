@@ -48,16 +48,16 @@ namespace tl
  */
 
 
- /*!
-  * \brief Log file class.
-  *
-  * This class handles logging messages to a file. It can operate independently,
-  * writing messages directly to a log file, or integrate with the \ref Message class
-  * for message handling.
-  *
-  * This class supports multiple message levels such as debug, info, success,
-  * warning, and error, which can be configured using \ref setMessageLevel.
-  */
+/*!
+ * \brief Log file class.
+ *
+ * This class handles logging messages to a file. It can operate independently,
+ * writing messages directly to a log file, or integrate with the \ref Message class
+ * for message handling.
+ *
+ * This class supports multiple message levels such as debug, info, success,
+ * warning, and error, which can be configured using \ref setMessageLevel.
+ */
 class TL_EXPORT Log
     : public MessageHandler
 {
@@ -116,7 +116,8 @@ public:
      *
      * Multiple log levels can be combined:
      *
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * Log log;
      * log.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
      * \endcode
@@ -194,7 +195,9 @@ public:
             Log::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
+/// \cond
 #endif
+/// \endcond
 
 // MessageHandler
 

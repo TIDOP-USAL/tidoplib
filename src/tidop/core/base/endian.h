@@ -55,11 +55,13 @@ enum class endianness
     little_endian, /*!< Little-endian byte order. */
     big_endian,    /*!< Big-endian byte order. */
     native = little_endian /*!< Native byte order (always little-endian on Windows). */
+/// \cond
 #else
     little_endian = __ORDER_LITTLE_ENDIAN__,
     big_endian = __ORDER_BIG_ENDIAN__,
     native = __BYTE_ORDER__
 #endif
+/// \endcond
 };
 
 /*!

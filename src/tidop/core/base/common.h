@@ -78,9 +78,11 @@ using iteratorValueType = typename std::iterator_traits<It>::value_type;
  *
  * \return The number of arguments passed to the function.
  *
- * \example
+ * ### Example Usage
+ * \code{.cpp}
  * size_t count = args_size(1, 2, 3);
  * // count = 3
+ * \endcode
  */
 template<typename ...Args>
 constexpr size_t args_size(Args&&...)
@@ -100,12 +102,14 @@ constexpr size_t args_size(Args&&...)
  *
  * \return `true` if no arguments were passed, `false` otherwise.
  *
- * \example
+ * ### Example Usage
+ * \code{.cpp}
  * bool isEmpty = args_empty();
  * // isEmpty = true
  *
  * bool isEmpty2 = args_empty(1, 2);
  * // isEmpty2 = false
+ * \endcode
  */
 template<typename ...Args>
 constexpr size_t args_empty(Args&&...)
@@ -151,12 +155,14 @@ auto isInRange(T value, T min, T max) -> bool
  *
  * \return `true` if `ptr` is an instance of `Base` or is derived from `Base`, `false` otherwise.
  *
- * \example
+ * ### Example Usage
+ * \code{.cpp}
  * class Animal { ... };
  * class Dog : public Animal { ... };
  * Dog dog;
  * bool result = instanceof<Animal>(&dog);
  * // result = true, because Dog is derived from Animal.
+ * \endcode
  */
 template<typename Base, typename T>
 bool instanceof(const T *ptr)

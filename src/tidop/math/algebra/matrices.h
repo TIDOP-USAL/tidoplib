@@ -1,6 +1,6 @@
 #pragma once
 
-#include "matrix.h"
+#include "tidop/math/algebra/matrix.h"
 
 namespace tl
 {

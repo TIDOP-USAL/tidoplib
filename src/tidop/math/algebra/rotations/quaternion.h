@@ -32,37 +32,30 @@
 #endif
 
 #include "tidop/math/math.h"
-#include "tidop/math/algebra/rotations.h"
+#include "tidop/math/algebra/rotations/rotations.h"
 #include "tidop/geometry/entities/point.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-/*! \addtogroup algebra
- *  \{
- */
-
-/*! \defgroup rotations Rotations
+/*! \addtogroup Rotations
  *  \{
  */
 
 
 
-/*!
- * \brief Clase cuaternión para la representación de orientaciones y rotaciones en el espacio
- * Los cuaterniones unitarios proporcionan una notación matemática para representar
- * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con
- * los ángulos de Euler, son más simples de componer y evitan el problema del bloqueo
- * del cardán. Comparados con las matrices de rotación, son más eficientes y más
- * estables numéricamente.
- *
- * Un cuaternión se representa como:
- * \f[ w+xi+yj+zk \f]
- */
+ /*!
+  * \brief Quaternion class for representing orientations and rotations in space.
+  *
+  * Unit quaternions provide a mathematical notation for representing the
+  * orientations and rotations of objects in three dimensions. Compared to
+  * Euler angles, they are easier to compose and avoid the gimbal lock issue.
+  * Compared to rotation matrices, they are more efficient and numerically stable.
+  *
+  * A quaternion is represented as:
+  * \f[ w + xi + yj + zk \f]
+  * where \(w, x, y, z\) are the components of the quaternion.
+  */
 template<typename T>
 class Quaternion
   : public OrientationBase<Quaternion<T>>
@@ -70,117 +63,174 @@ class Quaternion
 
 public:
 
+    T x; /*!< The x coefficient of the quaternion. */
+    T y; /*!< The y coefficient of the quaternion. */
+    T z; /*!< The z coefficient of the quaternion. */
+    T w; /*!< The scalar part (w) of the quaternion. */
+
+public:
+
     /*!
      * \brief Default constructor
+     * Initializes the quaternion to zero.
      */
     Quaternion();
 
     /*!
      * \brief Constructor
-     * \param[in] x Coefficient x
-     * \param[in] y Coefficient y
-     * \param[in] z Coefficient z
-     * \param[in] w Coefficient w
+     * \param[in] x Coefficient for the x-axis component.
+     * \param[in] y Coefficient for the y-axis component.
+     * \param[in] z Coefficient for the z-axis component.
+     * \param[in] w Scalar part of the quaternion.
      */
     Quaternion(T x, T y, T z, T w);
 
     /*!
      * \brief Copy constructor
-     * \param[in] quaternion Quaternion object to copy
+     * \param[in] quaternion The quaternion object to copy.
      */
     Quaternion(const Quaternion<T> &quaternion);
 
     /*!
      * \brief Move constructor
-     * \param[in] quaternion Quaternion object to move
+     * \param[in] quaternion The quaternion object to move.
      */
     Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT;
 
+    /*!
+     * \brief Destructor
+     */
     ~Quaternion() override;
 
     /*!
      * \brief Assignment operator
-     * \param[in] quaternion Object to copy
+     * \param[in] quaternion The quaternion object to copy.
+     * \return A reference to the current quaternion object.
      */
-    auto operator=(const Quaternion<T> &quaternion)->Quaternion &;
+    auto operator=(const Quaternion<T> &quaternion) -> Quaternion &;
 
     /*!
      * \brief Move assignment operator
-     * \param[in] quaternion Quaternion object to move
+     * \param[in] quaternion The quaternion object to move.
+     * \return A reference to the current quaternion object.
      */
-    auto operator = (Quaternion<T> &&quaternion) TL_NOEXCEPT -> Quaternion &;
+    auto operator=(Quaternion<T> &&quaternion) TL_NOEXCEPT -> Quaternion &;
 
     /*!
      * \brief Quaternion conjugate
-     * The conjugate of a quaternion reverses the sign of the "added" components of the quaternion:
+     * The conjugate of a quaternion reverses the sign of the "added" components:
      * \f[ q = w - xi - yj - zk \f]
+     * \return The conjugated quaternion.
      */
     auto conjugate() const->Quaternion<T>;
 
     /*!
      * \brief Norm
-     * \f[ q = w+xi+yj+zk \f]
-     * \f[ n(q) = sqrt{q.q} = sqrt{w^2+x^2+y^2+z^2} \f]
+     * The norm of a quaternion is defined as the square root of the sum of the squares of its components:
+     * \f[ n(q) = \sqrt{w^2 + x^2 + y^2 + z^2} \f]
+     * \return The norm (magnitude) of the quaternion.
      */
     auto norm() const -> T;
 
     /*!
-     * \brief Normalises the quaternion
+     * \brief Normalizes the quaternion.
+     * Converts the quaternion into a unit quaternion (magnitude 1).
+     * \return A reference to the normalized quaternion.
      */
     auto normalize() -> Quaternion&;
 
-    // For a nonzero quaternion q = (x,y,z,w), inv(q) = (-x,-y,-z,w)/|q|^2, where
-    // |q| is the length of the quaternion.  When q is zero, the function returns
-    // zero, which is considered to be an improbable case.
+    /*!
+     * \brief Inverse of the quaternion
+     * The inverse of a non-zero quaternion is given by:
+     * \f[ q^{-1} = \frac{-xi - yj - zk + w}{|q|^2} \f]
+     * When the quaternion is zero, the function returns zero.
+     * \return The inverse of the quaternion.
+     */
     auto inverse() const -> Quaternion;
 
+    /*!
+     * \brief Quaternion multiplication assignment
+     * Multiplies the current quaternion by another quaternion.
+     * \param[in] quaternion The quaternion to multiply with.
+     * \return A reference to the current quaternion.
+     */
     auto operator *=(const Quaternion &quaternion) -> Quaternion&;
-    auto operator +=(const Quaternion &quaternion) -> Quaternion&;
-    auto operator -=(const Quaternion &quaternion) -> Quaternion&;
 
-    auto operator *=(T scalar) -> Quaternion&;
+    /*!
+     * \brief Quaternion addition assignment
+     * Adds another quaternion to the current quaternion.
+     * \param[in] quaternion The quaternion to add.
+     * \return A reference to the current quaternion.
+     */
+    auto operator+=(const Quaternion &quaternion) -> Quaternion &;
+
+    /*!
+     * \brief Quaternion subtraction assignment
+     * Subtracts another quaternion from the current quaternion.
+     * \param[in] quaternion The quaternion to subtract.
+     * \return A reference to the current quaternion.
+     */
+    auto operator-=(const Quaternion &quaternion) -> Quaternion &;
+
+    /*!
+     * \brief Scalar multiplication assignment
+     * Multiplies the current quaternion by a scalar.
+     * \param[in] scalar The scalar to multiply by.
+     * \return A reference to the current quaternion.
+     */
+    auto operator*=(T scalar) -> Quaternion &;
+
+    /*!
+     * \brief Scalar division assignment
+     * Divides the current quaternion by a scalar.
+     * \param[in] scalar The scalar to divide by.
+     * \return A reference to the current quaternion.
+     */
     auto operator /=(T scalar) -> Quaternion&;
 
     /* Factory methods */
 
     /*!
-     * \brief
+     * \brief Returns the zero quaternion
      * \f[ z = 0*i + 0*j + 0*k + 0 \f]
+     * \return The zero quaternion.
      */
     static auto zero() -> Quaternion;
 
     /*!
-     * \brief
+     * \brief Returns the quaternion representing the unit vector along the i-axis.
      * \f[ i = 1*i + 0*j + 0*k + 0 \f]
+     * \return The quaternion representing the i-axis.
      */
     static auto i() -> Quaternion;
 
     /*!
-     * \brief
+     * \brief Returns the quaternion representing the unit vector along the j-axis.
      * \f[ j = 0*i + 1*j + 0*k + 0 \f]
+     * \return The quaternion representing the j-axis.
      */
     static auto j() -> Quaternion;
 
     /*!
-     * \brief
+     * \brief Returns the quaternion representing the unit vector along the k-axis.
      * \f[ k = 0*i + 0*j + 1*k + 0 \f]
+     * \return The quaternion representing the k-axis.
      */
     static auto k() -> Quaternion;
 
     /*!
-     * \brief
+     * \brief Returns the identity quaternion
      * \f[ 1 = 0*i + 0*j + 0*k + 1 \f]
+     * \return The identity quaternion (1).
      */
     static auto identity() -> Quaternion;
 
+    /*!
+     * \brief Normalize a quaternion
+     * \param[in] quaternion The quaternion to normalize.
+     * \return The normalized quaternion.
+     */
     static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
-
-public:
-
-    T x;
-    T y;
-    T z;
-    T w;
 
 };
 
@@ -667,11 +717,7 @@ auto operator<<(std::ostream& os, const Quaternion<T>* q) -> std::ostream&
 
 
 
-/*! \} */ // end of rotations
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

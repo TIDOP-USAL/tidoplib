@@ -30,12 +30,7 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
+/*! \addtogroup Statistics
  *  \{
  */
 
@@ -70,8 +65,6 @@ auto interquartileRange(It first, It last) -> enableIfFloating<iteratorValueType
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

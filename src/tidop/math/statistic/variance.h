@@ -30,29 +30,22 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
+/*! \addtogrop Statistics
+ * \{
  */
 
 
-/*! \addtogroup statistics Statistics
- *  \{
+/*!
+ * \brief Sample Variance
+ *
+ * The sample variance is a measure of the dispersion or spread in a dataset. It is calculated as:
+ * \f[ \sigma^2 = \frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n-1} \f]
+ * where \( x_i \) are the data points, \( \overline{x} \) is the mean of the data, and \( n \) is the number of data points.
+ *
+ * \param[in] first Iterator to the beginning of the dataset.
+ * \param[in] last Iterator to the end of the dataset.
+ * \return Sample variance of the dataset.
  */
-
-/*! \addtogroup dispersion Statistical dispersion
- *  \{
- */
-
-
- /*!
-  * \brief Sample Variance
-  *
-  * \f[ \sigma^2 = \frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}  \f]
-  *
-  * \param[in] first Iterator to the beginning
-  * \param[in] last Iterator to the end
-  * \return Sample variance of the dataset
-  */
 template<typename It>
 auto variance(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
@@ -97,13 +90,16 @@ auto variance(It first, It last) -> enableIfFloating<iteratorValueType<It>, std:
 
 
 /*!
- * \brief Variance
+ * \brief Population Variance
  *
- * \f[ \sigma^2 = \frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}  \f]
+ * The population variance is a measure of the dispersion or spread in a dataset for an entire population.
+ * It is calculated as:
+ * \f[ \sigma^2 = \frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n} \f]
+ * where \( x_i \) are the data points, \( \overline{x} \) is the mean of the data, and \( n \) is the number of data points.
  *
- * \param[in] first Iterator to the beginning
- * \param[in] last Iterator to the end
- * \return Variance of the dataset
+ * \param[in] first Iterator to the beginning of the dataset.
+ * \param[in] last Iterator to the end of the dataset.
+ * \return Population variance of the dataset.
  */
 template<typename It>
 auto populationVariance(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -147,11 +143,6 @@ auto populationVariance(It first, It last) -> enableIfFloating<iteratorValueType
     return (sum - ep * ep / n) / n;
 }
 
-
-/*! \} */ // end of dispersion
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

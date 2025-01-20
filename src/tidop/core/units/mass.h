@@ -47,9 +47,8 @@ constexpr enableIfFloating<T,T> pound_to_grams = static_cast<T>(453.59237);
  * and imperial units (e.g., pounds, ounces). Conversion is performed by mapping each unit to
  * a base unit (grams for SI, pounds for imperial) and applying predefined scaling factors.
  *
- * \h4 Example Usage </h4>
- *
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * double weightInPounds = MassConverter::convert(1000.0, MassConverter::Units::gram, MassConverter::Units::pound);
  * double weightInKilograms = MassConverter::convert(weightInPounds, MassConverter::Units::pound, MassConverter::Units::kilogram);
  * \endcode

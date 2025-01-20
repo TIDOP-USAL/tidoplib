@@ -29,43 +29,47 @@
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/lapack.h"
+#include "tidop/math/base/lapack.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Decomposition
  *  \{
  */
 
-
-/*! \addtogroup algebra
- *  \{
- */
+/// \cond
 
 //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
 //https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
 
-/*!
- * \brief Factorización QR
- *
- * La descomposición o factorización QR de una matriz es una descomposición
- * de la misma como producto de una matriz ortogonal por una triangular
- * superior.
- *
- * La descomposición QR de una matriz cuadrada T A es:
- *
- * \f[ A = Q*R \f]
- *
- * donde Q es una matriz ortogonal:
- *
- * \f[ Q^t*Q = I \f]
- *
- * y R es una matriz triangular superior.
- */
 template<typename T>
 class QRDecomposition;
 
+/// \endcond
+
+/*!
+ * \brief QR Decomposition
+ *
+ * The QR decomposition of a matrix is a factorization of the matrix into the product of two matrices:
+ * an orthogonal matrix \( Q \) and an upper triangular matrix \( R \). The QR decomposition is often
+ * used to solve linear systems, compute eigenvalues, and perform least squares fitting.
+ *
+ * For a matrix \( A \), the QR decomposition is given by:
+ * \f[ A = Q \cdot R \f]
+ * where \( Q \) is an orthogonal matrix, and \( R \) is an upper triangular matrix. The orthogonality
+ * of \( Q \) is given by:
+ * \f[ Q^T \cdot Q = I \f]
+ * where \( Q^T \) is the transpose of \( Q \) and \( I \) is the identity matrix.
+ *
+ * The QR decomposition can be computed using different algorithms, such as Householder transformations.
+ * This class implements the Householder method for QR decomposition.
+ *
+ * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
+ * \tparam T The type of the elements in the matrix (e.g., `double`).
+ * \tparam _rows The number of rows in the matrix.
+ * \tparam _cols The number of columns in the matrix.
+ */
 template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -75,17 +79,54 @@ class QRDecomposition<Matrix_t<T, _rows, _cols>>
 
 public:
 
+    /*!
+     * \brief Constructs the QR decomposition from a given matrix
+     *
+     * This constructor performs the QR decomposition of the matrix \( A \), storing the resulting
+     * orthogonal matrix \( Q \) and the upper triangular matrix \( R \).
+     *
+     * \param[in] a The matrix \( A \) to decompose.
+     */
     QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
+    /*!
+     * \brief Solves the system of equations \( A \cdot x = b \) using the QR decomposition
+     *
+     * Using the QR decomposition, this method solves the system of linear equations \( A \cdot x = b \),
+     * where \( A \) is the matrix and \( b \) is the right-hand side vector.
+     *
+     * \param[in] b The right-hand side vector \( b \).
+     * \return The solution vector \( x \).
+     */
     auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
 
+    /*!
+     * \brief Gets the orthogonal matrix \( Q \)
+     *
+     * This method returns the orthogonal matrix \( Q \) from the QR decomposition.
+     *
+     * \return The matrix \( Q \), which is orthogonal.
+     */
     auto q() const -> Matrix<T, _rows, _cols>;
+
+    /*!
+     * \brief Gets the upper triangular matrix \( R \)
+     *
+     * This method returns the upper triangular matrix \( R \) from the QR decomposition.
+     *
+     * \return The matrix \( R \), which is upper triangular.
+     */
     auto r() const -> Matrix<T, _rows, _cols>;
     //Matrix<T, _rows, _cols> qr() const;
 
 private:
 
-    //Householder
+    /*!
+     * \brief Performs the QR decomposition using Householder transformations
+     *
+     * This private method performs the QR decomposition of the matrix using the Householder method,
+     * which generates orthogonal transformations to zero out the lower triangular part of the matrix.
+     */
     void decompose();
 
     //#ifdef TL_HAVE_OPENBLAS
@@ -296,9 +337,6 @@ auto QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const -> Matrix<T, _rows, _
 //#endif // TL_HAVE_OPENBLAS
 
 
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

@@ -26,36 +26,40 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/common.h"
-#include "tidop/math/simd.h"
+#include "tidop/math/base/simd.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
-
-/*! \addtogroup statistics Statistics
- *  \{
+/*!
+ * \brief Calculates the mean (average) of a range of values.
+ * 
+ *
+ * This function computes the mean of a range of values. If the container
+ * is contiguous and SIMD intrinsics are available, it uses SIMD instructions for
+ * faster computation.
+ * 
+ * Formula for the mean:
+ * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n} \f]
+ * 
+ * ### Example usage:
+ * \code{.cpp}
+ * std::vector<int> data = {1, 2, 3, 4, 5};
+ * double meanValue = mean(data.begin(), data.end());
+ * // meanValue is 3.0
+ * \endcode
+ * 
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the range.
+ * \param[in] last Iterator pointing to the end of the range.
+ * \param[in] isContiguousContainer Flag indicating if the container is contiguous (e.g., `std::vector`, `std::array`).
+ * \return The mean value
  */
 
-/*! \addtogroup CentralTendency
- *  \{
- */
-
- /*!
-  * \brief The mean is the sum of all the data divided by the number of data points.
-  * It is represented as:
-  * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n} \f]
-  * The most commonly used measure of dispersion for the mean is the standard deviation,
-  * but it can also be another measure such as the range, coefficient of variation, etc.
-  * It is very sensitive to outliers.
-  * \param[in] first Iterator to the beginning
-  * \param[in] last Iterator to the end
-  * \param[in] isContiguousContainer For contiguous containers (std::vector, std::array) the calculation is done with simd 
-  * \return Value of the mean
-  */
 template<typename It>
 auto mean(It first, It last, bool isContiguousContainer = false) -> enableIfIntegral<iteratorValueType<It>, double>
 {
@@ -128,11 +132,6 @@ auto mean(It first, It last, bool isContiguousContainer = false) -> enableIfFloa
 } 
  
 
-
-/*! \} */ // end of CentralTendency
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

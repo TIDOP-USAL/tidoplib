@@ -65,6 +65,8 @@ public:
     virtual void print() const = 0;
 };
 
+
+
 /*!
  * \brief Template class for validating specific data types.
  *
@@ -105,8 +107,8 @@ public:
  * 
  * \tparam T The type of the value to be validated. Must be an arithmetic type.
  *
- * Example:
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * auto validator = RangeValidator<int>::create(0, 100);
  * if (validator->validate(50)) {
  *     std::cout << "Value is valid!" << std::endl;
@@ -240,8 +242,8 @@ private:
  * 
  * \tparam T The type of the value to be validated.
  *
- * Example:
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * // Create a validator for specific string values
  * auto validator = ValuesValidator<std::string>::create({"XML", "YML", "TXT", "BIN"});
  * if (validator->validate("XML")) {

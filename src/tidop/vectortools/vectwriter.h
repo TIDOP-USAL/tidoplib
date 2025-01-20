@@ -37,7 +37,7 @@ namespace tl
 
 class GLayer;
 
-/*! \addtogroup vector
+/*! \addtogroup VectorTools
  *  \{
  */
 

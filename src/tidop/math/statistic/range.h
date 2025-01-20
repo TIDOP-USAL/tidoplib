@@ -30,22 +30,30 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
+/*! \addtogroup Statistics
  *  \{
  */
 
 /*!
  * \brief Range
+ * 
  * The range is the difference between the maximum and minimum values in the dataset.
+ * It is calculated as:
+ * 
  * \f[ R = x_{\text{max}} - x_{\text{min}} \f]
- * \param[in] first Iterator to the beginning
- * \param[in] last Iterator to the end
+ * 
+ * \param[in] first Iterator to the beginning of the dataset
+ * \param[in] last Iterator to the end of the dataset
  * \return The value of the range for the dataset.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<int> data = {5, 3, 9, 1, 7, 8};
+ * auto result = range(data.begin(), data.end());
+ * Message::info("Range of the dataset: {}", result);
+ * 
+ * // Output: Range of the dataset: 8
+ * \endcode
  */
 template<typename It>
 auto range(It first, It last) -> iteratorValueType<It>
@@ -61,8 +69,6 @@ auto range(It first, It last) -> iteratorValueType<It>
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

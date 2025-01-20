@@ -31,23 +31,36 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
-
-/*! \addtogroup statistics Statistics
- *  \{
+/*!
+ * \brief Computes the Pearson correlation coefficient between two data sets.
+ * \tparam It Type of the iterator.
+ * \param[in] firstX Iterator pointing to the beginning of the first data set.
+ * \param[in] lastX Iterator pointing to the end of the first data set.
+ * \param[in] firstY Iterator pointing to the beginning of the second data set.
+ * \param[in] lastY Iterator pointing to the end of the second data set.
+ * \return The Pearson correlation coefficient, a value between -1 and 1.
+ * 
+ * The Pearson correlation coefficient measures the linear correlation between two sets of data.
+ * It returns a value between -1 and 1, where 1 indicates a perfect positive linear relationship,
+ * -1 indicates a perfect negative linear relationship, and 0 indicates no linear correlation.
+ * 
+ * This function works for both integral and floating-point types and handles the computation
+ * accordingly. If the input ranges have different sizes or contain less than two elements,
+ * the function returns zero.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<double> dataX = {1.0, 2.0, 3.0};
+ * std::vector<double> dataY = {2.0, 4.0, 6.0};
+ * double correlation = pearsonCorrelationCoefficient(dataX.begin(), dataX.end(), dataY.begin(), dataY.end());
+ * // correlation is 1.0
+ * \endcode
  */
 
- /*!
-  * \brief pearsonCorrelationCoefficient
-  * \param[in] firstX
-  * \param[in] lastX
-  * \param[in] firstY
-  * \param[in] lastY
-  * \return
-  */
 template<typename It>
 auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> enableIfIntegral<iteratorValueType<It>,double>
 {
@@ -72,8 +85,6 @@ auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> 
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

@@ -53,8 +53,8 @@ class Path;
  * This class provides various utilities for handling file and directory paths, such as checking existence,
  * creating directories, and retrieving components like file names and extensions.
  * 
- * Example:
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * Path path("/usr/local/bin");
  * if (path.exists()) {
  *     auto fileName = path.fileName();
@@ -357,8 +357,8 @@ public:
  * This class manages a temporary directory, ensuring its removal upon destruction if
  * auto-removal is enabled.
  *
- * Example:
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * TemporalDir tempDir;
  * auto path = tempDir.path();
  * // Use the temporary directory

@@ -24,21 +24,20 @@
 
 #pragma once
 
-#include "tidop/math/math.h"
-#include "tidop/math/algebra/vector.h"
 #include "tidop/core/base/exception.h"
 #include "tidop/core/concurrency/parallel.h"
-#include "tidop/math/simd.h"
-#include "tidop/math/blas.h"
-#include "tidop/math/cuda.h"
-#include "tidop/math/data.h"
-#include "tidop/math/algebra/lu.h"
-//#include "tidop/math/algebra/matrix/operations.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/math/math.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/base/simd.h"
+#include "tidop/math/base/blas.h"
+#include "tidop/math/base/cuda.h"
+#include "tidop/math/base/data.h"
+#include "tidop/math/algebra/decomp/lu.h"
 #include "tidop/math/algebra/matrix/row.h"
 #include "tidop/math/algebra/matrix/col.h"
 #include "tidop/math/algebra/matrix/block.h"
 #include "tidop/math/algebra/matrix/base.h"
+#include "tidop/geometry/rect.h"
 
 #include <type_traits>
 #include <iomanip>
@@ -54,17 +53,11 @@ namespace tl
 //      de objetos temporales. 
 
 
-/*! \addtogroup math
+/*! \addtogroup Matrix
  *  \{
  */
 
-/*! \defgroup algebra Algebra
- *  
- * Algebra
- *
- *  \{
- */
-
+/// \cond
 template<typename T>
 class MatrixBase;
 
@@ -73,7 +66,7 @@ class Matrix;
 
 template<typename T>
 class LuDecomposition;
-
+/// \endcond
 
 
 class TL_EXPORT MatrixConfig
@@ -200,7 +193,7 @@ public:
      * \param[in] matrix Object being moved
      * \return Reference to the assigned object
      */
-    auto operator=(Matrix &&matrix) noexcept -> Matrix &;
+    auto operator=(Matrix &&matrix) TL_NOEXCEPT-> Matrix &;
 
     operator Matrix<T, DynamicData, DynamicData>();
 
@@ -208,13 +201,13 @@ public:
      * \brief Number of rows in the matrix
      * \return Number of rows
      */
-    auto rows() const->size_t;
+    auto rows() const TL_NOEXCEPT -> size_t;
 
     /*!
      * \brief Number of columns in the matrix
      * \return Number of columns
      */
-    auto cols() const->size_t;
+    auto cols() const TL_NOEXCEPT -> size_t;
 
     /*!
      * \brief Inverse matrix
@@ -281,7 +274,7 @@ public:
      * \f[ tr(A) = a_{11} + ... +  a_{nn} \f]
      * \return The trace of the matrix
      */
-    auto trace() const->T;
+    auto trace() const -> T;
 
     /*!
      * \brief Checks if the matrix is invertible
@@ -304,7 +297,7 @@ public:
      * \f[ (-)^{r+j} \f]
      * \return The cofactor
      */
-    auto cofactor(size_t r, size_t c) const->T;
+    auto cofactor(size_t r, size_t c) const -> T;
 
     /*!
      * \brief First minor
@@ -324,17 +317,17 @@ public:
      *
      * \return The first minor
      */
-    auto firstMinor(size_t row, size_t col) const->T;
+    auto firstMinor(size_t row, size_t col) const -> T;
 
     /*!
      * \brief Row echelon form
      */
-    auto rowEchelonForm() const->Matrix;
+    auto rowEchelonForm() const -> Matrix;
 
     /*!
      * \brief Reduced row echelon form
      */
-    auto reducedRowEchelonForm() const->Matrix;
+    auto reducedRowEchelonForm() const -> Matrix;
 
     /*!
      * \brief Rank of a matrix
@@ -386,7 +379,7 @@ public:
      * double value = matrix(0, 0);
      * \endcode
      */
-    auto operator()(size_t r, size_t c) -> reference;
+    auto operator()(size_t r, size_t c) TL_NOEXCEPT -> reference;
 
     /*!
      * \brief Constant reference to the element at position (r, c)
@@ -398,7 +391,7 @@ public:
      * double value = matrix(0, 0);
      * \endcode
      */
-    auto operator()(size_t r, size_t c) const -> const_reference;
+    auto operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference;
 
     /*!
      * \brief Reference to the element
@@ -413,7 +406,7 @@ public:
      * double value = matrix(4); // value == 1.5
      * \endcode
      */
-    auto operator()(size_t position)->reference;
+    auto operator()(size_t position) TL_NOEXCEPT -> reference;
 
     /*!
      * \brief Constant reference to the element
@@ -428,10 +421,10 @@ public:
      * double value = matrix(4); // value == 1.5
      * \endcode
      */
-    auto operator()(size_t position) const->const_reference;
+    auto operator()(size_t position) const TL_NOEXCEPT-> const_reference;
 
     auto operator[](size_t position) const -> const internal::MatrixRow<const T>;
-    auto operator[](size_t position)->internal::MatrixRow<T>;
+    auto operator[](size_t position) -> internal::MatrixRow<T>;
 
     auto row(size_t row) const -> const internal::MatrixRow<const T>;
     auto row(size_t row) -> internal::MatrixRow<T>;
@@ -495,8 +488,8 @@ public:
     static auto randon() -> Matrix;
     static auto randon(size_t rows, size_t cols) -> Matrix;
 
-    auto data() -> pointer;
-    auto data() const -> const_pointer;
+    auto data() TL_NOEXCEPT -> pointer;
+    auto data() const TL_NOEXCEPT -> const_pointer;
 
 private:
 
@@ -1385,13 +1378,13 @@ Matrix<T, Rows, Cols>::operator Matrix<T, DynamicData, DynamicData>()
 }
 
 template <typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::rows() const -> size_t
+auto Matrix<T, Rows, Cols>::rows() const TL_NOEXCEPT -> size_t
 {
     return mRows;
 }
 
 template <typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::cols() const -> size_t
+auto Matrix<T, Rows, Cols>::cols() const TL_NOEXCEPT -> size_t
 {
     return mCols;
 }
@@ -1934,25 +1927,25 @@ auto Matrix<T, Rows, Cols>::at(size_t r, size_t c) const -> const_reference
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::operator()(size_t r, size_t c) -> reference
+auto Matrix<T, Rows, Cols>::operator()(size_t r, size_t c) TL_NOEXCEPT -> reference
 {
     return mData[r * mCols + c];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::operator()(size_t r, size_t c) const -> const_reference
+auto Matrix<T, Rows, Cols>::operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference
 {
     return mData[r * mCols + c];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::operator()(size_t position) -> reference
+auto Matrix<T, Rows, Cols>::operator()(size_t position) TL_NOEXCEPT -> reference
 {
     return mData[position];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::operator()(size_t position) const -> const_reference
+auto Matrix<T, Rows, Cols>::operator()(size_t position) const TL_NOEXCEPT -> const_reference
 {
     return mData[position];
 }
@@ -2158,13 +2151,13 @@ auto Matrix<T, Rows, Cols>::randon(size_t rows, size_t cols) -> Matrix
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::data() -> pointer
+auto Matrix<T, Rows, Cols>::data() TL_NOEXCEPT -> pointer
 {
     return mData.data();
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::data() const -> const_pointer
+auto Matrix<T, Rows, Cols>::data() const TL_NOEXCEPT -> const_pointer
 {
     return mData.data();
 }
@@ -2613,9 +2606,7 @@ auto operator *(const Vector<T, _dim>& vector,
     return matrix * vector;
 }
 
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

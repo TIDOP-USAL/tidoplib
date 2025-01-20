@@ -24,46 +24,54 @@
 
 #pragma once
 
-#include "tidop/math/algebra/rotations.h"
+#include "tidop/math/algebra/rotations/rotations.h"
 #include "tidop/math/algebra/vector.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Rotations
  *  \{
  */
 
-
-/*! \addtogroup algebra
- *  \{
- */
-
-/*! \defgroup rotations Rotations
- *  \{
- */
-
+ /*!
+  * \brief Enum representing different rotation conventions for Euler angles.
+  *
+  * The `Axes` enum defines the various conventions for Euler angles,
+  * including both Euler angles and Tait-Bryan angles. These conventions
+  * describe the sequence of axes used for rotations.
+  */
 enum Axes
 {
-    //Euler angles
-    zxz,
-    xyx,
-    yzy,
-    zyz,
-    xzx,
-    yxy,
-    //TaitBryan angles
-    xyz,
-    yzx,
-    zxy,
-    xzy,
-    zyx,
-    yxz
+    // Euler angles
+    zxz, /*!< Rotation around the Z axis, then X, then Z again. */
+    xyx, /*!< Rotation around the X axis, then Y, then X again. */
+    yzy, /*!< Rotation around the Y axis, then Z, then Y again. */
+    zyz, /*!< Rotation around the Z axis, then Y, then Z again. */
+    xzx, /*!< Rotation around the X axis, then Z, then X again. */
+    yxy, /*!< Rotation around the Y axis, then X, then Y again. */
+
+    // Tait-Bryan angles
+    xyz, /*!< Rotation around X, then Y, then Z. */
+    yzx, /*!< Rotation around Y, then Z, then X. */
+    zxy, /*!< Rotation around Z, then X, then Y. */
+    xzy, /*!< Rotation around X, then Z, then Y. */
+    zyx, /*!< Rotation around Z, then Y, then X. */
+    yxz  /*!< Rotation around Y, then X, then Z. */
 };
 
+
 /*!
- * \brief Euler Angles
+ * \brief Euler Angles representation class.
+ *
+ * The `EulerAngles` class represents the orientation of an object using
+ * Euler angles, which are defined by three angles corresponding to rotations
+ * about the axes. The class allows different conventions (or axis orders)
+ * to be used, specified by the template parameter `_axes`.
+ *
+ * \tparam T The data type of the Euler angles (e.g., `float`, `double`).
+ * \tparam _axes The specific rotation sequence (default is `Axes::xyz`).
  */
 template<typename T, int _axes = Axes::xyz>
 class EulerAngles
@@ -72,26 +80,73 @@ class EulerAngles
 
 public:
 
-    double x;
-    double y;
-    double z;
-    Axes axes;
+    double x;  /*!< The first Euler angle (corresponding to the first axis in the rotation sequence). */
+    double y;  /*!< The second Euler angle (corresponding to the second axis in the rotation sequence). */
+    double z;  /*!< The third Euler angle (corresponding to the third axis in the rotation sequence). */
+    Axes axes; /*!< The rotation axes convention being used (e.g., `Axes::xyz`). */
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     * Initializes the Euler angles to zero.
+     */
     EulerAngles();
+
+    /*!
+     * \brief Constructor with specific Euler angles.
+     * \param[in] x The first Euler angle.
+     * \param[in] y The second Euler angle.
+     * \param[in] z The third Euler angle.
+     */
     EulerAngles(double x, double y, double z);
+
+    /*!
+     * \brief Constructor with a vector of Euler angles.
+     * \param[in] angles A vector containing the three Euler angles.
+     */
     EulerAngles(const Vector<T, 3> &angles);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] eulerAngles The `EulerAngles` instance to copy.
+     */
     EulerAngles(const EulerAngles<T, _axes> &eulerAngles);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] eulerAngles The `EulerAngles` instance to move.
+     */
     EulerAngles(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT;
+
     ~EulerAngles() override = default;
 
-    auto operator = (const EulerAngles<T, _axes> &eulerAngles) -> EulerAngles&;
-    auto operator = (EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] eulerAngles The `EulerAngles` instance to copy.
+     * \return A reference to the current instance.
+     */
+    auto operator=(const EulerAngles<T, _axes> &eulerAngles) -> EulerAngles&;
 
-    /* Unary arithmetic operators */
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] eulerAngles The `EulerAngles` instance to move.
+     * \return A reference to the current instance.
+     */
+    auto operator=(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
 
+    /*!
+     * \brief Unary plus operator.
+     * Returns a copy of the `EulerAngles` object.
+     * \return A copy of the current `EulerAngles` instance.
+     */
     auto operator+() -> EulerAngles<T, _axes>;
+
+    /*!
+     * \brief Unary minus operator.
+     * Negates the Euler angles.
+     * \return A new `EulerAngles` instance with negated angles.
+     */
     auto operator-() -> EulerAngles<T, _axes>;
 };
 
@@ -184,11 +239,7 @@ auto EulerAngles<T, _axes>::operator-() -> EulerAngles<T, _axes>
 }
 
 
-/*! \} */ // end of rotation
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

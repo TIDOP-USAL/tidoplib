@@ -44,21 +44,21 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Levels of messages emitted by the Message class.
-  *
-  * This enumeration defines the different levels of messages that can
-  * be emitted and handled. The levels are designed to categorize messages
-  * based on their importance or type.
-  *
-  * Each level can be combined using bitwise operations to enable multiple
-  * levels simultaneously, as shown in the example below:
-  *
-  * <h4>Example:</h4>
-  * \code
-  * MessageLevel levels = MessageLevel::error | MessageLevel::warning;
-  * \endcode
-  */
+/*!
+ * \brief Levels of messages emitted by the Message class.
+ *
+ * This enumeration defines the different levels of messages that can
+ * be emitted and handled. The levels are designed to categorize messages
+ * based on their importance or type.
+ *
+ * Each level can be combined using bitwise operations to enable multiple
+ * levels simultaneously, as shown in the example below:
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * MessageLevel levels = MessageLevel::error | MessageLevel::warning;
+ * \endcode
+ */
 enum class MessageLevel : int8_t
 {
     debug = 1 << 0,                        /*!< Debug-level messages, typically for developers. */
@@ -76,7 +76,8 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel)
  * Classes implementing the `MessageHandler` interface can process 
  * messages emitted by the \ref Message class. For example:
  * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * Console &console = App::console();
  * Message::addMessageHandler(&console);
  * \endcode

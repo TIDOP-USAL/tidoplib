@@ -44,8 +44,8 @@ namespace tl
  * This class stores details about the license associated with the application or library,
  * including its name, text, version, author, email, and a URL.
  * 
- * <h4>Example</h4>
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * Licence licence("TidopLib", "GNU Lesser General Public License v3.0");
  * licence.setUrl("https://github.com/TIDOP-USAL/tidoplib");
  * licence.setAutor("TIDOP Research Group");
@@ -147,7 +147,7 @@ public:
 
     /*!
      * \brief Set the license URL.
-     * \param url The URL to set.
+     * \param[in] url The URL to set.
      */
     auto setUrl(const std::string &url) -> void;
 
@@ -220,13 +220,13 @@ public:
 
     /*!
      * \brief Add a license to the list.
-     * \param licence The license to add.
+     * \param[in] licence The license to add.
      */
     auto push_back(const Licence &licence) -> void;
 
     /*!
      * \brief Add a license to the list (move version).
-     * \param licence The license to add.
+     * \param[in] licence The license to add.
      */
     auto push_back(Licence &&licence) TL_NOEXCEPT -> void;
 
@@ -249,8 +249,8 @@ public:
 
     /*!
      * \brief Erase licenses from the list.
-     * \param first Iterator to the first element to erase.
-     * \param last Iterator to the last element to erase.
+     * \param[in] first Iterator to the first element to erase.
+     * \param[in] last Iterator to the last element to erase.
      * \return An iterator to the element following the last erased element.
      */
     auto erase(const_iterator first, const_iterator last) -> iterator;

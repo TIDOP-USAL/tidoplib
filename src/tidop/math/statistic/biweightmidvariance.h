@@ -30,20 +30,29 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
-
-
-/*! \addtogroup statistics Statistics
- *  \{
- */
-
 
 /*!
  * \brief Biweight Midvariance
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
+ *
+ * The biweight midvariance is a robust measure of the spread of data that reduces the influence
+ * of outliers. It is calculated by weighting the squared deviations from the median and adjusting
+ * them using a biweight function.
+ *
+ * \param[in] first Iterator to the beginning of the dataset
+ * \param[in] last Iterator to the end of the dataset
+ * \return The biweight midvariance for the dataset.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<double> data = {6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3};
+ * auto result = biweightMidvariance(data.begin(), data.end());
+ * Message::info("Biweight Midvariance of the dataset: {}", result);
+ *
+ * // Output: Biweight Midvariance of the dataset: 0.677818
+ * \endcode
  */
 template<typename It>
 auto biweightMidvariance(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -106,8 +115,6 @@ auto biweightMidvariance(It first, It last) -> enableIfFloating<iteratorValueTyp
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

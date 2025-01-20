@@ -52,8 +52,8 @@ namespace tl
  * at different levels (debug, info, success, warning, error). It allows 
  * for the registration of \ref MessageHandler instances to process these messages.
  *
- * <h4>Example:</h4>
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * // Add the Console as a message handler
  * Console &console = App::console();
  * console.setTitle("Transform Example");
@@ -229,7 +229,9 @@ public:
         Message::error(message);
     }
 
+/// \cond
 #endif
+/// \endcond
 
 };
 

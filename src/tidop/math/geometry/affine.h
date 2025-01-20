@@ -36,38 +36,41 @@
 namespace tl
 {
 
-/*! \addtogroup Math
+/*! \addtogroup GeometricTransformations
  *  \{
  */
-
-
-/*! \addtogroup Algebra
- *
- * Algebra
- *
- *  \{
- */
-
 
 /*!
- * \brief Affine transformation
- * 
- * The Affine Transformation expresses the relationship that exists 
- * (or the transformation that needs to be performed) between two 
- * Cartesian systems that differ in the location of the origin, in 
- * the orientation of the axes and in the unit of measurement along
- * the axes.
+ * \brief Affine transformation.
  *
- * 2D transformation:
- * 
- * \f[ a =  scaleX * cos(rotation)\f]
- * \f[ b = -scaleY * sin(rotation)\f]
- * \f[ c =  scaleX * sin(rotation)\f]
- * \f[ d =  scaleY * cos(rotation)\f]
+ * The Affine Transformation expresses the relationship between two
+ * Cartesian coordinate systems that may differ in the origin location,
+ * axis orientation, and unit measurement along the axes.
  *
- * \f[ x' = a * x + b * y + x0\f]
- * \f[ y' = c * x + d * y + y0\f]
- * 
+ * In 2D, the transformation is represented by:
+ * \f[
+ * a =  \text{scaleX} \cdot \cos(\text{rotation})
+ * \f]
+ * \f[
+ * b = -\text{scaleY} \cdot \sin(\text{rotation})
+ * \f]
+ * \f[
+ * c =  \text{scaleX} \cdot \sin(\text{rotation})
+ * \f]
+ * \f[
+ * d =  \text{scaleY} \cdot \cos(\text{rotation})
+ * \f]
+ *
+ * The transformation equations are:
+ * \f[
+ * x' = a \cdot x + b \cdot y + x_0
+ * \f]
+ * \f[
+ * y' = c \cdot x + d \cdot y + y_0
+ * \f]
+ *
+ * \tparam T The type of the elements (e.g., float, double).
+ * \tparam Dim The number of dimensions (e.g., 2 for 2D, 3 for 3D).
  */
 template <typename T, size_t Dim>
 class Affine
@@ -75,6 +78,9 @@ class Affine
 
 public:
 
+    /*!
+     * \brief Number of dimensions.
+     */
     enum
     {
         dimensions = Dim
@@ -91,54 +97,251 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Affine();
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] affine The Affine object to copy.
+     */
     Affine(const Affine &affine);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] affine The Affine object to move.
+     */
     Affine(Affine &&affine) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor from a matrix.
+     * \param[in] matrix The transformation matrix.
+     */
     explicit Affine(const Matrix<T, Dim, Dim + 1> &matrix);
+
+    /*!
+     * \brief Constructor for 2D affine transformation.
+     * \param[in] sx Scale in the x-direction.
+     * \param[in] sy Scale in the y-direction.
+     * \param[in] tx Translation in the x-direction.
+     * \param[in] ty Translation in the y-direction.
+     * \param[in] angle Rotation angle in radians.
+     */
     Affine(T sx, T sy, T tx, T ty, T angle);
+
+    /*!
+     * \brief Constructor for 3D affine transformation.
+     * \param[in] sx Scale in the x-direction.
+     * \param[in] sy Scale in the y-direction.
+     * \param[in] sz Scale in the z-direction.
+     * \param[in] tx Translation in the x-direction.
+     * \param[in] ty Translation in the y-direction.
+     * \param[in] tz Translation in the z-direction.
+     * \param[in] omega Rotation around the x-axis.
+     * \param[in] phi Rotation around the y-axis.
+     * \param[in] kappa Rotation around the z-axis.
+     */
     Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa);
+
+    /*!
+     * \brief Constructor from scale, translation, and rotation for 2D.
+     * \param[in] scale The scaling vector.
+     * \param[in] translation The translation vector.
+     * \param[in] angle Rotation angle in radians.
+     */
     Affine(const Vector<T, 2> &scale, const Vector<T, 2> &translation, T angle);
+
+    /*!
+     * \brief Constructor from scale, translation, and Euler angles for 3D.
+     * \param[in] scale The scaling vector.
+     * \param[in] translation The translation vector.
+     * \param[in] rotation Euler angles for rotation.
+     */
     Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const EulerAngles<T> &rotation);
+
+    /*!
+     * \brief Constructor from scale, translation, and rotation matrix for 3D.
+     * \param[in] scale The scaling vector.
+     * \param[in] translation The translation vector.
+     * \param[in] rotation The rotation matrix.
+     */
     Affine(const Vector<T, 3> &scale, const Vector<T, 3> &translation, const RotationMatrix<double> &rotation);
+
+    /*!
+     * \brief Constructor from separate transformations.
+     * \param[in] scale The scaling transformation.
+     * \param[in] translation The translation transformation.
+     * \param[in] rotation The rotation transformation.
+     */
     Affine(const Scaling<T, Dim> &scale, const Translation<T, Dim> &translation, const Rotation<T, Dim> &rotation);
+
     ~Affine() = default;
 
+    /*!
+     * \brief Assignment operator.
+     * \param[in] affine The Affine object to copy.
+     * \return Reference to this object.
+     */
     auto operator=(const Affine &affine) -> Affine&;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] affine The Affine object to move.
+     * \return Reference to this object.
+     */
     auto operator=(Affine &&affine) TL_NOEXCEPT -> Affine &;
 
-    auto operator()(size_t r, size_t c) -> reference;
-    auto operator()(size_t r, size_t c) const -> const_reference;
+    /*!
+     * \brief Access element at row r, column c.
+     * \param[in] r Row index.
+     * \param[in] c Column index.
+     * \return Reference to the element.
+     */
+    auto operator()(size_t r, size_t c) TL_NOEXCEPT -> reference;
 
+    /*!
+     * \brief Access element at row r, column c (const version).
+     * \param[in] r Row index.
+     * \param[in] c Column index.
+     * \return Const reference to the element.
+     */
+    auto operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Get the scaling transformation.
+     * \return The scaling transformation.
+     */
     auto scale() const -> Scaling<T, Dim>;
+
+    /*!
+     * \brief Get the translation transformation.
+     * \return The translation transformation.
+     */
     auto translation() const -> Translation<T, Dim>;
+
+    /*!
+     * \brief Get the rotation transformation.
+     * \return The rotation transformation.
+     */
     auto rotation() const -> Rotation<T, Dim>;
 
+    /*!
+     * \brief Compute the inverse of the affine transformation.
+     * \return The inverse transformation.
+     */
     auto inverse() const -> Affine<T, Dim>;
-    auto toMatrix() const -> Matrix<T, Dim, Dim + 1>;
 
+    /*!
+     * \brief Convert the affine transformation to a matrix.
+     * \return The transformation matrix.
+     */
+    auto toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim + 1>;
+
+    /*!
+     * \brief Apply the transformation to a point.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
     auto transform(const Point<T> &point) const -> Point<T>;
+
+    /*!
+     * \brief Apply the transformation to a 3D point.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
     auto transform(const Point3<T> &point) const -> Point3<T>;
+
+    /*!
+     * \brief Apply the transformation to a vector.
+     * \tparam _size The size of the vector.
+     * \param[in] vector The vector to transform.
+     * \return The transformed vector.
+     */
     template<size_t _size>
     auto transform(const Vector<T, _size> &vector) const -> Vector<T, _size>;
+
+    /*!
+      * \brief Apply the transformation to a matrix.
+      * \tparam _row The number of rows in the matrix.
+      * \tparam _col The number of columns in the matrix.
+      * \param[in] matrix The matrix to transform.
+      * \return The transformed matrix.
+      */
     template<size_t _row, size_t _col>
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
+    /*!
+     * \brief Apply the transformation using the multiplication operator.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
     auto operator * (const Point<T> &point) const -> Point<T>;
+
+    /*!
+     * \brief Apply the transformation using the multiplication operator to a 3D point.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
     auto operator * (const Point3<T> &point) const -> Point3<T>;
+    
+    /*!
+     * \brief Apply the transformation using the multiplication operator to a vector.
+     * \tparam _size The size of the vector.
+     * \param[in] vector The vector to transform.
+     * \return The transformed vector.
+     */
     template<size_t _size>
     auto operator * (const Vector<T, _size> &vector) const-> Vector<T, _size>;
+
+    /*!
+     * \brief Apply the transformation using the multiplication operator to a matrix.
+     * \tparam _row The number of rows in the matrix.
+     * \tparam _col The number of columns in the matrix.
+     * \param[in] matrix The matrix to transform.
+     * \return The transformed matrix.
+     */
     template<size_t _row, size_t _col>
     auto operator * (const Matrix<T, _row, _col> &matrix) const-> Matrix<T, _row, _col>;
 
+    /*!
+     * \brief Apply the transformation to a point using function call syntax.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
     auto operator()(const Point<T> &point) const -> Point<T>;
+
+    /*!
+     * \brief Apply the transformation to a 3D point using function call syntax.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
     auto operator()(const Point3<T> &point) const -> Point3<T>;
 
-    auto isEmpty() const;
+    /*!
+     * \brief Check if the affine transformation is empty (i.e., identity).
+     * \return `true` if the transformation is empty, otherwise `false`.
+     */
+    auto isEmpty() const TL_NOEXCEPT -> bool;
 
 };
 
+/*! \} */
 
 
+/*! \addtogroup Estimators
+ *  \{
+ */
+
+/*!
+ * \brief Estimator for 2D affine transformations.
+ *
+ * The `Affine2DEstimator` class provides static methods to estimate a 2D affine
+ * transformation between two sets of points or matrices representing the source
+ * and destination coordinates.
+ *
+ * \tparam T The type of the elements (e.g., float, double).
+ */
 template <typename T>
 class Affine2DEstimator
 {
@@ -148,15 +351,38 @@ public:
     Affine2DEstimator() = default;
     ~Affine2DEstimator() = default;
 
+    /*!
+     * \brief Estimate a 2D affine transformation between two matrices.
+     *
+     * This method estimates the affine transformation that maps points
+     * from the source matrix \p src to the destination matrix \p dst.
+     *
+     * \tparam Rows Number of rows in the matrices.
+     * \tparam Cols Number of columns in the matrices.
+     * \param[in] src The source matrix of points.
+     * \param[in] dst The destination matrix of points.
+     * \return The estimated 2D affine transformation.
+     */
     template<size_t Rows, size_t Cols>
     static auto estimate(const Matrix<T, Rows, Cols> &src,
                          const Matrix<T, Rows, Cols> &dst) -> Affine<T, 2>;
 
+    /*!
+     * \brief Estimate a 2D affine transformation between two sets of points.
+     *
+     * This method estimates the affine transformation that maps points
+     * from the source vector \p src to the destination vector \p dst.
+     *
+     * \param[in] src The source vector of points.
+     * \param[in] dst The destination vector of points.
+     * \return The estimated 2D affine transformation.
+     */
     static auto estimate(const std::vector<Point<T>> &src,
                          const std::vector<Point<T>> &dst) -> Affine<T, 2>;
 
 };
 
+/*! \} */
 
 
 /* Affine implementation */
@@ -299,13 +525,13 @@ auto Affine<T, Dim>::operator=(const Affine &affine) -> Affine&
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::operator()(size_t r, size_t c) -> reference
+auto Affine<T, Dim>::operator()(size_t r, size_t c) TL_NOEXCEPT -> reference
 {
     return this->_transform(r, c);
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::operator()(size_t r, size_t c) const -> const_reference
+auto Affine<T, Dim>::operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference
 {
     return this->_transform(r, c);
 }
@@ -371,7 +597,7 @@ auto Affine<T, Dim>::inverse() const -> Affine<T, Dim>
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::toMatrix() const -> Matrix<T, Dim, Dim + 1>
+auto Affine<T, Dim>::toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim + 1>
 {
     return this->_transform;
 }
@@ -482,7 +708,7 @@ auto Affine<T, Dim>::operator()(const Point3<T> &point) const -> Point3<T>
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::isEmpty() const
+auto Affine<T, Dim>::isEmpty() const TL_NOEXCEPT -> bool
 {
     return this->_transform == Matrix<T, Dim, Dim + 1>::identity();
 }
@@ -562,12 +788,6 @@ auto Affine2DEstimator<T>::estimate(const std::vector<Point<T>> &src,
 
     return Affine2DEstimator<T>::estimate(src_mat, dst_mat);
 }
-
-
-/*! \} */ // end of Algebra
-
-/*! \} */ // end of Math
-
 
 
 } // End namespace tl

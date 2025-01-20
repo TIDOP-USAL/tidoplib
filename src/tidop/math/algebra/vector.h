@@ -30,22 +30,18 @@
 
 #include "tidop/core/base/exception.h"
 #include "tidop/math/math.h"
-#include "tidop/math/simd.h"
-#include "tidop/math/data.h"
+#include "tidop/math/base/simd.h"
+#include "tidop/math/base/data.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Vector
  *  \{
  */
 
-
- /*! \addtogroup algebra
-  *  \{
-  */
-
+ /// \cond
 
 template<typename T>
 class VectorBase;
@@ -53,6 +49,25 @@ class VectorBase;
 template<typename T, size_t _size>
 class Vector;
 
+/// \endcond
+
+/*!
+ * \class VectorBase
+ * \brief Base class for vector operations.
+ *
+ * \tparam VectorDerived A template parameter representing the derived vector class.
+ * \tparam T The type of elements in the vector.
+ * \tparam _size The size of the vector, defaulting to `DynamicData` if not specified.
+ *
+ * The `VectorBase` class serves as a base for vector classes, defining fundamental
+ * operations between vectors and between vectors and scalars. It provides a foundation
+ * for creating vector types with customizable behavior.
+ *
+ * The `_size` parameter allows the class to work with both static and dynamic vectors.
+ * If `_size` is set to `DynamicData`, the vector will be dynamic, allowing its size to
+ * change at runtime. Otherwise, the vector will be static, with a fixed size defined
+ * at compile time.
+ */
 template<
     template<typename, size_t _size = DynamicData>
 class VectorDerived, typename T, size_t _size
@@ -62,6 +77,12 @@ class VectorBase<VectorDerived<T, _size>>
 
 public:
 
+    /*!
+     * \enum Properties
+     * \brief Enum to define vector properties.
+     *
+     * - `contiguous_memory`: Indicates the vector is stored in contiguous memory.
+     */
     enum class Properties
     {
         contiguous_memory = 0x01
@@ -69,17 +90,43 @@ public:
 
 public:
 
+    /*!
+     * \brief Flags for vector properties.
+     */
     EnumFlags<Properties> properties;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     VectorBase();
 
+    /*!
+     * \brief Calculates the magnitude (or length) of the vector.
+     * \return The magnitude of the vector.
+     */
     auto module() const -> double;
+
+    /*!
+     * \brief Normalizes the vector, making its magnitude equal to 1.
+     */
     auto normalize() -> void;
+
+    /*!
+     * \brief Computes the dot product with another vector.
+     * \param[in] vector Another vector to compute the dot product with.
+     * \tparam VectorDerived2 The type of the other vector.
+     * \return The dot product as a double.
+     */
     template<typename VectorDerived2>
     auto dotProduct(const VectorDerived2 &vector) const -> double;
 
+    /*!
+     * \brief Conversion operator to another vector type.
+     * \tparam VectorDerived2 The type to convert to.
+     * \return A new vector of type `VectorDerived2`.
+     */
     template<typename VectorDerived2>
     operator VectorDerived2() const
     {
@@ -91,36 +138,118 @@ public:
     /* Unary arithmetic operators */
 
     /*!
-     * \brief Operator unary plus
+     * \brief Unary plus operator.
+     * \return A copy of the vector.
      */
     auto operator+() const -> Vector<T, _size>;
 
     /*!
-     * \brief Operator unary minus
+     * \brief Unary minus operator.
+     * \return A negated copy of the vector.
      */
     auto operator-() const -> Vector<T, _size>;
 
     /* Binary arithmetic operators */
 
+    /*!
+     * \brief Adds two vectors.
+     * \param[in] vector2 The vector to add.
+     * \return The sum of the vectors.
+     */
     auto operator+(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Subtracts one vector from another.
+     * \param[in] vector2 The vector to subtract.
+     * \return The difference of the vectors.
+     */
     auto operator-(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Multiplies two vectors element-wise.
+     * \param[in] vector2 The vector to multiply.
+     * \return The product of the vectors.
+     */
     auto operator*(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Divides two vectors element-wise.
+     * \param[in] vector2 The vector to divide by.
+     * \return The quotient of the vectors.
+     */
     auto operator/(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Multiplies the vector by a scalar.
+     * \param[in] scalar The scalar to multiply by.
+     * \return The scaled vector.
+     */
     auto operator*(T scalar) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Divides the vector by a scalar.
+     * \param[in] scalar The scalar to divide by.
+     * \return The scaled vector.
+     */
     auto operator/(T scalar) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Adds another vector to this vector.
+     * \param[in] vector The vector to add.
+     * \tparam VectorDerived2 The type of the other vector.
+     * \return A reference to this vector.
+     */
     template<typename VectorDerived2>
     auto operator+=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+
+    /*!
+     * \brief Subtracts another vector from this vector.
+     * \param[in] vector The vector to subtract.
+     * \tparam VectorDerived2 The type of the other vector.
+     * \return A reference to this vector.
+     */
     template<typename VectorDerived2>
     auto operator-=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+
+    /*!
+     * \brief Multiplies this vector by another vector element-wise.
+     * \param[in] vector The vector to multiply by.
+     * \tparam VectorDerived2 The type of the other vector.
+     * \return A reference to this vector.
+     */
     template<typename VectorDerived2>
     auto operator*=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+
+    /*!
+     * \brief Divides this vector by another vector element-wise.
+     * \param[in] vector The vector to divide by.
+     * \tparam VectorDerived2 The type of the other vector.
+     * \return A reference to this vector.
+     */
     template<typename VectorDerived2>
     auto operator/=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+
+    /*!
+     * \brief Multiplies the vector by a scalar.
+     * \param[in] scalar The scalar to multiply by.
+     * \return A reference to this vector.
+     */
     auto operator*=(T scalar) -> VectorDerived<T, _size> &;
+
+    /*!
+     * \brief Divides the vector by a scalar.
+     * \param[in] scalar The scalar to divide by.
+     * \return A reference to this vector.
+     */
     auto operator/=(T scalar) -> VectorDerived<T, _size> &;
 
 protected:
 
+    /*!
+     * \brief Sets the values of this vector to match another vector.
+     * \param[in] vector The vector to copy values from.
+     * \tparam VectorDerived2 The type of the other vector.
+     */
     template<typename VectorDerived2>
     void set(const VectorDerived2 &vector);
 
@@ -132,6 +261,19 @@ private:
 };
 
 
+
+/*!
+ * \class Vector
+ * \brief Represents a mathematical vector, supporting both static and dynamic sizes.
+ *
+ * \tparam T The type of elements in the vector.
+ * \tparam _size The size of the vector. If not specified, defaults to `DynamicData`, making it a dynamic vector.
+ *
+ * The `Vector` class provides a robust implementation for vectors of various sizes, including
+ * operations for accessing, modifying, and manipulating vector data. It inherits from `VectorBase`
+ * and supports both static and dynamic sizing depending on the template parameter `_size`.
+ *
+ */
 template<typename T, size_t _size = DynamicData>
 class Vector
     : public VectorBase<Vector<T, _size>>
@@ -148,71 +290,326 @@ public:
 
     using iterator = typename Data<T, _size>::iterator;
     using const_iterator = typename Data<T, _size>::const_iterator;
-    //using reverse_iterator       = typename Data<T, _size>::reverse_iterator;
-    //using const_reverse_iterator = typename Data<T, _size>::const_reverse_iterator;
 
 public:
 
+    /*!
+     * \brief Default constructor. Initializes an empty vector.
+     */
     Vector();
+
+    /*!
+     * \brief Constructs a vector of a given size, initializing all elements to a specified value.
+     * \param[in] size The size of the vector.
+     * \param[in] value The value to initialize each element to (default is the lowest value of `T`).
+     */
     explicit Vector(size_t size, T value = std::numeric_limits<T>().lowest());
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] vector The vector to copy.
+     */
     Vector(const Vector &vector);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] vector The vector to move.
+     */
     Vector(Vector &&vector) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a vector from an initializer list.
+     * \param[in] values The values to initialize the vector with.
+     */
     Vector(std::initializer_list<T> values);
+
+    /*!
+     * \brief Constructs a vector from a raw pointer and size.
+     * \param[in] data Pointer to the data.
+     * \param[in] size The size of the vector.
+     */
     Vector(T *data, size_t size);
+
     ~Vector() = default;
 
-    auto operator=(const Vector &vector)->Vector &;
+    /*!
+     * \brief Assignment operator for copying another vector.
+     * \param vector The vector to copy from.
+     * \return A reference to this vector.
+     */
+    auto operator=(const Vector &vector) -> Vector &;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param vector The vector to move from.
+     * \return A reference to this vector.
+     */
     auto operator=(Vector &&vector) TL_NOEXCEPT -> Vector &;
+
+    /*!
+     * \brief Assignment operator for assigning a derived vector.
+     * \tparam VectorDerived The type of the derived vector.
+     * \param vector The derived vector to assign from.
+     * \return A reference to this vector.
+     */
     template<typename VectorDerived>
     auto operator=(const VectorDerived &vector) -> Vector &;
 
 public:
 
+    /*!
+     * \brief Resizes the vector to a new size.
+     * \param[in] size The new size of the vector.
+     */
     void resize(size_t size);
+
+    /*!
+     * \brief Resizes the vector to a new size and initializes new elements to a specified value.
+     * \param[in] size The new size of the vector.
+     * \param[in] value The value to initialize new elements with.
+     */
     void resize(size_t size, T value);
 
+    /*!
+     * \brief Returns the size of the vector.
+     * \return The number of elements in the vector.
+     */
     auto size() const TL_NOEXCEPT -> size_t;
 
+    /*!
+     * \brief Accesses the element at the specified position with bounds checking.
+     *
+     * \param[in] position The position of the element to access.
+     * \return A reference to the element at the specified position.
+     * \throws std::out_of_range if the position is out of bounds.
+     */
     auto at(size_type position) -> reference;
+
+    /*!
+     * \brief Accesses the element at the specified position with bounds checking (const version).
+     *
+     * \param[in] position The position of the element to access.
+     * \return A const reference to the element at the specified position.
+     * \throws std::out_of_range if the position is out of bounds.
+     */
     auto at(size_type position) const -> const_reference;
 
-    auto operator[](size_t position) -> reference;
-    auto operator[](size_t position) const -> const_reference;
+    /*!
+     * \brief Accesses the element at the specified position without bounds checking.
+     *
+     * \param[in] position The position of the element to access.
+     * \return A reference to the element at the specified position.
+     * \note No bounds checking is performed, so accessing an invalid position
+     *       may result in undefined behavior.
+     */
+    auto operator[](size_t position) TL_NOEXCEPT -> reference;
 
-    auto front() -> reference;
-    auto front() const -> const_reference;
-    auto back() -> reference;
-    auto back() const -> const_reference;
+    /*!
+     * \brief Accesses the element at the specified position without bounds checking (const version).
+     *
+     * \param position The position of the element to access.
+     * \return A const reference to the element at the specified position.
+     * \note No bounds checking is performed, so accessing an invalid position
+     *       may result in undefined behavior.
+     */
+    auto operator[](size_t position) const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the first element in the vector.
+     * \return A reference to the first element.
+     */
+    auto front() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the first element in the vector (const version).
+     * \return A const reference to the first element.
+     */
+    auto front() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the last element in the vector.
+     * \return A reference to the last element.
+     */
+    auto back() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the last element in the vector (const version).
+     * \return A const reference to the last element.
+     * \throws std::out_of_range if the vector is empty.
+     */
+    auto back() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Returns an iterator to the beginning of the vector.
+     * \return An iterator to the beginning of the vector.
+     */
     auto begin() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to the beginning of the vector.
+     * \return A const iterator to the beginning of the vector.
+     */
     auto begin() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Returns an iterator to the end of the vector.
+     * \return An iterator to the end of the vector.
+     */
     auto end() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to the end of the vector.
+     * \return A const iterator to the end of the vector.
+     */
     auto end() const TL_NOEXCEPT -> const_iterator;
 
-    auto data() -> pointer;
-    auto data() const -> const_pointer;
+    /*!
+     * \brief Returns a pointer to the data array of the vector.
+     * \return A pointer to the data array.
+     */
+    auto data() TL_NOEXCEPT -> pointer;
 
-    auto x() const -> T;
-    auto y() const -> T;
-    auto z() const -> T;
-    auto w() const -> T;
+    /*!
+     * \brief Returns a const pointer to the data array of the vector.
+     * \return A const pointer to the data array.
+     */
+    auto data() const TL_NOEXCEPT -> const_pointer;
 
-    auto x() -> reference;
-    auto y() -> reference;
-    auto z() -> reference;
-    auto w() -> reference;
+    /*!
+     * \brief Access the x-component of the vector.
+     * \return A const reference to the x-component.
+     * \note Only valid for vectors with size at least 1.
+     */
+    auto x() const TL_NOEXCEPT -> const_reference;
 
+    /*!
+     * \brief Access the y-component of the vector.
+     * \return A const reference to the y-component.
+     * \note Only valid for vectors with size at least 2.
+     */
+    auto y() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the z-component of the vector.
+     * \return A const reference to the z-component.
+     * \note Only valid for vectors with size at least 3.
+     */
+    auto z() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the w-component of the vector.
+     * \return A const reference to the w-component.
+     * \note Only valid for vectors with size at least 4.
+     */
+    auto w() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the x-component of the vector (non-const version).
+     * \return A reference to the x-component.
+     * \note Only valid for vectors with size at least 1.
+     */
+    auto x() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the y-component of the vector (non-const version).
+     * \return A reference to the y-component.
+     * \note Only valid for vectors with size at least 2.
+     */
+    auto y() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the z-component of the vector (non-const version).
+     * \return A reference to the z-component.
+     * \note Only valid for vectors with size at least 3.
+     */
+    auto z() TL_NOEXCEPT-> reference;
+
+    /*!
+     * \brief Access the w-component of the vector (non-const version).
+     * \return A reference to the w-component.
+     * \note Only valid for vectors with size at least 4.
+     */
+    auto w() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Equality operator for comparing two vectors.
+     * \param vector The vector to compare with.
+     * \return True if the vectors are equal, false otherwise.
+     */
     bool operator == (const Vector &vector) const;
+
+    /*!
+     * \brief Inequality operator for comparing two vectors.
+     * \param vector The vector to compare with.
+     * \return True if the vectors are not equal, false otherwise.
+     */
     bool operator != (const Vector &vector) const;
+
+    /*!
+     * \brief Less-than operator for comparing two vectors.
+     * \param vector The vector to compare with.
+     * \return True if this vector is less than the other, false otherwise.
+     */
     bool operator <  (const Vector &vector) const;
+
+    /*!
+     * \brief Less-than-or-equal operator for comparing two vectors.
+     * \param vector The vector to compare with.
+     * \return True if this vector is less than or equal to the other, false otherwise.
+     */
     bool operator <= (const Vector &vector) const;
+
+    /*!
+     * \brief Greater-than operator for comparing two vectors.
+     * \param vector The vector to compare with.
+     * \return True if this vector is greater than the other, false otherwise.
+     */
     bool operator >  (const Vector &vector) const;
+
+    /*!
+     * \brief Greater-than-or-equal operator for comparing two vectors.
+     * \param vector The vector to compare with.
+     * \return True if this vector is greater than or equal to the other, false otherwise.
+     */
     bool operator >= (const Vector &vector) const;
 
+    /*!
+     * \brief Creates a zero vector.
+     * \return A vector with all elements initialized to zero.
+     */
     static auto zero() -> Vector;
+
+    /*!
+     * \brief Creates a zero vector of a specified size.
+     * \param size The size of the vector.
+     * \return A vector with all elements initialized to zero.
+     */
     static auto zero(size_t size) -> Vector;
+
+    /*!
+     * \brief Creates a unit vector (vector with all elements initialized to one).
+     * \return A unit vector.
+     */
     static auto unit() -> Vector;
+
+    /*!
+     * \brief Creates a unit vector of a specified size.
+     * \param size The size of the vector.
+     * \return A unit vector.
+     */
     static auto unit(size_t size) -> Vector;
+
+    /*!
+     * \brief Creates a random vector.
+     * \return A vector with randomly initialized elements.
+     */
     static auto randon() -> Vector;
+
+    /*!
+     * \brief Creates a random vector of a specified size.
+     * \param size The size of the vector.
+     * \return A vector with randomly initialized elements.
+     */
     static auto randon(size_t size) -> Vector;
 
 private:
@@ -727,10 +1124,7 @@ auto VectorBase<VectorDerived<T, _size>>::derived() const -> const VectorDerived
 
 
 
-/*------------------------------------------------------------------------*/
-/* Vector implementation                                                  */
-/*------------------------------------------------------------------------*/
-
+/* Vector implementation */
 
 template<typename T, size_t _size>
 Vector<T, _size>::Vector()
@@ -831,37 +1225,37 @@ auto Vector<T, _size>::at(size_type position) const -> const_reference
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::operator[](size_t position) -> reference
+auto Vector<T, _size>::operator[](size_t position) TL_NOEXCEPT -> reference
 {
     return _data[position];
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::operator[](size_t position) const -> const_reference
+auto Vector<T, _size>::operator[](size_t position) const TL_NOEXCEPT -> const_reference
 {
     return _data[position];
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::front() -> reference
+auto Vector<T, _size>::front() TL_NOEXCEPT -> reference
 {
     return _data.front();
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::front() const -> const_reference
+auto Vector<T, _size>::front() const TL_NOEXCEPT -> const_reference
 {
     return _data.front();
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::back() -> reference
+auto Vector<T, _size>::back() TL_NOEXCEPT -> reference
 {
     return _data.back();
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::back() const -> const_reference
+auto Vector<T, _size>::back() const TL_NOEXCEPT -> const_reference
 {
     return _data.back();
 }
@@ -891,19 +1285,19 @@ auto Vector<T, _size>::end() const TL_NOEXCEPT -> const_iterator
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::data() -> pointer
+auto Vector<T, _size>::data() TL_NOEXCEPT -> pointer
 {
     return _data.data();
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::data() const -> const_pointer
+auto Vector<T, _size>::data() const TL_NOEXCEPT -> const_pointer
 {
     return _data.data();
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::x() const -> T
+auto Vector<T, _size>::x() const TL_NOEXCEPT -> const_reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -911,7 +1305,7 @@ auto Vector<T, _size>::x() const -> T
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::y() const -> T
+auto Vector<T, _size>::y() const TL_NOEXCEPT -> const_reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -919,7 +1313,7 @@ auto Vector<T, _size>::y() const -> T
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::z() const -> T
+auto Vector<T, _size>::z() const TL_NOEXCEPT -> const_reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -927,7 +1321,7 @@ auto Vector<T, _size>::z() const -> T
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::w() const -> T
+auto Vector<T, _size>::w() const TL_NOEXCEPT -> const_reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -935,7 +1329,7 @@ auto Vector<T, _size>::w() const -> T
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::x() -> reference
+auto Vector<T, _size>::x() TL_NOEXCEPT -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -943,7 +1337,7 @@ auto Vector<T, _size>::x() -> reference
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::y() -> reference
+auto Vector<T, _size>::y() TL_NOEXCEPT -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -951,7 +1345,7 @@ auto Vector<T, _size>::y() -> reference
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::z() -> reference
+auto Vector<T, _size>::z() TL_NOEXCEPT -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -959,7 +1353,7 @@ auto Vector<T, _size>::z() -> reference
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::w() -> reference
+auto Vector<T, _size>::w() TL_NOEXCEPT -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -1071,10 +1465,6 @@ auto Vector<T, _size>::randon(size_t size) -> Vector
 
     return vector;
 }
-
-/*------------------------------------------------------------------------*/
-/* End Vector implementation                                              */
-/*------------------------------------------------------------------------*/
 
 
 
@@ -1226,6 +1616,18 @@ auto operator /(Vector<T, _size>&& vector, T scalar) -> Vector<T, _size>
 //}
 
 
+/*!
+ * \brief Computes the dot product of two vectors.
+ *
+ * The dot product of two vectors is the sum of the products of their corresponding components.
+ * This function asserts that both vectors have the same size.
+ *
+ * \tparam T The type of the elements in the vectors.
+ * \tparam _size The size of the vectors.
+ * \param[in] v1 The first vector.
+ * \param[in] v2 The second vector.
+ * \return The dot product of `v1` and `v2` as a `double`.
+ */
 template<typename T, size_t _size> 
 auto dotProduct(const Vector<T, _size>& v1,
                 const Vector<T, _size>& v2) -> double
@@ -1239,7 +1641,19 @@ auto dotProduct(const Vector<T, _size>& v1,
     return dot;
 }
 
-
+/*!
+ * \brief Computes the cross product of two 3-dimensional vectors.
+ *
+ * The cross product of two vectors in three-dimensional space results in a vector that is
+ * perpendicular to both of the vectors being multiplied, with a direction given by the right-hand rule.
+ * This function assumes that the vectors have three components.
+ *
+ * \tparam T The type of the elements in the vectors.
+ * \tparam _size The size of the vectors, defaulting to 3.
+ * \param[in] pt1 The first vector.
+ * \param[in] pt2 The second vector.
+ * \return The cross product of `pt1` and `pt2` as a `Vector<T, _size>`.
+ */
 template<typename T, size_t _size = 3>
 auto crossProduct(const Vector<T, _size>& pt1,
                   const Vector<T, _size>& pt2) -> Vector<T, _size>
@@ -1272,7 +1686,20 @@ auto operator<<(std::ostream& os, const Vector<T, _size>* vector) -> std::ostrea
 }
 
 
-
+/*!
+ * \brief Computes the angle between two 2-dimensional vectors.
+ *
+ * This function calculates the angle in radians between two vectors \f$v1\f$ and \f$v2\f$.
+ * If the vectors are equal, the angle is 0. If either vector has a magnitude of zero, an exception is thrown.
+ * The angle is computed using the dot product and the magnitudes of the vectors, ensuring that the cosine of the angle
+ * is within the range \f$[-1, 1]\f$ to account for numerical precision errors.
+ *
+ * \tparam T The type of the elements in the vectors.
+ * \param[in] v1 The first 2-dimensional vector.
+ * \param[in] v2 The second 2-dimensional vector.
+ * \return The angle between `v1` and `v2` in radians.
+ * \throws std::invalid_argument if either vector has a magnitude of zero.
+ */
 template<typename T>
 T vectorAngle(const Vector<T, 2> &v1, const Vector<T, 2> &v2) 
 {
@@ -1282,7 +1709,7 @@ T vectorAngle(const Vector<T, 2> &v1, const Vector<T, 2> &v2)
     T magV2 = v2.module();
     
     if (magV1 == 0 || magV2 == 0) {
-        throw std::invalid_argument("El ángulo no está definido para vectores de magnitud cero.");
+        throw std::invalid_argument("The angle is not defined for zero magnitude vectors.");
     }
     
     T cosTheta = dotProduct(v1, v2) / (magV1 * magV2);
@@ -1293,9 +1720,7 @@ T vectorAngle(const Vector<T, 2> &v1, const Vector<T, 2> &v2)
 }
 
 
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

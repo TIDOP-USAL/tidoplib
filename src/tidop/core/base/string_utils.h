@@ -134,10 +134,12 @@ inline auto trim_copy(std::string s) -> std::string
  * \param[in] str_new The new substring to replace the old one.
  * \return None. The original string is modified.
  *
- * \example
+ * ### Example Usage
+ * \code{.cpp}
  * std::string str = "Hello world";
  * replaceString(str, " ", "_");
  * // str will be "Hello_world"
+ * \endcode
  */
 TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 

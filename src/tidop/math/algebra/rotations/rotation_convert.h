@@ -25,25 +25,15 @@
 #pragma once
 
 #include "tidop/math/math.h"
-#include "tidop/math/algebra/quaternion.h"
-#include "tidop/math/algebra/euler_angles.h"
-#include "tidop/math/algebra/rotation_matrix.h"
-#include "tidop/math/algebra/axis_angle.h"
+#include "tidop/math/algebra/rotations/quaternion.h"
+#include "tidop/math/algebra/rotations/euler_angles.h"
+#include "tidop/math/algebra/rotations/rotation_matrix.h"
+#include "tidop/math/algebra/rotations/axis_angle.h"
 
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-/*! \addtogroup algebra
- *  \{
- */
-
-/*! \defgroup rotations Rotations
- *  \{
- */
+/// \cond
 
 /*!
  * \brief Clase para convertir entre diferentes sistemas de rotación
@@ -75,8 +65,8 @@ public:
      * \f[ y*w = \frac{r_{02} - r_{20}}{4} \f]
      * \f[ z*w = \frac{r_{10} - r_{01}}{4} \f]
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   RotationMatrix<double> rotationMatrix;
      *   rot[0][0] = -0.8888889;
      *   rot[0][1] = 0.4444444;
@@ -110,8 +100,8 @@ public:
      * \f[ r_{21} = 2 * y * z + 2 * x * w \f]
      * \f[ r_{22} = 1 - 2 * x² - 2 * y² \f]
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   Quaterniond quaternion(0., 1., -3., 2.);
      *   RotationMatrix<double> rotationMatrix;
      *   RotationConverter<double>::convert(quaternion, rotationMatrix);
@@ -126,8 +116,8 @@ public:
     /*!
      * \brief Converts a quaternion rotation to axial-angular notation
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   Quaterniond quaternion(0., 1., -3., 2.);
      *   AxisAngle<double> axis_angle;
      *   RotationConverter<double>::convert(quaternion, axis_angle);
@@ -142,8 +132,8 @@ public:
     /*!
      * \brief Converts a rotation in axial-angular notation to quaternions
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   AxisAngle<double> axis_angle(3.4764888, {-0.1690308, -0.5070926, 0.8451542});
      *   Quaterniond quaternion;
      *   RotationConverter<double>::convert(axis_angle, quaternion);
@@ -158,8 +148,8 @@ public:
     /*!
      * Converts a rotation matrix to axial-angular notation
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   RotationMatrix<double> rotationMatrix;
      *   rot[0][0] = -0.8888889;
      *   rot[0][1] = 0.4444444;
@@ -183,8 +173,8 @@ public:
     /*!
      * \brief Converts a rotation in axial-angular notation to a rotation matrix
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   AxisAngle<double> axis_angle(3.4764888, {-0.1690308, -0.5070926, 0.8451542});
      *   RotationMatrix<double> rotationMatrix;
      *   RotationConverter<double>::convert(axis_angle, rotationMatrix);
@@ -199,8 +189,8 @@ public:
     /*!
      * \brief Convert a rotation matrix to Euler Angles
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   RotationMatrix<double> rotationMatrix;
      *   rot[0][0] = -0.8888889;
      *   rot[0][1] = 0.4444444;
@@ -224,8 +214,8 @@ public:
     /*!
      * \brief Converts a rotation as Euler angles to rotation matrix
      * https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * EulerAngles<double> eulerAngles(2.356194490192345,
      *                                 2.5261129449194057,
      *                                 0.7853981633974483,
@@ -241,8 +231,8 @@ public:
 
     /*!
      * \brief Converts a rotation as quaternions to Euler angles
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * Quaterniond quaternion(0., 1., -3., 2.);
      * EulerAngles<double> eulerAngles;
      * RotationConverter<double>::convert(quaternion, eulerAngles);
@@ -256,8 +246,8 @@ public:
     /*!
      * \brief Converts a rotation as Eeuler angles to quaternions
      * https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * EulerAngles<double> eulerAngles(2.356194490192345,
      *                                 2.5261129449194057,
      *                                 0.7853981633974483,
@@ -274,8 +264,8 @@ public:
     /*!
      * \brief Converts a rotation as Euler angles to axial-angular notation
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      * EulerAngles<double> eulerAngles(2.356194490192345,
      *                                 2.5261129449194057,
      *                                 0.7853981633974483,
@@ -292,8 +282,8 @@ public:
     /*!
      * \brief Converts a rotation in axial-angular notation to Euler angles
      *
-     * <h4>Example</h4>
-     * \code
+     * ### Example Usage
+     * \code{.cpp}
      *   AxisAngle<double> axis_angle(3.4764888, {-0.1690308, -0.5070926, 0.8451542});
      *   EulerAngles<double> eulerAngles;
      *   RotationConverter<double>::convert(axis_angle, eulerAngles);
@@ -306,7 +296,6 @@ public:
                         EulerAngles<T, P...> &eulerAngles);
 
 };
-
 
 
 /// Implementación RotationConverter
@@ -958,10 +947,6 @@ void RotationConverter<T, P...>::convert(const AxisAngle<T> &axisAngle,
     convert(rotationMatrix, eulerAngles);
 }
 
-/*! \} */ // end of rotation
-
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/// \endcond
 
 } // End namespace tl

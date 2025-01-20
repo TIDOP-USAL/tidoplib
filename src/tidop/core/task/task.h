@@ -59,7 +59,7 @@ class TL_EXPORT Task
 public:
 
     /*!
-     * \enum Task::Status
+     * \enum Status
      * \brief Represents the lifecycle status of a task.
      *
      * Possible values are:

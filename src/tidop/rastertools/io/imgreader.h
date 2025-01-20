@@ -56,9 +56,8 @@ class ImageMetadata;
  * The `ImageReader` class provides an abstract interface for reading various types of raster image files.
  * It supports reading specific regions, scaling, and accessing metadata such as georeferencing information.
  *
- * <h4>Usage Example</h4>
- *
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * tl::Path imagePath("example.tif");
  * auto reader = ImageReaderFactory::create(imagePath);
  * reader->open();
@@ -250,9 +249,8 @@ private:
  * based on the file format of the provided image path. It supports various image formats and selects
  * the appropriate `ImageReader` implementation automatically.
  *
- * <h4>Usage Example</h4>
- *
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * tl::Path imagePath("example.tif");
  * auto reader = ImageReaderFactory::create(imagePath);
  * reader->open();
