@@ -27,30 +27,43 @@
 #  TidopLib vector module                                                #
 ##########################################################################
 
+include(TidopUtils)
+
 if (BUILD_TL_VECTOR_TOOLS)
 
     project(VectorTools)
   
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
-                vect.cpp
-				vect.h
-                vectreader.cpp
-                vectreader.h
-                vectwriter.cpp
-                vectwriter.h			
-                formats.cpp
-                formats.h)
+    add_files_to_project(${PROJECT_NAME} 
+                         SOURCE_FILES 
+                             vect.cpp
+                             io/vectreader.cpp
+                             io/vectwriter.cpp
+                             io/formats.cpp
+                             impl/io/gdalreader.cpp
+                             impl/io/gdalwriter.cpp
+                         HEADER_FILES
+                             vect.h
+                             io/vectreader.h
+                             io/vectwriter.h
+                             io/formats.h
+                             impl/io/gdalreader.h
+                             impl/io/gdalwriter.h)
 
-    add_library(TidopLib::${PROJECT_NAME} ALIAS ${PROJECT_NAME})   
-    
-    target_include_directories(${PROJECT_NAME} PRIVATE 
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                ${PROJECT_SOURCE_FILES}
+                ${PROJECT_HEADER_FILES})
+				
+    add_library(TidopLib::${PROJECT_NAME}
+                ALIAS ${PROJECT_NAME})
+				
+    target_include_directories(${PROJECT_NAME} PUBLIC 
                                $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+    target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core
                           TidopLib::Graphic
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
@@ -74,7 +87,8 @@ if (BUILD_TL_VECTOR_TOOLS)
 
     install(DIRECTORY . 
             DESTINATION include/tidop/vectortools
-            FILES_MATCHING PATTERN "*.h")
+            FILES_MATCHING PATTERN "*.h"
+            PATTERN "impl" EXCLUDE)
             
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     

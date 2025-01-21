@@ -572,3 +572,19 @@
  * computations, including support for BLAS, LAPACK, CUDA, SIMD operations, and data 
  * structures.
  */
+ 
+ 
+/*!
+ * \defgroup VectorTools Vector Tools
+ * \brief Tools for reading and writing vector files.
+ *
+ * The `VectorTools` module provides a set of utilities for handling vector files.
+ * It supports various operations such as reading from and writing to different vector file formats.
+ */
+
+/*! 
+ * \defgroup VectorIO Vector File I/O
+ * \ingroup VectorTools
+ * 
+ * \brief This module provides functionalities for reading and writing vector data in various formats.
+ */ 

@@ -39,7 +39,7 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-/*! \addtogroup VectorTools
+/*! \addtogroup VectorIO
  *  \{
  */
 

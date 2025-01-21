@@ -22,91 +22,51 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#include "tidop/vectortools/io/vectreader.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/private/gdalreg.h"
+#include "tidop/vectortools/impl/io/gdalreader.h"
 
-#include <memory>
-#include <list>
-#include <string>
-
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/path.h"
-#include "tidop/core/base/ptr.h"
+#ifdef TL_HAVE_GDAL
+TL_DISABLE_WARNINGS
+#include "ogrsf_frmts.h"
+TL_DEFAULT_WARNINGS
+#endif // TL_HAVE_GDAL
 
 namespace tl
 {
 
-class GLayer;
-
-/*! \addtogroup VectorTools
- *  \{
- */
-
-class TL_EXPORT VectorWriter
+VectorReader::VectorReader(Path file)
+  : mFile(std::move(file))
 {
-
-    GENERATE_UNIQUE_PTR(VectorWriter)
-
-public:
-
-    VectorWriter(Path file);
-    virtual ~VectorWriter() = default;
-
-    /*!
-     * \brief Open the file
-     */
-    virtual void open() = 0;
-
-    /*!
-     * \brief Check if the file has been loaded correctly
-     */
-    virtual auto isOpen() const -> bool = 0;
-
-    /*!
-     * \brief Close the file
-     */
-    virtual void close() = 0;
-
-    /*!
-     * \brief Create the file
-     */
-    virtual void create() = 0;
-
-    /*!
-     * \brief Write the layer to the file
-     * \param[in] layer The layer to be written
-     */
-    virtual void write(const GLayer &layer) = 0;
-
-    /*!
-     * \brief Set the Coordinate Reference System
-     * \param[in] epsgCode Coordinate Reference System in EPSG code format
-     */
-    virtual void setCRS(const std::string &epsgCode) = 0;
-
-protected:
-
-    Path mFile;
-
-};
+}
 
 
-/*!
- * \brief Factory class for writing various vector formats
- */
-class TL_EXPORT VectorWriterFactory
+
+auto VectorReaderFactory::create(const Path &file) -> VectorReader::Ptr
 {
+    VectorReader::Ptr vector_reader;
 
-private:
+    try {
 
-    VectorWriterFactory() = default;
+        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
 
-public:
+        std::string extension = file.extension().toString();
+#ifdef TL_HAVE_GDAL
+        if (driverAvailable(file)){
+        //if (VectorReaderGdal::isExtensionSupported(extension)) {
+            vector_reader = VectorReaderGdal::New(file);
+        } else
+#endif
+        {
+            TL_THROW_EXCEPTION("Invalid Vector Reader: {}", file.fileName().toString());
+        }
 
-    static auto create(const Path &file) -> VectorWriter::Ptr;
-    TL_DEPRECATED("create", "2.1")
-    static auto createWriter(const Path &file) -> VectorWriter::Ptr;
-};
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-/*! \} */ // end of vector
+    return vector_reader;
+}
 
 } // End namespace tl

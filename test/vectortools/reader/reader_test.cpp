@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop vector reader test
 #include <boost/test/unit_test.hpp>
-#include <tidop/vectortools/vectreader.h>
+#include <tidop/vectortools/io/vectreader.h>
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/point.h>
 #include <tidop/graphic/entities/linestring.h>

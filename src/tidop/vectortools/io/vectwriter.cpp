@@ -22,88 +22,49 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include <memory>
-#include <list>
-#include <string>
-
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/path.h"
-#include "tidop/core/base/ptr.h"
-
+#include "tidop/vectortools/io/vectwriter.h"
+#include "tidop/vectortools/impl/io/gdalwriter.h"
+#include "tidop/core/base/string_utils.h"
 
 namespace tl
 {
 
-
-class GLayer;
-
-
-/*! \addtogroup VectorTools
- *  \{
- */
-
-
-class TL_EXPORT VectorReader
+VectorWriter::VectorWriter(Path file)
+  : mFile(std::move(file))
 {
-
-    GENERATE_UNIQUE_PTR(VectorReader)
-
-protected:
-
-    Path mFile;
-
-public:
-
-    VectorReader(Path file);
-    virtual ~VectorReader() = default;
-
-    /*!
-     * \brief Opens the file
-     */
-    virtual void open() = 0;
-
-    /*!
-     * \brief Checks if the file has been loaded correctly
-     */
-    virtual auto isOpen() const -> bool = 0;
-
-    /*!
-     * \brief Closes the file
-     */
-    virtual void close() = 0;
-
-    virtual auto layersCount() const -> int = 0;
-    virtual auto read(int layerId) -> std::shared_ptr<GLayer> = 0;
-    virtual auto read(const std::string& layerName) -> std::shared_ptr<GLayer> = 0;
-
-    /*!
-     * \brief Reference system in WKT format
-     */
-    virtual auto crsWkt() const -> std::string = 0;
-
-};
+}
 
 
-/*!
- * \brief Factoría de clases para la lectura de formatos vectoriales
- */
-class TL_EXPORT VectorReaderFactory
+auto VectorWriterFactory::create(const Path& file) -> VectorWriter::Ptr
 {
+    VectorWriter::Ptr vector_writer;
 
-private:
+    try {
 
-    VectorReaderFactory() = default;
+        std::string extension = file.extension().toString();
+#ifdef TL_HAVE_GDAL
+        if (compareInsensitiveCase(extension, ".dxf") ||
+            compareInsensitiveCase(extension, ".dwg") ||
+            compareInsensitiveCase(extension, ".dgn") ||
+            compareInsensitiveCase(extension, ".shp") ||
+            compareInsensitiveCase(extension, ".gml") ||
+            compareInsensitiveCase(extension, ".kml") ||
+            compareInsensitiveCase(extension, ".kmz") ||
+            compareInsensitiveCase(extension, ".json") ||
+            compareInsensitiveCase(extension, ".osm")) {
+            vector_writer = std::make_unique<VectorWriterGdal>(file);
+        } else
+#endif
+        {
+            TL_THROW_EXCEPTION("Invalid Vector Writer: {}", file.fileName().toString());
+        }
 
-public:
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 
-    static auto create(const Path &file) -> VectorReader::Ptr;
-    TL_DEPRECATED("create", "2.1")
-    static auto createReader(const Path &file) -> VectorReader::Ptr;
-};
+    return vector_writer;
+}
 
-
-/*! \} */ // end of vector
 
 } // End namespace tl

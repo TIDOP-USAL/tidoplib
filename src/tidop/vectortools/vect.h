@@ -37,9 +37,10 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-/*! \defgroup vector Vector
+/*! \addtogroup VectorTools
  *  \{
  */
+
 
 
 #ifdef TL_HAVE_GDAL
