@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop AgastDetector test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/agast.h>
+#include <tidop/featmatch/features/agast.h>
 
 using namespace tl;
 

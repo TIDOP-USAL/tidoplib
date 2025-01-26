@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop StarDetector test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/star.h>
+#include <tidop/featmatch/features/star.h>
 
 using namespace tl;
 

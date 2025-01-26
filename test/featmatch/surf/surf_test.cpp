@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop SurfDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/surf.h>
+#include <tidop/featmatch/features/surf.h>
 
 using namespace tl;
 

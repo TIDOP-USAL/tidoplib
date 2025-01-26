@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop SiftDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/sift.h>
+#include <tidop/featmatch/features/sift.h>
 
 using namespace tl;
 

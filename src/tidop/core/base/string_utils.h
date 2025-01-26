@@ -161,6 +161,7 @@ auto stringToWString(const std::string &string) -> std::wstring;
  */
 auto wstringToString(const std::wstring &wideString) -> std::string;
 
+
 /// \cond
 #endif // TL_OS_WINDOWS
 /// \endcond

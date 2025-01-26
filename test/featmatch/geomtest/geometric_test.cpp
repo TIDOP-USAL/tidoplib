@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop GeometricTest test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/geomtest.h>
+#include <tidop/featmatch/matching/geomtest.h>
 
 using namespace tl;
 

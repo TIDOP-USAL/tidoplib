@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop VggDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/vgg.h>
+#include <tidop/featmatch/features/vgg.h>
 
 using namespace tl;
 

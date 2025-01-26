@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop FreakDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/freak.h>
+#include <tidop/featmatch/features/freak.h>
 
 using namespace tl;
 

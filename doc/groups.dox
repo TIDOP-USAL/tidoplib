@@ -588,3 +588,25 @@
  * 
  * \brief This module provides functionalities for reading and writing vector data in various formats.
  */ 
+ 
+ 
+ 
+ 
+/*! 
+ * \defgroup Features Feature extraction and matching
+ */
+
+
+/*! 
+ * \defgroup FeatureExtraction Feature detection and descriptor extraction
+ * \ingroup Features
+ */ 
+ 
+ 
+/*! 
+ * \defgroup FeatureMatching Feature matching
+ * \ingroup Features
+ */  
+ 
+ 
+ 

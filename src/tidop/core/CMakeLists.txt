@@ -79,10 +79,12 @@ if(BUILD_TL_CORE)
                              base/exception.h
                              base/flags.h
                              base/path.h
+                             base/property.h
                              base/ptr.h
                              base/size.h
                              base/split.h
                              base/string_utils.h
+                             base/type.h
                              base/type_conversions.h
                              concurrency/consumer.h							 
                              concurrency/parallel.h							 

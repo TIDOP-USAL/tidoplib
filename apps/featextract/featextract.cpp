@@ -22,18 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
-#include <tidop/core/app.h>
-#include <tidop/core/msg/message.h>
-#include <tidop/core/path.h>
-#include <tidop/core/chrono.h>
-#include <tidop/img/imgreader.h>
-#include <tidop/featmatch/features.h>
-#include <tidop/featmatch/featio.h>
-#include <tidop/featmatch/kaze.h>
-#include <tidop/featmatch/akaze.h>
-#include <tidop/featmatch/brisk.h>
-#include <tidop/featmatch/sift.h>
-#include <tidop/featmatch/orb.h>
+#include <tidop/core/app/app.h>
+#include <tidop/core/app/message.h>
+#include <tidop/core/base/path.h>
+#include <tidop/core/base/chrono.h>
+#include <tidop/rastertools/io/imgreader.h>
+#include <tidop/featmatch/base/features.h>
+#include <tidop/featmatch/io/featio.h>
+#include <tidop/featmatch/features/agast.h>
+#include <tidop/featmatch/features/kaze.h>
+#include <tidop/featmatch/features/akaze.h>
+#include <tidop/featmatch/features/brisk.h>
+#include <tidop/featmatch/features/sift.h>
+#include <tidop/featmatch/features/orb.h>
 
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
@@ -181,8 +182,8 @@ int main(int argc, char **argv)
     else
         TL_THROW_EXCEPTION("Unknow format: {}", format);
 
-    std::shared_ptr<KeypointDetector> keypoint_detector;
-    std::shared_ptr<DescriptorExtractor> descriptor_extractor;
+    std::shared_ptr<FeatureDetector> feature_detector;
+    std::shared_ptr<FeatureDescriptor> feature_descriptor;
 
     std::string featextract_name = cmd.commandName();
 
@@ -193,8 +194,8 @@ int main(int argc, char **argv)
                                                              cmd_sift->value<double>("contrast_threshold"),
                                                              cmd_sift->value<double>("edge_threshold"),
                                                              cmd_sift->value<double>("sigma"));
-        keypoint_detector = std::dynamic_pointer_cast<KeypointDetector>(sift);
-        descriptor_extractor = std::dynamic_pointer_cast<DescriptorExtractor>(sift);
+        feature_detector = std::dynamic_pointer_cast<FeatureDetector>(sift);
+        feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(sift);
 
     } else if(featextract_name == "akaze") {
         
@@ -206,8 +207,8 @@ int main(int argc, char **argv)
                                                                cmd_akaze->value<int>("octave_layers"),
                                                                cmd_akaze->value<std::string>("diffusivity"));
 
-        keypoint_detector = std::dynamic_pointer_cast<KeypointDetector>(akaze);
-        descriptor_extractor = std::dynamic_pointer_cast<DescriptorExtractor>(akaze);
+        feature_detector = std::dynamic_pointer_cast<FeatureDetector>(akaze);
+        feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(akaze);
 
     } else if(featextract_name == "kaze") {
         
@@ -218,8 +219,8 @@ int main(int argc, char **argv)
                                                              cmd_kaze->value<int>("octave_layers"),
                                                              cmd_kaze->value<std::string>("diffusivity"));
 
-        keypoint_detector = std::dynamic_pointer_cast<KeypointDetector>(kaze);
-        descriptor_extractor = std::dynamic_pointer_cast<DescriptorExtractor>(kaze);
+        feature_detector = std::dynamic_pointer_cast<FeatureDetector>(kaze);
+        feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(kaze);
 
     } else if(featextract_name == "brisk") {
 
@@ -227,8 +228,8 @@ int main(int argc, char **argv)
                                                                cmd_brisk->value<int>("octaves"),
                                                                cmd_brisk->value<double>("patternScale"));
 
-        keypoint_detector = std::dynamic_pointer_cast<KeypointDetector>(brisk);
-        descriptor_extractor = std::dynamic_pointer_cast<DescriptorExtractor>(brisk);
+        feature_detector = std::dynamic_pointer_cast<FeatureDetector>(brisk);
+        feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(brisk);
 
     } else if(featextract_name == "orb") {
 
@@ -241,8 +242,8 @@ int main(int argc, char **argv)
                                                            cmd_orb->value<int>("patch_size"),
                                                            cmd_orb->value<int>("fast_threshold"));
 
-        keypoint_detector = std::dynamic_pointer_cast<KeypointDetector>(orb);
-        descriptor_extractor = std::dynamic_pointer_cast<DescriptorExtractor>(orb);
+        feature_detector = std::dynamic_pointer_cast<FeatureDetector>(orb);
+        feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(orb);
     }
 
 
@@ -258,7 +259,7 @@ int main(int argc, char **argv)
         tl::Chrono chrono;
         chrono.run();
 
-        std::vector<cv::KeyPoint> key_points = keypoint_detector->detect(img);
+        std::vector<cv::KeyPoint> key_points = feature_detector->detect(img);
 
         double time = chrono.stop();
         Message::info("{} Keypoints detected in image {} [Time: {} seconds]", key_points.size(), input_path.fileName().toString(), time);
@@ -268,7 +269,7 @@ int main(int argc, char **argv)
         chrono.reset();
         chrono.run();
 
-        cv::Mat descriptors = descriptor_extractor->extract(img, key_points);
+        cv::Mat descriptors = feature_descriptor->extract(img, key_points);
 
         time = chrono.stop();
         Message::info("Descriptors computed for image {} [Time: {} seconds]", input_path.fileName().toString(), time);

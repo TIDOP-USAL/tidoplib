@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop HogDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/hog.h>
+#include <tidop/featmatch/features/hog.h>
 #include <tidop/core/base/size.h>
 
 using namespace tl;

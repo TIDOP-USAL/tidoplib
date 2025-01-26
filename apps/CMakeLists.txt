@@ -26,4 +26,5 @@ add_subdirectory(crstrf)
 add_subdirectory(ImageManager)
 add_subdirectory(crs_operations)
 add_subdirectory(pc_examples)
+add_subdirectory(featextract)
 

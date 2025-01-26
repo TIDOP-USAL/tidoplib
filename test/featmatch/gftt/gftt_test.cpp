@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop GfttDetector test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/gftt.h>
+#include <tidop/featmatch/features/gftt.h>
 
 using namespace tl;
 

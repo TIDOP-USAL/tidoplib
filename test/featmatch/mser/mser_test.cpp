@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop MserDetector test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/mser.h>
+#include <tidop/featmatch/features/mser.h>
 
 using namespace tl;
 

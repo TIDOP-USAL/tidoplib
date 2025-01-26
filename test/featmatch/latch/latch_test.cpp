@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop LatchDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/latch.h>
+#include <tidop/featmatch/features/latch.h>
 
 using namespace tl;
 

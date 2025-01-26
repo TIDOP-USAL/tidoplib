@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop DaisyDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/daisy.h>
+#include <tidop/featmatch/features/daisy.h>
 
 using namespace tl;
 

@@ -107,9 +107,9 @@ if(BUILD_TL_GEOMETRY)
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
 
     message(STATUS "  TidopLib::Geom disabled")
-    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::Graphic disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::FeatMatch disabled    [Module dependent on TidopLib::Geom that is deactivated]")
-    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::RasterTools disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
+    message(STATUS "  TidopLib::Graphic disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
+    message(STATUS "  TidopLib::FeatureMatching disabled  [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::Geospatial disabled       [Module dependent on TidopLib::Geom that is deactivated]")
 
 endif(BUILD_TL_GEOMETRY)

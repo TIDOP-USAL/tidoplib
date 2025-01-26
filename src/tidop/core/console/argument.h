@@ -32,6 +32,7 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
+#include "tidop/core/base/type.h"
 #include "tidop/core/base/type_conversions.h"
 #include "tidop/core/console/validator.h"
 #include "tidop/core/base/exception.h"
@@ -63,10 +64,10 @@ template <typename T> class Argument_;
  *
  * ### %Argument Types
  * The `Type` enum defines the supported types for arguments:
- * - Boolean (`arg_bool`)
- * - Integer types (`arg_int8`, `arg_uint8`, etc.)
- * - Floating-point types (`arg_float32`, `arg_float64`)
- * - String types (`arg_string`, `arg_path`)
+ * - Boolean (`type_bool`)
+ * - Integer types (`type_int8`, `type_uint8`, etc.)
+ * - Floating-point types (`type_float32`, `type_float64`)
+ * - String types (`type_string`, `type_path`)
  *
  * ### Example Usage
  * \code{.cpp}
@@ -90,67 +91,6 @@ class TL_EXPORT Argument
 {
 
 public:
-
-    /*!
-     * \enum Type
-     * \brief Defines the data types supported by an Argument.
-     *
-     * The `Type` enumeration specifies the types of values that an `Argument` can represent.
-     * It includes standard primitive types, strings, and file paths, along with aliases
-     * for better readability and compatibility with different programming contexts.
-     *
-     * ### Enumerators
-     * - `arg_unknown`: Represents an unknown or unspecified type.
-     * - `arg_bool`: Represents a boolean value (`true` or `false`).
-     * - `arg_int8`: Represents an 8-bit signed integer.
-     * - `arg_uint8`: Represents an 8-bit unsigned integer.
-     * - `arg_int16`: Represents a 16-bit signed integer.
-     * - `arg_uint16`: Represents a 16-bit unsigned integer.
-     * - `arg_int32`: Represents a 32-bit signed integer.
-     * - `arg_uint32`: Represents a 32-bit unsigned integer.
-     * - `arg_int64`: Represents a 64-bit signed integer.
-     * - `arg_uint64`: Represents a 64-bit unsigned integer.
-     * - `arg_float32`: Represents a 32-bit floating-point number.
-     * - `arg_float64`: Represents a 64-bit floating-point number (double precision).
-     * - `arg_string`: Represents a string.
-     * - `arg_path`: Represents a file path or directory path.
-     *
-     * ### Aliases
-     * - `arg_char`: Alias for `arg_int8` (character as an 8-bit signed integer).
-     * - `arg_uchar`: Alias for `arg_uint8` (character as an 8-bit unsigned integer).
-     * - `arg_short`: Alias for `arg_int16` (short integer).
-     * - `arg_ushort`: Alias for `arg_uint16` (unsigned short integer).
-     * - `arg_int`: Alias for `arg_int32` (standard signed integer).
-     * - `arg_uint`: Alias for `arg_uin32` (unsigned integer).
-     * - `arg_float`: Alias for `arg_float32` (standard single-precision floating-point number).
-     * - `arg_double`: Alias for `arg_float64` (double-precision floating-point number).
-     *
-     */
-    enum class Type
-    {
-        arg_unknown,               /*!< Represents an unknown or unspecified type. */
-        arg_bool,                  /*!< Represents a boolean value (`true` or `false`). */
-        arg_int8,                  /*!< Represents an 8-bit signed integer. */
-        arg_uint8,                 /*!< Represents an 8-bit unsigned integer. */
-        arg_int16,                 /*!< Represents a 16-bit signed integer. */
-        arg_uint16,                /*!< Represents a 16-bit unsigned integer. */
-        arg_int32,                 /*!< Represents a 32-bit signed integer. */
-        arg_uint32,                /*!< Represents a 32-bit unsigned integer. */
-        arg_int64,                 /*!< Represents a 64-bit signed integer. */
-        arg_uint64,                /*!< Represents a 64-bit unsigned integer. */
-        arg_float32,               /*!< Represents a 32-bit floating-point number. */
-        arg_float64,               /*!< Represents a 64-bit floating-point number (double precision). */
-        arg_string,                /*!< Represents a string. */
-        arg_path,                  /*!< Represents a file path or directory path. */
-        arg_char = arg_int8,       /*!< Alias for `arg_int8` (character as an 8-bit signed integer). */
-        arg_uchar = arg_uint8,     /*!< Alias for `arg_uint8` (character as an 8-bit unsigned integer). */
-        arg_short = arg_int16,     /*!< Alias for `arg_int16` (short integer). */
-        arg_ushort = arg_uint16,   /*!< Alias for `arg_uint16` (unsigned short integer). */
-        arg_int = arg_int32,       /*!< Alias for `arg_int32` (standard signed integer). */
-        arg_uint = arg_uint32,     /*!< Alias for `arg_uint32` (unsigned integer). */
-        arg_float = arg_float32,   /*!< Alias for `arg_float32` (standard single-precision floating-point number). */
-        arg_double = arg_float64   /*!< Alias for `arg_float64` (double-precision floating-point number). */
-    };
 
     using SharedPtr = std::shared_ptr<Argument>;
 
@@ -337,123 +277,6 @@ public:
 
 
 
-
-/// \cond
-
-template<typename T>
-struct ArgTraits
-{
-    static constexpr auto property_type = Argument::Type::arg_unknown;
-    static constexpr auto type_name = "unknown";
-};
-
-template<>
-struct ArgTraits<bool>
-{
-    using value_type = bool;
-    static constexpr auto property_type = Argument::Type::arg_bool;
-    static constexpr auto type_name = "bool";
-};
-
-template<>
-struct ArgTraits<float>
-{
-    using value_type = float;
-    static constexpr auto property_type = Argument::Type::arg_float;
-    static constexpr auto type_name = "float";
-};
-
-template<>
-struct ArgTraits<double>
-{
-    using value_type = double;
-    static constexpr auto property_type = Argument::Type::arg_double;
-    static constexpr auto type_name = "double";
-};
-
-template<>
-struct ArgTraits<char>
-{
-    using value_type = char;
-    static constexpr auto property_type = Argument::Type::arg_char;
-    static constexpr auto type_name = "char";
-};
-
-template<>
-struct ArgTraits<unsigned char>
-{
-    using value_type = unsigned char;
-    static constexpr auto property_type = Argument::Type::arg_uchar;
-    static constexpr auto type_name = "uchar";
-};
-
-template<>
-struct ArgTraits<short>
-{
-    using value_type = short;
-    static constexpr auto property_type = Argument::Type::arg_short;
-    static constexpr auto type_name = "short";
-};
-
-template<>
-struct ArgTraits<unsigned short>
-{
-    using value_type = unsigned short;
-    static constexpr auto property_type = Argument::Type::arg_ushort;
-    static constexpr auto type_name = "ushort";
-};
-
-template<>
-struct ArgTraits<int>
-{
-    using value_type = int;
-    static constexpr auto property_type = Argument::Type::arg_int;
-    static constexpr auto type_name = "int";
-};
-
-template<>
-struct ArgTraits<unsigned int>
-{
-    using value_type = unsigned int;
-    static constexpr auto property_type = Argument::Type::arg_uint;
-    static constexpr auto type_name = "uint";
-};
-
-template<>
-struct ArgTraits<long long>
-{
-    using value_type = long long;
-    static constexpr auto property_type = Argument::Type::arg_int64;
-    static constexpr auto type_name = "int64";
-};
-
-template<>
-struct ArgTraits<unsigned long long>
-{
-    using value_type = unsigned long;
-    static constexpr auto property_type = Argument::Type::arg_uint64;
-    static constexpr auto type_name = "uint64";
-};
-
-template<>
-struct ArgTraits<std::string>
-{
-    using value_type = std::string;
-    static constexpr auto property_type = Argument::Type::arg_string;
-    static constexpr auto type_name = "std::string";
-};
-
-template<>
-struct ArgTraits<tl::Path>
-{
-    using value_type = tl::Path;
-    static constexpr auto property_type = Argument::Type::arg_path;
-    static constexpr auto type_name = "tl::Path";
-};
-
-/// \endcond
-
-
 /*!
  * \brief Template class to manage different types of arguments
  */
@@ -569,7 +392,7 @@ using ArgumentCharRequired = Argument_<char>;
 template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,
                         const std::string &description)
-  : Argument(name, description, ArgTraits<T>::property_type),
+  : Argument(name, description, TypeTraits<T>::id_type),
     mValue(T()),
     optional(false),
     bValid(true)
@@ -580,7 +403,7 @@ template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,
                         const std::string &description,
                         T value)
-  : Argument(name, description, ArgTraits<T>::property_type),
+  : Argument(name, description, TypeTraits<T>::id_type),
     mValue(value),
     optional(true),
     bValid(true)
@@ -590,7 +413,7 @@ Argument_<T>::Argument_(const std::string &name,
 template<typename T> inline
 Argument_<T>::Argument_(const char &shortName,
                         const std::string &description)
-  : Argument(shortName, description, ArgTraits<T>::property_type),
+  : Argument(shortName, description, TypeTraits<T>::id_type),
     optional(false),
     bValid(true)
 {
@@ -600,7 +423,7 @@ template<typename T> inline
 Argument_<T>::Argument_(const char &shortName,
                         const std::string &description,
                         T value)
-  : Argument(shortName, description, ArgTraits<T>::property_type),
+  : Argument(shortName, description, TypeTraits<T>::id_type),
     mValue(value),
     optional(true),
     bValid(true)
@@ -611,7 +434,7 @@ template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,
                         const char &shortName,
                         const std::string &description)
-  : Argument(name, shortName, description, ArgTraits<T>::property_type),
+  : Argument(name, shortName, description, TypeTraits<T>::id_type),
     optional(false),
     bValid(true)
 {
@@ -622,7 +445,7 @@ Argument_<T>::Argument_(const std::string &name,
                         const char &shortName,
                         const std::string &description,
                         T value)
-  : Argument(name, shortName, description, ArgTraits<T>::property_type),
+  : Argument(name, shortName, description, TypeTraits<T>::id_type),
     mValue(value),
     optional(true),
     bValid(true)
@@ -632,7 +455,7 @@ Argument_<T>::Argument_(const std::string &name,
 template<typename T> inline
 auto Argument_<T>::typeName() const -> std::string
 {
-    return ArgTraits<T>::type_name;
+    return TypeTraits<T>::name_type;
 }
 
 template<typename T> inline
@@ -724,44 +547,44 @@ auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
         TL_ASSERT(arg, "Argument pointer is null");
 
         auto type = arg->type();
-        auto return_type = ArgTraits<T>::property_type;
+        auto return_type = TypeTraits<T>::id_type;
 
         if (type != return_type) {
-            TL_ASSERT(type != Argument::Type::arg_string, "Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
-            if (type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
-                std::string type_name = ArgTraits<T>::type_name;
+            TL_ASSERT(type != Type::type_string, "Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
+            if (type < Type::type_string && return_type < Type::type_string && return_type < type) {
+                std::string type_name = TypeTraits<T>::name_type;
                 Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), type_name);
             }
         }
 
         switch (type) {
-        case Argument::Type::arg_unknown:
+        case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown argument type");
-        case Argument::Type::arg_bool:
+        case Type::type_bool:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
             break;
-        case Argument::Type::arg_int8:
+        case Type::type_int8:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
             break;
-        case Argument::Type::arg_uint8:
+        case Type::type_uint8:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
             break;
-        case Argument::Type::arg_int16:
+        case Type::type_int16:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
             break;
-        case Argument::Type::arg_uint16:
+        case Type::type_uint16:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
             break;
-        case Argument::Type::arg_int32:
+        case Type::type_int32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
             break;
-        case Argument::Type::arg_uint32:
+        case Type::type_uint32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
             break;
-        case Argument::Type::arg_float32:
+        case Type::type_float32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
             break;
-        case Argument::Type::arg_float64:
+        case Type::type_float64:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
             break;
         default:
@@ -787,16 +610,16 @@ inline auto ArgValue<std::string>::value(const Argument::SharedPtr &arg) -> std:
         const auto type = arg->type();
 
         switch (type) {
-        case Argument::Type::arg_unknown:
+        case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown argument type");
-        case Argument::Type::arg_string:
+        case Type::type_string:
             value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
             break;
-        case Argument::Type::arg_path:
+        case Type::type_path:
             value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value().toString();
             break;
         default:
-            TL_THROW_EXCEPTION("Conversion from \"{}\" to \"tl::Path\" is not allowed", arg->typeName());
+            TL_THROW_EXCEPTION("Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
         }
 
     } catch (...) {
@@ -818,12 +641,12 @@ inline auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Pat
         const auto type = arg->type();
 
         switch (type) {
-        case Argument::Type::arg_unknown:
+        case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown argument type");
-        case Argument::Type::arg_string:
+        case Type::type_string:
             value = tl::Path(std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value());
             break;
-        case Argument::Type::arg_path:
+        case Type::type_path:
             value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value();
             break;
         default:

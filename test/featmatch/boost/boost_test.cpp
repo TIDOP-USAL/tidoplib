@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop BoostDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/boost.h>
+#include <tidop/featmatch/features/boost.h>
 
 using namespace tl;
 

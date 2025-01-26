@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop OrbDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/orb.h>
+#include <tidop/featmatch/features/orb.h>
 
 using namespace tl;
 

@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop evaluation test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/evaluation.h>
+#include <tidop/featmatch/base/evaluation.h>
 
 using namespace tl;
 

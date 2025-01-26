@@ -22,82 +22,83 @@
 #                                                                        #
 ##########################################################################
 
-# Modulo featmatch de la librería TIDOP que incluye detectores/descriptores y matching
 
 include(TidopUtils)
 
 
 if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
   
-    project(FeatMatch)
+    project(FeatureMatching)
   
     add_files_to_project(${PROJECT_NAME}
                          SOURCE_FILES 
-                             agast.cpp
-                             akaze.cpp
-                             boost.cpp
-                             brief.cpp
-                             brisk.cpp
-                             daisy.cpp
-                             fast.cpp
-                             featio.cpp
-                             freak.cpp
-                             gftt.cpp
-                             hog.cpp
-                             kaze.cpp
-                             latch.cpp
-                             lss.cpp
-                             lucid.cpp
-                             matchio.cpp
-                             msd.cpp
-                             mser.cpp
-                             orb.cpp
-                             sift.cpp
-                             star.cpp
-                             surf.cpp
-                             vgg.cpp
-                             gsm.cpp
-                             robustmatch.cpp
-                             bfmatch.cpp
-                             flann.cpp
-                             keypointsfilter.cpp
-                             geomtest.cpp
+                             #base/features.cpp
+                             base/keypointsfilter.cpp
+                             features/agast.cpp
+                             features/akaze.cpp
+                             features/boost.cpp
+                             features/brief.cpp
+                             features/brisk.cpp
+                             features/daisy.cpp
+                             features/fast.cpp
+                             features/flann.cpp
+                             features/freak.cpp
+                             features/gftt.cpp
+                             features/hog.cpp
+                             features/kaze.cpp
+                             features/latch.cpp
+                             features/lss.cpp
+                             features/lucid.cpp
+                             features/msd.cpp
+                             features/mser.cpp
+                             features/orb.cpp
+                             features/sift.cpp
+                             features/star.cpp
+                             features/surf.cpp
+                             features/vgg.cpp
+                             io/featio.cpp
+                             io/matchio.cpp
+                             matching/bfmatch.cpp
+                             matching/geomtest.cpp
+                             matching/gsm.cpp
+                             matching/robustmatch.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/lss/lss.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp
                          HEADER_FILES
-                             agast.h
-                             akaze.h
-                             boost.h
-                             brief.h
-                             brisk.h
-                             daisy.h
-                             evaluation.h
-                             fast.h
-                             features.h
-                             featio.h
-                             freak.h
-                             gftt.h
-                             hog.h
-                             kaze.h
-                             latch.h
-                             lss.h
-                             lucid.h
-                             matcher.h
-                             matchio.h
-                             msd.h
-                             mser.h
-                             orb.h
-                             sift.h
-                             star.h
-                             surf.h
-                             vgg.h
-                             gsm.h
-                             robustmatch.h
-                             bfmatch.h
-                             flann.h
-                             keypointsfilter.h
-                             geomtest.h
+                             base/evaluation.h
+                             base/features.h
+                             base/keypointsfilter.h
+                             base/matcher.h
+                             features/agast.h
+                             #features/impl/agast.h
+                             features/akaze.h
+                             features/boost.h
+                             features/brief.h
+                             features/brisk.h
+                             features/daisy.h
+                             features/fast.h
+                             features/flann.h
+                             features/freak.h
+                             features/gftt.h
+                             features/hog.h
+                             features/kaze.h
+                             features/latch.h
+                             features/lss.h
+                             features/lucid.h
+                             features/msd.h
+                             features/mser.h
+                             features/orb.h
+                             features/sift.h
+                             features/star.h
+                             features/surf.h
+                             features/vgg.h
+                             io/featio.h
+                             io/matchio.h
+                             matching/bfmatch.h
+                             matching/geomtest.h
+                             matching/gsm.h
+                             matching/robustmatch.h
                              ${TidopLib_SOURCE_DIR}/third_party/lss/lss.h
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.h
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h)
@@ -143,14 +144,14 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
     set(TL_HAVE_FEAT_MATCH YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::FeatMatch enabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
   
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
     if(NOT TL_HAVE_OPENCV)
-        message(STATUS "  TidopLib::FeatMatch disabled [OPENCV not found]")
+        message(STATUS "  TidopLib::FeatureMatching disabled [OPENCV not found]")
     else()
-        message(STATUS "  TidopLib::FeatMatch disabled")
+        message(STATUS "  TidopLib::FeatureMatching disabled")
     endif()
 
 endif()

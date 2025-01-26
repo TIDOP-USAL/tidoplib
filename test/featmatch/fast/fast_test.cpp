@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop FastDetector test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/fast.h>
+#include <tidop/featmatch/features/fast.h>
 
 using namespace tl;
 

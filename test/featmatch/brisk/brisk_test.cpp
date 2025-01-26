@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop BriskDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/brisk.h>
+#include <tidop/featmatch/features/brisk.h>
 
 using namespace tl;
 

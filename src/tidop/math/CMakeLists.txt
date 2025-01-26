@@ -148,7 +148,7 @@ elseif(BUILD_TL_CORE)
     
     message(STATUS "  TidopLib::Math disabled")
     message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Math that is deactivated]") 
-    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Math that is deactivated]") 
+    message(STATUS "  TidopLib::RasterTools disabled  [Module dependent on TidopLib::Math that is deactivated]") 
     message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Math that is deactivated]") 
 
 endif(BUILD_TL_MATH)

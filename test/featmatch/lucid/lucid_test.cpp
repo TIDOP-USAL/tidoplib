@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop LucidDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/lucid.h>
+#include <tidop/featmatch/features/lucid.h>
 
 using namespace tl;
 

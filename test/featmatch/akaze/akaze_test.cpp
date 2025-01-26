@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop AkazeDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/akaze.h>
+#include <tidop/featmatch/features/akaze.h>
 
 using namespace tl;
 

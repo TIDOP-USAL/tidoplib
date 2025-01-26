@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop KazeDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/kaze.h>
+#include <tidop/featmatch/features/kaze.h>
 
 using namespace tl;
 

@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop BriefDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/brief.h>
+#include <tidop/featmatch/features/brief.h>
 
 using namespace tl;
 

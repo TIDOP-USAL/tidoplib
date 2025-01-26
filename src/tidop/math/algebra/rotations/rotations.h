@@ -244,7 +244,7 @@ private:
 template<
   template<typename, int... P>
   class OrientationDerived, typename T, int... P>
-OrientationBase<OrientationDerived<T, P...>>::OrientationBase(Type type)
+OrientationBase<OrientationDerived<T, P...>>::OrientationBase(Orientation::Type type)
   : rotationType(type)
 {
 }
@@ -294,7 +294,7 @@ auto OrientationBase<OrientationDerived<T, P...>>::operator=(OrientationBase &&r
 template<
   template<typename, int... P>
   class OrientationDerived, typename T, int... P>
-auto OrientationBase<OrientationDerived<T, P...>>::type() const -> Type
+auto OrientationBase<OrientationDerived<T, P...>>::type() const -> Orientation::Type
 {
     return rotationType;
 }
