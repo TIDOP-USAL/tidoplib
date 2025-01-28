@@ -27,13 +27,9 @@
 
 #include "tidop/config.h"
 #include "tidop/core/base/defs.h"
+#include "tidop/core/base/format.h"
 
 #include <list>
-#ifdef TL_HAVE_FMT
-#include <fmt/format.h>
-#else
-#include <format>
-#endif
 
 #include "tidop/core/app/messagehandler.h"
 
@@ -117,18 +113,18 @@ public:
         stopHandler = false;
     }
 
-    /*!
-     * \brief Format a message string with arguments.
-     * \tparam Args Argument types.
-     * \param[in] s Format string.
-     * \param[in] args Arguments for formatting.
-     * \return Formatted string.
-     */
-    template<typename... Args>
-    static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-    {
-        return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
-    }
+    ///*!
+    // * \brief Format a message string with arguments.
+    // * \tparam Args Argument types.
+    // * \param[in] s Format string.
+    // * \param[in] args Arguments for formatting.
+    // * \return Formatted string.
+    // */
+    //template<typename... Args>
+    //static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    //{
+    //    return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
+    //}
 
     /*!
      * \brief Emit a debug message.
@@ -160,10 +156,6 @@ public:
      */
     static void error(String message);
 
-/// \cond
-#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
-/// \endcond
-
     /*!
      * \brief Emit a debug message with formatted arguments.
      * \tparam Args Argument types.
@@ -173,7 +165,7 @@ public:
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = format(s, std::forward<Args>(args)...);
+        auto message = tl::format(s, std::forward<Args>(args)...);
         Message::debug(message);
     }
 
@@ -186,7 +178,7 @@ public:
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = format(s, std::forward<Args>(args)...);
+        auto message = tl::format(s, std::forward<Args>(args)...);
         Message::info(message);
     }
 
@@ -199,7 +191,7 @@ public:
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = format(s, std::forward<Args>(args)...);
+        auto message = tl::format(s, std::forward<Args>(args)...);
         Message::success(message);
     }
 
@@ -212,7 +204,7 @@ public:
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = format(s, std::forward<Args>(args)...);
+        auto message = tl::format(s, std::forward<Args>(args)...);
         Message::warning(message);
     }
 
@@ -225,13 +217,9 @@ public:
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = format(s, std::forward<Args>(args)...);
+        auto message = tl::format(s, std::forward<Args>(args)...);
         Message::error(message);
     }
-
-/// \cond
-#endif
-/// \endcond
 
 };
 

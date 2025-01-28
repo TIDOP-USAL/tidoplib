@@ -56,18 +56,14 @@ HANDLE pipeWriteHandle = nullptr;
 
 unsigned long readFromPipe(void *)
 {
-    DWORD numberOfBytesRead;
-    //char buffer[process_bufsize];
+    DWORD bytesRead;
     std::array<char, process_bufsize + 1> buffer{};
     int err = 0;
 
-    for (;;) {
-        err = ReadFile(pipeReadHandle, buffer.data(), process_bufsize, &numberOfBytesRead, nullptr);
-        if (!err || numberOfBytesRead == 0) continue;
-        buffer[static_cast<size_t>(numberOfBytesRead)] = '\0';
-        std::cout << buffer.data() << std::endl;
-
-        if (!err) break;
+    while (true) {
+        err = ReadFile(pipeReadHandle, buffer.data(), process_bufsize, &bytesRead, nullptr);
+        if (!err || bytesRead == 0) break;
+        std::cout << std::string(buffer.data(), bytesRead);
     }
 
     return 0;
@@ -97,7 +93,16 @@ Process::Process(std::string commandText,
 #endif
 }
 
-Process::~Process() = default;
+Process::~Process()
+{
+#ifdef TL_OS_WINDOWS
+    if (mProcessInformation.hProcess) CloseHandle(mProcessInformation.hProcess);
+    if (mProcessInformation.hThread) CloseHandle(mProcessInformation.hThread);
+    if (mThreadHandle) CloseHandle(mThreadHandle);
+    if (pipeReadHandle) CloseHandle(pipeReadHandle);
+    if (pipeWriteHandle) CloseHandle(pipeWriteHandle);
+#endif
+}
 
 void Process::execute(Progress *)
 {
@@ -105,9 +110,9 @@ void Process::execute(Progress *)
 
 #ifdef TL_OS_WINDOWS
 
-        if (outputHandle && !createPipe()) return;
-
-        unsigned long priority = static_cast<unsigned long>(mPriority);
+        if (outputHandle && !createPipe()) {
+            throw std::runtime_error("Failed to create pipe.");
+        }
 
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::wstring command = converter.from_bytes(mCommandText);
@@ -117,7 +122,7 @@ void Process::execute(Progress *)
                                      nullptr,
                                      nullptr,
                                      /*false,*/ true,
-                                     CREATE_NO_WINDOW | priority,
+                                     CREATE_NO_WINDOW | static_cast<unsigned long>(mPriority),
                                      nullptr,
                                      nullptr,
                                      &mStartUpInfo,
@@ -129,7 +134,7 @@ void Process::execute(Progress *)
         // Cerrar el extremo de escritura de la tubería del proceso hijo, ya que no lo necesitamos
         if (outputHandle) {
             CloseHandle(pipeWriteHandle);
-            mThreadHandle = CreateThread(0, 0, readFromPipe, nullptr, 0, nullptr);
+            mThreadHandle = CreateThread(nullptr, 0, readFromPipe, nullptr, 0, nullptr);
         }
 
         DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
@@ -137,17 +142,17 @@ void Process::execute(Progress *)
 
             unsigned long exitCode;
 
-            if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode) == 0) {
+            if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode)) {
+                if (exitCode == 0) {
+                    eventTriggered(Event::Type::task_finalized);
+                } else {
+                    eventTriggered(Event::Type::task_error);
+                }
+            } else {
                 TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
                                    GetLastError(),
                                    formatErrorMsg(GetLastError()),
                                    mCommandText);
-            }
-
-            if (exitCode == 0){
-                eventTriggered(Event::Type::task_finalized);
-            } else {
-                eventTriggered(Event::Type::task_error);
             }
 
         } else {
@@ -159,30 +164,20 @@ void Process::execute(Progress *)
 
         }
 
-        CloseHandle(mProcessInformation.hProcess);
-        CloseHandle(mProcessInformation.hThread);
-        if (outputHandle) {
-            CloseHandle(mThreadHandle);
-            CloseHandle(pipeReadHandle);
-        }
-
 #else
         pid_t pid;
-        char *command = strdup(mCommandText.data());
-        //char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), mCommandText.data(), nullptr};
+        std::unique_ptr<char[]> command(strdup(mCommandText.data()));
         char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), command, nullptr};
 
         int status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
         
         TL_ASSERT(status == 0, "Error({}: {}) when executing the command : {}", status, strerror(status), mCommandText);
 
-            if (waitpid(pid, &status, 0) != -1) {
-                eventTriggered(Event::Type::task_finalized);
-                return;
-            } else {
-                eventTriggered(Event::Type::task_error);
-                return;
-            }
+        if (waitpid(pid, &status, 0) != -1) {
+            eventTriggered(Event::Type::task_finalized);
+        } else {
+            eventTriggered(Event::Type::task_error);
+        }
 
         //  int posix_spawn(pid_t *pid, const char *path,
         //                  const posix_spawn_file_actions_t *file_actions,
@@ -190,8 +185,6 @@ void Process::execute(Progress *)
         //                  char *const argv[], char *const envp[]);
           /// Para escribir en un log la salida
           /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
-          
-        free(command);
 
 #endif
     } catch (...) {

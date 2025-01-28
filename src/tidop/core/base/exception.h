@@ -164,14 +164,24 @@ private:
         if (mLine == -1) {
             mMessage = mError;
         } else {
-            mMessage = Message::format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
+            mMessage = format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
         }
     }
 
 
 };
 
-
+//class OutOfRangeException 
+//  : public Exception
+//{
+//
+//public:
+//
+//    explicit OutOfRangeException(const std::string &message)
+//        : Exception(message)
+//    {
+//    }
+//};
 
 /*!
  * \brief Creates an exception object
@@ -218,7 +228,7 @@ TL_EXPORT void printException(const std::exception &e);
   * This macro formats the error message and creates an `Exception` object,
   * including the file, line, and function where it was called.
   */
-#define TL_ERROR(...) tl::makeException(tl::Message::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_ERROR(...) tl::makeException(tl::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION)
 
 /*!
  * \brief Macro to throw an exception
@@ -226,7 +236,7 @@ TL_EXPORT void printException(const std::exception &e);
  * This macro creates an `Exception` object using the formatted error message 
  * and throws it, including the file, line, and function where it was called.
  */
-#define TL_THROW_EXCEPTION(...) throw tl::makeException(tl::Message::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_EXCEPTION(...) throw tl::makeException(tl::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION)
 
 /*!
  * \brief Macro to throw a nested exception
@@ -236,7 +246,7 @@ TL_EXPORT void printException(const std::exception &e);
  */
 #define TL_THROW_EXCEPTION_WITH_NESTED(...) \
     std::throw_with_nested( \
-        tl::makeException(tl::Message::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION))
+        tl::makeException(tl::format(__VA_ARGS__), __FILE__, __LINE__, TL_FUNCTION))
 
 /*!
  * \brief Macro to assert an expression and throw an exception if false

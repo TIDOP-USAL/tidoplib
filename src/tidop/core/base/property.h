@@ -29,6 +29,7 @@
 #include "tidop/core/base/type.h"
 #include "tidop/core/base/exception.h"
 #include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/type_conversions.h"
 
 #include <type_traits>
 #include <stdexcept>
@@ -38,12 +39,21 @@
 namespace tl
 {
 
+namespace internal
+{
+template<typename T> class PropertyValue;
+}
 
 /*! \addtogroup Base
  *  \{
  */
 
-
+/*!
+ * \brief Base class for all property types.
+ *
+ * This class provides a common interface for properties, allowing them to be converted to and from strings.
+ * It also stores the type of the property.
+ */
 class PropertyBase
 {
 
@@ -57,25 +67,56 @@ private:
 
 public:
 
+    /*!
+     * \brief Constructor.
+     * \param type The type of the property.
+     */
     PropertyBase(Type type)
         : mType(type)
     {
     }
+
     virtual ~PropertyBase() = default;
 
+    /*!
+     * \brief Converts the property's value to a string.
+     * \return A string representation of the property's value.
+     */
     virtual auto toString() const -> std::string = 0;
+
+    /*!
+     * \brief Sets the property's value from a string.
+     * \param[in] value A string representation of the value to set.
+     * \exception Exception If the string cannot be converted to the property's type.
+     */
     virtual void fromString(const std::string &value) = 0;
-    virtual auto clone() const -> PropertyBase* = 0;
+
+    /*!
+     * \brief Gets the type of the property.
+     * \return The type of the property as a `Type` enum value.
+     */
 	auto type() const -> Type
     {
         return mType;
     }
+
+    /*!
+     * \brief Gets the name of the property's type.
+     * \return The name of the property's type as a string.
+     */
 	virtual auto typeName() const -> std::string = 0;
 	
 };
 
 
-
+/*!
+ * \brief A templated class representing a specific property with a defined type.
+ *
+ * This class extends PropertyBase and implements functionality for converting the property
+ * value to and from strings, as well as accessing and modifying the property's value.
+ *
+ * \tparam T The type of the property's value.
+ */
 template <typename T>
 class Property 
   : public PropertyBase 
@@ -83,67 +124,72 @@ class Property
 
 private:
 
-    T mValue; ///< Valor almacenado con su tipo original.
+    T mValue;
 
 public:
 
+    /*!
+     * \brief Constructor.
+     * \param[in] value The initial value of the property.
+     */
     explicit Property(const T &value) 
       : PropertyBase(TypeTraits<T>::id_type),
         mValue(value) {}
 
-    auto value() const -> T {
+    /*!
+     * \brief Gets the property's value.
+     * \return The value of the property.
+     */
+    auto value() const -> T 
+    {
         return mValue;
     }
 
-    void setValue(const T &value) {
+    /*!
+     * \brief Sets the property's value.
+     * \param[in] value The new value to set.
+     */
+    void setValue(const T &value) 
+    {
         mValue = value;
     }
 
+    /*!
+     * \brief Converts the property's value to a string.
+     * \return A string representation of the property's value.
+     * \exception Exception If the value cannot be converted to a string.
+     */
     auto toString() const -> std::string override 
     {
-        return toStringImpl(mValue);
+        try {
+            internal::PropertyValue<std::string> property_value;
+            return property_value.value(this);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+        }
     }
 
+    /*!
+     * \brief Sets the property's value from a string.
+     * \param[in] value A string representation of the value to set.
+     * \exception Exception If the string cannot be converted to the property's type.
+     */
     void fromString(const std::string &value) override
     {
         try {
             mValue = convertStringTo<T>(value);
         } catch(...) {
-
+            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
         }
     }
 
-    auto clone() const -> PropertyBase* override 
-    {
-        return new Property<T>(mValue);
-    }
-
+    /*!
+     * \brief Gets the name of the property's type.
+     * \return The name of the property's type as a string.
+     */
 	auto typeName() const -> std::string override
     {
         return TypeTraits<T>::name_type;
-    }
-
-private:
-
-    std::string toStringImpl(const bool &value) const
-    {
-        return value ? "true" : "false";
-    }
-
-    std::string toStringImpl(const std::string &value) const
-    {
-        return value;
-    }
-
-    std::string toStringImpl(const tl::Path &value) const
-    {
-        return value.toString();
-    }
-
-    template <typename U>
-    std::string toStringImpl(const U &value) const 
-    {
-        return std::to_string(value);
     }
 };
 
@@ -160,6 +206,99 @@ void Property<Path>::fromString(const std::string &value)
 }
 
 
+
+template <typename Key, typename Value>
+std::string mapToString(const std::map<Key, Value> &map)
+{
+    std::ostringstream oss;
+    bool first = true;
+
+    for (const auto p/*&[key, value]*/ : map) {
+        auto key = p.first;
+        auto value = p.second;
+        if (!first) {
+            oss << ",";
+        }
+        first = false;
+
+        oss << key << ":" << value;
+    }
+
+    return oss.str();
+}
+
+template <typename Key, typename Value>
+std::map<Key, Value> stringToMap(const std::string &str)
+{
+    std::map<Key, Value> result;
+    std::istringstream ss(str);
+    std::string pair;
+
+    while (std::getline(ss, pair, ',')) {
+        auto separator = pair.find(':');
+        if (separator == std::string::npos) {
+            throw Exception("Invalid format for std::map");
+        }
+
+        std::string keyStr = pair.substr(0, separator);
+        std::string valueStr = pair.substr(separator + 1);
+
+        Key key = convertStringTo<Key>(keyStr);
+        Value value = convertStringTo<Value>(valueStr);
+
+        result.emplace(key, value);
+    }
+
+    return result;
+}
+
+template <typename Key, typename Value>
+class Property<std::map<Key, Value>> 
+  : public PropertyBase
+{
+
+private:
+
+    std::map<Key, Value> mValue;
+
+public:
+
+    explicit Property(const std::map<Key, Value> &value)
+        : PropertyBase(TypeTraits<std::map<Key, Value>>::id_type),
+        mValue(value) {
+    }
+
+    auto value() const -> std::map<Key, Value>
+    {
+        return mValue;
+    }
+
+    void setValue(const std::map<Key, Value> &value)
+    {
+        mValue = value;
+    }
+
+    auto toString() const -> std::string override
+    {
+        return mapToString(mValue);
+    }
+
+    void fromString(const std::string &value) override
+    {
+        try {
+            mValue = stringToMap<Key, Value>(value);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert string to std::map");
+        }
+    }
+
+    auto typeName() const -> std::string override
+    {
+        return TypeTraits<std::map<Key, Value>>::name_type;
+    }
+
+};
+
 /// \cond
 
 namespace internal
@@ -174,11 +313,11 @@ public:
 
     PropertyValue(/* args */) {}
 
-    T value(const PropertyBase::SharedPtr &arg);
+    T value(const PropertyBase *arg);
 };
 
 template<typename T>
-auto PropertyValue<T>::value(const PropertyBase::SharedPtr &arg) -> T
+auto PropertyValue<T>::value(const PropertyBase *arg) -> T
 {
     T value{};
 
@@ -187,7 +326,7 @@ auto PropertyValue<T>::value(const PropertyBase::SharedPtr &arg) -> T
         TL_ASSERT(arg, "Property pointer is null");
 
         auto type = arg->type();
-        auto return_type = TypeTraits<T>::property_type;
+        auto return_type = TypeTraits<T>::id_type;
 
         if (type != return_type) {
             TL_ASSERT(type != Type::type_string, "Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
@@ -201,31 +340,37 @@ auto PropertyValue<T>::value(const PropertyBase::SharedPtr &arg) -> T
         case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown Property type");
         case Type::type_bool:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<bool>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<bool> *>(arg)->value());
             break;
         case Type::type_int8:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<char>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<signed char> *>(arg)->value());
             break;
         case Type::type_uint8:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<unsigned char>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<unsigned char> *>(arg)->value());
             break;
         case Type::type_int16:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<short>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<short> *>(arg)->value());
             break;
         case Type::type_uint16:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<unsigned short>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<unsigned short>*>(arg)->value());
             break;
         case Type::type_int32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<int>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<int>*>(arg)->value());
             break;
         case Type::type_uint32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<unsigned int>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<unsigned int>*>(arg)->value());
+            break;
+        case Type::type_int64:
+            value = numberCast<T>(dynamic_cast<const Property<long long>*>(arg)->value());
+            break;
+        case Type::type_uint64:
+            value = numberCast<T>(dynamic_cast<const Property<unsigned long long>*>(arg)->value());
             break;
         case Type::type_float32:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<float>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<float>*>(arg)->value());
             break;
         case Type::type_float64:
-            value = numberCast<T>(std::dynamic_pointer_cast<Property<double>>(arg)->value());
+            value = numberCast<T>(dynamic_cast<const Property<double>*>(arg)->value());
             break;
         default:
             break;
@@ -239,7 +384,7 @@ auto PropertyValue<T>::value(const PropertyBase::SharedPtr &arg) -> T
 }
 
 template<>
-inline auto PropertyValue<std::string>::value(const PropertyBase::SharedPtr &arg) -> std::string
+inline auto PropertyValue<std::string>::value(const PropertyBase *arg) -> std::string
 {
     std::string value;
 
@@ -253,10 +398,43 @@ inline auto PropertyValue<std::string>::value(const PropertyBase::SharedPtr &arg
         case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown Property type");
         case Type::type_string:
-            value = std::dynamic_pointer_cast<Property<std::string>>(arg)->value();
+            value = dynamic_cast<const Property<std::string>*>(arg)->value();
             break;
         case Type::type_path:
-            value = std::dynamic_pointer_cast<Property<tl::Path>>(arg)->value().toString();
+            value = dynamic_cast<const Property<tl::Path>*>(arg)->value().toString();
+            break;
+        case Type::type_bool:
+            value = dynamic_cast<const Property<bool> *>(arg)->value() ? "true" : "false";
+            break;
+        case Type::type_int8:
+            value = std::to_string(dynamic_cast<const Property<int8_t> *>(arg)->value());
+            break;
+        case Type::type_uint8:
+            value = std::to_string(dynamic_cast<const Property<uint8_t> *>(arg)->value());
+            break;
+        case Type::type_int16:
+            value = std::to_string(dynamic_cast<const Property<int16_t> *>(arg)->value());
+            break;
+        case Type::type_uint16:
+            value = std::to_string(dynamic_cast<const Property<uint16_t>*>(arg)->value());
+            break;
+        case Type::type_int32:
+            value = std::to_string(dynamic_cast<const Property<int>*>(arg)->value());
+            break;
+        case Type::type_uint32:
+            value = std::to_string(dynamic_cast<const Property<unsigned int>*>(arg)->value());
+            break;
+        case Type::type_int64:
+            value = std::to_string(dynamic_cast<const Property<int64_t>*>(arg)->value());
+            break;
+        case Type::type_uint64:
+            value = std::to_string(dynamic_cast<const Property<uint64_t>*>(arg)->value());
+            break;
+        case Type::type_float32:
+            value = std::to_string(dynamic_cast<const Property<float>*>(arg)->value());
+            break;
+        case Type::type_float64:
+            value = std::to_string(dynamic_cast<const Property<double>*>(arg)->value());
             break;
         default:
             TL_THROW_EXCEPTION("Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
@@ -270,7 +448,7 @@ inline auto PropertyValue<std::string>::value(const PropertyBase::SharedPtr &arg
 }
 
 template<>
-inline auto PropertyValue<tl::Path>::value(const PropertyBase::SharedPtr &arg) -> tl::Path
+inline auto PropertyValue<tl::Path>::value(const PropertyBase *arg) -> tl::Path
 {
     tl::Path value;
 
@@ -284,10 +462,10 @@ inline auto PropertyValue<tl::Path>::value(const PropertyBase::SharedPtr &arg) -
         case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown Property type");
         case Type::type_string:
-            value = tl::Path(std::dynamic_pointer_cast<Property<std::string>>(arg)->value());
+            value = tl::Path(dynamic_cast<const Property<std::string>*>(arg)->value());
             break;
         case Type::type_path:
-            value = std::dynamic_pointer_cast<Property<tl::Path>>(arg)->value();
+            value = dynamic_cast<const Property<tl::Path>*>(arg)->value();
             break;
         default:
             TL_THROW_EXCEPTION("Conversion from \"{}\" to \"tl::Path\" is not allowed", arg->typeName());
@@ -322,8 +500,14 @@ public:
      * \param[in] value Valor de la propiedad.
      */
     template <typename T>
-    void setProperty(const std::string &key, const T &value) {
-        mProperties[key] = std::shared_ptr<Property<T>>(value);
+    void setProperty(const std::string &key, T value) 
+    {
+        //if constexpr (std::is_same_v<T, const char *>) {
+        //    mProperties[key] = std::make_shared<Property<std::string>>(std::string(value));
+        //} else {
+        //    mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
+        //}
+        mProperties[key] = std::make_shared<Property<std::decay<T>::type>>(value);
     }
 
     /*!
@@ -357,9 +541,9 @@ public:
                 throw std::out_of_range("Property not found: " + key);
             }
             internal::PropertyValue<T> property_value;
-            _value = property_value.value(it->second);
+            _value = property_value.value(it->second.get());
         } catch (std::exception &e) {
-            std::throw_with_nested(std::bad_cast());
+            std::throw_with_nested(e);
         } catch (...) {
             ///TODO: comprobar
             std::throw_with_nested(std::bad_cast());
@@ -374,7 +558,8 @@ public:
      * \return Valor de la propiedad como cadena.
      * \throws std::out_of_range Si la clave no existe.
      */
-    auto getPropertyAsString(const std::string &key) const -> std::string {
+    auto getPropertyAsString(const std::string &key) const -> std::string
+    {
         auto it = mProperties.find(key);
         if (it == mProperties.end()) {
             throw std::out_of_range("Property not found: " + key);
@@ -382,19 +567,21 @@ public:
         return it->second->toString();
     }
 
-    /*!
-     * \brief Establece una propiedad a partir de una cadena de texto.
-     * \param[in] key Clave de la propiedad.
-     * \param[in] value Cadena con el valor a asignar.
-     * \throws std::out_of_range Si la clave no existe.
-     */
-    void setPropertyFromString(const std::string &key, const std::string &value) {
-        auto it = mProperties.find(key);
-        if (it == mProperties.end()) {
-            throw std::out_of_range("Property not found: " + key);
-        }
-        it->second->fromString(value);
-    }
+    ///*!
+    // * \brief Establece una propiedad a partir de una cadena de texto.
+    // * \param[in] key Clave de la propiedad.
+    // * \param[in] value Cadena con el valor a asignar.
+    // * \throws std::out_of_range Si la clave no existe.
+    // */
+    //void setPropertyFromString(const std::string &key, const std::string &value)
+    //{
+    //    //auto it = mProperties.find(key);
+    //    //if (it == mProperties.end()) {
+    //    //    throw std::out_of_range("Property not found: " + key);
+    //    //}
+    //    //it->second->fromString(value);
+    //    mProperties[key] = std::make_shared<Property<T>>(value);
+    //}
 
     /*!
      * \brief Verifica si una propiedad existe.
@@ -411,7 +598,8 @@ public:
      * \return Tipo de la propiedad.
      * \throws std::out_of_range Si la clave no existe.
      */
-    auto getPropertyType(const std::string &key) const -> Type {
+    auto getPropertyType(const std::string &key) const -> Type 
+    {
         auto it = mProperties.find(key);
         if (it == mProperties.end()) {
             throw std::out_of_range("Property not found: " + key);
@@ -427,6 +615,11 @@ public:
     }
 };
 
+template <>
+void Properties::setProperty(const std::string &key, const char *value)
+{
+    mProperties[key] = std::make_shared<Property<std::string>>(std::string(value));
+}
 
 /*! \} */
 

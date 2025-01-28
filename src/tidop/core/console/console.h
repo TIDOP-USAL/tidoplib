@@ -834,10 +834,6 @@ public:
      */
     static auto clear(std::ostream &os) -> std::ostream &;
 
-/// \cond
-#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
-/// \endcond
-
     /*!
      * \brief Logs a debug message.
      *
@@ -970,10 +966,6 @@ public:
     {
         Console::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
-
-/// \cond
-#endif
-/// \endcond
 
     /*!
      * \brief Prompts the user for input.

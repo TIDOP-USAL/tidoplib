@@ -137,7 +137,7 @@ inline auto trim_copy(std::string s) -> std::string
  * ### Example Usage
  * \code{.cpp}
  * std::string str = "Hello world";
- * replaceString(str, " ", "_");
+ * replaceString(&str, " ", "_");
  * // str will be "Hello_world"
  * \endcode
  */

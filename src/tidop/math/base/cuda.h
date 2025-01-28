@@ -46,6 +46,30 @@ namespace tl
 namespace cuda
 {
 
+
+/// \cond
+
+template <typename T>
+struct CublasTraits;
+
+template <>
+struct CublasTraits<float> 
+{
+    static constexpr auto gemm = cublasSgemm;
+    static constexpr auto gemv = cublasSgemv;
+    static constexpr auto op = CUBLAS_OP_T;
+};
+
+template <>
+struct CublasTraits<double> 
+{
+    static constexpr auto gemm = cublasDgemm;
+    static constexpr auto gemv = cublasDgemv;
+    static constexpr auto op = CUBLAS_OP_T;
+};
+
+/// \endcond
+
 /* Matrix multiplication */
 
 /*!
@@ -63,39 +87,46 @@ namespace cuda
  * \param[in] b Pointer to the matrix B of size `k x n`.
  * \param[out] c Pointer to the matrix C of size `m x n`, where the result will be stored.
  */
-template<typename T>
-auto gemm(size_t m, size_t n, size_t k,
-          const T *a, const T *b, T *c) -> enableIfFloat<T, void>
+template <typename T>
+void gemm(size_t m, size_t n, size_t k, const T *a, const T *b, T *c)
 {
     try {
 
-        float *a_device, *b_device, *c_device;
-        cudaError_t result = cudaMalloc((void **)&a_device, m * k * sizeof(float));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&b_device, k * n * sizeof(float));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&c_device, m * n * sizeof(float));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
+        static_assert(std::is_same<T, float>::value || std::is_same<T, double>::value,
+            "Only float or double types are supported.");
 
-        result = cudaMemcpy(a_device, a, m * k * sizeof(float), cudaMemcpyHostToDevice);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMemcpy(b_device, b, k * n * sizeof(float), cudaMemcpyHostToDevice);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
+        T *a_device = nullptr;
+        T *b_device = nullptr;
+        T *c_device = nullptr;
         cublasHandle_t handle;
-        cublasCreate(&handle);
 
-        const T alpha = 1.f;
-        const T beta = 0.f;
+        if (cublasCreate(&handle) != CUBLAS_STATUS_SUCCESS) {
+            throw std::runtime_error("Failed to create cuBLAS handle.");
+        }
 
-        cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
-                    static_cast<int>(n),
-                    static_cast<int>(m),
-                    static_cast<int>(k),
-                    &alpha, b_device, static_cast<int>(n), a_device, static_cast<int>(k),
-                    &beta, c_device, static_cast<int>(n));
+        cudaError_t result = cudaMalloc((void **)&a_device, sizeof(T) * m * k);
+        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
+        result = cudaMalloc((void **)&b_device, sizeof(T) * k * n);
+        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
+        result = cudaMalloc((void **)&c_device, sizeof(T) * m * n);
+        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
 
-        result = cudaMemcpy(c, c_device, m * n * sizeof(float), cudaMemcpyDeviceToHost);
+        result = cudaMemcpy(a_device, a, sizeof(T) * m * k, cudaMemcpyHostToDevice);
+        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
+        result = cudaMemcpy(b_device, b, sizeof(T) * k * n, cudaMemcpyHostToDevice);
+        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
+
+        const T alpha = 1.0;
+        const T beta = 0.0;
+
+        CublasTraits<T>::gemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                              static_cast<int>(n),
+                              static_cast<int>(m),
+                              static_cast<int>(k),
+                              &alpha, b_device, static_cast<int>(n), a_device, static_cast<int>(k),
+                              &beta, c_device, static_cast<int>(n));
+
+        cudaMemcpy(c, c_device, sizeof(T) * m * n, cudaMemcpyDeviceToHost);
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
 
         result = cudaFree(a_device);
@@ -111,56 +142,6 @@ auto gemm(size_t m, size_t n, size_t k,
         TL_THROW_EXCEPTION_WITH_NESTED("Error in matrix multiplication");
     }
 }
-
-template<typename T>
-auto gemm(size_t m, size_t n, size_t k,
-          const T *a, const T *b, T *c) -> enableIfDouble<T, void>
-{
-    try {
-
-        double *a_device, *b_device, *c_device;
-        cudaError_t result = cudaMalloc((void **)&a_device, m * k * sizeof(double));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&b_device, k * n * sizeof(double));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&c_device, m * n * sizeof(double));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        result = cudaMemcpy(a_device, a, m * k * sizeof(double), cudaMemcpyHostToDevice);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMemcpy(b_device, b, k * n * sizeof(double), cudaMemcpyHostToDevice);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        cublasHandle_t handle;
-        cublasCreate(&handle);
-
-        const T alpha = 1.f;
-        const T beta = 0.f;
-
-        cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
-                    static_cast<int>(n),
-                    static_cast<int>(m),
-                    static_cast<int>(k),
-                    &alpha, b_device, static_cast<int>(n), a_device, static_cast<int>(k),
-                    &beta, c_device, static_cast<int>(n));
-
-        result = cudaMemcpy(c, c_device, m * n * sizeof(double), cudaMemcpyDeviceToHost);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        result = cudaFree(a_device);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaFree(b_device);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaFree(c_device);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        cublasDestroy(handle);
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Error in matrix multiplication");
-    }
-}
-
 
 /* Matrix x Vector */
 
@@ -178,33 +159,40 @@ auto gemm(size_t m, size_t n, size_t k,
  * \param[in] vector Pointer to the vector B of size `n`.
  * \param[out] vector_out Pointer to the output vector C of size `m`, where the result will be stored.
  */
-template<typename T>
-auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfFloat<T, void>
+template <typename T>
+void gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out)
 {
     try {
 
-        T *matrix_device, *vector_device, *vector_out_device;
+        static_assert(std::is_same<T, float>::value || std::is_same<T, double>::value,
+            "Only float or double types are supported.");
+
+        T *matrix_device = nullptr;
+		T *vector_device = nullptr;
+        T *vector_out_device = nullptr;
         const T alpha = 1.0;
         const T beta = 0.0;
 
-        cudaError_t result = cudaMalloc((void **)&matrix_device, m * n * sizeof(float));
+        cudaError_t result = cudaMalloc((void **)&matrix_device, m * n * sizeof(T));
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&vector_device, n * sizeof(float));
+        result = cudaMalloc((void **)&vector_device, n * sizeof(T));
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&vector_out_device, m * sizeof(float));
+        result = cudaMalloc((void **)&vector_out_device, m * sizeof(T));
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
 
-        result = cudaMemcpy(matrix_device, matrix, m * n * sizeof(float), cudaMemcpyHostToDevice);
+        result = cudaMemcpy(matrix_device, matrix, m * n * sizeof(T), cudaMemcpyHostToDevice);
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMemcpy(vector_device, vector, n * sizeof(float), cudaMemcpyHostToDevice);
+        result = cudaMemcpy(vector_device, vector, n * sizeof(T), cudaMemcpyHostToDevice);
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
 
         cublasHandle_t handle;
         cublasCreate(&handle);
 
-        cublasSgemv(handle, CUBLAS_OP_T, n, m, &alpha, matrix_device, n, vector_device, 1, &beta, vector_out_device, 1);
+        CublasTraits<T>::gemv(handle, CublasTraits<T>::op, n, m, &alpha,
+                              matrix_device, n, vector_device, 1, &beta,
+                              vector_out_device, 1);
 
-        result = cudaMemcpy(vector_out, vector_out_device, m * sizeof(float), cudaMemcpyDeviceToHost);
+        result = cudaMemcpy(vector_out, vector_out_device, m * sizeof(T), cudaMemcpyDeviceToHost);
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
 
         result = cudaFree(matrix_device);
@@ -215,49 +203,7 @@ auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -
         TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
 
         cublasDestroy(handle);
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Error in Matrix x Vector");
-    }
-}
-
-template<typename T>
-auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfDouble<T, void>
-{
-    try {
-        T *matrix_device, *vector_device, *vector_out_device;
-        const T alpha = 1.0;
-        const T beta = 0.0;
-
-        cudaError_t result = cudaMalloc((void **)&matrix_device, m * n * sizeof(double));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&vector_device, n * sizeof(double));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMalloc((void **)&vector_out_device, m * sizeof(double));
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        result = cudaMemcpy(matrix_device, matrix, m * n * sizeof(double), cudaMemcpyHostToDevice);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaMemcpy(vector_device, vector, n * sizeof(double), cudaMemcpyHostToDevice);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        cublasHandle_t handle;
-        cublasCreate(&handle);
-
-        cublasDgemv(handle, CUBLAS_OP_T, n, m, &alpha, matrix_device, n, vector_device, 1, &beta, vector_out_device, 1);
-
-        result = cudaMemcpy(vector_out, vector_out_device, m * sizeof(double), cudaMemcpyDeviceToHost);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        result = cudaFree(matrix_device);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaFree(vector_device);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-        result = cudaFree(vector_out_device);
-        TL_ASSERT(result == cudaSuccess, "CUDA Error: {}", cudaGetErrorString(result));
-
-        cublasDestroy(handle);
-
+		
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Error in Matrix x Vector");
     }
@@ -267,142 +213,125 @@ auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -
 
 /* Factorización LU */
 
-//template<typename T>
-//auto getrf(int rows, int cols, T *a, int lda, int *pivot, int *info) -> enableIfFloat<T, void>
-//{
-//    float *a_device;
-//    int *d_pivot;
-//    int *d_info;
-//
-//    cusolverDnHandle_t cusolverH = nullptr;
-//    cusolverStatus_t result = cusolverDnCreate(&cusolverH);
-//
-//    cudaMalloc((void**)&a_device, sizeof(float) * rows * cols);
-//    cudaMalloc((void**)&d_pivot, sizeof(int) * rows);
-//    cudaMalloc((void**)&d_info, sizeof(int));
-//
-//    cudaMemcpy(a_device, a, sizeof(float) * lda * rows, cudaMemcpyHostToDevice);
-//    TL_ASSERT(result == cudaSuccess, "cuSOLVER Error: cusolverDnCreate");
-//
-//    // Perform LU factorization
-//
-//    int work_size = 0;
-//    cusolverDnSgetrf_bufferSize(cusolverH, rows, cols, a_device, lda, &work_size);
-//
-//    float* d_work;
-//    cudaMalloc((void**)&d_work, sizeof(float) * work_size);
-//
-//    cusolverDnSgetrf(cusolverH, rows, cols, a_device, lda, d_work, d_pivot, d_info);
-//    
-//    cudaMemcpy(a, a_device, sizeof(float) * rows * cols, cudaMemcpyDeviceToHost);
-//
-//    cudaFree(a_device);
-//    cudaFree(d_pivot);
-//    cudaFree(d_info);
-//    cudaFree(d_work);
-//    cusolverDnDestroy(cusolverH);
-//}
-//
-//template<typename T>
-//auto getrf(int rows, int cols, T *a, int lda, int *pivot, int *info) -> enableIfDouble<T, void>
-//{
-//    double *a_device;
-//    int *d_pivot;
-//    int *d_info;
-//
-//    cusolverDnHandle_t cusolverH = nullptr;
-//    cusolverStatus_t result = cusolverDnCreate(&cusolverH);
-//    TL_ASSERT(result == cudaSuccess, "cuSOLVER Error: cusolverDnCreate");
-//
-//    cudaMalloc((void**)&a_device, sizeof(double) * rows * cols);
-//    cudaMalloc((void**)&d_pivot, sizeof(int) * rows);
-//    cudaMalloc((void**)&d_info, sizeof(int));
-//
-//    cudaMemcpy(a_device, a, sizeof(double) * lda * rows, cudaMemcpyHostToDevice);
-//
-//    // Perform LU factorization
-//
-//    int work_size = 0;
-//    cusolverDnDgetrf_bufferSize(cusolverH, rows, cols, a_device, lda, &work_size);
-//
-//    double* d_work;
-//    cudaMalloc((void**)&d_work, sizeof(double) * work_size);
-//
-//    cusolverDnDgetrf(cusolverH, rows, cols, a_device, lda, d_work, d_pivot, d_info);
-//
-//    cudaMemcpy(a, a_device, sizeof(double) * rows * cols, cudaMemcpyDeviceToHost);
-//
-//    cudaFree(a_device);
-//    cudaFree(d_pivot);
-//    cudaFree(d_info);
-//    cudaFree(d_work);
-//    cusolverDnDestroy(cusolverH);
-//}
-//
-//
-//
-//template<typename T> 
-//auto getrs(int rows, int nrhs, T *a, int lda, int* ipiv, T *b, int ldb, int* info) -> enableIfFloat<T, void>
-//{
-//    cusolverDnHandle_t cusolverH = nullptr;
-//    cusolverStatus_t result = cusolverDnCreate(&cusolverH);
-//    TL_ASSERT(result == cudaSuccess, "cuSOLVER Error: cusolverDnCreate");
-//
-//    float *a_device;
-//    float *b_device;
-//    int* d_pivot;
-//    int* d_info;
-//
-//    cudaMalloc((void**)&a_device, sizeof(float) * lda * rows);
-//    cudaMalloc((void**)&b_device, sizeof(float) * ldb);
-//    cudaMalloc((void**)&d_pivot, sizeof(int) * rows);
-//    cudaMalloc((void**)&d_info, sizeof(int));
-//
-//    cudaMemcpy(a_device, a, sizeof(float) * lda * rows, cudaMemcpyHostToDevice);
-//    cudaMemcpy(b_device, b, sizeof(float) * ldb, cudaMemcpyHostToDevice);
-//
-//    cusolverDnSgetrs(cusolverH, CUBLAS_OP_N, rows, nrhs, a_device, lda, d_pivot, b_device, ldb, d_info);
-//
-//    //T h_X[n];
-//    cudaMemcpy(b, b_device, sizeof(float) * rows, cudaMemcpyDeviceToHost);
-//
-//    cudaFree(a_device);
-//    cudaFree(b_device);
-//    cudaFree(d_pivot);
-//    cudaFree(d_info);
-//    cusolverDnDestroy(cusolverH);
-//}
-//
-//template<typename T> 
-//auto getrs(int rows, int nrhs, T *a, int lda, int* ipiv, T *b, int ldb, int* info) -> enableIfDouble<T, void>
-//{
-//    cusolverDnHandle_t cusolverH = nullptr;
-//    cusolverStatus_t result = cusolverDnCreate(&cusolverH);
-//    TL_ASSERT(result == cudaSuccess, "cuSOLVER Error: cusolverDnCreate");
-//
-//    double *a_device;
-//    double *b_device;
-//    int* d_pivot;
-//    int* d_info;
-//
-//    cudaMalloc((void**)&a_device, sizeof(double) * lda * rows);
-//    cudaMalloc((void**)&b_device, sizeof(double) * ldb);
-//
-//    cudaMemcpy(a_device, a, sizeof(double) * lda * rows, cudaMemcpyHostToDevice);
-//    cudaMemcpy(b_device, b, sizeof(double) * ldb, cudaMemcpyHostToDevice);
-//    cudaMalloc((void**)&d_pivot, sizeof(int) * rows);
-//    cudaMalloc((void**)&d_info, sizeof(int));
-//
-//    cusolverDnDgetrs(cusolverH, CUBLAS_OP_N, rows, nrhs, a_device, lda, d_pivot, b_device, ldb, d_info);
-//
-//    cudaMemcpy(b, b_device, sizeof(double) * rows, cudaMemcpyDeviceToHost);
-//
-//    cudaFree(a_device);
-//    cudaFree(b_device);
-//    cudaFree(d_pivot);
-//    cudaFree(d_info);
-//    cusolverDnDestroy(cusolverH);
-//}
+template <typename T>
+struct cusolverTraits;
+
+template <>
+struct cusolverTraits<float> {
+    static constexpr auto getrf_bufferSize = cusolverDnSgetrf_bufferSize;
+    static constexpr auto getrf = cusolverDnSgetrf;
+    static constexpr auto getrs = cusolverDnSgetrs;
+};
+
+template <>
+struct cusolverTraits<double> {
+    static constexpr auto getrf_bufferSize = cusolverDnDgetrf_bufferSize;
+    static constexpr auto getrf = cusolverDnDgetrf;
+    static constexpr auto getrs = cusolverDnDgetrs;
+};
+
+template <typename T>
+void getrf(int rows, int cols, T *a, int lda, int *pivot, int *info) 
+{
+    static_assert(std::is_same<T, float>::value || std::is_same<T, double>::value,
+        "Only float or double types are supported.");
+
+    T *a_device = nullptr;
+    int *d_pivot = nullptr;
+    int *d_info = nullptr;
+    T *d_work = nullptr;
+    cusolverDnHandle_t cusolverH;
+
+    // Create cuSOLVER handle
+    if (cusolverDnCreate(&cusolverH) != CUSOLVER_STATUS_SUCCESS) {
+        throw std::runtime_error("Failed to create cuSOLVER handle.");
+    }
+
+    // Allocate device memory
+    cudaMalloc(&a_device, sizeof(T) * lda * rows);
+    cudaMalloc(&d_pivot, sizeof(int) * rows);
+    cudaMalloc(&d_info, sizeof(int));
+
+    // Copy input matrix to device
+    cudaMemcpy(a_device, a, sizeof(T) * lda * rows, cudaMemcpyHostToDevice);
+
+    // Query workspace size
+    int work_size = 0;
+    cusolverTraits<T>::getrf_bufferSize(cusolverH, rows, cols, a_device, lda, &work_size);
+
+    cudaMalloc(&d_work, sizeof(T) * work_size);
+
+    // Perform LU factorization
+    cusolverTraits<T>::getrf(cusolverH, rows, cols, a_device, lda, d_work, d_pivot, d_info);
+
+    // Check for success
+    int h_info = 0;
+    cudaMemcpy(&h_info, d_info, sizeof(int), cudaMemcpyDeviceToHost);
+    if (h_info != 0) {
+        throw std::runtime_error("LU factorization failed. Matrix may be singular.");
+    }
+
+    // Copy results back to host
+    cudaMemcpy(a, a_device, sizeof(T) * lda * rows, cudaMemcpyDeviceToHost);
+    cudaMemcpy(pivot, d_pivot, sizeof(int) * rows, cudaMemcpyDeviceToHost);
+
+    // Clean up
+    cudaFree(a_device);
+    cudaFree(d_pivot);
+    cudaFree(d_info);
+    cudaFree(d_work);
+    cusolverDnDestroy(cusolverH);
+}
+
+template <typename T>
+void getrs(int rows, int nrhs, T *a, int lda, int *ipiv, T *b, int ldb, int *info) 
+{
+    static_assert(std::is_same<T, float>::value || std::is_same<T, double>::value,
+        "Only float or double types are supported.");
+
+    T *a_device = nullptr;
+    T *b_device = nullptr;
+    int *d_pivot = nullptr;
+    int *d_info = nullptr;
+    cusolverDnHandle_t cusolverH;
+
+    // Create cuSOLVER handle
+    if (cusolverDnCreate(&cusolverH) != CUSOLVER_STATUS_SUCCESS) {
+        throw std::runtime_error("Failed to create cuSOLVER handle.");
+    }
+
+    // Allocate device memory
+    cudaMalloc(&a_device, sizeof(T) * lda * rows);
+    cudaMalloc(&b_device, sizeof(T) * ldb * nrhs);
+    cudaMalloc(&d_pivot, sizeof(int) * rows);
+    cudaMalloc(&d_info, sizeof(int));
+
+    // Copy input data to device
+    cudaMemcpy(a_device, a, sizeof(T) * lda * rows, cudaMemcpyHostToDevice);
+    cudaMemcpy(b_device, b, sizeof(T) * ldb * nrhs, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_pivot, ipiv, sizeof(int) * rows, cudaMemcpyHostToDevice);
+
+    // Solve the system
+    cusolverTraits<T>::getrs(cusolverH, CUBLAS_OP_N, rows, nrhs, a_device, lda, d_pivot, b_device, ldb, d_info);
+
+    // Check for success
+    int h_info = 0;
+    cudaMemcpy(&h_info, d_info, sizeof(int), cudaMemcpyDeviceToHost);
+    if (h_info != 0) {
+        throw std::runtime_error("Solving linear system failed.");
+    }
+
+    // Copy result back to host
+    cudaMemcpy(b, b_device, sizeof(T) * ldb * nrhs, cudaMemcpyDeviceToHost);
+
+    // Clean up
+    cudaFree(a_device);
+    cudaFree(b_device);
+    cudaFree(d_pivot);
+    cudaFree(d_info);
+    cusolverDnDestroy(cusolverH);
+}
+
 
 
 } // End namespace blas

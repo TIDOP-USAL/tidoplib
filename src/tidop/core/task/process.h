@@ -79,10 +79,12 @@ private:
     Priority mPriority;
     bool outputHandle;
 #ifdef TL_OS_WINDOWS
-    STARTUPINFO mStartUpInfo;
-    PROCESS_INFORMATION mProcessInformation;
-    SECURITY_ATTRIBUTES mSecurityAttributes;
-    HANDLE mThreadHandle;
+    STARTUPINFO mStartUpInfo{};
+    PROCESS_INFORMATION mProcessInformation{};
+    SECURITY_ATTRIBUTES mSecurityAttributes{};
+    HANDLE mThreadHandle = nullptr;
+    HANDLE pipeReadHandle = nullptr;
+    HANDLE pipeWriteHandle = nullptr;
 #endif
 
 public:
@@ -123,6 +125,7 @@ private:
      * \return True if the pipe was successfully created, otherwise false.
      */
     auto createPipe() -> bool;
+
 #endif
 
 private:

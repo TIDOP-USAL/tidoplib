@@ -78,6 +78,7 @@ if(BUILD_TL_CORE)
                              base/event.h
                              base/exception.h
                              base/flags.h
+                             base/format.h
                              base/path.h
                              base/property.h
                              base/ptr.h

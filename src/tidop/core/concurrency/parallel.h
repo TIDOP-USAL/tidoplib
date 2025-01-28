@@ -129,10 +129,8 @@ Function parallel_for_each(Iter first,
         block_ini = block_end;
     }
 
-    for (auto &_thread : threads) {
-        if (_thread.joinable())
-            _thread.join();
-    }
+    for (auto &_thread : threads)
+        _thread.join();
 
     return f;
 }
@@ -174,10 +172,8 @@ void parallel_for_each_2(Iterator first,
         futures[i].get();
     }
 
-    for (auto &_thread : threads) {
-        if (_thread.joinable())
-            _thread.join();
-    }
+    for (auto &_thread : threads)
+        _thread.join();
 }
 
 template<typename Iterator, typename Func>

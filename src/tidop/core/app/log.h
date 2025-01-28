@@ -126,10 +126,6 @@ public:
      */
     void setMessageLevel(MessageLevel level);
 
-/// \cond
-#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
-/// \endcond
-
     /*!
      * \brief Log a debug message using formatted arguments.
      * \tparam Args Argument types.
@@ -194,10 +190,6 @@ public:
         if (Log::instance().isOpen())
             Log::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
-
-/// \cond
-#endif
-/// \endcond
 
 // MessageHandler
 

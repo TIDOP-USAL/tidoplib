@@ -24,7 +24,7 @@
  
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-set(test_filename utils_test.cpp)
+set(test_filename base_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
 
 project(${test_name} LANGUAGES CXX)

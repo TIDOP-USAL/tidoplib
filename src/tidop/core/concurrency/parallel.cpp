@@ -98,10 +98,8 @@ void parallel_for(size_t ini,
         block_ini = block_end;
     }
 
-    for (auto &_thread : threads) {
-        if (_thread.joinable())
-            _thread.join();
-    }
+    for (auto &_thread : threads)
+        _thread.join();
 
 #endif
 
