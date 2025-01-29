@@ -377,6 +377,39 @@ BOOST_FIXTURE_TEST_CASE(get_property_as_string_error, PropertiesTest)
     BOOST_CHECK_THROW(properties.getPropertyAsString("key7"), std::out_of_range);
 }
 
+BOOST_FIXTURE_TEST_CASE(get_property_type, PropertiesTest)
+{
+    BOOST_CHECK(Type::type_int == properties.getPropertyType("key1"));
+    BOOST_CHECK(Type::type_double == properties.getPropertyType("key2"));
+    BOOST_CHECK(Type::type_string == properties.getPropertyType("key3"));
+    BOOST_CHECK(Type::type_bool == properties.getPropertyType("key4"));
+}
+
+BOOST_FIXTURE_TEST_CASE(get_property_type_error, PropertiesTest)
+{
+    BOOST_CHECK_THROW(properties.getPropertyType("key7"), std::out_of_range);
+}
+
+BOOST_FIXTURE_TEST_CASE(iteratorValueType, PropertiesTest)
+{
+    auto it = properties.begin();
+    BOOST_CHECK_EQUAL("key1", it->first);
+    BOOST_CHECK_EQUAL("1", it->second->toString());
+    ++it;
+    BOOST_CHECK_EQUAL("key2", it->first);
+    BOOST_CHECK_EQUAL("2.000000", it->second->toString());
+    ++it;
+    BOOST_CHECK_EQUAL("key3", it->first);
+    BOOST_CHECK_EQUAL("value", it->second->toString());
+    ++it;
+    BOOST_CHECK_EQUAL("key4", it->first);
+    BOOST_CHECK_EQUAL("true", it->second->toString());
+
+    ++it;
+    BOOST_CHECK(it == properties.end());
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

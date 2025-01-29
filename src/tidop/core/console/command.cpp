@@ -523,7 +523,7 @@ auto Command::showLicence() const -> void
     //mLicence.productName();
     //mLicence.version();
     //mLicence.autor();
-    //mLicence.autorEmail();
+    //mLicence.authorEmail();
     //mLicence.type();
 }
 

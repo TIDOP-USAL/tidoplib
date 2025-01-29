@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/featmatch/base/features.h"
+#include "tidop/core/base/property.h"
 
 namespace tl
 {
@@ -153,26 +154,61 @@ constexpr auto agast_default_value_threshold{10};
 constexpr auto agast_default_value_nonmax_suppression{true};
 constexpr auto agast_default_value_detector_type{"OAST_9_16"};
 
+//
+//class TL_EXPORT AgastProperties
+//  : public Agast
+//{
+//
+//private:
+//
+//    int mThreshold;
+//    bool mNonmaxSuppression;
+//    std::string mDetectorType;
+//
+//public:
+//
+//    AgastProperties();
+//    AgastProperties(const AgastProperties &agast);
+//    AgastProperties(AgastProperties &&agast) TL_NOEXCEPT;
+//    ~AgastProperties() override;
+//
+//    auto operator =(const AgastProperties &agast) -> AgastProperties&;
+//    auto operator =(AgastProperties &&agast) TL_NOEXCEPT  -> AgastProperties&;
+//
+//// Agast interface
+//
+//public:
+//
+//    auto threshold() const -> int override;
+//    auto nonmaxSuppression() const -> bool override;
+//    auto detectorType() const -> std::string override;
+//    void setThreshold(int threshold) override;
+//    void setNonmaxSuppression(bool nonmaxSuppression) override;
+//    void setDetectorType(const std::string &detectorType) override;
+//
+//// Feature interface
+//
+//public:
+//
+//    void reset() override;
+//    auto name() const -> std::string final;
+//
+//};
 
 class TL_EXPORT AgastProperties
-  : public Agast
+  : public Agast, 
+    public Properties
 {
-
-private:
-
-    int mThreshold;
-    bool mNonmaxSuppression;
-    std::string mDetectorType;
 
 public:
 
     AgastProperties();
     AgastProperties(const AgastProperties &agast);
     AgastProperties(AgastProperties &&agast) TL_NOEXCEPT;
-    ~AgastProperties() override;
+    ~AgastProperties() override = default;
 
-    auto operator =(const AgastProperties &agast) -> AgastProperties&;
-    auto operator =(AgastProperties &&agast) TL_NOEXCEPT  -> AgastProperties&;
+    auto operator=(const AgastProperties &agast)->AgastProperties &;
+    auto operator=(AgastProperties &&agast) TL_NOEXCEPT->AgastProperties &;
 
 // Agast interface
 
@@ -191,7 +227,6 @@ public:
 
     void reset() override;
     auto name() const -> std::string final;
-
 };
 
 

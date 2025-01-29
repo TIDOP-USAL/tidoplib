@@ -48,9 +48,9 @@ namespace tl
  * \code{.cpp}
  * Licence licence("TidopLib", "GNU Lesser General Public License v3.0");
  * licence.setUrl("https://github.com/TIDOP-USAL/tidoplib");
- * licence.setAutor("TIDOP Research Group");
- * licence.setAutorEmail("email@email.com");
- * licence.setVersion("3.0.0");
+ * licence.setAuthor("TIDOP Research Group");
+ * licence.setAuthorEmail("email@email.com");
+ * licence.setVersion("4.0.0");
  * \endcode
  */
 class TL_EXPORT Licence
@@ -59,7 +59,8 @@ class TL_EXPORT Licence
 private:
 
     std::string mProductName; /*!< The name of the product or library. */
-    std::string mText;        /*!< The license text. */
+    std::string mLicense;     /*!< The license name. */
+    std::string mLicenseText; /*!< The license text. */
     std::string mVersion;     /*!< The license version. */
     std::string mAutor;       /*!< The author of the license. */
     std::string mEmail;       /*!< The email of the author. */
@@ -73,11 +74,11 @@ public:
     Licence();
 
     /*!
-     * \brief Constructor with product name and license text.
+     * \brief Constructor with product name and license name.
      * \param[in] name The product name.
-     * \param[in] text The license text.
+     * \param[in] license The license name.
      */
-    Licence(std::string name, std::string text);
+    Licence(std::string name, std::string license);
 
     /*!
      * \brief Get the product name.
@@ -92,16 +93,28 @@ public:
     auto setProductName(const std::string &productName) -> void;
 
     /*!
+     * \brief Get the license name.
+     * \return The license name.
+     */
+    auto licenseName() const -> std::string;
+
+    /*!
+     * \brief Set the license name.
+     * \param[in] license The license name to set.
+     */
+    void setLicence(const std::string &license);
+
+    /*!
      * \brief Get the license text.
      * \return The license text.
      */
-    auto text() const -> std::string;
+    auto licenseText() const -> std::string;
 
     /*!
      * \brief Set the license text.
-     * \param text The license text to set.
+     * \param[in] text The license text to set.
      */
-    auto setText(const std::string &text) -> void;
+    auto setLicenseText(const std::string &text) -> void;
 
     /*!
      * \brief Get the license version.
@@ -111,7 +124,7 @@ public:
 
     /*!
      * \brief Set the license version.
-     * \param version The version to set.
+     * \param[in] version The version to set.
      */
     auto setVersion(const std::string &version) -> void;
 
@@ -123,21 +136,21 @@ public:
 
     /*!
      * \brief Set the author of the license.
-     * \param autor The author's name to set.
+     * \param[in] autor The author's name to set.
      */
-    auto setAutor(const std::string &autor) -> void;
+    auto setAuthor(const std::string &autor) -> void;
 
     /*!
      * \brief Get the author's email.
      * \return The author's email.
      */
-    auto autorEmail() const->std::string;
+    auto authorEmail() const->std::string;
 
     /*!
      * \brief Set the author's email.
-     * \param autorEmail The email to set.
+     * \param[in] authorEmail The email to set.
      */
-    auto setAutorEmail(const std::string &autorEmail) -> void;
+    auto setAuthorEmail(const std::string &authorEmail) -> void;
 
     /*!
      * \brief Get the license URL.

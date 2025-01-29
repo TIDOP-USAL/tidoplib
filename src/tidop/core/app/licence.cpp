@@ -33,9 +33,9 @@ namespace tl
 Licence::Licence() = default;
 
 Licence::Licence(std::string productName, 
-                 std::string text)
+                 std::string license)
   : mProductName(std::move(productName)),
-    mText(std::move(text))
+    mLicense(std::move(license))
 {
     
 }
@@ -50,14 +50,24 @@ auto Licence::setProductName(const std::string &productName) -> void
     mProductName = productName;
 }
 
-auto Licence::text() const -> std::string
+auto Licence::licenseName() const -> std::string
 {
-    return mText;
+    return mLicense;
 }
 
-auto Licence::setText(const std::string &text) -> void
+void Licence::setLicence(const std::string &license)
 {
-    mText = text;
+    mLicense = license;
+}
+
+auto Licence::licenseText() const -> std::string
+{
+    return mLicenseText;
+}
+
+auto Licence::setLicenseText(const std::string &text) -> void
+{
+    mLicenseText = text;
 }
 
 auto Licence::version() const -> std::string
@@ -75,19 +85,19 @@ auto Licence::autor() const -> std::string
     return mAutor;
 }
 
-auto Licence::setAutor(const std::string &autor) -> void
+auto Licence::setAuthor(const std::string &autor) -> void
 {
     mAutor = autor;
 }
 
-auto Licence::autorEmail() const -> std::string
+auto Licence::authorEmail() const -> std::string
 {
     return mEmail;
 }
 
-auto Licence::setAutorEmail(const std::string &autorEmail) -> void
+auto Licence::setAuthorEmail(const std::string &authorEmail) -> void
 {
-    mEmail = autorEmail;
+    mEmail = authorEmail;
 }
 
 auto Licence::url() const -> std::string
@@ -102,7 +112,7 @@ auto Licence::setUrl(const std::string &url) -> void
 
 auto Licence::empty() const -> bool
 {
-    return mProductName.empty() && mText.empty();
+    return mProductName.empty() && mLicenseText.empty();
 }
 
 

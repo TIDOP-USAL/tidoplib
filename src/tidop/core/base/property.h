@@ -95,7 +95,7 @@ public:
      * \brief Gets the type of the property.
      * \return The type of the property as a `Type` enum value.
      */
-	auto type() const -> Type
+	auto type() const TL_NOEXCEPT -> Type
     {
         return mType;
     }
@@ -140,7 +140,7 @@ public:
      * \brief Gets the property's value.
      * \return The value of the property.
      */
-    auto value() const -> T 
+    auto value() const TL_NOEXCEPT -> T
     {
         return mValue;
     }
@@ -149,7 +149,7 @@ public:
      * \brief Sets the property's value.
      * \param[in] value The new value to set.
      */
-    void setValue(const T &value) 
+    void setValue(const T &value)  
     {
         mValue = value;
     }
@@ -187,20 +187,20 @@ public:
      * \brief Gets the name of the property's type.
      * \return The name of the property's type as a string.
      */
-	auto typeName() const -> std::string override
+	auto typeName() const TL_NOEXCEPT -> std::string override
     {
         return TypeTraits<T>::name_type;
     }
 };
 
 template<>
-void Property<std::string>::fromString(const std::string &value)
+inline void Property<std::string>::fromString(const std::string &value)
 {
     mValue = value;
 }
 
 template<>
-void Property<Path>::fromString(const std::string &value)
+inline void Property<Path>::fromString(const std::string &value)
 {
     mValue = Path(value);
 }
@@ -268,7 +268,7 @@ public:
         mValue(value) {
     }
 
-    auto value() const -> std::map<Key, Value>
+    auto value() const TL_NOEXCEPT -> std::map<Key, Value>
     {
         return mValue;
     }
@@ -292,7 +292,7 @@ public:
         }
     }
 
-    auto typeName() const -> std::string override
+    auto typeName() const TL_NOEXCEPT -> std::string override
     {
         return TypeTraits<std::map<Key, Value>>::name_type;
     }
@@ -482,146 +482,202 @@ inline auto PropertyValue<tl::Path>::value(const PropertyBase *arg) -> tl::Path
 
 /// \endcond
 
-
+/*!
+ * \class Properties
+ * \brief Manages a collection of properties using a key-value storage system.
+ *
+ * This class allows storing, retrieving, and modifying properties dynamically.
+ * Each property is associated with a string key and can hold different types of values.
+ */
 class Properties 
 {
+
+public:
+
+    /*!
+     * \brief Iterator type for traversing and modifying properties.
+     */
+    using iterator = std::unordered_map<std::string, std::shared_ptr<PropertyBase>>::iterator;
+
+    /*!
+     * \brief Constant iterator type for read-only traversal of properties.
+     */
+    using const_iterator = std::unordered_map<std::string, std::shared_ptr<PropertyBase>>::const_iterator;
+
 
 private:
 
     std::unordered_map<std::string, std::shared_ptr<PropertyBase>> mProperties; 
 
 public:
+
+    /*!
+     * \brief Default constructor.
+     */
     Properties() = default;
 
     /*!
-     * \brief Añade o actualiza una propiedad con un valor de tipo T.
-     * \tparam T Tipo de la propiedad.
-     * \param[in] key Clave de la propiedad.
-     * \param[in] value Valor de la propiedad.
+     * \brief Adds or updates a property with a given value.
+     * \tparam T The type of the property.
+     * \param[in] key The key associated with the property.
+     * \param[in] value The value of the property.
      */
     template <typename T>
-    void setProperty(const std::string &key, T value) 
-    {
-        //if constexpr (std::is_same_v<T, const char *>) {
-        //    mProperties[key] = std::make_shared<Property<std::string>>(std::string(value));
-        //} else {
-        //    mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
-        //}
-        mProperties[key] = std::make_shared<Property<std::decay<T>::type>>(value);
-    }
+    void setProperty(const std::string &key, T value);
 
     /*!
-     * \brief Obtiene una propiedad como tipo T.
-     * \tparam T Tipo esperado de la propiedad.
-     * \param[in] key Clave de la propiedad.
-     * \return Valor de la propiedad como tipo T.
-     * \throws std::out_of_range Si la clave no existe.
-     * \throws std::bad_cast Si el tipo no coincide con el almacenado.
+     * \brief Retrieves a property as type T.
+     * \tparam T The expected type of the property.
+     * \param[in] key The key associated with the property.
+     * \return The property value as type T.
+     * \throws std::out_of_range If the key does not exist.
+     * \throws std::bad_cast If the type does not match the stored value.
      */
     template <typename T>
-    auto getProperty(const std::string &key) const -> T
-    {
-        //auto it = mProperties.find(key);
-        //if (it == mProperties.end()) {
-        //    throw std::out_of_range("Property not found: " + key);
-        //}
-
-        //auto *prop = dynamic_cast<Property<T> *>(it->second.get());
-        //if (!prop) {
-        //    throw std::bad_cast();
-        //}
-
-        //return prop->value();
-
-        T _value{};
-
-        try {
-            auto it = mProperties.find(key);
-            if (it == mProperties.end()) {
-                throw std::out_of_range("Property not found: " + key);
-            }
-            internal::PropertyValue<T> property_value;
-            _value = property_value.value(it->second.get());
-        } catch (std::exception &e) {
-            std::throw_with_nested(e);
-        } catch (...) {
-            ///TODO: comprobar
-            std::throw_with_nested(std::bad_cast());
-        }
-
-        return _value;
-    }
+    auto getProperty(const std::string &key) const -> T;
 
     /*!
-     * \brief Obtiene una propiedad como una cadena de texto.
-     * \param[in] key Clave de la propiedad.
-     * \return Valor de la propiedad como cadena.
-     * \throws std::out_of_range Si la clave no existe.
+     * \brief Retrieves a property as a string.
+     * \param[in] key The key associated with the property.
+     * \return The property value as a string.
+     * \throws std::out_of_range If the key does not exist.
      */
-    auto getPropertyAsString(const std::string &key) const -> std::string
-    {
-        auto it = mProperties.find(key);
-        if (it == mProperties.end()) {
-            throw std::out_of_range("Property not found: " + key);
-        }
-        return it->second->toString();
-    }
-
-    ///*!
-    // * \brief Establece una propiedad a partir de una cadena de texto.
-    // * \param[in] key Clave de la propiedad.
-    // * \param[in] value Cadena con el valor a asignar.
-    // * \throws std::out_of_range Si la clave no existe.
-    // */
-    //void setPropertyFromString(const std::string &key, const std::string &value)
-    //{
-    //    //auto it = mProperties.find(key);
-    //    //if (it == mProperties.end()) {
-    //    //    throw std::out_of_range("Property not found: " + key);
-    //    //}
-    //    //it->second->fromString(value);
-    //    mProperties[key] = std::make_shared<Property<T>>(value);
-    //}
+    auto getPropertyAsString(const std::string &key) const -> std::string;
 
     /*!
-     * \brief Verifica si una propiedad existe.
-     * \param[in] key Clave de la propiedad.
-     * \return true si la propiedad existe; de lo contrario, false.
+     * \brief Checks whether a property exists.
+     * \param[in] key The key associated with the property.
+     * \return True if the property exists; otherwise, false.
      */
-    auto hasProperty(const std::string &key) const -> bool {
-        return mProperties.find(key) != mProperties.end();
-    }
+    auto hasProperty(const std::string &key) const -> bool;
 
     /*!
-     * \brief Devuelve el tipo de una propiedad.
-     * \param[in] key Clave de la propiedad.
-     * \return Tipo de la propiedad.
-     * \throws std::out_of_range Si la clave no existe.
+     * \brief Retrieves the type of a property.
+     * \param[in] key The key associated with the property.
+     * \return The type of the property.
+     * \throws std::out_of_range If the key does not exist.
      */
-    auto getPropertyType(const std::string &key) const -> Type 
-    {
-        auto it = mProperties.find(key);
-        if (it == mProperties.end()) {
-            throw std::out_of_range("Property not found: " + key);
-        }
-        return it->second->type();
-    }
+    auto getPropertyType(const std::string &key) const -> Type;
 
     /*!
-     * \brief Limpia todas las propiedades almacenadas.
+     * \brief Returns an iterator to the beginning of the properties.
+     * \return Iterator pointing to the beginning of the properties.
      */
-    void clear() {
-        mProperties.clear();
-    }
+    auto begin() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns an iterator to the end of the properties.
+     * \return Iterator pointing to the end of the properties.
+     */
+    auto end() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a constant iterator to the beginning of the properties.
+     * \return Constant iterator pointing to the beginning of the properties.
+     */
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Returns a constant iterator to the end of the properties.
+     * \return Constant iterator pointing to the end of the properties.
+     */
+    auto end() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Returns a constant iterator to the beginning of the properties (explicit const version).
+     * \return Constant iterator pointing to the beginning of the properties.
+     */
+    auto cbegin() const TL_NOEXCEPT -> const_iterator;
+    
+    /*!
+     * \brief Returns a constant iterator to the end of the properties (explicit const version).
+     * \return Constant iterator pointing to the end of the properties.
+     */
+    auto cend() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Clears all stored properties.
+     */
+    void clear();
 };
 
+
+
+/*! \} */
+
+
+template<typename T>
+inline void Properties::setProperty(const std::string &key, T value)
+{
+    //if constexpr (std::is_same_v<T, const char *>) {
+    //    mProperties[key] = std::make_shared<Property<std::string>>(std::string(value));
+    //} else {
+    //    mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
+    //}
+    mProperties[key] = std::make_shared<Property<std::decay<T>::type>>(value);
+}
+
 template <>
-void Properties::setProperty(const std::string &key, const char *value)
+inline void Properties::setProperty(const std::string &key, const char *value)
 {
     mProperties[key] = std::make_shared<Property<std::string>>(std::string(value));
 }
 
-/*! \} */
+template<typename T>
+inline auto Properties::getProperty(const std::string &key) const -> T
+{
+    T _value{};
 
+    try {
+        auto it = mProperties.find(key);
+        if (it == mProperties.end()) {
+            throw std::out_of_range("Property not found: " + key);
+        }
+        internal::PropertyValue<T> property_value;
+        _value = property_value.value(it->second.get());
+    } catch (std::exception &e) {
+        std::throw_with_nested(e);
+    } catch (...) {
+        ///TODO: comprobar
+        std::throw_with_nested(std::bad_cast());
+    }
+
+    return _value;
+}
+
+inline auto Properties::begin() TL_NOEXCEPT -> iterator
+{ 
+    return mProperties.begin();
+}
+
+inline auto Properties::end() TL_NOEXCEPT -> iterator 
+{ 
+    return mProperties.end(); 
+}
+
+inline auto Properties::begin() const TL_NOEXCEPT -> const_iterator
+{ 
+    return mProperties.begin();
+}
+
+inline auto Properties::end() const TL_NOEXCEPT -> const_iterator
+{ 
+    return mProperties.end();
+}
+
+inline auto Properties::cbegin() const TL_NOEXCEPT -> const_iterator 
+{ 
+    return mProperties.cbegin();
+}
+
+inline auto Properties::cend() const TL_NOEXCEPT -> const_iterator 
+{ 
+    return mProperties.cend();
+}
+
+inline void Properties::clear()
+{
+    mProperties.clear();
+}
 
 } // End namespace tl

@@ -22,11 +22,33 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#include "tidop/core/base/property.h"
 
-#include "tidop/core/concurrency/consumer.h"
-#include "tidop/core/concurrency/parallel.h"
-#include "tidop/core/concurrency/producer.h"
-#include "tidop/core/concurrency/consumer.h"
-#include "tidop/core/concurrency/queue_mpmc.h"
-#include "tidop/core/concurrency/queue_spsc.h"
+
+namespace tl
+{
+
+auto Properties::getPropertyAsString(const std::string &key) const -> std::string
+{
+    auto it = mProperties.find(key);
+    if (it == mProperties.end()) {
+        throw std::out_of_range("Property not found: " + key);
+    }
+    return it->second->toString();
+}
+
+auto Properties::hasProperty(const std::string &key) const -> bool {
+    return mProperties.find(key) != mProperties.end();
+}
+
+auto Properties::getPropertyType(const std::string &key) const -> Type
+{
+    auto it = mProperties.find(key);
+    if (it == mProperties.end()) {
+        throw std::out_of_range("Property not found: " + key);
+    }
+    return it->second->type();
+}
+
+} // End namespace tl
+

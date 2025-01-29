@@ -69,6 +69,7 @@ enum class Type
 };
 
 
+/// \cond
 
 template<typename T>
 struct TypeTraits
@@ -197,6 +198,8 @@ struct TypeTraits<std::map<Key, Value>>
     static constexpr auto id_type = Type::type_map;
     static constexpr auto name_type = "std::map";
 };
+
+/// \endcond
 
 /*! \} */
 

@@ -702,7 +702,7 @@ private:
     /*!
      * \brief Label text
      */
-    std::string mText;
+    std::string mLicenseText;
 
     /*!
      * \brief Rotation angle in decimal sexagesimal degrees

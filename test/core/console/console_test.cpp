@@ -67,6 +67,70 @@ BOOST_AUTO_TEST_CASE(messageLevel)
     console.setMessageLevel(MessageLevel::debug);
     EnumFlags<MessageLevel> message_level = console.messageLevel();
     BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+
+    console.setMessageLevel(MessageLevel::info);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+
+    console.setMessageLevel(MessageLevel::success);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+
+    console.setMessageLevel(MessageLevel::warning);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+
+    console.setMessageLevel(MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::debug | MessageLevel::info);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::success | MessageLevel::warning);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::info | MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::debug | MessageLevel::success | MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::debug | MessageLevel::info | MessageLevel::success | MessageLevel::warning | MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::all);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
 }
 
 BOOST_AUTO_TEST_CASE(printMessage)

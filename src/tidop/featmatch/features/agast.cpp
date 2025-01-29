@@ -30,99 +30,178 @@
 namespace tl
 {
 
-
 AgastProperties::AgastProperties()
-  : mThreshold(agast_default_value_threshold),
-    mNonmaxSuppression(agast_default_value_nonmax_suppression),
-    mDetectorType(agast_default_value_detector_type)
 {
+    setThreshold(10);
+    setNonmaxSuppression(true);
+    setDetectorType("OAST_9_16");
 }
 
 AgastProperties::AgastProperties(const AgastProperties &agast)
-  : Agast(agast),
-    mThreshold(agast.mThreshold),
-    mNonmaxSuppression(agast.nonmaxSuppression()),
-    mDetectorType(agast.mDetectorType)
+  : Agast(agast), 
+    Properties(agast)
 {
 }
 
 AgastProperties::AgastProperties(AgastProperties &&agast) TL_NOEXCEPT
-  : mThreshold(agast.mThreshold),
-    mNonmaxSuppression(std::exchange(agast.mNonmaxSuppression,true)),
-    mDetectorType(std::move(agast.mDetectorType))
+  : Agast(std::move(agast)), 
+    Properties(std::move(agast))
 {
 }
 
-AgastProperties::~AgastProperties() = default;
-
-auto AgastProperties::operator =(const AgastProperties &agast) -> AgastProperties&
+auto AgastProperties::operator=(const AgastProperties &agast) -> AgastProperties &
 {
     if (this != &agast) {
-        mThreshold = agast.mThreshold;
-        mNonmaxSuppression = agast.mNonmaxSuppression;
-        mDetectorType = agast.mDetectorType;
+        Agast::operator=(agast);
+        Properties::operator=(agast);
     }
-
     return *this;
 }
 
-auto AgastProperties::operator =(AgastProperties &&agast) TL_NOEXCEPT -> AgastProperties&
+auto AgastProperties::operator=(AgastProperties &&agast) TL_NOEXCEPT -> AgastProperties &
 {
     if (this != &agast) {
-        mThreshold = agast.mThreshold;
-        mNonmaxSuppression = std::exchange(agast.mNonmaxSuppression, true);
-        mDetectorType = std::move(agast.mDetectorType);
+        Agast::operator=(std::move(agast));
+        Properties::operator=(std::move(agast));
     }
-
     return *this;
 }
 
 auto AgastProperties::threshold() const -> int
 {
-    return mThreshold;
+    return getProperty<int>("threshold");
 }
 
 auto AgastProperties::nonmaxSuppression() const -> bool
 {
-    return mNonmaxSuppression;
+    return getProperty<bool>("nonmaxSuppression");
 }
 
 auto AgastProperties::detectorType() const -> std::string
 {
-    return mDetectorType;
+    return getProperty<std::string>("detectorType");
 }
 
 void AgastProperties::setThreshold(int threshold)
 {
-    mThreshold = threshold;
+    setProperty("threshold", threshold);
 }
 
 void AgastProperties::setNonmaxSuppression(bool nonmaxSuppression)
 {
-    mNonmaxSuppression = nonmaxSuppression;
+    setProperty("nonmaxSuppression", nonmaxSuppression);
 }
 
 void AgastProperties::setDetectorType(const std::string &detectorType)
 {
-    if (detectorType == "AGAST_5_8" ||
-        detectorType == "AGAST_7_12d" ||
-        detectorType == "AGAST_7_12s" ||
-        detectorType == "OAST_9_16") {
-        mDetectorType = detectorType;
-    }
+    setProperty("detectorType", detectorType);
 }
 
 void AgastProperties::reset()
 {
-    mThreshold = agast_default_value_threshold;
-    mNonmaxSuppression = agast_default_value_nonmax_suppression;
-    mDetectorType = agast_default_value_detector_type;
+    setThreshold(10);
+    setNonmaxSuppression(true);
+    setDetectorType("OAST_9_16");
 }
 
 auto AgastProperties::name() const -> std::string
 {
-    return std::string("AGAST");
+    return "AgastProperties";
 }
+
+
+//AgastProperties::AgastProperties()
+//  : mThreshold(agast_default_value_threshold),
+//    mNonmaxSuppression(agast_default_value_nonmax_suppression),
+//    mDetectorType(agast_default_value_detector_type)
+//{
+//}
+//
+//AgastProperties::AgastProperties(const AgastProperties &agast)
+//  : Agast(agast),
+//    mThreshold(agast.mThreshold),
+//    mNonmaxSuppression(agast.nonmaxSuppression()),
+//    mDetectorType(agast.mDetectorType)
+//{
+//}
+//
+//AgastProperties::AgastProperties(AgastProperties &&agast) TL_NOEXCEPT
+//  : mThreshold(agast.mThreshold),
+//    mNonmaxSuppression(std::exchange(agast.mNonmaxSuppression,true)),
+//    mDetectorType(std::move(agast.mDetectorType))
+//{
+//}
+//
+//AgastProperties::~AgastProperties() = default;
+//
+//auto AgastProperties::operator =(const AgastProperties &agast) -> AgastProperties&
+//{
+//    if (this != &agast) {
+//        mThreshold = agast.mThreshold;
+//        mNonmaxSuppression = agast.mNonmaxSuppression;
+//        mDetectorType = agast.mDetectorType;
+//    }
+//
+//    return *this;
+//}
+//
+//auto AgastProperties::operator =(AgastProperties &&agast) TL_NOEXCEPT -> AgastProperties&
+//{
+//    if (this != &agast) {
+//        mThreshold = agast.mThreshold;
+//        mNonmaxSuppression = std::exchange(agast.mNonmaxSuppression, true);
+//        mDetectorType = std::move(agast.mDetectorType);
+//    }
+//
+//    return *this;
+//}
+//
+//auto AgastProperties::threshold() const -> int
+//{
+//    return mThreshold;
+//}
+//
+//auto AgastProperties::nonmaxSuppression() const -> bool
+//{
+//    return mNonmaxSuppression;
+//}
+//
+//auto AgastProperties::detectorType() const -> std::string
+//{
+//    return mDetectorType;
+//}
+//
+//void AgastProperties::setThreshold(int threshold)
+//{
+//    mThreshold = threshold;
+//}
+//
+//void AgastProperties::setNonmaxSuppression(bool nonmaxSuppression)
+//{
+//    mNonmaxSuppression = nonmaxSuppression;
+//}
+//
+//void AgastProperties::setDetectorType(const std::string &detectorType)
+//{
+//    if (detectorType == "AGAST_5_8" ||
+//        detectorType == "AGAST_7_12d" ||
+//        detectorType == "AGAST_7_12s" ||
+//        detectorType == "OAST_9_16") {
+//        mDetectorType = detectorType;
+//    }
+//}
+//
+//void AgastProperties::reset()
+//{
+//    mThreshold = agast_default_value_threshold;
+//    mNonmaxSuppression = agast_default_value_nonmax_suppression;
+//    mDetectorType = agast_default_value_detector_type;
+//}
+//
+//auto AgastProperties::name() const -> std::string
+//{
+//    return std::string("AGAST");
+//}
 
 
 /*----------------------------------------------------------------*/

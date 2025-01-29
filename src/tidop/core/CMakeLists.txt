@@ -43,6 +43,7 @@ if(BUILD_TL_CORE)
                              base/event.cpp
                              base/exception.cpp
                              base/path.cpp
+                             base/property.cpp
                              base/string_utils.cpp
                              base/type_conversions.cpp
                              concurrency/parallel.cpp
