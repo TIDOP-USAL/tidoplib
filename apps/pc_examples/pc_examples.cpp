@@ -105,6 +105,33 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // get CPS struct test
+    try
+    {
+        // node_keys has four index, first is the level
+        // uses map container -> ordered
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > x_min_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > x_max_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > y_min_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > y_max_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > resolution_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, int > > > > number_of_points_by_node_keys;        std::string getCOPCTestFileName = "D:/dev/pnoa_lidar_2009_crs.copc.laz";
+        PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+        ptrPointCloudTools->getCOPCStruct(getCOPCTestFileName,
+            x_min_by_node_keys,
+            x_max_by_node_keys,
+            y_min_by_node_keys,
+            x_max_by_node_keys,
+            resolution_by_node_keys,
+            number_of_points_by_node_keys);
+        int yo = 1;
+    }
+    catch (const std::exception& e) {
+        printException(e);
+        return 1;
+    }
+
+
     std::string sourceCrsId, targetCrsId;
     // ply to copc
     //inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_clipped.ply";

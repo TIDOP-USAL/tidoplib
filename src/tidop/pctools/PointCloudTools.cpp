@@ -204,6 +204,88 @@ void PointCloudTools::clear()
         // delete(mPtrPointCloudFileManager);
 }
 
+void PointCloudTools::getCOPCStruct(std::string fileName,
+    std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& x_min_by_node_keys,
+    std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& x_max_by_node_keys,
+    std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& y_min_by_node_keys,
+    std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& y_max_by_node_keys,
+    std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& resolution_by_node_keys,
+    std::map<int, std::map<int, std::map<int, std::map<int, int > > > >& number_of_points_by_node_keys)
+{
+    x_min_by_node_keys.clear();
+    x_max_by_node_keys.clear();
+    y_min_by_node_keys.clear();
+    y_max_by_node_keys.clear();
+    resolution_by_node_keys.clear();
+    number_of_points_by_node_keys.clear();
+    tl::Path inputFile(fileName);
+    if (!inputFile.exists())
+    {
+        TL_ASSERT(false, "Not exists input file: {}", fileName);
+    }
+    if (!inputFile.isFile())
+    {
+        TL_ASSERT(false, "Input is not a file: {}", fileName);
+    }
+    std::string extension = inputFile.extension().toString();
+    if (!compareInsensitiveCase(extension, ".las")
+        && !compareInsensitiveCase(extension, ".laz"))
+    {
+        TL_ASSERT(false, "Input is not a LAS/LAZ file: {}", fileName);
+    }
+    bool isCopc = false;
+    std::map<int, std::map<int, std::map<int, std::map<int, std::vector<double> > > > > node_keys;
+    try
+    {
+        copc::FileReader reader(fileName); // error if file is not copc
+        isCopc = true;
+        auto las_header = reader.CopcConfig().LasHeader();
+        auto copc_info = reader.CopcConfig().CopcInfo();
+        //cout << "Copc Info: " << endl;
+        //cout << "\tSpacing: " << copc_info.spacing << endl
+        //     << "\tRoot Offset: " << copc_info.root_hier_offset << endl
+        //     << "\tRoot Size: " << copc_info.root_hier_size << endl;
+        // Get the CopcInfo struct
+        auto copc_extents = reader.CopcConfig().CopcExtents();
+        //cout << "Copc Extents (Min/Max): " << endl;
+        //cout << "\tIntensity : (" << copc_extents.Intensity()->minimum << "/" << copc_extents.Intensity()->maximum << ")"
+        //     << endl
+        //     << "\tClassification : (" << copc_extents.Classification()->minimum << "/"
+        //     << copc_extents.Classification()->maximum << ")" << endl
+        //     << "\tGpsTime : (" << copc_extents.GpsTime()->minimum << "/" << copc_extents.GpsTime()->maximum << ")" << endl;
+        int number_of_nodes = 0;
+        for (const auto& node : reader.GetAllChildrenOfPage(copc::VoxelKey::RootKey()))
+            //for (const auto &node : reader.GetAllNodes())
+        {
+            copc::Box nodeBox(node.key, las_header);
+            double x_min = nodeBox.x_min;
+            double x_max = nodeBox.x_max;
+            double y_min = nodeBox.y_min;
+            double y_max = nodeBox.y_max;
+            int key_d = node.key.d;
+            int key_x = node.key.x;
+            int key_y = node.key.y;
+            int key_z = node.key.z;
+            int nop = node.point_count;
+            std::vector<double> bbox;
+            bbox.push_back(x_min);
+            bbox.push_back(x_max);
+            bbox.push_back(y_min);
+            bbox.push_back(y_max);
+            x_min_by_node_keys[key_d][key_x][key_y][key_z] = node.key.d;
+            x_max_by_node_keys[key_d][key_x][key_y][key_z] = node.key.x;
+            y_min_by_node_keys[key_d][key_x][key_y][key_z] = node.key.y;
+            y_max_by_node_keys[key_d][key_x][key_y][key_z] = node.key.z;
+            resolution_by_node_keys[key_d][key_x][key_y][key_z] = node.key.Resolution(las_header, copc_info);
+            number_of_points_by_node_keys[key_d][key_x][key_y][key_z] = node.point_count;
+        }
+    }
+    catch (...)
+    {
+        TL_ASSERT(false, "Input is not a COPC file: {}", fileName);
+    }
+}
+
 std::string PointCloudTools::getCRSId(std::string fileName)
 {
     bool succesFull = false;
