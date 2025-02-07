@@ -27,6 +27,7 @@
 #include "tidop/config.h"
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
+//#include "tidop/core/base/size.h"
 
 #include <type_traits>
 #include <stdexcept>
@@ -35,6 +36,8 @@
 namespace tl
 {
 
+template<typename T>
+class Size;
 
 /*! \addtogroup Base
  *  \{
@@ -57,7 +60,8 @@ enum class Type
     type_string,                 /*!< Represents a string. */
     type_wstring,                /*!< Represents a wide string. */
     type_path,                   /*!< Represents a file path or directory path. */
-    type_map,                    /*!< Represents a map (associative container). */
+    type_size,
+    //type_map,                    /*!< Represents a map (associative container). */
     type_schar = type_int8,      /*!< Alias for `type_int8` (character as an 8-bit signed integer). */
     type_uchar = type_uint8,     /*!< Alias for `type_uint8` (character as an 8-bit unsigned integer). */
     type_short = type_int16,     /*!< Alias for `type_int16` (short integer). */
@@ -191,12 +195,20 @@ struct TypeTraits<tl::Path>
     static constexpr auto name_type = "tl::Path";
 };
 
-template <typename Key, typename Value>
-struct TypeTraits<std::map<Key, Value>>
+//template <typename Key, typename Value>
+//struct TypeTraits<std::map<Key, Value>>
+//{
+//    using value_type = std::map<Key, Value>;
+//    static constexpr auto id_type = Type::type_map;
+//    static constexpr auto name_type = "std::map";
+//};
+
+template<typename T>
+struct TypeTraits<Size<T>>
 {
-    using value_type = std::map<Key, Value>;
-    static constexpr auto id_type = Type::type_map;
-    static constexpr auto name_type = "std::map";
+    using value_type = Size<T>;
+    static constexpr auto id_type = Type::type_size;
+    static constexpr auto name_type = "Size";
 };
 
 /// \endcond

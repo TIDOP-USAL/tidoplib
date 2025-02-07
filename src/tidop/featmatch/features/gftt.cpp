@@ -30,136 +30,164 @@
 namespace tl
 {
 
+
+/* GFTT properties */
+
 GfttProperties::GfttProperties()
+  : Feature("GFTT", Feature::Type::gftt)
+{
+    reset();
+}
+
+GfttProperties::GfttProperties(const GfttProperties &properties)
+  : Feature(properties)
 {
 }
 
-GfttProperties::GfttProperties(const GfttProperties &gfttProperties)
-  : Gftt(gfttProperties),
-    mMaxFeatures(gfttProperties.mMaxFeatures),
-    mQualityLevel(gfttProperties.mQualityLevel),
-    mMinDistance(gfttProperties.mMinDistance),
-    mBlockSize(gfttProperties.mBlockSize),
-    mHarrisDetector(gfttProperties.mHarrisDetector),
-    mK(gfttProperties.mK)
+GfttProperties::GfttProperties(GfttProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto GfttProperties::operator=(const GfttProperties &properties) -> GfttProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto GfttProperties::operator=(GfttProperties &&properties) TL_NOEXCEPT -> GfttProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto GfttProperties::maxFeatures() const -> int
 {
-    return mMaxFeatures;
+    return getProperty<int>("MaxFeatures");
 }
 
 auto GfttProperties::qualityLevel() const -> double
 {
-    return mQualityLevel;
+    return getProperty<double>("QualityLevel");
 }
 
 auto GfttProperties::minDistance() const -> double
 {
-    return mMinDistance;
+    return getProperty<double>("MinDistance");
 }
 
 auto GfttProperties::blockSize() const -> int
 {
-    return mBlockSize;
+    return getProperty<int>("BlockSize");
 }
 
 auto GfttProperties::harrisDetector() const -> bool
 {
-    return mHarrisDetector;
+    return getProperty<bool>("HarrisDetector");
 }
 
 auto GfttProperties::k() const -> double
 {
-    return mK;
+    return getProperty<double>("K");
 }
 
 void GfttProperties::setMaxFeatures(int maxFeatures)
 {
-    mMaxFeatures = maxFeatures;
+    setProperty("MaxFeatures", maxFeatures);
 }
 
 void GfttProperties::setQualityLevel(double qlevel)
 {
-    mQualityLevel = qlevel;
+    setProperty("QualityLevel", qlevel);
 }
 
 void GfttProperties::setMinDistance(double minDistance)
 {
-    mMinDistance = minDistance;
+    setProperty("MinDistance", minDistance);
 }
 
 void GfttProperties::setBlockSize(int blockSize)
 {
-    mBlockSize = blockSize;
+    setProperty("BlockSize", blockSize);
 }
 
 void GfttProperties::setHarrisDetector(bool value)
 {
-    mHarrisDetector = value;
+    setProperty("HarrisDetector", value);
 }
 
 void GfttProperties::setK(double k)
 {
-    mK = k;
+    setProperty("K", k);
 }
 
 void GfttProperties::reset()
 {
-    mMaxFeatures = 1000;
-    mQualityLevel = 0.01;
-    mMinDistance = 1;
-    mBlockSize = 3;
-    mHarrisDetector = false;
-    mK = 0.04;
-}
-
-auto GfttProperties::name() const -> std::string
-{
-    return std::string("GFTT");
+    setMaxFeatures(1000);
+    setQualityLevel(0.01);
+    setMinDistance(1);
+    setBlockSize(3);
+    setHarrisDetector(false);
+    setK(0.04);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* GFTT detector */
 
 GfttDetector::GfttDetector()
 {
-    mGFTT = cv::GFTTDetector::create(GfttProperties::maxFeatures(),
-                                     GfttProperties::qualityLevel(),
-                                     GfttProperties::minDistance(),
-                                     GfttProperties::blockSize(),
-                                     GfttProperties::harrisDetector(),
-                                     GfttProperties::k());
+    init();
 }
 
-GfttDetector::GfttDetector(const GfttDetector &gfttDetector)
-    : GfttProperties(gfttDetector),
-    FeatureDetector(gfttDetector)
+GfttDetector::GfttDetector(const GfttProperties &properties)
+  : mProperties(properties)
 {
-    mGFTT = cv::GFTTDetector::create(GfttProperties::maxFeatures(),
-                                     GfttProperties::qualityLevel(),
-                                     GfttProperties::minDistance(),
-                                     GfttProperties::blockSize(),
-                                     GfttProperties::harrisDetector(),
-                                     GfttProperties::k());
+    init();
 }
 
-GfttDetector::GfttDetector(int maxFeatures,
-                           double qualityLevel,
-                           double minDistance,
-                           int blockSize,
-                           bool harrisDetector,
-                           double k)
-    : mGFTT(cv::GFTTDetector::create())
+GfttDetector::GfttDetector(const GfttDetector &gftt)
+  : mProperties(gftt.mProperties)
 {
-	GfttDetector::setMaxFeatures(maxFeatures);
-	GfttDetector::setQualityLevel(qualityLevel);
-	GfttDetector::setMinDistance(minDistance);
-	GfttDetector::setBlockSize(blockSize);
-	GfttDetector::setHarrisDetector(harrisDetector);
-	GfttDetector::setK(k);
+    init();
+}
+
+GfttDetector::GfttDetector(GfttDetector &&gftt) TL_NOEXCEPT
+  : mProperties(std::move(gftt.mProperties)),
+    mGFTT(std::move(gftt.mGFTT))
+{
+}
+
+auto GfttDetector::operator =(const GfttDetector &gftt) -> GfttDetector &
+{
+    if (this != &gftt) {
+        mProperties = gftt.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto GfttDetector::operator =(GfttDetector &&gftt) TL_NOEXCEPT -> GfttDetector &
+{
+    if (this != &gftt) {
+        mProperties = std::move(gftt.mProperties);
+        mGFTT = std::move(gftt.mGFTT);
+    }
+    return *this;
+}
+
+void GfttDetector::init()
+{
+    mGFTT = cv::GFTTDetector::create(mProperties.maxFeatures(),
+                                     mProperties.qualityLevel(),
+                                     mProperties.minDistance(),
+                                     mProperties.blockSize(),
+                                     mProperties.harrisDetector(),
+                                     mProperties.k());
 }
 
 auto GfttDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
@@ -175,53 +203,6 @@ auto GfttDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vect
     }
 
     return key_points;
-}
-
-void GfttDetector::setMaxFeatures(int maxFeatures)
-{
-    GfttProperties::setMaxFeatures(maxFeatures);
-    mGFTT->setMaxFeatures(maxFeatures);
-}
-
-void GfttDetector::setQualityLevel(double qlevel)
-{
-    GfttProperties::setQualityLevel(qlevel);
-    mGFTT->setQualityLevel(qlevel);
-}
-
-void GfttDetector::setMinDistance(double minDistance)
-{
-    GfttProperties::setMinDistance(minDistance);
-    mGFTT->setMinDistance(minDistance);
-}
-
-void GfttDetector::setBlockSize(int blockSize)
-{
-    GfttProperties::setBlockSize(blockSize);
-    mGFTT->setBlockSize(blockSize);
-}
-
-void GfttDetector::setHarrisDetector(bool value)
-{
-    GfttProperties::setHarrisDetector(value);
-    mGFTT->setHarrisDetector(value);
-}
-
-void GfttDetector::setK(double k)
-{
-    GfttProperties::setK(k);
-    mGFTT->setK(k);
-}
-
-void GfttDetector::reset()
-{
-    GfttProperties::reset();
-    mGFTT->setMaxFeatures(GfttProperties::maxFeatures());
-    mGFTT->setQualityLevel(GfttProperties::qualityLevel());
-    mGFTT->setMinDistance(GfttProperties::minDistance());
-    mGFTT->setBlockSize(GfttProperties::blockSize());
-    mGFTT->setHarrisDetector(GfttProperties::harrisDetector());
-    mGFTT->setK(GfttProperties::k());
 }
 
 } // namespace tl

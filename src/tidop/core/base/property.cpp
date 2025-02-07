@@ -28,6 +28,21 @@
 namespace tl
 {
 
+Properties::Properties(std::string name)
+    : mName(std::move(name))
+{
+}
+
+auto Properties::name() const TL_NOEXCEPT -> std::string
+{
+    return mName;
+}
+
+void Properties::setName(const std::string &name)
+{
+    mName = name;
+}
+
 auto Properties::getPropertyAsString(const std::string &key) const -> std::string
 {
     auto it = mProperties.find(key);

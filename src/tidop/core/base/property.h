@@ -34,6 +34,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <unordered_map>
+#include <iostream>
 
 
 namespace tl
@@ -207,97 +208,154 @@ inline void Property<Path>::fromString(const std::string &value)
 
 
 
-template <typename Key, typename Value>
-std::string mapToString(const std::map<Key, Value> &map)
+
+template <typename T>
+class Property<Size<T>>
+    : public PropertyBase
 {
-    std::ostringstream oss;
-    bool first = true;
-
-    for (const auto p/*&[key, value]*/ : map) {
-        auto key = p.first;
-        auto value = p.second;
-        if (!first) {
-            oss << ",";
-        }
-        first = false;
-
-        oss << key << ":" << value;
-    }
-
-    return oss.str();
-}
-
-template <typename Key, typename Value>
-std::map<Key, Value> stringToMap(const std::string &str)
-{
-    std::map<Key, Value> result;
-    std::istringstream ss(str);
-    std::string pair;
-
-    while (std::getline(ss, pair, ',')) {
-        auto separator = pair.find(':');
-        if (separator == std::string::npos) {
-            throw Exception("Invalid format for std::map");
-        }
-
-        std::string keyStr = pair.substr(0, separator);
-        std::string valueStr = pair.substr(separator + 1);
-
-        Key key = convertStringTo<Key>(keyStr);
-        Value value = convertStringTo<Value>(valueStr);
-
-        result.emplace(key, value);
-    }
-
-    return result;
-}
-
-template <typename Key, typename Value>
-class Property<std::map<Key, Value>> 
-  : public PropertyBase
-{
-
 private:
 
-    std::map<Key, Value> mValue;
+    Size<T> mValue;
 
 public:
 
-    explicit Property(const std::map<Key, Value> &value)
-        : PropertyBase(TypeTraits<std::map<Key, Value>>::id_type),
-        mValue(value) {
+    explicit Property(const Size<T> &value)
+        : PropertyBase(TypeTraits<Size<T>>::id_type), mValue(value) {
     }
 
-    auto value() const TL_NOEXCEPT -> std::map<Key, Value>
+    auto value() const TL_NOEXCEPT -> Size<T>
     {
         return mValue;
     }
 
-    void setValue(const std::map<Key, Value> &value)
+    void setValue(const Size<T> &value)
     {
         mValue = value;
     }
 
     auto toString() const -> std::string override
     {
-        return mapToString(mValue);
+        try {
+            return std::to_string(mValue.width) + "x" + std::to_string(mValue.height);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Error converting Size<T> to string");
+        }
     }
 
     void fromString(const std::string &value) override
     {
         try {
-            mValue = stringToMap<Key, Value>(value);
+            size_t pos = value.find('x');
+            if (pos == std::string::npos) {
+                throw std::invalid_argument("Invalid Size format");
+            }
+            T width = static_cast<T>(std::stod(value.substr(0, pos)));
+            T height = static_cast<T>(std::stod(value.substr(pos + 1)));
+            mValue = Size<T>(width, height);
         } catch (...) {
-            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert string to std::map");
+            TL_THROW_EXCEPTION_WITH_NESTED("Error converting string to Size<T>");
         }
     }
 
     auto typeName() const TL_NOEXCEPT -> std::string override
     {
-        return TypeTraits<std::map<Key, Value>>::name_type;
+        return TypeTraits<Size<T>>::name_type;
     }
-
 };
+
+
+
+//template <typename Key, typename Value>
+//std::string mapToString(const std::map<Key, Value> &map)
+//{
+//    std::ostringstream oss;
+//    bool first = true;
+//
+//    for (const auto p/*&[key, value]*/ : map) {
+//        auto key = p.first;
+//        auto value = p.second;
+//        if (!first) {
+//            oss << ",";
+//        }
+//        first = false;
+//
+//        oss << key << ":" << value;
+//    }
+//
+//    return oss.str();
+//}
+//
+//template <typename Key, typename Value>
+//std::map<Key, Value> stringToMap(const std::string &str)
+//{
+//    std::map<Key, Value> result;
+//    std::istringstream ss(str);
+//    std::string pair;
+//
+//    while (std::getline(ss, pair, ',')) {
+//        auto separator = pair.find(':');
+//        if (separator == std::string::npos) {
+//            throw Exception("Invalid format for std::map");
+//        }
+//
+//        std::string keyStr = pair.substr(0, separator);
+//        std::string valueStr = pair.substr(separator + 1);
+//
+//        Key key = convertStringTo<Key>(keyStr);
+//        Value value = convertStringTo<Value>(valueStr);
+//
+//        result.emplace(key, value);
+//    }
+//
+//    return result;
+//}
+
+//template <typename Key, typename Value>
+//class Property<std::map<Key, Value>> 
+//  : public PropertyBase
+//{
+//
+//private:
+//
+//    std::map<Key, Value> mValue;
+//
+//public:
+//
+//    explicit Property(const std::map<Key, Value> &value)
+//        : PropertyBase(TypeTraits<std::map<Key, Value>>::id_type),
+//        mValue(value) {
+//    }
+//
+//    auto value() const TL_NOEXCEPT -> std::map<Key, Value>
+//    {
+//        return mValue;
+//    }
+//
+//    void setValue(const std::map<Key, Value> &value)
+//    {
+//        mValue = value;
+//    }
+//
+//    auto toString() const -> std::string override
+//    {
+//        return mapToString(mValue);
+//    }
+//
+//    void fromString(const std::string &value) override
+//    {
+//        try {
+//            mValue = stringToMap<Key, Value>(value);
+//        } catch (...) {
+//            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert string to std::map");
+//        }
+//    }
+//
+//    auto typeName() const TL_NOEXCEPT -> std::string override
+//    {
+//        return TypeTraits<std::map<Key, Value>>::name_type;
+//    }
+//
+//};
 
 /// \cond
 
@@ -478,6 +536,39 @@ inline auto PropertyValue<tl::Path>::value(const PropertyBase *arg) -> tl::Path
     return value;
 }
 
+template<typename T>
+struct PropertyValue<Size<T>>
+{
+    auto value(const PropertyBase *arg) -> Size<T>
+    {
+        Size<T> value{};
+
+        try {
+
+            TL_ASSERT(arg, "Property pointer is null");
+
+            const auto type = arg->type();
+            auto return_type = TypeTraits<Size<T>>::id_type;
+
+            if (type != return_type) {
+                TL_THROW_EXCEPTION("Cannot convert from type {}<{}> to Size<{}>", arg->typeName(), TypeTraits<Size<T>>::name_type, TypeTraits<T>::name_type);
+            }
+
+            switch (type) {
+            case Type::type_size:
+                value = dynamic_cast<const Property<Size<T>>*>(arg)->value();
+                break;
+            default:
+                TL_THROW_EXCEPTION("Unsupported type for Size conversion");
+            }
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+        }
+
+        return value;
+    }
+};
+
 } // namespace internal 
 
 /// \endcond
@@ -507,6 +598,7 @@ public:
 
 private:
 
+    std::string mName;
     std::unordered_map<std::string, std::shared_ptr<PropertyBase>> mProperties; 
 
 public:
@@ -515,6 +607,12 @@ public:
      * \brief Default constructor.
      */
     Properties() = default;
+
+    Properties(std::string name);
+
+    auto name() const TL_NOEXCEPT -> std::string;
+
+    void setName(const std::string &name);
 
     /*!
      * \brief Adds or updates a property with a given value.
@@ -599,6 +697,17 @@ public:
      * \brief Clears all stored properties.
      */
     void clear();
+
+    /*!
+     * \brief Prints the property values to the console.
+     */
+    void print() const
+    {
+        std::cout << "Properties: " << mName << std::endl;
+        for (const auto &property : mProperties) {
+            std::cout << "  " << property.first << "   " << property.second->toString() << std::endl;
+        }
+    }
 };
 
 

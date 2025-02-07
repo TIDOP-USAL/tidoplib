@@ -33,13 +33,8 @@
 namespace tl
 {
 
-/*! \addtogroup Features
- * 
- *  \{
- */
-
-/*! \addtogroup FeatureDetectorAndDescriptor
- * 
+/*! \addtogroup FeatureExtraction
+ *
  *  \{
  */
 
@@ -50,56 +45,168 @@ constexpr auto star_default_value_line_threshold_binarized{8};
 constexpr auto star_default_value_suppress_nonmax_size{5};
 
 
+/*!
+ * \class StarProperties
+ * \brief Stores properties for the STAR feature detector.
+ *
+ * Properties can be accessed directly or by name using \ref getProperty and \ref setProperty.
+ * Available property names:
+ * - "MaxSize"
+ * - "ResponseThreshold"
+ * - "LineThresholdProjected"
+ * - "LineThresholdBinarized"
+ * - "SuppressNonmaxSize"
+ */
 class TL_EXPORT StarProperties
-  : public Star
+  : public Feature
 {
 
-private:
-
-    int mMaxSize{star_default_value_max_size};
-    int mResponseThreshold{star_default_value_response_threshold};
-    int mLineThresholdProjected{star_default_value_line_threshold_projected};
-    int mLineThresholdBinarized{star_default_value_line_threshold_binarized};
-    int mSuppressNonmaxSize{star_default_value_suppress_nonmax_size};
-
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes STAR properties with default values.
+     */
     StarProperties();
-    StarProperties(const StarProperties &starProperties);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * Copies the properties from another `StarProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     */
+    StarProperties(const StarProperties &properties);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties from another `StarProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     */
+    StarProperties(StarProperties &&properties) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~StarProperties() override = default;
 
-// Star interface
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties from another `StarProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator=(const StarProperties &properties) -> StarProperties &;
 
-public:
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties from another `StarProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator=(StarProperties &&properties) TL_NOEXCEPT -> StarProperties &;
 
-    auto maxSize() const -> int override;
-    auto responseThreshold() const -> int override;
-    auto lineThresholdProjected() const -> int override;
-    auto lineThresholdBinarized() const -> int override;
-    auto suppressNonmaxSize() const -> int override;
-    void setMaxSize(int maxSize) override;
-    void setResponseThreshold(int responseThreshold) override;
-    void setLineThresholdProjected(int lineThresholdProjected) override;
-    void setLineThresholdBinarized(int lineThresholdBinarized) override;
-    void setSuppressNonmaxSize(int suppressNonmaxSize) override;
+    /*!
+     * \brief Get the maximum size of the features.
+     *
+     * Defines the maximum diameter of the detected keypoints.
+     * \return Maximum feature size.
+     */
+    auto maxSize() const -> int;
+
+    /*!
+     * \brief Get the response threshold.
+     *
+     * A higher threshold reduces the number of detected features by filtering
+     * out weaker responses.
+     * \return Response threshold.
+     */
+    auto responseThreshold() const -> int;
+
+    /*!
+     * \brief Get the projected line threshold.
+     *
+     * A higher value allows longer line segments in keypoints.
+     * \return Line threshold (projected).
+     */
+    auto lineThresholdProjected() const -> int;
+
+    /*!
+     * \brief Get the binarized line threshold.
+     *
+     * This threshold determines the minimum contrast for a keypoint to be
+     * considered.
+     * \return Line threshold (binarized).
+     */
+    auto lineThresholdBinarized() const -> int;
+
+    /*!
+     * \brief Get the suppression window size for non-maximum suppression.
+     *
+     * A larger value leads to fewer but more significant keypoints.
+     * \return Suppression non-maximum size.
+     */
+    auto suppressNonmaxSize() const -> int;
+
+    /*!
+     * \brief Set the maximum size of the features.
+     * \param[in] maxSize Maximum feature size.
+     */
+    void setMaxSize(int maxSize);
+
+    /*!
+     * \brief Set the response threshold.
+     * \param[in] responseThreshold Response threshold value.
+     */
+    void setResponseThreshold(int responseThreshold);
+
+    /*!
+     * \brief Set the projected line threshold.
+     * \param[in] lineThresholdProjected Line threshold (projected).
+     */
+    void setLineThresholdProjected(int lineThresholdProjected);
+
+    /*!
+     * \brief Set the binarized line threshold.
+     * \param[in] lineThresholdBinarized Line threshold (binarized).
+     */
+    void setLineThresholdBinarized(int lineThresholdBinarized);
+
+    /*!
+     * \brief Set the suppression window size for non-maximum suppression.
+     * \param[in] suppressNonmaxSize Suppression non-maximum size.
+     */
+    void setSuppressNonmaxSize(int suppressNonmaxSize);
 
 // Feature interface
 
 public:
 
+    /*!
+     * \brief Reset STAR properties to their default values.
+     */
     void reset() override;
-    auto name() const -> std::string final;
 
 };
 
 
 
-/*----------------------------------------------------------------*/
 
-
+/*!
+ * \class StarDetector
+ * \brief STAR feature detector implementation.
+ *
+ * Uses the STAR detector to find keypoints in an image.
+ */
 class TL_EXPORT StarDetector
-  : public StarProperties,
-    public FeatureDetector
+  : public FeatureDetector
 {
 
 private:
@@ -107,50 +214,111 @@ private:
 #ifdef HAVE_OPENCV_XFEATURES2D 
     cv::Ptr<cv::xfeatures2d::StarDetector> mSTAR;
 #endif // HAVE_OPENCV_XFEATURES2D
+    StarProperties mProperties;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes the STAR detector with default properties.
+     */
     StarDetector();
-    StarDetector(const StarDetector &starDetector);
-    StarDetector(int maxSize,
-                 int responseThreshold,
-                 int lineThresholdProjected,
-                 int lineThresholdBinarized,
-                 int suppressNonmaxSize);
+
+    /*!
+     * \brief Constructor with custom properties.
+     *
+     * Initializes STAR using the provided properties.
+     *
+     * \param[in] properties Configuration properties for STAR.
+     */
+    explicit StarDetector(const StarProperties &properties);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * Creates a copy of the given `StarDetector` instance.
+     *
+     * \param[in] star The object to copy.
+     */
+    StarDetector(const StarDetector &star);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties and internal state from another `StarDetector` instance.
+     *
+     * \param[in] star The object to move.
+     */
+    StarDetector(StarDetector &&star) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~StarDetector() override = default;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties and internal state from another `StarDetector` instance.
+     *
+     * \param[in] star The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator=(const StarDetector &star)->StarDetector &;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties and internal state from another `StarDetector` instance.
+     *
+     * \param[in] star The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator=(StarDetector &&star) TL_NOEXCEPT->StarDetector &;
+
+    /*!
+     * \brief Get a reference to the STAR properties.
+     *
+     * This allows modifying the properties of the STAR detector.
+     *
+     * \return Reference to the properties object.
+     */
+    auto properties() -> StarProperties &{ return mProperties; }
+
+    /*!
+     * \brief Get a constant reference to the STAR properties.
+     *
+     * This allows read-only access to the properties of the STAR detector.
+     *
+     * \return Constant reference to the properties object.
+     */
+    auto properties() const -> const StarProperties &{ return mProperties; }
 
 private:
 
-    void update();
+    void init();
 
 // FeatureDetector interface
 
 public:
 
+    /*!
+     * \brief Detect keypoints in an image using STAR.
+     *
+     * Processes the given image and extracts keypoints using the STAR algorithm.
+     * If a mask is provided, keypoints will only be detected in unmasked regions.
+     *
+     * \param[in] img The input grayscale image.
+     * \param[in,out] mask Optional mask to specify regions of interest (default = no mask).
+     * \return A vector of detected keypoints.
+     */
     auto detect(const cv::Mat &img,
                 cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
-
-// Star interface
-
-public:
-
-    void setMaxSize(int maxSize) override;
-    void setResponseThreshold(int responseThreshold) override;
-    void setLineThresholdProjected(int lineThresholdProjected) override;
-    void setLineThresholdBinarized(int lineThresholdBinarized) override;
-    void setSuppressNonmaxSize(int suppressNonmaxSize) override;
-
-// Feature interface
-
-public:
-
-    void reset() override;
 
 };
 
 
-/*! \} */ // end of FeatureDetectorAndDescriptor
-
-/*! \} */ // end of Features
+/*! \} */ 
 
 } // namespace tl

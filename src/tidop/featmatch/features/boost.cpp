@@ -30,41 +30,36 @@ namespace tl
 {
 
 BoostProperties::BoostProperties()
-  : mDescriptorType("BINBOOST_256")
+  : Feature("BOOST", Feature::Type::boost)
+{
+    reset();
+}
+
+BoostProperties::BoostProperties(const BoostProperties &properties)
+  : Feature(properties)
 {
 }
 
-
-
-BoostProperties::BoostProperties(const BoostProperties &boostProperties) = default;
-
-BoostProperties::BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT
-  : mDescriptorType(std::exchange(boostProperties.mDescriptorType,"")),
-    bUseOrientation(boostProperties.bUseOrientation),
-    mScaleFactor(boostProperties.mScaleFactor)
+BoostProperties::BoostProperties(BoostProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
-
 }
 
 BoostProperties::~BoostProperties() = default;
 
-auto BoostProperties::operator =(const BoostProperties &boostProperties) -> BoostProperties&
+auto BoostProperties::operator =(const BoostProperties &properties) -> BoostProperties&
 {
-    if (this != &boostProperties) {
-        mDescriptorType = boostProperties.mDescriptorType;
-        bUseOrientation = boostProperties.bUseOrientation;
-        mScaleFactor = boostProperties.mScaleFactor;
+    if (this != &properties) {
+        Feature::operator=(properties);
     }
 
     return *this;
 }
 
-auto BoostProperties::operator =(BoostProperties &&boostProperties) TL_NOEXCEPT -> BoostProperties&
+auto BoostProperties::operator =(BoostProperties &&properties) TL_NOEXCEPT -> BoostProperties&
 {
-    if (this != &boostProperties) {
-        mDescriptorType = std::exchange(boostProperties.mDescriptorType, "");
-        bUseOrientation = std::exchange(boostProperties.bUseOrientation, boost_default_value_use_orientation);
-        mScaleFactor = std::exchange(boostProperties.mScaleFactor, boost_default_value_scale_factor);
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
     }
 
     return *this;
@@ -72,17 +67,17 @@ auto BoostProperties::operator =(BoostProperties &&boostProperties) TL_NOEXCEPT 
 
 auto BoostProperties::descriptorType() const -> std::string
 {
-    return mDescriptorType;
+    return getProperty<std::string>("DescriptorType");
 }
 
 auto BoostProperties::useOrientation() const -> bool
 {
-    return bUseOrientation;
+    return getProperty<bool>("UseOrientation");
 }
 
-auto BoostProperties::scaleFactor() const -> double
+auto BoostProperties::scaleFactor() const -> float
 {
-    return mScaleFactor;
+    return getProperty<float>("ScaleFactor");
 }
 
 void BoostProperties::setDescriptorType(const std::string &descriptorType)
@@ -94,67 +89,62 @@ void BoostProperties::setDescriptorType(const std::string &descriptorType)
         descriptorType == "BINBOOST_64" ||
         descriptorType == "BINBOOST_128" ||
         descriptorType == "BINBOOST_256") {
-        mDescriptorType = descriptorType;
+        setProperty("DescriptorType", descriptorType);
+    } else {
+        Message::warning("'DescriptorType' value not valid: {}", descriptorType);
     }
 }
 
 void BoostProperties::setUseOrientation(bool useOrientation)
 {
-    bUseOrientation = useOrientation;
+    setProperty("UseOrientation", useOrientation);
 }
 
-void BoostProperties::setScaleFactor(double scaleFactor)
+void BoostProperties::setScaleFactor(float scaleFactor)
 {
-    mScaleFactor = scaleFactor;
+    setProperty("ScaleFactor" , scaleFactor);
 }
 
 void BoostProperties::reset()
 {
-    mDescriptorType = "BINBOOST_256";
-    bUseOrientation = boost_default_value_use_orientation;
-    mScaleFactor = boost_default_value_scale_factor;
+    setDescriptorType(boost_default_value_descriptor_type);
+    setUseOrientation(boost_default_value_use_orientation);
+    setScaleFactor(boost_default_value_scale_factor);
 }
 
-auto BoostProperties::name() const -> std::string
-{
-    return std::string("BOOST");
-}
 
 
 /*----------------------------------------------------------------*/
 
 
 BoostDescriptor::BoostDescriptor()
+  : mProperties()
+{
+    update();
+}
+
+BoostDescriptor::BoostDescriptor(const BoostProperties &properties)
+  : mProperties(properties)
 {
     update();
 }
 
 BoostDescriptor::BoostDescriptor(const BoostDescriptor &boostDescriptor)
-  : BoostProperties(boostDescriptor)
+  : mProperties(boostDescriptor.mProperties)
 {
     update();
 }
 
 BoostDescriptor::BoostDescriptor(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT
-  : BoostProperties(std::forward<BoostProperties>(boostDescriptor))
+  : mProperties(std::move(boostDescriptor.mProperties))
 {
-    update();
-}
-
-BoostDescriptor::BoostDescriptor(const std::string &descriptorType,
-                                 bool useOrientation,
-                                 double scaleFactor)
-{
-    BoostProperties::setDescriptorType(descriptorType);
-    BoostProperties::setUseOrientation(useOrientation);
-    BoostProperties::setScaleFactor(scaleFactor);
     update();
 }
 
 auto BoostDescriptor::operator =(const BoostDescriptor &boostDescriptor) -> BoostDescriptor&
 {
     if (this != &boostDescriptor) {
-        BoostProperties::operator=(boostDescriptor);
+        mProperties = boostDescriptor.mProperties;
         update();
     }
 
@@ -164,7 +154,7 @@ auto BoostDescriptor::operator =(const BoostDescriptor &boostDescriptor) -> Boos
 auto BoostDescriptor::operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT -> BoostDescriptor&
 {
     if (this != &boostDescriptor) {
-        BoostProperties::operator=(std::forward<BoostProperties>(boostDescriptor));
+        mProperties = std::move(boostDescriptor.mProperties);
         update();
     }
 
@@ -180,7 +170,7 @@ void BoostDescriptor::update()
 #  if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
 
         int descriptor_type = cv::xfeatures2d::BoostDesc::BGM;
-        std::string descriptorType = BoostProperties::descriptorType();
+        std::string descriptorType = mProperties.descriptorType();
         if (descriptorType == "BGM") {
             descriptor_type = cv::xfeatures2d::BoostDesc::BGM;
         } else if (descriptorType == "BGM_HARD") {
@@ -198,8 +188,8 @@ void BoostDescriptor::update()
         }
 
         mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
-                                                    BoostProperties::useOrientation(),
-                                                    static_cast<float>(BoostProperties::scaleFactor()));
+                                                    mProperties.useOrientation(),
+                                                    mProperties.scaleFactor());
 
 #  else
 
@@ -218,30 +208,6 @@ void BoostDescriptor::update()
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
-}
-
-void BoostDescriptor::reset()
-{
-    BoostProperties::reset();
-    update();
-}
-
-void BoostDescriptor::setDescriptorType(const std::string &descriptorType)
-{
-    BoostProperties::setDescriptorType(descriptorType);
-    update();
-}
-
-void BoostDescriptor::setUseOrientation(bool useOrientation)
-{
-    BoostProperties::setUseOrientation(useOrientation);
-    update();
-}
-
-void BoostDescriptor::setScaleFactor(double scaleFactor)
-{
-    BoostProperties::setScaleFactor(scaleFactor);
-    update();
 }
 
 auto BoostDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat

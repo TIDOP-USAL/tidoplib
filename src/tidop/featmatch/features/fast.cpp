@@ -31,37 +31,63 @@ namespace tl
 {
 
 
-FastProperties::FastProperties()
-    : mDetectorType(fast_default_value_detector_type)
-{
+/* FAST properties */
 
+FastProperties::FastProperties()
+  : Feature("FAST", Feature::Type::fast)
+{
+    reset();
 }
 
-FastProperties::FastProperties(const FastProperties &fastProperties) = default;
+FastProperties::FastProperties(const FastProperties &properties)
+  : Feature(properties)
+{
+}
+
+FastProperties::FastProperties(FastProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
+{
+}
+
+auto FastProperties::operator=(const FastProperties &properties) -> FastProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto FastProperties::operator=(FastProperties &&properties) TL_NOEXCEPT -> FastProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
+}
 
 int FastProperties::threshold() const
 {
-    return mThreshold;
+    return getProperty<int>("Threshold");
 }
 
 bool FastProperties::nonmaxSuppression() const
 {
-    return mNonmaxSuppression;
+    return getProperty<bool>("NonmaxSuppression");
 }
 
 std::string FastProperties::detectorType() const
 {
-    return mDetectorType;
+    return getProperty<std::string>("DetectorType");
 }
 
 void FastProperties::setThreshold(int threshold)
 {
-    mThreshold = threshold;
+    setProperty("Threshold", threshold);
 }
 
 void FastProperties::setNonmaxSuppression(bool nonmaxSuppression)
 {
-    mNonmaxSuppression = nonmaxSuppression;
+    setProperty("NonmaxSuppression", nonmaxSuppression);
 }
 
 void FastProperties::setDetectorType(const std::string &detectorType)
@@ -69,50 +95,63 @@ void FastProperties::setDetectorType(const std::string &detectorType)
     if (detectorType == "TYPE_5_8" ||
         detectorType == "TYPE_7_12" ||
         detectorType == "TYPE_9_16") {
-        mDetectorType = detectorType;
+        setProperty("DetectorType", detectorType);
+    } else {
+        Message::warning("'DetectorType' value not valid: {}", detectorType);
     }
 }
 
 void FastProperties::reset()
 {
-    mThreshold = fast_default_value_threshold;
-    mNonmaxSuppression = fast_default_value_nonmax_suppression;
-    mDetectorType = fast_default_value_detector_type;
-}
-
-std::string FastProperties::name() const
-{
-    return std::string("FAST");
+    setThreshold(fast_default_value_threshold);
+    setNonmaxSuppression(fast_default_value_nonmax_suppression);
+    setDetectorType(fast_default_value_detector_type);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* FAST detector */
 
 FastDetector::FastDetector()
+  : mProperties()
 {
-    mFast = cv::FastFeatureDetector::create(FastProperties::threshold(),
-                                            FastProperties::nonmaxSuppression(),
-                                            convertDetectorType(FastProperties::detectorType()));
+    init();
 }
 
-FastDetector::FastDetector(const FastDetector &fastDetector)
-  : FastProperties(fastDetector),
-    FeatureDetector(fastDetector)
+FastDetector::FastDetector(const FastProperties &properties)
+    : mProperties(properties)
 {
-    mFast = cv::FastFeatureDetector::create(FastProperties::threshold(),
-                                            FastProperties::nonmaxSuppression(),
-                                            convertDetectorType(FastProperties::detectorType()));
+    init();
 }
 
-FastDetector::FastDetector(int threshold,
-                           bool nonmaxSuppression,
-                           const std::string &detectorType)
-    : mFast(cv::FastFeatureDetector::create())
+FastDetector::FastDetector(const FastDetector &fast)
+  : mProperties(fast.mProperties)
 {
-	FastDetector::setThreshold(threshold);
-	FastDetector::setNonmaxSuppression(nonmaxSuppression);
-	FastDetector::setDetectorType(detectorType);
+    init();
+}
+
+FastDetector::FastDetector(FastDetector &&fast) TL_NOEXCEPT
+  : mProperties(std::move(fast.mProperties)),
+    mFast(std::move(fast.mFast))
+{
+}
+
+auto FastDetector::operator =(const FastDetector &fast) -> FastDetector &
+{
+    if (this != &fast) {
+        mProperties = fast.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto FastDetector::operator =(FastDetector &&fast) TL_NOEXCEPT -> FastDetector &
+{
+    if (this != &fast) {
+        mProperties = std::move(fast.mProperties);
+        mFast = std::move(fast.mFast);
+    }
+    return *this;
 }
 
 #if CV_VERSION_MAJOR >= 4
@@ -150,6 +189,13 @@ int FastDetector::convertDetectorType(const std::string &detectorType)
 }
 #endif
 
+void FastDetector::init()
+{
+    mFast = cv::FastFeatureDetector::create(mProperties.threshold(),
+                                            mProperties.nonmaxSuppression(),
+                                            convertDetectorType(mProperties.detectorType()));
+}
+
 auto FastDetector::detect(const cv::Mat& img, cv::InputArray& mask) -> std::vector<cv::KeyPoint>
 {
     std::vector<cv::KeyPoint> keyPoints;
@@ -165,57 +211,51 @@ auto FastDetector::detect(const cv::Mat& img, cv::InputArray& mask) -> std::vect
     return keyPoints;
 }
 
-void FastDetector::setThreshold(int threshold)
-{
-    FastProperties::setThreshold(threshold);
-    mFast->setThreshold(threshold);
-}
-
-void FastDetector::setNonmaxSuppression(bool nonmaxSuppression)
-{
-    FastProperties::setNonmaxSuppression(nonmaxSuppression);
-    mFast->setNonmaxSuppression(nonmaxSuppression);
-}
-
-void FastDetector::setDetectorType(const std::string &detectorType)
-{
-    FastProperties::setDetectorType(detectorType);
-    mFast->setType(convertDetectorType(detectorType));
-}
-
-void FastDetector::reset()
-{
-    FastProperties::reset();
-    mFast->setThreshold(FastProperties::threshold());
-    mFast->setNonmaxSuppression(FastProperties::nonmaxSuppression());
-    mFast->setType(convertDetectorType(FastProperties::detectorType()));
-}
 
 
-/*----------------------------------------------------------------*/
 
-
+/* FAST detector Cuda */
 
 FastDetectorCuda::FastDetectorCuda()
+  : mProperties() 
 {
-    this->update();
+    init();
 }
 
-FastDetectorCuda::FastDetectorCuda(const FastDetectorCuda &fastDetector)
-  : FastProperties(fastDetector),
-    FeatureDetector(fastDetector)
+FastDetectorCuda::FastDetectorCuda(const FastProperties &properties)
+  : mProperties(properties)
 {
-    this->update();
+    init();
 }
 
-FastDetectorCuda::FastDetectorCuda(int threshold,
-                                   bool nonmaxSuppression,
-                                   const std::string &detectorType)
+FastDetectorCuda::FastDetectorCuda(const FastDetectorCuda &fast)
+  : mProperties(fast.mProperties)
 {
-    FastProperties::setThreshold(threshold);
-    FastProperties::setNonmaxSuppression(nonmaxSuppression);
-    FastProperties::setDetectorType(detectorType);
-    this->update();
+    init();
+}
+
+FastDetectorCuda::FastDetectorCuda(FastDetectorCuda &&fast) TL_NOEXCEPT
+  : mProperties(std::move(fast.mProperties)),
+    mFast(std::move(fast.mFast))
+{
+}
+
+auto FastDetectorCuda::operator =(const FastDetectorCuda &fast) -> FastDetectorCuda &
+{
+    if (this != &fast) {
+        mProperties = fast.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto FastDetectorCuda::operator =(FastDetectorCuda &&fast) TL_NOEXCEPT -> FastDetectorCuda &
+{
+    if (this != &fast) {
+        mProperties = std::move(fast.mProperties);
+        mFast = std::move(fast.mFast);
+    }
+    return *this;
 }
 
 auto FastDetectorCuda::convertDetectorType(const std::string& detectorType) -> int
@@ -233,12 +273,12 @@ auto FastDetectorCuda::convertDetectorType(const std::string& detectorType) -> i
     return type;
 }
 
-void FastDetectorCuda::update()
+void FastDetectorCuda::init()
 {
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
-    mFast = cv::cuda::FastFeatureDetector::create(FastProperties::threshold(),
-                                                  FastProperties::nonmaxSuppression(),
-                                                  convertDetectorType(FastProperties::detectorType()),
+    mFast = cv::cuda::FastFeatureDetector::create(mProperties.threshold(),
+                                                  mProperties.nonmaxSuppression(),
+                                                  convertDetectorType(mProperties.detectorType()),
                                                   10000);
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 }
@@ -263,30 +303,6 @@ auto FastDetectorCuda::detect(const cv::Mat& img, cv::InputArray& mask) -> std::
     }
 
     return keyPoints;
-}
-
-void FastDetectorCuda::setThreshold(int threshold)
-{
-    FastProperties::setThreshold(threshold);
-    update();
-}
-
-void FastDetectorCuda::setNonmaxSuppression(bool nonmaxSuppression)
-{
-    FastProperties::setNonmaxSuppression(nonmaxSuppression);
-    update();
-}
-
-void FastDetectorCuda::setDetectorType(const std::string &detectorType)
-{
-    FastProperties::setDetectorType(detectorType);
-    update();
-}
-
-void FastDetectorCuda::reset()
-{
-    FastProperties::reset();
-    update();
 }
 
 

@@ -1061,9 +1061,6 @@ auto mulmat(const Matrix<T, _rows1, _cols1> &matrix1,
         break;
 #endif
     case tl::MatrixConfig::Product::CPP:
-        //mulmat_cpp(matrix1, matrix2, matrix);
-        //break;
-    default:
         mulmat_cpp(matrix1, matrix2, matrix);
         break;
     }

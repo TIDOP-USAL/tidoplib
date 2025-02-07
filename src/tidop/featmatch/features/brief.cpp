@@ -30,38 +30,39 @@
 namespace tl
 {
 
+/* BRIEF properties */
 
 BriefProperties::BriefProperties()
-  : mBytes(brief_default_value_bytes)
+  : Feature("BRIEF", Feature::Type::brief)
+{
+    reset();
+}
+
+BriefProperties::BriefProperties(const BriefProperties &properties)
+  : Feature(properties)
 {
 }
 
-BriefProperties::BriefProperties(const BriefProperties &briefProperties) = default;
-
-BriefProperties::BriefProperties(BriefProperties &&briefProperties) TL_NOEXCEPT
-  : Brief(std::forward<Brief>(briefProperties)),
-    mBytes(std::exchange(briefProperties.mBytes, brief_default_value_bytes)),
-    mUseOrientation(std::exchange(briefProperties.mUseOrientation, brief_default_value_use_orientation))
+BriefProperties::BriefProperties(BriefProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
 }
 
 BriefProperties::~BriefProperties() = default;
 
-auto BriefProperties::operator =(const BriefProperties &briefProperties) -> BriefProperties&
+auto BriefProperties::operator =(const BriefProperties &properties) -> BriefProperties&
 {
-    if (this != &briefProperties) {
-        mBytes = briefProperties.mBytes;
-        mUseOrientation = briefProperties.mUseOrientation;
+    if (this != &properties) {
+        Feature::operator=(properties);
     }
 
     return *this;
 }
 
-auto BriefProperties::operator =(BriefProperties &&briefProperties) TL_NOEXCEPT -> BriefProperties&
+auto BriefProperties::operator =(BriefProperties &&properties) TL_NOEXCEPT -> BriefProperties&
 {
-    if (this != &briefProperties) {
-        mBytes = std::exchange(briefProperties.mBytes, brief_default_value_bytes);
-        mUseOrientation = std::exchange(briefProperties.mUseOrientation, brief_default_value_use_orientation);
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
     }
 
     return *this;
@@ -69,12 +70,12 @@ auto BriefProperties::operator =(BriefProperties &&briefProperties) TL_NOEXCEPT 
 
 auto BriefProperties::bytes() const -> std::string
 {
-    return mBytes;
+    return getProperty<std::string>("Bytes");
 }
 
 auto BriefProperties::useOrientation() const -> bool
 {
-    return mUseOrientation;
+    return getProperty<bool>("UseOrientation");
 }
 
 void BriefProperties::setBytes(const std::string &bytes)
@@ -82,52 +83,57 @@ void BriefProperties::setBytes(const std::string &bytes)
     if (bytes == "16" ||
         bytes == "32" ||
         bytes == "64") {
-        mBytes = bytes;
+        setProperty("Bytes", bytes);
+    } else {
+        Message::warning("'Bytes' value not valid: {}", bytes);
     }
 }
 
 void BriefProperties::setUseOrientation(bool useOrientation)
 {
-    mUseOrientation = useOrientation;
+    setProperty("UseOrientation", useOrientation);
 }
 
 void BriefProperties::reset()
 {
-    mBytes = brief_default_value_bytes;
-    mUseOrientation = brief_default_value_use_orientation;
-}
-
-auto BriefProperties::name() const -> std::string
-{
-    return std::string("BRIEF");
+    setBytes(brief_default_value_bytes);
+    setUseOrientation(brief_default_value_use_orientation);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* BRIEF detector */
 
 BriefDescriptor::BriefDescriptor()
+  : mProperties()
 {
-    update();
+    init();
+}
+
+BriefDescriptor::BriefDescriptor(const BriefProperties &properties)
+  : mProperties(properties)
+{
+    init();
 }
 
 BriefDescriptor::BriefDescriptor(const BriefDescriptor &briefDescriptor)
-  : BriefProperties(briefDescriptor)
+  : mProperties(briefDescriptor.mProperties)
 {
-    update();
+    init();
 }
 
 BriefDescriptor::BriefDescriptor(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT
-  : BriefProperties(std::forward<BriefProperties>(briefDescriptor))
+  : mProperties(std::move(briefDescriptor.mProperties)),
+    mBrief(std::move(briefDescriptor.mBrief))
 {
-    update();
+    init();
 }
 
 auto BriefDescriptor::operator =(const BriefDescriptor &briefDescriptor) -> BriefDescriptor&
 {
     if (this != &briefDescriptor) {
-        BriefProperties::operator=(briefDescriptor);
-        update();
+        mProperties = briefDescriptor.mProperties;
+        init();
     }
 
     return *this;
@@ -136,28 +142,21 @@ auto BriefDescriptor::operator =(const BriefDescriptor &briefDescriptor) -> Brie
 auto BriefDescriptor::operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT -> BriefDescriptor&
 {
     if (this != &briefDescriptor) {
-        BriefProperties::operator=(std::forward<BriefProperties>(briefDescriptor));
-        update();
+        mProperties = std::move(briefDescriptor.mProperties);
+        mBrief = std::move(briefDescriptor.mBrief);
     }
 
     return *this;
 }
 
-BriefDescriptor::BriefDescriptor(const std::string &bytes, bool useOrientation)
-{
-    BriefProperties::setBytes(bytes);
-    BriefProperties::setUseOrientation(useOrientation);
-    update();
-}
-
 BriefDescriptor::~BriefDescriptor() = default;
 
-void BriefDescriptor::update()
+void BriefDescriptor::init()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
     try {
-        mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(BriefProperties::bytes()),
-                                                                   BriefProperties::useOrientation());
+        mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(mProperties.bytes()),
+                                                                   mProperties.useOrientation());
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -182,24 +181,6 @@ auto BriefDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &key
     }
 
     return descriptors;
-}
-
-void BriefDescriptor::setBytes(const std::string &bytes)
-{
-    BriefProperties::setBytes(bytes);
-    update();
-}
-
-void BriefDescriptor::setUseOrientation(bool useOrientation)
-{
-    BriefProperties::setUseOrientation(useOrientation);
-    update();
-}
-
-void BriefDescriptor::reset()
-{
-    BriefProperties::reset();
-    update();
 }
 
 

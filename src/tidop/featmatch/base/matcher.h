@@ -223,6 +223,7 @@ public:
 
 class TL_EXPORT MatchingStrategy
 {
+
 public:
 
     enum class Strategy
@@ -231,9 +232,13 @@ public:
         gms
     };
 
+protected:
+
+    tl::EnumFlags<Strategy> mStrategy;
+
 public:
 
-    MatchingStrategy() {}
+    MatchingStrategy(Strategy strategy) : mStrategy(strategy) {}
     virtual ~MatchingStrategy() = default;
 
     /*!
@@ -241,7 +246,11 @@ public:
      */
     virtual void reset() = 0;
 
-    virtual auto strategy() const -> Strategy = 0;
+    auto strategy() const -> Strategy
+    {
+        return mStrategy.flags();
+    }
+
     virtual auto name() const -> std::string = 0;
 
 };
@@ -251,29 +260,27 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MatchingStrategy::Strategy)
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT MatchingStrategyBase
-  : public MatchingStrategy
-{
-
-protected:
-
-    tl::EnumFlags<Strategy> mStrategy;
-
-public:
-
-    MatchingStrategyBase(Strategy strategy) : mStrategy(strategy) {}
-    ~MatchingStrategyBase() override = default;
-
-// MatchingStrategy interface
-
-public:
-
-    auto strategy() const -> Strategy override
-    {
-        return mStrategy.flags();
-    }
-
-};
+//class TL_EXPORT MatchingStrategyBase
+//  : public MatchingStrategy
+//{
+//
+//
+//
+//public:
+//
+//    MatchingStrategyBase(Strategy strategy) : mStrategy(strategy) {}
+//    ~MatchingStrategyBase() override = default;
+//
+//// MatchingStrategy interface
+//
+//public:
+//
+//    auto strategy() const -> Strategy override
+//    {
+//        return mStrategy.flags();
+//    }
+//
+//};
 
 
 /*----------------------------------------------------------------*/
@@ -310,13 +317,13 @@ public:
  * http://docs.opencv.org/3.1.0/dc/d2c/tutorial_real_time_pose.html
  */
 class TL_EXPORT RobustMatcher
-  : public MatchingStrategyBase
+  : public MatchingStrategy
 {
 
 public:
 
     RobustMatcher()
-        : MatchingStrategyBase(Strategy::robust_matching)
+        : MatchingStrategy(Strategy::robust_matching)
     {
     }
     ~RobustMatcher() override = default;
@@ -338,12 +345,12 @@ public:
 
 
 class TL_EXPORT Gms
-  : public MatchingStrategyBase
+  : public MatchingStrategy
 {
 
 public:
 
-    Gms() : MatchingStrategyBase(Strategy::gms) {}
+    Gms() : MatchingStrategy(Strategy::gms) {}
     ~Gms() override = default;
 
     virtual auto rotation() const -> bool = 0;

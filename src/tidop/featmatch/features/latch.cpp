@@ -30,32 +30,57 @@
 namespace tl
 {
 
+/* LATCH properties */
+
 LatchProperties::LatchProperties()
-  : mBytes("32")
+  : Feature("LATCH", Feature::Type::latch)
+{
+    reset();
+}
+
+LatchProperties::LatchProperties(const LatchProperties &properties)
+  : Feature(properties)
 {
 }
 
-LatchProperties::LatchProperties(const LatchProperties &latchProperties)
-  : Latch(latchProperties),
-    mBytes(latchProperties.mBytes),
-    mRotationInvariance(latchProperties.mRotationInvariance),
-    mHalfSsdSize(latchProperties.mHalfSsdSize)
+LatchProperties::LatchProperties(LatchProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+LatchProperties::~LatchProperties() = default;
+
+auto LatchProperties::operator =(const LatchProperties &properties) -> LatchProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+
+    return *this;
+}
+
+auto LatchProperties::operator =(LatchProperties &&properties) TL_NOEXCEPT -> LatchProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+
+    return *this;
 }
 
 auto LatchProperties::bytes() const -> std::string
 {
-    return mBytes;
+    return getProperty<std::string>("Bytes");
 }
 
 auto LatchProperties::rotationInvariance() const -> bool
 {
-    return mRotationInvariance;
+    return getProperty<bool>("RotationInvariance");
 }
 
 auto LatchProperties::halfSsdSize() const -> int
 {
-    return mHalfSsdSize;
+    return getProperty<int>("HalfSsdSize");
 }
 
 void LatchProperties::setBytes(const std::string &bytes)
@@ -67,65 +92,91 @@ void LatchProperties::setBytes(const std::string &bytes)
         bytes == "16" ||
         bytes == "32" ||
         bytes == "64") {
-        mBytes = bytes;
+        setProperty("Bytes", bytes);
+    } else {
+        Message::warning("'Bytes' value not valid: {}", bytes);
     }
 }
 
 void LatchProperties::setRotationInvariance(bool rotationInvariance)
 {
-    mRotationInvariance = rotationInvariance;
+    setProperty("RotationInvariance", rotationInvariance);
 }
 
 void LatchProperties::setHalfSsdSize(int halfSsdSize)
 {
-    mHalfSsdSize = halfSsdSize;
+    setProperty("HalfSsdSize", halfSsdSize);
 }
 
 void LatchProperties::reset()
 {
-    mBytes = "32";
-    mRotationInvariance = true;
-    mHalfSsdSize = 3;
-}
-
-auto LatchProperties::name() const -> std::string
-{
-    return std::string("LATCH");
+    setBytes("32");
+    setRotationInvariance(true);
+    setHalfSsdSize(3);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* LATCH Descriptor */
 
 LatchDescriptor::LatchDescriptor()
+    : mProperties()
 {
-    update();
+    init();
 }
 
-LatchDescriptor::LatchDescriptor(const LatchDescriptor &latchDescriptor)
-  : LatchProperties(latchDescriptor),
-    FeatureDescriptor(latchDescriptor)
+LatchDescriptor::LatchDescriptor(const LatchProperties &properties)
+    : mProperties(properties)
 {
-    update();
+    init();
 }
 
-LatchDescriptor::LatchDescriptor(const std::string &bytes,
-                                 bool rotationInvariance,
-                                 int halfSsdSize)
-  : LatchProperties()
+LatchDescriptor::LatchDescriptor(const LatchDescriptor &briefDescriptor)
+    : mProperties(briefDescriptor.mProperties)
 {
-    LatchProperties::setBytes(bytes);
-    LatchProperties::setRotationInvariance(rotationInvariance);
-    LatchProperties::setHalfSsdSize(halfSsdSize);
-    update();
+    init();
 }
 
-void LatchDescriptor::update()
+LatchDescriptor::LatchDescriptor(LatchDescriptor &&briefDescriptor) TL_NOEXCEPT
+  : mProperties(std::move(briefDescriptor.mProperties))
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    ,
+    mLATCH(std::move(briefDescriptor.mLATCH))
+#endif // HAVE_OPENCV_XFEATURES2D
+{
+    init();
+}
+
+auto LatchDescriptor::operator =(const LatchDescriptor &briefDescriptor) -> LatchDescriptor &
+{
+    if (this != &briefDescriptor) {
+        mProperties = briefDescriptor.mProperties;
+        init();
+    }
+
+    return *this;
+}
+
+auto LatchDescriptor::operator =(LatchDescriptor &&briefDescriptor) TL_NOEXCEPT -> LatchDescriptor &
+{
+    if (this != &briefDescriptor) {
+        mProperties = std::move(briefDescriptor.mProperties);
+#ifdef HAVE_OPENCV_XFEATURES2D 
+        mLATCH = std::move(briefDescriptor.mLATCH);
+#endif // HAVE_OPENCV_XFEATURES2D
+    }
+
+    return *this;
+}
+
+LatchDescriptor::~LatchDescriptor() = default;
+
+void LatchDescriptor::init()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
-    mLATCH = cv::xfeatures2d::LATCH::create(std::stoi(LatchProperties::bytes()),
-                                            LatchProperties::rotationInvariance(),
-                                            LatchProperties::halfSsdSize());
+    mLATCH = cv::xfeatures2d::LATCH::create(std::stoi(mProperties.bytes()),
+                                                      mProperties.rotationInvariance(),
+                                                      mProperties.halfSsdSize());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
@@ -147,30 +198,6 @@ auto LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &key
     }
 
     return descriptors;
-}
-
-void LatchDescriptor::setBytes(const std::string &bytes)
-{
-    LatchProperties::setBytes(bytes);
-    update();
-}
-
-void LatchDescriptor::setRotationInvariance(bool rotationInvariance)
-{
-    LatchProperties::setRotationInvariance(rotationInvariance);
-    update();
-}
-
-void LatchDescriptor::setHalfSsdSize(int halfSsdSize)
-{
-    LatchProperties::setHalfSsdSize(halfSsdSize);
-    update();
-}
-
-void LatchDescriptor::reset()
-{
-    LatchProperties::reset();
-    update();
 }
 
 

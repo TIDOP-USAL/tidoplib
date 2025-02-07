@@ -34,56 +34,136 @@
 namespace tl
 {
 
-/*! \addtogroup Features
- * 
- *  \{
- */
-
-/*! \addtogroup FeatureDetectorAndDescriptor
- * 
+/*! \addtogroup FeatureExtraction
+ *
  *  \{
  */
 
 
+/*!
+ * \brief LUCID feature descriptor properties.
+ *
+ * Stores configuration parameters for the LUCID (Locally Uniform Comparison Image Descriptor) feature descriptor.
+ *
+ * The following property names are valid when accessed via the `Properties` class:
+ * - `"LucidKernel"`: Kernel size for descriptor construction. (`1 = 3x3`, `2 = 5x5`, `3 = 7x7`, etc.). Default = `1`.
+ * - `"BlurKernel"`: Kernel size for blurring the image prior to descriptor construction. (`1 = 3x3`, `2 = 5x5`, `3 = 7x7`, etc.). Default = `2`.
+ *
+ * Reference:
+ * Christiansen, E., Kriegman, D., Ziegler, A., & Belongie, S. J.
+ * Locally Uniform Comparison Image Descriptor.
+ */
 class TL_EXPORT LucidProperties
-  : public Lucid
+  : public Feature
 {
 
-private:
-
-    int mLucidKernel{1};
-    int mBlurKernel{2};
-
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes LUCID properties with default values.
+     */
     LucidProperties();
-    ~LucidProperties() override = default;
 
-// Lucid interface
+    /*!
+     * \brief Copy constructor.
+     *
+     * Copies the properties from another `LucidProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     */
+    LucidProperties(const LucidProperties &properties);
 
-public:
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties from another `LucidProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     */
+    LucidProperties(LucidProperties &&properties) TL_NOEXCEPT;
 
-    auto lucidKernel() const -> int override;
-    auto blurKernel() const -> int override;
-    void setLucidKernel(int lucidKernel) override;
-    void setBlurKernel(int blurKernel) override;
+    /*!
+     * \brief Destructor.
+     */
+    ~LucidProperties() override;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties from another `LucidProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator =(const LucidProperties &properties) -> LucidProperties &;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties from another `LucidProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator =(LucidProperties &&properties) TL_NOEXCEPT -> LucidProperties &;
+
+    /*!
+     * \brief Gets the kernel size for descriptor construction.
+     *
+     * \return The kernel size (`1 = 3x3`, `2 = 5x5`, `3 = 7x7`, etc.).
+     *
+     * \note Property name: `"LucidKernel"`.
+     */
+    auto lucidKernel() const -> int;
+
+    /*!
+     * \brief Gets the kernel size for blurring the image prior to descriptor construction.
+     *
+     * \return The blur kernel size (`1 = 3x3`, `2 = 5x5`, `3 = 7x7`, etc.).
+     *
+     * \note Property name: `"BlurKernel"`.
+     */
+    auto blurKernel() const -> int;
+
+    /*!
+     * \brief Sets the kernel size for descriptor construction.
+     *
+     * \param[in] lucidKernel Kernel size (`1 = 3x3`, `2 = 5x5`, `3 = 7x7`, etc.).
+     */
+    void setLucidKernel(int lucidKernel);
+
+    /*!
+     * \brief Sets the kernel size for blurring the image prior to descriptor construction.
+     *
+     * \param[in] blurKernel Kernel size (`1 = 3x3`, `2 = 5x5`, `3 = 7x7`, etc.).
+     */
+    void setBlurKernel(int blurKernel);
 
 // Feature interface
 
 public:
 
+    /*!
+     * \brief Resets LUCID properties to their default values.
+     */
     void reset() override;
-    std::string name() const final;
 
 };
 
 
-/*----------------------------------------------------------------*/
 
-
+/*!
+ * \brief LUCID feature descriptor.
+ *
+ * Implements the LUCID (Locally Uniform Comparison Image Descriptor) for keypoint feature description.
+ * LUCID is designed for robustness against image deformations and variations.
+ *
+ * \note This class requires OpenCV's `xfeatures2d` module.
+ */
 class TL_EXPORT LucidDescriptor
-  : public LucidProperties,
-    public FeatureDescriptor
+  : public FeatureDescriptor
 {
 
 private:
@@ -91,40 +171,116 @@ private:
 #ifdef HAVE_OPENCV_XFEATURES2D 
     cv::Ptr<cv::xfeatures2d::LUCID> mLUCID;
 #endif // HAVE_OPENCV_XFEATURES2D
+    LucidProperties mProperties;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes the LUCID descriptor with default properties.
+     */
     LucidDescriptor();
-    LucidDescriptor(int lucidKernel, int blurKernel);
-    ~LucidDescriptor() override = default;
+
+    /*!
+     * \brief Constructor with custom properties.
+     *
+     * Initializes LUCID using the provided properties.
+     *
+     * \param[in] properties Configuration properties for LUCID.
+     */
+    explicit LucidDescriptor(const LucidProperties &properties);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * Creates a copy of the given `LucidDescriptor` instance.
+     *
+     * \param[in] lucid The object to copy.
+     */
+    LucidDescriptor(const LucidDescriptor &lucid);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties and internal state from another `LucidDescriptor` instance.
+     *
+     * \param[in] lucid The object to move.
+     */
+    LucidDescriptor(LucidDescriptor &&lucid) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
+    ~LucidDescriptor() override;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties and internal state from another `LucidDescriptor` instance.
+     *
+     * \param[in] lucid The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator =(const LucidDescriptor &lucid) -> LucidDescriptor &;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties and internal state from another `LucidDescriptor` instance.
+     *
+     * \param[in] lucid The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator =(LucidDescriptor &&lucid) TL_NOEXCEPT -> LucidDescriptor &;
+
+    /*!
+     * \brief Get a reference to the LUCID descriptor properties.
+     *
+     * This allows modifying the properties of the LUCID descriptor.
+     *
+     * \return Reference to the properties object.
+     *
+     * \note The following property names are valid when accessed through the `Properties` class:
+     * - `"LucidKernel"`
+     * - `"BlurKernel"`
+     */
+    auto properties() -> LucidProperties &{ return mProperties; }
+
+    /*!
+     * \brief Get a constant reference to the LUCID descriptor properties.
+     *
+     * This allows read-only access to the properties of the LUCID descriptor.
+     *
+     * \return Constant reference to the properties object.
+     * 
+     * \note The following property names are valid when accessed through the `Properties` class:
+     * - `"LucidKernel"`
+     * - `"BlurKernel"`
+     */
+    auto properties() const -> const LucidProperties &{ return mProperties; }
 
 private:
 
-    void update();
+    void init();
 
 // FeatureDescriptor interface
 
 public:
 
+    /*!
+     * \brief Extract descriptors from an image.
+     *
+     * Extracts binary descriptors for the given keypoints using the LUCID descriptor.
+     *
+     * \param[in] img The input grayscale image.
+     * \param[in,out] keyPoints Detected keypoints (modified if necessary).
+     * \return %Matrix containing the computed descriptors.
+     */
     auto extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
-
-// Lucid interface
-
-public:
-
-    void setLucidKernel(int lucidKernel) override;
-    void setBlurKernel(int blurKernel) override;
-
-// Feature interface
-
-public:
-
-    void reset() override;
 
 };
 
-/*! \} */ // end of FeatureDetectorAndDescriptor
-
-/*! \} */ // end of Features
+/*! \} */
 
 } // namespace tl

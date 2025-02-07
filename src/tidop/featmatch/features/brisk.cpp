@@ -31,85 +31,132 @@ namespace tl
 {
 
 
-BriskProperties::BriskProperties() = default;
+/* BRISK properties */
 
-BriskProperties::BriskProperties(const BriskProperties &briskProperties) = default;
-
-int BriskProperties::threshold() const
+BriskProperties::BriskProperties()
+  : Feature("BRISK", Feature::Type::brisk)
 {
-    return mThreshold;
+    reset();
 }
 
-int BriskProperties::octaves() const
+BriskProperties::BriskProperties(const BriskProperties &properties)
+  : Feature(properties)
 {
-    return mOctaves;
+
 }
 
-double BriskProperties::patternScale() const
+BriskProperties::BriskProperties(BriskProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
-    return mPatternScale;
+
+}
+
+auto BriskProperties::operator=(const BriskProperties &properties) -> BriskProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto BriskProperties::operator=(BriskProperties &&properties) TL_NOEXCEPT -> BriskProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
+}
+
+auto BriskProperties::threshold() const -> int
+{
+    return getProperty<int>("Threshold");
+}
+
+auto BriskProperties::octaves() const -> int
+{
+    return getProperty<int>("Octaves");
+}
+
+auto BriskProperties::patternScale() const -> float
+{
+    return getProperty<float>("PatternScale");
 }
 
 void BriskProperties::setThreshold(int threshold)
 {
-    mThreshold = threshold;
+    setProperty("Threshold", threshold);
 }
 
 void BriskProperties::setOctaves(int octaves)
 {
-    mOctaves = octaves;
+    setProperty("Octaves", octaves);
 }
 
-void BriskProperties::setPatternScale(double patternScale)
+void BriskProperties::setPatternScale(float patternScale)
 {
-    mPatternScale = patternScale;
+    setProperty("PatternScale", patternScale);
 }
 
 void BriskProperties::reset()
 {
-    mThreshold = brisk_default_value_threshold;
-    mOctaves = brisk_default_value_octaves;
-    mPatternScale = brisk_default_value_pattern_scale;
-}
-
-std::string BriskProperties::name() const
-{
-    return std::string("BRISK");
+    setThreshold(brisk_default_value_threshold);
+    setOctaves(brisk_default_value_octaves);
+    setPatternScale(brisk_default_value_pattern_scale);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* BRISK Detector/Descriptor */
 
 BriskDetectorDescriptor::BriskDetectorDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-BriskDetectorDescriptor::BriskDetectorDescriptor(const BriskDetectorDescriptor &briskDetectorDescriptor)
-  : BriskProperties(briskDetectorDescriptor),
-    FeatureDetector(briskDetectorDescriptor),
-    FeatureDescriptor(briskDetectorDescriptor)
+BriskDetectorDescriptor::BriskDetectorDescriptor(const BriskProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
+}
+
+BriskDetectorDescriptor::BriskDetectorDescriptor(const BriskDetectorDescriptor &brisk)
+  : mProperties(brisk.mProperties)
+{
+    init();
+}
+
+BriskDetectorDescriptor::BriskDetectorDescriptor(BriskDetectorDescriptor &&brisk) TL_NOEXCEPT
+  : mProperties(std::move(brisk.mProperties)),
+    mBrisk(std::move(brisk.mBrisk))
+{
 }
 
 
-BriskDetectorDescriptor::BriskDetectorDescriptor(int threshold,
-                                                 int octaves,
-                                                 double patternScale)
+auto BriskDetectorDescriptor::operator=(const BriskDetectorDescriptor &brisk) -> BriskDetectorDescriptor &
 {
-    BriskProperties::setThreshold(threshold);
-    BriskProperties::setOctaves(octaves);
-    BriskProperties::setPatternScale(patternScale);
-    update();
+    if (this != &brisk) {
+        mProperties = brisk.mProperties;
+        init();
+    }
+    return *this;
 }
 
-void BriskDetectorDescriptor::update()
+auto BriskDetectorDescriptor::operator=(BriskDetectorDescriptor &&brisk) TL_NOEXCEPT -> BriskDetectorDescriptor &
 {
-    mBrisk = cv::BRISK::create(BriskProperties::threshold(),
-                               BriskProperties::octaves(),
-                               static_cast<float>(BriskProperties::patternScale()));
+    if (this != &brisk) {
+        mProperties = std::move(brisk.mProperties);
+        mBrisk = std::move(brisk.mBrisk);
+    }
+    return *this;
+}
+
+
+void BriskDetectorDescriptor::init()
+{
+    mBrisk = cv::BRISK::create(mProperties.threshold(),
+                               mProperties.octaves(),
+                               mProperties.patternScale());
 }
 
 std::vector<cv::KeyPoint> BriskDetectorDescriptor::detect(const cv::Mat &img,
@@ -142,30 +189,6 @@ cv::Mat BriskDetectorDescriptor::extract(const cv::Mat &img,
     }
 
     return descriptors;
-}
-
-void BriskDetectorDescriptor::setThreshold(int threshold)
-{
-    BriskProperties::setThreshold(threshold);
-    update();
-}
-
-void BriskDetectorDescriptor::setOctaves(int octaves)
-{
-    BriskProperties::setOctaves(octaves);
-    update();
-}
-
-void BriskDetectorDescriptor::setPatternScale(double patternScale)
-{
-    BriskProperties::setPatternScale(patternScale);
-    update();
-}
-
-void BriskDetectorDescriptor::reset()
-{
-    BriskProperties::reset();
-    update();
 }
 
 

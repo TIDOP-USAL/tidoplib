@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_SUITE(BriefDescriptorTestSuite)
 struct BriefDescriptorTest
 {
     BriefDescriptorTest()
-        : briefDescriptor(new BriefDescriptor("16", true))
     { }
 
     ~BriefDescriptorTest()
@@ -54,12 +53,18 @@ struct BriefDescriptorTest
         bytes_result.push_back("32");
         bytes_result.push_back("64");
         bytes_result.push_back("64");
+
+        briefProperties.setBytes("16");
+        briefProperties.setUseOrientation(true);
+       
+        briefDescriptor = new BriefDescriptor(briefProperties);
     }
 
     void teardown()
     {
     }
 
+    BriefProperties briefDefaultProperties;
     BriefProperties briefProperties;
     BriefDescriptor *briefDescriptor;
     std::vector<std::string> bytes_value;
@@ -68,26 +73,26 @@ struct BriefDescriptorTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, BriefDescriptorTest)
 {
-    BOOST_CHECK_EQUAL("32", briefProperties.bytes());
-    BOOST_CHECK_EQUAL(false, briefProperties.useOrientation());
+    BOOST_CHECK_EQUAL("32", briefDefaultProperties.bytes());
+    BOOST_CHECK_EQUAL(false, briefDefaultProperties.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, BriefDescriptorTest)
 {
-    BOOST_CHECK_EQUAL("16", briefDescriptor->bytes());
-    BOOST_CHECK_EQUAL(true, briefDescriptor->useOrientation());
+    BOOST_CHECK_EQUAL("16", briefProperties.bytes());
+    BOOST_CHECK_EQUAL(true, briefProperties.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, BriefDescriptorTest)
 {
-    BriefProperties copy(*briefDescriptor);
+    BriefProperties copy(briefProperties);
     BOOST_CHECK_EQUAL("16", copy.bytes());
     BOOST_CHECK_EQUAL(true, copy.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(assign, BriefDescriptorTest)
 {
-    BriefProperties assign = *briefDescriptor;
+    BriefProperties assign = briefProperties;
     BOOST_CHECK_EQUAL("16", assign.bytes());
     BOOST_CHECK_EQUAL(true, assign.useOrientation());
 }
@@ -122,10 +127,21 @@ BOOST_FIXTURE_TEST_CASE(scaleFactor, BriefDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, BriefDescriptorTest)
 {
-    BriefProperties brief(*briefDescriptor);
+    BriefProperties brief = briefProperties;
     brief.reset();
     BOOST_CHECK_EQUAL("32", brief.bytes());
     BOOST_CHECK_EQUAL(false, brief.useOrientation());
+}
+
+BOOST_FIXTURE_TEST_CASE(brief_descriptor_properties, BriefDescriptorTest)
+{
+    auto properties = briefDescriptor->properties();
+
+    BOOST_CHECK_EQUAL("16", properties.getProperty<std::string>("Bytes"));
+    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("UseOrientation"));
+
+    BOOST_CHECK_EQUAL("16", properties.getPropertyAsString("Bytes"));
+    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("UseOrientation"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() 

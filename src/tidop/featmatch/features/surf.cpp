@@ -31,123 +31,158 @@ namespace tl
 {
 
 
+/* SURF properties */
+
 SurfProperties::SurfProperties()
+  : Feature("SURF", Feature::Type::surf)
+{
+    reset();
+}
+
+SurfProperties::SurfProperties(const SurfProperties &properties)
+  : Feature(properties)
 {
 }
 
-SurfProperties::SurfProperties(const SurfProperties &surfProperties)
-  : Surf(surfProperties),
-    mHessianThreshold(surfProperties.mHessianThreshold),
-    mOctaves(surfProperties.octaves()),
-    mOctaveLayers(surfProperties.mOctaveLayers),
-    mExtendedDescriptor(surfProperties.mExtendedDescriptor),
-    mUpright(surfProperties.mUpright)
+SurfProperties::SurfProperties(SurfProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto SurfProperties::operator=(const SurfProperties &properties) -> SurfProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto SurfProperties::operator=(SurfProperties &&properties) TL_NOEXCEPT -> SurfProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto SurfProperties::hessianThreshold() const -> double
 {
-    return mHessianThreshold;
+    return getProperty<double>("HessianThreshold");
 }
 
 void SurfProperties::setHessianThreshold(double hessianThreshold)
 {
-    mHessianThreshold = hessianThreshold;
+    setProperty("HessianThreshold", hessianThreshold);
 }
 
 auto SurfProperties::octaves() const -> int
 {
-    return mOctaves;
+    return getProperty<int>("Octaves");
 }
 
 void SurfProperties::setOctaves(int octaves)
 {
-    mOctaves = octaves;
+    setProperty("Octaves", octaves);
 }
 
 auto SurfProperties::octaveLayers() const -> int
 {
-    return mOctaveLayers;
+    return getProperty<int>("OctaveLayers");
 }
 
 void SurfProperties::setOctaveLayers(int octaveLayers)
 {
-    mOctaveLayers = octaveLayers;
+    setProperty("OctaveLayers", octaveLayers);
 }
 
 auto SurfProperties::extendedDescriptor() const -> bool
 {
-    return mExtendedDescriptor;
+    return getProperty<bool>("ExtendedDescriptor");
 }
 
 void SurfProperties::setExtendedDescriptor(bool extendedDescriptor)
 {
-    mExtendedDescriptor = extendedDescriptor;
+    setProperty("ExtendedDescriptor", extendedDescriptor);
 }
 
 auto SurfProperties::upright() const -> bool
 {
-    return mUpright;
+    return getProperty<bool>("Upright");
 }
 
 void SurfProperties::setUpright(bool upright)
 {
-    mUpright = upright;
+    setProperty("Upright", upright);
 }
 
 void SurfProperties::reset()
 {
-    mHessianThreshold = surf_default_value_hessian_threshold;
-    mOctaves = surf_default_value_octaves;
-    mOctaveLayers = surf_default_value_octave_layers;
-    mExtendedDescriptor = surf_default_value_extended_descriptor;
-    mUpright = surf_default_value_upright;
-}
-
-auto SurfProperties::name() const -> std::string
-{
-    return std::string("SURF");
+    setHessianThreshold(surf_default_value_hessian_threshold);
+    setOctaves(surf_default_value_octaves);
+    setOctaveLayers(surf_default_value_octave_layers);
+    setExtendedDescriptor(surf_default_value_extended_descriptor);
+    setUpright(surf_default_value_upright);
 }
 
 
-/*----------------------------------------------------------------*/
 
-//#ifdef OPENCV_ENABLE_NONFREE
+
 
 SurfDetectorDescriptor::SurfDetectorDescriptor()
+    : mProperties()
 {
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf = cv::xfeatures2d::SURF::create(SurfProperties::hessianThreshold(),
-                                          SurfProperties::octaves(),
-                                          SurfProperties::octaveLayers(),
-                                          SurfProperties::extendedDescriptor(),
-                                          SurfProperties::upright());
-#endif // HAVE_OPENCV_XFEATURES2D
+    init();
 }
 
-SurfDetectorDescriptor::SurfDetectorDescriptor(const SurfDetectorDescriptor &surfDetectorDescriptor)
-    : SurfProperties(surfDetectorDescriptor)
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    ,
-    mSurf(surfDetectorDescriptor.mSurf)
+SurfDetectorDescriptor::SurfDetectorDescriptor(const SurfProperties &properties)
+    : mProperties(properties)
+{
+    init();
+}
+
+SurfDetectorDescriptor::SurfDetectorDescriptor(const SurfDetectorDescriptor &surf)
+    : mProperties(surf.mProperties)
+{
+    init();
+}
+
+SurfDetectorDescriptor::SurfDetectorDescriptor(SurfDetectorDescriptor &&surf) TL_NOEXCEPT
+    : mProperties(std::move(surf.mProperties))
+#if defined HAVE_OPENCV_XFEATURES2D  && defined OPENCV_ENABLE_NONFREE
+    , mSurf(std::move(surf.mSurf))
 #endif // HAVE_OPENCV_XFEATURES2D
 {
 }
 
-SurfDetectorDescriptor::SurfDetectorDescriptor(double hessianThreshold,
-                                               int octaves,
-                                               int octaveLayers,
-                                               bool extendedDescriptor,
-                                               bool upright)
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    : mSurf(cv::xfeatures2d::SURF::create())
-#endif // HAVE_OPENCV_XFEATURES2D
+auto SurfDetectorDescriptor::operator =(const SurfDetectorDescriptor &surf) -> SurfDetectorDescriptor &
 {
-	SurfDetectorDescriptor::setHessianThreshold(hessianThreshold);
-	SurfDetectorDescriptor::setOctaves(octaves);
-    SurfDetectorDescriptor::setOctaveLayers(octaveLayers);
-    SurfDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
-    SurfDetectorDescriptor::setUpright(upright);
+    if (this != &surf) {
+        mProperties = surf.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto SurfDetectorDescriptor::operator =(SurfDetectorDescriptor &&surf) TL_NOEXCEPT -> SurfDetectorDescriptor &
+{
+    if (this != &surf) {
+        mProperties = std::move(surf.mProperties);
+#if defined HAVE_OPENCV_XFEATURES2D  && defined OPENCV_ENABLE_NONFREE
+        mSurf = std::move(surf.mSurf);
+#endif
+    }
+    return *this;
+}
+
+void SurfDetectorDescriptor::init()
+{
+#if defined HAVE_OPENCV_XFEATURES2D  && defined OPENCV_ENABLE_NONFREE
+    mSurf = cv::xfeatures2d::SURF::create(mProperties.hessianThreshold(),
+                                          mProperties.octaves(),
+                                          mProperties.octaveLayers(),
+                                          mProperties.extendedDescriptor(),
+                                          mProperties.upright());
+#endif
 }
 
 auto SurfDetectorDescriptor::detect(const cv::Mat &img,
@@ -157,7 +192,7 @@ auto SurfDetectorDescriptor::detect(const cv::Mat &img,
 
     try {
 
-#ifdef HAVE_OPENCV_XFEATURES2D 
+#if defined HAVE_OPENCV_XFEATURES2D  && defined OPENCV_ENABLE_NONFREE
         mSurf->detect(img, keyPoints, mask);
 #else
         TL_COMPILER_WARNING("OpenCV not built with extra modules. Surf Detector/Descriptor not supported")
@@ -178,7 +213,7 @@ auto SurfDetectorDescriptor::extract(const cv::Mat &img,
 
     try {
 
-#ifdef HAVE_OPENCV_XFEATURES2D 
+#if defined HAVE_OPENCV_XFEATURES2D  && defined OPENCV_ENABLE_NONFREE
         mSurf->compute(img, keyPoints, descriptors);
 #else
         TL_COMPILER_WARNING("OpenCV not built with extra modules. Surf Detector/Descriptor not supported")
@@ -192,105 +227,66 @@ auto SurfDetectorDescriptor::extract(const cv::Mat &img,
     return descriptors;
 }
 
-void SurfDetectorDescriptor::setHessianThreshold(double hessianThreshold)
-{
-    SurfProperties::setHessianThreshold(hessianThreshold);
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf->setHessianThreshold(hessianThreshold);
-#endif // HAVE_OPENCV_XFEATURES2D
-}
-
-void SurfDetectorDescriptor::setOctaves(int octaves)
-{
-    SurfProperties::setOctaves(octaves);
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf->setNOctaves(octaves);
-#endif // HAVE_OPENCV_XFEATURES2D
-}
-
-void SurfDetectorDescriptor::setOctaveLayers(int octaveLayers)
-{
-    SurfProperties::setOctaveLayers(octaveLayers);
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf->setNOctaveLayers(octaveLayers);
-#endif // HAVE_OPENCV_XFEATURES2D
-}
-
-void SurfDetectorDescriptor::setExtendedDescriptor(bool extendedDescriptor)
-{
-    SurfProperties::setExtendedDescriptor(extendedDescriptor);
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf->setExtended(extendedDescriptor);
-#endif // HAVE_OPENCV_XFEATURES2D
-}
-
-void SurfDetectorDescriptor::setUpright(bool upright)
-{
-    SurfProperties::setUpright(upright);
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf->setUpright(upright);
-#endif // HAVE_OPENCV_XFEATURES2D
-}
-
-void SurfDetectorDescriptor::reset()
-{
-    SurfProperties::reset();
-#ifdef HAVE_OPENCV_XFEATURES2D 
-    mSurf->setHessianThreshold(SurfProperties::hessianThreshold());
-    mSurf->setNOctaves(SurfProperties::octaves());
-    mSurf->setNOctaveLayers(SurfProperties::octaveLayers());
-    mSurf->setExtended(SurfProperties::extendedDescriptor());
-    mSurf->setUpright(SurfProperties::upright());
-#endif // HAVE_OPENCV_XFEATURES2D
-}
 
 
 
-/*----------------------------------------------------------------*/
 
-
-//#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor()
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-  : mSurf(new cv::cuda::SURF_CUDA())
-#endif
+  : mProperties()
 {
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->hessianThreshold = SurfProperties::hessianThreshold();
-    mSurf->nOctaves = SurfProperties::octaves();
-    mSurf->nOctaveLayers = SurfProperties::octaveLayers();
-    mSurf->extended = SurfProperties::extendedDescriptor();
-    mSurf->upright = SurfProperties::upright();
-#endif
+    init();
 }
 
-SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(const SurfCudaDetectorDescriptor &surfDetectorDescriptor)
-  : SurfProperties(surfDetectorDescriptor)
+SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(const SurfProperties &properties)
+  : mProperties(properties)
 {
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf = std::make_unique<cv::cuda::SURF_CUDA>();
-    mSurf->hessianThreshold = SurfProperties::hessianThreshold();
-    mSurf->nOctaves = SurfProperties::octaves();
-    mSurf->nOctaveLayers = SurfProperties::octaveLayers();
-    mSurf->extended = SurfProperties::extendedDescriptor();
-    mSurf->upright = SurfProperties::upright();
-#endif
+    init();
 }
 
-SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(double hessianThreshold,
-                                                       int octaves,
-                                                       int octaveLayers,
-                                                       bool extendedDescriptor,
-                                                       bool upright)
+SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(const SurfCudaDetectorDescriptor &surf)
+  : mProperties(surf.mProperties)
 {
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf = std::make_unique<cv::cuda::SURF_CUDA>();
-    SurfCudaDetectorDescriptor::setHessianThreshold(hessianThreshold);
-    SurfCudaDetectorDescriptor::setOctaves(octaves);
-    SurfCudaDetectorDescriptor::setOctaveLayers(octaveLayers);
-    SurfCudaDetectorDescriptor::setExtendedDescriptor(extendedDescriptor);
-    SurfCudaDetectorDescriptor::setUpright(upright);
+    init();
+}
+
+SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(SurfCudaDetectorDescriptor &&surf) TL_NOEXCEPT
+  : mProperties(std::move(surf.mProperties))
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D && defined OPENCV_ENABLE_NONFREE
+    , mSurf(std::move(surf.mSurf))
+#endif
+{
+}
+
+auto SurfCudaDetectorDescriptor::operator =(const SurfCudaDetectorDescriptor &surf) -> SurfCudaDetectorDescriptor &
+{
+    if (this != &surf) {
+        mProperties = surf.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto SurfCudaDetectorDescriptor::operator =(SurfCudaDetectorDescriptor &&surf) TL_NOEXCEPT -> SurfCudaDetectorDescriptor &
+{
+    if (this != &surf) {
+        mProperties = std::move(surf.mProperties);
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D && defined OPENCV_ENABLE_NONFREE
+        mSurf = std::move(surf.mSurf);
+#endif
+    }
+    return *this;
+}
+
+void SurfCudaDetectorDescriptor::init()
+{
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D && defined OPENCV_ENABLE_NONFREE
+    mSurf = std::make_unique<cv::cuda::SURF_CUDA>(mProperties.hessianThreshold(),
+                                                  mProperties.octaves(),
+                                                  mProperties.octaveLayers(),
+                                                  mProperties.extendedDescriptor(),
+                                                  0.01f,
+                                                  mProperties.upright());
 #endif
 }
 
@@ -301,7 +297,7 @@ auto SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
 
     try {
 
-#if defined HAVE_OPENCV_CUDAFEATURES2D
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D && defined OPENCV_ENABLE_NONFREE
         cv::cuda::GpuMat g_img(img);
         cv::cuda::GpuMat g_mask(mask);
         (*mSurf)(g_img, g_mask, keyPoints);
@@ -324,7 +320,7 @@ auto SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
 
     try {
 
-#if defined HAVE_OPENCV_CUDAFEATURES2D
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D && defined OPENCV_ENABLE_NONFREE
         cv::cuda::GpuMat g_img(img);
         cv::cuda::GpuMat g_descriptors;
         (*mSurf)(g_img, cv::cuda::GpuMat(), keyPoints, g_descriptors, true);
@@ -339,58 +335,6 @@ auto SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
     }
 
     return descriptors;
-}
-
-void SurfCudaDetectorDescriptor::setHessianThreshold(double hessianThreshold)
-{
-    SurfProperties::setHessianThreshold(hessianThreshold);
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->hessianThreshold = hessianThreshold;
-#endif
-}
-
-void SurfCudaDetectorDescriptor::setOctaves(int octaves)
-{
-    SurfProperties::setOctaves(octaves);
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->nOctaves = octaves;
-#endif
-}
-
-void SurfCudaDetectorDescriptor::setOctaveLayers(int octaveLayers)
-{
-    SurfProperties::setOctaveLayers(octaveLayers);
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->nOctaveLayers = octaveLayers;
-#endif
-}
-
-void SurfCudaDetectorDescriptor::setExtendedDescriptor(bool extendedDescriptor)
-{
-    SurfProperties::setExtendedDescriptor(extendedDescriptor);
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->extended = extendedDescriptor;
-#endif
-}
-
-void SurfCudaDetectorDescriptor::setUpright(bool upright)
-{
-    SurfProperties::setUpright(upright);
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->upright = upright;
-#endif
-}
-
-void SurfCudaDetectorDescriptor::reset()
-{
-    SurfProperties::reset();
-#if defined HAVE_OPENCV_CUDAFEATURES2D
-    mSurf->hessianThreshold = SurfProperties::hessianThreshold();
-    mSurf->nOctaves = SurfProperties::octaves();
-    mSurf->nOctaveLayers = SurfProperties::octaveLayers();
-    mSurf->extended = SurfProperties::extendedDescriptor();
-    mSurf->upright = SurfProperties::upright();
-#endif
 }
 
 

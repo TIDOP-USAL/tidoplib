@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE(LucidDescriptorTestSuite)
 struct LucidDescriptorTest
 {
   LucidDescriptorTest()
-    : lucidDescriptor(new LucidDescriptor(3, 3))
+    
   { }
     
   ~LucidDescriptorTest()
@@ -45,38 +45,43 @@ struct LucidDescriptorTest
 
   void setup()
   {
+      //: lucidDescriptor(new LucidDescriptor(3, 3))
+      lucidProperties.setBlurKernel(3);
+      lucidProperties.setLucidKernel(3);
+      lucidDescriptor = new LucidDescriptor(lucidProperties);
   }
 
   void teardown()
   {
   }
 
+  LucidProperties lucidDefaultProperties;
   LucidProperties lucidProperties;
   LucidDescriptor *lucidDescriptor;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, LucidDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(1, lucidProperties.lucidKernel());
-  BOOST_CHECK_EQUAL(2, lucidProperties.blurKernel());
+  BOOST_CHECK_EQUAL(1, lucidDefaultProperties.lucidKernel());
+  BOOST_CHECK_EQUAL(2, lucidDefaultProperties.blurKernel());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, LucidDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(3, lucidDescriptor->lucidKernel());
-  BOOST_CHECK_EQUAL(3, lucidDescriptor->blurKernel());
+  BOOST_CHECK_EQUAL(3, lucidProperties.lucidKernel());
+  BOOST_CHECK_EQUAL(3, lucidProperties.blurKernel());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, LucidDescriptorTest)
 {
-  LucidProperties copy(*lucidDescriptor);
+  LucidProperties copy(lucidProperties);
   BOOST_CHECK_EQUAL(3, copy.lucidKernel());
   BOOST_CHECK_EQUAL(3, copy.blurKernel());
 }
 
 BOOST_FIXTURE_TEST_CASE(assign, LucidDescriptorTest)
 {
-  LucidProperties assign = *lucidDescriptor;
+  LucidProperties assign = lucidProperties;
   BOOST_CHECK_EQUAL(3, assign.lucidKernel());
   BOOST_CHECK_EQUAL(3, assign.blurKernel());
 }
@@ -111,10 +116,21 @@ BOOST_FIXTURE_TEST_CASE(blurKernel, LucidDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, LucidDescriptorTest)
 {
-  LucidProperties lucid(*lucidDescriptor);
+  LucidProperties lucid = lucidProperties;
   lucid.reset();
   BOOST_CHECK_EQUAL(1, lucid.lucidKernel());
   BOOST_CHECK_EQUAL(2, lucid.blurKernel());
+}
+
+BOOST_FIXTURE_TEST_CASE(lucid_descriptor_properties, LucidDescriptorTest)
+{
+    auto &properties = lucidDescriptor->properties();
+
+    BOOST_CHECK_EQUAL(3, properties.getProperty<int>("LucidKernel"));
+    BOOST_CHECK_EQUAL(3, properties.getProperty<int>("BlurKernel"));
+
+    BOOST_CHECK_EQUAL("3", properties.getPropertyAsString("LucidKernel"));
+    BOOST_CHECK_EQUAL("3", properties.getPropertyAsString("BlurKernel"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

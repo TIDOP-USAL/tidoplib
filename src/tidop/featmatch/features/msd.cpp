@@ -40,291 +40,236 @@
 namespace tl
 {
 
+/* MSD properties */
+
 MsdProperties::MsdProperties()
-  : mThresholdSaliency(250),
-    mPatchRadius(3),
-    mKNN(4),
-    mAreaRadius(5),
-    mScaleFactor(1.25),
-    mNMSRadius(5),
-    mNScales(-1),
-    mNMSScaleR(0),
-    mComputeOrientations(false),
-    mAffineMSD(false),
-    mAffineTilts(3)
+  : Feature("MSD", Feature::Type::msd)
+{
+    reset();
+}
+
+MsdProperties::MsdProperties(const MsdProperties &properties)
+    : Feature(properties)
 {
 }
 
-MsdProperties::MsdProperties(const MsdProperties &msd)
-  : Msd(msd),
-    mThresholdSaliency(msd.mThresholdSaliency),
-    mPatchRadius(msd.mPatchRadius),
-    mKNN(msd.mKNN),
-    mAreaRadius(msd.mAreaRadius),
-    mScaleFactor(msd.mScaleFactor),
-    mNMSRadius(msd.mNMSRadius),
-    mNScales(msd.mNScales),
-    mNMSScaleR(msd.mNMSScaleR),
-    mComputeOrientations(msd.mComputeOrientations),
-    mAffineMSD(msd.mAffineMSD),
-    mAffineTilts(msd.mAffineTilts)
+MsdProperties::MsdProperties(MsdProperties &&properties) TL_NOEXCEPT
+    : Feature(std::forward<Feature>(properties))
 {
 }
 
-MsdProperties::MsdProperties(MsdProperties &&msd) TL_NOEXCEPT
-  : mThresholdSaliency(msd.mThresholdSaliency),
-    mPatchRadius(msd.mPatchRadius),
-    mKNN(msd.mKNN),
-    mAreaRadius(msd.mAreaRadius),
-    mScaleFactor(msd.mScaleFactor),
-    mNMSRadius(msd.mNMSRadius),
-    mNScales(msd.mNScales),
-    mNMSScaleR(msd.mNMSScaleR),
-    mComputeOrientations(msd.mComputeOrientations),
-    mAffineMSD(msd.mAffineMSD),
-    mAffineTilts(msd.mAffineTilts)
+auto MsdProperties::operator=(const MsdProperties &properties) -> MsdProperties &
 {
-}
-
-MsdProperties::~MsdProperties() = default;
-
-auto MsdProperties::operator =(const MsdProperties &msd) -> MsdProperties&
-{
-    if (this != &msd) {
-        mThresholdSaliency = msd.mThresholdSaliency;
-        mPatchRadius = msd.mPatchRadius;
-        mKNN = msd.mKNN;
-        mAreaRadius = msd.mAreaRadius;
-        mScaleFactor = msd.mScaleFactor;
-        mNMSRadius = msd.mNMSRadius;
-        mNScales = msd.mNScales;
-        mNMSScaleR = msd.mNMSScaleR;
-        mComputeOrientations = msd.mComputeOrientations;
-        mAffineMSD = msd.mAffineMSD;
-        mAffineTilts = msd.mAffineTilts;
+    if (this != &properties) {
+        Feature::operator=(properties);
     }
     return *this;
 }
 
-auto MsdProperties::operator =(MsdProperties &&msd) TL_NOEXCEPT -> MsdProperties&
+auto MsdProperties::operator=(MsdProperties &&properties) TL_NOEXCEPT -> MsdProperties &
 {
-    if (this != &msd) {
-        mThresholdSaliency = msd.mThresholdSaliency;
-        mPatchRadius = msd.mPatchRadius;
-        mKNN = msd.mKNN;
-        mAreaRadius = msd.mAreaRadius;
-        mScaleFactor = msd.mScaleFactor;
-        mNMSRadius = msd.mNMSRadius;
-        mNScales = msd.mNScales;
-        mNMSScaleR = msd.mNMSScaleR;
-        mComputeOrientations = msd.mComputeOrientations;
-        mAffineMSD = msd.mAffineMSD;
-        mAffineTilts = msd.mAffineTilts;
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
     }
     return *this;
 }
 
-double MsdProperties::thresholdSaliency() const
+auto MsdProperties::thresholdSaliency() const -> float
 {
-    return mThresholdSaliency;
+    return getProperty<float>("ThresholdSaliency");
 }
 
-int MsdProperties::patchRadius() const
+auto MsdProperties::patchRadius() const -> int
 {
-    return mPatchRadius;
+    return getProperty<int>("PatchRadius");
 }
 
-int MsdProperties::knn() const
+auto MsdProperties::knn() const -> int
 {
-    return mKNN;
+    return getProperty<int>("KNN");
 }
 
-int MsdProperties::searchAreaRadius() const
+auto MsdProperties::searchAreaRadius() const -> int
 {
-    return mAreaRadius;
+    return getProperty<int>("AreaRadius");
 }
 
-double MsdProperties::scaleFactor() const
+auto MsdProperties::scaleFactor() const -> float
 {
-    return mScaleFactor;
+    return getProperty<float>("ScaleFactor");
 }
 
-int MsdProperties::NMSRadius() const
+auto MsdProperties::NMSRadius() const -> int
 {
-    return mNMSRadius;
+    return getProperty<int>("NMSRadius");
 }
 
-int MsdProperties::nScales() const
+auto MsdProperties::nScales() const -> int
 {
-    return mNScales;
+    return getProperty<int>("NScales");
 }
 
-int MsdProperties::NMSScaleRadius() const
+auto MsdProperties::NMSScaleRadius() const -> int
 {
-    return mNMSScaleR;
+    return getProperty<int>("NMSScaleRadius");
 }
 
-bool MsdProperties::computeOrientation() const
+auto MsdProperties::computeOrientation() const -> bool
 {
-    return mComputeOrientations;
+    return getProperty<int>("ComputeOrientations");
 }
 
-bool MsdProperties::affineMSD() const
+auto MsdProperties::affineMSD() const -> bool
 {
-    return mAffineMSD;
+    return getProperty<int>("AffineMSD");
 }
 
-int MsdProperties::affineTilts() const
+auto MsdProperties::affineTilts() const -> int
 {
-    return mAffineTilts;
+    return getProperty<int>("AffineTilts");
 }
 
-void MsdProperties::setThresholdSaliency(double thresholdSaliency)
+void MsdProperties::setThresholdSaliency(float thresholdSaliency)
 {
-    mThresholdSaliency = thresholdSaliency;
+    setProperty("ThresholdSaliency", thresholdSaliency);
 }
 
 void MsdProperties::setPatchRadius(int patchRadius)
 {
-    mPatchRadius = patchRadius;
+    setProperty("PatchRadius", patchRadius);
 }
 
 void MsdProperties::setKNN(int knn)
 {
-    mKNN = knn;
+    setProperty("KNN", knn);
 }
 
 void MsdProperties::setSearchAreaRadius(int areaRadius)
 {
-    mAreaRadius = areaRadius;
+    setProperty("AreaRadius", areaRadius);
 }
 
-void MsdProperties::setScaleFactor(double scaleFactor)
+void MsdProperties::setScaleFactor(float scaleFactor)
 {
-    mScaleFactor = scaleFactor;
+    setProperty("ScaleFactor", scaleFactor);
 }
 
 void MsdProperties::setNMSRadius(int NMSRadius)
 {
-    mNMSRadius = NMSRadius;
+    setProperty("NMSRadius", NMSRadius);
 }
 
 void MsdProperties::setNScales(int nScales)
 {
-    mNScales = nScales;
+    setProperty("NScales", nScales);
 }
 
 void MsdProperties::setNMSScaleRadius(int NMSScaleR)
 {
-    mNMSScaleR = NMSScaleR;
+    setProperty("NMSScaleRadius", NMSScaleR);
 }
 
 void MsdProperties::setComputeOrientation(bool computeOrientations)
 {
-    mComputeOrientations = computeOrientations;
+    setProperty("ComputeOrientations", computeOrientations);
 }
 
 void MsdProperties::setAffineMSD(bool affineMSD)
 {
-    mAffineMSD = affineMSD;
+    setProperty("AffineMSD", affineMSD);
 }
 
 void MsdProperties::setAffineTilts(int affineTilts)
 {
-    mAffineTilts = affineTilts;
+    setProperty("AffineTilts", affineTilts);
 }
 
 void MsdProperties::reset()
 {
-    mThresholdSaliency = 250;
-    mPatchRadius = 3;
-    mKNN = 4;
-    mAreaRadius = 5;
-    mScaleFactor = 1.25;
-    mNMSRadius = 5;
-    mNScales = -1;
-    mNMSScaleR = 0;
-    mComputeOrientations = false;
-    mAffineMSD = false;
-    mAffineTilts = 3;
-}
-
-std::string MsdProperties::name() const
-{
-    return std::string("MSD");
+    setThresholdSaliency(250);
+    setPatchRadius(3);
+    setKNN(4);
+    setSearchAreaRadius(5);
+    setScaleFactor(1.25);
+    setNMSRadius(5);
+    setNScales(-1);
+    setNMSScaleRadius(0);
+    setComputeOrientation(false);
+    setAffineMSD(false);
+    setAffineTilts(3);
 }
 
 
 
-/*----------------------------------------------------------------*/
 
+
+/* MSD detector */
 
 MsdDetector::MsdDetector()
-  : FeatureDetector()
+  : mProperties()
 {
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1) || !defined HAVE_OPENCV_XFEATURES2D
-    mMSD = std::make_shared<::MsdDetector>();
-#endif
-
-    update();
+    init();
 }
 
-MsdDetector::MsdDetector(double thresholdSaliency,
-                         int pathRadius,
-                         int knn,
-                         int areaRadius,
-                         double scaleFactor,
-                         int NMSRadius,
-                         int nScales,
-                         int NMSScaleR,
-                         bool computeOrientations,
-                         bool affineMSD,
-                         int affineTilts)
-  : FeatureDetector()
+MsdDetector::MsdDetector(const MsdProperties &properties)
+  : mProperties(properties)
 {
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)  || !defined HAVE_OPENCV_XFEATURES2D
-    mMSD = std::make_shared<::MsdDetector>();
-#endif
-
-    MsdProperties::setThresholdSaliency(thresholdSaliency);
-    MsdProperties::setPatchRadius(pathRadius);
-    MsdProperties::setKNN(knn);
-    MsdProperties::setSearchAreaRadius(areaRadius);
-    MsdProperties::setScaleFactor(scaleFactor);
-    MsdProperties::setNMSRadius(NMSRadius);
-    MsdProperties::setNScales(nScales);
-    MsdProperties::setNMSScaleRadius(NMSScaleR);
-    MsdProperties::setComputeOrientation(computeOrientations);
-    MsdProperties::setAffineMSD(affineMSD);
-    MsdProperties::setAffineTilts(affineTilts);
-
-    update();
+    init();
 }
 
-MsdDetector::~MsdDetector() = default;
+MsdDetector::MsdDetector(const MsdDetector &msd)
+  : mProperties(msd.mProperties)
+{
+    init();
+}
 
-void MsdDetector::update()
+MsdDetector::MsdDetector(MsdDetector &&msd) TL_NOEXCEPT
+  : mProperties(std::move(msd.mProperties)),
+    mMSD(std::move(msd.mMSD))
+{
+}
+
+auto MsdDetector::operator =(const MsdDetector &msd) -> MsdDetector &
+{
+    if (this != &msd) {
+        mProperties = msd.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto MsdDetector::operator =(MsdDetector &&msd) TL_NOEXCEPT -> MsdDetector &
+{
+    if (this != &msd) {
+        mProperties = std::move(msd.mProperties);
+        mMSD = std::move(msd.mMSD);
+    }
+    return *this;
+}
+
+void MsdDetector::init()
 {
 #if (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1)) && defined HAVE_OPENCV_XFEATURES2D
-    mMSD = cv::xfeatures2d::MSDDetector::create(MsdProperties::patchRadius(),
-                                                MsdProperties::searchAreaRadius(),
-                                                MsdProperties::NMSRadius(),
-                                                MsdProperties::NMSScaleRadius(),
-                                                static_cast<float>(MsdProperties::thresholdSaliency()),
-                                                MsdProperties::knn(),
-                                                static_cast<float>(MsdProperties::scaleFactor()),
-                                                MsdProperties::nScales(),
-                                                MsdProperties::computeOrientation());
+    mMSD = cv::xfeatures2d::MSDDetector::create(mProperties.patchRadius(),
+                                                mProperties.searchAreaRadius(),
+                                                mProperties.NMSRadius(),
+                                                mProperties.NMSScaleRadius(),
+                                                mProperties.thresholdSaliency(),
+                                                mProperties.knn(),
+                                                mProperties.scaleFactor(),
+                                                mProperties.nScales(),
+                                                mProperties.computeOrientation());
 #else
-    mMSD->setThSaliency(static_cast<float>(MsdProperties::thresholdSaliency()));
-    mMSD->setPatchRadius(MsdProperties::patchRadius());
-    mMSD->setKNN(MsdProperties::knn());
-    mMSD->setSearchAreaRadius(MsdProperties::searchAreaRadius());
-    mMSD->setScaleFactor(static_cast<float>(MsdProperties::scaleFactor()));
-    mMSD->setNMSRadius(MsdProperties::NMSRadius());
-    mMSD->setNScales(MsdProperties::nScales());
-    mMSD->setNMSScaleRadius(MsdProperties::NMSScaleRadius());
-    mMSD->setComputeOrientation(MsdProperties::computeOrientation());
+    mMSD = std::make_shared<::MsdDetector>();
+    mMSD->setThSaliency(mProperties.thresholdSaliency());
+    mMSD->setPatchRadius(mProperties.patchRadius());
+    mMSD->setKNN(mProperties.knn());
+    mMSD->setSearchAreaRadius(mProperties.searchAreaRadius());
+    mMSD->setScaleFactor(mProperties.scaleFactor());
+    mMSD->setNMSRadius(mProperties.NMSRadius());
+    mMSD->setNScales(mProperties.nScales());
+    mMSD->setNMSScaleRadius(mProperties.NMSScaleRadius());
+    mMSD->setComputeOrientation(mProperties.computeOrientation());
 #endif
 }
 
@@ -534,112 +479,6 @@ void MsdDetector::affineSkew(double tilt, double phi, cv::Mat &img, cv::Mat &mas
 }
 
 #endif
-
-void MsdDetector::setThresholdSaliency(double thresholdSaliency)
-{
-    MsdProperties::setThresholdSaliency(thresholdSaliency);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setThSaliency(static_cast<float>(thresholdSaliency));
-#endif
-}
-
-void MsdDetector::setPatchRadius(int pathRadius)
-{
-    MsdProperties::setPatchRadius(pathRadius);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setPatchRadius(pathRadius);
-#endif
-}
-
-void MsdDetector::setKNN(int knn)
-{
-    MsdProperties::setKNN(knn);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setKNN(knn);
-#endif
-}
-
-void MsdDetector::setSearchAreaRadius(int areaRadius)
-{
-    MsdProperties::setSearchAreaRadius(areaRadius);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setSearchAreaRadius(areaRadius);
-#endif
-}
-
-void MsdDetector::setScaleFactor(double scaleFactor)
-{
-    MsdProperties::setScaleFactor(scaleFactor);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setScaleFactor(static_cast<float>(scaleFactor));
-#endif
-}
-
-void MsdDetector::setNMSRadius(int NMSRadius)
-{
-    MsdProperties::setNMSRadius(NMSRadius);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setNMSRadius(NMSRadius);
-#endif
-}
-
-void MsdDetector::setNScales(int nScales)
-{
-    MsdProperties::setNScales(nScales);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setNScales(nScales);
-#endif
-}
-
-void MsdDetector::setNMSScaleRadius(int NMSScaleR)
-{
-    MsdProperties::setNMSScaleRadius(NMSScaleR);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setScaleFactor(NMSScaleR);
-#endif
-}
-
-void MsdDetector::setComputeOrientation(bool computeOrientations)
-{
-    MsdProperties::setComputeOrientation(computeOrientations);
-#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
-    update();
-#else
-    mMSD->setComputeOrientation(computeOrientations);
-#endif
-}
-
-void MsdDetector::setAffineMSD(bool affineMSD)
-{
-    MsdProperties::setAffineMSD(affineMSD);
-}
-
-void MsdDetector::setAffineTilts(int tilts)
-{
-    MsdProperties::setAffineTilts(tilts);
-}
-
-void MsdDetector::reset()
-{
-    MsdProperties::reset();
-    update();
-}
 
 
 } // namespace tl

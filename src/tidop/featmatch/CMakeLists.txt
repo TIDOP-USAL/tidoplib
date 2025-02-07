@@ -41,7 +41,6 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/brisk.cpp
                              features/daisy.cpp
                              features/fast.cpp
-                             features/flann.cpp
                              features/freak.cpp
                              features/gftt.cpp
                              features/hog.cpp
@@ -56,9 +55,23 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/star.cpp
                              features/surf.cpp
                              features/vgg.cpp
-                             io/featio.cpp
-                             io/matchio.cpp
+                             io/featreader.cpp
+                             io/featwriter.cpp
+                             io/matchreader.cpp
+                             io/matchwriter.cpp
+                             io/passpoints.cpp
+                             io/impl/features/binaryreader.cpp
+                             io/impl/features/binarywriter.cpp
+                             io/impl/features/opencvreader.cpp
+                             io/impl/features/opencvwriter.cpp
+                             io/impl/features/txtreader.cpp
+                             io/impl/features/txtwriter.cpp
+                             io/impl/matches/binaryreader.cpp
+                             io/impl/matches/binarywriter.cpp
+                             io/impl/matches/opencvreader.cpp
+                             io/impl/matches/opencvwriter.cpp
                              matching/bfmatch.cpp
+                             matching/flann.cpp
                              matching/geomtest.cpp
                              matching/gsm.cpp
                              matching/robustmatch.cpp
@@ -78,7 +91,6 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/brisk.h
                              features/daisy.h
                              features/fast.h
-                             features/flann.h
                              features/freak.h
                              features/gftt.h
                              features/hog.h
@@ -93,9 +105,23 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/star.h
                              features/surf.h
                              features/vgg.h
-                             io/featio.h
-                             io/matchio.h
+                             io/featreader.h
+                             io/featwriter.h
+                             io/matchreader.h
+                             io/matchwriter.h
+                             io/passpoints.h
+                             io/impl/features/binaryreader.h
+                             io/impl/features/binarywriter.h
+                             io/impl/features/opencvreader.h
+                             io/impl/features/opencvwriter.h
+                             io/impl/features/txtreader.h
+                             io/impl/features/txtwriter.h
+                             io/impl/matches/binaryreader.h
+                             io/impl/matches/binarywriter.h
+                             io/impl/matches/opencvreader.h
+                             io/impl/matches/opencvwriter.h
                              matching/bfmatch.h
+                             matching/flann.h
                              matching/geomtest.h
                              matching/gsm.h
                              matching/robustmatch.h

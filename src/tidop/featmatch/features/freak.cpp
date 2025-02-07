@@ -30,107 +30,145 @@ namespace tl
 {
 
 
+/* FREAK properties */
+
 FreakProperties::FreakProperties()
+  : Feature("FREAK", Feature::Type::freak)
+{
+    reset();
+}
+
+FreakProperties::FreakProperties(const FreakProperties &properties)
+  : Feature(properties)
 {
 }
 
-FreakProperties::FreakProperties(const FreakProperties &freakProperties)
-  : Freak(freakProperties),
-    mOrientationNormalized(freakProperties.mOrientationNormalized),
-    mScaleNormalized(freakProperties.mScaleNormalized),
-    mPatternScale(freakProperties.mPatternScale),
-    mOctaves(freakProperties.mOctaves)
+FreakProperties::FreakProperties(FreakProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto FreakProperties::operator=(const FreakProperties &properties) -> FreakProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto FreakProperties::operator=(FreakProperties &&properties) TL_NOEXCEPT -> FreakProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto FreakProperties::orientationNormalized() const -> bool
 {
-    return mOrientationNormalized;
+    return getProperty<bool>("OrientationNormalized");
 }
 
 auto FreakProperties::scaleNormalized() const -> bool
 {
-    return mScaleNormalized;
+    return getProperty<bool>("ScaleNormalized");
 }
 
-auto FreakProperties::patternScale() const -> double
+auto FreakProperties::patternScale() const -> float
 {
-    return mPatternScale;
+    return getProperty<float>("PatternScale");
 }
 
 auto FreakProperties::octaves() const -> int
 {
-    return mOctaves;
+    return getProperty<int>("Octaves");
 }
 
 void FreakProperties::setOrientationNormalized(bool orientationNormalized)
 {
-    mOrientationNormalized = orientationNormalized;
+    setProperty("OrientationNormalized", orientationNormalized);
 }
 
 void FreakProperties::setScaleNormalized(bool scaleNormalized)
 {
-    mScaleNormalized = scaleNormalized;
+    setProperty("ScaleNormalized", scaleNormalized);
 }
 
-void FreakProperties::setPatternScale(double patternScale)
+void FreakProperties::setPatternScale(float patternScale)
 {
-    mPatternScale = patternScale;
+    setProperty("PatternScale", patternScale);
 }
 
 void FreakProperties::setOctaves(int octaves)
 {
-    mOctaves = octaves;
+    setProperty("Octaves", octaves);
 }
 
 void FreakProperties::reset()
 {
-    mOrientationNormalized = true;
-    mScaleNormalized = true;
-    mPatternScale = 22.;
-    mOctaves = 4;
-}
-
-auto FreakProperties::name() const -> std::string
-{
-    return std::string("FREAK");
+    setOrientationNormalized(true);
+    setScaleNormalized(true);
+    setPatternScale(22.f);
+    setOctaves(4);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* FREAK descriptor */
 
 FreakDescriptor::FreakDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-FreakDescriptor::FreakDescriptor(const FreakDescriptor &freakDescriptor)
-  : FreakProperties(freakDescriptor),
-    FeatureDescriptor(freakDescriptor)
+FreakDescriptor::FreakDescriptor(const FreakProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-FreakDescriptor::FreakDescriptor(bool orientationNormalized,
-                                 bool scaleNormalized,
-                                 double patternScale,
-                                 int octaves)
+FreakDescriptor::FreakDescriptor(const FreakDescriptor &freak)
+  : mProperties(freak.mProperties)
 {
-    FreakProperties::setOrientationNormalized(orientationNormalized);
-    FreakProperties::setScaleNormalized(scaleNormalized);
-    FreakProperties::setPatternScale(patternScale);
-    FreakProperties::setOctaves(octaves);
-    update();
+    init();
 }
 
-void FreakDescriptor::update()
+FreakDescriptor::FreakDescriptor(FreakDescriptor &&freak) TL_NOEXCEPT
+  : mProperties(std::move(freak.mProperties))
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    , mFREAK(std::move(freak.mFREAK))
+#endif // HAVE_OPENCV_XFEATURES2D
+{
+}
+
+auto FreakDescriptor::operator =(const FreakDescriptor &freak) -> FreakDescriptor &
+{
+    if (this != &freak) {
+        mProperties = freak.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto FreakDescriptor::operator =(FreakDescriptor &&freak) TL_NOEXCEPT -> FreakDescriptor &
+{
+    if (this != &freak) {
+        mProperties = std::move(freak.mProperties);
+#ifdef HAVE_OPENCV_XFEATURES2D 
+        mFREAK = std::move(freak.mFREAK);
+#endif // HAVE_OPENCV_XFEATURES2D
+    }
+    return *this;
+}
+
+void FreakDescriptor::init()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
-    mFREAK = cv::xfeatures2d::FREAK::create(FreakProperties::orientationNormalized(),
-                                            FreakProperties::scaleNormalized(),
-                                            static_cast<float>(FreakProperties::patternScale()),
-                                            FreakProperties::octaves());
+    mFREAK = cv::xfeatures2d::FREAK::create(mProperties.orientationNormalized(),
+                                            mProperties.scaleNormalized(),
+                                            mProperties.patternScale(),
+                                            mProperties.octaves());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
@@ -152,36 +190,6 @@ auto FreakDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &key
     }
 
     return descriptors;
-}
-
-void FreakDescriptor::setOrientationNormalized(bool orientationNormalized)
-{
-    FreakProperties::setOrientationNormalized(orientationNormalized);
-    update();
-}
-
-void FreakDescriptor::setScaleNormalized(bool scaleNormalized)
-{
-    FreakProperties::setScaleNormalized(scaleNormalized);
-    update();
-}
-
-void FreakDescriptor::setPatternScale(double patternScale)
-{
-    FreakProperties::setPatternScale(patternScale);
-    update();
-}
-
-void FreakDescriptor::setOctaves(int octaves)
-{
-    FreakProperties::setOctaves(octaves);
-    update();
-}
-
-void FreakDescriptor::reset()
-{
-    FreakProperties::reset();
-    update();
 }
 
 

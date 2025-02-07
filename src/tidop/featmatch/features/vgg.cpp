@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "vgg.h"
+#include "tidop/featmatch/features/vgg.h"
 
 #include "tidop/core/base/exception.h"
 
@@ -30,25 +30,43 @@ namespace tl
 {
 
 
+/* VGG properties */
+
 VggProperties::VggProperties()
-  : mDescriptorType(vgg_default_value_descriptor_type)
+  : Feature("VGG", Feature::Type::vgg)
+{
+    reset();
+}
+
+VggProperties::VggProperties(const VggProperties &properties)
+  : Feature(properties)
 {
 }
 
-VggProperties::VggProperties(const VggProperties &vggProperties)
-  : Vgg(vggProperties),
-    mDescriptorType(vggProperties.mDescriptorType),
-    mScaleFactor(vggProperties.mScaleFactor),
-    mSigma(vggProperties.mSigma),
-    bUseNormalizeDescriptor(vggProperties.bUseNormalizeDescriptor),
-    bUseNormalizeImage(vggProperties.bUseNormalizeImage),
-    bUseScaleOrientation(vggProperties.bUseScaleOrientation)
+VggProperties::VggProperties(VggProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto VggProperties::operator=(const VggProperties &properties) -> VggProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto VggProperties::operator=(VggProperties &&properties) TL_NOEXCEPT -> VggProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto VggProperties::descriptorType() const -> std::string
 {
-    return mDescriptorType;
+    return getProperty<std::string>("DescriptorType");
 }
 
 void VggProperties::setDescriptorType(const std::string &descriptorType)
@@ -57,114 +75,134 @@ void VggProperties::setDescriptorType(const std::string &descriptorType)
         descriptorType == "VGG_80" ||
         descriptorType == "VGG_64" ||
         descriptorType == "VGG_48") {
-        mDescriptorType = descriptorType;
+        setProperty("DescriptorType", descriptorType);
+    } else {
+        Message::warning("'DescriptorType' value not valid: {}", descriptorType);
     }
 }
 
-auto VggProperties::scaleFactor() const -> double
+auto VggProperties::scaleFactor() const -> float
 {
-    return mScaleFactor;
+    return getProperty<float>("ScaleFactor");
 }
 
-void VggProperties::setScaleFactor(double scaleFactor)
+void VggProperties::setScaleFactor(float scaleFactor)
 {
-    mScaleFactor = scaleFactor;
+    setProperty("ScaleFactor", scaleFactor);
 }
 
-auto VggProperties::sigma() const -> double
+auto VggProperties::sigma() const -> float
 {
-    return mSigma;
+    return getProperty<float>("Sigma");
 }
 
-void VggProperties::setSigma(double sigma)
+void VggProperties::setSigma(float sigma)
 {
-    mSigma = sigma;
+    setProperty("Sigma", sigma);
 }
 
 auto VggProperties::useNormalizeDescriptor() const -> bool
 {
-    return bUseNormalizeDescriptor;
+    return getProperty<bool>("UseNormalizeDescriptor");
 }
 
 void VggProperties::setUseNormalizeDescriptor(bool useNormalizeDescriptor)
 {
-    bUseNormalizeDescriptor = useNormalizeDescriptor;
+    setProperty("UseNormalizeDescriptor", useNormalizeDescriptor);
 }
 
 auto VggProperties::useNormalizeImage() const -> bool
 {
-    return bUseNormalizeImage;
+    return getProperty<bool>("UseNormalizeImage");
 }
 
 void VggProperties::setUseNormalizeImage(bool useNormalizeImage)
 {
-    bUseNormalizeImage = useNormalizeImage;
+    setProperty("UseNormalizeImage", useNormalizeImage);
 }
 
 auto VggProperties::useScaleOrientation() const -> bool
 {
-    return bUseScaleOrientation;
+    return getProperty<bool>("UseScaleOrientation");
 }
 
 void VggProperties::setUseScaleOrientation(bool useScaleOrientation)
 {
-    bUseScaleOrientation = useScaleOrientation;
+    setProperty("UseScaleOrientation", useScaleOrientation);
 }
 
 void VggProperties::reset()
 {
-    mDescriptorType = vgg_default_value_descriptor_type;
-    mScaleFactor = vgg_default_value_scale_factor;
-    mSigma = vgg_default_value_sigma;
-    bUseNormalizeDescriptor = vgg_default_value_use_normalize_descriptor;
-    bUseNormalizeImage = vgg_default_value_use_normalize_image;
-    bUseScaleOrientation = vgg_default_value_useScale_orientation;
-}
-
-auto VggProperties::name() const -> std::string
-{
-    return std::string("VGG");
+    setDescriptorType(vgg_default_value_descriptor_type);
+    setScaleFactor(vgg_default_value_scale_factor);
+    setSigma(vgg_default_value_sigma);
+    setUseNormalizeDescriptor(vgg_default_value_use_normalize_descriptor);
+    setUseNormalizeImage(vgg_default_value_use_normalize_image);
+    setUseScaleOrientation(vgg_default_value_useScale_orientation);
 }
 
 
 
-/*----------------------------------------------------------------*/
 
 
+/* VGG descriptor */
 
 VggDescriptor::VggDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-VggDescriptor::VggDescriptor(const VggDescriptor &vggDescriptor)
-  : VggProperties(vggDescriptor)
+VggDescriptor::VggDescriptor(const VggProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-VggDescriptor::VggDescriptor(const std::string &descriptorType,
-                             double scaleFactor,
-                             double sigma,
-                             bool useNormalizeDescriptor,
-                             bool useNormalizeImage,
-                             bool useScaleOrientation)
+VggDescriptor::VggDescriptor(const VggDescriptor &vgg)
+  : mProperties(vgg.mProperties)
 {
-    VggProperties::setDescriptorType(descriptorType);
-    VggProperties::setScaleFactor(scaleFactor);
-    VggProperties::setSigma(sigma);
-    VggProperties::setUseNormalizeDescriptor(useNormalizeDescriptor);
-    VggProperties::setUseNormalizeImage(useNormalizeImage);
-    VggProperties::setUseScaleOrientation(useScaleOrientation);
-    update();
+    init();
 }
 
-void VggDescriptor::update()
+VggDescriptor::VggDescriptor(VggDescriptor &&vgg) TL_NOEXCEPT
+  : mProperties(std::move(vgg.mProperties))
+#ifdef HAVE_OPENCV_XFEATURES2D 
+#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
+    , mVGG(std::move(vgg.mVGG))
+#endif
+#endif // HAVE_OPENCV_XFEATURES2D
+{
+}
+
+auto VggDescriptor::operator =(const VggDescriptor &vgg) -> VggDescriptor &
+{
+    if (this != &vgg) {
+        mProperties = vgg.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto VggDescriptor::operator =(VggDescriptor &&vgg) TL_NOEXCEPT -> VggDescriptor &
+{
+    if (this != &vgg) {
+        mProperties = std::move(vgg.mProperties);
+#ifdef HAVE_OPENCV_XFEATURES2D 
+#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
+        mVGG = std::move(vgg.mVGG);
+#endif
+#endif // HAVE_OPENCV_XFEATURES2D
+    }
+    return *this;
+}
+
+void VggDescriptor::init()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
     int descriptor_type = cv::xfeatures2d::VGG::VGG_120;
-    std::string descriptorType = VggProperties::descriptorType();
+    std::string descriptorType = mProperties.descriptorType();
     if (descriptorType == "VGG_120") {
         descriptor_type = cv::xfeatures2d::VGG::VGG_120;
     } else if (descriptorType == "VGG_80") {
@@ -176,55 +214,13 @@ void VggDescriptor::update()
     }
 
     mVGG = cv::xfeatures2d::VGG::create(descriptor_type,
-                                        static_cast<float>(VggProperties::sigma()),
-                                        VggProperties::useNormalizeImage(),
-                                        VggProperties::useScaleOrientation(),
-                                        static_cast<float>(VggProperties::scaleFactor()),
-                                        VggProperties::useNormalizeDescriptor());
+                                        mProperties.sigma(),
+                                        mProperties.useNormalizeImage(),
+                                        mProperties.useScaleOrientation(),
+                                        mProperties.scaleFactor(),
+                                        mProperties.useNormalizeDescriptor());
 #endif
 #endif // HAVE_OPENCV_XFEATURES2D
-}
-
-void VggDescriptor::reset()
-{
-    VggProperties::reset();
-    update();
-}
-
-void VggDescriptor::setDescriptorType(const std::string &descriptorType)
-{
-    VggProperties::setDescriptorType(descriptorType);
-    update();
-}
-
-void VggDescriptor::setScaleFactor(double scaleFactor)
-{
-    VggProperties::setScaleFactor(scaleFactor);
-    update();
-}
-
-void VggDescriptor::setSigma(double sigma)
-{
-    VggProperties::setSigma(sigma);
-    update();
-}
-
-void VggDescriptor::setUseNormalizeDescriptor(bool useNormalizeDescriptor)
-{
-    VggProperties::setUseNormalizeDescriptor(useNormalizeDescriptor);
-    update();
-}
-
-void VggDescriptor::setUseNormalizeImage(bool useNormalizeImage)
-{
-    VggProperties::setUseNormalizeImage(useNormalizeImage);
-    update();
-}
-
-void VggDescriptor::setUseScaleOrientation(bool useScaleOrientation)
-{
-    VggProperties::setUseScaleOrientation(useScaleOrientation);
-    update();
 }
 
 auto VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat

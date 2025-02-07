@@ -34,31 +34,9 @@ class LSS;
 namespace tl
 {
 
-class TL_EXPORT LssProperties
-  : public Lss
-{
-
-public:
-
-    LssProperties();
-    ~LssProperties() override;
-
-// Feature interface
-
-public:
-
-    void reset() override;
-    auto name() const -> std::string final;
-
-};
-
-
-/*----------------------------------------------------------------*/
-
 
 class TL_EXPORT LssDescriptor
-  : public LssProperties,
-    public FeatureDescriptor
+  : public FeatureDescriptor
 {
 
 protected:
@@ -70,22 +48,21 @@ public:
     LssDescriptor();
     ~LssDescriptor() override;
 
-private:
-
-    void update();
-
 // FeatureDescriptor interface
 
 public:
 
+    /*!
+     * \brief Extract descriptors from an image.
+     *
+     * Extracts binary descriptors for the given keypoints using the LSS descriptor.
+     *
+     * \param[in] img The input grayscale image.
+     * \param[in,out] keyPoints Detected keypoints (modified if necessary).
+     * \return %Matrix containing the computed descriptors.
+     */
     auto extract(const cv::Mat &img,
                  std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
-
-// Feature interface
-
-public:
-
-    void reset() override;
 
 };
 

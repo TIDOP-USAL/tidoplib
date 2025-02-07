@@ -34,142 +34,166 @@ BOOST_AUTO_TEST_SUITE(SiftDetectorDescriptorTestSuite)
 
 struct SiftDetectorDescriptorTest
 {
-  SiftDetectorDescriptorTest()
+    SiftDetectorDescriptorTest()
+    {
+    }
+
+    ~SiftDetectorDescriptorTest()
+    {
 #if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
-    : siftDetectorDescriptor(new SiftDetectorDescriptor(500, 4, 0.5, 20., 3.))
+        delete siftDetectorDescriptor;
 #endif
-  { }
-    
-  ~SiftDetectorDescriptorTest()
-  { 
+    }
+
+    void setup()
+    {
+        siftProperties.setFeaturesNumber(500);
+        siftProperties.setOctaveLayers(4);
+        siftProperties.setContrastThreshold(0.5);
+        siftProperties.setEdgeThreshold(20.);
+        siftProperties.setSigma(3.);
+
 #if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
-    delete siftDetectorDescriptor;
+        siftDetectorDescriptor = new SiftDetectorDescriptor(siftProperties);
 #endif
-  }
 
-  void setup()
-  {
+    }
 
-  }
+    void teardown()
+    {
+    }
 
-  void teardown()
-  {
-  }
-
-  SiftProperties siftProperties;
+    SiftProperties siftProperties;
+    SiftProperties siftDefaultProperties;
 #if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
-  SiftDetectorDescriptor *siftDetectorDescriptor;
+    SiftDetectorDescriptor *siftDetectorDescriptor;
 #endif
 
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, SiftDetectorDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(5000, siftProperties.featuresNumber());
-  BOOST_CHECK_EQUAL(3, siftProperties.octaveLayers());
-  BOOST_CHECK_EQUAL(0.04, siftProperties.contrastThreshold());
-  BOOST_CHECK_EQUAL(10., siftProperties.edgeThreshold());
-  BOOST_CHECK_EQUAL(1.6, siftProperties.sigma());
+    BOOST_CHECK_EQUAL(5000, siftDefaultProperties.featuresNumber());
+    BOOST_CHECK_EQUAL(3, siftDefaultProperties.octaveLayers());
+    BOOST_CHECK_EQUAL(0.04, siftDefaultProperties.contrastThreshold());
+    BOOST_CHECK_EQUAL(10., siftDefaultProperties.edgeThreshold());
+    BOOST_CHECK_EQUAL(1.6, siftDefaultProperties.sigma());
 }
 
 #if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
 BOOST_FIXTURE_TEST_CASE(constructor, SiftDetectorDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(500, siftDetectorDescriptor->featuresNumber());
-  BOOST_CHECK_EQUAL(4, siftDetectorDescriptor->octaveLayers());
-  BOOST_CHECK_EQUAL(0.5, siftDetectorDescriptor->contrastThreshold());
-  BOOST_CHECK_EQUAL(20., siftDetectorDescriptor->edgeThreshold());
-  BOOST_CHECK_EQUAL(3., siftDetectorDescriptor->sigma());
+    BOOST_CHECK_EQUAL(500, siftProperties.featuresNumber());
+    BOOST_CHECK_EQUAL(4, siftProperties.octaveLayers());
+    BOOST_CHECK_EQUAL(0.5, siftProperties.contrastThreshold());
+    BOOST_CHECK_EQUAL(20., siftProperties.edgeThreshold());
+    BOOST_CHECK_EQUAL(3., siftProperties.sigma());
 }
 
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, SiftDetectorDescriptorTest)
 {
-  SiftProperties copy(*siftDetectorDescriptor);
-  BOOST_CHECK_EQUAL(500, copy.featuresNumber());
-  BOOST_CHECK_EQUAL(4, copy.octaveLayers());
-  BOOST_CHECK_EQUAL(0.5, copy.contrastThreshold());
-  BOOST_CHECK_EQUAL(20., copy.edgeThreshold());
-  BOOST_CHECK_EQUAL(3., copy.sigma());
+    SiftProperties copy(siftProperties);
+    BOOST_CHECK_EQUAL(500, copy.featuresNumber());
+    BOOST_CHECK_EQUAL(4, copy.octaveLayers());
+    BOOST_CHECK_EQUAL(0.5, copy.contrastThreshold());
+    BOOST_CHECK_EQUAL(20., copy.edgeThreshold());
+    BOOST_CHECK_EQUAL(3., copy.sigma());
 }
 
 BOOST_FIXTURE_TEST_CASE(assign, SiftDetectorDescriptorTest)
 {
-  SiftProperties assign = *siftDetectorDescriptor;
-  BOOST_CHECK_EQUAL(500, assign.featuresNumber());
-  BOOST_CHECK_EQUAL(4, assign.octaveLayers());
-  BOOST_CHECK_EQUAL(0.5, assign.contrastThreshold());
-  BOOST_CHECK_EQUAL(20., assign.edgeThreshold());
-  BOOST_CHECK_EQUAL(3., assign.sigma());
+    SiftProperties assign = siftProperties;
+    BOOST_CHECK_EQUAL(500, assign.featuresNumber());
+    BOOST_CHECK_EQUAL(4, assign.octaveLayers());
+    BOOST_CHECK_EQUAL(0.5, assign.contrastThreshold());
+    BOOST_CHECK_EQUAL(20., assign.edgeThreshold());
+    BOOST_CHECK_EQUAL(3., assign.sigma());
 }
 #endif
 
 BOOST_FIXTURE_TEST_CASE(type, SiftDetectorDescriptorTest)
 {
-  BOOST_CHECK(Feature::Type::sift == siftProperties.type());
+    BOOST_CHECK(Feature::Type::sift == siftProperties.type());
 }
 
 BOOST_FIXTURE_TEST_CASE(name, SiftDetectorDescriptorTest)
 {
-  BOOST_CHECK_EQUAL("SIFT", siftProperties.name());
+    BOOST_CHECK_EQUAL("SIFT", siftProperties.name());
 }
 
 BOOST_FIXTURE_TEST_CASE(featuresNumber, SiftDetectorDescriptorTest)
 {
-  SiftProperties sift;
-  sift.setFeaturesNumber(500);
-  BOOST_CHECK_EQUAL(500, sift.featuresNumber());
-  sift.setFeaturesNumber(10000);
-  BOOST_CHECK_EQUAL(10000, sift.featuresNumber());
+    SiftProperties sift;
+    sift.setFeaturesNumber(500);
+    BOOST_CHECK_EQUAL(500, sift.featuresNumber());
+    sift.setFeaturesNumber(10000);
+    BOOST_CHECK_EQUAL(10000, sift.featuresNumber());
 }
 
 BOOST_FIXTURE_TEST_CASE(octaveLayers, SiftDetectorDescriptorTest)
 {
-  SiftProperties sift;
-  sift.setOctaveLayers(3);
-  BOOST_CHECK_EQUAL(3, sift.octaveLayers());
-  sift.setOctaveLayers(4);
-  BOOST_CHECK_EQUAL(4, sift.octaveLayers());
+    SiftProperties sift;
+    sift.setOctaveLayers(3);
+    BOOST_CHECK_EQUAL(3, sift.octaveLayers());
+    sift.setOctaveLayers(4);
+    BOOST_CHECK_EQUAL(4, sift.octaveLayers());
 }
 
 BOOST_FIXTURE_TEST_CASE(contrastThreshold, SiftDetectorDescriptorTest)
 {
-  SiftProperties sift;
-  sift.setContrastThreshold(0.04);
-  BOOST_CHECK_EQUAL(0.04, sift.contrastThreshold());
-  sift.setContrastThreshold(0.1);
-  BOOST_CHECK_EQUAL(0.1, sift.contrastThreshold());
+    SiftProperties sift;
+    sift.setContrastThreshold(0.04);
+    BOOST_CHECK_EQUAL(0.04, sift.contrastThreshold());
+    sift.setContrastThreshold(0.1);
+    BOOST_CHECK_EQUAL(0.1, sift.contrastThreshold());
 }
 
 BOOST_FIXTURE_TEST_CASE(edgeThreshold, SiftDetectorDescriptorTest)
 {
-  SiftProperties sift;
-  sift.setEdgeThreshold(10.);
-  BOOST_CHECK_EQUAL(10., sift.edgeThreshold());
-  sift.setEdgeThreshold(20.);
-  BOOST_CHECK_EQUAL(20., sift.edgeThreshold());
+    SiftProperties sift;
+    sift.setEdgeThreshold(10.);
+    BOOST_CHECK_EQUAL(10., sift.edgeThreshold());
+    sift.setEdgeThreshold(20.);
+    BOOST_CHECK_EQUAL(20., sift.edgeThreshold());
 }
 
 BOOST_FIXTURE_TEST_CASE(sigma, SiftDetectorDescriptorTest)
 {
-  SiftProperties sift;
-  sift.setSigma(1.);
-  BOOST_CHECK_EQUAL(1., sift.sigma());
-  sift.setSigma(2.);
-  BOOST_CHECK_EQUAL(2., sift.sigma());
+    SiftProperties sift;
+    sift.setSigma(1.);
+    BOOST_CHECK_EQUAL(1., sift.sigma());
+    sift.setSigma(2.);
+    BOOST_CHECK_EQUAL(2., sift.sigma());
 }
 
-#if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
 BOOST_FIXTURE_TEST_CASE(reset, SiftDetectorDescriptorTest)
 {
-  SiftProperties sift(*siftDetectorDescriptor);
-  sift.reset();
-  BOOST_CHECK_EQUAL(5000, sift.featuresNumber());
-  BOOST_CHECK_EQUAL(3, sift.octaveLayers());
-  BOOST_CHECK_EQUAL(0.04, sift.contrastThreshold());
-  BOOST_CHECK_EQUAL(10., sift.edgeThreshold());
-  BOOST_CHECK_EQUAL(1.6, sift.sigma());
+    SiftProperties sift = siftProperties;
+    sift.reset();
+    BOOST_CHECK_EQUAL(5000, sift.featuresNumber());
+    BOOST_CHECK_EQUAL(3, sift.octaveLayers());
+    BOOST_CHECK_EQUAL(0.04, sift.contrastThreshold());
+    BOOST_CHECK_EQUAL(10., sift.edgeThreshold());
+    BOOST_CHECK_EQUAL(1.6, sift.sigma());
 }
-#endif
+
+BOOST_FIXTURE_TEST_CASE(sift_detector_descriptor_properties, SiftDetectorDescriptorTest)
+{
+    auto &properties = siftDetectorDescriptor->properties();
+
+    BOOST_CHECK_EQUAL(500, properties.getProperty<int>("FeaturesNumber"));
+    BOOST_CHECK_EQUAL(3.0, properties.getProperty<double>("Sigma"));
+    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("OctaveLayers"));
+    BOOST_CHECK_EQUAL(0.5, properties.getProperty<double>("ContrastThreshold"));
+    BOOST_CHECK_EQUAL(20.0, properties.getProperty<double>("EdgeThreshold"));
+
+    BOOST_CHECK_EQUAL("500", properties.getPropertyAsString("FeaturesNumber"));
+    BOOST_CHECK_EQUAL("3.000000", properties.getPropertyAsString("Sigma"));
+    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("OctaveLayers"));
+    BOOST_CHECK_EQUAL("0.500000", properties.getPropertyAsString("ContrastThreshold"));
+    BOOST_CHECK_EQUAL("20.000000", properties.getPropertyAsString("EdgeThreshold"));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

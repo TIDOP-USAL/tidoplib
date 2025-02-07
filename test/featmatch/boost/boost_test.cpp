@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_SUITE(BoostDescriptorTestSuite)
 struct BoostDescriptorTest
 {
     BoostDescriptorTest()
-        : boostDescriptor(new BoostDescriptor("BGM_BILINEAR", false, 0.75))
     { }
 
     ~BoostDescriptorTest()
@@ -62,12 +61,20 @@ struct BoostDescriptorTest
         descriptor_type_result.push_back("BINBOOST_128");
         descriptor_type_result.push_back("BINBOOST_256");
         descriptor_type_result.push_back("BINBOOST_256");
+
+        boostProperties.setDescriptorType("BGM_BILINEAR");
+        boostProperties.setUseOrientation(false);
+        boostProperties.setScaleFactor(0.75);
+
+        boostDescriptor = new BoostDescriptor(boostProperties);
+
     }
 
     void teardown()
     {
     }
 
+    BoostProperties boostDefaultProperties;
     BoostProperties boostProperties;
     BoostDescriptor *boostDescriptor;
     std::vector<std::string> descriptor_type_value;
@@ -76,21 +83,21 @@ struct BoostDescriptorTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, BoostDescriptorTest)
 {
-    BOOST_CHECK_EQUAL("BINBOOST_256", boostProperties.descriptorType());
-    BOOST_CHECK_EQUAL(true, boostProperties.useOrientation());
-    BOOST_CHECK_EQUAL(6.25, boostProperties.scaleFactor());
+    BOOST_CHECK_EQUAL("BINBOOST_256", boostDefaultProperties.descriptorType());
+    BOOST_CHECK_EQUAL(true, boostDefaultProperties.useOrientation());
+    BOOST_CHECK_EQUAL(6.25, boostDefaultProperties.scaleFactor());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, BoostDescriptorTest)
 {
-    BOOST_CHECK_EQUAL("BGM_BILINEAR", boostDescriptor->descriptorType());
-    BOOST_CHECK_EQUAL(false, boostDescriptor->useOrientation());
-    BOOST_CHECK_EQUAL(0.75, boostDescriptor->scaleFactor());
+    BOOST_CHECK_EQUAL("BGM_BILINEAR", boostProperties.descriptorType());
+    BOOST_CHECK_EQUAL(false, boostProperties.useOrientation());
+    BOOST_CHECK_EQUAL(0.75, boostProperties.scaleFactor());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, BoostDescriptorTest)
 {
-    BoostProperties copy(*boostDescriptor);
+    BoostProperties copy(boostProperties);
     BOOST_CHECK_EQUAL("BGM_BILINEAR", copy.descriptorType());
     BOOST_CHECK_EQUAL(false, copy.useOrientation());
     BOOST_CHECK_EQUAL(0.75, copy.scaleFactor());
@@ -98,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, BoostDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(assign, BoostDescriptorTest)
 {
-    BoostProperties assign = *boostDescriptor;
+    BoostProperties assign = boostProperties;
     BOOST_CHECK_EQUAL("BGM_BILINEAR", assign.descriptorType());
     BOOST_CHECK_EQUAL(false, assign.useOrientation());
     BOOST_CHECK_EQUAL(0.75, assign.scaleFactor());
@@ -143,11 +150,24 @@ BOOST_FIXTURE_TEST_CASE(useOrientation, BoostDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, BoostDescriptorTest)
 {
-    BoostProperties boost(*boostDescriptor);
+    BoostProperties boost(boostProperties);
     boost.reset();
     BOOST_CHECK_EQUAL("BINBOOST_256", boost.descriptorType());
     BOOST_CHECK_EQUAL(true, boost.useOrientation());
     BOOST_CHECK_EQUAL(6.25, boost.scaleFactor());
+}
+
+BOOST_FIXTURE_TEST_CASE(boost_detector_properties, BoostDescriptorTest)
+{
+    auto properties = boostDescriptor->properties();
+
+    BOOST_CHECK_EQUAL("BGM_BILINEAR", properties.getProperty<std::string>("DescriptorType"));
+    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("UseOrientation"));
+    BOOST_CHECK_EQUAL(0.75f, properties.getProperty<float>("ScaleFactor"));
+
+    BOOST_CHECK_EQUAL("BGM_BILINEAR", properties.getPropertyAsString("DescriptorType"));
+    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("UseOrientation"));
+    BOOST_CHECK_EQUAL("0.750000", properties.getPropertyAsString("ScaleFactor"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() 

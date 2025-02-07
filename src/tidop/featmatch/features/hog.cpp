@@ -34,148 +34,175 @@ namespace tl
 
 
 HogProperties::HogProperties()
-  : mWinSize(16, 16),
-    mBlockSize(4, 4),
-    mBlockStride(2, 2),
-    mCellSize(2, 2)
+  : Feature("HOG", Feature::Type::hog)
+{
+    reset();
+}
+
+HogProperties::HogProperties(const HogProperties &properties)
+  : Feature(properties)
 {
 }
 
-HogProperties::HogProperties(const HogProperties &hogProperties)
-  : Hog(hogProperties),
-    mWinSize(hogProperties.mWinSize),
-    mBlockSize(hogProperties.mBlockSize),
-    mBlockStride(hogProperties.mBlockStride),
-    mCellSize(hogProperties.mCellSize),
-    mNbins(hogProperties.mNbins),
-    mDerivAperture(hogProperties.mDerivAperture)
+HogProperties::HogProperties(HogProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto HogProperties::operator =(const HogProperties &properties) -> HogProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+
+    return *this;
+}
+
+auto HogProperties::operator =(HogProperties &&properties) TL_NOEXCEPT -> HogProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+
+    return *this;
 }
 
 auto HogProperties::winSize() const -> Size<int>
 {
-    return mWinSize;
+    return getProperty<Size<int>>("WinSize");
 }
 
 auto HogProperties::blockSize() const -> Size<int>
 {
-    return mBlockSize;
+    return getProperty<Size<int>>("BlockSize");
 }
 
 auto HogProperties::blockStride() const -> Size<int>
 {
-    return mBlockStride;
+    return getProperty<Size<int>>("BlockStride");
 }
 
 auto HogProperties::cellSize() const -> Size<int>
 {
-    return mCellSize;
+    return getProperty<Size<int>>("CellSize");
 }
 
 auto HogProperties::nbins() const -> int
 {
-    return mNbins;
+    return getProperty<int>("Nbins");
 }
 
 auto HogProperties::derivAperture() const -> int
 {
-    return mDerivAperture;
+    return getProperty<int>("DerivAperture");
 }
 
 void HogProperties::setWinSize(const Size<int> &winSize)
 {
-    mWinSize = winSize;
+    setProperty("WinSize", winSize);
 }
 
 void HogProperties::setBlockSize(const Size<int> &blockSize)
 {
-    mBlockSize = blockSize;
+    setProperty("BlockSize", blockSize);
 }
 
 void HogProperties::setBlockStride(const Size<int> &blockStride)
 {
-    mBlockStride = blockStride;
+    setProperty("BlockStride", blockStride);
 }
 
 void HogProperties::setCellSize(const Size<int> &cellSize)
 {
-    mCellSize = cellSize;
+    setProperty("CellSize", cellSize);
 }
 
 void HogProperties::setNbins(int nbins)
 {
-    mNbins = nbins;
+    setProperty("Nbins", nbins);
 }
 
 void HogProperties::setDerivAperture(int derivAperture)
 {
-    mDerivAperture = derivAperture;
+    setProperty("DerivAperture", derivAperture);
 }
 
 void HogProperties::reset()
 {
-    mWinSize = Size<int>(16, 16);
-    mBlockSize = Size<int>(4, 4);
-    mBlockStride = Size<int>(2, 2);
-    mCellSize = Size<int>(2, 2);
-    mNbins = 9;
-    mDerivAperture = 1;
-}
-
-auto HogProperties::name() const -> std::string
-{
-    return std::string("HOG");
+    setWinSize({16, 16});
+    setBlockSize({4, 4});
+    setBlockStride({2, 2});
+    setCellSize({2, 2});
+    setNbins(9);
+    setDerivAperture(1);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* HOG descriptor */
 
 HogDescriptor::HogDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-HogDescriptor::HogDescriptor(const HogDescriptor &hogDescriptor)
-  : HogProperties(hogDescriptor),
-    FeatureDescriptor(hogDescriptor)
+HogDescriptor::HogDescriptor(const HogProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-HogDescriptor::HogDescriptor(const Size<int> &winSize,
-                             const Size<int> &blockSize,
-                             const Size<int> &blockStride,
-                             const Size<int> &cellSize,
-                             int nbins,
-                             int derivAperture)
+HogDescriptor::HogDescriptor(const HogDescriptor &hog)
+  : mProperties(hog.mProperties)
 {
-    HogProperties::setWinSize(winSize);
-    HogProperties::setBlockSize(blockSize);
-    HogProperties::setBlockStride(blockStride);
-    HogProperties::setCellSize(cellSize);
-    HogProperties::setNbins(nbins);
-    HogProperties::setDerivAperture(derivAperture);
-    update();
+    init();
 }
 
-void HogDescriptor::update()
+HogDescriptor::HogDescriptor(HogDescriptor &&hog) TL_NOEXCEPT
+  : mProperties(std::move(hog.mProperties)),
+    mHOG(std::move(hog.mHOG))
 {
-    cv::Size win_size(HogProperties::winSize().width,
-                      HogProperties::winSize().height);
-    cv::Size block_size(HogProperties::blockSize().width,
-                        HogProperties::blockSize().height);
-    cv::Size block_stride(HogProperties::blockStride().width,
-                          HogProperties::blockStride().height);
-    cv::Size cell_size(HogProperties::cellSize().width,
-                       HogProperties::cellSize().height);
+    init();
+}
+
+auto HogDescriptor::operator =(const HogDescriptor &hog) -> HogDescriptor &
+{
+    if (this != &hog) {
+        mProperties = hog.mProperties;
+        init();
+    }
+
+    return *this;
+}
+
+auto HogDescriptor::operator =(HogDescriptor &&hog) TL_NOEXCEPT -> HogDescriptor &
+{
+    if (this != &hog) {
+        mProperties = std::move(hog.mProperties);
+        mHOG = std::move(hog.mHOG);
+    }
+
+    return *this;
+}
+
+void HogDescriptor::init()
+{
+    cv::Size win_size(mProperties.winSize().width,
+                      mProperties.winSize().height);
+    cv::Size block_size(mProperties.blockSize().width,
+                        mProperties.blockSize().height);
+    cv::Size block_stride(mProperties.blockStride().width,
+                          mProperties.blockStride().height);
+    cv::Size cell_size(mProperties.cellSize().width,
+                       mProperties.cellSize().height);
 
     mHOG = std::make_shared<cv::HOGDescriptor>(win_size,
                                                block_size,
                                                block_stride,
                                                cell_size,
-                                               HogProperties::nbins(),
-                                               HogProperties::derivAperture());
+                                               mProperties.nbins(),
+                                               mProperties.derivAperture());
 }
 
 void HogDescriptor::normalizepatch(const cv::Mat &gray,
@@ -186,7 +213,7 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
 
         cv::Point center = keypoint.pt;
 
-        cv::Size outsize(HogProperties::winSize().width, HogProperties::winSize().height);
+        cv::Size outsize(mProperties.winSize().width, mProperties.winSize().height);
         output = cv::Mat::zeros(outsize, CV_8UC1);
         cv::Size maskenter;
         maskenter.height = cvRound(keypoint.size);
@@ -257,48 +284,6 @@ auto HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPo
     }
 
     return descriptors;
-}
-
-void HogDescriptor::setWinSize(const Size<int> &winSize)
-{
-    HogProperties::setWinSize(winSize);
-    update();
-}
-
-void HogDescriptor::setBlockSize(const Size<int> &blockSize)
-{
-    HogProperties::setBlockSize(blockSize);
-    update();
-}
-
-void HogDescriptor::setBlockStride(const Size<int> &blockStride)
-{
-    HogProperties::setBlockStride(blockStride);
-    update();
-}
-
-void HogDescriptor::setCellSize(const Size<int> &cellSize)
-{
-    HogProperties::setCellSize(cellSize);
-    update();
-}
-
-void HogDescriptor::setNbins(int nbins)
-{
-    HogProperties::setNbins(nbins);
-    update();
-}
-
-void HogDescriptor::setDerivAperture(int derivAperture)
-{
-    HogProperties::setDerivAperture(derivAperture);
-    update();
-}
-
-void HogDescriptor::reset()
-{
-    HogProperties::reset();
-    update();
 }
 
 

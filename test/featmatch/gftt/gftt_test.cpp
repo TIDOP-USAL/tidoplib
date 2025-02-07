@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_SUITE(GfttDetectorTestSuite)
 struct GfttDetectorTest
 {
   GfttDetectorTest()
-    : gfttDetector(new GfttDetector(2000, 0.05, 2, 5, true, 0.05))
   { }
     
   ~GfttDetectorTest()
@@ -45,12 +44,21 @@ struct GfttDetectorTest
 
   void setup()
   {
+      gfttProperties.setMaxFeatures(2000);
+      gfttProperties.setQualityLevel(0.05);
+      gfttProperties.setMinDistance(2);
+      gfttProperties.setBlockSize(5);
+      gfttProperties.setHarrisDetector(true);
+      gfttProperties.setK(0.05);
+
+      gfttDetector = new GfttDetector(gfttProperties);
   }
 
   void teardown()
   {
   }
 
+  GfttProperties gfttDefaultProperties;
   GfttProperties gfttProperties;
   GfttDetector *gfttDetector;
 
@@ -58,27 +66,27 @@ struct GfttDetectorTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, GfttDetectorTest)
 {
-  BOOST_CHECK_EQUAL(1000, gfttProperties.maxFeatures());
-  BOOST_CHECK_EQUAL(0.01, gfttProperties.qualityLevel());
-  BOOST_CHECK_EQUAL(1, gfttProperties.minDistance());
-  BOOST_CHECK_EQUAL(3, gfttProperties.blockSize());
-  BOOST_CHECK_EQUAL(false, gfttProperties.harrisDetector());
-  BOOST_CHECK_EQUAL(0.04, gfttProperties.k());
+  BOOST_CHECK_EQUAL(1000, gfttDefaultProperties.maxFeatures());
+  BOOST_CHECK_EQUAL(0.01, gfttDefaultProperties.qualityLevel());
+  BOOST_CHECK_EQUAL(1, gfttDefaultProperties.minDistance());
+  BOOST_CHECK_EQUAL(3, gfttDefaultProperties.blockSize());
+  BOOST_CHECK_EQUAL(false, gfttDefaultProperties.harrisDetector());
+  BOOST_CHECK_EQUAL(0.04, gfttDefaultProperties.k());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, GfttDetectorTest)
 {
-  BOOST_CHECK_EQUAL(2000, gfttDetector->maxFeatures());
-  BOOST_CHECK_EQUAL(0.05, gfttDetector->qualityLevel());
-  BOOST_CHECK_EQUAL(2, gfttDetector->minDistance());
-  BOOST_CHECK_EQUAL(5, gfttDetector->blockSize());
-  BOOST_CHECK_EQUAL(true, gfttDetector->harrisDetector());
-  BOOST_CHECK_EQUAL(0.05, gfttDetector->k());
+  BOOST_CHECK_EQUAL(2000, gfttProperties.maxFeatures());
+  BOOST_CHECK_EQUAL(0.05, gfttProperties.qualityLevel());
+  BOOST_CHECK_EQUAL(2, gfttProperties.minDistance());
+  BOOST_CHECK_EQUAL(5, gfttProperties.blockSize());
+  BOOST_CHECK_EQUAL(true, gfttProperties.harrisDetector());
+  BOOST_CHECK_EQUAL(0.05, gfttProperties.k());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, GfttDetectorTest)
 {
-  GfttProperties copy(*gfttDetector);
+  GfttProperties copy(gfttProperties);
   BOOST_CHECK_EQUAL(2000, copy.maxFeatures());
   BOOST_CHECK_EQUAL(0.05, copy.qualityLevel());
   BOOST_CHECK_EQUAL(2, copy.minDistance());
@@ -89,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, GfttDetectorTest)
 
 BOOST_FIXTURE_TEST_CASE(assign, GfttDetectorTest)
 {
-  GfttProperties assign = *gfttDetector;
+  GfttProperties assign = gfttProperties;
   BOOST_CHECK_EQUAL(2000, assign.maxFeatures());
   BOOST_CHECK_EQUAL(0.05, assign.qualityLevel());
   BOOST_CHECK_EQUAL(2, assign.minDistance());
@@ -164,7 +172,7 @@ BOOST_FIXTURE_TEST_CASE(k, GfttDetectorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, GfttDetectorTest)
 {
-  GfttProperties gftt(*gfttDetector);
+  GfttProperties gftt = gfttProperties;
   gftt.reset();
   BOOST_CHECK_EQUAL(1000, gftt.maxFeatures());
   BOOST_CHECK_EQUAL(0.01, gftt.qualityLevel());
@@ -173,5 +181,25 @@ BOOST_FIXTURE_TEST_CASE(reset, GfttDetectorTest)
   BOOST_CHECK_EQUAL(false, gftt.harrisDetector());
   BOOST_CHECK_EQUAL(0.04, gftt.k());
 }
+
+BOOST_FIXTURE_TEST_CASE(gftt_detector_properties, GfttDetectorTest)
+{
+    auto &properties = gfttDetector->properties();
+
+    BOOST_CHECK_EQUAL(2000, properties.getProperty<int>("MaxFeatures"));
+    BOOST_CHECK_EQUAL(0.05, properties.getProperty<double>("QualityLevel"));
+    BOOST_CHECK_EQUAL(2., properties.getProperty<double>("MinDistance"));
+    BOOST_CHECK_EQUAL(5, properties.getProperty<int>("BlockSize"));
+    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("HarrisDetector"));
+    BOOST_CHECK_EQUAL(0.05, properties.getProperty<double>("K"));
+
+    BOOST_CHECK_EQUAL("2000", properties.getPropertyAsString("MaxFeatures"));
+    BOOST_CHECK_EQUAL("0.050000", properties.getPropertyAsString("QualityLevel"));
+    BOOST_CHECK_EQUAL("2.000000", properties.getPropertyAsString("MinDistance"));
+    BOOST_CHECK_EQUAL("5", properties.getPropertyAsString("BlockSize"));
+    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("HarrisDetector"));
+    BOOST_CHECK_EQUAL("0.050000", properties.getPropertyAsString("K"));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END() 

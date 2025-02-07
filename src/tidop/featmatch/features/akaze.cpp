@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "akaze.h"
+#include "tidop/featmatch/features/akaze.h"
 
 #include "tidop/core/base/exception.h"
 
@@ -30,53 +30,39 @@
 namespace tl
 {
 
+/* AKAZE properties */
 
 AkazeProperties::AkazeProperties()
-  : mDescriptorType(akaze_default_value_descriptor_type),
-    mDiffusivity(akaze_default_value_diffusivity)
+  : Feature("AKAZE", Feature::Type::akaze)
+{
+    reset();
+}
+
+AkazeProperties::AkazeProperties(const AkazeProperties &properties)
+  : Feature(properties)
 {
 }
 
-AkazeProperties::AkazeProperties(const AkazeProperties &akazeProperties) = default;
-
-AkazeProperties::AkazeProperties(AkazeProperties &&akazeProperties) TL_NOEXCEPT
-  : mDescriptorType(std::move(akazeProperties.mDescriptorType)),
-    mDescriptorSize(akazeProperties.mDescriptorSize),
-    mDescriptorChannels(akazeProperties.mDescriptorChannels),
-    mThreshold(akazeProperties.mThreshold),
-    mOctaves(akazeProperties.mOctaves),
-    mOctaveLayers(akazeProperties.mOctaveLayers),
-    mDiffusivity(std::move(akazeProperties.mDiffusivity))
+AkazeProperties::AkazeProperties(AkazeProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
 }
 
 AkazeProperties::~AkazeProperties() = default;
 
-auto AkazeProperties::operator =(const AkazeProperties &akazeProperties) -> AkazeProperties&
+auto AkazeProperties::operator =(const AkazeProperties &properties) -> AkazeProperties&
 {
-    if (this != &akazeProperties) {
-        mDescriptorType = akazeProperties.mDescriptorType;
-        mDescriptorSize = akazeProperties.mDescriptorSize;
-        mDescriptorChannels = akazeProperties.mDescriptorChannels;
-        mThreshold = akazeProperties.mThreshold;
-        mOctaves = akazeProperties.mOctaves;
-        mOctaveLayers = akazeProperties.mOctaveLayers;
-        mDiffusivity = akazeProperties.mDiffusivity;
+    if (this != &properties) {
+        Feature::operator=(properties);
     }
 
     return *this;
 }
 
-auto AkazeProperties::operator =(AkazeProperties &&akazeProperties) TL_NOEXCEPT -> AkazeProperties&
+auto AkazeProperties::operator =(AkazeProperties &&properties) TL_NOEXCEPT -> AkazeProperties&
 {
-    if (this != &akazeProperties) {
-        mDescriptorType = std::move(akazeProperties.mDescriptorType);
-        mDescriptorSize = akazeProperties.mDescriptorSize;
-        mDescriptorChannels = akazeProperties.mDescriptorChannels;
-        mThreshold = akazeProperties.mThreshold;
-        mOctaves = akazeProperties.mOctaves;
-        mOctaveLayers = akazeProperties.mOctaveLayers;
-        mDiffusivity = std::move(akazeProperties.mDiffusivity);
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
     }
 
     return *this;
@@ -84,37 +70,37 @@ auto AkazeProperties::operator =(AkazeProperties &&akazeProperties) TL_NOEXCEPT 
 
 auto AkazeProperties::descriptorType() const -> std::string
 {
-    return mDescriptorType;
+    return getProperty<std::string>("DescriptorType");
 }
 
 auto AkazeProperties::descriptorSize() const -> int
 {
-    return mDescriptorSize;
+    return getProperty<int>("DescriptorSize");
 }
 
 auto AkazeProperties::descriptorChannels() const -> int
 {
-    return mDescriptorChannels;
+    return getProperty<int>("DescriptorChannels");
 }
 
 auto AkazeProperties::threshold() const -> double
 {
-    return mThreshold;
+    return getProperty<double>("Threshold");
 }
 
 auto AkazeProperties::octaves() const -> int
 {
-    return mOctaves;
+    return getProperty<int>("Octaves");
 }
 
 auto AkazeProperties::octaveLayers() const -> int
 {
-    return mOctaveLayers;
+    return getProperty<int>("OctaveLayers");
 }
 
 auto AkazeProperties::diffusivity() const -> std::string
 {
-    return mDiffusivity;
+    return getProperty<std::string>("Diffusivity");
 }
 
 void AkazeProperties::setDescriptorType(const std::string &descriptorType)
@@ -123,33 +109,35 @@ void AkazeProperties::setDescriptorType(const std::string &descriptorType)
         descriptorType == "KAZE_UPRIGHT" ||
         descriptorType == "MLDB" ||
         descriptorType == "MLDB_UPRIGHT") {
-        mDescriptorType = descriptorType;
+        setProperty("DescriptorType", descriptorType);
+    } else {
+        Message::warning("'DescriptorType' value not valid: {}", descriptorType);
     }
 }
 
 void AkazeProperties::setDescriptorSize(int descriptorSize)
 {
-    mDescriptorSize = descriptorSize;
+    setProperty("DescriptorSize", descriptorSize);
 }
 
 void AkazeProperties::setDescriptorChannels(int channels)
 {
-    mDescriptorChannels = channels;
+    setProperty("DescriptorChannels", channels);
 }
 
 void AkazeProperties::setThreshold(double threshold)
 {
-    mThreshold = threshold;
+    setProperty("Threshold", threshold);
 }
 
 void AkazeProperties::setOctaves(int octaves)
 {
-    mOctaves = octaves;
+    setProperty("Octaves", octaves);
 }
 
 void AkazeProperties::setOctaveLayers(int octaveLayers)
 {
-    mOctaveLayers = octaveLayers;
+    setProperty("OctaveLayers", octaveLayers);
 }
 
 void AkazeProperties::setDiffusivity(const std::string &diffusivity)
@@ -158,92 +146,83 @@ void AkazeProperties::setDiffusivity(const std::string &diffusivity)
         diffusivity == "DIFF_PM_G2" ||
         diffusivity == "DIFF_WEICKERT" ||
         diffusivity == "DIFF_CHARBONNIER") {
-        mDiffusivity = diffusivity;
+        setProperty("Diffusivity", diffusivity);
+    } else {
+        Message::warning("'Diffusivity' value not valid: {}", diffusivity);
     }
 }
 
 void AkazeProperties::reset()
 {
-    mDescriptorType = akaze_default_value_descriptor_type;
-    mDescriptorSize = akaze_default_value_descriptor_size;
-    mDescriptorChannels = akaze_default_value_descriptor_channels;
-    mThreshold = akaze_default_value_threshold;
-    mOctaves = akaze_default_value_octaves;
-    mOctaveLayers = akaze_default_value_octave_layers;
-    mDiffusivity = akaze_default_value_diffusivity;
-}
-
-std::string AkazeProperties::name() const
-{
-    return std::string("AKAZE");
+    setDescriptorType(akaze_default_value_descriptor_type);
+    setDescriptorSize(akaze_default_value_descriptor_size);
+    setDescriptorChannels(akaze_default_value_descriptor_channels);
+    setThreshold(akaze_default_value_threshold);
+    setOctaves(akaze_default_value_octaves);
+    setOctaveLayers(akaze_default_value_octave_layers);
+    setDiffusivity(akaze_default_value_diffusivity);
 }
 
 
 
-/*----------------------------------------------------------------*/
-
+/* AGAST detector/descriptor */
 
 AkazeDetectorDescriptor::AkazeDetectorDescriptor()
-{
-    mAkaze = cv::AKAZE::create(convertDescriptorType(AkazeProperties::descriptorType()),
-                               AkazeProperties::descriptorSize(),
-                               AkazeProperties::descriptorChannels(),
-                               static_cast<float>(AkazeProperties::threshold()),
-                               AkazeProperties::octaves(),
-                               AkazeProperties::octaveLayers(),
-                               convertDiffusivity(AkazeProperties::diffusivity()));
-}
-
-AkazeDetectorDescriptor::AkazeDetectorDescriptor(const AkazeDetectorDescriptor &akazeDetectorDescriptor)
-  : AkazeProperties(akazeDetectorDescriptor),
-    FeatureDetector(akazeDetectorDescriptor),
-    FeatureDescriptor(akazeDetectorDescriptor)
+  : mProperties(),
+    mAkaze(cv::AKAZE::create())
 {
     this->initAkazeFromProperties();
 }
 
-AkazeDetectorDescriptor::AkazeDetectorDescriptor(AkazeDetectorDescriptor &&akazeDetectorDescriptor) TL_NOEXCEPT
-  : AkazeProperties(std::forward<AkazeProperties>(akazeDetectorDescriptor))
+AkazeDetectorDescriptor::AkazeDetectorDescriptor(const AkazeProperties &properties)
+  : mProperties(properties),
+    mAkaze(cv::AKAZE::create())
 {
     this->initAkazeFromProperties();
 }
 
-AkazeDetectorDescriptor::AkazeDetectorDescriptor(const std::string &descriptorType,
-                                                 int descriptorSize,
-                                                 int descriptorChannels,
-                                                 double threshold,
-                                                 int octaves,
-                                                 int octaveLayers,
-                                                 const std::string &diffusivity)
-  : mAkaze(cv::AKAZE::create())
+AkazeDetectorDescriptor::AkazeDetectorDescriptor(const AkazeDetectorDescriptor &akaze)
+  : mProperties(akaze.mProperties),
+    mAkaze(cv::AKAZE::create())
 {
-	AkazeDetectorDescriptor::setDescriptorType(descriptorType);
-    AkazeDetectorDescriptor::setDescriptorSize(descriptorSize);
-    AkazeDetectorDescriptor::setDescriptorChannels(descriptorChannels);
-    AkazeDetectorDescriptor::setThreshold(threshold);
-    AkazeDetectorDescriptor::setOctaves(octaves);
-    AkazeDetectorDescriptor::setOctaveLayers(octaveLayers);
-    AkazeDetectorDescriptor::setDiffusivity(diffusivity);
+    this->initAkazeFromProperties();
 }
 
-auto AkazeDetectorDescriptor::operator =(const AkazeDetectorDescriptor &akazeDetectorDescriptor) -> AkazeDetectorDescriptor &
+AkazeDetectorDescriptor::AkazeDetectorDescriptor(AkazeDetectorDescriptor &&akaze) TL_NOEXCEPT
+  : mProperties(std::move(akaze.mProperties)),
+    mAkaze(std::move(akaze.mAkaze))
 {
-    if (this != &akazeDetectorDescriptor) {
-        AkazeProperties::operator=(akazeDetectorDescriptor);
+}
+
+auto AkazeDetectorDescriptor::operator =(const AkazeDetectorDescriptor &akaze) -> AkazeDetectorDescriptor &
+{
+    if (this != &akaze) {
+        mProperties = akaze.mProperties;
         this->initAkazeFromProperties();
     }
 
     return *this;
 }
 
-auto AkazeDetectorDescriptor::operator =(AkazeDetectorDescriptor &&akazeDetectorDescriptor) TL_NOEXCEPT -> AkazeDetectorDescriptor&
+auto AkazeDetectorDescriptor::operator =(AkazeDetectorDescriptor &&akaze) TL_NOEXCEPT -> AkazeDetectorDescriptor&
 {
-    if (this != &akazeDetectorDescriptor) {
-        AkazeProperties::operator=(std::forward<AkazeProperties>(akazeDetectorDescriptor));
-        this->initAkazeFromProperties();
+    if (this != &akaze) {
+        mProperties = std::move(akaze.mProperties);
+        mAkaze = std::move(akaze.mAkaze);
     }
 
     return *this;
+}
+
+void AkazeDetectorDescriptor::initAkazeFromProperties()
+{
+    mAkaze->setDescriptorChannels(mProperties.descriptorChannels());
+    mAkaze->setDescriptorSize(mProperties.descriptorSize());
+    mAkaze->setDescriptorType(convertDescriptorType(mProperties.descriptorType()));
+    mAkaze->setDiffusivity(convertDiffusivity(mProperties.diffusivity()));
+    mAkaze->setNOctaves(mProperties.octaves());
+    mAkaze->setNOctaveLayers(mProperties.octaveLayers());
+    mAkaze->setThreshold(mProperties.threshold());
 }
 
 #if CV_VERSION_MAJOR >= 4
@@ -279,17 +258,6 @@ auto AkazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity)
     }
 
     return diff;
-}
-
-void AkazeDetectorDescriptor::initAkazeFromProperties()
-{
-    mAkaze = cv::AKAZE::create(convertDescriptorType(AkazeProperties::descriptorType()),
-                               AkazeProperties::descriptorSize(),
-                               AkazeProperties::descriptorChannels(),
-                               static_cast<float>(AkazeProperties::threshold()),
-                               AkazeProperties::octaves(),
-                               AkazeProperties::octaveLayers(),
-                               convertDiffusivity(AkazeProperties::diffusivity()));
 }
 
 #else
@@ -358,60 +326,6 @@ auto AkazeDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoi
     }
 
     return descriptors;
-}
-
-void AkazeDetectorDescriptor::setDescriptorType(const std::string &descriptorType)
-{
-    AkazeProperties::setDescriptorType(descriptorType);
-    mAkaze->setDescriptorType(convertDescriptorType(descriptorType));
-}
-
-void AkazeDetectorDescriptor::setDescriptorSize(int descriptorSize)
-{
-    AkazeProperties::setDescriptorSize(descriptorSize);
-    mAkaze->setDescriptorSize(descriptorSize);
-}
-
-void AkazeDetectorDescriptor::setDescriptorChannels(int channels)
-{
-    AkazeProperties::setDescriptorChannels(channels);
-    mAkaze->setDescriptorChannels(channels);
-}
-
-void AkazeDetectorDescriptor::setThreshold(double threshold)
-{
-    AkazeProperties::setThreshold(threshold);
-    mAkaze->setThreshold(threshold);
-}
-
-void AkazeDetectorDescriptor::setOctaves(int octaves)
-{
-    AkazeProperties::setOctaves(octaves);
-    mAkaze->setNOctaves(octaves);
-}
-
-void AkazeDetectorDescriptor::setOctaveLayers(int octaveLayers)
-{
-    AkazeProperties::setOctaveLayers(octaveLayers);
-    mAkaze->setNOctaveLayers(octaveLayers);
-}
-
-void AkazeDetectorDescriptor::setDiffusivity(const std::string &diffusivity)
-{
-    AkazeProperties::setDiffusivity(diffusivity);
-    mAkaze->setDiffusivity(convertDiffusivity(diffusivity));
-}
-
-void AkazeDetectorDescriptor::reset()
-{
-    AkazeProperties::reset();
-    mAkaze->setDescriptorType(convertDescriptorType(AkazeProperties::descriptorType()));
-    mAkaze->setDescriptorSize(AkazeProperties::descriptorSize());
-    mAkaze->setDescriptorChannels(AkazeProperties::descriptorChannels());
-    mAkaze->setThreshold(AkazeProperties::threshold());
-    mAkaze->setNOctaves(AkazeProperties::octaves());
-    mAkaze->setNOctaveLayers(AkazeProperties::octaveLayers());
-    mAkaze->setDiffusivity(convertDiffusivity(AkazeProperties::diffusivity()));
 }
 
 

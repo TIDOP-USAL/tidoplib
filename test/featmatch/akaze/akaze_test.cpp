@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_SUITE(AkazeDetectorDescriptorTestSuite)
 struct AkazeDetectorDescriptorTest
 {
     AkazeDetectorDescriptorTest()
-        : akazeDetectorDescriptor(new AkazeDetectorDescriptor("KAZE_UPRIGHT", 32, 4, 0.1, 3, 6, "DIFF_WEICKERT"))
     { }
 
     ~AkazeDetectorDescriptorTest()
@@ -68,12 +67,23 @@ struct AkazeDetectorDescriptorTest
         diffusivity_result.push_back("DIFF_WEICKERT");
         diffusivity_result.push_back("DIFF_CHARBONNIER");
         diffusivity_result.push_back("DIFF_CHARBONNIER");
+
+        akazeProperties.setDescriptorType("KAZE_UPRIGHT");
+        akazeProperties.setDescriptorSize(32);
+        akazeProperties.setDescriptorChannels(4);
+        akazeProperties.setThreshold(0.1);
+        akazeProperties.setOctaves(3);
+        akazeProperties.setOctaveLayers(6);
+        akazeProperties.setDiffusivity("DIFF_WEICKERT");
+
+        akazeDetectorDescriptor = new AkazeDetectorDescriptor(akazeProperties);
     }
 
     void teardown()
     {
     }
 
+    AkazeProperties akazeDefaultProperties;
     AkazeProperties akazeProperties;
     AkazeDetectorDescriptor *akazeDetectorDescriptor;
     std::vector<std::string> descriptor_type_value;
@@ -84,29 +94,29 @@ struct AkazeDetectorDescriptorTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, AkazeDetectorDescriptorTest)
 {
-    BOOST_CHECK_EQUAL("MLDB", akazeProperties.descriptorType());
-    BOOST_CHECK_EQUAL(0, akazeProperties.descriptorSize());
-    BOOST_CHECK_EQUAL(3, akazeProperties.descriptorChannels());
-    BOOST_CHECK_EQUAL(0.001, akazeProperties.threshold());
-    BOOST_CHECK_EQUAL(4, akazeProperties.octaves());
-    BOOST_CHECK_EQUAL(4, akazeProperties.octaveLayers());
-    BOOST_CHECK_EQUAL("DIFF_PM_G2", akazeProperties.diffusivity());
+    BOOST_CHECK_EQUAL("MLDB", akazeDefaultProperties.descriptorType());
+    BOOST_CHECK_EQUAL(0, akazeDefaultProperties.descriptorSize());
+    BOOST_CHECK_EQUAL(3, akazeDefaultProperties.descriptorChannels());
+    BOOST_CHECK_EQUAL(0.001, akazeDefaultProperties.threshold());
+    BOOST_CHECK_EQUAL(4, akazeDefaultProperties.octaves());
+    BOOST_CHECK_EQUAL(4, akazeDefaultProperties.octaveLayers());
+    BOOST_CHECK_EQUAL("DIFF_PM_G2", akazeDefaultProperties.diffusivity());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, AkazeDetectorDescriptorTest)
 {
-    BOOST_CHECK_EQUAL("KAZE_UPRIGHT", akazeDetectorDescriptor->descriptorType());
-    BOOST_CHECK_EQUAL(32, akazeDetectorDescriptor->descriptorSize());
-    BOOST_CHECK_EQUAL(4, akazeDetectorDescriptor->descriptorChannels());
-    BOOST_CHECK_EQUAL(0.1, akazeDetectorDescriptor->threshold());
-    BOOST_CHECK_EQUAL(3, akazeDetectorDescriptor->octaves());
-    BOOST_CHECK_EQUAL(6, akazeDetectorDescriptor->octaveLayers());
-    BOOST_CHECK_EQUAL("DIFF_WEICKERT", akazeDetectorDescriptor->diffusivity());
+    BOOST_CHECK_EQUAL("KAZE_UPRIGHT", akazeProperties.descriptorType());
+    BOOST_CHECK_EQUAL(32, akazeProperties.descriptorSize());
+    BOOST_CHECK_EQUAL(4, akazeProperties.descriptorChannels());
+    BOOST_CHECK_EQUAL(0.1, akazeProperties.threshold());
+    BOOST_CHECK_EQUAL(3, akazeProperties.octaves());
+    BOOST_CHECK_EQUAL(6, akazeProperties.octaveLayers());
+    BOOST_CHECK_EQUAL("DIFF_WEICKERT", akazeProperties.diffusivity());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, AkazeDetectorDescriptorTest)
 {
-    AkazeProperties copy(*akazeDetectorDescriptor);
+    AkazeProperties copy(akazeProperties);
     BOOST_CHECK_EQUAL("KAZE_UPRIGHT", copy.descriptorType());
     BOOST_CHECK_EQUAL(32, copy.descriptorSize());
     BOOST_CHECK_EQUAL(4, copy.descriptorChannels());
@@ -118,7 +128,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, AkazeDetectorDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(assign, AkazeDetectorDescriptorTest)
 {
-    AkazeProperties assign = *akazeDetectorDescriptor;
+    AkazeProperties assign = akazeProperties;
     BOOST_CHECK_EQUAL("KAZE_UPRIGHT", assign.descriptorType());
     BOOST_CHECK_EQUAL(32, assign.descriptorSize());
     BOOST_CHECK_EQUAL(4, assign.descriptorChannels());
@@ -203,7 +213,14 @@ BOOST_FIXTURE_TEST_CASE(diffusivity, AkazeDetectorDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, AkazeDetectorDescriptorTest)
 {
-    AkazeProperties akaze(*akazeDetectorDescriptor);
+    AkazeProperties akaze;
+    akaze.setDescriptorType("KAZE_UPRIGHT");
+    akaze.setDescriptorSize(32);
+    akaze.setDescriptorChannels(4);
+    akaze.setThreshold(0.1);
+    akaze.setOctaves(3);
+    akaze.setOctaveLayers(6);
+    akaze.setDiffusivity("DIFF_WEICKERT");
     akaze.reset();
     BOOST_CHECK_EQUAL("MLDB", akaze.descriptorType());
     BOOST_CHECK_EQUAL(0, akaze.descriptorSize());
@@ -212,6 +229,28 @@ BOOST_FIXTURE_TEST_CASE(reset, AkazeDetectorDescriptorTest)
     BOOST_CHECK_EQUAL(4, akaze.octaves());
     BOOST_CHECK_EQUAL(4, akaze.octaveLayers());
     BOOST_CHECK_EQUAL("DIFF_PM_G2", akaze.diffusivity());
+}
+
+
+BOOST_FIXTURE_TEST_CASE(akaze_detector_properties, AkazeDetectorDescriptorTest)
+{
+    auto properties = akazeDetectorDescriptor->properties();
+
+    BOOST_CHECK_EQUAL("KAZE_UPRIGHT", properties.getProperty<std::string>("DescriptorType"));
+    BOOST_CHECK_EQUAL(32, properties.getProperty<int>("DescriptorSize"));
+    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("DescriptorChannels"));
+    BOOST_CHECK_EQUAL(0.1, properties.getProperty<double>("Threshold"));
+    BOOST_CHECK_EQUAL(3, properties.getProperty<int>("Octaves"));
+    BOOST_CHECK_EQUAL(6, properties.getProperty<int>("OctaveLayers"));
+    BOOST_CHECK_EQUAL("DIFF_WEICKERT", properties.getProperty<std::string>("Diffusivity"));
+
+    BOOST_CHECK_EQUAL("KAZE_UPRIGHT", properties.getPropertyAsString("DescriptorType"));
+    BOOST_CHECK_EQUAL("32", properties.getPropertyAsString("DescriptorSize"));
+    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("DescriptorChannels"));
+    BOOST_CHECK_EQUAL("0.100000", properties.getPropertyAsString("Threshold"));
+    BOOST_CHECK_EQUAL("3", properties.getPropertyAsString("Octaves"));
+    BOOST_CHECK_EQUAL("6", properties.getPropertyAsString("OctaveLayers"));
+    BOOST_CHECK_EQUAL("DIFF_WEICKERT", properties.getPropertyAsString("Diffusivity"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

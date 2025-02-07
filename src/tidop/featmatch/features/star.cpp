@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "star.h"
+#include "tidop/featmatch/features/star.h"
 
 #include "tidop/core/base/exception.h"
 
@@ -31,119 +31,159 @@ namespace tl
 {
 
 
-StarProperties::StarProperties() = default;
+/* STAR properties */
 
-StarProperties::StarProperties(const StarProperties &starProperties)
-  : Star(starProperties),
-    mMaxSize(starProperties.mMaxSize),
-    mResponseThreshold(starProperties.mResponseThreshold),
-    mLineThresholdProjected(starProperties.mLineThresholdProjected),
-    mLineThresholdBinarized(starProperties.mLineThresholdBinarized),
-    mSuppressNonmaxSize(starProperties.mSuppressNonmaxSize)
+StarProperties::StarProperties()
+  : Feature("STAR", Feature::Type::star)
 {
+    reset();
+}
+
+StarProperties::StarProperties(const StarProperties &properties)
+  : Feature(properties)
+{
+}
+
+StarProperties::StarProperties(StarProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
+{
+}
+
+auto StarProperties::operator=(const StarProperties &properties) -> StarProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto StarProperties::operator=(StarProperties &&properties) TL_NOEXCEPT -> StarProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto StarProperties::maxSize() const -> int
 {
-    return mMaxSize;
+    return getProperty<int>("MaxSize");
 }
 
 auto StarProperties::responseThreshold() const -> int
 {
-    return mResponseThreshold;
+    return getProperty<int>("ResponseThreshold");
 }
 
 auto StarProperties::lineThresholdProjected() const -> int
 {
-    return mLineThresholdProjected;
+    return getProperty<int>("LineThresholdProjected");
 }
 
 auto StarProperties::lineThresholdBinarized() const -> int
 {
-    return mLineThresholdBinarized;
+    return getProperty<int>("LineThresholdBinarized");
 }
 
 auto StarProperties::suppressNonmaxSize() const -> int
 {
-    return mSuppressNonmaxSize;
+    return getProperty<int>("SuppressNonmaxSize");
 }
 
 void StarProperties::setMaxSize(int maxSize)
 {
-    mMaxSize = maxSize;
+    setProperty("MaxSize", maxSize);
 }
 
 void StarProperties::setResponseThreshold(int responseThreshold)
 {
-    mResponseThreshold = responseThreshold;
+    setProperty("ResponseThreshold", responseThreshold);
 }
 
 void StarProperties::setLineThresholdProjected(int lineThresholdProjected)
 {
-    mLineThresholdProjected = lineThresholdProjected;
+    setProperty("LineThresholdProjected", lineThresholdProjected);
 }
 
 void StarProperties::setLineThresholdBinarized(int lineThresholdBinarized)
 {
-    mLineThresholdBinarized = lineThresholdBinarized;
+    setProperty("LineThresholdBinarized", lineThresholdBinarized);
 }
 
 void StarProperties::setSuppressNonmaxSize(int suppressNonmaxSize)
 {
-    mSuppressNonmaxSize = suppressNonmaxSize;
+    setProperty("SuppressNonmaxSize", suppressNonmaxSize);
 }
 
 void StarProperties::reset()
 {
-    mMaxSize = star_default_value_max_size;
-    mResponseThreshold = star_default_value_response_threshold;
-    mLineThresholdProjected = star_default_value_line_threshold_projected;
-    mLineThresholdBinarized = star_default_value_line_threshold_binarized;
-    mSuppressNonmaxSize = star_default_value_suppress_nonmax_size;
-}
-
-auto StarProperties::name() const -> std::string
-{
-    return std::string("STAR");
+    setMaxSize(star_default_value_max_size);
+    setResponseThreshold(star_default_value_response_threshold);
+    setLineThresholdProjected(star_default_value_line_threshold_projected);
+    setLineThresholdBinarized(star_default_value_line_threshold_binarized);
+    setSuppressNonmaxSize(star_default_value_suppress_nonmax_size);
 }
 
 
-/*----------------------------------------------------------------*/
 
+
+
+/* STAR detector */
 
 StarDetector::StarDetector()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-StarDetector::StarDetector(const StarDetector &starDetector)
-    : StarProperties(starDetector)
+StarDetector::StarDetector(const StarProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-StarDetector::StarDetector(int maxSize,
-                           int responseThreshold,
-                           int lineThresholdProjected,
-                           int lineThresholdBinarized,
-                           int suppressNonmaxSize)
+StarDetector::StarDetector(const StarDetector &star)
+    : mProperties(star.mProperties)
 {
-    StarProperties::setMaxSize(maxSize);
-    StarProperties::setResponseThreshold(responseThreshold);
-    StarProperties::setLineThresholdProjected(lineThresholdProjected);
-    StarProperties::setLineThresholdBinarized(lineThresholdBinarized);
-    StarProperties::setSuppressNonmaxSize(suppressNonmaxSize);
-    update();
+    init();
 }
 
-void StarDetector::update()
+StarDetector::StarDetector(StarDetector &&star) TL_NOEXCEPT
+    : mProperties(std::move(star.mProperties))
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    , mSTAR(std::move(star.mSTAR))
+#endif // HAVE_OPENCV_XFEATURES2D
+{
+}
+
+auto StarDetector::operator =(const StarDetector &star) -> StarDetector &
+{
+    if (this != &star) {
+        mProperties = star.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto StarDetector::operator =(StarDetector &&star) TL_NOEXCEPT -> StarDetector &
+{
+    if (this != &star) {
+        mProperties = std::move(star.mProperties);
+#ifdef HAVE_OPENCV_XFEATURES2D 
+        mSTAR = std::move(star.mSTAR);
+#endif // HAVE_OPENCV_XFEATURES2D
+    }
+    return *this;
+}
+
+void StarDetector::init()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D
-    mSTAR = cv::xfeatures2d::StarDetector::create(StarProperties::maxSize(),
-                                                  StarProperties::responseThreshold(),
-                                                  StarProperties::lineThresholdProjected(),
-                                                  StarProperties::lineThresholdBinarized(),
-                                                  StarProperties::suppressNonmaxSize());
+    mSTAR = cv::xfeatures2d::StarDetector::create(mProperties.maxSize(),
+                                                  mProperties.responseThreshold(),
+                                                  mProperties.lineThresholdProjected(),
+                                                  mProperties.lineThresholdBinarized(),
+                                                  mProperties.suppressNonmaxSize());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
@@ -165,42 +205,6 @@ auto StarDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vect
     }
 
     return keyPoints;
-}
-
-void StarDetector::setMaxSize(int maxSize)
-{
-    StarProperties::setMaxSize(maxSize);
-    update();
-}
-
-void StarDetector::setResponseThreshold(int responseThreshold)
-{
-    StarProperties::setResponseThreshold(responseThreshold);
-    update();
-}
-
-void StarDetector::setLineThresholdProjected(int lineThresholdProjected)
-{
-    StarProperties::setLineThresholdProjected(lineThresholdProjected);
-    update();
-}
-
-void StarDetector::setLineThresholdBinarized(int lineThresholdBinarized)
-{
-    StarProperties::setLineThresholdBinarized(lineThresholdBinarized);
-    update();
-}
-
-void StarDetector::setSuppressNonmaxSize(int suppressNonmaxSize)
-{
-    StarProperties::setSuppressNonmaxSize(suppressNonmaxSize);
-    update();
-}
-
-void StarDetector::reset()
-{
-    StarProperties::reset();
-    update();
 }
 
 

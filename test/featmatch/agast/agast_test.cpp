@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_SUITE(AgastDetectorTestSuite)
 struct AgastDetectorTest
 {
     AgastDetectorTest()
-        : agastDetector(new AgastDetector(5, false, "AGAST_7_12s"))
     { }
 
     ~AgastDetectorTest()
@@ -45,45 +44,50 @@ struct AgastDetectorTest
 
     void setup()
     {
+        agastProperties.setThreshold(15);
+        agastProperties.setNonmaxSuppression(true);
+        agastProperties.setDetectorType("AGAST_7_12s");
 
+        agastDetector = new AgastDetector(agastProperties);
     }
 
     void teardown()
     {
     }
 
+    AgastProperties agastDefaultProperties;
     AgastProperties agastProperties;
     AgastDetector *agastDetector;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, AgastDetectorTest)
 {
-    BOOST_CHECK_EQUAL(10, agastProperties.threshold());
-    BOOST_CHECK_EQUAL("OAST_9_16", agastProperties.detectorType());
-    BOOST_CHECK_EQUAL(true, agastProperties.nonmaxSuppression());
+    BOOST_CHECK_EQUAL(10, agastDefaultProperties.threshold());
+    BOOST_CHECK_EQUAL("OAST_9_16", agastDefaultProperties.detectorType());
+    BOOST_CHECK_EQUAL(true, agastDefaultProperties.nonmaxSuppression());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, AgastDetectorTest)
 {
-    BOOST_CHECK_EQUAL(5, agastDetector->threshold());
-    BOOST_CHECK_EQUAL("AGAST_7_12s", agastDetector->detectorType());
-    BOOST_CHECK_EQUAL(false, agastDetector->nonmaxSuppression());
+    BOOST_CHECK_EQUAL(15, agastProperties.threshold());
+    BOOST_CHECK_EQUAL("AGAST_7_12s", agastProperties.detectorType());
+    BOOST_CHECK_EQUAL(true, agastProperties.nonmaxSuppression());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, AgastDetectorTest)
 {
-    AgastProperties agast_copy(*agastDetector);
-    BOOST_CHECK_EQUAL(5, agast_copy.threshold());
+    AgastProperties agast_copy(agastProperties);
+    BOOST_CHECK_EQUAL(15, agast_copy.threshold());
     BOOST_CHECK_EQUAL("AGAST_7_12s", agast_copy.detectorType());
-    BOOST_CHECK_EQUAL(false, agast_copy.nonmaxSuppression());
+    BOOST_CHECK_EQUAL(true, agast_copy.nonmaxSuppression());
 }
 
 BOOST_FIXTURE_TEST_CASE(assign, AgastDetectorTest)
 {
-    AgastProperties agast_assign = *agastDetector;
-    BOOST_CHECK_EQUAL(5, agast_assign.threshold());
+    AgastProperties agast_assign = agastProperties;
+    BOOST_CHECK_EQUAL(15, agast_assign.threshold());
     BOOST_CHECK_EQUAL("AGAST_7_12s", agast_assign.detectorType());
-    BOOST_CHECK_EQUAL(false, agast_assign.nonmaxSuppression());
+    BOOST_CHECK_EQUAL(true, agast_assign.nonmaxSuppression());
 }
 
 BOOST_FIXTURE_TEST_CASE(type, AgastDetectorTest)
@@ -127,6 +131,19 @@ BOOST_FIXTURE_TEST_CASE(reset, AgastDetectorTest)
     BOOST_CHECK_EQUAL(10, agast.threshold());
     BOOST_CHECK_EQUAL("OAST_9_16", agast.detectorType());
     BOOST_CHECK_EQUAL(true, agast.nonmaxSuppression());
+}
+
+BOOST_FIXTURE_TEST_CASE(agast_detector_properties, AgastDetectorTest)
+{
+    auto &properties = agastDetector->properties();
+
+    BOOST_CHECK_EQUAL(15, properties.getProperty<int>("Threshold"));
+    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("NonmaxSuppression"));
+    BOOST_CHECK_EQUAL("AGAST_7_12s", properties.getProperty<std::string>("DetectorType"));
+
+    BOOST_CHECK_EQUAL("15", properties.getPropertyAsString("Threshold"));
+    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("NonmaxSuppression"));
+    BOOST_CHECK_EQUAL("AGAST_7_12s", properties.getPropertyAsString("DetectorType"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

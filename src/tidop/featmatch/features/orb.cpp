@@ -31,192 +31,202 @@ namespace tl
 {
 
 
+/* ORB properties */
+
 OrbProperties::OrbProperties()
-  : mFeaturesNumber(5000),
-    mScaleFactor(1.2),
-    mLevelsNumber(8),
-    mEdgeThreshold(31),
-    mFirstLevel(0),
-    mWTA_K(2),
-    mScoreType("Harris"),
-    mPatchSize(31),
-    mFastThreshold(20)
+  : Feature("ORB", Feature::Type::orb)
+{
+    reset();
+}
+
+OrbProperties::OrbProperties(const OrbProperties &properties)
+  : Feature(properties)
 {
 }
 
-OrbProperties::OrbProperties(const OrbProperties &orbProperties)
-  : Orb(orbProperties),
-    mFeaturesNumber(orbProperties.mFeaturesNumber),
-    mScaleFactor(orbProperties.mScaleFactor),
-    mLevelsNumber(orbProperties.mLevelsNumber),
-    mEdgeThreshold(orbProperties.mEdgeThreshold),
-    mFirstLevel(orbProperties.mFirstLevel),
-    mWTA_K(orbProperties.mWTA_K),
-    mScoreType(orbProperties.mScoreType),
-    mPatchSize(orbProperties.mPatchSize),
-    mFastThreshold(orbProperties.mFastThreshold)
+OrbProperties::OrbProperties(OrbProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto OrbProperties::operator=(const OrbProperties &properties) -> OrbProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto OrbProperties::operator=(OrbProperties &&properties) TL_NOEXCEPT -> OrbProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto OrbProperties::featuresNumber() const -> int
 {
-    return mFeaturesNumber;
+    return getProperty<int>("FeaturesNumber");
 }
 
-auto OrbProperties::scaleFactor() const -> double
+auto OrbProperties::scaleFactor() const -> float
 {
-    return mScaleFactor;
+    return getProperty<float>("ScaleFactor");
 }
 
 auto OrbProperties::levelsNumber() const -> int
 {
-    return mLevelsNumber;
+    return getProperty<int>("LevelsNumber");
 }
 
 auto OrbProperties::edgeThreshold() const -> int
 {
-    return mEdgeThreshold;
+    return getProperty<int>("EdgeThreshold");
 }
 
 auto OrbProperties::firstLevel() const -> int
 {
-    return mFirstLevel;
+    return getProperty<int>("FirstLevel");
 }
 
 auto OrbProperties::wta_k() const -> int
 {
-    return mWTA_K;
+    return getProperty<int>("WTA_K");
 }
 
 auto OrbProperties::scoreType() const -> std::string
 {
-    return mScoreType;
+    return getProperty<std::string>("ScoreType");
 }
 
 auto OrbProperties::patchSize() const -> int
 {
-    return mPatchSize;
+    return getProperty<int>("PatchSize");
 }
 
 auto OrbProperties::fastThreshold() const -> int
 {
-    return mFastThreshold;
+    return getProperty<int>("FastThreshold");
 }
 
-void OrbProperties::setScaleFactor(double scaleFactor)
+void OrbProperties::setScaleFactor(float scaleFactor)
 {
-    mScaleFactor = scaleFactor;
+    setProperty("ScaleFactor", scaleFactor);
 }
 
 void OrbProperties::setFeaturesNumber(int featuresNumber)
 {
-    mFeaturesNumber = featuresNumber;
+    setProperty("FeaturesNumber", featuresNumber);
 }
 
 void OrbProperties::setLevelsNumber(int levelsNumber)
 {
-    mLevelsNumber = levelsNumber;
+    setProperty("LevelsNumber", levelsNumber);
 }
 
 void OrbProperties::setEdgeThreshold(int edgeThreshold)
 {
-    mEdgeThreshold = edgeThreshold;
+    setProperty("EdgeThreshold", edgeThreshold);
 }
 
 void OrbProperties::setFirstLevel(int firstLevel)
 {
-    mFirstLevel = firstLevel;
+    setProperty("FirstLevel", firstLevel);
 }
 
 void OrbProperties::setWTA_K(int WTA_K)
 {
-    mWTA_K = WTA_K;
+    setProperty("WTA_K", WTA_K);
 }
 
 void OrbProperties::setScoreType(const std::string &scoreType)
 {
-    mScoreType = scoreType;
+    setProperty("ScoreType", scoreType);
 }
 
 void OrbProperties::setPatchSize(int patchSize)
 {
-    mPatchSize = patchSize;
+    setProperty("PatchSize", patchSize);
 }
 
 void OrbProperties::setFastThreshold(int fastThreshold)
 {
-    mFastThreshold = fastThreshold;
+    setProperty("FastThreshold", fastThreshold);
 }
 
 void OrbProperties::reset()
 {
-    mFeaturesNumber = 5000;
-    mScaleFactor = 1.2;
-    mLevelsNumber = 8;
-    mEdgeThreshold = 31;
-    mFirstLevel = 0;
-    mWTA_K = 2;
-    mScoreType = "Harris";
-    mPatchSize = 31;
-    mFastThreshold = 20;
-}
-
-auto OrbProperties::name() const -> std::string
-{
-    return std::string("ORB");
+    setFeaturesNumber(5000);
+    setScaleFactor(1.2);
+    setLevelsNumber(8);
+    setEdgeThreshold(31);
+    setFirstLevel(0);
+    setWTA_K(2);
+    setScoreType("Harris");
+    setPatchSize(31);
+    setFastThreshold(20);
 }
 
 
-/*----------------------------------------------------------------*/
 
+
+/* Orb detector/descriptor */
 
 OrbDetectorDescriptor::OrbDetectorDescriptor()
+  : mProperties()
 {
-    mOrb = cv::ORB::create(OrbProperties::featuresNumber(),
-                           static_cast<float>(OrbProperties::scaleFactor()),
-                           OrbProperties::levelsNumber(),
-                           OrbProperties::edgeThreshold(),
-                           OrbProperties::firstLevel(),
-                           OrbProperties::wta_k(),
-                           convertScoreType(OrbProperties::scoreType()),
-                           OrbProperties::patchSize(),
-                           OrbProperties::fastThreshold());
+    init();
 }
 
-OrbDetectorDescriptor::OrbDetectorDescriptor(const OrbDetectorDescriptor &orbDetectorDescriptor)
-  : OrbProperties(orbDetectorDescriptor),
-    FeatureDetector(orbDetectorDescriptor),
-    FeatureDescriptor(orbDetectorDescriptor)
+
+OrbDetectorDescriptor::OrbDetectorDescriptor(const OrbProperties &properties)
+  : mProperties(properties)
 {
-    mOrb = cv::ORB::create(OrbProperties::featuresNumber(),
-                           static_cast<float>(OrbProperties::scaleFactor()),
-                           OrbProperties::levelsNumber(),
-                           OrbProperties::edgeThreshold(),
-                           OrbProperties::firstLevel(),
-                           OrbProperties::wta_k(),
-                           convertScoreType(OrbProperties::scoreType()),
-                           OrbProperties::patchSize(),
-                           OrbProperties::fastThreshold());
+    init();
 }
 
-OrbDetectorDescriptor::OrbDetectorDescriptor(int featuresNumber,
-                                             double scaleFactor,
-                                             int levelsNumber,
-                                             int edgeThreshold,
-                                             int wta_k,
-                                             const std::string &scoreType,
-                                             int patchSize,
-                                             int fastThreshold)
-  : mOrb(cv::ORB::create())
+OrbDetectorDescriptor::OrbDetectorDescriptor(const OrbDetectorDescriptor &orb)
+  : mProperties(orb.mProperties)
 {
-	OrbDetectorDescriptor::setFeaturesNumber(featuresNumber);
-	OrbDetectorDescriptor::setScaleFactor(scaleFactor);
-	OrbDetectorDescriptor::setLevelsNumber(levelsNumber);
-	OrbDetectorDescriptor::setEdgeThreshold(edgeThreshold);
-	OrbDetectorDescriptor::setWTA_K(wta_k);
-	OrbDetectorDescriptor::setScoreType(scoreType);
-	OrbDetectorDescriptor::setPatchSize(patchSize);
-	OrbDetectorDescriptor::setFastThreshold(fastThreshold);
+    init();
+}
+
+OrbDetectorDescriptor::OrbDetectorDescriptor(OrbDetectorDescriptor &&orb) TL_NOEXCEPT
+  : mProperties(std::move(orb.mProperties)), 
+    mOrb(std::move(orb.mOrb))
+{
+}
+
+auto OrbDetectorDescriptor::operator =(const OrbDetectorDescriptor &orb) -> OrbDetectorDescriptor &
+{
+    if (this != &orb) {
+        mProperties = orb.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto OrbDetectorDescriptor::operator =(OrbDetectorDescriptor &&orb) TL_NOEXCEPT -> OrbDetectorDescriptor &
+{
+    if (this != &orb) {
+        mProperties = std::move(orb.mProperties);
+        mOrb = std::move(orb.mOrb);
+    }
+    return *this;
+}
+
+void OrbDetectorDescriptor::init()
+{
+    mOrb = cv::ORB::create(mProperties.featuresNumber(),
+                           mProperties.scaleFactor(),
+                           mProperties.levelsNumber(),
+                           mProperties.edgeThreshold(),
+                           mProperties.firstLevel(),
+                           mProperties.wta_k(),
+                           convertScoreType(mProperties.scoreType()),
+                           mProperties.patchSize(),
+                           mProperties.fastThreshold());
 }
 
 #if CV_VERSION_MAJOR >= 4
@@ -281,111 +291,52 @@ auto OrbDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint
     return descriptors;
 }
 
-void OrbDetectorDescriptor::setFeaturesNumber(int featuresNumber)
-{
-    OrbProperties::setFeaturesNumber(featuresNumber);
-    mOrb->setMaxFeatures(featuresNumber);
-}
-
-void OrbDetectorDescriptor::setScaleFactor(double scaleFactor)
-{
-    OrbProperties::setScaleFactor(scaleFactor);
-    mOrb->setScaleFactor(scaleFactor);
-}
-
-void OrbDetectorDescriptor::setLevelsNumber(int levelsNumber)
-{
-    OrbProperties::setLevelsNumber(levelsNumber);
-    mOrb->setNLevels(levelsNumber);
-}
-
-void OrbDetectorDescriptor::setEdgeThreshold(int edgeThreshold)
-{
-    OrbProperties::setEdgeThreshold(edgeThreshold);
-    mOrb->setEdgeThreshold(edgeThreshold);
-}
-
-void OrbDetectorDescriptor::setFirstLevel(int firstLevel)
-{
-    OrbProperties::setFirstLevel(firstLevel);
-    mOrb->setFirstLevel(firstLevel);
-}
-
-void OrbDetectorDescriptor::setWTA_K(int WTA_K)
-{
-    OrbProperties::setWTA_K(WTA_K);
-    mOrb->setWTA_K(WTA_K);
-}
-
-void OrbDetectorDescriptor::setScoreType(const std::string &scoreType)
-{
-    OrbProperties::setScoreType(scoreType);
-    mOrb->setScoreType(convertScoreType(scoreType));
-}
-
-void OrbDetectorDescriptor::setPatchSize(int patchSize)
-{
-    OrbProperties::setPatchSize(patchSize);
-    mOrb->setPatchSize(patchSize);
-}
-
-void OrbDetectorDescriptor::setFastThreshold(int fastThreshold)
-{
-    OrbProperties::setFastThreshold(fastThreshold);
-    mOrb->setFastThreshold(fastThreshold);
-}
-
-void OrbDetectorDescriptor::reset()
-{
-    OrbProperties::reset();
-    mOrb->setMaxFeatures(OrbProperties::featuresNumber());
-    mOrb->setScaleFactor(OrbProperties::scaleFactor());
-    mOrb->setNLevels(OrbProperties::levelsNumber());
-    mOrb->setEdgeThreshold(OrbProperties::edgeThreshold());
-    mOrb->setFirstLevel(OrbProperties::firstLevel());
-    mOrb->setWTA_K(OrbProperties::wta_k());
-    mOrb->setScoreType(convertScoreType(OrbProperties::scoreType()));
-    mOrb->setPatchSize(OrbProperties::patchSize());
-    mOrb->setFastThreshold(OrbProperties::fastThreshold());
-}
 
 
-/*----------------------------------------------------------------*/
-
-
-
+/* Orb detector/descriptor CUDA */
 
 OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(const OrbCudaDetectorDescriptor &orbCudaDetectorDescriptor)
-  : OrbProperties(orbCudaDetectorDescriptor),
-    FeatureDetector(orbCudaDetectorDescriptor),
-    FeatureDescriptor(orbCudaDetectorDescriptor)
+OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(const OrbProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(int featuresNumber,
-                                                     double scaleFactor,
-                                                     int levelsNumber,
-                                                     int edgeThreshold,
-                                                     int wta_k,
-                                                     const std::string &scoreType,
-                                                     int patchSize,
-                                                     int fastThreshold)
+OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(const OrbCudaDetectorDescriptor &orb)
+  : mProperties(orb.mProperties)
 {
-    OrbProperties::setFeaturesNumber(featuresNumber);
-    OrbProperties::setScaleFactor(scaleFactor);
-    OrbProperties::setLevelsNumber(levelsNumber);
-    OrbProperties::setEdgeThreshold(edgeThreshold);
-    OrbProperties::setWTA_K(wta_k);
-    OrbProperties::setScoreType(scoreType);
-    OrbProperties::setPatchSize(patchSize);
-    OrbProperties::setFastThreshold(fastThreshold);
-    update();
+    init();
+}
+
+OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(OrbCudaDetectorDescriptor &&orb) TL_NOEXCEPT
+  : mProperties(std::move(orb.mProperties))
+#ifdef HAVE_OPENCV_CUDAFEATURES2D  
+    , mOrb(std::move(orb.mOrb))
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+{
+}
+
+auto OrbCudaDetectorDescriptor::operator =(const OrbCudaDetectorDescriptor &orb) -> OrbCudaDetectorDescriptor &
+{
+    if (this != &orb) {
+        mProperties = orb.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto OrbCudaDetectorDescriptor::operator =(OrbCudaDetectorDescriptor &&orb) TL_NOEXCEPT -> OrbCudaDetectorDescriptor &
+{
+    if (this != &orb) {
+        mProperties = std::move(orb.mProperties);
+        mOrb = std::move(orb.mOrb);
+    }
+    return *this;
 }
 
 auto OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType) -> int
@@ -401,19 +352,18 @@ auto OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType) -
     return score;
 }
 
-void OrbCudaDetectorDescriptor::update()
+void OrbCudaDetectorDescriptor::init()
 {
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
-    mOrb = cv::cuda::ORB::create(OrbProperties::featuresNumber(),
-                                 static_cast<float>(OrbProperties::scaleFactor()),
-                                 OrbProperties::levelsNumber(),
-                                 OrbProperties::edgeThreshold(),
-                                 OrbProperties::firstLevel(),
-                                 OrbProperties::wta_k(),
-                                 convertScoreType(OrbProperties::scoreType()),
-                                 OrbProperties::patchSize(),
-                                 OrbProperties::fastThreshold());
-#endif // HAVE_OPENCV_CUDAFEATURES2D
+    mOrb = cv::cuda::ORB::create(mProperties.featuresNumber(),
+                                 mProperties.scaleFactor(),
+                                 mProperties.levelsNumber(),
+                                 mProperties.edgeThreshold(),
+                                 mProperties.firstLevel(),
+                                 mProperties.wta_k(),
+                                 convertScoreType(mProperties.scoreType()),
+                                 mProperties.patchSize(),
+                                 mProperties.fastThreshold());
+
 }
 
 auto OrbCudaDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
@@ -460,67 +410,6 @@ auto OrbCudaDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyP
 
     return descriptors;
 }
-
-void OrbCudaDetectorDescriptor::setFeaturesNumber(int featuresNumber)
-{
-    OrbProperties::setFeaturesNumber(featuresNumber);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setScaleFactor(double scaleFactor)
-{
-    OrbProperties::setScaleFactor(scaleFactor);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setLevelsNumber(int levelsNumber)
-{
-    OrbProperties::setLevelsNumber(levelsNumber);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setEdgeThreshold(int edgeThreshold)
-{
-    OrbProperties::setEdgeThreshold(edgeThreshold);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setFirstLevel(int firstLevel)
-{
-    OrbProperties::setFirstLevel(firstLevel);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setWTA_K(int WTA_K)
-{
-    OrbProperties::setWTA_K(WTA_K);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setScoreType(const std::string &scoreType)
-{
-    OrbProperties::setScoreType(scoreType);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setPatchSize(int patchSize)
-{
-    OrbProperties::setPatchSize(patchSize);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::setFastThreshold(int fastThreshold)
-{
-    OrbProperties::setFastThreshold(fastThreshold);
-    update();
-}
-
-void OrbCudaDetectorDescriptor::reset()
-{
-    OrbProperties::reset();
-    update();
-}
-
 
 } // namespace tl
 

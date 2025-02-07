@@ -30,62 +30,131 @@ namespace tl
 {
 
 
+/* LUCID properties */
+
 LucidProperties::LucidProperties()
+  : Feature("LUCID", Feature::Type::lucid)
 {
+    reset();
+}
+
+LucidProperties::LucidProperties(const LucidProperties &properties)
+  : Feature(properties)
+{
+}
+
+LucidProperties::LucidProperties(LucidProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
+{
+}
+
+LucidProperties::~LucidProperties() = default;
+
+auto LucidProperties::operator =(const LucidProperties &properties) -> LucidProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+
+    return *this;
+}
+
+auto LucidProperties::operator =(LucidProperties &&properties) TL_NOEXCEPT -> LucidProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+
+    return *this;
 }
 
 auto LucidProperties::lucidKernel() const -> int
 {
-    return mLucidKernel;
+    return getProperty<int>("LucidKernel");
 }
 
 auto LucidProperties::blurKernel() const -> int
 {
-    return mBlurKernel;
+    return getProperty<int>("BlurKernel");
 }
 
 void LucidProperties::setLucidKernel(int lucidKernel)
 {
-    mLucidKernel = lucidKernel;
+    setProperty("LucidKernel", lucidKernel);
 }
 
 void LucidProperties::setBlurKernel(int blurKernel)
 {
-    mBlurKernel = blurKernel;
+    setProperty("BlurKernel", blurKernel);
 }
 
 void LucidProperties::reset()
 {
-    mLucidKernel = 1;
-    mBlurKernel = 2;
-}
-
-std::string LucidProperties::name() const
-{
-    return std::string("LUCID");
+    setLucidKernel(1);
+    setBlurKernel(2);
 }
 
 
-/*----------------------------------------------------------------*/
 
+/* LUCID Descriptor */
 
 LucidDescriptor::LucidDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
+LucidDescriptor::LucidDescriptor(const LucidProperties &properties)
+  : mProperties(properties)
 {
-    LucidProperties::setLucidKernel(lucidKernel);
-    LucidProperties::setBlurKernel(blurKernel);
-    update();
+    init();
 }
 
-void LucidDescriptor::update()
+LucidDescriptor::LucidDescriptor(const LucidDescriptor &lucid)
+  : mProperties(lucid.mProperties)
+{
+    init();
+}
+
+LucidDescriptor::LucidDescriptor(LucidDescriptor &&lucid) TL_NOEXCEPT
+  : mProperties(std::move(lucid.mProperties))
+#ifdef HAVE_OPENCV_XFEATURES2D 
+    ,
+    mLUCID(std::move(lucid.mLUCID))
+#endif // HAVE_OPENCV_XFEATURES2D
+{
+    init();
+}
+
+auto LucidDescriptor::operator =(const LucidDescriptor &lucid) -> LucidDescriptor &
+{
+    if (this != &lucid) {
+        mProperties = lucid.mProperties;
+        init();
+    }
+
+    return *this;
+}
+
+auto LucidDescriptor::operator =(LucidDescriptor &&lucid) TL_NOEXCEPT -> LucidDescriptor &
+{
+    if (this != &lucid) {
+        mProperties = std::move(lucid.mProperties);
+#ifdef HAVE_OPENCV_XFEATURES2D 
+        mLUCID = std::move(lucid.mLUCID);
+#endif // HAVE_OPENCV_XFEATURES2D
+    }
+
+    return *this;
+}
+
+LucidDescriptor::~LucidDescriptor() = default;
+
+void LucidDescriptor::init()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D
-    mLUCID = cv::xfeatures2d::LUCID::create(LucidProperties::lucidKernel(),
-                                            LucidProperties::blurKernel());
+    mLUCID = cv::xfeatures2d::LUCID::create(mProperties.lucidKernel(),
+                                            mProperties.blurKernel());
 #endif
 }
 
@@ -110,24 +179,5 @@ auto LucidDescriptor::extract(const cv::Mat &img,
 
     return descriptors;
 }
-
-void LucidDescriptor::setLucidKernel(int lucidKernel)
-{
-    LucidProperties::setLucidKernel(lucidKernel);
-    update();
-}
-
-void LucidDescriptor::setBlurKernel(int blurKernel)
-{
-    LucidProperties::setBlurKernel(blurKernel);
-    update();
-}
-
-void LucidDescriptor::reset()
-{
-    LucidProperties::reset();
-    update();
-}
-
 
 } // namespace tl

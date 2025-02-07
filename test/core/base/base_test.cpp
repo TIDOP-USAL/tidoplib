@@ -63,6 +63,7 @@ struct PropertyTest
         property_uint32 = new Property<uint32_t>(1);
         property_int64 = new Property<int64_t>(-1);
         property_uint64 = new Property<uint64_t>(1);
+        property_size = new Property<Size<int>>({100,100});
     }
 
     void teardown() {}
@@ -80,6 +81,7 @@ struct PropertyTest
     Property<uint32_t> *property_uint32;
     Property<int64_t> *property_int64;
     Property<uint64_t> *property_uint64;
+    Property<Size<int>> *property_size;
 
 };
 
@@ -98,6 +100,10 @@ BOOST_FIXTURE_TEST_CASE(get_value, PropertyTest)
     BOOST_CHECK_EQUAL(1, property_uint32->value());
     BOOST_CHECK_EQUAL(-1, property_int64->value());
     BOOST_CHECK_EQUAL(1, property_uint64->value());
+
+    auto size = property_size->value();
+    BOOST_CHECK_EQUAL(100, size.width);
+    BOOST_CHECK_EQUAL(100, size.height);
 }
 
 BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
@@ -128,6 +134,9 @@ BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
     BOOST_CHECK_EQUAL(2, property_int64->value());
     property_uint64->setValue(2);
     BOOST_CHECK_EQUAL(2, property_uint64->value());
+    property_size->setValue({250, 150});
+    BOOST_CHECK_EQUAL(250, property_size->value().width);
+    BOOST_CHECK_EQUAL(150, property_size->value().height);
 }
 
 BOOST_FIXTURE_TEST_CASE(to_string, PropertyTest)
@@ -145,6 +154,7 @@ BOOST_FIXTURE_TEST_CASE(to_string, PropertyTest)
     BOOST_CHECK_EQUAL("1", property_uint32->toString());
     BOOST_CHECK_EQUAL("-1", property_int64->toString());
     BOOST_CHECK_EQUAL("1", property_uint64->toString());
+    BOOST_CHECK_EQUAL("100x100", property_size->toString());
 }
 
 BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
@@ -175,6 +185,9 @@ BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
     BOOST_CHECK_EQUAL(2, property_int64->value());
     property_uint64->fromString("2");
     BOOST_CHECK_EQUAL(2, property_uint64->value());
+    property_size->fromString("150x150");
+    BOOST_CHECK_EQUAL(150, property_size->value().width);
+    BOOST_CHECK_EQUAL(150, property_size->value().height);
 }
 
 BOOST_FIXTURE_TEST_CASE(value_out_of_range, PropertyTest)
@@ -257,6 +270,7 @@ BOOST_FIXTURE_TEST_CASE(invalid_argument, PropertyTest)
     BOOST_CHECK_THROW(property_uint32->fromString("hi"), Exception);
     BOOST_CHECK_THROW(property_int64->fromString("hi"), Exception);
     BOOST_CHECK_THROW(property_uint64->fromString("hi"), Exception);
+    BOOST_CHECK_THROW(property_size->fromString("hi"), Exception);
 }
 
 BOOST_FIXTURE_TEST_CASE(type_name, PropertyTest)
@@ -274,6 +288,7 @@ BOOST_FIXTURE_TEST_CASE(type_name, PropertyTest)
     BOOST_CHECK_EQUAL("uint", property_uint32->typeName());
     BOOST_CHECK_EQUAL("int64", property_int64->typeName());
     BOOST_CHECK_EQUAL("uint64", property_uint64->typeName());
+    BOOST_CHECK_EQUAL("Size", property_size->typeName());
 }
 
 BOOST_FIXTURE_TEST_CASE(type, PropertyTest)
@@ -291,6 +306,7 @@ BOOST_FIXTURE_TEST_CASE(type, PropertyTest)
     BOOST_CHECK(Type::type_uint32 == property_uint32->type());
     BOOST_CHECK(Type::type_int64 == property_int64->type());
     BOOST_CHECK(Type::type_uint64 == property_uint64->type());
+    BOOST_CHECK(Type::type_size == property_size->type());
 }
 
 BOOST_FIXTURE_TEST_CASE(map_property, PropertyTest)

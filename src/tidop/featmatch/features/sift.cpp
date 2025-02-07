@@ -31,129 +31,163 @@ namespace tl
 {
 
 
+/* SIFT Properties */
 SiftProperties::SiftProperties()
+  : Feature("SIFT", Feature::Type::sift)
+{
+    reset();
+}
+
+SiftProperties::SiftProperties(const SiftProperties &properties)
+  : Feature(properties)
 {
 }
 
-SiftProperties::SiftProperties(const SiftProperties &siftProperties)
-  : Sift(siftProperties),
-    mFeaturesNumber(siftProperties.mFeaturesNumber),
-    mOctaveLayers(siftProperties.mOctaveLayers),
-    mContrastThreshold(siftProperties.mContrastThreshold),
-    mEdgeThreshold(siftProperties.mEdgeThreshold),
-    mSigma(siftProperties.mSigma)
+SiftProperties::SiftProperties(SiftProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto SiftProperties::operator=(const SiftProperties &properties) -> SiftProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto SiftProperties::operator=(SiftProperties &&properties) TL_NOEXCEPT -> SiftProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 auto SiftProperties::featuresNumber() const -> int
 {
-    return mFeaturesNumber;
+    return getProperty<int>("FeaturesNumber");
 }
 
 auto SiftProperties::octaveLayers() const -> int
 {
-    return mOctaveLayers;
+    return getProperty<int>("OctaveLayers");
 }
 
 auto SiftProperties::contrastThreshold() const -> double
 {
-    return mContrastThreshold;
+    return getProperty<double>("ContrastThreshold");
 }
 
 auto SiftProperties::edgeThreshold() const -> double
 {
-    return mEdgeThreshold;
+    return getProperty<double>("EdgeThreshold");
 }
 
 auto SiftProperties::sigma() const -> double
 {
-    return mSigma;
+    return getProperty<double>("Sigma");
 }
 
 void SiftProperties::setFeaturesNumber(int featuresNumber)
 {
-    mFeaturesNumber = featuresNumber;
+    setProperty("FeaturesNumber",featuresNumber);
 }
 
 void SiftProperties::setOctaveLayers(int octaveLayers)
 {
-    mOctaveLayers = octaveLayers;
+    setProperty("OctaveLayers",octaveLayers);
 }
 
 void SiftProperties::setContrastThreshold(double contrastThreshold)
 {
-    mContrastThreshold = contrastThreshold;
+    setProperty("ContrastThreshold",contrastThreshold);
 }
 
 void SiftProperties::setEdgeThreshold(double edgeThreshold)
 {
-    mEdgeThreshold = edgeThreshold;
+    setProperty("EdgeThreshold",edgeThreshold);
 }
 
 void SiftProperties::setSigma(double sigma)
 {
-    mSigma = sigma;
+    setProperty("Sigma",sigma);
 }
 
 void SiftProperties::reset()
 {
-    mFeaturesNumber = sift_default_value_features_number;
-    mOctaveLayers = sift_default_value_octave_layers;
-    mContrastThreshold = sift_default_value_contrast_threshold;
-    mEdgeThreshold = sift_default_value_edge_threshold;
-    mSigma = sift_default_value_sigma;
-}
-
-auto SiftProperties::name() const -> std::string
-{
-    return std::string("SIFT");
+    setFeaturesNumber(sift_default_value_features_number);
+    setOctaveLayers(sift_default_value_octave_layers);
+    setContrastThreshold(sift_default_value_contrast_threshold);
+    setEdgeThreshold(sift_default_value_edge_threshold);
+    setSigma(sift_default_value_sigma);
 }
 
 
-/*----------------------------------------------------------------*/
 
+
+/* SIFT descriptor */
 
 SiftDetectorDescriptor::SiftDetectorDescriptor()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-SiftDetectorDescriptor::SiftDetectorDescriptor(const SiftDetectorDescriptor &siftDetectorDescriptor)
-  : SiftProperties(siftDetectorDescriptor),
-    FeatureDetector(siftDetectorDescriptor),
-    FeatureDescriptor(siftDetectorDescriptor)
+SiftDetectorDescriptor::SiftDetectorDescriptor(const SiftProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-SiftDetectorDescriptor::SiftDetectorDescriptor(int featuresNumber,
-                                               int octaveLayers,
-                                               double contrastThreshold,
-                                               double edgeThreshold,
-                                               double sigma)
+SiftDetectorDescriptor::SiftDetectorDescriptor(const SiftDetectorDescriptor &sift)
+  : mProperties(sift.mProperties)
 {
-    SiftProperties::setFeaturesNumber(featuresNumber);
-    SiftProperties::setOctaveLayers(octaveLayers);
-    SiftProperties::setContrastThreshold(contrastThreshold);
-    SiftProperties::setEdgeThreshold(edgeThreshold);
-    SiftProperties::setSigma(sigma);
-    update();
+    init();
 }
 
-void SiftDetectorDescriptor::update()
+SiftDetectorDescriptor::SiftDetectorDescriptor(SiftDetectorDescriptor &&sift) TL_NOEXCEPT
+  : mProperties(std::move(sift.mProperties))
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
+    , mSift(std::move(sift.mSift))
+#endif
+{
+}
+
+auto SiftDetectorDescriptor::operator =(const SiftDetectorDescriptor &sift) -> SiftDetectorDescriptor &
+{
+    if (this != &sift) {
+        mProperties = sift.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto SiftDetectorDescriptor::operator =(SiftDetectorDescriptor &&sift) TL_NOEXCEPT -> SiftDetectorDescriptor &
+{
+    if (this != &sift) {
+        mProperties = std::move(sift.mProperties);
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
+        mSift = std::move(sift.mSift);
+#endif
+    }
+    return *this;
+}
+
+void SiftDetectorDescriptor::init()
 {
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
-    mSift = cv::SIFT::create(SiftProperties::featuresNumber(),
-                             SiftProperties::octaveLayers(),
-                             SiftProperties::contrastThreshold(),
-                             SiftProperties::edgeThreshold(),
-                             SiftProperties::sigma());
+    mSift = cv::SIFT::create(mProperties.featuresNumber(),
+                             mProperties.octaveLayers(),
+                             mProperties.contrastThreshold(),
+                             mProperties.edgeThreshold(),
+                             mProperties.sigma());
 #elif defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE
-    mSift = cv::xfeatures2d::SIFT::create(SiftProperties::featuresNumber(),
-                                          SiftProperties::octaveLayers(),
-                                          SiftProperties::contrastThreshold(),
-                                          SiftProperties::edgeThreshold(),
-                                          SiftProperties::sigma());
+    mSift = cv::xfeatures2d::SIFT::create(mProperties.featuresNumber(),
+                                          mProperties.octaveLayers(),
+                                          mProperties.contrastThreshold(),
+                                          mProperties.edgeThreshold(),
+                                          mProperties.sigma());
 #endif
 }
 
@@ -195,42 +229,6 @@ auto SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoin
     }
 
     return descriptors;
-}
-
-void SiftDetectorDescriptor::setFeaturesNumber(int featuresNumber)
-{
-    SiftProperties::setFeaturesNumber(featuresNumber);
-    update();
-}
-
-void SiftDetectorDescriptor::setOctaveLayers(int octaveLayers)
-{
-    SiftProperties::setOctaveLayers(octaveLayers);
-    update();
-}
-
-void SiftDetectorDescriptor::setContrastThreshold(double contrastThreshold)
-{
-    SiftProperties::setContrastThreshold(contrastThreshold);
-    update();
-}
-
-void SiftDetectorDescriptor::setEdgeThreshold(double edgeThreshold)
-{
-    SiftProperties::setEdgeThreshold(edgeThreshold);
-    update();
-}
-
-void SiftDetectorDescriptor::setSigma(double sigma)
-{
-    SiftProperties::setSigma(sigma);
-    update();
-}
-
-void SiftDetectorDescriptor::reset()
-{
-    SiftProperties::reset();
-    update();
 }
 
 

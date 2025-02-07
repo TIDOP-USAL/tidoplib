@@ -33,78 +33,188 @@
 namespace tl
 {
 
-/*! \addtogroup Features
- * 
- *  \{
- */
-
-/*! \addtogroup FeatureDetectorAndDescriptor
- * 
+/*! \addtogroup FeatureExtraction
+ *
  *  \{
  */
 
 
 constexpr auto vgg_default_value_descriptor_type{"VGG_120"};
-constexpr auto vgg_default_value_scale_factor{6.25};
-constexpr auto vgg_default_value_sigma{1.4};
+constexpr auto vgg_default_value_scale_factor{6.25f};
+constexpr auto vgg_default_value_sigma{1.4f};
 constexpr auto vgg_default_value_use_normalize_descriptor{false};
 constexpr auto vgg_default_value_use_normalize_image{true};
 constexpr auto vgg_default_value_useScale_orientation{true};
 
 
+/*!
+ * \class VggProperties
+ * \brief Stores the parameters for the VGG feature descriptor.
+ *
+ * The VGG descriptor is a feature descriptor inspired by the VGG network.
+ * It is designed to capture image features using Gaussian blurring and
+ * normalization techniques. The descriptor can operate in different modes
+ * depending on the type chosen (VGG_120, VGG_80, VGG_64, VGG_48).
+ */
 class TL_EXPORT VggProperties
-  : public Vgg
+  : public Feature
 {
 
-private:
-
-    std::string mDescriptorType;
-    double mScaleFactor{vgg_default_value_scale_factor};
-    double mSigma{vgg_default_value_sigma};
-    bool bUseNormalizeDescriptor{vgg_default_value_use_normalize_descriptor};
-    bool bUseNormalizeImage{vgg_default_value_use_normalize_image};
-    bool bUseScaleOrientation{vgg_default_value_useScale_orientation};
-
 public:
 
+    /*!
+     * \brief Default constructor.
+     * 
+     * Initializes the properties with their default values.
+     */
     VggProperties();
-    VggProperties(const VggProperties &vggProperties);
+
+    /*!
+     * \brief Copy constructor.
+     * 
+     * Copies the properties from another `VggProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     */
+    VggProperties(const VggProperties &properties);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties from another `VggProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     */
+    VggProperties(VggProperties &&properties) TL_NOEXCEPT;
+
+    /*!
+     * \brief Default destructor.
+     */
     ~VggProperties() override = default;
 
-// Vgg interface
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties from another `VggProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator=(const VggProperties &properties) -> VggProperties &;
 
-public:
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties from another `VggProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator=(VggProperties &&properties) TL_NOEXCEPT -> VggProperties &;
 
-    auto descriptorType() const -> std::string override;
-    void setDescriptorType(const std::string &descriptorType) override;
-    auto scaleFactor() const -> double override;
-    void setScaleFactor(double scaleFactor) override;
-    auto sigma() const -> double override;
-    void setSigma(double sigma) override;
-    auto useNormalizeDescriptor() const -> bool override;
-    void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
-    auto useNormalizeImage() const -> bool override;
-    void setUseNormalizeImage(bool useNormalizeImage) override;
-    auto useScaleOrientation() const -> bool override;
-    void setUseScaleOrientation(bool useScaleOrientation) override;
+    /*!
+     * \brief Gets the type of descriptor used.
+     * \return The descriptor type as a string. Available types:
+     * - "VGG_120" (default)
+     * - "VGG_80"
+     * - "VGG_64"
+     * - "VGG_48"
+     */
+    auto descriptorType() const -> std::string;
+
+    /*!
+     * \brief Sets the type of descriptor to use.
+     * \param[in] descriptorType The desired descriptor type.
+     * Must be one of "VGG_120", "VGG_80", "VGG_64", or "VGG_48".
+     */
+    void setDescriptorType(const std::string &descriptorType);
+
+    /*!
+     * \brief Gets the scale factor applied to the descriptor.
+     * \return The scale factor (default: 6.25).
+     */
+    auto scaleFactor() const -> float;
+
+    /*!
+     * \brief Sets the scale factor for the descriptor.
+     * \param[in] scaleFactor Scale factor to apply.
+     */
+    void setScaleFactor(float scaleFactor);
+
+    /*!
+     * \brief Gets the Gaussian kernel value used for image blurring.
+     * \return The Gaussian sigma value (default: 1.4).
+     */
+    auto sigma() const -> float;
+
+    /*!
+     * \brief Sets the Gaussian kernel value for image blurring.
+     * \param[in] sigma The sigma value for the Gaussian kernel.
+     */
+    void setSigma(float sigma);
+
+    /*!
+     * \brief Checks whether the descriptor normalization is enabled.
+     * \return True if the descriptor is normalized, false otherwise (default: false).
+     */
+    auto useNormalizeDescriptor() const -> bool;
+
+    /*!
+     * \brief Enables or disables descriptor normalization.
+     * \param[in] useNormalizeDescriptor Set to true to enable normalization.
+     */
+    void setUseNormalizeDescriptor(bool useNormalizeDescriptor);
+
+    /*!
+     * \brief Checks whether the image is normalized before feature extraction.
+     * \return True if image normalization is enabled, false otherwise (default: true).
+     */
+    auto useNormalizeImage() const -> bool;
+
+    /*!
+     * \brief Enables or disables image normalization before feature extraction.
+     * \param[in] useNormalizeImage Set to true to enable normalization.
+     */
+    void setUseNormalizeImage(bool useNormalizeImage);
+
+    /*!
+     * \brief Checks whether scale orientation is used in feature extraction.
+     * \return True if scale orientation is enabled, false otherwise (default: true).
+     */
+    auto useScaleOrientation() const -> bool;
+
+    /*!
+     * \brief Enables or disables the use of scale orientation in feature extraction.
+     * \param[in] useScaleOrientation Set to true to use scale orientation.
+     */
+    void setUseScaleOrientation(bool useScaleOrientation);
 
 // Feature interface
 
 public:
 
+    /*!
+     * \brief Resets VGG properties to their default values.
+     */
     void reset() override;
-    auto name() const ->std::string override;
 
 };
 
 
 
-/*----------------------------------------------------------------*/
 
-
+/*!
+ * \class VggDescriptor
+ * \brief Implements the VGG feature descriptor using OpenCV.
+ *
+ * The VGG descriptor extracts feature descriptors from an image using
+ * a Gaussian blurring and normalization pipeline. It is particularly
+ * useful for applications in image matching and recognition.
+ *
+ * This class requires OpenCV's `xfeatures2d` module to be available.
+ */
 class TL_EXPORT VggDescriptor
-  : public VggProperties,
-    public FeatureDescriptor
+  : public FeatureDescriptor
 {
 
 private:
@@ -114,52 +224,109 @@ private:
     cv::Ptr<cv::xfeatures2d::VGG> mVGG;
 #endif
 #endif // HAVE_OPENCV_XFEATURES2D
+    VggProperties mProperties;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes the VGG detector and descriptor with default properties.
+     */
     VggDescriptor();
-    VggDescriptor(const VggDescriptor &vggDescriptor);
-    VggDescriptor(const std::string &descriptorType,
-                  double scaleFactor,
-                  double sigma,
-                  bool useNormalizeDescriptor,
-                  bool useNormalizeImage,
-                  bool useScaleOrientation);
+
+    /*!
+     * \brief Constructor with custom properties.
+     *
+     * Initializes VGG using the provided properties.
+     *
+     * \param[in] properties Configuration properties for VGG.
+     */
+    explicit VggDescriptor(const VggProperties &properties);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * Creates a copy of the given `VggDescriptor` instance.
+     *
+     * \param[in] vgg The object to copy.
+     */
+    VggDescriptor(const VggDescriptor &vgg);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties and internal state from another `VggDescriptor` instance.
+     *
+     * \param[in] vgg The object to move.
+     */
+    VggDescriptor(VggDescriptor &&vgg) TL_NOEXCEPT;
+
+    /*!
+     * \brief Default destructor.
+     */
     ~VggDescriptor() override = default;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties and internal state from another `VggDescriptor` instance.
+     *
+     * \param[in] vgg The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator=(const VggDescriptor &vgg) -> VggDescriptor &;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties and internal state from another `VggDescriptor` instance.
+     *
+     * \param[in] vgg The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator=(VggDescriptor &&vgg) TL_NOEXCEPT -> VggDescriptor &;
+
+    /*!
+     * \brief Get a reference to the VGG properties.
+     *
+     * This allows modifying the properties of the VGG descriptor.
+     *
+     * \return Reference to the properties object.
+     */
+    auto properties() -> VggProperties &{ return mProperties; }
+
+    /*!
+     * \brief Get a constant reference to the VGG properties.
+     *
+     * This allows read-only access to the properties of the VGG descriptor.
+     *
+     * \return Constant reference to the properties object.
+     */
+    auto properties() const -> const VggProperties &{ return mProperties; }
 
 private:
 
-    void update();
-
-// Feature interface
-
-public:
-
-    void reset() override;
-
-// Vgg interface
-
-public:
-
-    void setDescriptorType(const std::string &descriptorType) override;
-    void setScaleFactor(double scaleFactor) override;
-    void setSigma(double sigma) override;
-    void setUseNormalizeDescriptor(bool useNormalizeDescriptor) override;
-    void setUseNormalizeImage(bool useNormalizeImage) override;
-    void setUseScaleOrientation(bool useScaleOrientation) override;
+    void init();
 
 // FeatureDescriptor interface
 
 public:
 
+    /*!
+     * \brief Extract descriptors from an image.
+     *
+     * Extracts binary descriptors for the given keypoints using the VGG descriptor.
+     *
+     * \param[in] img The input grayscale image.
+     * \param[in,out] keyPoints Detected keypoints (modified if necessary).
+     * \return %Matrix containing the computed descriptors.
+     */
     auto extract(const cv::Mat &img,
                  std::vector<cv::KeyPoint> &keyPoints) -> cv::Mat override;
 
-
 };
 
-/*! \} */ // end of FeatureDetectorAndDescriptor
-
-/*! \} */ // end of Features
+/*! \} */
 
 } // namespace tl

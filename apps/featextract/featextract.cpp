@@ -28,7 +28,6 @@
 #include <tidop/core/base/chrono.h>
 #include <tidop/rastertools/io/imgreader.h>
 #include <tidop/featmatch/base/features.h>
-#include <tidop/featmatch/io/featio.h>
 #include <tidop/featmatch/features/agast.h>
 #include <tidop/featmatch/features/kaze.h>
 #include <tidop/featmatch/features/akaze.h>
@@ -45,6 +44,7 @@ using namespace tl;
 #ifdef HAVE_VLD
 #include <vld.h>
 #endif
+#include <tidop/featmatch/io/featwriter.h>
 
 int main(int argc, char **argv)
 {
@@ -189,58 +189,69 @@ int main(int argc, char **argv)
 
     if(featextract_name == "sift") {
 
-        auto sift = std::make_shared<SiftDetectorDescriptor>(cmd_sift->value<int>("features_number"),
-                                                             cmd_sift->value<int>("octave_layers"),
-                                                             cmd_sift->value<double>("contrast_threshold"),
-                                                             cmd_sift->value<double>("edge_threshold"),
-                                                             cmd_sift->value<double>("sigma"));
+        SiftProperties properties;
+        properties.setFeaturesNumber(cmd_sift->value<int>("features_number"));
+        properties.setOctaveLayers(cmd_sift->value<int>("octave_layers"));
+        properties.setContrastThreshold(cmd_sift->value<double>("contrast_threshold"));
+        properties.setEdgeThreshold(cmd_sift->value<double>("edge_threshold"));
+        properties.setSigma(cmd_sift->value<double>("sigma"));
+        auto sift = std::make_shared<SiftDetectorDescriptor>(properties);
         feature_detector = std::dynamic_pointer_cast<FeatureDetector>(sift);
         feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(sift);
 
     } else if(featextract_name == "akaze") {
         
-        auto akaze = std::make_shared<AkazeDetectorDescriptor>(cmd_akaze->value<std::string>("descriptor_type"),
-                                                               cmd_akaze->value<int>("descriptor_size"),
-                                                               cmd_akaze->value<int>("descriptor_channels"),
-                                                               cmd_akaze->value<double>("threshold"),
-                                                               cmd_akaze->value<int>("octaves"),
-                                                               cmd_akaze->value<int>("octave_layers"),
-                                                               cmd_akaze->value<std::string>("diffusivity"));
+        AkazeProperties properties;
+        properties.setDescriptorType(cmd_akaze->value<std::string>("descriptor_type"));
+        properties.setDescriptorSize(cmd_akaze->value<int>("descriptor_size"));
+        properties.setDescriptorChannels(cmd_akaze->value<int>("descriptor_channels"));
+        properties.setThreshold(cmd_akaze->value<double>("threshold"));
+        properties.setOctaves(cmd_akaze->value<int>("octaves"));
+        properties.setOctaveLayers(cmd_akaze->value<int>("octave_layers"));
+        properties.setDiffusivity(cmd_akaze->value<std::string>("diffusivity"));
+        auto akaze = std::make_shared<AkazeDetectorDescriptor>(properties);
 
         feature_detector = std::dynamic_pointer_cast<FeatureDetector>(akaze);
         feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(akaze);
 
     } else if(featextract_name == "kaze") {
         
-        auto kaze = std::make_shared<KazeDetectorDescriptor>(cmd_kaze->value<bool>("extended"),
-                                                             cmd_kaze->value<bool>("upright"),
-                                                             cmd_kaze->value<double>("threshold"),
-                                                             cmd_kaze->value<int>("octaves"),
-                                                             cmd_kaze->value<int>("octave_layers"),
-                                                             cmd_kaze->value<std::string>("diffusivity"));
+        KazeProperties properties;
+        properties.setExtendedDescriptor(cmd_kaze->value<bool>("extended"));
+        properties.setUprightDescriptor(cmd_kaze->value<bool>("upright"));
+        properties.setThreshold(cmd_kaze->value<double>("threshold"));
+        properties.setOctaves(cmd_kaze->value<int>("octaves"));
+        properties.setOctaveLayers(cmd_kaze->value<int>("octave_layers"));
+        properties.setDiffusivity(cmd_kaze->value<std::string>("diffusivity"));
+        auto kaze = std::make_shared<KazeDetectorDescriptor>(properties);
 
         feature_detector = std::dynamic_pointer_cast<FeatureDetector>(kaze);
         feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(kaze);
 
     } else if(featextract_name == "brisk") {
 
-        auto brisk = std::make_shared<BriskDetectorDescriptor>(cmd_brisk->value<int>("threshold"),
-                                                               cmd_brisk->value<int>("octaves"),
-                                                               cmd_brisk->value<double>("patternScale"));
+        BriskProperties properties;
+        properties.setThreshold(cmd_brisk->value<int>("threshold"));
+        properties.setOctaves(cmd_brisk->value<int>("octaves"));
+        properties.setPatternScale(cmd_brisk->value<double>("patternScale"));
+        auto brisk = std::make_shared<BriskDetectorDescriptor>(properties);
 
         feature_detector = std::dynamic_pointer_cast<FeatureDetector>(brisk);
         feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(brisk);
 
     } else if(featextract_name == "orb") {
 
-        auto orb = std::make_shared<OrbDetectorDescriptor>(cmd_orb->value<int>("features_number"),
-                                                           cmd_orb->value<double>("scale_factor"),
-                                                           cmd_orb->value<int>("levels_number"),
-                                                           cmd_orb->value<int>("edge_threshold"),
-                                                           cmd_orb->value<int>("wta_k"),
-                                                           cmd_orb->value<std::string>("score_type"),
-                                                           cmd_orb->value<int>("patch_size"),
-                                                           cmd_orb->value<int>("fast_threshold"));
+        OrbProperties properties;
+        properties.setFeaturesNumber(4000);
+        properties.setScaleFactor(1.5);
+        properties.setLevelsNumber(6);
+        properties.setEdgeThreshold(11);
+        properties.setWTA_K(2);
+        properties.setScoreType("FAST");
+        properties.setPatchSize(11);
+        properties.setFastThreshold(10);
+
+        auto orb = std::make_shared<OrbDetectorDescriptor>(properties);
 
         feature_detector = std::dynamic_pointer_cast<FeatureDetector>(orb);
         feature_descriptor = std::dynamic_pointer_cast<FeatureDescriptor>(orb);

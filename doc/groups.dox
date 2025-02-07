@@ -600,7 +600,52 @@
 /*! 
  * \defgroup FeatureExtraction Feature detection and descriptor extraction
  * \ingroup Features
- */ 
+ * \brief This module provides implementations for feature detection and descriptor extraction.
+ *
+ * Feature detection and descriptor extraction are fundamental steps in computer vision
+ * and image processing. They allow identifying keypoints in images and computing descriptors
+ * that can be used for tasks such as object recognition, image matching, and 3D reconstruction.
+ *
+ * The library includes various detectors and descriptors, such as ORB, STAR, SURF, and VGG.
+ * These are implemented as separate classes that follow a unified interface.
+ *
+ * \section feature_example Example Usage
+ *
+ * The following example demonstrates how to detect keypoints using the STAR detector
+ * and extract descriptors using the VGG descriptor.
+ *
+ * \code{.cpp}
+ * #include <tidop/featmatch/features/star.h>
+ * #include <tidop/featmatch/features/vgg.h>
+ * #include <opencv2/opencv.hpp>
+ *
+ * int main()
+ * {
+ *     // Load input image
+ *     cv::Mat img = cv::imread("image.jpg", cv::IMREAD_GRAYSCALE);
+ *     if (img.empty()) {
+ *         std::cerr << "Error loading image!" << std::endl;
+ *         return -1;
+ *     }
+ *
+ *     // Create STAR detector and detect keypoints
+ *     StarDetector detector;
+ *     std::vector<cv::KeyPoint> keypoints = detector.detect(img);
+ *
+ *     // Create VGG descriptor and extract descriptors
+ *     VggDescriptor descriptor;
+ *     cv::Mat descriptors = descriptor.extract(img, keypoints);
+ *
+ *     // Draw keypoints and show result
+ *     cv::Mat output;
+ *     cv::drawKeypoints(img, keypoints, output);
+ *     cv::imshow("Keypoints", output);
+ *     cv::waitKey(0);
+ *
+ *     return 0;
+ * }
+ * \endcode
+ */
  
  
 /*! 
@@ -609,4 +654,7 @@
  */  
  
  
- 
+/*! 
+ * \defgroup FeatureIO Reading and writing Features and Matches
+ * \ingroup Features 
+ */   

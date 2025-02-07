@@ -26,8 +26,6 @@
 
 #include "tidop/config.h"
 
-#include <memory>
-
 #include <opencv2/features2d.hpp>
 
 #include "tidop/core/base/path.h"
@@ -35,16 +33,43 @@
 namespace tl
 {
 
-/*! \addtogroup Features
+/*! \addtogroup FeatureIO
  * 
  *  \{
  */
 
-/*! \defgroup FeatureMatching Correspondencia de caracteristicas (Feature Matching)
- * 
- *  \{
+/*!
+ * \brief Reads feature matches from a file.
+ *
+ * This abstract class provides an interface for reading feature matches,
+ * including correct matches (`goodMatches`) and incorrect matches (`wrongMatches`),
+ * from OpenCV (.xml and .yml) and binary (.bin) formats.
+ *
+ * #### Example Usage
+ *
+ * The following example demonstrates how to read feature matches from a file:
+ *
+ * \code{.cpp}
+ * #include <TidopLib/Features/MatchesReader.h>
+ *
+ * int main()
+ * {
+ *     try {
+ *
+ *         tl::Path file("matches.xml");
+ *         auto reader = MatchesReaderFactory::create(file);
+ *         reader->read();
+ *         std::vector<cv::DMatch> goodMatches = reader->goodMatches();
+ *         std::vector<cv::DMatch> wrongMatches = reader->wrongMatches();
+ *
+ *     } catch (std::exception &e) {
+ *         printException(e);
+ *     }
+ *
+ *     return 0;
+ * }
+ * \endcode
  */
-
 class TL_EXPORT MatchesReader
 {
 
@@ -56,12 +81,33 @@ private:
 
 public:
 
-    MatchesReader(tl::Path file);
+    /*!
+     * \brief Constructor.
+     * \param[in] file Path to the input matches file.
+     */
+    MatchesReader(tl::Path file) : mFilePath(std::move(file)) {}
+    
+    /*!
+     * \brief Destructor.
+     */
     virtual ~MatchesReader() = default;
 
+    /*!
+     * \brief Reads matches from a file.
+     * \note This is a pure virtual function that must be implemented in derived classes.
+     */
     virtual void read() = 0;
 
+    /*!
+     * \brief Get the good matches.
+     * \return Vector of correctly matched features.
+     */
     auto goodMatches() const -> std::vector<cv::DMatch>;
+
+    /*!
+     * \brief Get the wrong matches.
+     * \return Vector of incorrectly matched features.
+     */
     auto wrongMatches() const -> std::vector<cv::DMatch>;
 
 protected:
@@ -73,44 +119,12 @@ protected:
 };
 
 
-
-/*----------------------------------------------------------------*/
-
-
-
-class TL_EXPORT MatchesWriter
-{
-
-private:
-
-    tl::Path mFilePath;
-    std::vector<cv::DMatch> mGoodMatches;
-    std::vector<cv::DMatch> mWrongMatches;
-
-public:
-
-    MatchesWriter(tl::Path file);
-    virtual ~MatchesWriter() = default;
-
-    virtual void write() = 0;
-
-    void setGoodMatches(const std::vector<cv::DMatch> &goodMatches);
-    void setWrongMatches(const std::vector<cv::DMatch> &wrongMatches);
-
-protected:
-
-    auto filePath() const -> const tl::Path&;
-    auto goodMatches() const -> const std::vector<cv::DMatch>&;
-    auto wrongMatches() const -> const std::vector<cv::DMatch>&;
-
-};
-
-
-
-/*----------------------------------------------------------------*/
-
-
-
+/*!
+ * \brief Factory class to create match readers based on file format.
+ *
+ * This factory selects the appropriate `MatchesReader` implementation depending
+ * on the file extension.
+ */
 class TL_EXPORT MatchesReaderFactory
 {
 
@@ -120,54 +134,47 @@ private:
 
 public:
 
-    TL_DEPRECATED("create", "2.1")
-    static auto createReader(const Path &file) -> std::unique_ptr<MatchesReader>;
+    /*!
+     * \brief Create a match reader based on file format.
+     * \param[in] file Path to the input matches file.
+     * \return A unique pointer to a `MatchesReader` object.
+     * \exception Exception if no reader is found.
+     */
     static auto create(const Path &file) -> std::unique_ptr<MatchesReader>;
 };
 
 
-
-/*----------------------------------------------------------------*/
-
+/*! \} */
 
 
-class TL_EXPORT MatchesWriterFactory
+
+/* Inline methods */
+
+inline auto MatchesReader::goodMatches() const -> std::vector<cv::DMatch>
 {
+    return mGoodMatches;
+}
 
-private:
+inline auto MatchesReader::wrongMatches() const -> std::vector<cv::DMatch>
+{
+    return mWrongMatches;
+}
 
-    MatchesWriterFactory() {}
+inline auto MatchesReader::filePath() const -> const Path &
+{
+    return mFilePath;
+}
 
-public:
+inline auto MatchesReader::good_matches() -> std::vector<cv::DMatch> &
+{
+    return mGoodMatches;
+}
 
-    TL_DEPRECATED("create", "2.1")
-    static auto createWriter(const Path &file) -> std::unique_ptr<MatchesWriter>;
-    static auto create(const Path &file) -> std::unique_ptr<MatchesWriter>;
-};
+inline auto MatchesReader::wrong_matches() -> std::vector<cv::DMatch> &
+{
+    return mWrongMatches;
+}
 
-
-/*----------------------------------------------------------------*/
-
-
-/*!
- * \brief Pass Points write
- * \param[in] fname File name
- * \param[in] pass_points Pass Points
- */
-TL_EXPORT void passPointsWrite(const std::string &fname,
-                               const std::vector<std::vector<std::pair<std::string,int>>> &pass_points);
-
-/*!
- * \brief Pass Points read
- * \param[in] fname File name
- * \param[out] pass_points Pass Points
- */
-TL_EXPORT void passPointsRead(const std::string &fname,
-                              std::vector<std::vector<std::pair<std::string,int>>> &pass_points);
-
-/*! \} */ // end of FeatureMatching
-
-/*! \} */ // end of Features
 
 
 } // namespace tl

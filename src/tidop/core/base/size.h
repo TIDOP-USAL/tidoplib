@@ -129,6 +129,7 @@ Size<T>::Size()
   : width{0},
     height{0}
 {
+    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
 }
 
 template<typename T>
@@ -136,6 +137,7 @@ Size<T>::Size(T width, T height)
   : width(width),
     height(height)
 {
+    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
 }
 
 template<typename T>
@@ -143,6 +145,7 @@ Size<T>::Size(const Size &size)
   : width(size.width),
     height(size.height)
 {
+    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
 }
 
 template<typename T>

@@ -29,114 +29,339 @@
 namespace tl
 {
 
-/*! \addtogroup Features
- * 
+/*! \addtogroup FeatureExtraction
+ *
  *  \{
  */
 
-/*! \addtogroup FeatureDetectorAndDescriptor
- * 
- *  \{
+/*!
+ * \brief GFTT (Good Features to Track) properties class.
+ *
+ * Stores configuration parameters for the GFTT (Good Features to Track) corner detector.
+ * This detector is designed to identify strong corners in an image using the minimum eigenvalue method
+ * or the Harris detector response.
+ *
+ * The following property names are valid when accessed via the `Properties` class:
+ * - `"MaxFeatures"`: Maximum number of corners to detect.
+ * - `"QualityLevel"`: Minimum accepted quality of image corners.
+ * - `"MinDistance"`: Minimum possible Euclidean distance between detected corners.
+ * - `"BlockSize"`: Size of the averaging block for derivative computation.
+ * - `"HarrisDetector"`: Enables the use of the Harris detector instead of the minimum eigenvalue method.
+ * - `"K"`: Free parameter for the Harris detector.
  */
-
-
 class TL_EXPORT GfttProperties
-  : public Gftt
+  : public Feature
 {
 
-private:
-
-    int mMaxFeatures{1000};
-    double mQualityLevel{0.01};
-    double mMinDistance{1};
-    int mBlockSize{3};
-    bool mHarrisDetector{false};
-    double mK{0.04};
-
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes GFTT properties with default values.
+     */
     GfttProperties();
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * Copies the properties from another `GfttProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     */
     GfttProperties(const GfttProperties &gfttProperties);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties from another `GfttProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     */
+    GfttProperties(GfttProperties &&properties) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~GfttProperties() override = default;
 
-// Gftt interface
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties from another `GfttProperties` instance.
+     *
+     * \param[in] properties The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator=(const GfttProperties &properties) -> GfttProperties &;
 
-public:
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties from another `GfttProperties` instance.
+     *
+     * \param[in] properties The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator=(GfttProperties &&properties) TL_NOEXCEPT -> GfttProperties &;
 
-    auto maxFeatures() const -> int override;
-    auto qualityLevel() const -> double override;
-    auto minDistance() const -> double override;
-    auto blockSize() const -> int override;
-    auto harrisDetector() const -> bool override;
-    auto k() const -> double override;
-    void setMaxFeatures(int maxFeatures) override;
-    void setQualityLevel(double qlevel) override;
-    void setMinDistance(double minDistance) override;
-    void setBlockSize(int blockSize) override;
-    void setHarrisDetector(bool value) override;
-    void setK(double k) override;
+    /*!
+     * \brief Gets the maximum number of corners to detect.
+     *
+     * If set to 0 or negative, there is no limit on the number of detected corners.
+     *
+     * \return Maximum number of corners.
+     *
+     * \note Property name: `"MaxFeatures"`.
+     */
+    auto maxFeatures() const -> int;
+
+    /*!
+     * \brief Gets the minimum accepted quality level of image corners.
+     *
+     * The value is multiplied by the best corner quality measure. Corners with a lower measure are rejected.
+     *
+     * \return Quality level.
+     *
+     * \note Property name: `"QualityLevel"`.
+     */
+    auto qualityLevel() const -> double;
+
+    /*!
+     * \brief Gets the minimum possible Euclidean distance between detected corners.
+     *
+     * Ensures that detected corners are sufficiently spaced apart.
+     *
+     * \return Minimum distance between corners.
+     *
+     * \note Property name: `"MinDistance"`.
+     */
+    auto minDistance() const -> double;
+
+    /*!
+     * \brief Gets the size of the averaging block for computing the derivative covariation matrix.
+     *
+     * A larger block size results in a smoother response.
+     *
+     * \return Block size.
+     *
+     * \note Property name: `"BlockSize"`.
+     */
+    auto blockSize() const -> int;
+
+    /*!
+     * \brief Checks if the Harris detector is enabled.
+     *
+     * If `true`, the Harris corner detector response is used instead of the minimum eigenvalue method.
+     *
+     * \return `true` if Harris detector is enabled, `false` otherwise.
+     *
+     * \note Property name: `"HarrisDetector"`.
+     */
+    auto harrisDetector() const -> bool;
+
+    /*!
+     * \brief Gets the free parameter for the Harris detector.
+     *
+     * This parameter is used when `HarrisDetector` is enabled.
+     *
+     * \return Harris detector parameter.
+     *
+     * \note Property name: `"K"`.
+     */
+    auto k() const -> double;
+
+    /*!
+     * \brief Sets the maximum number of corners to detect.
+     *
+     * \param[in] maxFeatures Maximum number of corners.
+     */
+    void setMaxFeatures(int maxFeatures);
+
+    /*!
+     * \brief Sets the minimum accepted quality level of image corners.
+     *
+     * \param[in] qlevel Quality level.
+     */
+    void setQualityLevel(double qlevel);
+
+    /*!
+     * \brief Sets the minimum possible Euclidean distance between detected corners.
+     *
+     * \param[in] minDistance Minimum distance between corners.
+     */
+    void setMinDistance(double minDistance);
+
+    /*!
+     * \brief Sets the size of the averaging block for computing the derivative covariation matrix.
+     *
+     * \param[in] blockSize Block size.
+     */
+    void setBlockSize(int blockSize);
+
+    /*!
+     * \brief Enables or disables the Harris detector.
+     *
+     * \param[in] value `true` to enable, `false` to disable.
+     */
+    void setHarrisDetector(bool value);
+
+    /*!
+     * \brief Sets the free parameter for the Harris detector.
+     *
+     * \param[in] k Harris detector parameter.
+     */
+    void setK(double k);
 
 // Feature interface
 
 public:
 
+    /*!
+     * \brief Resets all properties to their default values.
+     */
     void reset() override;
-    auto name() const -> std::string final;
 
 };
 
 
-/*----------------------------------------------------------------*/
 
-
+/*!
+ * \brief GFTT (Good Features to Track) feature detector.
+ *
+ * Implements the GFTT detector, which finds the most prominent corners in an image using
+ * the minimum eigenvalue method or the Harris detector response.
+ *
+ * This detector applies non-maximum suppression and filters weak corners based on the `QualityLevel` parameter.
+ * It is commonly used for object tracking and feature extraction in computer vision applications.
+ */
 class TL_EXPORT GfttDetector
-  : public GfttProperties,
-    public FeatureDetector
+  : public FeatureDetector
 {
 
 private:
 
     cv::Ptr<cv::GFTTDetector> mGFTT;
+    GfttProperties mProperties;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Initializes GFTT with default properties.
+     */
     GfttDetector();
-    GfttDetector(const GfttDetector &gfttDetector);
-    GfttDetector(int maxFeatures,
-                 double qualityLevel,
-                 double minDistance,
-                 int blockSize,
-                 bool harrisDetector,
-                 double k);
+
+    /*!
+     * \brief Constructor with custom properties.
+     *
+     * Initializes GFTT Detector using the provided properties.
+     *
+     * \param[in] properties The GFTT detection properties.
+     */
+    explicit GfttDetector(const GfttProperties &properties);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * Creates a copy of the given `GfttDetector` instance.
+     *
+     * \param[in] gftt The object to copy.
+     */
+    GfttDetector(const GfttDetector &gftt);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * Moves the properties and internal state from another `GfttDetector` instance.
+     *
+     * \param[in] gftt The object to move.
+     */
+    GfttDetector(GfttDetector &&gftt) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~GfttDetector() override = default;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * Copies the properties and internal detector from another `GfttDetector` instance.
+     *
+     * \param[in] gftt The object to copy.
+     * \return Reference to the updated object.
+     */
+    auto operator =(const GfttDetector &gftt) -> GfttDetector &;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * Moves the properties and internal state from another `GfttDetector` instance.
+     *
+     * \param[in] gftt The object to move.
+     * \return Reference to the updated object.
+     */
+    auto operator =(GfttDetector &&gftt) TL_NOEXCEPT -> GfttDetector &;
+
+    /*!
+     * \brief Get a reference to the GFTT detector properties.
+     *
+     * This allows modifying the properties of the GFTT detector.
+     *
+     * \return Reference to the properties object.
+     *
+     * \note The following property names are valid when accessed through the `Properties` class:
+     * - `"MaxFeatures"`: Maximum number of corners to detect.
+     * - `"QualityLevel"`: Minimum accepted quality of image corners.
+     * - `"MinDistance"`: Minimum possible Euclidean distance between detected corners.
+     * - `"BlockSize"`: Size of the averaging block for derivative computation.
+     * - `"HarrisDetector"`: Enables the use of the Harris detector instead of the minimum eigenvalue method.
+     * - `"K"`: Free parameter for the Harris detector.
+     */
+    auto properties() -> GfttProperties &{ return mProperties; }
+
+    /*!
+     * \brief Get a constant reference to the GFTT detector properties.
+     *
+     * This allows read-only access to the properties of the GFTT detector.
+     *
+     * \return Constant reference to the properties object.
+     *
+     * \note The following property names are valid when accessed through the `Properties` class:
+     * - `"MaxFeatures"`: Maximum number of corners to detect.
+     * - `"QualityLevel"`: Minimum accepted quality of image corners.
+     * - `"MinDistance"`: Minimum possible Euclidean distance between detected corners.
+     * - `"BlockSize"`: Size of the averaging block for derivative computation.
+     * - `"HarrisDetector"`: Enables the use of the Harris detector instead of the minimum eigenvalue method.
+     * - `"K"`: Free parameter for the Harris detector.
+     */
+    auto properties() const -> const GfttProperties &{ return mProperties; }
+
+private:
+
+    void init();
 
 // FeatureDetector interface
 
 public:
 
+    /*!
+     * \brief Detect keypoints in an image using GFTT.
+     *
+     * Processes the given image and extracts keypoints using the GFTT algorithm.
+     * If a mask is provided, keypoints will only be detected in unmasked regions.
+     *
+     * \param[in] img The input grayscale image.
+     * \param[in,out] mask Optional mask to specify regions of interest (default = no mask).
+     *
+     * \return A vector of detected keypoints.
+     */
     auto detect(const cv::Mat &img, cv::InputArray &mask = cv::noArray()) -> std::vector<cv::KeyPoint> override;
-
-// Gftt interface
-
-public:
-
-    void setMaxFeatures(int maxFeatures) override;
-    void setQualityLevel(double qlevel) override;
-    void setMinDistance(double minDistance) override;
-    void setBlockSize(int blockSize) override;
-    void setHarrisDetector(bool value) override;
-    void setK(double k) override;
-
-// Feature interface
-
-public:
-
-    void reset() override;
 
 };
 
-/*! \} */ // end of FeatureDetectorAndDescriptor
-
-/*! \} */ // end of Features
+/*! \} */
 
 } // namespace tl

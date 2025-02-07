@@ -29,192 +29,202 @@
 namespace tl
 {
 
+/* MSER properties */
 
 MserProperties::MserProperties()
-  : mDelta(5),
-    mMinArea(60),
-    mMaxArea(14400),
-    mMaxVariation(0.25),
-    mMinDiversity(0.2),
-    mMaxEvolution(200),
-    mAreaThreshold(1.01),
-    mMinMargin(0.003),
-    mEdgeBlurSize(5)
+  : Feature("MSER", Feature::Type::mser)
+{
+    reset();
+}
+
+MserProperties::MserProperties(const MserProperties &properties)
+  : Feature(properties)
 {
 }
 
-MserProperties::MserProperties(const MserProperties &mserProperties)
-  : Mser(mserProperties),
-    mDelta(mserProperties.mDelta),
-    mMinArea(mserProperties.minArea()),
-    mMaxArea(mserProperties.mMaxArea),
-    mMaxVariation(mserProperties.mMaxVariation),
-    mMinDiversity(mserProperties.mMinDiversity),
-    mMaxEvolution(mserProperties.mMaxEvolution),
-    mAreaThreshold(mserProperties.mAreaThreshold),
-    mMinMargin(mserProperties.mMinMargin),
-    mEdgeBlurSize(mserProperties.mEdgeBlurSize)
+MserProperties::MserProperties(MserProperties &&properties) TL_NOEXCEPT
+  : Feature(std::forward<Feature>(properties))
 {
+}
+
+auto MserProperties::operator=(const MserProperties &properties) -> MserProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(properties);
+    }
+    return *this;
+}
+
+auto MserProperties::operator=(MserProperties &&properties) TL_NOEXCEPT -> MserProperties &
+{
+    if (this != &properties) {
+        Feature::operator=(std::forward<Feature>(properties));
+    }
+    return *this;
 }
 
 
 auto MserProperties::delta() const -> int
 {
-    return mDelta;
+    return getProperty<int>("Delta");
 }
 
 auto MserProperties::minArea() const -> int
 {
-    return mMinArea;
+    return getProperty<int>("MinArea");
 }
 
 auto MserProperties::maxArea() const -> int
 {
-    return mMaxArea;
+    return getProperty<int>("MaxArea");
 }
 
 auto MserProperties::maxVariation() const -> double
 {
-    return mMaxVariation;
+    return getProperty<double>("MaxVariation");
 }
 
 auto MserProperties::minDiversity() const -> double
 {
-    return mMinDiversity;
+    return getProperty<double>("MinDiversity");
 }
 
 auto MserProperties::maxEvolution() const -> int
 {
-    return mMaxEvolution;
+    return getProperty<int>("MaxEvolution");
 }
 
 auto MserProperties::areaThreshold() const -> double
 {
-    return mAreaThreshold;
+    return getProperty<double>("AreaThreshold");
 }
 
 auto MserProperties::minMargin() const -> double
 {
-    return mMinMargin;
+    return getProperty<double>("MinMargin");
 }
 
 auto MserProperties::edgeBlurSize() const -> int
 {
-    return mEdgeBlurSize;
+    return getProperty<int>("EdgeBlurSize");
 }
 
 void MserProperties::setDelta(int delta)
 {
-    mDelta = delta;
+    setProperty("Delta", delta);
 }
 
 void MserProperties::setMinArea(int minArea)
 {
-    mMinArea = minArea;
+    setProperty("MinArea", minArea);
 }
 
 void MserProperties::setMaxArea(int maxArea)
 {
-    mMaxArea = maxArea;
+    setProperty("MaxArea", maxArea);
 }
 
 void MserProperties::setMaxVariation(double maxVariation)
 {
-    mMaxVariation = maxVariation;
+    setProperty("MaxVariation", maxVariation);
 }
 
 void MserProperties::setMinDiversity(double minDiversity)
 {
-    mMinDiversity = minDiversity;
+    setProperty("MinDiversity", minDiversity);
 }
 
 void MserProperties::setMaxEvolution(int maxEvolution)
 {
-    mMaxEvolution = maxEvolution;
+    setProperty("MaxEvolution", maxEvolution);
 }
 
 void MserProperties::setAreaThreshold(double areaThreshold)
 {
-    mAreaThreshold = areaThreshold;
+    setProperty("AreaThreshold", areaThreshold);
 }
 
 void MserProperties::setMinMargin(double minMargin)
 {
-    mMinMargin = minMargin;
+    setProperty("MinMargin", minMargin);
 }
 
 void MserProperties::setEdgeBlurSize(int edgeBlurSize)
 {
-    mEdgeBlurSize = edgeBlurSize;
+    setProperty("EdgeBlurSize", edgeBlurSize);
 }
 
 void MserProperties::reset()
 {
-    mDelta = 5;
-    mMinArea = 60;
-    mMaxArea = 14400;
-    mMaxVariation = 0.25;
-    mMinDiversity = .2;
-    mMaxEvolution = 200;
-    mAreaThreshold = 1.01;
-    mMinMargin = 0.003;
-    mEdgeBlurSize = 5;
-}
-
-auto MserProperties::name() const -> std::string
-{
-    return std::string("MSER");
+     setDelta(5);
+     setMinArea(60);
+     setMaxArea(14400);
+     setMaxVariation(0.25);
+     setMinDiversity(.2);
+     setMaxEvolution(200);
+     setAreaThreshold(1.01);
+     setMinMargin(0.003);
+     setEdgeBlurSize(5);
 }
 
 
-/*----------------------------------------------------------------*/
 
+
+/* MSER Detector */
 
 MserDetector::MserDetector()
+  : mProperties()
 {
-    update();
+    init();
 }
 
-MserDetector::MserDetector(const MserDetector &mserDetector)
-  : MserProperties(mserDetector),
-    FeatureDetector(mserDetector)
+MserDetector::MserDetector(const MserProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-MserDetector::MserDetector(int delta,
-                           int minArea,
-                           int maxArea,
-                           double maxVariation,
-                           double minDiversity,
-                           int maxEvolution,
-                           double areaThreshold,
-                           double minMargin,
-                           int edgeBlurSize)
+MserDetector::MserDetector(const MserDetector &mser)
+  : mProperties(mser.mProperties)
 {
-    MserProperties::setDelta(delta);
-    MserProperties::setMinArea(minArea);
-    MserProperties::setMaxArea(maxArea);
-    MserProperties::setMaxVariation(maxVariation);
-    MserProperties::setMinDiversity(minDiversity);
-    MserProperties::setMaxEvolution(maxEvolution);
-    MserProperties::setAreaThreshold(areaThreshold);
-    MserProperties::setMinMargin(minMargin);
-    MserProperties::setEdgeBlurSize(edgeBlurSize);
-    update();
+    init();
 }
 
-void MserDetector::update()
+MserDetector::MserDetector(MserDetector &&mser) TL_NOEXCEPT
+  : mProperties(std::move(mser.mProperties)),
+    mMSER(std::move(mser.mMSER))
 {
-    mMSER = cv::MSER::create(MserProperties::delta(),
-                             MserProperties::minArea(),
-                             MserProperties::maxArea(),
-                             MserProperties::maxVariation(),
-                             MserProperties::minDiversity(),
-                             MserProperties::maxEvolution(),
-                             MserProperties::areaThreshold(),
-                             MserProperties::minMargin(),
-                             MserProperties::edgeBlurSize());
+}
+
+auto MserDetector::operator =(const MserDetector &mser) -> MserDetector &
+{
+    if (this != &mser) {
+        mProperties = mser.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto MserDetector::operator =(MserDetector &&mser) TL_NOEXCEPT -> MserDetector &
+{
+    if (this != &mser) {
+        mProperties = std::move(mser.mProperties);
+        mMSER = std::move(mser.mMSER);
+    }
+    return *this;
+}
+
+void MserDetector::init()
+{
+    mMSER = cv::MSER::create(mProperties.delta(),
+                             mProperties.minArea(),
+                             mProperties.maxArea(),
+                             mProperties.maxVariation(),
+                             mProperties.minDiversity(),
+                             mProperties.maxEvolution(),
+                             mProperties.areaThreshold(),
+                             mProperties.minMargin(),
+                             mProperties.edgeBlurSize());
 }
 
 auto MserDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vector<cv::KeyPoint>
@@ -231,66 +241,5 @@ auto MserDetector::detect(const cv::Mat &img, cv::InputArray &mask) -> std::vect
 
     return keyPoints;
 }
-
-void MserDetector::setDelta(int delta)
-{
-    MserProperties::setDelta(delta);
-    mMSER->setDelta(delta);
-}
-
-void MserDetector::setMinArea(int minArea)
-{
-    MserProperties::setMinArea(minArea);
-    mMSER->setMinArea(minArea);
-}
-
-void MserDetector::setMaxArea(int maxArea)
-{
-    MserProperties::setMaxArea(maxArea);
-    mMSER->setMaxArea(maxArea);
-}
-
-void MserDetector::setMaxVariation(double maxVariation)
-{
-    MserProperties::setMaxVariation(maxVariation);
-    update();
-}
-
-void MserDetector::setMinDiversity(double minDiversity)
-{
-    MserProperties::setMinDiversity(minDiversity);
-    update();
-}
-
-void MserDetector::setMaxEvolution(int maxEvolution)
-{
-    MserProperties::setMaxEvolution(maxEvolution);
-    update();
-}
-
-void MserDetector::setAreaThreshold(double areaThreshold)
-{
-    MserProperties::setAreaThreshold(areaThreshold);
-    update();
-}
-
-void MserDetector::setMinMargin(double minMargin)
-{
-    MserProperties::setMinMargin(minMargin);
-    update();
-}
-
-void MserDetector::setEdgeBlurSize(int edgeBlurSize)
-{
-    MserProperties::setEdgeBlurSize(edgeBlurSize);
-    update();
-}
-
-void MserDetector::reset()
-{
-    MserProperties::reset();
-    update();
-}
-
 
 } // namespace tl
