@@ -24,10 +24,15 @@
 
 #pragma once
 
-#include "tidop/featmatch/base/matcher.h"
+#include "tidop/featmatch/matching/matching.h"
 
 namespace tl
 {
+
+/*! \addtogroup FeatureMatching
+ *
+ *  \{
+ */
 
 constexpr auto gms_default_value_rotation{true};
 constexpr auto gms_default_value_scale{true};
@@ -35,61 +40,103 @@ constexpr auto gms_default_value_threshold{6.};
 
 
 class TL_EXPORT GmsProperties
-    : public Gms
+  : public MatchingStrategy
 {
-
-private:
-
-    bool mRotation{gms_default_value_rotation};
-    bool mScale{gms_default_value_scale};
-    double mThreshold{gms_default_value_threshold};
 
 public:
 
+    /*!
+     * \brief Default constructor. Initializes the properties with default values.
+     */
     GmsProperties();
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] properties Another instance to copy properties from.
+     */
+    GmsProperties(const GmsProperties &properties);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] properties Another instance to move properties from.
+     */
+    GmsProperties(GmsProperties &&properties) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~GmsProperties() override = default;
+
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] properties Another instance to copy properties from.
+     * \return Reference to this instance.
+     */
+    auto operator=(const GmsProperties &properties) -> GmsProperties &;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] properties Another instance to move properties from.
+     * \return Reference to this instance.
+     */
+    auto operator=(GmsProperties &&properties) TL_NOEXCEPT -> GmsProperties &;
+
+    auto rotation() const -> bool;
+    void setRotation(bool rotation);
+    auto scale() const -> bool;
+    void setScale(bool scale);
+    auto threshold() const -> double;
+    void setThreshold(double threshold);
 
 // MatchingStrategy interface
 
 public:
 
     void reset() override;
-    auto name() const -> std::string override;
-
-// Gms interface
-
-public:
-
-    auto rotation() const -> bool override;
-    void setRotation(bool rotation) override;
-    auto scale() const -> bool override;
-    void setScale(bool scale) override;
-    auto threshold() const -> double override;
-    void setThreshold(double threshold) override;
 
 };
 
 
-/*----------------------------------------------------------------*/
 
 
-class TL_EXPORT GsmImp
-  : public GmsProperties,
-    public MatchingAlgorithm
+
+class TL_EXPORT Gms
+  : public MatchingAlgorithm
 {
 
 private:
 
     std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+    GmsProperties mProperties;
 
 public:
 
-    explicit GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
-    GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
-           bool rotation,
-           bool scale,
-           double threshold);
-    ~GsmImp() override = default;
+    explicit Gms(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+    Gms(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+        const GmsProperties &properties);
+    ~Gms() override = default;
+
+    /*!
+     * \brief Get the GMS properties.
+     * \return Reference to the properties object.
+     *
+     * The following property names are valid when accessed via the `Properties` class:
+     * - `"Rotation"`
+     * - `"Scale"`
+     * - `"Threshold"`
+     */
+    auto properties() -> GmsProperties &{ return mProperties; }
+
+    /*!
+     * \brief Get the GMS properties (const version).
+     * \return Const reference to the properties object.
+     *
+     * The following property names are valid when accessed via the `Properties` class:
+     * - `"Rotation"`
+     * - `"Scale"`
+     * - `"Threshold"`
+     */
+    auto properties() const -> const GmsProperties &{ return mProperties; }
 
 // MatchingAlgorithm interface
 
@@ -99,12 +146,13 @@ public:
                  const cv::Mat &trainDescriptor,
                  const std::vector<cv::KeyPoint> &keypoints1,
                  const std::vector<cv::KeyPoint> &keypoints2,
-                 std::vector<cv::DMatch> *goodMatches,
                  std::vector<cv::DMatch> *wrongMatches = nullptr,
                  const cv::Size &queryImageSize = cv::Size(),
-                 const cv::Size &trainImageSize = cv::Size()) -> bool override;
+                 const cv::Size &trainImageSize = cv::Size()) -> std::vector<cv::DMatch> override;
 
 };
+
+/*! \} */
 
 } // namespace tl
 

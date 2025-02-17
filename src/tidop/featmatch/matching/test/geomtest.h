@@ -27,17 +27,44 @@
 #include "tidop/core/base/defs.h"
 
 #include <opencv2/core.hpp>
-#include <opencv2/calib3d.hpp>
 
 namespace tl
 {
 
-/*! \addtogroup FeatureMatching
+/*! \addtogroup GeometricTest
  *  \{
  */
 
 /*!
  * \brief Base class for performing geometric tests, such as homography and fundamental matrix estimation.
+ * 
+ *
+ * This class provides an interface for performing geometric tests between two sets of matched points.
+ * It supports various types of tests, including homography and fundamental matrix estimation,
+ * using different algorithms such as RANSAC, LMEDS, and USAC.
+ * 
+ * #### Example Usage
+ * \code{.cpp}
+ * // Create a geometric test using RANSAC-based homography estimation
+ * auto geometricTest = GeometricTestFactory::create(GeometricTest::Type::homography_ransac);
+ *
+ * // Define corresponding points from two images
+ *   size_t size = matches.size();
+ *   std::vector<cv::Point2f> points1(size);
+ *   std::vector<cv::Point2f> points2(size);
+ *   for (size_t i = 0; i < size; i++) {
+ *       points1[i] = keypoints1[static_cast<size_t>(matches[i].queryIdx)].pt;
+ *       points2[i] = keypoints2[static_cast<size_t>(matches[i].trainIdx)].pt;
+ *   }
+ *
+ * // Execute the test to determine inliers
+ * std::vector<unsigned char> inliers = geometricTest->exec(points1, points2);
+ * std::vector<cv::DMatch> filter_matches;
+ * for (size_t i = 0; i < nPoints; i++) {
+ *     if (inliers[i])
+ *         filter_matches.push_back(matches[i]);
+ * }
+ * \endcode
  */
 class TL_EXPORT GeometricTest
 {
@@ -46,11 +73,15 @@ public:
 
     /*!
      * \brief Struct to hold properties specific to the geometric test.
+     * 
+     * This struct can be extended to include algorithm-specific parameters.
      */
     struct Properties{};
 
     /*!
      * \brief Enum representing the type of geometric test.
+     *
+     * Defines different algorithms used for estimating geometric transformations.
      */
     enum class Type
     {
@@ -81,7 +112,7 @@ public:
      * \brief Constructor that initializes the geometric test with a specific type.
      * \param[in] type The type of geometric test.
      */
-    GeometricTest(Type type) : mType(type) {}
+    GeometricTest(Type type);
 
     /*!
      * \brief Virtual destructor for the GeometricTest class.
@@ -93,20 +124,26 @@ public:
     /*!
      * \brief Retrieves the properties of the geometric test.
      * \return A pointer to the properties.
+     *
+     * Derived classes should return a pointer to their specific `Properties` implementation.
      */
     virtual auto properties() const -> const Properties* = 0;
 
     /*!
      * \brief Sets the properties of the geometric test.
      * \param[in] properties A pointer to the properties to set.
+     *
+     * This method allows modifying test-specific parameters, such as RANSAC thresholds.
      */
     virtual void setProperties(const Properties *properties) = 0;
 
     /*!
-     * \brief Executes the geometric test on two sets of points.
-     * \param[in] points1 The first set of points.
-     * \param[in] points2 The second set of points.
-     * \return A vector of unsigned char with the inliers.
+     * \brief Executes the geometric test on two sets of corresponding points.
+     *
+     * This method applies the selected geometric transformation estimation method (e.g., homography, fundamental matrix)
+     * and returns a vector indicating which points are inliers.
+     *
+     * \return A vector of unsigned char with the inliers (1 for inliers, 0 for outliers).
      */
     virtual auto exec(const std::vector<cv::Point2f> &points1,
                       const std::vector<cv::Point2f> &points2) -> std::vector<unsigned char> = 0;
@@ -125,72 +162,10 @@ public:
 
 
 /*!
- * \brief Properties for All Points geometric test.
- */
-struct TL_EXPORT AllPointsTestProperties
-  : GeometricTest::Properties
-{
-    double confidence{0.999}; ///< Confidence level for the test.
-};
-
-/*!
- * \brief Properties for RANSAC geometric test.
- */
-struct TL_EXPORT RANSACTestProperties
-  : GeometricTest::Properties
-{
-    double distance{0.7};     ///< Distance threshold for inlier detection.
-    double confidence{0.999}; ///< Confidence level for the test.
-    int iterations{2000};     ///< Maximum number of iterations.
-};
-
-/*!
- * \brief Properties for LMEDS geometric test.
- */
-struct TL_EXPORT LMedsTestProperties
-  : GeometricTest::Properties
-{
-    double confidence{0.999}; ///< Confidence level for the test.
-    int iterations{2000};     ///< Maximum number of iterations.
-};
-
-/*!
- * \brief Properties for RHO geometric test.
- */
-struct TL_EXPORT RHOTestProperties
-  : GeometricTest::Properties
-{
-    double distance{0.7};     ///< Distance threshold for inlier detection.
-    double confidence{0.999}; ///< Confidence level for the test.
-};
-
-#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR > 4))
-   
-/*!
- * \brief Properties for USAC geometric test.
- */
-struct TL_EXPORT UsacTestProperties
-  : GeometricTest::Properties
-{
-    double confidence{0.99}; ///< Confidence level for the test.
-    bool isParallel{false};  ///< Flag to indicate if the test should run in parallel.
-    int	loIterations{5};     ///< Number of iterations for local optimization
-    cv::LocalOptimMethod loMethod{cv::LocalOptimMethod::LOCAL_OPTIM_INNER_LO}; ///< Local optimization method.
-    int loSampleSize{14};   ///< Sample size for local optimization.
-    int maxIterations{5000};  ///< Maximum number of iterations.
-    cv::NeighborSearchMethod neighborsSearch{cv::NeighborSearchMethod::NEIGH_GRID}; ///< Neighbor search method.
-    int randomGeneratorState{0}; ///< Random generator state.
-    cv::SamplingMethod sampler{cv::SamplingMethod::SAMPLING_UNIFORM}; ///< Sampling method.
-    cv::ScoreMethod score{cv::ScoreMethod::SCORE_METHOD_MSAC}; ///< Scoring method.
-    double threshold{1.5}; ///< Threshold for inlier detection.
-};
-
-#endif
-
-
-
-/*!
  * \brief Factory class for creating instances of geometric tests.
+ *
+ * The `GeometricTestFactory` provides a simple interface for instantiating different
+ * types of geometric tests. This ensures modularity and ease of configuration.
  */
 class TL_EXPORT GeometricTestFactory
 {
@@ -203,6 +178,9 @@ public:
 
     /*!
      * \brief Creates a geometric test of the specified type.
+     * 
+     * This function initializes the appropriate geometric test algorithm based on the provided type.
+     * 
      * \param[in] type The type of geometric test to create.
      * \return A shared pointer to the created geometric test.
      */
@@ -210,6 +188,9 @@ public:
 
     /*!
      * \brief Creates a geometric test of the specified type with given properties.
+     * 
+     * This function allows creating a geometric test with custom parameters.
+     * 
      * \param[in] type The type of geometric test to create.
      * \param[in] properties The properties to configure the geometric test.
      * \return A shared pointer to the created geometric test.

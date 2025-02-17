@@ -31,7 +31,7 @@ namespace tl
 {
 
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 

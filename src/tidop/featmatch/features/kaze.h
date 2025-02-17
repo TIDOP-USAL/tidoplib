@@ -26,7 +26,7 @@
 
 #include "tidop/config.h"
 
-#include "tidop/featmatch/base/features.h"
+#include "tidop/featmatch/features/features.h"
 
 namespace tl
 {

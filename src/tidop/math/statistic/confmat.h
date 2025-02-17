@@ -88,10 +88,10 @@ public:
      */
     enum class Classification
     {
-        true_positives, /*!< True positives */
+        true_positives,  /*!< True positives */
         false_positives, /*!< False positives */
-        true_negatives, /*!< True negatives */
-        false_negatives /*!< False negatives */
+        true_negatives,  /*!< True negatives */
+        false_negatives  /*!< False negatives */
     };
 
 private:

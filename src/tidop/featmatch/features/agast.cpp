@@ -116,21 +116,21 @@ AgastDetector::AgastDetector()
   : mProperties(), 
     mAgast(cv::AgastFeatureDetector::create())
 {
-    this->initAgastFromProperties();
+    init();
 }
 
 AgastDetector::AgastDetector(const AgastProperties &properties)
   : mProperties(properties), 
     mAgast(cv::AgastFeatureDetector::create())
 {
-    this->initAgastFromProperties();
+    init();
 }
 
 AgastDetector::AgastDetector(const AgastDetector &agastDetector)
   : mProperties(agastDetector.mProperties),
     mAgast(cv::AgastFeatureDetector::create())
 {
-    this->initAgastFromProperties();
+    init();
 }
 
 AgastDetector::AgastDetector(AgastDetector &&agastDetector) TL_NOEXCEPT
@@ -148,7 +148,7 @@ auto AgastDetector::operator =(const AgastDetector &agastDetector) -> AgastDetec
 {
     if (this != &agastDetector) {
         mProperties = agastDetector.mProperties;
-        this->initAgastFromProperties();
+        init();
     }
     return *this;
 }
@@ -162,7 +162,7 @@ auto AgastDetector::operator =(AgastDetector &&agastDetector) TL_NOEXCEPT -> Aga
     return *this;
 }
 
-void AgastDetector::initAgastFromProperties()
+void AgastDetector::init()
 {
     mAgast->setThreshold(mProperties.threshold());
     mAgast->setNonmaxSuppression(mProperties.nonmaxSuppression());

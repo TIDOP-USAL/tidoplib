@@ -27,7 +27,7 @@
 #include <tidop/core/base/path.h>
 #include <tidop/core/base/chrono.h>
 #include <tidop/rastertools/io/imgreader.h>
-#include <tidop/featmatch/base/features.h>
+#include <tidop/featmatch/features/features.h>
 #include <tidop/featmatch/features/agast.h>
 #include <tidop/featmatch/features/kaze.h>
 #include <tidop/featmatch/features/akaze.h>

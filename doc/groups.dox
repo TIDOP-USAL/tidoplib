@@ -592,8 +592,12 @@
  
  
  
-/*! 
- * \defgroup Features Feature extraction and matching
+/*!
+ * \defgroup Features Feature Extraction and Matching
+ * \brief Modules related to feature extraction and matching in images.
+ *
+ * This module includes tools for detecting, describing, and matching features in images,
+ * enabling tasks such as pattern recognition, computer vision, and 3D reconstruction.
  */
 
 
@@ -648,13 +652,84 @@
  */
  
  
-/*! 
- * \defgroup FeatureMatching Feature matching
+/*!
+ * \defgroup FeatureMatching Feature Matching
  * \ingroup Features
- */  
+ * \brief Methods for feature matching in images.
+ *
+ * This module contains algorithms for comparing and matching image descriptors.
+ * It includes brute-force matching, FLANN-based approaches, and advanced strategies 
+ * to improve matching accuracy.
+ */
  
+/*!
+ * \defgroup GeometricTest Geometric Test
+ * \ingroup FeatureMatching
+ * \brief Methods using the fundamental matrix and homography to filter incorrect matches.
+ *
+ * These methods validate the geometric consistency of the found matches by applying 
+ * constraints based on the fundamental matrix and homography. This helps remove 
+ * incorrect matches caused by noise, occlusions, or perspective changes.
+ */
+
+/*!
+ * \defgroup RatioTest Ratio Test
+ * \ingroup FeatureMatching
+ * \brief Implementation of Lowe’s ratio test to improve match quality.
+ *
+ * This test compares the distance between the best and the second-best match for 
+ * each keypoint. If their ratio is below a predefined threshold, the match is considered valid. 
+ * This technique reduces the number of incorrect matches.
+ */
  
-/*! 
- * \defgroup FeatureIO Reading and writing Features and Matches
- * \ingroup Features 
+/*!
+ * \defgroup CrossCheckTest Cross-Check Test
+ * \ingroup FeatureMatching
+ * \brief Implementation of the cross-check test to verify symmetry in matches.
+ *
+ * The cross-check test compares matches in both directions (from image A to B and from B to A).
+ * If a keypoint in A matches a keypoint in B and vice versa, the match is considered valid.
+ * This approach improves matching accuracy by eliminating ambiguous associations.
+ */
+ 
+/*!
+ * \defgroup FeatureIO Reading and Writing Features and Matches
+ * \ingroup Features
+ * \brief Module for reading and writing feature keypoints and matches.
+ *
+ * Provides tools to store and retrieve keypoints, descriptors, and matches in formats suitable
+ * for reuse in computer vision applications and image analysis.
+ */
+ 
+/*!
+ * \defgroup KeyPointsFilters Keypoint Filters
+ * \ingroup Features
+ * \brief Filters for selecting and processing keypoints in images.
+ *
+ * Contains methods to refine keypoint selection based on criteria such as size,
+ * duplicate removal, masking, and selecting the best `N` keypoints.
  */   
+  
+/*!
+ * \defgroup Evaluation Evaluation
+ * \ingroup Features
+ * \brief Methods for evaluating the quality of extracted features and matches.
+ *
+ * This module includes metrics and techniques to analyze the performance of feature detection, 
+ * description, and matching algorithms. It allows measuring the accuracy, robustness, 
+ * and efficiency of the implemented methods.
+ */
+
+/*!
+ * \defgroup Curves Curves
+ * \ingroup Evaluation
+ * \brief Evaluation curves used for analyzing classifiers and match performance.
+ *
+ * Provides tools for generating DET, PR, and ROC curves, which help assess the accuracy
+ * and discriminability of matching and classification algorithms.
+ */ 
+ 
+ 
+/*!
+ * \defgroup GeometricEntities Geometric Entities
+ */  

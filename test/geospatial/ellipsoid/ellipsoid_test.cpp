@@ -190,9 +190,20 @@ BOOST_FIXTURE_TEST_CASE(geodetic_to_parametric_latitude, EllipsoidTest)
     Degrees<double> parametric_latitude(wgs84->geodeticToParametricLatitude(lat.value()));
 
     BOOST_CHECK_EQUAL(40, parametric_latitude.degrees());
-    BOOST_CHECK_EQUAL(27, parametric_latitude.minutes());
-    BOOST_CHECK_CLOSE(39.2299049, parametric_latitude.seconds(), 0.01);
+    BOOST_CHECK_EQUAL(33, parametric_latitude.minutes());
+    BOOST_CHECK_CLOSE(21.3459, parametric_latitude.seconds(), 0.01);
 }
+
+BOOST_FIXTURE_TEST_CASE(geodetic_to_authalic_latitude, EllipsoidTest)
+{
+    Degrees<double> lat(40, 39, 3.6396);
+    Degrees<double> authalic_latitude(wgs84->geodeticToAuthalicLatitude(lat.value()));
+
+    BOOST_CHECK_EQUAL(40, authalic_latitude.degrees());
+    BOOST_CHECK_EQUAL(31, authalic_latitude.minutes());
+    BOOST_CHECK_CLOSE(27.2128181, authalic_latitude.seconds(), 0.01);
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

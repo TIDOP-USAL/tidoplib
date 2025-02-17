@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/featmatch/base/features.h"
+#include "tidop/featmatch/features/features.h"
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>

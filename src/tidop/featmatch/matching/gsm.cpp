@@ -32,101 +32,115 @@ namespace tl
 {
 
 GmsProperties::GmsProperties()
+  : MatchingStrategy("GMS", Strategy::gms)
 {
-
+    reset();
 }
 
-void GmsProperties::reset()
+GmsProperties::GmsProperties(const GmsProperties &properties)
+    : MatchingStrategy(properties)
 {
-    mRotation = gms_default_value_rotation;
-    mScale = gms_default_value_scale;
-    mThreshold = gms_default_value_threshold;
 }
 
-auto GmsProperties::name() const -> std::string
+GmsProperties::GmsProperties(GmsProperties &&properties) TL_NOEXCEPT
+    : MatchingStrategy(std::forward<MatchingStrategy>(properties))
 {
-    return std::string("GMS");
 }
 
+auto GmsProperties::operator=(const GmsProperties &properties) -> GmsProperties &
+{
+    if (this != &properties) {
+        MatchingStrategy::operator=(properties);
+    }
+    return *this;
+}
+
+auto GmsProperties::operator=(GmsProperties &&properties) TL_NOEXCEPT -> GmsProperties &
+{
+    if (this != &properties) {
+        MatchingStrategy::operator=(std::forward<MatchingStrategy>(properties));
+    }
+    return *this;
+}
 auto GmsProperties::rotation() const -> bool
 {
-    return mRotation;
+    return getProperty<bool>("Rotation");
 }
 
 void GmsProperties::setRotation(bool rotation)
 {
-    mRotation = rotation;
+    setProperty("Rotation", rotation);
 }
 
 auto GmsProperties::scale() const -> bool
 {
-    return mScale;
+    return getProperty<bool>("Scale");
 }
 
 void GmsProperties::setScale(bool scale)
 {
-    mScale = scale;
+    setProperty("Scale", scale);
 }
 
 auto GmsProperties::threshold() const -> double
 {
-    return mThreshold;
+    return getProperty<double>("Threshold");
 }
 
 void GmsProperties::setThreshold(double threshold)
 {
-    mThreshold = threshold;
+    setProperty("Threshold", threshold);
+}
+
+void GmsProperties::reset()
+{
+    setRotation(gms_default_value_rotation);
+    setScale(gms_default_value_scale);
+    setThreshold(gms_default_value_threshold);
 }
 
 
 
-/*----------------------------------------------------------------*/
 
 
-GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher)
-  : mDescriptorMatcher(std::move(descriptorMatcher))
+Gms::Gms(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
+  : mDescriptorMatcher(descriptorMatcher)
 {
 }
 
-GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
-               bool rotation,
-               bool scale,
-               double threshold)
-  : mDescriptorMatcher(std::move(descriptorMatcher))
+Gms::Gms(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+         const GmsProperties &properties)
+  : mDescriptorMatcher(descriptorMatcher),
+    mProperties(properties)
 {
-    GmsProperties::setRotation(rotation);
-    GmsProperties::setScale(scale);
-    GmsProperties::setThreshold(threshold);
 }
 
-auto GsmImp::compute(const cv::Mat &queryDescriptor,
-                     const cv::Mat &trainDescriptor,
-                     const std::vector<cv::KeyPoint> &keypoints1,
-                     const std::vector<cv::KeyPoint> &keypoints2,
-                     std::vector<cv::DMatch> *goodMatches,
-                     std::vector<cv::DMatch> *wrongMatches,
-                     const cv::Size &queryImageSize,
-                     const cv::Size &trainImageSize) -> bool
+auto Gms::compute(const cv::Mat &queryDescriptor,
+                  const cv::Mat &trainDescriptor,
+                  const std::vector<cv::KeyPoint> &keypoints1,
+                  const std::vector<cv::KeyPoint> &keypoints2,
+                  std::vector<cv::DMatch> *wrongMatches,
+                  const cv::Size &queryImageSize,
+                  const cv::Size &trainImageSize) -> std::vector<cv::DMatch>
 {
+    std::vector<cv::DMatch> goodMatches;
+
     try {
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 4 && CV_VERSION_REVISION >= 1 )
 
-
-        if (goodMatches == nullptr) return true;
-
         std::vector<cv::DMatch> matches;
         mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
 
-        cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, *goodMatches);
+        cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, goodMatches);
 
         for (size_t i = 0; i < matches.size(); i++) {
             bool wrong = true;
-            for (size_t j = 0; j < goodMatches->size(); j++) {
-                if (matches[i].queryIdx == (*goodMatches)[j].queryIdx &&
-                    matches[i].trainIdx == (*goodMatches)[j].trainIdx) {
+            for (size_t j = 0; j < goodMatches.size(); j++) {
+                if (matches[i].queryIdx == goodMatches[j].queryIdx &&
+                    matches[i].trainIdx == goodMatches[j].trainIdx) {
                     wrong = false;
                     break;
                 }
@@ -149,7 +163,7 @@ auto GsmImp::compute(const cv::Mat &queryDescriptor,
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
-    return false;
+    return goodMatches;
 }
 
 } // namespace tl

@@ -32,8 +32,6 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
   
     add_files_to_project(${PROJECT_NAME}
                          SOURCE_FILES 
-                             #base/features.cpp
-                             base/keypointsfilter.cpp
                              features/agast.cpp
                              features/akaze.cpp
                              features/boost.cpp
@@ -55,6 +53,9 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/star.cpp
                              features/surf.cpp
                              features/vgg.cpp
+                             features/filter/bysize.cpp
+                             features/filter/duplicates.cpp
+                             features/filter/nbest.cpp
                              io/featreader.cpp
                              io/featwriter.cpp
                              io/matchreader.cpp
@@ -72,25 +73,37 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              io/impl/matches/opencvwriter.cpp
                              matching/bfmatch.cpp
                              matching/flann.cpp
-                             matching/geomtest.cpp
                              matching/gsm.cpp
                              matching/robustmatch.cpp
+                             matching/test/crosstest.cpp
+                             matching/test/geomtest.cpp
+                             matching/test/ratiotest.cpp
+                             matching/test/impl/fundamental_7_points_test.cpp
+                             matching/test/impl/fundamental_8_points_test.cpp
+                             matching/test/impl/fundamental_lmeds_test.cpp
+                             matching/test/impl/fundamental_ransac_test.cpp
+                             matching/test/impl/fundamental_usac_test.cpp
+                             matching/test/impl/homography_all_points_test.cpp
+                             matching/test/impl/homography_lmeds_test.cpp
+                             matching/test/impl/homography_ransac_test.cpp
+                             matching/test/impl/homography_rho_test.cpp
+                             matching/test/impl/homography_usac_test.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/lss/lss.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp
                          HEADER_FILES
-                             base/evaluation.h
-                             base/features.h
-                             base/keypointsfilter.h
-                             base/matcher.h
+                             evaluation/curve.h
+                             evaluation/detcurve.h
+                             evaluation/prcurve.h
+                             evaluation/roccurve.h
                              features/agast.h
-                             #features/impl/agast.h
                              features/akaze.h
                              features/boost.h
                              features/brief.h
                              features/brisk.h
                              features/daisy.h
                              features/fast.h
+                             features/features.h
                              features/freak.h
                              features/gftt.h
                              features/hog.h
@@ -105,6 +118,10 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/star.h
                              features/surf.h
                              features/vgg.h
+                             features/filter/keypointsfilter.h
+                             features/filter/bysize.h
+                             features/filter/duplicates.h
+                             features/filter/nbest.h
                              io/featreader.h
                              io/featwriter.h
                              io/matchreader.h
@@ -122,9 +139,27 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              io/impl/matches/opencvwriter.h
                              matching/bfmatch.h
                              matching/flann.h
-                             matching/geomtest.h
                              matching/gsm.h
+                             matching/matching.h
                              matching/robustmatch.h
+                             matching/test/all_points.h
+                             matching/test/crosstest.h
+                             matching/test/geomtest.h
+                             matching/test/lmeds.h
+                             matching/test/ransac.h
+                             matching/test/ratiotest.h
+                             matching/test/rho.h
+                             matching/test/usac.h
+                             matching/test/impl/fundamental_7_points_test.h
+                             matching/test/impl/fundamental_8_points_test.h
+                             matching/test/impl/fundamental_lmeds_test.h
+                             matching/test/impl/fundamental_ransac_test.h
+                             matching/test/impl/fundamental_usac_test.h
+                             matching/test/impl/homography_all_points_test.h
+                             matching/test/impl/homography_lmeds_test.h
+                             matching/test/impl/homography_ransac_test.h
+                             matching/test/impl/homography_rho_test.h
+                             matching/test/impl/homography_usac_test.h
                              ${TidopLib_SOURCE_DIR}/third_party/lss/lss.h
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.h
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h)
@@ -164,7 +199,8 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
 
     install(DIRECTORY .
             DESTINATION include/tidop/featmatch
-            FILES_MATCHING PATTERN "*.h")
+            FILES_MATCHING PATTERN "*.h"
+            PATTERN "impl" EXCLUDE)
   
   
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})

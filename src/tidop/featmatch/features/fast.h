@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/featmatch/base/features.h"
+#include "tidop/featmatch/features/features.h"
 
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>

@@ -24,146 +24,122 @@
 
 #pragma once
 
-#include "tidop/featmatch/base/matcher.h"
+#include "tidop/featmatch/matching/matching.h"
 
 namespace tl
 {
 
+/*! \addtogroup FeatureMatching
+ *
+ *  \{
+ */
+
+
 class TL_EXPORT RobustMatchingProperties
-  : public RobustMatcher
+  : public MatchingStrategy
 {
 
-private:
-
-    double mRatio;
-    bool mCrossCheck;
-    std::shared_ptr<GeometricTest> mGeometricTest;
+//private:
+//
+//    double mRatio;
+//    bool mCrossCheck;
 
 public:
 
+    /*!
+     * \brief Default constructor. Initializes the properties with default values.
+     */
     RobustMatchingProperties();
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] properties Another instance to copy properties from.
+     */
+    RobustMatchingProperties(const RobustMatchingProperties &properties);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] properties Another instance to move properties from.
+     */
+    RobustMatchingProperties(RobustMatchingProperties &&properties) TL_NOEXCEPT;
+
+    /*!
+     * \brief Destructor.
+     */
     ~RobustMatchingProperties() override = default;
 
-// RobustMatcher interface
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] properties Another instance to copy properties from.
+     * \return Reference to this instance.
+     */
+    auto operator=(const RobustMatchingProperties &properties) -> RobustMatchingProperties &;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] properties Another instance to move properties from.
+     * \return Reference to this instance.
+     */
+    auto operator=(RobustMatchingProperties &&properties) TL_NOEXCEPT -> RobustMatchingProperties &;
 
 public:
 
-    auto ratio() const -> double override;
-    void setRatio(double ratio) override;
-    auto crossCheck() const -> bool override;
-    void setCrossCheck(bool crossCheck) override;
-    auto geometricTest() const -> std::shared_ptr<GeometricTest> override;
-    void setGeometricTest(std::shared_ptr<GeometricTest> geometricTest) override;
+    auto ratio() const -> double;
+    void setRatio(double ratio);
+    auto crossCheck() const -> bool;
+    void setCrossCheck(bool crossCheck);
 
 // MatchingStrategy interface
 
 public:
 
     void reset() override;
-    auto name() const -> std::string override;
 
 };
 
 
-/*----------------------------------------------------------------*/
+
 
 
 class TL_EXPORT RobustMatchingImp
-  : public RobustMatchingProperties,
-    public MatchingAlgorithm
+  : public MatchingAlgorithm
 {
 
 protected:
 
     std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+    RobustMatchingProperties mProperties;
+    std::shared_ptr<GeometricTest> mGeometricTest;
 
 public:
 
-    explicit RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
-    RobustMatchingImp(std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
-                      double ratio,
-                      bool crossCheck,
-                      std::shared_ptr<GeometricTest> &geometricTest);
+    explicit RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+    RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+                      const RobustMatchingProperties &properties,
+                      const std::shared_ptr<GeometricTest> &geometricTest);
     ~RobustMatchingImp() override = default;
 
     /*!
-     * \brief Sets the matching method
-     * \param[in] matcher
+     * \brief Get the GMS properties.
+     * \return Reference to the properties object.
+     *
+     * The following property names are valid when accessed via the `Properties` class:
+     * - `"Ratio"`
+     * - `"CrossCheck"`
      */
-    void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+    auto properties() -> RobustMatchingProperties &{ return mProperties; }
 
     /*!
-     * \brief Ratio test
-     * \param[in] matches
-     * \param[in] ratio
-     * \param[out] goodMatches
-     * \param[out] wrongMatches
+     * \brief Get the GMS properties (const version).
+     * \return Const reference to the properties object.
+     *
+     * The following property names are valid when accessed via the `Properties` class:
+     * - `"Ratio"`
+     * - `"CrossCheck"`
      */
-    static auto ratioTest(const std::vector<std::vector<cv::DMatch>> &matches,
-                          double ratio,
-                          std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr) -> std::vector<std::vector<cv::DMatch>>
-    {
-        std::vector<std::vector<cv::DMatch>> goodMatches;
+    auto properties() const -> const RobustMatchingProperties &{ return mProperties; }
 
-        for (size_t i = 0; i < matches.size(); i++) {
-
-            if (matches[i].size() > 1) {
-                // check distance ratio
-                if (matches[i][0].distance / matches[i][1].distance <= static_cast<float>(ratio)) {
-                    goodMatches.push_back(matches[i]);
-                } else {
-                    if (wrongMatches) {
-                        wrongMatches->push_back(matches[i]);
-                    }
-                }
-            }
-
-        }
-
-        return goodMatches;
-    }
-
-    /*!
-     * \brief Cross test
-     * Search for symmetrical matches
-     * \param[in] matches12
-     * \param[in] matches21
-     * \param[out] goodMatches
-     * \param[out] wrongMatches
-     */
-    static auto crossCheckTest(const std::vector<std::vector<cv::DMatch>> &matches12,
-                               const std::vector<std::vector<cv::DMatch>> &matches21,
-                               std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>
-    {
-        std::vector<cv::DMatch> goodMatches;
-
-        for (size_t i = 0; i < matches12.size(); i++) {
-
-            if (matches12[i].empty() || matches12[i].size() < 2)
-                continue;
-
-            bool findGoodMatch = false;
-            for (size_t j = 0; j < matches21.size(); j++) {
-
-                if (matches21[j].empty() || matches21[j].size() < 2)
-                    continue;
-
-                if (matches12[i][0].queryIdx == matches21[j][0].trainIdx &&
-                    matches21[j][0].queryIdx == matches12[i][0].trainIdx) {
-                    goodMatches.push_back(matches12[i][0]);
-                    findGoodMatch = true;
-                    break;
-                }
-
-            }
-
-            if (findGoodMatch == false && wrongMatches)
-                wrongMatches->push_back(matches12[i][0]);
-
-        }
-
-        return goodMatches;
-    }
+private:
 
     auto geometricFilter(const std::vector<cv::DMatch> &matches,
                          const std::vector<cv::KeyPoint> &keypoints1,
@@ -180,8 +156,6 @@ public:
     auto match(const cv::Mat &queryDescriptor,
                const cv::Mat &trainDescriptor,
                std::vector<cv::DMatch> *wrongMatches = nullptr) -> std::vector<cv::DMatch>;
-
-private:
 
     /*!
      * \brief Robust matching
@@ -212,15 +186,16 @@ private:
 
 public:
 
-    bool compute(const cv::Mat &queryDescriptor,
+    auto compute(const cv::Mat &queryDescriptor,
                  const cv::Mat &trainDescriptor,
                  const std::vector<cv::KeyPoint> &keypoints1,
                  const std::vector<cv::KeyPoint> &keypoints2,
-                 std::vector<cv::DMatch> *goodMatches,
                  std::vector<cv::DMatch> *wrongMatches = nullptr,
                  const cv::Size &queryImageSize = cv::Size(),
-                 const cv::Size &trainImageSize = cv::Size()) override;
+                 const cv::Size &trainImageSize = cv::Size()) -> std::vector<cv::DMatch> override;
 
 };
+
+/*! \} */
 
 } // namespace tl

@@ -29,63 +29,123 @@
 namespace tl
 {
 
+/* Flann matcher properties */
+
 FlannMatcherProperties::FlannMatcherProperties()
-  : mIndex(Index::kdtree)
+  : MatchingMethod("Flann Based Matching", Type::flann)
+{
+    reset();
+}
+
+FlannMatcherProperties::FlannMatcherProperties(const FlannMatcherProperties &properties)
+  : MatchingMethod(properties)
+{
+}
+
+FlannMatcherProperties::FlannMatcherProperties(FlannMatcherProperties &&properties) TL_NOEXCEPT
+  : MatchingMethod(std::forward<MatchingMethod>(properties))
 {
 }
 
 FlannMatcherProperties::~FlannMatcherProperties() = default;
 
+auto FlannMatcherProperties::operator=(const FlannMatcherProperties &properties) -> FlannMatcherProperties &
+{
+    if (this != &properties) {
+        MatchingMethod::operator=(properties);
+    }
+    return *this;
+}
+
+auto FlannMatcherProperties::operator=(FlannMatcherProperties &&properties) TL_NOEXCEPT -> FlannMatcherProperties &
+{
+    if (this != &properties) {
+        MatchingMethod::operator=(std::forward<MatchingMethod>(properties));
+    }
+    return *this;
+}
+
 void FlannMatcherProperties::reset()
 {
-    mIndex = FlannMatcherProperties::Index::kdtree;
+    setIndex("kdtree");
 }
 
-auto FlannMatcherProperties::name() const -> std::string
+auto FlannMatcherProperties::index() const -> std::string
 {
-    return std::string("Flann Based Matching");
+    return getProperty<std::string>("Index");
 }
 
-auto FlannMatcherProperties::index() const -> FlannMatcher::Index
+void FlannMatcherProperties::setIndex(const std::string &index)
 {
-    return mIndex;
+    if (index == "kdtree" ||
+        index == "lsh") {
+        setProperty("Index", index);
+    } else {
+        Message::warning("'Index' value not valid: {}", index);
+    }
 }
 
-void FlannMatcherProperties::setIndex(FlannMatcher::Index index)
+
+
+/* Flann matcher */
+
+FlannMatcher::FlannMatcher()
+  : mProperties() 
 {
-    mIndex = index;
+    init();
 }
 
-
-/*----------------------------------------------------------------*/
-
-
-FlannMatcherImp::FlannMatcherImp()
+FlannMatcher::FlannMatcher(const FlannMatcherProperties &properties)
+  : mProperties(properties)
 {
-    update();
+    init();
 }
 
-FlannMatcherImp::FlannMatcherImp(Index index)
+FlannMatcher::FlannMatcher(const FlannMatcher &flann)
+  : mProperties(flann.mProperties)
 {
-    FlannMatcherProperties::setIndex(index);
-    update();
+    init();
 }
 
-void FlannMatcherImp::update()
+FlannMatcher::FlannMatcher(FlannMatcher &&flann) TL_NOEXCEPT
+  : mProperties(std::move(flann.mProperties)),
+    mFlannBasedMatcher(std::move(flann.mFlannBasedMatcher))
+{
+}
+
+auto FlannMatcher::operator =(const FlannMatcher &flann) -> FlannMatcher &
+{
+    if (this != &flann) {
+        mProperties = flann.mProperties;
+        init();
+    }
+    return *this;
+}
+
+auto FlannMatcher::operator =(FlannMatcher &&flann) TL_NOEXCEPT -> FlannMatcher &
+{
+    if (this != &flann) {
+        mProperties = std::move(flann.mProperties);
+        mFlannBasedMatcher = std::move(flann.mFlannBasedMatcher);
+    }
+    return *this;
+}
+
+void FlannMatcher::init()
 {
     cv::Ptr<cv::flann::IndexParams> indexParams;
-    if (FlannMatcherProperties::index() == FlannMatcherProperties::Index::kdtree) {
+    if (mProperties.index() == "kdtree") {
         indexParams = cv::makePtr<cv::flann::KDTreeIndexParams>();
-    } else if (FlannMatcherProperties::index() == FlannMatcherProperties::Index::lsh) {
+    } else {
         indexParams = cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2);
     }
     mFlannBasedMatcher = cv::Ptr<cv::FlannBasedMatcher>(new cv::FlannBasedMatcher(indexParams));
 }
 
-void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
-                            const cv::Mat &trainDescriptors,
-                            std::vector<cv::DMatch> &matches,
-                            const cv::Mat mask)
+void FlannMatcher::match(const cv::Mat &queryDescriptors,
+                         const cv::Mat &trainDescriptors,
+                         std::vector<cv::DMatch> &matches,
+                         const cv::Mat mask)
 {
     try {
 
@@ -96,29 +156,19 @@ void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
     }
 }
 
-void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
-                            const cv::Mat &trainDescriptors,
-                            std::vector<std::vector<cv::DMatch>> &matches,
-                            const cv::Mat mask)
+void FlannMatcher::match(const cv::Mat &queryDescriptors,
+                         const cv::Mat &trainDescriptors,
+                         std::vector<std::vector<cv::DMatch>> &matches,
+                         int k,
+                         const cv::Mat mask)
 {
     try {
 
-        mFlannBasedMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
+        mFlannBasedMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, k, mask);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
-}
-
-void FlannMatcherImp::reset()
-{
-    FlannMatcherProperties::reset();
-    update();
-}
-
-void FlannMatcherImp::setIndex(FlannMatcher::Index index)
-{
-    FlannMatcherProperties::setIndex(index);
 }
 
 

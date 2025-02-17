@@ -32,13 +32,17 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 
 /*!
- * \brief Clase cuadro delimitador (bounding bbox)
+ * \brief Bounding Box (BBox) class.
+ * \tparam Point3_t Type representing a 3D point.
+ *
+ * The `BoundingBox` class represents a 3D bounding box defined by two corner points.
+ * It provides utility functions for checking containment, dimensions, and validity.
  */
 template<typename Point3_t>
 class BoundingBox final
@@ -53,141 +57,167 @@ public:
 public:
 
     /*!
-     * \brief Point 1
+     * \brief First corner point of the bounding box.
      */
     Point3_t pt1;
-    
+
     /*!
-     * \brief Point 2
+     * \brief Second corner point of the bounding box.
      */
     Point3_t pt2;
 
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor. Creates an empty bounding box.
      */
     BoundingBox();
-    
+
     /*!
-     * \brief Copy constructor
-     * \param[in] bbox BoundingBox object to copy
+     * \brief Copy constructor.
+     * \param[in] bbox BoundingBox object to copy.
      */
     BoundingBox(const BoundingBox &bbox);
-      
+
     /*!
-     * \brief Move constructor
-     * \param[in] bbox BoundingBox object to move
+     * \brief Move constructor.
+     * \param[in] bbox BoundingBox object to move.
      */
     BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT;
-    
+
     /*!
-     * \brief Constructor
-     * \param[in] pt1 first point
-     * \param[in] pt2 Second point
+     * \brief Constructor that defines the bounding box using two corner points.
+     * \param[in] pt1 First corner point.
+     * \param[in] pt2 Second corner point.
      */
-    BoundingBox(const Point3_t &pt1, 
-                const Point3_t &pt2);
-    
+    BoundingBox(const Point3_t &pt1,
+        const Point3_t &pt2);
+
     /*!
-     * \brief Constructor
-     * \param[in] pt Central point
-     * \param[in] width Box width
-     * \param[in] depth Box depth
-     * \param[in] height Box height
+     * \brief Constructor that defines the bounding box using a central point and dimensions.
+     * \param[in] pt Center of the bounding box.
+     * \param[in] width Width of the bounding box.
+     * \param[in] depth Depth of the bounding box.
+     * \param[in] height Height of the bounding box.
      */
     template<typename T>
-    BoundingBox(const Point3_t &pt, 
-                T width, T depth, T height);
-    
+    BoundingBox(const Point3_t &pt,
+        T width, T depth, T height);
+
     /*!
-     * \brief Constructor 
-     * \param[in] pt Central point
-     * \param[in] side Side dimensions (width == depth == height)
+     * \brief Constructor that defines a cubic bounding box using a central point and side length.
+     * \param[in] pt Center of the bounding box.
+     * \param[in] side Length of each side (width = depth = height).
      */
     template<typename T>
     BoundingBox(const Point3_t &pt, T side);
- 
-    explicit BoundingBox(const std::vector<Point3_t> &vertices);
-    template<typename Point3_t2> BoundingBox(const std::vector<Point3_t2> &vertices);
-    
 
+    /*!
+     * \brief Constructor that creates a bounding box from a set of 3D points.
+     * \param[in] vertices Vector of points used to compute the bounding box.
+     */
+    explicit BoundingBox(const std::vector<Point3_t> &vertices);
+
+    /*!
+     * \brief Constructor that creates a bounding box from a set of 3D points of another type.
+     * \param[in] vertices Vector of points of a different type used to compute the bounding box.
+     */
+    template<typename Point3_t2> BoundingBox(const std::vector<Point3_t2> &vertices);
+
+    /*!
+     * \brief Destructor.
+     */
     ~BoundingBox() override = default;
-    
+
     /*!
-     * \brief Copy assignment operator
-     * \param[in] bbox BoundingBox object to copy
-     * \return BoundingBox reference
+     * \brief Copy assignment operator.
+     * \param[in] bbox BoundingBox object to copy.
+     * \return Reference to this BoundingBox.
      */
-    auto operator = (const BoundingBox &bbox) -> BoundingBox&;
-    
+    auto operator = (const BoundingBox &bbox)->BoundingBox &;
+
     /*!
-     * \brief Move assignment operator
-     * \param[in] bbox BoundingBox object to move
-     * \return BoundingBox reference
+     * \brief Move assignment operator.
+     * \param[in] bbox BoundingBox object to move.
+     * \return Reference to this BoundingBox.
      */
-    auto operator = (BoundingBox &&bbox) TL_NOEXCEPT -> BoundingBox&;
-    
+    auto operator = (BoundingBox &&bbox) TL_NOEXCEPT->BoundingBox &;
+
     /*!
-     * \brief Sobrecarga del operador 'igual que'
-     * \param[in] bbox BoundingBox to compare
-     * \return true if both BoundingBox are equal
+     * \brief Equality operator.
+     * \param[in] bbox BoundingBox to compare.
+     * \return true if both bounding boxes are equal, false otherwise.
      */
     auto operator == (const BoundingBox &bbox) const -> bool;
-    
+
     /*!
-     * \brief Conversion
+     * \brief Type conversion operator.
+     * \tparam Point3_t2 Target point type.
+     * \return BoundingBox of the new point type.
      */
     template<typename Point3_t2> operator BoundingBox<Point3_t2>() const;
-    
+
     /*!
-     * \brief Bounding Box center
+     * \brief Computes the center point of the bounding box.
+     * \return The center point.
      */
     auto center() const -> Point3_t;
-    
+
+    /*!
+     * \brief Retrieves the vertices of the bounding box.
+     * \return A vector containing the bounding box's corner points.
+     */
     auto vertices() const -> std::vector<Point3_t>;
 
     /*!
-     * \brief Bounding Box width
+     * \brief Retrieves the width of the bounding box.
+     * \return The width.
      */
     auto width() const -> scalar;
-    
+
     /*!
-     * \brief Bounding Box height
+     * \brief Retrieves the height of the bounding box.
+     * \return The height.
      */
     auto height() const -> scalar;
-    
+
     /*!
-     * \brief Bounding Box depth
+     * \brief Retrieves the depth of the bounding box.
+     * \return The depth.
      */
     auto depth() const -> scalar;
-    
+
     /*!
-     * \brief Check if Bounding Box is empty
+     * \brief Checks if the bounding box is empty (i.e., has no volume).
+     * \return true if empty, false otherwise.
      */
     auto isEmpty() const -> bool;
-    
+
     /*!
-     * \brief Check if Bounding Box is valid
+     * \brief Checks if the bounding box is valid (i.e., pt1 and pt2 define a proper volume).
+     * \return true if valid, false otherwise.
      */
     auto isValid() const -> bool;
-    
+
     /*!
-     * \brief Normalize Bounding Box
+     * \brief Normalizes the bounding box to ensure correct ordering of points.
      */
     void normalized();
-    
+
     /*!
-     * \brief Checks if a point is contained within the bounding box
-     * \param[in] pt Point to check
-     * \return true if the point is inside the bounding box
+     * \brief Checks if a point is contained within the bounding box.
+     * \param[in] pt Point to check.
+     * \return true if the point is inside the bounding box, false otherwise.
      */
     auto containsPoint(const Point3_t &pt) const -> bool;
-    
+
     /*!
-     * \brief Checks if the bounding box passed as parameter is contained in the bounding box.
+     * \brief Checks if another bounding box is fully contained within this bounding box.
+     * \param[in] bbox Bounding box to check.
+     * \return true if bbox is entirely inside this bounding box, false otherwise.
      */
     auto containsBox(const BoundingBox<Point3_t> &bbox) const -> bool;
+
 };
 
 
@@ -485,10 +515,14 @@ using BoundingBoxF = BoundingBox<Point3<float> >;
 
 
 /*!
- * \brief Unión de bounding boxes
- * \param[in] b1 Caja 1
- * \param[in] b2 Caja 2
- * \return Caja unión
+ * \brief Computes the union of two bounding boxes.
+ * \tparam T Bounding box type.
+ * \param[in] b1 First bounding box.
+ * \param[in] b2 Second bounding box.
+ * \return The smallest bounding box that fully contains both \p b1 and \p b2.
+ *
+ * The function expands the boundaries of the first and second bounding boxes
+ * to form a new bounding box that encloses them completely.
  */
 template<typename T>
 T joinBoundingBoxes(const T &b1, const T &b2)
@@ -507,10 +541,14 @@ T joinBoundingBoxes(const T &b1, const T &b2)
 
 
 /*!
- * \brief Intersección de bounding boxes
- * \param[in] b1 Caja 1
- * \param[in] b2 Caja 2
- * \return Caja envolovente intersección
+ * \brief Computes the intersection of two bounding boxes.
+ * \tparam T Bounding box type.
+ * \param[in] b1 First bounding box.
+ * \param[in] b2 Second bounding box.
+ * \return A bounding box representing the intersection of \p b1 and \p b2.
+ *
+ * If the bounding boxes do not overlap, the resulting bounding box may be invalid
+ * (i.e., its dimensions may be negative).
  */
 template<typename T>
 T intersectBoundingBoxes(const T &b1, const T &b2)

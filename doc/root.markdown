@@ -16,32 +16,14 @@ Modules
 ------------
 
 - @ref Core
-  - @ref Console
-  - @ref Messages
-  - @ref concurrency
+- @ref MathTools
 - @ref Features
-- @ref geometry
-  - @ref geometry_algorithms
-- @ref geospatial
+- @ref Geometry
+- @ref GeoTools
 - @ref GraphicEntities
 - @ref RasterTools
-  - @ref Filters
-  - @ref imgTransf
-  - @ref skeleton
-  - @ref WhiteBalance
-  - @ref MorphOper
-- @ref MathTools
-  - @ref Algebra
-  - @ref Statistics
 - @ref VectorTools
-
-## Getting Started
-
-### Prerequisites
-
-- **[CMake](https://cmake.org/) v3.10+**
-- **C++ Compiler** with support for C++14
-- Git
+- @ref PointCloudTools
 
 ## Getting Started
 
@@ -93,4 +75,4 @@ cmake --build .
 
 ## License
 
-TidopLib is distributed under the GNU Lesser General Public License Version 3 (LGPL 3). Please see the [LICENSE](LICENSE) file for more information.
+TidopLib is distributed under the GNU Lesser General Public License Version 3 (LGPL 3).

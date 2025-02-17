@@ -77,7 +77,7 @@ namespace tl
  *
  * ## Example Usage
  * ```cpp
- * #include <StereoImage.h>
+ * #include <tidop/rastertools/process/anaglyph.h>
  * #include <opencv2/opencv.hpp>
  *
  * int main() 

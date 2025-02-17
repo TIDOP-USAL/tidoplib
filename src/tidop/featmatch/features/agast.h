@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/featmatch/base/features.h"
+#include "tidop/featmatch/features/features.h"
 #include "tidop/core/base/property.h"
 
 namespace tl
@@ -333,7 +333,7 @@ private:
     auto convertDetectorType(const std::string &detectorType) -> int;
 #endif
 
-    void initAgastFromProperties();
+    void init();
 
 // FeatureDetector interface
 

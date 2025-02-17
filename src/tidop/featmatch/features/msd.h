@@ -24,7 +24,7 @@
  
 #pragma once
 
-#include "tidop/featmatch/base/features.h"
+#include "tidop/featmatch/features/features.h"
 
 #if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1))
 #include <opencv2/xfeatures2d.hpp>
