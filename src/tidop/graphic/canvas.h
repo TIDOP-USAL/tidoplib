@@ -146,12 +146,12 @@ protected:
      */
     virtual void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) = 0;
 
-    void setPainter(Painter *painter);
+    //void setPainter(Painter *painter);
 
 private:
 
     friend class Painter;
-    Painter *mPainter;
+    //Painter *mPainter;
 };
 
 

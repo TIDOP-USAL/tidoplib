@@ -37,14 +37,14 @@ namespace tl
 
 
 Canvas::Canvas()
-  : mPainter(nullptr)
+  //: mPainter(nullptr)
 {
 }
 
-void Canvas::setPainter(Painter *painter)
-{
-    mPainter = painter;
-}
+//void Canvas::setPainter(Painter *painter)
+//{
+//    mPainter = painter;
+//}
 
 
 

@@ -47,6 +47,7 @@ if(BUILD_TL_GEOMETRY)
                             entities/point.h
                             entities/polygon.h
                             entities/multipoint.h
+                            entities/multilinestring.h
                             entities/multipolygon.h
                             entities/segment.h
                             entities/window.h

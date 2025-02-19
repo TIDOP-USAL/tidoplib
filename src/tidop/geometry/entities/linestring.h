@@ -33,14 +33,20 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 
-/*!
- * \brief LineString 2D
- */
+ /*!
+  * \brief LineString (2D Polyline)
+  *
+  * A class that represents a 2D polyline composed of consecutive points.
+  * This class provides methods for managing and manipulating a sequence of 2D points
+  * forming a connected polyline.
+  *
+  * \tparam Point_t The type representing a 2D point.
+  */
 template <typename Point_t>
 class LineString
   : public Entity,
@@ -53,35 +59,84 @@ public:
 
 public:
 
+    /*!
+     * \brief Default constructor
+     *
+     * Creates an empty polyline with no points.
+     */
     LineString();
+
+    /*!
+     * \brief Constructs a polyline with a specified number of points.
+     * \param[in] size Number of points to reserve.
+     * The points are default-initialized.
+     */
     explicit LineString(size_type size);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] lineString The LineString object to copy.
+     * Creates a new polyline as a deep copy of the given one.
+     */
     LineString(const LineString &lineString);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] lineString The LineString object to move.
+     * Transfers ownership of the points from the given polyline,
+     * leaving the source object in a valid but unspecified state.
+     */
     LineString(LineString &&lineString) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a polyline from a vector of points.
+     * \param[in] points A vector containing Point_t objects.
+     * Initializes the polyline with the provided sequence of points.
+     */
     explicit LineString(const std::vector<Point_t> &points);
+
+    /*!
+     * \brief Constructs a polyline from an initializer list.
+     * \param[in] listPoints An initializer list of Point_t objects.
+     */
     LineString(std::initializer_list<Point_t> listPoints);
 
     ~LineString() override = default;
 
     /*!
-     * \brief Polyline length
-     * \return Length
-     */
-    auto length() const -> double;
-
-    /*!
      * \brief Copy assignment operator
+     * \param[in] lineString The LineString object to copy.
+     * \return Reference to the modified LineString instance.
      */
     auto operator = (const LineString<Point_t> &lineString) -> LineString<Point_t> &;
 
     /*!
      * \brief Move assignment operator
+     * \param[in] lineString The LineString object to move.
+     * \return Reference to the modified LineString instance.
+     *
+     * Transfers ownership of the points from the given polyline.
      */
     auto operator = (LineString<Point_t> &&lineString) TL_NOEXCEPT -> LineString<Point_t> &;
 
+    /*!
+     * \brief Calculate the total length of the polyline.
+     * \return The total length of the polyline.
+     *
+     * Computes the sum of the Euclidean distances between consecutive points.
+     */
+    auto length() const -> double;
+
+    /*!
+     * \brief Get the window (bounding box) of the polyline.
+     * \return The bounding box window of the polyline.
+     *
+     * Computes the minimum bounding rectangle that encloses all points
+     * of the polyline.
+     */
     auto window() const -> Window<Point_t>;
 
 };
-
 
 
 using LineStringI = LineString<Point<int> >;
@@ -90,12 +145,15 @@ using LineStringD = LineString<Point<double> >;
 
 
 
-/* ---------------------------------------------------------------------------------- */
-
 
 /*!
  * \brief 3D LineString
  *
+ * A class representing a 3D polyline composed of consecutive points in a three-dimensional space.
+ * This class provides methods for managing, manipulating, and analyzing a sequence of 3D points
+ * that form a connected polyline.
+ *
+ * \tparam Point3_t The type representing a 3D point.
  */
 template <typename Point3_t>
 class LineString3D
@@ -109,34 +167,76 @@ public:
 
 public:
 
+    /*!
+     * \brief Default constructor
+     *
+     * Creates an empty 3D polyline with no points.
+     */
     LineString3D();
+
+    /*!
+     * \brief Constructs a 3D polyline with a specified number of points.
+     * \param[in] size Number of points to reserve.
+     * The points are default-initialized.
+     */
     explicit LineString3D(size_type size);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] lineString The LineString3D object to copy.
+     */
     LineString3D(const LineString3D &lineString);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] lineString The LineString3D object to move.
+     */
     LineString3D(LineString3D &&lineString) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a 3D polyline from a vector of points.
+     * \param[in] points A vector containing Point3_t objects.
+     * Initializes the polyline with the provided sequence of points.
+     */
     explicit LineString3D(const std::vector<Point3_t> &points);
+
+    /*!
+     * \brief Constructs a 3D polyline from an initializer list.
+     * \param[in] listPoints An initializer list of Point3_t objects.
+     */
     LineString3D(std::initializer_list<Point3_t> listPoints);
 
     ~LineString3D() override = default;
 
     /*!
-     * \brief Polyline length
-     * \return Length
-     */
-    auto length() const -> double;
-
-    /*!
      * \brief Copy assignment operator
+     * \param[in] lineString The LineString3D object to copy.
+     * \return Reference to the modified LineString3D instance.
      */
     auto operator = (const LineString3D<Point3_t> &lineString) -> LineString3D<Point3_t> &;
 
     /*!
      * \brief Move assignment operator
+     * \param[in] lineString The LineString3D object to move.
+     * \return Reference to the modified LineString3D instance.
      */
     auto operator = (LineString3D<Point3_t> &&lineString) TL_NOEXCEPT -> LineString3D<Point3_t> &;
 
     /*!
-     * \brief Bounding box
-     * \return Polyline bounding box
+     * \brief Calculates the total length of the 3D polyline.
+     * \return The total length of the polyline.
+     *
+     * Computes the sum of the Euclidean distances between consecutive points
+     * in 3D space.
+     */
+    auto length() const -> double;
+
+    /*!
+     * \brief Computes the bounding box of the 3D polyline.
+     * \return The bounding box that encloses the entire polyline.
+     *
+     * The bounding box is the smallest rectangular cuboid that fully contains
+     * all points in the polyline.
      */
     auto boundingBox() const -> BoundingBox<Point3_t>;
 };
@@ -147,87 +247,6 @@ using LineString3dI = LineString3D<Point3<int>>;
 using LineString3dD = LineString3D<Point3<double>>;
 using LineString3dF = LineString3D<Point3<float>>;
 
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-template <typename Point_t>
-class MultiLineString
-  : public Entity,
-    public Entities2D<LineString<Point_t>>
-{
-
-public:
-
-    using size_type = typename MultiLineString<Point_t>::size_type;
-
-public:
-
-    MultiLineString();
-    explicit MultiLineString(size_type size);
-    MultiLineString(const MultiLineString &multiLineString);
-    MultiLineString(MultiLineString &&multiLineString) TL_NOEXCEPT;
-
-    ~MultiLineString() override = default;
-
-    /*!
-     * \brief Copy assignment operator
-     */
-    auto operator = (const MultiLineString<Point_t> &multiLineString) -> MultiLineString<Point_t> &;
-
-    /*!
-     * \brief Move assignment operator
-     */
-    auto operator = (MultiLineString<Point_t> &&multiLineString) TL_NOEXCEPT -> MultiLineString<Point_t> &;
-
-    auto window() const -> Window<Point_t>;
-
-};
-
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-template <typename Point3_t>
-class MultiLineString3D
-  : public Entity,
-    public Entities3D<LineString3D<Point3_t>>
-{
-
-public:
-
-    using size_type = typename MultiLineString3D<Point3_t>::size_type;
-
-public:
-
-    MultiLineString3D();
-    explicit MultiLineString3D(size_type size);
-    MultiLineString3D(const MultiLineString3D &multiLineString);
-    MultiLineString3D(MultiLineString3D &&multiLineString) TL_NOEXCEPT;
-
-    ~MultiLineString3D() override = default;
-
-    /*!
-     * \brief Copy assignment operator
-     */
-    auto operator = (const MultiLineString3D<Point3_t> &multiLineString) -> MultiLineString3D<Point3_t> &;
-
-    /*!
-     * \brief Move assignment operator
-     */
-    auto operator = (MultiLineString3D<Point3_t> &&multiLineString) TL_NOEXCEPT -> MultiLineString3D<Point3_t> &;
-
-    /*!
-     * \brief Bounding box
-     * \return Polyline bounding box
-     */
-    auto boundingBox() const -> BoundingBox<Point3_t>;
-
-};
 
 
 
@@ -424,141 +443,6 @@ auto LineString3D<Point3_t>::boundingBox() const -> BoundingBox<Point3_t>
     return bounding_box;
 }
 
-
-
-
-/* MultiLineString implementation */
-
-
-template <typename Point_t>
-MultiLineString<Point_t>::MultiLineString()
-  : Entity(Type::multiline2d),
-    Entities2D<LineString<Point_t>>()
-{
-}
-
-template<typename Point_t>
-MultiLineString<Point_t>::MultiLineString(size_type size)
-  : Entity(Type::multiline2d),
-    Entities2D<LineString<Point_t>>(size) 
-{
-}
-
-template<typename Point_t>
-MultiLineString<Point_t>::MultiLineString(const MultiLineString &multiLineString) 
-  : Entity(multiLineString), 
-    Entities2D<LineString<Point_t>>(multiLineString) 
-{
-}
-
-template<typename Point_t>
-MultiLineString<Point_t>::MultiLineString(MultiLineString &&multiLineString) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(multiLineString)), 
-    Entities2D<LineString<Point_t>>(std::forward<Entities2D<LineString<Point_t>>>(multiLineString)) 
-{
-}
-
-template<typename Point_t>
-auto MultiLineString<Point_t>::operator = (const MultiLineString &multiLineString) -> MultiLineString<Point_t> &
-{
-    if (this != &multiLineString) {
-        Entity::operator = (multiLineString);
-        Entities2D<LineString<Point_t>>::operator = (multiLineString);
-    }
-
-    return *this;
-}
-
-template<typename Point_t>
-auto MultiLineString<Point_t>::operator = (MultiLineString &&multiLineString) TL_NOEXCEPT -> MultiLineString<Point_t> &
-{
-    if (this != &multiLineString) {
-        Entity::operator = (std::forward<Entity>(multiLineString));
-        Entities2D<LineString<Point_t>>::operator = (std::forward<Entities2D<LineString<Point_t>>>(multiLineString));
-    }
-
-    return *this;
-}
-
-template<typename Point_t>
-auto MultiLineString<Point_t>::window() const -> Window<Point_t>
-{
-    Window<Point_t> w;
-
-    for (size_t i = 0; i < this->size(); i++) {
-        w = joinWindow(w, this->at(i).window());
-    }
-
-    return w;
-}
-
-
-
-
-/* MultiLineString3D implementation */
-
-
-template <typename Point3_t>
-MultiLineString3D<Point3_t>::MultiLineString3D()
-  : Entity(Type::multiline3d),
-    Entities3D<LineString3D<Point3_t>>()
-{
-}
-
-template<typename Point3_t>
-MultiLineString3D<Point3_t>::MultiLineString3D(size_type size)
-  : Entity(Type::multiline3d),
-    Entities3D<LineString3D<Point3_t>>(size) 
-{
-}
-
-template<typename Point3_t>
-MultiLineString3D<Point3_t>::MultiLineString3D(const MultiLineString3D &multiLineString) 
-  : Entity(multiLineString), 
-    Entities3D<LineString3D<Point3_t>>(multiLineString) 
-{
-}
-
-template<typename Point3_t>
-MultiLineString3D<Point3_t>::MultiLineString3D(MultiLineString3D &&multiLineString) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(multiLineString)), 
-    Entities3D<LineString3D<Point3_t>>(std::forward<Entities3D<LineString3D<Point3_t>>>(multiLineString)) 
-{
-}
-
-template<typename Point3_t>
-auto MultiLineString3D<Point3_t>::operator = (const MultiLineString3D &multiLineString) -> MultiLineString3D<Point3_t> &
-{
-    if (this != &multiLineString) {
-        Entity::operator = (multiLineString);
-        Entities3D<LineString3D<Point3_t>>::operator = (multiLineString);
-    }
-
-    return *this;
-}
-
-template<typename Point3_t>
-auto MultiLineString3D<Point3_t>::operator = (MultiLineString3D &&multiLineString) TL_NOEXCEPT -> MultiLineString3D<Point3_t> &
-{
-    if (this != &multiLineString) {
-        Entity::operator = (std::forward<Entity>(multiLineString));
-        Entities3D<LineString3D<Point3_t>>::operator = (std::forward<Entities3D<LineString3D<Point3_t>>>(multiLineString));
-    }
-
-    return *this;
-}
-
-template<typename Point3_t>
-auto MultiLineString3D<Point3_t>::boundingBox() const -> BoundingBox<Point3_t>
-{
-    BoundingBox<Point3_t> bounding_box;
-
-    for (size_t i = 0; i < this->size(); i++) {
-        bounding_box = joinBoundingBoxes(bounding_box, this->at(i).boundingBox());
-    }
-
-    return bounding_box;
-}
 
 /*! \} */ // end of geometry
 

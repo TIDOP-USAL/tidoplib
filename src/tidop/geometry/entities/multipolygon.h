@@ -245,14 +245,14 @@ auto MultiPolygon<Point_t>::window() const -> Window<Point_t>
 
 template <typename Point3_t>
 MultiPolygon3D<Point3_t>::MultiPolygon3D()
-  : Entity(Type::multipoygon3d),
+  : Entity(Type::multipolygon3d),
     Entities3D<Polygon3D<Point3_t>>()
 {
 }
 
 template<typename Point3_t>
 MultiPolygon3D<Point3_t>::MultiPolygon3D(size_type size)
-  : Entity(Type::multipoygon3d),
+  : Entity(Type::multipolygon3d),
     Entities3D<Polygon3D<Point3_t>>(size) 
 {
 }

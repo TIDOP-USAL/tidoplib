@@ -2,7 +2,10 @@
 #define GEOTOOLS_DEFINITIONS_H
 
 #include <string>
-namespace tl {
+
+namespace tl 
+{
+
     /*!
      * \brief CRSInfo struct
      */
