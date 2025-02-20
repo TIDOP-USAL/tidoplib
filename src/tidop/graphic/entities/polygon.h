@@ -26,6 +26,7 @@
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/polygon.h"
+#include "tidop/geometry/entities/multipolygon.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace tl

@@ -431,7 +431,7 @@ public:
 
 private:
 
-    T size;
+    T side;
 
 public:
 

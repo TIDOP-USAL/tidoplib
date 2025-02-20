@@ -158,7 +158,7 @@ void OrbProperties::setFastThreshold(int fastThreshold)
 void OrbProperties::reset()
 {
     setFeaturesNumber(5000);
-    setScaleFactor(1.2);
+    setScaleFactor(1.2f);
     setLevelsNumber(8);
     setEdgeThreshold(31);
     setFirstLevel(0);

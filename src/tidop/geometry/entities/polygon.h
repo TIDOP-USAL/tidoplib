@@ -342,11 +342,6 @@ public:
     auto length() const -> double;
 
     /*!
-     * \brief Bounding Box
-     */
-    auto boundingBox() const -> BoundingBox<Point3_t>;
-
-    /*!
      * \brief Computes the bounding box of the polygon.
      * \return A `BoundingBox<Point3_t>` representing the polygon's bounding volume.
      */

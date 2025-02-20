@@ -268,6 +268,28 @@ public:
     Packed(value_type scalar);
 
     /*!
+     * \brief Loads data from the specified source.
+     *
+     * This method loads data into the `Packed` object from a given memory address.
+     * If the memory address is properly aligned, an optimized load is used.
+     * Otherwise, an unaligned load is used.
+     *
+     * \param[in] src Memory address from which to load the data.
+     */
+    void load(const value_type *src);
+
+    /**
+     * \brief Stores data to the specified destination.
+     *
+     * This method stores the data from the `Packed` object into a given memory address.
+     * If the memory address is properly aligned, an optimized store is used.
+     * Otherwise, an unaligned store is used.
+     *
+     * \param[out] dst Memory address where to store the data.
+     */
+    void store(value_type *dst);
+
+    /*!
      * \brief Load values from aligned memory into the SIMD packed type.
      * \param[in] src Pointer to the aligned memory source.
      */
@@ -281,13 +303,13 @@ public:
 
     /*!
      * \brief Store the values of the SIMD packed type into aligned memory.
-     * \param[in] dst Pointer to the aligned memory destination.
+     * \param[out] dst Pointer to the aligned memory destination.
      */
     void storeAligned(value_type *dst) const;
 
     /*!
      * \brief Store the values of the SIMD packed type into unaligned memory.
-     * \param[in] dst Pointer to the unaligned memory destination.
+     * \param[out] dst Pointer to the unaligned memory destination.
      */
     void storeUnaligned(value_type *dst) const;
 
@@ -393,6 +415,13 @@ public:
      * \return A Packed object with all elements set to zero.
      */
     static auto zero() -> Packed;
+
+private:
+
+    bool isAligned(const void *ptr, size_t alignment)
+    {
+        return (reinterpret_cast<uintptr_t>(ptr) % alignment) == 0;
+    }
 
 private:
 
@@ -1909,6 +1938,16 @@ Packed<T>::Packed(value_type scalar)
 }
 
 template<typename T>
+void Packed<T>::load(const value_type *src)
+{
+    if (isAligned(src, 32)) {
+        loadAligned(src);
+    } else {
+        loadUnaligned(src);
+    }
+}
+
+template<typename T>
 void Packed<T>::loadAligned(const value_type *src)
 {
     mValue = internal::loadPackedAligned(src);
@@ -1918,6 +1957,16 @@ template<typename T>
 void Packed<T>::loadUnaligned(const value_type *src)
 {
     mValue = internal::loadPackedUnaligned(src);
+}
+
+template<typename T>
+void Packed<T>::store(value_type *dst)
+{
+    if (isAligned(dst, 32)) {
+        storeAligned(dst);
+    } else {
+        storeUnaligned(dst);
+    }
 }
 
 template<typename T>

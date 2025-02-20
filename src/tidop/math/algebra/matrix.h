@@ -574,39 +574,39 @@ void mulmat_simd(const Matrix<T, _rows1, _col1> &matrix1,
 
             for (size_t c = 0; c < max_vector; c += packed_size) {
 
-                packed_b.loadUnaligned(&matrix2(i, c));
+                packed_b.loadAligned(&matrix2(i, c));
 
-                packed_c.loadUnaligned(&matrix(r, c));
+                packed_c.loadAligned(&matrix(r, c));
                 packed_c += packed_a1 * packed_b;
-                packed_c.storeUnaligned(&matrix(r, c));
+                packed_c.storeAligned(&matrix(r, c));
 
-                packed_c.loadUnaligned(&matrix(r + 1, c));
+                packed_c.loadAligned(&matrix(r + 1, c));
                 packed_c += packed_a2 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 1, c));
+                packed_c.storeAligned(&matrix(r + 1, c));
 
-                packed_c.loadUnaligned(&matrix(r + 2, c));
+                packed_c.loadAligned(&matrix(r + 2, c));
                 packed_c += packed_a3 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 2, c));
+                packed_c.storeAligned(&matrix(r + 2, c));
 
-                packed_c.loadUnaligned(&matrix(r + 3, c));
+                packed_c.loadAligned(&matrix(r + 3, c));
                 packed_c += packed_a4 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 3, c));
+                packed_c.storeAligned(&matrix(r + 3, c));
 
-                packed_c.loadUnaligned(&matrix(r + 4, c));
+                packed_c.loadAligned(&matrix(r + 4, c));
                 packed_c += packed_a5 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 4, c));
+                packed_c.storeAligned(&matrix(r + 4, c));
 
-                packed_c.loadUnaligned(&matrix(r + 5, c));
+                packed_c.loadAligned(&matrix(r + 5, c));
                 packed_c += packed_a6 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 5, c));
+                packed_c.storeAligned(&matrix(r + 5, c));
 
-                packed_c.loadUnaligned(&matrix(r + 6, c));
+                packed_c.loadAligned(&matrix(r + 6, c));
                 packed_c += packed_a7 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 6, c));
+                packed_c.storeAligned(&matrix(r + 6, c));
 
-                packed_c.loadUnaligned(&matrix(r + 7, c));
+                packed_c.loadAligned(&matrix(r + 7, c));
                 packed_c += packed_a8 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 7, c));
+                packed_c.storeAligned(&matrix(r + 7, c));
 
             }
 
@@ -634,11 +634,11 @@ void mulmat_simd(const Matrix<T, _rows1, _col1> &matrix1,
 
             for (size_t c = 0; c < max_vector; c += packed_size) {
 
-                packed_b.loadUnaligned(&matrix2(i, c));
+                packed_b.loadAligned(&matrix2(i, c));
 
-                packed_c.loadUnaligned(&matrix(r, c));
+                packed_c.loadAligned(&matrix(r, c));
                 packed_c += packed_a * packed_b;
-                packed_c.storeUnaligned(&matrix(r, c));
+                packed_c.storeAligned(&matrix(r, c));
             }
 
             for (size_t c = max_vector; c < cols; c++) {
@@ -687,39 +687,39 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
             packed_a8.setScalar(matrix1(r + 7, i));
 
             for (int c = 0; c < max_vector; c += packed_size) {
-                packed_b.loadUnaligned(&matrix2(i, c));
+                packed_b.loadAligned(&matrix2(i, c));
 
-                packed_c.loadUnaligned(&matrix(r, c));
+                packed_c.loadAligned(&matrix(r, c));
                 packed_c += packed_a1 * packed_b;
-                packed_c.storeUnaligned(&matrix(r, c));
+                packed_c.storeAligned(&matrix(r, c));
 
-                packed_c.loadUnaligned(&matrix(r + 1, c));
+                packed_c.loadAligned(&matrix(r + 1, c));
                 packed_c += packed_a2 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 1, c));
+                packed_c.storeAligned(&matrix(r + 1, c));
 
-                packed_c.loadUnaligned(&matrix(r + 2, c));
+                packed_c.loadAligned(&matrix(r + 2, c));
                 packed_c += packed_a3 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 2, c));
+                packed_c.storeAligned(&matrix(r + 2, c));
 
-                packed_c.loadUnaligned(&matrix(r + 3, c));
+                packed_c.loadAligned(&matrix(r + 3, c));
                 packed_c += packed_a4 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 3, c));
+                packed_c.storeAligned(&matrix(r + 3, c));
 
-                packed_c.loadUnaligned(&matrix(r + 4, c));
+                packed_c.loadAligned(&matrix(r + 4, c));
                 packed_c += packed_a5 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 4, c));
+                packed_c.storeAligned(&matrix(r + 4, c));
 
-                packed_c.loadUnaligned(&matrix(r + 5, c));
+                packed_c.loadAligned(&matrix(r + 5, c));
                 packed_c += packed_a6 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 5, c));
+                packed_c.storeAligned(&matrix(r + 5, c));
 
-                packed_c.loadUnaligned(&matrix(r + 6, c));
+                packed_c.loadAligned(&matrix(r + 6, c));
                 packed_c += packed_a7 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 6, c));
+                packed_c.storeAligned(&matrix(r + 6, c));
 
-                packed_c.loadUnaligned(&matrix(r + 7, c));
+                packed_c.loadAligned(&matrix(r + 7, c));
                 packed_c += packed_a8 * packed_b;
-                packed_c.storeUnaligned(&matrix(r + 7, c));
+                packed_c.storeAligned(&matrix(r + 7, c));
             }
 
             for (size_t c = max_vector; c < cols; c++) {
@@ -744,10 +744,10 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
             packed_a.setScalar(a);
 
             for (int c = 0; c < max_vector; c += packed_size) {
-                packed_b.loadUnaligned(&matrix2(i, c));
-                packed_c.loadUnaligned(&matrix(r, c));
+                packed_b.loadAligned(&matrix2(i, c));
+                packed_c.loadAligned(&matrix(r, c));
                 packed_c += packed_a * packed_b;
-                packed_c.storeUnaligned(&matrix(r, c));
+                packed_c.storeAligned(&matrix(r, c));
             }
 
             for (int c = max_vector; c < cols; c++) {
@@ -801,39 +801,39 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
 //
 //                for (size_t c = 0; c < max_vector; c += packed_size) {
 //
-//                    packed_b.loadUnaligned(&matrix2(i, c));
+//                    packed_b.loadAligned(&matrix2(i, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r, c));
+//                    packed_c.loadAligned(&matrix(r, c));
 //                    packed_c += packed_a1 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r, c));
+//                    packed_c.storeAligned(&matrix(r, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 1, c));
+//                    packed_c.loadAligned(&matrix(r + 1, c));
 //                    packed_c += packed_a2 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 1, c));
+//                    packed_c.storeAligned(&matrix(r + 1, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 2, c));
+//                    packed_c.loadAligned(&matrix(r + 2, c));
 //                    packed_c += packed_a3 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 2, c));
+//                    packed_c.storeAligned(&matrix(r + 2, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 3, c));
+//                    packed_c.loadAligned(&matrix(r + 3, c));
 //                    packed_c += packed_a4 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 3, c));
+//                    packed_c.storeAligned(&matrix(r + 3, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 4, c));
+//                    packed_c.loadAligned(&matrix(r + 4, c));
 //                    packed_c += packed_a5 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 4, c));
+//                    packed_c.storeAligned(&matrix(r + 4, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 5, c));
+//                    packed_c.loadAligned(&matrix(r + 5, c));
 //                    packed_c += packed_a6 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 5, c));
+//                    packed_c.storeAligned(&matrix(r + 5, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 6, c));
+//                    packed_c.loadAligned(&matrix(r + 6, c));
 //                    packed_c += packed_a7 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 6, c));
+//                    packed_c.storeAligned(&matrix(r + 6, c));
 //
-//                    packed_c.loadUnaligned(&matrix(r + 7, c));
+//                    packed_c.loadAligned(&matrix(r + 7, c));
 //                    packed_c += packed_a8 * packed_b;
-//                    packed_c.storeUnaligned(&matrix(r + 7, c));
+//                    packed_c.storeAligned(&matrix(r + 7, c));
 //
 //                }
 //
@@ -903,39 +903,39 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
 //
 //    //    for (size_t c = 0; c < max_vector; c += packed_size) {
 //
-//    //      packed_b.loadUnaligned(&matrix2(i, c));
+//    //      packed_b.loadAligned(&matrix2(i, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r, c));
+//    //      packed_c.loadAligned(&matrix(r, c));
 //    //      packed_c += packed_a1 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r, c));
+//    //      packed_c.storeAligned(&matrix(r, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 1, c));
+//    //      packed_c.loadAligned(&matrix(r + 1, c));
 //    //      packed_c += packed_a2 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 1, c));
+//    //      packed_c.storeAligned(&matrix(r + 1, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 2, c));
+//    //      packed_c.loadAligned(&matrix(r + 2, c));
 //    //      packed_c += packed_a3 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 2, c));
+//    //      packed_c.storeAligned(&matrix(r + 2, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 3, c));
+//    //      packed_c.loadAligned(&matrix(r + 3, c));
 //    //      packed_c += packed_a4 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 3, c));
+//    //      packed_c.storeAligned(&matrix(r + 3, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 4, c));
+//    //      packed_c.loadAligned(&matrix(r + 4, c));
 //    //      packed_c += packed_a5 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 4, c));
+//    //      packed_c.storeAligned(&matrix(r + 4, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 5, c));
+//    //      packed_c.loadAligned(&matrix(r + 5, c));
 //    //      packed_c += packed_a6 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 5, c));
+//    //      packed_c.storeAligned(&matrix(r + 5, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 6, c));
+//    //      packed_c.loadAligned(&matrix(r + 6, c));
 //    //      packed_c += packed_a7 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 6, c));
+//    //      packed_c.storeAligned(&matrix(r + 6, c));
 //
-//    //      packed_c.loadUnaligned(&matrix(r + 7, c));
+//    //      packed_c.loadAligned(&matrix(r + 7, c));
 //    //      packed_c += packed_a8 * packed_b;
-//    //      packed_c.storeUnaligned(&matrix(r + 7, c));
+//    //      packed_c.storeAligned(&matrix(r + 7, c));
 //
 //    //    }
 //
@@ -963,11 +963,11 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
 //
 //            for (size_t c = 0; c < max_vector; c += packed_size) {
 //
-//                packed_b.loadUnaligned(&matrix2(i, c));
+//                packed_b.loadAligned(&matrix2(i, c));
 //
-//                packed_c.loadUnaligned(&matrix(r, c));
+//                packed_c.loadAligned(&matrix(r, c));
 //                packed_c += packed_a * packed_b;
-//                packed_c.storeUnaligned(&matrix(r, c));
+//                packed_c.storeAligned(&matrix(r, c));
 //            }
 //
 //            for (size_t c = max_vector; c < cols; c++) {
@@ -1086,8 +1086,8 @@ void matrix_per_vector_simd(const Matrix<T, Rows, Cols> &matrix,
     for(size_t r = 0; r < rows; r++) {
         for(size_t i = 0; i < max_vector; i += packed_size) {
 
-            packed_a.loadUnaligned(&vector[i]);
-            packed_b.loadUnaligned(&matrix(r, i));
+            packed_a.loadAligned(&vector[i]);
+            packed_b.loadAligned(&matrix(r, i));
             packed_c = packed_a * packed_b;
             vectorOut[r] += packed_c.sum();
         }
