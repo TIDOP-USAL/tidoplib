@@ -40,19 +40,14 @@ if(TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
                                $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC)
-                               # $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
-                               # $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} 
                           TidopLib::Core
-                          # TidopLib::Math
-                          # TidopLib::Geom
-                          # TidopLib::Geospatial
                           TidopLib::GeoTools
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
-                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>)
-                          # $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
+                          $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
     					  
     if(HAVE_OPENCV)
         target_link_libraries(${PROJECT_NAME} 
@@ -73,5 +68,9 @@ if(TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
+   
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    endif(MSVC)
 
 endif()

@@ -50,7 +50,8 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
                           TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           OUTPUT_NAME image_manager

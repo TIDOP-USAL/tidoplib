@@ -39,9 +39,14 @@
 #include "tidop/geospatial/crs.h"
 #include "tidop/img/formats.h"
 
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
+
+
 using namespace tl;
 
-#ifdef HAVE_VLD
+#ifdef TL_HAVE_VLD
 #include <vld.h>
 #endif
 

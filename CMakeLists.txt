@@ -643,9 +643,10 @@ if(WITH_VLD)
     find_package(VLD)
 
     if(NOT VLD_FOUND)
-        set(HAVE_VLD NO)
+        set(TL_HAVE_VLD NO)
     else()
-        set(HAVE_VLD YES)
+        include_directories(${VLD_INCLUDE_DIR})
+        set(TL_HAVE_VLD YES)
     endif()
 
 endif(WITH_VLD)

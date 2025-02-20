@@ -60,7 +60,8 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
 						  ${PDAL_LIBRARIES}
 						  COPCLIB::copc-lib 
-						  LAZPERF::lazperf)
+						  LAZPERF::lazperf
+                          $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
                           # $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
     					  
     if(HAVE_OPENCV)
@@ -82,5 +83,9 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
+
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    endif(MSVC)
 
 endif()

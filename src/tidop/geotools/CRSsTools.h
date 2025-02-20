@@ -46,7 +46,7 @@ namespace tl{
 class TL_EXPORT CRSsTools{
 public:
     inline CRSsTools(){};
-    ~CRSsTools() {};
+    virtual ~CRSsTools() {};
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         double& fc, double&sc, double& tc) = 0;
     virtual Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) = 0;

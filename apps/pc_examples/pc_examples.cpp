@@ -35,6 +35,10 @@
 #include <pdal/pipelinemanager.hpp>
 #include <pdal/util/fileutils.hpp>
 
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
+
 
 //using namespace pdal;
 using namespace tl;
@@ -174,6 +178,7 @@ int main(int argc, char* argv[])
     try
     {
         PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+        return 0;
         ptrPointCloudTools->formatFileConversionToCOPC(inputFileName,
             outputFileName, targetCrsId, sourceCrsId);
         int yo = 1;

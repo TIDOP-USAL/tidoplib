@@ -37,23 +37,25 @@ class CRSsTools;
 /*!
  * \brief GeoTools class
  */
-class TL_EXPORT GeoTools{
+class TL_EXPORT GeoTools
+{
 public:
-    static inline GeoTools* getInstance(void )
+    static GeoTools* getInstance(void )
     {
-        if (mInstance==0) mInstance = new GeoTools;
-        return mInstance;
-    };
+        static GeoTools instance;
+        return &instance;
+    }
     ~GeoTools();
 public:
     void initializeCRSsTools(bool ignoreDeprecatedCRSs = true);
     CRSsTools* ptrCRSsTools();
 protected:
     inline GeoTools(){ mPtrCRSsTools =NULL;};
+    TL_DISABLE_COPY(GeoTools)
+    TL_DISABLE_MOVE(GeoTools)
     //void getCRSsInfo(std::vector<CRSInfo>&);
 private:
     void clear();
-    static GeoTools* mInstance;
 	CRSsTools* mPtrCRSsTools;
 };
 

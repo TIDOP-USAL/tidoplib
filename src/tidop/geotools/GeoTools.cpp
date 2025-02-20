@@ -3,7 +3,6 @@
 
 using namespace tl;
 
-GeoTools* GeoTools::mInstance = 0;
 
 GeoTools::~GeoTools()
 {
@@ -12,6 +11,10 @@ GeoTools::~GeoTools()
 
 void GeoTools::clear()
 {
+    if (mPtrCRSsTools) {
+        delete mPtrCRSsTools;
+        mPtrCRSsTools = nullptr;
+    }
 }
 
 CRSsTools* GeoTools::ptrCRSsTools()

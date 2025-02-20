@@ -50,6 +50,11 @@
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/geotools/CRSsTools.h>
 
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
+
+
 using namespace tl;
 
 bool test_1(GeoTools* ptrGeoTools, std::string outputFileName, std::string& strError);
