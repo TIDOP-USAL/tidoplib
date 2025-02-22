@@ -83,4 +83,8 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
 
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    endif(MSVC)
+
 endif()

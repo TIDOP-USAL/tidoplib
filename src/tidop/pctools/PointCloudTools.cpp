@@ -308,19 +308,13 @@ void PointCloudTools::formatFileConversionToCOPC(std::string fileName, std::stri
         std::string inputSourceCrsId = sourceCrsId;
         std::string inputTargetCrsId = targetCrsId;
         std::vector<std::string> filesToRemove;
-        if (mPtrGeoTools == nullptr)
-        {
-            TL_ASSERT(false, "GeoTools is not defined");
-        }
+
+        TL_ASSERT(mPtrGeoTools, "GeoTools is not defined");
+
         tl::Path inputFile(fileName);
-        if (!inputFile.exists())
-        {
-            TL_ASSERT(false, "Not exists input file: {}", fileName);
-        }
-        if (!inputFile.isFile())
-        {
-            TL_ASSERT(false, "Input is not a file: {}", fileName);
-        }
+        TL_ASSERT(inputFile.exists(), "Not exists input file: {}", fileName);
+        TL_ASSERT(inputFile.isFile(), "Input is not a file: {}", fileName);
+
         std::string extension = inputFile.extension().toString();
         if (!compareInsensitiveCase(extension, ".ply")
             && !compareInsensitiveCase(extension, ".laz")
@@ -328,18 +322,12 @@ void PointCloudTools::formatFileConversionToCOPC(std::string fileName, std::stri
         {
             TL_ASSERT(false, "Invalid input file extension: {}", extension);
         }
-        tl::Path outputFile = Path(outputFileName);
+        tl::Path outputFile(outputFileName);
         if (outputFile.exists())
         {
-            if (!outputFile.isFile())
-            {
-                TL_ASSERT(false, "Output is not a file: {}", outputFileName);
-            }
+            TL_ASSERT(outputFile.isFile(), "Output is not a file: {}", outputFileName);
             Path::removeFile(outputFile);
-            if (outputFile.exists())
-            {
-                TL_ASSERT(false, "Error removing existing output file: {}", outputFileName);
-            }
+            TL_ASSERT(!outputFile.exists(), "Error removing existing output file: {}", outputFileName);
         }
         std::string outputExtension = outputFile.extension().toString();
         if (outputFileName.find(".copc") == std::string::npos)
@@ -370,27 +358,18 @@ void PointCloudTools::formatFileConversionToCOPC(std::string fileName, std::stri
         }
         if (!targetCrsId.empty()) // enu output is invalid
         {
-            if (!mPtrGeoTools->ptrCRSsTools()->getIsCRSValid(targetCrsId))
-            {
-                TL_ASSERT(false, "Invalid target CRS Id: {}", targetCrsId);
-            }
-            if (mPtrGeoTools->ptrCRSsTools()->getIsCRSEnu(targetCrsId))
-            {
-                TL_ASSERT(false, "ENU CRS is not a valid target CRS: {}", targetCrsId);
-            }
+
+            TL_ASSERT(mPtrGeoTools->ptrCRSsTools()->getIsCRSValid(targetCrsId), "Invalid target CRS Id: {}", targetCrsId);
+            TL_ASSERT(!mPtrGeoTools->ptrCRSsTools()->getIsCRSEnu(targetCrsId), "ENU CRS is not a valid target CRS: {}", targetCrsId);
         }
-        if (!mPtrGeoTools->ptrCRSsTools()->getIsCRSValid(sourceCrsId))
-        {
-            TL_ASSERT(false, "Invalid source CRS Id: {}", sourceCrsId);
-        }
+
+        //TL_ASSERT(mPtrGeoTools->ptrCRSsTools()->getIsCRSValid(sourceCrsId), "Invalid source CRS Id: {}", sourceCrsId);
+
         // sourceCRS is ENU and different to targetCRS then CRSOperation using CRSsTools
         if (mPtrGeoTools->ptrCRSsTools()->getIsCRSEnu(sourceCrsId)
             && !compareInsensitiveCase(sourceCrsId, targetCrsId))
         {
-            if (!compareInsensitiveCase(extension, ".ply")) // to change
-            {
-                TL_ASSERT(false, "ENU CRS: {} is only valid for PLY input files", sourceCrsId);
-            }
+            TL_ASSERT(compareInsensitiveCase(extension, ".ply"), "ENU CRS: {} is only valid for PLY input files", sourceCrsId);
             Path temporalPlyPath(fileName);
             temporalPlyPath.replaceExtension("_temp.ply");
             if (Path::exists(temporalPlyPath))
