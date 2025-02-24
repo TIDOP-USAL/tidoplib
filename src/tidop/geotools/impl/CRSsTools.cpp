@@ -61,6 +61,9 @@ CRSsToolsImpl::~CRSsToolsImpl()
 
 void CRSsToolsImpl::clear() 
 {
+    for (auto &crs : mPtrCRSs) {
+        delete crs.second;
+    }
     for (auto const& value1 : mPtrCRSsOperations)
     {
         for (auto const& value2 : value1.second)

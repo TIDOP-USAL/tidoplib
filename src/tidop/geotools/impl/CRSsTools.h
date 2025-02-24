@@ -40,7 +40,7 @@ class CRSsToolsImpl: public CRSsTools{
 public:
     CRSsToolsImpl(bool oamsTraditionalGisOrder=true,
         bool ignoreDeprecated=true);
-    ~CRSsToolsImpl();
+    ~CRSsToolsImpl() override;
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         double& fc, double& sc, double& tc) override;
     Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) override;

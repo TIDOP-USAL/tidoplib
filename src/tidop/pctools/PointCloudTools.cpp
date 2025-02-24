@@ -35,7 +35,6 @@
 
 using namespace tl;
 
-PointCloudTools* PointCloudTools::mInstance = 0;
 
 PointCloudTools::PointCloudTools()
 {
