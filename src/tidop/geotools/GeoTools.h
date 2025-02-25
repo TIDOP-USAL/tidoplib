@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_GEOTOOLS_INTERFACE_H
-#define GEOTOOLS_GEOTOOLS_INTERFACE_H
+#pragma once
 
 #include <vector>
 
@@ -60,4 +59,3 @@ private:
 };
 
 }
-#endif

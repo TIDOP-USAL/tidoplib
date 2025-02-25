@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_CRSTOOLS_H
-#define GEOTOOLS_CRSTOOLS_H
+#pragma once
 
 #include <map>
 
@@ -50,7 +49,7 @@ public:
         std::vector<std::vector<double> >& points, bool byPoint = false) override;
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::vector<Point3d> &points, bool byPoint = false) override;
-    void dumpCRSsInfoToFile(std::string fileName) override;
+    void dumpCRSsInfoToFile(const std::string &fileName) override;
     std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) override;
     std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) override;
     void getCRSsInfo(std::map<std::string, CRSInfo>&) override;
@@ -85,5 +84,3 @@ private:
     std::map<std::string, std::string> mCRSIdByCRSWkt;
 };
 }
-
-#endif

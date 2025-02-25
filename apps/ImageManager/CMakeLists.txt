@@ -69,7 +69,7 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin)
 
     if(MSVC)
-        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+        set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
     endif(MSVC)
 
 endif()

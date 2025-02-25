@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef CRSSUTILS_CRSTOOLS_H
-#define CRSSUTILS_CRSTOOLS_H
+#pragma once
 
 #include <string>
 #include <sstream>
@@ -53,4 +52,3 @@ namespace tl {
     TL_EXPORT std::string pjTypeToString(PJ_TYPE type);
     TL_EXPORT PJ_TYPE stringToPjType(std::string strType);
 }
-#endif

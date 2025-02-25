@@ -85,7 +85,7 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
 
     if(MSVC)
-        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+        set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
     endif(MSVC)
 
 endif()

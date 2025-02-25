@@ -203,8 +203,8 @@ cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib
 cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
 cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
-cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
-cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
+cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY" OFF)
+cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOTOOLS;BUILD_TL_GEOMETRY" OFF)
 
 
 # Activación/desactivación de otros componentes de la libreria
@@ -690,7 +690,7 @@ if(NOT EXISTS ${TL_ENV_FILE})
 endif()
 
 # Read the .env file
-read_env_file(${TL_ENV_FILE})
+read_env_file(${TL_ENV_FILE} ENV_VARS_LIST)
 
 endif(MSVC)
 

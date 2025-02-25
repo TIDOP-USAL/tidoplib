@@ -35,8 +35,11 @@
 #include "tidop/core/app.h"
 #include "tidop/geometry/entities/point.h"
 
-using namespace tl;
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
 
+using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(CRSsToolsTestSuite)
 
@@ -57,36 +60,18 @@ struct CRSsToolsTest
 
     virtual void setup()
     {
-		
-#ifdef TL_OS_WINDOWS
-    #if defined _DEBUG
-        Path gdal_data_path("D:/dev/libs/gdal/3.7.0/vc16/share/gdal");
-        CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
-        Path proj_data_path("D:/dev/libs/proj/9.2/vc16/share/proj");
-    #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-           CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-           CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    #   else
-            std::string s_proj = proj_data_path.toString();
-            const char* proj_data[]{ s_proj.c_str(), nullptr };
-            OSRSetPROJSearchPaths(proj_data);
-    #   endif
-    #else
-        tl::Path _path = App::instance().path().parentPath().parentPath();
-        tl::Path gdal_data_path(_path);
-        gdal_data_path.append("gdal\\data");
-        tl::Path proj_data_path(_path);
-        proj_data_path.append("proj");
-        CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
-    #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-            CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-            CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    #   else
-            std::string s_proj = proj_data_path.toString();
-            const char* proj_data[]{ s_proj.c_str(), nullptr };
-            OSRSetPROJSearchPaths(proj_data);
-    #   endif
-#   endif
+
+        _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) & ~_CRTDBG_LEAK_CHECK_DF);
+
+        std::string gdal_data_path(CPLGetConfigOption("TL_GDAL_DATA", ""));
+        std::string proj_data_path(CPLGetConfigOption("TL_PROJ_DATA", ""));
+
+        CPLSetConfigOption("GDAL_DATA", gdal_data_path.c_str());
+        CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
+
+#if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3,7,0)
+        const char *proj_data[]{proj_data_path.c_str(), nullptr};
+        OSRSetPROJSearchPaths(proj_data);
 #endif
 
         ptrGeoTools = GeoTools::getInstance();
@@ -98,7 +83,6 @@ struct CRSsToolsTest
         coor_4937["1012"] = {-4.443571654 , 36.684036053 , 117.310};
         coor_4937["1013"] = {2.683869762 , 39.541883089 , 62.554};
         coor_4937["1015"] = {-5.443845659 , 40.913368096 , 861.337};
-
     }
 
     virtual void teardown()
@@ -125,6 +109,7 @@ BOOST_FIXTURE_TEST_CASE(transform, CRSsToolsTest)
 
 BOOST_FIXTURE_TEST_CASE(getCRSEnu, CRSsToolsTest)
 {
+
     double tcElip = 142.1590;
     double tcHOrth = 94.2172;
     tl::Point3d point(-4.495021180808, 36.756413127079, tcElip);
@@ -154,12 +139,12 @@ BOOST_FIXTURE_TEST_CASE(getCRSEnu, CRSsToolsTest)
     BOOST_CHECK_CLOSE(-4.495021181, fc4258FromEnuHOrth, 0.01);
     BOOST_CHECK_CLOSE(36.756413127, sc4258FromEnuHOrth, 0.01);
     BOOST_CHECK_CLOSE(94.2172, tc4258FromEnuHOrth, 0.01);
-}
 
-// test CRSsVertical
+}
 
 BOOST_FIXTURE_TEST_CASE(getCRSsVertical, CRSsToolsTest)
 {
+
     std::map<std::string, CRSInfo> crssFor2dApplications;
     ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications(crssFor2dApplications);
     std::string crsId_1 = "EPSG:25830";
@@ -174,7 +159,53 @@ BOOST_FIXTURE_TEST_CASE(getCRSsVertical, CRSsToolsTest)
 
     auto &epsg9393 = crssVertical_1["EPSG:9393"];
     BOOST_CHECK_EQUAL(epsg9393.name, "Menorca height");
+
 }
+
+BOOST_FIXTURE_TEST_CASE(getCRSsInfo, CRSsToolsTest)
+{
+
+    std::map<std::string, CRSInfo> mapCRSsInfo;
+    ptrGeoTools->ptrCRSsTools()->getCRSsInfo(mapCRSsInfo);
+
+    {
+        auto &epsg_25830_info = mapCRSsInfo["EPSG:25830"];
+        auto &area_name = epsg_25830_info.area_name;
+        BOOST_CHECK_EQUAL(area_name, "Europe between 6°W and 0°W: Faroe Islands offshore; Ireland - offshore; Jan Mayen - offshore; Norway including Svalbard - offshore; Spain - onshore and offshore.");
+        auto &auth_name = epsg_25830_info.auth_name;
+        BOOST_CHECK_EQUAL(auth_name, "EPSG");
+        auto &code = epsg_25830_info.code;
+        BOOST_CHECK_EQUAL(code, "25830");
+        auto deprecated = epsg_25830_info.deprecated;
+        BOOST_CHECK_EQUAL(deprecated, false);
+        auto &name = epsg_25830_info.name;
+        BOOST_CHECK_EQUAL(name, "ETRS89 / UTM zone 30N");
+        auto &projection_method_name = epsg_25830_info.projection_method_name;
+        BOOST_CHECK_EQUAL(projection_method_name, "Transverse Mercator");
+        auto &type = epsg_25830_info.type;
+        BOOST_CHECK_EQUAL(type, "Projected Coordinate Reference System");
+    }
+
+    {
+        auto &epsg_4258_info = mapCRSsInfo["EPSG:4258"];
+        auto &area_name = epsg_4258_info.area_name;
+        BOOST_CHECK_EQUAL(area_name, "Europe - onshore and offshore: Albania; Andorra; Austria; Belgium; Bosnia and Herzegovina; Bulgaria; Croatia; Cyprus; Czechia; Denmark; Estonia; Faroe Islands; Finland; France; Germany; Gibraltar; Greece; Hungary; Ireland; Italy; Kosovo; Latvia; Liechtenstein; Lithuania; Luxembourg; Malta; Moldova; Monaco; Montenegro; Netherlands; North Macedonia; Norway including Svalbard and Jan Mayen; Poland; Portugal; Romania; San Marino; Serbia; Slovakia; Slovenia; Spain; Sweden; Switzerland; United Kingdom (UK) including Channel Islands and Isle of Man; Vatican City State.");
+        auto &auth_name = epsg_4258_info.auth_name;
+        BOOST_CHECK_EQUAL(auth_name, "EPSG");
+        auto &code = epsg_4258_info.code;
+        BOOST_CHECK_EQUAL(code, "4258");
+        auto deprecated = epsg_4258_info.deprecated;
+        BOOST_CHECK_EQUAL(deprecated, false);
+        auto &name = epsg_4258_info.name;
+        BOOST_CHECK_EQUAL(name, "ETRS89");
+        auto &projection_method_name = epsg_4258_info.projection_method_name;
+        BOOST_CHECK_EQUAL(projection_method_name, "");
+        auto &type = epsg_4258_info.type;
+        BOOST_CHECK_EQUAL(type, "Geographic 2D Coordinate Reference System");
+    }
+
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -22,31 +22,32 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_CRSTOOLS_INTERFACE_H
-#define GEOTOOLS_CRSTOOLS_INTERFACE_H
-
 #pragma once
 
 #include <vector>
 #include <map>
+#include <string>
+
 #include "tidop/core/defs.h"
 #include "tidop/geometry/entities/point.h"
-
-#include "GeoToolsDefinitions.h"
+#include "tidop/geotools/GeoToolsDefinitions.h"
 
 #if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
-#include <string>
-
-namespace tl{
+namespace tl
+{
 
 /*!
  * \brief CRSsTools class
  */
-class TL_EXPORT CRSsTools{
+class TL_EXPORT CRSsTools
+{
+
 public:
-    inline CRSsTools(){};
+
+    CRSsTools() {};
     virtual ~CRSsTools() {};
+
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         double& fc, double&sc, double& tc) = 0;
     virtual Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) = 0;
@@ -56,7 +57,7 @@ public:
         std::vector<Point3d> &points, bool byPoint = false) = 0;
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
-    virtual void dumpCRSsInfoToFile(std::string fileName) = 0;
+    virtual void dumpCRSsInfoToFile(const std::string &fileName) = 0;
     virtual std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) = 0;
     virtual std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) = 0;
     virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
@@ -71,5 +72,6 @@ public:
 };
 
 }
+
 #endif 
-#endif // GEOTOOLS_CRSTOOLS_INTERFACE_H
+

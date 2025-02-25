@@ -59,20 +59,13 @@ if (BUILD_TL_GEOTOOLS)
                                $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC)
-                               # $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
-                               # $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core
-                          # TidopLib::Math
-                          # TidopLib::Geom
-                          # TidopLib::Vect
-                          # TidopLib::Img
-                          # TidopLib::Graphic
+                          TidopLib::Geom
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>)
-#                          ${OpenCV_LIBS})
 
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
@@ -99,8 +92,9 @@ if (BUILD_TL_GEOTOOLS)
     set(TL_HAVE_GEOTOOLS YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
-# elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
-#
-#     message(STATUS "  TidopLib::GeoTools disabled")
+elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
+
+    message(STATUS "  TidopLib::GeoTools disabled")
+    message(STATUS "  TidopLib::PointCloudTools          [Module dependent on TidopLib::GeoTools that is deactivated]")
 
 endif()

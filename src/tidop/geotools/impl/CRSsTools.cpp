@@ -22,26 +22,23 @@
  *                                                                        *
  **************************************************************************/
 
+#include "tidop/geotools/impl/CRSsTools.h"
+#include "tidop/core/exception.h"
+#include "tidop/geotools/impl/CRSsUtils.h"
+#include "tidop/geotools/impl/CRS.h"
+
+#include <proj.h>
+
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <string>
 #include <cctype>
 
-#include "tidop/core/exception.h"
-
-//#include "CRSsToolsDefinitions.h"
-#include "CRSsUtils.h"
-#include "CRSsTools.h"
-#include "CRS.h"
-
-#include <proj.h>
-
 using namespace tl;
 
 CRSsToolsImpl::CRSsToolsImpl(bool oamsTraditionalGisOrder,
     bool ignoreDeprecated)
-    //: CRSsTools(ignoreDeprecated)
     : CRSsTools(),
     mIgnoreDeprecated(ignoreDeprecated),
     mOamsTraditionalGisOrder(oamsTraditionalGisOrder)
@@ -551,7 +548,7 @@ PJ* CRSsToolsImpl::getCRSOperationEcefToEnu(std::string crsEnuId)
     return(mPtrCRSsOperationsEcefToEnuByCRSEnuId[crsEnuId]);
 }
 
-void CRSsToolsImpl::dumpCRSsInfoToFile(std::string fileName)
+void CRSsToolsImpl::dumpCRSsInfoToFile(const std::string &fileName)
 {
     try {
         std::ofstream ofs;
