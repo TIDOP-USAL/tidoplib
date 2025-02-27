@@ -67,7 +67,7 @@ CRS::CRS(struct CRSInfo& crsInfo,
             mEpsgCode = std::stoi(code);
         }
         catch (std::exception& e) {
-            TL_ASSERT(false, "Error importing from: {}", id);
+            TL_THROW_EXCEPTION_WITH_NESTED("Error importing from: {}", id);
         }
         if (mOamsTraditionalGisOrder)
             this->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
@@ -88,7 +88,7 @@ CRS::CRS(std::string strEpsgCodes,
         TL_ASSERT(strEpsgCodes.rfind(CRS_USER_EPSGCODE_TAG, 0) == 0, 
             "CRS id: {} must start with {}", strEpsgCodes, CRS_USER_EPSGCODE_TAG);
         strEpsgCodes.erase(0, 5);
-        std::vector<std::string> epsgCodeStrValues = split(strEpsgCodes, '+');
+        std::vector<std::string> epsgCodeStrValues = split<std::string>(strEpsgCodes, '+');
         bool sucessFail = epsgCodeStrValues.size() < 1 || epsgCodeStrValues.size() > 2;
         TL_ASSERT(!sucessFail,
             "Invalid CRS id: {} \nMust be one or two EPSG codes", strEpsgCodes);
@@ -97,9 +97,8 @@ CRS::CRS(std::string strEpsgCodes,
             epsgCode = std::stoi(epsgCodeStrValues[0]);
         }
         catch (std::exception& e) {
-            TL_ASSERT(false,
-                "Invalid CRS id: {} \nEPSG code: {} is not an integer",
-                strEpsgCodes, epsgCodeStrValues[0]);
+            TL_THROW_EXCEPTION_WITH_NESTED("Invalid CRS id: {} \nEPSG code: {} is not an integer",
+                                           strEpsgCodes, epsgCodeStrValues[0]);
         }
         std::string id(CRS_USER_EPSGCODE_TAG);
         id += (':' + epsgCodeStrValues[0]);
@@ -125,9 +124,9 @@ CRS::CRS(std::string strEpsgCodes,
                 verticalEpsgCode = std::stoi(epsgCodeStrValues[1]);
             }
             catch (std::exception& e) {
-                TL_ASSERT(false, "Invalid CRS id: {} \nEPSG code: {} "
-                    " is not an integer",
-                    strEpsgCodes, epsgCodeStrValues[1]);
+                TL_THROW_EXCEPTION_WITH_NESTED("Invalid CRS id: {} \nEPSG code: {} "
+                                               " is not an integer",
+                                               strEpsgCodes, epsgCodeStrValues[1]);
             }
             std::string strEpsgCodeVertical(CRS_USER_EPSGCODE_TAG);
             strEpsgCodeVertical += (':' + epsgCodeStrValues[1]);
@@ -176,7 +175,7 @@ CRS::CRS(std::string strEpsgCodes,
     }
     catch (...){
         TL_THROW_EXCEPTION_WITH_NESTED("");
-        };
+    }
 
 }
 
@@ -186,8 +185,7 @@ CRS::CRS(std::string projString,
     std::string functionName = "CRS::CRS";
     const char* projStr = projString.c_str();
     this->SetFromUserInput(projStr);
-    int ogrError = this->Validate();
-    TL_ASSERT(ogrError == 0, "Invalid CRS proj string: {}", projString);
+    TL_ASSERT(this->Validate() == OGRERR_NONE, "Invalid CRS proj string: {}", projString);
     this->PromoteTo3D(NULL); // if 2d, ellispoid heigh
     if (mOamsTraditionalGisOrder)
         this->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
@@ -233,10 +231,9 @@ std::string CRS::getBaseCrsId(PJ_CONTEXT* projContext)
         catch (std::exception& e) {
             proj_destroy(ptrProjGeodeticCrs);
             proj_destroy(ptrProjCrs);
-            TL_ASSERT(false,
-                "Creating Proj Geodetic CRS: {} from database"
-                "\nGeodetic base id: {} is not an integer",
-                strCrsEpsgCode, str_geodetic_id_code);
+            TL_THROW_EXCEPTION_WITH_NESTED("Creating Proj Geodetic CRS: {} from database"
+                                           "\nGeodetic base id: {} is not an integer",
+                                           strCrsEpsgCode, str_geodetic_id_code);
         }
         std::string baseCrsId = CRS_EPSG_AUTHORITY;
         baseCrsId += (':' + str_geodetic_id_code);

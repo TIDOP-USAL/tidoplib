@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef PCTOOLS_PCTOOLS_INTERFACE_H
-#define PCTOOLS_PCTOOLS_INTERFACE_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -58,4 +57,3 @@ private:
 };
 
 }
-#endif

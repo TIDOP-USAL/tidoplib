@@ -53,20 +53,22 @@ public:
     virtual Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) = 0;
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::vector<std::vector<double> >& points, bool byPoint=false) = 0;
-    virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::vector<Point3d> &points, bool byPoint = false) = 0;
+    virtual std::vector<Point3d> crsOperation(std::string crsSourceId, std::string crsTargetId,
+                                              const std::vector<Point3d> &points, bool byPoint = false) = 0;
     virtual void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::map<std::string, std::vector<double> >& points, bool byPoint = false) = 0;
     virtual void dumpCRSsInfoToFile(const std::string &fileName) = 0;
     virtual std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) = 0;
     virtual std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) = 0;
-    virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
+    //virtual void getCRSsInfo(std::map<std::string, CRSInfo>&) = 0;
+    virtual std::map<std::string, CRSInfo> getCRSsInfo() const = 0;
     virtual void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) = 0;
-    virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;
+    //virtual void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) = 0;
+    virtual std::map<std::string, CRSInfo> getCRSsFor2dApplications() const = 0;
     virtual void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) = 0;
-    virtual bool getIsCRSEnu(std::string crsId) = 0;
-    virtual bool getIsCRSGeographic(std::string crsId) = 0;
-    virtual bool getIsCRSValid(std::string crsId) = 0;
+    virtual bool getIsCRSEnu(const std::string &crsId) const = 0;
+    virtual bool getIsCRSGeographic(const std::string &crsId) = 0;
+    virtual bool getIsCRSValid(const std::string &crsId) = 0;
     virtual void setCRSFromWkt(std::string wkt, std::string& crsId) = 0;
 
 };

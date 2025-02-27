@@ -33,29 +33,29 @@ namespace tl
         return std::regex_search(completeString, pattern);
     }
 
-    std::vector<std::string> split(std::string str, char delim)
-    {
-        std::vector<std::string> result;
-        auto left = str.begin();
-        for (auto it = left; it != str.end(); ++it)
-        {
-            if (*it == delim)
-            {
-                result.emplace_back(&*left, it - left);
-                left = it + 1;
-            }
-        }
-        if (left != str.end())
-            result.emplace_back(&*left, str.end() - left);
-        return result;
-    }
+    //std::vector<std::string> split(std::string str, char delim)
+    //{
+    //    std::vector<std::string> result;
+    //    auto left = str.begin();
+    //    for (auto it = left; it != str.end(); ++it)
+    //    {
+    //        if (*it == delim)
+    //        {
+    //            result.emplace_back(&*left, it - left);
+    //            left = it + 1;
+    //        }
+    //    }
+    //    if (left != str.end())
+    //        result.emplace_back(&*left, str.end() - left);
+    //    return result;
+    //}
 
-    std::string to_string(int a_value)
-    {
-        std::ostringstream out;
-        out << a_value;
-        return std::move(out).str();
-    }
+    //std::string to_string(int a_value)
+    //{
+    //    std::ostringstream out;
+    //    out << a_value;
+    //    return std::move(out).str();
+    //}
 
     std::string to_string_with_precision(double a_value, const int n)
     {

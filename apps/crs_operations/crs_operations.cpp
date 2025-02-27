@@ -66,35 +66,15 @@ int main(int argc, char **argv)
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();
 
-#ifdef TL_OS_WINDOWS
-    #if defined _DEBUG
-        Path gdal_data_path("D:/dev/libs/gdal/3.7.0/vc16/share/gdal");
-        CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
-        Path proj_data_path("D:/dev/libs/proj/9.2/vc16/share/proj");
-    #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-           CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-           CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    #   else
-            std::string s_proj = proj_data_path.toString();
-            const char* proj_data[]{ s_proj.c_str(), nullptr };
-            OSRSetPROJSearchPaths(proj_data);
-    #   endif
-    #else
-        tl::Path _path = app_path.parentPath().parentPath();
-        tl::Path gdal_data_path(_path);
-        gdal_data_path.append("gdal\\data");
-        tl::Path proj_data_path(_path);
-        proj_data_path.append("proj");
-        CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
-    #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-            CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-            CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    #   else
-            std::string s_proj = proj_data_path.toString();
-            const char* proj_data[]{ s_proj.c_str(), nullptr };
-            OSRSetPROJSearchPaths(proj_data);
-    #   endif
-#   endif
+    std::string gdal_data_path(CPLGetConfigOption("TL_GDAL_DATA", ""));
+    std::string proj_data_path(CPLGetConfigOption("TL_PROJ_DATA", ""));
+
+    CPLSetConfigOption("GDAL_DATA", gdal_data_path.c_str());
+    CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
+
+#if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3,7,0)
+    const char *proj_data[]{proj_data_path.c_str(), nullptr};
+    OSRSetPROJSearchPaths(proj_data);
 #endif
 
             // Consola
@@ -131,8 +111,7 @@ int main(int argc, char **argv)
         GeoTools* ptrGeoTools = GeoTools::getInstance();
         bool ignoreDeprecatedCRSs = true;
         ptrGeoTools->initializeCRSsTools(ignoreDeprecatedCRSs);
-        std::map<std::string, CRSInfo> mapCRSsInfo;
-        ptrGeoTools->ptrCRSsTools()->getCRSsInfo(mapCRSsInfo);
+        std::map<std::string, CRSInfo> mapCRSsInfo = ptrGeoTools->ptrCRSsTools()->getCRSsInfo();
         std::string crssInfoFileName = "D:/dev/sources/tidoplib/apps/crs_operations/CRSsInfo.csv";
         ptrGeoTools->ptrCRSsTools()->dumpCRSsInfoToFile(crssInfoFileName);
         //// test getENUCrs
@@ -166,8 +145,7 @@ int main(int argc, char **argv)
         
         // test CRSsVertical
         {
-            std::map<std::string, CRSInfo> crssFor2dApplications;
-            ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications(crssFor2dApplications);
+            std::map<std::string, CRSInfo> crssFor2dApplications = ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications();
             std::string crsId_1 = "EPSG:25830";
             std::map<std::string, CRSInfo> crssVertical_1;
             ptrGeoTools->ptrCRSsTools()->getCRSsVertical(crsId_1, crssVertical_1);

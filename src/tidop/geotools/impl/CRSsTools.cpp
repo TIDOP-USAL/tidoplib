@@ -92,15 +92,15 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
             CRS* ptrTargetCRS = getCRS(crsTargetId);
         }
         std::string crsSourceEnuId;
-        double pi = 4.0 * atan(1.);
+        //double pi = 4.0 * atan(1.);
         if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
         {
             crsSourceEnuId = crsSourceId;
             PJ* pj = getCRSOperationEcefToEnu(crsSourceEnuId);
             PJ_COORD  projPto = proj_coord(fc, sc, tc, 0);
             PJ_COORD  targetProjPto = proj_trans(pj, PJ_INV, projPto);
-            fc = targetProjPto.lpzt.lam * 180. / pi;
-            sc = targetProjPto.lpzt.phi * 180. / pi;
+            fc = targetProjPto.lpzt.lam * consts::rad_to_deg<double>;
+            sc = targetProjPto.lpzt.phi * consts::rad_to_deg<double>;
             tc = targetProjPto.lpzt.z;
             std::string crsSourceEnuBaseId = mCRSGeo3dIdByCRSEnuId[crsSourceEnuId];
             crsSourceId = crsSourceEnuBaseId;
@@ -119,7 +119,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                     bool sucess = ptrCRSOperation->Transform(1, &fc, &sc, &tc);
                     TL_ASSERT(sucess, "Error in CRSOperation from CRS: {} to target CRS: {}", crsSourceId, crsTargetEnuBaseId);
                 }
-                PJ_COORD  projPto = proj_coord(fc * pi / 180., sc * pi / 180.,tc, 0);
+                PJ_COORD  projPto = proj_coord(fc * consts::deg_to_rad<double>, sc * consts::deg_to_rad<double>,tc, 0);
                 PJ_COORD  targetProjPto = proj_trans(pj, PJ_FWD, projPto);
                 fc = targetProjPto.enu.e;
                 sc = targetProjPto.enu.n;
@@ -135,7 +135,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
-    };
+    }
 }
 
 Point3d CRSsToolsImpl::crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point)
@@ -153,7 +153,9 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
         {
             for (auto& x : points)
             {
-                crsOperation(crsSourceId, crsTargetId, x.second[0], x.second[1], x.second[2]);
+                double z = x.second.size() == 3 ? x.second[2] : 0.0;
+                crsOperation(crsSourceId, crsTargetId, x.second[0], x.second[1], z);
+                if (x.second.size() == 3) x.second[2] = z;
             }
             return;
         }
@@ -189,7 +191,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
             cont++;
         }
         std::string crsSourceEnuId;
-        double pi = 4.0 * atan(1.);
+        //double pi = 4.0 * atan(1.);
         if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
         {
             crsSourceEnuId = crsSourceId;
@@ -199,8 +201,8 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
                 PJ_COORD  projPto = proj_coord(ptosFc[np], ptosSc[np], ptosTc[np], 0);
                 PJ_COORD  targetProjPto = proj_trans(pj, PJ_INV, projPto);
-                ptosFc[np] = targetProjPto.lpzt.lam * 180. / pi;
-                ptosSc[np] = targetProjPto.lpzt.phi * 180. / pi;
+                ptosFc[np] = targetProjPto.lpzt.lam * consts::rad_to_deg<double>;
+                ptosSc[np] = targetProjPto.lpzt.phi * consts::rad_to_deg<double>;
                 ptosTc[np] = targetProjPto.lpzt.z;
             }
             std::string crsSourceEnuBaseId = mCRSGeo3dIdByCRSEnuId[crsSourceEnuId];
@@ -223,7 +225,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 for (int np = 0; np < points.size(); np++)
                 {
                     //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
-                    PJ_COORD  projPto = proj_coord(ptosFc[np] * pi / 180., ptosSc[np] * pi / 180., ptosTc[np], 0);
+                    PJ_COORD  projPto = proj_coord(ptosFc[np] * consts::deg_to_rad<double>, ptosSc[np] * consts::deg_to_rad<double>, ptosTc[np], 0);
                     PJ_COORD  targetProjPto = proj_trans(pj, PJ_FWD, projPto);
                     ptosFc[np] = targetProjPto.enu.e;
                     ptosSc[np] = targetProjPto.enu.n;
@@ -252,7 +254,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
-    };
+    }
 }
 
 void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetId,
@@ -263,7 +265,9 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
         {
             for (auto& x : points)
             {
-                crsOperation(crsSourceId, crsTargetId, x[0], x[1], x[2]);
+                double z = x.size() == 3 ? x[2] : 0.0;
+                crsOperation(crsSourceId, crsTargetId, x[0], x[1], z);
+                if (x.size() == 3) x[2] = z;
             }
             return;
         }
@@ -298,7 +302,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
             cont++;
         }
         std::string crsSourceEnuId;
-        double pi = 4.0 * atan(1.);
+        //double pi = 4.0 * atan(1.);
         if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
         {
             crsSourceEnuId = crsSourceId;
@@ -308,8 +312,8 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
                 PJ_COORD  projPto = proj_coord(ptosFc[np], ptosSc[np], ptosTc[np], 0);
                 PJ_COORD  targetProjPto = proj_trans(pj, PJ_INV, projPto);
-                ptosFc[np] = targetProjPto.lpzt.lam * 180. / pi;
-                ptosSc[np] = targetProjPto.lpzt.phi * 180. / pi;
+                ptosFc[np] = targetProjPto.lpzt.lam * consts::rad_to_deg<double>;
+                ptosSc[np] = targetProjPto.lpzt.phi * consts::rad_to_deg<double>;
                 ptosTc[np] = targetProjPto.lpzt.z;
             }
             std::string crsSourceEnuBaseId = mCRSGeo3dIdByCRSEnuId[crsSourceEnuId];
@@ -332,7 +336,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 for (int np = 0; np < points.size(); np++)
                 {
                     //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
-                    PJ_COORD  projPto = proj_coord(ptosFc[np] * pi / 180., ptosSc[np] * pi / 180., ptosTc[np], 0);
+                    PJ_COORD  projPto = proj_coord(ptosFc[np] * consts::deg_to_rad<double>, ptosSc[np] * consts::deg_to_rad<double>, ptosTc[np], 0);
                     PJ_COORD  targetProjPto = proj_trans(pj, PJ_FWD, projPto);
                     ptosFc[np] = targetProjPto.enu.e;
                     ptosSc[np] = targetProjPto.enu.n;
@@ -361,25 +365,31 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
-    };
+    }
 }
 
-void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetId,
-    std::vector<Point3d> &points, bool byPoint)
+std::vector<Point3d> CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetId,
+                                                 const std::vector<Point3d> &points, bool byPoint)
 {
     try {
+
+        std::vector<Point3d> transform_points;
+
         if (byPoint)
         {
+            transform_points.reserve(points.size());
+
             for (auto& point : points)
             {
-                point = crsOperation(crsSourceId, crsTargetId, point);
+                transform_points.push_back(crsOperation(crsSourceId, crsTargetId, point));
             }
-            return;
+            return transform_points;
         }
+
         std::string strSourceIdInitial = crsSourceId;
         std::string strTargetIdInitial = crsTargetId;
         if (crsSourceId == crsTargetId)
-            return;
+            return points;
         if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
         {
             CRS* ptrSourceCRS = getCRS(crsSourceId);
@@ -408,7 +418,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
             cont++;
         }
         std::string crsSourceEnuId;
-        double pi = 4.0 * atan(1.);
+        //double pi = 4.0 * atan(1.);
         if (crsSourceId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
         {
             crsSourceEnuId = crsSourceId;
@@ -418,8 +428,8 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
                 PJ_COORD  projPto = proj_coord(ptosFc[np], ptosSc[np], ptosTc[np], 0);
                 PJ_COORD  targetProjPto = proj_trans(pj, PJ_INV, projPto);
-                ptosFc[np] = targetProjPto.lpzt.lam * 180. / pi;
-                ptosSc[np] = targetProjPto.lpzt.phi * 180. / pi;
+                ptosFc[np] = targetProjPto.lpzt.lam * consts::rad_to_deg<double>;
+                ptosSc[np] = targetProjPto.lpzt.phi * consts::rad_to_deg<double>;
                 ptosTc[np] = targetProjPto.lpzt.z;
             }
             std::string crsSourceEnuBaseId = mCRSGeo3dIdByCRSEnuId[crsSourceEnuId];
@@ -442,7 +452,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 for (int np = 0; np < points.size(); np++)
                 {
                     //auto a = proj_coord(proj_torad(12), proj_torad(55), 0, 0);
-                    PJ_COORD  projPto = proj_coord(ptosFc[np] * pi / 180., ptosSc[np] * pi / 180., ptosTc[np], 0);
+                    PJ_COORD  projPto = proj_coord(ptosFc[np] * consts::deg_to_rad<double>, ptosSc[np] * consts::deg_to_rad<double>, ptosTc[np], 0);
                     PJ_COORD  targetProjPto = proj_trans(pj, PJ_FWD, projPto);
                     ptosFc[np] = targetProjPto.enu.e;
                     ptosSc[np] = targetProjPto.enu.n;
@@ -456,8 +466,10 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
                 TL_ASSERT(sucess, "Error in CRSOperation from CRS: {} to target CRS: {}", crsSourceId, crsTargetId);
             }
         }
+
+        transform_points.resize(points.size());
         cont = 0;
-        for (auto& point : points)
+        for (auto& point : transform_points)
         {
             point.x = ptosFc[cont];
             point.y = ptosSc[cont];
@@ -467,6 +479,9 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
         free(ptosFc);
         free(ptosSc);
         free(ptosTc);
+
+        return transform_points;
+
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
@@ -511,7 +526,7 @@ PJ* CRSsToolsImpl::getCRSOperationEcefToEnu(std::string crsEnuId)
     try {
         if (mPtrCRSsOperationsEcefToEnuByCRSEnuId.find(crsEnuId) == mPtrCRSsOperationsEcefToEnuByCRSEnuId.end())
         {
-            std::vector<std::string> crsSourceIdValues = split(crsEnuId, ';');
+            std::vector<std::string> crsSourceIdValues = split<std::string>(crsEnuId, ';');
             TL_ASSERT(crsSourceIdValues.size() == 4, "Invalid CRS id: {}\nENU CRS id must be like:"
                 "\"ENU:4937;-4.495021180808;36.756413127079;142.1590\"", crsEnuId);
             std::string strCrsBaseEpsgCode = crsSourceIdValues[0];
@@ -599,7 +614,7 @@ std::string CRSsToolsImpl::getCRSEnu(std::string crsId, double fc, double sc, do
         }
         std::string baseCrsId = mPtrCRSs[crsId]->getBaseCrsId(mProjContext);
         int baseCrsEpsgCode = mPtrCRSs[baseCrsId]->getEpsgCode();
-        std::string baseCrsEpsgCodeStr=to_string(baseCrsEpsgCode);
+        std::string baseCrsEpsgCodeStr=std::to_string(baseCrsEpsgCode);
         double fcCrsBase = fc;
         double scCrsBase = sc;
         double tcCrsBase = tc;
@@ -641,12 +656,13 @@ std::string CRSsToolsImpl::getCRSIdEllipsoidHeightsForPDAL(std::string crsId)
             int baseCRSEpsgCode = ptrBaseCRS->getEpsgCode();
             crsIdEllipsoidHeightsForPDAL = crsId;
             crsIdEllipsoidHeightsForPDAL += '+';
-            crsIdEllipsoidHeightsForPDAL += to_string(baseCRSEpsgCode);
+            crsIdEllipsoidHeightsForPDAL += std::to_string(baseCRSEpsgCode);
         }
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
-    };
+    }
+
     return(crsIdEllipsoidHeightsForPDAL);
 }
 
@@ -681,7 +697,7 @@ CRS* CRSsToolsImpl::getCRS(std::string crsId)
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
-    };
+    }
     return(mPtrCRSs[crsId]);
 }
 
@@ -764,7 +780,7 @@ void CRSsToolsImpl::setCRSFromWkt(std::string wkt, std::string& crsId)
         }
         catch (...)
         {
-            TL_ASSERT(false, "Invalid EPSG code from vertical WKT CRS: {}", verticalCrsString);
+            TL_THROW_EXCEPTION_WITH_NESTED("Invalid EPSG code from vertical WKT CRS: {}", verticalCrsString);
         }
         verticalEpsgCode = epsgCode;
     }
@@ -772,7 +788,7 @@ void CRSsToolsImpl::setCRSFromWkt(std::string wkt, std::string& crsId)
     id += (':');
     if (horizontalEpsgCode > -1)
     {
-        id += to_string(horizontalEpsgCode);
+        id += std::to_string(horizontalEpsgCode);
         if (verticalEpsgCode > -1)
         {
             id += ('+');
@@ -780,15 +796,20 @@ void CRSsToolsImpl::setCRSFromWkt(std::string wkt, std::string& crsId)
     }
     if (verticalEpsgCode > -1)
     {
-        id += to_string(verticalEpsgCode);
+        id += std::to_string(verticalEpsgCode);
     }
     CRS* ptrCRS = getCRS(id);
     crsId = ptrCRS->getId();
 }
 
-void CRSsToolsImpl::getCRSsInfo(std::map<std::string,CRSInfo>& values)
+//void CRSsToolsImpl::getCRSsInfo(std::map<std::string,CRSInfo>& values)
+//{
+//    values = mCRSsInfo;
+//}
+
+std::map<std::string, CRSInfo> CRSsToolsImpl::getCRSsInfo() const
 {
-    values = mCRSsInfo;
+    return mCRSsInfo;
 }
 
 void CRSsToolsImpl::getCRSPrecision(std::string crsId, int& precision,
@@ -801,10 +822,11 @@ void CRSsToolsImpl::getCRSPrecision(std::string crsId, int& precision,
         verticalPrecision = CRS_TYPE_ENU_PRECISION;
         return;
     }
-    CRS* ptrCRS = NULL;
-    bool sucessFail = mPtrCRSs.find(crsId) == mPtrCRSs.end();
-    TL_ASSERT(!sucessFail, "Not exists CRS: {}",crsId);
-    ptrCRS = mPtrCRSs[crsId];
+    CRS* ptrCRS = getCRS(crsId);
+    TL_ASSERT(ptrCRS != nullptr, "Not exists CRS: {}", crsId);
+    //bool sucessFail = mPtrCRSs.find(crsId) == mPtrCRSs.end();
+    //TL_ASSERT(!sucessFail, "Not exists CRS: {}",crsId);
+    //ptrCRS = mPtrCRSs[crsId];
     //if (!getCRS(crsId, &ptrCRS, strAuxError))
     //{
     //    strError = functionName;
@@ -815,27 +837,50 @@ void CRSsToolsImpl::getCRSPrecision(std::string crsId, int& precision,
     verticalPrecision = ptrCRS->getVerticalPrecision();
 }
 
-void CRSsToolsImpl::getCRSsFor2dApplications(std::map<std::string, CRSInfo>& crssInfo)
+//void CRSsToolsImpl::getCRSsFor2dApplications(std::map<std::string, CRSInfo>& crssInfo)
+//{
+//    try {
+//        crssInfo.clear();
+//        for (auto const& x : mCRSsInfo)
+//        {
+//            std::string crsId = x.first;
+//            CRSInfo crsInfo = x.second;
+//            std::string strCrsType = crsInfo.type;
+//            //PJ_TYPE pjType = stringToPjType(strCrsType);
+//            if (strCrsType == CRS_TYPE_PROJ_GEODETIC_2D
+//                || strCrsType != CRS_TYPE_PROJ_GEODETIC_3D
+//                || strCrsType != CRS_TYPE_PROJ_PROJECTED)
+//            {
+//                crssInfo[crsId] = crsInfo;
+//            }
+//        }
+//    }
+//    catch (...) {
+//        TL_THROW_EXCEPTION_WITH_NESTED("");
+//    }
+//}
+
+std::map<std::string, CRSInfo> tl::CRSsToolsImpl::getCRSsFor2dApplications() const
 {
+    std::map<std::string, CRSInfo> crssInfo;
+
     try {
-        crssInfo.clear();
-        for (auto const& x : mCRSsInfo)
-        {
+
+        for (auto const &x : mCRSsInfo) {
             std::string crsId = x.first;
             CRSInfo crsInfo = x.second;
             std::string strCrsType = crsInfo.type;
-            //PJ_TYPE pjType = stringToPjType(strCrsType);
             if (strCrsType == CRS_TYPE_PROJ_GEODETIC_2D
                 || strCrsType != CRS_TYPE_PROJ_GEODETIC_3D
-                || strCrsType != CRS_TYPE_PROJ_PROJECTED)
-            {
+                || strCrsType != CRS_TYPE_PROJ_PROJECTED) {
                 crssInfo[crsId] = crsInfo;
             }
         }
-    }
-    catch (...) {
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
+
+    return crssInfo;
 }
 
 void CRSsToolsImpl::getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>& crssInfo)
@@ -881,15 +926,15 @@ void CRSsToolsImpl::getCRSsVertical(std::string crsId, std::map<std::string, CRS
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
-    };
+    }
 }
 
-bool CRSsToolsImpl::getIsCRSEnu(std::string crsId)
+bool CRSsToolsImpl::getIsCRSEnu(const std::string &crsId) const
 {
     return(crsId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos);
 }
 
-bool CRSsToolsImpl::getIsCRSGeographic(std::string crsId)
+bool CRSsToolsImpl::getIsCRSGeographic(const std::string &crsId)
 {
     if (crsId.find(CRS_ID_STRING_ENU_PREFIX) != std::string::npos)
         return(false);
@@ -930,7 +975,7 @@ bool CRSsToolsImpl::getIsCRSGeographic(std::string crsId)
     return(isGeographic);
 }
 
-bool CRSsToolsImpl::getIsCRSValid(std::string crsId)
+bool CRSsToolsImpl::getIsCRSValid(const std::string &crsId)
 {
     if (mPtrCRSs.find(crsId) == mPtrCRSs.end())
     {
@@ -947,17 +992,11 @@ bool CRSsToolsImpl::getIsCRSValid(std::string crsId)
             }
             else
             {
-                if (crsId.find(CRS_ID_STRING_ENU_PREFIX) == std::string::npos)
-                {
-                    TL_THROW_EXCEPTION("CRS id must start with: EPSG, proj=");
-                    //strError = functionName;
-                    //strError += "\n";
-                    //return(NULL);
-                }
+                return false;
             }
             mPtrCRSs[crsId] = ptrCRS;
         }
-        catch (...)
+        catch (std::exception &e)
         {
             return(false);
             //TL_THROW_EXCEPTION("Invalid CRS id: {}", crsId);
@@ -1034,11 +1073,9 @@ void CRSsToolsImpl::initialize()
             try {
                 epsgCode = std::stoi(strCode);
             }
-            catch (std::exception& e) {
+            catch (...) {
                 proj_string_list_destroy(compoundCRSsCodes);
-                TL_ASSERT(false,
-                    "Creating Proj Compound CRS: {} from database, id is not an integer",
-                    strCode);
+                TL_THROW_EXCEPTION_WITH_NESTED("Creating Proj Compound CRS: {} from database, id is not an integer", strCode);
             }
             PJ* compound_crs = proj_create_from_database(mProjContext, "EPSG", code,
                 PJ_CATEGORY_CRS, false, nullptr);
@@ -1066,12 +1103,11 @@ void CRSsToolsImpl::initialize()
             try {
                 horizontalCrsEpsgCode = std::stoi(str_subcrs_horiz_id_code);
             }
-            catch (std::exception& e) {
+            catch (...) {
                 proj_destroy(compound_crs);
                 proj_string_list_destroy(compoundCRSsCodes);
-                TL_ASSERT(false,
-                    "Creating horizontal CRS: {} from database, id is not an integer",
-                    subcrs_horiz_id_code);
+                TL_THROW_EXCEPTION_WITH_NESTED("Creating horizontal CRS: {} from database, id is not an integer",
+                                               subcrs_horiz_id_code);
             }
             PJ* subcrs_horiz_geodetic = proj_crs_get_geodetic_crs(mProjContext, subcrs_horiz);
             const char* subcrs_horiz_geodetic_authority = proj_get_id_auth_name(subcrs_horiz_geodetic, 0);
@@ -1082,12 +1118,11 @@ void CRSsToolsImpl::initialize()
             try {
                 horizontalGeodeticCrsEpsgCode = std::stoi(str_subcrs_horiz_geodetic_id_code);
             }
-            catch (std::exception& e) {
+            catch (...) {
                 proj_destroy(compound_crs);
                 proj_string_list_destroy(compoundCRSsCodes);
-                TL_ASSERT(false,
-                    "Creating horizontal geodetic CRS: {} from database, id is not an integer",
-                    str_subcrs_horiz_geodetic_id_code);
+                TL_THROW_EXCEPTION_WITH_NESTED("Creating horizontal geodetic CRS: {} from database, id is not an integer",
+                                               str_subcrs_horiz_geodetic_id_code);
             }
             if (horizontalCrsEpsgCode != horizontalGeodeticCrsEpsgCode)
             {
@@ -1112,14 +1147,13 @@ void CRSsToolsImpl::initialize()
             try {
                 verticalCrsEpsgCode = std::stoi(str_subcrs_vert_id_code);
             }
-            catch (std::exception& e) {
+            catch (...) {
                 proj_destroy(subcrs_vert);
                 proj_destroy(subcrs_horiz);
                 proj_destroy(compound_crs);
                 proj_string_list_destroy(compoundCRSsCodes);
-                TL_ASSERT(false,
-                    "Creating vertical geodetic CRS: {} from database, id is not an integer",
-                    str_subcrs_horiz_geodetic_id_code);
+                TL_THROW_EXCEPTION_WITH_NESTED("Creating vertical geodetic CRS: {} from database, id is not an integer",
+                                               str_subcrs_horiz_geodetic_id_code);
             }
             std::string compoundCrsId = CRS_EPSG_AUTHORITY;
             compoundCrsId += (':' + strCode);
