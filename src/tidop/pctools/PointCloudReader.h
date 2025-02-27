@@ -24,9 +24,6 @@
 
 #pragma once
 
-#ifndef PCTOOLS_POINTCLOUDREADER_H
-#define PCTOOLS_POINTCLOUDREADER_H
-
 #include <map>
 #include <string>
 #include <memory>
@@ -141,5 +138,3 @@ namespace tl
     };
 
 }
-
-#endif

@@ -36,6 +36,10 @@
 #include <tidop/rastertools/io/imgwriter.h>
 #include <tidop/rastertools/io/metadata.h>
 
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
+
 using namespace tl;
 
 

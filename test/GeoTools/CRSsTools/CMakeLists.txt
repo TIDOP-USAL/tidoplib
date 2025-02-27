@@ -47,7 +47,8 @@ target_link_libraries(${PROJECT_NAME}
                       $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                       $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                       $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME ${PROJECT_NAME}
@@ -59,6 +60,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
 if(MSVC)
-    set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+    set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
     set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
 endif(MSVC)

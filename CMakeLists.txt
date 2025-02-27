@@ -204,15 +204,12 @@ cmake_dependent_option(BUILD_TL_MATH "Include math module in TidopLib build" ON 
 cmake_dependent_option(BUILD_TL_GEOMETRY "Include geometry module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH" OFF)
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_RASTER_TOOLS "Include RasterTools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_GRAPHIC" OFF)
-#cmake_dependent_option(BUILD_TL_IMG "Include image module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_GRAPHIC" OFF)
-#cmake_dependent_option(BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
 cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_VECTOR_TOOLS "Include VectorTools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_RASTER_TOOLS;BUILD_TL_VECTOR_TOOLS" OFF)
 cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
-cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_RASTER_TOOLS;BUILD_TL_VECTOR_TOOLS" OFF)
-cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_RASTER_TOOLS;BUILD_TL_VECTOR_TOOLS" OFF)
-
+cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY" OFF)
+cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOTOOLS;BUILD_TL_GEOMETRY" OFF)
 
 # Configuración de componentes adicionales de la biblioteca
 option(BUILD_APPS                    "Build Apps"             OFF)
@@ -570,13 +567,18 @@ endif()
 # Visual Leak Detector (optional)
 
 if(WITH_VLD)
+
     find_package(VLD)
 
     if(NOT VLD_FOUND)
         set(HAVE_VLD NO)
+        set(TL_HAVE_VLD NO)
     else()
         set(HAVE_VLD YES)
+        include_directories(${VLD_INCLUDE_DIR})
+        set(TL_HAVE_VLD YES)
     endif()
+
 endif(WITH_VLD)
 
 
@@ -618,7 +620,7 @@ if(NOT EXISTS ${TL_ENV_FILE})
 endif()
 
 # Read the .env file
-read_env_file(${TL_ENV_FILE})
+read_env_file(${TL_ENV_FILE} ENV_VARS_LIST)
 
 endif(MSVC)
 

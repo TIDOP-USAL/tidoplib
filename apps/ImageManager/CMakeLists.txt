@@ -49,7 +49,8 @@ if(BUILD_TL_CORE AND BUILD_TL_RASTER_TOOLS)
                           TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
     
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           OUTPUT_NAME image_manager
@@ -67,7 +68,7 @@ if(BUILD_TL_CORE AND BUILD_TL_RASTER_TOOLS)
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin)
 
     if(MSVC)
-        set_user_enviroment_path(${PROJECT_NAME} "$ENV{PATH}")
+        set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
     endif(MSVC)
 
 endif()
