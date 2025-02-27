@@ -98,8 +98,8 @@ if (BUILD_TL_PCTOOLS)
     set(TL_HAVE_PCTOOLS YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
-# elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
-#
-#     message(STATUS "  TidopLib::GeoTools disabled")
+elseif(BUILD_TL_CORE AND BUILD_TL_GEOTOOLS AND BUILD_TL_GEOMETRY)
+
+     message(STATUS "  TidopLib::GeoTools disabled")
 
 endif()

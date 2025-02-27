@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef PCTOOLS_PCTOOLS_INTERFACE_H
-#define PCTOOLS_PCTOOLS_INTERFACE_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -37,8 +36,8 @@ class TL_EXPORT PointCloudTools{
 public:
     static inline PointCloudTools* getInstance()
     {
-        if (mInstance==0) mInstance = new PointCloudTools;
-        return mInstance;
+        static PointCloudTools instance;
+        return &instance;
     };
     ~PointCloudTools();
     bool assignCRS(std::string fileName, std::string crsI, std::string outputFileName, 
@@ -61,9 +60,7 @@ protected:
     PointCloudTools();
 private:
     void clear();
-    static PointCloudTools* mInstance;
     GeoTools* mPtrGeoTools;
 };
 
 }
-#endif

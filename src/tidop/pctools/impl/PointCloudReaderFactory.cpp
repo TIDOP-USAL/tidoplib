@@ -22,8 +22,6 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
 #include <map>
 #include <string>
 #include <memory>
@@ -48,68 +46,69 @@
 
 namespace tl
 {
-    auto PointCloudReaderFactory::create(const Path& file) -> PointCloudReader::Ptr
-    {
-        PointCloudReader::Ptr pointCloudReader;
-        //try {
-            TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
-            std::string extension = file.extension().toString();
-            if (compareInsensitiveCase(extension, ".las")
-                || compareInsensitiveCase(extension, ".laz"))
-            {
-                pointCloudReader = PointCloudReaderPDAL::New(file);
-            }
-            else
-            {
-                TL_THROW_EXCEPTION("Invalid Point Cloud Reader: {}", file.fileName().toString());
-            }
+auto PointCloudReaderFactory::create(const Path& file) -> PointCloudReader::Ptr
+{
+    PointCloudReader::Ptr pointCloudReader;
+    //try {
+        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
+        std::string extension = file.extension().toString();
+        if (compareInsensitiveCase(extension, ".las")
+            || compareInsensitiveCase(extension, ".laz"))
+        {
+            pointCloudReader = PointCloudReaderPDAL::New(file);
+        }
+        else
+        {
+            TL_THROW_EXCEPTION("Invalid Point Cloud Reader: {}", file.fileName().toString());
+        }
 
-            /*
-            if(compareInsensitiveCase(extension, ".las")
-                || compareInsensitiveCase(extension, ".laz"))
+        /*
+        if(compareInsensitiveCase(extension, ".las")
+            || compareInsensitiveCase(extension, ".laz"))
+        {
+            bool isCopcLaz = true;
+            try
             {
-                bool isCopcLaz = true;
-                try
-                {
-                    copc::FileReader copcFile(file.toString());
-                }
-                catch (...)
-                {
-                    isCopcLaz = false;
-                    //TL_THROW_EXCEPTION("Error while opening COPC file: {}", file.fileName().toString());
-                    //auto f_stream = new std::fstream;
-                    //f_stream->open(file.toString().c_str(), std::ios::in | std::ios::binary);
-                    //if (!f_stream->good())
-                    //    TL_THROW_EXCEPTION("Error while opening file: {}", file.fileName().toString());
-                    //std::unique_ptr<lazperf::reader::generic_file> reader_;
-                    //reader_ = std::make_unique<lazperf::reader::generic_file>(*f_stream);
-                    //const base_header& header = reader_->header();
-                }
-                if (!isCopcLaz)
-                {
-                    TL_THROW_EXCEPTION("File must be COPC LAZ: {}", file.fileName().toString());
-                }
-                try {
-                    //mCopcFile(mFileName);
-                    pointCloudReader = PointCloudReaderPDAL::New(file);
-                        //auto las_header = mCopcFile.CopcConfig().LasHeader();
-                        //auto copc_info = mCopcFile.CopcConfig().CopcInfo();
-                        //auto copc_extents = mCopcFile.CopcConfig().CopcExtents();
-                }
-                catch (...) {
-                    // try lastools
-                    TL_THROW_EXCEPTION_WITH_NESTED("");
-                }
+                copc::FileReader copcFile(file.toString());
             }
-            else
+            catch (...)
             {
-                TL_THROW_EXCEPTION("Invalid Point Cloud Reader: {}", file.fileName().toString());
+                isCopcLaz = false;
+                //TL_THROW_EXCEPTION("Error while opening COPC file: {}", file.fileName().toString());
+                //auto f_stream = new std::fstream;
+                //f_stream->open(file.toString().c_str(), std::ios::in | std::ios::binary);
+                //if (!f_stream->good())
+                //    TL_THROW_EXCEPTION("Error while opening file: {}", file.fileName().toString());
+                //std::unique_ptr<lazperf::reader::generic_file> reader_;
+                //reader_ = std::make_unique<lazperf::reader::generic_file>(*f_stream);
+                //const base_header& header = reader_->header();
             }
-            */
-        //}
-        //catch (...) {
-        //    TL_THROW_EXCEPTION_WITH_NESTED("");
-        //}
-        return pointCloudReader;
-    }
+            if (!isCopcLaz)
+            {
+                TL_THROW_EXCEPTION("File must be COPC LAZ: {}", file.fileName().toString());
+            }
+            try {
+                //mCopcFile(mFileName);
+                pointCloudReader = PointCloudReaderPDAL::New(file);
+                    //auto las_header = mCopcFile.CopcConfig().LasHeader();
+                    //auto copc_info = mCopcFile.CopcConfig().CopcInfo();
+                    //auto copc_extents = mCopcFile.CopcConfig().CopcExtents();
+            }
+            catch (...) {
+                // try lastools
+                TL_THROW_EXCEPTION_WITH_NESTED("");
+            }
+        }
+        else
+        {
+            TL_THROW_EXCEPTION("Invalid Point Cloud Reader: {}", file.fileName().toString());
+        }
+        */
+    //}
+    //catch (...) {
+    //    TL_THROW_EXCEPTION_WITH_NESTED("");
+    //}
+    return pointCloudReader;
+}
+
 }

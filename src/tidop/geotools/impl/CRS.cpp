@@ -1,3 +1,27 @@
+/**************************************************************************
+ *                                                                        *
+ * Copyright (C) 2021 by Tidop Research Group                             *
+ * Copyright (C) 2021 by David Hernandez Lopez                            *
+ *                                                                        *
+ * This file is part of TidopLib                                          *
+ *                                                                        *
+ * TidopLib is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU Lesser General Public License as         *
+ * published by the Free Software Foundation, either version 3 of the     *
+ * License, or (at your option) any later version.                        *
+ *                                                                        *
+ * TidopLib is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ * GNU Lesser General Public License for more details.                    *
+ *                                                                        *
+ * You should have received a copy of the GNU Lesser General Public       *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ *                                                                        *
+ * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
+ *                                                                        *
+ **************************************************************************/
+
 #include <sstream>
 #include <regex>
 
@@ -6,10 +30,10 @@
 #include "tidop/core/utils.h"
 #include "tidop/core/exception.h"
 
-#include "../GeoToolsDefinitions.h"
-#include "CRSsUtils.h"
-#include "CRSsToolsDefinitions.h"
-#include "CRS.h"
+#include "tidop/geotools/GeoToolsDefinitions.h"
+#include "tidop/geotools/impl/CRSsUtils.h"
+#include "tidop/geotools/impl/CRSsToolsDefinitions.h"
+#include "tidop/geotools/impl/CRS.h"
 
 using namespace tl;
 
@@ -43,7 +67,7 @@ CRS::CRS(struct CRSInfo& crsInfo,
             mEpsgCode = std::stoi(code);
         }
         catch (std::exception& e) {
-            TL_ASSERT(false, "Error importing from: {}", id);
+            TL_THROW_EXCEPTION_WITH_NESTED("Error importing from: {}", id);
         }
         if (mOamsTraditionalGisOrder)
             this->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
@@ -64,7 +88,7 @@ CRS::CRS(std::string strEpsgCodes,
         TL_ASSERT(strEpsgCodes.rfind(CRS_USER_EPSGCODE_TAG, 0) == 0, 
             "CRS id: {} must start with {}", strEpsgCodes, CRS_USER_EPSGCODE_TAG);
         strEpsgCodes.erase(0, 5);
-        std::vector<std::string> epsgCodeStrValues = split(strEpsgCodes, '+');
+        std::vector<std::string> epsgCodeStrValues = split<std::string>(strEpsgCodes, '+');
         bool sucessFail = epsgCodeStrValues.size() < 1 || epsgCodeStrValues.size() > 2;
         TL_ASSERT(!sucessFail,
             "Invalid CRS id: {} \nMust be one or two EPSG codes", strEpsgCodes);
@@ -73,9 +97,8 @@ CRS::CRS(std::string strEpsgCodes,
             epsgCode = std::stoi(epsgCodeStrValues[0]);
         }
         catch (std::exception& e) {
-            TL_ASSERT(false,
-                "Invalid CRS id: {} \nEPSG code: {} is not an integer",
-                strEpsgCodes, epsgCodeStrValues[0]);
+            TL_THROW_EXCEPTION_WITH_NESTED("Invalid CRS id: {} \nEPSG code: {} is not an integer",
+                                           strEpsgCodes, epsgCodeStrValues[0]);
         }
         std::string id(CRS_USER_EPSGCODE_TAG);
         id += (':' + epsgCodeStrValues[0]);
@@ -101,9 +124,9 @@ CRS::CRS(std::string strEpsgCodes,
                 verticalEpsgCode = std::stoi(epsgCodeStrValues[1]);
             }
             catch (std::exception& e) {
-                TL_ASSERT(false, "Invalid CRS id: {} \nEPSG code: {} "
-                    " is not an integer",
-                    strEpsgCodes, epsgCodeStrValues[1]);
+                TL_THROW_EXCEPTION_WITH_NESTED("Invalid CRS id: {} \nEPSG code: {} "
+                                               " is not an integer",
+                                               strEpsgCodes, epsgCodeStrValues[1]);
             }
             std::string strEpsgCodeVertical(CRS_USER_EPSGCODE_TAG);
             strEpsgCodeVertical += (':' + epsgCodeStrValues[1]);
@@ -152,7 +175,7 @@ CRS::CRS(std::string strEpsgCodes,
     }
     catch (...){
         TL_THROW_EXCEPTION_WITH_NESTED("");
-        };
+    }
 
 }
 
@@ -162,8 +185,7 @@ CRS::CRS(std::string projString,
     std::string functionName = "CRS::CRS";
     const char* projStr = projString.c_str();
     this->SetFromUserInput(projStr);
-    int ogrError = this->Validate();
-    TL_ASSERT(ogrError == 0, "Invalid CRS proj string: {}", projString);
+    TL_ASSERT(this->Validate() == OGRERR_NONE, "Invalid CRS proj string: {}", projString);
     this->PromoteTo3D(NULL); // if 2d, ellispoid heigh
     if (mOamsTraditionalGisOrder)
         this->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
@@ -209,10 +231,9 @@ std::string CRS::getBaseCrsId(PJ_CONTEXT* projContext)
         catch (std::exception& e) {
             proj_destroy(ptrProjGeodeticCrs);
             proj_destroy(ptrProjCrs);
-            TL_ASSERT(false,
-                "Creating Proj Geodetic CRS: {} from database"
-                "\nGeodetic base id: {} is not an integer",
-                strCrsEpsgCode, str_geodetic_id_code);
+            TL_THROW_EXCEPTION_WITH_NESTED("Creating Proj Geodetic CRS: {} from database"
+                                           "\nGeodetic base id: {} is not an integer",
+                                           strCrsEpsgCode, str_geodetic_id_code);
         }
         std::string baseCrsId = CRS_EPSG_AUTHORITY;
         baseCrsId += (':' + str_geodetic_id_code);
