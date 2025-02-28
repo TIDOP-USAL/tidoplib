@@ -31,8 +31,9 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricTest
-/*! \addtogroup GeometricTest
+
+/*!
+ * \addtogroup GeometricTest
  *  \{
  */
 

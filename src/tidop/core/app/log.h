@@ -227,10 +227,6 @@ public:
 
 };
 
-
-
-/*! \} */ // end of Log
-
 /*! \} */
 
 } // End namespace tl

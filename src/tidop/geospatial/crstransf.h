@@ -51,9 +51,6 @@ class CoordinateTransformation;
 
 /// \endcond
 
-#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
-
-
 
 /*!
  * \addtogroup geospatial
@@ -61,6 +58,7 @@ class CoordinateTransformation;
  * \{
  */
 
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
@@ -295,7 +293,7 @@ public:
 auto rotationEnuToEcef(double longitude, double latitude) -> RotationMatrix<double>;
 
 
-/*! \} */ // end of geospatial
+/*! \} */
 
 } // End namespace tl
 

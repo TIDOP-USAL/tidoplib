@@ -76,6 +76,8 @@ if(BUILD_TL_MATH)
                              statistic/cv.h
                              statistic/descriptive.h
                              statistic/iqr.h
+                             statistic/kurtosis.h
+                             statistic/kurtosis.impl.h
                              statistic/mad.h
                              statistic/mean.h
                              statistic/median.h
