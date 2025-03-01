@@ -31,11 +31,7 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
- *  \{
- */
-
-/*! \addtogroup geometry_algorithms
+/*! \addtogroup Algorithms
  *  \{
  */
 

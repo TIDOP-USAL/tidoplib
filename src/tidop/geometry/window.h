@@ -34,7 +34,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Geometry
  *  \{
  */
 
@@ -48,7 +48,6 @@ namespace tl
  */
 template<typename Point_t>
 class Window
-  : public Entity
 {
 
 public:
@@ -130,7 +129,7 @@ public:
      */
     template<typename Point_t2> Window(const std::vector<Point_t2> &vertices);
     
-    ~Window() override = default;
+    ~Window() = default;
     
     /*!
      * \brief Copy assignment operator
@@ -161,7 +160,6 @@ public:
 
     /*!
      * \brief Type conversion operator
-     * \param[in] window The window to convert.
      * \return A new window of a different point type.
      *
      * Converts the current window to one with a different point type.
@@ -242,8 +240,7 @@ public:
 
 template<typename Point_t>
 Window<Point_t>::Window() 
-  : Entity(Type::window), 
-    pt1(std::numeric_limits<scalar>().max(),
+  : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()), 
     pt2(-std::numeric_limits<scalar>().max(), 
         -std::numeric_limits<scalar>().max()) 
@@ -252,16 +249,14 @@ Window<Point_t>::Window()
 
 template<typename Point_t>
 Window<Point_t>::Window(const Window &w) 
-  : Entity(Type::window), 
-    pt1(w.pt1), 
+  : pt1(w.pt1), 
     pt2(w.pt2) 
 {
 }
 
 template<typename Point_t>
 Window<Point_t>::Window(Window &&window) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(window)), 
-    pt1(std::move(window.pt1)), 
+  : pt1(std::move(window.pt1)), 
     pt2(std::move(window.pt2)) 
 {
 }
@@ -269,8 +264,7 @@ Window<Point_t>::Window(Window &&window) TL_NOEXCEPT
 template<typename Point_t>
 Window<Point_t>::Window(Point_t pt1,
                         Point_t pt2)
-  : Entity(Type::window), 
-    pt1(std::move(pt1)), 
+  : pt1(std::move(pt1)), 
     pt2(std::move(pt2)) 
 {
 }
@@ -278,7 +272,6 @@ Window<Point_t>::Window(Point_t pt1,
 template<typename Point_t> template<typename T>
 Window<Point_t>::Window(const Point_t &pt,
                         T width, T height)
-  : Entity(Type::window)
 {
     auto half_width = width / consts::two<scalar>;
     auto half_height = height / consts::two<scalar>;
@@ -307,7 +300,6 @@ Window<Point_t>::Window(const Point_t &pt,
 template<typename Point_t> template<typename T>
 Window<Point_t>::Window(const Point_t &pt,
                         T side)
-  : Entity(Type::window)
 {
     auto half_side = side / consts::two<scalar>;
 
@@ -331,8 +323,7 @@ Window<Point_t>::Window(const Point_t &pt,
 
 template<typename Point_t>
 Window<Point_t>::Window(const std::vector<Point_t> &vertices)
-  : Entity(Type::window),
-    pt1(std::numeric_limits<scalar>().max(),
+  : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
         -std::numeric_limits<scalar>().max())
@@ -349,8 +340,7 @@ Window<Point_t>::Window(const std::vector<Point_t> &vertices)
 
 template<typename Point_t> template<typename Point_t2>
 Window<Point_t>::Window(const std::vector<Point_t2> &vertices)
-  : Entity(Type::window),
-    pt1(std::numeric_limits<scalar>().max(),
+  : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
         -std::numeric_limits<scalar>().max())
@@ -369,7 +359,6 @@ template<typename Point_t>
 auto Window<Point_t>::operator = (const Window &window) -> Window<Point_t> &
 {
     if (this != &window) {
-        Entity::operator = (window);
         this->pt1 = window.pt1;
         this->pt2 = window.pt2;
     }
@@ -381,7 +370,6 @@ template<typename Point_t>
 auto Window<Point_t>::operator = (Window &&window) TL_NOEXCEPT -> Window<Point_t> &
 {
     if (this != &window) {
-        Entity::operator = (std::forward<Entity>(window));
         this->pt1 = std::move(window.pt1);
         this->pt2 = std::move(window.pt2);
     }
@@ -634,6 +622,6 @@ auto boundingWindow(It begin, It end) -> Window<iteratorValueType<It>>
     return window;
 }
 
-/*! \} */ // end of geometry
+/*! \} */
 
-} // End namespace TL
+}

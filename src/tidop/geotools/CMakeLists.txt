@@ -62,7 +62,7 @@ if (BUILD_TL_GEOTOOLS)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>)

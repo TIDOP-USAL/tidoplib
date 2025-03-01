@@ -32,7 +32,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Geometry
  *  \{
  */
 
@@ -46,7 +46,6 @@ namespace tl
  */
 template<typename Point3_t>
 class BoundingBox final
-  : public Entity
 {
 
 public:
@@ -90,8 +89,7 @@ public:
      * \param[in] pt1 First corner point.
      * \param[in] pt2 Second corner point.
      */
-    BoundingBox(const Point3_t &pt1,
-        const Point3_t &pt2);
+    BoundingBox(const Point3_t &pt1, const Point3_t &pt2);
 
     /*!
      * \brief Constructor that defines the bounding box using a central point and dimensions.
@@ -101,8 +99,7 @@ public:
      * \param[in] height Height of the bounding box.
      */
     template<typename T>
-    BoundingBox(const Point3_t &pt,
-        T width, T depth, T height);
+    BoundingBox(const Point3_t &pt, T width, T depth, T height);
 
     /*!
      * \brief Constructor that defines a cubic bounding box using a central point and side length.
@@ -127,21 +124,21 @@ public:
     /*!
      * \brief Destructor.
      */
-    ~BoundingBox() override = default;
+    ~BoundingBox() = default;
 
     /*!
      * \brief Copy assignment operator.
      * \param[in] bbox BoundingBox object to copy.
      * \return Reference to this BoundingBox.
      */
-    auto operator = (const BoundingBox &bbox)->BoundingBox &;
+    auto operator = (const BoundingBox &bbox) -> BoundingBox &;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] bbox BoundingBox object to move.
      * \return Reference to this BoundingBox.
      */
-    auto operator = (BoundingBox &&bbox) TL_NOEXCEPT->BoundingBox &;
+    auto operator = (BoundingBox &&bbox) TL_NOEXCEPT -> BoundingBox &;
 
     /*!
      * \brief Equality operator.
@@ -228,8 +225,7 @@ using BoundingBoxd = BoundingBox<Point3<double>>;
 
 template<typename Point3_t> 
 BoundingBox<Point3_t>::BoundingBox()
-  : Entity(Type::bounding_box),
-    pt1(std::numeric_limits<scalar>().max(),
+  : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
@@ -240,16 +236,14 @@ BoundingBox<Point3_t>::BoundingBox()
 
 template<typename Point3_t> 
 BoundingBox<Point3_t>::BoundingBox(const BoundingBox &bbox) 
-  : Entity(Type::bounding_box), 
-    pt1(bbox.pt1), 
+  : pt1(bbox.pt1), 
     pt2(bbox.pt2) 
 {
 }
 
 template<typename Point3_t> 
 BoundingBox<Point3_t>::BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(bbox)), 
-    pt1(std::move(bbox.pt1)), 
+  : pt1(std::move(bbox.pt1)), 
     pt2(std::move(bbox.pt2)) 
 {
 }
@@ -257,16 +251,13 @@ BoundingBox<Point3_t>::BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT
 template<typename Point3_t>
 BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1, 
                                    const Point3_t &pt2) 
-  : Entity(Type::bounding_box),
-    pt1(std::move(pt1)),
+  : pt1(std::move(pt1)),
     pt2(std::move(pt2))
 {
 }
 
 template<typename Point3_t> template<typename T> 
-BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
-                                   T width, T depth, T height)
-  : Entity(Type::bounding_box)
+BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, T width, T depth, T height)
 {
     auto half_width = width / consts::two<scalar>;
     auto half_depth = depth / consts::two<scalar>;
@@ -299,9 +290,7 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
 }
 
 template<typename Point3_t> template<typename T> 
-BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
-                                   T side)
-  : Entity(Type::bounding_box)
+BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, T side)
 {
     auto half_side = side / consts::two<scalar>;
 
@@ -331,8 +320,7 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt,
 
 template<typename Point3_t>
 BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t> &vertices)
-  : Entity(Type::bounding_box),
-    pt1(std::numeric_limits<scalar>().max(),
+  : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
@@ -353,8 +341,7 @@ BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t> &vertices)
 
 template<typename Point3_t> template<typename Point3_t2>
 BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t2> &vertices)
-  : Entity(Type::bounding_box),
-    pt1(std::numeric_limits<scalar>().max(),
+  : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
     pt2(-std::numeric_limits<scalar>().max(),
@@ -377,7 +364,6 @@ template<typename Point3_t>
 auto BoundingBox<Point3_t>::operator = (const BoundingBox &bbox) -> BoundingBox<Point3_t>&
 {
     if (this != &bbox) {
-        Entity::operator = (bbox);
         this->pt1 = bbox.pt1;
         this->pt2 = bbox.pt2;
     }
@@ -389,7 +375,6 @@ template<typename Point3_t>
 auto BoundingBox<Point3_t>::operator = (BoundingBox &&bbox) TL_NOEXCEPT -> BoundingBox<Point3_t>&
 {
     if (this != &bbox) {
-        Entity::operator = (std::forward<Entity>(bbox));
         this->pt1 = std::move(bbox.pt1);
         this->pt2 = std::move(bbox.pt2);
     }
@@ -602,8 +587,8 @@ OrientedBoundingBox<Point_t<P, T>>::OrientedBoundingBox()
 {
 }
 
-/*! \} */ // end of geometry
+/*! \} */
 
-} // End namespace tl
+}
 
 

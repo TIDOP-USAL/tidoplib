@@ -29,8 +29,9 @@
 #include "tidop/math/mathutils.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/entity.h"
-#include "tidop/geometry/entities/window.h"
-#include "tidop/geometry/algorithms.h"
+#include "tidop/geometry/window.h"
+#include "tidop/geometry/algorithms/angle.h"
+#include "tidop/geometry/algorithms/distance.h"
 
 namespace tl
 {
@@ -614,37 +615,6 @@ using Segment3dD = Segment3D<Point3<double> >;
 using Segment3dF = Segment3D<Point3<float> >;
 
 
+/*! \} */
 
-// Mover a algorithms
-
-/*!
- * \brief GroupLines class
- */
-class TL_EXPORT GroupLines
-{
-
-private:
-
-    std::vector<Line> linesgroup;
-    WindowI bbox;
-
-public:
-
-    GroupLines();
-    GroupLines(const std::vector<Line> &lines);
-
-    void add(const Line &line);
-    double angleMean() const;
-    void deleteLine(int id);
-    WindowI window() const { return bbox; }
-    size_t size() const { return linesgroup.size(); }
-    const Line &operator[](size_t id) const { return linesgroup[id]; }
-    Line &operator[](size_t id) { return linesgroup[id]; }
-    const std::vector<Line> &getLines() const { return linesgroup; }
-
-};
-
-
-/*! \} */ // end of geometry
-
-} // End namespace tl
+}

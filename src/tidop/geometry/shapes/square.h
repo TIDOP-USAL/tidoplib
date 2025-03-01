@@ -21,75 +21,113 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#define BOOST_TEST_MODULE Tidop operations test
-#include <boost/test/unit_test.hpp>
-#include <tidop/geometry/algorithms/algorithms.h>
-#include <tidop/geometry/entities/point.h>
-#include <tidop/geometry/entities/linestring.h>
-#include <tidop/geometry/entities/segment.h>
-#include <tidop/geometry/algorithms/distance.h>
 
-using namespace tl;
+#pragma once
 
+#include <numeric>
 
-BOOST_AUTO_TEST_SUITE(GeometricOperationsTestSuite)
+#include "tidop/geometry/entities/entity.h"
+#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/rect.h"
 
-struct GeometricOperations
+namespace tl
 {
-  GeometricOperations()
-  {
 
-  }
+/*! \addtogroup Shapes
+ *  \{
+ */
 
-  ~GeometricOperations()
-  {
 
-  }
+/*!
+ * \brief Square class
+ *
+ * The `Square` class represents a square, a 2D geometric shape where 
+ * all sides are of equal length.
+ */
+template<typename T>
+class Square
+  : public Shape
+{
 
-  void setup()
-  {
-    pt_int = Point<int>(10, 50);
+public:
 
-    pt1 = Point<double>(21.45, 34.67);
-    pt2 = Point<double>(234.54, 45.76);
+    using value_type = T;
 
-    pt1d = Point3<double>(3423.56, 345.78, 34.8);
-    pt2d = Point3<double>(1234.45, 456.98, 45.9);
+private:
 
-    segment = Segment<Point<int>>(Point<int>(0, 0), Point<int>(50, 50));
-  }
+    T side;
 
-  void teardown()
-  {
+public:
 
-  }
+    /*!
+     * \brief Default constructor
+     *
+     * Creates a square with side length 0.
+     */
+    Square();
 
-  Point<int> pt_int;
-  Point<double> pt1;
-  Point<double> pt2;
-  Point3<double> pt1d;
-  Point3<double> pt2d;
-  Segment<Point<int>> segment;
-  LineStringI line;
+    /*!
+     * \brief Constructor with parameter
+     * \param[in] side The length of one side of the square
+     *
+     * Creates a square with the specified side length.
+     */
+    Square(T side);
+
+    /*!
+     * \brief Get the area of the square
+     * \return The area of the square
+     *
+     * The area of a square is simply the side length squared.
+     */
+    auto area() const -> double override;
+
+    /*!
+     * \brief Set the side length
+     * \param[in] side The length of the square's side
+     */
+    void setSide(T side);
+
+    /*!
+     * \brief Get the side length
+     * \return The length of the square's side
+     */
+    auto getSide() const -> T;
 };
 
 
-BOOST_FIXTURE_TEST_CASE(distance, GeometricOperations)
+
+template<typename T>
+Square<T>::Square()
+  : side(0)
 {
-  BOOST_CHECK_CLOSE(213.378, tl::distance(pt1, pt2), 0.001);
-  BOOST_CHECK_CLOSE(213.378, tl::distance(pt2, pt1), 0.001);
 }
 
-BOOST_FIXTURE_TEST_CASE(distance3D, GeometricOperations)
+template<typename T>
+Square<T>::Square(T side)
+  : side(side)
 {
-  BOOST_CHECK_CLOSE(2191.961, tl::distance3D(pt1d, pt2d), 0.001);
-  BOOST_CHECK_CLOSE(2191.961, tl::distance3D(pt2d, pt1d), 0.001);
 }
 
-//BOOST_FIXTURE_TEST_CASE(isLeft, GeometricOperations)
-//{
-//  BOOST_CHECK_EQUAL(1, tl::isLeft(segment.pt1, segment.pt2, pt_int));
-//}
+template<typename T>
+auto Square<T>::area() const -> double
+{
+    return static_cast<double>(side * side);
+}
 
-BOOST_AUTO_TEST_SUITE_END()
+template<typename T>
+void Square<T>::setSide(T side)
+{
+    this->side = side;
+}
+
+template<typename T>
+auto Square<T>::getSide() const -> T 
+{
+    return side;
+}
+
+
+/*! \} */ 
+
+}

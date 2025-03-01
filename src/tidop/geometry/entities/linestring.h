@@ -28,7 +28,7 @@
 #include "tidop/geometry/entities/entities2d.h"
 #include "tidop/geometry/entities/entities3d.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/algorithms.h"
+#include "tidop/geometry/algorithms/distance.h"
 
 namespace tl
 {
@@ -444,6 +444,6 @@ auto LineString3D<Point3_t>::boundingBox() const -> BoundingBox<Point3_t>
 }
 
 
-/*! \} */ // end of geometry
+/*! \} */ 
 
-} // Fin namespace tl
+}

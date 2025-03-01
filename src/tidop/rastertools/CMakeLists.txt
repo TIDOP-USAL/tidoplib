@@ -144,7 +144,7 @@ if(BUILD_TL_RASTER_TOOLS AND TL_HAVE_OPENCV)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           TidopLib::Math
                           TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>

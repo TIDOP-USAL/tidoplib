@@ -101,7 +101,7 @@ if(BUILD_TL_VIEWER)
                           $<$<BOOL:${UNIX}>:-lpthread>
                           ${LASLib_LIBRARIES}
                           TidopLib::Core
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           TidopLib::Math
 						  GLEW::GLEW
 						  opengl32

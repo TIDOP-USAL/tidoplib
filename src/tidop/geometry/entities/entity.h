@@ -74,11 +74,11 @@ public:
         linestring2d = (1 << 4),                  /*!< 2D Polyline */
         polygon2d = (1 << 5),                     /*!< 2D Polygon */
         segment2d = (1 << 6),                     /*!< 2D Segment */
-        circle = (1 << 7),                        /*!< Circle */
-        ellipse = (1 << 8),                       /*!< Ellipse */
-        triangle = (1 << 9),                      /*!< Triangle */
-        square = (1 << 10),                       /*!< Square */
-        rectangle = (1 << 11),                    /*!< Rectangle */
+        //circle = (1 << 7),                        /*!< Circle */
+        //ellipse = (1 << 8),                       /*!< Ellipse */
+        //triangle = (1 << 9),                      /*!< Triangle */
+        //square = (1 << 10),                       /*!< Square */
+        //rectangle = (1 << 11),                    /*!< Rectangle */
 
         /* 3D entities */
         point3d = point2d | geom3d,               /*!< 3D Point */
@@ -92,12 +92,12 @@ public:
         multiline2d = linestring2d | multi_entity,  /*!< 2D Multi-line */
         multiline3d = linestring3d | multi_entity,  /*!< 3D Multi-line */
         multipolygon2d = polygon2d | multi_entity,  /*!< 2D Multi-polygon */
-        multipolygon3d = polygon3d | multi_entity,   /*!< 3D Multi-polygon */
+        multipolygon3d = polygon3d | multi_entity   /*!< 3D Multi-polygon */
 
         /* Special types */
-        envelope = (1 << 20),                       /*!< Envelope */
-        window = envelope,                          /*!< Window */
-        bounding_box = envelope | geom3d            /*!< Bounding box */
+        //envelope = (1 << 20),                       /*!< Envelope */
+        //window = envelope,                          /*!< Window */
+        //bounding_box = envelope | geom3d            /*!< Bounding box */
     };
 
 private:
@@ -525,6 +525,6 @@ auto EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last)
     return mEntities.erase(first, last);
 }
 
-/*! \} */ // end of geometry
+/*! \} */ 
 
-} // End namespace tl
+}

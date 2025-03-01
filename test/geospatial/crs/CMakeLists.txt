@@ -42,7 +42,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 							   
 target_link_libraries(${PROJECT_NAME}
                       TidopLib::Core 
-                      TidopLib::Geom 
+                      TidopLib::Geometry 
                       TidopLib::Geospatial
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>

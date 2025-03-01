@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/geometry/entities/entity.h"
-#include "tidop/geometry/entities/window.h"
+#include "tidop/geometry/window.h"
 
 namespace tl
 {
@@ -190,6 +190,6 @@ auto Entities2D<Entity_t>::operator=(Entities2D<Entity_t>&& entities) TL_NOEXCEP
 }
 
 
-/*! \} */ // end of geometry
+/*! \} */ 
 
 } // End namespace tl

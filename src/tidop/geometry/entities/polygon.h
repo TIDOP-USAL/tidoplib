@@ -28,8 +28,9 @@
 #include "tidop/geometry/entities/entities3d.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/segment.h"
-#include "tidop/geometry/algorithms.h"
-
+#include "tidop/geometry/algorithms/distance.h"
+#include "tidop/geometry/algorithms/intersect.h"
+#include "tidop/geometry/algorithms/algorithms.h"
 
 namespace tl
 {
@@ -785,6 +786,6 @@ void Polygon3D<Point3_t>::addHole(const Polygon3DHole<Point3_t> &polygonHole)
 
 
 
-/*! \} */ // end of geometry
+/*! \} */
 
-} // End namespace tl
+} 

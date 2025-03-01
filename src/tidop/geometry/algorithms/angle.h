@@ -31,13 +31,13 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+template<typename Point3_t>
+class Segment3D;
+
+/*! \addtogroup Algorithms
  *  \{
  */
 
-/*! \addtogroup geometry_algorithms
- *  \{
- */
 
 /*!
  * \brief Returns the angle between two vectors
@@ -129,9 +129,7 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
 }
 
 
-/*! \} */ // end of geometry_algorithms
-
-/*! \} */ // end of geometry
+/*! \} */ 
 
 } // End namespace tl
 

@@ -31,7 +31,7 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -305,6 +305,6 @@ using MultiPoint3dD = MultiPoint3D<Point3<double> >;
 using MultiPoint3dF = MultiPoint3D<Point3<float> >;
 
 
-/*! \} */ // end of geometry
+/*! \} */
 
-} // End namespace tl
+}

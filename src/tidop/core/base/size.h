@@ -28,13 +28,13 @@
 #include <numeric>
 
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/window.h"
+#include "tidop/geometry/window.h"
 
 namespace tl
 {
 
 
-/*! \addtogroup geometry
+/*! \addtogroup Base
  *  \{
  */
 

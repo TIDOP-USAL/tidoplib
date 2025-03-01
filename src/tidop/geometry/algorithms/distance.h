@@ -35,11 +35,7 @@ template<typename T> class Segment3D;
 template<typename T> class Polygon;
 template<typename T> class Polygon3D;
 
-/*! \addtogroup geometry
- *  \{
- */
-
-/*! \addtogroup geometry_algorithms
+/*! \addtogroup Algorithms
  *  \{
  */
 
@@ -219,9 +215,7 @@ double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plan
     return(num / normal);
 }
 
-/*! \} */ // end of geometry_algorithms
-
-/*! \} */ // end of geometry
+/*! \} */ 
 
 } // End namespace tl
 

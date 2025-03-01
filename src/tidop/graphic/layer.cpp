@@ -30,7 +30,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/geometry/entities/bbox.h"
+#include "tidop/geometry/bbox.h"
 
 namespace tl
 {

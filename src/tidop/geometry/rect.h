@@ -27,13 +27,13 @@
 #include <limits>
 
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/window.h"
+#include "tidop/geometry/window.h"
 #include "tidop/core/base/size.h"
 
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup Geometry
  *  \{
  */
 
@@ -407,6 +407,6 @@ auto intersect(const Rect<T> &rect1, const Rect<T> &rect2) -> Rect<T>
     return rect;
 }
 
-/*! \} */ // end of geometry
+/*! \} */ 
 
-} // End namespace tl
+}

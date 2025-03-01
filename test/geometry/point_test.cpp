@@ -26,8 +26,8 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geometry/entities/multipoint.h>
-#include <tidop/geometry/entities/window.h>
-#include <tidop/geometry/entities/bbox.h>
+#include <tidop/geometry/window.h>
+#include <tidop/geometry/bbox.h>
 #include <tidop/math/algebra/vector.h>
 
 using namespace tl;

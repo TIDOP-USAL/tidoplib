@@ -32,13 +32,10 @@ namespace tl
 {
 
 
-/*! \addtogroup geometry
+/*! \addtogroup Algorithms
  *  \{
  */
 
-/*! \addtogroup geometry_algorithms
- *  \{
- */
 
 /*!
  * \brief Intersect de dos segmentos de línea
@@ -122,9 +119,7 @@ int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Poi
   //planePoint->z = point.z + plane[2] * t;
 //}
 
-/*! \} */ // end of geometry_algorithms
-
-/*! \} */ // end of geometry
+/*! \} */ 
 
 } // End namespace tl
 

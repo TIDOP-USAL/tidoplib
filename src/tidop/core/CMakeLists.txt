@@ -166,7 +166,7 @@ else()
 
     message(STATUS "  TidopLib::Core disabled")
     message(STATUS "  TidopLib::Math disabled         [Module dependent on TidopLib::Core that is deactivated]")
-    message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Core that is deactivated]")
+    message(STATUS "  TidopLib::Geometry disabled         [Module dependent on TidopLib::Core that is deactivated]")
     message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Core that is deactivated]")
     message(STATUS "  TidopLib::ImgProcess disabled   [Module dependent on TidopLib::Core that is deactivated]")
     message(STATUS "  TidopLib::Graphic disabled      [Module dependent on TidopLib::Core that is deactivated]")

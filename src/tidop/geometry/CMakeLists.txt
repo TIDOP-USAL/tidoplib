@@ -31,15 +31,23 @@ include(TidopUtils)
 
 if(BUILD_TL_GEOMETRY)
 
-    project(Geom)
+    project(Geometry)
   
     add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
-                            entities/segment.cpp
+                            algorithms/algorithms.cpp
                         HEADER_FILES
+                            bbox.h
                             rect.h
-                            #size.h
-                            entities/bbox.h
+                            window.h
+                            algorithms/algorithms.h
+                            algorithms/vector.h
+                            algorithms/distance.h
+                            algorithms/angle.h
+                            algorithms/projection.h
+                            algorithms/buffer.h
+                            algorithms/intersect.h
+							algorithms/dbscan.h
                             entities/entity.h
                             entities/entities2d.h
                             entities/entities3d.h
@@ -50,16 +58,12 @@ if(BUILD_TL_GEOMETRY)
                             entities/multilinestring.h
                             entities/multipolygon.h
                             entities/segment.h
-                            entities/window.h
-                            entities/shapes.h
-                            algorithms.h
-                            algorithms/vector.h
-                            algorithms/distance.h
-                            algorithms/angle.h
-                            algorithms/projection.h
-                            algorithms/buffer.h
-                            algorithms/intersect.h
-							algorithms/dbscan.h)
+                            shapes/circle.h
+                            shapes/ellipse.h
+                            shapes/rectangle.h
+                            shapes/shape.h
+                            shapes/square.h
+                            shapes/triangle.h)
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -104,14 +108,14 @@ if(BUILD_TL_GEOMETRY)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
   
     set(TL_HAVE_GEOMETRY YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::Geom enabled")
+    message(STATUS "  TidopLib::Geometry enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
 
-    message(STATUS "  TidopLib::Geom disabled")
-    message(STATUS "  TidopLib::RasterTools disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::Graphic disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::FeatureMatching disabled  [Module dependent on TidopLib::Geom that is deactivated]")
-    message(STATUS "  TidopLib::Geospatial disabled       [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::Geometry disabled")
+    message(STATUS "  TidopLib::RasterTools disabled      [Module dependent on TidopLib::Geometry that is deactivated]") 
+    message(STATUS "  TidopLib::Graphic disabled          [Module dependent on TidopLib::Geometry that is deactivated]") 
+    message(STATUS "  TidopLib::FeatureMatching disabled  [Module dependent on TidopLib::Geometry that is deactivated]")
+    message(STATUS "  TidopLib::Geospatial disabled       [Module dependent on TidopLib::Geometry that is deactivated]")
 
 endif(BUILD_TL_GEOMETRY)

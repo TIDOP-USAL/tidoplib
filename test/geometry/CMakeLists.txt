@@ -40,7 +40,7 @@ if(TL_HAVE_GEOMETRY)
 
     target_link_libraries(${PROJECT_NAME} 
                           TidopLib::Core 
-                          TidopLib::Geom 
+                          TidopLib::Geometry 
                           TidopLib::Math 
                           ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)

@@ -51,7 +51,7 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     target_link_libraries(${PROJECT_NAME} 
                           TidopLib::Core
                           # TidopLib::Math
-                          # TidopLib::Geom
+                          # TidopLib::Geometry
                           # TidopLib::Geospatial
                           TidopLib::GeoTools
 						  TidopLib::PointCloudTools

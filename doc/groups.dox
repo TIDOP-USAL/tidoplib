@@ -531,7 +531,7 @@
  */
  
 /*! 
- * \defgroup Geometry Geometry
+ * \defgroup geometry Geometry
  * \ingroup MathTools
  * 
  * \brief Geometric transformations and operations.
@@ -542,7 +542,7 @@
 
 /*! 
  * \defgroup GeometricTransformations Geometric Transformations
- * \ingroup Geometry
+ * \ingroup geometry
  * 
  * \brief Transformations on geometric objects.
  * 
@@ -731,5 +731,42 @@
  
  
 /*!
+ * \defgroup Geometry Geometry
+ * 
+ * \brief This module provides fundamental geometric entities and operations.
+ * 
+ * The Geometry module includes various geometric entities, spatial objects, 
+ * and algorithms for geometric computations.
+ */
+ 
+/*!
  * \defgroup GeometricEntities Geometric Entities
- */  
+ * \ingroup Geometry
+ * 
+ * \brief Fundamental geometric entities such as points, polylines, polygons, and multi-entities.
+ * 
+ * This module includes core geometric primitives that represent spatial objects 
+ * in 2D and 3D space. These entities form the basis for higher-level geometric 
+ * operations and spatial analyses.
+ */
+ 
+/*!
+ * \defgroup Algorithms Geometric Algorithms
+ * \ingroup Geometry
+ * 
+ * \brief Computational geometry algorithms for spatial analysis.
+ * 
+ * This module provides algorithms for geometric computations such as distance 
+ * measurements and intersections.
+ */
+
+/*!
+ * \defgroup Shapes Shapes
+ * \ingroup Geometry
+ * 
+ * \brief A set of predefined geometric shapes that extend the basic geometric entities.
+ * 
+ * The Shapes module includes common geometric figures such as circles, ellipses, 
+ * triangles, squares, and rectangles. These shapes provide specialized methods 
+ * for area computation, bounding box generation, and geometric transformations.
+ */

@@ -75,7 +75,7 @@ if (BUILD_TL_GRAPHIC)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
   	                      TidopLib::Core 
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 

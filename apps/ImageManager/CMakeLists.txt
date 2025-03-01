@@ -45,7 +45,7 @@ if(BUILD_TL_CORE AND BUILD_TL_RASTER_TOOLS)
     target_link_libraries(${PROJECT_NAME} PRIVATE
                           TidopLib::RasterTools
                           TidopLib::Math
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           TidopLib::Geospatial
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>

@@ -797,6 +797,6 @@ auto operator /(const Point3<T1>& pt, T2 b) -> enableIfNotIntegral<T1,Point3<T1>
                       static_cast<T1>(pt.z / b));
 }
 
-/*! \} */ // end of geometry
+/*! \} */
 
-} // End namespace tl
+}

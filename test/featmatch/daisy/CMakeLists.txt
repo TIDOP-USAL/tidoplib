@@ -36,7 +36,7 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
                       TidopLib::Core 
-                      TidopLib::Geom 
+                      TidopLib::Geometry 
                       TidopLib::FeatureMatching
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       ${OpenCV_LIBS})

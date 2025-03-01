@@ -32,7 +32,7 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/ptr.h"
-#include "tidop/geometry/entities/bbox.h"
+#include "tidop/geometry/bbox.h"
 
 #include <proj.h>
 

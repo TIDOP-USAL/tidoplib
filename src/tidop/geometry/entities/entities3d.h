@@ -161,6 +161,6 @@ auto Entities3D<Entity_t>::operator=(Entities3D<Entity_t>&& entities) TL_NOEXCEP
 }
 
 
-/*! \} */ // end of geometry
+/*! \} */ 
 
 } // End namespace tl

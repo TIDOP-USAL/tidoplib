@@ -22,67 +22,71 @@
  *                                                                        *
  **************************************************************************/
 
-#include "segment.h"
+#pragma once
 
-#include "tidop/math/mathutils.h"
-
-//#include "tidop/geometry/operations.h"
-
+//#include "tidop/geometry/algorithms/distance.h"
+//#include "tidop/geometry/algorithms/angle.h"
+//#include "tidop/geometry/algorithms/intersect.h"
+#include "tidop/geometry/entities/segment.h"
 
 namespace tl
 {
+    
 
-GroupLines::GroupLines()
+/*! \addtogroup Algorithms
+ *  \{
+ */
+
+
+/*!
+ * \brief Comprueba si un punto esta a la derecha o izquierda de una linea
+ */
+template<typename Point_t> inline
+int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
 {
-    bbox = WindowI();
+    int r_value{0};
+
+    double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
+        - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
+    if (aux > 0) r_value = 1;
+    else if (aux < 0) r_value = -1;
+
+    return r_value;
 }
 
-GroupLines::GroupLines(const std::vector<Line> &lines)
+
+
+
+
+
+/*!
+ * \brief GroupLines class
+ */
+class TL_EXPORT GroupLines
 {
-    linesgroup = lines;
-    for (const auto &i : linesgroup) {
-        if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
-        if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
-        if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
-        if (bbox.pt2.y < i.pt2.y) bbox.pt2.y = i.pt2.y;
-    }
+
+private:
+
+    std::vector<Line> linesgroup;
+    WindowI bbox;
+
+public:
+
+    GroupLines();
+    GroupLines(const std::vector<Line> &lines);
+
+    void add(const Line &line);
+    double angleMean() const;
+    void deleteLine(int id);
+    WindowI window() const { return bbox; }
+    size_t size() const { return linesgroup.size(); }
+    const Line &operator[](size_t id) const { return linesgroup[id]; }
+    Line &operator[](size_t id) { return linesgroup[id]; }
+    const std::vector<Line> &getLines() const { return linesgroup; }
+
+};
+
 }
 
-void GroupLines::add(const Line &line)
-{
-    linesgroup.push_back(line);
-    WindowI window = line.window();
-    //Se actualiza la ventana  envolvente
-    bbox = (bbox.isEmpty()) ? window : joinWindow(bbox, window);
-}
 
-//#ifdef TL_HAVE_OPENCV
-//
-//void GroupLines::add(const cv::Vec4i &lvect)
-//{
-//  Line _line;
-//  _line.pt1.x = lvect[0];
-//  _line.pt1.y = lvect[1];
-//  _line.pt2.x = lvect[2];
-//  _line.pt2.y = lvect[3];
-//  add(_line);
-//}
-//
-//#endif
-
-double GroupLines::angleMean() const
-{
-    double angle = 0.0;
-    for (auto &line : linesgroup) {
-        angle += line.angleOX();
-    }
-    angle /= static_cast<double>(linesgroup.size());
-    return angle;
-}
-
-void GroupLines::deleteLine(int id)
-{
-    linesgroup.erase(linesgroup.begin() + id);
-}
-
-} // End namespace tl
+/*! \} */

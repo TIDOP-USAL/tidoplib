@@ -247,6 +247,6 @@ auto MultiLineString3D<Point3_t>::boundingBox() const -> BoundingBox<Point3_t>
     return bounding_box;
 }
 
-/*! \} */ // end of geometry
+/*! \} */
 
-} // Fin namespace tl
+}

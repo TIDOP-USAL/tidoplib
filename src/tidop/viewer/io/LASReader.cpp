@@ -1,6 +1,6 @@
 #include "LASReader.h"
 
-#include "tidop/geometry/entities/bbox.h"
+#include "tidop/geometry/bbox.h"
 #include "tidop/viewer/group/PointCloud.h"
 #include "tidop/viewer/widget/ViewerWidget.h"
 

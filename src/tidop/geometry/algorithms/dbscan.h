@@ -33,13 +33,10 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup Algorithms
  *  \{
  */
 
-/*! \addtogroup geometry_algorithms
- *  \{
- */
 
  //https://stackoverflow.com/questions/23842940/clustering-image-segments-in-opencv/23997322#23997322
 
@@ -154,9 +151,7 @@ public:
 };
 
 
-/*! \} */ // end of geometry_algorithms
-
-/*! \} */ // end of geometry
+/*! \} */ 
 
 } // End namespace tl
 

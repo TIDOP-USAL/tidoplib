@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_MODULE Tidop bounding box test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/entities/bbox.h>
+#include <tidop/geometry/bbox.h>
 
 using namespace tl;
 
@@ -404,15 +404,6 @@ BOOST_FIXTURE_TEST_CASE(depth, BoundingBoxTest)
   BOOST_CHECK_CLOSE(123.34f, box_constructor_center_size_float->depth(), 0.01);
 }
 
-BOOST_FIXTURE_TEST_CASE(type, BoundingBoxTest) 
-{
-  BOOST_CHECK(box_default_constructor_integer.type() == Entity::Type::bounding_box);
-  BOOST_CHECK(box_integer->type() == Entity::Type::bounding_box);
-  BOOST_CHECK(box_integer_copy->type() == Entity::Type::bounding_box);
-  BOOST_CHECK(box_constructor_center_side_integer_even_size->type() == Entity::Type::bounding_box);
-  BOOST_CHECK(box_constructor_center_size_integer_even_size->type() == Entity::Type::bounding_box);
-}
-
 BOOST_FIXTURE_TEST_CASE(isEmpty, BoundingBoxTest) 
 {
   BOOST_CHECK(box_default_constructor_integer.isEmpty());
@@ -429,15 +420,6 @@ BOOST_FIXTURE_TEST_CASE(isValid, BoundingBoxTest)
   BOOST_CHECK(box_integer_copy->isValid() == true);
   BOOST_CHECK(box_constructor_center_side_integer_even_size->isValid() == true);
   BOOST_CHECK(box_constructor_center_size_integer_even_size->isValid() == true);
-}
-
-BOOST_FIXTURE_TEST_CASE(is3D, BoundingBoxTest) 
-{
-  BOOST_CHECK(box_default_constructor_integer.is3D());
-  BOOST_CHECK(box_integer->is3D());
-  BOOST_CHECK(box_integer_copy->is3D());
-  BOOST_CHECK(box_constructor_center_side_integer_even_size->is3D());
-  BOOST_CHECK(box_constructor_center_size_integer_even_size->is3D());
 }
 
 BOOST_FIXTURE_TEST_CASE(containsPoint, BoundingBoxTest) 
