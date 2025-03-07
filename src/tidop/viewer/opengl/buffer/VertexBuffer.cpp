@@ -5,12 +5,16 @@
 namespace tl
 {
 
-constexpr unsigned int stride = 12 * sizeof(float);
-
 VertexBuffer::VertexBuffer() : Buffer(), hasIdxBuffer(false) { }
 
 VertexBuffer::VertexBuffer(std::vector<Vertex>& vertices)
     : Buffer(), hasIdxBuffer(false)
+{
+    initBuffer(vertices);
+}
+
+VertexBuffer::VertexBuffer(std::vector<Vertex>& vertices, const std::map<std::string, uint8_t>& _attributes)
+    : Buffer(), attributes(_attributes), hasIdxBuffer(false)
 {
     initBuffer(vertices);
 }
@@ -53,7 +57,7 @@ VertexBuffer::~VertexBuffer()
     glDeleteBuffers(1, &id);
 }
 
-void VertexBuffer::vertexAttributes()
+void VertexBuffer::vertexAttributes(int stride)
 {
     // position attribute
     glEnableVertexAttribArray(0);
@@ -70,22 +74,55 @@ void VertexBuffer::vertexAttributes()
     // uvs attribute
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (void*)(10 * sizeof(float)));
+
+    // Dynamic attributes
+    int sum = 10;
+	int index = 4;
+
+    for(auto& [k, v] : attributes) {
+
+        sum += v;
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(index, v, GL_FLOAT, GL_FALSE, stride, (void*)(sum * sizeof(float)));
+
+        index++;
+    }
 }
 
 void VertexBuffer::initBuffer(std::vector<Vertex>& vertices, const std::vector<unsigned int> indices)
 {
+    if (vertices.empty())
+        return;
+
     // Load vertices
     unsigned int index = 0;
-    float* glVertices = new float[vertices.size() * 12];
+    constexpr size_t fixedSize = 12;
+    size_t length = fixedSize + vertices[0].scalars.size();
+
+    std::cout << "Vertex length: " << length << std::endl;
+
+    float* glVertices = new float[vertices.size() * length];
 
     for (Vertex& vertex : vertices) {
 
-        glVertices[index] = vertex.position[0];       glVertices[index + 1] = vertex.position[1];   glVertices[index + 2] = vertex.position[2];
-        glVertices[index + 3] = vertex.color[0]; glVertices[index + 4] = vertex.color[1];  glVertices[index + 5] = vertex.color[2];  glVertices[index + 6] = vertex.color[3];
-        glVertices[index + 7] = vertex.normal[0]; glVertices[index + 8] = vertex.normal[1]; glVertices[index + 9] = vertex.normal[2];
-        glVertices[index + 10] = vertex.uvs[0]; glVertices[index + 11] = vertex.uvs[1];
-        index += 12;
+        // Fixed
+        glVertices[index++] = vertex.position[0];  glVertices[index++] = vertex.position[1];   glVertices[index++] = vertex.position[2];
+        glVertices[index++] = vertex.color[0];     glVertices[index++] = vertex.color[1];      glVertices[index++] = vertex.color[2];     glVertices[index++] = vertex.color[3];
+        glVertices[index++] = vertex.normal[0];    glVertices[index++] = vertex.normal[1];     glVertices[index++] = vertex.normal[2];
+        glVertices[index++] = vertex.uvs[0];       glVertices[index++] = vertex.uvs[1];
+
+        // Scalar fields
+        for(float v : vertex.scalars)
+            glVertices[index++] = v;
     }
+
+    for(int i = 0; i < length; i ++)
+    {
+        std::cout << glVertices[i] << " ";
+    }
+    std::cout << std::endl;
+
+    int stride = length * sizeof(float);
 
     // Vertex buffer
     glGenBuffers(1, &id);
@@ -97,7 +134,7 @@ void VertexBuffer::initBuffer(std::vector<Vertex>& vertices, const std::vector<u
     if (hasIdxBuffer) indexBuffer = IndexBuffer::New(indices);
 
     // Vertex Attributes
-    vertexAttributes();
+    vertexAttributes(stride);
 
     // Unbind VBO
     unbind();

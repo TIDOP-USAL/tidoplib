@@ -43,8 +43,13 @@ protected:
 public:
 
 	ModelBase(const std::vector<Vertex>& _points, Type _type = Type::Mesh)
-		: points(_points), type(_type), modelMatrix(tl::Matrix4x4f::identity()),
-		pointSize(1.0f), lineSize(1.0f), offset(Vector3d::zero()) {
+		: points(_points),
+		type(_type),
+		modelMatrix(tl::Matrix4x4f::identity()),
+		pointSize(1.0f),
+		lineSize(1.0f),
+		offset(Vector3d::zero()) {
+
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points);
 
@@ -52,10 +57,30 @@ public:
 	}
 
 	ModelBase(const std::vector<Vertex>& _points, const std::vector<unsigned int>& _indices, Type _type = Type::Mesh)
-		: points(_points), indices(_indices), type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f),
-		lineSize(1.0f), offset(Vector3d::zero()) {
+		: points(_points),
+		indices(_indices),
+		type(_type),
+		modelMatrix(tl::Matrix4x4f::identity()),
+		pointSize(1.0f),
+		lineSize(1.0f),
+		offset(Vector3d::zero()) {
+
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points, indices);
+
+		initLength();
+	}
+
+	ModelBase(const std::vector<Vertex>& _points, const std::map<std::string, uint8_t>& attributes, Type _type = Type::PointCloud)
+		: points(_points),
+		type(_type),
+		modelMatrix(tl::Matrix4x4f::identity()),
+		pointSize(1.0f),
+		lineSize(1.0f),
+		offset(Vector3d::zero()) {
+
+		vertexArray = VertexArray::New();
+		vertexBuffer = VertexBuffer::New(points, attributes);
 
 		initLength();
 	}

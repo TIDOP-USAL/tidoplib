@@ -62,19 +62,24 @@ void MainWindow::loadFromFile(const std::string& path) {
     ModelReader::Ptr reader = ModelReaderFactory::create(modelPath);
     reader->open();
 
-    ModelBase::Ptr model = reader->getModelBase();
+    if(reader->isOpen())
+    {
+        ModelBase::Ptr model = reader->getModelBase();
 
-    PointCloud::Ptr cloud = std::dynamic_pointer_cast<PointCloud>(model);
-    cloud->scale(0.01f, 0.01f, 0.01f);
+        PointCloud::Ptr cloud = std::dynamic_pointer_cast<PointCloud>(model);
+        cloud->scale(0.01f, 0.01f, 0.01f);
 
-    viewerWidget->getRenderer()->addModel(cloud);
+        viewerWidget->getRenderer()->addModel(cloud);
+
+        reader->close();
+    }
 
 
 
 
     // Ray model base
     std::vector<Vertex> points = {
-    Vertex(Vector3f{0.0, 0.0, 0.0}, Vector4f{1.0, 0.0, 0.0, 1.0})
+		Vertex(Vector3f{0.0, 0.0, 0.0}, Vector4f{1.0, 0.0, 0.0, 1.0})
     };
 
     rayModelBase = PointCloud::New(points);

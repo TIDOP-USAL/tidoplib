@@ -739,8 +739,10 @@ void PointCloudReaderPDAL::open()
             //const base_header& header = reader_->header();
         }
     }
+    /*
     if (crsWKT.empty())
         TL_ASSERT(false, "Not exists CRS WKT in file: {}", file().toString());
+        */
     try {
         pdal::Dimension::IdList dimensionsIdInFile = pointTable.layout()->dims();
         pdal::PointTable pointTableNoPredefinedDimensions;
@@ -762,10 +764,14 @@ void PointCloudReaderPDAL::open()
             {
                 mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, crsId);
             }
+
+            mCrsId = crsId;
         }
+        /*
         if (crsId.empty())
             TL_ASSERT(false, "Not exists CRS WKT in file: {}", file().toString());
-        mCrsId = crsId;
+		*/
+        
     }
     catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");

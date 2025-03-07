@@ -86,8 +86,9 @@ void ViewerWidget::initializeGL()
 
     Mesh::Ptr mesh = Mesh::New(cubeVertices);
     mesh->scale(5.f, 5.f, 5.f);
+    //mesh->rotate(AxisAngle<float>(consts::pi<float>, { 1.0, 1.0, 0.0 }));
 
-    Texture::Ptr texture = Texture::New("D:/dev/albedo.png");
+    Texture::Ptr texture = Texture::New("C:/Users/EquipoTidop/Documents/Texturas/albedo.png");
     mesh->addTexture(texture);
 
     renderer->addModel(mesh);

@@ -17,7 +17,8 @@
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
-    
+
+
     tl::Path app_path(argv[0]);
 
 #ifdef TL_OS_WINDOWS
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
 #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
     //CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
     //CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    std::string proj_data_path = "D:\\dev\\sources\\graphos\\build\\bin\\proj";
+    std::string proj_data_path = "E:/libs/proj/9.2/vc17/share/proj";
     CPLSetConfigOption("PROJ_DATA", proj_data_path.c_str());
     CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
 #   else
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
     const char* proj_data[]{ s_proj.c_str(), nullptr };
     OSRSetPROJSearchPaths(proj_data);
 #   endif
-    std::string gdal_data_path = "D:\\dev\\sources\\graphos\\build\\bin\\gdal\\data";
+    std::string gdal_data_path = "E:/libs/gdal/3.7.0/vc17/share/gdal";
     CPLSetConfigOption("GDAL_DATA", gdal_data_path.c_str());
     //CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
 #endif // TL_OS_WINDOWS
@@ -57,6 +58,7 @@ int main(int argc, char* argv[])
     log.setMessageLevel(tl::MessageLevel::all);
     tl::Message::addMessageHandler(&log);
 
+    
     try {
         tl::GeoTools* ptrGeoTools = tl::GeoTools::getInstance();
         bool ignoreDeprecatedCRSs = true;

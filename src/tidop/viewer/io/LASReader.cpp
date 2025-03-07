@@ -21,6 +21,7 @@ namespace tl
 
 	void LASReader::open()
 	{
+		/*
 		std::string pathStr = path.toString();
 		Path outputPointsPath = path;
 		outputPointsPath.replaceExtension(".txt");
@@ -87,6 +88,11 @@ namespace tl
 			dimensionsNames, dimensionsValues,
 			x_min, y_min, z_min, x_max, y_max, z_max, resolution, crsId_25830_5782);// crsId_25830_5782);
 
+		std::vector<std::string> names;
+		pointCloudReader->getDimensionsNames(names);
+
+		for (auto name : names) std::cout << name << " " << std::endl;
+
 		int np = 0;
 		double x_min_real = 1000000000.;
 		double y_min_real = 1000000000.;
@@ -149,8 +155,7 @@ namespace tl
 		//offset = { 0.0, 0.0, 0.0 };
 		modelBase = PointCloud::New(points);
 		modelBase->setOffset(offset);
-
-		/*
+		*/
 		std::string pathStr = path.toString();
 		file = std::ifstream(pathStr, std::ios_base::binary);
 
@@ -168,6 +173,24 @@ namespace tl
 		Vector3d offset = bbox.center().vector();
 
 		std::vector<Vertex> points;
+
+		// Define attributes
+		std::map<std::string, uint8_t> attributes;
+
+		for (int i = 0; i < lasheader.number_attributes; i++)
+		{
+			auto attribute = lasheader.attributes[i];
+
+			std::string k = attribute.name;
+			constexpr unsigned int v = 1;
+
+			//attributes[k] = v;
+			attributes.insert(std::pair<std::string, uint8_t>(k, v));
+		}
+
+		std::vector<float> scalars(lasheader.number_attributes, 0.f);
+
+		// Get attribute values
 		while (lasreader.read_point()) {
 
 			const LASpoint& laspoint = lasreader.point;
@@ -193,13 +216,17 @@ namespace tl
 				static_cast<float>(laspoint.rgb[3] / 65536.)
 			};
 
-			Vertex vertex(position, color);
+			for (int i = 0; i < laspoint.attributer->number_attributes; i++) {
+				float value = laspoint.get_attribute_as_float(i);
+				scalars[i] = value;
+			}
+
+			Vertex vertex(position, color, scalars);
 			points.push_back(vertex);
 		}
-		modelBase = PointCloud::New(points);
+
+		modelBase = PointCloud::New(points, attributes);
 		modelBase->setOffset(offset);
-		*/
-		close();
 	}
 
 	bool LASReader::isOpen() const

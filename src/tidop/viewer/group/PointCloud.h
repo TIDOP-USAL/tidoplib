@@ -22,6 +22,7 @@ class PointCloud
 public:
 
 	PointCloud(const std::vector<Vertex>& points);
+	PointCloud(const std::vector<Vertex>& points, const std::map<std::string, uint8_t>& attributes);
 	PointCloud(size_t _size);
 	PointCloud() = default;
 	~PointCloud() = default;

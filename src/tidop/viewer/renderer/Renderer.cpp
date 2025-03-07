@@ -4,16 +4,18 @@
 
 #include "group/Mesh.h"
 
-const char* vertexShaderSource = "#version 330 core\n"
+const char* vertexShaderSource = "#version 430 core\n"
 "\n"
 "layout (location = 0) in vec3 aPos;\n"
 "layout (location = 1) in vec4 aColor;\n"
 "layout (location = 2) in vec3 aNormal;\n"
 "layout (location = 3) in vec2 aTexCoord;\n"
+"layout (location = 4) in float aLabel;\n"
 "\n"
 "out vec4 Color;\n"
 "out vec3 Normal;\n"
 "out vec2 TexCoord;\n"
+"out float Label;\n"
 "\n"
 "uniform mat4 model;\n"
 "uniform mat4 view;\n"
@@ -25,15 +27,17 @@ const char* vertexShaderSource = "#version 330 core\n"
 "	Color = aColor;\n"
 "	Normal = aNormal;\n"
 "	TexCoord = aTexCoord;\n"
+"   Label = aLabel;\n"
 "}\0";
 
-const char* fragmentShaderSource = "#version 330 core\n"
+const char* fragmentShaderSource = "#version 430 core\n"
 "\n"
 "out vec4 FragColor;\n"
 "\n"
 "in vec4 Color;\n"
 "in vec3 Normal;\n"
 "in vec2 TexCoord;\n"
+"in float Label;\n"
 "\n"
 "uniform sampler2D tex;\n"
 "uniform bool hasTexture;\n"
@@ -45,12 +49,123 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "   vec4 light = vec4(1.0, 1.0, 0.85, 1.0);\n"
 "	vec4 ambient = vec4(0.3);\n"
 "	if(hasTexture) {\n"
-"		// color = texture(tex, TexCoord) * dot(lightPos, Normal) * light;\n"
-"		color = texture(tex, TexCoord);\n"
+"		color = texture(tex, TexCoord) * dot(lightPos, Normal) * light;\n"
+"		//color = texture(tex, TexCoord);\n"
 "   }\n"
 "	FragColor = color;\n"
 "}\n\0";
 
+/**
+
+const char* vertexShaderSource = "#version 430 core\n"
+"\n"
+"layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec4 aColor;\n"
+"layout (location = 2) in vec3 aNormal;\n"
+
+layout(location = 3) in vecSize name;
+
+"layout (location = 3) in vec2 aTexCoord;\n"
+"\n"
+"out vec4 Color;\n"
+"out vec3 Normal;\n"
+"out vec2 TexCoord;\n"
+
+out vecSize Name;
+
+"\n"
+"uniform mat4 model;\n"
+"uniform mat4 view;\n"
+"uniform mat4 projection;\n"
+"\n"
+"void main()\n"
+"{\n"
+"   gl_Position = projection * view * model * vec4(aPos.xyz, 1.0);\n"
+"	Color = aColor;\n"
+"	Normal = aNormal;\n"
+
+Name = name;
+
+"	TexCoord = aTexCoord;\n"
+"}\0";
+
+const char* fragmentShaderSource = "#version 430 core\n"
+"\n"
+"out vec4 FragColor;\n"
+"\n"
+"in vec4 Color;\n"
+"in vec3 Normal;\n"
+"in vec2 TexCoord;\n"
+
+in vecSize Name;
+
+"\n"
+"uniform sampler2D tex;\n"
+"uniform bool hasTexture;\n"
+
+uniform float min;
+uniform float max;
+uniform int index;
+
+
+uniform bool hasNormals;
+
+
+uniform bool isColor;
+uniform bool isColorRamp;
+uniform bool isGreyScale;
+uniform bool isFixedColor;
+
+vec3 fixedColor = vec3(1.0);
+
+"\n"
+"void main()\n"
+"{\n"
+"   vec4 color = Color;\n"
+"   vec3 lightPos = vec3(1.0, 0.5, 0.75);\n"
+"   vec4 light = vec4(1.0, 1.0, 0.85, 1.0);\n"
+"	vec4 ambient = vec4(0.3);\n"
+"	if(hasTexture) {\n"
+"		color = texture(tex, TexCoord) * dot(lightPos, Normal) * light;\n"
+"		//color = texture(tex, TexCoord);\n"
+"   }\n"
+	if(index == 1)
+	{
+		aPos
+	}
+
+	"if(index == {index})"
+	" float rate = ({k} - min) / (max - min);"
+	"  if(isGreyScale)"
+	"    color = vec3(rate);"
+	"  else if(isColorRamp)"
+	"     color = colorRamp(rate);"
+	"  else if(isFixedColor)"
+	"      color = fixedColor;"
+
+	"if(index == 1)"
+	" float rate = (intensity} - min) / (max - min);"
+	"  if(isGreyScale)"
+	"    color = vec3(rate);"
+	"  else if(isColorRamp)"
+	"     color = colorRamp(rate);"
+	"  else if(isFixedColor)"
+	"      color = fixedColor;"
+
+	"if(index == 2)"
+	" float rate = (gpsTime - min) / (max - min);"
+	"  if(isGreyScale)"
+	"    color = vec3(rate);"
+	"  else if(isColorRamp)"
+	"     color = colorRamp(rate);"
+	"  else if(isFixedColor)"
+	"      color = fixedColor;"
+
+
+"	FragColor = color;\n"
+"}\n\0";
+
+ */
 namespace tl
 {
 
