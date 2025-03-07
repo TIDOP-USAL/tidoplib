@@ -25,9 +25,8 @@
 #define BOOST_TEST_MODULE Tidop Console test
 #include <boost/test/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
-#include <tidop/core/console.h>
-#include <tidop/core/log.h>
-#include <tidop/core/app.h>
+
+#include <tidop/core/app/app.h>
 
 using namespace tl;
 
@@ -40,48 +39,112 @@ BOOST_AUTO_TEST_SUITE(ConsoleTestSuite)
 
 struct cout_redirect
 {
-  cout_redirect(std::streambuf *new_buffer)
-    : old(std::cout.rdbuf(new_buffer))
-  {
-  }
+    cout_redirect(std::streambuf *new_buffer)
+        : old(std::cout.rdbuf(new_buffer))
+    {
+    }
 
-  ~cout_redirect()
-  {
-    std::cout.rdbuf(old);
-  }
+    ~cout_redirect()
+    {
+        std::cout.rdbuf(old);
+    }
 
 private:
-  std::streambuf *old;
+    std::streambuf *old;
 };
 
 
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
-  Console &console = App::console();
-  EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+    Console &console = App::console();
+    EnumFlags<MessageLevel> message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
 }
 
 BOOST_AUTO_TEST_CASE(messageLevel)
 {
-  Console &console = App::console();
-  console.setMessageLevel(MessageLevel::debug);
-  EnumFlags<MessageLevel> message_level = console.messageLevel();
-  BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    Console &console = App::console();
+    console.setMessageLevel(MessageLevel::debug);
+    EnumFlags<MessageLevel> message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+
+    console.setMessageLevel(MessageLevel::info);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+
+    console.setMessageLevel(MessageLevel::success);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+
+    console.setMessageLevel(MessageLevel::warning);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+
+    console.setMessageLevel(MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::debug | MessageLevel::info);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::success | MessageLevel::warning);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::info | MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::debug | MessageLevel::success | MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::debug | MessageLevel::info | MessageLevel::success | MessageLevel::warning | MessageLevel::error);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
+
+    console.setMessageLevel(MessageLevel::all);
+    message_level = console.messageLevel();
+    BOOST_CHECK_EQUAL(false, message_level.isEnabled(MessageLevel::debug));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::info));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::success));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::warning));
+    BOOST_CHECK_EQUAL(true, message_level.isEnabled(MessageLevel::error));
 }
 
 BOOST_AUTO_TEST_CASE(printMessage)
 {
-  Console &console = App::console();
+    Console &console = App::console();
 
-  boost::test_tools::output_test_stream output;
-  {
-    cout_redirect guard(output.rdbuf());
+    boost::test_tools::output_test_stream output;
+    {
+        cout_redirect guard(output.rdbuf());
 
-    console << "Test";
-  }
+        console << "Test";
+    }
 
-  BOOST_CHECK( output.is_equal( "Test" ) );
+    BOOST_CHECK(output.is_equal("Test"));
 }
 
 

@@ -30,17 +30,15 @@
 #include <string>
 #include <memory>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/utils.h"
-#include "tidop/core/path.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/path.h"
+#include "tidop/core/base/type.h"
+#include "tidop/core/base/type_conversions.h"
 #include "tidop/core/console/validator.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {
-
-/*! \addtogroup core
- *  \{
- */
 
 /*! \addtogroup Console
  *  \{
@@ -50,38 +48,49 @@ template <typename T> class Argument_;
 
 
 /*!
- * \brief The Argument class
+ * \class Argument
+ * \brief Represents a command-line argument with associated metadata and validation.
+ *
+ * The `Argument` class is an abstraction for command-line arguments. It allows
+ * you to define arguments with a name, short name, description, type, and an optional validator.
+ * This class supports both mandatory and optional arguments, with the ability to validate
+ * and parse their values from strings.
+ *
+ * ### Features
+ * - **Metadata**: Name, short name, description, and type for each argument.
+ * - **Validation**: Validate argument values using custom validators.
+ * - **Dynamic Typing**: Supports various argument types such as integers, floating-point numbers, strings, and more.
+ * - **Extensibility**: Derived classes can implement specific behavior, including mandatory checks, type names, and value parsing.
+ *
+ * ### %Argument Types
+ * The `Type` enum defines the supported types for arguments:
+ * - Boolean (`type_bool`)
+ * - Integer types (`type_int8`, `type_uint8`, etc.)
+ * - Floating-point types (`type_float32`, `type_float64`)
+ * - String types (`type_string`, `type_path`)
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * auto input = Argument::make<std::string>("input", "Path to the input file");
+ * auto option = Argument::make<int>("option", 'o', "Optional parameter", false);
+ * \endcode
+ *
+ * ### Notes
+ * This class is designed to be subclassed to provide specific argument behaviors. Subclasses
+ * must implement the following pure virtual methods:
+ * - `typeName()`: Returns a string representation of the argument's type.
+ * - `isRequired()`: Indicates if the argument is mandatory.
+ * - `fromString()`: Parses the argument's value from a string.
+ * - `isValid()`: Validates the argument's value.
+ *
+ * ### See Also
+ * - `Validator`: For defining custom validation logic.
+ * - `Argument_<T>`: Template subclass for typed arguments.
  */
 class TL_EXPORT Argument
 {
 
 public:
-
-    enum class Type
-    {
-        arg_unknown,
-        arg_bool,
-        arg_int8,
-        arg_uint8,
-        arg_int16,
-        arg_uint16,
-        arg_int32,
-        arg_uin32,
-        arg_int64,
-        arg_uint64,
-        arg_float32,
-        arg_float64,
-        arg_string,
-        arg_path,
-        arg_char = arg_int8,
-        arg_uchar = arg_uint8,
-        arg_short = arg_int16,
-        arg_ushort = arg_uint16,
-        arg_int = arg_int32,
-        arg_uint = arg_uin32,
-        arg_float = arg_float32,
-        arg_double = arg_float64
-    };
 
     using SharedPtr = std::shared_ptr<Argument>;
 
@@ -96,28 +105,33 @@ private:
 public:
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] type Type of the argument
-     * \see Type
+     * \brief Constructs an Argument with a name, description, and type.
+     * \param[in] name Name of the argument.
+     * \param[in] description Description of the argument, explaining its purpose.
+     * \param[in] type Type of the argument, as defined in \ref Argument::Type.
+     * \see Argument::Type
      */
     Argument(std::string name, std::string description, Type type);
 
     /*!
-     * \brief Constructor
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] type Type of the argument
+     * \brief Constructs an Argument with a short name, description, and type.
+     * \param[in] shortName Short, single-character name for the argument.
+     * \param[in] description Description of the argument, explaining its purpose.
+     * \param[in] type Type of the argument, as defined in \ref Argument::Type.
+     *
+     * This constructor is useful for command-line arguments that are commonly referred
+     * to using a single character, such as `-o`.
      */
     Argument(const char &shortName, std::string description, Type type);
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] type Type of the argument
+     * \brief Constructs an Argument with a name, short name, description, and type.
+     * \param[in] name Name of the argument.
+     * \param[in] shortName Short, single-character name for the argument.
+     * \param[in] description Description of the argument, explaining its purpose.
+     * \param[in] type Type of the argument, as defined in \ref Argument::Type.
+     *
+     * This constructor allows defining both a full name and a shorthand for the argument.
      */
     Argument(std::string name, const char &shortName, std::string description, Type type);
 
@@ -223,15 +237,34 @@ public:
     virtual bool isValid() = 0;
 
     /*!
-     * \brief Construct an argument
-     * 
-     * Example of use:
-     * \code
+     * \brief Creates a new argument instance.
+     *
+     * This static method allows the construction of an argument with the specified
+     * type and parameters. It supports both required and optional arguments.
+     *
+     * - **Required arguments**: These do not have a default value and must always
+     *   be provided by the user.
+     * - **Optional arguments**: These include a default value, making them optional
+     *   to specify during usage.
+     *
+     * \tparam T The type of the argument (e.g., `std::string`, `int`, `bool`).
+     * \tparam Arg The variadic template for additional argument parameters.
+     * \param[in] arg Parameters to initialize the argument (e.g., name, description,
+     * short name, and default value for optional arguments).
+     *
+     * \return A shared pointer to the newly created `Argument_<T>` instance.
+     *
+     * Example usage:
+     * \code{.cpp}
+     * // Required argument (must be provided by the user)
      * auto input = Argument::make<std::string>("input", "Input data");
-     * auto option = Argument::make<std::string>("option", 'o', "Option 1", false);
+     *
+     * // Optional argument (default value provided, user can override)
+     * auto option = Argument::make<std::string>("option", 'o', "Option 1", "default_value");
      * \endcode
-     * 
-     * \return
+     *
+     * In the first example, `input` is a required argument because no default value is provided.
+     * In the second example, `option` is an optional argument because it has a default value (`"default_value"`).
      */
     template<typename T, typename... Arg>
     static auto make(Arg&&... arg) -> std::shared_ptr<Argument_<T>>
@@ -239,123 +272,6 @@ public:
         return std::make_shared<Argument_<T>>(std::forward<Arg>(arg)...);
     }
 
-};
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-template<typename T>
-struct ArgTraits
-{
-    static constexpr auto property_type = Argument::Type::arg_unknown;
-    static constexpr auto type_name = "unknown";
-};
-
-template<>
-struct ArgTraits<bool>
-{
-    using value_type = bool;
-    static constexpr auto property_type = Argument::Type::arg_bool;
-    static constexpr auto type_name = "bool";
-};
-
-template<>
-struct ArgTraits<float>
-{
-    using value_type = float;
-    static constexpr auto property_type = Argument::Type::arg_float;
-    static constexpr auto type_name = "float";
-};
-
-template<>
-struct ArgTraits<double>
-{
-    using value_type = double;
-    static constexpr auto property_type = Argument::Type::arg_double;
-    static constexpr auto type_name = "double";
-};
-
-template<>
-struct ArgTraits<char>
-{
-    using value_type = char;
-    static constexpr auto property_type = Argument::Type::arg_char;
-    static constexpr auto type_name = "char";
-};
-
-template<>
-struct ArgTraits<unsigned char>
-{
-    using value_type = unsigned char;
-    static constexpr auto property_type = Argument::Type::arg_uchar;
-    static constexpr auto type_name = "uchar";
-};
-
-template<>
-struct ArgTraits<short>
-{
-    using value_type = short;
-    static constexpr auto property_type = Argument::Type::arg_short;
-    static constexpr auto type_name = "short";
-};
-
-template<>
-struct ArgTraits<unsigned short>
-{
-    using value_type = unsigned short;
-    static constexpr auto property_type = Argument::Type::arg_ushort;
-    static constexpr auto type_name = "ushort";
-};
-
-template<>
-struct ArgTraits<int>
-{
-    using value_type = int;
-    static constexpr auto property_type = Argument::Type::arg_int;
-    static constexpr auto type_name = "int";
-};
-
-template<>
-struct ArgTraits<unsigned int>
-{
-    using value_type = unsigned int;
-    static constexpr auto property_type = Argument::Type::arg_uint;
-    static constexpr auto type_name = "uint";
-};
-
-template<>
-struct ArgTraits<long long>
-{
-    using value_type = long long;
-    static constexpr auto property_type = Argument::Type::arg_int64;
-    static constexpr auto type_name = "int64";
-};
-
-template<>
-struct ArgTraits<unsigned long long>
-{
-    using value_type = unsigned long;
-    static constexpr auto property_type = Argument::Type::arg_uint64;
-    static constexpr auto type_name = "uint64";
-};
-
-template<>
-struct ArgTraits<std::string>
-{
-    using value_type = std::string;
-    static constexpr auto property_type = Argument::Type::arg_string;
-    static constexpr auto type_name = "std::string";
-};
-
-template<>
-struct ArgTraits<tl::Path>
-{
-    using value_type = tl::Path;
-    static constexpr auto property_type = Argument::Type::arg_path;
-    static constexpr auto type_name = "tl::Path";
 };
 
 
@@ -476,7 +392,7 @@ using ArgumentCharRequired = Argument_<char>;
 template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,
                         const std::string &description)
-  : Argument(name, description, ArgTraits<T>::property_type),
+  : Argument(name, description, TypeTraits<T>::id_type),
     mValue(T()),
     optional(false),
     bValid(true)
@@ -487,7 +403,7 @@ template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,
                         const std::string &description,
                         T value)
-  : Argument(name, description, ArgTraits<T>::property_type),
+  : Argument(name, description, TypeTraits<T>::id_type),
     mValue(value),
     optional(true),
     bValid(true)
@@ -497,7 +413,7 @@ Argument_<T>::Argument_(const std::string &name,
 template<typename T> inline
 Argument_<T>::Argument_(const char &shortName,
                         const std::string &description)
-  : Argument(shortName, description, ArgTraits<T>::property_type),
+  : Argument(shortName, description, TypeTraits<T>::id_type),
     optional(false),
     bValid(true)
 {
@@ -507,7 +423,7 @@ template<typename T> inline
 Argument_<T>::Argument_(const char &shortName,
                         const std::string &description,
                         T value)
-  : Argument(shortName, description, ArgTraits<T>::property_type),
+  : Argument(shortName, description, TypeTraits<T>::id_type),
     mValue(value),
     optional(true),
     bValid(true)
@@ -518,7 +434,7 @@ template<typename T> inline
 Argument_<T>::Argument_(const std::string &name,
                         const char &shortName,
                         const std::string &description)
-  : Argument(name, shortName, description, ArgTraits<T>::property_type),
+  : Argument(name, shortName, description, TypeTraits<T>::id_type),
     optional(false),
     bValid(true)
 {
@@ -529,7 +445,7 @@ Argument_<T>::Argument_(const std::string &name,
                         const char &shortName,
                         const std::string &description,
                         T value)
-  : Argument(name, shortName, description, ArgTraits<T>::property_type),
+  : Argument(name, shortName, description, TypeTraits<T>::id_type),
     mValue(value),
     optional(true),
     bValid(true)
@@ -539,7 +455,7 @@ Argument_<T>::Argument_(const std::string &name,
 template<typename T> inline
 auto Argument_<T>::typeName() const -> std::string
 {
-    return ArgTraits<T>::type_name;
+    return TypeTraits<T>::name_type;
 }
 
 template<typename T> inline
@@ -600,10 +516,7 @@ auto Argument_<T>::isValid() -> bool
 
 
 
-/*! \} */ // end of Console
-
-/*! \} */ // end of core
-
+/*! \} */
 
 
 
@@ -634,44 +547,44 @@ auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
         TL_ASSERT(arg, "Argument pointer is null");
 
         auto type = arg->type();
-        auto return_type = ArgTraits<T>::property_type;
+        auto return_type = TypeTraits<T>::id_type;
 
         if (type != return_type) {
-            TL_ASSERT(type != Argument::Type::arg_string, "Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
-            if (type < Argument::Type::arg_string && return_type < Argument::Type::arg_string && return_type < type) {
-                std::string type_name = ArgTraits<T>::type_name;
+            TL_ASSERT(type != Type::type_string, "Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
+            if (type < Type::type_string && return_type < Type::type_string && return_type < type) {
+                std::string type_name = TypeTraits<T>::name_type;
                 Message::warning("Conversion from \"{}\" to \"{}\", possible loss of data", arg->typeName(), type_name);
             }
         }
 
         switch (type) {
-        case Argument::Type::arg_unknown:
+        case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown argument type");
-        case Argument::Type::arg_bool:
+        case Type::type_bool:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<bool>>(arg)->value());
             break;
-        case Argument::Type::arg_int8:
+        case Type::type_int8:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<char>>(arg)->value());
             break;
-        case Argument::Type::arg_uint8:
+        case Type::type_uint8:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned char>>(arg)->value());
             break;
-        case Argument::Type::arg_int16:
+        case Type::type_int16:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<short>>(arg)->value());
             break;
-        case Argument::Type::arg_uint16:
+        case Type::type_uint16:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned short>>(arg)->value());
             break;
-        case Argument::Type::arg_int32:
+        case Type::type_int32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<int>>(arg)->value());
             break;
-        case Argument::Type::arg_uin32:
+        case Type::type_uint32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<unsigned int>>(arg)->value());
             break;
-        case Argument::Type::arg_float32:
+        case Type::type_float32:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<float>>(arg)->value());
             break;
-        case Argument::Type::arg_float64:
+        case Type::type_float64:
             value = numberCast<T>(std::dynamic_pointer_cast<Argument_<double>>(arg)->value());
             break;
         default:
@@ -697,16 +610,16 @@ inline auto ArgValue<std::string>::value(const Argument::SharedPtr &arg) -> std:
         const auto type = arg->type();
 
         switch (type) {
-        case Argument::Type::arg_unknown:
+        case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown argument type");
-        case Argument::Type::arg_string:
+        case Type::type_string:
             value = std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value();
             break;
-        case Argument::Type::arg_path:
+        case Type::type_path:
             value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value().toString();
             break;
         default:
-            TL_THROW_EXCEPTION("Conversion from \"{}\" to \"tl::Path\" is not allowed", arg->typeName());
+            TL_THROW_EXCEPTION("Conversion from \"{}\" to \"std::string\" is not allowed", arg->typeName());
         }
 
     } catch (...) {
@@ -728,12 +641,12 @@ inline auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Pat
         const auto type = arg->type();
 
         switch (type) {
-        case Argument::Type::arg_unknown:
+        case Type::type_unknown:
             TL_THROW_EXCEPTION("Unknown argument type");
-        case Argument::Type::arg_string:
+        case Type::type_string:
             value = tl::Path(std::dynamic_pointer_cast<Argument_<std::string>>(arg)->value());
             break;
-        case Argument::Type::arg_path:
+        case Type::type_path:
             value = std::dynamic_pointer_cast<Argument_<tl::Path>>(arg)->value();
             break;
         default:
@@ -750,8 +663,6 @@ inline auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Pat
 } // namespace internal 
 
 /// \endcond
-
-
 
 
 } // End namespace tl

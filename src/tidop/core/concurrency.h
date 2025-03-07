@@ -27,5 +27,6 @@
 #include "tidop/core/concurrency/consumer.h"
 #include "tidop/core/concurrency/parallel.h"
 #include "tidop/core/concurrency/producer.h"
+#include "tidop/core/concurrency/consumer.h"
 #include "tidop/core/concurrency/queue_mpmc.h"
 #include "tidop/core/concurrency/queue_spsc.h"

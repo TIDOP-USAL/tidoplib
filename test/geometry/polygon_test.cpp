@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop Plygon test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/polygon.h>
+#include <tidop/geometry/entities/multipolygon.h>
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
 
@@ -603,7 +604,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygon3DTest)
 
   BoundingBoxI box = multipolygon1.boundingBox();
   BOOST_CHECK_EQUAL(0, multipolygon1.size());
-  BOOST_CHECK(multipolygon1.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon1.type() == Entity::Type::multipolygon3d);
   BOOST_CHECK(multipolygon1.is3D());
   BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.x);
   BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.y);
@@ -621,7 +622,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygon3DTest)
   BoundingBoxD box = multipolygon.boundingBox();
   
   BOOST_CHECK_EQUAL(10, multipolygon.size());
-  BOOST_CHECK(multipolygon.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon3d);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.x);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.y);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.z);
@@ -636,7 +637,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygon3DTest)
 {
   MultiPolygon3D<Point3<int>> multipolygon_copy(multipolygon2);
   
-  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon3d);
   BOOST_CHECK(multipolygon_copy.is3D());
 	BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
   BoundingBoxD bbox = multipolygon_copy.boundingBox();
@@ -655,7 +656,7 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygon3DTest)
   MultiPolygon3D<Point3<int>> multipolygon_copy;
   multipolygon_copy = multipolygon2;
   
-  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon3d);
   BOOST_CHECK(multipolygon_copy.is3D());
 
 	BOOST_CHECK_EQUAL(1, multipolygon_copy.size());

@@ -24,17 +24,13 @@
 
 #pragma once
 
-#include "tidop/math/data.h"
+#include "tidop/math/base/data.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-/*! \addtogroup algebra Algebra
+/*! \addtogroup Matrix
  *  \{
  */
  
@@ -908,8 +904,6 @@ auto MatrixBase<MatrixDerived<T, Rows, Cols>>::determinantnxn() const -> T
 }
 
 
-/*! \} */ // end of algebra
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

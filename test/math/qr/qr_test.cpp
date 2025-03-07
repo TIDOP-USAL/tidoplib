@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop qr test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/qr.h>
+#include <tidop/math/algebra/decomp/qr.h>
 
 using namespace tl;
 

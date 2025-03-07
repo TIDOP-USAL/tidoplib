@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop BriskDetectorDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/brisk.h>
+#include <tidop/featmatch/features/brisk.h>
 
 using namespace tl;
 
@@ -34,102 +34,120 @@ BOOST_AUTO_TEST_SUITE(BriskDetectorDescriptorTestSuite)
 
 struct BriskDetectorDescriptorTest
 {
-  BriskDetectorDescriptorTest()
-    : briskDescriptor(new BriskDetectorDescriptor(15, 4, 2.))
-  { }
-    
-  ~BriskDetectorDescriptorTest()
-  { 
-    delete briskDescriptor;
-  }
+    BriskDetectorDescriptorTest()
+    { }
 
-  void setup()
-  {
-  }
+    ~BriskDetectorDescriptorTest()
+    {
+        delete briskDescriptor;
+    }
 
-  void teardown()
-  {
-  }
+    void setup()
+    {
+        briskProperties.setThreshold(15);
+        briskProperties.setOctaves(4);
+        briskProperties.setPatternScale(2.f);
 
-  BriskProperties briskProperties;
-  BriskDetectorDescriptor *briskDescriptor;
+        briskDescriptor = new BriskDetectorDescriptor(briskProperties);
+    }
+
+    void teardown()
+    {
+    }
+
+    BriskProperties briskDefaultProperties;
+    BriskProperties briskProperties;
+    BriskDetectorDescriptor *briskDescriptor;
 
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, BriskDetectorDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(30, briskProperties.threshold());
-  BOOST_CHECK_EQUAL(3, briskProperties.octaves());
-  BOOST_CHECK_EQUAL(1.0, briskProperties.patternScale());
+    BOOST_CHECK_EQUAL(30, briskDefaultProperties.threshold());
+    BOOST_CHECK_EQUAL(3, briskDefaultProperties.octaves());
+    BOOST_CHECK_EQUAL(1.0, briskDefaultProperties.patternScale());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, BriskDetectorDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(15, briskDescriptor->threshold());
-  BOOST_CHECK_EQUAL(4, briskDescriptor->octaves());
-  BOOST_CHECK_EQUAL(2., briskDescriptor->patternScale());
+    BOOST_CHECK_EQUAL(15, briskProperties.threshold());
+    BOOST_CHECK_EQUAL(4, briskProperties.octaves());
+    BOOST_CHECK_EQUAL(2., briskProperties.patternScale());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, BriskDetectorDescriptorTest)
 {
-  BriskProperties copy(*briskDescriptor);
-  BOOST_CHECK_EQUAL(15, copy.threshold());
-  BOOST_CHECK_EQUAL(4, copy.octaves());
-  BOOST_CHECK_EQUAL(2., copy.patternScale());
+    BriskProperties copy(briskProperties);
+    BOOST_CHECK_EQUAL(15, copy.threshold());
+    BOOST_CHECK_EQUAL(4, copy.octaves());
+    BOOST_CHECK_EQUAL(2., copy.patternScale());
 }
 
 BOOST_FIXTURE_TEST_CASE(assign, BriskDetectorDescriptorTest)
 {
-  BriskProperties assign = *briskDescriptor;
-  BOOST_CHECK_EQUAL(15, assign.threshold());
-  BOOST_CHECK_EQUAL(4, assign.octaves());
-  BOOST_CHECK_EQUAL(2., assign.patternScale());
+    BriskProperties assign = briskProperties;
+    BOOST_CHECK_EQUAL(15, assign.threshold());
+    BOOST_CHECK_EQUAL(4, assign.octaves());
+    BOOST_CHECK_EQUAL(2., assign.patternScale());
 }
 
 BOOST_FIXTURE_TEST_CASE(type, BriskDetectorDescriptorTest)
 {
-  BOOST_CHECK(Feature::Type::brisk == briskProperties.type());
+    BOOST_CHECK(Feature::Type::brisk == briskProperties.type());
 }
 
 BOOST_FIXTURE_TEST_CASE(name, BriskDetectorDescriptorTest)
 {
-  BOOST_CHECK_EQUAL("BRISK", briskProperties.name());
+    BOOST_CHECK_EQUAL("BRISK", briskProperties.name());
 }
 
 BOOST_FIXTURE_TEST_CASE(threshold, BriskDetectorDescriptorTest)
 {
-  BriskProperties brisk;
-  brisk.setThreshold(11);
-  BOOST_CHECK_EQUAL(11, brisk.threshold());
-  brisk.setThreshold(20);
-  BOOST_CHECK_EQUAL(20, brisk.threshold());
+    BriskProperties brisk;
+    brisk.setThreshold(11);
+    BOOST_CHECK_EQUAL(11, brisk.threshold());
+    brisk.setThreshold(20);
+    BOOST_CHECK_EQUAL(20, brisk.threshold());
 }
 
 BOOST_FIXTURE_TEST_CASE(octaves, BriskDetectorDescriptorTest)
 {
-  BriskProperties brisk;
-  brisk.setOctaves(4);
-  BOOST_CHECK_EQUAL(4, brisk.octaves());
-  brisk.setOctaves(8);
-  BOOST_CHECK_EQUAL(8, brisk.octaves());
+    BriskProperties brisk;
+    brisk.setOctaves(4);
+    BOOST_CHECK_EQUAL(4, brisk.octaves());
+    brisk.setOctaves(8);
+    BOOST_CHECK_EQUAL(8, brisk.octaves());
 }
 
 BOOST_FIXTURE_TEST_CASE(patternScale, BriskDetectorDescriptorTest)
 {
-  BriskProperties brisk;
-  brisk.setPatternScale(2.);
-  BOOST_CHECK_EQUAL(2., brisk.patternScale());
-  brisk.setPatternScale(8.);
-  BOOST_CHECK_EQUAL(8., brisk.patternScale());
+    BriskProperties brisk;
+    brisk.setPatternScale(2.);
+    BOOST_CHECK_EQUAL(2., brisk.patternScale());
+    brisk.setPatternScale(8.);
+    BOOST_CHECK_EQUAL(8., brisk.patternScale());
 }
 
 BOOST_FIXTURE_TEST_CASE(reset, BriskDetectorDescriptorTest)
 {
-  BriskProperties brisk(*briskDescriptor);
-  brisk.reset();
-  BOOST_CHECK_EQUAL(30, brisk.threshold());
-  BOOST_CHECK_EQUAL(3, brisk.octaves());
-  BOOST_CHECK_EQUAL(1.0, brisk.patternScale());
+    BriskProperties brisk = briskProperties;
+    brisk.reset();
+    BOOST_CHECK_EQUAL(30, brisk.threshold());
+    BOOST_CHECK_EQUAL(3, brisk.octaves());
+    BOOST_CHECK_EQUAL(1.0f, brisk.patternScale());
+}
+
+BOOST_FIXTURE_TEST_CASE(agast_detector_properties, BriskDetectorDescriptorTest)
+{
+    auto properties = briskDescriptor->properties();
+
+    BOOST_CHECK_EQUAL(15, properties.getProperty<int>("Threshold"));
+    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("Octaves"));
+    BOOST_CHECK_EQUAL(2.0f, properties.getProperty<float>("PatternScale"));
+
+    BOOST_CHECK_EQUAL("15", properties.getPropertyAsString("Threshold"));
+    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("Octaves"));
+    BOOST_CHECK_EQUAL("2.000000", properties.getPropertyAsString("PatternScale"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() 

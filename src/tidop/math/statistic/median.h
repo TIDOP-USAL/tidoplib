@@ -29,28 +29,30 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
- *  \{
- */
-
-/*! \addtogroup CentralTendency Measures of central tendency
+/*! \addtogroup Statistics
  *  \{
  */
 
 /*!
- * \brief The median is the value of the variable that occupies the central position in the distribution.
- * It is the value that verifies that 50% of the variables are greater than or equal to it,
- * and the other 50% are smaller.
- * The median should be accompanied by a measure of dispersion (usually the interquartile range).
- * \param[in] first Iterator to the beginning
- * \param[in] last Iterator to the end
- * \return Value of the median
+ * \brief Calculates the median of a range of values.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the range.
+ * \param[in] last Iterator pointing to the end of the range.
+ * \return The median value.
+ * 
+ * The median is the value that separates the higher half from the lower half of a data sample.
+ * It is the value that ensures that 50% of the data points are greater than or equal to it,
+ * and the other 50% are smaller. The median is often used with a measure of dispersion,
+ * such as the interquartile range, to give a better understanding of the data distribution.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<int> data = {1, 2, 3, 4, 5};
+ * double medianValue = median(data.begin(), data.end());
+ * // medianValue is 3.0
+ * \endcode
  */
+
 template<typename It>
 auto median(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
@@ -64,10 +66,6 @@ auto median(It first, It last) -> enableIfFloating<iteratorValueType<It>, std::r
 }
 
 
-/*! \} */ // end of CentralTendency
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

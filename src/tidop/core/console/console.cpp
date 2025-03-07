@@ -24,7 +24,7 @@
 
 #include "tidop/core/console/console.h"
 
-#include "tidop/core/progress.h"
+#include "tidop/core/task/progress.h"
 
 #include <map>
 #include <iomanip>
@@ -107,12 +107,6 @@ void Console::setFontUnderline(bool underline)
     update();
 }
 
-void Console::setFontBlink(bool blink)
-{
-    fontBlink = blink ? 5 : 25;
-    update();
-}
-
 void Console::setFontReverse(bool reverse)
 {
     fontReverse = reverse ? 7 : 27;
@@ -134,7 +128,6 @@ void Console::reset()
     fontFaint = 22;
     fontItalic = 23;
     fontUnderline = 24;
-    fontBlink = 25;
     fontReverse = 27;
     fontStrikethrough = 29;
 
@@ -144,7 +137,7 @@ void Console::reset()
 Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
 {
     outputStream << _endl;
-    reset();
+    //reset();
     return *this;
 }
 

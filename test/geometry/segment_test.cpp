@@ -26,7 +26,6 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/segment.h>
 #include <tidop/geometry/entities/bbox.h>
-#include <tidop/core/utils.h>
 
 using namespace tl;
 

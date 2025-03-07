@@ -30,27 +30,26 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
- *  \{
- */
-
-/*! \addtogroup dispersion Statistical dispersion
- *  \{
+/*! \addtogrop Statistics
+ * \{
  */
 
 /*!
  * \brief Standard Deviation
  *
- * \f[ \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}}  \f]
+ * The standard deviation measures the amount of variation or dispersion in a set of values.
+ * It is defined as the square root of the variance, providing insight into the average distance of the data points from the mean.
  *
- * \param[in] first Iterator to the beginning
- * \param[in] last Iterator to the end
- * \return Standard deviation of the dataset
+ * The formula for the standard deviation (\f$\sigma\f$) is:
+ * \f[
+ * \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}}
+ * \f]
+ *
+ * \param[in] first Iterator to the beginning of the data set.
+ * \param[in] last Iterator to the end of the data set.
+ * \return The standard deviation of the dataset.
+ *
+ * This template function is overloaded for both integral and floating-point data types
  */
 template<typename It>
 auto standarDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
@@ -64,11 +63,6 @@ auto standarDeviation(It first, It last) -> enableIfFloating<iteratorValueType<I
     return sqrt(variance(first, last));
 }
 
-
-/*! \} */ // end of dispersion
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

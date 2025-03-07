@@ -24,7 +24,8 @@
 
 #include "tidop/core/console/command.h"
 
-#include "tidop/core/app.h"
+#include "tidop/core/app/app.h"
+#include "tidop/core/base/split.h"
 #include "tidop/core/console/console.h"
 
 #include <map>
@@ -76,7 +77,7 @@ Command::Command(std::string name, std::string description)
 
 Command::Command(std::string name, 
                  std::string description,
-                 std::initializer_list<std::shared_ptr<Argument>> arguments)
+                 std::initializer_list<Argument::SharedPtr> arguments)
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mArguments(arguments),
@@ -522,7 +523,7 @@ auto Command::showLicence() const -> void
     //mLicence.productName();
     //mLicence.version();
     //mLicence.autor();
-    //mLicence.autorEmail();
+    //mLicence.authorEmail();
     //mLicence.type();
 }
 

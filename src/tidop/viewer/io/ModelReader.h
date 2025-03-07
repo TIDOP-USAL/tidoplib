@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tidop/core/path.h"
+#include "tidop/core/base/path.h"
 #include "tidop/viewer/group/ModelBase.h"
 
 namespace tl

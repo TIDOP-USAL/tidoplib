@@ -85,13 +85,11 @@ if(BUILD_TL_VIEWER)
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
 
-    if(MSVC)
-        target_compile_options(${PROJECT_NAME} PUBLIC "/Zc:__cplusplus")
-    endif(MSVC)
+    #if(MSVC)
+    #    target_compile_options(${PROJECT_NAME} PUBLIC "/Zc:__cplusplus")
+    #endif(MSVC)
 
     target_include_directories(${PROJECT_NAME} PUBLIC
-                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include>
                                $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>)
 
     if(LASLib_FOUND)
@@ -99,13 +97,12 @@ if(BUILD_TL_VIEWER)
     endif()
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
-                          ${Boost_FILESYSTEM_LIBRARY} 
-                          ${Boost_SYSTEM_LIBRARY}
                           $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
                           $<$<BOOL:${UNIX}>:-lpthread>
                           ${LASLib_LIBRARIES}
                           TidopLib::Core
                           TidopLib::Geom
+                          TidopLib::Math
 						  GLEW::GLEW
 						  opengl32
 						  glu32
@@ -122,11 +119,10 @@ if(BUILD_TL_VIEWER)
                           $<$<BOOL:${Qt5_FOUND}>:Qt5::Widgets>
                           $<$<BOOL:${Qt5_FOUND}>:Qt5::OpenGLExtensions>
                           TidopLib::GeoTools
-                      TidopLib::PointCloudTools
-                      $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
-                      $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
-                      $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-                      ${PDAL_LIBRARIES})
+                          TidopLib::PointCloudTools
+                          $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
+                          ${PDAL_LIBRARIES})
     
     set_target_properties(${PROJECT_NAME} PROPERTIES 
                           FOLDER "modules"

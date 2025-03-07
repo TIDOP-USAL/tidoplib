@@ -36,19 +36,40 @@ namespace tl
 
 class Progress;
 
+/*!
+ * \addtogroup Task
+ * \{
+ */
 
-
-/* Task Tree */
-
+/*!
+ * \class TaskTree
+ * 
+ * \brief Class for managing a task tree with parent-child dependencies.
+ *
+ * This class allows tasks to be organized in a hierarchical structure where tasks can have parent tasks.
+ * The tasks are executed respecting these dependencies. Tasks in the tree can be stopped or executed based on their status.
+ */
 class TL_EXPORT TaskTree
   : public TaskBase
 {
 
 public:
 
+    /*!
+     * \brief Default constructor for TaskTree.
+     */
     TaskTree();
     ~TaskTree() override;
 
+    /*!
+     * \brief Add a task to the task tree.
+     *
+     * This method adds a new task to the task tree. It also assigns the parent tasks that need to be completed
+     * before the task can execute.
+     *
+     * \param[in] task The task to be added.
+     * \param[in] parentTasks A list of parent tasks that must be completed before the task can be run.
+     */
     void addTask(const std::shared_ptr<Task> &task, 
                  const std::list<std::shared_ptr<Task>> &parentTasks);
  
@@ -69,7 +90,7 @@ private:
 };
 
 
-/*! \} */ // end of core
+/*! \} */
 
 } // End namespace tl
 

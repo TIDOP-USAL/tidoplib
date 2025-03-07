@@ -31,11 +31,10 @@
 #include <iomanip>
 
 #include "tidop/config.h"
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
-#include "tidop/core/ptr.h"
-#include "tidop/core/exception.h"
-#include "tidop/core/utils.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/path.h"
+#include "tidop/core/base/ptr.h"
+#include "tidop/core/base/exception.h"
 
 #include <proj.h>
 #include <copc-lib/las/header.hpp>

@@ -25,9 +25,9 @@
 #define BOOST_TEST_MODULE Tidop LineString test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/linestring.h>
+#include <tidop/geometry/entities/multilinestring.h>
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
-#include <tidop/core/utils.h>
 
 using namespace tl;
 

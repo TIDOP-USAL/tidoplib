@@ -28,7 +28,7 @@
 #include <vector>
 #include <string>
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "PointCloudToolsDefinitions.h"
 
 namespace tl{

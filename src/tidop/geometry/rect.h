@@ -28,7 +28,7 @@
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/window.h"
-#include "tidop/geometry/size.h"
+#include "tidop/core/base/size.h"
 
 namespace tl
 {

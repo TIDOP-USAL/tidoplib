@@ -33,22 +33,35 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
- /*!
-  * \brief Shape interface
-  *
-  */
+
+/*!
+ * \brief Shape interface
+ *
+ * Base class for geometric shapes, enforcing area computation.
+ */
 class TL_EXPORT Shape
 {
 
 public:
 
+    /*!
+     * \brief Default constructor
+     */
     Shape() = default;
+
+    /*!
+     * \brief Default virtual destructor
+     */
     virtual ~Shape() = default;
 
+    /*!
+     * \brief Compute the area of the shape
+     * \return The computed area
+     */
     virtual auto area() const -> double = 0;
 
 };
@@ -57,6 +70,7 @@ public:
 /*!
  * \brief Circle class
  *
+ * Represents a circle with a center and a radius.
  */
 template<typename T>
 class Circle
@@ -66,7 +80,7 @@ class Circle
 
 public:
 
-    typedef T value_type;
+    using value_type = T;
 
 public:
 
@@ -88,57 +102,73 @@ public:
     Circle();
 
     /*!
-     * \brief Constructor
-     * \param[in] center Circle center
-     * \param[in] radius Circle radius
+     * \brief Constructs a circle with a given center and radius
+     * \param[in] center The center point of the circle
+     * \param[in] radius The radius of the circle
      */
-    Circle(const Point<T> &center, T radius);
+    explicit Circle(const Point<T> &center, T radius);
 
     /*!
      * \brief Copy constructor
-     * \param[in] circle Circle object to copy
+     * \param[in] circle The circle to copy
      */
     Circle(const Circle<T> &circle);
 
     /*!
      * \brief Move constructor
-     * \param[in] circle Circle object to move
+     * \param[in] circle The circle to move
      */
     Circle(Circle<T> &&circle) TL_NOEXCEPT;
 
+    /*!
+     * \brief Destructor
+     */
     ~Circle() override = default;
 
     /*!
      * \brief Copy assignment operator
-     * \param[in] circle Circle object to copy
+     * \param[in] circle The circle to copy
+     * \return Reference to the assigned object
      */
-    auto operator = (const Circle<T> &circle) -> Circle<T> &;
+    auto operator=(const Circle<T> &circle) -> Circle<T> &;
 
     /*!
      * \brief Move assignment operator
-     * \param[in] circle Circle object to move
+     * \param[in] circle The circle to move
+     * \return Reference to the assigned object
      */
-    auto operator = (Circle<T> &&circle) TL_NOEXCEPT -> Circle<T> &;
+    auto operator=(Circle<T> &&circle) TL_NOEXCEPT -> Circle<T> &;
 
     /*!
-     * \brief Type conversion
+     * \brief Converts the circle to a different type
+     * \tparam T2 The target type for conversion
+     * \return A new circle with the converted type
      */
     template<typename T2> operator Circle<T2>() const;
 
     /*!
-     * \brief Circle area
-     * \return Area
+     * \brief Computes the area of the circle
+     * \return The computed area
      */
     auto area() const -> double override;
 
     /*!
-     * \brief Circumference (Distance around the perimeter of a circle)
-     * \return length
+     * \brief Computes the circumference (perimeter) of the circle
+     * \return The computed circumference
      */
     auto length() const -> double;
 
-    auto rect() const -> Rect<T>;
+    /*!
+     * \brief Computes the bounding rectangle of the circle
+     * \return A rectangle that bounds the circle
+     */
+    auto rect() const->Rect<T>;
 
+    /*!
+     * \brief Equality comparison operator
+     * \param[in] other The circle to compare with
+     * \return True if circles are equal, false otherwise
+     */
     bool operator==(const Circle &other) const;
 
 };
@@ -154,6 +184,7 @@ typedef Circle<float> CircleF;
 /*!
  * \brief Ellipse class
  *
+ * Represents an ellipse defined by a center, semi-major axis, semi-minor axis, and optional rotation.
  */
 template<typename T>
 class Ellipse
@@ -163,7 +194,7 @@ class Ellipse
 
 public:
 
-    typedef T value_type;
+    using value_type = T;
 
 public:
 
@@ -211,41 +242,62 @@ public:
      */
     Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
+    /*!
+     * \brief Destructor
+     */
     ~Ellipse() override = default;
 
     /*!
      * \brief Copy assignment operator
      * \param[in] ellipse Ellipse object to copy
+     * \return Reference to the assigned object
      */
-    auto operator = (const Ellipse<T> &ellipse) -> Ellipse<T> &;
+    auto operator=(const Ellipse<T> &ellipse) -> Ellipse<T> &;
 
     /*!
      * \brief Move assignment operator
      * \param[in] ellipse Ellipse object to move
+     * \return Reference to the assigned object
      */
-    auto operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT -> Ellipse<T> &;
+    auto operator=(Ellipse<T> &&ellipse) TL_NOEXCEPT -> Ellipse<T> &;
 
     /*!
-     * \brief Type conversion
+     * \brief Converts the ellipse to a different type
+     * \tparam T2 The target type for conversion
+     * \return A new ellipse with the converted type
      */
     template<typename T2> operator Ellipse<T2>() const;
 
     /*!
-     * \brief Ellipse area
-     * \return Area
+     * \brief Computes the area of the ellipse
+     * \return The computed area
      */
     auto area() const -> double override;
 
     /*!
-     * \brief Circumference
-     * \return length
+     * \brief Computes the approximate circumference of the ellipse
+     * \return The computed circumference
      */
     auto length() const -> double;
 
+    /*!
+     * \brief Computes the bounding rectangle of the ellipse (axis-aligned)
+     * \return A rectangle that bounds the ellipse
+     */
     auto rect() const -> Rect<T>;
 
+    /*!
+     * \brief Checks if a point is inside the ellipse
+     * \param[in] point The point to check
+     * \return True if the point is inside, false otherwise
+     */
     auto isInner(const Point<T> &point) const -> bool;
 
+    /*!
+     * \brief Equality comparison operator
+     * \param[in] other The ellipse to compare with
+     * \return True if ellipses are equal, false otherwise
+     */
     auto operator==(const Ellipse &other) const -> bool;
 };
 
@@ -258,6 +310,7 @@ typedef Ellipse<float> EllipseF;
 /*!
  * \brief Triangle class
  *
+ * Represents a 2D triangle defined by three points.
  */
 template<typename T>
 class Triangle
@@ -267,7 +320,7 @@ class Triangle
 
 public:
 
-    typedef T value_type;
+    using value_type = T;
 
 protected:
 
@@ -277,19 +330,84 @@ protected:
 
 public:
 
+    /*!
+     * \brief Default constructor
+     */
     Triangle();
-    Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
+
+    /*!
+     * \brief Constructor with three points
+     * \param[in] pt1 First vertex
+     * \param[in] pt2 Second vertex
+     * \param[in] pt3 Third vertex
+     */
+    explicit Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] triangle Triangle object to copy
+     */
     Triangle(const Triangle<T> &triangle);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] triangle Triangle object to move
+     */
     Triangle(Triangle<T> &&triangle) TL_NOEXCEPT;
 
+    /*!
+     * \brief Destructor
+     */
     ~Triangle() override = default;
 
-    auto operator = (const Triangle<T> &triangle) -> Triangle<T> &;
-    auto operator = (Triangle<T> &&triangle) TL_NOEXCEPT -> Triangle<T> &;
+    /*!
+     * \brief Copy assignment operator
+     * \param[in] triangle Triangle object to copy
+     * \return Reference to the assigned object
+     */
+    auto operator=(const Triangle<T> &triangle)->Triangle<T> &;
 
+    /*!
+     * \brief Move assignment operator
+     * \param[in] triangle Triangle object to move
+     * \return Reference to the assigned object
+     */
+    auto operator=(Triangle<T> &&triangle) TL_NOEXCEPT->Triangle<T> &;
+
+    /*!
+     * \brief Computes the area of the triangle using the determinant formula
+     * \return The computed area
+     */
     auto area() const -> double override;
 
+    /*!
+     * \brief Computes the perimeter of the triangle
+     * \return The sum of the three side lengths
+     */
+    auto perimeter() const -> double;
+
+    /*!
+     * \brief Checks if the triangle is valid (not degenerate)
+     * \return True if the triangle is valid, false otherwise
+     */
+    auto isValid() const -> bool;
+
+    /*!
+     * \brief Computes the centroid (barycenter) of the triangle
+     * \return The centroid as a `Point<T>`
+     */
+    auto centroid() const -> Point<T>;
+
+    /*!
+     * \brief Equality comparison operator
+     * \param[in] other The triangle to compare with
+     * \return True if triangles are equal, false otherwise
+     */
     auto operator==(const Triangle &other) const -> bool;
+
+    auto pt1() const -> Point<T> { return mPt1; }
+    auto pt2() const -> Point<T> { return mPt2; }
+    auto pt3() const -> Point<T> { return mPt3; }
 };
 
 
@@ -298,6 +416,8 @@ public:
 /*!
  * \brief Square class
  *
+ * The `Square` class represents a square, a 2D geometric shape where all sides are of equal length.
+ * It inherits from `Entity` and `Shape`, providing common geometric properties and the ability to calculate its area.
  */
 template<typename T>
 class Square
@@ -307,27 +427,56 @@ class Square
 
 public:
 
-    /*!
-     * \brief type
-     */
-    typedef T value_type;
+    using value_type = T;
+
+private:
+
+    T side;
 
 public:
 
+    /*!
+     * \brief Default constructor
+     *
+     * Creates a square with side length 0.
+     */
     Square();
 
     /*!
-     * \brief Area
-     * \return Area
+     * \brief Constructor with parameter
+     * \param[in] side The length of one side of the square
+     *
+     * Creates a square with the specified side length.
+     */
+    Square(T side);
+
+    /*!
+     * \brief Get the area of the square
+     * \return The area of the square
+     *
+     * The area of a square is simply the side length squared.
      */
     auto area() const -> double override;
 
+    /*!
+     * \brief Set the side length
+     * \param[in] side The length of the square's side
+     */
+    void setSide(T side);
+
+    /*!
+     * \brief Get the side length
+     * \return The length of the square's side
+     */
+    auto getSide() const -> T;
 };
 
 
 /*!
- * \brief Clase rectangulo
+ * \brief Rectangle class
  *
+ * The `Rectangle` class represents a rectangle, a 2D geometric shape with opposite sides of equal length.
+ * It inherits from `Entity` and `Shape`, providing common geometric properties and the ability to calculate its area.
  */
 template<typename T>
 class Rectangle
@@ -337,14 +486,62 @@ class Rectangle
 
 public:
 
-    typedef T value_type;
+    using value_type = T;
+
+private:
+
+    T width;  ///< The width of the rectangle
+    T height; ///< The height of the rectangle
 
 public:
 
+    /*!
+     * \brief Default constructor
+     *
+     * Creates a rectangle with width and height equal to 0.
+     */
     Rectangle();
 
+    /*!
+     * \brief Constructor with parameters
+     * \param[in] width The width of the rectangle
+     * \param[in] height The height of the rectangle
+     *
+     * Creates a rectangle with the specified width and height.
+     */
+    Rectangle(T width, T height);
+
+    /*!
+     * \brief Get the area of the rectangle
+     * \return The area of the rectangle
+     *
+     * The area of a rectangle is calculated by multiplying its width by its height.
+     */
     auto area() const -> double override;
 
+    /*!
+     * \brief Set the width of the rectangle
+     * \param[in] width The width of the rectangle
+     */
+    void setWidth(T width);
+
+    /*!
+     * \brief Get the width of the rectangle
+     * \return The width of the rectangle
+     */
+    auto getWidth() const->T;
+
+    /*!
+     * \brief Set the height of the rectangle
+     * \param[in] height The height of the rectangle
+     */
+    void setHeight(T height);
+
+    /*!
+     * \brief Get the height of the rectangle
+     * \return The height of the rectangle
+     */
+    auto getHeight() const->T;
 };
 
 
@@ -623,7 +820,36 @@ auto Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT -> Triangle<T> &
 template<typename T>
 auto Triangle<T>::area() const -> double
 {
-    return 0;
+    return 0.5 * std::abs(
+        mPt1.x * (mPt2.y - mPt3.y) +
+        mPt2.x * (mPt3.y - mPt1.y) +
+        mPt3.x * (mPt1.y - mPt2.y));
+}
+
+template<typename T>
+auto Triangle<T>::perimeter() const -> double
+{
+    double side1 = mPt1.distanceTo(mPt2);
+    double side2 = mPt2.distanceTo(mPt3);
+    double side3 = mPt3.distanceTo(mPt1);
+    return side1 + side2 + side3;
+}
+
+template<typename T>
+auto Triangle<T>::isValid() const -> bool
+{
+    double side1 = mPt1.distanceTo(mPt2);
+    double side2 = mPt2.distanceTo(mPt3);
+    double side3 = mPt3.distanceTo(mPt1);
+    return (side1 + side2 > side3) &&
+           (side2 + side3 > side1) &&
+           (side3 + side1 > side2);
+}
+
+template<typename T>
+auto Triangle<T>::centroid() const -> Point<T>
+{
+    return Point<T>((mPt1.x + mPt2.x + mPt3.x) / 3.0, (mPt1.y + mPt2.y + mPt3.y) / 3.0);
 }
 
 template<typename T>
@@ -638,15 +864,34 @@ auto Triangle<T>::operator==(const Triangle &other) const -> bool
 
 template<typename T>
 Square<T>::Square()
-  : Entity(Type::square)
+  : Entity(Type::square),
+    side(0)
 {
 }
 
+template<typename T>
+Square<T>::Square(T side)
+  : Entity(Type::square),
+    side(side)
+{
+}
 
 template<typename T>
 auto Square<T>::area() const -> double
 {
-    return 0;
+    return static_cast<double>(side * side);
+}
+
+template<typename T>
+void Square<T>::setSide(T side)
+{
+    this->side = side;
+}
+
+template<typename T>
+auto Square<T>::getSide() const -> T 
+{
+    return side;
 }
 
 
@@ -655,15 +900,49 @@ auto Square<T>::area() const -> double
 
 template<typename T>
 Rectangle<T>::Rectangle()
-  : Entity(Type::rectangle)
+  : Entity(Type::rectangle),
+    width(0), 
+    height(0)
 {
 }
 
 
 template<typename T>
+Rectangle<T>::Rectangle(T width, T height)
+  : Entity(Type::rectangle), 
+    width(width),
+    height(height)
+{
+}
+
+template<typename T>
 auto Rectangle<T>::area() const -> double
 {
-    return 0;
+    return static_cast<double>(width * height);
+}
+
+template<typename T>
+void Rectangle<T>::setWidth(T width)
+{
+    this->width = width;
+}
+
+template<typename T>
+auto Rectangle<T>::getWidth() const -> T
+{
+    return width;
+}
+
+template<typename T>
+void Rectangle<T>::setHeight(T height)
+{
+    this->height = height;
+}
+
+template<typename T>
+auto Rectangle<T>::getHeight() const -> T
+{
+    return height;
 }
 
 

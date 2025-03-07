@@ -492,7 +492,7 @@ Label::Label()
 
 Label::Label(const Label &label)
   : mFont(label.mFont),
-    mText(label.mText),
+    mLicenseText(label.mLicenseText),
     mAngle(label.mAngle),
     mForegroundColor(label.mForegroundColor),
     mBackgroundColor(label.mBackgroundColor),
@@ -510,7 +510,7 @@ Label::Label(const Label &label)
 
 Label::Label(Label &&label) TL_NOEXCEPT
   : mFont(label.mFont),
-    mText(label.mText),
+    mLicenseText(label.mLicenseText),
     mAngle(label.mAngle),
     mForegroundColor(std::move(label.mForegroundColor)),
     mBackgroundColor(std::move(label.mBackgroundColor)),
@@ -530,12 +530,12 @@ Label::~Label() = default;
 
 auto Label::text() const -> std::string
 {
-    return mText;
+    return mLicenseText;
 }
 
 void Label::setText(const std::string &text)
 {
-    mText = text;
+    mLicenseText = text;
 }
 
 auto Label::angle() const -> double
@@ -648,7 +648,7 @@ auto Label::operator =(const Label& label) -> Label&
 {
     if (this != &label) {
         mFont = label.mFont;
-        mText = label.mText;
+        mLicenseText = label.mLicenseText;
         mAngle = label.mAngle;
         mForegroundColor = label.mForegroundColor;
         mBackgroundColor = label.mBackgroundColor;
@@ -668,7 +668,7 @@ auto Label::operator=(Label&& label) TL_NOEXCEPT -> Label&
 {
     if (this != &label) {
         mFont = label.mFont;
-        mText = label.mText;
+        mLicenseText = label.mLicenseText;
         mAngle = label.mAngle;
         mForegroundColor = std::move(label.mForegroundColor);
         mBackgroundColor = std::move(label.mBackgroundColor);

@@ -35,9 +35,9 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Point graphic class
-  */
+/*!
+ * \brief Point graphic class
+ */
 class TL_EXPORT GPoint
   : public Point<double>,
     public GraphicEntity

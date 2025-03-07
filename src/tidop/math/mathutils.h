@@ -34,7 +34,7 @@ namespace tl
 {
 
 /*!
- * \addtogroup math
+ * \addtogroup MathTools
  *
  * \{
  */
@@ -57,8 +57,8 @@ namespace tl
  * \param[out] b Intercept
  * \return Correlation coefficient. Value between -1 (negative slope) and 1 (positive slope). Values close to zero indicate a poor fit.
  *
- * <h4>Example</h4>
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * double m = 0.;
  * double b = 0.;
  * double corr = regressionLinearYX(pts, &m, &b);
@@ -105,8 +105,8 @@ auto regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b) -
  * \param[out] b Intercept
  * \return Correlation coefficient. Value between -1 (negative slope) and 1 (positive slope). Values close to zero indicate a poor fit.
  *
- * <h4>Example</h4>
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * double m = 0.;
  * double b = 0.;
  * double corr = regressionLinearXY(pts, &m, &b);
@@ -175,7 +175,7 @@ auto threePointsPlane(const std::array<T, 3>& points,
 }
 
 
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

@@ -23,7 +23,6 @@
  **************************************************************************/
 
 #include "tidop/core/concurrency/parallel.h"
-#include "tidop/core/concurrency.h"
 
 #if defined TL_HAVE_OPENMP
 #include <omp.h>  // OpenMP
@@ -99,10 +98,8 @@ void parallel_for(size_t ini,
         block_ini = block_end;
     }
 
-    for (auto &_thread : threads) {
-        if (_thread.joinable())
-            _thread.join();
-    }
+    for (auto &_thread : threads)
+        _thread.join();
 
 #endif
 

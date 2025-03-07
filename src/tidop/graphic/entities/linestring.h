@@ -26,6 +26,7 @@
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/linestring.h"
+#include "tidop/geometry/entities/multilinestring.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace tl

@@ -42,12 +42,11 @@
 #cmakedefine TL_HAVE_CORE
 #cmakedefine TL_HAVE_MATH
 #cmakedefine TL_HAVE_GEOMETRY
-#cmakedefine TL_HAVE_IMG
-#cmakedefine TL_HAVE_IMG_PROCESS
+#cmakedefine TL_HAVE_RASTER_TOOLS
 #cmakedefine TL_HAVE_FEAT_MATCH
 #cmakedefine TL_HAVE_GRAPHIC
 #cmakedefine TL_HAVE_GEOSPATIAL
-#cmakedefine TL_HAVE_VECT
+#cmakedefine TL_HAVE_VECTOR_TOOLS
 #cmakedefine TL_HAVE_GEOTOOLS
 #cmakedefine TL_HAVE_PCTOOLS
 

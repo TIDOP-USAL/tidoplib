@@ -31,15 +31,14 @@
 #include <numeric>
 #include <vector>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/flags.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/flags.h"
 
 namespace tl
 {
 
 
-/*! \defgroup geometry Geometric Entities
- *  Puntos, lineas, ...
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -50,7 +49,7 @@ template<typename T> class BoundingBox;
 
 
 /*!
- * \brief Base class for geometric entities
+ * \brief Base class for geometric entities.
  */
 class TL_EXPORT Entity
 {
@@ -58,9 +57,9 @@ class TL_EXPORT Entity
 public:
 
     /*!
-     * \brief Types of geometric entities
+     * \brief Enum representing different types of geometric entities.
      */
-    enum class Type
+    enum class Type : uint32_t
     {
         /* Dimension */
         geom2d = (0 << 0),                        /*!< 2D Geometry */
@@ -93,7 +92,7 @@ public:
         multiline2d = linestring2d | multi_entity,  /*!< 2D Multi-line */
         multiline3d = linestring3d | multi_entity,  /*!< 3D Multi-line */
         multipolygon2d = polygon2d | multi_entity,  /*!< 2D Multi-polygon */
-        multipoygon3d = polygon3d | multi_entity,   /*!< 3D Multi-polygon */
+        multipolygon3d = polygon3d | multi_entity,   /*!< 3D Multi-polygon */
 
         /* Special types */
         envelope = (1 << 20),                       /*!< Envelope */
@@ -111,29 +110,52 @@ private:
 
 public:
 
-    Entity(Type type) : mEntityType(type) {}
+    /*!
+     * \brief Constructor with entity type.
+     * \param[in] type The type of entity.
+     */
+    explicit Entity(Type type) : mEntityType(type) {}
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] entity The entity to copy.
+     */
     Entity(const Entity &entity) = default;
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] entity The entity to move.
+     */
     Entity(Entity &&entity) TL_NOEXCEPT : mEntityType(std::move(entity.mEntityType)) {}
+
+    /*!
+     * \brief Virtual destructor.
+     */
     virtual ~Entity() = default;
-    
-    /*!
-     * \brief Returns the type of entity
-     */
-    auto type() const -> Type;
 
     /*!
-     * \brief Copy assignment operator
+     * \brief Copy assignment operator.
+     * \param[in] entity The entity to copy.
+     * \return A reference to the assigned entity.
      */
-    auto operator = (const Entity &entity) -> Entity &;
-    
-    /*!
-     * \brief Move assignment operator
-     */
-    auto operator = (Entity &&entity) TL_NOEXCEPT -> Entity &;
+    auto operator=(const Entity &entity)->Entity &;
 
     /*!
-     * \brief Checks if an entity is 3D
-     * \return True if it is a 3D entity
+     * \brief Move assignment operator.
+     * \param[in] entity The entity to move.
+     * \return A reference to the assigned entity.
+     */
+    auto operator=(Entity &&entity) TL_NOEXCEPT->Entity &;
+
+    /*!
+     * \brief Gets the type of entity.
+     * \return The entity type.
+     */
+    auto type() const->Type;
+
+    /*!
+     * \brief Checks if the entity is 3D.
+     * \return True if the entity is 3D, otherwise false.
      */
     auto is3D() const -> bool;
 
@@ -142,15 +164,12 @@ ALLOW_BITWISE_FLAG_OPERATIONS(Entity::Type)
 
 
 
-/* ---------------------------------------------------------------------------------- */
 
-//TODO: Añadir constructor a partir de iteradores first end
 
 /*!
- * \brief Contenedor para entidades geométricas
- * 
- * Es un simple wrapper de std::vector para que las clases de geometrías 
- * se puedan utilizar como contenedores.
+ * \brief Container for geometric entities.
+ *
+ * A simple wrapper around `std::vector` to store and manage geometric entities.
  */
 template<typename Entity_t>
 class EntityContainer
@@ -178,11 +197,42 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor
+     * Initializes an empty entity container.
+     */
     EntityContainer();
+
+    /*!
+     * \brief Constructs an entity container with a predefined size.
+     * \param[in] size Number of entities to allocate space for.
+     * The container is initialized with the given size but does not necessarily populate entities.
+     */
     EntityContainer(size_type size);
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] entity Another EntityContainer to copy.
+     */
     EntityContainer(const EntityContainer &entity);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] entity Another EntityContainer to move.
+     */
     EntityContainer(EntityContainer &&entity) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs an entity container from a vector of entities.
+     * \param[in] entities A vector containing Entity_t objects.
+     * Initializes the container with the provided entities.
+     */
     EntityContainer(std::vector<Entity_t> entities);
+
+    /*!
+     * \brief Constructs an entity container from an initializer list.
+     * \param[in] entities An initializer list containing Entity_t objects.
+     */
     EntityContainer(std::initializer_list<Entity_t> entities);
    
     virtual ~EntityContainer() = default;

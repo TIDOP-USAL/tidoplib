@@ -25,7 +25,7 @@
 #pragma once
 
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 #include <string>
 
@@ -244,13 +244,17 @@ inline auto Ellipsoid::geodeticToParametricLatitude(double lat) -> double
 {
     double lat_rad = lat * consts::deg_to_rad<double>;
     double e = eccentricity();
-
-    return atan(sqrt(1-e*e) * tan(lat_rad));
+    return atan(sqrt(1 - e * e) * tan(lat_rad)) * consts::rad_to_deg<double>;
 }
 
 inline auto Ellipsoid::geodeticToAuthalicLatitude(double lat) const -> double
 {
-    return 0.0;
+    double lat_rad = lat * consts::deg_to_rad<double>;
+    double e = eccentricity();
+    double q = (1 - e * e) * (sin(lat_rad) / (1 - e * e * sin(lat_rad) * sin(lat_rad)) -
+               (1 / (2 * e)) * log((1 - e * sin(lat_rad)) / (1 + e * sin(lat_rad))));
+    double q_p = 1 - ((1 - e * e) / (2 * e)) * log((1 - e) / (1 + e));
+    return asin(q / q_p) * consts::rad_to_deg<double>;
 }
 
 inline auto Ellipsoid::geocentricRadius(double lat) const -> double

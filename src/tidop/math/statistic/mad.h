@@ -30,23 +30,30 @@
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
+/*! \addtogroup Statistics
  *  \{
  */
 
 /*!
- * \brief Mean Absolute Deviation
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
+ * \brief Computes the Mean Absolute Deviation (MAD) for a range of values.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the range.
+ * \param[in] last Iterator pointing to the end of the range.
+ * \return The mean absolute deviation of the values in the range.
+ * 
+ * This function calculates the mean absolute deviation for a range of values
+ * pointed to by the iterators `first` and `last`.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<double> data = {8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5};
+ * double mad = meanAbsoluteDeviation(data.begin(), data.end());
+ * // mad is 0.89506172839506
+ * \endcode
  */
+
 template<typename It>
-auto meanAbsoluteDeviation(It first, It last) -> 
-enableIfIntegral<iteratorValueType<It>, double>
+auto meanAbsoluteDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     size_t n = std::distance(first, last);
     if (n <= 1) return consts::zero<double>;
@@ -81,9 +88,25 @@ auto meanAbsoluteDeviation(It first, It last) -> std::enable_if_t<
 
 
 /*!
- * \brief Median Absolute Deviation
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
+ * \brief Calculates the Median Absolute Deviation (MAD) of a range of values.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the range.
+ * \param[in] last Iterator pointing to the end of the range.
+ * \return The median absolute deviation.
+ *
+ * This function computes the median absolute deviation, which is a robust measure
+ * of statistical dispersion. It is the median of the absolute deviations from the
+ * median of the data set.
+ *
+ * Formula for MAD:
+ * \f[ \text{MAD} = \text{median}(|x_i - \text{median}(x)|) \f]
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<int> data = {1, 2, 3, 4, 5};
+ * double madValue = medianAbsoluteDeviation(data.begin(), data.end());
+ * // madValue is 1.0
+ * \endcode
  */
 template<typename It>
 auto medianAbsoluteDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>,double>
@@ -127,8 +150,6 @@ auto medianAbsoluteDeviation(It first, It last) -> enableIfFloating<iteratorValu
 }
 
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

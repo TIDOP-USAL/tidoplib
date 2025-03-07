@@ -24,30 +24,33 @@
 
 #pragma once
 
-#include <tidop/core/defs.h>
+#include <tidop/core/base/defs.h>
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
-
-/*! \addtogroup statistics Statistics
- *  \{
- */
-
-/*! \addtogroup CentralTendency Measures of central tendency
- *  \{
- */
-
-/*!
- * \brief La moda es el valor de la variable que mas veces se repite, el que lleva asociada la mayor frecuencia absoluta.
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor de la moda
- */
+ /*!
+  * \brief Calculates the mode of a range of values.
+  * \tparam It Type of the iterator.
+  * \param[in] first Iterator pointing to the beginning of the range.
+  * \param[in] last Iterator pointing to the end of the range.
+  * \return The mode value, which is the most frequently occurring element in the range.
+  *
+  * The mode is the value that appears most frequently in a data set.
+  * If multiple values have the same highest frequency, the function returns the first one encountered.
+  * This function is useful in statistics for identifying the most common value in a sample.
+  *
+  * ### Example Usage
+  * \code{.cpp}
+  * std::vector<int> data = {1, 2, 2, 3, 4, 4, 4, 5};
+  * int modeValue = mode(data.begin(), data.end());
+  * // modeValue is 4
+  * \endcode
+  */
 template<typename It>
 auto mode(It first, It last) -> iteratorValueType<It>
 {
@@ -67,23 +70,7 @@ auto mode(It first, It last) -> iteratorValueType<It>
     return max->first;
 }
 
-/*!
- * \brief La moda es el valor de la variable mas veces se repite, el que lleva asociada la mayor frecuencia absoluta.
- * \param[in] container Objeto contenedor
- * \return Valor de la moda
- */
-template<typename T>
-auto mode(const T& container) -> typename T::value_type
-{
-    return mode(container.begin(), container.end());
-}
 
-
-
-/*! \} */ // end of CentralTendency
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

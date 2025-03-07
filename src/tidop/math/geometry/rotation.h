@@ -28,29 +28,29 @@
 
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/svd.h"
-#include "tidop/math/algebra/rotation_convert.h"
-#include "tidop/math/algebra/euler_angles.h"
-#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/decomp/svd.h"
+#include "tidop/math/algebra/rotations/rotation_convert.h"
+#include "tidop/math/algebra/rotations/euler_angles.h"
+#include "tidop/math/algebra/rotations/rotation_matrix.h"
 #include "tidop/geometry/entities/point.h"
 
 namespace tl
 {
 
-/*! \addtogroup Math
+/*! \addtogroup GeometricTransformations
  *  \{
  */
 
-
-/*! \addtogroup Algebra
- *
- * Algebra
- *
- *  \{
- */
-
-/* Rotation */
-
+ /*!
+  * \brief Represents a rotation transformation in 2D or 3D space.
+  *
+  * The `Rotation` class encapsulates a rotation transformation, providing
+  * various constructors for different representations of rotations, such as
+  * angles, Euler angles, axis-angle, quaternions, and matrices.
+  *
+  * \tparam T The type of the elements (e.g., float, double).
+  * \tparam Dim The dimensionality of the rotation (e.g., 2 for 2D, 3 for 3D).
+  */
 template <typename T, size_t Dim>
 class Rotation
 {
@@ -73,64 +73,274 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Rotation();
+
+    /*!
+     * \brief Construct a 2D rotation using an angle in radians.
+     *
+     * \param[in] angle The angle of rotation in radians.
+     */
     explicit Rotation(T angle);
+
+    /*!
+     * \brief Construct a 3D rotation using Euler angles (omega, phi, kappa).
+     *
+     * \param[in] omega Rotation around the x-axis.
+     * \param[in] phi Rotation around the y-axis.
+     * \param[in] kappa Rotation around the z-axis.
+     */
     Rotation(T omega, T phi, T kappa);
+
+    /*!
+     * \brief Construct a rotation from a rotation matrix.
+     *
+     * \param[in] rotation The rotation matrix.
+     */
     explicit Rotation(const Matrix<T, Dim, Dim> &rotation);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * \param[in] rotation The rotation to copy.
+     */
     explicit Rotation(const Rotation &rotation);
+
+    /*!
+     * \brief Construct a rotation from Euler angles.
+     *
+     * \param[in] eulerAngles The Euler angles.
+     */
     explicit Rotation(const EulerAngles<T> &eulerAngles);
+
+    /*!
+     * \brief Construct a rotation from an axis-angle representation.
+     *
+     * \param[in] axisAngle The axis-angle representation.
+     */
     explicit Rotation(const AxisAngle<T> &axisAngle);
+
+    /*!
+     * \brief Construct a rotation from a quaternion.
+     *
+     * \param[in] quaternion The quaternion representing the rotation.
+     */
     explicit Rotation(const Quaternion<T> &quaternion);
+
+    /*!
+     * \brief Move constructor.
+     *
+     * \param[in] rotation The rotation to move.
+     */
     Rotation(Rotation &&rotation) TL_NOEXCEPT;
 
+    /*!
+     * \brief Default destructor.
+     */
     ~Rotation() = default;
 
+    /*!
+     * \brief Assignment operator.
+     *
+     * \param[in] rotation The rotation to assign.
+     * \return A reference to the assigned rotation.
+     */
     auto operator=(const Rotation &rotation) -> Rotation&;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * \param[in] rotation The rotation to move.
+     * \return A reference to the moved rotation.
+     */
     auto operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation&;
 
-    auto angle() const -> T;
+    /*!
+     * \brief Get the angle of the rotation (for 2D rotations).
+     * 
+     * \return The angle of rotation in radians.
+     */
+    auto angle() const TL_NOEXCEPT -> T;
+
+    /*!
+     * \brief Convert the rotation to Euler angles.
+     * 
+     * \return The Euler angles representing the rotation.
+     */
     auto toEulerAngles() const -> EulerAngles<T, xyz>;
+
+    /*!
+     * \brief Convert the rotation to a quaternion.
+     * 
+     * \return The quaternion representing the rotation.
+     */
     auto toQuaternions() const -> Quaternion<T>;
-    auto toMatrix() const -> Matrix<T, Dim, Dim>;
 
-    auto operator()(size_t r, size_t c) -> reference;
-    auto operator()(size_t r, size_t c) const -> const_reference;
+    /*!
+     * \brief Convert the rotation to a matrix.
+     * 
+     * \return The rotation matrix.
+     */
+    auto toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim>;
 
+    /*!
+     * \brief Access the element at the specified row and column (non-const version).
+     * 
+     * \param[in] r The row index.
+     * \param[in] c The column index.
+     * \return A reference to the element at the specified position.
+     */
+    auto operator()(size_t r, size_t c) TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the element at the specified row and column (const version).
+     * 
+     * \param[in] r The row index.
+     * \param[in] c The column index.
+     * \return A const reference to the element at the specified position.
+     */
+    auto operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Compute the inverse of the rotation.
+     *
+     * \return The inverse rotation.
+     */
     auto inverse() const -> Rotation;
 
-    /// Clases que deberían ser virtuales
+    /*!
+     * \brief Apply the rotation to a 2D point.
+     *
+     * \param[in] point The 2D point to transform.
+     * \return The transformed 2D point.
+     */
     auto transform(const Point<T> &point) const -> Point<T>;
+
+    /*!
+     * \brief Apply the rotation to a 3D point.
+     *
+     * \param[in] point The 3D point to transform.
+     * \return The transformed 3D point.
+     */
     auto transform(const Point3<T> &point) const -> Point3<T>;
+
+    /*!
+     * \brief Apply the rotation to a vector.
+     *
+     * \tparam _size The size of the vector.
+     * \param[in] vector The vector to transform.
+     * \return The transformed vector.
+     */
     template<size_t _size>
     auto transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>;
+
+    /*!
+     * \brief Apply the rotation to a matrix.
+     *
+     * \tparam _row Number of rows in the matrix.
+     * \tparam _col Number of columns in the matrix.
+     * \param[in] matrix The matrix to transform.
+     * \return The transformed matrix.
+     */
     template<size_t _row, size_t _col>
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
+    /*!
+     * \brief Apply the rotation to a 2D point using the multiplication operator.
+     * 
+     * \param[in] point The 2D point to transform.
+     * \return The transformed 2D point.
+     */
     auto operator * (const Point<T> &point) const -> Point<T>;
+
+    /*!
+     * \brief Apply the rotation to a 3D point using the multiplication operator.
+     * 
+     * \param[in] point The 3D point to transform.
+     * \return The transformed 3D point.
+     */
     auto operator * (const Point3<T> &point) const -> Point3<T>;
+
+    /*!
+     * \brief Apply the rotation to a vector using the multiplication operator.
+     *
+     * \tparam _size The size of the vector.
+     * \param[in] vector The vector to transform.
+     * \return The transformed vector.
+     */
     template<size_t _size>
     auto operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>;
+
+    /*!
+     * \brief Apply the rotation to a matrix using the multiplication operator.
+     *
+     * \tparam _row Number of rows in the matrix.
+     * \tparam _col Number of columns in the matrix.
+     * \param[in] matrix The matrix to transform.
+     * \return The transformed matrix.
+     */
     template<size_t _row, size_t _col>
     auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
+    /*!
+     * \brief Apply the rotation to a 2D point using the function call operator.
+     *
+     * \param[in] point The 2D point to transform.
+     * \return The transformed 2D point.
+     */
     auto operator() (const Point<T> &point) const -> Point<T>;
+
+    /*!
+     * \brief Apply the rotation to a 3D point using the function call operator.
+     *
+     * \param[in] point The 3D point to transform.
+     * \return The transformed 3D point.
+     */
     auto operator() (const Point3<T> &point) const -> Point3<T>;
 
+    /*!
+     * \brief Combine this rotation with another rotation using the multiplication operator.
+     *
+     * \param[in] rotation The other rotation to combine with.
+     * \return The combined rotation.
+     */
     auto operator * (const Rotation<T, Dim> &rotation) const -> Rotation<T, Dim>;
 };
 
+/*! \} */
 
 
+/*! \addtogroup Estimators
+ *  \{
+ */
+
+
+/*!
+ * \brief Estimator for rotation transformations.
+ *
+ * The `RotationEstimator` class is used to estimate the rotation transformation
+ * that maps one set of points or matrices to another. It uses different
+ * mathematical methods to compute the optimal rotation between two sets of points
+ * or matrices.
+ *
+ * \tparam T The type of the elements (e.g., float, double).
+ * \tparam Dim The dimensionality of the rotation (e.g., 2 for 2D, 3 for 3D).
+ */
 template <typename T, size_t Dim>
 class RotationEstimator
 {
 
 public:
 
+    /*!
+     * \brief The dimensionality of the rotation.
+     */
     enum
     {
-        dimensions = Dim,
-        matrix_size
+        dimensions = Dim,  ///< Dimensionality of the rotation (2D or 3D).
+        matrix_size        ///< Matrix size (rows and columns for matrices).
     };
 
 public:
@@ -138,16 +348,40 @@ public:
     RotationEstimator() = default;
     ~RotationEstimator() = default;
 
+    /*!
+     * \brief Estimate the rotation matrix between two matrices.
+     *
+     * This method estimates the rotation that maps one matrix of points to another.
+     * The matrices should have the same dimensions and represent corresponding sets
+     * of points in the source and destination coordinate systems.
+     *
+     * \tparam rows The number of rows in the matrices.
+     * \tparam cols The number of columns in the matrices.
+     * \param[in] src The source matrix of points.
+     * \param[in] dst The destination matrix of points.
+     * \return The estimated rotation.
+     */
     template<size_t rows, size_t cols>
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Rotation<T, Dim>;
 
+    /*!
+     * \brief Estimate the rotation transformation between two sets of points.
+     *
+     * This method estimates the rotation that maps one set of points in the source
+     * coordinate system to another set of corresponding points in the destination
+     * coordinate system. Both sets of points must have the same size.
+     *
+     * \param[in] src The source set of points.
+     * \param[in] dst The destination set of points.
+     * \return The estimated rotation.
+     */
     static auto estimate(const std::vector<Point<T>> &src,
                          const std::vector<Point<T>> &dst) -> Rotation<T, Dim>;
 
 };
 
-
+/*! \} */
 
 
 /* Rotation implementation */
@@ -246,7 +480,7 @@ auto Rotation<T, Dim>::operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation &
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::angle() const -> T
+auto Rotation<T, Dim>::angle() const TL_NOEXCEPT -> T
 {
     static_assert(dimensions == 2, "Method valid only for 2D.");
 
@@ -267,19 +501,19 @@ auto Rotation<T, Dim>::toQuaternions() const -> Quaternion<T>
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::toMatrix() const -> Matrix<T, Dim, Dim>
+auto Rotation<T, Dim>::toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim>
 {
     return this->rotation;
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator()(size_t r, size_t c) -> reference
+auto Rotation<T, Dim>::operator()(size_t r, size_t c) TL_NOEXCEPT -> reference
 {
     return this->rotation.at(r, c);
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator()(size_t r, size_t c) const -> const_reference
+auto Rotation<T, Dim>::operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference
 {
     return this->rotation.at(r, c);
 }
@@ -443,12 +677,6 @@ auto RotationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src,
 
     return RotationEstimator<T, dimensions>::estimate(src_mat, dst_mat);
 }
-
-
-/*! \} */ // end of Algebra
-
-/*! \} */ // end of Math
-
 
 
 

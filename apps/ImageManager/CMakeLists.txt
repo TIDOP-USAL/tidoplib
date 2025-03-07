@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_CORE AND BUILD_TL_IMG)
+if(BUILD_TL_CORE AND BUILD_TL_RASTER_TOOLS)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -43,8 +43,7 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
                                $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-                          TidopLib::Img
-                          TidopLib::Core
+                          TidopLib::RasterTools
                           TidopLib::Math
                           TidopLib::Geom
                           TidopLib::Geospatial

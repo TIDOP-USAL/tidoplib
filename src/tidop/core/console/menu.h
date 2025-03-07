@@ -25,7 +25,7 @@
 #pragma once
 
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 #include <functional>
 #include <list>
@@ -35,18 +35,10 @@
 namespace tl
 {
 
-
-/*! \addtogroup core
+/*! \addtogroup Console
+ *
  *  \{
  */
-
- /*! \addtogroup Console Console tools
-  *
-  * Tools for console mode applications comprising console appearance (text 
-  * size, colour, etc.), command parsing and progress bar for processes.
-  *
-  *  \{
-  */
 
 class TL_EXPORT MenuAction
 {
@@ -91,19 +83,8 @@ public:
 
     Menu(std::string title, std::string description);
 
-    void addAction(const MenuAction &action)
-    {
-        items.push_back(action.text());
-        actions[static_cast<unsigned int>(items.size())] = action;
-    }
-
-    void addMenu(Menu *menu)
-    {
-        menu->parent = this;
-        items.push_back(menu->text());
-        subMenus[static_cast<unsigned int>(items.size())] = menu;
-    }
-
+    void addAction(const MenuAction &action);
+    void addMenu(Menu *menu);
     void show() const;
 
     std::string text()
@@ -119,9 +100,7 @@ protected:
 
 
 
-/*! \} */ // end of Console
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

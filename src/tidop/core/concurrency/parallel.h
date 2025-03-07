@@ -34,19 +34,14 @@
 #include <future>
 #include <algorithm>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/concurrency.h"
+#include "tidop/core/base/defs.h"
 
 namespace tl
 {
 
 
-/*! \addtogroup core
- *  \{
- */
-
 /*!
- * \defgroup concurrency Concurrency
+ * \addtogroup concurrency
  *
  * \{
  */
@@ -59,9 +54,8 @@ TL_EXPORT uint32_t optimalNumberOfThreads();
 /*!
  * \brief Iterates over a range of indices and executes a function in parallel
  * 
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
  * std::vector<int> aux(nums.size());
  *
@@ -82,9 +76,8 @@ TL_EXPORT void parallel_for(size_t ini,
 /*!
  * \brief Iterates over a range and executes a function in parallel
  * 
- * <h4>Example</h4>
- * 
- * \code
+ * ### Example Usage
+ * \code{.cpp}
  * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
  * struct Sum
  * {
@@ -136,10 +129,8 @@ Function parallel_for_each(Iter first,
         block_ini = block_end;
     }
 
-    for (auto &_thread : threads) {
-        if (_thread.joinable())
-            _thread.join();
-    }
+    for (auto &_thread : threads)
+        _thread.join();
 
     return f;
 }
@@ -181,10 +172,8 @@ void parallel_for_each_2(Iterator first,
         futures[i].get();
     }
 
-    for (auto &_thread : threads) {
-        if (_thread.joinable())
-            _thread.join();
-    }
+    for (auto &_thread : threads)
+        _thread.join();
 }
 
 template<typename Iterator, typename Func>
@@ -210,9 +199,7 @@ void parallel_for_each_3(Iterator first,
 
 /// \endcond
 
-/*! \} */ // end of concurrency
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

@@ -25,34 +25,73 @@
 #pragma once
 
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
-
- /*! \defgroup statistics Statistics
-  *  \{
-  */
-
-
+/*!
+ * \brief Confusion Matrix for classification problems
+ * 
+ * The `ConfusionMatrix` class provides methods to calculate various metrics related to the 
+ * performance of a classification model, such as True Positives, False Positives, Accuracy, 
+ * Precision, Recall, and more, based on a dataset of predicted and actual labels.
+ * It also supports threshold-based classification, where you can adjust the threshold to
+ * evaluate the performance at different points.
+ * 
+ * \tparam T The type of the predicted labels (e.g., `double`, `int`).
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * 
+ * #include <iostream>
+ * #include <vector>
+ * #include <tidop/math/statistic/confmat.h>
+ * 
+ * int main() {
+ *     std::vector<std::pair<double, int>> data = {
+ *         {0.9, 1}, {0.7, 1}, {0.6, 0}, {0.8, 1}, {0.4, 0}, {0.3, 0}, {0.5, 1}
+ *     };
+ * 
+ *     ConfusionMatrix<double> cm(data);
+ *     double threshold = 0.5;
+ * 
+ *     Message::info("Accuracy: {}", cm.accuracy(threshold));
+ *     Message::info("Precision: {}", cm.positivePredictiveValue(threshold));
+ *     Message::info("Recall: {}", cm.truePositiveRate(threshold));
+ *     Message::info("Specificity: {}", cm.trueNegativeRate(threshold));
+ * 
+ *     return 0;
+ * }
+ * 
+ * \endcode
+ */
 template<typename T>
 class ConfusionMatrix
 {
 
 public:
 
+    /*!
+     * \brief Enumeration for confusion matrix elements
+     *
+     * Defines the four key elements of a confusion matrix:
+     * - True Positives (TP)
+     * - False Positives (FP)
+     * - True Negatives (TN)
+     * - False Negatives (FN)
+     */
     enum class Classification
     {
-        true_positives,
-        false_positives,
-        true_negatives,
-        false_negatives
+        true_positives,  /*!< True positives */
+        false_positives, /*!< False positives */
+        true_negatives,  /*!< True negatives */
+        false_negatives  /*!< False negatives */
     };
 
 private:
@@ -63,106 +102,163 @@ private:
 
 public:
 
+    /*!
+     * \brief Constructor to initialize the confusion matrix with data
+     *
+     * \param[in] data A vector of pairs where each pair contains the predicted label and the
+     *                 actual label.
+     */
     explicit ConfusionMatrix(const std::vector<std::pair<T, int>> &data);
+
     virtual ~ConfusionMatrix() = default;
 
     /*!
-     * \brief positives
-     * positives = TP + FN
-     * \return
+     * \brief Computes the total number of positive instances (TP + FN)
+     * \return The number of positive instances
      */
     auto positives() const -> size_t;
 
     /*!
-     * \brief negatives
-     * negatives = FP + TN
-     * \return
+     * \brief Computes the total number of negative instances (FP + TN)
+     * \return The number of negative instances
      */
     auto negatives() const -> size_t;
 
     /*!
-     * \brief True Positives
-     * \param[in] threshold
-     * \return
+     * \brief Computes the number of True Positives (TP) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The number of True Positives
      */
     auto truePositives(T threshold) const -> size_t;
 
     /*!
-     * \brief False Positives
-     * \param[in] threshold
-     * \return
+     * \brief Computes the number of False Positives (FP) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The number of False Positives
      */
     auto falsePositives(T threshold) const -> size_t;
 
     /*!
-     * \brief True Negatives
-     * \param[in] threshold
-     * \return
+     * \brief Computes the number of True Negatives (TN) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The number of True Negatives
      */
     auto trueNegatives(T threshold) const -> size_t;
 
     /*!
-     * \brief False Negatives
-     * \param[in] threshold
-     * \return
+     * \brief Computes the number of False Negatives (FN) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The number of False Negatives
      */
     auto falseNegatives(T threshold) const -> size_t;
 
     /*!
-     * \brief accuracy
-     * \param[in] threshold
-     * \return
+     * \brief Computes the accuracy of the classification model based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The accuracy of the model
      */
     auto accuracy(T threshold) const -> double;
 
     /*!
-     * \brief Precision or Positive Predictive Value
-     * \param[in] threshold
-     * \return
+     * \brief Computes the Precision (Positive Predictive Value) of the classification model
+     *        based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The Precision of the model
      */
     auto positivePredictiveValue(T threshold) const -> double;
 
     /*!
-     * \brief Negative Predictive Value
-     * \param[in] threshold
-     * \return
+     * \brief Computes the Negative Predictive Value (NPV) of the classification model
+     *        based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The Negative Predictive Value
      */
     auto negativePredictiveValue(T threshold) const -> double;
 
     /*!
-     * \brief True Positive Rate, Recall or Sensitivity
-     * \param[in] threshold
-     * \return
+     * \brief Computes the True Positive Rate (Recall or Sensitivity) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The True Positive Rate
      */
     auto truePositiveRate(T threshold) const -> double;
 
     /*!
-     * \brief False Positive Rate or Fall-out
-     * \param[in] threshold
-     * \return
+     * \brief Computes the False Positive Rate (Fall-out) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The False Positive Rate
      */
     auto falsePositiveRate(T threshold) const -> double;
 
     /*!
-     * \brief True Negative Rate or Specificity
-     * \param[in] threshold
-     * \return
+     * \brief Computes the True Negative Rate (Specificity) based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The True Negative Rate
      */
     auto trueNegativeRate(T threshold) const -> double;
 
     /*!
-     * \brief False Negative Rate
-     * \param[in] threshold
-     * \return
+     * \brief Computes the False Negative Rate based on the given threshold
+     * \param[in] threshold The threshold for classification
+     * \return The False Negative Rate
      */
     auto falseNegativeRate(T threshold) const -> double;
 
+    /*!
+     * \brief Static method to compute True Positive Rate
+     * \param[in] tp The number of true positives
+     * \param[in] fn The number of false negatives
+     * \return The True Positive Rate
+     */
     static auto truePositiveRate(size_t tp, size_t fn) -> double;
+
+    /*!
+     * \brief Static method to compute False Positive Rate
+     * \param[in] fp The number of false positives
+     * \param[in] tn The number of true negatives
+     * \return The False Positive Rate
+     */
     static auto falsePositiveRate(size_t fp, size_t tn) -> double;
+
+    /*!
+     * \brief Static method to compute True Negative Rate
+     * \param[in] tn The number of true negatives
+     * \param[in] fp The number of false positives
+     * \return The True Negative Rate
+     */
     static auto trueNegativeRate(size_t tn, size_t fp) -> double;
+
+    /*!
+     * \brief Static method to compute False Negative Rate
+     * \param[in] fn The number of false negatives
+     * \param[in] tp The number of true positives
+     * \return The False Negative Rate
+     */
     static auto falseNegativeRate(size_t fn, size_t tp) -> double;
+
+    /*!
+     * \brief Static method to compute Precision (Positive Predictive Value)
+     * \param[in] tp The number of true positives
+     * \param[in] fp The number of false positives
+     * \return The Precision
+     */
     static auto positivePredictiveValue(size_t tp, size_t fp) -> double;
+
+    /*!
+     * \brief Static method to compute Negative Predictive Value
+     * \param[in] fn The number of false negatives
+     * \param[in] tn The number of true negatives
+     * \return The Negative Predictive Value
+     */
     static auto negativePredictiveValue(size_t fn, size_t tn) -> double;
+
+    /*!
+     * \brief Static method to compute Accuracy
+     * \param[in] tp The number of true positives
+     * \param[in] tn The number of true negatives
+     * \param[in] positives The number of positive instances
+     * \param[in] negatives The number of negative instances
+     * \return The accuracy
+     */
     static auto accuracy(size_t tp, size_t tn, size_t positives, size_t negatives) -> double;
 
 private:
@@ -385,10 +481,7 @@ auto ConfusionMatrix<T>::compute(T threshold) const -> std::map<Classification, 
 }
 
 
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl
 

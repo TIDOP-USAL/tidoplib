@@ -28,22 +28,16 @@
 
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/rotation_convert.h"
+#include "tidop/math/algebra/rotations/rotation_convert.h"
 
 namespace tl
 {
 
 
-
-/*! \addtogroup Math
+/*! \addtogroup GeometricTransformations
  *  \{
  */
 
-
-/*! \addtogroup Geometry
- *
- *  \{
- */
 
 //template <typename T, size_t Dim>
 //class TransformBase
@@ -226,9 +220,7 @@ auto Transform<T, Dim>::inverse() const -> Transform<T, Dim>
 }
 
 
-/*! \} */ // end of Geometry
-
-/*! \} */ // end of Math
+/*! \} */
 
 
 

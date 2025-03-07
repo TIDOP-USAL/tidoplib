@@ -38,7 +38,7 @@ if(BUILD_TL_GEOMETRY)
                             entities/segment.cpp
                         HEADER_FILES
                             rect.h
-                            size.h
+                            #size.h
                             entities/bbox.h
                             entities/entity.h
                             entities/entities2d.h
@@ -47,6 +47,8 @@ if(BUILD_TL_GEOMETRY)
                             entities/point.h
                             entities/polygon.h
                             entities/multipoint.h
+                            entities/multilinestring.h
+                            entities/multipolygon.h
                             entities/segment.h
                             entities/window.h
                             entities/shapes.h
@@ -107,9 +109,9 @@ if(BUILD_TL_GEOMETRY)
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
 
     message(STATUS "  TidopLib::Geom disabled")
-    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::Graphic disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::FeatMatch disabled    [Module dependent on TidopLib::Geom that is deactivated]")
-    message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::RasterTools disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
+    message(STATUS "  TidopLib::Graphic disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
+    message(STATUS "  TidopLib::FeatureMatching disabled  [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::Geospatial disabled       [Module dependent on TidopLib::Geom that is deactivated]")
 
 endif(BUILD_TL_GEOMETRY)

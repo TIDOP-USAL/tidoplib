@@ -38,27 +38,29 @@ if(BUILD_TL_MATH)
                          HEADER_FILES
                              math.h
                              angles.h
-                             statistics.h
                              mathutils.h
-                             simd.h
-                             data.h
-                             algebra/quaternion.h
-                             algebra/euler_angles.h
-                             algebra/rotations.h
-                             algebra/rotation_matrix.h
-                             algebra/rotation_convert.h
-                             algebra/axis_angle.h
-                             algebra/matrix.h
-                             algebra/matrices.h
-                             algebra/vector.h
-                             algebra/svd.h
-                             algebra/lu.h
-                             algebra/qr.h
-                             algebra/cholesky.h
+                             algebra/decomp/cholesky.h
+                             algebra/decomp/lu.h
+                             algebra/decomp/qr.h
+                             algebra/decomp/svd.h
                              algebra/matrix/base.h
                              algebra/matrix/block.h
                              algebra/matrix/col.h
                              algebra/matrix/row.h
+                             algebra/rotations/axis_angle.h
+                             algebra/rotations/euler_angles.h
+                             algebra/rotations/quaternion.h
+                             algebra/rotations/rotation_convert.h
+                             algebra/rotations/rotation_matrix.h
+                             algebra/rotations/rotations.h
+                             algebra/matrix.h
+                             algebra/matrices.h
+                             algebra/vector.h
+                             base/blas.h
+                             base/cuda.h
+                             base/data.h
+                             base/lapack.h
+                             base/simd.h
                              geometry/affine.h
                              geometry/helmert.h
                              geometry/rotation.h
@@ -71,6 +73,7 @@ if(BUILD_TL_MATH)
                              geometry/analytic/sphere.h
                              statistic/algorithm.h
                              statistic/biweightmidvariance.h
+                             statistic/cv.h
                              statistic/descriptive.h
                              statistic/iqr.h
                              statistic/mad.h
@@ -89,9 +92,7 @@ if(BUILD_TL_MATH)
                              statistic/stddev.h
                              statistic/tukeyfences.h
                              statistic/variance.h
-                             lapack.h
-                             blas.h
-                             cuda.h)
+                             statistic/zscore.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
@@ -147,7 +148,7 @@ elseif(BUILD_TL_CORE)
     
     message(STATUS "  TidopLib::Math disabled")
     message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Math that is deactivated]") 
-    message(STATUS "  TidopLib::Img disabled          [Module dependent on TidopLib::Math that is deactivated]") 
+    message(STATUS "  TidopLib::RasterTools disabled  [Module dependent on TidopLib::Math that is deactivated]") 
     message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Math that is deactivated]") 
 
 endif(BUILD_TL_MATH)

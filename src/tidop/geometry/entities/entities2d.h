@@ -31,13 +31,14 @@ namespace tl
 {
 
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 
 /*!
- * \brief 2D entities
+ * \brief Represents a container for 2D entities.
+ * \tparam Entity_t The type of entity stored in the container.
  */
 template<typename Entity_t>
 class Entities2D
@@ -50,32 +51,65 @@ public:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Entities2D();
+
+    /*!
+     * \brief Constructs a container with a specified number of elements.
+     * \param[in] size Number of elements to allocate.
+     */
     explicit Entities2D(size_type size);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] entities Another `Entities2D` object to copy.
+     */
     Entities2D(const Entities2D &entities);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] entities Another `Entities2D` object to move.
+     */
     Entities2D(Entities2D &&entities) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a container from a vector of entities.
+     * \param[in] entities A vector of entities to initialize the container.
+     */
     explicit Entities2D(const std::vector<Entity_t> &entities);
+
+    /*!
+     * \brief Constructs a container from an initializer list of entities.
+     * \param[in] entities A list of entities.
+     */
     Entities2D(std::initializer_list<Entity_t> entities);
 
     ~Entities2D() override = default;
 
     /*!
-     * \brief Returns the entities that are inside a window.
-     * \param[in] window Window
-     * \return Selected entities
+     * \brief Retrieves the entities that are inside a given window.
+     * \tparam Window_t The type representing the window.
+     * \param[in] window The window to filter entities.
+     * \return A vector containing the selected entities.
      */
     template<typename Window_t>
     auto entitiesInWindow(const Window_t& window) const -> std::vector<Entity_t>;
 
     /*!
-     * \brief Copy assignment operator
+     * \brief Copy assignment operator.
+     * \param[in] entities Another `Entities2D` object to copy.
+     * \return A reference to the assigned `Entities2D` object.
      */
-    auto operator=(const Entities2D<Entity_t>& entities) -> Entities2D<Entity_t>&;
+    auto operator=(const Entities2D<Entity_t> &entities) -> Entities2D<Entity_t> &;
 
     /*!
-     * \brief Move assignment operator
+     * \brief Move assignment operator.
+     * \param[in] entities Another `Entities2D` object to move.
+     * \return A reference to the assigned `Entities2D` object.
      */
-    Entities2D<Entity_t> &operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT;
+    auto operator=(Entities2D<Entity_t> &&entities) TL_NOEXCEPT -> Entities2D<Entity_t> &;
 
 };
 

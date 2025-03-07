@@ -27,21 +27,25 @@
 #include <algorithm>
 #include <utility>
 
+#include "tidop/core/base/size.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/size.h"
 
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 
 /*!
-* \brief The Window class
-*/
+ * \brief The `Window` class represents a 2D window (bounding box) defined by two points in space.
+ *
+ * The `Window` class is used to represent a rectangular area in 2D space. The window is defined by two corner points, 
+ * typically the bottom-left and top-right corners. This class provides various utility functions for manipulating and querying the window's properties.
+ * It also supports conversion between different point types and contains functions for checking point containment within the window.
+ */
 template<typename Point_t>
 class Window
   : public Entity
@@ -59,32 +63,175 @@ public:
 
 public:
 
+    /*!
+     * \brief Default constructor
+     *
+     * Creates an empty window with uninitialized points.
+     */
     Window();
+
+    /*!
+     * \brief Copy constructor
+     * \param[in] window The window to copy.
+     *
+     * Creates a copy of the provided window.
+     */
     Window(const Window &window);
+
+    /*!
+     * \brief Move constructor
+     * \param[in] window The window to move.
+     *
+     * Moves the contents of the provided window into the new window.
+     */
     Window(Window &&window) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructor using two points
+     * \param[in] pt1 One corner of the window.
+     * \param[in] pt2 The opposite corner of the window.
+     *
+     * Initializes the window with the provided points.
+     */
     Window(Point_t pt1, Point_t pt2);
+
+    /*!
+     * \brief Constructor using a point and dimensions
+     * \param[in] point The bottom-left corner of the window.
+     * \param[in] width The width of the window.
+     * \param[in] height The height of the window.
+     *
+     * Creates a window defined by a bottom-left corner point and its width and height.
+     */
     template<typename T> Window(const Point_t &point, T width, T height);
+
+    /*!
+     * \brief Constructor using a point and side length
+     * \param[in] pt The bottom-left corner of the window.
+     * \param[in] side The length of each side of a square window.
+     *
+     * Creates a window where both sides are of equal length (a square).
+     */
     template<typename T> Window(const Point_t &pt, T side);
+
+    /*!
+     * \brief Constructor using a list of points
+     * \param[in] vertices The list of points (should represent the vertices of a window).
+     *
+     * Creates a window by using the list of vertices, typically to define a rectangular area.
+     */
     explicit Window(const std::vector<Point_t> &vertices);
+
+    /*!
+     * \brief Constructor using a list of points with a different point type
+     * \param[in] vertices The list of points (with a different point type) to define the window.
+     *
+     * Creates a window using a list of points, with a different point type from the template.
+     */
     template<typename Point_t2> Window(const std::vector<Point_t2> &vertices);
     
     ~Window() override = default;
     
-    auto operator =(const Window& window) -> Window&;
-    auto operator =(Window&& window) TL_NOEXCEPT -> Window&;
+    /*!
+     * \brief Copy assignment operator
+     * \param[in] window The window to copy.
+     * \return Reference to this window after copying.
+     *
+     * Copies the contents of the provided window into this window.
+     */
+    auto operator =(const Window &window)->Window &;
+
+    /*!
+     * \brief Move assignment operator
+     * \param[in] window The window to move.
+     * \return Reference to this window after moving.
+     *
+     * Moves the contents of the provided window into this window.
+     */
+    auto operator =(Window &&window) TL_NOEXCEPT->Window &;
     
-    auto operator ==(const Window& window) const -> bool;
-    
+    /*!
+     * \brief Equality operator
+     * \param[in] window The window to compare with.
+     * \return `true` if both windows are identical, `false` otherwise.
+     *
+     * Compares two windows for equality by checking if their corner points are the same.
+     */
+    auto operator ==(const Window &window) const -> bool;
+
+    /*!
+     * \brief Type conversion operator
+     * \param[in] window The window to convert.
+     * \return A new window of a different point type.
+     *
+     * Converts the current window to one with a different point type.
+     */
     template<typename Point_t2> operator Window<Point_t2>() const;
     
+    /*!
+     * \brief Get the width of the window
+     * \return The width of the window.
+     *
+     * The width is the horizontal distance between `pt1` and `pt2`.
+     */
     auto width() const -> scalar;
+
+    /*!
+     * \brief Get the height of the window
+     * \return The height of the window.
+     *
+     * The height is the vertical distance between `pt1` and `pt2`.
+     */
     auto height() const -> scalar;
+
+    /*!
+     * \brief Get the center point of the window
+     * \return The center point of the window.
+     *
+     * The center is calculated as the midpoint between `pt1` and `pt2`.
+     */
     auto center() const -> Point_t;
+
+    /*!
+     * \brief Check if the window is empty
+     * \return `true` if the window is empty, `false` otherwise.
+     *
+     * A window is considered empty if its width or height is zero.
+     */
     auto isEmpty() const -> bool;
+
+    /*!
+     * \brief Check if the window is valid
+     * \return `true` if the window is valid, `false` otherwise.
+     *
+     * A window is valid if both width and height are positive values.
+     */
     auto isValid() const -> bool;
+
+    /*!
+     * \brief Normalize the window
+     *
+     * Adjusts the window so that `pt1` represents the bottom-left corner
+     * and `pt2` represents the top-right corner.
+     */
     void normalized();
-    
+
+    /*!
+     * \brief Check if the point is inside the window
+     * \param[in] pt The point to check.
+     * \return `true` if the point is inside the window, `false` otherwise.
+     *
+     * Determines if a point lies inside the window by comparing its coordinates with `pt1` and `pt2`.
+     */
     template<typename Point_t2> auto containsPoint(const Point_t2& pt) const -> bool;
+
+    /*!
+     * \brief Check if the window contains another window
+     * \param[in] w The window to check.
+     * \return `true` if the window contains the other window, `false` otherwise.
+     *
+     * Determines if the current window fully contains the other window by checking the corners.
+     */
     template<typename Point_t2> auto containsWindow(const Window<Point_t2>& w) const -> bool;
  
 };
@@ -329,13 +476,15 @@ using WindowF = Window<Point<float> >;
 
 
 
-/* Operaciones con ventanas */
+
 
 /*!
- * \brief Comprueba si dos ventanas intersectan
- * \param[in] w1 Ventana 1
- * \param[in] w2 Ventana 2
- * \return Verdadero si intersectan
+ * \brief Checks if two windows intersect.
+ * \param[in] w1 The first window.
+ * \param[in] w2 The second window.
+ * \return `true` if the two windows intersect, `false` otherwise.
+ *
+ * This function checks if two windows overlap. It does so by comparing their corner points (`pt1` and `pt2`) to see if the windows' areas intersect.
  */
 template<typename T1, typename T2>
 auto intersectWindows(const T1 &w1, const T2 &w2) -> bool
@@ -347,10 +496,13 @@ auto intersectWindows(const T1 &w1, const T2 &w2) -> bool
 }
 
 /*!
- * \brief Ventana interseción
- * \param[in] w1 Ventana 1
- * \param[in] w2 Ventana 2
- * \return Ventana interseción
+ * \brief Computes the intersection of two windows.
+ * \param[in] w1 The first window.
+ * \param[in] w2 The second window.
+ * \return The intersection of the two windows as a new window.
+ *
+ * This function calculates the intersection of two windows, returning a new window that represents the overlapping area.
+ * If the windows do not intersect, the returned window will be empty.
  */
 template<typename T>
 auto windowIntersection(const T &w1, const T &w2) -> T
@@ -366,10 +518,13 @@ auto windowIntersection(const T &w1, const T &w2) -> T
 }
 
 /*!
- * \brief Unión de dos ventanas
- * \param[in] w1 Ventana 1
- * \param[in] w2 Ventana 2
- * \return Ventana unión
+ * \brief Computes the union of two windows.
+ * \param[in] w1 The first window.
+ * \param[in] w2 The second window.
+ * \return The union of the two windows as a new window.
+ *
+ * This function calculates the union of two windows, creating a new window that represents the smallest bounding window
+ * that contains both input windows.
  */
 template<typename T>
 auto joinWindow(const T &w1, const T &w2) -> T
@@ -383,11 +538,14 @@ auto joinWindow(const T &w1, const T &w2) -> T
 }
 
 /*!
- * \brief Expande una ventana según la cantidad indicada para x e y
- * \param[in] w Ventana que se va a expandir
- * \param[in] szx Aumento en x
- * \param[in] szy Aumento en y
- * \return Ventana resultante
+ * \brief Expands a window by specified amounts in the x and y directions.
+ * \param[in] w The window to be expanded.
+ * \param[in] szx The amount by which to expand in the x-direction.
+ * \param[in] szy The amount by which to expand in the y-direction.
+ * \return The expanded window.
+ *
+ * This function expands a window by the given amounts in both x and y directions. The expansion is applied to both the
+ * bottom-left corner (`pt1`) and top-right corner (`pt2`).
  */
 template<typename T1, typename T2>
 auto expandWindow(const T1 &w, T2 szx, T2 szy) -> T1
@@ -402,10 +560,13 @@ auto expandWindow(const T1 &w, T2 szx, T2 szy) -> T1
 
 
 /*!
- * \brief Expande una ventana
- * \param[in] w Ventana que se va a expandir
- * \param[in] sz Cantidad en que se expande
- * \return Ventana resultante
+ * \brief Expands a window by a specified amount.
+ * \param[in] w The window to be expanded.
+ * \param[in] sz The amount by which to expand in both x and y directions.
+ * \return The expanded window.
+ *
+ * This function expands a window by a single value in both the x and y directions (i.e., the window is expanded
+ * symmetrically in both dimensions).
  */
 template<typename T1, typename T2>
 auto expandWindow(const T1 &w, T2 sz) -> T1
@@ -413,6 +574,16 @@ auto expandWindow(const T1 &w, T2 sz) -> T1
     return expandWindow(w, sz, sz);
 }
 
+/*!
+ * \brief Moves a window by specified distances in the x and y directions.
+ * \param[in] w The window to be moved.
+ * \param[in] dx The distance to move the window in the x-direction.
+ * \param[in] dy The distance to move the window in the y-direction.
+ * \return A new window, moved by the specified amounts.
+ *
+ * This function moves the window by the specified amounts along the x and y axes, effectively translating the window's
+ * position by the given offsets.
+ */
 template<typename Point_t, typename T>
 auto moveWindow(const Window<Point_t> &w, T dx, T dy) -> Window<Point_t>
 {
@@ -437,6 +608,15 @@ auto operator != (const Window<Point_t> &window1, const Window<Point_t> &window2
             window1.pt2 != window2.pt2);
 }
 
+/*!
+ * \brief Computes the bounding window for a range of points.
+ * \param[in] begin The iterator to the beginning of the range.
+ * \param[in] end The iterator to the end of the range.
+ * \return The bounding window that contains all the points in the range.
+ *
+ * This function calculates the smallest window that contains all points in the specified range. The resulting window
+ * is the one that encloses all the points between the `begin` and `end` iterators.
+ */
 template<typename It>
 auto boundingWindow(It begin, It end) -> Window<iteratorValueType<It>>
 {

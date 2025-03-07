@@ -30,13 +30,14 @@ namespace tl
 {
 
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 
 /*!
- * \brief 3D entities
+ * \brief Represents a container for 3D entities.
+ * \tparam Entity_t The type of entity stored in the container.
  */
 template<typename Entity_t>
 class Entities3D
@@ -49,22 +50,54 @@ public:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Entities3D();
+
+    /*!
+     * \brief Constructs a container with a specified number of elements.
+     * \param[in] size Number of elements to allocate.
+     */
     explicit Entities3D(size_type size);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] entities Another `Entities3D` object to copy.
+     */
     Entities3D(const Entities3D &entities);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] entities Another `Entities3D` object to move.
+     */
     Entities3D(Entities3D &&entities) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a container from a vector of entities.
+     * \param[in] entities A vector of entities to initialize the container.
+     */
     explicit Entities3D(const std::vector<Entity_t> &entities);
+
+    /*!
+     * \brief Constructs a container from an initializer list of entities.
+     * \param[in] entities A list of entities.
+     */
     Entities3D(std::initializer_list<Entity_t> entities);
 
     ~Entities3D() override = default;
 
     /*!
-     * \brief Copy assignment operator
+     * \brief Copy assignment operator.
+     * \param[in] entities Another `Entities3D` object to copy.
+     * \return A reference to the assigned `Entities3D` object.
      */
     auto operator=(const Entities3D<Entity_t>& entities) -> Entities3D<Entity_t>&;
 
     /*!
-     * \brief Move assignment operator
+     * \brief Move assignment operator.
+     * \param[in] entities Another `Entities3D` object to move.
+     * \return A reference to the assigned `Entities3D` object.
      */
     auto operator=(Entities3D<Entity_t>&& entities) TL_NOEXCEPT -> Entities3D<Entity_t>&;
 

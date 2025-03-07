@@ -25,25 +25,25 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/core/concurrency/queue.h"
 
 namespace tl
 {
-
-
-/*! \addtogroup core
- *  \{
- */
 
 /*!
  * \addtogroup concurrency
  *
  * \{
  */
- 
-/*!
+
+/*! 
  * \brief Multi-producer multi-consumer queue
+ * 
+ * This class implements a thread-safe queue designed for multi-producer, multi-consumer (MPMC) scenarios.
+ * It supports concurrent push and pop operations with synchronization, ensuring thread safety.
+ * The queue can be stopped to notify all threads that no more elements should be added or processed.
+ *
  */
 template<typename T>
 class QueueMPMC
@@ -59,12 +59,16 @@ public:
 
     /*!
      * \brief Default constructor
+     *
+     * Creates an MPMC queue with the default capacity (256).
      */
     QueueMPMC();
     
     /*!
-     * \brief Constructor with queue capacity
-     * \param[in] capacity Queue capacity
+     * \brief Constructor with specified queue capacity
+     * \param[in] capacity Maximum capacity of the queue
+     *
+     * Creates an MPMC queue with the specified capacity.
      */
     explicit QueueMPMC(size_t capacity);
     
@@ -72,10 +76,31 @@ public:
     
     TL_DISABLE_COPY(QueueMPMC)
     TL_DISABLE_MOVE(QueueMPMC)
-    
+
+    /*!
+     * \brief Inserts an element into the queue
+     * \param[in] value Element to insert into the queue
+     *
+     * If the queue is full, the thread will block until space becomes available or the queue is stopped.
+     * If the queue has been stopped, the element will not be added.
+     */
     void push(const T &value) override;
-    bool pop(T &value) override;
+    /*!
+     * \brief Extracts the first element from the queue
+     * \param[out] value Extracted element from the queue
+     * \return Returns `true` if an element was successfully extracted; `false` if the queue is empty and stopped.
+     *
+     * If the queue is empty, the thread will block until an element becomes available or the queue is stopped.
+     * If stopped, the operation returns `false`.
+     */
+    auto pop(T &value) -> bool override;
     
+    /*!
+     * \brief Stops the queue and notifies all waiting threads
+     *
+     * This function signals all threads to stop blocking on push or pop operations. Once the queue is stopped,
+     * no new elements will be added, and pop operations will return `false` if the queue is empty.
+     */
     void stop();
 
 };
@@ -145,9 +170,7 @@ void QueueMPMC<T>::stop()
 
 
 
-/*! \} */ // end of concurrency
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

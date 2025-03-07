@@ -1,6 +1,5 @@
 // #include "./impl/PointCloudFileManager.h"
-#include "tidop/core/exception.h"
-#include "tidop/core/utils.h"
+#include "tidop/core/base/exception.h"
 
 #include "tidop/geotools/GeoTools.h"
 #include "tidop/geotools/CRSsTools.h"

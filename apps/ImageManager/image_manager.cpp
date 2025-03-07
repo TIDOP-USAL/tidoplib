@@ -27,23 +27,16 @@
 
 #include <cpl_conv.h>
 
-#include <tidop/core/app.h>
+#include <tidop/core/app/app.h>
+#include <tidop/core/app/log.h>
+#include <tidop/core/app/message.h>
 #include <tidop/core/console.h>
-#include <tidop/core/log.h>
-#include <tidop/core/msg/message.h>
-#include <tidop/core/chrono.h>
-#include <tidop/img/imgreader.h>
-#include <tidop/img/metadata.h>
-#include <tidop/img/imgwriter.h>
-
-#include "tidop/geospatial/crs.h"
-#include "tidop/img/formats.h"
+#include <tidop/core/base/chrono.h>
+#include <tidop/rastertools/io/imgreader.h>
+#include <tidop/rastertools/io/imgwriter.h>
+#include <tidop/rastertools/io/metadata.h>
 
 using namespace tl;
-
-#ifdef HAVE_VLD
-#include <vld.h>
-#endif
 
 
 void imageInfo(const Command::SharedPtr &command)
@@ -71,10 +64,8 @@ void imageInfo(const Command::SharedPtr &command)
             std::shared_ptr<ImageMetadata> image_metadata = image_reader->metadata();
             std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
 
-            for (auto it = metadata.begin(); it != metadata.end(); ++it) {
-                std::string name = it->first;
-                std::string value = it->second;
-                Message::info("  {}: {}", name, value);
+            for (auto &item : metadata) {
+                Message::info("  {}: {}", item.first, item.second);
             }
 
             image_reader->close();
@@ -108,6 +99,7 @@ void convertImageFormat(const Command::SharedPtr &command)
         image_reader->open();
         if (image_reader->isOpen()) {
 
+            image_writer->open();
             image_writer->create(image_reader->rows(), image_reader->cols(), image_reader->channels(), image_reader->dataType());
 
             image_writer->setMetadata(image_reader->metadata());

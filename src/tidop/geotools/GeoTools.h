@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "GeoToolsDefinitions.h"
 
 namespace tl{

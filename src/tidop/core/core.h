@@ -24,11 +24,10 @@
  
 #pragma once
 
-#include "tidop/core/defs.h"
-#include "tidop/core/common.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/common.h"
 #include "tidop/core/console.h"
-#include "tidop/core/messages.h"
-#include "tidop/core/utils.h"
-#include "tidop/core/flags.h"
-#include "tidop/core/exception.h"
+#include "tidop/core/app/message.h"
+#include "tidop/core/base/flags.h"
+#include "tidop/core/base/exception.h"
 

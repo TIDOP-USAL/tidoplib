@@ -25,51 +25,76 @@
 #pragma once
 
 
-#include "tidop/core/flags.h"
-#include "tidop/core/units/si.h"
-#include "tidop/core/units/imperial.h"
+#include "tidop/core/base/flags.h"
+#include "tidop/core/base/common.h"
 
 namespace tl
 {
+
+
+/*! \addtogroup Units
+ *  \{
+ */
 
 template<typename T>
 constexpr enableIfFloating<T,T> metre_to_feets = static_cast<T>(3.28084);
 template<typename T>
 constexpr enableIfFloating<T,T> foot_to_metres = static_cast<T>(0.3048);
 
-
+/*!
+ * \brief LengthConverter: A utility for converting between metric and imperial length units.
+ *
+ * This class supports a variety of units from both metric (e.g., metres, millimetres) and
+ * imperial systems (e.g., feet, inches). Conversion is handled internally by mapping each
+ * unit to a base unit (metres for metric, feet for imperial) and applying scaling factors.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * double lengthInFeet = LengthConverter::convert(100.0, LengthConverter::Units::metre, LengthConverter::Units::foot);
+ * double lengthInKilometres = LengthConverter::convert(lengthInFeet, LengthConverter::Units::foot, LengthConverter::Units::kilometre);
+ * \endcode
+ */
 class LengthConverter
 {
 
 private:
 
+    /*!
+     * \brief Enum for unit systems
+     */
     enum System
     {
-        si = (1 << 20),
-        imperial = (1 << 21),
+        si = (1 << 20),         /*!< Metric system */
+        imperial = (1 << 21),   /*!< Imperial system */
     };
 
+    /*!
+     * \brief Enum for base length units
+     */
     enum LengthUnits
     {
-        metre = (0 << 0),
-        decimetre = (1 << 0),
-        centimetre = (1 << 2),
-        millimetre = (1 << 3),
-        micrometre = (1 << 4),
-        nanometre = (1 << 5),
-        kilometre = (1 << 6),
-        hectometre = (1 << 7),
-        decametre = (1 << 8),
-        inch = (1 << 9),
-        foot = (1 << 10),
-        yard = (1 << 11),
-        chain = (1 << 12),
-        furlong = (1 << 13),
-        mile = (1 << 14)
+        metre = (0 << 0),        /*!< Base unit for metric */
+        decimetre = (1 << 0),    /*!< 0.1 metres */
+        centimetre = (1 << 2),   /*!< 0.01 metres */
+        millimetre = (1 << 3),   /*!< 0.001 metres */
+        micrometre = (1 << 4),   /*!< 1e-6 metres */
+        nanometre = (1 << 5),    /*!< 1e-9 metres */
+        kilometre = (1 << 6),    /*!< 1000 metres */
+        hectometre = (1 << 7),   /*!< 100 metres */
+        decametre = (1 << 8),    /*!< 10 metres */
+        inch = (1 << 9),         /*!< 1/12 feet */
+        foot = (1 << 10),        /*!< Base unit for imperial */
+        yard = (1 << 11),        /*!< 3 feet */
+        chain = (1 << 12),       /*!< 66 feet */
+        furlong = (1 << 13),     /*!< 660 feet */
+        mile = (1 << 14)         /*!< 5280 feet */
     };
 
 public:
 
+    /*!
+     * \brief Enum for all supported units
+     */
     enum class Units
     {
         metre = static_cast<int>(LengthUnits::metre) | System::si,
@@ -91,175 +116,32 @@ public:
 
 public:
 
-    static auto convert(double length, Units in, Units out) -> double
-    {
-        EnumFlags<Units> input_unit(in);
-        EnumFlags<Units> output_unit(out);
+    /*!
+     * \brief Converts a length from one unit to another.
+     * \param[in] length The length value to be converted.
+     * \param[in] in The input unit.
+     * \param[in] out The output unit.
+     * \return The converted length value.
+     */
+    static auto convert(double length, Units in, Units out) -> double;
 
-        if (input_unit.flags() == output_unit.flags()) {
-            return length;
-        }
+    /*!
+     * \brief Converts a unit to its base unit scaling factor.
+     * \param[in] unit The unit to convert.
+     * \return The scaling factor to the base unit.
+     */
+    static auto convertFactorToBaseUnit(Units unit) -> double;
 
-        double convert_factor = convertFactorToBaseUnit(in);
-
-        if (input_unit.isEnabled(static_cast<Units>(System::si)) && 
-            output_unit.isEnabled(static_cast<Units>(System::imperial))) {
-
-            convert_factor *= metre_to_feets<double>;
-
-        } else if (input_unit.isEnabled(static_cast<Units>(System::imperial)) &&
-                   output_unit.isEnabled(static_cast<Units>(System::si))){
-
-            convert_factor *= foot_to_metres<double>;
-
-        }
-
-        convert_factor *= convertFactorFromBaseUnit(out);
-
-        return length * convert_factor;
-    }
-
-    static auto convertFactorToBaseUnit(Units unit) -> double
-    {
-        EnumFlags<Units> flags(unit);
-
-        double convert_factor = 1.;
-
-        if (flags.isEnabled(static_cast<Units>(System::si))) {
-
-            switch (unit) {
-            case Units::metre:
-                convert_factor = 1.;
-                break;
-            case Units::decimetre:
-                convert_factor = from_deci<double>;
-                break;
-            case Units::centimetre:
-                convert_factor = from_centi<double>;
-                break;
-            case Units::millimetre:
-                convert_factor = from_milli<double>;
-                break;
-            case Units::micrometre:
-                convert_factor = from_micro<double>;
-                break;
-            case Units::nanometre:
-                convert_factor = from_nano<double>;
-                break;
-            case Units::kilometre:
-                convert_factor = from_kilo<double>;
-                break;
-            case Units::hectometre:
-                convert_factor = from_hecto<double>;
-                break;
-            case Units::decametre:
-                convert_factor = from_deca<double>;
-                break;
-            default: 
-                convert_factor = 1.;
-            }
-
-        } else if (flags.isEnabled(static_cast<Units>(System::imperial))) {
-
-            switch (unit) {
-            case Units::inch:
-                convert_factor = inch_to_feet<double>;
-                break;
-            case Units::foot:
-                convert_factor = 1.;
-                break;
-            case Units::yard:
-                convert_factor = yard_to_feet<double>;
-                break;
-            case Units::chain:
-                convert_factor = chain_to_feet<double>;
-                break;
-            case Units::furlong:
-                convert_factor = furlong_to_feet<double>;
-                break;
-            case Units::mile:
-                convert_factor = mile_to_feet<double>;
-                break;
-            default:
-                convert_factor = 1.;
-            }
-
-        }
-
-        return convert_factor;
-    }
-
-    static auto convertFactorFromBaseUnit(Units unit) -> double
-    {
-        EnumFlags<Units> flags(unit);
-
-        double convert_factor = 1.;
-
-        if (flags.isEnabled(static_cast<Units>(System::si))) {
-
-            switch (unit) {
-            case Units::metre:
-                convert_factor = 1.;
-                break;
-            case Units::decimetre:
-                convert_factor = to_deci<double>;
-                break;
-            case Units::centimetre:
-                convert_factor = to_centi<double>;
-                break;
-            case Units::millimetre:
-                convert_factor = to_milli<double>;
-                break;
-            case Units::micrometre:
-                convert_factor = to_micro<double>;
-                break;
-            case Units::nanometre:
-                convert_factor = to_nano<double>;
-                break;
-            case Units::kilometre:
-                convert_factor = to_kilo<double>;
-                break;
-            case Units::hectometre:
-                convert_factor = to_hecto<double>;
-                break;
-            case Units::decametre:
-                convert_factor = to_deca<double>;
-                break;
-            default:
-                convert_factor = 1.;
-            }
-
-        } else if (flags.isEnabled(static_cast<Units>(System::imperial))) {
-
-            switch (unit) {
-            case Units::inch:
-                convert_factor = foot_to_inches<double>;
-                break;
-            case Units::foot:
-                convert_factor = 1.;
-                break;
-            case Units::yard:
-                convert_factor = foot_to_yards<double>;
-                break;
-            case Units::chain:
-                convert_factor = foot_to_chains<double>;
-                break;
-            case Units::furlong:
-                convert_factor = foot_to_furlongs<double>;
-                break;
-            case Units::mile:
-                convert_factor = foot_to_mile<double>;
-                break;
-            default:
-                convert_factor = 1.;
-            }
-
-        }
-
-        return convert_factor;
-    }
+    /*!
+     * \brief Converts a base unit to its output unit scaling factor.
+     * \param[in] unit The target unit.
+     * \return The scaling factor from the base unit.
+     */
+    static auto convertFactorFromBaseUnit(Units unit) -> double;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(LengthConverter::Units)
+
+/*! \} */
 
 }

@@ -24,23 +24,32 @@
 
 #pragma once
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 
 
 namespace tl
 {
 
-/*! \addtogroup math
- *  \{
- */
-
-
-/*! \addtogroup statistics Statistics
+/*! \addtogroup Statistics
  *  \{
  */
 
 /*!
- * \brief Root Mean Square (RMS)
+ * \brief Computes the Root Mean Square (RMS) of a range of values.
+ * \tparam It Type of the iterator.
+ * \param[in] first Iterator pointing to the beginning of the data range.
+ * \param[in] last Iterator pointing to the end of the data range.
+ * \return The Root Mean Square (RMS) of the values in the range.
+ * 
+ * The Root Mean Square (RMS) is a measure of the average magnitude of the values in a dataset. It is calculated as:
+ * \f[ \text{RMS} = \sqrt{\frac{1}{n} \sum_{i=1}^n x_i^2} \f]
+ * where \( x_i \) represents each individual value and \( n \) is the number of elements.
+ * 
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<double> data = {8.0, 8.5, 7.5, 9.0, 6.25, 5.5, 8.5, 7.5, 8.5};
+ * double rms = rootMeanSquare(data.begin(), data.end()); // rms is approximately 7.77147562
+ * \endcode
  */
 template<typename It>
 auto rootMeanSquare(It first, It last) -> double
@@ -57,8 +66,6 @@ auto rootMeanSquare(It first, It last) -> double
     return std::sqrt(sum);
 }
 
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
+/*! \} */
 
 } // End namespace tl

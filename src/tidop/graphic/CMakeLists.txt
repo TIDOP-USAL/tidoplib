@@ -107,8 +107,8 @@ if (BUILD_TL_GRAPHIC)
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
     message(STATUS "  TidopLib::Graphic disabled")
-    message(STATUS "  TidopLib::ImgProcess disabled   [Module dependent on TidopLib::Graphic that is deactivated]") 
-    message(STATUS "  TidopLib::Vect disabled         [Module dependent on TidopLib::Graphic that is deactivated]") 
+    message(STATUS "  TidopLib::RasterTools disabled  [Module dependent on TidopLib::Graphic that is deactivated]") 
+    message(STATUS "  TidopLib::VectorTools disabled  [Module dependent on TidopLib::Graphic that is deactivated]") 
     message(STATUS "  TidopLib::Experimental disabled [Module dependent on TidopLib::Graphic that is deactivated]")
 
 endif(BUILD_TL_GRAPHIC)

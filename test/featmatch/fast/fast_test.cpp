@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop FastDetector test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/fast.h>
+#include <tidop/featmatch/features/fast.h>
 
 using namespace tl;
 
@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_SUITE(FastDetectorTestSuite)
 struct FastDetectorTest
 {
   FastDetectorTest()
-    : fastDetector(new FastDetector(11, false, "TYPE_7_12"))
   { }
     
   ~FastDetectorTest()
@@ -54,12 +53,18 @@ struct FastDetectorTest
     descriptor_type_result.push_back("TYPE_7_12");
     descriptor_type_result.push_back("TYPE_9_16");
     descriptor_type_result.push_back("TYPE_9_16");
+
+    fastProperties.setThreshold(11);
+    fastProperties.setDetectorType("TYPE_7_12");
+    fastProperties.setNonmaxSuppression(false);
+    fastDetector = new FastDetector(fastProperties);
   }
 
   void teardown()
   {
   }
 
+  FastProperties fastDefaultProperties;
   FastProperties fastProperties;
   FastDetector *fastDetector;
   std::vector<std::string> descriptor_type_value;
@@ -69,21 +74,21 @@ struct FastDetectorTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, FastDetectorTest)
 {
-  BOOST_CHECK_EQUAL(10, fastProperties.threshold());
-  BOOST_CHECK_EQUAL("TYPE_9_16", fastProperties.detectorType());
-  BOOST_CHECK_EQUAL(true, fastProperties.nonmaxSuppression());
+  BOOST_CHECK_EQUAL(10, fastDefaultProperties.threshold());
+  BOOST_CHECK_EQUAL("TYPE_9_16", fastDefaultProperties.detectorType());
+  BOOST_CHECK_EQUAL(true, fastDefaultProperties.nonmaxSuppression());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, FastDetectorTest)
 {
-  BOOST_CHECK_EQUAL(11, fastDetector->threshold());
-  BOOST_CHECK_EQUAL("TYPE_7_12", fastDetector->detectorType());
-  BOOST_CHECK_EQUAL(false, fastDetector->nonmaxSuppression());
+  BOOST_CHECK_EQUAL(11, fastProperties.threshold());
+  BOOST_CHECK_EQUAL("TYPE_7_12", fastProperties.detectorType());
+  BOOST_CHECK_EQUAL(false, fastProperties.nonmaxSuppression());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, FastDetectorTest)
 {
-  FastProperties copy(*fastDetector);
+  FastProperties copy(fastProperties);
   BOOST_CHECK_EQUAL(11, copy.threshold());
   BOOST_CHECK_EQUAL("TYPE_7_12", copy.detectorType());
   BOOST_CHECK_EQUAL(false, copy.nonmaxSuppression());
@@ -91,7 +96,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, FastDetectorTest)
 
 BOOST_FIXTURE_TEST_CASE(assign, FastDetectorTest)
 {
-  FastProperties assign = *fastDetector;
+  FastProperties assign = fastProperties;
   BOOST_CHECK_EQUAL(11, assign.threshold());
   BOOST_CHECK_EQUAL("TYPE_7_12", assign.detectorType());
   BOOST_CHECK_EQUAL(false, assign.nonmaxSuppression());
@@ -136,11 +141,24 @@ BOOST_FIXTURE_TEST_CASE(detectorType, FastDetectorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, FastDetectorTest)
 {
-  FastProperties fast(*fastDetector);
+  FastProperties fast = fastProperties;
   fast.reset();
   BOOST_CHECK_EQUAL(10, fast.threshold());
   BOOST_CHECK_EQUAL("TYPE_9_16", fast.detectorType());
   BOOST_CHECK_EQUAL(true, fast.nonmaxSuppression());
+}
+
+BOOST_FIXTURE_TEST_CASE(fast_detector_properties, FastDetectorTest)
+{
+    auto &properties = fastDetector->properties();
+
+    BOOST_CHECK_EQUAL(11, properties.getProperty<int>("Threshold"));
+    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("NonmaxSuppression"));
+    BOOST_CHECK_EQUAL("TYPE_7_12", properties.getProperty<std::string>("DetectorType"));
+
+    BOOST_CHECK_EQUAL("11", properties.getPropertyAsString("Threshold"));
+    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("NonmaxSuppression"));
+    BOOST_CHECK_EQUAL("TYPE_7_12", properties.getPropertyAsString("DetectorType"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() 

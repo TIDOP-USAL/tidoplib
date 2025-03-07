@@ -26,8 +26,8 @@
 
 #include <string>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/flags.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/flags.h"
 
 namespace tl
 {

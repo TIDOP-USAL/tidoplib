@@ -25,16 +25,11 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/core/concurrency/queue.h"
 
 namespace tl
 {
-
-
-/*! \addtogroup core
- *  \{
- */
 
 /*!
  * \addtogroup concurrency
@@ -44,19 +39,48 @@ namespace tl
  
 /*!
  * \brief Consumer Interface
+ * 
+ * This interface defines a consumer that retrieves data from a queue and processes it.
+ * It is designed to work with any queue implementing the `Queue<T>` interface.
+ * Consumers are typically used in the Producer-Consumer design pattern to consume and 
+ * process work items produced by producers.
+ * 
  */
 template<typename T>
 class Consumer
 {
+
 public:
 
+    /*!
+     * \brief Constructor
+     * \param[in] queue Pointer to the queue from which data will be dequeued
+     *
+     * Initializes a consumer with a reference to the queue it will use for dequeuing data.
+     */
     explicit Consumer(Queue<T> *queue) : mQueue(queue) {}
+
+    /*!
+     * \brief Virtual destructor
+     */
     virtual ~Consumer() = default;
 
+    /*!
+     * \brief Consume operator
+     *
+     * This method defines the behavior for consuming data from the queue. The specific
+     * implementation should handle dequeuing and processing of the data.
+     */
     virtual void operator() () = 0;
 
 protected:
 
+    /*!
+     * \brief Access the queue
+     * \return Pointer to the associated queue
+     *
+     * Provides derived classes access to the queue for dequeuing data.
+     */
     auto queue() -> Queue<T>*
     {
         return mQueue;
@@ -69,9 +93,7 @@ private:
 };
 
 
-/*! \} */ // end of concurrency
-
-/*! \} */ // end of core
+/*! \} */
 
 
 } // End namespace tl

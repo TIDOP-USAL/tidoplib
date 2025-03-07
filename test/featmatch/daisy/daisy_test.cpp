@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop DaisyDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/daisy.h>
+#include <tidop/featmatch/features/daisy.h>
 
 using namespace tl;
 
@@ -34,164 +34,195 @@ BOOST_AUTO_TEST_SUITE(DaisyDescriptorTestSuite)
 
 struct DaisyDescriptorTest
 {
-  DaisyDescriptorTest()
-    : daisyDescriptor(new DaisyDescriptor(10., 4, 4, 4, "NRM_PARTIAL", false, true))
-  { }
-    
-  ~DaisyDescriptorTest()
-  { 
-    delete daisyDescriptor;
-  }
+    DaisyDescriptorTest()
+    { }
 
-  void setup()
-  {
-  }
+    ~DaisyDescriptorTest()
+    {
+        delete daisyDescriptor;
+    }
 
-  void teardown()
-  {
-  }
+    void setup()
+    {
+        daisyProperties.setRadius(10.f);
+        daisyProperties.setRadialDivisions(4);
+        daisyProperties.setAngularDivision(4);
+        daisyProperties.setGradientOrientationsDivision(4);
+        daisyProperties.setNormalization("NRM_PARTIAL");
+        daisyProperties.setInterpolation(false);
+        daisyProperties.setUseOrientation(true);
+        daisyDescriptor = new DaisyDescriptor(daisyProperties);
+    }
 
-  DaisyProperties daisyProperties;
-  DaisyDescriptor *daisyDescriptor;
+    void teardown()
+    {
+    }
+
+    DaisyProperties daisyDefaultProperties;
+    DaisyProperties daisyProperties;
+    DaisyDescriptor *daisyDescriptor;
 
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, DaisyDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(15., daisyProperties.radius());
-  BOOST_CHECK_EQUAL(3, daisyProperties.qRadius());
-  BOOST_CHECK_EQUAL(8, daisyProperties.qTheta());
-  BOOST_CHECK_EQUAL(8, daisyProperties.qHist());
-  BOOST_CHECK_EQUAL("NRM_NONE", daisyProperties.norm());
-  BOOST_CHECK_EQUAL(true, daisyProperties.interpolation());
-  BOOST_CHECK_EQUAL(false, daisyProperties.useOrientation());
+    BOOST_CHECK_EQUAL(15.f, daisyDefaultProperties.radius());
+    BOOST_CHECK_EQUAL(3, daisyDefaultProperties.radialDivisions());
+    BOOST_CHECK_EQUAL(8, daisyDefaultProperties.angularDivision());
+    BOOST_CHECK_EQUAL(8, daisyDefaultProperties.gradientOrientationsDivision());
+    BOOST_CHECK_EQUAL("NRM_NONE", daisyDefaultProperties.normalization());
+    BOOST_CHECK_EQUAL(true, daisyDefaultProperties.interpolation());
+    BOOST_CHECK_EQUAL(false, daisyDefaultProperties.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, DaisyDescriptorTest)
 {
-  BOOST_CHECK_EQUAL(10., daisyDescriptor->radius());
-  BOOST_CHECK_EQUAL(4, daisyDescriptor->qRadius());
-  BOOST_CHECK_EQUAL(4, daisyDescriptor->qTheta());
-  BOOST_CHECK_EQUAL(4, daisyDescriptor->qHist());
-  BOOST_CHECK_EQUAL("NRM_PARTIAL", daisyDescriptor->norm());
-  BOOST_CHECK_EQUAL(false, daisyDescriptor->interpolation());
-  BOOST_CHECK_EQUAL(true, daisyDescriptor->useOrientation());
+    BOOST_CHECK_EQUAL(10.f, daisyProperties.radius());
+    BOOST_CHECK_EQUAL(4, daisyProperties.radialDivisions());
+    BOOST_CHECK_EQUAL(4, daisyProperties.angularDivision());
+    BOOST_CHECK_EQUAL(4, daisyProperties.gradientOrientationsDivision());
+    BOOST_CHECK_EQUAL("NRM_PARTIAL", daisyProperties.normalization());
+    BOOST_CHECK_EQUAL(false, daisyProperties.interpolation());
+    BOOST_CHECK_EQUAL(true, daisyProperties.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, DaisyDescriptorTest)
 {
-  DaisyProperties copy(*daisyDescriptor);
-  BOOST_CHECK_EQUAL(10., copy.radius());
-  BOOST_CHECK_EQUAL(4, copy.qRadius());
-  BOOST_CHECK_EQUAL(4, copy.qTheta());
-  BOOST_CHECK_EQUAL(4, copy.qHist());
-  BOOST_CHECK_EQUAL("NRM_PARTIAL", copy.norm());
-  BOOST_CHECK_EQUAL(false, copy.interpolation());
-  BOOST_CHECK_EQUAL(true, copy.useOrientation());
+    DaisyProperties copy(daisyProperties);
+    BOOST_CHECK_EQUAL(10.f, copy.radius());
+    BOOST_CHECK_EQUAL(4, copy.radialDivisions());
+    BOOST_CHECK_EQUAL(4, copy.angularDivision());
+    BOOST_CHECK_EQUAL(4, copy.gradientOrientationsDivision());
+    BOOST_CHECK_EQUAL("NRM_PARTIAL", copy.normalization());
+    BOOST_CHECK_EQUAL(false, copy.interpolation());
+    BOOST_CHECK_EQUAL(true, copy.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(assign, DaisyDescriptorTest)
 {
-  DaisyProperties assign = *daisyDescriptor;
-  BOOST_CHECK_EQUAL(10., assign.radius());
-  BOOST_CHECK_EQUAL(4, assign.qRadius());
-  BOOST_CHECK_EQUAL(4, assign.qTheta());
-  BOOST_CHECK_EQUAL(4, assign.qHist());
-  BOOST_CHECK_EQUAL("NRM_PARTIAL", assign.norm());
-  BOOST_CHECK_EQUAL(false, assign.interpolation());
-  BOOST_CHECK_EQUAL(true, assign.useOrientation());
+    DaisyProperties assign = daisyProperties;
+    BOOST_CHECK_EQUAL(10.f, assign.radius());
+    BOOST_CHECK_EQUAL(4, assign.radialDivisions());
+    BOOST_CHECK_EQUAL(4, assign.angularDivision());
+    BOOST_CHECK_EQUAL(4, assign.gradientOrientationsDivision());
+    BOOST_CHECK_EQUAL("NRM_PARTIAL", assign.normalization());
+    BOOST_CHECK_EQUAL(false, assign.interpolation());
+    BOOST_CHECK_EQUAL(true, assign.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(type, DaisyDescriptorTest)
 {
-  BOOST_CHECK(Feature::Type::daisy == daisyProperties.type());
+    BOOST_CHECK(Feature::Type::daisy == daisyProperties.type());
 }
 
 BOOST_FIXTURE_TEST_CASE(name, DaisyDescriptorTest)
 {
-  BOOST_CHECK_EQUAL("DAISY", daisyProperties.name());
+    BOOST_CHECK_EQUAL("DAISY", daisyProperties.name());
 }
 
 BOOST_FIXTURE_TEST_CASE(radius, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setRadius(5.0);
-  BOOST_CHECK_EQUAL(5.0, daisy.radius());
-  daisy.setRadius(20.0);
-  BOOST_CHECK_EQUAL(20.0, daisy.radius());
+    DaisyProperties daisy;
+    daisy.setRadius(5.0f);
+    BOOST_CHECK_EQUAL(5.0f, daisy.radius());
+    daisy.setRadius(20.0f);
+    BOOST_CHECK_EQUAL(20.0f, daisy.radius());
 }
 
-BOOST_FIXTURE_TEST_CASE(qRadius, DaisyDescriptorTest)
+BOOST_FIXTURE_TEST_CASE(radialDivisions, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setQRadius(1);
-  BOOST_CHECK_EQUAL(1, daisy.qRadius());
-  daisy.setQRadius(50);
-  BOOST_CHECK_EQUAL(50, daisy.qRadius());
+    DaisyProperties daisy;
+    daisy.setRadialDivisions(1);
+    BOOST_CHECK_EQUAL(1, daisy.radialDivisions());
+    daisy.setRadialDivisions(50);
+    BOOST_CHECK_EQUAL(50, daisy.radialDivisions());
 }
 
-BOOST_FIXTURE_TEST_CASE(qTheta, DaisyDescriptorTest)
+BOOST_FIXTURE_TEST_CASE(angularDivision, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setQTheta(2);
-  BOOST_CHECK_EQUAL(2, daisy.qTheta());
-  daisy.setQTheta(30);
-  BOOST_CHECK_EQUAL(30, daisy.qTheta());
+    DaisyProperties daisy;
+    daisy.setAngularDivision(2);
+    BOOST_CHECK_EQUAL(2, daisy.angularDivision());
+    daisy.setAngularDivision(30);
+    BOOST_CHECK_EQUAL(30, daisy.angularDivision());
 }
 
-BOOST_FIXTURE_TEST_CASE(qHist, DaisyDescriptorTest)
+BOOST_FIXTURE_TEST_CASE(gradientOrientationsDivision, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setQHist(3);
-  BOOST_CHECK_EQUAL(3, daisy.qHist());
-  daisy.setQHist(20);
-  BOOST_CHECK_EQUAL(20, daisy.qHist());
+    DaisyProperties daisy;
+    daisy.setGradientOrientationsDivision(3);
+    BOOST_CHECK_EQUAL(3, daisy.gradientOrientationsDivision());
+    daisy.setGradientOrientationsDivision(20);
+    BOOST_CHECK_EQUAL(20, daisy.gradientOrientationsDivision());
 }
 
-BOOST_FIXTURE_TEST_CASE(norm, DaisyDescriptorTest)
+BOOST_FIXTURE_TEST_CASE(normalization, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setNorm("NRM_NONE");
-  BOOST_CHECK_EQUAL("NRM_NONE", daisy.norm());
-  daisy.setNorm("NRM_PARTIAL");
-  BOOST_CHECK_EQUAL("NRM_PARTIAL", daisy.norm());
-  daisy.setNorm("NRM_FULL");
-  BOOST_CHECK_EQUAL("NRM_FULL", daisy.norm());
-  daisy.setNorm("NRM_SIFT");
-  BOOST_CHECK_EQUAL("NRM_SIFT", daisy.norm());
-  daisy.setNorm("BAD_VALUE");
-  BOOST_CHECK_EQUAL("NRM_SIFT", daisy.norm());
+    DaisyProperties daisy;
+    daisy.setNormalization("NRM_NONE");
+    BOOST_CHECK_EQUAL("NRM_NONE", daisy.normalization());
+    daisy.setNormalization("NRM_PARTIAL");
+    BOOST_CHECK_EQUAL("NRM_PARTIAL", daisy.normalization());
+    daisy.setNormalization("NRM_FULL");
+    BOOST_CHECK_EQUAL("NRM_FULL", daisy.normalization());
+    daisy.setNormalization("NRM_SIFT");
+    BOOST_CHECK_EQUAL("NRM_SIFT", daisy.normalization());
+    daisy.setNormalization("BAD_VALUE");
+    BOOST_CHECK_EQUAL("NRM_SIFT", daisy.normalization());
 }
 
 BOOST_FIXTURE_TEST_CASE(interpolation, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setInterpolation(true);
-  BOOST_CHECK_EQUAL(true, daisy.interpolation());
-  daisy.setInterpolation(false);
-  BOOST_CHECK_EQUAL(false, daisy.interpolation());
+    DaisyProperties daisy;
+    daisy.setInterpolation(true);
+    BOOST_CHECK_EQUAL(true, daisy.interpolation());
+    daisy.setInterpolation(false);
+    BOOST_CHECK_EQUAL(false, daisy.interpolation());
 }
 
 BOOST_FIXTURE_TEST_CASE(useOrientation, DaisyDescriptorTest)
 {
-  DaisyProperties daisy;
-  daisy.setUseOrientation(true);
-  BOOST_CHECK_EQUAL(true, daisy.useOrientation());
-  daisy.setUseOrientation(false);
-  BOOST_CHECK_EQUAL(false, daisy.useOrientation());
+    DaisyProperties daisy;
+    daisy.setUseOrientation(true);
+    BOOST_CHECK_EQUAL(true, daisy.useOrientation());
+    daisy.setUseOrientation(false);
+    BOOST_CHECK_EQUAL(false, daisy.useOrientation());
 }
 
 BOOST_FIXTURE_TEST_CASE(reset, DaisyDescriptorTest)
 {
-  DaisyProperties daisy(*daisyDescriptor);
-  daisy.reset();
-  BOOST_CHECK_EQUAL(15., daisy.radius());
-  BOOST_CHECK_EQUAL(3, daisy.qRadius());
-  BOOST_CHECK_EQUAL(8, daisy.qTheta());
-  BOOST_CHECK_EQUAL(8, daisy.qHist());
-  BOOST_CHECK_EQUAL("NRM_NONE", daisy.norm());
-  BOOST_CHECK_EQUAL(true, daisy.interpolation());
-  BOOST_CHECK_EQUAL(false, daisy.useOrientation());
+    DaisyProperties daisy = daisyProperties;
+    daisy.reset();
+    BOOST_CHECK_EQUAL(15.f, daisy.radius());
+    BOOST_CHECK_EQUAL(3, daisy.radialDivisions());
+    BOOST_CHECK_EQUAL(8, daisy.angularDivision());
+    BOOST_CHECK_EQUAL(8, daisy.gradientOrientationsDivision());
+    BOOST_CHECK_EQUAL("NRM_NONE", daisy.normalization());
+    BOOST_CHECK_EQUAL(true, daisy.interpolation());
+    BOOST_CHECK_EQUAL(false, daisy.useOrientation());
 }
+
+BOOST_FIXTURE_TEST_CASE(properties, DaisyDescriptorTest)
+{
+    DaisyProperties properties = daisyDescriptor->properties();
+    
+    BOOST_CHECK_EQUAL(10.f, properties.getProperty<float>("Radius"));
+    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("QRadius"));
+    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("QTheta"));
+    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("QHist"));
+    BOOST_CHECK_EQUAL("NRM_PARTIAL", properties.getProperty<std::string>("Norm"));
+    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("Interpolation"));
+    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("UseOrientation"));
+
+    BOOST_CHECK_EQUAL("10.000000", properties.getPropertyAsString("Radius"));
+    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("QRadius"));
+    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("QTheta"));
+    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("QHist"));
+    BOOST_CHECK_EQUAL("NRM_PARTIAL", properties.getPropertyAsString("Norm"));
+    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("Interpolation"));
+    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("UseOrientation"));
+
+}
+
 
 BOOST_AUTO_TEST_SUITE_END() 

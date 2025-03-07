@@ -29,7 +29,7 @@
 #include <memory>
 #include <string>
 
-#include "tidop/core/defs.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/graphic/datamodel.h"
 #include "tidop/geometry/entities/window.h"
 

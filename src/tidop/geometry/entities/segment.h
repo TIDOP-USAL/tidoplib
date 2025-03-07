@@ -26,7 +26,6 @@
 
 #include <utility>
 
-#include "tidop/core/utils.h"
 #include "tidop/math/mathutils.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/entity.h"
@@ -36,7 +35,7 @@
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -44,6 +43,12 @@ namespace tl
 /*!
  * \brief 2D segment class
  *
+ * A class representing a 2D line segment defined by two endpoints.
+ * It provides methods for computing geometric properties such as 
+ * length, direction, and parallelism, as well as transformations like 
+ * splitting into smaller segments.
+ *
+ * \tparam Point_t The type representing a 2D point.
  */
 template<typename Point_t>
 class Segment
@@ -57,85 +62,138 @@ public:
 
 public:
 
+    /*!
+     * \brief First endpoint of the segment.
+     */
     Point_t pt1;
+
+    /*!
+     * \brief Second endpoint of the segment.
+     */
     Point_t pt2;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Creates an empty segment with uninitialized points.
+     */
     Segment();
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] segment The segment to copy.
+     */
     Segment(const Segment &segment);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] segment The segment to move.
+     */
     Segment(Segment &&segment) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a segment from two given points.
+     * \param[in] _pt1 First endpoint.
+     * \param[in] _pt2 Second endpoint.
+     */
     Segment(Point_t _pt1, Point_t _pt2);
+
+    /*!
+     * \brief Constructs a segment from a starting point, angle, and length.
+     * \param[in] pt Starting point.
+     * \param[in] angle Angle in radians (measured counterclockwise from the x-axis).
+     * \param[in] length Length of the segment.
+     * \param[in] bCenter If true, the given point is the center; otherwise, it is the starting point.
+     *
+     * If `bCenter` is true, the segment is created symmetrically around `pt`.
+     * Otherwise, the segment starts at `pt` and extends in the direction given by `angle`.
+     */
     Segment(const Point_t &pt, double angle, double length, bool bCenter = true);
 
     /*!
-     * \brief Copy assignment operator
+     * \brief Copy assignment operator.
+     * \param[in] segment The segment to copy.
+     * \return Reference to the modified segment.
      */
     auto operator = (const Segment &segment) -> Segment &;
 
     /*!
-     * \brief Move assignment operator
+     * \brief Move assignment operator.
+     * \param[in] segment The segment to move.
+     * \return Reference to the modified segment.
      */
     auto operator = (Segment &&segment) TL_NOEXCEPT -> Segment &;
     
     ~Segment() override = default;
     
     /*!
-     * \brief Conversion to a segment of a different type
+     * \brief Conversion to a segment of a different point type.
+     * \tparam Point_t2 The target point type.
      */
     template<typename Point_t2> operator Segment<Point_t2>() const;
     
     /*!
-     * \brief Angle measured with respect to the x-axis.
-     * \return Angle in radians
+     * \brief Computes the angle of the segment relative to the x-axis.
+     * \return The angle in radians.
      */
     auto angleOX() const -> double;
-    
+
     /*!
-     * \brief Angle measured with respect to the y-axis.
-     * \return Angle in radians
+     * \brief Computes the angle of the segment relative to the y-axis.
+     * \return The angle in radians.
      */
     auto angleOY() const -> double;
     
     /*!
-     * \brief Window
+     * \brief Computes the bounding box of the segment.
+     * \return The bounding box as a `Window<Point_t>`.
      */
     auto window() const -> Window<Point_t>;
-    
+
     /*!
-     * \brief Check if the segment is empty
+     * \brief Checks if the segment is empty (i.e., both endpoints are identical).
+     * \return True if the segment is empty, false otherwise.
      */
     auto isEmpty() const -> bool;
-    
+
     /*!
-     * \brief Checks if two segments are close to each other
-     * \param[in] l2 Segment to which it is compared
-     * \param[in] dist Maximum separation distance
+     * \brief Checks if two segments are close to each other within a given distance.
+     * \param[in] l2 The segment to compare against.
+     * \param[in] dist Maximum allowed separation distance.
+     * \return True if the segments are closer than `dist`, false otherwise.
      */
     auto isNear(const Segment<Point_t> &l2, double dist = 10.) const -> bool;
     
     /*!
-     * \brief Check if it is parallel to another segment
-     * \param[in] l2 Segment to which it is compared
-     * \param[in] tol Angular tolerance. If it is 0, the segments must be parallel.
-     *  If it has another value, lines below this tolerance are accepted.
+     * \brief Checks if the segment is parallel to another segment.
+     * \param[in] l2 The segment to compare against.
+     * \param[in] tol Angular tolerance in radians.
+     *        If `tol == 0`, the segments must be exactly parallel.
+     *        If `tol > 0`, segments with an angular difference less than `tol` are considered parallel.
+     * \return True if the segments are parallel, false otherwise.
      */
     auto isParallel(const Segment<Point_t> &l2, double tol = 0.) const -> bool;
     
     /*!
-     * \brief Segment length
+     * \brief Computes the length of the segment.
+     * \return The Euclidean distance between `pt1` and `pt2`.
      */
     auto length() const -> double;
     
     /*!
-     * \brief Vector
+     * \brief Computes the directional vector of the segment.
+     * \return A point representing the vector from `pt1` to `pt2`.
      */
     auto vector() const -> Point_t;
     
     /*!
-     * \brief divides a segment into n parts
-     * \param[in] n number of partitions
-     * \return Segments
+     * \brief Divides the segment into `n` equal parts.
+     * \param[in] n Number of partitions.
+     * \return A vector containing `n` smaller segments.
+     *
+     * Each sub-segment is of equal length and follows the same direction as the original segment.
      */
     auto split(size_t n) const -> std::vector<Segment<Point_t>>;
 };
@@ -152,6 +210,11 @@ using Line = SegmentI;
 /*!
  * \brief 3D segment class
  *
+ * A class representing a 3D line segment defined by two endpoints.
+ * It provides methods for computing geometric properties such as
+ * length, direction, and bounding box.
+ *
+ * \tparam Point3_t The type representing a 3D point.
  */
 template<typename Point3_t>
 class Segment3D
@@ -164,51 +227,91 @@ public:
 
 public:
 
+    /*!
+     * \brief First endpoint of the segment.
+     */
     Point3_t pt1;
 
+    /*!
+     * \brief Second endpoint of the segment.
+     */
     Point3_t pt2;
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     *
+     * Creates an empty segment with uninitialized points.
+     */
     Segment3D();
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] segment The segment to copy.
+     */
     Segment3D(const Segment3D &segment);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] segment The segment to move.
+     */
     Segment3D(Segment3D &&segment) TL_NOEXCEPT;
+
+    /*!
+     * \brief Constructs a segment from two given points.
+     * \param[in] _pt1 First endpoint.
+     * \param[in] _pt2 Second endpoint.
+     */
     Segment3D(const Point3_t &_pt1, const Point3_t &_pt2);
 
+    /*!
+     * \brief Default destructor.
+     */
     ~Segment3D() override = default;
 
     /*!
-     * \brief Copy assignment operator
+     * \brief Copy assignment operator.
+     * \param[in] segment The segment to copy.
+     * \return Reference to the modified segment.
      */
-    auto operator =(const Segment3D& segment) -> Segment3D&;
+    auto operator =(const Segment3D &segment) -> Segment3D &;
 
     /*!
-     * \brief Move assignment operator
+     * \brief Move assignment operator.
+     * \param[in] segment The segment to move.
+     * \return Reference to the modified segment.
      */
-    auto operator =(Segment3D&& segment) TL_NOEXCEPT -> Segment3D&;
+    auto operator =(Segment3D &&segment) TL_NOEXCEPT -> Segment3D &;
 
     /*!
-     * \brief Conversion to a segment of a different type
+     * \brief Conversion to a segment of a different point type.
+     * \tparam Point3_t2 The target point type.
+     * \return A new segment with the converted point type.
      */
     template<typename Point3_t2> operator Segment3D<Point3_t2>() const;
 
     /*!
-     * \brief Bounding Box
+     * \brief Computes the bounding box of the segment.
+     * \return The bounding box as a `BoundingBox<Point3_t>`.
      */
     auto boundingBox() const -> BoundingBox<Point3_t>;
 
     /*!
-     * \brief Check if the segment is empty
+     * \brief Checks if the segment is empty (i.e., both endpoints are identical).
+     * \return True if the segment is empty, false otherwise.
      */
     auto isEmpty() const -> bool;
 
     /*!
-     * \brief Segment length
+     * \brief Computes the length of the segment.
+     * \return The Euclidean distance between `pt1` and `pt2`.
      */
     auto length() const -> double;
 
     /*!
-     * \brief Vector
+     * \brief Computes the directional vector of the segment.
+     * \return A point representing the vector from `pt1` to `pt2`.
      */
     auto vector() const -> Point3_t;
 };

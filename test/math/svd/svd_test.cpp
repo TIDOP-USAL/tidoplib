@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop svd test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/svd.h>
+#include <tidop/math/algebra/decomp/svd.h>
 
 using namespace tl;
 

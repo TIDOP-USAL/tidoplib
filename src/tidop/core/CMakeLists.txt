@@ -35,50 +35,59 @@ if(BUILD_TL_CORE)
     
     add_files_to_project(${PROJECT_NAME} 
                          SOURCE_FILES 
-                             app.cpp
-                             exception.cpp
-                             log.cpp
-                             utils.cpp
-                             progress.cpp
-                             event.cpp
-                             licence.cpp
-                             gdalreg.cpp
-                             chrono.cpp
-                             path.cpp
-                             xml.cpp
+                             app/app.cpp
+                             app/licence.cpp
+                             app/log.cpp
+                             app/message.cpp
+                             base/chrono.cpp
+                             base/event.cpp
+                             base/exception.cpp
+                             base/path.cpp
+                             base/property.cpp
+                             base/string_utils.cpp
+                             base/type_conversions.cpp
                              concurrency/parallel.cpp
                              console/console.cpp
                              console/argument.cpp
                              console/command.cpp
                              console/menu.cpp
-                             msg/message.cpp
+                             private/gdalreg.cpp
                              task/events.cpp
                              task/process.cpp
+                             task/progress.cpp
                              task/task.cpp
                              task/tasklist.cpp
                              task/taskqueue.cpp
                              task/tasktree.cpp
+                             units/area.cpp
+                             units/length.cpp
+                             units/mass.cpp
                          HEADER_FILES
-                             core.h
-                             defs.h
-                             common.h
-                             ptr.h
-                             app.h
-                             exception.h
-                             flags.h
-                             log.h
-                             utils.h
-                             task.h
-                             progress.h
-                             event.h
-                             licence.h
-                             gdalreg.h
-                             chrono.h
                              concurrency.h
-                             path.h
-                             xml.h
-                             endian.h
                              console.h
+                             core.h
+                             task.h
+                             app/app.h
+                             app/licence.h
+                             app/log.h
+                             app/messagehandler.h
+                             app/message.h
+                             base/chrono.h
+                             base/common.h
+                             base/defs.h
+                             base/endian.h
+                             base/event.h
+                             base/exception.h
+                             base/flags.h
+                             base/format.h
+                             base/path.h
+                             base/property.h
+                             base/ptr.h
+                             base/size.h
+                             base/split.h
+                             base/string_utils.h
+                             base/type.h
+                             base/type_conversions.h
                              concurrency/consumer.h							 
                              concurrency/parallel.h							 
                              concurrency/producer.h							 
@@ -90,15 +99,15 @@ if(BUILD_TL_CORE)
                              console/command.h
                              console/validator.h
                              console/menu.h
-                             messages.h
-                             msg/handler.h
-                             msg/message.h
+                             private/gdalreg.h
                              task/events.h
                              task/process.h
+                             task/progress.h
                              task/task.h
                              task/tasklist.h
                              task/taskqueue.h
                              task/tasktree.h
+                             units/area.h
                              units/length.h
                              units/mass.h
                              units/si.h

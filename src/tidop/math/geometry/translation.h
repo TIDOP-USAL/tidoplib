@@ -28,23 +28,26 @@
 
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/svd.h"
+#include "tidop/math/algebra/decomp/svd.h"
 #include "tidop/geometry/entities/point.h"
 
 namespace tl
 {
 
-/*! \addtogroup Math
- *  \{
- */
-
-
-/*! \addtogroup Geometry
+/*! \addtogroup GeometricTransformations
  *  \{
  */
 
 /*!
- * /brief Translation
+ * \brief Translation Transformation.
+ * 
+ * The `Translation` class represents a translation transformation that is applied 
+ * to points, vectors, and matrices. It encapsulates the translation vector, which 
+ * can be of arbitrary dimension (`Dim`), and provides various methods for transforming 
+ * points, vectors, and matrices using the translation transformation.
+ * 
+ * \tparam T The type of the translation components (e.g., float, double).
+ * \tparam Dim The dimensionality of the translation (e.g., 2D or 3D).
  */
 template <typename T, size_t Dim>
 class Translation
@@ -52,9 +55,12 @@ class Translation
 
 public:
 
+    /*!
+     * \brief The dimensionality of the translation transformation.
+     */
     enum
     {
-        dimensions = Dim
+        dimensions = Dim ///< Dimensionality of the translation (2D or 3D).
     };
 
     using value_type = T;
@@ -68,55 +74,232 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     */
     Translation();
+
+    /*!
+     * \brief Constructor that initializes translation for 2D (tx, ty).
+     * \param[in] tx The translation in the x-direction.
+     * \param[in] ty The translation in the y-direction.
+     */
     Translation(T tx, T ty);
+
+    /*!
+     * \brief Constructor that initializes translation for 3D (tx, ty, tz).
+     * \param[in] tx The translation in the x-direction.
+     * \param[in] ty The translation in the y-direction.
+     * \param[in] tz The translation in the z-direction.
+     */
     Translation(T tx, T ty, T tz);
+
+    /*!
+     * \brief Constructor that initializes translation from a vector.
+     * \param[in] vector The translation vector.
+     */
     Translation(const Vector<T, Dim> &vector);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] translate The translation object to copy.
+     */
     Translation(const Translation &translate);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] translate The translation object to move.
+     */
     Translation(Translation &&translate) TL_NOEXCEPT;
 
+    /*!
+     * \brief Destructor.
+     */
     ~Translation() = default;
 
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] translate The translation object to assign.
+     * \return A reference to this translation object.
+     */
     auto operator=(const Translation &translate) -> Translation&;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] translate The translation object to move.
+     * \return A reference to this translation object.
+     */
     auto operator=(Translation &&translate) TL_NOEXCEPT -> Translation&;
 
-    auto toVector() const -> Vector<T, Dim>;
+    /*!
+     * \brief Converts the translation to a vector.
+     * \return The translation vector.
+     */
+    auto toVector() const TL_NOEXCEPT -> Vector<T, Dim>;
 
-    auto x() const -> T;
-    auto x() -> reference;
-    auto y() const -> T;
-    auto y() -> reference;
-    auto z() const -> T;
-    auto z() -> reference;
+    /*!
+     * \brief Access the x-component of the translation.
+     * \return The x-component.
+     */
+    auto x() const TL_NOEXCEPT -> const_reference;
 
+    /*!
+     * \brief Access the x-component of the translation (non-const version).
+     * \return A reference to the x-component.
+     */
+    auto x() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the y-component of the translation.
+     * \return The y-component.
+     */
+    auto y() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the y-component of the translation (non-const version).
+     * \return A reference to the y-component.
+     */
+    auto y() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access the z-component of the translation.
+     * \return The z-component.
+     */
+    auto z() const TL_NOEXCEPT -> const_reference;
+
+    /*!
+     * \brief Access the z-component of the translation (non-const version).
+     * \return A reference to the z-component.
+     */
+    auto z() TL_NOEXCEPT -> reference;
+
+    /*!
+     * \brief Access a specific component of the translation by position.
+     * \param[in] position The index of the component to access.
+     * \return A reference to the translation component at the specified position.
+     */
     auto at(size_type position) -> reference;
+
+    /*!
+     * \brief Access a specific component of the translation by position (const version).
+     * \param[in] position The index of the component to access.
+     * \return A constant reference to the translation component at the specified position.
+     */
     auto at(size_type position) const -> const_reference;
 
-    auto operator[](size_t position) -> reference;
-    auto operator[](size_t position) const -> const_reference;
+    /*!
+     * \brief Access a specific component of the translation using the subscript operator.
+     * \param[in] position The index of the component to access.
+     * \return A reference to the translation component at the specified position.
+     */
+    auto operator[](size_t position) TL_NOEXCEPT -> reference;
 
-    auto inverse() const -> Translation;
+    /*!
+     * \brief Access a specific component of the translation using the subscript operator (const version).
+     * \param[in] position The index of the component to access.
+     * \return A constant reference to the translation component at the specified position.
+     */
+    auto operator[](size_t position) const TL_NOEXCEPT -> const_reference;
 
-    /// Clases que deberían ser virtuales
-    auto transform(const Point<T> &point) const -> Point<T>;
-    auto transform(const Point3<T> &point) const -> Point3<T>;
+    /*!
+     * \brief Compute the inverse of the translation.
+     * \return A translation representing the inverse of the current translation.
+     */
+    auto inverse() const->Translation;
+
+    /*!
+     * \brief Transform a point using the translation.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
+    auto transform(const Point<T> &point) const->Point<T>;
+
+    /*!
+     * \brief Transform a 3D point using the translation.
+     * \param[in] point The point to transform.
+     * \return The transformed point.
+     */
+    auto transform(const Point3<T> &point) const->Point3<T>;
+
+    /*!
+     * \brief Transform a vector using the translation.
+     * \tparam _size The size of the vector.
+     * \param[in] vector The vector to transform.
+     * \return The transformed vector.
+     */
     template<size_t _size>
-    auto transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>;
-    template<size_t _row, size_t _col>
-    auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
+    auto transform(const Vector<T, _size> &vector) const->Vector<T, Dim>;
 
-    auto operator * (const Point<T> &point) const -> Point<T>;
-    auto operator * (const Point3<T> &point) const -> Point3<T>;
+    /*!
+     * \brief Transform a matrix using the translation.
+     * \tparam _row The number of rows in the matrix.
+     * \tparam _col The number of columns in the matrix.
+     * \param[in] matrix The matrix to transform.
+     * \return The transformed matrix.
+     */
+    template<size_t _row, size_t _col>
+    auto transform(const Matrix<T, _row, _col> &matrix) const->Matrix<T, _row, _col>;
+
+    /*!
+     * \brief Apply the translation to a point.
+     * \param[in] point The point to apply the translation to.
+     * \return The translated point.
+     */
+    auto operator * (const Point<T> &point) const->Point<T>;
+
+    /*!
+     * \brief Apply the translation to a 3D point.
+     * \param[in] point The point to apply the translation to.
+     * \return The translated 3D point.
+     */
+    auto operator * (const Point3<T> &point) const->Point3<T>;
+
+    /*!
+     * \brief Apply the translation to a vector.
+     * \tparam _size The size of the vector.
+     * \param[in] vector The vector to apply the translation to.
+     * \return The translated vector.
+     */
     template<size_t _size>
-    auto operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>;
-    template<size_t _row, size_t _col>
-    auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
+    auto operator * (const Vector<T, _size> &vector) const->Vector<T, _size>;
 
-    auto operator * (const Translation<T, Dim> &translation) const -> Translation<T, Dim>;
+    /*!
+     * \brief Apply the translation to a matrix.
+     * \tparam _row The number of rows in the matrix.
+     * \tparam _col The number of columns in the matrix.
+     * \param[in] matrix The matrix to apply the translation to.
+     * \return The translated matrix.
+     */
+    template<size_t _row, size_t _col>
+    auto operator * (const Matrix<T, _row, _col> &matrix) const->Matrix<T, _row, _col>;
+
+    /*!
+     * \brief Apply the translation to another translation.
+     * \param[in] translation The translation to apply.
+     * \return The resulting translation.
+     */
+    auto operator * (const Translation<T, Dim> &translation) const->Translation<T, Dim>;
 };
 
+/*! \} */
 
 
+/*! \addtogroup Estimators
+ *  \{
+ */
+
+
+/*!
+ * \brief Estimator for Translation transformations.
+ *
+ * The `TranslationEstimator` class provides methods to estimate a translation
+ * transformation between two sets of points or matrices. The translation is estimated
+ * based on the corresponding pairs of source and destination points or matrices,
+ * and the result is represented as a `Translation` object.
+ *
+ * \tparam T The type of the translation components (e.g., float, double).
+ * \tparam Dim The dimensionality of the translation (e.g., 2D or 3D).
+ */
 template <typename T, size_t Dim>
 class TranslationEstimator
 {
@@ -134,16 +317,34 @@ public:
     TranslationEstimator() = default;
     ~TranslationEstimator() = default;
 
+    /*!
+     * \brief Estimate the translation between two matrices.
+     * 
+     * This method estimates the translation transformation between two matrices of corresponding points.
+     * \tparam rows The number of rows in the input matrices.
+     * \tparam cols The number of columns in the input matrices.
+     * \param[in] src The source matrix of points.
+     * \param[in] dst The destination matrix of points.
+     * \return The estimated translation transformation.
+     */
     template<size_t rows, size_t cols>
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>;
 
+    /*!
+     * \brief Estimate the translation between two sets of points.
+     * 
+     * This method estimates the translation transformation between two sets of corresponding points.
+     * \param[in] src The source set of points.
+     * \param[in] dst The destination set of points.
+     * \return The estimated translation transformation.
+     */
     static auto estimate(const std::vector<Point<T>> &src,
                          const std::vector<Point<T>> &dst) -> Translation<T, Dim>;
 
 };
 
-
+/*! \} */
 
 
 /* Translation implementation */
@@ -213,44 +414,44 @@ auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT -> Tran
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::toVector() const -> Vector<T, Dim>
+auto Translation<T, Dim>::toVector() const TL_NOEXCEPT -> Vector<T, Dim>
 {
     return this->translation;
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::x() const -> T
+auto Translation<T, Dim>::x() const TL_NOEXCEPT -> const_reference
 {
     return this->translation[0];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::x() -> T&
+auto Translation<T, Dim>::x() TL_NOEXCEPT -> T&
 {
     return this->translation[0];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::y() const -> T
+auto Translation<T, Dim>::y() const TL_NOEXCEPT -> const_reference
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::y() -> reference
+auto Translation<T, Dim>::y() TL_NOEXCEPT -> reference
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::z() const -> T
+auto Translation<T, Dim>::z() const TL_NOEXCEPT -> const_reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::z() -> reference
+auto Translation<T, Dim>::z() TL_NOEXCEPT -> reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
@@ -269,13 +470,13 @@ auto Translation<T, Dim>::at(size_type position) const -> const_reference
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator[](size_t position) -> reference
+auto Translation<T, Dim>::operator[](size_t position) TL_NOEXCEPT -> reference
 {
     return this->translation[position];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator[](size_t position) const -> const_reference
+auto Translation<T, Dim>::operator[](size_t position) const TL_NOEXCEPT -> const_reference
 {
     return this->translation[position];
 }
@@ -434,14 +635,6 @@ auto TranslationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src,
 
     return TranslationEstimator<T, dimensions>::estimate(src_mat, dst_mat);
 }
-
-
-/*! \} */ // end of Geometry
-
-/*! \} */ // end of Math
-
-
-
 
 } // End namespace tl
 

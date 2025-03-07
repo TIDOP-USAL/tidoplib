@@ -28,8 +28,8 @@
 #include <array>
 #include <memory>
 
-#include "tidop/core/defs.h"
-#include "tidop/core/flags.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/flags.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/font.h"
 
@@ -702,7 +702,7 @@ private:
     /*!
      * \brief Label text
      */
-    std::string mText;
+    std::string mLicenseText;
 
     /*!
      * \brief Rotation angle in decimal sexagesimal degrees

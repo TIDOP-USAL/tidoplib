@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop flags test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/flags.h>
+#include <tidop/core/base/flags.h>
 
 using namespace tl;
 

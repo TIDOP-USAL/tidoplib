@@ -27,8 +27,8 @@
 #include <vector> 
 #include <string> 
 
-#include "tidop/core/defs.h"
-#include "tidop/core/flags.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/flags.h"
 #include "tidop/math/statistic/mean.h"
 #include "tidop/math/statistic/median.h"
 #include "tidop/math/statistic/mode.h"
@@ -40,15 +40,55 @@
 namespace tl
 {
 
-/*! \addtogroup math
+/*! \addtogroup Statistics
  *  \{
  */
 
-/*! \defgroup statistics Statistics
- *  \{
+/*!
+ * \brief Class for computing descriptive statistics
+ *
+ * The `DescriptiveStatistics` class provides a comprehensive set of methods for calculating
+ * descriptive statistics on a dataset, including measures like mean, median, mode, variance,
+ * standard deviation, quartiles, and more. The class can handle both sample and population
+ * data configurations and allows flexibility in choosing the method for skewness calculation.
+ * 
+ * \tparam T The type of data in the series (e.g., `double`, `int`).
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * // Example usage of the DescriptiveStatistics class
+ * 
+ * // Creating a dataset of double values
+ * std::vector<double> data = {1.5, 2.3, 3.1, 4.4, 5.5, 6.2, 7.7, 8.8, 9.0};
+ *
+ * // Initializing DescriptiveStatistics object with the dataset
+ * DescriptiveStatistics<double> stats(data);
+ *
+ * // Computing and printing quintiles
+ * auto quintiles = stats.quintiles();
+ * std::cout << "Quintiles: ";
+ * for (const auto& q : quintiles) {
+ *     std::cout << q << " ";
+ * }
+ * std::cout << std::endl;
+ *
+ * // Computing and printing deciles
+ * auto deciles = stats.deciles();
+ * std::cout << "Deciles: ";
+ * for (const auto& d : deciles) {
+ *     std::cout << d << " ";
+ * }
+ * std::cout << std::endl;
+ *
+ * // Computing and printing percentiles
+ * auto percentiles = stats.percentiles();
+ * std::cout << "Percentiles: ";
+ * for (const auto& p : percentiles) {
+ *     std::cout << p << " ";
+ * }
+ * std::cout << std::endl;
+ * \endcode
  */
-
-
 template<typename T>
 class DescriptiveStatistics
 {
@@ -61,29 +101,41 @@ public:
     //  population
     //};
 
+    /*!
+     * \brief Configuration struct
+     *
+     * This structure allows users to configure the behavior of the `DescriptiveStatistics`
+     * class. Users can specify whether the data is considered a sample or a population,
+     * and select the skewness calculation method.
+     */
     struct Config
     {
-        bool sample = true;
-        SkewnessMethod skewness_method = SkewnessMethod::fisher_pearson;
+        bool sample = true; ///< True for sample data, false for population data.
+        SkewnessMethod skewness_method = SkewnessMethod::fisher_pearson; ///< Method for calculating skewness.
     };
 
 private:
 
+    /*!
+     * \brief Internal status flags for computed statistics
+     *
+     * This enum is used internally to track which statistics have been computed.
+     */
     enum class InternalStatus
     {
-        min = (1 << 0),
-        max = (1 << 1),
-        mean = (1 << 2),
-        median = (1 << 3),
-        mode = (1 << 4),
-        range = (1 << 5),
-        first_quartile = (1 << 6),
-        second_quartile = (1 << 7),
-        third_quartile = (1 << 8),
-        sum_of_squares = (1 << 9),
-        rms = (1 << 10),
-        variance = (1 << 11),
-        standar_deviation = (1 << 12)
+        min = (1 << 0),               ///< Minimum value computed
+        max = (1 << 1),               ///< Maximum value computed
+        mean = (1 << 2),              ///< Mean computed
+        median = (1 << 3),            ///< Median computed
+        mode = (1 << 4),              ///< Mode computed
+        range = (1 << 5),             ///< Range computed
+        first_quartile = (1 << 6),    ///< First quartile computed
+        second_quartile = (1 << 7),   ///< Second quartile computed
+        third_quartile = (1 << 8),    ///< Third quartile computed
+        sum_of_squares = (1 << 9),    ///< Sum of squares computed
+        rms = (1 << 10),              ///< Root mean square computed
+        variance = (1 << 11),         ///< Variance computed
+        standar_deviation = (1 << 12) ///< Standard deviation computed
     };
 
     mutable tl::EnumFlags<InternalStatus> mStatus;
@@ -107,37 +159,64 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor
+     * \param config Configuration settings
+     */
     DescriptiveStatistics(Config config = Config());
-    DescriptiveStatistics(Series<T> data,
-                          Config config = Config());
-    DescriptiveStatistics(const DescriptiveStatistics<T> &object);
-    ~DescriptiveStatistics();
-
-    auto data() const -> Series<T>;
 
     /*!
-     * \brief Return the smallest value
+     * \brief Constructor with data
+     * \param[in] data A series of data values
+     * \param[in] config Configuration settings
+     */
+    DescriptiveStatistics(Series<T> data, Config config = Config());
+
+    /*!
+     * \brief Copy constructor
+     * \param object An existing DescriptiveStatistics object
+     */
+    DescriptiveStatistics(const DescriptiveStatistics<T> &object);
+
+    /*!
+     * \brief Destructor
+     */
+    ~DescriptiveStatistics();
+
+    /*!
+     * \brief Get the dataset
+     * \return The series of data
+     */
+    auto data() const -> Series<T>;
+    /*!
+     * \brief Return the smallest value in the dataset
      * \f[ \text{min} = \text{min}(x_i)_{i=1}^{n} \f]
-     * \return Minimun value
+     * \return Minimum value
      */
     auto min() const -> T;
 
     /*!
-     * \brief Returns the greatest value
+     * \brief Return the largest value in the dataset
      * \f[ \text{max} = \text{max}(x_i)_{i=1}^{n} \f]
      * \return Maximum value
      */
     auto max() const -> T;
 
     /*!
-     * \brief Total of all data values
+     * \brief Return the sum of all values in the dataset
      * \f[ \text{sum} = \sum_{i=1}^{n}x_i \f]
-     * \return
+     * \return Sum of the dataset
      */
     auto sum() const -> T;
-
     /*!
-     * \brief The arithmetic mean or arithmetic average,
+     * \brief Return the arithmetic mean of the dataset
+     * \f[ \mu = \frac{\sum_{i=1}^{n}x_i}{n} \f]
+     * \return Mean of the dataset
+     */
+    /*!
+     * \brief Return the arithmetic mean of the dataset
+     * 
+     * The arithmetic mean or arithmetic average,
      * or simply just the mean or the average, is the sum
      * of a collection of numbers divided by the count of
      * numbers in the collection.
@@ -155,15 +234,19 @@ public:
     auto mean() const -> double;
 
     /*!
-     * \brief The median is the value separating the higher half from
+     * \brief Return the median of the dataset
+     * 
+     * The median is the value separating the higher half from
      * the lower half of a data sample, a population, or a probability
      * distribution.
-     * \return
+     * \return Median value
      */
     auto median() const -> T;
 
     /*!
-     * \brief Variance measures dispersion of data from the mean.
+     * \brief Return the variance of the dataset
+     * 
+     * Variance measures dispersion of data from the mean.
      * The formula for variance is the sum of squared differences from the
      * mean divided by the size of the data set.
      *
@@ -175,12 +258,14 @@ public:
      *
      * \f[ s^{2} = \frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1} \f]
      *
-     * \return
+     * \return Variance of the dataset
      */
     auto variance() const -> double;
 
     /*!
-     * \brief The standard deviation is a measure of the amount of variation
+     * \brief Return the standard deviation of the dataset
+     * 
+     * The standard deviation is a measure of the amount of variation
      * or dispersion of a set of values.
      *
      * For a population:
@@ -191,40 +276,43 @@ public:
      *
      * \f[ s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1}} \f]
      *
-     * \return
+     * \return Standard deviation of the dataset
      */
     auto standarDeviation() const -> double;
 
     /*!
-     * \brief mode
-     * \return
+     * \brief Return the mode of the dataset
+     * \return Mode of the dataset
      */
     auto mode() const -> double;
 
     /*!
-     * \brief The range of a set of data is the difference between
+     * \brief Return the range of the dataset
+     * 
+     * The range of a set of data is the difference between
      * the largest and smallest values.
      * \f[ \text{range} = x_n - x_1 \f]
-     * \return Range
+     * \return Range of the dataset
      * \see min, max
      */
     auto range() const -> T;
 
     /*!
-     * \brief Quantile
-     * \return
+     * \brief Return the specified quantile of the dataset
+     * \param[in] p The quantile percentage (between 0 and 1)
+     * \return The quantile value
      */
     auto quantile(double p) const -> double;
 
     /*!
-     * \brief firstQuartile
-     * \return
+     * \brief Return the first quartile (Q1)
+     * \return The first quartile value
      */
     auto firstQuartile() const -> double;
 
     /*!
-     * \brief secondQuartile
-     * \return
+     * \brief Return the second quartile (Q2, median)
+     * \return The second quartile value
      */
     auto secondQuartile() const -> double;
 
@@ -234,20 +322,55 @@ public:
      */
     auto thirdQuartile() const -> double;
 
+    /*!
+     * \brief Return the third quartile (Q3)
+     * \return The third quartile value
+     */
     auto quartiles() const -> std::array<double, 3>;
+
+    /*!
+     * \brief Compute the quintiles of the dataset
+     *
+     * The quintiles are the values that divide the data into five equal parts. This method computes
+     * the 20th, 40th, 60th, and 80th percentiles, which represent the first, second, third, and fourth
+     * quintiles of the data, respectively.
+     *
+     * \return An array containing the first, second, third, and fourth quintiles.
+     */
     auto quintiles() const -> std::array<double, 4>;
+
+    /*!
+     * \brief Compute the deciles of the dataset
+     *
+     * The deciles are the values that divide the data into ten equal parts. This method computes the
+     * values corresponding to the 10th, 20th, ..., 90th percentiles, representing the deciles of the data.
+     *
+     * \return An array containing the deciles (9 values corresponding to 10th, 20th, ..., 90th percentiles).
+     */
     auto deciles() const -> std::array<double, 9>;
+
+    /*!
+     * \brief Compute the percentiles of the dataset
+     *
+     * The percentiles are the values that divide the data into 100 equal parts. This method computes
+     * the values corresponding to the 1st, 2nd, ..., 99th percentiles, representing the percentiles
+     * of the data.
+     *
+     * \return An array containing the percentiles (99 values corresponding to 1st, 2nd, ..., 99th percentiles).
+     */
     auto percentiles() const -> std::array<double, 99>;
 
     /*!
-     * \brief Interquartile Range
+     * \brief Return the interquartile range (IQR)
      * \f[ IQR = Q_3 - Q_1 \f]
-     * \return
+     * \return The interquartile range
      */
     auto interquartileRange() const -> double;
 
     /*!
-     * \brief Mean Absolute Deviation
+     * \brief Return the mean absolute deviation (MAD)
+     *
+     * Mean Absolute Deviation
      *
      * For a Population:
      *
@@ -257,18 +380,19 @@ public:
      *
      * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \overline{x}|}{n}  \f]
      *
-     * \return
+     * \return The mean absolute deviation
      */
     auto meanAbsoluteDeviation() const -> double;
 
     /*!
-     * \brief Median Absolute Deviation
-     * \return
+     * \brief Return the median absolute deviation (MAD)
+     * \return The median absolute deviation
      */
     auto medianAbsoluteDeviation() const -> double;
 
     /*!
-     * \brief Sum of Squares
+     * \brief Return the sum of squared differences from the mean
+     * 
      * The sum of squares is the sum of the squared differences between
      * data values and the mean.
      *
@@ -280,12 +404,12 @@ public:
      *
      * \f[ SS = \sum_{i=1}^{n}(x_i - \overline{x})^{2}  \f]
      *
-     * \return
+     * \return The sum of squares
      */
     auto sumOfSquares() const -> double;
 
     /*!
-     * \brief Root Mean Square
+     * \brief Return the root mean square (RMS) of the dataset
      *
      * The root mean square describes the magnitude of a set of numbers.
      * The formula for root mean square is the square root of the sum of
@@ -293,26 +417,32 @@ public:
      *
      * \f[ RMS = \sqrt{\frac{\sum_{i=1}^{n}x_i^{2}}{n}} \f]
      *
-     * \return
+     * \return The root mean square
      */
     auto rootMeanSquare() const -> double;
 
     /*!
-     * \brief Skewness
-     * \return
+     * \brief Return the skewness of the dataset
+     * \return The skewness value
      */
     auto skewness() const -> double;
 
     /*!
-     * \brief Kurtosis
-     * \return
+     * \brief Return the kurtosis of the dataset
+     * \return The kurtosis value
      */
     auto kurtosis() const -> double;
 
+    /*!
+     * \brief Return the excess kurtosis of the dataset
+     * \return The kurtosis excess
+     */
     auto kurtosisExcess() const -> double;
 
     /*!
-     * \brief Coefficient of Variation (CV) or Relative Standard Deviation (RSD)
+     * \brief Return the coefficient of variation (CV)
+     *
+     * Coefficient of Variation (CV) or Relative Standard Deviation (RSD)
      * The coefficient of variation describes dispersion of data around the mean.
      * It is the ratio of the standard deviation to the mean. The coefficient of
      * variation is calculated as the standard deviation divided by the mean.
@@ -325,27 +455,48 @@ public:
      *
      * \f[ C_V = \frac{\sigma}{\bar{x}} \f]
      *
-     * \return
+     * \return The coefficient of variation
      */
     auto coefficientOfVariation() const -> double;
 
     /*!
-     * \brief Quartile coefficient of dispersion
+     * \brief Return the quartile coefficient of dispersion 
+     * 
+     * Quartile coefficient of dispersion
      * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
-     * \return
+     * \return The quartile coefficient of dispersion
      */
     auto quartileCoefficientOfDispersion() const -> double;
 
     /*!
-     * \brief Quartile Deviation
+     * \brief Return the quartile deviation
      * \f[ \frac{Q_3-Q_1}{2} \f]
+     * \return The quartile deviation
      */
     auto quartileDeviation() const -> double;
 
+    /*!
+     * \brief Return the biweight midvariance
+     * \return The biweight midvariance
+     */
     auto biweightMidvariance() const -> double;
 
+    /*!
+     * \brief Return the size of the dataset
+     * \return The number of elements in the dataset
+     */
     auto size() const -> size_t;
+
+    /*!
+     * \brief Return whether the data is treated as a sample
+     * \return True if the data is a sample
+     */
     auto isSample() const -> bool;
+
+    /*!
+     * \brief Return whether the data is treated as a population
+     * \return True if the data is a population
+     */
     auto isPopulation() const -> bool;
 
 private:
@@ -366,6 +517,8 @@ private:
     template<typename It>
     void quantile(It &first, It &last) const;
 };
+
+/*! \} */
 
 
 /* Implementation */
@@ -927,12 +1080,6 @@ void DescriptiveStatistics<T>::quantile(It &first, It &last) const
         *first++ = quantile(p);
     }
 }
-
-
-/*! \} */ // end of statistic
-
-/*! \} */ // end of math
-
 
 
 } // End namespace tl

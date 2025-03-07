@@ -22,12 +22,9 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_APPS)
-
 add_subdirectory(crstrf)
 add_subdirectory(ImageManager)
-# add_subdirectory(featextract)
-# add_subdirectory(featmatch)
 add_subdirectory(crs_operations)
 add_subdirectory(pc_examples)
-endif()
+add_subdirectory(featextract)
+

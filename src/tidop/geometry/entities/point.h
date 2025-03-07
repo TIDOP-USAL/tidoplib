@@ -24,21 +24,26 @@
 
 #pragma once
 
-#include "tidop/core/utils.h"
-#include "tidop/core/common.h"
+#include "tidop/core/base/common.h"
+#include "tidop/core/base/type_conversions.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/math/algebra/vector.h"
 
 namespace tl
 {
 
-/*! \addtogroup geometry
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 
-/*!
- * \brief 2D point class
+/**
+ * @class Point
+ * @brief Represents a 2D point with X and Y coordinates.
+ * @tparam T Data type for the coordinates.
+ *
+ * This class provides basic operations for a two-dimensional point,
+ * including constructors, type conversions, and assignment operators.
  */
 template<typename T>
 class Point
@@ -47,85 +52,97 @@ class Point
 
 public:
 
-    /*!
-     * \brief type
-     */
+    /** @brief Type alias for the coordinate data type. */
     using value_type = T;
 
 public:
 
     /*!
-     * \brief Coordinate X
+     * \brief X coordinate of the point.
      */
     T x;
 
     /*!
-     * \brief Coordinate Y
+     * \brief Y coordinate of the point.
      */
     T y;
 
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor. Initializes X and Y to default values.
      */
     Point();
 
     /*!
-     * \brief Constructor
-     * \param[in] x Coordinate x
-     * \param[in] y Coordinate y
+     * \brief Constructs a Point with given coordinates.
+     * \param[in] x X coordinate.
+     * \param[in] y Y coordinate.
      */
     Point(T x, T y);
 
     /*!
-     * \brief Copy constructor
-     * \param[in] point Point object to be copied
+     * \brief Copy constructor.
+     * \param[in] point Point object to be copied.
      */
     Point(const Point<T> &point);
 
     /*!
-     * \brief Move constructor
-     * \param[in] point Point object to move
+     * \brief Move constructor.
+     * \param[in] point Point object to be moved.
      */
     Point(Point<T> &&point) TL_NOEXCEPT;
 
+    /*!
+     * \brief Constructs a Point from an array.
+     * \param[in] array Array containing two elements [x, y].
+     */
     Point(const std::array<T, 2> &array);
-    Point(const Vector<T, 2> &vector);
-
-    ~Point() override = default;
 
     /*!
-     * \brief Copy assignment operator
-     * \param[in] point Point object to be copied
+     * \brief Constructs a Point from a 2D vector.
+     * \param[in] vector Vector containing X and Y components.
+     */
+    Point(const Vector<T, 2> &vector);
+
+    /*! \brief Destructor. */
+    ~Point() override = default;
+
+    /*! 
+     * \brief Copy assignment operator.
+     * \param[in] point Point object to be copied.
+     * \return Reference to this Point.
      */
     auto operator = (const Point<T> &point) -> Point<T>&;
 
-    /*!
-     * \brief Move assignment operator
-     * \param[in] point Point object to move
+    /*! 
+     * \brief Move assignment operator.
+     * \param[in] point Point object to be moved.
+     * \return Reference to this Point.
      */
     auto operator = (Point<T> &&point) TL_NOEXCEPT -> Point<T>&;
 
     /*!
-     * \brief Type conversion
+     * \brief Type conversion to another Point type.
+     * \tparam T2 Target type for conversion.
      */
     template<typename T2> 
     operator Point<T2>() const;
 
     /*!
-     * \brief Conversion to a 3D point
+     * \brief Converts the 2D point to a 3D point.
+     * \tparam T2 Target type for conversion.
      */
     template<typename T2> 
     operator Point3<T2>() const;
 
     /*!
-     * \brief Conversion to static Vector
+     * \brief Converts the point to a static 2D vector.
      */
     auto vector() const -> Vector<T, 2>;
 
     /*!
-     * \brief Conversion to dynamic Vector
+     * \brief Converts the point to a dynamic vector.
      */
     auto dynVector() const -> Vector<T>;
 
@@ -144,8 +161,12 @@ public:
 
 
 /*!
- * \brief 3D point class
+ * \class Point3
+ * \brief Represents a 3D point with X, Y, and Z coordinates.
+ * \tparam T Data type for the coordinates.
  *
+ * This class provides similar functionality as the 2D Point class
+ * but extends it to three dimensions.
  */
 template<typename T>
 class Point3
@@ -162,17 +183,17 @@ public:
 public:
 
     /*!
-     * \brief Coordinate X
+     * \brief X coordinate of the point.
      */
     T x;
 
     /*!
-     * \brief Coordinate Y
+     * \brief Y coordinate of the point.
      */
     T y;
 
     /*!
-     * \brief Coordinate Z
+     * \brief Z coordinate of the point.
      */
     T z;
 
@@ -184,41 +205,51 @@ public:
     Point3();
 
     /*!
-     * \brief Constructor
-     * \param[in] x Coordinate x
-     * \param[in] y Coordinate y
-     * \param[in] z Coordinate z
+     * \brief Constructs a Point3 with given coordinates.
+     * \param[in] x X coordinate.
+     * \param[in] y Y coordinate.
+     * \param[in] z Z coordinate.
      */
     Point3(T x, T y, T z);
 
     /*!
-     * \brief Copy constructor
-     * \param[in] point Objeto Point object to be copied
+     * \brief Copy constructor.
+     * \param[in] point Point3 object to be copied.
      */
     Point3(const Point3<T> &point);
 
     /*!
-     * \brief Move constructor
-     * \param[in] point Objeto Point object to move
+     * \brief Move constructor.
+     * \param[in] point Point3 object to be moved.
      */
     Point3(Point3<T> &&point) TL_NOEXCEPT;
 
+    /*!
+     * \brief Constructs a Point3 from an array.
+     * \param[in] v Array containing three elements [x, y, z].
+     */
     Point3(const std::array<T, 3> &v);
+
+    /*!
+     * \brief Constructs a Point3 from a 3D vector.
+     * \param[in] vector Vector containing X, Y, and Z components.
+     */
     Point3(const Vector<T, 3> &vector);
 
+    /*! \brief Destructor. */
     ~Point3() override = default;
 
-    /*!
-     * \brief Assignment operator
-     * \param[in] point Point object to be copied
+    /*! 
+     * \brief Copy assignment operator.
+     * \param[in] point Point3 object to be copied.
      */
-    auto operator = (const Point3<T> &point) -> Point3<T> &;
+    auto operator = (const Point3<T> &point) -> Point3<T>&;
 
-    /*!
-     * \brief Move assignment operator
-     * \param[in] point Point object to move
+    /*! 
+     * \brief Move assignment operator.
+     * \param[in] point Point3 object to be moved.
      */
-    auto operator = (Point3<T> &&point) TL_NOEXCEPT -> Point3<T> &;
+    auto operator = (Point3<T> &&point) TL_NOEXCEPT -> Point3<T>&;
 
     /*!
      * \brief Type conversion

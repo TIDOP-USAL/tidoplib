@@ -132,7 +132,6 @@ BOOST_FIXTURE_TEST_CASE(mode, StatisticsTest)
   BOOST_CHECK_CLOSE(8.5, tl::mode(vd.begin(), vd.end()), 0.1);
   BOOST_CHECK_EQUAL(1, tl::mode(vi.begin(), vi.end()));
   BOOST_CHECK_EQUAL(7, tl::mode(vi2.begin(), vi2.end()));
-  BOOST_CHECK_EQUAL(1, tl::mode(vi));
   /// TODO: si hay mas de un valor mas repetido???
 }
 

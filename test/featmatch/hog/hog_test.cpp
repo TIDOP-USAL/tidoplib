@@ -25,8 +25,8 @@
 #define BOOST_TEST_MODULE Tidop HogDescriptor test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/hog.h>
-#include <tidop/geometry/size.h>
+#include <tidop/featmatch/features/hog.h>
+#include <tidop/core/base/size.h>
 
 using namespace tl;
 
@@ -35,51 +35,60 @@ BOOST_AUTO_TEST_SUITE(HogDescriptorTestSuite)
 
 struct HogDescriptorTest
 {
-  HogDescriptorTest()
-    : hogDescriptor(new HogDescriptor(Size<int>(32, 32), Size<int>(8, 8), Size<int>(4, 4), Size<int>(4, 4), 5, 2))
-  { }
-    
-  ~HogDescriptorTest()
-  { 
-    delete hogDescriptor;
-  }
+    HogDescriptorTest()
+    {
+    }
 
-  void setup()
-  {
-  }
+    ~HogDescriptorTest()
+    {
+        delete hogDescriptor;
+    }
 
-  void teardown()
-  {
-  }
+    void setup()
+    {
+        hogProperties.setWinSize(Size<int>(32, 32));
+        hogProperties.setBlockSize(Size<int>(8, 8));
+        hogProperties.setBlockStride(Size<int>(4, 4));
+        hogProperties.setCellSize(Size<int>(4, 4));
+        hogProperties.setNbins(5);
+        hogProperties.setDerivAperture(2);
 
-  HogProperties hogProperties;
-  HogDescriptor *hogDescriptor;
+        hogDescriptor = new HogDescriptor(hogProperties);
+    }
+
+    void teardown()
+    {
+    }
+
+    HogProperties hogDefaultProperties;
+    HogProperties hogProperties;
+    HogDescriptor *hogDescriptor;
 
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, HogDescriptorTest)
 {
-  BOOST_CHECK(Size<int>(16, 16) == hogProperties.winSize());
-  BOOST_CHECK(Size<int>(4, 4) == hogProperties.blockSize());
-  BOOST_CHECK(Size<int>(2, 2) == hogProperties.blockStride());
-  BOOST_CHECK(Size<int>(2, 2) == hogProperties.cellSize());
-  BOOST_CHECK_EQUAL(9, hogProperties.nbins());
-  BOOST_CHECK_EQUAL(1, hogProperties.derivAperture());
+  BOOST_CHECK(Size<int>(16, 16) == hogDefaultProperties.winSize());
+  BOOST_CHECK(Size<int>(4, 4) == hogDefaultProperties.blockSize());
+  BOOST_CHECK(Size<int>(2, 2) == hogDefaultProperties.blockStride());
+  BOOST_CHECK(Size<int>(2, 2) == hogDefaultProperties.cellSize());
+  BOOST_CHECK_EQUAL(9, hogDefaultProperties.nbins());
+  BOOST_CHECK_EQUAL(1, hogDefaultProperties.derivAperture());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor, HogDescriptorTest)
 {
-  BOOST_CHECK(Size<int>(32, 32) == hogDescriptor->winSize());
-  BOOST_CHECK(Size<int>(8, 8) == hogDescriptor->blockSize());
-  BOOST_CHECK(Size<int>(4, 4) == hogDescriptor->blockStride());
-  BOOST_CHECK(Size<int>(4, 4) == hogDescriptor->cellSize());
-  BOOST_CHECK_EQUAL(5, hogDescriptor->nbins());
-  BOOST_CHECK_EQUAL(2, hogDescriptor->derivAperture());
+  BOOST_CHECK(Size<int>(32, 32) == hogProperties.winSize());
+  BOOST_CHECK(Size<int>(8, 8) == hogProperties.blockSize());
+  BOOST_CHECK(Size<int>(4, 4) == hogProperties.blockStride());
+  BOOST_CHECK(Size<int>(4, 4) == hogProperties.cellSize());
+  BOOST_CHECK_EQUAL(5, hogProperties.nbins());
+  BOOST_CHECK_EQUAL(2, hogProperties.derivAperture());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, HogDescriptorTest)
 {
-  HogProperties copy(*hogDescriptor);
+  HogProperties copy(hogProperties);
   BOOST_CHECK(Size<int>(32, 32) == copy.winSize());
   BOOST_CHECK(Size<int>(8, 8) == copy.blockSize());
   BOOST_CHECK(Size<int>(4, 4) == copy.blockStride());
@@ -90,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, HogDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(assign, HogDescriptorTest)
 {
-  HogProperties assign = *hogDescriptor;
+  HogProperties assign = hogProperties;
   BOOST_CHECK(Size<int>(32, 32) == assign.winSize());
   BOOST_CHECK(Size<int>(8, 8) == assign.blockSize());
   BOOST_CHECK(Size<int>(4, 4) == assign.blockStride());
@@ -165,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE(derivAperture, HogDescriptorTest)
 
 BOOST_FIXTURE_TEST_CASE(reset, HogDescriptorTest)
 {
-  HogProperties hog(*hogDescriptor);
+  HogProperties hog = hogProperties;
   hog.reset();
   BOOST_CHECK(Size<int>(16, 16) == hog.winSize());
   BOOST_CHECK(Size<int>(4, 4) == hog.blockSize());
@@ -173,6 +182,25 @@ BOOST_FIXTURE_TEST_CASE(reset, HogDescriptorTest)
   BOOST_CHECK(Size<int>(2, 2) == hog.cellSize());
   BOOST_CHECK_EQUAL(9, hog.nbins());
   BOOST_CHECK_EQUAL(1, hog.derivAperture());
+}
+
+BOOST_FIXTURE_TEST_CASE(hog_descriptor_properties, HogDescriptorTest)
+{
+    auto &properties = hogDescriptor->properties();
+
+    BOOST_CHECK(Size<int>(32, 32) == properties.getProperty<Size<int>>("WinSize"));
+    BOOST_CHECK(Size<int>(8, 8) == properties.getProperty<Size<int>>("BlockSize"));
+    BOOST_CHECK(Size<int>(4, 4) == properties.getProperty<Size<int>>("BlockStride"));
+    BOOST_CHECK(Size<int>(4, 4) == properties.getProperty<Size<int>>("CellSize"));
+    BOOST_CHECK_EQUAL(5, properties.getProperty<int>("Nbins"));
+    BOOST_CHECK_EQUAL(2, properties.getProperty<int>("DerivAperture"));
+
+    BOOST_CHECK_EQUAL("32x32", properties.getPropertyAsString("WinSize"));
+    BOOST_CHECK_EQUAL("8x8", properties.getPropertyAsString("BlockSize"));
+    BOOST_CHECK_EQUAL("4x4", properties.getPropertyAsString("BlockStride"));
+    BOOST_CHECK_EQUAL("4x4", properties.getPropertyAsString("CellSize"));
+    BOOST_CHECK_EQUAL("5", properties.getPropertyAsString("Nbins"));
+    BOOST_CHECK_EQUAL("2", properties.getPropertyAsString("DerivAperture"));
 }
 
 BOOST_AUTO_TEST_SUITE_END() 
