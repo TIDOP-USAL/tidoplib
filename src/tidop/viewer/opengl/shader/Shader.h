@@ -80,4 +80,7 @@ public:
     inline Shader& getFragmentShader() { return fragmentShader; }
 };
 
+ShaderProgram::Ptr getDefaultShaderProgram();
+ShaderProgram::Ptr getShaderProgramFromPointCloud();
+
 }

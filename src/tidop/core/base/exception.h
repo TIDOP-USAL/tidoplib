@@ -164,7 +164,7 @@ private:
         if (mLine == -1) {
             mMessage = mError;
         } else {
-            mMessage = format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
+            mMessage = tl::format("{} ({}:{}, {})", mError, mFile, mLine, mFunction);
         }
     }
 

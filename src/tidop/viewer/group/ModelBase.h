@@ -5,6 +5,7 @@
 
 #include "tidop/viewer/opengl/buffer/VertexArray.h"
 #include "tidop/viewer/opengl/buffer/VertexBuffer.h"
+#include "tidop/viewer/opengl/shader/Shader.h"
 
 #include <tidop/math/algebra/vector.h>
 #include <tidop/math/algebra/matrix.h>
@@ -29,6 +30,7 @@ protected:
 
 	VertexArray::Ptr vertexArray;
 	VertexBuffer::Ptr vertexBuffer;
+	ShaderProgram::Ptr shaderProgram;
 
 	Type type;
 
@@ -52,6 +54,7 @@ public:
 
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points);
+		shaderProgram = getDefaultShaderProgram();
 
 		initLength();
 	}
@@ -67,6 +70,7 @@ public:
 
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points, indices);
+		shaderProgram = getDefaultShaderProgram();
 
 		initLength();
 	}
@@ -81,6 +85,7 @@ public:
 
 		vertexArray = VertexArray::New();
 		vertexBuffer = VertexBuffer::New(points, attributes);
+		shaderProgram = getDefaultShaderProgram();
 
 		initLength();
 	}
@@ -89,10 +94,12 @@ public:
 		: type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
 		//vertexArray = VertexArray::New();
 		//vertexBuffer = VertexBuffer::New(length);
+		shaderProgram = getDefaultShaderProgram();
 	}
 
 	ModelBase(Type _type = Type::Mesh)
 		: type(_type), modelMatrix(tl::Matrix4x4f::identity()), pointSize(1.0f), lineSize(1.0f) {
+		shaderProgram = getDefaultShaderProgram();
 	}
 
 	virtual ~ModelBase() = default;
@@ -106,6 +113,7 @@ public:
 		lineSize = modelBase.lineSize;
 		pointSize = modelBase.pointSize;
 		offset = modelBase.offset;
+		shaderProgram = modelBase.shaderProgram;
 		return *this;
 	}
 
@@ -164,6 +172,10 @@ public:
 	{
 		this->offset = offset;
 	}
+
+	void setShaderProgram(const ShaderProgram::Ptr& shaderProgram) { this->shaderProgram = shaderProgram; }
+
+	ShaderProgram::Ptr getShaderProgram() const { return shaderProgram; }
 
 	Vector3d getOffset() const { return offset; }
 
