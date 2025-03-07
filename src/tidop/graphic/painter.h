@@ -39,12 +39,7 @@
 namespace tl
 {
 
-namespace geom
-{
-class Transform;
-}
-
-/*! \addtogroup GraphicEntities
+/*! \addtogroup Graphic
  *  \{
  */
 

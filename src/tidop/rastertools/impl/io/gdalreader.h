@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/config.h"
+#include "tidop/core/base/defs.h"
 #include "tidop/rastertools/io/imgreader.h"
 
 #ifdef TL_HAVE_GDAL

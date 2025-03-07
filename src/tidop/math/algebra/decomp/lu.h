@@ -26,7 +26,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/core/base/exception.h"
-#include "tidop/math/algebra/matrix.h"
+//#include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/base/lapack.h"
 #include "tidop/math/base/cuda.h"

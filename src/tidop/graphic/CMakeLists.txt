@@ -36,18 +36,30 @@ if (BUILD_TL_GRAPHIC)
 
     add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
-                            color.cpp
+                            #color.cpp
                             font.cpp
                             linealgorithms.cpp
-                            styles.cpp
                             layer.cpp
                             canvas.cpp
                             painter.cpp
                             datamodel.cpp
+                            color/cmyk.cpp
+                            color/color.cpp
+                            color/color_conversion.cpp
+                            #color/color_space.cpp
+                            color/hsl.cpp
+                            color/hsv.cpp
+                            color/rgb.cpp
+                            color/rgba.cpp
                             entities/entity.cpp
                             entities/point.cpp
                             entities/polygon.cpp
                             entities/linestring.cpp
+                            styles/brush.cpp
+                            styles/gstyle.cpp
+                            styles/label.cpp
+                            styles/pen.cpp
+                            styles/symbol.cpp
                         HEADER_FILES
                             color.h
                             font.h
@@ -57,10 +69,24 @@ if (BUILD_TL_GRAPHIC)
                             canvas.h
                             painter.h
                             datamodel.h
+                            color/cmyk.h
+                            color/color.h
+                            color/color_conversion.h
+                            color/color_model.h
+                            #color/color_space.h
+                            color/hsl.h
+                            color/hsv.h
+                            color/rgb.h
+                            color/rgba.h
                             entities/entity.h
                             entities/point.h
                             entities/polygon.h
-                            entities/linestring.h)
+                            entities/linestring.h
+                            styles/brush.h
+                            styles/gstyle.h
+                            styles/label.h
+                            styles/pen.h
+                            styles/symbol.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

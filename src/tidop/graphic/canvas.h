@@ -41,8 +41,7 @@ namespace tl
 {
 
 
-/*! \defgroup GraphicEntities Entidades gráficas
- *  Puntos, lineas, ...
+/*! \addtogroup Graphic
  *  \{
  */
 
@@ -277,6 +276,6 @@ inline auto CanvasCV::colorToCvScalar(const Color &color) -> cv::Scalar
 #endif // TL_HAVE_OPENCV
 
 
-/*! \} */ // Fin GraphicEntities
+/*! \} */
 
 } // Fin namespace tl

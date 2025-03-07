@@ -32,7 +32,7 @@
 namespace tl
 {
 
-/*! \addtogroup GraphicEntities
+/*! \addtogroup Graphic
  *  \{
  */
 

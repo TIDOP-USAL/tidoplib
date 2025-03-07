@@ -22,12 +22,52 @@
  *                                                                        *
  **************************************************************************/
 
+
 #pragma once
 
+#include "tidop/core/base/defs.h"
+#include "tidop/graphic/color/color.h"
 
-#include "tidop/graphic/styles/brush.h"
-#include "tidop/graphic/styles/gstyle.h"
-#include "tidop/graphic/styles/label.h"
-#include "tidop/graphic/styles/pen.h"
-#include "tidop/graphic/styles/symbol.h"
+namespace tl
+{
 
+/*! \addtogroup Color
+ *  \{
+ */
+
+
+/*!
+ * \brief Interface for a color model.
+ */
+class TL_EXPORT ColorModel
+{
+
+public:
+
+    /*!
+     * \brief Default constructor
+     */
+    ColorModel();
+
+    /*!
+     * \brief Destructor
+     */
+    virtual ~ColorModel();
+
+    /*!
+     * \brief Converts the model to a Color object.
+     * \return Color object representation
+     */
+    virtual auto toColor() const -> Color = 0;
+
+    /*!
+     * \brief Initializes the model from a Color object.
+     * \param[in] color Color object to initialize from
+     */
+    virtual void fromColor(const Color &color) = 0;
+};
+
+
+/*! \} */
+
+} // End namespace tl

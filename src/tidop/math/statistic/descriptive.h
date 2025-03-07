@@ -595,6 +595,7 @@ auto DescriptiveStatistics<T>::sum() const -> T
     //  T aux{};
 
     TL_TODO("Hacer prueba de rendimiento")
+    TL_TODO("Utilizar SIMD")
         //#pragma omp parallel for reduction(+:summation) private(aux) 
         //  for (long long i = 0; i < static_cast<long long>(size()); i++) {
         //    aux = mData[static_cast<size_t>(i)];

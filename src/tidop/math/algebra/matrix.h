@@ -33,6 +33,7 @@
 #include "tidop/math/base/cuda.h"
 #include "tidop/math/base/data.h"
 #include "tidop/math/algebra/decomp/lu.h"
+#include "tidop/math/algebra/decomp/svd.h"
 #include "tidop/math/algebra/matrix/row.h"
 #include "tidop/math/algebra/matrix/col.h"
 #include "tidop/math/algebra/matrix/block.h"
@@ -66,6 +67,10 @@ class Matrix;
 
 template<typename T>
 class LuDecomposition;
+
+template<typename T>
+class SingularValueDecomposition;
+
 /// \endcond
 
 
@@ -253,20 +258,20 @@ public:
      *
      * \return The transpose matrix
      */
-    auto transpose() const->Matrix<T, Cols, Rows>;
+    auto transpose() const -> Matrix<T, Cols, Rows>;
 
     /*!
      * \brief Calculates the adjugate matrix
      * \f[ adj(A) = C^T \f]
      * \return The adjugate matrix
      */
-    auto adjugate() const->Matrix;
+    auto adjugate() const -> Matrix;
 
     /*!
      * \brief Calculates the cofactor matrix
      * \return The cofactor matrix
      */
-    auto cofactorMatrix() const->Matrix;
+    auto cofactorMatrix() const -> Matrix;
 
     /*!
      * \brief Trace of a square matrix
@@ -280,7 +285,7 @@ public:
      * \brief Checks if the matrix is invertible
      * \return True if the matrix is invertible
      */
-    auto invertible() -> bool;
+    auto isInvertible() -> bool;
 
     /*!
      * \brief Checks if the matrix is singular
@@ -288,7 +293,72 @@ public:
      * determinant of a singular matrix is 0
      * \return True if the matrix is singular
      */
-    auto singular() -> bool;
+    auto isSingular() -> bool;
+
+    /*!
+     * \brief Checks if the matrix is square (i.e., same number of rows and columns)
+     * \return True if the matrix is square, false otherwise
+     */
+    auto isSquare() const -> bool;
+
+    /*!
+     * \brief Checks if the matrix is symmetric
+     * \return True if the matrix is symmetric, false otherwise
+     */
+    auto isSymmetric() const -> bool;
+
+    /*!
+     * \brief Checks if the matrix is a diagonal matrix.
+     *
+     * A matrix is diagonal if all non-diagonal elements are zero.
+     * Only square matrices can be diagonal.
+     *
+     * \return true if the matrix is diagonal, false otherwise.
+     */
+    auto isDiagonal() const -> bool;
+
+    /*!
+     * \brief Checks if the matrix is an identity matrix.
+     *
+     * A matrix is an identity matrix if it is square, all diagonal elements are 1,
+     * and all non-diagonal elements are 0.
+     *
+     * \return true if the matrix is an identity matrix, false otherwise.
+     */
+    auto isIdentity() const -> bool;
+
+    /*!
+     * \brief Checks if the matrix is upper triangular.
+     *
+     * A matrix is upper triangular if all elements below the main diagonal are zero.
+     *
+     * \return true if the matrix is upper triangular, false otherwise.
+     */
+    auto isUpperTriangular() const -> bool;
+
+    /*!
+     * \brief Checks if the matrix is lower triangular.
+     *
+     * A matrix is lower triangular if all elements above the main diagonal are zero.
+     *
+     * \return true if the matrix is lower triangular, false otherwise.
+     */
+    auto isLowerTriangular() const -> bool;
+
+    /*!
+     * \brief Checks if the matrix is triangular.
+     *
+     * A matrix is triangular if it is either upper triangular or lower triangular.
+     *
+     * A matrix is:
+     * - **Upper triangular** if all elements below the main diagonal are zero.
+     * - **Lower triangular** if all elements above the main diagonal are zero.
+     *
+     * This method returns `true` if the matrix satisfies either of these conditions.
+     *
+     * \return true if the matrix is triangular (upper or lower), false otherwise.
+     */
+    auto isTriangular() const -> bool;
 
     /*!
      * \brief Cofactor
@@ -333,6 +403,44 @@ public:
      * \brief Rank of a matrix
      */
     auto rank() const -> int;
+
+    /*!
+     * \brief Computes the Frobenius norm of the matrix.
+     *
+     * The Frobenius norm is defined as:
+     * \f[
+     * \|A\|_F = \sqrt{\sum_{i,j} |a_{ij}|^2}
+     * \f]
+     *
+     * \return T The Frobenius norm of the matrix.
+     */
+    auto frobeniusNorm() const -> T;
+
+    /*!
+     * \brief Computes the L1 norm of the matrix (maximum column sum).
+     *
+     * The L1 norm is defined as:
+     * \f[
+     * \|A\|_1 = \max_j \sum_i |a_{ij}|
+     * \f]
+     *
+     * \return T The L1 norm of the matrix.
+     */
+    auto l1Norm() const -> T;
+
+    /*!
+     * \brief Computes the L2 norm of the matrix (approximate spectral norm).
+     *
+     * The L2 norm is approximated as:
+     * \f[
+     * \|A\|_2 = \max_i \sqrt{\sum_j |a_{ij}|^2}
+     * \f]
+     *
+     * This is an upper bound approximation of the true spectral norm.
+     *
+     * \return T The approximate L2 norm of the matrix.
+     */
+    auto l2Norm() const -> T;
 
     /*!
      * \brief Swap two rows
@@ -451,8 +559,7 @@ public:
      * \f]
      * \return
      */
-    static auto zero() -> Matrix;
-    static auto zero(size_t rows, size_t cols) -> Matrix;
+    static auto zero(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     /*!
      * \brief Constructs a matrix of 'ones'
@@ -465,8 +572,7 @@ public:
      * \f]
      * \return
      */
-    static auto ones() -> Matrix;
-    static auto ones(size_t rows, size_t cols) -> Matrix;
+    static auto ones(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     /*!
      * \brief Constructs the identity matrix
@@ -479,14 +585,12 @@ public:
      * \f]
      * \return
      */
-    static auto identity() -> Matrix;
-    static auto identity(size_t rows, size_t cols) -> Matrix;
+    static auto identity(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     /*!
      * \brief Constructs a matrix with random values
      */
-    static auto randon() -> Matrix;
-    static auto randon(size_t rows, size_t cols) -> Matrix;
+    static auto randon(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     auto data() TL_NOEXCEPT -> pointer;
     auto data() const TL_NOEXCEPT -> const_pointer;
@@ -995,6 +1099,45 @@ void mulmat_cpp(const Matrix<T, _rows1, _col1> &matrix1,
     }
 }
 
+//template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
+//void mulmat_blas(const Matrix<T, _rows1, _col1> &matrix1,
+//                 const Matrix<T, _rows2, _cols2> &matrix2,
+//                 Matrix<T, _rows3, _cols3> &matrix)
+//{
+//    bool mat1_is_symmetric = matrix1.isSymmetric();
+//    bool mat2_is_symmetric = matrix2.isSymmetric();
+//    bool mat1_is_upper = matrix1.isUpperTriangular();
+//    bool mat1_is_lower = matrix1.isLowerTriangular();
+//    bool mat2_is_upper = matrix2.isUpperTriangular();
+//    bool mat2_is_lower = matrix2.isLowerTriangular();
+//    bool mat1_is_triangular = mat1_is_upper || mat1_is_lower;
+//    bool mat2_is_triangular = mat2_is_upper || mat2_is_lower;
+//
+//    if (matrix1.rows() == matrix1.cols() && (mat1_is_symmetric || mat2_is_symmetric)) {
+//
+//        blas::symm(mat1_is_symmetric ? blas::Side::blas_left : blas::Side::blas_right,
+//            matrix1.rows(), matrix2.cols(), matrix1.data(), matrix2.data(), matrix.data());
+//
+//    } else if (matrix1.rows() == matrix1.cols() && (mat1_is_triangular || mat2_is_triangular)) {
+//
+//        blas::Side side;
+//        blas::TriangularForm form;
+//
+//        if (mat1_is_triangular) {
+//            side = blas::Side::blas_left;
+//            form = mat1_is_upper ? blas::TriangularForm::blas_upper : blas::TriangularForm::blas_lower;
+//        } else {
+//            side = blas::Side::blas_right;
+//            form = mat1_is_upper ? blas::TriangularForm::blas_upper : blas::TriangularForm::blas_lower;
+//        }
+//
+//        blas::trmm(side, form, matrix1.rows(), matrix2.cols(), matrix1.data(), matrix2.data(), matrix.data());
+//
+//    } else {
+//        blas::gemm(matrix1.rows(), matrix2.cols(), matrix1.cols(), matrix1.data(), matrix2.data(), matrix.data());
+//    }
+//}
+
 template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
 auto mulmat(const Matrix<T, _rows1, _col1> &matrix1,
             const Matrix<T, _rows2, _cols2> &matrix2,
@@ -1053,6 +1196,9 @@ auto mulmat(const Matrix<T, _rows1, _cols1> &matrix1,
                    matrix1.data(), 
                    matrix2.data(), 
                    matrix.data());
+
+        //mulmat_blas(matrix1, matrix2, matrix);
+
         break;
 #endif
 #ifdef TL_HAVE_SIMD_INTRINSICS
@@ -1211,7 +1357,7 @@ Matrix<T, Rows, Cols>::Matrix()
 
 template<typename T, size_t Rows, size_t Cols>
 Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols)
-  : mData(Data<T, data::size>(rows *cols)),
+  : mData(Data<T, data::size>(rows * cols)),
     mRows(Rows == DynamicData ? rows : Rows),
     mCols(Cols == DynamicData ? cols : Cols)
 {
@@ -1261,6 +1407,7 @@ template<typename T, size_t Rows, size_t Cols>
 Matrix<T, Rows, Cols>::Matrix(std::initializer_list<T> values)
 {
     if(Rows == DynamicData && Cols == DynamicData) {
+
         this->mRows = 1;
         this->mCols = values.size();
         mData = Data<T, data::size>(values.size());
@@ -1729,17 +1876,112 @@ auto Matrix<T, Rows, Cols>::trace() const -> T
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::invertible() -> bool
+auto Matrix<T, Rows, Cols>::isInvertible() -> bool
 {
     T det = this->determinant();
     return (det != consts::zero<T>);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::singular() -> bool
+auto Matrix<T, Rows, Cols>::isSingular() -> bool
 {
     T det = this->determinant();
     return (det == consts::zero<T>);
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isSquare() const -> bool
+{
+    return mRows == mCols;
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isSymmetric() const -> bool
+{
+    if (mRows != mCols) {
+        return false;
+    }
+
+    for (size_t r = 0; r < mRows; ++r) {
+        for (size_t c = r + 1; c < mCols; ++c) {
+            if (mData[r * mCols + c] != mData[c * mCols + r]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isDiagonal() const -> bool
+{
+    if (!isSquare()) return false;
+
+    for (size_t r = 0; r < mRows; ++r) {
+        for (size_t c = 0; c < mCols; ++c) {
+            if (r != c && mData[r * mCols + c] != consts::zero<T>) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isIdentity() const -> bool
+{
+    if (!isSquare()) return false;
+
+    for (size_t r = 0; r < mRows; ++r) {
+        for (size_t c = 0; c < mCols; ++c) {
+            if (r == c && !isNearlyEqual(mData[r * mCols + c], consts::one<T>)) {
+                return false;
+            } 
+            if (r != c && !isNearlyZero(mData[r * mCols + c])) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template<typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isUpperTriangular() const -> bool
+{
+    if (!isSquare()) return false;
+
+    for (size_t r = 1; r < mRows; ++r) {
+        for (size_t c = 0; c < r; ++c) {
+            if (!isNearlyZero(mData[r * mCols + c])) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isLowerTriangular() const -> bool
+{
+    if (!isSquare()) return false;
+
+    for (size_t r = 0; r < mRows; ++r) {
+        for (size_t c = r + 1; c < mCols; ++c) {
+            if (!isNearlyZero(mData[r * mCols + c])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::isTriangular() const -> bool
+{
+    return isUpperTriangular() || isLowerTriangular();
 }
 
 template<typename T, size_t Rows, size_t Cols>
@@ -1904,6 +2146,45 @@ auto Matrix<T, Rows, Cols>::rank() const -> int
 }
 
 template<typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::frobeniusNorm() const -> T
+{
+    T sum = 0;
+
+    for (size_t r = 0; r < mRows; ++r) {
+        for (size_t c = 0; c < mCols; ++c) {
+            sum += mData[r * mCols + c] * mData[r * mCols + c];
+        }
+    }
+
+    return std::sqrt(sum);
+
+    //auto ata = this->transpose() * (*this);
+    //return std::sqrt(ata.trace());
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::l1Norm() const -> T
+{
+    T max_sum = 0;
+    for (size_t c = 0; c < mCols; ++c) {
+        T col_sum = 0;
+        for (size_t r = 0; r < mRows; ++r) {
+            col_sum += std::abs(mData[r * mCols + c]);
+        }
+        max_sum = std::max(max_sum, col_sum);
+    }
+    return max_sum;
+}
+
+template <typename T, size_t Rows, size_t Cols>
+auto Matrix<T, Rows, Cols>::l2Norm() const -> T
+{
+    SingularValueDecomposition<Matrix<T, Rows, Cols>> svd(*this);
+    Vector<T, Cols> w = svd.w();
+    return *std::max_element(w.begin(), w.end());
+}
+
+template<typename T, size_t Rows, size_t Cols>
 auto Matrix<T, Rows, Cols>::swapRows(size_t i, size_t j) -> void
 {
     for(size_t c = 0; c < mCols; c++) {
@@ -2036,63 +2317,21 @@ auto Matrix<T, Rows, Cols>::colBlock(size_t iniCol, size_t endCol) -> internal::
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::zero() -> Matrix
-{
-    static_assert(Rows != DynamicData || Cols != DynamicData, "Not supported for dinamic matrix");
-
-    return Matrix<T, Rows, Cols>(Rows, Cols, consts::zero<T>);
-}
-
-template<typename T, size_t Rows, size_t Cols>
 auto Matrix<T, Rows, Cols>::zero(size_t rows, size_t cols) -> Matrix
 {
-    static_assert(Rows == DynamicData || Cols == DynamicData, "Not supported for static matrix");
-
-    return Matrix<T>(rows, cols, consts::zero<T>);
-}
-
-template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::ones() -> Matrix
-{
-    static_assert(Rows != DynamicData || Cols != DynamicData, "Not supported for dinamic matrix");
-
-    return Matrix<T, Rows, Cols>(Rows, Cols, consts::one<T>);
+    return Matrix<T, Rows, Cols>(rows == 0 ? Rows : rows, cols == 0 ? Cols : cols, consts::zero<T>);
 }
 
 template<typename T, size_t Rows, size_t Cols>
 auto Matrix<T, Rows, Cols>::ones(size_t rows, size_t cols) -> Matrix
 {
-    static_assert(Rows == DynamicData || Cols == DynamicData, "Not supported for static matrix");
-
-    return Matrix<T>(rows, cols, consts::one<T>);
-}
-
-template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::identity() -> Matrix
-{
-    static_assert(Rows != DynamicData || Cols != DynamicData, "Not supported for dinamic matrix");
-
-    Matrix<T, Rows, Cols> matrix;
-
-    for(size_t r = 0; r < matrix.rows(); r++) {
-        for(size_t c = 0; c < matrix.cols(); c++) {
-            if(r == c) {
-                matrix(r, c) = consts::one<T>;
-            } else {
-                matrix(r, c) = consts::zero<T>;
-            }
-        }
-    }
-
-    return matrix;
+    return Matrix<T, Rows, Cols>(rows == 0 ? Rows : rows, cols == 0 ? Cols : cols, consts::one<T>);
 }
 
 template<typename T, size_t Rows, size_t Cols>
 auto Matrix<T, Rows, Cols>::identity(size_t rows, size_t cols) -> Matrix
 {
-    static_assert(Rows == DynamicData || Cols == DynamicData, "Not supported for static matrix");
-
-    Matrix<T> matrix(rows, cols);
+    Matrix<T, Rows, Cols> matrix(rows, cols);
 
     for(size_t r = 0; r < matrix.rows(); r++) {
         for(size_t c = 0; c < matrix.cols(); c++) {
@@ -2102,26 +2341,6 @@ auto Matrix<T, Rows, Cols>::identity(size_t rows, size_t cols) -> Matrix
                 matrix(r, c) = consts::zero<T>;
             }
         }
-    }
-
-    return matrix;
-}
-
-template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::randon() -> Matrix
-{
-    static_assert(Rows != DynamicData || Cols != DynamicData, "Not supported for dinamic matrix");
-
-    Matrix<T, Rows, Cols> matrix;
-
-    std::random_device rd;
-    std::mt19937 random_number_engine(rd());
-    std::uniform_real_distribution<> distribution(0.0, 99.0);
-
-    constexpr size_t size = Rows * Cols;
-
-    for(size_t i = 0; i < size; ++i) {
-        matrix(i) = static_cast<T>(distribution(random_number_engine));
     }
 
     return matrix;
@@ -2130,9 +2349,7 @@ auto Matrix<T, Rows, Cols>::randon() -> Matrix
 template<typename T, size_t Rows, size_t Cols>
 auto Matrix<T, Rows, Cols>::randon(size_t rows, size_t cols) -> Matrix
 {
-    static_assert(Rows == DynamicData || Cols == DynamicData, "Not supported for static matrix");
-
-    Matrix<T> matrix(rows, cols);
+    Matrix<T, Rows, Cols> matrix(rows, cols);
 
     std::random_device rd;
     std::mt19937 random_number_engine(rd());

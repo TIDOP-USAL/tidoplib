@@ -770,3 +770,48 @@
  * triangles, squares, and rectangles. These shapes provide specialized methods 
  * for area computation, bounding box generation, and geometric transformations.
  */
+ 
+ 
+/*!
+ * \defgroup Graphic Graphic
+ * 
+ * \brief This module provides graphical representations and visualization tools.
+ * 
+ * The Graphic module includes entities and styles used for rendering and 
+ * visualizing geometric objects. It provides support for graphical attributes 
+ * such as colors, line styles, and fills.
+ */
+
+/*!
+ * \defgroup GraphicEntities Graphic Entities
+ * \ingroup Graphic
+ * 
+ * \brief Graphical representations of geometric objects.
+ * 
+ * This module defines entities that can be displayed visually, including 
+ * vector-based graphics, annotations, and rendered objects.
+ */
+
+/*!
+ * \defgroup Styles Styles
+ * \ingroup Graphic
+ * 
+ * \brief Styling options for graphical entities.
+ * 
+ * The Styles module provides attributes for customizing the appearance of 
+ * graphical entities, including colors, line thickness, transparency, 
+ * and fill patterns.
+ */
+ 
+/*!
+ * \defgroup Color Color
+ * \ingroup Graphic
+ * 
+ * \brief Provides utilities for color representation, conversion, and manipulation.
+ * 
+ */
+ 
+/*! \defgroup ColorConversion Color conversion
+ * \ingroup Color
+ * \brief Functions to convert between different color representations.
+ */ 

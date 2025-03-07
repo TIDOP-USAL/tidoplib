@@ -40,6 +40,7 @@ if(BUILD_TL_MATH)
                              angles.h
                              mathutils.h
                              algebra/decomp/cholesky.h
+                             algebra/decomp/eigen.h
                              algebra/decomp/lu.h
                              algebra/decomp/qr.h
                              algebra/decomp/svd.h
@@ -108,6 +109,7 @@ if(BUILD_TL_MATH)
     endif(MSVC)
 
     target_include_directories(${PROJECT_NAME} INTERFACE 
+                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_INCLUDE_DIRS}>)
 
     target_compile_definitions(${PROJECT_NAME} INTERFACE
@@ -119,8 +121,7 @@ if(BUILD_TL_MATH)
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_LIBRARIES}>
                           $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>
-                          #$<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cusolver_LIBRARY}>
-                          )
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cusolver_LIBRARY}>)
        
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           FOLDER "modules"

@@ -22,27 +22,39 @@
 #                                                                        #
 ##########################################################################
  
-# Math tests
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-if(TL_HAVE_MATH)
-add_subdirectory(affine)
-add_subdirectory(angle_conversion)
-add_subdirectory(cholesky)
-add_subdirectory(eigen)
-add_subdirectory(lu)
-add_subdirectory(matrix)
-add_subdirectory(qr)
-add_subdirectory(quaternion)
-add_subdirectory(rotation)
-add_subdirectory(rotation_converter)
-add_subdirectory(scaling)
-add_subdirectory(simd)
-add_subdirectory(statistic)
-add_subdirectory(statistics)
-add_subdirectory(svd)
-add_subdirectory(transform)
-add_subdirectory(translation)
-add_subdirectory(umeyama)
-add_subdirectory(utils)
-add_subdirectory(vector)
-endif()
+set(test_filename eigen_value_decomposition_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+
+project(${test_name} LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
+               ${test_filename})
+
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core
+                      TidopLib::Math
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+
+if(HAVE_OPENBLAS)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_OPENBLAS)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+                      FOLDER "test/math")
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+
+if(MSVC)
+    set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
+    set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+endif(MSVC)

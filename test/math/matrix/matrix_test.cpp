@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_SUITE(MatrixTestSuite)
 struct MatrixTest
 {
     MatrixTest()
-        : _mat_dyn_default_constructor(new Matrix<double>()),
+      : _mat_dyn_default_constructor(new Matrix<double>()),
         _mat_dyn_2x2_constructor(new Matrix<double>(2, 2)),
         _mat_dyn_2x2(new Matrix<double>(2, 2)),
         _mat_dyn_3x3_d(new Matrix<double>(3, 3)),
@@ -244,6 +244,23 @@ struct MatrixTest
                                          2.89, 3.61, 5.30, 2.00, 4.53,
                                          0.58, 0.69, 5.86, 3.62, 5.66};
         matrix3 = Matrix<double>(a3.data(), 10, 5);
+
+        mat_symmetric = {1.1, 0.2, 4.5,
+                         0.2, 3.4, 6.3,
+                         4.5, 6.3, 7.1};
+
+        mat_orthogonal = {0.866, -0.5,   0,
+                          0.5,    0.866, 0,
+                          0,      0,     1};
+
+        mat_upper = {1,  2,  3,
+                     0,  4,  5,
+                     0,  0,  6};
+
+        mat_lower = {1,  0,  0,
+                     2,  3,  0,
+                     4,  5,  6};
+
     }
 
     void teardown()
@@ -286,6 +303,10 @@ struct MatrixTest
     Matrix<double> mat_dyn_identity;
 
     Matrix<int, 3, 3> mat_singular;
+    Matrix<double, 3, 3> mat_symmetric;
+    Matrix<double, 3, 3> mat_orthogonal;
+    Matrix<double, 3, 3> mat_upper;
+    Matrix<double, 3, 3> mat_lower;
 
     Matrix<double> matrix1;
     Matrix<double> matrix2;
@@ -1171,12 +1192,59 @@ BOOST_FIXTURE_TEST_CASE(trace, MatrixTest)
 
 BOOST_FIXTURE_TEST_CASE(invertible, MatrixTest)
 {
-  BOOST_CHECK(_mat_2x2.invertible());
+  BOOST_CHECK(_mat_2x2.isInvertible());
 }
 
 BOOST_FIXTURE_TEST_CASE(singular, MatrixTest)
 {
-  BOOST_CHECK(mat_singular.singular());
+  BOOST_CHECK(mat_singular.isSingular());
+}
+
+BOOST_FIXTURE_TEST_CASE(isSymmetric, MatrixTest)
+{
+    BOOST_CHECK(!_mat_2x2.isSymmetric());
+    BOOST_CHECK(!_mat_3x3_d.isSymmetric());
+    BOOST_CHECK(mat_symmetric.isSymmetric());
+}
+
+BOOST_FIXTURE_TEST_CASE(isDiagonal, MatrixTest)
+{
+    BOOST_CHECK(!_mat_2x2.isDiagonal());
+    BOOST_CHECK(!_mat_3x3_d.isDiagonal());
+    BOOST_CHECK(mat_identity.isDiagonal());
+}
+
+BOOST_FIXTURE_TEST_CASE(isIdentity, MatrixTest)
+{
+    BOOST_CHECK(mat_identity.isIdentity());
+    BOOST_CHECK(!_mat_2x2.isIdentity());
+    BOOST_CHECK(!_mat_3x3_d.isIdentity());
+}
+
+BOOST_FIXTURE_TEST_CASE(isUpperTriangular, MatrixTest)
+{
+    BOOST_CHECK(mat_upper.isUpperTriangular());
+    BOOST_CHECK(!mat_lower.isUpperTriangular());
+}
+
+BOOST_FIXTURE_TEST_CASE(isLowerTriangular, MatrixTest)
+{
+    BOOST_CHECK(mat_lower.isLowerTriangular());
+    BOOST_CHECK(!mat_upper.isLowerTriangular());
+}
+
+BOOST_FIXTURE_TEST_CASE(isTriangular, MatrixTest)
+{
+    BOOST_CHECK(mat_lower.isTriangular());
+    BOOST_CHECK(mat_lower.isTriangular());
+}
+
+BOOST_FIXTURE_TEST_CASE(isSquare, MatrixTest)
+{
+    BOOST_CHECK(_mat_2x2.isSquare());
+    BOOST_CHECK(_mat_dyn_2x2->isSquare());
+    BOOST_CHECK(_mat_3x3_d.isSquare());
+    BOOST_CHECK(!_mat_2x3_i.isSquare());
 }
 
 BOOST_FIXTURE_TEST_CASE(adjoint2x2, MatrixTest)
@@ -2158,6 +2226,29 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
     BOOST_CHECK_CLOSE(mat_result[0][1], 64, 0.01);
     BOOST_CHECK_CLOSE(mat_result[1][0], 139, 0.01);
     BOOST_CHECK_CLOSE(mat_result[1][1], 154, 0.01);
+
+
+    // Caso de prueba para matriz simetrica
+    Matrix<double, 3, 3> symm_result;
+    symm_result = mat_symmetric * _mat_3x3_d;
+
+    BOOST_CHECK_CLOSE(7.7, symm_result[0][0], 0.0001);
+    BOOST_CHECK_CLOSE(11.9, symm_result[0][1], 0.0001);
+    BOOST_CHECK_CLOSE(11.890, symm_result[1][0], 0.0001);
+    BOOST_CHECK_CLOSE(19.7799999, symm_result[1][1], 0.0001);
+    BOOST_CHECK_CLOSE(22.280, symm_result[2][0], 0.0001);
+    BOOST_CHECK_CLOSE(24.760, symm_result[2][1], 0.0001);
+
+    // Caso de prueba para matriz triangular
+    Matrix<double, 3, 3> trmm_result;
+    trmm_result = mat_upper * _mat_3x3_d;
+
+    BOOST_CHECK_CLOSE(7.4, trmm_result[0][0], 0.0001);
+    BOOST_CHECK_CLOSE(9.8, trmm_result[0][1], 0.0001);
+    BOOST_CHECK_CLOSE(10.5, trmm_result[1][0], 0.0001);
+    BOOST_CHECK_CLOSE(17., trmm_result[1][1], 0.0001);
+    BOOST_CHECK_CLOSE(7.8, trmm_result[2][0], 0.0001);
+    BOOST_CHECK_CLOSE(15.6, trmm_result[2][1], 0.0001);
 }
 
 /// Multiplicación de una matriz por un escalar
@@ -2498,6 +2589,31 @@ BOOST_FIXTURE_TEST_CASE(compare, MatrixTest)
 
   BOOST_CHECK(mat1 == mat2);
   BOOST_CHECK(mat1 != mat3);
+}
+
+
+BOOST_FIXTURE_TEST_CASE(frobenius_norm, MatrixTest)
+{
+    double norm = _mat_5x5_d.frobeniusNorm();
+    BOOST_CHECK_CLOSE(26.8328157, norm, 0.01);
+    double norm2 = _mat_dyn_3x3_d->frobeniusNorm();
+    BOOST_CHECK_CLOSE(4.5255, norm2, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(l1norm, MatrixTest)
+{
+    double norm = _mat_5x5_d.l1Norm();
+    BOOST_CHECK_CLOSE(33., norm, 0.01);
+    double norm2 = _mat_dyn_3x3_d->l1Norm();
+    BOOST_CHECK_CLOSE(4., norm2, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(l2norm, MatrixTest)
+{
+    double norm = _mat_5x5_d.l2Norm();
+    BOOST_CHECK_CLOSE(25.39591, norm, 0.01);
+    double norm2 = _mat_dyn_3x3_d->l2Norm();
+    BOOST_CHECK_CLOSE(3.827, norm2, 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

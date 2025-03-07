@@ -27,7 +27,7 @@
 
 #include <algorithm>
 
-#include "tidop/math/algebra/matrix.h"
+//#include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/base/lapack.h"
 
@@ -109,7 +109,7 @@ public:
      *
      * \return The matrix \( U \), which is orthogonal.
      */
-    auto u() const -> Matrix<T, Rows, Cols>;
+    auto u() const -> Matrix_t<T, Rows, Cols>;
 
     /*!
      * \brief Gets the orthogonal matrix \( V \)
@@ -118,7 +118,7 @@ public:
      *
      * \return The matrix \( V \), which is orthogonal.
      */
-    auto v() const -> Matrix<T, Cols, Cols>;
+    auto v() const -> Matrix_t<T, Cols, Cols>;
 
     /*!
      * \brief Gets the singular values as a vector \( W \)
@@ -158,9 +158,9 @@ private:
 
 private:
 
-    Matrix<T, Rows, Cols> A;
-    Matrix<T, Rows, Cols> U;
-    Matrix<T, Cols, Cols> V;
+    Matrix_t<T, Rows, Cols> A;
+    Matrix_t<T, Rows, Cols> U;
+    Matrix_t<T, Cols, Cols> V;
     Vector<T, Cols> W;
     int mIterationMax;
     T eps;
@@ -175,15 +175,15 @@ template<
 class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a)
-    : A(a),
+  : A(a),
     mIterationMax(30),
     mRows(a.rows()),
     mCols(a.cols())
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-    U = Matrix<T, Rows, Cols>(mRows, mCols);
-    V = Matrix<T, Cols, Cols>(mCols, mCols);
+    U = Matrix_t<T, Rows, Cols>(mRows, mCols);
+    V = Matrix_t<T, Cols, Cols>(mCols, mCols);
     W = Vector<T, Cols>(mCols);
 
 #ifdef TL_HAVE_OPENBLAS
@@ -526,13 +526,14 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 inline void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackDecompose()
 {
-    lapack_int info;
     lapack_int lda = static_cast<int>(mCols);
     lapack_int ldu = static_cast<int>(mRows);
     lapack_int ldvt = static_cast<int>(mCols);
     T *superb = new T[std::min(mRows, mCols) - 1];
 
-    info = lapack::gesvd(static_cast<int>(mRows), static_cast<int>(mCols), A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
+    lapack_int info = lapack::gesvd(static_cast<int>(mRows), static_cast<int>(mCols),
+                                    A.data(), lda, W.data(), U.data(),
+                                    ldu, V.data(), ldvt, superb);
     V = V.transpose();
 
     delete[] superb;
@@ -546,7 +547,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::u() const -> Matrix<T, Rows, Cols>
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::u() const -> Matrix_t<T, Rows, Cols>
 {
     return U;
 }
@@ -555,7 +556,7 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t Rows, size_t Cols
 >
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::v() const -> Matrix<T, Cols, Cols>
+auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::v() const -> Matrix_t<T, Cols, Cols>
 {
     return V;
 }

@@ -349,6 +349,12 @@ auto isNearlyEqual(T a, T b) -> enableIfFloating<T, bool>
     return diff < std::max(std::numeric_limits<T>::min(), epsilon * norm);
 }
 
+template<typename T>
+auto isNearlyEqual(T a, T b) -> enableIfIntegral<T, bool>
+{
+    return a == b;
+}
+
 /*!
  * \brief Checks if an integral value is zero.
  *
@@ -394,6 +400,11 @@ auto isNearlyZero(T value) -> enableIfFloating<T, bool>
     return isNearlyEqual(value, consts::zero<T>);
 }
 
+template<typename T>
+auto isNearlyZero(T value) -> enableIfIntegral<T, bool>
+{
+    return isZero(value);
+}
 
 /*! \} */
 

@@ -122,6 +122,8 @@ public:
     template<typename VectorDerived2>
     auto dotProduct(const VectorDerived2 &vector) const -> double;
 
+    auto sum() const->T;
+
     /*!
      * \brief Conversion operator to another vector type.
      * \tparam VectorDerived2 The type to convert to.
@@ -574,43 +576,25 @@ public:
     bool operator >= (const Vector &vector) const;
 
     /*!
-     * \brief Creates a zero vector.
-     * \return A vector with all elements initialized to zero.
-     */
-    static auto zero() -> Vector;
-
-    /*!
      * \brief Creates a zero vector of a specified size.
      * \param size The size of the vector.
      * \return A vector with all elements initialized to zero.
      */
-    static auto zero(size_t size) -> Vector;
-
-    /*!
-     * \brief Creates a unit vector (vector with all elements initialized to one).
-     * \return A unit vector.
-     */
-    static auto unit() -> Vector;
+    static auto zero(size_t size = 0) -> Vector;
 
     /*!
      * \brief Creates a unit vector of a specified size.
      * \param size The size of the vector.
      * \return A unit vector.
      */
-    static auto unit(size_t size) -> Vector;
-
-    /*!
-     * \brief Creates a random vector.
-     * \return A vector with randomly initialized elements.
-     */
-    static auto randon() -> Vector;
+    static auto unit(size_t size = 0) -> Vector;
 
     /*!
      * \brief Creates a random vector of a specified size.
      * \param size The size of the vector.
      * \return A vector with randomly initialized elements.
      */
-    static auto randon(size_t size) -> Vector;
+    static auto randon(size_t size = 0) -> Vector;
 
 private:
 
@@ -662,6 +646,40 @@ class VectorDerived, typename T, size_t _size>
 auto VectorBase<VectorDerived<T, _size>>::normalize() -> void
 {
     *this /= static_cast<T>(this->module());
+}
+
+template<
+    template<typename, size_t _size = DynamicData>
+class VectorDerived, typename T, size_t _size>
+auto VectorBase<VectorDerived<T, _size>>::sum() const -> T
+{
+    T summation{};
+
+    auto &derived = this->derived();
+    size_t i = 0;
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    using Scalar = std::remove_cv_t<T>;
+    Packed<Scalar> packed_a;
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+    
+    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory)) {
+
+        for (; i < max_vector; i += packed_size) {
+            packed_a.loadAligned(&derived[i]);
+            summation += packed_a.sum();
+        }
+
+    }
+
+#endif
+
+    for (; i < derived.size(); ++i) {
+        summation += derived[i];
+    }
+
+    return summation;
 }
 
 template<
@@ -1397,62 +1415,20 @@ bool Vector<T, _size>::operator >= (const Vector<T, _size> &vector) const
 }
 
 template<typename T, size_t _size>
-auto Vector<T, _size>::zero() -> Vector
-{
-    Vector<T, _size> vector;
-    for (size_t i = 0; i < vector.size(); i++) {
-        vector[i] = consts::zero<T>;
-    }
-    return vector;
-}
-
-template<typename T, size_t _size>
 auto Vector<T, _size>::zero(size_t size) -> Vector
 {
-    static_assert(_size == DynamicData, "Fixed-size vector not support resize");
-    return Vector<T>(size, consts::zero<T>);
-}
-
-template<typename T, size_t _size>
-auto Vector<T, _size>::unit() -> Vector
-{
-    Vector<T, _size> vector;
-
-    for (size_t i = 0; i < vector.size(); i++) {
-        vector[i] = consts::one<T>;
-    }
-
-    return vector;
+    return Vector<T, _size>(size, consts::zero<T>);
 }
 
 template<typename T, size_t _size>
 auto Vector<T, _size>::unit(size_t size) -> Vector
 {
-    static_assert(_size == DynamicData, "Fixed-size vector not support resize");
-    return Vector<T>(size, consts::one<T>);
-}
-
-template<typename T, size_t _size>
-auto Vector<T, _size>::randon() -> Vector
-{
-    Vector<T, _size> vector;
-
-    std::random_device rd;
-    std::mt19937 random_number_engine(rd());
-    std::uniform_real_distribution<> distribution(0.0, 99.0);
-
-    for (size_t i = 0; i < vector.size(); i++) {
-        vector[i] = static_cast<T>(distribution(random_number_engine));
-    }
-
-    return vector;
+    return Vector<T, _size>(size, consts::one<T>);
 }
 
 template<typename T, size_t _size>
 auto Vector<T, _size>::randon(size_t size) -> Vector
 {
-    static_assert(_size == DynamicData, "Fixed-size vector not support resize");
-
     Vector<T, _size> vector(size);
 
     std::random_device rd;

@@ -39,8 +39,7 @@ namespace tl
 {
 
 
-/*! \defgroup GraphicEntities Entidades gráficas
- *  Puntos, lineas, ...
+/*! \addtogroup GraphicEntities
  *  \{
  */
 

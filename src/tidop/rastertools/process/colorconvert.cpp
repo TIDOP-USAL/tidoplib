@@ -26,6 +26,7 @@
 
 #include "tidop/graphic/color.h"
 #include "tidop/core/concurrency.h"
+#include "tidop/core/base/exception.h"
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>

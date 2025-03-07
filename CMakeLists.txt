@@ -331,7 +331,6 @@ OPTION (WITH_CUDA     "Include CUDA"                          OFF)
 message(STATUS "\nDependency loading:\n")
 
 
-
 # fmt (REQUIRED C++ Version < 20)
 
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
@@ -396,57 +395,6 @@ find_package(GLEW REQUIRED)
 
 find_package(assimp REQUIRED)
 
-
-# Qt
-
-if (USE_QT6)
-
-    find_package(Qt6 REQUIRED 
-                 COMPONENTS 
-                     Core
-                     Concurrent
-                     OpenGL  
-                     Widgets
-                     OpenGLWidgets)
-
-    set(QT_VERSION 6)
-
-    if (Qt6_POSITION_INDEPENDENT_CODE)
-        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-    endif()
-
-else()
-
-   find_package(Qt5 REQUIRED 
-                COMPONENTS 
-                    Core
-                    Concurrent
-                    OpenGL  
-                    Widgets
-                    OpenGLExtensions)
-					
-    set(QT_VERSION 5)
-
-endif()
-
-set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
-
-if(QT_VERSION)
-
-    if (USE_QT6)
-        message(STATUS "  Qt version: ${Qt6_VERSION}")
-    else()
-        message(STATUS "  Qt version: ${Qt5_VERSION}")
-    endif()
-
-    set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
-    set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
-    set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
-    set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
-else()
-    message(STATUS "  Qt not found")
-endif()
-
  
 # LASLib
 set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
@@ -454,7 +402,7 @@ find_package(LASLib REQUIRED)
 set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
 endif(BUILD_TL_VIEWER)
-
+	
 
 # OpenCV  (optional)
 
@@ -600,8 +548,57 @@ if(WITH_CUDA)
 endif(WITH_CUDA)
 
 
+# Qt
 
+if (USE_QT6)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(Qt6 REQUIRED 
+                 COMPONENTS 
+                     Core
+                     Concurrent
+                     OpenGL  
+                     Widgets
+                     OpenGLWidgets)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
+
+    set(QT_VERSION 6)
+
+    if (Qt6_POSITION_INDEPENDENT_CODE)
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    endif()
+
+else()
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(Qt5 REQUIRED 
+                 COMPONENTS 
+                     Core
+                     Concurrent
+                     OpenGL  
+                     Widgets
+                     OpenGLExtensions)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")					
+    set(QT_VERSION 5)
+
+endif()
+
+set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
+
+if(QT_VERSION)
+
+    if (USE_QT6)
+        message(STATUS "  Qt version: ${Qt6_VERSION}")
+    else()
+        message(STATUS "  Qt version: ${Qt5_VERSION}")
+    endif()
+
+    set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
+    set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
+    set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
+    set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+else()
+    message(STATUS "  Qt not found")
+endif()
 
 # Build documentation
 
