@@ -99,7 +99,6 @@ private:
     Vector<T, Cols> W;
     int mIterationMax;
     T eps;
-    T tsh;
     size_t mRows;
     size_t mCols;
 };
@@ -112,6 +111,7 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a)
     : A(a),
     mIterationMax(30),
+    eps(std::numeric_limits<T>::epsilon()),
     mRows(a.rows()),
     mCols(a.cols())
 {
@@ -124,10 +124,8 @@ SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(
 #ifdef TL_HAVE_OPENBLAS
     this->lapackDecompose();
 #else
-    eps = std::numeric_limits<T>::epsilon();
     this->decompose();
     this->reorder();
-    tsh = consts::one_half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
 #endif // TL_HAVE_OPENBLAS
 
 }
@@ -140,7 +138,7 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, Rows>& B) -> Vector<T, Cols>
 {
     Vector<T, Cols> C(mCols);
-
+    T tsh = consts::one_half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
     T s;
     Vector<T, Cols> tmp(mCols);
 
