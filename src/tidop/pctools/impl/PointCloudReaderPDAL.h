@@ -24,9 +24,6 @@
 
 #pragma once
 
-#ifndef PCTOOLS_POINTCLOUDREADERCOPC_H
-#define PCTOOLS_POINTCLOUDREADERCOPC_H
-
 #include <map>
 #include <string>
 #include <memory>
@@ -124,5 +121,5 @@ private:
     // LAS/LAZ no COPC
     pdal::LasReader* mPtrLasReader = nullptr;
 };
+
 }
-#endif

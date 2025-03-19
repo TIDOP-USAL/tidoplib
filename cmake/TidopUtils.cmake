@@ -83,44 +83,57 @@ endfunction()
 
 
 
-# Function to read .env file and set environment variables
-function(read_env_file filepath)
+function(read_env_file filepath output_var)
     if(EXISTS ${filepath})
         file(READ ${filepath} env_content)
         string(REPLACE ";" "," env_content "${env_content}")
         string(REPLACE "\n" ";" env_content ${env_content})
 
+        set(env_list "")
+
         foreach(line ${env_content})
             if(line MATCHES "^[^#]+=[^#]*$")
                 string(REGEX REPLACE "(.+)=([^#]*)" "\\1" var ${line})
                 string(REGEX REPLACE "(.+)=([^#]*)" "\\2" value ${line})
-				string(REPLACE "," ";" value "${value}")
-				set(ENV{${var}} "${value}")
+                string(REPLACE "," ";" value "${value}")
+                set(ENV{${var}} "${value}")
+                list(APPEND env_list "${var}")
             endif()
         endforeach()
+
+        set(${output_var} "${env_list}" PARENT_SCOPE)  # Guardamos en una variable de salida
     else()
         message(WARNING ".env file not found at ${filepath}")
     endif()
 endfunction()
 
-
-# Set the environment variables
-function(set_user_enviroment_path project_name environment_path)
+function(set_user_enviroment_path project_name env_vars_list)
 
     set(USER_FILE "${PROJECT_BINARY_DIR}/${project_name}.vcxproj.user")
+    set(env_entries "")
+
+    foreach(env_var ${env_vars_list})
+
+        if("${env_var}" STREQUAL "PATH")
+			set(env_entries "${env_entries}${env_var}=%PATH%;$ENV{${env_var}}\n")
+        else()
+            set(env_entries "${env_entries}${env_var}=$ENV{${env_var}}\n")
+        endif()
+
+    endforeach()
 
     file(WRITE ${USER_FILE}
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
         "<Project ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n"
         "  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|x64'\">\n"
-        "    <LocalDebuggerEnvironment>PATH=%PATH%;${environment_path}</LocalDebuggerEnvironment>\n"
+        "    <LocalDebuggerEnvironment>${env_entries}</LocalDebuggerEnvironment>\n"
         "    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n"
         "  </PropertyGroup>\n"
         "  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\">\n"
-        "    <LocalDebuggerEnvironment>PATH=%PATH%;${environment_path}</LocalDebuggerEnvironment>\n"
+        "    <LocalDebuggerEnvironment>${env_entries}</LocalDebuggerEnvironment>\n"
         "    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>\n"
         "  </PropertyGroup>\n"
         "</Project>\n"
     )
-					 
+
 endfunction()

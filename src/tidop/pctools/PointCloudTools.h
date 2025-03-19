@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef PCTOOLS_PCTOOLS_INTERFACE_H
-#define PCTOOLS_PCTOOLS_INTERFACE_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -37,12 +36,19 @@ class TL_EXPORT PointCloudTools{
 public:
     static inline PointCloudTools* getInstance()
     {
-        if (mInstance==0) mInstance = new PointCloudTools;
-        return mInstance;
+        static PointCloudTools instance;
+        return &instance;
     };
     ~PointCloudTools();
     bool assignCRS(std::string fileName, std::string crsI, std::string outputFileName, 
         bool ignoreInternalCrs=true);
+    void getCOPCStruct(std::string fileName,
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& x_min_by_node_keys,
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& x_max_by_node_keys,
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& y_min_by_node_keys,
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& y_max_by_node_keys, 
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > >& resolution_by_node_keys,
+        std::map<int, std::map<int, std::map<int, std::map<int, int > > > >& number_of_points_by_node_keys);
     std::string getCRSId(std::string fileName);
     void formatFileConversionToCOPC(std::string fileName, std::string outputFileName, 
         std::string targetCrsId, std::string sourceCrsId ="");
@@ -54,9 +60,7 @@ protected:
     PointCloudTools();
 private:
     void clear();
-    static PointCloudTools* mInstance;
     GeoTools* mPtrGeoTools;
 };
 
 }
-#endif

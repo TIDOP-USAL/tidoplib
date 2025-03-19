@@ -1,5 +1,28 @@
-#ifndef CRSSTOOLS_DEFINITIONS_H
-#define CRSSTOOLS_DEFINITIONS_H
+/**************************************************************************
+ *                                                                        *
+ * Copyright (C) 2021 by Tidop Research Group                             *
+ * Copyright (C) 2021 by David Hernandez Lopez                            *
+ *                                                                        *
+ * This file is part of TidopLib                                          *
+ *                                                                        *
+ * TidopLib is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU Lesser General Public License as         *
+ * published by the Free Software Foundation, either version 3 of the     *
+ * License, or (at your option) any later version.                        *
+ *                                                                        *
+ * TidopLib is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ * GNU Lesser General Public License for more details.                    *
+ *                                                                        *
+ * You should have received a copy of the GNU Lesser General Public       *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ *                                                                        *
+ * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
+ *                                                                        *
+ **************************************************************************/
+
+#pragma once
 
 #define CRSSTOOLS_DEFAULT_CRS                            "EPSG:25830+5782"
 #define CRSSTOOLS_DEFAULT_GEOGRAPHIC_CRS                 "EPSG:4258+5782"
@@ -70,5 +93,3 @@
 #define CRSSTOOLS_WKT_PROJECTED_CRS_TAG "PROJCS"
 #define CRSSTOOLS_WKT_VERTICAL_CRS_TAG "VERT_CS"
 #define CRSSTOOLS_WKT_CS_TAG "CS"
-
-#endif
