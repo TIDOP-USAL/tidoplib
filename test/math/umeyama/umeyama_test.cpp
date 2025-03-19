@@ -33,6 +33,8 @@
 
 using namespace tl;
 
+constexpr double tolerance = 0.1;              // 0.1%
+constexpr double tolerance_small_values = 10.; // 10%
 
 BOOST_AUTO_TEST_SUITE(UmeyamaTestSuite)
 
@@ -160,18 +162,18 @@ BOOST_FIXTURE_TEST_CASE(estimate, UmeyamaTest)
 {
     auto transform = Umeyama<double, 3>::estimate(src_mat, dst_mat);
 
-    BOOST_CHECK_CLOSE(1, transform(0,0), 0.1);
-    BOOST_CHECK_CLOSE(-3.80747e-05, transform(0,1), 0.1);
-    BOOST_CHECK_CLOSE(-8.79539e-06, transform(0,2), 0.1);
-    BOOST_CHECK_CLOSE(-419.568, transform(0,3), 0.1);
-    BOOST_CHECK_CLOSE(3.80748e-05, transform(1,0), 0.1);
-    BOOST_CHECK_CLOSE(1, transform(1,1), 0.1);
-    BOOST_CHECK_CLOSE(4.1215e-06, transform(1,2), 0.1);
-    BOOST_CHECK_CLOSE(-99.246, transform(1,3), 0.1);
-    BOOST_CHECK_CLOSE(8.79523e-06, transform(2,0), 0.1);
-    BOOST_CHECK_CLOSE(-4.12183e-06, transform(2,1), 0.1);
-    BOOST_CHECK_CLOSE(1, transform(2,2), 0.1);
-    BOOST_CHECK_CLOSE(-591.456, transform(2,3), 0.1);
+    BOOST_CHECK_CLOSE(1, transform(0,0), tolerance);
+    BOOST_CHECK_CLOSE(-3.80747e-05, transform(0,1), tolerance);
+    BOOST_CHECK_CLOSE(-8.79539e-06, transform(0,2), tolerance);
+    BOOST_CHECK_CLOSE(-419.568, transform(0,3), tolerance);
+    BOOST_CHECK_CLOSE(3.80748e-05, transform(1,0), tolerance);
+    BOOST_CHECK_CLOSE(1, transform(1,1), tolerance);
+    BOOST_CHECK_CLOSE(4.1215e-06, transform(1,2), tolerance);
+    BOOST_CHECK_CLOSE(-99.246, transform(1,3), tolerance);
+    BOOST_CHECK_CLOSE(8.79523e-06, transform(2,0), tolerance);
+    BOOST_CHECK_CLOSE(-4.12183e-06, transform(2,1), tolerance);
+    BOOST_CHECK_CLOSE(1, transform(2,2), tolerance);
+    BOOST_CHECK_CLOSE(-591.456, transform(2,3), tolerance);
 
 }
 
@@ -179,18 +181,18 @@ BOOST_FIXTURE_TEST_CASE(estimate2, UmeyamaTest)
 {
     auto transform = Umeyama<double, 3>::estimate(src_mat2, dst_mat2);
 
-    BOOST_CHECK_CLOSE(1.7837, transform(0,0), 0.1);
-    BOOST_CHECK_CLOSE(1.42329e-15, transform(0,1), 0.1);
-    BOOST_CHECK_CLOSE(0.241004, transform(0,2), 0.1);
-    BOOST_CHECK_CLOSE(-62.463, transform(0,3), 0.1);
-    BOOST_CHECK_CLOSE(1.04309e-15, transform(1,0), 0.1);
-    BOOST_CHECK_CLOSE(-1.79991, transform(1,1), 0.1);
-    BOOST_CHECK_CLOSE(2.90962e-15, transform(1,2), 0.1);
-    BOOST_CHECK_CLOSE(15.7482, transform(1,3), 0.1);
-    BOOST_CHECK_CLOSE(-0.241004, transform(2,0), 0.1);
-    BOOST_CHECK_CLOSE(2.74375e-15, transform(2,1), 0.1);
-    BOOST_CHECK_CLOSE(1.7837 , transform(2,2), 0.1);
-    BOOST_CHECK_CLOSE(27.8571, transform(2,3), 0.1);
+    BOOST_CHECK_CLOSE(1.7837, transform(0,0), tolerance);
+    BOOST_CHECK_CLOSE(1.42329e-15, transform(0,1), tolerance_small_values);
+    BOOST_CHECK_CLOSE(0.241004, transform(0,2), tolerance);
+    BOOST_CHECK_CLOSE(-62.463, transform(0,3), tolerance);
+    BOOST_CHECK_CLOSE(1.04309e-15, transform(1,0), tolerance_small_values);
+    BOOST_CHECK_CLOSE(-1.79991, transform(1,1), tolerance);
+    BOOST_CHECK_CLOSE(2.90962e-15, transform(1,2), tolerance_small_values);
+    BOOST_CHECK_CLOSE(15.7482, transform(1,3), tolerance);
+    BOOST_CHECK_CLOSE(-0.241004, transform(2,0), tolerance);
+    BOOST_CHECK_CLOSE(2.74375e-15, transform(2,1), tolerance_small_values);
+    BOOST_CHECK_CLOSE(1.7837 , transform(2,2), tolerance);
+    BOOST_CHECK_CLOSE(27.8571, transform(2,3), tolerance);
 
 }
 
@@ -199,18 +201,18 @@ BOOST_FIXTURE_TEST_CASE(estimate_points, UmeyamaTest)
 {
     auto transform = Umeyama<double, 3>::estimate(src_points, dst_points);
 
-    BOOST_CHECK_CLOSE(1, transform(0,0), 0.1);
-    BOOST_CHECK_CLOSE(-3.80747e-05, transform(0,1), 0.1);
-    BOOST_CHECK_CLOSE(-8.79539e-06, transform(0,2), 0.1);
-    BOOST_CHECK_CLOSE(-419.568, transform(0,3), 0.1);
-    BOOST_CHECK_CLOSE(3.80748e-05, transform(1,0), 0.1);
-    BOOST_CHECK_CLOSE(1, transform(1,1), 0.1);
-    BOOST_CHECK_CLOSE(4.1215e-06, transform(1,2), 0.1);
-    BOOST_CHECK_CLOSE(-99.246, transform(1,3), 0.1);
-    BOOST_CHECK_CLOSE(8.79523e-06, transform(2,0), 0.1);
-    BOOST_CHECK_CLOSE(-4.12183e-06, transform(2,1), 0.1);
-    BOOST_CHECK_CLOSE(1, transform(2,2), 0.1);
-    BOOST_CHECK_CLOSE(-591.456, transform(2,3), 0.1);
+    BOOST_CHECK_CLOSE(1, transform(0,0), tolerance);
+    BOOST_CHECK_CLOSE(-3.80747e-05, transform(0,1), tolerance);
+    BOOST_CHECK_CLOSE(-8.79539e-06, transform(0,2), tolerance);
+    BOOST_CHECK_CLOSE(-419.568, transform(0,3), tolerance);
+    BOOST_CHECK_CLOSE(3.80748e-05, transform(1,0), tolerance);
+    BOOST_CHECK_CLOSE(1, transform(1,1), tolerance);
+    BOOST_CHECK_CLOSE(4.1215e-06, transform(1,2), tolerance);
+    BOOST_CHECK_CLOSE(-99.246, transform(1,3), tolerance);
+    BOOST_CHECK_CLOSE(8.79523e-06, transform(2,0), tolerance);
+    BOOST_CHECK_CLOSE(-4.12183e-06, transform(2,1), tolerance);
+    BOOST_CHECK_CLOSE(1, transform(2,2), tolerance);
+    BOOST_CHECK_CLOSE(-591.456, transform(2,3), tolerance);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

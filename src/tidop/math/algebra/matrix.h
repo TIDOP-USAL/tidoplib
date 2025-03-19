@@ -1099,44 +1099,49 @@ void mulmat_cpp(const Matrix<T, _rows1, _col1> &matrix1,
     }
 }
 
-//template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
-//void mulmat_blas(const Matrix<T, _rows1, _col1> &matrix1,
-//                 const Matrix<T, _rows2, _cols2> &matrix2,
-//                 Matrix<T, _rows3, _cols3> &matrix)
-//{
-//    bool mat1_is_symmetric = matrix1.isSymmetric();
-//    bool mat2_is_symmetric = matrix2.isSymmetric();
-//    bool mat1_is_upper = matrix1.isUpperTriangular();
-//    bool mat1_is_lower = matrix1.isLowerTriangular();
-//    bool mat2_is_upper = matrix2.isUpperTriangular();
-//    bool mat2_is_lower = matrix2.isLowerTriangular();
-//    bool mat1_is_triangular = mat1_is_upper || mat1_is_lower;
-//    bool mat2_is_triangular = mat2_is_upper || mat2_is_lower;
-//
-//    if (matrix1.rows() == matrix1.cols() && (mat1_is_symmetric || mat2_is_symmetric)) {
-//
-//        blas::symm(mat1_is_symmetric ? blas::Side::blas_left : blas::Side::blas_right,
-//            matrix1.rows(), matrix2.cols(), matrix1.data(), matrix2.data(), matrix.data());
-//
-//    } else if (matrix1.rows() == matrix1.cols() && (mat1_is_triangular || mat2_is_triangular)) {
-//
-//        blas::Side side;
-//        blas::TriangularForm form;
-//
-//        if (mat1_is_triangular) {
-//            side = blas::Side::blas_left;
-//            form = mat1_is_upper ? blas::TriangularForm::blas_upper : blas::TriangularForm::blas_lower;
-//        } else {
-//            side = blas::Side::blas_right;
-//            form = mat1_is_upper ? blas::TriangularForm::blas_upper : blas::TriangularForm::blas_lower;
-//        }
-//
-//        blas::trmm(side, form, matrix1.rows(), matrix2.cols(), matrix1.data(), matrix2.data(), matrix.data());
-//
-//    } else {
-//        blas::gemm(matrix1.rows(), matrix2.cols(), matrix1.cols(), matrix1.data(), matrix2.data(), matrix.data());
-//    }
-//}
+#ifdef TL_HAVE_OPENBLAS
+
+template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
+void mulmat_blas(const Matrix<T, _rows1, _col1> &matrix1,
+                 const Matrix<T, _rows2, _cols2> &matrix2,
+                 Matrix<T, _rows3, _cols3> &matrix)
+{
+    bool mat1_is_symmetric = matrix1.isSymmetric();
+    bool mat2_is_symmetric = matrix2.isSymmetric();
+    bool mat1_is_upper = matrix1.isUpperTriangular();
+    bool mat1_is_lower = matrix1.isLowerTriangular();
+    bool mat2_is_upper = matrix2.isUpperTriangular();
+    bool mat2_is_lower = matrix2.isLowerTriangular();
+    bool mat1_is_triangular = mat1_is_upper || mat1_is_lower;
+    bool mat2_is_triangular = mat2_is_upper || mat2_is_lower;
+
+    //if (matrix1.rows() == matrix1.cols() && (mat1_is_symmetric || mat2_is_symmetric)) {
+
+    //    blas::symm(mat1_is_symmetric ? blas::Side::left : blas::Side::right,
+    //               matrix1.rows(), matrix2.cols(), matrix1.data(), matrix2.data(), matrix.data());
+
+    //} else if (matrix1.rows() == matrix1.cols() && (mat1_is_triangular || mat2_is_triangular)) {
+
+    //    blas::Side side;
+    //    blas::TriangularForm form;
+
+    //    if (mat1_is_triangular) {
+    //        side = blas::Side::left;
+    //        form = mat1_is_upper ? blas::TriangularForm::upper : blas::TriangularForm::lower;
+    //    } else {
+    //        side = blas::Side::right;
+    //        form = mat1_is_upper ? blas::TriangularForm::upper : blas::TriangularForm::lower;
+    //    }
+
+    //    matrix = matrix2;
+    //    blas::trmm(side, form, matrix1.rows(), matrix2.cols(), matrix1.data(), matrix.data());
+
+    //} else {
+        blas::gemm(matrix1.rows(), matrix2.cols(), matrix1.cols(), matrix1.data(), matrix2.data(), matrix.data());
+    //}
+}
+
+#endif // TL_HAVE_OPENBLAS
 
 template<typename T, size_t _rows1, size_t _col1, size_t _rows2, size_t _cols2, size_t _rows3, size_t _cols3>
 auto mulmat(const Matrix<T, _rows1, _col1> &matrix1,
@@ -1190,14 +1195,14 @@ auto mulmat(const Matrix<T, _rows1, _cols1> &matrix1,
 #endif
 #ifdef TL_HAVE_OPENBLAS
     case tl::MatrixConfig::Product::BLAS:
-        blas::gemm(matrix1.rows(),
-                   matrix2.cols(),
-                   matrix1.cols(),
-                   matrix1.data(), 
-                   matrix2.data(), 
-                   matrix.data());
+        //blas::gemm(matrix1.rows(),
+        //           matrix2.cols(),
+        //           matrix1.cols(),
+        //           matrix1.data(), 
+        //           matrix2.data(), 
+        //           matrix.data());
 
-        //mulmat_blas(matrix1, matrix2, matrix);
+        mulmat_blas(matrix1, matrix2, matrix);
 
         break;
 #endif

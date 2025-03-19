@@ -2239,6 +2239,15 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
     BOOST_CHECK_CLOSE(22.280, symm_result[2][0], 0.0001);
     BOOST_CHECK_CLOSE(24.760, symm_result[2][1], 0.0001);
 
+    symm_result = _mat_3x3_d * mat_symmetric;
+
+    BOOST_CHECK_CLOSE(12.9, symm_result[0][0], 0.0001);
+    BOOST_CHECK_CLOSE(16.05, symm_result[0][1], 0.0001);
+    BOOST_CHECK_CLOSE(6.699999, symm_result[1][0], 0.0001);
+    BOOST_CHECK_CLOSE(11.16, symm_result[1][1], 0.0001);
+    BOOST_CHECK_CLOSE(3.299999, symm_result[2][0], 0.0001);
+    BOOST_CHECK_CLOSE(10.99, symm_result[2][1], 0.0001);
+
     // Caso de prueba para matriz triangular
     Matrix<double, 3, 3> trmm_result;
     trmm_result = mat_upper * _mat_3x3_d;
@@ -2249,6 +2258,34 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
     BOOST_CHECK_CLOSE(17., trmm_result[1][1], 0.0001);
     BOOST_CHECK_CLOSE(7.8, trmm_result[2][0], 0.0001);
     BOOST_CHECK_CLOSE(15.6, trmm_result[2][1], 0.0001);
+
+    trmm_result = _mat_3x3_d * mat_upper;
+
+    BOOST_CHECK_CLOSE(1.5, trmm_result[0][0], 0.0001);
+    BOOST_CHECK_CLOSE(3.0, trmm_result[0][1], 0.0001);
+    BOOST_CHECK_CLOSE(1.0, trmm_result[1][0], 0.0001);
+    BOOST_CHECK_CLOSE(6.0, trmm_result[1][1], 0.0001);
+    BOOST_CHECK_CLOSE(1.3, trmm_result[2][0], 0.0001);
+    BOOST_CHECK_CLOSE(13., trmm_result[2][1], 0.0001);
+
+    trmm_result = mat_lower * _mat_3x3_d;
+
+    BOOST_CHECK_CLOSE(1.5, trmm_result[0][0], 0.0001);
+    BOOST_CHECK_CLOSE(0., trmm_result[0][1], 0.0001);
+    BOOST_CHECK_CLOSE(6., trmm_result[1][0], 0.0001);
+    BOOST_CHECK_CLOSE(3., trmm_result[1][1], 0.0001);
+    BOOST_CHECK_CLOSE(18.8, trmm_result[2][0], 0.0001);
+    BOOST_CHECK_CLOSE(20.6, trmm_result[2][1], 0.0001);
+
+
+    trmm_result = _mat_3x3_d * mat_lower;
+
+    BOOST_CHECK_CLOSE(11.5, trmm_result[0][0], 0.0001);
+    BOOST_CHECK_CLOSE(12.5, trmm_result[0][1], 0.0001);
+    BOOST_CHECK_CLOSE(7.799999, trmm_result[1][0], 0.0001);
+    BOOST_CHECK_CLOSE(9., trmm_result[1][1], 0.0001);
+    BOOST_CHECK_CLOSE(7.7, trmm_result[2][0], 0.0001);
+    BOOST_CHECK_CLOSE(9.3, trmm_result[2][1], 0.0001);
 }
 
 /// Multiplicación de una matriz por un escalar

@@ -38,10 +38,10 @@ namespace tl
  *  \{
  */
 
-/// \cond
+ /// \cond
 
-//https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
-//https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
+ //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
+ //https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
 
 template<typename T>
 class QRDecomposition;
@@ -98,7 +98,7 @@ public:
      * \param[in] b The right-hand side vector \( b \).
      * \return The solution vector \( x \).
      */
-    auto solve(const Vector<T, _rows>& b) -> Vector<T, _rows>;
+    auto solve(const Vector<T, _rows> &b) -> Vector<T, _cols>;
 
     /*!
      * \brief Gets the orthogonal matrix \( Q \)
@@ -107,7 +107,7 @@ public:
      *
      * \return The matrix \( Q \), which is orthogonal.
      */
-    auto q() const -> Matrix<T, _rows, _cols>;
+    auto q() const->Matrix<T, _rows, _rows>;
 
     /*!
      * \brief Gets the upper triangular matrix \( R \)
@@ -116,8 +116,7 @@ public:
      *
      * \return The matrix \( R \), which is upper triangular.
      */
-    auto r() const -> Matrix<T, _rows, _cols>;
-    //Matrix<T, _rows, _cols> qr() const;
+    auto r() const->Matrix<T, _rows, _cols>;
 
 private:
 
@@ -129,19 +128,17 @@ private:
      */
     void decompose();
 
-    //#ifdef TL_HAVE_OPENBLAS
-    //  void lapackeDecompose();
-    //#endif // TL_HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
+    void lapackeDecompose();
+#endif // TL_HAVE_OPENBLAS
 
 private:
 
-    Matrix<T, _rows, _cols> Q_t;
+    Matrix<T, _rows, _rows> Q;
     Matrix<T, _rows, _cols> R;
-    //#ifdef TL_HAVE_OPENBLAS
-    //  Matrix<T, _rows, _cols> QR;
-    //#endif // TL_HAVE_OPENBLAS
     bool singular;
     size_t mRows;
+    size_t mCols;
 };
 
 
@@ -150,21 +147,19 @@ template<
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _rows, _cols> &a)
-  : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
+  : Q(Matrix<T, _rows, _rows>::identity(a.rows(), a.rows())),
     R(a),
-    //#ifdef TL_HAVE_OPENBLAS
-    //    QR(a),
-    //#endif
     singular(false),
-    mRows(a.rows())
+    mRows(a.rows()),
+    mCols(a.cols())
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-    //#ifdef TL_HAVE_OPENBLAS
-    //  this->lapackeDecompose();
-    //#else
+#ifdef TL_HAVE_OPENBLAS
+    this->lapackeDecompose();
+#else
     this->decompose();
-    //#endif // TL_HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 }
 
@@ -174,22 +169,24 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+    size_t minRowsCols = std::min(mRows, mCols);
 
-    Vector<T, _rows> c(mRows);
-    Vector<T, _rows> diagonal(mRows);
+    // Vectores dinamicos para poder tomar el tamaño minimo
+    Vector<T> v(minRowsCols);
+    Vector<T> diagonal(minRowsCols);
 
-    for (size_t k = 0; k < mRows - 1; k++) {
+    for (size_t k = 0; k < minRowsCols - 1; k++) {
 
         T scale = consts::zero<T>;
 
         for (size_t i = k; i < mRows; i++) {
             scale = std::max(scale, std::abs(R[i][k]));
         }
-
-        if (scale == consts::zero<T>) {
+        
+        if (isNearlyZero(scale)) {
 
             singular = true;
-            c[k] = diagonal[k] = consts::zero<T>;
+            v[k] = diagonal[k] = consts::zero<T>;
 
         } else {
 
@@ -205,10 +202,10 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
             T sigma = std::copysign(sqrt(aux), R[k][k]);
             R.at(k, k) += sigma;
-            c[k] = sigma * R[k][k];
+            v[k] = sigma * R[k][k];
             diagonal[k] = -scale * sigma;
 
-            for (size_t j = k + 1; j < mRows; j++) {
+            for (size_t j = k + 1; j < mCols; j++) {
 
                 T aux{0};
 
@@ -216,7 +213,7 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
                     aux += R[i][k] * R[i][j];
                 }
 
-                T tau = aux / c[k];
+                T tau = aux / v[k];
 
                 for (size_t i = k; i < mRows; i++) {
                     R[i][j] -= tau * R[i][k];
@@ -226,36 +223,40 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         }
     }
 
-    diagonal[mRows - 1] = R[mRows - 1][mRows - 1];
+    diagonal[minRowsCols - 1] = R[minRowsCols - 1][minRowsCols - 1];
+    singular = (diagonal[minRowsCols - 1] == consts::zero<T>);
 
-    singular = (diagonal[mRows - 1] == consts::zero<T>);
+    for (size_t k = 0; k < minRowsCols - 1; k++) {
 
-    for (size_t k = 0; k < mRows - 1; k++) {
+        if (v[k] != consts::zero<T>) {
 
-        if (c[k] != consts::zero<T>) {
-
-            for (size_t j = 0; j < mRows; j++) {
+            for (size_t i = 0; i < mRows; i++) {
 
                 T aux{0};
-                for (size_t i = k; i < mRows; i++)
-                    aux += R[i][k] * Q_t[i][j];
+                for (size_t j = k; j < mRows; j++) {
+                    aux += R[j][k] * Q[i][j];
+                }
 
-                aux /= c[k];
+                aux /= v[k];
 
-                for (size_t i = k; i < mRows; i++)
-                    Q_t[i][j] -= aux * R[i][k];
+                for (size_t j = k; j < mRows; j++) {
+                    Q[i][j] -= aux * R[j][k];
+                }
             }
-
         }
     }
 
-    for (size_t r = 0; r < mRows; r++) {
-
+    for (size_t r = 0; r < minRowsCols; r++) {
         R[r][r] = diagonal[r];
-
-        for (size_t c = 0; c < r; c++)
+        for (size_t c = 0; c < r; c++) {
             R[r][c] = consts::zero<T>;
+        }
+    }
 
+    for (size_t r = minRowsCols; r < mRows; r++) {
+        for (size_t c = 0; c < mCols; c++) {
+            if (r > c) R[r][c] = consts::zero<T>;
+        }
     }
 }
 
@@ -263,21 +264,20 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows>& b) -> Vector<T, _rows>
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b) -> Vector<T, _cols>
 {
     TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
     TL_ASSERT(!singular, "Singular");
 
-    Vector<T, _rows> x = Q_t * b;
+    Vector<T, _rows> y = Q.transpose() * b;
+    Vector<T, _cols> x(mCols);
 
-    T aux;
-
-    for (size_t i = mRows; i > 0; i--) {
-        size_t r = i - 1;
-        aux = x[r];
-        for (size_t c = i; c < mRows; c++)
-            aux -= R[r][c] * x[c];
-        x[r] = aux / R[r][r];
+    for (int i = mCols - 1; i >= 0; --i) {
+        T sum = 0;
+        for (int j = i + 1; j < mCols; ++j) {
+            sum += R(i, j) * x[j];
+        }
+        x[i] = (y[i] - sum) / R(i, i);
     }
 
     return x;
@@ -287,19 +287,10 @@ template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-auto QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const -> Matrix<T, _rows, _cols>
+auto QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const -> Matrix<T, _rows, _rows>
 {
-    return Q_t.transpose();
+    return Q;
 }
-
-//template<
-//  template<typename, size_t, size_t>
-//class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::qr() const
-//{
-//  return QR;
-//}
 
 template<
     template<typename, size_t, size_t>
@@ -310,31 +301,58 @@ auto QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const -> Matrix<T, _rows, _
     return R;
 }
 
-//#ifdef TL_HAVE_OPENBLAS
-//
-//template<
-//  template<typename, size_t, size_t>
-//class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
-//{
-//  lapack_int info;
-//  lapack_int lda = QR.cols();
-//  T *superb = new T[std::min(QR.rows(), QR.cols()) - 1];
-//  info = lapack::lapackeGEQRF(QR.rows(), QR.cols(), QR.data(), lda, superb);
-//
-//  //std::cout << QR << std::endl;
-//  //for (size_t r = 1; r < QR.rows(); r++) {
-//  //  for (size_t c = 0; c < r; c++){
-//  //    R[r][c] = QR[r][c];
-//  //  }
-//  //}
-//
-//  TL_ASSERT(info >= 0, "The algorithm computing SVD failed to converge.");
-//
-//}
-//
-//#endif // TL_HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
+
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+{
+    Matrix_t<T, _rows, _cols> QR(R);
+
+    lapack_int info;
+    lapack_int m = QR.rows();
+    lapack_int n = QR.cols();
+    // En row-major order, cada fila está almacenada de forma contigua en memoria, 
+    // por lo que la leading dimension es el número de columnas de A.
+    //lapack_int lda = QR.cols(); 
+
+    std::vector<T> tau(std::min(m, n));
+
+    // Factorización QR usando geqrf
+    info = lapack::geqrf(m, n, QR.data(), /*lda, */tau.data());
+
+    TL_ASSERT(info >= 0, "LAPACKE_geqrf failed.");
+
+    singular = false;
+    for (size_t i = 0; i < std::min(m, n); i++) {
+        if (std::abs(QR(i, i)) < std::numeric_limits<T>::epsilon()) {
+            singular = true;
+            break;
+        }
+    }
+
+    // Extraer R (es la parte superior de QR)
+    for (size_t i = 0; i < m; i++) {
+        for (size_t j = 0; j < n; j++) {
+            if (i > j) R(i, j) = consts::zero<T>;
+            else R(i, j) = QR(i, j);
+        }
+    }
+
+    for (size_t i = 0; i < m; i++) {
+        for (size_t j = 0; j < n; j++) {
+            Q(i,j) = QR(i, j);  // Copiar la parte de A que contiene Q
+        }
+    }
+
+    // Calcular Q a partir de QR usando orgqr
+    info = lapack::orgqr(m, m, tau.size(), Q.data(), /*lda,*/ tau.data());
+    TL_ASSERT(info >= 0, "LAPACKE_orgqr failed.");
+}
+
+#endif // TL_HAVE_OPENBLAS
 
 
 /*! \} */

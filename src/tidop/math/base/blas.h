@@ -44,7 +44,55 @@ namespace tl
 namespace blas
 {
 
+enum class Order
+{
+    row_major = CBLAS_ORDER::CblasRowMajor,
+    col_major = CBLAS_ORDER::CblasColMajor
+};
+
+enum class Side
+{
+    left = CBLAS_SIDE::CblasLeft,
+    right = CBLAS_SIDE::CblasRight
+};
+
+enum class TriangularForm
+{
+    upper = CBLAS_UPLO::CblasUpper,
+    lower = CBLAS_UPLO::CblasLower
+};
+
+
 /* Matrix multiplication */
+
+template<typename T>
+auto gemm(Order order, bool atranspose, bool btranspose, unsigned int m, unsigned int n, unsigned int k,
+    T alpha, const T *a, unsigned int lda, const T *b, unsigned int ldb, T beta, T *c, unsigned int ldc) -> enableIfFloat<T, void>
+{
+    cblas_sgemm(static_cast<CBLAS_ORDER>(order),
+                atranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
+                btranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
+                static_cast<blasint>(m),
+                static_cast<blasint>(n),
+                static_cast<blasint>(k),
+                alpha, a, lda, b, ldb,
+                beta, c, ldc);
+}
+
+template<typename T>
+auto gemm(Order order, bool atranspose, bool btranspose, unsigned int m, unsigned int n, unsigned int k,
+    T alpha, const T *a, unsigned int lda, const T *b, unsigned int ldb, T beta, T *c, unsigned int ldc) -> enableIfDouble<T, void>
+{
+    cblas_dgemm(static_cast<CBLAS_ORDER>(order),
+                atranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
+                btranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
+                static_cast<blasint>(m),
+                static_cast<blasint>(n),
+                static_cast<blasint>(k),
+                alpha, a, static_cast<blasint>(lda),
+                b, static_cast<blasint>(ldb),
+                beta, c, static_cast<blasint>(ldc));
+}
 
 /*!
  * \brief Matrix-matrix multiplication (gemm) for floating point types.
@@ -61,124 +109,88 @@ namespace blas
  * \param[out] c Pointer to the matrix C of size `m x n`, where the result will be stored.
  */
 template<typename T>
-auto gemm(size_t m, size_t n, size_t k,
-          const T *a, const T *b, T *c) -> enableIfFloat<T, void>
+auto gemm(size_t m, size_t n, size_t k, const T *a, const T *b, T *c) -> enableIfFloating<T, void>
 {
-    T alpha = 1.f;
-    T beta = 0.f;
-    blasint lda = static_cast<blasint>(k);
+    T alpha = 1.;
+    T beta = 0.;
+
+    gemm(blas::Order::row_major, false, false, m, n, k, alpha, a, /*lda*/ k, b, /*ldb*/ n, beta, c, /*ldc*/ n);
+}
+
+
+
+
+
+
+template<typename T>
+auto symm(Side side, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfFloat<T, void>
+{
+    T alpha = 1.0;
+    T beta = 0.0;
+    blasint lda = static_cast<blasint>(m);
     blasint ldb = static_cast<blasint>(n);
     blasint ldc = static_cast<blasint>(n);
 
-    cblas_sgemm(CBLAS_ORDER::CblasRowMajor,
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                static_cast<blasint>(m),
-                static_cast<blasint>(n),
-                static_cast<blasint>(k),
-                alpha, a, lda, b, ldb,
+    cblas_ssymm(CBLAS_ORDER::CblasRowMajor, 
+                static_cast<CBLAS_SIDE>(side),
+                CBLAS_UPLO::CblasUpper,
+                static_cast<blasint>(m), 
+                static_cast<blasint>(n), 
+                alpha, a, lda, b, ldb, 
                 beta, c, ldc);
 }
 
 template<typename T>
-auto gemm(size_t m, size_t n, size_t k,
-          const T *a, const T *b, T *c) -> enableIfDouble<T, void>
+auto symm(Side side, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfDouble<T, void>
 {
-    T alpha = 1.;
-    T beta = 0.;
-    blasint lda = static_cast<blasint>(k);
+    T alpha = 1.0;
+    T beta = 0.0;
+    blasint lda = static_cast<blasint>(m);
     blasint ldb = static_cast<blasint>(n);
     blasint ldc = static_cast<blasint>(n);
 
-    cblas_dgemm(CBLAS_ORDER::CblasRowMajor,
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                static_cast<blasint>(m),
-                static_cast<blasint>(n),
-                static_cast<blasint>(k),
-                alpha, a, lda, b, ldb,
+    cblas_dsymm(CBLAS_ORDER::CblasRowMajor,
+                static_cast<CBLAS_SIDE>(side),
+                CBLAS_UPLO::CblasUpper,
+                static_cast<blasint>(m), 
+                static_cast<blasint>(n), 
+                alpha, a, lda, b, ldb, 
                 beta, c, ldc);
 }
 
-enum class Side
+template<typename T>
+auto trmm(Side side, TriangularForm form, size_t m, size_t n, const T *a, T *b) -> enableIfFloat<T, void>
 {
-    blas_left = CBLAS_SIDE::CblasLeft,
-    blas_right = CBLAS_SIDE::CblasRight
-};
+    T alpha = 1.0;
+    blasint lda = static_cast<blasint>(m);
+    blasint ldb = static_cast<blasint>(n);
 
-enum class TriangularForm
+    cblas_strmm(CBLAS_ORDER::CblasRowMajor,
+                static_cast<CBLAS_SIDE>(side),
+                static_cast<CBLAS_UPLO>(form),
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                CBLAS_DIAG::CblasNonUnit, 
+                static_cast<blasint>(m), 
+                static_cast<blasint>(n), 
+                alpha, a, lda, b, ldb);
+}
+
+template<typename T>
+auto trmm(Side side, TriangularForm form, size_t m, size_t n, const T *a, T *b) -> enableIfDouble<T, void>
 {
-    blas_upper = CBLAS_UPLO::CblasUpper,
-    blas_lower = CBLAS_UPLO::CblasLower
-};
+    T alpha = 1.0;
+    blasint lda = static_cast<blasint>(m);
+    blasint ldb = static_cast<blasint>(n);
 
-//template<typename T>
-//auto symm(Side side, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfFloat<T, void>
-//{
-//    T alpha = 1.0;
-//    T beta = 0.0;
-//    blasint lda = static_cast<blasint>(m); // Asumiendo que A es cuadrada m x m
-//    blasint ldb = static_cast<blasint>(n);
-//    blasint ldc = static_cast<blasint>(n);
-//
-//    cblas_ssymm(CBLAS_ORDER::CblasRowMajor, 
-//                static_cast<CBLAS_SIDE>(side),
-//                static_cast<blasint>(m), 
-//                static_cast<blasint>(n), 
-//                alpha, a, lda, b, ldb, 
-//                beta, c, ldc);
-//}
-//
-//template<typename T>
-//auto symm(Side side, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfDouble<T, void>
-//{
-//    T alpha = 1.0;
-//    T beta = 0.0;
-//    blasint lda = static_cast<blasint>(m); // Asumiendo que A es cuadrada m x m
-//    blasint ldb = static_cast<blasint>(n);
-//    blasint ldc = static_cast<blasint>(n);
-//
-//    cblas_dsymm(CBLAS_ORDER::CblasRowMajor,
-//                static_cast<CBLAS_SIDE>(side),
-//                static_cast<blasint>(m), 
-//                static_cast<blasint>(n), 
-//                alpha, a, lda, b, ldb, 
-//                beta, c, ldc);
-//}
-//
-//template<typename T>
-//auto trmm(Side side, TriangularForm form, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfFloat<T, void>
-//{
-//    T alpha = 1.0;
-//    blasint lda = static_cast<blasint>(m); // Asumiendo que A es cuadrada m x m
-//    blasint ldb = static_cast<blasint>(n);
-//
-//    cblas_strmm(CBLAS_ORDER::CblasRowMajor,
-//                static_cast<CBLAS_SIDE>(side),
-//                static_cast<CBLAS_UPLO>(form),
-//                CBLAS_TRANSPOSE::CblasNoTrans,
-//                CBLAS_DIAG::CblasNonUnit, 
-//                static_cast<blasint>(m), 
-//                static_cast<blasint>(n), 
-//                alpha, a, lda, b, ldb);
-//}
-//
-//template<typename T>
-//auto trmm(Side side, TriangularForm form, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfDouble<T, void>
-//{
-//    T alpha = 1.0;
-//    blasint lda = static_cast<blasint>(m); // Asumiendo que A es cuadrada m x m
-//    blasint ldb = static_cast<blasint>(n);
-//
-//    cblas_dtrmm(CBLAS_ORDER::CblasRowMajor,
-//                static_cast<CBLAS_SIDE>(side),
-//                static_cast<CBLAS_UPLO>(form),
-//                CBLAS_TRANSPOSE::CblasNoTrans,
-//                CBLAS_DIAG::CblasNonUnit,
-//                static_cast<blasint>(m), 
-//                static_cast<blasint>(n), 
-//                alpha, a, lda, b, ldb);
-//}
+    cblas_dtrmm(CBLAS_ORDER::CblasRowMajor,
+                static_cast<CBLAS_SIDE>(side),
+                static_cast<CBLAS_UPLO>(form),
+                CBLAS_TRANSPOSE::CblasNoTrans,
+                CBLAS_DIAG::CblasNonUnit,
+                static_cast<blasint>(m), 
+                static_cast<blasint>(n), 
+                alpha, a, lda, b, ldb);
+}
 
 
 /* Matrix x Vector */
