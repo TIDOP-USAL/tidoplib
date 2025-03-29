@@ -29,6 +29,7 @@
 
 using namespace tl;
 
+constexpr double small_values = 1e-14;
 
 BOOST_AUTO_TEST_SUITE(LuTestSuite)
 
@@ -101,6 +102,16 @@ struct LuTest
         SB[2] = 2;
 
         slu = new LuDecomposition<Matrix<double, 3, 3>>(SA);
+
+        A_4x4 = {2, 1, 1, 0,
+                 4, 3, 3, 1,
+                 8, 7, 9, 5,
+                 6, 7, 9, 8};
+
+        b_4x2 = {1, 2,
+                 2, 3,
+                 3, 4,
+                 4, 5};
     }
 
     void teardown()
@@ -118,6 +129,9 @@ struct LuTest
     Matrix<double, 3, 3> SA;
     Vector<double, 3> SB;
     LuDecomposition<Matrix<double, 3, 3>> *slu;
+
+    Matrix<double, 4, 4> A_4x4;
+    Matrix<double, 4, 2> b_4x2;
 };
 
 
@@ -167,7 +181,7 @@ BOOST_FIXTURE_TEST_CASE(solve, LuTest)
     BOOST_CHECK_CLOSE(-0.060408163265306125, SC[2], 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE(solve_matrix, LuTest)
+BOOST_FIXTURE_TEST_CASE(solve_matrix_partial, LuTest)
 {
     Matrix<double> a(2, 2);
     a[0][0] = 2;
@@ -207,6 +221,221 @@ BOOST_FIXTURE_TEST_CASE(solve_matrix, LuTest)
     BOOST_CHECK_CLOSE(-0.26498, mc[2][0], 0.1);
     BOOST_CHECK_CLOSE(-0.335184, mc[2][1], 0.1);
 
+    LuDecomposition<Matrix<double, 4, 4>> slu(A_4x4);
+    auto x = slu.solve(b_4x2);
+
+    BOOST_CHECK_CLOSE(1., x[0][0], 0.1);
+    BOOST_CHECK_CLOSE(2.5, x[0][1], 0.1);
+    BOOST_CHECK_CLOSE(0.5, x[1][0], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, x[1][1], 0.1);
+    BOOST_CHECK_CLOSE(-1.5, x[2][0], 0.1);
+    BOOST_CHECK_CLOSE(-2.5, x[2][1], 0.1);
+    BOOST_CHECK_CLOSE(1., x[3][0], 0.1);
+    BOOST_CHECK_CLOSE(2., x[3][1], 0.1);
 }
 
+BOOST_FIXTURE_TEST_CASE(solve_matrix_full_pivot, LuTest)
+{
+    LuDecomposition<Matrix<double, 4, 4>> slu(A_4x4, true);
+    auto x = slu.solve(b_4x2);
+
+    BOOST_CHECK_CLOSE(1., x[0][0], 0.1);
+    BOOST_CHECK_CLOSE(2.5, x[0][1], 0.1);
+    BOOST_CHECK_CLOSE(0.5, x[1][0], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, x[1][1], 0.1);
+    BOOST_CHECK_CLOSE(-1.5, x[2][0], 0.1);
+    BOOST_CHECK_CLOSE(-2.5, x[2][1], 0.1);
+    BOOST_CHECK_CLOSE(1., x[3][0], 0.1);
+    BOOST_CHECK_CLOSE(2., x[3][1], 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(inverse, LuTest)
+{
+
+    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4);
+    Matrix<double, 4, 4> A_inv = lu.inverse();
+
+    BOOST_CHECK_CLOSE(2.25, A_inv[0][0], 0.1);
+    BOOST_CHECK_CLOSE(-0.75, A_inv[0][1], 0.1);
+    BOOST_CHECK_CLOSE(-0.25, A_inv[0][2], 0.1);
+    BOOST_CHECK_CLOSE(0.25, A_inv[0][3], 0.1);
+    BOOST_CHECK_CLOSE(-3., A_inv[1][0], 0.1);
+    BOOST_CHECK_CLOSE(2.5, A_inv[1][1], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[1][2], 0.1);
+    BOOST_CHECK_SMALL(A_inv[1][3], small_values);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[2][0], 0.1);
+    BOOST_CHECK_CLOSE(-1, A_inv[2][1], 0.1);
+    BOOST_CHECK_CLOSE(1., A_inv[2][2], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[2][3], 0.1);
+    BOOST_CHECK_CLOSE(1.5, A_inv[3][0], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[3][1], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[3][2], 0.1);
+    BOOST_CHECK_CLOSE(0.5, A_inv[3][3], 0.1);
+
+    // Verificar que A * A_inv ≈ Identidad
+    Matrix<double, 4, 4> I = A_4x4 * A_inv;
+
+
+    BOOST_CHECK_CLOSE(1., I[0][0], 0.1);
+    BOOST_CHECK_CLOSE(1., I[1][1], 0.1);
+    BOOST_CHECK_CLOSE(1., I[2][2], 0.1);
+    BOOST_CHECK_CLOSE(1., I[3][3], 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(rank, LuTest)
+{
+    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4);
+    BOOST_CHECK_EQUAL(4, lu.rank());
+}
+
+BOOST_FIXTURE_TEST_CASE(lower, LuTest)
+{
+    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4, true);
+    auto lower = lu.lower();
+    BOOST_CHECK_CLOSE(1, lower[0][0], 0.1);
+    BOOST_CHECK_CLOSE(0, lower[0][1], 0.1);
+    BOOST_CHECK_CLOSE(0, lower[0][2], 0.1);
+    BOOST_CHECK_CLOSE(0, lower[0][3], 0.1);
+    BOOST_CHECK_CLOSE(1, lower[1][0], 0.1);
+    BOOST_CHECK_CLOSE(1, lower[1][1], 0.1);
+    BOOST_CHECK_CLOSE(0, lower[1][2], 0.1);
+    BOOST_CHECK_CLOSE(0, lower[1][3], 0.1);
+    BOOST_CHECK_CLOSE(0.333333, lower[2][0], 0.1);
+    BOOST_CHECK_CLOSE(-0.222222, lower[2][1], 0.1);
+    BOOST_CHECK_CLOSE(1., lower[2][2], 0.1);
+    BOOST_CHECK_CLOSE(0., lower[2][3], 0.1);
+    BOOST_CHECK_CLOSE(0.111111, lower[3][0], 0.1);
+    BOOST_CHECK_CLOSE(-0.185185, lower[3][1], 0.1);
+    BOOST_CHECK_CLOSE(0.833333, lower[3][2], 0.1);
+    BOOST_CHECK_CLOSE(1., lower[3][3], 0.1);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(upper, LuTest)
+{
+    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4, true);
+    auto upper = lu.upper();
+    BOOST_CHECK_CLOSE(9, upper[0][0], 0.1);
+    BOOST_CHECK_CLOSE(5, upper[0][1], 0.1);
+    BOOST_CHECK_CLOSE(8, upper[0][2], 0.1);
+    BOOST_CHECK_CLOSE(7, upper[0][3], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[1][0], 0.1);
+    BOOST_CHECK_CLOSE(3, upper[1][1], 0.1);
+    BOOST_CHECK_CLOSE(-2, upper[1][2], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[1][3], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[2][0], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[2][1], 0.1);
+    BOOST_CHECK_CLOSE(0.888889, upper[2][2], 0.1);
+    BOOST_CHECK_CLOSE(0.666667, upper[2][3], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[3][0], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[3][1], 0.1);
+    BOOST_CHECK_CLOSE(0, upper[3][2], 0.1);
+    BOOST_CHECK_CLOSE(-0.333333, upper[3][3], 0.1);
+
+}
+
+//BOOST_FIXTURE_TEST_CASE(determinant, LuTest)
+//{
+//    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4);
+//    BOOST_CHECK_EQUAL(8, lu.determinant());
+//}
+
+
+//BOOST_FIXTURE_TEST_CASE(rectangular, LuTest)
+//{
+//    Matrix<double, 3, 4> A = {
+//        {2, 3, 1, 5},
+//        {6, 13, 5, 19},
+//        {2, 19, 10, 23}
+//    };
+//
+//    LuDecomposition<Matrix<double, 3, 4>> lu(A);
+//
+//    Matrix<double, 3, 4> L = lu.lower();
+//    Matrix<double, 3, 4> U = lu.upper();
+//
+//    // Verificar estructura de L (triangular inferior con 1s en la diagonal)
+//    BOOST_TEST(L(0, 0) == 1.0);
+//    BOOST_TEST(L(1, 1) == 1.0);
+//    BOOST_TEST(L(2, 2) == 1.0);
+//
+//    // Verificar estructura de U (triangular superior)
+//    BOOST_TEST(U(1, 0) == 0.0);
+//    BOOST_TEST(U(2, 0) == 0.0);
+//    BOOST_TEST(U(2, 1) == 0.0);
+//
+//    // Comprobar que \( L \times U \) aproxima \( A \)
+//    auto LU_result = L * U;
+//    BOOST_TEST(LU_result.isApproximatelyEqual(A, 1e-6));
+//}
+
 BOOST_AUTO_TEST_SUITE_END()
+
+//BOOST_AUTO_TEST_CASE(LU_IsSingular_Test)
+//{
+//    Matrix<double, 3, 3> A = {
+//        {1, 2, 3},
+//        {4, 5, 6},
+//        {7, 8, 9} // Matriz singular (det = 0)
+//    };
+//
+//    LuDecomposition<Matrix<double, 3, 3>> lu(A, true);
+//    BOOST_TEST(lu.isSingular() == true);
+//
+//    // Matriz no singular
+//    Matrix<double, 3, 3> B = {
+//        {4, 3, 2},
+//        {2, 1, 3},
+//        {3, 5, 1}
+//    };
+//
+//    LuDecomposition<Matrix<double, 3, 3>> luB(B, true);
+//    BOOST_TEST(luB.isSingular() == false);
+//}
+
+//BOOST_AUTO_TEST_CASE(LU_LeastSquares_Solution)
+//{
+//    Matrix<double, 4, 3> A = {
+//        {2, 3, 1},
+//        {6, 13, 5},
+//        {2, 19, 10},
+//        {4, 10, 7}
+//    };
+//
+//    Vector<double, 4> b = {1, 2, 3, 4};
+//
+//    LuDecomposition<Matrix<double, 4, 3>> lu(A);
+//    Vector<double, 3> x = lu.leastSquares(b);
+//
+//    // Comparación con solución obtenida por Eigen
+//    Eigen::MatrixXd A_eigen(4, 3);
+//    Eigen::VectorXd b_eigen(4);
+//
+//    for (int i = 0; i < 4; ++i) {
+//        b_eigen(i) = b[i];
+//        for (int j = 0; j < 3; ++j)
+//            A_eigen(i, j) = A(i, j);
+//    }
+//
+//    Eigen::VectorXd x_eigen = A_eigen.colPivHouseholderQr().solve(b_eigen);
+//
+//    BOOST_TEST(x.isApproximatelyEqual(x_eigen, 1e-6));
+//}
+
+//BOOST_AUTO_TEST_CASE(LU_Underdetermined_Solution)
+//{
+//    Matrix<double, 2, 3> A = {
+//        {2, 3, 1},
+//        {6, 13, 5}
+//    };
+//
+//    Vector<double, 2> b = {1, 2};
+//
+//    LuDecomposition<Matrix<double, 2, 3>> lu(A);
+//    Vector<double, 3> x = lu.solve(b);
+//
+//    // Verificar que Ax ≈ b
+//    Vector<double, 2> Ax = A * x;
+//    BOOST_TEST(Ax.isApproximatelyEqual(b, 1e-6));
+//}
+

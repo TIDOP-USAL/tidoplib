@@ -182,7 +182,7 @@ void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 #ifdef TL_HAVE_OPENBLAS
     lapack_int info;
 
-    info = lapack::potrf(L.rows(), L.data(), L.cols());
+    info = lapack::potrf(lapack::Order::row_major, lapack::TriangularForm::lower , L.rows(), L.data(), L.cols());
 
     TL_ASSERT(info >= 0, "Cholesky decomposition failed");
 #else

@@ -667,7 +667,7 @@ auto VectorBase<VectorDerived<T, _size>>::sum() const -> T
     if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory)) {
 
         for (; i < max_vector; i += packed_size) {
-            packed_a.loadAligned(&derived[i]);
+            packed_a.loadUnaligned(&derived[i]);
             summation += packed_a.sum();
         }
 

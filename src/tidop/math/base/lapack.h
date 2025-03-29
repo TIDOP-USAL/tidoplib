@@ -49,8 +49,21 @@ enum class Order
     col_major = LAPACK_COL_MAJOR
 };
 
+enum class TriangularForm : char
+{
+    upper = 'U',
+    lower = 'L'
+};
+
 
 /* Factorización LU */
+
+enum class LUTransposeMode : char
+{
+    NoTrans = 'N',
+    Transpose = 'T',
+    ConjugateTranspose = 'C'
+};
 
 /*!
  * \brief LU factorization for floating point types.
@@ -67,15 +80,15 @@ enum class Order
  * \return Information about the success or failure of the operation.
  */
 template<typename T>
-auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> enableIfFloat<T, lapack_int>
+auto getrf(Order order, lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> enableIfFloat<T, lapack_int>
 {
-    return LAPACKE_sgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
+    return LAPACKE_sgetrf(static_cast<int>(order), rows, cols, a, lda, ipiv);
 }
 
 template<typename T>
-auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> enableIfDouble<T, lapack_int>
+auto getrf(Order order, lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* ipiv) -> enableIfDouble<T, lapack_int>
 {
-    return LAPACKE_dgetrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, ipiv);
+    return LAPACKE_dgetrf(static_cast<int>(order), rows, cols, a, lda, ipiv);
 }
 
 /* Solving linear equations using LU factorization */
@@ -97,17 +110,17 @@ auto getrf(lapack_int rows, lapack_int cols, T* a, lapack_int lda, lapack_int* i
  * \return Information about the success or failure of the operation.
  */
 template<typename T> 
-auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda, 
+auto getrs(Order order, LUTransposeMode trans, lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
            lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfFloat<T, lapack_int>
 {
-    return LAPACKE_sgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
+    return LAPACKE_sgetrs(static_cast<int>(order), static_cast<char>(trans), rows, nrhs, a, lda, ipiv, b, ldb);
 }
 
 template<typename T> 
-auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda, 
+auto getrs(Order order, LUTransposeMode trans, lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
            lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfDouble<T, lapack_int>
 {
-    return LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
+    return LAPACKE_dgetrs(static_cast<int>(order), static_cast<char>(trans), rows, nrhs, a, lda, ipiv, b, ldb);
 }
 
 
@@ -126,15 +139,15 @@ auto getrs(lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
  * \return Information about the success or failure of the operation.
  */
 template<typename T>
-auto potrf(lapack_int rows, T* a, lapack_int lda) -> enableIfFloat<T, lapack_int>
+auto potrf(Order order, TriangularForm form, lapack_int rows, T* a, lapack_int lda) -> enableIfFloat<T, lapack_int>
 {
-    return LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
+    return LAPACKE_spotrf(static_cast<int>(order), static_cast<char>(form), rows, a, lda);
 }
 
 template<typename T> 
-auto potrf(lapack_int rows, T* a, lapack_int lda) -> enableIfDouble<T, lapack_int>
+auto potrf(Order order, TriangularForm form, lapack_int rows, T* a, lapack_int lda) -> enableIfDouble<T, lapack_int>
 {
-    return LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
+    return LAPACKE_dpotrf(static_cast<int>(order), static_cast<char>(form), rows, a, lda);
 }
 
 
@@ -153,67 +166,31 @@ auto potrf(lapack_int rows, T* a, lapack_int lda) -> enableIfDouble<T, lapack_in
  * \return Information about the success or failure of the operation.
  */
 template<typename T>
-auto geqrf(lapack_int rows, lapack_int cols, T *a, /*lapack_int lda, */T *tau) -> enableIfFloat<T, lapack_int>
+auto geqrf(Order order, lapack_int m, lapack_int n, T *a, lapack_int lda, T *tau) -> enableIfFloat<T, lapack_int>
 {
-    return LAPACKE_sgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, cols, tau);
+    return LAPACKE_sgeqrf(static_cast<int>(order), m, n, a, lda, tau);
 }
 
 template<typename T> 
-auto geqrf(lapack_int rows, lapack_int cols, T *a, /*lapack_int lda, */T *tau) -> enableIfDouble<T, lapack_int>
+auto geqrf(Order order, lapack_int m, lapack_int n, T *a, lapack_int lda, T *tau) -> enableIfDouble<T, lapack_int>
 {
-    return LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, cols, tau);
+    return LAPACKE_dgeqrf(static_cast<int>(order), m, n, a, lda, tau);
 }
 
 template<typename T>
-auto orgqr(lapack_int rows, lapack_int cols, lapack_int k, T *a, /*lapack_int lda,*/ T *tau) -> enableIfFloat<T, lapack_int>
+auto orgqr(Order order, lapack_int m, lapack_int n, lapack_int k, T *a, lapack_int lda, T *tau) -> enableIfFloat<T, lapack_int>
 {
-    return LAPACKE_sorgqr(LAPACK_ROW_MAJOR, rows, cols, k, a, cols, tau);
+    return LAPACKE_sorgqr(static_cast<int>(order), m, n, k, a, lda, tau);
 }
 
 template<typename T>
-auto orgqr(lapack_int rows, lapack_int cols, lapack_int k, T *a, /*lapack_int lda,*/ T *tau) -> enableIfDouble<T, lapack_int>
+auto orgqr(Order order, lapack_int m, lapack_int n, lapack_int k, T *a, lapack_int lda, T *tau) -> enableIfDouble<T, lapack_int>
 {
-    return LAPACKE_dorgqr(LAPACK_ROW_MAJOR, rows, cols, k, a, cols, tau);
+    return LAPACKE_dorgqr(static_cast<int>(order), m, n, k, a, lda, tau);
 }
 
 
 /* SVD (Singular value decomposition) */
-
-/*!
- * \brief Singular Value Decomposition (SVD) for floating point types.
- *
- * This function performs the Singular Value Decomposition of a matrix using the LAPACKE_sgesvd function,
- * which is optimized for floating point types (`float` or `double`).
- *
- * \tparam T The data type (must be `float` or `double`).
- * \param[in] rows The number of rows in the matrix.
- * \param[in] cols The number of columns in the matrix.
- * \param[in,out] a Pointer to the matrix data.
- * \param[in] lda Leading dimension of the matrix.
- * \param[out] s Pointer to the singular values.
- * \param[out] u Pointer to the left singular vectors.
- * \param[in] ldu Leading dimension of the matrix U.
- * \param[out] v Pointer to the right singular vectors.
- * \param[in] ldvt Leading dimension of the matrix VT.
- * \param[in] superb Pointer to the array that holds the superdiagonal elements of the bidiagonal form.
- * \return Information about the success or failure of the operation.
- */
-//template<typename T> 
-//auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
-//           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> enableIfFloat<T, lapack_int>
-//{
-//    lapack_int info = LAPACKE_sgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-//    return info;
-//}
-//
-//template<typename T> 
-//auto gesvd(lapack_int rows, lapack_int cols, T* a, lapack_int lda, T* s, T* u,
-//           lapack_int ldu, T* v, lapack_int ldvt, T* superb) -> enableIfDouble<T, lapack_int>
-//{
-//    lapack_int info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-//    return info;
-//}
-
 
 /*!
  * \brief Options for returning U and V^T matrices in SVD

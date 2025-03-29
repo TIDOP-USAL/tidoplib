@@ -27,9 +27,9 @@
 
 #include <algorithm>
 
- //#include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/base/lapack.h"
+#include "tidop/core/base/flags.h"
 
 namespace tl
 {
@@ -41,13 +41,64 @@ namespace tl
 
  /// \cond
 
- // http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
- // https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
-
 template<typename T>
 class SingularValueDecomposition;
 
 /// \endcond
+
+
+
+/*!
+ * \enum ConfigSVD
+ * \brief Configuration flags for the Singular Value Decomposition (SVD).
+ *
+ * This enumeration defines options for controlling the computation of
+ * the U and V matrices in the Singular Value Decomposition (SVD).
+ *
+ * The flags can be combined using bitwise operations to customize the
+ * behavior of the decomposition.
+ */
+enum class ConfigSVD : int8_t
+{
+    /*!
+     * \brief Compute the full U matrix.
+     *
+     * When set, the decomposition will compute the full \( m \times m \)
+     * orthogonal matrix \( U \). If not set, a reduced version may be computed
+     * depending on other flags.
+     */
+    full_u = 1 << 0,
+
+    /*!
+     * \brief Compute the full V matrix.
+     *
+     * When set, the decomposition will compute the full \( n \times n \)
+     * orthogonal matrix \( V \). If not set, a reduced version may be computed
+     * depending on other flags.
+     */
+    full_v = 1 << 1,
+
+    /*!
+     * \brief Disable computation of the U matrix.
+     *
+     * When set, the U matrix will not be computed. This flag overrides
+     * both `full_u` and any other option related to U.
+     */
+    no_u = 1 << 2,
+
+    /*!
+     * \brief Disable computation of the V matrix.
+     *
+     * When set, the V matrix will not be computed. This flag overrides
+     * both `full_v` and any other option related to V.
+     */
+    no_v = 1 << 3
+};
+ALLOW_BITWISE_FLAG_OPERATIONS(ConfigSVD)
+
+constexpr unsigned int max_svg_iterations = 30;
+
+
 
 /*!
  * \brief Singular Value Decomposition (SVD)
@@ -60,12 +111,21 @@ class SingularValueDecomposition;
  * Given an \( m \times n \) matrix \( A \), the SVD is given by:
  * \f[ A = U \cdot \Sigma \cdot V^T \f]
  * where:
- * - \( U \) is an orthogonal matrix of size \( m \times m \),
+ * - \( U \) is an orthogonal matrix of size \( m \times m \) (or a reduced version if configured),
  * - \( \Sigma \) is a diagonal matrix of size \( m \times n \),
- * - \( V \) is an orthogonal matrix of size \( n \times n \).
+ * - \( V \) is an orthogonal matrix of size \( n \times n \) (or a reduced version if configured).
  *
  * The SVD provides a powerful tool for analyzing and solving linear systems, especially in cases
  * where the matrix is non-square or ill-conditioned.
+ *
+ * This class supports computing the full or reduced versions of \( U \) and \( V \), as well as disabling
+ * their computation entirely through the \ref ConfigSVD configuration flags.
+ *
+ * \note
+ * If **LAPACK** is available (`TL_HAVE_OPENBLAS` is defined), the decomposition is performed using LAPACK's
+ * optimized routines for higher efficiency and numerical stability.
+ * Otherwise, the decomposition is computed using the **Golub-Reinsch algorithm**, which follows
+ * an iterative bidiagonalization and QR algorithm approach.
  *
  * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
  * \tparam T The type of the elements in the matrix (e.g., `double`).
@@ -78,6 +138,16 @@ class Matrix_t, typename T, size_t Rows, size_t Cols>
 class SingularValueDecomposition<Matrix_t<T, Rows, Cols>>
 {
 
+private:
+
+    Matrix_t<T, Rows, Cols> A;
+    Matrix_t<T, DynamicData, DynamicData> U;
+    Matrix_t<T, DynamicData, DynamicData> V;
+    Vector<T, Cols> W;
+    EnumFlags<ConfigSVD> mConfig;
+    size_t mRows;
+    size_t mCols;
+
 public:
 
     /*!
@@ -86,9 +156,13 @@ public:
      * This constructor performs the SVD of the matrix \( A \), storing the resulting orthogonal matrices
      * \( U \) and \( V \), as well as the singular values in the vector \( W \).
      *
+     * The computation of \( U \) and \( V \) can be controlled through the \ref ConfigSVD parameter.
+     * By default, both \( U \) and \( V \) are computed in reduced form.
+     *
      * \param[in] a The matrix \( A \) to decompose.
+     * \param[in] config Configuration flags to control computation of \( U \) and \( V \).
      */
-    SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a, bool fullU = false, bool fullV = false);
+    SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a, ConfigSVD config = static_cast<ConfigSVD>(0));
 
     /*!
      * \brief Solves the system of equations \( A \cdot x = b \) using the SVD
@@ -100,21 +174,40 @@ public:
      * \param[in] b The right-hand side vector \( b \).
      * \return The solution vector \( x \).
      */
+    /*!
+     * \brief Solves the system of equations \( A \cdot x = b \) using the SVD
+     *
+     * Using the SVD, this method solves the system of linear equations \( A \cdot x = b \), where \( A \)
+     * is the matrix and \( b \) is the right-hand side vector. This is done by using the properties of
+     * the matrices \( U \), \( \Sigma \), and \( V \) from the SVD.
+     *
+     * \throws Exception if \( U \) was not computed (ConfigSVD::no_u was enabled).
+     * \throws Exception if \( V \) was not computed (ConfigSVD::no_v was enabled).
+     *
+     * \param[in] B The right-hand side vector \( b \).
+     * \return The solution vector \( x \).
+     */
     auto solve(const Vector<T, Rows> &b) -> Vector<T, Cols>;
 
     /*!
-     * \brief Gets the orthogonal matrix \( U \)
+     * \brief Gets the orthogonal matrix \( U \), if computed
      *
      * This method returns the orthogonal matrix \( U \) from the SVD decomposition.
+     * If \( U \) was disabled in the configuration, an exception is thrown.
+     *
+     * \throws Exception if \( U \) was not computed (ConfigSVD::no_u was enabled).
      *
      * \return The matrix \( U \), which is orthogonal.
      */
     auto u() const -> Matrix_t<T, DynamicData, DynamicData>;
 
     /*!
-     * \brief Gets the orthogonal matrix \( V \)
+     * \brief Gets the orthogonal matrix \( V \), if computed
      *
      * This method returns the orthogonal matrix \( V \) from the SVD decomposition.
+     * If \( V \) was disabled in the configuration, an exception is thrown.
+     *
+     * \throws Exception if \( V \) was not computed (ConfigSVD::no_v was enabled).
      *
      * \return The matrix \( V \), which is orthogonal.
      */
@@ -129,25 +222,6 @@ public:
      */
     auto w() const -> Vector<T, Cols>;
 
-    /*!
-     * \brief Gets the maximum number of iterations for the decomposition
-     *
-     * This method returns the maximum number of iterations that will be performed during the decomposition.
-     *
-     * \return The maximum number of iterations.
-     */
-    auto maxIterations() const -> int;
-
-    /*!
-     * \brief Sets the maximum number of iterations for the decomposition
-     *
-     * This method allows the user to set the maximum number of iterations to be performed during the
-     * decomposition.
-     *
-     * \param[in] maxIterations The maximum number of iterations.
-     */
-    void setMaxIterations(int maxIterations);
-
 private:
 
     void decompose();
@@ -156,19 +230,8 @@ private:
     void lapackDecompose();
 #endif // TL_HAVE_OPENBLAS
 
-private:
-
-    Matrix_t<T, Rows, Cols> A;
-    Matrix_t<T, DynamicData, DynamicData> U;
-    Matrix_t<T, DynamicData, DynamicData> V;
-    Vector<T, Cols> W;
-    int mIterationMax;
-    T eps;
-    bool mFullU;
-    bool mFullV;
-    size_t mRows;
-    size_t mCols;
 };
+
 
 
 template<
@@ -176,19 +239,16 @@ template<
 class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a,
-                                                                                bool fullU, bool fullV)
+                                                                                ConfigSVD config)
   : A(a),
-    mIterationMax(30),
-    eps(std::numeric_limits<T>::epsilon()),
-    mFullU(fullU),
-    mFullV(fullV),
+    mConfig(config),
     mRows(a.rows()),
     mCols(a.cols())
 {
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-    U = Matrix_t<T, DynamicData, DynamicData>(mRows, mFullU ? mRows : std::min(mRows, mCols), 0);
-    V = Matrix_t<T, DynamicData, DynamicData>(mFullV ? mCols : std::min(mRows, mCols), mCols);
+    U = Matrix_t<T, DynamicData, DynamicData>(mRows, mConfig.isEnabled(ConfigSVD::full_u) ? mRows : std::min(mRows, mCols));
+    V = Matrix_t<T, DynamicData, DynamicData>(mConfig.isEnabled(ConfigSVD::full_v) ? mCols : std::min(mRows, mCols), mCols);
     W = Vector<T, Cols>(mCols);
 
 #ifdef TL_HAVE_OPENBLAS
@@ -206,8 +266,11 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, Rows> &B) -> Vector<T, Cols>
 {
+    TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_u), "Attempted to solve the system, but matrix U was not computed. Disable ConfigSVD::no_u in the constructor.");
+    TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_v), "Attempted to solve the system, but matrix V was not computed. Disable ConfigSVD::no_v in the constructor.");
+
     Vector<T, Cols> C(mCols);
-    T tsh = consts::one_half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
+    T tsh = consts::one_half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * std::numeric_limits<T>::epsilon();
     T s;
     Vector<T, Cols> tmp(mCols);
 
@@ -231,243 +294,328 @@ auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, 
     return C;
 }
 
+
 template<
     template<typename, size_t, size_t>
 class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 {
-    U.block(0, A.rows() - 1, 0, A.cols() - 1) = A;
-    Vector<T, Cols> rv1(mCols);
-    int i;
-    int j;
-    int k;
-    int l;
-    T anorm;
-    T f;
-    T g;
-    T h;
-    T s;
-    T scale;
-    g = scale = anorm = consts::zero<T>; //Householder reduction to bidiagonal form.
+    if (A.cols() > U.cols())
+        U = A.block(0, A.rows() - 1, 0, U.cols() - 1);
+    else
+        U.block(0, A.rows() - 1, 0, A.cols() - 1) = A;
 
-    //int one = 1;
+    T tol = static_cast<T>(1e-10);
 
-    for (i = 0; i < static_cast<int>(mCols); i++) {
-        l = i + 2;
-        rv1[i] = scale * g;
-        g = s = scale = 0.0;
+    Vector<T, Cols> e(mCols, 0);
 
-        if (i < static_cast<int>(mRows)) {
-            for (k = i; k < static_cast<int>(mRows); k++) scale += std::abs(U[k][i]);
+    T g = consts::zero<T>;
+    T x = consts::zero<T>;
+    T scale = consts::zero<T>;
+    bool with_u = mConfig.isDisabled(ConfigSVD::no_u);
+    bool with_v = mConfig.isDisabled(ConfigSVD::no_v);
+
+    // Householder's reduction to bidiagonal form
+
+    for (size_t i = 0; i < mCols; ++i) {
+
+        e[i] = scale * g;
+        T s = consts::zero<T>;
+        scale = consts::zero<T>;
+        size_t l = i + 1;
+
+        if (i < mRows) {
+
+            for (size_t k = i; k < mRows; k++)
+                scale += std::abs(U[k][i]);
+
             if (scale != 0.) {
-                for (k = i; k < static_cast<int>(mRows); k++) {
-                    U[k][i] /= scale;
-                    s += U[k][i] * U[k][i];
+
+                for (size_t j = i; j < mRows; ++j) {
+                    U[j][i] /= scale;
+                    s += U[j][i] * U[j][i];
                 }
-                f = U[i][i];
-                g = -std::copysign(sqrt(s), f);
-                h = f * g - s;
-                U[i][i] = f - g;
-                for (j = l - consts::one<int>; j < static_cast<int>(mCols); j++) {
-                    for (s = 0.0, k = i; k < static_cast<int>(mRows); k++)
-                        s += U[k][i] * U[k][j];
-                    f = s / h;
-                    for (k = i; k < mRows; k++)
-                        U[k][j] += f * U[k][i];
+
+                if (s < tol) {
+                    g = consts::zero<T>;
+                } else {
+
+                    T f = U[i][i];
+
+                    g = -std::copysign(sqrt(s), f);
+                    T h = f * g - s;
+                    U[i][i] = f - g;
+
+                    for (size_t j = l; j < U.cols(); ++j) {
+
+                        s = consts::zero<T>;
+
+                        for (size_t k = i; k < U.rows(); ++k)
+                            s += U[k][i] * U[k][j];
+
+                        T f = s / h;
+
+                        for (size_t k = i; k < U.rows(); ++k)
+                            U[k][j] += f * U[k][i];
+                    }
+
+                    for (size_t k = i; k < mRows; k++)
+                        U[k][i] *= scale;
                 }
-                for (k = i; k < mRows; k++)
-                    U[k][i] *= scale;
             }
         }
 
         W[i] = scale * g;
-        g = s = scale = 0.0;
-        if (i + consts::one<int> <= mRows && i + consts::one<int> != mCols) {
-            for (k = l - consts::one<int>; k < mCols; k++) scale += fabs(U[i][k]);
+        s = scale = 0.0;
+
+        if (i < mRows && i + consts::one<int> != mCols) {
+
+            for (size_t k = l; k < mCols; k++)
+                scale += fabs(U[i][k]);
+
             if (scale != 0.) {
-                for (k = l - consts::one<int>; k < mCols; k++) {
-                    U[i][k] /= scale;
-                    s += U[i][k] * U[i][k];
-                }
-                f = U[i][l - consts::one<int>];
-                g = -std::copysign(sqrt(s), f);
-                h = f * g - s;
-                U[i][l - consts::one<int>] = f - g;
 
-                for (k = l - consts::one<int>; k < mCols; k++)
-                    rv1[k] = U[i][k] / h;
-
-                for (j = l - consts::one<int>; j < mRows; j++) {
-                    for (s = 0.0, k = l - consts::one<int>; k < mCols; k++)
-                        s += U[j][k] * U[i][k];
-                    for (k = l - consts::one<int>; k < mCols; k++)
-                        U[j][k] += s * rv1[k];
+                for (size_t j = l; j < mCols; ++j) {
+                    U[i][j] /= scale;
+                    s += U[i][j] * U[i][j];
                 }
 
-                for (k = l - consts::one<int>; k < mCols; k++)
-                    U[i][k] *= scale;
+                if (s < tol)
+                    g = 0.0;
+                else {
+
+                    T f = U[i][i + 1];
+                    g = -std::copysign(sqrt(s), f);
+                    T h = f * g - s;
+                    U[i][i + 1] = f - g;
+
+                    for (size_t j = l; j < mCols; ++j)
+                        e[j] = U[i][j] / h;
+
+                    for (size_t j = l; j < mRows; ++j) {
+
+                        s = 0.0;
+
+                        for (size_t k = l; k < mCols; ++k)
+                            s += U[j][k] * U[i][k];
+
+                        for (size_t k = l; k < mCols; ++k)
+                            U[j][k] += s * e[k];
+                    }
+
+                    for (size_t k = l; k < mCols; k++)
+                        U[i][k] *= scale;
+                }
             }
         }
-        anorm = std::max(anorm, std::abs(W[i]) + std::abs(rv1[i]));
+
+        x = std::max(x, abs(W[i]) + abs(e[i]));
+
     }
 
-    for (i = static_cast<int>(mCols) - consts::one<int>; i >= 0; i--) { //Accumulation of right-hand transformations.
-        if (i < mCols - consts::one<int>) {
-            if (g != 0.) {
-                for (j = l; j < mCols; j++) //Double division to avoid possible underflow.
-                    V[j][i] = (U[i][j] / U[i][l]) / g;
-                for (j = l; j < mCols; j++) {
-                    for (s = 0.0, k = l; k < mCols; k++)
-                        s += U[i][k] * V[k][j];
-                    for (k = l; k < mCols; k++)
-                        V[k][j] += s * V[k][i];
-                }
-            }
+    // Acumulación de las transformaciones de la derecha
+    if (with_v) {
 
-            for (j = l; j < mCols; j++)
-                V[i][j] = V[j][i] = consts::zero<T>;
-        }
+        int l = -1;
+        for (int i = mCols - 1; i >= 0; --i) {
 
-        V[i][i] = consts::one<T>;
-        g = rv1[i];
-        l = i;
-    }
+            if (l != -1) {
 
-    for (i = static_cast<int>(std::min(mRows, mCols)) - consts::one<int>; i >= 0; i--) { //Accumulation of left-hand transformations.
+                if (g != 0.0) {
 
-        if (mFullU) {
-            for (int i = mCols; i < mRows; ++i) {
-                U[i][i] = 1.0;
-            }
-        }
+                    T h = U[i][l] * g;
 
-        l = i + consts::one<int>;
-        g = W[i];
-        for (j = l; j < U.cols()/*mCols*/; j++)
-            this->U.at(i, j) = 0.0;
-        if (g != consts::zero<T>) {
-            g = consts::one<T> / g;
-            for (j = l; j < U.cols()/*mCols*/; j++) {
-                for (s = consts::zero<T>, k = l; k < mRows; k++)
-                    s += U[k][i] * U[k][j];
-                f = (s / U[i][i]) * g;
-                for (k = i; k < mRows; k++)
-                    U[k][j] += f * U[k][i];
-            }
-            for (j = i; j < mRows; j++)
-                U[j][i] *= g;
-        } else {
-            for (j = i; j < mRows; j++)
-                U[j][i] = consts::zero<T>;
-        }
-        ++U[i][i];
-    }
+                    for (size_t j = l; j < mCols; ++j)
+                        V[j][i] = U[i][j] / h;
 
-    bool flag;
-    int its;
-    size_t nm;
-    T c;
-    T x;
-    T y;
-    T z;
-    for (k = static_cast<int>(mCols) - consts::one<int>; k >= 0; k--) { //Diagonalization of the bidiagonal form: Loop over
-        for (its = 0; its < mIterationMax; its++) { // singular values, and over allowed iterations.
+                    for (size_t j = l; j < mCols; ++j) {
 
-            flag = true;
+                        T s = consts::zero<T>;
 
-            for (l = k; l >= 0; l--) { //Test for splitting.
-                nm = static_cast<size_t>(l) - consts::one<int>; //Note that rv1[1] is always zero.
-                if (l == 0 || std::abs(rv1[l]) <= eps * anorm) {
-                    flag = false;
-                    break;
-                }
-                if (std::abs(W[nm]) <= eps * anorm) break;
-            }
+                        for (size_t k = l; k < mCols; ++k)
+                            s += U[i][k] * V[k][j];
 
-            if (flag) {
-                c = consts::zero<T>; //Cancellation of rv1[l], if l > 1.
-                s = consts::one<T>;
-                for (i = l; i < k + consts::one<int>; i++) {
-                    f = s * rv1[i];
-                    rv1[i] = c * rv1[i];
-                    if (std::abs(f) <= eps * anorm) break;
-                    g = W[i];
-                    h = module(f, g);
-                    W[i] = h;
-                    h = consts::one<T> / h;
-                    c = g * h;
-                    s = -f * h;
-                    for (j = 0; j < mRows; j++) {
-                        y = U[j][nm];
-                        z = U[j][i];
-                        U[j][nm] = y * c + z * s;
-                        U[j][i] = z * c - y * s;
+                        for (size_t k = l; k < mCols; ++k)
+                            V[k][j] += s * V[k][i];
                     }
                 }
-            }
-            z = W[k];
-            if (l == k) { //Convergence.
-                if (z < consts::zero<T>) { //Singular value is made nonnegative.
-                    W[k] = -z;
-                    for (j = 0; j < mCols; j++)
-                        V[j][k] = -V[j][k];
-                }
-                break;
+
+                for (size_t j = l; j < mCols; ++j)
+                    V[i][j] = V[j][i] = consts::zero<T>;
             }
 
-            if (its == 29) throw std::runtime_error("no convergence in 30 iterations");
-            x = W[l]; //Shift from bottom 2-by-2 minor.
-            nm = static_cast<size_t>(k - consts::one<int>);
-            y = W[nm];
-            g = rv1[nm];
-            h = rv1[k];
-            f = ((y - z) * (y + z) + (g - h) * (g + h)) / (static_cast<T>(2) * h * y);
+            V[i][i] = consts::one<T>;
+            g = e[i];
+            l = i;
+        }
+    }
+
+    if (with_u) {
+
+        if (mConfig.isEnabled(ConfigSVD::full_u)){
+            for (size_t i = mCols; i < mRows; ++i) {
+                for (size_t j = mCols; j < mRows; ++j) {
+                    U[i][j] = (i == j) ? consts::one<T> : consts::zero<T>;
+                }
+            }
+        }
+
+        for (int i = std::min(mRows, mCols) - 1; i >= 0; --i) {
+
+            size_t l = i + 1;
+            g = W[i];
+
+            for (size_t j = l; j < U.cols(); ++j)
+                U[i][j] = 0.0;
+
+            if (g != 0.0) {
+
+                g = consts::one<T> / g;
+                T h = (consts::one<T> / U[i][i]) * g;
+
+                //Para matrices completas -> mRows. En ese caso U.cols() == A.rows()
+                for (size_t j = l; j < U.cols(); ++j) {
+
+                    T s = consts::zero<T>;
+
+                    for (size_t k = l; k < mRows; ++k)
+                        s += U[k][i] * U[k][j];
+
+                    T f = s * h;
+
+                    for (size_t k = i; k < mRows; ++k)
+                        U[k][j] += f * U[k][i];
+
+                }
+
+                for (size_t j = i; j < mRows; ++j)
+                    U[j][i] *= g;
+
+            } else {
+                for (size_t j = i; j < mRows; ++j)
+                    U[j][i] = consts::zero<T>;
+            }
+            ++U[i][i];
+        }
+    }
+
+    T convergenge = std::numeric_limits<T>::epsilon() * x;
+
+    // Diagonalización de la forma bidiagonal
+
+    for (int k = static_cast<int>(mCols) - 1; k >= 0; --k) {
+
+        for (size_t its = 0; its < max_svg_iterations; its++) {
+
+            int l;
+
+            //Test for splitting.
+            for (l = k; l >= 0; --l) {
+
+                if (l == 0 || std::abs(e[l]) <= convergenge) break; // -> Test for convergence
+
+                if (std::abs(W[l - 1]) <= convergenge) {
+                    // Cancellation of e[l] if l > 1
+                    T c = consts::zero<T>;
+                    T s = consts::one<T>;
+                    int l1 = l - 1;
+                    for (int i = l; i <= k; ++i) {
+                        T f = s * e[i];
+                        e[i] = c * e[i];
+                        if (std::abs(f) <= convergenge) break;
+                        T g = W[i];
+                        W[i] = module(f, g);
+                        T h = consts::one<T> / W[i];
+                        c = g * h;
+                        s = -f * h;
+
+                        if (with_u) {
+                            for (size_t j = 0; j < mRows; ++j) {
+                                T y = U[j][l1];
+                                T z = U[j][i];
+                                U[j][l1] = y * c + z * s;
+                                U[j][i] = -y * s + z * c;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            // Test for convergence
+            T z = W[k];
+            if (l == k) {
+                if (z < consts::zero<T>) {  //Singular value is made nonnegative.
+                    W[k] = -z;
+                    if (with_v) {
+                        for (int j = 0; j < mCols; ++j) {
+                            V[j][k] = -V[j][k];
+                        }
+                    }
+                }
+                continue;
+            }
+
+            TL_ASSERT(its < max_svg_iterations, "SVD no convergence in {} iterations", max_svg_iterations);
+
+            // Shift from bottom 2x2 minor
+            T x = W[l], y = W[k - 1];
+            T g = e[k - 1], h = e[k];
+            T f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
             g = module(f, consts::one<T>);
             f = ((x - z) * (x + z) + h * ((y / (f + std::copysign(g, f))) - h)) / x;
-            c = s = consts::one<T>; //Next QR transformation:
 
-            for (j = l; j <= nm; j++) {
-                i = j + consts::one<int>;
-                g = rv1[i];
+            // Next QR transformation
+            T c = 1, s = 1;
+            for (int i = l + 1; i <= k; ++i) {
+                g = e[i];
                 y = W[i];
                 h = s * g;
                 g = c * g;
-                z = module(f, h);
-                rv1[j] = z;
+                e[i - 1] = z = module(f, h);
                 c = f / z;
                 s = h / z;
                 f = x * c + g * s;
-                g = g * c - x * s;
+                g = -x * s + g * c;
                 h = y * s;
                 y *= c;
-                for (size_t jj = 0; jj < mCols; jj++) {
-                    x = V[jj][j];
-                    z = V[jj][i];
-                    V[jj][j] = x * c + z * s;
-                    V[jj][i] = z * c - x * s;
+
+                if (with_v) {
+                    for (size_t j = 0; j < mCols; ++j) {
+                        x = V[j][i - 1];
+                        z = V[j][i];
+                        V[j][i - 1] = x * c + z * s;
+                        V[j][i] = -x * s + z * c;
+                    }
                 }
-                z = module(f, h);
-                W[j] = z; //Rotation can be arbitrary if z = 0.
-                if (z != 0.) {
-                    z = consts::one<T> / z;
+
+                W[i - 1] = module(f, h);
+                //Rotation can be arbitrary if W[i - 1] = 0.
+                if (W[i - 1] != 0.) {
+                    z = consts::one<T> / W[i - 1];
                     c = f * z;
                     s = h * z;
                 }
                 f = c * g + s * y;
-                x = c * y - s * g;
-                for (size_t jj = 0; jj < mRows; jj++) {
-                    y = U[jj][j];
-                    z = U[jj][i];
-                    U[jj][j] = y * c + z * s;
-                    U[jj][i] = z * c - y * s;
+                x = -s * g + c * y;
+
+                if (with_u) {
+                    for (size_t j = 0; j < mRows; ++j) {
+                        y = U[j][i - 1];
+                        z = U[j][i];
+                        U[j][i - 1] = y * c + z * s;
+                        U[j][i] = -y * s + z * c;
+                    }
                 }
             }
 
-            rv1[l] = consts::zero<T>;
-            rv1[k] = f;
+            e[l] = consts::zero<T>;
+            e[k] = f;
             W[k] = x;
+
         }
+
     }
 }
 
@@ -477,34 +625,25 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
 {
-    int i;
-    int j;
-    size_t k;
+    size_t inc = 1;
 
-    int inc = 1;
-    T sw;
-    Vector<T, Rows> su(mRows);
-    Vector<T, Cols> sv(mCols);
+    bool with_u = mConfig.isDisabled(ConfigSVD::no_u);
+    bool with_v = mConfig.isDisabled(ConfigSVD::no_v);
 
     do { inc *= 3; inc++; } while (inc <= mCols);
 
     do {
         inc /= 3;
-        for (i = inc; i < mCols; i++) {
-            sw = W[i];
-            for (k = 0; k < mRows; k++) su[k] = U.at(k, i);
-            for (k = 0; k < mCols; k++) sv[k] = V.at(k, i);
-            j = i;
+        for (size_t i = inc; i < mCols; i++) {
+            T sw = W[i];
+            size_t j = i;
             while (W[j - inc] < sw) {
-                W[j] = W[j - inc];
-                for (k = 0; k < mRows; k++) U.at(k, j) = U.at(k, j - inc);
-                for (k = 0; k < mCols; k++) V.at(k, j) = V.at(k, j - inc);
+                std::swap(W[j], W[j - inc]);
+                if (with_u) U.swapCols(j, j - inc);
+                if (with_v) V.swapCols(j, j - inc);
                 j -= inc;
                 if (j < inc) break;
             }
-            W[j] = sw;
-            for (k = 0; k < mRows; k++) U.at(k, j) = su[k];
-            for (k = 0; k < mCols; k++) V.at(k, j) = sv[k];
 
         }
     } while (inc > 1);
@@ -513,17 +652,21 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
     for (size_t c = 0; c < mCols; c++) {
         s = 0;
 
-        for (size_t r = 0; r < mRows; r++)
-            if (U[r][c] < consts::zero<T>)
-                s++;
+        if (with_u) {
+            for (size_t r = 0; r < mRows; r++)
+                if (U[r][c] < consts::zero<T>)
+                    s++;
+        }
 
-        for (size_t r = 0; r < mCols; r++)
-            if (V[r][c] < consts::zero<T>)
-                s++;
+        if (with_v) {
+            for (size_t r = 0; r < mCols; r++)
+                if (V[r][c] < consts::zero<T>)
+                    s++;
+        }
 
         if (s > (mRows + mCols) / 2) {
-            U.col(c) = -U.col(c);
-            V.col(c) = -V.col(c);
+            if (with_u) U.col(c) = -U.col(c);
+            if (with_v) V.col(c) = -V.col(c);
         }
     }
 }
@@ -537,17 +680,28 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 inline void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackDecompose()
 {
     auto lda = mCols;
-    auto ldu = mFullU ? mRows : std::min(mRows, mCols);
-    auto ldvt = mFullV ? mCols : std::min(mRows, mCols);
+    auto ldu = mConfig.isEnabled(ConfigSVD::full_u) ? mRows : std::min(mRows, mCols);
+    auto ldvt = mConfig.isEnabled(ConfigSVD::full_v) ? mCols : std::min(mRows, mCols);
     T *superb = new T[std::min(mRows, mCols) - 1];
 
-    auto info = gesvd(lapack::Order::row_major,
-                            mFullU ? lapack::SVDMode::full : lapack::SVDMode::reduced,
-                            mFullV ? lapack::SVDMode::full : lapack::SVDMode::reduced,
-                            mRows, mCols,
-                            A.data(), lda, W.data(), U.data(),
-                            ldu, V.data(), ldvt, superb);
-    V = V.transpose();
+    lapack::SVDMode jobu = lapack::SVDMode::none;
+    if (mConfig.isDisabled(ConfigSVD::no_u)) {
+        jobu = mConfig.isEnabled(ConfigSVD::full_u) ? lapack::SVDMode::full : lapack::SVDMode::reduced;
+    }
+
+    lapack::SVDMode jobvt = lapack::SVDMode::none;
+    if (mConfig.isDisabled(ConfigSVD::no_v)) {
+        jobvt = mConfig.isEnabled(ConfigSVD::full_v) ? lapack::SVDMode::full : lapack::SVDMode::reduced;
+    }
+
+    auto info = lapack::gesvd(lapack::Order::row_major,
+                              jobu, jobvt,
+                              mRows, mCols,
+                              A.data(), lda, W.data(), U.data(),
+                              ldu, V.data(), ldvt, superb);
+
+    if (mConfig.isDisabled(ConfigSVD::no_v))
+        V = V.transpose();
 
     delete[] superb;
 
@@ -562,6 +716,9 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::u() const -> Matrix_t<T, DynamicData, DynamicData>
 {
+    TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_u), 
+              "Attempted to access matrix U, but it was not computed. Disable ConfigSVD::no_u in the constructor.");
+
     return U;
 }
 
@@ -571,6 +728,8 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 >
 auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::v() const -> Matrix_t<T, DynamicData, DynamicData>
 {
+    TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_v), "Attempted to access matrix V, but it was not computed. Disable ConfigSVD::no_v in the constructor.");
+
     return V;
 }
 
@@ -581,24 +740,6 @@ class Matrix_t, typename T, size_t Rows, size_t Cols
 auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::w() const -> Vector<T, Cols>
 {
     return W;
-}
-
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::maxIterations() const -> int
-{
-    return mIterationMax;
-}
-
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::setMaxIterations(int maxIterations)
-{
-    mIterationMax = maxIterations;
 }
 
 

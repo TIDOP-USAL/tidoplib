@@ -316,12 +316,12 @@ inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
     lapack_int n = QR.cols();
     // En row-major order, cada fila está almacenada de forma contigua en memoria, 
     // por lo que la leading dimension es el número de columnas de A.
-    //lapack_int lda = QR.cols(); 
+    lapack_int lda = QR.cols(); 
 
     std::vector<T> tau(std::min(m, n));
 
     // Factorización QR usando geqrf
-    info = lapack::geqrf(m, n, QR.data(), /*lda, */tau.data());
+    info = lapack::geqrf(lapack::Order::row_major, m, n, QR.data(), lda, tau.data());
 
     TL_ASSERT(info >= 0, "LAPACKE_geqrf failed.");
 
@@ -348,7 +348,7 @@ inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
     }
 
     // Calcular Q a partir de QR usando orgqr
-    info = lapack::orgqr(m, m, tau.size(), Q.data(), /*lda,*/ tau.data());
+    info = lapack::orgqr(lapack::Order::row_major, m, m, tau.size(), Q.data(), m, tau.data());
     TL_ASSERT(info >= 0, "LAPACKE_orgqr failed.");
 }
 
