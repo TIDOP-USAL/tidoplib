@@ -334,11 +334,11 @@ BOOST_FIXTURE_TEST_CASE(upper, LuTest)
 
 }
 
-//BOOST_FIXTURE_TEST_CASE(determinant, LuTest)
-//{
-//    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4);
-//    BOOST_CHECK_EQUAL(8, lu.determinant());
-//}
+BOOST_FIXTURE_TEST_CASE(determinant, LuTest)
+{
+    LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4);
+    BOOST_CHECK_EQUAL(8, lu.determinant());
+}
 
 
 //BOOST_FIXTURE_TEST_CASE(rectangular, LuTest)

@@ -29,7 +29,7 @@
 
 include(TidopUtils)
 
-if (BUILD_TL_GEOSPATIAL)
+if (BUILD_TL_GEOSPATIAL AND TL_HAVE_RASTER_TOOLS)
 
     project(Geospatial)
     

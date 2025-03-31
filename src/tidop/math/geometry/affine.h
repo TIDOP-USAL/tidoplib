@@ -93,6 +93,7 @@ public:
 
 private:
 
+    // Utilizar al menos doble para no perder precision aunque los datos de entrada sean float.
     Matrix<T, Dim, Dim + 1> _transform;
 
 public:
@@ -425,11 +426,11 @@ Affine<T, Dim>::Affine(T sx, T sy, T tx, T ty, T angle)
 {
     static_assert(dimensions == 2, "Constructor for 2D Affine. Use the 3D Affine constructor: Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kappa).");
 
-    this->_transform[0][0] = sx * cos(angle);
-    this->_transform[0][1] = -sy * sin(angle);
+    this->_transform[0][0] = sx * static_cast<T>(cos(angle));
+    this->_transform[0][1] = -sy * static_cast<T>(sin(angle));
     this->_transform[0][2] = tx;
-    this->_transform[1][0] = sx * sin(angle);
-    this->_transform[1][1] = sy * cos(angle);
+    this->_transform[1][0] = sx * static_cast<T>(sin(angle));
+    this->_transform[1][1] = sy * static_cast<T>(cos(angle));
     this->_transform[1][2] = ty;
 }
 

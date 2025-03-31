@@ -26,6 +26,7 @@
 #include "tidop/core/base/type_conversions.h"
 
 #include <array>
+#include <utility>
 
 namespace tl
 {

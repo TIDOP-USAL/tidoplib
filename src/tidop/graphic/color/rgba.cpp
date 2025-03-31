@@ -24,6 +24,8 @@
 
 #include "tidop/graphic/color/rgba.h"
 
+#include <utility>
+
 namespace tl
 {
 

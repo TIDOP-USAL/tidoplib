@@ -2285,6 +2285,21 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
     BOOST_CHECK_CLOSE(9., trmm_result[1][1], 0.0001);
     BOOST_CHECK_CLOSE(7.7, trmm_result[2][0], 0.0001);
     BOOST_CHECK_CLOSE(9.3, trmm_result[2][1], 0.0001);
+
+    // Matrices grandes
+
+    Matrix<double> mat_100x100 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat_100x50 = Matrix<double>::randon(100, 50);
+
+    MatrixConfig::instance().product = MatrixConfig::Product::CPP;
+    auto result_cpp = mat_100x100 * mat_100x50;
+
+    MatrixConfig::instance().product = MatrixConfig::Product::SIMD;
+    auto result_simd = mat_100x100 * mat_100x50;
+
+    for (size_t r = 0; r < result_cpp.rows(); ++r)
+      for (size_t c = 0; c < result_cpp.cols(); ++c)
+          BOOST_CHECK_EQUAL(result_cpp[r][c], result_simd[r][c]);
 }
 
 /// Multiplicación de una matriz por un escalar
@@ -2817,11 +2832,11 @@ BOOST_FIXTURE_TEST_CASE(asign, MatrixRowTest)
                          {5,3,3,7,6},
                          {5,5,7,4,7}};
 
-    a[0] = 0;
-    a[1] = 1;
-    a[2] = 2;
-    a[3] = 3;
-    a[4] = 4;
+    a[0].fill(0);
+    a[1].fill(1);
+    a[2].fill(2);
+    a[3].fill(3);
+    a[4].fill(4);
 
     BOOST_CHECK_EQUAL(0, a[0][0]);
     BOOST_CHECK_EQUAL(0, a[0][1]);
@@ -3290,11 +3305,11 @@ BOOST_FIXTURE_TEST_CASE(asign, MatrixColTest)
                         {5,3,3,7,6},
                         {5,5,7,4,7}};
 
-    a.col(0) = 0;
-    a.col(1) = 1;
-    a.col(2) = 2;
-    a.col(3) = 3;
-    a.col(4) = 4;
+    a.col(0).fill(0);
+    a.col(1).fill(1);
+    a.col(2).fill(2);
+    a.col(3).fill(3);
+    a.col(4).fill(4);
 
     BOOST_CHECK_EQUAL(0, a[0][0]);
     BOOST_CHECK_EQUAL(0, a[1][0]);

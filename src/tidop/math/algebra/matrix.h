@@ -777,9 +777,14 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
     size_t max_vector = cols - cols % packed_size;
     size_t iter = rows - rows % 8;
 
-    T b{};
-
-    #pragma omp parallel for collapse(2) private(packed_a, packed_b, packed_c, b)
+    // Hacer pruebas con:
+    // #pragma omp parallel for schedule(dynamic) private(packed_b, packed_c)
+    // #pragma omp parallel for collapse(3) private(packed_b, packed_c)
+    // #pragma omp parallel
+    // {
+    // #pragma omp for collapse(2)
+    //#pragma omp parallel for collapse(2) private(packed_b, packed_c)
+    #pragma omp parallel for private(packed_b, packed_c) 
     for (int r = 0; r < iter; r += 8) {
         for (int i = 0; i < dim; i++) {
 
@@ -806,21 +811,21 @@ void mulmat_simd_parallel(const Matrix<T, _rows1, _col1> &matrix1,
         }
     }
 
-    #pragma omp parallel for private(packed_a, packed_b, packed_c, b)
-    for (int r = iter; r < rows; r++) {
-        for (int i = 0; i < dim; i++) {
+    #pragma omp parallel for private(packed_a, packed_b, packed_c)
+    for (int r = static_cast<int>(iter); r < static_cast<int>(rows); r++) {
+        for (size_t i = 0; i < dim; i++) {
 
             T a = matrix1(r, i);
             packed_a.setScalar(a);
 
-            for (int c = 0; c < max_vector; c += packed_size) {
+            for (size_t c = 0; c < max_vector; c += packed_size) {
                 packed_b.loadUnaligned(&matrix2(i, c));
                 packed_c.loadUnaligned(&matrix(r, c));
                 packed_c += packed_a * packed_b;
                 packed_c.storeUnaligned(&matrix(r, c));
             }
 
-            for (int c = max_vector; c < cols; c++) {
+            for (size_t c = max_vector; c < cols; c++) {
                 matrix(r, c) += a * matrix2(i, c);
             }
         }
@@ -861,9 +866,21 @@ void mulmat_blas(const Matrix<T, _rows1, _col1> &matrix1,
     bool mat2_is_triangular = mat2_is_upper || mat2_is_lower;
 
     //if (matrix1.rows() == matrix1.cols() && (mat1_is_symmetric || mat2_is_symmetric)) {
-
-    //    blas::symm(mat1_is_symmetric ? blas::Side::left : blas::Side::right,
-    //               matrix1.rows(), matrix2.cols(), matrix1.data(), matrix2.data(), matrix.data());
+        //T alpha = 1.0;
+        //T beta = 0.0;
+        //auto lda = matrix1.rows();
+        //auto ldb = matrix2.cols();
+        //auto ldc = matrix2.cols();
+    //    blas::symm(blas::Order::row_major, 
+    //               mat1_is_symmetric ? blas::Side::left : blas::Side::right,
+    //               blas::TriangularForm::upper,
+    //               matrix1.rows(), 
+    //               matrix2.cols(), 
+    //               alpha,
+    //               matrix1.data(), lda
+    //               matrix2.data(), ldb,
+    //               beta,
+    //               matrix.data(), ldc);
 
     //} else if (matrix1.rows() == matrix1.cols() && (mat1_is_triangular || mat2_is_triangular)) {
 
@@ -878,11 +895,37 @@ void mulmat_blas(const Matrix<T, _rows1, _col1> &matrix1,
     //        form = mat1_is_upper ? blas::TriangularForm::upper : blas::TriangularForm::lower;
     //    }
 
+    //    T alpha = 1.0;
+    //    auto lda = m;
+    //    auto ldb = n;
     //    matrix = matrix2;
-    //    blas::trmm(side, form, matrix1.rows(), matrix2.cols(), matrix1.data(), matrix.data());
+    //    blas::trmm(blas::Order::row_major, 
+    //               side, 
+    //               form, 
+    //               blas::TransposeMode::no_transpose,  
+    //               matrix1.rows(),
+    //               matrix2.cols(),
+    //               alpha,
+    //               matrix1.data(), lda,
+    //               matrix.data(), ldb);
 
     //} else {
-        blas::gemm(matrix1.rows(), matrix2.cols(), matrix1.cols(), matrix1.data(), matrix2.data(), matrix.data());
+        T alpha = 1.;
+        T beta = 0.;
+        auto lda = matrix1.cols();
+        auto ldb = matrix2.cols();
+        auto ldc = matrix2.cols();
+        blas::gemm(blas::Order::row_major, 
+                   blas::TransposeMode::no_transpose, 
+                   blas::TransposeMode::no_transpose,
+                   matrix1.rows(),
+                   matrix2.cols(),
+                   matrix1.cols(), 
+                   alpha, 
+                   matrix1.data(), lda, 
+                   matrix2.data(), ldb,
+                   beta,
+                   matrix.data(), ldc);
     //}
 }
 
@@ -1054,12 +1097,24 @@ auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
 #endif
 #ifdef TL_HAVE_OPENBLAS
     case tl::MatrixConfig::Product::BLAS:
-        blas::gemv(matrix.rows(),
+    {
+        T alpha = 1.;
+        T beta = 0.;
+        size_t lda = matrix.cols();
+        size_t incx = 1;
+        size_t incy = 1;
+        blas::gemv(blas::Order::row_major,
+                   blas::TransposeMode::no_transpose,
+                   matrix.rows(),
                    matrix.cols(),
-                   matrix.data(), 
-                   vector.data(), 
-                   vectorOut.data());
-        break;
+                   alpha,
+                   matrix.data(), lda,
+                   vector.data(), incx,
+                   beta,
+                   vectorOut.data(), incy);
+        
+    }
+    break;
 #endif
 #ifdef TL_HAVE_SIMD_INTRINSICS
     case tl::MatrixConfig::Product::SIMD:

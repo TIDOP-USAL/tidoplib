@@ -55,15 +55,15 @@ enum class TriangularForm : char
     lower = 'L'
 };
 
+enum class Transpose : char
+{
+    no_trans = 'N',
+    transpose = 'T',
+    conjugate_transpose = 'C'
+};
+
 
 /* Factorización LU */
-
-enum class LUTransposeMode : char
-{
-    NoTrans = 'N',
-    Transpose = 'T',
-    ConjugateTranspose = 'C'
-};
 
 /*!
  * \brief LU factorization for floating point types.
@@ -110,17 +110,17 @@ auto getrf(Order order, lapack_int rows, lapack_int cols, T* a, lapack_int lda, 
  * \return Information about the success or failure of the operation.
  */
 template<typename T> 
-auto getrs(Order order, LUTransposeMode trans, lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
-           lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfFloat<T, lapack_int>
+auto getrs(Order order, Transpose transpose, lapack_int rows, lapack_int nrhs, const T* a, lapack_int lda,
+           const lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfFloat<T, lapack_int>
 {
-    return LAPACKE_sgetrs(static_cast<int>(order), static_cast<char>(trans), rows, nrhs, a, lda, ipiv, b, ldb);
+    return LAPACKE_sgetrs(static_cast<int>(order), static_cast<char>(transpose), rows, nrhs, a, lda, ipiv, b, ldb);
 }
 
 template<typename T> 
-auto getrs(Order order, LUTransposeMode trans, lapack_int rows, lapack_int nrhs, T* a, lapack_int lda,
-           lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfDouble<T, lapack_int>
+auto getrs(Order order, Transpose transpose, lapack_int rows, lapack_int nrhs, const T* a, lapack_int lda,
+           const lapack_int* ipiv, T* b, lapack_int ldb) -> enableIfDouble<T, lapack_int>
 {
-    return LAPACKE_dgetrs(static_cast<int>(order), static_cast<char>(trans), rows, nrhs, a, lda, ipiv, b, ldb);
+    return LAPACKE_dgetrs(static_cast<int>(order), static_cast<char>(transpose), rows, nrhs, a, lda, ipiv, b, ldb);
 }
 
 
@@ -150,6 +150,17 @@ auto potrf(Order order, TriangularForm form, lapack_int rows, T* a, lapack_int l
     return LAPACKE_dpotrf(static_cast<int>(order), static_cast<char>(form), rows, a, lda);
 }
 
+template<typename T>
+auto potrs(Order order, TriangularForm form, lapack_int n, lapack_int nrhs, const T *a, lapack_int lda, T *b, lapack_int ldb) -> enableIfFloat<T, lapack_int>
+{
+    return LAPACKE_spotrs(static_cast<int>(order), static_cast<char>(form), n, nrhs, a, lda, b, ldb);
+}
+
+template<typename T>
+auto potrs(Order order, TriangularForm form, lapack_int n, lapack_int nrhs, const T *a, lapack_int lda, T *b, lapack_int ldb) -> enableIfDouble<T, lapack_int>
+{
+    return LAPACKE_dpotrs(static_cast<int>(order), static_cast<char>(form), n, nrhs, a, lda, b, ldb);
+}
 
 /* Descomposición QR */
 
@@ -189,6 +200,18 @@ auto orgqr(Order order, lapack_int m, lapack_int n, lapack_int k, T *a, lapack_i
     return LAPACKE_dorgqr(static_cast<int>(order), m, n, k, a, lda, tau);
 }
 
+
+template<typename T>
+auto gels(Order order, Transpose transpose, lapack_int m, lapack_int n, lapack_int nrhs, T *a, lapack_int lda, T *b, lapack_int ldb) -> enableIfFloat<T, lapack_int>
+{
+    return LAPACKE_sgels(static_cast<int>(order), static_cast<char>(transpose), m, n, nrhs, a, lda, b, ldb);
+}
+
+template<typename T>
+auto gels(Order order, Transpose transpose, lapack_int m, lapack_int n, lapack_int nrhs, T *a, lapack_int lda, T *b, lapack_int ldb) -> enableIfDouble<T, lapack_int>
+{
+    return LAPACKE_dgels(static_cast<int>(order), static_cast<char>(transpose), m, n, nrhs, a, lda, b, ldb);
+}
 
 /* SVD (Singular value decomposition) */
 

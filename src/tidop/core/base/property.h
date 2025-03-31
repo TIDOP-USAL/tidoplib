@@ -40,9 +40,22 @@
 namespace tl
 {
 
+class PropertyBase;
+
 namespace internal
 {
-template<typename T> class PropertyValue;
+
+template<typename T>
+class PropertyValue
+{
+
+public:
+
+    PropertyValue(/* args */) {}
+
+    T value(const PropertyBase *arg);
+};
+
 }
 
 /*! \addtogroup Base
@@ -362,17 +375,6 @@ public:
 namespace internal
 {
 
-
-template<typename T>
-class PropertyValue
-{
-
-public:
-
-    PropertyValue(/* args */) {}
-
-    T value(const PropertyBase *arg);
-};
 
 template<typename T>
 auto PropertyValue<T>::value(const PropertyBase *arg) -> T
@@ -723,7 +725,7 @@ inline void Properties::setProperty(const std::string &key, T value)
     //} else {
     //    mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
     //}
-    mProperties[key] = std::make_shared<Property<std::decay<T>::type>>(value);
+    mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
 }
 
 template <>

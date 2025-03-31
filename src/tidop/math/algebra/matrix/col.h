@@ -107,14 +107,16 @@ public:
     auto end() const TL_NOEXCEPT -> const_iterator;
     auto size() const TL_NOEXCEPT -> size_t;
     
+    void fill(T value);
+
     auto operator[](size_t row) const -> const_reference;
     auto operator[](size_t row) -> reference;
-    void operator=(T value);
+    //void operator=(T value);
     auto operator=(const Vector<T> &vector) -> MatrixCol&;
     template<typename T2, size_t _size2>
     auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;   
     
-    operator Vector<T>();
+    explicit operator Vector<T>();
 
 };
 
@@ -219,6 +221,12 @@ auto MatrixCol<T, _size_>::size() const TL_NOEXCEPT -> size_t
 }
 
 template<typename T, size_t _size_>
+void MatrixCol<T, _size_>::fill(T value)
+{
+    std::fill(begin(), end(), value);
+}
+
+template<typename T, size_t _size_>
 auto MatrixCol<T, _size_>::operator[](size_t row) const -> const_reference
 {
     return matrixData[row * matrixCols + matrixCol];
@@ -230,11 +238,11 @@ auto MatrixCol<T, _size_>::operator[](size_t row) -> reference
     return matrixData[row * matrixCols + matrixCol];
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::operator=(T value) -> void
-{
-    std::fill(begin(), end(), value);
-}
+//template<typename T, size_t _size_>
+//auto MatrixCol<T, _size_>::operator=(T value) -> void
+//{
+//    std::fill(begin(), end(), value);
+//}
 
 template<typename T, size_t _size_>
 auto MatrixCol<T, _size_>::operator=(const Vector<T> &vector) -> MatrixCol&

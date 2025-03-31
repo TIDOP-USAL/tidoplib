@@ -999,6 +999,7 @@ bool CRSsToolsImpl::getIsCRSValid(const std::string &crsId)
         }
         catch (std::exception &e)
         {
+            unusedParameter(e);
             return(false);
             //TL_THROW_EXCEPTION("Invalid CRS id: {}", crsId);
         }

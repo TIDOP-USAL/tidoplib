@@ -167,7 +167,7 @@ void Process::execute(Progress *)
 #else
         pid_t pid;
         std::unique_ptr<char[]> command(strdup(mCommandText.data()));
-        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), command, nullptr};
+        char *argv[] = {const_cast<char *>("sh"), const_cast<char *>("-c"), command.get(), nullptr};
 
         int status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
         

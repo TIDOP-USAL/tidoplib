@@ -104,14 +104,16 @@ public:
     auto end() const TL_NOEXCEPT -> const_iterator;
     auto size() const TL_NOEXCEPT -> size_t;
 
+    void fill(T value);
+
     auto operator[](size_t column) const -> const_reference;
     auto operator[](size_t column) -> reference;
-    void operator=(T value);
+    //void operator=(T value);
     auto operator=(const Vector<T> &vector) -> MatrixRow&;
     template<typename T2, size_t _size2>
     auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow&;
 
-    operator Vector<T>();
+    explicit operator Vector<T>();
 
 };
 
@@ -210,6 +212,12 @@ auto MatrixRow<T, _size_>::size() const TL_NOEXCEPT -> size_t
 }
 
 template<typename T, size_t _size_>
+void MatrixRow<T, _size_>::fill(T value)
+{
+    std::fill(begin(), end(), value);
+}
+
+template<typename T, size_t _size_>
 auto MatrixRow<T, _size_>::operator[](size_t column) const -> const_reference
 {
     return matrixData[matrixRow * matrixCols + column];
@@ -221,11 +229,11 @@ auto MatrixRow<T, _size_>::operator[](size_t column) -> reference
     return matrixData[matrixRow * matrixCols + column];
 }
 
-template<typename T, size_t _size_>
-auto MatrixRow<T, _size_>::operator=(T value) -> void
-{
-    std::fill(begin(), end(), value);
-}
+//template<typename T, size_t _size_>
+//auto MatrixRow<T, _size_>::operator=(T value) -> void
+//{
+//    std::fill(begin(), end(), value);
+//}
 
 template<typename T, size_t _size_>
 auto MatrixRow<T, _size_>::operator=(const Vector<T> &vector) -> MatrixRow&

@@ -94,7 +94,7 @@ namespace tl
 		double x_max_real = -1000000000.;
 		double y_max_real = -1000000000.;
 		double z_max_real = -1000000000.;
-		for (auto pto : coordinates)
+		for (auto &pto : coordinates)
 		{
 			if (pto[0] < x_min_real) x_min_real = pto[0];
 			if (pto[1] < y_min_real) y_min_real = pto[1];
@@ -102,32 +102,22 @@ namespace tl
 			if (pto[0] > x_max_real) x_max_real = pto[0];
 			if (pto[1] > y_max_real) y_max_real = pto[1];
 			if (pto[2] > z_max_real) z_max_real = pto[2];
-			Vector3f position = {
-				static_cast<float>(pto[0],pto[1],pto[2])
-			};
+			Vector3f position = {pto[0],pto[1],pto[2]};
 			if (ViewerWidget::isEnabledSwitchAxis()) {
-				position = {
-					-static_cast<float>(pto[0]),
-					static_cast<float>(pto[2]),
-					static_cast<float>(pto[1])
-				};
+				position[0] = -position[0];
+				std::swap(pto[1], pto[2]);
 			}
-			Vector4f color = {
-				static_cast<float>(0.),
-				static_cast<float>(0.),
-				static_cast<float>(0.),
-				static_cast<float>(1.)
-			};
+			Vector4f color = {0.f, 0.f, 0.f, 1.f};
 			if (posRed != -1 && posGreen != -1 && posBlue != -1)
 			{
 				float alpha = 65536.;
 				if (posAlpha != -1)
 					alpha = dimensionsValues[np][posAlpha];
 				color = {
-					static_cast<float>(dimensionsValues[np][posRed] / 65536.),
-					static_cast<float>(dimensionsValues[np][posGreen] / 65536.),
-					static_cast<float>(dimensionsValues[np][posBlue] / 65536.),
-					static_cast<float>(alpha / 65536.)
+					dimensionsValues[np][posRed] / 65536.f,
+					dimensionsValues[np][posGreen] / 65536.f,
+					dimensionsValues[np][posBlue] / 65536.f,
+					alpha / 65536.f
 				};
 			}
 			Vertex vertex(position, color);
@@ -135,9 +125,9 @@ namespace tl
 			ofs << pto[0] << ", " << pto[1] << ", " << pto[2] << ", ";
 			if (posRed != -1 && posGreen != -1 && posBlue != -1)
 			{
-				ofs << (dimensionsValues[np][posRed] / 65536.) << ", ";
-				ofs << (dimensionsValues[np][posGreen] / 65536.) << ", ";
-				ofs << (dimensionsValues[np][posBlue] / 65536.);
+				ofs << (dimensionsValues[np][posRed] / 65536.f) << ", ";
+				ofs << (dimensionsValues[np][posGreen] / 65536.f) << ", ";
+				ofs << (dimensionsValues[np][posBlue] / 65536.f);
 			}
 			ofs << "\n";
 			np++;

@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     arg_akaze_diffusivity->setValidator(std::make_shared<ValuesValidator<std::string>>(diffusivity));
     auto arg_kaze_octaves = Argument::make<int>("octaves", "Octaves", 4);
     auto arg_kaze_octave_layers = Argument::make<int>("octave_layers", "Octave layers", 4);
-    auto arg_kaze_threshold = Argument::make<double>("threshold", "Threshold", 0.001);
+    auto arg_kaze_threshold = Argument::make<float>("threshold", "Threshold", 0.001f);
 
     auto cmd_akaze = Command::create("akaze", "AKAZE", {
             arg_input,
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
             arg_akaze_descriptor_type,
             Argument::make<int>("threshold", "Threshold", 30),
             Argument::make<int>("octaves", "Octaves", 3),
-            Argument::make<double>("pattern_scale", "Pattern scale", 1.0)
+            Argument::make<float>("pattern_scale", "Pattern scale", 1.0)
         });
 
     /* ORB */
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
         KazeProperties properties;
         properties.setExtendedDescriptor(cmd_kaze->value<bool>("extended"));
         properties.setUprightDescriptor(cmd_kaze->value<bool>("upright"));
-        properties.setThreshold(cmd_kaze->value<double>("threshold"));
+        properties.setThreshold(cmd_kaze->value<float>("threshold"));
         properties.setOctaves(cmd_kaze->value<int>("octaves"));
         properties.setOctaveLayers(cmd_kaze->value<int>("octave_layers"));
         properties.setDiffusivity(cmd_kaze->value<std::string>("diffusivity"));
@@ -233,7 +233,7 @@ int main(int argc, char **argv)
         BriskProperties properties;
         properties.setThreshold(cmd_brisk->value<int>("threshold"));
         properties.setOctaves(cmd_brisk->value<int>("octaves"));
-        properties.setPatternScale(cmd_brisk->value<double>("patternScale"));
+        properties.setPatternScale(cmd_brisk->value<float>("patternScale"));
         auto brisk = std::make_shared<BriskDetectorDescriptor>(properties);
 
         feature_detector = std::dynamic_pointer_cast<FeatureDetector>(brisk);

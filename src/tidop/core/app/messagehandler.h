@@ -30,11 +30,11 @@
 #include "tidop/core/base/flags.h"
 
 #include <string>
-#if CPP_VERSION >= 20
-#include <format>
-#else
-#include <fmt/format.h>
-#endif
+//#if CPP_VERSION >= 20
+//#include <format>
+//#else
+//#include <fmt/format.h>
+//#endif
 
 namespace tl
 {

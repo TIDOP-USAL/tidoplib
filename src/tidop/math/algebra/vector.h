@@ -122,7 +122,7 @@ public:
     template<typename VectorDerived2>
     auto dotProduct(const VectorDerived2 &vector) const -> double;
 
-    auto sum() const->T;
+    auto sum() const -> T;
 
     /*!
      * \brief Conversion operator to another vector type.

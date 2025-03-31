@@ -27,6 +27,7 @@
 #include "tidop/core/base/type_conversions.h"
 
 #include <random>
+#include <utility>
 
 namespace tl
 {

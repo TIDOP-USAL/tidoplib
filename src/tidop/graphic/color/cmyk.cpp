@@ -25,6 +25,8 @@
 #include "tidop/graphic/color/cmyk.h"
 #include "tidop/core/base/type_conversions.h"
 
+#include <utility>
+
 namespace tl
 {
 

@@ -217,14 +217,16 @@ template <typename T>
 struct cusolverTraits;
 
 template <>
-struct cusolverTraits<float> {
+struct cusolverTraits<float> 
+{
     static constexpr auto getrf_bufferSize = cusolverDnSgetrf_bufferSize;
     static constexpr auto getrf = cusolverDnSgetrf;
     static constexpr auto getrs = cusolverDnSgetrs;
 };
 
 template <>
-struct cusolverTraits<double> {
+struct cusolverTraits<double>
+{
     static constexpr auto getrf_bufferSize = cusolverDnDgetrf_bufferSize;
     static constexpr auto getrf = cusolverDnDgetrf;
     static constexpr auto getrs = cusolverDnDgetrs;

@@ -38,6 +38,8 @@ public:
             _kurtosis = _kurtosis /
                 (static_cast<T>(n) * _variance * _variance);
         }
+
+        return _kurtosis;
     }
 
 };

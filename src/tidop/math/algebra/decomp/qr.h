@@ -269,8 +269,24 @@ auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
     TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
     TL_ASSERT(!singular, "Singular");
 
-    Vector<T, _rows> y = Q.transpose() * b;
     Vector<T, _cols> x(mCols);
+
+//#ifdef TL_HAVE_OPENBLAS 
+//
+//    lapack_int info;
+//    lapack_int nrhs = static_cast<lapack_int>(b.cols());
+//    lapack_int lda = static_cast<lapack_int>(mRows);
+//    lapack_int ldb = static_cast<lapack_int>(b.cols());
+//
+//    info = lapack::gels(lapack::Order::row_major, lapack::Transpose::no_trans, 
+//                        mRows, mCols, nrhs, 
+//                        const_cast<T *>(QR.data()), lda,  // Necesito guardar QR
+//                        x.data(), ldb);
+//
+//
+//#else
+
+    Vector<T, _rows> y = Q.transpose() * b;
 
     for (int i = mCols - 1; i >= 0; --i) {
         T sum = 0;
@@ -279,6 +295,8 @@ auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
         }
         x[i] = (y[i] - sum) / R(i, i);
     }
+
+//#endif
 
     return x;
 }

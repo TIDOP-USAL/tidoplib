@@ -130,7 +130,7 @@ public:
      * \return The determinant of \( A \).
      */
     // Con Lapack no se esta calculando
-    //auto determinant() const->T;
+    auto determinant() const -> T;
 
     /*!
      * \brief Computes the inverse of the matrix \( A \) using LU decomposition.
@@ -215,12 +215,12 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
     mCols(a.cols()),
     mColPer(mRows)
 {
-    static_assert(Rows == Cols, "Non-Square Matrix");
+    static_assert(_rows == _cols, "Non-Square Matrix");
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-    TL_ASSERT(mRows == cols, "Non-Square Matrix");
+    TL_ASSERT(mRows == mCols, "Non-Square Matrix");
 
     for (size_t i = 0; i < mRows; i++) {
-        mColPer[i] = i;
+        mColPer[i] = static_cast<int>(i);
     }
 
     this->decompose();
@@ -242,7 +242,7 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
         lapack_int lda = static_cast<int>(mRows);
         lapack_int ldb = 1;
         lapack_int info = lapack::getrs(lapack::Order::row_major,
-            lapack::LUTransposeMode::NoTrans,
+            lapack::Transpose::no_trans,
             static_cast<int>(mRows), nrhs, const_cast<T *>(LU.data()), lda, const_cast<int *>(mPivotIndexRow.data()), x.data(), ldb);
     } else {
 #endif
@@ -301,7 +301,6 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 template<typename Matrix2_t>
 auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix2_t &b) const -> Matrix2_t
-///Por ahora solo funciona con matrizes dinamicas
 {
     TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
 
@@ -314,24 +313,16 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix2_t &b) const
         lapack_int lda = static_cast<lapack_int>(mRows);
         lapack_int ldb = static_cast<lapack_int>(b.cols());
 
-        info = lapack::getrs(lapack::Order::row_major, lapack::LUTransposeMode::NoTrans, mRows, nrhs, const_cast<T *>(LU.data()), lda, const_cast<int *>(mPivotIndexRow.data()), x.data(), ldb);
+        info = lapack::getrs(lapack::Order::row_major, lapack::Transpose::no_trans, 
+                             static_cast<lapack_int>(mRows), nrhs, LU.data(), lda,
+                             mPivotIndexRow.data(), x.data(), ldb);
 
     } else {
 #endif
 
-        Vector<T, _rows> xx(mRows);
-
         for (size_t j = 0; j < x.cols(); j++) {
-
-            for (size_t i = 0; i < mRows; i++) {
-                xx[i] = b[i][j];
-            }
-
-            xx = this->solve(xx);
-
-            for (size_t i = 0; i < mRows; i++) {
-                x[i][j] = xx[i];
-            }
+            Vector<T, _rows> temp = b.col(j);
+            x.col(j) = this->solve(temp);
         }
 
 #ifdef TL_HAVE_OPENBLAS 
@@ -349,12 +340,19 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
 #ifdef TL_HAVE_OPENBLAS 
     if (!mFullPivot) {
-        lapack_int info;
-        lapack_int lda = mRows;
-
-        info = lapack::getrf(lapack::Order::row_major, mRows, mRows, LU.data(), lda, mPivotIndexRow.data());
+        lapack_int lda = static_cast<lapack_int>(mRows);
+        lapack_int info = lapack::getrf(lapack::Order::row_major, static_cast<lapack_int>(mRows), static_cast<lapack_int>(mRows), LU.data(), lda, mPivotIndexRow.data());
 
         TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.");
+
+        int rowSwaps = 0;
+        for (int i = 0; i < mRows; ++i) {
+            if (mPivotIndexRow[i] != i + 1) {
+                rowSwaps++;
+            }
+        }
+
+        this->d = (rowSwaps % 2 == 0) ? T(1) : T(-1);
 
     } else {
 #endif
@@ -391,7 +389,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
                 this->d = -this->d;
             }
 
-            mPivotIndexRow[k] = pivot_row;
+            mPivotIndexRow[k] = static_cast<int>(pivot_row);
 
             // Intercambio de columnas
             if (mFullPivot) {
@@ -399,7 +397,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
                     LU.swapCols(pivot_col, k);
                     std::swap(mColPer[k], mColPer[pivot_col]);
                 }
-                mPivotIndexCol[k] = pivot_col;
+                mPivotIndexCol[k] = static_cast<int>(pivot_col);
             }
 
             if (isNearlyZero(LU[k][k]))
@@ -433,19 +431,19 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const -> Matrix_t<T, _rows
     return LU;
 }
 
-//template<
-//    template<typename, size_t, size_t>
-//class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
-//{
-//    T det = this->d;
-//
-//    for (size_t i = 0; i < mRows; i++)
-//        det *= LU[i][i];
-//
-//    return det;
-//}
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
+{
+    T det = this->d;
+
+    for (size_t i = 0; i < mRows; i++)
+        det *= LU[i][i];
+
+    return det;
+}
 
 
 template<
@@ -454,8 +452,7 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 auto LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse() const -> Matrix_t<T, _rows, _cols>
 {
-    Matrix_t<T, _rows, _cols> I = Matrix_t<T, _rows, _cols>::identity(mRows, mCols);
-    return solve(I);
+    return solve(Matrix_t<T, _rows, _cols>::identity(mRows, mCols));
 }
 
 template<

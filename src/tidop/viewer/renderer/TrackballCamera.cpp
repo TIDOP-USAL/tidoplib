@@ -87,7 +87,7 @@ void TrackballCamera::pan(float dx, float dy)
 void TrackballCamera::zoom(float dRadius)
 {
     radius -= dRadius;
-    if (radius <= 0.1) radius = 0.1;
+    if (radius <= 0.1f) radius = 0.1f;
 }
 
 }

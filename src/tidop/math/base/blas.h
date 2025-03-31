@@ -44,202 +44,236 @@ namespace tl
 namespace blas
 {
 
+/*!
+ * \brief Storage order for matrices.
+ *
+ * Specifies whether matrices are stored in row-major or column-major order.
+ */
 enum class Order
 {
-    row_major = CBLAS_ORDER::CblasRowMajor,
-    col_major = CBLAS_ORDER::CblasColMajor
+    row_major = CBLAS_ORDER::CblasRowMajor, /**< Row-major storage order. */
+    col_major = CBLAS_ORDER::CblasColMajor  /**< Column-major storage order. */
 };
 
+/*!
+ * \brief Specifies the side on which a matrix is applied.
+ *
+ * Determines whether the matrix is on the left or right in operations like SYMM and TRMM.
+ */
 enum class Side
 {
-    left = CBLAS_SIDE::CblasLeft,
-    right = CBLAS_SIDE::CblasRight
+    left = CBLAS_SIDE::CblasLeft,  /*!< Matrix A is on the left side of the operation. */
+    right = CBLAS_SIDE::CblasRight /*!< Matrix A is on the right side of the operation. */
 };
 
+/*!
+ * \brief Specifies the triangular form of a matrix.
+ *
+ * Indicates whether a triangular matrix is upper or lower triangular.
+ */
 enum class TriangularForm
 {
-    upper = CBLAS_UPLO::CblasUpper,
-    lower = CBLAS_UPLO::CblasLower
+    upper = CBLAS_UPLO::CblasUpper, /*!< Upper triangular matrix. */
+    lower = CBLAS_UPLO::CblasLower  /*!< Lower triangular matrix. */
+};
+
+/*!
+ * \brief Specifies how a matrix should be transposed in an operation.
+ *
+ * Determines whether a matrix is transposed, conjugate transposed, or not transposed.
+ */
+enum class TransposeMode
+{
+    no_transpose = CBLAS_TRANSPOSE::CblasNoTrans, /**< No transposition. */
+    transpose = CBLAS_TRANSPOSE::CblasTrans, /**< Transposition. */
+    conjugate_transpose = CBLAS_TRANSPOSE::CblasConjTrans, /**< Conjugate transposition. */
+    conjugate_no_transpose = CBLAS_TRANSPOSE::CblasConjNoTrans /**< Conjugate without transposition. */
+};
+
+
+/*!
+ * \brief Traits class to map floating point types to BLAS functions.
+ *
+ * This structure provides static mappings to the appropriate BLAS functions for
+ * single and double precision floating point types.
+ *
+ * \tparam T The floating point type (float or double).
+ */
+template <typename T>
+struct BlasTraits;
+
+/*!
+ * \brief Specialization of BlasTraits for float type.
+ */
+template <>
+struct BlasTraits<float>
+{
+    static constexpr auto gemm = cblas_sgemm; /**< Single precision GEMM function. */
+    static constexpr auto gemv = cblas_sgemv; /**< Single precision GEMV function. */
+    static constexpr auto symm = cblas_ssymm; /**< Single precision SYMM function. */
+    static constexpr auto trmm = cblas_strmm; /**< Single precision TRMM function. */
+};
+
+/*!
+ * \brief Specialization of BlasTraits for double type.
+ */
+template <>
+struct BlasTraits<double>
+{
+    static constexpr auto gemm = cblas_dgemm; /**< Double precision GEMM function. */
+    static constexpr auto gemv = cblas_dgemv; /**< Double precision GEMV function. */
+    static constexpr auto symm = cblas_dsymm; /**< Double precision SYMM function. */
+    static constexpr auto trmm = cblas_dtrmm; /**< Double precision TRMM function. */
 };
 
 
 /* Matrix multiplication */
 
-template<typename T>
-auto gemm(Order order, bool atranspose, bool btranspose, unsigned int m, unsigned int n, unsigned int k,
-    T alpha, const T *a, unsigned int lda, const T *b, unsigned int ldb, T beta, T *c, unsigned int ldc) -> enableIfFloat<T, void>
-{
-    cblas_sgemm(static_cast<CBLAS_ORDER>(order),
-                atranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
-                btranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
-                static_cast<blasint>(m),
-                static_cast<blasint>(n),
-                static_cast<blasint>(k),
-                alpha, a, lda, b, ldb,
-                beta, c, ldc);
-}
-
-template<typename T>
-auto gemm(Order order, bool atranspose, bool btranspose, unsigned int m, unsigned int n, unsigned int k,
-    T alpha, const T *a, unsigned int lda, const T *b, unsigned int ldb, T beta, T *c, unsigned int ldc) -> enableIfDouble<T, void>
-{
-    cblas_dgemm(static_cast<CBLAS_ORDER>(order),
-                atranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
-                btranspose ? CBLAS_TRANSPOSE::CblasTrans : CBLAS_TRANSPOSE::CblasNoTrans,
-                static_cast<blasint>(m),
-                static_cast<blasint>(n),
-                static_cast<blasint>(k),
-                alpha, a, static_cast<blasint>(lda),
-                b, static_cast<blasint>(ldb),
-                beta, c, static_cast<blasint>(ldc));
-}
-
 /*!
- * \brief Matrix-matrix multiplication (gemm) for floating point types.
+ * \brief General Matrix-Matrix multiplication (GEMM) for floating point types.
  *
- * This function performs matrix multiplication using the General Matrix Multiply (GEMM) operation
- * for floating point types (`float` or `double`).
+ * This function performs matrix-matrix multiplication using the General Matrix-Matrix (GEMM) operation.
  *
  * \tparam T The data type (must be `float` or `double`).
+ * \param[in] order The storage order of matrices (Row-major or Column-major).
+ * \param[in] atranspose Specifies whether to transpose matrix A before multiplication.
+ * \param[in] btranspose Specifies whether to transpose matrix B before multiplication.
  * \param[in] m The number of rows of matrix A and matrix C.
  * \param[in] n The number of columns of matrix B and matrix C.
  * \param[in] k The number of columns of matrix A and rows of matrix B.
- * \param[in] a Pointer to the matrix A of size `m x k`.
- * \param[in] b Pointer to the matrix B of size `k x n`.
- * \param[out] c Pointer to the matrix C of size `m x n`, where the result will be stored.
+ * \param[in] alpha Scalar multiplier for the matrix product.
+ * \param[in] a Pointer to matrix A of size `m x k` or `k x m` depending on `atranspose`.
+ * \param[in] lda Leading dimension of matrix A.
+ * \param[in] b Pointer to matrix B of size `k x n` or `n x k` depending on `btranspose`.
+ * \param[in] ldb Leading dimension of matrix B.
+ * \param[in] beta Scalar multiplier for matrix C.
+ * \param[out] c Pointer to output matrix C of size `m x n`.
+ * \param[in] ldc Leading dimension of matrix C.
  */
 template<typename T>
-auto gemm(size_t m, size_t n, size_t k, const T *a, const T *b, T *c) -> enableIfFloating<T, void>
+void gemm(Order order, TransposeMode atranspose, TransposeMode btranspose, size_t m, size_t n, size_t k,
+          T alpha, const T *a, size_t lda, const T *b, size_t ldb, T beta, T *c, size_t ldc)
 {
-    T alpha = 1.;
-    T beta = 0.;
-
-    gemm(blas::Order::row_major, false, false, m, n, k, alpha, a, /*lda*/ k, b, /*ldb*/ n, beta, c, /*ldc*/ n);
+    BlasTraits<T>::gemm(static_cast<CBLAS_ORDER>(order),
+                        static_cast<CBLAS_TRANSPOSE>(atranspose),
+                        static_cast<CBLAS_TRANSPOSE>(btranspose),
+                        static_cast<blasint>(m),
+                        static_cast<blasint>(n),
+                        static_cast<blasint>(k),
+                        alpha,
+                        a, static_cast<blasint>(lda),
+                        b, static_cast<blasint>(ldb),
+                        beta,
+                        c, static_cast<blasint>(ldc));
 }
 
-
-
-
-
-
+/*!
+ * \brief Symmetric Matrix-Matrix multiplication (SYMM) for floating point types.
+ *
+ * This function performs symmetric matrix-matrix multiplication.
+ *
+ * \tparam T The data type (must be `float` or `double`).
+ * \param[in] order The storage order of matrices.
+ * \param[in] side Specifies whether A is on the left or right of B.
+ * \param[in] form Specifies whether A is upper or lower triangular.
+ * \param[in] m The number of rows of matrix B and matrix C.
+ * \param[in] n The number of columns of matrix B and matrix C.
+ * \param[in] alpha Scalar multiplier for the matrix product.
+ * \param[in] a Pointer to symmetric matrix A.
+ * \param[in] lda Leading dimension of matrix A.
+ * \param[in] b Pointer to matrix B of size `m x n`.
+ * \param[in] ldb Leading dimension of matrix B.
+ * \param[in] beta Scalar multiplier for matrix C.
+ * \param[out] c Pointer to output matrix C of size `m x n`.
+ * \param[in] ldc Leading dimension of matrix C.
+ */
 template<typename T>
-auto symm(Side side, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfFloat<T, void>
+void symm(Order order, Side side, TriangularForm form, size_t m, size_t n,
+          T alpha, const T *a, size_t lda, const T *b, size_t ldb,
+          T beta, T *c, size_t ldc)
 {
-    T alpha = 1.0;
-    T beta = 0.0;
-    blasint lda = static_cast<blasint>(m);
-    blasint ldb = static_cast<blasint>(n);
-    blasint ldc = static_cast<blasint>(n);
-
-    cblas_ssymm(CBLAS_ORDER::CblasRowMajor, 
-                static_cast<CBLAS_SIDE>(side),
-                CBLAS_UPLO::CblasUpper,
-                static_cast<blasint>(m), 
-                static_cast<blasint>(n), 
-                alpha, a, lda, b, ldb, 
-                beta, c, ldc);
+    BlasTraits<T>::symm(static_cast<CBLAS_ORDER>(order),
+                        static_cast<CBLAS_SIDE>(side),
+                        static_cast<CBLAS_UPLO>(form),
+                        static_cast<blasint>(m),
+                        static_cast<blasint>(n),
+                        alpha,
+                        a, static_cast<blasint>(lda),
+                        b, static_cast<blasint>(ldb),
+                        beta,
+                        c, static_cast<blasint>(ldc));
 }
 
+/*!
+ * \brief Triangular Matrix-Matrix multiplication (TRMM) for floating point types.
+ *
+ * This function performs triangular matrix-matrix multiplication.
+ *
+ * \tparam T The data type (must be `float` or `double`).
+ * \param[in] order The storage order of matrices.
+ * \param[in] side Specifies whether A is on the left or right of B.
+ * \param[in] form Specifies whether A is upper or lower triangular.
+ * \param[in] transpose Specifies whether to transpose matrix A before multiplication.
+ * \param[in] m The number of rows of matrix B.
+ * \param[in] n The number of columns of matrix B.
+ * \param[in] alpha Scalar multiplier for the matrix product.
+ * \param[in] a Pointer to triangular matrix A.
+ * \param[in] lda Leading dimension of matrix A.
+ * \param[in,out] b Pointer to matrix B of size `m x n`.
+ * \param[in] ldb Leading dimension of matrix B.
+ */
 template<typename T>
-auto symm(Side side, size_t m, size_t n, const T *a, const T *b, T *c) -> enableIfDouble<T, void>
+void trmm(Order order, Side side, TriangularForm form, TransposeMode transpose,
+    size_t m, size_t n, T alpha, const T *a, size_t lda, T *b, size_t ldb)
 {
-    T alpha = 1.0;
-    T beta = 0.0;
-    blasint lda = static_cast<blasint>(m);
-    blasint ldb = static_cast<blasint>(n);
-    blasint ldc = static_cast<blasint>(n);
-
-    cblas_dsymm(CBLAS_ORDER::CblasRowMajor,
-                static_cast<CBLAS_SIDE>(side),
-                CBLAS_UPLO::CblasUpper,
-                static_cast<blasint>(m), 
-                static_cast<blasint>(n), 
-                alpha, a, lda, b, ldb, 
-                beta, c, ldc);
+    BlasTraits<T>::trmm(static_cast<CBLAS_ORDER>(order),
+                        static_cast<CBLAS_SIDE>(side),
+                        static_cast<CBLAS_UPLO>(form),
+                        static_cast<CBLAS_TRANSPOSE>(transpose),
+                        CBLAS_DIAG::CblasNonUnit,
+                        static_cast<blasint>(m),
+                        static_cast<blasint>(n),
+                        alpha,
+                        a, static_cast<blasint>(lda),
+                        b, static_cast<blasint>(ldb));
 }
-
-template<typename T>
-auto trmm(Side side, TriangularForm form, size_t m, size_t n, const T *a, T *b) -> enableIfFloat<T, void>
-{
-    T alpha = 1.0;
-    blasint lda = static_cast<blasint>(m);
-    blasint ldb = static_cast<blasint>(n);
-
-    cblas_strmm(CBLAS_ORDER::CblasRowMajor,
-                static_cast<CBLAS_SIDE>(side),
-                static_cast<CBLAS_UPLO>(form),
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                CBLAS_DIAG::CblasNonUnit, 
-                static_cast<blasint>(m), 
-                static_cast<blasint>(n), 
-                alpha, a, lda, b, ldb);
-}
-
-template<typename T>
-auto trmm(Side side, TriangularForm form, size_t m, size_t n, const T *a, T *b) -> enableIfDouble<T, void>
-{
-    T alpha = 1.0;
-    blasint lda = static_cast<blasint>(m);
-    blasint ldb = static_cast<blasint>(n);
-
-    cblas_dtrmm(CBLAS_ORDER::CblasRowMajor,
-                static_cast<CBLAS_SIDE>(side),
-                static_cast<CBLAS_UPLO>(form),
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                CBLAS_DIAG::CblasNonUnit,
-                static_cast<blasint>(m), 
-                static_cast<blasint>(n), 
-                alpha, a, lda, b, ldb);
-}
-
 
 /* Matrix x Vector */
 
-/*!
- * \brief Matrix-vector multiplication (gemv) for floating point types.
+/*! 
+ * \brief General Matrix-Vector multiplication (GEMV) for floating point types.
  *
- * This function performs matrix-vector multiplication using the General Matrix Vector (GEMV) operation
- * for floating point types (`float` or `double`).
+ * This function performs matrix-vector multiplication using the General Matrix-Vector (GEMV) operation
+ * for floating point types (`float` or `double`). It relies on BLAS routines for efficient computation.
  *
  * \tparam T The data type (must be `float` or `double`).
+ * \param[in] order The storage order of matrix A (Row-major or Column-major).
+ * \param[in] transpose Specifies whether to transpose matrix A before multiplication.
  * \param[in] m The number of rows of matrix A.
- * \param[in] n The number of columns of matrix A and the length of the vector.
- * \param[in] matrix Pointer to the matrix A of size `m x n`.
- * \param[in] vector Pointer to the vector B of size `n`.
- * \param[out] vector_out Pointer to the output vector C of size `m`, where the result will be stored.
+ * \param[in] n The number of columns of matrix A.
+ * \param[in] alpha Scalar multiplier for the matrix-vector product.
+ * \param[in] a Pointer to the matrix A of size `m x n` stored in column-major or row-major order.
+ * \param[in] lda Leading dimension of matrix A, which is at least `m` if column-major, or `n` if row-major.
+ * \param[in] x Pointer to the input vector of size `n`.
+ * \param[in] incx Stride between consecutive elements in vector x.
+ * \param[in] beta Scalar multiplier for the output vector y.
+ * \param[out] y Pointer to the output vector of size `m`, where the result will be stored.
+ * \param[in] incy Stride between consecutive elements in vector y.
  */
 template<typename T>
-auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfFloat<T, void>
+void gemv(Order order, TransposeMode transpose, size_t m, size_t n, T alpha,
+    const T *a, size_t lda, const T *x, size_t incx, T beta, T *y, size_t incy)
 {
-    T alpha = 1.;
-    T beta = 0.;
-
-    cblas_sgemv(CBLAS_ORDER::CblasRowMajor, 
-                CBLAS_TRANSPOSE::CblasNoTrans, 
-                static_cast<blasint>(m),
-                static_cast<blasint>(n), 
-                alpha, matrix,
-                static_cast<blasint>(n), 
-                vector, 1, 
-                beta, vector_out, 1);
+    BlasTraits<T>::gemv(static_cast<CBLAS_ORDER>(order),
+                        static_cast<CBLAS_TRANSPOSE>(transpose),
+                        static_cast<blasint>(m),
+                        static_cast<blasint>(n),
+                        alpha,
+                        a, static_cast<blasint>(lda),
+                        x, static_cast<blasint>(incx),
+                        beta,
+                        y, static_cast<blasint>(incy));
 }
-
-template<typename T>
-auto gemv(size_t m, size_t n, const T *matrix, const T *vector, T *vector_out) -> enableIfDouble<T, void>
-{
-    T alpha = 1.;
-    T beta = 0.;
-
-    cblas_dgemv(CBLAS_ORDER::CblasRowMajor, 
-                CBLAS_TRANSPOSE::CblasNoTrans,
-                static_cast<blasint>(m),
-                static_cast<blasint>(n), 
-                alpha, matrix, 
-                static_cast<blasint>(n),
-                vector, 1, 
-                beta, vector_out, 1);
-}
-
 
 } // End namespace blas
 

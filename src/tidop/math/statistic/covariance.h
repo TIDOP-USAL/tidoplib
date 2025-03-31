@@ -204,26 +204,26 @@ auto Covariance<T>::eval(const Series<T> &series1,
     double sum{};
     size_t i{0};
 
-#ifdef TL_HAVE_SIMD_INTRINSICS
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-    Packed<T> packed_mean_x(mean_x);
-    Packed<T> packed_mean_y(mean_y);
-
-    constexpr size_t packed_size = packed_a.size();
-    size_t max_vector = (data1_size / packed_size) * packed_size;
-    
-    for (i = 0; i < max_vector; i += packed_size) {
-
-        packed_a.loadUnaligned(&series1[i]);
-        packed_b.loadUnaligned(&series2[i]);
-
-        sum += ((packed_a - packed_mean_x) * (packed_b - packed_mean_y)).sum();
-
-    }
-
-#endif
+//#ifdef TL_HAVE_SIMD_INTRINSICS
+//
+//    Packed<T> packed_a;
+//    Packed<T> packed_b;
+//    Packed<double> packed_mean_x(mean_x); // mean_x y mean_y son double. Revisar como se hace la resta entre tipos diferentes
+//    Packed<double> packed_mean_y(mean_y);
+//
+//    constexpr size_t packed_size = packed_a.size();
+//    size_t max_vector = (data1_size / packed_size) * packed_size;
+//    
+//    for (i = 0; i < max_vector; i += packed_size) {
+//
+//        packed_a.loadUnaligned(&series1[i]);
+//        packed_b.loadUnaligned(&series2[i]);
+//
+//        sum += ((packed_a - packed_mean_x) * (packed_b - packed_mean_y)).sum();
+//
+//    }
+//
+//#endif
 
     for (; i < data1_size; i++) {
         sum += (series1[i] - mean_x) * (series2[i] - mean_y);
