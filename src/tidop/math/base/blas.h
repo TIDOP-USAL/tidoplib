@@ -62,8 +62,8 @@ enum class Order
  */
 enum class Side
 {
-    left = CBLAS_SIDE::CblasLeft,  /*!< Matrix A is on the left side of the operation. */
-    right = CBLAS_SIDE::CblasRight /*!< Matrix A is on the right side of the operation. */
+    left = CBLAS_SIDE::CblasLeft,  /*!< Matrix is on the left side of the operation. */
+    right = CBLAS_SIDE::CblasRight /*!< Matrix is on the right side of the operation. */
 };
 
 /*!

@@ -99,6 +99,8 @@ public:
 
 private:
 
+    void decompose();
+
     /*!
      * \brief Computes the eigenvalues and eigenvectors of a symmetric matrix.
      *
@@ -121,20 +123,95 @@ private:
      * - Ensure that the input matrix is square.
      * - The matrix must be symmetric for valid results.
      */
-    void computeSymmetric()
-    {
+    void computeSymmetric();
+
+    /*!
+     * \brief Computes the eigenvalues and eigenvectors of a general matrix.
+     *
+     * This function computes the eigenvalues and eigenvectors of a general matrix (not necessarily symmetric) using different methods depending on the availability of LAPACK.
+     * If LAPACK is available, the optimized `geev` function from LAPACK is used to compute the eigenvalues and right eigenvectors.
+     * If LAPACK is not available, the QR algorithm is used iteratively to compute the eigenvalues and eigenvectors.
+     *
+     * - If LAPACK is available, its optimized function `geev` is used to calculate the eigenvalues and right eigenvectors.
+     * - If LAPACK is not available, the QR algorithm is used iteratively to converge towards the eigenvalues and eigenvectors.
+     *
+     * The QR algorithm works by iteratively decomposing the matrix into a product of an orthogonal matrix (Q) and an upper triangular matrix (R), and updating the matrix as \( A_{k+1} = R_k \times Q_k \). The eigenvalues are extracted from the diagonal of the matrix when it becomes nearly diagonal.
+     *
+     * \note
+     * - This method handles general matrices, meaning matrices that are not necessarily symmetric.
+     * - The convergence criterion is when the off-diagonal elements of the matrix are sufficiently small (below a specified tolerance).
+     *
+     * \param mMatrix The input matrix for which eigenvalues and eigenvectors are to be computed.
+     *
+     * \return No explicit return value, but the eigenvalues are stored in `mEigenvaluesReal` and `mEigenvaluesImag` (the imaginary parts are zero for real eigenvalues), and the eigenvectors are stored in `mEigenvectors`.
+     *
+     * \note
+     * - Ensure that the input matrix is square for eigenvalue computation.
+     */
+    void computeGeneral();
+	
+private:
+	
+    Matrix_t<T, Rows, Cols> mMatrix;
+    Vector<T, Rows> mEigenvaluesReal;
+    Vector<T, Rows> mEigenvaluesImag;
+    Matrix_t<T, Rows, Cols> mEigenvectors;
+    size_t mSize;
+};
+
+
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t Rows, size_t Cols
+>
+EigenDecomposition<Matrix_t<T, Rows, Cols>>::EigenDecomposition(const Matrix_t<T, Rows, Cols> &a)
+  : mMatrix(a), 
+    mSize(a.rows())
+{
+	static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+
+    TL_ASSERT(mMatrix.isSquare(), "Matrix must be square.");
+
+    mEigenvaluesReal = Vector<T, Cols>::zero(mSize);
+    mEigenvaluesImag = Vector<T, Cols>::zero(mSize);
+    mEigenvectors = Matrix_t<T, Cols, Cols>::zero(mSize, mSize);
+
+    decompose();
+
+}
+
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t Rows, size_t Cols>
+void EigenDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
+{
+    try {
+        if (mMatrix.isSymmetric()) {
+            computeSymmetric();
+        } else {
+            computeGeneral();
+        }
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Eigen decomposition exception");
+    }
+}
+
+
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t Rows, size_t Cols>
+void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeSymmetric()
+{
+    try {
 #ifdef TL_HAVE_OPENBLAS
 
         mEigenvectors = mMatrix;
 
-        lapack_int info = lapack::syev('V', // 'V' para calcular autovectores
-                                       'U', // Usamos la parte superior de la matriz
-                                       static_cast<int>(mSize),
-                                       mEigenvectors.data(),
-                                       static_cast<int>(mSize),
-                                       mEigenvaluesReal.data());
-
-        TL_ASSERT(info >= 0, "Eigenvalue decomposition did not converge.");
+        lapack::syev(lapack::Order::row_major,
+                     lapack::EigenVectors::compute,
+                     lapack::TriangularForm::upper,
+                     mSize, mEigenvectors.data(),
+                     mSize, mEigenvaluesReal.data());
 
 #else
         if (mSize < 10) {
@@ -249,46 +326,29 @@ private:
             mEigenvaluesImag = Vector<T, Rows>::zero(mSize); // No hay parte imaginaria
         }
 #endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Exception when calculating the eigenvalues and eigenvectors of a symmetric matrix");
     }
+}
 
-    /*!
-     * \brief Computes the eigenvalues and eigenvectors of a general matrix.
-     *
-     * This function computes the eigenvalues and eigenvectors of a general matrix (not necessarily symmetric) using different methods depending on the availability of LAPACK.
-     * If LAPACK is available, the optimized `geev` function from LAPACK is used to compute the eigenvalues and right eigenvectors.
-     * If LAPACK is not available, the QR algorithm is used iteratively to compute the eigenvalues and eigenvectors.
-     *
-     * - If LAPACK is available, its optimized function `geev` is used to calculate the eigenvalues and right eigenvectors.
-     * - If LAPACK is not available, the QR algorithm is used iteratively to converge towards the eigenvalues and eigenvectors.
-     *
-     * The QR algorithm works by iteratively decomposing the matrix into a product of an orthogonal matrix (Q) and an upper triangular matrix (R), and updating the matrix as \( A_{k+1} = R_k \times Q_k \). The eigenvalues are extracted from the diagonal of the matrix when it becomes nearly diagonal.
-     *
-     * \note
-     * - This method handles general matrices, meaning matrices that are not necessarily symmetric.
-     * - The convergence criterion is when the off-diagonal elements of the matrix are sufficiently small (below a specified tolerance).
-     *
-     * \param mMatrix The input matrix for which eigenvalues and eigenvectors are to be computed.
-     *
-     * \return No explicit return value, but the eigenvalues are stored in `mEigenvaluesReal` and `mEigenvaluesImag` (the imaginary parts are zero for real eigenvalues), and the eigenvectors are stored in `mEigenvectors`.
-     *
-     * \note
-     * - Ensure that the input matrix is square for eigenvalue computation.
-     */
-    void computeGeneral() 
-    {
+
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t Rows, size_t Cols
+>
+void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
+{
+    try {
 #ifdef TL_HAVE_OPENBLAS
 
         Matrix_t<T, Rows, Cols> A_copy = mMatrix;
-        lapack_int info = lapack::geev('N', // No queremos autovectores izquierdos
-                                       'V', // Se calculan autovectores derechos
-                                       static_cast<int>(mSize), 
-                                       A_copy.data(),
-                                       static_cast<int>(mSize), mEigenvaluesReal.data(),
-                                       mEigenvaluesImag.data(), static_cast<T *>(nullptr),
-                                       static_cast<int>(mSize),
-                                       mEigenvectors.data(), static_cast<int>(mSize)); // Matriz de autovectores derechos
-
-        TL_ASSERT(info >= 0, "Eigenvalue decomposition did not converge.");
+        lapack::geev(lapack::Order::row_major,
+                     lapack::EigenVectors::none,   // No queremos autovectores izquierdos
+                     lapack::EigenVectors::compute,// Se calculan autovectores derechos
+                     mSize, A_copy.data(),
+                     mSize, mEigenvaluesReal.data(),
+                     mEigenvaluesImag.data(), static_cast<T *>(nullptr),
+                     mSize, mEigenvectors.data(), mSize); // Matriz de autovectores derechos
 
 #else
         //constexpr size_t maxIterations = 1000;
@@ -514,42 +574,10 @@ private:
         mEigenvectors = Q_total;  // Autovectores = acumulación de Q
 
 #endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Exception when calculating the eigenvalues and eigenvectors of a general matrix.");
     }
-	
-private:
-	
-    Matrix_t<T, Rows, Cols> mMatrix;
-    Vector<T, Rows> mEigenvaluesReal;
-    Vector<T, Rows> mEigenvaluesImag;
-    Matrix_t<T, Rows, Cols> mEigenvectors;
-    size_t mSize;
-};
-
-
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-EigenDecomposition<Matrix_t<T, Rows, Cols>>::EigenDecomposition(const Matrix_t<T, Rows, Cols> &a)
-  : mMatrix(a), 
-    mSize(a.rows())
-{
-	static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-
-    TL_ASSERT(mMatrix.isSquare(), "Matrix must be square.");
-
-    mEigenvaluesReal = Vector<T, Cols>::zero(mSize);
-    mEigenvaluesImag = Vector<T, Cols>::zero(mSize);
-    mEigenvectors = Matrix_t<T, Cols, Cols>::zero(mSize, mSize);
-
-    if (mMatrix.isSymmetric()) {
-        computeSymmetric();
-    } else {
-        computeGeneral();
-    }
-
 }
-
 
 /*! \} */ 
 

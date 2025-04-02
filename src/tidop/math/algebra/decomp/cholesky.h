@@ -71,6 +71,7 @@ class CholeskyDecomposition<Matrix_t<T, _rows, _cols>>
 {
 
 public:
+
     /*!
      * \brief Constructs a Cholesky Decomposition from a given matrix
      *
@@ -83,6 +84,7 @@ public:
      * \param[in] a The matrix \( A \) to decompose, which must be symmetric and positive-definite.
      */
     CholeskyDecomposition(const Matrix_t<T, _rows, _cols> &a);
+
     /*!
      * \brief Solves the system of equations \( A \cdot x = b \) using the Cholesky decomposition
      *
@@ -189,52 +191,55 @@ auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _ro
     TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
 
     Vector<T, _rows> x(b);
+
+    try {
+
 //#ifdef TL_HAVE_OPENBLAS 
 //
-//    lapack_int info;
-//    lapack_int nrhs = 1;  // Un único vector de términos constantes b
-//    // lda y ldb son el número de filas de las matrices L y X (que es igual a mRows)
-//    lapack_int lda = mRows;
-//    lapack_int ldb = mRows;
+//        size_t nrhs = 1;  // Un único vector de términos constantes b
+//        // lda y ldb son el número de filas de las matrices L y X (que es igual a mRows)
+//        size_t lda = mRows;
+//        size_t ldb = mRows;
 //
-//    info = lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
-//                         lapack::TriangularForm::lower,     // L es triangular inferior
-//                         mRows,                             // Número de filas de L
-//                         nrhs,                              // Número de términos constantes (1 en este caso)
-//                         L.data(),                          // Matriz L
-//                         lda,                               // Paso entre filas de L
-//                         x.data(),                          // La solución del sistema
-//                         ldb);                              // Paso entre filas de X
-//
-//    TL_ASSERT(info == 0, "LAPACK error in potrs");
+//        lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
+//            lapack::TriangularForm::lower,     // L es triangular inferior
+//            mRows,                             // Número de filas de L
+//            nrhs,                              // Número de términos constantes (1 en este caso)
+//            L.data(),                          // Matriz L
+//            lda,                               // Paso entre filas de L
+//            x.data(),                          // La solución del sistema
+//            ldb);                              // Paso entre filas de X
 //
 //#else
 
-    T sum;
+        T sum;
 
-    for (size_t r = 0; r < mRows; r++) {
+        for (size_t r = 0; r < mRows; r++) {
 
-        sum = b[r];
+            sum = b[r];
 
-        for (size_t k = r; k > 0; k--)
-            sum -= L[r][k - 1] * x[k - 1];
+            for (size_t k = r; k > 0; k--)
+                sum -= L[r][k - 1] * x[k - 1];
 
-        x[r] = sum / L[r][r];
+            x[r] = sum / L[r][r];
 
-    }
+        }
 
-    for (size_t i = mRows; i > 0; i--) {
+        for (size_t i = mRows; i > 0; i--) {
 
-        sum = x[i - 1];
+            sum = x[i - 1];
 
-        for (size_t k = i; k < mRows; k++)
-            sum -= L[k][i - 1] * x[k];
+            for (size_t k = i; k < mRows; k++)
+                sum -= L[k][i - 1] * x[k];
 
-        x[i - 1] = sum / L[i - 1][i - 1];
+            x[i - 1] = sum / L[i - 1][i - 1];
 
-    }
+        }
 
 //#endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
+    }
 
     return x;
 }
@@ -249,34 +254,35 @@ auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T, _ro
 
     Matrix<T, _rows, _cols> X(B);
 
+    try {
+
 //#ifdef TL_HAVE_OPENBLAS 
 //
-//    lapack_int info;
+//        // Número de columnas en la matriz B (equivale a "nrhs" en LAPACK, ya que cada columna es un sistema independiente)
+//        size_t nrhs = B.cols();
+//        size_t lda = mRows;  // Leading dimension de L
+//        size_t ldb = mRows;  // Leading dimension de X
 //
-//    // Número de columnas en la matriz B (equivale a "nrhs" en LAPACK, ya que cada columna es un sistema independiente)
-//    lapack_int nrhs = B.cols();
-//    lapack_int lda = mRows;  // Leading dimension de L
-//    lapack_int ldb = mRows;  // Leading dimension de X
-//
-//    info = lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
-//                         lapack::TriangularForm::lower,     // L es triangular inferior
-//                         mRows,                             // Número de filas de L
-//                         nrhs,                              // Número de columnas de B (número de sistemas a resolver)
-//                         L.data(),                          // Matriz L
-//                         lda,                               // Leading dimension de L
-//                         X.data(),                          // Matriz X con las soluciones
-//                         ldb);                              // Leading dimension de X
-//    
-//    TL_ASSERT(info == 0, "LAPACK error in potrs");
+//        lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
+//                      lapack::TriangularForm::lower,     // L es triangular inferior
+//                      mRows,                             // Número de filas de L
+//                      nrhs,                              // Número de columnas de B (número de sistemas a resolver)
+//                      L.data(),                          // Matriz L
+//                      lda,                               // Leading dimension de L
+//                      X.data(),                          // Matriz X con las soluciones
+//                      ldb);                              // Leading dimension de X
 //
 //#else
 
-    for (size_t j = 0; j < B.cols(); j++) {
-        Vector<T, _rows> temp = B.col(j);
-        X.col(j) = this->solve(temp);
-    }
+        for (size_t j = 0; j < B.cols(); j++) {
+            Vector<T, _rows> temp = B.col(j);
+            X.col(j) = this->solve(temp);
+        }
 
 //#endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
+    }
 
     return X;
 }
@@ -287,33 +293,36 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+    try {
+
 #ifdef TL_HAVE_OPENBLAS
-    lapack_int info;
+        
+        lapack::potrf(lapack::Order::row_major, lapack::TriangularForm::lower, L.rows(), L.data(), L.cols());
 
-    info = lapack::potrf(lapack::Order::row_major, lapack::TriangularForm::lower , L.rows(), L.data(), L.cols());
-
-    TL_ASSERT(info >= 0, "Cholesky decomposition failed");
 #else
-    for (size_t i = 0; i < mRows; i++) {
+        for (size_t i = 0; i < mRows; i++) {
 
-        for (size_t j = i; j < mRows; j++) {
+            for (size_t j = i; j < mRows; j++) {
 
-            T sum = L[i][j];
+                T sum = L[i][j];
 
-            for (size_t k = i; k > 0; k--) {
-                sum -= L[i][k - 1] * L[j][k - 1];
+                for (size_t k = i; k > 0; k--) {
+                    sum -= L[i][k - 1] * L[j][k - 1];
+                }
+
+                if (i == j) {
+                    TL_ASSERT(sum > 0.0, "Cholesky decomposition failed");
+                    L[i][i] = sqrt(sum);
+                } else {
+                    L[j][i] = sum / L[i][i];
+                }
+
             }
-
-            if (i == j) {
-                TL_ASSERT(sum > 0.0, "Cholesky decomposition failed");
-                L[i][i] = sqrt(sum);
-            } else {
-                L[j][i] = sum / L[i][i];
-            }
-
         }
-    }
 #endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Cholesky decompose exception");
+    }
 }
 
 template<

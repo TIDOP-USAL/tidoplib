@@ -122,7 +122,7 @@ public:
      *
      * \return The name of the file where the error occurred.
      */
-    auto file() const -> std::string
+    auto file() const TL_NOEXCEPT -> std::string
     {
         return mFile;
     }
@@ -134,7 +134,7 @@ public:
      *
      * \return The name of the function where the error occurred.
      */
-    auto function() const -> std::string
+    auto function() const TL_NOEXCEPT -> std::string
     {
         return mFunction;
     }
@@ -146,7 +146,7 @@ public:
      *
      * \return The line number where the error occurred.
      */
-    auto line() const -> int
+    auto line() const TL_NOEXCEPT -> int
     {
         return mLine;
     }

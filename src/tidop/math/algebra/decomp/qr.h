@@ -169,94 +169,100 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
-    size_t minRowsCols = std::min(mRows, mCols);
+    try {
 
-    // Vectores dinamicos para poder tomar el tamaño minimo
-    Vector<T> v(minRowsCols);
-    Vector<T> diagonal(minRowsCols);
+        size_t minRowsCols = std::min(mRows, mCols);
 
-    for (size_t k = 0; k < minRowsCols - 1; k++) {
+        // Vectores dinamicos para poder tomar el tamaño minimo
+        Vector<T> v(minRowsCols);
+        Vector<T> diagonal(minRowsCols);
 
-        T scale = consts::zero<T>;
+        for (size_t k = 0; k < minRowsCols - 1; k++) {
 
-        for (size_t i = k; i < mRows; i++) {
-            scale = std::max(scale, std::abs(R[i][k]));
-        }
-        
-        if (isNearlyZero(scale)) {
-
-            singular = true;
-            v[k] = diagonal[k] = consts::zero<T>;
-
-        } else {
+            T scale = consts::zero<T>;
 
             for (size_t i = k; i < mRows; i++) {
-                R[i][k] /= scale;
+                scale = std::max(scale, std::abs(R[i][k]));
             }
 
-            T aux{0};
+            if (isNearlyZero(scale)) {
 
-            for (size_t i = k; i < mRows; i++) {
-                aux += R[i][k] * R[i][k];
-            }
+                singular = true;
+                v[k] = diagonal[k] = consts::zero<T>;
 
-            T sigma = std::copysign(sqrt(aux), R[k][k]);
-            R.at(k, k) += sigma;
-            v[k] = sigma * R[k][k];
-            diagonal[k] = -scale * sigma;
+            } else {
 
-            for (size_t j = k + 1; j < mCols; j++) {
+                for (size_t i = k; i < mRows; i++) {
+                    R[i][k] /= scale;
+                }
 
                 T aux{0};
 
                 for (size_t i = k; i < mRows; i++) {
-                    aux += R[i][k] * R[i][j];
+                    aux += R[i][k] * R[i][k];
                 }
 
-                T tau = aux / v[k];
+                T sigma = std::copysign(sqrt(aux), R[k][k]);
+                R.at(k, k) += sigma;
+                v[k] = sigma * R[k][k];
+                diagonal[k] = -scale * sigma;
 
-                for (size_t i = k; i < mRows; i++) {
-                    R[i][j] -= tau * R[i][k];
-                }
+                for (size_t j = k + 1; j < mCols; j++) {
 
-            }
-        }
-    }
+                    T aux{0};
 
-    diagonal[minRowsCols - 1] = R[minRowsCols - 1][minRowsCols - 1];
-    singular = (diagonal[minRowsCols - 1] == consts::zero<T>);
+                    for (size_t i = k; i < mRows; i++) {
+                        aux += R[i][k] * R[i][j];
+                    }
 
-    for (size_t k = 0; k < minRowsCols - 1; k++) {
+                    T tau = aux / v[k];
 
-        if (v[k] != consts::zero<T>) {
+                    for (size_t i = k; i < mRows; i++) {
+                        R[i][j] -= tau * R[i][k];
+                    }
 
-            for (size_t i = 0; i < mRows; i++) {
-
-                T aux{0};
-                for (size_t j = k; j < mRows; j++) {
-                    aux += R[j][k] * Q[i][j];
-                }
-
-                aux /= v[k];
-
-                for (size_t j = k; j < mRows; j++) {
-                    Q[i][j] -= aux * R[j][k];
                 }
             }
         }
-    }
 
-    for (size_t r = 0; r < minRowsCols; r++) {
-        R[r][r] = diagonal[r];
-        for (size_t c = 0; c < r; c++) {
-            R[r][c] = consts::zero<T>;
-        }
-    }
+        diagonal[minRowsCols - 1] = R[minRowsCols - 1][minRowsCols - 1];
+        singular = (diagonal[minRowsCols - 1] == consts::zero<T>);
 
-    for (size_t r = minRowsCols; r < mRows; r++) {
-        for (size_t c = 0; c < mCols; c++) {
-            if (r > c) R[r][c] = consts::zero<T>;
+        for (size_t k = 0; k < minRowsCols - 1; k++) {
+
+            if (v[k] != consts::zero<T>) {
+
+                for (size_t i = 0; i < mRows; i++) {
+
+                    T aux{0};
+                    for (size_t j = k; j < mRows; j++) {
+                        aux += R[j][k] * Q[i][j];
+                    }
+
+                    aux /= v[k];
+
+                    for (size_t j = k; j < mRows; j++) {
+                        Q[i][j] -= aux * R[j][k];
+                    }
+                }
+            }
         }
+
+        for (size_t r = 0; r < minRowsCols; r++) {
+            R[r][r] = diagonal[r];
+            for (size_t c = 0; c < r; c++) {
+                R[r][c] = consts::zero<T>;
+            }
+        }
+
+        for (size_t r = minRowsCols; r < mRows; r++) {
+            for (size_t c = 0; c < mCols; c++) {
+                if (r > c) R[r][c] = consts::zero<T>;
+            }
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Lapack decompose exception");
     }
 }
 
@@ -271,32 +277,38 @@ auto QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
 
     Vector<T, _cols> x(mCols);
 
+    try {
+
 //#ifdef TL_HAVE_OPENBLAS 
 //
-//    lapack_int info;
-//    lapack_int nrhs = static_cast<lapack_int>(b.cols());
-//    lapack_int lda = static_cast<lapack_int>(mRows);
-//    lapack_int ldb = static_cast<lapack_int>(b.cols());
+//        auto nrhs = b.cols();
+//        auto lda = mRows;
+//        auto ldb = b.cols();
 //
-//    info = lapack::gels(lapack::Order::row_major, lapack::Transpose::no_trans, 
-//                        mRows, mCols, nrhs, 
-//                        const_cast<T *>(QR.data()), lda,  // Necesito guardar QR
-//                        x.data(), ldb);
+//        lapack::gels(lapack::Order::row_major, 
+//                     lapack::Transpose::no_trans,
+//                     mRows, mCols, nrhs,
+//                     const_cast<T *>(QR.data()), lda,  // Necesito guardar QR
+//                     x.data(), ldb);
 //
 //
 //#else
 
-    Vector<T, _rows> y = Q.transpose() * b;
+        Vector<T, _rows> y = Q.transpose() * b;
 
-    for (int i = mCols - 1; i >= 0; --i) {
-        T sum = 0;
-        for (int j = i + 1; j < mCols; ++j) {
-            sum += R(i, j) * x[j];
+        for (int i = mCols - 1; i >= 0; --i) {
+            T sum = 0;
+            for (int j = i + 1; j < mCols; ++j) {
+                sum += R(i, j) * x[j];
+            }
+            x[i] = (y[i] - sum) / R(i, i);
         }
-        x[i] = (y[i] - sum) / R(i, i);
-    }
 
 //#endif
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
+    }
 
     return x;
 }
@@ -327,47 +339,49 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 {
-    Matrix_t<T, _rows, _cols> QR(R);
+    try {
 
-    lapack_int info;
-    lapack_int m = QR.rows();
-    lapack_int n = QR.cols();
-    // En row-major order, cada fila está almacenada de forma contigua en memoria, 
-    // por lo que la leading dimension es el número de columnas de A.
-    lapack_int lda = QR.cols(); 
+        Matrix_t<T, _rows, _cols> QR(R);
 
-    std::vector<T> tau(std::min(m, n));
+        size_t m = QR.rows();
+        size_t n = QR.cols();
+        // En row-major order, cada fila está almacenada de forma contigua en memoria, 
+        // por lo que la leading dimension es el número de columnas de A.
+        size_t lda = QR.cols();
 
-    // Factorización QR usando geqrf
-    info = lapack::geqrf(lapack::Order::row_major, m, n, QR.data(), lda, tau.data());
+        std::vector<T> tau(std::min(m, n));
 
-    TL_ASSERT(info >= 0, "LAPACKE_geqrf failed.");
+        // Factorización QR usando geqrf
+        lapack::geqrf(lapack::Order::row_major, m, n, QR.data(), lda, tau.data());
 
-    singular = false;
-    for (size_t i = 0; i < std::min(m, n); i++) {
-        if (std::abs(QR(i, i)) < std::numeric_limits<T>::epsilon()) {
-            singular = true;
-            break;
+        singular = false;
+        for (size_t i = 0; i < std::min(m, n); i++) {
+            if (std::abs(QR(i, i)) < std::numeric_limits<T>::epsilon()) {
+                singular = true;
+                break;
+            }
         }
-    }
 
-    // Extraer R (es la parte superior de QR)
-    for (size_t i = 0; i < m; i++) {
-        for (size_t j = 0; j < n; j++) {
-            if (i > j) R(i, j) = consts::zero<T>;
-            else R(i, j) = QR(i, j);
+        // Extraer R (es la parte superior de QR)
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < n; j++) {
+                if (i > j) R(i, j) = consts::zero<T>;
+                else R(i, j) = QR(i, j);
+            }
         }
-    }
 
-    for (size_t i = 0; i < m; i++) {
-        for (size_t j = 0; j < n; j++) {
-            Q(i,j) = QR(i, j);  // Copiar la parte de A que contiene Q
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < n; j++) {
+                Q(i, j) = QR(i, j);  // Copiar la parte de A que contiene Q
+            }
         }
-    }
 
-    // Calcular Q a partir de QR usando orgqr
-    info = lapack::orgqr(lapack::Order::row_major, m, m, tau.size(), Q.data(), m, tau.data());
-    TL_ASSERT(info >= 0, "LAPACKE_orgqr failed.");
+        // Calcular Q a partir de QR usando orgqr
+        lapack::orgqr(lapack::Order::row_major, m, m, tau.size(), Q.data(), m, tau.data());
+    
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Lapack decompose exception");
+    }
 }
 
 #endif // TL_HAVE_OPENBLAS

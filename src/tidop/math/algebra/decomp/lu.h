@@ -158,7 +158,7 @@ public:
      *
      * \return True if the matrix is singular, false otherwise.
      */
-    //auto isSingular() const -> bool;
+    auto isSingular() const -> bool;
 
     /*!
      * \brief Extracts the lower triangular matrix \( L \).
@@ -198,6 +198,7 @@ private:
     size_t mRows;
     size_t mCols;
     Vector<int, _rows > mColPer;
+    bool mIsSingular;
 };
 
 
@@ -213,7 +214,8 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
     d(consts::one<T>),
     mRows(a.rows()),
     mCols(a.cols()),
-    mColPer(mRows)
+    mColPer(mRows),
+    mIsSingular(false)
 {
     static_assert(_rows == _cols, "Non-Square Matrix");
     static_assert(std::is_floating_point<T>::value, "Integral type not supported");
@@ -233,64 +235,75 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>
 {
     TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
+    TL_ASSERT(!mIsSingular, "The matrix is singular and cannot be solved.");
 
     Vector<T, _rows> x(b);
 
+    try {
+
 #ifdef TL_HAVE_OPENBLAS 
-    if (!mFullPivot) {
-        lapack_int nrhs = 1;
-        lapack_int lda = static_cast<int>(mRows);
-        lapack_int ldb = 1;
-        lapack_int info = lapack::getrs(lapack::Order::row_major,
-            lapack::Transpose::no_trans,
-            static_cast<int>(mRows), nrhs, const_cast<T *>(LU.data()), lda, const_cast<int *>(mPivotIndexRow.data()), x.data(), ldb);
-    } else {
+
+        if (!mFullPivot) {
+
+            size_t nrhs = 1;
+            size_t lda = mRows;
+            size_t ldb = 1;
+            lapack::getrs(lapack::Order::row_major,
+                          lapack::Transpose::no_trans,
+                          mRows, nrhs, LU.data(), lda, 
+                          mPivotIndexRow.data(), x.data(), ldb);
+
+        } else {
+
 #endif
 
-        T sum;
-        size_t ii = 0;
+            T sum;
+            size_t ii = 0;
 
-        // 1. Sustitución hacia adelante (L * y = Pb)
-        for (size_t i = 0; i < mRows; i++) {
-
-            size_t pivot_index = mPivotIndexRow[i];
-            sum = x[pivot_index];
-            x[pivot_index] = x[i];
-
-            if (ii != 0) {
-                for (size_t j = ii - 1; j < i; j++) {
-                    sum -= LU(i, j) * x[j];
-                }
-            } else if (sum != consts::zero<T>) {
-                ii = i + 1;
-            }
-
-            x[i] = sum;
-        }
-
-        // 2. Sustitución hacia atrás (U * x = y)
-        for (int i = static_cast<int>(mRows - 1); i >= 0; i--) {
-
-            sum = x[i];
-
-            for (size_t j = static_cast<size_t>(i + 1); j < mRows; j++)
-                sum -= LU(i, j) * x[j];
-
-            x[i] = sum / LU(i, i);
-        }
-
-        // 3. Si se usó pivotación completa, reordenar la solución aplicando la permutación inversa de columnas.
-        if (mFullPivot) {
-            Vector<T, _rows> y = x;
-
-            // Reordenamos la solución aplicando la permutación de columnas: 
+            // 1. Sustitución hacia adelante (L * y = Pb)
             for (size_t i = 0; i < mRows; i++) {
-                x[mColPer[i]] = y[i];
+
+                size_t pivot_index = mPivotIndexRow[i];
+                sum = x[pivot_index];
+                x[pivot_index] = x[i];
+
+                if (ii != 0) {
+                    for (size_t j = ii - 1; j < i; j++) {
+                        sum -= LU(i, j) * x[j];
+                    }
+                } else if (sum != consts::zero<T>) {
+                    ii = i + 1;
+                }
+
+                x[i] = sum;
             }
-        }
+
+            // 2. Sustitución hacia atrás (U * x = y)
+            for (int i = static_cast<int>(mRows - 1); i >= 0; i--) {
+
+                sum = x[i];
+
+                for (size_t j = static_cast<size_t>(i + 1); j < mRows; j++)
+                    sum -= LU(i, j) * x[j];
+
+                x[i] = sum / LU(i, i);
+            }
+
+            // 3. Si se usó pivotación completa, reordenar la solución aplicando la permutación inversa de columnas.
+            if (mFullPivot) {
+                Vector<T, _rows> y = x;
+
+                // Reordenamos la solución aplicando la permutación de columnas: 
+                for (size_t i = 0; i < mRows; i++) {
+                    x[mColPer[i]] = y[i];
+                }
+            }
 #ifdef TL_HAVE_OPENBLAS 
-    }
+        }
 #endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
+    }
 
     return x;
 }
@@ -303,31 +316,41 @@ template<typename Matrix2_t>
 auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix2_t &b) const -> Matrix2_t
 {
     TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
+    TL_ASSERT(!mIsSingular, "The matrix is singular and cannot be solved.");
 
     Matrix2_t x(b);
 
+    try {
+
 #ifdef TL_HAVE_OPENBLAS 
-    if (!mFullPivot) {
-        lapack_int info;
-        lapack_int nrhs = static_cast<lapack_int>(b.cols());
-        lapack_int lda = static_cast<lapack_int>(mRows);
-        lapack_int ldb = static_cast<lapack_int>(b.cols());
 
-        info = lapack::getrs(lapack::Order::row_major, lapack::Transpose::no_trans, 
-                             static_cast<lapack_int>(mRows), nrhs, LU.data(), lda,
-                             mPivotIndexRow.data(), x.data(), ldb);
+        if (!mFullPivot) {
 
-    } else {
+            lapack_int nrhs = static_cast<lapack_int>(b.cols());
+            lapack_int lda = static_cast<lapack_int>(mRows);
+            lapack_int ldb = static_cast<lapack_int>(b.cols());
+
+            lapack::getrs(lapack::Order::row_major, 
+                          lapack::Transpose::no_trans,
+                          mRows, nrhs, LU.data(), lda,
+                          mPivotIndexRow.data(), x.data(), ldb);
+
+        } else {
+
 #endif
 
-        for (size_t j = 0; j < x.cols(); j++) {
-            Vector<T, _rows> temp = b.col(j);
-            x.col(j) = this->solve(temp);
+            for (size_t j = 0; j < x.cols(); j++) {
+                Vector<T, _rows> temp = b.col(j);
+                x.col(j) = this->solve(temp);
+            }
+
+#ifdef TL_HAVE_OPENBLAS 
         }
-
-#ifdef TL_HAVE_OPENBLAS 
-    }
 #endif
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
+    }
 
     return x;
 }
@@ -338,88 +361,93 @@ class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+    try {
 #ifdef TL_HAVE_OPENBLAS 
-    if (!mFullPivot) {
-        lapack_int lda = static_cast<lapack_int>(mRows);
-        lapack_int info = lapack::getrf(lapack::Order::row_major, static_cast<lapack_int>(mRows), static_cast<lapack_int>(mRows), LU.data(), lda, mPivotIndexRow.data());
+        if (!mFullPivot) {
 
-        TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.");
+            auto lda = mRows;
+            mIsSingular = lapack::getrf(lapack::Order::row_major, mRows, mRows, LU.data(), lda, mPivotIndexRow.data());
 
-        int rowSwaps = 0;
-        for (int i = 0; i < mRows; ++i) {
-            if (mPivotIndexRow[i] != i + 1) {
-                rowSwaps++;
+            int rowSwaps = 0;
+            for (int i = 0; i < mRows; ++i) {
+                if (mPivotIndexRow[i] != i + 1) {
+                    rowSwaps++;
+                }
             }
-        }
 
-        this->d = (rowSwaps % 2 == 0) ? T(1) : T(-1);
+            this->d = (rowSwaps % 2 == 0) ? T(1) : T(-1);
 
-    } else {
+        } else {
 #endif
 
-        for (size_t k = 0; k < mRows; k++) {
+            for (size_t k = 0; k < mRows; k++) {
 
-            T big = consts::zero<T>;
-            size_t pivot_row = k;
-            size_t pivot_col = k;
+                T big = consts::zero<T>;
+                size_t pivot_row = k;
+                size_t pivot_col = k;
 
-            for (size_t i = k; i < mRows; i++) {
+                for (size_t i = k; i < mRows; i++) {
 
-                if (mFullPivot) {
-                    for (size_t j = k; j < mRows; j++) {
-                        T temp = std::abs(LU[i][j]);
+                    if (mFullPivot) {
+                        for (size_t j = k; j < mRows; j++) {
+                            T temp = std::abs(LU[i][j]);
+                            if (temp > big) {
+                                big = temp;
+                                pivot_row = i;
+                                pivot_col = j;
+                            }
+                        }
+                    } else {
+                        T temp = std::abs(LU[i][k]);
                         if (temp > big) {
                             big = temp;
                             pivot_row = i;
-                            pivot_col = j;
                         }
                     }
-                } else {
-                    T temp = std::abs(LU[i][k]);
-                    if (temp > big) {
-                        big = temp;
-                        pivot_row = i;
+                }
+
+                // Intercambio de filas
+                if (k != pivot_row) {
+                    LU.swapRows(pivot_row, k);
+                    this->d = -this->d;
+                }
+
+                mPivotIndexRow[k] = static_cast<int>(pivot_row);
+
+                // Intercambio de columnas
+                if (mFullPivot) {
+                    if (k != pivot_col) {
+                        LU.swapCols(pivot_col, k);
+                        std::swap(mColPer[k], mColPer[pivot_col]);
                     }
+                    mPivotIndexCol[k] = static_cast<int>(pivot_col);
+                }
+
+                if (isNearlyZero(LU[k][k])) {
+                    mIsSingular = true;
+                    LU[k][k] = std::numeric_limits<T>::epsilon();
+                }
+
+                T llkk = LU[k][k];
+
+                // Actualización de la submatriz
+                for (size_t i = k + 1; i < mRows; i++) {
+
+                    T temp = LU[i][k];
+                    temp /= llkk;
+                    LU[i][k] = temp;
+
+                    for (size_t j = k + 1; j < mRows; j++)
+                        LU[i][j] -= temp * LU[k][j];
                 }
             }
-
-            // Intercambio de filas
-            if (k != pivot_row) {
-                LU.swapRows(pivot_row, k);
-                this->d = -this->d;
-            }
-
-            mPivotIndexRow[k] = static_cast<int>(pivot_row);
-
-            // Intercambio de columnas
-            if (mFullPivot) {
-                if (k != pivot_col) {
-                    LU.swapCols(pivot_col, k);
-                    std::swap(mColPer[k], mColPer[pivot_col]);
-                }
-                mPivotIndexCol[k] = static_cast<int>(pivot_col);
-            }
-
-            if (isNearlyZero(LU[k][k]))
-                LU[k][k] = std::numeric_limits<T>::epsilon();
-
-            T llkk = LU[k][k];
-
-            // Actualización de la submatriz
-            for (size_t i = k + 1; i < mRows; i++) {
-
-                T temp = LU[i][k];
-                temp /= llkk;
-                LU[i][k] = temp;
-
-                for (size_t j = k + 1; j < mRows; j++)
-                    LU[i][j] -= temp * LU[k][j];
-            }
-        }
 
 #ifdef TL_HAVE_OPENBLAS 
-    }
+        }
 #endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("LU decompose error");
+    }
 }
 
 template<
@@ -470,19 +498,14 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::rank() const -> size_t
     return r;
 }
 
-//template<
-//    template<typename, size_t, size_t>
-//class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//auto LuDecomposition<Matrix_t<T, _rows, _cols>>::isSingular() const -> bool
-//{
-//    for (size_t i = 0; i < mRows; i++) {
-//        if (isNearlyZero(LU(i, i))) {
-//            return true;
-//        }
-//    }
-//    return false;
-//}
+template<
+    template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+auto LuDecomposition<Matrix_t<T, _rows, _cols>>::isSingular() const -> bool
+{
+    return mIsSingular;
+}
 
 template<
     template<typename, size_t, size_t>
