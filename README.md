@@ -1,4 +1,4 @@
-# TidopLib 3.2.0
+# TidopLib 3.2.1
 
 <p align="center">
 <img src="tidop_logo.png" />
