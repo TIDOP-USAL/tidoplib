@@ -31,7 +31,7 @@ cmake_policy(SET CMP0146 OLD)
 endif()
 
 project(TidopLib
-        VERSION 3.1.0
+        VERSION 3.2.1
         DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
