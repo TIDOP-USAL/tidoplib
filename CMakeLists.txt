@@ -380,6 +380,15 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
 endif()
 
 
+
+if(BUILD_TL_PCTOOLS)
+	find_package(COPCLIB REQUIRED)
+	find_package(LAZPERF REQUIRED)
+	find_package(PDAL 2.0.0 REQUIRED CONFIG)
+endif()
+
+
+
 if(BUILD_TL_VIEWER)
 
 option(USE_QT6 "Use Qt6 if available" ON)
