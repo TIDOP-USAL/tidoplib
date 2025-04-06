@@ -41,100 +41,107 @@
 
 namespace tl
 {
+/*!
+ * \brief Class for reading different image formats
+ */
+class TL_EXPORT PointCloudReader
+{
+    GENERATE_UNIQUE_PTR(PointCloudReader)
+
+public:
+
+    PointCloudReader(tl::Path file);
+    virtual ~PointCloudReader() = default;
+
     /*!
-     * \brief Class for reading different image formats
+     * \brief Open the file
      */
-    class TL_EXPORT PointCloudReader
-    {
-        GENERATE_UNIQUE_PTR(PointCloudReader)
-
-    public:
-
-        PointCloudReader(tl::Path file);
-        virtual ~PointCloudReader() = default;
-
-        /*!
-         * \brief Open the file
-         */
-        virtual void open() = 0;
-
-        /*!
-         * \brief Check if the file has been loaded correctly.
-         */
-        virtual auto isOpen() const -> bool = 0;
-
-        /*!
-         * \brief Close the file
-         */
-        virtual void close() = 0;
-        /*!
-         * \brief Reference system in WKT format
-         */
-        //virtual auto crsWkt() const->std::string = 0;
-
-        virtual void copcDumpBoundingBoxToCsv(std::string fileName, std::string crsId = "") = 0;
-        virtual void copcGetResolutionByLevel(std::map<int,double>& resolutionByLevel) = 0;
-
-        auto file() const->tl::Path;
-
-        virtual void getBoundingBox(double& x_min, double& y_min, double& z_min,
-            double& x_max, double& y_max, double& z_max, std::string crsId="") = 0;
-        virtual BoundingBoxd getBoundingBox(std::string crsId="") = 0;
-
-        virtual void getDimensionsNames(std::vector<std::string>& values) = 0;
-
-        virtual bool getIsCopc() = 0;
-
-        virtual void getPoints(double& x_o, double& y_o, double& z_o,
-            std::vector<std::vector<float> >& coordinates,
-            std::vector<std::string> dimensionsNames,
-            std::vector<std::vector<float> >& dimensionsValues,
-            std::string crsId = "") = 0;
-
-        virtual void getPoints(double& x_o, double& y_o, double& z_o, 
-            std::vector<std::vector<float> >& coordinates,
-            std::vector<std::string> dimensionsNames,
-            std::vector<std::vector<float> >& dimensionsValues,
-            double x_min, double y_min, double z_min,
-            double x_max, double y_max, double z_max,
-            std::string crsId = "") = 0;
-
-        virtual void getPoints(double& x_o, double& y_o, double& z_o, 
-            std::vector<std::vector<float> >& coordinates,
-            std::vector<std::string> dimensionsNames,
-            std::vector<std::vector<float> >& dimensionsValues,
-            double resolution,
-            std::string crsId = "") = 0;
-
-        virtual void getPoints(double& x_o, double& y_o, double& z_o, 
-            std::vector<std::vector<float> >& coordinates,
-            std::vector<std::string> dimensionsNames,
-            std::vector<std::vector<float> >& dimensionsValues,
-            double x_min, double y_min, double z_min,
-            double x_max, double y_max, double z_max,
-            double resolution,
-            std::string crsId = "") = 0;
-
-    protected:
-        GeoTools* mPtrGeoTools;
-
-    private:
-        Path mFile;
-    };
+    virtual void open() = 0;
 
     /*!
+     * \brief Check if the file has been loaded correctly.
+     */
+    virtual auto isOpen() const -> bool = 0;
+
+    /*!
+     * \brief Close the file
+     */
+    virtual void close() = 0;
+    /*!
+     * \brief Reference system in WKT format
+     */
+     //virtual auto crsWkt() const->std::string = 0;
+
+    virtual void copcDumpBoundingBoxToCsv(const std::string &fileName, std::string crsId = "") = 0;
+    virtual void copcGetResolutionByLevel(std::map<int, double> &resolutionByLevel) = 0;
+
+    auto file() const -> tl::Path;
+
+    virtual void getBoundingBox(double &x_min, double &y_min, double &z_min,
+                                double &x_max, double &y_max, double &z_max, std::string crsId = "") = 0;
+    virtual auto getBoundingBox(std::string crsId = "") const -> BoundingBoxd = 0;
+
+    //virtual void getDimensionsNames(std::vector<std::string> &values) const = 0;
+    virtual auto getDimensionsNames() const -> std::vector<std::string> = 0;
+
+    virtual bool getIsCopc() const = 0;
+
+    virtual void getPoints(double &x_o, double &y_o, double &z_o,
+                           std::vector<std::vector<float> > &coordinates,
+                           std::vector<std::string> dimensionsNames,
+                           std::vector<std::vector<float> > &dimensionsValues,
+                           std::string crsId = "") = 0;
+
+    virtual void getPoints(double &x_o, double &y_o, double &z_o,
+                           std::vector<std::vector<float> > &coordinates,
+                           std::vector<std::string> dimensionsNames,
+                           std::vector<std::vector<float> > &dimensionsValues,
+                           double x_min, double y_min, double z_min,
+                           double x_max, double y_max, double z_max,
+                           std::string crsId = "") = 0;
+
+    virtual void getPoints(double &x_o, double &y_o, double &z_o,
+                           std::vector<std::vector<float> > &coordinates,
+                           std::vector<std::string> dimensionsNames,
+                           std::vector<std::vector<float> > &dimensionsValues,
+                           double resolution,
+                           std::string crsId = "") = 0;
+
+    virtual void getPoints(double &x_o, double &y_o, double &z_o,
+                           std::vector<std::vector<float> > &coordinates,
+                           std::vector<std::string> dimensionsNames,
+                           std::vector<std::vector<float> > &dimensionsValues,
+                           double x_min, double y_min, double z_min,
+                           double x_max, double y_max, double z_max,
+                           double resolution,
+                           std::string crsId = "") = 0;
+    virtual auto getOffset() const -> Point3<double> = 0;
+    //virtual auto getScale()  const -> Vector<double, 3> = 0;
+    virtual auto getCoordinates(int index) const -> Point3<double> = 0;
+    virtual auto getField(int index, const std::string &name) const -> double = 0;
+    virtual auto hasColors() const -> bool = 0;
+    virtual auto hasNormals() const -> bool = 0;
+
+protected:
+    GeoTools *mPtrGeoTools;
+
+private:
+    Path mFile;
+};
+
+/*!
  * \brief Class factory for reading image formats
  */
-    class TL_EXPORT PointCloudReaderFactory
-    {
+class TL_EXPORT PointCloudReaderFactory
+{
 
-    private:
+private:
 
-        PointCloudReaderFactory() = default;
+    PointCloudReaderFactory() = default;
 
-    public:
+public:
 
-        static auto create(const Path& file)->PointCloudReader::Ptr;
-    };
+    static auto create(const Path &file) -> PointCloudReader::Ptr;
+};
 
 }

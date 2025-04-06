@@ -39,6 +39,9 @@
 #include "tidop/pctools/PointCloudReader.h"
 
 #include <pdal/Dimension.hpp>
+#include <pdal/PointView.hpp>
+#include <pdal/PointTable.hpp>
+#include <pdal/Options.hpp>
 
 namespace copc
 {
@@ -65,21 +68,24 @@ class PointCloudReaderPDAL final
     : public PointCloudReader
 {
     GENERATE_UNIQUE_PTR(PointCloudReaderPDAL)
+
 public:
+
     PointCloudReaderPDAL(tl::Path file);
     ~PointCloudReaderPDAL() override;
     auto isOpen() const -> bool override
     {
-        return mPtrCopcFile != nullptr;
+        return mPtrCopcFile != nullptr || mPtrLasReader != nullptr;
     }
     void close() override;
-    void copcDumpBoundingBoxToCsv(std::string fileName, std::string crsId = "") override;
+    void copcDumpBoundingBoxToCsv(const std::string &fileName, std::string crsId = "") override;
     void copcGetResolutionByLevel(std::map<int, double>& resolutionByLevel) override;
     void getBoundingBox(double& x_min, double& y_min, double& z_min,
         double& x_max, double& y_max, double& z_max, std::string crsId = "") override;
-    BoundingBoxd getBoundingBox(std::string crsId="") override;
-    void getDimensionsNames(std::vector<std::string>& values) override;
-    bool getIsCopc() override;
+    auto getBoundingBox(std::string crsId = "") const -> BoundingBoxd override;
+    //void getDimensionsNames(std::vector<std::string>& values) const override;
+    auto getDimensionsNames() const -> std::vector<std::string> override;
+    bool getIsCopc() const override;
     void getPoints(double& x_o, double& y_o, double& z_o,
         std::vector<std::vector<float> >& coordinates,
         std::vector<std::string> dimensionsNames,
@@ -107,8 +113,19 @@ public:
         double resolution,
         std::string crsId = "") override;
     void open() override;
+    auto getOffset() const -> Point3<double> override;
+    //auto getScale()  const -> Vector<double, 3> override;
+    auto getCoordinates(int index) const -> Point3<double> override;
+    auto getField(int index, const std::string &name) const -> double override;
+    auto hasColors() const -> bool override;
+    auto hasNormals() const -> bool override;
+
 private:
+
     void initialize();
+
+private:
+
     std::string mCrsId;
     std::map<std::string, pdal::Dimension::Id> mDimensionIdByName;
     bool mIsCopc{ false };
@@ -120,6 +137,9 @@ private:
     double mResolutionLastLevel;
     // LAS/LAZ no COPC
     pdal::LasReader* mPtrLasReader = nullptr;
+    pdal::PointTable mTable;
+    pdal::PointViewSet mViewSet;
+    pdal::PointViewPtr mView;
 };
 
 }
