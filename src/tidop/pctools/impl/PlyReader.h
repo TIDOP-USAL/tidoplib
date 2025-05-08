@@ -24,10 +24,9 @@
 
 #pragma once
 
-#include "tidop/config.h"
-#include "tidop/core/defs.h"
-#include "tidop/core/path.h"
-#include "tidop/core/ptr.h"
+#include "tidop/core/core.h"
+#include "tidop/core/base/path.h"
+#include "tidop/core/base/ptr.h"
 #include "tidop/pctools/PointCloudReader.h"
 
 #include <pdal/io/PlyReader.hpp>

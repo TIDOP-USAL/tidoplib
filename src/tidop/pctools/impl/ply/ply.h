@@ -27,13 +27,12 @@
 #include "tidop/config.h"
 
 
-#include <tidop/core/exception.h>
-#include <tidop/core/flags.h>
-#include <tidop/core/path.h>
-#include <tidop/core/utils.h>
-#include <tidop/core/endian.h>
-#include <tidop/geometry/entities/point.h>
-#include <tidop/graphic/color.h>
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/flags.h"
+#include "tidop/core/base/path.h"
+#include "tidop/core/base/endian.h"
+#include "tidop/geometry/entities/point.h"
+#include "tidop/graphic/color.h"
 
 #include <fstream>
 #include <memory>
