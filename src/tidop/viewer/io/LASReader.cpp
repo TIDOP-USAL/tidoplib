@@ -50,14 +50,13 @@ namespace tl
 		//double y_max = 38.52796193315600703;
 		//double z_max = 781.0;
 		double x_o, y_o, z_o;
-		std::vector<std::string> dimensionsNames;
-		pointCloudReader->getDimensionsNames(dimensionsNames);
+		std::vector<std::string> dimensionsNames = pointCloudReader->getDimensionsNames();
 		int posRed = -1;
 		int posGreen = -1;
 		int posBlue = -1;
 		int posAlpha = -1;
 		int i = 0;
-		for (auto dimensionName : dimensionsNames)
+		for (auto &dimensionName : dimensionsNames)
 		{
 			if (compareInsensitiveCase("red", dimensionName))
 				posRed = i;
@@ -94,7 +93,7 @@ namespace tl
 		double x_max_real = -1000000000.;
 		double y_max_real = -1000000000.;
 		double z_max_real = -1000000000.;
-		for (auto pto : coordinates)
+		for (auto &pto : coordinates)
 		{
 			if (pto[0] < x_min_real) x_min_real = pto[0];
 			if (pto[1] < y_min_real) y_min_real = pto[1];
