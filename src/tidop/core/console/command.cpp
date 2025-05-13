@@ -548,6 +548,14 @@ void Command::enableLog()
     mDefaultArguments.push_back(log_arg);
 }
 
+void Command::enableProgressBar()
+{
+    auto progress_bar_arg = Argument::make<std::string>("progress_bar", "Enable progress bar", "COLOR");
+    auto validator = ValuesValidator<std::string>::create({"NORMAL", "COLOR", "PERCENT", "SPINNER", "DISABLE"});
+    progress_bar_arg->setValidator(validator);
+    mDefaultArguments.push_back(progress_bar_arg);
+}
+
 auto Command::setLicence(const Licence &licence) -> void
 {
     mLicence = licence;

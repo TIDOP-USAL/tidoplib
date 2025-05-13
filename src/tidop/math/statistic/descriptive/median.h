@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/statistic/quantile.h"
+#include "tidop/math/statistic/descriptive/quantile.h"
 
 namespace tl
 {

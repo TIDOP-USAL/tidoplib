@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "tidop/math/statistic/covariance.h"
-#include "tidop/math/statistic/stddev.h"
+#include "tidop/math/statistic/association/covariance.h"
+#include "tidop/math/statistic/descriptive/stddev.h"
 
 
 namespace tl

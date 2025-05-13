@@ -50,8 +50,7 @@ namespace tl
 		//double y_max = 38.52796193315600703;
 		//double z_max = 781.0;
 		double x_o, y_o, z_o;
-		std::vector<std::string> dimensionsNames;
-		pointCloudReader->getDimensionsNames(dimensionsNames);
+		std::vector<std::string> dimensionsNames = pointCloudReader->getDimensionsNames();
 		int posRed = -1;
 		int posGreen = -1;
 		int posBlue = -1;

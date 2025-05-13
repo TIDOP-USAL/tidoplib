@@ -24,52 +24,44 @@
 
 #pragma once
 
-#include <tidop/core/base/defs.h>
+#include "tidop/math/statistic/descriptive/variance.h"
+
 
 namespace tl
 {
 
-/*! \addtogroup Statistics
- *  \{
+/*! \addtogrop Statistics
+ * \{
  */
 
- /*!
-  * \brief Calculates the mode of a range of values.
-  * \tparam It Type of the iterator.
-  * \param[in] first Iterator pointing to the beginning of the range.
-  * \param[in] last Iterator pointing to the end of the range.
-  * \return The mode value, which is the most frequently occurring element in the range.
-  *
-  * The mode is the value that appears most frequently in a data set.
-  * If multiple values have the same highest frequency, the function returns the first one encountered.
-  * This function is useful in statistics for identifying the most common value in a sample.
-  *
-  * ### Example Usage
-  * \code{.cpp}
-  * std::vector<int> data = {1, 2, 2, 3, 4, 4, 4, 5};
-  * int modeValue = mode(data.begin(), data.end());
-  * // modeValue is 4
-  * \endcode
-  */
+/*!
+ * \brief Standard Deviation
+ *
+ * The standard deviation measures the amount of variation or dispersion in a set of values.
+ * It is defined as the square root of the variance, providing insight into the average distance of the data points from the mean.
+ *
+ * The formula for the standard deviation (\f$\sigma\f$) is:
+ * \f[
+ * \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}}
+ * \f]
+ *
+ * \param[in] first Iterator to the beginning of the data set.
+ * \param[in] last Iterator to the end of the data set.
+ * \return The standard deviation of the dataset.
+ *
+ * This template function is overloaded for both integral and floating-point data types
+ */
 template<typename It>
-auto mode(It first, It last) -> iteratorValueType<It>
+auto standarDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
-    using T = std::remove_cv_t<iteratorValueType<It>>;
-
-    std::map<T, int> h;
-    while (first != last) {
-        h[*first++]++;
-    }
-
-    auto max = std::max_element(h.begin(), h.end(),
-                                [](const std::pair<T, int> &p1,
-                                const std::pair<T, int> &p2) {
-                                    return p1.second < p2.second;
-                                });
-
-    return max->first;
+    return sqrt(variance(first, last));
 }
 
+template<typename It>
+auto standarDeviation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
+{
+    return sqrt(variance(first, last));
+}
 
 /*! \} */
 

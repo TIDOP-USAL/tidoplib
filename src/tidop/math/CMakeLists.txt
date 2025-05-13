@@ -72,30 +72,30 @@ if(BUILD_TL_MATH)
                              geometry/analytic/line.h
                              geometry/analytic/plane.h
                              geometry/analytic/sphere.h
-                             statistic/algorithm.h
-                             statistic/biweightmidvariance.h
-                             statistic/cv.h
                              statistic/descriptive.h
-                             statistic/iqr.h
-                             statistic/kurtosis.h
-                             statistic/kurtosis.impl.h
-                             statistic/mad.h
-                             statistic/mean.h
-                             statistic/median.h
-                             statistic/mode.h
-                             statistic/pearson.h
-                             statistic/quantile.h
-                             statistic/range.h
-                             statistic/rms.h
-                             statistic/series.h
-                             statistic/confmat.h
-		                     statistic/covariance.h
-                             statistic/skewness.h
-                             statistic/skewness.impl.h
-                             statistic/stddev.h
-                             statistic/tukeyfences.h
-                             statistic/variance.h
-                             statistic/zscore.h)
+                             statistic/association/pearson.h
+                             statistic/association/covariance.h
+                             statistic/base/algorithm.h
+                             statistic/base/series.h
+                             statistic/classification/confmat.h
+                             statistic/descriptive/mean.h
+                             statistic/descriptive/median.h
+                             statistic/descriptive/mode.h                             
+                             statistic/descriptive/quantile.h
+                             statistic/descriptive/range.h                        
+                             statistic/descriptive/stddev.h
+                             statistic/descriptive/tukeyfences.h
+                             statistic/descriptive/variance.h
+                             statistic/shape/kurtosis.h
+                             statistic/shape/kurtosis.impl.h
+                             statistic/ratios/cv.h
+                             statistic/ratios/zscore.h
+                             statistic/ratios/rms.h     
+                             statistic/robust/biweightmidvariance.h
+                             statistic/robust/iqr.h
+                             statistic/robust/mad.h
+                             statistic/shape/skewness.h
+                             statistic/shape/skewness.impl.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}

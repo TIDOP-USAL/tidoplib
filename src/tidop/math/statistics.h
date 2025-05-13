@@ -28,15 +28,15 @@
 #include <map>
 
 #include "tidop/math/math.h"
-#include "tidop/math/statistic/mad.h"
-#include "tidop/math/statistic/mode.h"
-#include "tidop/math/statistic/covariance.h"
-#include "tidop/math/statistic/stddev.h"
-#include "tidop/math/statistic/variance.h"
-#include "tidop/math/statistic/range.h"
-#include "tidop/math/statistic/iqr.h"
-#include "tidop/math/statistic/pearson.h"
-#include "tidop/math/statistic/biweightmidvariance.h"
+#include "tidop/math/statistic/descriptive/mode.h"
+#include "tidop/math/statistic/association/covariance.h"
+#include "tidop/math/statistic/association/pearson.h"
+#include "tidop/math/statistic/descriptive/stddev.h"
+#include "tidop/math/statistic/descriptive/variance.h"
+#include "tidop/math/statistic/descriptive/range.h"
+#include "tidop/math/statistic/robust/mad.h"
+#include "tidop/math/statistic/robust/iqr.h"
+#include "tidop/math/statistic/robust/biweightmidvariance.h"
 
 namespace tl
 {

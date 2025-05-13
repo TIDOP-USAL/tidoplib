@@ -26,10 +26,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tidop/math/statistic/descriptive.h>
-#include <tidop/math/statistic/series.h>
-#include <tidop/math/statistic/confmat.h>
-#include <tidop/math/statistic/covariance.h>
-#include <tidop/math/statistic/tukeyfences.h>
+#include <tidop/math/statistic/base/series.h>
+#include <tidop/math/statistic/classification/confmat.h>
+#include <tidop/math/statistic/association/covariance.h>
+#include <tidop/math/statistic/descriptive/tukeyfences.h>
 
 using namespace tl;
 

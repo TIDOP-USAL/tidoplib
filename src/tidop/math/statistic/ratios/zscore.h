@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/statistic/variance.h"
+#include "tidop/math/statistic/descriptive/mean.h"
 
 
 namespace tl
@@ -34,33 +34,27 @@ namespace tl
  * \{
  */
 
-/*!
- * \brief Standard Deviation
- *
- * The standard deviation measures the amount of variation or dispersion in a set of values.
- * It is defined as the square root of the variance, providing insight into the average distance of the data points from the mean.
- *
- * The formula for the standard deviation (\f$\sigma\f$) is:
- * \f[
- * \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}}
- * \f]
- *
- * \param[in] first Iterator to the beginning of the data set.
- * \param[in] last Iterator to the end of the data set.
- * \return The standard deviation of the dataset.
- *
- * This template function is overloaded for both integral and floating-point data types
- */
-template<typename It>
-auto standarDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
-{
-    return sqrt(variance(first, last));
-}
 
-template<typename It>
-auto standarDeviation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
+/*!
+ * \brief Z-Score normalization
+ *
+ * The Z-score normalization is a statistical method that transforms a dataset by subtracting
+ * the mean and dividing by the standard deviation for each data point. The Z-score represents
+ * the number of standard deviations a value is from the mean.
+ *
+ * \param[in] inFirst Iterator to the first element in the data range
+ * \param[in] inLast Iterator to the last element in the data range
+ * \param[out] outFirst Iterator to store the normalized Z-scores
+ */
+template<typename itIn, typename itOut>
+void zScore(itIn inFirst, itIn inLast, itOut outFirst)
 {
-    return sqrt(variance(first, last));
+    double _mean = mean(inFirst, inLast);
+    double standar_deviation = standarDeviation(inFirst, inLast);
+
+    while (inFirst != inLast) {
+        *outFirst++ = (*inFirst++ - _mean) / standar_deviation;
+    }
 }
 
 /*! \} */

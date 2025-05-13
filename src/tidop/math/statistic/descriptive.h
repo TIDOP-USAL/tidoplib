@@ -30,14 +30,14 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/flags.h"
-#include "tidop/math/statistic/mean.h"
-#include "tidop/math/statistic/median.h"
-#include "tidop/math/statistic/mode.h"
-#include "tidop/math/statistic/quantile.h"
-#include "tidop/math/statistic/rms.h"
-#include "tidop/math/statistic/series.h"
-#include "tidop/math/statistic/skewness.h"
-#include "tidop/math/statistic/kurtosis.h"
+#include "tidop/math/statistic/descriptive/mean.h"
+#include "tidop/math/statistic/descriptive/median.h"
+#include "tidop/math/statistic/descriptive/mode.h"
+#include "tidop/math/statistic/descriptive/quantile.h"
+#include "tidop/math/statistic/ratios/rms.h"
+#include "tidop/math/statistic/base/series.h"
+#include "tidop/math/statistic/shape/skewness.h"
+#include "tidop/math/statistic/shape/kurtosis.h"
 
 namespace tl
 {

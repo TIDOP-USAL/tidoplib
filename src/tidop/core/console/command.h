@@ -471,6 +471,23 @@ public:
     void enableLog();
 
     /*!
+     * \brief Enables progress bar support for the command
+     *
+     * This method adds support for a progress bar by introducing a "progressbar" argument.
+     * The "progressbar" argument allows the user to customize how progress is displayed during command execution.
+     *
+     * The accepted values for the "progressbar" argument are:
+     * - **NORMAL**: Displays a standard progress bar.
+     * - **COLOR**: Displays a colored progress bar.
+     * - **PERCENT**: Displays the progress as a percentage.
+     * - **SPINNER**: Displays a spinner animation.
+     * - **DISABLE**: Disables the progress bar.
+     *
+     * Using this method, the command can provide visual feedback on its progress, improving user experience during long operations.
+     */
+    void enableProgressBar();
+
+    /*!
      * \brief Sets the licence
      * \param[in] licence Licence
      * \see Licence

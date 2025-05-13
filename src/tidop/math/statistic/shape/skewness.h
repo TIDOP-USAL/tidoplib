@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/statistic/algorithm.h"
+#include "tidop/math/statistic/base/algorithm.h"
 
 namespace tl
 {
@@ -107,7 +107,7 @@ public:
     static auto create(SkewnessMethod method) -> std::shared_ptr<Skewness<T>>;
 };
 
-#include "tidop/math/statistic/skewness.impl.h"
+#include "tidop/math/statistic/shape/skewness.impl.h"
 
 /*! \} */
 

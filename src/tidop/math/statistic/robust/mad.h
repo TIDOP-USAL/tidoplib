@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "tidop/math/statistic/mean.h"
-#include "tidop/math/statistic/median.h"
+#include "tidop/math/statistic/descriptive/mean.h"
+#include "tidop/math/statistic/descriptive/median.h"
 
 namespace tl
 {

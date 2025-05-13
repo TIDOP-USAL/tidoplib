@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/statistic/mean.h"
+#include "tidop/math/statistic/descriptive/mean.h"
 
 
 namespace tl

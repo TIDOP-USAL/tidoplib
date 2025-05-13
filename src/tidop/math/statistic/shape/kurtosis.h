@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/statistic/algorithm.h"
+#include "tidop/math/statistic/base/algorithm.h"
 
 #include <cmath>
 
@@ -102,7 +102,7 @@ public:
     static auto create(KurtosisMethod method) -> std::shared_ptr<Kurtosis<T>>;
 };
 
-#include "tidop/math/statistic/kurtosis.impl.h"
+#include "tidop/math/statistic/shape/kurtosis.impl.h"
 
 /*! \} */ 
 
