@@ -53,17 +53,17 @@ namespace tl
 namespace internal
 {
 
-// std::string toUtf8(const std::wstring &wstr)
-// {
-//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-//     return converter.to_bytes(wstr);
-// }
+std::string toUtf8(const std::wstring &wstr)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(wstr);
+}
 
-// std::wstring fromUtf8(const std::string &utf8str)
-// {
-//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-//     return converter.from_bytes(utf8str);
-// }
+std::wstring fromUtf8(const std::string &utf8str)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(utf8str);
+}
 
 // std::string toLocal8Bit(const std::wstring &wstr)
 // {
@@ -74,11 +74,45 @@ namespace internal
 //     return converter.to_bytes(wstr);
 // }
 
+std::string toLocal8Bit(const std::wstring &wstr)
+{
+#ifdef _WIN32
+    if (wstr.empty()) return {};
+
+    int size_needed = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    std::string result(size_needed, '\0');
+    WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &result[0], size_needed, nullptr, nullptr);
+    if (!result.empty() && result.back() == '\0') result.pop_back();
+    return result;
+#else
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(wstr);
+#endif
+}
+
 // std::wstring fromLocal8Bit(const std::string &wstr)
 // {
 //     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
 //     return converter.from_bytes(wstr);
 // }
+
+std::wstring fromLocal8Bit(const std::string &str)
+{
+#ifdef _WIN32
+    if (str.empty()) return {};
+
+    int size_needed = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
+    if (size_needed <= 0) return {};
+
+    std::wstring wstr(size_needed, 0);
+    MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, &wstr[0], size_needed);
+    if (!wstr.empty() && wstr.back() == L'\0') wstr.pop_back();
+    return wstr;
+#else
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(str);
+#endif
+}
 
 class Path
 {
@@ -139,9 +173,9 @@ Path::Path()
 {
 }
 
-Path::Path(const std::string &path)
-  : mPath(new internal::Path(path))
-  //: mPath(new internal::Path(internal::fromUtf8(path)))  
+Path::Path(const std::string &utf8Path)
+  //: mPath(new internal::Path(path))
+  : mPath(new internal::Path(internal::fromUtf8(utf8Path)))
 {
 }
 
@@ -177,10 +211,10 @@ auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
     return *this;
 }
 
-void Path::setPath(const std::string &path)
+void Path::setPath(const std::string &utf8Path)
 {
-    mPath = std::make_unique<internal::Path>(path);
-    //mPath = std::make_unique<internal::Path>(internal::fromUtf8(path));
+    //mPath = std::make_unique<internal::Path>(path);
+    mPath = std::make_unique<internal::Path>(internal::fromUtf8(utf8Path));
 }
 
 void Path::setPath(const std::wstring &path)
@@ -199,10 +233,15 @@ auto Path::toWString() const -> std::wstring
     return mPath->ref().wstring();
 }
 
-// auto Path::toLocal8Bit() const -> std::string
-// {
-//     return internal::toLocal8Bit(mPath->ref().wstring());
-// }
+auto Path::toUtf8() const -> std::string
+{
+    return internal::toUtf8(mPath->ref().wstring());
+}
+
+auto Path::toLocal8Bit() const -> std::string
+{
+    return internal::toLocal8Bit(mPath->ref().wstring());
+}
 
 auto Path::fileName() const -> Path
 {
@@ -301,14 +340,14 @@ auto Path::list(const std::regex &filter) -> std::list<Path>
     return list;
 }
 
-auto Path::replaceFileName(const std::string &fileName) -> Path&
+auto Path::replaceFileName(const std::string &utf8FileName) -> Path&
 {
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
         _path.remove_filename();
-        //_path.append(internal::fromUtf8(fileName));
-        _path.append(fileName);
+        _path.append(internal::fromUtf8(utf8FileName));
+        //_path.append(fileName);
     }
 
     return *this;
@@ -331,16 +370,16 @@ auto Path::replaceFileName(const Path &fileName) -> Path&
     return replaceFileName(fileName.toWString());
 }
 
-auto Path::replaceBaseName(const std::string &baseName) -> Path&
+auto Path::replaceBaseName(const std::string &utf8BaseName) -> Path&
 {
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
         std::string ext = _path.extension().string();
-        std::string file_name = baseName + ext;
+        std::string file_name = utf8BaseName + ext;
         _path.remove_filename();
-        //_path.append(internal::fromUtf8(file_name));
-        _path.append(file_name);
+        _path.append(internal::fromUtf8(file_name));
+        //_path.append(file_name);
     }
 
     return *this;
@@ -384,8 +423,8 @@ auto Path::replaceExtension(const Path &extension) -> Path&
 
 auto Path::append(const std::string &text) -> Path&
 {
-    mPath->ref().append(text);
-    //mPath->ref().append(internal::fromUtf8(text));
+    //mPath->ref().append(text);
+    mPath->ref().append(internal::fromUtf8(text));
     return *this;
 }
 
@@ -517,10 +556,10 @@ auto Path::currentPath() -> Path
     return Path(fs::current_path().wstring());
 }
 
-// auto Path::fromLocal8Bit(const std::string &s) -> Path
-// {
-//     return Path(internal::fromLocal8Bit(s));
-// }
+auto Path::fromLocal8Bit(const std::string &s) -> Path
+{
+    return Path(internal::fromLocal8Bit(s));
+}
 
 /* Override operators */
 

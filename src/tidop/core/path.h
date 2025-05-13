@@ -57,7 +57,7 @@ private:
 public:
 
     Path();
-    Path(const std::string &path);
+    Path(const std::string &utf8Path);
     Path(const std::wstring &path);
     Path(const Path &path);
     Path(Path &&path) TL_NOEXCEPT;
@@ -66,7 +66,7 @@ public:
     auto operator = (const Path &path) -> Path&;
     auto operator = (Path &&path) TL_NOEXCEPT -> Path&;
 
-    void setPath(const std::string &path);
+    void setPath(const std::string &utf8Path);
     void setPath(const std::wstring &path);
 
     /*!
@@ -79,7 +79,8 @@ public:
      */
     auto toWString() const -> std::wstring;
 
-    //auto toLocal8Bit() const -> std::string;
+    auto toUtf8() const -> std::string;
+    auto toLocal8Bit() const -> std::string;
 
     auto fileName() const -> Path;
     auto baseName() const -> Path;
@@ -96,10 +97,10 @@ public:
     auto empty() const -> bool;
     auto exists() const -> bool;
 
-    auto replaceFileName(const std::string &fileName) -> Path&;
+    auto replaceFileName(const std::string &utf8FileName) -> Path&;
     auto replaceFileName(const std::wstring &fileName) -> Path&;
     auto replaceFileName(const Path &fileName) -> Path&;
-    auto replaceBaseName(const std::string &baseName) -> Path&;
+    auto replaceBaseName(const std::string &utf8BaseName) -> Path&;
     auto replaceBaseName(const std::wstring &baseName) -> Path&;
     auto replaceBaseName(const Path &baseName) -> Path&;
     auto replaceExtension(const std::string &extension) -> Path&;
@@ -132,7 +133,7 @@ public:
     static auto hash(const Path &path) -> size_t;
     static void copy(const Path &from, const Path &to);
     static auto currentPath() -> Path;
-    //static auto fromLocal8Bit(const std::string &s) -> Path;
+    static auto fromLocal8Bit(const std::string &s) -> Path;
 
     /* Override operators */
 
