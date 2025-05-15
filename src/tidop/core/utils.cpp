@@ -125,6 +125,7 @@ auto wstringToString(const std::wstring &wideString) -> std::string
 
     return _string;
 }
+#endif // TL_OS_WINDOWS
 
 std::wstring fromLocalEncoding(const std::string& local)
 {
@@ -179,7 +180,7 @@ std::wstring fromLocal8Bit(const std::string &str)
     return converter.from_bytes(str);
 #endif
 }
-#endif // TL_OS_WINDOWS
+
 
 } // End namespace tl
 
