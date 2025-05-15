@@ -416,6 +416,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
             OGRPoint pt(point.x, point.y);
             ogr_linear_ring.addPoint(&pt);
         }
+        ogr_linear_ring.closeRings();
 
         auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
 
@@ -429,6 +430,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
                 OGRPoint pt(point.x, point.y);
                 ogr_inner_linear_ring.addPoint(&pt);
             }
+            ogr_inner_linear_ring.closeRings();
 
             ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
 
@@ -456,6 +458,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
             OGRPoint pt(point.x, point.y, point.z);
             ogr_linear_ring.addPoint(&pt);
         }
+        ogr_linear_ring.closeRings();
 
         auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
 
@@ -470,6 +473,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
                 OGRPoint pt(point.x, point.y, point.z);
                 inner_linear_ring.addPoint(&pt);
             }
+            inner_linear_ring.closeRings();
 
             ogr_err = ogr_polygon.addRing(&inner_linear_ring);
 
