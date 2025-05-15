@@ -81,7 +81,7 @@ void Console::setConsoleUnicode()
     //SetConsoleCP(1252);
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
+    //SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
 #endif
 }
 

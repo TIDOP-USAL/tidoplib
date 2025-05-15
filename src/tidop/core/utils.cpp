@@ -32,6 +32,8 @@
 #include <algorithm>
 #endif
 
+#include <codecvt>
+
 
 namespace tl
 {
@@ -124,6 +126,59 @@ auto wstringToString(const std::wstring &wideString) -> std::string
     return _string;
 }
 
+std::wstring fromLocalEncoding(const std::string& local)
+{
+    int len = MultiByteToWideChar(CP_ACP, 0, local.c_str(), -1, nullptr, 0);
+    std::wstring wide(len - 1, L'\0'); // -1 para quitar el '\0' agregado
+    MultiByteToWideChar(CP_ACP, 0, local.c_str(), -1, &wide[0], len);
+    return wide;
+}
+
+std::string toUtf8(const std::wstring &wstr)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(wstr);
+}
+
+std::wstring fromUtf8(const std::string &utf8str)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(utf8str);
+}
+
+std::string toLocal8Bit(const std::wstring &wstr)
+{
+#ifdef _WIN32
+    if (wstr.empty()) return {};
+
+    int size_needed = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    std::string result(size_needed, '\0');
+    WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &result[0], size_needed, nullptr, nullptr);
+    if (!result.empty() && result.back() == '\0') result.pop_back();
+    return result;
+#else
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(wstr);
+#endif
+}
+
+std::wstring fromLocal8Bit(const std::string &str)
+{
+#ifdef _WIN32
+    if (str.empty()) return {};
+
+    int size_needed = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
+    if (size_needed <= 0) return {};
+
+    std::wstring wstr(size_needed, 0);
+    MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, &wstr[0], size_needed);
+    if (!wstr.empty() && wstr.back() == L'\0') wstr.pop_back();
+    return wstr;
+#else
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(str);
+#endif
+}
 #endif // TL_OS_WINDOWS
 
 } // End namespace tl

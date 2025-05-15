@@ -304,6 +304,14 @@ auto wstringToString(const std::wstring &wideString) -> std::string;
 
 #endif // TL_OS_WINDOWS
 
+
+
+std::wstring fromLocalEncoding(const std::string &local);
+std::string toUtf8(const std::wstring &wstr);
+std::wstring fromUtf8(const std::string &utf8str);
+std::string toLocal8Bit(const std::wstring &wstr);
+std::wstring fromLocal8Bit(const std::string &str);
+
 /*! \} */ // end of core
 
 
