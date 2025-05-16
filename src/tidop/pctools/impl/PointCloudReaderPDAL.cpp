@@ -56,7 +56,52 @@
 #include "tidop/geotools/CRSsTools.h"
 #include "PointCloudReaderPDAL.h"
 
-using namespace tl;
+namespace tl
+{
+
+
+struct VLRHeader
+{
+    char user_id[16];
+    uint16_t record_id;
+    uint16_t reserved;
+    uint32_t record_length;
+    char description[32];
+};
+
+bool isCOPC(const std::string &filename)
+{
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        return false;
+    }
+
+    // Saltar los primeros 96 bytes del header LAS estándar
+    file.seekg(96, std::ios::beg);
+
+    // Leer el número de VLRs
+    uint32_t vlr_count;
+    file.read(reinterpret_cast<char *>(&vlr_count), sizeof(vlr_count));
+
+    // Leer cada VLR y verificar si es COPC
+    for (uint32_t i = 0; i < vlr_count; ++i) {
+        VLRHeader vlr;
+        file.read(reinterpret_cast<char *>(&vlr), sizeof(VLRHeader));
+
+        std::string user_id(vlr.user_id, 16);
+        if (user_id.find("copc") != std::string::npos && vlr.record_id == 1) {
+            return true;
+        }
+
+        // Saltar el contenido del VLR
+        file.seekg(vlr.record_length, std::ios::cur);
+    }
+
+    return false;
+}
+
+
+
 
 PointCloudReaderPDAL::PointCloudReaderPDAL(tl::Path file)
     : PointCloudReader(std::move(file)),
@@ -64,9 +109,12 @@ PointCloudReaderPDAL::PointCloudReaderPDAL(tl::Path file)
     mPtrLasReader(nullptr)
 {
     try {
-        initialize();
-    }
-    catch (...) {
+        // Comentado al menos para las pruebas de lectura
+        // El cambio de CRS para nubes de puntos igual mejor en una clase a parte dentro de GeoTools
+        // Podría hacer la conversión de CRS de mapas raster, vectoriales y nubes de puntos
+        // De esta forma queda mas sencilla la lectura/escritura de nubes de puntos
+        //initialize();
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 }
@@ -75,7 +123,7 @@ PointCloudReaderPDAL::~PointCloudReaderPDAL()
 {
     PointCloudReaderPDAL::close();
 }
-        
+
 void PointCloudReaderPDAL::close()
 {
     if (mPtrCopcFile) {
@@ -88,12 +136,11 @@ void PointCloudReaderPDAL::close()
     }
 }
 
-void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(std::string fileName, std::string crsId)
+void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(const std::string &fileName, std::string crsId)
 {
     try {
         if (mPtrCopcFile == nullptr
-            && mPtrLasReader == nullptr)
-        {
+            && mPtrLasReader == nullptr) {
             TL_ASSERT(false, "Reader is NULL");
         }
         // only COPC
@@ -101,13 +148,12 @@ void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(std::string fileName, std::s
             return;
         std::ofstream ofs;
         ofs.open(fileName, std::ofstream::out | std::ofstream::trunc);
-        if (!ofs.is_open())
-        {
-            TL_ASSERT(false, "Error opening file : {}",fileName);
+        if (!ofs.is_open()) {
+            TL_ASSERT(false, "Error opening file : {}", fileName);
         }
         ofs << "id;level;point_count;resolution;wkt" << std::endl;
         int number_of_nodes = 0;
-        for (const auto& node : mPtrCopcFile->GetAllChildrenOfPage(copc::VoxelKey::RootKey()))
+        for (const auto &node : mPtrCopcFile->GetAllChildrenOfPage(copc::VoxelKey::RootKey()))
             //for (const auto &node : reader.GetAllNodes())
         {
             copc::Box nodeBox(node.key, mPtrCopcFile->CopcConfig().LasHeader());
@@ -118,17 +164,16 @@ void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(std::string fileName, std::s
             double y_max = nodeBox.y_max;
             double z_max = nodeBox.z_max;
             if (!crsId.empty()
-                && crsId != mCrsId)
-            {
+                && crsId != mCrsId) {
                 std::vector<std::vector<double> > points;
-                std::vector<double> ptoSW_minZ = { x_min, y_min, z_min };
-                std::vector<double> ptoNW_minZ = { x_min, y_max, z_min };
-                std::vector<double> ptoNE_minZ = { x_max, y_max, z_min };
-                std::vector<double> ptoSE_minZ = { x_max, y_min, z_min };
-                std::vector<double> ptoSW_maxZ = { x_min, y_min, z_max };
-                std::vector<double> ptoNW_maxZ = { x_min, y_max, z_max };
-                std::vector<double> ptoNE_maxZ = { x_max, y_max, z_max };
-                std::vector<double> ptoSE_maxZ = { x_max, y_min, z_max };
+                std::vector<double> ptoSW_minZ = {x_min, y_min, z_min};
+                std::vector<double> ptoNW_minZ = {x_min, y_max, z_min};
+                std::vector<double> ptoNE_minZ = {x_max, y_max, z_min};
+                std::vector<double> ptoSE_minZ = {x_max, y_min, z_min};
+                std::vector<double> ptoSW_maxZ = {x_min, y_min, z_max};
+                std::vector<double> ptoNW_maxZ = {x_min, y_max, z_max};
+                std::vector<double> ptoNE_maxZ = {x_max, y_max, z_max};
+                std::vector<double> ptoSE_maxZ = {x_max, y_min, z_max};
                 points.push_back(ptoSW_minZ);
                 points.push_back(ptoNW_minZ);
                 points.push_back(ptoNE_minZ);
@@ -144,8 +189,7 @@ void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(std::string fileName, std::s
                 double new_x_max = -10000000000.;
                 double new_y_max = -10000000000.;
                 double new_z_max = -10000000000.;
-                for (auto const& pto : points)
-                {
+                for (auto const &pto : points) {
                     if (pto[0] < new_x_min) new_x_min = pto[0];
                     if (pto[0] > new_x_max) new_x_max = pto[0];
                     if (pto[1] < new_y_min) new_y_min = pto[1];
@@ -194,7 +238,7 @@ void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(std::string fileName, std::s
             ofs << node.key.d << "-" << node.key.x << "-" << node.key.y << "-" << node.key.z << ";";
             ofs << node.key.d << ";";
             ofs << node.point_count << ";";
-            double nodeResolution = node.key.Resolution(mPtrCopcFile->CopcConfig().LasHeader(), 
+            double nodeResolution = node.key.Resolution(mPtrCopcFile->CopcConfig().LasHeader(),
                 mPtrCopcFile->CopcConfig().CopcInfo());
             ofs << std::fixed << std::setprecision(3) << nodeResolution << ";";
             ofs << wkt << std::endl;
@@ -213,18 +257,16 @@ void PointCloudReaderPDAL::copcDumpBoundingBoxToCsv(std::string fileName, std::s
             number_of_nodes++;
         }
         ofs.close();
-    }
-    catch (...) {
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 }
 
-void PointCloudReaderPDAL::copcGetResolutionByLevel(std::map<int, double>& resolutionByLevel)
+void PointCloudReaderPDAL::copcGetResolutionByLevel(std::map<int, double> &resolutionByLevel)
 {
     resolutionByLevel.clear();
     if (mPtrCopcFile == nullptr
-        && mPtrLasReader == nullptr)
-    {
+        && mPtrLasReader == nullptr) {
         TL_ASSERT(false, "Reader is NULL");
     }
     // only COPC
@@ -234,17 +276,15 @@ void PointCloudReaderPDAL::copcGetResolutionByLevel(std::map<int, double>& resol
         resolutionByLevel[value.first] = value.second;
 }
 
-void PointCloudReaderPDAL::getBoundingBox(double& x_min, double& y_min, double& z_min,
-    double& x_max, double& y_max, double& z_max, std::string crsId)
+void PointCloudReaderPDAL::getBoundingBox(double &x_min, double &y_min, double &z_min,
+    double &x_max, double &y_max, double &z_max, std::string crsId)
 {
     if (mPtrCopcFile == nullptr
-        && mPtrLasReader == nullptr)
-    {
+        && mPtrLasReader == nullptr) {
         TL_ASSERT(false, "Reader is NULL");
     }
     try {
-        if (mPtrCopcFile)
-        {
+        if (mPtrCopcFile) {
             auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
             copc::Box box = las_header.Bounds();
             x_min = box.x_min;
@@ -253,10 +293,8 @@ void PointCloudReaderPDAL::getBoundingBox(double& x_min, double& y_min, double& 
             x_max = box.x_max;
             y_max = box.y_max;
             z_max = box.z_max;
-        }
-        else if (mPtrLasReader)
-        {
-            const pdal::LasHeader& h = mPtrLasReader->header();
+        } else if (mPtrLasReader) {
+            const pdal::LasHeader &h = mPtrLasReader->header();
             x_min = h.minX();
             y_min = h.minY();
             z_min = h.minZ();
@@ -265,17 +303,16 @@ void PointCloudReaderPDAL::getBoundingBox(double& x_min, double& y_min, double& 
             z_max = h.maxZ();
         }
         if (!crsId.empty()
-            && crsId != mCrsId)
-        {
+            && crsId != mCrsId) {
             std::vector<std::vector<double> > points;
-            std::vector<double> ptoSW_minZ = { x_min, y_min, z_min };
-            std::vector<double> ptoNW_minZ = { x_min, y_max, z_min };
-            std::vector<double> ptoNE_minZ = { x_max, y_max, z_min };
-            std::vector<double> ptoSE_minZ = { x_max, y_min, z_min };
-            std::vector<double> ptoSW_maxZ = { x_min, y_min, z_max };
-            std::vector<double> ptoNW_maxZ = { x_min, y_max, z_max };
-            std::vector<double> ptoNE_maxZ = { x_max, y_max, z_max };
-            std::vector<double> ptoSE_maxZ = { x_max, y_min, z_max };
+            std::vector<double> ptoSW_minZ = {x_min, y_min, z_min};
+            std::vector<double> ptoNW_minZ = {x_min, y_max, z_min};
+            std::vector<double> ptoNE_minZ = {x_max, y_max, z_min};
+            std::vector<double> ptoSE_minZ = {x_max, y_min, z_min};
+            std::vector<double> ptoSW_maxZ = {x_min, y_min, z_max};
+            std::vector<double> ptoNW_maxZ = {x_min, y_max, z_max};
+            std::vector<double> ptoNE_maxZ = {x_max, y_max, z_max};
+            std::vector<double> ptoSE_maxZ = {x_max, y_min, z_max};
             points.push_back(ptoSW_minZ);
             points.push_back(ptoNW_minZ);
             points.push_back(ptoNE_minZ);
@@ -291,8 +328,7 @@ void PointCloudReaderPDAL::getBoundingBox(double& x_min, double& y_min, double& 
             double new_x_max = -10000000000.;
             double new_y_max = -10000000000.;
             double new_z_max = -10000000000.;
-            for (auto const& pto : points)
-            {
+            for (auto const &pto : points) {
                 if (pto[0] < new_x_min) new_x_min = pto[0];
                 if (pto[0] > new_x_max) new_x_max = pto[0];
                 if (pto[1] < new_y_min) new_y_min = pto[1];
@@ -307,22 +343,20 @@ void PointCloudReaderPDAL::getBoundingBox(double& x_min, double& y_min, double& 
             y_max = new_y_max;
             z_max = new_z_max;
         }
-    }
-    catch (...) {
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 }
 
-BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId)
+BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId) const
 {
     BoundingBoxd bounding_box;
 
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+
     try {
 
-        TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
-
-        if (mPtrCopcFile)
-        {
+        if (mPtrCopcFile) {
             auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
             copc::Box box = las_header.Bounds();
             bounding_box.pt1.x = box.x_min;
@@ -331,10 +365,8 @@ BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId)
             bounding_box.pt2.x = box.x_max;
             bounding_box.pt2.y = box.y_max;
             bounding_box.pt2.z = box.z_max;
-        }
-        else if (mPtrLasReader)
-        {
-            const pdal::LasHeader& h = mPtrLasReader->header();
+        } else if (mPtrLasReader) {
+            const pdal::LasHeader &h = mPtrLasReader->header();
             bounding_box.pt1.x = h.minX();
             bounding_box.pt1.y = h.minY();
             bounding_box.pt1.z = h.minZ();
@@ -344,8 +376,7 @@ BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId)
         }
 
         if (!crsId.empty()
-            && crsId != mCrsId)
-        {
+            && crsId != mCrsId) {
             auto vertices = bounding_box.vertices();
             mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, vertices, true);
             bounding_box = BoundingBoxd(vertices);
@@ -357,34 +388,42 @@ BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId)
     return bounding_box;
 }
 
-void PointCloudReaderPDAL::getDimensionsNames(std::vector<std::string>& values)
+//void PointCloudReaderPDAL::getDimensionsNames(std::vector<std::string>& values) const
+//{
+//    if (mPtrCopcFile == nullptr
+//        && mPtrLasReader == nullptr)
+//    {
+//        TL_ASSERT(false, "Reader is NULL");
+//    }
+//    values.clear();
+//    for (const auto &value : mDimensionIdByName)
+//    {
+//        values.push_back(value.first);
+//    }
+//}
+
+auto PointCloudReaderPDAL::getDimensionsNames() const -> std::vector<std::string>
 {
-    if (mPtrCopcFile == nullptr
-        && mPtrLasReader == nullptr)
-    {
-        TL_ASSERT(false, "Reader is NULL");
-    }
-    values.clear();
-    for (auto value : mDimensionIdByName)
-    {
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+
+    std::vector<std::string> values;
+    for (const auto &value : mDimensionIdByName) {
         values.push_back(value.first);
     }
+
+    return values;
 }
 
-bool PointCloudReaderPDAL::getIsCopc()
+bool PointCloudReaderPDAL::getIsCopc() const
 {
-    if (mPtrCopcFile == nullptr
-        && mPtrLasReader == nullptr)
-    {
-        TL_ASSERT(false, "Reader is NULL");
-    }
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
     return(mIsCopc);
 }
 
-void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o, 
-    std::vector<std::vector<float> >& coordinates,
+void PointCloudReaderPDAL::getPoints(double &x_o, double &y_o, double &z_o,
+    std::vector<std::vector<float> > &coordinates,
     std::vector<std::string> dimensionsNames,
-    std::vector<std::vector<float> >& dimensionsValues,
+    std::vector<std::vector<float> > &dimensionsValues,
     std::string crsId)
 {
     double resolution = PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE;
@@ -398,10 +437,10 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
         x_min, y_min, z_min, x_max, y_max, z_max, resolution, crsId));
 }
 
-void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o, 
-    std::vector<std::vector<float> >& coordinates,
+void PointCloudReaderPDAL::getPoints(double &x_o, double &y_o, double &z_o,
+    std::vector<std::vector<float> > &coordinates,
     std::vector<std::string> dimensionsNames,
-    std::vector<std::vector<float> >& dimensionsValues,
+    std::vector<std::vector<float> > &dimensionsValues,
     double x_min, double y_min, double z_min,
     double x_max, double y_max, double z_max,
     std::string crsId)
@@ -411,10 +450,10 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
         x_min, y_min, z_min, x_max, y_max, z_max, resolution, crsId));
 }
 
-void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o, 
-    std::vector<std::vector<float> >& coordinates,
+void PointCloudReaderPDAL::getPoints(double &x_o, double &y_o, double &z_o,
+    std::vector<std::vector<float> > &coordinates,
     std::vector<std::string> dimensionsNames,
-    std::vector<std::vector<float> >& dimensionsValues,
+    std::vector<std::vector<float> > &dimensionsValues,
     double resolution,
     std::string crsId)
 {
@@ -428,10 +467,10 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
         x_min, y_min, z_min, x_max, y_max, z_max, resolution, crsId));
 }
 
-void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o, 
-    std::vector<std::vector<float> >& coordinates,
+void PointCloudReaderPDAL::getPoints(double &x_o, double &y_o, double &z_o,
+    std::vector<std::vector<float> > &coordinates,
     std::vector<std::string> dimensionsNames,
-    std::vector<std::vector<float> >& dimensionsValues,
+    std::vector<std::vector<float> > &dimensionsValues,
     double x_min, double y_min, double z_min,
     double x_max, double y_max, double z_max,
     double resolution,
@@ -440,49 +479,42 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
     coordinates.clear();
     dimensionsValues.clear();
     if (mPtrCopcFile == nullptr
-        && mPtrLasReader == nullptr)
-    {
+        && mPtrLasReader == nullptr) {
         TL_ASSERT(false, "Reader is NULL");
     }
     std::vector<pdal::Dimension::Id> dimensionsIds;
-    for (auto dimensionName : dimensionsNames)
-    {
+    for (auto &dimensionName : dimensionsNames) {
         if (compareInsensitiveCase(dimensionName, "X")
             || compareInsensitiveCase(dimensionName, "Y")
             || compareInsensitiveCase(dimensionName, "Z"))
             continue;
-        if (mDimensionIdByName.find(dimensionName) == mDimensionIdByName.end())
-        {
+        if (mDimensionIdByName.find(dimensionName) == mDimensionIdByName.end()) {
             TL_ASSERT(false, "Not found dimension: {}", dimensionName);
         }
         dimensionsIds.push_back(mDimensionIdByName[dimensionName]);
     }
     if (fabs(resolution - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001
-        && mPtrCopcFile == nullptr)
-    {
+        && mPtrCopcFile == nullptr) {
         TL_ASSERT(false, "Get points using resolution is only valid for COPC format");
     }
-    try
-    {
+    try {
         if (fabs(x_min - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001
             && fabs(y_min - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001
             && fabs(z_min - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001
             && fabs(x_max - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001
             && fabs(y_max - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001
-            && fabs(z_max - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001)
-        {
+            && fabs(z_max - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) > 0.001) {
             if (!crsId.empty()
-                && crsId != mCrsId)
-            {
+                && crsId != mCrsId) {
                 std::vector<std::vector<double> > pointsBounds;
-                std::vector<double> ptoSW_minZ = { x_min, y_min, z_min };
-                std::vector<double> ptoNW_minZ = { x_min, y_max, z_min };
-                std::vector<double> ptoNE_minZ = { x_max, y_max, z_min };
-                std::vector<double> ptoSE_minZ = { x_max, y_min, z_min };
-                std::vector<double> ptoSW_maxZ = { x_min, y_min, z_max };
-                std::vector<double> ptoNW_maxZ = { x_min, y_max, z_max };
-                std::vector<double> ptoNE_maxZ = { x_max, y_max, z_max };
-                std::vector<double> ptoSE_maxZ = { x_max, y_min, z_max };
+                std::vector<double> ptoSW_minZ = {x_min, y_min, z_min};
+                std::vector<double> ptoNW_minZ = {x_min, y_max, z_min};
+                std::vector<double> ptoNE_minZ = {x_max, y_max, z_min};
+                std::vector<double> ptoSE_minZ = {x_max, y_min, z_min};
+                std::vector<double> ptoSW_maxZ = {x_min, y_min, z_max};
+                std::vector<double> ptoNW_maxZ = {x_min, y_max, z_max};
+                std::vector<double> ptoNE_maxZ = {x_max, y_max, z_max};
+                std::vector<double> ptoSE_maxZ = {x_max, y_min, z_max};
                 pointsBounds.push_back(ptoSW_minZ);
                 pointsBounds.push_back(ptoNW_minZ);
                 pointsBounds.push_back(ptoNE_minZ);
@@ -498,8 +530,7 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
                 double new_x_max = -10000000000.;
                 double new_y_max = -10000000000.;
                 double new_z_max = -10000000000.;
-                for (auto const& pto : pointsBounds)
-                {
+                for (auto const &pto : pointsBounds) {
                     if (pto[0] < new_x_min) new_x_min = pto[0];
                     if (pto[0] > new_x_max) new_x_max = pto[0];
                     if (pto[1] < new_y_min) new_y_min = pto[1];
@@ -514,24 +545,20 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
                 y_max = new_y_max;
                 z_max = new_z_max;
             }
-        }
-        else
-        {
+        } else {
             getBoundingBox(x_min, y_min, z_min, x_max, y_max, z_max);
         }
         x_o = x_min;
         y_o = y_min;
         z_o = z_min;
         if (!crsId.empty()
-            && crsId != mCrsId)
-        {
+            && crsId != mCrsId) {
             mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, x_o, y_o, z_o);
         }
         pdal::BOX3D bounds(x_min, y_min, z_min, x_max, y_max, z_max);
         pdal::PointViewSet set;
         pdal::PointTable pointTable;
-        if (mPtrLasReader)
-        {
+        if (mPtrLasReader) {
             pdal::LasReader reader;
             {
                 pdal::Options options;
@@ -541,13 +568,11 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
             }
             reader.prepare(pointTable);
             //const auto set(reader.execute(pointTable));
-            set=pdal::PointViewSet(reader.execute(pointTable));
-        }
-        else if (mPtrCopcFile)
-        {
+            set = pdal::PointViewSet(reader.execute(pointTable));
+        } else if (mPtrCopcFile) {
             if (fabs(resolution - PCTOOLS_DEFINITIONS_NO_DOUBLE_VALUE) < 0.001)
                 resolution = mResolutionLastLevel;
-            if(resolution > mResolutionFirstLevel)
+            if (resolution > mResolutionFirstLevel)
                 resolution = mResolutionFirstLevel + 0.01;
             else if (resolution < mResolutionLastLevel)
                 resolution = mResolutionLastLevel - 0.01;
@@ -567,12 +592,10 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
             //const auto set(reader.execute(pointTable));
             set = pdal::PointViewSet(reader.execute(pointTable));
         }
-        uint64_t np(0);
-        for (const pdal::PointViewPtr& view : set)
-        {
-            for (pdal::point_count_t i(0); i < view->size(); ++i)
-            {
-                ++np;
+        //uint64_t np(0);
+        for (const pdal::PointViewPtr &view : set) {
+            for (pdal::point_count_t i(0); i < view->size(); ++i) {
+                //++np;
                 uint64_t o = view->getFieldAs<uint64_t>(pdal::Dimension::Id::OriginId, i);
                 double x = view->getFieldAs<double>(pdal::Dimension::Id::X, i);
                 double y = view->getFieldAs<double>(pdal::Dimension::Id::Y, i);
@@ -581,15 +604,13 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
                     && !bounds.contains(x, y, z))
                     continue;
                 std::vector<float> values;
-                for (auto dimensionId : dimensionsIds)
-                {
+                for (auto dimensionId : dimensionsIds) {
                     double value = view->getFieldAs<double>(dimensionId, i);
                     values.push_back((float)value);
                 }
                 if (!crsId.empty()
-                    && crsId != mCrsId)
-                {
-                    mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId,x, y, z);
+                    && crsId != mCrsId) {
+                    mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, x, y, z);
                 }
                 float x_f = x - x_o;
                 float y_f = y - y_o;
@@ -599,8 +620,7 @@ void PointCloudReaderPDAL::getPoints(double& x_o, double& y_o, double& z_o,
                 dimensionsValues.push_back(values);
             }
         }
-    }
-    catch (...) {
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 }
@@ -611,8 +631,7 @@ void PointCloudReaderPDAL::initialize()
         mPtrGeoTools = GeoTools::getInstance();
         if (mPtrGeoTools->ptrCRSsTools() == NULL)
             TL_ASSERT(false, "CRSsTools is not initialized");
-    }
-    catch (...) {
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 }
@@ -625,14 +644,14 @@ void PointCloudReaderPDAL::open()
     std::string extension = file().extension().toString();
     std::string crsWKT;
     pdal::StringList dimensionsName;
-    pdal::PointTable pointTable;
+    //pdal::PointTable pointTable;
     std::string crsId;
     if (compareInsensitiveCase(extension, ".las")
-        || compareInsensitiveCase(extension, ".laz"))
-    {
-        try
-        {
-            copc::FileReader copcFile(file().toString());
+        || compareInsensitiveCase(extension, ".laz")) {
+        if (isCOPC(file().toString())) {
+            //try
+            //{
+                //copc::FileReader copcFile(file().toString());
             mIsCopc = true;
             mPtrCopcFile = new copc::FileReader(file().toString());
             auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
@@ -642,15 +661,13 @@ void PointCloudReaderPDAL::open()
             pdal::Options options;
             options.add("filename", file().toString());
             copcReader.setOptions(options);
-            copcReader.prepare(pointTable);
+            copcReader.prepare(mTable);
             pdal::SpatialReference crs = copcReader.getSpatialReference();
             std::string horizontalCrsEPSG = crs.identifyHorizontalEPSG();
             std::string verticalCrsEPSG = crs.identifyVerticalEPSG();
-            if (!horizontalCrsEPSG.empty() || !verticalCrsEPSG.empty())
-            {
+            if (!horizontalCrsEPSG.empty() || !verticalCrsEPSG.empty()) {
                 crsId = "EPSG:";
-                if (!horizontalCrsEPSG.empty())
-                {
+                if (!horizontalCrsEPSG.empty()) {
                     crsId += horizontalCrsEPSG;
                     if (!verticalCrsEPSG.empty())
                         crsId += "+";
@@ -661,20 +678,18 @@ void PointCloudReaderPDAL::open()
             crsWKT = crs.getWKT1();
             mResolutionLastLevel = 100000000.;
             mResolutionFirstLevel = -100000000;
-            for (const auto& node : mPtrCopcFile->GetAllChildrenOfPage(copc::VoxelKey::RootKey()))
+            for (const auto &node : mPtrCopcFile->GetAllChildrenOfPage(copc::VoxelKey::RootKey()))
                 //for (const auto &node : reader.GetAllNodes())
             {
                 copc::Box nodeBox(node.key, mPtrCopcFile->CopcConfig().LasHeader());
                 std::string nodeId;
-                std::vector<int> nodeKeys{ node.key.d, node.key.x, node.key.y, node.key.z };
-                if (mVoxelsByLevel.find(node.key.d) == mVoxelsByLevel.end())
-                {
+                std::vector<int> nodeKeys{node.key.d, node.key.x, node.key.y, node.key.z};
+                if (mVoxelsByLevel.find(node.key.d) == mVoxelsByLevel.end()) {
                     std::vector<std::vector<int> > aux;
                     mVoxelsByLevel[node.key.d] = aux;
                 }
                 mVoxelsByLevel[node.key.d].push_back(nodeKeys);
-                if (mResolutionByLevel.find(node.key.d) == mResolutionByLevel.end())
-                {
+                if (mResolutionByLevel.find(node.key.d) == mResolutionByLevel.end()) {
                     double nodeResolution = node.key.Resolution(mPtrCopcFile->CopcConfig().LasHeader(),
                         mPtrCopcFile->CopcConfig().CopcInfo());
                     if (nodeResolution < mResolutionLastLevel)
@@ -691,12 +706,12 @@ void PointCloudReaderPDAL::open()
                 //options.add("bounds", bounds);
                 reader.setOptions(options);
             }
-            reader.prepare(pointTable);
+            reader.prepare(mTable);
             const pdal::QuickInfo qi(reader.preview());
-            dimensionsName=pdal::StringList(qi.m_dimNames.begin(), qi.m_dimNames.end());
+            dimensionsName = pdal::StringList(qi.m_dimNames.begin(), qi.m_dimNames.end());
         }
-        catch (...)
-        {
+        //catch (...)
+        else {
             mIsCopc = false;
             mPtrLasReader = new pdal::LasReader;
             {
@@ -705,20 +720,20 @@ void PointCloudReaderPDAL::open()
                 //options.add("bounds", bounds);
                 mPtrLasReader->setOptions(options);
             }
-            mPtrLasReader->prepare(pointTable);
-            const pdal::LasHeader& h = mPtrLasReader->header();
+            mPtrLasReader->prepare(mTable);
+            mViewSet = mPtrLasReader->execute(mTable);
+            mView = *mViewSet.begin();
+            const pdal::LasHeader &h = mPtrLasReader->header();
             const pdal::QuickInfo qi(mPtrLasReader->preview());
             //const pdal::BOX3D pointBounds = qi.m_bounds;
             //const pdal::point_count_t pointsCount = qi.m_pointCount;
-            dimensionsName=pdal::StringList(qi.m_dimNames.begin(), qi.m_dimNames.end());
+            dimensionsName = pdal::StringList(qi.m_dimNames.begin(), qi.m_dimNames.end());
             pdal::SpatialReference crs = h.srs();
             std::string horizontalCrsEPSG = crs.identifyHorizontalEPSG();
             std::string verticalCrsEPSG = crs.identifyVerticalEPSG();
-            if (!horizontalCrsEPSG.empty() || !verticalCrsEPSG.empty())
-            {
+            if (!horizontalCrsEPSG.empty() || !verticalCrsEPSG.empty()) {
                 crsId = "EPSG:";
-                if (!horizontalCrsEPSG.empty())
-                {
+                if (!horizontalCrsEPSG.empty()) {
                     crsId += horizontalCrsEPSG;
                     if (!verticalCrsEPSG.empty())
                         crsId += "+";
@@ -740,33 +755,105 @@ void PointCloudReaderPDAL::open()
     if (crsWKT.empty())
         TL_ASSERT(false, "Not exists CRS WKT in file: {}", file().toString());
     try {
-        pdal::Dimension::IdList dimensionsIdInFile = pointTable.layout()->dims();
+        pdal::Dimension::IdList dimensionsIdInFile = mTable.layout()->dims();
         pdal::PointTable pointTableNoPredefinedDimensions;
         pdal::PointLayoutPtr layoutNoPredefinidedDimensions(pointTableNoPredefinedDimensions.layout());
-        for (auto dimensionName : dimensionsName)
-        {
+        for (auto dimensionName : dimensionsName) {
             pdal::Dimension::Id dimensionId = pdal::Dimension::id(dimensionName);
-            if (dimensionId == pdal::Dimension::Id::Unknown)
-            {
+            if (dimensionId == pdal::Dimension::Id::Unknown) {
                 dimensionId = layoutNoPredefinidedDimensions->assignDim(dimensionName,
                     pdal::Dimension::Type::Float);
             }
             std::string name = dimensionName;
             mDimensionIdByName[name] = dimensionId;
         }
-        if (crsId.empty())
-        {
-            if (!crsWKT.empty())
-            {
+        if (crsId.empty()) {
+            if (!crsWKT.empty()) {
                 mPtrGeoTools->ptrCRSsTools()->setCRSFromWkt(crsWKT, crsId);
             }
         }
-        if (crsId.empty())
-            TL_ASSERT(false, "Not exists CRS WKT in file: {}", file().toString());
+        //if (crsId.empty())
+        //    TL_ASSERT(false, "Not exists CRS WKT in file: {}", file().toString());
         mCrsId = crsId;
-    }
-    catch (...) {
+    } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 }
 
+auto PointCloudReaderPDAL::getOffset() const -> Point3<double>
+{
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+
+    if (mPtrCopcFile) {
+        auto copcOffset = mPtrCopcFile->CopcConfig().LasHeader().Offset();
+        return Point3<double>(copcOffset.x, copcOffset.y, copcOffset.z);
+    } else if (mPtrLasReader) {
+        return Point3<double>(mPtrLasReader->header().offsetX(),
+            mPtrLasReader->header().offsetY(),
+            mPtrLasReader->header().offsetZ());
+    }
+
+    return Point3d();
+}
+
+
+
+auto PointCloudReaderPDAL::getCoordinates(int index) const -> Point3<double>
+{
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+    TL_ASSERT(index < mView->size(), "Index out of range.");
+
+    Point3<double> coordinates;
+
+    coordinates.x = mView->getFieldAs<double>(pdal::Dimension::Id::X, index);
+    coordinates.y = mView->getFieldAs<double>(pdal::Dimension::Id::Y, index);
+    coordinates.z = mView->getFieldAs<double>(pdal::Dimension::Id::Z, index);
+
+    return coordinates;
+}
+
+auto PointCloudReaderPDAL::getField(int index, const std::string &name) const -> double
+{
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+    TL_ASSERT(index < mView->size(), "Index out of range.");
+
+    pdal::Dimension::Id dim = mTable.layout()->findDim(name);
+    TL_ASSERT(dim != pdal::Dimension::Id::Unknown, "Unknown dimension: {}", name);
+
+    return mView->getFieldAs<double>(dim, index);
+}
+
+auto PointCloudReaderPDAL::hasColors() const -> bool 
+{
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+
+    for (const auto &dim : mTable.layout()->dims()) {
+        if (dim == pdal::Dimension::Id::Red ||
+            dim == pdal::Dimension::Id::Green ||
+            dim == pdal::Dimension::Id::Blue) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+auto PointCloudReaderPDAL::hasNormals() const -> bool 
+{ 
+    TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
+
+    for (const auto &dim : mTable.layout()->dims()) {
+        if (dim == pdal::Dimension::Id::NormalX ||
+            dim == pdal::Dimension::Id::NormalY ||
+            dim == pdal::Dimension::Id::NormalZ ||
+            mTable.layout()->dimName(dim) == "NormalX_8knn" ||
+            mTable.layout()->dimName(dim) == "NormalY_8knn" ||
+            mTable.layout()->dimName(dim) == "NormalZ_8knn") {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+}

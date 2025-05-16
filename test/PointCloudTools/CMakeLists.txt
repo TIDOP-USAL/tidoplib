@@ -22,15 +22,6 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TEST)
-add_subdirectory(core)
-add_subdirectory(featmatch)
-add_subdirectory(geometry)
-add_subdirectory(geospatial)
-add_subdirectory(GeoTools)
-add_subdirectory(graphic)  
-add_subdirectory(math)
-add_subdirectory(PointCloudTools)
-add_subdirectory(vect)
-add_subdirectory(viewer)
-endif(BUILD_TEST)
+if(TL_HAVE_GEOTOOLS)
+add_subdirectory(reader)
+endif()

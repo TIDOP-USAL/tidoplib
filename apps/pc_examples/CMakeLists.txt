@@ -23,9 +23,6 @@
 ##########################################################################
 
 if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
-    
-	find_package(COPCLIB REQUIRED)
-	find_package(LAZPERF REQUIRED)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     
@@ -41,8 +38,8 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     
     target_include_directories(${PROJECT_NAME} PRIVATE 
                                $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>
-							   ${PDAL_INCLUDE_DIRS}
-							   ${PDAL_INCLUDE_DIRS}/pdal)
+                               ${PDAL_INCLUDE_DIRS}
+                               ${PDAL_INCLUDE_DIRS}/pdal)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC)
                                # $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
@@ -54,16 +51,16 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
                           # TidopLib::Geom
                           # TidopLib::Geospatial
                           TidopLib::GeoTools
-						  TidopLib::PointCloudTools
+                          TidopLib::PointCloudTools
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-						  ${PDAL_LIBRARIES}
-						  COPCLIB::copc-lib 
-						  LAZPERF::lazperf
+                          ${PDAL_LIBRARIES}
+                          COPCLIB::copc-lib 
+                          LAZPERF::lazperf
                           $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
                           # $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-    					  
+
     if(HAVE_OPENCV)
         target_link_libraries(${PROJECT_NAME} 
                               ${OpenCV_LIBS})

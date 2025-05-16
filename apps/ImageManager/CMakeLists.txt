@@ -48,6 +48,7 @@ if(BUILD_TL_CORE AND BUILD_TL_IMG)
                           TidopLib::Math
                           TidopLib::Geom
                           TidopLib::Geospatial
+                          TidopLib::GeoTools
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>

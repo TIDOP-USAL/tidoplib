@@ -25,6 +25,8 @@
 #include "tidop/core/path.h"
 
 #include "tidop/core/console.h"
+#include "tidop/core/utils.h"
+
 
 // filesystem
 #if (CPP_VERSION >= 17)
@@ -52,33 +54,6 @@ namespace tl
 
 namespace internal
 {
-
-// std::string toUtf8(const std::wstring &wstr)
-// {
-//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-//     return converter.to_bytes(wstr);
-// }
-
-// std::wstring fromUtf8(const std::string &utf8str)
-// {
-//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-//     return converter.from_bytes(utf8str);
-// }
-
-// std::string toLocal8Bit(const std::wstring &wstr)
-// {
-//     // Configurar la codificación local
-//     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
-
-//     // Convertir a std::string utilizando la codificación local
-//     return converter.to_bytes(wstr);
-// }
-
-// std::wstring fromLocal8Bit(const std::string &wstr)
-// {
-//     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
-//     return converter.from_bytes(wstr);
-// }
 
 class Path
 {
@@ -139,9 +114,9 @@ Path::Path()
 {
 }
 
-Path::Path(const std::string &path)
-  : mPath(new internal::Path(path))
-  //: mPath(new internal::Path(internal::fromUtf8(path)))  
+Path::Path(const std::string &utf8Path)
+  //: mPath(new internal::Path(path))
+  : mPath(new internal::Path(tl::fromUtf8(utf8Path)))
 {
 }
 
@@ -177,10 +152,10 @@ auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
     return *this;
 }
 
-void Path::setPath(const std::string &path)
+void Path::setPath(const std::string &utf8Path)
 {
-    mPath = std::make_unique<internal::Path>(path);
-    //mPath = std::make_unique<internal::Path>(internal::fromUtf8(path));
+    //mPath = std::make_unique<internal::Path>(path);
+    mPath = std::make_unique<internal::Path>(tl::fromUtf8(utf8Path));
 }
 
 void Path::setPath(const std::wstring &path)
@@ -190,7 +165,7 @@ void Path::setPath(const std::wstring &path)
 
 auto Path::toString() const -> std::string
 {
-    //return internal::toUtf8(mPath->ref().wstring());
+    //return tl::toUtf8(mPath->ref().wstring());
     return mPath->ref().string();
 }
 
@@ -199,10 +174,15 @@ auto Path::toWString() const -> std::wstring
     return mPath->ref().wstring();
 }
 
-// auto Path::toLocal8Bit() const -> std::string
-// {
-//     return internal::toLocal8Bit(mPath->ref().wstring());
-// }
+auto Path::toUtf8() const -> std::string
+{
+    return tl::toUtf8(mPath->ref().wstring());
+}
+
+auto Path::toLocal8Bit() const -> std::string
+{
+    return tl::toLocal8Bit(mPath->ref().wstring());
+}
 
 auto Path::fileName() const -> Path
 {
@@ -301,14 +281,14 @@ auto Path::list(const std::regex &filter) -> std::list<Path>
     return list;
 }
 
-auto Path::replaceFileName(const std::string &fileName) -> Path&
+auto Path::replaceFileName(const std::string &utf8FileName) -> Path&
 {
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
         _path.remove_filename();
-        //_path.append(internal::fromUtf8(fileName));
-        _path.append(fileName);
+        _path.append(tl::fromUtf8(utf8FileName));
+        //_path.append(fileName);
     }
 
     return *this;
@@ -331,16 +311,16 @@ auto Path::replaceFileName(const Path &fileName) -> Path&
     return replaceFileName(fileName.toWString());
 }
 
-auto Path::replaceBaseName(const std::string &baseName) -> Path&
+auto Path::replaceBaseName(const std::string &utf8BaseName) -> Path&
 {
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
         std::string ext = _path.extension().string();
-        std::string file_name = baseName + ext;
+        std::string file_name = utf8BaseName + ext;
         _path.remove_filename();
-        //_path.append(internal::fromUtf8(file_name));
-        _path.append(file_name);
+        _path.append(tl::fromUtf8(file_name));
+        //_path.append(file_name);
     }
 
     return *this;
@@ -384,8 +364,8 @@ auto Path::replaceExtension(const Path &extension) -> Path&
 
 auto Path::append(const std::string &text) -> Path&
 {
-    mPath->ref().append(text);
-    //mPath->ref().append(internal::fromUtf8(text));
+    //mPath->ref().append(text);
+    mPath->ref().append(tl::fromUtf8(text));
     return *this;
 }
 
@@ -517,10 +497,10 @@ auto Path::currentPath() -> Path
     return Path(fs::current_path().wstring());
 }
 
-// auto Path::fromLocal8Bit(const std::string &s) -> Path
-// {
-//     return Path(internal::fromLocal8Bit(s));
-// }
+auto Path::fromLocal8Bit(const std::string &s) -> Path
+{
+    return Path(tl::fromLocal8Bit(s));
+}
 
 /* Override operators */
 

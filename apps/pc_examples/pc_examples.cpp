@@ -313,8 +313,7 @@ int main(int argc, char* argv[])
         PointCloudReader::Ptr pointCloudReader;
         pointCloudReader = PointCloudReaderFactory::create(pointCloudFileName);
         pointCloudReader->open();
-        std::vector<std::string> dimensionsNames;
-        pointCloudReader->getDimensionsNames(dimensionsNames);
+        std::vector<std::string> dimensionsNames = pointCloudReader->getDimensionsNames();
         double xmin_25830_5782, ymin_25830_5782, zmin_25830_5782;
         double xmax_25830_5782, ymax_25830_5782, zmax_25830_5782;
         pointCloudReader->getBoundingBox(xmin_25830_5782, ymin_25830_5782, zmin_25830_5782,
@@ -338,8 +337,7 @@ int main(int argc, char* argv[])
             PointCloudReader::Ptr pointCloudReaderNoCopc;
             pointCloudReaderNoCopc = PointCloudReaderFactory::create(pointCloudFileNameNoCopc);
             pointCloudReaderNoCopc->open();
-            std::vector<std::string> dimensionsNamesNoCopc;
-            pointCloudReaderNoCopc->getDimensionsNames(dimensionsNamesNoCopc);
+            std::vector<std::string> dimensionsNamesNoCopc = pointCloudReaderNoCopc->getDimensionsNames();
             double xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc;
             double xmax_25830_5782NoCopc, ymax_25830_5782NoCopc, zmax_25830_5782NoCopc;
             pointCloudReaderNoCopc->getBoundingBox(xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc,
