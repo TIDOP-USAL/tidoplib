@@ -31,27 +31,54 @@ namespace tl
 
 auto fromLocalEncoding(const std::string& local) -> std::wstring
 {
+#ifdef TL_OS_WINDOWS
     int len = MultiByteToWideChar(CP_ACP, 0, local.c_str(), -1, nullptr, 0);
     std::wstring wide(len - 1, L'\0'); // -1 para quitar el '\0' agregado
     MultiByteToWideChar(CP_ACP, 0, local.c_str(), -1, &wide[0], len);
     return wide;
+#else
+    // Assume local encoding is UTF-8
+    return fromUtf8(local);
+#endif
 }
 
 auto toUtf8(const std::wstring& wstr) -> std::string
 {
+#if CPP_VERSION < 20
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.to_bytes(wstr);
+#else
+    std::string str;
+    mbstate_t state = {};
+    const wchar_t *src = wstr.data();
+    size_t len = std::wcsrtombs(nullptr, &src, 0, &state);
+    if (len == static_cast<size_t>(-1)) return {};
+    str.resize(len);
+    std::wcsrtombs(&str[0], &src, len, &state);
+    return str;
+#endif
 }
 
 auto fromUtf8(const std::string& utf8str) -> std::wstring
 {
+#if CPP_VERSION < 20
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.from_bytes(utf8str);
+#else
+    std::wstring wstr;
+    mbstate_t state = {};
+    const char *src = utf8str.data();
+    size_t len = std::mbsrtowcs(nullptr, &src, 0, &state);
+    if (len == static_cast<size_t>(-1)) return {};
+    wstr.resize(len);
+    std::mbsrtowcs(&wstr[0], &src, len, &state);
+    return wstr;
+#endif
 }
 
 auto toLocal8Bit(const std::wstring& wstr) -> std::string
 {
-#ifdef _WIN32
+#ifdef TL_OS_WINDOWS
     if (wstr.empty()) return {};
 
     int size_needed = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
@@ -60,14 +87,13 @@ auto toLocal8Bit(const std::wstring& wstr) -> std::string
     if (!result.empty() && result.back() == '\0') result.pop_back();
     return result;
 #else
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.to_bytes(wstr);
+    return toUtf8(wstr);
 #endif
 }
 
 auto fromLocal8Bit(const std::string& str) -> std::wstring
 {
-#ifdef _WIN32
+#ifdef TL_OS_WINDOWS
     if (str.empty()) return {};
 
     int size_needed = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
@@ -78,8 +104,7 @@ auto fromLocal8Bit(const std::string& str) -> std::wstring
     if (!wstr.empty() && wstr.back() == L'\0') wstr.pop_back();
     return wstr;
 #else
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(str);
+    return fromUtf8(str);
 #endif
 }
 
