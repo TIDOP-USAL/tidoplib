@@ -169,7 +169,10 @@ auto module(T a, T b) -> std::enable_if_t<
 {
     if (a == consts::zero<T> && b == consts::zero<T>) return consts::zero<T>;
 
-    auto result = std::minmax(std::abs(a), std::abs(b));
+    T aa = std::abs(a);
+    T bb = std::abs(b);
+    auto result = std::minmax(aa, bb);
+
     T div = static_cast<T>(result.first) / static_cast<T>(result.second);
     return result.second * std::sqrt(consts::one<T> +div * div);
 }
