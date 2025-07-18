@@ -195,7 +195,6 @@ void ImageWriterGdal::close()
         if (bTempFile) {
             for (size_t i = 0; i < sizeof(**tmp); i++) {
                 Path::removeFile(Path(tmp[i]));
-                //std::remove(tmp[i]);
             }
 
         }
@@ -226,11 +225,10 @@ void ImageWriterGdal::setMetadata(const std::shared_ptr<ImageMetadata> &imageMet
                     auto &name = metadata.first;
                     auto &value = metadata.second;
 #endif
-                    gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
+                    mDataset->SetMetadataItem(name.c_str(), value.c_str());
                 }
             }
 
-            mDataset->SetMetadata(gdalMetadata);
         }
 
     } catch (...) {
@@ -277,7 +275,7 @@ void ImageWriterGdal::create(int rows,
 
         TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
-        char **gdalMetadata = nullptr;
+        //char **gdalMetadata = nullptr;
         if (mImageMetadata) {
             std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
 #if CPP_VERSION >= 17
@@ -287,10 +285,11 @@ void ImageWriterGdal::create(int rows,
                 auto &name = metadata.first;
                 auto &value = metadata.second;
 #endif
-                gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
+                //gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
+                mDataset->SetMetadataItem(name.c_str(), value.c_str());
             }
         }
-        mDataset->SetMetadata(gdalMetadata);
+        //mDataset->SetMetadata(gdalMetadata);
 
         //if (!mAffine.isNull()) {
         if (!this->affine.isEmpty()) {

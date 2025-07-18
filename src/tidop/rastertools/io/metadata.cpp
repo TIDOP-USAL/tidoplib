@@ -121,23 +121,23 @@ auto ImageMetadata::format() const -> Format
 
 std::shared_ptr<ImageMetadata> ImageMetadataFactory::create(const std::string &format)
 {
-    std::shared_ptr<ImageMetadata> imageMetadata;
+    std::shared_ptr<ImageMetadata> image_metadata;
 
     if (format == "JPEG") {
-        imageMetadata = std::make_shared<JpegMetadata>();
+        image_metadata = std::make_shared<JpegMetadata>();
     } else if (format == "GTiff") {
-        imageMetadata = std::make_shared<TiffMetadata>();
+        image_metadata = std::make_shared<TiffMetadata>();
     } else if (format == "PNG") {
-        imageMetadata = std::make_shared<PngMetadata>();
+        image_metadata = std::make_shared<PngMetadata>();
     } else if (format == "BMP") {
-        imageMetadata = std::make_shared<BmpMetadata>();
+        image_metadata = std::make_shared<BmpMetadata>();
     } else if (format == "GIF") {
-        imageMetadata = std::make_shared<GifMetadata>();
+        image_metadata = std::make_shared<GifMetadata>();
     } else {
         throw std::runtime_error("Invalid Image Format");
     }
 
-    return imageMetadata;
+    return image_metadata;
 }
 
 

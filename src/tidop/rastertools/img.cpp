@@ -164,12 +164,7 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
     return flag;
 }
 
-/*!
- * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensi�n de archivo
- * Si la extensi�n no se correspondo con un driver disponible devuelve nulo.
- * \param ext Extensi�n del archivo
- * \return Nombre del Driver de GDAL
- */
+
 std::string gdalDriverFromExtension(const std::string &extension)
 {
     std::string format;

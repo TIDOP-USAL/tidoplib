@@ -30,7 +30,7 @@
 #include <string>
 #include <memory>
 
-#include "base/text_encoding.h"
+#include "tidop/core/base/text_encoding.h"
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/type.h"

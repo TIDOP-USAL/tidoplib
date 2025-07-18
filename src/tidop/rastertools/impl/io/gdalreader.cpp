@@ -27,6 +27,9 @@
 #include "tidop/core/base/exception.h"
 #include "tidop/core/private/gdalreg.h"
 #include "tidop/rastertools/io/metadata.h"
+#include "tidop/rastertools/io/formats.h"
+
+#include <gdalwarper.h>
 
 #ifdef TL_HAVE_OPENCV
 
@@ -336,6 +339,94 @@ auto ImageReaderGdal::read(const Window<Point<double>> &terrainWindow,
     }
 
     return image;
+}
+
+void ImageReaderGdal::copy(const std::string &outputPath, 
+                           std::shared_ptr<ImageOptions> options, 
+                           std::shared_ptr<ImageMetadata> metadata, 
+                           const std::string &epsgCode) const
+{
+    try {
+
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
+
+        std::string driver_name = gdalDriverFromExtension(tl::Path(outputPath).extension().toString());
+        GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str());
+        TL_ASSERT(driver != nullptr, "Driver not found for extension: {}", driver_name);
+
+        GDALDataset *source_dataset = mDataset;
+        GDALDataset *copy_source_dataset = source_dataset;
+
+        if (!epsgCode.empty()) {
+
+            const OGRSpatialReference *src_srs = mDataset->GetSpatialRef();
+
+            if (src_srs) {
+
+                const char *auth_name = src_srs->GetAuthorityName(nullptr);
+                const char *auth_code = src_srs->GetAuthorityCode(nullptr);
+
+                if (auth_name && std::string(auth_name) == "EPSG" && auth_code) {
+
+                    int src_epsg = std::stoi(auth_code);
+                    int dst_epsg = std::stoi(epsgCode.substr(5));
+
+                    if (src_epsg != dst_epsg) {
+
+                        OGRSpatialReference dst_srs;
+                        dst_srs.importFromEPSG(dst_epsg);
+                        char *c_wtk = nullptr;
+                        dst_srs.exportToWkt(&c_wtk);
+                        std::string dst_wkt(c_wtk);
+                        CPLFree(c_wtk);
+
+                        std::string src_wkt = crsWkt();
+                        TL_ASSERT(!src_wkt.empty(), "Source CRS is undefined");
+
+                        copy_source_dataset = static_cast<GDALDataset *>(GDALAutoCreateWarpedVRT(source_dataset,
+                                                                                                 src_wkt.c_str(),
+                                                                                                 epsgCode.c_str(),
+                                                                                                 GRA_Bilinear,  // Resample configurable
+                                                                                                 0.0, nullptr));
+                        TL_ASSERT(copy_source_dataset != nullptr, "Failed to reproject: {}", CPLGetLastErrorMsg());
+                    }
+                }
+            }
+
+        }
+
+        char **gdal_opt = nullptr;
+        if (options) {
+            auto active_options = options->activeOptions();
+#if CPP_VERSION >= 17
+            for (const auto &[name, value] : options) {
+#else
+            for (const auto &option : active_options) {
+                auto &name = option.first;
+                auto &value = option.second;
+#endif
+                gdal_opt = CSLSetNameValue(gdal_opt, name.c_str(), value.c_str());
+            }
+        }
+
+        GDALDataset *copied_dataset = driver->CreateCopy(outputPath.c_str(), copy_source_dataset, FALSE, gdal_opt, nullptr, nullptr);
+        TL_ASSERT(copied_dataset != nullptr, "Failed to create copy: {}", CPLGetLastErrorMsg());
+
+        if (metadata) {
+            std::map<std::string, std::string> active_metadata = metadata->activeMetadata();
+            for (const auto &pair : active_metadata) {
+                copied_dataset->SetMetadataItem(pair.first.c_str(), pair.second.c_str());
+            }
+        }
+
+        GDALClose(copied_dataset);
+        if (copy_source_dataset != source_dataset) {
+            GDALClose(copy_source_dataset);
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
 }
 
 auto ImageReaderGdal::rows() const -> int
@@ -650,10 +741,10 @@ auto ImageReaderGdal::crsWkt() const -> std::string
         TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
 #if GDAL_VERSION_MAJOR >= 3
-        const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef();
-        if (spatialReference) {
+        const OGRSpatialReference *spatial_reference = mDataset->GetSpatialRef();
+        if (spatial_reference) {
             char *wkt = nullptr;
-            spatialReference->exportToWkt(&wkt);
+            spatial_reference->exportToWkt(&wkt);
             crs_wkt = std::string(wkt);
             CPLFree(wkt);
         }

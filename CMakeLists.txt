@@ -548,7 +548,7 @@ if(WITH_CUDA)
 
     if(NOT CUDA_FOUND)
         set(TL_HAVE_CUDA NO)
-         message(STATUS "  Cuda not found")
+        message(STATUS "  Cuda not found")
     else()
         message(STATUS "  Cuda version: ${CUDA_VERSION}")
         include_directories(${CUDA_INCLUDE_DIRS})

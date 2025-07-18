@@ -42,13 +42,12 @@
 namespace tl
 {
 
+class ImageOptions;
+class ImageMetadata;
 
 /*! \addtogroup RasterIO
  *  \{
  */
-
-
-class ImageMetadata;
 
 /*!
  * \brief Class for reading different raster image formats.
@@ -152,6 +151,18 @@ public:
                       double scaleX = 1.,
                       double scaleY = 1.,
                       Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
+
+    /*!
+     * \brief 
+     * \param[in] outputPath
+     * \param[in] options 
+     * \param[in] metadata
+     * \param[in] epsgCode 
+     */
+    virtual void copy(const std::string &outputPath,
+                      std::shared_ptr<ImageOptions> options = nullptr,
+                      std::shared_ptr<ImageMetadata> metadata = nullptr,
+                      const std::string &epsgCode = "") const = 0;
 
     /*!
      * \brief Retrieves the number of rows in the image.

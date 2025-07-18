@@ -87,6 +87,10 @@ public:
               double scaleX,
               double scaleY,
               Affine<int, 2> *affine = nullptr) -> cv::Mat override;
+    void copy(const std::string &outputPath,
+              std::shared_ptr<ImageOptions> options = nullptr,
+              std::shared_ptr<ImageMetadata> metadata = nullptr,
+              const std::string &epsgCode = "") const override;
     auto rows() const -> int override;
     auto cols() const -> int override;
     auto channels() const -> int override;
