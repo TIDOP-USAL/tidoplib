@@ -319,6 +319,35 @@ auto Command::parse(int argc, char **argv) -> Status
         }
     }
 
+    if (!mUsages.empty()) {
+
+        bool match = false;
+
+        for (const auto &usage : mUsages) {
+
+            bool valid = true;
+
+            for (const auto &arg : usage.required) {
+                std::string short_key(1, arg->shortName());
+                if (cmd_in.find(arg->name()) == cmd_in.end() &&
+                    cmd_in.find(short_key) == cmd_in.end()) {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid) {
+                match = true;
+                break;
+            }
+        }
+
+        if (!match) {
+            Message::error("Invalid argument combination for command '{}'", mName);
+            return Command::Status::parse_error;
+        }
+    }
+
     return Command::Status::parse_success;
 }
 
@@ -361,6 +390,12 @@ auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
 auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &
 {
     mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
+    return (*this);
+}
+
+auto Command::addUsage(const UsageSignature &usage) -> Command &
+{
+    mUsages.push_back(usage);
     return (*this);
 }
 
@@ -413,14 +448,60 @@ auto Command::erase(const const_iterator first,
 auto Command::showHelp() const -> void
 {
 
+    /// Descripción del comando
+    std::cout << mDescription << "\n";
+
     auto &console = App::console();
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    std::cout << "\nUsage: " << mName << " [OPTION...] \n\n";
+
+    std::cout << "\nUsage:\n\n";
+
     console.reset();
 
-    /// Descripción del comando
-    std::cout << mDescription << "\n\n";
+    std::cout << "  " << mName << " [-h | --help] [--version] [--licence] \n";
+
+    if (!mUsages.empty()) {
+
+        for (const auto &usage : mUsages) {
+
+            std::cout << "  " << mName;
+
+            for (const auto &arg : usage.required) {
+                std::stringstream ss;
+                ss << " ";
+                if (arg->shortName() && !arg->name().empty()) {
+                    ss << "[-" << arg->shortName() << " | --" << arg->name() << "] <value>";
+                } else if (arg->shortName()) {
+                    ss << "-" << arg->shortName() << " <value>";
+                } else if (!arg->name().empty()) {
+                    ss << "--" << arg->name() << " <value>";
+                }
+                std::cout << ss.str();
+            }
+
+            for (const auto &arg : usage.optional) {
+                std::stringstream ss;
+                ss << " ";
+                if (arg->shortName() && !arg->name().empty()) {
+                    ss << "[-" << arg->shortName() << " | --" << arg->name() << "] <value>";
+                } else if (arg->shortName()) {
+                    ss << "[-" << arg->shortName() << " <value>]";
+                } else if (!arg->name().empty()) {
+                    ss << "[--" << arg->name() << " <value>]";
+                }
+                std::cout << ss.str();
+            }
+
+            if (!usage.description.empty())
+                std::cout << "    " << usage.description;
+
+            std::cout << "\n";
+        }
+
+    }
+
+    std::cout << "\n";
 
     int max_name_size = 7;
     for(const auto &arg : mArguments) {

@@ -44,6 +44,26 @@ namespace tl
  */
 
 
+
+struct UsageSignature
+{
+    std::list<Argument::SharedPtr> required;
+    std::list<Argument::SharedPtr> optional;
+    std::string description;
+
+    UsageSignature() = default;
+
+    UsageSignature(const std::list<Argument::SharedPtr> &req,
+                   const std::list<Argument::SharedPtr> &opt = {},
+                   const std::string &desc = "")
+      : required(req),
+        optional(opt), 
+        description(desc)
+    {
+    }
+};
+
+
 /*!
  * \brief Class for console command management
  * The class sets the command arguments, parses the command input 
@@ -113,6 +133,7 @@ private:
     std::string mDescription;
     std::list<Argument::SharedPtr> mArguments;
     std::list<Argument::SharedPtr> mDefaultArguments;
+    std::vector<UsageSignature> mUsages;
     std::string mVersion;
     std::list<std::string> mExamples;
     Licence mLicence;
@@ -355,6 +376,8 @@ public:
         mArguments.push_back(Argument::make<bool>(std::forward<Arg>(arg)...));
         return *this;
     }
+
+    auto addUsage(const UsageSignature &usage) -> Command &;
 
     /*!
      * \brief Removes arguments
