@@ -35,10 +35,7 @@ namespace tl
 /*                        Algoritmos de trazado de lineas                             */
 /* ---------------------------------------------------------------------------------- */
 
-/*!
- * \brief Clase base virtual para algoritmos de lineas
- *
- */
+
 class TL_EXPORT LineAlgorithms
 {
 public:

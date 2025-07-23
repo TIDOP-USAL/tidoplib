@@ -119,6 +119,7 @@ void Painter::drawPolygon(const GPolygon &polygon) const
             }
 
             mCanvas->drawPolygon(polygon_transform, polygon);
+
         } else {
             mCanvas->drawPolygon(polygon, polygon);
         }
@@ -133,6 +134,7 @@ void Painter::drawPolygon(const PolygonD &polygon) const
     if (mCanvas) {
 
         if (!mTransform.isEmpty()) {
+
             Polygon<Point<double>> polygon_transform(polygon.size());
 
             for (size_t i = 0; i < polygon.size(); i++) {
@@ -140,6 +142,7 @@ void Painter::drawPolygon(const PolygonD &polygon) const
             }
 
             mCanvas->drawPolygon(polygon_transform, *this);
+
         } else {
             mCanvas->drawPolygon(polygon, *this);
         }
@@ -151,17 +154,80 @@ void Painter::drawPolygon(const PolygonD &polygon) const
 
 void Painter::drawMultiPoint(const GMultiPoint &multipoint) const
 {
-    unusedParameter(multipoint);
+    if (mCanvas) {
+
+        if (!mTransform.isEmpty()) {
+
+            MultiPoint<Point<double>> mp_trans(multipoint.size());
+
+            for (size_t i = 0; i < multipoint.size(); ++i) {
+                mp_trans[i] = mTransform.transform(multipoint[i]);
+            }
+
+            mCanvas->drawMultiPoint(mp_trans, multipoint);
+
+        } else {
+            mCanvas->drawMultiPoint(multipoint, multipoint);
+        }
+
+    } else {
+        Message::error("Canvas not defined");
+    }
 }
 
 void Painter::drawMultiLineString(const GMultiLineString &multiLineString) const
 {
-    unusedParameter(multiLineString);
+    if (mCanvas) {
+
+        if (!mTransform.isEmpty()) {
+
+            MultiLineString<Point<double>> mls_trans(multiLineString.size());
+
+            for (size_t i = 0; i < multiLineString.size(); ++i) {
+                const auto &ls = multiLineString[i];
+                mls_trans[i].resize(ls.size());
+                for (size_t j = 0; j < ls.size(); ++j) {
+                    mls_trans[i][j] = mTransform.transform(ls[j]);
+                }
+            }
+
+            mCanvas->drawMultiLineString(mls_trans, multiLineString);
+
+        } else {
+            mCanvas->drawMultiLineString(multiLineString, multiLineString);
+        }
+
+    } else {
+        Message::error("Canvas not defined");
+    }
 }
 
 void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon) const
 {
-    unusedParameter(multiPolygon);
+    if (mCanvas) {
+
+        if (!mTransform.isEmpty()) {
+
+            MultiPolygon<Point<double>> mp_trans(multiPolygon.size());
+
+            for (size_t i = 0; i < multiPolygon.size(); ++i) {
+                const auto &poly = multiPolygon[i];
+                mp_trans[i].resize(poly.size());
+                for (size_t j = 0; j < poly.size(); ++j) {
+                    mp_trans[i][j] = mTransform.transform(poly[j]);
+                }
+                // Holes are ignored as in drawPolygon
+            }
+
+            mCanvas->drawMultiPolygon(mp_trans, multiPolygon);
+
+        } else {
+            mCanvas->drawMultiPolygon(multiPolygon, multiPolygon);
+        }
+
+    } else {
+        Message::error("Canvas not defined");
+    }
 }
 
 #ifdef TL_HAVE_OPENCV
@@ -191,6 +257,20 @@ void Painter::drawText(const Point<double> &point, const std::string &text) cons
 void Painter::setCanvas(Canvas *canvas)
 {
     mCanvas = canvas;
+}
+
+void Painter::pushStyle(const GraphicStyle &style)
+{
+    mStyleStack.push_back(static_cast<const GraphicStyle &>(*this));
+    GraphicStyle::operator=(style);
+}
+
+void Painter::popStyle()
+{
+    if (!mStyleStack.empty()) {
+        GraphicStyle::operator=(mStyleStack.back());
+        mStyleStack.pop_back();
+    }
 }
 
 void Painter::setTransform(const Affine<double, 2> &affine)

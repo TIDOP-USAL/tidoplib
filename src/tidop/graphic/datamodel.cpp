@@ -184,11 +184,6 @@ auto DataTable::size() const -> size_t
 
 
 
-DataModel::DataModel()
-{
-}
-
-DataModel::~DataModel() = default;
 
 void DataModel::createTable(const std::string &tableName,
                             const std::vector<std::shared_ptr<TableField>> &fields)

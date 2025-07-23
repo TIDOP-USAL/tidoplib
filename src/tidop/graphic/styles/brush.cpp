@@ -32,7 +32,7 @@ namespace tl
 Brush::Brush()
   : mForeColor(0),
     mBackColor(0),
-    mName(Name::solid),
+    mPattern(Pattern::solid),
     mAngle(0.),
     mScalingFactor(1.),
     mPriorityLevel(0)
@@ -43,7 +43,7 @@ Brush::Brush()
 Brush::Brush(const Brush &brush)
   : mForeColor(brush.mForeColor),
     mBackColor(brush.mBackColor),
-    mName(brush.mName),
+    mPattern(brush.mPattern),
     mAngle(brush.mAngle),
     mScalingFactor(brush.mScalingFactor),
     mSpacing(brush.mSpacing),
@@ -54,7 +54,7 @@ Brush::Brush(const Brush &brush)
 Brush::Brush(Brush&& brush) TL_NOEXCEPT
   : mForeColor(std::move(brush.mForeColor)),
     mBackColor(std::move(brush.mBackColor)),
-    mName(brush.mName),
+    mPattern(brush.mPattern),
     mAngle(brush.mAngle),
     mScalingFactor(brush.mScalingFactor),
     mSpacing(brush.mSpacing),
@@ -84,14 +84,14 @@ void Brush::setBackgroundColor(const Color& backgroundColor)
     mBackColor = backgroundColor;
 }
 
-auto Brush::name() const -> Name
+auto Brush::pattern() const -> Pattern
 {
-    return mName;
+    return mPattern;
 }
 
-void Brush::setName(Name name)
+void Brush::setPattern(Pattern pattern)
 {
-    mName = name;
+    mPattern = pattern;
 }
 
 auto Brush::angle() const -> double
@@ -145,7 +145,7 @@ auto Brush::operator =(const Brush& brush) -> Brush&
     if (this != &brush) {
         mForeColor = brush.mForeColor;
         mBackColor = brush.mBackColor;
-        mName = brush.mName;
+        mPattern = brush.mPattern;
         mAngle = brush.mAngle;
         mScalingFactor = brush.mScalingFactor;
         mSpacing = brush.mSpacing;
@@ -154,12 +154,24 @@ auto Brush::operator =(const Brush& brush) -> Brush&
     return *this;
 }
 
+#ifdef TL_WARNING_DEPRECATED_METHOD
+auto Brush::name() const -> Name
+{
+    return static_cast<Brush::Name>(static_cast<std::underlying_type<Brush::Pattern>::type>(mPattern));
+}
+
+void Brush::setName(Name name)
+{
+    mPattern = static_cast<Brush::Pattern>(static_cast<std::underlying_type<Brush::Name>::type>(name));
+}
+#endif // TL_WARNING_DEPRECATED_METHOD
+
 auto Brush::operator=(Brush&& brush) TL_NOEXCEPT -> Brush&
 {
     if (this != &brush) {
         mForeColor = std::move(brush.mForeColor);
         mBackColor = std::move(brush.mBackColor);
-        mName = brush.mName;
+        mPattern = brush.mPattern;
         mAngle = brush.mAngle;
         mScalingFactor = brush.mScalingFactor;
         mSpacing = brush.mSpacing;

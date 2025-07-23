@@ -788,27 +788,27 @@ void VectorReaderGdal::readPenName(OGRStylePen *ogrStylePen, Pen *pen)
     GBool bDefault = false;
     const char *name = ogrStylePen->Id(bDefault);
     if (!bDefault) {
-        Pen::Name pen_name;
+        Pen::PredefinedPattern pattern;
         if (strcmp(name, "ogr-pen-1") == 0) {
-            pen_name = Pen::Name::null;
+            pattern = Pen::PredefinedPattern::null;
         } else if (strcmp(name, "ogr-pen-2") == 0) {
-            pen_name = Pen::Name::dash;
+            pattern = Pen::PredefinedPattern::dash;
         } else if (strcmp(name, "ogr-pen-3") == 0) {
-            pen_name = Pen::Name::short_dash;
+            pattern = Pen::PredefinedPattern::short_dash;
         } else if (strcmp(name, "ogr-pen-4") == 0) {
-            pen_name = Pen::Name::long_dash;
+            pattern = Pen::PredefinedPattern::long_dash;
         } else if (strcmp(name, "ogr-pen-5") == 0) {
-            pen_name = Pen::Name::dot_line;
+            pattern = Pen::PredefinedPattern::dot_line;
         } else if (strcmp(name, "ogr-pen-6") == 0) {
-            pen_name = Pen::Name::dash_dot_line;
+            pattern = Pen::PredefinedPattern::dash_dot_line;
         } else if (strcmp(name, "ogr-pen-7") == 0) {
-            pen_name = Pen::Name::dash_dot_dot_line;
+            pattern = Pen::PredefinedPattern::dash_dot_dot_line;
         } else if (strcmp(name, "ogr-pen-8") == 0) {
-            pen_name = Pen::Name::alternate_line;
+            pattern = Pen::PredefinedPattern::alternate_line;
         } else {
-            pen_name = Pen::Name::solid;
+            pattern = Pen::PredefinedPattern::solid;
         }
-        pen->setName(pen_name);
+        pen->setPredefinedPattern(pattern);
     }
 }
 
@@ -907,28 +907,28 @@ void VectorReaderGdal::readBrushForeColor(OGRStyleBrush *ogrStyleBrush, Brush *b
 void VectorReaderGdal::readBrushName(OGRStyleBrush *ogrStyleBrush, Brush *brush)
 {
     GBool bDefault = false;
-    const char *brush_name = ogrStyleBrush->Id(bDefault);
+    const char *brush_id = ogrStyleBrush->Id(bDefault);
     if (!bDefault) {
-        Brush::Name name;
-        if (strcmp(brush_name, "ogr-pen-1") == 0) {
-            name = Brush::Name::null;
-        } else if (strcmp(brush_name, "ogr-pen-2") == 0) {
-            name = Brush::Name::horizontal_hatch;
-        } else if (strcmp(brush_name, "ogr-pen-3") == 0) {
-            name = Brush::Name::vertical_hatch;
-        } else if (strcmp(brush_name, "ogr-pen-4") == 0) {
-            name = Brush::Name::fdiagonal_hatch;
-        } else if (strcmp(brush_name, "ogr-pen-5") == 0) {
-            name = Brush::Name::bdiagonal_hatch;
-        } else if (strcmp(brush_name, "ogr-pen-6") == 0) {
-            name = Brush::Name::cross_hatch;
-        } else if (strcmp(brush_name, "ogr-pen-7") == 0) {
-            name = Brush::Name::diagcross_hatch;
+        Brush::Pattern pattern;
+        if (strcmp(brush_id, "ogr-pen-1") == 0) {
+            pattern = Brush::Pattern::null;
+        } else if (strcmp(brush_id, "ogr-pen-2") == 0) {
+            pattern = Brush::Pattern::horizontal_hatch;
+        } else if (strcmp(brush_id, "ogr-pen-3") == 0) {
+            pattern = Brush::Pattern::vertical_hatch;
+        } else if (strcmp(brush_id, "ogr-pen-4") == 0) {
+            pattern = Brush::Pattern::fdiagonal_hatch;
+        } else if (strcmp(brush_id, "ogr-pen-5") == 0) {
+            pattern = Brush::Pattern::bdiagonal_hatch;
+        } else if (strcmp(brush_id, "ogr-pen-6") == 0) {
+            pattern = Brush::Pattern::cross_hatch;
+        } else if (strcmp(brush_id, "ogr-pen-7") == 0) {
+            pattern = Brush::Pattern::diagcross_hatch;
         } else {
-            name = Brush::Name::solid;
+            pattern = Brush::Pattern::solid;
         }
 
-        brush->setName(name);
+        brush->setPattern(pattern);
     }
 }
 
@@ -1000,34 +1000,34 @@ void VectorReaderGdal::readSymbolName(OGRStyleSymbol *ogrStyleSymbol, Symbol *sy
     GBool bDefault = false;
     const char *name = ogrStyleSymbol->Id(bDefault);
     if (!bDefault) {
-        Symbol::Name symbol_name = Symbol::Name::cross;
+        Symbol::Shape shape = Symbol::Shape::cross;
         if (strcmp(name, "ogr-sym-0") == 0) {
-            symbol_name = Symbol::Name::cross;
+            shape = Symbol::Shape::cross;
         } else if (strcmp(name, "ogr-sym-1") == 0) {
-            symbol_name = Symbol::Name::diagonal_cross;
+            shape = Symbol::Shape::diagonal_cross;
         } else if (strcmp(name, "ogr-sym-2") == 0) {
-            symbol_name = Symbol::Name::circle;
+            shape = Symbol::Shape::circle;
         } else if (strcmp(name, "ogr-sym-3") == 0) {
-            symbol_name = Symbol::Name::circle_filled;
+            shape = Symbol::Shape::circle_filled;
         } else if (strcmp(name, "ogr-sym-4") == 0) {
-            symbol_name = Symbol::Name::square;
+            shape = Symbol::Shape::square;
         } else if (strcmp(name, "ogr-sym-5") == 0) {
-            symbol_name = Symbol::Name::square_filled;
+            shape = Symbol::Shape::square_filled;
         } else if (strcmp(name, "ogr-sym-6") == 0) {
-            symbol_name = Symbol::Name::triangle;
+            shape = Symbol::Shape::triangle;
         } else if (strcmp(name, "ogr-sym-7") == 0) {
-            symbol_name = Symbol::Name::triangle_filled;
+            shape = Symbol::Shape::triangle_filled;
         } else if (strcmp(name, "ogr-sym-8") == 0) {
-            symbol_name = Symbol::Name::star;
+            shape = Symbol::Shape::star;
         } else if (strcmp(name, "ogr-sym-9") == 0) {
-            symbol_name = Symbol::Name::star_filled;
+            shape = Symbol::Shape::star_filled;
         } else if (strcmp(name, "ogr-sym-10") == 0) {
-            symbol_name = Symbol::Name::vertical_bar;
+            shape = Symbol::Shape::vertical_bar;
         } else {
             ///TODO: Bitmap...
         }
 
-        symbol->setName(symbol_name);
+        symbol->setShape(shape);
     }
 }
 
@@ -1222,7 +1222,7 @@ void VectorReaderGdal::readLabelStretch(OGRStyleLabel *ogrStyleLabel, Label *lab
     GBool bDefault = false;
     double stretch = ogrStyleLabel->Stretch(bDefault);
     if (!bDefault) {
-        label->setStretch(stretch);
+        label->setStretchFactor(stretch);
     }
 }
 

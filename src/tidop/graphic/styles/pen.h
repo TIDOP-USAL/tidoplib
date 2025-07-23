@@ -36,17 +36,44 @@ namespace tl
  */
 
 
-/*!
- * \brief Estilo de pluma
- */
+ /*!
+  * \class Pen
+  * \brief Defines the line style used for drawing outlines or strokes.
+  *
+  * The `Pen` class encapsulates the visual styling properties for drawing linear features such as borders,
+  * paths, or contours. This includes color, width, predefined or custom line patterns, line caps,
+  * joins, perpendicular offset, and rendering priority.
+  *
+  * It is typically used in vector drawing, mapping, and styling of geometries.
+  *
+  * \see Color, Pen::PredefinedPattern, Pen::Cap, Pen::Join
+  */
 class TL_EXPORT Pen
 {
 public:
 
     /*!
+     * \enum PredefinedPattern
+     * \brief Predefined stroke patterns.
+     */
+    enum class PredefinedPattern : uint8_t
+    {
+        solid,              /*!< Solid line (default) */
+        null,               /*!< No line (invisible) */
+        dash,               /*!< Dashed line */
+        short_dash,         /*!< Short dashes */
+        long_dash,          /*!< Long dashes */
+        dot_line,           /*!< Dotted line */
+        dash_dot_line,      /*!< Dash-dot pattern */
+        dash_dot_dot_line,  /*!< Dash-dot-dot pattern */
+        alternate_line      /*!< Alternate line */
+    };
+
+#ifdef TL_WARNING_DEPRECATED_METHOD
+    /*!
      * \brief Pen names
      */
-    enum class Name : uint8_t
+    enum class TL_DEPRECATED(PredefinedPattern, "4.0") Name : uint8_t
     {
         solid,             /*!< Solid (the default value when no ID is provided) */
         null,              /*!< Null pen (invisible) */
@@ -58,9 +85,11 @@ public:
         dash_dot_dot_line, /*!< Dash-dot-dot line */
         alternate_line     /*!< Alternate line */
     };
+#endif // TL_WARNING_DEPRECATED_METHOD
 
     /*!
-     * \brief End point shapes of lines.
+     * \enum Cap
+     * \brief Defines the shape of the line endpoints.
      */
     enum class Cap : uint8_t
     {
@@ -70,7 +99,8 @@ public:
     };
 
     /*!
-     * \brief Join point shape (vertex) of lines.
+     * \enum Join
+     * \brief Defines the shape of the connection between line segments.
      */
     enum class Join : uint8_t
     {
@@ -78,51 +108,16 @@ public:
         rounded,    /*!< Join lines with an arc whose center is at the junction point and whose diameter is equal to the width of the line */
         bevel       /*!< Beveled join */
     };
+
 private:
 
-    /*!
-     * \brief Pen color
-     * \see Color
-     */
     Color mColor;
-
-    /*!
-     * \brief Pen width
-     */
     uint8_t mWidth;
-
-    /*!
-     * \brief Pattern
-     */
     std::string mPattern;
-
-    /*!
-     * \brief Pen name or id
-     * \see Name
-     */
-    Name mName;
-
-    /*!
-     * \brief End point shape of lines
-     * \see Cap
-     */
+    PredefinedPattern mPredefinedPattern;
     Cap mCap;
-
-    /*!
-     * \brief Join point shape (vertex) of lines
-     * \see Join
-     */
     Join mJoin;
-
-    /*!
-     * \brief Offset from the center of the line.
-     * If negative, it is drawn to the left.
-     */
     int32_t mPerpendicularOffset;
-
-    /*!
-     * \brief Priority level
-     */
     uint32_t mPriorityLevel;
 
 public:
@@ -149,101 +144,98 @@ public:
     ~Pen();
 
     /*!
-     * \brief Get the pen color
-     * \return Pen color
-     * \see Color
+     * \brief Returns the pen color.
+     * \return Pen color.
      */
     auto color() const -> Color;
 
     /*!
-     * \brief Set the pen color
-     * \param[in] color Pen color
-     * \see Color
+     * \brief Sets the pen color.
+     * \param[in] color Pen color.
      */
     void setColor(const Color &color);
 
     /*!
-     * \brief Get the pen width
-     * \return Pen width
+     * \brief Returns the pen width in pixels or drawing units.
+     * \return Pen width.
      */
     auto width() const -> uint8_t;
 
     /*!
-     * \brief Set the pen width
-     * \param[in] width Pen width
+     * \brief Sets the pen width.
+     * \param[in] width Pen width.
      */
     void setWidth(uint8_t width);
 
     /*!
-     * \brief Get the pen pattern
-     * \return Pen pattern
+     * \brief Returns the custom line pattern string (e.g., for dash arrays).
+     * \return Pattern string.
      */
     auto pattern() const -> std::string;
 
     /*!
-     * \brief Set the pen pattern
-     * \param[in] pattern Pen pattern
+     * \brief Sets a custom line pattern string.
+     * \param[in] pattern Pattern string.
      */
     void setPattern(const std::string& pattern);
 
     /*!
-     * \brief Get the pen name or ID
-     * \return Pen name or ID
+     * \brief Returns the predefined pattern type.
+     * \return Predefined line pattern.
      */
-    auto name() const -> Name;
+    auto predefinedPattern() const->PredefinedPattern;
 
     /*!
-     * \brief Set the pen name or ID
-     * \param[in] name Pen name or ID
+     * \brief Sets the predefined pattern type.
+     * \param[in] pattern Predefined line pattern.
      */
-    void setName(Name name);
+    void setPredefinedPattern(PredefinedPattern pattern);
 
     /*!
-     * \brief Get the shape of line endpoints
-     * \return Shape of line endpoints
+     * \brief Returns the cap style for line ends.
+     * \return Cap style.
      */
     auto cap() const -> Cap;
 
     /*!
-     * \brief Set the shape of line endpoints
-     * \param[in] pencap Shape of line endpoints
+     * \brief Sets the cap style for line ends.
+     * \param[in] cap Cap style.
      */
     void setCap(Cap pencap);
 
     /*!
-     * \brief Get the shape of line junction points (vertices)
-     * \return Shape of line junction points (vertices)
+     * \brief Returns the join style between line segments.
+     * \return Join style.
      */
     auto join() const -> Join;
 
     /*!
-     * \brief Set the shape of line junction points (vertices)
-     * \param[in] join Shape of line junction points (vertices)
+     * \brief Sets the join style between line segments.
+     * \param[in] join Join style.
      */
     void setJoin(Join join);
 
     /*!
-     * \brief Get the perpendicular offset from the center of the line
-     * \return Perpendicular offset from the center of the line
+     * \brief Returns the perpendicular offset from the centerline.
+     * \return Offset in drawing units (negative = left).
      */
     auto perpendicularOffset() const -> int32_t;
 
     /*!
-     * \brief Set the perpendicular offset from the center of the line
-     * If negative, it draws to the left
-     * \param[in] perpendicularoffset Perpendicular offset from the center of the line
+     * \brief Sets the perpendicular offset from the centerline.
+     * \param[in] offset Offset value (negative = left).
      */
     void setPerpendicularOffset(int32_t perpendicularoffset);
 
     /*!
-     * \brief Get the priority level
-     * \return Priority level
+     * \brief Returns the rendering priority level.
+     * \return Priority level.
      */
     auto priorityLevel() const -> uint32_t;
 
     /*!
-     * \brief Set the priority level
-     * \param priorityLevel Priority level
+     * \brief Sets the rendering priority level.
+     * \param[in] level Priority level.
      */
     void setPriorityLevel(uint32_t priorityLevel);
 
@@ -260,6 +252,25 @@ public:
      * \return Reference to the pen style
      */
     auto operator =(Pen &&stylePen) TL_NOEXCEPT -> Pen &;
+
+#ifdef TL_WARNING_DEPRECATED_METHOD
+    /*!
+     * \brief Get the pen name or ID
+     * \return Pen name or ID
+     * \deprecated Use `predefinedPattern()` instead.
+     */
+    TL_DEPRECATED("predefinedPattern()", "4.0")
+    auto name() const->Name;
+
+    /*!
+     * \brief Set the pen name or ID
+     * \param[in] name Pen name or ID
+     * \deprecated Use `setPredefinedPattern()` instead.
+     */
+    TL_DEPRECATED("setPredefinedPattern()", "4.0")
+    void setName(Name name);
+#endif // TL_WARNING_DEPRECATED_METHOD
+
 };
 
 /*! \} */

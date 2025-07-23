@@ -46,7 +46,29 @@ class TL_EXPORT Symbol
 
 public:
 
-    enum class Name
+    /*!
+     * \enum Shape
+     * \brief Symbol shapes used to represent points.
+     *
+     * These shapes are rendered at the symbol insertion point, optionally rotated or scaled.
+     */
+    enum class Shape
+    {
+        cross,             /*!< + */
+        diagonal_cross,    /*!< x */
+        circle,            /*!< Hollow circle */
+        circle_filled,     /*!< Filled circle */
+        square,            /*!< Hollow square */
+        square_filled,     /*!< Filled square */
+        triangle,          /*!< Hollow triangle */
+        triangle_filled,   /*!< Filled triangle */
+        star,              /*!< Hollow star */
+        star_filled,       /*!< Filled star */
+        vertical_bar       /*!< | */
+    };
+
+#ifdef TL_WARNING_DEPRECATED_METHOD
+    enum class TL_DEPRECATED(Shape, "4.0") Name
     {
         cross,             /*!< + */
         diagonal_cross,    /*!< x */
@@ -60,45 +82,16 @@ public:
         star_filled,       /*!< Filled star */
         vertical_bar       /*!< | */
     };
+#endif // TL_WARNING_DEPRECATED_METHOD
 
 private:
 
-    /*!
-     * \brief Name or identifier of the symbol
-     */
-    Name mName;
-
-    /*!
-     * \brief Rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
-     */
+    Shape mShape;
     double mAngle;
-
-    /*!
-     * \brief Color
-     * \see Color
-     */
     Color mColor;
-
-    /*!
-     * \brief Outline color
-     * \see Color
-     */
     Color mOutlineColor;
-
-    /*!
-     * \brief Scaling factor
-     */
     double mScalingFactor;
-
-    /*!
-     * \brief X and Y offset of the symbol insertion point.
-     */
     std::array<double, 2> mOffset;
-
-    /*!
-     * \brief mPriorityLevel
-     */
     uint32_t mPriorityLevel;
 
 public:
@@ -126,35 +119,32 @@ public:
     ~Symbol();
 
     /*!
-     * \brief Get the rotation angle
-     * \return Rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
+     * \brief Gets the rotation angle of the symbol.
+     * \return Rotation angle in decimal degrees.
      */
     auto angle() const -> double;
 
     /*!
-     * \brief Set the rotation angle
-     * \param[in] angle Rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
+     * \brief Sets the rotation angle of the symbol.
+     * \param[in] angle Rotation angle in decimal degrees.
      */
     void setAngle(double angle);
 
     /*!
-     * \brief Get the name or id of the symbol
-     * \return Name or id of the symbol
+     * \brief Returns the symbol shape.
+     * \return Symbol shape.
      */
-    auto name() const -> Name;
+    auto shape() const -> Shape;
 
     /*!
-     * \brief Set the name or id of the symbol
-     * \param[in] name Name or id of the symbol
+     * \brief Sets the symbol shape.
+     * \param[in] shape The shape to use for rendering the symbol.
      */
-    void setName(Name name);
+    void setShape(Shape shape);
 
     /*!
-     * \brief Get the color
-     * \return Color
-     * \see Color
+     * \brief Gets the fill color of the symbol.
+     * \return Symbol fill color.
      */
     auto color() const -> Color;
 
@@ -166,9 +156,8 @@ public:
     void setColor(const Color &color);
 
     /*!
-     * \brief Get the outline color
-     * \return Outline color
-     * \see Color
+     * \brief Gets the outline color of the symbol.
+     * \return Outline color.
      */
     auto outlineColor() const -> Color;
 
@@ -180,36 +169,46 @@ public:
     void setOutlineColor(const Color &outlinecolor);
 
     /*!
-     * \brief Get the scaling factor
-     * \return Scaling factor
+     * \brief Gets the scale factor applied to the symbol.
+     * \return Scaling factor (1.0 = no scaling).
      */
     auto scalingFactor() const -> double;
 
     /*!
-     * \brief Set the scaling factor
-     * \param[in] scalingFactor Scaling factor
+     * \brief Sets the scale factor of the symbol.
+     * \param[in] scalingFactor Factor to scale the symbol size.
      */
     void setScalingFactor(double scalingFactor);
 
     /*!
-     * \brief Get the X offset of the symbol insertion point.
+     * \brief Gets the offset in X direction from the insertion point.
+     * \return X offset in drawing units.
      */
     auto offsetX() const -> double;
 
     /*!
-     * \brief Get the Y offset of the symbol insertion point.
+     * \brief Gets the offset in Y direction from the insertion point.
+     * \return Y offset in drawing units.
      */
     auto offsetY() const -> double;
 
     /*!
-     * \brief Set the offset of the symbol insertion point
-     * \param[in] dx X offset of the symbol insertion point.
-     * \param[in] dy Y offset of the symbol insertion point.
+     * \brief Sets the offset from the insertion point.
+     * \param[in] dx Horizontal offset.
+     * \param[in] dy Vertical offset.
      */
     void setOffset(double dx, double dy);
 
+    /*!
+     * \brief Gets the rendering priority level.
+     * \return Priority level.
+     */
     auto priorityLevel() const -> uint32_t;
 
+    /*!
+     * \brief Sets the rendering priority level.
+     * \param[in] priorityLevel Rendering priority.
+     */
     void setPriorityLevel(uint32_t priorityLevel);
 
     /*!
@@ -225,6 +224,24 @@ public:
      * \return Reference to the symbol style
      */
     auto operator =(Symbol&& symbol) TL_NOEXCEPT -> Symbol&;
+
+#ifdef TL_WARNING_DEPRECATED_METHOD
+    /*!
+     * \brief Get the name or id of the symbol
+     * \return Name or id of the symbol
+     * \deprecated Use `shape()` instead.
+     */
+    TL_DEPRECATED("shape()", "4.0")
+    auto name() const->Name;
+
+    /*!
+     * \brief Set the name or id of the symbol
+     * \param[in] name Name or id of the symbol
+     * \deprecated Use `setShape()` instead.
+     */
+    TL_DEPRECATED("setShape()", "4.0")
+    void setName(Name name);
+#endif // TL_WARNING_DEPRECATED_METHOD
 };
 
 

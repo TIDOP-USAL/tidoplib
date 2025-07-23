@@ -36,6 +36,7 @@
 namespace tl
 {
 
+class Painter;
 
 /*! \addtogroup Graphic
  *  \{
@@ -44,8 +45,18 @@ namespace tl
 class GraphicEntity;
 
 /*!
- * Layer. Can contain elements of one or several types. They can
- * be graphical entities or simple ones.
+ * \class GLayer
+ * \brief Represents a layer that holds a collection of graphical entities.
+ *
+ * A `GLayer` contains a list of `GraphicEntity` objects that can be rendered
+ * together as a logical group. Layers may hold entities of one or multiple types
+ * (e.g., points, lines, polygons), and can also store optional table fields associated
+ * with their attributes.
+ *
+ * Layers support basic container operations such as iteration, insertion, resizing,
+ * and drawing.
+ *
+ * \see GraphicEntity, Painter, TableField
  */
 class TL_EXPORT GLayer
 {
@@ -78,46 +89,82 @@ public:
     GLayer();
 
     /*!
-     * \brief Copy constructor
-     * \param[in] gLayer Object being copied
+     * \brief Copy constructor.
+     * \param[in] gLayer Layer to copy.
      */
     GLayer(const GLayer &gLayer);
 
     /*!
-     * \brief Move constructor
-     * \param[in] gLayer Object being moved
+     * \brief Move constructor.
+     * \param[in] gLayer Layer to move.
      */
     GLayer(GLayer &&gLayer) TL_NOEXCEPT;
 
     /*!
-     * \brief List constructor
-     * \param[in] entities List of entities
+     * \brief Constructs the layer with a list of entities.
+     * \param[in] entities Initial list of graphical entities.
      */
     GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities);
 
     ~GLayer() = default;
 
+    /*!
+     * \brief Returns the name of the layer.
+     * \return Layer name.
+     */
+    auto name() const->std::string;
+
+    /*!
+     * \brief Sets the name of the layer.
+     * \param[in] name Layer name.
+     */
+    void setName(const std::string &name);
+
+    /*!
+     * \brief Returns an iterator to the beginning of the entity list.
+     */
     auto begin() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a constant iterator to the beginning of the entity list.
+     */
     auto begin() const TL_NOEXCEPT -> const_iterator;
+
+    /*!
+     * \brief Returns an iterator to the end of the entity list.
+     */
     auto end() TL_NOEXCEPT -> iterator;
+
+    /*!
+     * \brief Returns a constant iterator to the end of the entity list.
+     */
     auto end() const TL_NOEXCEPT -> const_iterator;
 
+    /*!
+     * \brief Appends a new entity to the layer.
+     * \param[in] entity Shared pointer to the entity.
+     */
     void push_back(const std::shared_ptr<GraphicEntity> &entity);
+
+    /*!
+     * \brief Appends a new entity using move semantics.
+     * \param[in] entity Rvalue reference to the entity.
+     */
     void push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT;
 
     /*!
-     * \brief Clears the container
+     * \brief Removes all entities from the layer.
      */
     void clear() TL_NOEXCEPT;
 
     /*!
-     * \brief Checks if the container is empty
-     * \return true if the container is empty and false otherwise
+     * \brief Checks whether the layer is empty.
+     * \return True if the entity list is empty.
      */
     auto empty() const TL_NOEXCEPT -> bool;
 
     /*!
-     * \brief Modifies the container size
+     * \brief Resizes the entity container.
      * If the current size is less than count, additional elements are added. If the current size
      * is greater than count, the container is truncated to the specified number of elements.
      * \param[in] count New container size
@@ -125,7 +172,7 @@ public:
     void resize(size_type count);
 
     /*!
-     * \brief Modifies the container size
+     * \brief Resizes the container and initializes new elements with the given value.
      * If the current size is less than count, additional elements are added and initialized with value.
      * If the current size is greater than count, the container is truncated to the specified number of elements.
      * \param[in] count New container size
@@ -135,10 +182,18 @@ public:
         const std::shared_ptr<GraphicEntity> &value);
 
     /*!
-     * \brief Returns the container size
-     * \return Size
+     * \brief Returns the number of entities in the layer.
+     * \return Entity count.
      */
     auto size() const TL_NOEXCEPT -> size_type;
+
+    /*!
+     * \brief Erases a range of entities.
+     * \param[in] first Iterator to the beginning of the range.
+     * \param[in] last Iterator to the end of the range.
+     * \return Iterator following the last removed element.
+     */
+    auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
      * \brief Copy assignment
@@ -151,26 +206,27 @@ public:
     auto operator=(GLayer &&entity) TL_NOEXCEPT -> GLayer &;
 
     /*!
-     * \brief Erases the range
+     * \brief Adds a table field (attribute definition) to the layer.
+     * \param[in] field Shared pointer to the field.
      */
-    auto erase(const_iterator first, const_iterator last) -> iterator;
-
-    /*!
-     * \brief Returns the layer name
-     * \return Layer name
-     */
-    auto name() const->std::string;
-
-    /*!
-     * \brief Sets the layer name
-     * \param[in] name Layer name
-     */
-    void setName(const std::string &name);
-
     void addDataField(const std::shared_ptr<TableField> &field);
 
+    /*!
+     * \brief Returns the list of table fields (attribute schema).
+     * \return Vector of field definitions.
+     */
     auto tableFields() const -> std::vector<std::shared_ptr<TableField>>;
 
+    /*!
+     * \brief Draws all entities in the layer using the provided painter.
+     * \param[in] painter Painter object used for rendering.
+     */
+    void draw(Painter &painter) const;
+
+    /*!
+     * \brief Returns the bounding box (window) that encloses all entities.
+     * \return Bounding window of the layer contents.
+     */
     auto window() const -> Window<Point<double>>;
 
 };

@@ -44,7 +44,30 @@ namespace tl
  */
 
 
-
+/*!
+ * \struct UsageSignature
+ * \brief Represents a valid usage pattern for a command
+ *
+ * A `UsageSignature` defines a specific combination of arguments that is considered
+ * a valid way to invoke a command. Each signature can include:
+ *
+ * - A list of **required** arguments (must be present to match the signature)
+ * - A list of **optional** arguments (may or may not be present)
+ * - An optional **description** (displayed in the help message next to the usage line)
+ *
+ * When multiple signatures are defined for a command, the parser will check that
+ * the user input matches at least one of them. The help message will list each signature
+ * as a separate `Usage:` line.
+ *
+ * ### Example
+ * \code{.cpp}
+ * UsageSignature sig1({arg_input, arg_output}, {}, "Basic input-output usage");
+ * UsageSignature sig2({arg_config}, {arg_verbose}, "Alternative config-based usage");
+ * cmd.addUsage(sig1).addUsage(sig2);
+ * \endcode
+ *
+ * \see Command::addUsage
+ */
 struct UsageSignature
 {
     std::list<Argument::SharedPtr> required;
@@ -377,6 +400,26 @@ public:
         return *this;
     }
 
+    /*!
+     * \brief Adds a usage signature to the command
+     *
+     * This method allows defining an explicit usage pattern (signature) for the command.
+     * A usage signature specifies a valid combination of required and optional arguments
+     * that the user can provide. When multiple signatures are defined, the parser checks
+     * that the user input matches at least one of them.
+     *
+     * The help output will display each signature on a separate usage line.
+     *
+     * \param[in] usage A `UsageSignature` object containing required and optional arguments,
+     *                  and an optional description.
+     * \return The current `Command` object, allowing for method chaining.
+     *
+     * ### Example Usage
+     * \code{.cpp}
+     * cmd.addUsage(UsageSignature({arg_input, arg_output}, {}, "Basic usage with input and output"));
+     * cmd.addUsage(UsageSignature({arg_input}, {arg_format}, "Input only with optional format"));
+     * \endcode
+     */
     auto addUsage(const UsageSignature &usage) -> Command &;
 
     /*!

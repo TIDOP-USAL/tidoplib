@@ -34,22 +34,32 @@
 namespace tl
 {
 
-
+/*! \addtogroup Graphic
+ *  \{
+ */
 
 /*!
- * \brief Campo de la tabla
+ * \class TableField
+ * \brief Represents a field (column) definition in a table schema.
  *
+ * A `TableField` stores metadata about a table column, including its name,
+ * data type and maximum size. It defines the structure of a `TableRegister`.
  */
 class TL_EXPORT TableField
 {
+
 public:
 
+    /*!
+     * \enum Type
+     * \brief Supported field data types.
+     */
     enum class Type
     {
-        INT,
-        INT64,
-        DOUBLE,
-        STRING
+        INT,       /*!< 32-bit integer */
+        INT64,     /*!< 64-bit integer */
+        DOUBLE,    /*!< Double-precision floating point */
+        STRING     /*!< UTF-8 encoded string */
         //....
     };
 
@@ -64,8 +74,8 @@ public:
     /*!
      * \brief Constructor
      * \param[in] name Field name
-     * \param[in] type Type
-     * \param[in] size Size
+     * \param[in] type Field type
+     * \param[in] size Maximum field size (in characters or bytes)
      */
     TableField(const std::string &name, Type type, int size);
 
@@ -90,18 +100,43 @@ public:
 };
 
 
-
+/*!
+ * \class RegisterValue
+ * \brief Represents a single value in a table record.
+ *
+ * A `RegisterValue` holds a string-formatted value associated with a specific `TableField`.
+ * The actual value may be stored in string form, regardless of its declared type.
+ */
 class TL_EXPORT RegisterValue
 {
 
 public:
 
+    /*!
+     * \brief Constructor with field reference.
+     * \param[in] field Associated table field.
+     */
     RegisterValue(const std::shared_ptr<TableField> &field);
+
+    /*!
+     * \brief Constructor with initial value.
+     * \param[in] field Associated table field.
+     * \param[in] value String-formatted value.
+     */
     RegisterValue(const std::shared_ptr<TableField> &field,
                   std::string value);
+
     ~RegisterValue();
 
+    /*!
+     * \brief Returns the string value.
+     */
     auto value() const -> std::string;
+
+    /*!
+     * \brief Sets the string value.
+     * \param[in] value New value to assign.
+     */
     void setValue(const std::string &value);
 
 private:
@@ -115,7 +150,11 @@ private:
 
 
 /*!
- * \brief Class representing a record of a table
+ * \class TableRegister
+ * \brief Represents a single record (row) in a data table.
+ *
+ * A `TableRegister` stores one value per field, forming a complete table row.
+ * Values are internally managed as `RegisterValue` objects.
  */
 class TL_EXPORT TableRegister
 {
@@ -126,6 +165,10 @@ protected:
 
 public:
 
+    /*!
+     * \brief Constructs a new record with the given table schema.
+     * \param[in] fields Table fields defining the register structure.
+     */
     TableRegister(const std::vector<std::shared_ptr<TableField>> &fields);
 
     /*!
@@ -138,16 +181,35 @@ public:
 
     ~TableRegister();
 
+    /*!
+     * \brief Returns the value at the given index.
+     * \param[in] idx Field index.
+     * \return Value as string.
+     */
     auto value(size_t idx) const -> std::string;
+
+    /*!
+     * \brief Sets the value at the given index.
+     * \param[in] idx Field index.
+     * \param[in] field Value as string.
+     */
     void setValue(size_t idx, const std::string &field);
 
+    /*!
+     * \brief Returns the number of fields in the register.
+     */
     auto size() const -> size_t;
 
 };
 
 
 /*!
- * \brief Tabla de datos
+ * \class DataTable
+ * \brief Represents a table with schema and data records.
+ *
+ * A `DataTable` contains a set of `TableField` definitions (columns)
+ * and a list of `TableRegister` entries (rows). It supports iteration
+ * over records and register creation based on the field definitions.
  */
 class TL_EXPORT DataTable
 {
@@ -163,56 +225,85 @@ private:
 
 public:
 
+    /*!
+     * \brief Constructs a table with name and fields.
+     * \param[in] tableName Table name.
+     * \param[in] tableField Vector of field definitions.
+     */
     DataTable(const std::string &tableName,
               const std::vector<std::shared_ptr<TableField>> &tableField);
+
     ~DataTable() = default;
 
+    /*!
+     * \brief Returns an iterator to the beginning of the table records.
+     */
     auto begin() -> iterator;
+
+    /*!
+     * \brief Returns an iterator to the end of the table records.
+     */
     auto end() -> iterator;
 
     /*!
-     * \brief Table name
-     * \return Table name
+     * \brief Returns the table name.
      */
     auto name() const -> std::string;
 
+    /*!
+     * \brief Creates a new empty register using the table schema.
+     * \param[in] index Optional index (unused).
+     * \return New `TableRegister` object.
+     */
     auto createRegister(int index) const -> std::shared_ptr<TableRegister>;
 
+    /*!
+     * \brief Returns the list of fields that define the table schema.
+     */
     auto fields() const -> std::vector<std::shared_ptr<TableField>>;
 
     /*!
-     * \brief Sets the table name
-     * \param[in] name Table name
+     * \brief Sets the table name.
+     * \param[in] name New table name.
      */
     void setName(const char *name);
 
+    /*!
+     * \brief Returns the number of records in the table.
+     */
     auto size() const -> size_t;
 
 };
 
 
 /*!
- * \brief The DataModel class
+ * \class DataModel
+ * \brief Container and manager for multiple data tables.
+ *
+ * The `DataModel` manages a collection of named `DataTable` objects.
+ * It allows for creation and registration of new tables in a structured
+ * data model, often associated with geometries or layers.
  */
 class TL_EXPORT DataModel
 {
 
 public:
 
-    DataModel();
-    ~DataModel();
+    DataModel() = default;
+    ~DataModel() = default;
+
     /*!
-     * \brief Creates a new table in the data model
-     * \param[in] tableName Table name
-     * \param[in] fields Table fields
+     * \brief Creates and registers a new table in the model.
+     * \param[in] tableName Name of the table.
+     * \param[in] fields Table schema definition.
      * \see TableField
      */
     void createTable(const std::string &tableName,
                      const std::vector<std::shared_ptr<TableField>> &fields);
 
     /*!
-     * \brief Adds a table to the data model
-     * \param[in] table Table to be added
+     * \brief Adds an existing table to the model.
+     * \param[in] table Table to add.
      */
     void addTable(const std::shared_ptr<DataTable>& table);
 
@@ -222,5 +313,6 @@ private:
 
 };
 
+/*! \} */ // Fin GraphicEntities
 
 } // End namespace tl

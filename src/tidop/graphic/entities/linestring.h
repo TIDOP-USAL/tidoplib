@@ -91,7 +91,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-
+    auto window() const->Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -150,6 +151,9 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
+
+    void draw(Painter &painter) const override;
+    auto window() const -> Window<Point<double>> override;
 };
 
 
@@ -201,6 +205,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
+    auto window() const -> Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -247,7 +253,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-
+    auto window() const -> Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -304,8 +311,5 @@ inline auto GMultiLineString3D::isSimpleEntity() const -> bool
 }
 
 
-
-
-/*! \} */ // Fin GraphicEntities
 
 } // Fin namespace tl

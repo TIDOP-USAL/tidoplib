@@ -35,19 +35,6 @@ namespace tl
 {
 
 
-
-Canvas::Canvas()
-  //: mPainter(nullptr)
-{
-}
-
-//void Canvas::setPainter(Painter *painter)
-//{
-//    mPainter = painter;
-//}
-
-
-
 #ifdef TL_HAVE_OPENCV
 
 CanvasCV::CanvasCV()
@@ -69,52 +56,52 @@ CanvasCV::~CanvasCV() = default;
 
 void CanvasCV::drawPoint(const Point<double> &point, const GraphicStyle &style)
 {
-    const Symbol *style_symbol = style.symbol();
-    const Pen *style_pen = style.pen();
+    const auto style_symbol = style.symbol();
+    const auto style_pen = style.pen();
     Color c = style_pen->color();
     cv::Scalar color = colorToCvScalar(c);
     Point<double> pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
     Point<int> pt = point + pt_offset;
 
-    switch (style_symbol->name()) {
-    case Symbol::Name::cross:
+    switch (style_symbol->shape()) {
+    case Symbol::Shape::cross:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_CROSS, 10, 1);
         break;
-    case Symbol::Name::diagonal_cross:
+    case Symbol::Shape::diagonal_cross:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TILTED_CROSS, 10, 1);
         break;
-    case Symbol::Name::circle:
+    case Symbol::Shape::circle:
         cv::circle(mCanvas, cv::Point(pt.x, pt.y), 10, color, 1);
         break;
-    case Symbol::Name::circle_filled:
+    case Symbol::Shape::circle_filled:
         cv::circle(mCanvas, cv::Point(pt.x, pt.y), 10, color, -1);
         break;
-    case Symbol::Name::square:
+    case Symbol::Shape::square:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_SQUARE, 10, 1);
         break;
-    case Symbol::Name::square_filled:
+    case Symbol::Shape::square_filled:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_SQUARE, 10, -1);
         break;
-    case Symbol::Name::triangle:
+    case Symbol::Shape::triangle:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TRIANGLE_UP, 10, 1);
         break;
-    case Symbol::Name::triangle_filled:
+    case Symbol::Shape::triangle_filled:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_TRIANGLE_UP, 10, -1);
         break;
-    case Symbol::Name::star:
+    case Symbol::Shape::star:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_STAR, 10, 1);
         break;
-    case Symbol::Name::star_filled:
+    case Symbol::Shape::star_filled:
         cv::drawMarker(mCanvas, cv::Point(pt.x, pt.y), color, cv::MARKER_STAR, 10, -1);
         break;
-    case Symbol::Name::vertical_bar:
+    case Symbol::Shape::vertical_bar:
         break;
     default:
         cv::line(mCanvas, cv::Point(pt.x, pt.y), cv::Point(pt.x, pt.y), color, style_pen->width());
         break;
     }
 
-    Label *style_label = style.label();
+    auto style_label = style.label();
     if (style_label && !style_label->text().empty()) {
 
         Color foregroundColor = style_label->foregroundColor();
@@ -154,7 +141,7 @@ void CanvasCV::drawLineString(const LineStringD &lineString, const GraphicStyle 
     //  const cv::Point *cpts = (const cv::Point*) cv::Mat(pts).data;
     //  int npts = cv::Mat(pts).rows;
 
-    const Pen *style_pen = style.pen();
+    const auto style_pen = style.pen();
     if (!style_pen->pattern().empty()) {
         ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
     } else {
@@ -173,12 +160,12 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
         pts[0][i].y = static_cast<int>(polygon[i].y);
     }
 
-    if (const Brush *style_brush = style.brush()) {
+    if (const auto style_brush = style.brush()) {
         Color fore_color = style_brush->foregroundColor();
         cv::fillPoly(mCanvas, pts, colorToCvScalar(fore_color));
     }
 
-    if (const Pen *style_pen = style.pen()) {
+    if (const auto style_pen = style.pen()) {
         Color color = style_pen->color();
         uint8_t width = style_pen->width();
         if (!style_pen->pattern().empty()) {
@@ -189,7 +176,7 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
     }
 
     
-    Label *style_label = style.label();
+    const auto style_label = style.label();
     if (style_label && !style_label->text().empty()) {
 
         Color foregroundColor = style_label->foregroundColor();
@@ -221,9 +208,30 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
     //}
 }
 
+void CanvasCV::drawMultiPoint(const MultiPoint<Point<double>> &multiPoint, const GraphicStyle &style)
+{
+    for (const auto &pt : multiPoint) {
+        drawPoint(pt, style);
+    }
+}
+
+void CanvasCV::drawMultiLineString(const MultiLineString<Point<double>> &multiLineString, const GraphicStyle &style)
+{
+    for (const auto &ls : multiLineString) {
+        drawLineString(ls, style);
+    }
+}
+
+void CanvasCV::drawMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon, const GraphicStyle &style)
+{
+    for (const auto &poly : multiPolygon) {
+        drawPolygon(poly, style);
+    }
+}
+
 void CanvasCV::drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style)
 {
-    Label *style_label = style.label();
+    const auto style_label = style.label();
     Color foregroundColor = style_label->foregroundColor();
 
 #ifdef HAVE_QT
@@ -246,11 +254,11 @@ void CanvasCV::drawText(const Point<double> &point, const std::string &text, con
 #endif
 }
 
-void CanvasCV::setPicture(const cv::Mat &bmp)
-{
-    /// insertar imagen. 
-    bmp.copyTo(mCanvas);
-}
+//void CanvasCV::setPicture(const cv::Mat &bmp)
+//{
+//    /// insertar imagen. 
+//    bmp.copyTo(mCanvas);
+//}
 
 CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)
 {
@@ -263,9 +271,13 @@ CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)
 
 void CanvasCV::update()
 {
-    mCanvas = cv::Mat(mSize.height, mSize.width, CV_MAKETYPE(CV_8U, 3), colorToCvScalar(mBgColor));
-}
+    if (mCanvas.rows != mSize.height || mCanvas.cols != mSize.width) {
+        mCanvas = cv::Mat(mSize.height, mSize.width, CV_MAKETYPE(CV_8U, 3));
+    }
 
+    // Always apply the current background color.
+    mCanvas.setTo(colorToCvScalar(mBgColor));
+}
 
 
 

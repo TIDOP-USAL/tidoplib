@@ -34,29 +34,65 @@
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-
+#include "tidop/geometry/entities/multipoint.h"
+#include "tidop/geometry/entities/multilinestring.h"
+#include "tidop/geometry/entities/multipolygon.h"
 
 
 namespace tl
 {
 
+class Painter;
 
 /*! \addtogroup Graphic
  *  \{
  */
 
-
-class Painter;
-
 /*!
- * \brief Canvas class
+ * \class Canvas
+ * \brief Abstract base class for 2D graphical drawing surfaces.
+ *
+ * The `Canvas` class provides an abstract interface for rendering 2D geometric primitives
+ * (such as points, lines, polygons, and text) onto a drawable surface. It is intended to be
+ * subclassed by concrete implementations (e.g., image renderers, PDF backends, OpenGL contexts).
+ * 
+ * The `Canvas` itself does not perform drawing directly. Instead, it defines a set of protected
+ * drawing methods that must be implemented by subclasses. These methods are invoked exclusively
+ * through the `Painter` class, which acts as a high-level drawing interface and is declared
+ * as a friend of `Canvas`.
+ *
+ * ### Key Responsibilities:
+ * - Defines canvas dimensions (width, height, size).
+ * - Manages background color settings.
+ * - Declares protected virtual methods to draw geometric primitives with styling.
+ * - Enables double-dispatch through `Painter` for abstraction and separation of concerns.
+ *
+ * ### Usage Example
+ * \code{.cpp}
+ * class ImageCanvas : public Canvas {
+ * protected:
+ *     void drawPoint(const Point<double>& point, const GraphicStyle& style) override { ... }
+ *     void drawLineString(const LineStringD& lineString, const GraphicStyle& style) override { ... }
+ *     // implement other drawing methods...
+ * };
+ *
+ * ImageCanvas canvas;
+ * canvas.setSize(800, 600);
+ * canvas.setBackgroundColor(Color::white);
+ *
+ * Painter painter(&canvas);
+ * painter.draw(myGeometry, myStyle);  // Internally calls drawPoint/drawPolygon, etc.
+ * \endcode
+ *
+ * \note Direct calls to drawing methods like `drawPoint` are not permitted; only `Painter` can invoke them.
+ * \see Painter, GraphicStyle, Color, Size
  */
 class TL_EXPORT Canvas
 {
 
 public:
 
-    Canvas();
+    Canvas() = default;
     virtual ~Canvas() = default;
 
     /*!
@@ -138,6 +174,27 @@ protected:
     virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
 
     /*!
+     * \brief Draws a set of points on the canvas
+     * \param[in] multiPoint Collection of points
+     * \param[in] style Style to apply to each point
+     */
+    virtual void drawMultiPoint(const MultiPoint<Point<double>> &multiPoint, const GraphicStyle &style) = 0;
+
+    /*!
+     * \brief Draws a set of polylines on the canvas
+     * \param[in] multiLineString Collection of polylines
+     * \param[in] style Style to apply to each polyline
+     */
+    virtual void drawMultiLineString(const MultiLineString<Point<double>> &multiLineString, const GraphicStyle &style) = 0;
+
+    /*!
+     * \brief Draws a set of polygons on the canvas
+     * \param[in] multiPolygon Collection of polygons
+     * \param[in] style Style to apply to each polygon
+     */
+    virtual void drawMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon, const GraphicStyle &style) = 0;
+
+    /*!
      * \brief Draw a text on the canvas
      * \param[in] point Insertion point
      * \param[in] text Text
@@ -145,18 +202,69 @@ protected:
      */
     virtual void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) = 0;
 
-    //void setPainter(Painter *painter);
-
 private:
 
     friend class Painter;
-    //Painter *mPainter;
 };
 
 
 
 #ifdef TL_HAVE_OPENCV
 
+/*!
+ * \class CanvasCV
+ * \brief OpenCV-based implementation of the Canvas interface.
+ *
+ * The `CanvasCV` class is a concrete subclass of `Canvas` that provides 2D drawing
+ * capabilities using the OpenCV library. It allows rendering of points, lines,
+ * polygons, and text onto an OpenCV `cv::Mat` image.
+ *
+ * This class is especially useful for generating visual output in image formats
+ * such as PNG, JPEG, etc., or for in-memory visualization using OpenCV's GUI tools.
+ *
+ * Drawing is performed through the `Painter` interface, which invokes the protected
+ * `drawXXX` methods (e.g., `drawPoint`, `drawPolygon`, etc.) of this class.
+ *
+ * ### Key Features:
+ * - Manages a resizable OpenCV image buffer (`cv::Mat`) as the drawing surface.
+ * - Implements all geometric drawing operations using OpenCV primitives.
+ * - Handles background color configuration and canvas size updates.
+ * - Provides access to the internal image buffer for saving, displaying, or post-processing.
+ *
+ * ### Usage Example
+ * \code{.cpp}
+ * auto vector_reader = VectorReaderFactory::create(vector_path);
+ * vector_reader->open();
+ * if (vector_reader->isOpen()) {
+ *     CanvasCV canvas;
+ *     canvas.setSize(640, 480);
+ *     canvas.setBackgroundColor(Color(Color::Name::white);
+ *
+ *     Painter painter(&canvas);
+ *             
+ *     Window<Point<double>> window;
+ *     for (int i = 0; i < vector_reader->layersCount(); i++) {
+ *         auto layer = vector_reader->read(i);
+ *         window = joinWindow(window, layer->window());
+ *     }
+ *
+ *     double scale_x = canvas.width() / static_cast<double>(window.width());
+ *     double scale_y = canvas.height() / static_cast<double>(window.height());
+ *     double scale = std::min(scale_x, scale_y);
+ *
+ *     Affine<double, 2> affine(scale, -scale, -window.pt1.x * scale, window.pt2.y * scale, 0.);
+ *     painter.setTransform(affine);
+ *     
+ *     for (int i = 0; i < vector_reader->layersCount(); i++) {
+ *         auto layer = vector_reader->read(i);
+ *         layer->draw(painter);
+ *     }
+ *     cv::imwrite("output.png", canvas.bmp());
+ * }
+ * \endcode
+ *
+ * \see Canvas, Painter
+ */
 class TL_EXPORT CanvasCV
     : public Canvas
 {
@@ -177,16 +285,42 @@ public:
     void setSize(const Size<int> &size) override;
     void setSize(int width, int height) override;
 
-    auto bmp() -> cv::Mat;
-    void setPicture(const cv::Mat &bmp);
+    /*!
+     * \brief Returns a reference to the internal OpenCV image buffer.
+     *
+     * This buffer stores all drawn content and can be used for saving to disk,
+     * displaying via OpenCV GUI functions, or further post-processing.
+     *
+     * \return A reference to the internal cv::Mat image.
+     */
+    auto image() -> cv::Mat &;
+
+    /*!
+     * \brief Returns a const reference to the internal OpenCV image buffer.
+     *
+     * Allows read-only access to the canvas content.
+     *
+     * \return A const reference to the internal cv::Mat image.
+     */
+    auto image() const -> const cv::Mat &;
+
+    //void setPicture(const cv::Mat &bmp);
 
     auto operator =(const CanvasCV &canvas) -> CanvasCV&;
+
+#ifdef TL_WARNING_DEPRECATED_METHOD 
+    TL_DEPRECATED("image()", "4.0")
+    auto bmp() -> cv::Mat;
+#endif
 
 protected:
 
     void drawPoint(const Point<double> &point, const GraphicStyle &style) override;
     void drawLineString(const LineStringD &lineString, const GraphicStyle &style) override;
     void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
+    void drawMultiPoint(const MultiPoint<Point<double>> &multiPoint, const GraphicStyle &style) override;
+    void drawMultiLineString(const MultiLineString<Point<double>> &multiLineString, const GraphicStyle &style) override;
+    void drawMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon, const GraphicStyle &style) override;
     void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) override;
 
 private:
@@ -259,7 +393,19 @@ inline void CanvasCV::setSize(int width, int height)
     update();
 }
 
+#ifdef TL_WARNING_DEPRECATED_METHOD 
 inline auto CanvasCV::bmp() -> cv::Mat
+{
+    return mCanvas;
+}
+#endif // TL_WARNING_DEPRECATED_METHOD
+
+inline auto CanvasCV::image() -> cv::Mat&
+{
+    return mCanvas;
+}
+
+inline auto CanvasCV::image() const -> const cv::Mat &
 {
     return mCanvas;
 }
