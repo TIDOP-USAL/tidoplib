@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "tidop/core/base/defs.h"
+#include "tidop/rastertools/DataType.h"
 
 namespace tl
 {
@@ -39,35 +40,22 @@ template<typename T> class EnumFlags;
  */
 
 
-enum class DataType : int16_t
-{
-    TL_8U = (1 << 0),      // Equivalente a CV_8U y GDT_Byte
-    TL_8S = (1 << 1),      // Equivalente a CV_8S
-    TL_16U = (1 << 2),     // Equivalente a CV_16U y GDT_UInt16
-    TL_16S = (1 << 3),     // Equivalente a CV_16S y GDT_Int16
-    TL_32U = (1 << 4),     // Equivalente a GDT_UInt32
-    TL_32S = (1 << 5),     // Equivalente a CV_32S y GDT_Int32
-    TL_32F = (1 << 6),     // Equivalente a CV_32F y GDT_Float32  
-    TL_64F = (1 << 7)      // Equivalente a CV_64F y GDT_Float64
-};
-
-
 //TL_EXPORT std::vector<std::string> gdalValidExtensions();
-TL_EXPORT bool gdalValidExtensions(const std::string &extension);
-TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
-
-/*!
- * \brief Returns the GDAL driver name corresponding to a file extension.
- * If the extension does not match an available driver, it returns nullptr.
- * \param[in] extension File extension
- * \return GDAL driver name
- */
-TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
+//TL_EXPORT bool gdalValidExtensions(const std::string &extension);
+//TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
+//
+///*!
+// * \brief Returns the GDAL driver name corresponding to a file extension.
+// * If the extension does not match an available driver, it returns nullptr.
+// * \param[in] extension File extension
+// * \return GDAL driver name
+// */
+//TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
 
-TL_EXPORT std::vector<int> gdalBandOrder(int channels);
+//TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 
 
 

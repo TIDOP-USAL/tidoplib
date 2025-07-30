@@ -179,7 +179,7 @@ public:
      * \param[in] value Value assigned to the new elements
      */
     void resize(size_type count,
-        const std::shared_ptr<GraphicEntity> &value);
+                const std::shared_ptr<GraphicEntity> &value);
 
     /*!
      * \brief Returns the number of entities in the layer.

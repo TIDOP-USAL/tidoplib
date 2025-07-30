@@ -240,7 +240,7 @@ void CanvasCV::drawText(const Point<double> &point, const std::string &text, con
         colorToCvScalar(foregroundColor),
         font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
         font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
-    cv::addText(mCanvas, style_label->text(), cv::Point(point.x, point.y), qt_font);
+    cv::addText(mCanvas, text, cv::Point(point.x, point.y), qt_font);
 #else
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;
     double fontScale = 2;

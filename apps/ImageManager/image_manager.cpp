@@ -32,9 +32,9 @@
 #include <tidop/core/app/message.h>
 #include <tidop/core/console.h>
 #include <tidop/core/base/chrono.h>
-#include <tidop/rastertools/io/imgreader.h>
-#include <tidop/rastertools/io/imgwriter.h>
-#include <tidop/rastertools/io/metadata.h>
+#include <tidop/rastertools/io/Reader.h>
+#include <tidop/rastertools/io/writer.h>
+#include <tidop/rastertools/io/Metadata.h>
 
 #include <tidop/geospatial/crs.h>
 #include <tidop/geotools/GeoTools.h>
@@ -62,24 +62,23 @@ void imageInfo(const Command::SharedPtr &command)
 
         TL_ASSERT(img.exists(), "The image does not exist {}", img.toString());
 
-        auto image_reader = ImageReaderFactory::create(img);
+        RasterReader image_reader(img);
 
-        image_reader->open();
-        if (image_reader->isOpen()) {
+        if (image_reader.isOpen()) {
 
-            Message::info("Number of bands: {}", image_reader->channels());
-            Message::info("Color depth: {}", image_reader->depth());
-            Message::info("Image dimensions: {}x{}", image_reader->cols(), image_reader->rows());
+            Message::info("Number of bands: {}", image_reader.channels());
+            Message::info("Color depth: {}", image_reader.depth());
+            Message::info("Image dimensions: {}x{}", image_reader.cols(), image_reader.rows());
             Message::info("Metadata:");
 
-            std::shared_ptr<ImageMetadata> image_metadata = image_reader->metadata();
+            std::shared_ptr<ImageMetadata> image_metadata = image_reader.metadata();
             std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
 
             for (auto &item : metadata) {
                 Message::info("  {}: {}", item.first, item.second);
             }
 
-            image_reader->close();
+            image_reader.close();
 
             chrono.stop();
 
@@ -147,12 +146,11 @@ void convertImageFormat(const Command::SharedPtr &command)
         auto output_img = command->value<Path>("output_img");
         auto crs_out = command->value<std::string>("crs_out");
 
-        auto image_reader = ImageReaderFactory::create(img);
+        RasterReader image_reader(img);
 
-        image_reader->open();
-        if (image_reader->isOpen()) {
-            image_reader->copy(output_img.toString(), nullptr, nullptr, image_reader->isGeoreferenced() ? crs_out : "");
-            image_reader->close();
+        if (image_reader.isOpen()) {
+            image_reader.copy(output_img.toString(), nullptr, nullptr, image_reader.isGeoreferenced() ? crs_out : "");
+            image_reader.close();
         }
 
         chrono.stop();

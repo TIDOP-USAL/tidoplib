@@ -597,7 +597,6 @@ public:
      */
     using const_iterator = std::unordered_map<std::string, std::shared_ptr<PropertyBase>>::const_iterator;
 
-
 private:
 
     std::string mName;
