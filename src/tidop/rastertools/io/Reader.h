@@ -44,7 +44,7 @@ namespace tl
 {
 
 
-/*! \addtogroup raster
+/*! \addtogroup RasterIO
  *  \{
  */
 

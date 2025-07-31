@@ -613,7 +613,7 @@
  * The library includes various detectors and descriptors, such as ORB, STAR, SURF, and VGG.
  * These are implemented as separate classes that follow a unified interface.
  *
- * \section feature_example Example Usage
+ * ### Example Usage
  *
  * The following example demonstrates how to detect keypoints using the STAR detector
  * and extract descriptors using the VGG descriptor.
@@ -815,3 +815,39 @@
  * \ingroup Color
  * \brief Functions to convert between different color representations.
  */ 
+ 
+ 
+/*!
+ * \defgroup PointCloudTools Point Cloud Tools
+ * \brief Tools and utilities for reading and converting point clouds.
+ *
+ * The PointCloudTools module provides tools for managing point clouds, including:
+ * - Reading and extracting metadata and data from point cloud files.
+ * - Assigning and transforming coordinate reference systems (CRS).
+ * - Converting point clouds into COPC format for optimized storage and access.
+ *
+ */
+
+/*! 
+ * \defgroup PointCloudToolsIO Point Cloud I/O
+ * \ingroup PointCloudTools
+ * 
+ * \brief Input and Output tools for point clouds, including reading and writing operations.
+ */  
+
+/*!
+ * \defgroup GeoToolsGroup Geospatial Tools
+ *
+ * \brief Provides tools for Coordinate Reference System (CRS) operations and geospatial utilities.
+ *
+ * This module defines the interface and core functionality for working with coordinate
+ * reference systems (CRSs) within the TidopLib framework. It includes the `GeoTools` singleton 
+ * class for accessing CRS tools, the abstract `CRSsTools` interface for performing CRS operations, 
+ * and the `CRSInfo` struct for holding metadata about each CRS.
+ *
+ * Features of this module include:
+ * - Transformation of 3D points and coordinate sets between CRSs
+ * - Support for ENU, projected, geographic, and vertical CRS types
+ * - CRS validation, metadata querying, and filtering (e.g., 2D-applicable or non-deprecated CRSs)
+ * - WKT-based CRS creation
+ */

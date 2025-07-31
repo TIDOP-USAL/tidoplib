@@ -44,12 +44,11 @@ namespace tl
  * This group contains classes and functions for handling angles in different units
  * (degrees, radians, and gradians) and converting between these units.
  *
- * \section angleConversionExample Example
- *
+ * ### Example Usage
+ * 
  * The following example demonstrates how to convert an angle from degrees to radians using
  * the `AngleConverter` class:
- *
- * ### Example Usage
+ * 
  * \code{.cpp}
  * Degrees<double> degrees(135, 34, 27);
  * Radians<double> radians = degrees;

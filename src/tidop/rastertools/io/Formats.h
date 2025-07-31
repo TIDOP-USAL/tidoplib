@@ -45,12 +45,12 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Abstract base class for image format options.
-  *
-  * The `ImageOptions` class provides an interface for managing options related to different image formats.
-  * It allows accessing and resetting options and retrieving both all and active options.
-  */
+/*!
+ * \brief Abstract base class for image format options.
+ *
+ * The `ImageOptions` class provides an interface for managing options related to different image formats.
+ * It allows accessing and resetting options and retrieving both all and active options.
+ */
 class TL_EXPORT ImageOptions
 {
 

@@ -191,18 +191,18 @@
 
 
 /*!
- * \brief Warning para informar que una función esta obsoleta
+ * \brief Warning macro to indicate that a function is deprecated.
  *
  * ### Example Usage
  * 
- * Se debe anteceder a la función obsoleta añadiendo el método que lo reemplaza
+ * The deprecated function should be preceded by the replacement method using this macro.
  * 
  * \code{.cpp}
  * TL_DEPRECATED("newFunc(int a, float b)", "2.0")
  * void oldFunc(int a, float b);
  * \endcode
  * 
- * En el caso de una clase o un enum se debe añadir entre class y el nombre de la clase:
+ * For classes or enums, the macro should be placed between `class` (or `enum`) and the class/enum name:
  * 
  * \code{.cpp}
  * class TL_DEPRECATED(NewClass, "2.0") OldClass
@@ -210,7 +210,8 @@
  * \endcode
  * 
  * \code{.cpp}
- * En el caso de las funciones template:
+ *
+ * For template functions:
  *
  * template<typename T> inline
  * TL_DEPRECATED("void newFunc(T a, T b)", "2.0")

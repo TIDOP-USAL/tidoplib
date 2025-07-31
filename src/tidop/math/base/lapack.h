@@ -415,7 +415,7 @@ enum class SVDMode : char
  * \f]
  * where:
  * - \( U \) is an m × m or m × min(m,n) orthogonal matrix (left singular vectors).
- * - \( \Sigma \) is a diagonal matrix of singular values of size min(m,n).
+ * - \( &Sigma; \) is a diagonal matrix of singular values of size min(m,n).
  * - \( V^T \) is an n × n or min(m,n) × n orthogonal matrix (right singular vectors).
  *
  * \tparam T Floating point type (`float` or `double`).

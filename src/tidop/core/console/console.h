@@ -47,8 +47,6 @@ class App;
  *  \{
  */
 
-
-
 /*!
  * \class Console
  * \brief Class for managing console configuration and output formatting.
@@ -65,7 +63,6 @@ class App;
  * Console::instance().setFontBold(true);
  * Console::success("Initialization complete: {} modules loaded", 5);
  * \endcode
- *
  */
 class TL_EXPORT Console
   : public MessageHandler
@@ -1026,7 +1023,6 @@ public:
     void error(String message) override;
 
 };
-
 
 /*! \} */ 
 

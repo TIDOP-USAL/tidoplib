@@ -30,7 +30,8 @@
 namespace tl
 {
 
-/*! \addtogrop Statistics
+/*! 
+ * \addtogrop Statistics
  * \{
  */
 

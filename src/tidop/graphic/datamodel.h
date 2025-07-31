@@ -313,6 +313,6 @@ private:
 
 };
 
-/*! \} */ // Fin GraphicEntities
+/*! \} */ // End Graphic
 
 } // End namespace tl

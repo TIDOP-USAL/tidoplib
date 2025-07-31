@@ -106,14 +106,14 @@ constexpr unsigned int max_svg_iterations = 30;
  * In linear algebra, the Singular Value Decomposition (SVD) of a matrix \( A \) is a factorization
  * of the matrix that has many applications, such as solving linear systems, signal processing, and data
  * compression. The SVD of a matrix allows it to be expressed as a product of three matrices: an orthogonal
- * matrix \( U \), a diagonal matrix \( \Sigma \), and the transpose of another orthogonal matrix \( V \).
+ * matrix \( U \), a diagonal matrix \( &Sigma; \), and the transpose of another orthogonal matrix \( V \).
  *
- * Given an \( m \times n \) matrix \( A \), the SVD is given by:
+ * Given an \( m &times; n \) matrix \( A \), the SVD is given by:
  * \f[ A = U \cdot \Sigma \cdot V^T \f]
  * where:
- * - \( U \) is an orthogonal matrix of size \( m \times m \) (or a reduced version if configured),
- * - \( \Sigma \) is a diagonal matrix of size \( m \times n \),
- * - \( V \) is an orthogonal matrix of size \( n \times n \) (or a reduced version if configured).
+ * - \( U \) is an orthogonal matrix of size \( m &times; m \) (or a reduced version if configured),
+ * - \( &Sigma; \) is a diagonal matrix of size \( m &times; n \),
+ * - \( V \) is an orthogonal matrix of size \( n &times; n \) (or a reduced version if configured).
  *
  * The SVD provides a powerful tool for analyzing and solving linear systems, especially in cases
  * where the matrix is non-square or ill-conditioned.
@@ -169,7 +169,7 @@ public:
      *
      * Using the SVD, this method solves the system of linear equations \( A \cdot x = b \), where \( A \)
      * is the matrix and \( b \) is the right-hand side vector. This is done by using the properties of
-     * the matrices \( U \), \( \Sigma \), and \( V \) from the SVD.
+     * the matrices \( U \), \( &Sigma; \), and \( V \) from the SVD.
      *
      * \param[in] b The right-hand side vector \( b \).
      * \return The solution vector \( x \).
@@ -179,7 +179,7 @@ public:
      *
      * Using the SVD, this method solves the system of linear equations \( A \cdot x = b \), where \( A \)
      * is the matrix and \( b \) is the right-hand side vector. This is done by using the properties of
-     * the matrices \( U \), \( \Sigma \), and \( V \) from the SVD.
+     * the matrices \( U \), \( &Sigma; \), and \( V \) from the SVD.
      *
      * \throws Exception if \( U \) was not computed (ConfigSVD::no_u was enabled).
      * \throws Exception if \( V \) was not computed (ConfigSVD::no_v was enabled).

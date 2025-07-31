@@ -47,7 +47,7 @@ class ImageOptions;
 class ImageMetadata;
 class ImageWriter;
 
-/*! \addtogroup raster
+/*! \addtogroup RasterIO
  *  \{
  */
 

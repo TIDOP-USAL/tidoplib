@@ -53,7 +53,7 @@ class EigenDecomposition;
  * In linear algebra, the Eigenvalue Decomposition of a matrix \( A \) is a factorization of the matrix
  * that has many applications, such as solving linear systems, signal processing, and data compression.
  * The Eigenvalue Decomposition of a matrix allows it to be expressed as a product of three matrices:
- * an orthogonal matrix \( U \), a diagonal matrix \( \Sigma \), and the transpose of another orthogonal
+ * an orthogonal matrix \( U \), a diagonal matrix \( &Sigma; \), and the transpose of another orthogonal
  * matrix \( V \).
  *
  * Given an \( n \times n \) matrix \( A \), the Eigenvalue Decomposition is given by:

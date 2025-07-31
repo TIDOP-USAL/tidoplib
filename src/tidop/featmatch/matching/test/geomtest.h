@@ -43,7 +43,7 @@ namespace tl
  * It supports various types of tests, including homography and fundamental matrix estimation,
  * using different algorithms such as RANSAC, LMEDS, and USAC.
  * 
- * #### Example Usage
+ * ### Example Usage
  * \code{.cpp}
  * // Create a geometric test using RANSAC-based homography estimation
  * auto geometricTest = GeometricTestFactory::create(GeometricTest::Type::homography_ransac);

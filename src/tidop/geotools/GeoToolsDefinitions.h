@@ -29,17 +29,56 @@
 namespace tl 
 {
 
+/*! \addtogroup GeoToolsGroup
+ *  \{
+ */
+
+ /*!
+  * \struct CRSInfo
+  * \brief Metadata container for a Coordinate Reference System (CRS).
+  *
+  * This struct holds descriptive information about a coordinate reference system,
+  * including its authority, name, code, type, applicable area, and projection method.
+  * It also indicates whether the CRS is deprecated.
+  */
+struct CRSInfo
+{
     /*!
-     * \brief CRSInfo struct
+     * \brief Name of the authority defining the CRS (e.g., "EPSG").
      */
-    struct CRSInfo
-    {
-        std::string auth_name;
-        std::string name;
-        std::string code;
-        std::string type;
-        std::string area_name;
-        std::string projection_method_name;
-        bool deprecated;
-    };
+    std::string auth_name;
+
+    /*!
+     * \brief Human-readable name of the CRS.
+     */
+    std::string name;
+
+    /*!
+     * \brief Code of the CRS within the authority (e.g., "4326").
+     */
+    std::string code;
+
+    /*!
+     * \brief Type of the CRS (e.g., "geographic", "projected", "vertical").
+     */
+    std::string type;
+
+    /*!
+     * \brief Name of the geographical area where the CRS is valid.
+     */
+    std::string area_name;
+
+    /*!
+     * \brief Name of the projection method used (if applicable).
+     */
+    std::string projection_method_name;
+
+    /*!
+     * \brief Indicates whether the CRS is deprecated.
+     */
+    bool deprecated = false;
+};
+
+/*! \} */
+
 }
