@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/vectortools/io/VectorReader.h"
+#include "tidop/vectortools/io/impl/VectorReader.h"
 
 class OGRLayer;
 class OGRGeometry;
@@ -71,7 +71,7 @@ class TableRegister;
 /// \cond
 
 class VectorReaderGdal
-  : public VectorReader
+  : public VectorReaderBase
 {
 
     GENERATE_UNIQUE_PTR(VectorReaderGdal)
@@ -79,21 +79,16 @@ class VectorReaderGdal
 public:
 
     VectorReaderGdal(Path file);
-    
     ~VectorReaderGdal() override;
 
     void open() override;
-
     auto isOpen() const -> bool override;
-    
     void close() override;
-    
     auto layersCount() const -> int override;
-
     auto read(int layerId) -> std::shared_ptr<GLayer> override;
-
-    auto read(const std::string& layerName) -> std::shared_ptr<GLayer> override;
-
+    auto read(const std::string &layerName) -> std::shared_ptr<GLayer> override;
+    //void copy(const Path &outputPath,
+    //          const std::string &targetEpsg) const override;
     auto crsWkt() const -> std::string override;
 
 private:

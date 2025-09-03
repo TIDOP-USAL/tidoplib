@@ -22,49 +22,75 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/vectortools/io/VectorWriter.h"
-#include "tidop/vectortools/io/impl/GdalWriter.h"
-#include "tidop/core/base/string_utils.h"
+#include "tidop/vectortools/io/Reader.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/vectortools/io/impl/GdalReader.h"
 
 namespace tl
 {
 
-VectorWriter::VectorWriter(Path file)
-  : mFile(std::move(file))
+VectorReader::VectorReader()
+  : mReader(nullptr)
 {
 }
 
-
-auto VectorWriterFactory::create(const Path& file) -> VectorWriter::Ptr
+VectorReader::VectorReader(Path file)
 {
-    VectorWriter::Ptr vector_writer;
+    open(std::move(file));
+}
 
-    try {
+VectorReader::~VectorReader()
+{
+    close();
+}
 
-        std::string extension = file.extension().toString();
-#ifdef TL_HAVE_GDAL
-        if (compareInsensitiveCase(extension, ".dxf") ||
-            compareInsensitiveCase(extension, ".dwg") ||
-            compareInsensitiveCase(extension, ".dgn") ||
-            compareInsensitiveCase(extension, ".shp") ||
-            compareInsensitiveCase(extension, ".gml") ||
-            compareInsensitiveCase(extension, ".kml") ||
-            compareInsensitiveCase(extension, ".kmz") ||
-            compareInsensitiveCase(extension, ".json") ||
-            compareInsensitiveCase(extension, ".osm")) {
-            vector_writer = std::make_unique<VectorWriterGdal>(file);
-        } else
-#endif
-        {
-            TL_THROW_EXCEPTION("Invalid Vector Writer: {}", file.fileName().toString());
-        }
+void VectorReader::open(const tl::Path &file)
+{
+    mReader = VectorReaderFactory::create(file);
+    mReader->open();
+}
 
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+auto VectorReader::isOpen() const -> bool
+{
+    return mReader && mReader->isOpen();
+}
+
+void VectorReader::close()
+{
+    if (mReader) {
+        mReader->close();
+        mReader.reset();
     }
-
-    return vector_writer;
 }
 
+auto VectorReader::layersCount() const -> int
+{
+    TL_ASSERT(isOpen(), "VectorReader is not open");
+    return mReader->layersCount();
+}
+
+auto VectorReader::read(int layerId) -> std::shared_ptr<GLayer>
+{
+    TL_ASSERT(isOpen(), "VectorReader is not open");
+    return mReader->read(layerId);
+}
+
+auto VectorReader::read(const std::string &layerName) -> std::shared_ptr<GLayer>
+{
+    TL_ASSERT(isOpen(), "VectorReader is not open");
+    return mReader->read(layerName);
+}
+
+//void VectorReader::copy(const tl::Path &outputPath, const std::string &targetEpsg) const
+//{
+//    TL_ASSERT(isOpen(), "VectorReader is not open");
+//    return mReader->copy(outputPath.toString(), targetEpsg);
+//}
+
+auto VectorReader::crsWkt() const -> std::string
+{
+    TL_ASSERT(isOpen(), "VectorReader is not open");
+    return mReader->crsWkt();
+}
 
 } // End namespace tl

@@ -29,8 +29,9 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/vectortools/private/TypeConverter.h"
 #include "tidop/vectortools/io/Formats.h"
+#include "tidop/vectortools/io/private/gdal.h"
+#include "tidop/vectortools/io/private/TypeConverter.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
@@ -42,7 +43,7 @@ namespace tl
 {
 
 VectorWriterGdal::VectorWriterGdal(Path file)
-  : VectorWriter(std::move(file)),
+  : VectorWriterBase(std::move(file)),
     mDataset(nullptr),
     mDriver(nullptr),
 #if _DEBUG
@@ -74,7 +75,7 @@ void VectorWriterGdal::open()
 
         this->close();
 
-        std::string driver_name = driverFromExt(mFile.extension().toString());
+        std::string driver_name = internal::gdalVectorDriverFromExtension(mFile.extension().toString());
 
         TL_ASSERT(!driver_name.empty(), "Vector file open fail. Driver not found");
 
@@ -258,29 +259,6 @@ void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr,
     TL_TODO("Escribir los estilos. Hay que establecer un flag para ver si el estilo está activo");
 
     delete ogr_style_tool;
-}
-
-auto VectorWriterGdal::driverFromExt(const std::string& extension) -> std::string
-{
-    std::string format;
-    if (compareInsensitiveCase(extension, ".dxf"))
-        format = "DXF";
-    else if (compareInsensitiveCase(extension, ".dwg"))
-        format = "DWG";
-    else if (compareInsensitiveCase(extension, ".dgn"))
-        format = "DGN";
-    else if (compareInsensitiveCase(extension, ".shp"))
-        format = "ESRI Shapefile";
-    else if (compareInsensitiveCase(extension, ".gml"))
-        format = "GML";
-    else if (compareInsensitiveCase(extension, ".kml") || compareInsensitiveCase(extension, ".kmz"))
-        format = "LIBKML";
-    else if (compareInsensitiveCase(extension, ".json"))
-        format = "GeoJSON";
-    else if (compareInsensitiveCase(extension, ".osm"))
-        format = "OSM";
-    else format = "";
-    return format;
 }
 
 auto VectorWriterGdal::createLayer(const std::string &layerName) const -> OGRLayer*

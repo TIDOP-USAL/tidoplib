@@ -31,7 +31,8 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/vectortools/private/TypeConverter.h"
+#include "tidop/vectortools/io/private/TypeConverter.h"
+#include "tidop/vectortools/io/private/gdal.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
@@ -49,7 +50,7 @@ constexpr auto mm_to_m = 0.001;
 
 
 VectorReaderGdal::VectorReaderGdal(Path file)
-  : VectorReader(std::move(file)),
+  : VectorReaderBase(std::move(file)),
     mDataset(nullptr)
 {
     RegisterGdal::init();
@@ -67,10 +68,10 @@ void VectorReaderGdal::open()
         this->close();
 
         mDataset = static_cast<GDALDataset *>(GDALOpenEx(mFile.toString().c_str(),
-            GDAL_OF_VECTOR,
-            nullptr,
-            nullptr/*options->getOptions()*/,
-            nullptr));
+                                              GDAL_OF_VECTOR,
+                                              nullptr,
+                                              nullptr/*options->getOptions()*/,
+                                              nullptr));
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
@@ -134,6 +135,183 @@ auto VectorReaderGdal::read(const std::string &layerName) -> std::shared_ptr<GLa
 
     return layer;
 }
+
+//void VectorReaderGdal::copy(const Path &outputPath, const std::string &targetEpsg) const
+//{
+//    try {
+//
+//        TL_ASSERT(isOpen(), "The file has not been opened.");
+//        //TL_ASSERT(driverAvailable(outputPath), "");
+//        
+//        std::string driver_name = internal::gdalVectorDriverFromExtension(mFile.extension().toString());
+//
+//        TL_ASSERT(!driver_name.empty(), "Vector file open fail. Driver not found");
+//
+//        GDALDriver *out_driver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str());
+//
+//        GDALDataset *dstDs = out_driver->Create(outputPath.toString().c_str(), 0, 0, 0, GDT_Unknown, nullptr);
+//
+//        TL_ASSERT(dstDs, "VectorReaderGdal::copy: failed to create output dataset.");
+//
+//        // Preparar SRS objetivo si se ha pedido
+//        OGRSpatialReference *targetSrs = nullptr;
+//        if (!targetEpsg.empty()) {
+//            targetSrs = new OGRSpatialReference();
+//            if (targetEpsg.rfind("EPSG:", 0) == 0 || targetEpsg.rfind("epsg:", 0) == 0) {
+//                const int code = std::atoi(targetEpsg.substr(targetEpsg.find(':') + 1).c_str());
+//                if (code <= 0 || targetSrs->importFromEPSG(code) != OGRERR_NONE) {
+//                    GDALClose(dstDs);
+//                    throw std::runtime_error("VectorReaderGdal::copy: invalid EPSG code in targetEpsg.");
+//                }
+//            } else {
+//                if (targetSrs->SetFromUserInput(targetEpsg.c_str()) != OGRERR_NONE) {
+//                    GDALClose(dstDs);
+//                    throw std::runtime_error("VectorReaderGdal::copy: unable to parse targetEpsg.");
+//                }
+//            }
+//        }
+//
+//        // Recorrer capas fuente y copiarlas
+//        int nLayers = mDataset->GetLayerCount();
+//        for (int i = 0; i < nLayers; ++i) {
+//            OGRLayer *srcLy = mDataset->GetLayer(i);
+//            if (!srcLy) {
+//                GDALClose(dstDs);
+//                throw std::runtime_error("VectorReaderGdal::copy: unable to fetch source layer.");
+//            }
+//
+//            OGRFeatureDefn *srcDefn = srcLy->GetLayerDefn();
+//            if (!srcDefn) {
+//                GDALClose(dstDs);
+//                throw std::runtime_error("VectorReaderGdal::copy: unable to fetch source layer definition.");
+//            }
+//
+//            // SRS fuente y decisión de transformación
+//            OGRSpatialReference *srcSrs = srcLy->GetSpatialRef();
+//            OGRSpatialReference *dstSrsRaw = nullptr;
+//            std::unique_ptr<OGRSpatialReference> dstSrsOwner;
+//            bool needsTransform = false;
+//
+//            if (targetSrs) {
+//                dstSrsRaw = targetSrs;
+//                if (srcSrs) {
+//                    needsTransform = (srcSrs->IsSame(targetSrs) == FALSE);
+//                } else {
+//                    // Sin SRS de origen: asignamos SRS destino, sin transformar
+//                    needsTransform = false;
+//                }
+//            } else {
+//                if (srcSrs) {
+//                    dstSrsOwner.reset(srcSrs->Clone());
+//                    dstSrsRaw = dstSrsOwner.get();
+//                } else {
+//                    dstSrsRaw = nullptr;
+//                }
+//                needsTransform = false;
+//            }
+//
+//            // Crear capa de salida (mismo nombre, tipo geométrico, SRS escogido)
+//            const char *layerName = srcLy->GetName();
+//            const OGRwkbGeometryType geomType = srcDefn->GetGeomType();
+//
+//            OGRLayer *dstLy = dstDs->CreateLayer(layerName, dstSrsRaw, geomType, nullptr);
+//            if (!dstLy) {
+//                GDALClose(dstDs);
+//                throw std::runtime_error("VectorReaderGdal::copy: failed to create output layer.");
+//            }
+//
+//            const bool canCreateField = dstLy->TestCapability(OLCCreateField);
+//            if (canCreateField) {
+//                // Copiar campos de atributos
+//                for (int f = 0; f < srcDefn->GetFieldCount(); ++f) {
+//                    OGRFieldDefn *fldDefn = srcDefn->GetFieldDefn(f);
+//                    if (!fldDefn) continue;
+//                    OGRFieldDefn fld(fldDefn);
+//                    if (dstLy->CreateField(&fld) != OGRERR_NONE) {
+//                        GDALClose(dstDs);
+//                        throw std::runtime_error("VectorReaderGdal::copy: failed to create output field.");
+//                    }
+//                }
+//            } else {
+//                Message::warning("VectorReaderGdal::copy: output layer does not support creating fields. Attributes will be skipped.");
+//            }
+//
+//            // Preparar transformación (si procede)
+//            std::unique_ptr<OGRCoordinateTransformation> coordTx;
+//            if (needsTransform) {
+//                coordTx.reset(OGRCreateCoordinateTransformation(srcSrs, dstSrsRaw));
+//                if (!coordTx) {
+//                    GDALClose(dstDs);
+//                    throw std::runtime_error("VectorReaderGdal::copy: failed to create coordinate transformation.");
+//                }
+//            }
+//
+//            // Copiar features
+//            srcLy->ResetReading();
+//            OGRFeature *srcFeat = nullptr;
+//            while ((srcFeat = srcLy->GetNextFeature()) != nullptr) {
+//                std::unique_ptr<OGRFeature> dstFeat(OGRFeature::CreateFeature(dstLy->GetLayerDefn()));
+//                if (!dstFeat) {
+//                    OGRFeature::DestroyFeature(srcFeat);
+//                    GDALClose(dstDs);
+//                    throw std::runtime_error("VectorReaderGdal::copy: failed to allocate output feature.");
+//                }
+//
+//                // Copiar atributos
+//                for (int f = 0; f < dstFeat->GetFieldCount(); ++f) {
+//                    dstFeat->SetField(f, srcFeat->GetRawFieldRef(f));
+//                }
+//
+//                // Copiar / transformar geometría
+//                if (OGRGeometry *g = srcFeat->GetGeometryRef()) {
+//                    std::unique_ptr<OGRGeometry> gClone(g->clone());
+//                    if (!gClone) {
+//                        OGRFeature::DestroyFeature(srcFeat);
+//                        GDALClose(dstDs);
+//                        throw std::runtime_error("VectorReaderGdal::copy: failed to clone geometry.");
+//                    }
+//                    if (coordTx) {
+//                        if (gClone->transform(coordTx.get()) != OGRERR_NONE) {
+//                            OGRFeature::DestroyFeature(srcFeat);
+//                            GDALClose(dstDs);
+//                            throw std::runtime_error("VectorReaderGdal::copy: geometry transformation failed.");
+//                        }
+//                    }
+//                    if (dstFeat->SetGeometry(gClone.get()) != OGRERR_NONE) {
+//                        OGRFeature::DestroyFeature(srcFeat);
+//                        GDALClose(dstDs);
+//                        throw std::runtime_error("VectorReaderGdal::copy: failed to set geometry on output feature.");
+//                    }
+//                }
+//
+//                if (dstLy->CreateFeature(dstFeat.get()) != OGRERR_NONE) {
+//                    OGRFeature::DestroyFeature(srcFeat);
+//                    GDALClose(dstDs);
+//                    throw std::runtime_error("VectorReaderGdal::copy: failed to write feature.");
+//                }
+//
+//                OGRFeature::DestroyFeature(srcFeat);
+//            }
+//
+//            // (Opcional) Copiar metadatos de capa:
+//            // char** md = srcLy->GetMetadata();
+//            // if (md) dstLy->SetMetadata(md);
+//        }
+//
+//        // (Opcional) Copiar metadatos de dataset:
+//        // char** dsMd = mDataset->GetMetadata();
+//        // if (dsMd) dstDs->SetMetadata(dsMd);
+//        if (targetSrs) {
+//            delete targetSrs;
+//            targetSrs = nullptr;
+//        }
+//
+//        GDALClose(dstDs);
+//
+//    } catch (...) {
+//        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+//    }
+//}
 
 auto VectorReaderGdal::crsWkt() const -> std::string
 {

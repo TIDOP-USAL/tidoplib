@@ -400,12 +400,12 @@ void ImageReaderGdal::copy(const std::string &outputPath,
 
                     if (src_epsg != dst_epsg) {
 
-                        OGRSpatialReference dst_srs;
-                        dst_srs.importFromEPSG(dst_epsg);
-                        char *c_wtk = nullptr;
-                        dst_srs.exportToWkt(&c_wtk);
-                        std::string dst_wkt(c_wtk);
-                        CPLFree(c_wtk);
+                        //OGRSpatialReference dst_srs;
+                        //dst_srs.importFromEPSG(dst_epsg);
+                        //char *c_wtk = nullptr;
+                        //dst_srs.exportToWkt(&c_wtk);
+                        //std::string dst_wkt(c_wtk);
+                        //CPLFree(c_wtk);
 
                         std::string src_wkt = crsWkt();
                         TL_ASSERT(!src_wkt.empty(), "Source CRS is undefined");

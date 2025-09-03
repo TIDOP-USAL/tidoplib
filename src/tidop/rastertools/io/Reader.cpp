@@ -26,11 +26,7 @@
 
 #include "tidop/rastertools/io/ImageReader.h"
 
-#ifdef TL_HAVE_OPENCV
-
-
 #include <utility>
-
 
 namespace tl
 {
@@ -183,5 +179,3 @@ auto RasterReader::noDataValue(bool *exist) const -> double
 
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

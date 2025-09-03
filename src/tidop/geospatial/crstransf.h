@@ -37,11 +37,6 @@
 namespace tl
 {
 
-namespace geom
-{
-template<typename Point_t> class Transform3D;
-}
-
 /// \cond
 
 namespace internal

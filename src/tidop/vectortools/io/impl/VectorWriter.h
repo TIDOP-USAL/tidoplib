@@ -43,10 +43,10 @@ class GLayer;
 
 
 /*!
- * \class VectorWriter
+ * \class VectorWriterBase
  * \brief Abstract base class for writing vector data to files.
  *
- * The `VectorWriter` class provides an interface for creating, opening, writing to,
+ * The `VectorWriterBase` class provides an interface for creating, opening, writing to,
  * and closing vector data files. It is designed to be extended by specific implementations
  * that handle different vector file formats.
  *
@@ -55,20 +55,20 @@ class GLayer;
  *
  * \tparam Path Type representing the file path.
  */
-class TL_EXPORT VectorWriter
+class TL_EXPORT VectorWriterBase
 {
 
-    GENERATE_UNIQUE_PTR(VectorWriter)
+    GENERATE_UNIQUE_PTR(VectorWriterBase)
 
 public:
 
     /*!
-     * \brief Constructor for `VectorWriter`.
+     * \brief Constructor for `VectorWriterBase`.
      * \param[in] file The path to the vector file.
      */
-    VectorWriter(Path file);
+    VectorWriterBase(Path file);
 
-    virtual ~VectorWriter() = default;
+    virtual ~VectorWriterBase() = default;
 
     /*!
      * \brief Open the file.
@@ -123,14 +123,14 @@ protected:
 
 /*!
  * \class VectorWriterFactory
- * \brief Factory class for creating instances of `VectorWriter` for various vector formats.
+ * \brief Factory class for creating instances of `VectorWriterBase` for various vector formats.
  *
- * The `VectorWriterFactory` provides a static method to create `VectorWriter` instances
+ * The `VectorWriterFactory` provides a static method to create `VectorWriterBase` instances
  * based on the provided file path. It abstracts the creation logic, allowing users to
  * work with different vector file formats without needing to know the specific implementation details.
  *
  * This class follows the factory design pattern to simplify the instantiation of
- * different `VectorWriter` types based on the file format.
+ * different `VectorWriterBase` types based on the file format.
  */
 class TL_EXPORT VectorWriterFactory
 {
@@ -148,15 +148,15 @@ private:
 public:
 
     /*!
-     * \brief Create a `VectorWriter` instance for the given file.
+     * \brief Create a `VectorWriterBase` instance for the given file.
      * \param file The path to the vector file.
-     * \return A smart pointer (`Ptr`) to the created `VectorWriter` instance.
+     * \return A smart pointer (`Ptr`) to the created `VectorWriterBase` instance.
      *
-     * This method inspects the file path and creates an appropriate `VectorWriter`
+     * This method inspects the file path and creates an appropriate `VectorWriterBase`
      * instance that can handle the specific format of the given vector file.
-     * The actual type of `VectorWriter` returned depends on the file's extension or contents.
+     * The actual type of `VectorWriterBase` returned depends on the file's extension or contents.
      */
-    static auto create(const Path &file) -> VectorWriter::Ptr;
+    static auto create(const Path &file) -> VectorWriterBase::Ptr;
 };
 
 /*! \} */ // end of vector

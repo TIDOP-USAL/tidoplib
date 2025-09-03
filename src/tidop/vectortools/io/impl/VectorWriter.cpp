@@ -22,51 +22,49 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/vectortools/io/VectorReader.h"
-#include "tidop/core/base/exception.h"
-#include "tidop/core/private/gdalreg.h"
-#include "tidop/vectortools/io/impl/GdalReader.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+#include "tidop/vectortools/io/impl/VectorWriter.h"
+#include "tidop/vectortools/io/impl/GdalWriter.h"
+#include "tidop/core/base/string_utils.h"
 
 namespace tl
 {
 
-VectorReader::VectorReader(Path file)
+VectorWriterBase::VectorWriterBase(Path file)
   : mFile(std::move(file))
 {
 }
 
 
-
-auto VectorReaderFactory::create(const Path &file) -> VectorReader::Ptr
+auto VectorWriterFactory::create(const Path& file) -> VectorWriterBase::Ptr
 {
-    VectorReader::Ptr vector_reader;
+    VectorWriterBase::Ptr vector_writer;
 
     try {
 
-        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
-
         std::string extension = file.extension().toString();
 #ifdef TL_HAVE_GDAL
-        if (driverAvailable(file)){
-        //if (VectorReaderGdal::isExtensionSupported(extension)) {
-            vector_reader = VectorReaderGdal::New(file);
+        if (compareInsensitiveCase(extension, ".dxf") ||
+            compareInsensitiveCase(extension, ".dwg") ||
+            compareInsensitiveCase(extension, ".dgn") ||
+            compareInsensitiveCase(extension, ".shp") ||
+            compareInsensitiveCase(extension, ".gml") ||
+            compareInsensitiveCase(extension, ".kml") ||
+            compareInsensitiveCase(extension, ".kmz") ||
+            compareInsensitiveCase(extension, ".json") ||
+            compareInsensitiveCase(extension, ".osm")) {
+            vector_writer = std::make_unique<VectorWriterGdal>(file);
         } else
 #endif
         {
-            TL_THROW_EXCEPTION("Invalid Vector Reader: {}", file.fileName().toString());
+            TL_THROW_EXCEPTION("Invalid Vector Writer: {}", file.fileName().toString());
         }
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
     }
 
-    return vector_reader;
+    return vector_writer;
 }
+
 
 } // End namespace tl

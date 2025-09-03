@@ -46,17 +46,17 @@ class GLayer;
 
 
 /*!
- * \class VectorReader
+ * \class VectorReaderBase
  * \brief Abstract base class for reading various vector file formats.
  *
- * The `VectorReader` class defines the interface for reading vector data from files. 
+ * The `VectorReaderBase` class defines the interface for reading vector data from files. 
  * It provides methods to open, check the status, close the file, and read layers from it. 
  * Derived classes should implement the specific logic for handling different vector file formats.
  */
-class TL_EXPORT VectorReader
+class TL_EXPORT VectorReaderBase
 {
 
-    GENERATE_UNIQUE_PTR(VectorReader)
+    GENERATE_UNIQUE_PTR(VectorReaderBase)
 
 protected:
 
@@ -65,15 +65,15 @@ protected:
 public:
 
     /*!
-     * \brief Constructs a `VectorReader` with the given file path.
+     * \brief Constructs a `VectorReaderBase` with the given file path.
      * \param file The path to the vector file.
      */
-    VectorReader(Path file);
+    VectorReaderBase(Path file);
 
     /*!
      * \brief Virtual destructor for proper cleanup in derived classes.
      */
-    virtual ~VectorReader() = default;
+    virtual ~VectorReaderBase() = default;
 
     /*!
      * \brief Opens the vector file.
@@ -125,6 +125,11 @@ public:
     virtual auto read(const std::string &layerName) -> std::shared_ptr<GLayer> = 0;
 
     /*!
+     * \brief Copies the vector data to another file, optionally reprojecting it. 
+     */
+    //virtual void copy(const Path &outputPath, const std::string &targetEpsg) const = 0;
+
+    /*!
      * \brief Gets the Coordinate Reference System (CRS) in Well-Known Text (WKT) format.
      * \return A string containing the CRS in WKT format.
      *
@@ -138,11 +143,11 @@ public:
 
 /*!
  * \class VectorReaderFactory
- * \brief Factory class for creating `VectorReader` instances to handle different vector file formats.
+ * \brief Factory class for creating `VectorReaderBase` instances to handle different vector file formats.
  *
- * The `VectorReaderFactory` class provides a static method to create appropriate `VectorReader` objects
+ * The `VectorReaderFactory` class provides a static method to create appropriate `VectorReaderBase` objects
  * based on the specified file path. This factory pattern allows for the encapsulation of the logic
- * required to determine the correct `VectorReader` implementation for a given vector file format.
+ * required to determine the correct `VectorReaderBase` implementation for a given vector file format.
  */
 class TL_EXPORT VectorReaderFactory
 {
@@ -159,15 +164,15 @@ private:
 public:
 
     /*!
-     * \brief Creates a `VectorReader` instance for the specified vector file.
+     * \brief Creates a `VectorReaderBase` instance for the specified vector file.
      * \param[in] file The path to the vector file.
-     * \return A shared pointer to a `VectorReader` object that can read the specified file.
+     * \return A shared pointer to a `VectorReaderBase` object that can read the specified file.
      *
      * This static method analyzes the file type based on its extension or content and
-     * returns an appropriate `VectorReader` instance capable of handling that specific format.
+     * returns an appropriate `VectorReaderBase` instance capable of handling that specific format.
      * If the format is unsupported, it may return a null pointer or throw an exception.
      */
-    static auto create(const Path &file) -> VectorReader::Ptr;
+    static auto create(const Path &file) -> VectorReaderBase::Ptr;
 
 };
 

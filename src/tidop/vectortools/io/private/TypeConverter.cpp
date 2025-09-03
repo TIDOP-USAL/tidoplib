@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -21,14 +21,81 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
-#include "tidop/core/console.h"
-#include "tidop/core/app/message.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/vectortools/io/private/TypeConverter.h"
+
 #include "tidop/core/base/exception.h"
-#include "tidop/core/concurrency.h"
-#include "tidop/core/task.h"
+
+namespace tl
+{
+
+#ifdef TL_HAVE_GDAL
+
+TableField::Type typeFromGdal(OGRFieldType ogrType)
+{
+    TableField::Type type = TableField::Type::STRING;
+
+    switch (ogrType) {
+    case OFTInteger:
+        type = TableField::Type::INT;
+        break;
+    case OFTInteger64:
+        type = TableField::Type::INT64;
+        break;
+    case OFTReal:
+        type = TableField::Type::DOUBLE;
+        break;
+    case OFTString:
+        type = TableField::Type::STRING;
+        break;
+    case OFTIntegerList:
+        //break;
+    case OFTRealList:
+        //break;
+    case OFTStringList:
+        //break;
+    case OFTWideString:
+        //break;
+    case OFTWideStringList:
+        //break;
+    case OFTBinary:
+        //break;
+    case OFTDate:
+        //break;
+    case OFTTime:
+        //break;
+    case OFTDateTime:
+        //break;
+    case OFTInteger64List:
+        //break;
+        TL_THROW_EXCEPTION("Unsupported type");
+    }
+
+    return type;
+}
+
+OGRFieldType typeToGdal(TableField::Type type)
+{
+    OGRFieldType ogr_type = OFTString;
+    switch (type) {
+    case TableField::Type::INT:
+        ogr_type = OFTInteger;
+        break;
+    case TableField::Type::INT64:
+        ogr_type = OFTInteger64;
+        break;
+    case TableField::Type::DOUBLE:
+        ogr_type = OFTReal;
+        break;
+    case TableField::Type::STRING:
+        ogr_type = OFTString;
+        break;
+    }
+
+    return ogr_type;
+}
+
+#endif // TL_HAVE_GDAL
+
+} // End namespace tl
+

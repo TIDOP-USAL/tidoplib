@@ -107,7 +107,7 @@ void ExifMetadata::init()
     mMetadata["EXIF_ExposureIndex"] = std::make_pair("", false);
     mMetadata["EXIF_SensingMethod"] = std::make_pair("", false);
     mMetadata["EXIF_FileSource"] = std::make_pair("3 (Digital Still Camera)", false);
-    mMetadata["EXIF_SceneType"] = std::make_pair("	1 (Directly photographed image)", false);
+    mMetadata["EXIF_SceneType"] = std::make_pair("1 (Directly photographed image)", false);
     mMetadata["EXIF_CFAPattern"] = std::make_pair("", false);
     mMetadata["EXIF_CustomRendered"] = std::make_pair("", false);
     mMetadata["EXIF_ExposureMode"] = std::make_pair("", false);

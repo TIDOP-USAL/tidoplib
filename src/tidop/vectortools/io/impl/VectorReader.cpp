@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -21,14 +21,52 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
-#include "tidop/core/console.h"
-#include "tidop/core/app/message.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/vectortools/io/impl/VectorReader.h"
 #include "tidop/core/base/exception.h"
-#include "tidop/core/concurrency.h"
-#include "tidop/core/task.h"
+#include "tidop/core/private/gdalreg.h"
+#include "tidop/vectortools/io/impl/GdalReader.h"
+
+#ifdef TL_HAVE_GDAL
+TL_DISABLE_WARNINGS
+#include "ogrsf_frmts.h"
+TL_DEFAULT_WARNINGS
+#endif // TL_HAVE_GDAL
+
+namespace tl
+{
+
+VectorReaderBase::VectorReaderBase(Path file)
+  : mFile(std::move(file))
+{
+}
+
+
+
+auto VectorReaderFactory::create(const Path &file) -> VectorReaderBase::Ptr
+{
+    VectorReaderBase::Ptr vector_reader;
+
+    try {
+
+        TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
+
+        std::string extension = file.extension().toString();
+#ifdef TL_HAVE_GDAL
+        if (driverAvailable(file)){
+        //if (VectorReaderGdal::isExtensionSupported(extension)) {
+            vector_reader = VectorReaderGdal::New(file);
+        } else
+#endif
+        {
+            TL_THROW_EXCEPTION("Invalid Vector Reader: {}", file.fileName().toString());
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+
+    return vector_reader;
+}
+
+} // End namespace tl

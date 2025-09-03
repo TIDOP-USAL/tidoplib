@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/rastertools/io/private/DataTypeConverter.h"
+#include "tidop/rastertools/io/private/gdal.h"
 
 #include "tidop/core/base/exception.h"
 #include "tidop/core/base/string_utils.h"

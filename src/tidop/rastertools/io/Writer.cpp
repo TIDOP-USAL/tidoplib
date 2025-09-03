@@ -24,8 +24,6 @@
 
 #include "tidop/rastertools/io/Writer.h"
 
-#ifdef TL_HAVE_OPENCV
-
 #include "tidop/rastertools/io/ImageWriter.h"
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/Metadata.h"
@@ -33,6 +31,7 @@
 
 namespace tl
 {
+
 RasterWriter::RasterWriter()
   : mWriter(nullptr)
 {
@@ -56,7 +55,7 @@ void RasterWriter::open(const tl::Path &file)
 
 void RasterWriter::create(int rows, int cols, int bands, DataType type, const std::shared_ptr<ImageOptions> &imageOptions)
 {
-    TL_ASSERT(!mWriter, "RasterWriter is already open");
+    TL_ASSERT(mWriter, "RasterWriter is not open");
     mWriter->create(rows, cols, bands, type, imageOptions);
 }
 
@@ -141,5 +140,3 @@ void RasterWriter::setNoDataValue(double nodata)
 
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

@@ -26,8 +26,6 @@
 
 #include "tidop/config.h"
 
-#ifdef TL_HAVE_OPENCV
-
 #include <string>
 #include <memory>
 
@@ -43,15 +41,13 @@
 namespace tl
 {
 
+class ImageMetadata;
+class ImageOptions;
+class ImageReader;
 
 /*! \addtogroup RasterIO
  *  \{
  */
-
-
-class ImageMetadata;
-class ImageOptions;
-class ImageReader;
 
 /*!
  * \brief Class for reading different raster formats
@@ -267,5 +263,3 @@ ALLOW_BITWISE_FLAG_OPERATIONS(RasterReader::Mode)
 
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

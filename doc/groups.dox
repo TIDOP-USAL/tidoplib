@@ -307,17 +307,20 @@
  * 
  * Example usage:
  * \code 
- * auto image_reader = ImageReaderFactory::create(img);
+ * #include <tidop/rastertools/io/Reader.h>
  *
- * image_reader->open();
- * if (image_reader->isOpen()) {
+ * using namespace tl;
  *
- *     Message::info("Number of bands: {}", image_reader->channels());
- *     Message::info("Color depth: {}", image_reader->depth());
- *     Message::info("Image dimensions: {}x{}", image_reader->cols(), image_reader->rows());
+ * RasterReader image_reader(img);
+ *
+ * if (image_reader.isOpen()) {
+ *
+ *     Message::info("Number of bands: {}", image_reader.channels());
+ *     Message::info("Color depth: {}", image_reader.depth());
+ *     Message::info("Image dimensions: {}x{}", image_reader.cols(), image_reader.rows());
  *     Message::info("Metadata:");
  *     
- *     auto image_metadata = image_reader->metadata();
+ *     auto image_metadata = image_reader.metadata();
  *     auto metadata = image_metadata->activeMetadata();
  *     
  *     for (auto it = metadata.begin(); it != metadata.end(); ++it) {
@@ -326,7 +329,7 @@
  *         Message::info("  {}: {}", name, value);
  *     }
  *     
- *     image_reader->close(); 
+ *     image_reader.close(); 
  * }
  * \endcode
  * 

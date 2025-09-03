@@ -22,80 +22,59 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/vectortools/private/TypeConverter.h"
-
-#include "tidop/core/base/exception.h"
+#include "tidop/vectortools/io/Writer.h"
+#include "tidop/vectortools/io/impl/GdalWriter.h"
+#include "tidop/core/base/string_utils.h"
 
 namespace tl
 {
 
-#ifdef TL_HAVE_GDAL
-
-TableField::Type typeFromGdal(OGRFieldType ogrType)
+VectorWriter::VectorWriter()
+  : mWriter(nullptr)
 {
-    TableField::Type type = TableField::Type::STRING;
-
-    switch (ogrType) {
-    case OFTInteger:
-        type = TableField::Type::INT;
-        break;
-    case OFTInteger64:
-        type = TableField::Type::INT64;
-        break;
-    case OFTReal:
-        type = TableField::Type::DOUBLE;
-        break;
-    case OFTString:
-        type = TableField::Type::STRING;
-        break;
-    case OFTIntegerList:
-        //break;
-    case OFTRealList:
-        //break;
-    case OFTStringList:
-        //break;
-    case OFTWideString:
-        //break;
-    case OFTWideStringList:
-        //break;
-    case OFTBinary:
-        //break;
-    case OFTDate:
-        //break;
-    case OFTTime:
-        //break;
-    case OFTDateTime:
-        //break;
-    case OFTInteger64List:
-        //break;
-        TL_THROW_EXCEPTION("Unsupported type");
-    }
-
-    return type;
 }
 
-OGRFieldType typeToGdal(TableField::Type type)
+VectorWriter::VectorWriter(Path file)
 {
-    OGRFieldType ogr_type = OFTString;
-    switch (type) {
-    case TableField::Type::INT:
-        ogr_type = OFTInteger;
-        break;
-    case TableField::Type::INT64:
-        ogr_type = OFTInteger64;
-        break;
-    case TableField::Type::DOUBLE:
-        ogr_type = OFTReal;
-        break;
-    case TableField::Type::STRING:
-        ogr_type = OFTString;
-        break;
-    }
-
-    return ogr_type;
+    open(std::move(file));
 }
 
-#endif // TL_HAVE_GDAL
+VectorWriter::~VectorWriter()
+{
+    close();
+}
+
+void VectorWriter::open(const Path &file)
+{
+    mWriter = VectorWriterFactory::create(file);
+    mWriter->open();
+    mWriter->create();
+}
+
+auto VectorWriter::isOpen() const -> bool
+{
+    return mWriter && mWriter->isOpen();
+}
+
+void VectorWriter::close()
+{
+    if (mWriter) {
+        mWriter->close();
+        mWriter.reset();
+    }
+}
+
+void VectorWriter::write(const GLayer &layer)
+{
+    TL_ASSERT(mWriter, "VectorWriter is not open");
+    mWriter->write(layer);
+}
+
+void VectorWriter::setCRS(const std::string &epsgCode)
+{
+    TL_ASSERT(mWriter, "VectorWriter is not open");
+    mWriter->setCRS(epsgCode);
+}
+
 
 } // End namespace tl
-

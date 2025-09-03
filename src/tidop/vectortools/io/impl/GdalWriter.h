@@ -26,7 +26,7 @@
 
 #include "tidop/config.h"
 #include "tidop/core/base/path.h"
-#include "tidop/vectortools/io/VectorWriter.h"
+#include "tidop/vectortools/io/impl/VectorWriter.h"
 
 class OGRLayer;
 class OGRFeature;
@@ -57,7 +57,7 @@ class GraphicEntity;
 /// \cond
 
 class VectorWriterGdal
-    : public VectorWriter
+    : public VectorWriterBase
 {
 
 public:
@@ -74,7 +74,6 @@ public:
 
 private:
 
-    static auto driverFromExt(const std::string& extension) -> std::string;
     auto createLayer(const std::string &layerName) const -> OGRLayer*;
     static void writePoint(OGRFeature *ogrFeature, const GPoint *gPoint);
     static void writePoint(OGRFeature *ogrFeature, const GPoint3D *gPoint3D);

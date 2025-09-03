@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -21,14 +21,45 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
-#include "tidop/core/console.h"
-#include "tidop/core/app/message.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/vectortools/io/private/gdal.h"
+
 #include "tidop/core/base/exception.h"
-#include "tidop/core/concurrency.h"
-#include "tidop/core/task.h"
+#include "tidop/core/base/string_utils.h"
+
+namespace tl
+{
+
+namespace internal
+{
+
+
+std::string gdalVectorDriverFromExtension(const std::string &extension)
+{
+    std::string format;
+	
+    if (compareInsensitiveCase(extension, ".dxf"))
+        format = "DXF";
+    else if (compareInsensitiveCase(extension, ".dwg"))
+        format = "DWG";
+    else if (compareInsensitiveCase(extension, ".dgn"))
+        format = "DGN";
+    else if (compareInsensitiveCase(extension, ".shp"))
+        format = "ESRI Shapefile";
+    else if (compareInsensitiveCase(extension, ".gml"))
+        format = "GML";
+    else if (compareInsensitiveCase(extension, ".kml") || compareInsensitiveCase(extension, ".kmz"))
+        format = "LIBKML";
+    else if (compareInsensitiveCase(extension, ".json"))
+        format = "GeoJSON";
+    else if (compareInsensitiveCase(extension, ".osm"))
+        format = "OSM";
+    else format = "";
+	
+    return format;
+}
+
+
+} // End namespace internal
+
+} // End namespace tl

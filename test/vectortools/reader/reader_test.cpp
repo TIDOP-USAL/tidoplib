@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop vector reader test
 #include <boost/test/unit_test.hpp>
-#include <tidop/vectortools/io/VectorReader.h>
+#include <tidop/vectortools/io/Reader.h>
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/point.h>
 #include <tidop/graphic/entities/linestring.h>
@@ -40,14 +40,13 @@ BOOST_AUTO_TEST_CASE(read_geojson)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.geojson"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) throw std::runtime_error("Vector open error");
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) throw std::runtime_error("Vector open error");
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         // read point
         auto entity = layer->begin();
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE(read_geojson)
         auto polygon_data = entity->get()->data();
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(0));
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -110,15 +109,14 @@ BOOST_AUTO_TEST_CASE(read_gml)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.gml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return; // read support needs Xerces or libexpat 
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return; // read support needs Xerces or libexpat 
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(3, layers_count);
 
         // read point
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
         auto entity = layer->begin();
         std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(*entity);
         BOOST_CHECK_EQUAL(-105.01621, point->x);
@@ -129,7 +127,7 @@ BOOST_AUTO_TEST_CASE(read_gml)
         BOOST_CHECK_EQUAL("Ubicación de ejemplo", point_data->value(1));
 
         // read linestring
-        layer = vector_reader->read(1);
+        layer = vector_reader.read(1);
         entity = layer->begin();
         std::shared_ptr<GLineString> linestring = std::dynamic_pointer_cast<GLineString>(*entity);
         BOOST_CHECK_EQUAL(2, linestring->size());
@@ -147,7 +145,7 @@ BOOST_AUTO_TEST_CASE(read_gml)
         BOOST_CHECK_EQUAL("Línea de ejemplo", linestring_data->value(1));
 
         // read polygon
-        layer = vector_reader->read(2);
+        layer = vector_reader.read(2);
         entity = layer->begin();
         std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(*entity);
         BOOST_CHECK_EQUAL(4, polygon->size());
@@ -172,7 +170,7 @@ BOOST_AUTO_TEST_CASE(read_gml)
         BOOST_CHECK_EQUAL("polygon.0", polygon_data->value(0));
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(1));
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -185,14 +183,13 @@ BOOST_AUTO_TEST_CASE(read_kml)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.kml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return; // read support needs Expat XML Parser
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return; // read support needs Expat XML Parser
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         // read point
         auto entity = layer->begin();
@@ -243,7 +240,7 @@ BOOST_AUTO_TEST_CASE(read_kml)
         auto polygon_data = entity->get()->data();
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(0));
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -256,14 +253,13 @@ BOOST_AUTO_TEST_CASE(read_kmz)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.kmz"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return; // read support needs Libkml
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return; // read support needs Libkml
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         // read point
         auto entity = layer->begin();
@@ -314,7 +310,8 @@ BOOST_AUTO_TEST_CASE(read_kmz)
         auto polygon_data = entity->get()->data();
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(0));
 
-        vector_reader->close();
+        vector_reader.close();
+
     } catch (std::exception &e) {
         tl::printException(e);
     }
@@ -609,14 +606,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Autos.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(autos_name, layer->name());
 
@@ -632,7 +628,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -641,14 +637,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Bridges.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(bridges_name, layer->name());
 
@@ -666,7 +661,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -680,14 +675,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Autos.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("AutoFeature", layer->name());
 
@@ -703,7 +697,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -712,14 +706,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Bridges.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("BridgeFeature", layer->name());
 
@@ -737,7 +730,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -750,14 +743,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Autos.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(autos_name, layer->name());
 
@@ -773,7 +765,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -783,14 +775,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Bridges.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(bridges_name, layer->name());
 
@@ -808,7 +799,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -817,14 +808,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Buildings.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(buildings_name, layer->name());
 
@@ -844,7 +834,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
             }
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -859,14 +849,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\RoadSegments.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(road_segments_name, layer->name());
 
@@ -888,7 +877,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -898,14 +887,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Streams.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(streams_name, layer->name());
 
@@ -927,7 +915,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -940,14 +928,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\RoadSegments.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("RoadSegmentFeature", layer->name());
 
@@ -969,7 +956,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -979,14 +966,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Streams.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("StreamFeature", layer->name());
 
@@ -1008,7 +994,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1022,14 +1008,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\RoadSegments.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(road_segments_name, layer->name());
 
@@ -1051,7 +1036,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1060,14 +1045,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Streams.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(streams_name, layer->name());
 
@@ -1089,7 +1073,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1103,14 +1087,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Forests.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(forest_name, layer->name());
 
@@ -1129,7 +1112,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1139,14 +1122,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\BasicPolygons.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(basic_polygons_name, layer->name());
 
@@ -1163,7 +1145,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1173,14 +1155,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Ponds.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(ponds_name, layer->name());
 
@@ -1205,7 +1186,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1215,14 +1196,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Buildings.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(buildings_name, layer->name());
 
@@ -1243,7 +1223,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1253,14 +1233,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Lakes.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(lakes_name, layer->name());
 
@@ -1290,7 +1269,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1300,14 +1279,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\LakesWithElevation.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(lakes_with_elevations_name, layer->name());
 
@@ -1341,7 +1319,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1354,14 +1332,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Forests.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("ForestFeature", layer->name());
 
@@ -1384,7 +1361,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1393,14 +1370,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\BasicPolygons.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("PolygonFeature", layer->name());
 
@@ -1417,7 +1393,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1427,14 +1403,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Ponds.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("PondFeature", layer->name());
 
@@ -1459,7 +1434,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1468,14 +1443,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Buildings.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("BuildingFeature", layer->name());
 
@@ -1496,7 +1470,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1505,14 +1479,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Lakes.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("LakeFeature", layer->name());
 
@@ -1542,7 +1515,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1551,14 +1524,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\LakesWithElevation.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("LakeFeature", layer->name());
 
@@ -1592,7 +1564,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1605,14 +1577,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Forests.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(forest_name, layer->name());
 
@@ -1631,7 +1602,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1641,14 +1612,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\BasicPolygons.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(basic_polygons_name, layer->name());
 
@@ -1665,7 +1635,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1674,14 +1644,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Ponds.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(ponds_name, layer->name());
 
@@ -1706,7 +1675,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1716,14 +1685,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Buildings.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(buildings_name, layer->name());
 
@@ -1745,7 +1713,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
             }
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1755,14 +1723,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Lakes.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(lakes_name, layer->name());
 
@@ -1792,7 +1759,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1801,14 +1768,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\LakesWithElevation.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(lakes_with_elevations_name, layer->name());
 
@@ -1842,7 +1808,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
             i++;
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1856,14 +1822,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_multilinestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\DividedRoutes.shp"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(divided_routes_name, layer->name());
 
@@ -1886,7 +1851,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_multilinestring, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1899,14 +1864,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_multilinestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\DividedRoutes.xml"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL("DividedRouteFeature", layer->name());
 
@@ -1929,7 +1893,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_multilinestring, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);
@@ -1942,14 +1906,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_multilinestring, VectorReaderTest)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\DividedRoutes.mif"));
-        std::unique_ptr<VectorReader> vector_reader = VectorReaderFactory::create(file);
-        vector_reader->open();
-        if (!vector_reader->isOpen()) return;
+        VectorReader vector_reader(file);
+        if (!vector_reader.isOpen()) return;
 
-        int layers_count = vector_reader->layersCount();
+        int layers_count = vector_reader.layersCount();
         BOOST_CHECK_EQUAL(1, layers_count);
 
-        std::shared_ptr<GLayer> layer = vector_reader->read(0);
+        std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
         BOOST_CHECK_EQUAL(divided_routes_name, layer->name());
 
@@ -1972,7 +1935,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_multilinestring, VectorReaderTest)
 
         }
 
-        vector_reader->close();
+        vector_reader.close();
 
     } catch (std::exception &e) {
         tl::printException(e);

@@ -296,29 +296,29 @@ DataType openCVDataTypeToDataType(int dataType)
 
 #endif // TL_HAVE_OPENCV
 
-std::vector<int> gdalBandOrder(int channels)
-{
-    std::vector<int> panBandMap;
-#ifdef TL_HAVE_OPENCV
-    if (channels == 1)
-        panBandMap = {1};
-    if (channels == 2)
-        panBandMap = {1, 2};
-    else if (channels == 3)
-        panBandMap = {3, 2, 1};   // Orden de bandas de OpenCV
-    else if (channels == 4)
-        panBandMap = {3, 2, 1, 4};
-#else
-    if (channels == 1)
-        panBandMap = {1};
-    else if (channels == 3)
-        panBandMap = {1, 2, 3};
-    else if (channels == 4)
-        panBandMap = {1, 2, 3, 4};
-#endif
-
-    return panBandMap;
-}
+//std::vector<int> gdalBandOrder(int channels)
+//{
+//    std::vector<int> panBandMap;
+//#ifdef TL_HAVE_OPENCV
+//    if (channels == 1)
+//        panBandMap = {1};
+//    if (channels == 2)
+//        panBandMap = {1, 2};
+//    else if (channels == 3)
+//        panBandMap = {3, 2, 1};   // Orden de bandas de OpenCV
+//    else if (channels == 4)
+//        panBandMap = {3, 2, 1, 4};
+//#else
+//    if (channels == 1)
+//        panBandMap = {1};
+//    else if (channels == 3)
+//        panBandMap = {1, 2, 3};
+//    else if (channels == 4)
+//        panBandMap = {1, 2, 3, 4};
+//#endif
+//
+//    return panBandMap;
+//}
 
 
 #ifdef TL_HAVE_EDSDK

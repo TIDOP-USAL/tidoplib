@@ -26,8 +26,6 @@
 
 #include "tidop/config.h"
 
-#ifdef TL_HAVE_OPENCV
-
 #include <string>
 #include <memory>
 
@@ -82,7 +80,7 @@ public:
 
     /*!
      * \brief Constructor with file path
-     * \param file Output file path
+     * \param[in] file Output file path
      */
     RasterWriter(tl::Path file);
 
@@ -90,7 +88,7 @@ public:
 	
     /*!
      * \brief Opens the target file
-     * \param file Output file path
+     * \param[in] file Output file path
      */
     void open(const tl::Path &file);
 
@@ -190,7 +188,7 @@ public:
      */
     void setNoDataValue(double nodata);
 
-protected:
+private:
 
     std::unique_ptr<ImageWriter> mWriter;
 
@@ -202,5 +200,3 @@ protected:
 
 
 } // End namespace tl
-
-#endif // TL_HAVE_OPENCV

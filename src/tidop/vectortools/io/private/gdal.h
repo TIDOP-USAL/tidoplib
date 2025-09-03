@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -21,14 +21,23 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
+
 #pragma once
 
+#include "tidop/config.h"
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
-#include "tidop/core/console.h"
-#include "tidop/core/app/message.h"
-#include "tidop/core/base/flags.h"
-#include "tidop/core/base/exception.h"
-#include "tidop/core/concurrency.h"
-#include "tidop/core/task.h"
+
+#include <vector>
+#include <string>
+
+namespace tl
+{
+
+namespace internal
+{
+	
+TL_EXPORT std::string gdalVectorDriverFromExtension(const std::string &extension);
+
+} // End namespace internal
+
+} // End namespace tl
