@@ -23,12 +23,6 @@
  **************************************************************************/
 
 #include "tidop/rastertools/io/Metadata.h"
-#include "tidop/rastertools/io/impl/metadata/bmp.h"
-#include "tidop/rastertools/io/impl/metadata/exif.h"
-#include "tidop/rastertools/io/impl/metadata/gif.h"
-#include "tidop/rastertools/io/impl/metadata/jpeg.h"
-#include "tidop/rastertools/io/impl/metadata/png.h"
-#include "tidop/rastertools/io/impl/metadata/tiff.h"
 #include "tidop/core/app/message.h"
 
 namespace tl
@@ -105,40 +99,73 @@ void MetadataItemText::parseValue(const std::string &value)
 
 
 
-ImageMetadata::ImageMetadata(Format format)
-    : mFormat(format)
+ImageMetadata::ImageMetadata()
 {
 }
 
 ImageMetadata::~ImageMetadata() = default;
 
-auto ImageMetadata::format() const -> Format
+auto ImageMetadata::existMetadata(const std::string &name) -> bool
 {
-    return mFormat;
+    auto metadata = mMetadata.find(name);
+    if (metadata != mMetadata.end()) {
+        return true;
+    }
+    return false;
 }
 
-
-
-std::shared_ptr<ImageMetadata> ImageMetadataFactory::create(const std::string &format)
+auto ImageMetadata::metadata(const std::string &name) const -> std::string
 {
-    std::shared_ptr<ImageMetadata> image_metadata;
+    std::string value;
 
-    if (format == "JPEG") {
-        image_metadata = std::make_shared<JpegMetadata>();
-    } else if (format == "GTiff") {
-        image_metadata = std::make_shared<TiffMetadata>();
-    } else if (format == "PNG") {
-        image_metadata = std::make_shared<PngMetadata>();
-    } else if (format == "BMP") {
-        image_metadata = std::make_shared<BmpMetadata>();
-    } else if (format == "GIF") {
-        image_metadata = std::make_shared<GifMetadata>();
-    } else {
-        throw std::runtime_error("Invalid Image Format");
+    auto metadata = mMetadata.find(name);
+    if (metadata != mMetadata.end()) {
+        value = metadata->second;
     }
 
-    return image_metadata;
+    return value;
 }
+
+void ImageMetadata::setMetadata(const std::string &name, const std::string &value)
+{
+    mMetadata[name] = value;
+}
+
+auto ImageMetadata::begin() TL_NOEXCEPT -> iterator
+{
+    return mMetadata.begin();
+}
+
+auto ImageMetadata::begin() const TL_NOEXCEPT -> const_iterator
+{
+    return mMetadata.cbegin();
+}
+
+auto ImageMetadata::end() TL_NOEXCEPT -> iterator
+{
+    return mMetadata.end();
+}
+
+auto ImageMetadata::end() const TL_NOEXCEPT -> const_iterator
+{
+    return mMetadata.cend();
+}
+
+auto ImageMetadata::empty() const -> bool
+{
+    return mMetadata.empty();
+}
+
+auto ImageMetadata::size() const -> size_t
+{
+    return mMetadata.size();
+}
+
+void ImageMetadata::clear()
+{
+    mMetadata.clear();
+}
+
 
 
 } // End namespace tl

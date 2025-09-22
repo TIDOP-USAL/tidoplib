@@ -72,7 +72,7 @@ void RasterWriter::close()
     }
 }
 
-void RasterWriter::setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata)
+void RasterWriter::setMetadata(const ImageMetadata &imageMetadata)
 {
     TL_ASSERT(mWriter, "RasterWriter is not open");
     mWriter->setMetadata(imageMetadata);

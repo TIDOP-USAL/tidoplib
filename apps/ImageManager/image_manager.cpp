@@ -71,10 +71,9 @@ void imageInfo(const Command::SharedPtr &command)
             Message::info("Image dimensions: {}x{}", image_reader.cols(), image_reader.rows());
             Message::info("Metadata:");
 
-            std::shared_ptr<ImageMetadata> image_metadata = image_reader.metadata();
-            std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
+            auto image_metadata = image_reader.metadata();
 
-            for (auto &item : metadata) {
+            for (auto &item : image_metadata) {
                 Message::info("  {}: {}", item.first, item.second);
             }
 
@@ -149,7 +148,7 @@ void convertImageFormat(const Command::SharedPtr &command)
         RasterReader image_reader(img);
 
         if (image_reader.isOpen()) {
-            image_reader.copy(output_img.toString(), nullptr, nullptr, image_reader.isGeoreferenced() ? crs_out : "");
+            image_reader.copy(output_img.toString(), nullptr, ImageMetadata(), image_reader.isGeoreferenced() ? crs_out : "");
             image_reader.close();
         }
 

@@ -58,9 +58,7 @@ BOOST_AUTO_TEST_CASE(read_png)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader->metadata();
-        BOOST_CHECK(tl::ImageMetadata::Format::png == metadata->format());
-        auto active_metadata = metadata->activeMetadata();
-        BOOST_CHECK_EQUAL(0, active_metadata.size());
+        BOOST_CHECK_EQUAL(0, metadata.size());
 
         cv::Mat image = raster_reader->read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
@@ -104,9 +102,7 @@ BOOST_AUTO_TEST_CASE(read_tiff)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader->metadata();
-        BOOST_CHECK(tl::ImageMetadata::Format::tiff == metadata->format());
-        auto active_metadata = metadata->activeMetadata();
-        BOOST_CHECK_EQUAL(0, active_metadata.size());
+        BOOST_CHECK_EQUAL(0, metadata.size());
 
         cv::Mat image = raster_reader->read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
@@ -157,9 +153,7 @@ BOOST_AUTO_TEST_CASE(reader_png)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader.metadata();
-        BOOST_CHECK(tl::ImageMetadata::Format::png == metadata->format());
-        auto active_metadata = metadata->activeMetadata();
-        BOOST_CHECK_EQUAL(0, active_metadata.size());
+        BOOST_CHECK_EQUAL(0, metadata.size());
 
         cv::Mat image = raster_reader.read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
@@ -202,15 +196,42 @@ BOOST_AUTO_TEST_CASE(reader_tiff)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader.metadata();
-        BOOST_CHECK(tl::ImageMetadata::Format::tiff == metadata->format());
-        auto active_metadata = metadata->activeMetadata();
-        BOOST_CHECK_EQUAL(0, active_metadata.size());
+        BOOST_CHECK_EQUAL(0, metadata.size());
 
         cv::Mat image = raster_reader.read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
         BOOST_CHECK_EQUAL(382, image.at<uint16_t>(93, 61));
         BOOST_CHECK_EQUAL(367, image.at<uint16_t>(138, 23));
         BOOST_CHECK_EQUAL(140, image.at<uint16_t>(599, 599));
+
+        raster_reader.close();
+
+        BOOST_CHECK(!raster_reader.isOpen());
+
+    } catch (std::exception &e) {
+        tl::printException(e);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(reader_geotiff)
+{
+    try {
+
+        //tl::Path file("C:\\Users\\Tidop\\Documents\\GRAPHOS\\Projects\\urban_ortho\\ortho\\ortho.tif");
+        tl::Path file("C:\\Users\\Tidop\\Documents\\GRAPHOS\\Projects\\Gregg1_2\\ortho\\ortho.tif");
+
+        // Create a raster reader for the specified file
+        RasterReader raster_reader(file);
+        Size<int> size(2323, 2323);
+        //auto scale_src = 0.11020457284169043;
+        auto scale_src = 0.10753054637115214;
+        Rect<int> rect_to_read(219, 219, 2455, 4);
+        Window<Point<double>> terrain_window(Point<double>(356880.33150275325, 4500170.7196016246), Point<double>(356998.68577994872, 4500288.6336116809));
+        terrain_window.normalized();
+        Affine<double, 2> affine;
+        //cv::Mat image = raster_reader.read(terrain_window, scale_src, scale_src, &affine);
+        cv::Mat image = raster_reader.read(scale_src, scale_src, rect_to_read);
 
         raster_reader.close();
 

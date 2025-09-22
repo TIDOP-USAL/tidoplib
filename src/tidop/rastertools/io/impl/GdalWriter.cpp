@@ -42,7 +42,6 @@ ImageWriterGdal::ImageWriterGdal(tl::Path file)
     mTempFile(""),
     mDataType(DataType::TL_8U),
     mImageOptions(nullptr),
-    mImageMetadata(nullptr),
 #ifdef _DEBUG
     mSpatialReference(static_cast<OGRSpatialReference *>(OSRNewSpatialReference(nullptr)))
 #else
@@ -144,7 +143,7 @@ void ImageWriterGdal::close()
     mTempFile.clear();
 }
     
-void ImageWriterGdal::setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata)
+void ImageWriterGdal::setMetadata(const ImageMetadata &imageMetadata)
 {
     try {
 
@@ -156,12 +155,11 @@ void ImageWriterGdal::setMetadata(const std::shared_ptr<ImageMetadata> &imageMet
 
             char **gdalMetadata = nullptr;
 
-            if (mImageMetadata) {
-                std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+            if (!mImageMetadata.empty()) {
 #if CPP_VERSION >= 17
-                for (const auto &[name, value] : active_metadata) {
+                for (const auto &[name, value] : imageMetadata) {
 #else
-                for (const auto &metadata : active_metadata) {
+                for (const auto &metadata : imageMetadata) {
                     auto &name = metadata.first;
                     auto &value = metadata.second;
 #endif
@@ -185,7 +183,6 @@ void ImageWriterGdal::create(int rows,
     try {
 
         open();
-        //TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
 
         mDataType = type;
         TL_ASSERT(checkDataType(), "Data Type not supported");
@@ -216,23 +213,18 @@ void ImageWriterGdal::create(int rows,
 
         TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
-        //char **gdalMetadata = nullptr;
-        if (mImageMetadata) {
-            std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+        if (!mImageMetadata.empty()) {
 #if CPP_VERSION >= 17
-            for (const auto &[name, value] : active_metadata) {
+            for (const auto &[name, value] : mImageMetadata) {
 #else
-            for (const auto &metadata : active_metadata) {
+            for (const auto &metadata : mImageMetadata) {
                 auto &name = metadata.first;
                 auto &value = metadata.second;
 #endif
-                //gdalMetadata = CSLSetNameValue(gdalMetadata, name.c_str(), value.c_str());
                 mDataset->SetMetadataItem(name.c_str(), value.c_str());
             }
         }
-        //mDataset->SetMetadata(gdalMetadata);
 
-        //if (!mAffine.isNull()) {
         if (!this->affine.isEmpty()) {
             this->setGdalGeoTransform();
         }

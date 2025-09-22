@@ -46,18 +46,9 @@ namespace tl
 
 /// \cond
 
-//GDALDataType dataTypeToGdalDataType(DataType dataType);
-//
-///*!
-// * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
-// * \param cvdt Profundidad de bits
-// * \return GDALDataType
-// */
-//GDALDataType openCvToGdal(int cvdt);
-
 
 class ImageWriterGdal
-    : public ImageWriter
+  : public ImageWriter
 {
     GENERATE_UNIQUE_PTR(ImageWriterGdal)
 
@@ -71,7 +62,7 @@ public:
     void open() override;
     bool isOpen() const override { return mDriver != nullptr; }
     void close() override;
-    void setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) override;
+    void setMetadata(const ImageMetadata &imageMetadata) override;
     void create(int rows,
                 int cols,
                 int bands,
@@ -134,7 +125,7 @@ private:
     Path mTempFile;
     DataType mDataType;
     std::shared_ptr<ImageOptions> mImageOptions;
-    std::shared_ptr<ImageMetadata> mImageMetadata;
+    ImageMetadata mImageMetadata;
     OGRSpatialReference *mSpatialReference;
 };
 

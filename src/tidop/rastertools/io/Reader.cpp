@@ -66,25 +66,25 @@ void RasterReader::close()
     }
 }
 
-auto RasterReader::read(const Rect<int> &rect, const Size<int> &size, Affine<int, 2> *affine) -> cv::Mat
+auto RasterReader::read(const Rect<int> &rect, const Size<int> &size) -> cv::Mat
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
-    return mReader->read(rect, size, affine);
+    return mReader->read(rect, size);
 }
 
-auto RasterReader::read(double scaleX, double scaleY, const Rect<int> &rect, Affine<int, 2> *affine) -> cv::Mat
+auto RasterReader::read(double scaleX, double scaleY, const Rect<int> &rect) -> cv::Mat
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
-    return mReader->read(scaleX, scaleY, rect, affine);
+    return mReader->read(scaleX, scaleY, rect);
 }
 
-auto RasterReader::read(const WindowI &window, double scaleX, double scaleY, Affine<int, 2> *affine) -> cv::Mat
+auto RasterReader::read(const WindowI &window, double scaleX, double scaleY) -> cv::Mat
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
-    return mReader->read(window, scaleX, scaleY, affine);
+    return mReader->read(window, scaleX, scaleY);
 }
 
-auto RasterReader::read(const Window<Point<double>> &terrainWindow, double scaleX, double scaleY, Affine<int, 2> *affine) -> cv::Mat
+auto RasterReader::read(const Window<Point<double>> &terrainWindow, double scaleX, double scaleY, Affine<double, 2> *affine) -> cv::Mat
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->read(terrainWindow, scaleX, scaleY, affine);
@@ -104,7 +104,7 @@ void RasterReader::update(const cv::Mat &image, const WindowI &window)
 
 void RasterReader::copy(const tl::Path &outputPath,
                         const std::shared_ptr<ImageOptions> &options, 
-                        const std::shared_ptr<ImageMetadata> &metadata, 
+                        const ImageMetadata &metadata, 
                         const std::string &epsgCode) const
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
@@ -141,7 +141,7 @@ auto RasterReader::depth() const -> int
     return mReader->depth();
 }
 
-auto RasterReader::metadata() const -> std::shared_ptr<ImageMetadata>
+auto RasterReader::metadata() const -> ImageMetadata
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->metadata();

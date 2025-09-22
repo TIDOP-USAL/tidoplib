@@ -46,13 +46,6 @@ if(BUILD_TL_RASTER_TOOLS AND TL_HAVE_OPENCV)
                              io/impl/GdalReader.cpp
                              io/impl/GdalWriter.cpp
                              io/impl/CanonReader.cpp
-                             io/impl/metadata/metadata.cpp
-                             io/impl/metadata/bmp.cpp
-                             io/impl/metadata/exif.cpp
-                             io/impl/metadata/gif.cpp
-                             io/impl/metadata/jpeg.cpp
-                             io/impl/metadata/png.cpp
-                             io/impl/metadata/tiff.cpp
                              io/private/DataTypeConverter.cpp
                              io/private/gdal.cpp
                              process/Anaglyph.cpp
@@ -95,13 +88,6 @@ if(BUILD_TL_RASTER_TOOLS AND TL_HAVE_OPENCV)
                              io/impl/GdalReader.h
                              io/impl/GdalWriter.h
                              io/impl/CanonReader.h
-                             io/impl/metadata/metadata.h
-                             io/impl/metadata/bmp.h
-                             io/impl/metadata/exif.h
-                             io/impl/metadata/gif.h
-                             io/impl/metadata/jpeg.h
-                             io/impl/metadata/png.h
-                             io/impl/metadata/tiff.h
                              io/private/DataTypeConverter.h
                              io/private/gdal.h
                              process/Anaglyph.h

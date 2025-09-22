@@ -37,13 +37,13 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/rastertools/img.h"
+#include "tidop/rastertools/io/Metadata.h"
 #include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
 class ImageOptions;
-class ImageMetadata;
 
 /*! \addtogroup RasterIO
  *  \{
@@ -114,55 +114,49 @@ public:
      * \brief Reads a specific area of the image defined by a rectangle.
      * \param[in] rect Rectangle specifying the area to read. Defaults to the entire image.
      * \param[in] size Desired output image size. Defaults to the size of the reading area.
-     * \param[out] affine Optional affine transformation for the output image.
      * \return The image data as a `cv::Mat` object.
      * \see Rect Size Affine
      */
     virtual auto read(const Rect<int> &rect = Rect<int>(),
-                      const Size<int> &size = Size<int>(),
-                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
+                      const Size<int> &size = Size<int>()) -> cv::Mat = 0;
 
     /*!
      * \brief Reads a scaled area of the image.
      * \param[in] scaleX Horizontal scaling factor. Default is 1.
      * \param[in] scaleY Vertical scaling factor. Default is 1.
      * \param[in] rect Rectangle specifying the area to read. Defaults to the entire image.
-     * \param[out] affine Optional affine transformation for the output image.
      * \return The image data as a `cv::Mat` object.
      * \see Rect Affine
      */
     virtual auto read(double scaleX,
                       double scaleY,
-                      const Rect<int> &rect = Rect<int>(),
-                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
+                      const Rect<int> &rect = Rect<int>()) -> cv::Mat = 0;
 
     /*!
      * \brief Reads a specific window of the image.
      * \param[in] window The window specifying the image region to load.
      * \param[in] scaleX Horizontal scaling factor. Default is 1.
      * \param[in] scaleY Vertical scaling factor. Default is 1.
-     * \param[out] affine Optional affine transformation for the output image.
      * \return The image data as a `cv::Mat` object.
      * \see Window Affine
      */
     virtual auto read(const WindowI &window,
                       double scaleX = 1.,
-                      double scaleY = 1.,
-                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
+                      double scaleY = 1.) -> cv::Mat = 0;
 
     /*!
      * \brief Reads an image area in terrestrial coordinates.
      * \param[in] terrainWindow Window in terrain coordinates of the area to read.
      * \param[in] scaleX Horizontal scaling factor. Default is 1.
      * \param[in] scaleY Vertical scaling factor. Default is 1.
-     * \param[out] affine Optional affine transformation for the output image.
+     * \param[out] georeference Optional affine transformation (georeference) for the output image.
      * \return The image data as a `cv::Mat` object.
      * \see Window Affine
      */
     virtual auto read(const Window<Point<double>> &terrainWindow,
                       double scaleX = 1.,
                       double scaleY = 1.,
-                      Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
+                      Affine<double, 2> *georeference = nullptr) -> cv::Mat = 0;
 
     virtual void update(const cv::Mat &image,
                         const Rect<int> &rect = Rect<int>()) = 0;
@@ -179,7 +173,7 @@ public:
      */
     virtual void copy(const std::string &outputPath,
                       std::shared_ptr<ImageOptions> options = nullptr,
-                      std::shared_ptr<ImageMetadata> metadata = nullptr,
+                      const ImageMetadata &metadata = ImageMetadata(),
                       const std::string &epsgCode = "") const = 0;
 
     /*!
@@ -215,9 +209,8 @@ public:
 
     /*!
      * \brief Retrieves the metadata associated with the image.
-     * \return A shared pointer to the `ImageMetadata`.
      */
-    virtual auto metadata() const -> std::shared_ptr<ImageMetadata> = 0;
+    virtual auto metadata() const -> ImageMetadata = 0;
 
     /*!
      * \brief Checks if the image is georeferenced.

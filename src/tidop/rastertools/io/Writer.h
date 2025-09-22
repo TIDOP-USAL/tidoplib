@@ -36,13 +36,13 @@
 #include "tidop/core/base/ptr.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/rastertools/img.h"
+#include "tidop/rastertools/io/Metadata.h"  
 #include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
 class ImageOptions;
-class ImageMetadata;
 class ImageWriter;
 
 /*! \addtogroup RasterIO
@@ -122,7 +122,7 @@ public:
      * \brief Sets metadata for the image
      * \param imageMetadata Metadata to associate with the output image
      */
-    void setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata);
+    void setMetadata(const ImageMetadata &imageMetadata);
 
     /*!
      * \brief Writes a block of image data

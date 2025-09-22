@@ -36,13 +36,13 @@
 #include "tidop/core/base/ptr.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/rastertools/img.h"
+#include "tidop/rastertools/io/Metadata.h"
 #include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
 class ImageOptions;
-class ImageMetadata;
 
 
 /*! \addtogroup RasterIO
@@ -103,7 +103,7 @@ public:
      * \param[in] imageMetadata Shared pointer to the image metadata.
      * \see ImageMetadata
      */
-    virtual void setMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
+    virtual void setMetadata(const ImageMetadata &imageMetadata) = 0;
 
     /*!
      * \brief Creates an image with the specified dimensions and data type.

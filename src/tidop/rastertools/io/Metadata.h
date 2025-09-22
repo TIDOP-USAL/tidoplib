@@ -192,33 +192,18 @@ public:
 
 /*!
  * \brief Class representing image metadata.
- *
- * The `ImageMetadata` class provides an interface for managing metadata of different image formats.
- * It supports retrieving, setting, and resetting metadata, as well as accessing active metadata.
  */
 class TL_EXPORT ImageMetadata
 {
 
-    GENERATE_SHARED_PTR(ImageMetadata)
-
 public:
 
-    /*!
-     * \brief Enum representing supported image formats.
-     */
-    enum class Format
-    {
-        tiff,
-        jpeg,
-        jp2000,
-        png,
-        bmp,
-        gif
-    };
+    using iterator = typename std::map<std::string, std::string>::iterator;
+    using const_iterator = typename std::map<std::string, std::string>::const_iterator;
 
 protected:
 
-    Format mFormat;
+    std::map<std::string, std::string> mMetadata;
 
 public:
 
@@ -226,73 +211,40 @@ public:
      * \brief Constructor to initialize metadata with a specific format.
      * \param[in] format Format of the image.
      */
-    ImageMetadata(Format format);
-    virtual ~ImageMetadata();
+    ImageMetadata();
+    ~ImageMetadata();
 
     /*!
-     * \brief Returns the format of the image.
-     * \return Image format.
+     * \brief Checks if a specific metadata item exists.
+     * \param[in] name Name of the metadata item.
+     * \return True if the metadata item exists, false otherwise.
      */
-    auto format() const -> Format;
+    auto existMetadata(const std::string &name) -> bool;
 
     /*!
      * \brief Retrieves the value of a specific metadata item.
      * \param[in] name Name of the metadata item.
-     * \param[out] active Indicates if the metadata item is active.
      * \return Value of the metadata item.
      */
-    virtual auto metadata(const std::string &name, bool &active) const -> std::string = 0;
+    auto metadata(const std::string &name) const -> std::string;
 
     /*!
      * \brief Sets the value of a specific metadata item.
      * \param[in] name Name of the metadata item.
      * \param[in] value Value to set.
      */
-    virtual void setMetadata(const std::string &name, const std::string &value) = 0;
+    void setMetadata(const std::string &name, const std::string &value);
 
-    /*!
-     * \brief Returns a map of all metadata items and their values.
-     * \return Map of metadata items.
-     */
-    virtual auto metadata() const -> std::map<std::string, std::string> = 0;
+    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto end() TL_NOEXCEPT -> iterator;
+    auto end() const TL_NOEXCEPT -> const_iterator;
 
-    /*!
-     * \brief Returns a map of active metadata items and their values.
-     * \return Map of active metadata items.
-     */
-    virtual auto activeMetadata() const -> std::map<std::string, std::string> = 0;
+    auto empty() const -> bool;
+    auto size() const -> size_t;
 
-    /*!
-     * \brief Resets all metadata to their default values.
-     */
-    virtual void reset() = 0;
+    void clear();
 
-};
-
-
-
-
-/*!
- * \brief Factory class for creating `ImageMetadata` instances.
- *
- * The `ImageMetadataFactory` provides a static method to create `ImageMetadata` instances
- * based on the specified image format.
- */
-class TL_EXPORT ImageMetadataFactory
-{
-
-private:
-
-    ImageMetadataFactory() {}
-
-public:
-
-    /*!
-     * \brief Creates an `ImageMetadata` instance for the specified format.
-     * \param[in] format String representation of the image format.
-     * \return Shared pointer to the created `ImageMetadata` instance.
-     */
-    static auto create(const std::string &format) -> std::shared_ptr<ImageMetadata>;
 };
 
 /*! \} */ // end of raster

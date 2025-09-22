@@ -36,12 +36,12 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/rastertools/img.h"
+#include "tidop/rastertools/io/Metadata.h"
 #include "tidop/math/geometry/affine.h"
 
 namespace tl
 {
 
-class ImageMetadata;
 class ImageOptions;
 class ImageReader;
 
@@ -120,38 +120,32 @@ public:
      * \brief Reads a region of the image
      * \param[in] rect Region to read (default: full image)
      * \param[in] size Size of the output image (default: size of rect)
-     * \param[out] affine Optional output affine transform
      * \return Subimage as a cv::Mat
      */
     auto read(const Rect<int> &rect = Rect<int>(),
-              const Size<int> &size = Size<int>(),
-              Affine<int, 2> *affine = nullptr) -> cv::Mat;
+              const Size<int> &size = Size<int>()) -> cv::Mat;
 
     /*!
      * \brief Reads a region with scaling factors
      * \param[in] scaleX Horizontal scaling (default: 1)
      * \param[in] scaleY Vertical scaling (default: 1)
      * \param[in] rect Region to read (default: full image)
-     * \param[out] affine Optional output affine transform
      * \return Scaled subimage
      */
     auto read(double scaleX,
               double scaleY,
-              const Rect<int> &rect = Rect<int>(),
-              Affine<int, 2> *affine = nullptr) -> cv::Mat;
+              const Rect<int> &rect = Rect<int>()) -> cv::Mat;
 
     /*!
      * \brief Reads a region defined in image coordinates (WindowI)
      * \param[in] window Input window
      * \param[in] scaleX Horizontal scaling (default: 1)
      * \param[in] scaleY Vertical scaling (default: 1)
-     * \param[out] affine Optional output affine transform
      * \return Subimage as a cv::Mat
      */
     auto read(const WindowI &window,
               double scaleX = 1.,
-              double scaleY = 1.,
-              Affine<int, 2> *affine = nullptr) -> cv::Mat;
+              double scaleY = 1.) -> cv::Mat;
 
     /*!
      * \brief Reads a region defined in geographic/terrain coordinates
@@ -164,7 +158,7 @@ public:
     auto read(const Window<Point<double>> &terrainWindow,
               double scaleX = 1.,
               double scaleY = 1.,
-              Affine<int, 2> *affine = nullptr) -> cv::Mat;
+              Affine<double, 2> *affine = nullptr) -> cv::Mat;
 
     /*!
      * \brief Writes an image into a region of the raster (in update mode)
@@ -189,7 +183,7 @@ public:
      */
     void copy(const tl::Path &outputPath,
               const std::shared_ptr<ImageOptions> &options = nullptr,
-              const std::shared_ptr<ImageMetadata> &metadata = nullptr,
+              const ImageMetadata &metadata = ImageMetadata(),
               const std::string &epsgCode = "") const;
 
     /*!
@@ -224,7 +218,7 @@ public:
     /*!
      * \brief Returns the image metadata
      */
-    auto metadata() const -> std::shared_ptr<ImageMetadata>;
+    auto metadata() const -> ImageMetadata;
 
     /*!
      * \brief Check if the image is geo-referenced.

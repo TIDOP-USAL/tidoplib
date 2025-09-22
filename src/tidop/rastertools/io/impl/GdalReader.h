@@ -73,34 +73,31 @@ public:
     auto isOpen() const -> bool override {return mDataset != nullptr; }
     void close() override;
     auto read(const Rect<int> &rect,
-              const Size<int> &size,
-              Affine<int, 2> *affine = nullptr) -> cv::Mat override;
+              const Size<int> &size) -> cv::Mat override;
     auto read(double scaleX,
               double scaleY,
-              const Rect<int> &rect,
-              Affine<int, 2> *affine = nullptr) -> cv::Mat override;
+              const Rect<int> &rect) -> cv::Mat override;
     auto read(const WindowI &window,
               double scaleX,
-              double scaleY,
-              Affine<int, 2> *affine = nullptr) -> cv::Mat override;
+              double scaleY) -> cv::Mat override;
     auto read(const Window<Point<double>> &terrainWindow,
               double scaleX,
               double scaleY,
-              Affine<int, 2> *affine = nullptr) -> cv::Mat override;
+              Affine<double, 2> *georeference = nullptr) -> cv::Mat override;
     void update(const cv::Mat &image,
                 const Rect<int> &rect = Rect<int>()) override;
     void update(const cv::Mat &image,
                 const WindowI &window) override;
     void copy(const std::string &outputPath,
               std::shared_ptr<ImageOptions> options = nullptr,
-              std::shared_ptr<ImageMetadata> metadata = nullptr,
+              const ImageMetadata &metadata = ImageMetadata(),
               const std::string &epsgCode = "") const override;
     auto rows() const -> int override;
     auto cols() const -> int override;
     auto channels() const -> int override;
     auto dataType() const -> DataType override;
     auto depth() const -> int override;
-    auto metadata() const -> std::shared_ptr<ImageMetadata> override;
+    auto metadata() const -> ImageMetadata override;
     auto isGeoreferenced() const -> bool override;
     auto georeference() const -> Affine<double, 2> override { return mAffine; }
     auto crsWkt() const -> std::string override;
