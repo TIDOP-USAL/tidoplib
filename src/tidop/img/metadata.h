@@ -116,50 +116,34 @@ class TL_EXPORT ImageMetadata
 
 public:
 
-    enum class Format
-    {
-        tiff,
-        jpeg,
-        jp2000,
-        png,
-        bmp,
-        gif
-    };
+    using iterator = typename std::map<std::string, std::string>::iterator;
+    using const_iterator = typename std::map<std::string, std::string>::const_iterator;
 
 protected:
 
-    Format mFormat;
+    std::map<std::string, std::string> mMetadata;
 
 public:
 
-    ImageMetadata(Format format);
-    virtual ~ImageMetadata();
+    ImageMetadata();
+    ~ImageMetadata();
 
-    Format format() const;
+    auto existMetadata(const std::string &name) -> bool;
+    auto metadata(const std::string& name, bool &active) const -> std::string;
+    void setMetadata(const std::string &name, const std::string &value);
 
-    virtual auto metadata(const std::string& name, bool &active) const -> std::string = 0;
-    virtual void setMetadata(const std::string &name, const std::string &value) = 0;
-    virtual auto metadata() const -> std::map<std::string, std::string> = 0;
-    virtual auto activeMetadata() const -> std::map<std::string, std::string> = 0;
-    virtual void reset() = 0;
+    auto begin() TL_NOEXCEPT->iterator;
+    auto begin() const TL_NOEXCEPT->const_iterator;
+    auto end() TL_NOEXCEPT->iterator;
+    auto end() const TL_NOEXCEPT->const_iterator;
+
+    auto empty() const -> bool;
+    auto size() const->size_t;
+
+    void clear();
 
 };
 
-
-
-
-
-class TL_EXPORT ImageMetadataFactory
-{
-
-private:
-
-    ImageMetadataFactory() {}
-
-public:
-
-    static auto create(const std::string &format) -> std::shared_ptr<ImageMetadata>;
-};
 
 /*! \} */ // end of raster
 

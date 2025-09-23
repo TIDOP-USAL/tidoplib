@@ -529,7 +529,6 @@ auto Affine2DEstimator<T>::estimate(const Matrix<T, rows, cols> &src,
         Vector<double> C = svd.solve(B);
 
         affine(0, 0) = C[0];
-        affine(0, 0) = C[0];
         affine(0, 1) = C[1];
         affine(0, 2) = C[4];
         affine(1, 0) = C[2];

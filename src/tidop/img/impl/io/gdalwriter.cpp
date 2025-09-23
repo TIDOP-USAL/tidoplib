@@ -213,12 +213,12 @@ void ImageWriterGdal::setMetadata(const std::shared_ptr<ImageMetadata> &imageMet
 
         char **gdalMetadata = nullptr;
 
-        if (mImageMetadata) {
-            std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+        if (mImageMetadata && !mImageMetadata->empty()) {
+
 #if CPP_VERSION >= 17
             for (const auto &[name, value] : active_metadata) {
 #else
-            for (const auto &metadata : active_metadata) {
+            for (const auto &metadata : *mImageMetadata) {
                 auto &name = metadata.first;
                 auto &value = metadata.second;
 #endif
@@ -270,12 +270,12 @@ void ImageWriterGdal::create(int rows,
         TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
         char **gdalMetadata = nullptr;
-        if (mImageMetadata) {
-            std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+        if (mImageMetadata && !mImageMetadata->empty()) {
+            //std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
 #if CPP_VERSION >= 17
             for (const auto &[name, value] : active_metadata) {
 #else
-            for (const auto &metadata : active_metadata) {
+            for (const auto &metadata : *mImageMetadata) {
                 auto &name = metadata.first;
                 auto &value = metadata.second;
 #endif

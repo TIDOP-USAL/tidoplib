@@ -31,7 +31,7 @@ cmake_policy(SET CMP0146 OLD)
 endif()
 
 project(TidopLib
-        VERSION 3.2.3
+        VERSION 3.3.0
         DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
         HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
@@ -543,21 +543,9 @@ if(WITH_PROJ)
   set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
   if(NOT PROJ_FOUND)
-    unset(PROJ_DIR CACHE)
     set(TL_HAVE_PROJ NO)
-	set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
-    find_package(PROJ4 QUIET)
-    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
-    if(NOT PROJ4_FOUND)
-      set(TL_HAVE_PROJ4 NO)
-    else()
-      set(TL_HAVE_PROJ4 YES)
-      include_directories(${PROJ4_INCLUDE_DIRS})
-      message(STATUS "  PROJ version: ${PROJ4_VERSION}")
-    endif()
   else()
     set(TL_HAVE_PROJ YES)
-    #include_directories(${PROJ_INCLUDE_DIRS})
     message(STATUS "  PROJ version: ${PROJ_VERSION}")
   endif()
 endif(WITH_PROJ)
