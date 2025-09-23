@@ -44,13 +44,12 @@
 namespace tl
 {
 
+class ImageMetadata;
+class ImageOptions;
 
 /*! \addtogroup raster
  *  \{
  */
-
-
-class ImageMetadata;
 
 /*!
  * \brief Class for reading different image formats
@@ -129,6 +128,18 @@ public:
                       Affine<int, 2> *affine = nullptr) -> cv::Mat = 0;
 
     /*!
+     * \brief 
+     * \param[in] outputPath
+     * \param[in] options 
+     * \param[in] metadata
+     * \param[in] epsgCode 
+     */
+    virtual void copy(const std::string &outputPath,
+                      std::shared_ptr<ImageOptions> options = nullptr,
+                      std::shared_ptr<ImageMetadata> metadata = nullptr,
+                      const std::string &epsgCode = "") const = 0;
+					  
+    /*!					  
      * \brief Returns the number of rows in the image
      * \return Number of rows in the image
      */

@@ -44,13 +44,6 @@ if(BUILD_TL_IMG)
                              impl/io/gdalreader.cpp
                              impl/io/gdalwriter.cpp
                              impl/io/canonreader.cpp
-                             impl/formats/metadata/metadata.cpp
-                             impl/formats/metadata/bmp.cpp
-                             impl/formats/metadata/exif.cpp
-                             impl/formats/metadata/gif.cpp
-                             impl/formats/metadata/jpeg.cpp
-                             impl/formats/metadata/png.cpp
-                             impl/formats/metadata/tiff.cpp
                          HEADER_FILES
                              img.h
                              image.h
@@ -60,14 +53,7 @@ if(BUILD_TL_IMG)
                              metadata.h
                              impl/io/gdalreader.h
                              impl/io/gdalwriter.h
-                             impl/io/canonreader.h
-                             impl/formats/metadata/metadata.h
-                             impl/formats/metadata/bmp.h
-                             impl/formats/metadata/exif.h
-                             impl/formats/metadata/gif.h
-                             impl/formats/metadata/jpeg.h
-                             impl/formats/metadata/png.h
-                             impl/formats/metadata/tiff.h)
+                             impl/io/canonreader.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
