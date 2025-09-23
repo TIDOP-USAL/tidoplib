@@ -35,9 +35,31 @@
 #ifdef TL_HAVE_OPENCV
 
 #include <utility>
+#include <iostream>
+#include <fstream>
 
 namespace tl
 {
+
+std::string extractXMP(const std::string &filename)
+{
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) return "";
+
+    // Leer todo el fichero en memoria (si es muy grande, mejor hacerlo por chunks)
+    std::string buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    // Buscar las etiquetas XMP
+    size_t start = buffer.find("<x:xmpmeta");
+    size_t end = buffer.find("</x:xmpmeta>");
+
+    if (start == std::string::npos || end == std::string::npos) return "";
+
+    // Incluir la etiqueta de cierre
+    end += std::string("</x:xmpmeta>").size();
+
+    return buffer.substr(start, end - start);
+}
 
 ImageReaderGdal::ImageReaderGdal(tl::Path file, Mode mode)
   : ImageReader(std::move(file)),
@@ -532,6 +554,73 @@ auto ImageReaderGdal::depth() const -> int
     return depth;
 }
 
+void readXMP(CPLXMLNode *&xml_node, ImageMetadata &metadata)
+{
+    while (xml_node) {
+
+        if (std::string(xml_node->pszValue) == "xpacket") {
+
+        } else if (std::string(xml_node->pszValue) == "x:xmpmeta") {
+
+            CPLXMLNode *child_node = xml_node->psChild;
+
+            while (child_node) {
+
+                if (std::string(child_node->pszValue) == "rdf:RDF") {
+
+                    CPLXMLNode *rdf_node = child_node->psChild;
+
+                    while (rdf_node) {
+
+                        if (std::string(rdf_node->pszValue) == "rdf:Description") {
+
+                            CPLXMLNode *rdfdescription_node = rdf_node->psChild;
+                            while (rdfdescription_node) {
+
+                                if (rdfdescription_node->pszValue) {
+
+                                    std::string key(rdfdescription_node->pszValue);
+                                    std::string value;
+
+                                    if (rdfdescription_node->psChild && rdfdescription_node->psChild->pszValue) {
+                                        value = rdfdescription_node->psChild->pszValue;
+                                    }
+
+                                    if (key == "xmlns:drone-dji") {
+                                        metadata.setMetadata("EXIF_Make", "DJI");
+                                    } if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
+                                        metadata.setMetadata("EXIF_Model", value);
+                                    } else if (key.rfind("drone-dji:", 0) == 0) {
+                                        std::string name = key.substr(std::string("drone-dji:").size());
+                                        metadata.setMetadata("XMP_DJI_" + name, value);
+                                    } else if (key.rfind("Camera:", 0) == 0) {
+                                        std::string name = key.substr(std::string("Camera:").size());
+                                        metadata.setMetadata("XMP_CAMERA_" + name, value);
+                                    }
+                                }
+
+                                rdfdescription_node = rdfdescription_node->psNext;
+
+                            }
+
+                        }
+
+                        rdf_node = rdf_node->psNext;
+
+                    }
+
+                }
+
+                child_node = child_node->psNext;
+
+            }
+
+        }
+
+        xml_node = xml_node->psNext;
+    }
+}
+
 auto ImageReaderGdal::metadata() const -> ImageMetadata
 {
     ImageMetadata metadata;
@@ -540,9 +629,7 @@ auto ImageReaderGdal::metadata() const -> ImageMetadata
 
         TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
 
-        //std::string driver_name = mDataset->GetDriverName();
-        //metadata = ImageMetadataFactory::create(driver_name);
-
+        bool xmp_found = false;
         char **gdalMetadata = mDataset->GetMetadata(); // Si no hago esto no lee el exif...
         unusedParameter(gdalMetadata);
 
@@ -556,72 +643,9 @@ auto ImageReaderGdal::metadata() const -> ImageMetadata
 
                 if (std::string("xml:XMP") == domain) {
 
-                    /// Sacar a función parseXMP
-                    {
-
-                        CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
-                        while (xml_node) {
-                            if (std::string(xml_node->pszValue) == "xpacket") {
-
-                            } else if (std::string(xml_node->pszValue) == "x:xmpmeta") {
-
-                                CPLXMLNode *child_node = xml_node->psChild;
-                                while (child_node) {
-                                    if (std::string(child_node->pszValue) == "rdf:RDF") {
-
-                                        CPLXMLNode *rdf_node = child_node->psChild;
-
-                                        while (rdf_node) {
-
-                                            if (std::string(rdf_node->pszValue) == "rdf:Description") {
-
-                                                CPLXMLNode *rdfdescription_node = rdf_node->psChild;
-                                                while (rdfdescription_node) {
-
-                                                    if (rdfdescription_node->pszValue) {
-
-                                                        std::string key(rdfdescription_node->pszValue);
-                                                        std::string value;
-
-                                                        if (rdfdescription_node->psChild && rdfdescription_node->psChild->pszValue) {
-                                                            value = rdfdescription_node->psChild->pszValue;
-                                                        }
-
-                                                        if (key == "xmlns:drone-dji") {
-                                                            metadata.setMetadata("EXIF_Make", "DJI");
-                                                        } if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
-                                                            metadata.setMetadata("EXIF_Model", value);
-                                                        }else if (key.rfind("drone-dji:", 0) == 0) {
-                                                            std::string name = key.substr(std::string("drone-dji:").size());
-                                                            metadata.setMetadata("XMP_DJI_" + name, value);
-                                                        } else if (key.rfind("Camera:", 0) == 0) {
-                                                            std::string name = key.substr(std::string("Camera:").size());
-                                                            metadata.setMetadata("XMP_CAMERA_" + name, value);
-                                                        }
-                                                    }
-
-                                                    rdfdescription_node = rdfdescription_node->psNext;
-
-                                                }
-
-                                            }
-
-                                            rdf_node = rdf_node->psNext;
-
-                                        }
-
-                                    }
-
-                                    child_node = child_node->psNext;
-
-                                }
-
-                            }
-
-                            xml_node = xml_node->psNext;
-                        }
-
-                    }
+                    xmp_found = true;
+                    CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
+                    readXMP(xml_node, metadata);
 
                 } else {
 
@@ -643,6 +667,13 @@ auto ImageReaderGdal::metadata() const -> ImageMetadata
                 }
             }
 
+        }
+
+        if (xmp_found == false) {
+
+            auto xmp = extractXMP(file().toString());
+            CPLXMLNode *xml_node = CPLParseXMLString(xmp.c_str());
+            readXMP(xml_node, metadata);
         }
 
     } catch (...) {
