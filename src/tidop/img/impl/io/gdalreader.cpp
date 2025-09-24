@@ -551,8 +551,6 @@ void readXMP(CPLXMLNode *&xml_node, tl::ImageMetadata::Ptr &metadata)
 
                         if (std::string(rdf_node->pszValue) == "rdf:Description") {
 
-                            Message::warning("DJI XMP metadata found");
-
                             CPLXMLNode *rdfdescription_node = rdf_node->psChild;
                             while (rdfdescription_node) {
 
@@ -563,15 +561,17 @@ void readXMP(CPLXMLNode *&xml_node, tl::ImageMetadata::Ptr &metadata)
 
                                     if (rdfdescription_node->psChild && rdfdescription_node->psChild->pszValue) {
                                         value = rdfdescription_node->psChild->pszValue;
-                                        Message::warning("{}: {}", key, value);
                                     }
 
                                     if (key == "xmlns:drone-dji") {
                                         metadata->setMetadata("EXIF_Make", "DJI");
-                                    } if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
+                                    } else if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
                                         metadata->setMetadata("EXIF_Model", value);
                                     } else if (key.rfind("drone-dji:", 0) == 0) {
                                         std::string name = key.substr(std::string("drone-dji:").size());
+                                        metadata->setMetadata("XMP_DJI_" + name, value);
+                                    } else if (key.rfind("drone:", 0) == 0) {
+                                        std::string name = key.substr(std::string("drone:").size());
                                         metadata->setMetadata("XMP_DJI_" + name, value);
                                     } else if (key.rfind("Camera:", 0) == 0) {
                                         std::string name = key.substr(std::string("Camera:").size());
