@@ -593,6 +593,9 @@ void readXMP(CPLXMLNode *&xml_node, ImageMetadata &metadata)
                                     } else if (key.rfind("drone-dji:", 0) == 0) {
                                         std::string name = key.substr(std::string("drone-dji:").size());
                                         metadata.setMetadata("XMP_DJI_" + name, value);
+                                    } else if (key.rfind("drone:", 0) == 0) {
+                                        std::string name = key.substr(std::string("drone:").size());
+                                        metadata.setMetadata("XMP_DJI_" + name, value);
                                     } else if (key.rfind("Camera:", 0) == 0) {
                                         std::string name = key.substr(std::string("Camera:").size());
                                         metadata.setMetadata("XMP_CAMERA_" + name, value);
