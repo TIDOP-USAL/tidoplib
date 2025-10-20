@@ -583,23 +583,53 @@ void readXMP(CPLXMLNode *&xml_node, ImageMetadata &metadata)
                                     std::string value;
 
                                     if (rdfdescription_node->psChild && rdfdescription_node->psChild->pszValue) {
+                                        
                                         value = rdfdescription_node->psChild->pszValue;
+
+                                        if (value == "rdf:Seq") {
+
+                                            value = "";
+                                            CPLXMLNode *rdf_seq_node = rdfdescription_node->psChild->psChild;
+                                            while (rdf_seq_node) {
+
+                                                if (std::string(rdf_seq_node->pszValue) == "rdf:li") {
+                                                    CPLXMLNode *rdf_li_node = rdf_seq_node->psChild;
+                                                    if (rdf_li_node && rdf_li_node->pszValue) {
+                                                        if (!value.empty()) {
+                                                            value += ", ";
+                                                        }
+                                                        value += rdf_li_node->pszValue;
+                                                    }
+                                                }
+
+                                                rdf_seq_node = rdf_seq_node->psNext;
+
+                                            }
+
+                                        }
+
+                                        Message::warning("{}: {}", key, value);
+
+                                        if (key == "xmlns:drone-dji") {
+                                            metadata.setMetadata("EXIF_Make", "DJI");
+                                        } if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
+                                            metadata.setMetadata("EXIF_Model", value);
+                                        } else if (key.rfind("drone-dji:", 0) == 0) {
+                                            std::string name = key.substr(std::string("drone-dji:").size());
+                                            metadata.setMetadata("XMP_DJI_" + name, value);
+                                        } else if (key.rfind("drone:", 0) == 0) {
+                                            std::string name = key.substr(std::string("drone:").size());
+                                            metadata.setMetadata("XMP_DJI_" + name, value);
+                                        } else if (key.rfind("Camera:", 0) == 0) {
+                                            std::string name = key.substr(std::string("Camera:").size());
+                                            metadata.setMetadata("XMP_CAMERA_" + name, value);
+                                            if (name == "RigName" && value == "Sequoia") {
+                                                metadata.setMetadata("EXIF_Make", "Parrot");
+                                                metadata.setMetadata("EXIF_Model", "Sequoia");
+                                            }
+                                        }
                                     }
 
-                                    if (key == "xmlns:drone-dji") {
-                                        metadata.setMetadata("EXIF_Make", "DJI");
-                                    } if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
-                                        metadata.setMetadata("EXIF_Model", value);
-                                    } else if (key.rfind("drone-dji:", 0) == 0) {
-                                        std::string name = key.substr(std::string("drone-dji:").size());
-                                        metadata.setMetadata("XMP_DJI_" + name, value);
-                                    } else if (key.rfind("drone:", 0) == 0) {
-                                        std::string name = key.substr(std::string("drone:").size());
-                                        metadata.setMetadata("XMP_DJI_" + name, value);
-                                    } else if (key.rfind("Camera:", 0) == 0) {
-                                        std::string name = key.substr(std::string("Camera:").size());
-                                        metadata.setMetadata("XMP_CAMERA_" + name, value);
-                                    }
                                 }
 
                                 rdfdescription_node = rdfdescription_node->psNext;
