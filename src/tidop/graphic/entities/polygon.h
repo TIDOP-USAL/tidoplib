@@ -32,6 +32,8 @@
 namespace tl
 {
 
+class Painter;
+
 /*! \addtogroup GraphicEntities
  *  \{
  */
@@ -90,6 +92,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
+    auto window() const -> Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -146,6 +150,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
+    auto window() const -> Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -202,6 +208,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
+    auto window() const -> Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -256,6 +264,8 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
+    auto window() const -> Window<Point<double>> override;
+    void draw(Painter &painter) const override;
 };
 
 
@@ -274,7 +284,6 @@ inline auto GPolygon::isSimpleEntity() const -> bool
 
 
 
-
 inline auto GPolygon3D::isMultiEntity() const -> bool
 {
     return false;
@@ -284,7 +293,6 @@ inline auto GPolygon3D::isSimpleEntity() const -> bool
 {
     return true;
 }
-
 
 
 
@@ -311,6 +319,7 @@ inline auto GMultiPolygon3D::isSimpleEntity() const -> bool
 {
     return false;
 }
+
 
 
 /*! \} */ // Fin GraphicEntities

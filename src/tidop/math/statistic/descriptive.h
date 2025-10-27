@@ -192,6 +192,13 @@ public:
      * \return The series of data
      */
     auto data() const -> Series<T>;
+
+    /*!
+     * \brief Set the dataset
+     * \param[in] data A series of data values
+     */
+    void setData(Series<T> data);
+
     /*!
      * \brief Return the smallest value in the dataset
      * \f[ \text{min} = \text{min}(x_i)_{i=1}^{n} \f]
@@ -521,7 +528,7 @@ private:
     void computeSecondQuartile() const;
     void computeThirdQuartile() const;
     template<typename It>
-    void quantile(It &first, It &last) const;
+    void quantile(It first, It last) const;
 };
 
 /*! \} */
@@ -564,6 +571,13 @@ template<typename T>
 auto DescriptiveStatistics<T>::data() const -> Series<T>
 {
     return mData;
+}
+
+template<typename T>
+void DescriptiveStatistics<T>::setData(Series<T> data)
+{
+    mData = std::move(data);
+    mStatus.clear();
 }
 
 template<typename T>
@@ -613,11 +627,17 @@ auto DescriptiveStatistics<T>::sum() const -> T
 template<typename T>
 auto DescriptiveStatistics<T>::mean() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::mean)) {
-        computeMean();
-    }
+    try {
 
-    return mMean;
+        if (!mStatus.isEnabled(InternalStatus::mean)) {
+            computeMean();
+        }
+
+        return mMean;
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
 template<typename T>
@@ -633,11 +653,17 @@ auto DescriptiveStatistics<T>::median() const -> T
 template<typename T>
 auto DescriptiveStatistics<T>::variance() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::variance)) {
-        computeVariance();
-    }
+    try {
 
-    return mVariance;
+        if (!mStatus.isEnabled(InternalStatus::variance)) {
+            computeVariance();
+        }
+
+        return mVariance;
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
 template<typename T>
@@ -943,13 +969,19 @@ void DescriptiveStatistics<T>::computeMinMax() const
 template<typename T>
 void DescriptiveStatistics<T>::computeMean() const
 {
+    try {
+
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    mMean = tl::mean(mData.begin(), mData.end(), true);
+        mMean = tl::mean(mData.begin(), mData.end(), true);
 #else
-    mMean = tl::mean(mData.begin(), mData.end());
+        mMean = tl::mean(mData.begin(), mData.end());
 #endif
 
-    mStatus.enable(InternalStatus::mean);
+        mStatus.enable(InternalStatus::mean);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error computing mean");
+    }
 }
 
 template<typename T>
@@ -998,26 +1030,34 @@ void DescriptiveStatistics<T>::computeRootMeanSquare() const
 template<typename T>
 void DescriptiveStatistics<T>::computeVariance() const
 {
-    size_t n = mData.size();
-    TL_TODO("¿Devolver error?")
-    //if (n <= 1) return consts::one<T>;
+    try {
+        size_t n = mData.size();
+        TL_ASSERT(n > 0, "empty dataset");
 
-    double sum{};
-    double ep{};
-    double aux{};
+        if (mConfig.sample && n < 2) TL_THROW_EXCEPTION("computeVariance: sample variance undefined for n < 2");
 
-    double _mean = mean();
-    for (const auto &data : mData) {
-        aux = data - _mean;
-        ep += aux;
-        sum += aux * aux;
+        double sum{};
+        double ep{};
+        double aux{};
+
+        double _mean = mean();
+        for (const auto &data : mData) {
+            aux = data - _mean;
+            ep += aux;
+            sum += aux * aux;
+        }
+
+        size_t div = mConfig.sample ? n - 1 : n;
+
+        mVariance = (sum - ep * ep / static_cast<double>(n)) / static_cast<double>(div);
+
+        if (mVariance < 0 && std::abs(mVariance) < 1e-15) mVariance = 0.0;
+
+        mStatus.enable(InternalStatus::variance);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error computing variance");
     }
-
-    size_t div = mConfig.sample ? n - 1 : n;
-
-    mVariance = (sum - ep * ep / static_cast<double>(n)) / static_cast<double>(div);
-
-    mStatus.enable(InternalStatus::variance);
 }
 
 template<typename T>
@@ -1067,11 +1107,11 @@ void DescriptiveStatistics<T>::computeThirdQuartile() const
 
 template<typename T>
 template<typename It>
-void DescriptiveStatistics<T>::quantile(It &first, It &last) const
+void DescriptiveStatistics<T>::quantile(It first, It last) const
 {
-    auto n = std::distance(first, last);
+    size_t n = std::distance(first, last);
 
-    double step = (static_cast<double>(n) + 1.) / 10.;
+    double step = 1.0 / static_cast<double>(n + 1);
     double p = 0.;
     for (size_t i = 0; i < n; i++) {
         p += step;

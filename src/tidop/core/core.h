@@ -30,4 +30,5 @@
 #include "tidop/core/app/message.h"
 #include "tidop/core/base/flags.h"
 #include "tidop/core/base/exception.h"
-
+#include "tidop/core/concurrency.h"
+#include "tidop/core/task.h"

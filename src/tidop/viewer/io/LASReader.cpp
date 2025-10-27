@@ -56,7 +56,7 @@ namespace tl
 		int posBlue = -1;
 		int posAlpha = -1;
 		int i = 0;
-		for (auto dimensionName : dimensionsNames)
+		for (auto &dimensionName : dimensionsNames)
 		{
 			if (compareInsensitiveCase("red", dimensionName))
 				posRed = i;

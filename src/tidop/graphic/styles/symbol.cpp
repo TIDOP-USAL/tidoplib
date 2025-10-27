@@ -30,7 +30,7 @@ namespace tl
 
 
 Symbol::Symbol()
-  : mName(Name::cross),
+  : mShape(Shape::cross),
     mAngle(0.),
     mColor(0),
     mOutlineColor(0),
@@ -41,7 +41,7 @@ Symbol::Symbol()
 }
 
 Symbol::Symbol(const Symbol &symbol)
-  : mName(symbol.mName),
+  : mShape(symbol.mShape),
     mAngle(symbol.mAngle),
     mColor(symbol.mColor),
     mOutlineColor(symbol.mOutlineColor),
@@ -52,7 +52,7 @@ Symbol::Symbol(const Symbol &symbol)
 }
 
 Symbol::Symbol(Symbol&& symbol) TL_NOEXCEPT
-  : mName(symbol.mName),
+  : mShape(symbol.mShape),
     mAngle(symbol.mAngle),
     mColor(std::move(symbol.mColor)),
     mOutlineColor(std::move(symbol.mOutlineColor)),
@@ -74,14 +74,14 @@ void Symbol::setAngle(double angle)
     mAngle = angle;
 }
 
-auto Symbol::name() const -> Name
+auto Symbol::shape() const -> Shape
 {
-    return mName;
+    return mShape;
 }
 
-void Symbol::setName(Name name)
+void Symbol::setShape(Shape shape)
 {
-    mName = name;
+    mShape = shape;
 }
 
 auto Symbol::color() const -> Color
@@ -143,7 +143,7 @@ void Symbol::setPriorityLevel(uint32_t priorityLevel)
 auto Symbol::operator =(const Symbol& symbol) -> Symbol&
 {
     if (this != &symbol) {
-        mName = symbol.mName;
+        mShape = symbol.mShape;
         mAngle = symbol.mAngle;
         mColor = symbol.mColor;
         mOutlineColor = symbol.mOutlineColor;
@@ -157,7 +157,7 @@ auto Symbol::operator =(const Symbol& symbol) -> Symbol&
 auto Symbol::operator=(Symbol&& symbol) TL_NOEXCEPT -> Symbol&
 {
     if (this != &symbol) {
-        mName = symbol.mName;
+        mShape = symbol.mShape;
         mAngle = symbol.mAngle;
         mColor = std::move(symbol.mColor);
         mOutlineColor = std::move(symbol.mOutlineColor);
@@ -168,5 +168,16 @@ auto Symbol::operator=(Symbol&& symbol) TL_NOEXCEPT -> Symbol&
     return *this;
 }
 
+#ifdef TL_WARNING_DEPRECATED_METHOD
+auto Symbol::name() const -> Name
+{
+    return static_cast<Symbol::Name>(static_cast<std::underlying_type<Symbol::Shape>::type>(mShape));
+}
+
+void Symbol::setName(Name name)
+{
+    mShape = static_cast<Symbol::Shape>(static_cast<std::underlying_type<Symbol::Name>::type>(name));
+}
+#endif // TL_WARNING_DEPRECATED_METHOD
 
 } // End namespace tl

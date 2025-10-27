@@ -35,19 +35,25 @@ if (BUILD_TL_VECTOR_TOOLS)
   
     add_files_to_project(${PROJECT_NAME} 
                          SOURCE_FILES 
-                             vect.cpp
-                             io/vectreader.cpp
-                             io/vectwriter.cpp
-                             io/formats.cpp
-                             impl/io/gdalreader.cpp
-                             impl/io/gdalwriter.cpp
+                             io/private/TypeConverter.cpp
+                             io/private/gdal.cpp
+                             io/Reader.cpp
+                             io/Writer.cpp
+                             io/Formats.cpp
+                             io/impl/GdalReader.cpp
+                             io/impl/GdalWriter.cpp
+                             io/impl/VectorReader.cpp
+                             io/impl/VectorWriter.cpp
                          HEADER_FILES
-                             vect.h
-                             io/vectreader.h
-                             io/vectwriter.h
-                             io/formats.h
-                             impl/io/gdalreader.h
-                             impl/io/gdalwriter.h)
+                             io/private/TypeConverter.h
+                             io/private/gdal.h
+                             io/Reader.h
+                             io/Writer.h
+                             io/Formats.h
+                             io/impl/GdalReader.h
+                             io/impl/GdalWriter.h    
+                             io/impl/VectorReader.h
+                             io/impl/VectorWriter.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -88,7 +94,8 @@ if (BUILD_TL_VECTOR_TOOLS)
     install(DIRECTORY . 
             DESTINATION include/tidop/vectortools
             FILES_MATCHING PATTERN "*.h"
-            PATTERN "impl" EXCLUDE)
+            PATTERN "impl" EXCLUDE
+            PATTERN "private" EXCLUDE)
             
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     

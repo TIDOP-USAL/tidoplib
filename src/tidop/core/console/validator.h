@@ -327,7 +327,7 @@ public:
      */
     void print() const override
     {
-        std::cout << "Allowable values: [ ";
+        std::cout << "Allowed values: [ ";
         for (const auto &values : this->values)
             std::cout << values << " ";
         std::cout << "]";

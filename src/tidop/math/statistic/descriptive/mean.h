@@ -26,6 +26,7 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/common.h"
+#include "tidop/core/base/exception.h"
 #include "tidop/math/base/simd.h"
 
 namespace tl
@@ -63,6 +64,8 @@ namespace tl
 template<typename It>
 auto mean(It first, It last, bool isContiguousContainer = false) -> enableIfIntegral<iteratorValueType<It>, double>
 {
+    TL_ASSERT(first != last, "mean: empty range");
+
     double x{0};
     double i{0};
 
@@ -100,6 +103,8 @@ template<typename It>
 auto mean(It first, It last, bool isContiguousContainer = false) -> enableIfFloating<iteratorValueType<It>, 
                                                                     std::remove_cv_t<iteratorValueType<It>>>
 {
+    TL_ASSERT(first != last, "mean: empty range");
+
     using T = std::remove_cv_t<iteratorValueType<It>>;
     T x{0};
     T i{0};

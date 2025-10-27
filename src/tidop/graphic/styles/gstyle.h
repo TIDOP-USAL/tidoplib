@@ -42,33 +42,28 @@ namespace tl
 
 
 /*!
- * \brief Class for styles
+ * \class GraphicStyle
+ * \brief Aggregates graphical style components for rendering.
  *
- * Styles for an entity, a layer, or a file
+ * `GraphicStyle` defines the complete visual styling for an entity, layer, or dataset.
+ * It groups four visual components:
+ * - `Pen`: controls stroke (line) appearance.
+ * - `Brush`: controls area (fill) appearance.
+ * - `Symbol`: defines point marker style.
+ * - `Label`: defines text rendering style.
+ *
+ * A style can be partially defined (e.g., only a label), and missing components are simply ignored during rendering.
+ *
+ * \see Pen, Brush, Symbol, Label
  */
 class TL_EXPORT GraphicStyle
 {
 
 private:
 
-    /*!
-     * \brief Pen style
-     */
     std::shared_ptr<Pen> mPen;
-
-    /*!
-     * \brief Brush style
-     */
     std::shared_ptr<Brush> mBrush;
-
-    /*!
-     * \brief Symbol style
-     */
     std::shared_ptr<Symbol> mSymbol;
-
-    /*!
-     * \brief Label style
-     */
     std::shared_ptr<Label> mLabel;
 
 public:
@@ -79,9 +74,15 @@ public:
     GraphicStyle();
 
     /*!
-     * \brief Copy constructor
+     * \brief Copy constructor.
+     * \param[in] graphicStyle The style to copy.
      */
     GraphicStyle(const GraphicStyle &graphicStyle);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] graphicStyle The style to move.
+     */
     GraphicStyle(GraphicStyle&& graphicStyle) noexcept;
 
     /*!
@@ -90,62 +91,64 @@ public:
     virtual ~GraphicStyle() = default;
 
     /*!
-     * \brief Get the pen style
-     * \return Pointer to the pen style
+     * \brief Returns the current pen style.
+     * \return Shared pointer to the `Pen` object (may be null).
      */
-    auto pen() const -> Pen*;
+    auto pen() const -> std::shared_ptr<Pen>;
 
     /*!
-     * \brief Set the pen style
-     * \param[in] pen Pointer to the pen style
+     * \brief Sets the pen style.
+     * \param[in] pen Shared pointer to the pen style.
      */
     void setPen(const std::shared_ptr<Pen> &pen);
 
     /*!
-     * \brief Get the brush style
-     * \return Pointer to the brush style
+     * \brief Returns the current brush style.
+     * \return Shared pointer to the `Brush` object (may be null).
      */
-    auto brush() const -> Brush*;
+    auto brush() const -> std::shared_ptr<Brush>;
 
     /*!
-     * \brief Set the brush style
-     * \param[in] brush Pointer to the brush style
+     * \brief Sets the brush style.
+     * \param[in] brush Shared pointer to the brush style.
      */
     void setBrush(const std::shared_ptr<Brush> &brush);
 
     /*!
-     * \brief Get the symbol style
-     * \return Pointer to the symbol style
+     * \brief Returns the current symbol style.
+     * \return Shared pointer to the `Symbol` object (may be null).
      */
-    auto symbol() const -> Symbol*;
+    auto symbol() const -> std::shared_ptr<Symbol>;
 
     /*!
-     * \brief Set the symbol style
-     * \param[in] symbol Pointer to the symbol style
+     * \brief Sets the symbol style.
+     * \param[in] symbol Shared pointer to the symbol style.
      */
     void setSymbol(const std::shared_ptr<Symbol> &symbol);
 
     /*!
-     * \brief Get the label style
-     * \return Pointer to the label style
+     * \brief Returns the current label style.
+     * \return Shared pointer to the `Label` object (may be null).
      */
-    auto label() const -> Label*;
+    auto label() const -> std::shared_ptr<Label>;
 
     /*!
-     * \brief Set the label style
-     * \param[in] label Pointer to the label style
+     * \brief Sets the label style.
+     * \param[in] label Shared pointer to the label style.
      */
     void setLabel(const std::shared_ptr<Label> &label);
 
     /*!
-     * \brief Assignment operator
-     * \param[in] graphicStyle The graphic style
+     * \brief Copy assignment operator.
+     * \param[in] graphicStyle The style to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GraphicStyle& graphicStyle) -> GraphicStyle&;
+    auto operator =(const GraphicStyle &graphicStyle) -> GraphicStyle&;
 
     /*!
-     * \brief Assignment copy operator
-     * \param[in] graphicStyle The graphic style
+     * \brief Move assignment operator.
+     * \param[in] graphicStyle The style to move.
+     * \return Reference to this object.
      */
     auto operator =(GraphicStyle &&graphicStyle) TL_NOEXCEPT -> GraphicStyle &;
 

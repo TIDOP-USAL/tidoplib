@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/math/math.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {
@@ -56,24 +57,26 @@ namespace tl
 template<typename It>
 auto quantile(It first, It last, double p) -> enableIfIntegral<iteratorValueType<It>, double>
 {
-    double q;
+    TL_ASSERT(first != last, "quantile: empty range");
+    TL_ASSERT(std::isfinite(p), "quantile: p must be finite");
+    TL_ASSERT(p >= 0. && p <= 1., "quantile: p must be in the range [0, 1]");
 
-    auto n = std::distance(first, last);
-    std::vector<iteratorValueType<It>> sort_vector(n);
-    std::copy(first, last, sort_vector.begin());
+    std::vector<iteratorValueType<It>> sort_vector(first, last);
     std::sort(sort_vector.begin(), sort_vector.end());
+    size_t n = sort_vector.size();
 
-    double idx = static_cast<double>(n + 1) * p - 1.;
-    size_t idx_1 = static_cast<size_t>(std::floor(idx));
-    size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+    // Boundary cases
+    if (p == 0.0) return sort_vector.front();
+    if (p == 1.0) return sort_vector.back();
 
-    if (idx_1 == idx_2) {
-        q = static_cast<double>(sort_vector[idx_1]);
-    } else {
-        q = static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
-    }
+    // Hyndman & Fan type 7
+    double h = (static_cast<double>(n) - 1.0) * p;
+    size_t i = static_cast<size_t>(std::floor(h));
+    double f = h - static_cast<double>(i);
 
-    return q;
+    return (i + 1 < n)
+        ? static_cast<double>(sort_vector[i] + f * (static_cast<double>(sort_vector[i + 1]) - static_cast<double>(sort_vector[i])))
+        : sort_vector[i];
 }
 
 template<typename It>
@@ -81,24 +84,26 @@ auto quantile(It first, It last, double p) -> enableIfFloating<iteratorValueType
 {
     using T = std::remove_cv_t<iteratorValueType<It>>;
 
-    T q;
+    TL_ASSERT(first != last, "quantile: empty range");
+    TL_ASSERT(std::isfinite(p), "quantile: p must be finite");
+    TL_ASSERT(p >= 0. && p <= 1., "quantile: p must be in the range [0, 1]");
 
-    auto n = std::distance(first, last);
-    std::vector<T> sort_vector(n);
-    std::copy(first, last, sort_vector.begin());
+    std::vector<T> sort_vector(first, last);
     std::sort(sort_vector.begin(), sort_vector.end());
+    size_t n = sort_vector.size();
 
-    double idx = static_cast<double>(n + 1) * p - 1.;
-    size_t idx_1 = static_cast<size_t>(std::floor(idx));
-    size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+    // Boundary cases
+    if (p == 0.0) return sort_vector.front();
+    if (p == 1.0) return sort_vector.back();
 
-    if (idx_1 == idx_2) {
-        q = sort_vector[idx_1];
-    } else {
-        q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * static_cast<T>(fabs(idx - static_cast<int>(idx)));
-    }
+    // Hyndman & Fan type 7
+    double h = (static_cast<T>(n) - 1.0) * p;
+    size_t i = static_cast<size_t>(std::floor(h));
+    T f = static_cast<T>(h) - static_cast<T>(i);
 
-    return q;
+    return (i + 1 < n) 
+        ? static_cast<T>(sort_vector[i] + f * (static_cast<T>(sort_vector[i + 1]) - static_cast<T>(sort_vector[i])))
+        : sort_vector[i];
 }
 
 

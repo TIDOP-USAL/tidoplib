@@ -36,22 +36,37 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Font class 
-  */
+/*!
+ * \class Font
+ * \brief Represents a text font with styling options.
+ *
+ * The `Font` class defines the typographic attributes used when rendering text.
+ * This includes the font family name, size, style flags (bold, italic), and decorations
+ * such as underline or strikethrough. Font styles are stored using bitwise combinable flags.
+ *
+ * \see Font::Style, Label, GraphicStyle
+ */
 class TL_EXPORT Font
 {
 
 public:
 
     /*!
-     * \brief Font style
+     * \enum Style
+     * \brief Font style flags.
+     *
+     * These flags define the stylistic appearance of the font.
+     * Flags can be combined using bitwise operators.
+     *
+     * \code
+     * Font::Style style = Font::Style::bold | Font::Style::italic;
+     * \endcode
      */
     enum class Style : uint8_t
     {
-        normal = 0 << 0,
-        bold = 1 << 0,
-        italic = 1 << 1
+        normal = 0 << 0,  /*!< Regular style (default) */
+        bold = 1 << 0,  /*!< Bold weight */
+        italic = 1 << 1   /*!< Italic slant */
     };
 
 private:
@@ -71,23 +86,23 @@ public:
 
     /*!
      * \brief Copy constructor
-     * \param[in] font Font
+     * \param[in] font Font to copy.
      */
     Font(const Font &font);
 
     /*!
      * \brief Move constructor
-     * \param[in] font Font
+     * \param[in] font Font to move.
      */
     Font(Font &&font) TL_NOEXCEPT;
 
     /*!
-     * \brief Constructor
-     * \param[in] name Font name
-     * \param[in] size Font size
-     * \param[in] style Font style
-     * \param[in] underline Underline. Default is off
-     * \param[in] strikethrough Strikethrough. Default is off
+     * \brief Constructs a font with custom parameters.
+     * \param[in] name Font family name.
+     * \param[in] size Font size in points.
+     * \param[in] style Font style flags.
+     * \param[in] underline Whether the font is underlined.
+     * \param[in] strikethrough Whether the font is struck through.
      * \see Style
      */
     explicit Font(std::string name, 
@@ -96,97 +111,100 @@ public:
                   bool underline = false, 
                   bool strikethrough = false);
 
+    /*!
+     * \brief Destructor.
+     */
     ~Font() = default;
 
     /*!
-     * \brief Returns the font name
-     * \return Font name
+     * \brief Returns the font family name.
+     * \return Font name.
      */
     auto name() const -> std::string;
 
     /*!
-     * \brief Sets the font name
-     * \param[in] name Font name
+     * \brief Sets the font family name.
+     * \param[in] name Font name.
      */
     void setName(const std::string &name);
 
     /*!
-     * \brief Returns the font size
-     * \return Font size
+     * \brief Returns the font size (in points).
+     * \return Font size.
      */
     auto size() const -> int;
 
     /*!
-     * \brief Sets the font size
-     * \param[in] size Font size
+     * \brief Sets the font size (in points).
+     * \param[in] size Font size.
      */
     void setSize(int size);
 
     /*!
-     * \brief Bold font
-     * \return True if the font is bold
+     * \brief Checks if the font is bold.
+     * \return True if bold.
      */
     auto isBold() const -> bool;
 
     /*!
-     * \brief Bold font
-     * \param[in] active Activate option
+     * \brief Enables or disables bold style.
+     * \param[in] active True to enable bold.
      */
     void setBold(bool active);
 
     /*!
-     * \brief Italic font
-     * \return True if the font is italic
+     * \brief Checks if the font is italic.
+     * \return True if italic.
      */
     auto isItalic() const -> bool;
 
     /*!
-     * \brief Italic font
-     * \param[in] active Activate option
+     * \brief Enables or disables italic style.
+     * \param[in] active True to enable italic.
      */
     void setItalic(bool active);
 
     /*!
-     * \brief Underlined font
-     * \return True if the font is underlined
+     * \brief Checks if the font is underlined.
+     * \return True if underlined.
      */
     auto isUnderline() const -> bool;
 
     /*!
-     * \brief Underlined font
-     * \param[in] active Activate option
+     * \brief Enables or disables underline.
+     * \param[in] active True to enable underline.
      */
     void setUnderline(bool active);
 
     /*!
-     * \brief Strikethrough font
-     * \return True if the font is strikethrough
+     * \brief Checks if the font has strikethrough.
+     * \return True if strikethrough is enabled.
      */
     auto isStrikethrough() const -> bool;
 
     /*!
-     * \brief Strikethrough font
-     * \param[in] active Activate option
+     * \brief Enables or disables strikethrough.
+     * \param[in] active True to enable strikethrough.
      */
     void setStrikethrough(bool active);
 
     /*!
-     * \brief Set the style
-     * \param[in] style
+     * \brief Sets the font style.
+     * \param[in] style Bitwise combination of Style flags.
      */
     void setStyle(Style style);
 
     /*!
-     * \brief Assignment operator
-     * \param[in] font Font object being assigned
-     * \return
+     * \brief Copy assignment operator.
+     * \param[in] font Font to assign.
+     * \return Reference to this object.
      */
     auto operator =(const Font& font) -> Font&;
 
     /*!
-     * \brief Move assignment operator
-     * \param[in] font Font object being moved
-     * \return
+     * \brief Move assignment operator.
+     * \param[in] font Font to move.
+     * \return Reference to this object.
      */
     auto operator =(Font&& font) TL_NOEXCEPT -> Font&;
 
@@ -196,5 +214,5 @@ ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)
 
 /*! \} */ // end of GraphicEntities
 
-} // End namespace TL
+} // End namespace tl
 

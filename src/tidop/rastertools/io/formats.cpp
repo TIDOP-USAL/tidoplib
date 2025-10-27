@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/rastertools/io/formats.h"
+#include "tidop/rastertools/io/Formats.h"
 
 #include "tidop/rastertools/img.h"
 

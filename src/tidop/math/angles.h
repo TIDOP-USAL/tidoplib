@@ -44,21 +44,35 @@ namespace tl
  * This group contains classes and functions for handling angles in different units
  * (degrees, radians, and gradians) and converting between these units.
  *
- * \section angleConversionExample Example
- *
- * The following example demonstrates how to convert an angle from degrees to radians using
- * the `AngleConverter` class:
- *
  * ### Example Usage
+ * 
+ * The following example demonstrates two ways to convert an angle from degrees to radians:
+ * 
+ * 1. **Using `AngleConverter` explicitly**
  * \code{.cpp}
  * Degrees<double> degrees(135, 34, 27);
- * Radians<double> radians = degrees;
+ * Radians<double> radians;
+ * AngleConverter<double>::convert(degrees, radians);
+ *
+ * Message::info("The angle in radians is: {}", radians.value());
+ * \endcode
+ *
+ * 2. **Using implicit conversion by type assignment**
+ *
+ * The same conversion can be performed directly by assigning one angle type to another.
+ * Internally, this operation also relies on the `AngleConverter` class.
+ *
+ * \code{.cpp}
+ * Degrees<double> degrees(135, 34, 27);
+ * Radians<double> radians = degrees; // Conversion performed internally
  *
  * Message::info("The angle in radians is: {}", radians.value());
  * \endcode
  *
  * The output will be:
+ * \code
  * The angle in radians is: 2.3662161708
+ * \endcode
  * 
  * \{
  */

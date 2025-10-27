@@ -23,6 +23,8 @@
  **************************************************************************/
 
 #include "tidop/graphic/entities/point.h"
+#include "tidop/graphic/painter.h"
+#include "tidop/geometry/bbox.h"
 
 namespace tl
 {
@@ -79,7 +81,16 @@ auto GPoint::operator =(GPoint&& gPoint) TL_NOEXCEPT -> GPoint&
     return *this;
 }
 
+auto GPoint::window() const -> Window<Point<double>>
+{
+    Point<double> pt(this->x, this->y);
+    return {pt, pt};
+}
 
+void GPoint::draw(Painter &painter) const
+{
+    painter.drawPoint(*this);
+}
 
 
 
@@ -136,6 +147,16 @@ auto GPoint3D::operator =(GPoint3D &&gPoint) TL_NOEXCEPT -> GPoint3D&
     return *this;
 }
 
+auto GPoint3D::window() const -> Window<Point<double>>
+{
+    Point<double> pt(this->x, this->y);
+    return {pt, pt};
+}
+
+void GPoint3D::draw(Painter &painter) const
+{
+    painter.drawPoint(Point<double>(x, y));
+}
 
 
 
@@ -192,6 +213,18 @@ auto GMultiPoint::operator=(GMultiPoint&& gMultiPoint) TL_NOEXCEPT -> GMultiPoin
     return *this;
 }
 
+auto GMultiPoint::window() const -> Window<Point<double>>
+{
+    return MultiPoint<Point<double>>::window();
+}
+
+void GMultiPoint::draw(Painter &painter) const
+{
+    painter.drawMultiPoint(*this);
+}
+
+
+
 
 GMultiPoint3D::GMultiPoint3D()
   : GraphicEntity(GraphicEntity::Type::multipoint_3d)
@@ -243,5 +276,19 @@ auto GMultiPoint3D::operator=(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT -> GMul
     return *this;
 }
 
+auto GMultiPoint3D::window() const -> Window<Point<double>>
+{
+    auto bbox = MultiPoint3D<Point3<double>>::boundingBox();
+    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
+            Point<double>(bbox.pt2.x, bbox.pt2.y)};
+}
+
+void GMultiPoint3D::draw(Painter &painter) const
+{
+    GMultiPoint tmp(size());
+    for (size_t i = 0; i < size(); ++i)
+        tmp[i] = Point<double>((*this)[i].x, (*this)[i].y);
+    painter.drawMultiPoint(tmp);
+}
 
 } // End namespace tl

@@ -32,7 +32,7 @@ namespace tl
 Pen::Pen()
   : mColor(0),
     mWidth(1),
-    mName(Name::solid),
+    mPredefinedPattern(PredefinedPattern::solid),
     mCap(Cap::butt),
     mJoin(Join::bevel),
     mPerpendicularOffset(0),
@@ -44,7 +44,7 @@ Pen::Pen(const Pen &pen)
   : mColor(pen.mColor),
     mWidth(pen.mWidth),
     mPattern(pen.mPattern),
-    mName(pen.mName),
+    mPredefinedPattern(pen.mPredefinedPattern),
     mCap(pen.mCap),
     mJoin(pen.mJoin),
     mPerpendicularOffset(pen.mPerpendicularOffset),
@@ -56,7 +56,7 @@ Pen::Pen(Pen&& pen) TL_NOEXCEPT
   : mColor(std::move(pen.mColor)),
     mWidth(pen.mWidth),
     mPattern(std::move(pen.mPattern)),
-    mName(pen.mName),
+    mPredefinedPattern(pen.mPredefinedPattern),
     mCap(pen.mCap),
     mJoin(pen.mJoin),
     mPerpendicularOffset(pen.mPerpendicularOffset),
@@ -97,14 +97,14 @@ void Pen::setPattern(const std::string &pattern)
     mPattern = pattern;
 }
 
-auto Pen::name() const -> Name
+auto Pen::predefinedPattern() const -> PredefinedPattern
 {
-    return mName;
+    return mPredefinedPattern;
 }
 
-void Pen::setName(Name name)
+void Pen::setPredefinedPattern(PredefinedPattern pattern)
 {
-    mName = name;
+    mPredefinedPattern = pattern;
 }
 
 auto Pen::cap() const -> Cap
@@ -153,7 +153,7 @@ auto Pen::operator =(const Pen& stylePen) -> Pen&
         mColor = stylePen.mColor;
         mWidth = stylePen.mWidth;
         mPattern = stylePen.mPattern;
-        mName = stylePen.mName;
+        mPredefinedPattern = stylePen.mPredefinedPattern;
         mCap = stylePen.mCap;
         mJoin = stylePen.mJoin;
         mPerpendicularOffset = stylePen.mPerpendicularOffset;
@@ -168,7 +168,7 @@ auto Pen::operator=(Pen &&stylePen) TL_NOEXCEPT -> Pen&
         mColor = std::move(stylePen.mColor);
         mWidth = stylePen.mWidth;
         mPattern = std::move(stylePen.mPattern);
-        mName = stylePen.mName;
+        mPredefinedPattern = stylePen.mPredefinedPattern;
         mCap = stylePen.mCap;
         mJoin = stylePen.mJoin;
         mPerpendicularOffset = stylePen.mPerpendicularOffset;
@@ -177,5 +177,16 @@ auto Pen::operator=(Pen &&stylePen) TL_NOEXCEPT -> Pen&
     return *this;
 }
 
+#ifdef TL_WARNING_DEPRECATED_METHOD
+auto Pen::name() const -> Name
+{
+    return static_cast<Pen::Name>(static_cast<std::underlying_type<Pen::PredefinedPattern>::type>(mPredefinedPattern));
+}
+
+void Pen::setName(Name name)
+{
+    mPredefinedPattern = static_cast<Pen::PredefinedPattern>(static_cast<std::underlying_type<Pen::Name>::type>(name));
+}
+#endif // TL_WARNING_DEPRECATED_METHOD
 
 } // End namespace tl

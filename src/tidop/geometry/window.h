@@ -453,9 +453,9 @@ auto Window<Point_t>::containsWindow(const Window<Point_t2> &w) const -> bool
 {
     Window<Point_t> w2 = w;
     return pt1.x <= w2.pt1.x &&
-        pt1.y <= w2.pt1.y &&
-        pt2.x >= w2.pt2.x &&
-        pt2.y >= w2.pt2.y;
+           pt1.y <= w2.pt1.y &&
+           pt2.x >= w2.pt2.x &&
+           pt2.y >= w2.pt2.y;
 }
 
 using WindowI = Window<Point<int> >;

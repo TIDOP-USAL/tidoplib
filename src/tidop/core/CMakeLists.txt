@@ -46,6 +46,7 @@ if(BUILD_TL_CORE)
                              base/property.cpp
                              base/string_utils.cpp
                              base/type_conversions.cpp
+                             base/text_encoding.cpp
                              concurrency/parallel.cpp
                              console/console.cpp
                              console/argument.cpp
@@ -88,6 +89,7 @@ if(BUILD_TL_CORE)
                              base/string_utils.h
                              base/type.h
                              base/type_conversions.h
+                             base/text_encoding.h
                              concurrency/consumer.h							 
                              concurrency/parallel.h							 
                              concurrency/producer.h							 

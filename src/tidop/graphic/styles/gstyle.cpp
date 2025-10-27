@@ -53,9 +53,9 @@ GraphicStyle::GraphicStyle(GraphicStyle &&graphicStyle) TL_NOEXCEPT
 {
 }
 
-auto GraphicStyle::pen() const -> Pen*
+auto GraphicStyle::pen() const -> std::shared_ptr<Pen>
 {
-    return mPen.get();
+    return mPen;
 }
 
 void GraphicStyle::setPen(const std::shared_ptr<Pen> &pen)
@@ -63,9 +63,9 @@ void GraphicStyle::setPen(const std::shared_ptr<Pen> &pen)
     mPen = pen;
 }
 
-auto GraphicStyle::brush() const -> Brush*
+auto GraphicStyle::brush() const -> std::shared_ptr<Brush>
 {
-    return mBrush.get();
+    return mBrush;
 }
 
 void GraphicStyle::setBrush(const std::shared_ptr<Brush> &brush)
@@ -73,9 +73,9 @@ void GraphicStyle::setBrush(const std::shared_ptr<Brush> &brush)
     mBrush = brush;
 }
 
-auto GraphicStyle::symbol() const -> Symbol*
+auto GraphicStyle::symbol() const -> std::shared_ptr<Symbol>
 {
-    return mSymbol.get();
+    return mSymbol;
 }
 
 void GraphicStyle::setSymbol(const std::shared_ptr<Symbol> &symbol)
@@ -83,9 +83,9 @@ void GraphicStyle::setSymbol(const std::shared_ptr<Symbol> &symbol)
     mSymbol = symbol;
 }
 
-auto GraphicStyle::label() const -> Label*
+auto GraphicStyle::label() const -> std::shared_ptr<Label>
 {
-    return mLabel.get();
+    return mLabel;
 }
 
 void GraphicStyle::setLabel(const std::shared_ptr<Label> &label)
@@ -93,7 +93,7 @@ void GraphicStyle::setLabel(const std::shared_ptr<Label> &label)
     mLabel = label;
 }
 
-auto GraphicStyle::operator =(const GraphicStyle& graphicStyle) -> GraphicStyle&
+auto GraphicStyle::operator =(const GraphicStyle &graphicStyle) -> GraphicStyle&
 {
     if (this != &graphicStyle) {
         mPen = graphicStyle.mPen;

@@ -17,7 +17,7 @@ Modules
 - @ref MathTools
 - @ref Features
 - @ref Geometry
-- @ref GeoTools
+- @ref GeoToolsGroup
 - @ref GraphicEntities
 - @ref RasterTools
 - @ref VectorTools

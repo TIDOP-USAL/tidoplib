@@ -48,7 +48,7 @@ Label::Label()
 
 Label::Label(const Label &label)
   : mFont(label.mFont),
-    mLicenseText(label.mLicenseText),
+    mText(label.mText),
     mAngle(label.mAngle),
     mForegroundColor(label.mForegroundColor),
     mBackgroundColor(label.mBackgroundColor),
@@ -66,7 +66,7 @@ Label::Label(const Label &label)
 
 Label::Label(Label &&label) TL_NOEXCEPT
   : mFont(label.mFont),
-    mLicenseText(label.mLicenseText),
+    mText(label.mText),
     mAngle(label.mAngle),
     mForegroundColor(std::move(label.mForegroundColor)),
     mBackgroundColor(std::move(label.mBackgroundColor)),
@@ -86,12 +86,12 @@ Label::~Label() = default;
 
 auto Label::text() const -> std::string
 {
-    return mLicenseText;
+    return mText;
 }
 
 void Label::setText(const std::string &text)
 {
-    mLicenseText = text;
+    mText = text;
 }
 
 auto Label::angle() const -> double
@@ -144,12 +144,12 @@ void Label::setShadowColor(const Color &color)
     mShadowColor = color;
 }
 
-auto Label::stretch() const -> double
+auto Label::stretchFactor() const -> double
 {
     return mStretch;
 }
 
-void Label::setStretch(double stretch)
+void Label::setStretchFactor(double stretch)
 {
     mStretch = stretch;
 }
@@ -200,11 +200,21 @@ void Label::setPerpendicularOffset(int perpendicularOffset)
     mPerpendicularOffset = perpendicularOffset;
 }
 
+auto Label::priorityLevel() const -> uint32_t
+{
+    return mPriorityLevel;
+}
+
+void Label::setPriorityLevel(uint32_t level)
+{
+    mPriorityLevel = level;
+}
+
 auto Label::operator =(const Label& label) -> Label&
 {
     if (this != &label) {
         mFont = label.mFont;
-        mLicenseText = label.mLicenseText;
+        mText = label.mText;
         mAngle = label.mAngle;
         mForegroundColor = label.mForegroundColor;
         mBackgroundColor = label.mBackgroundColor;
@@ -224,7 +234,7 @@ auto Label::operator=(Label&& label) TL_NOEXCEPT -> Label&
 {
     if (this != &label) {
         mFont = label.mFont;
-        mLicenseText = label.mLicenseText;
+        mText = label.mText;
         mAngle = label.mAngle;
         mForegroundColor = std::move(label.mForegroundColor);
         mBackgroundColor = std::move(label.mBackgroundColor);
@@ -250,6 +260,16 @@ auto Label::font() const -> Font
     return mFont;
 }
 
+#ifdef TL_WARNING_DEPRECATED_METHOD
+auto Label::stretch() const -> double
+{
+    return stretchFactor();
+}
 
+void Label::setStretch(double stretch)
+{
+    setStretchFactor(stretch);
+}
+#endif // TL_WARNING_DEPRECATED_METHOD
 
 } // End namespace tl

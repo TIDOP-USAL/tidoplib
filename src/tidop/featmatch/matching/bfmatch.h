@@ -46,7 +46,7 @@ namespace tl
  * This class stores the configuration parameters for a Brute-Force descriptor matcher.
  * The primary parameter is the norm type, which determines how distances between descriptors are computed.
  *
- * #### Example Usage
+ * ### Example Usage
  * \code{.cpp}
  * BruteForceMatcherProperties properties;
  * properties.setNormType("L2");

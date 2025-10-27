@@ -78,9 +78,9 @@ public:
 
     /*!
      * \brief Constructs a Path object from a string.
-     * \param path The path as a std::string.
+     * \param utf8Path The path as a std::string.
      */
-    Path(const std::string &path);
+    Path(const std::string &utf8Path);
 
     /*!
      * \brief Constructs a Path object from a wide string.
@@ -94,7 +94,7 @@ public:
     auto operator = (const Path &path) -> Path&;
     auto operator = (Path &&path) TL_NOEXCEPT -> Path&;
 
-    void setPath(const std::string &path);
+    void setPath(const std::string &utf8Path);
     void setPath(const std::wstring &path);
 
     /*!
@@ -107,7 +107,8 @@ public:
      */
     auto toWString() const -> std::wstring;
 
-    //auto toLocal8Bit() const -> std::string;
+    auto toUtf8() const -> std::string;
+    auto toLocal8Bit() const -> std::string;
 
     /*!
      * \brief Returns the file name component of the path.
@@ -333,7 +334,7 @@ public:
      */
     static auto currentPath() -> Path;
 
-    //static auto fromLocal8Bit(const std::string &s) -> Path;
+    static auto fromLocal8Bit(const std::string &s) -> Path;
 
     /* Override operators */
 

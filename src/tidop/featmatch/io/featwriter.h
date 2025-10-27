@@ -46,7 +46,7 @@ namespace tl
  * This abstract class provides an interface for saving keypoints and descriptors
  * in various formats (XML (OpenCV), YML (OpenCV), binary (TidopLib) and text).
  *
- * #### Example Usage
+ * ### Example Usage
  *
  * The following example shows how to write keypoints and descriptors to a file:
  *

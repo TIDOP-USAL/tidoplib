@@ -299,9 +299,12 @@ auto module(T a, T b) -> enableIfIntegral<T, double>
 {
     if (a == 0 && b == 0) return 0.;
 
-    auto result = std::minmax(std::abs(a), std::abs(b));
+    T aa = std::abs(a);
+    T bb = std::abs(b);
+    auto result = std::minmax(aa, bb);
+
     double div = static_cast<double>(result.first) /
-        static_cast<double>(result.second);
+                 static_cast<double>(result.second);
     return static_cast<double>(result.second) * sqrt(1. + div * div);
 }
 
@@ -320,7 +323,10 @@ auto module(T a, T b) -> enableIfFloating<T, T>
 {
     if (a == consts::zero<T> && b == consts::zero<T>) return consts::zero<T>;
 
-    auto result = std::minmax(std::abs(a), std::abs(b));
+    T aa = std::abs(a);
+    T bb = std::abs(b);
+    auto result = std::minmax(aa, bb);
+
     T div = static_cast<T>(result.first) / static_cast<T>(result.second);
     return result.second * std::sqrt(consts::one<T> +div * div);
 }

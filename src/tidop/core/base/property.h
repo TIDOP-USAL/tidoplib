@@ -581,6 +581,7 @@ struct PropertyValue<Size<T>>
  *
  * This class allows storing, retrieving, and modifying properties dynamically.
  * Each property is associated with a string key and can hold different types of values.
+ * \example Core/properties.cpp
  */
 class Properties 
 {
@@ -596,7 +597,6 @@ public:
      * \brief Constant iterator type for read-only traversal of properties.
      */
     using const_iterator = std::unordered_map<std::string, std::shared_ptr<PropertyBase>>::const_iterator;
-
 
 private:
 

@@ -23,10 +23,11 @@
  **************************************************************************/
 
 #include "tidop/graphic/entities/polygon.h"
+#include "tidop/graphic/painter.h"
+#include "tidop/geometry/bbox.h"
 
 namespace tl
 {
-
 
 
 GPolygon::GPolygon()
@@ -80,6 +81,15 @@ auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
     return *this;
 }
 
+auto GPolygon::window() const -> Window<Point<double>>
+{
+    return Polygon<Point<double>>::window();
+}
+
+void GPolygon::draw(Painter &painter) const
+{
+    painter.drawPolygon(*this);
+}
 
 
 
@@ -134,6 +144,21 @@ auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
         GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon3D));
     }
     return *this;
+}
+
+auto GPolygon3D::window() const -> Window<Point<double>>
+{
+    auto bbox = Polygon3D<Point3<double>>::boundingBox();
+    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
+            Point<double>(bbox.pt2.x, bbox.pt2.y)};
+}
+
+void GPolygon3D::draw(Painter &painter) const
+{
+    Polygon<Point<double>> poly2d(size());
+    for (size_t i = 0; i < size(); ++i)
+        poly2d[i] = Point<double>((*this)[i].x, (*this)[i].y);
+    painter.drawPolygon(poly2d);
 }
 
 
@@ -193,6 +218,19 @@ auto GMultiPolygon::operator=(GMultiPolygon &&multiPolygon) noexcept -> GMultiPo
     return *this;
 }
 
+auto GMultiPolygon::window() const -> Window<Point<double>>
+{
+    return MultiPolygon<Point<double>>::window();
+}
+
+void GMultiPolygon::draw(Painter &painter) const
+{
+    painter.drawMultiPolygon(*this);
+}
+
+
+
+
 
 GMultiPolygon3D::GMultiPolygon3D()
   : GraphicEntity(GraphicEntity::Type::multipolygon_3d)
@@ -236,6 +274,26 @@ auto GMultiPolygon3D::operator=(GMultiPolygon3D &&multiPolygon3D) noexcept -> GM
         GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon3D));
     }
     return *this;
+}
+
+auto GMultiPolygon3D::window() const -> Window<Point<double>>
+{
+    auto bbox = MultiPolygon3D<Point3<double>>::boundingBox();
+    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
+            Point<double>(bbox.pt2.x, bbox.pt2.y)};
+}
+
+void GMultiPolygon3D::draw(Painter &painter) const
+{
+    GMultiPolygon tmp(size());
+    for (size_t i = 0; i < size(); ++i) {
+        const auto &poly = (*this)[i];
+        Polygon<Point<double>> p(poly.size());
+        for (size_t j = 0; j < poly.size(); ++j)
+            p[j] = Point<double>(poly[j].x, poly[j].y);
+        tmp[i] = p;
+    }
+    painter.drawMultiPolygon(tmp);
 }
 
 } // End namespace tl

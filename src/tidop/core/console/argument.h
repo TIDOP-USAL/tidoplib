@@ -30,6 +30,7 @@
 #include <string>
 #include <memory>
 
+#include "tidop/core/base/text_encoding.h"
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/type.h"
@@ -486,8 +487,19 @@ void Argument_<std::string>::fromString(const std::string &value)
 template<> inline
 void Argument_<Path>::fromString(const std::string &value)
 {
-    //mValue = Path::fromLocal8Bit(value);
+#ifdef _WIN32
+    // Convertir desde la codificación local (CP_ACP) a UTF-16
+    std::wstring wide = fromLocalEncoding(value);
+
+    // Convertir desde UTF-16 a UTF-8
+    std::string utf8 = toUtf8(wide);
+
+    mValue = Path(utf8);
+#else
+    // En Unix, std::string ya debería estar en UTF-8
     mValue = Path(value);
+#endif
+
     bValid = true;
 }
 

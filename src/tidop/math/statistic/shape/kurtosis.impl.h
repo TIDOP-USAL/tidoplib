@@ -63,7 +63,7 @@ public:
         double q1 = octiles.at(0);
         double q2 = octiles.at(1);
         double q3 = octiles.at(2);
-        double q5 = octiles.at(3);
+        double q5 = octiles.at(4);
         double q6 = octiles.at(5);
         double q7 = octiles.at(6);
 

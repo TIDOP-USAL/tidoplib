@@ -23,6 +23,8 @@
  **************************************************************************/
 
 #include "tidop/graphic/entities/linestring.h"
+#include "tidop/graphic/painter.h"
+#include "tidop/geometry/bbox.h"
 
 namespace tl
 {
@@ -80,6 +82,16 @@ GLineString &GLineString::operator = (GLineString &&gLineString) TL_NOEXCEPT
     return *this;
 }
 
+void GLineString::draw(Painter &painter) const
+{
+    painter.drawLineString(*this);
+}
+
+auto GLineString::window() const -> Window<Point<double>>
+{
+    return LineString<Point<double>>::window();
+}
+
 
 
 
@@ -135,7 +147,20 @@ auto GLineString3D::operator =(GLineString3D &&gLineString3D) TL_NOEXCEPT -> GLi
     return *this;
 }
 
+void GLineString3D::draw(Painter &painter) const
+{
+    LineStringD ls(size());
+    for (size_t i = 0; i < size(); ++i)
+        ls[i] = Point<double>((*this)[i].x, (*this)[i].y);
+    painter.drawLineString(ls);
+}
 
+auto GLineString3D::window() const -> Window<Point<double>>
+{
+    auto bbox = LineString3D<Point3<double>>::boundingBox();
+    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
+            Point<double>(bbox.pt2.x, bbox.pt2.y)};
+}
 
 
 
@@ -191,9 +216,15 @@ auto GMultiLineString::operator =(GMultiLineString &&gMultiLineString) TL_NOEXCE
     return *this;
 }
 
+void GMultiLineString::draw(Painter &painter) const
+{
+    painter.drawMultiLineString(*this);
+}
 
-
-
+auto GMultiLineString::window() const -> Window<Point<double>>
+{
+    return MultiLineString<Point<double>>::window();
+}
 
 
 GMultiLineString3D::GMultiLineString3D()
@@ -247,6 +278,24 @@ auto GMultiLineString3D::operator =(GMultiLineString3D &&gMultiLineString3D) TL_
     return *this;
 }
 
+auto GMultiLineString3D::window() const -> Window<Point<double>>
+{
+    auto bbox = MultiLineString3D<Point3<double>>::boundingBox();
+    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
+        Point<double>(bbox.pt2.x, bbox.pt2.y)};
+}
 
+void GMultiLineString3D::draw(Painter &painter) const
+{
+    GMultiLineString tmp(size());
+    for (size_t i = 0; i < size(); ++i) {
+        const auto &ln = (*this)[i];
+        LineString<Point<double>> ls(ln.size());
+        for (size_t j = 0; j < ln.size(); ++j)
+            ls[j] = Point<double>(ln[j].x, ln[j].y);
+        tmp[i] = ls;
+    }
+    painter.drawMultiLineString(tmp);
+}
 
-} // End namespace TL
+} // End namespace tl

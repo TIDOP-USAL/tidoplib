@@ -32,12 +32,19 @@
 #include <tidop/core/app/message.h>
 #include <tidop/core/console.h>
 #include <tidop/core/base/chrono.h>
-#include <tidop/rastertools/io/imgreader.h>
-#include <tidop/rastertools/io/imgwriter.h>
-#include <tidop/rastertools/io/metadata.h>
+#include <tidop/rastertools/io/Reader.h>
+#include <tidop/rastertools/io/writer.h>
+#include <tidop/rastertools/io/Metadata.h>
+
+#include <tidop/geospatial/crs.h>
+#include <tidop/geotools/GeoTools.h>
+#include <tidop/geotools/CRSsTools.h>
+
+#include "gdal_priv.h"
+
 
 #ifdef TL_HAVE_VLD
-#include "vld.h"
+//#include "vld.h"
 #endif // TL_HAVE_VLD
 
 using namespace tl;
@@ -55,24 +62,22 @@ void imageInfo(const Command::SharedPtr &command)
 
         TL_ASSERT(img.exists(), "The image does not exist {}", img.toString());
 
-        auto image_reader = ImageReaderFactory::create(img);
+        RasterReader image_reader(img);
 
-        image_reader->open();
-        if (image_reader->isOpen()) {
+        if (image_reader.isOpen()) {
 
-            Message::info("Number of bands: {}", image_reader->channels());
-            Message::info("Color depth: {}", image_reader->depth());
-            Message::info("Image dimensions: {}x{}", image_reader->cols(), image_reader->rows());
+            Message::info("Number of bands: {}", image_reader.channels());
+            Message::info("Color depth: {}", image_reader.depth());
+            Message::info("Image dimensions: {}x{}", image_reader.cols(), image_reader.rows());
             Message::info("Metadata:");
 
-            std::shared_ptr<ImageMetadata> image_metadata = image_reader->metadata();
-            std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
+            auto image_metadata = image_reader.metadata();
 
-            for (auto &item : metadata) {
+            for (auto &item : image_metadata) {
                 Message::info("  {}: {}", item.first, item.second);
             }
 
-            image_reader->close();
+            image_reader.close();
 
             chrono.stop();
 
@@ -87,6 +92,48 @@ void imageInfo(const Command::SharedPtr &command)
 }
 
 
+//void convertImageFormat(const Command::SharedPtr &command)
+//{
+//    try {
+//
+//        Chrono chrono("Convert image format");
+//        chrono.run();
+//
+//        auto img = command->value<Path>("img");
+//        auto output_img = command->value<Path>("output_img");
+//        //auto crs_in = command->value<std::string>("crs_in");
+//        auto crs_out = command->value<std::string>("crs_out");
+//
+//        auto image_reader = ImageReaderFactory::create(img);
+//        auto image_writer = ImageWriterFactory::create(output_img);
+//
+//        image_reader->open();
+//        if (image_reader->isOpen()) {
+//
+//            image_writer->open();
+//            image_writer->create(image_reader->rows(), image_reader->cols(), image_reader->channels(), image_reader->dataType());
+//
+//            image_writer->setMetadata(image_reader->metadata());
+//
+//            auto image = image_reader->read();
+//            image_writer->write(image);
+//
+//            if (image_reader->isGeoreferenced()) {
+//                image_writer->setGeoreference(image_reader->georeference());
+//                image_writer->setCRS(image_reader->crsWkt());
+//            }
+//
+//            image_reader->close();
+//            image_writer->close();
+//        }
+//
+//        chrono.stop();
+//
+//    } catch (...) {
+//        TL_THROW_EXCEPTION_WITH_NESTED("Exception caught on image format conversion");
+//    }
+//}
+
 void convertImageFormat(const Command::SharedPtr &command)
 {
     try {
@@ -96,28 +143,13 @@ void convertImageFormat(const Command::SharedPtr &command)
 
         auto img = command->value<Path>("img");
         auto output_img = command->value<Path>("output_img");
+        auto crs_out = command->value<std::string>("crs_out");
 
-        auto image_reader = ImageReaderFactory::create(img);
-        auto image_writer = ImageWriterFactory::create(output_img);
+        RasterReader image_reader(img);
 
-        image_reader->open();
-        if (image_reader->isOpen()) {
-
-            image_writer->open();
-            image_writer->create(image_reader->rows(), image_reader->cols(), image_reader->channels(), image_reader->dataType());
-
-            image_writer->setMetadata(image_reader->metadata());
-
-            auto image = image_reader->read();
-            image_writer->write(image);
-
-            if (image_reader->isGeoreferenced()) {
-                image_writer->setGeoreference(image_reader->georeference());
-                image_writer->setCRS(image_reader->crsWkt());
-            }
-
-            image_reader->close();
-            image_writer->close();
+        if (image_reader.isOpen()) {
+            image_reader.copy(output_img.toString(), nullptr, ImageMetadata(), image_reader.isGeoreferenced() ? crs_out : "");
+            image_reader.close();
         }
 
         chrono.stop();
@@ -126,6 +158,7 @@ void convertImageFormat(const Command::SharedPtr &command)
         TL_THROW_EXCEPTION_WITH_NESTED("Exception caught on image format conversion");
     }
 }
+
 
 /*!
  * read_image:
@@ -139,21 +172,16 @@ int main(int argc, char **argv)
     Path app_path(argv[0]);
 
     std::string cmd_name = app_path.baseName().toString();
-    
-#ifdef TL_OS_WINDOWS
-    tl::Path _path = app_path.parentPath().parentPath();
-    tl::Path gdal_data_path(_path);
-    gdal_data_path.append("gdal\\data");
-    tl::Path proj_data_path(_path);
-    proj_data_path.append("proj");
-    CPLSetConfigOption( "GDAL_DATA", gdal_data_path.toString().c_str());
-#   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-        CPLSetConfigOption( "PROJ_DATA", proj_data_path.toString().c_str());
-#   else
-        std::string s_proj = proj_data_path.toString();
-        const char *proj_data[] {s_proj.c_str(), nullptr};
-        OSRSetPROJSearchPaths(proj_data);
-#   endif
+
+    std::string gdal_data_path(CPLGetConfigOption("TL_GDAL_DATA", ""));
+    std::string proj_data_path(CPLGetConfigOption("TL_PROJ_DATA", ""));
+
+    CPLSetConfigOption("GDAL_DATA", gdal_data_path.c_str());
+    CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
+
+#if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3,7,0)
+    const char *proj_data[]{proj_data_path.c_str(), nullptr};
+    OSRSetPROJSearchPaths(proj_data);
 #endif
 
     Console &console = App::console();
@@ -162,9 +190,6 @@ int main(int argc, char **argv)
     console.setConsoleUnicode();
     Message::addMessageHandler(&console);
 
-    //Log &log = App::log();
-    //log.setMessageLevel(MessageLevel::all);
-    //Message::addMessageHandler(&log);
 
     auto img_arg = Argument::make<Path>("img", 'i', "Image");
 
@@ -178,7 +203,9 @@ int main(int argc, char **argv)
 
     auto cmd_image_convert = Command::create("convert", "Convert image format", {
         img_arg,
-        Argument::make<Path>("output_img", 'o', "Output image")
+        Argument::make<Path>("output_img", 'o', "Output image"),
+        //Argument::make<std::string>("crs_in", "input CRS", ""),
+        Argument::make<std::string>("crs_out", "Output CRS", "")
     });
 
     CommandList cmd(cmd_name, "Image manager");

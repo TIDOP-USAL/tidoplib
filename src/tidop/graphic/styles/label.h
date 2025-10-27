@@ -40,14 +40,26 @@ namespace tl
 
 
 /*!
- * \brief Text style class
+ * \class Label
+ * \brief Represents the text style and placement options for map or geometry labels.
+ *
+ * The `Label` class defines how text is rendered and positioned relative to a geometric feature.
+ * It supports font styling, color customization (foreground, background, outline, shadow),
+ * alignment, rotation, offsetting, and various placement strategies for polylines or points.
+ *
+ * Labels are typically used to annotate map features, drawings, or geometries in visualization systems.
+ *
+ * \see Font, Color, Label::Placement, Label::AnchorPosition
  */
 class TL_EXPORT Label
 {
 public:
 
     /*!
-     * \brief How the text is drawn relative to the feature's geometry
+     * \enum Placement
+     * \brief Defines how text is positioned along or around geometric features.
+     *
+     * Used to determine label placement for polylines and point features.
      */
     enum class Placement : uint8_t
     {
@@ -61,7 +73,11 @@ public:
     };
 
     /*!
-     * \brief Position of the label relative to the insertion point
+     * \enum AnchorPosition
+     * \brief Defines alignment of the label relative to its insertion point.
+     *
+     * Can be combined using bitwise operators to define horizontal and vertical alignment.
+     * For example: `horizontal_center | vertical_top`.
      */
     enum class AnchorPosition : uint8_t
     {
@@ -76,81 +92,19 @@ public:
 
 private:
 
-    /*!
-     * \brief Font
-     */
     Font mFont;
-
-    /*!
-     * \brief Label text
-     */
-    std::string mLicenseText;
-
-    /*!
-     * \brief Rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
-     */
+    std::string mText;
     double mAngle;
-
-    /*!
-     * \brief Foreground color
-     * \see Color
-     */
     Color mForegroundColor;
-
-    /*!
-     * \brief Background color
-     * \see Color
-     */
     Color mBackgroundColor;
-
-    /*!
-     * \brief Outline color
-     * \see Color
-     */
     Color mOutlineColor;
-
-    /*!
-     * \brief Shadow color
-     * \see Color
-     */
     Color mShadowColor;
-
-    /*!
-     * \brief Scaling in percentage
-     */
     double mStretch;
-
-    /*!
-     * \brief Label placement mode in entities
-     * \see Placement
-     */
     Placement mPlacement;
-
-    /*!
-     * \brief Anchor position of the label
-     * \see AnchorPosition
-     */
     AnchorPosition mAnchorPosition;
-
-    /*!
-     * \brief X and Y offset of the label insertion point
-     */
     std::array<double, 2> mOffset;
-
-    /*!
-     * \brief Perpendicular distance between the label and the line along which it is placed
-     */
     int mPerpendicularOffset;
-
-    /*!
-     * \brief Strikethrough
-     */
     bool mStrikeout;
-
-    /*!
-     * \brief mPriorityLevel
-     */
     uint32_t mPriorityLevel;
 
 public:
@@ -243,16 +197,16 @@ public:
     void setShadowColor(const Color &color);
 
     /*!
-     * \brief Get the stretch factor
-     * \return The stretch factor
+     * \brief Gets the horizontal stretch factor of the text.
+     * \return Stretch factor in percentage (e.g. 100 = no stretch, 200 = 2× wider).
      */
-    auto stretch() const -> double;
+    auto stretchFactor() const -> double;
 
     /*!
      * \brief Set the stretch factor
      * \param[in] stretch The stretch factor
      */
-    void setStretch(double stretch);
+    void setStretchFactor(double stretch);
 
     /*!
      * \brief Get the label placement mode
@@ -315,12 +269,61 @@ public:
      */
     auto operator =(Label &&label) TL_NOEXCEPT -> Label &;
 
+    /*!
+     * \brief Sets the font of the label text.
+     * \param[in] font Font to be used.
+     */
     void setFont(const Font &font);
+
+    /*!
+     * \brief Gets the font used to render the label text.
+     * \return Font definition.
+     */
     auto font() const -> Font;
+
+    /*!
+     * \brief Gets the perpendicular offset from the geometry.
+     *
+     * Useful to move the label away from the feature when drawing along a line.
+     * \return Perpendicular offset in pixels or drawing units.
+     */
     auto perpendicularOffset() const -> int;
+
+    /*!
+     * \brief Sets the perpendicular offset from the geometry.
+     * \param[in] offset Offset value.
+     */
     void setPerpendicularOffset(int perpendicularOffset);
 
+    /*!
+     * \brief Gets the rendering priority of the label.
+     * \return Priority level (higher = drawn on top).
+     */
+    auto priorityLevel() const -> uint32_t;
 
+    /*!
+     * \brief Sets the rendering priority of the label.
+     * \param[in] level Priority level.
+     */
+    void setPriorityLevel(uint32_t level);
+
+#ifdef TL_WARNING_DEPRECATED_METHOD
+    /*!
+     * \brief Get the stretch factor
+     * \return The stretch factor
+     * \deprecated This method is deprecated (v4.0), use stretchFactor() instead.
+     */
+    TL_DEPRECATED("stretchFactor()", "4.0")
+    auto stretch() const -> double;
+
+    /*!
+     * \brief Set the stretch factor
+     * \param[in] stretch The stretch factor
+     * \deprecated This method is deprecated (v4.0), use setStretchFactor() instead.
+     */
+    TL_DEPRECATED("setStretchFactor(double stretch)", "4.0")
+    void setStretch(double stretch);
+#endif // TL_WARNING_DEPRECATED_METHOD
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Label::AnchorPosition)

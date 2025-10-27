@@ -56,6 +56,9 @@ struct PathTest
 
     void setup()
     {
+        tl::Console &console = tl::Console::instance();
+        console.setConsoleUnicode();
+
 #if defined WIN32
         path_file.setPath("C:\\temp\\file.txt");
         path2.setPath("C:\\temp\\áñ.txt");
@@ -212,8 +215,21 @@ BOOST_FIXTURE_TEST_CASE(clear, PathTest)
 BOOST_FIXTURE_TEST_CASE(japanese, PathTest)
 {
     Path path("こんにちは世界");
-    std::cout << path << std::endl;
+    std::string utf8 = path.toUtf8();
+    std::cout << "Japanese path: " << utf8 << std::endl;
+    BOOST_CHECK(!utf8.empty());
+    BOOST_CHECK(utf8.find("世界") != std::string::npos);
 }
 
+BOOST_FIXTURE_TEST_CASE(utf8_support, PathTest)
+{
+    Path path_utf8("áéíóú ñ ç € 中 文 😃.txt");
+    std::string utf8 = path_utf8.toUtf8();
+    std::cout << "UTF-8 path: " << utf8 << std::endl;
+    BOOST_CHECK(!utf8.empty());
+    BOOST_CHECK(utf8.find("ñ") != std::string::npos);
+    BOOST_CHECK(utf8.find("€") != std::string::npos);
+    BOOST_CHECK(path_utf8.fileName().toUtf8().find(".txt") != std::string::npos);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
