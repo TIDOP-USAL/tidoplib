@@ -105,30 +105,41 @@ ImageMetadata::ImageMetadata()
 
 ImageMetadata::~ImageMetadata() = default;
 
-auto ImageMetadata::existMetadata(const std::string &name) -> bool
+auto ImageMetadata::existMetadata(const std::string &key) -> bool
 {
-    auto metadata = mMetadata.find(name);
+    auto metadata = mMetadata.find(key);
     if (metadata != mMetadata.end()) {
         return true;
     }
     return false;
 }
 
-auto ImageMetadata::metadata(const std::string &name) const -> std::string
+auto ImageMetadata::metadata(const std::string &key, bool &active) const -> std::string
 {
-    std::string value;
-
-    auto metadata = mMetadata.find(name);
+    active = false;
+    auto metadata = mMetadata.find(key);
     if (metadata != mMetadata.end()) {
-        value = metadata->second;
+        active = true;
+        return metadata->second;
     }
 
-    return value;
+    return std::string();
 }
 
-void ImageMetadata::setMetadata(const std::string &name, const std::string &value)
+auto ImageMetadata::metadata(const std::vector<std::string> &keys, bool &active) const -> std::string
 {
-    mMetadata[name] = value;
+    for (const auto &key : keys) {
+        auto value = metadata(key, active);
+        if (active)
+            return value;
+    }
+
+    return std::string();
+}
+
+void ImageMetadata::setMetadata(const std::string &key, const std::string &value)
+{
+    mMetadata[key] = value;
 }
 
 auto ImageMetadata::begin() TL_NOEXCEPT -> iterator

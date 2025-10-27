@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <map>
+#include <vector>
 
 namespace tl
 {
@@ -216,24 +217,33 @@ public:
 
     /*!
      * \brief Checks if a specific metadata item exists.
-     * \param[in] name Name of the metadata item.
+     * \param[in] key Key of the metadata item.
      * \return True if the metadata item exists, false otherwise.
      */
-    auto existMetadata(const std::string &name) -> bool;
+    auto existMetadata(const std::string &key) -> bool;
 
     /*!
      * \brief Retrieves the value of a specific metadata item.
-     * \param[in] name Name of the metadata item.
+     * \param[in] key Key of the metadata item.
+     * \param[out] active Flag indicating if the metadata item exists.
      * \return Value of the metadata item.
      */
-    auto metadata(const std::string &name) const -> std::string;
+    auto metadata(const std::string &key, bool &active) const -> std::string;
+
+    /*!
+     * \brief Retrieves the value of the first existing metadata item from a list of keys.
+     * \param[in] keys List of keys to check.
+     * \param[out] active Flag indicating if a valid metadata item was found.
+     * \return Value of the first existing metadata item, or an empty string if none found.
+     */
+    auto metadata(const std::vector<std::string> &keys, bool &active) const -> std::string;    
 
     /*!
      * \brief Sets the value of a specific metadata item.
-     * \param[in] name Name of the metadata item.
+     * \param[in] key Key of the metadata item.
      * \param[in] value Value to set.
      */
-    void setMetadata(const std::string &name, const std::string &value);
+    void setMetadata(const std::string &key, const std::string &value);
 
     auto begin() TL_NOEXCEPT -> iterator;
     auto begin() const TL_NOEXCEPT -> const_iterator;
