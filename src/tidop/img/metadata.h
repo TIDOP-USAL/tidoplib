@@ -128,9 +128,10 @@ public:
     ImageMetadata();
     ~ImageMetadata();
 
-    auto existMetadata(const std::string &name) -> bool;
-    auto metadata(const std::string& name, bool &active) const -> std::string;
-    void setMetadata(const std::string &name, const std::string &value);
+    auto existMetadata(const std::string &key) -> bool;
+    auto metadata(const std::string &key, bool &active) const -> std::string;
+    auto metadata(const std::vector<std::string> &keys, bool &active) const -> std::string;
+    void setMetadata(const std::string &key, const std::string &value);
 
     auto begin() TL_NOEXCEPT->iterator;
     auto begin() const TL_NOEXCEPT->const_iterator;

@@ -28,6 +28,7 @@
 #include "tidop/core/gdalreg.h"
 #include "tidop/img/metadata.h"
 #include "tidop/img/formats.h"
+#include "tidop/math/angles.h"
 
 #include <gdalwarper.h>
 
@@ -40,26 +41,65 @@
 namespace tl
 {
 
-std::string extractXMP(const std::string &filename) 
+static auto extractXMP(const std::string &filename) -> std::string
 {
     std::ifstream file(filename, std::ios::binary);
     if (!file) return "";
 
-    // Leer todo el fichero en memoria (si es muy grande, mejor hacerlo por chunks)
     std::string buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-    // Buscar las etiquetas XMP
     size_t start = buffer.find("<x:xmpmeta");
     size_t end = buffer.find("</x:xmpmeta>");
 
     if (start == std::string::npos || end == std::string::npos) return "";
 
-    // Incluir la etiqueta de cierre
     end += std::string("</x:xmpmeta>").size();
 
     return buffer.substr(start, end - start);
 }
 
+static auto formatDegreesFromExif(const std::string &exifAngle) -> tl::Degrees<double>
+{
+    tl::Degrees<double> angle;
+
+    auto v = split<double>(exifAngle, ' ');
+
+    if (v.size() == 3) {
+        angle.setDegrees(v[0]);
+        angle.setMinutes(v[1]);
+        angle.setSeconds(v[2]);
+    }
+
+    return angle;
+}
+
+static auto cleanExifValue(const std::string &value) -> std::string
+{
+    std::string result = value;
+
+    result.erase(result.begin(), std::find_if(result.begin(), result.end(), [](unsigned char ch) {
+        return !std::isspace(ch);
+        }));
+    result.erase(std::find_if(result.rbegin(), result.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+        }).base(), result.end());
+
+    result.erase(std::remove_if(result.begin(), result.end(),
+        [](char c) { return c == '(' || c == ')'; }),
+        result.end());
+
+    result.erase(std::unique(result.begin(), result.end(),
+        [](char a, char b) { return std::isspace(a) && std::isspace(b); }),
+        result.end());
+
+
+    if (!result.empty() && std::isspace(result.front()))
+        result.erase(result.begin());
+    if (!result.empty() && std::isspace(result.back()))
+        result.pop_back();
+
+    return result;
+}
 
 DataType gdalConvertDataType(GDALDataType dataType)
 {
@@ -552,6 +592,7 @@ void readXMP(CPLXMLNode *&xml_node, tl::ImageMetadata::Ptr &metadata)
                         if (std::string(rdf_node->pszValue) == "rdf:Description") {
 
                             CPLXMLNode *rdfdescription_node = rdf_node->psChild;
+
                             while (rdfdescription_node) {
 
                                 if (rdfdescription_node->pszValue) {
@@ -560,22 +601,55 @@ void readXMP(CPLXMLNode *&xml_node, tl::ImageMetadata::Ptr &metadata)
                                     std::string value;
 
                                     if (rdfdescription_node->psChild && rdfdescription_node->psChild->pszValue) {
-                                        value = rdfdescription_node->psChild->pszValue;
-                                    }
 
-                                    if (key == "xmlns:drone-dji") {
-                                        metadata->setMetadata("EXIF_Make", "DJI");
-                                    } else if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
-                                        metadata->setMetadata("EXIF_Model", value);
-                                    } else if (key.rfind("drone-dji:", 0) == 0) {
-                                        std::string name = key.substr(std::string("drone-dji:").size());
-                                        metadata->setMetadata("XMP_DJI_" + name, value);
-                                    } else if (key.rfind("drone:", 0) == 0) {
-                                        std::string name = key.substr(std::string("drone:").size());
-                                        metadata->setMetadata("XMP_DJI_" + name, value);
-                                    } else if (key.rfind("Camera:", 0) == 0) {
-                                        std::string name = key.substr(std::string("Camera:").size());
-                                        metadata->setMetadata("XMP_CAMERA_" + name, value);
+                                        value = rdfdescription_node->psChild->pszValue;
+
+                                        if (value == "rdf:Seq") {
+
+                                            value = "";
+                                            CPLXMLNode *rdf_seq_node = rdfdescription_node->psChild->psChild;
+                                            while (rdf_seq_node) {
+
+                                                if (std::string(rdf_seq_node->pszValue) == "rdf:li") {
+                                                    CPLXMLNode *rdf_li_node = rdf_seq_node->psChild;
+                                                    if (rdf_li_node && rdf_li_node->pszValue) {
+                                                        if (!value.empty()) {
+                                                            value += ", ";
+                                                        }
+                                                        value += rdf_li_node->pszValue;
+                                                    }
+                                                }
+
+                                                rdf_seq_node = rdf_seq_node->psNext;
+
+                                            }
+
+                                        }
+
+                                        if (key == "xmlns:drone-dji") {
+                                            metadata->setMetadata("EXIF_Make", "DJI");
+                                        } else if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
+                                            metadata->setMetadata("EXIF_Model", value);
+                                        } else if (key.rfind("drone-dji:", 0) == 0) {
+                                            std::string name = key.substr(std::string("drone-dji:").size());
+                                            metadata->setMetadata("XMP_DJI_" + name, value);
+                                        } else if (key.rfind("drone:", 0) == 0) {
+                                            std::string name = key.substr(std::string("drone:").size());
+                                            metadata->setMetadata("XMP_DJI_" + name, value);
+                                        } else if (key.rfind("Camera:", 0) == 0) {
+                                            std::string name = key.substr(std::string("Camera:").size());
+                                            metadata->setMetadata("XMP_CAMERA_" + name, value);
+                                            if (name == "RigName" && value == "Sequoia") {
+                                                metadata->setMetadata("EXIF_Make", "Parrot");
+                                                metadata->setMetadata("EXIF_Model", "Sequoia");
+                                            }
+                                        } else if (key.rfind("MicaSense:", 0) == 0) {
+                                            std::string name = key.substr(std::string("MicaSense:").size());
+                                            metadata->setMetadata("XMP_" + name, value);
+                                        } else if (key.rfind("DLS:", 0) == 0) {
+                                            std::string name = key.substr(std::string("DLS:").size());
+                                            metadata->setMetadata("XMP_" + name, value);
+                                        }
                                     }
                                 }
 
@@ -639,10 +713,19 @@ auto ImageReaderGdal::metadata() const -> std::shared_ptr<ImageMetadata>
                         for (int j = 0; gdalMetadata[j] != nullptr; j++) {
 
                             char *key = nullptr;
-                            const char *value = CPLParseNameValue(gdalMetadata[j], &key);
+                            std::string value(CPLParseNameValue(gdalMetadata[j], &key));
 
                             if (key) {
-                                metadata->setMetadata(key, value);
+
+                                auto clean_value = cleanExifValue(value);
+
+                                if (key == std::string("EXIF_GPSLongitude") ||
+                                    key == std::string("EXIF_GPSLatitude")) {
+                                    tl::Degrees<double> angle = formatDegreesFromExif(clean_value);
+                                    clean_value = std::to_string(angle.value());
+                                }
+
+                                metadata->setMetadata(key, clean_value);
                                 CPLFree(key);
                             }
                         }
