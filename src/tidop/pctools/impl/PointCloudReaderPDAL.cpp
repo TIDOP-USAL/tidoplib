@@ -75,10 +75,10 @@ bool isCOPC(const std::string &filename)
         return false;
     }
 
-    // Saltar los primeros 96 bytes del header LAS estándar
+    // Saltar los primeros 96 bytes del header LAS estÃ¡ndar
     file.seekg(96, std::ios::beg);
 
-    // Leer el número de VLRs
+    // Leer el nÃºmero de VLRs
     uint32_t vlr_count;
     file.read(reinterpret_cast<char *>(&vlr_count), sizeof(vlr_count));
 
@@ -110,7 +110,7 @@ PointCloudReaderPDAL::PointCloudReaderPDAL(tl::Path file)
     try {
         // Comentado al menos para las pruebas de lectura
         // El cambio de CRS para nubes de puntos igual mejor en una clase a parte dentro de GeoTools
-        // Podría hacer la conversión de CRS de mapas raster, vectoriales y nubes de puntos
+        // PodrÃ­a hacer la conversiÃ³n de CRS de mapas raster, vectoriales y nubes de puntos
         // De esta forma queda mas sencilla la lectura/escritura de nubes de puntos
         //initialize();
     } catch (...) {

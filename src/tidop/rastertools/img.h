@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "tidop/core/base/defs.h"
+#include "tidop/core/base/common.h"
 #include "tidop/rastertools/DataType.h"
 
 namespace tl
@@ -38,6 +39,9 @@ template<typename T> class EnumFlags;
 /*! \addtogroup RasterTools
  *  \{
  */
+
+template<typename T>
+constexpr enableIfFloating<T, T> NoData = static_cast<T>(-9999.L);
 
 
 //TL_EXPORT std::vector<std::string> gdalValidExtensions();
