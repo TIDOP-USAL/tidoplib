@@ -28,15 +28,20 @@
 #include <vector>
 
 #include "tidop/core/defs.h"
+#include "tidop/core/common.h"
 
 namespace tl
 {
+
+template<typename T> class EnumFlags;
 
 /*! \defgroup raster Raster
  *  \{
  */
 
-template<typename T> class EnumFlags;
+template<typename T>
+constexpr enableIfFloating<T, T> NoData = static_cast<T>(-9999.L);
+
 
 enum class DataType : int16_t
 {
