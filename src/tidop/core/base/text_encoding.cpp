@@ -44,7 +44,7 @@ auto fromLocalEncoding(const std::string& local) -> std::wstring
 
 auto toUtf8(const std::wstring& wstr) -> std::string
 {
-#if CPP_VERSION < 20
+#if TL_CPP_VERSION< 20
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.to_bytes(wstr);
 #else
@@ -61,7 +61,7 @@ auto toUtf8(const std::wstring& wstr) -> std::string
 
 auto fromUtf8(const std::string& utf8str) -> std::wstring
 {
-#if CPP_VERSION < 20
+#if TL_CPP_VERSION< 20
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.from_bytes(utf8str);
 #else

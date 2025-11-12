@@ -277,7 +277,7 @@ constexpr enableIfFloating<T,T> grad_to_deg = static_cast<T>(0.9);
 template<typename T>
 constexpr auto clamp(const T& value, const T& min, const T& max) -> T
 {
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
     return std::clamp(value, min, max);
 #else
     return std::max(min, std::min(max, value));

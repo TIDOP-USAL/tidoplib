@@ -219,7 +219,7 @@
  * \endcode
  */
 #ifdef TL_WARNING_DEPRECATED_METHOD 
-#  if CPP_VERSION >= 14
+#  if TL_CPP_VERSION>= 14
 #    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " TL_CONVERT_TO_STRING(version) ". Use " msg " instead")]]
 //#    define TL_DEPRECATED(msg, version)  [[deprecated("Deprecated in version " version ": Use " msg " instead")]]
 #  else
@@ -259,7 +259,7 @@
 
 
 
-#if CPP_VERSION >= 11
+#if TL_CPP_VERSION>= 11
 #  define TL_NOEXCEPT noexcept
 #  define TL_NOEXCEPT_OP(x) noexcept((x))
 #else

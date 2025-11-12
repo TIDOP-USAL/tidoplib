@@ -115,7 +115,7 @@ void VectorWriterGdal::create()
 //        char **gdalOpt = nullptr;
 //        if (mVectorOptions) {
 //            auto options = mVectorOptions->activeOptions();
-//#if CPP_VERSION >= 17
+//#if TL_CPP_VERSION>= 17
 //            for (const auto &[name, value] : options) {
 //#else
 //            for (const auto &option : options) {

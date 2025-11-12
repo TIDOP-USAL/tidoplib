@@ -29,7 +29,7 @@
 
 
 // filesystem
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
 #include <filesystem>
 #include <functional> 
 #else
@@ -41,7 +41,7 @@
 #include <ostream>
 
 
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
 namespace fs = std::filesystem;
 #else
 namespace fs = boost::filesystem;

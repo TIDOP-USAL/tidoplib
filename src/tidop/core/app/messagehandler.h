@@ -30,7 +30,7 @@
 #include "tidop/core/base/flags.h"
 
 #include <string>
-//#if CPP_VERSION >= 20
+//#if TL_CPP_VERSION>= 20
 //#include <format>
 //#else
 //#include <fmt/format.h>
@@ -87,7 +87,7 @@ class TL_EXPORT MessageHandler
 
 public:
 
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
     using String = std::string_view;
 #else
     using String = const std::string &;

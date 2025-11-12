@@ -122,7 +122,7 @@ struct DescriptiveStatisticsTest
 
         data5 = {2.3, 5.1, 3.8, 7.6, 9.2, 4.5, 6.3, 8.7, 10.1, 5.5};
 
-#if (CPP_VERSION < 20)
+#if (TL_CPP_VERSION< 20)
         DescriptiveStatistics<double>::Config config{};
         config.skewness_method = SkewnessMethod::fisher_pearson;
         config.sample = false;

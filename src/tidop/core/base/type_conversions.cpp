@@ -28,7 +28,7 @@
 
 #ifdef TL_HAVE_BOOST
 #include <boost/algorithm/string.hpp>
-#elif  CPP_VERSION >= 14
+#elif  TL_CPP_VERSION>= 14
 #include <algorithm>
 #endif
 

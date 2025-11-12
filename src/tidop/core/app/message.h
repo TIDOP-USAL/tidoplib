@@ -63,7 +63,7 @@ namespace tl
 class TL_EXPORT Message
 {
 
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
     using String = std::string_view;
 #else
     using String = const std::string &;

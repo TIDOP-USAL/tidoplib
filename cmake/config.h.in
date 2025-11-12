@@ -103,7 +103,7 @@
 
 /// https://philippegroarke.com/blog/2017/11/20/simplifying-compile-time-options-with-if-constexpr/
 
-#define CPP_VERSION @CMAKE_CXX_STANDARD@
+#define TL_CPP_VERSION @CMAKE_CXX_STANDARD@
 
 namespace tl
 {

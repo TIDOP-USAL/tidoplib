@@ -721,7 +721,7 @@ auto operator<<(std::ostream& os, const Quaternion<T>* q) -> std::ostream&
 
 } // End namespace tl
 
-#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
+#if TL_CPP_VERSION>= 20 || defined(TL_HAVE_FMT)
 
 template <typename T>
 struct FORMAT_NAMESPACE formatter<tl::Quaternion<T>> 

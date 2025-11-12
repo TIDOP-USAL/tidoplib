@@ -107,7 +107,7 @@ void ImageWriterGdal::close()
             char **gdalOpt = nullptr;
             if (mImageOptions) {
                 std::map<std::string, std::string> options = mImageOptions->activeOptions();
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
                 for (const auto &[name, value] : options) {
 #else
                 for (const auto &option : options) {
@@ -156,7 +156,7 @@ void ImageWriterGdal::setMetadata(const ImageMetadata &imageMetadata)
             char **gdalMetadata = nullptr;
 
             if (!mImageMetadata.empty()) {
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
                 for (const auto &[name, value] : imageMetadata) {
 #else
                 for (const auto &metadata : imageMetadata) {
@@ -196,7 +196,7 @@ void ImageWriterGdal::create(int rows,
         mImageOptions = imageOptions;
         if (mImageOptions && !bTempFile) {
             auto options = mImageOptions->activeOptions();
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
             for (const auto &[name, value] : options) {
 #else
             for (const auto &option : options) {
@@ -214,7 +214,7 @@ void ImageWriterGdal::create(int rows,
         TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
         if (!mImageMetadata.empty()) {
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
             for (const auto &[name, value] : mImageMetadata) {
 #else
             for (const auto &metadata : mImageMetadata) {

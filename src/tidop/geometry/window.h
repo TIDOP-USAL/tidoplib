@@ -276,7 +276,7 @@ Window<Point_t>::Window(const Point_t &pt,
     auto half_width = width / consts::two<scalar>;
     auto half_height = height / consts::two<scalar>;
 
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
     if constexpr (std::is_integral<scalar>::value) {
 #else
     if (std::is_integral<scalar>::value) {
@@ -303,7 +303,7 @@ Window<Point_t>::Window(const Point_t &pt,
 {
     auto half_side = side / consts::two<scalar>;
 
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
     if constexpr (std::is_integral<scalar>::value) {
 #else
     if (std::is_integral<scalar>::value) {

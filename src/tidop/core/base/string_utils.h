@@ -52,7 +52,7 @@ namespace tl
  * \param[in] compare The second string to compare.
  * \return True if the strings are equal ignoring case, false otherwise.
  */
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
 TL_EXPORT bool compareInsensitiveCase(std::string_view source,
                                       std::string_view compare);
 #else

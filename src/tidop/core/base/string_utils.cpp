@@ -28,7 +28,7 @@
 
 #ifdef TL_HAVE_BOOST
 #include <boost/algorithm/string.hpp>
-#elif  CPP_VERSION >= 14
+#elif  TL_CPP_VERSION>= 14
 #include <algorithm>
 #endif
 
@@ -39,7 +39,7 @@ namespace tl
 {
 
 
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
 bool compareInsensitiveCase(std::string_view source, std::string_view compare)
 #else
 bool compareInsensitiveCase(const std::string &source, const std::string &compare)
@@ -47,7 +47,7 @@ bool compareInsensitiveCase(const std::string &source, const std::string &compar
 {
 #ifdef TL_HAVE_BOOST
     return boost::iequals(source, compare);
-#elif CPP_VERSION >= 14
+#elif TL_CPP_VERSION>= 14
     //https://stackoverflow.com/questions/11635/case-insensitive-string-comparison-in-c
     return std::equal(source.begin(), source.end(),
                       compare.begin(), compare.end(),

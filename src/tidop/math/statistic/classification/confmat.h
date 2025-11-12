@@ -450,7 +450,7 @@ auto ConfusionMatrix<T>::compute(T threshold) const -> std::map<Classification, 
     size_t true_negatives = 0;
     size_t false_negatives = 0;
 
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
     for (const auto &[value, tag] : mData) {
 #else
     for (const auto &pair : mData) {
