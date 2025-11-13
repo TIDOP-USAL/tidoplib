@@ -68,6 +68,17 @@
  */
  
 /*!
+ * \defgroup type_traits Template Type Utilities
+ * \ingroup Base
+ * \brief Utility aliases for constraining templates using SFINAE based on C++ type traits.
+ *
+ * This group provides convenient aliases like enableIfFloating and enableIfIntegral
+ * to conditionally enable or disable template functions and classes, making generic
+ * programming more robust and readable.
+ * \{
+ */ 
+ 
+/*!
  * \defgroup AppManagement Application Management
  * \ingroup Core
  * \brief Provides classes for application management, including logging, licensing, and application details.
