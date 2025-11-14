@@ -26,10 +26,11 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/common.h"
-#include <type_traits>
+
 namespace tl
 {
 
