@@ -674,6 +674,9 @@ void readXMP(CPLXMLNode *&xml_node, ImageMetadata &metadata)
                                         } else if (key.rfind("DLS:", 0) == 0) {
                                             std::string name = key.substr(std::string("DLS:").size());
                                             metadata.setMetadata("XMP_" + name, value);
+                                        } else if (key.rfind("tiff:", 0) == 0) {
+                                            std::string name = key.substr(std::string("tiff:").size());
+                                            metadata.setMetadata("XMP_TIFF_" + name, value);
                                         }
                                     }
 
