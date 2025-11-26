@@ -22,13 +22,39 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file chrono.h
+ * \brief High-precision time measurement and chrono utilities
+ *
+ * This module provides classes and functions for measuring elapsed time with high precision.
+ * It supports both manual time control (start, pause, resume, stop) and automatic RAII-based
+ * measurements for code blocks.
+ *
+ * ### Classes
+ *
+ * - \ref Chrono - Manual time measurement with pause/resume capabilities
+ * - \ref ChronoAuto - Automatic time measurement using RAII pattern
+ *
+ * ### Functions
+ *
+ * - \ref formatTimeToString - Format current time as string
+ * - \ref tickCount - Get current tick count in milliseconds
+ *
+ * ### Features
+ *
+ * - High-precision timing using std::chrono::steady_clock
+ * - Cross-platform support (Windows/Linux)
+ * - Automatic console output with optional messages
+ * - Pause and resume capabilities for complex measurements
+ *
+ * \see tl::Chrono, tl::ChronoAuto
+ */
+
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
 
 #include <string>
-
 #include <chrono>
 
 namespace tl
@@ -41,9 +67,25 @@ namespace tl
 
 
 /*!
- * \brief Generates a string with the current time in the specified format.
+ * \brief Formats the current time as a string.
+ *
+ * Generates a formatted string representation of the current system time
+ * using strftime-compatible format specifiers.
+ *
+ * \param[in] templ Format template using strftime conventions
+ *            (e.g., "%d/%b/%Y %H:%M:%S" for "15/Nov/2025 14:30:45")
+ * \return Formatted time string
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::string now = formatTimeToString("%Y-%m-%d %H:%M:%S");
+ * Message::info("Current time: {}", now);
+ * \endcode
+ *
+ * \see tickCount
  */
-TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H:%M:%S");
+TL_EXPORT auto formatTimeToString(const std::string &templ = "%d/%b/%Y %H:%M:%S") -> std::string;
+
 
 /*!
  * \brief current time.
@@ -57,7 +99,7 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  * \endcode
  * 
  */
-TL_EXPORT uint64_t tickCount();
+TL_EXPORT auto tickCount() -> uint64_t;
 
 
 /*!
@@ -96,15 +138,17 @@ class TL_EXPORT Chrono
 public:
 
     /*!
-     * \brief Chrono status
+     * \brief Chrono status enumeration
+     *
+     * Represents the current state of the chronometer.
      */
     enum class Status
     {
-        start,
-        running,
-        pause,
-        stopped,
-        finalized
+        start,       /*!< Initial state, not yet started */
+        running,     /*!< Timer is actively running */
+        pause,       /*!< Timer is paused, can be resumed */
+        stopped,     /*!< Timer has been stopped, final state */
+        finalized    /*!< Reserved for future use */
     };
 
 private:
@@ -150,12 +194,29 @@ public:
      * \return Elapsed time in seconds
      */
     auto stop() -> double;
-  
+
+    /*!
+     * \brief Get the current elapsed time without stopping.
+     *
+     * Returns the elapsed time in seconds at the moment of the call.
+     * If the chronometer is running, includes the current partial interval.
+     * If paused or stopped, returns the accumulated time.
+     *
+     * \return Elapsed time in seconds
+     *
+     * \note This method does not modify the chronometer state
+     */  
     auto currentTime() const -> double;
 
     /*!
-     * \brief Stops the chronometer
-     * \param[in] message Message displayed when chronometer is stopped
+     * \brief Set the message displayed when the chronometer stops.
+     *
+     * Associates a message with this chronometer. When stop() is called,
+     * the elapsed time and this message will be printed to the console.
+     *
+     * \param[in] message The message to display on stop
+     *
+     * \see stop()
      */
     void setMessage(const std::string &message);
 
@@ -165,22 +226,33 @@ public:
 
 
 /*!
- * \brief Class to measure times in a block of code.
- * 
- * In the constructor, the time measurement starts and in the destructor, 
- * the time is stopped.
- * 
+ * \brief Automatic time measurement using RAII pattern.
+ *
+ * Automatically starts timing in the constructor and stops in the destructor.
+ * This is useful for measuring execution time of a code block or function scope.
+ *
+ * The parent Chrono class is inherited privately to hide its manual control methods
+ * (pause, resume, run) since ChronoAuto manages timing automatically.
+ *
  * ### Example Usage
  *
  * \code{.cpp}
- *   void foo()
- *   {
- *     ChronoAuto chrono("foo function finished"); // the time measurement starts
+ * void processData()
+ * {
+ *     ChronoAuto timer("Data processing completed");  // Timing starts
  *     
- *      ....
- * 
- *   } // The time is stopped and printed on the console
+ *     // ... lengthy operation ...
+ *     
+ * }  // Timing stops and message is printed
  * \endcode
+ *
+ * ### Notes
+ *
+ * - The message is always displayed when the object is destroyed
+ * - Cannot be paused or manually controlled
+ * - Ideal for scope-based measurements
+ *
+ * \see Chrono
  */
 class TL_EXPORT ChronoAuto final
 	: private Chrono

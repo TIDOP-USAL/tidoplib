@@ -44,12 +44,8 @@ namespace tl
  * outliers and far out points.
  *
  * The fences are defined as:
- * \f[
- * \text{Lower Fence} = Q_1 - k \times \text{IQR}
- * \]
- * \f[
- * \text{Upper Fence} = Q_3 + k \times \text{IQR}
- * \]
+ * \f[ \text{Lower Fence} = Q_1 - k \times \text{IQR} \]
+ * \f[ \text{Upper Fence} = Q_3 + k \times \text{IQR} \]
  * where \( Q_1 \) is the first quartile, \( Q_3 \) is the third quartile, and \( k \) is a multiplier
  * that typically takes the values 1.5 for outliers and 3 for far out points.
  *
@@ -88,7 +84,7 @@ public:
 
 };
 
-/*! \} */
+
 
 
 /* Implementation */
@@ -121,5 +117,7 @@ auto TukeyFences<T>::eval(const Series<T> &series, TukeyFences<T>::K k) -> std::
 
     return inliers;
 }
+
+/*! \} */
 
 } // End namespace tl

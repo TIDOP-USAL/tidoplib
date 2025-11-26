@@ -25,6 +25,9 @@
 
 #include "tidop/core/task/process.h"
 #include "tidop/core/task/progress.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/text_encoding.h"
 
 #ifdef TL_OS_LINUX
 #include <spawn.h>
@@ -43,6 +46,7 @@
 extern char **environ;
 #endif
 
+
 namespace tl
 {
 
@@ -51,23 +55,23 @@ namespace tl
 
 
 constexpr auto process_bufsize = 4096;
-HANDLE pipeReadHandle = nullptr;
-HANDLE pipeWriteHandle = nullptr;
-
-unsigned long readFromPipe(void *)
-{
-    DWORD bytesRead;
-    std::array<char, process_bufsize + 1> buffer{};
-    int err = 0;
-
-    while (true) {
-        err = ReadFile(pipeReadHandle, buffer.data(), process_bufsize, &bytesRead, nullptr);
-        if (!err || bytesRead == 0) break;
-        std::cout << std::string(buffer.data(), bytesRead);
-    }
-
-    return 0;
-}
+//HANDLE pipeReadHandle = nullptr;
+//HANDLE pipeWriteHandle = nullptr;
+//
+//unsigned long readFromPipe(void *)
+//{
+//    DWORD bytesRead;
+//    std::array<char, process_bufsize + 1> buffer{};
+//    int err = 0;
+//
+//    while (true) {
+//        err = ReadFile(pipeReadHandle, buffer.data(), process_bufsize, &bytesRead, nullptr);
+//        if (!err || bytesRead == 0) break;
+//        std::cout << std::string(buffer.data(), bytesRead);
+//    }
+//
+//    return 0;
+//}
 #endif
 
 Process::Process(std::string commandText,
@@ -96,11 +100,31 @@ Process::Process(std::string commandText,
 Process::~Process()
 {
 #ifdef TL_OS_WINDOWS
-    if (mProcessInformation.hProcess) CloseHandle(mProcessInformation.hProcess);
-    if (mProcessInformation.hThread) CloseHandle(mProcessInformation.hThread);
-    if (mThreadHandle) CloseHandle(mThreadHandle);
-    if (pipeReadHandle) CloseHandle(pipeReadHandle);
-    if (pipeWriteHandle) CloseHandle(pipeWriteHandle);
+    if (mThreadHandle) {
+        WaitForSingleObject(mThreadHandle, INFINITE);
+        CloseHandle(mThreadHandle);
+        mThreadHandle = nullptr;
+    }
+
+    if (mProcessInformation.hProcess) {
+        CloseHandle(mProcessInformation.hProcess);
+        mProcessInformation.hProcess = nullptr;
+    }
+
+    if (mProcessInformation.hThread) {
+        CloseHandle(mProcessInformation.hThread);
+        mProcessInformation.hThread = nullptr;
+    }
+
+    if (mPipeReadHandle) {
+        CloseHandle(mPipeReadHandle);
+        mPipeReadHandle = nullptr;
+    }
+
+    if (mPipeWriteHandle) {
+        CloseHandle(mPipeWriteHandle);
+        mPipeWriteHandle = nullptr;
+    }
 #endif
 }
 
@@ -133,8 +157,19 @@ void Process::execute(Progress *)
 
         // Cerrar el extremo de escritura de la tubería del proceso hijo, ya que no lo necesitamos
         if (outputHandle) {
-            CloseHandle(pipeWriteHandle);
-            mThreadHandle = CreateThread(nullptr, 0, readFromPipe, nullptr, 0, nullptr);
+            CloseHandle(mPipeWriteHandle);
+
+            // Crear hilo lector que usará mPipeReadHandle del objeto
+            mThreadHandle = CreateThread(nullptr,
+                                         0,
+                                         &Process::readFromPipe,
+                                         this,       // lpParam -> será reinterpretado como Process*
+                                         0,
+                                         nullptr);
+
+            if (!mThreadHandle) {
+                Message::error("CreateThread failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
+            }
         }
 
         DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
@@ -162,6 +197,18 @@ void Process::execute(Progress *)
                                formatErrorMsg(GetLastError()),
                                mCommandText);
 
+        }
+
+        if (mThreadHandle) {
+            // Espera a que el hilo lector termine de leer toda la salida
+            WaitForSingleObject(mThreadHandle, INFINITE);
+            CloseHandle(mThreadHandle);
+            mThreadHandle = nullptr;
+        }
+
+        if (mPipeReadHandle) {
+            CloseHandle(mPipeReadHandle);
+            mPipeReadHandle = nullptr;
         }
 
 #else
@@ -233,7 +280,7 @@ auto Process::formatErrorMsg(unsigned long errorCode) -> std::string
                   sizeof(errorMessage) / sizeof(TCHAR),
                   nullptr);
 
-    std::string strError = wstringToString(errorMessage);
+    std::string strError = toUtf8(errorMessage);
 
     return strError;
 }
@@ -241,22 +288,50 @@ auto Process::formatErrorMsg(unsigned long errorCode) -> std::string
 
 auto Process::createPipe() -> bool
 {
-    if (!CreatePipe(&pipeReadHandle, &pipeWriteHandle, &mSecurityAttributes, 0)) {
+    // Usar los miembros del objeto
+    if (!CreatePipe(&mPipeReadHandle, &mPipeWriteHandle, &mSecurityAttributes, 0)) {
         Message::error("CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
         eventTriggered(Event::Type::task_error);
         return false;
     }
 
-    if (!SetHandleInformation(pipeReadHandle, HANDLE_FLAG_INHERIT, 0)) {
+    // Evitar que el proceso hijo herede el extremo de lectura
+    if (!SetHandleInformation(mPipeReadHandle, HANDLE_FLAG_INHERIT, 0)) {
         Message::error("CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
         eventTriggered(Event::Type::task_error);
         return false;
     }
 
-    mStartUpInfo.hStdError = pipeWriteHandle;
-    mStartUpInfo.hStdOutput = pipeWriteHandle;
+    // Usar extremos de escritura para stdout/stderr del hijo
+    mStartUpInfo.hStdError = mPipeWriteHandle;
+    mStartUpInfo.hStdOutput = mPipeWriteHandle;
 
     return true;
+}
+
+DWORD WINAPI Process::readFromPipe(LPVOID lpParam)
+{
+    auto *self = reinterpret_cast<Process *>(lpParam);
+    if (!self) return 1;
+
+    DWORD bytesRead = 0;
+    std::array<char, process_bufsize + 1> buffer{};
+
+    for (;;) {
+        BOOL ok = ReadFile(self->mPipeReadHandle,
+                           buffer.data(),
+                           static_cast<DWORD>(process_bufsize),
+                           &bytesRead,
+                           nullptr);
+        if (!ok || bytesRead == 0) {
+            break;
+        }
+        
+        std::cout.write(buffer.data(), bytesRead);
+        std::cout.flush();
+    }
+
+    return 0;
 }
 
 #endif

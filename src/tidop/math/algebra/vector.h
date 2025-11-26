@@ -637,7 +637,7 @@ template<
 class VectorDerived, typename T, size_t _size>
 auto VectorBase<VectorDerived<T, _size>>::module() const -> double
 {
-    return sqrt(dotProduct(this->derived()));
+    return sqrt(this->dotProduct(this->derived()));
 }
 
 template<
@@ -645,7 +645,10 @@ template<
 class VectorDerived, typename T, size_t _size>
 auto VectorBase<VectorDerived<T, _size>>::normalize() -> void
 {
-    *this /= static_cast<T>(this->module());
+    double m = this->module();
+    if (m > std::numeric_limits<T>::epsilon()) {
+        *this /= static_cast<T>(m);
+    }
 }
 
 template<
@@ -1431,8 +1434,7 @@ auto Vector<T, _size>::randon(size_t size) -> Vector
 {
     Vector<T, _size> vector(size);
 
-    std::random_device rd;
-    std::mt19937 random_number_engine(rd());
+    static thread_local std::mt19937 random_number_engine(std::random_device{}());
     std::uniform_real_distribution<> distribution(0.0, 99.0);
 
     for (size_t i = 0; i < vector.size(); i++) {

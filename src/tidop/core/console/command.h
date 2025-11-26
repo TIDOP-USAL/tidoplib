@@ -22,27 +22,56 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+/*!
+ * \file command.h
+ * \brief Command-line interface for console applications
+ *
+ * This module provides a comprehensive framework for building command-line interfaces (CLI).
+ * It includes:
+ * - `Command`: Single command with arguments, parsing, and help generation
+ * - `CommandList`: Multiple commands with hierarchical structure (e.g., `git commit`, `git push`)
+ * - `UsageSignature`: Argument validation patterns
+ *
+ * ### Features
+ *
+ * - Type-safe argument handling with templates
+ * - Automatic help generation with formatting
+ * - Validation of argument combinations via usage signatures
+ * - Support for boolean flags and valued parameters
+ * - Short (`-h`) and long (`--help`) argument names
+ * - Default arguments: log level, logging, progress bar
+ * - Version and license information display
+ * - Usage examples in help output
+ *
+ * ### Architecture
+ *
+ * ```
+ * CommandList                 (Multiple commands)
+ *     └─ Command              (Single command)
+ *         └─ Argument         (Individual parameter)
+ *             └─ Validator    (Value validation)
+ * ```
+ *
+ * \see Command, CommandList, Argument, UsageSignature
+ */
 
+#pragma once
 
 #include "tidop/config.h"
 
 #include <list>
 #include <memory>
 
-#include "tidop/core/base/defs.h"
 #include "tidop/core/console/argument.h"
-#include "tidop/core/app/licence.h"
+#include "tidop/core/app/license.h"
 #include "tidop/core/app/message.h"
 
 namespace tl
 {
 
-
 /*! \addtogroup Console
  *  \{
  */
-
 
 /*!
  * \struct UsageSignature
@@ -61,8 +90,12 @@ namespace tl
  *
  * ### Example
  * \code{.cpp}
+ * auto arg_input = Argument::make<std::string>("input", "Input file");
+ * auto arg_output = Argument::make<std::string>("output", "Output file");
+ * auto arg_verbose = Argument::make<bool>("verbose", 'v', "Verbose output", false);
+ *
  * UsageSignature sig1({arg_input, arg_output}, {}, "Basic input-output usage");
- * UsageSignature sig2({arg_config}, {arg_verbose}, "Alternative config-based usage");
+ * UsageSignature sig2({arg_input}, {arg_verbose}, "Alternative with verbose flag");
  * cmd.addUsage(sig1).addUsage(sig2);
  * \endcode
  *
@@ -70,14 +103,22 @@ namespace tl
  */
 struct UsageSignature
 {
-    std::list<Argument::SharedPtr> required;
-    std::list<Argument::SharedPtr> optional;
-    std::string description;
+    std::list<Argument::Ptr> required;   /*!< Required arguments for this signature */
+    std::list<Argument::Ptr> optional;   /*!< Optional arguments for this signature */
+    std::string description;                   /*!< Description shown in help output */
+
 
     UsageSignature() = default;
 
-    UsageSignature(const std::list<Argument::SharedPtr> &req,
-                   const std::list<Argument::SharedPtr> &opt = {},
+    /*!
+     * \brief Constructs a usage signature with required and optional arguments
+     *
+     * \param[in] req Required arguments
+     * \param[in] opt Optional arguments (default: empty)
+     * \param[in] desc Description (default: empty)
+     */   
+    UsageSignature(const std::list<Argument::Ptr> &req,
+                   const std::list<Argument::Ptr> &opt = {},
                    const std::string &desc = "")
       : required(req),
         optional(opt), 
@@ -88,40 +129,61 @@ struct UsageSignature
 
 
 /*!
- * \brief Class for console command management
- * The class sets the command arguments, parses the command input 
- * and checks that the command is correct.
+ * \brief Class for command-line interface command management
  *
- * The structure of a command is:
+ * The `Command` class encapsulates a single console command with its arguments,
+ * parsing logic, validation, and help text generation. It handles:
  *
- * cmdName [--param1|-p] [Value] [--option|-o]
+ * - Argument management (add, retrieve, iterate)
+ * - Command-line parsing from argc/argv
+ * - Input validation against defined arguments
+ * - Help, version, and license information display
+ * - Usage signature enforcement
+ *
+ * ### Command Structure
+ *
+ * ```
+ * cmdName [--param1|-p value] [--option|-o] [--help|-h] [--version]
+ * ```
+ *
+ * ### Required vs Optional Arguments
+ *
+ * - **Required**: Must be provided by user or parsing fails
+ * - **Optional**: Have default values; parsing succeeds if omitted
+ *
+ * ### Default Arguments
+ *
+ * Commands automatically support:
+ * - `-h, --help`: Display help
+ * - `--version`: Show version
+ * - `--license`: Display license
+ *
+ * Optional system arguments (if enabled via methods):
+ * - `--log_level`: Set console message level
+ * - `--log`: Write logs to file
+ * - `--progress_bar`: Progress display format
  *
  * ### Example Usage
  * \code{.cpp}
  *
- *  Command cmd(command_name, "Example of a console application");
- *  cmd.addArgument<std::string>("file", 'f', "Example of a mandatory parameter of type string");
- *  cmd.addArgument<int>("int", 'i', "Required integer value");
- *  cmd.addArgument<bool>("bool", 'b', "boolean", false);
- *  cmd.addArgument<double>("double", "Optional double parameter. If omitted, the default value is taken", 0.5);
+ * \code{.cpp}
+ * Command cmd("convert", "Convert between image formats");
+ * cmd.addArgument<std::string>("input", 'i', "Input file", "");
+ * cmd.addArgument<std::string>("output", 'o', "Output file", "");
+ * cmd.addArgument<std::string>("format", 'f', "Output format", "PNG");
+ * cmd.setVersion("2.1.0");
+ * cmd.enableLog();
+ * cmd.addExample("convert -i input.jpg -o output.png -f PNG");
  *
- *  Command::Status status = cmd.parse(argc, argv);
- *  if (status == Command::Status::parse_error ) {
- *    return 1;
- *  } else if (status == Command::Status::show_help) {
- *    return 0;
- *  } else if (status == Command::Status::show_licence) {
- *    return 0;
- *  } else if (status == Command::Status::show_version) {
- *    return 0;
- *  }
- * 
- *  auto file = cmd.value<std::string>("file");
- *  auto value_int = cmd.value<int>("int");
- *  auto option = cmd.value<bool>("bool");
- *  auto value_double = cmd.value<double>("double");
+ * auto status = cmd.parse(argc, argv);
+ * if (status == Command::Status::parse_success) {
+ *     std::string input_file = cmd.value<std::string>("input");
+ *     std::string format = cmd.value<std::string>("format");
+ * }
  *
  * \endcode
+ *
+ * \see Argument, UsageSignature, CommandList
  */
 class TL_EXPORT Command
 {
@@ -129,37 +191,37 @@ class TL_EXPORT Command
 public:
 
     /*!
-     * \brief Parsing Status
+     * \brief Command parsing status
      */
     enum class Status
     {
-        parse_success,  /*!< The command was parsed correctly */
-        parse_error,    /*!< Error parsing the command */
-        show_help,      /*!< Displays command help */
-        show_version,   /*!< Displays command version */
-        show_licence    /*!< Displays license information */
+        parse_success,   /*!< Arguments parsed successfully */
+        parse_error,     /*!< Parse error (invalid arguments or validation failed) */
+        show_help,       /*!< Help was requested (--help or -h) */
+        show_version,    /*!< Version was requested (--version) */
+        show_license     /*!< License was requested (--license) */
     };
 
-    using value_type = std::list<Argument::SharedPtr>::value_type;
-    using size_type = std::list<Argument::SharedPtr>::size_type;
-    using pointer = std::list<Argument::SharedPtr>::pointer;
-    using const_pointer = std::list<Argument::SharedPtr>::const_pointer;
-    using reference = std::list<Argument::SharedPtr>::reference;
-    using const_reference = std::list<Argument::SharedPtr>::const_reference;
-    using iterator = std::list<Argument::SharedPtr>::iterator;
-    using const_iterator = std::list<Argument::SharedPtr>::const_iterator;
+    using value_type = std::list<Argument::Ptr>::value_type;
+    using size_type = std::list<Argument::Ptr>::size_type;
+    using pointer = std::list<Argument::Ptr>::pointer;
+    using const_pointer = std::list<Argument::Ptr>::const_pointer;
+    using reference = std::list<Argument::Ptr>::reference;
+    using const_reference = std::list<Argument::Ptr>::const_reference;
+    using iterator = std::list<Argument::Ptr>::iterator;
+    using const_iterator = std::list<Argument::Ptr>::const_iterator;
     using SharedPtr = std::shared_ptr<Command>;
 
 private:
 
     std::string mName;
     std::string mDescription;
-    std::list<Argument::SharedPtr> mArguments;
-    std::list<Argument::SharedPtr> mDefaultArguments;
+    std::list<Argument::Ptr> mArguments;
+    std::list<Argument::Ptr> mDefaultArguments;
     std::vector<UsageSignature> mUsages;
     std::string mVersion;
     std::list<std::string> mExamples;
-    Licence mLicence;
+    License mLicense;
     bool mEnableLog;
 
 public:
@@ -231,7 +293,7 @@ public:
      */
     Command(std::string name,
             std::string description,
-            std::initializer_list<Argument::SharedPtr> arguments);
+            std::initializer_list<Argument::Ptr> arguments);
 
     ~Command() = default;
 
@@ -289,20 +351,9 @@ public:
      */
     auto setVersion(const std::string &version) -> void;
 
-    /*!
-     * \brief Parse the input arguments.
-     *
-     * Parses the command line arguments passed to the program, checking for errors
-     * and processing the provided values. The method returns `Status::parse_error`
-     * if there is an error in the arguments, or `Status::parse_success` if parsing was successful.
-     *
-     * \param[in] argc The number of arguments passed to the program.
-     * \param[in] argv The array of arguments passed to the program.
-     * \return Returns `Status::parse_error` in case of an error, and `Status::parse_success`
-     *         when the parsing was successful.
-     * \see Status
-     */
-    auto parse(int argc, char **argv) -> Status;
+    // ========================================================================
+    // Argument Management
+    // ========================================================================
 
     auto begin() TL_NOEXCEPT -> iterator;
     auto begin() const TL_NOEXCEPT -> const_iterator;
@@ -318,7 +369,7 @@ public:
      *
      * \param[in] argument A shared pointer to the `Argument` object to be added.
      */
-    auto push_back(const Argument::SharedPtr &argument) -> void;
+    auto push_back(const Argument::Ptr &argument) -> void;
 
     /*!
      * \brief Adds an argument to the command
@@ -329,7 +380,7 @@ public:
      * \param[in] argument A shared pointer to the `Argument` object to be added.
      * \return The current `Command` object, allowing for method chaining.
      */
-    auto addArgument(const Argument::SharedPtr &argument) -> Command &;
+    auto addArgument(const Argument::Ptr &argument) -> Command &;
 
     /*!
      * \brief Adds an argument to the command (move version)
@@ -339,7 +390,7 @@ public:
      *
      * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
      */
-    auto push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void;
+    auto push_back(Argument::Ptr &&argument) TL_NOEXCEPT -> void;
 
     /*!
      * \brief Adds an argument to the command (move version)
@@ -351,18 +402,18 @@ public:
      * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
      * \return The current `Command` object, allowing for method chaining.
      */
-    auto addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &;
+    auto addArgument(Argument::Ptr &&argument) TL_NOEXCEPT -> Command &;
 
     /*!
      * \brief Adds a typed argument to the command
      *
-     * This template method allows adding an argument with a specific type to the command.
-     * The argument is created and added directly to the list of arguments associated with
-     * the command. It simplifies adding arguments by eliminating the need to create the
-     * argument object separately.
+     * Template method that creates and adds an argument of the specified type.
+     * Simplifies adding arguments without manually creating the Argument object.
      *
-     * \param[in] arg... The arguments required to construct an `Argument` of the specified type.
-     * \return The current `Command` object, allowing for method chaining.
+     * \tparam type The type of argument value (int, double, std::string, bool, etc.)
+     * \tparam Arg Parameter pack for Argument_<type> constructor arguments
+     * \param[in] arg Constructor arguments forwarded to Argument_<type>
+     * \return Reference to this command for method chaining
      *
      * ### Example Usage
      * \code{.cpp}
@@ -378,15 +429,14 @@ public:
     }
 
     /*!
-     * \brief Adds a boolean option to the command
+     * \brief Adds a boolean option (flag) to the command
      *
-     * This template method allows adding an option with a boolean type to the command.
-     * It is useful for adding flags or options that represent true/false states.
-     * The option is created and added directly to the list of arguments associated with
-     * the command.
+     * Convenience method for adding boolean arguments. Boolean options typically
+     * represent flags like `--verbose`, `--debug`, etc.
      *
-     * \param[in] arg... The arguments required to construct the `Argument` as a boolean option.
-     * \return The current `Command` object, allowing for method chaining.
+     * \tparam Arg Parameter pack for Argument_<bool> constructor arguments
+     * \param[in] arg Constructor arguments forwarded to Argument_<bool>
+     * \return Reference to this command for method chaining
      *
      * ### Example Usage
      * \code{.cpp}
@@ -416,8 +466,15 @@ public:
      *
      * ### Example Usage
      * \code{.cpp}
-     * cmd.addUsage(UsageSignature({arg_input, arg_output}, {}, "Basic usage with input and output"));
-     * cmd.addUsage(UsageSignature({arg_input}, {arg_format}, "Input only with optional format"));
+     * auto arg_input = Argument::make<std::string>("input", "Input file");
+     * auto arg_output = Argument::make<std::string>("output", "Output file");
+     * auto arg_format = Argument::make<std::string>("format", "Format", "JSON");
+     *
+     * // Signature 1: input + output (required)
+     * cmd.addUsage(UsageSignature({arg_input, arg_output}, {}));
+     *
+     * // Signature 2: input + format (required) + verbose (optional)
+     * cmd.addUsage(UsageSignature({arg_input}, {arg_format}));
      * \endcode
      */
     auto addUsage(const UsageSignature &usage) -> Command &;
@@ -454,16 +511,6 @@ public:
     auto size() const TL_NOEXCEPT -> size_t;
 
     /*!
-     * \brief Assignment operator
-     */
-    auto operator=(const Command &command) -> Command &;
-
-    /*!
-     * \brief Move assignment operator
-     */
-    auto operator=(Command &&command) TL_NOEXCEPT -> Command &;
-
-    /*!
      * \brief Removes the interval
      *
      * This method removes a range of arguments from the command's argument list,
@@ -475,12 +522,120 @@ public:
      */
     auto erase(const_iterator first, const_iterator last) -> iterator;
 
+    // ========================================================================
+    // Parsing and Validation
+    // ========================================================================
+
     /*!
-     * \brief Displays help in the console
+     * \brief Parses command-line arguments
      *
-     * This method outputs the help information to the console, typically including
-     * a description of the command, its arguments, and usage instructions.
-     * It can be triggered by the `--help` or `-h` argument.
+     * Parses the command line arguments passed to the program, checking for errors
+     * and processing the provided values. The method returns `Status::parse_error`
+     * if there is an error in the arguments, or `Status::parse_success` if parsing was successful.
+     *
+     * \param[in] argc The number of arguments passed to the program.
+     * \param[in] argv The array of arguments passed to the program.
+     * \return Returns `Status::parse_error` in case of an error, and `Status::parse_success`
+     *         when the parsing was successful.
+     * \see Status
+     */
+    auto parse(int argc, char **argv) -> Status;
+
+    /*!
+     * \brief Retrieves an argument by name
+     * \param[in] name Argument long name (e.g., "input")
+     * \return Shared pointer to the argument
+     * \exception Exception if argument not found
+     */
+    auto argument(const std::string &name) const -> Argument::Ptr;
+
+    /*!
+     * \brief Retrieves an argument by short name
+     *
+     * \param[in] shortName Single-character argument name (e.g., 'i')
+     * \return Shared pointer to the argument
+     * \exception Exception if argument not found
+     */
+    auto argument(const char &shortName) const -> Argument::Ptr;
+
+    /*!
+     * \brief Retrieves the parsed value of an argument by name
+     *
+     * Type-safe value extraction. Performs type conversion and validation.
+     *
+     * \tparam T The type to extract (int, float, std::string, Path, bool, etc.)
+     * \param[in] name Argument long name
+     * \return Value of type T
+     * \exception Exception if argument not found or type mismatch
+     *
+     * ### Example
+     * \code{.cpp}
+     * auto input_file = cmd.value<std::string>("input");
+     * auto threshold = cmd.value<float>("threshold");
+     * bool verbose = cmd.value<bool>("verbose");
+     * \endcode
+     */
+    template<typename T>
+    auto value(const std::string &name) const -> T
+    {
+        T _value{};
+
+        try {
+            auto arg = argument(name);
+            internal::ArgValue<T> arg_value;
+            _value = arg_value.value(arg);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Error retrieving argument value for '{}'", name);
+        }
+
+        return _value;
+    }
+
+    /*!
+     * \brief Retrieves the parsed value of an argument by short name
+     *
+     * Type-safe value extraction by short name.
+     *
+     * \tparam T The type to extract
+     * \param[in] shortName Single-character argument name
+     * \return Value of type T
+     * \exception Exception if argument not found or type mismatch
+     *
+     * ### Example
+     * \code{.cpp}
+     * auto count = cmd.value<int>('c');
+     * \endcode
+     */
+    template<typename T>
+    auto value(const char &shortName) const -> T
+    {
+        T _value{};
+
+        try {
+            auto arg = argument(shortName);
+            internal::ArgValue<T> arg_value;
+            _value = arg_value.value(arg);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Error retrieving argument value for '{}'", shortName);
+        }
+
+        return _value;
+    }
+
+    // ========================================================================
+    // Help and Information Output
+    // ========================================================================
+
+    /*!
+     * \brief Displays command help to console
+     *
+     * Shows:
+     * - Command description
+     * - Usage patterns (including all signatures)
+     * - Argument list with descriptions
+     * - Argument type and required/optional status
+     * - Usage examples (if any)
+     * - Syntax conventions
      */
     auto showHelp() const -> void;
 
@@ -495,173 +650,105 @@ public:
     auto showVersion() const -> void;
 
     /*!
-     * \brief Display the licence on the console
+     * \brief Display the license on the console
      *
      * This method outputs the license information for the command-line application
-     * to the console. It can be triggered by the `--licence` argument.
+     * to the console. It can be triggered by the `--license` argument.
      */
-    auto showLicence() const -> void;
+    auto showLicense() const -> void;
 
     /*!
-     * \brief Add an example of how to use the command
+     * \brief Adds a usage example for help output
      *
-     * This method allows adding an example of how to use the command.
-     * It provides users with clear instructions on how to invoke the command
-     * along with its arguments, making it easier to understand its usage.
+     * Examples help users understand how to use the command.
+     * Multiple examples can be added; all are shown in help.
      *
-     * \param[in] example Example of usage in string format, showing how the command should be used with arguments.
-     * \return Reference to the Command object to allow method chaining.
+     * \param[in] example Example command line (e.g., "app input.txt --verbose")
+     * \return Reference to this command for method chaining
+     *
+     * ### Example
+     * \code{.cpp}
+     * cmd.addExample("convert input.jpg output.png");
+     * cmd.addExample("convert input.jpg output.png --format=PNG --quality=95");
+     * \endcode
      */
     auto addExample(const std::string &example) -> Command &;
 
+    // ========================================================================
+    // Advanced Configuration
+    // ========================================================================
+
     /*!
-     * \brief Enables log level selection for the command
+     * \brief Enables log level selection via command-line
      *
-     * This method allows the command to activate the log level selection feature.
-     * Once enabled, you can set different log levels (e.g., ERROR, WARNING, INFO, SUCCESS, etc.)
-     * for the command's output messages. This functionality works independently
-     * of whether logging to a file is enabled.
+     * Adds `--log_level` argument with values: ERROR, WARNING, SUCCESS, INFO, ALL.
+     * Users can control console message verbosity via this argument.
      *
-     * When active, the log level can be specified as a command-line argument using
-     * the "log_level" parameter.
+     * Example: `app --log_level WARNING`
      */
     void enableLogLevel();
 
     /*!
-     * \brief Enables logging to a file for the command
+     * \brief Enables file logging support
      *
-     * This method enables logging to a file by setting the log file's path using the "log" argument.
-     * Once activated, the command will log output messages to the specified log file.
+     * Adds `--log` argument for specifying a log file path.
+     * Logs are written to the specified file. Requires enableLogLevel() for
+     * message level control.
      *
+     * Example: `app --log output.log`
      */
     void enableLog();
 
     /*!
-     * \brief Enables progress bar support for the command
+     * \brief Enables progress bar customization via command-line
      *
-     * This method adds support for a progress bar by introducing a "progressbar" argument.
-     * The "progressbar" argument allows the user to customize how progress is displayed during command execution.
+     * Adds `--progress_bar` argument with values: NORMAL, COLOR, PERCENT, SPINNER, DISABLE.
      *
-     * The accepted values for the "progressbar" argument are:
-     * - **NORMAL**: Displays a standard progress bar.
-     * - **COLOR**: Displays a colored progress bar.
-     * - **PERCENT**: Displays the progress as a percentage.
-     * - **SPINNER**: Displays a spinner animation.
-     * - **DISABLE**: Disables the progress bar.
-     *
-     * Using this method, the command can provide visual feedback on its progress, improving user experience during long operations.
+     * Example: `app --progress_bar COLOR`
      */
     void enableProgressBar();
 
     /*!
-     * \brief Sets the licence
-     * \param[in] licence Licence
-     * \see Licence
+     * \brief Sets the license
+     * \param[in] license License
+     * \see License
      */
-    auto setLicence(const Licence &licence) -> void;
+    auto setLicense(const License &license) -> void;
+	
+    /*!
+     * \brief Assignment operator
+     */
+    auto operator=(const Command &command) -> Command &;
 
     /*!
-     * \brief Returns the argument from its name
-     * If the argument does not exist, an exception is returned.
-     * \param[in] name Argument name
-     * \return Argument
+     * \brief Move assignment operator
      */
-    auto argument(const std::string &name) const -> Argument::SharedPtr;
+    auto operator=(Command &&command) TL_NOEXCEPT -> Command &;
 
     /*!
-     * \brief Returns the argument from its short name
-     * If the argument does not exist, an exception is returned.
-     * \param[in] shortName Argument short name
-     * \return Argument
+     * \brief Creates a new command via factory method
+     *
+     * \param[in] name Command name
+     * \param[in] description Command description
+     * \return Shared pointer to new Command
      */
-    auto argument(const char &shortName) const -> Argument::SharedPtr;
-
-    /*!
-     * \brief Returns the argument value from its name
-     *
-     * This method retrieves the value of an argument based on its name. If the argument
-     * does not exist, an exception is thrown. The value is returned in the specified type.
-     *
-     * \param[in] name Argument name, the string that identifies the argument.
-     * \return The value of the argument of type T.
-     * \throws std::exception if the argument with the given name does not exist.
-     *
-     *
-     * ### Example Usage
-     * \code{.cpp}
-     * Command cmd("read", "Read file");
-     * cmd.addArgument<Path>("file", 'f', "File to read");
-     * Command::Status status = cmd.parse(argc, argv);
-     * if (status == Command::Status::parse_success){
-     *     auto file = cmd.value<Path>("file");
-     * }
-     * \endcode
-     */
-    template<typename T>
-    auto value(const std::string &name) const -> T
-    {
-        T _value{};
-
-        try {
-            auto arg = argument(name);
-            internal::ArgValue<T> arg_value;
-            _value = arg_value.value(arg);
-        } catch (...) {
-            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-        }
-
-        return _value;
-    }
-
-    /*!
-     * \brief Returns the argument value from its short name
-     *
-     * This method retrieves the value of an argument based on its short name. If the argument
-     * does not exist, an exception is thrown. The value is returned in the specified type.
-     *
-     * \param[in] shortName Argument short name, the single character that identifies the argument.
-     * \return The value of the argument of type T.
-     * \throws std::exception if the argument with the given short name does not exist.
-     *
-     * \note The argument must have been previously added to the command with a matching short name.
-     *
-     * ### Example Usage
-     * \code{.cpp}
-     * Command cmd("read", "Read file");
-     * cmd.addArgument<Path>("file", 'f', "File to read");
-     * Command::Status status = cmd.parse(argc, argv);
-     * if (status == Command::Status::parse_success){
-     *     auto file = cmd.value<Path>('f');
-     * }
-     * \endcode
-     */
-    template<typename T>
-    auto value(const char &shortName) const -> T
-    {
-        T _value{};
-
-        try {
-            auto arg = argument(shortName);
-            internal::ArgValue<T> arg_value;
-            _value = arg_value.value(arg);
-        } catch (...) {
-            TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-        }
-
-        return _value;
-    }
-
-public:
-
     static auto create(const std::string &name,
                        const std::string &description) TL_NOEXCEPT -> std::shared_ptr<Command>
     {
         return std::make_shared<Command>(name, description);
     }
 
+    /*!
+     * \brief Creates a new command with initial arguments via factory method
+     *
+     * \param[in] name Command name
+     * \param[in] description Command description
+     * \param[in] arguments Initial arguments
+     * \return Shared pointer to new Command
+     */
     static auto create(const std::string &name,
                        const std::string &description,
-                       std::initializer_list<Argument::SharedPtr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
+                       std::initializer_list<Argument::Ptr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
     {
         return std::make_shared<Command>(name, description, arguments);
     }
@@ -670,7 +757,7 @@ protected:
 
     void init();
     
-    void printArgument(const tl::Argument::SharedPtr &arg, int maxNameSize) const;
+    void printArgument(const tl::Argument::Ptr &arg, int maxNameSize) const;
 
 };
 
@@ -680,8 +767,7 @@ protected:
 
 
 /*!
- * \class CommandList
- * \brief Represents a collection of commands for command-line interfaces.
+ * \brief Container for multiple related commands (subcommands)
  *
  * The `CommandList` class is designed to manage a list of commands, enabling applications 
  * to parse and execute multiple related commands. Each command can have its own arguments 
@@ -753,7 +839,7 @@ private:
     std::list<Command::SharedPtr> mCommands;
     Command::SharedPtr mCommand;
     std::string mVersion;
-    Licence mLicence;
+    License mLicense;
 
 public:
 
@@ -829,10 +915,14 @@ public:
     auto setVersion(const std::string &version) -> void;
 
     /*!
-     * \brief Parses input arguments for the command list.
-     * \param[in] argc Number of arguments.
-     * \param[in] argv Array of argument strings.
-     * \return The parsing status (`Command::Status::parse_success` or `Command::Status::parse_error`).
+     * \brief Parses command-line arguments
+     *
+     * Dispatches to appropriate command based on first argument (argv[1]).
+     * Handles special arguments: --help, --version, --license at app level.
+     *
+     * \param[in] argc Number of arguments
+     * \param[in] argv Command-line arguments
+     * \return Parse status
      */
     auto parse(int argc, char **argv) -> Command::Status;
 
@@ -903,7 +993,7 @@ public:
     /*!
      * \brief Displays the license information.
      */
-    auto showLicence() const -> void;
+    auto showLicense() const -> void;
 
     /*!
      * \brief Retrieves the name of the command currently being parsed.

@@ -33,7 +33,7 @@
 
 
 #include "tidop/rastertools/process/Anaglyph.h"
-#include "tidop/core/concurrency.h"
+#include "tidop/core/concurrency/parallel.h"
 #include "tidop/core/base/exception.h"
 
 #include <opencv2/core.hpp>

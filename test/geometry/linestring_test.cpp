@@ -181,22 +181,22 @@ BOOST_FIXTURE_TEST_CASE(size, LineStringTest)
 BOOST_FIXTURE_TEST_CASE(window, LineStringTest) 
 {
   WindowI w_i = line_string_default_constructor_integer.window();
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w_i.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w_i.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w_i.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w_i.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w_i.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w_i.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w_i.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w_i.pt2.y);
 
   WindowD w_d = line_string_default_constructor_double.window();
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w_d.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w_d.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w_d.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w_d.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w_d.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w_d.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w_d.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w_d.pt2.y);
     
   WindowF w_f = line_string_default_constructor_float.window();
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.y);
 
   w_i = line_string_integer->window();
   BOOST_CHECK_EQUAL(12, w_i.pt1.x);
@@ -211,10 +211,10 @@ BOOST_FIXTURE_TEST_CASE(window, LineStringTest)
   BOOST_CHECK_EQUAL(7026.70, w_d.pt2.y);
     
   w_f = line_string_float->window();
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.y);
 
   w_i = line_string_integer_copy->window();
   BOOST_CHECK_EQUAL(12, w_i.pt1.x);
@@ -229,10 +229,10 @@ BOOST_FIXTURE_TEST_CASE(window, LineStringTest)
   BOOST_CHECK_EQUAL(7026.70, w_d.pt2.y);
     
   w_f = line_string_float_copy->window();
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.y);
 
   w_d = line_string_constructor_reserve->window();
   BOOST_CHECK_EQUAL(0., w_d.pt1.x);
@@ -435,28 +435,28 @@ BOOST_FIXTURE_TEST_CASE(size, LineString3DTest)
 BOOST_FIXTURE_TEST_CASE(boundingBox, LineString3DTest) 
 {
   BoundingBoxI box_i = line_string_default_constructor_integer.boundingBox();
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box_i.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box_i.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box_i.pt1.z);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box_i.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box_i.pt2.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box_i.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.pt2.z);
 
   BoundingBoxD box_d = line_string_default_constructor_double.boundingBox();
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box_d.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box_d.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box_d.pt1.z);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box_d.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box_d.pt2.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box_d.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.pt2.z);
     
   BoundingBoxF box_f = line_string_default_constructor_float.boundingBox();
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, box_f.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, box_f.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, box_f.pt1.z);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, box_f.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, box_f.pt2.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, box_f.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.pt2.z);
 
   box_i = line_string_integer->boundingBox();
   BOOST_CHECK_EQUAL(12, box_i.pt1.x);
@@ -676,10 +676,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiLineStringTest)
   BOOST_CHECK_EQUAL(0, multiline_default_constructor.size());
   BOOST_CHECK(multiline_default_constructor.type() == Entity::Type::multiline2d);
   BOOST_CHECK_EQUAL(false, multiline_default_constructor.is3D());
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w.pt2.y);
 }
 
 BOOST_FIXTURE_TEST_CASE(push_back, MultiLineStringTest)
@@ -699,10 +699,10 @@ BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve)
   BOOST_CHECK_EQUAL(10, multiline.size());
   BOOST_CHECK(multiline.type() == Entity::Type::multiline2d);
   BOOST_CHECK_EQUAL(false, multiline.is3D());
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w.pt2.y);
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
@@ -803,12 +803,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK_EQUAL(0, multiline_3d.size());
 //  BOOST_CHECK(multiline_3d.type() == Entity::Type::multiline3d);
 //  BOOST_CHECK(multiline_3d.is3D());
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.y);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.z);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.y);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.x);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.y);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::min(), box.pt2.x);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::min(), box.pt2.y);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::min(), box.pt2.z);
 //}
 //
 //BOOST_AUTO_TEST_CASE(MultiLineString3D_constructor_reserve) 
@@ -818,12 +818,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //  
 //  BOOST_CHECK_EQUAL(10, multiline_3d.size());
 //  BOOST_CHECK(multiline_3d.type() == Entity::Type::multiline3d);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.y);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.z);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.x);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.y);
-//  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.x);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.y);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::min(), box.pt2.x);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::min(), box.pt2.y);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::min(), box.pt2.z);
 //}
 //
 //BOOST_AUTO_TEST_CASE(MultiLineString3D_copy_constructor) 

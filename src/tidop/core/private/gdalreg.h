@@ -29,7 +29,6 @@
 #include <memory>
 #include <mutex>
 
-#include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 
 class GDALDriver;

@@ -15,8 +15,8 @@
  * - \ref AppManagement "Application Management": Provides classes and utilities for managing application-level 
  *   tasks. This includes:
  *   - App: For managing application instances and metadata.
- *   - Log: For logging messages with different levels of severity.
- *   - Licence and AppLicence: For managing licensing information for the 
+ *   - Logger: For logging messages with different levels of severity.
+ *   - License and AppLicense: For managing licensing information for the 
  *     application and third-party libraries.
  *   - Message: For emitting and managing application messages, such as debug 
  *     information, warnings, and errors.
@@ -47,6 +47,16 @@
  * file path operations. 
  */ 
  
+/*!
+ * \defgroup Macros Macros
+ * \ingroup Base
+ */ 
+ 
+/*!
+ * \defgroup meta Meta-programming utilities 
+ * \ingroup Base
+ */
+ 
 /*! 
  * \defgroup StringUtils String Utilities
  * \ingroup Base
@@ -75,7 +85,6 @@
  * This group provides convenient aliases like enableIfFloating and enableIfIntegral
  * to conditionally enable or disable template functions and classes, making generic
  * programming more robust and readable.
- * \{
  */ 
  
 /*!

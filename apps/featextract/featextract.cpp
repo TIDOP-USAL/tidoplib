@@ -26,6 +26,8 @@
 #include <tidop/core/app/message.h>
 #include <tidop/core/base/path.h>
 #include <tidop/core/base/chrono.h>
+#include <tidop/core/console/argument.h>
+#include <tidop/core/console/command.h>
 #include <tidop/rastertools/io/ImageReader.h>
 #include <tidop/featmatch/features/features.h>
 #include <tidop/featmatch/features/agast.h>
@@ -160,7 +162,7 @@ int main(int argc, char **argv)
         return 1;
     } else if(status == Command::Status::show_help) {
         return 0;
-    } else if(status == Command::Status::show_licence) {
+    } else if(status == Command::Status::show_license) {
         return 0;
     } else if(status == Command::Status::show_version) {
         return 0;

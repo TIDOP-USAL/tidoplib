@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(read_png)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader->metadata();
-        BOOST_CHECK_EQUAL(0, metadata.size());
+        BOOST_CHECK_EQUAL(2, metadata.size());
 
         cv::Mat image = raster_reader->read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(read_tiff)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader->metadata();
-        BOOST_CHECK_EQUAL(0, metadata.size());
+        BOOST_CHECK_EQUAL(3, metadata.size());
 
         cv::Mat image = raster_reader->read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(reader_png)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader.metadata();
-        BOOST_CHECK_EQUAL(0, metadata.size());
+        BOOST_CHECK_EQUAL(2, metadata.size());
 
         cv::Mat image = raster_reader.read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(reader_tiff)
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
         auto metadata = raster_reader.metadata();
-        BOOST_CHECK_EQUAL(0, metadata.size());
+        BOOST_CHECK_EQUAL(3, metadata.size());
 
         cv::Mat image = raster_reader.read();
         BOOST_CHECK_EQUAL(395, image.at<uint16_t>(0, 0));

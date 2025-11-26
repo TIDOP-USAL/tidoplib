@@ -26,6 +26,8 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/window.h>
 
+#include <limits>
+
 using namespace tl;
 
 
@@ -35,7 +37,7 @@ struct WindowTest
 {
 
     WindowTest()
-        : window_integer(nullptr),
+      : window_integer(nullptr),
         window_double(nullptr),
         window_float(nullptr),
         window_integer_copy(nullptr),
@@ -130,20 +132,21 @@ struct WindowTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, WindowTest)
 {
-    BOOST_CHECK_EQUAL(TL_INT_MAX, window_default_constructor_integer.pt1.x);
-    BOOST_CHECK_EQUAL(TL_INT_MAX, window_default_constructor_integer.pt1.y);
-    BOOST_CHECK_EQUAL(TL_INT_MIN, window_default_constructor_integer.pt2.x);
-    BOOST_CHECK_EQUAL(TL_INT_MIN, window_default_constructor_integer.pt2.y);
+    
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), window_default_constructor_integer.pt1.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), window_default_constructor_integer.pt1.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), window_default_constructor_integer.pt2.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), window_default_constructor_integer.pt2.y);
 
-    BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, window_default_constructor_double.pt1.x);
-    BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, window_default_constructor_double.pt1.y);
-    BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, window_default_constructor_double.pt2.x);
-    BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, window_default_constructor_double.pt2.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), window_default_constructor_double.pt1.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), window_default_constructor_double.pt1.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), window_default_constructor_double.pt2.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), window_default_constructor_double.pt2.y);
 
-    BOOST_CHECK_EQUAL(TL_FLOAT_MAX, window_default_constructor_float.pt1.x);
-    BOOST_CHECK_EQUAL(TL_FLOAT_MAX, window_default_constructor_float.pt1.y);
-    BOOST_CHECK_EQUAL(TL_FLOAT_MIN, window_default_constructor_float.pt2.x);
-    BOOST_CHECK_EQUAL(TL_FLOAT_MIN, window_default_constructor_float.pt2.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), window_default_constructor_float.pt1.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), window_default_constructor_float.pt1.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), window_default_constructor_float.pt2.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), window_default_constructor_float.pt2.y);
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, WindowTest)
@@ -439,10 +442,10 @@ BOOST_AUTO_TEST_CASE(windowIntersection_window_int)
     BOOST_CHECK_EQUAL(50, w.pt2.y);
 
     w = windowIntersection(WindowI(Point<int>(0, 0), Point<int>(100, 100)), WindowI(Point<int>(150, 150), Point<int>(200, 200)));
-    BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
-    BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
-    BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
-    BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.y);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.x);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.y);
 }
 
 BOOST_AUTO_TEST_CASE(join_window)

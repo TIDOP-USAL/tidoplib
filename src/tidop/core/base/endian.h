@@ -22,14 +22,48 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file endian.h
+ * \brief Byte order (endianness) detection and conversion utilities
+ *
+ * This module provides utilities for handling byte order conversions and endianness detection.
+ * It supports reading and writing values with automatic byte-order conversion for both
+ * file streams and memory buffers.
+ *
+ * ### Features
+ *
+ * - Detect native system byte order (little-endian or big-endian)
+ * - Swap byte order of arithmetic values
+ * - Read/write from file streams with automatic endianness conversion
+ * - Read/write from memory buffers with automatic endianness conversion
+ * - Cross-platform support (Windows/Linux)
+ *
+ * ### Example Usage
+ *
+ * \code{.cpp}
+ * // Detect native endianness
+ * auto native = getNativeEndianness();
+ * 
+ * // Read from file with conversion
+ * int32_t value;
+ * std::ifstream file("data.bin", std::ios::binary);
+ * read(&file, value, true);  // File is in little-endian format
+ * \endcode
+ *
+ * \see tl::endianness, tl::getNativeEndianness
+ */
+
 #pragma once
 
+#include "tidop/config.h"
+
+#include <array>
+#include <cstring>
 #include <mutex>
 #include <fstream>
 
-#include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/type.h"
 
 namespace tl
 {
@@ -64,9 +98,23 @@ enum class endianness
 /// \endcond
 };
 
+
 /*!
  * \brief Detects the native byte order of the current system.
- * \return `endianness::little_endian` or `endianness::big_endian`.
+ * 
+ * Determines whether the system uses little-endian or big-endian byte order
+ * by examining how a test value is stored in memory.
+ * 
+ * \return `endianness::little_endian` if the system is little-endian,
+ *         `endianness::big_endian` if the system is big-endian.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * auto order = getNativeEndianness();
+ * if (order == endianness::little_endian) {
+ *     Message::info("System is little-endian");
+ * }
+ * \endcode
  */
 inline endianness getNativeEndianness()
 {
@@ -77,11 +125,21 @@ inline endianness getNativeEndianness()
 
 /*!
  * \brief Swaps the endianness of an arithmetic value.
- * \tparam T The type of the value, must be arithmetic (e.g., int, float).
+ * 
+ * Converts a value from one byte order to its opposite by reversing
+ * the order of its bytes in memory.
+ * 
+ * \tparam T The type of the value, must be arithmetic (e.g., int, float, double).
  * \param[in] val The value whose endianness is to be swapped.
  * \return The value with swapped byte order.
  *
- * This function converts a value from one byte order to its opposite.
+ * ### Example Usage
+ * \code{.cpp}
+ * uint32_t value = 0x12345678;
+ * uint32_t swapped = swapEndian(value);  // Result: 0x78563412
+ * \endcode
+ *
+ * \note This function only works with arithmetic types
  */
 template <typename T>
 auto swapEndian(T val) -> enableIfArithmetic<T, T>
@@ -98,14 +156,28 @@ auto swapEndian(T val) -> enableIfArithmetic<T, T>
 }
 
 /*!
- * \brief Reads a value of type T from a stream, adjusting for endianness.
- * \tparam T The type of the value to read.
+ * \brief Reads a value of type T from a file stream, adjusting for endianness.
+ * 
+ * Reads a value of type T from a file stream and automatically converts its byte order
+ * from the specified format to the native system endianness if necessary.
+ * 
+ * \tparam T The type of the value to read (must be arithmetic).
  * \param[in] stream Pointer to the input file stream.
  * \param[out] value Reference to the value to store the result.
- * \param[in] littleEndian Indicates whether the value in the file is in little-endian format.
+ * \param[in] littleEndian If true, assumes the file value is in little-endian format.
+ *                         If false, assumes big-endian format. Defaults to true.
  *
- * Reads a value of type T from a file stream and optionally converts its byte order
- * to match the native system endianness.
+ * ### Example Usage
+ * \code{.cpp}
+ * std::ifstream file("data.bin", std::ios::binary);
+ * int32_t value;
+ * read(&file, value, true);  // File is little-endian
+ * file.close();
+ * \endcode
+ *
+ * ### Notes
+ * - Stream position advances by sizeof(T) bytes
+ * - Conversion is automatic based on native system endianness
  */
 template<typename T>
 void read(std::fstream *stream, T &value, bool littleEndian = true)
@@ -129,13 +201,27 @@ void read(std::ifstream *stream, T &value, bool littleEndian = true)
 }
 
 /*!
- * \brief Writes a value of type T to a stream, adjusting for endianness.
- * \tparam T The type of the value to write.
+ * \brief Writes a value of type T to a file stream, adjusting for endianness.
+ * 
+ * Converts a value to the specified byte order and writes it to the file stream.
+ * 
+ * \tparam T The type of the value to write (must be arithmetic).
  * \param[in] stream Pointer to the output file stream.
  * \param[in] value The value to write to the file.
- * \param[in] littleEndian Indicates whether the value should be written in little-endian format.
+ * \param[in] littleEndian If true, writes the value in little-endian format.
+ *                         If false, writes in big-endian format. Defaults to true.
  *
- * Converts the byte order of a value to the specified endianness and writes it to the file stream.
+ * ### Example Usage
+ * \code{.cpp}
+ * std::ofstream file("data.bin", std::ios::binary);
+ * int32_t value = 12345;
+ * write(&file, value, true);  // Write as little-endian
+ * file.close();
+ * \endcode
+ *
+ * ### Notes
+ * - Conversion is automatic based on native system endianness
+ * - Stream position advances by sizeof(T) bytes
  */
 template<typename T>
 void write(std::fstream *stream, const T &value, bool littleEndian = true)
@@ -162,9 +248,26 @@ void write(std::ofstream *stream, const T &value, bool littleEndian = true)
 
 /*!
  * \brief Reads a value of type T from a memory buffer, adjusting for endianness.
- * \param[in] buffer Pointer to the memory buffer.
+ * 
+ * Copies a value of type T from a memory buffer and automatically converts its byte order
+ * from the specified format to the native system endianness if necessary.
+ * 
+ * \tparam T The type of the value to read (must be arithmetic).
+ * \param[in] buffer Pointer to the memory buffer containing the data.
  * \param[out] value Reference to the value to store the result.
- * \param[in] littleEndian Indicates whether the buffer is in little-endian format.
+ * \param[in] littleEndian If true, assumes the buffer value is in little-endian format.
+ *                         If false, assumes big-endian format. Defaults to true.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * uint8_t buffer[4] = {0x12, 0x34, 0x56, 0x78};
+ * int32_t value;
+ * readFromBuffer(buffer, value, true);  // Buffer is little-endian
+ * \endcode
+ *
+ * ### Notes
+ * - Does not modify buffer pointer or stream position
+ * - Safe for use with arbitrary memory locations
  */
 template <typename T>
 void readFromBuffer(const uint8_t *buffer, T &value, bool littleEndian = true)
@@ -177,9 +280,26 @@ void readFromBuffer(const uint8_t *buffer, T &value, bool littleEndian = true)
 
 /*!
  * \brief Writes a value of type T to a memory buffer, adjusting for endianness.
- * \param[out] buffer Pointer to the memory buffer.
+ * 
+ * Converts a value to the specified byte order and copies it to a memory buffer.
+ * 
+ * \tparam T The type of the value to write (must be arithmetic).
+ * \param[out] buffer Pointer to the memory buffer where data will be written.
  * \param[in] value The value to write to the buffer.
- * \param[in] littleEndian Indicates whether the value should be written in little-endian format.
+ * \param[in] littleEndian If true, writes the value in little-endian format.
+ *                         If false, writes in big-endian format. Defaults to true.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * uint8_t buffer[4];
+ * int32_t value = 0x12345678;
+ * writeToBuffer(buffer, value, true);  // Write as little-endian
+ * // buffer now contains: {0x78, 0x56, 0x34, 0x12}
+ * \endcode
+ *
+ * ### Notes
+ * - Caller is responsible for ensuring buffer has at least sizeof(T) bytes
+ * - Does not modify original value
  */
 template <typename T>
 void writeToBuffer(uint8_t *buffer, const T &value, bool littleEndian = true)

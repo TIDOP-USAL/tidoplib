@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/graphic/datamodel.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/meta.h"
 
 namespace tl
 {

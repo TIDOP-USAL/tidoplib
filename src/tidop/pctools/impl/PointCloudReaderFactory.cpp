@@ -29,7 +29,7 @@
 #include "tidop/config.h"
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
-#include "tidop/core/base/ptr.h"
+#include "tidop/core/base/macros/smart_ptr.h"
 #include "tidop/core/base/exception.h"
 
 #include <proj.h>

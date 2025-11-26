@@ -28,10 +28,12 @@
 #include <cpl_conv.h>
 
 #include <tidop/core/app/app.h>
-#include <tidop/core/app/log.h>
+#include <tidop/core/app/logger.h>
 #include <tidop/core/app/message.h>
-#include <tidop/core/console.h>
+#include <tidop/core/console/console.h>
+#include <tidop/core/console/command.h>
 #include <tidop/core/base/chrono.h>
+#include <tidop/core/base/path.h>
 #include <tidop/rastertools/io/Reader.h>
 #include <tidop/rastertools/io/writer.h>
 #include <tidop/rastertools/io/Metadata.h>
@@ -219,7 +221,7 @@ int main(int argc, char **argv)
     }
 
     if(status == Command::Status::show_help || 
-       status == Command::Status::show_licence ||
+       status == Command::Status::show_license ||
        status == Command::Status::show_version) {
         return 0;
     }

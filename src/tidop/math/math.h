@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <algorithm>
 
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/type.h"
 
 namespace tl
 {

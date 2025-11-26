@@ -24,7 +24,6 @@
 
 #include "tidop/core/private/gdalreg.h"
 
-#include "tidop/core/console.h"
 #include "tidop/core/base/exception.h"
 
 #ifdef TL_HAVE_GDAL

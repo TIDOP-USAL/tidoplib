@@ -24,8 +24,9 @@
 
 #pragma once
 
+#include <condition_variable>
+
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
 #include "tidop/core/concurrency/queue.h"
 
 namespace tl
@@ -38,12 +39,16 @@ namespace tl
  */
 
 /*! 
- * \brief Multi-producer multi-consumer queue
+ * \brief Multi-producer multi-consumer blocking queue
  * 
  * This class implements a thread-safe queue designed for multi-producer, multi-consumer (MPMC) scenarios.
  * It supports concurrent push and pop operations with synchronization, ensuring thread safety.
  * The queue can be stopped to notify all threads that no more elements should be added or processed.
  *
+ * ### Thread Safety
+ *
+ * This queue is fully thread-safe and supports multiple producer and consumer threads.
+ * All operations are protected by mutexes and condition variables.
  */
 template<typename T>
 class QueueMPMC
@@ -66,12 +71,17 @@ public:
     
     /*!
      * \brief Constructor with specified queue capacity
-     * \param[in] capacity Maximum capacity of the queue
+     * \param[in] capacity Maximum capacity of the queue. Must be greater than 0.
      *
      * Creates an MPMC queue with the specified capacity.
+     *
+     * \exception Exception If capacity is 0
      */
     explicit QueueMPMC(size_t capacity);
-    
+
+    /*!
+     * \brief Virtual destructor
+     */    
     ~QueueMPMC() override = default;
     
     TL_DISABLE_COPY(QueueMPMC)

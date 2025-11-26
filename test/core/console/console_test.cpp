@@ -27,6 +27,10 @@
 #include <boost/test/tools/output_test_stream.hpp>
 
 #include <tidop/core/app/app.h>
+#include <tidop/core/app/messagehandler.h>
+#include <tidop/core/base/flags.h>
+#include <tidop/core/console/console.h>
+
 
 using namespace tl;
 

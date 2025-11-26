@@ -38,6 +38,8 @@ namespace tl
 
 int stringToInteger(const std::string &text, Base base)
 {
+    TL_ASSERT(!text.empty(), "Cannot convert empty string to integer");
+
     std::istringstream ss(text);
     switch (base) {
     case Base::octal:
@@ -50,8 +52,15 @@ int stringToInteger(const std::string &text, Base base)
         ss.setf(std::ios_base::hex, std::ios::basefield);
         break;
     }
-    int number;
-    return ss >> number ? number : 0;
+
+    int number = 0;
+
+    if (!(ss >> number)) {
+        TL_THROW_EXCEPTION("Invalid format for {} conversion: '{}'", 
+                          static_cast<int>(base), text);
+    }
+
+    return number;
 }
 
 } // End namespace tl

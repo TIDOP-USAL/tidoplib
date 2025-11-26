@@ -22,13 +22,34 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file queue.h
+ * \brief Thread-safe queue base class and concrete implementations
+ *
+ * This module provides thread-safe queue implementations for concurrent producer-consumer patterns.
+ * It includes:
+ * - Base abstract Queue class
+ * - SPSC (Single Producer Single Consumer) queue
+ * - MPMC (Multi Producer Multi Consumer) queue
+ *
+ * ### Features
+ *
+ * - Type-safe queue implementation with templates
+ * - Thread-safe push/pop operations using mutexes
+ * - Configurable capacity with overflow blocking
+ * - Condition variables for efficient thread synchronization
+ * - Support for queue stopping/shutdown
+ *
+ * \see QueueSPSC, QueueMPMC
+ */
+ 
 #pragma once
 
 #include <mutex>
 #include <queue>
 
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {
@@ -40,16 +61,25 @@ namespace tl
  * \{
  */
  
+/*!
+ * \brief Default queue capacity if not specified
+ */
 constexpr auto QueueDefaultCapacity = 256;
 
 /*!
- * \brief Interface for a thread-safe queue with fixed capacity.
+ * \brief Abstract base class for a thread-safe queue with fixed capacity.
  * 
  * The `Queue` class defines a generic interface for a thread-safe queue implementation. 
  * It enforces the implementation of the `push` and `pop` methods in derived classes 
  * while providing common functionality such as checking size, capacity, and thread-safety 
  * via mutex locks.
  *
+ * ### Thread Safety
+ *
+ * All operations are protected by an internal mutex. Multiple threads can safely call
+ * push() and pop() concurrently on the same queue instance.
+ *
+ * \tparam T Element type
  */
 template<typename T>
 class Queue
@@ -65,15 +95,21 @@ public:
 
     /*!
      * \brief Default constructor.
+     * Creates a queue with the default capacity (256 elements).
      */
     Queue() = default;
     
     /*!
      * \brief Constructor with queue capacity.
-     * \param[in] capacity Queue capacity.
+     * \param[in] capacity Queue maximum capacity. Must be greater than 0.
+     *
+     * \exception Exception If capacity is 0
      */
     explicit Queue(size_t capacity);
-    
+
+    /*!
+     * \brief Virtual destructor
+     */
     virtual ~Queue() = default;
     
     TL_DISABLE_COPY(Queue)
@@ -95,8 +131,11 @@ public:
     virtual auto pop(T& value) -> bool = 0;
     
     /*!
-     * \brief Returns the number of elements in the queue.
-     * \return Size of the queue.
+     * \brief Returns the number of elements currently in the queue.
+     * \return Current size of the queue (thread-safe).
+     *
+     * Note: The returned size may change immediately after this call returns
+     * if other threads are pushing/popping elements.
      */
     auto size() const -> size_t;
     
@@ -108,13 +147,13 @@ public:
     
     /*!
      * \brief Checks whether the queue is empty.
-     * \return `true` if the queue is empty, `false` otherwise.
+     * \return `true` if the queue is empty (thread-safe), `false` otherwise.
      */
     auto empty() const -> bool;
 
     /*!
      * \brief Checks whether the queue is full.
-     * \return `true` if the queue is full, `false` otherwise.
+     * \return `true` if the number of elements equals capacity, `false` otherwise (thread-safe).
      */
     auto full() const -> bool;
 
@@ -124,12 +163,17 @@ protected:
     /*!
      * \brief Provides access to the internal queue buffer.
      * \return Reference to the internal queue buffer.
+     *
+     * \warning Caller must hold the lock when accessing the buffer.
+     * Use with mutex() accessor to get the lock.
      */
     auto buffer() -> std::queue<T>&;
 
     /*!
-     * \brief Provides access to the internal mutex.
-     * \return Reference to the mutex.
+     * \brief Provides access to the internal mutex for synchronization.
+     * \return Reference to the mutex used for thread synchronization.
+     *
+     * Derived classes use this to implement custom locking strategies.
      */
     auto mutex() const -> std::mutex&;
 
@@ -144,6 +188,7 @@ template<typename T>
 Queue<T>::Queue(size_t capacity)
   : queueCapacity(capacity)
 {
+    TL_ASSERT(capacity > 0, "Queue capacity must be greater than 0");
 }
 
 template<typename T>
@@ -170,7 +215,7 @@ template<typename T>
 auto Queue<T>::full() const -> bool
 {
     std::lock_guard<std::mutex> locker(_mutex);
-    return queueBuffer.size() < queueCapacity;
+    return queueBuffer.size() >= queueCapacity;
 }
 
 template<typename T>

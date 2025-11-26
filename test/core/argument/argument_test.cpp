@@ -24,7 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop Argument test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/console.h>
+#include <tidop/core/console/argument.h>
+#include <tidop/core/console/command.h>
 
 #include <array>
 
@@ -457,10 +458,10 @@ BOOST_FIXTURE_TEST_CASE(parseVersion, CommandTest)
     BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_version);
 }
 
-BOOST_FIXTURE_TEST_CASE(parseLicence, CommandTest)
+BOOST_FIXTURE_TEST_CASE(parseLicense, CommandTest)
 {
-    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--licence")};
-    BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_licence);
+    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--license")};
+    BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_license);
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_option_ok, CommandTest)
@@ -728,10 +729,10 @@ BOOST_FIXTURE_TEST_CASE(parseVersion, CommandListTest)
     BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::show_version);
 }
 
-BOOST_FIXTURE_TEST_CASE(parseLicence, CommandListTest)
+BOOST_FIXTURE_TEST_CASE(parseLicense, CommandListTest)
 {
-    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--licence")};
-    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_licence);
+    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--license")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_license);
 }
 
 BOOST_FIXTURE_TEST_CASE(parseCommand, CommandListTest)

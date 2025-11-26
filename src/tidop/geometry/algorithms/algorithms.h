@@ -24,9 +24,6 @@
 
 #pragma once
 
-//#include "tidop/geometry/algorithms/distance.h"
-//#include "tidop/geometry/algorithms/angle.h"
-//#include "tidop/geometry/algorithms/intersect.h"
 #include "tidop/geometry/entities/segment.h"
 
 namespace tl
@@ -86,7 +83,9 @@ public:
 
 };
 
+/*! \} */
+
 }
 
 
-/*! \} */
+

@@ -27,7 +27,7 @@
 #include "tidop/featmatch/io/impl/features/opencvwriter.h"
 #include "tidop/featmatch/io/impl/features/txtwriter.h"
 #include "tidop/core/base/string_utils.h"
-
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {

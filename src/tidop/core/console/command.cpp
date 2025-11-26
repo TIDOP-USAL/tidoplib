@@ -25,6 +25,7 @@
 #include "tidop/core/console/command.h"
 
 #include "tidop/core/app/app.h"
+#include "tidop/core/app/logger.h"
 #include "tidop/core/base/split.h"
 #include "tidop/core/console/console.h"
 
@@ -34,6 +35,11 @@
 namespace tl
 {
   
+static auto getShortNameString(char shortName) -> std::string
+{
+    return shortName == '\0' ? "" : std::string(1, shortName);
+}
+
 
 Command::Command()
   : mArguments(0),
@@ -77,7 +83,7 @@ Command::Command(std::string name, std::string description)
 
 Command::Command(std::string name, 
                  std::string description,
-                 std::initializer_list<Argument::SharedPtr> arguments)
+                 std::initializer_list<Argument::Ptr> arguments)
   : mName(std::move(name)),
     mDescription(std::move(description)),
     mArguments(arguments),
@@ -120,6 +126,11 @@ auto Command::setVersion(const std::string &version) -> void
 auto Command::parse(int argc, char **argv) -> Status
 {
 
+    if (argc < 0 || argv == nullptr) {
+        Message::error("Invalid command-line arguments (argc/argv)");
+        return Status::parse_error;
+    }
+	
     std::map<std::string, std::string> cmd_in;
 
     for(int i = 1; i < argc; ++i) {
@@ -208,9 +219,9 @@ auto Command::parse(int argc, char **argv) -> Status
         return Command::Status::show_version;
     }
 
-    if(cmd_in.find("licence") != cmd_in.end()) {
-        showLicence();
-        return Command::Status::show_licence;
+    if(cmd_in.find("license") != cmd_in.end()) {
+        showLicense();
+        return Command::Status::show_license;
     }
 
 
@@ -219,10 +230,12 @@ auto Command::parse(int argc, char **argv) -> Status
         bool bFind = false;
         bool bFindValue = false;
 
-        std::stringstream ss;
-        std::string short_name;
-        ss << argument->shortName();
-        ss >> short_name;
+        //std::stringstream ss;
+        //std::string short_name;
+        //ss << argument->shortName();
+        //ss >> short_name;
+        std::string short_name = getShortNameString(argument->shortName());
+
         if(cmd_in.find(short_name) != cmd_in.end()) {
             bFind = true;
             std::string value = cmd_in.find(short_name)->second;
@@ -296,7 +309,7 @@ auto Command::parse(int argc, char **argv) -> Status
                     Message::addMessageHandler(&console);
 
                     if (mEnableLog) {
-                        Log &log = App::log();
+                        Logger &log = App::log();
                         log.setMessageLevel(message_level);
                         Message::addMessageHandler(&log);
                     }
@@ -311,7 +324,7 @@ auto Command::parse(int argc, char **argv) -> Status
 
                 log_path.parentPath().createDirectories();
                 argument->fromString(log_path.toString());
-                Log &log = App::log();
+                Logger &log = App::log();
                 log.open(log_path);
                 Message::addMessageHandler(&log);
             }
@@ -371,25 +384,25 @@ auto Command::end() const TL_NOEXCEPT -> const_iterator
     return mArguments.cend();
 }
 
-auto Command::push_back(const Argument::SharedPtr &argument) -> void
+auto Command::push_back(const Argument::Ptr &argument) -> void
 {
     mArguments.push_back(argument);
 }
 
-auto Command::addArgument(const Argument::SharedPtr &argument) -> Command &
+auto Command::addArgument(const Argument::Ptr &argument) -> Command &
 {
     mArguments.push_back(argument);
     return (*this);
 }
 
-auto Command::push_back(Argument::SharedPtr &&argument) TL_NOEXCEPT -> void
+auto Command::push_back(Argument::Ptr &&argument) TL_NOEXCEPT -> void
 {
-    mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
+    mArguments.push_back(std::forward<Argument::Ptr>(argument));
 }
 
-auto Command::addArgument(Argument::SharedPtr &&argument) TL_NOEXCEPT -> Command &
+auto Command::addArgument(Argument::Ptr &&argument) TL_NOEXCEPT -> Command &
 {
-    mArguments.push_back(std::forward<Argument::SharedPtr>(argument));
+    mArguments.push_back(std::forward<Argument::Ptr>(argument));
     return (*this);
 }
 
@@ -447,25 +460,25 @@ auto Command::erase(const const_iterator first,
 
 auto Command::showHelp() const -> void
 {
+    Console &console = App::console();
 
     /// Descripción del comando
-    std::cout << mDescription << "\n";
+    console << mDescription << "\n";
 
-    auto &console = App::console();
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
 
-    std::cout << "\nUsage:\n\n";
+    console << "\nUsage:\n\n";
 
-    console.reset();
+    console.clear();
 
-    std::cout << "  " << mName << " [-h | --help] [--version] [--licence] \n";
+    console << "  " << mName << " [-h | --help] [--version] [--license] \n";
 
     if (!mUsages.empty()) {
 
         for (const auto &usage : mUsages) {
 
-            std::cout << "  " << mName;
+            console << "  " << mName;
 
             for (const auto &arg : usage.required) {
                 std::stringstream ss;
@@ -477,7 +490,7 @@ auto Command::showHelp() const -> void
                 } else if (!arg->name().empty()) {
                     ss << "--" << arg->name() << " <value>";
                 }
-                std::cout << ss.str();
+                console << ss.str();
             }
 
             for (const auto &arg : usage.optional) {
@@ -490,18 +503,18 @@ auto Command::showHelp() const -> void
                 } else if (!arg->name().empty()) {
                     ss << "[--" << arg->name() << " <value>]";
                 }
-                std::cout << ss.str();
+                console << ss.str();
             }
 
             if (!usage.description.empty())
-                std::cout << "    " << usage.description;
+                console << "    " << usage.description;
 
-            std::cout << "\n";
+            console << "\n";
         }
 
     }
 
-    std::cout << "\n";
+    console << "\n";
 
     int max_name_size = 7;
     for(const auto &arg : mArguments) {
@@ -514,8 +527,8 @@ auto Command::showHelp() const -> void
 
     max_name_size += 1;
 
-    std::cout << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
-    std::cout << "    , --" << std::left << std::setw(max_name_size) << "version" << "    Show version information and exit\n";
+    console << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
+    console << "    , --" << std::left << std::setw(max_name_size) << "version" << "    Show version information and exit\n";
 
     for(const auto &arg : mArguments) {
 
@@ -527,57 +540,59 @@ auto Command::showHelp() const -> void
         printArgument(arg, max_name_size);
     }
 
-    std::cout << "\n\n";
+    console << "\n\n";
 
-    std::cout << "R: Required argument\n";
-    std::cout << "O: Optional argument\n\n";
+    console << "R: Required argument\n";
+    console << "O: Optional argument\n\n";
 
 
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    std::cout << "Argument Syntax Conventions\n\n";
-    console.reset();
+    console << "Argument Syntax Conventions\n\n";
+    console.clear();
 
-    std::cout << "  - Arguments are options if they begin with a hyphen delimiter (-).\n";
-    std::cout << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. '-abc' is equivalent to '-a -b -c'.\n";
-    std::cout << "  - Option names are single alphanumeric characters.\n";
-    std::cout << "  - An option and its argument may or may not appear as separate tokens. '-o foo' and '-ofoo' are equivalent.\n";
-    std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  '--name=value' is equivalent to '--name value'.\n\n";
+    console << "  - Arguments are options if they begin with a hyphen delimiter (-).\n";
+    console << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. '-abc' is equivalent to '-a -b -c'.\n";
+    console << "  - Option names are single alphanumeric characters.\n";
+    console << "  - An option and its argument may or may not appear as separate tokens. '-o foo' and '-ofoo' are equivalent.\n";
+    console << "  - Long options (--) can have arguments specified after space or equal sign (=).  '--name=value' is equivalent to '--name value'.\n\n";
 
     if(!mExamples.empty()) {
         console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
         console.setFontBold(true);
-        std::cout << "Examples\n\n";
-        console.reset();
+        console << "Examples\n\n";
+        console.clear();
 
         for(auto &example : mExamples) {
-            std::cout << "  " << example << "\n";
+            console << "  " << example << "\n";
         }
     }
 
-    std::cout << std::endl;
+    console << std::endl;
 }
 
-void Command::printArgument(const tl::Argument::SharedPtr &arg, int maxNameSize) const
+void Command::printArgument(const tl::Argument::Ptr &arg, int maxNameSize) const
 {
+    Console &console = App::console();
+
     if (arg->shortName()) {
-        std::cout << "  -" << arg->shortName() << ", ";
+        console << "  -" << arg->shortName() << ", ";
     } else {
-        std::cout << "    , ";
+        console << "    , ";
     }
 
     if (!arg->name().empty()) {
-        std::cout << "--" << std::left << std::setw(maxNameSize) << arg->name() << (arg->isRequired() ? "[R] " : "[O] ")
+        console << "--" << std::left << std::setw(maxNameSize) << arg->name() << (arg->isRequired() ? "[R] " : "[O] ")
             << arg->description() << ". ";
         //TODO: Añadir valor por defecto
         if (arg->validator() != nullptr) arg->validator()->print(); // por ahora...
     } else {
-        std::cout << "--" << std::left << std::setw(maxNameSize) << "" << (arg->isRequired() ? "[R] " : "[O] ")
+        console << "--" << std::left << std::setw(maxNameSize) << "" << (arg->isRequired() ? "[R] " : "[O] ")
             << arg->description() << ". ";
         if (arg->validator() != nullptr) arg->validator()->print();
     }
 
-    std::cout << "\n";
+    console << "\n";
 }
 
 auto Command::showVersion() const -> void
@@ -586,26 +601,26 @@ auto Command::showVersion() const -> void
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
 
-    std::cout << "Version: " << mVersion << "\n";
+    console << "Version: " << mVersion << "\n";
 
-    console.reset();
+    console.clear();
 }
 
-auto Command::showLicence() const -> void
+auto Command::showLicense() const -> void
 {
     Console &console = App::console();
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    std::cout << "Licence\n\n";
-    console.reset();
+    console << "License\n\n";
+    console.clear();
 
-    std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
+    console << mLicense.productName() << ": " << mLicense.version() << "\n";
 
-    //mLicence.productName();
-    //mLicence.version();
-    //mLicence.autor();
-    //mLicence.authorEmail();
-    //mLicence.type();
+    //mLicense.productName();
+    //mLicense.version();
+    //mLicense.autor();
+    //mLicense.authorEmail();
+    //mLicense.type();
 }
 
 auto Command::addExample(const std::string &example) -> Command &
@@ -637,41 +652,33 @@ void Command::enableProgressBar()
     mDefaultArguments.push_back(progress_bar_arg);
 }
 
-auto Command::setLicence(const Licence &licence) -> void
+auto Command::setLicense(const License &license) -> void
 {
-    mLicence = licence;
+    mLicense = license;
 }
 
-auto Command::argument(const std::string &name) const -> Argument::SharedPtr
+auto Command::argument(const std::string &name) const -> Argument::Ptr
 {
-    Argument::SharedPtr argument;
-
-    for(auto &arg : mArguments) {
+    for(const auto &arg : mArguments) {
         if(arg->name() == name) {
-            argument = arg;
-            break;
+            return arg;
         }
     }
 
-    TL_ASSERT(argument != nullptr, "Argument not found: {}", name);
-
-    return argument;
+    TL_THROW_EXCEPTION("Argument not found: '{}'", name);
 }
 
-auto Command::argument(const char &shortName) const -> Argument::SharedPtr
+auto Command::argument(const char &shortName) const -> Argument::Ptr
 {
-    Argument::SharedPtr argument;
+    TL_ASSERT(shortName != '\0', "Invalid short name (null character)");
 
     for(auto &arg : mArguments) {
         if(arg->shortName() == shortName) {
-            argument = arg;
-            break;
+            return arg;
         }
     }
 
-    TL_ASSERT(argument != nullptr, "Argument not found: {}", shortName);
-
-    return argument;
+    TL_THROW_EXCEPTION("Argument not found with short name: '{}'", shortName);
 }
 
 void Command::init()
@@ -778,9 +785,9 @@ auto CommandList::parse(int argc, char **argv) -> Command::Status
         return Command::Status::show_version;
     }
 
-    if(arg_cmd_name == "licence") {
-        showLicence();
-        return Command::Status::show_licence;
+    if(arg_cmd_name == "license") {
+        showLicense();
+        return Command::Status::show_license;
     }
 
     for(const auto &command : mCommands) {
@@ -901,16 +908,16 @@ auto CommandList::showHelp() const -> void
 
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    std::cout << "\nUsage: " << mName << " [--version] [-h | --help] [--licence] <command> [<args>] \n\n";
+    console << "\nUsage: " << mName << " [--version] [-h | --help] [--license] <command> [<args>] \n\n";
     
-    console.reset();
+    console.clear();
 
-    std::cout << mDescription << " \n\n";
+    console << mDescription << " \n\n";
 
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    std::cout << "Command list: \n\n";
-    console.reset();
+    console << "Command list: \n\n";
+    console.clear();
 
     size_t max_name_size = 10;
     for(auto &arg : mCommands) {
@@ -919,10 +926,10 @@ auto CommandList::showHelp() const -> void
     max_name_size += 2;
 
     for(auto &arg : mCommands) {
-        std::cout << std::left << std::setw(max_name_size) << arg->name() << arg->description() << "\n";
+        console << std::left << std::setw(max_name_size) << arg->name() << arg->description() << "\n";
     }
 
-    std::cout << std::endl;
+    console << std::endl;
 }
 
 auto CommandList::showVersion() const -> void
@@ -931,20 +938,20 @@ auto CommandList::showVersion() const -> void
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
 
-    std::cout << "Version: " << mVersion << "\n";
+    console << "Version: " << mVersion << "\n";
 
-    console.reset();
+    console.clear();
 }
 
-auto CommandList::showLicence() const -> void
+auto CommandList::showLicense() const -> void
 {
     Console &console = App::console();
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    std::cout << "Licence\n\n";
-    console.reset();
+    console << "License\n\n";
+    console.clear();
 
-    std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
+    console << mLicense.productName() << ": " << mLicense.version() << "\n";
 }
 
 auto CommandList::commandName() const -> std::string
@@ -953,6 +960,6 @@ auto CommandList::commandName() const -> std::string
 }
 
 
-} // End mamespace tl
+} // End namespace tl
 
 

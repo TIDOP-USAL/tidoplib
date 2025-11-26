@@ -40,17 +40,17 @@ class Progress;
  * \{
  */
 
- /*!
-  * \class TaskQueue
-  * 
-  * \brief A queue of tasks that are executed in a FIFO (First In, First Out) order.
-  *
-  * The `TaskQueue` class manages a queue of tasks, where tasks are executed in the order they are added.
-  * The class provides methods for pushing tasks into the queue, popping tasks, and controlling the
-  * execution of the task queue. It extends the functionality of `TaskBase` to provide task management and
-  * execution control.
-  *
-  */
+/*!
+ * \class TaskQueue
+ * 
+ * \brief A queue of tasks that are executed in a FIFO (First In, First Out) order.
+ *
+ * The `TaskQueue` class manages a queue of tasks, where tasks are executed in the order they are added.
+ * The class provides methods for pushing tasks into the queue, popping tasks, and controlling the
+ * execution of the task queue. It extends the functionality of `TaskBase` to provide task management and
+ * execution control.
+ *
+ */
 class TL_EXPORT TaskQueue
   : public TaskBase
 {

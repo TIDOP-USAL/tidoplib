@@ -25,7 +25,7 @@ int main(int argc, char **argv)
         return 1;
     } else if(status == Command::Status::show_help) {
         return 0;
-    } else if(status == Command::Status::show_licence) {
+    } else if(status == Command::Status::show_license) {
         return 0;
     } else if(status == Command::Status::show_version) {
         return 0;

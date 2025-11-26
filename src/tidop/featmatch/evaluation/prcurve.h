@@ -92,19 +92,19 @@ void PRCurve<T>::compute(size_t steeps)
 
         if (this->mData.empty()) return;
 
-    this->mCurve.resize(0);
-
+    this->mCurve.clear();
 
     T min = this->mData.front().first;
     T max = this->mData.back().first;
 
     T step = (max - min) / static_cast<double>(steeps);
 
+    auto it = this->mConfusionMatrix.thresholdIterator();
     T threshold = min;
-
-    for (size_t i = 0; i < steeps; i++) {
-        double recall = this->mConfusionMatrix.truePositiveRate(threshold);
-        double precision = this->mConfusionMatrix.positivePredictiveValue(threshold);
+    for (size_t i = 0; i < steeps; ++i) {
+        it.advanceTo(threshold);
+        double recall = it.truePositiveRate();
+        double precision = it.positivePredictiveValue();
         this->mCurve.emplace_back(recall, precision);
         threshold += step;
     }

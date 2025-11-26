@@ -131,22 +131,22 @@ BOOST_FIXTURE_TEST_CASE(size, PolygonTest)
 BOOST_FIXTURE_TEST_CASE(window, PolygonTest)
 {
   WindowI w_i = polygon_default_constructor_integer.window();
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w_i.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w_i.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w_i.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w_i.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w_i.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w_i.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w_i.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w_i.pt2.y);
 
   WindowD w_d = polygon_default_constructor_double.window();
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w_d.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w_d.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w_d.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w_d.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w_d.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), w_d.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w_d.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), w_d.pt2.y);
     
   WindowF w_f = polygon_default_constructor_float.window();
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), w_f.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), w_f.pt2.y);
 
   w_i = polygon_initializer_list_constructor->window();
   BOOST_CHECK_EQUAL(4137012, w_i.pt1.x);
@@ -326,12 +326,12 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
   
   BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.size());
   BOOST_CHECK(polygon_default_constructor_integer.type() == Entity::Type::polygon3d);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.z);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.pt2.z);
   BOOST_CHECK_EQUAL(0., polygon_default_constructor_integer.length());
   BOOST_CHECK(polygon_default_constructor_integer.is3D());
 }
@@ -375,12 +375,12 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, Polygon3DTest)
 
   BoundingBoxD bbox = pol.boundingBox();
   BOOST_CHECK(pol.type() == Entity::Type::polygon3d);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, bbox.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, bbox.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, bbox.pt1.z);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, bbox.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, bbox.pt2.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, bbox.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2.z);
 
   BOOST_CHECK_EQUAL(0., pol.length());
 }
@@ -503,10 +503,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygonTest)
   BOOST_CHECK(multipolygon1.type() == Entity::Type::multipolygon2d);
   BOOST_CHECK(false == multipolygon1.is3D());
   WindowI w = multipolygon1.window();
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2.y);
 }
 
 /* Constructor reserve */
@@ -519,10 +519,10 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygonTest)
   BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon2d);
   BOOST_CHECK(false == multipolygon.is3D());
   WindowI w = multipolygon.window();
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2.y);
 }
 
 /*Constructor de copia*/
@@ -606,12 +606,12 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygon3DTest)
   BOOST_CHECK_EQUAL(0, multipolygon1.size());
   BOOST_CHECK(multipolygon1.type() == Entity::Type::multipolygon3d);
   BOOST_CHECK(multipolygon1.is3D());
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.z);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box.pt2.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.pt2.z);
 }
 
 /* Constructor reserve */
@@ -623,12 +623,12 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygon3DTest)
   
   BOOST_CHECK_EQUAL(10, multipolygon.size());
   BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon3d);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.z);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2.z);
 }
 
 /*Constructor de copia*/

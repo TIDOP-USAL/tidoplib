@@ -80,13 +80,13 @@ std::pair<int, char> utmZoneFromLonLat(double longitude, double latitude)
 
         // Polo Norte
         if (longitude < 0) return std::make_pair(0, 'Y');
-        if (longitude > 0) return std::make_pair(0, 'Z');
+        else return std::make_pair(0, 'Z');
 
     } else if (latitude < -80.0) {
 
         // Polo Sur
         if (longitude < 0) return std::make_pair(0, 'A');
-        if (longitude > 0) return std::make_pair(0, 'B');
+        else return std::make_pair(0, 'B');
 
     } else {
         throw std::runtime_error("");

@@ -39,10 +39,14 @@ class Progress;
 
 /*!
  * \class Process
- * \brief Represents a task that executes an external process.
+ * \brief Executes an external command as a process.
  *
- * The Process class allows the execution of external processes with configurable priorities
- * and handles platform-specific details for process management.
+ * The Process class provides a cross-platform abstraction for launching and
+ * managing external processes. It supports configurable priority levels and,
+ * on Windows, optional redirection and asynchronous reading of the process
+ * output through pipes.
+ *
+ * \note Thread-safe. Internally synchronized when managing process execution.
  */
 class TL_EXPORT Process
   : public TaskBase
@@ -52,7 +56,9 @@ public:
 
     /*!
      * \enum Priority
-     * \brief Defines the priority levels for the process execution.
+     * \brief Defines priority levels available for process execution.
+     *
+     * The values correspond to platform-specific priority constants.
      */
     enum class Priority
     {
@@ -83,30 +89,39 @@ private:
     PROCESS_INFORMATION mProcessInformation{};
     SECURITY_ATTRIBUTES mSecurityAttributes{};
     HANDLE mThreadHandle = nullptr;
-    HANDLE pipeReadHandle = nullptr;
-    HANDLE pipeWriteHandle = nullptr;
+    HANDLE mPipeReadHandle = nullptr;
+    HANDLE mPipeWriteHandle = nullptr;
+
 #endif
 
 public:
 
     /*!
-     * \brief Constructs a Process object with a command and priority.
-     * \param[in] commandText The command to execute as a process.
-     * \param[in] priority The priority of the process (default: Priority::normal).
+     * \brief Constructs a Process object with a command and an optional priority.
+     * \param[in] commandText The command to execute.
+     * \param[in] priority The desired process priority (default: Priority::normal).
      */
     explicit Process(std::string commandText,
                      Priority priority = Priority::normal);
+    /*!
+     * \brief Destructor.
+     *
+     * Ensures that any system handles used during process management
+     * are properly released.
+     */
     ~Process() override;
    
     /*!
-     * \brief Gets the priority of the process.
-     * \return The priority of the process.
+     * \brief Returns the current priority of the process.
+     * \return The priority level.
      */
     auto priority() const -> Priority;
    
     /*!
-     * \brief Sets the priority of the process.
-     * \param[in] priority The new priority level for the process.
+     * \brief Sets a new priority level for the process.
+     * \param[in] priority The desired priority.
+     *
+     * \note The priority is applied when the process is launched.
      */
     void setPriority(Priority priority);
 
@@ -125,6 +140,19 @@ private:
      * \return True if the pipe was successfully created, otherwise false.
      */
     auto createPipe() -> bool;
+
+    /*!
+     * \brief Reads from the process output pipe asynchronously.
+     *
+     * This function is executed in a dedicated system thread and reads data
+     * from the process output stream until no more data is available.
+     *
+     * \param[in] lpParam Pointer to the Process instance.
+     * \return Thread exit code.
+     *
+     * \note Windows only.
+     */
+    static DWORD WINAPI readFromPipe(LPVOID lpParam);
 
 #endif
 

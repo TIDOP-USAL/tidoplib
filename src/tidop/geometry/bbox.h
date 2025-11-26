@@ -228,9 +228,9 @@ BoundingBox<Point3_t>::BoundingBox()
   : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
-    pt2(-std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max())
+    pt2(std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest())
 {
 }
 
@@ -323,9 +323,9 @@ BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t> &vertices)
   : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
-    pt2(-std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max())
+    pt2(std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest())
 {
     if (vertices.size() >= 2) {
         for (const auto &vertex : vertices) {
@@ -344,9 +344,9 @@ BoundingBox<Point3_t>::BoundingBox(const std::vector<Point3_t2> &vertices)
   : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
-    pt2(-std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max())
+    pt2(std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest())
 {
     if (vertices.size() >= 2) {
         for (const auto &vertex : vertices) {
@@ -449,9 +449,9 @@ auto BoundingBox<Point3_t>::isEmpty() const -> bool
     return (pt1.x == std::numeric_limits<scalar>().max() &&
             pt1.y == std::numeric_limits<scalar>().max() &&
             pt1.z == std::numeric_limits<scalar>().max() &&
-            pt2.x == -std::numeric_limits<scalar>().max() &&
-            pt2.y == -std::numeric_limits<scalar>().max() &&
-            pt2.z == -std::numeric_limits<scalar>().max());
+            pt2.x == std::numeric_limits<scalar>().lowest() &&
+            pt2.y == std::numeric_limits<scalar>().lowest() &&
+            pt2.z == std::numeric_limits<scalar>().lowest());
 }
 
 template<typename Point3_t>

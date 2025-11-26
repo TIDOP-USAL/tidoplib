@@ -22,32 +22,63 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file app.h
+ *  \brief Application singleton for global configuration and management
+ *
+ * This module provides a global access point for application-wide resources,
+ * including executable path, version information, logging facilities, and
+ * console I/O. It implements a thread-safe singleton pattern to guarantee
+ * a unique and consistent application context.
+ * 
+ * ### Classes
+ *
+ * - \ref tl::App - Singleton for accessing global application services
+ *
+ * \see tl::Console, tl::Logger
+ */
+
+
 #pragma once
 
 #include "tidop/config.h"
+#include "tidop/core/console/console.h"
+#include "tidop/core/app/logger.h"
 
 #include <string>
 
-#include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
-#include "tidop/core/app/log.h"
-#include "tidop/core/console.h"
 
 namespace tl
 {
 
-class Console;
-class Log;
 
 /*! \addtogroup AppManagement
  *  \{
  */
 
 /*!
- * \brief Application information and management.
+ * \brief Singleton for application management and resource access.
  * 
- * This class provides methods to access application-related information such as 
- * the executable path, version, and logging mechanisms.
+ * App provides global access to application information and core resources
+ * such as the executable path, logging facilities, and console I/O.
+ *
+ * ### Usage Example
+ *
+ * \code{.cpp}
+ * // Get application information
+ * Path exe_path = App::instance().path();
+ * std::string version = App::instance().version();
+ *
+ * // Access global services
+ * App::console().write("Hello World");
+ * App::log().info("Application started");
+ * \endcode
+ *
+ * \note Thread-safe singleton. The instance is created on first use and is
+ *       safe to access concurrently.
+ * \note Non-copyable and non-movable. The App singleton cannot be copied or moved.
+ *
+ * \see Logger, Console
  */
 class TL_EXPORT App
 {
@@ -55,7 +86,10 @@ class TL_EXPORT App
 private:
 
     /*!
-     * \brief Default constructor is private to enforce singleton pattern.
+     * \brief Private constructor for singleton pattern
+     *
+     * Performs application initialization including singleton setup for
+     * console and logging subsystems.
      */
     App();
 
@@ -68,33 +102,48 @@ public:
 
     /*!
      * \brief Get the singleton instance of the application.
-     * \return A reference to the App instance.
+     *
+     * Thread-safe access to the global App instance. The first call creates
+     * the instance; subsequent calls return the same instance.
+     *
+     * \return Reference to the App singleton instance
      */
     static auto instance() -> App&;
 
     /*!
-     * \brief Get the path to the executable.
-     * \return The executable path.
+     * \brief Get the path to the application executable.
+     *
+     * Returns the full path to the currently running executable. Platform-specific
+     * methods are used to resolve the location at runtime.
+     *
+     * \return The executable path as a Path object.
+     * \see Path
      */
     auto path() const -> Path;
 
     /*!
-     * \brief Get the application version.
-     * \return The version as a string.
-     */
-    auto version() const -> std::string;
-
-    /*!
-     * \brief Get the console instance.
-     * \return A reference to the Console object.
+     * \brief Get the global console instance.
+     *
+     * Provides access to the console I/O subsystem for interactive user
+     * communication, menus, and command-line argument processing.
+     *
+     * \return Reference to the Console singleton instance
+     *
+     * \see Console
      */
     static auto console() -> Console&;
 
     /*!
-     * \brief Get the log instance.
-     * \return A reference to the Log object.
+     * \brief Get the global logger instance.
+     *
+     * Provides access to the file-based logging subsystem for recording
+     * application events and diagnostics.
+     *
+     * \return Reference to the Logger singleton instance
+     *
+     * \see Logger
      */
-    static auto log() -> Log&;
+    static auto log() -> Logger&;
 
 private:
 

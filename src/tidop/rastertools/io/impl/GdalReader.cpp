@@ -25,8 +25,9 @@
 #include "tidop/rastertools/io/impl/GdalReader.h"
 
 #include "tidop/core/base/exception.h"
-#include "tidop/core/private/gdalreg.h"
 #include "tidop/core/base/split.h"
+#include "tidop/core/base/meta.h"
+#include "tidop/core/private/gdalreg.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/private/DataTypeConverter.h"
@@ -68,8 +69,8 @@ static auto formatDegreesFromExif(const std::string &exifAngle) -> tl::Degrees<d
     auto v = split<double>(exifAngle, ' ');
 
     if (v.size() == 3) {
-        angle.setDegrees(v[0]);
-        angle.setMinutes(v[1]);
+        angle.setDegrees(static_cast<int>(v[0]));
+        angle.setMinutes(static_cast<int>(v[1]));
         angle.setSeconds(v[2]);
     }
 

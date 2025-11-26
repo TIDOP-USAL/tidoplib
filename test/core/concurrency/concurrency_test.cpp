@@ -24,7 +24,12 @@
  
 #define BOOST_TEST_MODULE Tidop Concurrency test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/concurrency.h>
+#include <tidop/core/concurrency/parallel.h>
+#include <tidop/core/concurrency/queue_mpmc.h>
+#include <tidop/core/concurrency/queue_spsc.h>
+#include <tidop/core/concurrency/producer.h>
+#include <tidop/core/concurrency/consumer.h>
+
 #include <thread>
 
 using namespace tl;
@@ -83,7 +88,7 @@ struct Sum
 
 BOOST_FIXTURE_TEST_CASE(parallel_for_each_test, ConcurrencyTest)
 {
-    Sum sum = parallel_for_each(nums.begin(), nums.end(), Sum());
+    Sum sum = parallel_reduce(nums.begin(), nums.end(), Sum());
 
     BOOST_CHECK_EQUAL(299, sum.sum);
 }

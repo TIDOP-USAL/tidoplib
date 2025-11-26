@@ -242,8 +242,8 @@ template<typename Point_t>
 Window<Point_t>::Window() 
   : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()), 
-    pt2(-std::numeric_limits<scalar>().max(), 
-        -std::numeric_limits<scalar>().max()) 
+    pt2(std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest())
 {
 }
 
@@ -325,8 +325,8 @@ template<typename Point_t>
 Window<Point_t>::Window(const std::vector<Point_t> &vertices)
   : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
-    pt2(-std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max())
+    pt2(std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest())
 {
     if (vertices.size() >= 2) {
         for (size_t i = 0; i < vertices.size(); i++) {
@@ -342,8 +342,8 @@ template<typename Point_t> template<typename Point_t2>
 Window<Point_t>::Window(const std::vector<Point_t2> &vertices)
   : pt1(std::numeric_limits<scalar>().max(),
         std::numeric_limits<scalar>().max()),
-    pt2(-std::numeric_limits<scalar>().max(),
-        -std::numeric_limits<scalar>().max())
+    pt2(std::numeric_limits<scalar>().lowest(),
+        std::numeric_limits<scalar>().lowest())
 {
     if (vertices.size() >= 2) {
         for (size_t i = 0; i < vertices.size(); i++) {
@@ -420,8 +420,8 @@ auto Window<Point_t>::isEmpty() const -> bool
 {
     return (pt1.x == std::numeric_limits<scalar>().max() &&
             pt1.y == std::numeric_limits<scalar>().max() &&
-            pt2.x == -std::numeric_limits<scalar>().max() &&
-            pt2.y == -std::numeric_limits<scalar>().max());
+            pt2.x == std::numeric_limits<scalar>().lowest() &&
+            pt2.y == std::numeric_limits<scalar>().lowest());
 }
 
 template<typename Point_t>

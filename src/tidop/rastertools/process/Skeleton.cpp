@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/process/Skeleton.h"
 
-#include "tidop/core/concurrency.h"
+#include "tidop/core/concurrency/parallel.h"
 #include "tidop/core/base/exception.h"
 
 #include <opencv2/imgproc.hpp>

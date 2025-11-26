@@ -33,7 +33,7 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
-#include "tidop/core/base/ptr.h"
+#include "tidop/core/base/macros/smart_ptr.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"  

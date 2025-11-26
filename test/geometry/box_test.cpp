@@ -130,26 +130,26 @@ struct BoundingBoxTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, BoundingBoxTest) 
 {
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box_default_constructor_integer.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box_default_constructor_integer.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, box_default_constructor_integer.pt1.z);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box_default_constructor_integer.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box_default_constructor_integer.pt2.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, box_default_constructor_integer.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.pt2.z);
 
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box_default_constructor_double.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box_default_constructor_double.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box_default_constructor_double.pt1.z);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box_default_constructor_double.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box_default_constructor_double.pt2.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box_default_constructor_double.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.pt2.z);
     
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, box_default_constructor_float.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, box_default_constructor_float.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, box_default_constructor_float.pt1.z);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, box_default_constructor_float.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, box_default_constructor_float.pt2.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, box_default_constructor_float.pt2.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.pt1.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.pt1.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.pt1.z);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.pt2.x);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.pt2.y);
+  BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.pt2.z);
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, BoundingBoxTest) 

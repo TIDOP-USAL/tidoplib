@@ -27,9 +27,9 @@
 #include "tidop/config.h"
 
 #include <mutex>
+#include <vector>
 
-#include "tidop/core/base/defs.h"
-#include "tidop/core/console.h"
+#include "tidop/core/console/console.h"
 
 namespace tl
 {

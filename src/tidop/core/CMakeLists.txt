@@ -36,8 +36,8 @@ if(BUILD_TL_CORE)
     add_files_to_project(${PROJECT_NAME} 
                          SOURCE_FILES 
                              app/app.cpp
-                             app/licence.cpp
-                             app/log.cpp
+                             app/license.cpp
+                             app/logger.cpp
                              app/message.cpp
                              base/chrono.cpp
                              base/event.cpp
@@ -64,32 +64,33 @@ if(BUILD_TL_CORE)
                              units/length.cpp
                              units/mass.cpp
                          HEADER_FILES
-                             concurrency.h
-                             console.h
-                             core.h
-                             task.h
                              app/app.h
-                             app/licence.h
-                             app/log.h
+                             app/license.h
+                             app/logger.h
                              app/messagehandler.h
                              app/message.h
                              base/chrono.h
-                             base/common.h
                              base/defs.h
                              base/endian.h
                              base/event.h
                              base/exception.h
                              base/flags.h
                              base/format.h
+                             base/meta.h
                              base/path.h
                              base/property.h
-                             base/ptr.h
                              base/size.h
                              base/split.h
                              base/string_utils.h
                              base/type.h
                              base/type_conversions.h
                              base/text_encoding.h
+                             base/macros/deprecation.h
+                             base/macros/exception.h
+                             base/macros/export.h
+                             base/macros/noncopyable.h
+                             base/macros/smart_ptr.h
+                             base/macros/warnings.h
                              concurrency/consumer.h							 
                              concurrency/parallel.h							 
                              concurrency/producer.h							 

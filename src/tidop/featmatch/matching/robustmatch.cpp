@@ -25,7 +25,7 @@
 #include "robustmatch.h"
 
 #include "tidop/core/base/exception.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/meta.h"
 #include "tidop/featmatch/matching/test/geomtest.h"
 #include "tidop/featmatch/matching/test/crosstest.h"
 #include "tidop/featmatch/matching/test/ratiotest.h"

@@ -743,7 +743,7 @@ BOOST_FIXTURE_TEST_CASE(falsePositives, ConfusionMatrixTest)
 BOOST_FIXTURE_TEST_CASE(trueNegatives, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
-    BOOST_CHECK_EQUAL(25, mConfusionMatrix->trueNegatives(threshold));
+    BOOST_CHECK_EQUAL(25, mConfusionMatrix->trueNegatives(threshold));  
 }
 
 BOOST_FIXTURE_TEST_CASE(falseNegatives, ConfusionMatrixTest)
@@ -799,6 +799,26 @@ BOOST_FIXTURE_TEST_CASE(falseNegativeRate, ConfusionMatrixTest)
     double threshold = this->data.back().first;
     BOOST_CHECK_EQUAL(0.0625, mConfusionMatrix->falseNegativeRate(threshold));
     BOOST_CHECK_CLOSE(0.3333, ConfusionMatrix<double>::falseNegativeRate(10, 20), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(threshold_iterator, ConfusionMatrixTest)
+{
+    double threshold = this->data.back().first;
+
+    auto it = mConfusionMatrix->thresholdIterator();
+    it.advanceTo(threshold);
+
+    BOOST_CHECK_EQUAL(75, it.truePositives());
+    BOOST_CHECK_EQUAL(43, it.falsePositives());
+    BOOST_CHECK_EQUAL(25, it.trueNegatives());
+    BOOST_CHECK_EQUAL(5, it.falseNegatives());
+    BOOST_CHECK_CLOSE(0.63559, it.positivePredictiveValue(), 0.1);
+    BOOST_CHECK_CLOSE(0.8333, it.negativePredictiveValue(), 0.1);
+    BOOST_CHECK_EQUAL(0.9375, it.truePositiveRate());
+    BOOST_CHECK_CLOSE(0.6323529, it.falsePositiveRate(), 0.1);
+    BOOST_CHECK_CLOSE(0.367647, it.trueNegativeRate(), 0.1);
+    BOOST_CHECK_CLOSE(0.0625, it.falseNegativeRate(), 0.1);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

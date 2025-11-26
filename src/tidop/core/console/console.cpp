@@ -33,7 +33,6 @@ namespace tl
 {
 
 std::mutex Console::mtx;
-//EnumFlags<MessageLevel> Console::messageLevelFlags = MessageLevel::all;
 
 Console::Console()
   : outputStream(std::cout) 
@@ -60,6 +59,8 @@ void Console::setTitle(const std::string &title)
 void Console::setBackgroundColor(Color backgroundColor,
                                  Intensity intensity)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     this->backgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity);
 
     update();
@@ -69,6 +70,8 @@ void Console::setBackgroundColor(Color backgroundColor,
 void Console::setForegroundColor(Color foregroundColor,
                                  Intensity intensity)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     this->foregroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity);
 
     update();
@@ -77,6 +80,8 @@ void Console::setForegroundColor(Color foregroundColor,
 void Console::setConsoleUnicode()
 {
 #ifdef TL_OS_WINDOWS
+    std::lock_guard<std::mutex> lck(mtx); 
+
     //SetConsoleOutputCP(1252);
     //SetConsoleCP(1252);
     SetConsoleOutputCP(CP_UTF8);
@@ -87,69 +92,80 @@ void Console::setConsoleUnicode()
 
 void Console::setFontBold(bool bold)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     fontBold = bold ? 1 : 21;
     update();
 }
 
 void Console::setFontFaint(bool faint)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     fontFaint = faint ? 2 : 22;
     update();
 }
 
 void Console::setFontItalic(bool italic)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     fontItalic = italic ? 3 : 23;
     update();
 }
 
 void Console::setFontUnderline(bool underline)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     fontUnderline = underline ? 4 : 24;
     update();
 }
 
 void Console::setFontReverse(bool reverse)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     fontReverse = reverse ? 7 : 27;
     update();
 }
 
 void Console::setFontStrikethrough(bool strikethrough)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     fontStrikethrough = strikethrough ? 9 : 29;
     update();
 }
 
-void Console::reset()
+void Console::clear()
 {
-    messageLevelFlags = MessageLevel::all;
-    foregroundColor = 39;
-    backgroundColor = 49;
-    fontBold = 21;
-    fontFaint = 22;
-    fontItalic = 23;
-    fontUnderline = 24;
-    fontReverse = 27;
-    fontStrikethrough = 29;
+    std::lock_guard<std::mutex> lck(mtx); 
 
+    reset();
     update();
 }
 
 Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     outputStream << _endl;
-    //reset();
+
     return *this;
 }
 
 auto Console::messageLevel() -> EnumFlags<MessageLevel>
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     return messageLevelFlags;
 }
 
 void Console::setMessageLevel(MessageLevel level)
 {
+    std::lock_guard<std::mutex> lck(mtx); 
+
     messageLevelFlags = level;
 }
 
@@ -287,7 +303,7 @@ auto Console::strikethrough(std::ostream &os) -> std::ostream &
 
 std::ostream& Console::clear(std::ostream &os)
 {
-    Console::instance().reset();
+    Console::instance().clear();
     return os;
 }
 
@@ -372,10 +388,36 @@ void Console::error(String message)
 
 void Console::init()
 {
-    reset();
+    clear();
     enableVTMode();
 }
 
-} // End mamespace tl
+void Console::update()
+{
+    outputStream << static_cast<char>(0x1b) << '['
+                 << this->fontBold << ';'
+                 << this->fontFaint << ';'
+                 << this->fontItalic << ';'
+                 << this->fontUnderline << ';'
+                 << this->fontReverse << ';'
+                 << this->fontStrikethrough << ';' 
+                 << this->foregroundColor << ';' 
+                 << this->backgroundColor << 'm';
+}
+
+void Console::reset()
+{
+    messageLevelFlags = MessageLevel::all;
+    foregroundColor = 39;
+    backgroundColor = 49;
+    fontBold = 21;
+    fontFaint = 22;
+    fontItalic = 23;
+    fontUnderline = 24;
+    fontReverse = 27;
+    fontStrikethrough = 29;
+}
+	
+} // End namespace tl
 
 

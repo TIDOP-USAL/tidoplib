@@ -31,7 +31,6 @@
 #include <vector>
 #include <iostream>
 
-#include "tidop/core/base/defs.h"
 #include "tidop/core/app/message.h"
 
 
@@ -301,8 +300,8 @@ public:
         if(!valid) {
             std::ostringstream stream;
             stream << "Invalid value: '" << value << "'. Valid values are: ";
-            for (const auto &values : values)
-                stream << values << " ";
+            for (const auto &value : values)
+                stream << value << " ";
             
             Message::error(stream.str());
         }

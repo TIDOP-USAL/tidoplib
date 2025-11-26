@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include "tidop/core/base/ptr.h"
+#include "tidop/core/base/macros/smart_ptr.h"
 
 
 namespace tl
@@ -81,7 +81,7 @@ public:
 	void setType(const Type& type) { this->type = type; }
 	Type& getType() { return type; }
 
-	void setFreeGPU(bool freeGPU) { this->freeGPU; }
+	void setFreeGPU(bool freeGPU) { this->freeGPU = freeGPU; }
 	bool isFreeGPU() const { return freeGPU; }
 
 	static unsigned int getCount() { return count; }

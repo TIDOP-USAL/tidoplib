@@ -25,6 +25,7 @@
 #include "tidop/vectortools/io/impl/VectorWriter.h"
 #include "tidop/vectortools/io/impl/GdalWriter.h"
 #include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {

@@ -22,103 +22,107 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/app/log.h"
+#include "tidop/core/app/logger.h"
 #include "tidop/core/app/app.h"
 #include "tidop/core/base/chrono.h"
 #include "tidop/core/base/path.h"
 
 
-
 namespace tl
 {
 
-std::mutex Log::mtx;
+std::mutex Logger::mtx;
 
-Log::Log()
+Logger::Logger()
   : messageLevelFlags(MessageLevel::all)
 {
 }
 
-auto Log::instance() -> Log &
+auto Logger::instance() -> Logger &
 {
-    static Log log;
-    return log;
+    static Logger logger;
+    return logger;
 }
 
-void Log::open(const tl::Path &file)
+void Logger::open(const tl::Path &file)
 {
+    std::lock_guard<std::mutex> lck(Logger::mtx);
+
     if (isOpen()) close();
     _stream.open(file.toString(), std::ofstream::app);
 }
 
-void Log::close()
+void Logger::close()
 {
+    std::lock_guard<std::mutex> lck(Logger::mtx);
     _stream.close();
 }
 
-auto Log::isOpen() const -> bool
+auto Logger::isOpen() const -> bool
 {
     return _stream.is_open();
 }
 
-auto Log::messageLevel() -> EnumFlags<MessageLevel>
+auto Logger::messageLevel() const -> EnumFlags<MessageLevel>
 {
     return messageLevelFlags;
 }
 
-void Log::setMessageLevel(MessageLevel level)
+void Logger::setMessageLevel(MessageLevel level)
 {
     messageLevelFlags = level;
 }
 
-void Log::debug(String message)
+static const char *getPadding(size_t level_len)
 {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-
-    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-
-    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::debug))
-        _stream << date << " - Debug:   " << message << std::endl;
+    static const char *padding[] = {"", " ", "  ", "   ", "    ", "    ", "    ", ""};
+    return padding[level_len < 8 ? level_len : 7];
 }
 
-void Log::info(String message)
+void Logger::logMessage(MessageLevel level, String level_name, String message)
 {
-    std::lock_guard<std::mutex> lck(Log::mtx);
+    std::lock_guard<std::mutex> lck(Logger::mtx);
+
+    if (!isOpen() || !messageLevelFlags.isEnabled(level))
+        return;
 
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
-    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::info))
-        _stream << date << " - Info:    " << message << std::endl;
+#if TL_CPP_VERSION>= 17
+    constexpr std::string_view padding[] = {"", " ", "  ", "   "};
+    size_t level_len = levelName.length();
+    std::string_view pad = (level_len < 7) ? padding[7 - level_len] : "";
+    _stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
+#else
+    size_t level_len = level_name.length();
+    auto pad = getPadding(7 - (level_len < 7 ? level_len : 7));
+    _stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
+#endif
 }
 
-void Log::success(String message)
+void Logger::debug(String message)
 {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-
-    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-
-    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::success))
-        _stream << date << " - Success: " << message << std::endl;
+    logMessage(MessageLevel::debug, "Debug", message);
 }
 
-void Log::warning(String message)
+void Logger::info(String message)
 {
-    std::lock_guard<std::mutex> lck(Log::mtx);
+    logMessage(MessageLevel::info, "Info", message);
+}
 
-    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
+void Logger::success(String message)
+{
+    logMessage(MessageLevel::success, "Success", message);
+}
 
-    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::warning)) 
-        _stream << date << " - Warning: " << message << std::endl;
+void Logger::warning(String message)
+{
+    logMessage(MessageLevel::warning, "Warning", message);
 }                          
 
-void Log::error(String message)
+void Logger::error(String message)
 {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    
-    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-
-    if (Log::instance().isOpen() && messageLevelFlags.isEnabled(MessageLevel::error))
-        _stream << date << " - Error:   " << message << std::endl;
+    logMessage(MessageLevel::error, "Error", message);
 }
 
-} // End mamespace tl
+} // End namespace tl

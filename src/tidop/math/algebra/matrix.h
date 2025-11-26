@@ -2155,8 +2155,7 @@ auto Matrix<T, Rows, Cols>::randon(size_t rows, size_t cols) -> Matrix
 {
     Matrix<T, Rows, Cols> matrix(rows, cols);
 
-    std::random_device rd;
-    std::mt19937 random_number_engine(rd());
+    static thread_local std::mt19937 random_number_engine(std::random_device{}());
     std::uniform_real_distribution<> distribution(0.0, 99.0);
 
     size_t size = matrix.rows() * matrix.cols();

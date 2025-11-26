@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/meta.h"
 #include "tidop/core/base/exception.h"
 #include "tidop/math/base/simd.h"
 

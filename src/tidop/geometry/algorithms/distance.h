@@ -27,6 +27,8 @@
 #include "tidop/geometry/algorithms/vector.h"
 #include "tidop/geometry/algorithms/projection.h"
 
+#include <limits>
+
 namespace tl
 {
 
@@ -136,7 +138,7 @@ double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &
 template<typename Point_t>
 double distPointToPolygon(const Point_t &pt, const Polygon<Point_t> &polygon)
 {
-    double max_dist = TL_DOUBLE_MAX;
+    double max_dist = std::numeric_limits<double>::max();
     double dist;
     Polygon<Point_t> _p = polygon;
     for (size_t i = 0; i < polygon.size(); i++) {
@@ -160,7 +162,7 @@ double distPointToPolygon(const Point_t &pt, const Polygon<Point_t> &polygon)
 template<typename Point_t>
 double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
 {
-    double max_dist = TL_DOUBLE_MAX;
+    double max_dist = std::numeric_limits<double>::max();
     double dist;
     Polygon3D<Point_t> _p = polygon;
     for (size_t i = 0; i < polygon.size(); i++) {
@@ -186,7 +188,7 @@ double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
 template<typename Point_t, typename Polygon_it_t>
 double distPointToPolygon(const Point_t &pt, Polygon_it_t it_begin, Polygon_it_t it_end)
 {
-    double max_dist = TL_DOUBLE_MAX;
+    double max_dist = std::numeric_limits<double>::max();
     double dist;
     Polygon_it_t it = it_begin;
     Point_t prev = *(it_end - 1);

@@ -97,11 +97,12 @@ void ROCCurve<T>::compute(size_t steeps)
 
     T step = (max - min) / static_cast<double>(steeps);
 
+    auto it = this->mConfusionMatrix.thresholdIterator();
     T threshold = min;
-    for (size_t i = 0; i < steeps; i++) {
-        double fpr = this->mConfusionMatrix.falsePositiveRate(threshold);
-        double tpr = this->mConfusionMatrix.truePositiveRate(threshold);
-
+    for (size_t i = 0; i < steeps; ++i) {
+        it.advanceTo(threshold);
+        double fpr = it.falsePositiveRate();
+        double tpr = it.truePositiveRate();
         this->mCurve.emplace_back(fpr, tpr);
         threshold += step;
     }

@@ -22,6 +22,36 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file type_conversions.h
+ * \brief Type conversion utilities for numeric and string conversions
+ *
+ * This module provides utilities for converting between different types, including
+ * numeric type casting, string-to-numeric conversions with validation, and precision
+ * control for floating-point to string conversion.
+ *
+ * ### Functions
+ *
+ * - \ref numberCast - Numeric type casting with rounding for integral types
+ * - \ref convertStringTo - String to numeric/boolean conversion with range validation
+ * - \ref toStringWithPrecision - Floating-point to string with precision control
+ * - \ref roundToInteger - Floating-point rounding to integer
+ * - \ref stringToInteger - String to integer with configurable base (octal, decimal, hex)
+ *
+ * ### Features
+ *
+ * - Type-safe numeric conversions
+ * - Range validation for all numeric types
+ * - Support for octal, decimal, and hexadecimal bases
+ * - Precise floating-point to string conversion
+ * - Proper error handling with detailed exception messages
+ * - Specializations for small integer types (int8_t, uint8_t)
+ * - Support for 64-bit integer types (int64_t, uint64_t)
+ * - Boolean string parsing ("true"/"false" or "1"/"0")
+ *
+ * \see numberCast, convertStringTo, stringToInteger, Base
+ */
+ 
 #pragma once
 
 #include "tidop/config.h"
@@ -34,7 +64,6 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/exception.h"
-#include "tidop/core/base/common.h"
 #include "tidop/core/base/string_utils.h"
 #include "tidop/core/base/type.h"
 
@@ -49,11 +78,41 @@ namespace tl
 
 
 /*!
- * \brief Performs a cast from one numeric type to another, rounding if necessary.
- * \tparam T1 The target numeric type.
- * \tparam T2 The source numeric type.
- * \param[in] number The number to cast.
+ * \brief Performs a cast from one numeric type to another, with automatic rounding for integral types.
+ *
+ * This function safely converts a numeric value from type T2 to type T1. For integral target types,
+ * the source value is rounded to the nearest integer. For floating-point target types, the value
+ * is converted directly without rounding.
+ *
+ * ### Template Specializations
+ *
+ * - **Integral T1**: Rounds the source value before casting
+ * - **Floating-point T1**: Direct cast without rounding
+ * - **Non-arithmetic T1**: Throws an exception
+ *
+ * ### Parameters
+ *
+ * - `number` - The value to cast
+ *
+ * ### Returns
+ *
+ * The value cast to type T1
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * int rounded = tl::numberCast<int>(3.7);          // Result: 4 (rounded)
+ * float converted = tl::numberCast<float>(42);     // Result: 42.0f
+ * \endcode
+ *
+ * \tparam T1 The target numeric type
+ * \tparam T2 The source numeric type
+ * \param[in] number The number to cast
  * \return The number cast to type T1
+ *
+ * \exception Exception If T1 is not an arithmetic type
+ *
+ * \see convertStringTo
  */
 template<typename T1, typename T2>
 auto numberCast(T2 number) -> enableIfIntegral<T1, T1>
@@ -61,14 +120,16 @@ auto numberCast(T2 number) -> enableIfIntegral<T1, T1>
     return static_cast<T1>(std::round(number));
 }
 
-/// \cond
-
+/*!
+ * \copydoc read(std::fstream *, T &, bool)
+ */
 template<typename T1, typename T2>
 auto numberCast(T2 number) -> enableIfFloating<T1, T1>
 {
     return static_cast<T1>(number);
 }
 
+/// \cond
 template<typename T1, typename T2>
 auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1, T1>
 {
@@ -83,13 +144,19 @@ auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1, T1>
 /*!
  * \brief Converts a string to a numeric or boolean type, with range validation.
  *
- * This function converts an input string to the specified numeric type \c T.
- * It ensures that the value falls within the valid range for \c T.
- * Specialized behavior is implemented for `int8_t`, `uint8_t`, and `bool`.
+ * This function converts an input string to the specified numeric type T.
+ * It ensures that the value falls within the valid range for T using std::numeric_limits.
+ * Specialized implementations are provided for `int8_t`, `uint8_t`, `int64_t`, `uint64_t`, and `bool`.
+ *
+ * ### Supported Types
+ *
+ * - Integral types: `int`, `long`, `long long`, `short`, `int8_t`, `uint8_t`, `int64_t`, `uint64_t`
+ * - Floating-point types: `float`, `double`, `long double`
+ * - Boolean: `bool` (accepts "true", "1", "false", "0")
  *
  * \tparam T The target type to convert the string into. Supported types include numeric types and `bool`.
- * \param[in] str The input string representing the value.
- * \return The converted value as the specified type \c T.
+ * \param[in] str The input string to convert
+ * \return The converted value as type T
  *
  * \note For `bool`, the function accepts "true", "1" (evaluating to \c true) and "false", "0" (evaluating to \c false).
  * \exception Exception Throws an exception if the input string is invalid or if the value is out of range.
@@ -203,6 +270,7 @@ auto convertStringTo(const std::string &str) -> enableIfBool<T,T>
     TL_THROW_EXCEPTION("Invalid value for bool");
 }
 
+
 template <typename T>
 auto convertStringTo(const std::string &/*str*/) -> enableIfNotArithmetic<T,T>
 {
@@ -214,6 +282,29 @@ auto convertStringTo(const std::string &/*str*/) -> enableIfNotArithmetic<T,T>
 
 /// \endcond
 
+
+/*!
+ * \brief Converts a floating-point number to a string with specified precision.
+ *
+ * This function provides a convenient way to convert floating-point values to strings
+ * with a specified number of decimal places. Uses fixed-point notation with the
+ * specified precision.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string str1 = tl::toStringWithPrecision(3.14159, 2);   // "3.14"
+ * std::string str2 = tl::toStringWithPrecision(2.71828, 3);   // "2.718"
+ * std::string str3 = tl::toStringWithPrecision(1.5, 4);       // "1.5000"
+ * \endcode
+ *
+ * \tparam T The floating-point type
+ * \param[in] value The value to convert
+ * \param[in] precision The number of decimal places
+ * \return String representation with specified precision
+ *
+ * \see convertStringTo
+ */
 template <typename T>
 auto toStringWithPrecision(T value, int precision) -> std::string
 {
@@ -226,27 +317,72 @@ auto toStringWithPrecision(T value, int precision) -> std::string
 
 /*!
  * \enum Base
- * \brief Represents numeric bases for string-to-integer conversion.
+ * \brief Numeric bases for string-to-integer conversion.
+ *
+ * Enumeration specifying the base (radix) for converting strings to integers.
+ * Commonly used bases are supported: octal (8), decimal (10), and hexadecimal (16).
+ *
+ * ### Values
+ *
+ * - `octal` - Base 8 (digits 0-7)
+ * - `decimal` - Base 10 (digits 0-9)
+ * - `hexadecimal` - Base 16 (digits 0-9, A-F)
+ *
+ * \see stringToInteger
  */
 enum class Base : int8_t
 {
-    octal = 8,        /*!< Octal base. */
-    decimal = 10,     /*!< Decimal base. */
-    hexadecimal = 16  /*!< Hexadecimal base. */
+    octal = 8,        /*!< Octal base (radix 8). */
+    decimal = 10,     /*!< Decimal base (radix 10). */
+    hexadecimal = 16  /*!< Hexadecimal base (radix 16). */
 };
 
 
 /*!
- * \brief Converts a string to an integer, considering its base.
+ * \brief Converts a string to an integer, considering its numeric base.
+ *
+ * This function converts a string representation of an integer to an `int` value,
+ * using the specified base (octal, decimal, or hexadecimal). The string format
+ * should follow the conventions of the specified base.
+ *
+ * ### Supported Formats
+ *
+ * - **Decimal**: Normal digits (0-9)
+ * - **Octal**: Digits 0-7
+ * - **Hexadecimal**: Digits 0-9 and letters A-F (case-insensitive)
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * int dec = tl::stringToInteger("42");                              // 42
+ * int hex = tl::stringToInteger("FF", tl::Base::hexadecimal);       // 255
+ * int oct = tl::stringToInteger("77", tl::Base::octal);             // 63
+ * int neg = tl::stringToInteger("-10", tl::Base::decimal);          // -10
+ * \endcode
+ *
  * \param[in] text The input string representing a number.
  * \param[in] base The numeric base (e.g., octal, decimal, hexadecimal).
  * \return The integer value represented by the string.
- * \see Base
+ * \see convertStringTo, Base
  */
 TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal);
 
 /*!
  * \brief Rounds a floating-point number and converts it to an integer.
+ *
+ * This function rounds a floating-point value to the nearest integer and performs
+ * a safe conversion to `int`. This avoids compiler warnings (e.g., C4244 in MSVC)
+ * about implicit floating-point to integer conversions and ensures proper rounding
+ * semantics.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * int val1 = tl::roundToInteger(3.4);    // 3
+ * int val2 = tl::roundToInteger(3.5);    // 4 (banker's rounding or standard rounding)
+ * int val3 = tl::roundToInteger(3.7);    // 4
+ * \endcode
+ *
  * \tparam T The floating-point type.
  * \param[in] n The number to round.
  * \return The rounded integer value.

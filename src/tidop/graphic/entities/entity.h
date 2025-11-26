@@ -30,7 +30,7 @@
 #include <memory>
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/meta.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/datamodel.h"

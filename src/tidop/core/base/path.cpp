@@ -24,7 +24,7 @@
 
 #include "tidop/core/base/path.h"
 
-#include "tidop/core/console.h"
+#include "tidop/core/base/string_utils.h"
 #include "tidop/core/base/text_encoding.h"
 
 
@@ -39,6 +39,7 @@
 
 #include <codecvt>
 #include <ostream>
+
 
 
 #if (TL_CPP_VERSION>= 17)
@@ -115,7 +116,6 @@ Path::Path()
 }
 
 Path::Path(const std::string &utf8Path)
-  //: mPath(new internal::Path(path))
   : mPath(new internal::Path(tl::fromUtf8(utf8Path)))
 {
 }
@@ -156,7 +156,6 @@ auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
 
 void Path::setPath(const std::string &utf8Path)
 {
-    //mPath = std::make_unique<internal::Path>(path);
     mPath = std::make_unique<internal::Path>(tl::fromUtf8(utf8Path));
 }
 
@@ -167,7 +166,6 @@ void Path::setPath(const std::wstring &path)
 
 auto Path::toString() const -> std::string
 {
-    //return tl::toUtf8(mPath->ref().wstring());
     return mPath->ref().string();
 }
 
@@ -290,7 +288,6 @@ auto Path::replaceFileName(const std::string &utf8FileName) -> Path&
     if (_path.has_filename()) {
         _path.remove_filename();
         _path.append(tl::fromUtf8(utf8FileName));
-        //_path.append(fileName);
     }
 
     return *this;
@@ -322,7 +319,6 @@ auto Path::replaceBaseName(const std::string &utf8BaseName) -> Path&
         std::string file_name = utf8BaseName + ext;
         _path.remove_filename();
         _path.append(tl::fromUtf8(file_name));
-        //_path.append(file_name);
     }
 
     return *this;
@@ -366,7 +362,6 @@ auto Path::replaceExtension(const Path &extension) -> Path&
 
 auto Path::append(const std::string &text) -> Path&
 {
-    //mPath->ref().append(text);
     mPath->ref().append(tl::fromUtf8(text));
     return *this;
 }
@@ -421,27 +416,19 @@ auto Path::tempPath() -> Path
     return temp_path;
 }
 
-auto Path::tempDirectory() -> Path
+auto Path::createTempDirectory() -> Path
 {
-    std::string temp_path;
-
-#ifdef WIN32
-    temp_path = std::tmpnam(nullptr);
-#else
-    temp_path = fs::temp_directory_path().string();
-    temp_path.append("/tlXXXXXX");
-    std::vector<char> c_path(temp_path.begin(), temp_path.end());
-    c_path.push_back('\0');
-    int file_descriptor = mkstemp(c_path.data());
-    if (file_descriptor != -1) {
-        temp_path.assign(c_path.begin(), c_path.end() - 1);
-    } else {
-        temp_path = "";
-        Message::warning("Failed to create temporary directory");
+    try {
+        // Generate unique directory in system temp location
+        fs::path tempDir = fs::temp_directory_path() /
+            fs::unique_path("tidop-%%%%-%%%%-%%%%-%%%%");
+        if (fs::create_directories(tempDir)) {
+            return Path(tempDir.string());
+        }
+    } catch (const std::exception &e) {
+        Message::warning("Failed to create temporary directory: {}", e.what());
     }
-#endif
-
-    return Path(temp_path);
+    return Path();
 }
 
 auto Path::compare(const Path &path) const -> int
@@ -521,7 +508,7 @@ auto Path::operator!=(const Path &path) const -> bool
 
 TemporalDir::TemporalDir(bool autoRemove)
   : bAutoRemove(autoRemove),
-    mPath(Path::tempDirectory())
+    mPath(Path::createTempDirectory())
 {
     mPath.createDirectories();
 }
@@ -541,28 +528,9 @@ auto TemporalDir::path() const -> Path
 
 std::ostream &operator<< (std::ostream &os, const Path &path)
 {
-    //os << path.toLocal8Bit() << std::flush;
-    os << path.toString() << std::flush;
+    os << path.toUtf8() << std::flush;
     return os;
 }
-
-
-
-//FileStatus::FileStatus(Path path)
-//    : path(path)
-//{
-//}
-//
-//FileStatus::~FileStatus()
-//{
-//}
-//
-//inline bool FileStatus::isBlock() const
-//{
-//#if (BOOST_VERSION_NUMBER_MAJOR > 8 && BOOST_VERSION_NUMBER_MINOR >=3)
-//    fs::is_block_file(path.toString());
-//#endif
-//}
 
 
 } // End namespace tl

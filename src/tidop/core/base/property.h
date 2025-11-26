@@ -22,20 +22,63 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file property.h
+ * \brief Type-safe property system with dynamic type conversion
+ *
+ * This module provides a generic property system for storing and retrieving typed values
+ * with automatic conversion capabilities. Properties can be dynamically converted between
+ * compatible types and serialized to/from strings.
+ *
+ * ### Classes
+ *
+ * - \ref PropertyBase - Abstract base class for all property types
+ * - \ref Property<T> - Generic property implementation for type T
+ * - \ref Property<Size<T>> - Specialized property for Size types
+ * - \ref Properties - Container managing multiple named properties
+ *
+ * ### Features
+ *
+ * - Type-safe property storage with RTTI support
+ * - Automatic type conversion between compatible types
+ * - String serialization/deserialization
+ * - Support for built-in types (int, float, bool, etc.)
+ * - Support for custom types (Path, Size)
+ * - Container-style interface (iterators, find, etc.)
+ * - Loss-of-data warnings on narrowing conversions
+ *
+ * ### Example Usage
+ *
+ * \code{.cpp}
+ * #include "tidop/core/base/property.h"
+ *
+ * tl::Properties config;
+ * config.setProperty("width", 1920);
+ * config.setProperty("height", 1080);
+ * config.setProperty("enabled", true);
+ * config.setProperty("name", "Desktop");
+ *
+ * int w = config.getProperty<int>("width");
+ * std::string name = config.getProperty<std::string>("name");
+ * std::string configStr = config.getPropertyAsString("enabled");
+ * \endcode
+ *
+ * \see tl::PropertyBase, tl::Property, tl::Properties
+ */
+
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/type.h"
-#include "tidop/core/base/exception.h"
-#include "tidop/core/base/string_utils.h"
-#include "tidop/core/base/type_conversions.h"
 
 #include <type_traits>
 #include <stdexcept>
 #include <unordered_map>
 #include <iostream>
 
+#include "tidop/core/base/type.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/type_conversions.h"
 
 namespace tl
 {
@@ -141,6 +184,11 @@ private:
     T mValue;
 
 public:
+
+    Property()
+      : PropertyBase(TypeTraits<T>::id_type)
+    {
+    }
 
     /*!
      * \brief Constructor.
@@ -260,13 +308,22 @@ public:
         try {
             size_t pos = value.find('x');
             if (pos == std::string::npos) {
-                throw std::invalid_argument("Invalid Size format");
+                TL_THROW_EXCEPTION("Invalid Size format. Expected 'width x height' (e.g., '1920x1080')");
             }
-            T width = static_cast<T>(std::stod(value.substr(0, pos)));
-            T height = static_cast<T>(std::stod(value.substr(pos + 1)));
+
+            std::string widthStr = value.substr(0, pos);
+            std::string heightStr = value.substr(pos + 1);
+
+            T width = convertStringTo<T>(widthStr);
+            T height = convertStringTo<T>(heightStr);
+
+            if (width <= 0 || height <= 0) {
+                TL_THROW_EXCEPTION("Size dimensions must be positive: {}x{}", width, height);
+            }
+
             mValue = Size<T>(width, height);
         } catch (...) {
-            TL_THROW_EXCEPTION_WITH_NESTED("Error converting string to Size<T>");
+            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert string to Size<T>");
         }
     }
 
@@ -278,97 +335,189 @@ public:
 
 
 
-//template <typename Key, typename Value>
-//std::string mapToString(const std::map<Key, Value> &map)
-//{
-//    std::ostringstream oss;
-//    bool first = true;
-//
-//    for (const auto p/*&[key, value]*/ : map) {
-//        auto key = p.first;
-//        auto value = p.second;
-//        if (!first) {
-//            oss << ",";
-//        }
-//        first = false;
-//
-//        oss << key << ":" << value;
-//    }
-//
-//    return oss.str();
-//}
-//
-//template <typename Key, typename Value>
-//std::map<Key, Value> stringToMap(const std::string &str)
-//{
-//    std::map<Key, Value> result;
-//    std::istringstream ss(str);
-//    std::string pair;
-//
-//    while (std::getline(ss, pair, ',')) {
-//        auto separator = pair.find(':');
-//        if (separator == std::string::npos) {
-//            throw Exception("Invalid format for std::map");
-//        }
-//
-//        std::string keyStr = pair.substr(0, separator);
-//        std::string valueStr = pair.substr(separator + 1);
-//
-//        Key key = convertStringTo<Key>(keyStr);
-//        Value value = convertStringTo<Value>(valueStr);
-//
-//        result.emplace(key, value);
-//    }
-//
-//    return result;
-//}
 
-//template <typename Key, typename Value>
-//class Property<std::map<Key, Value>> 
-//  : public PropertyBase
-//{
-//
-//private:
-//
-//    std::map<Key, Value> mValue;
-//
-//public:
-//
-//    explicit Property(const std::map<Key, Value> &value)
-//        : PropertyBase(TypeTraits<std::map<Key, Value>>::id_type),
-//        mValue(value) {
-//    }
-//
-//    auto value() const TL_NOEXCEPT -> std::map<Key, Value>
-//    {
-//        return mValue;
-//    }
-//
-//    void setValue(const std::map<Key, Value> &value)
-//    {
-//        mValue = value;
-//    }
-//
-//    auto toString() const -> std::string override
-//    {
-//        return mapToString(mValue);
-//    }
-//
-//    void fromString(const std::string &value) override
-//    {
-//        try {
-//            mValue = stringToMap<Key, Value>(value);
-//        } catch (...) {
-//            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert string to std::map");
-//        }
-//    }
-//
-//    auto typeName() const TL_NOEXCEPT -> std::string override
-//    {
-//        return TypeTraits<std::map<Key, Value>>::name_type;
-//    }
-//
-//};
+
+template <typename T>
+inline auto formatValue(const T &value) -> std::string
+{
+    return std::to_string(value);
+}
+
+// Specialization for std::string
+template <>
+inline auto formatValue<std::string>(const std::string &value) -> std::string
+{
+    return format("\"{}\"", value);
+}
+
+// Specialization for bool
+template <>
+inline auto formatValue<bool>(const bool &value) -> std::string
+{
+    return value ? "true" : "false";
+}
+
+// Specialization for const char*
+template <>
+inline auto formatValue<const char *>(const char *const &value) -> std::string
+{
+    return format("\"{}\"", value);
+}
+
+template <typename Key, typename Value>
+auto mapToString(const std::map<Key, Value> &m) -> std::string
+{
+    if (m.empty()) return "{}";
+
+    std::string result = "{";
+    bool first = true;
+
+    for (const auto p : m) {
+        auto key = p.first;
+        auto value = p.second;
+        if (!first) result += ",";
+
+        std::string key_str = formatValue<Key>(key);
+        std::string value_str = formatValue<Value>(value);
+
+        result += format("{}:{}", key_str, value_str);
+        first = false;
+    }
+
+    result += "}";
+    return result;
+}
+
+
+template <typename Key, typename Value>
+auto stringToMap(const std::string &str) -> std::map<Key, Value>
+{
+    std::map<Key, Value> result;
+
+    if (str.empty() || str == "{}") return result;
+
+    std::string trimmed = str;
+    if (trimmed.front() == '{') trimmed = trimmed.substr(1);
+    if (trimmed.back() == '}') trimmed.pop_back();
+
+    std::istringstream ss(trimmed);
+    std::string pair;
+
+    while (std::getline(ss, pair, ',')) {
+        // Trim whitespace
+        pair.erase(0, pair.find_first_not_of(" \t"));
+        pair.erase(pair.find_last_not_of(" \t") + 1);
+
+        size_t sep = pair.find(':');
+        if (sep == std::string::npos) {
+            TL_THROW_EXCEPTION("Invalid map format. Expected 'key:value'");
+        }
+
+        std::string key_str = pair.substr(0, sep);
+        std::string value_str = pair.substr(sep + 1);
+
+        // Trim whitespace
+        key_str.erase(0, key_str.find_first_not_of(" \t"));
+        key_str.erase(key_str.find_last_not_of(" \t") + 1);
+        value_str.erase(0, value_str.find_first_not_of(" \t"));
+        value_str.erase(value_str.find_last_not_of(" \t") + 1);
+
+        // Remove quotes si están presentes
+        if (!key_str.empty() && key_str.front() == '"' && key_str.back() == '"') {
+            key_str = key_str.substr(1, key_str.length() - 2);
+        }
+        if (!value_str.empty() && value_str.front() == '"' && value_str.back() == '"') {
+            value_str = value_str.substr(1, value_str.length() - 2);
+        }
+
+        Property<Key> key_property;
+        key_property.fromString(key_str);
+        Key k = key_property.value();
+        Property<Value> value_property;
+        value_property.fromString(value_str);
+        Value v = value_property.value();
+        result[k] = v;
+    }
+
+    return result;
+}
+
+template <typename Key, typename Value>
+class Property<std::map<Key, Value>> 
+  : public PropertyBase
+{
+
+private:
+
+    std::map<Key, Value> mValue;
+
+public:
+
+    explicit Property(const std::map<Key, Value> &value)
+      : PropertyBase(TypeTraits<std::map<Key, Value>>::id_type),
+        mValue(value) {
+    }
+
+    /*!
+     * \brief Gets the map value.
+     * \return The stored map
+     */
+    auto value() const TL_NOEXCEPT -> std::map<Key, Value>
+    {
+        return mValue;
+    }
+
+    /*!
+     * \brief Sets the map value.
+     * \param[in] value The new map value
+     */
+    void setValue(const std::map<Key, Value> &value)
+    {
+        mValue = value;
+    }
+
+    /*!
+     * \brief Converts map to string representation.
+     * 
+     * Format: "key1:value1,key2:value2,..."
+     * Empty map: "{}"
+     * 
+     * \return String representation
+     */
+    auto toString() const -> std::string override
+    {
+        try {
+            return mapToString(mValue);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert std::map to string");
+        }
+    }
+
+    /*!
+     * \brief Converts string to map.
+     * 
+     * Expected format: "key1:value1,key2:value2,..."
+     * 
+     * \param[in] value String representation of map
+     * \exception Exception If format is invalid
+     */
+    void fromString(const std::string &value) override
+    {
+        try {
+            mValue = stringToMap<Key, Value>(value);
+        } catch (...) {
+            TL_THROW_EXCEPTION_WITH_NESTED("Failed to convert string to std::map");
+        }
+    }
+
+   auto typeName() const TL_NOEXCEPT -> std::string override
+   {
+        return format("std::map<{},{}>", 
+                      TypeTraits<Key>::name_type,
+                      TypeTraits<Value>::name_type);
+   }
+
+};
 
 /// \cond
 
@@ -701,7 +850,20 @@ public:
     void clear();
 
     /*!
-     * \brief Prints the property values to the console.
+     * \brief Prints all properties to standard output.
+     *
+     * Outputs all properties in a human-readable format to the console.
+     * Format: "Properties: <name>\n  <key>   <value>\n  ..."
+     *
+     * ### Example Output
+     * \code
+     * Properties: Config
+     *   width   1920
+     *   height  1080
+     *   enabled true
+     * \endcode
+     *
+     * \see getPropertyAsString()
      */
     void print() const
     {
@@ -720,11 +882,6 @@ public:
 template<typename T>
 inline void Properties::setProperty(const std::string &key, T value)
 {
-    //if constexpr (std::is_same_v<T, const char *>) {
-    //    mProperties[key] = std::make_shared<Property<std::string>>(std::string(value));
-    //} else {
-    //    mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
-    //}
     mProperties[key] = std::make_shared<Property<typename std::decay<T>::type>>(value);
 }
 

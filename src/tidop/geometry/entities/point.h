@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/core/base/common.h"
 #include "tidop/core/base/type_conversions.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/math/algebra/vector.h"

@@ -40,10 +40,10 @@
 #include <ogr_srs_api.h>
 
 #include <tidop/core/app/app.h>
-#include <tidop/core/console.h>
+#include <tidop/core/console/console.h>
 #include <tidop/core/app/message.h>
 #include <tidop/core/base/path.h>
-#include <tidop/core/app/log.h>
+#include <tidop/core/app/logger.h>
 // #include <tidop/geometry/entities/point.h>
 // #include <tidop/geospatial/crs.h>
 // #include <tidop/geospatial/crstransf.h>
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
             //if(status == Command::Status::parse_error) {
             //    return 1;
             //} else if(status == Command::Status::show_help || 
-            //          status == Command::Status::show_licence || 
+            //          status == Command::Status::show_license || 
             //          status == Command::Status::show_version) {
             //    return 0;
             //}

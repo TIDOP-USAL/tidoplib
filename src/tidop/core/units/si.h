@@ -24,9 +24,8 @@
  
 #pragma once
 
-#include <type_traits>
-
-#include "tidop/core/base/common.h"
+#include "tidop/config.h"
+#include "tidop/core/base/type.h"
 
 namespace tl
 {

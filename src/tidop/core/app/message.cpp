@@ -24,71 +24,64 @@
 
 #include "tidop/core/app/message.h"
 
+#include <algorithm>
+#include <utility>
 
 namespace tl
 {
 
+std::set<MessageHandler *> Message::messageHandlers;
+std::mutex Message::messageHandlersMutex;
 bool Message::stopHandler = false;
-std::list<MessageHandler *> Message::messageHandlers;
+std::mutex Message::stopHandlerMutex;
+
+void Message::addMessageHandler(MessageHandler *messageHandler)
+{
+    if (messageHandler == nullptr)
+        return;
+
+    std::lock_guard<std::mutex> lck(messageHandlersMutex);
+    messageHandlers.insert(messageHandler);
+}
+
+void Message::removeMessageHandler(MessageHandler *messageHandler)
+{
+    if (messageHandler == nullptr)
+        return;
+
+    std::lock_guard<std::mutex> lck(messageHandlersMutex);
+    messageHandlers.erase(messageHandler);
+}
+
+void Message::clearMessageHandlers()
+{
+    std::lock_guard<std::mutex> lck(messageHandlersMutex);
+    messageHandlers.clear();
+}
 
 void Message::debug(String message)
 {
-    if (stopHandler) return;
-
-    const std::list<MessageHandler *> handlers = messageHandlers;
-    if (!stopHandler && !handlers.empty()) {
-        for (MessageHandler *handler : handlers) {
-            handler->debug(message);
-        }
-    }
+    dispatch(message, [message](MessageHandler *h) { h->debug(message); });
 }
 
 void Message::info(String message)
 {
-    if (stopHandler) return;
-
-    const std::list<MessageHandler *> handlers = messageHandlers;
-    if (!stopHandler && !handlers.empty()) {
-        for (MessageHandler *handler : handlers) {
-            handler->info(message);
-        }
-    }
+    dispatch(message, [message](MessageHandler *h) { h->info(message); });
 }
 
 void Message::success(String message)
 {
-    if (stopHandler) return;
-
-    const std::list<MessageHandler *> handlers = messageHandlers;
-    if (!stopHandler && !handlers.empty()) {
-        for (MessageHandler *handler : handlers) {
-            handler->success(message);
-        }
-    }
+    dispatch(message, [message](MessageHandler *h) { h->success(message); });
 }
 
 void Message::warning(String message)
 {
-    if (stopHandler) return;
-
-    const std::list<MessageHandler *> handlers = messageHandlers;
-    if (!stopHandler && !handlers.empty()) {
-        for (MessageHandler *handler : handlers) {
-            handler->warning(message);
-        }
-    }
+    dispatch(message, [message](MessageHandler *h) { h->warning(message); });
 }
 
 void Message::error(String message)
 {
-    if (stopHandler) return;
-
-    const std::list<MessageHandler *> handlers = messageHandlers;
-    if (!stopHandler && !handlers.empty()) {
-        for (MessageHandler *handler : handlers) {
-            handler->error(message);
-        }
-    }
+    dispatch(message, [message](MessageHandler *h) { h->error(message); });
 }
 
-} // End mamespace tl
+} // End namespace tl

@@ -94,6 +94,116 @@ public:
         false_negatives  /*!< False negatives */
     };
 
+    /*!
+     * \brief Threshold iterator to walk thresholds incrementally and update
+     *        confusion matrix counts in O(1) amortized per moved element.
+     *
+     * ### Example Usage
+     * \code{.cpp}
+     * 
+     *   auto it = cm.thresholdIterator();
+     *   it.advanceTo(threshold1);
+     *   // use it.truePositives(), it.falsePositives(), ...
+     *   it.advanceTo(threshold2); // only processes elements between thresholds
+     * 
+     * \endcode
+     */
+    class ThresholdIterator
+    {
+
+    public:
+
+        explicit ThresholdIterator(const ConfusionMatrix<T> &cm)
+          : mCM(cm),
+            mIndex(0),
+            mTP(cm.mPositives),
+            mFP(cm.mNegatives),
+            mTN(0),
+            mFN(0)
+        {
+            // initial state corresponds to threshold <= min(mData): all predicted positives
+            // mIndex is first index with value >= currentThreshold (0 here)
+        }
+
+        void reset()
+        {
+            mIndex = 0;
+            mTP = mCM.mPositives;
+            mFP = mCM.mNegatives;
+            mTN = 0;
+            mFN = 0;
+        }
+
+        // Advance iterator to the given threshold (assumes thresholds are non-decreasing
+        // across successive calls for amortized O(n) behaviour). If caller provides
+        // decreasing thresholds, iterator will reset and re-scan.
+        void advanceTo(T threshold)
+        {
+            // if threshold is less than current processed value, reset to start
+            if (mIndex > 0 && threshold <= mCM.mData[mIndex - 1].first) {
+                reset();
+            }
+
+            const auto &data = mCM.mData;
+            size_t n = data.size();
+
+            // Move elements with value < threshold from predicted-positive to predicted-negative
+            while (mIndex < n && data[mIndex].first < threshold) {
+                int tag = data[mIndex].second;
+                if (tag == 1) { // was positive, now becomes false negative
+                    --mTP;
+                    ++mFN;
+                } else { // was negative, now becomes true negative
+                    --mFP;
+                    ++mTN;
+                }
+                ++mIndex;
+            }
+        }
+
+        // accessors for raw counts
+        auto truePositives() const -> size_t { return mTP; }
+        auto falsePositives() const -> size_t { return mFP; }
+        auto trueNegatives() const -> size_t { return mTN; }
+        auto falseNegatives() const -> size_t { return mFN; }
+
+        auto truePositiveRate() const -> double
+        {
+            return ConfusionMatrix<T>::truePositiveRate(mTP, mFN);
+        }
+
+        auto falsePositiveRate() const
+        {
+            return ConfusionMatrix<T>::falsePositiveRate(mFP, mTN);
+        }
+
+        auto trueNegativeRate() const -> double
+        {
+            return ConfusionMatrix<T>::trueNegativeRate(mTN, mFP);
+        }
+
+        auto falseNegativeRate() const -> double
+        {
+            return ConfusionMatrix<T>::falseNegativeRate(mFN, mTP);
+        }
+
+        auto positivePredictiveValue() const -> double
+        {
+            return ConfusionMatrix<T>::positivePredictiveValue(mTP, mFP);
+        }
+
+        auto negativePredictiveValue() const -> double
+        {
+            return ConfusionMatrix<T>::negativePredictiveValue(mFN, mTN);
+        }
+
+    private:
+
+        const ConfusionMatrix<T> &mCM;
+        size_t mIndex;   // first index with value >= current threshold
+        size_t mTP, mFP, mTN, mFN;
+    };
+
 private:
 
     std::vector<std::pair<T, int>> mData;
@@ -260,6 +370,11 @@ public:
      * \return The accuracy
      */
     static auto accuracy(size_t tp, size_t tn, size_t positives, size_t negatives) -> double;
+
+    auto thresholdIterator() const -> ThresholdIterator
+    {
+        return ThresholdIterator(*this);
+    }
 
 private:
 

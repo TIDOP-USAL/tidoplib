@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <limits>
 
 #include "tidop/core/base/defs.h"
 #include "tidop/geometry/entities/point.h"
@@ -67,7 +68,7 @@ Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon,
     // biggest known distance
     double max_distance = 0.;
 
-    double tmp_distance = TL_DOUBLE_MAX;
+    double tmp_distance = std::numeric_limits<double>::max();
     for (int i = 0; static_cast<double>(i) <= nCells; i++) {
 
         tmp.x = bounds.pt1.x + i * increment_x;

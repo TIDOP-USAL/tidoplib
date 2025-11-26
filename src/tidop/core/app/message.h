@@ -22,15 +22,22 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file message.h
+ * \brief Observer pattern implementation for message broadcasting.
+ *
+ * The tl::Message class implements a message publisher that dispatches events
+ * to registered handlers (tl::Logger, tl::Console, etc.) with different severity levels.
+ */ 
+
 #pragma once
 
-
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
+
+#include <set> 
+#include <mutex>
+
 #include "tidop/core/base/format.h"
-
-#include <list>
-
 #include "tidop/core/app/messagehandler.h"
 
 namespace tl
@@ -42,23 +49,66 @@ namespace tl
  */
 
 /*!
- * \brief Message class
+ * \brief Message publisher using Observer pattern.
  *
- * The `Message` class is responsible for managing and emitting messages 
- * at different levels (debug, info, success, warning, error). It allows 
- * for the registration of \ref MessageHandler instances to process these messages.
+ * The Message class implements a publisher that broadcasts messages to
+ * multiple registered handlers. It acts as a central event dispatcher
+ * for application-level logging and console output.
+ *
+ * ### Observer Pattern
+ *
+ * This class follows the Observer pattern where:
+ * - **Subject (Publisher):** Message class
+ * - **Observer (Listener):** MessageHandler implementations (Logger, Console)
+ * - **Event:** Message emission at different levels
+ *
+ * ### Message Levels
+ *
+ * Messages can be emitted at different severity levels:
+ * - `debug()` - Diagnostic information
+ * - `info()` - General information
+ * - `success()` - Successful operation
+ * - `warning()` - Warning condition
+ * - `error()` - Error condition
  *
  * ### Example Usage
+ *
  * \code{.cpp}
- * // Add the Console as a message handler
- * Console &console = App::console();
- * console.setTitle("Transform Example");
- * console.setMessageLevel(MessageLevel::all);
+ * // Register handlers
+ * Logger& logger = App::log();
+ * logger.open("app.log");
+ * logger.setMessageLevel(MessageLevel::all);
+ * Message::addMessageHandler(&logger);
+ *
+ * Console& console = App::console();
+ * console.setMessageLevel(MessageLevel::warning | MessageLevel::error);
  * Message::addMessageHandler(&console);
- * 
- * Message::warning("This is a {} message", "warning");
- * Message::info("{} + {} = {}", 1, 1, 2);
+ *
+ * // Emit messages (will be sent to both logger and console)
+ * Message::info("Application started");
+ * Message::warning("Low memory condition");
+ * Message::error("Failed to open file: {}", filename);
+ *
+ * // Temporarily suppress messages
+ * Message::pauseMessages();
+ * // ... messages won't reach handlers
+ * Message::resumeMessages();
  * \endcode
+ *
+ * ### Formatted Messages
+ *
+ * Messages support formatting with fmt::format or std::format (C++20):
+ *
+ * \code{.cpp}
+ * int count = 42;
+ * double elapsed = 1.5;
+ * Message::info("Processed {} records in {:.2f} seconds", count, elapsed);
+ * \endcode
+ * 
+ * \note Thread-safe. All operations are protected by internal mutexes.
+ * \note Handlers can be safely added or removed while messages are dispatched.
+ * \note Message emission can be temporarily paused and resumed.
+ * \see MessageHandler, Logger, Console, MessageLevel
  */
 class TL_EXPORT Message
 {
@@ -71,96 +121,148 @@ class TL_EXPORT Message
 
 private:
 
-    static std::list<MessageHandler *> messageHandlers; /*!< List of registered message handlers. */
-    static bool stopHandler;                            /*!< Indicates whether message handling is paused. */
+    static std::set<MessageHandler *> messageHandlers;   /*!< Registered message handlers */
+    static std::mutex messageHandlersMutex;              /*!< Protects messageHandlers list */
+    static bool stopHandler;                             /*!< Flag to pause message dispatch */
+    static std::mutex stopHandlerMutex;                  /*!< Protects stopHandler flag */
 
 public:
 
     /*!
-     * \brief Add a message handler.
-     * \param[in] messageHandler Pointer to the message handler to be added.
+     * \brief Register a message handler.
+     *
+     * Adds the given handler to the list of handlers that receive messages.
+     * If the handler is already registered, it is not added again.
+     *
+     * ### Example
+     * \code{.cpp}
+     * Logger& logger = App::log();
+     * Message::addMessageHandler(&logger);
+     * \endcode
+     *
+     * \param[in] messageHandler Pointer to the handler to register
+     *
+     * \note
+     * - Passing a nullptr has no effect (silently ignored)
+     * - Handlers are called in registration order
+     * - Adding a handler while messages are being dispatched is safe
+     * \note Thread-safe.
+     * \see removeMessageHandler()
      */
-    static void addMessageHandler(MessageHandler *messageHandler)
-    {
-        bool added = false;
-        for (const auto handler : messageHandlers) {
-            if (handler == messageHandler) {
-                added = true;
-                break;
-            }
-        }
-
-        if (!added)
-            messageHandlers.push_back(messageHandler);
-    }
+    static void addMessageHandler(MessageHandler *messageHandler);
 
     /*!
-     * \brief Pause message handling.
+     * \brief Unregister a message handler.
      *
-     * When paused, emitted messages are not processed by handlers until
-     * \ref resumeMessages is called.
+     * Removes the given handler from the list. If not registered, this
+     * has no effect.
+     *
+     * \param[in] messageHandler Pointer to the handler to remove
+     * \note Thread-safe.
+     * \see addMessageHandler()
+     */
+    static void removeMessageHandler(MessageHandler *messageHandler);
+
+    /*!
+     * \brief Clear all registered handlers.
+     *
+     * Removes all handlers at once. Useful for cleanup or handler replacement.
+     *
+     * \note Thread-safe.
+     */
+    static void clearMessageHandlers();
+
+    /*!
+     * \brief Temporarily pause message handling.
+     *
+     * When paused, calls to debug(), info(), success(), warning(), and error()
+     * have no effect. Messages are silently discarded. Useful for suppressing
+     * output during critical sections or batch operations.
+     *
+     * ### Example
+     * \code{.cpp}
+     * Message::pauseMessages();
+     * // ... perform silent operations
+     * Message::resumeMessages();
+     * \endcode
+     * 
+     * \note Thread-safe.
+     * \see resumeMessages()
      */
     static void pauseMessages()
     {
+        std::lock_guard<std::mutex> lck(stopHandlerMutex);
         stopHandler = true;
     }
 
     /*!
      * \brief Resume message handling.
+     *
+     * Re-enables message dispatch after a call to pauseMessages().
+     * Messages will be sent to handlers again.
+     *
+     * \note Thread-safe.
+     * \see pauseMessages()
      */
     static void resumeMessages()
     {
+        std::lock_guard<std::mutex> lck(stopHandlerMutex);
         stopHandler = false;
     }
 
-    ///*!
-    // * \brief Format a message string with arguments.
-    // * \tparam Args Argument types.
-    // * \param[in] s Format string.
-    // * \param[in] args Arguments for formatting.
-    // * \return Formatted string.
-    // */
-    //template<typename... Args>
-    //static std::string format(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
-    //{
-    //    return FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...));
-    //}
-
     /*!
      * \brief Emit a debug message.
-     * \param[in] message Message string.
+     *
+     * Sends a debug-level message to all registered handlers.
+     * Only sent if message handling is not paused.
+     *
+     * \param[in] message The message content
+     * \note Thread-safe.
+     * \see info(), success(), warning(), error()
      */
     static void debug(String message);
 
     /*!
      * \brief Emit an informational message.
-     * \param[in] message Message string.
+     * \param[in] message The message content
+     * \see debug(), success(), warning(), error()
      */
     static void info(String message);
 
     /*!
      * \brief Emit a success message.
-     * \param[in] message Message string.
+     * \param[in] message The message content
+     * \see debug(), info(), warning(), error()
      */
     static void success(String message);
-    
+
     /*!
      * \brief Emit a warning message.
-     * \param[in] message Message string.
+     * \param[in] message The message content
+     * \see debug(), info(), success(), error()
      */
     static void warning(String message);
 
     /*!
      * \brief Emit an error message.
-     * \param[in] message Message string.
+     * \param[in] message The message content
+     * \see debug(), info(), success(), warning()
      */
     static void error(String message);
 
     /*!
-     * \brief Emit a debug message with formatted arguments.
-     * \tparam Args Argument types.
-     * \param[in] s Format string.
-     * \param[in] args Arguments for formatting.
+     * \brief Emit a formatted debug message.
+     *
+     * ### Example
+     * \code{.cpp}
+     * int value = 42;
+     * Message::debug("Value is {}", value);
+     * \endcode
+     *     
+     * \tparam Args Argument types for format string
+     * \param[in] s Format string (fmt::format or std::format compatible)
+     * \param[in] args Arguments to substitute into format string
+     * \see info(), success(), warning(), error()
      */
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -170,10 +272,10 @@ public:
     }
 
     /*!
-     * \brief Emit an informational message with formatted arguments.
-     * \tparam Args Argument types.
-     * \param[in] s Format string.
-     * \param[in] args Arguments for formatting.
+     * \brief Emit a formatted informational message.
+     * \tparam Args Argument types
+     * \param[in] s Format string
+     * \param[in] args Format arguments
      */
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -183,10 +285,10 @@ public:
     }
 
     /*!
-     * \brief Emit a success message with formatted arguments.
-     * \tparam Args Argument types.
-     * \param[in] s Format string.
-     * \param[in] args Arguments for formatting.
+     * \brief Emit a formatted success message.
+     * \tparam Args Argument types
+     * \param[in] s Format string
+     * \param[in] args Format arguments
      */
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -196,10 +298,10 @@ public:
     }
 
     /*!
-     * \brief Emit a warning message with formatted arguments.
-     * \tparam Args Argument types.
-     * \param[in] s Format string.
-     * \param[in] args Arguments for formatting.
+     * \brief Emit a formatted warning message.
+     * \tparam Args Argument types
+     * \param[in] s Format string
+     * \param[in] args Format arguments
      */
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -209,10 +311,10 @@ public:
     }
 
     /*!
-     * \brief Emit an error message with formatted arguments.
-     * \tparam Args Argument types.
-     * \param[in] s Format string.
-     * \param[in] args Arguments for formatting.
+     * \brief Emit a formatted error message.
+     * \tparam Args Argument types
+     * \param[in] s Format string
+     * \param[in] args Format arguments
      */
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -220,7 +322,28 @@ public:
         auto message = tl::format(s, std::forward<Args>(args)...);
         Message::error(message);
     }
+	
+private:
 
+    template<typename Func>
+    static void dispatch(String message, Func&& handler_func)
+    {
+        {
+            std::lock_guard<std::mutex> lck(stopHandlerMutex);
+            if (stopHandler)
+                return;
+        }
+
+        std::set<MessageHandler *> handlers_snapshot;
+        {
+            std::lock_guard<std::mutex> lck(messageHandlersMutex);
+            handlers_snapshot = messageHandlers;
+        }
+
+        for (MessageHandler *handler : handlers_snapshot) {
+            handler_func(handler);
+        }
+    }
 };
 
 

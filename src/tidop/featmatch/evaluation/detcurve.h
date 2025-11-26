@@ -92,18 +92,19 @@ void DETCurve<T>::compute(size_t steeps)
 
         if (this->mData.empty()) return;
 
-    this->mCurve.resize(0);
+    this->mCurve.clear();
 
     T min = this->mData.front().first;
     T max = this->mData.back().first;
 
     T step = (max - min) / static_cast<double>(steeps);
 
+    auto it = this->mConfusionMatrix.thresholdIterator();
     T threshold = min;
-    for (size_t i = 0; i < steeps; i++) {
-        double fpr = this->mConfusionMatrix.falsePositiveRate(threshold);
-        double fnr = this->mConfusionMatrix.falseNegativeRate(threshold);
-
+    for (size_t i = 0; i < steeps; ++i) {
+        it.advanceTo(threshold);
+        double fpr = it.falsePositiveRate();
+        double fnr = it.falseNegativeRate();
         this->mCurve.emplace_back(fpr, fnr);
         threshold += step;
     }

@@ -25,9 +25,10 @@
 #include "tidop/core/task/progress.h"
 
 #include "tidop/core/app/app.h"
-#include "tidop/core/console.h"
+#include "tidop/core/base/type_conversions.h"
 
 #include <thread>
+
 
 namespace tl
 {
@@ -169,15 +170,6 @@ void ProgressBar::updateProgress()
     int posInBar = roundToInteger(static_cast<double>(percent()) *
                                   static_cast<double>(mProgressBarSize) / 100.);
 
-
-    //for (int i = 0; i < mProgressBarSize; i++) {
-
-    //    if (i < posInBar)
-    //        std::cout << "#";
-    //    else
-    //        std::cout << "-";
-
-    //}
     std::string bar(posInBar, '#');
     bar.resize(mProgressBarSize, '-');
 
@@ -214,45 +206,42 @@ void ProgressBarColor::updateProgress()
     Progress::cleanConsole();
 
     Console &console = App::console();
-    int posInBar = roundToInteger(static_cast<double>(percent()) * static_cast<double>(mProgressBarSize) / 100.);
 
-    int ini = mProgressBarSize / 2 - 2;
+    // Posición hasta donde la barra está completa
+    int posInBar = roundToInteger(static_cast<double>(percent()) * mProgressBarSize / 100.0);
 
-    for (int i = 0; i < mProgressBarSize; i++) {
+    // Posición del texto del porcentaje
+    size_t ini = mProgressBarSize / 2 - 2;
 
+    std::string bar(mProgressBarSize, ' ');
+
+    // Texto de porcentaje
+    int p = percent();
+    bar[ini] = (p >= 100 ? '1' : (p / 100) ? char('0' + (p / 100)) : ' ');
+    bar[ini + 1] = (p >= 10 ? char('0' + (p / 10 % 10)) : ' ');
+    bar[ini + 2] = char('0' + (p % 10));
+    bar[ini + 3] = '%';
+
+    std::string done = bar.substr(0, posInBar);
+    std::string remain = bar.substr(posInBar);
+
+    // Primera parte (completada)
+    console.setBackgroundColor(mCompleteColor);
+    if (mCompleteColor == Console::Color::white)
+        console.setForegroundColor(Console::Color::black);
+    else
         console.setForegroundColor(Console::Color::white);
+    console << done;
 
-        if (i < posInBar) {
-            console.setBackgroundColor(mCompleteColor);
-            if (posInBar > ini && mCompleteColor == Console::Color::white)
-                console.setForegroundColor(Console::Color::black);
-        } else {
-            console.setBackgroundColor(mRemainigColor);
-            if (posInBar < ini + 4 && mRemainigColor == Console::Color::white)
-                console.setForegroundColor(Console::Color::black);
-        }
+    // Segunda parte (restante)
+    console.setBackgroundColor(mRemainigColor);
+    if (mRemainigColor == Console::Color::white)
+        console.setForegroundColor(Console::Color::black);
+    else
+        console.setForegroundColor(Console::Color::white);
+    console << remain;
 
-        int n;
-        if (i == ini) {
-            n = percent() / 100 % 10;
-            if (n > 0) std::cout << n;
-            else std::cout << " ";
-        } else if (i == ini + 1) {
-            n = percent() / 10 % 10;
-            if (n > 0 || percent() >= 10) std::cout << n;
-            else std::cout << " ";
-        } else if (i == ini + 2) {
-            n = percent() % 10;
-            std::cout << n;
-        } else if (i == ini + 3) {
-            std::cout << "%";
-        } else {
-            std::cout << " ";
-        }
-
-        console.reset();
-    }
-
+    console.clear();
 }
 
 

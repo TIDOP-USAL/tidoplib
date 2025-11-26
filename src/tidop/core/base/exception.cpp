@@ -28,16 +28,7 @@
 #include <codecvt>
 #include <utility>
 
-
 #include "tidop/core/app/app.h"
-
-//TODO: mirar
-//https://en.cppreference.com/w/cpp/error/nested_exception
-//https://en.cppreference.com/w/cpp/error/throw_with_nested
-//https://stackoverflow.com/questions/37227300/why-doesnt-c-use-stdnested-exception-to-allow-throwing-from-destructor/37227893#37227893
-//https://github.com/GPMueller/mwe-cpp-exception
-//https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.how_to_print_current_call_stack
-
 
 
 namespace tl

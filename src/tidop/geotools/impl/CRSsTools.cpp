@@ -25,6 +25,7 @@
 #include "tidop/geotools/impl/CRSsTools.h"
 #include "tidop/core/base/exception.h"
 #include "tidop/core/base/split.h"
+#include "tidop/core/base/meta.h"
 #include "tidop/geotools/impl/CRSsUtils.h"
 #include "tidop/geotools/impl/CRS.h"
 
@@ -39,8 +40,8 @@
 using namespace tl;
 
 CRSsToolsImpl::CRSsToolsImpl(bool oamsTraditionalGisOrder,
-    bool ignoreDeprecated)
-    : CRSsTools(),
+                             bool ignoreDeprecated)
+  : CRSsTools(),
     mIgnoreDeprecated(ignoreDeprecated),
     mOamsTraditionalGisOrder(oamsTraditionalGisOrder)
 {

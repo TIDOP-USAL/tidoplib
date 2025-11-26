@@ -60,9 +60,7 @@ Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
     return buff;
 }
 
-/*! \} */ // end of geometry_algorithms
-
-/*! \} */ // end of geometry
+/*! \} */
 
 } // End namespace tl
 

@@ -26,6 +26,8 @@
 
 #include "tidop/core/base/exception.h"
 
+#include <limits>
+
 namespace tl
 {
 
@@ -34,7 +36,7 @@ namespace tl
 KeyPointsFilterBySizeProperties::KeyPointsFilterBySizeProperties()
   : KeyPointsFilterProperties(Type::size),
     mMinSize(0.),
-    mMaxSize(TL_DOUBLE_MAX)
+    mMaxSize(std::numeric_limits<double>::max())
 {
 }
 
@@ -61,7 +63,7 @@ void KeyPointsFilterBySizeProperties::setMaxSize(double maxSize)
 void KeyPointsFilterBySizeProperties::reset()
 {
     mMinSize = 0.;
-    mMaxSize = TL_DOUBLE_MAX;
+    mMaxSize = std::numeric_limits<double>::max();
 }
 
 auto KeyPointsFilterBySizeProperties::name() const -> std::string

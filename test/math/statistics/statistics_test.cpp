@@ -144,9 +144,9 @@ BOOST_FIXTURE_TEST_CASE(range, StatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(interquartileRange, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(1.625, tl::interquartileRange(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(2, tl::interquartileRange(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(10, tl::interquartileRange(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(1., tl::interquartileRange(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(1., tl::interquartileRange(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(6.5, tl::interquartileRange(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(variance, StatisticsTest)
@@ -218,16 +218,16 @@ BOOST_FIXTURE_TEST_CASE(biweightMidvariance, StatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(first_quartile, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(6.875, tl::quantile(vd.begin(), vd.end(), 0.25), 0.1);
-  BOOST_CHECK_CLOSE(0, tl::quantile(vi.begin(), vi.end(), 0.25), 0.1);
-  BOOST_CHECK_CLOSE(8.5, tl::quantile(vi2.begin(), vi2.end(), 0.25), 0.1);
+  BOOST_CHECK_CLOSE(7.5, tl::quantile(vd.begin(), vd.end(), 0.25), 0.1);
+  BOOST_CHECK_CLOSE(0.5, tl::quantile(vi.begin(), vi.end(), 0.25), 0.1);
+  BOOST_CHECK_CLOSE(10., tl::quantile(vi2.begin(), vi2.end(), 0.25), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(third_quartile, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(8.5, tl::quantile(vd.begin(), vd.end(), 0.75), 0.1);
-  BOOST_CHECK_CLOSE(2, tl::quantile(vi.begin(), vi.end(), 0.75), 0.1);
-  BOOST_CHECK_CLOSE(18.5, tl::quantile(vi2.begin(), vi2.end(), 0.75), 0.1);
+  BOOST_CHECK_CLOSE(1.5, tl::quantile(vi.begin(), vi.end(), 0.75), 0.1);
+  BOOST_CHECK_CLOSE(16.5, tl::quantile(vi2.begin(), vi2.end(), 0.75), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(quantile, StatisticsTest)
@@ -239,16 +239,16 @@ BOOST_FIXTURE_TEST_CASE(quantile, StatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(quartileCoefficientOfDispersion, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(0.10569, tl::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1, tl::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(0.37037037037037, tl::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.0625, tl::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.5, tl::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.24528301886792453, tl::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartileDeviation, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(0.8125, tl::quartileDeviation(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(1, tl::quartileDeviation(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(5, tl::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.5, tl::quartileDeviation(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.5, tl::quartileDeviation(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(3.25, tl::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

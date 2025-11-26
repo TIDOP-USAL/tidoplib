@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/app/licence.h"
+#include "tidop/core/app/license.h"
 
 #include <utility>
 
@@ -30,9 +30,9 @@ namespace tl
 {
 
 
-Licence::Licence() = default;
+License::License() = default;
 
-Licence::Licence(std::string productName, 
+License::License(std::string productName, 
                  std::string license)
   : mProductName(std::move(productName)),
     mLicense(std::move(license))
@@ -40,77 +40,77 @@ Licence::Licence(std::string productName,
     
 }
 
-auto Licence::productName() const -> std::string
+auto License::productName() const -> std::string
 {
     return mProductName;
 }
 
-auto Licence::setProductName(const std::string &productName) -> void
+auto License::setProductName(const std::string &productName) -> void
 {
     mProductName = productName;
 }
 
-auto Licence::licenseName() const -> std::string
+auto License::licenseName() const -> std::string
 {
     return mLicense;
 }
 
-void Licence::setLicence(const std::string &license)
+void License::setLicenseName(const std::string &license)
 {
     mLicense = license;
 }
 
-auto Licence::licenseText() const -> std::string
+auto License::licenseText() const -> std::string
 {
     return mLicenseText;
 }
 
-auto Licence::setLicenseText(const std::string &text) -> void
+auto License::setLicenseText(const std::string &text) -> void
 {
     mLicenseText = text;
 }
 
-auto Licence::version() const -> std::string
+auto License::version() const -> std::string
 {
     return mVersion;
 }
 
-auto Licence::setVersion(const std::string &version) -> void
+auto License::setVersion(const std::string &version) -> void
 {
     mVersion = version;
 }
 
-auto Licence::autor() const -> std::string
+auto License::author() const -> std::string
 {
-    return mAutor;
+    return mAuthor;
 }
 
-auto Licence::setAuthor(const std::string &autor) -> void
+void License::setAuthor(const std::string &author)
 {
-    mAutor = autor;
+    mAuthor = author;
 }
 
-auto Licence::authorEmail() const -> std::string
+auto License::authorEmail() const -> std::string
 {
     return mEmail;
 }
 
-auto Licence::setAuthorEmail(const std::string &authorEmail) -> void
+auto License::setAuthorEmail(const std::string &authorEmail) -> void
 {
     mEmail = authorEmail;
 }
 
-auto Licence::url() const -> std::string
+auto License::url() const -> std::string
 {
     return mUrl;
 }
 
-auto Licence::setUrl(const std::string &url) -> void
+auto License::setUrl(const std::string &url) -> void
 {
     mUrl = url;
 }
 
-auto Licence::empty() const -> bool
+auto License::empty() const -> bool
 {
     return mProductName.empty() && mLicenseText.empty();
 }
@@ -118,60 +118,62 @@ auto Licence::empty() const -> bool
 
 
 
-AppLicence::AppLicence()
-  : mThirdPartyLicences(0)
+AppLicense::AppLicense()
+  : mThirdPartyLicenses(0)
 {
 }
 
-auto AppLicence::begin() TL_NOEXCEPT -> iterator
+auto AppLicense::begin() TL_NOEXCEPT -> iterator
 {
-    return mThirdPartyLicences.begin();
+    return mThirdPartyLicenses.begin();
 }
 
-auto AppLicence::begin() const TL_NOEXCEPT -> const_iterator
+auto AppLicense::begin() const TL_NOEXCEPT -> const_iterator
 {
-    return mThirdPartyLicences.cbegin();
+    return mThirdPartyLicenses.cbegin();
 }
 
-auto AppLicence::end() TL_NOEXCEPT -> iterator
+auto AppLicense::end() TL_NOEXCEPT -> iterator
 {
-    return mThirdPartyLicences.end();
+    return mThirdPartyLicenses.end();
 }
 
-auto AppLicence::end() const TL_NOEXCEPT -> const_iterator
+auto AppLicense::end() const TL_NOEXCEPT -> const_iterator
 {
-    return mThirdPartyLicences.cend();
+    return mThirdPartyLicenses.cend();
 }
 
-auto AppLicence::push_back(const Licence &licence) -> void
+void AppLicense::push_back(const License &license)
 {
-    mThirdPartyLicences.push_back(licence);
+    mThirdPartyLicenses.push_back(license);
 }
 
-auto AppLicence::push_back(Licence &&licence) TL_NOEXCEPT -> void
+void AppLicense::push_back(License &&license) TL_NOEXCEPT
 {
-    mThirdPartyLicences.push_back(std::forward<Licence>(licence));
+    mThirdPartyLicenses.push_back(std::move(license));
 }
 
-auto AppLicence::clear() TL_NOEXCEPT -> void
+void AppLicense::clear() TL_NOEXCEPT
 {
-    mThirdPartyLicences.clear();
+    mThirdPartyLicenses.clear();
 }
 
-auto AppLicence::empty() const TL_NOEXCEPT -> bool
-{
-    return mThirdPartyLicences.empty();
-}
-
-auto AppLicence::size() const TL_NOEXCEPT -> size_t
-{
-    return mThirdPartyLicences.size();
-}
-
-auto AppLicence::erase(const_iterator first,
+auto AppLicense::erase(const_iterator first,
                        const_iterator last) -> iterator
 {
-    return mThirdPartyLicences.erase(first, last);
+    return mThirdPartyLicenses.erase(first, last);
 }
+
+auto AppLicense::empty() const TL_NOEXCEPT -> bool
+{
+    return mThirdPartyLicenses.empty();
+}
+
+auto AppLicense::size() const TL_NOEXCEPT -> size_t
+{
+    return mThirdPartyLicenses.size();
+}
+
+
 
 } // End namespace tl

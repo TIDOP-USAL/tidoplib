@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop licence test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/app/licence.h>
+#include <tidop/core/app/license.h>
 
 using namespace tl;
 
@@ -55,7 +55,7 @@ struct LicenceTest
                         "Everyone is permitted to copy and distribute verbatim copies"
                         "of this license document, but changing it is not allowed.";
                        
-        license2 = new Licence("PhotoMatch", "LGPL-3.0 license");
+        license2 = new License("PhotoMatch", "LGPL-3.0 license");
         license2->setUrl("https://github.com/TIDOP-USAL/photomatch");
         license2->setAuthor("author");
         license2->setAuthorEmail("user@email.com");
@@ -68,8 +68,8 @@ struct LicenceTest
 
     }
 
-    Licence license;
-    Licence *license2;
+    License license;
+    License *license2;
     std::string _license_text;
 };
 
@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(version, LicenceTest)
 
 BOOST_FIXTURE_TEST_CASE(get_author, LicenceTest)
 {
-    BOOST_CHECK_EQUAL("author", license2->autor());
+    BOOST_CHECK_EQUAL("author", license2->author());
 }
 
 BOOST_FIXTURE_TEST_CASE(get_url, LicenceTest)
@@ -133,7 +133,7 @@ BOOST_FIXTURE_TEST_CASE(set_version, LicenceTest)
 BOOST_FIXTURE_TEST_CASE(set_author, LicenceTest)
 {
     license2->setAuthor("author2");
-    BOOST_CHECK_EQUAL("author2", license2->autor());
+    BOOST_CHECK_EQUAL("author2", license2->author());
 }
 
 BOOST_FIXTURE_TEST_CASE(set_url, LicenceTest)
@@ -180,19 +180,19 @@ struct AppLicenceTest
                         "Copyright(C) 2007 Free Software Foundation, Inc. < https://fsf.org/>"
                         "Everyone is permitted to copy and distribute verbatim copies"
                         "of this license document, but changing it is not allowed.";
-        appLicense = new AppLicence;
+        appLicense = new AppLicense;
         appLicense->setProductName("GRAPHOS");
-        appLicense->setLicence("GPL-3.0 license");
+        appLicense->setLicenseName("GPL-3.0 license");
         appLicense->setUrl("https://github.com/TIDOP-USAL/graphos");
         appLicense->setAuthor("author");
         appLicense->setAuthorEmail("user@email.com");
         appLicense->setVersion("2.0.0");
         appLicense->setLicenseText(_license_text);
 
-        appLicense->push_back(Licence("Qt5", "GNU Lesser General Public License v3.0"));
-        appLicense->push_back(Licence("OpenCV", "Apache-2.0 license"));
-        appLicense->push_back(Licence("Boost", "Boost Software License 1.0"));
-        appLicense->push_back(Licence("TidopLib", "GNU Lesser General Public License v3.0"));
+        appLicense->push_back(License("Qt5", "GNU Lesser General Public License v3.0"));
+        appLicense->push_back(License("OpenCV", "Apache-2.0 license"));
+        appLicense->push_back(License("Boost", "Boost Software License 1.0"));
+        appLicense->push_back(License("TidopLib", "GNU Lesser General Public License v3.0"));
 
     }
 
@@ -201,7 +201,7 @@ struct AppLicenceTest
 
     }
 
-    AppLicence *appLicense;
+    AppLicense *appLicense;
     std::string _license_text;
 };
 
@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE(get_version, AppLicenceTest)
 
 BOOST_FIXTURE_TEST_CASE(get_author, AppLicenceTest)
 {
-    BOOST_CHECK_EQUAL("author", appLicense->autor());
+    BOOST_CHECK_EQUAL("author", appLicense->author());
 }
 
 BOOST_FIXTURE_TEST_CASE(get_url, AppLicenceTest)
@@ -260,7 +260,7 @@ BOOST_FIXTURE_TEST_CASE(set_version, AppLicenceTest)
 BOOST_FIXTURE_TEST_CASE(set_author, AppLicenceTest)
 {
     appLicense->setAuthor("author2");
-    BOOST_CHECK_EQUAL("author2", appLicense->autor());
+    BOOST_CHECK_EQUAL("author2", appLicense->author());
 }
 
 BOOST_FIXTURE_TEST_CASE(set_url, AppLicenceTest)
@@ -293,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE(begin, AppLicenceTest)
 
 BOOST_FIXTURE_TEST_CASE(push_back, AppLicenceTest)
 {
-    appLicense->push_back(Licence("COLMAP", "BSD-3"));
+    appLicense->push_back(License("COLMAP", "BSD-3"));
     BOOST_CHECK_EQUAL(5, appLicense->size());
 }
 
