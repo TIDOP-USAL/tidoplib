@@ -90,11 +90,6 @@
 namespace tl
 {
 
-namespace internal
-{
-class Path;
-}
-
 /*! \addtogroup Base
  *  \{
  */
@@ -120,7 +115,9 @@ class TL_EXPORT Path
 
 private:
 
-    std::unique_ptr<internal::Path> mPath;
+    //Pointer to implementation
+    class Impl; 
+    std::unique_ptr<Impl> mPath;
 
 public:
 

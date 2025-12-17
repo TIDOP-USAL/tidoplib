@@ -53,17 +53,13 @@ namespace tl
 
 /// \cond
 
-namespace internal
+class Path::Impl
 {
-
-class Path
-{
-
 public:
 
-    Path() = default;
+    Impl() = default;
 
-    explicit Path(const fs::path &path)
+    explicit Impl(const fs::path &path)
         : mPath(path.native())
     {
     }
@@ -101,34 +97,30 @@ public:
 private:
 
     fs::path mPath;
-
 };
-
-} // namespace internal
 
 /// \endcond
 
 
 
 Path::Path()
-  : mPath(new internal::Path())
+  : mPath(new Impl)
 {
 }
 
 Path::Path(const std::string &utf8Path)
-  : mPath(new internal::Path(tl::fromUtf8(utf8Path)))
+  : mPath(new Impl(tl::fromUtf8(utf8Path)))
 {
 }
 
 Path::Path(const std::wstring &path)
-  : mPath(new internal::Path(path))
+  : mPath(new Impl(path))
 {
 }
 
 Path::Path(const Path &path)
-  : mPath(new internal::Path(*path.mPath))
+  : mPath(new Impl(*path.mPath))
 {
-
 }
 
 Path::Path(Path &&path) TL_NOEXCEPT
@@ -142,7 +134,7 @@ Path::~Path()
 
 auto Path::operator=(const Path &path)  -> Path&
 {
-    mPath = std::make_unique<internal::Path>(*path.mPath);
+    mPath = std::make_unique<Impl>(*path.mPath);
 
     return *this;
 }
@@ -156,12 +148,12 @@ auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
 
 void Path::setPath(const std::string &utf8Path)
 {
-    mPath = std::make_unique<internal::Path>(tl::fromUtf8(utf8Path));
+    mPath = std::make_unique<Impl>(tl::fromUtf8(utf8Path));
 }
 
 void Path::setPath(const std::wstring &path)
 {
-    mPath = std::make_unique<internal::Path>(path);
+    mPath = std::make_unique<Impl>(path);
 }
 
 auto Path::toString() const -> std::string
@@ -400,7 +392,7 @@ void Path::normalize()
 
 void Path::clear()
 {
-    mPath = std::make_unique<internal::Path>("");
+    mPath = std::make_unique<Impl>("");
 }
 
 /* Static methods */
