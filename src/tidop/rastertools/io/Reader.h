@@ -186,6 +186,9 @@ public:
               const ImageMetadata &metadata = ImageMetadata(),
               const std::string &epsgCode = "") const;
 
+    void addOverviews(int levels,
+                      const std::shared_ptr<ImageOptions> &options = nullptr);
+
     /*!
      * \brief Returns the number of rows in the image
      * \return Number of rows in the image

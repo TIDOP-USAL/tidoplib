@@ -49,7 +49,8 @@ RasterReader::~RasterReader()
 
 void RasterReader::open(const tl::Path &file, Mode mode)
 {
-    mReader = ImageReaderFactory::create(file);
+    
+    mReader = ImageReaderFactory::create(file, static_cast<ImageReader::Mode>(static_cast<std::underlying_type<Mode>::type>(mode)));
     mReader->open();
 }
 
@@ -109,6 +110,12 @@ void RasterReader::copy(const tl::Path &outputPath,
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->copy(outputPath.toString(), options, metadata, epsgCode);
+}
+
+void RasterReader::addOverviews(int levels, const std::shared_ptr<ImageOptions> &options)
+{
+    TL_ASSERT(isOpen(), "RasterReader is not open");
+    return mReader->addOverviews(levels, options);
 }
 
 auto RasterReader::rows() const -> int

@@ -186,6 +186,23 @@ public:
      */
     auto operator[](const std::string &idx) -> T;
 
+    auto push_back(const T &value) -> void
+    {
+        mData.push_back(value);
+    }
+
+    auto push_back(const std::pair<std::string, T> &value) -> void
+    {
+        mStringIndex.push_back(value.first);
+        mData.push_back(value.second);
+    }
+
+    auto push_back(const std::pair<size_t, T> &value) -> void
+    {
+        mIndex.push_back(value.first);
+        mData.push_back(value.second);
+    }
+
     //void setData(std::initializer_list<T> data);
     //void setData(std::initializer_list<std::pair<std::string, T>> data);
     //void setData(std::initializer_list<std::pair<size_t, T>> data);

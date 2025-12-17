@@ -175,6 +175,9 @@ public:
                       std::shared_ptr<ImageOptions> options = nullptr,
                       const ImageMetadata &metadata = ImageMetadata(),
                       const std::string &epsgCode = "") const = 0;
+   
+    virtual void addOverviews(int levels,
+                              const std::shared_ptr<ImageOptions> &options = nullptr) = 0;
 
     /*!
      * \brief Retrieves the number of rows in the image.

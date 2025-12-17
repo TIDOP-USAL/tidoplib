@@ -515,6 +515,41 @@ void ImageReaderGdal::copy(const std::string &outputPath,
     }
 }
 
+void ImageReaderGdal::addOverviews(int levels, const std::shared_ptr<ImageOptions> &options)
+{
+    try {
+
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
+        TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+        TL_ASSERT(mDataset->GetAccess() == GA_Update, "The file has not been opened in update mode");
+
+        // Comprobar si existe piramides
+        TL_ASSERT(mDataset->GetRasterCount() > 0, "The dataset has no raster bands");
+        auto raster_band = mDataset->GetRasterBand(1);
+        if (raster_band->GetOverviewCount() > 0) {
+            Message::warning("The dataset already has overviews");
+            return;
+        }
+
+        std::vector<int> overview_levels;
+        int level = 2;
+        while (level <= levels) {
+            overview_levels.push_back(level);
+            level *= 2;
+        }
+        CPLErr cerr = mDataset->BuildOverviews("NEAREST",
+                                               static_cast<int>(overview_levels.size()),
+                                               overview_levels.data(),
+                                               0, nullptr, 
+                                               nullptr, //Capturar progreso
+                                               nullptr);
+        TL_ASSERT(cerr == CE_None, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
 auto ImageReaderGdal::rows() const -> int
 {
     int rows;

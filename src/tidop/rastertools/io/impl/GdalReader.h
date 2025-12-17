@@ -92,6 +92,8 @@ public:
               std::shared_ptr<ImageOptions> options = nullptr,
               const ImageMetadata &metadata = ImageMetadata(),
               const std::string &epsgCode = "") const override;
+    void addOverviews(int levels,
+                      const std::shared_ptr<ImageOptions> &options = nullptr) override;
     auto rows() const -> int override;
     auto cols() const -> int override;
     auto channels() const -> int override;
