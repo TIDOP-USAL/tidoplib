@@ -2996,7 +2996,7 @@ BOOST_FIXTURE_TEST_CASE(subtraction, MatrixRowTest)
     BOOST_CHECK_EQUAL(0, a[0][4]);
 }
 
-BOOST_FIXTURE_TEST_CASE(multiplication, MatrixRowTest)
+BOOST_FIXTURE_TEST_CASE(cwise_product, MatrixRowTest)
 {
     Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
                         {9, 6, 2, 3, 3},
@@ -3004,7 +3004,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixRowTest)
                         {5, 3, 3, 7, 6},
                         {5, 5, 7, 4, 7}};
 
-    auto v = a[0] * a[1];
+    auto v = a[0].cwiseProduct(a[1]);
 
     BOOST_CHECK_EQUAL(54, v[0]);
     BOOST_CHECK_EQUAL(48, v[1]);
@@ -3012,7 +3012,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixRowTest)
     BOOST_CHECK_EQUAL(21, v[3]);
     BOOST_CHECK_EQUAL(9, v[4]);
 
-    a[0] *= a[1];
+    a[0].cwiseProductInPlace(a[1]);
 
     BOOST_CHECK_EQUAL(54, a[0][0]);
     BOOST_CHECK_EQUAL(48, a[0][1]);
@@ -3026,7 +3026,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixRowTest)
                              {5., 3., 3., 7., 6.},
                              {5., 5., 7., 4., 7.}};
 
-    auto v_d = a_d[0] * a_d[1];
+    auto v_d = a_d[0].cwiseProduct(a_d[1]);
 
     BOOST_CHECK_EQUAL(54., v_d[0]);
     BOOST_CHECK_EQUAL(48., v_d[1]);
@@ -3036,7 +3036,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixRowTest)
 
 }
 
-BOOST_FIXTURE_TEST_CASE(division, MatrixRowTest)
+BOOST_FIXTURE_TEST_CASE(cwise_div, MatrixRowTest)
 {
     Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
                            {9, 6, 2, 3, 3},
@@ -3044,7 +3044,7 @@ BOOST_FIXTURE_TEST_CASE(division, MatrixRowTest)
                            {5, 3, 3, 7, 6},
                            {5, 5, 7, 4, 7}};
 
-    auto v = a[0] / a[1];
+    auto v = a[0].cwiseDiv(a[1]);
 
     BOOST_CHECK_CLOSE(0.6666666, v[0], 0.01);
     BOOST_CHECK_CLOSE(1.3333333, v[1], 0.01);
@@ -3052,7 +3052,7 @@ BOOST_FIXTURE_TEST_CASE(division, MatrixRowTest)
     BOOST_CHECK_CLOSE(2.3333333, v[3], 0.01);
     BOOST_CHECK_CLOSE(1, v[4], 0.01);
 
-    a[0] /= a[1];
+    a[0].cwiseDivInPlace(a[1]);
 
     BOOST_CHECK_CLOSE(0.6666666, a[0][0], 0.01);
     BOOST_CHECK_CLOSE(1.3333333, a[0][1], 0.01);
@@ -3463,7 +3463,7 @@ BOOST_FIXTURE_TEST_CASE(subtraction, MatrixColTest)
 
 }
 
-BOOST_FIXTURE_TEST_CASE(multiplication, MatrixColTest)
+BOOST_FIXTURE_TEST_CASE(cwise_product, MatrixColTest)
 {
     Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
                         {9, 6, 2, 3, 3},
@@ -3471,7 +3471,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixColTest)
                         {5, 3, 3, 7, 6},
                         {5, 5, 7, 4, 7}};
 
-    auto v = a.col(0) * a.col(1);
+    auto v = a.col(0).cwiseProduct(a.col(1));
 
     BOOST_CHECK_EQUAL(48, v[0]);
     BOOST_CHECK_EQUAL(54, v[1]);
@@ -3479,7 +3479,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixColTest)
     BOOST_CHECK_EQUAL(15, v[3]);
     BOOST_CHECK_EQUAL(25, v[4]);
 
-    a.col(0) *= a.col(1);
+    a.col(0).cwiseProductInPlace(a.col(1));
 
     BOOST_CHECK_EQUAL(48, a.col(0)[0]);
     BOOST_CHECK_EQUAL(54, a.col(0)[1]);
@@ -3489,7 +3489,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixColTest)
 
 }
 
-BOOST_FIXTURE_TEST_CASE(division, MatrixColTest)
+BOOST_FIXTURE_TEST_CASE(cwise_div, MatrixColTest)
 {
     Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
                            {9, 6, 2, 3, 3},
@@ -3497,7 +3497,7 @@ BOOST_FIXTURE_TEST_CASE(division, MatrixColTest)
                            {5, 3, 3, 7, 6},
                            {5, 5, 7, 4, 7}};
 
-    auto v = a.col(0) / a.col(1);
+    auto v = a.col(0).cwiseDiv(a.col(1));
 
     BOOST_CHECK_EQUAL(6 / 8., v[0]);
     BOOST_CHECK_EQUAL(9 / 6., v[1]);
@@ -3505,7 +3505,7 @@ BOOST_FIXTURE_TEST_CASE(division, MatrixColTest)
     BOOST_CHECK_EQUAL(5 / 3., v[3]);
     BOOST_CHECK_EQUAL(1, v[4]);
 
-    a.col(0) /= a.col(1);
+    a.col(0).cwiseDivInPlace(a.col(1));
 
     BOOST_CHECK_EQUAL(6 / 8., a.col(0)[0]);
     BOOST_CHECK_EQUAL(9 / 6., a.col(0)[1]);

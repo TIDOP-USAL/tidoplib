@@ -63,7 +63,14 @@ if(BUILD_TL_GEOMETRY)
                             shapes/rectangle.h
                             shapes/shape.h
                             shapes/square.h
-                            shapes/triangle.h)
+                            shapes/triangle.h
+                            base/Dimension.h
+                            base/Geometry.h
+                            base/EntityContainer.h
+                            #base/GeometryCollection.h
+                            base/Traits.h
+                            primitives/Point.h
+    )
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

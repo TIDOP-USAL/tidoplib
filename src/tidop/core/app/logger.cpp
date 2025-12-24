@@ -90,7 +90,7 @@ void Logger::logMessage(MessageLevel level, String level_name, String message)
 
 #if TL_CPP_VERSION>= 17
     constexpr std::string_view padding[] = {"", " ", "  ", "   "};
-    size_t level_len = levelName.length();
+    size_t level_len = level_name.length();
     std::string_view pad = (level_len < 7) ? padding[7 - level_len] : "";
     _stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
 #else

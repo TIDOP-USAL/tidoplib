@@ -486,7 +486,7 @@ void ImageReaderGdal::copy(const std::string &outputPath,
         if (options) {
             auto active_options = options->activeOptions();
 #if TL_CPP_VERSION>= 17
-            for (const auto &[name, value] : options) {
+            for (const auto &[name, value] : active_options) {
 #else
             for (const auto &option : active_options) {
                 auto &name = option.first;

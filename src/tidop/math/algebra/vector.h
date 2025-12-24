@@ -29,10 +29,11 @@
 #include <iomanip>
 
 #include "tidop/core/base/exception.h"
+#include "tidop/core/base/type_conversions.h"
 #include "tidop/math/math.h"
 #include "tidop/math/base/simd.h"
 #include "tidop/math/base/data.h"
-
+#include "tidop/math/base/Traits.h"
 
 namespace tl
 {
@@ -68,12 +69,13 @@ class Vector;
  * change at runtime. Otherwise, the vector will be static, with a fixed size defined
  * at compile time.
  */
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size
->
-class VectorBase<VectorDerived<T, _size>>
+template<typename Derived>
+class VectorBase 
 {
+
+    using T = typename VectorTraits<Derived>::value_type;
+    static constexpr size_t _size = VectorTraits<Derived>::size;
+    using result_type = typename VectorTraits<Derived>::result_type;
 
 public:
 
@@ -106,36 +108,41 @@ public:
      * \brief Calculates the magnitude (or length) of the vector.
      * \return The magnitude of the vector.
      */
-    auto module() const -> double;
+    template<typename U = Derived>
+    auto module() const -> std::enable_if_t<is_vector<U>::value, double>;
 
     /*!
      * \brief Normalizes the vector, making its magnitude equal to 1.
      */
-    auto normalize() -> void;
+    template<typename U = Derived>
+    auto normalize() -> std::enable_if_t<is_vector<U>::value &&std::is_floating_point_v<T>, void>;
 
     /*!
      * \brief Computes the dot product with another vector.
      * \param[in] vector Another vector to compute the dot product with.
-     * \tparam VectorDerived2 The type of the other vector.
+     * \tparam OtherDerived The type of the other vector.
      * \return The dot product as a double.
      */
-    template<typename VectorDerived2>
-    auto dotProduct(const VectorDerived2 &vector) const -> double;
+    template<typename OtherDerived>
+    auto dotProduct(const OtherDerived &vector) const -> double;
+
+    template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
+    auto cross(const OtherDerived &other) const -> result_type 
+    {
+        static_assert(_size == 3, "The cross product is only defined for 3 dimensions.");
+
+        result_type res{};
+        const auto &a = this->derived();
+        const auto &b = other.derived();
+
+        res[0] = a[1] * b[2] - a[2] * b[1];
+        res[1] = a[2] * b[0] - a[0] * b[2];
+        res[2] = a[0] * b[1] - a[1] * b[0];
+
+        return res;
+    }
 
     auto sum() const -> T;
-
-    /*!
-     * \brief Conversion operator to another vector type.
-     * \tparam VectorDerived2 The type to convert to.
-     * \return A new vector of type `VectorDerived2`.
-     */
-    template<typename VectorDerived2>
-    operator VectorDerived2() const
-    {
-        VectorDerived2 v;
-        v = this->derived();
-        return v;
-    }
 
     /* Unary arithmetic operators */
 
@@ -143,13 +150,13 @@ public:
      * \brief Unary plus operator.
      * \return A copy of the vector.
      */
-    auto operator+() const -> Vector<T, _size>;
+    auto operator+() const -> Derived;
 
     /*!
      * \brief Unary minus operator.
      * \return A negated copy of the vector.
      */
-    auto operator-() const -> Vector<T, _size>;
+    auto operator-() const -> Derived;
 
     /* Binary arithmetic operators */
 
@@ -158,107 +165,123 @@ public:
      * \param[in] vector2 The vector to add.
      * \return The sum of the vectors.
      */
-    auto operator+(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
-
+    template<typename U = Derived>
+    auto operator+(const Derived &vector2) const -> std::enable_if_t<is_vector<U>::value, result_type>;
+    
     /*!
      * \brief Subtracts one vector from another.
      * \param[in] vector2 The vector to subtract.
      * \return The difference of the vectors.
      */
-    auto operator-(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    auto operator-(const Derived &vector2) const -> result_type;
 
     /*!
      * \brief Multiplies two vectors element-wise.
      * \param[in] vector2 The vector to multiply.
      * \return The product of the vectors.
      */
-    auto operator*(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    //auto operator*(const Derived &vector2) const -> result_type;
+    template<typename U = Derived>
+    auto cwiseProduct(const Derived &vector) const -> std::enable_if_t<is_vector<U>::value, result_type>;
 
     /*!
      * \brief Divides two vectors element-wise.
      * \param[in] vector2 The vector to divide by.
      * \return The quotient of the vectors.
      */
-    auto operator/(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>;
+    //auto operator/(const Derived &vector2) const -> result_type;
+    template<typename U = Derived>
+    auto cwiseDiv(const Derived &vector) const -> std::enable_if_t<is_vector<U>::value, result_type>;
 
     /*!
      * \brief Multiplies the vector by a scalar.
      * \param[in] scalar The scalar to multiply by.
      * \return The scaled vector.
      */
-    auto operator*(T scalar) const -> Vector<T, _size>;
+    auto operator*(T scalar) const -> result_type;
+
+    // Operador binario correspondiente
+    template<typename Scalar, typename = std::enable_if_t<std::is_arithmetic_v<Scalar>>>
+    auto operator*(Scalar scalar) const->result_type;
 
     /*!
      * \brief Divides the vector by a scalar.
      * \param[in] scalar The scalar to divide by.
      * \return The scaled vector.
      */
-    auto operator/(T scalar) const -> Vector<T, _size>;
+    auto operator/(T scalar) const -> result_type;
 
     /*!
      * \brief Adds another vector to this vector.
      * \param[in] vector The vector to add.
-     * \tparam VectorDerived2 The type of the other vector.
+     * \tparam OtherDerived The type of the other vector.
      * \return A reference to this vector.
      */
-    template<typename VectorDerived2>
-    auto operator+=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
+    auto operator+=(const OtherDerived &vector) -> Derived &;
 
     /*!
      * \brief Subtracts another vector from this vector.
      * \param[in] vector The vector to subtract.
-     * \tparam VectorDerived2 The type of the other vector.
+     * \tparam OtherDerived The type of the other vector.
      * \return A reference to this vector.
      */
-    template<typename VectorDerived2>
-    auto operator-=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
+    auto operator-=(const OtherDerived &vector) -> Derived&;
 
     /*!
      * \brief Multiplies this vector by another vector element-wise.
      * \param[in] vector The vector to multiply by.
-     * \tparam VectorDerived2 The type of the other vector.
+     * \tparam OtherDerived The type of the other vector.
      * \return A reference to this vector.
      */
-    template<typename VectorDerived2>
-    auto operator*=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    //template<typename OtherDerived>
+    //auto operator*=(const OtherDerived &vector) -> Derived&;
+    template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
+    auto cwiseProductInPlace(const OtherDerived &vector) -> Derived &;
 
     /*!
      * \brief Divides this vector by another vector element-wise.
      * \param[in] vector The vector to divide by.
-     * \tparam VectorDerived2 The type of the other vector.
+     * \tparam OtherDerived The type of the other vector.
      * \return A reference to this vector.
      */
-    template<typename VectorDerived2>
-    auto operator/=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &;
+    //template<typename OtherDerived>
+    //auto operator/=(const OtherDerived &vector) -> Derived&;
+    template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
+    auto cwiseDivInPlace(const OtherDerived &vector) -> Derived &;
 
     /*!
      * \brief Multiplies the vector by a scalar.
      * \param[in] scalar The scalar to multiply by.
      * \return A reference to this vector.
      */
-    auto operator*=(T scalar) -> VectorDerived<T, _size> &;
+    auto operator*=(T scalar) -> Derived&;
+
+    template<typename Scalar, typename = std::enable_if_t<std::is_arithmetic_v<Scalar>>>
+    auto operator*=(Scalar scalar) -> Derived &;
 
     /*!
      * \brief Divides the vector by a scalar.
      * \param[in] scalar The scalar to divide by.
      * \return A reference to this vector.
      */
-    auto operator/=(T scalar) -> VectorDerived<T, _size> &;
+    auto operator/=(T scalar) -> Derived&;
 
 protected:
 
     /*!
      * \brief Sets the values of this vector to match another vector.
      * \param[in] vector The vector to copy values from.
-     * \tparam VectorDerived2 The type of the other vector.
+     * \tparam OtherDerived The type of the other vector.
      */
-    template<typename VectorDerived2>
-    void set(const VectorDerived2 &vector);
+    template<typename OtherDerived>
+    void set(const OtherDerived &vector);
 
-private:
+public:
 
-    auto derived() -> VectorDerived<T, _size> &;
-    auto derived() const -> const VectorDerived<T, _size> &;
+    auto derived() -> Derived&;
+    auto derived() const -> const Derived&;
 
 };
 
@@ -278,7 +301,7 @@ private:
  */
 template<typename T, size_t _size = DynamicData>
 class Vector
-    : public VectorBase<Vector<T, _size>>
+  : public VectorBase<Vector<T, _size>>
 {
 
 public:
@@ -324,6 +347,11 @@ public:
      * \param[in] values The values to initialize the vector with.
      */
     Vector(std::initializer_list<T> values);
+    //template<typename... Args, std::enable_if_t<sizeof...(Args) == _size, int> = 0>
+    //explicit Vector(Args... args)
+    //    : mData{static_cast<T>(args)...}
+    //{
+    //}
 
     /*!
      * \brief Constructs a vector from a raw pointer and size.
@@ -332,6 +360,9 @@ public:
      */
     Vector(T *data, size_t size);
 
+    template<typename OtherDerived>
+    Vector(const VectorBase<OtherDerived> &other);
+    
     ~Vector() = default;
 
     /*!
@@ -354,10 +385,8 @@ public:
      * \param vector The derived vector to assign from.
      * \return A reference to this vector.
      */
-    template<typename VectorDerived>
-    auto operator=(const VectorDerived &vector) -> Vector &;
-
-public:
+    template<typename OtherDerived>
+    auto operator=(const VectorBase<OtherDerived> &vector) -> Vector &;
 
     /*!
      * \brief Resizes the vector to a new size.
@@ -596,6 +625,59 @@ public:
      */
     static auto randon(size_t size = 0) -> Vector;
 
+    /*!
+     * \brief Convert to dynamic vector.
+     * Only works if this vector is static.
+     */
+    explicit operator Vector<T, DynamicData>() const
+    {
+        static_assert(_size != DynamicData,
+            "Cannot convert dynamic vector to dynamic vector. "
+            "It's already dynamic.");
+
+        Vector<T, DynamicData> result(_size);
+        for (size_t i = 0; i < _size; ++i) {
+            result[i] = (*this)[i];
+        }
+        return result;
+    }
+
+    /*!
+     * \brief Convert to static vector.
+     * For static vectors: same size only (compile-time check).
+     * For dynamic vectors: runtime size check.
+     */
+    template<size_t TargetSize>
+    explicit operator Vector<T, TargetSize>() const
+    {
+        if constexpr (_size != DynamicData) {
+            // Este vector es estático
+            static_assert(_size == TargetSize,
+                "Cannot convert static vector to different static size. "
+                "Use toDynamic() first.");
+
+            Vector<T, TargetSize> result;
+            for (size_t i = 0; i < TargetSize; ++i) {
+                result[i] = (*this)[i];
+            }
+            return result;
+        } else {
+            // Este vector es dinámico
+            static_assert(TargetSize != DynamicData,
+                "Cannot convert dynamic vector to dynamic vector.");
+
+            if (this->size() != TargetSize) {
+                throw std::invalid_argument("Size mismatch");
+            }
+
+            Vector<T, TargetSize> result;
+            for (size_t i = 0; i < TargetSize; ++i) {
+                result[i] = (*this)[i];
+            }
+            return result;
+        }
+    }
+
 private:
 
     Data<T, _size> _data;
@@ -624,26 +706,23 @@ using Vector4f = Vector<float, 4>;
 /*------------------------------------------------------------------------*/
 
 
-template<
-    template<typename, size_t _size = DynamicData>
-    class VectorDerived, typename T, size_t _size>
-VectorBase<VectorDerived<T, _size>>::VectorBase()
+template<typename Derived>
+VectorBase<Derived>::VectorBase()
 {
     this->properties.enable(Properties::contiguous_memory);
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::module() const -> double
+template<typename Derived>
+template<typename U>
+auto VectorBase<Derived>::module() const -> std::enable_if_t<is_vector<U>::value, double>
 {
     return sqrt(this->dotProduct(this->derived()));
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::normalize() -> void
+template<typename Derived>
+template<typename U>
+auto VectorBase<Derived>::normalize() -> std::enable_if_t<is_vector<U>::value &&
+                                         std::is_floating_point_v<T>, void>
 {
     double m = this->module();
     if (m > std::numeric_limits<T>::epsilon()) {
@@ -651,45 +730,9 @@ auto VectorBase<VectorDerived<T, _size>>::normalize() -> void
     }
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::sum() const -> T
-{
-    T summation{};
-
-    auto &derived = this->derived();
-    size_t i = 0;
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    using Scalar = std::remove_cv_t<T>;
-    Packed<Scalar> packed_a;
-    constexpr size_t packed_size = packed_a.size();
-    size_t max_vector = (derived.size() / packed_size) * packed_size;
-    
-    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory)) {
-
-        for (; i < max_vector; i += packed_size) {
-            packed_a.loadUnaligned(&derived[i]);
-            summation += packed_a.sum();
-        }
-
-    }
-
-#endif
-
-    for (; i < derived.size(); ++i) {
-        summation += derived[i];
-    }
-
-    return summation;
-}
-
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-template<typename VectorDerived2>
-auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived2 &vector) const -> double
+template<typename Derived>
+template<typename OtherDerived>
+auto VectorBase<Derived>::dotProduct(const OtherDerived &vector) const -> double
 {
     auto &derived = this->derived();
 
@@ -707,8 +750,8 @@ auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived2 &vecto
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
-        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
 
         for (; i < max_vector; i += packed_size) {
 
@@ -730,26 +773,55 @@ auto VectorBase<VectorDerived<T, _size>>::dotProduct(const VectorDerived2 &vecto
     return dot;
 }
 
+template<typename Derived>
+auto VectorBase<Derived>::sum() const -> T
+{
+    T summation{};
+
+    auto &derived = this->derived();
+    size_t i = 0;
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    using Scalar = std::remove_cv_t<T>;
+    Packed<Scalar> packed_a;
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+    
+    if (this->properties.isEnabled(Derived::Properties::contiguous_memory)) {
+
+        for (; i < max_vector; i += packed_size) {
+            packed_a.loadUnaligned(&derived[i]);
+            summation += packed_a.sum();
+        }
+
+    }
+
+#endif
+
+    for (; i < derived.size(); ++i) {
+        summation += derived[i];
+    }
+
+    return summation;
+}
+
+
 /* Unary arithmetic operators */
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator+() const -> Vector<T, _size>
+template<typename Derived>
+auto VectorBase<Derived>::operator+() const -> Derived
 {
     return this->derived();
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator-() const -> Vector<T, _size>
+template<typename Derived>
+auto VectorBase<Derived>::operator-() const -> Derived
 {
     static_assert(std::is_signed<T>::value, "Requires signed type");
 
     using Scalar = std::remove_cv_t<T>;
 
-    Vector<Scalar, _size> result = this->derived();
+    auto result = this->derived();
     size_t i = 0;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
@@ -757,7 +829,7 @@ auto VectorBase<VectorDerived<T, _size>>::operator-() const -> Vector<T, _size>
     constexpr size_t packed_size = packed_value.size();
     size_t max_vector = (result.size() / packed_size) * packed_size;
 
-    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory)) {
+    if (this->properties.isEnabled(Derived::Properties::contiguous_memory)) {
         for (; i < max_vector; i += packed_size) {
             packed_value.loadUnaligned(&result[i]);
             packed_value = - packed_value;
@@ -776,71 +848,73 @@ auto VectorBase<VectorDerived<T, _size>>::operator-() const -> Vector<T, _size>
 
 /* Binary arithmetic operators */
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator+(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
+template<typename Derived>
+template<typename U>
+auto VectorBase<Derived>::operator+(const Derived &vector2) const -> std::enable_if_t<is_vector<U>::value, result_type>
 {
-    Vector<T, _size> vector = this->derived();
+    result_type vector = this->derived();
     vector += vector2;
     return vector;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator-(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
+template<typename Derived>
+auto VectorBase<Derived>::operator-(const Derived &vector2) const -> result_type
 {
-    Vector<T, _size> vector = this->derived();
+    result_type vector = this->derived();
     vector -= vector2;
     return vector;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator*(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
+//template<typename Derived>
+//auto VectorBase<Derived>::operator*(const Derived &vector2) const -> result_type
+template<typename Derived>
+template<typename U>
+auto VectorBase<Derived>::cwiseProduct(const Derived &vector) const -> std::enable_if_t<is_vector<U>::value, result_type>
 {
-    Vector<T, _size> vector = this->derived();
-    vector *= vector2;
-    return vector;
+    result_type result = this->derived();
+    result.cwiseProductInPlace(vector);
+    return result;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator/(const VectorDerived<T, _size> &vector2) const -> Vector<T, _size>
+//template<typename Derived>
+//auto VectorBase<Derived>::operator/(const Derived &vector2) const -> result_type
+template<typename Derived>
+template<typename U>
+auto VectorBase<Derived>::cwiseDiv(const Derived &vector) const -> std::enable_if_t<is_vector<U>::value, result_type>
 {
-    Vector<T, _size> vector = this->derived();
-    vector /= vector2;
-    return vector;
+    result_type result = this->derived();
+    result.cwiseDivInPlace(vector);
+    return result;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator*(T scalar) const -> Vector<T, _size>
+template<typename Derived>
+auto VectorBase<Derived>::operator*(T scalar) const -> result_type
 {
-    Vector<T, _size> vector = this->derived();
+    result_type vector = this->derived();
     vector *= scalar;
     return vector;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator/(T scalar) const -> Vector<T, _size>
+template<typename Derived>
+template<typename Scalar, typename>
+auto VectorBase<Derived>::operator*(Scalar scalar) const -> result_type
 {
-    Vector<T, _size> vector = this->derived();
+    result_type result = this->derived();
+    result *= scalar;
+    return result;
+}
+
+template<typename Derived>
+auto VectorBase<Derived>::operator/(T scalar) const -> result_type
+{
+    result_type vector = this->derived();
     vector /= scalar;
     return vector;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-template<typename VectorDerived2>
-auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
+template<typename Derived>
+template<typename OtherDerived, typename>
+auto VectorBase<Derived>::operator+=(const OtherDerived &vector) -> Derived &
 {
     auto &derived = this->derived();
 
@@ -856,8 +930,8 @@ auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived2 &vecto
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
-        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
 
         for (; i < max_vector; i += packed_size) {
 
@@ -879,11 +953,9 @@ auto VectorBase<VectorDerived<T, _size>>::operator+=(const VectorDerived2 &vecto
     return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-template<typename VectorDerived2>
-auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
+template<typename Derived>
+template<typename OtherDerived, typename>
+auto VectorBase<Derived>::operator-=(const OtherDerived &vector) -> Derived &
 {
     auto &derived = this->derived();
 
@@ -900,8 +972,8 @@ auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived2 &vecto
 
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
-        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
 
         for (; i < max_vector; i += packed_size) {
 
@@ -922,11 +994,14 @@ auto VectorBase<VectorDerived<T, _size>>::operator-=(const VectorDerived2 &vecto
     return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-template<typename VectorDerived2>
-auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
+
+
+//template<typename Derived>
+//template<typename OtherDerived>
+//auto VectorBase<Derived>::operator*=(const OtherDerived &vector) -> Derived &
+template<typename Derived>
+template<typename OtherDerived, typename>
+auto VectorBase<Derived>::cwiseProductInPlace(const OtherDerived &vector) -> Derived &
 {
     auto &derived = this->derived();
 
@@ -941,8 +1016,8 @@ auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived2 &vecto
 
     constexpr size_t packed_size = packed_a.size();
 
-    if (this->properties.isEnabled(VectorDerived<T, _size>::Properties::contiguous_memory) &&
-        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
+        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
 
         size_t max_vector = (derived.size() / packed_size) * packed_size;
         for (; i < max_vector; i += packed_size) {
@@ -961,16 +1036,15 @@ auto VectorBase<VectorDerived<T, _size>>::operator*=(const VectorDerived2 &vecto
         derived[i] *= vector[i];
     }
 
-
-
     return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-template<typename VectorDerived2>
-auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived2 &vector) -> VectorDerived<T, _size> &
+//template<typename Derived>
+//template<typename OtherDerived>
+//auto VectorBase<Derived>::operator/=(const OtherDerived &vector)->Derived &
+template<typename Derived>
+template<typename OtherDerived, typename>
+auto VectorBase<Derived>::cwiseDivInPlace(const OtherDerived &vector) -> Derived &
 {
     auto &derived = this->derived();
 
@@ -987,7 +1061,7 @@ auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived2 &vecto
     size_t max_vector = (derived.size() / packed_size) * packed_size;
 
     if (this->properties.isEnabled(Properties::contiguous_memory) &&
-        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
+        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
 
         for (; i < max_vector; i += packed_size) {
 
@@ -1008,54 +1082,20 @@ auto VectorBase<VectorDerived<T, _size>>::operator/=(const VectorDerived2 &vecto
     return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-template<typename VectorDerived2>
-void VectorBase<VectorDerived<T, _size>>::set(const VectorDerived2 &vector)
+template<typename Derived>
+template<typename Scalar, typename>
+auto VectorBase<Derived>::operator*=(Scalar scalar) -> Derived &
 {
     auto &derived = this->derived();
 
-    if(_size == DynamicData) {
-        derived = VectorDerived<T, _size>(vector.size());
+    for (size_t i = 0; i < derived.size(); ++i) {
+        derived[i] = numberCast<T>(derived[i] * scalar);
     }
-
-    TL_ASSERT(derived.size() == vector.size(), "Static vector cannot be resized");
-
-    size_t i{0};
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-
-    Packed<T> packed_a;
-    Packed<T> packed_b;
-
-    constexpr size_t packed_size = packed_a.size();
-    size_t max_vector = (derived.size() / packed_size) * packed_size;
-
-    if (this->properties.isEnabled(Properties::contiguous_memory) &&
-        vector.properties.isEnabled(VectorDerived2::Properties::contiguous_memory)) {
-
-        for (; i < max_vector; i += packed_size) {
-
-            packed_a.loadUnaligned(&derived[i]);
-            packed_b.loadUnaligned(&vector[i]);
-            packed_a = packed_b;
-            packed_a.storeUnaligned(&derived[i]);
-
-        }
-    }
-
-#endif
-
-    for (; i < derived.size(); ++i) {
-        derived[i] = vector[i];
-    }
+    return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator*=(T scalar) -> VectorDerived<T, _size> &
+template<typename Derived>
+auto VectorBase<Derived>::operator*=(T scalar) -> Derived &
 {
     auto &derived = this->derived();
 
@@ -1088,10 +1128,8 @@ auto VectorBase<VectorDerived<T, _size>>::operator*=(T scalar) -> VectorDerived<
     return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorDerived<T, _size> &
+template<typename Derived>
+auto VectorBase<Derived>::operator/=(T scalar) -> Derived &
 {
     auto &derived = this->derived();
 
@@ -1126,20 +1164,58 @@ auto VectorBase<VectorDerived<T, _size>>::operator/=(T scalar) -> VectorDerived<
     return derived;
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::derived() -> VectorDerived<T, _size> &
+template<typename Derived>
+template<typename OtherDerived>
+void VectorBase<Derived>::set(const OtherDerived &vector)
 {
-    return *static_cast<VectorDerived<T, _size> *>(this);
+    auto &derived = this->derived();
+
+    if(_size == DynamicData) {
+        derived = Derived(vector.size());
+    }
+
+    TL_ASSERT(derived.size() == vector.size(), "Static vector cannot be resized");
+
+    size_t i{0};
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+
+    if (this->properties.isEnabled(Properties::contiguous_memory) &&
+        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
+
+        for (; i < max_vector; i += packed_size) {
+
+            packed_a.loadUnaligned(&derived[i]);
+            packed_b.loadUnaligned(&vector[i]);
+            packed_a = packed_b;
+            packed_a.storeUnaligned(&derived[i]);
+
+        }
+    }
+
+#endif
+
+    for (; i < derived.size(); ++i) {
+        derived[i] = vector[i];
+    }
 }
 
-template<
-    template<typename, size_t _size = DynamicData>
-class VectorDerived, typename T, size_t _size>
-auto VectorBase<VectorDerived<T, _size>>::derived() const -> const VectorDerived<T, _size> &
+template<typename Derived>
+auto VectorBase<Derived>::derived() -> Derived &
 {
-    return *static_cast<const VectorDerived<T, _size> *>(this);
+    return *static_cast<Derived *>(this);
+}
+
+template<typename Derived>
+auto VectorBase<Derived>::derived() const -> const Derived &
+{
+    return *static_cast<const Derived *>(this);
 }
 
 
@@ -1184,6 +1260,13 @@ Vector<T, _size>::Vector(T *data, size_t size)
 }
 
 template<typename T, size_t _size>
+template<typename OtherDerived>
+Vector<T, _size>::Vector(const VectorBase<OtherDerived> &other)
+{
+    this->set(other.derived());
+}
+
+template<typename T, size_t _size>
 auto Vector<T, _size>::operator=(const Vector &vector) -> Vector &
 {
     if (this != &vector) {
@@ -1204,10 +1287,10 @@ auto Vector<T, _size>::operator=(Vector &&vector) TL_NOEXCEPT -> Vector &
 }
 
 template<typename T, size_t _size>
-template<typename VectorDerived>
-auto Vector<T, _size>::operator=(const VectorDerived &vector) -> Vector &
+template<typename OtherDerived>
+auto Vector<T, _size>::operator=(const VectorBase<OtherDerived> &vector) -> Vector &
 {
-    VectorBase<Vector<T, _size>>::set(vector);
+    this->set(vector.derived());
     return (*this);
 }
 
@@ -1337,7 +1420,7 @@ template<typename T, size_t _size>
 auto Vector<T, _size>::z() const TL_NOEXCEPT -> const_reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
-    static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+    static_assert(_size > 2 && _size <= 4, "Method only supported for 3 or 4 element vectors");
     return _data[2];
 }
 
@@ -1345,7 +1428,7 @@ template<typename T, size_t _size>
 auto Vector<T, _size>::w() const TL_NOEXCEPT -> const_reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
-    static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+    static_assert(_size == 4, "Method only supported for 4 element vectors");
     return _data[3];
 }
 
@@ -1369,7 +1452,7 @@ template<typename T, size_t _size>
 auto Vector<T, _size>::z() TL_NOEXCEPT -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
-    static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+    static_assert(_size > 2 && _size <= 4, "Method only supported for 3 or 4 element vectors");
     return _data[2];
 }
 
@@ -1377,7 +1460,7 @@ template<typename T, size_t _size>
 auto Vector<T, _size>::w() TL_NOEXCEPT -> reference
 {
     static_assert(_size != DynamicData, "Unsupported method for dynamic vectors");
-    static_assert(_size >= 2 && _size <= 4, "Method only supported for 2, 3 or 4 element vectors");
+    static_assert(_size == 4, "Method only supported for 4 element vectors");
     return _data[3];
 }
 
@@ -1505,49 +1588,49 @@ auto operator -(Vector<T, _size>&& vector1,
 
 
 /* Multiplication */
-
-template<typename T, size_t _size>
-auto operator *(const Vector<T, _size>& vector1,
-                Vector<T, _size>&& vector2) -> Vector<T, _size>
-{
-    vector2 *= vector1;
-    return vector2;
-}
-
-template<typename T, size_t _size>
-auto operator *(Vector<T, _size>&& vector1,
-                const Vector<T, _size>& vector2) -> Vector<T, _size>
-{
-    vector1 *= vector2;
-    return vector1;
-}
-
-template<typename T, size_t _size>
-auto operator *(Vector<T, _size>&& vector1,
-                Vector<T, _size>&& vector2) -> Vector<T, _size>
-{
-    vector1 *= vector2;
-    return vector1;
-}
+//
+//template<typename T, size_t _size>
+//auto operator *(const Vector<T, _size>& vector1,
+//                Vector<T, _size>&& vector2) -> Vector<T, _size>
+//{
+//    vector2 *= vector1;
+//    return vector2;
+//}
+//
+//template<typename T, size_t _size>
+//auto operator *(Vector<T, _size>&& vector1,
+//                const Vector<T, _size>& vector2) -> Vector<T, _size>
+//{
+//    vector1 *= vector2;
+//    return vector1;
+//}
+//
+//template<typename T, size_t _size>
+//auto operator *(Vector<T, _size>&& vector1,
+//                Vector<T, _size>&& vector2) -> Vector<T, _size>
+//{
+//    vector1 *= vector2;
+//    return vector1;
+//}
 
 
 /* Division */
 
-template<typename T, size_t _size>
-auto operator /(Vector<T, _size>&& vector1,
-                const Vector<T, _size>& vector2) -> Vector<T, _size>
-{
-    vector1 /= vector2;
-    return vector1;
-}
-
-template<typename T, size_t _size>
-auto operator /(Vector<T, _size>&& vector1,
-                Vector<T, _size>&& vector2) -> Vector<T, _size>
-{
-    vector1 /= vector2;
-    return vector1;
-}
+//template<typename T, size_t _size>
+//auto operator /(Vector<T, _size>&& vector1,
+//                const Vector<T, _size>& vector2) -> Vector<T, _size>
+//{
+//    vector1 /= vector2;
+//    return vector1;
+//}
+//
+//template<typename T, size_t _size>
+//auto operator /(Vector<T, _size>&& vector1,
+//                Vector<T, _size>&& vector2) -> Vector<T, _size>
+//{
+//    vector1 /= vector2;
+//    return vector1;
+//}
 
 
 /* Multiplication vector * scalar */
@@ -1562,7 +1645,7 @@ auto operator *(Vector<T, _size>&& vector, T scalar) -> Vector<T, _size>
 template<
   template<typename, size_t _size = DynamicData>
   class VectorDerived, typename T, size_t _size>
-auto operator *(T scalar, const VectorDerived<T, _size>& vector) -> Vector<T, _size>
+auto operator *(T scalar, const VectorDerived<T, _size> &vector) -> Vector<T, _size>
 {
     Vector<T, _size> _vector = vector;
     _vector *= scalar;
@@ -1570,7 +1653,7 @@ auto operator *(T scalar, const VectorDerived<T, _size>& vector) -> Vector<T, _s
 }
 
 template<typename T, size_t _size>
-auto operator *(T scalar, Vector<T, _size>&& vector) -> Vector<T, _size>
+auto operator *(T scalar, Vector<T, _size> &&vector) -> Vector<T, _size>
 {
     vector *= scalar;
     return vector;
@@ -1699,6 +1782,7 @@ T vectorAngle(const Vector<T, 2> &v1, const Vector<T, 2> &v2)
 
 
 /*! \} */
+
 
 } // End namespace tl
 

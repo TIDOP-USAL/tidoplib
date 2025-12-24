@@ -62,6 +62,7 @@ if(BUILD_TL_MATH)
                              base/data.h
                              base/lapack.h
                              base/simd.h
+                             base/Traits.h
                              geometry/affine.h
                              geometry/helmert.h
                              geometry/rotation.h
