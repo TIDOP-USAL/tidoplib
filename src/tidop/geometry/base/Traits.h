@@ -89,10 +89,21 @@ struct geometry_traits<Segment<Point_t>>
     static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
     static constexpr GeometryType type = GeometryType::segment;
 
-    using value_type = geometry_traits<Point_t>::value_type;
+    using value_type = typename geometry_traits<Point_t>::value_type;
 };
 
+template<typename Point_t> class BoundingBox;
 
+template<typename Point_t>
+struct geometry_traits<BoundingBox<Point_t>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = false;
+    static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
+    static constexpr GeometryType type = GeometryType::bbox;
+
+    using value_type = typename Point_t::value_type;
+};
 
 /* HELPER ALIASES AND VARIABLES */
 

@@ -268,6 +268,27 @@ public:
      */
     auto operator/=(T scalar) -> Derived&;
 
+    /*!
+     * \brief Equality operator restricted to the same type.
+     */
+    friend auto operator == (const Derived &lhs, const Derived &rhs) -> bool
+    {
+        for (std::size_t i = 0; i < VectorTraits<Derived>::size; ++i) {
+            if (lhs[i] != rhs[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*!
+     * \brief Inequality operator.
+     */
+    friend auto operator != (const Derived &lhs, const Derived &rhs) -> bool
+    {
+        return !(lhs == rhs);
+    }
+
 protected:
 
     /*!
@@ -1139,22 +1160,24 @@ auto VectorBase<Derived>::operator/=(T scalar) -> Derived &
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-    Packed<T> packed_a;
-    Packed<T> packed_b(scalar);
+    if constexpr (!std::is_integral_v<T>) {
 
-    constexpr size_t packed_size = packed_a.size();
-    size_t max_vector = (derived.size() / packed_size) * packed_size;
+        Packed<T> packed_a;
+        Packed<T> packed_b(scalar);
 
-    if (this->properties.isEnabled(Properties::contiguous_memory)) {
-        for (; i < max_vector; i += packed_size) {
+        constexpr size_t packed_size = packed_a.size();
+        size_t max_vector = (derived.size() / packed_size) * packed_size;
 
-            packed_a.loadUnaligned(&derived[i]);
-            packed_a /= packed_b;
-            packed_a.storeUnaligned(&derived[i]);
+        if (this->properties.isEnabled(Properties::contiguous_memory)) {
+            for (; i < max_vector; i += packed_size) {
 
+                packed_a.loadUnaligned(&derived[i]);
+                packed_a /= packed_b;
+                packed_a.storeUnaligned(&derived[i]);
+
+            }
         }
     }
-
 #endif
 
     for (; i < derived.size(); ++i) {

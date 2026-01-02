@@ -70,6 +70,8 @@ if(BUILD_TL_GEOMETRY)
                             #base/GeometryCollection.h
                             base/Traits.h
                             primitives/Point.h
+                            primitives/Segment.h
+                            spatial/BoundingBox.h
     )
         
     add_library(${PROJECT_NAME} ${LIB_TYPE}

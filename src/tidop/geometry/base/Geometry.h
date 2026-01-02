@@ -73,6 +73,9 @@ class GeometryBase
   : public Geometry
 {
 
+    //static constexpr GeometryType type = geometry_traits<Derived>::type;
+    //static constexpr Dimension _dimension = geometry_traits<Derived>::dimension;
+
 public:
 
     constexpr auto type() const noexcept -> GeometryType final
