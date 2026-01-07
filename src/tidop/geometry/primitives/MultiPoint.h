@@ -24,61 +24,46 @@
 
 #pragma once
 
-#include "tidop/config.h"
+#include "tidop/core/base/type_conversions.h"
+#include "tidop/geometry/base/Dimension.h"
+#include "tidop/geometry/base/Geometry.h"
+#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/EntityContainer.h"
+#include "tidop/math/algebra/vector.h"
+
+#include <array>
 
 namespace tl
 {
-
-template<typename T, size_t _size> class Vector;
-namespace internal
+	
+namespace geometry
 {
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
+	
+/*! \addtogroup GeometricEntities
+ *  \{
+ */
+
+template<typename Point_t>
+class MultiPoint 
+  : public GeometryBase<MultiPoint<Point_t>>, 
+    public EntityContainer<Point_t> 
+{
+	
+public:
+
+    using EntityContainer<Point_t>::EntityContainer;
+};
+
+
+using MultiPoint2i = MultiPoint<Point2i>;
+using MultiPoint3i = MultiPoint<Point3i>;
+using MultiPoint2f = MultiPoint<Point2f>;
+using MultiPoint3f = MultiPoint<Point3f>;
+using MultiPoint2d = MultiPoint<Point2d>;
+using MultiPoint3d = MultiPoint<Point3d>;
+
+/*! \} */
+
+
 }
-
-template<typename D>
-struct VectorTraits;
-
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-
-
-template<typename D>
-struct is_vector : std::false_type {};
-
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
-
-
-template<typename T>
-struct is_point : std::false_type {};
-
 }

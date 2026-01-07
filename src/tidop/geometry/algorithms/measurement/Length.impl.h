@@ -24,61 +24,77 @@
 
 #pragma once
 
-#include "tidop/config.h"
+#include <cmath>
+#include "tidop/geometry/algorithms/measurement/Distance.h"
 
 namespace tl
 {
-
-template<typename T, size_t _size> class Vector;
-namespace internal
+	
+namespace geometry
 {
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
+
+namespace detail 
+{
+
+template<typename Point_t>
+auto length_impl(const Point_t &, point_tag) -> double
+{
+    return typename geometry_traits<Point_t>::value_type{0};
 }
 
-template<typename D>
-struct VectorTraits;
-
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
+template<typename Segment_t>
+auto length_impl(const Segment_t &s, segment_tag) -> double
 {
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-
-
-template<typename D>
-struct is_vector : std::false_type {};
-
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
-
-
-template<typename T>
-struct is_point : std::false_type {};
-
+    return (s.pt2() - s.pt1()).module();
 }
+
+template<typename LineString_t>
+auto length_impl(const LineString_t &ls, linestring_tag) -> double 
+{
+    if (ls.size() < 2) return 0.0;
+
+    double total = 0.0;
+    for (std::size_t i = 0; i < ls.size() - 1; ++i) {
+        total += distance(ls[i], ls[i + 1]);
+    }
+    return total;
+}
+
+template<typename Ring_t>
+auto calculate_ring_perimeter(const Ring_t &ring) -> double
+{
+    if (ring.size() < 2) return 0.0;
+
+    double p = 0.0;
+    std::size_t n = ring.size();
+
+    for (std::size_t i = 0; i < n; ++i) {
+        p += distance(ring[i], ring[(i + 1) % n]);
+    }
+
+    return p;
+}
+
+template<typename Polygon_t>
+auto length_impl(const Polygon_t &poly, polygon_tag) -> double
+{
+    double total = calculate_ring_perimeter(poly.outer());
+
+    for (const auto &inner : poly.inners()) {
+        total += calculate_ring_perimeter(inner);
+    }
+
+    return total;
+}
+
+} // namespace detail
+
+// API
+template<typename Geometry>
+auto length(const Geometry& g) -> double
+{
+    return detail::length_impl(g, geometry_tag_t<Geometry>{});
+}
+
+} // namespace tl
+} // namespace geometry

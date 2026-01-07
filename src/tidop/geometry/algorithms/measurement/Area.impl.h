@@ -24,61 +24,78 @@
 
 #pragma once
 
-#include "tidop/config.h"
+#include <cmath>
 
 namespace tl
 {
-
-template<typename T, size_t _size> class Vector;
-namespace internal
+	
+namespace geometry
 {
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
+
+namespace detail 
+{
+
+template<typename Ring_t>
+auto calculate_ring_area(const Ring_t &ring) -> double
+{
+    if (ring.size() < 3) return 0.0;
+
+    double area = 0.0;
+    size_t n = ring.size();
+
+    for (size_t i = 0; i < n; ++i) {
+        const auto &p1 = ring[i];
+        const auto &p2 = ring[(i + 1) % n]; // Conecta el último con el primero
+        area += (p1.x() * p2.y()) - (p2.x() * p1.y());
+    }
+
+    return area * 0.5;
 }
 
-template<typename D>
-struct VectorTraits;
 
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
+template<typename Point_t>
+auto area_impl(const Point_t &, point_tag) { return 0.0; }
+
+template<typename Segment_t>
+auto area_impl(const Segment_t &, segment_tag) { return 0.0; }
+
+template<typename Polygon_t>
+auto area_impl(const Polygon_t &poly, polygon_tag)
 {
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
+    double total_area = std::abs(calculate_ring_area(poly.outer()));
+    for (const auto &inner : poly.inners()) {
+        total_area -= std::abs(calculate_ring_area(inner));
+    }
 
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-
-
-template<typename D>
-struct is_vector : std::false_type {};
-
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
-
-
-template<typename T>
-struct is_point : std::false_type {};
-
+    return total_area;
 }
+
+template<typename MultiPolygon_t>
+auto area_impl(const MultiPolygon_t &multiPolygon, multipolygon_tag) -> double
+{
+    double total_area = 0.0;
+
+    for (const auto &polygon : multiPolygon) {
+        total_area += area(polygon);
+    }
+
+    return total_area;
+}
+
+// Depende de si es 2D o 3D
+//template<typename BoundingBox_t>
+//auto area_impl(const BoundingBox_t &box, bbox_tag) -> double
+//{
+//    return static_cast<double>(box.width()) * box.height();
+//}
+
+} // namespace detail
+
+template<typename Geometry_t>
+auto area(const Geometry_t &g)
+{
+    return detail::area_impl(g, geometry_tag_t<Geometry_t>{});
+}
+
+} // namespace tl
+} // namespace geometry

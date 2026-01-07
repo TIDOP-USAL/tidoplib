@@ -34,7 +34,7 @@ using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(LineStringTestSuite)
 
-std::initializer_list<Point<int>> initializer_list_line_string_integer 
+std::initializer_list<Point<int>> initializer_list_line_string_integer
 {
   Point<int>(34, 34),
   Point<int>(45, 54),
@@ -61,76 +61,76 @@ std::initializer_list<Point<double>> initializer_list_line_string_double
 struct LineStringTest
 {
 
-  LineStringTest()
-    : line_string_integer(nullptr),
-      line_string_double(nullptr),
-      line_string_float(nullptr),
-      line_string_integer_copy(nullptr),
-      line_string_double_copy(nullptr),
-      line_string_float_copy(nullptr),
-      line_string_constructor_reserve(nullptr),
-      line_string_constructor_vector(nullptr)
-  {
+    LineStringTest()
+      : line_string_integer(nullptr),
+        line_string_double(nullptr),
+        line_string_float(nullptr),
+        line_string_integer_copy(nullptr),
+        line_string_double_copy(nullptr),
+        line_string_float_copy(nullptr),
+        line_string_constructor_reserve(nullptr),
+        line_string_constructor_vector(nullptr)
+    {
 
-  }
+    }
 
-  ~LineStringTest()
-  {
-    delete line_string_integer;
-    delete line_string_double;
-    delete line_string_float;
-    delete line_string_integer_copy;
-    delete line_string_double_copy;
-    delete line_string_float_copy;
-    delete line_string_constructor_reserve;
-    delete line_string_constructor_vector;
-  }
+    ~LineStringTest()
+    {
+        delete line_string_integer;
+        delete line_string_double;
+        delete line_string_float;
+        delete line_string_integer_copy;
+        delete line_string_double_copy;
+        delete line_string_float_copy;
+        delete line_string_constructor_reserve;
+        delete line_string_constructor_vector;
+    }
 
-  void setup()
-  {
+    void setup()
+    {
 
-    v_d.push_back(Point<double>(41572.22, 6647.89));
-    v_d.push_back(Point<double>(41490.43, 6888.36));
-    v_d.push_back(Point<double>(41728.03, 6903.40));
-    v_d.push_back(Point<double>(41771.48, 6429.97));
-    v_d.push_back(Point<double>(41370.12, 6718.08));
-    v_d.push_back(Point<double>(41462.92, 6669.53));
-    v_d.push_back(Point<double>(41387.59, 7026.70));
+        v_d.push_back(Point<double>(41572.22, 6647.89));
+        v_d.push_back(Point<double>(41490.43, 6888.36));
+        v_d.push_back(Point<double>(41728.03, 6903.40));
+        v_d.push_back(Point<double>(41771.48, 6429.97));
+        v_d.push_back(Point<double>(41370.12, 6718.08));
+        v_d.push_back(Point<double>(41462.92, 6669.53));
+        v_d.push_back(Point<double>(41387.59, 7026.70));
 
-    line_string_integer = new LineString<Point<int>>(initializer_list_line_string_integer);
-    line_string_double = new LineString<Point<double>>(initializer_list_line_string_double);
-    line_string_float = new LineString<Point<float>>();
+        line_string_integer = new LineString<Point<int>>(initializer_list_line_string_integer);
+        line_string_double = new LineString<Point<double>>(initializer_list_line_string_double);
+        line_string_float = new LineString<Point<float>>();
 
-    line_string_integer_copy = new LineString<Point<int>>(*line_string_integer);
-    line_string_double_copy = new LineString<Point<double>>(*line_string_double);
-    line_string_float_copy = new LineString<Point<float>>(*line_string_float);
-    
-    line_string_constructor_reserve = new LineString<Point<int>>(10);
+        line_string_integer_copy = new LineString<Point<int>>(*line_string_integer);
+        line_string_double_copy = new LineString<Point<double>>(*line_string_double);
+        line_string_float_copy = new LineString<Point<float>>(*line_string_float);
 
-    line_string_constructor_vector = new LineString<Point<double>>(v_d);
-  }
- 
-  void teardown()
-  {
+        line_string_constructor_reserve = new LineString<Point<int>>(10);
 
-  }
+        line_string_constructor_vector = new LineString<Point<double>>(v_d);
+    }
 
-  std::vector<Point<double>> v_d;
+    void teardown()
+    {
 
-  LineString<Point<int>> line_string_default_constructor_integer;
-  LineString<Point<double>> line_string_default_constructor_double;
-  LineString<Point<float>> line_string_default_constructor_float;
+    }
 
-  LineString<Point<int>> *line_string_integer;
-  LineString<Point<double>> *line_string_double;
-  LineString<Point<float>> *line_string_float;
-  LineString<Point<int>> *line_string_integer_copy;
-  LineString<Point<double>> *line_string_double_copy;
-  LineString<Point<float>> *line_string_float_copy;
+    std::vector<Point<double>> v_d;
 
-  LineString<Point<int>> *line_string_constructor_reserve;
+    LineString<Point<int>> line_string_default_constructor_integer;
+    LineString<Point<double>> line_string_default_constructor_double;
+    LineString<Point<float>> line_string_default_constructor_float;
 
-  LineString<Point<double>> *line_string_constructor_vector;
+    LineString<Point<int>> *line_string_integer;
+    LineString<Point<double>> *line_string_double;
+    LineString<Point<float>> *line_string_float;
+    LineString<Point<int>> *line_string_integer_copy;
+    LineString<Point<double>> *line_string_double_copy;
+    LineString<Point<float>> *line_string_float_copy;
+
+    LineString<Point<int>> *line_string_constructor_reserve;
+
+    LineString<Point<double>> *line_string_constructor_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, LineStringTest)

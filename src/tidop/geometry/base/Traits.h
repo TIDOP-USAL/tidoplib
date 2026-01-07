@@ -37,7 +37,13 @@ namespace geometry
 	
 template<typename T, Dimension D> class Point;
 template<typename Point_t> class Segment;
-
+template<typename Point_t> class LineString;
+template<typename Point_t> class LinearRing;
+template<typename Point_t> class Polygon;
+template<typename Point_t> class MultiPoint;
+template<typename Point_t> class MultiLineString;
+template<typename Point_t> class MultiPolygon;
+template<typename Point_t> class BoundingBox;
 template<typename T> class Circle;
 
 /*! \addtogroup GeometricEntities
@@ -57,6 +63,8 @@ enum class GeometryType
     bbox
 };
 
+
+/* GEOMETRY TRAITS */
 
 template<typename G>
 struct geometry_traits
@@ -90,9 +98,74 @@ struct geometry_traits<Segment<Point_t>>
     static constexpr GeometryType type = GeometryType::segment;
 
     using value_type = typename geometry_traits<Point_t>::value_type;
+    using point_type = Point_t;
 };
 
-template<typename Point_t> class BoundingBox;
+template<typename Point_t>
+struct geometry_traits<LineString<Point_t>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = false;
+    static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
+    static constexpr GeometryType type = GeometryType::linestring;
+
+    using value_type = typename geometry_traits<Point_t>::value_type;
+    using point_type = Point_t;
+};
+
+template<typename Point_t>
+struct geometry_traits<LinearRing<Point_t>>
+{
+    static constexpr bool is_geometry = false;
+};
+
+template<typename Point_t>
+struct geometry_traits<Polygon<Point_t>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = false;
+    static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
+    static constexpr GeometryType type = GeometryType::polygon;
+
+    using value_type = typename geometry_traits<Point_t>::value_type;
+    using point_type = Point_t;
+};
+
+template<typename Point_t>
+struct geometry_traits<MultiPoint<Point_t>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = true;
+    static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
+    static constexpr GeometryType type = GeometryType::multipoint;
+
+    using value_type = typename geometry_traits<Point_t>::value_type;
+    using point_type = Point_t;
+};
+
+template<typename Point_t>
+struct geometry_traits<MultiLineString<Point_t>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = true;
+    static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
+    static constexpr GeometryType type = GeometryType::multilinestring;
+
+    using value_type = typename geometry_traits<Point_t>::value_type;
+    using point_type = Point_t;
+};
+
+template<typename Point_t>
+struct geometry_traits<MultiPolygon<Point_t>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = true;
+    static constexpr Dimension dimension = geometry_traits<Point_t>::dimension;
+    static constexpr GeometryType type = GeometryType::multipolygon;
+
+    using value_type = typename geometry_traits<Point_t>::value_type;
+    using point_type = Point_t;
+};
 
 template<typename Point_t>
 struct geometry_traits<BoundingBox<Point_t>>
@@ -103,7 +176,36 @@ struct geometry_traits<BoundingBox<Point_t>>
     static constexpr GeometryType type = GeometryType::bbox;
 
     using value_type = typename Point_t::value_type;
+    using point_type = Point_t;
 };
+
+
+/* GEOMETRY TAGS */
+
+struct point_tag {};
+struct segment_tag {};
+struct bbox_tag {};
+struct linestring_tag {};
+struct polygon_tag {};
+struct multipoint_tag {};
+struct multipolygon_tag {};
+struct multilinestring_tag {};
+
+template<GeometryType> struct geometry_tag;
+
+template<> struct geometry_tag<GeometryType::point> { using type = point_tag; };
+template<> struct geometry_tag<GeometryType::segment> { using type = segment_tag; };
+template<> struct geometry_tag<GeometryType::bbox> { using type = bbox_tag; };
+template<> struct geometry_tag<GeometryType::linestring> { using type = linestring_tag; };
+template<> struct geometry_tag<GeometryType::polygon> { using type = polygon_tag; };
+template<> struct geometry_tag<GeometryType::multipoint> { using type = multipoint_tag; };
+template<> struct geometry_tag<GeometryType::multipolygon> { using type = multipolygon_tag; };
+template<> struct geometry_tag<GeometryType::multilinestring> { using type = multilinestring_tag; };
+
+template<typename G>
+using geometry_tag_t =
+typename geometry_tag<geometry_traits<G>::type>::type;
+
 
 /* HELPER ALIASES AND VARIABLES */
 
@@ -194,5 +296,7 @@ struct VectorTraits<geometry::Point<T, D>>
     using difference_type = Vector<T, static_cast<std::size_t>(D)>;
 };
 
+template<typename T, geometry::Dimension D>
+struct is_point<geometry::Point<T, D>> : std::true_type {};
 
 }

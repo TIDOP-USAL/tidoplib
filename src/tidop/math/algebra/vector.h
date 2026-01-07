@@ -1558,6 +1558,21 @@ auto Vector<T, _size>::randon(size_t size) -> Vector
 
 /* Addition */
 
+template<typename PointDerived, typename VectorDerived,
+    typename = std::enable_if_t<
+    is_point<PointDerived>::value &&
+    is_vector<VectorDerived>::value>>
+auto operator+(const PointDerived &p, const VectorDerived &v) -> PointDerived
+{
+    PointDerived res = p;
+    constexpr std::size_t N = VectorTraits<PointDerived>::size;
+
+    for (std::size_t i = 0; i < N; ++i)
+        res[i] += v[i];
+
+    return res;
+}
+
 template<typename T, size_t _size>
 auto operator +(Vector<T, _size>& vector1,
                 Vector<T, _size>&& vector2) -> Vector<T, _size>

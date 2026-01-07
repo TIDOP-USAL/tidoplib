@@ -24,61 +24,69 @@
 
 #pragma once
 
-#include "tidop/config.h"
+#include <utility>
+
+#include "tidop/geometry/base/Dimension.h"
+#include "tidop/geometry/base/Geometry.h"
+#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/EntityContainer.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/geometry/algorithms/measurement/Length.h"
 
 namespace tl
 {
 
-template<typename T, size_t _size> class Vector;
-namespace internal
+namespace geometry 
 {
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
+	
+/*! \addtogroup GeometricEntities
+ *  \{
+ */
+
+ /**
+  * \brief A LineString is a Curve with linear interpolation between points.
+  */
+template<typename Point_t>
+class LineString 
+  : public GeometryBase<LineString<Point_t>>,
+    public EntityContainer<Point_t>
+{
+
+public:
+
+    using EntityContainer<Point_t>::EntityContainer;
+
+    auto numPoints() const { return this->size(); }
+
+    // Un acceso rápido para saber si es cerrada
+    bool isClosed() const
+    {
+        if (this->size() < 2) return false;
+        return this->front() == this->back();
+    }
+
+    auto boundingBox() const
+    {
+        return tl::geometry::envelope(*this);
+    }
+
+    auto length() const -> double
+    {
+        return tl::geometry::length(*this);
+    }
+};
+
+using LineString2i = LineString<Point2i>;
+using LineString2f = LineString<Point2f>;
+using LineString2d = LineString<Point2d>;
+using LineString3i = LineString<Point3i>;
+using LineString3f = LineString<Point3f>;
+using LineString3d = LineString<Point3d>;
+
+/*! \} */
+
 }
-
-template<typename D>
-struct VectorTraits;
-
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-
-
-template<typename D>
-struct is_vector : std::false_type {};
-
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
-
-
-template<typename T>
-struct is_point : std::false_type {};
 
 }

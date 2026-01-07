@@ -21,64 +21,51 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
+#define BOOST_TEST_MODULE Tidop algorithms length test
+#include <boost/test/unit_test.hpp>
+#include <tidop/geometry/algorithms/measurement/Length.h>
+#include <tidop/geometry/primitives/Segment.h>
 
-#pragma once
 
-#include "tidop/config.h"
+using namespace tl; 
+using namespace geometry;
 
-namespace tl
+
+BOOST_AUTO_TEST_SUITE(LengthAlgorithmsTestSuite)
+
+struct LengthAlgorithms
 {
+    LengthAlgorithms()
+    {
 
-template<typename T, size_t _size> class Vector;
-namespace internal
+    }
+
+    ~LengthAlgorithms()
+    {
+
+    }
+
+    void setup()
+    {
+        segment = Segment<geometry::Point2d>(geometry::Point2d(56.23, 123.5), geometry::Point2d(96.2, 34.4));
+    }
+
+    void teardown()
+    {
+
+    }
+
+    geometry::Point2d point;
+    Segment<geometry::Point2d> segment;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(distance, LengthAlgorithms)
 {
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
+    BOOST_CHECK_CLOSE(0., tl::geometry::length(point), 0.1);
+    BOOST_CHECK_CLOSE(97.6545, tl::geometry::length(segment), 0.1);
 }
 
-template<typename D>
-struct VectorTraits;
 
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-
-
-template<typename D>
-struct is_vector : std::false_type {};
-
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
-
-
-template<typename T>
-struct is_point : std::false_type {};
-
-}
+BOOST_AUTO_TEST_SUITE_END()

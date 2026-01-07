@@ -176,13 +176,13 @@ public:
     }
 
     // Contención Genérica
-    auto containsPoint(const Point_t &pt) const -> bool
-    {
-        for (size_t i = 0; i < _size; ++i) {
-            if (pt[i] < mPoints[0][i] || pt[i] > mPoints[1][i]) return false;
-        }
-        return true;
-    }
+    //auto containsPoint(const Point_t &pt) const -> bool
+    //{
+    //    for (size_t i = 0; i < _size; ++i) {
+    //        if (pt[i] < mPoints[0][i] || pt[i] > mPoints[1][i]) return false;
+    //    }
+    //    return true;
+    //}
 
     // Propiedades geométricas
     auto center() const -> Point_t

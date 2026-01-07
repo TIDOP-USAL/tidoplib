@@ -40,6 +40,16 @@ if(BUILD_TL_GEOMETRY)
                             bbox.h
                             rect.h
                             window.h
+                            algorithms/analysis/Contains.h
+                            algorithms/analysis/Contains.impl.h
+                            algorithms/measurement/Area.h
+                            algorithms/measurement/Area.impl.h
+                            algorithms/measurement/Distance.h
+                            algorithms/measurement/Distance.impl.h
+                            algorithms/measurement/Length.h
+                            algorithms/measurement/Length.impl.h
+                            algorithms/spatial/Envelope.h
+                            algorithms/spatial/Envelope.impl.h
                             algorithms/algorithms.h
                             algorithms/vector.h
                             algorithms/distance.h
@@ -69,8 +79,13 @@ if(BUILD_TL_GEOMETRY)
                             base/EntityContainer.h
                             #base/GeometryCollection.h
                             base/Traits.h
+                            primitives/LineString.h
                             primitives/Point.h
+                            primitives/Polygon.h
                             primitives/Segment.h
+                            primitives/MultiPoint.h
+                            primitives/MultiLinestring.h
+                            primitives/MultiPolygon.h
                             spatial/BoundingBox.h
     )
         

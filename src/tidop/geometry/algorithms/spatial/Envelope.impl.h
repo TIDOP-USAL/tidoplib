@@ -24,61 +24,70 @@
 
 #pragma once
 
-#include "tidop/config.h"
+#include <cmath>
+
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
-
-template<typename T, size_t _size> class Vector;
-namespace internal
+	
+namespace geometry
 {
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
+
+namespace detail
+{
+
+template<typename Point_t>
+auto envelope_impl(const Point_t &p, point_tag) 
+{
+    return BoundingBox<Point_t>(p, p);
 }
 
-template<typename D>
-struct VectorTraits;
-
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
+template<typename Segment_t>
+auto envelope_impl(const Segment_t &s, segment_tag)
 {
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
-{
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
-};
-
-
-
-template<typename D>
-struct is_vector : std::false_type {};
-
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
-
-template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
-
-
-template<typename T>
-struct is_point : std::false_type {};
-
+    return BoundingBox<typename Segment_t::value_type>(s.pt1(), s.pt2());
 }
+
+template<typename Container_t>
+auto envelope_from_container(const Container_t &container)
+{
+    using Point_t = typename Container_t::value_type;
+    if (container.empty()) return BoundingBox<Point_t>();
+
+    Point_t min_p = container[0];
+    Point_t max_p = container[0];
+
+    for (const auto &p : container) {
+        for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
+            if (p[i] < min_p[i]) min_p[i] = p[i];
+            if (p[i] > max_p[i]) max_p[i] = p[i];
+        }
+    }
+    return BoundingBox<Point_t>(min_p, max_p);
+}
+
+
+template<typename Poly_t>
+auto envelope_impl(const Poly_t &poly, polygon_tag)
+{
+    return envelope_from_container(poly.outer());
+}
+
+template<typename MultiPoint_t>
+auto envelope_impl(const MultiPoint_t &mp, multipoint_tag)
+{
+    return envelope_from_container(mp);
+}
+
+} // namespace detail
+
+
+template<typename Geometry_t>
+auto envelope(const Geometry_t &g) 
+{
+    return detail::envelope_impl(g, geometry_tag_t<Geometry_t>{});
+}
+
+} // namespace tl
+} // namespace geometry

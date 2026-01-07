@@ -26,17 +26,13 @@
 
 #include <utility>
 
-//#include "tidop/math/mathutils.h"
-//#include "tidop/geometry/entities/point.h"
-//#include "tidop/geometry/entities/entity.h"
-//#include "tidop/geometry/window.h"
-//#include "tidop/geometry/algorithms/angle.h"
-//#include "tidop/geometry/algorithms/distance.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/geometry/algorithms/measurement/Length.h"
 
 namespace tl
 {
@@ -174,16 +170,16 @@ public:
     //auto window() const -> Window<Point_t>;
     auto boundingBox() const
     {
-        return BoundingBox<Point_t>(mPoints[0], mPoints[1]);
+        return tl::geometry::envelope(*this);
     }
 
     /**
      * \brief Alias for boundingBox() to follow OGC/GIS standards.
      */
-    auto envelope() const
-    {
-        return boundingBox();
-    }
+    //auto envelope() const
+    //{
+    //    return boundingBox();
+    //}
 
     /*!
      * \brief Checks if the segment is empty (i.e., both endpoints are identical).
@@ -368,7 +364,7 @@ auto Segment<Point_t>::isEmpty() const -> bool
 template<typename Point_t>
 auto Segment<Point_t>::length() const -> double
 { 
-    return (mPoints[1] - mPoints[0]).module();
+    return tl::geometry::length(*this);
 }
 
 

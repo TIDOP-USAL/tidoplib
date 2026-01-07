@@ -32,6 +32,8 @@
 
 #include <tidop/geometry/base/Dimension.h>
 #include <tidop/geometry/primitives/Point.h>
+#include <tidop/geometry/primitives/MultiPoint.h>
+#include <tidop/geometry/algorithms/spatial/Envelope.h>
 
 using namespace tl;
 
@@ -904,352 +906,352 @@ BOOST_AUTO_TEST_CASE(to_string)
 
 /* MultiPoint */
 
-BOOST_AUTO_TEST_SUITE(MultiPointTestSuite)
-
-struct MultiPointTest
-{
-
-    MultiPointTest()
-      : multiPointD(nullptr),
-        multiPointVector(nullptr)
-    {
-
-    }
-
-    ~MultiPointTest()
-    {
-        delete multiPointD;
-        delete multiPointVector;
-
-    }
-
-    void setup()
-    {
-        multiPointD = new MultiPointD();
-        multiPointD->push_back(Point<double>(23.6, 94.4));
-        multiPointD->push_back(Point<double>(75.36, 246.33));
-        multiPointD->push_back(Point<double>(256.6, 619.3));
-        multiPointD->push_back(Point<double>(62.36, 6.60));
-
-        std::vector<Point<double>> vector{
-          Point<double>(23.6, 94.4),
-          Point<double>(75.36, 246.33),
-          Point<double>(256.6, 619.3),
-          Point<double>(62.36, 6.60)};
-
-        multiPointVector = new MultiPointD(vector);
-    }
-
-    void teardown()
-    {
-
-    }
-
-
-    MultiPointD *multiPointD;
-    MultiPointD *multiPointVector;
-};
-
-
-BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPointTest)
-{
-    MultiPoint<Point<int>> multiPoint;
-
-    BOOST_CHECK_EQUAL(false, multiPoint.is3D());
-    BOOST_CHECK_EQUAL(true, multiPoint.empty());
-    BOOST_CHECK_EQUAL(0, multiPoint.size());
-    BOOST_CHECK(Entity::Type::multipoint2d == multiPoint.type());
-    WindowI w = multiPoint.window();
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.x);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.y);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.x);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.y);
-}
-
-BOOST_FIXTURE_TEST_CASE(reserve_constructor, MultiPointTest)
-{
-    MultiPointD multiPoint(10);
-    WindowD w = multiPoint.window();
-
-    BOOST_CHECK_EQUAL(10, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
-    BOOST_CHECK_EQUAL(0., w.pt1.x);
-    BOOST_CHECK_EQUAL(0., w.pt1.y);
-    BOOST_CHECK_EQUAL(0., w.pt2.x);
-    BOOST_CHECK_EQUAL(0., w.pt2.y);
-}
-
-BOOST_FIXTURE_TEST_CASE(vector_constructor, MultiPointTest)
-{
-    BOOST_CHECK(multiPointVector->type() == Entity::Type::multipoint2d);
-    BOOST_CHECK_EQUAL(4, multiPointVector->size());
-    BOOST_CHECK(multiPointVector->at(0) == Point<double>(23.6, 94.4));
-    BOOST_CHECK(multiPointVector->at(1) == Point<double>(75.36, 246.33));
-    BOOST_CHECK(multiPointVector->at(2) == Point<double>(256.6, 619.3));
-    BOOST_CHECK(multiPointVector->at(3) == Point<double>(62.36, 6.60));
-}
-
-BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPointTest)
-{
-    MultiPointD multiPoint(*multiPointD);
-
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
-    WindowD w = multiPoint.window();
-    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
-    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
-    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
-    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
-    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
-    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
-    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
-    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
-    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
-    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
-}
-
-BOOST_FIXTURE_TEST_CASE(move_constructor, MultiPointTest)
-{
-    MultiPointD multiPoint1(*multiPointD);
-    MultiPointD multiPoint(std::move(multiPoint1));
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
-    WindowD w = multiPoint.window();
-    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
-    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
-    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
-    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
-    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
-    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
-    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
-    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
-    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
-    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
-}
-
-BOOST_FIXTURE_TEST_CASE(copy_assing_operator, MultiPointTest)
-{
-    MultiPointD multiPoint;
-    multiPoint = *multiPointD;
-
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
-    WindowD w = multiPoint.window();
-    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
-    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
-    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
-    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
-    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
-    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
-    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
-    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
-    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
-    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
-}
-
-BOOST_FIXTURE_TEST_CASE(move_assing_operator, MultiPointTest)
-{
-    MultiPointD multiPoint1(*multiPointD);
-    MultiPointD multiPoint;
-    multiPoint = std::move(multiPoint1);
-
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
-    WindowD w = multiPoint.window();
-    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
-    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
-    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
-    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
-    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
-    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
-    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
-    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
-    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
-    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-
-/* MultiPoint3D */
-
-BOOST_AUTO_TEST_SUITE(MultiPoint3DTestSuite)
-
-struct MultiPoint3DTest
-{
-
-    MultiPoint3DTest()
-        : multiPointD(nullptr),
-        multiPointVector(nullptr)
-    {
-
-    }
-
-    ~MultiPoint3DTest()
-    {
-        delete multiPointD;
-        delete multiPointVector;
-
-    }
-
-    void setup()
-    {
-        multiPointD = new MultiPoint3D<Point3<double>>();
-        multiPointD->push_back(Point3<double>(23.6, 94.4, 2.));
-        multiPointD->push_back(Point3<double>(75.36, 246.33, 23.2));
-        multiPointD->push_back(Point3<double>(256.6, 619.3, 42.3));
-        multiPointD->push_back(Point3<double>(62.36, 6.60, 12.6));
-
-        std::vector<Point3<double>> vector{
-          Point3<double>(23.6, 94.4, 2.),
-          Point3<double>(75.36, 246.33, 23.2),
-          Point3<double>(256.6, 619.3, 42.3),
-          Point3<double>(62.36, 6.60, 12.6)};
-
-        multiPointVector = new MultiPoint3D<Point3<double>>(vector);
-    }
-
-    void teardown()
-    {
-
-    }
-
-
-    MultiPoint3D<Point3<double>> *multiPointD;
-    MultiPoint3D<Point3<double>> *multiPointVector;
-};
-
-
-BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPoint3DTest)
-{
-    MultiPoint3D<Point3<int>> multiPoint;
-
-    BOOST_CHECK_EQUAL(true, multiPoint.is3D());
-    BOOST_CHECK_EQUAL(true, multiPoint.empty());
-    BOOST_CHECK_EQUAL(0, multiPoint.size());
-    BOOST_CHECK(Entity::Type::multipoint3d == multiPoint.type());
-    BoundingBox<Point3<int>> box = multiPoint.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.x);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.y);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.z);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2.x);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2.y);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2.z);
-}
-
-BOOST_FIXTURE_TEST_CASE(reserve_constructor, MultiPoint3DTest)
-{
-    MultiPoint3D<Point3<int>> multiPoint(10);
-
-    BOOST_CHECK_EQUAL(10, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
-    BoundingBox<Point3<int>> box = multiPoint.boundingBox();
-    BOOST_CHECK_EQUAL(0, box.pt1.x);
-    BOOST_CHECK_EQUAL(0, box.pt1.y);
-    BOOST_CHECK_EQUAL(0, box.pt1.z);
-    BOOST_CHECK_EQUAL(0, box.pt2.x);
-    BOOST_CHECK_EQUAL(0, box.pt2.y);
-    BOOST_CHECK_EQUAL(0, box.pt2.z);
-}
-
-BOOST_FIXTURE_TEST_CASE(vector_constructor, MultiPoint3DTest)
-{
-    BOOST_CHECK(multiPointVector->type() == Entity::Type::multipoint3d);
-    BOOST_CHECK_EQUAL(4, multiPointVector->size());
-    BOOST_CHECK(multiPointVector->at(0) == Point3<double>(23.6, 94.4, 2.));
-    BOOST_CHECK(multiPointVector->at(1) == Point3<double>(75.36, 246.33, 23.2));
-    BOOST_CHECK(multiPointVector->at(2) == Point3<double>(256.6, 619.3, 42.3));
-    BOOST_CHECK(multiPointVector->at(3) == Point3<double>(62.36, 6.60, 12.6));
-}
-
-BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPoint3DTest)
-{
-    MultiPoint3D<Point3<double>> multiPoint(*multiPointD);
-
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
-    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
-    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
-    BOOST_CHECK_EQUAL(2., box.pt1.z);
-    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
-    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
-    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
-    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
-    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
-    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
-}
-
-BOOST_FIXTURE_TEST_CASE(move_constructor, MultiPoint3DTest)
-{
-    MultiPoint3D<Point3<double>> multiPoint1(*multiPointD);
-    MultiPoint3D<Point3<double>> multiPoint(std::move(multiPoint1));
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
-    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
-    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
-    BOOST_CHECK_EQUAL(2., box.pt1.z);
-    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
-    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
-    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
-    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
-    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
-    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
-}
-
-BOOST_FIXTURE_TEST_CASE(copy_assing_operator, MultiPoint3DTest)
-{
-    MultiPoint3D<Point3<double>> multiPoint;
-    multiPoint = *multiPointD;
-
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
-    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
-    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
-    BOOST_CHECK_EQUAL(2., box.pt1.z);
-    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
-    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
-    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
-    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
-    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
-    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
-}
-
-BOOST_FIXTURE_TEST_CASE(move_assing_operator, MultiPoint3DTest)
-{
-    MultiPoint3D<Point3<double>> multiPoint1(*multiPointD);
-    MultiPoint3D<Point3<double>> multiPoint;
-    multiPoint = std::move(multiPoint1);
-
-    BOOST_CHECK_EQUAL(4, multiPoint.size());
-    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
-    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
-    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
-    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
-    BOOST_CHECK_EQUAL(2., box.pt1.z);
-    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
-    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
-    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
-    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
-    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
-    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
-    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
-}
-
-BOOST_AUTO_TEST_SUITE_END()
+//BOOST_AUTO_TEST_SUITE(MultiPointTestSuite)
+//
+//struct MultiPointTest
+//{
+//
+//    MultiPointTest()
+//      : multiPointD(nullptr),
+//        multiPointVector(nullptr)
+//    {
+//
+//    }
+//
+//    ~MultiPointTest()
+//    {
+//        delete multiPointD;
+//        delete multiPointVector;
+//
+//    }
+//
+//    void setup()
+//    {
+//        multiPointD = new MultiPointD();
+//        multiPointD->push_back(Point<double>(23.6, 94.4));
+//        multiPointD->push_back(Point<double>(75.36, 246.33));
+//        multiPointD->push_back(Point<double>(256.6, 619.3));
+//        multiPointD->push_back(Point<double>(62.36, 6.60));
+//
+//        std::vector<Point<double>> vector{
+//          Point<double>(23.6, 94.4),
+//          Point<double>(75.36, 246.33),
+//          Point<double>(256.6, 619.3),
+//          Point<double>(62.36, 6.60)};
+//
+//        multiPointVector = new MultiPointD(vector);
+//    }
+//
+//    void teardown()
+//    {
+//
+//    }
+//
+//
+//    MultiPointD *multiPointD;
+//    MultiPointD *multiPointVector;
+//};
+//
+//
+//BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPointTest)
+//{
+//    MultiPoint<Point<int>> multiPoint;
+//
+//    BOOST_CHECK_EQUAL(false, multiPoint.is3D());
+//    BOOST_CHECK_EQUAL(true, multiPoint.empty());
+//    BOOST_CHECK_EQUAL(0, multiPoint.size());
+//    BOOST_CHECK(Entity::Type::multipoint2d == multiPoint.type());
+//    WindowI w = multiPoint.window();
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.x);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.y);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.x);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.y);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(reserve_constructor, MultiPointTest)
+//{
+//    MultiPointD multiPoint(10);
+//    WindowD w = multiPoint.window();
+//
+//    BOOST_CHECK_EQUAL(10, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
+//    BOOST_CHECK_EQUAL(0., w.pt1.x);
+//    BOOST_CHECK_EQUAL(0., w.pt1.y);
+//    BOOST_CHECK_EQUAL(0., w.pt2.x);
+//    BOOST_CHECK_EQUAL(0., w.pt2.y);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(vector_constructor, MultiPointTest)
+//{
+//    BOOST_CHECK(multiPointVector->type() == Entity::Type::multipoint2d);
+//    BOOST_CHECK_EQUAL(4, multiPointVector->size());
+//    BOOST_CHECK(multiPointVector->at(0) == Point<double>(23.6, 94.4));
+//    BOOST_CHECK(multiPointVector->at(1) == Point<double>(75.36, 246.33));
+//    BOOST_CHECK(multiPointVector->at(2) == Point<double>(256.6, 619.3));
+//    BOOST_CHECK(multiPointVector->at(3) == Point<double>(62.36, 6.60));
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPointTest)
+//{
+//    MultiPointD multiPoint(*multiPointD);
+//
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
+//    WindowD w = multiPoint.window();
+//    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
+//    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
+//    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
+//    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
+//    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
+//    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
+//    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
+//    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
+//    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
+//    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(move_constructor, MultiPointTest)
+//{
+//    MultiPointD multiPoint1(*multiPointD);
+//    MultiPointD multiPoint(std::move(multiPoint1));
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
+//    WindowD w = multiPoint.window();
+//    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
+//    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
+//    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
+//    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
+//    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
+//    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
+//    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
+//    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
+//    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
+//    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(copy_assing_operator, MultiPointTest)
+//{
+//    MultiPointD multiPoint;
+//    multiPoint = *multiPointD;
+//
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
+//    WindowD w = multiPoint.window();
+//    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
+//    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
+//    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
+//    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
+//    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
+//    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
+//    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
+//    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
+//    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
+//    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(move_assing_operator, MultiPointTest)
+//{
+//    MultiPointD multiPoint1(*multiPointD);
+//    MultiPointD multiPoint;
+//    multiPoint = std::move(multiPoint1);
+//
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
+//    WindowD w = multiPoint.window();
+//    BOOST_CHECK_EQUAL(23.6, w.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, w.pt1.y);
+//    BOOST_CHECK_EQUAL(256.6, w.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, w.pt2.y);
+//    BOOST_CHECK_EQUAL(23.6, multiPoint.at(0).x);
+//    BOOST_CHECK_EQUAL(94.4, multiPoint.at(0).y);
+//    BOOST_CHECK_EQUAL(75.36, multiPoint.at(1).x);
+//    BOOST_CHECK_EQUAL(246.33, multiPoint.at(1).y);
+//    BOOST_CHECK_EQUAL(256.6, multiPoint.at(2).x);
+//    BOOST_CHECK_EQUAL(619.3, multiPoint.at(2).y);
+//    BOOST_CHECK_EQUAL(62.36, multiPoint.at(3).x);
+//    BOOST_CHECK_EQUAL(6.60, multiPoint.at(3).y);
+//}
+//
+//BOOST_AUTO_TEST_SUITE_END()
+//
+//
+///* MultiPoint3D */
+//
+//BOOST_AUTO_TEST_SUITE(MultiPoint3DTestSuite)
+//
+//struct MultiPoint3DTest
+//{
+//
+//    MultiPoint3DTest()
+//        : multiPointD(nullptr),
+//        multiPointVector(nullptr)
+//    {
+//
+//    }
+//
+//    ~MultiPoint3DTest()
+//    {
+//        delete multiPointD;
+//        delete multiPointVector;
+//
+//    }
+//
+//    void setup()
+//    {
+//        multiPointD = new MultiPoint3D<Point3<double>>();
+//        multiPointD->push_back(Point3<double>(23.6, 94.4, 2.));
+//        multiPointD->push_back(Point3<double>(75.36, 246.33, 23.2));
+//        multiPointD->push_back(Point3<double>(256.6, 619.3, 42.3));
+//        multiPointD->push_back(Point3<double>(62.36, 6.60, 12.6));
+//
+//        std::vector<Point3<double>> vector{
+//          Point3<double>(23.6, 94.4, 2.),
+//          Point3<double>(75.36, 246.33, 23.2),
+//          Point3<double>(256.6, 619.3, 42.3),
+//          Point3<double>(62.36, 6.60, 12.6)};
+//
+//        multiPointVector = new MultiPoint3D<Point3<double>>(vector);
+//    }
+//
+//    void teardown()
+//    {
+//
+//    }
+//
+//
+//    MultiPoint3D<Point3<double>> *multiPointD;
+//    MultiPoint3D<Point3<double>> *multiPointVector;
+//};
+//
+//
+//BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPoint3DTest)
+//{
+//    MultiPoint3D<Point3<int>> multiPoint;
+//
+//    BOOST_CHECK_EQUAL(true, multiPoint.is3D());
+//    BOOST_CHECK_EQUAL(true, multiPoint.empty());
+//    BOOST_CHECK_EQUAL(0, multiPoint.size());
+//    BOOST_CHECK(Entity::Type::multipoint3d == multiPoint.type());
+//    BoundingBox<Point3<int>> box = multiPoint.boundingBox();
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.x);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.y);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.z);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2.x);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2.y);
+//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2.z);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(reserve_constructor, MultiPoint3DTest)
+//{
+//    MultiPoint3D<Point3<int>> multiPoint(10);
+//
+//    BOOST_CHECK_EQUAL(10, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
+//    BoundingBox<Point3<int>> box = multiPoint.boundingBox();
+//    BOOST_CHECK_EQUAL(0, box.pt1.x);
+//    BOOST_CHECK_EQUAL(0, box.pt1.y);
+//    BOOST_CHECK_EQUAL(0, box.pt1.z);
+//    BOOST_CHECK_EQUAL(0, box.pt2.x);
+//    BOOST_CHECK_EQUAL(0, box.pt2.y);
+//    BOOST_CHECK_EQUAL(0, box.pt2.z);
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(vector_constructor, MultiPoint3DTest)
+//{
+//    BOOST_CHECK(multiPointVector->type() == Entity::Type::multipoint3d);
+//    BOOST_CHECK_EQUAL(4, multiPointVector->size());
+//    BOOST_CHECK(multiPointVector->at(0) == Point3<double>(23.6, 94.4, 2.));
+//    BOOST_CHECK(multiPointVector->at(1) == Point3<double>(75.36, 246.33, 23.2));
+//    BOOST_CHECK(multiPointVector->at(2) == Point3<double>(256.6, 619.3, 42.3));
+//    BOOST_CHECK(multiPointVector->at(3) == Point3<double>(62.36, 6.60, 12.6));
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPoint3DTest)
+//{
+//    MultiPoint3D<Point3<double>> multiPoint(*multiPointD);
+//
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
+//    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
+//    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
+//    BOOST_CHECK_EQUAL(2., box.pt1.z);
+//    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
+//    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
+//    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
+//    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
+//    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
+//    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(move_constructor, MultiPoint3DTest)
+//{
+//    MultiPoint3D<Point3<double>> multiPoint1(*multiPointD);
+//    MultiPoint3D<Point3<double>> multiPoint(std::move(multiPoint1));
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
+//    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
+//    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
+//    BOOST_CHECK_EQUAL(2., box.pt1.z);
+//    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
+//    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
+//    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
+//    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
+//    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
+//    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(copy_assing_operator, MultiPoint3DTest)
+//{
+//    MultiPoint3D<Point3<double>> multiPoint;
+//    multiPoint = *multiPointD;
+//
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
+//    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
+//    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
+//    BOOST_CHECK_EQUAL(2., box.pt1.z);
+//    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
+//    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
+//    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
+//    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
+//    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
+//    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(move_assing_operator, MultiPoint3DTest)
+//{
+//    MultiPoint3D<Point3<double>> multiPoint1(*multiPointD);
+//    MultiPoint3D<Point3<double>> multiPoint;
+//    multiPoint = std::move(multiPoint1);
+//
+//    BOOST_CHECK_EQUAL(4, multiPoint.size());
+//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint3d);
+//    BoundingBox<Point3<double>> box = multiPoint.boundingBox();
+//    BOOST_CHECK_EQUAL(23.6, box.pt1.x);
+//    BOOST_CHECK_EQUAL(6.60, box.pt1.y);
+//    BOOST_CHECK_EQUAL(2., box.pt1.z);
+//    BOOST_CHECK_EQUAL(256.6, box.pt2.x);
+//    BOOST_CHECK_EQUAL(619.3, box.pt2.y);
+//    BOOST_CHECK_EQUAL(42.3, box.pt2.z);
+//    BOOST_CHECK(multiPoint.at(0) == Point3<double>(23.6, 94.4, 2.));
+//    BOOST_CHECK(multiPoint.at(1) == Point3<double>(75.36, 246.33, 23.2));
+//    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
+//    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
+//}
+//
+//BOOST_AUTO_TEST_SUITE_END()
 
 
 
@@ -2114,84 +2116,91 @@ BOOST_AUTO_TEST_CASE(point_multiplication)
 //        BOOST_CHECK_EQUAL("25.3 27.52 1.5", oss.str());
 //    }
 //}
-//
-///* MultiPoint */
-//
-//BOOST_AUTO_TEST_SUITE(MultiPointTestSuite)
-//
-//struct MultiPointTest
-//{
-//
-//    MultiPointTest()
-//        : multiPointD(nullptr),
-//        multiPointVector(nullptr)
-//    {
-//
-//    }
-//
-//    ~MultiPointTest()
-//    {
-//        delete multiPointD;
-//        delete multiPointVector;
-//
-//    }
-//
-//    void setup()
-//    {
-//        multiPointD = new MultiPointD();
-//        multiPointD->push_back(Point<double>(23.6, 94.4));
-//        multiPointD->push_back(Point<double>(75.36, 246.33));
-//        multiPointD->push_back(Point<double>(256.6, 619.3));
-//        multiPointD->push_back(Point<double>(62.36, 6.60));
-//
-//        std::vector<Point<double>> vector{
-//          Point<double>(23.6, 94.4),
-//          Point<double>(75.36, 246.33),
-//          Point<double>(256.6, 619.3),
-//          Point<double>(62.36, 6.60)};
-//
-//        multiPointVector = new MultiPointD(vector);
-//    }
-//
-//    void teardown()
-//    {
-//
-//    }
-//
-//
-//    MultiPointD *multiPointD;
-//    MultiPointD *multiPointVector;
-//};
-//
-//
-//BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPointTest)
-//{
-//    MultiPoint<Point<int>> multiPoint;
-//
-//    BOOST_CHECK_EQUAL(false, multiPoint.is3D());
-//    BOOST_CHECK_EQUAL(true, multiPoint.empty());
-//    BOOST_CHECK_EQUAL(0, multiPoint.size());
-//    BOOST_CHECK(Entity::Type::multipoint2d == multiPoint.type());
-//    WindowI w = multiPoint.window();
-//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.x);
-//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1.y);
-//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.x);
-//    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2.y);
-//}
-//
-//BOOST_FIXTURE_TEST_CASE(reserve_constructor, MultiPointTest)
-//{
-//    MultiPointD multiPoint(10);
-//    WindowD w = multiPoint.window();
-//
-//    BOOST_CHECK_EQUAL(10, multiPoint.size());
-//    BOOST_CHECK(multiPoint.type() == Entity::Type::multipoint2d);
-//    BOOST_CHECK_EQUAL(0., w.pt1.x);
-//    BOOST_CHECK_EQUAL(0., w.pt1.y);
-//    BOOST_CHECK_EQUAL(0., w.pt2.x);
-//    BOOST_CHECK_EQUAL(0., w.pt2.y);
-//}
-//
+
+/* MultiPoint */
+
+BOOST_AUTO_TEST_SUITE(MultiPointTestSuite)
+
+struct MultiPointTest
+{
+
+    void setup()
+    {
+        multiPoint2d.emplace_back(23.6, 94.4);
+        multiPoint2d.emplace_back(75.36, 246.33);
+        multiPoint2d.emplace_back(256.6, 619.3);
+        multiPoint2d.emplace_back(62.36, 6.60);
+
+        multiPoint3d.emplace_back(23.6, 94.4, 2.);
+        multiPoint3d.emplace_back(75.36, 246.33, 23.2);
+        multiPoint3d.emplace_back(256.6, 619.3, 42.3);
+        multiPoint3d.emplace_back(62.36, 6.60, 12.6);
+
+        //std::vector<Point<double>> vector{
+        //  Point<double>(23.6, 94.4),
+        //  Point<double>(75.36, 246.33),
+        //  Point<double>(256.6, 619.3),
+        //  Point<double>(62.36, 6.60)};
+    }
+
+    void teardown()
+    {
+
+    }
+
+
+    geometry::MultiPoint2d multiPoint2d;
+    geometry::MultiPoint3d multiPoint3d;
+
+};
+
+BOOST_AUTO_TEST_CASE(initializer_list_constructor)
+{
+    geometry::MultiPoint2d mp = {geometry::Point2d(0,0), geometry::Point2d(10,10), geometry::Point2d(20,20)};
+    BOOST_CHECK_EQUAL(mp.size(), 3);
+    BOOST_CHECK_EQUAL(mp[1].x(), 10);
+}
+
+BOOST_AUTO_TEST_CASE(multi_point_default_constructor)
+{
+    geometry::MultiPoint2i multiPoint;
+
+    BOOST_CHECK_EQUAL(true, multiPoint.empty());
+    BOOST_CHECK_EQUAL(0, multiPoint.size());
+    BOOST_CHECK(geometry::GeometryType::multipoint == multiPoint.type());
+    auto w = geometry::envelope(multiPoint);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), w.pt2().y());
+
+    geometry::MultiPoint3i multiPoint3;
+
+    BOOST_CHECK_EQUAL(true, multiPoint3.empty());
+    BOOST_CHECK_EQUAL(0, multiPoint3.size());
+    BOOST_CHECK(geometry::GeometryType::multipoint == multiPoint3.type());
+    auto box = geometry::envelope(multiPoint3);
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::min(), box.pt2().z());
+}
+
+BOOST_AUTO_TEST_CASE(multi_point_reserve_constructor)
+{
+    geometry::MultiPoint2d multiPoint(10);
+    auto w = geometry::envelope(multiPoint);
+
+    BOOST_CHECK_EQUAL(10, multiPoint.size());
+    BOOST_CHECK(multiPoint.type() == geometry::GeometryType::multipoint);
+    BOOST_CHECK_EQUAL(0., w.pt1().x());
+    BOOST_CHECK_EQUAL(0., w.pt1().y());
+    BOOST_CHECK_EQUAL(0., w.pt2().x());
+    BOOST_CHECK_EQUAL(0., w.pt2().y());
+}
+
 //BOOST_FIXTURE_TEST_CASE(vector_constructor, MultiPointTest)
 //{
 //    BOOST_CHECK(multiPointVector->type() == Entity::Type::multipoint2d);
@@ -2461,5 +2470,5 @@ BOOST_AUTO_TEST_CASE(point_multiplication)
 //    BOOST_CHECK(multiPoint.at(2) == Point3<double>(256.6, 619.3, 42.3));
 //    BOOST_CHECK(multiPoint.at(3) == Point3<double>(62.36, 6.60, 12.6));
 //}
-//
-//BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE_END()
