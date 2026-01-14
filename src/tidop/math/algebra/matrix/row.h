@@ -109,9 +109,10 @@ public:
     auto operator[](size_t column) const -> const_reference;
     auto operator[](size_t column) -> reference;
     //void operator=(T value);
-    auto operator=(const Vector<T> &vector) -> MatrixRow&;
-    template<typename T2, size_t _size2>
-    auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow&;
+    template<typename Vector_t>
+    auto operator=(const Vector_t &vector) -> MatrixRow&;
+    //template<typename T2, size_t _size2>
+    //auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow&;
 
     explicit operator Vector<T>();
 
@@ -236,7 +237,8 @@ auto MatrixRow<T, _size_>::operator[](size_t column) -> reference
 //}
 
 template<typename T, size_t _size_>
-auto MatrixRow<T, _size_>::operator=(const Vector<T> &vector) -> MatrixRow&
+template<typename Vector_t>
+auto MatrixRow<T, _size_>::operator=(const Vector_t &vector) -> MatrixRow&
 {
     TL_ASSERT(vector.size() == size(), "Invalid vector size");
     
@@ -246,18 +248,18 @@ auto MatrixRow<T, _size_>::operator=(const Vector<T> &vector) -> MatrixRow&
     return *this;
 }
 
-template<typename T, size_t _size_>
-template<typename T2, size_t _size2>
-auto MatrixRow<T, _size_>::operator=(const Vector<T2, _size2> &vector) -> MatrixRow &
-{
-    TL_ASSERT(this->size() == vector.size(), "A size != B size");
-
-    for(size_t i = 0; i < this->size(); i++) {
-        (*this)(i) = static_cast<T>(vector(i));
-    }
-
-    return *this;
-}
+//template<typename T, size_t _size_>
+//template<typename T2, size_t _size2>
+//auto MatrixRow<T, _size_>::operator=(const Vector<T2, _size2> &vector) -> MatrixRow &
+//{
+//    TL_ASSERT(this->size() == vector.size(), "A size != B size");
+//
+//    for(size_t i = 0; i < this->size(); i++) {
+//        (*this)(i) = static_cast<T>(vector(i));
+//    }
+//
+//    return *this;
+//}
 
 template<typename T, size_t _size_>
 MatrixRow<T, _size_>::operator Vector<T>()

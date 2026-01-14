@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/algorithms/vector.h"
+//#include "tidop/geometry/primitives/Point.h"
+//#include "tidop/geometry/algorithms/vector.h"
 
 namespace tl
 {
@@ -102,10 +102,6 @@ namespace tl
 //    return iret;
 //}
 
-
-namespace geometry
-{
-
 template<typename Point_t> class Segment;
 
 template<typename Point_t>
@@ -139,8 +135,6 @@ auto project(const Point_t &pt, const Segment<Point_t> &seg) -> ProjectionResult
 
     return {proj_pt, t};
 }
-
-} // End namespace geometry
 
 /*! \} */ 
 

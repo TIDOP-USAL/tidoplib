@@ -34,7 +34,7 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/macros/smart_ptr.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/math/geometry/affine.h"
@@ -136,7 +136,7 @@ public:
      * \see Window
      */
     virtual void write(const cv::Mat &image,
-                       const WindowI &window) = 0;
+                       const BoundingBox2i &window) = 0;
 
     /*!
      * \brief Returns the number of rows in the image.
@@ -190,9 +190,9 @@ public:
 
 protected:
 
-    void windowWrite(const WindowI &window,
-                     WindowI *windowWrite,
-                     Point<int> *offset) const;
+    void windowWrite(const BoundingBox2i &window,
+                     BoundingBox2i *windowWrite,
+                     Vector<int, 2> *offset) const;
 protected:
 
     Path mFile;

@@ -35,9 +35,6 @@
 namespace tl
 {
 	
-namespace geometry
-{
-	
 /*! \addtogroup GeometricEntities
  *  \{
  */
@@ -60,6 +57,4 @@ using MultiLineString3d = MultiLineString<Point3d>;
 
 /*! \} */
 
-
-}
-}
+} // End namespace tl

@@ -77,17 +77,17 @@ public:
     auto read(double scaleX,
               double scaleY,
               const Rect<int> &rect) -> cv::Mat override;
-    auto read(const WindowI &window,
+    auto read(const BoundingBox2i &window,
               double scaleX,
               double scaleY) -> cv::Mat override;
-    auto read(const Window<Point<double>> &terrainWindow,
+    auto read(const BoundingBox2d &terrainWindow,
               double scaleX,
               double scaleY,
               Affine<double, 2> *georeference = nullptr) -> cv::Mat override;
     void update(const cv::Mat &image,
                 const Rect<int> &rect = Rect<int>()) override;
     void update(const cv::Mat &image,
-                const WindowI &window) override;
+                const BoundingBox2i &window) override;
     void copy(const std::string &outputPath,
               std::shared_ptr<ImageOptions> options = nullptr,
               const ImageMetadata &metadata = ImageMetadata(),
@@ -103,7 +103,7 @@ public:
     auto isGeoreferenced() const -> bool override;
     auto georeference() const -> Affine<double, 2> override { return mAffine; }
     auto crsWkt() const -> std::string override;
-    auto window() const -> WindowD override;
+    auto window() const -> BoundingBox2d override;
     auto noDataValue(bool *exist) const -> double override;
 
 protected:

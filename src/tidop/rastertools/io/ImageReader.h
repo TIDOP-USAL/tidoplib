@@ -34,8 +34,8 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/macros/smart_ptr.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/math/geometry/affine.h"
@@ -140,7 +140,7 @@ public:
      * \return The image data as a `cv::Mat` object.
      * \see Window Affine
      */
-    virtual auto read(const WindowI &window,
+    virtual auto read(const BoundingBox2i &window,
                       double scaleX = 1.,
                       double scaleY = 1.) -> cv::Mat = 0;
 
@@ -153,7 +153,7 @@ public:
      * \return The image data as a `cv::Mat` object.
      * \see Window Affine
      */
-    virtual auto read(const Window<Point<double>> &terrainWindow,
+    virtual auto read(const BoundingBox2d &terrainWindow,
                       double scaleX = 1.,
                       double scaleY = 1.,
                       Affine<double, 2> *georeference = nullptr) -> cv::Mat = 0;
@@ -162,7 +162,7 @@ public:
                         const Rect<int> &rect = Rect<int>()) = 0;
 
     virtual void update(const cv::Mat &image,
-                        const WindowI &window) = 0;
+                        const BoundingBox2i &window) = 0;
 
     /*!
      * \brief 
@@ -239,7 +239,7 @@ public:
      * \return The bounding box as a `WindowD` object.
      * \see Window
      */
-    virtual auto window() const -> WindowD = 0;
+    virtual auto window() const ->BoundingBox2d = 0;
 
     /*!
      * \brief Retrieves the file path of the image.
@@ -256,9 +256,9 @@ public:
 
 protected:
 
-    void windowRead(const WindowI &wLoad,
-                    WindowI *wRead,
-                    Point<int> *offset) const;
+    void windowRead(const BoundingBox2i &wLoad,
+                    BoundingBox2i *wRead,
+                    Vector<int, 2> *offset) const;
 
 private:
 

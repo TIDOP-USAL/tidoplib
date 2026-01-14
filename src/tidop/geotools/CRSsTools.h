@@ -27,7 +27,7 @@
 #include <vector>
 #include <map>
 #include "tidop/core/base/defs.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 #include "tidop/geotools/GeoToolsDefinitions.h"
 
 namespace tl

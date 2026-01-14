@@ -34,40 +34,46 @@ if(BUILD_TL_GEOMETRY)
     project(Geometry)
   
     add_files_to_project(${PROJECT_NAME} 
-                        SOURCE_FILES 
-                            algorithms/algorithms.cpp
+                        #SOURCE_FILES 
+                        #    algorithms/algorithms.cpp
                         HEADER_FILES
-                            bbox.h
-                            rect.h
-                            window.h
+                            #bbox.h
+                            #rect.h
+                            #window.h
                             algorithms/analysis/Contains.h
                             algorithms/analysis/Contains.impl.h
+                            algorithms/measurement/Angle.h
+                            algorithms/measurement/Angle.impl.h
                             algorithms/measurement/Area.h
                             algorithms/measurement/Area.impl.h
                             algorithms/measurement/Distance.h
                             algorithms/measurement/Distance.impl.h
                             algorithms/measurement/Length.h
                             algorithms/measurement/Length.impl.h
+                            algorithms/spatial/Buffer.h
+                            algorithms/spatial/Buffer.impl.h
                             algorithms/spatial/Envelope.h
                             algorithms/spatial/Envelope.impl.h
-                            algorithms/algorithms.h
-                            algorithms/vector.h
-                            algorithms/distance.h
-                            algorithms/angle.h
+                            algorithms/spatial/Intersection.h
+                            algorithms/spatial/Intersection.impl.h
+                            #algorithms/algorithms.h
+                            #algorithms/vector.h
+                            #algorithms/distance.h
+                            #algorithms/angle.h
                             algorithms/projection.h
-                            algorithms/buffer.h
-                            algorithms/intersect.h
-							algorithms/dbscan.h
-                            entities/entity.h
-                            entities/entities2d.h
-                            entities/entities3d.h
-                            entities/linestring.h
-                            entities/point.h
-                            entities/polygon.h
-                            entities/multipoint.h
-                            entities/multilinestring.h
-                            entities/multipolygon.h
-                            entities/segment.h
+                            #algorithms/buffer.h
+                            #algorithms/intersect.h
+							#algorithms/dbscan.h
+                            #entities/entity.h
+                            #entities/entities2d.h
+                            #entities/entities3d.h
+                            #entities/linestring.h
+                            #entities/point.h
+                            #entities/polygon.h
+                            #entities/multipoint.h
+                            #entities/multilinestring.h
+                            #entities/multipolygon.h
+                            #entities/segment.h
                             shapes/circle.h
                             shapes/ellipse.h
                             shapes/rectangle.h
@@ -89,22 +95,22 @@ if(BUILD_TL_GEOMETRY)
                             spatial/BoundingBox.h
     )
         
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
+    add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
                 ${PROJECT_HEADER_FILES})
     
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
 
-    target_include_directories(${PROJECT_NAME} PUBLIC
+    target_include_directories(${PROJECT_NAME} INTERFACE
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC
+    target_compile_definitions(${PROJECT_NAME} INTERFACE
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} PUBLIC
+    target_link_libraries(${PROJECT_NAME} INTERFACE
                           TidopLib::Core
                           TidopLib::Math
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)

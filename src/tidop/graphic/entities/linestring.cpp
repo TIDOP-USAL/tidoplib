@@ -24,7 +24,6 @@
 
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/painter.h"
-#include "tidop/geometry/bbox.h"
 
 namespace tl
 {
@@ -37,25 +36,25 @@ GLineString::GLineString()
 }
 
 GLineString::GLineString(size_t size)
-  : LineString<Point<double>>(size),
+  : LineString<Point2d>(size),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
-GLineString::GLineString(const LineString<Point<double>> &lineString)
-  : LineString<Point<double>>(lineString),
+GLineString::GLineString(const LineString<Point2d> &lineString)
+  : LineString<Point2d>(lineString),
     GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
 GLineString::GLineString(const GLineString &lineString)
-  : LineString<Point<double>>(lineString),
+  : LineString<Point2d>(lineString),
     GraphicEntity(lineString)
 {
 }
 
 GLineString::GLineString(GLineString &&lineString) TL_NOEXCEPT
-  : LineString<Point<double>>(std::forward<LineString<Point<double>>>(lineString)),
+  : LineString<Point2d>(std::forward<LineString<Point2d>>(lineString)),
     GraphicEntity(std::forward<GraphicEntity>(lineString))
 {
 }
@@ -67,7 +66,7 @@ GLineString::~GLineString()
 GLineString &GLineString::operator = (const GLineString &gLineString)
 {
     if (this != &gLineString) {
-        LineString<Point<double>>::operator=(gLineString);
+        LineString<Point2d>::operator=(gLineString);
         GraphicEntity::operator=(gLineString);
     }
     return *this;
@@ -76,7 +75,7 @@ GLineString &GLineString::operator = (const GLineString &gLineString)
 GLineString &GLineString::operator = (GLineString &&gLineString) TL_NOEXCEPT
 {
     if (this != &gLineString) {
-        LineString<Point<double>>::operator=(std::forward<LineString<Point<double>>>(gLineString));
+        LineString<Point2d>::operator=(std::forward<LineString<Point2d>>(gLineString));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gLineString));
     }
     return *this;
@@ -87,9 +86,11 @@ void GLineString::draw(Painter &painter) const
     painter.drawLineString(*this);
 }
 
-auto GLineString::window() const -> Window<Point<double>>
+auto GLineString::window() const -> BoundingBox<Point2d>
 {
-    return LineString<Point<double>>::window();
+    auto bbox = envelope(static_cast<const LineString<Point2d>&>(*this));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
+
 }
 
 
@@ -102,25 +103,25 @@ GLineString3D::GLineString3D()
 }
 
 GLineString3D::GLineString3D(size_t size)
-  : LineString3D<Point3<double>>(size),
+  : LineString<Point3d>(size),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
-GLineString3D::GLineString3D(const LineString3D<Point3<double>> &gLineString3D)
-  : LineString3D<Point3<double>>(gLineString3D),
+GLineString3D::GLineString3D(const LineString<Point3d> &gLineString3D)
+  : LineString<Point3d>(gLineString3D),
     GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
 GLineString3D::GLineString3D(const GLineString3D &gLineString3D)
-  : LineString3D<Point3<double>>(gLineString3D),
+  : LineString<Point3d>(gLineString3D),
     GraphicEntity(gLineString3D)
 {
 }
 
 GLineString3D::GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT
-  : LineString3D<Point3<double>>(std::forward<LineString3D<Point3<double>>>(gLineString3D)),
+  : LineString<Point3d>(std::forward<LineString<Point3d>>(gLineString3D)),
     GraphicEntity(std::forward<GraphicEntity>(gLineString3D))
 {
 }
@@ -132,7 +133,7 @@ GLineString3D::~GLineString3D()
 auto GLineString3D::operator =(const GLineString3D &gLineString3D) -> GLineString3D&
 {
     if (this != &gLineString3D) {
-        LineString3D<Point3<double>>::operator=(gLineString3D);
+        LineString<Point3d>::operator=(gLineString3D);
         GraphicEntity::operator=(gLineString3D);
     }
     return *this;
@@ -141,7 +142,7 @@ auto GLineString3D::operator =(const GLineString3D &gLineString3D) -> GLineStrin
 auto GLineString3D::operator =(GLineString3D &&gLineString3D) TL_NOEXCEPT -> GLineString3D&
 {
     if (this != &gLineString3D) {
-        LineString3D<Point3<double>>::operator=(std::forward<LineString3D<Point3<double>>>(gLineString3D));
+        LineString<Point3d>::operator=(std::forward<LineString<Point3d>>(gLineString3D));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gLineString3D));
     }
     return *this;
@@ -149,17 +150,17 @@ auto GLineString3D::operator =(GLineString3D &&gLineString3D) TL_NOEXCEPT -> GLi
 
 void GLineString3D::draw(Painter &painter) const
 {
-    LineStringD ls(size());
+    LineString2d ls(size());
     for (size_t i = 0; i < size(); ++i)
-        ls[i] = Point<double>((*this)[i].x, (*this)[i].y);
+        ls[i] = Point2d((*this)[i].x(), (*this)[i].y());
     painter.drawLineString(ls);
 }
 
-auto GLineString3D::window() const -> Window<Point<double>>
+auto GLineString3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = LineString3D<Point3<double>>::boundingBox();
-    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
-            Point<double>(bbox.pt2.x, bbox.pt2.y)};
+    auto bbox = envelope(static_cast<const LineString<Point3d>&>(*this));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
+
 }
 
 
@@ -171,25 +172,25 @@ GMultiLineString::GMultiLineString()
 }
 
 GMultiLineString::GMultiLineString(size_t size)
-  : MultiLineString<Point<double>>(size),
+  : MultiLineString<Point2d>(size),
 	GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
-GMultiLineString::GMultiLineString(const MultiLineString<Point<double>> &multiLineString)
-  : MultiLineString<Point<double>>(multiLineString),
+GMultiLineString::GMultiLineString(const MultiLineString<Point2d> &multiLineString)
+  : MultiLineString<Point2d>(multiLineString),
     GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
 GMultiLineString::GMultiLineString(const GMultiLineString &gMultiLineString)
-  : MultiLineString<Point<double>>(gMultiLineString),
+  : MultiLineString<Point2d>(gMultiLineString),
     GraphicEntity(gMultiLineString)
 {
 }
 
 GMultiLineString::GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT
-  : MultiLineString<Point<double>>(std::forward<MultiLineString<Point<double>>>(gMultiLineString)),
+  : MultiLineString<Point2d>(std::forward<MultiLineString<Point2d>>(gMultiLineString)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiLineString))
 {
 }
@@ -201,7 +202,7 @@ GMultiLineString::~GMultiLineString()
 auto GMultiLineString::operator =(const GMultiLineString &gMultiLineString) -> GMultiLineString&
 {
     if (this != &gMultiLineString) {
-        MultiLineString<Point<double>>::operator=(gMultiLineString);
+        MultiLineString<Point2d>::operator=(gMultiLineString);
         GraphicEntity::operator=(gMultiLineString);
     }
     return *this;
@@ -210,7 +211,7 @@ auto GMultiLineString::operator =(const GMultiLineString &gMultiLineString) -> G
 auto GMultiLineString::operator =(GMultiLineString &&gMultiLineString) TL_NOEXCEPT -> GMultiLineString&
 {
     if (this != &gMultiLineString) {
-        MultiLineString<Point<double>>::operator=(std::forward<MultiLineString<Point<double>>>(gMultiLineString));
+        MultiLineString<Point2d>::operator=(std::forward<MultiLineString<Point2d>>(gMultiLineString));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString));
     }
     return *this;
@@ -221,9 +222,9 @@ void GMultiLineString::draw(Painter &painter) const
     painter.drawMultiLineString(*this);
 }
 
-auto GMultiLineString::window() const -> Window<Point<double>>
+auto GMultiLineString::window() const -> BoundingBox<Point2d>
 {
-    return MultiLineString<Point<double>>::window();
+    return envelope(static_cast<const MultiLineString<Point2d>&>(*this));
 }
 
 
@@ -233,25 +234,25 @@ GMultiLineString3D::GMultiLineString3D()
 }
 
 GMultiLineString3D::GMultiLineString3D(size_t size)
-  : MultiLineString3D<Point3<double>>(size),
+  : MultiLineString<Point3d>(size),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
-GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D)
-  : MultiLineString3D<Point3<double>>(gMultiLineString3D),
+GMultiLineString3D::GMultiLineString3D(const MultiLineString<Point3d> &gMultiLineString3D)
+  : MultiLineString<Point3d>(gMultiLineString3D),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D)
-  : MultiLineString3D<Point3<double>>(gMultiLineString3D),
+  : MultiLineString<Point3d>(gMultiLineString3D),
     GraphicEntity(gMultiLineString3D)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT
-  : MultiLineString3D<Point3<double>>(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D)),
+  : MultiLineString<Point3d>(std::forward<MultiLineString<Point3d>>(gMultiLineString3D)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiLineString3D))
 {
 }
@@ -263,7 +264,7 @@ GMultiLineString3D::~GMultiLineString3D()
 auto GMultiLineString3D::operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D&
 {
     if (this != &gMultiLineString3D) {
-        MultiLineString3D<Point3<double>>::operator=(gMultiLineString3D);
+        MultiLineString<Point3d>::operator=(gMultiLineString3D);
         GraphicEntity::operator=(gMultiLineString3D);
     }
     return *this;
@@ -272,17 +273,16 @@ auto GMultiLineString3D::operator =(const GMultiLineString3D &gMultiLineString3D
 auto GMultiLineString3D::operator =(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT -> GMultiLineString3D&
 {
     if (this != &gMultiLineString3D) {
-        MultiLineString3D<Point3<double>>::operator=(std::forward<MultiLineString3D<Point3<double>>>(gMultiLineString3D));
+        MultiLineString<Point3d>::operator=(std::forward<MultiLineString<Point3d>>(gMultiLineString3D));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiLineString3D));
     }
     return *this;
 }
 
-auto GMultiLineString3D::window() const -> Window<Point<double>>
+auto GMultiLineString3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = MultiLineString3D<Point3<double>>::boundingBox();
-    return {Point<double>(bbox.pt1.x, bbox.pt1.y),
-        Point<double>(bbox.pt2.x, bbox.pt2.y)};
+    auto bbox = envelope(static_cast<const MultiLineString<Point3d>&>(*this));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
 }
 
 void GMultiLineString3D::draw(Painter &painter) const
@@ -290,9 +290,9 @@ void GMultiLineString3D::draw(Painter &painter) const
     GMultiLineString tmp(size());
     for (size_t i = 0; i < size(); ++i) {
         const auto &ln = (*this)[i];
-        LineString<Point<double>> ls(ln.size());
+        LineString<Point2d> ls(ln.size());
         for (size_t j = 0; j < ln.size(); ++j)
-            ls[j] = Point<double>(ln[j].x, ln[j].y);
+            ls[j] = Point2d(ln[j].x(), ln[j].y());
         tmp[i] = ls;
     }
     painter.drawMultiLineString(tmp);

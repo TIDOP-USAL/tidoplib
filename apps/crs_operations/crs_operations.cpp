@@ -44,7 +44,7 @@
 #include <tidop/core/app/message.h>
 #include <tidop/core/base/path.h>
 #include <tidop/core/app/logger.h>
-// #include <tidop/geometry/entities/point.h>
+// #include <tidop/geometry/primitives/Point.h>
 // #include <tidop/geospatial/crs.h>
 // #include <tidop/geospatial/crstransf.h>
 #include <tidop/geotools/GeoTools.h>

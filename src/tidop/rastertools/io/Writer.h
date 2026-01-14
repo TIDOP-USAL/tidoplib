@@ -34,7 +34,7 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/macros/smart_ptr.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"  
 #include "tidop/math/geometry/affine.h"
@@ -138,7 +138,7 @@ public:
      * \param[in] window Target area within the image
      */
     void write(const cv::Mat &image,
-               const WindowI &window);
+               const BoundingBox<Point2i> &window);
 
     /*!
      * \brief Returns the number of rows of the image.

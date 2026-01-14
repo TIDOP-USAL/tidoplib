@@ -57,10 +57,10 @@ public:
     bool isOpen() const override;
     void close() override;
 
-    auto getBoundingBox(std::string crsId = "") const -> BoundingBoxd override;
+    auto getBoundingBox(std::string crsId = "") const -> BoundingBox<Point3d> override;
     auto getDimensionsNames() const -> std::vector<std::string> override;
-    auto getOffset() const -> Point3<double> override;
-    auto getCoordinates(int index) const -> Point3<double> override;
+    auto getOffset() const -> Point3d override;
+    auto getCoordinates(int index) const -> Point3d override;
     auto getField(int index, const std::string &name) const -> double override;
     auto hasColors() const -> bool override;
     auto hasNormals() const -> bool override;

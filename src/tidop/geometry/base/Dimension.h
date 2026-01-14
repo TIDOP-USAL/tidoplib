@@ -31,9 +31,6 @@
 
 namespace tl
 {
-
-namespace geometry
-{
 	
 /*! \addtogroup GeometricEntities
  *  \{
@@ -93,7 +90,5 @@ struct dimension_of
 };
 
 /*! \} */ 
-
-}
 
 }

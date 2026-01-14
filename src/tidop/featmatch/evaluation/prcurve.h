@@ -90,7 +90,7 @@ void PRCurve<T>::compute(size_t steeps)
 {
     TL_TODO("para enteros habria que especializar la plantilla")
 
-        if (this->mData.empty()) return;
+    if (this->mData.empty()) return;
 
     this->mCurve.clear();
 
@@ -115,15 +115,15 @@ void PRCurve<T>::compute(size_t steeps)
 
     if (size > 1) {
 
-        if (this->mCurve.front().x > this->mCurve.back().x)
+        if (this->mCurve.front().x() > this->mCurve.back().x())
             std::reverse(this->mCurve.begin(), this->mCurve.end());
 
-        Point<double> point1 = this->mCurve[0];
-        Point<double> point2;
+        Point2d point1 = this->mCurve[0];
+        Point2d point2;
 
         for (size_t i = 1; i < size; i++) {
             point2 = this->mCurve[i];
-            this->mAuc += std::abs(point2.x - point1.x) * (point1.y + point2.y) / 2.0;
+            this->mAuc += std::abs(point2.x() - point1.x()) * (point1.y() + point2.y()) / 2.0;
             point1 = point2;
         }
     }
@@ -149,15 +149,15 @@ void PRCurve<T>::compute()
 
     if (size > 1) {
 
-        if (this->mCurve.front().x > this->mCurve.back().x)
+        if (this->mCurve.front().x() > this->mCurve.back().x())
             std::reverse(this->mCurve.begin(), this->mCurve.end());
 
-        Point<double> point1 = this->mCurve[0];
-        Point<double> point2;
+        Point2d point1 = this->mCurve[0];
+        Point2d point2;
 
         for (size_t i = 1; i < size; i++) {
             point2 = this->mCurve[i];
-            this->mAuc += std::abs(point2.x - point1.x) * (point1.y + point2.y) / 2.0;
+            this->mAuc += std::abs(point2.x() - point1.x()) * (point1.y() + point2.y()) / 2.0;
             point1 = point2;
         }
     }

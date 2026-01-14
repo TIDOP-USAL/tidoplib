@@ -29,7 +29,7 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/decomp/svd.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {
@@ -205,30 +205,16 @@ public:
      * \brief Compute the inverse of the translation.
      * \return A translation representing the inverse of the current translation.
      */
-    auto inverse() const->Translation;
+    auto inverse() const -> Translation;
 
     /*!
-     * \brief Transform a point using the translation.
-     * \param[in] point The point to transform.
-     * \return The transformed point.
-     */
-    auto transform(const Point<T> &point) const->Point<T>;
-
-    /*!
-     * \brief Transform a 3D point using the translation.
-     * \param[in] point The point to transform.
-     * \return The transformed point.
-     */
-    auto transform(const Point3<T> &point) const->Point3<T>;
-
-    /*!
-     * \brief Transform a vector using the translation.
+     * \brief Transform a Point or Vector using the translation.
      * \tparam _size The size of the vector.
      * \param[in] vector The vector to transform.
      * \return The transformed vector.
      */
-    template<size_t _size>
-    auto transform(const Vector<T, _size> &vector) const->Vector<T, Dim>;
+    template <typename Vector_t>
+    auto transform(const Vector_t &vector) const -> Vector_t;
 
     /*!
      * \brief Transform a matrix using the translation.
@@ -238,30 +224,16 @@ public:
      * \return The transformed matrix.
      */
     template<size_t _row, size_t _col>
-    auto transform(const Matrix<T, _row, _col> &matrix) const->Matrix<T, _row, _col>;
+    auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
-     * \brief Apply the translation to a point.
-     * \param[in] point The point to apply the translation to.
-     * \return The translated point.
-     */
-    auto operator * (const Point<T> &point) const->Point<T>;
-
-    /*!
-     * \brief Apply the translation to a 3D point.
-     * \param[in] point The point to apply the translation to.
-     * \return The translated 3D point.
-     */
-    auto operator * (const Point3<T> &point) const->Point3<T>;
-
-    /*!
-     * \brief Apply the translation to a vector.
+     * \brief Apply the translation to a Point or Vector.
      * \tparam _size The size of the vector.
      * \param[in] vector The vector to apply the translation to.
      * \return The translated vector.
      */
-    template<size_t _size>
-    auto operator * (const Vector<T, _size> &vector) const->Vector<T, _size>;
+    template <typename Vector_t>
+    auto operator * (const Vector_t &vec) const -> Vector_t;
 
     /*!
      * \brief Apply the translation to a matrix.
@@ -271,14 +243,14 @@ public:
      * \return The translated matrix.
      */
     template<size_t _row, size_t _col>
-    auto operator * (const Matrix<T, _row, _col> &matrix) const->Matrix<T, _row, _col>;
+    auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
      * \brief Apply the translation to another translation.
      * \param[in] translation The translation to apply.
      * \return The resulting translation.
      */
-    auto operator * (const Translation<T, Dim> &translation) const->Translation<T, Dim>;
+    auto operator * (const Translation<T, Dim> &translation) const -> Translation<T, Dim>;
 };
 
 /*! \} */
@@ -300,7 +272,7 @@ public:
  * \tparam T The type of the translation components (e.g., float, double).
  * \tparam Dim The dimensionality of the translation (e.g., 2D or 3D).
  */
-template <typename T, size_t Dim>
+template <typename T/*, size_t Dim*/>
 class TranslationEstimator
 {
 
@@ -308,7 +280,7 @@ public:
 
     enum
     {
-        dimensions = Dim,
+        dimensions = 2/*Dim*/,
         matrix_size
     };
 
@@ -329,7 +301,7 @@ public:
      */
     template<size_t rows, size_t cols>
     static auto estimate(const Matrix<T, rows, cols> &src,
-                         const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>;
+                         const Matrix<T, rows, cols> &dst) -> Translation<T, dimensions>;
 
     /*!
      * \brief Estimate the translation between two sets of points.
@@ -339,8 +311,9 @@ public:
      * \param[in] dst The destination set of points.
      * \return The estimated translation transformation.
      */
-    static auto estimate(const std::vector<Point<T>> &src,
-                         const std::vector<Point<T>> &dst) -> Translation<T, Dim>;
+    template <typename Vector_t>
+    static auto estimate(const std::vector<Vector_t> &src,
+                         const std::vector<Vector_t> &dst) -> Translation<T, dimensions>;
 
 };
 
@@ -488,31 +461,15 @@ auto Translation<T, Dim>::inverse() const -> Translation
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::transform(const Point<T> &point) const -> Point<T>
+template<typename Vector_t>
+inline auto Translation<T, Dim>::transform(const Vector_t &vector) const -> Vector_t
 {
-    static_assert(dimensions == 2, "Transformation not allowed for 2D points");
+    static_assert(VectorTraits<Vector_t>::size == Dim,
+        "Dimension mismatch between Translation and Vector/Point");
 
-    return Point<T>(this->translation[0] + point.x,
-                    this->translation[1] + point.y);
-}
+    Vector_t result = vector + this->translation;
 
-template<typename T, size_t Dim>
-auto Translation<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
-{
-    static_assert(dimensions == 3, "Transformation not allowed for 3D points");
-
-    return Point3<T>(this->translation[0] + point.x,
-                     this->translation[1] + point.y,
-                     this->translation[2] + point.z);
-}
-
-template<typename T, size_t Dim>
-template<size_t _size>
-auto Translation<T, Dim>::transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>
-{
-    TL_ASSERT(dimensions == vector.size(), "Invalid Vector dimensions");
-
-    return this->translation + vector;
+    return result;
 }
 
 template<typename T, size_t Dim>
@@ -530,22 +487,10 @@ auto Translation<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator * (const Point<T> &point) const -> Point<T>
+template <typename Vector_t>
+auto Translation<T, Dim>::operator * (const Vector_t &vec) const -> Vector_t
 {
-    return this->transform(point);
-}
-
-template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator * (const Point3<T> &point) const -> Point3<T>
-{
-    return this->transform(point);
-}
-
-template<typename T, size_t Dim>
-template<size_t _size>
-auto Translation<T, Dim>::operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>
-{
-    return this->transform(vector);
+    return transform(vec);
 }
 
 template<typename T, size_t Dim>
@@ -565,14 +510,14 @@ auto Translation<T, Dim>::operator * (const Translation<T, Dim> &translation) co
 
 /* TranslationEstimator implementation */
 
-template<typename T, size_t Dim>
+template<typename T>
 template<size_t rows, size_t cols>
-auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src, 
-                                            const Matrix<T, rows, cols> &dst) -> Translation<T, Dim>
+auto TranslationEstimator<T>::estimate(const Matrix<T, rows, cols> &src, 
+                                            const Matrix<T, rows, cols> &dst) -> Translation<T, dimensions>
 {
     static_assert(dimensions == 2, "Scale estimator only for 2D Scaling");
 
-    Translation<T, Dim> translation;
+    Translation<T, dimensions> translation;
 
     try {
 
@@ -616,24 +561,24 @@ auto TranslationEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
     return translation;
 }
 
-template<typename T, size_t Dim>
-auto TranslationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
-                                            const std::vector<Point<T>> &dst) -> Translation<T, Dim>
+template<typename T>
+template <typename Vector_t>
+auto TranslationEstimator<T>::estimate(const std::vector<Vector_t> &src, 
+                                       const std::vector<Vector_t> &dst) -> Translation<T, dimensions>
 {
+    static_assert(VectorTraits<Vector_t>::size == DynamicData || VectorTraits<Vector_t>::size == 2, "Vector dimension must match Affine transformation dimension");
+
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
 
     Matrix<T> src_mat(src.size(), dimensions);
     Matrix<T> dst_mat(dst.size(), dimensions);
 
     for (size_t r = 0; r < src_mat.rows(); r++) {
-        src_mat[r][0] = src[r].x;
-        src_mat[r][1] = src[r].y;
-
-        dst_mat[r][0] = dst[r].x;
-        dst_mat[r][1] = dst[r].y;
+        src_mat[r] = src[r];
+        dst_mat[r] = dst[r];
     }
 
-    return TranslationEstimator<T, dimensions>::estimate(src_mat, dst_mat);
+    return TranslationEstimator<T>::estimate(src_mat, dst_mat);
 }
 
 } // End namespace tl

@@ -280,16 +280,16 @@ BOOST_FIXTURE_TEST_CASE(scaling_transform_point2d, ScalingTest)
 
         auto point2 = scaling.transform(src_points_utm[0]);
 
-        BOOST_CHECK_CLOSE(1039305.636, point2.x, 0.01);
-        BOOST_CHECK_CLOSE(166197.327, point2.y, 0.01);
+        BOOST_CHECK_CLOSE(1039305.636, point2.x(), 0.01);
+        BOOST_CHECK_CLOSE(166197.327, point2.y(), 0.01);
     }
 
     {
         Point<double> point(23.5, 21.1);
         auto point2 = Scaling<double, 2>(1.5, 2.0) * point;
 
-        BOOST_CHECK_CLOSE(35.25, point2.x, 0.01);
-        BOOST_CHECK_CLOSE(42.2, point2.y, 0.01);
+        BOOST_CHECK_CLOSE(35.25, point2.x(), 0.01);
+        BOOST_CHECK_CLOSE(42.2, point2.y(), 0.01);
     }
 
 }

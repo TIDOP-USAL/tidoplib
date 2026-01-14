@@ -37,9 +37,6 @@
 
 namespace tl
 {
-
-namespace geometry 
-{
 	
 /*! \addtogroup GeometricEntities
  *  \{
@@ -53,6 +50,9 @@ class LineString
   : public GeometryBase<LineString<Point_t>>,
     public EntityContainer<Point_t>
 {
+public:
+
+    using value_type = Point_t;
 
 public:
 
@@ -69,12 +69,12 @@ public:
 
     auto boundingBox() const
     {
-        return tl::geometry::envelope(*this);
+        return envelope(*this);
     }
 
     auto length() const -> double
     {
-        return tl::geometry::length(*this);
+        return tl::length(*this);
     }
 };
 
@@ -87,6 +87,4 @@ using LineString3d = LineString<Point3d>;
 
 /*! \} */
 
-}
-
-}
+} // End namespace tl

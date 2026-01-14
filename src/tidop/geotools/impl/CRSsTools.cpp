@@ -143,7 +143,7 @@ void CRSsToolsImpl::crsOperation(std::string crsSourceId, std::string crsTargetI
 Point3d CRSsToolsImpl::crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point)
 {
     Point3d transform_point = point;
-    crsOperation(crsSourceId, crsTargetId, transform_point.x, transform_point.y, transform_point.z);
+    crsOperation(crsSourceId, crsTargetId, transform_point.x(), transform_point.y(), transform_point.z());
     return transform_point;
 }
 
@@ -410,9 +410,9 @@ std::vector<Point3d> CRSsToolsImpl::crsOperation(std::string crsSourceId, std::s
         int cont = 0;
         for (auto const& point : points)
         {
-            ptosFc[cont] = point.x;
-            ptosSc[cont] = point.y;
-            ptosTc[cont] = point.z;
+            ptosFc[cont] = point.x();
+            ptosSc[cont] = point.y();
+            ptosTc[cont] = point.z();
             //if (x.size() == 3)
             //    ptosTc[cont] = x[2];
             //else
@@ -473,9 +473,9 @@ std::vector<Point3d> CRSsToolsImpl::crsOperation(std::string crsSourceId, std::s
         cont = 0;
         for (auto& point : transform_points)
         {
-            point.x = ptosFc[cont];
-            point.y = ptosSc[cont];
-            point.z = ptosTc[cont];
+            point.x() = ptosFc[cont];
+            point.y() = ptosSc[cont];
+            point.z() = ptosTc[cont];
             cont++;
         }
         free(ptosFc);

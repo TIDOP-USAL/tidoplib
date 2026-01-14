@@ -68,6 +68,7 @@ if (BUILD_TL_GRAPHIC)
                             layer.h
                             canvas.h
                             painter.h
+                            Rect.h
                             datamodel.h
                             color/cmyk.h
                             color/color.h

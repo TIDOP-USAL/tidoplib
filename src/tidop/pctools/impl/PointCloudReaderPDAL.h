@@ -82,7 +82,7 @@ public:
     void copcGetResolutionByLevel(std::map<int, double>& resolutionByLevel) override;
     void getBoundingBox(double& x_min, double& y_min, double& z_min,
         double& x_max, double& y_max, double& z_max, std::string crsId = "") override;
-    auto getBoundingBox(std::string crsId = "") const -> BoundingBoxd override;
+    auto getBoundingBox(std::string crsId = "") const -> BoundingBox<Point3d> override;
     //void getDimensionsNames(std::vector<std::string>& values) const override;
     auto getDimensionsNames() const -> std::vector<std::string> override;
     bool getIsCopc() const override;

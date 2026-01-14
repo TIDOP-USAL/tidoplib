@@ -29,9 +29,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-	
 /*! \addtogroup Algorithms
  *  \{
  */
@@ -41,7 +38,6 @@ auto contains(const G1 &g1, const G2 &g2) -> bool;
 
 /*! \} */ 
 
-} // End namespace geometry
 } // End namespace tl
 
 #include "Contains.impl.h"

@@ -28,9 +28,6 @@
 
 namespace tl
 {
-
-namespace geometry
-{
 	
 /*! \addtogroup Algorithms
  *  \{
@@ -41,7 +38,6 @@ auto area(const Geometry_t &g);
 
 /*! \} */ 
 
-} // End namespace geometry
 } // End namespace tl
 
 #include "Area.impl.h"

@@ -38,7 +38,6 @@
 #include "tidop/math/algebra/matrix/col.h"
 #include "tidop/math/algebra/matrix/block.h"
 #include "tidop/math/algebra/matrix/base.h"
-#include "tidop/geometry/rect.h"
 
 #include <type_traits>
 #include <iomanip>
@@ -124,7 +123,9 @@ public:
 
     enum data
     {
-        size = DataSize<T, Rows, Cols>::size()
+        size = DataSize<T, Rows, Cols>::size(),
+        rows_size = Rows,
+        cols_size = Cols
     };
 
 public:
@@ -998,11 +999,44 @@ auto mulmat(const Matrix<T, _rows1, _cols1> &matrix1,
 
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-template<typename T, size_t Rows, size_t Cols, size_t _size>
+//template<typename T, size_t Rows, size_t Cols, size_t _size>
+//void matrix_per_vector_simd(const Matrix<T, Rows, Cols> &matrix,
+//    const Vector<T, _size> &vector,
+//    Vector<T, Rows> &vectorOut)
+//{
+//    size_t rows = matrix.rows();
+//    size_t cols = matrix.cols();
+//
+//    Packed<T> packed_a;
+//    Packed<T> packed_b;
+//    Packed<T> packed_c;
+//
+//    constexpr size_t packed_size = packed_a.size();
+//    size_t max_vector = cols - cols % packed_size;
+//
+//    for (size_t r = 0; r < rows; r++) {
+//        for (size_t i = 0; i < max_vector; i += packed_size) {
+//
+//            packed_a.loadUnaligned(&vector[i]);
+//            packed_b.loadUnaligned(&matrix(r, i));
+//            packed_c = packed_a * packed_b;
+//            vectorOut[r] += packed_c.sum();
+//        }
+//
+//        for (size_t i = max_vector; i < cols; i++) {
+//            vectorOut[r] += matrix(r, i) * vector[i];
+//        }
+//    }
+//}
+
+template<typename T, size_t Rows, size_t Cols, typename DerivedIn, typename DerivedOut>
 void matrix_per_vector_simd(const Matrix<T, Rows, Cols> &matrix,
-                            const Vector<T, _size> &vector,
-                            Vector<T, Rows> &vectorOut)
+                            const VectorBase<DerivedIn> &vectorIn,
+                            VectorBase<DerivedOut> &vectorOut)
 {
+    const auto &v_in = vectorIn.derived();
+    auto &v_out = vectorOut.derived();
+
     size_t rows = matrix.rows();
     size_t cols = matrix.cols();
 
@@ -1013,44 +1047,64 @@ void matrix_per_vector_simd(const Matrix<T, Rows, Cols> &matrix,
     constexpr size_t packed_size = packed_a.size();
     size_t max_vector = cols - cols % packed_size;
 
-    for(size_t r = 0; r < rows; r++) {
-        for(size_t i = 0; i < max_vector; i += packed_size) {
-
-            packed_a.loadUnaligned(&vector[i]);
+    for (size_t r = 0; r < rows; r++) {
+        for (size_t i = 0; i < max_vector; i += packed_size) {
+            packed_a.loadUnaligned(&v_in[i]);
             packed_b.loadUnaligned(&matrix(r, i));
             packed_c = packed_a * packed_b;
-            vectorOut[r] += packed_c.sum();
+            v_out[r] += packed_c.sum();
         }
 
-        for(size_t i = max_vector; i < cols; i++) {
-            vectorOut[r] += matrix(r, i) * vector[i];
+        // Bucle de limpieza para elementos restantes
+        for (size_t i = max_vector; i < cols; i++) {
+            v_out[r] += matrix(r, i) * v_in[i];
         }
     }
 }
 #endif // TL_HAVE_SIMD_INTRINSICS
 
-template<typename T, size_t Rows, size_t Cols, size_t _size>
-void matrix_per_vector_cpp(const Matrix<T, Rows, Cols> &matrix, 
-                           const Vector<T, _size> &vector, 
-                           Vector<T, Rows> &vectorOut)
+//template<typename T, size_t Rows, size_t Cols, size_t _size>
+//void matrix_per_vector_cpp(const Matrix<T, Rows, Cols> &matrix, 
+//                           const Vector<T, _size> &vector, 
+//                           Vector<T, Rows> &vectorOut)
+//{
+//    size_t rows = matrix.rows();
+//    size_t cols = matrix.cols();
+//
+//    for(size_t r = 0; r < rows; r++) {
+//        for(size_t c = 0; c < cols; c++) {
+//            vectorOut[r] += matrix(r, c) * vector[c];
+//        }
+//    }
+//}
+template<typename T, size_t Rows, size_t Cols, typename DerivedIn, typename DerivedOut>
+void matrix_per_vector_cpp(const Matrix<T, Rows, Cols> &matrix,
+                           const VectorBase<DerivedIn> &vectorIn,
+                           VectorBase<DerivedOut> &vectorOut)
 {
+    const auto &v_in = vectorIn.derived();
+    auto &v_out = vectorOut.derived();
+
     size_t rows = matrix.rows();
     size_t cols = matrix.cols();
 
-    for(size_t r = 0; r < rows; r++) {
-        for(size_t c = 0; c < cols; c++) {
-            vectorOut[r] += matrix(r, c) * vector[c];
+    for (size_t r = 0; r < rows; r++) {
+        for (size_t c = 0; c < cols; c++) {
+            v_out[r] += matrix(r, c) * v_in[c];
         }
     }
 }
 
-
-template<typename T, size_t Rows, size_t Cols, size_t _size>
-auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, 
-                       const Vector<T, _size> &vector, 
-                       Vector<T, Rows> &vectorOut) -> std::enable_if_t<std::is_integral<T>::value, void>
+//template<typename T, size_t Rows, size_t Cols, size_t _size>
+//auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, 
+//                       const Vector<T, _size> &vector, 
+//                       Vector<T, Rows> &vectorOut) -> std::enable_if_t<std::is_integral<T>::value, void>
+template<typename T, size_t Rows, size_t Cols, typename DerivedIn, typename DerivedOut>
+auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
+                       const VectorBase<DerivedIn> &vector,
+                       VectorBase<DerivedOut> &vectorOut) -> std::enable_if_t<std::is_integral<T>::value, void>
 {
-    TL_ASSERT(matrix.cols() == vector.size(), "Matrix columns != Vector size");
+    //TL_ASSERT(matrix.cols() == vector.derived().size(), "Matrix columns != Vector size");
 
 //#ifndef TL_HAVE_SIMD_INTRINSICS
 //
@@ -1078,21 +1132,34 @@ auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
 }
 
 
-template<typename T, size_t Rows, size_t Cols, size_t _size>
-auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, 
-                       const Vector<T, _size> &vector, 
-                       Vector<T, Rows> &vectorOut) -> std::enable_if_t<std::is_floating_point<T>::value, void>
+//template<typename T, size_t Rows, size_t Cols, size_t _size>
+//auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix, 
+//                       const Vector<T, _size> &vector, 
+//                       Vector<T, Rows> &vectorOut) -> std::enable_if_t<std::is_floating_point<T>::value, void>
+template<typename T, size_t Rows, size_t Cols, typename DerivedIn, typename DerivedOut>
+auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
+                       const VectorBase<DerivedIn> &vectorIn,
+                       VectorBase<DerivedOut> &vectorOut) -> std::enable_if_t<std::is_floating_point<T>::value, void>
 {       
-    TL_ASSERT(matrix.cols() == vector.size(), "Matrix columns != Vector size");
+    const auto &v_in = vectorIn.derived();
+    auto &v_out = vectorOut.derived();
+
+    //TL_ASSERT(matrix.cols() == vector.size(), "Matrix columns != Vector size");
+    //TL_ASSERT(matrix.cols() == v_in.size(), "Matrix columns != Vector size");
 
     switch (MatrixConfig::instance().product) {
 #ifdef TL_HAVE_CUDA
     case tl::MatrixConfig::Product::CuBLAS:
-        cuda::gemv(matrix.rows(),
-                   matrix.cols(),
-                   matrix.data(), 
-                   vector.data(), 
-                   vectorOut.data());
+        //cuda::gemv(matrix.rows(),
+        //           matrix.cols(),
+        //           matrix.data(), 
+        //           vector.data(), 
+        //           vectorOut.data());
+        cuda::gemv(matrix.rows(), 
+                   matrix.cols(), 
+                   matrix.data(),
+                   v_in.data(), 
+                   v_out.data());
         break;
 #endif
 #ifdef TL_HAVE_OPENBLAS
@@ -1103,29 +1170,37 @@ auto matrix_per_vector(const Matrix<T, Rows, Cols> &matrix,
         size_t lda = matrix.cols();
         size_t incx = 1;
         size_t incy = 1;
+        //blas::gemv(blas::Order::row_major,
+        //           blas::TransposeMode::no_transpose,
+        //           matrix.rows(),
+        //           matrix.cols(),
+        //           alpha,
+        //           matrix.data(), lda,
+        //           vector.data(), incx,
+        //           beta,
+        //           vectorOut.data(), incy);
         blas::gemv(blas::Order::row_major,
                    blas::TransposeMode::no_transpose,
                    matrix.rows(),
                    matrix.cols(),
                    alpha,
                    matrix.data(), lda,
-                   vector.data(), incx,
+                   v_in.data(), incx,
                    beta,
-                   vectorOut.data(), incy);
-        
+                   v_out.data(), incy);        
     }
     break;
 #endif
 #ifdef TL_HAVE_SIMD_INTRINSICS
     case tl::MatrixConfig::Product::SIMD:
-        matrix_per_vector_simd(matrix, vector, vectorOut);
+        matrix_per_vector_simd(matrix, vectorIn, vectorOut);
         break;
 #endif
     case tl::MatrixConfig::Product::CPP:
         //matrix_per_vector_cpp(matrix, vector, vectorOut);
         //break;
     default:
-        matrix_per_vector_cpp(matrix, vector, vectorOut);
+        matrix_per_vector_cpp(matrix, vectorIn, vectorOut);
         break;
     }
 }
@@ -2534,41 +2609,112 @@ auto operator<<(std::ostream& os, const internal::MatrixBlock<T, Rows, Cols>* ma
 
 
 
-template<typename T, size_t Rows, size_t Cols>
-auto operator *(const Matrix<T, Rows, Cols>& matrix,
-                const Vector<T, Cols>& vector) -> Vector<T, Rows>
+//template<typename T, size_t Rows, size_t Cols>
+//auto operator *(const Matrix<T, Rows, Cols>& matrix,
+//                const Vector<T, Cols>& vector) -> Vector<T, Rows>
+//{
+//    Vector<T, Rows> vector_out = Vector<T, Rows>::zero(matrix.rows());
+//    internal::matrix_per_vector(matrix, vector, vector_out);
+//    return vector_out;
+//}
+
+//template<typename T, size_t Rows, size_t Cols, typename DerivedVector>
+//auto operator *(const Matrix<T, Rows, Cols> &matrix,
+//                const VectorBase<DerivedVector> &v_in) -> typename VectorTraits<DerivedVector>::result_type
+//{
+//    // 1. Deducimos el tipo de retorno correcto (Point o Vector)
+//    using Result_t = typename VectorTraits<DerivedVector>::result_type;
+//
+//    // 2. Obtenemos la referencia al tipo derivado real
+//    const auto &vector = v_in.derived();
+//
+//    TL_ASSERT(vector.size() == Cols, "Matrix-Vector dimensions mismatch");
+//
+//    // 3. Inicializamos el resultado (usando zero o constructor por defecto)
+//    Result_t vector_out;
+//    if constexpr (is_vector<Result_t>::value) {
+//        vector_out = Result_t::zero(matrix.rows());
+//    }
+//
+//    // 4. Ejecutamos la multiplicación
+//    internal::matrix_per_vector(matrix, vector, vector_out);
+//
+//    return vector_out;
+//}
+
+template<size_t Rows, size_t FixedV>
+struct DetermineBestSize
 {
-    Vector<T, Rows> vector_out = Vector<T, Rows>::zero();
+    // Si Rows es dinámico, el resultado es dinámico.
+    // Si no, mandan las Rows de la matriz.
+    static constexpr size_t value = (Rows == DynamicData) ? DynamicData : Rows;
+};
+
+// 2. Re-vinculador avanzado
+template<typename V, size_t Rows>
+struct VectorRebind 
+{
+    using T = typename V::value_type;
+    static constexpr size_t BestSize = DetermineBestSize<Rows, VectorTraits<V>::size>::value;
+
+    // Decisión final de tipo
+    using type = std::conditional_t<
+        (BestSize == 2 || BestSize == 3) && !is_vector<V>::value, // ¿Es tamaño "punto" y la entrada era un punto?
+        Point<T, static_cast<Dimension>(BestSize)>,
+        Vector<T, BestSize> // Si es dinámico o tamaño != 2,3, devolvemos Vector
+    >;
+};
+
+template<typename T, size_t Rows, size_t Cols, typename DerivedVector>
+auto operator *(const Matrix<T, Rows, Cols> &matrix,
+                const VectorBase<DerivedVector> &v_in) -> typename VectorRebind<DerivedVector, Rows>::type
+{
+    using Result_t = typename VectorRebind<DerivedVector, Rows>::type;
+    const auto &vector = v_in.derived();
+
+    if constexpr (Cols != DynamicData && VectorTraits<DerivedVector>::size != DynamicData) {
+        static_assert(Cols == VectorTraits<DerivedVector>::size,
+                      "Matrix columns must match Vector size for multiplication.");
+    }
+
+    TL_ASSERT(vector.size() == matrix.cols(), "Matrix-Vector dimensions mismatch");
+
+    // Inicialización segura
+    Result_t vector_out;
+    if constexpr (is_vector<Result_t>::value) {
+        vector_out = Result_t::zero(matrix.rows());
+    } 
+
     internal::matrix_per_vector(matrix, vector, vector_out);
     return vector_out;
 }
 
-template<typename T>
-auto operator *(const Matrix<T>& matrix,
-                const Vector<T>& vector) -> Vector<T>
-{
-    Vector<T> vector_out = Vector<T>::zero(matrix.rows());
-    internal::matrix_per_vector(matrix, vector, vector_out);
-    return vector_out;
-}
+//template<typename T>
+//auto operator *(const Matrix<T>& matrix,
+//                const Vector<T>& vector) -> Vector<T>
+//{
+//    Vector<T> vector_out = Vector<T>::zero(matrix.rows());
+//    internal::matrix_per_vector(matrix, vector, vector_out);
+//    return vector_out;
+//}
 
-template<typename T, size_t Rows, size_t Cols>
-auto operator *(const Matrix<T, Rows, Cols>& matrix,
-                const Vector<T>& vector) -> Vector<T, Rows>
-{
-    Vector<T, Rows> vector_out = Vector<T, Rows>::zero();
-    internal::matrix_per_vector(matrix, vector, vector_out);
-    return vector_out;
-}
+//template<typename T, size_t Rows, size_t Cols>
+//auto operator *(const Matrix<T, Rows, Cols>& matrix,
+//                const Vector<T>& vector) -> Vector<T, Rows>
+//{
+//    Vector<T, Rows> vector_out = Vector<T, Rows>::zero();
+//    internal::matrix_per_vector(matrix, vector, vector_out);
+//    return vector_out;
+//}
 
-template<typename T, size_t _dim>
-auto operator *(const Matrix<T>& matrix,
-                const Vector<T, _dim>& vector) -> Vector<T>
-{
-    Vector<T> vector_out = Vector<T>::zero(matrix.rows());
-    internal::matrix_per_vector(matrix, vector, vector_out);
-    return vector_out;
-}
+//template<typename T, size_t _dim>
+//auto operator *(const Matrix<T>& matrix,
+//                const Vector<T, _dim>& vector) -> Vector<T>
+//{
+//    Vector<T> vector_out = Vector<T>::zero(matrix.rows());
+//    internal::matrix_per_vector(matrix, vector, vector_out);
+//    return vector_out;
+//}
 
 //template<
 //  template<typename, size_t Rows = DynamicData, size_t Cols = DynamicData>
@@ -2613,14 +2759,6 @@ auto operator *(const internal::MatrixBlock<T>& matrix,
     }
 
     return vect;
-}
-
-
-template<typename T, size_t Rows, size_t _dim> 
-auto operator *(const Vector<T, _dim>& vector,
-                const Matrix<T, Rows, _dim>& matrix) -> Vector<T, Rows>
-{
-    return matrix * vector;
 }
 
 /*! \} */

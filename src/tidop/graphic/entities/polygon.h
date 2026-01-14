@@ -24,9 +24,9 @@
 
 #pragma once
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/polygon.h"
-#include "tidop/geometry/entities/multipolygon.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/Polygon.h"
+#include "tidop/geometry/primitives/Multipolygon.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace tl
@@ -43,7 +43,7 @@ class Painter;
  * \brief Polygon graphic class
  */
 class TL_EXPORT GPolygon
-  : public Polygon<Point<double>>,
+  : public Polygon<Point2d>,
     public GraphicEntity
 {
 public:
@@ -60,7 +60,7 @@ public:
      * \param[in] polygon Polygon class object
      * \see Polygon
      */
-    explicit GPolygon(const Polygon<Point<double>> &polygon);
+    explicit GPolygon(const Polygon<Point2d> &polygon);
 
     /*!
      * \brief Copy constructor
@@ -92,7 +92,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -101,7 +101,7 @@ public:
  * \brief 3D polygon graphics class
  */
 class TL_EXPORT GPolygon3D
-  : public Polygon3D<Point3<double>>,
+  : public Polygon<Point3d>,
     public GraphicEntity
 {
 public:
@@ -118,7 +118,7 @@ public:
      * \param[in] polygon Polygon object
      * \see Polygon3D
      */
-    explicit GPolygon3D(const Polygon3D<Point3<double>> &polygon);
+    explicit GPolygon3D(const Polygon<Point3d> &polygon);
 
     /*!
      * \brief Copy constructor
@@ -150,7 +150,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -159,7 +159,7 @@ public:
  * \brief Multi-polygon graphic class
  */
 class TL_EXPORT GMultiPolygon
-  : public MultiPolygon<Point<double>>,
+  : public MultiPolygon<Point2d>,
     public GraphicEntity
 {
 public:
@@ -176,7 +176,7 @@ public:
      * \param multiPolygon MultiPolygon object
      * \see MultiPolygon
      */
-    explicit GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon);
+    explicit GMultiPolygon(const MultiPolygon<Point2d> &multiPolygon);
 
     /*!
      * \brief Copy constructor
@@ -208,7 +208,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -217,7 +217,7 @@ public:
  * \brief Multi-polygon 3D graphic class
  */
 class TL_EXPORT GMultiPolygon3D
-  : public MultiPolygon3D<Point3<double>>,
+  : public MultiPolygon<Point3d>,
     public GraphicEntity
 {
 public:
@@ -228,11 +228,11 @@ public:
     GMultiPolygon3D();
 
     /*!
-     * \brief Constructor from a MultiPolygon3D
-     * \param multiPolygon MultiPolygon3D object
+     * \brief Constructor from a MultiPolygon
+     * \param multiPolygon MultiPolygon object
      * \see MultiPolygon
      */
-    explicit GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon);
+    explicit GMultiPolygon3D(const MultiPolygon<Point3d> &multiPolygon);
 
     /*!
      * \brief Copy constructor
@@ -264,7 +264,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 

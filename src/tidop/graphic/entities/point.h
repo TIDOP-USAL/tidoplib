@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/multipoint.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/MultiPoint.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace tl
@@ -96,7 +96,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -161,7 +161,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -188,7 +188,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const ->BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -199,7 +199,7 @@ public:
  * \brief Multi-point 3D graphic class
  */
 class TL_EXPORT GMultiPoint3D
-  : public MultiPoint3D<Point3<double>>,
+  : public MultiPoint<Point3d>,
     public GraphicEntity
 {
 
@@ -207,7 +207,7 @@ public:
 
     GMultiPoint3D();
     explicit GMultiPoint3D(size_t size);
-    explicit GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint);
+    explicit GMultiPoint3D(const MultiPoint<Point3d> &multiPoint);
     GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D);
     GMultiPoint3D(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT;
     ~GMultiPoint3D() override;
@@ -217,7 +217,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const ->BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 

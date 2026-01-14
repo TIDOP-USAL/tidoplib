@@ -261,16 +261,16 @@ BOOST_FIXTURE_TEST_CASE(translation_transform_point2d, TranslationTest)
         Point<double> point(23.5, 21.1);
         auto point2 = translate.transform(point);
 
-        BOOST_CHECK_EQUAL(48.5, point2.x);
-        BOOST_CHECK_EQUAL(57.1, point2.y);
+        BOOST_CHECK_EQUAL(48.5, point2.x());
+        BOOST_CHECK_EQUAL(57.1, point2.y());
     }
 
     {
         Point<double> point(23.5, 21.1);
         auto point2 = Translation<double, 2>(25., 36.) * point;
 
-        BOOST_CHECK_EQUAL(48.5, point2.x);
-        BOOST_CHECK_EQUAL(57.1, point2.y);
+        BOOST_CHECK_EQUAL(48.5, point2.x());
+        BOOST_CHECK_EQUAL(57.1, point2.y());
     }
 
 }
@@ -345,7 +345,15 @@ BOOST_FIXTURE_TEST_CASE(translation_transform_matrix, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(estimate_points, TranslationTest)
 {
-    auto translation = TranslationEstimator<double, 2>::estimate(src_points_utm, dst_points_utm);
+    auto translation = TranslationEstimator<double>::estimate(src_points_utm, dst_points_utm);
+
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(estimate_vectors, TranslationTest)
+{
+    auto translation = TranslationEstimator<double>::estimate(src_vector_utm, dst_vector_utm);
 
     BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
     BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
@@ -353,7 +361,7 @@ BOOST_FIXTURE_TEST_CASE(estimate_points, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(estimate_matrix, TranslationTest)
 {
-    auto translation = TranslationEstimator<double, 2>::estimate(src_matrix_utm, dst_matrix_utm);
+    auto translation = TranslationEstimator<double>::estimate(src_matrix_utm, dst_matrix_utm);
 
     BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
     BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);

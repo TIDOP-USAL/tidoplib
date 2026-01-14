@@ -29,8 +29,6 @@
 
 
 using namespace tl; 
-using namespace geometry;
-
 
 BOOST_AUTO_TEST_SUITE(LengthAlgorithmsTestSuite)
 
@@ -48,7 +46,7 @@ struct LengthAlgorithms
 
     void setup()
     {
-        segment = Segment<geometry::Point2d>(geometry::Point2d(56.23, 123.5), geometry::Point2d(96.2, 34.4));
+        segment = Segment<Point2d>(Point2d(56.23, 123.5), Point2d(96.2, 34.4));
     }
 
     void teardown()
@@ -56,15 +54,15 @@ struct LengthAlgorithms
 
     }
 
-    geometry::Point2d point;
-    Segment<geometry::Point2d> segment;
+    Point2d point;
+    Segment<Point2d> segment;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(distance, LengthAlgorithms)
 {
-    BOOST_CHECK_CLOSE(0., tl::geometry::length(point), 0.1);
-    BOOST_CHECK_CLOSE(97.6545, tl::geometry::length(segment), 0.1);
+    BOOST_CHECK_CLOSE(0., tl::length(point), 0.1);
+    BOOST_CHECK_CLOSE(97.6545, tl::length(segment), 0.1);
 }
 
 

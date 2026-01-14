@@ -25,10 +25,8 @@
 #define BOOST_TEST_MODULE Tidop Argument test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/primitives/Segment.h>
-//#include <tidop/geometry/bbox.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 /* Segment */
 

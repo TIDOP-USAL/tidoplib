@@ -28,9 +28,6 @@
 
 namespace tl
 {
-	
-namespace geometry
-{
 
 namespace detail 
 {
@@ -90,6 +87,7 @@ auto contains_impl(const Polygon_t &polygon,
                    point_tag) -> bool
 {
     // 1. Check rápido: Si el punto no está en el Bounding Box, no puede estar en el polígono
+    auto bbox = envelope(polygon);
     if (!contains(envelope(polygon), pt)) {
         return false;
     }
@@ -140,4 +138,3 @@ auto contains(const G1 &g1, const G2 &g2) -> bool
 }
 
 } // namespace tl
-} // namespace geometry

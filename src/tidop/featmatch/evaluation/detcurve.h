@@ -115,15 +115,15 @@ void DETCurve<T>::compute(size_t steeps)
 
     if (size > 1) {
 
-        if (this->mCurve.front().x > this->mCurve.back().x)
+        if (this->mCurve.front().x() > this->mCurve.back().x())
             std::reverse(this->mCurve.begin(), this->mCurve.end());
 
-        Point<double> point1 = this->mCurve[0];
-        Point<double> point2;
+        Point2d point1 = this->mCurve[0];
+        Point2d point2;
 
         for (size_t i = 1; i < size; i++) {
             point2 = this->mCurve[i];
-            this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+            this->mAuc += std::abs((1 - point1.x() + 1 - point2.x()) / 2. * (point1.y() - point2.y()));
             point1 = point2;
         }
     }
@@ -148,15 +148,15 @@ void DETCurve<T>::compute()
 
     if (size > 1) {
 
-        if (this->mCurve.front().x > this->mCurve.back().x)
+        if (this->mCurve.front().x() > this->mCurve.back().x())
             std::reverse(this->mCurve.begin(), this->mCurve.end());
 
-        Point<double> point1 = this->mCurve[0];
-        Point<double> point2;
+        Point2d point1 = this->mCurve[0];
+        Point2d point2;
 
         for (size_t i = 1; i < size; i++) {
             point2 = this->mCurve[i];
-            this->mAuc += std::abs((1 - point1.x + 1 - point2.x) / 2. * (point1.y - point2.y));
+            this->mAuc += std::abs((1 - point1.x() + 1 - point2.x()) / 2. * (point1.y() - point2.y()));
             point1 = point2;
         }
     }

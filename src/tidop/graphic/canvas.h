@@ -30,13 +30,14 @@
 #include "opencv2/core/core.hpp"
 #endif // TL_HAVE_OPENCV
 
+#include "tidop/core/base/size.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/geometry/entities/multipoint.h"
-#include "tidop/geometry/entities/multilinestring.h"
-#include "tidop/geometry/entities/multipolygon.h"
+#include "tidop/geometry/primitives/MultiPoint.h"
+#include "tidop/geometry/primitives/MultiLineString.h"
+#include "tidop/geometry/primitives/MultiPolygon.h"
 
 
 namespace tl
@@ -71,7 +72,7 @@ class Painter;
  * \code{.cpp}
  * class ImageCanvas : public Canvas {
  * protected:
- *     void drawPoint(const Point<double>& point, const GraphicStyle& style) override { ... }
+ *     void drawPoint(const Point2d& point, const GraphicStyle& style) override { ... }
  *     void drawLineString(const LineStringD& lineString, const GraphicStyle& style) override { ... }
  *     // implement other drawing methods...
  * };
@@ -157,42 +158,42 @@ protected:
      * \param[in] point Point
      * \param[in] style Style
      */
-    virtual void drawPoint(const Point<double> &point, const GraphicStyle &style) = 0;
+    virtual void drawPoint(const Point2d &point, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draw a polyline on the canvas
      * \param[in] lineString Polyline
      * \param[in] style Style
      */
-    virtual void drawLineString(const LineStringD &lineString, const GraphicStyle &style) = 0;
+    virtual void drawLineString(const LineString<Point2d> &lineString, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draw a polygon on the canvas
      * \param[in] polygon Polygon
      * \param[in] style Style
      */
-    virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
+    virtual void drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draws a set of points on the canvas
      * \param[in] multiPoint Collection of points
      * \param[in] style Style to apply to each point
      */
-    virtual void drawMultiPoint(const MultiPoint<Point<double>> &multiPoint, const GraphicStyle &style) = 0;
+    virtual void drawMultiPoint(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draws a set of polylines on the canvas
      * \param[in] multiLineString Collection of polylines
      * \param[in] style Style to apply to each polyline
      */
-    virtual void drawMultiLineString(const MultiLineString<Point<double>> &multiLineString, const GraphicStyle &style) = 0;
+    virtual void drawMultiLineString(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draws a set of polygons on the canvas
      * \param[in] multiPolygon Collection of polygons
      * \param[in] style Style to apply to each polygon
      */
-    virtual void drawMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon, const GraphicStyle &style) = 0;
+    virtual void drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draw a text on the canvas
@@ -200,7 +201,7 @@ protected:
      * \param[in] text Text
      * \param[in] style Style
      */
-    virtual void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) = 0;
+    virtual void drawText(const Point2d &point, const std::string &text, const GraphicStyle &style) = 0;
 
 private:
 
@@ -242,7 +243,7 @@ private:
  *
  *     Painter painter(&canvas);
  *             
- *     Window<Point<double>> window;
+ *     Window<Point2d> window;
  *     for (int i = 0; i < vector_reader->layersCount(); i++) {
  *         auto layer = vector_reader->read(i);
  *         window = joinWindow(window, layer->window());
@@ -315,13 +316,13 @@ public:
 
 protected:
 
-    void drawPoint(const Point<double> &point, const GraphicStyle &style) override;
-    void drawLineString(const LineStringD &lineString, const GraphicStyle &style) override;
-    void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
-    void drawMultiPoint(const MultiPoint<Point<double>> &multiPoint, const GraphicStyle &style) override;
-    void drawMultiLineString(const MultiLineString<Point<double>> &multiLineString, const GraphicStyle &style) override;
-    void drawMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon, const GraphicStyle &style) override;
-    void drawText(const Point<double> &point, const std::string &text, const GraphicStyle &style) override;
+    void drawPoint(const Point2d &point, const GraphicStyle &style) override;
+    void drawLineString(const LineString<Point2d> &lineString, const GraphicStyle &style) override;
+    void drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &style) override;
+    void drawMultiPoint(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style) override;
+    void drawMultiLineString(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style) override;
+    void drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style) override;
+    void drawText(const Point2d &point, const std::string &text, const GraphicStyle &style) override;
 
 private:
 
@@ -424,4 +425,4 @@ inline auto CanvasCV::colorToCvScalar(const Color &color) -> cv::Scalar
 
 /*! \} */
 
-} // Fin namespace tl
+} // End namespace tl

@@ -31,7 +31,7 @@
 #include "tidop/core/base/flags.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/endian.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 #include "tidop/graphic/color.h"
 
 #include <fstream>

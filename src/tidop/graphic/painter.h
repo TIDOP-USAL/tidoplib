@@ -120,7 +120,7 @@ public:
      * \brief Draws a polyline from raw 2D points.
      * \param[in] lineString Polyline.
      */
-    void drawLineString(const LineStringD &lineString) const;
+    void drawLineString(const LineString<Point2d> &lineString) const;
 
     /*!
      * \brief Draws a polygon geometry.
@@ -132,7 +132,7 @@ public:
      * \brief Draws a polygon from raw 2D coordinates.
      * \param[in] polygon Polygon.
      */
-    void drawPolygon(const PolygonD &polygon) const;
+    void drawPolygon(const Polygon<Point2d> &polygon) const;
 
     /*!
      * \brief Draws a multipoint geometry.

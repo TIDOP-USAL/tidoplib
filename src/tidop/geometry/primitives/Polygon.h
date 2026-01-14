@@ -37,9 +37,6 @@
 
 namespace tl
 {
-
-namespace geometry 
-{
 	
 /*! \addtogroup GeometricEntities
  *  \{
@@ -90,8 +87,7 @@ class Polygon
 
 public:
 
-    using value_type = typename Point_t::value_type;
-    //static constexpr std::size_t _size = Point_t::_size;
+    using value_type = Point_t;
 
 private:
 
@@ -122,6 +118,7 @@ public:
     auto outer() -> LinearRing<Point_t> & { return mOuter; }
     
     auto inners() const -> const std::vector<LinearRing<Point_t>> & { return mInners; }
+    auto inners() -> std::vector<LinearRing<Point_t>> & { return mInners; }
     void addInner(const LinearRing<Point_t>& hole) { mInners.push_back(hole); }
 
     auto inner(std::size_t i) const -> const LinearRing<Point_t> & { return mInners[i]; }
@@ -155,6 +152,4 @@ using Polygon3f = Polygon<Point3<float>>;
 
 /*! \} */
 
-}
-
-}
+} // End namespace tl

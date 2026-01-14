@@ -25,10 +25,15 @@
 #define BOOST_TEST_MODULE Tidop bounding box test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/spatial/BoundingBox.h>
+#include <tidop/geometry/algorithms/spatial/Envelope.h>
+#include <tidop/geometry/primitives/Segment.h>
+#include <tidop/geometry/primitives/LineString.h>
+#include <tidop/geometry/primitives/Polygon.h>
+#include <tidop/geometry/primitives/MultiPoint.h>
+#include <tidop/geometry/primitives/MultiLineString.h>
+#include <tidop/geometry/primitives/MultiPolygon.h>
 
 using namespace tl;
-using namespace tl::geometry;
-
 
 BOOST_AUTO_TEST_SUITE(BoundingBoxTestSuite)
 
@@ -807,5 +812,140 @@ BOOST_FIXTURE_TEST_CASE(normalized, BoundingBox2DTest)
 //    BOOST_CHECK_EQUAL(true, bbox_integer->containsWindow(w1));
 //    BOOST_CHECK_EQUAL(false, bbox_integer->containsWindow(w2));
 //}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(EnvelopeTestSuite)
+
+// Test para Punto
+BOOST_AUTO_TEST_CASE(envelope_point)
+{
+    Point2d p(5.0, 10.0);
+    auto box = envelope(p);
+
+    BOOST_CHECK(box.isValid());
+    BOOST_CHECK_EQUAL(box.pt1().x(), 5.0);
+    BOOST_CHECK_EQUAL(box.pt2().y(), 10.0);
+}
+
+// Test para Segmento
+BOOST_AUTO_TEST_CASE(envelope_segment)
+{
+    Segment2d seg(Point2d{0, 10}, Point2d{5, -5});
+    auto box = envelope(seg);
+
+    // El min debe ser (0, -5) y el max (5, 10)
+    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt1().y(), -5.0);
+    BOOST_CHECK_EQUAL(box.pt2().x(), 5.0);
+    BOOST_CHECK_EQUAL(box.pt2().y(), 10.0);
+}
+
+// Test para LineString (basado en contenedor)
+BOOST_AUTO_TEST_CASE(envelope_linestring)
+{
+    LineString2d line;
+    line.emplace_back(0, 0);
+    line.emplace_back(10, 5);
+    line.emplace_back(-2, 8);
+
+    auto box = envelope(line);
+
+    BOOST_CHECK_EQUAL(box.pt1().x(), -2.0);
+    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.pt2().y(), 8.0);
+}
+
+// Test para Polígono (solo considera el anillo exterior)
+BOOST_AUTO_TEST_CASE(envelope_polygon)
+{
+    Polygon2d poly;
+    poly.outer() = {Point2d{0,0}, Point2d{10,0}, Point2d{10,10}, Point2d{0,10}};
+
+    // Añadimos un hueco que se sale del outer para probar que se ignora 
+    // (según la lógica estándar de OGC, el outer define el envelope)
+    LinearRing2d hole = {Point2d{ -5, -5}, Point2d{15, -5}, Point2d{15, 15}, Point2d{-5, 15}};
+    poly.addInner(hole);
+
+    auto box = envelope(poly);
+
+    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
+}
+
+// Test para MultiPoint
+BOOST_AUTO_TEST_CASE(envelope_multipoint)
+{
+    MultiPoint2d mp;
+    mp.emplace_back(0.0, 5.0);
+    mp.emplace_back(10.0, -2.0);
+    mp.emplace_back(5.0, 15.0);
+
+    auto box = envelope(mp);
+
+    BOOST_CHECK(box.isValid());
+    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt1().y(), -2.0);
+    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.pt2().y(), 15.0);
+}
+
+// Test para MultiPolygon
+BOOST_AUTO_TEST_CASE(envelope_multipolygon)
+{
+    MultiPolygon2d mp;
+
+    Polygon2d p1;
+    p1.outer() = {Point2d{0,0}, Point2d{2,2}};
+
+    Polygon2d p2;
+    p2.outer() = {Point2d{10,10}, Point2d{12,12}};
+
+    mp.push_back(p1);
+    mp.push_back(p2);
+
+    auto box = envelope(mp);
+
+    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt1().y(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt2().x(), 12.0);
+    BOOST_CHECK_EQUAL(box.pt2().y(), 12.0);
+}
+
+// Test para MultiLineString
+BOOST_AUTO_TEST_CASE(envelope_multilinestring)
+{
+    MultiLineString2d mls;
+
+    LineString2d l1;
+    l1.emplace_back(0, 0);
+    l1.emplace_back(2, 2);
+
+    LineString2d l2;
+    l2.emplace_back(10, 10);
+    l2.emplace_back(5, 5);
+
+    mls.push_back(l1);
+    mls.push_back(l2);
+
+    auto box = envelope(mls);
+
+    // El envelope total debe englobar ambas líneas: (0,0) a (10,10)
+    BOOST_CHECK(box.isValid());
+    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt1().y(), 0.0);
+    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.pt2().y(), 10.0);
+}
+
+// Test de caso vacío
+BOOST_AUTO_TEST_CASE(envelope_empty_multi)
+{
+    MultiPolygon2d empty_mp;
+    auto box = envelope(empty_mp);
+
+    BOOST_CHECK(!box.isValid());
+}
 
 BOOST_AUTO_TEST_SUITE_END()

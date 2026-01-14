@@ -615,8 +615,8 @@ auto VectorReaderGdal::readLineString(const OGRLineString *ogrLineString) -> std
     auto line_string = std::make_shared<GLineString>(size);
 
     for (size_t i = 0; i < size; i++) {
-        (*line_string)[i].x = ogrLineString->getX(static_cast<int>(i));
-        (*line_string)[i].y = ogrLineString->getY(static_cast<int>(i));
+        (*line_string)[i].x() = ogrLineString->getX(static_cast<int>(i));
+        (*line_string)[i].y() = ogrLineString->getY(static_cast<int>(i));
     }
 
     return line_string;
@@ -628,9 +628,9 @@ auto VectorReaderGdal::readLineString3D(const OGRLineString *ogrLineString) -> s
     auto line_string = std::make_shared<GLineString3D>(size);
 
     for (size_t i = 0; i < size; i++) {
-        (*line_string)[i].x = ogrLineString->getX(static_cast<int>(i));
-        (*line_string)[i].y = ogrLineString->getY(static_cast<int>(i));
-        (*line_string)[i].z = ogrLineString->getZ(static_cast<int>(i));
+        (*line_string)[i].x() = ogrLineString->getX(static_cast<int>(i));
+        (*line_string)[i].y() = ogrLineString->getY(static_cast<int>(i));
+        (*line_string)[i].z() = ogrLineString->getZ(static_cast<int>(i));
     }
 
     return line_string;
@@ -643,7 +643,7 @@ auto VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon) -> std::shared_ptr<GP
     auto polygon = std::make_shared<GPolygon>(size);
 
     for (size_t i = 0; i < size; i++) {
-        (*polygon)[i] = Point<double>(ogr_linear_ring->getX(static_cast<int>(i)),
+        polygon->outer()[i] = Point2d(ogr_linear_ring->getX(static_cast<int>(i)),
                                       ogr_linear_ring->getY(static_cast<int>(i)));
     }
 
@@ -651,12 +651,12 @@ auto VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon) -> std::shared_ptr<GP
     for (size_t i = 0; i < size; i++) {
         ogr_linear_ring = ogrPolygon->getInteriorRing(static_cast<int>(i));
         int nr = ogr_linear_ring->getNumPoints();
-        PolygonHole<Point<double>> hole(nr);
+        LinearRing<Point2d> hole(nr);
         for (int j = 0; j < nr; j++) {
             hole[j] = Point<double>(ogr_linear_ring->getX(j),
                                     ogr_linear_ring->getY(j));
         }
-        polygon->addHole(hole);
+        polygon->addInner(hole);
     }
 
     return polygon;
@@ -669,22 +669,22 @@ auto VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolygon) -> std::shared_ptr<
     auto polygon = std::make_shared <GPolygon3D>(size);
 
     for (size_t i = 0; i < size; i++) {
-        (*polygon)[i] = Point3<double>(ogr_linear_ring->getX(static_cast<int>(i)),
-                                       ogr_linear_ring->getY(static_cast<int>(i)),
-                                       ogr_linear_ring->getZ(static_cast<int>(i)));
+        polygon->outer()[i] = Point3d(ogr_linear_ring->getX(static_cast<int>(i)),
+                                      ogr_linear_ring->getY(static_cast<int>(i)),
+                                      ogr_linear_ring->getZ(static_cast<int>(i)));
     }
 
     size = static_cast<size_t>(ogrPolygon->getNumInteriorRings());
     for (size_t i = 0; i < size; i++) {
         ogr_linear_ring = ogrPolygon->getInteriorRing(static_cast<int>(i));
         auto nr = static_cast<size_t>(ogr_linear_ring->getNumPoints());
-        Polygon3DHole<Point3<double>> hole(nr);
+        LinearRing<Point3d> hole(nr);
         for (size_t j = 0; j < nr; j++) {
             hole[j] = Point3<double>(ogr_linear_ring->getX(static_cast<int>(j)),
                                      ogr_linear_ring->getY(static_cast<int>(j)),
                                      ogr_linear_ring->getZ(static_cast<int>(j)));
         }
-        polygon->addHole(hole);
+        polygon->addInner(hole);
     }
 
     return polygon;
@@ -703,8 +703,8 @@ auto VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogrMultiPoint) -> std::shar
         const OGRPoint *point = dynamic_cast<OGRPoint *>(ogrMultiPoint->getGeometryRef(static_cast<int>(i)));
 #endif
 
-        (*multi_point)[i].x = point->getX();
-        (*multi_point)[i].y = point->getY();
+        (*multi_point)[i].x() = point->getX();
+        (*multi_point)[i].y() = point->getY();
     }
 
     return multi_point;
@@ -723,9 +723,9 @@ auto VectorReaderGdal::readMultiPoint3D(OGRMultiPoint *ogrMultiPoint) -> std::sh
         const OGRPoint *point = dynamic_cast<OGRPoint *>(ogrMultiPoint->getGeometryRef(static_cast<int>(i)));
 #endif
 
-        (*multi_point)[i].x = point->getX();
-        (*multi_point)[i].y = point->getY();
-        (*multi_point)[i].z = point->getZ();
+        (*multi_point)[i].x() = point->getX();
+        (*multi_point)[i].y() = point->getY();
+        (*multi_point)[i].z() = point->getZ();
     }
 
     return multi_point;
@@ -748,8 +748,8 @@ auto VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineStrin
         (*multi_line_string)[i].resize(np);
 
         for (size_t j = 0; j < np; j++) {
-            (*multi_line_string)[i][j].x = line_string->getX(static_cast<int>(j));
-            (*multi_line_string)[i][j].y = line_string->getY(static_cast<int>(j));
+            (*multi_line_string)[i][j].x() = line_string->getX(static_cast<int>(j));
+            (*multi_line_string)[i][j].y() = line_string->getY(static_cast<int>(j));
         }
     }
 
@@ -773,9 +773,9 @@ auto VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineStr
         (*line_string)[i].resize(points_size);
 
         for (size_t j = 0; j < points_size; j++) {
-            (*line_string)[i][j].x = ogr_line_string->getX(static_cast<int>(j));
-            (*line_string)[i][j].y = ogr_line_string->getY(static_cast<int>(j));
-            (*line_string)[i][j].z = ogr_line_string->getZ(static_cast<int>(j));
+            (*line_string)[i][j].x() = ogr_line_string->getX(static_cast<int>(j));
+            (*line_string)[i][j].y() = ogr_line_string->getY(static_cast<int>(j));
+            (*line_string)[i][j].z() = ogr_line_string->getZ(static_cast<int>(j));
         }
     }
 
@@ -797,23 +797,25 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
 
         const OGRLinearRing *ogr_linear_ring = ogr_polygon->getExteriorRing();
         auto np = static_cast<size_t>(ogr_linear_ring->getNumPoints());
-        (*multi_polygon)[i].resize(np);
+        LinearRing<Point2d> polygon(np);
+        //(*multi_polygon)[i].resize(np);
 
         for (size_t j = 0; j < np; j++) {
-            (*multi_polygon)[i][j].x = ogr_linear_ring->getX(static_cast<int>(j));
-            (*multi_polygon)[i][j].y = ogr_linear_ring->getY(static_cast<int>(j));
+            polygon[j].x() = ogr_linear_ring->getX(static_cast<int>(j));
+            polygon[j].y() = ogr_linear_ring->getY(static_cast<int>(j));
         }
+        (*multi_polygon)[i].outer() = polygon;
 
         int nir = ogr_polygon->getNumInteriorRings();
         for (size_t k = 0; k < nir; k++) {
             const OGRLinearRing *ogr_interior_ring = ogr_polygon->getInteriorRing(static_cast<int>(k));
             int nr = ogr_interior_ring->getNumPoints();
-            PolygonHole<Point<double>> hole(nr);
+            LinearRing<Point2d> hole(nr);
             for (int j = 0; j < nr; j++) {
-                hole[j] = Point<double>(ogr_interior_ring->getX(j),
-                                        ogr_interior_ring->getY(j));
+                hole[j] = Point2d(ogr_interior_ring->getX(j),
+                                  ogr_interior_ring->getY(j));
             }
-            (*multi_polygon)[i].addHole(hole);
+            (*multi_polygon)[i].addInner(hole);
         }
         //}
 
@@ -837,25 +839,27 @@ auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> s
 
         const OGRLinearRing *ogr_linear_ring = ogr_polygon->getExteriorRing();
         auto points_size = static_cast<size_t>(ogr_linear_ring->getNumPoints());
-        (*multi_polygon)[i].resize(points_size);
+        //(*multi_polygon)[i].resize(points_size);
+        LinearRing<Point3d> polygon(points_size);
 
         for (size_t j = 0; j < points_size; j++) {
-            (*multi_polygon)[i][j].x = ogr_linear_ring->getX(static_cast<int>(j));
-            (*multi_polygon)[i][j].y = ogr_linear_ring->getY(static_cast<int>(j));
-            (*multi_polygon)[i][j].z = ogr_linear_ring->getZ(static_cast<int>(j));
+            polygon[j].x() = ogr_linear_ring->getX(static_cast<int>(j));
+            polygon[j].y() = ogr_linear_ring->getY(static_cast<int>(j));
+            polygon[j].z() = ogr_linear_ring->getZ(static_cast<int>(j));
         }
+        (*multi_polygon)[i].outer() = polygon;
 
         int nir = ogr_polygon->getNumInteriorRings();
         for (size_t k = 0; k < nir; k++) {
             ogr_linear_ring = ogr_polygon->getInteriorRing(static_cast<int>(k));
             auto nr = static_cast<size_t>(ogr_linear_ring->getNumPoints());
-            Polygon3DHole<Point3<double>> hole(nr);
+            LinearRing<Point3d> hole(nr);
             for (size_t j = 0; j < nr; j++) {
-                hole[j] = Point3<double>(ogr_linear_ring->getX(static_cast<int>(j)),
-                                         ogr_linear_ring->getY(static_cast<int>(j)),
-                                         ogr_linear_ring->getZ(static_cast<int>(j)));
+                hole[j] = Point3d(ogr_linear_ring->getX(static_cast<int>(j)),
+                                  ogr_linear_ring->getY(static_cast<int>(j)),
+                                  ogr_linear_ring->getZ(static_cast<int>(j)));
             }
-            (*multi_polygon)[i].addHole(hole);
+            (*multi_polygon)[i].addInner(hole);
         }
     }
 

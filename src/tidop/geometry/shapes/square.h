@@ -27,8 +27,8 @@
 #include <numeric>
 
 #include "tidop/geometry/entities/entity.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/graphic/rect.h"
 
 namespace tl
 {

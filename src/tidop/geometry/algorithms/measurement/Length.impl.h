@@ -29,9 +29,6 @@
 
 namespace tl
 {
-	
-namespace geometry
-{
 
 namespace detail 
 {
@@ -97,4 +94,3 @@ auto length(const Geometry& g) -> double
 }
 
 } // namespace tl
-} // namespace geometry

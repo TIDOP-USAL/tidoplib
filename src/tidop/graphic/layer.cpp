@@ -30,7 +30,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/geometry/bbox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
@@ -174,15 +174,26 @@ void GLayer::draw(Painter &painter) const
     }
 }
 
-auto GLayer::window() const -> Window<Point<double>>
+auto GLayer::boundingBox() const -> BoundingBox<Point2d>
 {
-    Window<Point<double>> w;
+    BoundingBox<Point2d> bbox;
 
-    for (auto &entity : mEntities) {
-        w = joinWindow(w, entity->window());
+    for (const auto &entity : mEntities) {
+        bbox = merge(bbox, entity->window());
     }
 
-    return w;
+    return bbox;
+}
+
+auto GLayer::window() const -> BoundingBox<Point2d>
+{
+    //Window<Point<double>> w;
+
+    //for (auto &entity : mEntities) {
+    //    w = joinWindow(w, entity->window());
+    //}
+
+    return boundingBox();
 }
 
 } // End namespace tl

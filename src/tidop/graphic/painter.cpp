@@ -51,7 +51,7 @@ void Painter::drawPoint(const GPoint &point)
 
         if (!mTransform.isEmpty()) {
 
-            Point<double> point_transform = mTransform.transform(point);
+            Point2d point_transform = mTransform.transform(point);
             mCanvas->drawPoint(point_transform, point);
 
         } else {
@@ -64,7 +64,7 @@ void Painter::drawPoint(const GPoint &point)
     }
 }
 
-void Painter::drawPoint(const Point<double> &point) const
+void Painter::drawPoint(const Point2d &point) const
 {
     if (mCanvas) {
         mCanvas->drawPoint(point, *this);
@@ -79,7 +79,7 @@ void Painter::drawLineString(const GLineString &lineString) const
 
         if (!mTransform.isEmpty()) {
 
-            LineString<Point<double>> linestring_transform(lineString.size());
+            LineString<Point2d> linestring_transform(lineString.size());
 
             for (size_t i = 0; i < lineString.size(); i++) {
                 linestring_transform[i] = mTransform.transform(lineString[i]);
@@ -98,7 +98,7 @@ void Painter::drawLineString(const GLineString &lineString) const
     }
 }
 
-void Painter::drawLineString(const LineStringD &lineString) const
+void Painter::drawLineString(const LineString<Point2d> &lineString) const
 {
     if (mCanvas) {
         mCanvas->drawLineString(lineString, *this);
@@ -112,10 +112,21 @@ void Painter::drawPolygon(const GPolygon &polygon) const
     if (mCanvas) {
 
         if (!mTransform.isEmpty()) {
-            Polygon<Point<double>> polygon_transform(polygon.size());
+            const auto &outer = polygon.outer();
+            Polygon<Point2d> polygon_transform(outer.size());
 
-            for (size_t i = 0; i < polygon.size(); i++) {
-                polygon_transform[i] = mTransform.transform(polygon[i]);
+            for (size_t i = 0; i < outer.size(); ++i) {
+                polygon_transform.outer()[i] = mTransform.transform(outer[i]);
+            }
+
+            const auto &inners = polygon.inners();
+            for (size_t i = 0; i < inners.size(); ++i) {
+                const auto &inner = inners[i];
+                LinearRing<Point2d> inner_ring(inner.size());
+                for (size_t j = 0; j < inner.size(); ++j) {
+                    inner_ring[j] = mTransform.transform(inner[j]);
+                }
+                polygon_transform.addInner(inner_ring);
             }
 
             mCanvas->drawPolygon(polygon_transform, polygon);
@@ -129,16 +140,27 @@ void Painter::drawPolygon(const GPolygon &polygon) const
     }
 }
 
-void Painter::drawPolygon(const PolygonD &polygon) const
+void Painter::drawPolygon(const Polygon<Point2d> &polygon) const
 {
     if (mCanvas) {
 
         if (!mTransform.isEmpty()) {
 
-            Polygon<Point<double>> polygon_transform(polygon.size());
+            const auto &outer = polygon.outer();
+            Polygon<Point2d> polygon_transform(outer.size());
 
-            for (size_t i = 0; i < polygon.size(); i++) {
-                polygon_transform[i] = mTransform.transform(polygon[i]);
+            for (size_t i = 0; i < outer.size(); ++i) {
+                polygon_transform.outer()[i] = mTransform.transform(outer[i]);
+            }
+
+            const auto &inners = polygon.inners();
+            for (size_t i = 0; i < inners.size(); ++i) {
+                const auto &inner = inners[i];
+                LinearRing<Point2d> inner_ring(inner.size());
+                for (size_t j = 0; j < inner.size(); ++j) {
+                    inner_ring[j] = mTransform.transform(inner[j]);
+                }
+                polygon_transform.addInner(inner_ring);
             }
 
             mCanvas->drawPolygon(polygon_transform, *this);
@@ -158,7 +180,7 @@ void Painter::drawMultiPoint(const GMultiPoint &multipoint) const
 
         if (!mTransform.isEmpty()) {
 
-            MultiPoint<Point<double>> mp_trans(multipoint.size());
+            MultiPoint<Point2d> mp_trans(multipoint.size());
 
             for (size_t i = 0; i < multipoint.size(); ++i) {
                 mp_trans[i] = mTransform.transform(multipoint[i]);
@@ -181,7 +203,7 @@ void Painter::drawMultiLineString(const GMultiLineString &multiLineString) const
 
         if (!mTransform.isEmpty()) {
 
-            MultiLineString<Point<double>> mls_trans(multiLineString.size());
+            MultiLineString<Point2d> mls_trans(multiLineString.size());
 
             for (size_t i = 0; i < multiLineString.size(); ++i) {
                 const auto &ls = multiLineString[i];
@@ -208,17 +230,19 @@ void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon) const
 
         if (!mTransform.isEmpty()) {
 
-            MultiPolygon<Point<double>> mp_trans(multiPolygon.size());
+            MultiPolygon<Point2d> mp_trans;
 
             for (size_t i = 0; i < multiPolygon.size(); ++i) {
                 const auto &poly = multiPolygon[i];
-                mp_trans[i].resize(poly.size());
-                for (size_t j = 0; j < poly.size(); ++j) {
-                    mp_trans[i][j] = mTransform.transform(poly[j]);
+                const auto &outer = poly.outer();
+                Polygon<Point2d> polygon(outer.size());
+                for (size_t j = 0; j < outer.size(); ++j) {
+                    polygon.outer()[j] = mTransform.transform(outer[j]);
                 }
                 // Holes are ignored as in drawPolygon
+                mp_trans.push_back(polygon);
             }
-
+            
             mCanvas->drawMultiPolygon(mp_trans, multiPolygon);
 
         } else {
@@ -238,12 +262,12 @@ void Painter::drawPicture(const cv::Mat &bmp) const
 }
 #endif // TL_HAVE_OPENCV
 
-void Painter::drawText(const Point<double> &point, const std::string &text) const
+void Painter::drawText(const Point2d &point, const std::string &text) const
 {
     if (mCanvas) {
 
         if (!mTransform.isEmpty()) {
-            Point<double> point_transform = mTransform.transform(point);
+            Point2d point_transform = mTransform.transform(point);
             mCanvas->drawText(point_transform, text, *this);
         } else {
             mCanvas->drawText(point, text, *this);

@@ -71,7 +71,7 @@ public:
     void write(const cv::Mat &image,
                const Rect<int> &rect) override;
     void write(const cv::Mat &image,
-               const WindowI &window) override;
+               const BoundingBox2i &window) override;
     auto rows() const -> int override;
     auto cols() const -> int override;
     auto channels() const -> int override;

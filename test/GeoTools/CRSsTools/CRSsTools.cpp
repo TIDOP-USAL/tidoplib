@@ -33,7 +33,7 @@
 #include <cpl_conv.h>
 
 #include "tidop/core/app/app.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 
 //#ifdef TL_HAVE_VLD
 //#include "vld.h"
@@ -154,11 +154,11 @@ BOOST_FIXTURE_TEST_CASE(crsOperation_coordinates, CRSsToolsTest)
 {
     auto crs_tools = ptrGeoTools->ptrCRSsTools();
 
-    tl::Point3d point(281815.044, 4827675.243, 0.);
-    crs_tools->crsOperation(crs25830, crs4258, point.x, point.y, point.z);
-    BOOST_CHECK_CLOSE(-5.701905, point.x, 0.1);
-    BOOST_CHECK_CLOSE(43.570113, point.y, 0.1);
-    BOOST_CHECK_CLOSE(0., point.z, 0.1);
+    Point3d point(281815.044, 4827675.243, 0.);
+    crs_tools->crsOperation(crs25830, crs4258, point.x(), point.y(), point.z());
+    BOOST_CHECK_CLOSE(-5.701905, point.x(), 0.1);
+    BOOST_CHECK_CLOSE(43.570113, point.y(), 0.1);
+    BOOST_CHECK_CLOSE(0., point.z(), 0.1);
 
     double x = coor_4937["1001"][0];
     double y = coor_4937["1001"][1];
@@ -174,20 +174,20 @@ BOOST_FIXTURE_TEST_CASE(crsOperation_point, CRSsToolsTest)
 {
     auto crs_tools = ptrGeoTools->ptrCRSsTools();
 
-    tl::Point3d point(281815.044, 4827675.243, 0.);
+    Point3d point(281815.044, 4827675.243, 0.);
     auto transform_point = crs_tools->crsOperation(crs25830, crs4258, point);
-    BOOST_CHECK_CLOSE(-5.701905, transform_point.x, 0.1);
-    BOOST_CHECK_CLOSE(43.570113, transform_point.y, 0.1);
-    BOOST_CHECK_CLOSE(0., transform_point.z, 0.1);
+    BOOST_CHECK_CLOSE(-5.701905, transform_point.x(), 0.1);
+    BOOST_CHECK_CLOSE(43.570113, transform_point.y(), 0.1);
+    BOOST_CHECK_CLOSE(0., transform_point.z(), 0.1);
 
-    point.x = coor_4937["1001"][0];
-    point.y = coor_4937["1001"][1];
-    point.z = coor_4937["1001"][2];
+    point.x() = coor_4937["1001"][0];
+    point.y() = coor_4937["1001"][1];
+    point.z() = coor_4937["1001"][2];
     transform_point = crs_tools->crsOperation("EPSG:4937", "EPSG:4258+5782", point);
 
-    BOOST_CHECK_CLOSE(-8.380627694, transform_point.x, 0.1);
-    BOOST_CHECK_CLOSE(43.326214300, transform_point.y, 0.1);
-    BOOST_CHECK_CLOSE(15.4850, transform_point.z, 0.1);
+    BOOST_CHECK_CLOSE(-8.380627694, transform_point.x(), 0.1);
+    BOOST_CHECK_CLOSE(43.326214300, transform_point.y(), 0.1);
+    BOOST_CHECK_CLOSE(15.4850, transform_point.z(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(crsOperation_map, CRSsToolsTest)
@@ -877,25 +877,25 @@ BOOST_FIXTURE_TEST_CASE(crsOperation_points, CRSsToolsTest)
     auto crs_tools = ptrGeoTools->ptrCRSsTools();
     auto points = crs_tools->crsOperation("EPSG:23030+5782", "EPSG:25830", coor_23030_msl);
 
-    BOOST_CHECK_CLOSE(63723.3240, points[0].x, 0.1);
-    BOOST_CHECK_CLOSE(4811118.8230, points[0].y, 0.1);
-    BOOST_CHECK_CLOSE(70.0970, points[0].z, 0.1);
+    BOOST_CHECK_CLOSE(63723.3240, points[0].x(), 0.1);
+    BOOST_CHECK_CLOSE(4811118.8230, points[0].y(), 0.1);
+    BOOST_CHECK_CLOSE(70.0970, points[0].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(590477.0470, points[1].x, 0.1);
-    BOOST_CHECK_CLOSE(4317725.0160, points[1].y, 0.1);
-    BOOST_CHECK_CLOSE(750.7860, points[1].z, 0.1);
+    BOOST_CHECK_CLOSE(590477.0470, points[1].x(), 0.1);
+    BOOST_CHECK_CLOSE(4317725.0160, points[1].y(), 0.1);
+    BOOST_CHECK_CLOSE(750.7860, points[1].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(371023.2210, points[2].x, 0.1);
-    BOOST_CHECK_CLOSE(4060793.1670, points[2].y, 0.1);
-    BOOST_CHECK_CLOSE(117.3100, points[2].z, 0.1);
+    BOOST_CHECK_CLOSE(371023.2210, points[2].x(), 0.1);
+    BOOST_CHECK_CLOSE(4060793.1670, points[2].y(), 0.1);
+    BOOST_CHECK_CLOSE(117.3100, points[2].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(988552.7250, points[3].x, 0.1);
-    BOOST_CHECK_CLOSE(4392368.2990, points[3].y, 0.1);
-    BOOST_CHECK_CLOSE(62.5540, points[3].z, 0.1);
+    BOOST_CHECK_CLOSE(988552.7250, points[3].x(), 0.1);
+    BOOST_CHECK_CLOSE(4392368.2990, points[3].y(), 0.1);
+    BOOST_CHECK_CLOSE(62.5540, points[3].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(294190.9700, points[4].x, 0.1);
-    BOOST_CHECK_CLOSE(4532015.6750, points[4].y, 0.1);
-    BOOST_CHECK_CLOSE(861.3370, points[4].z, 0.1);
+    BOOST_CHECK_CLOSE(294190.9700, points[4].x(), 0.1);
+    BOOST_CHECK_CLOSE(4532015.6750, points[4].y(), 0.1);
+    BOOST_CHECK_CLOSE(861.3370, points[4].z(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(crsOperation_points_by_point, CRSsToolsTest)
@@ -903,25 +903,25 @@ BOOST_FIXTURE_TEST_CASE(crsOperation_points_by_point, CRSsToolsTest)
     auto crs_tools = ptrGeoTools->ptrCRSsTools();
     auto points = crs_tools->crsOperation("EPSG:23030+5782", "EPSG:25830", coor_23030_msl, true);
 
-    BOOST_CHECK_CLOSE(63723.3240, points[0].x, 0.1);
-    BOOST_CHECK_CLOSE(4811118.8230, points[0].y, 0.1);
-    BOOST_CHECK_CLOSE(70.0970, points[0].z, 0.1);
+    BOOST_CHECK_CLOSE(63723.3240, points[0].x(), 0.1);
+    BOOST_CHECK_CLOSE(4811118.8230, points[0].y(), 0.1);
+    BOOST_CHECK_CLOSE(70.0970, points[0].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(590477.0470, points[1].x, 0.1);
-    BOOST_CHECK_CLOSE(4317725.0160, points[1].y, 0.1);
-    BOOST_CHECK_CLOSE(750.7860, points[1].z, 0.1);
+    BOOST_CHECK_CLOSE(590477.0470, points[1].x(), 0.1);
+    BOOST_CHECK_CLOSE(4317725.0160, points[1].y(), 0.1);
+    BOOST_CHECK_CLOSE(750.7860, points[1].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(371023.2210, points[2].x, 0.1);
-    BOOST_CHECK_CLOSE(4060793.1670, points[2].y, 0.1);
-    BOOST_CHECK_CLOSE(117.3100, points[2].z, 0.1);
+    BOOST_CHECK_CLOSE(371023.2210, points[2].x(), 0.1);
+    BOOST_CHECK_CLOSE(4060793.1670, points[2].y(), 0.1);
+    BOOST_CHECK_CLOSE(117.3100, points[2].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(988552.7250, points[3].x, 0.1);
-    BOOST_CHECK_CLOSE(4392368.2990, points[3].y, 0.1);
-    BOOST_CHECK_CLOSE(62.5540, points[3].z, 0.1);
+    BOOST_CHECK_CLOSE(988552.7250, points[3].x(), 0.1);
+    BOOST_CHECK_CLOSE(4392368.2990, points[3].y(), 0.1);
+    BOOST_CHECK_CLOSE(62.5540, points[3].z(), 0.1);
 
-    BOOST_CHECK_CLOSE(294190.9700, points[4].x, 0.1);
-    BOOST_CHECK_CLOSE(4532015.6750, points[4].y, 0.1);
-    BOOST_CHECK_CLOSE(861.3370, points[4].z, 0.1);
+    BOOST_CHECK_CLOSE(294190.9700, points[4].x(), 0.1);
+    BOOST_CHECK_CLOSE(4532015.6750, points[4].y(), 0.1);
+    BOOST_CHECK_CLOSE(861.3370, points[4].z(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(crsOperation_2d_points, CRSsToolsTest)
@@ -973,12 +973,12 @@ BOOST_FIXTURE_TEST_CASE(getCRSEnu, CRSsToolsTest)
     double tcElip = 142.1590;
     double tcHOrth = 94.2172;
     tl::Point3d point(-4.495021180808, 36.756413127079, tcElip);
-    crs_tools->crsOperation(crs4258, crs25830, point.x, point.y, point.z);
+    crs_tools->crsOperation(crs4258, crs25830, point.x(), point.y(), point.z());
 
-    std::string crsEnuFrom25830 = crs_tools->getCRSEnu(crs25830, point.x, point.y, point.z);
+    std::string crsEnuFrom25830 = crs_tools->getCRSEnu(crs25830, point.x(), point.y(), point.z());
     BOOST_CHECK_EQUAL("ENU:4258;-4.495021181;36.756413127;142.1590", crsEnuFrom25830);
 
-    std::string crsEnuFrom25830_5782 = crs_tools->getCRSEnu(crs25830_5782, point.x, point.y, tcHOrth);
+    std::string crsEnuFrom25830_5782 = crs_tools->getCRSEnu(crs25830_5782, point.x(), point.y(), tcHOrth);
     BOOST_CHECK_EQUAL("ENU:4258;-4.495021181;36.756413127;142.1591", crsEnuFrom25830_5782);
 
     double fc4258FromEnuHElip = 0.;

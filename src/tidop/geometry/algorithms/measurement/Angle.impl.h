@@ -22,65 +22,62 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/geometry/algorithms/algorithms.h"
+#pragma once
 
-#include "tidop/math/mathutils.h"
-
+#include <cmath>
+#include <algorithm>
 
 namespace tl
 {
-
-GroupLines::GroupLines()
+	
+namespace detail 
 {
-    bbox = WindowI();
+
+template<typename Segment_t>
+auto angle_impl(const Segment_t& s, segment_tag) -> double 
+{
+    static_assert(geometry_traits<Segment_t>::dimension == Dimension::dim2, "angle(segment) for OX is only defined in 2D");
+    
+    auto v = s.vector();
+    return std::atan2(static_cast<double>(v.y()), static_cast<double>(v.x()));
 }
 
-GroupLines::GroupLines(const std::vector<Line> &lines)
+template<typename Segment_t>
+auto angle_between_impl(const Segment_t& s1, const Segment_t& s2, segment_tag, segment_tag) -> double 
 {
-    linesgroup = lines;
-    for (const auto &i : linesgroup) {
-        if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
-        if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
-        if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
-        if (bbox.pt2.y < i.pt2.y) bbox.pt2.y = i.pt2.y;
-    }
+    auto v1 = s1.vector();
+    auto v2 = s2.vector();
+    
+    double dot = v1.dot(v2);
+    double mag = v1.module() * v2.module();
+    
+    if (mag < 1e-9) return 0.0;
+    
+    // clamp para evitar errores de precisión fuera de [-1, 1]
+    double cos_theta = std::clamp(dot / mag, -1.0, 1.0);
+    return std::acos(cos_theta);
 }
 
-void GroupLines::add(const Line &line)
+
+} // namespace detail
+
+template<typename G1, typename G2>
+auto angle(const G1 &g1, const G2 &g2) -> double
 {
-    linesgroup.push_back(line);
-    WindowI window = line.window();
-    //Se actualiza la ventana  envolvente
-    bbox = (bbox.isEmpty()) ? window : joinWindow(bbox, window);
+    return detail::angle_between_impl(g1, g2, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
 }
 
-//#ifdef TL_HAVE_OPENCV
-//
-//void GroupLines::add(const cv::Vec4i &lvect)
-//{
-//  Line _line;
-//  _line.pt1.x = lvect[0];
-//  _line.pt1.y = lvect[1];
-//  _line.pt2.x = lvect[2];
-//  _line.pt2.y = lvect[3];
-//  add(_line);
-//}
-//
-//#endif
-
-double GroupLines::angleMean() const
+template<typename G>
+auto angleOX(const G &g) -> double
 {
-    double angle = 0.0;
-    for (auto &line : linesgroup) {
-        angle += line.angleOX();
-    }
-    angle /= static_cast<double>(linesgroup.size());
-    return angle;
+    return detail::angle_impl(g, geometry_tag_t<G>{});
 }
 
-void GroupLines::deleteLine(int id)
+template<typename G>
+auto angleOY(const G &g) -> double
 {
-    linesgroup.erase(linesgroup.begin() + id);
+    // En 2D, el ángulo respecto a Y es PI/2 - angleOX
+    return consts::half_pi<double> -angleOX(g);
 }
 
-} // End namespace tl
+} // namespace tl

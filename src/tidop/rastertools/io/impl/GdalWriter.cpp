@@ -274,16 +274,17 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
 
             std::vector<Point<double>> image_points_transform(image_points.size());
             std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
-            Rect<int> rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+            Rect<int> rect_image_points_transform(static_cast<Point2i>(image_points_transform[0]), 
+                                                  static_cast<Point2i>(image_points_transform[2]));
             Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
             auto transform_inverse = _affine.inverse();
             Point<double> tl = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()));
             Point<double> br = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()));
 
-            rect_to_crop_image = Rect<int>(tl, br);
-            image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
-                .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
+            rect_to_crop_image = Rect<int>(static_cast<Point2i>(tl), static_cast<Point2i>(br));
+            image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x())
+                .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y())
                 .clone();
 
         } else {
@@ -368,11 +369,11 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
     }
 }
 
-void ImageWriterGdal::write(const cv::Mat &image, const WindowI &window)
+void ImageWriterGdal::write(const cv::Mat &image, const BoundingBox2i &window)
 {
     try {
 
-        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1, window.pt2);
+        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1(), window.pt2());
         write(image, rect);
 
     } catch (...) {

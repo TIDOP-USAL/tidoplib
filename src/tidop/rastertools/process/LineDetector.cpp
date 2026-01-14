@@ -30,6 +30,7 @@
 #endif // HAVE_OPENCV_XIMGPROC
 
 #include "tidop/core/base/exception.h"
+#include "tidop/geometry/algorithms/measurement/Angle.h"
 
 using namespace std;
 
@@ -43,8 +44,8 @@ void LineDetector::drawLines(cv::Mat &canvas, const cv::Scalar &color, int thick
 {
     for (size_t i = 0; i < mLines.size(); i++) {
         cv::line(canvas,
-                 cv::Point(mLines[i].pt1.x, mLines[i].pt1.y),
-                 cv::Point(mLines[i].pt2.x, mLines[i].pt2.y),
+                 cv::Point(mLines[i].pt1().x(), mLines[i].pt1().y()),
+                 cv::Point(mLines[i].pt2().x(), mLines[i].pt2().y()),
                  color, thickness, lineType);
     }
 }
@@ -72,11 +73,11 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
         //cv::Point pt1, pt2;
         double a = cos(theta), b = sin(theta);
         double x0 = a * rho, y0 = b * rho;
-        SegmentI l;
-        l.pt1.x = roundToInteger(x0 + 1.1 * image.cols * -b);
-        l.pt1.y = roundToInteger(y0 + 1.1 * image.rows * a);
-        l.pt2.x = roundToInteger(x0 - 1.1 * image.cols * -b);
-        l.pt2.y = roundToInteger(y0 - 1.1 * image.rows * a);
+        Segment2i l;
+        l.pt1().x() = roundToInteger(x0 + 1.1 * image.cols * -b);
+        l.pt1().y() = roundToInteger(y0 + 1.1 * image.rows * a);
+        l.pt2().x() = roundToInteger(x0 - 1.1 * image.cols * -b);
+        l.pt2().y() = roundToInteger(y0 - 1.1 * image.rows * a);
         mLines.push_back(l);
     }
     return LineDetector::Exit::SUCCESS;
@@ -108,12 +109,12 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
         return LineDetector::Exit::FAILURE;
     }
     for (size_t i = 0; i < linesaux.size(); i++) {
-        SegmentI l;
-        l.pt1.x = linesaux[i][0];
-        l.pt1.y = linesaux[i][1];
-        l.pt2.x = linesaux[i][2];
-        l.pt2.y = linesaux[i][3];
-        angle = l.angleOY();
+        Segment2i l;
+        l.pt1().x() = linesaux[i][0];
+        l.pt1().y() = linesaux[i][1];
+        l.pt2().x() = linesaux[i][2];
+        l.pt2().y() = linesaux[i][3];
+        angle = angleOY(l);
         if ((angle >= mMinTheta && angle <= mMaxTheta) ||
             (angle >= mMinTheta + consts::pi<double> &&
             angle <= mMaxTheta + consts::pi<double>)) {
@@ -164,12 +165,12 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
     }
 
     for (size_t i = 0; i < linesaux.size(); i++) {
-        SegmentI l;
-        l.pt1.x = linesaux[i][0];
-        l.pt1.y = linesaux[i][1];
-        l.pt2.x = linesaux[i][2];
-        l.pt2.y = linesaux[i][3];
-        angle = l.angleOY();
+        Segment2i l;
+        l.pt1().x() = linesaux[i][0];
+        l.pt1().y() = linesaux[i][1];
+        l.pt2().x() = linesaux[i][2];
+        l.pt2().y() = linesaux[i][3];
+        angle = angleOY(l);
         if ((angle >= mMinTheta && angle <= mMaxTheta) ||
             (angle >= mMinTheta + consts::pi<double> &&
             angle <= mMaxTheta + consts::pi<double>)) {
@@ -302,12 +303,12 @@ LineDetector::Exit ldLSD::run(cv::Mat &image)
     }
 
     for (size_t i = 0; i < linesaux.size(); i++) {
-        SegmentI l;
-        l.pt1.x = linesaux[i][0];
-        l.pt1.y = linesaux[i][1];
-        l.pt2.x = linesaux[i][2];
-        l.pt2.y = linesaux[i][3];
-        angle = l.angleOY();
+        Segment2i l;
+        l.pt1().x() = linesaux[i][0];
+        l.pt1().y() = linesaux[i][1];
+        l.pt2().x() = linesaux[i][2];
+        l.pt2().y() = linesaux[i][3];
+        angle = angleOY(l);
         if ((angle >= mMinTheta && angle <= mMaxTheta) ||
             (angle >= mMinTheta + consts::pi<double> &&
             angle <= mMaxTheta + consts::pi<double>)) {

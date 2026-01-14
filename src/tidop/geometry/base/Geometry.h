@@ -31,9 +31,6 @@
 
 namespace tl
 {
-
-namespace geometry
-{
 	
 /*! \addtogroup GeometricEntities
  *  \{
@@ -73,9 +70,6 @@ class GeometryBase
   : public Geometry
 {
 
-    //static constexpr GeometryType type = geometry_traits<Derived>::type;
-    //static constexpr Dimension _dimension = geometry_traits<Derived>::dimension;
-
 public:
 
     constexpr auto type() const noexcept -> GeometryType final
@@ -88,14 +82,8 @@ public:
         return geometry_traits<Derived>::dimension;
     }
 
-    // Implementación genérica de accept usando CRTP
-    //void accept(GeometryVisitor &visitor) override {
-    //    visitor.visit(static_cast<Derived &>(*this));
-    //}
 };
 
 /*! \} */ 
 
-}
-
-}
+} // End namespace tl

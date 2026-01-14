@@ -212,13 +212,13 @@ auto Umeyama<T, Dim>::estimate(const std::vector<Point3<T>> &src,
         Matrix<T> dst_mat(dst.size(), dimensions);
 
         for (size_t r = 0; r < src_mat.rows(); r++) {
-            src_mat[r][0] = src[r].x;
-            src_mat[r][1] = src[r].y;
-            src_mat[r][2] = src[r].z;
+            src_mat[r][0] = src[r].x();
+            src_mat[r][1] = src[r].y();
+            src_mat[r][2] = src[r].z();
 
-            dst_mat[r][0] = dst[r].x;
-            dst_mat[r][1] = dst[r].y;
-            dst_mat[r][2] = dst[r].z;
+            dst_mat[r][0] = dst[r].x();
+            dst_mat[r][1] = dst[r].y();
+            dst_mat[r][2] = dst[r].z();
         }
 
         affine = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);

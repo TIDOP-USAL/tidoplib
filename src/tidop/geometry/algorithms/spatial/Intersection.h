@@ -33,11 +33,11 @@ namespace tl
  *  \{
  */
 
-template<typename Geometry>
-auto length(const Geometry &g) -> double;
+template<typename G1, typename G2>
+auto intersection(const G1 &g1, const G2 &g2);
 
 /*! \} */ 
 
 } // End namespace tl
 
-#include "Length.impl.h"
+#include "Intersection.impl.h"

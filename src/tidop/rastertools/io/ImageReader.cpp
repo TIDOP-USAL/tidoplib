@@ -25,6 +25,7 @@
 #include "tidop/rastertools/io/ImageReader.h"
 
 #include "tidop/core/base/exception.h"
+#include "tidop/geometry/algorithms/spatial/Intersection.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/impl/GdalReader.h"
 #include "tidop/rastertools/io/impl/CanonReader.h"
@@ -43,17 +44,17 @@ ImageReader::ImageReader(tl::Path file, Mode mode)
 {
 }
 
-void ImageReader::windowRead(const WindowI &wLoad,
-                             WindowI *wRead,
-                             Point<int> *offset) const
+void ImageReader::windowRead(const BoundingBox2i &wLoad,
+                             BoundingBox2i *wRead,
+                             Vector<int, 2> *offset) const
 {
-    WindowI image_window(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));
+    BoundingBox2i image_window(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));
 
     if (wLoad.isEmpty()) {
         *wRead = image_window;
     } else {
-        *wRead = windowIntersection(image_window, wLoad);
-        *offset = wRead->pt1 - wLoad.pt1;
+        *wRead = intersection(image_window, wLoad);
+        *offset = wRead->pt1() - wLoad.pt1();
     }
 }
 

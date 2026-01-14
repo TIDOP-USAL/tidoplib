@@ -32,7 +32,7 @@
 #include "tidop/math/algebra/rotations/rotation_convert.h"
 #include "tidop/math/algebra/rotations/euler_angles.h"
 #include "tidop/math/algebra/rotations/rotation_matrix.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {

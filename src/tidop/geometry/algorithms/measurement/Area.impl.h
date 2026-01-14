@@ -29,9 +29,6 @@
 namespace tl
 {
 	
-namespace geometry
-{
-
 namespace detail 
 {
 
@@ -98,4 +95,3 @@ auto area(const Geometry_t &g)
 }
 
 } // namespace tl
-} // namespace geometry

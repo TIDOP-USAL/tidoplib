@@ -34,7 +34,7 @@
 #endif
 
 #include "tidop/core/base/defs.h"
-#include "tidop/geometry/entities/segment.h"
+#include "tidop/geometry/primitives/Segment.h"
 
 namespace tl
 {
@@ -96,7 +96,7 @@ protected:
     /*!
      * \brief Lineas detectadas
      */
-    std::vector<SegmentI> mLines;
+    std::vector<Segment2i> mLines;
 
 public:
 
@@ -107,7 +107,7 @@ public:
      */
     LineDetector(Type type, const cv::Scalar &angletol) : mType(type)
     {
-      setAngleRange(angletol);
+        setAngleRange(angletol);
     }
     
     /*!
@@ -154,7 +154,7 @@ public:
      * \brief Devuelve una referencia a las líneas detectadas
      * \return Lineas
      */
-    const std::vector<SegmentI> &getLines() const { return mLines; }
+    const std::vector<Segment2i> &getLines() const { return mLines; }
     
     /*!
      * \brief Establece rango angular en el cual se buscarán las líneas

@@ -34,8 +34,8 @@
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/datamodel.h"
-#include "tidop/geometry/window.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {
@@ -212,7 +212,7 @@ public:
      * \brief Returns the 2D bounding window of the entity.
      * \return Bounding window of the entity.
      */
-    virtual auto window() const -> Window<Point<double>> = 0;
+    virtual auto window() const -> BoundingBox<Point2d> = 0;
 
     /*!
      * \brief Returns the attribute data associated with this entity.

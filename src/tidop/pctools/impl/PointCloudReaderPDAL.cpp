@@ -347,9 +347,9 @@ void PointCloudReaderPDAL::getBoundingBox(double &x_min, double &y_min, double &
     }
 }
 
-BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId) const
+BoundingBox<Point3d> tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId) const
 {
-    BoundingBoxd bounding_box;
+    BoundingBox<Point3d> bounding_box;
 
     TL_ASSERT(mPtrCopcFile || mPtrLasReader, "Reader is NULL");
 
@@ -358,27 +358,27 @@ BoundingBoxd tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId) const
         if (mPtrCopcFile) {
             auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
             copc::Box box = las_header.Bounds();
-            bounding_box.pt1.x = box.x_min;
-            bounding_box.pt1.y = box.y_min;
-            bounding_box.pt1.z = box.z_min;
-            bounding_box.pt2.x = box.x_max;
-            bounding_box.pt2.y = box.y_max;
-            bounding_box.pt2.z = box.z_max;
+            bounding_box.pt1().x() = box.x_min;
+            bounding_box.pt1().y() = box.y_min;
+            bounding_box.pt1().z() = box.z_min;
+            bounding_box.pt2().x() = box.x_max;
+            bounding_box.pt2().y() = box.y_max;
+            bounding_box.pt2().z() = box.z_max;
         } else if (mPtrLasReader) {
             const pdal::LasHeader &h = mPtrLasReader->header();
-            bounding_box.pt1.x = h.minX();
-            bounding_box.pt1.y = h.minY();
-            bounding_box.pt1.z = h.minZ();
-            bounding_box.pt2.x = h.maxX();
-            bounding_box.pt2.y = h.maxY();
-            bounding_box.pt2.z = h.maxZ();
+            bounding_box.pt1().x() = h.minX();
+            bounding_box.pt1().y() = h.minY();
+            bounding_box.pt1().z() = h.minZ();
+            bounding_box.pt2().x() = h.maxX();
+            bounding_box.pt2().y() = h.maxY();
+            bounding_box.pt2().z() = h.maxZ();
         }
 
         if (!crsId.empty()
             && crsId != mCrsId) {
             auto vertices = bounding_box.vertices();
             mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, vertices, true);
-            bounding_box = BoundingBoxd(vertices);
+            bounding_box = BoundingBox<Point3d>(vertices);
         }
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
@@ -804,9 +804,9 @@ auto PointCloudReaderPDAL::getCoordinates(int index) const -> Point3<double>
 
     Point3<double> coordinates;
 
-    coordinates.x = mView->getFieldAs<double>(pdal::Dimension::Id::X, index);
-    coordinates.y = mView->getFieldAs<double>(pdal::Dimension::Id::Y, index);
-    coordinates.z = mView->getFieldAs<double>(pdal::Dimension::Id::Z, index);
+    coordinates.x() = mView->getFieldAs<double>(pdal::Dimension::Id::X, index);
+    coordinates.y() = mView->getFieldAs<double>(pdal::Dimension::Id::Y, index);
+    coordinates.z() = mView->getFieldAs<double>(pdal::Dimension::Id::Z, index);
 
     return coordinates;
 }

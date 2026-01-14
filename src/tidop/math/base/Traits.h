@@ -77,6 +77,8 @@ struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
 template<typename T, size_t _size>
 struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
 
+template<typename D>
+using enable_if_vector_t = std::enable_if_t<is_vector<D>::value, int>;
 
 template<typename T>
 struct is_point : std::false_type {};

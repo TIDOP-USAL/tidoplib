@@ -1,6 +1,6 @@
 #include "LASReader.h"
 
-#include "tidop/geometry/bbox.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
 #include "tidop/viewer/group/PointCloud.h"
 #include "tidop/viewer/widget/ViewerWidget.h"
 
@@ -134,7 +134,7 @@ namespace tl
 		Point3<double> min(x_min_real, y_min_real, z_min_real);
 		Point3<double> max(x_max_real, y_max_real, z_max_real);
 		BoundingBox<Point3<double>> bbox(min, max);
-		Vector3d offset = bbox.center().vector();
+		Vector3d offset = bbox.center();
 		//offset = { 0.0, 0.0, 0.0 };
 		modelBase = PointCloud::New(points);
 		modelBase->setOffset(offset);

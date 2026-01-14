@@ -84,7 +84,7 @@ void RasterWriter::write(const cv::Mat &image, const Rect<int> &rect)
     mWriter->write(image, rect);
 }
 
-void RasterWriter::write(const cv::Mat &image, const WindowI &window)
+void RasterWriter::write(const cv::Mat &image, const BoundingBox<Point2i> &window)
 {
     TL_ASSERT(mWriter, "RasterWriter is not open");
     mWriter->write(image, window);

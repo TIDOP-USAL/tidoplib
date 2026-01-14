@@ -79,13 +79,13 @@ auto RasterReader::read(double scaleX, double scaleY, const Rect<int> &rect) -> 
     return mReader->read(scaleX, scaleY, rect);
 }
 
-auto RasterReader::read(const WindowI &window, double scaleX, double scaleY) -> cv::Mat
+auto RasterReader::read(const BoundingBox2i &window, double scaleX, double scaleY) -> cv::Mat
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->read(window, scaleX, scaleY);
 }
 
-auto RasterReader::read(const Window<Point<double>> &terrainWindow, double scaleX, double scaleY, Affine<double, 2> *affine) -> cv::Mat
+auto RasterReader::read(const BoundingBox2d &terrainWindow, double scaleX, double scaleY, Affine<double, 2> *affine) -> cv::Mat
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->read(terrainWindow, scaleX, scaleY, affine);
@@ -97,7 +97,7 @@ void RasterReader::update(const cv::Mat &image, const Rect<int> &rect)
     return mReader->update(image, rect);
 }
 
-void RasterReader::update(const cv::Mat &image, const WindowI &window)
+void RasterReader::update(const cv::Mat &image, const BoundingBox2i &window)
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->update(image, window);
@@ -172,7 +172,7 @@ auto RasterReader::crsWkt() const -> std::string
     return mReader->crsWkt();
 }
 
-auto RasterReader::window() const -> WindowD
+auto RasterReader::window() const -> BoundingBox2d
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->window();

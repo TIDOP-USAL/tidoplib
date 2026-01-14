@@ -31,9 +31,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-
 /*! \addtogroup GeometricEntities
  *  \{
  */
@@ -401,5 +398,4 @@ auto EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last)
 
 /*! \} */ 
 
-}
-}
+} // End namespace tl

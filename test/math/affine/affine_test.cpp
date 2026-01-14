@@ -78,6 +78,46 @@ struct AffineTest
                        Point<double>(734496.503, 758529.698),
                        Point<double>(726807.795, 766227.040)};
 
+        src_vector = {
+            {4157222.543, 664789.307},
+            {4149043.336, 688836.443},
+            {4172803.511, 690340.078},
+            {4177148.376, 642997.635},
+            {4137012.190, 671808.029},
+            {4146292.729, 666952.887},
+            {4138759.902, 702670.738}
+        };
+
+        dst_vector = {
+            {737107.092, 759565.279},
+            {731294.227, 764301.907},
+            {735901.291, 768078.488},
+            {744937.420, 757067.318},
+            {731760.522, 758392.053},
+            {734496.503, 758529.698},
+            {726807.795, 766227.040}
+        };
+
+        src_vector_dyn = {
+            {4157222.543, 664789.307},
+            {4149043.336, 688836.443},
+            {4172803.511, 690340.078},
+            {4177148.376, 642997.635},
+            {4137012.190, 671808.029},
+            {4146292.729, 666952.887},
+            {4138759.902, 702670.738}
+        };
+
+        dst_vector_dyn = {
+            {737107.092, 759565.279},
+            {731294.227, 764301.907},
+            {735901.291, 768078.488},
+            {744937.420, 757067.318},
+            {731760.522, 758392.053},
+            {734496.503, 758529.698},
+            {726807.795, 766227.040}
+        };
+
         dst_points_helmert = {
           Point<double>(756172.466,	732337.103),
           Point<double>(751049.245,	736088.818),
@@ -86,6 +126,26 @@ struct AffineTest
           Point<double>(751027.184,  730876.407),
           Point<double>(753623.926,	731212.907),
           Point<double>(746959.564,	737447.332)};
+
+        dst_vector_helmert = {
+            {756172.466, 732337.103},
+            {751049.245, 736088.818},
+            {755699.431, 739803.813},
+            {763377.835, 730731.677},
+            {751027.184, 730876.407},
+            {753623.926, 731212.907},
+            {746959.564, 737447.332}
+        };
+
+        dst_vector_dyn_helmert = {
+            {756172.466, 732337.103},
+            {751049.245, 736088.818},
+            {755699.431, 739803.813},
+            {763377.835, 730731.677},
+            {751027.184, 730876.407},
+            {753623.926, 731212.907},
+            {746959.564, 737447.332}
+        };
         
         src_3d_mat = {{2441775.419, 799268.100, 5818729.162},
                       {3464655.838, 845749.989, 5270271.528},
@@ -185,7 +245,13 @@ struct AffineTest
     Matrix<double> dst_mat;
     std::vector<Point<double>> src_points;
     std::vector<Point<double>> dst_points;   
-    std::vector<Point<double>> dst_points_helmert;   
+    std::vector<Vector<double, 2>> src_vector;
+    std::vector<Vector<double, 2>> dst_vector;
+    std::vector<Vector<double>> src_vector_dyn;
+    std::vector<Vector<double>> dst_vector_dyn;
+    std::vector<Point<double>> dst_points_helmert;
+    std::vector<Vector<double, 2>> dst_vector_helmert;
+    std::vector<Vector<double>> dst_vector_dyn_helmert;
     Matrix<double> src_3d_mat;
     Matrix<double> dst_3d_mat;
     std::vector<Point3<double>> src_3d_points;
@@ -341,16 +407,16 @@ BOOST_FIXTURE_TEST_CASE(affine_inverse, AffineTest)
     auto inverse = affine.inverse();
 
     auto point = inverse.transform(Point<double>(737107.092, 759565.279));
-    BOOST_CHECK_CLOSE(4157222.543, point.x, 0.1);
-    BOOST_CHECK_CLOSE(664789.307, point.y, 0.1);
+    BOOST_CHECK_CLOSE(4157222.543, point.x(), 0.1);
+    BOOST_CHECK_CLOSE(664789.307, point.y(), 0.1);
 
     point = inverse.transform(Point<double>(731294.227, 764301.907));
-    BOOST_CHECK_CLOSE(4149043.336, point.x, 0.1);
-    BOOST_CHECK_CLOSE(688836.443, point.y, 0.1);
+    BOOST_CHECK_CLOSE(4149043.336, point.x(), 0.1);
+    BOOST_CHECK_CLOSE(688836.443, point.y(), 0.1);
 
     point = inverse.transform(Point<double>(735901.291, 768078.488));
-    BOOST_CHECK_CLOSE(4172803.511, point.x, 0.1);
-    BOOST_CHECK_CLOSE(690340.078, point.y, 0.1);
+    BOOST_CHECK_CLOSE(4172803.511, point.x(), 0.1);
+    BOOST_CHECK_CLOSE(690340.078, point.y(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(transform_point2d, AffineTest)
@@ -359,14 +425,13 @@ BOOST_FIXTURE_TEST_CASE(transform_point2d, AffineTest)
 
     auto transform_point = affine.transform(src_points[0]);
 
-    BOOST_CHECK_CLOSE(737107.092, transform_point.x, 0.01);
-    BOOST_CHECK_CLOSE(759565.279, transform_point.y, 0.01);
+    BOOST_CHECK_CLOSE(737107.092, transform_point.x(), 0.01);
+    BOOST_CHECK_CLOSE(759565.279, transform_point.y(), 0.01);
 
     transform_point = affine * src_points[1];
 
-    BOOST_CHECK_CLOSE(731294.227, transform_point.x, 0.01);
-    BOOST_CHECK_CLOSE(764301.907, transform_point.y, 0.01);
-
+    BOOST_CHECK_CLOSE(731294.227, transform_point.x(), 0.01);
+    BOOST_CHECK_CLOSE(764301.907, transform_point.y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(transform_vector_2d, AffineTest)
@@ -381,6 +446,22 @@ BOOST_FIXTURE_TEST_CASE(transform_vector_2d, AffineTest)
 
     transform_vector = affine * Vector<double, 2>{4149043.336, 688836.443};
     
+    BOOST_CHECK_CLOSE(731294.227, transform_vector[0], 0.01);
+    BOOST_CHECK_CLOSE(764301.907, transform_vector[1], 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(transform_vector_dyn_2d, AffineTest)
+{
+    Affine<double, 2> affine(0.25, 0.3, 150., 75., consts::deg_to_rad<double> *35.);
+
+    Vector<double> vector{4157222.543, 664789.307};
+    auto transform_vector = affine.transform(vector);
+
+    BOOST_CHECK_CLOSE(737107.092, transform_vector[0], 0.01);
+    BOOST_CHECK_CLOSE(759565.279, transform_vector[1], 0.01);
+
+    transform_vector = affine * Vector<double>{4149043.336, 688836.443};
+
     BOOST_CHECK_CLOSE(731294.227, transform_vector[0], 0.01);
     BOOST_CHECK_CLOSE(764301.907, transform_vector[1], 0.01);
 }
@@ -427,7 +508,6 @@ BOOST_FIXTURE_TEST_CASE(transform_matrix, AffineTest)
         BOOST_CHECK_CLOSE(726807.795, out[6][0], 0.1);
         BOOST_CHECK_CLOSE(766227.040, out[6][1], 0.1);
     }
-
 }
 
 BOOST_FIXTURE_TEST_CASE(estimate_points, AffineTest)
@@ -452,6 +532,58 @@ BOOST_FIXTURE_TEST_CASE(estimate_points, AffineTest)
     auto rotation = affine.rotation();
     double rotation1 = atan2(rotation(1,0), rotation(0,0));
     double rotation2 = atan2(-rotation(0,1), rotation(1,1));
+    BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation1, 0.1);
+    BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation2, 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(estimate_vectors, AffineTest)
+{
+    auto affine = Affine2DEstimator<double>::estimate(src_vector, dst_vector);
+
+    BOOST_CHECK_CLOSE(0.20478801107224795, affine(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(-0.17207293090531381, affine(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(150.0, affine(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(0.14339410908776151, affine(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.24574561328669753, affine(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(75.0, affine(1, 2), 0.1);
+
+    auto scale = affine.scale();
+    BOOST_CHECK_CLOSE(0.25, scale.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.30, scale.y(), 0.1);
+
+    auto translation = affine.translation();
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
+
+    auto rotation = affine.rotation();
+    double rotation1 = atan2(rotation(1, 0), rotation(0, 0));
+    double rotation2 = atan2(-rotation(0, 1), rotation(1, 1));
+    BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation1, 0.1);
+    BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation2, 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(estimate_vectors_dyn, AffineTest)
+{
+    auto affine = Affine2DEstimator<double>::estimate(src_vector_dyn, dst_vector_dyn);
+
+    BOOST_CHECK_CLOSE(0.20478801107224795, affine(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(-0.17207293090531381, affine(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(150.0, affine(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(0.14339410908776151, affine(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.24574561328669753, affine(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(75.0, affine(1, 2), 0.1);
+
+    auto scale = affine.scale();
+    BOOST_CHECK_CLOSE(0.25, scale.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.30, scale.y(), 0.1);
+
+    auto translation = affine.translation();
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
+
+    auto rotation = affine.rotation();
+    double rotation1 = atan2(rotation(1, 0), rotation(0, 0));
+    double rotation2 = atan2(-rotation(0, 1), rotation(1, 1));
     BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation1, 0.1);
     BOOST_CHECK_CLOSE(35 * consts::deg_to_rad<double>, rotation2, 0.1);
 }
@@ -482,7 +614,6 @@ BOOST_FIXTURE_TEST_CASE(estimate_matrix, AffineTest)
     BOOST_CHECK_CLOSE(0.81915204403226161, rotation(1, 1), 0.1);
 }
 
-
 BOOST_FIXTURE_TEST_CASE(helmert2d_estimate_points, AffineTest)
 {
     auto affine = HelmertEstimator<double, 2>::estimate(src_points, dst_points_helmert);
@@ -503,6 +634,45 @@ BOOST_FIXTURE_TEST_CASE(helmert2d_estimate_points, AffineTest)
     BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
 }
 
+BOOST_FIXTURE_TEST_CASE(helmert2d_estimate_vectors, AffineTest)
+{
+    auto affine = HelmertEstimator<double, 2>::estimate(src_vector, dst_vector_helmert);
+
+    BOOST_CHECK_CLOSE(0.20478801107224795, affine(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.14339411103233352, affine(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(150.0, affine(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(0.14339410908776151, affine(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.20478801190648055, affine(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(75.0, affine(1, 2), 0.1);
+
+    auto scale = affine.scale();
+    BOOST_CHECK_CLOSE(0.25, scale.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.25, scale.y(), 0.1);
+
+    auto translation = affine.translation();
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(helmert2d_estimate_vector_dyn, AffineTest)
+{
+    auto affine = HelmertEstimator<double, 2>::estimate(src_vector_dyn, dst_vector_dyn_helmert);
+
+    BOOST_CHECK_CLOSE(0.20478801107224795, affine(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.14339411103233352, affine(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(150.0, affine(0, 2), 0.1);
+    BOOST_CHECK_CLOSE(0.14339410908776151, affine(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.20478801190648055, affine(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(75.0, affine(1, 2), 0.1);
+
+    auto scale = affine.scale();
+    BOOST_CHECK_CLOSE(0.25, scale.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.25, scale.y(), 0.1);
+
+    auto translation = affine.translation();
+    BOOST_CHECK_CLOSE(150.0, translation.x(), 0.1);
+    BOOST_CHECK_CLOSE(75.0, translation.y(), 0.1);
+}
 BOOST_FIXTURE_TEST_CASE(helmert3d_estimate_matrix, AffineTest)
 {
     auto affine = HelmertEstimator<double, 3>::estimate(src_3d_mat, dst_3d_mat);

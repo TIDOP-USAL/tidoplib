@@ -73,9 +73,9 @@ void PlyReader::close()
     mIsOpen = false;
 }
 
-auto PlyReader::getBoundingBox(std::string crsId) const -> BoundingBoxd
+auto PlyReader::getBoundingBox(std::string crsId) const -> BoundingBox<Point3d>
 {
-    BoundingBoxd bounding_box;
+    BoundingBox<Point3d> bounding_box;
 
     TL_ASSERT(mIsOpen, "PlyReader not open.");
 
@@ -111,12 +111,12 @@ auto PlyReader::getBoundingBox(std::string crsId) const -> BoundingBoxd
 
 #endif // TL_HAVE_PDAL
 
-        bounding_box.pt1.x = minX;
-        bounding_box.pt1.y = minY;
-        bounding_box.pt1.z = minZ;
-        bounding_box.pt2.x = maxX;
-        bounding_box.pt2.y = maxY;
-        bounding_box.pt2.z = maxZ;
+        bounding_box.pt1().x() = minX;
+        bounding_box.pt1().y() = minY;
+        bounding_box.pt1().z() = minZ;
+        bounding_box.pt2().x() = maxX;
+        bounding_box.pt2().y() = maxY;
+        bounding_box.pt2().z() = maxZ;
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
@@ -142,24 +142,24 @@ auto PlyReader::getDimensionsNames() const -> std::vector<std::string>
     return fields;
 }
 
-auto PlyReader::getOffset() const -> Point3<double>
+auto PlyReader::getOffset() const -> Point3d
 {
-    return {0.0, 0.0, 0.0}; // Los archivos PLY no suelen tener offset
+    return Point3d{0.0, 0.0, 0.0}; // Los archivos PLY no suelen tener offset
 }
 
-auto PlyReader::getCoordinates(int index) const -> Point3<double> 
+auto PlyReader::getCoordinates(int index) const -> Point3d 
 {
     TL_ASSERT(mIsOpen, "PlyReader not open.");
 
-    Point3<double> coordinates;
+    Point3d coordinates;
 
 #ifdef TL_HAVE_PDAL    
     
     TL_ASSERT(index < mView->size(), "Index out of range.");
 
-    coordinates.x = mView->getFieldAs<double>(pdal::Dimension::Id::X, index);
-    coordinates.y = mView->getFieldAs<double>(pdal::Dimension::Id::Y, index);
-    coordinates.z = mView->getFieldAs<double>(pdal::Dimension::Id::Z, index);
+    coordinates.x() = mView->getFieldAs<double>(pdal::Dimension::Id::X, index);
+    coordinates.y() = mView->getFieldAs<double>(pdal::Dimension::Id::Y, index);
+    coordinates.z() = mView->getFieldAs<double>(pdal::Dimension::Id::Z, index);
 #else
 
     TL_ASSERT(index < mPly->size(), "Index out of range.");

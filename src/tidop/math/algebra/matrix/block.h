@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/math/base/data.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/graphic/Rect.h"
 
 namespace tl
 {

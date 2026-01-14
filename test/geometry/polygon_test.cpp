@@ -29,7 +29,6 @@
 #include <tidop/geometry/algorithms/measurement/Area.h>
 
 using namespace tl;
-using namespace geometry;
 
 BOOST_AUTO_TEST_SUITE(PolygonTestSuite)
 
@@ -71,30 +70,30 @@ struct PolygonTest
 
     void setup()
     {
-        polygon_initializer_list_constructor = new geometry::Polygon<geometry::Point2i>
+        polygon_initializer_list_constructor = new Polygon2i
         {
-            geometry::Point2i(4157222, 664789),
-            geometry::Point2i(4149043, 688836),
-            geometry::Point2i(4172803, 690340),
-            geometry::Point2i(4177148, 642997),
-            geometry::Point2i(4137012, 671808),
-            geometry::Point2i(4146292, 666953),
-            geometry::Point2i(4138759, 702670)
+            Point2i(4157222, 664789),
+            Point2i(4149043, 688836),
+            Point2i(4172803, 690340),
+            Point2i(4177148, 642997),
+            Point2i(4137012, 671808),
+            Point2i(4146292, 666953),
+            Point2i(4138759, 702670)
         };
 
-        polygon_reserve_constructor = new geometry::Polygon<geometry::Point2d>(10);
+        polygon_reserve_constructor = new Polygon2d(10);
 
-        polygon_copy_constructor_integer = new geometry::Polygon<geometry::Point2i>(*polygon_initializer_list_constructor);
+        polygon_copy_constructor_integer = new Polygon2i(*polygon_initializer_list_constructor);
 
-        polygon_copy_constructor_double = new geometry::Polygon<geometry::Point2d>(*polygon_reserve_constructor);
+        polygon_copy_constructor_double = new Polygon2d(*polygon_reserve_constructor);
 
-        polygon_holes = new geometry::Polygon<geometry::Point2d>({geometry::Point2d(0., 0.),
-                                                        geometry::Point2d(100., 0.),
-                                                        geometry::Point2d(100., 100.),
-                                                        geometry::Point2d(0., 100.)});
-        LinearRing<geometry::Point2d> hole{geometry::Point2d(20., 20.),
-                                           geometry::Point2d(80., 20.),
-                                           geometry::Point2d(50., 80.)};
+        polygon_holes = new Polygon2d({Point2d(0., 0.),
+                                       Point2d(100., 0.),
+                                       Point2d(100., 100.),
+                                       Point2d(0., 100.)});
+        LinearRing<Point2d> hole{Point2d(20., 20.),
+                                 Point2d(80., 20.),
+                                 Point2d(50., 80.)};
         polygon_holes->addInner(hole);
     }
 
@@ -103,17 +102,17 @@ struct PolygonTest
 
     }
 
-    geometry::Polygon<geometry::Point2i> polygon_default_constructor_integer;
-    geometry::Polygon<geometry::Point2d> polygon_default_constructor_double;
-    geometry::Polygon<geometry::Point2f> polygon_default_constructor_float;
+    Polygon2i polygon_default_constructor_integer;
+    Polygon2d polygon_default_constructor_double;
+    Polygon2f polygon_default_constructor_float;
 
-    geometry::Polygon<geometry::Point2i> *polygon_initializer_list_constructor;
-    geometry::Polygon<geometry::Point2d> *polygon_reserve_constructor;
+    Polygon2i *polygon_initializer_list_constructor;
+    Polygon2d *polygon_reserve_constructor;
 
-    geometry::Polygon<geometry::Point2i> *polygon_copy_constructor_integer;
-    geometry::Polygon<geometry::Point2d> *polygon_copy_constructor_double;
+    Polygon2i *polygon_copy_constructor_integer;
+    Polygon2d *polygon_copy_constructor_double;
 
-    geometry::Polygon<geometry::Point2d> *polygon_holes;
+    Polygon2d *polygon_holes;
 };
 
 
@@ -210,7 +209,7 @@ BOOST_FIXTURE_TEST_CASE(type, PolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 {
-    geometry::Polygon<geometry::Point2i> polygon;
+    Polygon2i polygon;
     polygon = *polygon_initializer_list_constructor;
 
     BOOST_CHECK_EQUAL(7, polygon.outer().size());
@@ -227,8 +226,8 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(move_operator, PolygonTest)
 {
-    geometry::Polygon<geometry::Point2i> polygon_to_move(*polygon_initializer_list_constructor);
-    geometry::Polygon<geometry::Point2i> polygon;
+    Polygon2i polygon_to_move(*polygon_initializer_list_constructor);
+    Polygon2i polygon;
     polygon = std::move(polygon_to_move);
 
     BOOST_CHECK_EQUAL(7, polygon.outer().size());
@@ -272,18 +271,18 @@ struct Polygon3DTest
     Polygon3DTest()
         : polygon_holes(nullptr)
     {
-        polygon_initializer_list_constructor = new geometry::Polygon<geometry::Point3i>
+        polygon_initializer_list_constructor = new Polygon3i
         {
-             geometry::Point3i(4157222, 664789, 10),
-             geometry::Point3i(4149043, 688836, 20),
-             geometry::Point3i(4172803, 690340, 30),
-             geometry::Point3i(4177148, 642997, 25),
-             geometry::Point3i(4137012, 671808, 20),
-             geometry::Point3i(4146292, 666953, 15),
-             geometry::Point3i(4138759, 702670, 10)
+             Point3i(4157222, 664789, 10),
+             Point3i(4149043, 688836, 20),
+             Point3i(4172803, 690340, 30),
+             Point3i(4177148, 642997, 25),
+             Point3i(4137012, 671808, 20),
+             Point3i(4146292, 666953, 15),
+             Point3i(4138759, 702670, 10)
         };
 
-        polygon_reserve_constructor = new geometry::Polygon<geometry::Point3d>(10);
+        polygon_reserve_constructor = new Polygon3d(10);
     }
 
     ~Polygon3DTest()
@@ -306,14 +305,14 @@ struct Polygon3DTest
 
     void setup()
     {
-        LinearRing<geometry::Point3d> hole{geometry::Point3d(20., 20., 2.),
-                                           geometry::Point3d(80., 20., 2.),
-                                           geometry::Point3d(50., 80., 2.)};
+        LinearRing<Point3d> hole{Point3d(20., 20., 2.),
+                                 Point3d(80., 20., 2.),
+                                 Point3d(50., 80., 2.)};
 
-        polygon_holes = new geometry::Polygon<geometry::Point3d>({geometry::Point3d(0., 0., 0.),
-                                                        geometry::Point3d(100., 0., 0.),
-                                                        geometry::Point3d(100., 100., 0.),
-                                                        geometry::Point3d(0., 100., 0.)});
+        polygon_holes = new Polygon3d({Point3d(0., 0., 0.),
+                                       Point3d(100., 0., 0.),
+                                       Point3d(100., 100., 0.),
+                                       Point3d(0., 100., 0.)});
 
         polygon_holes->addInner(hole);
 
@@ -324,10 +323,10 @@ struct Polygon3DTest
 
     }
 
-    geometry::Polygon<geometry::Point3i>  polygon_default_constructor_integer;
-    geometry::Polygon<geometry::Point3i> *polygon_initializer_list_constructor;
-    geometry::Polygon<geometry::Point3d> *polygon_reserve_constructor;
-    geometry::Polygon<geometry::Point3d> *polygon_holes;
+    Polygon3i  polygon_default_constructor_integer;
+    Polygon3i *polygon_initializer_list_constructor;
+    Polygon3d *polygon_reserve_constructor;
+    Polygon3d *polygon_holes;
 };
 
 
@@ -366,7 +365,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 {
-    geometry::Polygon<geometry::Point3d> pol_c(*polygon_reserve_constructor);
+    Polygon3d pol_c(*polygon_reserve_constructor);
     BOOST_CHECK_EQUAL(0, pol_c.outer().size());
     BOOST_CHECK_EQUAL(0, pol_c.outer().capacity());
 
@@ -384,7 +383,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, Polygon3DTest)
 {
-    geometry::Polygon<geometry::Point3d> pol(std::move(geometry::Polygon<geometry::Point3d>()));
+    Polygon3d pol(std::move(Polygon3d()));
     BOOST_CHECK_EQUAL(0, pol.outer().size());
 
     auto bbox = pol.boundingBox();
@@ -426,7 +425,7 @@ BOOST_FIXTURE_TEST_CASE(type, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
 {
-    geometry::Polygon<geometry::Point3i> polygon;
+    Polygon3i polygon;
     polygon = *polygon_initializer_list_constructor;
 
     BOOST_CHECK_EQUAL(7, polygon.outer().size());
@@ -443,8 +442,8 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(move_operator, Polygon3DTest)
 {
-    geometry::Polygon<geometry::Point3i> polygon_to_move(*polygon_initializer_list_constructor);
-    geometry::Polygon<geometry::Point3i> polygon;
+    Polygon3i polygon_to_move(*polygon_initializer_list_constructor);
+    Polygon3i polygon;
     polygon = std::move(polygon_to_move);
 
     BOOST_CHECK_EQUAL(7, polygon.outer().size());
@@ -686,23 +685,23 @@ BOOST_AUTO_TEST_SUITE(MultiGeometryTests)
 
 BOOST_AUTO_TEST_CASE(multi_polygon_area_complex)
 {
-    geometry::Polygon2d island1;
-    island1.outer().push_back(geometry::Point2d(0, 0));
-    island1.outer().push_back(geometry::Point2d(10, 0));
-    island1.outer().push_back(geometry::Point2d(10, 10));
-    island1.outer().push_back(geometry::Point2d(0, 10));
+    Polygon2d island1;
+    island1.outer().push_back(Point2d(0, 0));
+    island1.outer().push_back(Point2d(10, 0));
+    island1.outer().push_back(Point2d(10, 10));
+    island1.outer().push_back(Point2d(0, 10));
 
     Polygon2d island2;
-    island2.outer().push_back(geometry::Point2d(20, 0));
-    island2.outer().push_back(geometry::Point2d(30, 0));
-    island2.outer().push_back(geometry::Point2d(30, 10));
-    island2.outer().push_back(geometry::Point2d(20, 10));
+    island2.outer().push_back(Point2d(20, 0));
+    island2.outer().push_back(Point2d(30, 0));
+    island2.outer().push_back(Point2d(30, 10));
+    island2.outer().push_back(Point2d(20, 10));
 
     LinearRing2d lake;
-    lake.push_back(geometry::Point2d(24, 4));
-    lake.push_back(geometry::Point2d(26, 4));
-    lake.push_back(geometry::Point2d(26, 6));
-    lake.push_back(geometry::Point2d(24, 6));
+    lake.push_back(Point2d(24, 4));
+    lake.push_back(Point2d(26, 4));
+    lake.push_back(Point2d(26, 6));
+    lake.push_back(Point2d(24, 6));
     island2.addInner(lake);
 
     MultiPolygon2d archipelago;

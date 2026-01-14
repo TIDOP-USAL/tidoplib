@@ -34,8 +34,7 @@
 
 namespace tl
 {
-namespace geometry
-{
+
 /*! \addtogroup GeometricEntities
  *  \{
  */
@@ -58,6 +57,8 @@ public:
     using value_type = T;
     using reference = T &;
     using const_reference = const T &;
+    using pointer = T *;
+    using const_pointer = const T *;
 
 private:
 
@@ -237,6 +238,18 @@ public:
      */
     auto size() const noexcept -> std::size_t { return _size; }
 
+    /*!
+     * \brief Returns a pointer to the data array of the point.
+     * \return A pointer to the data array.
+     */
+    auto data() noexcept -> pointer;
+
+    /*!
+     * \brief Returns a const pointer to the data array of the point.
+     * \return A const pointer to the data array.
+     */
+    auto data() const noexcept -> const_pointer;
+
     template<typename U, Dimension D2>
     explicit operator Point<U, D2>() const;
 };
@@ -316,9 +329,21 @@ auto Point<T, D>::at(size_t position) -> reference
 }
 
 template<typename T, Dimension D>
-inline auto Point<T, D>::at(size_t position) const -> const_reference
+auto Point<T, D>::at(size_t position) const -> const_reference
 {
     return mData.at(position);
+}
+
+template<typename T, Dimension D>
+auto Point<T, D>::data() noexcept -> pointer
+{
+    return mData.data();
+}
+
+template<typename T, Dimension D>
+auto Point<T, D>::data() const noexcept -> const_pointer
+{
+    return mData.data();
 }
 
 template<typename T, Dimension D>
@@ -368,6 +393,4 @@ auto operator-(const Point<T, D> &a, const Point<T, D> &b) -> typename VectorTra
 
 /*! \} */
 
-
-}
-}
+} // End namespace tl

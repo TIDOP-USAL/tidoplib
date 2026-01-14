@@ -32,7 +32,7 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/macros/smart_ptr.h"
-#include "tidop/geometry/bbox.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 #include <proj.h>
 
@@ -161,7 +161,7 @@ public:
      * \param[in] crsId Optional target CRS for output.
      * \return Bounding box in 3D.
      */
-    virtual auto getBoundingBox(std::string crsId = "") const -> BoundingBoxd = 0;
+    virtual auto getBoundingBox(std::string crsId = "") const -> BoundingBox<Point3d> = 0;
 
     /*!
      * \brief Retrieves the names of the available dimensions in the point cloud.

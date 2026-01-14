@@ -24,9 +24,9 @@
 
 #pragma once
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/linestring.h"
-#include "tidop/geometry/entities/multilinestring.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/LineString.h"
+#include "tidop/geometry/primitives/MultiLineString.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace tl
@@ -91,7 +91,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const->Window<Point<double>> override;
+    auto window() const ->BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -103,7 +103,7 @@ public:
  * \brief 3D polyline graphic class
  */
 class TL_EXPORT GLineString3D
-  : public LineString3D<Point3<double>>,
+  : public LineString<Point3d>,
     public GraphicEntity
 {
 public:
@@ -121,7 +121,7 @@ public:
      * \param[in] gLineString3D LineString3D class object
      * \see LineString3D
      */
-    explicit GLineString3D(const LineString3D<Point3<double>> &gLineString3D);
+    explicit GLineString3D(const LineString<Point3d> &gLineString3D);
 
     /*!
      * \brief Copy constructor
@@ -153,7 +153,7 @@ public:
     auto isSimpleEntity() const -> bool override;
 
     void draw(Painter &painter) const override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
 };
 
 
@@ -163,7 +163,7 @@ public:
  * \brief Multi-polyline graphic class
  */
 class TL_EXPORT GMultiLineString
-  : public MultiLineString<Point<double>>,
+  : public MultiLineString<Point2d>,
     public GraphicEntity
 {
 public:
@@ -205,7 +205,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 
@@ -215,7 +215,7 @@ public:
  * \brief 3D multi-polyline graphic class
  */
 class TL_EXPORT GMultiLineString3D
-  : public MultiLineString3D<Point3<double>>,
+  : public MultiLineString<Point3d>,
     public GraphicEntity
 {
 public:
@@ -227,7 +227,7 @@ public:
 
     explicit GMultiLineString3D(size_t size);
 
-    explicit GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D);
+    explicit GMultiLineString3D(const MultiLineString<Point3d> &gMultiLineString3D);
 
     /*!
      * \brief Copy constructor
@@ -253,7 +253,7 @@ public:
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
-    auto window() const -> Window<Point<double>> override;
+    auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
 };
 

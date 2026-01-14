@@ -268,7 +268,7 @@ auto ImageReaderGdal::read(double scaleX,
     return image;
 }
 
-auto ImageReaderGdal::read(const WindowI &window,
+auto ImageReaderGdal::read(const BoundingBox2i &window,
                            double scaleX, 
                            double scaleY) -> cv::Mat
 {
@@ -276,8 +276,9 @@ auto ImageReaderGdal::read(const WindowI &window,
 
     try {
 
-        int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
-        int y = window.pt1.y < window.pt2.y ? window.pt1.y : window.pt2.y;
+        // Debería estar normalizado pero por si acaso
+        int x = window.pt1().x() < window.pt2().x() ? window.pt1().x() : window.pt2().x();
+        int y = window.pt1().y() < window.pt2().y() ? window.pt1().y() : window.pt2().y();
 
         Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(x, y, std::abs(window.width()), std::abs(window.height()));
 
@@ -290,7 +291,7 @@ auto ImageReaderGdal::read(const WindowI &window,
     return image;
 }
 
-auto ImageReaderGdal::read(const Window<Point<double>> &terrainWindow, 
+auto ImageReaderGdal::read(const BoundingBox2d &terrainWindow, 
                            double scaleX, 
                            double scaleY, 
                            Affine<double, 2> *georeference) -> cv::Mat
@@ -300,8 +301,8 @@ auto ImageReaderGdal::read(const Window<Point<double>> &terrainWindow,
     try {
 
         auto transform_inverse = mAffine.inverse();
-        auto p1 = transform_inverse.transform(terrainWindow.pt1);
-        auto p2 = transform_inverse.transform(terrainWindow.pt2);
+        auto p1 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.pt1()));
+        auto p2 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.pt2()));
 
         Rect<int> rect_src(p1, p2);
         rect_src.normalized();
@@ -318,10 +319,11 @@ auto ImageReaderGdal::read(const Window<Point<double>> &terrainWindow,
             p2 = rect_to_read.bottomRight();
             p1 = mAffine.transform(p1);
             p2 = mAffine.transform(p2);
-            auto s = p2 - p1;
-            s.x /= static_cast<double>(image.cols);
-            s.y /= static_cast<double>(image.rows);
-            *georeference = Affine<double, 2>(s.x, s.y, p1.x, p1.y, 0.);
+            Vector2d kk = static_cast<Vector2d>(p2 - p1);
+            Vector2d s = static_cast<Point2d>(p2) - static_cast<Point2d>(p1);
+            s.x() /= static_cast<double>(image.cols);
+            s.y() /= static_cast<double>(image.rows);
+            *georeference = Affine<double, 2>(s.x(), s.y(), p1.x(), p1.y(), 0.);
         }
 
     } catch (...) {
@@ -372,16 +374,17 @@ void ImageReaderGdal::update(const cv::Mat &image, const Rect<int> &rect)
 
             std::vector<Point<double>> image_points_transform(image_points.size());
             std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
-            Rect<int> rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+            Rect<int> rect_image_points_transform(static_cast<Point2i>(image_points_transform[0]), 
+                                                  static_cast<Point2i>(image_points_transform[2]));
             Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
             auto transform_inverse = _affine.inverse();
             Point<double> tl = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()));
             Point<double> br = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()));
 
-            rect_to_crop_image = Rect<int>(tl, br);
-            image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
-                .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
+            rect_to_crop_image = Rect<int>(static_cast<Point2i>(tl), static_cast<Point2i>(br));
+            image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x())
+                .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y())
                 .clone();
 
         } else {
@@ -416,11 +419,11 @@ void ImageReaderGdal::update(const cv::Mat &image, const Rect<int> &rect)
     }
 }
 
-void ImageReaderGdal::update(const cv::Mat &image, const WindowI &window)
+void ImageReaderGdal::update(const cv::Mat &image, const BoundingBox2i &window)
 {
     try {
 
-        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1, window.pt2);
+        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1(), window.pt2());
         update(image, rect);
 
     } catch (...) {
@@ -861,11 +864,11 @@ auto ImageReaderGdal::crsWkt() const -> std::string
     return crs_wkt;
 }
 
-auto ImageReaderGdal::window() const -> WindowD
+auto ImageReaderGdal::window() const -> BoundingBox2d
 {
     Point<double> p1 = mAffine.transform(Point<double>(0, 0));
     Point<double> p2 = mAffine.transform(Point<double>(cols(), rows()));
-    WindowD window(p1, p2);
+    BoundingBox2d window(p1, p2);
     window.normalized();
     return window;
 }

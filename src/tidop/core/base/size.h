@@ -66,8 +66,7 @@
 #include <numeric>
 
 #include "tidop/core/base/exception.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/window.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {

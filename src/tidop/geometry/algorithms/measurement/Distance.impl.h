@@ -30,9 +30,6 @@
 
 namespace tl
 {
-	
-namespace geometry
-{
 
 namespace detail 
 {
@@ -186,4 +183,3 @@ auto distance(const G1 &g1, const G2 &g2) -> double
 }
 
 } // namespace tl
-} // namespace geometry

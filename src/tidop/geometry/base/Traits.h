@@ -32,9 +32,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-	
 template<typename T, Dimension D> class Point;
 template<typename Point_t> class Segment;
 template<typename Point_t> class LineString;
@@ -285,18 +282,16 @@ concept Geometry3DConcept = GeometryConcept<G> && is_3d_v<G>;
 
 /*! \} */ 
 
-}
-
-template<typename T, geometry::Dimension D>
-struct VectorTraits<geometry::Point<T, D>>
+template<typename T, Dimension D>
+struct VectorTraits<Point<T, D>>
 {
     using value_type = T;
     static constexpr std::size_t size = static_cast<std::size_t>(D);
-    using result_type = geometry::Point<T, D>;
+    using result_type = Point<T, D>;
     using difference_type = Vector<T, static_cast<std::size_t>(D)>;
 };
 
-template<typename T, geometry::Dimension D>
-struct is_point<geometry::Point<T, D>> : std::true_type {};
+template<typename T, Dimension D>
+struct is_point<Point<T, D>> : std::true_type {};
 
-}
+} // End namespace tl

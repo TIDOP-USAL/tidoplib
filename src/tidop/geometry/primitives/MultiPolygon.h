@@ -35,9 +35,6 @@
 namespace tl
 {
 	
-namespace geometry
-{
-	
 /*! \addtogroup GeometricEntities
  *  \{
  */
@@ -60,5 +57,4 @@ using MultiPolygon3d = MultiPolygon<Point3d>;
 
 /*! \} */
 
-}
-}
+} // End namespace tl

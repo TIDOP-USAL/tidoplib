@@ -36,9 +36,6 @@
 
 namespace tl
 {
-
-namespace geometry 
-{
 	
 /*! \addtogroup GeometricEntities
  *  \{
@@ -170,7 +167,7 @@ public:
     //auto window() const -> Window<Point_t>;
     auto boundingBox() const
     {
-        return tl::geometry::envelope(*this);
+        return tl::envelope(*this);
     }
 
     /**
@@ -364,7 +361,7 @@ auto Segment<Point_t>::isEmpty() const -> bool
 template<typename Point_t>
 auto Segment<Point_t>::length() const -> double
 { 
-    return tl::geometry::length(*this);
+    return tl::length(*this);
 }
 
 
@@ -387,6 +384,4 @@ auto Segment<Point_t>::length() const -> double
 
 /*! \} */
 
-}
-
-}
+} // End namespace tl

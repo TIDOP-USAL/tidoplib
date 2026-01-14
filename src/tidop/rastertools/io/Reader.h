@@ -33,8 +33,8 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/path.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/rect.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/math/geometry/affine.h"
@@ -137,13 +137,13 @@ public:
               const Rect<int> &rect = Rect<int>()) -> cv::Mat;
 
     /*!
-     * \brief Reads a region defined in image coordinates (WindowI)
+     * \brief Reads a region defined in image coordinates (BoundingBox2i)
      * \param[in] window Input window
      * \param[in] scaleX Horizontal scaling (default: 1)
      * \param[in] scaleY Vertical scaling (default: 1)
      * \return Subimage as a cv::Mat
      */
-    auto read(const WindowI &window,
+    auto read(const BoundingBox2i &window,
               double scaleX = 1.,
               double scaleY = 1.) -> cv::Mat;
 
@@ -155,7 +155,7 @@ public:
      * \param[out] affine Optional output affine transform
      * \return Subimage as a cv::Mat
      */
-    auto read(const Window<Point<double>> &terrainWindow,
+    auto read(const BoundingBox2d &terrainWindow,
               double scaleX = 1.,
               double scaleY = 1.,
               Affine<double, 2> *affine = nullptr) -> cv::Mat;
@@ -172,7 +172,7 @@ public:
      * \param[in] image Image to write
      * \param[in] window Region to update
      */
-    void update(const cv::Mat &image, const WindowI &window);
+    void update(const cv::Mat &image, const BoundingBox2i &window);
 
     /*!
      * \brief Copies the current image to another file
@@ -241,7 +241,7 @@ public:
     /*!
      * \brief Bounding box of the image in terrain coordinates
      */
-    auto window() const -> WindowD;
+    auto window() const ->BoundingBox2d;
 
     /*!
      * \brief No-data value for the image bands

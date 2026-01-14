@@ -30,9 +30,6 @@
 
 namespace tl
 {
-	
-namespace geometry
-{
 
 namespace detail
 {
@@ -68,16 +65,44 @@ auto envelope_from_container(const Container_t &container)
 }
 
 
-template<typename Poly_t>
-auto envelope_impl(const Poly_t &poly, polygon_tag)
+template<typename Polygon_t>
+auto envelope_impl(const Polygon_t &polygon, polygon_tag)
 {
-    return envelope_from_container(poly.outer());
+    return envelope_from_container(polygon.outer());
+}
+
+template<typename LineString_t>
+auto envelope_impl(const LineString_t &lineString, linestring_tag)
+{
+    return envelope_from_container(lineString);
 }
 
 template<typename MultiPoint_t>
 auto envelope_impl(const MultiPoint_t &mp, multipoint_tag)
 {
     return envelope_from_container(mp);
+}
+
+template<typename MultiLineString_t>
+auto envelope_impl(const MultiLineString_t &multiLineString, multilinestring_tag)
+{
+    using Point_t = typename geometry_traits<MultiLineString_t>::point_type;
+    BoundingBox<Point_t> total;
+    for (const auto &line : multiLineString) {
+        total = merge(total, envelope_impl(line, linestring_tag{}));
+    }
+    return total;
+}
+
+template<typename MultiPolygon_t>
+auto envelope_impl(const MultiPolygon_t &mp, multipolygon_tag)
+{
+    using Point_t = typename geometry_traits<MultiPolygon_t>::point_type;
+    BoundingBox<Point_t> total;
+    for (const auto &poly : mp) {
+        total = merge(total, envelope_impl(poly, polygon_tag{}));
+    }
+    return total;
 }
 
 } // namespace detail
@@ -90,4 +115,3 @@ auto envelope(const Geometry_t &g)
 }
 
 } // namespace tl
-} // namespace geometry

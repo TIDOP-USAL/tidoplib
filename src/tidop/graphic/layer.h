@@ -31,7 +31,7 @@
 
 #include "tidop/core/base/defs.h"
 #include "tidop/graphic/datamodel.h"
-#include "tidop/geometry/window.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -227,8 +227,10 @@ public:
      * \brief Returns the bounding box (window) that encloses all entities.
      * \return Bounding window of the layer contents.
      */
-    auto window() const -> Window<Point<double>>;
+    auto boundingBox() const -> BoundingBox<Point2d>;
 
+    //TL_DEPRECATED("Use boundingBox() instead")
+    auto window() const->BoundingBox<Point2d>;
 };
 
 

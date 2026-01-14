@@ -30,6 +30,7 @@
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/impl/GdalWriter.h"
 #include "tidop/core/base/exception.h"
+#include "tidop/geometry/algorithms/spatial/Intersection.h"
 #include "tidop/rastertools/io/private/gdal.h"
 
 namespace tl
@@ -42,16 +43,16 @@ ImageWriter::ImageWriter(tl::Path file)
 
 }
 
-void ImageWriter::windowWrite(const WindowI &window,
-                              WindowI *windowWrite,
-                              Point<int> *offset) const
+void ImageWriter::windowWrite(const BoundingBox2i &window,
+                              BoundingBox2i *windowWrite,
+                              Vector<int, 2> *offset) const
 {
-    WindowI window_all(Point<int>(0, 0), Point<int>(this->cols(), this->rows()));   // Ventana total de imagen
+    BoundingBox2i window_all(Point2i(0, 0), Point2i(this->cols(), this->rows()));   // Ventana total de imagen
     if (window.isEmpty()) {
         *windowWrite = window_all;  // Se lee toda la ventana
     } else {
-        *windowWrite = windowIntersection(window_all, window);
-        *offset = windowWrite->pt1 - window.pt1;
+        *windowWrite = intersection(window_all, window);
+        *offset = windowWrite->pt1() - window.pt1();
     }
 }
 

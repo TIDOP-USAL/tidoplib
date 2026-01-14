@@ -1545,7 +1545,7 @@ BOOST_FIXTURE_TEST_CASE(vector_div_float, PackedTest)
 {
 
     Vector<float> v3(v1.size());
-    v3 = v1 / v2;
+
     size_t max_vector = (v1.size() / packed_a.size()) * packed_a.size();
     for (size_t i = 0; i < max_vector; i += packed_a.size()) {
 

@@ -32,9 +32,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-
 /*! \addtogroup Geometry
  *  \{
  */
@@ -46,8 +43,9 @@ class BoundingBox final
 
 public:
 
-    using T = typename Point_t::value_type;
-    static constexpr size_t _size = VectorTraits<Point_t>::size;
+    using value_type = Point_t;
+    using T = typename geometry_traits<Point_t>::value_type;
+    static constexpr size_t _size = dimension_value(geometry_traits<Point_t>::dimension);
 
 private:
 
@@ -55,26 +53,14 @@ private:
 
 public:
 
-    BoundingBox() 
-    {
-        //mPoints[0].fill(std::numeric_limits<T>::max());
-        //mPoints[1].fill(std::numeric_limits<T>::lowest());
-        for (size_t i = 0; i < _size; ++i) {
-            mPoints[0][i] = std::numeric_limits<T>::max();
-            mPoints[1][i] = std::numeric_limits<T>::lowest();
-        }
-    }
+    BoundingBox();
 
     /*!
      * \brief Constructor that defines the bounding box using two corner points.
      * \param[in] pt1 First corner point.
      * \param[in] pt2 Second corner point.
      */
-    BoundingBox(const Point_t &pt1, const Point_t &pt2) 
-      : mPoints{pt1, pt2}
-    {
-        normalized();
-    }
+    BoundingBox(const Point_t &pt1, const Point_t &pt2);
 
     /*!
      * \brief Constructor that defines the bounding box using a central point and dimensions.
@@ -107,26 +93,14 @@ public:
      * \brief Constructor that creates a bounding box from a set of 3D points.
      * \param[in] vertices Vector of points used to compute the bounding box.
      */
-    explicit BoundingBox(const std::vector<Point_t> &vertices)
-      : BoundingBox()
-    {
-        for (const auto &v : vertices) {
-            add(v);
-        }
-    }
+    explicit BoundingBox(const std::vector<Point_t> &vertices);
 
     /*!
      * \brief Constructor de conversión/copia para diferentes tipos de punto.
      * \tparam OtherPoint_t El tipo de punto del BoundingBox origen.
      */
     template<typename OtherPoint_t>
-    explicit BoundingBox(const BoundingBox<OtherPoint_t>&other)
-    {
-        static_assert(geometry_traits<Point_t>::dimension == geometry_traits<OtherPoint_t>::dimension, "BoundingBoxes must have the same dimension for conversion.");
-
-        mPoints[0] = static_cast<Point_t>(other.pt1());
-        mPoints[1] = static_cast<Point_t>(other.pt2());
-    }
+    explicit BoundingBox(const BoundingBox<OtherPoint_t>&other);
 
     auto pt1() noexcept -> Point_t &{ return mPoints[0]; }
     auto pt1() const noexcept -> const Point_t &{ return mPoints[0]; }
@@ -134,11 +108,11 @@ public:
     auto pt2() noexcept -> Point_t &{ return mPoints[1]; }
     auto pt2() const noexcept -> const Point_t &{ return mPoints[1]; }
 
-    auto start() noexcept -> Point_t &{ return mPoints[0]; }
-    auto start() const noexcept -> const Point_t &{ return mPoints[0]; }
+    //auto start() noexcept -> Point_t &{ return mPoints[0]; }
+    //auto start() const noexcept -> const Point_t &{ return mPoints[0]; }
 
-    auto end() noexcept -> Point_t &{ return mPoints[1]; }
-    auto end() const noexcept -> const Point_t &{ return mPoints[1]; }
+    //auto end() noexcept -> Point_t &{ return mPoints[1]; }
+    //auto end() const noexcept -> const Point_t &{ return mPoints[1]; }
 
     /*!
      * \brief Retrieves the width of the bounding box.
@@ -158,22 +132,10 @@ public:
      */
     auto depth() const -> T;
 
-    // Método para expandir la caja (Crucial para algoritmos)
-    void add(const Point_t &pt)
-    {
-        for (size_t i = 0; i < _size; ++i) {
-            if (pt[i] < mPoints[0][i]) mPoints[0][i] = pt[i];
-            if (pt[i] > mPoints[1][i]) mPoints[1][i] = pt[i];
-        }
-    }
+    void add(const Point_t &pt);
 
     // Normalización N-Dimensional
-    void normalized() 
-    {
-        for (size_t i = 0; i < _size; ++i) {
-            if (mPoints[0][i] > mPoints[1][i]) std::swap(mPoints[0][i], mPoints[1][i]);
-        }
-    }
+    void normalized();
 
     // Contención Genérica
     //auto containsPoint(const Point_t &pt) const -> bool
@@ -185,45 +147,48 @@ public:
     //}
 
     // Propiedades geométricas
-    auto center() const -> Point_t
-    {
-        Point_t center{};
-        if (!this->isEmpty()) {
-            auto vector = (mPoints[1] - mPoints[0]) / consts::two<T>;
-            for (size_t i = 0; i < _size; ++i) {
-                center[i] = mPoints[0][i] + vector[i];
-                //center[i] = (mPoints[0][i] + mPoints[1][i]) / consts::two<T>;
-            }
-        }
+    auto center() const -> Point_t;
 
-        return center;
-    }
+    /*!
+     * \brief Retrieves the vertices of the bounding box.
+     * \return A vector containing the bounding box's corner points.
+     */
+    auto vertices() const -> std::vector<Point_t>;
 
-    auto extent(size_t dim) const -> T 
-    {
-        return (isEmpty()) ? 0 : mPoints[1][dim] - mPoints[0][dim];
-    }
+    void extend(const BoundingBox<Point_t> &other);
 
-    auto isEmpty() const -> bool 
-    {
-        return mPoints[0][0] == std::numeric_limits<T>::max();
-    }
+    auto isEmpty() const -> bool;
 
-    auto isValid() const -> bool
-    {
-        if constexpr (is_3d_v<BoundingBox<Point_t>>) {
-            return this->width() > consts::zero<T> &&
-                   this->height() > consts::zero<T> &&
-                   this->depth() > consts::zero<T>;
-        } else {
-            return this->width() > consts::zero<T> &&
-                   this->height() > consts::zero<T>;
-        }
-    }
+    auto isValid() const -> bool;
 
-    // Implementación del Visitor
-    //void accept(GeometryVisitor &v) override { v.visit(*this); }
+
 };
+
+
+using BoundingBox2i = BoundingBox<Point2i>;
+using BoundingBox2f = BoundingBox<Point2f>;
+using BoundingBox2d = BoundingBox<Point2d>;
+using BoundingBox3i = BoundingBox<Point3i>;
+using BoundingBox3f = BoundingBox<Point3f>;
+using BoundingBox3d = BoundingBox<Point3d>;
+
+
+
+template<typename Point_t>
+BoundingBox<Point_t>::BoundingBox()
+{
+    for (size_t i = 0; i < _size; ++i) {
+        mPoints[0][i] = std::numeric_limits<T>::max();
+        mPoints[1][i] = std::numeric_limits<T>::lowest();
+    }
+}
+
+template<typename Point_t>
+BoundingBox<Point_t>::BoundingBox(const Point_t &pt1, const Point_t &pt2)
+    : mPoints{pt1, pt2}
+{
+    normalized();
+}
 
 template<typename Point_t>
 template<typename U>
@@ -276,6 +241,26 @@ BoundingBox<Point_t>::BoundingBox(const Point_t &pt, U side)
     }
 }
 
+template<typename Point_t>
+BoundingBox<Point_t>::BoundingBox(const std::vector<Point_t> &vertices)
+  : BoundingBox()
+{
+    for (const auto &v : vertices) {
+        add(v);
+    }
+}
+
+template<typename Point_t>
+template<typename OtherPoint_t>
+BoundingBox<Point_t>::BoundingBox(const BoundingBox<OtherPoint_t> &other)
+{
+    static_assert(geometry_traits<Point_t>::dimension == geometry_traits<OtherPoint_t>::dimension, "BoundingBoxes must have the same dimension for conversion.");
+
+    mPoints[0] = static_cast<Point_t>(other.pt1());
+    mPoints[1] = static_cast<Point_t>(other.pt2());
+}
+
+
 
 template<typename Point_t>
 auto BoundingBox<Point_t>::width() const -> T
@@ -296,8 +281,103 @@ auto BoundingBox<Point_t>::depth() const -> T
     return this->isEmpty() ? consts::zero<T> : mPoints[1].z() - mPoints[0].z();
 }
 
+template<typename Point_t>
+void BoundingBox<Point_t>::add(const Point_t &pt)
+{
+    if (!isValid()) {
+        mPoints[0] = mPoints[1] = pt;
+        return;
+    }
+
+    for (size_t i = 0; i < _size; ++i) {
+        mPoints[0][i] = std::min(mPoints[0][i], pt[i]);
+        mPoints[1][i] = std::max(mPoints[1][i], pt[i]);
+    }
+}
+
+// Normalización N-Dimensional
+template<typename Point_t>
+void BoundingBox<Point_t>::normalized()
+{
+    for (size_t i = 0; i < _size; ++i) {
+        if (mPoints[0][i] > mPoints[1][i]) std::swap(mPoints[0][i], mPoints[1][i]);
+    }
+}
+
+template<typename Point_t>
+auto BoundingBox<Point_t>::center() const -> Point_t
+{
+    Point_t center{};
+    if (!this->isEmpty()) {
+        auto vector = (mPoints[1] - mPoints[0]) / consts::two<T>;
+        for (size_t i = 0; i < _size; ++i) {
+            center[i] = mPoints[0][i] + vector[i];
+        }
+    }
+
+    return center;
+}
+
+template<typename Point_t>
+auto BoundingBox<Point_t>::vertices() const -> std::vector<Point_t>
+{
+    return {
+        Point_t(pt1().x(), pt1().y(), pt1().z()),
+        Point_t(pt1().x(), pt2().y(), pt1().z()),
+        Point_t(pt2().x(), pt2().y(), pt1().z()),
+        Point_t(pt2().x(), pt1().y(), pt1().z()),
+        Point_t(pt1().x(), pt1().y(), pt2().z()),
+        Point_t(pt1().x(), pt2().y(), pt2().z()),
+        Point_t(pt2().x(), pt2().y(), pt2().z()),
+        Point_t(pt2().x(), pt1().y(), pt2().z())
+    };
+}
+
+template<typename Point_t>
+void BoundingBox<Point_t>::extend(const BoundingBox<Point_t> &other)
+{
+    *this = merge(*this, other);
+}
+
+template<typename Point_t>
+auto BoundingBox<Point_t>::isEmpty() const -> bool
+{
+    return mPoints[0][0] == std::numeric_limits<T>::max();
+}
+
+template<typename Point_t>
+auto BoundingBox<Point_t>::isValid() const -> bool
+{
+    for (size_t i = 0; i < _size; ++i) {
+        if (mPoints[0][i] > mPoints[1][i]) return false;
+    }
+
+    return true;
+}
+
+
+
+/*!
+ * /brief Une dos BoundingBoxes en una sola que contiene a ambas.
+ */
+template<typename Point_t>
+auto merge(const BoundingBox<Point_t> &b1, const BoundingBox<Point_t> &b2) -> BoundingBox<Point_t>
+{
+    // Si una de las cajas es inválida/vacía, devolvemos la otra
+    if (!b1.isValid()) return b2;
+    if (!b2.isValid()) return b1;
+
+    Point_t new_min, new_max;
+
+    for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
+        new_min[i] = std::min(b1.pt1()[i], b2.pt1()[i]);
+        new_max[i] = std::max(b1.pt2()[i], b2.pt2()[i]);
+    }
+
+    return BoundingBox<Point_t>(new_min, new_max);
+}
+
 /*! \} */
 
-}
-}
+} // End namespace tl
 

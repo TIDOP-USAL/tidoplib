@@ -28,9 +28,6 @@
 
 namespace tl
 {
-
-namespace geometry
-{
 	
 /*! \addtogroup Algorithms
  *  \{
@@ -41,7 +38,6 @@ auto distance(const G1 &g1, const G2 &g2) -> double;
 
 /*! \} */ 
 
-} // End namespace geometry
 } // End namespace tl
 
 #include "Distance.impl.h"
