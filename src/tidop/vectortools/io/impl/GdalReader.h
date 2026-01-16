@@ -146,7 +146,7 @@ private:
     static void readLabelFont(OGRStyleLabel *ogrStyleLabel, Label *label);
     static void readData(const OGRFeature *ogrFeature,
                          OGRFeatureDefn *ogrFeatureDefinition,
-                         TableRegister *data);
+                         TableRegister *attributes);
 
 private:
 

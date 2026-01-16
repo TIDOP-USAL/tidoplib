@@ -218,13 +218,13 @@ public:
      * \brief Returns the attribute data associated with this entity.
      * \return Shared pointer to the attribute table entry.
      */
-    auto data() const -> std::shared_ptr<TableRegister>;
+    auto attributes() const -> std::shared_ptr<TableRegister>;
 
     /*!
      * \brief Associates attribute data with this entity.
      * \param[in] data Pointer to the attribute table entry.
      */
-    void setData(const std::shared_ptr<TableRegister> &data);
+    void setAttributes(const std::shared_ptr<TableRegister> &attributes);
 
 };
 

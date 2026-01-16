@@ -111,6 +111,12 @@ public:
     template<typename D = Derived, enable_if_vector_t<D> = 0>
     auto module() const -> double;
 
+    template<typename D = Derived, enable_if_vector_t<D> = 0>
+    auto norm() const -> double;
+
+    template<typename D = Derived, enable_if_vector_t<D> = 0>
+    auto squaredNorm() const -> double;
+
     /*!
      * \brief Normalizes the vector, making its magnitude equal to 1.
      */
@@ -221,8 +227,6 @@ public:
      * \tparam OtherDerived The type of the other vector.
      * \return A reference to this vector.
      */
-    //template<typename OtherDerived>
-    //auto operator*=(const OtherDerived &vector) -> Derived&;
     template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
     auto cwiseProductInPlace(const OtherDerived &vector) -> Derived &;
 
@@ -232,8 +236,6 @@ public:
      * \tparam OtherDerived The type of the other vector.
      * \return A reference to this vector.
      */
-    //template<typename OtherDerived>
-    //auto operator/=(const OtherDerived &vector) -> Derived&;
     template<typename OtherDerived, typename = std::enable_if_t<is_vector<Derived>::value>>
     auto cwiseDivInPlace(const OtherDerived &vector) -> Derived &;
 
@@ -242,9 +244,12 @@ public:
      * \param[in] scalar The scalar to multiply by.
      * \return A reference to this vector.
      */
+    template<typename D = Derived, enable_if_vector_t<D> = 0>
     auto operator*=(T scalar) -> Derived&;
 
-    template<typename Scalar, typename = std::enable_if_t<std::is_arithmetic_v<Scalar>>>
+    template<typename Scalar, 
+             typename D = Derived,
+             typename = std::enable_if_t<std::is_arithmetic_v<Scalar> && is_vector<D>::value>>
     auto operator*=(Scalar scalar) -> Derived &;
 
     /*!
@@ -252,7 +257,13 @@ public:
      * \param[in] scalar The scalar to divide by.
      * \return A reference to this vector.
      */
+    template<typename D = Derived, enable_if_vector_t<D> = 0>
     auto operator/=(T scalar) -> Derived&;
+
+    template<typename Scalar,
+             typename D = Derived,
+             typename = std::enable_if_t<std::is_arithmetic_v<Scalar> &&is_vector<D>::value>>
+    auto operator/=(Scalar scalar) -> Derived &;
 
     /*!
      * \brief Equality operator restricted to the same type.
@@ -723,7 +734,21 @@ template<typename Derived>
 template<typename D, enable_if_vector_t<D>>
 auto VectorBase<Derived>::module() const -> double
 {
-    return sqrt(this->dotProduct(this->derived()));
+    return sqrt(this->squaredNorm());
+}
+
+template<typename Derived>
+template<typename D, enable_if_vector_t<D>>
+auto VectorBase<Derived>::norm() const -> double
+{
+    return this->module();
+}
+
+template<typename Derived>
+template<typename D, enable_if_vector_t<D>>
+auto VectorBase<Derived>::squaredNorm() const -> double
+{
+    return this->dotProduct(this->derived());
 }
 
 template<typename Derived>
@@ -1100,7 +1125,7 @@ auto VectorBase<Derived>::cwiseDivInPlace(const OtherDerived &vector) -> Derived
 }
 
 template<typename Derived>
-template<typename Scalar, typename>
+template<typename Scalar, typename D, typename>
 auto VectorBase<Derived>::operator*=(Scalar scalar) -> Derived &
 {
     auto &derived = this->derived();
@@ -1112,6 +1137,7 @@ auto VectorBase<Derived>::operator*=(Scalar scalar) -> Derived &
 }
 
 template<typename Derived>
+template<typename D, enable_if_vector_t<D>>
 auto VectorBase<Derived>::operator*=(T scalar) -> Derived &
 {
     auto &derived = this->derived();
@@ -1146,6 +1172,7 @@ auto VectorBase<Derived>::operator*=(T scalar) -> Derived &
 }
 
 template<typename Derived>
+template<typename D, enable_if_vector_t<D>>
 auto VectorBase<Derived>::operator/=(T scalar) -> Derived &
 {
     auto &derived = this->derived();
@@ -1178,6 +1205,19 @@ auto VectorBase<Derived>::operator/=(T scalar) -> Derived &
 
     for (; i < derived.size(); ++i) {
         derived[i] /= scalar;
+    }
+
+    return derived;
+}
+
+template<typename Derived>
+template<typename Scalar, typename D, typename>
+auto VectorBase<Derived>::operator/=(Scalar scalar) -> Derived &
+{
+    auto &derived = this->derived();
+
+    for (size_t i = 0; i < derived.size(); ++i) {
+        derived[i] = numberCast<T>(derived[i] / scalar);
     }
 
     return derived;

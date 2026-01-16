@@ -76,14 +76,14 @@ auto GraphicEntity::type() const -> Type
     return mEntityType;
 }
 
-auto GraphicEntity::data() const -> std::shared_ptr<TableRegister>
+auto GraphicEntity::attributes() const -> std::shared_ptr<TableRegister>
 {
     return mData;
 }
 
-void GraphicEntity::setData(const std::shared_ptr<TableRegister> &data)
+void GraphicEntity::setAttributes(const std::shared_ptr<TableRegister> &attributes)
 {
-    mData = data;
+    mData = attributes;
 }
 
 

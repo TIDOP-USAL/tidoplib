@@ -51,17 +51,17 @@ BOOST_AUTO_TEST_CASE(read_las)
     BOOST_CHECK(reader->isOpen());
 
     auto bbox = reader->getBoundingBox();
-    BOOST_CHECK_CLOSE(598462.820, bbox.pt1.x, 0.1);
-    BOOST_CHECK_CLOSE(4264813.320, bbox.pt1.y, 0.1);
-    BOOST_CHECK_CLOSE(625.539, bbox.pt1.z, 0.1);
-    BOOST_CHECK_CLOSE(598551.05, bbox.pt2.x, 0.1);
-    BOOST_CHECK_CLOSE(4264901.669, bbox.pt2.y, 0.1);
-    BOOST_CHECK_CLOSE(665.349, bbox.pt2.z, 0.1);
+    BOOST_CHECK_CLOSE(598462.820, bbox.pt1().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264813.320, bbox.pt1().y(), 0.1);
+    BOOST_CHECK_CLOSE(625.539, bbox.pt1().z(), 0.1);
+    BOOST_CHECK_CLOSE(598551.05, bbox.pt2().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264901.669, bbox.pt2().y(), 0.1);
+    BOOST_CHECK_CLOSE(665.349, bbox.pt2().z(), 0.1);
 
     auto offset = reader->getOffset();
-    BOOST_CHECK_CLOSE(597500.0, offset.x, 0.1);
-    BOOST_CHECK_CLOSE(4264200.0, offset.y, 0.1);
-    BOOST_CHECK_CLOSE(0.0, offset.z, 0.1);
+    BOOST_CHECK_CLOSE(597500.0, offset.x(), 0.1);
+    BOOST_CHECK_CLOSE(4264200.0, offset.y(), 0.1);
+    BOOST_CHECK_CLOSE(0.0, offset.z(), 0.1);
 
     //auto scale = reader->getScale();
     //BOOST_CHECK_CLOSE(0.01, scale.x(), 0.1);
@@ -76,14 +76,14 @@ BOOST_AUTO_TEST_CASE(read_las)
 
     // Obtener coordenadas del primer punto
     auto fist_point = reader->getCoordinates(0);
-    BOOST_CHECK_CLOSE(598463.520, fist_point.x, 0.1);
-    BOOST_CHECK_CLOSE(4264814.290, fist_point.y, 0.1);
-    BOOST_CHECK_CLOSE(657.460, fist_point.z, 0.1);
+    BOOST_CHECK_CLOSE(598463.520, fist_point.x(), 0.1);
+    BOOST_CHECK_CLOSE(4264814.290, fist_point.y(), 0.1);
+    BOOST_CHECK_CLOSE(657.460, fist_point.z(), 0.1);
 
     auto second_point = reader->getCoordinates(1);
-    BOOST_CHECK_CLOSE(598469.260, second_point.x, 0.1);
-    BOOST_CHECK_CLOSE(4264844.969, second_point.y, 0.1);
-    BOOST_CHECK_CLOSE(645.500, second_point.z, 0.1);
+    BOOST_CHECK_CLOSE(598469.260, second_point.x(), 0.1);
+    BOOST_CHECK_CLOSE(4264844.969, second_point.y(), 0.1);
+    BOOST_CHECK_CLOSE(645.500, second_point.z(), 0.1);
 
     BOOST_CHECK(reader->hasColors());
     BOOST_CHECK(reader->hasNormals());
@@ -131,31 +131,31 @@ BOOST_AUTO_TEST_CASE(read_ply)
     BOOST_CHECK(reader->isOpen());
 
     auto bbox = reader->getBoundingBox();
-    BOOST_CHECK_CLOSE(598462.820, bbox.pt1.x, 0.1);
-    BOOST_CHECK_CLOSE(4264813.320, bbox.pt1.y, 0.1);
-    BOOST_CHECK_CLOSE(625.539, bbox.pt1.z, 0.1);
-    BOOST_CHECK_CLOSE(598551.05, bbox.pt2.x, 0.1);
-    BOOST_CHECK_CLOSE(4264901.669, bbox.pt2.y, 0.1);
-    BOOST_CHECK_CLOSE(665.349, bbox.pt2.z, 0.1);
+    BOOST_CHECK_CLOSE(598462.820, bbox.pt1().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264813.320, bbox.pt1().y(), 0.1);
+    BOOST_CHECK_CLOSE(625.539, bbox.pt1().z(), 0.1);
+    BOOST_CHECK_CLOSE(598551.05, bbox.pt2().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264901.669, bbox.pt2().y(), 0.1);
+    BOOST_CHECK_CLOSE(665.349, bbox.pt2().z(), 0.1);
 
     auto offset = reader->getOffset();
-    BOOST_CHECK_CLOSE(0.0, offset.x, 0.1);
-    BOOST_CHECK_CLOSE(0.0, offset.y, 0.1);
-    BOOST_CHECK_CLOSE(0.0, offset.z, 0.1);
+    BOOST_CHECK_CLOSE(0.0, offset.x(), 0.1);
+    BOOST_CHECK_CLOSE(0.0, offset.y(), 0.1);
+    BOOST_CHECK_CLOSE(0.0, offset.z(), 0.1);
 
     auto dimensions_names = reader->getDimensionsNames();
     BOOST_CHECK_EQUAL(dimensions_names.size(), 19);
 
     // Obtener coordenadas del primer punto
     auto fist_point = reader->getCoordinates(0);
-    BOOST_CHECK_CLOSE(598463.520, fist_point.x, 0.1);
-    BOOST_CHECK_CLOSE(4264814.290, fist_point.y, 0.1);
-    BOOST_CHECK_CLOSE(657.460, fist_point.z, 0.1);
+    BOOST_CHECK_CLOSE(598463.520, fist_point.x(), 0.1);
+    BOOST_CHECK_CLOSE(4264814.290, fist_point.y(), 0.1);
+    BOOST_CHECK_CLOSE(657.460, fist_point.z(), 0.1);
 
     auto second_point = reader->getCoordinates(1);
-    BOOST_CHECK_CLOSE(598469.260, second_point.x, 0.1);
-    BOOST_CHECK_CLOSE(4264844.969, second_point.y, 0.1);
-    BOOST_CHECK_CLOSE(645.500, second_point.z, 0.1);
+    BOOST_CHECK_CLOSE(598469.260, second_point.x(), 0.1);
+    BOOST_CHECK_CLOSE(4264844.969, second_point.y(), 0.1);
+    BOOST_CHECK_CLOSE(645.500, second_point.z(), 0.1);
 
     BOOST_CHECK(reader->hasColors());
     BOOST_CHECK(reader->hasNormals());

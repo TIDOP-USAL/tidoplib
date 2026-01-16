@@ -222,7 +222,7 @@ auto Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT -> Ellipse<T> &
 template<typename T> template<typename T2>
 Ellipse<T>::operator Ellipse<T2>() const
 {
-    return Ellipse<T2>(this->center,
+    return Ellipse<T2>(static_cast<Point<T2>>(this->center),
                        numberCast<T2>(this->a),
                        numberCast<T2>(this->b));
 }
@@ -242,7 +242,7 @@ auto Ellipse<T>::length() const -> double
 template<typename T>
 auto Ellipse<T>::rect() const -> Rect<T>
 {
-    return Rect<T>(tl::Point<T>(center.x - a, center.y - b), a * 2., b * 2.);
+    return Rect<T>(tl::Point<T>(center.x() - a, center.y() - b), a * 2., b * 2.);
 }
 
 template<typename T>
@@ -250,9 +250,11 @@ auto Ellipse<T>::isInner(const Point<T> &point) const -> bool
 {
     if (!this->rect().contains(point)) return false;
     
-    T x = (point.x - this->center.x);
-    T y = (point.y - this->center.y);
-    T check = (x * x) / (this->a * this->a) + (y * y) / (this->b * this->b);
+    auto v = point - center;
+
+    //T x = (point.x - this->center.x);
+    //T y = (point.y - this->center.y);
+    T check = (v.x() * v.x()) / (this->a * this->a) + (v.y() * v.y()) / (this->b * this->b);
     //if (check <= 1) return true; // the point is inner
     //else if (check == 1) return true; // the point is on the boundary of the region
     //else return false;

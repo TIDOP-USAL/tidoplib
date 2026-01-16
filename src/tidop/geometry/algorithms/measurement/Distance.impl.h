@@ -27,6 +27,7 @@
 #include <cmath>
 #include "tidop/geometry/algorithms/projection.h"
 #include "tidop/geometry/algorithms/analysis/Contains.h"
+#include "tidop/geometry/base/Traits.h"
 
 namespace tl
 {

@@ -399,9 +399,9 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
                 ogr_style_mgr->GetStyleString(ogr_feature);
                 readStyles(ogr_style_mgr, entity.get());
 
-                auto data = std::make_shared<TableRegister>(layer->tableFields());
-                readData(ogr_feature, feature_definition, data.get());
-                entity->setData(data);
+                auto attributes = std::make_shared<TableRegister>(layer->tableFields());
+                readData(ogr_feature, feature_definition, attributes.get());
+                entity->setAttributes(attributes);
 
                 layer->push_back(entity);
 
@@ -1472,23 +1472,23 @@ void VectorReaderGdal::readLabelFont(OGRStyleLabel *ogrStyleLabel, Label *label)
 
 void VectorReaderGdal::readData(const OGRFeature *ogrFeature,
                                 OGRFeatureDefn *ogrFeatureDefinition,
-                                TableRegister *data)
+                                TableRegister *attributes)
 {
     for (int i = 0; i < ogrFeatureDefinition->GetFieldCount(); i++) {
         const OGRFieldDefn *ogr_field_defn = ogrFeatureDefinition->GetFieldDefn(i);
 
         switch (ogr_field_defn->GetType()) {
         case OFTInteger:
-            data->setValue(i, std::to_string(ogrFeature->GetFieldAsInteger(i)));
+            attributes->setValue(i, std::to_string(ogrFeature->GetFieldAsInteger(i)));
             break;
         case OFTInteger64:
-            data->setValue(i, std::to_string(ogrFeature->GetFieldAsInteger64(i)));
+            attributes->setValue(i, std::to_string(ogrFeature->GetFieldAsInteger64(i)));
             break;
         case OFTReal:
-            data->setValue(i, std::to_string(ogrFeature->GetFieldAsDouble(i)));
+            attributes->setValue(i, std::to_string(ogrFeature->GetFieldAsDouble(i)));
             break;
         case OFTString:
-            data->setValue(i, ogrFeature->GetFieldAsString(i));
+            attributes->setValue(i, ogrFeature->GetFieldAsString(i));
             break;
         //case OFTIntegerList:
         //    break;
@@ -1511,7 +1511,7 @@ void VectorReaderGdal::readData(const OGRFeature *ogrFeature,
         //case OFTInteger64List:
         //    break;
         default:
-            data->setValue(i, ogrFeature->GetFieldAsString(i));
+            attributes->setValue(i, ogrFeature->GetFieldAsString(i));
             break;
         }
     }

@@ -165,10 +165,10 @@ void VectorWriterGdal::write(const GLayer &layer)
 
             ogr_feature = OGRFeature::CreateFeature(ogr_layer->GetLayerDefn());
 
-            if (const auto data = entity->data()) {
-                for (size_t i = 0; i < data->size(); i++) {
+            if (const auto attributes = entity->attributes()) {
+                for (size_t i = 0; i < attributes->size(); i++) {
                     TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
-                    ogr_feature->SetField(static_cast<int>(i), data->value(static_cast<int>(i)).c_str());
+                    ogr_feature->SetField(static_cast<int>(i), attributes->value(static_cast<int>(i)).c_str());
                 }
             }
 

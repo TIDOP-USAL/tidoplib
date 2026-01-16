@@ -43,7 +43,7 @@ namespace tl
  * \brief Represents a field (column) definition in a table schema.
  *
  * A `TableField` stores metadata about a table column, including its name,
- * data type and maximum size. It defines the structure of a `TableRegister`.
+ * attributes type and maximum size. It defines the structure of a `TableRegister`.
  */
 class TL_EXPORT TableField
 {
@@ -52,7 +52,7 @@ public:
 
     /*!
      * \enum Type
-     * \brief Supported field data types.
+     * \brief Supported field attributes types.
      */
     enum class Type
     {
@@ -151,7 +151,7 @@ private:
 
 /*!
  * \class TableRegister
- * \brief Represents a single record (row) in a data table.
+ * \brief Represents a single record (row) in a attributes table.
  *
  * A `TableRegister` stores one value per field, forming a complete table row.
  * Values are internally managed as `RegisterValue` objects.
@@ -205,7 +205,7 @@ public:
 
 /*!
  * \class DataTable
- * \brief Represents a table with schema and data records.
+ * \brief Represents a table with schema and attributes records.
  *
  * A `DataTable` contains a set of `TableField` definitions (columns)
  * and a list of `TableRegister` entries (rows). It supports iteration
@@ -278,11 +278,11 @@ public:
 
 /*!
  * \class DataModel
- * \brief Container and manager for multiple data tables.
+ * \brief Container and manager for multiple attributes tables.
  *
  * The `DataModel` manages a collection of named `DataTable` objects.
  * It allows for creation and registration of new tables in a structured
- * data model, often associated with geometries or layers.
+ * attributes model, often associated with geometries or layers.
  */
 class TL_EXPORT DataModel
 {

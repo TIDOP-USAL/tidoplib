@@ -42,6 +42,7 @@ if(BUILD_TL_GEOMETRY)
                             #window.h
                             algorithms/analysis/Contains.h
                             algorithms/analysis/Contains.impl.h
+                            algorithms/clustering/dbscan.h
                             algorithms/measurement/Angle.h
                             algorithms/measurement/Angle.impl.h
                             algorithms/measurement/Area.h

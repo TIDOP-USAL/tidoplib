@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(read_tiff)
         BOOST_CHECK_EQUAL(367, image.at<uint16_t>(138, 23));
         BOOST_CHECK_EQUAL(140, image.at<uint16_t>(599, 599));
 
-        Window<Point<double>> terrain_window(Point<double>(-0.49931, 0.49926), Point<double>(-0.43475, 0.44057));
+        BoundingBox2d terrain_window(Point<double>(-0.49931, 0.49926), Point<double>(-0.43475, 0.44057));
         cv::Mat image2 = raster_reader->read(terrain_window);
         BOOST_CHECK_EQUAL(image2.cols, 39);
         BOOST_CHECK_EQUAL(image2.rows, 36);
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(reader_geotiff)
         //auto scale_src = 0.11020457284169043;
         auto scale_src = 0.10753054637115214;
         Rect<int> rect_to_read(219, 219, 2455, 4);
-        Window<Point<double>> terrain_window(Point<double>(356880.33150275325, 4500170.7196016246), Point<double>(356998.68577994872, 4500288.6336116809));
+        BoundingBox2d terrain_window(Point<double>(356880.33150275325, 4500170.7196016246), Point<double>(356998.68577994872, 4500288.6336116809));
         terrain_window.normalized();
         Affine<double, 2> affine;
         //cv::Mat image = raster_reader.read(terrain_window, scale_src, scale_src, &affine);

@@ -28,6 +28,7 @@
 
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/math/base/Traits.h"
+#include "tidop/math/base/data.h"
 
 namespace tl
 {
@@ -177,6 +178,19 @@ struct geometry_traits<BoundingBox<Point_t>>
 };
 
 
+// Caso especial para vector
+template<typename T, size_t S>
+struct geometry_traits<Vector<T, S>>
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = false;
+
+    static constexpr Dimension dimension = (S == DynamicData) ? Dimension::dynamic : static_cast<Dimension>(S);
+    static constexpr GeometryType type = GeometryType::point;
+
+    using value_type = T;
+};
+
 /* GEOMETRY TAGS */
 
 struct point_tag {};
@@ -200,8 +214,7 @@ template<> struct geometry_tag<GeometryType::multipolygon> { using type = multip
 template<> struct geometry_tag<GeometryType::multilinestring> { using type = multilinestring_tag; };
 
 template<typename G>
-using geometry_tag_t =
-typename geometry_tag<geometry_traits<G>::type>::type;
+using geometry_tag_t = typename geometry_tag<geometry_traits<G>::type>::type;
 
 
 /* HELPER ALIASES AND VARIABLES */

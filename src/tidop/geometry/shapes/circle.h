@@ -196,7 +196,8 @@ auto Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT -> Circle<T> &
 template<typename T> template<typename T2>
 Circle<T>::operator Circle<T2>() const
 {
-    return Circle<T2>(this->center, numberCast<T2>(this->radius));
+    return Circle<T2>(static_cast<Point<T2>>(this->center), 
+                      numberCast<T2>(this->radius));
 }
 
 template<typename T>

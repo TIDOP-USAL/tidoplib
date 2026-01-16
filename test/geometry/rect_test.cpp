@@ -276,8 +276,8 @@ BOOST_FIXTURE_TEST_CASE(topLeft, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(topRight, RectTest) 
 {
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().x);
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().y);
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().x());
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().y());
 
   BOOST_CHECK_EQUAL(105, rect_integer->topRight().x());
   BOOST_CHECK_EQUAL(10, rect_integer->topRight().y());
@@ -291,8 +291,8 @@ BOOST_FIXTURE_TEST_CASE(topRight, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(bottomRight, RectTest) 
 {
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().x);
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().y);
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().x());
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().y());
 
   BOOST_CHECK_EQUAL(105, rect_integer->bottomRight().x());
   BOOST_CHECK_EQUAL(110, rect_integer->bottomRight().y());

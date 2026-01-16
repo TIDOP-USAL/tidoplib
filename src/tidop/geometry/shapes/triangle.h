@@ -202,9 +202,9 @@ template<typename T>
 auto Triangle<T>::area() const -> double
 {
     return 0.5 * std::abs(
-        mPt1.x * (mPt2.y - mPt3.y) +
-        mPt2.x * (mPt3.y - mPt1.y) +
-        mPt3.x * (mPt1.y - mPt2.y));
+        mPt1.x() * (mPt2.y() - mPt3.y()) +
+        mPt2.x() * (mPt3.y() - mPt1.y()) +
+        mPt3.x() * (mPt1.y() - mPt2.y()));
 }
 
 template<typename T>
@@ -230,7 +230,7 @@ auto Triangle<T>::isValid() const -> bool
 template<typename T>
 auto Triangle<T>::centroid() const -> Point<T>
 {
-    return Point<T>((mPt1.x + mPt2.x + mPt3.x) / 3.0, (mPt1.y + mPt2.y + mPt3.y) / 3.0);
+    return Point<T>((mPt1.x() + mPt2.x() + mPt3.x()) / 3.0, (mPt1.y() + mPt2.y() + mPt3.y()) / 3.0);
 }
 
 template<typename T>

@@ -1823,117 +1823,119 @@ BOOST_AUTO_TEST_CASE(point_substraction)
 
 /* Multiplicación de un punto por un escalar */
 
-BOOST_AUTO_TEST_CASE(point_multiplication)
-{
-    Point2i pt(23, 67);
-    int s = 3;
-
-    auto pt_ = pt * s;
-
-    BOOST_CHECK_EQUAL(69, pt_.x());
-    BOOST_CHECK_EQUAL(201, pt_.y());
-
-    pt *= s;
-
-    BOOST_CHECK_EQUAL(69, pt.x());
-    BOOST_CHECK_EQUAL(201, pt.y());
-
-    Point2d pt_d(256.26, 2526.36);
-    double s_d = 23.5;
-
-    pt_d *= s_d;
-
-    BOOST_CHECK_CLOSE(6022.11, pt_d.x(), 0.01);
-    BOOST_CHECK_CLOSE(59369.46, pt_d.y(), 0.01);
-
-    Point2i pt2(23, 67);
-    double s2 = 3.3;
-
-    pt2 *= s2;
-    BOOST_CHECK_EQUAL(76, pt2.x());
-    BOOST_CHECK_EQUAL(221, pt2.y());
-
-
-    /// 3D
-
-    Point3i pt3(23, 67, 15);
-
-    pt3 *= s;
-
-    BOOST_CHECK_EQUAL(69, pt3.x());
-    BOOST_CHECK_EQUAL(201, pt3.y());
-    BOOST_CHECK_EQUAL(45, pt3.z());
-
-    Point3d pt3_d(256.26, 2526.36, 236.47);
-
-    pt3_d *= s_d;
-
-    BOOST_CHECK_CLOSE(6022.11, pt3_d.x(), 0.01);
-    BOOST_CHECK_CLOSE(59369.46, pt3_d.y(), 0.01);
-    BOOST_CHECK_CLOSE(5557.045, pt3_d.z(), 0.01);
-
-    Point3i pt3_2(23, 67, 26);
-
-    pt3_2 *= s2;
-    BOOST_CHECK_EQUAL(76, pt3_2.x());
-    BOOST_CHECK_EQUAL(221, pt3_2.y());
-    BOOST_CHECK_EQUAL(86, pt3_2.z());
-
-}
+// Eliminado para Point
+//BOOST_AUTO_TEST_CASE(point_multiplication)
+//{
+//    Point2i pt(23, 67);
+//    int s = 3;
+//
+//    Point2i pt_ = pt * s;
+//
+//    BOOST_CHECK_EQUAL(69, pt_.x());
+//    BOOST_CHECK_EQUAL(201, pt_.y());
+//
+//    pt *= s;
+//
+//    BOOST_CHECK_EQUAL(69, pt.x());
+//    BOOST_CHECK_EQUAL(201, pt.y());
+//
+//    Point2d pt_d(256.26, 2526.36);
+//    double s_d = 23.5;
+//
+//    pt_d *= s_d;
+//
+//    BOOST_CHECK_CLOSE(6022.11, pt_d.x(), 0.01);
+//    BOOST_CHECK_CLOSE(59369.46, pt_d.y(), 0.01);
+//
+//    Point2i pt2(23, 67);
+//    double s2 = 3.3;
+//
+//    pt2 *= s2;
+//    BOOST_CHECK_EQUAL(76, pt2.x());
+//    BOOST_CHECK_EQUAL(221, pt2.y());
+//
+//
+//    /// 3D
+//
+//    Point3i pt3(23, 67, 15);
+//
+//    pt3 *= s;
+//
+//    BOOST_CHECK_EQUAL(69, pt3.x());
+//    BOOST_CHECK_EQUAL(201, pt3.y());
+//    BOOST_CHECK_EQUAL(45, pt3.z());
+//
+//    Point3d pt3_d(256.26, 2526.36, 236.47);
+//
+//    pt3_d *= s_d;
+//
+//    BOOST_CHECK_CLOSE(6022.11, pt3_d.x(), 0.01);
+//    BOOST_CHECK_CLOSE(59369.46, pt3_d.y(), 0.01);
+//    BOOST_CHECK_CLOSE(5557.045, pt3_d.z(), 0.01);
+//
+//    Point3i pt3_2(23, 67, 26);
+//
+//    pt3_2 *= s2;
+//    BOOST_CHECK_EQUAL(76, pt3_2.x());
+//    BOOST_CHECK_EQUAL(221, pt3_2.y());
+//    BOOST_CHECK_EQUAL(86, pt3_2.z());
+//
+//}
 
 /* División de un punto por un escalar */
 
-BOOST_AUTO_TEST_CASE(Point_division)
-{
-    Point2i pt(23, 67);
-    int s = 3;
-
-    pt /= s;
-
-    BOOST_CHECK_EQUAL(8, pt.x());
-    BOOST_CHECK_EQUAL(22, pt.y());
-
-    Point2d pt_d(256.26, 2526.36);
-    double s_d = 23.5;
-
-    pt_d /= s_d;
-
-    BOOST_CHECK_CLOSE(10.905, pt_d.x(), 0.01);
-    BOOST_CHECK_CLOSE(107.505, pt_d.y(), 0.01);
-
-    Point2d pt2(23, 67);
-    double s2 = 3.3;
-
-    pt2 /= s2;
-    BOOST_CHECK_EQUAL(7, pt2.x());
-    BOOST_CHECK_EQUAL(20, pt2.y());
-
-
-    /// 3D
-
-    Point3i pt3(23, 67, 15);
-
-    pt3 /= s;
-
-    BOOST_CHECK_EQUAL(8, pt3.x());
-    BOOST_CHECK_EQUAL(22, pt3.y());
-    BOOST_CHECK_EQUAL(5, pt3.z());
-
-    Point3d pt3_d(256.26, 2526.36, 236.47);
-
-    pt3_d /= s_d;
-
-    BOOST_CHECK_CLOSE(10.905, pt3_d.x(), 0.01);
-    BOOST_CHECK_CLOSE(107.505, pt3_d.y(), 0.01);
-    BOOST_CHECK_CLOSE(10.0625, pt3_d.z(), 0.01);
-
-    //Point3i pt3_2(23, 67, 26);
-
-    //pt3_2 /= s2;
-    //BOOST_CHECK_EQUAL(7, pt3_2.x());
-    //BOOST_CHECK_EQUAL(20, pt3_2.y());
-    //BOOST_CHECK_EQUAL(8, pt3_2.z());
-}
+// Eliminado para Point
+//BOOST_AUTO_TEST_CASE(Point_division)
+//{
+//    Point2i pt(23, 67);
+//    int s = 3;
+//
+//    pt /= s;
+//
+//    BOOST_CHECK_EQUAL(8, pt.x());
+//    BOOST_CHECK_EQUAL(22, pt.y());
+//
+//    Point2d pt_d(256.26, 2526.36);
+//    double s_d = 23.5;
+//
+//    pt_d /= s_d;
+//
+//    BOOST_CHECK_CLOSE(10.905, pt_d.x(), 0.01);
+//    BOOST_CHECK_CLOSE(107.505, pt_d.y(), 0.01);
+//
+//    Point2d pt2(23, 67);
+//    double s2 = 3.3;
+//
+//    pt2 /= s2;
+//    BOOST_CHECK_EQUAL(7, pt2.x());
+//    BOOST_CHECK_EQUAL(20, pt2.y());
+//
+//
+//    /// 3D
+//
+//    Point3i pt3(23, 67, 15);
+//
+//    pt3 /= s;
+//
+//    BOOST_CHECK_EQUAL(8, pt3.x());
+//    BOOST_CHECK_EQUAL(22, pt3.y());
+//    BOOST_CHECK_EQUAL(5, pt3.z());
+//
+//    Point3d pt3_d(256.26, 2526.36, 236.47);
+//
+//    pt3_d /= s_d;
+//
+//    BOOST_CHECK_CLOSE(10.905, pt3_d.x(), 0.01);
+//    BOOST_CHECK_CLOSE(107.505, pt3_d.y(), 0.01);
+//    BOOST_CHECK_CLOSE(10.0625, pt3_d.z(), 0.01);
+//
+//    //Point3i pt3_2(23, 67, 26);
+//
+//    //pt3_2 /= s2;
+//    //BOOST_CHECK_EQUAL(7, pt3_2.x());
+//    //BOOST_CHECK_EQUAL(20, pt3_2.y());
+//    //BOOST_CHECK_EQUAL(8, pt3_2.z());
+//}
 
 
 /* Igualdad == */

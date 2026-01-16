@@ -51,10 +51,10 @@ BOOST_AUTO_TEST_CASE(read_geojson)
         // read point
         auto entity = layer->begin();
         std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(*entity);
-        BOOST_CHECK_EQUAL(-105.01621, point->x);
-        BOOST_CHECK_EQUAL(39.57422, point->y);
+        BOOST_CHECK_EQUAL(-105.01621, point->x());
+        BOOST_CHECK_EQUAL(39.57422, point->y());
 
-        auto point_data = entity->get()->data();
+        auto point_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Ubicación de ejemplo", point_data->value(0));
 
         // read linestring
@@ -63,38 +63,38 @@ BOOST_AUTO_TEST_CASE(read_geojson)
         BOOST_CHECK_EQUAL(2, linestring->size());
 
         auto &first_point = linestring->at(0);
-        BOOST_CHECK_EQUAL(-105.01621, first_point.x);
-        BOOST_CHECK_EQUAL(39.57422, first_point.y);
+        BOOST_CHECK_EQUAL(-105.01621, first_point.x());
+        BOOST_CHECK_EQUAL(39.57422, first_point.y());
 
         auto &second_point = linestring->at(1);
-        BOOST_CHECK_EQUAL(-105.00376, second_point.x);
-        BOOST_CHECK_EQUAL(39.59931, second_point.y);
+        BOOST_CHECK_EQUAL(-105.00376, second_point.x());
+        BOOST_CHECK_EQUAL(39.59931, second_point.y());
 
-        auto linestring_data = entity->get()->data();
+        auto linestring_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Línea de ejemplo", linestring_data->value(0));
 
         // read polygon
         entity++;
         std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(*entity);
-        BOOST_CHECK_EQUAL(4, polygon->size());
+        BOOST_CHECK_EQUAL(4, polygon->outer().size());
 
-        auto &point1 = polygon->at(0);
-        BOOST_CHECK_EQUAL(-105.02311, point1.x);
-        BOOST_CHECK_EQUAL(39.60058, point1.y);
+        auto &point1 = polygon->outer().at(0);
+        BOOST_CHECK_EQUAL(-105.02311, point1.x());
+        BOOST_CHECK_EQUAL(39.60058, point1.y());
 
-        auto &point2 = polygon->at(1);
-        BOOST_CHECK_EQUAL(-105.01431, point2.x);
-        BOOST_CHECK_EQUAL(39.59781, point2.y);
+        auto &point2 = polygon->outer().at(1);
+        BOOST_CHECK_EQUAL(-105.01431, point2.x());
+        BOOST_CHECK_EQUAL(39.59781, point2.y());
 
-        auto &point3 = polygon->at(2);
-        BOOST_CHECK_EQUAL(-105.01114, point3.x);
-        BOOST_CHECK_EQUAL(39.60235, point3.y);
+        auto &point3 = polygon->outer().at(2);
+        BOOST_CHECK_EQUAL(-105.01114, point3.x());
+        BOOST_CHECK_EQUAL(39.60235, point3.y());
 
-        auto &point4 = polygon->at(3);
-        BOOST_CHECK_EQUAL(-105.02311, point4.x);
-        BOOST_CHECK_EQUAL(39.60058, point4.y);
+        auto &point4 = polygon->outer().at(3);
+        BOOST_CHECK_EQUAL(-105.02311, point4.x());
+        BOOST_CHECK_EQUAL(39.60058, point4.y());
 
-        auto polygon_data = entity->get()->data();
+        auto polygon_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(0));
 
         vector_reader.close();
@@ -119,10 +119,10 @@ BOOST_AUTO_TEST_CASE(read_gml)
         std::shared_ptr<GLayer> layer = vector_reader.read(0);
         auto entity = layer->begin();
         std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(*entity);
-        BOOST_CHECK_EQUAL(-105.01621, point->x);
-        BOOST_CHECK_EQUAL(39.57422, point->y);
+        BOOST_CHECK_EQUAL(-105.01621, point->x());
+        BOOST_CHECK_EQUAL(39.57422, point->y());
 
-        auto point_data = entity->get()->data();
+        auto point_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("point.0", point_data->value(0));
         BOOST_CHECK_EQUAL("Ubicación de ejemplo", point_data->value(1));
 
@@ -133,14 +133,14 @@ BOOST_AUTO_TEST_CASE(read_gml)
         BOOST_CHECK_EQUAL(2, linestring->size());
 
         auto &first_point = linestring->at(0);
-        BOOST_CHECK_EQUAL(-105.01621, first_point.x);
-        BOOST_CHECK_EQUAL(39.57422, first_point.y);
+        BOOST_CHECK_EQUAL(-105.01621, first_point.x());
+        BOOST_CHECK_EQUAL(39.57422, first_point.y());
 
         auto &second_point = linestring->at(1);
-        BOOST_CHECK_EQUAL(-105.00376, second_point.x);
-        BOOST_CHECK_EQUAL(39.59931, second_point.y);
+        BOOST_CHECK_EQUAL(-105.00376, second_point.x());
+        BOOST_CHECK_EQUAL(39.59931, second_point.y());
 
-        auto linestring_data = entity->get()->data();
+        auto linestring_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("linestring.0", linestring_data->value(0));
         BOOST_CHECK_EQUAL("Línea de ejemplo", linestring_data->value(1));
 
@@ -148,25 +148,25 @@ BOOST_AUTO_TEST_CASE(read_gml)
         layer = vector_reader.read(2);
         entity = layer->begin();
         std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(*entity);
-        BOOST_CHECK_EQUAL(4, polygon->size());
+        BOOST_CHECK_EQUAL(4, polygon->outer().size());
 
-        auto &point1 = polygon->at(0);
-        BOOST_CHECK_EQUAL(-105.02311, point1.x);
-        BOOST_CHECK_EQUAL(39.60058, point1.y);
+        auto &point1 = polygon->outer().at(0);
+        BOOST_CHECK_EQUAL(-105.02311, point1.x());
+        BOOST_CHECK_EQUAL(39.60058, point1.y());
 
-        auto &point2 = polygon->at(1);
-        BOOST_CHECK_EQUAL(-105.01431, point2.x);
-        BOOST_CHECK_EQUAL(39.59781, point2.y);
+        auto &point2 = polygon->outer().at(1);
+        BOOST_CHECK_EQUAL(-105.01431, point2.x());
+        BOOST_CHECK_EQUAL(39.59781, point2.y());
 
-        auto &point3 = polygon->at(2);
-        BOOST_CHECK_EQUAL(-105.01114, point3.x);
-        BOOST_CHECK_EQUAL(39.60235, point3.y);
+        auto &point3 = polygon->outer().at(2);
+        BOOST_CHECK_EQUAL(-105.01114, point3.x());
+        BOOST_CHECK_EQUAL(39.60235, point3.y());
 
-        auto &point4 = polygon->at(3);
-        BOOST_CHECK_EQUAL(-105.02311, point4.x);
-        BOOST_CHECK_EQUAL(39.60058, point4.y);
+        auto &point4 = polygon->outer().at(3);
+        BOOST_CHECK_EQUAL(-105.02311, point4.x());
+        BOOST_CHECK_EQUAL(39.60058, point4.y());
 
-        auto polygon_data = entity->get()->data();
+        auto polygon_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("polygon.0", polygon_data->value(0));
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(1));
 
@@ -194,10 +194,10 @@ BOOST_AUTO_TEST_CASE(read_kml)
         // read point
         auto entity = layer->begin();
         std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(*entity);
-        BOOST_CHECK_EQUAL(-105.01621, point->x);
-        BOOST_CHECK_EQUAL(39.57422, point->y);
+        BOOST_CHECK_EQUAL(-105.01621, point->x());
+        BOOST_CHECK_EQUAL(39.57422, point->y());
 
-        auto point_data = entity->get()->data();
+        auto point_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Ubicación de ejemplo", point_data->value(0));
 
         // read linestring
@@ -206,38 +206,38 @@ BOOST_AUTO_TEST_CASE(read_kml)
         BOOST_CHECK_EQUAL(2, linestring->size());
 
         auto &first_point = linestring->at(0);
-        BOOST_CHECK_EQUAL(-105.01621, first_point.x);
-        BOOST_CHECK_EQUAL(39.57422, first_point.y);
+        BOOST_CHECK_EQUAL(-105.01621, first_point.x());
+        BOOST_CHECK_EQUAL(39.57422, first_point.y());
 
         auto &second_point = linestring->at(1);
-        BOOST_CHECK_EQUAL(-105.00376, second_point.x);
-        BOOST_CHECK_EQUAL(39.59931, second_point.y);
+        BOOST_CHECK_EQUAL(-105.00376, second_point.x());
+        BOOST_CHECK_EQUAL(39.59931, second_point.y());
 
-        auto linestring_data = entity->get()->data();
+        auto linestring_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Línea de ejemplo", linestring_data->value(0));
 
         // read polygon
         entity++;
         std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(*entity);
-        BOOST_CHECK_EQUAL(4, polygon->size());
+        BOOST_CHECK_EQUAL(4, polygon->outer().size());
 
-        auto &point1 = polygon->at(0);
-        BOOST_CHECK_EQUAL(-105.02311, point1.x);
-        BOOST_CHECK_EQUAL(39.60058, point1.y);
+        auto &point1 = polygon->outer().at(0);
+        BOOST_CHECK_EQUAL(-105.02311, point1.x());
+        BOOST_CHECK_EQUAL(39.60058, point1.y());
 
-        auto &point2 = polygon->at(1);
-        BOOST_CHECK_EQUAL(-105.01431, point2.x);
-        BOOST_CHECK_EQUAL(39.59781, point2.y);
+        auto &point2 = polygon->outer().at(1);
+        BOOST_CHECK_EQUAL(-105.01431, point2.x());
+        BOOST_CHECK_EQUAL(39.59781, point2.y());
 
-        auto &point3 = polygon->at(2);
-        BOOST_CHECK_EQUAL(-105.01114, point3.x);
-        BOOST_CHECK_EQUAL(39.60235, point3.y);
+        auto &point3 = polygon->outer().at(2);
+        BOOST_CHECK_EQUAL(-105.01114, point3.x());
+        BOOST_CHECK_EQUAL(39.60235, point3.y());
 
-        auto &point4 = polygon->at(3);
-        BOOST_CHECK_EQUAL(-105.02311, point4.x);
-        BOOST_CHECK_EQUAL(39.60058, point4.y);
+        auto &point4 = polygon->outer().at(3);
+        BOOST_CHECK_EQUAL(-105.02311, point4.x());
+        BOOST_CHECK_EQUAL(39.60058, point4.y());
 
-        auto polygon_data = entity->get()->data();
+        auto polygon_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(0));
 
         vector_reader.close();
@@ -264,10 +264,10 @@ BOOST_AUTO_TEST_CASE(read_kmz)
         // read point
         auto entity = layer->begin();
         std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(*entity);
-        BOOST_CHECK_EQUAL(-105.01621, point->x);
-        BOOST_CHECK_EQUAL(39.57422, point->y);
+        BOOST_CHECK_EQUAL(-105.01621, point->x());
+        BOOST_CHECK_EQUAL(39.57422, point->y());
 
-        auto point_data = entity->get()->data();
+        auto point_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Ubicación de ejemplo", point_data->value(0));
 
         // read linestring
@@ -276,38 +276,38 @@ BOOST_AUTO_TEST_CASE(read_kmz)
         BOOST_CHECK_EQUAL(2, linestring->size());
 
         auto &first_point = linestring->at(0);
-        BOOST_CHECK_EQUAL(-105.01621, first_point.x);
-        BOOST_CHECK_EQUAL(39.57422, first_point.y);
+        BOOST_CHECK_EQUAL(-105.01621, first_point.x());
+        BOOST_CHECK_EQUAL(39.57422, first_point.y());
 
         auto &second_point = linestring->at(1);
-        BOOST_CHECK_EQUAL(-105.00376, second_point.x);
-        BOOST_CHECK_EQUAL(39.59931, second_point.y);
+        BOOST_CHECK_EQUAL(-105.00376, second_point.x());
+        BOOST_CHECK_EQUAL(39.59931, second_point.y());
 
-        auto linestring_data = entity->get()->data();
+        auto linestring_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Línea de ejemplo", linestring_data->value(0));
 
         // read polygon
         entity++;
         std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(*entity);
-        BOOST_CHECK_EQUAL(4, polygon->size());
+        BOOST_CHECK_EQUAL(4, polygon->outer().size());
 
-        auto &point1 = polygon->at(0);
-        BOOST_CHECK_EQUAL(-105.02311, point1.x);
-        BOOST_CHECK_EQUAL(39.60058, point1.y);
+        auto &point1 = polygon->outer().at(0);
+        BOOST_CHECK_EQUAL(-105.02311, point1.x());
+        BOOST_CHECK_EQUAL(39.60058, point1.y());
 
-        auto &point2 = polygon->at(1);
-        BOOST_CHECK_EQUAL(-105.01431, point2.x);
-        BOOST_CHECK_EQUAL(39.59781, point2.y);
+        auto &point2 = polygon->outer().at(1);
+        BOOST_CHECK_EQUAL(-105.01431, point2.x());
+        BOOST_CHECK_EQUAL(39.59781, point2.y());
 
-        auto &point3 = polygon->at(2);
-        BOOST_CHECK_EQUAL(-105.01114, point3.x);
-        BOOST_CHECK_EQUAL(39.60235, point3.y);
+        auto &point3 = polygon->outer().at(2);
+        BOOST_CHECK_EQUAL(-105.01114, point3.x());
+        BOOST_CHECK_EQUAL(39.60235, point3.y());
 
-        auto &point4 = polygon->at(3);
-        BOOST_CHECK_EQUAL(-105.02311, point4.x);
-        BOOST_CHECK_EQUAL(39.60058, point4.y);
+        auto &point4 = polygon->outer().at(3);
+        BOOST_CHECK_EQUAL(-105.02311, point4.x());
+        BOOST_CHECK_EQUAL(39.60058, point4.y());
 
-        auto polygon_data = entity->get()->data();
+        auto polygon_data = entity->get()->attributes();
         BOOST_CHECK_EQUAL("Polígono de ejemplo", polygon_data->value(0));
 
         vector_reader.close();
@@ -528,9 +528,9 @@ struct VectorReaderTest
                                                Point<double>(0.0017, -0.0011)});
         lakes_with_elevations_inner_mapinfo.push_back({Point<double>(0.0017, -0.0011),
                                                        Point<double>(0.0017, -0.0006),
-                                               Point<double>(0.0025, -0.0006),
-                                               Point<double>(0.0025, -0.0011),
-                                               Point<double>(0.0017, -0.0011)});
+                                                       Point<double>(0.0025, -0.0006),
+                                                       Point<double>(0.0025, -0.0011),
+                                                       Point<double>(0.0017, -0.0011)});
         lakes_with_elevations_data_id_shape = "101";
         lakes_with_elevations_data_name = "Blue Lake";
         lakes_with_elevations_data_ids = {"101.1", "101.2", "101.3"};
@@ -560,7 +560,7 @@ struct VectorReaderTest
     std::vector<std::string> streams_data_names;
 
     std::string forest_name;
-    tl::Polygon<Point<double>> forest;
+    tl::LinearRing2d forest;
     std::string forest_data_id;
     std::string forest_data_name;
 
@@ -570,29 +570,29 @@ struct VectorReaderTest
     std::string divided_routes_data_name;
 
     std::string basic_polygons_name;
-    std::vector<tl::Polygon<Point<double>>> basic_polygons;
+    std::vector<tl::LinearRing2d> basic_polygons;
 
     std::string ponds_name;
-    std::vector<tl::Polygon<Point<double>>> ponds;
-    std::vector<tl::Polygon<Point<double>>> ponds_mapinfo;
+    std::vector<tl::LinearRing2d> ponds;
+    std::vector<tl::LinearRing2d> ponds_mapinfo;
     std::string ponds_data_id;
     std::string ponds_data_name;
 
     std::string buildings_name;
     std::vector<Point<double>> buildings_point;
-    std::vector<tl::Polygon<Point<double>>> buildings;
+    std::vector<tl::LinearRing2d> buildings;
     std::vector<std::string> buildings_data_ids;
     std::vector<std::string> buildings_data_names;
 
     std::string lakes_name;
-    std::vector<tl::Polygon<Point<double>>> lakes;
+    std::vector<tl::LinearRing2d> lakes;
     std::string lakes_data_id;
     std::string lakes_data_name;  
     
     std::string lakes_with_elevations_name;
-    std::vector<tl::Polygon<Point<double>>> lakes_with_elevations;
-    std::vector<tl::Polygon<Point<double>>> lakes_with_elevations_inner;
-    std::vector<tl::Polygon<Point<double>>> lakes_with_elevations_inner_mapinfo;
+    std::vector<tl::LinearRing2d> lakes_with_elevations;
+    std::vector<tl::LinearRing2d> lakes_with_elevations_inner;
+    std::vector<tl::LinearRing2d> lakes_with_elevations_inner_mapinfo;
     std::string lakes_with_elevations_data_id_shape;
     std::vector<std::string> lakes_with_elevations_data_ids;
     std::string lakes_with_elevations_data_name;
@@ -620,8 +620,8 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
         for (auto &entity : *layer) {
 
             std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity);
-            BOOST_CHECK_EQUAL(autos_points.at(i).x, point->x);
-            BOOST_CHECK_EQUAL(autos_points.at(i).y, point->y);
+            BOOST_CHECK_EQUAL(autos_points.at(i).x(), point->x());
+            BOOST_CHECK_EQUAL(autos_points.at(i).y(), point->y());
 
             point->data();
 
@@ -651,10 +651,10 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
         for (auto &entity : *layer) {
 
             std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity);
-            BOOST_CHECK_EQUAL(bridges_point.x, point->x);
-            BOOST_CHECK_EQUAL(bridges_point.y, point->y);
+            BOOST_CHECK_EQUAL(bridges_point.x(), point->x());
+            BOOST_CHECK_EQUAL(bridges_point.y(), point->y());
 
-            auto data = point->data();
+            auto data = point->attributes();
             BOOST_CHECK_EQUAL(bridges_data_id, data->value(0));
             BOOST_CHECK_EQUAL(bridges_data_name, data->value(1));
 
@@ -689,8 +689,8 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
         for (auto &entity : *layer) {
 
             std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity);
-            BOOST_CHECK_EQUAL(autos_points.at(i).x, point->x);
-            BOOST_CHECK_EQUAL(autos_points.at(i).y, point->y);
+            BOOST_CHECK_EQUAL(autos_points.at(i).x(), point->x());
+            BOOST_CHECK_EQUAL(autos_points.at(i).y(), point->y());
 
             point->data();
 
@@ -720,10 +720,10 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
         for (auto &entity : *layer) {
 
             std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity);
-            BOOST_CHECK_EQUAL(bridges_point.x, point->x);
-            BOOST_CHECK_EQUAL(bridges_point.y, point->y);
+            BOOST_CHECK_EQUAL(bridges_point.x(), point->x());
+            BOOST_CHECK_EQUAL(bridges_point.y(), point->y());
 
-            auto data = point->data();
+            auto data = point->attributes();
             BOOST_CHECK_EQUAL("BlueLake.110", data->value(0));
             BOOST_CHECK_EQUAL(bridges_data_name, data->value(1));
 
@@ -757,8 +757,8 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
         for (auto &entity : *layer) {
 
             std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity);
-            BOOST_CHECK_EQUAL(autos_points.at(i).x, point->x);
-            BOOST_CHECK_EQUAL(autos_points.at(i).y, point->y);
+            BOOST_CHECK_EQUAL(autos_points.at(i).x(), point->x());
+            BOOST_CHECK_EQUAL(autos_points.at(i).y(), point->y());
 
             point->data();
 
@@ -789,10 +789,10 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
         for (auto &entity : *layer) {
 
             std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity);
-            BOOST_CHECK_EQUAL(bridges_point.x, point->x);
-            BOOST_CHECK_EQUAL(bridges_point.y, point->y);
+            BOOST_CHECK_EQUAL(bridges_point.x(), point->x());
+            BOOST_CHECK_EQUAL(bridges_point.y(), point->y());
 
-            auto data = point->data();
+            auto data = point->attributes();
             BOOST_CHECK_EQUAL(bridges_data_id, data->value(0));
             BOOST_CHECK_EQUAL(bridges_data_name, data->value(1));
 
@@ -823,10 +823,10 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
 
             if (std::shared_ptr<GPoint> point = std::dynamic_pointer_cast<GPoint>(entity)) {
 
-                BOOST_CHECK_EQUAL(buildings_point.at(i).x, point->x);
-                BOOST_CHECK_EQUAL(buildings_point.at(i).y, point->y);
+                BOOST_CHECK_EQUAL(buildings_point.at(i).x(), point->x());
+                BOOST_CHECK_EQUAL(buildings_point.at(i).y(), point->y());
 
-                auto data = point->data();
+                auto data = point->attributes();
                 BOOST_CHECK_EQUAL(buildings_data_ids.at(i), data->value(0));
                 BOOST_CHECK_EQUAL(buildings_data_names.at(i), data->value(1));
 
@@ -866,11 +866,11 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
 
             auto &road = roads.at(i);
             for (size_t j = 0; j < linestring->size(); j++) {
-                BOOST_CHECK_EQUAL(road.at(j).x, linestring->at(j).x);
-                BOOST_CHECK_EQUAL(road.at(j).y, linestring->at(j).y);
+                BOOST_CHECK_EQUAL(road.at(j).x(), linestring->at(j).x());
+                BOOST_CHECK_EQUAL(road.at(j).y(), linestring->at(j).y());
             }
 
-            auto data = linestring->data();
+            auto data = linestring->attributes();
             BOOST_CHECK_EQUAL(road_segments_data_ids.at(i), data->value(0));
             BOOST_CHECK_EQUAL(road_segments_data_names.at(i), data->value(1));
 
@@ -904,11 +904,11 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
 
             auto &stream = streams.at(i);
             for (size_t j = 0; j < linestring->size(); j++) {
-                BOOST_CHECK_EQUAL(stream.at(j).x, linestring->at(j).x);
-                BOOST_CHECK_EQUAL(stream.at(j).y, linestring->at(j).y);
+                BOOST_CHECK_EQUAL(stream.at(j).x(), linestring->at(j).x());
+                BOOST_CHECK_EQUAL(stream.at(j).y(), linestring->at(j).y());
             }
 
-            auto data = linestring->data();
+            auto data = linestring->attributes();
             BOOST_CHECK_EQUAL(streams_data_ids.at(i), data->value(0));
             BOOST_CHECK_EQUAL(streams_data_names.at(i), data->value(1));
 
@@ -945,11 +945,11 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
 
             auto &road = roads.at(i);
             for (size_t j = 0; j < linestring->size(); j++) {
-                BOOST_CHECK_EQUAL(road.at(j).x, linestring->at(j).x);
-                BOOST_CHECK_EQUAL(road.at(j).y, linestring->at(j).y);
+                BOOST_CHECK_EQUAL(road.at(j).x(), linestring->at(j).x());
+                BOOST_CHECK_EQUAL(road.at(j).y(), linestring->at(j).y());
             }
 
-            auto data = linestring->data();
+            auto data = linestring->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(road_segments_data_ids.at(i)), data->value(0));
             BOOST_CHECK_EQUAL(road_segments_data_names.at(i), data->value(1));
 
@@ -983,11 +983,11 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
 
             auto &stream = streams.at(i);
             for (size_t j = 0; j < linestring->size(); j++) {
-                BOOST_CHECK_EQUAL(stream.at(j).x, linestring->at(j).x);
-                BOOST_CHECK_EQUAL(stream.at(j).y, linestring->at(j).y);
+                BOOST_CHECK_EQUAL(stream.at(j).x(), linestring->at(j).x());
+                BOOST_CHECK_EQUAL(stream.at(j).y(), linestring->at(j).y());
             }
 
-            auto data = linestring->data();
+            auto data = linestring->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(streams_data_ids.at(i)), data->value(0));
             BOOST_CHECK_EQUAL(streams_data_names.at(i), data->value(1));
 
@@ -1025,11 +1025,11 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
 
             auto &road = roads.at(i);
             for (size_t j = 0; j < linestring->size(); j++) {
-                BOOST_CHECK_EQUAL(road.at(j).x, linestring->at(j).x);
-                BOOST_CHECK_EQUAL(road.at(j).y, linestring->at(j).y);
+                BOOST_CHECK_EQUAL(road.at(j).x(), linestring->at(j).x());
+                BOOST_CHECK_EQUAL(road.at(j).y(), linestring->at(j).y());
             }
 
-            auto data = linestring->data();
+            auto data = linestring->attributes();
             BOOST_CHECK_EQUAL(road_segments_data_ids.at(i), data->value(0));
             BOOST_CHECK_EQUAL(road_segments_data_names.at(i), data->value(1));
 
@@ -1062,11 +1062,11 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
 
             auto &stream = streams.at(i);
             for (size_t j = 0; j < linestring->size(); j++) {
-                BOOST_CHECK_EQUAL(stream.at(j).x, linestring->at(j).x);
-                BOOST_CHECK_EQUAL(stream.at(j).y, linestring->at(j).y);
+                BOOST_CHECK_EQUAL(stream.at(j).x(), linestring->at(j).x());
+                BOOST_CHECK_EQUAL(stream.at(j).y(), linestring->at(j).y());
             }
 
-            auto data = linestring->data();
+            auto data = linestring->attributes();
             BOOST_CHECK_EQUAL(streams_data_ids.at(i), data->value(0));
             BOOST_CHECK_EQUAL(streams_data_names.at(i), data->value(1));
 
@@ -1101,12 +1101,12 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(forest.at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(forest.at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(forest.at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(forest.at(j).y(), polygon->outer().at(j).y());
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(forest_data_id, data->value(0));
             BOOST_CHECK_EQUAL(forest_data_name, data->value(1));
 
@@ -1137,9 +1137,9 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).y(), polygon->outer().at(j).y());
             }
 
             i++;
@@ -1171,15 +1171,15 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
             std::shared_ptr<GMultiPolygon> multi_polygon = std::dynamic_pointer_cast<GMultiPolygon>(entity);
 
             for (size_t j = 0; j < multi_polygon->size(); j++) {
-                for (size_t k = 0; k < multi_polygon->at(j).size(); k++) {
+                for (size_t k = 0; k < multi_polygon->at(j).outer().size(); k++) {
 
-                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).x, multi_polygon->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).y, multi_polygon->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).x(), multi_polygon->at(j).outer().at(k).x());
+                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).y(), multi_polygon->at(j).outer().at(k).y());
 
                 }
             }
                         
-            auto data = multi_polygon->data();
+            auto data = multi_polygon->attributes();
             BOOST_CHECK_EQUAL(ponds_data_id, data->value(0));
             BOOST_CHECK_EQUAL(ponds_data_name, data->value(2));
 
@@ -1211,12 +1211,12 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(buildings.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(buildings.at(i).at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(buildings.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(buildings.at(i).at(j).y(), polygon->outer().at(j).y());
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(buildings_data_ids.at(i), data->value(0));
             BOOST_CHECK_EQUAL(buildings_data_names.at(i), data->value(1));
 
@@ -1247,23 +1247,23 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
 
-                BOOST_CHECK_EQUAL(lakes.at(0).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(lakes.at(0).at(j).y, polygon->at(j).y);
+                BOOST_CHECK_EQUAL(lakes.at(0).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(lakes.at(0).at(j).y(), polygon->outer().at(j).y());
 
             }
             
-            for (size_t j = 0; j < polygon->holes(); j++) {
+            for (size_t j = 0; j < polygon->numInners(); j++) {
 
-                for (size_t k = 0; k < polygon->hole(j).size(); k++) {
-                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).x, polygon->hole(j).at(k).x);
-                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).y, polygon->hole(j).at(k).y);
+                for (size_t k = 0; k < polygon->inner(j).size(); k++) {
+                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).x(), polygon->inner(j).at(k).x());
+                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).y(), polygon->inner(j).at(k).y());
                 }
 
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(lakes_data_id, data->value(0));
             BOOST_CHECK_EQUAL(lakes_data_name, data->value(1));
 
@@ -1295,23 +1295,23 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
 
-                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).y, polygon->at(j).y);
+                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).y(), polygon->outer().at(j).y());
 
             }
             
-            for (size_t j = 0; j < polygon->holes(); j++) {
+            for (size_t j = 0; j < polygon->numInners(); j++) {
 
-                for (size_t k = 0; k < polygon->hole(j).size(); k++) {
-                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).x, polygon->hole(j).at(k).x);
-                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).y, polygon->hole(j).at(k).y);
+                for (size_t k = 0; k < polygon->inner(j).size(); k++) {
+                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).x(), polygon->inner(j).at(k).x());
+                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).y(), polygon->inner(j).at(k).y());
                 }
 
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_id_shape, data->value(0));
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_name, data->value(1));
             BOOST_CHECK_EQUAL(tl::convertStringTo<int>(lakes_with_elevations_data_elevations[i]), tl::convertStringTo<int>(data->value(2)));
@@ -1347,15 +1347,15 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
             std::shared_ptr<GMultiPolygon> multi_polygon = std::dynamic_pointer_cast<GMultiPolygon>(entity);
 
             for (size_t j = 0; j < multi_polygon->size(); j++) {
-                for (size_t k = 0; k < multi_polygon->at(j).size(); k++) {
+                for (size_t k = 0; k < multi_polygon->at(j).outer().size(); k++) {
 
-                    BOOST_CHECK_EQUAL(forest.at(k).x, multi_polygon->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(forest.at(k).y, multi_polygon->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(forest.at(k).x(), multi_polygon->at(j).outer().at(k).x());
+                    BOOST_CHECK_EQUAL(forest.at(k).y(), multi_polygon->at(j).outer().at(k).y());
 
                 }
             }
 
-            auto data = multi_polygon->data();
+            auto data = multi_polygon->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(forest_data_id), data->value(0));
             BOOST_CHECK_EQUAL(forest_data_name, data->value(1));
 
@@ -1385,9 +1385,9 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).y(), polygon->outer().at(j).y());
             }
 
             i++;
@@ -1419,15 +1419,15 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
             std::shared_ptr<GMultiPolygon> multi_polygon = std::dynamic_pointer_cast<GMultiPolygon>(entity);
 
             for (size_t j = 0; j < multi_polygon->size(); j++) {
-                for (size_t k = 0; k < multi_polygon->at(j).size(); k++) {
+                for (size_t k = 0; k < multi_polygon->at(j).outer().size(); k++) {
 
-                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).x, multi_polygon->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).y, multi_polygon->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).x(), multi_polygon->at(j).outer().at(k).x());
+                    BOOST_CHECK_EQUAL(ponds.at(j).at(k).y(), multi_polygon->at(j).outer().at(k).y());
 
                 }
             }
 
-            auto data = multi_polygon->data();
+            auto data = multi_polygon->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(ponds_data_id), data->value(0));
             BOOST_CHECK_EQUAL(ponds_data_name, data->value(2));
 
@@ -1458,12 +1458,12 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(buildings.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(buildings.at(i).at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(buildings.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(buildings.at(i).at(j).y(), polygon->outer().at(j).y());
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(buildings_data_ids.at(i)), data->value(0));
             BOOST_CHECK_EQUAL(buildings_data_names.at(i), data->value(1));
 
@@ -1493,23 +1493,23 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
 
-                BOOST_CHECK_EQUAL(lakes.at(0).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(lakes.at(0).at(j).y, polygon->at(j).y);
+                BOOST_CHECK_EQUAL(lakes.at(0).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(lakes.at(0).at(j).y(), polygon->outer().at(j).y());
 
             }
 
-            for (size_t j = 0; j < polygon->holes(); j++) {
+            for (size_t j = 0; j < polygon->numInners(); j++) {
 
-                for (size_t k = 0; k < polygon->hole(j).size(); k++) {
-                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).x, polygon->hole(j).at(k).x);
-                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).y, polygon->hole(j).at(k).y);
+                for (size_t k = 0; k < polygon->inner(j).size(); k++) {
+                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).x(), polygon->inner(j).at(k).x());
+                    BOOST_CHECK_EQUAL(lakes.at(2).at(k).y(), polygon->inner(j).at(k).y());
                 }
 
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(lakes_data_id), data->value(0));
             BOOST_CHECK_EQUAL(lakes_data_name, data->value(1));
 
@@ -1540,23 +1540,23 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
 
-                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).y, polygon->at(j).y);
+                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).y(), polygon->outer().at(j).y());
 
             }
             
-            for (size_t j = 0; j < polygon->holes(); j++) {
+            for (size_t j = 0; j < polygon->numInners(); j++) {
 
-                for (size_t k = 0; k < polygon->hole(j).size(); k++) {
-                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).x, polygon->hole(j).at(k).x);
-                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).y, polygon->hole(j).at(k).y);
+                for (size_t k = 0; k < polygon->inner(j).size(); k++) {
+                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).x(), polygon->inner(j).at(k).x());
+                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner.at(i).at(k).y(), polygon->inner(j).at(k).y());
                 }
 
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(lakes_with_elevations_data_ids.at(i)), data->value(0));
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_name, data->value(1));
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_elevations.at(i), data->value(2));
@@ -1591,12 +1591,12 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(forest.at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(forest.at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(forest.at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(forest.at(j).y(), polygon->outer().at(j).y());
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(forest_data_id, data->value(0));
             BOOST_CHECK_EQUAL(forest_data_name, data->value(1));
 
@@ -1627,9 +1627,9 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
-                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).y, polygon->at(j).y);
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
+                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(basic_polygons.at(i).at(j).y(), polygon->outer().at(j).y());
             }
 
             i++;
@@ -1660,15 +1660,15 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
             std::shared_ptr<GMultiPolygon> multi_polygon = std::dynamic_pointer_cast<GMultiPolygon>(entity);
 
             for (size_t j = 0; j < multi_polygon->size(); j++) {
-                for (size_t k = 0; k < multi_polygon->at(j).size(); k++) {
+                for (size_t k = 0; k < multi_polygon->at(j).outer().size(); k++) {
 
-                    BOOST_CHECK_EQUAL(ponds_mapinfo.at(j).at(k).x, multi_polygon->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(ponds_mapinfo.at(j).at(k).y, multi_polygon->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(ponds_mapinfo.at(j).at(k).x(), multi_polygon->at(j).outer().at(k).x());
+                    BOOST_CHECK_EQUAL(ponds_mapinfo.at(j).at(k).y(), multi_polygon->at(j).outer().at(k).y());
 
                 }
             }
                         
-            auto data = multi_polygon->data();
+            auto data = multi_polygon->attributes();
             BOOST_CHECK_EQUAL(ponds_data_id, data->value(0));
             BOOST_CHECK_EQUAL(ponds_data_name, data->value(2));
 
@@ -1700,12 +1700,12 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
             if (std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity)) {
 
-                for (size_t j = 0; j < polygon->size(); j++) {
-                    BOOST_CHECK_EQUAL(buildings.at(i).at(j).x, polygon->at(j).x);
-                    BOOST_CHECK_EQUAL(buildings.at(i).at(j).y, polygon->at(j).y);
+                for (size_t j = 0; j < polygon->outer().size(); j++) {
+                    BOOST_CHECK_EQUAL(buildings.at(i).at(j).x(), polygon->outer().at(j).x());
+                    BOOST_CHECK_EQUAL(buildings.at(i).at(j).y(), polygon->outer().at(j).y());
                 }
 
-                auto data = polygon->data();
+                auto data = polygon->attributes();
                 BOOST_CHECK_EQUAL(buildings_data_ids.at(i), data->value(0));
                 BOOST_CHECK_EQUAL(buildings_data_names.at(i), data->value(1));
 
@@ -1737,23 +1737,23 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
 
-                BOOST_CHECK_EQUAL(lakes.at(0).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(lakes.at(0).at(j).y, polygon->at(j).y);
+                BOOST_CHECK_EQUAL(lakes.at(0).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(lakes.at(0).at(j).y(), polygon->outer().at(j).y());
 
             }
             
-            for (size_t j = 0; j < polygon->holes(); j++) {
+            for (size_t j = 0; j < polygon->numInners(); j++) {
 
-                for (size_t k = 0; k < polygon->hole(j).size(); k++) {
-                    BOOST_CHECK_EQUAL(lakes.at(1).at(k).x, polygon->hole(j).at(k).x);
-                    BOOST_CHECK_EQUAL(lakes.at(1).at(k).y, polygon->hole(j).at(k).y);
+                for (size_t k = 0; k < polygon->inner(j).size(); k++) {
+                    BOOST_CHECK_EQUAL(lakes.at(j+1).at(k).x(), polygon->inner(j).at(k).x());
+                    BOOST_CHECK_EQUAL(lakes.at(j+1).at(k).y(), polygon->inner(j).at(k).y());
                 }
 
             }   
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(lakes_data_id, data->value(0));
             BOOST_CHECK_EQUAL(lakes_data_name, data->value(1));
 
@@ -1784,23 +1784,23 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
             std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>(entity);
 
-            for (size_t j = 0; j < polygon->size(); j++) {
+            for (size_t j = 0; j < polygon->outer().size(); j++) {
 
-                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).x, polygon->at(j).x);
-                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).y, polygon->at(j).y);
+                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).x(), polygon->outer().at(j).x());
+                BOOST_CHECK_EQUAL(lakes_with_elevations.at(i).at(j).y(), polygon->outer().at(j).y());
 
             }
             
-            for (size_t j = 0; j < polygon->holes(); j++) {
+            for (size_t j = 0; j < polygon->numInners(); j++) {
 
-                for (size_t k = 0; k < polygon->hole(j).size(); k++) {
-                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner_mapinfo.at(i).at(k).x, polygon->hole(j).at(k).x);
-                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner_mapinfo.at(i).at(k).y, polygon->hole(j).at(k).y);
+                for (size_t k = 0; k < polygon->inner(j).size(); k++) {
+                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner_mapinfo.at(i).at(k).x(), polygon->inner(j).at(k).x());
+                    BOOST_CHECK_EQUAL(lakes_with_elevations_inner_mapinfo.at(i).at(k).y(), polygon->inner(j).at(k).y());
                 }
 
             }
 
-            auto data = polygon->data();
+            auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_id_shape, data->value(0));
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_name, data->value(1));
             BOOST_CHECK_EQUAL(tl::convertStringTo<int>(lakes_with_elevations_data_elevations[i]), tl::convertStringTo<int>(data->value(2)));
@@ -1839,13 +1839,13 @@ BOOST_FIXTURE_TEST_CASE(read_shape_multilinestring, VectorReaderTest)
             for (size_t j = 0; j < multilinestring->size(); j++) {
                 for (size_t k = 0; k < multilinestring->at(j).size(); k++) {
 
-                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).x, multilinestring->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).y, multilinestring->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).x(), multilinestring->at(j).at(k).x());
+                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).y(), multilinestring->at(j).at(k).y());
 
                 }
             }
 
-            auto data = multilinestring->data();
+            auto data = multilinestring->attributes();
             BOOST_CHECK_EQUAL(divided_routes_data_id, data->value(0));
             BOOST_CHECK_EQUAL(divided_routes_data_name, data->value(1));
 
@@ -1881,13 +1881,13 @@ BOOST_FIXTURE_TEST_CASE(read_gml_multilinestring, VectorReaderTest)
             for (size_t j = 0; j < multilinestring->size(); j++) {
                 for (size_t k = 0; k < multilinestring->at(j).size(); k++) {
 
-                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).x, multilinestring->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).y, multilinestring->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).x(), multilinestring->at(j).at(k).x());
+                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).y(), multilinestring->at(j).at(k).y());
 
                 }
             }
 
-            auto data = multilinestring->data();
+            auto data = multilinestring->attributes();
             BOOST_CHECK_EQUAL(std::string("BlueLake.").append(divided_routes_data_id), data->value(0));
             BOOST_CHECK_EQUAL(divided_routes_data_name, data->value(1));
 
@@ -1923,13 +1923,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_multilinestring, VectorReaderTest)
             for (size_t j = 0; j < multilinestring->size(); j++) {
                 for (size_t k = 0; k < multilinestring->at(j).size(); k++) {
                     
-                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).x, multilinestring->at(j).at(k).x);
-                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).y, multilinestring->at(j).at(k).y);
+                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).x(), multilinestring->at(j).at(k).x());
+                    BOOST_CHECK_EQUAL(divided_routes.at(j).at(k).y(), multilinestring->at(j).at(k).y());
 
                 }
             }
 
-            auto data = multilinestring->data();
+            auto data = multilinestring->attributes();
             BOOST_CHECK_EQUAL(divided_routes_data_id, data->value(0));
             BOOST_CHECK_EQUAL(divided_routes_data_name, data->value(1));
 
