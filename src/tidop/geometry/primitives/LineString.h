@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file LineString.h
+ * \brief Polyline (sequence of points) implementation.
+ *
+ * This file defines the LineString class template, which represents a polyline
+ * as a sequence of points. It inherits from GeometryBase and EntityContainer.
+ * ### Classes
+ * - \ref tl::LineString : Main template class for a polyline.
+ * ### Type Aliases
+ * - \ref tl::LineString2i, \ref tl::LineString2f, \ref tl::LineString2d : 2D integer, float, and double polylines.
+ * - \ref tl::LineString3i, \ref tl::LineString3f, \ref tl::LineString3d : 3D integer, float, and double polylines.
+ * \see tl::GeometryBase, tl::EntityContainer, tl::Point
+ */
+
 #pragma once
 
 #include <utility>
@@ -38,13 +51,16 @@
 namespace tl
 {
 	
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Primitives
  *  \{
  */
 
- /**
-  * \brief A LineString is a Curve with linear interpolation between points.
-  */
+/*!
+ * \class LineString
+ * \brief A polyline defined by a sequence of points.
+ *
+ * \tparam Point_t Type of the points in the polyline (e.g., Point2d, Point3f).
+ */
 template<typename Point_t>
 class LineString 
   : public GeometryBase<LineString<Point_t>>,
@@ -52,38 +68,89 @@ class LineString
 {
 public:
 
+    /*! \brief Type of points stored in the polyline. */
     using value_type = Point_t;
 
 public:
 
     using EntityContainer<Point_t>::EntityContainer;
 
-    auto numPoints() const { return this->size(); }
+    /*!
+     * \brief Returns the number of points in the polyline.
+     * \return The number of points.
+     */
+    auto numPoints() const;
 
-    // Un acceso rápido para saber si es cerrada
-    bool isClosed() const
-    {
-        if (this->size() < 2) return false;
-        return this->front() == this->back();
-    }
+    /*!
+     * \brief Checks if the polyline is closed.
+     *
+     * A polyline is considered closed if the first and last points are equal.
+     * \return true if the polyline is closed, false otherwise.
+     */
+    auto isClosed() const -> bool;
 
-    auto boundingBox() const
-    {
-        return envelope(*this);
-    }
+    /*!
+     * \brief Computes the bounding box of the polyline.
+     * \return A bounding box that encloses all points in the polyline.
+     */
+    auto boundingBox() const;
 
-    auto length() const -> double
-    {
-        return tl::length(*this);
-    }
+    /*!
+     * \brief Computes the total length of the polyline.
+     * \return The length of the polyline as a double.
+     */
+    auto length() const -> double;
 };
 
+
+// TYPE ALIASES
+
+/*! \brief 2D polyline with integer coordinates. */
 using LineString2i = LineString<Point2i>;
+
+/*! \brief 2D polyline with float coordinates. */
 using LineString2f = LineString<Point2f>;
+
+/*! \brief 2D polyline with double coordinates. */
 using LineString2d = LineString<Point2d>;
+
+/*! \brief 3D polyline with integer coordinates. */
 using LineString3i = LineString<Point3i>;
+
+/*! \brief 3D polyline with float coordinates. */
 using LineString3f = LineString<Point3f>;
+
+/*! \brief 3D polyline with double coordinates. */
 using LineString3d = LineString<Point3d>;
+
+
+// METHOD IMPLEMENTATIONS
+
+template<typename Point_t>
+auto LineString<Point_t>::numPoints() const 
+{ 
+    return this->size();
+}
+
+template<typename Point_t>
+auto LineString<Point_t>::isClosed() const -> bool
+{
+    if (this->size() < 2) return false;
+    return this->front() == this->back();
+}
+
+template<typename Point_t>
+auto LineString<Point_t>::boundingBox() const
+{
+    return envelope(*this);
+}
+
+template<typename Point_t>
+auto LineString<Point_t>::length() const -> double
+{
+    return tl::length(*this);
+}
+
 
 /*! \} */
 

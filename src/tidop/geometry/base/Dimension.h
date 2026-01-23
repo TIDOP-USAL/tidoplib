@@ -22,6 +22,24 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Dimensions.h
+ * \brief Dimension types and utilities for geometric entities.
+ *
+ * This file defines the Dimension enumeration and related utilities for
+ * working with dimensions in geometric calculations. It provides compile-time
+ * and runtime dimension representations.
+ * ### Enumerations
+ * - \ref tl::Dimension : Dimension enumeration for geometric entities.
+ * ### Classes
+ * - \ref tl::dimension_constant : Compile-time dimension representation.
+ * ### Type Aliases
+ * - \ref tl::dim2, \ref tl::dim3, \ref tl::dim4 : Common dimension constants.
+ * ### Functions
+ * - \ref tl::is_valid_dimension : Validates dimension values.
+ * - \ref tl::dimension_value : Converts dimension enum to numeric value.
+ * - \ref tl::dimension_of : Traits class for dimension extraction.
+ */
+
 #pragma once
 
 #include "tidop/config.h"
@@ -32,18 +50,28 @@
 namespace tl
 {
 	
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Geometry
  *  \{
  */
 
+/*!
+ * \enum Dimension
+ * \brief Enumeration representing the dimension of geometric entities.
+ */
 enum class Dimension : std::uint8_t
 {
-    dim2 = 2,
-    dim3 = 3,
-    dim4 = 4,
-    dynamic = 255  // Para geometrías con dimensión variable
+    dim2 = 2,       /*!< Two-dimensional geometry. */
+    dim3 = 3,       /*!< Three-dimensional geometry. */
+    dim4 = 4,       /*!< Four-dimensional geometry. */
+    dynamic = 255   /*!< Dynamic dimension (size determined at runtime). */
 };
 
+/*!
+ * \struct dimension_constant
+ * \brief Compile-time dimension representation as a type.
+ *
+ * \tparam N Dimension value (2, 3, or 4).
+ */
 template<std::size_t N>
 struct dimension_constant
 {
@@ -51,7 +79,8 @@ struct dimension_constant
     static constexpr Dimension enum_value = static_cast<Dimension>(N);
 
     // Conversión a/desde enum
-    static constexpr dimension_constant from_enum(Dimension d) {
+    static constexpr dimension_constant from_enum(Dimension d) 
+    {
         switch (d) {
             case Dimension::dim2: 
                 return dimension_constant<2>{};
@@ -64,12 +93,25 @@ struct dimension_constant
     }
 };
 
-// Aliases comunes
+// ALIASES
+
+/*! \brief Alias for 2D dimension constant. */
 using dim2 = dimension_constant<2>;
+
+/*! \brief Alias for 3D dimension constant. */
 using dim3 = dimension_constant<3>;
+
+/*! \brief Alias for 4D dimension constant. */
 using dim4 = dimension_constant<4>;
 
-// Helper functions
+
+// HELPER FUNCTIONS
+
+/*!
+ * \brief Checks if a dimension enum represents a valid fixed dimension.
+ * \param[in] d Dimension to check.
+ * \return true if dimension is 2, 3, or 4; false otherwise.
+ */
 constexpr auto is_valid_dimension(Dimension d) -> bool
 {
     return d == Dimension::dim2 ||
@@ -77,12 +119,23 @@ constexpr auto is_valid_dimension(Dimension d) -> bool
            d == Dimension::dim4;
 }
 
+/*!
+ * \brief Converts a dimension enum to its numeric value.
+ * \param[in] d Dimension to convert.
+ * \return Numeric dimension value (0 for dynamic).
+ */
 constexpr auto dimension_value(Dimension d) -> size_t
 {
     return d == Dimension::dynamic ? 0 : static_cast<size_t>(d);
 }
 
-// Traits para obtener dimensión de tipos
+/*!
+ * \struct dimension_of
+ * \brief Traits class for extracting dimension from types.
+ *
+ * \tparam T Type to extract dimension from.
+ * Specializations should define `static constexpr Dimension value`.
+ */
 template<typename T>
 struct dimension_of
 {

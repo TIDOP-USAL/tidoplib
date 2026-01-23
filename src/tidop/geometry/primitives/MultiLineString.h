@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file MultiLineString.h
+ * \brief Collection of LineString objects.
+ *
+ * This file defines the MultiLineString class template, which represents a
+ * collection of LineString objects. It inherits from GeometryBase and EntityContainer.
+ * ### Classes
+ * - \ref tl::MultiLineString : Main template class for a collection of polylines.
+ * ### Type Aliases
+ * - \ref tl::MultiLineString2i, \ref tl::MultiLineString2f, \ref tl::MultiLineString2d : 2D integer, float, and double multi-polylines.
+ * - \ref tl::MultiLineString3i, \ref tl::MultiLineString3f, \ref tl::MultiLineString3d : 3D integer, float, and double multi-polylines.
+ * \see tl::GeometryBase, tl::EntityContainer, tl::LineString
+ */
+
 #pragma once
 
 #include "tidop/core/base/type_conversions.h"
@@ -35,11 +48,16 @@
 namespace tl
 {
 	
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Primitives
  *  \{
  */
 
-
+/*!
+ * \class MultiLineString
+ * \brief A collection of LineString objects.
+ *
+ * \tparam Point_t Type of the points in the LineStrings (e.g., Point2d, Point3f).
+ */
 template<typename Point_t>
 class MultiLineString 
   : public GeometryBase<MultiLineString<Point_t>>, 
@@ -48,11 +66,24 @@ class MultiLineString
     using EntityContainer<LineString<Point_t>>::EntityContainer;
 };
 
+// TYPE ALIASES
+
+/*! \brief 2D multi-polyline with integer coordinates. */
 using MultiLineString2i = MultiLineString<Point2i>;
+
+/*! \brief 3D multi-polyline with integer coordinates. */
 using MultiLineString3i = MultiLineString<Point3i>;
+
+/*! \brief 2D multi-polyline with float coordinates. */
 using MultiLineString2f = MultiLineString<Point2f>;
+
+/*! \brief 3D multi-polyline with float coordinates. */
 using MultiLineString3f = MultiLineString<Point3f>;
+
+/*! \brief 2D multi-polyline with double coordinates. */
 using MultiLineString2d = MultiLineString<Point2d>;
+
+/*! \brief 3D multi-polyline with double coordinates. */
 using MultiLineString3d = MultiLineString<Point3d>;
 
 /*! \} */

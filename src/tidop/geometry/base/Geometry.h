@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Geometry.h
+ * \brief Base classes for geometric entities.
+ *
+ * This file defines the base classes for all geometric entities in the library.
+ * It provides both a polymorphic base class and a CRTP base class for static
+ * polymorphism and compile-time type information.
+ * ### Classes
+ * - \ref tl::Geometry : Abstract base class for geometric entities.
+ * - \ref tl::GeometryBase : CRTP base class for geometric entities.
+ * \see tl::EntityContainer, tl::Dimension
+ */
+
 #pragma once
 
 #include "tidop/config.h"
@@ -32,39 +44,58 @@
 namespace tl
 {
 	
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Geometry
  *  \{
  */
 
 
 /*!
- * \brief Base class for geometric entities.
+ * \class Geometry
+ * \brief Abstract base class for geometric entities.
+ *
+ * Provides a common interface for all geometric types, including
+ * type identification and dimension queries.
  */
 class TL_EXPORT Geometry
 {
 
 public:
 
-
+    /*! \brief Default constructor. */
     Geometry() = default;
+
+    /*! \brief Virtual destructor. */
     virtual ~Geometry() = default;
 
+    /*!
+     * \brief Returns the geometry type.
+     * \return Geometry type identifier.
+     */
     virtual auto type() const noexcept -> GeometryType = 0;
+
+    /*!
+     * \brief Returns the dimension of the geometry.
+     * \return Dimension of the geometry.
+     */
     virtual auto dimension() const noexcept -> Dimension = 0;
 
+    /*!
+     * \brief Checks if the geometry is a collection (multi-type).
+     * \return true if the geometry is a collection, false otherwise.
+     */
     virtual auto isMulti() const noexcept -> bool { return false; }
 
-    //virtual void accept(GeometryVisitor &visitor) = 0;
 };
 
 /*!
- *\class GeometryBase
- *\brief CRTP base class for geometric entities.
+ * \class GeometryBase
+ * \brief CRTP base class for geometric entities.
  *
- *\tparam Derived The derived geometry class.
- *\tparam GT The geometry type.
- *\tparam D The dimension of the geometry.
-*/
+ * Provides static polymorphism and compile-time type information
+ * for geometric entities using the Curiously Recurring Template Pattern.
+ *
+ * \tparam Derived The derived geometry class.
+ */
 template<typename Derived>
 class GeometryBase
   : public Geometry
@@ -72,11 +103,19 @@ class GeometryBase
 
 public:
 
+    /*!
+     * \brief Returns the geometry type (compile-time).
+     * \return Geometry type identifier from traits.
+     */
     constexpr auto type() const noexcept -> GeometryType final
     {
         return geometry_traits<Derived>::type;
     }
 
+    /*!
+     * \brief Returns the dimension of the geometry (compile-time).
+     * \return Dimension from traits.
+     */
     constexpr auto dimension() const noexcept -> Dimension final
     {
         return geometry_traits<Derived>::dimension;

@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file EntityContainer.h
+ * \brief Generic container for geometric entities.
+ *
+ * This file defines the EntityContainer class template, which provides
+ * a wrapper around std::vector for storing collections of geometric entities.
+ * It offers a complete STL-like interface with additional geometric utilities.
+ * ### Classes
+ * - \ref tl::EntityContainer : Generic container for geometric entities.
+ * \see tl::GeometryBase, tl::Geometry
+ */
+
 #pragma once
 
 #include "tidop/config.h"
@@ -31,39 +42,62 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Geometry
  *  \{
  */
 
 
-/*!
- * \brief Container for geometric entities.
- *
- * A simple wrapper around `std::vector` to store and manage geometric entities.
- */
+ /*!
+  * \class EntityContainer
+  * \brief Container for geometric entities.
+  *
+  * A simple wrapper around `std::vector` to store and manage geometric entities.
+  * Provides STL-compatible iterators and operations.
+  *
+  * \tparam Entity_t Type of geometric entities to store.
+  */
 template<typename Entity_t>
 class EntityContainer 
 {
 
 public:
 
+    /*! \brief Allocator type. */
     using allocator_type = typename std::vector<Entity_t>::allocator_type;
+
+    /*! \brief Value type (Entity_t). */
     using value_type = typename std::vector<Entity_t>::value_type;
+
+    /*! \brief Size type. */
     using size_type = typename std::vector<Entity_t>::size_type;
+
+    /*! \brief Difference type. */
     using difference_type = typename std::vector<Entity_t>::difference_type;
+
+    /*! \brief Pointer type. */
     using pointer = typename std::vector<Entity_t>::pointer;
+
+    /*! \brief Const pointer type. */
     using const_pointer = typename std::vector<Entity_t>::const_pointer;
+
+    /*! \brief Reference type. */
     using reference = typename std::vector<Entity_t>::reference;
+
+    /*! \brief Const reference type. */
     using const_reference = typename std::vector<Entity_t>::const_reference;
+
+    /*! \brief Iterator type. */
     using iterator = typename std::vector<Entity_t>::iterator;
+
+    /*! \brief Const iterator type. */
     using const_iterator = typename std::vector<Entity_t>::const_iterator;
+
+    /*! \brief Reverse iterator type. */
+    using reverse_iterator = typename std::vector<Entity_t>::reverse_iterator;
 
 private:
 
-    /*!
-     * \brief Conjunto de puntos
-     */
-    std::vector<Entity_t> mEntities;
+    std::vector<Entity_t> mEntities; /*!< Internal vector storing entities. */
 
 public:
 
@@ -90,7 +124,7 @@ public:
      * \brief Move constructor
      * \param[in] entity Another EntityContainer to move.
      */
-    EntityContainer(EntityContainer &&entity) TL_NOEXCEPT;
+    EntityContainer(EntityContainer &&entity) noexcept;
 
     /*!
      * \brief Constructs an entity container from a vector of entities.
@@ -107,21 +141,62 @@ public:
    
     virtual ~EntityContainer() = default;
     
-    auto begin() TL_NOEXCEPT -> iterator;
-    auto begin() const TL_NOEXCEPT -> const_iterator;
-    auto end() TL_NOEXCEPT -> iterator;
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    /*!
+     * \brief Returns an iterator to the beginning.
+     * \return Iterator to the first element.
+     */
+    auto begin() noexcept -> iterator;
 
-    auto cbegin() const TL_NOEXCEPT { return mEntities.cbegin(); }
-    auto cend() const TL_NOEXCEPT { return mEntities.cend(); }
-    auto rbegin() TL_NOEXCEPT { return mEntities.rbegin(); }
-    auto rend() TL_NOEXCEPT { return mEntities.rend(); }
+    /*!
+     * \brief Returns a const iterator to the beginning.
+     * \return Const iterator to the first element.
+     */
+    auto begin() const noexcept -> const_iterator;
+
+    /*!
+     * \brief Returns an iterator to the end.
+     * \return Iterator to the element following the last element.
+     */
+    auto end() noexcept -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to the end.
+     * \return Const iterator to the element following the last element.
+     */
+    auto end() const noexcept -> const_iterator;
+
+    /*! \brief Returns a const iterator to the beginning. */
+    auto cbegin() const noexcept -> const_iterator;
+
+    /*! \brief Returns a const iterator to the end. */
+    auto cend() const noexcept -> const_iterator;
+
+    /*! \brief Returns a reverse iterator to the beginning. */
+    auto rbegin() noexcept -> reverse_iterator;
+
+    /*! \brief Returns a reverse iterator to the end. */
+    auto rend() noexcept -> reverse_iterator;
 	
+    /*!
+     * \brief Adds an entity to the end.
+     * \param[in] entity Entity to add.
+     */
     void push_back(const Entity_t &entity);
+
+    /*!
+     * \brief Adds an entity to the end (move version).
+     * \param[in] entity Entity to move.
+     */
     void push_back(Entity_t &&entity);
-    
+
+    /*!
+     * \brief Constructs an entity in-place at the end.
+     * \tparam Args Types of arguments to forward to the entity constructor.
+     * \param[in] args Arguments to forward to the entity constructor.
+     */
 	template<typename... Args>
-    void emplace_back(Args&&... args) {
+    void emplace_back(Args&&... args)
+    {
         mEntities.emplace_back(std::forward<Args>(args)...);
     }
 	
@@ -172,10 +247,15 @@ public:
     void resize(size_type count, const Entity_t &value);
     
     /*!
-     * \brief Size of the container
+     * \brief Returns the number of elements in the container.
+     * \return Number of elements.
      */
     auto size() const noexcept -> size_type;
-    
+
+    /*!
+     * \brief Returns the number of elements that can be held in currently allocated storage.
+     * \return Current capacity.
+     */
     auto capacity() const noexcept -> size_type;
 
     /*!
@@ -193,37 +273,60 @@ public:
     auto operator[](size_type position) -> reference;
     
     /*!
-     * \brief Copy assignment operator
+     * \brief Copy assignment operator.
+     * \param[in] entity Another EntityContainer to copy.
+     * \return Reference to this container.
      */
-    auto operator=(const EntityContainer<Entity_t> &entity) -> EntityContainer<Entity_t>&;
+    auto operator=(const EntityContainer<Entity_t> &entity) -> EntityContainer<Entity_t> &;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] entity Another EntityContainer to move.
+     * \return Reference to this container.
+     */
+    auto operator=(EntityContainer<Entity_t> &&entity) noexcept -> EntityContainer<Entity_t> &;
     
     /*!
-     * \brief Move assignment operator
-     */
-    auto operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT -> EntityContainer<Entity_t>&;
-    
-    /*!
-     * \brief Delete the interval
+     * \brief Erases elements in the specified range.
+     * \param[in] first Iterator to the first element to erase.
+     * \param[in] last Iterator to one past the last element to erase.
+     * \return Iterator following the last erased element.
      */
     auto erase(const_iterator first, const_iterator last) -> iterator;
 	
+    /*!
+     * \brief Inserts elements from a range.
+     * \tparam InputIt Input iterator type.
+     * \param[in] pos Iterator before which the content will be inserted.
+     * \param[in] first Iterator to the first element to insert.
+     * \param[in] last Iterator to one past the last element to insert.
+     */
     template<typename InputIt>
-    void insert(const_iterator pos, InputIt first, InputIt last)
-    {
-        mEntities.insert(pos, first, last);
-    }
+    void insert(const_iterator pos, InputIt first, InputIt last);
     
-    void insert(const_iterator pos, std::initializer_list<Entity_t> ilist)
-    {
-        mEntities.insert(pos, ilist);
-    }
+    /*!
+     * \brief Inserts elements from an initializer list.
+     * \param[in] pos Iterator before which the content will be inserted.
+     * \param[in] ilist Initializer list of elements to insert.
+     */
+    void insert(const_iterator pos, std::initializer_list<Entity_t> ilist);
 	
-    bool operator==(const EntityContainer& other) const 
+    /*!
+     * \brief Equality comparison operator.
+     * \param[in] other Another EntityContainer to compare with.
+     * \return true if containers are equal, false otherwise.
+     */
+    auto operator==(const EntityContainer &other) const -> bool
     {
         return mEntities == other.mEntities;
     }
-    
-    bool operator!=(const EntityContainer& other) const 
+
+    /*!
+     * \brief Inequality comparison operator.
+     * \param[in] other Another EntityContainer to compare with.
+     * \return true if containers are not equal, false otherwise.
+     */
+    auto operator!=(const EntityContainer &other) const -> bool
     {
         return !(*this == other);
     }
@@ -249,7 +352,7 @@ EntityContainer<Entity_t>::EntityContainer(const EntityContainer &entity)
 }
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity) TL_NOEXCEPT
+EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity) noexcept
   : mEntities(std::move(entity.mEntities))
 {
 }
@@ -267,27 +370,51 @@ EntityContainer<Entity_t>::EntityContainer(std::initializer_list<Entity_t> entit
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::begin() TL_NOEXCEPT -> iterator
+auto EntityContainer<Entity_t>::begin() noexcept -> iterator
 {
     return mEntities.begin();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::begin() const TL_NOEXCEPT -> const_iterator
+auto EntityContainer<Entity_t>::begin() const noexcept -> const_iterator
 {
     return mEntities.cbegin();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::end() TL_NOEXCEPT -> iterator 
+auto EntityContainer<Entity_t>::end() noexcept -> iterator 
 {
     return mEntities.end();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::end() const TL_NOEXCEPT -> const_iterator 
+auto EntityContainer<Entity_t>::end() const noexcept -> const_iterator 
 {
     return mEntities.cend();
+}
+
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::cbegin() const noexcept -> const_iterator
+{ 
+    return mEntities.cbegin();
+}
+
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::cend() const noexcept -> const_iterator
+{ 
+    return mEntities.cend(); 
+}
+
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::rbegin() noexcept -> reverse_iterator
+{ 
+    return mEntities.rbegin();
+}
+
+template<typename Entity_t>
+auto EntityContainer<Entity_t>::rend() noexcept -> reverse_iterator
+{ 
+    return mEntities.rend();
 }
 
 template<typename Entity_t>
@@ -380,7 +507,7 @@ auto EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entit
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT -> EntityContainer<Entity_t>&
+auto EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) noexcept -> EntityContainer<Entity_t>&
 {
     if (this != &entity) {
         this->mEntities.clear();
@@ -396,6 +523,20 @@ auto EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last)
     return mEntities.erase(first, last);
 }
 
+template<typename Entity_t>
+void EntityContainer<Entity_t>::insert(const_iterator pos, std::initializer_list<Entity_t> ilist)
+{
+    mEntities.insert(pos, ilist);
+}
+
+template<typename Entity_t>
+template<typename InputIt>
+void EntityContainer<Entity_t>::insert(const_iterator pos, InputIt first, InputIt last)
+{
+    mEntities.insert(pos, first, last);
+}
+
 /*! \} */ 
+
 
 } // End namespace tl

@@ -27,6 +27,7 @@
 #include <tidop/geometry/primitives/LineString.h>
 #include <tidop/geometry/primitives/MultiLineString.h>
 #include <tidop/geometry/spatial/BoundingBox.h>
+#include <tidop/geometry/io/wkt/Proxy.h>
 
 using namespace tl;
 
@@ -844,4 +845,23 @@ BOOST_AUTO_TEST_CASE(MultiLineString3D_assing_operator)
     BOOST_CHECK_EQUAL(256.6, box.pt2().x());
     BOOST_CHECK_EQUAL(619.3, box.pt2().y());
     BOOST_CHECK_EQUAL(454.3, box.pt2().z());
+}
+
+
+BOOST_AUTO_TEST_CASE(test_linestring_wkt)
+{
+    using Point2D = tl::Point<double, tl::Dimension::dim2>;
+    tl::LineString<Point2D> line;
+    line.push_back(Point2D(0.0, 0.0));
+    line.push_back(Point2D(1.123, 2.456));
+    line.push_back(Point2D(5.0, 10.0));
+
+    // Test Ostream con precisión
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << wkt(line);
+    BOOST_CHECK_EQUAL(ss.str(), "LINESTRING (0.00 0.00, 1.12 2.46, 5.00 10.00)");
+
+    // Test Formatter moderno
+    std::string fmt_out = FORMAT_NAMESPACE format("{:.1f}", wkt(line));
+    BOOST_CHECK_EQUAL(fmt_out, "LINESTRING (0.0 0.0, 1.1 2.5, 5.0 10.0)");
 }

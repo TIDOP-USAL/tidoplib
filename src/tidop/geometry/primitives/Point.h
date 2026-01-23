@@ -22,6 +22,20 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Point.hpp
+ * \brief N-dimensional point primitive implementation.
+ *
+ * This file defines the Point class template, which serves as the fundamental
+ * building block for all geometric entities. It supports dimensions 2, 3, and 4
+ * and provides vector-like operations through VectorBase.
+ * * ### Classes
+ * - \ref tl::Point : Main template class for N-dimensional points.
+ * * ### Type Aliases
+ * - \ref tl::Point2d, \ref tl::Point3d : Common double-precision aliases.
+ * - \ref tl::Point2f, \ref tl::Point3f : Common float-precision aliases.
+ * * \see tl::VectorBase, tl::GeometryBase
+ */
+
 #pragma once
 
 #include "tidop/core/base/type_conversions.h"
@@ -35,16 +49,16 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Primitives
  *  \{
  */
 
 /*!
  * \class Point
- * \brief N-dimensional point.
+ * \brief N-dimensional point representing a location in space.
  *
- * \tparam T Data type for the coordinates.
- * \tparam D Dimension (2, 3, or 4)
+ * \tparam T Data type for the coordinates (e.g., float, double, int).
+ * \tparam D Dimension of the point (Dimension::dim2, dim3, or dim4).
  */
 template<typename T, Dimension D = Dimension::dim2>
 class Point 
@@ -67,21 +81,12 @@ private:
     static constexpr std::size_t _size = dimension_value(D);
     std::array<T, _size> mData;
     
-
 public:
 
     /*!
      * \brief Default constructor. Initializes X and Y to default values.
      */
-    Point()
-    {
-        mData.fill(static_cast<T>(0));
-    }
-
-    //Point(std::initializer_list<T> list)
-    //  : Geometry(Geometry::Type::Point, D) {
-    //    std::copy(list.begin(), list.end(), mData.begin());
-    //}
+    Point();
 
     template<typename... Args, std::enable_if_t<sizeof...(Args) == _size, int> = 0>
     explicit Point(Args... args)
@@ -106,29 +111,13 @@ public:
      * \brief Constructs a Point from an array.
      * \param[in] array Array containing two elements [x, y].
      */
-    explicit Point(const std::array<T, _size> &a)
-    {
-        for (std::size_t i = 0; i < _size; ++i)
-            mData[i] = a[i];
-    }
+    explicit Point(const std::array<T, _size> &a);
 
     /*!
      * \brief Constructor from Point with different dimension.
      */
     template<Dimension OtherD>
-    explicit Point(const Point<T, OtherD> &other)
-    {
-        static_assert(is_valid_dimension(OtherD), "Invalid source dimension");
-
-        constexpr size_t other_size = dimension_value(OtherD);
-        constexpr size_t minDim = (_size < other_size) ? _size : other_size;
-
-        mData.fill(static_cast<T>(0));
-
-        for (size_t i = 0; i < minDim; ++i) {
-            (*this)[i] = other[i];
-        }
-    }
+    explicit Point(const Point<T, OtherD> &other);
 
     /*! \brief Destructor. */
     ~Point() override = default;
@@ -146,15 +135,6 @@ public:
      * \return Reference to this Point.
      */
     auto operator = (Point &&point) TL_NOEXCEPT -> Point & = default;
-
-    /*!
-     * \brief Assignment from Vector.
-     */
-    //auto operator=(const Vector<T, N> &vector) -> Point &
-    //{
-    //    Vector<T, N>::operator=(vector);
-    //    return *this;
-    //}
 
     /*!
      * \brief Access the x-component of the point.
@@ -198,6 +178,9 @@ public:
      */
     auto z() TL_NOEXCEPT -> reference;
 
+    // No se si es muy correcto este nombre... Tal vez debería ser m. Así se define en OGC
+    // Ademas, en R3, podemos tener un punto (x, y, z) o (x, y, m)
+
     /*!
      * \brief Access the w-component of the point.
      * \return A const reference to the w-component.
@@ -212,8 +195,9 @@ public:
      */
     auto w() TL_NOEXCEPT -> reference;
 
-    auto operator[](std::size_t position) noexcept -> T &{ return mData[position]; }
-    auto operator[](std::size_t position) const noexcept -> const T &{ return mData[position]; }
+    auto operator[](std::size_t position) noexcept -> reference { return mData[position]; }
+    auto operator[](std::size_t position) const noexcept -> const_reference { return mData[position]; }
+
     /*!
      * \brief Accesses the element at the specified position with bounds checking.
      *
@@ -255,7 +239,7 @@ public:
 };
 
 
-// TYPE ALIASES (usando Dimension enum)
+// TYPE ALIASES
 
 template<typename T> using Point2 = Point<T, Dimension::dim2>;
 template<typename T> using Point3 = Point<T, Dimension::dim3>;
@@ -269,6 +253,36 @@ using Point3f = Point<float, Dimension::dim3>;
 using Point3d = Point<double, Dimension::dim3>;
 using Point3i = Point<int, Dimension::dim3>;
 
+
+
+template<typename T, Dimension D>
+Point<T, D>::Point()
+{
+    mData.fill(static_cast<T>(0));
+}
+
+template<typename T, Dimension D>
+Point<T, D>::Point(const std::array<T, _size> &a)
+{
+    for (std::size_t i = 0; i < _size; ++i)
+        mData[i] = a[i];
+}
+
+template<typename T, Dimension D>
+template<Dimension OtherD>
+Point<T, D>::Point(const Point<T, OtherD> &other)
+{
+    static_assert(is_valid_dimension(OtherD), "Invalid source dimension");
+
+    constexpr size_t other_size = dimension_value(OtherD);
+    constexpr size_t minDim = (_size < other_size) ? _size : other_size;
+
+    mData.fill(static_cast<T>(0));
+
+    for (size_t i = 0; i < minDim; ++i) {
+        (*this)[i] = other[i];
+    }
+}
 
 template<typename T, Dimension D>
 auto Point<T, D>::x() const TL_NOEXCEPT -> const_reference

@@ -86,6 +86,8 @@ if(BUILD_TL_GEOMETRY)
                             base/EntityContainer.h
                             #base/GeometryCollection.h
                             base/Traits.h
+                            io/wkt/Writer.h
+                            io/wkt/Proxy.h
                             primitives/LineString.h
                             primitives/Point.h
                             primitives/Polygon.h
@@ -94,6 +96,10 @@ if(BUILD_TL_GEOMETRY)
                             primitives/MultiLinestring.h
                             primitives/MultiPolygon.h
                             spatial/BoundingBox.h
+                            spatial/index/KdTree.h
+                            #spatial/index/KdTreeStrategies.h
+                            #spatial/index/DynamicKdTree.h
+                            #spatial/index/StaticKdTree.h
     )
         
     add_library(${PROJECT_NAME} INTERFACE

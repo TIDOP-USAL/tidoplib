@@ -753,24 +753,21 @@
  */ 
  
  
+ 
+
+
+ 
 /*!
  * \defgroup Geometry Geometry
- * 
- * \brief This module provides fundamental geometric entities and operations.
- * 
- * The Geometry module includes various geometric entities, spatial objects, 
- * and algorithms for geometric computations.
+ * \brief This module provides fundamental geometric entities, spatial indices, and operations.
  */
  
 /*!
- * \defgroup GeometricEntities Geometric Entities
+ * \defgroup Primitives Geometric Primitives
  * \ingroup Geometry
- * 
- * \brief Fundamental geometric entities such as points, polylines, polygons, and multi-entities.
- * 
- * This module includes core geometric primitives that represent spatial objects 
- * in 2D and 3D space. These entities form the basis for higher-level geometric 
- * operations and spatial analyses.
+ * * \brief Fundamental geometric objects such as points, linestrings, and polygons.
+ * * This module includes the core building blocks of the library. These primitives
+ * are N-dimensional and provide the base for spatial analysis and complex shapes.
  */
  
 /*!
@@ -793,6 +790,21 @@
  * triangles, squares, and rectangles. These shapes provide specialized methods 
  * for area computation, bounding box generation, and geometric transformations.
  */
+ 
+/*!
+ * \defgroup SpatialIndex Spatial Indexing
+ * \ingroup Geometry
+ * \brief Data structures for efficient spatial querying (R-Tree, QuadTree).
+ */
+
+/*!
+ * \defgroup GeometryIO Input/Output
+ * \ingroup Geometry
+ * \brief Serialization and deserialization of geometric data (WKT, GeoJSON).
+ */
+
+ 
+ 
  
  
 /*!

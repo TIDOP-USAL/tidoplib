@@ -22,6 +22,23 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Polygon.h
+ * \brief Polygon with outer ring and inner holes implementation.
+ *
+ * This file defines the Polygon and LinearRing class templates.
+ * LinearRing represents a closed sequence of points forming a ring.
+ * Polygon represents a polygon with one outer ring and zero or more inner rings (holes).
+ * ### Classes
+ * - \ref tl::LinearRing : Closed sequence of points forming a ring.
+ * - \ref tl::Polygon : Polygon with outer and optional inner rings.
+ * ### Type Aliases
+ * - \ref tl::LinearRing2i, \ref tl::LinearRing2f, \ref tl::LinearRing2d : 2D integer, float, and double rings.
+ * - \ref tl::LinearRing3i, \ref tl::LinearRing3f, \ref tl::LinearRing3d : 3D integer, float, and double rings.
+ * - \ref tl::Polygon2i, \ref tl::Polygon2f, \ref tl::Polygon2d : 2D integer, float, and double polygons.
+ * - \ref tl::Polygon3i, \ref tl::Polygon3f, \ref tl::Polygon3d : 3D integer, float, and double polygons.
+ * \see tl::GeometryBase, tl::EntityContainer, tl::Point
+ */
+
 #pragma once
 
 #include <utility>
@@ -38,10 +55,16 @@
 namespace tl
 {
 	
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Primitives
  *  \{
  */
 
+/*!
+ * \class LinearRing
+ * \brief A closed sequence of points forming a ring.
+ *
+ * \tparam Point_t Type of the points in the ring (e.g., Point2d, Point3f).
+ */
 template<typename Point_t>
 class LinearRing
   : public EntityContainer<Point_t>
@@ -49,36 +72,49 @@ class LinearRing
 
 public:
 
-    using EntityContainer<Point_t>::EntityContainer; // Heredamos constructores
+    using EntityContainer<Point_t>::EntityContainer;
     
 public:
 
-    bool isClosed() const
-    {
-        if (this->size() < 3) {
-            return false;
-        }
-        return this->front() == this->back();
-    }
+    /*!
+     * \brief Checks if the ring is closed.
+     * \return true if the ring is closed (first and last points are equal), false otherwise.
+     */
+    auto isClosed() const -> bool;
 
-    bool isValid() const 
-    {
-        return isClosed();
-    }
+    /*!
+     * \brief Checks if the ring is valid.
+     * \return true if the ring is closed and has at least 3 points, false otherwise.
+     */
+    auto isValid() const -> bool;
 };
 
+// TYPE ALIASES FOR LINEARRING
+
+/*! \brief 2D linear ring with integer coordinates. */
 using LinearRing2i = LinearRing<Point2<int>>;
+
+/*! \brief 2D linear ring with double coordinates. */
 using LinearRing2d = LinearRing<Point2<double>>;
+
+/*! \brief 2D linear ring with float coordinates. */
 using LinearRing2f = LinearRing<Point2<float>>;
+
+/*! \brief 3D linear ring with integer coordinates. */
 using LinearRing3i = LinearRing<Point3<int>>;
+
+/*! \brief 3D linear ring with double coordinates. */
 using LinearRing3d = LinearRing<Point3<double>>;
+
+/*! \brief 3D linear ring with float coordinates. */
 using LinearRing3f = LinearRing<Point3<float>>;
 
 
 /*!
  * \class Polygon
  * \brief A polygon defined by an outer ring and optional inner holes.
- * \tparam Point_t The point type (e.g., Point<double, Dimension::dim2>)
+ *
+ * \tparam Point_t The point type (e.g., Point<double, Dimension::dim2>).
  */
 template<typename Point_t>
 class Polygon 
@@ -87,69 +123,237 @@ class Polygon
 
 public:
 
+    /*! \brief Type of points stored in the polygon. */
     using value_type = Point_t;
 
 private:
 
-    LinearRing<Point_t> mOuter;
-    std::vector<LinearRing<Point_t>> mInners;
+    LinearRing<Point_t> mOuter;                 /*!< Outer ring of the polygon. */
+    std::vector<LinearRing<Point_t>> mInners;   /*!< Inner rings (holes) of the polygon. */
 
 public:
 
-    // Constructores
+    /*!
+     * \brief Default constructor.
+     */
     Polygon() = default;
-    explicit Polygon(const std::vector<Point_t> &points) 
-      : mOuter(points) {}
 
-    Polygon(LinearRing<Point_t> outer, std::vector<LinearRing<Point_t>> inners)
-      : mOuter(std::move(outer)),
-        mInners(std::move(inners)) {}
+    /*!
+     * \brief Constructs a polygon from a vector of points (outer ring only).
+     * \param[in] points Points forming the outer ring.
+     */
+    explicit Polygon(const std::vector<Point_t> &points);
 
-    Polygon(std::initializer_list<Point_t> list) : mOuter(list) {}
+    /*!
+     * \brief Constructs a polygon with specified outer and inner rings.
+     * \param[in] outer Outer ring of the polygon.
+     * \param[in] inners Inner rings (holes) of the polygon.
+     */
+    Polygon(LinearRing<Point_t> outer, std::vector<LinearRing<Point_t>> inners);
 
-    // Constructor de reserva
-    explicit Polygon(size_t size) 
-    {
-        mOuter.reserve(size);
-    }
+    /*!
+     * \brief Constructs a polygon from an initializer list (outer ring only).
+     * \param[in] list Initializer list of points for the outer ring.
+     */
+    Polygon(std::initializer_list<Point_t> list);
 
-    // Acceso a datos
-    auto outer() const -> const LinearRing<Point_t> & { return mOuter; }
-    auto outer() -> LinearRing<Point_t> & { return mOuter; }
+    /*!
+     * \brief Constructs a polygon with a pre-allocated outer ring size.
+     * \param[in] size Number of points in the outer ring.
+     */
+    explicit Polygon(size_t size);
+
+    /*!
+     * \brief Returns a const reference to the outer ring.
+     * \return Const reference to the outer ring.
+     */
+    auto outer() const -> const LinearRing<Point_t> &;
+
+    /*!
+     * \brief Returns a reference to the outer ring.
+     * \return Reference to the outer ring.
+     */
+    auto outer() -> LinearRing<Point_t> &;
     
-    auto inners() const -> const std::vector<LinearRing<Point_t>> & { return mInners; }
-    auto inners() -> std::vector<LinearRing<Point_t>> & { return mInners; }
-    void addInner(const LinearRing<Point_t>& hole) { mInners.push_back(hole); }
+    /*!
+     * \brief Returns a const reference to the vector of inner rings.
+     * \return Const reference to the inner rings.
+     */
+    auto inners() const -> const std::vector<LinearRing<Point_t>> &;
 
-    auto inner(std::size_t i) const -> const LinearRing<Point_t> & { return mInners[i]; }
-    auto inner(std::size_t i) -> LinearRing<Point_t> & { return mInners[i]; }
+    /*!
+     * \brief Returns a reference to the vector of inner rings.
+     * \return Reference to the inner rings.
+     */
+    auto inners() -> std::vector<LinearRing<Point_t>> &;
 
-    auto boundingBox() const 
-	{
-        return envelope(*this);
-    }
+    /*!
+     * \brief Adds an inner ring (hole) to the polygon.
+     * \param[in] hole Inner ring to add.
+     */
+    void addInner(const LinearRing<Point_t> &hole);
 
-    auto numInners() const -> size_t { return mInners.size(); }
+    /*!
+     * \brief Returns a const reference to a specific inner ring.
+     * \param[in] i Index of the inner ring.
+     * \return Const reference to the i-th inner ring.
+     */
+    auto inner(std::size_t i) const -> const LinearRing<Point_t> &;
 
-    auto perimeter() const -> double
-    {
-        return length(*this);
-    }
+    /*!
+     * \brief Returns a reference to a specific inner ring.
+     * \param[in] i Index of the inner ring.
+     * \return Reference to the i-th inner ring.
+     */
+    auto inner(std::size_t i) -> LinearRing<Point_t> &;
 
-    //auto area() const -> double
-    //{
-    //    return tl::geometry::area(*this);
-    //}
+    /*!
+     * \brief Computes the bounding box of the polygon.
+     * \return Bounding box enclosing all points in the polygon.
+     */
+    auto boundingBox() const;
+
+    /*!
+     * \brief Returns the number of inner rings.
+     * \return Number of inner rings (holes).
+     */
+    auto numInners() const->size_t;
+
+    /*!
+     * \brief Computes the perimeter of the polygon.
+     * \return Total perimeter (outer ring + inner rings) as a double.
+     */
+    auto perimeter() const -> double;
 };
 
+// TYPE ALIASES FOR POLYGON
+
+/*! \brief 2D polygon with integer coordinates. */
 using Polygon2i = Polygon<Point2<int>>;
+
+/*! \brief 2D polygon with double coordinates. */
 using Polygon2d = Polygon<Point2<double>>;
+
+/*! \brief 2D polygon with float coordinates. */
 using Polygon2f = Polygon<Point2<float>>;
+
+/*! \brief 3D polygon with integer coordinates. */
 using Polygon3i = Polygon<Point3<int>>;
+
+/*! \brief 3D polygon with double coordinates. */
 using Polygon3d = Polygon<Point3<double>>;
+
+/*! \brief 3D polygon with float coordinates. */
 using Polygon3f = Polygon<Point3<float>>;
 
 
+// METHOD IMPLEMENTATIONS
+
+template<typename Point_t>
+auto LinearRing<Point_t>::isClosed() const -> bool
+{
+    if (this->size() < 3) {
+        return false;
+    }
+    return this->front() == this->back();
+}
+
+template<typename Point_t>
+auto LinearRing<Point_t>::isValid() const -> bool
+{
+    return isClosed();
+}
+
+
+template<typename Point_t>
+Polygon<Point_t>::Polygon(const std::vector<Point_t> &points)
+    : mOuter(points) {
+}
+
+template<typename Point_t>
+Polygon<Point_t>::Polygon(LinearRing<Point_t> outer,
+                          std::vector<LinearRing<Point_t>> inners)
+  : mOuter(std::move(outer)),
+    mInners(std::move(inners)) {
+}
+
+template<typename Point_t>
+Polygon<Point_t>::Polygon(std::initializer_list<Point_t> list) 
+  : mOuter(list) 
+{
+}
+
+template<typename Point_t>
+Polygon<Point_t>::Polygon(size_t size)
+{
+    mOuter.reserve(size);
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::outer() const -> const LinearRing<Point_t> &
+{ 
+    return mOuter;
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::outer() -> LinearRing<Point_t> &
+{ 
+    return mOuter; 
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::inners() const -> const std::vector<LinearRing<Point_t>> &
+{ 
+    return mInners; 
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::inners() -> std::vector<LinearRing<Point_t>> &
+{ 
+    return mInners; 
+}
+
+template<typename Point_t>
+void Polygon<Point_t>::addInner(const LinearRing<Point_t> &hole) 
+{ 
+    mInners.push_back(hole); 
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::inner(std::size_t i) const -> const LinearRing<Point_t> &
+{ 
+    return mInners[i]; 
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::inner(std::size_t i) -> LinearRing<Point_t> &
+{ 
+    return mInners[i];
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::boundingBox() const
+{
+    return envelope(*this);
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::numInners() const -> size_t 
+{
+    return mInners.size();
+}
+
+template<typename Point_t>
+auto Polygon<Point_t>::perimeter() const -> double
+{
+    return length(*this);
+}
+
+
 /*! \} */
+
+
+
+
 
 } // End namespace tl

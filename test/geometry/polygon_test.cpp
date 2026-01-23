@@ -27,6 +27,7 @@
 #include <tidop/geometry/primitives/Polygon.h>
 #include <tidop/geometry/primitives/MultiPolygon.h>
 #include <tidop/geometry/algorithms/measurement/Area.h>
+#include <tidop/geometry/io/wkt/Proxy.h>
 
 using namespace tl;
 
@@ -712,3 +713,43 @@ BOOST_AUTO_TEST_CASE(multi_polygon_area_complex)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_CASE(test_polygon_wkt_output)
+{
+    // Crear anillo exterior (cuadrado)
+    tl::LinearRing<Point3d> outer = {
+        Point3d(0,0,0), 
+        Point3d(10,0,0),
+        Point3d(10,10,0), 
+        Point3d(0,10,0), 
+        Point3d(0,0,0)
+    };
+
+    // Crear hueco interior
+    tl::LinearRing<Point3d> inner = {
+        Point3d(2,2,0),
+        Point3d(8,2,0), 
+        Point3d(8,8,0), 
+        Point3d(2,8,0), 
+        Point3d(2,2,0)
+    };
+
+    tl::Polygon<Point3d> poly(outer, {inner});
+
+    // Test con streams y precisión
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(1) << wkt(poly);
+
+    std::string expected = "POLYGON Z ((0.0 0.0 0.0, 10.0 0.0 0.0, 10.0 10.0 0.0, 0.0 10.0 0.0, 0.0 0.0 0.0), "
+        "(2.0 2.0 0.0, 8.0 2.0 0.0, 8.0 8.0 0.0, 2.0 8.0 0.0, 2.0 2.0 0.0))";
+
+    BOOST_CHECK_EQUAL(ss.str(), expected);
+
+    // Test con format moderno
+    std::string fmt_out = tl::format("{:.0f}", wkt(poly));
+    BOOST_CHECK(fmt_out.find("POLYGON Z ((0 0 0") != std::string::npos);
+
+    fmt_out = tl::format("{:.2f}", wkt(poly));
+    BOOST_CHECK(fmt_out.find("2.00 8.00 0.00") != std::string::npos);
+}

@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file MultiPoint.h
+ * \brief Collection of Point objects.
+ *
+ * This file defines the MultiPoint class template, which represents a
+ * collection of Point objects. It inherits from GeometryBase and EntityContainer.
+ * ### Classes
+ * - \ref tl::MultiPoint : Main template class for a collection of points.
+ * ### Type Aliases
+ * - \ref tl::MultiPoint2i, \ref tl::MultiPoint2f, \ref tl::MultiPoint2d : 2D integer, float, and double multi-points.
+ * - \ref tl::MultiPoint3i, \ref tl::MultiPoint3f, \ref tl::MultiPoint3d : 3D integer, float, and double multi-points.
+ * \see tl::GeometryBase, tl::EntityContainer, tl::Point
+ */
+
 #pragma once
 
 #include "tidop/core/base/type_conversions.h"
@@ -36,10 +49,16 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Primitives
  *  \{
  */
 
+/*!
+ * \class MultiPoint
+ * \brief A collection of Point objects.
+ *
+ * \tparam Point_t Type of the points (e.g., Point2d, Point3f).
+ */
 template<typename Point_t>
 class MultiPoint 
   : public GeometryBase<MultiPoint<Point_t>>, 
@@ -52,11 +71,24 @@ public:
 };
 
 
+// TYPE ALIASES
+
+/*! \brief 2D multi-point with integer coordinates. */
 using MultiPoint2i = MultiPoint<Point2i>;
+
+/*! \brief 3D multi-point with integer coordinates. */
 using MultiPoint3i = MultiPoint<Point3i>;
+
+/*! \brief 2D multi-point with float coordinates. */
 using MultiPoint2f = MultiPoint<Point2f>;
+
+/*! \brief 3D multi-point with float coordinates. */
 using MultiPoint3f = MultiPoint<Point3f>;
+
+/*! \brief 2D multi-point with double coordinates. */
 using MultiPoint2d = MultiPoint<Point2d>;
+
+/*! \brief 3D multi-point with double coordinates. */
 using MultiPoint3d = MultiPoint<Point3d>;
 
 /*! \} */

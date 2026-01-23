@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Segment.h
+ * \brief Geometric segment implementation.
+ *
+ * This file defines the Segment class template, which represents a line segment
+ * defined by two endpoints.
+ * ### Classes
+ * - \ref tl::Segment : Main template class for a line segment.
+ * ### Type Aliases
+ * - \ref tl::Segment2i, \ref tl::Segment2f, \ref tl::Segment2d : 2D integer, float, and double segments.
+ * - \ref tl::Segment3i, \ref tl::Segment3f, \ref tl::Segment3d : 3D integer, float, and double segments.
+ * \see tl::GeometryBase, tl::Point
+ */
+
 #pragma once
 
 #include <utility>
@@ -37,7 +50,7 @@
 namespace tl
 {
 	
-/*! \addtogroup GeometricEntities
+/*! \addtogroup Primitives
  *  \{
  */
 
@@ -45,7 +58,8 @@ namespace tl
 /*!
  * \class Segment
  * \brief A geometric segment defined by two endpoints.
- * \tparam Point_t The point type (e.g., Point<double, Dimension::dim2>)
+ *
+ * \tparam Point_t The point type (e.g., Point<double, Dimension::dim2>).
  */
 template<typename Point_t>
 class Segment
@@ -54,7 +68,10 @@ class Segment
 
 public:
 
+    /*! \brief Type of points stored in the segment. */
     using value_type = Point_t;
+
+    /*! \brief Scalar type of the point coordinates. */
     using scalar = typename Point_t::value_type;
 
 private:
@@ -66,7 +83,7 @@ public:
     /*!
      * \brief Default constructor.
      *
-     * Creates an empty segment with uninitialized points.
+     * Creates a segment with uninitialized endpoints.
      */
     Segment();
 
@@ -105,11 +122,7 @@ public:
      * \brief Constructor from segment with different dimension.
      */
     template<typename OtherPoint_t>
-    explicit Segment(const Segment<OtherPoint_t> &other)
-    {
-        mPoints[0] = static_cast<Point_t>(other.pt1());
-        mPoints[1] = static_cast<Point_t>(other.pt2());
-    }
+    explicit Segment(const Segment<OtherPoint_t> &other);
 	
     /*!
      * \brief Copy assignment operator.
@@ -134,49 +147,58 @@ public:
     template<typename OtherPoint_t> 
 	operator Segment<OtherPoint_t>() const;
     
-    // Accessors with new names (compatible with old interface)
-    auto pt1() noexcept -> Point_t& { return mPoints[0]; }
-    auto pt1() const noexcept -> const Point_t& { return mPoints[0]; }
+    /*!
+     * \brief Access the first endpoint (non-const version).
+     * \return Reference to the first endpoint.
+     */
+    auto pt1() noexcept -> Point_t &;
+
+    /*!
+     * \brief Access the first endpoint (const version).
+     * \return Const reference to the first endpoint.
+     */
+    auto pt1() const noexcept -> const Point_t &;
     
-    auto pt2() noexcept -> Point_t & { return mPoints[1]; }
-    auto pt2() const noexcept -> const Point_t & { return mPoints[1]; }
+    /*!
+     * \brief Access the second endpoint (non-const version).
+     * \return Reference to the second endpoint.
+     */
+    auto pt2() noexcept -> Point_t &;
+
+    /*!
+     * \brief Access the second endpoint (const version).
+     * \return Const reference to the second endpoint.
+     */
+    auto pt2() const noexcept -> const Point_t &;
 	
-    auto start() noexcept -> Point_t & { return mPoints[0]; }
-    auto start() const noexcept -> const Point_t & { return mPoints[0]; }
-    
-    auto end() noexcept -> Point_t & { return mPoints[1]; }
-    auto end() const noexcept -> const Point_t & { return mPoints[1]; }
-
+    /*!
+     * \brief Access the start point (non-const version).
+     * \return Reference to the start point (same as pt1).
+     */
+    auto start() noexcept -> Point_t &;
 
     /*!
-     * \brief Computes the angle of the segment relative to the x-axis.
-     * \return The angle in radians.
+     * \brief Access the start point (const version).
+     * \return Const reference to the start point (same as pt1).
      */
-    //auto angleOX() const -> double;
+    auto start() const noexcept -> const Point_t &;
+    
+    /*!
+     * \brief Access the end point (non-const version).
+     * \return Reference to the end point (same as pt2).
+     */
+    auto end() noexcept -> Point_t &;
 
     /*!
-     * \brief Computes the angle of the segment relative to the y-axis.
-     * \return The angle in radians.
+     * \brief Access the end point (const version).
+     * \return Const reference to the end point (same as pt2).
      */
-    //auto angleOY() const -> double;
-    
+    auto end() const noexcept -> const Point_t &;
+
     /*!
      * \brief Computes the bounding box of the segment.
-     * \return The bounding box as a `Window<Point_t>`.
      */
-    //auto window() const -> Window<Point_t>;
-    auto boundingBox() const
-    {
-        return tl::envelope(*this);
-    }
-
-    /**
-     * \brief Alias for boundingBox() to follow OGC/GIS standards.
-     */
-    //auto envelope() const
-    //{
-    //    return boundingBox();
-    //}
+    auto boundingBox() const;
 
     /*!
      * \brief Checks if the segment is empty (i.e., both endpoints are identical).
@@ -184,24 +206,6 @@ public:
      */
     auto isEmpty() const -> bool;
 
-    /*!
-     * \brief Checks if two segments are close to each other within a given distance.
-     * \param[in] l2 The segment to compare against.
-     * \param[in] dist Maximum allowed separation distance.
-     * \return True if the segments are closer than `dist`, false otherwise.
-     */
-    //auto isNear(const Segment<Point_t> &l2, double dist = 10.) const -> bool;
-    
-    /*!
-     * \brief Checks if the segment is parallel to another segment.
-     * \param[in] l2 The segment to compare against.
-     * \param[in] tol Angular tolerance in radians.
-     *        If `tol == 0`, the segments must be exactly parallel.
-     *        If `tol > 0`, segments with an angular difference less than `tol` are considered parallel.
-     * \return True if the segments are parallel, false otherwise.
-     */
-    //auto isParallel(const Segment<Point_t> &l2, double tol = 0.) const -> bool;
-    
     /*!
      * \brief Computes the length of the segment.
      * \return The Euclidean distance between `pt1` and `pt2`.
@@ -212,56 +216,36 @@ public:
      * \brief Computes the directional vector of the segment.
      * \return A point representing the vector from `pt1` to `pt2`.
      */
-    auto vector() const noexcept
-    {
-        return mPoints[1] - mPoints[0];
-    }
-    
-    /*!
-     * \brief Divides the segment into `n` equal parts.
-     * \param[in] n Number of partitions.
-     * \return A vector containing `n` smaller segments.
-     *
-     * Each sub-segment is of equal length and follows the same direction as the original segment.
-     */
-    //auto split(size_t n) const -> std::vector<Segment<Point_t>>;
-	
-    //void accept(GeometryVisitor& visitor) override 
-    //{
-    //    visitor.visit(*this);
-    //}
+    auto vector() const noexcept;
 };
 
 
+// TYPE ALIASES FOR SEGMENT
+
+/*! \brief 2D segment with integer coordinates. */
 using Segment2i = Segment<Point<int, Dimension::dim2>>;
+
+/*! \brief 2D segment with double coordinates. */
 using Segment2d = Segment<Point<double, Dimension::dim2>>;
+
+/*! \brief 2D segment with float coordinates. */
 using Segment2f = Segment<Point<float, Dimension::dim2>>;
-using Line = Segment2i;
+
+/*! \brief 3D segment with integer coordinates. */
 using Segment3i = Segment<Point<int, Dimension::dim3>>;
+
+/*! \brief 3D segment with double coordinates. */
 using Segment3d = Segment<Point<double, Dimension::dim3>>;
+
+/*! \brief 3D segment with float coordinates. */
 using Segment3f = Segment<Point<float, Dimension::dim3>>;
 
-
-// Segment implementation
+// METHOD IMPLEMENTATIONS
 
 template<typename Point_t>
 Segment<Point_t>::Segment()
 {
 }
-
-//template<typename Point_t>
-//Segment<Point_t>::Segment(const Segment &segment)
-//  : pt1(segment.pt1), 
-//    pt2(segment.pt2) 
-//{
-//}
-//
-//template<typename Point_t>
-//Segment<Point_t>::Segment(Segment &&segment) TL_NOEXCEPT
-//  : pt1(std::move(segment.pt1)), 
-//    pt2(std::move(segment.pt2)) 
-//{
-//}
 
 template<typename Point_t>
 Segment<Point_t>::Segment(Point_t _pt1, Point_t _pt2)
@@ -291,6 +275,14 @@ Segment<Point_t>::Segment(const Point_t &point,
     mPoints[1].y() = numberCast<scalar>(point.y() + l2 * a);
 }
 
+template<typename Point_t>
+template<typename OtherPoint_t>
+Segment<Point_t>::Segment(const Segment<OtherPoint_t> &other)
+{
+    mPoints[0] = static_cast<Point_t>(other.pt1());
+    mPoints[1] = static_cast<Point_t>(other.pt2());
+}
+
 template<typename Point_t> template<typename OtherPoint_t>
 Segment<Point_t>::operator Segment<OtherPoint_t>() const
 {
@@ -304,35 +296,59 @@ Segment<Point_t>::operator Segment<OtherPoint_t>() const
     return s;
 }
 
-//template<typename Point_t>
-//auto Segment<Point_t>::angleOX() const -> double
-//{
-//    double angle = 0.0;
-//    if (pt1 != pt2) {
-//        angle = vectorAngleOX(vector());
-//    }
-//
-//    return angle;
-//}
-//
-//template<typename Point_t>
-//auto Segment<Point_t>::angleOY() const -> double
-//{
-//    double angle = 0.0;
-//    if (pt1 != pt2) {
-//        angle = vectorAngleOY(vector());
-//    }
-//
-//    return angle;
-//}
+template<typename Point_t>
+auto Segment<Point_t>::pt1() noexcept -> Point_t &
+{ 
+    return mPoints[0];
+}
 
-//template<typename Point_t>
-//auto Segment<Point_t>::window() const -> Window<Point_t>
-//{
-//    Window<Point_t> w(pt1, pt2);
-//    w.normalized();
-//    return w;
-//}
+template<typename Point_t>
+auto Segment<Point_t>::pt1() const noexcept -> const Point_t &
+{ 
+    return mPoints[0];
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::pt2() noexcept -> Point_t &
+{ 
+    return mPoints[1];
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::pt2() const noexcept -> const Point_t &
+{ 
+    return mPoints[1]; 
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::start() noexcept -> Point_t &
+{ 
+    return mPoints[0]; 
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::start() const noexcept -> const Point_t &
+{ 
+    return mPoints[0];
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::end() noexcept -> Point_t &
+{ 
+    return mPoints[1];
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::end() const noexcept -> const Point_t &
+{ 
+    return mPoints[1]; 
+}
+
+template<typename Point_t>
+auto Segment<Point_t>::boundingBox() const
+{
+    return tl::envelope(*this);
+}
 
 template<typename Point_t>
 auto Segment<Point_t>::isEmpty() const -> bool
@@ -345,41 +361,21 @@ auto Segment<Point_t>::isEmpty() const -> bool
     return true;
 }
 
-//template<typename Point_t>
-//auto Segment<Point_t>::isNear(const Segment<Point_t> &l2, double dist) const -> bool
-//{
-//    double dist1 = minDistanceSegments(*this, l2);
-//    return (dist1 <= dist);
-//}
-//
-//template<typename Point_t>
-//auto Segment<Point_t>::isParallel(const Segment<Point_t> &l2, double tol) const -> bool
-//{
-//    return (std::abs(angleOX() - l2.angleOX()) < tol);
-//}
-
 template<typename Point_t>
 auto Segment<Point_t>::length() const -> double
 { 
     return tl::length(*this);
 }
 
-
-//template<typename Point_t>
-//auto Segment<Point_t>::split(size_t n) const -> std::vector<Segment<Point_t>> 
-//{
-//    std::vector<Segment<Point_t>> segments;
-//
-//    Point_t point1 = pt1;
-//    Point_t point2;
-//    for (size_t i = 1; i <= n; i++) {
-//        point2 = pt1 * (1 - i / static_cast<double>(n)) + pt2 * i / static_cast<double>(n);
-//        segments.emplace_back(point1, point2);
-//        point1 = point2;
-//    }
-//
-//    return segments;
-//}
+/*!
+* \brief Computes the directional vector of the segment.
+* \return A point representing the vector from `pt1` to `pt2`.
+*/
+template<typename Point_t>
+auto Segment<Point_t>::vector() const noexcept
+{
+    return mPoints[1] - mPoints[0];
+}
 
 
 /*! \} */

@@ -30,6 +30,7 @@
 #include "tidop/geometry/spatial/index/KdTree.h"
 
 #include <map>
+#include <random>
 
 namespace tl
 {
@@ -154,44 +155,403 @@ public:
 
 
 
-template<typename Point_t>
-class DbScanAdvanced
+/**
+ * @brief DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+ *
+ * Implementación optimizada usando KD-Tree para búsqueda eficiente de vecinos.
+ * Compatible con cualquier tipo que herede de VectorBase (Point, Vector, etc.).
+ *
+ * @tparam Entity_t Tipo de entidad (Point<T>, Vector<T>, etc.)
+ */
+template<typename Entity_t>
+class Dbscan2 
+{
+    static_assert(is_point<Entity_t>::value || is_vector<Entity_t>::value,
+                  "Dbscan can only be instantiated with point-like entities (Point, Vector, etc.)");
+
+public:
+
+    using PointType = Entity_t;
+    using T = typename VectorTraits<Entity_t>::value_type;
+    using Labels = std::vector<int>;
+
+    struct Config 
+    {
+        double eps = 1.0;                // Radio de vecindad
+        size_t min_pts = 5;              // Mínimo número de puntos para ser core
+        bool use_kdtree = true;          // Usar KD-Tree para optimización
+    };
+
+    struct Result 
+    {
+        Labels labels;                   // -1: ruido, >=0: id de cluster
+        size_t n_clusters;               // Número de clusters encontrados
+        std::vector<size_t> core_points; // Índices de puntos core
+        std::vector<size_t> noise_points;// Índices de puntos ruido
+    };
+
+    /**
+     * @brief Obtener estadísticas de los clusters
+     */
+    struct ClusterStats
+    {
+        size_t cluster_id;
+        size_t size;
+        double avg_density;
+        // Podrías añadir más estadísticas si necesitas
+    };
+
+private:
+
+    double m_eps;
+    size_t m_min_pts;
+    bool m_use_kdtree;
+
+public:
+
+    /**
+     * @brief Constructor
+     */
+    Dbscan2(double eps = 1.0, size_t min_pts = 5, bool use_kdtree = true)
+      : m_eps(eps),
+        m_min_pts(min_pts),
+        m_use_kdtree(use_kdtree)
+    {
+    }
+
+    Dbscan2(const Config &config)
+      : m_eps(config.eps), 
+        m_min_pts(config.min_pts), 
+        m_use_kdtree(config.use_kdtree)
+    {
+    }
+
+    /**
+     * @brief Ejecutar DBSCAN en un conjunto de puntos
+     */
+    auto fit(const std::vector<Entity_t> &points) -> Result
+    {
+        const size_t n = points.size();
+        Result result;
+
+        // Estado inicial
+        std::vector<int> labels(n, -99);      // -99: no visitado, -1: ruido, >=0: cluster
+        std::vector<bool> visited(n, false);
+        std::vector<bool> is_core(n, false);
+        int current_cluster = -1;
+
+        // Prepara KD-Tree si es necesario
+        std::unique_ptr<StaticKdTree<Entity_t>> kdtree;
+        if (m_use_kdtree && n > 100) {  // Umbral para usar KD-Tree
+            kdtree = std::make_unique<StaticKdTree<Entity_t>>(points);
+        }
+
+        // Primera pasada: identificar core points
+        for (size_t i = 0; i < n; ++i) {
+            if (visited[i]) continue;
+
+            std::vector<size_t> neighbors;
+            if (kdtree) {
+                neighbors = kdtree->radiusSearch(points[i], m_eps);
+            } else {
+                neighbors = linearRegionQuery(points, i);
+            }
+
+            if (neighbors.size() < m_min_pts) {
+                // Punto ruido (pero podría ser border point después)
+                labels[i] = -1;
+                visited[i] = true;
+            } else {
+                // Core point
+                is_core[i] = true;
+                // Expandir cluster
+                current_cluster++;
+                expandCluster(i, current_cluster, points, labels, visited, is_core, kdtree);
+            }
+        }
+
+        // Post-procesamiento: preparar resultado
+        result.labels.resize(n);
+        result.n_clusters = current_cluster + 1;
+
+        for (size_t i = 0; i < n; ++i) {
+            int label = labels[i];
+            if (label == -99) label = -1; // Puntos no procesados como ruido
+
+            result.labels[i] = label;
+
+            if (is_core[i]) {
+                result.core_points.push_back(i);
+            } else if (label == -1) {
+                result.noise_points.push_back(i);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @brief Obtener clusters como grupos de puntos
+     */
+    auto getClusters(const std::vector<Entity_t> &points,
+                     const Result &result) const -> std::vector<std::vector<Entity_t>>
+    {
+        std::vector<std::vector<Entity_t>> clusters(result.n_clusters);
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            int label = result.labels[i];
+            if (label >= 0) {
+                clusters[label].push_back(points[i]);
+            }
+        }
+
+        return clusters;
+    }
+
+    /**
+     * @brief Obtener clusters como grupos de índices
+     */
+    auto getClusterIndices(const Result &result) const -> std::vector<std::vector<size_t>> 
+    {
+
+        std::vector<std::vector<size_t>> clusters(result.n_clusters);
+
+        for (size_t i = 0; i < result.labels.size(); ++i) {
+            int label = result.labels[i];
+            if (label >= 0) {
+                clusters[label].push_back(i);
+            }
+        }
+
+        return clusters;
+    }
+
+    auto getClusterStats(const std::vector<Entity_t> &points,
+                         const Result &result) const -> std::vector<ClusterStats>
+    {
+        std::vector<ClusterStats> stats(result.n_clusters);
+        auto cluster_indices = getClusterIndices(result);
+
+        for (int i = 0; i < result.n_clusters; ++i) {
+            stats[i].cluster_id = i;
+            stats[i].size = cluster_indices[i].size();
+
+            // Calcular densidad promedio (simplificado)
+            double total_density = 0.0;
+            for (auto idx : cluster_indices[i]) {
+                // Contar puntos dentro del radio eps
+                size_t count = 0;
+                for (auto jdx : cluster_indices[i]) {
+                    if (idx != jdx && distance(points[idx], points[jdx]) <= m_eps) {
+                        count++;
+                    }
+                }
+                total_density += static_cast<double>(count);
+            }
+
+            if (cluster_indices[i].size() > 0) {
+                stats[i].avg_density = total_density / cluster_indices[i].size();
+            } else {
+                stats[i].avg_density = 0.0;
+            }
+        }
+
+        return stats;
+    }
+
+private:
+
+    // Búsqueda lineal de vecinos (para cuando no se usa KD-Tree)
+    auto linearRegionQuery(const std::vector<Entity_t> &points,
+                           size_t query_idx) const -> std::vector<size_t>
+    {
+        std::vector<size_t> neighbors;
+        const Entity_t &query_point = points[query_idx];
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            if (i == query_idx) continue;
+
+            if (distance(query_point, points[i]) <= m_eps) {
+                neighbors.push_back(i);
+            }
+        }
+
+        return neighbors;
+    }
+
+    // Búsqueda de vecinos usando KD-Tree o lineal
+    auto regionQuery(const std::vector<Entity_t> &points,
+                     size_t query_idx,
+                     const std::unique_ptr<StaticKdTree<Entity_t>> &kdtree) const -> std::vector<size_t> 
+    {
+        if (kdtree) {
+            return kdtree->radiusSearch(points[query_idx], m_eps);
+        } else {
+            return linearRegionQuery(points, query_idx);
+        }
+    }
+
+    // Expansión de cluster (iterativa para evitar desbordamiento de pila)
+    void expandCluster(size_t seed_idx,
+                       int cluster_id,
+                       const std::vector<Entity_t> &points,
+                       std::vector<int> &labels,
+                       std::vector<bool> &visited,
+                       std::vector<bool> &is_core,
+                       const std::unique_ptr<StaticKdTree<Entity_t>> &kdtree)
+    {
+        std::queue<size_t> queue;
+        queue.push(seed_idx);
+        visited[seed_idx] = true;
+        labels[seed_idx] = cluster_id;
+
+        while (!queue.empty()) {
+            size_t current_idx = queue.front();
+            queue.pop();
+
+            // Obtener vecinos
+            std::vector<size_t> neighbors = regionQuery(points, current_idx, kdtree);
+
+            // Verificar si es core point
+            if (neighbors.size() >= m_min_pts) {
+                is_core[current_idx] = true;
+
+                // Procesar vecinos
+                for (size_t neighbor_idx : neighbors) {
+                    if (!visited[neighbor_idx]) {
+                        visited[neighbor_idx] = true;
+                        labels[neighbor_idx] = cluster_id;
+                        queue.push(neighbor_idx);
+                    } else if (labels[neighbor_idx] == -1) {
+                        // Punto ruido que ahora pertenece al cluster
+                        labels[neighbor_idx] = cluster_id;
+                    }
+                }
+            }
+        }
+    }
+};
+
+/**
+ * @brief DBSCAN optimizado con configuración automática
+ */
+template<typename Entity_t>
+class DbscanAuto 
+  : public Dbscan<Entity_t>
 {
 
 public:
 
-    using T = typename VectorTraits<Point_t>::value_type;
+    using Base = Dbscan<Entity_t>;
+    using PointType = typename Base::PointType;
+
+    /**
+     * @brief Estimar parámetros óptimos usando heurística k-distancia
+     */
+    static typename Base::Config estimateParameters(const std::vector<Entity_t> &points,
+                                                    size_t k = 5,                   // k para k-NN distance
+                                                    double percentile = 0.95)       // Percentil para seleccionar eps
+    {
+        typename Base::Config config;
+
+        if (points.empty()) {
+            config.eps = 1.0;
+            config.min_pts = 5;
+            return config;
+        }
+
+        // 1. Estimar min_pts basado en dimensionalidad
+        size_t dimensions = points[0].size();
+        config.min_pts = 2 * dimensions;  // Heurística común
+
+        // 2. Estimar eps usando distancia al k-ésimo vecino más cercano
+        if (points.size() > 1000) {
+            // Para datasets grandes, muestrear
+            config.eps = estimateEpsSampling(points, k, percentile);
+        } else {
+            config.eps = estimateEpsFull(points, k, percentile);
+        }
+
+        return config;
+    }
+
+    /**
+     * @brief Constructor con parámetros automáticos
+     */
+    DbscanAuto(const std::vector<Entity_t> &points,
+               size_t k = 5,
+               double percentile = 0.95,
+               bool use_kdtree = true)
+      : Base(estimateParameters(points, k, percentile)) 
+    {
+        // Sobreescribir use_kdtree
+        static_cast<Base *>(this)->m_use_kdtree = use_kdtree;
+    }
 
 private:
 
-    std::vector<Point_t> mData;
-    std::map<size_t, int> labels;
-    int C;
-    double eps;
-    size_t mnpts;
-    std::unique_ptr<StaticKdTree<Point_t>> mTree;
-
-public:
-
-    DbScanAdvanced(const std::vector<Point_t> &data, double _eps, size_t _mnpts)
-      : mData(data), 
-        C(-1), 
-        eps(_eps), 
-        mnpts(_mnpts)
+    // Estimar eps usando todos los puntos
+    static double estimateEpsFull(const std::vector<Entity_t> &points,
+                                  size_t k,
+                                  double percentile)
     {
-        mTree = std::make_unique<StaticKdTree<Point_t>>(data);
 
-        for (size_t i = 0; i < mData.size(); i++) {
-            labels[i] = -99;
+        StaticKdTree<Entity_t> tree(points);
+        std::vector<double> kth_distances;
+        kth_distances.reserve(points.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            auto knn = tree.kNearestNeighbors(points[i], k + 1);
+            if (knn.size() > k) {
+                double dist = distance(points[i], points[knn[k]]);
+                kth_distances.push_back(dist);
+            }
         }
+
+        return percentileValue(kth_distances, percentile);
     }
 
-    std::vector<size_t> regionQuery(size_t p)
+    // Estimar eps usando muestreo
+    static double estimateEpsSampling(const std::vector<Entity_t> &points,
+        size_t k,
+        double percentile,
+        size_t sample_size = 1000) {
+
+        sample_size = std::min(sample_size, points.size());
+        StaticKdTree<Entity_t> tree(points);
+        std::vector<double> kth_distances;
+        kth_distances.reserve(sample_size);
+
+        // Muestrear aleatoriamente usando std::shuffle
+        std::vector<size_t> indices(points.size());
+        std::iota(indices.begin(), indices.end(), 0);
+
+        // Usar std::shuffle con generador aleatorio
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(indices.begin(), indices.end(), g);
+
+        for (size_t i = 0; i < sample_size; ++i) {
+            size_t idx = indices[i];
+            auto knn = tree.kNearestNeighbors(points[idx], k + 1);
+            if (knn.size() > k) {
+                double dist = distance(points[idx], points[knn[k]]);
+                kth_distances.push_back(dist);
+            }
+        }
+
+        return percentileValue(kth_distances, percentile);
+    }
+
+    // Calcular valor percentil
+    static double percentileValue(std::vector<double> &values, double percentile)
     {
-        return mTree->radiusSearch(mData[p], eps);
-    }
+        if (values.empty()) return 1.0;
 
-    // Resto de la implementación de DBSCAN...
+        std::sort(values.begin(), values.end());
+        size_t idx = static_cast<size_t>(percentile * (values.size() - 1));
+        return values[idx];
+    }
 };
 
 
