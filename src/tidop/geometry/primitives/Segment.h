@@ -223,22 +223,41 @@ public:
 // TYPE ALIASES FOR SEGMENT
 
 /*! \brief 2D segment with integer coordinates. */
-using Segment2i = Segment<Point<int, Dimension::dim2>>;
+using Segment2i = Segment<Point2i>;
 
 /*! \brief 2D segment with double coordinates. */
-using Segment2d = Segment<Point<double, Dimension::dim2>>;
+using Segment2d = Segment<Point2d>;
 
 /*! \brief 2D segment with float coordinates. */
-using Segment2f = Segment<Point<float, Dimension::dim2>>;
+using Segment2f = Segment<Point2f>;
 
 /*! \brief 3D segment with integer coordinates. */
-using Segment3i = Segment<Point<int, Dimension::dim3>>;
+using Segment3i = Segment<Point3i>;
 
 /*! \brief 3D segment with double coordinates. */
-using Segment3d = Segment<Point<double, Dimension::dim3>>;
+using Segment3d = Segment<Point3d>;
 
 /*! \brief 3D segment with float coordinates. */
-using Segment3f = Segment<Point<float, Dimension::dim3>>;
+using Segment3f = Segment<Point3f>;
+
+/*! \brief 4D segment with integer coordinates. */
+using Segment4i = Segment<Point4i>;
+
+/*! \brief 4D segment with double coordinates. */
+using Segment4d = Segment<Point4d>;
+
+/*! \brief 4D segment with float coordinates. */
+using Segment4f = Segment<Point4f>;
+
+using Segment2im = Segment<Point2im>;
+using Segment2dm = Segment<Point2dm>;
+using Segment2fm = Segment<Point2fm>;
+
+using Segment3im = Segment<Point3im>;
+using Segment3dm = Segment<Point3dm>;
+using Segment3fm = Segment<Point3fm>;
+
+
 
 // METHOD IMPLEMENTATIONS
 

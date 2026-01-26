@@ -74,17 +74,45 @@ using MultiLineString2i = MultiLineString<Point2i>;
 /*! \brief 3D multi-polyline with integer coordinates. */
 using MultiLineString3i = MultiLineString<Point3i>;
 
+/*! \brief 4D multi-polyline with integer coordinates. */
+using MultiLineString4i = MultiLineString<Point4i>;
+
 /*! \brief 2D multi-polyline with float coordinates. */
 using MultiLineString2f = MultiLineString<Point2f>;
 
 /*! \brief 3D multi-polyline with float coordinates. */
 using MultiLineString3f = MultiLineString<Point3f>;
 
+/*! \brief 4D multi-polyline with float coordinates. */
+using MultiLineString4f = MultiLineString<Point4f>;
+
 /*! \brief 2D multi-polyline with double coordinates. */
 using MultiLineString2d = MultiLineString<Point2d>;
 
 /*! \brief 3D multi-polyline with double coordinates. */
 using MultiLineString3d = MultiLineString<Point3d>;
+
+/*! \brief 4D multi-polyline with double coordinates. */
+using MultiLineString4d = MultiLineString<Point4d>;
+
+/*! \brief 2D multi-polyline with integer coordinates with measure. */
+using MultiLineString2im = MultiLineString<Point2im>;
+
+/*! \brief 2D multi-polyline with float coordinates with measure. */
+using MultiLineString2fm = MultiLineString<Point2fm>;
+
+/*! \brief 2D multi-polyline with double coordinates with measure. */
+using MultiLineString2dm = MultiLineString<Point2dm>;
+
+/*! \brief 3D multi-polyline with integer coordinates with measure. */
+using MultiLineString3im = MultiLineString<Point3im>;
+
+/*! \brief 3D multi-polyline with float coordinates with measure. */
+using MultiLineString3fm = MultiLineString<Point3fm>;
+
+/*! \brief 3D multi-polyline with double coordinates with measure. */
+using MultiLineString3dm = MultiLineString<Point3dm>;
+
 
 /*! \} */
 

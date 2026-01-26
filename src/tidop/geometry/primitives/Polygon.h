@@ -92,22 +92,22 @@ public:
 // TYPE ALIASES FOR LINEARRING
 
 /*! \brief 2D linear ring with integer coordinates. */
-using LinearRing2i = LinearRing<Point2<int>>;
+using LinearRing2i = LinearRing<Point2i>;
 
 /*! \brief 2D linear ring with double coordinates. */
-using LinearRing2d = LinearRing<Point2<double>>;
+using LinearRing2d = LinearRing<Point2d>;
 
 /*! \brief 2D linear ring with float coordinates. */
-using LinearRing2f = LinearRing<Point2<float>>;
+using LinearRing2f = LinearRing<Point2f>;
 
 /*! \brief 3D linear ring with integer coordinates. */
-using LinearRing3i = LinearRing<Point3<int>>;
+using LinearRing3i = LinearRing<Point3i>;
 
 /*! \brief 3D linear ring with double coordinates. */
-using LinearRing3d = LinearRing<Point3<double>>;
+using LinearRing3d = LinearRing<Point3d>;
 
 /*! \brief 3D linear ring with float coordinates. */
-using LinearRing3f = LinearRing<Point3<float>>;
+using LinearRing3f = LinearRing<Point3f>;
 
 
 /*!

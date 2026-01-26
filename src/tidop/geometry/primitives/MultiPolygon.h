@@ -72,20 +72,47 @@ class MultiPolygon
 /*! \brief 2D multi-polygon with integer coordinates. */
 using MultiPolygon2i = MultiPolygon<Point2i>;
 
-/*! \brief 3D multi-polygon with integer coordinates. */
-using MultiPolygon3i = MultiPolygon<Point3i>;
-
 /*! \brief 2D multi-polygon with float coordinates. */
 using MultiPolygon2f = MultiPolygon<Point2f>;
-
-/*! \brief 3D multi-polygon with float coordinates. */
-using MultiPolygon3f = MultiPolygon<Point3f>;
 
 /*! \brief 2D multi-polygon with double coordinates. */
 using MultiPolygon2d = MultiPolygon<Point2d>;
 
+/*! \brief 3D multi-polygon with integer coordinates. */
+using MultiPolygon3i = MultiPolygon<Point3i>;
+
+/*! \brief 3D multi-polygon with float coordinates. */
+using MultiPolygon3f = MultiPolygon<Point3f>;
+
 /*! \brief 3D multi-polygon with double coordinates. */
 using MultiPolygon3d = MultiPolygon<Point3d>;
+
+/*! \brief 4D multi-polygon with integer coordinates. */
+using MultiPolygon4i = MultiPolygon<Point4i>;
+
+/*! \brief 4D multi-polygon with float coordinates. */
+using MultiPolygon4f = MultiPolygon<Point4f>;
+
+/*! \brief 4D multi-polygon with double coordinates. */
+using MultiPolygon4d = MultiPolygon<Point4d>;
+
+/*! \brief 2D multi-polygon with integer coordinates with measure. */
+using MultiPolygon2im = MultiPolygon<Point2im>;
+
+/*! \brief 2D multi-polygon with float coordinates with measure. */
+using MultiPolygon2fm = MultiPolygon<Point2fm>;
+
+/*! \brief 2D multi-polygon with double coordinates with measure. */
+using MultiPolygon2dm = MultiPolygon<Point2dm>;
+
+/*! \brief 3D multi-polygon with integer coordinates with measure. */
+using MultiPolygon3im = MultiPolygon<Point3im>;
+
+/*! \brief 3D multi-polygon with float coordinates with measure. */
+using MultiPolygon3fm = MultiPolygon<Point3fm>;
+
+/*! \brief 3D multi-polygon with double coordinates with measure. */
+using MultiPolygon3dm = MultiPolygon<Point3dm>;
 
 
 /*! \} */

@@ -79,15 +79,15 @@ public:
      * \param[in] topLeft Rectangle top-left corner
      * \param[in] bottomRight Rectangle bottom-right corner
      */
-    Rect(const Point<T, Dimension::dim2> &topLeft, 
-         const Point<T, Dimension::dim2> &bottomRight);
+    Rect(const Point<T> &topLeft, 
+         const Point<T> &bottomRight);
     
     /*!
      * \brief Constructs a rectangle with top-left corner and size (width==height)
      * \param[in] topLeft Rectangle top-left corner
      * \param[in] size Rectangle width and height size
      */
-    Rect(const Point<T, Dimension::dim2> &topLeft,
+    Rect(const Point<T> &topLeft,
          const Size<T> &size);
     
     /*!
@@ -129,22 +129,22 @@ public:
     /*!
      * \brief Return top-left corner
      */
-    auto topLeft() const -> Point<T, Dimension::dim2>;
+    auto topLeft() const -> Point<T>;
     
     /*!
      * \brief Return top-right corner
      */
-     auto topRight() const -> Point<T, Dimension::dim2>;
+     auto topRight() const -> Point<T>;
     
     /*!
      * \brief Return bottom-right corner
      */
-    auto bottomRight() const -> Point<T, Dimension::dim2>;
+    auto bottomRight() const -> Point<T>;
     
     /*!
      * \brief Return bottom-left corner
      */
-    auto bottomLeft() const -> Point<T, Dimension::dim2>;
+    auto bottomLeft() const -> Point<T>;
     
     /*!
      * \brief Returns the size of the rectangle.
@@ -168,13 +168,13 @@ public:
      * \param[in] pt Point to check if is contained.
      * \return Returns true if the rectangle contains the point.
     */
-    auto contains(const Point<T, Dimension::dim2> &pt) const -> bool;
+    auto contains(const Point<T> &pt) const -> bool;
     
     /*!
      * \brief Transform a Rect object to a BoundingBox object
      * \return BoundingBox
      */
-    auto boundingBox() const -> BoundingBox<Point<T, Dimension::dim2>>;
+    auto boundingBox() const -> BoundingBox<Point<T>>;
     
     /*!
      * \brief Normalize the rectangle.
@@ -213,8 +213,8 @@ Rect<T>::Rect(T x, T y, T width, T height)
 }
 
 template<typename T> 
-Rect<T>::Rect(const Point<T, Dimension::dim2> &topLeft,
-              const Point<T, Dimension::dim2> &bottomRight)
+Rect<T>::Rect(const Point<T> &topLeft,
+              const Point<T> &bottomRight)
   : x(topLeft.x()), 
     y(topLeft.y()), 
     width(bottomRight.x() - topLeft.x()),
@@ -233,7 +233,7 @@ Rect<T>::Rect(const Point<T> &topLeft,
 }
 
 template<typename T> 
-Rect<T>::Rect(const Point<T, Dimension::dim2> &topLeft,
+Rect<T>::Rect(const Point<T> &topLeft,
               T width, T height)
   : x(topLeft.x()), 
     y(topLeft.y()), 
@@ -287,28 +287,28 @@ auto Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT -> Rect<T>&
 }
 
 template<typename T>
-auto Rect<T>::topLeft() const -> Point<T, Dimension::dim2>
+auto Rect<T>::topLeft() const -> Point<T>
 {
-    return Point<T, Dimension::dim2>(this->x, this->y);
+    return Point<T>(this->x, this->y);
 }
 
 template<typename T>
-auto Rect<T>::topRight() const -> Point<T, Dimension::dim2>
+auto Rect<T>::topRight() const -> Point<T>
 {
-    return Point<T, Dimension::dim2>(this->x + this->width, this->y);
+    return Point<T>(this->x + this->width, this->y);
 }
 
 template<typename T>
-auto Rect<T>::bottomRight() const -> Point<T, Dimension::dim2>
+auto Rect<T>::bottomRight() const -> Point<T>
 {
     return Point<T>(this->x + this->width, 
                     this->y + this->height);
 }
 
 template<typename T>
-auto Rect<T>::bottomLeft() const -> Point<T, Dimension::dim2>
+auto Rect<T>::bottomLeft() const -> Point<T>
 {
-    return Point<T, Dimension::dim2>(this->x, this->y + this->height);
+    return Point<T>(this->x, this->y + this->height);
 }
 
 template<typename T>
@@ -330,7 +330,7 @@ auto tl::Rect<T>::isValid() const -> bool
 }
 
 template<typename T>
-auto Rect<T>::contains(const Point<T, Dimension::dim2> &pt) const -> bool
+auto Rect<T>::contains(const Point<T> &pt) const -> bool
 {
     return (this->x <= pt.x() &&
             pt.x() < this->x + this->width &&
@@ -339,11 +339,11 @@ auto Rect<T>::contains(const Point<T, Dimension::dim2> &pt) const -> bool
 }
 
 template<typename T>
-auto Rect<T>::boundingBox() const -> BoundingBox<Point<T, Dimension::dim2>>
+auto Rect<T>::boundingBox() const -> BoundingBox<Point<T>>
 {
-    return BoundingBox<Point<T, Dimension::dim2>>(Point<T>(this->x, this->y),
-                                                  Point<T>(this->x + this->width,
-                                                           this->y + this->height));
+    return BoundingBox<Point<T>>(Point<T>(this->x, this->y),
+                                 Point<T>(this->x + this->width,
+                                          this->y + this->height));
 }
 
 template<typename T>
@@ -397,8 +397,8 @@ auto intersect(const Rect<T> &rect1, const Rect<T> &rect2) -> Rect<T>
 
     rect.x = std::max(rect1.x, rect2.x);
     rect.y = std::max(rect1.y, rect2.y);
-    Point<T, Dimension::dim2> bottomRight1 = rect1.bottomRight();
-    Point<T, Dimension::dim2> bottomRight2 = rect2.bottomRight();
+    Point<T> bottomRight1 = rect1.bottomRight();
+    Point<T> bottomRight2 = rect2.bottomRight();
     rect.width = std::min(bottomRight1.x(), bottomRight2.x()) - rect.x;
     rect.height = std::min(bottomRight1.y(), bottomRight2.y()) - rect.y;
     if (rect.width < 0) rect.width = 0;

@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop Point test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/vector.h>
+#include <tidop/math/algebra/matrix.h>
 #include <tidop/geometry/base/Dimension.h>
 #include <tidop/geometry/primitives/Point.h>
 #include <tidop/geometry/primitives/MultiPoint.h>
@@ -34,51 +35,32 @@
 using namespace tl;
 
 
-BOOST_AUTO_TEST_SUITE(GeometryPointTestSuite)
+BOOST_AUTO_TEST_SUITE(PointTestSuite)
 
 struct PointTest
 {
 
-    PointTest()
-      : point_integer(nullptr),
-        point_double(nullptr),
-        point_float(nullptr),
-        point_integer_copy(nullptr),
-        point_double_copy(nullptr),
-        point_float_copy(nullptr),
-        point_array_constructor_integer(nullptr)
-    {
-
-    }
-
-    ~PointTest()
-    {
-        delete point_integer;
-        delete point_double;
-        delete point_float;
-        delete point_integer_copy;
-        delete point_double_copy;
-        delete point_float_copy;
-        delete point_array_constructor_integer;
-    }
-
     void setup()
     {
-        point_integer = new Point<int, Dimension::dim2>(23, 67);
-        point_double = new Point<double, Dimension::dim2>(253.56, 562.94);
-        point_float = new Point<float, Dimension::dim2>(564.26f, 646.65f);
+        point_xy_integer = Point2i(23, 67);
+        point_xy_double = Point2d(253.56, 562.94);
+        point_xy_float = Point2f(564.26f, 646.65f);
 
-        point_integer_copy = new Point<int, Dimension::dim2>(*point_integer);
-        point_double_copy = new Point<double, Dimension::dim2>(*point_double);
-        point_float_copy = new Point<float, Dimension::dim2>(*point_float);
+        point_xyz_integer = Point3i(23, 67, 54);
+        point_xyz_double = Point3d(253.56, 562.94, 345.89);
+        point_xyz_float = Point3f(564.26f, 646.65f, 45.89f);
 
-        Vector2i vector_int{{23, 67}};
-        Vector2d vector_double{{253.56, 562.94}};
-        Vector2f vector_float{{564.26f, 646.65f}};
+        point_xym_double = Point2dm(253.56, 562.94, 255.);
+        point_xym_float = Point2fm(564.26f, 646.65f, 10.f);
+        point_xym_integer = Point2im(23, 67, 1);
 
-        std::array<int, 2> pt_int{{ 23, 67 }};
+        point_xyzm_double = Point3dm(253.56, 562.94, 345.89, 2563.2);
+        point_xyzm_float = Point3fm(564.26f, 646.65f, 45.89f, 452.23f);
+        point_xyzm_integer = Point3im(23, 67, 54, 10);
 
-        point_array_constructor_integer = new Point<int, Dimension::dim2>(pt_int);
+        point_xyzw_double = Point4d(253.56, 562.94, 345.89, 2563.2);
+        point_xyzw_float = Point4f(564.26f, 646.65f, 45.89f, 452.23f);
+        point_xyzw_integer = Point4i(23, 67, 54, 26);
     }
 
     void teardown()
@@ -86,61 +68,189 @@ struct PointTest
 
     }
 
-    Point<int, Dimension::dim2> point_default_constructor_integer;
-    Point<double, Dimension::dim2> point_default_constructor_double;
-    Point<float, Dimension::dim2> point_default_constructor_float;
+    Point2d point_xy_double;
+    Point2f point_xy_float;
+    Point2i point_xy_integer;
 
-    Point<int, Dimension::dim2> *point_integer;
-    Point<double, Dimension::dim2> *point_double;
-    Point<float, Dimension::dim2> *point_float;
-    Point<int, Dimension::dim2> *point_integer_copy;
-    Point<double, Dimension::dim2> *point_double_copy;
-    Point<float, Dimension::dim2> *point_float_copy;
+    Point3d point_xyz_double;
+    Point3f point_xyz_float;
+    Point3i point_xyz_integer;
 
-    Point<int, Dimension::dim2> *point_array_constructor_integer;
+    Point2dm point_xym_double;
+    Point2fm point_xym_float;
+    Point2im point_xym_integer;
 
+    Point3dm point_xyzm_double;
+    Point3fm point_xyzm_float;
+    Point3im point_xyzm_integer;
+
+    Point4d point_xyzw_double;
+    Point4f point_xyzw_float;
+    Point4i point_xyzw_integer;
+
+    std::array<int, 2> array_int{{ 23, 67 }};
 };
 
-BOOST_FIXTURE_TEST_CASE(default_constructor, PointTest)
+BOOST_AUTO_TEST_CASE(default_constructors)
 {
-    BOOST_CHECK_EQUAL(0, point_default_constructor_integer.x());
-    BOOST_CHECK_EQUAL(0, point_default_constructor_integer.y());
+    Point2d point_xy;
+    BOOST_CHECK_EQUAL(0., point_xy.x());
+    BOOST_CHECK_EQUAL(0., point_xy.y());
 
-    BOOST_CHECK_EQUAL(0., point_default_constructor_double.x());
-    BOOST_CHECK_EQUAL(0., point_default_constructor_double.y());
+    Point3d point_xyz;
+    BOOST_CHECK_EQUAL(0., point_xyz.x());
+    BOOST_CHECK_EQUAL(0., point_xyz.y());
+    BOOST_CHECK_EQUAL(0., point_xyz.z());
 
-    BOOST_CHECK_EQUAL(0.f, point_default_constructor_float.x());
-    BOOST_CHECK_EQUAL(0.f, point_default_constructor_float.y());
-}
+    Point2dm point_xym;
+    BOOST_CHECK_EQUAL(0., point_xym.x());
+    BOOST_CHECK_EQUAL(0., point_xym.y());
+    BOOST_CHECK_EQUAL(0., point_xym.m());
 
-BOOST_FIXTURE_TEST_CASE(xy_constructor, PointTest)
-{
-    BOOST_CHECK_EQUAL(23, point_integer->x());
-    BOOST_CHECK_EQUAL(67, point_integer->y());
+    Point3dm point_xyzm;
+    BOOST_CHECK_EQUAL(0., point_xyzm.x());
+    BOOST_CHECK_EQUAL(0., point_xyzm.y());
+    BOOST_CHECK_EQUAL(0., point_xyzm.z());
+    BOOST_CHECK_EQUAL(0., point_xyzm.m());
 
-    BOOST_CHECK_CLOSE(253.56, point_double->x(), 0.01);
-    BOOST_CHECK_CLOSE(562.94, point_double->y(), 0.01);
-
-    BOOST_CHECK_CLOSE(564.26f, point_float->x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, point_float->y(), 0.05);
+    Point4d point_xyzw;
+    BOOST_CHECK_EQUAL(0., point_xyzw.x());
+    BOOST_CHECK_EQUAL(0., point_xyzw.y());
+    BOOST_CHECK_EQUAL(0., point_xyzw.z());
+    BOOST_CHECK_EQUAL(0., point_xyzw.w());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, PointTest)
 {
-    BOOST_CHECK_EQUAL(23, point_integer_copy->x());
-    BOOST_CHECK_EQUAL(67, point_integer_copy->y());
+    Point2i point_xy_integer_copy(point_xy_integer);
+    BOOST_CHECK_EQUAL(23, point_xy_integer_copy.x());
+    BOOST_CHECK_EQUAL(67, point_xy_integer_copy.y());
 
-    BOOST_CHECK_CLOSE(253.56, point_double_copy->x(), 0.01);
-    BOOST_CHECK_CLOSE(562.94, point_double_copy->y(), 0.01);
+    Point2d point_xy_double_copy(point_xy_double);
+    BOOST_CHECK_CLOSE(253.56, point_xy_double_copy.x(), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xy_double_copy.y(), 0.01);
 
-    BOOST_CHECK_CLOSE(564.26f, point_float_copy->x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, point_float_copy->y(), 0.05);
+    Point2f point_xy_float_copy(point_xy_float);
+    BOOST_CHECK_CLOSE(564.26f, point_xy_float_copy.x(), 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xy_float_copy.y(), 0.05);
+
+    Point3d point_xyz_double_copy(point_xyz_double);
+    BOOST_CHECK_CLOSE(253.56, point_xyz_double_copy.x(), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xyz_double_copy.y(), 0.01);
+    BOOST_CHECK_CLOSE(345.89, point_xyz_double_copy.z(), 0.01);
+
+    Point3f point_xyz_float_copy(point_xyz_float);
+    BOOST_CHECK_CLOSE(564.26f, point_xyz_float_copy.x(), 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xyz_float_copy.y(), 0.05);
+    BOOST_CHECK_CLOSE(45.89f, point_xyz_float_copy.z(), 0.05);
+
+    Point3i point_xyz_integer_copy(point_xyz_integer);
+    BOOST_CHECK_EQUAL(23, point_xyz_integer_copy.x());
+    BOOST_CHECK_EQUAL(67, point_xyz_integer_copy.y());
+    BOOST_CHECK_EQUAL(54, point_xyz_integer_copy.z());
+
+    Point2dm point_xym_double_copy(point_xym_double);
+    BOOST_CHECK_CLOSE(253.56, point_xym_double_copy.x(), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xym_double_copy.y(), 0.01);
+    BOOST_CHECK_CLOSE(255., point_xym_double_copy.m(), 0.01);
+
+    Point2fm point_xym_float_copy(point_xym_float);
+    BOOST_CHECK_CLOSE(564.26f, point_xym_float_copy.x(), 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xym_float_copy.y(), 0.05);
+    BOOST_CHECK_CLOSE(10.f, point_xym_float_copy.m(), 0.05);
+
+    Point2im point_xym_integer_copy(point_xym_integer);
+    BOOST_CHECK_EQUAL(23, point_xym_integer_copy.x());
+    BOOST_CHECK_EQUAL(67, point_xym_integer_copy.y());
+    BOOST_CHECK_EQUAL(1, point_xym_integer_copy.m());
+
+    Point3dm point_xyzm_double_copy(point_xyzm_double);
+    BOOST_CHECK_CLOSE(253.56, point_xyzm_double_copy.x(), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xyzm_double_copy.y(), 0.01);
+    BOOST_CHECK_CLOSE(345.89, point_xyzm_double_copy.z(), 0.01);
+    BOOST_CHECK_CLOSE(2563.2, point_xyzm_double_copy.m(), 0.01);
+
+    Point3fm point_xyzm_float_copy(point_xyzm_float);
+    BOOST_CHECK_CLOSE(564.26f, point_xyzm_float_copy.x(), 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xyzm_float_copy.y(), 0.05);
+    BOOST_CHECK_CLOSE(45.89f, point_xyzm_float_copy.z(), 0.05);
+    BOOST_CHECK_CLOSE(452.23f, point_xyzm_float_copy.m(), 0.05);
+
+    Point3im point_xyzm_integer_copy(point_xyzm_integer);
+    BOOST_CHECK_EQUAL(23, point_xyzm_integer_copy.x());
+    BOOST_CHECK_EQUAL(67, point_xyzm_integer_copy.y());
+    BOOST_CHECK_EQUAL(54, point_xyzm_integer_copy.z());
+    BOOST_CHECK_EQUAL(10, point_xyzm_integer_copy.m());
+
+    Point4d point_xyzw_double_copy(point_xyzw_double);
+    BOOST_CHECK_CLOSE(253.56, point_xyzw_double_copy.x(), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xyzw_double_copy.y(), 0.01);
+    BOOST_CHECK_CLOSE(345.89, point_xyzw_double_copy.z(), 0.01);
+    BOOST_CHECK_CLOSE(2563.2, point_xyzw_double_copy.w(), 0.01);
+
+    Point4f point_xyzw_float_copy(point_xyzw_float);
+    BOOST_CHECK_CLOSE(564.26f, point_xyzw_float_copy.x(), 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xyzw_float_copy.y(), 0.05);
+    BOOST_CHECK_CLOSE(45.89f, point_xyzw_float_copy.z(), 0.05);
+    BOOST_CHECK_CLOSE(452.23f, point_xyzw_float_copy.w(), 0.05);
+
+    Point4i point_xyzw_integer_copy(point_xyzw_integer);
+    BOOST_CHECK_EQUAL(23, point_xyzw_integer_copy.x());
+    BOOST_CHECK_EQUAL(67, point_xyzw_integer_copy.y());
+    BOOST_CHECK_EQUAL(54, point_xyzw_integer_copy.z());
+    BOOST_CHECK_EQUAL(26, point_xyzw_integer_copy.w());
+}
+
+BOOST_FIXTURE_TEST_CASE(at_position, PointTest)
+{
+    BOOST_CHECK_EQUAL(23, point_xy_integer.at(0));
+    BOOST_CHECK_EQUAL(67, point_xy_integer.at(1));
+
+    BOOST_CHECK_CLOSE(253.56, point_xy_double[0], 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xy_double[1], 0.01);
+
+    BOOST_CHECK_CLOSE(253.56, point_xyz_double.at(0), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xyz_double.at(1), 0.01);
+    BOOST_CHECK_CLOSE(345.89, point_xyz_double.at(2), 0.01);
+
+    BOOST_CHECK_CLOSE(564.26f, point_xyz_float[0], 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xyz_float[1], 0.05);
+    BOOST_CHECK_CLOSE(45.89f, point_xyz_float[2], 0.05);
+
+    BOOST_CHECK_CLOSE(253.56, point_xym_double.at(0), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xym_double.at(1), 0.01);
+
+    BOOST_CHECK_CLOSE(564.26f, point_xym_float[0], 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xym_float[1], 0.05);
+    // No esta pensado para acceder a m (y no se devería) pero al estar contiguo en memoria funciona.
+    BOOST_CHECK_CLOSE(10.f, point_xym_float[2], 0.05);
+
+    BOOST_CHECK_CLOSE(253.56, point_xyzm_double.at(0), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xyzm_double.at(1), 0.01);
+    BOOST_CHECK_CLOSE(345.89, point_xyzm_double.at(2), 0.01);
+
+    BOOST_CHECK_CLOSE(564.26f, point_xyzm_float[0], 0.05);
+    BOOST_CHECK_CLOSE(646.65f, point_xyzm_float[1], 0.05);
+    BOOST_CHECK_CLOSE(45.89f, point_xyzm_float[2], 0.05);
+    // No esta pensado para acceder a m (y no se devería) pero al estar contiguo en memoria funciona.
+    BOOST_CHECK_CLOSE(452.23f, point_xyzm_float[3], 0.05);
+
+    BOOST_CHECK_CLOSE(253.56, point_xyzw_double.at(0), 0.01);
+    BOOST_CHECK_CLOSE(562.94, point_xyzw_double.at(1), 0.01);
+    BOOST_CHECK_CLOSE(345.89, point_xyzw_double.at(2), 0.01);
+    BOOST_CHECK_CLOSE(2563.2, point_xyzw_double.at(3), 0.01);
+
+    BOOST_CHECK_EQUAL(23, point_xyzw_integer[0]);
+    BOOST_CHECK_EQUAL(67, point_xyzw_integer[1]);
+    BOOST_CHECK_EQUAL(54, point_xyzw_integer[2]);
+    BOOST_CHECK_EQUAL(26, point_xyzw_integer[3]);
 }
 
 BOOST_FIXTURE_TEST_CASE(array_constructor, PointTest)
 {
-    BOOST_CHECK_EQUAL(23, point_array_constructor_integer->x());
-    BOOST_CHECK_EQUAL(67, point_array_constructor_integer->y());
+    Point2i pt_int(array_int);
+    BOOST_CHECK_EQUAL(23, pt_int.x());
+    BOOST_CHECK_EQUAL(67, pt_int.y());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, PointTest)
@@ -153,367 +263,122 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, PointTest)
 
 BOOST_FIXTURE_TEST_CASE(type, PointTest)
 {
-    BOOST_CHECK(GeometryType::point == point_default_constructor_integer.type());
-    BOOST_CHECK(GeometryType::point == point_integer->type());
-    BOOST_CHECK(GeometryType::point == point_double->type());
-    BOOST_CHECK(GeometryType::point == point_float->type());
-    BOOST_CHECK(GeometryType::point == point_integer_copy->type());
-    BOOST_CHECK(GeometryType::point == point_array_constructor_integer->type());
+    BOOST_CHECK(GeometryType::point == point_xy_integer.type());
+    BOOST_CHECK(GeometryType::point == point_xy_double.type());
+    BOOST_CHECK(GeometryType::point == point_xy_float.type());
 }
 
 BOOST_FIXTURE_TEST_CASE(dimension, PointTest)
 {
-    BOOST_CHECK(Dimension::dim2 == point_default_constructor_integer.dimension());
-    BOOST_CHECK(Dimension::dim2 == point_integer->dimension());
-    BOOST_CHECK(Dimension::dim2 == point_double->dimension());
-    BOOST_CHECK(Dimension::dim2 == point_float->dimension());
-    BOOST_CHECK(Dimension::dim2 == point_integer_copy->dimension());
+    BOOST_CHECK(Dimension::dim2 == point_xy_integer.dimension());
+    BOOST_CHECK(Dimension::dim2 == point_xy_double.dimension());
+    BOOST_CHECK(Dimension::dim2 == point_xy_float.dimension());
+
+    BOOST_CHECK(Dimension::dim3 == point_xyz_integer.dimension());
+    BOOST_CHECK(Dimension::dim3 == point_xyz_double.dimension());
+    BOOST_CHECK(Dimension::dim3 == point_xyz_float.dimension());
+
+    BOOST_CHECK(Dimension::dim2 == point_xym_integer.dimension());
+    BOOST_CHECK(Dimension::dim2 == point_xym_double.dimension());
+    BOOST_CHECK(Dimension::dim2 == point_xym_float.dimension());
+
+    BOOST_CHECK(Dimension::dim3 == point_xyzm_integer.dimension());
+    BOOST_CHECK(Dimension::dim3 == point_xyzm_double.dimension());
+    BOOST_CHECK(Dimension::dim3 == point_xyzm_float.dimension());
+
+    BOOST_CHECK(Dimension::dim4 == point_xyzw_integer.dimension());
+    BOOST_CHECK(Dimension::dim4 == point_xyzw_double.dimension());
+    BOOST_CHECK(Dimension::dim4 == point_xyzw_float.dimension());
 }
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, PointTest)
 {
-    Point2i pt_int_c = *point_integer;
-
+    Point2i pt_int_c = point_xy_integer;
     BOOST_CHECK_EQUAL(23, pt_int_c.x());
     BOOST_CHECK_EQUAL(67, pt_int_c.y());
 
-    Point2d pt_double_c = *point_double;
-
+    Point2d pt_double_c = point_xy_double;
     BOOST_CHECK_CLOSE(253.56, pt_double_c.x(), 0.01);
     BOOST_CHECK_CLOSE(562.94, pt_double_c.y(), 0.01);
 
-    Point2f pt_float_c = *point_float;
-
+    Point2f pt_float_c = point_xy_float;
     BOOST_CHECK_CLOSE(564.26f, pt_float_c.x(), 0.05);
     BOOST_CHECK_CLOSE(646.65f, pt_float_c.y(), 0.05);
-}
-
-BOOST_FIXTURE_TEST_CASE(assing_move_operator, PointTest)
-{
-    Point2i pt(23, 67);
-    Point2i pt2 = std::move(pt);
-    BOOST_CHECK_EQUAL(23, pt2.x());
-    BOOST_CHECK_EQUAL(67, pt2.y());
 }
 
 BOOST_FIXTURE_TEST_CASE(cast, PointTest)
 {
-    Point2d pt_double = static_cast<Point2d>(*point_integer);
+    Point2d pt_double = static_cast<Point2d>(point_xy_integer);
 
     BOOST_CHECK_EQUAL(23.0, pt_double.x());
     BOOST_CHECK_EQUAL(67.0, pt_double.y());
 
-    Point2i pt_int = static_cast<Point2i>(*point_double);
+    Point2i pt_int = static_cast<Point2i>(point_xy_double);
 
     BOOST_CHECK_EQUAL(254, pt_int.x());
     BOOST_CHECK_EQUAL(563, pt_int.y());
 
-    Point3f pt_float3D(564.26f, 646.65f, 23.32f);
-    Point2f pt_float = static_cast<Point2f>(pt_float3D);
+    Point2f pt_float = static_cast<Point2f>(point_xyz_float);
     BOOST_CHECK_CLOSE(564.26f, pt_float.x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, pt_float.y(), 0.05); 
-}
+    BOOST_CHECK_CLOSE(646.65f, pt_float.y(), 0.05);
 
-BOOST_AUTO_TEST_SUITE_END()
+    Point3d pt_double_3d = static_cast<Point3d>(point_xyz_integer);
 
+    BOOST_CHECK_EQUAL(23.0, pt_double_3d.x());
+    BOOST_CHECK_EQUAL(67.0, pt_double_3d.y());
+    BOOST_CHECK_EQUAL(54.0, pt_double_3d.z());
 
+    Point3f pt_float_3d = static_cast<Point3f>(point_xy_integer);
 
+    BOOST_CHECK_EQUAL(23.0, pt_float_3d.x());
+    BOOST_CHECK_EQUAL(67.0, pt_float_3d.y());
+    BOOST_CHECK_EQUAL(0.0, pt_float_3d.z());
 
-/* Punto 3D */
+    Point4f pt_xyzw = static_cast<Point4f>(point_xy_integer);
 
-BOOST_AUTO_TEST_SUITE(GeometryPoint3TestSuite)
+    BOOST_CHECK_EQUAL(23.0, pt_xyzw.x());
+    BOOST_CHECK_EQUAL(67.0, pt_xyzw.y());
+    BOOST_CHECK_EQUAL(0.0, pt_xyzw.z());
+    BOOST_CHECK_EQUAL(0.0, pt_xyzw.w());
 
-struct Point3Test
-{
+    pt_xyzw = static_cast<Point4f>(point_xym_integer);
 
-    Point3Test()
-        : point_integer(nullptr),
-        point_double(nullptr),
-        point_float(nullptr),
-        point_integer_copy(nullptr),
-        point_double_copy(nullptr),
-        point_float_copy(nullptr),
-        point_array_constructor_integer(nullptr)
-    {
+    BOOST_CHECK_EQUAL(23.0, pt_xyzw.x());
+    BOOST_CHECK_EQUAL(67.0, pt_xyzw.y());
+    BOOST_CHECK_EQUAL(0.0, pt_xyzw.z());
+    BOOST_CHECK_EQUAL(0.0, pt_xyzw.w());
 
-    }
+    pt_xyzw = static_cast<Point4f>(point_xyzm_integer);
 
-    ~Point3Test()
-    {
-        delete point_integer;
-        delete point_double;
-        delete point_float;
-        delete point_integer_copy;
-        delete point_double_copy;
-        delete point_float_copy;
-        delete point_array_constructor_integer;
-    }
+    BOOST_CHECK_EQUAL(23.0, pt_xyzw.x());
+    BOOST_CHECK_EQUAL(67.0, pt_xyzw.y());
+    BOOST_CHECK_EQUAL(54.0, pt_xyzw.z());
+    BOOST_CHECK_EQUAL(0.0, pt_xyzw.w());
 
-    void setup()
-    {
-        point_integer = new Point3i(23, 67, 54);
-        point_double = new Point3d(253.56, 562.94, 345.89);
-        point_float = new Point3f(564.26f, 646.65f, 45.89f);
+    Point3fm pt_xyzm = static_cast<Point3fm>(point_xym_integer);
 
-        point_integer_copy = new Point3i(*point_integer);
-        point_double_copy = new Point3d(*point_double);
-        point_float_copy = new Point3f(*point_float);
+    BOOST_CHECK_EQUAL(23.0, pt_xyzm.x());
+    BOOST_CHECK_EQUAL(67.0, pt_xyzm.y());
+    BOOST_CHECK_EQUAL(0.0, pt_xyzm.z());
+    BOOST_CHECK_EQUAL(1.0, pt_xyzm.m());
 
-        Vector3i vector_int{{23, 67, 23}};
-        Vector3d vector_double{{253.56, 562.94, 234.67}};
-        Vector3f vector_float{{564.26f, 646.65f, 56.21f}};
+    Point2fm pt_xym = static_cast<Point2fm>(point_xyzm_integer);
 
-        std::array<int, 3> pt_int{{ 23, 67, 23 }};
+    BOOST_CHECK_EQUAL(23.0, pt_xym.x());
+    BOOST_CHECK_EQUAL(67.0, pt_xym.y());
+    BOOST_CHECK_EQUAL(10.0, pt_xym.m());
 
-        point_array_constructor_integer = new Point<int, Dimension::dim3>(pt_int);
-    }
+    pt_xym = static_cast<Point2fm>(point_xyzw_integer);
 
-    void teardown()
-    {
-
-    }
-
-    
-    Point3i point_default_constructor_integer;
-    Point3d point_default_constructor_double;
-    Point3f point_default_constructor_float;
-
-    Point3i *point_integer;
-    Point3d *point_double;
-    Point3f *point_float;
-    Point3i *point_integer_copy;
-    Point3d *point_double_copy;
-    Point3f *point_float_copy;
-
-    Point3i *point_array_constructor_integer;
-
-};
-
-BOOST_FIXTURE_TEST_CASE(default_constructor, Point3Test)
-{
-    BOOST_CHECK_EQUAL(0, point_default_constructor_integer.x());
-    BOOST_CHECK_EQUAL(0, point_default_constructor_integer.y());
-    BOOST_CHECK_EQUAL(0, point_default_constructor_integer.z());
-
-    BOOST_CHECK_EQUAL(0., point_default_constructor_double.x());
-    BOOST_CHECK_EQUAL(0., point_default_constructor_double.y());
-    BOOST_CHECK_EQUAL(0., point_default_constructor_double.z());
-
-    BOOST_CHECK_EQUAL(0.f, point_default_constructor_float.x());
-    BOOST_CHECK_EQUAL(0.f, point_default_constructor_float.y());
-    BOOST_CHECK_EQUAL(0.f, point_default_constructor_float.z());
-}
-
-BOOST_FIXTURE_TEST_CASE(xy_constructor, Point3Test)
-{
-    BOOST_CHECK_EQUAL(23, point_integer->x());
-    BOOST_CHECK_EQUAL(67, point_integer->y());
-    BOOST_CHECK_EQUAL(54, point_integer->z());
-
-    BOOST_CHECK_CLOSE(253.56, point_double->x(), 0.01);
-    BOOST_CHECK_CLOSE(562.94, point_double->y(), 0.01);
-    BOOST_CHECK_CLOSE(345.89, point_double->z(), 0.01);
-
-    BOOST_CHECK_CLOSE(564.26f, point_float->x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, point_float->y(), 0.05);
-    BOOST_CHECK_CLOSE(45.89f, point_float->z(), 0.05);
-}
-
-BOOST_FIXTURE_TEST_CASE(copy_constructor, Point3Test)
-{
-    BOOST_CHECK_EQUAL(23, point_integer_copy->x());
-    BOOST_CHECK_EQUAL(67, point_integer_copy->y());
-    BOOST_CHECK_EQUAL(54, point_integer_copy->z());
-
-    BOOST_CHECK_CLOSE(253.56, point_double_copy->x(), 0.01);
-    BOOST_CHECK_CLOSE(562.94, point_double_copy->y(), 0.01);
-    BOOST_CHECK_CLOSE(345.89, point_double_copy->z(), 0.01);
-
-    BOOST_CHECK_CLOSE(564.26f, point_float_copy->x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, point_float_copy->y(), 0.05);
-    BOOST_CHECK_CLOSE(45.89f, point_float_copy->z(), 0.05);
-}
-
-BOOST_FIXTURE_TEST_CASE(array_constructor, Point3Test)
-{
-    BOOST_CHECK_EQUAL(23, point_array_constructor_integer->x());
-    BOOST_CHECK_EQUAL(67, point_array_constructor_integer->y());
-}
-
-BOOST_FIXTURE_TEST_CASE(move_constructor, Point3Test)
-{
-    Point3i pt(23, 67, 23);
-    Point3i pt2(std::move(pt));
-    BOOST_CHECK_EQUAL(23, pt2.x());
-    BOOST_CHECK_EQUAL(67, pt2.y());
-    BOOST_CHECK_EQUAL(23, pt2.z());
-}
-
-BOOST_FIXTURE_TEST_CASE(type, Point3Test)
-{
-    BOOST_CHECK(GeometryType::point == point_default_constructor_integer.type());
-    BOOST_CHECK(GeometryType::point == point_integer->type());
-    BOOST_CHECK(GeometryType::point == point_double->type());
-    BOOST_CHECK(GeometryType::point == point_float->type());
-    BOOST_CHECK(GeometryType::point == point_integer_copy->type());
-    BOOST_CHECK(GeometryType::point == point_array_constructor_integer->type());
-}
-
-BOOST_FIXTURE_TEST_CASE(dimension, Point3Test)
-{
-    BOOST_CHECK(Dimension::dim3 == point_default_constructor_integer.dimension());
-    BOOST_CHECK(Dimension::dim3 == point_integer->dimension());
-    BOOST_CHECK(Dimension::dim3 == point_double->dimension());
-    BOOST_CHECK(Dimension::dim3 == point_float->dimension());
-    BOOST_CHECK(Dimension::dim3 == point_integer_copy->dimension());
-}
-
-BOOST_FIXTURE_TEST_CASE(assing_operator, Point3Test)
-{
-    Point3i pt_int_c = *point_integer;
-
-    BOOST_CHECK_EQUAL(23, pt_int_c.x());
-    BOOST_CHECK_EQUAL(67, pt_int_c.y());
-    BOOST_CHECK_EQUAL(54, pt_int_c.z());
-
-    Point3d pt_double_c = *point_double;
-
-    BOOST_CHECK_CLOSE(253.56, pt_double_c.x(), 0.01);
-    BOOST_CHECK_CLOSE(562.94, pt_double_c.y(), 0.01);
-    BOOST_CHECK_CLOSE(345.89, pt_double_c.z(), 0.01);
-
-    Point3f pt_float_c = *point_float;
-
-    BOOST_CHECK_CLOSE(564.26f, pt_float_c.x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, pt_float_c.y(), 0.05);
-    BOOST_CHECK_CLOSE(45.89f, pt_float_c.z(), 0.05);
-}
-
-BOOST_FIXTURE_TEST_CASE(assing_move_operator, Point3Test)
-{
-    Point3i pt(23, 67, 23);
-    Point3i pt2 = std::move(pt);
-    BOOST_CHECK_EQUAL(23, pt2.x());
-    BOOST_CHECK_EQUAL(67, pt2.y());
-    BOOST_CHECK_EQUAL(23, pt2.z());
-}
-
-BOOST_FIXTURE_TEST_CASE(cast, Point3Test)
-{
-
-    Point3d pt_double = static_cast<Point3d>(*point_integer);
-
-    BOOST_CHECK_EQUAL(23.0, pt_double.x());
-    BOOST_CHECK_EQUAL(67.0, pt_double.y());
-    BOOST_CHECK_EQUAL(54.0, pt_double.z());
-
-    Point2i pt_int = static_cast<Point2i>(*point_double);
-
-    BOOST_CHECK_EQUAL(254, pt_int.x());
-    BOOST_CHECK_EQUAL(563, pt_int.y());
-
-    Point2f pt_float(564.26f, 646.65f);
-    Point3f pt_float_3d = static_cast<Point3f>(pt_float);
-    BOOST_CHECK_CLOSE(564.26f, pt_float_3d.x(), 0.05);
-    BOOST_CHECK_CLOSE(646.65f, pt_float_3d.y(), 0.05);
-    BOOST_CHECK_CLOSE(0.f, pt_float_3d.z(), 0.05);
+    BOOST_CHECK_EQUAL(23.0, pt_xym.x());
+    BOOST_CHECK_EQUAL(67.0, pt_xym.y());
+    BOOST_CHECK_EQUAL(0.0, pt_xym.m());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 
 
 /* Operaciones entre puntos */
-
-//BOOST_AUTO_TEST_CASE(point_append)
-//{
-//    /// 2D
-//
-//    Point2i pt_1(23, 67);
-//    Point2i pt_2(67, 56);
-//
-//    pt_2 += pt_1;
-//
-//    BOOST_CHECK_EQUAL(90, pt_2.x());
-//    BOOST_CHECK_EQUAL(123, pt_2.y());
-//
-//    Point2d pt_1d(23.45, 67.52);
-//    Point2d pt_2d(67.59, 56.39);
-//
-//    pt_2d += pt_1d;
-//
-//    BOOST_CHECK_CLOSE(91.04, pt_2d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(123.91, pt_2d.y(), 0.01);
-//
-//    // Tipos diferentes
-//    pt_1 += pt_2d;
-//    BOOST_CHECK_EQUAL(114, pt_1.x());
-//    BOOST_CHECK_EQUAL(191, pt_1.y());
-//
-//    /// 3D
-//
-//    Point3i pt3_1(23, 67, 10);
-//    Point3i pt3_2(67, 56, 25);
-//
-//    pt3_2 += pt3_1;
-//
-//    BOOST_CHECK_EQUAL(90, pt3_2.x());
-//    BOOST_CHECK_EQUAL(123, pt3_2.y());
-//    BOOST_CHECK_EQUAL(35, pt3_2.z());
-//
-//    Point3d pt3_1d(23.45, 67.52, 10.5);
-//    Point3d pt3_2d(67.59, 56.39, 15.9);
-//
-//    pt3_2d += pt3_1d;
-//
-//    BOOST_CHECK_CLOSE(91.04, pt3_2d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(123.91, pt3_2d.y(), 0.01);
-//    BOOST_CHECK_CLOSE(26.4, pt3_2d.z(), 0.01);
-//
-//    // Tipos diferentes
-//    pt3_1 += pt3_2d;
-//    BOOST_CHECK_EQUAL(114, pt3_1.x());
-//    BOOST_CHECK_EQUAL(191, pt3_1.y());
-//    BOOST_CHECK_EQUAL(36, pt3_1.z());
-//}
-
-//BOOST_AUTO_TEST_CASE(point_addition)
-//{
-//    Point2i pt_1(23, 67);
-//    Point2i pt_2(67, 56);
-//
-//    Point2i pt_3 = pt_1 + pt_2;
-//
-//    BOOST_CHECK_EQUAL(90, pt_3.x());
-//    BOOST_CHECK_EQUAL(123, pt_3.y());
-//
-//    Point2d pt_1d(23.45, 67.52);
-//    Point2d pt_2d(67.59, 56.39);
-//
-//    Point2d pt_3d = pt_1d + pt_2d;
-//
-//    BOOST_CHECK_CLOSE(91.04, pt_3d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(123.91, pt_3d.y(), 0.01);
-//
-//    // 3D
-//
-//    Point3i pt3_1(23, 67, 10);
-//    Point3i pt3_2(67, 56, 25);
-//
-//    Point3i pt3_3 = pt3_1 + pt3_2;
-//
-//    BOOST_CHECK_EQUAL(90, pt3_3.x());
-//    BOOST_CHECK_EQUAL(123, pt3_3.y());
-//    BOOST_CHECK_EQUAL(35, pt3_3.z());
-//
-//    Point3d pt3_1d(23.45, 67.52, 10.5);
-//    Point3d pt3_2d(67.59, 56.39, 15.9);
-//
-//    Point3d pt3_3d = pt3_1d + pt3_2d;
-//
-//    BOOST_CHECK_CLOSE(91.04, pt3_3d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(123.91, pt3_3d.y(), 0.01);
-//    BOOST_CHECK_CLOSE(26.4, pt3_3d.z(), 0.01);
-//}
 
 BOOST_AUTO_TEST_CASE(point_substraction)
 {
@@ -555,348 +420,37 @@ BOOST_AUTO_TEST_CASE(point_substraction)
 
 }
 
-//BOOST_AUTO_TEST_CASE(point_substraction2)
-//{
-//    Point2i pt_1(23, 67);
-//    Point2i pt_2(67, 56);
-//
-//    pt_1 -= pt_2;
-//
-//    BOOST_CHECK_EQUAL(-44, pt_1.x());
-//    BOOST_CHECK_EQUAL(11, pt_1.y());
-//
-//    Point2d pt_1d(256.26, 2526.36);
-//    Point2d pt_2d(894.66, 651.56);
-//
-//    pt_1d -= pt_2d;
-//
-//    BOOST_CHECK_CLOSE(-638.4, pt_1d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(1874.8, pt_1d.y(), 0.01);
-//
-//    // Tipos diferentes
-//    pt_1 -= pt_1d;
-//    BOOST_CHECK_EQUAL(594, pt_1.x());
-//    BOOST_CHECK_EQUAL(-1864, pt_1.y());
-//
-//    /// 3D
-//
-//    Point3i pt3_1(23, 67, 10);
-//    Point3i pt3_2(67, 56, 25);
-//
-//    pt3_1 -= pt3_2;
-//
-//    BOOST_CHECK_EQUAL(-44, pt3_1.x());
-//    BOOST_CHECK_EQUAL(11, pt3_1.y());
-//    BOOST_CHECK_EQUAL(-15, pt3_1.z());
-//
-//    Point3d pt3_1d(256.26, 2526.36, 12.36);
-//    Point3d pt3_2d(894.66, 651.56, 265.3);
-//
-//    pt3_1d -= pt3_2d;
-//
-//    BOOST_CHECK_CLOSE(-638.4, pt3_1d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(1874.8, pt3_1d.y(), 0.01);
-//    BOOST_CHECK_CLOSE(-252.94, pt3_1d.z(), 0.01);
-//
-//    // Tipos diferentes
-//    pt3_1 -= pt3_1d;
-//    BOOST_CHECK_EQUAL(594, pt3_1.x());
-//    BOOST_CHECK_EQUAL(-1864, pt3_1.y());
-//    BOOST_CHECK_EQUAL(238, pt3_1.z());
-//}
+/// Multiplicación de un punto por una matriz
 
-/* Multiplicación de un punto por un escalar */
+BOOST_AUTO_TEST_CASE(matrix_by_point)
+{
+    Matrix<int, 2, 3> _mat_2x3_i
+    {
+        6,8,6,
+        9,6,2
+    };
+    Point3i point(1, 2, 3);
+    Point2i point2 = _mat_2x3_i * point;
 
-// Eliminado para Point
-//BOOST_AUTO_TEST_CASE(point_multiplication)
-//{
-//    Point2i pt(23, 67);
-//    int s = 3;
-//
-//    Point2i pt_ = pt * s;
-//
-//    BOOST_CHECK_EQUAL(69, pt_.x());
-//    BOOST_CHECK_EQUAL(201, pt_.y());
-//
-//    pt *= s;
-//
-//    BOOST_CHECK_EQUAL(69, pt.x());
-//    BOOST_CHECK_EQUAL(201, pt.y());
-//
-//    Point2d pt_d(256.26, 2526.36);
-//    double s_d = 23.5;
-//
-//    pt_d *= s_d;
-//
-//    BOOST_CHECK_CLOSE(6022.11, pt_d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(59369.46, pt_d.y(), 0.01);
-//
-//    Point2i pt2(23, 67);
-//    double s2 = 3.3;
-//
-//    pt2 *= s2;
-//    BOOST_CHECK_EQUAL(76, pt2.x());
-//    BOOST_CHECK_EQUAL(221, pt2.y());
-//
-//
-//    /// 3D
-//
-//    Point3i pt3(23, 67, 15);
-//
-//    pt3 *= s;
-//
-//    BOOST_CHECK_EQUAL(69, pt3.x());
-//    BOOST_CHECK_EQUAL(201, pt3.y());
-//    BOOST_CHECK_EQUAL(45, pt3.z());
-//
-//    Point3d pt3_d(256.26, 2526.36, 236.47);
-//
-//    pt3_d *= s_d;
-//
-//    BOOST_CHECK_CLOSE(6022.11, pt3_d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(59369.46, pt3_d.y(), 0.01);
-//    BOOST_CHECK_CLOSE(5557.045, pt3_d.z(), 0.01);
-//
-//    Point3i pt3_2(23, 67, 26);
-//
-//    pt3_2 *= s2;
-//    BOOST_CHECK_EQUAL(76, pt3_2.x());
-//    BOOST_CHECK_EQUAL(221, pt3_2.y());
-//    BOOST_CHECK_EQUAL(86, pt3_2.z());
-//
-//}
+    BOOST_CHECK_EQUAL(40, point2[0]);
+    BOOST_CHECK_EQUAL(27, point2[1]);
 
-/* División de un punto por un escalar */
+    Matrix<int> mat_dyn_2x3_i(2, 3);
+    mat_dyn_2x3_i(0, 0) = 6;
+    mat_dyn_2x3_i(0, 1) = 8;
+    mat_dyn_2x3_i(0, 2) = 6;
+    mat_dyn_2x3_i(1, 0) = 9;
+    mat_dyn_2x3_i(1, 1) = 6;
+    mat_dyn_2x3_i(1, 2) = 2;
 
-// Eliminado para Point
-//BOOST_AUTO_TEST_CASE(Point_division)
-//{
-//    Point2i pt(23, 67);
-//    int s = 3;
-//
-//    pt /= s;
-//
-//    BOOST_CHECK_EQUAL(8, pt.x());
-//    BOOST_CHECK_EQUAL(22, pt.y());
-//
-//    Point2d pt_d(256.26, 2526.36);
-//    double s_d = 23.5;
-//
-//    pt_d /= s_d;
-//
-//    BOOST_CHECK_CLOSE(10.905, pt_d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(107.505, pt_d.y(), 0.01);
-//
-//    Point2d pt2(23, 67);
-//    double s2 = 3.3;
-//
-//    pt2 /= s2;
-//    BOOST_CHECK_EQUAL(7, pt2.x());
-//    BOOST_CHECK_EQUAL(20, pt2.y());
-//
-//
-//    /// 3D
-//
-//    Point3i pt3(23, 67, 15);
-//
-//    pt3 /= s;
-//
-//    BOOST_CHECK_EQUAL(8, pt3.x());
-//    BOOST_CHECK_EQUAL(22, pt3.y());
-//    BOOST_CHECK_EQUAL(5, pt3.z());
-//
-//    Point3d pt3_d(256.26, 2526.36, 236.47);
-//
-//    pt3_d /= s_d;
-//
-//    BOOST_CHECK_CLOSE(10.905, pt3_d.x(), 0.01);
-//    BOOST_CHECK_CLOSE(107.505, pt3_d.y(), 0.01);
-//    BOOST_CHECK_CLOSE(10.0625, pt3_d.z(), 0.01);
-//
-//    //Point3i pt3_2(23, 67, 26);
-//
-//    //pt3_2 /= s2;
-//    //BOOST_CHECK_EQUAL(7, pt3_2.x());
-//    //BOOST_CHECK_EQUAL(20, pt3_2.y());
-//    //BOOST_CHECK_EQUAL(8, pt3_2.z());
-//}
+    Point3i point3(1, 2, 3);
+    auto vect4 = mat_dyn_2x3_i * point3;
 
+    BOOST_CHECK_EQUAL(40, vect4[0]);
+    BOOST_CHECK_EQUAL(27, vect4[1]);
 
-/* Igualdad == */
-//BOOST_AUTO_TEST_CASE(Point_equal)
-//{
-//    Point<double> pt1(256.26, 2526.36);
-//    Point<double> pt2(256.26, 2526.36);
-//    Point<double> pt3(234.323, 234.36);
-//    BOOST_CHECK(pt1 == pt2);
-//    BOOST_CHECK(pt1 != pt3);
-//
-//
-//    Point3<double> pt1_3d(256.26, 2526.36, 10.6);
-//    Point3<double> pt2_3d(256.26, 2526.36, 10.6);
-//    Point3<double> pt3_3d(234.323, 234.36, 25.3);
-//    BOOST_CHECK(pt1_3d == pt2_3d);
-//    BOOST_CHECK(pt1_3d != pt3_3d);
-//}
-//
-///* Diferencia != */
-//
-//BOOST_AUTO_TEST_CASE(Point_difference)
-//{
-//    Point<double> pt1(256.26, 2526.36);
-//    Point<double> pt2(256.26, 2526.36);
-//    Point<double> pt3(234.323, 234.36);
-//    BOOST_CHECK(pt1 == pt2);
-//    BOOST_CHECK(pt1 != pt3);
-//}
-//
-///* Invertir punto */
-//
-//BOOST_AUTO_TEST_CASE(Point_invert)
-//{
-//    Point<double> pt1(256.26, 2526.36);
-//    Point<double> pt2(-256.26, -2526.36);
-//    BOOST_CHECK(pt2 == -pt1);
-//}
-//
-///* Punto por escalar */
-//
-//BOOST_AUTO_TEST_CASE(Point_multiplication1)
-//{
-//    Point<int> pt(23, 67);
-//    int s = 3;
-//
-//    Point<int> pt2 = pt * s;
-//
-//    BOOST_CHECK_EQUAL(69, pt2.x);
-//    BOOST_CHECK_EQUAL(201, pt2.y);
-//
-//    Point<double> pt_d(256.26, 2526.36);
-//    double s_d = 23.5;
-//
-//    Point<double> pt_d2 = pt_d * s_d;
-//
-//    BOOST_CHECK_CLOSE(6022.11, pt_d2.x, 0.01);
-//    BOOST_CHECK_CLOSE(59369.46, pt_d2.y, 0.01);
-//
-//    pt2 = Point<int>(23, 67) * 3.3;
-//    BOOST_CHECK_EQUAL(76, pt2.x);
-//    BOOST_CHECK_EQUAL(221, pt2.y);
-//
-//    /// 3D
-//
-//    Point3<int> pt3_1(23, 67, 15);
-//
-//    Point3<int> pt3_2 = pt3_1 * s;
-//
-//    BOOST_CHECK_EQUAL(69, pt3_2.x);
-//    BOOST_CHECK_EQUAL(201, pt3_2.y);
-//    BOOST_CHECK_EQUAL(45, pt3_2.z);
-//
-//    Point3<double> pt3_d(256.26, 2526.36, 236.47);
-//
-//    Point3<double> pt4_d = pt3_d * s_d;
-//
-//    BOOST_CHECK_CLOSE(6022.11, pt4_d.x, 0.01);
-//    BOOST_CHECK_CLOSE(59369.46, pt4_d.y, 0.01);
-//    BOOST_CHECK_CLOSE(5557.045, pt4_d.z, 0.01);
-//
-//    Point3<double> pt5 = Point3<int>(23, 67, 26) * 3.3;
-//    BOOST_CHECK_EQUAL(76, pt5.x);
-//    BOOST_CHECK_EQUAL(221, pt5.y);
-//    BOOST_CHECK_EQUAL(86, pt5.z);
-//}
-//
-///* Escalar por punto */
-//
-//BOOST_AUTO_TEST_CASE(Point_multiplication2)
-//{
-//    Point<int> pt(23, 67);
-//    int s = 3;
-//
-//    Point<int> pt2 = s * pt;
-//
-//    BOOST_CHECK_EQUAL(69, pt2.x);
-//    BOOST_CHECK_EQUAL(201, pt2.y);
-//
-//    Point<double> pt_d(256.26, 2526.36);
-//    double s_d = 23.5;
-//
-//    Point<double> pt_d2 = s_d * pt_d;
-//
-//    BOOST_CHECK_CLOSE(6022.11, pt_d2.x, 0.01);
-//    BOOST_CHECK_CLOSE(59369.46, pt_d2.y, 0.01);
-//
-//
-//    pt2 = 3.3 * Point<int>(23, 67);
-//    BOOST_CHECK_EQUAL(76, pt2.x);
-//    BOOST_CHECK_EQUAL(221, pt2.y);
-//}
-//
-///* Punto entre escalar */
-//
-//BOOST_AUTO_TEST_CASE(Point_division2)
-//{
-//    Point<int> pt(23, 67);
-//    int s = 3;
-//
-//    Point<int> pt_1 = pt / s;
-//
-//    BOOST_CHECK_EQUAL(8, pt_1.x);
-//    BOOST_CHECK_EQUAL(22, pt_1.y);
-//
-//    Point<double> pt_d(256.26, 2526.36);
-//    double s_d = 23.5;
-//
-//    Point<double> pt_d1 = pt_d / s_d;
-//
-//    BOOST_CHECK_CLOSE(10.905, pt_d1.x, 0.01);
-//    BOOST_CHECK_CLOSE(107.505, pt_d1.y, 0.001);
-//
-//    Point<int> pt2(23, 67);
-//    double s2 = 3.3;
-//
-//    Point<int> pt2_1 = pt2 / s2;
-//    BOOST_CHECK_EQUAL(7, pt2_1.x);
-//    BOOST_CHECK_EQUAL(20, pt2_1.y);
-//}
-//
-//BOOST_AUTO_TEST_CASE(from_string)
-//{
-//    {
-//        Point<double> point_2d;
-//        std::istringstream iss("25.0 27.52");
-//        iss >> point_2d;
-//        BOOST_CHECK_EQUAL(25.0, point_2d.x);
-//        BOOST_CHECK_EQUAL(27.52, point_2d.y);
-//    }
-//
-//    {
-//        Point3<double> point_3d;
-//        std::istringstream iss("25.0 27.52 1.5");
-//        iss >> point_3d;
-//        BOOST_CHECK_EQUAL(25.0, point_3d.x);
-//        BOOST_CHECK_EQUAL(27.52, point_3d.y);
-//        BOOST_CHECK_EQUAL(1.5, point_3d.z);
-//    }
-//}
-//
-//BOOST_AUTO_TEST_CASE(to_string)
-//{
-//    {
-//        Point<double> point_2d(25.3, 27.52);
-//        std::ostringstream oss;
-//        oss << point_2d;
-//        BOOST_CHECK_EQUAL("25.3 27.52", oss.str());
-//    }
-//
-//    {
-//        Point3<double> point_3d(25.3, 27.52, 1.5);
-//        std::ostringstream oss;
-//        oss << point_3d;
-//        BOOST_CHECK_EQUAL("25.3 27.52 1.5", oss.str());
-//    }
-//}
+    // Ver el resto de casos...
+}
 
 /* MultiPoint */
 

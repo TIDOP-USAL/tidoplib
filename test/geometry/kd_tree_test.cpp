@@ -39,17 +39,17 @@ BOOST_AUTO_TEST_SUITE(KdTreeTestSuite)
 BOOST_AUTO_TEST_CASE(RadiusSearch2D)
 {
     // Creamos una nube de puntos en forma de cuadrícula
-    std::vector<Point<double, Dimension::dim2>> points;
+    std::vector<Point2d> points;
     for(int x = 0; x < 10; ++x) {
         for(int y = 0; y < 10; ++y) {
             points.emplace_back(static_cast<double>(x), static_cast<double>(y));
         }
     }
 
-    KdTree<Point<double, Dimension::dim2>> tree(points);
+    KdTree<Point2d> tree(points);
     
     // Punto de búsqueda en el centro
-    Point<double, Dimension::dim2> query(4.5, 4.5);
+    Point2d query(4.5, 4.5);
     double radius = 1.0; 
     
     std::vector<size_t> results;
@@ -115,17 +115,17 @@ BOOST_AUTO_TEST_SUITE(KdTreeStaticTestSuite)
 BOOST_AUTO_TEST_CASE(RadiusSearch2D)
 {
     // Creamos una nube de puntos en forma de cuadrícula
-    std::vector<Point<double, Dimension::dim2>> points;
+    std::vector<Point2d> points;
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {
             points.emplace_back(static_cast<double>(x), static_cast<double>(y));
         }
     }
 
-    StaticKdTree<Point<double, Dimension::dim2>> tree(points);
+    StaticKdTree<Point2d> tree(points);
 
     // Punto de búsqueda en el centro
-    Point<double, Dimension::dim2> query(4.5, 4.5);
+    Point2d query(4.5, 4.5);
     double radius = 1.0;
 
     std::vector<size_t> results = tree.radiusSearch(query, radius);
@@ -187,17 +187,17 @@ BOOST_AUTO_TEST_SUITE(KdTreeDynamicTestSuite)
 BOOST_AUTO_TEST_CASE(RadiusSearch2D)
 {
     // Creamos una nube de puntos en forma de cuadrícula
-    std::vector<Point<double, Dimension::dim2>> points;
+    std::vector<Point2d> points;
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {
             points.emplace_back(static_cast<double>(x), static_cast<double>(y));
         }
     }
 
-    DynamicKdTree<Point<double, Dimension::dim2>> tree(points);
+    DynamicKdTree<Point2d> tree(points);
 
     // Punto de búsqueda en el centro
-    Point<double, Dimension::dim2> query(4.5, 4.5);
+    Point2d query(4.5, 4.5);
     double radius = 1.0;
 
     std::vector<size_t> results = tree.radiusSearch(query, radius);

@@ -27,12 +27,14 @@
  *
  * This file defines the Point class template, which serves as the fundamental
  * building block for all geometric entities. It supports dimensions 2, 3, and 4
- * and provides vector-like operations through VectorBase.
+ * and provides vector-like operations through VectorBase. It also supports 
+ * meassurent values (M) for 2 and 3 dimensions.
  * * ### Classes
  * - \ref tl::Point : Main template class for N-dimensional points.
  * * ### Type Aliases
- * - \ref tl::Point2d, \ref tl::Point3d : Common double-precision aliases.
- * - \ref tl::Point2f, \ref tl::Point3f : Common float-precision aliases.
+ * - \ref tl::Point2d, \ref tl::Point3d, \ref tl::Point4d, tl::Point2dm, \ref tl::Point3dm : Common double-precision aliases.
+ * - \ref tl::Point2f, \ref tl::Point3f, \ref tl::Point4f, tl::Point2fm, \ref tl::Point3fm : Common float-precision aliases.
+ * - \ref tl::Point2i, \ref tl::Point3i, \ref tl::Point4f, tl::Point2im, \ref tl::Point3im : Common integral-precision aliases.
  * * \see tl::VectorBase, tl::GeometryBase
  */
 
@@ -55,15 +57,21 @@ namespace tl
 
 /*!
  * \class Point
- * \brief N-dimensional point representing a location in space.
+ * 
+ * \brief N-dimensional point representing a location in space with optional measure (M).
+ *
+ * This class template represents a point whose coordinate structure is defined by a Tag.
+ * It strictly separates spatial dimensions (X, Y, Z) from storage size, allowing
+ * support for OGC-compliant types like XYM or XYZM.
  *
  * \tparam T Data type for the coordinates (e.g., float, double, int).
- * \tparam D Dimension of the point (Dimension::dim2, dim3, or dim4).
+ * \tparam Tag Type tag defining the coordinate layout (e.g., xy_tag, xyz_tag, xym_tag, xyzm_tag).
+ * \ingroup GeometricPrimitives
  */
-template<typename T, Dimension D = Dimension::dim2>
-class Point 
-  : public GeometryBase<Point<T, D>>,
-    public VectorBase<Point<T, D>>
+template<typename T, typename Tag = xy_tag>
+class Point
+  : public GeometryBase<Point<T, Tag>>,
+    public VectorBase<Point<T, Tag>>
 {
 
 public:
@@ -76,11 +84,11 @@ public:
 
 private:
 
-    static_assert(is_valid_dimension(D), "Point dimension must be 2, 3, or 4");
+    static constexpr size_t storage_size = Tag::storage_size;
+    static constexpr size_t spatial_dims = Tag::spatial_dims;
 
-    static constexpr std::size_t _size = dimension_value(D);
-    std::array<T, _size> mData;
-    
+    std::array<T, storage_size> mData;
+
 public:
 
     /*!
@@ -88,7 +96,7 @@ public:
      */
     Point();
 
-    template<typename... Args, std::enable_if_t<sizeof...(Args) == _size, int> = 0>
+    template<typename... Args, std::enable_if_t<sizeof...(Args) == storage_size, int> = 0>
     explicit Point(Args... args)
       : mData{static_cast<T>(args)...}
     {
@@ -105,19 +113,13 @@ public:
      * \brief Move constructor.
      * \param[in] point Point object to be moved.
      */
-    Point(Point &&point) TL_NOEXCEPT = default;
+    Point(Point &&point) noexcept = default;
 
     /*!
      * \brief Constructs a Point from an array.
      * \param[in] array Array containing two elements [x, y].
      */
-    explicit Point(const std::array<T, _size> &a);
-
-    /*!
-     * \brief Constructor from Point with different dimension.
-     */
-    template<Dimension OtherD>
-    explicit Point(const Point<T, OtherD> &other);
+    explicit Point(const std::array<T, storage_size> &a);
 
     /*! \brief Destructor. */
     ~Point() override = default;
@@ -134,69 +136,80 @@ public:
      * \param[in] point Point object to be moved.
      * \return Reference to this Point.
      */
-    auto operator = (Point &&point) TL_NOEXCEPT -> Point & = default;
+    auto operator = (Point &&point) noexcept -> Point & = default;
 
     /*!
      * \brief Access the x-component of the point.
      * \return A const reference to the x-component.
      * \note Only valid for points with size at least 1.
      */
-    auto x() const TL_NOEXCEPT -> const_reference;
+    auto x() const noexcept -> const_reference;
 
     /*!
      * \brief Access the x-component of the point (non-const version).
      * \return A reference to the x-component.
      * \note Only valid for points with size at least 1.
      */
-    auto x() TL_NOEXCEPT -> reference;
+    auto x() noexcept -> reference;
 
     /*!
      * \brief Access the y-component of the point.
      * \return A const reference to the y-component.
      * \note Only valid for points with size at least 2.
      */
-    auto y() const TL_NOEXCEPT -> const_reference;
+    auto y() const noexcept -> const_reference;
 
     /*!
      * \brief Access the y-component of the point (non-const version).
      * \return A reference to the y-component.
      * \note Only valid for points with size at least 2.
      */
-    auto y() TL_NOEXCEPT -> reference;
+    auto y() noexcept -> reference;
 
     /*!
      * \brief Access the z-component of the point.
      * \return A const reference to the z-component.
      * \note Only valid for points with size at least 3.
      */
-    auto z() const TL_NOEXCEPT -> const_reference;
+    auto z() const noexcept -> const_reference;
 
     /*!
      * \brief Access the z-component of the point (non-const version).
      * \return A reference to the z-component.
      * \note Only valid for points with size at least 3.
      */
-    auto z() TL_NOEXCEPT -> reference;
+    auto z() noexcept -> reference;
 
-    // No se si es muy correcto este nombre... Tal vez debería ser m. Así se define en OGC
-    // Ademas, en R3, podemos tener un punto (x, y, z) o (x, y, m)
+    /*!
+     * \brief Access the measure (M) component of the point.
+     * \return A const reference to the measure value.
+     * \note This method is only available for points using a Tag that includes measures (e.g., xym_tag).
+     */
+    auto m() const noexcept -> const_reference;
+
+    /*!
+     * \brief Access the measure (M) component of the point (non-const version).
+     * \return A const reference to the measure value.
+     * \note This method is only available for points using a Tag that includes measures (e.g., xym_tag).
+     */
+    auto m() noexcept -> reference;
 
     /*!
      * \brief Access the w-component of the point.
      * \return A const reference to the w-component.
      * \note Only valid for points with size at least 4.
      */
-    auto w() const TL_NOEXCEPT -> const_reference;
+    auto w() const noexcept -> const_reference;
 
     /*!
      * \brief Access the w-component of the vector (non-const version).
      * \return A reference to the w-component.
      * \note Only valid for vectors with size at least 4.
      */
-    auto w() TL_NOEXCEPT -> reference;
+    auto w() noexcept -> reference;
 
-    auto operator[](std::size_t position) noexcept -> reference { return mData[position]; }
-    auto operator[](std::size_t position) const noexcept -> const_reference { return mData[position]; }
+    auto operator[](std::size_t position) noexcept -> reference;
+    auto operator[](std::size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Accesses the element at the specified position with bounds checking.
@@ -217,10 +230,11 @@ public:
     auto at(size_t position) const -> const_reference;
 
     /*!
-     * \brief Returns the dimension of the point.
-     * \return Dimension
+     * \brief Returns the spatial dimension of the point.
+     * Storage components like Measure (M) are not counted here.
+     * \return Number of spatial dimensions.
      */
-    auto size() const noexcept -> std::size_t { return _size; }
+    constexpr auto size() const noexcept -> size_t { return spatial_dims; }
 
     /*!
      * \brief Returns a pointer to the data array of the point.
@@ -234,156 +248,177 @@ public:
      */
     auto data() const noexcept -> const_pointer;
 
-    template<typename U, Dimension D2>
-    explicit operator Point<U, D2>() const;
+    template<typename U, typename Tag2>
+    explicit operator Point<U, Tag2>() const;
 };
 
 
 // TYPE ALIASES
 
-template<typename T> using Point2 = Point<T, Dimension::dim2>;
-template<typename T> using Point3 = Point<T, Dimension::dim3>;
-template<typename T> using Point4 = Point<T, Dimension::dim4>;
+template<typename T> using Point2 = Point<T, xy_tag>;
+template<typename T> using Point3 = Point<T, xyz_tag>;
+template<typename T> using Point4 = Point<T, xyzw_tag>;
 
-using Point2f = Point<float, Dimension::dim2>;
-using Point2d = Point<double, Dimension::dim2>;
-using Point2i = Point<int, Dimension::dim2>;
+using Point2f = Point<float, xy_tag>;
+using Point2d = Point<double, xy_tag>;
+using Point2i = Point<int, xy_tag>;
 
-using Point3f = Point<float, Dimension::dim3>;
-using Point3d = Point<double, Dimension::dim3>;
-using Point3i = Point<int, Dimension::dim3>;
+using Point3f = Point<float, xyz_tag>;
+using Point3d = Point<double, xyz_tag>;
+using Point3i = Point<int, xyz_tag>;
+
+using Point4f = Point<float, xyzw_tag>;
+using Point4d = Point<double, xyzw_tag>;
+using Point4i = Point<int, xyzw_tag>;
+
+using Point2fm = Point<float, xym_tag>;
+using Point2dm = Point<double, xym_tag>;
+using Point2im = Point<int, xym_tag>;
+
+using Point3fm = Point<float, xyzm_tag>;
+using Point3dm = Point<double, xyzm_tag>;
+using Point3im = Point<int, xyzm_tag>;
 
 
+// IMPLEMENTATION
 
-template<typename T, Dimension D>
-Point<T, D>::Point()
+template<typename T, typename Tag>
+Point<T, Tag>::Point()
 {
     mData.fill(static_cast<T>(0));
 }
 
-template<typename T, Dimension D>
-Point<T, D>::Point(const std::array<T, _size> &a)
+template<typename T, typename Tag>
+Point<T, Tag>::Point(const std::array<T, storage_size> &a)
 {
-    for (std::size_t i = 0; i < _size; ++i)
-        mData[i] = a[i];
+    mData = a;
 }
 
-template<typename T, Dimension D>
-template<Dimension OtherD>
-Point<T, D>::Point(const Point<T, OtherD> &other)
+template<typename T, typename Tag>
+auto Point<T, Tag>::x() const noexcept -> const_reference
 {
-    static_assert(is_valid_dimension(OtherD), "Invalid source dimension");
+    return mData[0];
+}
 
-    constexpr size_t other_size = dimension_value(OtherD);
-    constexpr size_t minDim = (_size < other_size) ? _size : other_size;
+template<typename T, typename Tag>
+auto Point<T, Tag>::x() noexcept -> reference
+{
+    return mData[0];
+}
 
-    mData.fill(static_cast<T>(0));
+template<typename T, typename Tag>
+auto Point<T, Tag>::y() const noexcept -> const_reference
+{
+    return mData[1];
+}
 
-    for (size_t i = 0; i < minDim; ++i) {
-        (*this)[i] = other[i];
+template<typename T, typename Tag>
+auto Point<T, Tag>::y() noexcept -> reference
+{
+    return mData[1];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::z() const noexcept -> const_reference
+{
+    static_assert(spatial_dims >= 3, "Error: Access to Z coordinate at a point with less than 3 dimensions.");
+    return mData[2];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::z() noexcept -> reference
+{
+    static_assert(spatial_dims >= 3, "Error: Access to Z coordinate at a point with less than 3 dimensions.");
+    return mData[2];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::m() const noexcept -> const_reference
+{
+    static_assert(spatial_dims < storage_size, "Error: Point without measure");
+    return mData[spatial_dims];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::m() noexcept -> reference
+{
+    static_assert(spatial_dims < storage_size, "Error: Point without measure");
+    return mData[spatial_dims];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::w() const noexcept -> const_reference
+{
+    static_assert(spatial_dims == 4, "Error: Access to W coordinate at a point with less than 4 dimensions.");
+    return mData[3];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::w() noexcept -> reference
+{
+    static_assert(spatial_dims == 4, "Error: Access to W coordinate at a point with less than 4 dimensions.");
+    return mData[3];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::operator[](std::size_t position) noexcept -> reference
+{
+    return mData[position];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::operator[](std::size_t position) const noexcept -> const_reference
+{
+    return mData[position];
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::at(size_t position) -> reference
+{
+    if (position >= spatial_dims)
+        throw std::out_of_range("Point spatial index out of range");
+    return mData.at(position);
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::at(size_t position) const -> const_reference
+{
+    if (position >= spatial_dims)
+        throw std::out_of_range("Point spatial index out of range");
+    return mData.at(position);
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::data() noexcept -> pointer
+{
+    return mData.data();
+}
+
+template<typename T, typename Tag>
+auto Point<T, Tag>::data() const noexcept -> const_pointer
+{
+    return mData.data();
+}
+
+template<typename T, typename Tag>
+template<typename U, typename Tag2>
+Point<T, Tag>::operator Point<U, Tag2>() const
+{
+    Point<U, Tag2> result;
+    constexpr size_t min_size = (spatial_dims < Tag2::spatial_dims) ? spatial_dims : Tag2::spatial_dims;
+    for (size_t i = 0; i < min_size; ++i) {
+        result[i] = numberCast<U>(mData[i]);
     }
-}
 
-template<typename T, Dimension D>
-auto Point<T, D>::x() const TL_NOEXCEPT -> const_reference
-{
-    return mData[0];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::x() TL_NOEXCEPT -> reference
-{
-    return mData[0];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::y() const TL_NOEXCEPT -> const_reference
-{
-    return mData[1];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::y() TL_NOEXCEPT -> reference
-{
-    return mData[1];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::z() const TL_NOEXCEPT -> const_reference
-{
-    static_assert(D >= Dimension::dim3, "Error: Access to Z coordinate at a point with less than 3 dimensions.");
-    return mData[2];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::z() TL_NOEXCEPT -> reference
-{
-    static_assert(D >= Dimension::dim3, "Error: Access to Z coordinate at a point with less than 3 dimensions.");
-    return mData[2];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::w() const TL_NOEXCEPT -> const_reference
-{
-    static_assert(D >= Dimension::dim4, "Error: Access to W coordinate at a point with less than 4 dimensions.");
-    return mData[3];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::w() TL_NOEXCEPT -> reference
-{
-    static_assert(D >= Dimension::dim4, "Error: Access to W coordinate at a point with less than 4 dimensions.");
-    return mData[3];
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::at(size_t position) -> reference
-{
-    return mData.at(position);
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::at(size_t position) const -> const_reference
-{
-    return mData.at(position);
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::data() noexcept -> pointer
-{
-    return mData.data();
-}
-
-template<typename T, Dimension D>
-auto Point<T, D>::data() const noexcept -> const_pointer
-{
-    return mData.data();
-}
-
-template<typename T, Dimension D>
-template<typename U, Dimension D2>
-Point<T, D>::operator Point<U, D2>() const
-{
-    Point<U, D2> result;
-
-    constexpr std::size_t src_size = static_cast<std::size_t>(D);
-    constexpr std::size_t dst_size = static_cast<std::size_t>(D2);
-    constexpr std::size_t min_size = (src_size < dst_size) ? src_size : dst_size;
-
-    for (std::size_t i = 0; i < min_size; ++i)
-        result[i] = numberCast<U>(this->at(i));
-
-    if constexpr (dst_size > src_size) {
-        for (std::size_t i = src_size; i < dst_size; ++i) {
-            if constexpr (i == 3)       // w
-                result[i] = consts::one<U>;
-            else
-                result[i] = consts::zero<U>;
-        }
+    // Medida (M)
+    if constexpr (Tag2::spatial_dims < Tag2::storage_size) {
+        if constexpr (Tag::spatial_dims < Tag::storage_size)
+            result.m() = numberCast<U>(this->m());
     }
 
     return result;
 }
+
 
 /*!
  * \brief Subtract two points to get the vector between them.
@@ -396,10 +431,10 @@ Point<T, D>::operator Point<U, D2>() const
  *
  * \return Vector from point b to point a.
  */
-template<typename T, Dimension D>
-auto operator-(const Point<T, D> &a, const Point<T, D> &b) -> typename VectorTraits<Point<T, D>>::difference_type
+template<typename T, typename Tag>
+auto operator-(const Point<T, Tag> &a, const Point<T, Tag> &b) -> typename VectorTraits<Point<T, Tag>>::difference_type
 {
-    typename VectorTraits<Point<T, D>>::difference_type v;
+    typename VectorTraits<Point<T, Tag>>::difference_type v;
     for (size_t i = 0; i < v.size(); ++i)
         v[i] = a[i] - b[i];
     return v;

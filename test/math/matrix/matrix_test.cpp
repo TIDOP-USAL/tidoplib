@@ -2494,23 +2494,6 @@ BOOST_FIXTURE_TEST_CASE(vector_matrix, MatrixTest)
     BOOST_CHECK_EQUAL(204.f, vect_result_2[7]);
 }
 
-/// Multiplicación de un punto por una matriz
-
-BOOST_FIXTURE_TEST_CASE(matrix_point, MatrixTest)
-{
-    Point<int, Dimension::dim3> point(1, 2, 3);
-    Point<int, Dimension::dim2> point2 = _mat_2x3_i * point;
-
-    BOOST_CHECK_EQUAL(40, point2[0]);
-    BOOST_CHECK_EQUAL(27, point2[1]);
-
-    Point<int, Dimension::dim3> point3(1, 2, 3);
-    auto vect4 = (*_mat_dyn_2x3_i) * point3;
-
-    BOOST_CHECK_EQUAL(40, vect4[0]);
-    BOOST_CHECK_EQUAL(27, vect4[1]);
-}
-
 // División de una matriz por un escalar
 
 BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)

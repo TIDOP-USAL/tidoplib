@@ -123,6 +123,33 @@ using LineString3f = LineString<Point3f>;
 /*! \brief 3D polyline with double coordinates. */
 using LineString3d = LineString<Point3d>;
 
+/*! \brief 4D polyline with integer coordinates. */
+using LineString4i = LineString<Point4i>;
+
+/*! \brief 4D polyline with float coordinates. */
+using LineString4f = LineString<Point4f>;
+
+/*! \brief 4D polyline with double coordinates. */
+using LineString4d = LineString<Point4d>;
+
+/*! \brief 2D polyline with integer coordinates and measure. */
+using LineString2im = LineString<Point2im>;
+
+/*! \brief 2D polyline with float coordinates and measure. */
+using LineString2fm = LineString<Point2fm>;
+
+/*! \brief 2D polyline with double coordinates and measure. */
+using LineString2dm = LineString<Point2dm>;
+
+/*! \brief 3D polyline with integer coordinates and measure. */
+using LineString3im = LineString<Point3im>;
+
+/*! \brief 3D polyline with float coordinates and measure. */
+using LineString3fm = LineString<Point3fm>;
+
+/*! \brief 3D polyline with double coordinates and measure. */
+using LineString3dm = LineString<Point3dm>;
+
 
 // METHOD IMPLEMENTATIONS
 

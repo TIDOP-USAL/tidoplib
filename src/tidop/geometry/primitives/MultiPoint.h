@@ -76,20 +76,47 @@ public:
 /*! \brief 2D multi-point with integer coordinates. */
 using MultiPoint2i = MultiPoint<Point2i>;
 
-/*! \brief 3D multi-point with integer coordinates. */
-using MultiPoint3i = MultiPoint<Point3i>;
-
 /*! \brief 2D multi-point with float coordinates. */
 using MultiPoint2f = MultiPoint<Point2f>;
-
-/*! \brief 3D multi-point with float coordinates. */
-using MultiPoint3f = MultiPoint<Point3f>;
 
 /*! \brief 2D multi-point with double coordinates. */
 using MultiPoint2d = MultiPoint<Point2d>;
 
+/*! \brief 3D multi-point with integer coordinates. */
+using MultiPoint3i = MultiPoint<Point3i>;
+
+/*! \brief 3D multi-point with float coordinates. */
+using MultiPoint3f = MultiPoint<Point3f>;
+
 /*! \brief 3D multi-point with double coordinates. */
 using MultiPoint3d = MultiPoint<Point3d>;
+
+/*! \brief 4D multi-point with integer coordinates. */
+using MultiPoint4i = MultiPoint<Point4i>;
+
+/*! \brief 4D multi-point with float coordinates. */
+using MultiPoint4f = MultiPoint<Point4f>;
+
+/*! \brief 4D multi-point with double coordinates. */
+using MultiPoint4d = MultiPoint<Point4d>;
+
+/*! \brief 2D multi-point with integer coordinates with measure. */
+using MultiPoint2im = MultiPoint<Point2im>;
+
+/*! \brief 2D multi-point with float coordinates with measure. */
+using MultiPoint2fm = MultiPoint<Point2fm>;
+
+/*! \brief 2D multi-point with double coordinates with measure. */
+using MultiPoint2dm = MultiPoint<Point2dm>;
+
+/*! \brief 3D multi-point with integer coordinates with measure. */
+using MultiPoint3im = MultiPoint<Point3im>;
+
+/*! \brief 3D multi-point with float coordinates with measure. */
+using MultiPoint3fm = MultiPoint<Point3fm>;
+
+/*! \brief 3D multi-point with double coordinates with measure. */
+using MultiPoint3dm = MultiPoint<Point3dm>;
 
 /*! \} */
 

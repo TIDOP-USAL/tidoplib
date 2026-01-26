@@ -2642,27 +2642,46 @@ auto operator<<(std::ostream& os, const internal::MatrixBlock<T, Rows, Cols>* ma
 //    return vector_out;
 //}
 
-template<size_t Rows, size_t FixedV>
-struct DetermineBestSize
+//template<typename V, size_t Rows>
+//struct VectorRebind;
+//
+//template<typename T, typename Tag, size_t Rows>
+//struct VectorRebind<Point<T, Tag>, Rows>
+//{
+//    using new_tag = typename rebind_point_tag<Tag, Rows>::type;
+//    using type = Point<T, new_tag>;
+//};
+//
+//template<typename T, size_t N, size_t Rows>
+//struct VectorRebind<Vector<T, N>, Rows>
+//{
+//    using type = Vector<T, Rows>;
+//};
+
+template<typename V, size_t Rows, bool CanBePoint>
+struct VectorRebindImpl;
+
+template<typename T, typename Tag, size_t Rows>
+struct VectorRebindImpl<Point<T, Tag>, Rows, true>
 {
-    // Si Rows es dinámico, el resultado es dinámico.
-    // Si no, mandan las Rows de la matriz.
-    static constexpr size_t value = (Rows == DynamicData) ? DynamicData : Rows;
+    using new_tag = typename rebind_point_tag<Tag, Rows>::type;
+    using type = Point<T, new_tag>;
 };
 
-// 2. Re-vinculador avanzado
 template<typename V, size_t Rows>
-struct VectorRebind 
+struct VectorRebindImpl<V, Rows, false>
 {
     using T = typename V::value_type;
-    static constexpr size_t BestSize = DetermineBestSize<Rows, VectorTraits<V>::size>::value;
+    using type = Vector<T, Rows>;
+};
 
-    // Decisión final de tipo
-    using type = std::conditional_t<
-        (BestSize == 2 || BestSize == 3) && !is_vector<V>::value, // ¿Es tamaño "punto" y la entrada era un punto?
-        Point<T, static_cast<Dimension>(BestSize)>,
-        Vector<T, BestSize> // Si es dinámico o tamaño != 2,3, devolvemos Vector
-    >;
+template<typename V, size_t Rows>
+struct VectorRebind
+{
+    static constexpr bool can_be_point = is_point<V>::value &&
+                                         (Rows == 2 || Rows == 3 || Rows == 4);
+
+    using type = typename VectorRebindImpl<V, Rows, can_be_point>::type;
 };
 
 template<typename T, size_t Rows, size_t Cols, typename DerivedVector>
@@ -2688,57 +2707,6 @@ auto operator *(const Matrix<T, Rows, Cols> &matrix,
     internal::matrix_per_vector(matrix, vector, vector_out);
     return vector_out;
 }
-
-//template<typename T>
-//auto operator *(const Matrix<T>& matrix,
-//                const Vector<T>& vector) -> Vector<T>
-//{
-//    Vector<T> vector_out = Vector<T>::zero(matrix.rows());
-//    internal::matrix_per_vector(matrix, vector, vector_out);
-//    return vector_out;
-//}
-
-//template<typename T, size_t Rows, size_t Cols>
-//auto operator *(const Matrix<T, Rows, Cols>& matrix,
-//                const Vector<T>& vector) -> Vector<T, Rows>
-//{
-//    Vector<T, Rows> vector_out = Vector<T, Rows>::zero();
-//    internal::matrix_per_vector(matrix, vector, vector_out);
-//    return vector_out;
-//}
-
-//template<typename T, size_t _dim>
-//auto operator *(const Matrix<T>& matrix,
-//                const Vector<T, _dim>& vector) -> Vector<T>
-//{
-//    Vector<T> vector_out = Vector<T>::zero(matrix.rows());
-//    internal::matrix_per_vector(matrix, vector, vector_out);
-//    return vector_out;
-//}
-
-//template<
-//  template<typename, size_t Rows = DynamicData, size_t Cols = DynamicData>
-//  class MatrixDerived, typename T, size_t Rows, size_t Cols,
-//>
-//static Vector<T, Cols> operator * (const MatrixDerived<T, Rows, Cols> &matrix,
-//                                    const Vector<T, Cols> &vector)
-//{
-//  size_t rows = matrix.rows();
-//  size_t dim1 = matrix.cols();
-//  size_t dim2 = vector.size();
-//
-//  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
-//
-//  Vector<T, _col> vect = Vector<T>::zero(rows);
-//
-//  for (size_t r = 0; r < rows; r++) {
-//    for (size_t c = 0; c < dim1; c++) {
-//      vect[r] += matrix(r, c) * vector[c];
-//    }
-//  }
-//
-//  return vect;
-//}
 
 template<typename T, size_t _dim>
 auto operator *(const internal::MatrixBlock<T>& matrix,

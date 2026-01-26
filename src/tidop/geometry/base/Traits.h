@@ -58,7 +58,8 @@ namespace tl
 {
 
 // Forward declarations of geometry types
-template<typename T, Dimension D> class Point;
+//template<typename T, Dimension D> class Point;
+template<typename T, typename Tag> class Point;
 template<typename Point_t> class Segment;
 template<typename Point_t> class LineString;
 template<typename Point_t> class LinearRing;
@@ -91,13 +92,12 @@ enum class GeometryType
 };
 
 
-struct XY { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 2; };
-struct XYZ { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 3; };
-struct XYM { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 3; }; // OGC
-struct XYZM { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 4; }; // OGC
-struct XYW { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 3; }; // Proyectivo 2D
-struct XYZW { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 4; }; // Proyectivo 3D
-struct R4 { static constexpr size_t spatial_dims = 4; static constexpr size_t storage_size = 4; }; // R4
+struct xy_tag { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 2; };
+struct xyz_tag { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 3; };
+struct xym_tag { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 3; };
+struct xyzm_tag { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 4; };
+struct xyzw_tag { static constexpr size_t spatial_dims = 4; static constexpr size_t storage_size = 4; };
+
 
 
 /* GEOMETRY TRAITS */
@@ -124,17 +124,36 @@ struct geometry_traits
  * \tparam T Coordinate type.
  * \tparam D Dimension.
  */
-template<typename T, Dimension D>
-struct geometry_traits<Point<T, D>>
-{
-    static_assert(is_valid_dimension(D), "Invalid point dimension");
+//template<typename T, Dimension D>
+//struct geometry_traits<Point<T, D>>
+//{
+//    static_assert(is_valid_dimension(D), "Invalid point dimension");
+//
+//    static constexpr bool is_geometry = true;
+//    static constexpr bool is_multi = false;
+//    static constexpr Dimension dimension = D;
+//    static constexpr GeometryType type = GeometryType::point;
+//
+//    using value_type = T;
+//};
 
+template<typename T, typename Tag>
+struct geometry_traits<Point<T, Tag>>
+{
     static constexpr bool is_geometry = true;
     static constexpr bool is_multi = false;
-    static constexpr Dimension dimension = D;
     static constexpr GeometryType type = GeometryType::point;
 
     using value_type = T;
+    using tag_type = Tag;
+
+    static constexpr size_t spatial_dims = Tag::spatial_dims;
+    static constexpr size_t storage_size = Tag::storage_size;
+
+    static constexpr Dimension dimension =
+        Tag::spatial_dims == 2 ? Dimension::dim2 :
+        Tag::spatial_dims == 3 ? Dimension::dim3 :
+        Dimension::dim4;
 };
 
 /*!
@@ -419,16 +438,59 @@ concept Geometry3DConcept = GeometryConcept<G> && is_3d_v<G>;
 
 /*! \} */ 
 
-template<typename T, Dimension D>
-struct VectorTraits<Point<T, D>>
+//template<typename T, Dimension D>
+//struct VectorTraits<Point<T, D>>
+//{
+//    using value_type = T;
+//    static constexpr size_t size = static_cast<std::size_t>(D);
+//    using result_type = Point<T, D>;
+//    using difference_type = Vector<T, static_cast<std::size_t>(D)>;
+//};
+
+template<typename T, typename Tag>
+struct VectorTraits<Point<T, Tag>>
 {
     using value_type = T;
-    static constexpr size_t size = static_cast<std::size_t>(D);
-    using result_type = Point<T, D>;
-    using difference_type = Vector<T, static_cast<std::size_t>(D)>;
+    static constexpr size_t size = geometry_traits<Point<T, Tag>>::spatial_dims;
+    using result_type = Point<T, Tag>;
+    using difference_type = Vector<T, size>;
 };
 
-template<typename T, Dimension D>
-struct is_point<Point<T, D>> : std::true_type {};
+//template<typename T, Dimension D>
+//struct is_point<Point<T, D>> : std::true_type {};
+
+template<typename T, typename Tag>
+struct is_point<Point<T, Tag>> : std::true_type {};
+
+
+template<typename OldTag, size_t Rows>
+struct rebind_point_tag;
+
+// XY -> 2D sin medida
+template<> struct rebind_point_tag<xy_tag, 2> { using type = xy_tag; };
+template<> struct rebind_point_tag<xy_tag, 3> { using type = xyz_tag; };
+template<> struct rebind_point_tag<xy_tag, 4> { using type = xyzw_tag; };
+
+// XYZ
+template<> struct rebind_point_tag<xyz_tag, 2> { using type = xy_tag; };
+template<> struct rebind_point_tag<xyz_tag, 3> { using type = xyz_tag; };
+template<> struct rebind_point_tag<xyz_tag, 4> { using type = xyzw_tag; };
+
+// XYM
+template<> struct rebind_point_tag<xym_tag, 2> { using type = xy_tag; };
+template<> struct rebind_point_tag<xym_tag, 3> { using type = xyz_tag; };
+template<> struct rebind_point_tag<xym_tag, 4> { using type = xyzw_tag; };
+
+// XYZM
+template<> struct rebind_point_tag<xyzm_tag, 2> { using type = xy_tag; };
+template<> struct rebind_point_tag<xyzm_tag, 3> { using type = xyz_tag; };
+template<> struct rebind_point_tag<xyzm_tag, 4> { using type = xyzw_tag; };
+
+// XYZW
+template<> struct rebind_point_tag<xyzw_tag, 2> { using type = xy_tag; };
+template<> struct rebind_point_tag<xyzw_tag, 3> { using type = xyz_tag; };
+template<> struct rebind_point_tag<xyzw_tag, 4> { using type = xyzw_tag; };
+
+
 
 } // End namespace tl

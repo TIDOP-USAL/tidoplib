@@ -850,11 +850,10 @@ BOOST_AUTO_TEST_CASE(MultiLineString3D_assing_operator)
 
 BOOST_AUTO_TEST_CASE(test_linestring_wkt)
 {
-    using Point2D = tl::Point<double, tl::Dimension::dim2>;
-    tl::LineString<Point2D> line;
-    line.push_back(Point2D(0.0, 0.0));
-    line.push_back(Point2D(1.123, 2.456));
-    line.push_back(Point2D(5.0, 10.0));
+    LineString<Point2d> line;
+    line.push_back(Point2d(0.0, 0.0));
+    line.push_back(Point2d(1.123, 2.456));
+    line.push_back(Point2d(5.0, 10.0));
 
     // Test Ostream con precisión
     std::stringstream ss;

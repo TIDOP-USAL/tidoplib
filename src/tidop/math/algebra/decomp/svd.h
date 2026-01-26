@@ -419,7 +419,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
         if (with_v) {
 
             int l = -1;
-            for (int i = mCols - 1; i >= 0; --i) {
+            for (int i = static_cast<int>(mCols) - 1; i >= 0; --i) {
 
                 if (l != -1) {
 
