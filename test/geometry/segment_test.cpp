@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop Argument test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/primitives/Segment.h>
+#include <tidop/geometry/io/wkt/Proxy.h>
 
 using namespace tl;
 
@@ -349,4 +350,34 @@ BOOST_AUTO_TEST_CASE(Segment3D_conversion)
     BOOST_CHECK_CLOSE(25.3, segment_double.pt2().x(), 0.01);
     BOOST_CHECK_CLOSE(654.4, segment_double.pt2().y(), 0.01);
     BOOST_CHECK_CLOSE(52.6, segment_double.pt2().z(), 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(test_linestring_wkt)
+{
+    Segment<Point2d> segment(Point2d(0.0, 0.0), Point2d(1.123, 2.456));
+
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << wkt(segment);
+    BOOST_CHECK_EQUAL(ss.str(), "LINESTRING (0.00 0.00, 1.12 2.46)");
+
+    std::string fmt_out = tl::format("{:.1f}", wkt(segment));
+    BOOST_CHECK_EQUAL(fmt_out, "LINESTRING (0.0 0.0, 1.1 2.5)");
+
+    Segment<Point3d> segment_3d(Point3d(0.0, 0.0, 0.0), Point3d(1.123, 2.456, 2.14));
+
+    ss.str("");
+    ss << std::fixed << std::setprecision(2) << wkt(segment_3d);
+    BOOST_CHECK_EQUAL(ss.str(), "LINESTRING Z (0.00 0.00 0.00, 1.12 2.46 2.14)");
+
+    fmt_out = tl::format("{:.1f}", wkt(segment_3d));
+    BOOST_CHECK_EQUAL(fmt_out, "LINESTRING Z (0.0 0.0 0.0, 1.1 2.5 2.1)");
+
+    Segment<Point2dm> segment_m(Point2dm(1.123, 2.456, 3.), Point2dm(5.0, 10.0, 7.));
+
+    ss.str("");
+    ss << std::fixed << std::setprecision(2) << wkt(segment_m);
+    BOOST_CHECK_EQUAL(ss.str(), "LINESTRING M (1.12 2.46 3.00, 5.00 10.00 7.00)");
+
+    fmt_out = tl::format("{:.1f}", wkt(segment_m));
+    BOOST_CHECK_EQUAL(fmt_out, "LINESTRING M (1.1 2.5 3.0, 5.0 10.0 7.0)");
 }

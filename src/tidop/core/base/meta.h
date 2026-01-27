@@ -32,8 +32,8 @@
  *
  * ### Classes and Functions
  *
- * - \ref args_size - Count the number of variadic arguments at compile time
- * - \ref args_empty - Check if no arguments were passed
+ * - \ref argsSize - Count the number of variadic arguments at compile time
+ * - \ref argsEmpty - Check if no arguments were passed
  * - \ref unusedParameter - Suppress compiler warnings for unused parameters
  * - \ref isInRange - Check if a value is within a specified numeric range
  * - \ref instanceof - Runtime type checking for polymorphic types (RTTI)
@@ -52,11 +52,11 @@
  * #include "tidop/core/base/meta.h"
  *
  * // Count arguments at compile time
- * size_t count = tl::args_size(1, 2, 3, 4, 5);  // count = 5
+ * size_t count = tl::argsSize(1, 2, 3, 4, 5);  // count = 5
  *
  * // Check if list is empty
- * bool empty = tl::args_empty();                 // empty = true
- * bool notEmpty = tl::args_empty(10, 20);        // notEmpty = false
+ * bool empty = tl::argsEmpty();                 // empty = true
+ * bool notEmpty = tl::argsEmpty(10, 20);        // notEmpty = false
  *
  * // Suppress unused parameter warnings
  * void myFunction(int used, int unused) {
@@ -79,7 +79,7 @@
  * }
  * \endcode
  *
- * \see tl::args_size, tl::args_empty, tl::instanceof
+ * \see tl::argsSize, tl::argsEmpty, tl::instanceof
  */
 
 #pragma once
@@ -112,13 +112,13 @@ namespace tl
  *
  * ### Example Usage
  * \code{.cpp}
- * size_t count1 = tl::args_size(1, 2, 3);
+ * size_t count1 = tl::argsSize(1, 2, 3);
  * // count1 = 3 (compile-time constant)
  *
- * size_t count2 = tl::args_size("hello", 42, 3.14, true);
+ * size_t count2 = tl::argsSize("hello", 42, 3.14, true);
  * // count2 = 4
  *
- * size_t count3 = tl::args_size();
+ * size_t count3 = tl::argsSize();
  * // count3 = 0
  * \endcode
  *
@@ -136,7 +136,7 @@ namespace tl
  * - Works with any number of arguments of any types
  */
 template<typename ...Args>
-constexpr size_t args_size(Args&&...)
+constexpr size_t argsSize(Args&&...)
 {
     return sizeof...(Args);
 }
@@ -155,15 +155,15 @@ constexpr size_t args_size(Args&&...)
  *
  * ### Example Usage
  * \code{.cpp}
- * bool isEmpty = args_empty();
+ * bool isEmpty = argsEmpty();
  * // isEmpty = true
  *
- * bool isEmpty2 = args_empty(1, 2);
+ * bool isEmpty2 = argsEmpty(1, 2);
  * // isEmpty2 = false
  * \endcode
  */
 template<typename ...Args>
-constexpr bool args_empty(Args&&...)
+constexpr bool argsEmpty(Args&&...)
 {
     return sizeof...(Args) == 0;
 }
@@ -207,7 +207,7 @@ constexpr bool args_empty(Args&&...)
  * - The compiler typically optimizes this away completely
  * - Preferred over casting to void for clarity
  *
- * \see args_size, args_empty
+ * \see argsSize, argsEmpty
  */
 template <typename... T>
 constexpr void unusedParameter(const T&...)

@@ -442,17 +442,17 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(_args_size)
 {
-    BOOST_CHECK_EQUAL(4, tl::args_size(1, 2, 3, 4));
+    BOOST_CHECK_EQUAL(4, tl::argsSize(1, 2, 3, 4));
 
     std::string arg1("1");
     int arg2 = 2;
-    BOOST_CHECK_EQUAL(2, tl::args_size(arg1, arg2));
+    BOOST_CHECK_EQUAL(2, tl::argsSize(arg1, arg2));
 }
 
 BOOST_AUTO_TEST_CASE(_args_empty)
 {
-    BOOST_CHECK(tl::args_empty());
-    BOOST_CHECK(!tl::args_empty(1, 3));
+    BOOST_CHECK(tl::argsEmpty());
+    BOOST_CHECK(!tl::argsEmpty(1, 3));
 }
 
 BOOST_AUTO_TEST_CASE(is_in_range)

@@ -855,12 +855,34 @@ BOOST_AUTO_TEST_CASE(test_linestring_wkt)
     line.push_back(Point2d(1.123, 2.456));
     line.push_back(Point2d(5.0, 10.0));
 
-    // Test Ostream con precisión
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << wkt(line);
     BOOST_CHECK_EQUAL(ss.str(), "LINESTRING (0.00 0.00, 1.12 2.46, 5.00 10.00)");
 
-    // Test Formatter moderno
-    std::string fmt_out = FORMAT_NAMESPACE format("{:.1f}", wkt(line));
+    std::string fmt_out = tl::format("{:.1f}", wkt(line));
     BOOST_CHECK_EQUAL(fmt_out, "LINESTRING (0.0 0.0, 1.1 2.5, 5.0 10.0)");
+
+    LineString<Point3d> line_3d;
+    line_3d.push_back(Point3d(0.0, 0.0, 0.0));
+    line_3d.push_back(Point3d(1.123, 2.456, 2.14));
+    line_3d.push_back(Point3d(5.0, 10.0, 4.65));
+
+    ss.str("");
+    ss << std::fixed << std::setprecision(2) << wkt(line_3d);
+    BOOST_CHECK_EQUAL(ss.str(), "LINESTRING Z (0.00 0.00 0.00, 1.12 2.46 2.14, 5.00 10.00 4.65)");
+
+    fmt_out = tl::format("{:.1f}", wkt(line_3d));
+    BOOST_CHECK_EQUAL(fmt_out, "LINESTRING Z (0.0 0.0 0.0, 1.1 2.5 2.1, 5.0 10.0 4.7)");
+
+    LineString<Point2dm> line_m;
+    line_m.push_back(Point2dm(0.0, 0.0, 1.));
+    line_m.push_back(Point2dm(1.123, 2.456, 3.));
+    line_m.push_back(Point2dm(5.0, 10.0, 7.));
+
+    ss.str("");
+    ss << std::fixed << std::setprecision(2) << wkt(line_m);
+    BOOST_CHECK_EQUAL(ss.str(), "LINESTRING M (0.00 0.00 1.00, 1.12 2.46 3.00, 5.00 10.00 7.00)");
+
+    fmt_out = tl::format("{:.1f}", wkt(line_m));
+    BOOST_CHECK_EQUAL(fmt_out, "LINESTRING M (0.0 0.0 1.0, 1.1 2.5 3.0, 5.0 10.0 7.0)");
 }

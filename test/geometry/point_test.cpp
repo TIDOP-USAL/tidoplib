@@ -820,10 +820,22 @@ BOOST_AUTO_TEST_CASE(test_point_wkt_output_stream)
     BOOST_CHECK_EQUAL(ss.str(), "POINT (10.5 20)");
 
     Point3d p3d(1.0, 2.0, 3.5);
-    ss.str(""); // Limpiar stream
+    ss.str("");
     ss << wkt(p3d);
 
     BOOST_CHECK_EQUAL(ss.str(), "POINT Z (1 2 3.5)");
+
+    // Test XYM
+    Point<double, xym_tag> p_m(10.0, 20.0, 500.0);
+    ss.str("");
+    ss << wkt(p_m);
+    BOOST_CHECK_EQUAL(ss.str(), "POINT M (10 20 500)");
+
+    // Test XYZM
+    Point<double, xyzm_tag> p_zm(1.0, 2.0, 3.0, 99.0);
+    ss.str("");
+    ss << wkt(p_zm);
+    BOOST_CHECK_EQUAL(ss.str(), "POINT ZM (1 2 3 99)");
 }
 
 BOOST_AUTO_TEST_CASE(test_point_wkt_formatter)
@@ -839,37 +851,17 @@ BOOST_AUTO_TEST_CASE(test_point_wkt_formatter)
     formatted = tl::format("{}", wkt(p3d));
 
     BOOST_CHECK_EQUAL(formatted, "POINT Z (1 2 3.5)");
+
+    // Test XYM
+    Point<double, xym_tag> p_m(10.0, 20.0, 500.0);
+    formatted = tl::format("{}", wkt(p_m));
+    BOOST_CHECK_EQUAL(formatted, "POINT M (10 20 500)");
+
+    // Test XYZM
+    Point<double, xyzm_tag> p_zm(1.0, 2.0, 3.0, 99.0);
+    formatted = tl::format("{}", wkt(p_zm));
+    BOOST_CHECK_EQUAL(formatted, "POINT ZM (1 2 3 99)");
 }
-
-//BOOST_AUTO_TEST_CASE(test_point_wkt_input_stream)
-//{
-//    // Caso 1: Lectura estándar
-//    std::stringstream ss("POINT(100.25 200.75)");
-//    tl::Point<double, tl::Dimension::dim2> p;
-//    ss >> p;
-//
-//    BOOST_CHECK_CLOSE(p.x(), 100.25, 0.0001);
-//    BOOST_CHECK_CLOSE(p.y(), 200.75, 0.0001);
-//
-//    // Caso 2: Tolerancia a minúsculas y espacios (robustez)
-//    std::stringstream ss2("  point  ( 1.0   2.0   3.0 ) ");
-//    tl::Point<double, tl::Dimension::dim3> p3;
-//    ss2 >> p3;
-//
-//    BOOST_CHECK_EQUAL(p3.z(), 3.0);
-//    BOOST_CHECK(!ss2.fail());
-//}
-
-//BOOST_AUTO_TEST_CASE(test_point_wkt_failure)
-//{
-//    // Caso de error: Formato malformado
-//    std::stringstream ss("NOT_A_POINT(1 2)");
-//    tl::Point<double, tl::Dimension::dim2> p;
-//    ss >> p;
-//
-//    // El stream debería entrar en estado de fallo si no encuentra el '('
-//    BOOST_CHECK(ss.fail());
-//}
 
 BOOST_AUTO_TEST_CASE(test_point_precision_control)
 {

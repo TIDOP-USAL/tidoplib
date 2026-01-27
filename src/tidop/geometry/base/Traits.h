@@ -92,11 +92,40 @@ enum class GeometryType
 };
 
 
-struct xy_tag { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 2; };
-struct xyz_tag { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 3; };
-struct xym_tag { static constexpr size_t spatial_dims = 2; static constexpr size_t storage_size = 3; };
-struct xyzm_tag { static constexpr size_t spatial_dims = 3; static constexpr size_t storage_size = 4; };
-struct xyzw_tag { static constexpr size_t spatial_dims = 4; static constexpr size_t storage_size = 4; };
+struct xy_tag
+{ 
+    static constexpr bool is_ogc = true;
+    static constexpr size_t spatial_dims = 2; 
+    static constexpr size_t storage_size = 2; 
+};
+
+struct xyz_tag
+{ 
+    static constexpr bool is_ogc = true;
+    static constexpr size_t spatial_dims = 3; 
+    static constexpr size_t storage_size = 3;
+};
+
+struct xym_tag 
+{ 
+    static constexpr bool is_ogc = true;
+    static constexpr size_t spatial_dims = 2; 
+    static constexpr size_t storage_size = 3;
+};
+
+struct xyzm_tag
+{
+    static constexpr bool is_ogc = true;
+    static constexpr size_t spatial_dims = 3; 
+    static constexpr size_t storage_size = 4;
+};
+
+struct xyzw_tag 
+{ 
+    static constexpr bool is_ogc = false;
+    static constexpr size_t spatial_dims = 4;
+    static constexpr size_t storage_size = 4;
+};
 
 
 
@@ -121,22 +150,9 @@ struct geometry_traits
 
 /*!
  * \brief Traits specialization for Point.
- * \tparam T Coordinate type.
- * \tparam D Dimension.
+ * \tparam T Data type for the coordinates (e.g., float, double, int).
+ * \tparam Tag Type tag defining the coordinate layout (e.g., xy_tag, xyz_tag, xym_tag, xyzm_tag).
  */
-//template<typename T, Dimension D>
-//struct geometry_traits<Point<T, D>>
-//{
-//    static_assert(is_valid_dimension(D), "Invalid point dimension");
-//
-//    static constexpr bool is_geometry = true;
-//    static constexpr bool is_multi = false;
-//    static constexpr Dimension dimension = D;
-//    static constexpr GeometryType type = GeometryType::point;
-//
-//    using value_type = T;
-//};
-
 template<typename T, typename Tag>
 struct geometry_traits<Point<T, Tag>>
 {

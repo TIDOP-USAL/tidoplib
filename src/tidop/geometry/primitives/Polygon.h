@@ -149,7 +149,7 @@ public:
      * \param[in] outer Outer ring of the polygon.
      * \param[in] inners Inner rings (holes) of the polygon.
      */
-    Polygon(LinearRing<Point_t> outer, std::vector<LinearRing<Point_t>> inners);
+    Polygon(LinearRing<Point_t> outer, std::vector<LinearRing<Point_t>> inners = {});
 
     /*!
      * \brief Constructs a polygon from an initializer list (outer ring only).

@@ -714,11 +714,48 @@ BOOST_AUTO_TEST_CASE(multi_polygon_area_complex)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-
-BOOST_AUTO_TEST_CASE(test_polygon_wkt_output)
+BOOST_AUTO_TEST_CASE(test_polygon_2d_wkt_output)
 {
     // Crear anillo exterior (cuadrado)
-    tl::LinearRing<Point3d> outer = {
+    tl::LinearRing<Point2d> outer = {
+        Point2d(0,0),
+        Point2d(10,0),
+        Point2d(10,10),
+        Point2d(0,10),
+        Point2d(0,0)
+    };
+
+    // Crear hueco interior
+    tl::LinearRing<Point2d> inner = {
+        Point2d(2,2),
+        Point2d(8,2),
+        Point2d(8,8),
+        Point2d(2,8),
+        Point2d(2,2)
+    };
+
+    tl::Polygon<Point2d> poly(outer, {inner});
+
+    // Test con streams y precisión
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(1) << wkt(poly);
+
+    std::string expected = "POLYGON ((0.0 0.0, 10.0 0.0, 10.0 10.0, 0.0 10.0, 0.0 0.0), "
+        "(2.0 2.0, 8.0 2.0, 8.0 8.0, 2.0 8.0, 2.0 2.0))";
+
+    BOOST_CHECK_EQUAL(ss.str(), expected);
+
+    // Test con format moderno
+    std::string fmt_out = tl::format("{:.0f}", wkt(poly));
+    BOOST_CHECK(fmt_out.find("POLYGON ((0 0") != std::string::npos);
+
+    fmt_out = tl::format("{:.2f}", wkt(poly));
+    BOOST_CHECK(fmt_out.find("2.00 8.00") != std::string::npos);
+}
+BOOST_AUTO_TEST_CASE(test_polygon_3d_wkt_output)
+{
+    // Crear anillo exterior (cuadrado)
+    LinearRing<Point3d> outer = {
         Point3d(0,0,0), 
         Point3d(10,0,0),
         Point3d(10,10,0), 
@@ -727,7 +764,7 @@ BOOST_AUTO_TEST_CASE(test_polygon_wkt_output)
     };
 
     // Crear hueco interior
-    tl::LinearRing<Point3d> inner = {
+    LinearRing<Point3d> inner = {
         Point3d(2,2,0),
         Point3d(8,2,0), 
         Point3d(8,8,0), 
@@ -752,4 +789,52 @@ BOOST_AUTO_TEST_CASE(test_polygon_wkt_output)
 
     fmt_out = tl::format("{:.2f}", wkt(poly));
     BOOST_CHECK(fmt_out.find("2.00 8.00 0.00") != std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(test_polygon_zm_wkt)
+{
+    LinearRing<Point3dm> outer = {
+        Point3dm(0, 0, 0, 1),
+        Point3dm(10, 0, 0, 1),
+        Point3dm(0, 10, 0, 1),
+        Point3dm(0, 0, 0, 1)
+    };
+
+    tl::Polygon<Point3dm> poly(outer);
+
+    std::stringstream ss;
+    ss << wkt(poly);
+
+    BOOST_CHECK(ss.str().find("POLYGON ZM ((") != std::string::npos);
+}
+
+BOOST_AUTO_TEST_CASE(test_multipolygon_zm_wkt)
+{
+    LinearRing<Point3dm> outer1 = {
+        Point3dm(0, 0, 0, 1),
+        Point3dm(1, 1, 0, 1),
+        Point3dm(0, 0, 0, 1)
+    };
+
+    tl::LinearRing<Point3dm> outer2 = {
+        Point3dm(5, 5, 0, 1),
+        Point3dm(6, 6, 0, 1),
+        Point3dm(5, 5, 0, 1)
+    };
+
+    // Añadir dos polígonos simples
+    tl::Polygon<Point3dm> p1(outer1);
+    tl::Polygon<Point3dm> p2(outer2);
+
+    MultiPolygon<Point3dm> mpoly;
+    mpoly.push_back(p1);
+    mpoly.push_back(p2);
+
+    std::stringstream ss;
+    ss << wkt(mpoly);
+
+    // Verificamos que el prefijo es correcto y hay triple paréntesis al inicio
+    std::string result = ss.str();
+    BOOST_CHECK(result.find("MULTIPOLYGON ZM") != std::string::npos);
+    BOOST_CHECK(result.find("(((") != std::string::npos);
 }

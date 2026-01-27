@@ -32,21 +32,15 @@ namespace tl
 	
 struct WKTWriter 
 {
-    
-    template<typename Point_t>
-    static void writeCoords(std::ostream &os, const Point_t &p)
-    {
-        constexpr std::size_t dim = dimension_value(geometry_traits<Point_t>::dimension);
-        for (std::size_t d = 0; d < dim; ++d) {
-            os << p[d] << (d < dim - 1 ? " " : "");
-        }
-    }
 
     template<typename Point_t>
     static void write(std::ostream &os, const Point_t &g, point_tag)
     {
-        constexpr auto dim = geometry_traits<Point_t>::dimension;
-        os << (dim == Dimension::dim3 ? "POINT Z (" : "POINT (");
+        using Tag = typename geometry_traits<Point_t>::tag_type;
+
+        static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
+
+        writePrefix<Tag>(os, "POINT");
         writeCoords(os, g);
         os << ")";
     }
@@ -55,7 +49,11 @@ struct WKTWriter
     static void write(std::ostream &os, const LineString_t &g, linestring_tag)
     {
         using Point_t = typename geometry_traits<LineString_t>::point_type;
-        os << (geometry_traits<Point_t>::dimension == Dimension::dim3 ? "LINESTRING Z (" : "LINESTRING (");
+        using Tag = typename geometry_traits<Point_t>::tag_type;
+
+        static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
+
+        writePrefix<Tag>(os, "LINESTRING");
         for (std::size_t i = 0; i < g.size(); ++i) {
             writeCoords(os, g[i]);
             if (i < g.size() - 1) os << ", ";
@@ -67,21 +65,15 @@ struct WKTWriter
     static void write(std::ostream &os, const Polygon_t &g, polygon_tag)
     {
         using Point_t = typename geometry_traits<Polygon_t>::point_type;
-        os << (geometry_traits<Point_t>::dimension == Dimension::dim3 ? "POLYGON Z (" : "POLYGON (");
+        using Tag = typename geometry_traits<Point_t>::tag_type;
         
-        auto write_ring = [&](const auto &ring) {
-            os << "(";
-            for (std::size_t i = 0; i < ring.size(); ++i) {
-                writeCoords(os, ring[i]);
-                if (i < ring.size() - 1) os << ", ";
-            }
-            os << ")";
-        };
+        static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
 
-        write_ring(g.outer());
+        writePrefix<Tag>(os, "POLYGON");
+        writeRing(os, g.outer());
         for (const auto &inner : g.inners()) {
             os << ", ";
-            write_ring(inner);
+            writeRing(os, inner);
         }
         os << ")";
     }
@@ -89,10 +81,111 @@ struct WKTWriter
     template<typename Segment_t>
     static void write(std::ostream &os, const Segment_t &s, segment_tag)
     {
-        os << (geometry_traits<Geometry>::dimension == Dimension::dim3 ? "LINESTRING Z (" : "LINESTRING (");
-        writeCoords(os, s.first());
+        using Point_t = typename geometry_traits<Segment_t>::point_type;
+        using Tag = typename geometry_traits<Point_t>::tag_type;
+
+        static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
+
+        writePrefix<Tag>(os, "LINESTRING");
+        writeCoords(os, s.pt1());
         os << ", ";
-        writeCoords(os, s.second());
+        writeCoords(os, s.pt2());
+        os << ")";
+    }
+
+    template<typename MultiPoint_t>
+    static void write(std::ostream &os, const MultiPoint_t &g, multipoint_tag)
+    {
+        using Point_t = typename geometry_traits<MultiPoint_t>::point_type;
+        using Tag = typename geometry_traits<Point_t>::tag_type;
+
+        writePrefix<Tag>(os, "MULTIPOINT");
+        for (size_t i = 0; i < g.size(); ++i) {
+            os << "(";
+            writeCoords(os, g[i]);
+            os << ")" << (i < g.size() - 1 ? ", " : "");
+        }
+        os << ")";
+    }
+
+    template<typename MultiLineString_t>
+    static void write(std::ostream &os, const MultiLineString_t &g, multilinestring_tag)
+    {
+        using Point_t = typename geometry_traits<MultiLineString_t>::point_type;
+        using Tag = typename geometry_traits<Point_t>::tag_type;
+
+        writePrefix<Tag>(os, "MULTILINESTRING");
+        for (size_t i = 0; i < g.size(); ++i) {
+            os << "(";
+            const auto &line = g[i];
+            writeRingCoordinates(os, line);
+            os << ")" << (i < g.size() - 1 ? ", " : "");
+        }
+        os << ")";
+    }
+
+    template<typename MultiPolygon_t>
+    static void write(std::ostream &os, const MultiPolygon_t &g, multipolygon_tag)
+    {
+        using Point_t = typename geometry_traits<MultiPolygon_t>::point_type;
+        using Tag = typename geometry_traits<Point_t>::tag_type;
+
+        writePrefix<Tag>(os, "MULTIPOLYGON");
+
+        for (size_t i = 0; i < g.size(); ++i) {
+            os << "(";
+            const auto &poly = g[i];
+            writeRing(os, poly.outer());
+            for (const auto &inner : poly.inners()) {
+                os << ", ";
+                writeRing(os, inner);
+            }
+            os << ")" << (i < g.size() - 1 ? ", " : "");
+        }
+        os << ")";
+    }
+
+private:
+
+    template<typename Tag>
+    static void writePrefix(std::ostream &os, const std::string &typeName)
+    {
+        os << typeName;
+
+        if constexpr (std::is_same_v<Tag, xyz_tag>)
+            os << " Z (";
+        else if constexpr (std::is_same_v<Tag, xym_tag>)
+            os << " M (";
+        else if constexpr (std::is_same_v<Tag, xyzm_tag>)
+            os << " ZM (";
+        else
+            os << " (";
+    }
+
+    template<typename Point_t>
+    static void writeCoords(std::ostream &os, const Point_t &p)
+    {
+        static constexpr size_t storage_size = geometry_traits<Point_t>::storage_size;
+
+        for (size_t i = 0; i < storage_size; ++i) {
+            os << p[i] << (i < storage_size - 1 ? " " : "");
+        }
+    }
+
+    template<typename G>
+    static void writeRingCoordinates(std::ostream &os, const G &ring)
+    {
+        for (size_t i = 0; i < ring.size(); ++i) {
+            writeCoords(os, ring[i]);
+            if (i < ring.size() - 1) os << ", ";
+        }
+    }
+
+    template<typename G>
+    static void writeRing(std::ostream &os, const G &ring)
+    {
+        os << "(";
+        writeRingCoordinates(os, ring);
         os << ")";
     }
 };
