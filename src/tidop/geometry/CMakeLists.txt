@@ -34,12 +34,7 @@ if(BUILD_TL_GEOMETRY)
     project(Geometry)
   
     add_files_to_project(${PROJECT_NAME} 
-                        #SOURCE_FILES 
-                        #    algorithms/algorithms.cpp
                         HEADER_FILES
-                            #bbox.h
-                            #rect.h
-                            #window.h
                             algorithms/analysis/Contains.h
                             algorithms/analysis/Contains.impl.h
                             algorithms/clustering/dbscan.h
@@ -57,34 +52,11 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/spatial/Envelope.impl.h
                             algorithms/spatial/Intersection.h
                             algorithms/spatial/Intersection.impl.h
-                            #algorithms/algorithms.h
-                            #algorithms/vector.h
-                            #algorithms/distance.h
-                            #algorithms/angle.h
                             algorithms/projection.h
-                            #algorithms/buffer.h
-                            #algorithms/intersect.h
-							#algorithms/dbscan.h
-                            #entities/entity.h
-                            #entities/entities2d.h
-                            #entities/entities3d.h
-                            #entities/linestring.h
-                            #entities/point.h
-                            #entities/polygon.h
-                            #entities/multipoint.h
-                            #entities/multilinestring.h
-                            #entities/multipolygon.h
-                            #entities/segment.h
-                            shapes/circle.h
-                            shapes/ellipse.h
-                            shapes/rectangle.h
-                            shapes/shape.h
-                            shapes/square.h
-                            shapes/triangle.h
                             base/Dimension.h
                             base/Geometry.h
-                            base/EntityContainer.h
-                            #base/GeometryCollection.h
+                            base/GeometryContainer.h
+                            base/GeometryCollection.h
                             base/Traits.h
                             io/wkt/Writer.h
                             io/wkt/Proxy.h
@@ -95,6 +67,12 @@ if(BUILD_TL_GEOMETRY)
                             primitives/MultiPoint.h
                             primitives/MultiLinestring.h
                             primitives/MultiPolygon.h
+                            shapes/circle.h
+                            shapes/ellipse.h
+                            shapes/rectangle.h
+                            shapes/shape.h
+                            shapes/square.h
+                            shapes/triangle.h
                             spatial/BoundingBox.h
                             spatial/index/KdTree.h
                             #spatial/index/KdTreeStrategies.h

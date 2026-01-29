@@ -63,7 +63,7 @@ namespace tl
  */
 template<typename Point_t>
 class Segment
-  : public GeometryBase<Segment<Point_t>>
+  : public Geometry<Segment<Point_t>>
 {
 
 public:
@@ -138,7 +138,7 @@ public:
      */
     auto operator = (Segment &&segment) noexcept -> Segment & = default;
     
-    ~Segment() override = default;
+    ~Segment() = default;
     
     /*!
      * \brief Conversion to a segment of a different point type.

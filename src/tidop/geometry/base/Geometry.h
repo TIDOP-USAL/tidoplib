@@ -31,7 +31,7 @@
  * ### Classes
  * - \ref tl::Geometry : Abstract base class for geometric entities.
  * - \ref tl::GeometryBase : CRTP base class for geometric entities.
- * \see tl::EntityContainer, tl::Dimension
+ * \see tl::GeometryContainer, tl::Dimension
  */
 
 #pragma once
@@ -48,47 +48,8 @@ namespace tl
  *  \{
  */
 
-
 /*!
  * \class Geometry
- * \brief Abstract base class for geometric entities.
- *
- * Provides a common interface for all geometric types, including
- * type identification and dimension queries.
- */
-class TL_EXPORT Geometry
-{
-
-public:
-
-    /*! \brief Default constructor. */
-    Geometry() = default;
-
-    /*! \brief Virtual destructor. */
-    virtual ~Geometry() = default;
-
-    /*!
-     * \brief Returns the geometry type.
-     * \return Geometry type identifier.
-     */
-    virtual auto type() const noexcept -> GeometryType = 0;
-
-    /*!
-     * \brief Returns the dimension of the geometry.
-     * \return Dimension of the geometry.
-     */
-    virtual auto dimension() const noexcept -> Dimension = 0;
-
-    /*!
-     * \brief Checks if the geometry is a collection (multi-type).
-     * \return true if the geometry is a collection, false otherwise.
-     */
-    virtual auto isMulti() const noexcept -> bool { return false; }
-
-};
-
-/*!
- * \class GeometryBase
  * \brief CRTP base class for geometric entities.
  *
  * Provides static polymorphism and compile-time type information
@@ -97,30 +58,41 @@ public:
  * \tparam Derived The derived geometry class.
  */
 template<typename Derived>
-class GeometryBase
-  : public Geometry
+class Geometry
 {
 
 public:
-
     /*!
-     * \brief Returns the geometry type (compile-time).
-     * \return Geometry type identifier from traits.
+     * \brief Returns the geometry type.
+     * \return Geometry type identifier.
      */
-    constexpr auto type() const noexcept -> GeometryType final
+    constexpr auto type() const noexcept -> GeometryType
     {
         return geometry_traits<Derived>::type;
     }
 
     /*!
-     * \brief Returns the dimension of the geometry (compile-time).
-     * \return Dimension from traits.
+     * \brief Returns the dimension of the geometry.
+     * \return Dimension of the geometry.
      */
-    constexpr auto dimension() const noexcept -> Dimension final
+    constexpr auto dimension() const noexcept -> Dimension
     {
         return geometry_traits<Derived>::dimension;
     }
 
+    /*!
+     * \brief Checks if the geometry is a collection (multi-type).
+     * \return true if the geometry is a collection, false otherwise.
+     */
+    constexpr auto isMulti() const noexcept -> bool
+    {
+        return geometry_traits<Derived>::is_multi;
+    }
+
+protected:
+
+    Geometry() = default;
+    ~Geometry() = default;
 };
 
 /*! \} */ 

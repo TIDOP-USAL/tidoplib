@@ -22,14 +22,14 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file EntityContainer.h
+/*! \file GeometryContainer.h
  * \brief Generic container for geometric entities.
  *
- * This file defines the EntityContainer class template, which provides
+ * This file defines the GeometryContainer class template, which provides
  * a wrapper around std::vector for storing collections of geometric entities.
  * It offers a complete STL-like interface with additional geometric utilities.
  * ### Classes
- * - \ref tl::EntityContainer : Generic container for geometric entities.
+ * - \ref tl::GeometryContainer : Generic container for geometric entities.
  * \see tl::GeometryBase, tl::Geometry
  */
 
@@ -47,17 +47,17 @@ namespace tl
  */
 
 
- /*!
-  * \class EntityContainer
-  * \brief Container for geometric entities.
-  *
-  * A simple wrapper around `std::vector` to store and manage geometric entities.
-  * Provides STL-compatible iterators and operations.
-  *
-  * \tparam Entity_t Type of geometric entities to store.
-  */
+/*!
+ * \class GeometryContainer
+ * \brief Container for geometric entities.
+ *
+ * A simple wrapper around `std::vector` to store and manage geometric entities.
+ * Provides STL-compatible iterators and operations.
+ *
+ * \tparam Entity_t Type of geometric entities to store.
+ */
 template<typename Entity_t>
-class EntityContainer 
+class GeometryContainer 
 {
 
 public:
@@ -105,41 +105,41 @@ public:
      * \brief Default constructor
      * Initializes an empty entity container.
      */
-    EntityContainer();
+    GeometryContainer();
 
     /*!
      * \brief Constructs an entity container with a predefined size.
      * \param[in] size Number of entities to allocate space for.
      * The container is initialized with the given size but does not necessarily populate entities.
      */
-    EntityContainer(size_type size);
+    GeometryContainer(size_type size);
 
     /*!
      * \brief Copy constructor
-     * \param[in] entity Another EntityContainer to copy.
+     * \param[in] entity Another GeometryContainer to copy.
      */
-    EntityContainer(const EntityContainer &entity);
+    GeometryContainer(const GeometryContainer &entity);
 
     /*!
      * \brief Move constructor
-     * \param[in] entity Another EntityContainer to move.
+     * \param[in] entity Another GeometryContainer to move.
      */
-    EntityContainer(EntityContainer &&entity) noexcept;
+    GeometryContainer(GeometryContainer &&entity) noexcept;
 
     /*!
      * \brief Constructs an entity container from a vector of entities.
      * \param[in] entities A vector containing Entity_t objects.
      * Initializes the container with the provided entities.
      */
-    EntityContainer(std::vector<Entity_t> entities);
+    GeometryContainer(std::vector<Entity_t> entities);
 
     /*!
      * \brief Constructs an entity container from an initializer list.
      * \param[in] entities An initializer list containing Entity_t objects.
      */
-    EntityContainer(std::initializer_list<Entity_t> entities);
+    GeometryContainer(std::initializer_list<Entity_t> entities);
    
-    virtual ~EntityContainer() = default;
+    virtual ~GeometryContainer() = default;
     
     /*!
      * \brief Returns an iterator to the beginning.
@@ -274,17 +274,17 @@ public:
     
     /*!
      * \brief Copy assignment operator.
-     * \param[in] entity Another EntityContainer to copy.
+     * \param[in] entity Another GeometryContainer to copy.
      * \return Reference to this container.
      */
-    auto operator=(const EntityContainer<Entity_t> &entity) -> EntityContainer<Entity_t> &;
+    auto operator=(const GeometryContainer<Entity_t> &entity) -> GeometryContainer<Entity_t> &;
 
     /*!
      * \brief Move assignment operator.
-     * \param[in] entity Another EntityContainer to move.
+     * \param[in] entity Another GeometryContainer to move.
      * \return Reference to this container.
      */
-    auto operator=(EntityContainer<Entity_t> &&entity) noexcept -> EntityContainer<Entity_t> &;
+    auto operator=(GeometryContainer<Entity_t> &&entity) noexcept -> GeometryContainer<Entity_t> &;
     
     /*!
      * \brief Erases elements in the specified range.
@@ -313,20 +313,20 @@ public:
 	
     /*!
      * \brief Equality comparison operator.
-     * \param[in] other Another EntityContainer to compare with.
+     * \param[in] other Another GeometryContainer to compare with.
      * \return true if containers are equal, false otherwise.
      */
-    auto operator==(const EntityContainer &other) const -> bool
+    auto operator==(const GeometryContainer &other) const -> bool
     {
         return mEntities == other.mEntities;
     }
 
     /*!
      * \brief Inequality comparison operator.
-     * \param[in] other Another EntityContainer to compare with.
+     * \param[in] other Another GeometryContainer to compare with.
      * \return true if containers are not equal, false otherwise.
      */
-    auto operator!=(const EntityContainer &other) const -> bool
+    auto operator!=(const GeometryContainer &other) const -> bool
     {
         return !(*this == other);
     }
@@ -334,170 +334,170 @@ public:
 
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer() 
+GeometryContainer<Entity_t>::GeometryContainer() 
   : mEntities(0)
 {
 }
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer(size_type size)
+GeometryContainer<Entity_t>::GeometryContainer(size_type size)
   : mEntities(size)
 {
 }
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer(const EntityContainer &entity)
+GeometryContainer<Entity_t>::GeometryContainer(const GeometryContainer &entity)
   : mEntities(entity.mEntities)
 {
 }
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity) noexcept
+GeometryContainer<Entity_t>::GeometryContainer(GeometryContainer &&entity) noexcept
   : mEntities(std::move(entity.mEntities))
 {
 }
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer(std::vector<Entity_t> entities)
+GeometryContainer<Entity_t>::GeometryContainer(std::vector<Entity_t> entities)
   : mEntities(std::move(entities))
 {
 }
 
 template<typename Entity_t>
-EntityContainer<Entity_t>::EntityContainer(std::initializer_list<Entity_t> entities)
+GeometryContainer<Entity_t>::GeometryContainer(std::initializer_list<Entity_t> entities)
   : mEntities(entities)
 {
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::begin() noexcept -> iterator
+auto GeometryContainer<Entity_t>::begin() noexcept -> iterator
 {
     return mEntities.begin();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::begin() const noexcept -> const_iterator
+auto GeometryContainer<Entity_t>::begin() const noexcept -> const_iterator
 {
     return mEntities.cbegin();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::end() noexcept -> iterator 
+auto GeometryContainer<Entity_t>::end() noexcept -> iterator 
 {
     return mEntities.end();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::end() const noexcept -> const_iterator 
+auto GeometryContainer<Entity_t>::end() const noexcept -> const_iterator 
 {
     return mEntities.cend();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::cbegin() const noexcept -> const_iterator
+auto GeometryContainer<Entity_t>::cbegin() const noexcept -> const_iterator
 { 
     return mEntities.cbegin();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::cend() const noexcept -> const_iterator
+auto GeometryContainer<Entity_t>::cend() const noexcept -> const_iterator
 { 
     return mEntities.cend(); 
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::rbegin() noexcept -> reverse_iterator
+auto GeometryContainer<Entity_t>::rbegin() noexcept -> reverse_iterator
 { 
     return mEntities.rbegin();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::rend() noexcept -> reverse_iterator
+auto GeometryContainer<Entity_t>::rend() noexcept -> reverse_iterator
 { 
     return mEntities.rend();
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
+void GeometryContainer<Entity_t>::push_back(const Entity_t &entity)
 {
     mEntities.push_back(entity);
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::push_back(Entity_t &&entity)
+void GeometryContainer<Entity_t>::push_back(Entity_t &&entity)
 {
     mEntities.push_back(std::forward<Entity_t>(entity));
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::at(size_type position) const -> const_reference 
+auto GeometryContainer<Entity_t>::at(size_type position) const -> const_reference 
 {
     return mEntities.at(position);
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::at(size_type position) -> reference 
+auto GeometryContainer<Entity_t>::at(size_type position) -> reference 
 {
     return mEntities.at(position);
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::clear() 
+void GeometryContainer<Entity_t>::clear() 
 { 
     mEntities.clear();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::empty() const -> bool
+auto GeometryContainer<Entity_t>::empty() const -> bool
 {
     return mEntities.empty();
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::reserve(size_type size)
+void GeometryContainer<Entity_t>::reserve(size_type size)
 {
     mEntities.reserve(size);
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::resize(size_type count)
+void GeometryContainer<Entity_t>::resize(size_type count)
 {
     mEntities.resize(count);
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::resize(size_type count, const Entity_t &value)
+void GeometryContainer<Entity_t>::resize(size_type count, const Entity_t &value)
 {
     mEntities.resize(count, value);
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::size() const noexcept -> size_type
+auto GeometryContainer<Entity_t>::size() const noexcept -> size_type
 { 
     return mEntities.size();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::capacity() const noexcept -> size_type
+auto GeometryContainer<Entity_t>::capacity() const noexcept -> size_type
 {
     return mEntities.capacity();
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::operator[](size_type position) const -> const_reference 
+auto GeometryContainer<Entity_t>::operator[](size_type position) const -> const_reference 
 {
     return mEntities[position];
 }
   
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::operator[](size_type position) -> reference 
+auto GeometryContainer<Entity_t>::operator[](size_type position) -> reference 
 {
     return mEntities[position];
 }
 
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entity) -> EntityContainer<Entity_t>&
+auto GeometryContainer<Entity_t>::operator=(const GeometryContainer<Entity_t> &entity) -> GeometryContainer<Entity_t>&
 {
     if (this != &entity) {
         this->mEntities = entity.mEntities;
@@ -507,7 +507,7 @@ auto EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entit
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) noexcept -> EntityContainer<Entity_t>&
+auto GeometryContainer<Entity_t>::operator=(GeometryContainer<Entity_t> &&entity) noexcept -> GeometryContainer<Entity_t>&
 {
     if (this != &entity) {
         this->mEntities.clear();
@@ -518,20 +518,20 @@ auto EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) no
 }
 
 template<typename Entity_t>
-auto EntityContainer<Entity_t>::erase(const_iterator first, const_iterator last) -> iterator
+auto GeometryContainer<Entity_t>::erase(const_iterator first, const_iterator last) -> iterator
 {
     return mEntities.erase(first, last);
 }
 
 template<typename Entity_t>
-void EntityContainer<Entity_t>::insert(const_iterator pos, std::initializer_list<Entity_t> ilist)
+void GeometryContainer<Entity_t>::insert(const_iterator pos, std::initializer_list<Entity_t> ilist)
 {
     mEntities.insert(pos, ilist);
 }
 
 template<typename Entity_t>
 template<typename InputIt>
-void EntityContainer<Entity_t>::insert(const_iterator pos, InputIt first, InputIt last)
+void GeometryContainer<Entity_t>::insert(const_iterator pos, InputIt first, InputIt last)
 {
     mEntities.insert(pos, first, last);
 }

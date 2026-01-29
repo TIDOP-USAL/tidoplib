@@ -36,7 +36,7 @@ namespace detail
 template<typename Point_t>
 auto length_impl(const Point_t &, point_tag) -> double
 {
-    return typename geometry_traits<Point_t>::value_type{0};
+    return typename point_traits<Point_t>::value_type{0};
 }
 
 template<typename Segment_t>

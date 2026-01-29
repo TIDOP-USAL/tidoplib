@@ -26,13 +26,13 @@
  * \brief Collection of Polygon objects.
  *
  * This file defines the MultiPolygon class template, which represents a
- * collection of Polygon objects. It inherits from GeometryBase and EntityContainer.
+ * collection of Polygon objects. It inherits from GeometryBase and GeometryContainer.
  * ### Classes
  * - \ref tl::MultiPolygon : Main template class for a collection of polygons.
  * ### Type Aliases
  * - \ref tl::MultiPolygon2i, \ref tl::MultiPolygon2f, \ref tl::MultiPolygon2d : 2D integer, float, and double multi-polygons.
  * - \ref tl::MultiPolygon3i, \ref tl::MultiPolygon3f, \ref tl::MultiPolygon3d : 3D integer, float, and double multi-polygons.
- * \see tl::GeometryBase, tl::EntityContainer, tl::Polygon
+ * \see tl::GeometryBase, tl::GeometryContainer, tl::Polygon
  */
 
 #pragma once
@@ -41,6 +41,8 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/Polygon.h"
 #include "tidop/math/algebra/vector.h"
 
 #include <array>
@@ -60,10 +62,10 @@ namespace tl
  */
 template<typename Point_t>
 class MultiPolygon
-  : public GeometryBase<MultiPolygon<Point_t>>, 
-    public EntityContainer<Polygon<Point_t>> 
+  : public Geometry<MultiPolygon<Point_t>>, 
+    public GeometryContainer<Polygon<Point_t>> 
 {
-    using EntityContainer<Polygon<Point_t>>::EntityContainer;
+    using GeometryContainer<Polygon<Point_t>>::GeometryContainer;
 };
 
 

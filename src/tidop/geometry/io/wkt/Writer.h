@@ -25,7 +25,10 @@
 #pragma once
 
 #include "tidop/geometry/base/Traits.h"
+
 #include <ostream>
+#include <variant>
+#include <type_traits>
 
 namespace tl
 {
@@ -36,7 +39,7 @@ struct WKTWriter
     template<typename Point_t>
     static void write(std::ostream &os, const Point_t &g, point_tag)
     {
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
 
         static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
 
@@ -49,7 +52,7 @@ struct WKTWriter
     static void write(std::ostream &os, const LineString_t &g, linestring_tag)
     {
         using Point_t = typename geometry_traits<LineString_t>::point_type;
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
 
         static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
 
@@ -65,7 +68,7 @@ struct WKTWriter
     static void write(std::ostream &os, const Polygon_t &g, polygon_tag)
     {
         using Point_t = typename geometry_traits<Polygon_t>::point_type;
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
         
         static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
 
@@ -82,7 +85,7 @@ struct WKTWriter
     static void write(std::ostream &os, const Segment_t &s, segment_tag)
     {
         using Point_t = typename geometry_traits<Segment_t>::point_type;
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
 
         static_assert(Tag::is_ogc, "WKT Format Error: Only XY, XYZ, XYM, and XYZM layouts are supported by OGC standard.");
 
@@ -97,7 +100,7 @@ struct WKTWriter
     static void write(std::ostream &os, const MultiPoint_t &g, multipoint_tag)
     {
         using Point_t = typename geometry_traits<MultiPoint_t>::point_type;
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
 
         writePrefix<Tag>(os, "MULTIPOINT");
         for (size_t i = 0; i < g.size(); ++i) {
@@ -112,7 +115,7 @@ struct WKTWriter
     static void write(std::ostream &os, const MultiLineString_t &g, multilinestring_tag)
     {
         using Point_t = typename geometry_traits<MultiLineString_t>::point_type;
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
 
         writePrefix<Tag>(os, "MULTILINESTRING");
         for (size_t i = 0; i < g.size(); ++i) {
@@ -128,7 +131,7 @@ struct WKTWriter
     static void write(std::ostream &os, const MultiPolygon_t &g, multipolygon_tag)
     {
         using Point_t = typename geometry_traits<MultiPolygon_t>::point_type;
-        using Tag = typename geometry_traits<Point_t>::tag_type;
+        using Tag = typename point_traits<Point_t>::tag_type;
 
         writePrefix<Tag>(os, "MULTIPOLYGON");
 
@@ -141,6 +144,36 @@ struct WKTWriter
                 writeRing(os, inner);
             }
             os << ")" << (i < g.size() - 1 ? ", " : "");
+        }
+        os << ")";
+    }
+
+    template<typename Point_t>
+    static void write(std::ostream &os, const GeometryCollection<Point_t> &g, collection_tag)
+    {
+        using Tag = typename point_traits<Point_t>::tag_type;
+
+        writePrefix<Tag>(os, "GEOMETRYCOLLECTION");
+
+        for (size_t i = 0; i < g.size(); ++i) {
+            // Usamos std::visit para despachar el GeoID al método write correspondiente
+            std::visit([&os](auto &&arg) {
+                // arg es una referencia al objeto real (Point_t&, LineString<Point_t>&, etc.)
+                // Obtenemos su tag de geometría mediante traits para llamar al overload de WKTWriter
+                //using PtrType = std::decay_t<decltype(arg)>;
+                //using GeometryType = std::remove_const_t<std::remove_pointer_t<PtrType>>; // Quitamos el * para los traits
+                ////using ArgType = std::decay_t<decltype(arg)>;
+                //using ArgTag = typename geometry_traits<ArgType>::tag_type; // Ej: point_tag
+
+                //WKTWriter::write(os, *arg, geometry_tag_t<GeometryType>{});
+
+                const auto &geom = arg.get();
+                using GeometryType = std::decay_t<decltype(geom)>;
+
+                WKTWriter::write(os, geom, geometry_tag_t<GeometryType>{});
+                }, g[i]);
+
+            if (i < g.size() - 1) os << ", ";
         }
         os << ")";
     }
@@ -165,7 +198,7 @@ private:
     template<typename Point_t>
     static void writeCoords(std::ostream &os, const Point_t &p)
     {
-        static constexpr size_t storage_size = geometry_traits<Point_t>::storage_size;
+        static constexpr size_t storage_size = point_traits<Point_t>::storage_size;
 
         for (size_t i = 0; i < storage_size; ++i) {
             os << p[i] << (i < storage_size - 1 ? " " : "");

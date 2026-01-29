@@ -1,4 +1,4 @@
-/**************************************************************************
+    /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -26,13 +26,13 @@
  * \brief Collection of Point objects.
  *
  * This file defines the MultiPoint class template, which represents a
- * collection of Point objects. It inherits from GeometryBase and EntityContainer.
+ * collection of Point objects. It inherits from GeometryBase and GeometryContainer.
  * ### Classes
  * - \ref tl::MultiPoint : Main template class for a collection of points.
  * ### Type Aliases
  * - \ref tl::MultiPoint2i, \ref tl::MultiPoint2f, \ref tl::MultiPoint2d : 2D integer, float, and double multi-points.
  * - \ref tl::MultiPoint3i, \ref tl::MultiPoint3f, \ref tl::MultiPoint3d : 3D integer, float, and double multi-points.
- * \see tl::GeometryBase, tl::EntityContainer, tl::Point
+ * \see tl::GeometryBase, tl::GeometryContainer, tl::Point
  */
 
 #pragma once
@@ -41,7 +41,8 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/EntityContainer.h"
+#include "tidop/geometry/base/GeometryContainer.h"
+#include "tidop/geometry/primitives/Point.h"
 #include "tidop/math/algebra/vector.h"
 
 #include <array>
@@ -61,13 +62,13 @@ namespace tl
  */
 template<typename Point_t>
 class MultiPoint 
-  : public GeometryBase<MultiPoint<Point_t>>, 
-    public EntityContainer<Point_t> 
+  : public Geometry<MultiPoint<Point_t>>, 
+    public GeometryContainer<Point_t> 
 {
 	
 public:
 
-    using EntityContainer<Point_t>::EntityContainer;
+    using GeometryContainer<Point_t>::GeometryContainer;
 };
 
 

@@ -26,13 +26,13 @@
  * \brief Collection of LineString objects.
  *
  * This file defines the MultiLineString class template, which represents a
- * collection of LineString objects. It inherits from GeometryBase and EntityContainer.
+ * collection of LineString objects. It inherits from GeometryBase and GeometryContainer.
  * ### Classes
  * - \ref tl::MultiLineString : Main template class for a collection of polylines.
  * ### Type Aliases
  * - \ref tl::MultiLineString2i, \ref tl::MultiLineString2f, \ref tl::MultiLineString2d : 2D integer, float, and double multi-polylines.
  * - \ref tl::MultiLineString3i, \ref tl::MultiLineString3f, \ref tl::MultiLineString3d : 3D integer, float, and double multi-polylines.
- * \see tl::GeometryBase, tl::EntityContainer, tl::LineString
+ * \see tl::GeometryBase, tl::GeometryContainer, tl::LineString
  */
 
 #pragma once
@@ -41,6 +41,8 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/LineString.h"
 #include "tidop/math/algebra/vector.h"
 
 #include <array>
@@ -60,10 +62,10 @@ namespace tl
  */
 template<typename Point_t>
 class MultiLineString 
-  : public GeometryBase<MultiLineString<Point_t>>, 
-    public EntityContainer<LineString<Point_t>> 
+  : public Geometry<MultiLineString<Point_t>>, 
+    public GeometryContainer<LineString<Point_t>> 
 {
-    using EntityContainer<LineString<Point_t>>::EntityContainer;
+    using GeometryContainer<LineString<Point_t>>::GeometryContainer;
 };
 
 // TYPE ALIASES

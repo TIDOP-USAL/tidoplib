@@ -62,10 +62,10 @@ namespace tl
  * 
  * \tparam Geometry Type of the geometry being serialized.
  */
-template<typename Geometry>
+template<typename Geometry_t>
 struct WKTProxy 
 {
-    const Geometry &geometry;
+    const Geometry_t &geometry;
     int precision = -1;
 
     /*! \brief Define la precisión decimal de las coordenadas. */
@@ -99,7 +99,7 @@ struct WKTProxy
         }
 
         // Despacho por Tag Dispatching
-        WKTWriter::write(os, proxy.geometry, geometry_tag_t<Geometry>{});
+        WKTWriter::write(os, proxy.geometry, geometry_tag_t<Geometry_t>{});
 
         // Restaurar estado
         os.flags(old_flags);

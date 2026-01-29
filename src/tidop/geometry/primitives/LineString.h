@@ -26,13 +26,13 @@
  * \brief Polyline (sequence of points) implementation.
  *
  * This file defines the LineString class template, which represents a polyline
- * as a sequence of points. It inherits from GeometryBase and EntityContainer.
+ * as a sequence of points. It inherits from GeometryBase and GeometryContainer.
  * ### Classes
  * - \ref tl::LineString : Main template class for a polyline.
  * ### Type Aliases
  * - \ref tl::LineString2i, \ref tl::LineString2f, \ref tl::LineString2d : 2D integer, float, and double polylines.
  * - \ref tl::LineString3i, \ref tl::LineString3f, \ref tl::LineString3d : 3D integer, float, and double polylines.
- * \see tl::GeometryBase, tl::EntityContainer, tl::Point
+ * \see tl::GeometryBase, tl::GeometryContainer, tl::Point
  */
 
 #pragma once
@@ -42,7 +42,7 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/EntityContainer.h"
+#include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
@@ -63,9 +63,10 @@ namespace tl
  */
 template<typename Point_t>
 class LineString 
-  : public GeometryBase<LineString<Point_t>>,
-    public EntityContainer<Point_t>
+  : public Geometry<LineString<Point_t>>,
+    public GeometryContainer<Point_t>
 {
+
 public:
 
     /*! \brief Type of points stored in the polyline. */
@@ -73,13 +74,13 @@ public:
 
 public:
 
-    using EntityContainer<Point_t>::EntityContainer;
+    using GeometryContainer<Point_t>::GeometryContainer;
 
     /*!
      * \brief Returns the number of points in the polyline.
      * \return The number of points.
      */
-    auto numPoints() const;
+    //auto numPoints() const;
 
     /*!
      * \brief Checks if the polyline is closed.
@@ -153,11 +154,11 @@ using LineString3dm = LineString<Point3dm>;
 
 // METHOD IMPLEMENTATIONS
 
-template<typename Point_t>
-auto LineString<Point_t>::numPoints() const 
-{ 
-    return this->size();
-}
+//template<typename Point_t>
+//auto LineString<Point_t>::numPoints() const 
+//{ 
+//    return this->size();
+//}
 
 template<typename Point_t>
 auto LineString<Point_t>::isClosed() const -> bool

@@ -36,7 +36,7 @@
  * - \ref tl::LinearRing3i, \ref tl::LinearRing3f, \ref tl::LinearRing3d : 3D integer, float, and double rings.
  * - \ref tl::Polygon2i, \ref tl::Polygon2f, \ref tl::Polygon2d : 2D integer, float, and double polygons.
  * - \ref tl::Polygon3i, \ref tl::Polygon3f, \ref tl::Polygon3d : 3D integer, float, and double polygons.
- * \see tl::GeometryBase, tl::EntityContainer, tl::Point
+ * \see tl::GeometryBase, tl::GeometryContainer, tl::Point
  */
 
 #pragma once
@@ -46,7 +46,7 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/EntityContainer.h"
+#include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
@@ -67,12 +67,12 @@ namespace tl
  */
 template<typename Point_t>
 class LinearRing
-  : public EntityContainer<Point_t>
+  : public GeometryContainer<Point_t>
 {
 
 public:
 
-    using EntityContainer<Point_t>::EntityContainer;
+    using GeometryContainer<Point_t>::GeometryContainer;
     
 public:
 
@@ -118,7 +118,7 @@ using LinearRing3f = LinearRing<Point3f>;
  */
 template<typename Point_t>
 class Polygon 
-  : public GeometryBase<Polygon<Point_t>>
+  : public Geometry<Polygon<Point_t>>
 {
 
 public:

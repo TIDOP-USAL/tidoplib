@@ -64,7 +64,7 @@ namespace tl
  */
 template<typename Point_t>
 class BoundingBox final
-  : public GeometryBase<BoundingBox<Point_t>>
+  : public Geometry<BoundingBox<Point_t>>
 {
 
 public:
@@ -73,10 +73,10 @@ public:
     using value_type = Point_t;
 
     /*! \brief Scalar type of the point coordinates. */
-    using T = typename geometry_traits<Point_t>::value_type;
+    using T = typename point_traits<Point_t>::value_type;
 
     /*! \brief Dimension of the bounding box (compile-time constant). */
-    static constexpr size_t dimensions = dimension_value(geometry_traits<Point_t>::dimension);
+    static constexpr size_t dimensions = dimension_value(point_traits<Point_t>::dimension);
 
 private:
 

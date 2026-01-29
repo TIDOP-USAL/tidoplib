@@ -70,7 +70,7 @@ namespace tl
  */
 template<typename T, typename Tag = xy_tag>
 class Point
-  : public GeometryBase<Point<T, Tag>>,
+  : public Geometry<Point<T, Tag>>,
     public VectorBase<Point<T, Tag>>
 {
 
@@ -122,7 +122,7 @@ public:
     explicit Point(const std::array<T, storage_size> &a);
 
     /*! \brief Destructor. */
-    ~Point() override = default;
+    ~Point() = default;
 
     /*!
      * \brief Copy assignment operator.
@@ -439,6 +439,24 @@ auto operator-(const Point<T, Tag> &a, const Point<T, Tag> &b) -> typename Vecto
         v[i] = a[i] - b[i];
     return v;
 }
+
+template<typename T, typename Tag>
+auto operator == (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
+{
+    static constexpr size_t size = point_traits<Point<T, Tag>>::storage_size;
+
+    for (size_t i = 0; i < size; ++i)
+        if (pt1[i] != pt2[i]) return false;
+
+    return true;
+}
+
+template<typename T, typename Tag>
+auto operator != (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
+{
+    return !(pt1 == pt2);
+}
+
 
 /*! \} */
 
