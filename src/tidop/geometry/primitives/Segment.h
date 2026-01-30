@@ -43,9 +43,8 @@
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/geometry/spatial/BoundingBox.h"
-#include "tidop/geometry/algorithms/spatial/Envelope.h"
 #include "tidop/geometry/algorithms/measurement/Length.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -194,11 +193,6 @@ public:
      * \return Const reference to the end point (same as pt2).
      */
     auto end() const noexcept -> const Point_t &;
-
-    /*!
-     * \brief Computes the bounding box of the segment.
-     */
-    auto boundingBox() const;
 
     /*!
      * \brief Checks if the segment is empty (i.e., both endpoints are identical).
@@ -361,12 +355,6 @@ template<typename Point_t>
 auto Segment<Point_t>::end() const noexcept -> const Point_t &
 { 
     return mPoints[1]; 
-}
-
-template<typename Point_t>
-auto Segment<Point_t>::boundingBox() const
-{
-    return tl::envelope(*this);
 }
 
 template<typename Point_t>

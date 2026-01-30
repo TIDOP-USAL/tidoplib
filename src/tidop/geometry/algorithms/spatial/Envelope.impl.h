@@ -24,9 +24,9 @@
 
 #pragma once
 
-#include <cmath>
-
-#include "tidop/geometry/spatial/BoundingBox.h"
+#include <variant>
+#include <type_traits>
+#include "Envelope.h"
 
 namespace tl
 {
@@ -40,10 +40,10 @@ auto envelope_impl(const Point_t &p, point_tag)
     return BoundingBox<Point_t>(p, p);
 }
 
-template<typename Segment_t>
-auto envelope_impl(const Segment_t &s, segment_tag)
+template<typename Point_t>
+auto envelope_impl(const Segment<Point_t> &s, segment_tag)
 {
-    return BoundingBox<typename Segment_t::value_type>(s.pt1(), s.pt2());
+    return BoundingBox<Point_t>(s.pt1(), s.pt2());
 }
 
 template<typename Container_t>
@@ -83,10 +83,9 @@ auto envelope_impl(const MultiPoint_t &mp, multipoint_tag)
     return envelope_from_container(mp);
 }
 
-template<typename MultiLineString_t>
-auto envelope_impl(const MultiLineString_t &multiLineString, multilinestring_tag)
+template<typename Point_t>
+auto envelope_impl(const MultiLineString<Point_t> &multiLineString, multilinestring_tag)
 {
-    using Point_t = typename geometry_traits<MultiLineString_t>::point_type;
     BoundingBox<Point_t> total;
     for (const auto &line : multiLineString) {
         total = merge(total, envelope_impl(line, linestring_tag{}));
@@ -94,24 +93,49 @@ auto envelope_impl(const MultiLineString_t &multiLineString, multilinestring_tag
     return total;
 }
 
-template<typename MultiPolygon_t>
-auto envelope_impl(const MultiPolygon_t &mp, multipolygon_tag)
+template<typename Point_t>
+auto envelope_impl(const MultiPolygon<Point_t> &mp, multipolygon_tag)
 {
-    using Point_t = typename geometry_traits<MultiPolygon_t>::point_type;
-    BoundingBox<Point_t> total;
+    BoundingBox<Point_t> bbox;
     for (const auto &poly : mp) {
-        total = merge(total, envelope_impl(poly, polygon_tag{}));
+        bbox = merge(bbox, envelope_impl(poly, polygon_tag{}));
     }
-    return total;
+    return bbox;
+}
+
+template<typename Point_t>
+auto envelope_impl(const GeometryCollection<Point_t> &geometryCollection, collection_tag)
+{
+    BoundingBox<Point_t> bbox;
+
+    for (const auto &geom : geometryCollection) {
+        std::visit([&](auto &&arg) {
+
+            const auto &geometry = arg.get();
+            using GeometryType = std::decay_t<decltype(geometry)>;
+
+            bbox = merge(bbox, envelope_impl(geometry, geometry_tag_t<GeometryType>{}));
+
+        }, geom);
+    }
+
+    return bbox;
 }
 
 } // namespace detail
-
 
 template<typename Geometry_t>
 auto envelope(const Geometry_t &g) 
 {
     return detail::envelope_impl(g, geometry_tag_t<Geometry_t>{});
+}
+
+template<typename Geometry_t, typename ...Geometries>
+auto envelope(const Geometry_t &g, const Geometries & ...gs)
+{
+    auto bbox = envelope(g);
+    ((bbox = merge(bbox, envelope(gs))), ...);
+    return bbox;
 }
 
 } // namespace tl

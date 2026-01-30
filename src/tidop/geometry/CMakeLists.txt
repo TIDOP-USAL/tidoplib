@@ -55,6 +55,7 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/projection.h
                             base/Dimension.h
                             base/Geometry.h
+                            base/Geometry.impl.h
                             base/GeometryContainer.h
                             base/GeometryCollection.h
                             base/Traits.h

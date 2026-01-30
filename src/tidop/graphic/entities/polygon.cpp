@@ -82,7 +82,7 @@ auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
 
 auto GPolygon::window() const -> BoundingBox<Point2d>
 {
-    return envelope(static_cast<const Polygon<Point2d> &>(*this));
+    return tl::envelope(static_cast<const Polygon<Point2d> &>(*this));
 }
 
 void GPolygon::draw(Painter &painter) const
@@ -147,7 +147,7 @@ auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
 
 auto GPolygon3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = envelope(static_cast<const Polygon<Point3d>&>(*this));
+    auto bbox = tl::envelope(static_cast<const Polygon<Point3d>&>(*this));
     return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
 }
 
@@ -219,7 +219,7 @@ auto GMultiPolygon::operator=(GMultiPolygon &&multiPolygon) noexcept -> GMultiPo
 
 auto GMultiPolygon::window() const -> BoundingBox<Point2d>
 {
-    return envelope(static_cast<const MultiPolygon<Point2d>&>(*this));
+    return tl::envelope(static_cast<const MultiPolygon<Point2d>&>(*this));
 }
 
 void GMultiPolygon::draw(Painter &painter) const
@@ -277,7 +277,7 @@ auto GMultiPolygon3D::operator=(GMultiPolygon3D &&multiPolygon3D) noexcept -> GM
 
 auto GMultiPolygon3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = envelope(static_cast<const MultiPolygon<Point3d>&>(*this));
+    auto bbox = tl::envelope(static_cast<const MultiPolygon<Point3d>&>(*this));
     return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
 }
 

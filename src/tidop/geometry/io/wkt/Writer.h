@@ -156,16 +156,7 @@ struct WKTWriter
         writePrefix<Tag>(os, "GEOMETRYCOLLECTION");
 
         for (size_t i = 0; i < g.size(); ++i) {
-            // Usamos std::visit para despachar el GeoID al método write correspondiente
             std::visit([&os](auto &&arg) {
-                // arg es una referencia al objeto real (Point_t&, LineString<Point_t>&, etc.)
-                // Obtenemos su tag de geometría mediante traits para llamar al overload de WKTWriter
-                //using PtrType = std::decay_t<decltype(arg)>;
-                //using GeometryType = std::remove_const_t<std::remove_pointer_t<PtrType>>; // Quitamos el * para los traits
-                ////using ArgType = std::decay_t<decltype(arg)>;
-                //using ArgTag = typename geometry_traits<ArgType>::tag_type; // Ej: point_tag
-
-                //WKTWriter::write(os, *arg, geometry_tag_t<GeometryType>{});
 
                 const auto &geom = arg.get();
                 using GeometryType = std::decay_t<decltype(geom)>;

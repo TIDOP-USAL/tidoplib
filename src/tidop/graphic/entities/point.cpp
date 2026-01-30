@@ -215,7 +215,7 @@ auto GMultiPoint::operator=(GMultiPoint&& gMultiPoint) TL_NOEXCEPT -> GMultiPoin
 
 auto GMultiPoint::window() const -> BoundingBox<Point2d>
 {
-    return envelope(static_cast<const MultiPoint<Point2d>&>(*this));
+    return tl::envelope(static_cast<const MultiPoint<Point2d>&>(*this));
 }
 
 void GMultiPoint::draw(Painter &painter) const
@@ -278,7 +278,7 @@ auto GMultiPoint3D::operator=(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT -> GMul
 
 auto GMultiPoint3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = envelope(static_cast<const MultiPoint<Point3d>&>(*this));
+    auto bbox = tl::envelope(static_cast<const MultiPoint<Point3d>&>(*this));
     return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
 }
 

@@ -26,6 +26,8 @@
 
 #include <cmath>
 
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+
 namespace tl
 {
 

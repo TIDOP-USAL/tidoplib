@@ -48,9 +48,8 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/geometry/spatial/BoundingBox.h"
-#include "tidop/geometry/algorithms/spatial/Envelope.h"
 #include "tidop/geometry/algorithms/measurement/Length.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -208,12 +207,6 @@ public:
     auto inner(std::size_t i) -> LinearRing<Point_t> &;
 
     /*!
-     * \brief Computes the bounding box of the polygon.
-     * \return Bounding box enclosing all points in the polygon.
-     */
-    auto boundingBox() const;
-
-    /*!
      * \brief Returns the number of inner rings.
      * \return Number of inner rings (holes).
      */
@@ -329,12 +322,6 @@ template<typename Point_t>
 auto Polygon<Point_t>::inner(std::size_t i) -> LinearRing<Point_t> &
 { 
     return mInners[i];
-}
-
-template<typename Point_t>
-auto Polygon<Point_t>::boundingBox() const
-{
-    return envelope(*this);
 }
 
 template<typename Point_t>

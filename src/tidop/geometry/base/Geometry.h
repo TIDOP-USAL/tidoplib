@@ -41,6 +41,7 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Traits.h"
 
+
 namespace tl
 {
 	
@@ -60,6 +61,11 @@ namespace tl
 template<typename Derived>
 class Geometry
 {
+
+protected:
+
+    Geometry() = default;
+    ~Geometry() = default;
 
 public:
     /*!
@@ -89,12 +95,61 @@ public:
         return geometry_traits<Derived>::is_multi;
     }
 
-protected:
+    constexpr auto is2D() const noexcept -> bool
+    {
+        return is_2d_v<Derived>;
+    }
 
-    Geometry() = default;
-    ~Geometry() = default;
+    constexpr auto is3D() const noexcept -> bool
+    {
+        return is_3d_v<Derived>;
+    }
+
+    constexpr auto is4D() const noexcept -> bool
+    {
+        return is_4d_v<Derived>;
+    }
+
+    constexpr auto hasMeasure() const noexcept -> bool
+    {
+        return has_m_v<Derived>;
+    }
+
+    /*!
+     * \brief Returns the minimum bounding box (envelope) of the geometry.
+     * \return Axis-aligned bounding box containing the geometry.
+     */
+    auto envelope() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
+
+    /*!
+     * \brief Alias for envelope().
+     * \return Same as envelope().
+     */
+    auto boundingBox() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
+
+    //SRID
+    // AsText
+    // AsBinary
+    // IsEmpty()
+    // IsSimple()
+    // Boundary()
+
+
+private:
+
+    auto derived() -> Derived &
+    {
+        return *static_cast<Derived *>(this);
+    }
+
+    auto derived() const -> const Derived &
+    {
+        return *static_cast<const Derived *>(this);
+    }
 };
 
 /*! \} */ 
 
 } // End namespace tl
+
+#include "Geometry.impl.h"

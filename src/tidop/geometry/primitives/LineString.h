@@ -45,7 +45,6 @@
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
-#include "tidop/geometry/algorithms/spatial/Envelope.h"
 #include "tidop/geometry/algorithms/measurement/Length.h"
 
 namespace tl
@@ -77,24 +76,12 @@ public:
     using GeometryContainer<Point_t>::GeometryContainer;
 
     /*!
-     * \brief Returns the number of points in the polyline.
-     * \return The number of points.
-     */
-    //auto numPoints() const;
-
-    /*!
      * \brief Checks if the polyline is closed.
      *
      * A polyline is considered closed if the first and last points are equal.
      * \return true if the polyline is closed, false otherwise.
      */
     auto isClosed() const -> bool;
-
-    /*!
-     * \brief Computes the bounding box of the polyline.
-     * \return A bounding box that encloses all points in the polyline.
-     */
-    auto boundingBox() const;
 
     /*!
      * \brief Computes the total length of the polyline.
@@ -154,23 +141,11 @@ using LineString3dm = LineString<Point3dm>;
 
 // METHOD IMPLEMENTATIONS
 
-//template<typename Point_t>
-//auto LineString<Point_t>::numPoints() const 
-//{ 
-//    return this->size();
-//}
-
 template<typename Point_t>
 auto LineString<Point_t>::isClosed() const -> bool
 {
     if (this->size() < 2) return false;
     return this->front() == this->back();
-}
-
-template<typename Point_t>
-auto LineString<Point_t>::boundingBox() const
-{
-    return envelope(*this);
 }
 
 template<typename Point_t>
