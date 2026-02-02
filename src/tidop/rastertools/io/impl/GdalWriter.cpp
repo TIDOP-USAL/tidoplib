@@ -373,7 +373,7 @@ void ImageWriterGdal::write(const cv::Mat &image, const BoundingBox2i &window)
 {
     try {
 
-        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1(), window.pt2());
+        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.min(), window.max());
         write(image, rect);
 
     } catch (...) {

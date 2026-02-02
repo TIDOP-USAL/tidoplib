@@ -124,7 +124,7 @@ public:
 
     /*!
      * \brief Constructor
-     * BresenhamLine lineIter1(_line.pt1, _line.pt2);
+     * BresenhamLine lineIter1(_line.min, _line.max);
      * std::vector<cv::Point> v1 = lineIter1.getPoints();
      */
     BresenhamLine(const Point2i &pt1, const Point2i &pt2)

@@ -33,38 +33,25 @@ namespace tl
 //template<typename T> class Segment;
 //template<typename T> class Segment3D;
 //
-///*! \addtogroup Algorithms
-// *  \{
-// */
-//
-//
-///*!
-// * \brief Projecta un punto en un segmento de recta.
-// * Si no hay punto de proyección en el segmento se devuelve nulo
-// * \param[in] ln Segmento de línea
-// * \param[in] pt Punto que se proyecta
-// * \param[out] ptp Punto proyectado
-// * \return -1, 0, 1
-// */
 //template<typename Point_t>
 //int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 //{
 //    int iret = 0;
-//    if (pt == ln.pt1 || pt == ln.pt2) {
+//    if (pt == ln.min || pt == ln.max) {
 //        *ptp = pt;
 //        return 2;
 //    }
-//    Point_t v1 = pt - ln.pt1;
+//    Point_t v1 = pt - ln.min;
 //    Point_t v2 = ln.vector();
 //    double daux = dotProduct(v1, v2);
 //    double r = daux / (v2.x * v2.x + v2.y * v2.y);
 //
 //    if (typeid(typename Point_t::value_type) == typeid(int)) {
-//        ptp->x = ln.pt1.x + roundToInteger(v2.x * r);
-//        ptp->y = ln.pt1.y + roundToInteger(v2.y * r);
+//        ptp->x = ln.min.x + roundToInteger(v2.x * r);
+//        ptp->y = ln.min.y + roundToInteger(v2.y * r);
 //    } else {
-//        ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
-//        ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
+//        ptp->x = ln.min.x + static_cast<typename Point_t::value_type>(v2.x * r);
+//        ptp->y = ln.min.y + static_cast<typename Point_t::value_type>(v2.y * r);
 //    }
 //
 //    if (daux <= 0) iret = -1;
@@ -77,23 +64,23 @@ namespace tl
 //int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 //{
 //    int iret = 0;
-//    if (pt == ln.pt1 || pt == ln.pt2) {
+//    if (pt == ln.min || pt == ln.max) {
 //        *ptp = pt;
 //        return 2;
 //    }
-//    Point3<double> v1 = pt - ln.pt1;
+//    Point3<double> v1 = pt - ln.min;
 //    Point3<double> v2 = ln.vector();
 //    double daux = dotProduct3D(v1, v2);
 //    double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
 //
 //    if (typeid(typename Point_t::value_type) == typeid(int)) {
-//        ptp->x = ln.pt1.x + roundToInteger(v2.x * r);
-//        ptp->y = ln.pt1.y + roundToInteger(v2.y * r);
-//        ptp->z = ln.pt1.z + roundToInteger(v2.z * r);
+//        ptp->x = ln.min.x + roundToInteger(v2.x * r);
+//        ptp->y = ln.min.y + roundToInteger(v2.y * r);
+//        ptp->z = ln.min.z + roundToInteger(v2.z * r);
 //    } else {
-//        ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
-//        ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
-//        ptp->z = ln.pt1.z + static_cast<typename Point_t::value_type>(v2.z * r);
+//        ptp->x = ln.min.x + static_cast<typename Point_t::value_type>(v2.x * r);
+//        ptp->y = ln.min.y + static_cast<typename Point_t::value_type>(v2.y * r);
+//        ptp->z = ln.min.z + static_cast<typename Point_t::value_type>(v2.z * r);
 //    }
 //
 //    if (daux <= 0) iret = -1;
@@ -135,8 +122,6 @@ auto project(const Point_t &pt, const Segment<Point_t> &seg) -> ProjectionResult
 
     return {proj_pt, t};
 }
-
-/*! \} */ 
 
 } // End namespace tl
 

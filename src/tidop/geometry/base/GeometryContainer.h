@@ -37,6 +37,8 @@
 
 #include "tidop/config.h"
 
+#include "tidop/geometry/base/Concepts.h"
+
 #include <vector>
 
 namespace tl
@@ -54,50 +56,37 @@ namespace tl
  * A simple wrapper around `std::vector` to store and manage geometric entities.
  * Provides STL-compatible iterators and operations.
  *
- * \tparam Entity_t Type of geometric entities to store.
+ * \tparam Geometry_t Type of geometric entities to store.
  */
-template<typename Entity_t>
+template<typename Geometry_t>
 class GeometryContainer 
 {
+    static_assert(GeometryConcept<Geometry_t>,
+                  "GeometryCollection requires a geometry type");
 
 public:
 
-    /*! \brief Allocator type. */
-    using allocator_type = typename std::vector<Entity_t>::allocator_type;
-
-    /*! \brief Value type (Entity_t). */
-    using value_type = typename std::vector<Entity_t>::value_type;
-
-    /*! \brief Size type. */
-    using size_type = typename std::vector<Entity_t>::size_type;
-
-    /*! \brief Difference type. */
-    using difference_type = typename std::vector<Entity_t>::difference_type;
-
-    /*! \brief Pointer type. */
-    using pointer = typename std::vector<Entity_t>::pointer;
-
-    /*! \brief Const pointer type. */
-    using const_pointer = typename std::vector<Entity_t>::const_pointer;
+    /*! \brief Value type (Geometry_t). */
+    using value_type = typename std::vector<Geometry_t>::value_type;
 
     /*! \brief Reference type. */
-    using reference = typename std::vector<Entity_t>::reference;
+    using reference = typename std::vector<Geometry_t>::reference;
 
     /*! \brief Const reference type. */
-    using const_reference = typename std::vector<Entity_t>::const_reference;
+    using const_reference = typename std::vector<Geometry_t>::const_reference;
 
     /*! \brief Iterator type. */
-    using iterator = typename std::vector<Entity_t>::iterator;
+    using iterator = typename std::vector<Geometry_t>::iterator;
 
     /*! \brief Const iterator type. */
-    using const_iterator = typename std::vector<Entity_t>::const_iterator;
+    using const_iterator = typename std::vector<Geometry_t>::const_iterator;
 
     /*! \brief Reverse iterator type. */
-    using reverse_iterator = typename std::vector<Entity_t>::reverse_iterator;
+    using reverse_iterator = typename std::vector<Geometry_t>::reverse_iterator;
 
 private:
 
-    std::vector<Entity_t> mEntities; /*!< Internal vector storing entities. */
+    std::vector<Geometry_t> mEntities; /*!< Internal vector storing entities. */
 
 public:
 
@@ -105,89 +94,151 @@ public:
      * \brief Default constructor
      * Initializes an empty entity container.
      */
-    GeometryContainer();
+    GeometryContainer() = default;
 
     /*!
      * \brief Constructs an entity container with a predefined size.
      * \param[in] size Number of entities to allocate space for.
      * The container is initialized with the given size but does not necessarily populate entities.
      */
-    GeometryContainer(size_type size);
+    explicit GeometryContainer(size_t size);
 
     /*!
      * \brief Copy constructor
      * \param[in] entity Another GeometryContainer to copy.
      */
-    GeometryContainer(const GeometryContainer &entity);
+    GeometryContainer(const GeometryContainer &entity) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] entity Another GeometryContainer to move.
      */
-    GeometryContainer(GeometryContainer &&entity) noexcept;
+    GeometryContainer(GeometryContainer &&entity) noexcept = default;
 
     /*!
      * \brief Constructs an entity container from a vector of entities.
-     * \param[in] entities A vector containing Entity_t objects.
+     * \param[in] entities A vector containing Geometry_t objects.
      * Initializes the container with the provided entities.
      */
-    GeometryContainer(std::vector<Entity_t> entities);
+    explicit GeometryContainer(std::vector<Geometry_t> entities);
 
     /*!
      * \brief Constructs an entity container from an initializer list.
-     * \param[in] entities An initializer list containing Entity_t objects.
+     * \param[in] entities An initializer list containing Geometry_t objects.
      */
-    GeometryContainer(std::initializer_list<Entity_t> entities);
+    GeometryContainer(std::initializer_list<Geometry_t> entities);
    
-    virtual ~GeometryContainer() = default;
-    
+    /*!
+     * \brief Constructs a GeometryContainer from a range defined by iterators.
+     *
+     * This constructor initializes the container with elements from the iterator range [first, last).
+     * The elements are copied from the source range into the container's internal storage.
+     *
+     * \tparam It Iterator type that must satisfy std::input_iterator and have a value type
+     *           convertible to Geometry_t.
+     * \param[in] first Iterator to the first element in the source range.
+     * \param[in] last Iterator to one past the last element in the source range.
+     *
+     * \see GeometryContainer(R&&)
+     */
+    template<std::input_iterator It>
+        requires std::convertible_to<std::iter_value_t<It>, Geometry_t>
+    GeometryContainer(It first, It last)
+      : mEntities(first, last) 
+    {
+    }
+
+    /*!
+     * \brief Constructs a GeometryContainer from a range object.
+     *
+     * This constructor initializes the container with elements from the specified range.
+     * The range can be any C++20 range type (containers, views, etc.) whose elements
+     * are convertible to Geometry_t.
+     *
+     * \tparam R Range type that must satisfy std::ranges::input_range and have a value type
+     *           convertible to Geometry_t.
+     * \param[in] range The source range containing elements to copy into the container.
+     *
+     * \see GeometryContainer(It, It)
+     */
+    template<std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_value_t<R>, Geometry_t>
+    explicit GeometryContainer(R &&range)
+      : mEntities(std::ranges::begin(range), std::ranges::end(range)) 
+    {
+    }
+
+    ~GeometryContainer() = default;
+
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] entity Another GeometryContainer to copy.
+     * \return Reference to this container.
+     */
+    auto operator=(const GeometryContainer<Geometry_t> &entity) -> GeometryContainer<Geometry_t> & = default;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] entity Another GeometryContainer to move.
+     * \return Reference to this container.
+     */
+    auto operator=(GeometryContainer<Geometry_t> &&entity) noexcept -> GeometryContainer<Geometry_t> & = default;
+
     /*!
      * \brief Returns an iterator to the beginning.
      * \return Iterator to the first element.
      */
-    auto begin() noexcept -> iterator;
+    [[nodiscard]] 
+    constexpr auto begin() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the beginning.
      * \return Const iterator to the first element.
      */
-    auto begin() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns an iterator to the end.
      * \return Iterator to the element following the last element.
      */
-    auto end() noexcept -> iterator;
+    [[nodiscard]] 
+    constexpr auto end() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the end.
      * \return Const iterator to the element following the last element.
      */
-    auto end() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto end() const noexcept -> const_iterator;
 
     /*! \brief Returns a const iterator to the beginning. */
-    auto cbegin() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto cbegin() const noexcept -> const_iterator;
 
     /*! \brief Returns a const iterator to the end. */
-    auto cend() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto cend() const noexcept -> const_iterator;
 
     /*! \brief Returns a reverse iterator to the beginning. */
-    auto rbegin() noexcept -> reverse_iterator;
+    [[nodiscard]]
+    constexpr auto rbegin() noexcept -> reverse_iterator;
 
     /*! \brief Returns a reverse iterator to the end. */
-    auto rend() noexcept -> reverse_iterator;
+    [[nodiscard]]
+    constexpr auto rend() noexcept -> reverse_iterator;
 	
     /*!
      * \brief Adds an entity to the end.
      * \param[in] entity Entity to add.
      */
-    void push_back(const Entity_t &entity);
+    void push_back(const Geometry_t &entity);
 
     /*!
      * \brief Adds an entity to the end (move version).
      * \param[in] entity Entity to move.
      */
-    void push_back(Entity_t &&entity);
+    void push_back(Geometry_t &&entity);
 
     /*!
      * \brief Constructs an entity in-place at the end.
@@ -195,6 +246,7 @@ public:
      * \param[in] args Arguments to forward to the entity constructor.
      */
 	template<typename... Args>
+    requires std::constructible_from<Geometry_t, Args...>
     void emplace_back(Args&&... args)
     {
         mEntities.emplace_back(std::forward<Args>(args)...);
@@ -204,30 +256,33 @@ public:
      * \brief Returns a constant reference to the element at the specified position.
      * return Constant reference to the element
      */
-    auto at(size_type position) const -> const_reference;
+    [[nodiscard]]
+    auto at(size_t position) const -> const_reference;
     
     /*!
      * \brief Returns a reference to the element at the specified position.
      * return Reference to the element
      */
-    auto at(size_type position) -> reference;
+    [[nodiscard]]
+    auto at(size_t position) -> reference;
     
     /*!
      * \brief Removes the elements from the container
      */
-    void clear();
+    constexpr void clear() noexcept;
       
     /*!
      * \brief Check if the container is empty
      * \return true if the container is empty, false otherwise
      */
+    [[nodiscard]] 
     auto empty() const -> bool;
     
     /*!
      * \brief Sets the size of the container
      * \param[in] size Size of the container
      */
-    void reserve(size_type size);
+    void reserve(size_t size);
     
     /*!
      * \brief Resizing of the container
@@ -235,7 +290,7 @@ public:
      * size is greater than count the container is truncated to the specified number of elements.
      * \param[in] count New container size
      */
-    void resize(size_type count);
+    void resize(size_t count);
     
     /*!
      * \brief Resizing of the container
@@ -244,47 +299,37 @@ public:
      * \param[in] count New container size
      * \param[in] value Value to be assigned to the new elements
      */
-    void resize(size_type count, const Entity_t &value);
+    void resize(size_t count, const Geometry_t &value);
     
     /*!
      * \brief Returns the number of elements in the container.
      * \return Number of elements.
      */
-    auto size() const noexcept -> size_type;
+    [[nodiscard]]
+    constexpr auto size() const noexcept -> size_t;
 
     /*!
      * \brief Returns the number of elements that can be held in currently allocated storage.
      * \return Current capacity.
      */
-    auto capacity() const noexcept -> size_type;
+    [[nodiscard]]
+    constexpr auto capacity() const noexcept -> size_t;
 
     /*!
      * \brief Returns a reference to the element at the specified position.
      * No check is made to see if the element to be accessed is within the limits.
      * return Constant reference to the element
      */
-    auto operator[](size_type position) const -> const_reference;
+    [[nodiscard]] 
+    auto operator[](size_t position) const -> const_reference;
     
     /*!
      * \brief Returns a reference to the element at the specified position.
      * No check is made to see if the element to be accessed is within the limits.
      * return Reference to the element
      */
-    auto operator[](size_type position) -> reference;
-    
-    /*!
-     * \brief Copy assignment operator.
-     * \param[in] entity Another GeometryContainer to copy.
-     * \return Reference to this container.
-     */
-    auto operator=(const GeometryContainer<Entity_t> &entity) -> GeometryContainer<Entity_t> &;
-
-    /*!
-     * \brief Move assignment operator.
-     * \param[in] entity Another GeometryContainer to move.
-     * \return Reference to this container.
-     */
-    auto operator=(GeometryContainer<Entity_t> &&entity) noexcept -> GeometryContainer<Entity_t> &;
+    [[nodiscard]] 
+    auto operator[](size_t position) -> reference;
     
     /*!
      * \brief Erases elements in the specified range.
@@ -292,8 +337,29 @@ public:
      * \param[in] last Iterator to one past the last element to erase.
      * \return Iterator following the last erased element.
      */
-    auto erase(const_iterator first, const_iterator last) -> iterator;
-	
+    constexpr auto erase(const_iterator first, const_iterator last) -> iterator;
+
+    /*!
+     * \brief Removes the element at the specified position.
+     *
+     * Removes the element at the given iterator position and returns an iterator
+     * pointing to the element that followed the removed element (or end() if the
+     * removed element was the last one).
+     *
+     * \param[in] pos Iterator to the element to remove. Must be a valid dereferenceable
+     *                iterator within the container.
+     * \return Iterator pointing to the element that now occupies the position of
+     *         the removed element, or end() if the last element was removed.
+     */
+    constexpr auto erase(const_iterator pos) -> iterator;
+    
+    /*!
+     * \brief Inserts elements from an initializer list.
+     * \param[in] pos Iterator before which the content will be inserted.
+     * \param[in] ilist Initializer list of elements to insert.
+     */
+    constexpr auto insert(const_iterator pos, std::initializer_list<Geometry_t> ilist) -> iterator;
+
     /*!
      * \brief Inserts elements from a range.
      * \tparam InputIt Input iterator type.
@@ -301,21 +367,17 @@ public:
      * \param[in] first Iterator to the first element to insert.
      * \param[in] last Iterator to one past the last element to insert.
      */
-    template<typename InputIt>
-    void insert(const_iterator pos, InputIt first, InputIt last);
-    
-    /*!
-     * \brief Inserts elements from an initializer list.
-     * \param[in] pos Iterator before which the content will be inserted.
-     * \param[in] ilist Initializer list of elements to insert.
-     */
-    void insert(const_iterator pos, std::initializer_list<Entity_t> ilist);
+    template<std::input_iterator It>
+        requires std::convertible_to<std::iter_value_t<It>, Geometry_t>
+    constexpr auto insert(const_iterator pos, It first, It last) -> iterator;
+
 	
     /*!
      * \brief Equality comparison operator.
      * \param[in] other Another GeometryContainer to compare with.
      * \return true if containers are equal, false otherwise.
      */
+    [[nodiscard]] 
     auto operator==(const GeometryContainer &other) const -> bool
     {
         return mEntities == other.mEntities;
@@ -326,6 +388,7 @@ public:
      * \param[in] other Another GeometryContainer to compare with.
      * \return true if containers are not equal, false otherwise.
      */
+    [[nodiscard]] 
     auto operator!=(const GeometryContainer &other) const -> bool
     {
         return !(*this == other);
@@ -333,208 +396,180 @@ public:
 };
 
 
-template<typename Entity_t>
-GeometryContainer<Entity_t>::GeometryContainer() 
-  : mEntities(0)
-{
-}
 
-template<typename Entity_t>
-GeometryContainer<Entity_t>::GeometryContainer(size_type size)
+template<typename Geometry_t>
+GeometryContainer<Geometry_t>::GeometryContainer(size_t size)
   : mEntities(size)
 {
 }
 
-template<typename Entity_t>
-GeometryContainer<Entity_t>::GeometryContainer(const GeometryContainer &entity)
-  : mEntities(entity.mEntities)
-{
-}
-
-template<typename Entity_t>
-GeometryContainer<Entity_t>::GeometryContainer(GeometryContainer &&entity) noexcept
-  : mEntities(std::move(entity.mEntities))
-{
-}
-
-template<typename Entity_t>
-GeometryContainer<Entity_t>::GeometryContainer(std::vector<Entity_t> entities)
+template<typename Geometry_t>
+GeometryContainer<Geometry_t>::GeometryContainer(std::vector<Geometry_t> entities)
   : mEntities(std::move(entities))
 {
 }
 
-template<typename Entity_t>
-GeometryContainer<Entity_t>::GeometryContainer(std::initializer_list<Entity_t> entities)
+template<typename Geometry_t>
+GeometryContainer<Geometry_t>::GeometryContainer(std::initializer_list<Geometry_t> entities)
   : mEntities(entities)
 {
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::begin() noexcept -> iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::begin() noexcept -> iterator
 {
     return mEntities.begin();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::begin() const noexcept -> const_iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::begin() const noexcept -> const_iterator
 {
     return mEntities.cbegin();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::end() noexcept -> iterator 
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::end() noexcept -> iterator
 {
     return mEntities.end();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::end() const noexcept -> const_iterator 
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::end() const noexcept -> const_iterator
 {
     return mEntities.cend();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::cbegin() const noexcept -> const_iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::cbegin() const noexcept -> const_iterator
 { 
     return mEntities.cbegin();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::cend() const noexcept -> const_iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::cend() const noexcept -> const_iterator
 { 
     return mEntities.cend(); 
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::rbegin() noexcept -> reverse_iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::rbegin() noexcept -> reverse_iterator
 { 
     return mEntities.rbegin();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::rend() noexcept -> reverse_iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::rend() noexcept -> reverse_iterator
 { 
     return mEntities.rend();
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::push_back(const Entity_t &entity)
+template<typename Geometry_t>
+void GeometryContainer<Geometry_t>::push_back(const Geometry_t &entity)
 {
     mEntities.push_back(entity);
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::push_back(Entity_t &&entity)
+template<typename Geometry_t>
+void GeometryContainer<Geometry_t>::push_back(Geometry_t &&entity)
 {
-    mEntities.push_back(std::forward<Entity_t>(entity));
+    mEntities.push_back(std::forward<Geometry_t>(entity));
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::at(size_type position) const -> const_reference 
-{
-    return mEntities.at(position);
-}
-
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::at(size_type position) -> reference 
+template<typename Geometry_t>
+auto GeometryContainer<Geometry_t>::at(size_t position) const -> const_reference 
 {
     return mEntities.at(position);
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::clear() 
+template<typename Geometry_t>
+auto GeometryContainer<Geometry_t>::at(size_t position) -> reference 
+{
+    return mEntities.at(position);
+}
+
+template<typename Geometry_t>
+constexpr void GeometryContainer<Geometry_t>::clear() noexcept
 { 
     mEntities.clear();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::empty() const -> bool
+template<typename Geometry_t>
+auto GeometryContainer<Geometry_t>::empty() const -> bool
 {
     return mEntities.empty();
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::reserve(size_type size)
+template<typename Geometry_t>
+void GeometryContainer<Geometry_t>::reserve(size_t size)
 {
     mEntities.reserve(size);
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::resize(size_type count)
+template<typename Geometry_t>
+void GeometryContainer<Geometry_t>::resize(size_t count)
 {
     mEntities.resize(count);
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::resize(size_type count, const Entity_t &value)
+template<typename Geometry_t>
+void GeometryContainer<Geometry_t>::resize(size_t count, const Geometry_t &value)
 {
     mEntities.resize(count, value);
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::size() const noexcept -> size_type
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::size() const noexcept -> size_t
 { 
     return mEntities.size();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::capacity() const noexcept -> size_type
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::capacity() const noexcept -> size_t
 {
     return mEntities.capacity();
 }
 
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::operator[](size_type position) const -> const_reference 
+template<typename Geometry_t>
+auto GeometryContainer<Geometry_t>::operator[](size_t position) const -> const_reference 
 {
     return mEntities[position];
 }
   
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::operator[](size_type position) -> reference 
+template<typename Geometry_t>
+auto GeometryContainer<Geometry_t>::operator[](size_t position) -> reference 
 {
     return mEntities[position];
 }
 
-
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::operator=(const GeometryContainer<Entity_t> &entity) -> GeometryContainer<Entity_t>&
-{
-    if (this != &entity) {
-        this->mEntities = entity.mEntities;
-    }
-
-    return (*this);
-}
-
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::operator=(GeometryContainer<Entity_t> &&entity) noexcept -> GeometryContainer<Entity_t>&
-{
-    if (this != &entity) {
-        this->mEntities.clear();
-        this->mEntities = std::move(entity.mEntities);
-    }
-
-    return (*this);
-}
-
-template<typename Entity_t>
-auto GeometryContainer<Entity_t>::erase(const_iterator first, const_iterator last) -> iterator
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::erase(const_iterator first, const_iterator last) -> iterator
 {
     return mEntities.erase(first, last);
 }
 
-template<typename Entity_t>
-void GeometryContainer<Entity_t>::insert(const_iterator pos, std::initializer_list<Entity_t> ilist)
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::erase(const_iterator pos) -> iterator
 {
-    mEntities.insert(pos, ilist);
+    return mEntities.erase(pos);
 }
 
-template<typename Entity_t>
-template<typename InputIt>
-void GeometryContainer<Entity_t>::insert(const_iterator pos, InputIt first, InputIt last)
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::insert(const_iterator pos,
+                                                   std::initializer_list<Geometry_t> ilist) -> iterator
 {
-    mEntities.insert(pos, first, last);
+    return mEntities.insert(pos, ilist);
 }
+
+template<typename Geometry_t>
+template<std::input_iterator It>
+    requires std::convertible_to<std::iter_value_t<It>, Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::insert(const_iterator pos,
+                                                   It first, 
+                                                   It last) -> iterator
+{
+    return mEntities.insert(pos, first, last);
+}
+
 
 /*! \} */ 
 

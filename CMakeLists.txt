@@ -58,7 +58,7 @@ include(CompilerInfo)
 include(OperatingSystemInfo)
 include(TidopLibSIMDSupport)
 include(TidopUtils)
-
+# Añadir TidopLibCXXStandarSupport
 
 ##########################################################################
 #  Architecture Configuration                                            #
@@ -75,45 +75,31 @@ endif()
 #  C++ Standard Configuration                                            #
 ##########################################################################
 
+# TODO: modificar con TidopLibCXXStandarSupport
+
 set(cxx_standard_values "")
 
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_11" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++11)
-endif()
-
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_14" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++14)
-endif()
-
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++17)
-endif()
-
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++20)
+    list (APPEND cxx_standard_values C++20)
 endif()
 
-#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-#list (APPEND cxx_standard_values C++23)
-#endif()
-#
-#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-#list (APPEND cxx_standard_values C++26)
-#endif()
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    list (APPEND cxx_standard_values C++23)
+endif()
 
-set(TIDOPLIB_CXX_STANDARD "C++14" CACHE STRING "")
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    list (APPEND cxx_standard_values C++26)
+endif()
+
+set(TIDOPLIB_CXX_STANDARD "C++20" CACHE STRING "")
 set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
 
-if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++11")
-  set(CMAKE_CXX_STANDARD 11)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++14")
-  set(CMAKE_CXX_STANDARD 14)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++17")
-  set(CMAKE_CXX_STANDARD 17)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
-  set(CMAKE_CXX_STANDARD 20)
+if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
+    set(CMAKE_CXX_STANDARD 20)
 elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++23")
-  set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD 23)
+elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++26")
+    set(CMAKE_CXX_STANDARD 26)
 else()
 
 endif()

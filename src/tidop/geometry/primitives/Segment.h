@@ -172,25 +172,25 @@ public:
 	
     /*!
      * \brief Access the start point (non-const version).
-     * \return Reference to the start point (same as pt1).
+     * \return Reference to the start point (same as min).
      */
     auto start() noexcept -> Point_t &;
 
     /*!
      * \brief Access the start point (const version).
-     * \return Const reference to the start point (same as pt1).
+     * \return Const reference to the start point (same as min).
      */
     auto start() const noexcept -> const Point_t &;
     
     /*!
      * \brief Access the end point (non-const version).
-     * \return Reference to the end point (same as pt2).
+     * \return Reference to the end point (same as max).
      */
     auto end() noexcept -> Point_t &;
 
     /*!
      * \brief Access the end point (const version).
-     * \return Const reference to the end point (same as pt2).
+     * \return Const reference to the end point (same as max).
      */
     auto end() const noexcept -> const Point_t &;
 

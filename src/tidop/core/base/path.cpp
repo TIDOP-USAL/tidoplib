@@ -36,9 +36,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/functional/hash.hpp> 
 #endif
-#if (TL_CPP_VERSION == 17)
 #include <random>
-#endif
 #include <codecvt>
 #include <ostream>
 
@@ -425,10 +423,7 @@ auto Path::tempPath() -> Path
 auto Path::createTempDirectory() -> Path
 {
     try {
-        fs::path tempDir;
 
-#if TL_CPP_VERSION == 17
-        // C++17: generamos un nombre único manualmente
         auto generateUniquePathString = []() {
             std::random_device rd;
             std::mt19937 gen(rd());
@@ -436,26 +431,21 @@ auto Path::createTempDirectory() -> Path
             std::ostringstream ss;
             const std::string pattern = "tidop-%%%%-%%%%-%%%%-%%%%";
             for (char c : pattern) {
-                if (c == '%') {
-                    ss << std::hex << dis(gen);
-                } else {
-                    ss << c;
-                }
+                if (c == '%') ss << std::hex << dis(gen);
+                else ss << c;
             }
             return ss.str();
-            };
+        };
 
-        tempDir = fs::temp_directory_path() / generateUniquePathString();
-#else
-        tempDir = fs::temp_directory_path() / fs::unique_path("tidop-%%%%-%%%%-%%%%-%%%%");
-#endif
+        fs::path temp_dir = fs::temp_directory_path() / generateUniquePathString();
 
-        if (fs::create_directories(tempDir)) {
-            return Path(tempDir.string());
+        if (fs::create_directories(temp_dir)) {
+            return Path(temp_dir.string());
         }
     } catch (const std::exception &e) {
         Message::warning("Failed to create temporary directory: {}", e.what());
     }
+
     return Path();
 }
 

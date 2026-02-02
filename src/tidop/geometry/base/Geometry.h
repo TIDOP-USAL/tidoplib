@@ -38,6 +38,7 @@
 
 #include "tidop/config.h"
 
+#include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Traits.h"
 
@@ -61,6 +62,8 @@ namespace tl
 template<typename Derived>
 class Geometry
 {
+    static_assert(GeometryConcept<Derived>,
+                  "Derived must be a geometry type");
 
 protected:
 
@@ -68,10 +71,12 @@ protected:
     ~Geometry() = default;
 
 public:
+
     /*!
      * \brief Returns the geometry type.
      * \return Geometry type identifier.
      */
+    [[nodiscard]]
     constexpr auto type() const noexcept -> GeometryType
     {
         return geometry_traits<Derived>::type;
@@ -81,6 +86,7 @@ public:
      * \brief Returns the dimension of the geometry.
      * \return Dimension of the geometry.
      */
+    [[nodiscard]]
     constexpr auto dimension() const noexcept -> Dimension
     {
         return geometry_traits<Derived>::dimension;
@@ -90,26 +96,69 @@ public:
      * \brief Checks if the geometry is a collection (multi-type).
      * \return true if the geometry is a collection, false otherwise.
      */
+    [[nodiscard]] 
     constexpr auto isMulti() const noexcept -> bool
     {
         return geometry_traits<Derived>::is_multi;
     }
 
+    /*!
+     * \brief Checks if the geometry is two-dimensional.
+     *
+     * Returns true if the geometry exists in 2D space (XY coordinates).
+     * This corresponds to geometries using xy_tag or xym_tag point types.
+     *
+     * \return true if the geometry is 2D, false otherwise.
+     * \see is3D(), is4D(), dimension()
+     */
+    [[nodiscard]]
     constexpr auto is2D() const noexcept -> bool
     {
         return is_2d_v<Derived>;
     }
 
+    /*!
+     * \brief Checks if the geometry is three-dimensional.
+     *
+     * Returns true if the geometry exists in 3D space (XYZ coordinates).
+     * This corresponds to geometries using xyz_tag or xyzm_tag point types.
+     *
+     * \return true if the geometry is 3D, false otherwise.
+     * \see is2D(), is4D(), dimension()
+     */
+    [[nodiscard]]
     constexpr auto is3D() const noexcept -> bool
     {
         return is_3d_v<Derived>;
     }
 
+    /*!
+     * \brief Checks if the geometry is four-dimensional.
+     *
+     * Returns true if the geometry exists in 4D space (XYZW coordinates).
+     * This corresponds to geometries using xyzw_tag point types.
+     * Note that four-dimensional geometries are not OGC-compliant.
+     *
+     * \return true if the geometry is 4D, false otherwise.
+     * \see is2D(), is3D(), dimension()
+     */
+    [[nodiscard]] 
     constexpr auto is4D() const noexcept -> bool
     {
         return is_4d_v<Derived>;
     }
 
+    /*!
+     * \brief Checks if the geometry contains measure (M) coordinates.
+     *
+     * Returns true if the geometry includes an M (measure) coordinate
+     * in addition to its spatial dimensions. This is independent of
+     * the spatial dimensionality of the geometry.
+     *
+     * \return true if the geometry contains measure coordinates, false otherwise.
+     * \see is2D(), is3D()
+     */
+    [[nodiscard]] 
     constexpr auto hasMeasure() const noexcept -> bool
     {
         return has_m_v<Derived>;
@@ -119,12 +168,14 @@ public:
      * \brief Returns the minimum bounding box (envelope) of the geometry.
      * \return Axis-aligned bounding box containing the geometry.
      */
+    [[nodiscard]] 
     auto envelope() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
 
     /*!
      * \brief Alias for envelope().
      * \return Same as envelope().
      */
+    [[nodiscard]] 
     auto boundingBox() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
 
     //SRID

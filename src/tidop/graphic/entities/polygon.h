@@ -234,6 +234,8 @@ public:
      */
     explicit GMultiPolygon3D(const MultiPolygon<Point3d> &multiPolygon);
 
+    explicit GMultiPolygon3D(size_t size);
+
     /*!
      * \brief Copy constructor
      * \param multiPolygon3D Object to be copied

@@ -127,12 +127,23 @@ auto envelope_impl(const GeometryCollection<Point_t> &geometryCollection, collec
 template<typename Geometry_t>
 auto envelope(const Geometry_t &g) 
 {
+    static_assert(is_geometry_v<Geometry_t>,
+        "The type must be a geometry. Check if geometry_traits is specialized for this type.");
+
     return detail::envelope_impl(g, geometry_tag_t<Geometry_t>{});
 }
 
 template<typename Geometry_t, typename ...Geometries>
 auto envelope(const Geometry_t &g, const Geometries & ...gs)
 {
+    static_assert((is_geometry_v<Geometry_t> && ... && is_geometry_v<Geometries>),
+        "All types must be geometries. Check if geometry_traits is specialized for each type.");
+
+    // Verificar que todos los tipos de punto son iguales
+    static_assert((std::is_same_v<geometry_traits<Geometry_t>::point_type,
+                                 geometry_traits<Geometries>::point_type> && ...),
+        "All geometries must use the same point type.");
+
     auto bbox = envelope(g);
     ((bbox = merge(bbox, envelope(gs))), ...);
     return bbox;

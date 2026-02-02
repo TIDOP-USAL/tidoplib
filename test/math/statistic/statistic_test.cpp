@@ -122,14 +122,14 @@ struct DescriptiveStatisticsTest
 
         data5 = {2.3, 5.1, 3.8, 7.6, 9.2, 4.5, 6.3, 8.7, 10.1, 5.5};
 
-#if (TL_CPP_VERSION< 20)
+#if (TL_CPP_VERSION < 20)
         DescriptiveStatistics<double>::Config config{};
         config.skewness_method = SkewnessMethod::fisher_pearson;
         config.sample = false;
         stat_1_population = DescriptiveStatistics<double>(data1, config);
 #else
-        stat_1_population = DescriptiveStatistics<double>(s_1, {.sample = false,
-                                                                .skewness_method = SkewnessMethod::fisher_pearson});
+        stat_1_population = DescriptiveStatistics<double>(data1, { .sample = false,
+                                                                   .skewness_method = SkewnessMethod::fisher_pearson });
 #endif
 
         x = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};

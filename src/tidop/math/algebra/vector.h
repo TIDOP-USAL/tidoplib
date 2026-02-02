@@ -1790,8 +1790,8 @@ auto dotProduct(const Vector<T, _size>& v1,
  *
  * \tparam T The type of the elements in the vectors.
  * \tparam _size The size of the vectors, defaulting to 3.
- * \param[in] pt1 The first vector.
- * \param[in] pt2 The second vector.
+ * \param[in] min The first vector.
+ * \param[in] max The second vector.
  * \return The cross product of `pt1` and `pt2` as a `Vector<T, _size>`.
  */
 template<typename T, size_t _size = 3>

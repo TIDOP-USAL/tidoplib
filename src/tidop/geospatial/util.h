@@ -62,8 +62,8 @@ Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon,
     Point_t tmp{};
 
     // calculate the required increment for x and y
-    double increment_x = (bounds.pt2().x() - bounds.pt1().x()) / nCells;
-    double increment_y = (bounds.pt2().y() - bounds.pt1().y()) / mCells;
+    double increment_x = (bounds.max().x() - bounds.min().x()) / nCells;
+    double increment_y = (bounds.max().y() - bounds.min().y()) / mCells;
 
     // biggest known distance
     double max_distance = 0.;
@@ -71,11 +71,11 @@ Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon,
     double tmp_distance = std::numeric_limits<double>::max();
     for (int i = 0; static_cast<double>(i) <= nCells; i++) {
 
-        tmp.x() = bounds.pt1().x() + i * increment_x;
+        tmp.x() = bounds.min().x() + i * increment_x;
 
         for (int j = 0; static_cast<double>(j) <= mCells; j++) {
 
-            tmp.y() = bounds.pt1().y() + j * increment_y;
+            tmp.y() = bounds.min().y() + j * increment_y;
 
             if (polygon.isInner(tmp)) {
                 tmp_distance = distPointToPolygon(tmp, polygon);
@@ -116,13 +116,13 @@ void poleOfInaccessibility(const Polygon<Point_t> &polygon,
         pole->y() = point_tmp.y();
 
         Point_t aux{};
-        aux.x() = (w.pt2().x() - w.pt1().x()) / (sqrt(2.) * 2.);
-        aux.y() = (w.pt2().y() - w.pt1().y()) / (sqrt(2.) * 2.);
+        aux.x() = (w.max().x() - w.min().x()) / (sqrt(2.) * 2.);
+        aux.y() = (w.max().y() - w.min().y()) / (sqrt(2.) * 2.);
 
-        w.pt1() = *pole - aux;
-        w.pt2() = *pole + aux;
+        w.min() = *pole - aux;
+        w.max() = *pole + aux;
 
-        if (w.pt2().x() - w.pt1().x() < 0.01 || w.pt2().y() - w.pt1().y() < 0.01) break;
+        if (w.max().x() - w.min().x() < 0.01 || w.max().y() - w.min().y() < 0.01) break;
 
     }
 }

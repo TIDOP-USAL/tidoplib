@@ -142,46 +142,46 @@ BOOST_FIXTURE_TEST_CASE(capacity, PolygonTest)
 BOOST_FIXTURE_TEST_CASE(window, PolygonTest)
 {
     auto bbox_i = polygon_default_constructor_integer.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.max().y());
 
     auto bbox_d = polygon_default_constructor_double.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().y());
 
     auto bbox_f = polygon_default_constructor_float.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().y());
 
     bbox_i = polygon_initializer_list_constructor->boundingBox();
-    BOOST_CHECK_EQUAL(4137012, bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(642997, bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(4177148, bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(4137012, bbox_i.min().x());
+    BOOST_CHECK_EQUAL(642997, bbox_i.min().y());
+    BOOST_CHECK_EQUAL(4177148, bbox_i.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox_i.max().y());
 
     bbox_d = polygon_reserve_constructor->boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().y());
 
     bbox_i = polygon_copy_constructor_integer->boundingBox();
-    BOOST_CHECK_EQUAL(4137012, bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(642997, bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(4177148, bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(4137012, bbox_i.min().x());
+    BOOST_CHECK_EQUAL(642997, bbox_i.min().y());
+    BOOST_CHECK_EQUAL(4177148, bbox_i.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox_i.max().y());
 
     bbox_d = polygon_copy_constructor_double->boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(perimeter, PolygonTest)
@@ -217,10 +217,10 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 
     auto bbox = polygon.boundingBox();
 
-    BOOST_CHECK_EQUAL(4137012, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(642997, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
+    BOOST_CHECK_EQUAL(4137012, bbox.min().x());
+    BOOST_CHECK_EQUAL(642997, bbox.min().y());
+    BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox.max().y());
 
     BOOST_CHECK_CLOSE(235272.4835, polygon.perimeter(), 0.01);
 }
@@ -338,12 +338,12 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
 
     BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.outer().size());
     BOOST_CHECK(polygon_default_constructor_integer.type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox.max().z());
     BOOST_CHECK_EQUAL(0., polygon_default_constructor_integer.perimeter());
     BOOST_CHECK(Dimension::dim3 == polygon_default_constructor_integer.dimension());
 }
@@ -355,12 +355,12 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
     BOOST_CHECK_EQUAL(0, polygon_reserve_constructor->outer().size());
     BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->outer().capacity());
     BOOST_CHECK(polygon_reserve_constructor->type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().z());
     BOOST_CHECK_EQUAL(0., polygon_reserve_constructor->perimeter());
 }
 
@@ -372,12 +372,12 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 
     auto bbox = pol_c.boundingBox();
     BOOST_CHECK(pol_c.type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().z());
 
     BOOST_CHECK_EQUAL(0., pol_c.perimeter());
 }
@@ -389,12 +389,12 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, Polygon3DTest)
 
     auto bbox = pol.boundingBox();
     BOOST_CHECK(pol.type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().z());
 
     BOOST_CHECK_EQUAL(0., pol.perimeter());
 }
@@ -405,12 +405,12 @@ BOOST_FIXTURE_TEST_CASE(constructor_list, Polygon3DTest)
 
     auto bbox = polygon_initializer_list_constructor->boundingBox();
 
-    BOOST_CHECK_EQUAL(4137012, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(642997, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(10, bbox.pt1().z());
-    BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
-    BOOST_CHECK_EQUAL(30, bbox.pt2().z());
+    BOOST_CHECK_EQUAL(4137012, bbox.min().x());
+    BOOST_CHECK_EQUAL(642997, bbox.min().y());
+    BOOST_CHECK_EQUAL(10, bbox.min().z());
+    BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox.max().y());
+    BOOST_CHECK_EQUAL(30, bbox.max().z());
 
     BOOST_CHECK_CLOSE(235272.45, polygon_initializer_list_constructor->perimeter(), 0.01);
 }
@@ -433,12 +433,12 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
 
     auto bbox = polygon_initializer_list_constructor->boundingBox();
 
-    BOOST_CHECK_EQUAL(4137012, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(642997, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(10, bbox.pt1().z());
-    BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
-    BOOST_CHECK_EQUAL(30, bbox.pt2().z());
+    BOOST_CHECK_EQUAL(4137012, bbox.min().x());
+    BOOST_CHECK_EQUAL(642997, bbox.min().y());
+    BOOST_CHECK_EQUAL(10, bbox.min().z());
+    BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox.max().y());
+    BOOST_CHECK_EQUAL(30, bbox.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_operator, Polygon3DTest)
@@ -513,10 +513,10 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK(multipolygon1.type() == Entity::Type::multipolygon2d);
 //  BOOST_CHECK(false == multipolygon1.is3D());
 //  WindowI w = multipolygon1.window();
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1().y());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.min().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.min().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.max().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.max().y());
 //}
 //
 ///* Constructor reserve */
@@ -529,10 +529,10 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon2d);
 //  BOOST_CHECK(false == multipolygon.is3D());
 //  WindowI w = multipolygon.window();
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.pt1().y());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.pt2().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.min().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), w.min().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.max().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), w.max().y());
 //}
 //
 ///*Constructor de copia*/
@@ -544,10 +544,10 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
 //  BOOST_CHECK(false == multipolygon_copy.is3D());
 //  WindowI w = multipolygon_copy.window();
-//  BOOST_CHECK_EQUAL(4137012, w.pt1().x());
-//  BOOST_CHECK_EQUAL(642997, w.pt1().y());
-//  BOOST_CHECK_EQUAL(4177148, w.pt2().x());
-//  BOOST_CHECK_EQUAL(702670, w.pt2().y());
+//  BOOST_CHECK_EQUAL(4137012, w.min().x());
+//  BOOST_CHECK_EQUAL(642997, w.min().y());
+//  BOOST_CHECK_EQUAL(4177148, w.max().x());
+//  BOOST_CHECK_EQUAL(702670, w.max().y());
 //}
 //
 ///* Operador de asignación */
@@ -560,10 +560,10 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
 //  BOOST_CHECK(false == multipolygon_copy.is3D());
 //  WindowI w = multipolygon_copy.window();
-//  BOOST_CHECK_EQUAL(4137012, w.pt1().x());
-//  BOOST_CHECK_EQUAL(642997, w.pt1().y());
-//  BOOST_CHECK_EQUAL(4177148, w.pt2().x());
-//  BOOST_CHECK_EQUAL(702670, w.pt2().y());
+//  BOOST_CHECK_EQUAL(4137012, w.min().x());
+//  BOOST_CHECK_EQUAL(642997, w.min().y());
+//  BOOST_CHECK_EQUAL(4177148, w.max().x());
+//  BOOST_CHECK_EQUAL(702670, w.max().y());
 //}
 //
 //BOOST_AUTO_TEST_SUITE_END()
@@ -616,12 +616,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK_EQUAL(0, multipolygon1.size());
 //  BOOST_CHECK(multipolygon1.type() == Entity::Type::multipolygon3d);
 //  BOOST_CHECK(multipolygon1.is3D());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1().y());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.pt1.z);
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.pt2().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.pt2().y());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.pt2.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.min().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.min().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box.min.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.max().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.max().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box.max.z);
 //}
 //
 ///* Constructor reserve */
@@ -633,12 +633,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //  
 //  BOOST_CHECK_EQUAL(10, multipolygon.size());
 //  BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon3d);
-//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().y());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1.z);
-//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().x());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().y());
-//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min.z);
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().x());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().y());
+//  BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max.z);
 //}
 //
 ///*Constructor de copia*/
@@ -651,12 +651,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BOOST_CHECK(multipolygon_copy.is3D());
 //	BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
 //  BoundingBoxD bbox = multipolygon_copy.boundingBox();
-//  BOOST_CHECK_EQUAL(4137012, bbox.pt1().x());
-//  BOOST_CHECK_EQUAL(642997, bbox.pt1().y());
-//  BOOST_CHECK_EQUAL(10, bbox.pt1.z);
-//  BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-//  BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
-//  BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+//  BOOST_CHECK_EQUAL(4137012, bbox.min().x());
+//  BOOST_CHECK_EQUAL(642997, bbox.min().y());
+//  BOOST_CHECK_EQUAL(10, bbox.min.z);
+//  BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+//  BOOST_CHECK_EQUAL(702670, bbox.max().y());
+//  BOOST_CHECK_EQUAL(30, bbox.max.z);
 //}
 //
 ///* Operador de asignación */
@@ -671,12 +671,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //
 //	BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
 //  BoundingBoxD bbox = multipolygon_copy.boundingBox();
-//  BOOST_CHECK_EQUAL(4137012, bbox.pt1().x());
-//  BOOST_CHECK_EQUAL(642997, bbox.pt1().y());
-//  BOOST_CHECK_EQUAL(10, bbox.pt1.z);
-//  BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-//  BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
-//  BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+//  BOOST_CHECK_EQUAL(4137012, bbox.min().x());
+//  BOOST_CHECK_EQUAL(642997, bbox.min().y());
+//  BOOST_CHECK_EQUAL(10, bbox.min.z);
+//  BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+//  BOOST_CHECK_EQUAL(702670, bbox.max().y());
+//  BOOST_CHECK_EQUAL(30, bbox.max.z);
 //}
 //
 //BOOST_AUTO_TEST_SUITE_END()

@@ -182,70 +182,70 @@ BOOST_FIXTURE_TEST_CASE(size, LineStringTest)
 BOOST_FIXTURE_TEST_CASE(bounding_box, LineStringTest)
 {
     auto bbox_i = line_string_default_constructor_integer.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_i.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_i.max().y());
 
     auto bbox_d = line_string_default_constructor_double.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_d.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_d.max().y());
 
     auto bbox_f = line_string_default_constructor_float.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().y());
 
     bbox_i = line_string_integer->boundingBox();
-    BOOST_CHECK_EQUAL(12, bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(25, bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(95, bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(82, bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(12, bbox_i.min().x());
+    BOOST_CHECK_EQUAL(25, bbox_i.min().y());
+    BOOST_CHECK_EQUAL(95, bbox_i.max().x());
+    BOOST_CHECK_EQUAL(82, bbox_i.max().y());
 
     bbox_d = line_string_double->boundingBox();
-    BOOST_CHECK_EQUAL(41370.12, bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(6429.97, bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(41771.48, bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(7026.70, bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(41370.12, bbox_d.min().x());
+    BOOST_CHECK_EQUAL(6429.97, bbox_d.min().y());
+    BOOST_CHECK_EQUAL(41771.48, bbox_d.max().x());
+    BOOST_CHECK_EQUAL(7026.70, bbox_d.max().y());
 
     bbox_f = line_string_float->boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().y());
 
     bbox_i = line_string_integer_copy->boundingBox();
-    BOOST_CHECK_EQUAL(12, bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(25, bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(95, bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(82, bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(12, bbox_i.min().x());
+    BOOST_CHECK_EQUAL(25, bbox_i.min().y());
+    BOOST_CHECK_EQUAL(95, bbox_i.max().x());
+    BOOST_CHECK_EQUAL(82, bbox_i.max().y());
 
     bbox_d = line_string_double_copy->boundingBox();
-    BOOST_CHECK_EQUAL(41370.12, bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(6429.97, bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(41771.48, bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(7026.70, bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(41370.12, bbox_d.min().x());
+    BOOST_CHECK_EQUAL(6429.97, bbox_d.min().y());
+    BOOST_CHECK_EQUAL(41771.48, bbox_d.max().x());
+    BOOST_CHECK_EQUAL(7026.70, bbox_d.max().y());
 
     bbox_f = line_string_float_copy->boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_f.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_f.max().y());
 
     bbox_i = line_string_constructor_reserve->boundingBox();
-    BOOST_CHECK_EQUAL(0., bbox_i.pt1().x());
-    BOOST_CHECK_EQUAL(0., bbox_i.pt1().y());
-    BOOST_CHECK_EQUAL(0., bbox_i.pt2().x());
-    BOOST_CHECK_EQUAL(0., bbox_i.pt2().y());
+    BOOST_CHECK_EQUAL(0., bbox_i.min().x());
+    BOOST_CHECK_EQUAL(0., bbox_i.min().y());
+    BOOST_CHECK_EQUAL(0., bbox_i.max().x());
+    BOOST_CHECK_EQUAL(0., bbox_i.max().y());
 
     bbox_d = line_string_constructor_vector->boundingBox();
-    BOOST_CHECK_EQUAL(41370.12, bbox_d.pt1().x());
-    BOOST_CHECK_EQUAL(6429.97, bbox_d.pt1().y());
-    BOOST_CHECK_EQUAL(41771.48, bbox_d.pt2().x());
-    BOOST_CHECK_EQUAL(7026.70, bbox_d.pt2().y());
+    BOOST_CHECK_EQUAL(41370.12, bbox_d.min().x());
+    BOOST_CHECK_EQUAL(6429.97, bbox_d.min().y());
+    BOOST_CHECK_EQUAL(41771.48, bbox_d.max().x());
+    BOOST_CHECK_EQUAL(7026.70, bbox_d.max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(length, LineStringTest)
@@ -434,76 +434,76 @@ BOOST_FIXTURE_TEST_CASE(size, LineString3DTest)
 BOOST_FIXTURE_TEST_CASE(boundingBox, LineString3DTest)
 {
     BoundingBox3i box_i = line_string_default_constructor_integer.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_i.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_i.max().z());
 
     BoundingBox3d box_d = line_string_default_constructor_double.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_d.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_d.max().z());
 
     BoundingBox3f box_f = line_string_default_constructor_float.boundingBox();
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_f.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_f.max().z());
 
     box_i = line_string_integer->boundingBox();
-    BOOST_CHECK_EQUAL(12, box_i.pt1().x());
-    BOOST_CHECK_EQUAL(25, box_i.pt1().y());
-    BOOST_CHECK_EQUAL(3, box_i.pt1().z());
-    BOOST_CHECK_EQUAL(95, box_i.pt2().x());
-    BOOST_CHECK_EQUAL(82, box_i.pt2().y());
-    BOOST_CHECK_EQUAL(45, box_i.pt2().z());
+    BOOST_CHECK_EQUAL(12, box_i.min().x());
+    BOOST_CHECK_EQUAL(25, box_i.min().y());
+    BOOST_CHECK_EQUAL(3, box_i.min().z());
+    BOOST_CHECK_EQUAL(95, box_i.max().x());
+    BOOST_CHECK_EQUAL(82, box_i.max().y());
+    BOOST_CHECK_EQUAL(45, box_i.max().z());
 
     box_d = line_string_double->boundingBox();
-    BOOST_CHECK_EQUAL(23.6, box_d.pt1().x());
-    BOOST_CHECK_EQUAL(6.60, box_d.pt1().y());
-    BOOST_CHECK_EQUAL(0.36, box_d.pt1().z());
-    BOOST_CHECK_EQUAL(256.6, box_d.pt2().x());
-    BOOST_CHECK_EQUAL(619.3, box_d.pt2().y());
-    BOOST_CHECK_EQUAL(454.3, box_d.pt2().z());
+    BOOST_CHECK_EQUAL(23.6, box_d.min().x());
+    BOOST_CHECK_EQUAL(6.60, box_d.min().y());
+    BOOST_CHECK_EQUAL(0.36, box_d.min().z());
+    BOOST_CHECK_EQUAL(256.6, box_d.max().x());
+    BOOST_CHECK_EQUAL(619.3, box_d.max().y());
+    BOOST_CHECK_EQUAL(454.3, box_d.max().z());
 
     box_f = line_string_float->boundingBox();
-    BOOST_CHECK_EQUAL(0.f, box_f.pt1().x());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt1().y());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt1().z());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt2().x());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt2().y());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt2().z());
+    BOOST_CHECK_EQUAL(0.f, box_f.min().x());
+    BOOST_CHECK_EQUAL(0.f, box_f.min().y());
+    BOOST_CHECK_EQUAL(0.f, box_f.min().z());
+    BOOST_CHECK_EQUAL(0.f, box_f.max().x());
+    BOOST_CHECK_EQUAL(0.f, box_f.max().y());
+    BOOST_CHECK_EQUAL(0.f, box_f.max().z());
 
     box_i = line_string_integer_copy->boundingBox();
-    BOOST_CHECK_EQUAL(12, box_i.pt1().x());
-    BOOST_CHECK_EQUAL(25, box_i.pt1().y());
-    BOOST_CHECK_EQUAL(3, box_i.pt1().z());
-    BOOST_CHECK_EQUAL(95, box_i.pt2().x());
-    BOOST_CHECK_EQUAL(82, box_i.pt2().y());
-    BOOST_CHECK_EQUAL(45, box_i.pt2().z());
+    BOOST_CHECK_EQUAL(12, box_i.min().x());
+    BOOST_CHECK_EQUAL(25, box_i.min().y());
+    BOOST_CHECK_EQUAL(3, box_i.min().z());
+    BOOST_CHECK_EQUAL(95, box_i.max().x());
+    BOOST_CHECK_EQUAL(82, box_i.max().y());
+    BOOST_CHECK_EQUAL(45, box_i.max().z());
 
     box_d = line_string_double_copy->boundingBox();
-    BOOST_CHECK_EQUAL(23.6, box_d.pt1().x());
-    BOOST_CHECK_EQUAL(6.60, box_d.pt1().y());
-    BOOST_CHECK_EQUAL(0.36, box_d.pt1().z());
-    BOOST_CHECK_EQUAL(256.6, box_d.pt2().x());
-    BOOST_CHECK_EQUAL(619.3, box_d.pt2().y());
-    BOOST_CHECK_EQUAL(454.3, box_d.pt2().z());
+    BOOST_CHECK_EQUAL(23.6, box_d.min().x());
+    BOOST_CHECK_EQUAL(6.60, box_d.min().y());
+    BOOST_CHECK_EQUAL(0.36, box_d.min().z());
+    BOOST_CHECK_EQUAL(256.6, box_d.max().x());
+    BOOST_CHECK_EQUAL(619.3, box_d.max().y());
+    BOOST_CHECK_EQUAL(454.3, box_d.max().z());
 
     box_f = line_string_float_copy->boundingBox();
-    BOOST_CHECK_EQUAL(0.f, box_f.pt1().x());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt1().y());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt1().z());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt2().x());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt2().y());
-    BOOST_CHECK_EQUAL(0.f, box_f.pt2().z());
+    BOOST_CHECK_EQUAL(0.f, box_f.min().x());
+    BOOST_CHECK_EQUAL(0.f, box_f.min().y());
+    BOOST_CHECK_EQUAL(0.f, box_f.min().z());
+    BOOST_CHECK_EQUAL(0.f, box_f.max().x());
+    BOOST_CHECK_EQUAL(0.f, box_f.max().y());
+    BOOST_CHECK_EQUAL(0.f, box_f.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(length, LineString3DTest)
@@ -631,10 +631,10 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MultiLineStringTest)
     BOOST_CHECK(multiline_default_constructor.type() == GeometryType::multilinestring);
     BOOST_CHECK(multiline_default_constructor.dimension() == Dimension::dim2);
     BOOST_CHECK(Dimension::dim2 == multiline_default_constructor.dimension());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(push_back, MultiLineStringTest)
@@ -655,10 +655,10 @@ BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve)
     BOOST_CHECK_EQUAL(10, multiline.size());
     BOOST_CHECK(multiline.type() == GeometryType::multilinestring);
     BOOST_CHECK(multiline.dimension() == Dimension::dim2);
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox.max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiLineStringTest)
@@ -702,10 +702,10 @@ BOOST_AUTO_TEST_CASE(MultiLineString_copy_constructor)
     BOOST_CHECK(multiline_copy.type() == GeometryType::multilinestring);
     BOOST_CHECK(Dimension::dim2 == multiline_copy.dimension());
     BOOST_CHECK_EQUAL(2, multiline_copy.size());
-    BOOST_CHECK_EQUAL(4120568, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(636996, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
+    BOOST_CHECK_EQUAL(4120568, bbox.min().x());
+    BOOST_CHECK_EQUAL(636996, bbox.min().y());
+    BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox.max().y());
 
 }
 
@@ -741,10 +741,10 @@ BOOST_AUTO_TEST_CASE(MultiLineString_assing_operator)
     BOOST_CHECK(multiline_copy.type() == GeometryType::multilinestring);
     BOOST_CHECK(Dimension::dim2 == multiline_copy.dimension());
     BOOST_CHECK_EQUAL(2, multiline_copy.size());
-    BOOST_CHECK_EQUAL(4120568, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(636996, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(4177148, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(702670, bbox.pt2().y());
+    BOOST_CHECK_EQUAL(4120568, bbox.min().x());
+    BOOST_CHECK_EQUAL(636996, bbox.min().y());
+    BOOST_CHECK_EQUAL(4177148, bbox.max().x());
+    BOOST_CHECK_EQUAL(702670, bbox.max().y());
 
     LineString<Point2i> linestring = multiline_copy[1];
     for (size_t i = 0; i < linestring.size(); i++) {
@@ -765,12 +765,12 @@ BOOST_AUTO_TEST_CASE(MultiLineString3D_default_constructor)
     BOOST_CHECK_EQUAL(0, multiline_3d.size());
     BOOST_CHECK(multiline_3d.type() == GeometryType::multilinestring);
     BOOST_CHECK(Dimension::dim3 == multiline_3d.dimension());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().z());
 }
 
 BOOST_AUTO_TEST_CASE(MultiLineString3D_constructor_reserve)
@@ -781,12 +781,12 @@ BOOST_AUTO_TEST_CASE(MultiLineString3D_constructor_reserve)
     BOOST_CHECK_EQUAL(10, multiline_3d.size());
     BOOST_CHECK(multiline_3d.type() == GeometryType::multilinestring);
     BOOST_CHECK(Dimension::dim3 == multiline_3d.dimension());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box.max().z());
 }
 
 BOOST_AUTO_TEST_CASE(MultiLineString3D_copy_constructor)
@@ -810,12 +810,12 @@ BOOST_AUTO_TEST_CASE(MultiLineString3D_copy_constructor)
 
     BOOST_CHECK_EQUAL(1, multiline_copy.size());
     auto box = envelope(multiline_copy);
-    BOOST_CHECK_EQUAL(23.6, box.pt1().x());
-    BOOST_CHECK_EQUAL(6.60, box.pt1().y());
-    BOOST_CHECK_EQUAL(0.36, box.pt1().z());
-    BOOST_CHECK_EQUAL(256.6, box.pt2().x());
-    BOOST_CHECK_EQUAL(619.3, box.pt2().y());
-    BOOST_CHECK_EQUAL(454.3, box.pt2().z());
+    BOOST_CHECK_EQUAL(23.6, box.min().x());
+    BOOST_CHECK_EQUAL(6.60, box.min().y());
+    BOOST_CHECK_EQUAL(0.36, box.min().z());
+    BOOST_CHECK_EQUAL(256.6, box.max().x());
+    BOOST_CHECK_EQUAL(619.3, box.max().y());
+    BOOST_CHECK_EQUAL(454.3, box.max().z());
 }
 
 BOOST_AUTO_TEST_CASE(MultiLineString3D_assing_operator)
@@ -839,12 +839,12 @@ BOOST_AUTO_TEST_CASE(MultiLineString3D_assing_operator)
 
     BOOST_CHECK_EQUAL(1, multiline_copy.size());
     auto box = envelope(multiline_copy);
-    BOOST_CHECK_EQUAL(23.6, box.pt1().x());
-    BOOST_CHECK_EQUAL(6.60, box.pt1().y());
-    BOOST_CHECK_EQUAL(0.36, box.pt1().z());
-    BOOST_CHECK_EQUAL(256.6, box.pt2().x());
-    BOOST_CHECK_EQUAL(619.3, box.pt2().y());
-    BOOST_CHECK_EQUAL(454.3, box.pt2().z());
+    BOOST_CHECK_EQUAL(23.6, box.min().x());
+    BOOST_CHECK_EQUAL(6.60, box.min().y());
+    BOOST_CHECK_EQUAL(0.36, box.min().z());
+    BOOST_CHECK_EQUAL(256.6, box.max().x());
+    BOOST_CHECK_EQUAL(619.3, box.max().y());
+    BOOST_CHECK_EQUAL(454.3, box.max().z());
 }
 
 

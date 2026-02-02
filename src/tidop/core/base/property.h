@@ -347,7 +347,7 @@ inline auto formatValue(const T &value) -> std::string
 template <>
 inline auto formatValue<std::string>(const std::string &value) -> std::string
 {
-    return format("\"{}\"", value);
+    return tl::format("\"{}\"", value);
 }
 
 // Specialization for bool
@@ -361,7 +361,7 @@ inline auto formatValue<bool>(const bool &value) -> std::string
 template <>
 inline auto formatValue<const char *>(const char *const &value) -> std::string
 {
-    return format("\"{}\"", value);
+    return tl::format("\"{}\"", value);
 }
 
 template <typename Key, typename Value>
@@ -380,7 +380,7 @@ auto mapToString(const std::map<Key, Value> &m) -> std::string
         std::string key_str = formatValue<Key>(key);
         std::string value_str = formatValue<Value>(value);
 
-        result += format("{}:{}", key_str, value_str);
+        result += tl::format("{}:{}", key_str, value_str);
         first = false;
     }
 
@@ -512,9 +512,9 @@ public:
 
    auto typeName() const TL_NOEXCEPT -> std::string override
    {
-        return format("std::map<{},{}>", 
-                      TypeTraits<Key>::name_type,
-                      TypeTraits<Value>::name_type);
+        return tl::format("std::map<{},{}>",
+                          TypeTraits<Key>::name_type,
+                          TypeTraits<Value>::name_type);
    }
 
 };

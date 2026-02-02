@@ -27,6 +27,9 @@
 #include <cmath>
 
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/primitives/Polygon.h"
+#include "tidop/geometry/primitives/MultiPolygon.h"
 
 namespace tl
 {
@@ -34,14 +37,56 @@ namespace tl
 namespace detail 
 {
 
-template<typename BoundingBox_t, typename Point_t>
-auto contains_impl(const BoundingBox_t &box,
+// Point-Point (un punto contiene a otro si son iguales)
+template<typename Point_t>
+auto contains_impl(const Point_t &pt1,
+                   const Point_t &pt2,
+                   point_tag,
+                   point_tag)
+{
+    return pt1 == pt2;
+}
+
+// LineString - Point(un punto en la línea, pero no necesariamente en los extremos, depende de la definición)
+template<typename Point_t>
+auto contains_impl(const LineString<Point_t> &line, 
+                   const Point_t &point,
+                   linestring_tag,
+                   point_tag) -> bool
+{
+    if (line.empty()) return false;
+    if (line.size() == 1) return line[0] == point;
+
+    // Revisar todos los segmentos
+    for (size_t i = 0; i + 1 < line.size(); ++i) {
+        Segment<Point_t> seg(line[i], line[i + 1]);
+
+        // Proyectar punto en segmento
+        auto proj = project(point, seg);
+
+        // Está en el segmento pero NO en los extremos
+        if (!proj.isBeforeStart() && !proj.isAfterEnd() &&
+            distance(point, proj.closestPoint) < std::numeric_limits<double>::epsilon()) {
+            // Chequear que no sea un extremo
+            if (distance(point, seg.pt1()) > std::numeric_limits<double>::epsilon() &&
+                distance(point, seg.pt2()) > std::numeric_limits<double>::epsilon()) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// BoundingBox-Point
+template<typename Point_t>
+auto contains_impl(const BoundingBox<Point_t> &box,
                    const Point_t &pt, 
                    bbox_tag,
                    point_tag)
 {
     for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
-        if (pt[i] < box.pt1()[i] || pt[i] > box.pt2()[i]) {
+        if (pt[i] < box.min()[i] || pt[i] > box.max()[i]) {
             return false;
         }
     }
@@ -49,39 +94,7 @@ auto contains_impl(const BoundingBox_t &box,
     return true;
 }
 
-//template<typename Polygon_t, typename Point_t>
-//auto contains_impl(const Polygon_t &polygon, const Point_t &pt, polygon_tag, point_tag) -> bool
-//{
-//    auto is_inside_ring = [&](const auto &ring) {
-//        bool inside = false;
-//        size_t n = ring.size();
-//        if (n < 3) return false;
-//
-//        for (size_t i = 0, j = n - 1; i < n; j = i++) {
-//            // Comprobamos si el rayo horizontal cruza el segmento (ring[i], ring[j])
-//            if (((ring[i].y() > pt.y()) != (ring[j].y() > pt.y())) &&
-//                (pt.x() < (ring[j].x() - ring[i].x()) * (pt.y() - ring[i].y()) / (ring[j].y() - ring[i].y()) + ring[i].x())) {
-//                inside = !inside;
-//            }
-//        }
-//        return inside;
-//    };
-//
-//    // 1. El punto debe estar dentro del anillo exterior
-//    if (!is_inside_ring(polygon.outer())) {
-//        return false;
-//    }
-//
-//    // 2. El punto NO debe estar dentro de ningún hueco (inner ring)
-//    for (const auto &hole : polygon.inners()) {
-//        if (is_inside_ring(hole)) {
-//            return false;
-//        }
-//    }
-//
-//    return true;
-//}
-
+// Polygon-Point
 template<typename Polygon_t, typename Point_t>
 auto contains_impl(const Polygon_t &polygon,
                    const Point_t &pt, 
@@ -115,16 +128,79 @@ auto contains_impl(const Polygon_t &polygon,
     return true;
 }
 
-template<typename MultiPolygon_t, typename Point_t>
-auto contains_impl(const MultiPolygon_t &multiPolygon,
+// Polygon-LineString (todos los puntos de la línea están dentro del polígono, incluyendo el borde)
+template<typename Point_t>
+auto contains_impl(const Polygon<Point_t> &polygon, 
+                   const LineString<Point_t> &line,
+                   polygon_tag, 
+                   linestring_tag) -> bool
+{
+    if (line.empty()) return true; // Polígono contiene línea vacía
+
+    // Todos los puntos deben estar dentro (no en el borde)
+    for (const auto &point : line) {
+        if (!contains(polygon, point)) {
+            return false;
+        }
+    }
+
+    // Además, la línea no debe cruzar ningún hueco
+    // Esto es más complejo - necesitas verificar intersecciones
+    // Implementación básica por ahora
+    return true;
+}
+
+// Polygon-Polygon (un polígono contiene a otro)
+template<typename Point_t>
+auto contains_impl(const Polygon<Point_t> &container, 
+                   const Polygon<Point_t> &containee,
+                   polygon_tag, 
+                   polygon_tag) -> bool
+{
+    // 1. Todos los puntos del polígono contenido deben estar dentro del contenedor
+    for (const auto &point : containee.outer()) {
+        if (!contains(container, point)) {
+            return false;
+        }
+    }
+
+    // 2. Los huecos del contenedor NO deben intersectar el polígono contenido
+    // 3. Los huecos del contenido deben estar dentro de los huecos del contenedor o fuera completamente
+
+    // Implementación simplificada: chequea si un punto del borde está dentro
+    // y si no hay intersección entre los bordes (excepto posiblemente tangente)
+    // Esto es una simplificación - la implementación completa es compleja
+
+    return true; // Placeholder
+}
+
+// MultiPolygon - Point (un multipolígono contiene un punto)
+template<typename Point_t>
+auto contains_impl(const MultiPolygon<Point_t> &multiPolygon,
                    const Point_t &pt, 
                    multipolygon_tag, 
                    point_tag) -> bool
 {
     for (const auto &polygon : multiPolygon) {
-        if (contains(polygon, pt)) return true;
+        if (contains(polygon, pt))
+            return true;
     }
 
+    return false;
+}
+
+// MultiPolygon - Polygon
+template<typename Point_t>
+auto contains_impl(const MultiPolygon<Point_t> &multiPolygon, 
+                   const Polygon<Point_t> &polygon,
+                   multipolygon_tag, 
+                   polygon_tag) -> bool
+{
+    for (const auto &containerPoly : multiPolygon) {
+        if (contains(containerPoly, polygon)) {
+            return true;
+        }
+    }
     return false;
 }
 

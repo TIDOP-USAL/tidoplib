@@ -28,68 +28,27 @@
 
 namespace tl
 {
-	
+
 /*! \addtogroup Algorithms
  *  \{
  */
 
 /*!
- * \brief Computes the minimum bounding box (envelope) of a geometry.
+ * \brief Checks if two geometries intersect (share any common point).
  * 
- * This function computes the axis-aligned bounding box that contains the given geometry.
- *
- * \tparam Geometry_t Type of the geometry. Must be a valid geometry type.
+ * \tparam G1 Type of first geometry.
+ * \tparam G2 Type of second geometry.
  * 
- * \param[in] g Input geometry.
+ * \param g1 First geometry.
+ * \param g2 Second geometry.
  * 
- * \return BoundingBox containing the input geometry.
- * 
- * \throws std::invalid_argument if the geometry is invalid.
- * 
- * \note For empty geometries, returns a default-constructed (empty) BoundingBox.
- * 
- * ### Example
- * \code
- * Point2d p(1.0, 2.0);
- * auto bbox = envelope(p);  // bbox.min() == bbox.max() == p
- * 
- * LineString2d line{{0, 0}, {1, 1}, {2, 0}};
- * auto bbox2 = envelope(line);  // bbox2.min() == {0, 0}, bbox2.max() == {2, 1}
- * \endcode
+ * \return true if the geometries intersect, false otherwise.
  */
-template<typename Geometry_t>
-auto envelope(const Geometry_t &g);
+template<typename G1, typename G2>
+auto intersects(const G1 &g1, const G2 &g2) -> bool;
 
-/*!
- * \brief Computes the combined envelope of multiple geometries.
- *
- * This function computes the minimum bounding box that contains all input geometries.
- * It's equivalent to computing the envelope of each geometry and merging them.
- *
- * \tparam Geometry_t Type of the first geometry.
- * \tparam Geometries Types of remaining geometries.
- *
- * \param[in] g First geometry.
- * \param[in] gs Remaining geometries.
- *
- * \return BoundingBox containing all input geometries.
- *
- * \note If no geometries are provided, returns a default-constructed BoundingBox.
- *       For a single geometry, equivalent to calling envelope(const Geometry_t&).
- *
- * ### Example
- * \code
- * Point2d p1(0, 0);
- * Point2d p2(2, 2);
- * LineString2d line{{1, 1}, {3, 3}};
- * auto bbox = envelope(p1, p2, line);  // bbox.min() == {0, 0}, bbox.max() == {3, 3}
- * \endcode
- */
-template<typename Geometry_t, typename... Geometries>
-auto envelope(const Geometry_t &g, const Geometries&... gs);
-
-/*! \} */ 
+/*! \} */
 
 } // End namespace tl
 
-#include "Envelope.impl.h"
+#include "Intersects.impl.h"

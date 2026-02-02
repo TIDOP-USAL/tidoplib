@@ -54,7 +54,7 @@ void ImageReader::windowRead(const BoundingBox2i &wLoad,
         *wRead = image_window;
     } else {
         *wRead = intersection(image_window, wLoad);
-        *offset = wRead->pt1() - wLoad.pt1();
+        *offset = wRead->min() - wLoad.min();
     }
 }
 

@@ -37,6 +37,8 @@ if(BUILD_TL_GEOMETRY)
                         HEADER_FILES
                             algorithms/analysis/Contains.h
                             algorithms/analysis/Contains.impl.h
+                            algorithms/analysis/Intersects.h
+                            algorithms/analysis/Intersects.impl.h
                             algorithms/clustering/dbscan.h
                             algorithms/measurement/Angle.h
                             algorithms/measurement/Angle.impl.h
@@ -53,6 +55,7 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/spatial/Intersection.h
                             algorithms/spatial/Intersection.impl.h
                             algorithms/projection.h
+                            base/Concepts.h
                             base/Dimension.h
                             base/Geometry.h
                             base/Geometry.impl.h

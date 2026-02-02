@@ -52,7 +52,7 @@ void ImageWriter::windowWrite(const BoundingBox2i &window,
         *windowWrite = window_all;  // Se lee toda la ventana
     } else {
         *windowWrite = intersection(window_all, window);
-        *offset = windowWrite->pt1() - window.pt1();
+        *offset = windowWrite->min() - window.min();
     }
 }
 

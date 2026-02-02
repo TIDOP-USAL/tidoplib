@@ -139,10 +139,10 @@ BOOST_AUTO_TEST_CASE(Segment_window)
     Segment<Point2d> segment(Point2d(56.23, 123.5), Point2d(96.2, 34.4));
     BoundingBox<Point2d> w_s = segment.boundingBox();
     BoundingBox<Point2d> w(Point2d(56.23, 34.4), Point2d(96.2, 123.5));
-    BOOST_CHECK_EQUAL(w.pt1().x(), w_s.pt1().x());
-    BOOST_CHECK_EQUAL(w.pt1().y(), w_s.pt1().y());
-    BOOST_CHECK_EQUAL(w.pt2().x(), w_s.pt2().x());
-    BOOST_CHECK_EQUAL(w.pt2().y(), w_s.pt2().y());
+    BOOST_CHECK_EQUAL(w.min().x(), w_s.min().x());
+    BOOST_CHECK_EQUAL(w.min().y(), w_s.min().y());
+    BOOST_CHECK_EQUAL(w.max().x(), w_s.max().x());
+    BOOST_CHECK_EQUAL(w.max().y(), w_s.max().y());
 }
 
 /* Comprueba si el segmento esta vacio */
@@ -178,51 +178,51 @@ BOOST_AUTO_TEST_CASE(Segment_vector)
 //{
 //  Segment<Point2d> segment_horizontal(Point2d(0, 0), Point2d(100, 0));
 //  std::vector<Segment<Point2d>> horizontal_segments = segment_horizontal.split(2);
-//  BOOST_CHECK_CLOSE(0., horizontal_segments[0].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0., horizontal_segments[0].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(50., horizontal_segments[0].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0, horizontal_segments[0].pt2().y(), 0.1);
-//  BOOST_CHECK_CLOSE(50., horizontal_segments[1].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0, horizontal_segments[1].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(100., horizontal_segments[1].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0., horizontal_segments[1].pt2().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., horizontal_segments[0].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0., horizontal_segments[0].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(50., horizontal_segments[0].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0, horizontal_segments[0].max().y(), 0.1);
+//  BOOST_CHECK_CLOSE(50., horizontal_segments[1].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0, horizontal_segments[1].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(100., horizontal_segments[1].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0., horizontal_segments[1].max().y(), 0.1);
 //
 //  Segment<Point2d> segment_vertical(Point2d(0, 0), Point2d(0, 100));
 //  std::vector<Segment<Point2d>> vertical_segments = segment_vertical.split(2);
-//  BOOST_CHECK_CLOSE(0., vertical_segments[0].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0., vertical_segments[0].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(0., vertical_segments[0].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(50., vertical_segments[0].pt2().y(), 0.1);
-//  BOOST_CHECK_CLOSE(0., vertical_segments[1].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(50., vertical_segments[1].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(0., vertical_segments[1].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(100., vertical_segments[1].pt2().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., vertical_segments[0].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0., vertical_segments[0].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., vertical_segments[0].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(50., vertical_segments[0].max().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., vertical_segments[1].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(50., vertical_segments[1].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., vertical_segments[1].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(100., vertical_segments[1].max().y(), 0.1);
 //
 //  Segment<Point2d> segment(Point2d(0, 0), Point2d(100, 100));
 //  std::vector<Segment<Point2d>> segments = segment.split(2);
-//  BOOST_CHECK_CLOSE(0., segments[0].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0., segments[0].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(50., segments[0].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(50., segments[0].pt2().y(), 0.1);
-//  BOOST_CHECK_CLOSE(50., segments[1].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(50., segments[1].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(100., segments[1].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(100., segments[1].pt2().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., segments[0].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0., segments[0].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(50., segments[0].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(50., segments[0].max().y(), 0.1);
+//  BOOST_CHECK_CLOSE(50., segments[1].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(50., segments[1].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(100., segments[1].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(100., segments[1].max().y(), 0.1);
 //
 //  Segment<Point2d> segment3(Point2d(0, 0), Point2d(100, 100));
 //  std::vector<Segment<Point2d>> segments3 = segment3.split(3);
-//  BOOST_CHECK_CLOSE(0., segments3[0].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(0., segments3[0].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(33.33333, segments3[0].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(33.33333, segments3[0].pt2().y(), 0.1);
-//  BOOST_CHECK_CLOSE(33.33333, segments3[1].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(33.33333, segments3[1].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(66.666666, segments3[1].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(66.666666, segments3[1].pt2().y(), 0.1);
-//  BOOST_CHECK_CLOSE(66.666666, segments3[2].pt1().x(), 0.1);
-//  BOOST_CHECK_CLOSE(66.666666, segments3[2].pt1().y(), 0.1);
-//  BOOST_CHECK_CLOSE(100., segments3[2].pt2().x(), 0.1);
-//  BOOST_CHECK_CLOSE(100., segments3[2].pt2().y(), 0.1);
+//  BOOST_CHECK_CLOSE(0., segments3[0].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(0., segments3[0].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(33.33333, segments3[0].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(33.33333, segments3[0].max().y(), 0.1);
+//  BOOST_CHECK_CLOSE(33.33333, segments3[1].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(33.33333, segments3[1].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(66.666666, segments3[1].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(66.666666, segments3[1].max().y(), 0.1);
+//  BOOST_CHECK_CLOSE(66.666666, segments3[2].min().x(), 0.1);
+//  BOOST_CHECK_CLOSE(66.666666, segments3[2].min().y(), 0.1);
+//  BOOST_CHECK_CLOSE(100., segments3[2].max().x(), 0.1);
+//  BOOST_CHECK_CLOSE(100., segments3[2].max().y(), 0.1);
 //
 //}
 
@@ -295,12 +295,12 @@ BOOST_AUTO_TEST_CASE(Segment3D_bbox)
     Segment<Point3d> segment(Point3d(5.5, 93.2, 10.1), Point3d(25.3, 654.4, 15.6));
     BoundingBox<Point3d> bbox = segment.boundingBox();
 
-    BOOST_CHECK_EQUAL(5.5, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(93.2, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(10.1, bbox.pt1().z());
-    BOOST_CHECK_EQUAL(25.3, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(654.4, bbox.pt2().y());
-    BOOST_CHECK_EQUAL(15.6, bbox.pt2().z());
+    BOOST_CHECK_EQUAL(5.5, bbox.min().x());
+    BOOST_CHECK_EQUAL(93.2, bbox.min().y());
+    BOOST_CHECK_EQUAL(10.1, bbox.min().z());
+    BOOST_CHECK_EQUAL(25.3, bbox.max().x());
+    BOOST_CHECK_EQUAL(654.4, bbox.max().y());
+    BOOST_CHECK_EQUAL(15.6, bbox.max().z());
 }
 
 /* Comprueba si el segmento esta vacio */

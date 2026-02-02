@@ -274,14 +274,14 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
 //
 //  // Buscamos los máximos
 //  // Linea por angulo
-//  cv::Point pt1, pt2;
+//  cv::Point min, max;
 //  if (angle) {
 //    double a = cos(*angle), b = sin(*angle);
 //    double x0 = size.width / 2, y0 = size.height / 2;
-//    pt1.x = cvRound(x0 + 100 * (-b));
-//    pt1.y = cvRound(y0 + 100 * (a));
-//    pt2.x = cvRound(x0 - 100 * (-b));
-//    pt2.y = cvRound(y0 - 100 * (a));
+//    min.x = cvRound(x0 + 100 * (-b));
+//    min.y = cvRound(y0 + 100 * (a));
+//    max.x = cvRound(x0 - 100 * (-b));
+//    max.y = cvRound(y0 - 100 * (a));
 //  } else {
 //    cv::Mat nonZeroCoordinates;
 //    cv::findNonZero(mask2, nonZeroCoordinates);    // Buscamos en la mascara los elementos distintos de 0
@@ -290,14 +290,14 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
 //    double rmax, rmin;                      // Máximo y mínimo en filas
 //    cv::Point pmin, pmax;                   // Posición de máximo y mínimo en filas
 //    cv::minMaxLoc(rc[1], &rmin, &rmax, &pmin, &pmax);
-//    pt1.x = rcrop.x + rc[0].at<int>(pmin);
-//    pt1.y = rcrop.y + static_cast<int>(rmin);
-//    pt2.x = rcrop.x + rc[0].at<int>(pmax);
-//    pt2.y = rcrop.y + static_cast<int>(rmax);
+//    min.x = rcrop.x + rc[0].at<int>(pmin);
+//    min.y = rcrop.y + static_cast<int>(rmin);
+//    max.x = rcrop.x + rc[0].at<int>(pmax);
+//    max.y = rcrop.y + static_cast<int>(rmax);
 //  }
 //
 //  cv::Mat maskLine = cv::Mat::zeros(size, CV_8U);
-//  cv::line(maskLine, pt1, pt2, cv::Scalar(1, 1, 1), 3);
+//  cv::line(maskLine, min, max, cv::Scalar(1, 1, 1), 3);
 //  cv::Mat mat5;
 //  cv::Mat mat6;
 //  cv::bitwise_and(planes[0], planes[0], mat5, maskLine);

@@ -65,8 +65,8 @@ public:
 
     /*!
      * \brief Constructor with three points
-     * \param[in] pt1 First vertex
-     * \param[in] pt2 Second vertex
+     * \param[in] min First vertex
+     * \param[in] max Second vertex
      * \param[in] pt3 Third vertex
      */
     explicit Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);

@@ -76,7 +76,7 @@ public:
     using T = typename point_traits<Point_t>::value_type;
 
     /*! \brief Dimension of the bounding box (compile-time constant). */
-    static constexpr size_t dimensions = dimension_value(point_traits<Point_t>::dimension);
+    static constexpr size_t dimensions = point_traits<Point_t>::spatial_dims;
 
 private:
 
@@ -92,8 +92,8 @@ public:
 
     /*!
      * \brief Constructor that defines the bounding box using two corner points.
-     * \param[in] pt1 First corner point.
-     * \param[in] pt2 Second corner point.
+     * \param[in] min First corner point.
+     * \param[in] max Second corner point.
      * The bounding box will be normalized (min and max computed automatically).
      */
     BoundingBox(const Point_t &pt1, const Point_t &pt2);
@@ -147,25 +147,25 @@ public:
      * \brief Access the first corner point (non-const version).
      * \return Reference to the first corner point.
      */
-    auto pt1() noexcept -> Point_t &;
+    auto min() noexcept -> Point_t &;
 
     /*!
      * \brief Access the first corner point (const version).
      * \return Const reference to the first corner point.
      */
-    auto pt1() const noexcept -> const Point_t &;
+    auto min() const noexcept -> const Point_t &;
 
     /*!
      * \brief Access the second corner point (non-const version).
      * \return Reference to the second corner point.
      */
-    auto pt2() noexcept -> Point_t &;
+    auto max() noexcept -> Point_t &;
 
     /*!
      * \brief Access the second corner point (const version).
      * \return Const reference to the second corner point.
      */
-    auto pt2() const noexcept -> const Point_t &;
+    auto max() const noexcept -> const Point_t &;
 
     /*!
      * \brief Computes the width of the bounding box (x-axis extent).
@@ -195,7 +195,7 @@ public:
 
     /*!
      * \brief Normalizes the bounding box.
-     * Ensures pt1 is the minimum corner and pt2 is the maximum corner.
+     * Ensures min is the minimum corner and max is the maximum corner.
      */
     void normalized();
 
@@ -338,31 +338,31 @@ BoundingBox<Point_t>::BoundingBox(const BoundingBox<OtherPoint_t> &other)
     static_assert(geometry_traits<Point_t>::dimension == geometry_traits<OtherPoint_t>::dimension,
                   "BoundingBoxes must have the same dimension for conversion.");
 
-    mPoints[0] = static_cast<Point_t>(other.pt1());
-    mPoints[1] = static_cast<Point_t>(other.pt2());
+    mPoints[0] = static_cast<Point_t>(other.min());
+    mPoints[1] = static_cast<Point_t>(other.max());
 }
 
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::pt1() noexcept -> Point_t &
+auto BoundingBox<Point_t>::min() noexcept -> Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::pt1() const noexcept -> const Point_t &
+auto BoundingBox<Point_t>::min() const noexcept -> const Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::pt2() noexcept -> Point_t &
+auto BoundingBox<Point_t>::max() noexcept -> Point_t &
 { 
     return mPoints[1];
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::pt2() const noexcept -> const Point_t &
+auto BoundingBox<Point_t>::max() const noexcept -> const Point_t &
 { 
     return mPoints[1];
 }
@@ -428,16 +428,40 @@ auto BoundingBox<Point_t>::center() const -> Point_t
 template<typename Point_t>
 auto BoundingBox<Point_t>::vertices() const -> std::vector<Point_t>
 {
-    return {
-        Point_t(pt1().x(), pt1().y(), pt1().z()),
-        Point_t(pt1().x(), pt2().y(), pt1().z()),
-        Point_t(pt2().x(), pt2().y(), pt1().z()),
-        Point_t(pt2().x(), pt1().y(), pt1().z()),
-        Point_t(pt1().x(), pt1().y(), pt2().z()),
-        Point_t(pt1().x(), pt2().y(), pt2().z()),
-        Point_t(pt2().x(), pt2().y(), pt2().z()),
-        Point_t(pt2().x(), pt1().y(), pt2().z())
-    };
+    if constexpr (dimensions == 2) {
+        // 4 vértices en sentido horario/antihorario
+        return {
+            Point_t(mPoints[0][0], mPoints[0][1]), // MinMin
+            Point_t(mPoints[1][0], mPoints[0][1]), // MaxMin
+            Point_t(mPoints[1][0], mPoints[1][1]), // MaxMax
+            Point_t(mPoints[0][0], mPoints[1][1])  // MinMax
+        };
+    } else if constexpr (dimensions == 3) {
+        return {
+            Point_t(mPoints[0][0], mPoints[0][1], mPoints[0][2]),
+            Point_t(mPoints[1][0], mPoints[0][1], mPoints[0][2]),
+            Point_t(mPoints[1][0], mPoints[1][1], mPoints[0][2]),
+            Point_t(mPoints[0][0], mPoints[1][1], mPoints[0][2]),
+            Point_t(mPoints[0][0], mPoints[0][1], mPoints[1][2]),
+            Point_t(mPoints[1][0], mPoints[0][1], mPoints[1][2]),
+            Point_t(mPoints[1][0], mPoints[1][1], mPoints[1][2]),
+            Point_t(mPoints[0][0], mPoints[1][1], mPoints[1][2])
+        };
+    } else {
+        // Algoritmo genérico para n-dimensiones (Hipercubo)
+        const size_t num_vertices = 1ULL << dimensions;
+        std::vector<Point_t> verts;
+        verts.reserve(num_vertices);
+
+        for (size_t i = 0; i < num_vertices; ++i) {
+            Point_t p;
+            for (size_t d = 0; d < dimensions; ++d) {
+                p[d] = (i & (1ULL << d)) ? mPoints[1][d] : mPoints[0][d];
+            }
+            verts.push_back(std::move(p));
+        }
+        return verts;
+    }
 }
 
 template<typename Point_t>
@@ -473,8 +497,8 @@ auto merge(const BoundingBox<Point_t> &b1, const BoundingBox<Point_t> &b2) -> Bo
     Point_t new_min, new_max;
 
     for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
-        new_min[i] = std::min(b1.pt1()[i], b2.pt1()[i]);
-        new_max[i] = std::max(b1.pt2()[i], b2.pt2()[i]);
+        new_min[i] = std::min(b1.min()[i], b2.min()[i]);
+        new_max[i] = std::max(b1.max()[i], b2.max()[i]);
     }
 
     return BoundingBox<Point_t>(new_min, new_max);

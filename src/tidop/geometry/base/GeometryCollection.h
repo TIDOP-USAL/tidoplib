@@ -48,6 +48,8 @@
  * - **Efficient Access**: O(1) access by position, O(1) addition.
  * - **Memory Efficiency**: SoA-like storage per geometry type.
  * - **Nested Collections**: Supports recursive GeometryCollection storage.
+ * - **Modern C++20**: Uses concepts, std::span, constexpr, and noexcept where appropriate.
+ * - **Range Support**: Compatible with C++20 ranges and algorithms.
  *
  * \see tl::Geometry, tl::Point, tl::LineString, tl::Polygon,
  *      tl::MultiPoint, tl::MultiLineString, tl::MultiPolygon
@@ -68,6 +70,7 @@
 
 #include <vector>
 #include <variant>
+#include <span>
 
 namespace tl
 {
@@ -91,7 +94,6 @@ namespace tl
  * (mOrder) maintains the insertion order for sequential access.
  *
  * \tparam Point_t The point type used by all geometries in the collection.
- *                 Must satisfy the Point concept (provide x(), y() methods).
  *
  * ### Usage Example:
  * \code{.cpp}
@@ -116,6 +118,26 @@ namespace tl
  *         // Handle other geometry types...
  *     }, collection[i]);
  * }
+ * 
+ * // Using std::span for efficient batch processing
+ * auto points_span = collection.points();
+ * auto lines_span = collection.lineStrings();
+ *
+ * // Process all points with C++20 ranges
+ * std::ranges::for_each(points_span, [](auto& point) {
+ *     point.x() += 10.0; // Translate all points
+ * });
+ *
+ * // Count total vertices in all line strings
+ * size_t total_vertices = std::accumulate(
+ *     lines_span.begin(), lines_span.end(), 0,
+ *     [](size_t acc, const auto& line) {
+ *         return acc + line.size();
+ *     }
+ * );
+ *
+ * // Copy to vector if needed
+ * std::vector<Point2d> points_copy(points_span.begin(), points_span.end());
  * \endcode
  *
  * \see OGC Simple Feature Access Specification (06-103r4)
@@ -126,10 +148,13 @@ class GeometryCollection
   : public Geometry<GeometryCollection<Point_t>>
 {
 
+    static_assert(PointConcept<Point_t>,
+                  "GeometryCollection requires a point type");
+
 private:
 
     std::vector<Point_t> mPoints;                                    /*!< Storage for Point geometries. */
-    std::vector<LineString<Point_t>> mLineString;                    /*!< Storage for LineString geometries. */
+    std::vector<LineString<Point_t>> mLineStrings;                   /*!< Storage for LineString geometries. */
     std::vector<Polygon<Point_t>> mPolygons;                         /*!< Storage for Polygon geometries. */
     std::vector<MultiPoint<Point_t>> mMultiPoints;                   /*!< Storage for MultiPoint geometries. */
     std::vector<MultiLineString<Point_t>> mMultiLineStrings;         /*!< Storage for MultiLineString geometries. */
@@ -190,8 +215,65 @@ public:
      *
      * Creates an empty GeometryCollection.
      */
-    GeometryCollection() = default;
+    constexpr GeometryCollection() noexcept = default;
 
+    /*!
+     * \brief Copy constructor.
+     */
+    GeometryCollection(const GeometryCollection&) = default;
+    
+    /*!
+     * \brief Move constructor.
+     */
+    GeometryCollection(GeometryCollection&&) noexcept = default;
+
+    /*!
+     * \brief Destructor.
+     */
+    ~GeometryCollection() = default;
+
+    /*!
+     * \brief Copy assignment operator.
+     */
+    auto operator=(const GeometryCollection&) -> GeometryCollection& = default;
+
+    /*!
+     * \brief Move assignment operator.
+     */
+    auto operator=(GeometryCollection&&) noexcept -> GeometryCollection& = default;
+
+    /*!
+     * \brief Adds a geometry to the collection (copy version).
+     * \tparam GeometryType Type of geometry to add
+     * \param[in] geometry Geometry to add
+     * \return Reference to this collection
+     */
+    template<GeometryConcept G>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+    auto add(const G &geometry) -> GeometryCollection &;
+
+    /*!
+     * \brief Adds a geometry to the collection (move version).
+     * \tparam GeometryType Type of geometry to add
+     * \param[in] geometry Geometry to add
+     * \return Reference to this collection
+     */
+    template<GeometryConcept G>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+    auto add(G &&geometry) -> GeometryCollection &;
+	
+    /*!
+     * \brief Constructs and adds a geometry in-place.
+     * \tparam GeometryType Type of geometry to construct
+     * \tparam Args Types of arguments to forward to constructor
+     * \param[in] args Arguments to forward to constructor
+     * \return Reference to the added geometry
+     */
+    template<GeometryConcept G, typename... Args>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t> &&
+             std::constructible_from<G, Args...>
+    auto emplace(Args&&... args) -> G&;
+	
     /*!
      * \brief Add a Point to the collection (copy version).
      * \param[in] point The Point to add.
@@ -307,60 +389,151 @@ public:
     void addGeometryCollection(GeometryCollection<Point_t> &&collection);
 
     /*!
-     * \brief Get read-only access to the Point vector.
-     * \return Const reference to the vector of Points.
+     * \brief Returns a view over all Point geometries in the collection.
      *
-     * \note This provides direct access to all Points in insertion order.
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<Point_t> providing read-write access to all Points.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto points() const noexcept -> const std::vector<Point_t> &;
+    [[nodiscard]] 
+    auto points() noexcept -> std::span<Point_t>;
 
     /*!
-     * \brief Get read-only access to the LineString vector.
-     * \return Const reference to the vector of LineStrings.
+     * \brief Returns a read-only view over all Point geometries in the collection.
      *
-     * \note This provides direct access to all LineStrings in insertion order.
+     * \return std::span<const Point_t> providing read-only access to all Points.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto lineStrings() const noexcept -> const std::vector<LineString<Point_t>> &;
+    [[nodiscard]]
+    auto points() const noexcept -> std::span<const Point_t>;
 
     /*!
-     * \brief Get read-only access to the Polygon vector.
-     * \return Const reference to the vector of Polygons.
+     * \brief Returns a view over all LineString geometries in the collection.
      *
-     * \note This provides direct access to all Polygons in insertion order.
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<LineString<Point_t>> providing read-write access to all LineStrings.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto polygons() const noexcept -> const std::vector<Polygon<Point_t>> &;
+    [[nodiscard]] 
+    auto lineStrings() noexcept -> std::span<LineString<Point_t>>;
 
     /*!
-     * \brief Get read-only access to the MultiPoint vector.
-     * \return Const reference to the vector of MultiPoints.
+     * \brief Returns a read-only view over all LineString geometries in the collection.
      *
-     * \note This provides direct access to all MultiPoints in insertion order.
+     * \return std::span<const LineString<Point_t>> providing read-only access to all LineStrings.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto multiPoints() const noexcept -> const std::vector<MultiPoint<Point_t>> &;
+    [[nodiscard]] 
+    auto lineStrings() const noexcept -> std::span<const LineString<Point_t>>;
 
     /*!
-     * \brief Get read-only access to the MultiLineString vector.
-     * \return Const reference to the vector of MultiLineStrings.
+     * \brief Returns a view over all Polygon geometries in the collection.
      *
-     * \note This provides direct access to all MultiLineStrings in insertion order.
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<Polygon<Point_t>> providing read-write access to all Polygons.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto multiLineStrings() const noexcept -> const std::vector<MultiLineString<Point_t>> &;
+    [[nodiscard]] 
+    auto polygons() noexcept -> std::span<Polygon<Point_t>>;
 
     /*!
-     * \brief Get read-only access to the MultiPolygon vector.
-     * \return Const reference to the vector of MultiPolygons.
+     * \brief Returns a read-only view over all Polygon geometries in the collection.
      *
-     * \note This provides direct access to all MultiPolygons in insertion order.
+     * \return std::span<const Polygon<Point_t>> providing read-only access to all Polygons.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto multiPolygons() const noexcept -> const std::vector<MultiPolygon<Point_t>> &;
+    [[nodiscard]]
+    auto polygons() const noexcept -> std::span<const Polygon<Point_t>>;
 
     /*!
-     * \brief Get read-only access to the GeometryCollection vector.
-     * \return Const reference to the vector of nested GeometryCollections.
+     * \brief Returns a view over all MultiPoint geometries in the collection.
      *
-     * \note This provides direct access to all nested collections in insertion order.
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<MultiPoint<Point_t>> providing read-write access to all MultiPoints.
+     * \warning The span is invalidated by any operation that modifies the collection.
      */
-    auto geometryCollections() const noexcept -> const std::vector<GeometryCollection<Point_t>> &;
+    [[nodiscard]] 
+    auto multiPoints() noexcept -> std::span<MultiPoint<Point_t>>;
+
+    /*!
+     * \brief Returns a read-only view over all MultiPoint geometries in the collection.
+     *
+     * \return std::span<const MultiPoint<Point_t>> providing read-only access to all MultiPoints.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]]
+    auto multiPoints() const noexcept -> std::span<const MultiPoint<Point_t>>;
+
+    /*!
+     * \brief Returns a view over all MultiLineString geometries in the collection.
+     *
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<MultiLineString<Point_t>> providing read-write access to all MultiLineStrings.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]] 
+    auto multiLineStrings() noexcept -> std::span<MultiLineString<Point_t>>;
+
+    /*!
+     * \brief Returns a read-only view over all MultiLineString geometries in the collection.
+     *
+     * \return std::span<const MultiLineString<Point_t>> providing read-only access to all MultiLineStrings.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]] 
+    auto multiLineStrings() const noexcept -> std::span<const MultiLineString<Point_t>>;
+
+    /*!
+     * \brief Returns a view over all MultiPolygon geometries in the collection.
+     *
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<MultiPolygon<Point_t>> providing read-write access to all MultiPolygons.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]] 
+    auto multiPolygons() noexcept -> std::span<MultiPolygon<Point_t>>;
+
+    /*!
+     * \brief Returns a read-only view over all MultiPolygon geometries in the collection.
+     *
+     * \return std::span<const MultiPolygon<Point_t>> providing read-only access to all MultiPolygons.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]] 
+    auto multiPolygons() const noexcept -> std::span<const MultiPolygon<Point_t>>;
+
+    /*!
+     * \brief Returns a view over all nested GeometryCollection geometries in the collection.
+     *
+     * The returned span provides direct access to the underlying storage without copying.
+     * The view remains valid until the collection is modified (elements added or removed).
+     *
+     * \return std::span<GeometryCollection<Point_t>> providing read-write access to all nested collections.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]]
+    auto geometryCollections() noexcept -> std::span<GeometryCollection<Point_t>>;
+
+    /*!
+     * \brief Returns a read-only view over all nested GeometryCollection geometries in the collection.
+     *
+     * \return std::span<const GeometryCollection<Point_t>> providing read-only access to all nested collections.
+     * \warning The span is invalidated by any operation that modifies the collection.
+     */
+    [[nodiscard]] 
+    auto geometryCollections() const noexcept -> std::span<const GeometryCollection<Point_t>>;
 
     /*!
      * \brief Get mutable reference to a Point by its index in the Points vector.
@@ -368,6 +541,7 @@ public:
      * \return Reference to the Point at the specified index.
      * \throws std::out_of_range if index >= points().size().
      */
+    [[nodiscard]] 
     auto pointAt(size_t index) -> Point_t &;
 
     /*!
@@ -376,6 +550,7 @@ public:
      * \return Const reference to the Point at the specified index.
      * \throws std::out_of_range if index >= points().size().
      */
+    [[nodiscard]] 
     auto pointAt(size_t index) const -> const Point_t &;
 
     /*!
@@ -384,6 +559,7 @@ public:
      * \return Reference to the LineString at the specified index.
      * \throws std::out_of_range if index >= lineStrings().size().
      */
+    [[nodiscard]] 
     auto lineStringAt(size_t index) -> LineString<Point_t> &;
 
     /*!
@@ -392,6 +568,7 @@ public:
      * \return Const reference to the LineString at the specified index.
      * \throws std::out_of_range if index >= lineStrings().size().
      */
+    [[nodiscard]] 
     auto lineStringAt(size_t index) const -> const LineString<Point_t> &;
 
     /*!
@@ -400,6 +577,7 @@ public:
      * \return Reference to the Polygon at the specified index.
      * \throws std::out_of_range if index >= polygons().size().
      */
+    [[nodiscard]] 
     auto polygonAt(size_t index) -> Polygon<Point_t> &;
 
     /*!
@@ -408,6 +586,7 @@ public:
      * \return Const reference to the Polygon at the specified index.
      * \throws std::out_of_range if index >= polygons().size().
      */
+    [[nodiscard]]
     auto polygonAt(size_t index) const -> const Polygon<Point_t> &;
 
     /*!
@@ -416,6 +595,7 @@ public:
      * \return Reference to the MultiPoint at the specified index.
      * \throws std::out_of_range if index >= multiPoints().size().
      */
+    [[nodiscard]]
     auto multiPointAt(size_t index) -> MultiPoint<Point_t> &;
 
     /*!
@@ -424,6 +604,7 @@ public:
      * \return Const reference to the MultiPoint at the specified index.
      * \throws std::out_of_range if index >= multiPoints().size().
      */
+    [[nodiscard]] 
     auto multiPointAt(size_t index) const -> const MultiPoint<Point_t> &;
 
     /*!
@@ -432,6 +613,7 @@ public:
      * \return Reference to the MultiLineString at the specified index.
      * \throws std::out_of_range if index >= multiLineStrings().size().
      */
+    [[nodiscard]]
     auto multiLineStringAt(size_t index) -> MultiLineString<Point_t> &;
 
     /*!
@@ -440,6 +622,7 @@ public:
      * \return Const reference to the MultiLineString at the specified index.
      * \throws std::out_of_range if index >= multiLineStrings().size().
      */
+    [[nodiscard]]
     auto multiLineStringAt(size_t index) const -> const MultiLineString<Point_t> &;
 
     /*!
@@ -448,6 +631,7 @@ public:
      * \return Reference to the MultiPolygon at the specified index.
      * \throws std::out_of_range if index >= multiPolygons().size().
      */
+    [[nodiscard]] 
     auto multiPolygonAt(size_t index) -> MultiPolygon<Point_t> &;
 
     /*!
@@ -456,6 +640,7 @@ public:
      * \return Const reference to the MultiPolygon at the specified index.
      * \throws std::out_of_range if index >= multiPolygons().size().
      */
+    [[nodiscard]] 
     auto multiPolygonAt(size_t index) const -> const MultiPolygon<Point_t> &;
     
     /*!
@@ -464,6 +649,7 @@ public:
      * \return Reference to the GeometryCollection at the specified index.
      * \throws std::out_of_range if index >= geometryCollections().size().
      */
+    [[nodiscard]]
     auto geometryCollectionAt(size_t index) -> GeometryCollection<Point_t> &;
 
     /*!
@@ -472,6 +658,7 @@ public:
      * \return Const reference to the GeometryCollection at the specified index.
      * \throws std::out_of_range if index >= geometryCollections().size().
      */
+    [[nodiscard]]
     auto geometryCollectionAt(size_t index) const -> const GeometryCollection<Point_t> &;
 
     /*!
@@ -551,104 +738,120 @@ public:
      * \brief Get the number of Point geometries in the collection.
      * \return Number of Point geometries.
      */
-    auto pointCount() const noexcept -> size_t;
+    [[nodiscard]]
+    constexpr auto pointCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the number of LineString geometries in the collection.
      * \return Number of LineString geometries.
      */
-    auto lineStringCount() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto lineStringCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the number of Polygon geometries in the collection.
      * \return Number of Polygon geometries.
      */
-    auto polygonCount() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto polygonCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the number of MultiPoint geometries in the collection.
      * \return Number of MultiPoint geometries.
      */
-    auto multiPointCount() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto multiPointCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the number of MultiLineString geometries in the collection.
      * \return Number of MultiLineString geometries.
      */
-    auto multiLineStringCount() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto multiLineStringCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the number of MultiPolygon geometries in the collection.
      * \return Number of MultiPolygon geometries.
      */
-    auto multiPolygonCount() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto multiPolygonCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the number of nested GeometryCollection geometries.
      * \return Number of nested GeometryCollection geometries.
      */
-    auto geometryCollectionCount() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto geometryCollectionCount() const noexcept -> size_t;
 
     /*!
      * \brief Get the total number of geometries in the collection.
      * \return Number of geometries (all types combined).
      */
-    auto size() const noexcept -> size_t;
+    [[nodiscard]] 
+    constexpr auto size() const noexcept -> size_t;
 
     /*!
      * \brief Check if the collection contains any Point geometries.
      * \return true if at least one Point exists, false otherwise.
      */
-    auto hasPoints() const noexcept -> bool;
+    [[nodiscard]]
+    constexpr auto hasPoints() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection contains any LineString geometries.
      * \return true if at least one LineString exists, false otherwise.
      */
-    auto hasLineStrings() const noexcept -> bool;
+    [[nodiscard]] 
+    constexpr auto hasLineStrings() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection contains any Polygon geometries.
      * \return true if at least one Polygon exists, false otherwise.
      */
-    auto hasPolygons() const noexcept -> bool;
+    [[nodiscard]]
+    constexpr auto hasPolygons() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection contains any MultiPoint geometries.
      * \return true if at least one MultiPoint exists, false otherwise.
      */
-    auto hasMultiPoints() const noexcept -> bool;
+    [[nodiscard]] 
+    constexpr auto hasMultiPoints() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection contains any MultiLineString geometries.
      * \return true if at least one MultiLineString exists, false otherwise.
      */
-    auto hasMultiLineStrings() const noexcept -> bool;
+    [[nodiscard]]
+    constexpr auto hasMultiLineStrings() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection contains any MultiPolygon geometries.
      * \return true if at least one MultiPolygon exists, false otherwise.
      */
-    auto hasMultiPolygons() const noexcept -> bool;
+    [[nodiscard]] 
+    constexpr auto hasMultiPolygons() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection contains any nested GeometryCollections.
      * \return true if at least one nested GeometryCollection exists, false otherwise.
      */
-    auto hasGeometryCollections() const noexcept -> bool;
+    [[nodiscard]]
+    constexpr auto hasGeometryCollections() const noexcept -> bool;
 
     /*!
      * \brief Check if the collection is empty.
      * \return true if the collection contains no geometries, false otherwise.
      */
-    auto empty() const noexcept -> bool;
+    [[nodiscard]] 
+    constexpr auto empty() const noexcept -> bool;
 
     /*!
      * \brief Remove all geometries from the collection.
      *
      * \note All internal vectors are cleared and memory may be deallocated.
      */
-    void clear();
+    constexpr void clear() noexcept;
 
     /*!
      * \brief Access a geometry by its position in the collection (non-const version).
@@ -681,6 +884,7 @@ public:
      * }
      * \endcode
      */
+    [[nodiscard]] 
     auto operator[](size_t i) -> GeometryReference;
 
     /*!
@@ -689,6 +893,7 @@ public:
      * \return ConstGeometryReference variant containing a const reference to the geometry.
      * \throws std::runtime_error if index is out of range or unknown geometry type.
      */
+    [[nodiscard]]
     auto operator[](size_t i) const -> ConstGeometryReference;
 
 private:
@@ -707,6 +912,65 @@ private:
 
 
 template<typename Point_t>
+template<GeometryConcept G>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+auto GeometryCollection<Point_t>::add(const G &geometry) -> GeometryCollection &
+{
+    this->emplace<G>(geometry);
+    return *this;
+}
+
+template<typename Point_t>
+template<GeometryConcept G>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+auto GeometryCollection<Point_t>::add(G &&geometry) -> GeometryCollection &
+{
+    this->emplace<G>(std::move(geometry));
+    return *this;
+}
+
+template<typename Point_t>
+template<GeometryConcept G, typename... Args>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t> &&
+             std::constructible_from<G, Args...>
+auto GeometryCollection<Point_t>::emplace(Args&&... args) -> G &
+{
+    constexpr GeometryType type = geometry_traits<G>::type;
+
+    if constexpr (type == GeometryType::point) {
+        mPoints.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mPoints.size() - 1)});
+        return mPoints.back();
+    } else if constexpr (type == GeometryType::linestring) {
+        mLineStrings.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mLineStrings.size() - 1)});
+        return mLineStrings.back();
+    } else if constexpr (type == GeometryType::polygon) {
+        mPolygons.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mPolygons.size() - 1)});
+        return mPolygons.back();
+    } else if constexpr (type == GeometryType::multipoint) {
+        mMultiPoints.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mMultiPoints.size() - 1)});
+        return mMultiPoints.back();
+    } else if constexpr (type == GeometryType::multilinestring) {
+        mMultiLineStrings.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mMultiLineStrings.size() - 1)});
+        return mMultiLineStrings.back();
+    } else if constexpr (type == GeometryType::multipolygon) {
+        mMultiPolygons.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mMultiPolygons.size() - 1)});
+        return mMultiPolygons.back();
+    } else if constexpr (type == GeometryType::collection) {
+        mCollections.emplace_back(std::forward<Args>(args)...);
+        mOrder.push_back({type, static_cast<uint32_t>(mCollections.size() - 1)});
+        return mCollections.back();
+    } else {
+        static_assert(!sizeof(G), "Unsupported geometry type");
+    }
+}
+
+template<typename Point_t>
 void GeometryCollection<Point_t>::addPoint(const Point_t &point)
 {
     mOrder.push_back({GeometryType::point, static_cast<uint32_t>(mPoints.size())});
@@ -723,15 +987,15 @@ void GeometryCollection<Point_t>::addPoint(Point_t &&point)
 template<typename Point_t>
 void GeometryCollection<Point_t>::addLineString(const LineString<Point_t> &lineString)
 {
-    mOrder.push_back({GeometryType::linestring, static_cast<uint32_t>(mLineString.size())});
-    mLineString.push_back(lineString);
+    mOrder.push_back({GeometryType::linestring, static_cast<uint32_t>(mLineStrings.size())});
+    mLineStrings.push_back(lineString);
 }
 
 template<typename Point_t>
 void GeometryCollection<Point_t>::addLineString(LineString<Point_t> &&lineString)
 { 
-    mOrder.push_back({GeometryType::linestring, static_cast<uint32_t>(mLineString.size())});
-    mLineString.push_back(lineString); 
+    mOrder.push_back({GeometryType::linestring, static_cast<uint32_t>(mLineStrings.size())});
+    mLineStrings.push_back(lineString); 
 }
 
 template<typename Point_t>
@@ -805,43 +1069,85 @@ void GeometryCollection<Point_t>::addGeometryCollection(GeometryCollection<Point
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::points() const noexcept -> const std::vector<Point_t> &
+auto GeometryCollection<Point_t>::points() noexcept -> std::span<Point_t>
+{
+    return mPoints;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::points() const noexcept -> std::span<const Point_t>
 { 
     return mPoints;
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::lineStrings() const noexcept -> const std::vector<LineString<Point_t>> &
+auto GeometryCollection<Point_t>::lineStrings() noexcept -> std::span<LineString<Point_t>>
 {
-    return mLineString;
+    return mLineStrings;
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::polygons() const noexcept -> const std::vector<Polygon<Point_t>> &
+auto GeometryCollection<Point_t>::lineStrings() const noexcept -> std::span<const LineString<Point_t>>
+{
+    return mLineStrings;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::polygons() noexcept -> std::span<Polygon<Point_t>>
+{
+    return mPolygons;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::polygons() const noexcept -> std::span<const Polygon<Point_t>>
 { 
     return mPolygons; 
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::multiPoints() const noexcept -> const std::vector<MultiPoint<Point_t>> &
+auto GeometryCollection<Point_t>::multiPoints() noexcept -> std::span<MultiPoint<Point_t>>
+{
+    return mMultiPoints;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::multiPoints() const noexcept -> std::span<const MultiPoint<Point_t>>
 {
     return mMultiPoints; 
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::multiLineStrings() const noexcept -> const std::vector<MultiLineString<Point_t>> &
+auto GeometryCollection<Point_t>::multiLineStrings() noexcept -> std::span<MultiLineString<Point_t>>
+{
+    return mMultiLineStrings;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::multiLineStrings() const noexcept -> std::span<const MultiLineString<Point_t>>
 { 
     return mMultiLineStrings;
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::multiPolygons() const noexcept -> const std::vector<MultiPolygon<Point_t>> &
+auto GeometryCollection<Point_t>::multiPolygons() noexcept -> std::span<MultiPolygon<Point_t>>
+{
+    return mMultiPolygons;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::multiPolygons() const noexcept -> std::span<const MultiPolygon<Point_t>>
 { 
     return mMultiPolygons; 
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::geometryCollections() const noexcept -> const std::vector<GeometryCollection<Point_t>> &
+auto GeometryCollection<Point_t>::geometryCollections() noexcept -> std::span<GeometryCollection<Point_t>>
+{
+    return mCollections;
+}
+
+template<typename Point_t>
+auto GeometryCollection<Point_t>::geometryCollections() const noexcept -> std::span<const GeometryCollection<Point_t>>
 {
     return mCollections;
 }
@@ -861,13 +1167,13 @@ auto GeometryCollection<Point_t>::pointAt(size_t index) const -> const Point_t &
 template<typename Point_t>
 auto GeometryCollection<Point_t>::lineStringAt(size_t index) -> LineString<Point_t> &
 {
-    return mLineString.at(index);
+    return mLineStrings.at(index);
 }
 
 template<typename Point_t>
 auto GeometryCollection<Point_t>::lineStringAt(size_t index) const -> const LineString<Point_t> &
 { 
-    return mLineString.at(index); 
+    return mLineStrings.at(index); 
 }
 
 template<typename Point_t>
@@ -945,9 +1251,9 @@ auto GeometryCollection<Point_t>::removePoint(size_t index) -> bool
 template<typename Point_t>
 auto GeometryCollection<Point_t>::removeLineString(size_t index) -> bool
 {
-    if (index >= mLineString.size()) return false;
+    if (index >= mLineStrings.size()) return false;
 
-    mLineString.erase(mLineString.begin() + index);
+    mLineStrings.erase(mLineStrings.begin() + index);
 
     removeIndex(index, GeometryType::linestring);
 
@@ -1042,106 +1348,106 @@ auto GeometryCollection<Point_t>::removeAt(size_t indexInCollection) -> bool
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::pointCount() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::pointCount() const noexcept -> size_t
 {
     return mPoints.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::lineStringCount() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::lineStringCount() const noexcept -> size_t
 {
-    return mLineString.size();
+    return mLineStrings.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::polygonCount() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::polygonCount() const noexcept -> size_t
 {
     return mPolygons.size();
 }
 
 template<typename Point_t>
-inline auto GeometryCollection<Point_t>::multiPointCount() const noexcept -> size_t
+constexpr  auto GeometryCollection<Point_t>::multiPointCount() const noexcept -> size_t
 {
     return mMultiPoints.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::multiLineStringCount() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::multiLineStringCount() const noexcept -> size_t
 {
     return mMultiLineStrings.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::multiPolygonCount() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::multiPolygonCount() const noexcept -> size_t
 {
     return mMultiPolygons.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::geometryCollectionCount() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::geometryCollectionCount() const noexcept -> size_t
 {
     return mCollections.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::size() const noexcept -> size_t
+constexpr auto GeometryCollection<Point_t>::size() const noexcept -> size_t
 {
     return mOrder.size();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasPoints() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasPoints() const noexcept -> bool
 {
     return !mPoints.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasLineStrings() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasLineStrings() const noexcept -> bool
 {
-    return !mLineString.empty();
+    return !mLineStrings.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasPolygons() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasPolygons() const noexcept -> bool
 {
     return !mPolygons.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasMultiPoints() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasMultiPoints() const noexcept -> bool
 {
     return !mMultiPoints.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasMultiLineStrings() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasMultiLineStrings() const noexcept -> bool
 {
     return !mMultiLineStrings.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasMultiPolygons() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasMultiPolygons() const noexcept -> bool
 {
     return !mMultiPolygons.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::hasGeometryCollections() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::hasGeometryCollections() const noexcept -> bool
 {
     return !mCollections.empty();
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::empty() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::empty() const noexcept -> bool
 {
     return mOrder.empty();
 }
 
 template<typename Point_t>
-void GeometryCollection<Point_t>::clear()
+constexpr void GeometryCollection<Point_t>::clear() noexcept
 {
     mPoints.clear();
-    mLineString.clear();
+    mLineStrings.clear();
     mPolygons.clear();
     mMultiPoints.clear();
     mMultiLineStrings.clear();
@@ -1155,22 +1461,22 @@ auto GeometryCollection<Point_t>::operator[](size_t i) -> GeometryReference
 {
     const auto &id = mOrder[i];
     switch (id.type) {
-    case GeometryType::point:
-        return std::ref(mPoints[id.index]);
-    case GeometryType::linestring:
-        return std::ref(mLineString[id.index]);
-    case GeometryType::polygon:
-        return std::ref(mPolygons[id.index]);
-    case GeometryType::multipoint:
-        return std::ref(mMultiPoints[id.index]);
-    case GeometryType::multilinestring:
-        return std::ref(mMultiLineStrings[id.index]);
-    case GeometryType::multipolygon:
-        return std::ref(mMultiPolygons[id.index]);
-    case GeometryType::collection:
-        return std::ref(mCollections[id.index]);
-    default:
-        throw std::runtime_error("Unknown type");
+        case GeometryType::point:
+            return std::ref(mPoints[id.index]);
+        case GeometryType::linestring:
+            return std::ref(mLineStrings[id.index]);
+        case GeometryType::polygon:
+            return std::ref(mPolygons[id.index]);
+        case GeometryType::multipoint:
+            return std::ref(mMultiPoints[id.index]);
+        case GeometryType::multilinestring:
+            return std::ref(mMultiLineStrings[id.index]);
+        case GeometryType::multipolygon:
+            return std::ref(mMultiPolygons[id.index]);
+        case GeometryType::collection:
+            return std::ref(mCollections[id.index]);
+        default:
+            throw std::runtime_error("Unknown type");
     }
 }
 
@@ -1179,22 +1485,22 @@ auto GeometryCollection<Point_t>::operator[](size_t i) const -> ConstGeometryRef
 {
     const auto &id = mOrder[i];
     switch (id.type) {
-    case GeometryType::point:
-        return std::cref(mPoints[id.index]);
-    case GeometryType::linestring:
-        return std::cref(mLineString[id.index]);
-    case GeometryType::polygon:
-        return std::cref(mPolygons[id.index]);
-    case GeometryType::multipoint:
-        return std::cref(mMultiPoints[id.index]);
-    case GeometryType::multilinestring:
-        return std::cref(mMultiLineStrings[id.index]);
-    case GeometryType::multipolygon:
-        return std::cref(mMultiPolygons[id.index]);
-    case GeometryType::collection:
-        return std::cref(mCollections[id.index]);
-    default:
-        throw std::runtime_error("Unknown type");
+        case GeometryType::point:
+            return std::cref(mPoints[id.index]);
+        case GeometryType::linestring:
+            return std::cref(mLineStrings[id.index]);
+        case GeometryType::polygon:
+            return std::cref(mPolygons[id.index]);
+        case GeometryType::multipoint:
+            return std::cref(mMultiPoints[id.index]);
+        case GeometryType::multilinestring:
+            return std::cref(mMultiLineStrings[id.index]);
+        case GeometryType::multipolygon:
+            return std::cref(mMultiPolygons[id.index]);
+        case GeometryType::collection:
+            return std::cref(mCollections[id.index]);
+        default:
+            throw std::runtime_error("Unknown type");
     }
 }
 

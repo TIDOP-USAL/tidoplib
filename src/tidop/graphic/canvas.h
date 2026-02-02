@@ -253,7 +253,7 @@ private:
  *     double scale_y = canvas.height() / static_cast<double>(window.height());
  *     double scale = std::min(scale_x, scale_y);
  *
- *     Affine<double, 2> affine(scale, -scale, -window.pt1.x * scale, window.pt2.y * scale, 0.);
+ *     Affine<double, 2> affine(scale, -scale, -window.min.x * scale, window.max.y * scale, 0.);
  *     painter.setTransform(affine);
  *     
  *     for (int i = 0; i < vector_reader->layersCount(); i++) {

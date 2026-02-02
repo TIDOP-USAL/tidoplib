@@ -70,6 +70,7 @@ if(BUILD_TL_CORE)
                              app/messagehandler.h
                              app/message.h
                              base/chrono.h
+                             base/Concepts.h
                              base/defs.h
                              base/endian.h
                              base/event.h

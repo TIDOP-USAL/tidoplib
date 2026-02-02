@@ -89,7 +89,7 @@ void GLineString::draw(Painter &painter) const
 auto GLineString::window() const -> BoundingBox<Point2d>
 {
     auto bbox = tl::envelope(static_cast<const LineString<Point2d>&>(*this));
-    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
 
 }
 
@@ -159,7 +159,7 @@ void GLineString3D::draw(Painter &painter) const
 auto GLineString3D::window() const -> BoundingBox<Point2d>
 {
     auto bbox = tl::envelope(static_cast<const LineString<Point3d>&>(*this));
-    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
 
 }
 
@@ -282,7 +282,7 @@ auto GMultiLineString3D::operator =(GMultiLineString3D &&gMultiLineString3D) TL_
 auto GMultiLineString3D::window() const -> BoundingBox<Point2d>
 {
     auto bbox = tl::envelope(static_cast<const MultiLineString<Point3d>&>(*this));
-    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.pt1()), static_cast<Point2d>(bbox.pt2()));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
 }
 
 void GMultiLineString3D::draw(Painter &painter) const

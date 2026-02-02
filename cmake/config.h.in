@@ -54,13 +54,22 @@
 
 namespace tl
 {
-enum class CppVersion {
-  cpp_14 = 14,
-  cpp_17 = 17,
-  cpp_20 = 20
+
+enum class CppVersion 
+{
+    cpp_14 = 14,
+    cpp_17 = 17,
+    cpp_20 = 20,
+    cpp_23 = 23,
+    cpp_26 = 26
 };
 
 constexpr static CppVersion cpp_version = static_cast<CppVersion>(@CMAKE_CXX_STANDARD@);
+
+constexpr bool has_cpp20 = (tl::cpp_version >= tl::CppVersion::cpp_20);
+constexpr bool has_cpp23 = (tl::cpp_version >= tl::CppVersion::cpp_23);
+constexpr bool has_cpp26 = (tl::cpp_version >= tl::CppVersion::cpp_26);
+
 } // End namespace tl
 
 // ============================================================================

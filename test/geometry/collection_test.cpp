@@ -244,7 +244,7 @@ BOOST_FIXTURE_TEST_CASE(test_insertion_order, GeometryCollectionFixture)
     collection.addLineString(lineString);  // Índice 1
     collection.addPolygon(polygon);        // Índice 2
     collection.addMultiPoint(multiPoint);  // Índice 3
-    collection.addPoint(p2);               // Índice 4
+    collection.add<Point2d>(p2);           // Índice 4
 
     BOOST_CHECK_EQUAL(collection.size(), 5);
 
@@ -767,8 +767,9 @@ BOOST_FIXTURE_TEST_CASE(test_multiple_removals_consistency, GeometryCollectionFi
     BOOST_TEST(collection.size() == 7);
 
     // Eliminar varios elementos
-    collection.removePoint(1); // Elimina p2 (índice 1 en puntos, pero es el punto en posición 2 en colección)
+    bool is_removed = collection.removePoint(1); // Elimina p2 (índice 1 en puntos, pero es el punto en posición 2 en colección)
     BOOST_TEST(collection.size() == 6);
+    BOOST_TEST(is_removed);
 
     collection.removeLineString(0); // Elimina la primera línea
     BOOST_TEST(collection.size() == 5);

@@ -111,12 +111,12 @@ auto PlyReader::getBoundingBox(std::string crsId) const -> BoundingBox<Point3d>
 
 #endif // TL_HAVE_PDAL
 
-        bounding_box.pt1().x() = minX;
-        bounding_box.pt1().y() = minY;
-        bounding_box.pt1().z() = minZ;
-        bounding_box.pt2().x() = maxX;
-        bounding_box.pt2().y() = maxY;
-        bounding_box.pt2().z() = maxZ;
+        bounding_box.min().x() = minX;
+        bounding_box.min().y() = minY;
+        bounding_box.min().z() = minZ;
+        bounding_box.max().x() = maxX;
+        bounding_box.max().y() = maxY;
+        bounding_box.max().z() = maxZ;
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");

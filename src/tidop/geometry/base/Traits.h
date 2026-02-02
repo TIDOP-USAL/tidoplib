@@ -50,6 +50,7 @@
 
 #include "tidop/config.h"
 
+#include "tidop/core/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/math/base/Traits.h"
 #include "tidop/math/base/data.h"
@@ -201,20 +202,27 @@ struct geometry_traits<Point<T, Tag>>
     using point_type = Point<T, Tag>;
 };
 
+template<GeometryType geom_type, typename GeomTag_t, typename Point_t, bool is_multi = false>
+struct geometry_from_point_traits
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = is_multi;
+    static constexpr GeometryType type = geom_type;
+    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
+    static constexpr bool has_m = point_traits<Point_t>::has_m;
+
+    using geometry_tag = GeomTag_t;
+    using point_type = Point_t;
+};
+
 /*!
  * \brief Traits specialization for Segment.
  * \tparam Point_t Point type.
  */
 template<typename Point_t>
 struct geometry_traits<Segment<Point_t>>
+  : geometry_from_point_traits<GeometryType::segment, segment_tag, Point_t>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = false;
-    static constexpr GeometryType type = GeometryType::segment;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = segment_tag;
-    using point_type = Point_t;
 };
 
 /*!
@@ -223,14 +231,10 @@ struct geometry_traits<Segment<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<LineString<Point_t>>
+  : geometry_from_point_traits<GeometryType::linestring, 
+                               linestring_tag,
+                               Point_t>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = false;
-    static constexpr GeometryType type = GeometryType::linestring;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = linestring_tag;
-    using point_type = Point_t;
 };
 
 /*!
@@ -255,14 +259,8 @@ struct geometry_traits<LinearRing<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<Polygon<Point_t>>
+    : geometry_from_point_traits<GeometryType::polygon, polygon_tag, Point_t>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = false;
-    static constexpr GeometryType type = GeometryType::polygon;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = polygon_tag;
-    using point_type = Point_t;
 };
 
 /*!
@@ -271,14 +269,8 @@ struct geometry_traits<Polygon<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<MultiPoint<Point_t>>
+    : geometry_from_point_traits<GeometryType::multipoint, multipoint_tag, Point_t, true>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = true;
-    static constexpr GeometryType type = GeometryType::multipoint;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = multipoint_tag;
-    using point_type = Point_t;
 };
 
 /*!
@@ -287,15 +279,10 @@ struct geometry_traits<MultiPoint<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<MultiLineString<Point_t>>
+    : geometry_from_point_traits<GeometryType::multilinestring, multilinestring_tag, Point_t, true>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = true;
-    static constexpr GeometryType type = GeometryType::multilinestring;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = multilinestring_tag;
-    using point_type = Point_t;
 };
+
 
 /*!
  * \brief Traits specialization for MultiPolygon.
@@ -303,14 +290,8 @@ struct geometry_traits<MultiLineString<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<MultiPolygon<Point_t>>
+    : geometry_from_point_traits<GeometryType::multipolygon, multipolygon_tag, Point_t, true>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = true;
-    static constexpr GeometryType type = GeometryType::multipolygon;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = multipolygon_tag;
-    using point_type = Point_t;
 };
 
 /*!
@@ -319,14 +300,8 @@ struct geometry_traits<MultiPolygon<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<GeometryCollection<Point_t>>
+    : geometry_from_point_traits<GeometryType::collection, collection_tag, Point_t, true>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = true;
-    static constexpr GeometryType type = GeometryType::collection;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = collection_tag;
-    using point_type = Point_t;
 };
 
 /*!
@@ -335,16 +310,9 @@ struct geometry_traits<GeometryCollection<Point_t>>
  */
 template<typename Point_t>
 struct geometry_traits<BoundingBox<Point_t>>
+    : geometry_from_point_traits<GeometryType::bbox, bbox_tag, Point_t>
 {
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = false;
-    static constexpr GeometryType type = GeometryType::bbox;
-    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
-    static constexpr bool has_m = point_traits<Point_t>::has_m;
-    using geometry_tag = bbox_tag;
-    using point_type = Point_t;
 };
-
 
 /*!
  * \brief Traits specialization for Vector (treated as Point).
@@ -433,45 +401,7 @@ inline constexpr bool is_3d_v = has_dimension_v<G, Dimension::dim3>;
 template<typename G>
 inline constexpr bool is_4d_v = has_dimension_v<G, Dimension::dim4>;
 
-
-
-/* CONCEPTS (C++20) */
-
-#if (TL_CPP_VERSION > 17)
-
-/*!
- * \brief Concept for geometry types.
- * \tparam G Type to test.
- */
-template<typename G>
-concept GeometryConcept = is_geometry_v<G>;
-
-/*!
- * \brief Concept for 2D geometry types.
- * \tparam G Type to test.
- */
-template<typename G>
-concept Geometry2DConcept = GeometryConcept<G> && is_2d_v<G>;
-
-/*!
- * \brief Concept for 3D geometry types.
- * \tparam G Type to test.
- */
-template<typename G>
-concept Geometry3DConcept = GeometryConcept<G> && is_3d_v<G>;
-
-#endif
-
 /*! \} */ 
-
-//template<typename T, Dimension D>
-//struct VectorTraits<Point<T, D>>
-//{
-//    using value_type = T;
-//    static constexpr size_t size = static_cast<std::size_t>(D);
-//    using result_type = Point<T, D>;
-//    using difference_type = Vector<T, static_cast<std::size_t>(D)>;
-//};
 
 template<typename T, typename Tag>
 struct VectorTraits<Point<T, Tag>>
@@ -481,9 +411,6 @@ struct VectorTraits<Point<T, Tag>>
     using result_type = Point<T, Tag>;
     using difference_type = Vector<T, size>;
 };
-
-//template<typename T, Dimension D>
-//struct is_point<Point<T, D>> : std::true_type {};
 
 template<typename T, typename Tag>
 struct is_point<Point<T, Tag>> : std::true_type {};

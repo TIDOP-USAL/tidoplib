@@ -358,20 +358,20 @@ BoundingBox<Point3d> tl::PointCloudReaderPDAL::getBoundingBox(std::string crsId)
         if (mPtrCopcFile) {
             auto las_header = mPtrCopcFile->CopcConfig().LasHeader();
             copc::Box box = las_header.Bounds();
-            bounding_box.pt1().x() = box.x_min;
-            bounding_box.pt1().y() = box.y_min;
-            bounding_box.pt1().z() = box.z_min;
-            bounding_box.pt2().x() = box.x_max;
-            bounding_box.pt2().y() = box.y_max;
-            bounding_box.pt2().z() = box.z_max;
+            bounding_box.min().x() = box.x_min;
+            bounding_box.min().y() = box.y_min;
+            bounding_box.min().z() = box.z_min;
+            bounding_box.max().x() = box.x_max;
+            bounding_box.max().y() = box.y_max;
+            bounding_box.max().z() = box.z_max;
         } else if (mPtrLasReader) {
             const pdal::LasHeader &h = mPtrLasReader->header();
-            bounding_box.pt1().x() = h.minX();
-            bounding_box.pt1().y() = h.minY();
-            bounding_box.pt1().z() = h.minZ();
-            bounding_box.pt2().x() = h.maxX();
-            bounding_box.pt2().y() = h.maxY();
-            bounding_box.pt2().z() = h.maxZ();
+            bounding_box.min().x() = h.minX();
+            bounding_box.min().y() = h.minY();
+            bounding_box.min().z() = h.minZ();
+            bounding_box.max().x() = h.maxX();
+            bounding_box.max().y() = h.maxY();
+            bounding_box.max().z() = h.maxZ();
         }
 
         if (!crsId.empty()

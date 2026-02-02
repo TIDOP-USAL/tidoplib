@@ -51,12 +51,12 @@ BOOST_AUTO_TEST_CASE(read_las)
     BOOST_CHECK(reader->isOpen());
 
     auto bbox = reader->getBoundingBox();
-    BOOST_CHECK_CLOSE(598462.820, bbox.pt1().x(), 0.1);
-    BOOST_CHECK_CLOSE(4264813.320, bbox.pt1().y(), 0.1);
-    BOOST_CHECK_CLOSE(625.539, bbox.pt1().z(), 0.1);
-    BOOST_CHECK_CLOSE(598551.05, bbox.pt2().x(), 0.1);
-    BOOST_CHECK_CLOSE(4264901.669, bbox.pt2().y(), 0.1);
-    BOOST_CHECK_CLOSE(665.349, bbox.pt2().z(), 0.1);
+    BOOST_CHECK_CLOSE(598462.820, bbox.min().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264813.320, bbox.min().y(), 0.1);
+    BOOST_CHECK_CLOSE(625.539, bbox.min().z(), 0.1);
+    BOOST_CHECK_CLOSE(598551.05, bbox.max().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264901.669, bbox.max().y(), 0.1);
+    BOOST_CHECK_CLOSE(665.349, bbox.max().z(), 0.1);
 
     auto offset = reader->getOffset();
     BOOST_CHECK_CLOSE(597500.0, offset.x(), 0.1);
@@ -131,12 +131,12 @@ BOOST_AUTO_TEST_CASE(read_ply)
     BOOST_CHECK(reader->isOpen());
 
     auto bbox = reader->getBoundingBox();
-    BOOST_CHECK_CLOSE(598462.820, bbox.pt1().x(), 0.1);
-    BOOST_CHECK_CLOSE(4264813.320, bbox.pt1().y(), 0.1);
-    BOOST_CHECK_CLOSE(625.539, bbox.pt1().z(), 0.1);
-    BOOST_CHECK_CLOSE(598551.05, bbox.pt2().x(), 0.1);
-    BOOST_CHECK_CLOSE(4264901.669, bbox.pt2().y(), 0.1);
-    BOOST_CHECK_CLOSE(665.349, bbox.pt2().z(), 0.1);
+    BOOST_CHECK_CLOSE(598462.820, bbox.min().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264813.320, bbox.min().y(), 0.1);
+    BOOST_CHECK_CLOSE(625.539, bbox.min().z(), 0.1);
+    BOOST_CHECK_CLOSE(598551.05, bbox.max().x(), 0.1);
+    BOOST_CHECK_CLOSE(4264901.669, bbox.max().y(), 0.1);
+    BOOST_CHECK_CLOSE(665.349, bbox.max().z(), 0.1);
 
     auto offset = reader->getOffset();
     BOOST_CHECK_CLOSE(0.0, offset.x(), 0.1);

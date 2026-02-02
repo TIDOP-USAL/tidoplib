@@ -21,54 +21,54 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#define BOOST_TEST_MODULE Tidop intersection test
-#include <boost/test/unit_test.hpp>
 
-#include "tidop/geometry/algorithms/spatial/Intersection.h"
-#include "tidop/geometry/spatial/BoundingBox.h"
 
-using namespace tl;
+#pragma once
 
-//BOOST_AUTO_TEST_CASE(segment_intersection_test)
-//{
-//    // Caso 1: Cruz perfecta en (5,5)
-//    Segment2d s1(Point2d{0, 5}, Point2d{10, 5});
-//    Segment2d s2(Point2d{5, 0}, Point2d{5, 10});
-//    Point2d result;
-//    BOOST_CHECK(intersect_segments(s1, s2, result));
-//    BOOST_CHECK_CLOSE(result.x(), 5.0, 0.001);
-//    BOOST_CHECK_CLOSE(result.y(), 5.0, 0.001);
-//
-//    // Caso 2: Segmentos que comparten un extremo (T-junction)
-//    Segment2d s3(Point2d{0, 0}, Point2d{10, 0});
-//    Segment2d s4(Point2d{10, 0}, Point2d{10, 10});
-//    BOOST_CHECK(intersect_segments(s3, s4, result));
-//    BOOST_CHECK_EQUAL(result.x(), 10.0);
-//    BOOST_CHECK_EQUAL(result.y(), 0.0);
-//
-//    // Caso 3: Paralelos (No deben intersecar)
-//    Segment2d s5(Point2d{0, 0}, Point2d{10, 0});
-//    Segment2d s6(Point2d{0, 1}, Point2d{10, 1});
-//    BOOST_CHECK(!intersect_segments(s5, s6, result));
-//}
+#include "tidop/config.h"
 
-BOOST_AUTO_TEST_CASE(bbox_intersection_dispatch_test)
+#include "tidop/core/base/Concepts.h"
+#include "tidop/geometry/base/Traits.h"
+
+namespace tl
 {
-    BoundingBox2d a(Point2d(0, 0), Point2d(10, 10));
-    BoundingBox2d b(Point2d(5, 5), Point2d(15, 15));
 
-    // Llamada a través de la interfaz genérica
-    auto res = intersection(a, b);
 
-    BOOST_CHECK_EQUAL(res.min().x(), 5.0);
-    BOOST_CHECK_EQUAL(res.min().y(), 5.0);
-    BOOST_CHECK_EQUAL(res.max().x(), 10.0);
-    BOOST_CHECK_EQUAL(res.max().y(), 10.0);
-    BOOST_CHECK(!res.isEmpty());
+/* CONCEPTS (C++20) */
 
-    // Test de no intersección
-    BoundingBox2d c(Point2d(20, 20), Point2d(30, 30));
-    auto res_empty = tl::intersection(a, c);
-    BOOST_CHECK(res_empty.isEmpty());
-}
+/*!
+ * \brief Concept for geometry types.
+ * \tparam G Type to test.
+ */
+template<typename G>
+concept GeometryConcept = is_geometry_v<G>;
+
+/*!
+ * \brief Concept for 2D geometry types.
+ * \tparam G Type to test.
+ */
+template<typename G>
+concept Geometry2DConcept = GeometryConcept<G> && is_2d_v<G>;
+
+/*!
+ * \brief Concept for 3D geometry types.
+ * \tparam G Type to test.
+ */
+template<typename G>
+concept Geometry3DConcept = GeometryConcept<G> && is_3d_v<G>;
+
+/*!
+ * \brief Concept for 4D geometry types.
+ * \tparam G Type to test.
+ */
+template<typename G>
+concept Geometry4DConcept = GeometryConcept<G> && is_4d_v<G>;
+
+template<typename P>
+concept PointConcept = is_geometry_v<P> &&
+                       geometry_type_v<P> == GeometryType::point &&
+                       std::regular<P>;
+
+/*! \} */ 
+
+} // End namespace tl

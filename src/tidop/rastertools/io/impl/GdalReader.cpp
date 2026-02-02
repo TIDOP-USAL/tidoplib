@@ -277,8 +277,8 @@ auto ImageReaderGdal::read(const BoundingBox2i &window,
     try {
 
         // Debería estar normalizado pero por si acaso
-        int x = window.pt1().x() < window.pt2().x() ? window.pt1().x() : window.pt2().x();
-        int y = window.pt1().y() < window.pt2().y() ? window.pt1().y() : window.pt2().y();
+        int x = window.min().x() < window.max().x() ? window.min().x() : window.max().x();
+        int y = window.min().y() < window.max().y() ? window.min().y() : window.max().y();
 
         Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(x, y, std::abs(window.width()), std::abs(window.height()));
 
@@ -301,8 +301,8 @@ auto ImageReaderGdal::read(const BoundingBox2d &terrainWindow,
     try {
 
         auto transform_inverse = mAffine.inverse();
-        auto p1 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.pt1()));
-        auto p2 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.pt2()));
+        auto p1 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.min()));
+        auto p2 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.max()));
 
         Rect<int> rect_src(p1, p2);
         rect_src.normalized();
@@ -423,7 +423,7 @@ void ImageReaderGdal::update(const cv::Mat &image, const BoundingBox2i &window)
 {
     try {
 
-        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.pt1(), window.pt2());
+        Rect<int> rect = window.isEmpty() ? Rect<int>() : Rect<int>(window.min(), window.max());
         update(image, rect);
 
     } catch (...) {

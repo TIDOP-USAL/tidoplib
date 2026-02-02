@@ -32,6 +32,7 @@
 #include <tidop/geometry/primitives/MultiPoint.h>
 #include <tidop/geometry/primitives/MultiLineString.h>
 #include <tidop/geometry/primitives/MultiPolygon.h>
+#include <tidop/geometry/shapes/circle.h>
 
 using namespace tl;
 
@@ -136,136 +137,136 @@ struct BoundingBoxTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, BoundingBoxTest)
 {
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), box_default_constructor_integer.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), box_default_constructor_integer.max().z());
 
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), box_default_constructor_double.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), box_default_constructor_double.max().z());
 
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.pt1().z());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.pt2().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.pt2().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), box_default_constructor_float.min().z());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.max().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), box_default_constructor_float.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, BoundingBoxTest)
 {
-    BOOST_CHECK_EQUAL(box_integer->pt1().x(), box_integer_copy->pt1().x());
-    BOOST_CHECK_EQUAL(box_integer->pt1().y(), box_integer_copy->pt1().y());
-    BOOST_CHECK_EQUAL(box_integer->pt1().z(), box_integer_copy->pt1().z());
-    BOOST_CHECK_EQUAL(box_integer->pt2().x(), box_integer_copy->pt2().x());
-    BOOST_CHECK_EQUAL(box_integer->pt2().y(), box_integer_copy->pt2().y());
-    BOOST_CHECK_EQUAL(box_integer->pt2().z(), box_integer_copy->pt2().z());
+    BOOST_CHECK_EQUAL(box_integer->min().x(), box_integer_copy->min().x());
+    BOOST_CHECK_EQUAL(box_integer->min().y(), box_integer_copy->min().y());
+    BOOST_CHECK_EQUAL(box_integer->min().z(), box_integer_copy->min().z());
+    BOOST_CHECK_EQUAL(box_integer->max().x(), box_integer_copy->max().x());
+    BOOST_CHECK_EQUAL(box_integer->max().y(), box_integer_copy->max().y());
+    BOOST_CHECK_EQUAL(box_integer->max().z(), box_integer_copy->max().z());
 
-    BOOST_CHECK_EQUAL(box_double->pt1().x(), box_double_copy->pt1().x());
-    BOOST_CHECK_EQUAL(box_double->pt1().y(), box_double_copy->pt1().y());
-    BOOST_CHECK_EQUAL(box_double->pt1().z(), box_double_copy->pt1().z());
-    BOOST_CHECK_EQUAL(box_double->pt2().x(), box_double_copy->pt2().x());
-    BOOST_CHECK_EQUAL(box_double->pt2().y(), box_double_copy->pt2().y());
-    BOOST_CHECK_EQUAL(box_double->pt2().z(), box_double_copy->pt2().z());
+    BOOST_CHECK_EQUAL(box_double->min().x(), box_double_copy->min().x());
+    BOOST_CHECK_EQUAL(box_double->min().y(), box_double_copy->min().y());
+    BOOST_CHECK_EQUAL(box_double->min().z(), box_double_copy->min().z());
+    BOOST_CHECK_EQUAL(box_double->max().x(), box_double_copy->max().x());
+    BOOST_CHECK_EQUAL(box_double->max().y(), box_double_copy->max().y());
+    BOOST_CHECK_EQUAL(box_double->max().z(), box_double_copy->max().z());
 
-    BOOST_CHECK_EQUAL(box_float->pt1().x(), box_float_copy->pt1().x());
-    BOOST_CHECK_EQUAL(box_float->pt1().y(), box_float_copy->pt1().y());
-    BOOST_CHECK_EQUAL(box_float->pt1().z(), box_float_copy->pt1().z());
-    BOOST_CHECK_EQUAL(box_float->pt2().x(), box_float_copy->pt2().x());
-    BOOST_CHECK_EQUAL(box_float->pt2().y(), box_float_copy->pt2().y());
-    BOOST_CHECK_EQUAL(box_float->pt2().z(), box_float_copy->pt2().z());
+    BOOST_CHECK_EQUAL(box_float->min().x(), box_float_copy->min().x());
+    BOOST_CHECK_EQUAL(box_float->min().y(), box_float_copy->min().y());
+    BOOST_CHECK_EQUAL(box_float->min().z(), box_float_copy->min().z());
+    BOOST_CHECK_EQUAL(box_float->max().x(), box_float_copy->max().x());
+    BOOST_CHECK_EQUAL(box_float->max().y(), box_float_copy->max().y());
+    BOOST_CHECK_EQUAL(box_float->max().z(), box_float_copy->max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor_dif_types, BoundingBoxTest)
 {
     BoundingBox<Point3d> box(Point3d(0.5, 0.4, 1.9), Point3d(100.6, 100.4, 105.49));
     BoundingBox<Point3i> box2(box);
-    BOOST_CHECK_EQUAL(1, box2.pt1().x());
-    BOOST_CHECK_EQUAL(0, box2.pt1().y());
-    BOOST_CHECK_EQUAL(2, box2.pt1().z());
-    BOOST_CHECK_EQUAL(101, box2.pt2().x());
-    BOOST_CHECK_EQUAL(100, box2.pt2().y());
-    BOOST_CHECK_EQUAL(105, box2.pt2().z());
+    BOOST_CHECK_EQUAL(1, box2.min().x());
+    BOOST_CHECK_EQUAL(0, box2.min().y());
+    BOOST_CHECK_EQUAL(2, box2.min().z());
+    BOOST_CHECK_EQUAL(101, box2.max().x());
+    BOOST_CHECK_EQUAL(100, box2.max().y());
+    BOOST_CHECK_EQUAL(105, box2.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_center_side, BoundingBoxTest)
 {
-    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_even_size->pt1().x());
-    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_even_size->pt1().y());
-    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_even_size->pt1().z());
-    BOOST_CHECK_EQUAL(75, box_constructor_center_side_integer_even_size->pt2().x());
-    BOOST_CHECK_EQUAL(75, box_constructor_center_side_integer_even_size->pt2().y());
-    BOOST_CHECK_EQUAL(75, box_constructor_center_side_integer_even_size->pt2().z());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_even_size->min().x());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_even_size->min().y());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_even_size->min().z());
+    BOOST_CHECK_EQUAL(75, box_constructor_center_side_integer_even_size->max().x());
+    BOOST_CHECK_EQUAL(75, box_constructor_center_side_integer_even_size->max().y());
+    BOOST_CHECK_EQUAL(75, box_constructor_center_side_integer_even_size->max().z());
 
-    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_odd_size->pt1().x());
-    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_odd_size->pt1().y());
-    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_odd_size->pt1().z());
-    BOOST_CHECK_EQUAL(76, box_constructor_center_side_integer_odd_size->pt2().x());
-    BOOST_CHECK_EQUAL(76, box_constructor_center_side_integer_odd_size->pt2().y());
-    BOOST_CHECK_EQUAL(76, box_constructor_center_side_integer_odd_size->pt2().z());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_odd_size->min().x());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_odd_size->min().y());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_side_integer_odd_size->min().z());
+    BOOST_CHECK_EQUAL(76, box_constructor_center_side_integer_odd_size->max().x());
+    BOOST_CHECK_EQUAL(76, box_constructor_center_side_integer_odd_size->max().y());
+    BOOST_CHECK_EQUAL(76, box_constructor_center_side_integer_odd_size->max().z());
 
-    BOOST_CHECK_CLOSE(25.67, box_constructor_center_side_double->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(25.76, box_constructor_center_side_double->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(25.76, box_constructor_center_side_double->pt1().z(), 0.01);
-    BOOST_CHECK_CLOSE(75.67, box_constructor_center_side_double->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(75.76, box_constructor_center_side_double->pt2().y(), 0.01);
-    BOOST_CHECK_CLOSE(75.76, box_constructor_center_side_double->pt2().z(), 0.01);
+    BOOST_CHECK_CLOSE(25.67, box_constructor_center_side_double->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(25.76, box_constructor_center_side_double->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(25.76, box_constructor_center_side_double->min().z(), 0.01);
+    BOOST_CHECK_CLOSE(75.67, box_constructor_center_side_double->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(75.76, box_constructor_center_side_double->max().y(), 0.01);
+    BOOST_CHECK_CLOSE(75.76, box_constructor_center_side_double->max().z(), 0.01);
 
-    BOOST_CHECK_CLOSE(25.67f, box_constructor_center_side_float->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(9.45f, box_constructor_center_side_float->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(-14.77f, box_constructor_center_side_float->pt1().z(), 0.01);
-    BOOST_CHECK_CLOSE(75.67f, box_constructor_center_side_float->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(59.45f, box_constructor_center_side_float->pt2().y(), 0.01);
-    BOOST_CHECK_CLOSE(35.23f, box_constructor_center_side_float->pt2().z(), 0.01);
+    BOOST_CHECK_CLOSE(25.67f, box_constructor_center_side_float->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(9.45f, box_constructor_center_side_float->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(-14.77f, box_constructor_center_side_float->min().z(), 0.01);
+    BOOST_CHECK_CLOSE(75.67f, box_constructor_center_side_float->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(59.45f, box_constructor_center_side_float->max().y(), 0.01);
+    BOOST_CHECK_CLOSE(35.23f, box_constructor_center_side_float->max().z(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_center_size, BoundingBoxTest)
 {
-    BOOST_CHECK_EQUAL(25, box_constructor_center_size_integer_even_size->pt1().x());
-    BOOST_CHECK_EQUAL(20, box_constructor_center_size_integer_even_size->pt1().y());
-    BOOST_CHECK_EQUAL(15, box_constructor_center_size_integer_even_size->pt1().z());
-    BOOST_CHECK_EQUAL(75, box_constructor_center_size_integer_even_size->pt2().x());
-    BOOST_CHECK_EQUAL(80, box_constructor_center_size_integer_even_size->pt2().y());
-    BOOST_CHECK_EQUAL(85, box_constructor_center_size_integer_even_size->pt2().z());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_size_integer_even_size->min().x());
+    BOOST_CHECK_EQUAL(20, box_constructor_center_size_integer_even_size->min().y());
+    BOOST_CHECK_EQUAL(15, box_constructor_center_size_integer_even_size->min().z());
+    BOOST_CHECK_EQUAL(75, box_constructor_center_size_integer_even_size->max().x());
+    BOOST_CHECK_EQUAL(80, box_constructor_center_size_integer_even_size->max().y());
+    BOOST_CHECK_EQUAL(85, box_constructor_center_size_integer_even_size->max().z());
 
-    BOOST_CHECK_EQUAL(25, box_constructor_center_size_integer_odd_size->pt1().x());
-    BOOST_CHECK_EQUAL(20, box_constructor_center_size_integer_odd_size->pt1().y());
-    BOOST_CHECK_EQUAL(15, box_constructor_center_size_integer_odd_size->pt1().z());
-    BOOST_CHECK_EQUAL(76, box_constructor_center_size_integer_odd_size->pt2().x());
-    BOOST_CHECK_EQUAL(81, box_constructor_center_size_integer_odd_size->pt2().y());
-    BOOST_CHECK_EQUAL(86, box_constructor_center_size_integer_odd_size->pt2().z());
+    BOOST_CHECK_EQUAL(25, box_constructor_center_size_integer_odd_size->min().x());
+    BOOST_CHECK_EQUAL(20, box_constructor_center_size_integer_odd_size->min().y());
+    BOOST_CHECK_EQUAL(15, box_constructor_center_size_integer_odd_size->min().z());
+    BOOST_CHECK_EQUAL(76, box_constructor_center_size_integer_odd_size->max().x());
+    BOOST_CHECK_EQUAL(81, box_constructor_center_size_integer_odd_size->max().y());
+    BOOST_CHECK_EQUAL(86, box_constructor_center_size_integer_odd_size->max().z());
 
-    BOOST_CHECK_CLOSE(0.51, box_constructor_center_size_double->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(-76.365, box_constructor_center_size_double->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(-11.49, box_constructor_center_size_double->pt1().z(), 0.01);
-    BOOST_CHECK_CLOSE(100.83, box_constructor_center_size_double->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(177.885, box_constructor_center_size_double->pt2().y(), 0.01);
-    BOOST_CHECK_CLOSE(113.01, box_constructor_center_size_double->pt2().z(), 0.01);
+    BOOST_CHECK_CLOSE(0.51, box_constructor_center_size_double->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(-76.365, box_constructor_center_size_double->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(-11.49, box_constructor_center_size_double->min().z(), 0.01);
+    BOOST_CHECK_CLOSE(100.83, box_constructor_center_size_double->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(177.885, box_constructor_center_size_double->max().y(), 0.01);
+    BOOST_CHECK_CLOSE(113.01, box_constructor_center_size_double->max().z(), 0.01);
 
-    BOOST_CHECK_CLOSE(0.5f, box_constructor_center_size_float->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(-92.665f, box_constructor_center_size_float->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(-51.44f, box_constructor_center_size_float->pt1().z(), 0.01);
-    BOOST_CHECK_CLOSE(100.84f, box_constructor_center_size_float->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(161.565f, box_constructor_center_size_float->pt2().y(), 0.01);
-    BOOST_CHECK_CLOSE(71.9f, box_constructor_center_size_float->pt2().z(), 0.01);
+    BOOST_CHECK_CLOSE(0.5f, box_constructor_center_size_float->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(-92.665f, box_constructor_center_size_float->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(-51.44f, box_constructor_center_size_float->min().z(), 0.01);
+    BOOST_CHECK_CLOSE(100.84f, box_constructor_center_size_float->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(161.565f, box_constructor_center_size_float->max().y(), 0.01);
+    BOOST_CHECK_CLOSE(71.9f, box_constructor_center_size_float->max().z(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, BoundingBoxTest)
 {
     BoundingBox<Point3d> box(Point3d(50., 20., 30.), Point3d(100., 100., 100.));
     BoundingBox<Point3d> box2(std::move(box));
-    BOOST_CHECK_EQUAL(50., box2.pt1().x());
-    BOOST_CHECK_EQUAL(20., box2.pt1().y());
-    BOOST_CHECK_EQUAL(30., box2.pt1().z());
-    BOOST_CHECK_EQUAL(100., box2.pt2().x());
-    BOOST_CHECK_EQUAL(100., box2.pt2().y());
-    BOOST_CHECK_EQUAL(100., box2.pt2().z());
+    BOOST_CHECK_EQUAL(50., box2.min().x());
+    BOOST_CHECK_EQUAL(20., box2.min().y());
+    BOOST_CHECK_EQUAL(30., box2.min().z());
+    BOOST_CHECK_EQUAL(100., box2.max().x());
+    BOOST_CHECK_EQUAL(100., box2.max().y());
+    BOOST_CHECK_EQUAL(100., box2.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_assing_operator, BoundingBoxTest)
@@ -273,12 +274,12 @@ BOOST_FIXTURE_TEST_CASE(copy_assing_operator, BoundingBoxTest)
     BoundingBox<Point3d> box(Point3d(50., 20., 30.), Point3d(100., 100., 100.));
     BoundingBox<Point3d> box2;
     box2 = box;
-    BOOST_CHECK_EQUAL(50., box2.pt1().x());
-    BOOST_CHECK_EQUAL(20., box2.pt1().y());
-    BOOST_CHECK_EQUAL(30., box2.pt1().z());
-    BOOST_CHECK_EQUAL(100., box2.pt2().x());
-    BOOST_CHECK_EQUAL(100., box2.pt2().y());
-    BOOST_CHECK_EQUAL(100., box2.pt2().z());
+    BOOST_CHECK_EQUAL(50., box2.min().x());
+    BOOST_CHECK_EQUAL(20., box2.min().y());
+    BOOST_CHECK_EQUAL(30., box2.min().z());
+    BOOST_CHECK_EQUAL(100., box2.max().x());
+    BOOST_CHECK_EQUAL(100., box2.max().y());
+    BOOST_CHECK_EQUAL(100., box2.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_assing_operator, BoundingBoxTest)
@@ -286,12 +287,12 @@ BOOST_FIXTURE_TEST_CASE(move_assing_operator, BoundingBoxTest)
     BoundingBox<Point3d> box(Point3d(50., 20., 30.), Point3d(100., 100., 100.));
     BoundingBox<Point3d> box2;
     box2 = std::move(box);
-    BOOST_CHECK_EQUAL(50., box2.pt1().x());
-    BOOST_CHECK_EQUAL(20., box2.pt1().y());
-    BOOST_CHECK_EQUAL(30., box2.pt1().z());
-    BOOST_CHECK_EQUAL(100., box2.pt2().x());
-    BOOST_CHECK_EQUAL(100., box2.pt2().y());
-    BOOST_CHECK_EQUAL(100., box2.pt2().z());
+    BOOST_CHECK_EQUAL(50., box2.min().x());
+    BOOST_CHECK_EQUAL(20., box2.min().y());
+    BOOST_CHECK_EQUAL(30., box2.min().z());
+    BOOST_CHECK_EQUAL(100., box2.max().x());
+    BOOST_CHECK_EQUAL(100., box2.max().y());
+    BOOST_CHECK_EQUAL(100., box2.max().z());
 }
 
 BOOST_FIXTURE_TEST_CASE(center, BoundingBoxTest)
@@ -443,12 +444,12 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BoundingBox<Point3i> box1(Point3i(0, 0, 0), Point3i(50, 50, 50));
 //  BoundingBox<Point3i> box2(Point3i(20, 30, 10), Point3i(100, 100, 100));
 //  BoundingBox<Point3i> box3 = joinBoundingBoxes(box1, box2);
-//  BOOST_CHECK_EQUAL(0, box3.pt1().x());
-//  BOOST_CHECK_EQUAL(0, box3.pt1().y());
-//  BOOST_CHECK_EQUAL(0, box3.pt1().z());
-//  BOOST_CHECK_EQUAL(100, box3.pt2().x());
-//  BOOST_CHECK_EQUAL(100, box3.pt2().y());
-//  BOOST_CHECK_EQUAL(100, box3.pt2().z());
+//  BOOST_CHECK_EQUAL(0, box3.min().x());
+//  BOOST_CHECK_EQUAL(0, box3.min().y());
+//  BOOST_CHECK_EQUAL(0, box3.min().z());
+//  BOOST_CHECK_EQUAL(100, box3.max().x());
+//  BOOST_CHECK_EQUAL(100, box3.max().y());
+//  BOOST_CHECK_EQUAL(100, box3.max().z());
 //}
 //
 //BOOST_AUTO_TEST_CASE(Box_intersect)
@@ -456,24 +457,24 @@ BOOST_AUTO_TEST_SUITE_END()
 //  BoundingBox<Point3i> box1(Point3i(0, 0, 0), Point3i(50, 50, 50));
 //  BoundingBox<Point3i> box2(Point3i(20, 30, 10), Point3i(100, 100, 100));
 //  BoundingBox<Point3i> box3 = intersectBoundingBoxes(box1, box2);
-//  BOOST_CHECK_EQUAL(20, box3.pt1().x());
-//  BOOST_CHECK_EQUAL(30, box3.pt1().y());
-//  BOOST_CHECK_EQUAL(10, box3.pt1().z());
-//  BOOST_CHECK_EQUAL(50, box3.pt2().x());
-//  BOOST_CHECK_EQUAL(50, box3.pt2().y());
-//  BOOST_CHECK_EQUAL(50, box3.pt2().z());
+//  BOOST_CHECK_EQUAL(20, box3.min().x());
+//  BOOST_CHECK_EQUAL(30, box3.min().y());
+//  BOOST_CHECK_EQUAL(10, box3.min().z());
+//  BOOST_CHECK_EQUAL(50, box3.max().x());
+//  BOOST_CHECK_EQUAL(50, box3.max().y());
+//  BOOST_CHECK_EQUAL(50, box3.max().z());
 //}
 //
 //BOOST_AUTO_TEST_CASE(Box_cast)
 //{
 //  const BoundingBox<Point3d> box(Point3d(0.5, 0.4, 1.9), Point3d(100.6, 100.4, 105.49));
 //  BoundingBox<Point3i> box2 = static_cast<BoundingBox<Point3i>>(box);
-//  BOOST_CHECK_EQUAL(1, box2.pt1().x());
-//  BOOST_CHECK_EQUAL(0, box2.pt1().y());
-//  BOOST_CHECK_EQUAL(2, box2.pt1().z());
-//  BOOST_CHECK_EQUAL(101, box2.pt2().x());
-//  BOOST_CHECK_EQUAL(100, box2.pt2().y());
-//  BOOST_CHECK_EQUAL(105, box2.pt2().z());
+//  BOOST_CHECK_EQUAL(1, box2.min().x());
+//  BOOST_CHECK_EQUAL(0, box2.min().y());
+//  BOOST_CHECK_EQUAL(2, box2.min().z());
+//  BOOST_CHECK_EQUAL(101, box2.max().x());
+//  BOOST_CHECK_EQUAL(100, box2.max().y());
+//  BOOST_CHECK_EQUAL(105, box2.max().z());
 //}
 
 
@@ -579,101 +580,101 @@ struct BoundingBox2DTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, BoundingBox2DTest)
 {
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_default_constructor_integer.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_default_constructor_integer.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_default_constructor_integer.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_default_constructor_integer.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_default_constructor_integer.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::max(), bbox_default_constructor_integer.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_default_constructor_integer.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<int>::lowest(), bbox_default_constructor_integer.max().y());
 
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_default_constructor_double.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_default_constructor_double.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_default_constructor_double.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_default_constructor_double.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_default_constructor_double.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::max(), bbox_default_constructor_double.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_default_constructor_double.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<double>::lowest(), bbox_default_constructor_double.max().y());
 
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_default_constructor_float.pt1().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_default_constructor_float.pt1().y());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_default_constructor_float.pt2().x());
-    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_default_constructor_float.pt2().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_default_constructor_float.min().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::max(), bbox_default_constructor_float.min().y());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_default_constructor_float.max().x());
+    BOOST_CHECK_EQUAL(std::numeric_limits<float>::lowest(), bbox_default_constructor_float.max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, BoundingBox2DTest)
 {
-    BOOST_CHECK_EQUAL(bbox_integer->pt1().x(), bbox_integer_copy->pt1().x());
-    BOOST_CHECK_EQUAL(bbox_integer->pt1().y(), bbox_integer_copy->pt1().y());
-    BOOST_CHECK_EQUAL(bbox_integer->pt2().x(), bbox_integer_copy->pt2().x());
-    BOOST_CHECK_EQUAL(bbox_integer->pt2().y(), bbox_integer_copy->pt2().y());
+    BOOST_CHECK_EQUAL(bbox_integer->min().x(), bbox_integer_copy->min().x());
+    BOOST_CHECK_EQUAL(bbox_integer->min().y(), bbox_integer_copy->min().y());
+    BOOST_CHECK_EQUAL(bbox_integer->max().x(), bbox_integer_copy->max().x());
+    BOOST_CHECK_EQUAL(bbox_integer->max().y(), bbox_integer_copy->max().y());
 
-    BOOST_CHECK_EQUAL(bbox_double->pt1().x(), bbox_double_copy->pt1().x());
-    BOOST_CHECK_EQUAL(bbox_double->pt1().y(), bbox_double_copy->pt1().y());
-    BOOST_CHECK_EQUAL(bbox_double->pt2().x(), bbox_double_copy->pt2().x());
-    BOOST_CHECK_EQUAL(bbox_double->pt2().y(), bbox_double_copy->pt2().y());
+    BOOST_CHECK_EQUAL(bbox_double->min().x(), bbox_double_copy->min().x());
+    BOOST_CHECK_EQUAL(bbox_double->min().y(), bbox_double_copy->min().y());
+    BOOST_CHECK_EQUAL(bbox_double->max().x(), bbox_double_copy->max().x());
+    BOOST_CHECK_EQUAL(bbox_double->max().y(), bbox_double_copy->max().y());
 
-    BOOST_CHECK_EQUAL(bbox_float->pt1().x(), bbox_float_copy->pt1().x());
-    BOOST_CHECK_EQUAL(bbox_float->pt1().y(), bbox_float_copy->pt1().y());
-    BOOST_CHECK_EQUAL(bbox_float->pt2().x(), bbox_float_copy->pt2().x());
-    BOOST_CHECK_EQUAL(bbox_float->pt2().y(), bbox_float_copy->pt2().y());
+    BOOST_CHECK_EQUAL(bbox_float->min().x(), bbox_float_copy->min().x());
+    BOOST_CHECK_EQUAL(bbox_float->min().y(), bbox_float_copy->min().y());
+    BOOST_CHECK_EQUAL(bbox_float->max().x(), bbox_float_copy->max().x());
+    BOOST_CHECK_EQUAL(bbox_float->max().y(), bbox_float_copy->max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor_dif_types, BoundingBox2DTest)
 {
     const BoundingBox<Point2d> w(Point2d(0.5, 0.4), Point2d(100.6, 100.4));
     BoundingBox<Point2i> w2(w);
-    BOOST_CHECK_EQUAL(1, w2.pt1().x());
-    BOOST_CHECK_EQUAL(0, w2.pt1().y());
-    BOOST_CHECK_EQUAL(101, w2.pt2().x());
-    BOOST_CHECK_EQUAL(100, w2.pt2().y());
+    BOOST_CHECK_EQUAL(1, w2.min().x());
+    BOOST_CHECK_EQUAL(0, w2.min().y());
+    BOOST_CHECK_EQUAL(101, w2.max().x());
+    BOOST_CHECK_EQUAL(100, w2.max().y());
 
     const BoundingBox<Point2i> w_int(Point2i(1, 4), Point2i(100, 100));
     BoundingBox<Point2d> w_double(w_int);
-    BOOST_CHECK_EQUAL(1, w_double.pt1().x());
-    BOOST_CHECK_EQUAL(4, w_double.pt1().y());
-    BOOST_CHECK_EQUAL(100, w_double.pt2().x());
-    BOOST_CHECK_EQUAL(100, w_double.pt2().y());
+    BOOST_CHECK_EQUAL(1, w_double.min().x());
+    BOOST_CHECK_EQUAL(4, w_double.min().y());
+    BOOST_CHECK_EQUAL(100, w_double.max().x());
+    BOOST_CHECK_EQUAL(100, w_double.max().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_center_side, BoundingBox2DTest)
 {
-    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_even_size->pt1().x());
-    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_even_size->pt1().y());
-    BOOST_CHECK_EQUAL(75, bbox_constructor_center_side_integer_even_size->pt2().x());
-    BOOST_CHECK_EQUAL(75, bbox_constructor_center_side_integer_even_size->pt2().y());
+    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_even_size->min().x());
+    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_even_size->min().y());
+    BOOST_CHECK_EQUAL(75, bbox_constructor_center_side_integer_even_size->max().x());
+    BOOST_CHECK_EQUAL(75, bbox_constructor_center_side_integer_even_size->max().y());
 
-    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_odd_size->pt1().x());
-    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_odd_size->pt1().y());
-    BOOST_CHECK_EQUAL(76, bbox_constructor_center_side_integer_odd_size->pt2().x());
-    BOOST_CHECK_EQUAL(76, bbox_constructor_center_side_integer_odd_size->pt2().y());
+    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_odd_size->min().x());
+    BOOST_CHECK_EQUAL(25, bbox_constructor_center_side_integer_odd_size->min().y());
+    BOOST_CHECK_EQUAL(76, bbox_constructor_center_side_integer_odd_size->max().x());
+    BOOST_CHECK_EQUAL(76, bbox_constructor_center_side_integer_odd_size->max().y());
 
-    BOOST_CHECK_CLOSE(25.67, bbox_constructor_center_side_double->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(25.76, bbox_constructor_center_side_double->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(75.67, bbox_constructor_center_side_double->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(75.76, bbox_constructor_center_side_double->pt2().y(), 0.01);
+    BOOST_CHECK_CLOSE(25.67, bbox_constructor_center_side_double->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(25.76, bbox_constructor_center_side_double->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(75.67, bbox_constructor_center_side_double->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(75.76, bbox_constructor_center_side_double->max().y(), 0.01);
 
-    BOOST_CHECK_CLOSE(25.67f, bbox_constructor_center_side_float->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(9.45f, bbox_constructor_center_side_float->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(75.67f, bbox_constructor_center_side_float->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(59.45f, bbox_constructor_center_side_float->pt2().y(), 0.01);
+    BOOST_CHECK_CLOSE(25.67f, bbox_constructor_center_side_float->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(9.45f, bbox_constructor_center_side_float->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(75.67f, bbox_constructor_center_side_float->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(59.45f, bbox_constructor_center_side_float->max().y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_center_size, BoundingBox2DTest)
 {
-    BOOST_CHECK_EQUAL(25, bbox_constructor_center_size_integer_even_size->pt1().x());
-    BOOST_CHECK_EQUAL(20, bbox_constructor_center_size_integer_even_size->pt1().y());
-    BOOST_CHECK_EQUAL(75, bbox_constructor_center_size_integer_even_size->pt2().x());
-    BOOST_CHECK_EQUAL(80, bbox_constructor_center_size_integer_even_size->pt2().y());
+    BOOST_CHECK_EQUAL(25, bbox_constructor_center_size_integer_even_size->min().x());
+    BOOST_CHECK_EQUAL(20, bbox_constructor_center_size_integer_even_size->min().y());
+    BOOST_CHECK_EQUAL(75, bbox_constructor_center_size_integer_even_size->max().x());
+    BOOST_CHECK_EQUAL(80, bbox_constructor_center_size_integer_even_size->max().y());
 
-    BOOST_CHECK_EQUAL(25, bbox_constructor_center_size_integer_odd_size->pt1().x());
-    BOOST_CHECK_EQUAL(20, bbox_constructor_center_size_integer_odd_size->pt1().y());
-    BOOST_CHECK_EQUAL(76, bbox_constructor_center_size_integer_odd_size->pt2().x());
-    BOOST_CHECK_EQUAL(81, bbox_constructor_center_size_integer_odd_size->pt2().y());
+    BOOST_CHECK_EQUAL(25, bbox_constructor_center_size_integer_odd_size->min().x());
+    BOOST_CHECK_EQUAL(20, bbox_constructor_center_size_integer_odd_size->min().y());
+    BOOST_CHECK_EQUAL(76, bbox_constructor_center_size_integer_odd_size->max().x());
+    BOOST_CHECK_EQUAL(81, bbox_constructor_center_size_integer_odd_size->max().y());
 
-    BOOST_CHECK_CLOSE(0.51, bbox_constructor_center_size_double->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(-76.365, bbox_constructor_center_size_double->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(100.83, bbox_constructor_center_size_double->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(177.885, bbox_constructor_center_size_double->pt2().y(), 0.01);
+    BOOST_CHECK_CLOSE(0.51, bbox_constructor_center_size_double->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(-76.365, bbox_constructor_center_size_double->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(100.83, bbox_constructor_center_size_double->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(177.885, bbox_constructor_center_size_double->max().y(), 0.01);
 
-    BOOST_CHECK_CLOSE(0.5f, bbox_constructor_center_size_float->pt1().x(), 0.01);
-    BOOST_CHECK_CLOSE(-92.665f, bbox_constructor_center_size_float->pt1().y(), 0.01);
-    BOOST_CHECK_CLOSE(100.84f, bbox_constructor_center_size_float->pt2().x(), 0.01);
-    BOOST_CHECK_CLOSE(161.565f, bbox_constructor_center_size_float->pt2().y(), 0.01);
+    BOOST_CHECK_CLOSE(0.5f, bbox_constructor_center_size_float->min().x(), 0.01);
+    BOOST_CHECK_CLOSE(-92.665f, bbox_constructor_center_size_float->min().y(), 0.01);
+    BOOST_CHECK_CLOSE(100.84f, bbox_constructor_center_size_float->max().x(), 0.01);
+    BOOST_CHECK_CLOSE(161.565f, bbox_constructor_center_size_float->max().y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(center, BoundingBox2DTest)
@@ -776,20 +777,20 @@ BOOST_FIXTURE_TEST_CASE(normalized, BoundingBox2DTest)
 
     BOOST_CHECK_EQUAL(true, bbox.isValid());
 
-    bbox.pt1().x() = 100;
-    bbox.pt1().y() = 100;
-    bbox.pt2().x() = 0;
-    bbox.pt2().y() = 0;
+    bbox.min().x() = 100;
+    bbox.min().y() = 100;
+    bbox.max().x() = 0;
+    bbox.max().y() = 0;
 
     BOOST_CHECK_EQUAL(false, bbox.isValid());
 
     bbox.normalized();
 
     BOOST_CHECK_EQUAL(true, bbox.isValid());
-    BOOST_CHECK_EQUAL(0, bbox.pt1().x());
-    BOOST_CHECK_EQUAL(0, bbox.pt1().y());
-    BOOST_CHECK_EQUAL(100, bbox.pt2().x());
-    BOOST_CHECK_EQUAL(100, bbox.pt2().y());
+    BOOST_CHECK_EQUAL(0, bbox.min().x());
+    BOOST_CHECK_EQUAL(0, bbox.min().y());
+    BOOST_CHECK_EQUAL(100, bbox.max().x());
+    BOOST_CHECK_EQUAL(100, bbox.max().y());
 }
 
 //BOOST_FIXTURE_TEST_CASE(containsPoint, BoundingBox2DTest)
@@ -825,8 +826,8 @@ BOOST_AUTO_TEST_CASE(envelope_point)
     auto box = envelope(p);
 
     BOOST_CHECK(box.isValid());
-    BOOST_CHECK_EQUAL(box.pt1().x(), 5.0);
-    BOOST_CHECK_EQUAL(box.pt2().y(), 10.0);
+    BOOST_CHECK_EQUAL(box.min().x(), 5.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 10.0);
 }
 
 // Test para Segmento
@@ -836,10 +837,10 @@ BOOST_AUTO_TEST_CASE(envelope_segment)
     auto box = envelope(seg);
 
     // El min debe ser (0, -5) y el max (5, 10)
-    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt1().y(), -5.0);
-    BOOST_CHECK_EQUAL(box.pt2().x(), 5.0);
-    BOOST_CHECK_EQUAL(box.pt2().y(), 10.0);
+    BOOST_CHECK_EQUAL(box.min().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.min().y(), -5.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 5.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 10.0);
 }
 
 // Test para LineString (basado en contenedor)
@@ -852,9 +853,9 @@ BOOST_AUTO_TEST_CASE(envelope_linestring)
 
     auto box = envelope(line);
 
-    BOOST_CHECK_EQUAL(box.pt1().x(), -2.0);
-    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
-    BOOST_CHECK_EQUAL(box.pt2().y(), 8.0);
+    BOOST_CHECK_EQUAL(box.min().x(), -2.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 8.0);
 }
 
 // Test para Polígono (solo considera el anillo exterior)
@@ -870,8 +871,8 @@ BOOST_AUTO_TEST_CASE(envelope_polygon)
 
     auto box = envelope(poly);
 
-    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.min().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 10.0);
 }
 
 // Test para MultiPoint
@@ -885,10 +886,10 @@ BOOST_AUTO_TEST_CASE(envelope_multipoint)
     auto box = envelope(mp);
 
     BOOST_CHECK(box.isValid());
-    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt1().y(), -2.0);
-    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
-    BOOST_CHECK_EQUAL(box.pt2().y(), 15.0);
+    BOOST_CHECK_EQUAL(box.min().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.min().y(), -2.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 15.0);
 }
 
 // Test para MultiPolygon
@@ -907,10 +908,10 @@ BOOST_AUTO_TEST_CASE(envelope_multipolygon)
 
     auto box = envelope(mp);
 
-    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt1().y(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt2().x(), 12.0);
-    BOOST_CHECK_EQUAL(box.pt2().y(), 12.0);
+    BOOST_CHECK_EQUAL(box.min().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.min().y(), 0.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 12.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 12.0);
 }
 
 // Test para MultiLineString
@@ -933,10 +934,10 @@ BOOST_AUTO_TEST_CASE(envelope_multilinestring)
 
     // El envelope total debe englobar ambas líneas: (0,0) a (10,10)
     BOOST_CHECK(box.isValid());
-    BOOST_CHECK_EQUAL(box.pt1().x(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt1().y(), 0.0);
-    BOOST_CHECK_EQUAL(box.pt2().x(), 10.0);
-    BOOST_CHECK_EQUAL(box.pt2().y(), 10.0);
+    BOOST_CHECK_EQUAL(box.min().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.min().y(), 0.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 10.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 10.0);
 }
 
 // Test de caso vacío
@@ -946,6 +947,23 @@ BOOST_AUTO_TEST_CASE(envelope_empty_multi)
     auto box = envelope(empty_mp);
 
     BOOST_CHECK(!box.isValid());
+}
+
+// Evelope de varias entidades
+
+BOOST_AUTO_TEST_CASE(envelope_mixed_geometries)
+{
+    Point2d p(1.0, 2.0);
+    Segment2d seg(Point2d{0, 0}, Point2d{3, 4});
+    LineString2d line = {Point2d{5, 5}, Point2d{7, 8}};
+    Polygon2d poly;
+    poly.outer() = {Point2d{10,10}, Point2d{12,10}, Point2d{12,12}, Point2d{10,12}};
+    auto box = envelope(p, seg, line, poly);
+    BOOST_CHECK(box.isValid());
+    BOOST_CHECK_EQUAL(box.min().x(), 0.0);
+    BOOST_CHECK_EQUAL(box.min().y(), 0.0);
+    BOOST_CHECK_EQUAL(box.max().x(), 12.0);
+    BOOST_CHECK_EQUAL(box.max().y(), 12.0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

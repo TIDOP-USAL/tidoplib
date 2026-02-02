@@ -182,7 +182,7 @@ void CanvasCV::drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &
     if (style_label && !style_label->text().empty()) {
 
         Color foregroundColor = style_label->foregroundColor();
-        auto &point = polygon.boundingBox().pt1();
+        auto &point = polygon.boundingBox().min();
 
 #ifdef HAVE_QT
         Font font = style_label->font();

@@ -41,6 +41,7 @@
 #pragma once
 
 #include "tidop/core/base/type_conversions.h"
+#include "tidop/core/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
@@ -74,6 +75,9 @@ class Point
     public VectorBase<Point<T, Tag>>
 {
 
+    static_assert(Arithmetic<T>,
+                  "Point requires an arithmetic type (integral or floating-point)");
+
 public:
 
     using value_type = T;
@@ -81,6 +85,10 @@ public:
     using const_reference = const T &;
     using pointer = T *;
     using const_pointer = const T *;
+    using iterator = typename std::array<T, Tag::storage_size>::iterator;
+    using const_iterator = typename std::array<T, Tag::storage_size>::const_iterator;
+    using reverse_iterator = typename std::array<T, Tag::storage_size>::reverse_iterator;
+    using const_reverse_iterator = typename std::array<T, Tag::storage_size>::const_reverse_iterator;
 
 private:
 
@@ -92,34 +100,55 @@ private:
 public:
 
     /*!
-     * \brief Default constructor. Initializes X and Y to default values.
+     * \brief Default constructor. Initializes all components to zero.
      */
-    Point();
+    constexpr Point();
 
-    template<typename... Args, std::enable_if_t<sizeof...(Args) == storage_size, int> = 0>
-    explicit Point(Args... args)
-      : mData{static_cast<T>(args)...}
+    /*!
+     * \brief Constructs a Point from individual coordinate arguments.
+     * \tparam Args Pack of coordinate values
+     * \param args Coordinate values to initialize the point
+     * \pre sizeof...(Args) must equal storage_size
+     * \pre All arguments must be convertible to T
+     */
+    template<typename... Args>
+        requires (sizeof...(Args) == storage_size &&
+        (std::convertible_to<Args, T> && ...))
+     explicit constexpr Point(Args... args) noexcept
+        : mData{static_cast<T>(args)...}
     {
-        static_assert((std::is_convertible_v<Args, T> && ...), "All arguments must be convertible to the point's data type");
     }
 
     /*!
      * \brief Copy constructor.
      * \param[in] point Point object to be copied.
      */
-    Point(const Point &point) = default;
+    constexpr Point(const Point &point) = default;
 
     /*!
      * \brief Move constructor.
      * \param[in] point Point object to be moved.
      */
-    Point(Point &&point) noexcept = default;
+    constexpr Point(Point &&point) noexcept = default;
 
     /*!
      * \brief Constructs a Point from an array.
      * \param[in] array Array containing two elements [x, y].
      */
-    explicit Point(const std::array<T, storage_size> &a);
+    explicit constexpr Point(const std::array<T, storage_size> &a);
+
+    /*!
+     * \brief Constructs a Point from an initializer list.
+     * \param[in] init Initializer list with coordinate values
+     * \throws std::invalid_argument if init.size() != storage_size
+     */
+    explicit constexpr Point(std::initializer_list<T> init)
+    {
+        if (init.size() != storage_size) {
+            throw std::invalid_argument("Initializer list size must match point storage size");
+        }
+        std::copy(init.begin(), init.end(), mData.begin());
+    }
 
     /*! \brief Destructor. */
     ~Point() = default;
@@ -129,87 +158,112 @@ public:
      * \param[in] point Point object to be copied.
      * \return Reference to this Point.
      */
-    auto operator = (const Point &point) -> Point & = default;
+    constexpr auto operator = (const Point &point) -> Point & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] point Point object to be moved.
      * \return Reference to this Point.
      */
-    auto operator = (Point &&point) noexcept -> Point & = default;
+    constexpr auto operator = (Point &&point) noexcept -> Point & = default;
 
     /*!
      * \brief Access the x-component of the point.
      * \return A const reference to the x-component.
      * \note Only valid for points with size at least 1.
      */
-    auto x() const noexcept -> const_reference;
+    [[nodiscard]] 
+    constexpr auto x() const noexcept -> const_reference;
 
     /*!
      * \brief Access the x-component of the point (non-const version).
      * \return A reference to the x-component.
      * \note Only valid for points with size at least 1.
      */
-    auto x() noexcept -> reference;
+    [[nodiscard]] 
+    constexpr auto x() noexcept -> reference;
 
     /*!
      * \brief Access the y-component of the point.
      * \return A const reference to the y-component.
      * \note Only valid for points with size at least 2.
      */
-    auto y() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto y() const noexcept -> const_reference;
 
     /*!
      * \brief Access the y-component of the point (non-const version).
      * \return A reference to the y-component.
      * \note Only valid for points with size at least 2.
      */
-    auto y() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto y() noexcept -> reference;
 
     /*!
      * \brief Access the z-component of the point.
      * \return A const reference to the z-component.
      * \note Only valid for points with size at least 3.
      */
-    auto z() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto z() const noexcept -> const_reference;
 
     /*!
      * \brief Access the z-component of the point (non-const version).
      * \return A reference to the z-component.
      * \note Only valid for points with size at least 3.
      */
-    auto z() noexcept -> reference;
+    [[nodiscard]] 
+    constexpr auto z() noexcept -> reference;
 
     /*!
      * \brief Access the measure (M) component of the point.
      * \return A const reference to the measure value.
      * \note This method is only available for points using a Tag that includes measures (e.g., xym_tag).
      */
-    auto m() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto m() const noexcept -> const_reference;
 
     /*!
      * \brief Access the measure (M) component of the point (non-const version).
      * \return A const reference to the measure value.
      * \note This method is only available for points using a Tag that includes measures (e.g., xym_tag).
      */
-    auto m() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto m() noexcept -> reference;
 
     /*!
      * \brief Access the w-component of the point.
      * \return A const reference to the w-component.
      * \note Only valid for points with size at least 4.
      */
-    auto w() const noexcept -> const_reference;
+    [[nodiscard]] 
+    constexpr auto w() const noexcept -> const_reference;
 
     /*!
      * \brief Access the w-component of the vector (non-const version).
      * \return A reference to the w-component.
      * \note Only valid for vectors with size at least 4.
      */
-    auto w() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto w() noexcept -> reference;
 
-    auto operator[](std::size_t position) noexcept -> reference;
-    auto operator[](std::size_t position) const noexcept -> const_reference;
+    // Iterators
+    //[[nodiscard]] constexpr auto begin() noexcept -> iterator { return mData.begin(); }
+    //[[nodiscard]] constexpr auto begin() const noexcept -> const_iterator { return mData.begin(); }
+    //[[nodiscard]] constexpr auto end() noexcept -> iterator { return mData.end(); }
+    //[[nodiscard]] constexpr auto end() const noexcept -> const_iterator { return mData.end(); }
+    //[[nodiscard]] constexpr auto cbegin() const noexcept -> const_iterator { return mData.cbegin(); }
+    //[[nodiscard]] constexpr auto cend() const noexcept -> const_iterator { return mData.cend(); }
+    //[[nodiscard]] constexpr auto rbegin() noexcept -> reverse_iterator { return mData.rbegin(); }
+    //[[nodiscard]] constexpr auto rbegin() const noexcept -> const_reverse_iterator { return mData.rbegin(); }
+    //[[nodiscard]] constexpr auto rend() noexcept -> reverse_iterator { return mData.rend(); }
+    //[[nodiscard]] constexpr auto rend() const noexcept -> const_reverse_iterator { return mData.rend(); }
+
+    [[nodiscard]] 
+    constexpr auto operator[](std::size_t position) noexcept -> reference;
+
+    [[nodiscard]] 
+    constexpr auto operator[](std::size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Accesses the element at the specified position with bounds checking.
@@ -218,6 +272,7 @@ public:
      * \return A reference to the element at the specified position.
      * \throws std::out_of_range if the position is out of bounds.
      */
+    [[nodiscard]] 
     auto at(size_t position) -> reference;
 
     /*!
@@ -227,6 +282,7 @@ public:
      * \return A const reference to the element at the specified position.
      * \throws std::out_of_range if the position is out of bounds.
      */
+    [[nodiscard]] 
     auto at(size_t position) const -> const_reference;
 
     /*!
@@ -234,22 +290,29 @@ public:
      * Storage components like Measure (M) are not counted here.
      * \return Number of spatial dimensions.
      */
+    [[nodiscard]] 
     constexpr auto size() const noexcept -> size_t { return spatial_dims; }
+
+    [[nodiscard]] 
+    constexpr auto storageSize() const noexcept -> size_t { return storage_size; }
 
     /*!
      * \brief Returns a pointer to the data array of the point.
      * \return A pointer to the data array.
      */
-    auto data() noexcept -> pointer;
+    [[nodiscard]] 
+    constexpr auto data() noexcept -> pointer;
 
     /*!
      * \brief Returns a const pointer to the data array of the point.
      * \return A const pointer to the data array.
      */
-    auto data() const noexcept -> const_pointer;
+    [[nodiscard]] 
+    constexpr auto data() const noexcept -> const_pointer;
 
     template<typename U, typename Tag2>
     explicit operator Point<U, Tag2>() const;
+
 };
 
 
@@ -283,91 +346,91 @@ using Point3im = Point<int, xyzm_tag>;
 // IMPLEMENTATION
 
 template<typename T, typename Tag>
-Point<T, Tag>::Point()
+constexpr Point<T, Tag>::Point()
 {
     mData.fill(static_cast<T>(0));
 }
 
 template<typename T, typename Tag>
-Point<T, Tag>::Point(const std::array<T, storage_size> &a)
+constexpr Point<T, Tag>::Point(const std::array<T, storage_size> &a)
 {
     mData = a;
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::x() const noexcept -> const_reference
+constexpr auto Point<T, Tag>::x() const noexcept -> const_reference
 {
     return mData[0];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::x() noexcept -> reference
+constexpr auto Point<T, Tag>::x() noexcept -> reference
 {
     return mData[0];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::y() const noexcept -> const_reference
+constexpr auto Point<T, Tag>::y() const noexcept -> const_reference
 {
     return mData[1];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::y() noexcept -> reference
+constexpr auto Point<T, Tag>::y() noexcept -> reference
 {
     return mData[1];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::z() const noexcept -> const_reference
+constexpr auto Point<T, Tag>::z() const noexcept -> const_reference
 {
     static_assert(spatial_dims >= 3, "Error: Access to Z coordinate at a point with less than 3 dimensions.");
     return mData[2];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::z() noexcept -> reference
+constexpr auto Point<T, Tag>::z() noexcept -> reference
 {
     static_assert(spatial_dims >= 3, "Error: Access to Z coordinate at a point with less than 3 dimensions.");
     return mData[2];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::m() const noexcept -> const_reference
+constexpr auto Point<T, Tag>::m() const noexcept -> const_reference
 {
     static_assert(spatial_dims < storage_size, "Error: Point without measure");
     return mData[spatial_dims];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::m() noexcept -> reference
+constexpr auto Point<T, Tag>::m() noexcept -> reference
 {
     static_assert(spatial_dims < storage_size, "Error: Point without measure");
     return mData[spatial_dims];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::w() const noexcept -> const_reference
+constexpr auto Point<T, Tag>::w() const noexcept -> const_reference
 {
     static_assert(spatial_dims == 4, "Error: Access to W coordinate at a point with less than 4 dimensions.");
     return mData[3];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::w() noexcept -> reference
+constexpr auto Point<T, Tag>::w() noexcept -> reference
 {
     static_assert(spatial_dims == 4, "Error: Access to W coordinate at a point with less than 4 dimensions.");
     return mData[3];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::operator[](std::size_t position) noexcept -> reference
+constexpr auto Point<T, Tag>::operator[](std::size_t position) noexcept -> reference
 {
     return mData[position];
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::operator[](std::size_t position) const noexcept -> const_reference
+constexpr auto Point<T, Tag>::operator[](std::size_t position) const noexcept -> const_reference
 {
     return mData[position];
 }
@@ -389,13 +452,13 @@ auto Point<T, Tag>::at(size_t position) const -> const_reference
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::data() noexcept -> pointer
+constexpr auto Point<T, Tag>::data() noexcept -> pointer
 {
     return mData.data();
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::data() const noexcept -> const_pointer
+constexpr auto Point<T, Tag>::data() const noexcept -> const_pointer
 {
     return mData.data();
 }
