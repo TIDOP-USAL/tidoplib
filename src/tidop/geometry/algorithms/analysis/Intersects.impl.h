@@ -24,14 +24,33 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-
-
 namespace tl
 {
 
 namespace detail
 {
+
+/* Checks if a point is on the boundary of a ring */
+template<typename Point_t, typename Ring_t>
+auto point_on_ring_boundary(const Point_t &point, const Ring_t &ring) -> bool
+{
+    if (ring.size() < 2) return false;
+
+    for (size_t i = 0; i < ring.size(); ++i) {
+        size_t j = (i + 1) % ring.size();
+        Segment<Point_t> edge(ring[i], ring[j]);
+        if (distance(point, edge) < std::numeric_limits<double>::epsilon()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// ============================================================================
+// Intersection implementations for basic types
+// ============================================================================
+
+/* Point - Point */
 
 template<typename Point_t>
 auto intersects_impl(const Point_t &p1, 
@@ -39,8 +58,10 @@ auto intersects_impl(const Point_t &p1,
                      point_tag, 
                      point_tag) -> bool
 {
-    return p1 == p2; // Podrías usar una tolerancia
+    return p1 == p2; // Podría usar una tolerancia
 }
+
+/* Point - Segment */
 
 template<typename Point_t>
 auto intersects_impl(const Point_t &point, 
@@ -48,12 +69,16 @@ auto intersects_impl(const Point_t &point,
                      point_tag, 
                      segment_tag) -> bool
 {
+    using calc_t = typename point_traits<Point_t>::calculation_type;
+    constexpr calc_t eps = std::numeric_limits<calc_t>::epsilon() * static_cast<calc_t>(100);
+
     auto proj = project(point, segment);
     return !proj.isBeforeStart() && !proj.isAfterEnd() &&
-        distance(point, proj.closestPoint) < std::numeric_limits<double>::epsilon();
+           distance(point, proj.closestPoint) < eps;
 }
 
-/* Checks if two segments intersect */
+/* Segment - Segment */
+
 template<typename Point_t>
 auto intersects_impl(const Segment<Point_t> &s1, 
                      const Segment<Point_t> &s2,
@@ -63,41 +88,292 @@ auto intersects_impl(const Segment<Point_t> &s1,
     // Solo para 2D por ahora
     static_assert(point_traits<Point_t>::spatial_dims == 2, "Segment intersection currently only supports 2D");
 
+    using calc_t = typename point_traits<Point_t>::calculation_type;
+
+    if (!intersects(envelope(s1), envelope(s2))) return false;
+
     const auto &p1 = s1.pt1();
     const auto &p2 = s1.pt2();
     const auto &q1 = s2.pt1();
     const auto &q2 = s2.pt2();
 
-    // Función de orientación
-    auto orientation = [](const Point_t &a, const Point_t &b, const Point_t &c) -> int {
-        double val = (b.y() - a.y()) * (c.x() - b.x()) - (b.x() - a.x()) * (c.y() - b.y());
-        if (std::abs(val) < std::numeric_limits<double>::epsilon()) return 0; // colineal
-        return (val > 0) ? 1 : 2; // horario o antihorario
+    // TODO: Extraer función orientación
+    enum class Orientation : int 
+    { 
+        Colinear, 
+        Clockwise, 
+        CounterClockwise
+    };
+
+    auto orientation = [](const Point_t &a, 
+                          const Point_t &b, 
+                          const Point_t &c) -> Orientation {
+
+        const calc_t val = (static_cast<calc_t>(b.y()) - static_cast<calc_t>(a.y())) *
+                           (static_cast<calc_t>(c.x()) - static_cast<calc_t>(b.x())) -
+                           (static_cast<calc_t>(b.x()) - static_cast<calc_t>(a.x())) * 
+                           (static_cast<calc_t>(c.y()) - static_cast<calc_t>(b.y()));
+
+        constexpr calc_t eps = std::numeric_limits<calc_t>::epsilon() * static_cast<calc_t>(100);
+
+        if (std::abs(val) <= eps) return Orientation::Colinear; // colineal
+        return (val > static_cast<calc_t>(0)) ? Orientation::Clockwise : Orientation::CounterClockwise; // horario o antihorario
+    };
+
+    auto onSegment = [](const Point_t &p,
+                        const Point_t &q,
+                        const Point_t &r) {
+            return q.x() >= std::min(p.x(), r.x()) &&
+                   q.x() <= std::max(p.x(), r.x()) &&
+                   q.y() >= std::min(p.y(), r.y()) &&
+                   q.y() <= std::max(p.y(), r.y());
         };
 
-    auto onSegment = [](const Point_t &p, const Point_t &q, const Point_t &r) -> bool {
-        return q.x() <= std::max(p.x(), r.x()) && q.x() >= std::min(p.x(), r.x()) &&
-            q.y() <= std::max(p.y(), r.y()) && q.y() >= std::min(p.y(), r.y());
-        };
-
-    int o1 = orientation(p1, p2, q1);
-    int o2 = orientation(p1, p2, q2);
-    int o3 = orientation(q1, q2, p1);
-    int o4 = orientation(q1, q2, p2);
+    auto o1 = orientation(p1, p2, q1);
+    auto o2 = orientation(p1, p2, q2);
+    auto o3 = orientation(q1, q2, p1);
+    auto o4 = orientation(q1, q2, p2);
 
     // Caso general
     if (o1 != o2 && o3 != o4) return true;
 
     // Casos especiales (colinealidad)
-    if (o1 == 0 && onSegment(p1, q1, p2)) return true;
-    if (o2 == 0 && onSegment(p1, q2, p2)) return true;
-    if (o3 == 0 && onSegment(q1, p1, q2)) return true;
-    if (o4 == 0 && onSegment(q1, p2, q2)) return true;
+    if (o1 == Orientation::Colinear && onSegment(p1, q1, p2)) return true;
+    if (o2 == Orientation::Colinear && onSegment(p1, q2, p2)) return true;
+    if (o3 == Orientation::Colinear && onSegment(q1, p1, q2)) return true;
+    if (o4 == Orientation::Colinear && onSegment(q1, p2, q2)) return true;
 
     return false;
 }
 
-/* Fast bounding box intersection check. */
+/* Point - LineString */
+
+//TODO: Crear clase SegmentView
+template<typename Point_t>
+auto intersects_impl(const Point_t &pt,
+                     const LineString<Point_t> &lineString,
+                     point_tag, 
+                     linestring_tag) -> bool 
+{
+    for (size_t i = 0; i + 1 < lineString.size(); ++i) {
+        if (intersects(Segment<Point_t>(lineString[i], lineString[i + 1]), pt))
+            return true;
+    }
+
+    return false;
+}
+
+// LineString - Segment
+template<typename Point_t>
+auto intersects_impl(const LineString<Point_t> &line, 
+                     const Segment<Point_t> &seg,
+                     linestring_tag, 
+                     segment_tag) -> bool
+{
+    for (size_t i = 0; i + 1 < line.size(); ++i) {
+        if (intersects(Segment<Point_t>(line[i], line[i + 1]), seg)) return true;
+    }
+    return false;
+}
+
+/* LineString - LineString */
+
+template<typename Point_t>
+auto intersects_impl(const LineString<Point_t> &l1, 
+                     const LineString<Point_t> &l2,
+                     linestring_tag, 
+                     linestring_tag) -> bool 
+{
+    if (!intersects(envelope(l1), envelope(l2))) return false;
+
+    for (size_t i = 0; i + 1 < l1.size(); ++i) {
+        Segment<Point_t> s1(l1[i], l1[i + 1]);
+        for (size_t j = 0; j + 1 < l2.size(); ++j) {
+            if (intersects(s1, Segment<Point_t>(l2[j], l2[j + 1]))) return true;
+        }
+    }
+    return false;
+}
+
+/* Point - Polygon */
+
+template<typename Point_t>
+auto intersects_impl(const Point_t &point,
+                     const Polygon<Point_t> &polygon,
+                     point_tag, 
+                     polygon_tag) -> bool 
+{
+    // Fast bounding box check
+    auto bbox = envelope(polygon);
+    if (!intersects(bbox, point)) {
+        return false;
+    }
+
+    // Check if point is on boundary
+    if (point_on_ring_boundary(point, polygon.outer())) {
+        return true;
+    }
+
+    for (const auto &hole : polygon.inners()) {
+        if (point_on_ring_boundary(point, hole)) {
+            return true;
+        }
+    }
+
+    // Check if point is inside (using contains, which should handle interior)
+    return contains(polygon, point);
+}
+
+/* LineString - Polygon */
+
+//template<typename Point_t>
+//auto intersects_impl(const LineString<Point_t> &line,
+//                     const Polygon<Point_t> &poly,
+//                     linestring_tag,
+//                     polygon_tag) -> bool
+//{
+//    // Si algún segmento de la línea cruza el borde del polígono
+//    //TODO: Aún no tengo boundary
+//    //if (intersects(boundary(poly), line)) return true;
+//
+//    // Si no cruzan, la línea puede estar toda dentro o toda fuera
+//    if (line.empty()) return false;
+//    return intersects(poly, line[0]); // Basta con chequear un punto
+//}
+template<typename Point_t>
+auto intersects_impl(const LineString<Point_t> &line, 
+                     const Polygon<Point_t> &polygon,
+                     linestring_tag,
+                     polygon_tag) -> bool
+{
+    if (line.empty()) return false;
+
+    // 1. Check if any point of line is inside polygon
+    for (const auto &point : line) {
+        if (intersects(point, polygon)) {
+            return true;
+        }
+    }
+
+    // 2. Check if any segment intersects polygon boundary
+    auto check_ring_intersection = [&](const auto &ring) {
+        for (size_t i = 0; i < ring.size(); ++i) {
+            size_t j = (i + 1) % ring.size();
+            Segment<Point_t> edge(ring[i], ring[j]);
+
+            for (size_t k = 0; k + 1 < line.size(); ++k) {
+                Segment<Point_t> seg(line[k], line[k + 1]);
+                if (intersects(seg, edge)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+        };
+
+    if (check_ring_intersection(polygon.outer())) return true;
+
+    for (const auto &hole : polygon.inners()) {
+        if (check_ring_intersection(hole)) return true;
+    }
+
+    return false;
+}
+
+/* Polygon - Polygon */
+
+// Polygon - Polygon
+//template<typename Polygon_t>
+//auto intersects_impl(const Polygon_t &p1,
+//                     const Polygon_t &p2,
+//                     polygon_tag, 
+//                     polygon_tag) -> bool 
+//{
+//    // 1. ¿Se cruzan los bordes?
+//    //TODO: Aún no tengo boundary
+//    //if (intersects(boundary(p1), boundary(p2))) return true;
+//
+//    // 2. ¿P1 está dentro de P2? (chequeamos un punto del exterior)
+//    if (intersects(p1, p2.outer()[0])) return true;
+//
+//    // 3. ¿P2 está dentro de P1?
+//    if (intersects(p2, p1.outer()[0])) return true;
+//
+//    return false;
+//}
+template<typename Point_t>
+auto intersects_impl(const Polygon<Point_t> &poly1, const Polygon<Point_t> &poly2,
+    polygon_tag, polygon_tag) -> bool
+{
+    // 1. Check if any vertex of poly1 is inside poly2
+    for (const auto &point : poly1.outer()) {
+        if (intersects(point, poly2)) {
+            return true;
+        }
+    }
+
+    // 2. Check if any vertex of poly2 is inside poly1
+    for (const auto &point : poly2.outer()) {
+        if (intersects(point, poly1)) {
+            return true;
+        }
+    }
+
+    // 3. Check if boundaries intersect
+    auto check_rings_intersect = [](const auto &ring1, const auto &ring2) {
+        for (size_t i = 0; i < ring1.size(); ++i) {
+            size_t j = (i + 1) % ring1.size();
+            Segment<Point_t> edge1(ring1[i], ring1[j]);
+
+            for (size_t k = 0; k < ring2.size(); ++k) {
+                size_t l = (k + 1) % ring2.size();
+                Segment<Point_t> edge2(ring2[k], ring2[l]);
+
+                if (intersects(edge1, edge2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+        };
+
+    // Check all ring combinations
+    if (check_rings_intersect(poly1.outer(), poly2.outer())) return true;
+
+    for (const auto &hole : poly2.inners()) {
+        if (check_rings_intersect(poly1.outer(), hole)) return true;
+    }
+
+    for (const auto &hole : poly1.inners()) {
+        if (check_rings_intersect(poly2.outer(), hole)) return true;
+    }
+
+    for (const auto &hole1 : poly1.inners()) {
+        for (const auto &hole2 : poly2.inners()) {
+            if (check_rings_intersect(hole1, hole2)) return true;
+        }
+    }
+
+    return false;
+}
+
+/* GeometryCollection with any geometry */
+template<typename Point_t, typename Geometry_t>
+auto intersects_impl(const GeometryCollection<Point_t> &gc, 
+                     const Geometry_t &geom,
+                     collection_tag, 
+                     geometry_tag_t<Geometry_t>) -> bool
+{
+    for (const auto &item : gc) {
+        bool hit = std::visit([&](auto &&arg) {
+            return intersects(arg.get(), geom);
+            }, item);
+        if (hit) return true;
+    }
+    return false;
+}
+
+/* BoundingBox - BoundingBox */
 template<typename Point_t>
 auto intersects_impl(const BoundingBox<Point_t> &bbox1,
                      const BoundingBox<Point_t> &bbox2,
@@ -107,11 +383,34 @@ auto intersects_impl(const BoundingBox<Point_t> &bbox1,
     if (bbox1.isEmpty() || bbox2.isEmpty()) return false;
 
     for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
-        if (bbox1.max()[i] < bbox2.min()[i] || bbox1.min()[i] > bbox2.max()[i]) {
+        if (bbox1.max()[i] < bbox2.min()[i] || 
+            bbox1.min()[i] > bbox2.max()[i]) {
             return false;
         }
     }
     return true;
+}
+
+/* BoundingBox - Point */
+template<typename Point_t>
+auto intersects_impl(const BoundingBox<Point_t> &bbox, 
+                     const Point_t &point,
+                     bbox_tag, 
+                     point_tag) -> bool
+{
+    for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
+        if (point[i] < bbox.min()[i] || point[i] > bbox.max()[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Función espejo
+template<typename G1, typename G2, typename Tag1, typename Tag2>
+auto intersects_impl(const G1 &g1, const G2 &g2, Tag1 t1, Tag2 t2) -> double
+{
+    return intersects_impl(g2, g1, t2, t1);
 }
 
 } // namespace detail
@@ -122,19 +421,27 @@ auto intersects(const G1 &g1, const G2 &g2) -> bool
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");
     static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
 
-    // Chequeo rápido con bounding boxes
-    // Si G1 y G2 son BoundingBox esto no tiene sentido
-    auto bbox1 = envelope(g1);
-    auto bbox2 = envelope(g2);
+    auto dispatch = [&] {
+        using tag1 = geometry_tag_t<G1>;
+        using tag2 = geometry_tag_t<G2>;
+        return detail::intersects_impl(g1, g2, tag1{}, tag2{});
+    };
 
-    if (!detail::intersects_impl(bbox1, bbox2), bbox_tag, bbox_tag) {
+    if constexpr (GeometryCollectionConcept<G1> || GeometryCollectionConcept<G2>) {
+        return dispatch();
+    } else if constexpr (MultiGeometryConcept<G1>) {
+        for (const auto &a : g1) {
+            if (intersects(a, g2)) return true;
+        }
         return false;
+    } else if constexpr (MultiGeometryConcept<G2>) {
+        for (const auto &b : g2) {
+            if (intersects(g1, b)) return true;
+        }
+        return false;
+    } else {
+        return dispatch();
     }
-
-    using tag1 = geometry_tag_t<G1>;
-    using tag2 = geometry_tag_t<G2>;
-
-    return detail::intersects_impl(g1, g2, tag1{}, tag2{});
 }
 
 } // namespace tl

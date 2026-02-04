@@ -28,6 +28,8 @@
 
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/LineString.h"
 #include "tidop/geometry/primitives/Polygon.h"
 #include "tidop/geometry/primitives/MultiPolygon.h"
 

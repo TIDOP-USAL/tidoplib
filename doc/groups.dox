@@ -765,8 +765,8 @@
 /*!
  * \defgroup Primitives Geometric Primitives
  * \ingroup Geometry
- * * \brief Fundamental geometric objects such as points, linestrings, and polygons.
- * * This module includes the core building blocks of the library. These primitives
+ * \brief Fundamental geometric objects such as points, linestrings, and polygons.
+ * This module includes the core building blocks of the library. These primitives
  * are N-dimensional and provide the base for spatial analysis and complex shapes.
  */
  
@@ -780,6 +780,12 @@
  * measurements and intersections.
  */
 
+/*!
+ * \defgroup SpatialPredicates Spatial Predicates
+ * \ingroup algorithms
+ * \brief Simple Features spatial relationship predicates.
+ */
+ 
 /*!
  * \defgroup Shapes Shapes
  * \ingroup Geometry

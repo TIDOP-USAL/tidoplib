@@ -69,6 +69,7 @@ template<typename Point_t> class MultiLineString;
 template<typename Point_t> class MultiPolygon;
 template<typename Point_t> class GeometryCollection;
 template<typename Point_t> class BoundingBox;
+template<typename Point_t> class SegmentView;
 
 /*! \addtogroup Geometry
  *  \{
@@ -157,6 +158,9 @@ struct point_traits<Point<T, Tag>>
 {
     using value_type = T;
     using tag_type = Tag;
+    using calculation_type = std::conditional_t<std::is_integral_v<value_type>,
+                                                double,
+                                                value_type>;
 
     static constexpr size_t spatial_dims = Tag::spatial_dims;
     static constexpr size_t storage_size = Tag::storage_size;
@@ -223,6 +227,19 @@ template<typename Point_t>
 struct geometry_traits<Segment<Point_t>>
   : geometry_from_point_traits<GeometryType::segment, segment_tag, Point_t>
 {
+};
+
+template<typename Point_t>
+struct geometry_traits<SegmentView<Point_t>> 
+{
+    static constexpr bool is_geometry = true;
+    static constexpr bool is_multi = false;
+    static constexpr GeometryType type = GeometryType::segment;
+    static constexpr Dimension dimension = point_traits<Point_t>::dimension;
+    static constexpr bool has_m = point_traits<Point_t>::has_m;
+
+    using geometry_tag = segment_tag;
+    using point_type = Point_t;
 };
 
 /*!
@@ -400,6 +417,16 @@ inline constexpr bool is_3d_v = has_dimension_v<G, Dimension::dim3>;
  */
 template<typename G>
 inline constexpr bool is_4d_v = has_dimension_v<G, Dimension::dim4>;
+
+/*!
+ * \brief Variable template for multi-geometry check.
+ * \tparam G Type to check.
+ */
+template<typename G>
+inline constexpr bool is_multi_geometry_v = geometry_traits<G>::is_multi;
+
+template<typename G>
+inline constexpr bool is_geometry_collection_v = std::is_same_v<geometry_traits<G>::geometry_tag, collection_tag>;
 
 /*! \} */ 
 

@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -21,23 +21,25 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
-
+ 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
+#include <tidop/config.h>
+
+#include <concepts>
 
 namespace tl
 {
 
-/*! \addtogroup SpatialPredicates
- *  \{
+/*!
+ * \addtogroup meta
+ * \{
  */
 
-template<typename G1, typename G2>
-auto contains(const G1 &g1, const G2 &g2) -> bool;
+template<typename T>
+concept Arithmetic = std::integral<T> || std::floating_point<T>;
+	
+	
+/*! \} */
 
-/*! \} */ 
-
-} // End namespace tl
-
-#include "Contains.impl.h"
+}

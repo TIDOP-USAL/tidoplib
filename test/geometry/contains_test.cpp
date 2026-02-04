@@ -21,23 +21,8 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
+#define BOOST_TEST_MODULE Tidop Containts test
+#include <boost/test/unit_test.hpp>
 
-#pragma once
-
-#include "tidop/geometry/base/Traits.h"
-
-namespace tl
-{
-
-/*! \addtogroup SpatialPredicates
- *  \{
- */
-
-template<typename G1, typename G2>
-auto contains(const G1 &g1, const G2 &g2) -> bool;
-
-/*! \} */ 
-
-} // End namespace tl
-
-#include "Contains.impl.h"
+using namespace tl;

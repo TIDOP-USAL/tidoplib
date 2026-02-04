@@ -64,10 +64,28 @@ concept Geometry3DConcept = GeometryConcept<G> && is_3d_v<G>;
 template<typename G>
 concept Geometry4DConcept = GeometryConcept<G> && is_4d_v<G>;
 
+/*!
+ * \brief Concept for simple-geometry types.
+ * \tparam G Type to test.
+ */
+template<typename G>
+concept SimpleGeometryConcept = GeometryConcept<G> && !is_multi_geometry_v<G>;
+
+/*!
+ * \brief Concept for multi-geometry types.
+ * \tparam G Type to test.
+ */
+template<typename G>
+concept MultiGeometryConcept = GeometryConcept<G> && is_multi_geometry_v<G>;
+
+
 template<typename P>
 concept PointConcept = is_geometry_v<P> &&
                        geometry_type_v<P> == GeometryType::point &&
                        std::regular<P>;
+
+template<typename G>
+concept GeometryCollectionConcept = GeometryConcept<G> && is_geometry_collection_v<G>;
 
 /*! \} */ 
 

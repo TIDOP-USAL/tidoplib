@@ -108,7 +108,9 @@ auto envelope_impl(const GeometryCollection<Point_t> &geometryCollection, collec
 {
     BoundingBox<Point_t> bbox;
 
-    for (const auto &geom : geometryCollection) {
+    for (size_t i = 0; i < geometryCollection.size(); ++i) {
+
+        auto geom = geometryCollection[i];
         std::visit([&](auto &&arg) {
 
             const auto &geometry = arg.get();

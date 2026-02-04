@@ -214,6 +214,26 @@ public:
 };
 
 
+
+template<typename Point_t>
+class SegmentView
+{
+
+public:
+
+    SegmentView(const Point_t &a, const Point_t &b) 
+      : p1_(a), p2_(b) {}
+
+    const Point_t &pt1() const { return p1_; }
+    const Point_t &pt2() const { return p2_; }
+
+private:
+
+    const Point_t &p1_;
+    const Point_t &p2_;
+};
+
+
 // TYPE ALIASES FOR SEGMENT
 
 /*! \brief 2D segment with integer coordinates. */

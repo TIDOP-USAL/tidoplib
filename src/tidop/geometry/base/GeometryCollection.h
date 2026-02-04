@@ -151,6 +151,76 @@ class GeometryCollection
     static_assert(PointConcept<Point_t>,
                   "GeometryCollection requires a point type");
 
+public:
+
+    /*!
+     * \brief Variant type for non-const geometry references.
+     *
+     * This variant can hold a reference to any of the seven geometry types
+     * supported by the collection. Use std::visit to process the reference
+     * with compile-time type checking.
+     */
+    using reference = std::variant<std::reference_wrapper<Point_t>,
+                                   std::reference_wrapper<LineString<Point_t>>,
+                                   std::reference_wrapper<Polygon<Point_t>>,
+                                   std::reference_wrapper<MultiPoint<Point_t>>,
+                                   std::reference_wrapper<MultiLineString<Point_t>>,
+                                   std::reference_wrapper<MultiPolygon<Point_t>>,
+                                   std::reference_wrapper<GeometryCollection<Point_t>>>;
+
+    /*!
+     * \brief Variant type for const geometry references.
+     *
+     * Const version of GeometryReference for read-only access to collection
+     * elements. Useful when working with const GeometryCollection instances.
+     */
+    using const_reference = std::variant<std::reference_wrapper<const Point_t>,
+                                         std::reference_wrapper<const LineString<Point_t>>,
+                                         std::reference_wrapper<const Polygon<Point_t>>,
+                                         std::reference_wrapper<const MultiPoint<Point_t>>,
+                                         std::reference_wrapper<const MultiLineString<Point_t>>,
+                                         std::reference_wrapper<const MultiPolygon<Point_t>>,
+                                         std::reference_wrapper<const GeometryCollection<Point_t>>>;
+    
+    template<typename GeometryCollection_t, typename Reference_t>
+    struct Iterator
+    {
+
+        GeometryCollection_t *collection;
+        size_t index;
+
+        auto operator*() const -> Reference_t
+        {
+            return (*collection)[index];
+        }
+
+        auto operator++() -> Iterator &
+        {
+            ++index;
+            return *this;
+        }
+
+        auto operator++(int) -> Iterator
+        {
+            auto tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        auto operator==(const Iterator &other) const -> bool
+        {
+            return index == other.index;
+        }
+
+        auto operator!=(const Iterator &other) const -> bool
+        {
+            return !(*this == other);
+        }
+    };
+
+    using iterator = Iterator<GeometryCollection, reference>;
+    using const_iterator = Iterator<const GeometryCollection, const_reference>;
+
 private:
 
     std::vector<Point_t> mPoints;                                    /*!< Storage for Point geometries. */
@@ -178,36 +248,7 @@ private:
 
     std::vector<GeoID> mOrder; /*!< Index preserving insertion order and type mapping. */
 
-public:
 
-    /*!
-     * \brief Variant type for non-const geometry references.
-     *
-     * This variant can hold a reference to any of the seven geometry types
-     * supported by the collection. Use std::visit to process the reference
-     * with compile-time type checking.
-     */
-    using GeometryReference = std::variant<std::reference_wrapper<Point_t>,
-                                           std::reference_wrapper<LineString<Point_t>>,
-                                           std::reference_wrapper<Polygon<Point_t>>,
-                                           std::reference_wrapper<MultiPoint<Point_t>>,
-                                           std::reference_wrapper<MultiLineString<Point_t>>,
-                                           std::reference_wrapper<MultiPolygon<Point_t>>,
-                                           std::reference_wrapper<GeometryCollection<Point_t>>>;
-
-    /*!
-     * \brief Variant type for const geometry references.
-     *
-     * Const version of GeometryReference for read-only access to collection
-     * elements. Useful when working with const GeometryCollection instances.
-     */
-    using ConstGeometryReference = std::variant<std::reference_wrapper<const Point_t>,
-                                                std::reference_wrapper<const LineString<Point_t>>,
-                                                std::reference_wrapper<const Polygon<Point_t>>,
-                                                std::reference_wrapper<const MultiPoint<Point_t>>,
-                                                std::reference_wrapper<const MultiLineString<Point_t>>,
-                                                std::reference_wrapper<const MultiPolygon<Point_t>>,
-                                                std::reference_wrapper<const GeometryCollection<Point_t>>>;
 public:
 
     /*!
@@ -249,8 +290,12 @@ public:
      * \return Reference to this collection
      */
     template<GeometryConcept G>
-    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+        requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
     auto add(const G &geometry) -> GeometryCollection &;
+
+    template<GeometryConcept G>
+        requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+    auto push_back(const G &geometry) -> GeometryCollection &;
 
     /*!
      * \brief Adds a geometry to the collection (move version).
@@ -259,9 +304,13 @@ public:
      * \return Reference to this collection
      */
     template<GeometryConcept G>
-    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+        requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
     auto add(G &&geometry) -> GeometryCollection &;
-	
+    
+    template<GeometryConcept G>
+        requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+    auto push_back(G &&geometry) -> GeometryCollection &;
+
     /*!
      * \brief Constructs and adds a geometry in-place.
      * \tparam GeometryType Type of geometry to construct
@@ -274,6 +323,26 @@ public:
              std::constructible_from<G, Args...>
     auto emplace(Args&&... args) -> G&;
 	
+    auto begin() -> iterator 
+    { 
+        return iterator{this, 0};
+    }
+
+    auto begin() const -> const_iterator
+    {
+        return const_iterator{this, 0};
+    }
+
+    auto end() -> iterator
+    {
+        return iterator{this, mOrder.size()};
+    }
+
+    auto end() const -> const_iterator
+    {
+        return const_iterator{this, mOrder.size()};
+    }
+
     /*!
      * \brief Add a Point to the collection (copy version).
      * \param[in] point The Point to add.
@@ -856,7 +925,7 @@ public:
     /*!
      * \brief Access a geometry by its position in the collection (non-const version).
      * \param[in] i Index in the collection (0-based, following insertion order).
-     * \return GeometryReference variant containing a reference to the geometry.
+     * \return reference variant containing a reference to the geometry.
      * \throws std::runtime_error if index is out of range or unknown geometry type.
      *
      * ### Example with std::visit:
@@ -885,16 +954,16 @@ public:
      * \endcode
      */
     [[nodiscard]] 
-    auto operator[](size_t i) -> GeometryReference;
+    auto operator[](size_t i) -> reference;
 
     /*!
      * \brief Access a geometry by its position in the collection (const version).
      * \param[in] i Index in the collection (0-based, following insertion order).
-     * \return ConstGeometryReference variant containing a const reference to the geometry.
+     * \return const_reference variant containing a const reference to the geometry.
      * \throws std::runtime_error if index is out of range or unknown geometry type.
      */
     [[nodiscard]]
-    auto operator[](size_t i) const -> ConstGeometryReference;
+    auto operator[](size_t i) const -> const_reference;
 
 private:
 
@@ -923,7 +992,25 @@ auto GeometryCollection<Point_t>::add(const G &geometry) -> GeometryCollection &
 template<typename Point_t>
 template<GeometryConcept G>
     requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+auto GeometryCollection<Point_t>::push_back(const G &geometry) -> GeometryCollection &
+{
+    this->emplace<G>(geometry);
+    return *this;
+}
+
+template<typename Point_t>
+template<GeometryConcept G>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
 auto GeometryCollection<Point_t>::add(G &&geometry) -> GeometryCollection &
+{
+    this->emplace<G>(std::move(geometry));
+    return *this;
+}
+
+template<typename Point_t>
+template<GeometryConcept G>
+    requires std::same_as<typename geometry_traits<G>::point_type, Point_t>
+auto GeometryCollection<Point_t>::push_back(G &&geometry) -> GeometryCollection &
 {
     this->emplace<G>(std::move(geometry));
     return *this;
@@ -1457,7 +1544,7 @@ constexpr void GeometryCollection<Point_t>::clear() noexcept
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::operator[](size_t i) -> GeometryReference
+auto GeometryCollection<Point_t>::operator[](size_t i) -> reference
 {
     const auto &id = mOrder[i];
     switch (id.type) {
@@ -1481,7 +1568,7 @@ auto GeometryCollection<Point_t>::operator[](size_t i) -> GeometryReference
 }
 
 template<typename Point_t>
-auto GeometryCollection<Point_t>::operator[](size_t i) const -> ConstGeometryReference
+auto GeometryCollection<Point_t>::operator[](size_t i) const -> const_reference
 {
     const auto &id = mOrder[i];
     switch (id.type) {
