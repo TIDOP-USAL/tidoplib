@@ -41,6 +41,7 @@
 #pragma once
 
 #include "tidop/core/base/type_conversions.h"
+#include "tidop/core/base/Hash.h"
 #include "tidop/core/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
@@ -48,6 +49,7 @@
 #include "tidop/math/algebra/vector.h"
 
 #include <array>
+#include <typeindex>
 
 namespace tl
 {
@@ -313,6 +315,11 @@ public:
     template<typename U, typename Tag2>
     explicit operator Point<U, Tag2>() const;
 
+    [[nodiscard]]
+    auto empty() const -> bool
+    {
+        return false;
+    }
 };
 
 
@@ -521,6 +528,48 @@ auto operator != (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
 }
 
 
+template<typename Point_t>
+struct Hash
+{
+    std::size_t operator()(const Point_t &p) const noexcept
+    {
+        constexpr std::size_t D = point_traits<Point_t>::spatial_dims;
+
+        std::size_t seed = 0;
+
+        for (std::size_t i = 0; i < D; ++i) {
+            hash_combine(seed, p[i]);
+        }
+
+        return seed;
+    }
+
+private:
+
+    template<typename V>
+    static void hash_combine(std::size_t &seed, const V &v) noexcept
+    {
+        // Variante tipo boost::hash_combine
+        seed ^= std::hash<V>{}(v)+0x9e3779b97f4a7c15ULL + (seed << 6) + (seed >> 2);
+    }
+};
+
+
+
 /*! \} */
 
 } // End namespace tl
+
+
+namespace std
+{
+template<>
+struct hash<tl::Point2d>
+{
+    size_t operator()(const tl::Point2d &p) const noexcept
+    {
+        return tl::Hash<tl::Point2d>{}(p);
+    }
+};
+
+}

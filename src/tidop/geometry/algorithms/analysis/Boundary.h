@@ -25,28 +25,34 @@
 #pragma once
 
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/Operations.h"
+
+#include <variant>
+#include <unordered_map>
 
 namespace tl
 {
-
-/*! \addtogroup SpatialPredicates
+// Según OGC Simple Features:
+// 
+// Geometría	Boundary
+// Point	vacío
+// MultiPoint	vacío
+// LineString	sus puntos inicial y final si son distintos
+// LinearRing	vacío
+// Polygon	conjunto de anillos
+// MultiLineString	unión de los boundaries
+// GeometryCollection	unión de los boundaries
+	
+/*! \addtogroup Algorithms
  *  \{
  */
 
-// Según OGC Simple Features contains(A, B) es true si y solo si:
-//
-// - B está completamente en el interior de A
-//
-// - ningún punto de B está en la frontera de A
-//
-// - A ≠ B
+template<typename Geometry_t>
+auto boundary(const Geometry_t &g);
 
-template<typename G1, typename G2>
-auto contains(const G1 &g1, const G2 &g2) -> bool;
+
 
 /*! \} */ 
 
 } // End namespace tl
 
-#include "Contains.impl.h"
+#include "Boundary.impl.h"

@@ -35,6 +35,9 @@ if(BUILD_TL_GEOMETRY)
   
     add_files_to_project(${PROJECT_NAME} 
                         HEADER_FILES
+                            Operations.h
+                            algorithms/analysis/Boundary.h
+                            algorithms/analysis/Boundary.impl.h
                             algorithms/analysis/Contains.h
                             algorithms/analysis/Contains.impl.h
                             algorithms/analysis/Intersects.h
@@ -64,6 +67,7 @@ if(BUILD_TL_GEOMETRY)
                             base/Traits.h
                             io/wkt/Writer.h
                             io/wkt/Proxy.h
+                            primitives/LinearRing.h
                             primitives/LineString.h
                             primitives/Point.h
                             primitives/Polygon.h

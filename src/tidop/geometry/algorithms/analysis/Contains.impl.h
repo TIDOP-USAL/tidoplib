@@ -49,34 +49,41 @@ auto contains_impl(const Point_t &pt1,
     return pt1 == pt2;
 }
 
-// LineString - Point(un punto en la línea, pero no necesariamente en los extremos, depende de la definición)
+template<typename Point_t>
+auto contains_impl(const Segment<Point_t> &line,
+                   const Point_t &point,
+                   segment_tag,
+                   point_tag) -> bool
+{
+    return false;
+}
+
+template<typename Point_t>
+auto contains_impl(const Point_t &point,
+                   const Segment<Point_t> &line,
+                   point_tag,
+                   segment_tag) -> bool
+{
+    return false;
+}
+
+// LineString - Point
+// OGC: un punto no puede estar en el interior de un LineString, aunque caiga sobre un segmento.
 template<typename Point_t>
 auto contains_impl(const LineString<Point_t> &line, 
                    const Point_t &point,
                    linestring_tag,
                    point_tag) -> bool
 {
-    if (line.empty()) return false;
-    if (line.size() == 1) return line[0] == point;
+    return false;
+}
 
-    // Revisar todos los segmentos
-    for (size_t i = 0; i + 1 < line.size(); ++i) {
-        Segment<Point_t> seg(line[i], line[i + 1]);
-
-        // Proyectar punto en segmento
-        auto proj = project(point, seg);
-
-        // Está en el segmento pero NO en los extremos
-        if (!proj.isBeforeStart() && !proj.isAfterEnd() &&
-            distance(point, proj.closestPoint) < std::numeric_limits<double>::epsilon()) {
-            // Chequear que no sea un extremo
-            if (distance(point, seg.pt1()) > std::numeric_limits<double>::epsilon() &&
-                distance(point, seg.pt2()) > std::numeric_limits<double>::epsilon()) {
-                return true;
-            }
-        }
-    }
-
+template<typename Point_t>
+auto contains_impl(const Point_t &point,
+                   const LineString<Point_t> &line,
+                   point_tag,
+                   linestring_tag) -> bool
+{
     return false;
 }
 
@@ -103,31 +110,16 @@ auto contains_impl(const Polygon_t &polygon,
                    polygon_tag,
                    point_tag) -> bool
 {
-    // 1. Check rápido: Si el punto no está en el Bounding Box, no puede estar en el polígono
-    auto bbox = envelope(polygon);
-    if (!contains(envelope(polygon), pt)) {
-        return false;
-    }
+    return locatePointInPolygon(polygon, pt) == Location::Interior;
+}
 
-    auto is_inside_ring = [&](const auto &ring) {
-        bool inside = false;
-        size_t n = ring.size();
-        for (size_t i = 0, j = n - 1; i < n; j = i++) {
-            if (((ring[i].y() > pt.y()) != (ring[j].y() > pt.y())) &&
-                (pt.x() < (ring[j].x() - ring[i].x()) * (pt.y() - ring[i].y()) / (ring[j].y() - ring[i].y()) + ring[i].x())) {
-                inside = !inside;
-            }
-        }
-        return inside;
-    };
-
-    if (!is_inside_ring(polygon.outer())) return false;
-
-    for (const auto &hole : polygon.inners()) {
-        if (is_inside_ring(hole)) return false; // Si cae en un hueco, está fuera
-    }
-
-    return true;
+template<typename Polygon_t, typename Point_t>
+auto contains_impl(const Point_t &pt,
+                   const Polygon_t &polygon,
+                   point_tag,   
+                   polygon_tag) -> bool
+{
+    return false;
 }
 
 // Polygon-LineString (todos los puntos de la línea están dentro del polígono, incluyendo el borde)
@@ -137,19 +129,35 @@ auto contains_impl(const Polygon<Point_t> &polygon,
                    polygon_tag, 
                    linestring_tag) -> bool
 {
-    if (line.empty()) return true; // Polígono contiene línea vacía
+    if (line.empty()) return true; // Línea vacía siempre está contenida
 
-    // Todos los puntos deben estar dentro (no en el borde)
-    for (const auto &point : line) {
-        if (!contains(polygon, point)) {
+    // 1️ - Todos los puntos de la línea deben estar en el interior (no en borde)
+    for (const auto &pt : line) {
+        if (locatePointInPolygon(polygon, pt) != Location::Interior) {
             return false;
         }
     }
 
-    // Además, la línea no debe cruzar ningún hueco
-    // Esto es más complejo - necesitas verificar intersecciones
-    // Implementación básica por ahora
+    // 2️ - Ningún segmento debe intersectar los huecos
+    for (size_t i = 0; i + 1 < line.size(); ++i) {
+        Segment<Point_t> seg(line[i], line[i + 1]);
+        for (const auto &hole : polygon.inners()) {
+            if (intersects(seg, hole)) {
+                return false;
+            }
+        }
+    }
+
     return true;
+}
+
+template<typename Point_t>
+auto contains_impl(const LineString<Point_t> &line, 
+                   const Polygon<Point_t> &polygon,
+                   linestring_tag,
+                   polygon_tag) -> bool
+{
+    return false;
 }
 
 // Polygon-Polygon (un polígono contiene a otro)
@@ -159,21 +167,34 @@ auto contains_impl(const Polygon<Point_t> &container,
                    polygon_tag, 
                    polygon_tag) -> bool
 {
-    // 1. Todos los puntos del polígono contenido deben estar dentro del contenedor
-    for (const auto &point : containee.outer()) {
-        if (!contains(container, point)) {
+    // 1️ - Todos los puntos del containee deben estar dentro del container (interior)
+    for (const auto &pt : containee.outer()) {
+        if (locatePointInPolygon(container, pt) != Location::Interior) {
             return false;
         }
     }
 
-    // 2. Los huecos del contenedor NO deben intersectar el polígono contenido
-    // 3. Los huecos del contenido deben estar dentro de los huecos del contenedor o fuera completamente
+    // 2️ - Ningún segmento del containee intersecta los huecos del container
+    for (size_t i = 0; i < containee.outer().size(); ++i) {
+        size_t j = (i + 1) % containee.outer().size();
+        Segment<Point_t> seg(containee.outer()[i], containee.outer()[j]);
+        for (const auto &hole : container.inners()) {
+            if (intersects(seg, hole)) {
+                return false;
+            }
+        }
+    }
 
-    // Implementación simplificada: chequea si un punto del borde está dentro
-    // y si no hay intersección entre los bordes (excepto posiblemente tangente)
-    // Esto es una simplificación - la implementación completa es compleja
+    // 3️ - Los huecos del containee deben estar totalmente dentro de los huecos del container o fuera completamente
+    for (const auto &hole : containee.inners()) {
+        for (const auto &pt : hole) {
+            if (!point_in_any_hole(pt, container) && locatePointInPolygon(container, pt) != Location::Interior) {
+                return false;
+            }
+        }
+    }
 
-    return true; // Placeholder
+    return true;
 }
 
 // MultiPolygon - Point (un multipolígono contiene un punto)
@@ -206,15 +227,56 @@ auto contains_impl(const MultiPolygon<Point_t> &multiPolygon,
     return false;
 }
 
+/* GeometryCollection with any geometry */
+template<typename Point_t, typename Geometry_t>
+auto contains_impl(const GeometryCollection<Point_t> &gc,
+                   const Geometry_t &geom,
+                   collection_tag,
+                   geometry_tag_t<Geometry_t>) -> bool
+{
+    for (const auto &item : gc) {
+        bool hit = std::visit([&](auto &&arg) {
+            return contains(arg.get(), geom);
+            }, item);
+
+        if (hit) return true;
+    }
+
+    return false;
+}
+
 } // namespace detail
 
 
 template<typename G1, typename G2>
 auto contains(const G1 &g1, const G2 &g2) -> bool
 {
+    static_assert(is_geometry_v<G1>, "First argument must be a geometry");
+    static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
+
     using tag1 = geometry_tag_t<G1>;
     using tag2 = geometry_tag_t<G2>;
     return detail::contains_impl(g1, g2, tag1{}, tag2{});
+
+    //auto dispatch = [&] {
+    //    using tag1 = geometry_tag_t<G1>;
+    //    using tag2 = geometry_tag_t<G2>;
+    //    return detail::contains_impl(g1, g2, tag1{}, tag2{});
+    //};
+
+    //if constexpr (GeometryCollectionConcept<G1> || GeometryCollectionConcept<G2>) {
+    //    return dispatch();
+    //} else if constexpr (MultiGeometryConcept<G1> && MultiGeometryConcept<G2>) {
+    //    for (const auto &a : g1) {
+    //        for (const auto &b : g2)
+    //            if (contains(a, b)) return true;
+    //    }
+    //    return false;
+    //} else if constexpr (!MultiGeometryConcept<G1> && MultiGeometryConcept<G2>) {
+    //    return false;
+    //} else {
+    //    return dispatch();
+    //}
 }
 
 } // namespace tl

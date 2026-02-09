@@ -22,31 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+ 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/Operations.h"
+#include "tidop/config.h"
 
 namespace tl
 {
+	
+template<typename T>
+struct Hash;
 
-/*! \addtogroup SpatialPredicates
- *  \{
- */
+/*! \} */
 
-// Según OGC Simple Features contains(A, B) es true si y solo si:
-//
-// - B está completamente en el interior de A
-//
-// - ningún punto de B está en la frontera de A
-//
-// - A ≠ B
-
-template<typename G1, typename G2>
-auto contains(const G1 &g1, const G2 &g2) -> bool;
-
-/*! \} */ 
 
 } // End namespace tl
-
-#include "Contains.impl.h"

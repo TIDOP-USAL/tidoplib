@@ -44,6 +44,7 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/primitives/LinearRing.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 #include "tidop/geometry/algorithms/measurement/Length.h"
 
@@ -74,6 +75,7 @@ public:
 public:
 
     using GeometryContainer<Point_t>::GeometryContainer;
+
 
     /*!
      * \brief Checks if the polyline is closed.

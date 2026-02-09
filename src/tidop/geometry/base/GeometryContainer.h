@@ -164,8 +164,17 @@ public:
     template<std::ranges::input_range R>
         requires std::convertible_to<std::ranges::range_value_t<R>, Geometry_t>
     explicit GeometryContainer(R &&range)
-      : mEntities(std::ranges::begin(range), std::ranges::end(range)) 
     {
+        // Si el rango es forward_range y sized_range, hacemos reserve para optimizar
+        if constexpr (std::ranges::forward_range<R> && std::ranges::sized_range<R>) {
+            mEntities.reserve(std::ranges::size(range));
+        }
+
+        mEntities.insert(
+            mEntities.end(),
+            std::ranges::begin(range),
+            std::ranges::end(range)
+        );
     }
 
     ~GeometryContainer() = default;
@@ -228,6 +237,18 @@ public:
     [[nodiscard]]
     constexpr auto rend() noexcept -> reverse_iterator;
 	
+    [[nodiscard]]
+    constexpr auto front() noexcept -> reference;
+
+    [[nodiscard]]
+    constexpr auto front() const noexcept -> const_reference;
+
+    [[nodiscard]]
+    constexpr auto back() noexcept -> reference;
+
+    [[nodiscard]]
+    constexpr auto back() const noexcept -> const_reference;
+
     /*!
      * \brief Adds an entity to the end.
      * \param[in] entity Entity to add.
@@ -461,6 +482,30 @@ template<typename Geometry_t>
 constexpr auto GeometryContainer<Geometry_t>::rend() noexcept -> reverse_iterator
 { 
     return mEntities.rend();
+}
+
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::front() noexcept -> reference
+{
+    return mEntities.front();
+}
+
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::front() const noexcept -> const_reference
+{
+    return mEntities.front();
+}
+
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::back() noexcept -> reference
+{
+    return mEntities.back();
+}
+
+template<typename Geometry_t>
+constexpr auto GeometryContainer<Geometry_t>::back() const noexcept -> const_reference
+{
+    return mEntities.back();
 }
 
 template<typename Geometry_t>

@@ -1772,13 +1772,14 @@ template<typename T, size_t _size>
 auto dotProduct(const Vector<T, _size>& v1,
                 const Vector<T, _size>& v2) -> double
 {
-    TL_ASSERT(v1.size() == v2.size(), "Different vector size");
+    //TL_ASSERT(v1.size() == v2.size(), "Different vector size");
 
-    double dot = static_cast<double>(v1[0]) * static_cast<double>(v2[0]);
-    for (size_t i = 1; i < v1.size(); i++) {
-        dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
-    }
-    return dot;
+    //double dot = static_cast<double>(v1[0]) * static_cast<double>(v2[0]);
+    //for (size_t i = 1; i < v1.size(); i++) {
+    //    dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
+    //}
+    //return dot;
+    return v1.dotProduct(v2);
 }
 
 /*!
