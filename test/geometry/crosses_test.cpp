@@ -21,41 +21,64 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
+#define BOOST_TEST_MODULE Tidop algorithms crosses test
+#include <boost/test/unit_test.hpp>
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/analysis/Crosses.h"
 
-#pragma once
+using namespace tl; 
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
+BOOST_AUTO_TEST_SUITE(CrossesAlgorithmTest)
 
-#include <optional>
 
-namespace tl
+struct CrossesTestFixture
 {
-	
-/*! \addtogroup Algorithms
- *  \{
- */
 
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
+    void setup()
+    {
+        point2d1 = Point2d(1.0, 2.0);
+        point2d2 = Point2d(3.0, 4.0);
+        point3d1 = Point3d(1.0, 2.0, 3.0);
+        point3d2 = Point3d(4.0, 5.0, 6.0);
+        point2dm1 = Point2dm(1.0, 2.0, 10.0);
+        point2dm2 = Point2dm(3.0, 4.0, 20.0);
+    }
+
+    void teardown()
+    {
+
+    }
+
+    Point2d point2d1;
+    Point2d point2d2;
+    Point3d point3d1;
+    Point3d point3d2;
+    Point2dm point2dm1;
+    Point2dm point2dm2;
+};
 
 
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
+BOOST_FIXTURE_TEST_CASE(Crosses_Point_Point_Different, CrossesTestFixture)
+{
+    BOOST_TEST(!crosses(point2d1, point2d2));
+    BOOST_TEST(!crosses(point2d2, point2d1)); // Simetría
+}
 
+BOOST_FIXTURE_TEST_CASE(Crosses_Point_Point_Same, CrossesTestFixture)
+{
+    // Un punto no se cruza consigo mismo según OGC
+    BOOST_TEST(!crosses(point2d1, point2d1));
+}
 
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
+BOOST_FIXTURE_TEST_CASE(Crosses_Point3D, CrossesTestFixture)
+{
+    BOOST_TEST(!crosses(point3d1, point3d2));
+}
 
+BOOST_FIXTURE_TEST_CASE(Crosses_PointWithMeasure, CrossesTestFixture)
+{
+    BOOST_TEST(!crosses(point2dm1, point2dm2));
+}
 
-/*! \} */ 
-
-} // End namespace tl
-
-#include "Intersection.impl.h"
+BOOST_AUTO_TEST_SUITE_END()

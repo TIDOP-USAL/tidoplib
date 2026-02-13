@@ -24,14 +24,14 @@
 
 #pragma once
 
-#include <cmath>
-
-#include "tidop/geometry/algorithms/spatial/Envelope.h"
-#include "tidop/geometry/spatial/BoundingBox.h"
-#include "tidop/geometry/primitives/Point.h"
-#include "tidop/geometry/primitives/LineString.h"
-#include "tidop/geometry/primitives/Polygon.h"
-#include "tidop/geometry/primitives/MultiPolygon.h"
+//#include <cmath>
+//
+//#include "tidop/geometry/algorithms/spatial/Envelope.h"
+//#include "tidop/geometry/spatial/BoundingBox.h"
+//#include "tidop/geometry/primitives/Point.h"
+//#include "tidop/geometry/primitives/LineString.h"
+//#include "tidop/geometry/primitives/Polygon.h"
+//#include "tidop/geometry/primitives/MultiPolygon.h"
 
 namespace tl
 {
@@ -188,7 +188,7 @@ auto contains_impl(const Polygon<Point_t> &container,
     // 3️ - Los huecos del containee deben estar totalmente dentro de los huecos del container o fuera completamente
     for (const auto &hole : containee.inners()) {
         for (const auto &pt : hole) {
-            if (!point_in_any_hole(pt, container) && locatePointInPolygon(container, pt) != Location::Interior) {
+            if (!pointInAnyHole(pt, container) && locatePointInPolygon(container, pt) != Location::Interior) {
                 return false;
             }
         }
@@ -249,6 +249,7 @@ auto contains_impl(const GeometryCollection<Point_t> &gc,
 
 
 template<typename G1, typename G2>
+[[nodiscard]]
 auto contains(const G1 &g1, const G2 &g2) -> bool
 {
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");

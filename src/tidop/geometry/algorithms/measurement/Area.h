@@ -34,7 +34,8 @@ namespace tl
  */
 
 template<typename Geometry_t>
-auto area(const Geometry_t &g);
+[[nodiscard]]
+constexpr auto area(const Geometry_t &g);
 
 /*! \} */ 
 

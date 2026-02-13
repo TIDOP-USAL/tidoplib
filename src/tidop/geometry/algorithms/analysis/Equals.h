@@ -25,37 +25,58 @@
 #pragma once
 
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
-
-#include <optional>
+#include "tidop/geometry/Operations.h"
+#include "tidop/geometry/base/TolerancePolicy.h"
 
 namespace tl
 {
-	
-/*! \addtogroup Algorithms
+
+/*! \addtogroup SpatialPredicates
  *  \{
  */
 
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
+/*!
+ * \brief Spatial equality with default tolerance.
+ *
+ * Compares only spatial dimensions (X,Y,Z) with a type-adapted absolute tolerance:
+ * - float:  1e-6
+ * - double: 1e-12
+ * - int:    0 (exact comparison)
+ *
+ * Measure (M) is ignored (OGC Simple Feature Access).
+ *
+ * \see operator== for exact comparison including measure.
+ */
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto equals(const G1 &geom1, const G2 &geom2) -> bool;
 
 
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
+/*!
+ * \brief Spatial equality with explicit absolute tolerance.
+ *
+ * \param tolerance Absolute tolerance for coordinate comparison.
+ */
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto equals(const G1 &geom1, const G2 &geom2, double tolerance) -> bool;
 
 
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
 
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto equals(const G1 &geom1, 
+                      const G2 &geom2, 
+                      const TolerancePolicy &policy) -> bool
+{
+    return equals(geom1, geom2, policy.xyTolerance());
+}
 
 /*! \} */ 
 
 } // End namespace tl
 
-#include "Intersection.impl.h"
+#include "Equals.impl.h"

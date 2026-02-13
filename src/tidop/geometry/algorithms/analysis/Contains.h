@@ -27,6 +27,8 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/Operations.h"
 
+#include <variant>
+
 namespace tl
 {
 
@@ -43,6 +45,7 @@ namespace tl
 // - A ≠ B
 
 template<typename G1, typename G2>
+[[nodiscard]]
 auto contains(const G1 &g1, const G2 &g2) -> bool;
 
 /*! \} */ 

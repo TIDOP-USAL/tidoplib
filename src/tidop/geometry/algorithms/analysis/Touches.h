@@ -25,37 +25,31 @@
 #pragma once
 
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/Operations.h"
 
-#include <optional>
+#include <variant>
 
 namespace tl
 {
-	
-/*! \addtogroup Algorithms
+
+// Dos geometrías A y B touch si:
+// - Sus interiores NO se intersectan
+// - Sus boundaries SÍ se intersectan
+// - La intersección no es vacía
+
+// Touches(A, B): Las geometrías se intersectan, pero sus interiores no se intersectan.
+
+// Es decir, la intersección debe estar contenida exclusivamente en la unión de sus bordes (boundaries). Esta relación no está definida para Punto-Punto (ya que los puntos no tienen borde, solo interior, y si se tocan, sus interiores se intersectan, lo cual sería Equals, no Touches).
+
+/*! \addtogroup SpatialPredicates
  *  \{
  */
 
 template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
-
-
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
-
-
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
-
+auto touches(const G1 &g1, const G2 &g2) -> bool;
 
 /*! \} */ 
 
 } // End namespace tl
 
-#include "Intersection.impl.h"
+#include "Touches.impl.h"

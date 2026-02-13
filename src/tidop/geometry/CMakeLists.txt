@@ -40,8 +40,20 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/analysis/Boundary.impl.h
                             algorithms/analysis/Contains.h
                             algorithms/analysis/Contains.impl.h
+                            algorithms/analysis/Crosses.h
+                            algorithms/analysis/Crosses.impl.h
+                            algorithms/analysis/Disjoint.h
+                            algorithms/analysis/Disjoint.impl.h
+                            algorithms/analysis/Equals.h
+                            algorithms/analysis/Equals.impl.h
                             algorithms/analysis/Intersects.h
                             algorithms/analysis/Intersects.impl.h
+                            algorithms/analysis/Overlaps.h
+                            algorithms/analysis/Overlaps.impl.h
+                            algorithms/analysis/Touches.h
+                            algorithms/analysis/Touches.impl.h
+                            algorithms/analysis/Within.h
+                            algorithms/analysis/Within.impl.h
                             algorithms/clustering/dbscan.h
                             algorithms/measurement/Angle.h
                             algorithms/measurement/Angle.impl.h
@@ -53,6 +65,10 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/measurement/Length.impl.h
                             algorithms/spatial/Buffer.h
                             algorithms/spatial/Buffer.impl.h
+                            algorithms/spatial/ClosestPoints.h
+                            algorithms/spatial/ClosestPoints.impl.h
+                            algorithms/spatial/ConvexHull.h
+                            algorithms/spatial/ConvexHull.impl.h
                             algorithms/spatial/Envelope.h
                             algorithms/spatial/Envelope.impl.h
                             algorithms/spatial/Intersection.h
@@ -64,6 +80,7 @@ if(BUILD_TL_GEOMETRY)
                             base/Geometry.impl.h
                             base/GeometryContainer.h
                             base/GeometryCollection.h
+                            base/TolerancePolicy.h
                             base/Traits.h
                             io/wkt/Writer.h
                             io/wkt/Proxy.h

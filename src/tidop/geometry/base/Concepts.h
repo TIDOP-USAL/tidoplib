@@ -87,6 +87,15 @@ concept PointConcept = is_geometry_v<P> &&
 template<typename G>
 concept GeometryCollectionConcept = GeometryConcept<G> && is_geometry_collection_v<G>;
 
+template<typename G1, typename G2>
+concept SameSpatialDimension = GeometryConcept<G1> && 
+                               GeometryConcept<G2> &&
+                               (dimension_of_v<G1> == dimension_of_v<G2>);
+
+template<typename G1, typename G2>
+concept CompatibleGeometries = SameSpatialDimension<G1, G2> &&
+                               ((has_m_v<G1> == has_m_v<G2>) || !has_m_v<G1> || !has_m_v<G2>);
+
 /*! \} */ 
 
 } // End namespace tl

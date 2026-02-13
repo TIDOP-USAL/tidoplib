@@ -561,15 +561,15 @@ private:
 } // End namespace tl
 
 
-namespace std
-{
-template<>
-struct hash<tl::Point2d>
-{
-    size_t operator()(const tl::Point2d &p) const noexcept
-    {
-        return tl::Hash<tl::Point2d>{}(p);
-    }
-};
-
-}
+//namespace std
+//{
+//template<>
+//struct hash<tl::Point2d>
+//{
+//    size_t operator()(const tl::Point2d &p) const noexcept
+//    {
+//        return tl::Hash<tl::Point2d>{}(p);
+//    }
+//};
+//
+//}

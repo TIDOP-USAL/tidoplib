@@ -41,7 +41,7 @@
 #include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Traits.h"
-
+//#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -62,8 +62,8 @@ namespace tl
 template<typename Derived>
 class Geometry
 {
-    static_assert(GeometryConcept<Derived>,
-                  "Derived must be a geometry type");
+    //static_assert(GeometryConcept<Derived>,
+    //              "Derived must be a geometry type");
 
 protected:
 
@@ -168,15 +168,15 @@ public:
      * \brief Returns the minimum bounding box (envelope) of the geometry.
      * \return Axis-aligned bounding box containing the geometry.
      */
-    [[nodiscard]] 
-    auto envelope() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
+    //[[nodiscard]] 
+    //auto envelope() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
 
     /*!
      * \brief Alias for envelope().
      * \return Same as envelope().
      */
-    [[nodiscard]] 
-    auto boundingBox() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
+    //[[nodiscard]] 
+    //auto boundingBox() const -> BoundingBox<typename geometry_traits<Derived>::point_type>;
 
     //SRID
     // AsText
@@ -202,4 +202,4 @@ private:
 
 } // End namespace tl
 
-#include "Geometry.impl.h"
+//#include "Geometry.impl.h"

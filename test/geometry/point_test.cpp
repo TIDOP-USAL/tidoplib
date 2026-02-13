@@ -375,6 +375,26 @@ BOOST_FIXTURE_TEST_CASE(cast, PointTest)
     BOOST_CHECK_EQUAL(0.0, pt_xym.m());
 }
 
+BOOST_FIXTURE_TEST_CASE(check_point_equal, PointTest)
+{
+    Point2d pt_double = point_xy_double;
+
+    BOOST_CHECK(point_xy_double == pt_double);
+    BOOST_CHECK(67.0 == pt_double.y());
+
+    Point3f pt_float = point_xyz_float;
+    BOOST_CHECK(point_xyz_float == pt_float);
+
+    Point2dm pt_2dm = point_xym_double;
+    BOOST_CHECK(point_xym_double == pt_2dm);
+
+    Point3dm pt_3dm = point_xyzm_double;
+    BOOST_CHECK(point_xyzm_double == pt_3dm);
+
+    Point4d pt_4d = point_xyzw_double;
+    BOOST_CHECK(point_xyzw_double == pt_4d);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

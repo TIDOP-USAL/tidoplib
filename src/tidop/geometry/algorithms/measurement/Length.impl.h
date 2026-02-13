@@ -33,10 +33,12 @@ namespace tl
 namespace detail 
 {
 
+// Longitud de un punto es 0 según OGC
 template<typename Point_t>
-auto length_impl(const Point_t &, point_tag) -> double
+[[nodiscard]]
+constexpr auto length_impl(const Point_t &, point_tag) -> double
 {
-    return typename point_traits<Point_t>::value_type{0};
+    return 0.0;
 }
 
 template<typename Segment_t>
@@ -87,10 +89,11 @@ auto length_impl(const Polygon_t &poly, polygon_tag) -> double
 } // namespace detail
 
 // API
-template<typename Geometry>
-auto length(const Geometry& g) -> double
+template<GeometryConcept G>
+[[nodiscard]]
+constexpr auto length(const G& g) -> double
 {
-    return detail::length_impl(g, geometry_tag_t<Geometry>{});
+    return detail::length_impl(g, geometry_tag_t<G>{});
 }
 
 } // namespace tl

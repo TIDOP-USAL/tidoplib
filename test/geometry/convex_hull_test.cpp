@@ -21,41 +21,33 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
+#define BOOST_TEST_MODULE Tidop convex hull test
+#include <boost/test/unit_test.hpp>
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/spatial/ConvexHull.h"
+#include "tidop/geometry/algorithms/analysis/Equals.h"
 
-#pragma once
+#include <variant>
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
-
-#include <optional>
-
-namespace tl
-{
-	
-/*! \addtogroup Algorithms
- *  \{
- */
-
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
+using namespace tl;
 
 
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
-
-
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
-
-
-/*! \} */ 
-
-} // End namespace tl
-
-#include "Intersection.impl.h"
+//BOOST_AUTO_TEST_CASE(ConvexHull_Point2D)
+//{
+//    Point2d p{3.0, 4.0};
+//    
+//    auto hull = convexHull(p);
+//    
+//    // Convex hull de un punto debe ser el mismo punto
+//    BOOST_CHECK(equals(hull, p));
+//}
+//
+//BOOST_AUTO_TEST_CASE(ConvexHull_Point3D)
+//{
+//    Point3d p{1.0, 2.0, 3.0};
+//    
+//    auto hull = convexHull(p);
+//    
+//    BOOST_CHECK(equals(hull, p));
+//}

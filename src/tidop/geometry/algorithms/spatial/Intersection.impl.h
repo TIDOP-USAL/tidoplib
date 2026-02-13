@@ -27,6 +27,7 @@
 #include <cmath>
 
 #include "tidop/geometry/spatial/BoundingBox.h"
+#include "Intersection.h"
 
 namespace tl
 {
@@ -34,58 +35,21 @@ namespace tl
 namespace detail
 {
 
-//TODO: Esto se tiene que mover a Intersects
 
-//template <typename Point_t>
-//auto intersect_lines(const Segment<Point_t> &ln1, 
-//                     const Segment<Point_t> &ln2,
-//                     Point_t &out_pt) -> bool
-//{
-//    using T = typename Point_t::value_type;
-//    auto vs1 = ln1.vector();
-//    auto vs2 = ln2.vector();
-//
-//    double cp = vs1.cross(vs2);
-//    
-//
-//    // Si el producto vectorial es 0, las rectas son paralelas o coincidentes
-//    if (std::abs(cp) < 1e-10) return false;
-//
-//    auto v11_12 = ln2.min() - ln1.min();
-//    double t = crossProduct(v11_12, vs2) / cp;
-//
-//    out_pt.x() = numberCast<T>(ln1.min().x() + t * vs1.x());
-//    out_pt.y() = numberCast<T>(ln1.min().y() + t * vs1.y());
-//
-//    return true;
-//}
-//
-//template <typename Point_t>
-//bool intersect_segments(const Segment<Point_t> &ln1, 
-//                        const Segment<Point_t> &ln2, 
-//                        Point_t &out_pt) 
-//{
-//    using T = typename Point_t::value_type;
-//    auto vs1 = ln1.vector();
-//    auto vs2 = ln2.vector();
-//
-//    double cp = crossProduct(vs1, vs2);
-//    if (std::abs(cp) < 1e-10) return false;
-//
-//    Point_t v11_12 = ln2.min - ln1.min;
-//    double t = crossProduct(v11_12, vs2) / cp;
-//    double u = crossProduct(v11_12, vs1) / cp;
-//
-//    // Los parámetros t y u deben estar en el rango [0, 1] para que el punto esté en los segmentos
-//    if (t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0) {
-//        out_pt.x = numberCast<T>(ln1.min.x() + t * vs1.x);
-//        out_pt.y = numberCast<T>(ln1.min.y() + t * vs1.y);
-//        return true;
-//    }
-//
-//    return false;
-//}
+template<typename P1, typename P2>
+auto intersection_impl(const P1 &p1, 
+                       const P2 &p2, 
+                       point_tag, 
+                       point_tag) -> std::optional<common_point_without_measure_t<P1, P2>>
+{
+    using Point_t = common_point_without_measure_t<P1, P2>;
 
+    if (equals(p1, p2)) {
+        return static_cast<Point_t>(p1);
+    }
+
+    return std::nullopt;
+}
 
 template<typename BBox_t>
 auto intersection_impl(const BBox_t &b1, const BBox_t &b2, bbox_tag, bbox_tag) -> BBox_t
@@ -108,8 +72,15 @@ auto intersection_impl(const BBox_t &b1, const BBox_t &b2, bbox_tag, bbox_tag) -
     return BBox_t(new_min, new_max);
 }
 
+template<typename G1, typename G2>
+auto intersection_impl(const G1 &, const G2 &, ...)
+{
+    static_assert(false, "intersection not implemented for these geometry types");
+}
+
 
 } // namespace detail
+
 
 
 template<typename G1, typename G2>
@@ -117,7 +88,34 @@ auto intersection(const G1 &g1, const G2 &g2)
 {
     using tag1 = geometry_tag_t<G1>;
     using tag2 = geometry_tag_t<G2>;
+
     return detail::intersection_impl(g1, g2, tag1{}, tag2{});
 }
+
+
+//template<PointConcept P1, PointConcept P2>
+//    requires SameSpatialDimension<P1, P2>
+//[[nodiscard]]
+//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>
+//{
+//    if (equals(p1, p2)) {
+//
+//        // Convertir a punto sin medida
+//        using Point_t = common_point_without_measure_t<P1, P2>;
+//        Point_t result = static_cast<Point_t>(p1);
+//
+//        // Copiar solo dimensiones espaciales
+//        //constexpr size_t spatial_dims = point_traits<P1>::spatial_dims;
+//        //for (size_t i = 0; i < spatial_dims; ++i) {
+//        //    result[i] = static_cast<typename Point_t::value_type>(p1[i]);
+//        //}
+//
+//        return result;
+//    }
+//
+//    return std::nullopt;
+//}
+
+
 
 } // namespace tl

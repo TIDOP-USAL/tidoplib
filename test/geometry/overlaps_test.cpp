@@ -22,34 +22,27 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop algorithms length test
+#define BOOST_TEST_MODULE Tidop algorithms overlaps test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/algorithms/measurement/Length.h>
-#include <tidop/geometry/primitives/Segment.h>
-
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/analysis/Overlaps.h"
 
 using namespace tl; 
 
-BOOST_AUTO_TEST_SUITE(LengthAlgorithmsTestSuite)
+BOOST_AUTO_TEST_SUITE(OverlapsAlgorithmTest)
 
-struct LengthAlgorithms
+
+struct OverlapsTestFixture
 {
-    LengthAlgorithms()
-    {
-
-    }
-
-    ~LengthAlgorithms()
-    {
-
-    }
 
     void setup()
     {
-        point_2d = Point2d(1.0, 2.0);
-        point_3d = Point3d(1.0, 2.0, 3.0);
-        point_2dm = Point2dm(1.0, 2.0, 10.0);
-        segment = Segment<Point2d>(Point2d(56.23, 123.5), Point2d(96.2, 34.4));
+        point2d1 = Point2d(1.0, 2.0);
+        point2d2 = Point2d(3.0, 4.0);
+        point3d1 = Point3d(1.0, 2.0, 3.0);
+        point3d2 = Point3d(4.0, 5.0, 6.0);
+        point2dm1 = Point2dm(1.0, 2.0, 10.0);
+        point2dm2 = Point2dm(3.0, 4.0, 20.0);
     }
 
     void teardown()
@@ -57,32 +50,47 @@ struct LengthAlgorithms
 
     }
 
-    Point2d point_2d;
-    Point3d point_3d;
-    Point2dm point_2dm;
-    Segment<Point2d> segment;
+    Point2d point2d1;
+    Point2d point2d2;
+    Point3d point3d1;
+    Point3d point3d2;
+    Point2dm point2dm1;
+    Point2dm point2dm2;
 };
 
-BOOST_FIXTURE_TEST_CASE(Length_Point2D, LengthAlgorithms)
+
+BOOST_FIXTURE_TEST_CASE(Overlaps_Point_Point_Different, OverlapsTestFixture)
 {
-    BOOST_CHECK_SMALL(length(point_2d), 0.); // Longitud debe ser 0
+    BOOST_TEST(!overlaps(point2d1, point2d2));
+    BOOST_TEST(!overlaps(point2d2, point2d1)); // Simetría
 }
 
-BOOST_FIXTURE_TEST_CASE(Length_Point3D, LengthAlgorithms)
+BOOST_FIXTURE_TEST_CASE(Overlaps_Point_Point_Same, OverlapsTestFixture)
 {
-    BOOST_CHECK_SMALL(length(point_3d), 0.);
+    // Un punto no se superpone consigo mismo según OGC
+    // (overlaps requiere que las geometrías tengan la misma dimensión
+    // y que su intersección tenga dimensión menor que ambas)
+    BOOST_TEST(!overlaps(point2d1, point2d1));
 }
 
-BOOST_FIXTURE_TEST_CASE(Length_PointWithMeasure, LengthAlgorithms)
+BOOST_FIXTURE_TEST_CASE(Overlaps_Point3D, OverlapsTestFixture)
 {
-    BOOST_CHECK_SMALL(length(point_2dm), 0.);
+	static constexpr double EPSILON = 1e-10;
+	
+    Point3d p2{1.0, 2.0, 3.0 + EPSILON/2};
+    
+    // Puntos casi iguales pero no superpuestos
+    BOOST_TEST(!overlaps(point3d1, p2));
 }
 
-BOOST_FIXTURE_TEST_CASE(distance, LengthAlgorithms)
-{
-    BOOST_CHECK_CLOSE(0., length(point_2d), 0.1);
-    BOOST_CHECK_CLOSE(97.6545, length(segment), 0.1);
-}
-
+// Este caso no tiene que estar permitido pero si un punto tiene medidas si
+//BOOST_FIXTURE_TEST_CASE(Overlaps_DifferentDimensions, OverlapsTestFixture)
+//{
+//    Point2D p2d{1.0, 2.0};
+//    Point3D p3d{1.0, 2.0, 0.0};
+//    
+//    // Geometrías con dimensiones diferentes no pueden superponerse
+//    BOOST_TEST(!algorithms::overlaps(p2d, p3d));
+//}
 
 BOOST_AUTO_TEST_SUITE_END()

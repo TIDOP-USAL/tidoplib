@@ -166,6 +166,7 @@ auto boundary_impl(const GeometryCollection<Point_t> &gc, collection_tag) -> Geo
 } // namespace detail
 
 template<typename Geometry_t>
+[[nodiscard]]
 auto boundary(const Geometry_t &g)
 {
     static_assert(is_geometry_v<Geometry_t>,

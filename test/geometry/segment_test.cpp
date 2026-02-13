@@ -133,18 +133,6 @@ BOOST_AUTO_TEST_CASE(Segment_conversion)
 //  BOOST_CHECK_CLOSE(0.0352669, segment.angleOY(), 0.001);
 //}
 
-/* Ventana envolvente */
-BOOST_AUTO_TEST_CASE(Segment_window)
-{
-    Segment<Point2d> segment(Point2d(56.23, 123.5), Point2d(96.2, 34.4));
-    BoundingBox<Point2d> w_s = segment.boundingBox();
-    BoundingBox<Point2d> w(Point2d(56.23, 34.4), Point2d(96.2, 123.5));
-    BOOST_CHECK_EQUAL(w.min().x(), w_s.min().x());
-    BOOST_CHECK_EQUAL(w.min().y(), w_s.min().y());
-    BOOST_CHECK_EQUAL(w.max().x(), w_s.max().x());
-    BOOST_CHECK_EQUAL(w.max().y(), w_s.max().y());
-}
-
 /* Comprueba si el segmento esta vacio */
 
 BOOST_AUTO_TEST_CASE(Segment_empty)
@@ -288,19 +276,6 @@ BOOST_AUTO_TEST_CASE(Segment3D_assignment)
     BOOST_CHECK_EQUAL(25.3, segment_a.pt2().x());
     BOOST_CHECK_EQUAL(654.4, segment_a.pt2().y());
     BOOST_CHECK_EQUAL(15.6, segment_a.pt2().z());
-}
-
-BOOST_AUTO_TEST_CASE(Segment3D_bbox)
-{
-    Segment<Point3d> segment(Point3d(5.5, 93.2, 10.1), Point3d(25.3, 654.4, 15.6));
-    BoundingBox<Point3d> bbox = segment.boundingBox();
-
-    BOOST_CHECK_EQUAL(5.5, bbox.min().x());
-    BOOST_CHECK_EQUAL(93.2, bbox.min().y());
-    BOOST_CHECK_EQUAL(10.1, bbox.min().z());
-    BOOST_CHECK_EQUAL(25.3, bbox.max().x());
-    BOOST_CHECK_EQUAL(654.4, bbox.max().y());
-    BOOST_CHECK_EQUAL(15.6, bbox.max().z());
 }
 
 /* Comprueba si el segmento esta vacio */

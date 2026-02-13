@@ -25,6 +25,7 @@
 #include "tidop/graphic/canvas.h"
 #include "tidop/graphic/painter.h"
 #include "tidop/geometry/primitives/Point.h"
+#include "tidop/core/base/type_conversions.h"
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -182,7 +183,7 @@ void CanvasCV::drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &
     if (style_label && !style_label->text().empty()) {
 
         Color foregroundColor = style_label->foregroundColor();
-        auto &point = polygon.boundingBox().min();
+        auto &point = envelope(polygon).min();
 
 #ifdef HAVE_QT
         Font font = style_label->font();

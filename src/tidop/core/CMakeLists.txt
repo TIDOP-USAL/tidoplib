@@ -77,6 +77,7 @@ if(BUILD_TL_CORE)
                              base/exception.h
                              base/flags.h
                              base/format.h
+                             base/Hash.h
                              base/meta.h
                              base/path.h
                              base/property.h

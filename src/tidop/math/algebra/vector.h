@@ -268,6 +268,7 @@ public:
     /*!
      * \brief Equality operator restricted to the same type.
      */
+    template<typename D = Derived, enable_if_vector_t<D> = 0>
     friend auto operator == (const Derived &lhs, const Derived &rhs) -> bool
     {
         for (std::size_t i = 0; i < VectorTraits<Derived>::size; ++i) {
@@ -281,6 +282,7 @@ public:
     /*!
      * \brief Inequality operator.
      */
+    template<typename D = Derived, enable_if_vector_t<D> = 0>
     friend auto operator != (const Derived &lhs, const Derived &rhs) -> bool
     {
         return !(lhs == rhs);

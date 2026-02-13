@@ -33,7 +33,8 @@ namespace detail
 {
 
 template<typename Ring_t>
-auto calculate_ring_area(const Ring_t &ring) -> double
+[[nodiscard]]
+constexpr auto calculate_ring_area(const Ring_t &ring) -> double
 {
     if (ring.size() < 3) return 0.0;
 
@@ -51,7 +52,10 @@ auto calculate_ring_area(const Ring_t &ring) -> double
 
 
 template<typename Point_t>
-auto area_impl(const Point_t &, point_tag) { return 0.0; }
+auto area_impl(const Point_t &, point_tag)
+{
+    return 0.0; 
+}
 
 template<typename Segment_t>
 auto area_impl(const Segment_t &, segment_tag) { return 0.0; }
@@ -89,7 +93,8 @@ auto area_impl(const MultiPolygon_t &multiPolygon, multipolygon_tag) -> double
 } // namespace detail
 
 template<typename Geometry_t>
-auto area(const Geometry_t &g)
+[[nodiscard]]
+constexpr auto area(const Geometry_t &g)
 {
     return detail::area_impl(g, geometry_tag_t<Geometry_t>{});
 }

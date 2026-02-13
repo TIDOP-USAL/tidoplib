@@ -113,26 +113,26 @@ auto locatePointInRing(const Ring &ring,
     return inside ? Location::Interior : Location::Exterior;
 }
 	
-//template<typename LineString, typename Point>
-//auto locatePointOnLineString(const LineString &line, 
-//                             const Point &pt) -> Location
-//{
-//    const std::size_t n = line.size();
-//    if (n < 2) {
-//        return Location::Exterior;
-//    }
-//
-//    for (std::size_t i = 0; i + 1 < n; ++i) {
-//        const auto &p0 = line[i];
-//        const auto &p1 = line[i + 1];
-//
-//        if (pointOnSegment(p0, p1, pt)) {
-//            return Location::Boundary;
-//        }
-//    }
-//
-//    return Location::Exterior;
-//}
+template<typename LineString, typename Point>
+auto locatePointOnLineString(const LineString &line, 
+                             const Point &pt) -> Location
+{
+    const std::size_t n = line.size();
+    if (n < 2) {
+        return Location::Exterior;
+    }
+
+    for (std::size_t i = 0; i + 1 < n; ++i) {
+        const auto &p0 = line[i];
+        const auto &p1 = line[i + 1];
+
+        if (pointOnSegment(p0, p1, pt)) {
+            return Location::Boundary;
+        }
+    }
+
+    return Location::Exterior;
+}
 
 template<typename Polygon, typename Point>
 auto locatePointInPolygon(const Polygon &polygon, 
@@ -170,6 +170,19 @@ auto locatePointInPolygon(const Polygon &polygon,
 
     // 3 - Inside polygon, not in holes
     return Location::Interior;
+}
+
+template<typename Point_t, typename Polygon_t>
+auto pointInAnyHole(const Point_t &point,
+                       const Polygon_t &polygon) -> bool
+{
+    for (const auto &hole : polygon.inners()) {
+        auto loc = locatePointInRing(hole, point);
+        if (loc == Location::Interior || loc == Location::Boundary) {
+            return true; // punto dentro o en borde de un hueco
+        }
+    }
+    return false;
 }
 
 } // End namespace tl

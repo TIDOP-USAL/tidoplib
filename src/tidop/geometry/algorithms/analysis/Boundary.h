@@ -47,6 +47,7 @@ namespace tl
  */
 
 template<typename Geometry_t>
+[[nodiscard]]
 auto boundary(const Geometry_t &g);
 
 

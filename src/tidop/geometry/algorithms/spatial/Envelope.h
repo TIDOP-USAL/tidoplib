@@ -24,7 +24,11 @@
 
 #pragma once
 
+#include <variant>
+#include <type_traits>
+
 #include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {

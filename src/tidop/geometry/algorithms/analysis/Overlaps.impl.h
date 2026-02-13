@@ -24,38 +24,29 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
-
-#include <optional>
-
 namespace tl
 {
+
+namespace detail 
+{
+
+template<typename Point_t>
+[[nodiscard]]
+constexpr auto overlaps_impl(const Point_t& p1, const Point_t& p2, point_tag, point_tag) -> bool
+{
+    return false; // Puntos no pueden superponerse según OGC
+}
+
+} // namespace detail
+
+template<GeometryConcept G1, GeometryConcept G2>
+[[nodiscard]]
+constexpr auto overlaps(const G1 &geom1, const G2 &geom2) -> bool
+{
+	//static_assert(is_geometry_v<G1>, "First argument must be a geometry");
+    //static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
 	
-/*! \addtogroup Algorithms
- *  \{
- */
+    return detail::overlaps_impl(geom1, geom2, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
+}
 
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
-
-
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
-
-
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
-
-
-/*! \} */ 
-
-} // End namespace tl
-
-#include "Intersection.impl.h"
+} // namespace tl

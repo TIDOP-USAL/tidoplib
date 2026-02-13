@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
 
 namespace tl
 {
@@ -33,8 +34,9 @@ namespace tl
  *  \{
  */
 
-template<typename Geometry>
-auto length(const Geometry &g) -> double;
+template<GeometryConcept G>
+[[nodiscard]] 
+constexpr auto length(const G &g) -> double;
 
 /*! \} */ 
 

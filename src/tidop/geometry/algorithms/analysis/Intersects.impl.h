@@ -198,19 +198,6 @@ auto intersects_impl(const Point_t &point,
     return locatePointInPolygon(polygon, point) != Location::Exterior;
 }
 
-template<typename Point_t, typename Polygon_t>
-auto point_in_any_hole(const Point_t &point,
-                       const Polygon_t &polygon) -> bool
-{
-    for (const auto &hole : polygon.inners()) {
-        auto loc = locatePointInRing(hole, point);
-        if (loc == Location::Interior || loc == Location::Boundary) {
-            return true; // punto dentro o en borde de un hueco
-        }
-    }
-    return false;
-}
-
 template<typename Point_t>
 auto intersects_impl(const Segment<Point_t> &segment,
                      const Polygon<Point_t> &polygon,
@@ -242,12 +229,12 @@ auto intersects_impl(const Segment<Point_t> &segment,
     //// 2. Check if segment is completely inside polygon (excluding holes)
     //// For intersects, we just need one point inside
     //if (contains(polygon, segment.pt1()) &&
-    //    !point_in_any_hole(segment.pt1(), polygon)) {
+    //    !pointInAnyHole(segment.pt1(), polygon)) {
     //    return true;
     //}
 
     //if (contains(polygon, segment.pt2()) &&
-    //    !point_in_any_hole(segment.pt2(), polygon)) {
+    //    !pointInAnyHole(segment.pt2(), polygon)) {
     //    return true;
     //}
 
@@ -258,7 +245,7 @@ auto intersects_impl(const Segment<Point_t> &segment,
     //);
 
     //if (contains(polygon, mid_point) &&
-    //    !point_in_any_hole(mid_point, polygon)) {
+    //    !pointInAnyHole(mid_point, polygon)) {
     //    return true;
     //}
 
@@ -282,7 +269,7 @@ auto intersects_impl(const Segment<Point_t> &segment,
 
     // Algún punto del segmento dentro del polígono (sin contar huecos)
     auto check_point_inside = [&](const Point_t &pt) {
-        return contains(polygon, pt) && !point_in_any_hole(pt, polygon);
+        return contains(polygon, pt) && !pointInAnyHole(pt, polygon);
         };
 
     if (check_point_inside(segment.pt1())) return true;
@@ -526,6 +513,13 @@ auto intersects(const G1 &g1, const G2 &g2) -> bool
 {
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");
     static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
+
+    using P1 = geometry_traits<G1>::point_type;
+    using P2 = geometry_traits<G2>::point_type;
+
+    static_assert(std::is_same_v<typename point_traits<P1>::value_type,
+                                 typename point_traits<P2>::value_type>,
+        "Points must have same coordinate type");
 
     auto dispatch = [&] {
         using tag1 = geometry_tag_t<G1>;

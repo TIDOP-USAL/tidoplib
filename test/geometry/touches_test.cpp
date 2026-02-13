@@ -22,34 +22,27 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop algorithms length test
+#define BOOST_TEST_MODULE Tidop algorithms touches test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/algorithms/measurement/Length.h>
-#include <tidop/geometry/primitives/Segment.h>
-
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/analysis/Touches.h"
 
 using namespace tl; 
 
-BOOST_AUTO_TEST_SUITE(LengthAlgorithmsTestSuite)
+BOOST_AUTO_TEST_SUITE(TouchesAlgorithmTest)
 
-struct LengthAlgorithms
+
+struct TouchesTestFixture
 {
-    LengthAlgorithms()
-    {
-
-    }
-
-    ~LengthAlgorithms()
-    {
-
-    }
 
     void setup()
     {
-        point_2d = Point2d(1.0, 2.0);
-        point_3d = Point3d(1.0, 2.0, 3.0);
-        point_2dm = Point2dm(1.0, 2.0, 10.0);
-        segment = Segment<Point2d>(Point2d(56.23, 123.5), Point2d(96.2, 34.4));
+        point2d1 = Point2d(1.0, 2.0);
+        point2d2 = Point2d(3.0, 4.0);
+        point3d1 = Point3d(1.0, 2.0, 3.0);
+        point3d2 = Point3d(4.0, 5.0, 6.0);
+        point2dm1 = Point2dm(1.0, 2.0, 10.0);
+        point2dm2 = Point2dm(3.0, 4.0, 20.0);
     }
 
     void teardown()
@@ -57,32 +50,44 @@ struct LengthAlgorithms
 
     }
 
-    Point2d point_2d;
-    Point3d point_3d;
-    Point2dm point_2dm;
-    Segment<Point2d> segment;
+    Point2d point2d1;
+    Point2d point2d2;
+    Point3d point3d1;
+    Point3d point3d2;
+    Point2dm point2dm1;
+    Point2dm point2dm2;
 };
 
-BOOST_FIXTURE_TEST_CASE(Length_Point2D, LengthAlgorithms)
-{
-    BOOST_CHECK_SMALL(length(point_2d), 0.); // Longitud debe ser 0
+
+BOOST_FIXTURE_TEST_CASE(Touches_Point_Point_Different, TouchesTestFixture)
+{    
+    BOOST_TEST(!touches(point2d1, point2d2));
+    BOOST_TEST(!touches(point2d2, point2d1)); // Simetría
 }
 
-BOOST_FIXTURE_TEST_CASE(Length_Point3D, LengthAlgorithms)
+BOOST_FIXTURE_TEST_CASE(Touches_Point_Point_Same, TouchesTestFixture)
 {
-    BOOST_CHECK_SMALL(length(point_3d), 0.);
+    // Un punto no toca a otro punto según OGC
+    // (touches requiere que las geometrías tengan al menos un punto en común
+    // pero no puntos interiores en común. Un punto no tiene interior, solo frontera,
+    // y la frontera de un punto es vacía según OGC)
+    BOOST_TEST(!touches(point2d1, point2d1));
 }
 
-BOOST_FIXTURE_TEST_CASE(Length_PointWithMeasure, LengthAlgorithms)
+BOOST_FIXTURE_TEST_CASE(Touches_Point_AlmostEqual, TouchesTestFixture)
 {
-    BOOST_CHECK_SMALL(length(point_2dm), 0.);
+	static constexpr double EPSILON = 1e-10;
+	
+    Point2d p2{1.0 + EPSILON/2, 2.0 + EPSILON/2};
+    
+    // Puntos dentro de la tolerancia se consideran iguales, no se tocan
+    BOOST_TEST(!touches(point2d1, p2));
 }
 
-BOOST_FIXTURE_TEST_CASE(distance, LengthAlgorithms)
+BOOST_FIXTURE_TEST_CASE(Touches_PointWithMeasure, TouchesTestFixture)
 {
-    BOOST_CHECK_CLOSE(0., length(point_2d), 0.1);
-    BOOST_CHECK_CLOSE(97.6545, length(segment), 0.1);
+    BOOST_TEST(!touches(point2dm1, point2dm1));
+    BOOST_TEST(!touches(point2dm1, point2dm2));
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -42,16 +42,16 @@
 namespace tl
 {
 	
-template<typename Derived>
-auto Geometry<Derived>::envelope() const -> BoundingBox<typename geometry_traits<Derived>::point_type>
-{
-    return tl::envelope(this->derived());
-}
-
-template<typename Derived>
-auto Geometry<Derived>::boundingBox() const -> BoundingBox<typename geometry_traits<Derived>::point_type>
-{
-    return this->envelope();
-}
+//template<typename Derived>
+//auto Geometry<Derived>::envelope() const -> BoundingBox<typename geometry_traits<Derived>::point_type>
+//{
+//    return tl::envelope(this->derived());
+//}
+//
+//template<typename Derived>
+//auto Geometry<Derived>::boundingBox() const -> BoundingBox<typename geometry_traits<Derived>::point_type>
+//{
+//    return this->envelope();
+//}
 
 } // End namespace tl

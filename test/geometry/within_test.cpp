@@ -21,41 +21,45 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
+#define BOOST_TEST_MODULE Tidop algorithms within test
+#include <boost/test/unit_test.hpp>
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/analysis/Within.h"
 
-#pragma once
+using namespace tl; 
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
+BOOST_AUTO_TEST_SUITE(WithinAlgorithmTest)
 
-#include <optional>
 
-namespace tl
+struct WithinTestFixture
 {
-	
-/*! \addtogroup Algorithms
- *  \{
- */
 
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
+    void setup()
+    {
+        point2d1 = Point2d(1.0, 2.0);
+        point2d2 = Point2d(3.0, 4.0);
+    }
 
+    void teardown()
+    {
 
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
+    }
 
-
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
+    Point2d point2d1;
+    Point2d point2d2;
+};
 
 
-/*! \} */ 
+BOOST_FIXTURE_TEST_CASE(Within_Point2D_SamePoint, WithinTestFixture)
+{    
+    BOOST_CHECK(within(point2d1, point2d1));
+}
 
-} // End namespace tl
+BOOST_FIXTURE_TEST_CASE(Within_Point2D_DifferentPoints, WithinTestFixture)
+{   
+    BOOST_CHECK(!within(point2d1, point2d2));
+    BOOST_CHECK(!within(point2d2, point2d1));
+}
 
-#include "Intersection.impl.h"
+BOOST_AUTO_TEST_SUITE_END()

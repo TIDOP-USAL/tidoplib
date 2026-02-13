@@ -24,38 +24,27 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
-
-#include <optional>
-
 namespace tl
 {
-	
-/*! \addtogroup Algorithms
- *  \{
- */
 
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
+namespace detail
+{
 
+template<typename Point_t>
+[[nodiscard]]
+auto convex_hull_impl(const Point_t & point, point_tag) -> Point_t
+{
+    return point; // Convex hull de un punto es el mismo punto
+}
 
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
-
-
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
+} // namespace detail
 
 
-/*! \} */ 
+template<GeometryConcept G>
+[[nodiscard]]
+constexpr auto convexHull(const G &g) 
+{
+    return detail::convex_hull_impl(g, geometry_tag_t<G>{});
+}
 
-} // End namespace tl
-
-#include "Intersection.impl.h"
+} // namespace tl

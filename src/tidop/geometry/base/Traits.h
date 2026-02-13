@@ -428,6 +428,78 @@ inline constexpr bool is_multi_geometry_v = geometry_traits<G>::is_multi;
 template<typename G>
 inline constexpr bool is_geometry_collection_v = std::is_same_v<geometry_traits<G>::geometry_tag, collection_tag>;
 
+template<typename P>
+struct remove_measure;
+
+template<typename T, typename Tag>
+struct remove_measure<Point<T, Tag>> 
+{
+
+private:
+
+    static constexpr size_t spatial_dims = Tag::spatial_dims;
+
+    template<size_t Dim>
+    struct tag_for_dim;
+
+    template<>
+    struct tag_for_dim<2> { using type = xy_tag; };
+
+    template<>
+    struct tag_for_dim<3> { using type = xyz_tag; };
+
+    template<>
+    struct tag_for_dim<4> { using type = xyzw_tag; };
+
+public:
+    using type = Point<T, typename tag_for_dim<spatial_dims>::type>;
+};
+
+template<typename P>
+using remove_measure_t = typename remove_measure<P>::type;
+
+// Helper para tipo común sin medida
+template<typename P1, typename P2>
+struct common_point_without_measure 
+{
+    static_assert(SameSpatialDimension<P1, P2>,
+        "Points must have same spatial dimension");
+
+    using value_type = std::common_type_t<typename point_traits<P1>::value_type,
+                                          typename point_traits<P2>::value_type>;
+
+    static constexpr size_t spatial_dims = point_traits<P1>::spatial_dims;
+
+    template<size_t Dim>
+    struct tag_for_dim;
+
+    template<>
+    struct tag_for_dim<2> { using type = xy_tag; };
+
+    template<>
+    struct tag_for_dim<3> { using type = xyz_tag; };
+
+    template<>
+    struct tag_for_dim<4> { using type = xyzw_tag; };
+
+    using type = Point<value_type, typename tag_for_dim<spatial_dims>::type>;
+};
+
+template<typename P1, typename P2>
+using common_point_without_measure_t = typename common_point_without_measure<P1, P2>::type;
+
+
+template<typename T>
+constexpr auto epsilon_for() -> T
+{
+    if constexpr (std::is_floating_point_v<T>) {
+        return std::numeric_limits<T>::epsilon() * 100;
+    } else {
+        return T{0};
+    }
+}
+
+
 /*! \} */ 
 
 template<typename T, typename Tag>
