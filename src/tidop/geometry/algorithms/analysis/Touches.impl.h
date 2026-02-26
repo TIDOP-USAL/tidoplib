@@ -30,36 +30,36 @@ namespace tl
 namespace detail 
 {
 
-template<typename Point_t>
-auto touches_impl(const Point_t &,
-                  const Point_t &,
+
+template<typename P1, typename P2>
+auto touches_impl(const P1 &,
+                  const P2 &,
                   point_tag,
                   point_tag) -> bool
 {
     return false;
 }
 
+
+template<typename Point_t, typename Segment_t>
+auto touches_impl(const Point_t &point,
+                  const Segment_t &segment,
+                  point_tag,
+                  segment_tag) -> bool
+{
+    // Un punto toca un segmento si coincide con alguno de sus extremos (frontera)
+    // Si el punto está en el interior del segmento (pero no es extremo) retorna false.
+    return equals(point, segment.pt1()) || equals(point, segment.pt2());
+}
+
 // Point – LineString
-// 
-// Un punto toca una línea si:
-// 
-// - está en su boundary
-// - no está en el interior
-template<typename Point_t>
-auto touches_impl(const Point<Point_t>& pt,
-                  const LineString<Point_t>& ls,
+template<typename Point_t, typename LineString_t>
+auto touches_impl(const Point_t &point,
+                  const LineString_t &lineString,
                   point_tag,
                   linestring_tag) -> bool
 {
-    //if (ls.size() < 2) return false;
-	//
-    //const auto& p0 = ls.front();
-    //const auto& p1 = ls.back();
-	//
-    //if (p0 == p1) return false; // cerrada → no boundary
-	//
-    //return (pt == p0 || pt == p1);
-	return locatePointOnLineString(ls, pt) == Location::Boundary;
+	return locatePointOnLineString(lineString, point) == Location::Boundary;
 }
 
 // Point - Polygon
@@ -69,32 +69,36 @@ auto touches_impl(const Point_t &point,
                   point_tag, 
                   polygon_tag) -> bool 
 {
-    // Un punto toca un polígono si el punto está en el borde del polígono.
     return locatePointInPolygon(polygon, point) == Location::Boundary;
 }
 
 // LineString – LineString
-// Dos líneas tocan si algún endpoint de una está sobre la otra
-// pero no se cruzan en el interior
-//
-// Estrategia eficiente:
-// - Si intersects(interior, interior) → ❌
-// - Si intersects(boundary, boundary) → ✔
 template<typename Point_t>
 auto touches_impl(const LineString<Point_t> &a,
                   const LineString<Point_t> &b,
                   linestring_tag,
                   linestring_tag) -> bool
 {
-    // 1. Si se cruzan en interior → false
-    if (intersects_interior(a, b))
-        return false;
+    bool has_endpoint_contact = false;
 
-    // 2. Boundary vs Boundary
-    auto ba = boundary(a);
-    auto bb = boundary(b);
+    for (size_t i = 0; i + 1 < a.size(); ++i) {
+        Segment<Point_t> sa(a[i], a[i + 1]);
 
-    return intersects(ba, bb);
+        for (size_t j = 0; j + 1 < b.size(); ++j) {
+            Segment<Point_t> sb(b[j], b[j + 1]);
+
+            auto type = intersectionType(sa, sb);
+
+            if (type == IntersectionType::Proper ||
+                type == IntersectionType::Overlapping)
+                return false;
+
+            if (type == IntersectionType::Endpoint)
+                has_endpoint_contact = true;
+        }
+    }
+
+    return has_endpoint_contact;
 }
 
 // Polygon - Polygon
@@ -104,36 +108,43 @@ auto touches_impl(const Polygon_t& p1,
                   polygon_tag, 
                   polygon_tag) -> bool 
 {
-    // Dos polígonos se tocan si sus bordes intersectan pero sus interiores no.
-    if (!intersects(boundary(p1), boundary(p2))) return false;
+    using Point_t = typename geometry_traits<Polygon_t>::point_type;
 
-    // Verificar que un punto interior de P1 no esté dentro de P2
-    // (y viceversa para seguridad si son complejos)
-    if (within(representative_point(p1), p2)) return false;
-    if (within(representative_point(p2), p1)) return false;
+    // Lambda para recorrer todos los segmentos de todos los anillos
+    auto for_each_segment = [](const Polygon_t &poly, auto &&callback) {
+        const auto &outer = poly.outer();
+        for (size_t i = 0; i + 1 < outer.size(); ++i)
+            callback(Segment<Point_t>{outer[i], outer[i + 1]});
+        for (const auto &hole : poly.inners())
+            for (size_t i = 0; i + 1 < hole.size(); ++i)
+                callback(Segment<Point_t>{hole[i], hole[i + 1]});
+        };
 
-    return true;
+    bool has_endpoint_contact = false;
+
+    for_each_segment(p1, [&](const Segment<Point_t> &s1) {
+        for_each_segment(p2, [&](const Segment<Point_t> &s2) {
+            auto type = intersectionType(s1, s2);
+
+            if (type == IntersectionType::Proper || type == IntersectionType::Overlapping)
+                return false; // interior o solapamiento → no toca
+
+            if (type == IntersectionType::Endpoint)
+                has_endpoint_contact = true;
+            });
+        });
+
+    return has_endpoint_contact;
 }
 
 // Segment – Segment
-// Se tocan pero no se solapan (no colineales)
 template<typename Point_t>
 bool touches_impl(const Segment<Point_t>& s1,
                   const Segment<Point_t>& s2,
                   segment_tag,
                   segment_tag)
 {
-    // comparten endpoint
-    if (s1.pt1() == s2.pt1() ||
-        s1.pt1() == s2.pt2() ||
-        s1.pt2() == s2.pt1() ||
-        s1.pt2() == s2.pt2())
-    {
-        // pero no colineales solapados
-        return !overlaps(s1, s2);
-    }
-
-    return false;
+    return intersectionType(s1, s2) == IntersectionType::Endpoint;
 }
 
 template<typename Point_t, typename Geometry_t>
@@ -160,150 +171,26 @@ auto touches_impl(const G1& g1, const G2& g2, T1 t1, T2 t2) -> bool
 }
 
 
-template<typename Polygon_t>
-auto representative_point_impl(const Polygon_t& poly, polygon_tag) 
-{
-    using Point_t = typename geometry_traits<Polygon_t>::point_type;
-    auto bbox = envelope(poly);
-    double mid_y = (bbox.min().y() + bbox.max().y()) / 2.0;
-
-    // 1. Encontrar todas las intersecciones de la línea y = mid_y con los anillos
-    std::vector<double> x_intersections;
-    
-    auto collect_intersections = [&](const auto& ring) {
-        for (size_t i = 0, j = ring.size() - 1; i < ring.size(); j = i++) {
-            const auto& p1 = ring[i];
-            const auto& p2 = ring[j];
-            if ((p1.y() <= mid_y && p2.y() > mid_y) || (p2.y() <= mid_y && p1.y() > mid_y)) {
-                double x = p1.x() + (mid_y - p1.y()) * (p2.x() - p1.x()) / (p2.y() - p1.y());
-                x_intersections.push_back(x);
-            }
-        }
-    };
-
-    collect_intersections(poly.outer());
-    for (const auto& hole : poly.inners()) collect_intersections(hole);
-
-    std::sort(x_intersections.begin(), x_intersections.end());
-
-    // 2. Los intervalos [x[i], x[i+1]] alternan entre estar dentro y fuera.
-    // Buscamos el punto medio del intervalo más ancho que esté "dentro".
-    double best_x = 0;
-    double max_width = -1.0;
-
-    for (size_t i = 0; i + 1 < x_intersections.size(); i++) {
-        double mid_x = (x_intersections[i] + x_intersections[i+1]) / 2.0;
-        Point_t candidate(mid_x, mid_y);
-        
-        // Verificamos si el punto medio está dentro (usando tu algoritmo de ray-casting)
-        if (intersects(poly, candidate)) {
-            double width = x_intersections[i+1] - x_intersections[i];
-            if (width > max_width) {
-                max_width = width;
-                best_x = mid_x;
-            }
-        }
-    }
-
-    // Si no se encontró (caso degenerado), devolvemos el primer punto del outer
-    if (max_width < 0) return poly.outer()[0];
-
-    return Point_t(best_x, mid_y);
-}
-
-// Para LineString: El punto medio del segmento central
-template<typename Point_t>
-auto representative_point_impl(const LineString<Point_t>& line, linestring_tag)
-{
-    if (line.empty()) return Point_t{};
-    return line[line.size() / 2];
-}
-
-// Para Puntos: Es el punto mismo
-template<typename Point_t>
-auto representative_point_impl(const Point_t& pt, point_tag)
-{
-    return pt;
-}
-
-template<typename G1, typename G2>
-constexpr bool intersects_interior(const G1&, const G2&)
-{
-    return false;
-}
-
-template<typename Point_t>
-bool intersects_interior(const Segment<Point_t>& s1,
-                         const Segment<Point_t>& s2)
-{
-    // Intersección general
-    if (!intersects(s1, s2))
-        return false;
-
-    // Comparten solo extremos → NO interior
-    if (s1.pt1() == s2.pt1() ||
-        s1.pt1() == s2.pt2() ||
-        s1.pt2() == s2.pt1() ||
-        s1.pt2() == s2.pt2())
-    {
-        // ¿Hay algo más que el punto?
-        return overlaps(s1, s2);
-    }
-
-    // Si intersectan y no es solo endpoint → interior
-    return true;
-}
-
-template<typename Point_t>
-bool intersects_interior(const LineString<Point_t>& a,
-                         const LineString<Point_t>& b)
-{
-    if (a.size() < 2 || b.size() < 2)
-        return false;
-
-    for (size_t i = 0; i + 1 < a.size(); ++i) {
-        Segment<Point_t> sa(a[i], a[i + 1]);
-
-        for (size_t j = 0; j + 1 < b.size(); ++j) {
-            Segment<Point_t> sb(b[j], b[j + 1]);
-
-            if (intersects_interior(sa, sb))
-                return true;
-        }
-    }
-
-    return false;
-}
-
-template<typename Point_t>
-bool intersects_interior(const LineString<Point_t>& ls,
-                         const Segment<Point_t>& s)
-{
-    if (ls.size() < 2) return false;
-
-    for (size_t i = 0; i + 1 < ls.size(); ++i) {
-        Segment<Point_t> si(ls[i], ls[i + 1]);
-        if (intersects_interior(si, s))
-            return true;
-    }
-    return false;
-}
-
 } // namespace detail
 
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto touches(const G1 &g1, const G2 &g2) -> bool
 {
-    static_assert(is_geometry_v<G1>, "First argument must be a geometry");
-    static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
-    
+    //static_assert(is_geometry_v<G1>, "First argument must be a geometry");
+    //static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
+
     using P1 = geometry_traits<G1>::point_type;
     using P2 = geometry_traits<G2>::point_type;
+    using Scalar1 = typename point_traits<P1>::value_type;
+    using Scalar2 = typename point_traits<P2>::value_type;
 
-    static_assert(std::is_same_v<typename point_traits<P1>::value_type,
-                                 typename point_traits<P2>::value_type>,
-        "Points must have same coordinate type");
+    static_assert(std::is_same_v<Scalar1, Scalar2>, "Points must have same coordinate type");
+    //static_assert(std::is_same_v<typename point_traits<P1>::value_type,
+    //                             typename point_traits<P2>::value_type>,
+    //    "Points must have same coordinate type");
 
     auto dispatch = [&] {
         using tag1 = geometry_tag_t<G1>;
@@ -329,10 +216,5 @@ auto touches(const G1 &g1, const G2 &g2) -> bool
 }
 
 
-template<typename Geometry_t>
-auto representative_point(const Geometry_t& g) 
-{
-    return detail::representative_point_impl(g, geometry_tag_t<Geometry_t>{});
-}
 
 } // namespace tl

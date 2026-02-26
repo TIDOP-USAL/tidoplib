@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
 
 namespace tl
 {
@@ -190,7 +191,9 @@ struct ChebyshevDistance
  *  \{
  */
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto distance(const G1 &g1, const G2 &g2) -> double;
 
 /*! \} */ 

@@ -90,12 +90,11 @@ BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_DifferentPoints, IntersectionTestFi
 
 BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_WithinTolerance, IntersectionTestFixture)
 {
-    static constexpr double EPSILON = 1e-10;
-
+    static constexpr double EPSILON = 1e-5;
     Point2d p2{1.0 + EPSILON / 2, 2.0 + EPSILON / 2};
 
     auto result = intersection(point2d1, p2);
-
+    bool check = result.has_value();
     BOOST_CHECK(result.has_value());
     const auto &intersec_point = result.value();
 

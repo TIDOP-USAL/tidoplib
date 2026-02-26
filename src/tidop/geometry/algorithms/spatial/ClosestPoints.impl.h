@@ -173,7 +173,9 @@ auto closest_points_impl(const G1 &g1, const G2 &g2, Tag1 t1, Tag2 t2) -> Geomet
 
 } // namespace detail
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto closestPoints(const G1 &g1, const G2 &g2)  -> GeometryCollection<typename geometry_traits<G1>::point_type>
 {
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");

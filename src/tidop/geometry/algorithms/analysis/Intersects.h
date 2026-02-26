@@ -29,14 +29,15 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
+#include <ranges>
+#include <variant>
+
+#include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/Segment.h"
 #include "tidop/geometry/primitives/LineString.h"
+#include "tidop/geometry/algorithms/analysis/Equals.h"
 #include "tidop/geometry/Operations.h"
-
-#include <ranges>
-#include <variant>
 
 namespace tl
 {
@@ -111,34 +112,16 @@ namespace tl
  * | BoundingBox | Any | Fast bounding box intersection |
  * 
  */
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto intersects(const G1 &g1, const G2 &g2) -> bool;
 
 
+
+
 template<typename Point_t>
-auto intersects(const Segment<Point_t> &seg, const LinearRing<Point_t> &ring)
-{
-
-    if (ring.size() < 2) return false;
-
-    // 1️ - Chequear si alguno de los extremos está en el interior o en el borde
-    if (locatePointInRing(ring, seg.pt1()) != Location::Exterior ||
-        locatePointInRing(ring, seg.pt2()) != Location::Exterior) {
-        return true;
-    }
-
-    // 2️ - Revisar cada arista del anillo
-    for (size_t i = 0; i < ring.size(); ++i) {
-        size_t j = (i + 1) % ring.size();
-        Segment<Point_t> edge(ring[i], ring[j]);
-
-        if (intersects(seg, edge)) {
-            return true;
-        }
-    }
-
-    return false;
-}
+auto intersects(const Segment<Point_t> &seg, const LinearRing<Point_t> &ring);
 
 /*! \} */
 

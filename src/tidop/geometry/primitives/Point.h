@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file Point.hpp
+/*! \file Point.h
  * \brief N-dimensional point primitive implementation.
  *
  * This file defines the Point class template, which serves as the fundamental
@@ -316,7 +316,7 @@ public:
     explicit operator Point<U, Tag2>() const;
 
     [[nodiscard]]
-    auto empty() const -> bool
+    auto isEmpty() const -> bool
     {
         return false;
     }

@@ -37,9 +37,39 @@ constexpr auto overlaps_impl(const Point_t& p1, const Point_t& p2, point_tag, po
     return false; // Puntos no pueden superponerse según OGC
 }
 
+template<typename Point_t>
+[[nodiscard]]
+constexpr auto overlaps_impl(const Segment<Point_t> &segment1,
+                             const Segment<Point_t> &segment2,
+                             segment_tag,
+                             segment_tag) -> bool
+{
+    //const auto &p1 = seg1.pt1();
+    //const auto &p2 = seg1.pt2();
+    //const auto &q1 = seg2.pt1();
+    //const auto &q2 = seg2.pt2();
+
+    //if (orientation(p1, p2, q1) != WindingOrder::Colinear ||
+    //    orientation(p1, p2, q2) != WindingOrder::Colinear)
+    //    return false;
+
+    //if (!intersects(seg1, seg2))
+    //    return false;
+
+    //if (equals(seg1, seg2))
+    //    return false;
+
+    //if (contains(seg1, seg2) || contains(seg2, seg1))
+    //    return false;
+
+    //return true;
+    return intersectionType(segment1, segment2) == IntersectionType::Overlapping;
+}
+
 } // namespace detail
 
 template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
 constexpr auto overlaps(const G1 &geom1, const G2 &geom2) -> bool
 {

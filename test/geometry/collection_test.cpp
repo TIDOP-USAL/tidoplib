@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_constructor_and_initial_state)
 {
     GeometryCollection<Point2d> collection;
 
-    BOOST_CHECK(collection.empty());
+    BOOST_CHECK(collection.isEmpty());
     BOOST_CHECK_EQUAL(0, collection.size());
     BOOST_CHECK(!collection.hasPoints());
     BOOST_CHECK_EQUAL(collection.pointCount(), 0);
@@ -338,13 +338,13 @@ BOOST_FIXTURE_TEST_CASE(test_clear, GeometryCollectionFixture)
     collection.addLineString(lineString);
     collection.addPolygon(polygon);
 
-    BOOST_CHECK(!collection.empty());
+    BOOST_CHECK(!collection.isEmpty());
     BOOST_CHECK_EQUAL(collection.size(), 3);
 
     // Limpiar
     collection.clear();
 
-    BOOST_CHECK(collection.empty());
+    BOOST_CHECK(collection.isEmpty());
     BOOST_CHECK_EQUAL(collection.size(), 0);
     BOOST_CHECK(collection.points().empty());
     BOOST_CHECK(collection.lineStrings().empty());
@@ -454,7 +454,7 @@ BOOST_FIXTURE_TEST_CASE(test_copy_and_move, GeometryCollectionFixture)
     // Test de movimiento
     GeometryCollection<Point2d> moved = std::move(original);
     BOOST_CHECK_EQUAL(moved.size(), 3);
-    BOOST_CHECK(original.empty()); // Original debería estar vacío después del movimiento
+    BOOST_CHECK(original.isEmpty()); // Original debería estar vacío después del movimiento
 }
 
 // Test 18: Colecciones anidadas profundas
@@ -564,7 +564,7 @@ BOOST_FIXTURE_TEST_CASE(test_morder_synchronization, GeometryCollectionFixture)
 
     // Verificar que clear() limpia mOrder
     collection.clear();
-    BOOST_CHECK(collection.empty());
+    BOOST_CHECK(collection.isEmpty());
     //BOOST_CHECK_THROW(collection[0], std::runtime_error);
 }
 
@@ -833,7 +833,7 @@ BOOST_FIXTURE_TEST_CASE(test_clear_after_removals, GeometryCollectionFixture)
     collection.removeLineString(0);
     collection.removePolygon(0);
 
-    BOOST_TEST(collection.empty());
+    BOOST_TEST(collection.isEmpty());
     BOOST_TEST(collection.size() == 0);
     BOOST_TEST(collection.points().empty());
     BOOST_TEST(collection.lineStrings().empty());

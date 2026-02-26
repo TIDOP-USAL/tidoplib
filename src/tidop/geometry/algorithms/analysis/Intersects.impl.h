@@ -43,7 +43,7 @@ auto intersects_impl(const Point_t &p1,
                      point_tag, 
                      point_tag) -> bool
 {
-    return p1 == p2; // Podría usar una tolerancia
+    return equals(p1, p2);
 }
 
 /* Point - Segment */
@@ -55,11 +55,10 @@ auto intersects_impl(const Point_t &point,
                      segment_tag) -> bool
 {
     using calc_t = typename point_traits<Point_t>::calculation_type;
-    constexpr calc_t eps = std::numeric_limits<calc_t>::epsilon() * static_cast<calc_t>(100);
 
     auto proj = project(point, segment);
     return !proj.isBeforeStart() && !proj.isAfterEnd() &&
-           distance(point, proj.closestPoint) < eps;
+           distance(point, proj.closestPoint) < default_tolerance<calc_t>::value;
 }
 
 /* Segment - Segment */
@@ -87,30 +86,26 @@ auto intersects_impl(const Segment<Point_t> &s1,
     // Solo para 2D por ahora
     static_assert(point_traits<Point_t>::spatial_dims == 2, "Segment intersection currently only supports 2D");
 
-    using calc_t = typename point_traits<Point_t>::calculation_type;
+    //if (!intersects(envelope(s1), envelope(s2))) return false;
 
-    if (!intersects(envelope(s1), envelope(s2))) return false;
+    //auto data = computeIntersectionData(s1, s2);
 
-    const auto &p1 = s1.pt1();
-    const auto &p2 = s1.pt2();
-    const auto &q1 = s2.pt1();
-    const auto &q2 = s2.pt2();
+    //// Intersección interior-interior
+    //if (data.o1 != data.o2 && data.o3 != data.o4) return true;
 
-    auto o1 = orientation(p1, p2, q1);
-    auto o2 = orientation(p1, p2, q2);
-    auto o3 = orientation(q1, q2, p1);
-    auto o4 = orientation(q1, q2, p2);
+    //const auto &p1 = s1.pt1();
+    //const auto &p2 = s1.pt2();
+    //const auto &q1 = s2.pt1();
+    //const auto &q2 = s2.pt2();
 
-    // Caso general
-    if (o1 != o2 && o3 != o4) return true;
+    //// Casos especiales (colinealidad)
+    //if (data.o1 == WindingOrder::Colinear && isBetween(p1, q1, p2)) return true;
+    //if (data.o2 == WindingOrder::Colinear && isBetween(p1, q2, p2)) return true;
+    //if (data.o3 == WindingOrder::Colinear && isBetween(q1, p1, q2)) return true;
+    //if (data.o4 == WindingOrder::Colinear && isBetween(q1, p2, q2)) return true;
 
-    // Casos especiales (colinealidad)
-    if (o1 == WindingOrder::Colinear && isBetween(p1, q1, p2)) return true;
-    if (o2 == WindingOrder::Colinear && isBetween(p1, q2, p2)) return true;
-    if (o3 == WindingOrder::Colinear && isBetween(q1, p1, q2)) return true;
-    if (o4 == WindingOrder::Colinear && isBetween(q1, p2, q2)) return true;
-
-    return false;
+    //return false;
+    return intersectionType(s1, s2) != IntersectionType::None;
 }
 
 /* Point - LineString */
@@ -347,7 +342,7 @@ auto intersects_impl(const LineString<Point_t> &line,
                      linestring_tag,
                      polygon_tag) -> bool
 {
-    if (line.empty()) return false;
+    if (line.isEmpty()) return false;
 
     // 1️ - Algún punto dentro o en borde del polígono
     for (const auto &pt : line) {
@@ -508,11 +503,15 @@ auto intersects_impl(const G1 &g1, const G2 &g2, Tag1 t1, Tag2 t2) -> double
 
 } // namespace detail
 
-template<typename G1, typename G2>
+
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto intersects(const G1 &g1, const G2 &g2) -> bool
 {
-    static_assert(is_geometry_v<G1>, "First argument must be a geometry");
-    static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
+    //static_assert(is_geometry_v<G1>, "First argument must be a geometry");
+    //static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
 
     using P1 = geometry_traits<G1>::point_type;
     using P2 = geometry_traits<G2>::point_type;
@@ -544,6 +543,31 @@ auto intersects(const G1 &g1, const G2 &g2) -> bool
     }
 }
 
+
+template<typename Point_t>
+auto intersects(const Segment<Point_t> &seg, const LinearRing<Point_t> &ring)
+{
+
+    if (ring.size() < 2) return false;
+
+    // 1️ - Chequear si alguno de los extremos está en el interior o en el borde
+    if (locatePointInRing(ring, seg.pt1()) != Location::Exterior ||
+        locatePointInRing(ring, seg.pt2()) != Location::Exterior) {
+        return true;
+    }
+
+    // 2️ - Revisar cada arista del anillo
+    for (size_t i = 0; i < ring.size(); ++i) {
+        size_t j = (i + 1) % ring.size();
+        Segment<Point_t> edge(ring[i], ring[j]);
+
+        if (intersects(seg, edge)) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 
 

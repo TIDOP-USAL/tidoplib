@@ -24,7 +24,10 @@
 
 #pragma once
 
+#include <variant>
+
 #include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/Operations.h"
 #include "tidop/geometry/base/TolerancePolicy.h"
 
@@ -70,10 +73,7 @@ template<GeometryConcept G1, GeometryConcept G2>
 [[nodiscard]]
 constexpr auto equals(const G1 &geom1, 
                       const G2 &geom2, 
-                      const TolerancePolicy &policy) -> bool
-{
-    return equals(geom1, geom2, policy.xyTolerance());
-}
+                      const TolerancePolicy &policy) -> bool;
 
 /*! \} */ 
 

@@ -167,6 +167,11 @@ public:
      * \return Total perimeter (outer ring + inner rings) as a double.
      */
     auto perimeter() const -> double;
+
+    auto isEmpty() const -> bool
+    {
+        return mOuter.isEmpty();
+    }
 };
 
 // TYPE ALIASES FOR POLYGON

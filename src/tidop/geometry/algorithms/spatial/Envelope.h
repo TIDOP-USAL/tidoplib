@@ -22,6 +22,23 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file envelope.h
+ * \brief Minimum bounding box (envelope) computation for geometries.
+ *
+ * This file defines the envelope algorithm, which computes the axis-aligned
+ * minimum bounding box (also known as envelope or extent) that contains a given
+ * geometry or a set of geometries. The result is a BoundingBox object that uses
+ * the coordinate type of the input geometries but strips any measure information
+ * (e.g., M-coordinates) to ensure a pure geometric bounding box.
+ *
+ * The envelope is a fundamental spatial operation used for spatial indexing,
+ * culling, and approximations.
+ *
+ * \note If the input geometry is empty (e.g., empty LineString, empty MultiPoint),
+ *       the function returns an empty BoundingBox (default-constructed).
+ *
+ * \see tl::BoundingBox, tl::GeometryConcept, tl::remove_measure_t
+ */
 #pragma once
 
 #include <variant>
@@ -41,55 +58,61 @@ namespace tl
  * \brief Computes the minimum bounding box (envelope) of a geometry.
  * 
  * This function computes the axis-aligned bounding box that contains the given geometry.
+ * If the geometry is empty, the result is an empty BoundingBox. The returned BoundingBox
+ * uses the same coordinate type as the geometry but discards any measure components
+ * (e.g., M-values) to produce a pure geometric extent.
  *
- * \tparam Geometry_t Type of the geometry. Must be a valid geometry type.
- * 
+ * \tparam G Type of the geometry. Must satisfy the GeometryConcept.
  * \param[in] g Input geometry.
- * 
- * \return BoundingBox containing the input geometry.
- * 
- * \throws std::invalid_argument if the geometry is invalid.
- * 
- * \note For empty geometries, returns a default-constructed (empty) BoundingBox.
+ * \return BoundingBox containing the input geometry. The point type of the returned
+ *         BoundingBox is the same as the geometry's point type with measures removed.
+ *         If the geometry is empty, returns a default-constructed (empty) BoundingBox.
  * 
  * ### Example
  * \code
  * Point2d p(1.0, 2.0);
- * auto bbox = envelope(p);  // bbox.min() == bbox.max() == p
+ * auto bbox = envelope(p);  // bbox.min() == bbox.max() == Point2d(1.0,2.0)
  * 
- * LineString2d line{{0, 0}, {1, 1}, {2, 0}};
- * auto bbox2 = envelope(line);  // bbox2.min() == {0, 0}, bbox2.max() == {2, 1}
+ * LineString2d line{Point2d(0,0), Point2d(1,1), Point2d(2,0)};
+ * auto bbox2 = envelope(line);  // bbox2.min() == {0,0}, bbox2.max() == {2,1}
+ * 
+ * MultiPoint2d emptyPoints;
+ * auto bbox3 = envelope(emptyPoints);  // empty BoundingBox
  * \endcode
  */
-template<typename Geometry_t>
-auto envelope(const Geometry_t &g);
+template<GeometryConcept G>
+[[nodiscard]]
+auto envelope(const G &g);
 
 /*!
  * \brief Computes the combined envelope of multiple geometries.
  *
  * This function computes the minimum bounding box that contains all input geometries.
- * It's equivalent to computing the envelope of each geometry and merging them.
+ * It is equivalent to computing the envelope of each geometry and merging them using
+ * the `merge` function. All geometries must use the same underlying point type
+ * (same coordinate type and dimension), though they may include measure information
+ * which is ignored in the result.
  *
- * \tparam Geometry_t Type of the first geometry.
- * \tparam Geometries Types of remaining geometries.
+ * \tparam Geometry_t Type of the first geometry. Must satisfy GeometryConcept.
+ * \tparam Geometries Types of remaining geometries. Each must satisfy GeometryConcept.
  *
  * \param[in] g First geometry.
  * \param[in] gs Remaining geometries.
  *
- * \return BoundingBox containing all input geometries.
- *
- * \note If no geometries are provided, returns a default-constructed BoundingBox.
- *       For a single geometry, equivalent to calling envelope(const Geometry_t&).
+ * \return BoundingBox containing all input geometries. The point type is the same as
+ *         the geometries' point type with measures removed. If all geometries are empty,
+ *         returns an empty BoundingBox.
  *
  * ### Example
  * \code
  * Point2d p1(0, 0);
  * Point2d p2(2, 2);
- * LineString2d line{{1, 1}, {3, 3}};
+ * LineString2d line{Point2d(1, 1), Point2d(3, 3)};
  * auto bbox = envelope(p1, p2, line);  // bbox.min() == {0, 0}, bbox.max() == {3, 3}
  * \endcode
  */
 template<typename Geometry_t, typename... Geometries>
+[[nodiscard]]
 auto envelope(const Geometry_t &g, const Geometries&... gs);
 
 /*! \} */ 

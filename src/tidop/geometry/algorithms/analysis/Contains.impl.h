@@ -24,15 +24,6 @@
 
 #pragma once
 
-//#include <cmath>
-//
-//#include "tidop/geometry/algorithms/spatial/Envelope.h"
-//#include "tidop/geometry/spatial/BoundingBox.h"
-//#include "tidop/geometry/primitives/Point.h"
-//#include "tidop/geometry/primitives/LineString.h"
-//#include "tidop/geometry/primitives/Polygon.h"
-//#include "tidop/geometry/primitives/MultiPolygon.h"
-
 namespace tl
 {
 
@@ -43,54 +34,128 @@ namespace detail
 template<typename Point_t>
 auto contains_impl(const Point_t &pt1,
                    const Point_t &pt2,
+                   double tolerance,
                    point_tag,
                    point_tag)
 {
-    return pt1 == pt2;
+    return equalsExact(pt1, pt2, tolerance);
 }
 
 template<typename Point_t>
-auto contains_impl(const Segment<Point_t> &line,
-                   const Point_t &point,
-                   segment_tag,
-                   point_tag) -> bool
-{
-    return false;
-}
-
-template<typename Point_t>
-auto contains_impl(const Point_t &point,
-                   const Segment<Point_t> &line,
-                   point_tag,
+auto contains_impl(const Segment<Point_t> &seg1,
+                   const Segment<Point_t> &seg2,
+                   double tolerance,
+                   segment_tag, 
                    segment_tag) -> bool
 {
-    return false;
+    if (equalsExact(seg1, seg2, tolerance)) return true;
+
+    const auto &p1 = seg1.pt1();
+    const auto &p2 = seg1.pt2();
+    const auto &q1 = seg2.pt1();
+    const auto &q2 = seg2.pt2();
+
+    if (orientation(p1, p2, q1) != WindingOrder::Colinear ||
+        orientation(p1, p2, q2) != WindingOrder::Colinear)
+        return false;
+
+    if (!isBetween(p1, q1, p2) ||
+        !isBetween(p1, q2, p2))
+        return false;
+
+    if (q1 == q2) {
+        // Un segmento no contiene a sus propios extremos
+        if (equalsExact(q1, p1, tolerance) || equalsExact(q1, p2, tolerance)) return false;
+    } else if (p1 == p2) {
+        if (equalsExact(p1, q1, tolerance) || equalsExact(p1, q2, tolerance)) return false;
+    }
+
+    return true;
 }
 
-// LineString - Point
-// OGC: un punto no puede estar en el interior de un LineString, aunque caiga sobre un segmento.
+// LineString - LineString
 template<typename Point_t>
-auto contains_impl(const LineString<Point_t> &line, 
-                   const Point_t &point,
+auto contains_impl(const LineString<Point_t> &container,
+                   const LineString<Point_t> &containee,
+                   double tolerance,
                    linestring_tag,
-                   point_tag) -> bool
-{
-    return false;
-}
-
-template<typename Point_t>
-auto contains_impl(const Point_t &point,
-                   const LineString<Point_t> &line,
-                   point_tag,
                    linestring_tag) -> bool
 {
-    return false;
+    if (equalsExact(container, containee, tolerance))
+        return true;
+
+    // Todos los puntos del containee deben estar sobre container
+    for (const auto &pt : containee) {
+        if (locatePointOnLineString(container, pt, tolerance) == Location::Exterior)
+            return false;
+    }
+
+    // Todos los segmentos del containee deben estar contenidos
+    for (size_t i = 0; i + 1 < containee.size(); ++i) {
+        Segment<Point_t> seg(containee[i], containee[i + 1]);
+
+        bool found = false;
+
+        for (size_t j = 0; j + 1 < container.size(); ++j) {
+            Segment<Point_t> containerSeg(container[j], container[j + 1]);
+
+            if (contains(containerSeg, seg, tolerance)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+            return false;
+    }
+
+    return true;
 }
+
+// Polygon-Polygon (un polígono contiene a otro)
+template<typename Point_t>
+auto contains_impl(const Polygon<Point_t> &container,
+                   const Polygon<Point_t> &containee,
+                   double tolerance,
+                   polygon_tag,
+                   polygon_tag) -> bool
+{
+    // Todos los puntos del containee deben estar dentro del container (interior)
+    for (const auto &pt : containee.outer()) {
+        if (locatePointInPolygon(container, pt) != Location::Interior) {
+            return false;
+        }
+    }
+
+    // Ningún segmento del containee intersecta los huecos del container
+    for (size_t i = 0; i < containee.outer().size(); ++i) {
+        size_t j = (i + 1) % containee.outer().size();
+        Segment<Point_t> seg(containee.outer()[i], containee.outer()[j]);
+        for (const auto &hole : container.inners()) {
+            if (intersects(seg, hole)) {
+                return false;
+            }
+        }
+    }
+
+    // Los huecos del containee deben estar totalmente dentro de los huecos del container o fuera completamente
+    for (const auto &hole : containee.inners()) {
+        for (const auto &pt : hole) {
+            if (!pointInAnyHole(pt, container) && locatePointInPolygon(container, pt) != Location::Interior) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 
 // BoundingBox-Point
 template<typename Point_t>
 auto contains_impl(const BoundingBox<Point_t> &box,
                    const Point_t &pt, 
+                   double tolerance,
                    bbox_tag,
                    point_tag)
 {
@@ -107,29 +172,22 @@ auto contains_impl(const BoundingBox<Point_t> &box,
 template<typename Polygon_t, typename Point_t>
 auto contains_impl(const Polygon_t &polygon,
                    const Point_t &pt, 
+                   double tolerance,
                    polygon_tag,
                    point_tag) -> bool
 {
     return locatePointInPolygon(polygon, pt) == Location::Interior;
 }
 
-template<typename Polygon_t, typename Point_t>
-auto contains_impl(const Point_t &pt,
-                   const Polygon_t &polygon,
-                   point_tag,   
-                   polygon_tag) -> bool
-{
-    return false;
-}
-
 // Polygon-LineString (todos los puntos de la línea están dentro del polígono, incluyendo el borde)
 template<typename Point_t>
 auto contains_impl(const Polygon<Point_t> &polygon, 
                    const LineString<Point_t> &line,
+                   double tolerance,
                    polygon_tag, 
                    linestring_tag) -> bool
 {
-    if (line.empty()) return true; // Línea vacía siempre está contenida
+    if (line.isEmpty()) return true; // Línea vacía siempre está contenida
 
     // 1️ - Todos los puntos de la línea deben estar en el interior (no en borde)
     for (const auto &pt : line) {
@@ -151,56 +209,12 @@ auto contains_impl(const Polygon<Point_t> &polygon,
     return true;
 }
 
-template<typename Point_t>
-auto contains_impl(const LineString<Point_t> &line, 
-                   const Polygon<Point_t> &polygon,
-                   linestring_tag,
-                   polygon_tag) -> bool
-{
-    return false;
-}
-
-// Polygon-Polygon (un polígono contiene a otro)
-template<typename Point_t>
-auto contains_impl(const Polygon<Point_t> &container, 
-                   const Polygon<Point_t> &containee,
-                   polygon_tag, 
-                   polygon_tag) -> bool
-{
-    // 1️ - Todos los puntos del containee deben estar dentro del container (interior)
-    for (const auto &pt : containee.outer()) {
-        if (locatePointInPolygon(container, pt) != Location::Interior) {
-            return false;
-        }
-    }
-
-    // 2️ - Ningún segmento del containee intersecta los huecos del container
-    for (size_t i = 0; i < containee.outer().size(); ++i) {
-        size_t j = (i + 1) % containee.outer().size();
-        Segment<Point_t> seg(containee.outer()[i], containee.outer()[j]);
-        for (const auto &hole : container.inners()) {
-            if (intersects(seg, hole)) {
-                return false;
-            }
-        }
-    }
-
-    // 3️ - Los huecos del containee deben estar totalmente dentro de los huecos del container o fuera completamente
-    for (const auto &hole : containee.inners()) {
-        for (const auto &pt : hole) {
-            if (!pointInAnyHole(pt, container) && locatePointInPolygon(container, pt) != Location::Interior) {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
 
 // MultiPolygon - Point (un multipolígono contiene un punto)
 template<typename Point_t>
 auto contains_impl(const MultiPolygon<Point_t> &multiPolygon,
                    const Point_t &pt, 
+                   double tolerance,
                    multipolygon_tag, 
                    point_tag) -> bool
 {
@@ -216,6 +230,7 @@ auto contains_impl(const MultiPolygon<Point_t> &multiPolygon,
 template<typename Point_t>
 auto contains_impl(const MultiPolygon<Point_t> &multiPolygon, 
                    const Polygon<Point_t> &polygon,
+                   double tolerance,
                    multipolygon_tag, 
                    polygon_tag) -> bool
 {
@@ -231,6 +246,7 @@ auto contains_impl(const MultiPolygon<Point_t> &multiPolygon,
 template<typename Point_t, typename Geometry_t>
 auto contains_impl(const GeometryCollection<Point_t> &gc,
                    const Geometry_t &geom,
+                   double tolerance,
                    collection_tag,
                    geometry_tag_t<Geometry_t>) -> bool
 {
@@ -245,39 +261,55 @@ auto contains_impl(const GeometryCollection<Point_t> &gc,
     return false;
 }
 
+
+template<typename G1, typename G2, typename Tag1, typename Tag2>
+[[nodiscard]]
+constexpr auto contains_impl(const G1 &, const G2 &, double, Tag1, Tag2) -> bool
+{
+    return false;
+}
+
+
 } // namespace detail
 
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
-auto contains(const G1 &g1, const G2 &g2) -> bool
+auto contains(const G1 &geom1, const G2 &geom2) -> bool
 {
-    static_assert(is_geometry_v<G1>, "First argument must be a geometry");
-    static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
+    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
 
-    using tag1 = geometry_tag_t<G1>;
-    using tag2 = geometry_tag_t<G2>;
-    return detail::contains_impl(g1, g2, tag1{}, tag2{});
+    return contains(geom1, geom2, default_tolerance<Scalar>::value);
 
-    //auto dispatch = [&] {
-    //    using tag1 = geometry_tag_t<G1>;
-    //    using tag2 = geometry_tag_t<G2>;
-    //    return detail::contains_impl(g1, g2, tag1{}, tag2{});
-    //};
-
-    //if constexpr (GeometryCollectionConcept<G1> || GeometryCollectionConcept<G2>) {
-    //    return dispatch();
-    //} else if constexpr (MultiGeometryConcept<G1> && MultiGeometryConcept<G2>) {
-    //    for (const auto &a : g1) {
-    //        for (const auto &b : g2)
-    //            if (contains(a, b)) return true;
-    //    }
-    //    return false;
-    //} else if constexpr (!MultiGeometryConcept<G1> && MultiGeometryConcept<G2>) {
-    //    return false;
-    //} else {
-    //    return dispatch();
-    //}
 }
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto contains(const G1 &geom1,
+                        const G2 &geom2,
+                        double tolerance) -> bool
+{
+    using P1 = geometry_traits<G1>::point_type;
+    using P2 = geometry_traits<G2>::point_type;
+    using Scalar1 = typename point_traits<P1>::value_type;
+    using Scalar2 = typename point_traits<P2>::value_type;
+
+    static_assert(std::is_same_v<Scalar1, Scalar2>, "Points must have same coordinate type");
+
+    return detail::contains_impl(geom1, geom2, tolerance, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
+}
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto contains(const G1 &geom1,
+                        const G2 &geom2,
+                        const TolerancePolicy &policy) -> bool
+{
+    return contains(geom1, geom2, policy.xyTolerance());
+}
+
 
 } // namespace tl

@@ -27,7 +27,6 @@
 
 #include "tidop/config.h"
 
-#include "tidop/core/base/Concepts.h"
 #include "tidop/geometry/base/Traits.h"
 
 namespace tl
@@ -80,9 +79,14 @@ concept MultiGeometryConcept = GeometryConcept<G> && is_multi_geometry_v<G>;
 
 
 template<typename P>
-concept PointConcept = is_geometry_v<P> &&
+concept PointConcept = GeometryConcept<P> &&
                        geometry_type_v<P> == GeometryType::point &&
                        std::regular<P>;
+
+template<typename G>
+concept SegmentConcept = GeometryConcept<G> &&
+                         geometry_type_v<G> == GeometryType::segment;
+
 
 template<typename G>
 concept GeometryCollectionConcept = GeometryConcept<G> && is_geometry_collection_v<G>;

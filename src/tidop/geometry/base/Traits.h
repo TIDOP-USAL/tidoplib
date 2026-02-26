@@ -348,13 +348,59 @@ struct geometry_traits<Vector<T, S>>
     using point_type = Vector<T, S>;
 };
 
-
 /*!
  * \brief Helper alias to get the tag type for a geometry.
  * \tparam G Geometry type.
  */
 template<typename G>
 using geometry_tag_t = typename geometry_traits<G>::geometry_tag;
+
+
+template<typename G>
+struct topology_traits;
+
+template<typename T, typename Tag>
+struct topology_traits<Point<T, Tag>>
+{
+    static constexpr int topological_dimension = 0;
+};
+
+template<typename Point_t>
+struct topology_traits<Segment<Point_t>>
+{
+    static constexpr int topological_dimension = 1;
+};
+
+template<typename Point_t>
+struct topology_traits<LineString<Point_t>>
+{
+    static constexpr int topological_dimension = 1;
+};
+
+
+template<typename Point_t>
+struct topology_traits<Polygon<Point_t>>
+{
+    static constexpr int topological_dimension = 2;
+};
+
+template<typename Point_t>
+struct topology_traits<MultiPoint<Point_t>>
+{
+    static constexpr int topological_dimension = 0;
+};
+
+template<typename Point_t>
+struct topology_traits<MultiLineString<Point_t>>
+{
+    static constexpr int topological_dimension = 1;
+};
+
+template<typename Point_t>
+struct topology_traits<MultiPolygon<Point_t>>
+{
+    static constexpr int topological_dimension = 2;
+};
 
 /* HELPER ALIASES AND VARIABLES */
 
@@ -489,15 +535,15 @@ template<typename P1, typename P2>
 using common_point_without_measure_t = typename common_point_without_measure<P1, P2>::type;
 
 
-template<typename T>
-constexpr auto epsilon_for() -> T
-{
-    if constexpr (std::is_floating_point_v<T>) {
-        return std::numeric_limits<T>::epsilon() * 100;
-    } else {
-        return T{0};
-    }
-}
+//template<typename T>
+//constexpr auto epsilon_for() -> T
+//{
+//    if constexpr (std::is_floating_point_v<T>) {
+//        return std::numeric_limits<T>::epsilon() * 100;
+//    } else {
+//        return T{0};
+//    }
+//}
 
 
 /*! \} */ 

@@ -27,23 +27,12 @@
 namespace tl
 {
 
-namespace detail 
-{
-
-template<typename Point_t>
-[[nodiscard]]
-constexpr auto disjoint_impl(const Point_t& p1, const Point_t& p2, point_tag, point_tag) -> bool
-{
-    return !equals(p1, p2);
-}
-
-} // namespace detail
-
 template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
 constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool
 {
-    return detail::disjoint_impl(geom1, geom2, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
+    return !intersects(geom1, geom2);
 }
 
 } // namespace tl

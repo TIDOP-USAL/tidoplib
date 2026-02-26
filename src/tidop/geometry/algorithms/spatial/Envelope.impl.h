@@ -31,89 +31,101 @@ namespace detail
 {
 
 template<typename Point_t>
-auto envelope_impl(const Point_t &p, point_tag) 
+auto envelope_impl(const Point_t &point, 
+                   point_tag)
 {
-    return BoundingBox<Point_t>(p, p);
+    using P = remove_measure_t<Point_t>;
+    return BoundingBox<P>(static_cast<P>(point), static_cast<P>(point));
 }
 
 template<typename Point_t>
-auto envelope_impl(const Segment<Point_t> &s, segment_tag)
+auto envelope_impl(const Segment<Point_t> &segment,
+                   segment_tag)
 {
-    return BoundingBox<Point_t>(s.pt1(), s.pt2());
+    using P = remove_measure_t<Point_t>;
+    return BoundingBox<P>(static_cast<P>(segment.pt1()), static_cast<P>(segment.pt2()));
 }
 
 template<typename Container_t>
 auto envelope_from_container(const Container_t &container)
 {
     using Point_t = typename Container_t::value_type;
-    if (container.empty()) return BoundingBox<Point_t>();
+    using P = remove_measure_t<Point_t>;
 
-    Point_t min_p = container[0];
-    Point_t max_p = container[0];
+    // Solo se devería llamar desde envelope, que ya verifica si la geometría está vacía, pero se añade esta comprobación por seguridad.
+    if (container.isEmpty()) return BoundingBox<P>();
 
-    for (const auto &p : container) {
+    Point_t min_point = container[0];
+    Point_t max_point = container[0];
+
+    for (const auto &point : container) {
         for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
-            if (p[i] < min_p[i]) min_p[i] = p[i];
-            if (p[i] > max_p[i]) max_p[i] = p[i];
+            if (point[i] < min_point[i]) min_point[i] = point[i];
+            if (point[i] > max_point[i]) max_point[i] = point[i];
         }
     }
-    return BoundingBox<Point_t>(min_p, max_p);
+
+    return BoundingBox<P>(static_cast<P>(min_point), static_cast<P>(max_point));
 }
 
 
 template<typename Polygon_t>
-auto envelope_impl(const Polygon_t &polygon, polygon_tag)
+auto envelope_impl(const Polygon_t &polygon, 
+                   polygon_tag)
 {
     return envelope_from_container(polygon.outer());
 }
 
 template<typename LineString_t>
-auto envelope_impl(const LineString_t &lineString, linestring_tag)
+auto envelope_impl(const LineString_t &lineString, 
+                   linestring_tag)
 {
     return envelope_from_container(lineString);
 }
 
 template<typename MultiPoint_t>
-auto envelope_impl(const MultiPoint_t &mp, multipoint_tag)
+auto envelope_impl(const MultiPoint_t &multiPoint,
+                   multipoint_tag)
 {
-    return envelope_from_container(mp);
+    return envelope_from_container(multiPoint);
 }
 
 template<typename Point_t>
-auto envelope_impl(const MultiLineString<Point_t> &multiLineString, multilinestring_tag)
+auto envelope_impl(const MultiLineString<Point_t> &multiLineString,
+                   multilinestring_tag)
 {
-    BoundingBox<Point_t> total;
-    for (const auto &line : multiLineString) {
-        total = merge(total, envelope_impl(line, linestring_tag{}));
+    BoundingBox<remove_measure_t<Point_t>> bbox;
+
+    for (const auto &lineString : multiLineString) {
+        bbox = merge(bbox, envelope_impl(lineString, linestring_tag{}));
     }
-    return total;
+
+    return bbox;
 }
 
 template<typename Point_t>
-auto envelope_impl(const MultiPolygon<Point_t> &mp, multipolygon_tag)
+auto envelope_impl(const MultiPolygon<Point_t> &multiPolygon,
+                   multipolygon_tag)
 {
-    BoundingBox<Point_t> bbox;
-    for (const auto &poly : mp) {
-        bbox = merge(bbox, envelope_impl(poly, polygon_tag{}));
+    BoundingBox<remove_measure_t<Point_t>> bbox;
+
+    for (const auto &polygon : multiPolygon) {
+        bbox = merge(bbox, envelope_impl(polygon, polygon_tag{}));
     }
+
     return bbox;
 }
 
 template<typename Point_t>
 auto envelope_impl(const GeometryCollection<Point_t> &geometryCollection, collection_tag)
 {
-    BoundingBox<Point_t> bbox;
+    BoundingBox<remove_measure_t<Point_t>> bbox;
 
-    for (size_t i = 0; i < geometryCollection.size(); ++i) {
-
-        auto geom = geometryCollection[i];
+    for (const auto &geom : geometryCollection) {
         std::visit([&](auto &&arg) {
-
             const auto &geometry = arg.get();
             using GeometryType = std::decay_t<decltype(geometry)>;
-
             bbox = merge(bbox, envelope_impl(geometry, geometry_tag_t<GeometryType>{}));
-
         }, geom);
     }
 
@@ -122,16 +134,17 @@ auto envelope_impl(const GeometryCollection<Point_t> &geometryCollection, collec
 
 } // namespace detail
 
-template<typename Geometry_t>
-auto envelope(const Geometry_t &g) 
+template<GeometryConcept G>
+[[nodiscard]]
+auto envelope(const G &g)
 {
-    static_assert(is_geometry_v<Geometry_t>,
-        "The type must be a geometry. Check if geometry_traits is specialized for this type.");
+    if (g.isEmpty()) return BoundingBox<remove_measure_t<typename geometry_traits<G>::point_type>>();
 
-    return detail::envelope_impl(g, geometry_tag_t<Geometry_t>{});
+    return detail::envelope_impl(g, geometry_tag_t<G>{});
 }
 
 template<typename Geometry_t, typename ...Geometries>
+[[nodiscard]]
 auto envelope(const Geometry_t &g, const Geometries & ...gs)
 {
     static_assert((is_geometry_v<Geometry_t> && ... && is_geometry_v<Geometries>),

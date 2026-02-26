@@ -104,6 +104,24 @@ BOOST_AUTO_TEST_CASE(segment_segment_intersects)
     BOOST_CHECK(tl::intersects(s7, s8));
 }
 
+BOOST_AUTO_TEST_CASE(segment_LineString_intersects)
+{
+    Segment2d s(Point2d(0.0, 0.0), Point2d(10.0, 10.0));
+    LineString2d ls = {
+        Point2d(0.0, 10.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 9.0)};
+
+    BOOST_CHECK(intersects(s, ls));
+    BOOST_CHECK(intersects(ls, s));
+
+    LineString2d ls2 = {
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 9.0)};
+    BOOST_CHECK(intersects(s, ls2));
+}
+
 BOOST_AUTO_TEST_CASE(point_linestring_intersects)
 {
     tl::LineString2d line = {

@@ -41,7 +41,7 @@ struct DisjointTestFixture
         point2d2 = Point2d(3.0, 4.0);
 
         point3d1 = Point3d(1.0, 2.0, 3.0);
-        point3d2 = Point3d(1.0, 2.0, 3.000001);
+        point3d2 = Point3d(1.0, 2.0, 3.0 + 1e-13);
     }
 
     void teardown()

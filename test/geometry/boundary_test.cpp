@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(point_boundary)
     
     // Verificar que es un MultiPoint
     BOOST_CHECK_EQUAL(b.size(), 0);
-    BOOST_CHECK(b.empty());
+    BOOST_CHECK(b.isEmpty());
     
     // Punto 3D también
     Point3d point3d(1.0, 2.0, 3.0);

@@ -72,7 +72,7 @@ auto distance_impl(const Point_t &point,
                    point_tag, 
                    linestring_tag) -> double
 {
-    if (lineString.empty()) return std::numeric_limits<double>::max();
+    if (lineString.isEmpty()) return std::numeric_limits<double>::max();
     if (lineString.size() == 1) return distance(point, lineString[0]);
 
     double min_dist = std::numeric_limits<double>::max();
@@ -107,13 +107,13 @@ auto distance_impl(const Point_t &point,
     double min_dist = std::numeric_limits<double>::max();
 
     auto check_ring = [&](const auto &ring) {
-        if (ring.empty()) return;
+        if (ring.isEmpty()) return;
         // Importante: Un anillo de N puntos tiene N segmentos
         for (size_t i = 0; i < ring.size(); ++i) {
             Segment<Point_t> edge(ring[i], ring[(i + 1) % ring.size()]);
             min_dist = std::min(min_dist, distance(point, edge));
         }
-        };
+    };
 
     check_ring(polygon.outer());
     for (const auto &hole : polygon.inners()) {
@@ -206,7 +206,7 @@ auto distance_impl(const Segment<Point_t> &segment,
                    segment_tag,
                    linestring_tag) -> double
 {
-    if (line.empty()) return std::numeric_limits<double>::max();
+    if (line.isEmpty()) return std::numeric_limits<double>::max();
 
     double min_dist = std::numeric_limits<double>::max();
 
@@ -262,7 +262,7 @@ auto distance_impl(const LineString<Point_t> &l1,
                    linestring_tag,
                    linestring_tag) -> double
 {
-    if (l1.empty() || l2.empty())
+    if (l1.isEmpty() || l2.isEmpty())
         return std::numeric_limits<double>::max();
 
     double min_dist = std::numeric_limits<double>::max();
@@ -464,7 +464,9 @@ auto distance_impl(const G1 &g1, const G2 &g2, Tag1 t1, Tag2 t2) -> double
 } // namespace detail
 
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto distance(const G1 &g1, const G2 &g2) -> double
 {
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");

@@ -913,7 +913,7 @@ public:
      * \return true if the collection contains no geometries, false otherwise.
      */
     [[nodiscard]] 
-    constexpr auto empty() const noexcept -> bool;
+    constexpr auto isEmpty() const noexcept -> bool;
 
     /*!
      * \brief Remove all geometries from the collection.
@@ -1525,7 +1525,7 @@ constexpr auto GeometryCollection<Point_t>::hasGeometryCollections() const noexc
 }
 
 template<typename Point_t>
-constexpr auto GeometryCollection<Point_t>::empty() const noexcept -> bool
+constexpr auto GeometryCollection<Point_t>::isEmpty() const noexcept -> bool
 {
     return mOrder.empty();
 }

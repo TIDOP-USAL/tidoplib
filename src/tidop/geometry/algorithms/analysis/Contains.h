@@ -24,10 +24,11 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/Operations.h"
-
 #include <variant>
+
+#include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/Operations.h"
+#include "tidop/geometry/algorithms/analysis/EqualsExact.h"
 
 namespace tl
 {
@@ -44,9 +45,25 @@ namespace tl
 //
 // - A ≠ B
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
-auto contains(const G1 &g1, const G2 &g2) -> bool;
+auto contains(const G1 &geom1, const G2 &geom2) -> bool;
+
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto contains(const G1 &geom1, const G2 &geom2, double tolerance) -> bool;
+
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto contains(const G1 &geom1,
+                        const G2 &geom2, 
+                        const TolerancePolicy &policy) -> bool;
+
 
 /*! \} */ 
 

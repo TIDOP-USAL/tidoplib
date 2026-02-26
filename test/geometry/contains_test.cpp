@@ -753,7 +753,7 @@ BOOST_AUTO_TEST_CASE(contains_performance_large_polygon)
         large_poly.outer().push_back(tl::Point2d(x, y));
     }
     // Cerrar el polígono
-    if (!large_poly.outer().empty()) {
+    if (!large_poly.outer().isEmpty()) {
         large_poly.outer().push_back(large_poly.outer()[0]);
     }
 
@@ -766,6 +766,48 @@ BOOST_AUTO_TEST_CASE(contains_performance_large_polygon)
     BOOST_CHECK(!tl::contains(large_poly, tl::Point2d(15.0, 0.0)));      // Fuera en X
     BOOST_CHECK(!tl::contains(large_poly, tl::Point2d(0.0, 15.0)));      // Fuera en Y
     BOOST_CHECK(!tl::contains(large_poly, tl::Point2d(10.1, 10.1)));     // Fuera en diagonal
+}
+
+BOOST_AUTO_TEST_CASE(Contains_Segment_Segment)
+{
+    Point2d p1(1.0, 2.0);
+    Point2d p2(3.0, 4.0);
+    Point2d mid1(1.5, 2.5);
+    Point2d mid2(2.5, 3.5);
+
+    Segment<Point2d> segA(p1, p2);
+    Segment<Point2d> segB(p1, p2);
+    BOOST_CHECK(contains(segA, segB));
+    BOOST_CHECK(contains(segB, segA));
+
+    Segment<Point2d> segC(mid1, mid2);
+    BOOST_CHECK(contains(segA, segC));
+
+    Point2d mid(2.0, 3.0);
+    Segment<Point2d> segD(p1, mid); // toca extremo inicial
+    BOOST_CHECK(contains(segA, segD));
+
+    Point2d outside(3.5, 4.5);
+    Segment<Point2d> segE(p1, outside); // se sale
+    BOOST_CHECK(!contains(segA, segE));
+
+    Point2d q1(2.0, 2.0); // no colineal
+    Point2d q2(4.0, 4.0);
+    Segment<Point2d> segF(q1, q2);
+    BOOST_CHECK(!contains(segA, segF));
+
+    Segment<Point2d> segG(p1, p1); // degenerado (punto)
+    BOOST_CHECK(!contains(segA, segG)); // segmento no puede contener a otro si es punto
+
+    BOOST_CHECK(contains(segG, segG)); // punto contiene a punto (equals)
+
+    Point2dm pm1(1.0, 2.0, 10.0);
+    Point2dm pm2(3.0, 4.0, 20.0);
+    Point2dm qm1(1.5, 2.5, 15.0);
+    Point2dm qm2(2.5, 3.5, 25.0);
+    Segment<Point2dm> segH(pm1, pm2);
+    Segment<Point2dm> segI(qm1, qm2);
+    BOOST_CHECK(contains(segH, segI)); // ignora medida
 }
 
 BOOST_AUTO_TEST_SUITE_END()

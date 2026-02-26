@@ -24,9 +24,10 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-
 #include <variant>
+
+#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
 
 namespace tl
 {
@@ -54,7 +55,9 @@ namespace tl
  * 
  * \see distance(), intersects()
  */
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+	requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto closestPoints(const G1 &g1, const G2 &g2)  -> GeometryCollection<typename geometry_traits<G1>::point_type>;
 				 
 				 

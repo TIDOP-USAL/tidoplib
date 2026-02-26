@@ -35,6 +35,14 @@ namespace tl
  *  \{
  */
 
+template<typename T>
+struct default_tolerance
+{
+    static constexpr double value = std::is_same_v<T, float> ? 1e-6 :
+                                    std::is_same_v<T, double> ? 1e-12 :
+                                    std::is_same_v<T, long double> ? 1e-12l : 0.0;
+};
+
 
 enum class CoordinateUnit 
 {

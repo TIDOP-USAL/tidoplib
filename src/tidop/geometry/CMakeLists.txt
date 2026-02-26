@@ -46,6 +46,8 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/analysis/Disjoint.impl.h
                             algorithms/analysis/Equals.h
                             algorithms/analysis/Equals.impl.h
+                            algorithms/analysis/EqualsExact.h
+                            algorithms/analysis/EqualsExact.impl.h
                             algorithms/analysis/Intersects.h
                             algorithms/analysis/Intersects.impl.h
                             algorithms/analysis/Overlaps.h

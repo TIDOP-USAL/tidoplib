@@ -297,7 +297,7 @@ public:
      * \return true if the container is empty, false otherwise
      */
     [[nodiscard]] 
-    auto empty() const -> bool;
+    auto isEmpty() const -> bool;
     
     /*!
      * \brief Sets the size of the container
@@ -539,7 +539,7 @@ constexpr void GeometryContainer<Geometry_t>::clear() noexcept
 }
 
 template<typename Geometry_t>
-auto GeometryContainer<Geometry_t>::empty() const -> bool
+auto GeometryContainer<Geometry_t>::isEmpty() const -> bool
 {
     return mEntities.empty();
 }

@@ -24,10 +24,14 @@
 
 #pragma once
 
+#include <variant>
+
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/Operations.h"
-
-#include <variant>
+#include "tidop/geometry/algorithms/analysis/Overlaps.h"
+#include "tidop/geometry/algorithms/analysis/Boundary.h"
+#include "tidop/geometry/algorithms/analysis/Within.h"
+#include "tidop/geometry/algorithms/analysis/Crosses.h"
 
 namespace tl
 {
@@ -45,7 +49,9 @@ namespace tl
  *  \{
  */
 
-template<typename G1, typename G2>
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
 auto touches(const G1 &g1, const G2 &g2) -> bool;
 
 /*! \} */ 

@@ -211,6 +211,17 @@ public:
      * \return A point representing the vector from `pt1` to `pt2`.
      */
     auto vector() const noexcept;
+
+    auto midPoint() const noexcept
+    {
+        remove_measure_t<Point_t> mid{};
+
+        for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
+            mid[i] = (mPoints[0][i] + mPoints[1][i]) * 0.5;
+        }
+
+        return mid;
+    }
 };
 
 
@@ -292,6 +303,8 @@ Segment<Point_t>::Segment(const Point_t &point,
                           double length,
                           bool bCenter)
 {
+
+    static_assert(point_traits<Point_t>::spatial_dims == 2, "This constructor only supports 2D points");
 
     double a = std::cos(angle);
     double b = std::sin(angle);
@@ -381,10 +394,13 @@ template<typename Point_t>
 auto Segment<Point_t>::isEmpty() const -> bool
 {
     using sub_type = typename Point_t::value_type;
-    return (pt1().x() == consts::zero<sub_type> &&
-            pt1().y() == consts::zero<sub_type> &&
-            pt2().x() == consts::zero<sub_type> &&
-            pt2().y() == consts::zero<sub_type>);
+
+    for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
+        if (mPoints[0][i] != consts::zero<sub_type> || mPoints[1][i] != consts::zero<sub_type>) {
+            return false;
+        }
+    }
+
     return true;
 }
 

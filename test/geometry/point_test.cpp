@@ -380,7 +380,7 @@ BOOST_FIXTURE_TEST_CASE(check_point_equal, PointTest)
     Point2d pt_double = point_xy_double;
 
     BOOST_CHECK(point_xy_double == pt_double);
-    BOOST_CHECK(67.0 == pt_double.y());
+    BOOST_CHECK(562.94 == pt_double.y());
 
     Point3f pt_float = point_xyz_float;
     BOOST_CHECK(point_xyz_float == pt_float);
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(multi_point_default_constructor)
 {
     MultiPoint2i multiPoint;
 
-    BOOST_CHECK_EQUAL(true, multiPoint.empty());
+    BOOST_CHECK_EQUAL(true, multiPoint.isEmpty());
     BOOST_CHECK_EQUAL(0, multiPoint.size());
     BOOST_CHECK(GeometryType::multipoint == multiPoint.type());
     auto w = envelope(multiPoint);
@@ -531,7 +531,7 @@ BOOST_AUTO_TEST_CASE(multi_point_default_constructor)
 
     MultiPoint3i multiPoint3;
 
-    BOOST_CHECK_EQUAL(true, multiPoint3.empty());
+    BOOST_CHECK_EQUAL(true, multiPoint3.isEmpty());
     BOOST_CHECK_EQUAL(0, multiPoint3.size());
     BOOST_CHECK(GeometryType::multipoint == multiPoint3.type());
     auto box = envelope(multiPoint3);

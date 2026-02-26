@@ -195,7 +195,7 @@ auto buffer_impl(const LineString_t &line, double distance, linestring_tag) -> P
     for (auto it = right_side.rbegin(); it != right_side.rend(); ++it) outer.push_back(*it);
 
     // Cerrar el polígono
-    if (!outer.empty()) outer.push_back(outer[0]);
+    if (!outer.isEmpty()) outer.push_back(outer[0]);
 
     return result;
 }
@@ -251,7 +251,7 @@ auto buffer_ring_helper(const Ring_t &ring, double distance) -> Ring_t
         }
     }
 
-    if (!result.empty()) result.push_back(result[0]); // Cerrar
+    if (!result.isEmpty()) result.push_back(result[0]); // Cerrar
     return result;
 }
 
@@ -263,16 +263,16 @@ auto buffer_impl(const Polygon_t &poly, double distance, polygon_tag) -> Polygon
 
     // 1. Buffer del anillo exterior (infla el polígono)
     // Usamos la lógica de linestring pero asegurándonos de que trate el cierre
-    if (!poly.outer().empty()) {
+    if (!poly.outer().isEmpty()) {
         result.outer() = detail::buffer_ring_helper(poly.outer(), distance);
     }
 
     // 2. Buffer de los anillos interiores (huecos)
     // Nota: Para los huecos, la distancia actúa al revés (encoge el hueco)
     for (const auto &hole : poly.inners()) {
-        if (!hole.empty()) {
+        if (!hole.isEmpty()) {
             auto buffered_hole = detail::buffer_ring_helper(hole, -distance);
-            if (!buffered_hole.empty()) {
+            if (!buffered_hole.isEmpty()) {
                 result.addInner(buffered_hole);
             }
         }

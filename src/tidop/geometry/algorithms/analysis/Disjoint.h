@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/geometry/base/Concepts.h"
-#include "tidop/geometry/algorithms/analysis/Equals.impl.h"
+#include "tidop/geometry/algorithms/analysis/Intersects.h"
 
 namespace tl
 {
@@ -35,6 +35,7 @@ namespace tl
  */
 
 template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
 constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool;
 

@@ -22,6 +22,14 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Boundary.impl.h
+ * \brief Implementation details for boundary algorithm.
+ * 
+ * This file contains the tag-dispatched implementations of the boundary
+ * algorithm for each geometry type. These functions are internal and
+ * should not be used directly.
+ */
+
 #pragma once
 
 namespace tl
@@ -30,30 +38,18 @@ namespace tl
 namespace detail
 {
 
-// 1. Boundary de un Punto (0D): Según OGC, es el conjunto vacío.
-// Devolvemos una colección vacía (MultiPoint) del mismo tipo de punto.
 template<typename Point_t>
 auto boundary_impl(const Point_t &, point_tag)
 {
     return GeometryCollection<Point_t>{};
 }
 
-// 2. Boundary de un Segmento: Son sus dos puntos extremos.
 template<typename Point_t>
 auto boundary_impl(const Segment<Point_t> &s, segment_tag)
 {
-    //MultiPoint<Point_t> result;
-    //result.push_back(s.pt1());
-    //result.push_back(s.pt2());
     return MultiPoint<Point_t>{s.pt1(), s.pt2()};
 }
 
-// 3. Boundary de un LineString (1D): 
-// Según OGC (Regla del Punto Final): 
-// - Si es cerrada (anillo), el boundary es vacío.
-// - Si no es cerrada, son los puntos inicial y final.
-// cerrado → vacío
-// abierto → extremos
 template<typename Point_t>
 auto boundary_impl(const LineString<Point_t> &ls, linestring_tag) -> MultiPoint<Point_t>
 {
@@ -73,53 +69,41 @@ auto boundary_impl(const LineString<Point_t> &ls, linestring_tag) -> MultiPoint<
     return result;
 }
 
-// 4. Boundary de un Polígono (2D): 
-// El límite de un polígono es el conjunto de sus anillos (exterior e interiores) 
-// representados como un MultiLineString.
 template<typename Point_t>
 auto boundary_impl(const Polygon<Point_t> &poly, polygon_tag) -> MultiLineString<Point_t>
 {
     MultiLineString<Point_t> result;
 
-    if (poly.outer().empty()) return result;
+    if (poly.outer().isEmpty()) 
+        return result;
 
     result.push_back(LineString(poly.outer()));
 
     for (const auto &hole : poly.inners()) {
-        result.push_back(LineString(hole));
+        if (!hole.isEmpty()) {
+            result.push_back(LineString(hole));
+        }
     }
 
     return result;
 }
 
-// 5. Boundary de MultiPoint (0D): Siempre vacío.
 template<typename Point_t>
 auto boundary_impl(const MultiPoint<Point_t> &, multipoint_tag)
 {
     return GeometryCollection<Point_t>{};
 }
 
-// 6. Boundary de MultiLineString (1D):
-// Se aplica la "Mod 2 Rule": un punto está en el boundary si aparece un número impar 
-// de veces como extremo en las líneas que componen la colección.
-// - implementa cancelación
-// - cumple OGC
-// - reutiliza boundary(ls)
 template<typename Point_t>
 auto boundary_impl(const MultiLineString<Point_t> &mls, multilinestring_tag) -> MultiPoint<Point_t>
 {
-    std::unordered_map<Point_t, int, Hash<Point_t>> counts; // O un hash map si Point_t tiene hash
+    std::unordered_map<Point_t, int, Hash<Point_t>> counts;
 
     for (const auto &ls : mls) {
-        auto b = boundary(ls);
-        for (const auto &pt : b) {
-            counts[pt]++;
+        if (!ls.isEmpty() && !(ls.front() == ls.back())) {
+            counts[ls.front()]++;
+            counts[ls.back()]++;
         }
-        // o para evitar bucle:
-        //if (!line.empty() && !(line.front() == line.back())) {
-        //    point_counts[line.front()]++;
-        //    point_counts[line.back()]++;
-        //}
     }
 
     MultiPoint<Point_t> result;
@@ -138,8 +122,10 @@ auto boundary_impl(const MultiPolygon<Point_t> &mp, multipolygon_tag) -> MultiLi
 
     for (const auto &poly : mp) {
         auto b = boundary(poly);
-        if (!b.empty())
-            result.insert(result.end(), b.begin(), b.end());
+        if (!b.isEmpty())
+            result.insert(result.end(), 
+                         std::make_move_iterator(b.begin()), 
+                         std::make_move_iterator(b.end()));
     }
 
     return result;
@@ -155,8 +141,8 @@ auto boundary_impl(const GeometryCollection<Point_t> &gc, collection_tag) -> Geo
             const auto &geometry = arg.get();
             using GeometryType = std::decay_t<decltype(geometry)>;
             auto b = boundary_impl(geometry, geometry_tag_t<GeometryType>{});
-            if (!b.empty())
-                result.push_back(b);
+            if (!b.isEmpty())
+                result.push_back(std::move(b));
         }, geom);
     }
 
@@ -165,18 +151,12 @@ auto boundary_impl(const GeometryCollection<Point_t> &gc, collection_tag) -> Geo
 
 } // namespace detail
 
-template<typename Geometry_t>
-[[nodiscard]]
-auto boundary(const Geometry_t &g)
-{
-    static_assert(is_geometry_v<Geometry_t>,
-        "The type must be a geometry. Check if geometry_traits is specialized for this type.");
 
-    //if constexpr (!boundary_traits<G>::has_boundary) {
-    //    return typename boundary_traits<G>::type{};
-    //} else {
-        return detail::boundary_impl(g, geometry_tag_t<Geometry_t>{});
-    //}
+template<GeometryConcept G>
+[[nodiscard]]
+auto boundary(const G &geometry)
+{
+    return detail::boundary_impl(geometry, geometry_tag_t<G>{});
 }
 
 } // namespace tl

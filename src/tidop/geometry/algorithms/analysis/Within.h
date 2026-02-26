@@ -25,7 +25,10 @@
 #pragma once
 
 #include "tidop/geometry/base/Concepts.h"
-#include "tidop/geometry/algorithms/analysis/Equals.h"
+#include "tidop/geometry/algorithms/analysis/EqualsExact.h"
+#include "tidop/geometry/algorithms/analysis/Intersects.h"
+#include "tidop/geometry/algorithms/analysis/Boundary.h"
+#include "tidop/geometry/base/TolerancePolicy.h"
 
 namespace tl
 {
@@ -35,8 +38,21 @@ namespace tl
  */
 
 template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
 constexpr auto within(const G1 &geom1, const G2 &geom2) -> bool;
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto within(const G1 &geom1, const G2 &geom2, double tolerance) -> bool;
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto within(const G1 &geom1,
+                      const G2 &geom2,
+                      const TolerancePolicy &policy) -> bool;
 
 
 /*! \} */ 
