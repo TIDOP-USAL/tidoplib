@@ -24,11 +24,14 @@
  
 #define BOOST_TEST_MODULE Tidop algorithms equals test
 #include <boost/test/unit_test.hpp>
+
+#include "geometry_test_fixture.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/Segment.h"
 #include "tidop/geometry/algorithms/analysis/Equals.h"
 
 using namespace tl; 
+using namespace test;
 
 BOOST_AUTO_TEST_SUITE(EqualsAlgorithmTest)
 
@@ -112,81 +115,25 @@ struct EqualsTestFixture
     Segment<Point2i> seg2i_different;
 };
 
-BOOST_FIXTURE_TEST_CASE(Equals_Point2d_SamePoints, EqualsTestFixture)
+
+// -----------------------------------------------------------------------------
+// Point - Point
+// -----------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE(equals_point_point, GeometryTestFixture)
 {
-    BOOST_CHECK(equals(point2d1, point2d1));
+    BOOST_CHECK(equalsExact(point2d1, point2d1));
+    BOOST_CHECK(equalsExact(point2d2, point2d2));
+    BOOST_CHECK(!equalsExact(point2d1, point2d2));
+    BOOST_CHECK(!equalsExact(point2d4, point2d5));
+    BOOST_CHECK(equalsExact(point2d4, point2d5, policy));
 }
 
-BOOST_FIXTURE_TEST_CASE(Equals_Point2d_DifferentPoints, EqualsTestFixture)
+BOOST_FIXTURE_TEST_CASE(equals_point_point_with_measure, GeometryTestFixture)
 {
-    BOOST_CHECK(!equals(point2d1, point2d2));
-    BOOST_CHECK(!equals(point2d2, point2d1));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_PointWithMeasure, EqualsTestFixture)
-{    
-    BOOST_CHECK(equals(point2dm1, point2dm1));
-    BOOST_CHECK(equals(point2dm1, point2dm2)); // Diferente medida (se ignora)
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_PointIntegerTypes, EqualsTestFixture)
-{
-    BOOST_CHECK(equals(point2i1, point2i1));
-    BOOST_CHECK(!equals(point2i1, point2i2));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_Point2d_OutsideTolerance, EqualsTestFixture)
-{
-    BOOST_CHECK(!equals(point2d1, point2d_far));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_Point2f_OutsideTolerance, EqualsTestFixture)
-{
-    BOOST_CHECK(!equals(point2f1, point2f_far));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_Point2f_LargeValues, EqualsTestFixture)
-{
-    // Tolerancia relativa debe adaptarse a números grandes
-    Point<float, xy_tag> big{1e6f, 2e6f};
-    Point<float, xy_tag> big_near{1e6f + 1e-2f, 2e6f - 1e-2f}; // ~1e-2 en 1e6 = 1e-8 relativo
-    BOOST_CHECK(equals(big, big_near));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_Point2d_IndustrialPrecision, EqualsTestFixture)
-{
-    TolerancePolicy industrial(CoordinateUnit::meters, 0.000001, 0.000002, 0.000001, 0.000002);
-
-    Point2d nominal{1000.123456, 2000.123456};
-    Point2d medido_ok{1000.123457, 2000.123455};   // diferencia ≈ 0.001 mm (1 micra)
-    Point2d medido_ko{1000.123500, 2000.123400};   // diferencia ≈ 0.044 mm (44 micras)
-
-    // Tolerancia = 0.002 mm (2 micras)
-    BOOST_CHECK(equals(nominal, medido_ok, industrial));
-    BOOST_CHECK(!equals(nominal, medido_ko, industrial));
-
-    // El usuario puede ajustar la tolerancia explícitamente
-    BOOST_CHECK(equals(nominal, medido_ko, 0.0001));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_Point2d_Cadastral_1_500, EqualsTestFixture)
-{
-    TolerancePolicy cadastral(CoordinateUnit::meters, 0.025, 0.025, 0.025, 0.025);
-
-    Point2d p1{100.00, 200.00};
-    Point2d p2{100.02, 200.03};
-
-    BOOST_CHECK(!equals(p1, p2, cadastral));
-}
-
-BOOST_FIXTURE_TEST_CASE(Equals_PointGeographic_WGS84, EqualsTestFixture)
-{
-    TolerancePolicy wgs84 = TolerancePolicy::geographicDefault();
-
-    Point<double, xy_tag> p1{-3.70000000, 40.50000000};
-    Point<double, xy_tag> p2{-3.70000001, 40.50000001};
-
-    BOOST_CHECK(equals(p1, p2, wgs84));
+    BOOST_CHECK(equalsExact(point2dm1, point2dm1));
+    BOOST_CHECK(equalsExact(point2dm2, point2dm2));
+    BOOST_CHECK(!equalsExact(point2dm1, point2dm2));
 }
 
 BOOST_FIXTURE_TEST_CASE(Equals_Segment2d_Same, EqualsTestFixture)

@@ -30,51 +30,51 @@ namespace tl
 namespace detail 
 {
 
+/* Point - Point */
 
-template<typename P1, typename P2>
+template<PointConcept P1, PointConcept P2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
-constexpr auto equals_exact_impl(const P1 &point1, 
-                                 const P2 &point2,
-                                 double tolerance,
+constexpr auto equals_exact_impl(const P1 &point1,
+                                 const P2 &point2, 
+                                 const Policy &policy,
                                  point_tag,
                                  point_tag) -> bool
 {
-    using Scalar = typename point_traits<P1>::value_type;
+    if (policy.snap(point1.x()) != policy.snap(point2.x()) || 
+        policy.snap(point1.y()) != policy.snap(point2.y())) return false;
 
-    constexpr size_t spatial_dims = point_traits<P1>::spatial_dims;
+    if constexpr (point_traits<P1>::spatial_dims > 2) {
+        if (policy.snap(point1.z()) != policy.snap(point2.z())) return false;
+    }
 
-    for (size_t i = 0; i < spatial_dims; ++i) {
-        if constexpr (std::is_integral_v<Scalar>) {
-            if (point1[i] != point2[i]) return false;
-        } else {
-            if (std::abs(static_cast<double>(point1[i]) - static_cast<double>(point2[i])) > tolerance) {
-                return false;
-            }
-        }
+    if constexpr (point_traits<P1>::spatial_dims > 3) {
+        if (policy.snap(point1.w()) != policy.snap(point2.w())) return false;
     }
 
     return true;
 }
 
 
-template<typename S1, typename S2>
+/* Segment – Segment */
+
+template<SegmentConcept S1, SegmentConcept S2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
 constexpr auto equals_exact_impl(const S1 &segment1, 
                                  const S2 &segment2,
-                                 double tolerance,
+                                 const Policy &policy,
                                  segment_tag, 
                                  segment_tag) -> bool
 {
-    return equalsExact(segment1.pt1(), segment2.pt1(), tolerance) &&
-           equalsExact(segment1.pt2(), segment2.pt2(), tolerance);
+    return equalsExact(segment1.pt1(), segment2.pt1(), policy) &&
+           equalsExact(segment1.pt2(), segment2.pt2(), policy);
 }
 
 
-template<typename LS1, typename LS2>
+template<typename LS1, typename LS2, typename Policy_t>
 [[nodiscard]]
 constexpr auto equals_exact_impl(const LS1 &ls1,
                                  const LS2 &ls2,
-                                 double tolerance,
+                                 const Policy_t &policy,
                                  linestring_tag,
                                  linestring_tag) -> bool
 {
@@ -82,7 +82,7 @@ constexpr auto equals_exact_impl(const LS1 &ls1,
         return false;
 
     for (size_t i = 0; i < ls1.size(); ++i) {
-        if (!equalsExact(ls1[i], ls2[i], tolerance))
+        if (!equalsExact(ls1[i], ls2[i], policy))
             return false;
     }
 
@@ -90,11 +90,11 @@ constexpr auto equals_exact_impl(const LS1 &ls1,
 }
 
 
-template<typename Poly1, typename Poly2>
+template<typename Poly1, typename Poly2, typename Policy_t>
 [[nodiscard]]
 constexpr auto equals_exact_impl(const Poly1 &poly1,
                                  const Poly2 &poly2,
-                                 double tolerance,
+                                 const Policy_t &policy,
                                  polygon_tag,
                                  polygon_tag) -> bool
 {
@@ -102,7 +102,7 @@ constexpr auto equals_exact_impl(const Poly1 &poly1,
         return false;
 
     for (size_t i = 0; i < poly1.outer().size(); ++i) {
-        if (!equalsExact(poly1.outer()[i], poly2.outer()[i], tolerance))
+        if (!equalsExact(poly1.outer()[i], poly2.outer()[i], policy))
             return false;
     }
 
@@ -117,7 +117,7 @@ constexpr auto equals_exact_impl(const Poly1 &poly1,
             return false;
 
         for (size_t i = 0; i < hole1.size(); ++i) {
-            if (!equalsExact(hole1[i], hole2[i], tolerance))
+            if (!equalsExact(hole1[i], hole2[i], policy))
                 return false;
         }
     }
@@ -126,11 +126,11 @@ constexpr auto equals_exact_impl(const Poly1 &poly1,
 }
 
 
-template<typename GC1, typename GC2>
+template<typename GC1, typename GC2, typename Policy_t>
 [[nodiscard]]
 auto equals_exact_impl(const GC1 &col1,
                        const GC2 &col2,
-                       double tolerance,
+                       const Policy_t &policy,
                        collection_tag,
                        collection_tag) -> bool
 {
@@ -146,7 +146,7 @@ auto equals_exact_impl(const GC1 &col1,
             using G2 = std::decay_t<decltype(geometry2)>;
 
             if constexpr (GeometryConcept<G1> && GeometryConcept<G2>) {
-                return equalsExact(geometry1, geometry2, tolerance);
+                return equalsExact(geometry1, geometry2, policy);
             } else {
                 return false; // tipos no geométricos (no debería ocurrir)
             }
@@ -159,9 +159,9 @@ auto equals_exact_impl(const GC1 &col1,
 }
 
 
-template<typename G1, typename G2, typename Tag1, typename Tag2>
+template<typename G1, typename G2, typename Policy_t, typename Tag1, typename Tag2>
 [[nodiscard]]
-constexpr auto equals_exact_impl(const G1 &, const G2 &, double, Tag1, Tag2) -> bool
+constexpr auto equals_exact_impl(const G1 &, const G2 &, const Policy_t &, Tag1, Tag2) -> bool
 {
     return false;
 }
@@ -172,20 +172,24 @@ constexpr auto equals_exact_impl(const G1 &, const G2 &, double, Tag1, Tag2) -> 
 template<GeometryConcept G1, GeometryConcept G2>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1, const G2 &geom2) -> bool
-{	
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+constexpr auto equalsExact(const G1 &geom1,
+                           const G2 &geom2) -> bool
+{
+    using P = geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
-    return equalsExact(geom1, geom2, default_tolerance<Scalar>::value);
+    PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
+
+    return equalsExact(geom1, geom2, policy);
 }
 
 
-template<GeometryConcept G1, GeometryConcept G2>
+template<GeometryConcept G1, GeometryConcept G2, PrecisionPolicyConcept Policy>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1, 
+constexpr auto equalsExact(const G1 &geom1,
                            const G2 &geom2,
-                           double tolerance) -> bool
+                           const Policy &policy)
 {
     using P1 = geometry_traits<G1>::point_type;
     using P2 = geometry_traits<G2>::point_type;
@@ -194,30 +198,24 @@ constexpr auto equalsExact(const G1 &geom1,
 
     static_assert(std::is_same_v<Scalar1, Scalar2>, "Points must have same coordinate type");
 
+    if (geom1.isEmpty() && geom2.isEmpty())
+        return true;
+
+    if (geom1.isEmpty() || geom2.isEmpty())
+        return false;
+
     if constexpr (!std::is_same_v<geometry_tag_t<G1>, geometry_tag_t<G2>>) {
         return false;
     } else if constexpr (GeometryCollectionConcept<G1> || !MultiGeometryConcept<G1>) {
-        return detail::equals_exact_impl(geom1, geom2, tolerance, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
+        return detail::equals_exact_impl(geom1, geom2, policy, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
     } else if constexpr (MultiGeometryConcept<G1>) {
         if (geom1.size() != geom2.size()) return false;
         for (size_t i = 0; i < geom1.size(); ++i)
-            if (!equalsExact(geom1[i], geom2[i], tolerance)) return false;
+            if (!equalsExact(geom1[i], geom2[i], policy)) return false;
         return true;
     } else {
         return false; // casos no contemplados
     }
 }
-
-
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
-[[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1, 
-                           const G2 &geom2, 
-                           const TolerancePolicy &policy) -> bool
-{
-    return equalsExact(geom1, geom2, policy.xyTolerance());
-}
-
 
 } // namespace tl

@@ -24,6 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop algorithms equals exacts test
 #include <boost/test/unit_test.hpp>
+
+#include "geometry_test_fixture.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/Segment.h"
 #include "tidop/geometry/primitives/LineString.h"
@@ -35,50 +37,36 @@
 #include "tidop/geometry/algorithms/analysis/equalsExact.h"
 
 using namespace tl; 
+using namespace test; 
 
 
 BOOST_AUTO_TEST_SUITE(equalsExact_tests)
 
-// -----------------------------------------------------------------------------
-// Puntos
-// -----------------------------------------------------------------------------
-BOOST_AUTO_TEST_CASE(point_same)
+
+// ============================================================================
+// Point - Point
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(equals_exact_point_point, GeometryTestFixture)
 {
-    Point2d p1(1.0, 2.0);
-    Point2d p2(1.0, 2.0);
-    BOOST_CHECK(equalsExact(p1, p2));
+    BOOST_CHECK(equalsExact(point2d1, point2d1));
+    BOOST_CHECK(equalsExact(point2d2, point2d2));
+    BOOST_CHECK(!equalsExact(point2d1, point2d2));
+    BOOST_CHECK(!equalsExact(point2d4, point2d5));
+    BOOST_CHECK(equalsExact(point2d4, point2d5, policy));
 }
 
-BOOST_AUTO_TEST_CASE(point_different)
+BOOST_FIXTURE_TEST_CASE(equals_exact_point_point_with_measure, GeometryTestFixture)
 {
-    Point2d p1(1.0, 2.0);
-    Point2d p2(1.0, 3.0);
-    BOOST_CHECK(!equalsExact(p1, p2));
+    BOOST_CHECK(equalsExact(point2dm1, point2dm1));
+    BOOST_CHECK(equalsExact(point2dm2, point2dm2));
+    BOOST_CHECK(!equalsExact(point2dm1, point2dm2));
 }
 
-BOOST_AUTO_TEST_CASE(point_tolerance)
-{
-    Point2d p1(1.0, 2.0);
-    Point2d p2(1.0 + 1e-8, 2.0 - 1e-8);
-    // tolerancia por defecto (depende del tipo, asumimos double -> 1e-9)
-    BOOST_CHECK(equalsExact(p1, p2, 1e-7)); // dentro
-    BOOST_CHECK(!equalsExact(p1, p2, 1e-9)); // fuera
-}
+// ============================================================================
+// Segment - Segment
+// ============================================================================
 
-BOOST_AUTO_TEST_CASE(point_integral)
-{
-    Point2i p1(1, 2);
-    Point2i p2(1, 2);
-    Point2i p3(1, 3);
-    BOOST_CHECK(equalsExact(p1, p2));
-    BOOST_CHECK(!equalsExact(p1, p3));
-    // tolerancia se ignora para enteros
-    BOOST_CHECK(equalsExact(p1, p2, 1e-5));
-}
-
-// -----------------------------------------------------------------------------
-// Segmentos
-// -----------------------------------------------------------------------------
 BOOST_AUTO_TEST_CASE(segment_same_order)
 {
     Segment2d s1(Point2d(0,0), Point2d(1,1));

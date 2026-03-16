@@ -82,7 +82,9 @@ if(BUILD_TL_GEOMETRY)
                             base/Geometry.impl.h
                             base/GeometryContainer.h
                             base/GeometryCollection.h
+                            base/PrecisionPolicy.h
                             base/TolerancePolicy.h
+                            base/TopologyKernel.h
                             base/Traits.h
                             io/wkt/Writer.h
                             io/wkt/Proxy.h

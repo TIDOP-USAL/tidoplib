@@ -820,7 +820,6 @@ BOOST_AUTO_TEST_CASE(test_number_cast)
     BOOST_CHECK_EQUAL(1, numberCast<int>(1.0));
     BOOST_CHECK_EQUAL(1.0, numberCast<double>(1));
     BOOST_CHECK_EQUAL(1.0f, numberCast<float>(1));
-    BOOST_CHECK_THROW(numberCast<std::string>(1), Exception);
 }
 
 BOOST_AUTO_TEST_CASE(test_convert_string_to)

@@ -22,17 +22,51 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file disjoint.h
+ * \brief Spatial predicate "disjoint" following OGC Simple Features.
+ *
+ * This file defines the `disjoint` function, which determines whether two geometries
+ * have no points in common.
+ *
+ * According to the OGC Simple Feature Access specification, two geometries are
+ * **disjoint** if their intersection is empty.
+ *
+ * The function is implemented in terms of `intersects` (i.e., `!intersects(geom1, geom2)`)
+ * and uses **native precision** (exact coordinate comparison). For tolerance‑based
+ * evaluation, consider applying a precision policy via other spatial predicates.
+ *
+ * \see tl::intersects, tl::touches, tl::within, tl::contains, tl::overlaps
+ */
+
 #pragma once
+
+#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/base/PrecisionPolicy.h"
 
 namespace tl
 {
 
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
+
+template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool
 {
-    return !intersects(geom1, geom2);
+    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+
+    PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
+
+    return disjoint(geom1, geom2, policy);
+}
+
+
+template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
+[[nodiscard]]
+constexpr auto disjoint(const G1 &geom1,
+                        const G2 &geom2,
+                        const Policy &policy) -> bool
+{
+    return !intersects(geom1, geom2, policy);
 }
 
 } // namespace tl

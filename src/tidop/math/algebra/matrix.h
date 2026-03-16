@@ -2642,37 +2642,21 @@ auto operator<<(std::ostream& os, const internal::MatrixBlock<T, Rows, Cols>* ma
 //    return vector_out;
 //}
 
-//template<typename V, size_t Rows>
-//struct VectorRebind;
-//
-//template<typename T, typename Tag, size_t Rows>
-//struct VectorRebind<Point<T, Tag>, Rows>
-//{
-//    using new_tag = typename rebind_point_tag<Tag, Rows>::type;
-//    using type = Point<T, new_tag>;
-//};
-//
-//template<typename T, size_t N, size_t Rows>
-//struct VectorRebind<Vector<T, N>, Rows>
-//{
-//    using type = Vector<T, Rows>;
-//};
-
 template<typename V, size_t Rows, bool CanBePoint>
 struct VectorRebindImpl;
 
 template<typename T, typename Tag, size_t Rows>
 struct VectorRebindImpl<Point<T, Tag>, Rows, true>
 {
-    using new_tag = typename rebind_point_tag<Tag, Rows>::type;
-    using type = Point<T, new_tag>;
+    //using new_tag = typename rebind_point_tag<Tag, Rows>::type;
+    //using type = Point<T, new_tag>;
+    using type = Point<T, typename tag_for_dim<Rows>::type>;
 };
 
 template<typename V, size_t Rows>
 struct VectorRebindImpl<V, Rows, false>
 {
-    using T = typename V::value_type;
-    using type = Vector<T, Rows>;
+    using type = Vector<typename V::value_type, Rows>;
 };
 
 template<typename V, size_t Rows>

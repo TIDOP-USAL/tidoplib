@@ -150,68 +150,80 @@ public:
      * \brief Access the first endpoint (non-const version).
      * \return Reference to the first endpoint.
      */
+    [[nodiscard]]
     auto pt1() noexcept -> Point_t &;
 
     /*!
      * \brief Access the first endpoint (const version).
      * \return Const reference to the first endpoint.
      */
+    [[nodiscard]]
     auto pt1() const noexcept -> const Point_t &;
     
     /*!
      * \brief Access the second endpoint (non-const version).
      * \return Reference to the second endpoint.
      */
+    [[nodiscard]]
     auto pt2() noexcept -> Point_t &;
 
     /*!
      * \brief Access the second endpoint (const version).
      * \return Const reference to the second endpoint.
      */
+    [[nodiscard]]
     auto pt2() const noexcept -> const Point_t &;
 	
     /*!
      * \brief Access the start point (non-const version).
      * \return Reference to the start point (same as min).
      */
+    [[nodiscard]]
     auto start() noexcept -> Point_t &;
 
     /*!
      * \brief Access the start point (const version).
      * \return Const reference to the start point (same as min).
      */
+    [[nodiscard]]
     auto start() const noexcept -> const Point_t &;
     
     /*!
      * \brief Access the end point (non-const version).
      * \return Reference to the end point (same as max).
      */
+    [[nodiscard]]
     auto end() noexcept -> Point_t &;
 
     /*!
      * \brief Access the end point (const version).
      * \return Const reference to the end point (same as max).
      */
+    [[nodiscard]]
     auto end() const noexcept -> const Point_t &;
 
     /*!
      * \brief Checks if the segment is empty (i.e., both endpoints are identical).
      * \return True if the segment is empty, false otherwise.
      */
+    [[nodiscard]]
     auto isEmpty() const -> bool;
 
     /*!
      * \brief Computes the length of the segment.
      * \return The Euclidean distance between `pt1` and `pt2`.
      */
+    [[nodiscard]]
     auto length() const -> double;
     
     /*!
      * \brief Computes the directional vector of the segment.
      * \return A point representing the vector from `pt1` to `pt2`.
      */
+    [[nodiscard]]
     auto vector() const noexcept;
 
+    [[nodiscard]]
     auto midPoint() const noexcept
     {
         remove_measure_t<Point_t> mid{};
@@ -393,15 +405,7 @@ auto Segment<Point_t>::end() const noexcept -> const Point_t &
 template<typename Point_t>
 auto Segment<Point_t>::isEmpty() const -> bool
 {
-    using sub_type = typename Point_t::value_type;
-
-    for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
-        if (mPoints[0][i] != consts::zero<sub_type> || mPoints[1][i] != consts::zero<sub_type>) {
-            return false;
-        }
-    }
-
-    return true;
+    return false;
 }
 
 template<typename Point_t>

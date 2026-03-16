@@ -30,53 +30,90 @@ namespace tl
 namespace detail 
 {
 
-template<typename Point_t>
-[[nodiscard]]
-constexpr auto overlaps_impl(const Point_t& p1, const Point_t& p2, point_tag, point_tag) -> bool
+/* Point - Point */
+
+template<Point2DConcept P1, Point2DConcept P2, PrecisionPolicyConcept Policy>
+constexpr auto overlaps_impl(const P1 &,
+                             const P2 &,
+                             const Policy &,
+                             point_tag,
+                             point_tag) -> bool
 {
     return false; // Puntos no pueden superponerse según OGC
 }
 
-template<typename Point_t>
+
+/* Segment – Segment */
+
+template<Segment2DConcept S1, Segment2DConcept S2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
-constexpr auto overlaps_impl(const Segment<Point_t> &segment1,
-                             const Segment<Point_t> &segment2,
+constexpr auto overlaps_impl(const S1 &segment1,
+                             const S2 &segment2,
+                             const Policy &policy,
                              segment_tag,
                              segment_tag) -> bool
 {
-    //const auto &p1 = seg1.pt1();
-    //const auto &p2 = seg1.pt2();
-    //const auto &q1 = seg2.pt1();
-    //const auto &q2 = seg2.pt2();
+    const auto p1 = policy.toKernelPoint<Dimension::dim2>(segment1.pt1());
+    const auto p2 = policy.toKernelPoint<Dimension::dim2>(segment1.pt2());
+    const auto q1 = policy.toKernelPoint<Dimension::dim2>(segment2.pt1());
+    const auto q2 = policy.toKernelPoint<Dimension::dim2>(segment2.pt2());
 
-    //if (orientation(p1, p2, q1) != WindingOrder::Colinear ||
-    //    orientation(p1, p2, q2) != WindingOrder::Colinear)
-    //    return false;
+    if (TopologyKernel::equals(p1, p2) ||
+        TopologyKernel::equals(q1, q2)) {
+        return false;
+    }
 
-    //if (!intersects(seg1, seg2))
-    //    return false;
+    auto type = TopologyKernel::intersectionType(p1, p2, q1, q2);
+    if (type != TopologyKernel::IntersectionType::Overlapping) return false;
 
-    //if (equals(seg1, seg2))
-    //    return false;
+    bool q_in_p = TopologyKernel::isBetween(p1, p2, q1) &&
+                  TopologyKernel::isBetween(p1, p2, q2);
+    bool p_in_q = TopologyKernel::isBetween(q1, q2, p1) &&
+                  TopologyKernel::isBetween(q1, q2, p2);
 
-    //if (contains(seg1, seg2) || contains(seg2, seg1))
-    //    return false;
+    //bool q_in_p = pointOnSegment(p1, p2, q1) &&
+    //              pointOnSegment(p1, p2, q2);
 
-    //return true;
-    return intersectionType(segment1, segment2) == IntersectionType::Overlapping;
+    //bool p_in_q = pointOnSegment(q1, q2, p1) &&
+    //              pointOnSegment(q1, q2, p2);
+
+    return !(q_in_p || p_in_q);
+
 }
 
 } // namespace detail
 
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
+
+
+template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
-constexpr auto overlaps(const G1 &geom1, const G2 &geom2) -> bool
+constexpr auto overlaps(const G1 &geom1, 
+                        const G2 &geom2) -> bool
 {
-	//static_assert(is_geometry_v<G1>, "First argument must be a geometry");
-    //static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
-	
-    return detail::overlaps_impl(geom1, geom2, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
+    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+
+    PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
+
+    return overlaps(geom1, geom2, policy);
+}
+
+template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
+[[nodiscard]]
+constexpr auto overlaps(const G1 &geom1,
+                        const G2 &geom2,
+                        const Policy &policy) -> bool
+{
+    using P1 = geometry_traits<G1>::point_type;
+    using P2 = geometry_traits<G2>::point_type;
+    using Scalar1 = typename point_traits<P1>::value_type;
+    using Scalar2 = typename point_traits<P2>::value_type;
+
+    static_assert(std::is_same_v<Scalar1, Scalar2>, "Points must have same coordinate type");
+
+    if (geom1.isEmpty() || geom2.isEmpty())
+        return false;
+
+    return detail::overlaps_impl(geom1, geom2, policy, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
 }
 
 } // namespace tl

@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file equalsExact.h
+/*! \file EqualsExact.h
  * \brief Spatial equality predicates following OGC Simple Features.
  *
  * This file defines the `equalsExact` family of functions, which test whether two
@@ -32,13 +32,13 @@
  *
  * The functions are overloaded to accept:
  * - Default tolerance adapted to the coordinate type (float, double, int).
- * - Explicit absolute tolerance as a double.
- * - TolerancePolicy object.
+ * - A precision policy (`PrecisionPolicy`) that defines how coordinates are
+ *   compared (e.g., using fixed resolution).
  *
  * All overloads enforce that the two geometries have the same spatial dimension
  * (2D, 3D) via the `SameSpatialDimension` concept.
  *
- * \see tl::TolerancePolicy, tl::GeometryConcept, tl::SameSpatialDimension
+ * \see tl::PrecisionPolicy, tl::GeometryConcept, tl::SameSpatialDimension
  */
 
 #pragma once
@@ -48,7 +48,8 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/Operations.h"
-#include "tidop/geometry/base/TolerancePolicy.h"
+#include "tidop/geometry/base/PrecisionPolicy.h"
+
 
 namespace tl
 {
@@ -58,13 +59,14 @@ namespace tl
  */
 
 /*!
- * \brief Spatial equality with default tolerance.
+ * \brief Spatial equality using native precision.
  *
- * Compares two geometries using a default tolerance that depends on their
- * coordinate type:
- * - For `float`: 1e-6f
- * - For `double`: 1e-12
- * - For integral types: 0 (exact comparison)
+ * Compares two geometries by directly comparing their coordinate values
+ * without any snapping or tolerance. For integral types this is exact;
+ * for floating‑point types it performs a direct (bitwise) comparison,
+ * which may fail for values that are mathematically equal but differ
+ * due to rounding. If you need a tolerance‑based comparison, use the
+ * overload that accepts a precision policy.
  *
  * The comparison is performed only on the spatial dimensions (X, Y, Z);
  * any measure component (M) is ignored, following OGC Simple Feature Access.
@@ -73,8 +75,8 @@ namespace tl
  * \tparam G2 Second geometry type, must satisfy GeometryConcept.
  * \param[in] geom1 First geometry.
  * \param[in] geom2 Second geometry.
- * \return `true` if the two geometries are spatially equal within the default
- *         tolerance; `false` otherwise.
+ * \return `true` if the two geometries are spatially equal according to
+ *         native (exact) comparison; `false` otherwise.
  *
  * \note If the two geometries are of different types (e.g., Point vs LineString),
  *       the result is always `false` (even if they represent the same set of points).
@@ -84,85 +86,52 @@ namespace tl
  * ### Example
  * \code
  * Point2d p1(1.0, 2.0);
- * Point2d p2(1.0 + 1e-13, 2.0 - 1e-13);
- * bool eq = equalsExact(p1, p2); // true (within 1e-12)
+ * Point2d p2(1.0, 2.0);
+ * bool eq = equalsExact(p1, p2); // true
  *
- * Point2i pi1(1, 2);
- * Point2i pi2(1, 2);
- * bool eq_int = equalsExact(pi1, pi2); // true (exact)
+ * Point2d p3(1.0 + 1e-15, 2.0); // tiny rounding difference
+ * bool eq2 = equalsExact(p1, p3); // false (direct comparison)
  * \endcode
  */
 template<GeometryConcept G1, GeometryConcept G2>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1, const G2 &geom2) -> bool;
-
+constexpr auto equalsExact(const G1 &geom1,
+                           const G2 &geom2) -> bool;
 
 /*!
- * \brief Spatial equality with explicit absolute tolerance.
+ * \brief Spatial equality using a precision policy.
  *
- * Compares two geometries using a user-provided absolute tolerance.
- * The tolerance applies to each spatial coordinate independently:
- * \f$ |c1_i - c2_i| \le \text{tolerance} \f$ for all spatial dimensions i.
+ * Compares two geometries using a `PrecisionPolicy` object. The policy defines
+ * how coordinates are snapped or compared, for instance by converting them to
+ * a fixed-resolution integer grid. This enables robust, deterministic equality
+ * tests independent of floating-point roundoff.
  *
  * \tparam G1 First geometry type, must satisfy GeometryConcept.
  * \tparam G2 Second geometry type, must satisfy GeometryConcept.
+ * \tparam Policy A type satisfying `PrecisionPolicyConcept` (e.g., `PrecisionPolicy<Scalar, Mode>`).
  * \param[in] geom1 First geometry.
  * \param[in] geom2 Second geometry.
- * \param[in] tolerance Absolute tolerance value (must be non‑negative).
- * \return `true` if the two geometries are spatially equal within the given
- *         tolerance; `false` otherwise.
- *
- * \note For geometries composed of multiple elements (LineString, Polygon,
- *       multi‑geometries), all corresponding elements must satisfy the tolerance.
- * \note The tolerance is applied uniformly to all spatial dimensions; for
- *       per‑axis tolerances use the TolerancePolicy overload.
+ * \param[in] policy Precision policy that provides the `snap` operation for coordinates.
+ * \return `true` if the two geometries are spatially equal according to the policy;
+ *         `false` otherwise.
  *
  * ### Example
  * \code
+ * using Policy = PrecisionPolicy<double, PrecisionModel::FixedPrecisionModel>;
+ * Policy pol(1e-3);
+ *
  * Point2d p1(1.0, 2.0);
- * Point2d p2(1.0 + 1e-8, 2.0 - 1e-8);
- * bool eq = equalsExact(p1, p2, 1e-7); // true (1e-8 ≤ 1e-7)
- * bool eq2 = equalsExact(p1, p2, 1e-9); // false
+ * Point2d p2(1.0000001, 2.0000001);
+ * bool eq = equalsExact(p1, p2, pol); // true (both snap to same grid point)
  * \endcode
  */
-template<GeometryConcept G1, GeometryConcept G2>
+template<GeometryConcept G1, GeometryConcept G2, PrecisionPolicyConcept Policy>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1, const G2 &geom2, double tolerance) -> bool;
-
-
-/*!
- * \brief Spatial equality using a tolerance policy.
- *
- * Compares two geometries using a TolerancePolicy object, which may specify
- * different tolerances per axis (e.g., XY tolerance vs Z tolerance) and
- * other settings.
- *
- * \tparam G1 First geometry type, must satisfy GeometryConcept.
- * \tparam G2 Second geometry type, must satisfy GeometryConcept.
- * \param[in] geom1 First geometry.
- * \param[in] geom2 Second geometry.
- * \param[in] policy Tolerance policy defining comparison thresholds.
- * \return `true` if the two geometries are spatially equal according to the
- *         policy; `false` otherwise.
- *
- * \note This overload typically delegates to the double‑tolerance version
- *       using `policy.xyTolerance()` (or an appropriate per‑axis combination).
- *
- * ### Example
- * \code
- * TolerancePolicy pol(1e-6);            // uniform tolerance
- * TolerancePolicy pol2(1e-6, 1e-4);     // separate XY and Z tolerances
- * bool eq = equalsExact(geom1, geom2, pol);
- * \endcode
- */
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
-[[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1, 
-                      const G2 &geom2, 
-                      const TolerancePolicy &policy) -> bool;
+constexpr auto equalsExact(const G1 &geom1,
+                           const G2 &geom2,
+                           const Policy &policy);
 
 /*! \} */ 
 

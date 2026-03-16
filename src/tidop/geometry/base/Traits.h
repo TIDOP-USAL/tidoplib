@@ -357,49 +357,59 @@ using geometry_tag_t = typename geometry_traits<G>::geometry_tag;
 
 
 template<typename G>
-struct topology_traits;
+struct topology_traits
+{
+    static_assert(geometry_traits<G>::is_geometry, "topology_traits<G>: G must be a geometry type");
+    static constexpr int dimension = -1;
+};
 
 template<typename T, typename Tag>
 struct topology_traits<Point<T, Tag>>
 {
-    static constexpr int topological_dimension = 0;
+    static constexpr int dimension = 0;
 };
 
 template<typename Point_t>
 struct topology_traits<Segment<Point_t>>
 {
-    static constexpr int topological_dimension = 1;
+    static constexpr int dimension = 1;
 };
 
 template<typename Point_t>
 struct topology_traits<LineString<Point_t>>
 {
-    static constexpr int topological_dimension = 1;
+    static constexpr int dimension = 1;
 };
 
 
 template<typename Point_t>
 struct topology_traits<Polygon<Point_t>>
 {
-    static constexpr int topological_dimension = 2;
+    static constexpr int dimension = 2;
 };
 
 template<typename Point_t>
 struct topology_traits<MultiPoint<Point_t>>
 {
-    static constexpr int topological_dimension = 0;
+    static constexpr int dimension = 0;
 };
 
 template<typename Point_t>
 struct topology_traits<MultiLineString<Point_t>>
 {
-    static constexpr int topological_dimension = 1;
+    static constexpr int dimension = 1;
 };
 
 template<typename Point_t>
 struct topology_traits<MultiPolygon<Point_t>>
 {
-    static constexpr int topological_dimension = 2;
+    static constexpr int dimension = 2;
+};
+
+template<typename Point_t>
+struct topology_traits<GeometryCollection<Point_t>>
+{
+    static constexpr int dimension = 2; // dimensión máxima posible
 };
 
 /* HELPER ALIASES AND VARIABLES */
@@ -474,6 +484,20 @@ inline constexpr bool is_multi_geometry_v = geometry_traits<G>::is_multi;
 template<typename G>
 inline constexpr bool is_geometry_collection_v = std::is_same_v<geometry_traits<G>::geometry_tag, collection_tag>;
 
+
+template<size_t Dim>
+struct tag_for_dim;
+
+template<>
+struct tag_for_dim<2> { using type = xy_tag; };
+
+template<>
+struct tag_for_dim<3> { using type = xyz_tag; };
+
+template<>
+struct tag_for_dim<4> { using type = xyzw_tag; };
+
+
 template<typename P>
 struct remove_measure;
 
@@ -485,24 +509,14 @@ private:
 
     static constexpr size_t spatial_dims = Tag::spatial_dims;
 
-    template<size_t Dim>
-    struct tag_for_dim;
-
-    template<>
-    struct tag_for_dim<2> { using type = xy_tag; };
-
-    template<>
-    struct tag_for_dim<3> { using type = xyz_tag; };
-
-    template<>
-    struct tag_for_dim<4> { using type = xyzw_tag; };
-
 public:
+
     using type = Point<T, typename tag_for_dim<spatial_dims>::type>;
 };
 
 template<typename P>
 using remove_measure_t = typename remove_measure<P>::type;
+
 
 // Helper para tipo común sin medida
 template<typename P1, typename P2>
@@ -516,34 +530,12 @@ struct common_point_without_measure
 
     static constexpr size_t spatial_dims = point_traits<P1>::spatial_dims;
 
-    template<size_t Dim>
-    struct tag_for_dim;
-
-    template<>
-    struct tag_for_dim<2> { using type = xy_tag; };
-
-    template<>
-    struct tag_for_dim<3> { using type = xyz_tag; };
-
-    template<>
-    struct tag_for_dim<4> { using type = xyzw_tag; };
-
     using type = Point<value_type, typename tag_for_dim<spatial_dims>::type>;
 };
 
 template<typename P1, typename P2>
 using common_point_without_measure_t = typename common_point_without_measure<P1, P2>::type;
 
-
-//template<typename T>
-//constexpr auto epsilon_for() -> T
-//{
-//    if constexpr (std::is_floating_point_v<T>) {
-//        return std::numeric_limits<T>::epsilon() * 100;
-//    } else {
-//        return T{0};
-//    }
-//}
 
 
 /*! \} */ 
@@ -561,33 +553,33 @@ template<typename T, typename Tag>
 struct is_point<Point<T, Tag>> : std::true_type {};
 
 
-template<typename OldTag, size_t Rows>
-struct rebind_point_tag;
-
-// XY -> 2D sin medida
-template<> struct rebind_point_tag<xy_tag, 2> { using type = xy_tag; };
-template<> struct rebind_point_tag<xy_tag, 3> { using type = xyz_tag; };
-template<> struct rebind_point_tag<xy_tag, 4> { using type = xyzw_tag; };
-
-// XYZ
-template<> struct rebind_point_tag<xyz_tag, 2> { using type = xy_tag; };
-template<> struct rebind_point_tag<xyz_tag, 3> { using type = xyz_tag; };
-template<> struct rebind_point_tag<xyz_tag, 4> { using type = xyzw_tag; };
-
-// XYM
-template<> struct rebind_point_tag<xym_tag, 2> { using type = xy_tag; };
-template<> struct rebind_point_tag<xym_tag, 3> { using type = xyz_tag; };
-template<> struct rebind_point_tag<xym_tag, 4> { using type = xyzw_tag; };
-
-// XYZM
-template<> struct rebind_point_tag<xyzm_tag, 2> { using type = xy_tag; };
-template<> struct rebind_point_tag<xyzm_tag, 3> { using type = xyz_tag; };
-template<> struct rebind_point_tag<xyzm_tag, 4> { using type = xyzw_tag; };
-
-// XYZW
-template<> struct rebind_point_tag<xyzw_tag, 2> { using type = xy_tag; };
-template<> struct rebind_point_tag<xyzw_tag, 3> { using type = xyz_tag; };
-template<> struct rebind_point_tag<xyzw_tag, 4> { using type = xyzw_tag; };
+//template<typename OldTag, size_t Rows>
+//struct rebind_point_tag;
+//
+//// XY -> 2D sin medida
+//template<> struct rebind_point_tag<xy_tag, 2> { using type = xy_tag; };
+//template<> struct rebind_point_tag<xy_tag, 3> { using type = xyz_tag; };
+//template<> struct rebind_point_tag<xy_tag, 4> { using type = xyzw_tag; };
+//
+//// XYZ
+//template<> struct rebind_point_tag<xyz_tag, 2> { using type = xy_tag; };
+//template<> struct rebind_point_tag<xyz_tag, 3> { using type = xyz_tag; };
+//template<> struct rebind_point_tag<xyz_tag, 4> { using type = xyzw_tag; };
+//
+//// XYM
+//template<> struct rebind_point_tag<xym_tag, 2> { using type = xy_tag; };
+//template<> struct rebind_point_tag<xym_tag, 3> { using type = xyz_tag; };
+//template<> struct rebind_point_tag<xym_tag, 4> { using type = xyzw_tag; };
+//
+//// XYZM
+//template<> struct rebind_point_tag<xyzm_tag, 2> { using type = xy_tag; };
+//template<> struct rebind_point_tag<xyzm_tag, 3> { using type = xyz_tag; };
+//template<> struct rebind_point_tag<xyzm_tag, 4> { using type = xyzw_tag; };
+//
+//// XYZW
+//template<> struct rebind_point_tag<xyzw_tag, 2> { using type = xy_tag; };
+//template<> struct rebind_point_tag<xyzw_tag, 3> { using type = xyz_tag; };
+//template<> struct rebind_point_tag<xyzw_tag, 4> { using type = xyzw_tag; };
 
 
 

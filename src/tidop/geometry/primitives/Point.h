@@ -350,6 +350,15 @@ using Point3dm = Point<double, xyzm_tag>;
 using Point3im = Point<int, xyzm_tag>;
 
 
+
+//template<typename T, size_t Dim>
+//struct make_point
+//{ 
+//    static constexpr size_t dim = dimension_value(Dim);
+//    using type = Point<T, tag_for_dim<dim>::type>;
+//};
+
+
 // IMPLEMENTATION
 
 template<typename T, typename Tag>

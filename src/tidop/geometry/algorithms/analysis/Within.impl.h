@@ -30,58 +30,62 @@ namespace tl
 namespace detail 
 {
 
-// Point-Point
-template<typename P1, typename P2>
+/* Point - Point */
+
+template<Point2DConcept P1, Point2DConcept P2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
 constexpr auto within_impl(const P1 &p1,
                            const P2 &p2, 
-                           double tolerance, 
+                           const Policy &policy,
                            point_tag,
                            point_tag) -> bool
 {
-    return equalsExact(p1, p2, tolerance);
+    return equalsExact(p1, p2, policy);
 }
 
-// Segment - Segment
-template<typename S1, typename S2>
+
+/* Segment – Segment */
+
+template<Segment2DConcept S1, Segment2DConcept S2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
 constexpr auto within_impl(const S1 &seg1, 
                            const S2 &seg2,
-                           double tolerance,
+                           const Policy &policy,
                            segment_tag, 
                            segment_tag) -> bool
 {
-    return contains(seg2, seg1, tolerance);
+    return contains(seg2, seg1, policy);
 }
 
-template<typename LS>
+template<LineString2DConcept LS1, LineString2DConcept LS2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
-constexpr auto within_impl(const LS &ls1,
-                           const LS &ls2,
-                           double tolerance,
+constexpr auto within_impl(const LS1 &ls1,
+                           const LS2 &ls2,
+                           const Policy &policy,
                            linestring_tag,
                            linestring_tag) -> bool
 {
-    return contains(ls2, ls1, tolerance);
+    return contains(ls2, ls1, policy);
 }
 
-template<typename Poly>
-constexpr auto within_impl(const Poly &p1,
-                           const Poly &p2,
-                           double tolerance,
+template<Polygon2DConcept Poly1, Polygon2DConcept Poly2, PrecisionPolicyConcept Policy>
+[[nodiscard]] 
+constexpr auto within_impl(const Poly1 &p1,
+                           const Poly2 &p2,
+                           const Policy &policy,
                            polygon_tag,
                            polygon_tag) -> bool
 {
 //    return contains(p2, p1, tolerance);
     // ningún punto del exterior
     for (const auto &pt : p1.outer())
-        if (locatePointInPolygon(p2, pt) == Location::Exterior)
+        if (locatePointInPolygon(p2, pt, policy) == Location::Exterior)
             return false;
 
     // comprobar un punto interior real de p1
     auto interior_point = representativePoint(p1);
 
-    if (locatePointInPolygon(p2, interior_point) != Location::Interior)
+    if (locatePointInPolygon(p2, interior_point, policy) != Location::Interior)
         return false;
 
     return true;
@@ -103,59 +107,59 @@ constexpr auto within_impl(const Poly &p1,
 //}
 
 // Point - Segment
-template<typename P, typename S>
-constexpr bool within_impl(const P &p,
-                           const S &seg,
-                           double tolerance,
+template<Point2DConcept Point, Segment2DConcept Segment, PrecisionPolicyConcept Policy>
+constexpr bool within_impl(const Point &point,
+                           const Segment &segment,
+                           const Policy &policy,
                            point_tag,
                            segment_tag)
 {
-    return contains(seg, p, tolerance);
+    return contains(segment, point, policy);
 }
 
 // Point - LineString
-template<typename P, typename LS>
-constexpr bool within_impl(const P &p,
-                           const LS &ls,
-                           double tolerance,
+template<Point2DConcept Point, LineString2DConcept LineString, PrecisionPolicyConcept Policy>
+constexpr bool within_impl(const Point &point,
+                           const LineString &lineString,
+                           const Policy &policy,
                            point_tag,
                            linestring_tag)
 {
-    return locatePointOnLineString(ls, p, tolerance) == Location::Interior;
+    return locatePointOnLineString(lineString, point, policy) == Location::Interior;
 }
 
-template<typename P, typename Poly>
-constexpr bool within_impl(const P &p,
-                           const Poly &poly,
-                           double tolerance,
+template<Point2DConcept Point, Polygon2DConcept Polygon, PrecisionPolicyConcept Policy>
+constexpr bool within_impl(const Point &point,
+                           const Polygon &polygon,
+                           const Policy &policy,
                            point_tag,
                            polygon_tag)
 {
-    return locatePointInPolygon(poly, p) == Location::Interior;
+    return locatePointInPolygon(polygon, point, policy) == Location::Interior;
 }
 
-template<typename LS, typename Poly>
-auto within_impl(const LS &ls,
-                 const Poly &poly,
-                 double tolerance,
+template< LineString2DConcept LineString, Polygon2DConcept Polygon, PrecisionPolicyConcept Policy>
+auto within_impl(const LineString &lineString,
+                 const Polygon &polygon,
+                 const Policy &policy,
                  linestring_tag,
                  polygon_tag) -> bool
 {
     // ningún vértice puede estar en el exterior
-    for (const auto &p : ls)
-        if (locatePointInPolygon(poly, p) == Location::Exterior)
+    for (const auto &point : lineString)
+        if (locatePointInPolygon(polygon, point, policy) == Location::Exterior)
             return false;
 
     // comprobar que el interior del LS esté en el interior del polígono
     // basta comprobar un punto interior de cada segmento
     bool hasInteriorPointInside = false;
 
-    for (size_t i = 0; i + 1 < ls.size(); ++i) {
+    for (size_t i = 0; i + 1 < lineString.size(); ++i) {
 
-        Segment seg(ls[i], ls[i + 1]);
+        Segment seg(lineString[i], lineString[i + 1]);
 
         auto mid = seg.midPoint();
-        auto loc = locatePointInPolygon(poly, mid);
+        auto loc = locatePointInPolygon(polygon, mid, policy);
 
         if (loc == Location::Exterior)
             return false;
@@ -166,84 +170,71 @@ auto within_impl(const LS &ls,
     return hasInteriorPointInside;
 }
 
-template<typename S, typename LS>
-constexpr bool within_impl(const S &seg,
-                           const LS &ls,
-                           double tolerance,
+template<Segment2DConcept Segment, LineString2DConcept LineString, PrecisionPolicyConcept Policy>
+constexpr bool within_impl(const Segment &segment,
+                           const LineString &lineString,
+                           const Policy &policy,
                            segment_tag,
                            linestring_tag)
 {
-    for (size_t i = 0; i + 1 < ls.size(); ++i) {
-        Segment candidate(ls[i], ls[i + 1]);
-        if (contains(candidate, seg, tolerance))
+    for (size_t i = 0; i + 1 < lineString.size(); ++i) {
+        Segment candidate(lineString[i], lineString[i + 1]);
+        if (contains(candidate, segment, policy))
             return true;
     }
     return false;
 }
 
-template<typename S, typename Poly>
-constexpr bool within_impl(const S &seg,
-                           const Poly &poly,
-                           double tolerance,
+template<Segment2DConcept Segment, Polygon2DConcept Polygon, PrecisionPolicyConcept Policy>
+constexpr bool within_impl(const Segment &segment,
+                           const Polygon &polygon,
+                           const Policy &policy,
                            segment_tag,
                            polygon_tag)
 {
-    //if (locatePointInPolygon(poly, seg.start()) != Location::Interior)
-    //    return false;
-
-    //if (locatePointInPolygon(poly, seg.end()) != Location::Interior)
-    //    return false;
-
-    //auto boundary_poly = boundary(poly);
-
-    //if (intersects(seg, boundary_poly))
-    //    return false;
-
-    //return true;
-    // ningún punto puede estar fuera
-    if (locatePointInPolygon(poly, seg.start()) == Location::Exterior)
+    if (locatePointInPolygon(polygon, segment.start(), policy) == Location::Exterior)
         return false;
 
-    if (locatePointInPolygon(poly, seg.end()) == Location::Exterior)
+    if (locatePointInPolygon(polygon, segment.end(), policy) == Location::Exterior)
         return false;
 
     // el segmento no puede cruzar al exterior
-    if (intersects(seg, boundary(poly))) // o equivalente
+    if (intersects(segment, boundary(polygon), policy)) // o equivalente
         return false;
 
     // el interior del segmento debe intersectar el interior del polígono
     // Basta con que algún punto interior esté dentro.
-    auto mid = seg.midPoint();
-    if (locatePointInPolygon(poly, mid) != Location::Interior)
+    auto mid = segment.midPoint();
+    if (locatePointInPolygon(polygon, mid, policy) != Location::Interior)
         return false;
 
     return true;
 }
 
-template<typename LS, typename S>
-constexpr bool within_impl(const LS &ls,
-                           const S &seg,
-                           double tolerance,
+template<LineString2DConcept LineString, Segment2DConcept Segment, PrecisionPolicyConcept Policy>
+constexpr bool within_impl(const LineString &lineString,
+                           const Segment &segment,
+                           const Policy &policy,
                            linestring_tag,
                            segment_tag)
 {
-    if (ls.size() != 2)
+    if (lineString.size() != 2)
         return false;
 
-    Segment candidate(ls[0], ls[1]);
-    return contains(seg, candidate, tolerance);
+    Segment candidate(lineString[0], lineString[1]);
+    return contains(segment, candidate, policy);
 }
 
-template<typename GC, typename G2>
-bool within_impl(const GC &collection, 
-                 const G2 &geom, 
-                 double tolerance,
+template<GeometryCollection2DConcept GeometryCollection, Geometry2DConcept Geometry, PrecisionPolicyConcept Policy>
+bool within_impl(const GeometryCollection &collection,
+                 const Geometry &geom,
+                 const Policy &policy,
                  collection_tag, 
-                 geometry_tag_t<G2>) 
+                 geometry_tag_t<Geometry>)
 {
     for (const auto &item : collection) {
         if (!std::visit([&](auto &&arg) {
-                return within(arg.get(), geom, tolerance);
+                return within(arg.get(), geom, policy);
             }, item)) 
             return false;
     }
@@ -252,25 +243,25 @@ bool within_impl(const GC &collection,
 }
 
 // Segunda geometría es colección
-template<typename G1, typename GC>
+template<typename G1, typename GC, PrecisionPolicyConcept Policy>
 bool within_impl(const G1 &geom,
                  const GC &collection,
-                 double tolerance,
+                 const Policy &policy,
                  geometry_tag_t<G1>, 
                  collection_tag) 
 {
     for (const auto &item : collection) {
         if(std::visit([&](auto &&arg) {
-            return within(geom, arg.get(), tolerance);
+            return within(geom, arg.get(), policy);
             }, item)) return true;
     }
 
     return false;
 }
 
-template<typename G1, typename G2, typename Tag1, typename Tag2>
+template<typename G1, typename G2, PrecisionPolicyConcept Policy, typename Tag1, typename Tag2>
 [[nodiscard]]
-constexpr auto within_impl(const G1 &, const G2 &, double, Tag1, Tag2) -> bool
+constexpr auto within_impl(const G1 &, const G2 &, const Policy &, Tag1, Tag2) -> bool
 {
     return false;
 }
@@ -278,19 +269,22 @@ constexpr auto within_impl(const G1 &, const G2 &, double, Tag1, Tag2) -> bool
 } // namespace detail
 
 
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
+template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 constexpr auto within(const G1 &geom1, const G2 &geom2) -> bool
 {
     using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
-    return within(geom1, geom2, default_tolerance<Scalar>::value);
+
+    PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
+
+    return within(geom1, geom2, policy);
 }
 
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
+template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
-constexpr auto within(const G1 &geom1, const G2 &geom2, double tolerance) -> bool
+constexpr auto within(const G1 &geom1,
+                      const G2 &geom2,
+                      const Policy &policy) -> bool
 {
     using P1 = geometry_traits<G1>::point_type;
     using P2 = geometry_traits<G2>::point_type;
@@ -301,40 +295,22 @@ constexpr auto within(const G1 &geom1, const G2 &geom2, double tolerance) -> boo
 
     if (geom1.isEmpty() || geom2.isEmpty()) return false;
 
-    auto dispatch = [&] {
-        using tag1 = geometry_tag_t<G1>;
-        using tag2 = geometry_tag_t<G2>;
-        return detail::within_impl(geom1, geom2, tolerance, tag1{}, tag2{});
-    };
-
-    if constexpr (GeometryCollectionConcept<G1> || GeometryCollectionConcept<G2>) {
-        return dispatch();
-    } else if constexpr (MultiGeometryConcept<G1>) {
+    if constexpr (MultiGeometryConcept<G1> && !GeometryCollectionConcept<G1>) {
         for (const auto &a : geom1) {
-            if (!within(a, geom2, tolerance))
+            if (!within(a, geom2, policy))
                 return false;
         }
         return true;
-    } else if constexpr (MultiGeometryConcept<G2>) {
+    } else if constexpr (MultiGeometryConcept<G2> && !GeometryCollectionConcept<G2>) {
         for (const auto &b : geom2) {
-            if (within(geom1, b, tolerance)) return true;
+            if (within(geom1, b, policy)) return true;
         }
         return false;
     } else {
-        return dispatch();
+        using tag1 = geometry_tag_t<G1>;
+        using tag2 = geometry_tag_t<G2>;
+        return detail::within_impl(geom1, geom2, policy, tag1{}, tag2{});
     }
-
-    //return detail::within_impl(geom1, geom2, tolerance, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
-}
-
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
-[[nodiscard]]
-constexpr auto within(const G1 &geom1,
-                      const G2 &geom2,
-                      const TolerancePolicy &policy) -> bool
-{
-    return within(geom1, geom2, policy.xyTolerance());
 }
 
 } // namespace tl

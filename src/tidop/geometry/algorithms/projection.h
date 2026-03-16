@@ -99,7 +99,9 @@ struct ProjectionResult
 
     bool isBeforeStart() const { return t < 0.0; }
     bool isAfterEnd() const { return t > 1.0; }
-    bool isInsideSegment() const { return t >= 0.0 && t <= 1.0; }
+    bool isInsideSegment() const {
+        return t >= 0.0 && t <= 1.0;
+    }
 };
 
 template<typename Point_t>

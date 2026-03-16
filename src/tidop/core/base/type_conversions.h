@@ -115,31 +115,16 @@ namespace tl
  * \see convertStringTo
  */
 template<typename T1, typename T2>
-auto numberCast(T2 number) -> enableIfIntegral<T1, T1>
+    requires std::is_arithmetic_v<T1> &&std::is_arithmetic_v<T2>
+constexpr T1 numberCast(T2 number) noexcept
 {
-    return static_cast<T1>(std::round(number));
+    if constexpr (std::is_integral_v<T1>) {
+        return static_cast<T1>(std::round(number));
+    } else {
+        return static_cast<T1>(number);
+    }
 }
 
-/*!
- * \copydoc read(std::fstream *, T &, bool)
- */
-template<typename T1, typename T2>
-auto numberCast(T2 number) -> enableIfFloating<T1, T1>
-{
-    return static_cast<T1>(number);
-}
-
-/// \cond
-template<typename T1, typename T2>
-auto numberCast(T2 /*b*/) -> enableIfNotArithmetic<T1, T1>
-{
-    //En linux me sale siempre el error aunque no se llame a la función.
-    //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
-    throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
-    return T1{0};
-}
-
-/// \endcond
 
 /*!
  * \brief Converts a string to a numeric or boolean type, with range validation.

@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(Segment_empty)
     BOOST_CHECK(false == segment.isEmpty());
 
     Segment<Point2d> segment2;
-    BOOST_CHECK(segment2.isEmpty());
+    BOOST_CHECK(!segment2.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE(Segment_length)
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_isEmpty)
     BOOST_CHECK(false == segment.isEmpty());
 
     Segment<Point3d> segment2;
-    BOOST_CHECK(segment2.isEmpty());
+    BOOST_CHECK(!segment2.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE(Segment3D_length)

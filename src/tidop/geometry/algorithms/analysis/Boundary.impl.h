@@ -38,28 +38,29 @@ namespace tl
 namespace detail
 {
 
-template<typename Point_t>
-auto boundary_impl(const Point_t &, point_tag)
+template<PointConcept Point>
+auto boundary_impl(const Point &, point_tag)
 {
-    return GeometryCollection<Point_t>{};
+    return GeometryCollection<Point>{};
 }
 
-template<typename Point_t>
-auto boundary_impl(const Segment<Point_t> &s, segment_tag)
+template<PointConcept Point>
+auto boundary_impl(const Segment<Point> &segment, segment_tag)
 {
-    return MultiPoint<Point_t>{s.pt1(), s.pt2()};
+    return MultiPoint<Point>{segment.pt1(), segment.pt2()};
 }
 
-template<typename Point_t>
-auto boundary_impl(const LineString<Point_t> &ls, linestring_tag) -> MultiPoint<Point_t>
+template<PointConcept Point>
+auto boundary_impl(const LineString<Point> &lineString,
+                   linestring_tag) -> MultiPoint<Point>
 {
-    MultiPoint<Point_t> result;
+    MultiPoint<Point> result;
 
-    if (ls.size() < 2)
+    if (lineString.size() < 2)
         return result;
 
-    const auto &p0 = ls.front();
-    const auto &p1 = ls.back();
+    const auto &p0 = lineString.front();
+    const auto &p1 = lineString.back();
 
     if (p0 != p1) {
         result.push_back(p0);
@@ -69,17 +70,18 @@ auto boundary_impl(const LineString<Point_t> &ls, linestring_tag) -> MultiPoint<
     return result;
 }
 
-template<typename Point_t>
-auto boundary_impl(const Polygon<Point_t> &poly, polygon_tag) -> MultiLineString<Point_t>
+template<PointConcept Point>
+auto boundary_impl(const Polygon<Point> &polygon,
+                   polygon_tag) -> MultiLineString<Point>
 {
-    MultiLineString<Point_t> result;
+    MultiLineString<Point> result;
 
-    if (poly.outer().isEmpty()) 
+    if (polygon.outer().isEmpty())
         return result;
 
-    result.push_back(LineString(poly.outer()));
+    result.push_back(LineString(polygon.outer()));
 
-    for (const auto &hole : poly.inners()) {
+    for (const auto &hole : polygon.inners()) {
         if (!hole.isEmpty()) {
             result.push_back(LineString(hole));
         }
@@ -88,25 +90,26 @@ auto boundary_impl(const Polygon<Point_t> &poly, polygon_tag) -> MultiLineString
     return result;
 }
 
-template<typename Point_t>
-auto boundary_impl(const MultiPoint<Point_t> &, multipoint_tag)
+template<PointConcept Point>
+auto boundary_impl(const MultiPoint<Point> &, multipoint_tag)
 {
-    return GeometryCollection<Point_t>{};
+    return GeometryCollection<Point>{};
 }
 
-template<typename Point_t>
-auto boundary_impl(const MultiLineString<Point_t> &mls, multilinestring_tag) -> MultiPoint<Point_t>
+template<PointConcept Point>
+auto boundary_impl(const MultiLineString<Point> &multiLineString,
+                   multilinestring_tag) -> MultiPoint<Point>
 {
-    std::unordered_map<Point_t, int, Hash<Point_t>> counts;
+    std::unordered_map<Point, int, Hash<Point>> counts;
 
-    for (const auto &ls : mls) {
-        if (!ls.isEmpty() && !(ls.front() == ls.back())) {
-            counts[ls.front()]++;
-            counts[ls.back()]++;
+    for (const auto &lineString : multiLineString) {
+        if (!lineString.isEmpty() && !(lineString.front() == lineString.back())) {
+            counts[lineString.front()]++;
+            counts[lineString.back()]++;
         }
     }
 
-    MultiPoint<Point_t> result;
+    MultiPoint<Point> result;
     for (auto &[pt, count] : counts) {
         if (count % 2 == 1)
             result.push_back(pt);
@@ -115,13 +118,14 @@ auto boundary_impl(const MultiLineString<Point_t> &mls, multilinestring_tag) -> 
     return result;
 }
 
-template<typename Point_t>
-auto boundary_impl(const MultiPolygon<Point_t> &mp, multipolygon_tag) -> MultiLineString<Point_t>
+template<PointConcept Point>
+auto boundary_impl(const MultiPolygon<Point> &multiPolygon,
+                   multipolygon_tag) -> MultiLineString<Point>
 {
-    MultiLineString<Point_t> result;
+    MultiLineString<Point> result;
 
-    for (const auto &poly : mp) {
-        auto b = boundary(poly);
+    for (const auto &polygon : multiPolygon) {
+        auto b = boundary(polygon);
         if (!b.isEmpty())
             result.insert(result.end(), 
                          std::make_move_iterator(b.begin()), 
@@ -131,12 +135,13 @@ auto boundary_impl(const MultiPolygon<Point_t> &mp, multipolygon_tag) -> MultiLi
     return result;
 }
 
-template<typename Point_t>
-auto boundary_impl(const GeometryCollection<Point_t> &gc, collection_tag) -> GeometryCollection<Point_t>
+template<PointConcept Point>
+auto boundary_impl(const GeometryCollection<Point> &geometryCollection,
+                   collection_tag) -> GeometryCollection<Point>
 {
-    GeometryCollection<Point_t> result;
+    GeometryCollection<Point> result;
 
-    for (const auto &geom : gc) {
+    for (const auto &geom : geometryCollection) {
         std::visit([&](const auto &arg) {
             const auto &geometry = arg.get();
             using GeometryType = std::decay_t<decltype(geometry)>;

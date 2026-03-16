@@ -30,20 +30,21 @@ namespace tl
 namespace detail
 {
 
-template<typename Point_t>
-auto envelope_impl(const Point_t &point, 
+template<PointConcept Point>
+auto envelope_impl(const Point &point,
                    point_tag)
 {
-    using P = remove_measure_t<Point_t>;
+    using P = remove_measure_t<Point>;
     return BoundingBox<P>(static_cast<P>(point), static_cast<P>(point));
 }
 
-template<typename Point_t>
-auto envelope_impl(const Segment<Point_t> &segment,
+template<SegmentConcept Segment>
+auto envelope_impl(const Segment &segment,
                    segment_tag)
 {
-    using P = remove_measure_t<Point_t>;
-    return BoundingBox<P>(static_cast<P>(segment.pt1()), static_cast<P>(segment.pt2()));
+    using P = remove_measure_t<geometry_traits<Segment>::point_type>;
+    return BoundingBox<P>(static_cast<P>(segment.pt1()), 
+                          static_cast<P>(segment.pt2()));
 }
 
 template<typename Container_t>
@@ -69,15 +70,15 @@ auto envelope_from_container(const Container_t &container)
 }
 
 
-template<typename Polygon_t>
-auto envelope_impl(const Polygon_t &polygon, 
+template<PolygonConcept Polygon>
+auto envelope_impl(const Polygon &polygon, 
                    polygon_tag)
 {
     return envelope_from_container(polygon.outer());
 }
 
-template<typename LineString_t>
-auto envelope_impl(const LineString_t &lineString, 
+template<LineStringConcept LineString>
+auto envelope_impl(const LineString &lineString, 
                    linestring_tag)
 {
     return envelope_from_container(lineString);
@@ -116,10 +117,13 @@ auto envelope_impl(const MultiPolygon<Point_t> &multiPolygon,
     return bbox;
 }
 
-template<typename Point_t>
-auto envelope_impl(const GeometryCollection<Point_t> &geometryCollection, collection_tag)
+template<GeometryCollectionConcept GeometryCollection>
+auto envelope_impl(const GeometryCollection &geometryCollection, 
+                   collection_tag)
 {
-    BoundingBox<remove_measure_t<Point_t>> bbox;
+    using P = remove_measure_t<geometry_traits<GeometryCollection>::point_type>;
+
+    BoundingBox<P> bbox;
 
     for (const auto &geom : geometryCollection) {
         std::visit([&](auto &&arg) {

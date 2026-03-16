@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop intersects test
 #include <boost/test/unit_test.hpp>
 
+#include "geometry_test_fixture.h"
 #include "tidop/geometry/algorithms/analysis/Intersects.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/Segment.h"
@@ -36,73 +37,148 @@
 #include "tidop/geometry/base/GeometryCollection.h"
 
 using namespace tl;
+using namespace test;
 
 BOOST_AUTO_TEST_SUITE(IntersectsTestSuite)
 
+
 // ============================================================================
-// TEST CASES POR TIPO DE GEOMETRÍA
+// Point - Point
 // ============================================================================
 
-BOOST_AUTO_TEST_CASE(point_point_intersects)
+BOOST_FIXTURE_TEST_CASE(intersects_point_point, GeometryTestFixture)
 {
-    tl::Point2d p1(1.0, 2.0);
-    tl::Point2d p2(1.0, 2.0);
-    tl::Point2d p3(3.0, 4.0);
+    BOOST_CHECK(!intersects(point2d1, point2d2));
+    BOOST_CHECK(!intersects(point2d2, point2d1));
+    BOOST_CHECK(intersects(point2d1, point2d1));
 
-    // Puntos iguales deben intersectar
-    BOOST_CHECK(tl::intersects(p1, p2));
-    BOOST_CHECK(tl::intersects(p2, p1)); // Simetría
-
-    // Puntos diferentes no intersectan
-    BOOST_CHECK(!tl::intersects(p1, p3));
-    BOOST_CHECK(!tl::intersects(p3, p1));
+    BOOST_CHECK(!intersects(point2d4, point2d5));
+    BOOST_CHECK(intersects(point2d4, point2d5, policy));
 }
+
+BOOST_FIXTURE_TEST_CASE(disjoint_point_point_with_measure, GeometryTestFixture)
+{
+    BOOST_CHECK(intersects(point2d1, point2dm1));
+    BOOST_CHECK(!intersects(point2dm1, point2dm2));
+}
+
+// ============================================================================
+// Segment - Segment
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(intersects_segment_segment, GeometryTestFixture)
+{
+    // ------------------------------------------------------------------------
+    // Casos donde SÍ hay intersección (al menos un punto en común)
+    // ------------------------------------------------------------------------
+
+    // 1. Segmentos que se cruzan en un punto interior
+    BOOST_CHECK(intersects(segment1, segment4));   // diagonal (0,0)-(10,10) y horizontal (0,5)-(10,5) se cruzan en (5,5)
+    BOOST_CHECK(intersects(segment4, segment1));   // simetría
+
+    // 2. Segmentos que se tocan en un extremo
+    BOOST_CHECK(intersects(segment_colineal_1, segment_colineal_2)); // (0,0)-(5,0) y (5,0)-(10,0) tocan en (5,0)
+    BOOST_CHECK(intersects(segment_colineal_2, segment_colineal_1));
+
+    // 3. Segmentos iguales (mismos puntos)
+    Segment2d seg_dup(point2d1, point2d3);
+    BOOST_CHECK(intersects(segment1, seg_dup));
+    BOOST_CHECK(intersects(seg_dup, segment1));
+
+    // 4. Segmentos colineales con superposición parcial
+    BOOST_CHECK(intersects(segment7, segment3));
+    BOOST_CHECK(intersects(segment3, segment7));
+
+    // 5. Segmentos colineales donde uno contiene al otro
+    BOOST_CHECK(intersects(segment9, segment10));
+    BOOST_CHECK(intersects(segment10, segment9));
+
+    // 6. Segmentos que comparten un punto interior de uno y extremo del otro
+    BOOST_CHECK(intersects(segment4, segment2));
+    BOOST_CHECK(intersects(segment2, segment4));
+
+    // 7. Segmento degenerado (punto) que está sobre otro segmento
+    Segment2d seg_degen_on(point2d2, point2d2); // (2.5,2.5) que está sobre segment1
+    BOOST_CHECK(intersects(segment1, seg_degen_on));
+    BOOST_CHECK(intersects(seg_degen_on, segment1));
+
+    // ------------------------------------------------------------------------
+    // Casos donde NO hay intersección (ningún punto en común)
+    // ------------------------------------------------------------------------
+
+    // 8. Segmentos paralelos y separados
+    BOOST_CHECK(!intersects(segment4, segment3));
+    BOOST_CHECK(!intersects(segment3, segment4));
+
+    // 9. Segmentos no paralelos que no se cruzan
+    BOOST_CHECK(!intersects(segment1, segment_out));
+    BOOST_CHECK(!intersects(segment_out, segment1));
+
+    // 10. Segmentos colineales pero separados (con hueco)
+    Segment2d seg9(Point2d(0, 0), Point2d(5, 0));
+    Segment2d seg10(Point2d(7, 0), Point2d(10, 0));
+    BOOST_CHECK(!intersects(seg9, seg10));
+    BOOST_CHECK(!intersects(seg10, seg9));
+
+    // 11. Segmento degenerado (punto) que no está sobre el otro segmento
+    Segment2d seg_degen_off(point2d4, point2d4); // (15,15) fuera de segment1
+    BOOST_CHECK(!intersects(segment1, seg_degen_off));
+    BOOST_CHECK(!intersects(seg_degen_off, segment1));
+
+    // ------------------------------------------------------------------------
+    // Pruebas con política de precisión (puntos casi coincidentes)
+    // ------------------------------------------------------------------------
+
+    // Segmento casi horizontal pero ligeramente desviado, que casi toca en un punto
+    Segment2d seg_almost(Point2d(5, 1e-8), Point2d(5, 1e-8)); // degenerado, punto (5, 1e-8)
+    // Con política de resolución 0.001, 1e-8 < 0.001, por lo que se considera igual a 0, luego el punto (5,0) está sobre seg_hor.
+    BOOST_CHECK(intersects(segment3, seg_almost, policy));
+
+    // Segmento casi paralelo pero ligeramente separado, con distancia < resolución
+    Segment2d seg_almost_parallel(Point2d(0, 1e-8), Point2d(10, 1e-8));
+    // Con la política, estos puntos se convierten a y=0, por lo que el segmento se superpone exactamente con seg_hor
+    BOOST_CHECK(intersects(segment3, seg_almost_parallel, policy));
+
+    // Segmento con separación mayor que la resolución
+    Segment2d seg_far(Point2d(0, 0.01), Point2d(10, 0.01));
+    BOOST_CHECK(!intersects(segment3, seg_far, policy));
+
+    // Segmento que casi se cruza en un punto (desviación pequeña)
+    // El segmento vertical se convierte a (5,0)-(5,0). Segmento degenerado
+    Segment2d seg_cross_almost(Point2d(5, -1e-8), Point2d(5, 1e-8)); // vertical casi pasando por (5,0)
+    BOOST_CHECK(intersects(segment3, seg_cross_almost, policy));
+
+    // Ahora con una desviación mayor que la resolución
+    Segment2d seg_cross_far(Point2d(5, -0.01), Point2d(5, 0.01));
+    BOOST_CHECK(intersects(segment3, seg_cross_far, policy));
+}
+
+
+
+
 
 BOOST_AUTO_TEST_CASE(point_segment_intersects)
 {
-    tl::Point2d p1(5.0, 5.0);
-    tl::Segment2d seg(tl::Point2d(0.0, 0.0), tl::Point2d(10.0, 10.0));
+    Point2d p1(5.0, 5.0);
+    Segment2d seg(Point2d(0.0, 0.0), Point2d(10.0, 10.0));
 
     // Punto en el segmento (en el medio)
-    BOOST_CHECK(tl::intersects(p1, seg));
-    BOOST_CHECK(tl::intersects(seg, p1)); // Simetría
+    BOOST_CHECK(intersects(p1, seg));
+    BOOST_CHECK(intersects(seg, p1)); // Simetría
 
     // Punto en extremo del segmento
-    tl::Point2d p2(0.0, 0.0);
-    BOOST_CHECK(tl::intersects(p2, seg));
+    Point2d p2(0.0, 0.0);
+    BOOST_CHECK(intersects(p2, seg));
 
     // Punto fuera del segmento
-    tl::Point2d p3(5.0, 6.0);
-    BOOST_CHECK(!tl::intersects(p3, seg));
+    Point2d p3(5.0, 6.0);
+    BOOST_CHECK(!intersects(p3, seg));
 
     // Punto colineal pero fuera del segmento
-    tl::Point2d p4(15.0, 15.0);
-    BOOST_CHECK(!tl::intersects(p4, seg));
+    Point2d p4(15.0, 15.0);
+    BOOST_CHECK(!intersects(p4, seg));
 }
 
-BOOST_AUTO_TEST_CASE(segment_segment_intersects)
-{
-    // Segmentos que se cruzan
-    tl::Segment2d s1(tl::Point2d(0.0, 0.0), tl::Point2d(10.0, 10.0));
-    tl::Segment2d s2(tl::Point2d(0.0, 10.0), tl::Point2d(10.0, 0.0));
-    BOOST_CHECK(tl::intersects(s1, s2));
-    BOOST_CHECK(tl::intersects(s2, s1));
-
-    // Segmentos que se tocan en extremo
-    tl::Segment2d s3(tl::Point2d(0.0, 0.0), tl::Point2d(5.0, 5.0));
-    tl::Segment2d s4(tl::Point2d(5.0, 5.0), tl::Point2d(10.0, 10.0));
-    BOOST_CHECK(tl::intersects(s3, s4));
-
-    // Segmentos paralelos no intersectantes
-    tl::Segment2d s5(tl::Point2d(0.0, 0.0), tl::Point2d(10.0, 0.0));
-    tl::Segment2d s6(tl::Point2d(0.0, 5.0), tl::Point2d(10.0, 5.0));
-    BOOST_CHECK(!tl::intersects(s5, s6));
-
-    // Segmentos colineales que se solapan
-    tl::Segment2d s7(tl::Point2d(0.0, 0.0), tl::Point2d(5.0, 0.0));
-    tl::Segment2d s8(tl::Point2d(3.0, 0.0), tl::Point2d(8.0, 0.0));
-    BOOST_CHECK(tl::intersects(s7, s8));
-}
 
 BOOST_AUTO_TEST_CASE(segment_LineString_intersects)
 {
@@ -124,483 +200,512 @@ BOOST_AUTO_TEST_CASE(segment_LineString_intersects)
 
 BOOST_AUTO_TEST_CASE(point_linestring_intersects)
 {
-    tl::LineString2d line = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(5.0, 0.0),
-        tl::Point2d(5.0, 5.0),
-        tl::Point2d(0.0, 5.0)
+    LineString2d line = {
+        Point2d(0.0, 0.0),
+        Point2d(5.0, 0.0),
+        Point2d(5.0, 5.0),
+        Point2d(0.0, 5.0)
     };
 
     // Punto en vértice
-    BOOST_CHECK(tl::intersects(tl::Point2d(0.0, 0.0), line));
+    BOOST_CHECK(intersects(Point2d(0.0, 0.0), line));
 
     // Punto en borde
-    BOOST_CHECK(tl::intersects(tl::Point2d(2.5, 0.0), line));
+    BOOST_CHECK(intersects(Point2d(2.5, 0.0), line));
 
     // Punto dentro del segmento no horizontal/vertical
-    BOOST_CHECK(tl::intersects(tl::Point2d(5.0, 2.5), line));
+    BOOST_CHECK(intersects(Point2d(5.0, 2.5), line));
 
     // Punto fuera
-    BOOST_CHECK(!tl::intersects(tl::Point2d(10.0, 10.0), line));
+    BOOST_CHECK(!intersects(Point2d(10.0, 10.0), line));
 
     // Línea vacía
-    tl::LineString2d empty_line;
-    BOOST_CHECK(!tl::intersects(tl::Point2d(0.0, 0.0), empty_line));
+    LineString2d empty_line;
+    BOOST_CHECK(!intersects(Point2d(0.0, 0.0), empty_line));
 }
 
 BOOST_AUTO_TEST_CASE(point_polygon_intersects)
 {
     // Polígono cuadrado con un hueco
-    tl::Polygon2d polygon;
+    Polygon2d polygon;
     polygon.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 0.0),
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(0.0, 10.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 10.0),
+        Point2d(0.0, 10.0),
+        Point2d(0.0, 0.0)
     };
 
     // Hueco cuadrado en el centro
-    tl::LinearRing2d hole = {
-        tl::Point2d(3.0, 3.0),
-        tl::Point2d(7.0, 3.0),
-        tl::Point2d(7.0, 7.0),
-        tl::Point2d(3.0, 7.0),
-        tl::Point2d(3.0, 3.0)
+    LinearRing2d hole = {
+        Point2d(3.0, 3.0),
+        Point2d(7.0, 3.0),
+        Point2d(7.0, 7.0),
+        Point2d(3.0, 7.0),
+        Point2d(3.0, 3.0)
     };
     polygon.addInner(hole);
 
     // Punto dentro del polígono (no en hueco)
-    BOOST_CHECK(tl::intersects(tl::Point2d(1.0, 1.0), polygon));
+    BOOST_CHECK(intersects(Point2d(1.0, 1.0), polygon));
 
     // Punto en borde exterior
-    BOOST_CHECK(tl::intersects(tl::Point2d(5.0, 0.0), polygon));
+    BOOST_CHECK(intersects(Point2d(5.0, 0.0), polygon));
 
     // Punto en borde del hueco
-    BOOST_CHECK(tl::intersects(tl::Point2d(3.0, 5.0), polygon));
+    BOOST_CHECK(intersects(Point2d(3.0, 5.0), polygon));
 
     // Punto en hueco (fuera del polígono)
-    BOOST_CHECK(!tl::intersects(tl::Point2d(5.0, 5.0), polygon));
+    BOOST_CHECK(!intersects(Point2d(5.0, 5.0), polygon));
 
     // Punto fuera completamente
-    BOOST_CHECK(!tl::intersects(tl::Point2d(15.0, 15.0), polygon));
+    BOOST_CHECK(!intersects(Point2d(15.0, 15.0), polygon));
 }
 
 BOOST_AUTO_TEST_CASE(linestring_linestring_intersects)
 {
-    tl::LineString2d line1 = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 10.0)
+    LineString2d line1 = {
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 10.0)
     };
 
-    tl::LineString2d line2 = {
-        tl::Point2d(0.0, 10.0),
-        tl::Point2d(10.0, 0.0)
+    LineString2d line2 = {
+        Point2d(0.0, 10.0),
+        Point2d(10.0, 0.0)
     };
 
     // Líneas que se cruzan
-    BOOST_CHECK(tl::intersects(line1, line2));
+    BOOST_CHECK(intersects(line1, line2));
 
     // Líneas que se tocan en extremo
-    tl::LineString2d line3 = {
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(20.0, 20.0)
+    LineString2d line3 = {
+        Point2d(10.0, 10.0),
+        Point2d(20.0, 20.0)
     };
-    BOOST_CHECK(tl::intersects(line1, line3));
+    BOOST_CHECK(intersects(line1, line3));
 
     // Líneas paralelas no intersectantes
-    tl::LineString2d line4 = {
-        tl::Point2d(0.0, 5.0),
-        tl::Point2d(10.0, 15.0)
+    LineString2d line4 = {
+        Point2d(0.0, 5.0),
+        Point2d(10.0, 15.0)
     };
-    BOOST_CHECK(!tl::intersects(line1, line4));
+    BOOST_CHECK(!intersects(line1, line4));
+}
+
+
+BOOST_AUTO_TEST_CASE(segment_polygon_intersects)
+{
+    Polygon2d polygon;
+    polygon.outer() = {
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 10.0),
+        Point2d(0.0, 10.0),
+        Point2d(0.0, 0.0)
+    };
+
+    // Segmento completamente dentro
+    Segment2d segment1(Point2d(2.0, 2.0), Point2d(8.0, 8.0));
+    BOOST_CHECK(intersects(segment1, polygon));
+
+    // Segmento que cruza el polígono
+    Segment2d segment2(Point2d(-5.0, 5.0), Point2d(15.0, 5.0));
+    BOOST_CHECK(intersects(segment2, polygon));
+
+    // Segmento que toca el borde
+    Segment2d segment3(Point2d(-5.0, 0.0), Point2d(5.0, 0.0));
+    BOOST_CHECK(intersects(segment3, polygon));
+
+    // Segmento completamente fuera
+    Segment2d segment4(Point2d(-5.0, -5.0), Point2d(-1.0, -1.0));
+    BOOST_CHECK(!intersects(segment4, polygon));
 }
 
 BOOST_AUTO_TEST_CASE(linestring_polygon_intersects)
 {
-    tl::Polygon2d polygon;
+    Polygon2d polygon;
     polygon.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 0.0),
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(0.0, 10.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 10.0),
+        Point2d(0.0, 10.0),
+        Point2d(0.0, 0.0)
     };
 
     // Línea completamente dentro
-    tl::LineString2d line1 = {
-        tl::Point2d(2.0, 2.0),
-        tl::Point2d(8.0, 8.0)
+    LineString2d line1 = {
+        Point2d(2.0, 2.0),
+        Point2d(8.0, 8.0)
     };
-    BOOST_CHECK(tl::intersects(line1, polygon));
+    BOOST_CHECK(intersects(line1, polygon));
 
     // Línea que cruza el polígono
-    tl::LineString2d line2 = {
-        tl::Point2d(-5.0, 5.0),
-        tl::Point2d(15.0, 5.0)
+    LineString2d line2 = {
+        Point2d(-5.0, 5.0),
+        Point2d(15.0, 5.0)
     };
-    BOOST_CHECK(tl::intersects(line2, polygon));
+    BOOST_CHECK(intersects(line2, polygon));
 
     // Línea que toca el borde
-    tl::LineString2d line3 = {
-        tl::Point2d(-5.0, 0.0),
-        tl::Point2d(5.0, 0.0)
+    LineString2d line3 = {
+        Point2d(-5.0, 0.0),
+        Point2d(5.0, 0.0)
     };
-    BOOST_CHECK(tl::intersects(line3, polygon));
+    BOOST_CHECK(intersects(line3, polygon));
 
     // Línea completamente fuera
-    tl::LineString2d line4 = {
-        tl::Point2d(-5.0, -5.0),
-        tl::Point2d(-1.0, -1.0)
+    LineString2d line4 = {
+        Point2d(-5.0, -5.0),
+        Point2d(-1.0, -1.0)
     };
-    BOOST_CHECK(!tl::intersects(line4, polygon));
+    BOOST_CHECK(!intersects(line4, polygon));
 }
 
 BOOST_AUTO_TEST_CASE(polygon_polygon_intersects)
 {
     // Polígono 1: Cuadrado grande
-    tl::Polygon2d poly1;
+    Polygon2d poly1;
     poly1.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 0.0),
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(0.0, 10.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 10.0),
+        Point2d(0.0, 10.0),
+        Point2d(0.0, 0.0)
     };
 
     // Polígono 2: Se solapa parcialmente
-    tl::Polygon2d poly2;
+    Polygon2d poly2;
     poly2.outer() = {
-        tl::Point2d(5.0, 5.0),
-        tl::Point2d(15.0, 5.0),
-        tl::Point2d(15.0, 15.0),
-        tl::Point2d(5.0, 15.0),
-        tl::Point2d(5.0, 5.0)
+        Point2d(5.0, 5.0),
+        Point2d(15.0, 5.0),
+        Point2d(15.0, 15.0),
+        Point2d(5.0, 15.0),
+        Point2d(5.0, 5.0)
     };
 
     // Polígono 3: Completamente dentro de poly1
-    tl::Polygon2d poly3;
+    Polygon2d poly3;
     poly3.outer() = {
-        tl::Point2d(2.0, 2.0),
-        tl::Point2d(4.0, 2.0),
-        tl::Point2d(4.0, 4.0),
-        tl::Point2d(2.0, 4.0),
-        tl::Point2d(2.0, 2.0)
+        Point2d(2.0, 2.0),
+        Point2d(4.0, 2.0),
+        Point2d(4.0, 4.0),
+        Point2d(2.0, 4.0),
+        Point2d(2.0, 2.0)
     };
 
     // Polígono 4: Completamente fuera
-    tl::Polygon2d poly4;
+    Polygon2d poly4;
     poly4.outer() = {
-        tl::Point2d(20.0, 20.0),
-        tl::Point2d(25.0, 20.0),
-        tl::Point2d(25.0, 25.0),
-        tl::Point2d(20.0, 25.0),
-        tl::Point2d(20.0, 20.0)
+        Point2d(20.0, 20.0),
+        Point2d(25.0, 20.0),
+        Point2d(25.0, 25.0),
+        Point2d(20.0, 25.0),
+        Point2d(20.0, 20.0)
     };
 
-    BOOST_CHECK(tl::intersects(poly1, poly2));  // Solapamiento parcial
-    BOOST_CHECK(tl::intersects(poly1, poly3));  // Contención completa
-    BOOST_CHECK(!tl::intersects(poly1, poly4)); // Sin intersección
-    BOOST_CHECK(tl::intersects(poly2, poly1));  // Simetría
+    BOOST_CHECK(intersects(poly1, poly2));  // Solapamiento parcial
+    BOOST_CHECK(intersects(poly1, poly3));  // Contención completa
+    BOOST_CHECK(!intersects(poly1, poly4)); // Sin intersección
+    BOOST_CHECK(intersects(poly2, poly1));  // Simetría
 }
 
 BOOST_AUTO_TEST_CASE(multipoint_intersects)
 {
-    tl::MultiPoint2d mp1 = {
-        tl::Point2d(1.0, 1.0),
-        tl::Point2d(2.0, 2.0),
-        tl::Point2d(3.0, 3.0)
+    MultiPoint2d mp1 = {
+        Point2d(1.0, 1.0),
+        Point2d(2.0, 2.0),
+        Point2d(3.0, 3.0)
     };
 
-    tl::MultiPoint2d mp2 = {
-        tl::Point2d(3.0, 3.0),  // Punto común
-        tl::Point2d(4.0, 4.0)
+    MultiPoint2d mp2 = {
+        Point2d(3.0, 3.0),  // Punto común
+        Point2d(4.0, 4.0)
     };
 
-    tl::MultiPoint2d mp3 = {
-        tl::Point2d(5.0, 5.0),
-        tl::Point2d(6.0, 6.0)
+    MultiPoint2d mp3 = {
+        Point2d(5.0, 5.0),
+        Point2d(6.0, 6.0)
     };
 
-    tl::Point2d p1(2.0, 2.0);
-    tl::Point2d p2(7.0, 7.0);
+    Point2d p1(2.0, 2.0);
+    Point2d p2(7.0, 7.0);
 
     // Multipunto con punto (punto contenido)
-    BOOST_CHECK(tl::intersects(mp1, p1));
-    BOOST_CHECK(tl::intersects(p1, mp1));
+    BOOST_CHECK(intersects(mp1, p1));
+    BOOST_CHECK(intersects(p1, mp1));
 
     // Multipunto con punto (punto no contenido)
-    BOOST_CHECK(!tl::intersects(mp1, p2));
+    BOOST_CHECK(!intersects(mp1, p2));
 
     // Multipunto con multipunto (intersección)
-    BOOST_CHECK(tl::intersects(mp1, mp2));
+    BOOST_CHECK(intersects(mp1, mp2));
 
     // Multipunto con multipunto (sin intersección)
-    BOOST_CHECK(!tl::intersects(mp1, mp3));
+    BOOST_CHECK(!intersects(mp1, mp3));
 }
 
 BOOST_AUTO_TEST_CASE(multilinestring_intersects)
 {
-    tl::MultiLineString2d mls1 = {
-        tl::LineString2d{tl::Point2d(0.0, 0.0), tl::Point2d(5.0, 5.0)},
-        tl::LineString2d{tl::Point2d(0.0, 5.0), tl::Point2d(5.0, 0.0)}
+    MultiLineString2d mls1 = {
+        LineString2d{Point2d(0.0, 0.0), Point2d(5.0, 5.0)},
+        LineString2d{Point2d(0.0, 5.0), Point2d(5.0, 0.0)}
     };
 
-    tl::MultiLineString2d mls2 = {
-        tl::LineString2d{tl::Point2d(2.0, 2.0), tl::Point2d(8.0, 8.0)},
-        tl::LineString2d{tl::Point2d(0.0, 8.0), tl::Point2d(8.0, 0.0)}
+    MultiLineString2d mls2 = {
+        LineString2d{Point2d(2.0, 2.0), Point2d(8.0, 8.0)},
+        LineString2d{Point2d(0.0, 8.0), Point2d(8.0, 0.0)}
     };
 
-    tl::MultiLineString2d mls3 = {
-        tl::LineString2d{tl::Point2d(10.0, 10.0), tl::Point2d(15.0, 15.0)}
+    MultiLineString2d mls3 = {
+        LineString2d{Point2d(10.0, 10.0), Point2d(15.0, 15.0)}
     };
 
-    tl::LineString2d line = {
-        tl::Point2d(2.0, 2.0),
-        tl::Point2d(8.0, 2.0)
+    LineString2d line = {
+        Point2d(2.0, 2.0),
+        Point2d(8.0, 2.0)
     };
 
     // MultiLineString con LineString (intersección)
-    BOOST_CHECK(tl::intersects(mls1, line));
-    BOOST_CHECK(tl::intersects(line, mls1));
+    BOOST_CHECK(intersects(mls1, line));
+    BOOST_CHECK(intersects(line, mls1));
 
     // MultiLineString con MultiLineString (intersección)
-    BOOST_CHECK(tl::intersects(mls1, mls2));
+    BOOST_CHECK(intersects(mls1, mls2));
 
     // MultiLineString con MultiLineString (sin intersección)
-    BOOST_CHECK(!tl::intersects(mls1, mls3));
+    BOOST_CHECK(!intersects(mls1, mls3));
 }
 
 BOOST_AUTO_TEST_CASE(multipolygon_intersects)
 {
     // Crear varios polígonos para MultiPolygon
-    tl::Polygon2d poly1;
+    Polygon2d poly1;
     poly1.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(5.0, 0.0),
-        tl::Point2d(5.0, 5.0),
-        tl::Point2d(0.0, 5.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(5.0, 0.0),
+        Point2d(5.0, 5.0),
+        Point2d(0.0, 5.0),
+        Point2d(0.0, 0.0)
     };
 
-    tl::Polygon2d poly2;
+    Polygon2d poly2;
     poly2.outer() = {
-        tl::Point2d(3.0, 3.0),
-        tl::Point2d(8.0, 3.0),
-        tl::Point2d(8.0, 8.0),
-        tl::Point2d(3.0, 8.0),
-        tl::Point2d(3.0, 3.0)
+        Point2d(3.0, 3.0),
+        Point2d(8.0, 3.0),
+        Point2d(8.0, 8.0),
+        Point2d(3.0, 8.0),
+        Point2d(3.0, 3.0)
     };
 
-    tl::Polygon2d poly3;
+    Polygon2d poly3;
     poly3.outer() = {
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(15.0, 10.0),
-        tl::Point2d(15.0, 15.0),
-        tl::Point2d(10.0, 15.0),
-        tl::Point2d(10.0, 10.0)
+        Point2d(10.0, 10.0),
+        Point2d(15.0, 10.0),
+        Point2d(15.0, 15.0),
+        Point2d(10.0, 15.0),
+        Point2d(10.0, 10.0)
     };
 
-    tl::MultiPolygon2d mp1 = {poly1, poly2};
-    tl::MultiPolygon2d mp2 = {poly2, poly3};
-    tl::MultiPolygon2d mp3 = {poly3};
+    MultiPolygon2d mp1 = {poly1, poly2};
+    MultiPolygon2d mp2 = {poly2, poly3};
+    MultiPolygon2d mp3 = {poly3};
 
-    tl::Point2d point_in_poly1(2.0, 2.0);
-    tl::Point2d point_outside(20.0, 20.0);
+    Point2d point_in_poly1(2.0, 2.0);
+    Point2d point_outside(20.0, 20.0);
 
     // MultiPolygon con Point (punto dentro)
-    BOOST_CHECK(tl::intersects(mp1, point_in_poly1));
-    BOOST_CHECK(tl::intersects(point_in_poly1, mp1));
+    BOOST_CHECK(intersects(mp1, point_in_poly1));
+    BOOST_CHECK(intersects(point_in_poly1, mp1));
 
     // MultiPolygon con Point (punto fuera)
-    BOOST_CHECK(!tl::intersects(mp1, point_outside));
+    BOOST_CHECK(!intersects(mp1, point_outside));
 
     // MultiPolygon con MultiPolygon (intersección)
-    BOOST_CHECK(tl::intersects(mp1, mp2));
+    BOOST_CHECK(intersects(mp1, mp2));
 
     // MultiPolygon con MultiPolygon (sin intersección)
-    BOOST_CHECK(!tl::intersects(mp1, mp3));
+    BOOST_CHECK(!intersects(mp1, mp3));
 }
 
 BOOST_AUTO_TEST_CASE(geometry_collection_intersects)
 {
     // Crear una GeometryCollection con diferentes tipos
-    tl::GeometryCollection<Point2d> collection;
+    GeometryCollection<Point2d> collection;
 
     // Agregar un punto
-    collection.push_back(tl::Point2d(5.0, 5.0));
+    collection.push_back(Point2d(5.0, 5.0));
 
     // Agregar una línea
-    tl::LineString2d line = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 10.0)
+    LineString2d line = {
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 10.0)
     };
     collection.push_back(line);
 
     // Agregar un polígono
-    tl::Polygon2d polygon;
+    Polygon2d polygon;
     polygon.outer() = {
-        tl::Point2d(2.0, 2.0),
-        tl::Point2d(8.0, 2.0),
-        tl::Point2d(8.0, 8.0),
-        tl::Point2d(2.0, 8.0),
-        tl::Point2d(2.0, 2.0)
+        Point2d(2.0, 2.0),
+        Point2d(8.0, 2.0),
+        Point2d(8.0, 8.0),
+        Point2d(2.0, 8.0),
+        Point2d(2.0, 2.0)
     };
     collection.push_back(polygon);
 
     // Crear otra colección
-    tl::GeometryCollection<Point2d> collection2;
-    collection2.push_back(tl::Point2d(7.0, 7.0));
-    collection2.push_back(tl::LineString2d{tl::Point2d(0.0, 10.0), tl::Point2d(10.0, 0.0)});
+    GeometryCollection<Point2d> collection2;
+    collection2.push_back(Point2d(7.0, 7.0));
+    collection2.push_back(LineString2d{Point2d(0.0, 10.0), Point2d(10.0, 0.0)});
 
     // Punto que intersecta con elementos de la colección
-    BOOST_CHECK(tl::intersects(tl::Point2d(5.0, 5.0), collection));
-    BOOST_CHECK(tl::intersects(collection, tl::Point2d(5.0, 5.0)));
+    BOOST_CHECK(intersects(Point2d(5.0, 5.0), collection));
+    BOOST_CHECK(intersects(collection, Point2d(5.0, 5.0)));
 
     // Punto que no intersecta
-    BOOST_CHECK(!tl::intersects(tl::Point2d(20.0, 20.0), collection));
+    BOOST_CHECK(!intersects(Point2d(20.0, 20.0), collection));
 
     // Línea que intersecta
-    tl::LineString2d test_line = {
-        tl::Point2d(0.0, 5.0),
-        tl::Point2d(10.0, 5.0)
+    LineString2d test_line = {
+        Point2d(0.0, 5.0),
+        Point2d(10.0, 5.0)
     };
-    BOOST_CHECK(tl::intersects(test_line, collection));
-    BOOST_CHECK(tl::intersects(collection, test_line));
+    BOOST_CHECK(intersects(test_line, collection));
+    BOOST_CHECK(intersects(collection, test_line));
 
     // Colección con colección (intersección)
-    BOOST_CHECK(tl::intersects(collection, collection2));
+    BOOST_CHECK(intersects(collection, collection2));
 
     // Colección con colección (sin intersección)
-    tl::GeometryCollection<Point2d> collection3;
-    collection3.push_back(tl::Point2d(50.0, 50.0));
-    BOOST_CHECK(!tl::intersects(collection, collection3));
+    GeometryCollection<Point2d> collection3;
+    collection3.push_back(Point2d(50.0, 50.0));
+    BOOST_CHECK(!intersects(collection, collection3));
 }
 
 BOOST_AUTO_TEST_CASE(bounding_box_intersects)
 {
-    tl::BoundingBox2d bbox1(tl::Point2d(0.0, 0.0), tl::Point2d(10.0, 10.0));
-    tl::BoundingBox2d bbox2(tl::Point2d(5.0, 5.0), tl::Point2d(15.0, 15.0));
-    tl::BoundingBox2d bbox3(tl::Point2d(20.0, 20.0), tl::Point2d(30.0, 30.0));
-    tl::BoundingBox2d empty_bbox;
+    BoundingBox2d bbox1(Point2d(0.0, 0.0), Point2d(10.0, 10.0));
+    BoundingBox2d bbox2(Point2d(5.0, 5.0), Point2d(15.0, 15.0));
+    BoundingBox2d bbox3(Point2d(20.0, 20.0), Point2d(30.0, 30.0));
+    BoundingBox2d empty_bbox;
 
     // BoundingBox con BoundingBox (intersección)
-    BOOST_CHECK(tl::intersects(bbox1, bbox2));
+    BOOST_CHECK(intersects(bbox1, bbox2));
 
     // BoundingBox con BoundingBox (sin intersección)
-    BOOST_CHECK(!tl::intersects(bbox1, bbox3));
+    BOOST_CHECK(!intersects(bbox1, bbox3));
 
     // BoundingBox vacío
-    BOOST_CHECK(!tl::intersects(bbox1, empty_bbox));
-    BOOST_CHECK(!tl::intersects(empty_bbox, bbox1));
+    BOOST_CHECK(!intersects(bbox1, empty_bbox));
+    BOOST_CHECK(!intersects(empty_bbox, bbox1));
 
     // BoundingBox con Point (punto dentro)
-    BOOST_CHECK(tl::intersects(bbox1, tl::Point2d(5.0, 5.0)));
-    BOOST_CHECK(tl::intersects(tl::Point2d(5.0, 5.0), bbox1));
+    BOOST_CHECK(intersects(bbox1, Point2d(5.0, 5.0)));
+    BOOST_CHECK(intersects(Point2d(5.0, 5.0), bbox1));
 
     // BoundingBox con Point (punto fuera)
-    BOOST_CHECK(!tl::intersects(bbox1, tl::Point2d(15.0, 15.0)));
+    BOOST_CHECK(!intersects(bbox1, Point2d(15.0, 15.0)));
 
     // BoundingBox con Point (punto en borde)
-    BOOST_CHECK(tl::intersects(bbox1, tl::Point2d(10.0, 5.0)));
+    BOOST_CHECK(intersects(bbox1, Point2d(10.0, 5.0)));
 }
 
 BOOST_AUTO_TEST_CASE(edge_cases_and_special_cases)
 {
     // Geometrías vacías
-    tl::LineString2d empty_line;
-    tl::Polygon2d empty_polygon;
-    tl::MultiPoint2d empty_multipoint;
-    tl::MultiLineString2d empty_multilinestring;
-    tl::MultiPolygon2d empty_multipolygon;
+    LineString2d empty_line;
+    Polygon2d empty_polygon;
+    MultiPoint2d empty_multipoint;
+    MultiLineString2d empty_multilinestring;
+    MultiPolygon2d empty_multipolygon;
 
-    tl::Point2d point(1.0, 1.0);
-    tl::LineString2d line = {tl::Point2d(0.0, 0.0), tl::Point2d(2.0, 2.0)};
+    Point2d point(1.0, 1.0);
+    LineString2d line = {Point2d(0.0, 0.0), Point2d(2.0, 2.0)};
 
     // Punto con geometría vacía
-    BOOST_CHECK(!tl::intersects(point, empty_line));
-    BOOST_CHECK(!tl::intersects(point, empty_polygon));
-    BOOST_CHECK(!tl::intersects(point, empty_multipoint));
+    BOOST_CHECK(!intersects(point, empty_line));
+    BOOST_CHECK(!intersects(point, empty_polygon));
+    BOOST_CHECK(!intersects(point, empty_multipoint));
 
     // Línea con geometría vacía
-    BOOST_CHECK(!tl::intersects(line, empty_line));
-    BOOST_CHECK(!tl::intersects(line, empty_polygon));
+    BOOST_CHECK(!intersects(line, empty_line));
+    BOOST_CHECK(!intersects(line, empty_polygon));
 
     // Geometría vacía consigo misma
-    BOOST_CHECK(!tl::intersects(empty_line, empty_line));
-    BOOST_CHECK(!tl::intersects(empty_polygon, empty_polygon));
+    BOOST_CHECK(!intersects(empty_line, empty_line));
+    BOOST_CHECK(!intersects(empty_polygon, empty_polygon));
 
     // Polígonos degenerados (menos de 3 puntos)
-    tl::Polygon2d degenerate_polygon;
+    Polygon2d degenerate_polygon;
     degenerate_polygon.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(1.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(1.0, 0.0)
         // Falta el tercer punto para cerrar
     };
-    BOOST_CHECK(!tl::intersects(point, degenerate_polygon));
+    BOOST_CHECK(!intersects(point, degenerate_polygon));
 
     // Líneas con puntos duplicados
-    tl::LineString2d line_with_duplicates = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(0.0, 0.0),  // Duplicado
-        tl::Point2d(1.0, 1.0)
+    LineString2d line_with_duplicates = {
+        Point2d(0.0, 0.0),
+        Point2d(0.0, 0.0),  // Duplicado
+        Point2d(1.0, 1.0)
     };
-    BOOST_CHECK(tl::intersects(tl::Point2d(0.0, 0.0), line_with_duplicates));
+    BOOST_CHECK(intersects(Point2d(0.0, 0.0), line_with_duplicates));
 
     // Polígono con auto-intersección (no simple)
-    tl::Polygon2d self_intersecting_polygon;
+    Polygon2d self_intersecting_polygon;
     self_intersecting_polygon.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 0.0),
-        tl::Point2d(0.0, 10.0),
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(0.0, 10.0),
+        Point2d(10.0, 10.0),
+        Point2d(0.0, 0.0)
     };
     // Nota: intersect() debería funcionar incluso con polígonos no simples
-    BOOST_CHECK(tl::intersects(tl::Point2d(5.0, 5.0), self_intersecting_polygon));
+    BOOST_CHECK(intersects(Point2d(5.0, 5.0), self_intersecting_polygon));
 }
 
 BOOST_AUTO_TEST_CASE(performance_and_optimization_checks)
 {
     // Verificar que el chequeo de bounding boxes funciona
-    tl::Polygon2d poly1;
+    Polygon2d poly1;
     poly1.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(100.0, 0.0),
-        tl::Point2d(100.0, 100.0),
-        tl::Point2d(0.0, 100.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(100.0, 0.0),
+        Point2d(100.0, 100.0),
+        Point2d(0.0, 100.0),
+        Point2d(0.0, 0.0)
     };
 
     // Punto muy lejos del polígono
-    tl::Point2d far_point(1000.0, 1000.0);
+    Point2d far_point(1000.0, 1000.0);
 
     // El bounding box check debería evitar cálculos costosos
-    BOOST_CHECK(!tl::intersects(poly1, far_point));
+    BOOST_CHECK(!intersects(poly1, far_point));
 
     // Polígonos con bounding boxes que no se intersectan
-    tl::Polygon2d poly2;
+    Polygon2d poly2;
     poly2.outer() = {
-        tl::Point2d(200.0, 200.0),
-        tl::Point2d(300.0, 200.0),
-        tl::Point2d(300.0, 300.0),
-        tl::Point2d(200.0, 300.0),
-        tl::Point2d(200.0, 200.0)
+        Point2d(200.0, 200.0),
+        Point2d(300.0, 200.0),
+        Point2d(300.0, 300.0),
+        Point2d(200.0, 300.0),
+        Point2d(200.0, 200.0)
     };
 
-    BOOST_CHECK(!tl::intersects(poly1, poly2));
+    BOOST_CHECK(!intersects(poly1, poly2));
 
     // Geometrías grandes donde el bbox check es útil
-    tl::LineString2d long_line;
+    LineString2d long_line;
     for (int i = 0; i < 1000; ++i) {
-        long_line.push_back(tl::Point2d(i * 10.0, i * 10.0));
+        long_line.push_back(Point2d(i * 10.0, i * 10.0));
     }
 
-    tl::Point2d point_near_start(5.0, 5.0);
-    tl::Point2d point_far_away(10000.0, 10000.0);
+    Point2d point_near_start(5.0, 5.0);
+    Point2d point_far_away(10000.0, 10000.0);
 
-    BOOST_CHECK(tl::intersects(point_near_start, long_line));
-    BOOST_CHECK(!tl::intersects(point_far_away, long_line));
+    BOOST_CHECK(intersects(point_near_start, long_line));
+    BOOST_CHECK(!intersects(point_far_away, long_line));
 }
 
 // ============================================================================
@@ -610,76 +715,78 @@ BOOST_AUTO_TEST_CASE(performance_and_optimization_checks)
 BOOST_AUTO_TEST_CASE(regression_point_on_polygon_hole_boundary)
 {
     // Bug: Un punto en el borde de un hueco debería intersectar el polígono
-    tl::Polygon2d polygon_with_hole;
+    Polygon2d polygon_with_hole;
     polygon_with_hole.outer() = {
-        tl::Point2d(0.0, 0.0),
-        tl::Point2d(10.0, 0.0),
-        tl::Point2d(10.0, 10.0),
-        tl::Point2d(0.0, 10.0),
-        tl::Point2d(0.0, 0.0)
+        Point2d(0.0, 0.0),
+        Point2d(10.0, 0.0),
+        Point2d(10.0, 10.0),
+        Point2d(0.0, 10.0),
+        Point2d(0.0, 0.0)
     };
 
-    tl::LinearRing2d hole = {
-        tl::Point2d(3.0, 3.0),
-        tl::Point2d(7.0, 3.0),
-        tl::Point2d(7.0, 7.0),
-        tl::Point2d(3.0, 7.0),
-        tl::Point2d(3.0, 3.0)
+    LinearRing2d hole = {
+        Point2d(3.0, 3.0),
+        Point2d(7.0, 3.0),
+        Point2d(7.0, 7.0),
+        Point2d(3.0, 7.0),
+        Point2d(3.0, 3.0)
     };
     polygon_with_hole.addInner(hole);
 
     // Punto en el borde del hueco
-    tl::Point2d point_on_hole_boundary(5.0, 3.0);
-    BOOST_CHECK(tl::intersects(point_on_hole_boundary, polygon_with_hole));
+    Point2d point_on_hole_boundary(5.0, 3.0);
+    BOOST_CHECK(intersects(point_on_hole_boundary, polygon_with_hole));
 
     // Punto en el borde exterior
-    tl::Point2d point_on_outer_boundary(5.0, 0.0);
-    BOOST_CHECK(tl::intersects(point_on_outer_boundary, polygon_with_hole));
+    Point2d point_on_outer_boundary(5.0, 0.0);
+    BOOST_CHECK(intersects(point_on_outer_boundary, polygon_with_hole));
 
     // Punto dentro del hueco (no intersecta)
-    tl::Point2d point_in_hole(5.0, 5.0);
-    BOOST_CHECK(!tl::intersects(point_in_hole, polygon_with_hole));
+    Point2d point_in_hole(5.0, 5.0);
+    BOOST_CHECK(!intersects(point_in_hole, polygon_with_hole));
 }
 
 BOOST_AUTO_TEST_CASE(regression_colinear_segments)
 {
     // Segmentos colineales que se tocan en un punto
-    tl::Segment2d s1(tl::Point2d(0.0, 0.0), tl::Point2d(5.0, 0.0));
-    tl::Segment2d s2(tl::Point2d(5.0, 0.0), tl::Point2d(10.0, 0.0));
+    Segment2d s1(Point2d(0.0, 0.0), Point2d(5.0, 0.0));
+    Segment2d s2(Point2d(5.0, 0.0), Point2d(10.0, 0.0));
 
-    BOOST_CHECK(tl::intersects(s1, s2));
+    BOOST_CHECK(intersects(s1, s2));
 
     // Segmentos colineales que se solapan
-    tl::Segment2d s3(tl::Point2d(0.0, 0.0), tl::Point2d(7.0, 0.0));
-    tl::Segment2d s4(tl::Point2d(3.0, 0.0), tl::Point2d(10.0, 0.0));
+    Segment2d s3(Point2d(0.0, 0.0), Point2d(7.0, 0.0));
+    Segment2d s4(Point2d(3.0, 0.0), Point2d(10.0, 0.0));
 
-    BOOST_CHECK(tl::intersects(s3, s4));
+    BOOST_CHECK(intersects(s3, s4));
 
     // Segmentos colineales que no se tocan
-    tl::Segment2d s5(tl::Point2d(0.0, 0.0), tl::Point2d(3.0, 0.0));
-    tl::Segment2d s6(tl::Point2d(7.0, 0.0), tl::Point2d(10.0, 0.0));
+    Segment2d s5(Point2d(0.0, 0.0), Point2d(3.0, 0.0));
+    Segment2d s6(Point2d(7.0, 0.0), Point2d(10.0, 0.0));
 
-    BOOST_CHECK(!tl::intersects(s5, s6));
+    BOOST_CHECK(!intersects(s5, s6));
 }
 
 BOOST_AUTO_TEST_CASE(regression_floating_point_precision)
 {
-    // Punto muy cerca del segmento (dentro de la tolerancia)
-    tl::Point2d point(1.0, 1.000000001);  // Muy cerca de y = x
-    tl::Segment2d seg(tl::Point2d(0.0, 0.0), tl::Point2d(2.0, 2.0));
+    PrecisionPolicy<double, PrecisionModel::FixedPrecisionModel> policy(0.001);
+
+    // Punto muy cerca del segmento
+    Point2d point(1.0, 1.0001);  // Muy cerca de y = x
+    Segment2d seg(Point2d(0.0, 0.0), Point2d(2.0, 2.0));
 
     // Debería intersectar debido a la tolerancia
-    BOOST_CHECK(tl::intersects(point, seg));
+    BOOST_CHECK(intersects(point, seg, policy));
 
     // Punto justo fuera de la tolerancia
-    tl::Point2d point2(1.0, 1.0001);
-    BOOST_CHECK(!tl::intersects(point2, seg));
+    Point2d point2(1.0, 1.0001);
+    BOOST_CHECK(!intersects(point2, seg));
 
     // Puntos idénticos con diferencia de floating point
-    tl::Point2d p1(1.0 / 3.0, 1.0 / 3.0);
-    tl::Point2d p2(0.3333333333333333, 0.3333333333333333);
+    Point2d p1(1.0 / 3.0, 1.0 / 3.0);
+    Point2d p2(0.3333333333333333, 0.3333333333333333);
 
-    BOOST_CHECK(tl::intersects(p1, p2));
+    BOOST_CHECK(intersects(p1, p2));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

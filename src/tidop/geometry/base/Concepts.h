@@ -83,13 +83,81 @@ concept PointConcept = GeometryConcept<P> &&
                        geometry_type_v<P> == GeometryType::point &&
                        std::regular<P>;
 
+template<typename P>
+concept Point2DConcept = Geometry2DConcept<P> &&
+                         geometry_type_v<P> == GeometryType::point &&
+                         std::regular<P>;
+
+template<typename P>
+concept Point3DConcept = Geometry3DConcept<P> &&
+                         geometry_type_v<P> == GeometryType::point &&
+                         std::regular<P>;
+
 template<typename G>
 concept SegmentConcept = GeometryConcept<G> &&
                          geometry_type_v<G> == GeometryType::segment;
 
+template<typename G>
+concept Segment2DConcept = Geometry2DConcept<G> &&
+                           geometry_type_v<G> == GeometryType::segment;
+
+template<typename G>
+concept Segment3DConcept = Geometry3DConcept<G> &&
+                           geometry_type_v<G> == GeometryType::segment;
+
+template<typename G>
+concept LineStringConcept = GeometryConcept<G> &&
+                            geometry_type_v<G> == GeometryType::linestring;
+
+template<typename G>
+concept LineString2DConcept = Geometry2DConcept<G> &&
+                              geometry_type_v<G> == GeometryType::linestring;
+
+template<typename G>
+concept LineString3DConcept = Geometry3DConcept<G> &&
+                              geometry_type_v<G> == GeometryType::linestring;
+
+template<typename G>
+concept PolygonConcept = GeometryConcept<G> &&
+                         geometry_type_v<G> == GeometryType::polygon;
+
+template<typename G>
+concept Polygon2DConcept = Geometry2DConcept<G> &&
+                           geometry_type_v<G> == GeometryType::polygon;
+
+template<typename G>
+concept Polygon3DConcept = Geometry3DConcept<G> &&
+                           geometry_type_v<G> == GeometryType::polygon;
+
 
 template<typename G>
 concept GeometryCollectionConcept = GeometryConcept<G> && is_geometry_collection_v<G>;
+
+template<typename G>
+concept GeometryCollection2DConcept = Geometry2DConcept<G> && is_geometry_collection_v<G>;
+
+template<typename G>
+concept GeometryCollection3DConcept = Geometry3DConcept<G> && is_geometry_collection_v<G>;
+
+
+template<typename G>
+concept LinearContainerConcept = requires(G g)
+{
+    typename G::value_type;
+    { g.size() } -> std::convertible_to<std::size_t>;
+    { g[0] } -> std::same_as<typename G::value_type &>;
+};
+
+template<typename G>
+concept LinearGeometryConcept = LinearContainerConcept<G>;
+
+template<typename G>
+concept LinearGeometry2DConcept = LinearContainerConcept<G> && 
+                                  is_2d_v<typename G::value_type>;
+
+template<typename G>
+concept LinearGeometry3DConcept = LinearContainerConcept<G> && 
+                                  is_3d_v<typename G::value_type>;
 
 template<typename G1, typename G2>
 concept SameSpatialDimension = GeometryConcept<G1> && 
@@ -99,6 +167,16 @@ concept SameSpatialDimension = GeometryConcept<G1> &&
 template<typename G1, typename G2>
 concept CompatibleGeometries = SameSpatialDimension<G1, G2> &&
                                ((has_m_v<G1> == has_m_v<G2>) || !has_m_v<G1> || !has_m_v<G2>);
+
+
+template<typename Policy>
+concept PrecisionPolicyConcept = requires(Policy p, typename Policy::scalar_type v)
+{
+    typename Policy::scalar_type;   // existe
+    typename Policy::calc_type;     // existe
+    { p.snap(v) } -> std::convertible_to<typename Policy::calc_type>;
+};
+
 
 /*! \} */ 
 

@@ -38,29 +38,13 @@ namespace tl
  *  \{
  */
 
-/*!
- * \brief Spatial equality with default tolerance.
- *
- * Compares only spatial dimensions (X,Y,Z) with a type-adapted absolute tolerance:
- * - float:  1e-6
- * - double: 1e-12
- * - int:    0 (exact comparison)
- *
- * Measure (M) is ignored (OGC Simple Feature Access).
- *
- * \see operator== for exact comparison including measure.
- */
+
 template<GeometryConcept G1, GeometryConcept G2>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
 constexpr auto equals(const G1 &geom1, const G2 &geom2) -> bool;
 
 
-/*!
- * \brief Spatial equality with explicit absolute tolerance.
- *
- * \param tolerance Absolute tolerance for coordinate comparison.
- */
 template<GeometryConcept G1, GeometryConcept G2>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]

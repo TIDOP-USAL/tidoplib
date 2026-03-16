@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include "tidop/geometry/base/TopologyKernel.h"
+
 namespace tl
 {
 
@@ -43,7 +45,7 @@ auto isBetween(const Point_t &p,
 		
 enum class WindingOrder
 {
-    Colinear,
+    Collinear,
     Clockwise,
     CounterClockwise
 };
@@ -52,17 +54,17 @@ template<typename Point_t>
 [[nodiscard]]
 auto orientation(const Point_t &a,
                  const Point_t &b,
-                 const Point_t &c) -> WindingOrder
+                 const Point_t &c,
+                 double tolerance = 0.0) -> WindingOrder
 {
     using calc_t = typename point_traits<Point_t>::calculation_type;
     const calc_t val = (static_cast<calc_t>(b.y()) - static_cast<calc_t>(a.y())) *
-        (static_cast<calc_t>(c.x()) - static_cast<calc_t>(b.x())) -
-        (static_cast<calc_t>(b.x()) - static_cast<calc_t>(a.x())) *
-        (static_cast<calc_t>(c.y()) - static_cast<calc_t>(b.y()));
+                       (static_cast<calc_t>(c.x()) - static_cast<calc_t>(b.x())) -
+                       (static_cast<calc_t>(b.x()) - static_cast<calc_t>(a.x())) *
+                       (static_cast<calc_t>(c.y()) - static_cast<calc_t>(b.y()));
 
-    constexpr calc_t eps = std::numeric_limits<calc_t>::epsilon() * static_cast<calc_t>(100);
-
-    if (std::abs(val) <= eps) return WindingOrder::Colinear; // colineal
+    //constexpr calc_t eps = std::numeric_limits<calc_t>::epsilon() * static_cast<calc_t>(100);
+    if (std::abs(val) <= tolerance) return WindingOrder::Collinear; // colineal
     return (val > static_cast<calc_t>(0)) ? WindingOrder::Clockwise : WindingOrder::CounterClockwise; // horario o antihorario
 }
 
@@ -73,7 +75,7 @@ auto pointOnSegment(const Point_t &a,
                     const Point_t &p) -> bool
 {
     // Colinealidad
-    if (orientation(a, b, p) != WindingOrder::Colinear) {
+    if (orientation(a, b, p) != WindingOrder::Collinear) {
         return false;
     }
 
@@ -88,28 +90,31 @@ enum class Location
     Boundary
 };
 
-template<typename Ring, typename Point>
+template<typename Ring, typename Point, typename Policy_t>
 [[nodiscard]]
 auto locatePointInRing(const Ring &ring,
-                       const Point &pt) -> Location
+                       const Point &point,
+                       const Policy_t &policy) -> Location
 {
     bool inside = false;
     const std::size_t n = ring.size();
 
+    const auto p = policy.toKernelPoint<Dimension::dim2>(point);
+
     for (std::size_t i = 0, j = n - 1; i < n; j = i++) {
 
-        const auto& pi = ring[i];
-        const auto& pj = ring[j];
+        const auto pi = policy.toKernelPoint<Dimension::dim2>(ring[i]);
+        const auto pj = policy.toKernelPoint<Dimension::dim2>(ring[j]);
 
         // 1 - Boundary check
-        if (orientation(pj, pi, pt) == WindingOrder::Colinear &&
-            isBetween(pj, pt, pi)) {
+        if (TopologyKernel::orientation(pj, pi, p) == TopologyKernel::WindingOrder::Collinear &&
+            TopologyKernel::isBetween(pj, pi, p)) {
             return Location::Boundary;
         }
 
         // 2️ - Ray casting (horizontal ray to +∞)
-        const bool intersect = ((pi.y() > pt.y()) != (pj.y() > pt.y())) &&
-                               (pt.x() < (pj.x() - pi.x()) * (pt.y() - pi.y()) /
+        const bool intersect = ((pi.y() > p.y()) != (pj.y() > p.y())) &&
+                               (p.x() < (pj.x() - pi.x()) * (p.y() - pi.y()) /
                                (pj.y() - pi.y()) + pi.x());
 
         if (intersect)
@@ -119,66 +124,72 @@ auto locatePointInRing(const Ring &ring,
     return inside ? Location::Interior : Location::Exterior;
 }
 	
-template<typename Segment_t, typename Point_t>
+template<typename Segment_t, typename Point_t, typename Policy_t>
 [[nodiscard]]
 auto locatePointOnSegment(const Segment_t &segment,
-                          const Point_t &point) -> Location
+                          const Point_t &point,
+                          const Policy_t &policy) -> Location
 {
-    const auto &a = segment.pt1();
-    const auto &b = segment.pt2();
+    const auto p = policy.toKernelPoint<Dimension::dim2>(point);
+    const auto a = policy.toKernelPoint<Dimension::dim2>(segment.pt1());
+    const auto b = policy.toKernelPoint<Dimension::dim2>(segment.pt2());
 
-    if (point == a || point == b) {
+    if (TopologyKernel::equals(p, a) || TopologyKernel::equals(p, b)) {
         return Location::Boundary;
     }
 
-    if (orientation(a, b, point) == WindingOrder::Colinear &&
-        isBetween(a, point, b)) {
+    if (TopologyKernel::orientation(a, b, p) == TopologyKernel::WindingOrder::Collinear &&
+        TopologyKernel::isBetween(a, b, p)) {
         return Location::Interior;
     }
 
     return Location::Exterior;
 }
 
-template<typename LineString_t, typename Point_t>
+template<typename LineString_t, typename Point_t, typename Policy_t>
 [[nodiscard]]
 auto locatePointOnLineString(const LineString_t &ls,
                              const Point_t &point,
-                             double tol = 0.) -> Location
+                             const Policy_t &policy) -> Location
 {
     const std::size_t n = ls.size();
     if (n < 2)
         return Location::Exterior;
 
-    const bool isClosed = equalsExact(ls.front(), ls.back(), tol);
+     const auto p = policy.toKernelPoint<Dimension::dim2>(point);
+     const auto p1 = policy.toKernelPoint<Dimension::dim2>(ls.front());
+     const auto p2 = policy.toKernelPoint<Dimension::dim2>(ls.back());
+     bool isClosed = TopologyKernel::equals(p1, p2);
 
-    // Boundary check (solo extremos globales)
     if (!isClosed &&
-        (equalsExact(point, ls.front(), tol) ||
-         equalsExact(point, ls.back(), tol))) {
+        (TopologyKernel::equals(p, p1) ||
+         TopologyKernel::equals(p, p2))) {
         return Location::Boundary;
     }
-
-    // Interior check
+    
     for (std::size_t i = 0; i + 1 < n; ++i) {
-        if (pointOnSegment(ls[i], ls[i + 1], point/*, tol*/))
+        const auto p_ini = policy.toKernelPoint<Dimension::dim2>(ls[i]);
+        const auto p_end = policy.toKernelPoint<Dimension::dim2>(ls[i + 1]);
+        if (TopologyKernel::pointOnSegmentInclusive(p_ini, p_end, p))
             return Location::Interior;
     }
 
     return Location::Exterior;
 }
 
-template<typename Polygon, typename Point>
+template<typename Polygon, typename Point, typename Policy_t>
 [[nodiscard]]
 auto locatePointInPolygon(const Polygon &polygon, 
-                          const Point &pt) -> Location
+                          const Point &pt,
+                          const Policy_t &policy) -> Location
 {
     // 0 - Fast envelope rejection
-    if (!contains(envelope(polygon), pt)) {
+    if (!contains(envelope(polygon), pt, policy)) {
         return Location::Exterior;
     }
 
     // 1 - Exterior ring
-    const Location location = locatePointInRing(polygon.outer(), pt);
+    const Location location = locatePointInRing(polygon.outer(), pt, policy);
 
     if (location == Location::Exterior) {
         return Location::Exterior;
@@ -191,7 +202,7 @@ auto locatePointInPolygon(const Polygon &polygon,
     // 2 - Holes
     for (const auto &hole : polygon.inners()) {
 
-        const Location hole_location = locatePointInRing(hole, pt);
+        const Location hole_location = locatePointInRing(hole, pt, policy);
 
         if (hole_location == Location::Boundary) {
             return Location::Boundary;
@@ -206,13 +217,14 @@ auto locatePointInPolygon(const Polygon &polygon,
     return Location::Interior;
 }
 
-template<typename Point_t, typename Polygon_t>
+template<typename Point_t, typename Polygon_t, typename Policy_t>
 [[nodiscard]]
 auto pointInAnyHole(const Point_t &point,
-                    const Polygon_t &polygon) -> bool
+                    const Polygon_t &polygon,
+                    const Policy_t &policy) -> bool
 {
     for (const auto &hole : polygon.inners()) {
-        auto loc = locatePointInRing(hole, point);
+        auto loc = locatePointInRing(hole, point, policy);
         if (loc == Location::Interior || loc == Location::Boundary) {
             return true; // punto dentro o en borde de un hueco
         }
@@ -222,7 +234,6 @@ auto pointInAnyHole(const Point_t &point,
 
 
 
-template<typename Point_t>
 struct SegmentIntersectionData
 {
     WindingOrder o1;
@@ -234,7 +245,7 @@ struct SegmentIntersectionData
 template<typename Point_t>
 [[nodiscard]]
 constexpr auto computeIntersectionData(const Segment<Point_t> &s1,
-                                       const Segment<Point_t> &s2) -> SegmentIntersectionData<Point_t>
+                                       const Segment<Point_t> &s2) -> SegmentIntersectionData
 {
     const auto &p1 = s1.pt1();
     const auto &p2 = s1.pt2();
@@ -309,10 +320,10 @@ constexpr auto intersectionType(const Segment_t &s1,
     auto data = computeIntersectionData(s1, s2);
 
     if (data.o1 != data.o2 && data.o3 != data.o4 &&
-        data.o1 != WindingOrder::Colinear &&
-        data.o2 != WindingOrder::Colinear &&
-        data.o3 != WindingOrder::Colinear &&
-        data.o4 != WindingOrder::Colinear) {
+        data.o1 != WindingOrder::Collinear &&
+        data.o2 != WindingOrder::Collinear &&
+        data.o3 != WindingOrder::Collinear &&
+        data.o4 != WindingOrder::Collinear) {
         return IntersectionType::Proper;
     }
 
@@ -321,10 +332,10 @@ constexpr auto intersectionType(const Segment_t &s1,
     const auto &q1 = s2.pt1();
     const auto &q2 = s2.pt2();
 
-    if (data.o1 == WindingOrder::Colinear &&
-        data.o2 == WindingOrder::Colinear &&
-        data.o3 == WindingOrder::Colinear &&
-        data.o4 == WindingOrder::Colinear) {
+    if (data.o1 == WindingOrder::Collinear &&
+        data.o2 == WindingOrder::Collinear &&
+        data.o3 == WindingOrder::Collinear &&
+        data.o4 == WindingOrder::Collinear) {
         //int count = (isBetween(p1, q1, p2) ? 1 : 0) +
         //            (isBetween(p1, q2, p2) ? 1 : 0) +
         //            (isBetween(q1, p1, q2) ? 1 : 0) +
