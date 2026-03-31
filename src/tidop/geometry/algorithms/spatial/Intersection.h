@@ -24,34 +24,30 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
-
 #include <optional>
+
+//#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/base/PrecisionPolicy.h"
+#include "tidop/geometry/base/TopologyKernel.h"
 
 namespace tl
 {
 	
-/*! \addtogroup Algorithms
+/*! \addtogroup SpatialOperations
  *  \{
  */
 
-template<typename G1, typename G2>
-auto intersection(const G1 &g1, const G2 &g2);
+template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
+[[nodiscard]]
+auto intersection(const G1 &geom1,
+                  const G2 &geom2,
+                  const Policy &policy);
 
-
-//template<PointConcept P1, PointConcept P2>
-//    requires SameSpatialDimension<P1, P2>
-//[[nodiscard]]
-//auto intersection(const P1 &p1, const P2 &p2) -> std::optional<common_point_without_measure_t<P1, P2>>;
-
-
-// Versión para BBox-BBox (ya la tienes)
-//template<GeometryConcept B1, GeometryConcept B2>
-//    requires(std::is_same_v<geometry_tag_t<B1>, bbox_tag> &&
-//std::is_same_v<geometry_tag_t<B2>, bbox_tag>)
-//[[nodiscard]]
-//auto intersection(const B1 &b1, const B2 &b2) -> std::common_type_t<B1, B2>;
+template<Geometry2DConcept G1, Geometry2DConcept G2>
+[[nodiscard]]
+auto intersection(const G1 &geom1, 
+                  const G2 &geom2);
 
 
 /*! \} */ 

@@ -24,9 +24,6 @@
 
 #pragma once
 
-#include <cmath>
-#include "tidop/geometry/algorithms/measurement/Distance.h"
-
 namespace tl
 {
 

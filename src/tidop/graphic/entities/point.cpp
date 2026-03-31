@@ -25,6 +25,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/painter.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {

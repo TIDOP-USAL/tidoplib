@@ -45,10 +45,10 @@
 
 #include <variant>
 
-#include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/Operations.h"
 #include "tidop/geometry/base/PrecisionPolicy.h"
+#include "tidop/geometry/base/TopologyKernel.h"
 
 
 namespace tl

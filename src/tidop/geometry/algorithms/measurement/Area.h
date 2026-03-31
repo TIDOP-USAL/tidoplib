@@ -29,7 +29,7 @@
 namespace tl
 {
 	
-/*! \addtogroup Algorithms
+/*! \addtogroup Measurements
  *  \{
  */
 

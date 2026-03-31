@@ -25,6 +25,7 @@
 #include "tidop/graphic/canvas.h"
 #include "tidop/graphic/painter.h"
 #include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 #include "tidop/core/base/type_conversions.h"
 
 #ifdef TL_HAVE_OPENCV

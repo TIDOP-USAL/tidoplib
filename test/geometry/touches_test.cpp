@@ -41,39 +41,6 @@ using namespace test;
 
 BOOST_AUTO_TEST_SUITE(TouchesAlgorithmTest)
 
-
-struct TouchesTestFixture
-{
-
-    TouchesTestFixture()
-        : policy(0.001)   // resolución 0.001
-    {
-    }
-
-    void setup()
-    {
-        point2d1 = Point2d(1.0, 2.0);
-        point2d2 = Point2d(3.0, 4.0);
-        point3d1 = Point3d(1.0, 2.0, 3.0);
-        //point3d2 = Point3d(4.0, 5.0, 6.0);
-        point2dm1 = Point2dm(1.0, 2.0, 10.0);
-        point2dm2 = Point2dm(3.0, 4.0, 20.0);
-    }
-
-    void teardown()
-    {
-
-    }
-
-    Point2d point2d1;
-    Point2d point2d2;
-    Point3d point3d1;
-    //Point3d point3d2;
-    Point2dm point2dm1;
-    Point2dm point2dm2;
-    PrecisionPolicy<double, PrecisionModel::FixedPrecisionModel> policy;
-};
-
 // ============================================================================
 // Point - Point
 // ============================================================================
@@ -98,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(touches_point_point_with_measure, GeometryTestFixture)
 }
 
 // ============================================================================
-// touches segment - segment
+// Segment - Segment
 // ============================================================================
 
 BOOST_FIXTURE_TEST_CASE(touches_segment_segment, GeometryTestFixture)
@@ -204,7 +171,64 @@ BOOST_FIXTURE_TEST_CASE(touches_segment_segment, GeometryTestFixture)
 }
 
 
+// ============================================================================
+// LineString - LineString
+// ============================================================================
 
+BOOST_FIXTURE_TEST_CASE(touches_linestring_linestring, GeometryTestFixture)
+{
+    using namespace tl;
+
+    // Línea horizontal abierta (0,0)-(10,0)
+    LineString2d line_horiz({point2d1, Point2d(10,0)});
+    // Línea vertical abierta (5,0)-(5,10)
+    LineString2d line_vert({Point2d(5,0), Point2d(5,10)});
+    // Línea horizontal media (0,5)-(10,5)
+    LineString2d line_horiz_mid({Point2d(0,5), Point2d(10,5)});
+    // Línea diagonal (0,0)-(10,10)
+    LineString2d line_diag({point2d1, point2d3});
+    // Línea en L (0,0)-(5,0)-(5,5) → extremos (0,0) y (5,5)
+    LineString2d line_L({point2d1, Point2d(5,0), point2d7});
+    // Línea cerrada (triángulo)
+    LineString2d line_triangle({point2d1, Point2d(10,0), Point2d(5,10), point2d1});
+
+    // 1. Toque en extremo común (horizontal y vertical en (5,0))
+    BOOST_CHECK(touches(line_horiz, line_vert));
+    BOOST_CHECK(touches(line_vert, line_horiz));
+
+    // 2. Toque en un extremo de una y en el interior de la otra (forma de T)
+    BOOST_CHECK(!touches(line_horiz_mid, line_vert));
+    BOOST_CHECK(!touches(line_vert, line_horiz_mid));
+
+    // 3. Toque en un extremo de una y en un vértice interior de la otra (L y horizontal)
+    BOOST_CHECK(!touches(line_L, line_horiz));
+    BOOST_CHECK(!touches(line_horiz, line_L));
+
+    // 4. Líneas que se tocan en un extremo de ambas (colineales pero solo un punto)
+    LineString2d line_left({point2d1, Point2d(5,0)});   // (0,0)-(5,0)
+    LineString2d line_right({Point2d(5,0), Point2d(10,0)}); // (5,0)-(10,0)
+    BOOST_CHECK(touches(line_left, line_right));
+    BOOST_CHECK(touches(line_right, line_left));
+
+    // 5. Línea abierta que toca una línea cerrada en un punto
+    LineString2d line_to_triangle({Point2d(5,0), Point2d(5, -5)}); // termina en (5,0)
+    BOOST_CHECK(touches(line_to_triangle, line_triangle));
+    BOOST_CHECK(touches(line_triangle, line_to_triangle));
+
+    // 6. Línea cerrada con otra cerrada que se tocan en un punto (debería ser false porque ambas no tienen frontera)
+    LineString2d line_triangle2({Point2d(5,0), Point2d(15,0), Point2d(10,10), Point2d(5,0)}); // comparte vértice (5,0)
+    BOOST_CHECK(!touches(line_triangle, line_triangle2));
+    BOOST_CHECK(!touches(line_triangle2, line_triangle));
+
+    // 7. Líneas que se superponen parcialmente (colineales) → no touches
+    LineString2d line_long({point2d1, Point2d(10,0)});
+    LineString2d line_short({Point2d(2,0), Point2d(8,0)});
+    BOOST_CHECK(!touches(line_long, line_short));
+    BOOST_CHECK(!touches(line_short, line_long));
+
+    // 8. Líneas que se cruzan en un punto interior (diagonal y horizontal media) → no touches
+    BOOST_CHECK(!touches(line_diag, line_horiz_mid));
+}
 
 
 

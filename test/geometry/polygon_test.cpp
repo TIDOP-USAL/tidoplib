@@ -27,6 +27,7 @@
 #include <tidop/geometry/primitives/Polygon.h>
 #include <tidop/geometry/primitives/MultiPolygon.h>
 #include <tidop/geometry/algorithms/measurement/Area.h>
+#include <tidop/geometry/algorithms/measurement/Length.h>
 #include <tidop/geometry/io/wkt/Proxy.h>
 
 using namespace tl;
@@ -141,13 +142,13 @@ BOOST_FIXTURE_TEST_CASE(capacity, PolygonTest)
 
 BOOST_FIXTURE_TEST_CASE(perimeter, PolygonTest)
 {
-    BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.perimeter());
-    BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.perimeter());
-    BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.perimeter());
-    BOOST_CHECK_CLOSE(235272.48352, polygon_initializer_list_constructor->perimeter(), 0.01);
-    BOOST_CHECK_EQUAL(0., polygon_reserve_constructor->perimeter());
-    BOOST_CHECK_CLOSE(235272.48352, polygon_copy_constructor_integer->perimeter(), 0.01);
-    BOOST_CHECK_EQUAL(0., polygon_copy_constructor_double->perimeter());
+    BOOST_CHECK_EQUAL(0, tl::length(polygon_default_constructor_integer));
+    BOOST_CHECK_EQUAL(0, tl::length(polygon_default_constructor_integer));
+    BOOST_CHECK_EQUAL(0, tl::length(polygon_default_constructor_integer));
+    BOOST_CHECK_CLOSE(235272.48352, tl::length(*polygon_initializer_list_constructor), 0.01);
+    BOOST_CHECK_EQUAL(0., tl::length(*polygon_reserve_constructor));
+    BOOST_CHECK_CLOSE(235272.48352, tl::length(*polygon_copy_constructor_integer), 0.01);
+    BOOST_CHECK_EQUAL(0., tl::length(*polygon_copy_constructor_double));
 }
 
 BOOST_FIXTURE_TEST_CASE(type, PolygonTest)
@@ -170,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 
     BOOST_CHECK_EQUAL(7, polygon.outer().size());
 
-    BOOST_CHECK_CLOSE(235272.4835, polygon.perimeter(), 0.01);
+    BOOST_CHECK_CLOSE(235272.4835, tl::length(polygon), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(move_operator, PolygonTest)
@@ -284,7 +285,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
 {
     BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.outer().size());
     BOOST_CHECK(polygon_default_constructor_integer.type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(0., polygon_default_constructor_integer.perimeter());
+    BOOST_CHECK_EQUAL(0., tl::length(polygon_default_constructor_integer));
     BOOST_CHECK(Dimension::dim3 == polygon_default_constructor_integer.dimension());
 }
 
@@ -293,7 +294,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
     BOOST_CHECK_EQUAL(0, polygon_reserve_constructor->outer().size());
     BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->outer().capacity());
     BOOST_CHECK(polygon_reserve_constructor->type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(0., polygon_reserve_constructor->perimeter());
+    BOOST_CHECK_EQUAL(0., tl::length(*polygon_reserve_constructor));
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
@@ -302,7 +303,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
     BOOST_CHECK_EQUAL(0, pol_c.outer().size());
     BOOST_CHECK_EQUAL(0, pol_c.outer().capacity());
     BOOST_CHECK(pol_c.type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(0., pol_c.perimeter());
+    BOOST_CHECK_EQUAL(0., tl::length(pol_c));
 }
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, Polygon3DTest)
@@ -310,13 +311,13 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, Polygon3DTest)
     Polygon3d pol(std::move(Polygon3d()));
     BOOST_CHECK_EQUAL(0, pol.outer().size());
     BOOST_CHECK(pol.type() == GeometryType::polygon);
-    BOOST_CHECK_EQUAL(0., pol.perimeter());
+    BOOST_CHECK_EQUAL(0., tl::length(pol));
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_list, Polygon3DTest)
 {
     BOOST_CHECK_EQUAL(7, polygon_initializer_list_constructor->outer().size());
-    BOOST_CHECK_CLOSE(235272.45, polygon_initializer_list_constructor->perimeter(), 0.01);
+    BOOST_CHECK_CLOSE(235272.45, tl::length(*polygon_initializer_list_constructor), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(type, Polygon3DTest)

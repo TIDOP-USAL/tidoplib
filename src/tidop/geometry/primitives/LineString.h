@@ -46,7 +46,7 @@
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/LinearRing.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
-#include "tidop/geometry/algorithms/measurement/Length.h"
+//#include "tidop/geometry/algorithms/measurement/Length.h"
 
 namespace tl
 {
@@ -89,7 +89,7 @@ public:
      * \brief Computes the total length of the polyline.
      * \return The length of the polyline as a double.
      */
-    auto length() const -> double;
+    //auto length() const -> double;
 };
 
 
@@ -150,11 +150,11 @@ auto LineString<Point_t>::isClosed() const -> bool
     return this->front() == this->back();
 }
 
-template<typename Point_t>
-auto LineString<Point_t>::length() const -> double
-{
-    return tl::length(*this);
-}
+//template<typename Point_t>
+//auto LineString<Point_t>::length() const -> double
+//{
+//    return tl::length(*this);
+//}
 
 
 /*! \} */

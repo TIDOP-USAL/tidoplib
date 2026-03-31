@@ -178,12 +178,14 @@ template<GeometryConcept G1, GeometryConcept G2>
 [[nodiscard]]
 auto closestPoints(const G1 &g1, const G2 &g2)  -> GeometryCollection<typename geometry_traits<G1>::point_type>
 {
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
+    using Scalar1 = typename point_traits<P1>::value_type;
+    using Scalar2 = typename point_traits<P2>::value_type;
+
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");
     static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
-    static_assert((std::is_same_v<
-        geometry_traits<G1>::point_type,
-        geometry_traits<G2>::point_type>),
-        "All geometries must use the same point type.");
+    static_assert(std::is_same_v<P1, P2>, "All geometries must use the same point type.");
 
     //TODO: habría que añadir isEmpty() a Geometry
 	//if (g1.isEmpty() || g2.isEmpty()) return {};

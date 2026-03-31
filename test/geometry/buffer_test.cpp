@@ -29,6 +29,7 @@
 #include <tidop/geometry/primitives/Segment.h>
 #include <tidop/geometry/primitives/LineString.h>
 #include <tidop/geometry/algorithms/measurement/Area.h>
+#include <tidop/geometry/algorithms/analysis/Contains.h>
 
 using namespace tl;
 

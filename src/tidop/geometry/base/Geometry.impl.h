@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include "tidop/geometry/algorithms/spatial/Envelope.h"
+//#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 
 namespace tl

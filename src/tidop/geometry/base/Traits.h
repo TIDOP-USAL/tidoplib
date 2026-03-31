@@ -206,11 +206,11 @@ struct geometry_traits<Point<T, Tag>>
     using point_type = Point<T, Tag>;
 };
 
-template<GeometryType geom_type, typename GeomTag_t, typename Point_t, bool is_multi = false>
+template<GeometryType geom_type, typename GeomTag_t, typename Point_t, bool multi = false>
 struct geometry_from_point_traits
 {
     static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = is_multi;
+    static constexpr bool is_multi = multi;
     static constexpr GeometryType type = geom_type;
     static constexpr Dimension dimension = point_traits<Point_t>::dimension;
     static constexpr bool has_m = point_traits<Point_t>::has_m;

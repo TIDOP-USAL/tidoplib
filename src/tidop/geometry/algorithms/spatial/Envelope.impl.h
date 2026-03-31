@@ -155,8 +155,8 @@ auto envelope(const Geometry_t &g, const Geometries & ...gs)
         "All types must be geometries. Check if geometry_traits is specialized for each type.");
 
     // Verificar que todos los tipos de punto son iguales
-    static_assert((std::is_same_v<geometry_traits<Geometry_t>::point_type,
-                                 geometry_traits<Geometries>::point_type> && ...),
+    static_assert((std::is_same_v<typename geometry_traits<Geometry_t>::point_type,
+                                  typename geometry_traits<Geometries>::point_type> && ...),
         "All geometries must use the same point type.");
 
     auto bbox = envelope(g);

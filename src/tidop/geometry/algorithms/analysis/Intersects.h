@@ -51,13 +51,9 @@
 #include <variant>
 
 #include "tidop/geometry/base/Concepts.h"
-#include "tidop/geometry/primitives/Point.h"
-#include "tidop/geometry/primitives/Segment.h"
-#include "tidop/geometry/primitives/LineString.h"
-#include "tidop/geometry/algorithms/analysis/EqualsExact.h"
-#include "tidop/geometry/Operations.h"
 #include "tidop/geometry/base/PrecisionPolicy.h"
 #include "tidop/geometry/base/TopologyKernel.h"
+#include "tidop/geometry/Operations.h"
 
 namespace tl
 {

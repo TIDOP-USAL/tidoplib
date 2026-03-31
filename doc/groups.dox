@@ -771,19 +771,37 @@
  */
  
 /*!
- * \defgroup Algorithms Geometric Algorithms
+ * \defgroup GeometricAlgorithms Geometric Algorithms
  * \ingroup Geometry
  * 
  * \brief Computational geometry algorithms for spatial analysis.
  * 
- * This module provides algorithms for geometric computations such as distance 
- * measurements and intersections.
+ * This module provides algorithms for geometric computations.
  */
 
 /*!
  * \defgroup SpatialPredicates Spatial Predicates
- * \ingroup algorithms
+ * \ingroup GeometricAlgorithms
  * \brief Simple Features spatial relationship predicates.
+ * These functions test boolean relationships between geometries (contains, crosses, etc.).
+ */
+ 
+/*! 
+ * \defgroup Clustering Clustering
+ * \ingroup GeometricAlgorithms
+ * \brief Clustering algorithms for geometric data (e.g., DBSCAN).
+ */
+
+/*! 
+ * \defgroup SpatialOperations Spatial Operations
+ * \ingroup GeometricAlgorithms
+ * \brief Constructive and analytic spatial operations (buffer, intersection, envelope, closest points).
+ */
+ 
+/*! 
+ * \defgroup Measurements Measurements
+ * \ingroup GeometricAlgorithms
+ * \brief Geometric measurements such as distance, area, length, and angle.
  */
  
 /*!

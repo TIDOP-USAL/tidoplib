@@ -24,6 +24,7 @@
 
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/painter.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {

@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/algorithms/spatial/ConvexHull.h"
-#include "tidop/geometry/algorithms/analysis/Equals.h"
+//#include "tidop/geometry/algorithms/analysis/Equals.h"
 
 #include <variant>
 

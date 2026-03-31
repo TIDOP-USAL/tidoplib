@@ -34,13 +34,16 @@ namespace detail
 
 template<Point2DConcept P1, Point2DConcept P2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
-constexpr auto within_impl(const P1 &p1,
-                           const P2 &p2, 
+constexpr auto within_impl(const P1 &pt1,
+                           const P2 &pt2,
                            const Policy &policy,
                            point_tag,
                            point_tag) -> bool
 {
-    return equalsExact(p1, p2, policy);
+    const auto p1 = policy.toKernelPoint<Dimension::dim2>(pt1);
+    const auto p2 = policy.toKernelPoint<Dimension::dim2>(pt2);
+
+    return TopologyKernel::equals(p1, p2);
 }
 
 
@@ -273,7 +276,8 @@ template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 constexpr auto within(const G1 &geom1, const G2 &geom2) -> bool
 {
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+    using P = geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
     PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
 
@@ -286,8 +290,8 @@ constexpr auto within(const G1 &geom1,
                       const G2 &geom2,
                       const Policy &policy) -> bool
 {
-    using P1 = geometry_traits<G1>::point_type;
-    using P2 = geometry_traits<G2>::point_type;
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
     using Scalar1 = typename point_traits<P1>::value_type;
     using Scalar2 = typename point_traits<P2>::value_type;
 

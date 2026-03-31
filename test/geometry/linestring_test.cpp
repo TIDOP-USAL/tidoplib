@@ -28,6 +28,8 @@
 #include <tidop/geometry/primitives/MultiLineString.h>
 #include <tidop/geometry/spatial/BoundingBox.h>
 #include <tidop/geometry/io/wkt/Proxy.h>
+#include <tidop/geometry/algorithms/measurement/Length.h>
+#include <tidop/geometry/algorithms/spatial/Envelope.h>
 
 using namespace tl;
 
@@ -180,17 +182,17 @@ BOOST_FIXTURE_TEST_CASE(size, LineStringTest)
 
 BOOST_FIXTURE_TEST_CASE(length, LineStringTest)
 {
-    BOOST_CHECK_EQUAL(0, line_string_default_constructor_integer.length());
-    BOOST_CHECK_EQUAL(0, line_string_default_constructor_double.length());
-    BOOST_CHECK_EQUAL(0, line_string_default_constructor_float.length());
-    BOOST_CHECK_CLOSE(285.409, line_string_integer->length(), 0.01);
-    BOOST_CHECK_CLOSE(1931.316, line_string_double->length(), 0.01);
-    BOOST_CHECK_EQUAL(0, line_string_float->length());
-    BOOST_CHECK_CLOSE(285.409, line_string_integer_copy->length(), 0.01);
-    BOOST_CHECK_CLOSE(1931.316, line_string_double_copy->length(), 0.01);
-    BOOST_CHECK_EQUAL(0, line_string_float_copy->length());
-    BOOST_CHECK_CLOSE(0, line_string_constructor_reserve->length(), 0.01);
-    BOOST_CHECK_CLOSE(1931.316, line_string_constructor_vector->length(), 0.01);
+    BOOST_CHECK_EQUAL(0, tl::length(line_string_default_constructor_integer));
+    BOOST_CHECK_EQUAL(0, tl::length(line_string_default_constructor_double));
+    BOOST_CHECK_EQUAL(0, tl::length(line_string_default_constructor_float));
+    BOOST_CHECK_CLOSE(285.409, tl::length(*line_string_integer), 0.01);
+    BOOST_CHECK_CLOSE(1931.316, tl::length(*line_string_double), 0.01);
+    BOOST_CHECK_EQUAL(0, tl::length(*line_string_float));
+    BOOST_CHECK_CLOSE(285.409, tl::length(*line_string_integer_copy), 0.01);
+    BOOST_CHECK_CLOSE(1931.316, tl::length(*line_string_double_copy), 0.01);
+    BOOST_CHECK_EQUAL(0, tl::length(*line_string_float_copy));
+    BOOST_CHECK_CLOSE(0, tl::length(*line_string_constructor_reserve), 0.01);
+    BOOST_CHECK_CLOSE(1931.316, tl::length(*line_string_constructor_vector), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(type, LineStringTest)
@@ -363,15 +365,15 @@ BOOST_FIXTURE_TEST_CASE(size, LineString3DTest)
 
 BOOST_FIXTURE_TEST_CASE(length, LineString3DTest)
 {
-    BOOST_CHECK_EQUAL(0, line_string_default_constructor_integer.length());
-    BOOST_CHECK_EQUAL(0, line_string_default_constructor_double.length());
-    BOOST_CHECK_EQUAL(0, line_string_default_constructor_float.length());
-    BOOST_CHECK_CLOSE(318.498, line_string_integer->length(), 0.01);
-    BOOST_CHECK_CLOSE(1721.262, line_string_double->length(), 0.01);
-    BOOST_CHECK_EQUAL(0, line_string_float->length());
-    BOOST_CHECK_CLOSE(318.499, line_string_integer_copy->length(), 0.01);
-    BOOST_CHECK_CLOSE(1721.262, line_string_double_copy->length(), 0.01);
-    BOOST_CHECK_EQUAL(0, line_string_float_copy->length());
+    BOOST_CHECK_EQUAL(0, tl::length(line_string_default_constructor_integer));
+    BOOST_CHECK_EQUAL(0, tl::length(line_string_default_constructor_double));
+    BOOST_CHECK_EQUAL(0, tl::length(line_string_default_constructor_float));
+    BOOST_CHECK_CLOSE(318.498, tl::length(*line_string_integer), 0.01);
+    BOOST_CHECK_CLOSE(1721.262, tl::length(*line_string_double), 0.01);
+    BOOST_CHECK_EQUAL(0, tl::length(*line_string_float));
+    BOOST_CHECK_CLOSE(318.499, tl::length(*line_string_integer_copy), 0.01);
+    BOOST_CHECK_CLOSE(1721.262, tl::length(*line_string_double_copy), 0.01);
+    BOOST_CHECK_EQUAL(0, tl::length(*line_string_float_copy));
 }
 
 BOOST_FIXTURE_TEST_CASE(type, LineString3DTest)

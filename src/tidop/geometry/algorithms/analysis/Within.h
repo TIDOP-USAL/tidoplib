@@ -51,7 +51,7 @@
 #include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/base/PrecisionPolicy.h"
 #include "tidop/geometry/base/TopologyKernel.h"
-#include "tidop/geometry/algorithms/analysis/EqualsExact.h"
+#include "tidop/geometry/algorithms/analysis/contains.h"
 #include "tidop/geometry/algorithms/analysis/Intersects.h"
 #include "tidop/geometry/algorithms/analysis/Boundary.h"
 

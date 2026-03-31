@@ -74,6 +74,8 @@ struct GeometryTestFixture
     Segment2d segment_colineal_1;
     Segment2d segment_colineal_2;
 
+    LinearRing2d outer;
+    LinearRing2d inner;
     Polygon2d square;
     Polygon2d square_with_hole;
 
@@ -116,14 +118,14 @@ struct GeometryTestFixture
 
         segment_out = Segment2d(Point2d(15.0, 15.0), Point2d(20.0, 20.0));     // Segmento completamente fuera del cuadrado (15,15)-(20,20)
         
-        LinearRing<Point2d> outer({ Point2d(0.0, 0.0),
+        outer = LinearRing<Point2d>({ Point2d(0.0, 0.0),
                                     Point2d(10.0, 0.0),
                                     Point2d(10.0, 10.0),
                                     Point2d(0.0, 10.0),
                                     Point2d(0.0, 0.0) });
         square = Polygon2d(outer);
             
-        LinearRing2d inner({ Point2d(2.5, 2.5),
+        inner = LinearRing2d({ Point2d(2.5, 2.5),
                              Point2d(7.5, 2.5),
                              Point2d(7.5,7.5),
                              Point2d(2.5, 7.5),

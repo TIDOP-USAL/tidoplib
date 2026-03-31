@@ -24,13 +24,16 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/algorithms/measurement/Distance.h"
 
 namespace tl
 {
 	
-/*! \addtogroup Algorithms
+/*! \addtogroup Measurements
  *  \{
  */
 

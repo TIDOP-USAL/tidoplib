@@ -35,7 +35,7 @@
 namespace tl
 {
 
-/*! \addtogroup Algorithms
+/*! \addtogroup Clustering
  *  \{
  */
 

@@ -26,6 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/primitives/Segment.h>
 #include <tidop/geometry/io/wkt/Proxy.h>
+#include <tidop/geometry/algorithms/measurement/Length.h>
 
 using namespace tl;
 
@@ -148,7 +149,7 @@ BOOST_AUTO_TEST_CASE(Segment_empty)
 BOOST_AUTO_TEST_CASE(Segment_length)
 {
     Segment<Point2d> segment(Point2d(56.23, 123.5), Point2d(96.2, 34.4));
-    BOOST_CHECK_CLOSE(97.6545, segment.length(), 0.1);
+    BOOST_CHECK_CLOSE(97.6545, tl::length(segment), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(Segment_vector)
@@ -292,7 +293,7 @@ BOOST_AUTO_TEST_CASE(Segment3D_isEmpty)
 BOOST_AUTO_TEST_CASE(Segment3D_length)
 {
     Segment<Point3d> segment(Point3d(5.5, 93.2, 10.1), Point3d(25.3, 654.4, 15.6));
-    BOOST_CHECK_CLOSE(561.55, segment.length(), 0.1);
+    BOOST_CHECK_CLOSE(561.55, tl::length(segment), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(Segment3D_vector)

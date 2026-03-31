@@ -53,7 +53,7 @@
 namespace tl
 {
 	
-/*! \addtogroup Algorithms
+/*! \addtogroup GeometricAlgorithms
  *  \{
  */
 

@@ -31,8 +31,8 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/geometry/algorithms/measurement/Length.h"
-#include "tidop/geometry/spatial/BoundingBox.h"
+//#include "tidop/geometry/algorithms/measurement/Length.h"
+//#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {

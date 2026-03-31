@@ -24,8 +24,12 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/algorithms/projection.h"
+#include "tidop/geometry/algorithms/analysis/Intersects.h"
 
 namespace tl
 {
@@ -187,7 +191,7 @@ struct ChebyshevDistance
 
 
 
-/*! \addtogroup Algorithms
+/*! \addtogroup Measurements
  *  \{
  */
 

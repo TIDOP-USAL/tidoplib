@@ -47,10 +47,9 @@
 #pragma once
 
 #include "tidop/geometry/base/Concepts.h"
-#include "tidop/geometry/Operations.h"
 #include "tidop/geometry/base/PrecisionPolicy.h"
 #include "tidop/geometry/base/TopologyKernel.h"
-
+#include "tidop/geometry/Operations.h"
 
 namespace tl
 {

@@ -43,7 +43,7 @@
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/geometry/algorithms/measurement/Length.h"
+//#include "tidop/geometry/algorithms/measurement/Length.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
@@ -213,8 +213,8 @@ public:
      * \brief Computes the length of the segment.
      * \return The Euclidean distance between `pt1` and `pt2`.
      */
-    [[nodiscard]]
-    auto length() const -> double;
+    //[[nodiscard]]
+    //auto length() const -> double;
     
     /*!
      * \brief Computes the directional vector of the segment.
@@ -408,11 +408,11 @@ auto Segment<Point_t>::isEmpty() const -> bool
     return false;
 }
 
-template<typename Point_t>
-auto Segment<Point_t>::length() const -> double
-{ 
-    return tl::length(*this);
-}
+//template<typename Point_t>
+//auto Segment<Point_t>::length() const -> double
+//{ 
+//    return tl::length(*this);
+//}
 
 /*!
 * \brief Computes the directional vector of the segment.

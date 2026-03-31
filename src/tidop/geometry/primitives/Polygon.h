@@ -49,7 +49,6 @@
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/LinearRing.h"
-#include "tidop/geometry/algorithms/measurement/Length.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
@@ -166,7 +165,7 @@ public:
      * \brief Computes the perimeter of the polygon.
      * \return Total perimeter (outer ring + inner rings) as a double.
      */
-    auto perimeter() const -> double;
+    //auto perimeter() const -> double;
 
     auto isEmpty() const -> bool
     {
@@ -269,11 +268,11 @@ auto Polygon<Point_t>::numInners() const -> size_t
     return mInners.size();
 }
 
-template<typename Point_t>
-auto Polygon<Point_t>::perimeter() const -> double
-{
-    return length(*this);
-}
+//template<typename Point_t>
+//auto Polygon<Point_t>::perimeter() const -> double
+//{
+//    return length(*this);
+//}
 
 
 /*! \} */

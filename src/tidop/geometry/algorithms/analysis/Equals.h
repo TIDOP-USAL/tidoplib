@@ -29,7 +29,8 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/Operations.h"
-#include "tidop/geometry/base/TolerancePolicy.h"
+#include "tidop/geometry/base/PrecisionPolicy.h"
+#include "tidop/geometry/base/TopologyKernel.h"
 
 namespace tl
 {
@@ -45,19 +46,12 @@ template<GeometryConcept G1, GeometryConcept G2>
 constexpr auto equals(const G1 &geom1, const G2 &geom2) -> bool;
 
 
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
-[[nodiscard]]
-constexpr auto equals(const G1 &geom1, const G2 &geom2, double tolerance) -> bool;
-
-
-
-template<GeometryConcept G1, GeometryConcept G2>
+template<GeometryConcept G1, GeometryConcept G2, PrecisionPolicyConcept Policy>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
 constexpr auto equals(const G1 &geom1, 
                       const G2 &geom2, 
-                      const TolerancePolicy &policy) -> bool;
+                      const Policy &policy) -> bool;
 
 /*! \} */ 
 

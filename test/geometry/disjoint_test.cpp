@@ -147,4 +147,57 @@ BOOST_FIXTURE_TEST_CASE(disjoint_segment_segment, GeometryTestFixture)
     BOOST_CHECK(disjoint(seg_hor, seg_far, policy));
 }
 
+
+// ============================================================================
+// LineString - LineString
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(disjoint_linestring_linestring, GeometryTestFixture)
+{
+    // Línea horizontal (0,0)-(10,0)
+    LineString2d line_horiz({point2d1, Point2d(10,0)});
+    // Línea vertical (5,0)-(5,10)
+    LineString2d line_vert({Point2d(5,0), Point2d(5,10)});
+    // Línea diagonal (0,0)-(10,10)
+    LineString2d line_diag({point2d1, point2d3});
+    // Línea horizontal media (0,5)-(10,5)
+    LineString2d line_horiz_mid({Point2d(0,5), Point2d(10,5)});
+    // Línea paralela arriba (0,1)-(10,1)
+    LineString2d line_par_up({Point2d(0,1), Point2d(10,1)});
+    // Línea que no se toca (20,20)-(30,30)
+    LineString2d line_far({Point2d(20,20), Point2d(30,30)});
+    // Línea vacía
+    LineString2d empty;
+
+    // 1. Líneas que se cruzan → no disjuntas
+    BOOST_CHECK(!disjoint(line_diag, line_horiz_mid));
+    BOOST_CHECK(!disjoint(line_horiz_mid, line_diag));
+
+    // 2. Líneas que se tocan en un punto → no disjuntas
+    BOOST_CHECK(!disjoint(line_horiz, line_vert));   // tocan en (5,0)
+    BOOST_CHECK(!disjoint(line_vert, line_horiz));
+
+    // 3. Líneas que se superponen parcialmente → no disjuntas
+    LineString2d line_long({point2d1, Point2d(10,0)});
+    LineString2d line_short({Point2d(2,0), Point2d(8,0)});
+    BOOST_CHECK(!disjoint(line_long, line_short));
+    BOOST_CHECK(!disjoint(line_short, line_long));
+
+    // 4. Líneas paralelas separadas → disjuntas
+    BOOST_CHECK(disjoint(line_horiz, line_par_up));
+    BOOST_CHECK(disjoint(line_par_up, line_horiz));
+
+    // 5. Líneas completamente separadas → disjuntas
+    BOOST_CHECK(disjoint(line_horiz, line_far));
+    BOOST_CHECK(disjoint(line_far, line_horiz));
+
+    // 6. Línea consigo misma → no disjunta
+    BOOST_CHECK(!disjoint(line_horiz, line_horiz));
+
+    // 7. Línea vacía con cualquier otra → disjunta? Según OGC, vacío no tiene puntos, luego no hay intersección, por tanto disjoint = true.
+    BOOST_CHECK(disjoint(empty, line_horiz));
+    BOOST_CHECK(disjoint(line_horiz, empty));
+    BOOST_CHECK(disjoint(empty, empty)); // dos vacíos son disjuntos (no hay puntos comunes)
+}
+
 BOOST_AUTO_TEST_SUITE_END()

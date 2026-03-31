@@ -40,37 +40,6 @@ using namespace test;
 BOOST_AUTO_TEST_SUITE(CrossesAlgorithmTest)
 
 
-struct CrossesTestFixture
-{
-    CrossesTestFixture()
-        : policy(0.001)   // resolución 0.001
-    {
-    }
-
-    void setup()
-    {
-        point2d1 = Point2d(1.0, 2.0);
-        point2d2 = Point2d(3.0, 4.0);
-        point3d1 = Point3d(1.0, 2.0, 3.0);
-        point3d2 = Point3d(4.0, 5.0, 6.0);
-        point2dm1 = Point2dm(1.0, 2.0, 10.0);
-        point2dm2 = Point2dm(3.0, 4.0, 20.0);
-
-        square = Polygon2d(LinearRing2d({Point2d(0,0), Point2d(1,0), Point2d(1,1), Point2d(0,1), Point2d(0,0)}));
-    }
-
-    void teardown() {}
-
-    Point2d point2d1;
-    Point2d point2d2;
-    Point3d point3d1;
-    Point3d point3d2;
-    Point2dm point2dm1;
-    Point2dm point2dm2;
-    Polygon2d square;
-
-    PrecisionPolicy<double, PrecisionModel::FixedPrecisionModel> policy;
-};
 
 // ============================================================================
 // Point - Point
@@ -145,11 +114,155 @@ BOOST_FIXTURE_TEST_CASE(crosses_segment_with_measure, GeometryTestFixture)
 }
 
 
+// ============================================================================
+// LineString - LineString
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(crosses_linestring_linestring, GeometryTestFixture)
+{
+    // Dos líneas se cruzan si la intersección tiene dimensión 0 (punto) y ese punto está en el interior de ambas
+    // (es decir, no es extremo de ninguna).
+
+    // 1. Cruce en punto interior de ambas (5, 5)
+    LineString2d line_diag({point2d1, point2d3}); // (0,0)-(10,10)
+    LineString2d line_horiz_mid({Point2d(0,5), Point2d(10,5)});
+    BOOST_CHECK(crosses(line_diag, line_horiz_mid));
+    BOOST_CHECK(crosses(line_horiz_mid, line_diag));
+
+    // 2. Cruce en punto interior de ambas (5, 5)
+    LineString2d line_vert({Point2d(5,0), Point2d(5,10)});
+    BOOST_CHECK(crosses(line_diag, line_vert));
+
+    // 3. Overlap
+    LineString2d line_L({point2d1, Point2d(5,0), point2d7}); // (0,0)-(5,0)-(5,5)
+    LineString2d line_horiz({point2d1, Point2d(10,0)}); // (0,0)-(10,0)
+    BOOST_CHECK(!crosses(line_L, line_horiz));
+    BOOST_CHECK(!crosses(line_horiz, line_L));
+
+    // 4. Líneas que se tocan en un extremo de ambas
+    LineString2d line_left({point2d1, Point2d(5,0)});
+    LineString2d line_right({Point2d(5,0), Point2d(10,0)});
+    BOOST_CHECK(!crosses(line_left, line_right));
+
+    // 5. Líneas que no se intersectan
+    LineString2d line_par_up({Point2d(0,1), Point2d(10,1)});
+    BOOST_CHECK(!crosses(line_horiz, line_par_up));
+
+    // 6. Línea con punto degenerado (dimensión 0) con otra línea
+    LineString2d line_point({point2d2});
+    BOOST_CHECK(!crosses(line_diag, line_point));
+    BOOST_CHECK(!crosses(line_point, line_diag));
+
+    // ============================================================================
+    // Casos con líneas de múltiples segmentos
+    // ============================================================================
+
+    // Línea en zigzag: (0,0)-(5,5)-(10,0)-(15,5)
+    LineString2d zigzag({point2d1, Point2d(5,5), Point2d(10,0), Point2d(15,5)});
+
+    // Línea horizontal que cruza en varios puntos
+    LineString2d horiz1({Point2d(0,2.5), Point2d(15,2.5)});
+    // Cruza en (2.5,2.5) y (12.5,2.5), ambos interiores de ambas líneas
+    BOOST_CHECK(crosses(zigzag, horiz1));
+    BOOST_CHECK(crosses(horiz1, zigzag));
+
+    // Líneas que se tocan en un extremo de ambas → no crosses
+    LineString2d horiz2({Point2d(0,5), Point2d(15,5)});
+    BOOST_CHECK(!crosses(zigzag, horiz2));
+    BOOST_CHECK(!crosses(horiz2, zigzag));
+
+    LineString2d vert({Point2d(5, -5), Point2d(5, 10)});
+    // Cruza en (5,5) interior de zigzag y de vert (extremos de vert: (5,-5) y (5,10)) → crosses
+    BOOST_CHECK(crosses(zigzag, vert));
+    BOOST_CHECK(crosses(vert, zigzag));
+
+    LineString2d vert2({Point2d(5, -5), Point2d(5, 5),Point2d(5, 10)});
+    BOOST_CHECK(crosses(zigzag, vert2)); // Da false porque return IntersectionType == Endpoint; 
+    BOOST_CHECK(crosses(vert2, zigzag)); // Da false porque return IntersectionType == Endpoint; 
+
+    LineString2d zigzag2({point2d1, Point2d(5,5), Point2d(0,5)});
+    // Toca en (5,5) → No crosses
+    BOOST_CHECK(!crosses(zigzag2, vert)); 
+    BOOST_CHECK(!crosses(vert, zigzag2)); 
+    BOOST_CHECK(!crosses(zigzag2, vert2));
+    BOOST_CHECK(!crosses(vert2, zigzag2));
+
+    // Línea que toca en un vértice pero no cruza (solo un punto común que es vértice de ambas)
+    LineString2d line_touch({Point2d(5,5), Point2d(10,10)}); // empieza en (5,5)
+    BOOST_CHECK(!crosses(zigzag, line_touch));
+    BOOST_CHECK(!crosses(line_touch, zigzag));
+
+    // Línea que coincide con un segmento de zigzag (superposición parcial)
+    LineString2d line_overlap({Point2d(2.5,2.5), Point2d(7.5,7.5)}); // parte del primer segmento de zigzag
+    // La intersección tiene dimensión 1 (superposición) → no crosses
+    BOOST_CHECK(!crosses(zigzag, line_overlap));
+    BOOST_CHECK(!crosses(line_overlap, zigzag));
+
+    // ============================================================================
+    // Casos con líneas cerradas
+    // ============================================================================
+
+    // Triángulo cerrado: (0,0)-(10,0)-(5,10)-(0,0)
+    LineString2d triangle({point2d1, Point2d(10,0), Point2d(5,10), point2d1});
+
+    // Línea horizontal que cruza el triángulo (entra y sale)
+    LineString2d horiz_cross({Point2d(0,5), Point2d(10,5)});
+    // Cruza en dos puntos, ambos interiores de ambas? El triángulo es cerrado, 
+    // su frontera es vacía, luego todos sus puntos son interiores. Por tanto, 
+    // si la línea cruza en puntos interiores de horiz_cross (que no son extremos), 
+    // entonces es crosses.
+    // horiz_cross tiene extremos (0,5) y (10,5), ambos están fuera del triángulo. 
+    // Los puntos de cruce son interiores de horiz_cross. Luego interior-interior → crosses.
+    BOOST_CHECK(crosses(triangle, horiz_cross));
+    BOOST_CHECK(crosses(horiz_cross, triangle));
+
+    // Línea que pasa por un vértice del triángulo
+    LineString2d line_through_vertex({Point2d(5,0), Point2d(5,20)});
+    BOOST_CHECK(crosses(triangle, line_through_vertex));
+    BOOST_CHECK(crosses(line_through_vertex, triangle));
+
+    // Línea que coincide con un lado del triángulo
+    LineString2d line_side({point2d1, Point2d(10,0)}); // lado inferior
+    // Intersección con dimensión 1 → no crosses
+    BOOST_CHECK(!crosses(triangle, line_side));
+    BOOST_CHECK(!crosses(line_side, triangle));
+
+    // Overlap de los segmentos que van de(5, 0) a(10, 10) y de(10, 0) a(5, 10)
+
+    LineString2d triangle2({Point2d(5,0), Point2d(15,0), Point2d(10,10), Point2d(5,0)});
+    BOOST_CHECK(!crosses(triangle, triangle2));
+    BOOST_CHECK(!crosses(triangle2, triangle));
+
+    LineString2d triangle3({Point2d(5,0), Point2d(15,0), Point2d(10,-10), Point2d(5,0)});
+    BOOST_CHECK(!crosses(triangle, triangle3));
+    BOOST_CHECK(!crosses(triangle3, triangle));
+
+    // ============================================================================
+    // Casos con líneas que se cruzan en múltiples puntos
+    // ============================================================================
+
+    // Línea ondulada que cruza repetidamente a otra
+    LineString2d wavy({point2d1, Point2d(3,3), Point2d(6,0), Point2d(9,3), Point2d(12,0)});
+    LineString2d straight({Point2d(0,1.5), Point2d(12,1.5)});
+    // Cruza en 4 puntos, todos interiores de ambas → crosses
+    BOOST_CHECK(crosses(wavy, straight));
+    BOOST_CHECK(crosses(straight, wavy));
+}
+
+// ============================================================================
+// Polygon - Polygon
+// ============================================================================
+// Point - Point: Siempre falso
+// No se cruzan, aunque sean iguales (se contiene a sí mismo, pero no se cruza)
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(crosses_polygon_polygon, GeometryTestFixture)
+{
+    BOOST_CHECK(!crosses(square, square_with_hole, policy));
+    BOOST_CHECK(!crosses(square_with_hole, square, policy));
+}
 
 
-//
-//
-//
 //BOOST_FIXTURE_TEST_CASE(Crosses_Point_Segment_Inside, CrossesTestFixture)
 //{
 //    Point2d p(5, 0);  // punto medio del segmento (0,0)-(10,0)
@@ -411,19 +524,21 @@ BOOST_FIXTURE_TEST_CASE(crosses_segment_with_measure, GeometryTestFixture)
 //    BOOST_CHECK(crosses(mls, square, policy));
 //    BOOST_CHECK(!crosses(square, mls, policy));
 //}
-//
-//// ============================================================================
-//// Crosses: MultiPolygon - MultiPolygon? OGC no define crosses para dos superficies
-//// ============================================================================
-//
-//BOOST_FIXTURE_TEST_CASE(Crosses_MultiPolygon_MultiPolygon, CrossesTestFixture)
-//{
-//    MultiPolygon2d mpoly1({square});
-//    MultiPolygon2d mpoly2({Polygon2d(LinearRing2d({Point2d(0.5,0.5), Point2d(1.5,0.5), Point2d(1.5,1.5), Point2d(0.5,1.5), Point2d(0.5,0.5)}))});
-//    BOOST_CHECK(!crosses(mpoly1, mpoly2, policy));
-//    BOOST_CHECK(!crosses(mpoly2, mpoly1, policy));
-//}
-//
+
+// ============================================================================
+// MultiPolygon - MultiPolygon
+// ============================================================================
+// OGC no define crosses para dos superficies
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(crosses_multipolygon_multipolygon, GeometryTestFixture)
+{
+    MultiPolygon2d mpoly1({square});
+    MultiPolygon2d mpoly2({Polygon2d(LinearRing2d({Point2d(0.5,0.5), Point2d(1.5,0.5), Point2d(1.5,1.5), Point2d(0.5,1.5), Point2d(0.5,0.5)}))});
+    BOOST_CHECK(!crosses(mpoly1, mpoly2, policy));
+    BOOST_CHECK(!crosses(mpoly2, mpoly1, policy));
+}
+
 //// ============================================================================
 //// Crosses: Punto con cualquier otra cosa (siempre false)
 //// ============================================================================

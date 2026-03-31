@@ -41,7 +41,10 @@ auto intersects_impl(const P1 &p1,
                      point_tag, 
                      point_tag) -> bool
 {
-    return contains(p1, p2, policy);
+    const auto pt1 = policy.toKernelPoint<Dimension::dim2>(p1);
+    const auto pt2 = policy.toKernelPoint<Dimension::dim2>(p2);
+
+    return TopologyKernel::equals(pt1, pt2);
 }
 
 
@@ -179,8 +182,8 @@ auto intersects_impl(const Segment<Point_t> &segment,
 
     // Algún punto del segmento dentro del polígono (sin contar huecos)
     auto check_point_inside = [&](const Point_t &pt) {
-        return contains(polygon, pt, policy) && !pointInAnyHole(pt, polygon, policy);
-        };
+        return locatePointInPolygon(polygon, pt, policy) == Location::Interior;
+    };
 
     if (check_point_inside(segment.pt1())) return true;
     if (check_point_inside(segment.pt2())) return true;
@@ -254,7 +257,7 @@ auto intersects_impl(const Polygon<Point_t> &poly1,
             if (intersects(edge1, ring2, policy)) return true;
         }
         return false;
-        };
+    };
 
     // Check all ring combinations
     if (check_rings_intersect(poly1.outer(), poly2.outer(), policy)) return true;
@@ -352,12 +355,12 @@ auto intersects(const G1 &geom1,
                 const G2 &geom2,
                 const Policy &policy) -> bool
 {
-    using P1 = geometry_traits<G1>::point_type;
-    using P2 = geometry_traits<G2>::point_type;
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
+    using Scalar1 = typename point_traits<P1>::value_type;
+    using Scalar2 = typename point_traits<P2>::value_type;
 
-    static_assert(std::is_same_v<typename point_traits<P1>::value_type,
-                                 typename point_traits<P2>::value_type>,
-        "Points must have same coordinate type");
+    static_assert(std::is_same_v<Scalar1, Scalar2>, "Points must have same coordinate type");
 
     auto dispatch = [&] {
         using tag1 = geometry_tag_t<G1>;
@@ -387,7 +390,8 @@ template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 auto intersects(const G1 &geom1, const G2 &geom2) -> bool
 {
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+    using P = typename geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
     PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
 

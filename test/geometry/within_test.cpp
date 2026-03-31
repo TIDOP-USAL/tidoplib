@@ -41,98 +41,6 @@ using namespace test;
 
 BOOST_AUTO_TEST_SUITE(WithinAlgorithmTest)
 
-// Fixture que proporciona geometrías de ejemplo reutilizables
-struct WithinTestFixture
-{
-    WithinTestFixture()
-        : policy(0.001)   // resolución 0.001
-    {
-        // Puntos
-        p1 = Point2d(0.0, 0.0);
-        p2 = Point2d(1.0, 1.0);
-        p3 = Point2d(2.0, 2.0);
-        p_on_line = Point2d(0.5, 0.5);          // sobre la línea diagonal
-        p_on_polygon_boundary = Point2d(1.0, 0.0); // borde inferior del cuadrado
-        p_inside_polygon = Point2d(0.5, 0.5);      // interior del cuadrado
-        p_outside_polygon = Point2d(2.0, 2.0);      // fuera
-
-        // Líneas
-        line_diagonal = LineString2d({p1, p2, p3}); // (0,0)-(1,1)-(2,2)
-        line_horizontal = LineString2d({Point2d(0.0, 0.0), Point2d(2.0, 0.0)});
-        line_vertical = LineString2d({Point2d(1.0, 0.0), Point2d(1.0, 2.0)});
-        line_partial = LineString2d({p1, p2});       // solo el primer segmento
-
-        // Segmentos
-        seg_diag = Segment2d(p1, p2);
-        seg_horiz = Segment2d({Point2d(0.0, 0.0), Point2d(2.0, 0.0)});
-        seg_vert = Segment2d({Point2d(1.0, 0.0), Point2d(1.0, 2.0)});
-        interior_seg = Segment2d(Point2d(0.2, 0.2), Point2d(0.8, 0.8));
-        outside_seg = Segment2d(Point2d(2, 2), Point2d(3, 3));
-
-        // Polígonos
-        // Cuadrado unidad (0,0)-(1,0)-(1,1)-(0,1)
-        LinearRing<Point2d> square_outer({
-            Point2d(0.0, 0.0), 
-            Point2d(1.0, 0.0),
-            Point2d(1.0, 1.0), 
-            Point2d(0.0, 1.0), 
-            Point2d(0.0, 0.0)
-            });
-        square = Polygon2d(square_outer);
-
-        // Polígono con un agujero (donut)
-        LinearRing<Point2d> donut_outer({
-            Point2d(0.0, 0.0), 
-            Point2d(3.0, 0.0), 
-            Point2d(3.0, 3.0), 
-            Point2d(0.0, 3.0), 
-            Point2d(0.0, 0.0)
-            });
-        LinearRing2d donut_inner({
-            Point2d(1.0, 1.0),
-            Point2d(2.0, 1.0),
-            Point2d(2.0, 2.0), 
-            Point2d(1.0, 2.0),
-            Point2d(1.0, 1.0)
-            });
-        donut = Polygon2d(donut_outer, {donut_inner});
-
-        // MultiPuntos
-        mp_single = MultiPoint<Point2d>({p1});
-        mp_double = MultiPoint<Point2d>({p1, p2});
-        mp_triple = MultiPoint<Point2d>({p1, p2, p3});
-        mp_empty = MultiPoint<Point2d>();
-
-        // MultiLíneas
-        mls_one = MultiLineString<Point2d>({line_diagonal});
-        mls_two = MultiLineString<Point2d>({line_diagonal, line_horizontal});
-        mls_empty = MultiLineString<Point2d>();
-
-        // MultiPolígonos
-        mpoly_one = MultiPolygon<Point2d>({square});
-        mpoly_two = MultiPolygon<Point2d>({square, donut});
-        mpoly_empty = MultiPolygon<Point2d>();
-
-        collection_mixed.add(p1);
-        collection_mixed.add(line_diagonal);
-        collection_mixed.add(square);
-    }
-
-    // Geometrías comunes
-    Point2d p1, p2, p3, p_on_line, p_on_polygon_boundary, p_inside_polygon, p_outside_polygon;
-    LineString2d line_diagonal, line_horizontal, line_vertical, line_partial;
-    Segment2d seg_diag, seg_horiz, seg_vert;
-    Segment2d interior_seg;
-    Segment2d outside_seg;
-    //LinearRing<Point2d> square_outer, donut_outer, donut_inner;
-    Polygon2d square, donut;
-    MultiPoint<Point2d> mp_single, mp_double, mp_triple, mp_empty;
-    MultiLineString<Point2d> mls_one, mls_two, mls_empty;
-    MultiPolygon<Point2d> mpoly_one, mpoly_two, mpoly_empty;
-    GeometryCollection<Point2d> collection_mixed, collection_empty;
-    PrecisionPolicy<double, PrecisionModel::FixedPrecisionModel> policy;
-};
-
 // ============================================================================
 // Point - Point
 // ============================================================================
@@ -247,7 +155,51 @@ BOOST_FIXTURE_TEST_CASE(within_segment_segment, GeometryTestFixture)
 }
 
 
+// ============================================================================
+// LineString - LineString
+// ============================================================================
 
+BOOST_FIXTURE_TEST_CASE(within_linestring_linestring, GeometryTestFixture)
+{
+    // Línea larga (0,0)-(10,0)
+    LineString2d line_long({point2d1, Point2d(10,0)});
+    // Línea corta dentro (2,0)-(8,0)
+    LineString2d line_short({Point2d(2,0), Point2d(8,0)});
+    // Línea que empieza en extremo (0,0)-(5,0)
+    LineString2d line_start({point2d1, Point2d(5,0)});
+    // Línea que termina en extremo (5,0)-(10,0)
+    LineString2d line_end({Point2d(5,0), Point2d(10,0)});
+    // Línea con un punto interior (punto degenerado)
+    LineString2d line_point({point2d2}); // solo un punto
+
+    // Línea que no está contenida (se sale)
+    LineString2d line_out({Point2d(-1,0), Point2d(5,0)});
+    // Línea que cruza
+    LineString2d line_cross({Point2d(5,-5), Point2d(5,5)});
+
+    // 1. Línea corta contenida en larga (colineal)
+    BOOST_CHECK(within(line_short, line_long));
+    // 2. Línea que empieza en extremo (sí está contenida, porque el extremo es parte de la línea)
+    BOOST_CHECK(within(line_start, line_long));
+    // 3. Línea que termina en extremo
+    BOOST_CHECK(within(line_end, line_long));
+    // 4. Línea con un punto interior
+    BOOST_CHECK(within(line_point, line_long));
+    // 5. Línea que se sale por la izquierda
+    BOOST_CHECK(!within(line_out, line_long));
+    // 6. Línea que cruza (no contenida)
+    BOOST_CHECK(!within(line_cross, line_long));
+    // 7. Línea vacía
+    LineString2d empty;
+    BOOST_CHECK(!within(empty, line_long));
+    // 8. Contención en línea cerrada
+    LineString2d line_triangle({point2d1, Point2d(10,0), Point2d(5,10), point2d1});
+    LineString2d line_inside_triangle({Point2d(5,1), Point2d(6,2)}); // puntos dentro? pero no es colineal, luego no está contenida
+    BOOST_CHECK(!within(line_inside_triangle, line_triangle)); // porque la línea no es un área, solo el contorno
+    // Una línea contenida en el contorno de un triángulo sería parte de él, por ejemplo un lado
+    LineString2d line_side({point2d1, Point2d(10,0)});
+    BOOST_CHECK(within(line_side, line_triangle));
+}
 
 
 

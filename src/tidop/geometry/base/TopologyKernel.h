@@ -67,9 +67,6 @@ public:
 
 public:
 
-    //using value_type = typename point_traits<Point_t>::value_type;
-    //static constexpr std::size_t spatial_dims = point_traits<Point_t>::spatial_dims;
-
     template<Point2DConcept P>
     [[nodiscard]]
     static constexpr bool equals(const P &a,
@@ -77,11 +74,6 @@ public:
     {
         return (a.x() == b.x() && a.y() == b.y());
     }
-
-    //template<typename Point>
-    //constexpr std::strong_ordering
-    //compareLexicographic(const Point& a,
-    //                     const Point& b) const noexcept;
 
     // --------------------------------------------------
     // Orientación
@@ -212,9 +204,6 @@ public:
             return IntersectionType::Proper;
         }
 
-        //if (!are_collinear && isEndpointOnSegment(p1, p2, q1, q2))
-        //    return IntersectionType::EndpointInterior;
-
         // Collinear case
         if (are_collinear) {
 
@@ -247,10 +236,6 @@ public:
                                             const P &q1,
                                             const P &q2) noexcept -> bool
     {
-        //return isBetween(p1, p2, q1) &&
-        //       isBetween(p1, p2, q2)/* ||
-        //       isBetween(q1, q2, p1) ||
-        //       isBetween(q1, q2, p2)*/;
         using T = typename point_traits<P>::value_type;
 
         T min1, max1, min2, max2;

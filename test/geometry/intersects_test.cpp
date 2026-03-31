@@ -154,6 +154,173 @@ BOOST_FIXTURE_TEST_CASE(intersects_segment_segment, GeometryTestFixture)
 }
 
 
+// ============================================================================
+// LineString - LineString
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(intersects_linestring_linestring, GeometryTestFixture)
+{
+    // Línea horizontal (0,0)-(10,0)
+    LineString2d line_horiz({point2d1, Point2d(10,0)});
+    // Línea vertical (5,0)-(5,10)
+    LineString2d line_vert({Point2d(5,0), Point2d(5,10)});
+    // Línea diagonal (0,0)-(10,10)
+    LineString2d line_diag({point2d1, point2d3});
+    // Línea en L (0,0)-(5,0)-(5,5)
+    LineString2d line_L({point2d1, Point2d(5,0), point2d7});
+    // Línea que cruza en un vértice (0,5)-(10,5)
+    LineString2d line_horiz_mid({Point2d(0,5), Point2d(10,5)});
+    // Línea cerrada (triángulo)
+    LineString2d line_triangle({point2d1, Point2d(10,0), Point2d(5,10), point2d1});
+
+    // 1. Cruce en punto interior
+    BOOST_CHECK(intersects(line_diag, line_horiz_mid));  // (5,5) interior de ambas
+    BOOST_CHECK(intersects(line_horiz_mid, line_diag));  // simetría
+
+    // 2. Toque en un extremo (horizontal y vertical se tocan en (5,0))
+    BOOST_CHECK(intersects(line_horiz, line_vert));      // (5,0) común
+    BOOST_CHECK(intersects(line_vert, line_horiz));
+
+    // 3. Línea que contiene a otra (colineales)
+    LineString2d line_long({point2d1, Point2d(10,0)});
+    LineString2d line_short({Point2d(2,0), Point2d(8,0)});
+    BOOST_CHECK(intersects(line_long, line_short));      // superposición parcial
+    BOOST_CHECK(intersects(line_short, line_long));
+
+    // 4. Líneas que comparten un vértice interior (L y horizontal)
+    // line_L tiene vértice en (5,0) que es extremo de line_horiz? No, line_horiz termina en (10,0), luego (5,0) es interior de line_horiz.
+    // Por tanto, (5,0) es interior de line_horiz y vértice de line_L (no extremo de line_L porque line_L tiene extremos (0,0) y (5,5)). Luego es interior de line_L? (5,0) es un vértice de line_L pero no es extremo global (extremos son (0,0) y (5,5)), luego es interior de line_L. Por tanto, intersección interior-interior, sí es intersects.
+    BOOST_CHECK(intersects(line_L, line_horiz));         // punto (5,0)
+    BOOST_CHECK(intersects(line_horiz, line_L));
+
+    // 5. Líneas que no se tocan (paralelas separadas)
+    LineString2d line_par_up({Point2d(0,1), Point2d(10,1)});
+    BOOST_CHECK(!intersects(line_horiz, line_par_up));
+
+    // 6. Línea cerrada consigo misma
+    BOOST_CHECK(intersects(line_triangle, line_triangle));
+
+    // 7. Línea vacía
+    LineString2d empty;
+    BOOST_CHECK(!intersects(empty, line_horiz));
+    BOOST_CHECK(!intersects(line_horiz, empty));
+
+    LineString2d triangle2({Point2d(5,0), Point2d(15,0), Point2d(10,10), Point2d(5,0)});
+    BOOST_CHECK(intersects(line_triangle, triangle2));
+    BOOST_CHECK(intersects(triangle2, line_triangle));
+
+    LineString2d triangle3({Point2d(5,0), Point2d(15,0), Point2d(10,-10), Point2d(5,0)});
+    BOOST_CHECK(intersects(line_triangle, triangle3));
+    BOOST_CHECK(intersects(triangle3, line_triangle));
+
+    // ============================================================================
+    // Casos con líneas que se cruzan en múltiples puntos
+    // ============================================================================
+
+    // Línea ondulada que cruza repetidamente a otra
+    LineString2d wavy({point2d1, Point2d(3,3), Point2d(6,0), Point2d(9,3), Point2d(12,0)});
+    LineString2d straight({Point2d(0,1.5), Point2d(12,1.5)});
+    // Cruza en 4 puntos, todos interiores de ambas → crosses
+    BOOST_CHECK(intersects(wavy, straight));
+    BOOST_CHECK(intersects(straight, wavy));
+
+}
+
+
+// ============================================================================
+// Polygon - Polygon
+// ============================================================================
+
+BOOST_FIXTURE_TEST_CASE(polygon_polygon_intersects, GeometryTestFixture)
+{
+    // Polígono base: cuadrado sin agujero
+    Polygon2d poly1 = square;   // (0,0)-(10,0)-(10,10)-(0,10)
+
+    // ------------------------------------------------------------
+    // Casos con dos polígonos sin agujeros
+    // ------------------------------------------------------------
+
+    // 1. Disjuntos (separados)
+    Polygon2d separate;
+    separate.outer() = {Point2d(15,15), Point2d(20,15), Point2d(20,20), Point2d(15,20), Point2d(15,15)};
+    BOOST_CHECK(!intersects(poly1, separate));
+    BOOST_CHECK(!intersects(separate, poly1));
+
+    // 2. Tocar en un vértice
+    Polygon2d touch_vertex;
+    touch_vertex.outer() = {Point2d(10,10), Point2d(15,10), Point2d(15,15), Point2d(10,15), Point2d(10,10)};
+    BOOST_CHECK(intersects(poly1, touch_vertex));
+    BOOST_CHECK(intersects(touch_vertex, poly1));
+
+    // 3. Tocar en un borde
+    Polygon2d touch_edge;
+    touch_edge.outer() = {Point2d(10,2), Point2d(15,2), Point2d(15,8), Point2d(10,8), Point2d(10,2)};
+    BOOST_CHECK(intersects(poly1, touch_edge));
+    BOOST_CHECK(intersects(touch_edge, poly1));
+
+    // 4. Solapamiento parcial (intersección área)
+    Polygon2d overlap;
+    overlap.outer() = {Point2d(5,0), Point2d(15,0), Point2d(15,10), Point2d(5,10), Point2d(5,0)};
+    BOOST_CHECK(intersects(poly1, overlap));
+    BOOST_CHECK(intersects(overlap, poly1));
+
+    // 5. Polígono completamente dentro (contenido)
+    Polygon2d inside;
+    inside.outer() = {Point2d(2,2), Point2d(8,2), Point2d(8,8), Point2d(2,8), Point2d(2,2)};
+    BOOST_CHECK(intersects(poly1, inside));
+    BOOST_CHECK(intersects(inside, poly1));
+
+    // 6. Polígono igual
+    BOOST_CHECK(intersects(poly1, poly1));
+
+    // ------------------------------------------------------------
+    // Casos con polígono que tiene un agujero (square_with_hole)
+    // ------------------------------------------------------------
+    Polygon2d poly_hole = square_with_hole;   // exterior (0,0)-(10,0)-(10,10)-(0,10), agujero (2.5,2.5)-(7.5,2.5)-(7.5,7.5)-(2.5,7.5)
+
+    // 7. Polígono completamente dentro del agujero (no debe intersectar porque el agujero es vacío)
+    Polygon2d in_hole;
+    in_hole.outer() = {Point2d(3,3), Point2d(7,3), Point2d(7,7), Point2d(3,7), Point2d(3,3)};
+    BOOST_CHECK(!intersects(poly_hole, in_hole));
+    BOOST_CHECK(!intersects(in_hole, poly_hole));
+
+    // 8. Polígono que cruza el agujero (parte dentro del agujero, parte fuera)
+    Polygon2d cross_hole;
+    cross_hole.outer() = {Point2d(2,2), Point2d(8,2), Point2d(8,8), Point2d(2,8), Point2d(2,2)};
+    BOOST_CHECK(intersects(poly_hole, cross_hole));
+    BOOST_CHECK(intersects(cross_hole, poly_hole));
+
+    // 9. Polígono dentro del anillo exterior pero fuera del agujero
+    Polygon2d outer_ring;
+    outer_ring.outer() = {Point2d(1,1), Point2d(2,1), Point2d(2,2), Point2d(1,2), Point2d(1,1)};
+    BOOST_CHECK(intersects(poly_hole, outer_ring));
+    BOOST_CHECK(intersects(outer_ring, poly_hole));
+
+    // 10. Polígono que toca el borde del agujero desde fuera
+    Polygon2d touch_hole_boundary;
+    touch_hole_boundary.outer() = {Point2d(2.5,2.5), Point2d(3.5,2.5), Point2d(3.5,3.5), Point2d(2.5,3.5), Point2d(2.5,2.5)};
+    BOOST_CHECK(intersects(poly_hole, touch_hole_boundary));
+    BOOST_CHECK(intersects(touch_hole_boundary, poly_hole));
+
+    // 11. Polígono que coincide exactamente con el agujero (borde interior)
+    Polygon2d exact_hole;
+    exact_hole.outer() = {Point2d(2.5,2.5), Point2d(7.5,2.5), Point2d(7.5,7.5), Point2d(2.5,7.5), Point2d(2.5,2.5)};
+    // El agujero es vacío, pero el borde del agujero es parte del polígono (frontera). Por tanto, sí hay intersección (la frontera común).
+    BOOST_CHECK(intersects(poly_hole, exact_hole));
+    BOOST_CHECK(intersects(exact_hole, poly_hole));
+
+    // 12. Polígono que contiene completamente al polígono con agujero (intersección = polígono con agujero)
+    Polygon2d bigger;
+    bigger.outer() = {Point2d(-1,-1), Point2d(11,-1), Point2d(11,11), Point2d(-1,11), Point2d(-1,-1)};
+    BOOST_CHECK(intersects(bigger, poly_hole));
+    BOOST_CHECK(intersects(poly_hole, bigger));
+
+    // 13. Polígono vacío (si se permite)
+    Polygon2d empty_poly;
+    BOOST_CHECK(!intersects(poly1, empty_poly));
+    BOOST_CHECK(!intersects(empty_poly, poly1));
+}
+
 
 
 
@@ -262,35 +429,35 @@ BOOST_AUTO_TEST_CASE(point_polygon_intersects)
     BOOST_CHECK(!intersects(Point2d(15.0, 15.0), polygon));
 }
 
-BOOST_AUTO_TEST_CASE(linestring_linestring_intersects)
-{
-    LineString2d line1 = {
-        Point2d(0.0, 0.0),
-        Point2d(10.0, 10.0)
-    };
-
-    LineString2d line2 = {
-        Point2d(0.0, 10.0),
-        Point2d(10.0, 0.0)
-    };
-
-    // Líneas que se cruzan
-    BOOST_CHECK(intersects(line1, line2));
-
-    // Líneas que se tocan en extremo
-    LineString2d line3 = {
-        Point2d(10.0, 10.0),
-        Point2d(20.0, 20.0)
-    };
-    BOOST_CHECK(intersects(line1, line3));
-
-    // Líneas paralelas no intersectantes
-    LineString2d line4 = {
-        Point2d(0.0, 5.0),
-        Point2d(10.0, 15.0)
-    };
-    BOOST_CHECK(!intersects(line1, line4));
-}
+//BOOST_AUTO_TEST_CASE(linestring_linestring_intersects)
+//{
+//    LineString2d line1 = {
+//        Point2d(0.0, 0.0),
+//        Point2d(10.0, 10.0)
+//    };
+//
+//    LineString2d line2 = {
+//        Point2d(0.0, 10.0),
+//        Point2d(10.0, 0.0)
+//    };
+//
+//    // Líneas que se cruzan
+//    BOOST_CHECK(intersects(line1, line2));
+//
+//    // Líneas que se tocan en extremo
+//    LineString2d line3 = {
+//        Point2d(10.0, 10.0),
+//        Point2d(20.0, 20.0)
+//    };
+//    BOOST_CHECK(intersects(line1, line3));
+//
+//    // Líneas paralelas no intersectantes
+//    LineString2d line4 = {
+//        Point2d(0.0, 5.0),
+//        Point2d(10.0, 15.0)
+//    };
+//    BOOST_CHECK(!intersects(line1, line4));
+//}
 
 
 BOOST_AUTO_TEST_CASE(segment_polygon_intersects)
@@ -360,54 +527,54 @@ BOOST_AUTO_TEST_CASE(linestring_polygon_intersects)
     };
     BOOST_CHECK(!intersects(line4, polygon));
 }
-
-BOOST_AUTO_TEST_CASE(polygon_polygon_intersects)
-{
-    // Polígono 1: Cuadrado grande
-    Polygon2d poly1;
-    poly1.outer() = {
-        Point2d(0.0, 0.0),
-        Point2d(10.0, 0.0),
-        Point2d(10.0, 10.0),
-        Point2d(0.0, 10.0),
-        Point2d(0.0, 0.0)
-    };
-
-    // Polígono 2: Se solapa parcialmente
-    Polygon2d poly2;
-    poly2.outer() = {
-        Point2d(5.0, 5.0),
-        Point2d(15.0, 5.0),
-        Point2d(15.0, 15.0),
-        Point2d(5.0, 15.0),
-        Point2d(5.0, 5.0)
-    };
-
-    // Polígono 3: Completamente dentro de poly1
-    Polygon2d poly3;
-    poly3.outer() = {
-        Point2d(2.0, 2.0),
-        Point2d(4.0, 2.0),
-        Point2d(4.0, 4.0),
-        Point2d(2.0, 4.0),
-        Point2d(2.0, 2.0)
-    };
-
-    // Polígono 4: Completamente fuera
-    Polygon2d poly4;
-    poly4.outer() = {
-        Point2d(20.0, 20.0),
-        Point2d(25.0, 20.0),
-        Point2d(25.0, 25.0),
-        Point2d(20.0, 25.0),
-        Point2d(20.0, 20.0)
-    };
-
-    BOOST_CHECK(intersects(poly1, poly2));  // Solapamiento parcial
-    BOOST_CHECK(intersects(poly1, poly3));  // Contención completa
-    BOOST_CHECK(!intersects(poly1, poly4)); // Sin intersección
-    BOOST_CHECK(intersects(poly2, poly1));  // Simetría
-}
+//
+//BOOST_AUTO_TEST_CASE(polygon_polygon_intersects)
+//{
+//    // Polígono 1: Cuadrado grande
+//    Polygon2d poly1;
+//    poly1.outer() = {
+//        Point2d(0.0, 0.0),
+//        Point2d(10.0, 0.0),
+//        Point2d(10.0, 10.0),
+//        Point2d(0.0, 10.0),
+//        Point2d(0.0, 0.0)
+//    };
+//
+//    // Polígono 2: Se solapa parcialmente
+//    Polygon2d poly2;
+//    poly2.outer() = {
+//        Point2d(5.0, 5.0),
+//        Point2d(15.0, 5.0),
+//        Point2d(15.0, 15.0),
+//        Point2d(5.0, 15.0),
+//        Point2d(5.0, 5.0)
+//    };
+//
+//    // Polígono 3: Completamente dentro de poly1
+//    Polygon2d poly3;
+//    poly3.outer() = {
+//        Point2d(2.0, 2.0),
+//        Point2d(4.0, 2.0),
+//        Point2d(4.0, 4.0),
+//        Point2d(2.0, 4.0),
+//        Point2d(2.0, 2.0)
+//    };
+//
+//    // Polígono 4: Completamente fuera
+//    Polygon2d poly4;
+//    poly4.outer() = {
+//        Point2d(20.0, 20.0),
+//        Point2d(25.0, 20.0),
+//        Point2d(25.0, 25.0),
+//        Point2d(20.0, 25.0),
+//        Point2d(20.0, 20.0)
+//    };
+//
+//    BOOST_CHECK(intersects(poly1, poly2));  // Solapamiento parcial
+//    BOOST_CHECK(intersects(poly1, poly3));  // Contención completa
+//    BOOST_CHECK(!intersects(poly1, poly4)); // Sin intersección
+//    BOOST_CHECK(intersects(poly2, poly1));  // Simetría
+//}
 
 BOOST_AUTO_TEST_CASE(multipoint_intersects)
 {

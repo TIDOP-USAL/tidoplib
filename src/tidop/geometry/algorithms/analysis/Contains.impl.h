@@ -100,22 +100,15 @@ auto contains_impl(const LS1 &container,
                    linestring_tag,
                    linestring_tag) -> bool
 {
-    using P1 = typename geometry_traits<LS1>::point_type;
-    using P2 = typename geometry_traits<LS2>::point_type;
+    if (container.size() < 2) return false;
 
-    // TODO: No se debería usar equalsExact
-    // Si se usa en locatePointOnLineString no haría falta este chequeo
-    if (equalsExact(container, containee, policy))
-        return true;
+    for (std::size_t i = 0; i + 1 < containee.size(); ++i) {
+        using Point_t = typename geometry_traits<LS2>::point_type;
+        Segment<Point_t> current_seg(containee[i], containee[i + 1]);
 
-    for (const auto &pt : containee) {
-        auto loc = locatePointOnLineString(container, pt, policy);
-
-        if (loc == Location::Exterior)
+        if (!contains(container, current_seg, policy)) {
             return false;
-
-        if (loc == Location::Boundary)
-            return false;
+        }
     }
 
     return true;
@@ -227,7 +220,7 @@ auto contains_impl(const LineString<Point_t> &line,
     auto loc1 = locatePointOnLineString(line, segment.pt1(), policy);
     auto loc2 = locatePointOnLineString(line, segment.pt2(), policy);
 
-    if (loc1 != Location::Interior || loc2 != Location::Interior)
+    if (loc1 == Location::Exterior || loc2 == Location::Exterior)
         return false;
 
     const auto p = policy.toKernelPoint<Dimension::dim2>(segment.pt1());
@@ -265,7 +258,6 @@ auto contains_impl(const LineString<Point_t> &line,
             TopologyKernel::isBetween(start, end, q))
             return true;
 
-        break;
     }
 
     return false;
@@ -479,7 +471,8 @@ template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 auto contains(const G1 &geom1, const G2 &geom2) -> bool
 {
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+    using P = typename geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
     PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
 
@@ -493,8 +486,8 @@ constexpr auto contains(const G1 &geom1,
                         const G2 &geom2,
                         const Policy &policy) -> bool
 {
-    using P1 = geometry_traits<G1>::point_type;
-    using P2 = geometry_traits<G2>::point_type;
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
     using Scalar1 = typename point_traits<P1>::value_type;
     using Scalar2 = typename point_traits<P2>::value_type;
 

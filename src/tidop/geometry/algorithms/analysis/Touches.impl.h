@@ -1,4 +1,3 @@
-#include "Touches.h"
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
@@ -92,13 +91,14 @@ auto touches_impl(const LS1 &lineString1,
             const auto q1 = k_linestring_2[j];
             const auto q2 = k_linestring_2[j + 1];
 
-            auto type = TopologyKernel::intersectionType(p1, p2, q1, q2);
+            auto intersection_type = TopologyKernel::intersectionType(p1, p2, q1, q2);
 
-            if (type == TopologyKernel::IntersectionType::Proper||
-                type == TopologyKernel::IntersectionType::Overlapping)
+            if (intersection_type == TopologyKernel::IntersectionType::Proper||
+                intersection_type == TopologyKernel::IntersectionType::Overlapping)
                 return false;
 
-            if (type == TopologyKernel::IntersectionType::Endpoint )
+            if (intersection_type == TopologyKernel::IntersectionType::Endpoint ||
+                intersection_type == TopologyKernel::IntersectionType::EndpointInterior)
                 has_endpoint_contact = true;
         }
     }
@@ -232,13 +232,14 @@ auto touches_impl(const Segment &segment,
 
     for (size_t j = 0; j + 1 < lineString.size(); ++j) {
 
-        auto type = TopologyKernel::intersectionType(p1, p2, k_linestring[j], k_linestring[j+1]);
+        auto intersection_type = TopologyKernel::intersectionType(p1, p2, k_linestring[j], k_linestring[j+1]);
 
-        if (type == TopologyKernel::IntersectionType::Proper)
+        if (intersection_type == TopologyKernel::IntersectionType::Proper ||
+            intersection_type == TopologyKernel::IntersectionType::Overlapping)
             return false;
 
-        if (type == TopologyKernel::IntersectionType::Endpoint ||
-            type == TopologyKernel::IntersectionType::Overlapping)
+        if (intersection_type == TopologyKernel::IntersectionType::Endpoint ||
+            intersection_type == TopologyKernel::IntersectionType::EndpointInterior)
             has_endpoint_contact = true;
     }
 
@@ -508,7 +509,8 @@ template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 auto touches(const G1 &geom1, const G2 &geom2) -> bool
 {
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+    using P = typename geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
     PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
 
@@ -518,8 +520,8 @@ auto touches(const G1 &geom1, const G2 &geom2) -> bool
 template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
 constexpr auto touches(const G1 &geom1, const G2 &geom2, const Policy &policy) -> bool
 {
-    using P1 = geometry_traits<G1>::point_type;
-    using P2 = geometry_traits<G2>::point_type;
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
     using Scalar1 = typename point_traits<P1>::value_type;
     using Scalar2 = typename point_traits<P2>::value_type;
 

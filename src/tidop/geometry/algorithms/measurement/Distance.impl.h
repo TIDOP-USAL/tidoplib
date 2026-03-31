@@ -24,13 +24,6 @@
 
 #pragma once
 
-#include <cmath>
-#include "tidop/geometry/algorithms/projection.h"
-#include "tidop/geometry/algorithms/analysis/Contains.h"
-#include "tidop/geometry/algorithms/analysis/Intersects.h"
-#include "tidop/geometry/algorithms/spatial/Envelope.h"
-#include "tidop/geometry/base/Traits.h"
-
 namespace tl
 {
 
@@ -98,17 +91,15 @@ auto distance_impl(const Point_t &point,
                    point_tag, 
                    polygon_tag) -> double
 {
-    // 1. Si el punto está contenido en el polígono (incluyendo huecos), la distancia es 0
-    if (contains(polygon, point)) {
+    PrecisionPolicy<typename point_traits<Point_t>::value_type, PrecisionModel::Native> policy;
+    if (locatePointInPolygon(polygon, point, policy) != Location::Exterior) {
         return 0.0;
     }
 
-    // 2. Si está fuera, calculamos la distancia mínima a los bordes
     double min_dist = std::numeric_limits<double>::max();
 
     auto check_ring = [&](const auto &ring) {
         if (ring.isEmpty()) return;
-        // Importante: Un anillo de N puntos tiene N segmentos
         for (size_t i = 0; i < ring.size(); ++i) {
             Segment<Point_t> edge(ring[i], ring[(i + 1) % ring.size()]);
             min_dist = std::min(min_dist, distance(point, edge));
@@ -472,8 +463,8 @@ auto distance(const G1 &g1, const G2 &g2) -> double
     static_assert(is_geometry_v<G1>, "First argument must be a geometry");
     static_assert(is_geometry_v<G2>, "Second argument must be a geometry");
     static_assert((std::is_same_v<
-        geometry_traits<G1>::point_type,
-        geometry_traits<G2>::point_type>),
+        typename geometry_traits<G1>::point_type,
+        typename geometry_traits<G2>::point_type>),
         "All geometries must use the same point type.");
 
     //using tag1 = geometry_tag_t<G1>;

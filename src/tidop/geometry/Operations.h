@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/geometry/base/TopologyKernel.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
@@ -183,12 +184,11 @@ auto locatePointInPolygon(const Polygon &polygon,
                           const Point &pt,
                           const Policy_t &policy) -> Location
 {
-    // 0 - Fast envelope rejection
-    if (!contains(envelope(polygon), pt, policy)) {
-        return Location::Exterior;
-    }
+    // TODO: Añadir locatePointInBox
+    //if (!contains(envelope(polygon), pt, policy)) {
+    //    return Location::Exterior;
+    //}
 
-    // 1 - Exterior ring
     const Location location = locatePointInRing(polygon.outer(), pt, policy);
 
     if (location == Location::Exterior) {
@@ -199,7 +199,6 @@ auto locatePointInPolygon(const Polygon &polygon,
         return Location::Boundary;
     }
 
-    // 2 - Holes
     for (const auto &hole : polygon.inners()) {
 
         const Location hole_location = locatePointInRing(hole, pt, policy);
@@ -213,7 +212,6 @@ auto locatePointInPolygon(const Polygon &polygon,
         }
     }
 
-    // 3 - Inside polygon, not in holes
     return Location::Interior;
 }
 
@@ -297,80 +295,6 @@ constexpr bool isEndpointIntersection(const Segment_t &s1,
            equals(p2, q1) ||
            equals(p2, q2);
 }
-
-enum class IntersectionType
-{
-    None,
-    Proper,      // interior-interior (X shape)
-    Endpoint,    // boundary-boundary
-    Overlapping  // colinear overlap
-};
-
-template<typename Segment_t>
-constexpr auto intersectionType(const Segment_t &s1,
-                                const Segment_t &s2) -> IntersectionType
-{
-    using point_type = typename geometry_traits<Segment_t>::point_type;
-    static_assert(point_traits<point_type>::spatial_dims == 2, "Only 2D supported");
-    using T = typename point_traits<point_type>::value_type;
-
-    if (!intersects(envelope(s1), envelope(s2)))
-        return IntersectionType::None;
-
-    auto data = computeIntersectionData(s1, s2);
-
-    if (data.o1 != data.o2 && data.o3 != data.o4 &&
-        data.o1 != WindingOrder::Collinear &&
-        data.o2 != WindingOrder::Collinear &&
-        data.o3 != WindingOrder::Collinear &&
-        data.o4 != WindingOrder::Collinear) {
-        return IntersectionType::Proper;
-    }
-
-    const auto &p1 = s1.pt1();
-    const auto &p2 = s1.pt2();
-    const auto &q1 = s2.pt1();
-    const auto &q2 = s2.pt2();
-
-    if (data.o1 == WindingOrder::Collinear &&
-        data.o2 == WindingOrder::Collinear &&
-        data.o3 == WindingOrder::Collinear &&
-        data.o4 == WindingOrder::Collinear) {
-        //int count = (isBetween(p1, q1, p2) ? 1 : 0) +
-        //            (isBetween(p1, q2, p2) ? 1 : 0) +
-        //            (isBetween(q1, p1, q2) ? 1 : 0) +
-        //            (isBetween(q1, p2, q2) ? 1 : 0);
-
-        //if (count >= 2)
-        //    return IntersectionType::Overlapping;
-        T min1;
-        T max1;
-        T min2;
-        T max2;
-
-        if (std::abs(p1.x() - p2.x()) >= std::abs(p1.y() - p2.y())) {
-            min1 = std::min(p1.x(), p2.x());
-            max1 = std::max(p1.x(), p2.x());
-            min2 = std::min(q1.x(), q2.x());
-            max2 = std::max(q1.x(), q2.x());
-        } else {
-            min1 = std::min(p1.y(), p2.y());
-            max1 = std::max(p1.y(), p2.y());
-            min2 = std::min(q1.y(), q2.y());
-            max2 = std::max(q1.y(), q2.y());
-        }
-
-        if (std::max(min1, min2) < std::min(max1, max2))
-            return IntersectionType::Overlapping;
-
-    }
-
-    if (isEndpointIntersection(s1, s2))
-        return IntersectionType::Endpoint;
-
-    return IntersectionType::None;
-}
-
 
 namespace detail
 {

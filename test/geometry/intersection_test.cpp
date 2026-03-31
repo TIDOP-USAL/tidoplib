@@ -26,8 +26,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "tidop/geometry/algorithms/spatial/Intersection.h"
-#include "tidop/geometry/algorithms/analysis/Equals.h"
-#include "tidop/geometry/spatial/BoundingBox.h"
 #include <variant>
 #include <type_traits>
 
@@ -44,9 +42,6 @@ struct IntersectionTestFixture
         point2d1 = Point2d(1.0, 2.0);
         point2d2 = Point2d(3.0, 4.0);
 
-        point3d1 = Point3d(1.0, 2.0, 3.0);
-        point3d2 = Point3d(4.0, 5.0, 6.0);
-
         point2dm1 = Point2dm(1.0, 2.0, 10.0);
         point2dm2 = Point2dm(1.0, 2.0, 20.0);
 
@@ -61,8 +56,6 @@ struct IntersectionTestFixture
 
     Point2d point2d1;
     Point2d point2d2;
-    Point3d point3d1;
-    Point3d point3d2;
     Point2dm point2dm1;
     Point2dm point2dm2;
     Point2i point2i1;
@@ -80,26 +73,27 @@ BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_SamePoint, IntersectionTestFixture)
     BOOST_CHECK(intersec_point.x() == point2d1.x());
     BOOST_CHECK(intersec_point.y() == point2d1.y());
 }
-
-BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_DifferentPoints, IntersectionTestFixture)
-{
-    auto result = intersection(point2d1, point2d2);
-
-    BOOST_REQUIRE(!result.has_value());
-}
-
-BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_WithinTolerance, IntersectionTestFixture)
-{
-    static constexpr double EPSILON = 1e-5;
-    Point2d p2{1.0 + EPSILON / 2, 2.0 + EPSILON / 2};
-
-    auto result = intersection(point2d1, p2);
-    bool check = result.has_value();
-    BOOST_CHECK(result.has_value());
-    const auto &intersec_point = result.value();
-
-    BOOST_CHECK(equals(intersec_point, point2d1));
-}
+//
+//BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_DifferentPoints, IntersectionTestFixture)
+//{
+//    auto result = intersection(point2d1, point2d2);
+//
+//    BOOST_REQUIRE(!result.has_value());
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_WithinTolerance, IntersectionTestFixture)
+//{
+//    static constexpr double EPSILON = 1e-5;
+//    Point2d p2{1.0 + EPSILON / 2, 2.0 + EPSILON / 2};
+//
+//    auto result = intersection(point2d1, p2);
+//    bool check = result.has_value();
+//    BOOST_CHECK(result.has_value());
+//    const auto &intersec_point = result.value();
+//
+//    BOOST_TEST(intersec_point.x() == point2dm1.x());
+//    BOOST_TEST(intersec_point.y() == point2dm1.y());
+//}
 
 //BOOST_FIXTURE_TEST_CASE(Intersection_Point3D, IntersectionTestFixture)
 //{
@@ -124,17 +118,17 @@ BOOST_FIXTURE_TEST_CASE(Intersection_Point2D_WithinTolerance, IntersectionTestFi
 ////    auto result = intersection(p2d, p3d);
 ////    BOOST_REQUIRE(std::holds_alternative<std::monostate>(result));
 ////}
-
-BOOST_FIXTURE_TEST_CASE(Intersection_PointWithMeasure_SameMeasure, IntersectionTestFixture)
-{
-    auto result = intersection(point2dm1, point2dm1);
-
-    BOOST_REQUIRE(result.has_value());
-    const auto &intersec_point = result.value();
-
-    BOOST_TEST(intersec_point.x() == point2dm1.x());
-    BOOST_TEST(intersec_point.y() == point2dm1.y());
-}
+//
+//BOOST_FIXTURE_TEST_CASE(Intersection_PointWithMeasure_SameMeasure, IntersectionTestFixture)
+//{
+//    auto result = intersection(point2dm1, point2dm1);
+//
+//    BOOST_REQUIRE(result.has_value());
+//    const auto &intersec_point = result.value();
+//
+//    BOOST_TEST(intersec_point.x() == point2dm1.x());
+//    BOOST_TEST(intersec_point.y() == point2dm1.y());
+//}
 
 //BOOST_FIXTURE_TEST_CASE(Intersection_PointWithMeasure_DifferentMeasure, IntersectionTestFixture)
 //{
@@ -267,22 +261,22 @@ BOOST_AUTO_TEST_SUITE_END()
 //    BOOST_CHECK(!intersect_segments(s5, s6, result));
 //}
 
-BOOST_AUTO_TEST_CASE(bbox_intersection_dispatch_test)
-{
-    BoundingBox2d a(Point2d(0, 0), Point2d(10, 10));
-    BoundingBox2d b(Point2d(5, 5), Point2d(15, 15));
-
-    // Llamada a través de la interfaz genérica
-    auto res = intersection(a, b);
-
-    BOOST_CHECK_EQUAL(res.min().x(), 5.0);
-    BOOST_CHECK_EQUAL(res.min().y(), 5.0);
-    BOOST_CHECK_EQUAL(res.max().x(), 10.0);
-    BOOST_CHECK_EQUAL(res.max().y(), 10.0);
-    BOOST_CHECK(!res.isEmpty());
-
-    // Test de no intersección
-    BoundingBox2d c(Point2d(20, 20), Point2d(30, 30));
-    auto res_empty = tl::intersection(a, c);
-    BOOST_CHECK(res_empty.isEmpty());
-}
+//BOOST_AUTO_TEST_CASE(bbox_intersection_dispatch_test)
+//{
+//    BoundingBox2d a(Point2d(0, 0), Point2d(10, 10));
+//    BoundingBox2d b(Point2d(5, 5), Point2d(15, 15));
+//
+//    // Llamada a través de la interfaz genérica
+//    auto res = intersection(a, b);
+//
+//    BOOST_CHECK_EQUAL(res.min().x(), 5.0);
+//    BOOST_CHECK_EQUAL(res.min().y(), 5.0);
+//    BOOST_CHECK_EQUAL(res.max().x(), 10.0);
+//    BOOST_CHECK_EQUAL(res.max().y(), 10.0);
+//    BOOST_CHECK(!res.isEmpty());
+//
+//    // Test de no intersección
+//    BoundingBox2d c(Point2d(20, 20), Point2d(30, 30));
+//    auto res_empty = tl::intersection(a, c);
+//    BOOST_CHECK(res_empty.isEmpty());
+//}

@@ -1,4 +1,3 @@
-#include "Crosses.h"
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
@@ -66,6 +65,41 @@ constexpr auto crosses_impl(const S1 &segment1,
 
 /* LineString – LineString */
 
+template<typename Point_t>
+auto checkSideSwitch(const Point_t &p_prev,
+                     const Point_t &v,
+                     const Point_t &p_next,
+                     const Point_t &q1,
+                     const Point_t &q2) -> bool
+{
+    auto orient_prev = TopologyKernel::orientation(q1, q2, p_prev);
+    auto orient_next = TopologyKernel::orientation(q1, q2, p_next);
+
+    return (orient_prev == TopologyKernel::WindingOrder::Clockwise && orient_next == TopologyKernel::WindingOrder::CounterClockwise) ||
+           (orient_prev == TopologyKernel::WindingOrder::CounterClockwise && orient_next == TopologyKernel::WindingOrder::Clockwise);
+}
+
+template<typename Point_t>
+bool isVertexCrossing(const Point_t &v, 
+                      const Point_t &q1, 
+                      const Point_t &q3,
+                      const Point_t &p1, 
+                      const Point_t &p3)
+{
+    auto or_p1_q1 = TopologyKernel::orientation(v, q1, p1);
+    auto or_p3_q1 = TopologyKernel::orientation(v, q1, p3);
+    auto or_p1_q3 = TopologyKernel::orientation(v, q3, p1);
+    auto or_p3_q3 = TopologyKernel::orientation(v, q3, p3);
+
+    bool p1_left_q1 = (or_p1_q1 == TopologyKernel::WindingOrder::CounterClockwise);
+    bool p3_left_q1 = (or_p3_q1 == TopologyKernel::WindingOrder::CounterClockwise);
+    bool p1_left_q3 = (or_p1_q3 == TopologyKernel::WindingOrder::CounterClockwise);
+    bool p3_left_q3 = (or_p3_q3 == TopologyKernel::WindingOrder::CounterClockwise);
+
+    return (p1_left_q1 != p3_left_q1) && (p1_left_q3 != p3_left_q3);
+}
+
+
 template<LineString2DConcept LS1, LineString2DConcept LS2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
 auto crosses_impl(const LS1 &lineString1,
@@ -78,6 +112,8 @@ auto crosses_impl(const LS1 &lineString1,
     auto k_linestring_2 = policy.toKernelLineString<Dimension::dim2>(lineString2);
 
     bool proper_intersection = false;
+
+    if (lineString1.size() < 2 || lineString2.size() < 2) return false;
 
     for (size_t i = 0; i + 1 < lineString1.size(); ++i) {
 
@@ -94,8 +130,40 @@ auto crosses_impl(const LS1 &lineString1,
             if (type == TopologyKernel::IntersectionType::Overlapping)
                 return false;
 
-            if (type == TopologyKernel::IntersectionType::Proper)
+            if (type == TopologyKernel::IntersectionType::Proper) {
                 proper_intersection = true;
+            } else if (type == TopologyKernel::IntersectionType::EndpointInterior) {
+
+                if (i + 2 < lineString1.size()) {
+                    if (TopologyKernel::pointOnSegmentInclusive(q1, q2, p2)) {
+                        if (checkSideSwitch(p1, p2, k_linestring_1[i + 2], q1, q2)) {
+                            proper_intersection = true;
+                        }
+                    }
+                }
+
+                if (j + 2 < lineString2.size()) {
+                    if (TopologyKernel::pointOnSegmentInclusive(p1, p2, q2)) {
+                        if (checkSideSwitch(k_linestring_2[j], q2, k_linestring_2[j + 2], p1, p2)) {
+                            proper_intersection = true;
+                        }
+                    }
+                }
+            } else if (type == TopologyKernel::IntersectionType::Endpoint) {
+
+                if (i + 2 < lineString1.size() && j + 2 < lineString2.size()) {
+                    const auto &v = p2;
+                    const auto &p1_ptr = p1;
+                    const auto &p3_ptr = k_linestring_1[i + 2];
+                    const auto &q1_ptr = q1;
+                    const auto &q3_ptr = k_linestring_2[j + 2];
+
+                    if (isVertexCrossing(v, q1_ptr, q3_ptr, p1_ptr, p3_ptr) && 
+                        isVertexCrossing(v, p1_ptr, p3_ptr, q1_ptr, q3_ptr)) {
+                        proper_intersection = true;
+                    }
+                }
+            }
         }
     }
 
@@ -106,53 +174,16 @@ auto crosses_impl(const LS1 &lineString1,
 /* Polygon - Polygon */
 
 template<Polygon2DConcept P1, Polygon2DConcept P2, PrecisionPolicyConcept Policy>
-auto crosses_impl(const P1 &poly1, 
-                  const P2 &poly2, 
-                  const Policy &policy,
-                  polygon_tag, 
-                  polygon_tag) -> bool
+auto crosses_impl(const P1 &poly1,
+    const P2 &poly2,
+    const Policy &policy,
+    polygon_tag,
+    polygon_tag) -> bool
 {
-    //// Comprobar bordes exteriores
-    //if (crosses(poly1.outer(), poly2, policy)) return true;
-
-    //// Comprobar agujeros
-    //for (const auto &hole : poly1.inners())
-    //    if (crosses(hole, poly2, policy)) return true;
-    using P = Policy::KernelPoint2D;
-
-    auto kpoly1 = policy.toKernelPolygon<Dimension::dim2>(poly1);
-    auto kpoly2 = policy.toKernelPolygon<Dimension::dim2>(poly2);
-
-    auto for_each_segment = [](const auto &poly, auto &&callback) {
-        const auto &outer = poly.outer();
-
-        for (size_t i = 0; i + 1 < outer.size(); ++i)
-            callback(outer[i], outer[i + 1]);
-
-        for (const auto &hole : poly.inners())
-            for (size_t i = 0; i + 1 < hole.size(); ++i)
-                callback(hole[i], hole[i + 1]);
-    };
-
-    bool proper_intersection = false;
-
-    for_each_segment(kpoly1, [&](const P &p1, const P &p2) {
-        for_each_segment(kpoly2, [&](const P &q1, const P &q2) {
-
-            auto type = TopologyKernel::intersectionType(p1, p2, q1, q2);
-
-            if (type == TopologyKernel::IntersectionType::Overlapping)
-                return false;
-
-            if (type == TopologyKernel::IntersectionType::Proper)
-                proper_intersection = true;
-
-            return true;
-        });
-    });
-
-    return proper_intersection;
+    return false;
 }
+
+
 
 /* Point */
 
@@ -383,23 +414,14 @@ auto crosses_impl(const Geometry &geom,
     return crosses_impl(gc, geom, policy, collection_tag{}, geometry_tag_t<Geometry>{});
 }
 
-
-//template<typename G1, typename G2, typename Policy, typename Tag1, typename Tag2>
-//auto crosses_impl(const G1 &, const G2 &, const Policy &, Tag1, Tag2) -> double
-//{
-//    static_assert(always_false_v<G1, G2>,
-//        "crosses() not implemented for this geometry combination");
-//
-//    return 0.;
-//}
-
 } // namespace detail
 
 template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 constexpr auto crosses(const G1 &geom1, const G2 &geom2) -> bool
 {
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+    using P = typename geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
     PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
 
@@ -412,8 +434,8 @@ constexpr auto crosses(const G1 &geom1,
                        const G2 &geom2,
                        const Policy &policy) -> bool
 {
-    using P1 = geometry_traits<G1>::point_type;
-    using P2 = geometry_traits<G2>::point_type;
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
     using Scalar1 = typename point_traits<P1>::value_type;
     using Scalar2 = typename point_traits<P2>::value_type;
 

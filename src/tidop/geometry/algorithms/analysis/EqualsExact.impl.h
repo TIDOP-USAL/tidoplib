@@ -70,11 +70,13 @@ constexpr auto equals_exact_impl(const S1 &segment1,
 }
 
 
-template<typename LS1, typename LS2, typename Policy_t>
+/* LineString – LineString */
+
+template<typename LS1, typename LS2, PrecisionPolicyConcept Policy>
 [[nodiscard]]
 constexpr auto equals_exact_impl(const LS1 &ls1,
                                  const LS2 &ls2,
-                                 const Policy_t &policy,
+                                 const Policy &policy,
                                  linestring_tag,
                                  linestring_tag) -> bool
 {
@@ -89,6 +91,8 @@ constexpr auto equals_exact_impl(const LS1 &ls1,
     return true;
 }
 
+
+/* Polygon – Polygon */
 
 template<typename Poly1, typename Poly2, typename Policy_t>
 [[nodiscard]]
@@ -169,21 +173,6 @@ constexpr auto equals_exact_impl(const G1 &, const G2 &, const Policy_t &, Tag1,
 } // namespace detail
 
 
-template<GeometryConcept G1, GeometryConcept G2>
-    requires SameSpatialDimension<G1, G2>
-[[nodiscard]]
-constexpr auto equalsExact(const G1 &geom1,
-                           const G2 &geom2) -> bool
-{
-    using P = geometry_traits<G1>::point_type;
-    using Scalar = typename point_traits<P>::value_type;
-
-    PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
-
-    return equalsExact(geom1, geom2, policy);
-}
-
-
 template<GeometryConcept G1, GeometryConcept G2, PrecisionPolicyConcept Policy>
     requires SameSpatialDimension<G1, G2>
 [[nodiscard]]
@@ -191,8 +180,8 @@ constexpr auto equalsExact(const G1 &geom1,
                            const G2 &geom2,
                            const Policy &policy)
 {
-    using P1 = geometry_traits<G1>::point_type;
-    using P2 = geometry_traits<G2>::point_type;
+    using P1 = typename geometry_traits<G1>::point_type;
+    using P2 = typename geometry_traits<G2>::point_type;
     using Scalar1 = typename point_traits<P1>::value_type;
     using Scalar2 = typename point_traits<P2>::value_type;
 
@@ -217,5 +206,21 @@ constexpr auto equalsExact(const G1 &geom1,
         return false; // casos no contemplados
     }
 }
+
+
+template<GeometryConcept G1, GeometryConcept G2>
+    requires SameSpatialDimension<G1, G2>
+[[nodiscard]]
+constexpr auto equalsExact(const G1 &geom1,
+                           const G2 &geom2) -> bool
+{
+    using P = typename geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
+
+    PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
+
+    return equalsExact(geom1, geom2, policy);
+}
+
 
 } // namespace tl

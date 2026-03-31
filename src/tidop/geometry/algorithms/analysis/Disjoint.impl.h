@@ -40,9 +40,9 @@
 
 #pragma once
 
-#include "tidop/geometry/base/Traits.h"
-#include "tidop/geometry/base/Concepts.h"
-#include "tidop/geometry/base/PrecisionPolicy.h"
+//#include "tidop/geometry/base/Traits.h"
+//#include "tidop/geometry/base/Concepts.h"
+//#include "tidop/geometry/base/PrecisionPolicy.h"
 
 namespace tl
 {
@@ -52,7 +52,8 @@ template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
 constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool
 {
-    using Scalar = typename point_traits<geometry_traits<G1>::point_type>::value_type;
+    using P = typename geometry_traits<G1>::point_type;
+    using Scalar = typename point_traits<P>::value_type;
 
     PrecisionPolicy<Scalar, PrecisionModel::Native> policy;
 

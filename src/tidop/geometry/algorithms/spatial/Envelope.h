@@ -50,7 +50,7 @@
 namespace tl
 {
 	
-/*! \addtogroup Algorithms
+/*! \addtogroup SpatialOperations
  *  \{
  */
 

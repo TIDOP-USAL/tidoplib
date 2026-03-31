@@ -59,12 +59,9 @@ auto boundary_impl(const LineString<Point> &lineString,
     if (lineString.size() < 2)
         return result;
 
-    const auto &p0 = lineString.front();
-    const auto &p1 = lineString.back();
-
-    if (p0 != p1) {
-        result.push_back(p0);
-        result.push_back(p1);
+    if (lineString.isClosed()) {
+        result.push_back(lineString.front());
+        result.push_back(lineString.back());
     }
 
     return result;
