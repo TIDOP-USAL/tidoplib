@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/algebra/rotations/rotations.h"
 
 namespace tl
@@ -48,6 +48,10 @@ class RotationMatrix
   : public OrientationBase<RotationMatrix<T>>,
     public Matrix<T, 3, 3>
 {
+
+public:
+
+    using value_type = T;
 
 public:
 

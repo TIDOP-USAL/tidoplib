@@ -24,16 +24,9 @@
 
 #pragma once
 
-#include "tidop/math/base/data.h"
-#include "tidop/math/algebra/vector.h"
-
+#include "tidop/math/algebra/vector/Vector.h"
 
 namespace tl
-{
-	
-/// \cond
-
-namespace internal
 {
 
 /* Iterator */	
@@ -72,9 +65,9 @@ public:
 
 
 
-template<typename T, size_t _size_ = DynamicData>
+template<typename T, size_t Size = DynamicData>
 class MatrixCol
-  : public VectorBase<MatrixCol<T, _size_>>
+  : public VectorBase<MatrixCol<T, Size>>
 {
 
 private:
@@ -99,8 +92,30 @@ public:
 public:
 
     MatrixCol(T *data, size_t col, size_t rows, size_t cols);
-    //~MatrixCol() = default;
-    
+
+    template<VectorExpr Expr>
+    auto operator=(const Expr &expr) -> MatrixCol &
+    {
+        TL_ASSERT(expr.size() == size(), "Column size mismatch");
+
+        if (expr.aliases(matrixData)) {
+
+            Vector<T> tmp(expr);
+
+            for (size_t i = 0; i < size(); ++i) {
+                (*this)[i] = tmp[i];
+            }
+
+        } else {
+
+            for (size_t i = 0; i < size(); ++i) {
+                (*this)[i] = expr[i];
+            }
+        }
+
+        return *this;
+    }
+
     auto begin() TL_NOEXCEPT -> iterator;
     auto begin() const TL_NOEXCEPT -> const_iterator;
     auto end() TL_NOEXCEPT -> iterator;
@@ -111,13 +126,16 @@ public:
 
     auto operator[](size_t row) const -> const_reference;
     auto operator[](size_t row) -> reference;
-    //void operator=(T value);
-    auto operator=(const Vector<T> &vector) -> MatrixCol&;
+/*    auto operator=(const Vector<T> &vector) -> MatrixCol&;
     template<typename T2, size_t _size2>
-    auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;   
+    auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;*/   
     
     explicit operator Vector<T>();
 
+    auto aliases(const void *ptr) const -> bool
+    {
+        return matrixData == ptr;
+    }
 };
 
 
@@ -180,96 +198,95 @@ bool IteratorCols<T>::operator != (const IteratorCols<T> &itCol)
 /* MatrixCol implementation                                               */
 /*------------------------------------------------------------------------*/
 
-template<typename T, size_t _size_>
-MatrixCol<T, _size_>::MatrixCol(T *data, size_t col, size_t rows, size_t cols)
+template<typename T, size_t Size>
+MatrixCol<T, Size>::MatrixCol(T *data, size_t col, size_t rows, size_t cols)
   : matrixData(data),
     matrixCol(col),
     matrixRows(rows),
     matrixCols(cols)
 {
-    this->properties.disable(MatrixCol<T, _size_>::Properties::contiguous_memory);
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::begin() TL_NOEXCEPT -> iterator
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::begin() TL_NOEXCEPT -> iterator
 {
     return iterator(&matrixData[matrixCol], matrixCols);
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::begin() const TL_NOEXCEPT -> const_iterator
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::begin() const TL_NOEXCEPT -> const_iterator
 {
     return iterator(&matrixData[matrixCol], matrixCols);
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::end() TL_NOEXCEPT -> iterator
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::end() TL_NOEXCEPT -> iterator
 {
     return iterator(&matrixData[matrixCol] + matrixRows * matrixCols, matrixCols);
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::end() const TL_NOEXCEPT -> const_iterator
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::end() const TL_NOEXCEPT -> const_iterator
 {
     return iterator(&matrixData[matrixCol] + matrixRows * matrixCols, matrixCols);
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::size() const TL_NOEXCEPT -> size_t
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::size() const TL_NOEXCEPT -> size_t
 {
     return matrixRows;
 }
 
-template<typename T, size_t _size_>
-void MatrixCol<T, _size_>::fill(T value)
+template<typename T, size_t Size>
+void MatrixCol<T, Size>::fill(T value)
 {
     std::fill(begin(), end(), value);
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::operator[](size_t row) const -> const_reference
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::operator[](size_t row) const -> const_reference
 {
     return matrixData[row * matrixCols + matrixCol];
 }
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::operator[](size_t row) -> reference
+template<typename T, size_t Size>
+auto MatrixCol<T, Size>::operator[](size_t row) -> reference
 {
     return matrixData[row * matrixCols + matrixCol];
 }
 
-//template<typename T, size_t _size_>
-//auto MatrixCol<T, _size_>::operator=(T value) -> void
+//template<typename T, size_t Size>
+//auto MatrixCol<T, Size>::operator=(T value) -> void
 //{
 //    std::fill(begin(), end(), value);
 //}
 
-template<typename T, size_t _size_>
-auto MatrixCol<T, _size_>::operator=(const Vector<T> &vector) -> MatrixCol&
-{
-    TL_ASSERT(vector.size() == size(), "Invalid vector size");
+//template<typename T, size_t Size>
+//auto MatrixCol<T, Size>::operator=(const Vector<T> &vector) -> MatrixCol&
+//{
+//    TL_ASSERT(vector.size() == size(), "Invalid vector size");
+//
+//    for(size_t i = 0; i < size(); i++)
+//        (*this)[i] = vector[i];
+//
+//    return *this;
+//}
+//
+//template<typename T, size_t Size>
+//template<typename T2, size_t _size2>
+//auto MatrixCol<T, Size>::operator = (const Vector<T2, _size2> &vector) -> MatrixCol&
+//{
+//    TL_ASSERT(this->size() == vector.size(), "A size != B size");
+//
+//    for(size_t i = 0; i < this->size(); i++) {
+//        (*this)[i] = static_cast<T>(vector[i]);
+//    }
+//
+//    return *this;
+//}
 
-    for(size_t i = 0; i < size(); i++)
-        (*this)[i] = vector[i];
-
-    return *this;
-}
-
-template<typename T, size_t _size_>
-template<typename T2, size_t _size2>
-auto MatrixCol<T, _size_>::operator = (const Vector<T2, _size2> &vector) -> MatrixCol&
-{
-    TL_ASSERT(this->size() == vector.size(), "A size != B size");
-
-    for(size_t i = 0; i < this->size(); i++) {
-        (*this)[i] = static_cast<T>(vector[i]);
-    }
-
-    return *this;
-}
-
-template<typename T, size_t _size_>
-MatrixCol<T, _size_>::operator Vector<T>()
+template<typename T, size_t Size>
+MatrixCol<T, Size>::operator Vector<T>()
 {
     Vector<T> vector(this->size());
 
@@ -279,10 +296,5 @@ MatrixCol<T, _size_>::operator Vector<T>()
 
     return vector;
 }
-
-
-} // namespace internal
-
-/// \endcond
 
 } // End namespace tl

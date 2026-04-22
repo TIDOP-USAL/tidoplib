@@ -104,26 +104,26 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, QrTest)
     Matrix<double> q = qr->q();
     Matrix<double> r = qr->r();
 
-    BOOST_CHECK_CLOSE(-0.85714285714285721, q.at(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(0.39428571428571429, q.at(0, 1), 0.1);
-    BOOST_CHECK_CLOSE(0.33142857142857141, q.at(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(-0.42857142857142855, q.at(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(-0.902857142857142915, q.at(1, 1), 0.1);
-    BOOST_CHECK_CLOSE(-0.034285714285714280, q.at(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(0.28571428571428570, q.at(2, 0), 0.1);
-    BOOST_CHECK_CLOSE(-0.17142857142857137, q.at(2, 1), 0.1);
-    BOOST_CHECK_CLOSE(0.94285714285714295, q.at(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(-0.85714285714285721, q.at(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(0.39428571428571429, q.at(0, 1), 0.01);
+    BOOST_CHECK_CLOSE(0.33142857142857141, q.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.42857142857142855, q.at(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(-0.902857142857142915, q.at(1, 1), 0.01);
+    BOOST_CHECK_CLOSE(-0.034285714285714280, q.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.28571428571428570, q.at(2, 0), 0.01);
+    BOOST_CHECK_CLOSE(-0.17142857142857137, q.at(2, 1), 0.01);
+    BOOST_CHECK_CLOSE(0.94285714285714295, q.at(2, 2), 0.01);
 
 
-    BOOST_CHECK_CLOSE(-14, r.at(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(-21, r.at(0, 1), 0.1);
-    BOOST_CHECK_CLOSE(14, r.at(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(-175, r.at(1, 1), 0.1);
-    BOOST_CHECK_CLOSE(70, r.at(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.1);
-    BOOST_CHECK_CLOSE(-35, r.at(2, 2), 0.1);
+    BOOST_CHECK_CLOSE(-14, r.at(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(-21, r.at(0, 1), 0.01);
+    BOOST_CHECK_CLOSE(14, r.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(-175, r.at(1, 1), 0.01);
+    BOOST_CHECK_CLOSE(70, r.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.01);
+    BOOST_CHECK_CLOSE(-35, r.at(2, 2), 0.01);
 
 }
 
@@ -140,102 +140,102 @@ BOOST_FIXTURE_TEST_CASE(rectangular_matrix, QrTest)
 
 // Sale algo diferente con LAPACK
 
-    BOOST_CHECK_CLOSE(-0.0776151, q.at(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(-0.833052, q.at(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(-0.0776151, q.at(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(-0.833052, q.at(0, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(0.5405, q.at(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(-0.0885, q.at(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.5405, q.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.0885, q.at(0, 3), 0.01);
 #else
-    BOOST_CHECK_CLOSE(-0.392045, q.at(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(-0.382492, q.at(0, 3), 0.1);
+    BOOST_CHECK_CLOSE(-0.392045, q.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.382492, q.at(0, 3), 0.01);
 #endif // TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.31046, q.at(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(-0.451237, q.at(1, 1), 0.1);
+    BOOST_CHECK_CLOSE(-0.31046, q.at(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(-0.451237, q.at(1, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.6547, q.at(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(0.5209, q.at(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(-0.6547, q.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.5209, q.at(1, 3), 0.01);
 #else
-    BOOST_CHECK_CLOSE(0.237634, q.at(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(0.802203, q.at(1, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.237634, q.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.802203, q.at(1, 3), 0.01);
 #endif // TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.543305, q.at(2, 0), 0.1);
-    BOOST_CHECK_CLOSE(-0.069421, q.at(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(-0.543305, q.at(2, 0), 0.01);
+    BOOST_CHECK_CLOSE(-0.069421, q.at(2, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.3121, q.at(2, 2), 0.1);
-    BOOST_CHECK_CLOSE(-0.7763, q.at(2, 3), 0.1);
+    BOOST_CHECK_CLOSE(-0.3121, q.at(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.7763, q.at(2, 3), 0.01);
 #else
-    BOOST_CHECK_CLOSE(0.700868, q.at(2, 2), 0.1);
-    BOOST_CHECK_CLOSE(-0.456929, q.at(2, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.700868, q.at(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.456929, q.at(2, 3), 0.01);
 #endif // TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.776151, q.at(3, 0), 0.1);
-    BOOST_CHECK_CLOSE(0.312395, q.at(3, 1), 0.1);
+    BOOST_CHECK_CLOSE(-0.776151, q.at(3, 0), 0.01);
+    BOOST_CHECK_CLOSE(0.312395, q.at(3, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(0.4263, q.at(3, 2), 0.1);
-    BOOST_CHECK_CLOSE(0.3439, q.at(3, 3), 0.1);
+    BOOST_CHECK_CLOSE(0.4263, q.at(3, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.3439, q.at(3, 3), 0.01);
 #else
-    BOOST_CHECK_CLOSE(-0.546457, q.at(3, 2), 0.1);
-    BOOST_CHECK_CLOSE(0.0372184, q.at(3, 3), 0.1);
+    BOOST_CHECK_CLOSE(-0.546457, q.at(3, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.0372184, q.at(3, 3), 0.01);
 #endif // TL_HAVE_OPENBLAS
 
 
-    BOOST_CHECK_CLOSE(-12.8841, r.at(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(-14.5916, r.at(0, 1), 0.1);
-    BOOST_CHECK_CLOSE(-16.2992, r.at(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(-1.04132, r.at(1, 1), 0.1);
-    BOOST_CHECK_CLOSE(-2.08263, r.at(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.1);
+    BOOST_CHECK_CLOSE(-12.8841, r.at(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(-14.5916, r.at(0, 1), 0.01);
+    BOOST_CHECK_CLOSE(-16.2992, r.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(-1.04132, r.at(1, 1), 0.01);
+    BOOST_CHECK_CLOSE(-2.08263, r.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.01);
     // Valor muy pequeño que cambia de usar LAPACK a usar el código c++
-    //BOOST_CHECK_CLOSE(-1.11022e-16, r.at(2, 2), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(3, 0), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(3, 1), 0.1);
-    BOOST_CHECK_CLOSE(0, r.at(3, 2), 0.1);
+    //BOOST_CHECK_CLOSE(-1.11022e-16, r.at(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(3, 0), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(3, 1), 0.01);
+    BOOST_CHECK_CLOSE(0, r.at(3, 2), 0.01);
      
-    auto qtq = q.transpose() * q;
+    Matrix<double> qtq = q.transpose() * q;
 
-    BOOST_CHECK_CLOSE(1., qtq.at(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(1., qtq.at(1, 1), 0.1);
-    BOOST_CHECK_CLOSE(1., qtq.at(2, 2), 0.1);
-    BOOST_CHECK_CLOSE(1., qtq.at(3, 3), 0.1);
+    BOOST_CHECK_CLOSE(1., qtq.at(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(1., qtq.at(1, 1), 0.01);
+    BOOST_CHECK_CLOSE(1., qtq.at(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(1., qtq.at(3, 3), 0.01);
 
-    auto q_r = q * r;
+    Matrix<double> q_r = q * r;
 
-    BOOST_CHECK_CLOSE(1, q_r.at(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(2, q_r.at(0, 1), 0.1);
-    BOOST_CHECK_CLOSE(3, q_r.at(0, 2), 0.1);
-    BOOST_CHECK_CLOSE(4, q_r.at(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(5, q_r.at(1, 1), 0.1);
-    BOOST_CHECK_CLOSE(6, q_r.at(1, 2), 0.1);
-    BOOST_CHECK_CLOSE(7, q_r.at(2, 0), 0.1);
-    BOOST_CHECK_CLOSE(8, q_r.at(2, 1), 0.1);
-    BOOST_CHECK_CLOSE(9, q_r.at(2, 2), 0.1);
-    BOOST_CHECK_CLOSE(10, q_r.at(3, 0), 0.1);
-    BOOST_CHECK_CLOSE(11, q_r.at(3, 1), 0.1);
-    BOOST_CHECK_CLOSE(12, q_r.at(3, 2), 0.1);
+    BOOST_CHECK_CLOSE(1, q_r.at(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(2, q_r.at(0, 1), 0.01);
+    BOOST_CHECK_CLOSE(3, q_r.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(4, q_r.at(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(5, q_r.at(1, 1), 0.01);
+    BOOST_CHECK_CLOSE(6, q_r.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(7, q_r.at(2, 0), 0.01);
+    BOOST_CHECK_CLOSE(8, q_r.at(2, 1), 0.01);
+    BOOST_CHECK_CLOSE(9, q_r.at(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(10, q_r.at(3, 0), 0.01);
+    BOOST_CHECK_CLOSE(11, q_r.at(3, 1), 0.01);
+    BOOST_CHECK_CLOSE(12, q_r.at(3, 2), 0.01);
 
 
     //Vector<double, 4> b = {1, 2, 3, 4};
     //Vector<double, 3> x = qr.solve(b);
 
-    //BOOST_CHECK_CLOSE(2.16667, x[0], 0.1);
-    //BOOST_CHECK_CLOSE(-4.33333, x[1], 0.1);
-    //BOOST_CHECK_CLOSE(2.5, x[2], 0.1);
+    //BOOST_CHECK_CLOSE(2.16667, x[0], 0.01);
+    //BOOST_CHECK_CLOSE(-4.33333, x[1], 0.01);
+    //BOOST_CHECK_CLOSE(2.5, x[2], 0.01);
 
     //[-0.0466022, 0.0932043, 0.286731]
 }
 
 BOOST_FIXTURE_TEST_CASE(solve, QrTest)
 {
-    auto C = qr->solve(B);
-    BOOST_CHECK_CLOSE(0.065306122448979584, C.at(0), 0.1);
-    BOOST_CHECK_CLOSE(-0.0089795918367346957, C.at(1), 0.1);
-    BOOST_CHECK_CLOSE(-0.060408163265306125, C.at(2), 0.1);
+    Vector<double> C = qr->solve(B);
+    BOOST_CHECK_CLOSE(0.065306122448979584, C.at(0), 0.01);
+    BOOST_CHECK_CLOSE(-0.0089795918367346957, C.at(1), 0.01);
+    BOOST_CHECK_CLOSE(-0.060408163265306125, C.at(2), 0.01);
 
     C = qr2->solve(B2);
-    BOOST_CHECK_CLOSE(-2., C.at(0), 0.1);
-    BOOST_CHECK_CLOSE(1., C.at(1), 0.1);
-    BOOST_CHECK_CLOSE(1., C.at(2), 0.1);
+    BOOST_CHECK_CLOSE(-2., C.at(0), 0.01);
+    BOOST_CHECK_CLOSE(1., C.at(1), 0.01);
+    BOOST_CHECK_CLOSE(1., C.at(2), 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -37,15 +37,9 @@
 
 #pragma once
 
-#include "tidop/core/base/type_conversions.h"
-#include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
-#include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/math/algebra/vector.h"
-
-#include <array>
 
 namespace tl
 {

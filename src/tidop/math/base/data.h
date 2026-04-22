@@ -304,6 +304,11 @@ public:
      */
     auto size() const TL_NOEXCEPT -> size_t { return mData.size(); }
 
+    void fill(T value) 
+    {
+        mData.fill(value);
+    }
+
 private:
 
     std::array<T, _size> mData;
@@ -502,6 +507,16 @@ public:
      * \return The size of the data container.
      */
     auto size() const TL_NOEXCEPT -> size_t { return mData.size(); }
+
+    void resize(size_t newSize)
+    {
+        mData.resize(newSize);
+    }
+
+    void fill(T value)
+    {
+        std::fill(mData.begin(), mData.end(), value);
+    }
 
 private:
 

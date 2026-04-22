@@ -29,9 +29,10 @@
 #include <vector>
 
 #include "tidop/math/geometry/affine.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/algebra/decomp/svd.h"
 #include "tidop/math/base/Traits.h"
+#include "tidop/math/base/Concepts.h"
 #include "tidop/geometry/base/Traits.h"
 
 namespace tl
@@ -213,9 +214,9 @@ public:
     //static auto estimate(const std::vector<Point3<T>> &src,
     //                     const std::vector<Point3<T>> &dst) -> Affine<T, Dim>;
 
-    template <typename Vector_t>
-    static auto estimate(const std::vector<Vector_t> &src,
-                         const std::vector<Vector_t> &dst) -> Affine<T, Dim>;
+    template <PointConcept Point_t>
+    static auto estimate(const std::vector<Point_t> &src,
+                         const std::vector<Point_t> &dst) -> Affine<T, Dim>;
 };
 
 /*! \} */
@@ -243,21 +244,23 @@ auto HelmertEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
 }
 
 template<typename T, size_t Dim>
-template <typename Vector_t>
-auto HelmertEstimator<T, Dim>::estimate(const std::vector<Vector_t> &src,
-                                        const std::vector<Vector_t> &dst) -> Affine<T, Dim>
+template <PointConcept Point_t>
+auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point_t> &src,
+                                        const std::vector<Point_t> &dst) -> Affine<T, Dim>
 {
-    static_assert(VectorTraits<Vector_t>::size == DynamicData || VectorTraits<Vector_t>::size == Dim, "Vector dimension must match Affine transformation dimension");
+    static_assert(point_traits<Point_t>::spatial_dims == Dim, "Point dimension must match Affine transformation dimension");
 
     TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
-    TL_ASSERT(Dim == src[0].size(), "Vector dimension must match Affine transformation dimension");
+    TL_ASSERT(Dim == src[0].size(), "Point dimension must match Affine transformation dimension");
 
     Matrix<T> src_mat(src.size(), Dim);
     Matrix<T> dst_mat(dst.size(), Dim);
 
     for (size_t r = 0; r < src_mat.rows(); r++) {
-        src_mat[r] = src[r];
-        dst_mat[r] = dst[r];
+        for (size_t c = 0; c < Dim; c++) {
+            src_mat[r][c] = src[r][c];
+            dst_mat[r][c] = dst[r][c];
+        }
     }
 
     return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);

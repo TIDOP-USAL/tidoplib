@@ -134,7 +134,7 @@ namespace tl
 		Point3<double> min(x_min_real, y_min_real, z_min_real);
 		Point3<double> max(x_max_real, y_max_real, z_max_real);
 		BoundingBox<Point3<double>> bbox(min, max);
-		Vector3d offset = bbox.center();
+		Vector3d offset{bbox.center().x(), bbox.center().y(), bbox.center().z()};
 		//offset = { 0.0, 0.0, 0.0 };
 		modelBase = PointCloud::New(points);
 		modelBase->setOffset(offset);

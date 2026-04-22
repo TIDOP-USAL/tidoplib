@@ -33,7 +33,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations/rotations.h"
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/vector/Vector.h"
 
 namespace tl
 {
@@ -664,42 +664,37 @@ auto operator !=(const Quaternion<T>& q1, const Quaternion<T>& q2) -> bool
     return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
 }
 
-template<typename T, typename Derived>
-auto operator *(const Quaternion<T> &quaternion, 
-                const VectorBase<Derived> &v_in) -> typename VectorTraits<Derived>::result_type
+template<typename T, VectorExpr Vec>
+auto operator*(const Quaternion<T> &q, const Vec &vector) -> Vector<T, 3>
 {
-    static_assert(VectorTraits<Derived>::size == 3 || VectorTraits<Derived>::size == DynamicData,
-                  "Quaternion rotation is only defined for 3D entities.");
+    static_assert(vector_traits<Vec>::size == 3 || vector_traits<Vec>::size == DynamicData,
+        "Quaternion rotation is only defined for 3D entities.");
 
-    const auto &v = v_in.derived();
-    TL_ASSERT(v.size() == 3, "Quaternion rotation requires a vector of size 3.");
+    TL_ASSERT(vector.size() == 3, "Quaternion rotation requires a vector of size 3.");
 
-    Quaternion<T> q_norm = quaternion;
+    Quaternion<T> q_norm = q;
     q_norm.normalize();
 
-    // Rotación: q * p * q'
-    auto q_rot = q_norm * Quaternion<T>(v[0], v[1], v[2], consts::zero<T>) * q_norm.conjugate();
+    // Rotación: q * v * q'
+    auto q_rot = q_norm * Quaternion<T>(vector[0], vector[1], vector[2], consts::zero<T>) * q_norm.conjugate();
 
-    using Result_t = typename VectorTraits<Derived>::result_type;
-    return Result_t{q_rot.x, q_rot.y, q_rot.z};
+    return Vector<T, 3>{q_rot.x, q_rot.y, q_rot.z};
 }
 
-template<typename T, typename Derived>
-auto operator *(Quaternion<T> &&quaternion, 
-                const VectorBase<Derived> &v_in) -> typename VectorTraits<Derived>::result_type
-{
-    static_assert(VectorTraits<Derived>::size == 3 || VectorTraits<Derived>::size == DynamicData,
-                  "Quaternion rotation is only defined for 3D entities.");
-
-    const auto &v = v_in.derived();
-    TL_ASSERT(v.size() == 3, "Quaternion rotation requires a vector of size 3.");
-
-    quaternion.normalize();
-    auto q_rot = quaternion * Quaternion<T>(v[0], v[1], v[2], consts::zero<T>) * quaternion.conjugate();
-
-    using Result_t = typename VectorTraits<Derived>::result_type;
-    return Result_t{q_rot.x, q_rot.y, q_rot.z};
-}
+//template<typename T, typename Tag>
+//auto operator*(const Quaternion<T> &q, const Point<T, Tag> &p) -> Point<T, Tag>
+//{
+//    static_assert(point_traits<Point<T, Tag>>::spatial_dims == 3,
+//        "Quaternion rotation is only defined for 3D entities.");
+//
+//    Quaternion<T> q_norm = q;
+//    q_norm.normalize();
+//
+//    // Rotación: q * v * q'
+//    auto q_rot = q_norm * Quaternion<T>(p[0], p[1], p[2], consts::zero<T>) * q_norm.conjugate();
+//
+//    return Point<T, Tag>{q_rot.x, q_rot.y, q_rot.z};
+//}
 
 template<typename T>
 auto operator<<(std::ostream& os, const Quaternion<T>& q) -> std::ostream&

@@ -24,8 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop Point test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/vector.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 #include <tidop/geometry/base/Dimension.h>
 #include <tidop/geometry/primitives/Point.h>
 #include <tidop/geometry/primitives/MultiPoint.h>

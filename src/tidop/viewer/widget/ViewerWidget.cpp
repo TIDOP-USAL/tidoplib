@@ -113,11 +113,13 @@ void ViewerWidget::paintGL()
 void ViewerWidget::mousePressEvent(QMouseEvent* event)
 {
     mousePressed = true;
-    renderer->setPreviousMouse(Vector2i({ event->x(), event->y() }));
+    renderer->setPreviousMouse(Vector2i({ roundToInteger(event->position().x()),
+                                          roundToInteger(event->position().y())}));
     button = event->button();
 
     if(pickerEnabled)
-		picker->pick(renderer->getModels(),Vector2i({ event->x(), event->y() }));
+		picker->pick(renderer->getModels(),Vector2i({ roundToInteger(event->position().x()),
+                                                      roundToInteger(event->position().y()) }));
 }
 
 void ViewerWidget::mouseDoubleClickEvent(QMouseEvent* e)
@@ -136,9 +138,11 @@ void ViewerWidget::mouseReleaseEvent(QMouseEvent* event)
 void ViewerWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mousePressed && button == Qt::LeftButton)
-        renderer->rotate(event->x(), event->y());
+        renderer->rotate(roundToInteger(event->position().x()),
+                         roundToInteger(event->position().y()));
     else if (mousePressed && button == Qt::RightButton)
-        renderer->pan(event->x(), event->y());
+        renderer->pan(roundToInteger(event->position().x()),
+                      roundToInteger(event->position().y()));
 }
 
 void ViewerWidget::wheelEvent(QWheelEvent* event)

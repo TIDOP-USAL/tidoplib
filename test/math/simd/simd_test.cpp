@@ -25,8 +25,8 @@
 #define BOOST_TEST_MODULE Tidop simd test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/base/simd.h>
-#include <tidop/math/algebra/vector.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
@@ -4249,7 +4249,7 @@ BOOST_FIXTURE_TEST_CASE(mean, PackedTest)
     // Calcular la media del vector
     double mean = calculate_mean(data, 8);
 
-    BOOST_CHECK_CLOSE(7.695, mean, 0.1);
+    BOOST_CHECK_CLOSE(7.695, mean, 0.01);
 }
 
 

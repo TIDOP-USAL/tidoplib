@@ -70,7 +70,7 @@ std::pair<int, char> utmZoneFromLonLat(double longitude, double latitude)
         // Caso normal
         int zone = utmZoneFromLongitude(longitude);
 
-        int index = std::floor((latitude + 80.0) / 8.0);
+        int index = static_cast<int>(std::floor((latitude + 80.0) / 8.0));
 
         auto latitude_band = utm_latitude_band_letters[index];
 

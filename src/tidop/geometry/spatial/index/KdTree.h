@@ -36,20 +36,17 @@ namespace tl
  *  \{
  */
 
-template<typename Entity_t>
+template<typename Point_t>
 class KdTree 
 {
 
 public:
     
-    static_assert(is_point<Entity_t>::value || is_vector<Entity_t>::value,
-                  "KdTree can only be instantiated with point-like entities (Point, Vector, etc.)");
-
-    using T = typename VectorTraits<Entity_t>::value_type;
+    using T = typename point_traits<Point_t>::value_type;
     
     struct Node 
     {
-        Entity_t point;
+        Point_t point;
         size_t originalIndex;
     };
 
@@ -59,7 +56,7 @@ private:
 
 public:
 
-    KdTree(const std::vector<Entity_t> &points)
+    KdTree(const std::vector<Point_t> &points)
     {
         mNodes.reserve(points.size());
         for (size_t i = 0; i < points.size(); ++i) {
@@ -72,7 +69,7 @@ public:
     /**
      * @brief Búsqueda por radio (Optimizada para DBSCAN)
      */
-    void radiusSearch(const Entity_t &target, double radius, std::vector<size_t> &resultIndices) const
+    void radiusSearch(const Point_t &target, double radius, std::vector<size_t> &resultIndices) const
     {
         radiusSearchImpl(0, mNodes.size(), 0, target, radius * radius, resultIndices);
     }
@@ -83,7 +80,7 @@ private:
     {
         if (right <= left) return;
 
-        size_t axis = depth % VectorTraits<Entity_t>::size;
+        size_t axis = depth % point_traits<Point_t>::spatial_dims;
         size_t mid = left + (right - left) / 2;
 
         // nth_element reorganiza el vector mNodes de forma que el elemento en 'mid' 
@@ -98,7 +95,7 @@ private:
     }
 
     void radiusSearchImpl(size_t left, size_t right, size_t depth, 
-                          const Entity_t& target, double sqRadius, 
+                          const Point_t& target, double sqRadius, 
                           std::vector<size_t>& results) const 
     {
         if (right <= left) return;
@@ -112,7 +109,7 @@ private:
             results.push_back(node.originalIndex);
         }
 
-        size_t axis = depth % VectorTraits<Entity_t>::size;
+        size_t axis = depth % point_traits<Point_t>::spatial_dims;
         double diff = target[axis] - node.point[axis];
         double diffSq = diff * diff;
 
@@ -133,17 +130,15 @@ private:
 
 
 
-template<typename Entity_t>
+template<typename Point_t>
 class StaticKdTree
 {
-    static_assert(is_point<Entity_t>::value || is_vector<Entity_t>::value,
-        "StaticKdTree can only be instantiated with point-like entities");
 
-    using T = typename VectorTraits<Entity_t>::value_type;
+    using T = typename point_traits<Point_t>::value_type;
 
     struct Node
     {
-        Entity_t point;
+        Point_t point;
         size_t originalIndex;
     };
 
@@ -152,7 +147,7 @@ private:
     size_t mDimensions;
 
 public:
-    StaticKdTree(const std::vector<Entity_t> &points) : mDimensions(points[0].size())
+    StaticKdTree(const std::vector<Point_t> &points) : mDimensions(points[0].size())
     {
         mNodes.reserve(points.size());
         for (size_t i = 0; i < points.size(); ++i) {
@@ -163,7 +158,7 @@ public:
     }
 
     // Búsqueda por radio (Optimizada)
-    std::vector<size_t> radiusSearch(const Entity_t &target, double radius) const
+    std::vector<size_t> radiusSearch(const Point_t &target, double radius) const
     {
         std::vector<size_t> resultIndices;
         resultIndices.reserve(32); // Pre-reserva pequeña
@@ -172,7 +167,7 @@ public:
     }
 
     // K-Nearest Neighbors
-    std::vector<size_t> kNearestNeighbors(const Entity_t &target, size_t k) const
+    std::vector<size_t> kNearestNeighbors(const Point_t &target, size_t k) const
     {
         if (k == 0) return {};
         if (k >= mNodes.size()) {
@@ -196,7 +191,7 @@ public:
     }
 
 private:
-    double squaredDistance(const Entity_t &a, const Entity_t &b) const
+    double squaredDistance(const Point_t &a, const Point_t &b) const
     {
         auto v = b - a;
         return v.dotProduct(v);
@@ -221,7 +216,7 @@ private:
     }
 
     void radiusSearchImpl(size_t left, size_t right, size_t depth,
-        const Entity_t &target, double sqRadius,
+        const Point_t &target, double sqRadius,
         std::vector<size_t> &results) const
     {
         if (right <= left) return;
@@ -252,7 +247,7 @@ private:
     }
 
     void kNearestSearchImpl(size_t left, size_t right, size_t depth,
-        const Entity_t &target, size_t k,
+        const Point_t &target, size_t k,
         std::priority_queue<std::pair<double, size_t>> &maxHeap) const
     {
         if (right <= left) return;
@@ -287,20 +282,18 @@ private:
 };
 
 
-template<typename Entity_t>
+template<typename Point_t>
 class DynamicKdTree
 {
-    static_assert(is_point<Entity_t>::value || is_vector<Entity_t>::value,
-        "DynamicKdTree can only be instantiated with point-like entities");
 
     struct DynamicNode
     {
-        Entity_t point;
+        Point_t point;
         size_t id;  // Identificador único
         DynamicNode *left = nullptr;
         DynamicNode *right = nullptr;
 
-        DynamicNode(const Entity_t &p, size_t idx) : point(p), id(idx) {}
+        DynamicNode(const Point_t &p, size_t idx) : point(p), id(idx) {}
         ~DynamicNode() {
             delete left;
             delete right;
@@ -317,7 +310,7 @@ private:
 public:
     DynamicKdTree(size_t dimensions) : mDimensions(dimensions) {}
 
-    DynamicKdTree(const std::vector<Entity_t> &points) : mDimensions(points[0].size())
+    DynamicKdTree(const std::vector<Point_t> &points) : mDimensions(points[0].size())
     {
         for (const auto &point : points) {
             insert(point);
@@ -329,7 +322,7 @@ public:
     }
 
     // Insertar un punto
-    size_t insert(const Entity_t &point)
+    size_t insert(const Point_t &point)
     {
         size_t newId = mNextId++;
         mRoot = insertRecursive(mRoot, point, newId, 0);
@@ -350,7 +343,7 @@ public:
     }
 
     // Búsqueda por radio
-    std::vector<size_t> radiusSearch(const Entity_t &target, double radius) const
+    std::vector<size_t> radiusSearch(const Point_t &target, double radius) const
     {
         std::vector<size_t> results;
         radiusSearchRecursive(mRoot, target, radius * radius, 0, results);
@@ -358,7 +351,7 @@ public:
     }
 
     // K-Nearest Neighbors
-    std::vector<size_t> kNearestNeighbors(const Entity_t &target, size_t k) const
+    std::vector<size_t> kNearestNeighbors(const Point_t &target, size_t k) const
     {
         if (k == 0 || mSize == 0) return {};
 
@@ -377,7 +370,7 @@ public:
     }
 
     // Actualizar un punto
-    bool update(size_t id, const Entity_t &newPoint)
+    bool update(size_t id, const Point_t &newPoint)
     {
         if (!remove(id)) return false;
         insertWithId(newPoint, id);
@@ -390,7 +383,7 @@ public:
 private:
     //using KNNQueue = std::priority_queue<std::pair<double, size_t>>;
 
-    double squaredDistance(const Entity_t &a, const Entity_t &b) const
+    double squaredDistance(const Point_t &a, const Point_t &b) const
     {
         double sum = 0.0;
         for (size_t i = 0; i < mDimensions; ++i) {
@@ -400,7 +393,7 @@ private:
         return sum;
     }
 
-    DynamicNode *insertRecursive(DynamicNode *node, const Entity_t &point,
+    DynamicNode *insertRecursive(DynamicNode *node, const Point_t &point,
         size_t id, size_t depth)
     {
         if (!node) {
@@ -420,7 +413,7 @@ private:
         return node;
     }
 
-    void insertWithId(const Entity_t &point, size_t id)
+    void insertWithId(const Point_t &point, size_t id)
     {
         mRoot = insertRecursive(mRoot, point, id, 0);
         mSize++;
@@ -484,7 +477,7 @@ private:
         return node;
     }
 
-    void radiusSearchRecursive(DynamicNode *node, const Entity_t &target,
+    void radiusSearchRecursive(DynamicNode *node, const Point_t &target,
         double sqRadius, size_t depth,
         std::vector<size_t> &results) const
     {
@@ -512,7 +505,7 @@ private:
         }
     }
 
-    void knnSearchRecursive(DynamicNode *node, const Entity_t &target,
+    void knnSearchRecursive(DynamicNode *node, const Point_t &target,
         size_t depth, size_t k,
         std::priority_queue<std::pair<double, size_t>> &maxHeap) const
     {
@@ -549,7 +542,7 @@ private:
     }
 };
 
-//template<typename Entity_t>
+//template<typename Point_t>
 //class KdTreeSelector
 //{
 //public:
@@ -560,17 +553,17 @@ private:
 //
 //private:
 //    TreeType mType;
-//    std::unique_ptr<StaticKdTree<Entity_t>> mStaticTree;
-//    std::unique_ptr<DynamicKdTree<Entity_t>> mDynamicTree;
+//    std::unique_ptr<StaticKdTree<Point_t>> mStaticTree;
+//    std::unique_ptr<DynamicKdTree<Point_t>> mDynamicTree;
 //
 //public:
-//    KdTreeSelector(TreeType type, const std::vector<Entity_t> &initialData = {})
+//    KdTreeSelector(TreeType type, const std::vector<Point_t> &initialData = {})
 //        : mType(type)
 //    {
 //        if (type == TreeType::STATIC && !initialData.empty()) {
-//            mStaticTree = std::make_unique<StaticKdTree<Entity_t>>(initialData);
+//            mStaticTree = std::make_unique<StaticKdTree<Point_t>>(initialData);
 //        } else if (type == TreeType::DYNAMIC) {
-//            mDynamicTree = std::make_unique<DynamicKdTree<Entity_t>>(
+//            mDynamicTree = std::make_unique<DynamicKdTree<Point_t>>(
 //                initialData.empty() ? initialData[0].size() : 0
 //            );
 //            if (!initialData.empty()) {
@@ -582,7 +575,7 @@ private:
 //    }
 //
 //    // Interfaz unificada
-//    std::vector<size_t> radiusSearch(const Entity_t &target, double radius) const
+//    std::vector<size_t> radiusSearch(const Point_t &target, double radius) const
 //    {
 //        if (mType == TreeType::STATIC && mStaticTree) {
 //            return mStaticTree->radiusSearch(target, radius);
@@ -592,7 +585,7 @@ private:
 //        return {};
 //    }
 //
-//    std::vector<size_t> kNearestNeighbors(const Entity_t &target, size_t k) const
+//    std::vector<size_t> kNearestNeighbors(const Point_t &target, size_t k) const
 //    {
 //        if (mType == TreeType::STATIC && mStaticTree) {
 //            return mStaticTree->kNearestNeighbors(target, k);
@@ -603,7 +596,7 @@ private:
 //    }
 //
 //    // Solo para árbol dinámico
-//    size_t insert(const Entity_t &point)
+//    size_t insert(const Point_t &point)
 //    {
 //        if (mType == TreeType::DYNAMIC && mDynamicTree) {
 //            return mDynamicTree->insert(point);

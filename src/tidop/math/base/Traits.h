@@ -24,76 +24,538 @@
 
 #pragma once
 
+#include <type_traits>
+#include <cstddef>
+
 #include "tidop/config.h"
+#include "tidop/math/base/simd.h"
 
 namespace tl
 {
 
-template<typename T, size_t _size> class Vector;
-namespace internal
-{
+//template<typename T, size_t _size> class Vector;
+//namespace internal
+//{
+//template<typename T, size_t _size> class MatrixRow;
+//template<typename T, size_t _size> class MatrixCol;
+//}
+
+//template<typename D>
+//struct VectorTraits;
+//
+//template<typename T, size_t _size>
+//struct VectorTraits<Vector<T, _size>>
+//{
+//    using value_type = T;
+//    static constexpr size_t size = _size;
+//    using result_type = Vector<T, _size>;
+//};
+//
+//template<typename T, size_t _size>
+//struct VectorTraits<internal::MatrixRow<T, _size>>
+//{
+//    using value_type = T;
+//    static constexpr size_t size = _size;
+//    using result_type = Vector<T, _size>;
+//};
+//
+//template<typename T, size_t _size>
+//struct VectorTraits<internal::MatrixCol<T, _size>> 
+//{
+//    using value_type = T;
+//    static constexpr size_t size = _size;
+//    using result_type = Vector<T, _size>;
+//};
+//
+//
+//
+
+//
+//
+//template<typename T>
+//struct is_point : std::false_type {};
+//
+//template<typename T, size_t _size>
+//struct is_point<Vector<T, _size>> : std::false_type {};
+//
+//template<typename T, size_t _size>
+//struct is_point<internal::MatrixRow<T, _size>> : std::false_type {};
+//
+//template<typename T, size_t _size>
+//struct is_point<internal::MatrixCol<T, _size>> : std::false_type {};
+//
+//template<typename D>
+//using enable_if_point_t = std::enable_if_t<is_point<D>::value, int>;
+
+
+
+
+
+template<typename T, size_t Rows, size_t Cols> class Matrix;
+template<typename T, size_t Rows, size_t Cols> class MatrixBlock;
 template<typename T, size_t _size> class MatrixRow;
 template<typename T, size_t _size> class MatrixCol;
-}
+template<typename Expr> class MatrixDiagonal;
+template<typename T, size_t Size> class Vector;
+template<typename T> class RotationMatrix;
+
+
+template<typename LHS, typename RHS> class AddExpr;
+template<typename LHS, typename RHS> class SubExpr;
+template<typename LHS, typename RHS> class MulScalarExpr;
+template<typename LHS, typename RHS> class DivScalarExpr;
+template<typename LHS, typename RHS> class MatMulExpr;
+template<typename Expr> class UnaryMinusExpr;
+template<typename Expr> class TransposeExpr;
+template<typename LHS, typename RHS> class VecAddExpr;
+template<typename LHS, typename RHS> class VecSubExpr;
+template<typename LHS, typename RHS> class VecMulExpr;
+template<typename LHS, typename RHS> class VecDivExpr;
+template<typename LHS, typename RHS> class VecMulScalarExpr;
+template<typename LHS, typename RHS> class VecDivScalarExpr;
+template<typename Expr> class VecUnaryMinusExpr;
+template<typename Mat, typename Vec> class MatVecMulExpr;
+
+template<typename P> struct PackedTraits;
+template<typename T> class Packed;
+
+
+template<typename T>
+struct matrix_traits
+{
+    static constexpr bool is_mutable = false;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_element_wise = false;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename T, size_t R, size_t C>
+struct matrix_traits<Matrix<T, R, C>>
+{
+    using value_type = T;
+    static constexpr size_t rows = R;
+    static constexpr size_t cols = C;
+    static constexpr bool is_mutable = true;
+    static constexpr bool has_contiguous_memory = true;
+    static constexpr bool is_element_wise = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = true;
+};
+
+template<typename T, size_t Rows, size_t Cols>
+struct matrix_traits<MatrixBlock<T, Rows, Cols>>
+{
+    using value_type = std::remove_cv_t<T>;
+    static constexpr size_t rows = Rows;
+    static constexpr size_t cols = Cols;
+    static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool is_view = true;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_element_wise = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = false;
+};
+
+template<typename Expr>
+struct matrix_traits<MatrixDiagonal<Expr>> 
+{
+    using value_type = std::remove_cv_t<typename matrix_traits<Expr>::value_type>;
+    static constexpr size_t rows = (matrix_traits<Expr>::rows < matrix_traits<Expr>::cols) ?
+                                    matrix_traits<Expr>::rows : matrix_traits<Expr>::cols;
+    static constexpr size_t cols = 1;
+    static constexpr bool is_view = true;
+    static constexpr bool is_mutable = matrix_traits<Expr>::is_mutable;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_element_wise = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct matrix_traits<AddExpr<LHS, RHS>> 
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
+        std::remove_cv_t<typename matrix_traits<RHS>::value_type>>,
+        "Mixed types not supported in matrix operations");
+
+    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
+    static constexpr size_t rows = matrix_traits<LHS>::rows;
+    static constexpr size_t cols = matrix_traits<LHS>::cols;
+    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory && 
+                                                  matrix_traits<RHS>::has_contiguous_memory;
+    static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise &&
+                                            matrix_traits<RHS>::is_element_wise;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct matrix_traits<SubExpr<LHS, RHS>> 
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
+        std::remove_cv_t<typename matrix_traits<RHS>::value_type>>,
+        "Mixed types not supported in matrix operations");
+
+    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
+    static constexpr size_t rows = matrix_traits<LHS>::rows;
+    static constexpr size_t cols = matrix_traits<LHS>::cols;
+    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory && 
+                                                  matrix_traits<RHS>::has_contiguous_memory;
+    static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise &&
+                                            matrix_traits<RHS>::is_element_wise;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename Scalar>
+struct matrix_traits<MulScalarExpr<LHS, Scalar>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
+        std::remove_cv_t<Scalar>>,
+        "Mixed types not supported in matrix operations");
+
+    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
+    static constexpr size_t rows = matrix_traits<LHS>::rows;
+    static constexpr size_t cols = matrix_traits<LHS>::cols;
+    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory;
+    static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename Scalar>
+struct matrix_traits<DivScalarExpr<LHS, Scalar>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
+        std::remove_cv_t<Scalar>>,
+        "Mixed types not supported in matrix operations");
+
+    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
+    static constexpr size_t rows = matrix_traits<LHS>::rows;
+    static constexpr size_t cols = matrix_traits<LHS>::cols;
+    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory;
+    static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct matrix_traits<MatMulExpr<LHS, RHS>>
+{
+    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
+
+    static_assert(std::is_same_v<value_type, std::remove_cv_t<typename matrix_traits<RHS>::value_type>>,
+        "Mixed types not supported in matrix multiplication");
+
+    static constexpr size_t rows = matrix_traits<LHS>::rows;
+    static constexpr size_t cols = matrix_traits<RHS>::cols;
+
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_mutable = false;
+    static constexpr bool is_element_wise = false;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename Expr>
+struct matrix_traits<UnaryMinusExpr<Expr>>
+{
+    using value_type = std::remove_cv_t<typename matrix_traits<Expr>::value_type>;
+
+    static_assert(std::is_signed_v<value_type>, "Unary minus requires a signed type");
+
+    static constexpr size_t rows = matrix_traits<Expr>::rows;
+    static constexpr size_t cols = matrix_traits<Expr>::cols;
+    static constexpr bool has_contiguous_memory = matrix_traits<Expr>::has_contiguous_memory;
+    static constexpr bool is_element_wise = matrix_traits<Expr>::is_element_wise;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename Expr>
+struct matrix_traits<TransposeExpr<Expr>>
+{
+    using value_type = std::remove_cv_t<typename matrix_traits<Expr>::value_type>;
+
+    static constexpr size_t rows = matrix_traits<Expr>::cols;
+    static constexpr size_t cols = matrix_traits<Expr>::rows;
+
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_mutable = false;
+    static constexpr bool is_element_wise = false;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename T>
+struct matrix_traits<RotationMatrix<T>>
+{
+    using value_type = std::remove_cv_t<typename RotationMatrix<T>::value_type>;
+
+    static constexpr size_t rows = 3;
+    static constexpr size_t cols = 3;
+    static constexpr bool is_mutable = true;
+    static constexpr bool has_contiguous_memory = true;
+    static constexpr bool is_element_wise = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = true;
+};
+
+
 
 template<typename D>
-struct VectorTraits;
-
-template<typename T, size_t _size>
-struct VectorTraits<Vector<T, _size>>
+struct vector_traits
 {
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
+    static constexpr bool is_mutable = false;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
 };
 
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixRow<T, _size>>
+template<typename T, size_t Size>
+struct vector_traits<Vector<T, Size>>
 {
     using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
+    static constexpr size_t size = Size;
+    static constexpr bool is_mutable = true;
+    static constexpr bool has_contiguous_memory = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = true;
 };
 
-template<typename T, size_t _size>
-struct VectorTraits<internal::MatrixCol<T, _size>> 
+template<typename T, size_t Size>
+struct vector_traits<MatrixRow<T, Size>>
 {
-    using value_type = T;
-    static constexpr size_t size = _size;
-    using result_type = Vector<T, _size>;
+    using value_type = std::remove_cv_t<T>;
+    static constexpr size_t size = Size;
+    static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool has_contiguous_memory = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = false;
 };
 
+template<typename T, size_t Size>
+struct vector_traits<MatrixCol<T, Size>>
+{
+    using value_type = std::remove_cv_t<T>;
+    static constexpr size_t size = Size;
+    static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct vector_traits<VecAddExpr<LHS, RHS>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
+        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
+    static constexpr size_t size = vector_traits<LHS>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory && 
+                                                  vector_traits<RHS>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct vector_traits<VecSubExpr<LHS, RHS>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
+        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
+    static constexpr size_t size = vector_traits<LHS>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
+                                                  vector_traits<RHS>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct vector_traits<VecMulExpr<LHS, RHS>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
+        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
+    static constexpr size_t size = vector_traits<LHS>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
+                                                  vector_traits<RHS>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename RHS>
+struct vector_traits<VecDivExpr<LHS, RHS>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
+        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = typename vector_traits<LHS>::value_type;
+    static constexpr size_t size = vector_traits<LHS>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
+                                                  vector_traits<RHS>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename Scalar>
+struct vector_traits<VecMulScalarExpr<LHS, Scalar>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
+        std::remove_cv_t<Scalar>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
+    static constexpr size_t size = vector_traits<LHS>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename LHS, typename Scalar>
+struct vector_traits<VecDivScalarExpr<LHS, Scalar>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
+        std::remove_cv_t<Scalar>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
+    static constexpr size_t size = vector_traits<LHS>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename Mat, typename Vec>
+struct vector_traits<MatVecMulExpr<Mat, Vec>>
+{
+    static_assert(std::is_same_v<
+        std::remove_cv_t<typename matrix_traits<Mat>::value_type>,
+        std::remove_cv_t<typename vector_traits<Vec>::value_type>>,
+        "Mixed types not supported in vector operations");
+
+    using value_type = std::remove_cv_t<typename vector_traits<Vec>::value_type>;
+    static constexpr size_t size = vector_traits<Vec>::size;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
+
+template<typename Expr>
+struct vector_traits<VecUnaryMinusExpr<Expr>>
+{
+    using value_type = std::remove_cv_t<typename vector_traits<Expr>::value_type>;
+
+    static_assert(std::is_signed_v<value_type>, "Unary minus requires a signed type");
+
+    static constexpr size_t size = vector_traits<Expr>::size;
+    static constexpr bool has_contiguous_memory = vector_traits<Expr>::has_contiguous_memory;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
 
 
 template<typename D>
 struct is_vector : std::false_type {};
 
-template<typename T, size_t _size>
-struct is_vector<Vector<T, _size>> : std::true_type {};
+template<typename Scalar, size_t Size>
+struct is_vector<Vector<Scalar, Size>> : std::true_type {};
 
 template<typename T, size_t _size>
-struct is_vector<internal::MatrixRow<T, _size>> : std::true_type {};
+struct is_vector<MatrixRow<T, _size>> : std::true_type {};
 
 template<typename T, size_t _size>
-struct is_vector<internal::MatrixCol<T, _size>> : std::true_type {};
+struct is_vector<MatrixCol<T, _size>> : std::true_type {};
 
 template<typename D>
 using enable_if_vector_t = std::enable_if_t<is_vector<D>::value, int>;
 
 
+
+
 template<typename T>
-struct is_point : std::false_type {};
+struct is_matrix_product : std::false_type {};
 
-template<typename T, size_t _size>
-struct is_point<Vector<T, _size>> : std::false_type {};
+template<typename LHS, typename RHS>
+struct is_matrix_product<MatMulExpr<LHS, RHS>> : std::true_type {};
 
-template<typename T, size_t _size>
-struct is_point<internal::MatrixRow<T, _size>> : std::false_type {};
+template<typename T>
+inline constexpr bool is_matrix_product_v = is_matrix_product<std::remove_cvref_t<T>>::value;
 
-template<typename T, size_t _size>
-struct is_point<internal::MatrixCol<T, _size>> : std::false_type {};
 
-template<typename D>
-using enable_if_point_t = std::enable_if_t<is_point<D>::value, int>;
+template<typename T>
+struct is_matvec_product : std::false_type {};
+
+template<typename LHS, typename RHS>
+struct is_matvec_product<MatVecMulExpr<LHS, RHS>> : std::true_type {};
+
+template<typename T>
+inline constexpr bool is_matvec_product_v = is_matvec_product<std::remove_cvref_t<T>>::value;
+
+
+
+template<typename T>
+struct is_simd_compatible : std::false_type {};
+
+template<typename T>
+inline constexpr bool is_simd_compatible_v = is_simd_compatible<std::remove_cvref_t<T>>::value;
+
+template<typename T, size_t R, size_t C>
+struct is_simd_compatible<Matrix<T, R, C>>
+  : std::bool_constant<(PackedTraits<Packed<T>>::size > 0)>
+{};
+
+template<typename LHS, typename RHS>
+struct is_simd_compatible<AddExpr<LHS, RHS>>
+  : std::bool_constant<is_simd_compatible_v<LHS> &&
+                       is_simd_compatible_v<RHS> &&
+                       std::is_same_v<typename LHS::value_type, 
+                                      typename RHS::value_type>> 
+{};
+
+
+template<typename T>
+struct is_blas_compatible : std::false_type {};
+
+template<typename T, size_t R, size_t C>
+struct is_blas_compatible<Matrix<T, R, C>>
+    : std::bool_constant<std::is_floating_point_v<T>>
+{
+};
+
+template<typename T>
+inline constexpr bool is_blas_compatible_v = is_blas_compatible<std::remove_cvref_t<T>>::value;
+
+
+template<typename T>
+struct is_cublas_compatible : std::false_type {};
+
+template<typename T, size_t R, size_t C>
+struct is_cublas_compatible<Matrix<T, R, C>>
+    : std::bool_constant<std::is_floating_point_v<T>>
+{
+};
+
+template<typename T>
+inline constexpr bool is_cublas_compatible_v = is_cublas_compatible<std::remove_cvref_t<T>>::value;
+
 
 }

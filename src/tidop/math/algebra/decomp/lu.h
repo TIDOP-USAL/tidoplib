@@ -26,7 +26,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/core/base/exception.h"
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/base/lapack.h"
 #include "tidop/math/base/cuda.h"
 
@@ -468,7 +468,7 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
     T det = this->d;
 
     for (size_t i = 0; i < mRows; i++)
-        det *= LU[i][i];
+        det *= LU(i,i);
 
     return det;
 }

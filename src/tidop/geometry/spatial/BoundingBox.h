@@ -496,7 +496,7 @@ auto merge(const BoundingBox<Point_t> &b1, const BoundingBox<Point_t> &b2) -> Bo
 
     Point_t new_min, new_max;
 
-    for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
+    for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
         new_min[i] = std::min(b1.min()[i], b2.min()[i]);
         new_max[i] = std::max(b1.max()[i], b2.max()[i]);
     }

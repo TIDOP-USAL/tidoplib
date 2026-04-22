@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop lu test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/decomp/lu.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 using namespace tl;
 
@@ -140,45 +140,45 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, LuTest)
 
     Matrix<double> _lu = lu->lu();
 
-    BOOST_CHECK_CLOSE(12, _lu[0][0], 0.1);
-    BOOST_CHECK_CLOSE(-51, _lu[0][1], 0.1);
-    BOOST_CHECK_CLOSE(4, _lu[0][2], 0.1);
-    BOOST_CHECK_CLOSE(0.5, _lu[1][0], 0.1);
-    BOOST_CHECK_CLOSE(192.5, _lu[1][1], 0.1);
-    BOOST_CHECK_CLOSE(-70, _lu[1][2], 0.1);
-    BOOST_CHECK_CLOSE(-0.333333, _lu[2][0], 0.1);
-    BOOST_CHECK_CLOSE(0.0363636, _lu[2][1], 0.1);
-    BOOST_CHECK_CLOSE(-37.1212, _lu[2][2], 0.1);
+    BOOST_CHECK_CLOSE(12, _lu[0][0], 0.01);
+    BOOST_CHECK_CLOSE(-51, _lu[0][1], 0.01);
+    BOOST_CHECK_CLOSE(4, _lu[0][2], 0.01);
+    BOOST_CHECK_CLOSE(0.5, _lu[1][0], 0.01);
+    BOOST_CHECK_CLOSE(192.5, _lu[1][1], 0.01);
+    BOOST_CHECK_CLOSE(-70, _lu[1][2], 0.01);
+    BOOST_CHECK_CLOSE(-0.333333, _lu[2][0], 0.01);
+    BOOST_CHECK_CLOSE(0.0363636, _lu[2][1], 0.01);
+    BOOST_CHECK_CLOSE(-37.1212, _lu[2][2], 0.01);
 
     Matrix<double> _lu2 = lu2->lu();
 
-    BOOST_CHECK_CLOSE(7, _lu2[0][0], 0.1);
-    BOOST_CHECK_CLOSE(8, _lu2[0][1], 0.1);
-    BOOST_CHECK_CLOSE(10, _lu2[0][2], 0.1);
-    BOOST_CHECK_CLOSE(0.142857, _lu2[1][0], 0.1);
-    BOOST_CHECK_CLOSE(0.857143, _lu2[1][1], 0.1);
-    BOOST_CHECK_CLOSE(1.57143, _lu2[1][2], 0.1);
-    BOOST_CHECK_CLOSE(0.571429, _lu2[2][0], 0.1);
-    BOOST_CHECK_CLOSE(0.5, _lu2[2][1], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, _lu2[2][2], 0.1);
+    BOOST_CHECK_CLOSE(7, _lu2[0][0], 0.01);
+    BOOST_CHECK_CLOSE(8, _lu2[0][1], 0.01);
+    BOOST_CHECK_CLOSE(10, _lu2[0][2], 0.01);
+    BOOST_CHECK_CLOSE(0.142857, _lu2[1][0], 0.01);
+    BOOST_CHECK_CLOSE(0.857143, _lu2[1][1], 0.01);
+    BOOST_CHECK_CLOSE(1.57143, _lu2[1][2], 0.01);
+    BOOST_CHECK_CLOSE(0.571429, _lu2[2][0], 0.01);
+    BOOST_CHECK_CLOSE(0.5, _lu2[2][1], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, _lu2[2][2], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(solve, LuTest)
 {
     auto C = lu->solve(B);
-    BOOST_CHECK_CLOSE(0.065306122448979584, C[0], 0.1);
-    BOOST_CHECK_CLOSE(-0.0089795918367346957, C[1], 0.1);
-    BOOST_CHECK_CLOSE(-0.060408163265306125, C[2], 0.1);
+    BOOST_CHECK_CLOSE(0.065306122448979584, C[0], 0.01);
+    BOOST_CHECK_CLOSE(-0.0089795918367346957, C[1], 0.01);
+    BOOST_CHECK_CLOSE(-0.060408163265306125, C[2], 0.01);
 
     C = lu2->solve(B2);
-    BOOST_CHECK_CLOSE(-2., C[0], 0.1);
-    BOOST_CHECK_CLOSE(1., C[1], 0.1);
-    BOOST_CHECK_CLOSE(1., C[2], 0.1);
+    BOOST_CHECK_CLOSE(-2., C[0], 0.01);
+    BOOST_CHECK_CLOSE(1., C[1], 0.01);
+    BOOST_CHECK_CLOSE(1., C[2], 0.01);
 
     auto SC = slu->solve(SB);
-    BOOST_CHECK_CLOSE(0.065306122448979584, SC[0], 0.1);
-    BOOST_CHECK_CLOSE(-0.0089795918367346957, SC[1], 0.1);
-    BOOST_CHECK_CLOSE(-0.060408163265306125, SC[2], 0.1);
+    BOOST_CHECK_CLOSE(0.065306122448979584, SC[0], 0.01);
+    BOOST_CHECK_CLOSE(-0.0089795918367346957, SC[1], 0.01);
+    BOOST_CHECK_CLOSE(-0.060408163265306125, SC[2], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(solve_matrix_partial, LuTest)
@@ -198,10 +198,10 @@ BOOST_FIXTURE_TEST_CASE(solve_matrix_partial, LuTest)
     LuDecomposition<Matrix<double>> decomp(a);
 
     auto C = decomp.solve(b);
-    BOOST_CHECK_CLOSE(1.2, C[0][0], 0.1);
-    BOOST_CHECK_CLOSE(1.4, C[0][1], 0.1);
-    BOOST_CHECK_CLOSE(1.4, C[1][0], 0.1);
-    BOOST_CHECK_CLOSE(0.8, C[1][1], 0.1);
+    BOOST_CHECK_CLOSE(1.2, C[0][0], 0.01);
+    BOOST_CHECK_CLOSE(1.4, C[0][1], 0.01);
+    BOOST_CHECK_CLOSE(1.4, C[1][0], 0.01);
+    BOOST_CHECK_CLOSE(0.8, C[1][1], 0.01);
 
     Matrix<double> mb(3, 2);
     mb[0][0] = 3;
@@ -214,24 +214,24 @@ BOOST_FIXTURE_TEST_CASE(solve_matrix_partial, LuTest)
     LuDecomposition<Matrix<double>> decomp2(A);
 
     auto mc = decomp2.solve(mb);
-    BOOST_CHECK_CLOSE(0.0281633, mc[0][0], 0.1);
-    BOOST_CHECK_CLOSE(1.0751, mc[0][1], 0.1);
-    BOOST_CHECK_CLOSE(-0.0729796, mc[1][0], 0.1);
-    BOOST_CHECK_CLOSE(0.148245, mc[1][1], 0.1);
-    BOOST_CHECK_CLOSE(-0.26498, mc[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.335184, mc[2][1], 0.1);
+    BOOST_CHECK_CLOSE(0.0281633, mc[0][0], 0.01);
+    BOOST_CHECK_CLOSE(1.0751, mc[0][1], 0.01);
+    BOOST_CHECK_CLOSE(-0.0729796, mc[1][0], 0.01);
+    BOOST_CHECK_CLOSE(0.148245, mc[1][1], 0.01);
+    BOOST_CHECK_CLOSE(-0.26498, mc[2][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.335184, mc[2][1], 0.01);
 
     LuDecomposition<Matrix<double, 4, 4>> slu(A_4x4);
     auto x = slu.solve(b_4x2);
 
-    BOOST_CHECK_CLOSE(1., x[0][0], 0.1);
-    BOOST_CHECK_CLOSE(2.5, x[0][1], 0.1);
-    BOOST_CHECK_CLOSE(0.5, x[1][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, x[1][1], 0.1);
-    BOOST_CHECK_CLOSE(-1.5, x[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-2.5, x[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1., x[3][0], 0.1);
-    BOOST_CHECK_CLOSE(2., x[3][1], 0.1);
+    BOOST_CHECK_CLOSE(1., x[0][0], 0.01);
+    BOOST_CHECK_CLOSE(2.5, x[0][1], 0.01);
+    BOOST_CHECK_CLOSE(0.5, x[1][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, x[1][1], 0.01);
+    BOOST_CHECK_CLOSE(-1.5, x[2][0], 0.01);
+    BOOST_CHECK_CLOSE(-2.5, x[2][1], 0.01);
+    BOOST_CHECK_CLOSE(1., x[3][0], 0.01);
+    BOOST_CHECK_CLOSE(2., x[3][1], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(solve_matrix_full_pivot, LuTest)
@@ -239,14 +239,14 @@ BOOST_FIXTURE_TEST_CASE(solve_matrix_full_pivot, LuTest)
     LuDecomposition<Matrix<double, 4, 4>> slu(A_4x4, true);
     auto x = slu.solve(b_4x2);
 
-    BOOST_CHECK_CLOSE(1., x[0][0], 0.1);
-    BOOST_CHECK_CLOSE(2.5, x[0][1], 0.1);
-    BOOST_CHECK_CLOSE(0.5, x[1][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, x[1][1], 0.1);
-    BOOST_CHECK_CLOSE(-1.5, x[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-2.5, x[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1., x[3][0], 0.1);
-    BOOST_CHECK_CLOSE(2., x[3][1], 0.1);
+    BOOST_CHECK_CLOSE(1., x[0][0], 0.01);
+    BOOST_CHECK_CLOSE(2.5, x[0][1], 0.01);
+    BOOST_CHECK_CLOSE(0.5, x[1][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, x[1][1], 0.01);
+    BOOST_CHECK_CLOSE(-1.5, x[2][0], 0.01);
+    BOOST_CHECK_CLOSE(-2.5, x[2][1], 0.01);
+    BOOST_CHECK_CLOSE(1., x[3][0], 0.01);
+    BOOST_CHECK_CLOSE(2., x[3][1], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(inverse, LuTest)
@@ -255,31 +255,31 @@ BOOST_FIXTURE_TEST_CASE(inverse, LuTest)
     LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4);
     Matrix<double, 4, 4> A_inv = lu.inverse();
 
-    BOOST_CHECK_CLOSE(2.25, A_inv[0][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.75, A_inv[0][1], 0.1);
-    BOOST_CHECK_CLOSE(-0.25, A_inv[0][2], 0.1);
-    BOOST_CHECK_CLOSE(0.25, A_inv[0][3], 0.1);
-    BOOST_CHECK_CLOSE(-3., A_inv[1][0], 0.1);
-    BOOST_CHECK_CLOSE(2.5, A_inv[1][1], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, A_inv[1][2], 0.1);
+    BOOST_CHECK_CLOSE(2.25, A_inv[0][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.75, A_inv[0][1], 0.01);
+    BOOST_CHECK_CLOSE(-0.25, A_inv[0][2], 0.01);
+    BOOST_CHECK_CLOSE(0.25, A_inv[0][3], 0.01);
+    BOOST_CHECK_CLOSE(-3., A_inv[1][0], 0.01);
+    BOOST_CHECK_CLOSE(2.5, A_inv[1][1], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[1][2], 0.01);
     BOOST_CHECK_SMALL(A_inv[1][3], small_values);
-    BOOST_CHECK_CLOSE(-0.5, A_inv[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-1, A_inv[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1., A_inv[2][2], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, A_inv[2][3], 0.1);
-    BOOST_CHECK_CLOSE(1.5, A_inv[3][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, A_inv[3][1], 0.1);
-    BOOST_CHECK_CLOSE(-0.5, A_inv[3][2], 0.1);
-    BOOST_CHECK_CLOSE(0.5, A_inv[3][3], 0.1);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[2][0], 0.01);
+    BOOST_CHECK_CLOSE(-1, A_inv[2][1], 0.01);
+    BOOST_CHECK_CLOSE(1., A_inv[2][2], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[2][3], 0.01);
+    BOOST_CHECK_CLOSE(1.5, A_inv[3][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[3][1], 0.01);
+    BOOST_CHECK_CLOSE(-0.5, A_inv[3][2], 0.01);
+    BOOST_CHECK_CLOSE(0.5, A_inv[3][3], 0.01);
 
     // Verificar que A * A_inv ≈ Identidad
     Matrix<double, 4, 4> I = A_4x4 * A_inv;
 
 
-    BOOST_CHECK_CLOSE(1., I[0][0], 0.1);
-    BOOST_CHECK_CLOSE(1., I[1][1], 0.1);
-    BOOST_CHECK_CLOSE(1., I[2][2], 0.1);
-    BOOST_CHECK_CLOSE(1., I[3][3], 0.1);
+    BOOST_CHECK_CLOSE(1., I[0][0], 0.01);
+    BOOST_CHECK_CLOSE(1., I[1][1], 0.01);
+    BOOST_CHECK_CLOSE(1., I[2][2], 0.01);
+    BOOST_CHECK_CLOSE(1., I[3][3], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(rank, LuTest)
@@ -292,22 +292,22 @@ BOOST_FIXTURE_TEST_CASE(lower, LuTest)
 {
     LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4, true);
     auto lower = lu.lower();
-    BOOST_CHECK_CLOSE(1, lower[0][0], 0.1);
-    BOOST_CHECK_CLOSE(0, lower[0][1], 0.1);
-    BOOST_CHECK_CLOSE(0, lower[0][2], 0.1);
-    BOOST_CHECK_CLOSE(0, lower[0][3], 0.1);
-    BOOST_CHECK_CLOSE(1, lower[1][0], 0.1);
-    BOOST_CHECK_CLOSE(1, lower[1][1], 0.1);
-    BOOST_CHECK_CLOSE(0, lower[1][2], 0.1);
-    BOOST_CHECK_CLOSE(0, lower[1][3], 0.1);
-    BOOST_CHECK_CLOSE(0.333333, lower[2][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.222222, lower[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1., lower[2][2], 0.1);
-    BOOST_CHECK_CLOSE(0., lower[2][3], 0.1);
-    BOOST_CHECK_CLOSE(0.111111, lower[3][0], 0.1);
-    BOOST_CHECK_CLOSE(-0.185185, lower[3][1], 0.1);
-    BOOST_CHECK_CLOSE(0.833333, lower[3][2], 0.1);
-    BOOST_CHECK_CLOSE(1., lower[3][3], 0.1);
+    BOOST_CHECK_CLOSE(1, lower[0][0], 0.01);
+    BOOST_CHECK_CLOSE(0, lower[0][1], 0.01);
+    BOOST_CHECK_CLOSE(0, lower[0][2], 0.01);
+    BOOST_CHECK_CLOSE(0, lower[0][3], 0.01);
+    BOOST_CHECK_CLOSE(1, lower[1][0], 0.01);
+    BOOST_CHECK_CLOSE(1, lower[1][1], 0.01);
+    BOOST_CHECK_CLOSE(0, lower[1][2], 0.01);
+    BOOST_CHECK_CLOSE(0, lower[1][3], 0.01);
+    BOOST_CHECK_CLOSE(0.333333, lower[2][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.222222, lower[2][1], 0.01);
+    BOOST_CHECK_CLOSE(1., lower[2][2], 0.01);
+    BOOST_CHECK_CLOSE(0., lower[2][3], 0.01);
+    BOOST_CHECK_CLOSE(0.111111, lower[3][0], 0.01);
+    BOOST_CHECK_CLOSE(-0.185185, lower[3][1], 0.01);
+    BOOST_CHECK_CLOSE(0.833333, lower[3][2], 0.01);
+    BOOST_CHECK_CLOSE(1., lower[3][3], 0.01);
 
 }
 
@@ -315,22 +315,22 @@ BOOST_FIXTURE_TEST_CASE(upper, LuTest)
 {
     LuDecomposition<Matrix<double, 4, 4>> lu(A_4x4, true);
     auto upper = lu.upper();
-    BOOST_CHECK_CLOSE(9, upper[0][0], 0.1);
-    BOOST_CHECK_CLOSE(5, upper[0][1], 0.1);
-    BOOST_CHECK_CLOSE(8, upper[0][2], 0.1);
-    BOOST_CHECK_CLOSE(7, upper[0][3], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[1][0], 0.1);
-    BOOST_CHECK_CLOSE(3, upper[1][1], 0.1);
-    BOOST_CHECK_CLOSE(-2, upper[1][2], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[1][3], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[2][0], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[2][1], 0.1);
-    BOOST_CHECK_CLOSE(0.888889, upper[2][2], 0.1);
-    BOOST_CHECK_CLOSE(0.666667, upper[2][3], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[3][0], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[3][1], 0.1);
-    BOOST_CHECK_CLOSE(0, upper[3][2], 0.1);
-    BOOST_CHECK_CLOSE(-0.333333, upper[3][3], 0.1);
+    BOOST_CHECK_CLOSE(9, upper[0][0], 0.01);
+    BOOST_CHECK_CLOSE(5, upper[0][1], 0.01);
+    BOOST_CHECK_CLOSE(8, upper[0][2], 0.01);
+    BOOST_CHECK_CLOSE(7, upper[0][3], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[1][0], 0.01);
+    BOOST_CHECK_CLOSE(3, upper[1][1], 0.01);
+    BOOST_CHECK_CLOSE(-2, upper[1][2], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[1][3], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[2][0], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[2][1], 0.01);
+    BOOST_CHECK_CLOSE(0.888889, upper[2][2], 0.01);
+    BOOST_CHECK_CLOSE(0.666667, upper[2][3], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[3][0], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[3][1], 0.01);
+    BOOST_CHECK_CLOSE(0, upper[3][2], 0.01);
+    BOOST_CHECK_CLOSE(-0.333333, upper[3][3], 0.01);
 
 }
 

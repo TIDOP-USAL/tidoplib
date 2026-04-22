@@ -60,7 +60,7 @@ auto envelope_from_container(const Container_t &container)
     Point_t max_point = container[0];
 
     for (const auto &point : container) {
-        for (size_t i = 0; i < VectorTraits<Point_t>::size; ++i) {
+        for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
             if (point[i] < min_point[i]) min_point[i] = point[i];
             if (point[i] > max_point[i]) max_point[i] = point[i];
         }

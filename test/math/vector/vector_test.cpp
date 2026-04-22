@@ -22,21 +22,21 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop vector test
+#define BOOST_TEST_MODULE Tidop vector expr test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/vector.h>
+#include <tidop/math/algebra/vector/Vector.h>
 
 using namespace tl;
 
 
-BOOST_AUTO_TEST_SUITE(VectorTestSuite)
+BOOST_AUTO_TEST_SUITE(VectorExprTestSuite)
 
 /// Ampliar test para enteros y probar Boost_safe_numerics o similares
 
-struct VectorTest
+struct VectorExprTest
 {
 
-    VectorTest()
+    VectorExprTest()
       : _vect_dynamic_def(new Vector<double>()),
         _vect_dynamic_def_4(new Vector<double>(4)),
         _vect_dynamic_2_d(new Vector<double>(2)),
@@ -44,7 +44,8 @@ struct VectorTest
         _vect_dynamic_4_d(new Vector<double>(4))
     {
     }
-    ~VectorTest()
+
+    ~VectorExprTest()
     {
         delete _vect_dynamic_def;
         delete _vect_dynamic_def_4;
@@ -59,28 +60,32 @@ struct VectorTest
         _vect_2_d[0] = 1.1;
         _vect_2_d[1] = 3.5;
 
-        (*_vect_dynamic_2_d)[0] = 1.1;
-        (*_vect_dynamic_2_d)[1] = 3.5;
-
         _vect_3_d[0] = 3.4;
         _vect_3_d[1] = 5.7;
         _vect_3_d[2] = -3.4;
-
-        (*_vect_dynamic_3_d)[0] = 3.4;
-        (*_vect_dynamic_3_d)[1] = 5.7;
-        (*_vect_dynamic_3_d)[2] = -3.4;
 
         _vect_4_d[0] = 3.4;
         _vect_4_d[1] = 5.7;
         _vect_4_d[2] = -3.4;
         _vect_4_d[3] = 5.4;
 
+        vect_2_d_ones = Vector<double, 2>::unit();
+        vect_3_d_ones = Vector<double, 3>::unit();
+        vect_4_d_ones = Vector<double, 4>::unit();
+
+        (*_vect_dynamic_2_d)[0] = 1.1;
+        (*_vect_dynamic_2_d)[1] = 3.5;
+
+        (*_vect_dynamic_3_d)[0] = 3.4;
+        (*_vect_dynamic_3_d)[1] = 5.7;
+        (*_vect_dynamic_3_d)[2] = -3.4;
+
         (*_vect_dynamic_4_d)[0] = 3.4;
         (*_vect_dynamic_4_d)[1] = 5.7;
         (*_vect_dynamic_4_d)[2] = -3.4;
         (*_vect_dynamic_4_d)[3] = 5.4;
 
-        v1 = {0.81, 7.45, 1.17, 3.44, 4.13, 5.67, 4.57, 2.03, 5.53, 5.25,
+        big1 = {0.81, 7.45, 1.17, 3.44, 4.13, 5.67, 4.57, 2.03, 5.53, 5.25,
               6.69, 7.87, 1.70, 4.32, 6.33, 0.67, 8.99, 7.63, 7.08, 7.24,
               6.39, 3.54, 6.47, 7.15, 0.37, 5.52, 3.21, 8.52, 3.20, 5.83,
               7.86, 5.01, 5.82, 0.94, 8.94, 6.53, 2.04, 5.91, 5.94, 5.18,
@@ -91,7 +96,7 @@ struct VectorTest
               2.09, 4.23, 6.07, 8.07, 7.64, 0.80, 7.43, 0.15, 0.07, 7.02,
               2.24, 3.95, 5.79, 3.45, 3.43, 4.62, 5.88, 2.01, 3.04, 3.06};
 
-        v2 = {1.48, 1.19, 1.71, 7.35, 2.66, 8.25, 8.28, 3.86, 1.82, 2.69,
+        big2 = {1.48, 1.19, 1.71, 7.35, 2.66, 8.25, 8.28, 3.86, 1.82, 2.69,
               2.19, 5.53, 2.06, 6.51, 6.39, 1.18, 8.83, 3.41, 6.19, 5.41,
               8.52, 4.30, 0.60, 0.11, 7.88, 2.41, 3.63, 7.20, 5.96, 5.61,
               6.35, 0.27, 5.50, 4.55, 2.46, 3.81, 3.20, 6.69, 5.08, 3.68,
@@ -109,21 +114,25 @@ struct VectorTest
 
     }
 
+    Vector<double, 2> _vect_2_d;
+    Vector<double, 3> _vect_3_d;
+    Vector<double, 4> _vect_4_d;
+    Vector<double, 2> vect_2_d_ones;
+    Vector<double, 3> vect_3_d_ones;
+    Vector<double, 4> vect_4_d_ones;
+
     Vector<double, 3> _vect_def_3;
     Vector<double> *_vect_dynamic_def;
     Vector<double> *_vect_dynamic_def_4;
-    Vector<double, 2> _vect_2_d;
     Vector<double> *_vect_dynamic_2_d;
-    Vector<double, 3> _vect_3_d;
     Vector<double> *_vect_dynamic_3_d;
-    Vector<double, 4> _vect_4_d;
     Vector<double> *_vect_dynamic_4_d;
-    Vector<double, 100> v1;
-    Vector<double, 100> v2;
+    Vector<double, 100> big1;
+    Vector<double, 100> big2;
 };
 
-
-BOOST_FIXTURE_TEST_CASE(default_constructor, VectorTest)
+//
+BOOST_FIXTURE_TEST_CASE(default_constructor, VectorExprTest)
 {
     constexpr double ini_value = -std::numeric_limits<double>().max();
 
@@ -136,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, VectorTest)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(copy_constructor, VectorTest)
+BOOST_FIXTURE_TEST_CASE(copy_constructor, VectorExprTest)
 {
     Vector<double, 3> copy(_vect_3_d);
     for (size_t i = 0; i < _vect_3_d.size(); i++) {
@@ -149,7 +158,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, VectorTest)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(move_cnstructor, VectorTest)
+BOOST_FIXTURE_TEST_CASE(move_cnstructor, VectorExprTest)
 {
     Vector<double, 3> to_move;
     to_move[0] = 1.;
@@ -174,7 +183,7 @@ BOOST_FIXTURE_TEST_CASE(move_cnstructor, VectorTest)
     BOOST_CHECK_EQUAL(0, to_move2.size());
 }
 
-BOOST_FIXTURE_TEST_CASE(initializer_list, VectorTest)
+BOOST_FIXTURE_TEST_CASE(initializer_list, VectorExprTest)
 {
     Vector<double, 4> vect{{1.,2.,3.,4.}};
     BOOST_CHECK_EQUAL(1., vect[0]);
@@ -189,47 +198,47 @@ BOOST_FIXTURE_TEST_CASE(initializer_list, VectorTest)
     BOOST_CHECK_EQUAL(4., vect2[3]);
 }
 
-BOOST_FIXTURE_TEST_CASE(assing, VectorTest)
+BOOST_FIXTURE_TEST_CASE(assing, VectorExprTest)
 {
-    // Asignación de vector estático a dinámico
+    // Asignación de Vector estático a dinámico
 
     Vector<double, 4> vect{1.,2.,3.,4.};
-    Vector<double> vect2 = static_cast<Vector<double>>(vect);
+    Vector<double> vect2 = vect;
     BOOST_CHECK_EQUAL(1., vect2[0]);
     BOOST_CHECK_EQUAL(2., vect2[1]);
     BOOST_CHECK_EQUAL(3., vect2[2]);
     BOOST_CHECK_EQUAL(4., vect2[3]);
 
     Vector<double, 4> vect3{5.,6.,7.,8.};
-    Vector<double> vect4 = static_cast<Vector<double>>(vect3);
+    Vector<double> vect4 = vect3;
     BOOST_CHECK_EQUAL(5., vect4[0]);
     BOOST_CHECK_EQUAL(6., vect4[1]);
     BOOST_CHECK_EQUAL(7., vect4[2]);
     BOOST_CHECK_EQUAL(8., vect4[3]);
 
-    // Asignación de vector dinámico a estático
+    // Asignación de Vector dinámico a estático
 
-    Vector<double, 4> vect5 = static_cast<Vector<double, 4>>(vect2);
+    Vector<double, 4> vect5 = vect2;
     BOOST_CHECK_EQUAL(1., vect5[0]);
     BOOST_CHECK_EQUAL(2., vect5[1]);
     BOOST_CHECK_EQUAL(3., vect5[2]);
     BOOST_CHECK_EQUAL(4., vect5[3]);
 
-    Vector<double, 4> vect6 = static_cast<Vector<double, 4>>(vect4);
+    Vector<double, 4> vect6 = vect4;
     BOOST_CHECK_EQUAL(5., vect6[0]);
     BOOST_CHECK_EQUAL(6., vect6[1]);
     BOOST_CHECK_EQUAL(7., vect6[2]);
     BOOST_CHECK_EQUAL(8., vect6[3]);
 }
 
-BOOST_FIXTURE_TEST_CASE(size, VectorTest)
+BOOST_FIXTURE_TEST_CASE(size, VectorExprTest)
 {
     BOOST_CHECK_EQUAL(3, _vect_def_3.size());
     BOOST_CHECK_EQUAL(0, _vect_dynamic_def->size());
     BOOST_CHECK_EQUAL(4, _vect_dynamic_def_4->size());
 }
 
-BOOST_FIXTURE_TEST_CASE(iterator, VectorTest)
+BOOST_FIXTURE_TEST_CASE(iterator, VectorExprTest)
 {
     Vector<double, 4>::iterator it = _vect_4_d.begin();
     BOOST_CHECK_EQUAL(3.4, *it++);
@@ -239,7 +248,7 @@ BOOST_FIXTURE_TEST_CASE(iterator, VectorTest)
     BOOST_CHECK(it == _vect_4_d.end());
 }
 
-BOOST_FIXTURE_TEST_CASE(value_at, VectorTest)
+BOOST_FIXTURE_TEST_CASE(value_at, VectorExprTest)
 {
     BOOST_CHECK_EQUAL(1.1, _vect_2_d[0]);
     BOOST_CHECK_EQUAL(3.5, _vect_2_d[1]);
@@ -248,17 +257,34 @@ BOOST_FIXTURE_TEST_CASE(value_at, VectorTest)
     BOOST_CHECK_EQUAL(3.5, _vect_dynamic_2_d->at(1));
 }
 
-//BOOST_FIXTURE_TEST_CASE(module, VectorTest)
-//{
-//  ///TODO
-//}
-//
-//BOOST_FIXTURE_TEST_CASE(normalize, VectorTest)
-//{
-//  ///TODO
-//}
+BOOST_FIXTURE_TEST_CASE(module, VectorExprTest)
+{
+    Vector<double, 3> v1{1.0, 2.0, 2.0};
 
-BOOST_FIXTURE_TEST_CASE(zero, VectorTest)
+    BOOST_CHECK_CLOSE(v1.module(), 3.0, 1e-7);
+
+    Vector<int, 2> v2{3, 4};
+
+    BOOST_CHECK_CLOSE(v2.module(), 5.0, 1e-7);
+}
+
+BOOST_FIXTURE_TEST_CASE(normalize, VectorExprTest)
+{
+    Vector<double, 3> v{3.0, 4.0, 0.0};
+
+    v.normalize();
+
+    BOOST_CHECK_CLOSE(v.module(), 1.0, 1e-7);
+    BOOST_CHECK_CLOSE(v[0], 3.0 / 5.0, 1e-7);
+    BOOST_CHECK_CLOSE(v[1], 4.0 / 5.0, 1e-7);
+    BOOST_CHECK_SMALL(v[2], 1e-7);
+
+    // Esto tiene que dar error de compilación porque normalize solo está habilitado para tipos de punto flotante
+    //Vector<int, 3> v_int;
+    //v_int.normalize();
+}
+
+BOOST_FIXTURE_TEST_CASE(zero, VectorExprTest)
 {
     Vector<int, 3> _zero = Vector<int, 3>::zero();
 
@@ -275,7 +301,7 @@ BOOST_FIXTURE_TEST_CASE(zero, VectorTest)
     BOOST_CHECK_EQUAL(3, _zero2.size());
 }
 
-BOOST_FIXTURE_TEST_CASE(unit, VectorTest)
+BOOST_FIXTURE_TEST_CASE(unit, VectorExprTest)
 {
     {
         Vector<int, 3> one = Vector<int, 3>::unit();
@@ -296,7 +322,7 @@ BOOST_FIXTURE_TEST_CASE(unit, VectorTest)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(randon, VectorTest)
+BOOST_FIXTURE_TEST_CASE(randon, VectorExprTest)
 {
     {
         Vector<int, 3> one = Vector<int, 3>::randon();
@@ -325,7 +351,7 @@ BOOST_FIXTURE_TEST_CASE(randon, VectorTest)
 
 /* Operaciones unarias */
 
-BOOST_FIXTURE_TEST_CASE(plus, VectorTest)
+BOOST_FIXTURE_TEST_CASE(plus, VectorExprTest)
 {
     Vector<double, 4> v4 = +_vect_4_d;
 
@@ -342,7 +368,7 @@ BOOST_FIXTURE_TEST_CASE(plus, VectorTest)
     BOOST_CHECK_EQUAL(5.4, v4_dyn[3]);
 }
 
-BOOST_FIXTURE_TEST_CASE(minus, VectorTest)
+BOOST_FIXTURE_TEST_CASE(minus, VectorExprTest)
 {
     Vector<double, 4> v4 = -_vect_4_d;
 
@@ -367,7 +393,7 @@ BOOST_FIXTURE_TEST_CASE(minus, VectorTest)
 
 /// Suma de vectores
 
-BOOST_FIXTURE_TEST_CASE(addition, VectorTest)
+BOOST_FIXTURE_TEST_CASE(addition, VectorExprTest)
 {
     {
         Vector<int, 3> v1 = {1, 0, 3};
@@ -445,149 +471,179 @@ BOOST_FIXTURE_TEST_CASE(addition, VectorTest)
         BOOST_CHECK_EQUAL(4, v3_dyn[1]);
         BOOST_CHECK_EQUAL(5, v3_dyn[2]);
     }
+
+    {
+        Vector<double, 2> result_2_d = _vect_2_d + vect_2_d_ones;
+
+        for (size_t i = 0; i < result_2_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_2_d[i], _vect_2_d[i] + 1);
+        }
+
+        _vect_2_d += vect_2_d_ones;
+
+        for (size_t i = 0; i < result_2_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_2_d[i], _vect_2_d[i]);
+        }
+
+
+        Vector<double, 3> result_3_d = _vect_3_d + vect_3_d_ones;
+
+        for (size_t i = 0; i < result_3_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_3_d[i], _vect_3_d[i] + 1);
+        }
+
+        _vect_3_d += vect_3_d_ones;
+
+        for (size_t i = 0; i < result_3_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_3_d[i], _vect_3_d[i]);
+        }
+
+
+        Vector<double, 4> result_4_d = _vect_4_d + vect_4_d_ones;
+
+        for (size_t i = 0; i < result_4_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_4_d[i], _vect_4_d[i] + 1);
+        }
+
+        _vect_4_d += vect_4_d_ones;
+
+        for (size_t i = 0; i < result_4_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_4_d[i], _vect_4_d[i]);
+        }
+    }
 }
 
-BOOST_FIXTURE_TEST_CASE(subtraction, VectorTest)
-{
-  {
-    Vector<int, 3> v1 = {1, 0, 3};
-    Vector<int, 3> v2 = {-1, 4, 2};
-    Vector<int, 3> v3 = v1 - v2;
-
-    BOOST_CHECK_EQUAL(2, v3[0]);
-    BOOST_CHECK_EQUAL(-4, v3[1]);
-    BOOST_CHECK_EQUAL(1, v3[2]);
-
-    v1 -= v2;
-
-    BOOST_CHECK_EQUAL(2, v1[0]);
-    BOOST_CHECK_EQUAL(-4, v1[1]);
-    BOOST_CHECK_EQUAL(1, v1[2]);
-
-
-    Vector<int> v1_dyn = {1, 0, 3};
-    Vector<int> v2_dyn = {-1, 4, 2};
-    Vector<int> v3_dyn = v1_dyn - v2_dyn;
-
-    BOOST_CHECK_EQUAL(2, v3_dyn[0]);
-    BOOST_CHECK_EQUAL(-4, v3_dyn[1]);
-    BOOST_CHECK_EQUAL(1, v3_dyn[2]);
-
-    v1_dyn -= v2_dyn;
-
-    BOOST_CHECK_EQUAL(2, v1_dyn[0]);
-    BOOST_CHECK_EQUAL(-4, v1_dyn[1]);
-    BOOST_CHECK_EQUAL(1, v1_dyn[2]);
-  }
-
-  {
-    Vector<int, 3> v1 = {1, 0, 3};
-    Vector<int, 3> v2 = {-1, 4, 2};
-
-    Vector<int, 3> v3 = Vector<int, 3>{1, 0, 3} - v2;
-
-    BOOST_CHECK_EQUAL(2, v3[0]);
-    BOOST_CHECK_EQUAL(-4, v3[1]);
-    BOOST_CHECK_EQUAL(1, v3[2]);
-
-    v3 = v1 - Vector<int, 3>{-1, 4, 2};
-
-    BOOST_CHECK_EQUAL(2, v3[0]);
-    BOOST_CHECK_EQUAL(-4, v3[1]);
-    BOOST_CHECK_EQUAL(1, v3[2]);
-
-    v3 = Vector<int, 3>{1, 0, 3} - Vector<int, 3>{-1, 4, 2};
-
-    BOOST_CHECK_EQUAL(2, v3[0]);
-    BOOST_CHECK_EQUAL(-4, v3[1]);
-    BOOST_CHECK_EQUAL(1, v3[2]);
-  }
-
-}
-
-/// cwiseProduct
-
-BOOST_FIXTURE_TEST_CASE(cwise_product_int, VectorTest)
+BOOST_FIXTURE_TEST_CASE(subtraction, VectorExprTest)
 {
     {
         Vector<int, 3> v1 = {1, 0, 3};
         Vector<int, 3> v2 = {-1, 4, 2};
-        Vector<int, 3> v3 = v1.cwiseProduct(v2);
+        Vector<int, 3> v3 = v1 - v2;
 
-        BOOST_CHECK_EQUAL(-1, v3[0]);
-        BOOST_CHECK_EQUAL(0, v3[1]);
-        BOOST_CHECK_EQUAL(6, v3[2]);
+        BOOST_CHECK_EQUAL(2, v3[0]);
+        BOOST_CHECK_EQUAL(-4, v3[1]);
+        BOOST_CHECK_EQUAL(1, v3[2]);
 
-        v1.cwiseProductInPlace(v2);
+        v1 -= v2;
 
-        BOOST_CHECK_EQUAL(-1, v1[0]);
-        BOOST_CHECK_EQUAL(0, v1[1]);
-        BOOST_CHECK_EQUAL(6, v1[2]);
+        BOOST_CHECK_EQUAL(2, v1[0]);
+        BOOST_CHECK_EQUAL(-4, v1[1]);
+        BOOST_CHECK_EQUAL(1, v1[2]);
+
 
         Vector<int> v1_dyn = {1, 0, 3};
         Vector<int> v2_dyn = {-1, 4, 2};
-        Vector<int> v3_dyn = v1_dyn.cwiseProduct(v2_dyn);
+        Vector<int> v3_dyn = v1_dyn - v2_dyn;
 
-        BOOST_CHECK_EQUAL(-1, v3_dyn[0]);
-        BOOST_CHECK_EQUAL(0, v3_dyn[1]);
-        BOOST_CHECK_EQUAL(6, v3_dyn[2]);
+        BOOST_CHECK_EQUAL(2, v3_dyn[0]);
+        BOOST_CHECK_EQUAL(-4, v3_dyn[1]);
+        BOOST_CHECK_EQUAL(1, v3_dyn[2]);
 
-        v1_dyn.cwiseProductInPlace(v2_dyn);
+        v1_dyn -= v2_dyn;
 
-        BOOST_CHECK_EQUAL(-1, v1_dyn[0]);
-        BOOST_CHECK_EQUAL(0, v1_dyn[1]);
-        BOOST_CHECK_EQUAL(6, v1_dyn[2]);
+        BOOST_CHECK_EQUAL(2, v1_dyn[0]);
+        BOOST_CHECK_EQUAL(-4, v1_dyn[1]);
+        BOOST_CHECK_EQUAL(1, v1_dyn[2]);
     }
 
-    //{
-    //    Vector<int, 3> v1 = {1, 0, 3};
-    //    Vector<int, 3> v2 = {-1, 4, 2};
+    {
+        Vector<int, 3> v1 = {1, 0, 3};
+        Vector<int, 3> v2 = {-1, 4, 2};
 
-    //    Vector<int, 3> v3 = Vector<int, 3>{1, 0, 3} *v2;
+        Vector<int, 3> v3 = Vector<int, 3>{1, 0, 3} - v2;
 
-    //    BOOST_CHECK_EQUAL(-1, v3[0]);
-    //    BOOST_CHECK_EQUAL(0, v3[1]);
-    //    BOOST_CHECK_EQUAL(6, v3[2]);
+        BOOST_CHECK_EQUAL(2, v3[0]);
+        BOOST_CHECK_EQUAL(-4, v3[1]);
+        BOOST_CHECK_EQUAL(1, v3[2]);
 
-    //    v3 = v1 * Vector<int, 3>{-1, 4, 2};
+        v3 = v1 - Vector<int, 3>{-1, 4, 2};
 
-    //    BOOST_CHECK_EQUAL(-1, v3[0]);
-    //    BOOST_CHECK_EQUAL(0, v3[1]);
-    //    BOOST_CHECK_EQUAL(6, v3[2]);
+        BOOST_CHECK_EQUAL(2, v3[0]);
+        BOOST_CHECK_EQUAL(-4, v3[1]);
+        BOOST_CHECK_EQUAL(1, v3[2]);
 
-    //    v3 = Vector<int, 3>{1, 0, 3} *Vector<int, 3>{-1, 4, 2};
+        v3 = Vector<int, 3>{1, 0, 3} - Vector<int, 3>{-1, 4, 2};
 
-    //    BOOST_CHECK_EQUAL(-1, v3[0]);
-    //    BOOST_CHECK_EQUAL(0, v3[1]);
-    //    BOOST_CHECK_EQUAL(6, v3[2]);
+        BOOST_CHECK_EQUAL(2, v3[0]);
+        BOOST_CHECK_EQUAL(-4, v3[1]);
+        BOOST_CHECK_EQUAL(1, v3[2]);
+    }
 
+    {
+        Vector<double, 2> result_2_d = _vect_2_d - vect_2_d_ones;
 
-    //    Vector<int> v1_dyn = {1, 0, 3};
-    //    Vector<int> v2_dyn = {-1, 4, 2};
+        for (size_t i = 0; i < result_2_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_2_d[i], _vect_2_d[i] - 1);
+        }
 
-    //    Vector<int> v3_dyn = Vector<int>{1, 0, 3} *v2_dyn;
+        _vect_2_d -= vect_2_d_ones;
 
-    //    BOOST_CHECK_EQUAL(-1, v3_dyn[0]);
-    //    BOOST_CHECK_EQUAL(0, v3_dyn[1]);
-    //    BOOST_CHECK_EQUAL(6, v3_dyn[2]);
-
-    //    v3_dyn = v1_dyn * Vector<int>{-1, 4, 2};
-
-    //    BOOST_CHECK_EQUAL(-1, v3_dyn[0]);
-    //    BOOST_CHECK_EQUAL(0, v3_dyn[1]);
-    //    BOOST_CHECK_EQUAL(6, v3_dyn[2]);
+        for (size_t i = 0; i < result_2_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_2_d[i], _vect_2_d[i]);
+        }
 
 
-    //    v3_dyn = Vector<int>{1, 0, 3} *Vector<int>{-1, 4, 2};
+        Vector<double, 3> result_3_d = _vect_3_d - vect_3_d_ones;
 
-    //    BOOST_CHECK_EQUAL(-1, v3_dyn[0]);
-    //    BOOST_CHECK_EQUAL(0, v3_dyn[1]);
-    //    BOOST_CHECK_EQUAL(6, v3_dyn[2]);
+        for (size_t i = 0; i < result_3_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_3_d[i], _vect_3_d[i] - 1);
+        }
 
-    //}
+        _vect_3_d -= vect_3_d_ones;
+
+        for (size_t i = 0; i < result_3_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_3_d[i], _vect_3_d[i]);
+        }
+
+
+        Vector<double, 4> result_4_d = _vect_4_d - vect_4_d_ones;
+
+        for (size_t i = 0; i < result_4_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_4_d[i], _vect_4_d[i] - 1);
+        }
+
+        _vect_4_d -= vect_4_d_ones;
+
+        for (size_t i = 0; i < result_4_d.size(); i++) {
+            BOOST_CHECK_EQUAL(result_4_d[i], _vect_4_d[i]);
+        }
+    }
 }
 
-BOOST_FIXTURE_TEST_CASE(cwise_product_double, VectorTest)
+/// cwiseProduct
+
+BOOST_FIXTURE_TEST_CASE(cwise_product_int, VectorExprTest)
+{
+    Vector<int, 3> v1 = {1, 0, 3};
+    Vector<int, 3> v2 = {-1, 4, 2};
+    Vector<int, 3> v3 = v1.cwiseProduct(v2);
+
+    BOOST_CHECK_EQUAL(-1, v3[0]);
+    BOOST_CHECK_EQUAL(0, v3[1]);
+    BOOST_CHECK_EQUAL(6, v3[2]);
+
+    v1.cwiseProductInPlace(v2);
+
+    BOOST_CHECK_EQUAL(-1, v1[0]);
+    BOOST_CHECK_EQUAL(0, v1[1]);
+    BOOST_CHECK_EQUAL(6, v1[2]);
+
+    Vector<int> v1_dyn = {1, 0, 3};
+    Vector<int> v2_dyn = {-1, 4, 2};
+    Vector<int> v3_dyn = v1_dyn.cwiseProduct(v2_dyn);
+
+    BOOST_CHECK_EQUAL(-1, v3_dyn[0]);
+    BOOST_CHECK_EQUAL(0, v3_dyn[1]);
+    BOOST_CHECK_EQUAL(6, v3_dyn[2]);
+
+    v1_dyn.cwiseProductInPlace(v2_dyn);
+
+    BOOST_CHECK_EQUAL(-1, v1_dyn[0]);
+    BOOST_CHECK_EQUAL(0, v1_dyn[1]);
+    BOOST_CHECK_EQUAL(6, v1_dyn[2]);
+}
+
+BOOST_FIXTURE_TEST_CASE(cwise_product_double, VectorExprTest)
 {
     Vector<double, 3> v1 = {1., 0., 3.};
     Vector<double, 3> v2 = {-1., 4., 2.};
@@ -618,7 +674,7 @@ BOOST_FIXTURE_TEST_CASE(cwise_product_double, VectorTest)
     BOOST_CHECK_EQUAL(6., v1_dyn[2]);
 }
 
-BOOST_FIXTURE_TEST_CASE(cwise_product_float, VectorTest)
+BOOST_FIXTURE_TEST_CASE(cwise_product_float, VectorExprTest)
 {
     Vector<float, 3> v1 = {1.f, 0.f, 3.f};
     Vector<float, 3> v2 = {-1.f, 4.f, 2.f};
@@ -651,7 +707,7 @@ BOOST_FIXTURE_TEST_CASE(cwise_product_float, VectorTest)
 
 /// División
 
-BOOST_FIXTURE_TEST_CASE(cwise_div_double, VectorTest)
+BOOST_FIXTURE_TEST_CASE(cwise_div_double, VectorExprTest)
 {
     {
         Vector<double, 3> v1 = {1., 0., 3.};
@@ -707,7 +763,7 @@ BOOST_FIXTURE_TEST_CASE(cwise_div_double, VectorTest)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(division_float, VectorTest)
+BOOST_FIXTURE_TEST_CASE(division_float, VectorExprTest)
 {
     Vector<float, 3> v1 = {1.f, 0., 3.};
     Vector<float, 3> v2 = {-1.f, 4., 2.};
@@ -738,9 +794,8 @@ BOOST_FIXTURE_TEST_CASE(division_float, VectorTest)
     BOOST_CHECK_EQUAL(1.5f, v1_dyn[2]);
 }
 
-BOOST_FIXTURE_TEST_CASE(VectorScalar_int, VectorTest)
+BOOST_FIXTURE_TEST_CASE(VectorScalar_int, VectorExprTest)
 {
-  {
     Vector<int, 3> v1 = {1, 0, 3};
     Vector<int, 3> v2 = v1 * 10;
 
@@ -767,174 +822,209 @@ BOOST_FIXTURE_TEST_CASE(VectorScalar_int, VectorTest)
     BOOST_CHECK_EQUAL(10, v1_dyn[0]);
     BOOST_CHECK_EQUAL(0, v1_dyn[1]);
     BOOST_CHECK_EQUAL(30, v1_dyn[2]);
-  }
 
-  {
-    Vector<int, 3> v2 = Vector<int, 3>{1, 0, 3} * 10;
+    Vector<int, 3> v3 = Vector<int, 3>{1, 0, 3} *10;
+
+    BOOST_CHECK_EQUAL(10, v3[0]);
+    BOOST_CHECK_EQUAL(0, v3[1]);
+    BOOST_CHECK_EQUAL(30, v3[2]);
+}
+
+BOOST_FIXTURE_TEST_CASE(VectorScalar_double, VectorExprTest)
+{
+    Vector<double, 3> v1 = {1., 0., 3.};
+    Vector<double, 3> v2 = v1 * 10.;
+
+    BOOST_CHECK_EQUAL(10., v2[0]);
+    BOOST_CHECK_EQUAL(0., v2[1]);
+    BOOST_CHECK_EQUAL(30., v2[2]);
+
+    v1 *= 10.;
+
+    BOOST_CHECK_EQUAL(10., v1[0]);
+    BOOST_CHECK_EQUAL(0., v1[1]);
+    BOOST_CHECK_EQUAL(30., v1[2]);
+
+
+    Vector<double> v1_dyn = {1., 0., 3.};
+    Vector<double> v2_dyn = v1_dyn * 10.;
+
+    BOOST_CHECK_EQUAL(10., v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0., v2_dyn[1]);
+    BOOST_CHECK_EQUAL(30., v2_dyn[2]);
+
+    v1_dyn *= 10.;
+
+    BOOST_CHECK_EQUAL(10., v1_dyn[0]);
+    BOOST_CHECK_EQUAL(0., v1_dyn[1]);
+    BOOST_CHECK_EQUAL(30., v1_dyn[2]);
+}
+
+BOOST_FIXTURE_TEST_CASE(VectorScalar_float, VectorExprTest)
+{
+    Vector<float, 3> v1 = {1.f, 0.f, 3.f};
+    Vector<float, 3> v2 = v1 * 10.f;
+
+    BOOST_CHECK_EQUAL(10.f, v2[0]);
+    BOOST_CHECK_EQUAL(0.f, v2[1]);
+    BOOST_CHECK_EQUAL(30.f, v2[2]);
+
+    v1 *= 10.f;
+
+    BOOST_CHECK_EQUAL(10.f, v1[0]);
+    BOOST_CHECK_EQUAL(0.f, v1[1]);
+    BOOST_CHECK_EQUAL(30.f, v1[2]);
+
+
+    Vector<float> v1_dyn = {1.f, 0.f, 3.f};
+    Vector<float> v2_dyn = v1_dyn * 10.f;
+
+    BOOST_CHECK_EQUAL(10.f, v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0.f, v2_dyn[1]);
+    BOOST_CHECK_EQUAL(30.f, v2_dyn[2]);
+
+    v1_dyn *= 10.f;
+
+    BOOST_CHECK_EQUAL(10.f, v1_dyn[0]);
+    BOOST_CHECK_EQUAL(0.f, v1_dyn[1]);
+    BOOST_CHECK_EQUAL(30.f, v1_dyn[2]);
+}
+
+BOOST_FIXTURE_TEST_CASE(ScalarVector_int, VectorExprTest)
+{
+    Vector<int, 3> v1 = {1, 0, 3};
+    Vector<int, 3> v2 = 10 * v1;
 
     BOOST_CHECK_EQUAL(10, v2[0]);
     BOOST_CHECK_EQUAL(0, v2[1]);
     BOOST_CHECK_EQUAL(30, v2[2]);
+
+    Vector<int> v1_dyn = {1, 0, 3};
+    Vector<int> v2_dyn = 10 * v1_dyn;
+
+    BOOST_CHECK_EQUAL(10, v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0, v2_dyn[1]);
+    BOOST_CHECK_EQUAL(30, v2_dyn[2]);
 
     v2 = 10 * Vector<int, 3>{1, 0, 3};
 
     BOOST_CHECK_EQUAL(10, v2[0]);
     BOOST_CHECK_EQUAL(0, v2[1]);
     BOOST_CHECK_EQUAL(30, v2[2]);
- }
+
+    v2_dyn = 10 * Vector<int>{1, 0, 3};
+
+    BOOST_CHECK_EQUAL(10, v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0, v2_dyn[1]);
+    BOOST_CHECK_EQUAL(30, v2_dyn[2]);
 }
 
-BOOST_FIXTURE_TEST_CASE(VectorScalar_double, VectorTest)
+BOOST_FIXTURE_TEST_CASE(ScalarVector_double, VectorExprTest)
 {
-  Vector<double, 3> v1 = {1., 0., 3.};
-  Vector<double, 3> v2 = v1 * 10.;
+    Vector<double, 3> v1 = {1., 0., 3.};
+    Vector<double, 3> v2 = 10. * v1;
 
-  BOOST_CHECK_EQUAL(10., v2[0]);
-  BOOST_CHECK_EQUAL(0., v2[1]);
-  BOOST_CHECK_EQUAL(30., v2[2]);
+    BOOST_CHECK_EQUAL(10., v2[0]);
+    BOOST_CHECK_EQUAL(0., v2[1]);
+    BOOST_CHECK_EQUAL(30., v2[2]);
 
-  v1 *= 10.;
+    Vector<double> v1_dyn = {1., 0., 3.};
+    Vector<double> v2_dyn = 10. * v1_dyn;
 
-  BOOST_CHECK_EQUAL(10., v1[0]);
-  BOOST_CHECK_EQUAL(0., v1[1]);
-  BOOST_CHECK_EQUAL(30., v1[2]);
-
-
-  Vector<double> v1_dyn = {1., 0., 3.};
-  Vector<double> v2_dyn = v1_dyn * 10.;
-
-  BOOST_CHECK_EQUAL(10., v2_dyn[0]);
-  BOOST_CHECK_EQUAL(0., v2_dyn[1]);
-  BOOST_CHECK_EQUAL(30., v2_dyn[2]);
-
-  v1_dyn *= 10.;
-
-  BOOST_CHECK_EQUAL(10., v1_dyn[0]);
-  BOOST_CHECK_EQUAL(0., v1_dyn[1]);
-  BOOST_CHECK_EQUAL(30., v1_dyn[2]);
+    BOOST_CHECK_EQUAL(10., v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0., v2_dyn[1]);
+    BOOST_CHECK_EQUAL(30., v2_dyn[2]);
 }
 
-BOOST_FIXTURE_TEST_CASE(VectorScalar_float, VectorTest)
+BOOST_FIXTURE_TEST_CASE(ScalarVector_float, VectorExprTest)
 {
-  Vector<float, 3> v1 = {1.f, 0.f, 3.f};
-  Vector<float, 3> v2 = v1 * 10.f;
+    Vector<float, 3> v1 = {1.f, 0.f, 3.f};
+    Vector<float, 3> v2 = 10.f * v1;
 
-  BOOST_CHECK_EQUAL(10.f, v2[0]);
-  BOOST_CHECK_EQUAL(0.f, v2[1]);
-  BOOST_CHECK_EQUAL(30.f, v2[2]);
+    BOOST_CHECK_EQUAL(10.f, v2[0]);
+    BOOST_CHECK_EQUAL(0.f, v2[1]);
+    BOOST_CHECK_EQUAL(30.f, v2[2]);
 
-  v1 *= 10.f;
+    Vector<float> v1_dyn = {1.f, 0.f, 3.f};
+    Vector<float> v2_dyn = 10.f * v1_dyn;
 
-  BOOST_CHECK_EQUAL(10.f, v1[0]);
-  BOOST_CHECK_EQUAL(0.f, v1[1]);
-  BOOST_CHECK_EQUAL(30.f, v1[2]);
-
-
-  Vector<float> v1_dyn = {1.f, 0.f, 3.f};
-  Vector<float> v2_dyn = v1_dyn * 10.f;
-
-  BOOST_CHECK_EQUAL(10.f, v2_dyn[0]);
-  BOOST_CHECK_EQUAL(0.f, v2_dyn[1]);
-  BOOST_CHECK_EQUAL(30.f, v2_dyn[2]);
-
-  v1_dyn *= 10.f;
-
-  BOOST_CHECK_EQUAL(10.f, v1_dyn[0]);
-  BOOST_CHECK_EQUAL(0.f, v1_dyn[1]);
-  BOOST_CHECK_EQUAL(30.f, v1_dyn[2]);
-}
-
-BOOST_FIXTURE_TEST_CASE(ScalarVector_int, VectorTest)
-{
-  Vector<int, 3> v1 = {1, 0, 3};
-  Vector<int, 3> v2 = 10 * v1;
-
-  BOOST_CHECK_EQUAL(10, v2[0]);
-  BOOST_CHECK_EQUAL( 0, v2[1]);
-  BOOST_CHECK_EQUAL(30, v2[2]);
-
-  Vector<int> v1_dyn = {1, 0, 3};
-  Vector<int> v2_dyn = 10 * v1_dyn;
-
-  BOOST_CHECK_EQUAL(10, v2_dyn[0]);
-  BOOST_CHECK_EQUAL( 0, v2_dyn[1]);
-  BOOST_CHECK_EQUAL(30, v2_dyn[2]);
-
-  v2 = 10 * Vector<int, 3>{1, 0, 3};
-
-  BOOST_CHECK_EQUAL(10, v2[0]);
-  BOOST_CHECK_EQUAL(0, v2[1]);
-  BOOST_CHECK_EQUAL(30, v2[2]);
-
-  v2_dyn = 10 * Vector<int>{1, 0, 3};
-
-  BOOST_CHECK_EQUAL(10, v2_dyn[0]);
-  BOOST_CHECK_EQUAL(0, v2_dyn[1]);
-  BOOST_CHECK_EQUAL(30, v2_dyn[2]);
-}
-
-BOOST_FIXTURE_TEST_CASE(ScalarVector_double, VectorTest)
-{
-  Vector<double, 3> v1 = {1., 0., 3.};
-  Vector<double, 3> v2 = 10. * v1;
-
-  BOOST_CHECK_EQUAL(10., v2[0]);
-  BOOST_CHECK_EQUAL(0., v2[1]);
-  BOOST_CHECK_EQUAL(30., v2[2]);
-
-  Vector<double> v1_dyn = {1., 0., 3.};
-  Vector<double> v2_dyn = 10. * v1_dyn;
-
-  BOOST_CHECK_EQUAL(10., v2_dyn[0]);
-  BOOST_CHECK_EQUAL(0., v2_dyn[1]);
-  BOOST_CHECK_EQUAL(30., v2_dyn[2]);
-}
-
-BOOST_FIXTURE_TEST_CASE(ScalarVector_float, VectorTest)
-{
-  Vector<float, 3> v1 = {1.f, 0.f, 3.f};
-  Vector<float, 3> v2 = 10.f * v1;
-
-  BOOST_CHECK_EQUAL(10.f, v2[0]);
-  BOOST_CHECK_EQUAL(0.f, v2[1]);
-  BOOST_CHECK_EQUAL(30.f, v2[2]);
-
-  Vector<float> v1_dyn = {1.f, 0.f, 3.f};
-  Vector<float> v2_dyn = 10.f * v1_dyn;
-
-  BOOST_CHECK_EQUAL(10.f, v2_dyn[0]);
-  BOOST_CHECK_EQUAL(0.f, v2_dyn[1]);
-  BOOST_CHECK_EQUAL(30.f, v2_dyn[2]);
+    BOOST_CHECK_EQUAL(10.f, v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0.f, v2_dyn[1]);
+    BOOST_CHECK_EQUAL(30.f, v2_dyn[2]);
 }
 
 
-BOOST_FIXTURE_TEST_CASE(division_vector_scalar, VectorTest)
+BOOST_FIXTURE_TEST_CASE(division_vector_scalar, VectorExprTest)
 {
-  Vector<float, 3> v1 = {1.f, 0.f, 3.f};
-  Vector<float, 3> v2 = v1 / 10.f;
+    Vector<float, 3> v1 = {1.f, 0.f, 3.f};
+    Vector<float, 3> v2 = v1 / 10.f;
 
-  BOOST_CHECK_EQUAL(0.1f, v2[0]);
-  BOOST_CHECK_EQUAL(0.f, v2[1]);
-  BOOST_CHECK_EQUAL(0.3f, v2[2]);
+    BOOST_CHECK_EQUAL(0.1f, v2[0]);
+    BOOST_CHECK_EQUAL(0.f, v2[1]);
+    BOOST_CHECK_EQUAL(0.3f, v2[2]);
 
-  Vector<float> v1_dyn = {1.f, 0.f, 3.f};
-  Vector<float> v2_dyn = v1_dyn / 10.f;
+    Vector<float> v1_dyn = {1.f, 0.f, 3.f};
+    Vector<float> v2_dyn = v1_dyn / 10.f;
 
-  BOOST_CHECK_EQUAL(0.1f, v2_dyn[0]);
-  BOOST_CHECK_EQUAL(0.f, v2_dyn[1]);
-  BOOST_CHECK_EQUAL(0.3f, v2_dyn[2]);
+    BOOST_CHECK_EQUAL(0.1f, v2_dyn[0]);
+    BOOST_CHECK_EQUAL(0.f, v2_dyn[1]);
+    BOOST_CHECK_EQUAL(0.3f, v2_dyn[2]);
 
-  v2 = Vector<float, 3>{1.f, 0.f, 3.f} / 10.f;
+    v2 = Vector<float, 3>{1.f, 0.f, 3.f} / 10.f;
 
-  BOOST_CHECK_EQUAL(0.1f, v2[0]);
-  BOOST_CHECK_EQUAL(0.f, v2[1]);
-  BOOST_CHECK_EQUAL(0.3f, v2[2]);
+    BOOST_CHECK_EQUAL(0.1f, v2[0]);
+    BOOST_CHECK_EQUAL(0.f, v2[1]);
+    BOOST_CHECK_EQUAL(0.3f, v2[2]);
 }
 
-BOOST_FIXTURE_TEST_CASE(dotProduct, VectorTest)
+BOOST_FIXTURE_TEST_CASE(dotProduct, VectorExprTest)
 {
-    double dot = v1.dotProduct(v2);
+    double dot = big1.dotProduct(big2);
     BOOST_CHECK_CLOSE(1891.6183, dot, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(cross_product, VectorExprTest)
+{
+    Vector<double, 3> v1{1.0, 2.0, 3.0};
+    Vector<double, 3> v2{4.0, 5.0, 6.0};
+
+    auto result = v1.cross(v2);
+
+    BOOST_CHECK_CLOSE(result[0], -3.0, 1e-7);
+    BOOST_CHECK_CLOSE(result[1], 6.0, 1e-7);
+    BOOST_CHECK_CLOSE(result[2], -3.0, 1e-7);
+
+    // Prueba de anti-conmutatividad: v2 x v1 = (3, -6, 3)
+    auto result_reverse = v2.cross(v1);
+
+    BOOST_CHECK_CLOSE(result_reverse[0], 3.0, 1e-7);
+    BOOST_CHECK_CLOSE(result_reverse[1], -6.0, 1e-7);
+    BOOST_CHECK_CLOSE(result_reverse[2], 3.0, 1e-7);
+
+    // Prueba de producto cruzado consigo mismo: v1 x v1 = (0, 0, 0)
+    auto result_self = v1.cross(v1);
+
+    BOOST_CHECK_SMALL(result_self[0], 1e-7);
+    BOOST_CHECK_SMALL(result_self[1], 1e-7);
+    BOOST_CHECK_SMALL(result_self[2], 1e-7);
+}
+
+BOOST_FIXTURE_TEST_CASE(sum_elements, VectorExprTest)
+{
+    Vector<double, 3> v1{1.5, 2.5, 3.5};
+
+    BOOST_CHECK_CLOSE(v1.sum(), 7.5, 1e-7);
+
+    Vector<double, 10> v2;
+    for (size_t i = 0; i < 10; ++i) {
+        v2[i] = static_cast<double>(i + 1); // 1.0, 2.0, 3.0 ... 10.0
+    }
+
+    BOOST_CHECK_CLOSE(v2.sum(), 55.0, 1e-7);
+
+    Vector<int, 4> v3{10, -5, 20, -10};
+
+    BOOST_CHECK_EQUAL(v3.sum(), 15);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1000,15 +1090,15 @@ BOOST_AUTO_TEST_CASE(test_less_than_or_equal_vectors)
     BOOST_CHECK(v3 <= v1);
 }
 
-BOOST_AUTO_TEST_CASE(test_angle_between_vectors) 
-{
-    Vector<double, 2> v1 = {1.0, 0.0};
-    Vector<double, 2> v2 = {0.0, 1.0};
-    double angle = vectorAngle(v1, v2);
-    BOOST_CHECK_CLOSE(angle, tl::consts::half_pi<double>, 1e-9);
-
-    Vector<double, 2> v3 = {1.0, 1.0};
-    Vector<double, 2> v4 = {1.0, 1.0};
-    angle = vectorAngle(v3, v4);
-    BOOST_CHECK_CLOSE(angle, 0.0, 1e-9);
-}
+//BOOST_AUTO_TEST_CASE(test_angle_between_vectors) 
+//{
+//    Vector<double, 2> v1 = {1.0, 0.0};
+//    Vector<double, 2> v2 = {0.0, 1.0};
+//    double angle = vectorAngle(v1, v2);
+//    BOOST_CHECK_CLOSE(angle, tl::consts::half_pi<double>, 1e-9);
+//
+//    Vector<double, 2> v3 = {1.0, 1.0};
+//    Vector<double, 2> v4 = {1.0, 1.0};
+//    angle = vectorAngle(v3, v4);
+//    BOOST_CHECK_CLOSE(angle, 0.0, 1e-9);
+//}

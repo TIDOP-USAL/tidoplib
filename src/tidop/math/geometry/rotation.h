@@ -26,8 +26,8 @@
 
 #include <vector>
 
-#include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/algebra/decomp/svd.h"
 #include "tidop/math/algebra/rotations/rotation_convert.h"
 #include "tidop/math/algebra/rotations/euler_angles.h"
@@ -529,8 +529,8 @@ auto Rotation<T, Dim>::transform(const Point<T> &point) const -> Point<T>
 {
     static_assert(dimensions == 2, "Transformation not allowed for 2D points");
 
-    return Point<T>(point.x * rotation(0, 0) + point.y * rotation(0, 1),
-                    point.x * rotation(1, 0) + point.y * rotation(1, 1));
+    return Point<T>(point.x() * rotation(0, 0) + point.y() * rotation(0, 1),
+                    point.x() * rotation(1, 0) + point.y() * rotation(1, 1));
 }
 
 template<typename T, size_t Dim>
@@ -538,9 +538,9 @@ auto Rotation<T, Dim>::transform(const Point3<T> &point) const -> Point3<T>
 {
     static_assert(dimensions == 3, "Transformation not allowed for 3D points");
 
-    return Point3<T>(rotation(0, 0) * point.x + rotation(0, 1) * point.y + rotation(0, 2) * point.z,
-                     rotation(1, 0) * point.x + rotation(1, 1) * point.y + rotation(1, 2) * point.z,
-                     rotation(2, 0) * point.x + rotation(2, 1) * point.y + rotation(2, 2) * point.z);
+    return Point3<T>(rotation(0, 0) * point.x() + rotation(0, 1) * point.y() + rotation(0, 2) * point.z(),
+                     rotation(1, 0) * point.x() + rotation(1, 1) * point.y() + rotation(1, 2) * point.z(),
+                     rotation(2, 0) * point.x() + rotation(2, 1) * point.y() + rotation(2, 2) * point.z());
 }
 
 template<typename T, size_t Dim>
@@ -668,11 +668,11 @@ auto RotationEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src,
     Matrix<T> dst_mat(dst.size(), dimensions);
 
     for (size_t r = 0; r < src_mat.rows(); r++) {
-        src_mat[r][0] = src[r].x;
-        src_mat[r][1] = src[r].y;
+        src_mat[r][0] = src[r].x();
+        src_mat[r][1] = src[r].y();
 
-        dst_mat[r][0] = dst[r].x;
-        dst_mat[r][1] = dst[r].y;
+        dst_mat[r][0] = dst[r].x();
+        dst_mat[r][1] = dst[r].y();
     }
 
     return RotationEstimator<T, dimensions>::estimate(src_mat, dst_mat);

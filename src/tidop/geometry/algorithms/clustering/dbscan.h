@@ -26,7 +26,7 @@
 
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/algorithms/measurement/Distance.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/geometry/spatial/index/KdTree.h"
 
 #include <map>
@@ -161,18 +161,16 @@ public:
  * Implementación optimizada usando KD-Tree para búsqueda eficiente de vecinos.
  * Compatible con cualquier tipo que herede de VectorBase (Point, Vector, etc.).
  *
- * @tparam Entity_t Tipo de entidad (Point<T>, Vector<T>, etc.)
+ * @tparam Point_t Tipo de entidad (Point<T>, Vector<T>, etc.)
  */
-template<typename Entity_t>
+template<typename Point_t>
 class Dbscan2 
 {
-    static_assert(is_point<Entity_t>::value || is_vector<Entity_t>::value,
-                  "Dbscan can only be instantiated with point-like entities (Point, Vector, etc.)");
 
 public:
 
-    using PointType = Entity_t;
-    using T = typename VectorTraits<Entity_t>::value_type;
+    using PointType = Point_t;
+    using T = typename point_traits<Point_t>::value_type;
     using Labels = std::vector<int>;
 
     struct Config 
@@ -229,7 +227,7 @@ public:
     /**
      * @brief Ejecutar DBSCAN en un conjunto de puntos
      */
-    auto fit(const std::vector<Entity_t> &points) -> Result
+    auto fit(const std::vector<Point_t> &points) -> Result
     {
         const size_t n = points.size();
         Result result;
@@ -241,9 +239,9 @@ public:
         int current_cluster = -1;
 
         // Prepara KD-Tree si es necesario
-        std::unique_ptr<StaticKdTree<Entity_t>> kdtree;
+        std::unique_ptr<StaticKdTree<Point_t>> kdtree;
         if (m_use_kdtree && n > 100) {  // Umbral para usar KD-Tree
-            kdtree = std::make_unique<StaticKdTree<Entity_t>>(points);
+            kdtree = std::make_unique<StaticKdTree<Point_t>>(points);
         }
 
         // Primera pasada: identificar core points
@@ -293,10 +291,10 @@ public:
     /**
      * @brief Obtener clusters como grupos de puntos
      */
-    auto getClusters(const std::vector<Entity_t> &points,
-                     const Result &result) const -> std::vector<std::vector<Entity_t>>
+    auto getClusters(const std::vector<Point_t> &points,
+                     const Result &result) const -> std::vector<std::vector<Point_t>>
     {
-        std::vector<std::vector<Entity_t>> clusters(result.n_clusters);
+        std::vector<std::vector<Point_t>> clusters(result.n_clusters);
 
         for (size_t i = 0; i < points.size(); ++i) {
             int label = result.labels[i];
@@ -326,7 +324,7 @@ public:
         return clusters;
     }
 
-    auto getClusterStats(const std::vector<Entity_t> &points,
+    auto getClusterStats(const std::vector<Point_t> &points,
                          const Result &result) const -> std::vector<ClusterStats>
     {
         std::vector<ClusterStats> stats(result.n_clusters);
@@ -362,11 +360,11 @@ public:
 private:
 
     // Búsqueda lineal de vecinos (para cuando no se usa KD-Tree)
-    auto linearRegionQuery(const std::vector<Entity_t> &points,
+    auto linearRegionQuery(const std::vector<Point_t> &points,
                            size_t query_idx) const -> std::vector<size_t>
     {
         std::vector<size_t> neighbors;
-        const Entity_t &query_point = points[query_idx];
+        const Point_t &query_point = points[query_idx];
 
         for (size_t i = 0; i < points.size(); ++i) {
             if (i == query_idx) continue;
@@ -380,9 +378,9 @@ private:
     }
 
     // Búsqueda de vecinos usando KD-Tree o lineal
-    auto regionQuery(const std::vector<Entity_t> &points,
+    auto regionQuery(const std::vector<Point_t> &points,
                      size_t query_idx,
-                     const std::unique_ptr<StaticKdTree<Entity_t>> &kdtree) const -> std::vector<size_t> 
+                     const std::unique_ptr<StaticKdTree<Point_t>> &kdtree) const -> std::vector<size_t> 
     {
         if (kdtree) {
             return kdtree->radiusSearch(points[query_idx], m_eps);
@@ -394,11 +392,11 @@ private:
     // Expansión de cluster (iterativa para evitar desbordamiento de pila)
     void expandCluster(size_t seed_idx,
                        int cluster_id,
-                       const std::vector<Entity_t> &points,
+                       const std::vector<Point_t> &points,
                        std::vector<int> &labels,
                        std::vector<bool> &visited,
                        std::vector<bool> &is_core,
-                       const std::unique_ptr<StaticKdTree<Entity_t>> &kdtree)
+                       const std::unique_ptr<StaticKdTree<Point_t>> &kdtree)
     {
         std::queue<size_t> queue;
         queue.push(seed_idx);
@@ -435,20 +433,20 @@ private:
 /**
  * @brief DBSCAN optimizado con configuración automática
  */
-template<typename Entity_t>
+template<typename Point_t>
 class DbscanAuto 
-  : public Dbscan<Entity_t>
+  : public Dbscan<Point_t>
 {
 
 public:
 
-    using Base = Dbscan<Entity_t>;
+    using Base = Dbscan<Point_t>;
     using PointType = typename Base::PointType;
 
     /**
      * @brief Estimar parámetros óptimos usando heurística k-distancia
      */
-    static typename Base::Config estimateParameters(const std::vector<Entity_t> &points,
+    static typename Base::Config estimateParameters(const std::vector<Point_t> &points,
                                                     size_t k = 5,                   // k para k-NN distance
                                                     double percentile = 0.95)       // Percentil para seleccionar eps
     {
@@ -478,7 +476,7 @@ public:
     /**
      * @brief Constructor con parámetros automáticos
      */
-    DbscanAuto(const std::vector<Entity_t> &points,
+    DbscanAuto(const std::vector<Point_t> &points,
                size_t k = 5,
                double percentile = 0.95,
                bool use_kdtree = true)
@@ -491,12 +489,12 @@ public:
 private:
 
     // Estimar eps usando todos los puntos
-    static double estimateEpsFull(const std::vector<Entity_t> &points,
+    static double estimateEpsFull(const std::vector<Point_t> &points,
                                   size_t k,
                                   double percentile)
     {
 
-        StaticKdTree<Entity_t> tree(points);
+        StaticKdTree<Point_t> tree(points);
         std::vector<double> kth_distances;
         kth_distances.reserve(points.size());
 
@@ -512,13 +510,13 @@ private:
     }
 
     // Estimar eps usando muestreo
-    static double estimateEpsSampling(const std::vector<Entity_t> &points,
+    static double estimateEpsSampling(const std::vector<Point_t> &points,
         size_t k,
         double percentile,
         size_t sample_size = 1000) {
 
         sample_size = std::min(sample_size, points.size());
-        StaticKdTree<Entity_t> tree(points);
+        StaticKdTree<Point_t> tree(points);
         std::vector<double> kth_distances;
         kth_distances.reserve(sample_size);
 

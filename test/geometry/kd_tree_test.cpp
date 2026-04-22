@@ -69,18 +69,18 @@ BOOST_AUTO_TEST_CASE(RadiusSearch2D)
 // 2. Test con tipos Vector y dimensiones dinámicas (si aplica)
 BOOST_AUTO_TEST_CASE(RadiusSearch3D_Vector)
 {
-    std::vector<Vector<double, 3>> points = {
-        {0.0, 0.0, 0.0},
-        {1.0, 1.0, 1.0},
-        {2.0, 2.0, 2.0},
-        {10.0, 10.0, 10.0}
+    std::vector<Point3d> points = {
+        Point3d{0.0, 0.0, 0.0},
+        Point3d{1.0, 1.0, 1.0},
+        Point3d{2.0, 2.0, 2.0},
+        Point3d{10.0, 10.0, 10.0}
     };
 
-    KdTree<Vector<double, 3>> tree(points);
+    KdTree<Point3d> tree(points);
     
     std::vector<size_t> results;
     // Buscamos cerca del origen
-    tree.radiusSearch({0.5, 0.5, 0.5}, 1.0, results);
+    tree.radiusSearch(Point3d(0.5, 0.5, 0.5), 1.0, results);
 
     // Debería encontrar (0,0,0) y (1,1,1)
     BOOST_CHECK_EQUAL(results.size(), 2);
@@ -144,18 +144,18 @@ BOOST_AUTO_TEST_CASE(RadiusSearch2D)
 // 2. Test con tipos Vector y dimensiones dinámicas (si aplica)
 BOOST_AUTO_TEST_CASE(RadiusSearch3D_Vector)
 {
-    std::vector<Vector<double, 3>> points = {
-        {0.0, 0.0, 0.0},
-        {1.0, 1.0, 1.0},
-        {2.0, 2.0, 2.0},
-        {10.0, 10.0, 10.0}
+    std::vector<Point3d> points = {
+        Point3d{0.0, 0.0, 0.0},
+        Point3d{1.0, 1.0, 1.0},
+        Point3d{2.0, 2.0, 2.0},
+        Point3d{10.0, 10.0, 10.0}
     };
 
-    StaticKdTree<Vector<double, 3>> tree(points);
+    StaticKdTree<Point3d> tree(points);
 
     
     // Buscamos cerca del origen
-    std::vector<size_t> results = tree.radiusSearch({0.5, 0.5, 0.5}, 1.0);
+    std::vector<size_t> results = tree.radiusSearch(Point3d{0.5, 0.5, 0.5}, 1.0);
 
     // Debería encontrar (0,0,0) y (1,1,1)
     BOOST_CHECK_EQUAL(results.size(), 2);
@@ -216,18 +216,18 @@ BOOST_AUTO_TEST_CASE(RadiusSearch2D)
 // 2. Test con tipos Vector y dimensiones dinámicas (si aplica)
 BOOST_AUTO_TEST_CASE(RadiusSearch3D_Vector)
 {
-    std::vector<Vector<double, 3>> points = {
-        {0.0, 0.0, 0.0},
-        {1.0, 1.0, 1.0},
-        {2.0, 2.0, 2.0},
-        {10.0, 10.0, 10.0}
+    std::vector<Point3d> points = {
+        Point3d{0.0, 0.0, 0.0},
+        Point3d{1.0, 1.0, 1.0},
+        Point3d{2.0, 2.0, 2.0},
+        Point3d{10.0, 10.0, 10.0}
     };
 
-    DynamicKdTree<Vector<double, 3>> tree(points);
+    DynamicKdTree<Point3d> tree(points);
 
 
     // Buscamos cerca del origen
-    std::vector<size_t> results = tree.radiusSearch({0.5, 0.5, 0.5}, 1.0);
+    std::vector<size_t> results = tree.radiusSearch(Point3d{0.5, 0.5, 0.5}, 1.0);
 
     // Debería encontrar (0,0,0) y (1,1,1)
     BOOST_CHECK_EQUAL(results.size(), 2);

@@ -317,10 +317,9 @@ auto ImageReaderGdal::read(const BoundingBox2d &terrainWindow,
         if (georeference) {
             p1 = rect_to_read.topLeft();
             p2 = rect_to_read.bottomRight();
-            p1 = mAffine.transform(p1);
-            p2 = mAffine.transform(p2);
-            Vector2d kk = static_cast<Vector2d>(p2 - p1);
-            Vector2d s = static_cast<Point2d>(p2) - static_cast<Point2d>(p1);
+            auto p1_transf = mAffine.transform(static_cast<Point2d>(p1));
+            auto p2_transf = mAffine.transform(static_cast<Point2d>(p2));
+            Vector2d s = p2_transf - p1_transf;
             s.x() /= static_cast<double>(image.cols);
             s.y() /= static_cast<double>(image.rows);
             *georeference = Affine<double, 2>(s.x(), s.y(), p1.x(), p1.y(), 0.);

@@ -203,6 +203,7 @@ EcefToEnu::EcefToEnu(const Point3d& center, const RotationMatrix<double>& rotati
 {
 
 }
+
 auto EcefToEnu::direct(const Point3d &ecef) const -> Point3d
 {
     auto dif = ecef - mCenter;
@@ -213,7 +214,7 @@ auto EcefToEnu::direct(const Point3d &ecef) const -> Point3d
 
 auto EcefToEnu::inverse(const Point3d &enu) const -> Point3d
 {
-    auto d = mRotation.transpose() * enu;
+    Point3d d = mRotation.transpose() * enu;
 
     Point3d ecef;
     ecef.x() = mCenter.x() + d[0];

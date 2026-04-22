@@ -6,8 +6,8 @@
 #include "tidop/viewer/opengl/buffer/VertexArray.h"
 #include "tidop/viewer/opengl/buffer/VertexBuffer.h"
 
-#include <tidop/math/algebra/vector.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 #include <tidop/math/algebra/matrices.h>
 #include <tidop/math/algebra/rotations/axis_angle.h>
 

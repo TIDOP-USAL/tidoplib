@@ -336,17 +336,17 @@ struct geometry_traits<BoundingBox<Point_t>>
  * \tparam T Coordinate type.
  * \tparam S Vector size (or DynamicData).
  */
-template<typename T, size_t S>
-struct geometry_traits<Vector<T, S>>
-{
-    static constexpr bool is_geometry = true;
-    static constexpr bool is_multi = false;
-    static constexpr Dimension dimension = (S == DynamicData) ? Dimension::dynamic : static_cast<Dimension>(S);
-    static constexpr bool has_m = false;
-    static constexpr GeometryType type = GeometryType::point;
-    using geometry_tag = point_tag;
-    using point_type = Vector<T, S>;
-};
+//template<typename T, size_t S>
+//struct geometry_traits<Vector<T, S>>
+//{
+//    static constexpr bool is_geometry = true;
+//    static constexpr bool is_multi = false;
+//    static constexpr Dimension dimension = (S == DynamicData) ? Dimension::dynamic : static_cast<Dimension>(S);
+//    static constexpr bool has_m = false;
+//    static constexpr GeometryType type = GeometryType::point;
+//    using geometry_tag = point_tag;
+//    using point_type = Vector<T, S>;
+//};
 
 /*!
  * \brief Helper alias to get the tag type for a geometry.
@@ -498,6 +498,7 @@ template<>
 struct tag_for_dim<4> { using type = xyzw_tag; };
 
 
+
 template<typename P>
 struct remove_measure;
 
@@ -540,17 +541,17 @@ using common_point_without_measure_t = typename common_point_without_measure<P1,
 
 /*! \} */ 
 
-template<typename T, typename Tag>
-struct VectorTraits<Point<T, Tag>>
-{
-    using value_type = T;
-    static constexpr size_t size = point_traits<Point<T, Tag>>::spatial_dims;
-    using result_type = Point<T, Tag>;
-    using difference_type = Vector<T, size>;
-};
-
-template<typename T, typename Tag>
-struct is_point<Point<T, Tag>> : std::true_type {};
+//template<typename T, typename Tag>
+//struct VectorTraits<Point<T, Tag>>
+//{
+//    using value_type = T;
+//    static constexpr size_t size = point_traits<Point<T, Tag>>::spatial_dims;
+//    using result_type = Point<T, Tag>;
+//    using difference_type = Vector<T, size>;
+//};
+//
+//template<typename T, typename Tag>
+//struct is_point<Point<T, Tag>> : std::true_type {};
 
 
 //template<typename OldTag, size_t Rows>

@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop transform test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/geometry/transform.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 #include <tidop/math/geometry/scaling.h>
 #include <tidop/math/geometry/umeyama.h>
@@ -215,22 +215,22 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, TransformTest)
 
     Transform<double, 3> transform;
         
-    BOOST_CHECK_CLOSE(1., transform[0][0], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[0][1], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[0][2], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[0][3], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[1][0], 0.1);
-    BOOST_CHECK_CLOSE(1., transform[1][1], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[1][2], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[1][3], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[2][0], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[2][1], 0.1);
-    BOOST_CHECK_CLOSE(1., transform[2][2], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[2][3], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[3][0], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[3][1], 0.1);
-    BOOST_CHECK_CLOSE(0., transform[3][2], 0.1);
-    BOOST_CHECK_CLOSE(1., transform[3][3], 0.1);
+    BOOST_CHECK_CLOSE(1., transform[0][0], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[0][1], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[0][2], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[0][3], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[1][0], 0.01);
+    BOOST_CHECK_CLOSE(1., transform[1][1], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[1][2], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[1][3], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[2][0], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[2][1], 0.01);
+    BOOST_CHECK_CLOSE(1., transform[2][2], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[2][3], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[3][0], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[3][1], 0.01);
+    BOOST_CHECK_CLOSE(0., transform[3][2], 0.01);
+    BOOST_CHECK_CLOSE(1., transform[3][3], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(transform_per_transform, TransformTest)
@@ -242,12 +242,12 @@ BOOST_FIXTURE_TEST_CASE(transform_per_transform, TransformTest)
     transform2.setTranslation({10., 30., 26.});
     auto transform3 = transform1 * transform2;
 
-    BOOST_CHECK_CLOSE(2., transform3[0][0], 0.1);
-    BOOST_CHECK_CLOSE(2., transform3[1][1], 0.1);
-    BOOST_CHECK_CLOSE(2., transform3[2][2], 0.1);
-    BOOST_CHECK_CLOSE(20., transform3[0][3], 0.1);
-    BOOST_CHECK_CLOSE(60., transform3[1][3], 0.1);
-    BOOST_CHECK_CLOSE(52., transform3[2][3], 0.1);
+    BOOST_CHECK_CLOSE(2., transform3[0][0], 0.01);
+    BOOST_CHECK_CLOSE(2., transform3[1][1], 0.01);
+    BOOST_CHECK_CLOSE(2., transform3[2][2], 0.01);
+    BOOST_CHECK_CLOSE(20., transform3[0][3], 0.01);
+    BOOST_CHECK_CLOSE(60., transform3[1][3], 0.01);
+    BOOST_CHECK_CLOSE(52., transform3[2][3], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(setScale, TransformTest)
@@ -258,9 +258,9 @@ BOOST_FIXTURE_TEST_CASE(setScale, TransformTest)
 
     auto scale = transform.scale();
 
-    BOOST_CHECK_CLOSE(2., scale[0], 0.1);
-    BOOST_CHECK_CLOSE(2., scale[1], 0.1);
-    BOOST_CHECK_CLOSE(2., scale[2], 0.1);
+    BOOST_CHECK_CLOSE(2., scale[0], 0.01);
+    BOOST_CHECK_CLOSE(2., scale[1], 0.01);
+    BOOST_CHECK_CLOSE(2., scale[2], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(setTranslation, TransformTest)
@@ -270,9 +270,9 @@ BOOST_FIXTURE_TEST_CASE(setTranslation, TransformTest)
 
     auto translation = transform.translation();
 
-    BOOST_CHECK_CLOSE(10., translation[0], 0.1);
-    BOOST_CHECK_CLOSE(30., translation[1], 0.1);
-    BOOST_CHECK_CLOSE(26., translation[2], 0.1);
+    BOOST_CHECK_CLOSE(10., translation[0], 0.01);
+    BOOST_CHECK_CLOSE(30., translation[1], 0.01);
+    BOOST_CHECK_CLOSE(26., translation[2], 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

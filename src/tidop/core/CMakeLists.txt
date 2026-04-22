@@ -45,6 +45,7 @@ if(BUILD_TL_CORE)
                              base/path.cpp
                              base/property.cpp
                              base/string_utils.cpp
+                             base/SystemCache.h
                              base/type_conversions.cpp
                              base/text_encoding.cpp
                              concurrency/parallel.cpp
@@ -87,6 +88,7 @@ if(BUILD_TL_CORE)
                              base/type.h
                              base/type_conversions.h
                              base/text_encoding.h
+                             base/SystemCache.h
                              base/macros/deprecation.h
                              base/macros/exception.h
                              base/macros/export.h

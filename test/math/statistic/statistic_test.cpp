@@ -197,29 +197,29 @@ BOOST_FIXTURE_TEST_CASE(sum, DescriptiveStatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(mean, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(7.695, stat_1.mean(), 0.1);
-    BOOST_CHECK_CLOSE(1.142857143, stat_2.mean(), 0.1);
-    BOOST_CHECK_CLOSE(14, stat_3.mean(), 0.1);
-    BOOST_CHECK_CLOSE(7.695f, stat_4.mean(), 0.1);
-    BOOST_CHECK_CLOSE(7.695, stat_1_population.mean(), 0.1);
+    BOOST_CHECK_CLOSE(7.695, stat_1.mean(), 0.01);
+    BOOST_CHECK_CLOSE(1.142857143, stat_2.mean(), 0.01);
+    BOOST_CHECK_CLOSE(14, stat_3.mean(), 0.01);
+    BOOST_CHECK_CLOSE(7.695f, stat_4.mean(), 0.01);
+    BOOST_CHECK_CLOSE(7.695, stat_1_population.mean(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(median, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(8., stat_1.median(), 0.1);
-    BOOST_CHECK_CLOSE(1., stat_2.median(), 0.1);
-    BOOST_CHECK_CLOSE(14., stat_3.median(), 0.1);
-    BOOST_CHECK_CLOSE(8.f, stat_4.median(), 0.1);
-    BOOST_CHECK_CLOSE(8., stat_1_population.median(), 0.1);
+    BOOST_CHECK_CLOSE(8., stat_1.median(), 0.01);
+    BOOST_CHECK_CLOSE(1., stat_2.median(), 0.01);
+    BOOST_CHECK_CLOSE(14., stat_3.median(), 0.01);
+    BOOST_CHECK_CLOSE(8.f, stat_4.median(), 0.01);
+    BOOST_CHECK_CLOSE(8., stat_1_population.median(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(mode, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(8.5, stat_1.mode(), 0.1);
+    BOOST_CHECK_CLOSE(8.5, stat_1.mode(), 0.01);
     BOOST_CHECK_EQUAL(1, stat_2.mode());
     BOOST_CHECK_EQUAL(7, stat_3.mode());
-    BOOST_CHECK_CLOSE(8.5f, stat_4.mode(), 0.1);
-    BOOST_CHECK_CLOSE(8.5, stat_1_population.mode(), 0.1);
+    BOOST_CHECK_CLOSE(8.5f, stat_4.mode(), 0.01);
+    BOOST_CHECK_CLOSE(8.5, stat_1_population.mode(), 0.01);
 
     Series<int> v{1,1,2,2,3};
     DescriptiveStatistics<int> s(v);
@@ -237,97 +237,97 @@ BOOST_FIXTURE_TEST_CASE(range, DescriptiveStatisticsTest)
 
 BOOST_FIXTURE_TEST_CASE(variance, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(1.3402777777778, stat_1.variance(), 0.1);
-    BOOST_CHECK_CLOSE(1.1428571428571, stat_2.variance(), 0.1);
-    BOOST_CHECK_CLOSE(33.2, stat_3.variance(), 0.1);
-    BOOST_CHECK_CLOSE(1.19135802, stat_1_population.variance(), 0.1);
+    BOOST_CHECK_CLOSE(1.3402777777778, stat_1.variance(), 0.01);
+    BOOST_CHECK_CLOSE(1.1428571428571, stat_2.variance(), 0.01);
+    BOOST_CHECK_CLOSE(33.2, stat_3.variance(), 0.01);
+    BOOST_CHECK_CLOSE(1.19135802, stat_1_population.variance(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(standarDeviation, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(1.1577036657875, stat_1.standarDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(1.0690449676497, stat_2.standarDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(5.7619441163552, stat_3.standarDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(1.09149348, stat_1_population.standarDeviation(), 0.1);
+    BOOST_CHECK_CLOSE(1.1577036657875, stat_1.standarDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(1.0690449676497, stat_2.standarDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(5.7619441163552, stat_3.standarDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(1.09149348, stat_1_population.standarDeviation(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(coefficientOfVariation, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(0.150459682, stat_1.coefficientOfVariation(), 0.1);
-    BOOST_CHECK_CLOSE(0.935414347, stat_2.coefficientOfVariation(), 0.1);
-    BOOST_CHECK_CLOSE(0.411567437, stat_3.coefficientOfVariation(), 0.1);
-    BOOST_CHECK_CLOSE(0.141854749, stat_1_population.coefficientOfVariation(), 0.1);
+    BOOST_CHECK_CLOSE(0.150459682, stat_1.coefficientOfVariation(), 0.01);
+    BOOST_CHECK_CLOSE(0.935414347, stat_2.coefficientOfVariation(), 0.01);
+    BOOST_CHECK_CLOSE(0.411567437, stat_3.coefficientOfVariation(), 0.01);
+    BOOST_CHECK_CLOSE(0.141854749, stat_1_population.coefficientOfVariation(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(meanAbsoluteDeviation, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(0.89506172839506, stat_1.meanAbsoluteDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(0.775510204, stat_2.meanAbsoluteDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(4.3333333333333, stat_3.meanAbsoluteDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(0.89506172839506, stat_1_population.meanAbsoluteDeviation(), 0.1);
+    BOOST_CHECK_CLOSE(0.89506172839506, stat_1.meanAbsoluteDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(0.775510204, stat_2.meanAbsoluteDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(4.3333333333333, stat_3.meanAbsoluteDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(0.89506172839506, stat_1_population.meanAbsoluteDeviation(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(medianAbsoluteDeviation, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(0.5, stat_1.medianAbsoluteDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(1., stat_2.medianAbsoluteDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(4., stat_3.medianAbsoluteDeviation(), 0.1);
-    BOOST_CHECK_CLOSE(0.5, stat_1_population.medianAbsoluteDeviation(), 0.1);
+    BOOST_CHECK_CLOSE(0.5, stat_1.medianAbsoluteDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(1., stat_2.medianAbsoluteDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(4., stat_3.medianAbsoluteDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(0.5, stat_1_population.medianAbsoluteDeviation(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(quantile, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(6.1, stat_1.quantile(0.10), 0.1);
-    BOOST_CHECK_CLOSE(8.6, stat_1.quantile(0.90), 0.1);
+    BOOST_CHECK_CLOSE(6.1, stat_1.quantile(0.10), 0.01);
+    BOOST_CHECK_CLOSE(8.6, stat_1.quantile(0.90), 0.01);
 
-    BOOST_CHECK_CLOSE(0.0, stat_2.quantile(0.10), 0.1);
-    BOOST_CHECK_CLOSE(2.4, stat_2.quantile(0.90), 0.1);
+    BOOST_CHECK_CLOSE(0.0, stat_2.quantile(0.10), 0.01);
+    BOOST_CHECK_CLOSE(2.4, stat_2.quantile(0.90), 0.01);
 
-    BOOST_CHECK_CLOSE(8.0, stat_3.quantile(0.10), 0.1);
-    BOOST_CHECK_CLOSE(20.0, stat_3.quantile(0.90), 0.1);
+    BOOST_CHECK_CLOSE(8.0, stat_3.quantile(0.10), 0.01);
+    BOOST_CHECK_CLOSE(20.0, stat_3.quantile(0.90), 0.01);
 
     BOOST_CHECK_EQUAL(stat_1.quantile(0.0), stat_1.min());
     BOOST_CHECK_EQUAL(stat_1.quantile(1.0), stat_1.max());
 
     Series<double> v{1,1,1,1,10};
     DescriptiveStatistics<double> s(v);
-    BOOST_CHECK_CLOSE(s.quantile(0.80), 2.8, 0.1);
+    BOOST_CHECK_CLOSE(s.quantile(0.80), 2.8, 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartiles, DescriptiveStatisticsTest)
 {
     auto q1 = stat_1.quartiles();
     BOOST_REQUIRE_EQUAL(q1.size(), 3u);
-    BOOST_CHECK_CLOSE(7.5, q1[0], 0.1);
-    BOOST_CHECK_CLOSE(8.0, q1[1], 0.1);
-    BOOST_CHECK_CLOSE(8.5, q1[2], 0.1);
+    BOOST_CHECK_CLOSE(7.5, q1[0], 0.01);
+    BOOST_CHECK_CLOSE(8.0, q1[1], 0.01);
+    BOOST_CHECK_CLOSE(8.5, q1[2], 0.01);
 
     auto q2 = stat_2.quartiles();
     BOOST_REQUIRE_EQUAL(q2.size(), 3u);
-    BOOST_CHECK_CLOSE(0.5, q2[0], 0.1);
-    BOOST_CHECK_CLOSE(1.0, q2[1], 0.1);
-    BOOST_CHECK_CLOSE(1.5, q2[2], 0.1);
+    BOOST_CHECK_CLOSE(0.5, q2[0], 0.01);
+    BOOST_CHECK_CLOSE(1.0, q2[1], 0.01);
+    BOOST_CHECK_CLOSE(1.5, q2[2], 0.01);
 
     auto q3 = stat_3.quartiles();
     BOOST_REQUIRE_EQUAL(q3.size(), 3u);
-    BOOST_CHECK_CLOSE(10.0, q3[0], 0.1);
-    BOOST_CHECK_CLOSE(14.0, q3[1], 0.1);
-    BOOST_CHECK_CLOSE(16.5, q3[2], 0.1);
+    BOOST_CHECK_CLOSE(10.0, q3[0], 0.01);
+    BOOST_CHECK_CLOSE(14.0, q3[1], 0.01);
+    BOOST_CHECK_CLOSE(16.5, q3[2], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(quintiles_stat1, DescriptiveStatisticsTest)
 {
     auto q5 = stat_1.quintiles();
     BOOST_REQUIRE_EQUAL(q5.size(), 4u);
-    BOOST_CHECK_CLOSE(q5[0], 7.0, 0.1);
-    BOOST_CHECK_CLOSE(q5[1], 7.6, 0.1);
-    BOOST_CHECK_CLOSE(q5[2], 8.4, 0.1);
-    BOOST_CHECK_CLOSE(q5[3], 8.5, 0.1);
+    BOOST_CHECK_CLOSE(q5[0], 7.0, 0.01);
+    BOOST_CHECK_CLOSE(q5[1], 7.6, 0.01);
+    BOOST_CHECK_CLOSE(q5[2], 8.4, 0.01);
+    BOOST_CHECK_CLOSE(q5[3], 8.5, 0.01);
 
-    BOOST_CHECK_CLOSE(q5[0], stat_1.quantile(0.2), 0.1);
-    BOOST_CHECK_CLOSE(q5[1], stat_1.quantile(0.4), 0.1);
-    BOOST_CHECK_CLOSE(q5[2], stat_1.quantile(0.6), 0.1);
-    BOOST_CHECK_CLOSE(q5[3], stat_1.quantile(0.8), 0.1);
+    BOOST_CHECK_CLOSE(q5[0], stat_1.quantile(0.2), 0.01);
+    BOOST_CHECK_CLOSE(q5[1], stat_1.quantile(0.4), 0.01);
+    BOOST_CHECK_CLOSE(q5[2], stat_1.quantile(0.6), 0.01);
+    BOOST_CHECK_CLOSE(q5[3], stat_1.quantile(0.8), 0.01);
 }
 
 
@@ -349,15 +349,15 @@ BOOST_FIXTURE_TEST_CASE(deciles, DescriptiveStatisticsTest)
     auto d = stat_1.deciles();
     BOOST_REQUIRE_EQUAL(d.size(), 9u);
 
-    BOOST_CHECK_CLOSE(6.1, d[0], 0.1);
-    BOOST_CHECK_CLOSE(7.0, d[1], 0.1);
-    BOOST_CHECK_CLOSE(7.5, d[2], 0.1);
-    BOOST_CHECK_CLOSE(7.6, d[3], 0.1);
-    BOOST_CHECK_CLOSE(8.0, d[4], 0.1);
-    BOOST_CHECK_CLOSE(8.4, d[5], 0.1);
-    BOOST_CHECK_CLOSE(8.5, d[6], 0.1);
-    BOOST_CHECK_CLOSE(8.5, d[7], 0.1);
-    BOOST_CHECK_CLOSE(8.6, d[8], 0.1);
+    BOOST_CHECK_CLOSE(6.1, d[0], 0.01);
+    BOOST_CHECK_CLOSE(7.0, d[1], 0.01);
+    BOOST_CHECK_CLOSE(7.5, d[2], 0.01);
+    BOOST_CHECK_CLOSE(7.6, d[3], 0.01);
+    BOOST_CHECK_CLOSE(8.0, d[4], 0.01);
+    BOOST_CHECK_CLOSE(8.4, d[5], 0.01);
+    BOOST_CHECK_CLOSE(8.5, d[6], 0.01);
+    BOOST_CHECK_CLOSE(8.5, d[7], 0.01);
+    BOOST_CHECK_CLOSE(8.6, d[8], 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(percentiles, DescriptiveStatisticsTest)
@@ -370,11 +370,11 @@ BOOST_FIXTURE_TEST_CASE(percentiles, DescriptiveStatisticsTest)
         BOOST_CHECK(p1[i] >= p1[i - 1]);
     }
 
-    BOOST_CHECK_CLOSE(p1[9], stat_1.quantile(0.10), 0.1); // 10th
-    BOOST_CHECK_CLOSE(p1[49], stat_1.quantile(0.50), 0.1); // 50th (mediana)
-    BOOST_CHECK_CLOSE(p1[89], stat_1.quantile(0.90), 0.1); // 90th
-    BOOST_CHECK_CLOSE(p1.front(), stat_1.quantile(0.01), 0.1);
-    BOOST_CHECK_CLOSE(p1.back(), stat_1.quantile(0.99), 0.1);
+    BOOST_CHECK_CLOSE(p1[9], stat_1.quantile(0.10), 0.01); // 10th
+    BOOST_CHECK_CLOSE(p1[49], stat_1.quantile(0.50), 0.01); // 50th (mediana)
+    BOOST_CHECK_CLOSE(p1[89], stat_1.quantile(0.90), 0.01); // 90th
+    BOOST_CHECK_CLOSE(p1.front(), stat_1.quantile(0.01), 0.01);
+    BOOST_CHECK_CLOSE(p1.back(), stat_1.quantile(0.99), 0.01);
 
     auto p2 = stat_2.percentiles();
     BOOST_REQUIRE_EQUAL(p2.size(), 99u);
@@ -383,11 +383,11 @@ BOOST_FIXTURE_TEST_CASE(percentiles, DescriptiveStatisticsTest)
         BOOST_CHECK(p2[i] >= p2[i - 1]);
     }
 
-    BOOST_CHECK_CLOSE(p2[9], stat_2.quantile(0.10), 0.1); // 10th
-    BOOST_CHECK_CLOSE(p2[49], stat_2.quantile(0.50), 0.1); // 50th (mediana)
-    BOOST_CHECK_CLOSE(p2[89], stat_2.quantile(0.90), 0.1); // 90th
-    BOOST_CHECK_CLOSE(p2.front(), stat_2.quantile(0.01), 0.1);
-    BOOST_CHECK_CLOSE(p2.back(), stat_2.quantile(0.99), 0.1);
+    BOOST_CHECK_CLOSE(p2[9], stat_2.quantile(0.10), 0.01); // 10th
+    BOOST_CHECK_CLOSE(p2[49], stat_2.quantile(0.50), 0.01); // 50th (mediana)
+    BOOST_CHECK_CLOSE(p2[89], stat_2.quantile(0.90), 0.01); // 90th
+    BOOST_CHECK_CLOSE(p2.front(), stat_2.quantile(0.01), 0.01);
+    BOOST_CHECK_CLOSE(p2.back(), stat_2.quantile(0.99), 0.01);
 
     auto p3 = stat_3.percentiles();
     BOOST_REQUIRE_EQUAL(p3.size(), 99u);
@@ -396,46 +396,46 @@ BOOST_FIXTURE_TEST_CASE(percentiles, DescriptiveStatisticsTest)
         BOOST_CHECK(p3[i] >= p3[i - 1]);
     }
 
-    BOOST_CHECK_CLOSE(p3[9], stat_3.quantile(0.10), 0.1); // 10th
-    BOOST_CHECK_CLOSE(p3[49], stat_3.quantile(0.50), 0.1); // 50th (mediana)
-    BOOST_CHECK_CLOSE(p3[89], stat_3.quantile(0.90), 0.1); // 90th
-    BOOST_CHECK_CLOSE(p3.front(), stat_3.quantile(0.01), 0.1);
-    BOOST_CHECK_CLOSE(p3.back(), stat_3.quantile(0.99), 0.1);
+    BOOST_CHECK_CLOSE(p3[9], stat_3.quantile(0.10), 0.01); // 10th
+    BOOST_CHECK_CLOSE(p3[49], stat_3.quantile(0.50), 0.01); // 50th (mediana)
+    BOOST_CHECK_CLOSE(p3[89], stat_3.quantile(0.90), 0.01); // 90th
+    BOOST_CHECK_CLOSE(p3.front(), stat_3.quantile(0.01), 0.01);
+    BOOST_CHECK_CLOSE(p3.back(), stat_3.quantile(0.99), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(sumOfSquares, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(10.7222222, stat_1.sumOfSquares(), 0.1);
-    BOOST_CHECK_CLOSE(6.85714286, stat_2.sumOfSquares(), 0.1);
-    BOOST_CHECK_CLOSE(166, stat_3.sumOfSquares(), 0.1);
-    BOOST_CHECK_CLOSE(10.7222222, stat_1_population.sumOfSquares(), 0.1);
+    BOOST_CHECK_CLOSE(10.7222222, stat_1.sumOfSquares(), 0.01);
+    BOOST_CHECK_CLOSE(6.85714286, stat_2.sumOfSquares(), 0.01);
+    BOOST_CHECK_CLOSE(166, stat_3.sumOfSquares(), 0.01);
+    BOOST_CHECK_CLOSE(10.7222222, stat_1_population.sumOfSquares(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(rootMeanSquare, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(7.77147562, stat_1.rootMeanSquare(), 0.1);
-    BOOST_CHECK_CLOSE(1.51185789, stat_2.rootMeanSquare(), 0.1);
-    BOOST_CHECK_CLOSE(14.9554895, stat_3.rootMeanSquare(), 0.1);
-    BOOST_CHECK_CLOSE(7.77147562, stat_1_population.rootMeanSquare(), 0.1);
+    BOOST_CHECK_CLOSE(7.77147562, stat_1.rootMeanSquare(), 0.01);
+    BOOST_CHECK_CLOSE(1.51185789, stat_2.rootMeanSquare(), 0.01);
+    BOOST_CHECK_CLOSE(14.9554895, stat_3.rootMeanSquare(), 0.01);
+    BOOST_CHECK_CLOSE(7.77147562, stat_1_population.rootMeanSquare(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(skewness, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(-1.01235079, stat_1.skewness(), 0.1);
-    BOOST_CHECK_CLOSE(0.771716836, stat_2.skewness(), 0.1);
-    BOOST_CHECK_CLOSE(0.451654786, stat_3.skewness(), 0.1);
+    BOOST_CHECK_CLOSE(-1.01235079, stat_1.skewness(), 0.01);
+    BOOST_CHECK_CLOSE(0.771716836, stat_2.skewness(), 0.01);
+    BOOST_CHECK_CLOSE(0.451654786, stat_3.skewness(), 0.01);
 
-    BOOST_CHECK_CLOSE(-0.835146793, stat_1_population.skewness(), 0.1);
+    BOOST_CHECK_CLOSE(-0.835146793, stat_1_population.skewness(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(kurtosis, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(4.73030915, stat_1.kurtosis(), 0.1);
-    BOOST_CHECK_CLOSE(5.6625, stat_2.kurtosis(), 0.1);
-    BOOST_CHECK_CLOSE(6.14113079, stat_3.kurtosis(), 0.1);
-    BOOST_CHECK_CLOSE(4.73031039, stat_4.kurtosis(), 0.1);
+    BOOST_CHECK_CLOSE(4.73030915, stat_1.kurtosis(), 0.01);
+    BOOST_CHECK_CLOSE(5.6625, stat_2.kurtosis(), 0.01);
+    BOOST_CHECK_CLOSE(6.14113079, stat_3.kurtosis(), 0.01);
+    BOOST_CHECK_CLOSE(4.73031039, stat_4.kurtosis(), 0.01);
 
-    BOOST_CHECK_CLOSE(2.48341231, stat_1_population.kurtosis(), 0.1);
+    BOOST_CHECK_CLOSE(2.48341231, stat_1_population.kurtosis(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(kurtosis_moors, DescriptiveStatisticsTest)
@@ -445,7 +445,7 @@ BOOST_FIXTURE_TEST_CASE(kurtosis_moors, DescriptiveStatisticsTest)
         config.kurtosis_method = KurtosisMethod::moors;
         DescriptiveStatistics<float> stats(data4, config);
 
-        BOOST_CHECK_CLOSE(1.25, stats.kurtosis(), 0.1);
+        BOOST_CHECK_CLOSE(1.25, stats.kurtosis(), 0.01);
     }
 
     {
@@ -453,17 +453,17 @@ BOOST_FIXTURE_TEST_CASE(kurtosis_moors, DescriptiveStatisticsTest)
         config.kurtosis_method = KurtosisMethod::moors;
         DescriptiveStatistics<double> stats(data5, config);
 
-        BOOST_CHECK_CLOSE(0.89735099, stats.kurtosis(), 0.1);
+        BOOST_CHECK_CLOSE(0.89735099, stats.kurtosis(), 0.01);
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(kurtosisExcess, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(0.158880584, stat_1.kurtosisExcess(), 0.1);
-    BOOST_CHECK_CLOSE(0.2625, stat_2.kurtosisExcess(), 0.1);
-    BOOST_CHECK_CLOSE(-0.108869212, stat_3.kurtosisExcess(), 0.1);
+    BOOST_CHECK_CLOSE(0.158880584, stat_1.kurtosisExcess(), 0.01);
+    BOOST_CHECK_CLOSE(0.2625, stat_2.kurtosisExcess(), 0.01);
+    BOOST_CHECK_CLOSE(-0.108869212, stat_3.kurtosisExcess(), 0.01);
 
-    BOOST_CHECK_CLOSE(-0.516587694, stat_1_population.kurtosisExcess(), 0.1);
+    BOOST_CHECK_CLOSE(-0.516587694, stat_1_population.kurtosisExcess(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(biweightMidvariance, DescriptiveStatisticsTest)
@@ -471,61 +471,61 @@ BOOST_FIXTURE_TEST_CASE(biweightMidvariance, DescriptiveStatisticsTest)
   //std::vector<int> data{2, 2};
   //BOOST_CHECK_EQUAL(0., tl::biweightMidvariance(data.begin(), data.end()));
   //Vector<double> data2{6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3};
-  //BOOST_CHECK_CLOSE(0.677818, tl::biweightMidvariance(data2.begin(), data2.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.677818, tl::biweightMidvariance(data2.begin(), data2.end()), 0.01);
   //Vector<int> data3{1, 2, 3, 4};
-  //BOOST_CHECK_CLOSE(1.36477, tl::biweightMidvariance(data3.begin(), data3.end()), 0.1);
+  //BOOST_CHECK_CLOSE(1.36477, tl::biweightMidvariance(data3.begin(), data3.end()), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(firstQuartile, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(7.5, stat_1.firstQuartile(), 0.1);
-    BOOST_CHECK_CLOSE(0.5, stat_2.firstQuartile(), 0.1);
-    BOOST_CHECK_CLOSE(10., stat_3.firstQuartile(), 0.1);
+    BOOST_CHECK_CLOSE(7.5, stat_1.firstQuartile(), 0.01);
+    BOOST_CHECK_CLOSE(0.5, stat_2.firstQuartile(), 0.01);
+    BOOST_CHECK_CLOSE(10., stat_3.firstQuartile(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(secondQuartile, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(8.0, stat_1.secondQuartile(), 0.1);
-    BOOST_CHECK_CLOSE(1, stat_2.secondQuartile(), 0.1);
-    BOOST_CHECK_CLOSE(14, stat_3.secondQuartile(), 0.1);
+    BOOST_CHECK_CLOSE(8.0, stat_1.secondQuartile(), 0.01);
+    BOOST_CHECK_CLOSE(1, stat_2.secondQuartile(), 0.01);
+    BOOST_CHECK_CLOSE(14, stat_3.secondQuartile(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(thirdQuartile, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(8.5, stat_1.thirdQuartile(), 0.1);
-    BOOST_CHECK_CLOSE(1.5, stat_2.thirdQuartile(), 0.1);
-    BOOST_CHECK_CLOSE(16.5, stat_3.thirdQuartile(), 0.1);
+    BOOST_CHECK_CLOSE(8.5, stat_1.thirdQuartile(), 0.01);
+    BOOST_CHECK_CLOSE(1.5, stat_2.thirdQuartile(), 0.01);
+    BOOST_CHECK_CLOSE(16.5, stat_3.thirdQuartile(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(interquartileRange, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(1., stat_1.interquartileRange(), 0.1);
-    BOOST_CHECK_CLOSE(1., stat_2.interquartileRange(), 0.1);
-    BOOST_CHECK_CLOSE(6.5, stat_3.interquartileRange(), 0.1);
+    BOOST_CHECK_CLOSE(1., stat_1.interquartileRange(), 0.01);
+    BOOST_CHECK_CLOSE(1., stat_2.interquartileRange(), 0.01);
+    BOOST_CHECK_CLOSE(6.5, stat_3.interquartileRange(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartileCoefficientOfDispersion, DescriptiveStatisticsTest)
 {
-  //BOOST_CHECK_CLOSE(0.10569, tl::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.1);
-  //BOOST_CHECK_CLOSE(1, tl::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.1);
-  //BOOST_CHECK_CLOSE(0.37037037037037, tl::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.10569, tl::quartileCoefficientOfDispersion(vd.begin(), vd.end()), 0.01);
+  //BOOST_CHECK_CLOSE(1, tl::quartileCoefficientOfDispersion(vi.begin(), vi.end()), 0.01);
+  //BOOST_CHECK_CLOSE(0.37037037037037, tl::quartileCoefficientOfDispersion(vi2.begin(), vi2.end()), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(quartileDeviation, DescriptiveStatisticsTest)
 {
-  //BOOST_CHECK_CLOSE(0.8125, tl::quartileDeviation(vd.begin(), vd.end()), 0.1);
-  //BOOST_CHECK_CLOSE(1, tl::quartileDeviation(vi.begin(), vi.end()), 0.1);
-  //BOOST_CHECK_CLOSE(5, tl::quartileDeviation(vi2.begin(), vi2.end()), 0.1);
+  //BOOST_CHECK_CLOSE(0.8125, tl::quartileDeviation(vd.begin(), vd.end()), 0.01);
+  //BOOST_CHECK_CLOSE(1, tl::quartileDeviation(vi.begin(), vi.end()), 0.01);
+  //BOOST_CHECK_CLOSE(5, tl::quartileDeviation(vi2.begin(), vi2.end()), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(covariance, DescriptiveStatisticsTest)
 {
     tl::Covariance<double> covariance;
 
-    BOOST_CHECK_CLOSE(-33.06, covariance.eval(x, y), 0.1);
+    BOOST_CHECK_CLOSE(-33.06, covariance.eval(x, y), 0.01);
 
     tl::Covariance<float> covariancef;
-    BOOST_CHECK_CLOSE(-28.3777809f, covariancef.eval(x1, y1), 0.1);
+    BOOST_CHECK_CLOSE(-28.3777809f, covariancef.eval(x1, y1), 0.01);
 }
 
 BOOST_AUTO_TEST_CASE(empty_dataset_throws)
@@ -755,50 +755,50 @@ BOOST_FIXTURE_TEST_CASE(falseNegatives, ConfusionMatrixTest)
 BOOST_FIXTURE_TEST_CASE(accuracy, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
-    BOOST_CHECK_CLOSE(0.6756756, mConfusionMatrix->accuracy(threshold), 0.1);
-    BOOST_CHECK_CLOSE(0.9064, ConfusionMatrix<double>::accuracy(20, 1820, 30, 2000), 0.1);
+    BOOST_CHECK_CLOSE(0.6756756, mConfusionMatrix->accuracy(threshold), 0.01);
+    BOOST_CHECK_CLOSE(0.9064, ConfusionMatrix<double>::accuracy(20, 1820, 30, 2000), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(positivePredictiveValue, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
-    BOOST_CHECK_CLOSE(0.63559, mConfusionMatrix->positivePredictiveValue(threshold), 0.1);
-    BOOST_CHECK_CLOSE(0.1, ConfusionMatrix<double>::positivePredictiveValue(20, 180), 0.1);
+    BOOST_CHECK_CLOSE(0.63559, mConfusionMatrix->positivePredictiveValue(threshold), 0.01);
+    BOOST_CHECK_CLOSE(0.1, ConfusionMatrix<double>::positivePredictiveValue(20, 180), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(negativePredictiveValue, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
-    BOOST_CHECK_CLOSE(0.8333, mConfusionMatrix->negativePredictiveValue(threshold), 0.1);
-    BOOST_CHECK_CLOSE(0.9945, ConfusionMatrix<double>::negativePredictiveValue(10, 1820), 0.1);
+    BOOST_CHECK_CLOSE(0.8333, mConfusionMatrix->negativePredictiveValue(threshold), 0.01);
+    BOOST_CHECK_CLOSE(0.9945, ConfusionMatrix<double>::negativePredictiveValue(10, 1820), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(truePositiveRate, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
     BOOST_CHECK_EQUAL(0.9375, mConfusionMatrix->truePositiveRate(threshold));
-    BOOST_CHECK_CLOSE(0.66666, ConfusionMatrix<double>::truePositiveRate(20, 10), 0.1);
+    BOOST_CHECK_CLOSE(0.66666, ConfusionMatrix<double>::truePositiveRate(20, 10), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(falsePositiveRate, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
-    BOOST_CHECK_CLOSE(0.6323529, mConfusionMatrix->falsePositiveRate(threshold), 0.1);
-    BOOST_CHECK_CLOSE(0.09, ConfusionMatrix<double>::falsePositiveRate(180, 1820), 0.1);
+    BOOST_CHECK_CLOSE(0.6323529, mConfusionMatrix->falsePositiveRate(threshold), 0.01);
+    BOOST_CHECK_CLOSE(0.09, ConfusionMatrix<double>::falsePositiveRate(180, 1820), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(trueNegativeRate, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
-    BOOST_CHECK_CLOSE(0.367647, mConfusionMatrix->trueNegativeRate(threshold), 0.1);
-    BOOST_CHECK_CLOSE(0.91, ConfusionMatrix<double>::trueNegativeRate(1820, 180), 0.1);
+    BOOST_CHECK_CLOSE(0.367647, mConfusionMatrix->trueNegativeRate(threshold), 0.01);
+    BOOST_CHECK_CLOSE(0.91, ConfusionMatrix<double>::trueNegativeRate(1820, 180), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(falseNegativeRate, ConfusionMatrixTest)
 {
     double threshold = this->data.back().first;
     BOOST_CHECK_EQUAL(0.0625, mConfusionMatrix->falseNegativeRate(threshold));
-    BOOST_CHECK_CLOSE(0.3333, ConfusionMatrix<double>::falseNegativeRate(10, 20), 0.1);
+    BOOST_CHECK_CLOSE(0.33333, ConfusionMatrix<double>::falseNegativeRate(10, 20), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(threshold_iterator, ConfusionMatrixTest)
@@ -812,12 +812,12 @@ BOOST_FIXTURE_TEST_CASE(threshold_iterator, ConfusionMatrixTest)
     BOOST_CHECK_EQUAL(43, it.falsePositives());
     BOOST_CHECK_EQUAL(25, it.trueNegatives());
     BOOST_CHECK_EQUAL(5, it.falseNegatives());
-    BOOST_CHECK_CLOSE(0.63559, it.positivePredictiveValue(), 0.1);
-    BOOST_CHECK_CLOSE(0.8333, it.negativePredictiveValue(), 0.1);
+    BOOST_CHECK_CLOSE(0.63559, it.positivePredictiveValue(), 0.01);
+    BOOST_CHECK_CLOSE(0.8333, it.negativePredictiveValue(), 0.01);
     BOOST_CHECK_EQUAL(0.9375, it.truePositiveRate());
-    BOOST_CHECK_CLOSE(0.6323529, it.falsePositiveRate(), 0.1);
-    BOOST_CHECK_CLOSE(0.367647, it.trueNegativeRate(), 0.1);
-    BOOST_CHECK_CLOSE(0.0625, it.falseNegativeRate(), 0.1);
+    BOOST_CHECK_CLOSE(0.6323529, it.falsePositiveRate(), 0.01);
+    BOOST_CHECK_CLOSE(0.367647, it.trueNegativeRate(), 0.01);
+    BOOST_CHECK_CLOSE(0.0625, it.falseNegativeRate(), 0.01);
 
 }
 

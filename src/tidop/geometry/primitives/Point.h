@@ -46,7 +46,8 @@
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/rotations/quaternion.h"
 
 #include <array>
 #include <typeindex>
@@ -73,8 +74,8 @@ namespace tl
  */
 template<typename T, typename Tag = xy_tag>
 class Point
-  : public Geometry<Point<T, Tag>>,
-    public VectorBase<Point<T, Tag>>
+  : public Geometry<Point<T, Tag>>/*,
+    public VectorBase<Point<T, Tag>>*/
 {
 
     static_assert(Arithmetic<T>,
@@ -87,17 +88,18 @@ public:
     using const_reference = const T &;
     using pointer = T *;
     using const_pointer = const T *;
-    using iterator = typename std::array<T, Tag::storage_size>::iterator;
-    using const_iterator = typename std::array<T, Tag::storage_size>::const_iterator;
-    using reverse_iterator = typename std::array<T, Tag::storage_size>::reverse_iterator;
-    using const_reverse_iterator = typename std::array<T, Tag::storage_size>::const_reverse_iterator;
+    //using iterator = typename std::array<T, Tag::storage_size>::iterator;
+    //using const_iterator = typename std::array<T, Tag::storage_size>::const_iterator;
+    //using reverse_iterator = typename std::array<T, Tag::storage_size>::reverse_iterator;
+    //using const_reverse_iterator = typename std::array<T, Tag::storage_size>::const_reverse_iterator;
 
 private:
 
     static constexpr size_t storage_size = Tag::storage_size;
     static constexpr size_t spatial_dims = Tag::spatial_dims;
 
-    std::array<T, storage_size> mData;
+    //std::array<T, storage_size> mData;
+    Vector<T, storage_size> mData;
 
 public:
 
@@ -150,6 +152,26 @@ public:
             throw std::invalid_argument("Initializer list size must match point storage size");
         }
         std::copy(init.begin(), init.end(), mData.begin());
+    }
+
+    template<VectorExpr Expr>
+    Point(const Expr &expr) {
+        //if constexpr (is_static_matrix_v<Expr>) {
+        //    // Si la matriz/expresión era estática, fallamos en COMPILACIÓN si no cuadra
+        //    static_assert(Expr::Rows == point_traits<Point>::spatial_dims,
+        //        "El número de filas de la matriz no coincide con la dimensión del punto.");
+        //} else {
+        //    // Si la matriz era dinámica, fallamos en EJECUCIÓN si no cuadra
+        //    assert(expr.rows() == point_traits<Point>::spatial_dims &&
+        //        "Dimension mismatch at runtime when evaluating matrix into point.");
+        //}
+
+        //// 2. Evaluación de los datos
+        //// Aquí extraes los datos evaluados de la expresión a x, y, z
+        //for (size_t i = 0; i < point_traits<Point>::spatial_dims; ++i) {
+        //    this->operator[](i) = expr(i, 0); // Asumiendo que expr se evalúa como vector columna
+        //}
+        this->mData = expr;
     }
 
     /*! \brief Destructor. */
@@ -312,6 +334,20 @@ public:
     [[nodiscard]] 
     constexpr auto data() const noexcept -> const_pointer;
 
+    /*!
+     * \brief Returns a pointer to the data array of the point.
+     * \return A pointer to the data array.
+     */
+    [[nodiscard]]
+    constexpr auto vector() noexcept -> Vector<T, storage_size>&;
+
+    /*!
+     * \brief Returns a const pointer to the data array of the point.
+     * \return A const pointer to the data array.
+     */
+    [[nodiscard]]
+    constexpr auto vector() const noexcept -> const Vector<T, storage_size>&;
+
     template<typename U, typename Tag2>
     explicit operator Point<U, Tag2>() const;
 
@@ -319,6 +355,65 @@ public:
     auto isEmpty() const -> bool
     {
         return false;
+    }
+
+    auto operator-(const Point &other) const -> Vector<T, storage_size>
+    {
+        return this->mData - other.mData;
+    }
+
+    template<VectorExpr Vec>
+    auto operator+(const Vec &vec) const -> Point
+    {
+        Point res;
+        res.mData = this->mData + vec;
+        return res;
+    }
+
+    template<VectorExpr Vec>
+    auto operator-(const Vec &vec) const -> Point
+    {
+        Point res;
+        res.mData = this->mData - vec;
+        return res;
+    }
+
+    template<VectorExpr Vec>
+    auto operator * (const Vec &vec) const -> Point
+    {
+        Point res;
+        res.mData = this->mData.cwiseProduct(vec);
+        return res;
+    }
+
+    template<VectorExpr Vec>
+    auto operator / (const Vec &vec) const -> Point
+    {
+        Point res;
+        res.mData = this->mData.cwiseDiv(vec);
+        return res;
+    }
+
+    auto operator*(T scalar) const -> Point
+    {
+        Point res;
+        res.mCoords = this->mCoords * scalar;
+        return res;
+    }
+
+    auto operator/(T scalar) const -> Point
+    {
+        Point res;
+        res.mCoords = this->mCoords / scalar;
+        return res;
+    }
+
+    template<MatrixExpr Mat>
+    auto operator*(const Mat &matrix) const -> Point
+    {
+        Point res;
+        res.mData = this->mData * matrix;
+        return res;
     }
 };
 
@@ -370,7 +465,9 @@ constexpr Point<T, Tag>::Point()
 template<typename T, typename Tag>
 constexpr Point<T, Tag>::Point(const std::array<T, storage_size> &a)
 {
-    mData = a;
+    for (size_t i = 0; i < storage_size; ++i) {
+        mData[i] = a[i];
+    }
 }
 
 template<typename T, typename Tag>
@@ -480,6 +577,18 @@ constexpr auto Point<T, Tag>::data() const noexcept -> const_pointer
 }
 
 template<typename T, typename Tag>
+constexpr auto Point<T, Tag>::vector() noexcept -> Vector<T, storage_size>&
+{
+    return mData;
+}
+
+template<typename T, typename Tag>
+constexpr auto Point<T, Tag>::vector() const noexcept -> const Vector<T, storage_size>&
+{
+    return mData;
+}
+
+template<typename T, typename Tag>
 template<typename U, typename Tag2>
 Point<T, Tag>::operator Point<U, Tag2>() const
 {
@@ -510,13 +619,56 @@ Point<T, Tag>::operator Point<U, Tag2>() const
  *
  * \return Vector from point b to point a.
  */
+//template<typename T, typename Tag>
+//auto operator-(const Point<T, Tag> &a, const Point<T, Tag> &b) -> typename VectorTraits<Point<T, Tag>>::difference_type
+//{
+//    typename VectorTraits<Point<T, Tag>>::difference_type v;
+//    for (size_t i = 0; i < v.size(); ++i)
+//        v[i] = a[i] - b[i];
+//    return v;
+//}
+
 template<typename T, typename Tag>
-auto operator-(const Point<T, Tag> &a, const Point<T, Tag> &b) -> typename VectorTraits<Point<T, Tag>>::difference_type
+auto operator*(T scalar, const Point<T, Tag> &p) -> Point<T, Tag>
 {
-    typename VectorTraits<Point<T, Tag>>::difference_type v;
-    for (size_t i = 0; i < v.size(); ++i)
-        v[i] = a[i] - b[i];
-    return v;
+    Point<T, Tag> res;
+    res.mData = p.mData * scalar;
+    return res;
+}
+
+template<VectorExpr Vec, PointConcept P>
+auto operator+(const Vec &vec, const P &p) -> P
+{
+    return p + vec;
+}
+
+template<VectorExpr Vec, PointConcept P>
+auto operator-(const Vec &vec, const P &p) -> P
+{
+    return p - vec;
+}
+
+template<VectorExpr Vec, PointConcept P>
+auto operator * (const Vec &vec, const P &p) -> P
+{
+    return p * vec;
+}
+
+template<VectorExpr Vec, PointConcept P>
+auto operator / (const Vec &vec, const P &p) -> P
+{
+    return p / vec;
+}
+
+//template<MatrixExpr Mat, PointConcept P>
+//auto operator*(const Mat &mat, const P &p) -> P
+//{
+//    return p * mat;
+//}
+template<MatrixExpr Mat, PointConcept P>
+auto operator*(const Mat &mat, const P &p)
+{
+    return mat * p.vector();
 }
 
 template<typename T, typename Tag>
@@ -534,6 +686,24 @@ template<typename T, typename Tag>
 auto operator != (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
 {
     return !(pt1 == pt2);
+}
+
+
+/* Quaternion */
+
+template<typename T, typename Tag>
+auto operator*(const Quaternion<T> &q, const Point<T, Tag> &p) -> Point<T, Tag>
+{
+    static_assert(point_traits<Point<T, Tag>>::spatial_dims == 3,
+        "Quaternion rotation is only defined for 3D entities.");
+
+    Quaternion<T> q_norm = q;
+    q_norm.normalize();
+
+    // Rotación: q * v * q'
+    auto q_rot = q_norm * Quaternion<T>(p[0], p[1], p[2], consts::zero<T>) * q_norm.conjugate();
+
+    return Point<T, Tag>{q_rot.x, q_rot.y, q_rot.z};
 }
 
 

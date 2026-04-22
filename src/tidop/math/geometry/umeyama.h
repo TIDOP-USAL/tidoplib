@@ -26,8 +26,8 @@
 
 #include <vector>
 
-#include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/statistics.h"
 #include "tidop/math/algebra/decomp/svd.h"
 #include "tidop/math/geometry/affine.h"
@@ -152,7 +152,8 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
             }
         }
 
-        auto sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
+        TL_TODO("Cuando se implemente Evaluator quitar el eval()");  
+        Matrix<double> sigma = (dst_demean.transpose().eval() * src_demean).eval() / static_cast<double>(size);
         SingularValueDecomposition<Matrix<double>> svd(sigma);
 
         Matrix<double, dimensions, dimensions> S = Matrix<double, dimensions, dimensions>::identity();
@@ -165,7 +166,7 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
                 S[dimensions - 1][dimensions - 1] = -1;
         }
 
-        transformMatrix.block(0, dimensions - 1, 0, dimensions - 1) = svd.u() * S * svd.v().transpose();
+        transformMatrix.block_(0, 0, dimensions, dimensions) = svd.u() * S * svd.v().transpose();
 
         double src_var{};
         double module{};
@@ -183,13 +184,13 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
         transformMatrix.col(dimensions)[1] = mean_dst[1];
         transformMatrix.col(dimensions)[2] = mean_dst[2];
 
-        transformMatrix.block(0, dimensions - 1, 0, dimensions - 1) *= scale;
-        auto aux = transformMatrix.block(0, dimensions - 1, 0, dimensions - 1) * mean_src;
+        transformMatrix.block_(0, 0, dimensions, dimensions) *= scale;
+        Vector<double> aux = transformMatrix.block_(0, 0, dimensions, dimensions) * mean_src;
         transformMatrix.col(dimensions)[0] -= aux[0];
         transformMatrix.col(dimensions)[1] -= aux[1];
         transformMatrix.col(dimensions)[2] -= aux[2];
 
-        affine = Affine<T, Dim>(transformMatrix.block(0, dimensions - 1, 0, dimensions));
+        affine = Affine<T, Dim>(transformMatrix.block_(0, 0, dimensions, dimensions + 1));
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");
@@ -244,11 +245,11 @@ auto Umeyama<T, Dim>::estimate(const std::vector<Point<T>> &src,
         Matrix<T> dst_mat(dst.size(), dimensions);
 
         for (size_t r = 0; r < src_mat.rows(); r++) {
-            src_mat[r][0] = src[r].x;
-            src_mat[r][1] = src[r].y;
+            src_mat[r][0] = src[r].x();
+            src_mat[r][1] = src[r].y();
 
-            dst_mat[r][0] = dst[r].x;
-            dst_mat[r][1] = dst[r].y;
+            dst_mat[r][0] = dst[r].x();
+            dst_mat[r][1] = dst[r].y();
         }
 
         affine = Umeyama<T, dimensions>::estimate(src_mat, dst_mat);

@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(tl_math_module)
     BOOST_CHECK_EQUAL(0, module(0, 0));
     BOOST_CHECK_EQUAL(10, module(10, 0));
     BOOST_CHECK_EQUAL(10, module(0, 10));
-    BOOST_CHECK_CLOSE(14.142135623730, module(10, 10), 0.1);
+    BOOST_CHECK_CLOSE(14.142135623730, module(10, 10), 0.01);
 }
 
 BOOST_AUTO_TEST_CASE(scalar_is_zero)

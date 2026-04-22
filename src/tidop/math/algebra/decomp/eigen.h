@@ -27,8 +27,8 @@
 
 #include <algorithm>
 
-#include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/decomp/qr.h"
 #include "tidop/math/base/lapack.h"
 
@@ -395,7 +395,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
         //Matrix_t<T, Rows, Cols> A_copy = mMatrix;
         //Matrix_t<T, Rows, Cols> Q_total = Matrix_t<T, Rows, Cols>::identity(mSize, mSize);
 
-        //// 🔹 Paso 1: Reducción a forma de Hessenberg
+        //// Reducción a forma de Hessenberg
         //for (size_t k = 0; k < mSize - 2; ++k) {
         //    for (size_t i = k + 2; i < mSize; ++i) {
         //        T x = A_copy(i, k);
@@ -425,7 +425,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
         //    }
         //}
 
-        //// 🔹 Paso 2: Iteraciones QR con detección de bloques 2x2
+        //// Iteraciones QR con detección de bloques 2x2
         //for (size_t iter = 0; iter < maxIterations; ++iter) {
         //    QRDecomposition<Matrix_t<T, Rows, Cols>> qr(A_copy);
         //    Matrix_t<T, Rows, Cols> Q = qr.q();
@@ -434,7 +434,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
         //    A_copy = R * Q;   // A_{k+1} = R_k * Q_k
         //    Q_total = Q_total * Q;  // Acumulamos la transformación
 
-        //    // 🔹 Paso 3: Detectar bloques 2x2 en la diagonal
+        //    // Detectar bloques 2x2 en la diagonal
         //    bool converged = true;
         //    for (size_t i = 0; i < mSize - 1; ++i) {
         //        if (std::abs(A_copy(i + 1, i)) > tolerance) {
@@ -445,7 +445,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
         //    if (converged) break;
         //}
 
-        //// 🔹 Paso 4: Extraer autovalores reales y complejos
+        //// Extraer autovalores reales y complejos
         //for (size_t i = 0; i < mSize; ++i) {
         //    if (i < mSize - 1 && std::abs(A_copy(i + 1, i)) > tolerance) {
         //        // Bloque 2x2 -> calcular autovalores complejos
@@ -485,7 +485,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
         Matrix_t<T, Rows, Cols> A_copy = mMatrix;
         Matrix_t<T, Rows, Cols> Q_total = Matrix_t<T, Rows, Cols>::identity(mSize, mSize);
 
-        // 🔹 Paso 1: Reducción a Hessenberg
+        // Reducción a Hessenberg
         for (size_t k = 0; k < mSize - 2; ++k) {
             for (size_t i = k + 2; i < mSize; ++i) {
                 T x = A_copy(i, k);
@@ -515,7 +515,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
             }
         }
 
-        // 🔹 Paso 2: Iteraciones QR con Shift
+        // Iteraciones QR con Shift
         for (size_t iter = 0; iter < maxIterations; ++iter) {
             // Wilkinson Shift para mejorar convergencia
             T mu = A_copy(mSize - 1, mSize - 1);
@@ -526,10 +526,11 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
             Matrix_t<T, Rows, Cols> Q = qr.q();
             Matrix_t<T, Rows, Cols> R = qr.r();
 
-            A_copy = R * Q + mu * I; // Aplicar el shift
+            TL_TODO("Cuando se implemente Evaluator quitar el eval(). Se hace para seguir compilando")
+            A_copy = (R * Q).eval() + mu * I; // Aplicar el shift
             Q_total = Q_total * Q; // Acumular transformaciones
 
-            // 🔹 Paso 3: Detección de convergencia
+            // Detección de convergencia
             bool converged = true;
             for (size_t i = 0; i < mSize - 1; ++i) {
                 if (std::abs(A_copy(i + 1, i)) > tolerance) {
@@ -540,7 +541,7 @@ void EigenDecomposition<Matrix_t<T, Rows, Cols>>::computeGeneral()
             if (converged) break;
         }
 
-        // 🔹 Paso 4: Extraer autovalores (reales o complejos)
+        // Extraer autovalores (reales o complejos)
         for (size_t i = 0; i < mSize; ++i) {
             if (i < mSize - 1 && std::abs(A_copy(i + 1, i)) > tolerance) {
                 // Bloque 2x2 → calcular autovalores complejos

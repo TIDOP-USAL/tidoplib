@@ -16,10 +16,66 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
 
-#include "mathutils.h"
+#pragma once
+
+#include "tidop/math/base/Traits.h"
+#include "tidop/math/base/Concepts.h"
+
+
+namespace tl
+{
+
+template<typename Derived>
+class VectorBase;
+
+
+template<typename LHS, typename Scalar>
+class VecDivScalarExpr
+  : public VectorBase<VecDivScalarExpr<LHS, Scalar>>
+{
+
+private:
+
+    const LHS &mLhs;
+    Scalar mScalar;
+
+public:
+
+    static_assert(std::is_same_v<typename vector_traits<LHS>::value_type,
+                  Scalar>, "Mixed types not supported");
+
+    using value_type = Scalar;
+
+public:
+
+    VecDivScalarExpr(const LHS &lhs, Scalar scalar)
+      : mLhs(lhs), 
+        mScalar(scalar)
+    {}
+
+    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
+
+    auto operator[](size_t i) const -> value_type
+    {
+        return mLhs[i] / mScalar;
+    }
+
+    auto packet(size_t i) const
+    {
+        return mLhs.packet(i) / Packed<value_type>(mScalar);
+    }
+
+    auto aliases(const void *ptr) const -> bool
+    {
+        return mLhs.aliases(ptr);
+    }
+};
+
+
+} // End namespace tl

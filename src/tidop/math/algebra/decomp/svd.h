@@ -27,7 +27,7 @@
 
 #include <algorithm>
 
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/base/lapack.h"
 #include "tidop/core/base/flags.h"
 
@@ -303,9 +303,9 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 {
     try {
         if (A.cols() > U.cols())
-            U = A.block(0, A.rows() - 1, 0, U.cols() - 1);
+            U = A.block_(0, 0, A.rows(), U.cols());
         else
-            U.block(0, A.rows() - 1, 0, A.cols() - 1) = A;
+            U.block_(0, 0, A.rows(), A.cols()) = A;
 
         T tol = static_cast<T>(1e-10);
 
@@ -462,7 +462,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                 }
             }
 
-            for (int i = std::min(mRows, mCols) - 1; i >= 0; --i) {
+            for (int i = static_cast<int>(std::min(mRows, mCols)) - 1; i >= 0; --i) {
 
                 size_t l = i + 1;
                 g = W[i];

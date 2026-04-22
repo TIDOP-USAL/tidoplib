@@ -44,21 +44,57 @@ if(BUILD_TL_MATH)
                              algebra/decomp/lu.h
                              algebra/decomp/qr.h
                              algebra/decomp/svd.h
-                             algebra/matrix/base.h
-                             algebra/matrix/block.h
-                             algebra/matrix/col.h
-                             algebra/matrix/row.h
+                             algebra/expr/AddExpr.h
+                             algebra/expr/DivScalarExpr.h
+                             algebra/expr/MatMulExpr.h
+                             algebra/expr/MulScalarExpr.h
+                             algebra/expr/SubExpr.h
+                             algebra/expr/TransposeExpr.h
+                             algebra/expr/UnaryMinusExpr.h
+                             algebra/expr/MatVecMulExpr.h
+                             algebra/expr/VecAddExpr.h
+                             algebra/expr/VecDivExpr.h
+                             algebra/expr/VecDivScalarExpr.h
+                             algebra/expr/VecMulExpr.h
+                             algebra/expr/VecMulScalarExpr.h
+                             algebra/expr/VecSubExpr.h
+                             algebra/expr/VecUnaryMinusExpr.h
+                             #algebra/matrix/base.h
+                             #algebra/matrix/block.h
+                             #algebra/matrix/col.h
+                             #algebra/matrix/row.h
+                             algebra/matrix/Kernel.h
+                             algebra/matrix/Matrix.h
+                             algebra/matrix/MatrixBase.h
+                             algebra/matrix/MatrixBlock.h
+                             algebra/matrix/MatrixCol.h
+                             algebra/matrix/MatrixRow.h
+                             algebra/matrix/detail/AdjugateMatrix.h
+                             algebra/matrix/detail/Cofactor.h
+                             algebra/matrix/detail/CofactorMatrix.h
+                             algebra/matrix/detail/Determinant.h
+                             algebra/matrix/detail/FirstMinor.h
+                             algebra/matrix/detail/Inverse.h
+                             algebra/matrix/detail/ReducedRowEchelonForm.h
+                             algebra/matrix/detail/RowEchelonForm.h
                              algebra/rotations/axis_angle.h
                              algebra/rotations/euler_angles.h
                              algebra/rotations/quaternion.h
                              algebra/rotations/rotation_convert.h
                              algebra/rotations/rotation_matrix.h
                              algebra/rotations/rotations.h
-                             algebra/matrix.h
+                             algebra/vector/Vector.h
+                             algebra/vector/VectorBase.h
+                             algebra/vector/detail/MatVecMul.h
+                             algebra/vector/detail/MatVecMulCPP.h
+                             algebra/vector/detail/MatVecMulSIMD.h
+                             algebra/BaseExpr.h
                              algebra/matrices.h
-                             algebra/vector.h
+                             #algebra/matrix.h
+                             #algebra/vector.h
                              base/blas.h
                              base/cuda.h
+                             base/Concepts.h
                              base/data.h
                              base/lapack.h
                              base/simd.h

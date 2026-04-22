@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop rotation test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/geometry/rotation.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 
 using namespace tl;
@@ -254,10 +254,10 @@ BOOST_FIXTURE_TEST_CASE(constructor_2d, RotationTest)
     BOOST_CHECK_EQUAL(35. * consts::deg_to_rad<double>, rotation2.angle());
 
     rotation_matrix = rotation2.toMatrix();
-    BOOST_CHECK_CLOSE(0.8191520442, rotation_matrix(0, 0), 0.1);
-    BOOST_CHECK_CLOSE(-0.5735764363, rotation_matrix(0, 1), 0.1);
-    BOOST_CHECK_CLOSE(0.5735764363, rotation_matrix(1, 0), 0.1);
-    BOOST_CHECK_CLOSE(0.8191520442, rotation_matrix(1, 1), 0.1); 
+    BOOST_CHECK_CLOSE(0.8191520442, rotation_matrix(0, 0), 0.01);
+    BOOST_CHECK_CLOSE(-0.5735764363, rotation_matrix(0, 1), 0.01);
+    BOOST_CHECK_CLOSE(0.5735764363, rotation_matrix(1, 0), 0.01);
+    BOOST_CHECK_CLOSE(0.8191520442, rotation_matrix(1, 1), 0.01); 
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_3d, RotationTest)

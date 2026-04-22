@@ -27,8 +27,8 @@
 #include <algorithm>
 
 #include "tidop/math/math.h"
-#include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/base/lapack.h"
 
 namespace tl
