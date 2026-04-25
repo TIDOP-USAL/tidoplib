@@ -45,17 +45,23 @@ private:
 
 public:
 
+    using value_type = typename vector_traits<Expr>::value_type;
+
+public:
+
     explicit VecUnaryMinusExpr(const Expr &expr)
       : mExpr(expr) 
     {}
 
     constexpr auto size() const noexcept -> size_t { return mExpr.size(); }
 
+    auto expr() const -> const Expr & { return mExpr; }
+//TODO: Quitar
     constexpr auto operator[](size_t i) const
     {
         return -mExpr[i];
     }
-
+//TODO: Quitar
 #ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const 
     {

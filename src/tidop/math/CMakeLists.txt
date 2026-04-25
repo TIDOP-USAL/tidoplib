@@ -44,14 +44,35 @@ if(BUILD_TL_MATH)
                              algebra/decomp/lu.h
                              algebra/decomp/qr.h
                              algebra/decomp/svd.h
-                             algebra/expr/AddExpr.h
-                             algebra/expr/DivScalarExpr.h
+                             algebra/eval/Evaluator.h
+                             algebra/eval/MatAddEval.h
+                             algebra/eval/MatDivScalarEval.h
+                             algebra/eval/MatMulEval.h
+                             algebra/eval/MatMulScalarEval.h
+                             algebra/eval/MatrixBlockEval.h
+                             algebra/eval/MatrixColEval.h
+                             algebra/eval/MatrixEval.h
+                             algebra/eval/MatrixRowEval.h
+                             algebra/eval/MatSubEval.h
+                             algebra/eval/MatUnaryMinusEval.h
+                             algebra/eval/MatVecMulEval.h
+                             algebra/eval/TransposeEval.h
+                             algebra/eval/VecAddEval.h
+                             algebra/eval/VecDivEval.h
+                             algebra/eval/VecDivScalarEval.h
+                             algebra/eval/VecMulEval.h
+                             algebra/eval/VecMulScalarEval.h
+                             algebra/eval/VecSubEval.h
+                             algebra/eval/VectorEval.h
+                             algebra/eval/VecUnaryMinusEval.h
+                             algebra/expr/MatAddExpr.h
+                             algebra/expr/MatDivScalarExpr.h
                              algebra/expr/MatMulExpr.h
-                             algebra/expr/MulScalarExpr.h
-                             algebra/expr/SubExpr.h
-                             algebra/expr/TransposeExpr.h
-                             algebra/expr/UnaryMinusExpr.h
+                             algebra/expr/MatMulScalarExpr.h
+                             algebra/expr/MatSubExpr.h
+                             algebra/expr/MatUnaryMinusExpr.h
                              algebra/expr/MatVecMulExpr.h
+                             algebra/expr/TransposeExpr.h
                              algebra/expr/VecAddExpr.h
                              algebra/expr/VecDivExpr.h
                              algebra/expr/VecDivScalarExpr.h
@@ -68,13 +89,19 @@ if(BUILD_TL_MATH)
                              algebra/matrix/MatrixBase.h
                              algebra/matrix/MatrixBlock.h
                              algebra/matrix/MatrixCol.h
+                             algebra/matrix/MatrixConfig.h
                              algebra/matrix/MatrixRow.h
                              algebra/matrix/detail/AdjugateMatrix.h
+                             algebra/matrix/detail/Assing.h
                              algebra/matrix/detail/Cofactor.h
                              algebra/matrix/detail/CofactorMatrix.h
                              algebra/matrix/detail/Determinant.h
                              algebra/matrix/detail/FirstMinor.h
                              algebra/matrix/detail/Inverse.h
+                             algebra/matrix/detail/MulMat.h
+                             algebra/matrix/detail/MulMatBLAS.h
+                             algebra/matrix/detail/MulMatCPP.h
+                             algebra/matrix/detail/MulMatSIMD.h
                              algebra/matrix/detail/ReducedRowEchelonForm.h
                              algebra/matrix/detail/RowEchelonForm.h
                              algebra/rotations/axis_angle.h
@@ -85,6 +112,7 @@ if(BUILD_TL_MATH)
                              algebra/rotations/rotations.h
                              algebra/vector/Vector.h
                              algebra/vector/VectorBase.h
+                             algebra/vector/detail/Assing.h
                              algebra/vector/detail/MatVecMul.h
                              algebra/vector/detail/MatVecMulCPP.h
                              algebra/vector/detail/MatVecMulSIMD.h

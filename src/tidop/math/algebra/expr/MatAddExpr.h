@@ -35,8 +35,8 @@ class MatrixBase;
 
 
 template<typename LHS, typename RHS>
-class SubExpr 
-  : public MatrixBase<SubExpr<LHS, RHS>>
+class MatAddExpr
+  : public MatrixBase<MatAddExpr<LHS, RHS>>
 {
 
 private:
@@ -55,9 +55,8 @@ public:
 
 public:
 
-    SubExpr(const LHS &lhs, const RHS &rhs) 
-      : mLhs(lhs),
-        mRhs(rhs)
+    MatAddExpr(const LHS &lhs, const RHS &rhs) 
+      : mLhs(lhs), mRhs(rhs)
     {
         TL_ASSERT(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols(), "Matrix sizes must match");
     }
@@ -65,25 +64,36 @@ public:
     constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
     constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
 
-    auto operator()(size_t r, size_t c) const -> value_type
+    // Añadido para Evaluator
+    auto lhs() const -> const LHS & { return mLhs; }
+    auto rhs() const -> const RHS & { return mRhs; }
+	
+    // TODO: mover a Evaluator
+    auto operator()(size_t r, size_t c) const -> value_type 
     {
-        return mLhs(r, c) - mRhs(r, c);
+        return mLhs(r, c) + mRhs(r, c);
     }
 
+    // TODO: mover a Evaluator
     auto operator()(size_t i) const -> value_type
     {
-        return mLhs(i) - mRhs(i);
+        return mLhs(i) + mRhs(i);
     }
 
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    // TODO: mover a Evaluator
     auto packet(size_t i) const
     {
-        return mLhs.packet(i) - mRhs.packet(i);
+        return mLhs.packet(i) + mRhs.packet(i);
     }
+#endif
 
     auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }
+
 };
+
 
 } // End namespace tl

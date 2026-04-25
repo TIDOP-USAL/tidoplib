@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/vector/detail/Assing.h"
 
 namespace tl
 {
@@ -93,44 +94,47 @@ public:
     template<VectorExpr Expr>
     auto operator=(const Expr &expr) -> MatrixRow &
     {
-        TL_ASSERT(expr.size() == size(), "Row size mismatch");
-
-        if (expr.aliases(matrixData)) {
-
-            Vector<T> tmp(expr);
-
-            for (size_t i = 0; i < size(); ++i) {
-                (*this)[i] = tmp[i];
-            }
-
-        } else {
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-            if constexpr (vector_traits<Expr>::has_contiguous_memory) {
-
-                size_t i = 0;
-                constexpr size_t ps = Packed<T>::size();
-                size_t max = size() - (size() % ps);
-
-                for (; i < max; i += ps) {
-                    auto p = expr.packet(i);
-                    p.storeUnaligned(&(*this)[i]);
-                }
-
-                for (; i < size(); ++i) {
-                    (*this)[i] = expr[i];
-                }
-
-            } else
-#endif
-            {
-                for (size_t i = 0; i < size(); ++i) {
-                    (*this)[i] = expr[i];
-                }
-            }
-        }
-
+        detail::assign_row(*this, expr);
         return *this;
+
+//        TL_ASSERT(expr.size() == size(), "Row size mismatch");
+//
+//        if (expr.aliases(matrixData)) {
+//
+//            Vector<T> tmp = expr;
+//
+//            for (size_t i = 0; i < size(); ++i) {
+//                (*this)[i] = tmp[i];
+//            }
+//
+//        } else {
+//
+//#ifdef TL_HAVE_SIMD_INTRINSICS
+//            if constexpr (vector_traits<Expr>::has_contiguous_memory) {
+//
+//                size_t i = 0;
+//                constexpr size_t ps = Packed<T>::size();
+//                size_t max = size() - (size() % ps);
+//
+//                for (; i < max; i += ps) {
+//                    auto p = expr.packet(i);
+//                    p.storeUnaligned(&(*this)[i]);
+//                }
+//
+//                for (; i < size(); ++i) {
+//                    (*this)[i] = expr[i];
+//                }
+//
+//            } else
+//#endif
+//            {
+//                for (size_t i = 0; i < size(); ++i) {
+//                    (*this)[i] = expr[i];
+//                }
+//            }
+//        }
+//
+//        return *this;
     }
 
     auto begin() TL_NOEXCEPT->iterator;
@@ -149,7 +153,7 @@ public:
     //template<typename T2, size_t _size2>
     //auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow&;
 
-    explicit operator Vector<T>();
+    //explicit operator Vector<T>();
 
     auto aliases(const void *ptr) const -> bool
     {
@@ -306,17 +310,17 @@ auto MatrixRow<T, _size_>::operator[](size_t column) -> reference
 //    return *this;
 //}
 
-template<typename T, size_t _size_>
-MatrixRow<T, _size_>::operator Vector<T>()
-{
-    Vector<T> vector(this->size());
-
-    for(size_t i = 0; i < this->size(); i++) {
-        vector[i] = (*this)[i];
-    }
-
-    return vector;
-}
+//template<typename T, size_t _size_>
+//MatrixRow<T, _size_>::operator Vector<T>()
+//{
+//    Vector<T> vector(this->size());
+//
+//    for(size_t i = 0; i < this->size(); i++) {
+//        vector[i] = (*this)[i];
+//    }
+//
+//    return vector;
+//}
 
 
 } // End namespace tl

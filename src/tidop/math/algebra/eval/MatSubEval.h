@@ -24,72 +24,57 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
+#include "tidop/math/algebra/eval/Evaluator.h"
+#include "tidop/math/algebra/expr/MatSubExpr.h"
 
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
+/*! \addtogroup Algebra
+ *  \{
+ */
 
 template<typename LHS, typename RHS>
-class MatVecMulExpr 
-  : public VectorBase<MatVecMulExpr<LHS, RHS>>
+class Evaluator<MatSubExpr<LHS, RHS>>
 {
 
 private:
 
-    const LHS &mMat;
-    const RHS &mVec;
+    Evaluator<LHS> mLhs;
+    Evaluator<RHS> mRhs;
 
 public:
 
-    using value_type = typename matrix_traits<LHS>::value_type;
+    using value_type = typename MatSubExpr<LHS, RHS>::value_type;
 
-    MatVecMulExpr(const LHS &mat, const RHS &vec)
-      : mMat(mat), 
-        mVec(vec)
+public:
+
+    Evaluator(const MatSubExpr<LHS, RHS> &expr)
+      : mLhs(expr.lhs()),
+        mRhs(expr.rhs())
     {
-        TL_ASSERT(mat.cols() == vec.size(), "Matrix-Vector mismatch");
     }
 
-    constexpr auto size() const noexcept -> size_t { return mMat.rows(); }
-
-    auto lhs() const -> const LHS & { return mMat; }
-    auto rhs() const -> const RHS & { return mVec; }
-
-    auto aliases(const void *ptr) const -> bool
+    auto coeff(size_t r, size_t c) const -> value_type
     {
-        return mMat.aliases(ptr) || mVec.aliases(ptr);
+        return mLhs.coeff(r, c) - mRhs.coeff(r, c);
     }
 
-    //TODO: Quitar  
-    auto operator[](size_t r) const -> value_type
+    auto coeff(size_t i) const -> value_type
     {
-        value_type sum = 0;
-        size_t cols = mMat.cols();
-
-        for (size_t c = 0; c < cols; ++c) {
-            sum += mMat(r, c) * mVec[c];
-        }
-
-        return sum;
+        return mLhs.coeff(i) - mRhs.coeff(i);
     }
 
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    auto packet(size_t r) const
-//    {
-//        // ⚠️ IMPORTANTE:
-//        // MatVec no es fácilmente vectorizable por filas completas
-//        // normalmente NO implementas packet aquí
-//        // (Eigen tampoco lo hace así)
-//
-//        // Puedes dejarlo sin implementar o fallback
-//        return Packet<value_type>::zero();
-//    }
-//#endif
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    auto packet(size_t i) const
+    {
+        return mLhs.packet(i) - mRhs.packet(i);
+    }
+#endif
 
 };
+
+
+/*! \} */
 
 } // End namespace tl

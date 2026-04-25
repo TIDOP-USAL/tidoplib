@@ -462,7 +462,6 @@ public:
         } else {
             using T = std::remove_cv_t<typename vector_traits<Derived>::value_type>;
             constexpr size_t Size = vector_traits<Derived>::size;
-
             return Vector<T, Size>(this->derived());
         }
     }

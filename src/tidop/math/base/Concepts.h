@@ -64,6 +64,12 @@ concept DenseMatrix = MatrixExpr<T> && requires(T a)
 };
 
 template<typename T>
+concept DenseVector = VectorExpr<T> && requires(T a)
+{
+    { a.data() };
+};
+
+template<typename T>
 concept StaticMatrix = MatrixExpr<T> && (T::rows_at_compile_time != DynamicData);
 
 template<typename T>

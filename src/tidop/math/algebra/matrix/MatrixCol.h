@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/vector/detail/Assing.h"
 
 namespace tl
 {
@@ -96,24 +97,26 @@ public:
     template<VectorExpr Expr>
     auto operator=(const Expr &expr) -> MatrixCol &
     {
-        TL_ASSERT(expr.size() == size(), "Column size mismatch");
-
-        if (expr.aliases(matrixData)) {
-
-            Vector<T> tmp(expr);
-
-            for (size_t i = 0; i < size(); ++i) {
-                (*this)[i] = tmp[i];
-            }
-
-        } else {
-
-            for (size_t i = 0; i < size(); ++i) {
-                (*this)[i] = expr[i];
-            }
-        }
-
+        detail::assign_col(*this, expr);
         return *this;
+        //TL_ASSERT(expr.size() == size(), "Column size mismatch");
+
+        //if (expr.aliases(matrixData)) {
+
+        //    Vector<T> tmp(expr);
+
+        //    for (size_t i = 0; i < size(); ++i) {
+        //        (*this)[i] = tmp[i];
+        //    }
+
+        //} else {
+
+        //    for (size_t i = 0; i < size(); ++i) {
+        //        (*this)[i] = expr[i];
+        //    }
+        //}
+
+        //return *this;
     }
 
     auto begin() TL_NOEXCEPT -> iterator;
@@ -130,7 +133,7 @@ public:
     template<typename T2, size_t _size2>
     auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;*/   
     
-    explicit operator Vector<T>();
+    //explicit operator Vector<T>();
 
     auto aliases(const void *ptr) const -> bool
     {
@@ -285,16 +288,16 @@ auto MatrixCol<T, Size>::operator[](size_t row) -> reference
 //    return *this;
 //}
 
-template<typename T, size_t Size>
-MatrixCol<T, Size>::operator Vector<T>()
-{
-    Vector<T> vector(this->size());
-
-    for(size_t i = 0; i < this->size(); i++) {
-        vector[i] = (*this)[i];
-    }
-
-    return vector;
-}
+//template<typename T, size_t Size>
+//MatrixCol<T, Size>::operator Vector<T>()
+//{
+//    Vector<T> vector(this->size());
+//
+//    for(size_t i = 0; i < this->size(); i++) {
+//        vector[i] = (*this)[i];
+//    }
+//
+//    return vector;
+//}
 
 } // End namespace tl

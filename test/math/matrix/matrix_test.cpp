@@ -2158,10 +2158,10 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
     Matrix<double> mat_100x100 = Matrix<double>::randon(100, 100);
     Matrix<double> mat_100x50 = Matrix<double>::randon(100, 50);
 
-    MatrixConfigExpr::instance().product = MatrixConfigExpr::Product::CPP;
+    MatrixConfig::instance().product = MatrixConfig::Product::CPP;
     auto result_cpp = (mat_100x100 * mat_100x50).eval();
 
-    MatrixConfigExpr::instance().product = MatrixConfigExpr::Product::SIMD;
+    MatrixConfig::instance().product = MatrixConfig::Product::SIMD;
     auto result_simd = (mat_100x100 * mat_100x50).eval();
 
     for (size_t r = 0; r < result_cpp.rows(); ++r)
@@ -2533,6 +2533,142 @@ BOOST_FIXTURE_TEST_CASE(l1norm, MatrixTest)
 //    double norm2 = _mat_dyn_3x3_d->l2Norm();
 //    BOOST_CHECK_CLOSE(3.827, norm2, 0.01);
 //}
+
+BOOST_FIXTURE_TEST_CASE(multiple_add, MatrixTest)
+{
+    Matrix<double> mat1 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat2 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat3 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat4 = Matrix<double>::randon(100, 100);
+
+    Matrix<double> result1 = mat1 + mat2;
+
+    for (size_t r = 0; r < result1.rows(); ++r)
+        for (size_t c = 0; c < result1.cols(); ++c)
+            BOOST_CHECK_EQUAL(result1(r, c), mat1(r, c) + mat2(r, c));
+
+    Matrix<double> result2 = mat1 + mat2 + mat3;
+
+    for (size_t r = 0; r < result2.rows(); ++r)
+      for (size_t c = 0; c < result2.cols(); ++c)
+          BOOST_CHECK_EQUAL(result2(r, c), mat1(r, c) + mat2(r, c) + mat3(r, c));
+
+    Matrix<double> result3 = mat1 + mat2 + mat3 + mat4;
+
+    for (size_t r = 0; r < result3.rows(); ++r)
+        for (size_t c = 0; c < result3.cols(); ++c)
+            BOOST_CHECK_EQUAL(result3(r, c), mat1(r, c) + mat2(r, c) + mat3(r, c) + mat4(r, c));
+}
+
+BOOST_FIXTURE_TEST_CASE(multiple_div, MatrixTest)
+{
+    Matrix<double> mat1 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat2 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat3 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat4 = Matrix<double>::randon(100, 100);
+
+    Matrix<double> result1 = mat1 - mat2;
+
+    for (size_t r = 0; r < result1.rows(); ++r)
+        for (size_t c = 0; c < result1.cols(); ++c)
+            BOOST_CHECK_EQUAL(result1(r, c), mat1(r, c) - mat2(r, c));
+
+    Matrix<double> result2 = mat1 - mat2 - mat3;
+
+    for (size_t r = 0; r < result2.rows(); ++r)
+        for (size_t c = 0; c < result2.cols(); ++c)
+            BOOST_CHECK_EQUAL(result2(r, c), mat1(r, c) - mat2(r, c) - mat3(r, c));
+
+    Matrix<double> result3 = mat1 - mat2 - mat3 - mat4;
+
+    for (size_t r = 0; r < result3.rows(); ++r)
+        for (size_t c = 0; c < result3.cols(); ++c)
+            BOOST_CHECK_EQUAL(result3(r, c), mat1(r, c) - mat2(r, c) - mat3(r, c) - mat4(r, c));
+}
+
+BOOST_FIXTURE_TEST_CASE(multiple_add_div, MatrixTest)
+{
+    Matrix<double> mat1 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat2 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat3 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat4 = Matrix<double>::randon(100, 100);
+
+
+    Matrix<double> result1 = mat1 + mat2 - mat3;
+
+    for (size_t r = 0; r < result1.rows(); ++r)
+        for (size_t c = 0; c < result1.cols(); ++c)
+            BOOST_CHECK_EQUAL(result1(r, c), mat1(r, c) + mat2(r, c) - mat3(r, c)); 
+
+    Matrix<double> result2 = mat1 + mat2 - mat3 + mat4;
+
+    for (size_t r = 0; r < result2.rows(); ++r)
+        for (size_t c = 0; c < result2.cols(); ++c)
+            BOOST_CHECK_EQUAL(result2(r, c), mat1(r, c) + mat2(r, c) - mat3(r, c) + mat4(r, c));
+}
+
+BOOST_FIXTURE_TEST_CASE(transpose_add, MatrixTest)
+{
+    Matrix<double> mat1 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat2 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat3 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat4 = Matrix<double>::randon(100, 100);
+
+
+    Matrix<double> result1 = mat1.transpose() + mat2;
+
+    for (size_t r = 0; r < result1.rows(); ++r)
+        for (size_t c = 0; c < result1.cols(); ++c)
+            BOOST_CHECK_EQUAL(result1(r, c), mat1(c, r) + mat2(r, c));
+
+    Matrix<double> result2 = mat1 + mat2.transpose() + mat3 + mat4.transpose();
+
+    for (size_t r = 0; r < result2.rows(); ++r)
+        for (size_t c = 0; c < result2.cols(); ++c)
+            BOOST_CHECK_EQUAL(result2(r, c), mat1(r, c) + mat2(c, r) + mat3(r, c) + mat4(c, r));
+}
+
+BOOST_FIXTURE_TEST_CASE(mul_scalar_add, MatrixTest)
+{
+    Matrix<double> mat1 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat2 = Matrix<double>::randon(100, 100);
+    double scalar = 10.;
+
+    Matrix<double> result1 = mat1 * scalar + mat2;
+
+    for (size_t r = 0; r < result1.rows(); ++r)
+        for (size_t c = 0; c < result1.cols(); ++c)
+            BOOST_CHECK_EQUAL(result1(r, c), mat1(r, c) * scalar + mat2(r, c));
+
+    Matrix<double> result2 = mat1 * scalar + mat2 * scalar;
+
+    for (size_t r = 0; r < result2.rows(); ++r)
+        for (size_t c = 0; c < result2.cols(); ++c)
+            BOOST_CHECK_EQUAL(result2(r, c), mat1(r, c) * scalar + mat2(r, c) * scalar);
+
+    Matrix<double> result3 = mat2 + mat1 * scalar;
+
+    for (size_t r = 0; r < result3.rows(); ++r)
+        for (size_t c = 0; c < result3.cols(); ++c)
+            BOOST_CHECK_EQUAL(result3(r, c), mat2(r, c) + mat1(r, c) * scalar);
+}
+
+BOOST_FIXTURE_TEST_CASE(mul_add, MatrixTest)
+{
+    Matrix<double> mat1 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat2 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat3 = Matrix<double>::randon(100, 100);
+    Matrix<double> mat4 = Matrix<double>::randon(100, 100);
+
+    Matrix<double> result1 = mat1 * mat2 + mat3 * mat4;
+
+    Matrix<double> mul_1 =  mat1 * mat2;
+    Matrix<double> mul_2 = mat3 * mat4;
+
+    for (size_t r = 0; r < result1.rows(); ++r)
+        for (size_t c = 0; c < result1.cols(); ++c)
+            BOOST_CHECK_EQUAL(result1(r, c), mul_1(r, c) + mul_2(r, c));
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -4262,10 +4398,10 @@ BOOST_AUTO_TEST_CASE(test_big_matrix)
     Matrix<double> C = Matrix<double>::zero(m, n);
     Matrix<double> D = Matrix<double>::zero(m, n);
 
-    MatrixConfigExpr::instance().product = MatrixConfigExpr::Product::CPP;
+    MatrixConfig::instance().product = MatrixConfig::Product::CPP;
     C = A * B;
 
-    MatrixConfigExpr::instance().product = MatrixConfigExpr::Product::CuBLAS;
+    MatrixConfig::instance().product = MatrixConfig::Product::CuBLAS;
     D = A * B;
 
     for (size_t r = 0; r < C.rows(); ++r)

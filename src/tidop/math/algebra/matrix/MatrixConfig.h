@@ -24,72 +24,46 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
+#include "tidop/config.h"
 
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
+/*! \addtogroup Matrix
+ *  \{
+ */
 
-template<typename LHS, typename RHS>
-class MatVecMulExpr 
-  : public VectorBase<MatVecMulExpr<LHS, RHS>>
+class TL_EXPORT MatrixConfig
 {
-
-private:
-
-    const LHS &mMat;
-    const RHS &mVec;
 
 public:
 
-    using value_type = typename matrix_traits<LHS>::value_type;
-
-    MatVecMulExpr(const LHS &mat, const RHS &vec)
-      : mMat(mat), 
-        mVec(vec)
+    enum class Product
     {
-        TL_ASSERT(mat.cols() == vec.size(), "Matrix-Vector mismatch");
-    }
+		AUTO,
+#ifdef TL_HAVE_CUDA
+        CuBLAS,
+#endif
+#ifdef TL_HAVE_OPENBLAS
+        BLAS,
+#endif
+#ifdef TL_HAVE_SIMD_INTRINSICS
+        SIMD,
+#endif
+        CPP
+    };
 
-    constexpr auto size() const noexcept -> size_t { return mMat.rows(); }
+    Product product = Product::AUTO;
 
-    auto lhs() const -> const LHS & { return mMat; }
-    auto rhs() const -> const RHS & { return mVec; }
-
-    auto aliases(const void *ptr) const -> bool
+    static auto instance() -> MatrixConfig &
     {
-        return mMat.aliases(ptr) || mVec.aliases(ptr);
+        static MatrixConfig _config;
+        return _config;
     }
-
-    //TODO: Quitar  
-    auto operator[](size_t r) const -> value_type
-    {
-        value_type sum = 0;
-        size_t cols = mMat.cols();
-
-        for (size_t c = 0; c < cols; ++c) {
-            sum += mMat(r, c) * mVec[c];
-        }
-
-        return sum;
-    }
-
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    auto packet(size_t r) const
-//    {
-//        // ⚠️ IMPORTANTE:
-//        // MatVec no es fácilmente vectorizable por filas completas
-//        // normalmente NO implementas packet aquí
-//        // (Eigen tampoco lo hace así)
-//
-//        // Puedes dejarlo sin implementar o fallback
-//        return Packet<value_type>::zero();
-//    }
-//#endif
-
 };
 
-} // End namespace tl
+/*! \} */
+
+} // namespace tl
+
+

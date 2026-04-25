@@ -24,66 +24,52 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
-
+#include "tidop/math/algebra/eval/Evaluator.h"
+#include "tidop/math/algebra/expr/VecDivExpr.h"
 
 namespace tl
 {
 
-template<typename Derived>
-class MatrixBase;
+/*! \addtogroup Algebra
+ *  \{
+ */
 
-
-template<typename LHS, typename Scalar>
-class DivScalarExpr
-  : public MatrixBase<DivScalarExpr<LHS, Scalar>>
+template<typename LHS, typename RHS>
+class Evaluator<VecDivExpr<LHS, RHS>>
 {
 
 private:
 
-    const LHS &mLhs;
-    Scalar mScalar;
+    Evaluator<LHS> mLhs;
+    Evaluator<RHS> mRhs;
 
 public:
 
-    static_assert(std::is_same_v<
-        typename matrix_traits<LHS>::value_type,
-        Scalar>,
-        "Mixed types not supported");
-
-    using value_type = Scalar;
+    using value_type = typename VecDivExpr<LHS, RHS>::value_type;
 
 public:
 
-    DivScalarExpr(const LHS &lhs, Scalar scalar)
-      : mLhs(lhs), 
-        mScalar(scalar)
-    {}
-
-    constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
-    constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
-
-    auto operator()(size_t r, size_t c) const -> value_type
+    Evaluator(const VecDivExpr<LHS, RHS> &expr)
+      : mLhs(expr.lhs()),
+        mRhs(expr.rhs())
     {
-        return mLhs(r, c) / mScalar;
     }
 
-    auto operator()(size_t i) const -> value_type
+    auto coeff(size_t i) const -> value_type
     {
-        return mLhs(i) / mScalar;
+        return mLhs.coeff(i) / mRhs.coeff(i);
     }
 
+#ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const
     {
-        return mLhs.packet(i) / Packed<value_type>(mScalar);
+        return mLhs.packet(i) / mRhs.packet(i);
     }
+#endif
 
-    auto aliases(const void *ptr) const -> bool
-    {
-        return mLhs.aliases(ptr);
-    }
 };
 
+
+/*! \} */
 
 } // End namespace tl

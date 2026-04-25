@@ -27,6 +27,10 @@
 #include "tidop/math/base/data.h"
 #include "tidop/graphic/Rect.h"
 #include "tidop/math/base/Concepts.h"
+#include "tidop/math/algebra/matrix/detail/Assing.h"
+
+// Mover a Assing.h
+//#include "tidop/math/algebra/eval/MatrixBlockEval.h"
 
 namespace tl
 {
@@ -36,6 +40,66 @@ class MatrixBase;
 
 template<typename T, size_t Rows, size_t Cols>
 class MatrixBlock;
+
+namespace detail
+{
+
+//template<typename Block, typename Expr>
+//void assign_block(Block &dst, const Expr &expr)
+//{
+//    if (expr.aliases(&dst(0, 0))) {
+//        Matrix<typename Block::value_type> tmp(expr);
+//        assign_block(dst, tmp);
+//        return;
+//    }
+//
+//    Evaluator<std::remove_cvref_t<Expr>> eval(expr);
+//
+//    for (size_t r = 0; r < dst.rows(); ++r) {
+//        for (size_t c = 0; c < dst.cols(); ++c) {
+//            dst(r, c) = eval.coeff(r, c);
+//        }
+//    }
+//}
+
+//template<typename Block, typename Expr>
+//void assign_block(Block &dst, const Expr &expr)
+//{
+//    using CleanExpr = std::remove_cvref_t<Expr>;
+//
+//    // Alias
+//    if (expr.aliases(&dst(0, 0))) {
+//        Matrix<typename Block::value_type> tmp(expr);
+//        assign_block(dst, tmp);
+//        return;
+//    }
+//
+//    if constexpr (is_matrix_product_v<CleanExpr>) {
+//
+//        const auto &lhs = expr.lhs();
+//        const auto &rhs = expr.rhs();
+//
+//        // TODO: Aqui no siempre se necesita un temporal, solo cuando hay alias
+//        Matrix<typename matrix_traits<Block>::value_type> tmp(lhs.rows(), rhs.cols());
+//
+//        detail::mulmat(lhs, rhs, tmp);
+//
+//        assign_block(dst, tmp);
+//        return;
+//
+//    } else {
+//
+//        Evaluator<CleanExpr> eval(expr);
+//
+//        for (size_t r = 0; r < dst.rows(); ++r) {
+//            for (size_t c = 0; c < dst.cols(); ++c) {
+//                dst(r, c) = eval.coeff(r, c);
+//            }
+//        }
+//    }
+//}
+
+} // namespace detail
 
 
 template<typename T, size_t Rows = DynamicData, size_t Cols = DynamicData>
@@ -63,11 +127,11 @@ private:
 public:
 
     MatrixBlock(T *data, 
-                 size_t parentCols, 
-                 size_t iniRow, 
-                 size_t iniCol, 
-                 size_t blockRows, 
-                 size_t blockCols)
+                size_t parentCols, 
+                size_t iniRow, 
+                size_t iniCol, 
+                size_t blockRows, 
+                size_t blockCols)
         : mData(data), 
           mParentCols(parentCols), 
           mIniRow(iniRow),
@@ -82,26 +146,32 @@ public:
     {
         TL_ASSERT(expr.rows() == mRows && expr.cols() == mCols, "Block size mismatch in assignment");
 
-        if (expr.aliases(mData)) {
-
-            Matrix<T> temp_eval(expr);
-
-            for (size_t r = 0; r < mRows; ++r) {
-                for (size_t c = 0; c < mCols; ++c) {
-                    (*this)(r, c) = temp_eval(r, c);
-                }
-            }
-
-        } else {
-
-            for (size_t r = 0; r < mRows; ++r) {
-                for (size_t c = 0; c < mCols; ++c) {
-                    (*this)(r, c) = expr(r, c);
-                }
-            }
-        }
+        detail::assign_block(*this, expr);
 
         return *this;
+
+        //TL_ASSERT(expr.rows() == mRows && expr.cols() == mCols, "Block size mismatch in assignment");
+
+        //if (expr.aliases(mData)) {
+
+        //    Matrix<T> temp_eval(expr);
+
+        //    for (size_t r = 0; r < mRows; ++r) {
+        //        for (size_t c = 0; c < mCols; ++c) {
+        //            (*this)(r, c) = temp_eval(r, c);
+        //        }
+        //    }
+
+        //} else {
+
+        //    for (size_t r = 0; r < mRows; ++r) {
+        //        for (size_t c = 0; c < mCols; ++c) {
+        //            (*this)(r, c) = expr(r, c);
+        //        }
+        //    }
+        //}
+
+        //return *this;
     }
 
     auto operator=(const MatrixBlock &other) && -> MatrixBlock &
@@ -230,11 +300,24 @@ public:
     auto rows() const noexcept -> size_t { return mRows; }
     auto cols() const noexcept -> size_t { return mCols; }
 
-    auto aliases(const void *ptr) const -> bool 
+    //auto aliases(const void *ptr) const -> bool 
+    //{
+    //    return mData == ptr;
+    //}
+    auto aliases(const void *ptr) const -> bool
     {
-        return mData == ptr;
-    }
+        const T *p = static_cast<const T *>(ptr);
 
+        for (size_t r = 0; r < mRows; ++r) {
+            const T *row_start = mData + (mIniRow + r) * mParentCols + mIniCol;
+            const T *row_end = row_start + mCols;
+
+            if (p >= row_start && p < row_end)
+                return true;
+        }
+
+        return false;
+    }
 };
 
 

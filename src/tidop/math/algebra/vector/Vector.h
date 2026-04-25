@@ -34,6 +34,7 @@
 #include "tidop/math/base/data.h"
 #include "tidop/math/algebra/vector/VectorBase.h"
 #include "tidop/math/algebra/vector/detail/MatVecMul.h"
+#include "tidop/math/algebra/vector/detail/Assing.h"
 #include "tidop/math/base/simd.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/base/Traits.h"
@@ -128,10 +129,10 @@ public:
     Vector(const Expr& expr) 
         : mData(Data<T, Size>(expr.size()))
     {
-
         TL_ASSERT(expr.size() == this->mData.size(), "Static vector cannot be resized");
 
-        *this = expr;
+        //*this = expr;
+        detail::assign(*this, expr);
     }
 	
     //~Vector() = default;
@@ -161,77 +162,79 @@ public:
     template<VectorExpr Expr>
     auto operator=(const Expr &expr) -> Vector&
     {
-        if constexpr (is_matvec_product_v<std::remove_cvref_t<Expr>>) {
+        return detail::assign(*this, expr);
 
-            const auto &mat = expr.lhs();
-            const auto &vec = expr.rhs();
-
-            if (expr.aliases(this->data())) {
-
-                Vector<T, Size> tmp = Vector<T, Size>::zero(vec.size());
-                detail::mat_vec_mul(mat, vec, tmp);
-                *this = std::move(tmp);
-
-            } else {
-
-                if constexpr (Size == DynamicData) {
-                    if (this->size() != expr.size()) {
-                        this->resize(expr.size());
-                    }
-                } else {
-                    TL_ASSERT(expr.size() == Size, "Static vector cannot be resized");
-                }
-
-                //this->fill(0);
-
-                detail::mat_vec_mul(mat, vec, *this);
-
-            }
-
-            return *this;
-
-        } else {
-            constexpr size_t expr_size = vector_traits<Expr>::size;
-
-            if constexpr (Size != DynamicData && expr_size != DynamicData) {
-                static_assert(Size == expr_size, "Vector sizes must match for static vectors");
-            }
-
-            if constexpr (Size == DynamicData) {
-                if (this->size() != expr.size()) {
-                    this->resize(expr.size());
-                }
-            } else {
-                TL_ASSERT(expr.size() == Size, "Static vector cannot be resized");
-            }
-
-            if (expr.aliases(this->data())) {
-                Vector<T, Size> tmp = expr;
-                *this = std::move(tmp);
-                return *this;
-            }
-
-            size_t size = this->size();
-            size_t i = 0;
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-            if constexpr (vector_traits<Expr>::has_contiguous_memory) {
-                constexpr size_t packed_size = Packed<T>::size();
-                size_t max_size = size - (size % packed_size);
-
-                for (; i < max_size; i += packed_size) {
-                    Packed<T> result_packet = expr.packet(i);
-                    result_packet.storeUnaligned(&this->data()[i]);
-                }
-            }
-#endif
-
-            for (; i < size; ++i) {
-                (*this)[i] = expr[i];
-            }
-
-            return *this;
-        }
+//        if constexpr (is_matvec_product_v<std::remove_cvref_t<Expr>>) {
+//
+//            const auto &mat = expr.lhs();
+//            const auto &vec = expr.rhs();
+//
+//            if (expr.aliases(this->data())) {
+//
+//                Vector<T, Size> tmp = Vector<T, Size>::zero(vec.size());
+//                detail::mat_vec_mul(mat, vec, tmp);
+//                *this = std::move(tmp);
+//
+//            } else {
+//
+//                if constexpr (Size == DynamicData) {
+//                    if (this->size() != expr.size()) {
+//                        this->resize(expr.size());
+//                    }
+//                } else {
+//                    TL_ASSERT(expr.size() == Size, "Static vector cannot be resized");
+//                }
+//
+//                //this->fill(0);
+//
+//                detail::mat_vec_mul(mat, vec, *this);
+//
+//            }
+//
+//            return *this;
+//
+//        } else {
+//            constexpr size_t expr_size = vector_traits<Expr>::size;
+//
+//            if constexpr (Size != DynamicData && expr_size != DynamicData) {
+//                static_assert(Size == expr_size, "Vector sizes must match for static vectors");
+//            }
+//
+//            if constexpr (Size == DynamicData) {
+//                if (this->size() != expr.size()) {
+//                    this->resize(expr.size());
+//                }
+//            } else {
+//                TL_ASSERT(expr.size() == Size, "Static vector cannot be resized");
+//            }
+//
+//            if (expr.aliases(this->data())) {
+//                Vector<T, Size> tmp = expr;
+//                *this = std::move(tmp);
+//                return *this;
+//            }
+//
+//            size_t size = this->size();
+//            size_t i = 0;
+//
+//#ifdef TL_HAVE_SIMD_INTRINSICS
+//            if constexpr (vector_traits<Expr>::has_contiguous_memory) {
+//                constexpr size_t packed_size = Packed<T>::size();
+//                size_t max_size = size - (size % packed_size);
+//
+//                for (; i < max_size; i += packed_size) {
+//                    Packed<T> result_packet = expr.packet(i);
+//                    result_packet.storeUnaligned(&this->data()[i]);
+//                }
+//            }
+//#endif
+//
+//            for (; i < size; ++i) {
+//                (*this)[i] = expr[i];
+//            }
+//
+//            return *this;
+//        }
     }
 
     /*!

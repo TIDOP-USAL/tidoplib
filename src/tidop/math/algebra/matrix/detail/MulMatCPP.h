@@ -24,72 +24,37 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
-
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
-
-template<typename LHS, typename RHS>
-class MatVecMulExpr 
-  : public VectorBase<MatVecMulExpr<LHS, RHS>>
+namespace detail
 {
 
-private:
+template<MatrixExpr LHS, MatrixExpr RHS, typename OutMat>
+void mulmat_cpp(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
+{
+    using T = typename matrix_traits<OutMat>::value_type;
 
-    const LHS &mMat;
-    const RHS &mVec;
-
-public:
-
-    using value_type = typename matrix_traits<LHS>::value_type;
-
-    MatVecMulExpr(const LHS &mat, const RHS &vec)
-      : mMat(mat), 
-        mVec(vec)
-    {
-        TL_ASSERT(mat.cols() == vec.size(), "Matrix-Vector mismatch");
-    }
-
-    constexpr auto size() const noexcept -> size_t { return mMat.rows(); }
-
-    auto lhs() const -> const LHS & { return mMat; }
-    auto rhs() const -> const RHS & { return mVec; }
-
-    auto aliases(const void *ptr) const -> bool
-    {
-        return mMat.aliases(ptr) || mVec.aliases(ptr);
-    }
-
-    //TODO: Quitar  
-    auto operator[](size_t r) const -> value_type
-    {
-        value_type sum = 0;
-        size_t cols = mMat.cols();
-
-        for (size_t c = 0; c < cols; ++c) {
-            sum += mMat(r, c) * mVec[c];
+    //for (size_t r = 0; r < matrix1.rows(); r++) {
+    //    for (size_t i = 0; i < matrix1.cols(); i++) {
+    //        T a = matrix1(r, i);
+    //        for (size_t c = 0; c < matrix2.cols(); c++) {
+    //            matrix(r, c) += a * matrix2(i, c);
+    //        }
+    //    }
+    //}
+    // Para no tener que inicializar la matriz de salida a 0
+    for (size_t r = 0; r < matrix1.rows(); r++) {
+        for (size_t c = 0; c < matrix2.cols(); c++) {
+            T sum = 0;
+            for (size_t i = 0; i < matrix1.cols(); i++) {
+                sum += matrix1(r, i) * matrix2(i, c);
+            }
+            matrix(r, c) = sum;
         }
-
-        return sum;
     }
+}
 
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    auto packet(size_t r) const
-//    {
-//        // ⚠️ IMPORTANTE:
-//        // MatVec no es fácilmente vectorizable por filas completas
-//        // normalmente NO implementas packet aquí
-//        // (Eigen tampoco lo hace así)
-//
-//        // Puedes dejarlo sin implementar o fallback
-//        return Packet<value_type>::zero();
-//    }
-//#endif
+} // namespace detail
 
-};
-
-} // End namespace tl
+} // namespace tl

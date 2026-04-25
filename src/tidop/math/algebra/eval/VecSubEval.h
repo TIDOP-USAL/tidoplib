@@ -24,56 +24,52 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
+#include "tidop/math/algebra/eval/Evaluator.h"
+#include "tidop/math/algebra/expr/VecSubExpr.h"
 
 namespace tl
 {
 
-template<typename Derived>
-class MatrixBase;
+/*! \addtogroup Algebra
+ *  \{
+ */
 
-
-template<typename Expr>
-class UnaryMinusExpr 
-  : public MatrixBase<UnaryMinusExpr<Expr>>
+template<typename LHS, typename RHS>
+class Evaluator<VecSubExpr<LHS, RHS>>
 {
 
 private:
 
-    const Expr &mExpr;
+    Evaluator<LHS> mLhs;
+    Evaluator<RHS> mRhs;
 
 public:
 
-    explicit UnaryMinusExpr(const Expr &expr)
-      : mExpr(expr) 
-    {}
+    using value_type = typename VecSubExpr<LHS, RHS>::value_type;
 
-    constexpr auto rows() const noexcept -> size_t { return mExpr.rows(); }
-    constexpr auto cols() const noexcept -> size_t { return mExpr.cols(); }
+public:
 
-    constexpr auto operator()(size_t r, size_t c) const 
+    Evaluator(const VecSubExpr<LHS, RHS> &expr)
+      : mLhs(expr.lhs()),
+        mRhs(expr.rhs())
     {
-        return -mExpr(r, c);
     }
 
-    constexpr auto operator()(size_t i) const
+    auto coeff(size_t i) const -> value_type
     {
-        return -mExpr(i);
+        return mLhs.coeff(i) - mRhs.coeff(i);
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    auto packet(size_t i) const 
+    auto packet(size_t i) const
     {
-        return -mExpr.packet(i);
+        return mLhs.packet(i) - mRhs.packet(i);
     }
 #endif
 
-    auto aliases(const void *ptr) const -> bool
-    {
-        return mExpr.aliases(ptr);
-    }
-
 };
+
+
+/*! \} */
 
 } // End namespace tl

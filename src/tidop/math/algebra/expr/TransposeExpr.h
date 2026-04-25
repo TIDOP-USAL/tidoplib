@@ -55,12 +55,16 @@ public:
 
     constexpr auto rows() const noexcept -> size_t { return mExpr.cols(); }
     constexpr auto cols() const noexcept -> size_t { return mExpr.rows(); }
+    
+    auto expr() const -> const Expr &{ return mExpr; }
 
+    // TODO: Quitar
     constexpr auto operator()(size_t r, size_t c) const -> value_type
     {
         return mExpr(c, r);
     }
 
+    // TODO: Quitar
     constexpr auto operator()(size_t i) const -> value_type
     {
         size_t c = i % this->cols();
@@ -74,7 +78,7 @@ public:
         return mExpr.aliases(ptr);
     }
 
-    auto underlying() const -> const Expr & { return mExpr; }
+    //auto underlying() const -> const Expr & { return mExpr; }
 };
 
 

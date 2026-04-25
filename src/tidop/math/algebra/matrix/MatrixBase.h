@@ -27,11 +27,11 @@
 #include "tidop/math/base/data.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/BaseExpr.h"
-#include "tidop/math/algebra/expr/AddExpr.h"
-#include "tidop/math/algebra/expr/SubExpr.h"
-#include "tidop/math/algebra/expr/MulScalarExpr.h"
-#include "tidop/math/algebra/expr/DivScalarExpr.h"
-#include "tidop/math/algebra/expr/UnaryMinusExpr.h"
+#include "tidop/math/algebra/expr/MatAddExpr.h"
+#include "tidop/math/algebra/expr/MatSubExpr.h"
+#include "tidop/math/algebra/expr/MatMulScalarExpr.h"
+#include "tidop/math/algebra/expr/MatDivScalarExpr.h"
+#include "tidop/math/algebra/expr/MatUnaryMinusExpr.h"
 #include "tidop/math/algebra/expr/MatMulExpr.h"
 #include "tidop/math/algebra/expr/TransposeExpr.h"
 #include "tidop/math/algebra/matrix/detail/AdjugateMatrix.h"
@@ -574,7 +574,7 @@ public:
 
     auto operator-() const
     {
-        return UnaryMinusExpr<Derived>(this->derived());
+        return MatUnaryMinusExpr<Derived>(this->derived());
     }
 
     /* Binary arithmetic operators */
@@ -582,23 +582,23 @@ public:
     template<MatrixExpr RHS>
     auto operator +(const RHS &rhs) const
     {
-        return AddExpr<Derived, RHS>(this->derived(), rhs);
+        return MatAddExpr<Derived, RHS>(this->derived(), rhs);
     }
 
     template<MatrixExpr RHS>
     auto operator -(const RHS &rhs) const
     {
-        return SubExpr<Derived, RHS>(this->derived(), rhs);
+        return MatSubExpr<Derived, RHS>(this->derived(), rhs);
     }
 
     auto operator *(value_type scalar) const
     {
-        return MulScalarExpr<Derived, value_type>(this->derived(), scalar);
+        return MatMulScalarExpr<Derived, value_type>(this->derived(), scalar);
     }
 
     auto operator /(value_type scalar) const
     {
-        return DivScalarExpr<Derived, value_type>(this->derived(), scalar);
+        return MatDivScalarExpr<Derived, value_type>(this->derived(), scalar);
     }
 
     template<MatrixExpr Expr>

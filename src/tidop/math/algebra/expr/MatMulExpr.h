@@ -46,6 +46,15 @@ private:
 
 public:
 
+    static_assert(std::is_same_v<
+        typename matrix_traits<LHS>::value_type,
+        typename matrix_traits<RHS>::value_type>,
+        "Mixed types not supported");
+
+    using value_type = typename matrix_traits<LHS>::value_type;
+
+public:
+
     MatMulExpr(const LHS &lhs, const RHS &rhs)
       : mLhs(lhs), 
         mRhs(rhs)
@@ -64,10 +73,10 @@ public:
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }
 
+    // TODO: mover a Evaluator
     constexpr auto operator()(size_t r, size_t c) const
     {
-        using T = typename matrix_traits<LHS>::value_type;
-        T sum = 0;
+        value_type sum = 0;
         size_t k_max = mLhs.cols();
 
         for (size_t k = 0; k < k_max; ++k) {

@@ -31,65 +31,64 @@ namespace tl
 {
 
 template<typename Derived>
-class VectorBase;
+class MatrixBase;
+
 
 template<typename LHS, typename RHS>
-class MatVecMulExpr 
-  : public VectorBase<MatVecMulExpr<LHS, RHS>>
+class MatSubExpr 
+  : public MatrixBase<MatSubExpr<LHS, RHS>>
 {
 
 private:
 
-    const LHS &mMat;
-    const RHS &mVec;
+    const LHS &mLhs;
+    const RHS &mRhs;
 
 public:
 
+    static_assert(std::is_same_v<
+        typename matrix_traits<LHS>::value_type,
+        typename matrix_traits<RHS>::value_type>,
+        "Mixed types not supported");
+
     using value_type = typename matrix_traits<LHS>::value_type;
 
-    MatVecMulExpr(const LHS &mat, const RHS &vec)
-      : mMat(mat), 
-        mVec(vec)
+public:
+
+    MatSubExpr(const LHS &lhs, const RHS &rhs) 
+      : mLhs(lhs),
+        mRhs(rhs)
     {
-        TL_ASSERT(mat.cols() == vec.size(), "Matrix-Vector mismatch");
+        TL_ASSERT(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols(), "Matrix sizes must match");
     }
 
-    constexpr auto size() const noexcept -> size_t { return mMat.rows(); }
+    constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
+    constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
 
-    auto lhs() const -> const LHS & { return mMat; }
-    auto rhs() const -> const RHS & { return mVec; }
+    // Añadido para Evaluator
+    auto lhs() const -> const LHS & { return mLhs; }
+    auto rhs() const -> const RHS & { return mRhs; }
+	
+    // TODO: mover a Evaluator
+    auto operator()(size_t r, size_t c) const -> value_type
+    {
+        return mLhs(r, c) - mRhs(r, c);
+    }
+    // TODO: mover a Evaluator
+    auto operator()(size_t i) const -> value_type
+    {
+        return mLhs(i) - mRhs(i);
+    }
+    // TODO: mover a Evaluator
+    auto packet(size_t i) const
+    {
+        return mLhs.packet(i) - mRhs.packet(i);
+    }
 
     auto aliases(const void *ptr) const -> bool
     {
-        return mMat.aliases(ptr) || mVec.aliases(ptr);
+        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }
-
-    //TODO: Quitar  
-    auto operator[](size_t r) const -> value_type
-    {
-        value_type sum = 0;
-        size_t cols = mMat.cols();
-
-        for (size_t c = 0; c < cols; ++c) {
-            sum += mMat(r, c) * mVec[c];
-        }
-
-        return sum;
-    }
-
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    auto packet(size_t r) const
-//    {
-//        // ⚠️ IMPORTANTE:
-//        // MatVec no es fácilmente vectorizable por filas completas
-//        // normalmente NO implementas packet aquí
-//        // (Eigen tampoco lo hace así)
-//
-//        // Puedes dejarlo sin implementar o fallback
-//        return Packet<value_type>::zero();
-//    }
-//#endif
-
 };
 
 } // End namespace tl

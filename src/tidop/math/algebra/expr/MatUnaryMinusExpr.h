@@ -31,64 +31,56 @@ namespace tl
 {
 
 template<typename Derived>
-class VectorBase;
+class MatrixBase;
 
-template<typename LHS, typename RHS>
-class MatVecMulExpr 
-  : public VectorBase<MatVecMulExpr<LHS, RHS>>
+
+template<typename Expr>
+class MatUnaryMinusExpr 
+  : public MatrixBase<MatUnaryMinusExpr<Expr>>
 {
 
 private:
 
-    const LHS &mMat;
-    const RHS &mVec;
+    const Expr &mExpr;
 
 public:
 
-    using value_type = typename matrix_traits<LHS>::value_type;
+    using value_type = typename matrix_traits<Expr>::value_type;
 
-    MatVecMulExpr(const LHS &mat, const RHS &vec)
-      : mMat(mat), 
-        mVec(vec)
+public:
+
+    explicit MatUnaryMinusExpr(const Expr &expr)
+      : mExpr(expr) 
+    {}
+
+    constexpr auto rows() const noexcept -> size_t { return mExpr.rows(); }
+    constexpr auto cols() const noexcept -> size_t { return mExpr.cols(); }
+
+    auto expr() const -> const Expr & { return mExpr; }
+
+    //TODO: Quitar
+    constexpr auto operator()(size_t r, size_t c) const 
     {
-        TL_ASSERT(mat.cols() == vec.size(), "Matrix-Vector mismatch");
+        return -mExpr(r, c);
+    }
+    //TODO: Quitar
+    constexpr auto operator()(size_t i) const
+    {
+        return -mExpr(i);
     }
 
-    constexpr auto size() const noexcept -> size_t { return mMat.rows(); }
-
-    auto lhs() const -> const LHS & { return mMat; }
-    auto rhs() const -> const RHS & { return mVec; }
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    //TODO: Quitar
+    auto packet(size_t i) const 
+    {
+        return -mExpr.packet(i);
+    }
+#endif
 
     auto aliases(const void *ptr) const -> bool
     {
-        return mMat.aliases(ptr) || mVec.aliases(ptr);
+        return mExpr.aliases(ptr);
     }
-
-    //TODO: Quitar  
-    auto operator[](size_t r) const -> value_type
-    {
-        value_type sum = 0;
-        size_t cols = mMat.cols();
-
-        for (size_t c = 0; c < cols; ++c) {
-            sum += mMat(r, c) * mVec[c];
-        }
-
-        return sum;
-    }
-
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    auto packet(size_t r) const
-//    {
-//        // ⚠️ IMPORTANTE:
-//        // MatVec no es fácilmente vectorizable por filas completas
-//        // normalmente NO implementas packet aquí
-//        // (Eigen tampoco lo hace así)
-//
-//        // Puedes dejarlo sin implementar o fallback
-//        return Packet<value_type>::zero();
-//    }
-//#endif
 
 };
 

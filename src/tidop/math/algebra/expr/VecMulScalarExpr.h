@@ -61,11 +61,15 @@ public:
 
     constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
 
+    auto lhs() const -> const LHS & { return mLhs; }
+    auto scalar() const -> Scalar { return mScalar; }
+
+// TODO: mover a Evaluator
     auto operator[](size_t i) const -> value_type
     {
         return mLhs[i] * mScalar;
     }
-
+// TODO: mover a Evaluator
 #ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const
     {

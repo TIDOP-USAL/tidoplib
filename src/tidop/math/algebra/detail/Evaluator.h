@@ -24,70 +24,55 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
-
 namespace tl
 {
 
-template<typename Derived>
-class MatrixBase;
-
-
-template<typename LHS, typename RHS>
-class AddExpr
-  : public MatrixBase<AddExpr<LHS, RHS>>
+namespace detail
 {
 
-private:
+//TODO: Si se usa un expr_traits y vector_traits y matrix_traits heredan de él quedaría mas sencillo
 
-    const LHS &mLhs;
-    const RHS &mRhs;
-
-public:
-
-    static_assert(std::is_same_v<
-        typename matrix_traits<LHS>::value_type,
-        typename matrix_traits<RHS>::value_type>,
-        "Mixed types not supported");
-
-    using value_type = typename matrix_traits<LHS>::value_type;
-
-public:
-
-    AddExpr(const LHS &lhs, const RHS &rhs) 
-      : mLhs(lhs), mRhs(rhs)
-    {
-        TL_ASSERT(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols(), "Matrix sizes must match");
+template<MatrixExpr Expr>
+decltype(auto) require_physical_memory(const Expr &expr)
+{
+    if constexpr (matrix_traits<Expr>::is_plain) {
+        return expr;
+    } else {
+        return expr.eval();
     }
+}
 
-    constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
-    constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
-
-    auto operator()(size_t r, size_t c) const -> value_type 
-    {
-        return mLhs(r, c) + mRhs(r, c);
+template<MatrixExpr Expr>
+decltype(auto) require_linear_access(const Expr &expr) 
+{
+    if constexpr (matrix_traits<Expr>::has_contiguous_memory) {
+        return expr;
+    } else {
+        return expr.eval();
     }
+}
 
-    //requires (matrix_traits<LHS>::is_element_wise &&
-    //          matrix_traits<RHS>::is_element_wise)
-    auto operator()(size_t i) const -> value_type
-    {
-        return mLhs(i) + mRhs(i);
+
+template<VectorExpr Expr>
+decltype(auto) require_physical_memory(const Expr &expr)
+{
+    if constexpr (vector_traits<Expr>::is_plain) {
+        return expr;
+    } else {
+        return expr.eval();
     }
+}
 
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    auto packet(size_t i) const
-    {
-        return mLhs.packet(i) + mRhs.packet(i);
+template<VectorExpr Expr>
+decltype(auto) require_linear_access(const Expr &expr)
+{
+    if constexpr (vector_traits<Expr>::has_contiguous_memory) { 
+        return expr;
+    } else {
+        return expr.eval();
     }
-#endif
+}
 
-    auto aliases(const void *ptr) const -> bool
-    {
-        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
-    }
+} // namespace detail
 
-};
-
-} // End namespace tl
+} // namespace tl

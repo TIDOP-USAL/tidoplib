@@ -33,64 +33,6 @@
 namespace tl
 {
 
-//template<typename T, size_t _size> class Vector;
-//namespace internal
-//{
-//template<typename T, size_t _size> class MatrixRow;
-//template<typename T, size_t _size> class MatrixCol;
-//}
-
-//template<typename D>
-//struct VectorTraits;
-//
-//template<typename T, size_t _size>
-//struct VectorTraits<Vector<T, _size>>
-//{
-//    using value_type = T;
-//    static constexpr size_t size = _size;
-//    using result_type = Vector<T, _size>;
-//};
-//
-//template<typename T, size_t _size>
-//struct VectorTraits<internal::MatrixRow<T, _size>>
-//{
-//    using value_type = T;
-//    static constexpr size_t size = _size;
-//    using result_type = Vector<T, _size>;
-//};
-//
-//template<typename T, size_t _size>
-//struct VectorTraits<internal::MatrixCol<T, _size>> 
-//{
-//    using value_type = T;
-//    static constexpr size_t size = _size;
-//    using result_type = Vector<T, _size>;
-//};
-//
-//
-//
-
-//
-//
-//template<typename T>
-//struct is_point : std::false_type {};
-//
-//template<typename T, size_t _size>
-//struct is_point<Vector<T, _size>> : std::false_type {};
-//
-//template<typename T, size_t _size>
-//struct is_point<internal::MatrixRow<T, _size>> : std::false_type {};
-//
-//template<typename T, size_t _size>
-//struct is_point<internal::MatrixCol<T, _size>> : std::false_type {};
-//
-//template<typename D>
-//using enable_if_point_t = std::enable_if_t<is_point<D>::value, int>;
-
-
-
-
-
 template<typename T, size_t Rows, size_t Cols> class Matrix;
 template<typename T, size_t Rows, size_t Cols> class MatrixBlock;
 template<typename T, size_t _size> class MatrixRow;
@@ -100,12 +42,12 @@ template<typename T, size_t Size> class Vector;
 template<typename T> class RotationMatrix;
 
 
-template<typename LHS, typename RHS> class AddExpr;
-template<typename LHS, typename RHS> class SubExpr;
-template<typename LHS, typename RHS> class MulScalarExpr;
-template<typename LHS, typename RHS> class DivScalarExpr;
+template<typename LHS, typename RHS> class MatAddExpr;
+template<typename LHS, typename RHS> class MatSubExpr;
+template<typename LHS, typename RHS> class MatMulScalarExpr;
+template<typename LHS, typename RHS> class MatDivScalarExpr;
 template<typename LHS, typename RHS> class MatMulExpr;
-template<typename Expr> class UnaryMinusExpr;
+template<typename Expr> class MatUnaryMinusExpr;
 template<typename Expr> class TransposeExpr;
 template<typename LHS, typename RHS> class VecAddExpr;
 template<typename LHS, typename RHS> class VecSubExpr;
@@ -173,7 +115,7 @@ struct matrix_traits<MatrixDiagonal<Expr>>
 };
 
 template<typename LHS, typename RHS>
-struct matrix_traits<AddExpr<LHS, RHS>> 
+struct matrix_traits<MatAddExpr<LHS, RHS>> 
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
@@ -192,7 +134,7 @@ struct matrix_traits<AddExpr<LHS, RHS>>
 };
 
 template<typename LHS, typename RHS>
-struct matrix_traits<SubExpr<LHS, RHS>> 
+struct matrix_traits<MatSubExpr<LHS, RHS>> 
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
@@ -211,7 +153,7 @@ struct matrix_traits<SubExpr<LHS, RHS>>
 };
 
 template<typename LHS, typename Scalar>
-struct matrix_traits<MulScalarExpr<LHS, Scalar>>
+struct matrix_traits<MatMulScalarExpr<LHS, Scalar>>
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
@@ -228,7 +170,7 @@ struct matrix_traits<MulScalarExpr<LHS, Scalar>>
 };
 
 template<typename LHS, typename Scalar>
-struct matrix_traits<DivScalarExpr<LHS, Scalar>>
+struct matrix_traits<MatDivScalarExpr<LHS, Scalar>>
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
@@ -263,7 +205,7 @@ struct matrix_traits<MatMulExpr<LHS, RHS>>
 };
 
 template<typename Expr>
-struct matrix_traits<UnaryMinusExpr<Expr>>
+struct matrix_traits<MatUnaryMinusExpr<Expr>>
 {
     using value_type = std::remove_cv_t<typename matrix_traits<Expr>::value_type>;
 
@@ -406,7 +348,7 @@ struct vector_traits<VecDivExpr<LHS, RHS>>
         std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
         "Mixed types not supported in vector operations");
 
-    using value_type = typename vector_traits<LHS>::value_type;
+    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
     static constexpr size_t size = vector_traits<LHS>::size;
     static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
                                                   vector_traits<RHS>::has_contiguous_memory;
@@ -453,7 +395,7 @@ struct vector_traits<MatVecMulExpr<Mat, Vec>>
         "Mixed types not supported in vector operations");
 
     using value_type = std::remove_cv_t<typename vector_traits<Vec>::value_type>;
-    static constexpr size_t size = vector_traits<Vec>::size;
+    static constexpr size_t size = matrix_traits<Mat>::rows;
     static constexpr bool has_contiguous_memory = false;
     static constexpr bool is_expression = true;
     static constexpr bool is_plain = false;
@@ -524,7 +466,7 @@ struct is_simd_compatible<Matrix<T, R, C>>
 {};
 
 template<typename LHS, typename RHS>
-struct is_simd_compatible<AddExpr<LHS, RHS>>
+struct is_simd_compatible<MatAddExpr<LHS, RHS>>
   : std::bool_constant<is_simd_compatible_v<LHS> &&
                        is_simd_compatible_v<RHS> &&
                        std::is_same_v<typename LHS::value_type, 

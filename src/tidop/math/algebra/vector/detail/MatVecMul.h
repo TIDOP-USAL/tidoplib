@@ -26,13 +26,13 @@
 
 #include "tidop/math/algebra/vector/detail/MatVecMulCPP.h"
 #include "tidop/math/algebra/vector/detail/MatVecMulSIMD.h" 
-
 #include "tidop/math/algebra/detail/Evaluator.h"
+#include "tidop/math/algebra/matrix/MatrixConfig.h"
 
 namespace tl
 {
 
-class MatrixConfigExpr;
+class MatrixConfig;
 
 namespace detail 
 {
@@ -42,9 +42,9 @@ void mat_vec_mul(const Mat &matrix, const VecIn &vectorIn, VecOut &vectorOut)
 {
 	//TODO: Es necesario comprobar si es auto y determinar la mejor opción
 	
-    switch (MatrixConfigExpr::instance().product) {
+    switch (MatrixConfig::instance().product) {
 //#ifdef TL_HAVE_CUDA
-//    case MatrixConfigExpr::Product::CuBLAS:
+//    case MatrixConfig::Product::CuBLAS:
 //        cuda::gemv(matrix.rows(), 
 //                   matrix.cols(), 
 //                   matrix.data(),
@@ -53,7 +53,7 @@ void mat_vec_mul(const Mat &matrix, const VecIn &vectorIn, VecOut &vectorOut)
 //        break;
 //#endif
 //#ifdef TL_HAVE_OPENBLAS
-//    case MatrixConfigExpr::Product::BLAS:
+//    case MatrixConfig::Product::BLAS:
 //    {
 //        T alpha = 1.;
 //        T beta = 0.;
@@ -73,7 +73,7 @@ void mat_vec_mul(const Mat &matrix, const VecIn &vectorIn, VecOut &vectorOut)
 //    break;
 //#endif
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    case MatrixConfigExpr::Product::SIMD:
+    case MatrixConfig::Product::SIMD:
     {
         decltype(auto) a = require_linear_access(matrix);
         decltype(auto) b = require_linear_access(vectorIn);
@@ -81,7 +81,7 @@ void mat_vec_mul(const Mat &matrix, const VecIn &vectorIn, VecOut &vectorOut)
         break;
     }
 #endif
-    case MatrixConfigExpr::Product::CPP:
+    case MatrixConfig::Product::CPP:
     default:
     {
         decltype(auto) a = require_linear_access(matrix);
