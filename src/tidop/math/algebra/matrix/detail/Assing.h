@@ -77,7 +77,7 @@ auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
     }
 
     // Evaluator
-    Evaluator<CleanExpr> eval = expr;
+    Evaluator<CleanExpr> eval(expr);
 
     size_t size = dst.rows() * dst.cols();
     size_t i = 0;
@@ -85,11 +85,11 @@ auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
     // SIMD
 #ifdef TL_HAVE_SIMD_INTRINSICS
     if constexpr (matrix_traits<CleanExpr>::has_contiguous_memory) {
-        constexpr size_t packed_size = Packed<value_type>::size();
+        constexpr size_t packed_size = PackedTraits<Packed<value_type>>::size;
         const size_t max_size = size - (size % packed_size);
 
         for (; i < max_size; i += packed_size) {
-            auto result_packet = eval.packet(i);
+            Packed<value_type> result_packet = eval.packet(i);
             result_packet.storeUnaligned(&dst.data()[i]);
         }
     }

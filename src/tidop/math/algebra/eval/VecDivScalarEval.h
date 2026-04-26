@@ -46,7 +46,7 @@ private:
 public:
 
     using value_type = typename VecDivScalarExpr<LHS, Scalar>::value_type;
-
+    
 public:
 
     Evaluator(const VecDivScalarExpr<LHS, Scalar> &expr)
@@ -63,7 +63,11 @@ public:
 #ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const
     {
-        return mLhs.packet(i) / Packed<value_type>(mScalar);
+        if constexpr (vector_traits<VecDivScalarExpr<LHS, Scalar>>::has_contiguous_memory) {
+            return mLhs.packet(i) / Packed<value_type>(mScalar);
+        } else {
+            TL_ASSERT(false, "SIMD packet not supported for this expression");
+        }
     }
 #endif
 

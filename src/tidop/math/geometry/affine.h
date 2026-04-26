@@ -466,7 +466,7 @@ Affine<T, Dim>::Affine(T sx, T sy, T sz, T tx, T ty, T tz, T omega, T phi, T kap
 
     EulerAngles<T> eulerAngles(omega, phi, kappa);
     RotationMatrix<T> rt = eulerAngles;
-    this->_transform.block_(0, 0, dimensions, dimensions) = rt;
+    this->_transform.block(0, 0, dimensions, dimensions) = rt;
     this->_transform[0][0] *= sx;
     this->_transform[0][1] *= sy;
     this->_transform[0][2] *= sz;
@@ -504,7 +504,7 @@ Affine<T, Dim>::Affine(const Vector<T, 3> &scale,
     static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
 
     Rotation<T, dimensions> rot(rotation);
-    this->_transform.block_(0, 0, dimensions, dimensions) = rot.toMatrix();
+    this->_transform.block(0, 0, dimensions, dimensions) = rot.toMatrix();
     
     for (size_t i = 0; i < dimensions; i++)
         this->_transform.col(i) *= scale[i];
@@ -519,7 +519,7 @@ Affine<T, Dim>::Affine(const Vector<T, 3> &scale,
 {
     static_assert(dimensions == 3, "Constructor for 3D Affine. Use the 2D Affine constructor: Affine(T sx, T sy, T tx, T ty, T angle).");
 
-    this->_transform.block_(0, 0, dimensions, dimensions) = rotation;
+    this->_transform.block(0, 0, dimensions, dimensions) = rotation;
 
     for (size_t i = 0; i < dimensions; i++)
         this->_transform.col(i) *= scale[i];
@@ -532,7 +532,7 @@ Affine<T, Dim>::Affine(const Scaling<T, Dim> &scale,
                        const Translation<T, Dim> &translation, 
                        const Rotation<T, Dim> &rotation)
 {
-    this->_transform.block_(0, 0, dimensions, dimensions) = rotation.toMatrix();
+    this->_transform.block(0, 0, dimensions, dimensions) = rotation.toMatrix();
 
     for (size_t i = 0; i < dimensions; i++)
         this->_transform.col(i) *= scale[i];
@@ -671,7 +671,7 @@ auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Mat
     Vector<T, _col> v(dimensions);
     for (size_t r = 0; r < _matrix.rows(); r++) {
         v = _matrix[r];
-        _matrix[r] = this->_transform.block_(0, 0, Dim, Dim) * v + this->_transform.col(Dim);
+        _matrix[r] = this->_transform.block(0, 0, Dim, Dim) * v + this->_transform.col(Dim);
     }
 
     return _matrix;

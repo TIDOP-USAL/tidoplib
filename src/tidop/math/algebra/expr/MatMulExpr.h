@@ -73,20 +73,6 @@ public:
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }
 
-    // TODO: mover a Evaluator
-    constexpr auto operator()(size_t r, size_t c) const
-    {
-        value_type sum = 0;
-        size_t k_max = mLhs.cols();
-
-        for (size_t k = 0; k < k_max; ++k) {
-            sum += mLhs(r, k) * mRhs(k, c);
-        }
-        return sum;
-    }
-
-    // NOTA: No definimos operator()(i) lineal ni packet(i) SIMD
-    // porque este nodo no se evalúa secuencialmente.
 };
 
 

@@ -29,9 +29,6 @@
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/matrix/detail/Assing.h"
 
-// Mover a Assing.h
-//#include "tidop/math/algebra/eval/MatrixBlockEval.h"
-
 namespace tl
 {
 
@@ -40,67 +37,6 @@ class MatrixBase;
 
 template<typename T, size_t Rows, size_t Cols>
 class MatrixBlock;
-
-namespace detail
-{
-
-//template<typename Block, typename Expr>
-//void assign_block(Block &dst, const Expr &expr)
-//{
-//    if (expr.aliases(&dst(0, 0))) {
-//        Matrix<typename Block::value_type> tmp(expr);
-//        assign_block(dst, tmp);
-//        return;
-//    }
-//
-//    Evaluator<std::remove_cvref_t<Expr>> eval(expr);
-//
-//    for (size_t r = 0; r < dst.rows(); ++r) {
-//        for (size_t c = 0; c < dst.cols(); ++c) {
-//            dst(r, c) = eval.coeff(r, c);
-//        }
-//    }
-//}
-
-//template<typename Block, typename Expr>
-//void assign_block(Block &dst, const Expr &expr)
-//{
-//    using CleanExpr = std::remove_cvref_t<Expr>;
-//
-//    // Alias
-//    if (expr.aliases(&dst(0, 0))) {
-//        Matrix<typename Block::value_type> tmp(expr);
-//        assign_block(dst, tmp);
-//        return;
-//    }
-//
-//    if constexpr (is_matrix_product_v<CleanExpr>) {
-//
-//        const auto &lhs = expr.lhs();
-//        const auto &rhs = expr.rhs();
-//
-//        // TODO: Aqui no siempre se necesita un temporal, solo cuando hay alias
-//        Matrix<typename matrix_traits<Block>::value_type> tmp(lhs.rows(), rhs.cols());
-//
-//        detail::mulmat(lhs, rhs, tmp);
-//
-//        assign_block(dst, tmp);
-//        return;
-//
-//    } else {
-//
-//        Evaluator<CleanExpr> eval(expr);
-//
-//        for (size_t r = 0; r < dst.rows(); ++r) {
-//            for (size_t c = 0; c < dst.cols(); ++c) {
-//                dst(r, c) = eval.coeff(r, c);
-//            }
-//        }
-//    }
-//}
-
-} // namespace detail
-
 
 template<typename T, size_t Rows = DynamicData, size_t Cols = DynamicData>
 class MatrixBlock
@@ -318,6 +254,34 @@ public:
 
         return false;
     }
+
+    template<typename Scalar>
+        requires (matrix_traits<Derived>::is_mutable &&
+                  std::is_convertible_v<Scalar, value_type>)
+    void fill(Scalar value)
+    {
+        size_t size = mRows * mCols;
+        size_t i{0};
+
+        // Para futura optimización en casos de memoria contigua, aunque en bloques no suele ser el caso
+//#ifdef TL_HAVE_SIMD_INTRINSICS
+//
+//        if (matrix_traits<Derived>::has_contiguous_memory) {
+//            Packed<value_type> packed_val(value);
+//            constexpr size_t packed_size = packed_val.size();
+//            size_t max_size = size - size % packed_size;
+//
+//            for (; i < max_size; i += packed_size) {
+//                packed_val.storeUnaligned(&derived(i));
+//            }
+//        }
+//#endif
+
+        for (; i < size; i++) {
+            (*this)(i) = value;
+        }
+    }
+
 };
 
 

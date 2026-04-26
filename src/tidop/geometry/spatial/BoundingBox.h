@@ -416,7 +416,7 @@ auto BoundingBox<Point_t>::center() const -> Point_t
 {
     Point_t center{};
     if (!this->isEmpty()) {
-        auto vector = (mPoints[1] - mPoints[0]) / consts::two<T>;
+        Vector<T, dimensions> vector = (mPoints[1] - mPoints[0]) / consts::two<T>;
         for (size_t i = 0; i < dimensions; ++i) {
             center[i] = mPoints[0][i] + vector[i];
         }

@@ -44,6 +44,7 @@
 #include "tidop/math/base/simd.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/base/Traits.h"
+#include "tidop/math/algebra/vector/detail/VecEqual.h"
 
 namespace tl
 {
@@ -140,13 +141,16 @@ public:
         double dot = 0.0;
         size_t i = 0;
 
+        auto eval_derived = make_evaluator(derived);
+        auto eval_expr = make_evaluator(expr);
+
 #ifdef TL_HAVE_SIMD_INTRINSICS
         using Scalar = std::remove_cv_t<value_type>;
-        Packed<Scalar> packed_a;
-        Packed<Scalar> packed_b;
+        //Packed<Scalar> packed_a;
+        //Packed<Scalar> packed_b;
         Packed<Scalar> packed_result(0);
 
-        constexpr size_t packed_size = packed_a.size();
+        constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
         size_t max_vector = (derived.size() / packed_size) * packed_size;
 
         if constexpr (vector_traits<Derived>::has_contiguous_memory &&
@@ -154,10 +158,10 @@ public:
 
             for (; i < max_vector; i += packed_size) {
 
-                packed_a.loadUnaligned(&derived[i]);
-                packed_b.loadUnaligned(&expr[i]);
+                //packed_a.loadUnaligned(&eval_derived.packet(i));
+                //packed_b.loadUnaligned(&eval_expr.packet(i));
 
-                packed_result += packed_a * packed_b;
+                packed_result += eval_derived.packet(i) * eval_expr.packet(i);
 
             }
 
@@ -166,7 +170,7 @@ public:
 #endif
 
         for (; i < derived.size(); ++i) {
-            dot += static_cast<double>(derived[i]) * static_cast<double>(expr[i]);
+            dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
         }
 
         return dot;
@@ -178,7 +182,7 @@ public:
         static_assert(dimensions == 3, "The cross product is only defined for 3 dimensions.");
 
         Vector<value_type, 3> res{};
-        const auto &a = this->derived();
+        Vector<value_type, 3> a = this->derived();
         Vector<value_type, 3> b = expr;
 
         res[0] = a[1] * b[2] - a[2] * b[1];
@@ -193,19 +197,23 @@ public:
         value_type summation{};
 
         auto &derived = this->derived();
+        auto eval = make_evaluator(derived);
+
         size_t i = 0;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
         using Scalar = std::remove_cv_t<value_type>;
-        Packed<Scalar> packed_a;
-        constexpr size_t packed_size = packed_a.size();
+        //Packed<Scalar> packed_a;
+        //constexpr size_t packed_size = packed_a.size();
+        constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
         size_t max_vector = (derived.size() / packed_size) * packed_size;
 
         if constexpr (vector_traits<Derived>::has_contiguous_memory) {
 
             for (; i < max_vector; i += packed_size) {
-                packed_a.loadUnaligned(&derived[i]);
-                summation += packed_a.sum();
+                //packed_a.loadUnaligned(&derived[i]);
+                //summation += packed_a.sum();
+                summation += eval.packet(i).sum();
             }
 
         }
@@ -213,20 +221,20 @@ public:
 #endif
 
         for (; i < derived.size(); ++i) {
-            summation += derived[i];
+            summation += eval.coeff(i);
         }
 
         return summation;
     }
 
-    decltype(auto) operator[](size_t i) { return this->derived()[i]; }
-    decltype(auto) operator[](size_t i) const { return this->derived()[i]; }
+    //decltype(auto) operator[](size_t i) { return this->derived()[i]; }
+    //decltype(auto) operator[](size_t i) const { return this->derived()[i]; }
 
-    constexpr auto packet(size_t i) const -> Packed<value_type>
-        requires (vector_traits<Derived>::has_contiguous_memory)
-    {
-        return this->derived().packet(i);
-    }
+    //constexpr auto packet(size_t i) const -> Packed<value_type>
+    //    requires (vector_traits<Derived>::has_contiguous_memory)
+    //{
+    //    return this->derived().packet(i);
+    //}
 
     /* Unary arithmetic operators */
 
@@ -422,24 +430,24 @@ public:
     //    }
     //    return true;
     //}
-    template<typename OtherDerived>
-    bool operator==(const VectorBase<OtherDerived> &other) const
-    {
-        const auto &derived = this->derived();
-        const auto &rhs = other.derived();
+    //template<typename OtherDerived>
+    //bool operator==(const VectorBase<OtherDerived> &other) const
+    //{
+    //    const auto &derived = this->derived();
+    //    const auto &rhs = other.derived();
 
-        if (derived.size() != rhs.size()) {
-            return false;
-        }
+    //    if (derived.size() != rhs.size()) {
+    //        return false;
+    //    }
 
-        for (size_t i = 0; i < derived.size(); ++i) {
-            if (derived[i] != rhs[i]) {
-                return false;
-            }
-        }
+    //    for (size_t i = 0; i < derived.size(); ++i) {
+    //        if (derived[i] != rhs[i]) {
+    //            return false;
+    //        }
+    //    }
 
-        return true;
-    }
+    //    return true;
+    //}
 	
     /*!
      * \brief Inequality operator.
@@ -449,11 +457,11 @@ public:
     //{
     //    return !(lhs == rhs);
     //}
-    template<typename OtherDerived>
-    bool operator!=(const VectorBase<OtherDerived> &other) const
-    {
-        return !(*this == other);
-    }
+    //template<typename OtherDerived>
+    //bool operator!=(const VectorBase<OtherDerived> &other) const
+    //{
+    //    return !(*this == other);
+    //}
 	
     constexpr auto eval() const
     {
@@ -1064,6 +1072,23 @@ auto operator*(const RHS &vec, const LHS &mat)
 }
 
 
+template<typename DerivedL, typename DerivedR>
+auto operator==(const VectorBase<DerivedL> &lhs,
+                const VectorBase<DerivedR> &rhs) -> bool
+{
+    static_assert(!vector_traits<DerivedL>::is_expression &&
+        !vector_traits<DerivedR>::is_expression,
+        "Vector expressions cannot be compared directly.");
+
+    return detail::vector_equal(lhs.derived(), rhs.derived());
+}
+
+template<typename DerivedL, typename DerivedR>
+auto operator!=(const VectorBase<DerivedL> &lhs,
+                const VectorBase<DerivedR> &rhs) -> bool
+{
+    return !(lhs == rhs);
+}
 
 template<VectorExpr Expr>
 auto operator<<(std::ostream &os, const Expr &expr) -> std::ostream &

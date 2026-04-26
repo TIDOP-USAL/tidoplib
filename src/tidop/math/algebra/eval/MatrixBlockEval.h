@@ -63,12 +63,8 @@ public:
 #ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const
     {
-        // NO puedes asumir contigüidad
-        // así que fallback genérico
-
-        return Packed<value_type>::load([&](size_t k){
-            return coeff(i + k);
-        });
+        TL_ASSERT(false, "SIMD packet not supported for this expression");
+        return Packed<value_type>();
     }
 #endif
 };

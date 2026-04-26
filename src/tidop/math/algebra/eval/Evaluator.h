@@ -37,6 +37,13 @@ class Evaluator
     static_assert(sizeof(Expr) == 0, "Evaluator not specialized for this expression type");
 };
 
+
+template<typename Expr>
+auto make_evaluator(const Expr &expr)
+{
+    return Evaluator<std::remove_cvref_t<Expr>>(expr);
+}
+
 /*! \} */
 
 } // End namespace tl

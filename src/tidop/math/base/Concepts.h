@@ -45,7 +45,8 @@ concept MatrixExpr = LinearExpr<T> &&
 {
     { a.rows() } noexcept -> std::same_as<size_t>;
     { a.cols() } noexcept -> std::same_as<size_t>;
-    { a(i, j) } -> std::convertible_to<typename T::value_type>;
+    //{ a(i, j) } -> std::convertible_to<typename T::value_type>;
+    typename Evaluator<std::remove_cvref_t<T>>;
 };
 
 template<typename T>
@@ -53,8 +54,9 @@ concept VectorExpr = LinearExpr<T> &&
                      requires(const T & a, size_t i) 
 {
     { a.size() } noexcept -> std::same_as<size_t>;
-    { a[i] } -> std::convertible_to<typename T::value_type>;
+    //{ a[i] } -> std::convertible_to<typename T::value_type>;
     typename T::is_vector_expr_tag;
+    typename Evaluator<std::remove_cvref_t<T>>;
 };
 
 template<typename T>

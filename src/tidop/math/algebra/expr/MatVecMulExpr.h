@@ -64,32 +64,6 @@ public:
         return mMat.aliases(ptr) || mVec.aliases(ptr);
     }
 
-    //TODO: Quitar  
-    auto operator[](size_t r) const -> value_type
-    {
-        value_type sum = 0;
-        size_t cols = mMat.cols();
-
-        for (size_t c = 0; c < cols; ++c) {
-            sum += mMat(r, c) * mVec[c];
-        }
-
-        return sum;
-    }
-
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    auto packet(size_t r) const
-//    {
-//        // ⚠️ IMPORTANTE:
-//        // MatVec no es fácilmente vectorizable por filas completas
-//        // normalmente NO implementas packet aquí
-//        // (Eigen tampoco lo hace así)
-//
-//        // Puedes dejarlo sin implementar o fallback
-//        return Packet<value_type>::zero();
-//    }
-//#endif
-
 };
 
 } // End namespace tl

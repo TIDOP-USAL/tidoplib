@@ -180,7 +180,8 @@ struct matrix_traits<MatDivScalarExpr<LHS, Scalar>>
     using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
     static constexpr size_t rows = matrix_traits<LHS>::rows;
     static constexpr size_t cols = matrix_traits<LHS>::cols;
-    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory;
+    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory &&
+                                                  !std::is_integral_v<value_type>;
     static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise;
     static constexpr bool is_expression = true;
     static constexpr bool is_plain = false;
@@ -381,7 +382,8 @@ struct vector_traits<VecDivScalarExpr<LHS, Scalar>>
 
     using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
     static constexpr size_t size = vector_traits<LHS>::size;
-    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory;
+    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
+                                                  !std::is_integral_v<value_type>;
     static constexpr bool is_expression = true;
     static constexpr bool is_plain = false;
 };
@@ -429,7 +431,6 @@ struct is_vector<MatrixCol<T, _size>> : std::true_type {};
 
 template<typename D>
 using enable_if_vector_t = std::enable_if_t<is_vector<D>::value, int>;
-
 
 
 

@@ -24,52 +24,33 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
+
 
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
-
-// ¿Renombrar como cwiseDiv?
-template<typename LHS, typename RHS>
-class VecDivExpr
-  : public VectorBase<VecDivExpr<LHS, RHS>>
+ 
+namespace detail
 {
 
-private:
-
-    const LHS &mLhs;
-    const RHS &mRhs;
-
-public:
-
-    static_assert(std::is_same_v<
-        typename vector_traits<LHS>::value_type,
-        typename vector_traits<RHS>::value_type>,
-        "Mixed types not supported");
-
-    using value_type = typename vector_traits<LHS>::value_type;
-
-public:
-
-    VecDivExpr(const LHS &lhs, const RHS &rhs)
-      : mLhs(lhs), mRhs(rhs)
-    {
+template<typename L, typename R>
+bool matrix_equal(const L &lhs, const R &rhs) 
+{
+    if (lhs.rows() != rhs.rows() || lhs.cols() != rhs.cols()) {
+        return false;
     }
 
-    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
-
-    auto lhs() const -> const LHS & { return mLhs; }
-    auto rhs() const -> const RHS & { return mRhs; }
-	
-    auto aliases(const void *ptr) const -> bool
-    {
-        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
+    for (size_t i = 0; i < lhs.rows(); ++i) {
+        for (size_t j = 0; j < lhs.cols(); ++j) {
+            if (!isNearlyEqual(lhs(i, j), rhs(i, j))) {
+                return false;
+            }
+        }
     }
-};
 
+    return true;
+}
 
-} // End namespace tl
+} // namespace detail
+
+} // namespace tl

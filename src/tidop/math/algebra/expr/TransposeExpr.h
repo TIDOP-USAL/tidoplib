@@ -58,27 +58,10 @@ public:
     
     auto expr() const -> const Expr &{ return mExpr; }
 
-    // TODO: Quitar
-    constexpr auto operator()(size_t r, size_t c) const -> value_type
-    {
-        return mExpr(c, r);
-    }
-
-    // TODO: Quitar
-    constexpr auto operator()(size_t i) const -> value_type
-    {
-        size_t c = i % this->cols();
-        size_t r = i / this->cols();
-
-        return mExpr(c, r);
-    }
-
     auto aliases(const void *ptr) const 
     {
         return mExpr.aliases(ptr);
     }
-
-    //auto underlying() const -> const Expr & { return mExpr; }
 };
 
 

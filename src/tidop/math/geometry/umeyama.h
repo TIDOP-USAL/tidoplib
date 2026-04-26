@@ -166,7 +166,7 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
                 S[dimensions - 1][dimensions - 1] = -1;
         }
 
-        transformMatrix.block_(0, 0, dimensions, dimensions) = svd.u() * S * svd.v().transpose();
+        transformMatrix.block(0, 0, dimensions, dimensions) = svd.u() * S * svd.v().transpose();
 
         double src_var{};
         double module{};
@@ -184,13 +184,13 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
         transformMatrix.col(dimensions)[1] = mean_dst[1];
         transformMatrix.col(dimensions)[2] = mean_dst[2];
 
-        transformMatrix.block_(0, 0, dimensions, dimensions) *= scale;
-        Vector<double> aux = transformMatrix.block_(0, 0, dimensions, dimensions) * mean_src;
+        transformMatrix.block(0, 0, dimensions, dimensions) *= scale;
+        Vector<double> aux = transformMatrix.block(0, 0, dimensions, dimensions) * mean_src;
         transformMatrix.col(dimensions)[0] -= aux[0];
         transformMatrix.col(dimensions)[1] -= aux[1];
         transformMatrix.col(dimensions)[2] -= aux[2];
 
-        affine = Affine<T, Dim>(transformMatrix.block_(0, 0, dimensions, dimensions + 1));
+        affine = Affine<T, Dim>(transformMatrix.block(0, 0, dimensions, dimensions + 1));
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("");

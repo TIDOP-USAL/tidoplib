@@ -303,9 +303,9 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 {
     try {
         if (A.cols() > U.cols())
-            U = A.block_(0, 0, A.rows(), U.cols());
+            U = A.block(0, 0, A.rows(), U.cols());
         else
-            U.block_(0, 0, A.rows(), A.cols()) = A;
+            U.block(0, 0, A.rows(), A.cols()) = A;
 
         T tol = static_cast<T>(1e-10);
 

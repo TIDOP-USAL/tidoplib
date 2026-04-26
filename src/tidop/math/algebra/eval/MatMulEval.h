@@ -56,27 +56,6 @@ public:
       : mTemp(expr.rows(), expr.cols())
     {
         detail::mulmat(expr.lhs(), expr.rhs(), mTemp);
-        //Evaluator<LHS> lhs(expr.lhs());
-        //Evaluator<RHS> rhs(expr.rhs());
-
-        //const size_t M = expr.rows();
-        //const size_t N = expr.cols();
-        //const size_t K = expr.lhs().cols();
-
-        //for (size_t i = 0; i < M; ++i)
-        //{
-        //    for (size_t j = 0; j < N; ++j)
-        //    {
-        //        T sum = T(0);
-
-        //        for (size_t k = 0; k < K; ++k)
-        //        {
-        //            sum += lhs.coeff(i,k) * rhs.coeff(k,j);
-        //        }
-
-        //        mTemp(i,j) = sum;
-        //    }
-        //}
     }
 
     auto coeff(size_t r, size_t c) const -> value_type

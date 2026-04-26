@@ -42,6 +42,7 @@
 #include "tidop/math/algebra/matrix/detail/Inverse.h"
 #include "tidop/math/algebra/matrix/detail/ReducedRowEchelonForm.h"
 #include "tidop/math/algebra/matrix/detail/RowEchelonForm.h"
+#include "tidop/math/algebra/matrix/detail/MatEqual.h"
 
 namespace tl
 {
@@ -179,9 +180,11 @@ public:
 
         value_type sum = consts::zero<value_type>;
 
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
+        auto eval = make_evaluator(this->derived());
+
         for (size_t i = 0; i < r; ++i) {
-            sum += expr(i, i);
+            sum += eval.coeff(i, i);
         }
 
         return sum;
@@ -224,12 +227,13 @@ public:
     {
         if (!this->isSquare()) return false;
 
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
+        auto eval = make_evaluator(this->derived());
         size_t r = this->rows();
 
         for (size_t i = 0; i < r; ++i) {
             for (size_t j = i + 1; j < r; ++j) {
-                if (!isNearlyEqual(expr(i, j), expr(j, i))) {
+                if (!isNearlyEqual(eval.coeff(i, j), eval.coeff(j, i))) {
                     return false;
                 }
             }
@@ -249,12 +253,13 @@ public:
     {
         if (!this->isSquare()) return false;
 
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
+        auto eval = make_evaluator(this->derived());
         size_t r = this->rows();
 
         for (size_t i = 0; i < r; ++i) {
             for (size_t j = 0; j < r; ++j) {
-                if (i != j && !isNearlyZero(expr(i, j))) {
+                if (i != j && !isNearlyZero(eval.coeff(i, j))) {
                     return false;
                 }
             }
@@ -274,17 +279,18 @@ public:
     {
         if (!this->isSquare()) return false;
 
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
+        auto eval = make_evaluator(this->derived());
         size_t r = this->rows();
 
         for (size_t i = 0; i < r; ++i) {
             for (size_t j = 0; j < r; ++j) {
                 if (i == j) {
-                    if (!isNearlyEqual(expr(i, j), consts::one<value_type>)) {
+                    if (!isNearlyEqual(eval.coeff(i, j), consts::one<value_type>)) {
                         return false;
                     }
                 } else {
-                    if (!isNearlyZero(expr(i, j))) {
+                    if (!isNearlyZero(eval.coeff(i, j))) {
                         return false;
                     }
                 }
@@ -304,11 +310,12 @@ public:
     {
         if (!this->isSquare()) return false;
 
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
+        auto eval = make_evaluator(this->derived());
 
         for (size_t r = 1; r < this->rows(); ++r) {
             for (size_t c = 0; c < r; ++c) {
-                if (!isNearlyZero(expr(r,c))) {
+                if (!isNearlyZero(eval.coeff(r,c))) {
                     return false;
                 }
             }
@@ -328,11 +335,12 @@ public:
     {
         if (!this->isSquare()) return false;
 
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
+        auto eval = make_evaluator(this->derived());
 
         for (size_t r = 0; r < this->rows(); ++r) {
             for (size_t c = r + 1; c < this->cols(); ++c) {
-                if (!isNearlyZero(expr(r, c))) {
+                if (!isNearlyZero(eval.coeff(r, c))) {
                     return false;
                 }
             }
@@ -432,8 +440,10 @@ public:
         size_t size = std::min(derived.rows(), derived.cols());
         Vector<value_type> diag_vector(size);
 
+        auto eval = make_evaluator(derived);
+
         for (size_t i = 0; i < size; ++i) {
-            diag_vector[i] = derived(i, i);
+            diag_vector[i] = eval.coeff(i, i);
         }
 
         return diag_vector;
@@ -463,15 +473,17 @@ public:
      */
     auto frobeniusNorm() const -> value_type
     {
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
         size_t r_count = this->rows();
         size_t c_count = this->cols();
 
         value_type sum = consts::zero<value_type>;
 
+        auto eval = make_evaluator(this->derived());
+
         for (size_t r = 0; r < r_count; ++r) {
             for (size_t c = 0; c < c_count; ++c) {
-                value_type val = expr(r, c);
+                value_type val = eval.coeff(r, c);
                 sum += val * val;
             }
         }
@@ -491,16 +503,18 @@ public:
      */
     auto l1Norm() const -> value_type
     {
-        auto &expr = this->derived();
+        //auto &expr = this->derived();
         size_t r_count = this->rows();
         size_t c_count = this->cols();
 
         value_type max_sum = consts::zero<value_type>;
 
+        auto eval = make_evaluator(this->derived());
+
         for (size_t c = 0; c < c_count; ++c) {
             value_type col_sum = consts::zero<value_type>;
             for (size_t r = 0; r < r_count; ++r) {
-                col_sum += std::abs(expr(r, c));
+                col_sum += std::abs(eval.coeff(r, c));
             }
             max_sum = std::max(max_sum, col_sum);
         }
@@ -544,24 +558,24 @@ public:
     constexpr auto rows() const noexcept -> size_t { return this->derived().rows(); }
     constexpr auto cols() const noexcept -> size_t { return this->derived().cols(); }
 
-    decltype(auto) operator()(size_t i, size_t j)
-    { 
-        return this->derived()(i, j);
-    }
+    //decltype(auto) operator()(size_t i, size_t j)
+    //{ 
+    //    return this->derived()(i, j);
+    //}
 
-    decltype(auto) operator()(size_t i, size_t j) const
-    {
-        return this->derived()(i, j);
-    }
+    //decltype(auto) operator()(size_t i, size_t j) const
+    //{
+    //    return this->derived()(i, j);
+    //}
 
-    decltype(auto) operator()(size_t i) { return this->derived()(i); }
-    decltype(auto) operator()(size_t i) const { return this->derived()(i); }
+    //decltype(auto) operator()(size_t i) { return this->derived()(i); }
+    //decltype(auto) operator()(size_t i) const { return this->derived()(i); }
 
-    constexpr auto packet(size_t i) const
-        requires (matrix_traits<Derived>::has_contiguous_memory)
-    { 
-        return this->derived().packet(i);
-    }
+    //constexpr auto packet(size_t i) const
+    //    requires (matrix_traits<Derived>::has_contiguous_memory)
+    //{ 
+    //    return this->derived().packet(i);
+    //}
 
     //auto aliases(const void *ptr) const -> bool { return derived().aliases(ptr); }
 
@@ -654,61 +668,79 @@ public:
         }
     }
 
-    template<typename OtherDerived>
-    bool operator==(const MatrixBase<OtherDerived> &other) const
-    {
-        const auto &self = this->derived();
-        const auto &rhs = other.derived();
+    //template<typename OtherDerived>
+    //bool operator==(const MatrixBase<OtherDerived> &other) const
+    //{
+    //    const auto &self = this->derived();
+    //    const auto &rhs = other.derived();
 
-        if (self.rows() != rhs.rows() || self.cols() != rhs.cols()) {
-            return false;
-        }
+    //    if (self.rows() != rhs.rows() || self.cols() != rhs.cols()) {
+    //        return false;
+    //    }
 
-        size_t size = self.rows() * self.cols();
-        for (size_t i = 0; i < size; ++i) {
-            if (self(i) != rhs(i)) {
-                return false;
-            }
-        }
+    //    size_t size = self.rows() * self.cols();
+    //    for (size_t i = 0; i < size; ++i) {
+    //        if (self(i) != rhs(i)) {
+    //            return false;
+    //        }
+    //    }
 
-        return true;
-    }
+    //    return true;
+    //}
 
-    template<typename OtherDerived>
-    bool operator!=(const MatrixBase<OtherDerived> &other) const
-    {
-        return !(*this == other);
-    }
+    //template<typename OtherDerived>
+    //bool operator!=(const MatrixBase<OtherDerived> &other) const
+    //{
+    //    return !(*this == other);
+    //}
 
-    template<typename Scalar>
-        requires (matrix_traits<Derived>::is_mutable &&
-                  std::is_convertible_v<Scalar, value_type>)
-    void fill(Scalar value)
-    {
-        auto &derived = this->derived();
-        size_t size = derived.rows() * derived.cols();
-        size_t i{0};
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-
-        if (matrix_traits<Derived>::has_contiguous_memory) {
-            Packed<value_type> packed_val(value);
-            constexpr size_t packed_size = packed_val.size();
-            size_t max_size = size - size % packed_size;
-
-            for (; i < max_size; i += packed_size) {
-                packed_val.storeUnaligned(&derived(i));
-            }
-        }
-#endif
-
-        for (; i < size; i++) {
-            derived(i) = value;
-        }
-    }
+//    template<typename Scalar>
+//        requires (matrix_traits<Derived>::is_mutable &&
+//                  std::is_convertible_v<Scalar, value_type>)
+//    void fill(Scalar value)
+//    {
+//        auto &derived = this->derived();
+//        size_t size = derived.rows() * derived.cols();
+//        size_t i{0};
+//
+//#ifdef TL_HAVE_SIMD_INTRINSICS
+//
+//        if (matrix_traits<Derived>::has_contiguous_memory) {
+//            Packed<value_type> packed_val(value);
+//            constexpr size_t packed_size = packed_val.size();
+//            size_t max_size = size - size % packed_size;
+//
+//            for (; i < max_size; i += packed_size) {
+//                packed_val.storeUnaligned(&derived(i));
+//            }
+//        }
+//#endif
+//
+//        for (; i < size; i++) {
+//            derived(i) = value;
+//        }
+//    }
 
 };
 
+
+template<typename DerivedL, typename DerivedR>
+auto operator==(const MatrixBase<DerivedL> &lhs, 
+                const MatrixBase<DerivedR> &rhs) -> bool
+{
+    static_assert(!matrix_traits<DerivedL>::is_expression &&
+        !matrix_traits<DerivedR>::is_expression,
+        "Expressions cannot be compared directly. Use .eval().");
+
+    return detail::matrix_equal(lhs.derived(), rhs.derived());
+}
+
+template<typename DerivedL, typename DerivedR>
+auto operator!=(const MatrixBase<DerivedL> &lhs,
+                const MatrixBase<DerivedR> &rhs) -> bool
+{
+    return !(lhs == rhs);
+}
 
 
 template<typename Scalar, MatrixExpr Expr>
@@ -725,12 +757,13 @@ auto operator*(const LHS &lhs, const RHS &rhs)
 }
 
 
-template<MatrixExpr Expr>
-auto operator<<(std::ostream &os, const Expr &expr) -> std::ostream &
+template<MatrixExpr Mat>
+    requires (matrix_traits<Mat>::is_mutable)
+auto operator<<(std::ostream &os, const Mat &mat) -> std::ostream &
 {
-    for (size_t r = 0; r < expr.rows(); r++) {
-        for (size_t c = 0; c < expr.cols(); c++) {
-            os << std::left << std::setw(12) << expr(r, c) << " ";
+    for (size_t r = 0; r < mat.rows(); r++) {
+        for (size_t c = 0; c < mat.cols(); c++) {
+            os << std::left << std::setw(12) << mat(r, c) << " ";
         }
         os << "\n";
     }

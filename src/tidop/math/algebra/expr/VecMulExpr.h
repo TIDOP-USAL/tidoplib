@@ -63,18 +63,6 @@ public:
     auto lhs() const -> const LHS & { return mLhs; }
     auto rhs() const -> const RHS & { return mRhs; }
 
-    // TODO: mover a Evaluator
-    auto operator[](size_t i) const -> value_type
-    {
-        return mLhs[i] * mRhs[i];
-    }
-    
-	// TODO: mover a Evaluator
-    auto packet(size_t i) const
-    {
-        return mLhs.packet(i) * mRhs.packet(i);
-    }
-
     auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);

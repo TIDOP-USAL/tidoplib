@@ -54,6 +54,15 @@ public:
     {
         return mMatrixCol[i];
     }
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    auto packet(size_t i) const
+    {
+        TL_ASSERT(false, "SIMD packet not supported for this expression");
+        return Packed<value_type>();
+    }
+#endif
+
 };
 
 

@@ -27,10 +27,6 @@
 #include "tidop/core/base/exception.h"
 #include "tidop/core/concurrency/parallel.h"
 #include "tidop/math/math.h"
-//#include "tidop/math/algebra/vector/Vector.h"
-//#include "tidop/math/base/simd.h"
-//#include "tidop/math/base/blas.h"
-//#include "tidop/math/base/cuda.h"
 #include "tidop/math/base/data.h"
 #include "tidop/math/algebra/decomp/lu.h"
 #include "tidop/math/algebra/decomp/svd.h"
@@ -1445,75 +1441,6 @@ public:
     auto operator=(const Expr &expr) -> Matrix& 
     {
         return detail::assign(*this, expr);
-//        if constexpr (is_matrix_product_v<std::remove_cvref_t<Expr>>) {
-//
-//            const auto &lhs = expr.lhs();
-//            const auto &rhs = expr.rhs();
-//
-//            if (expr.aliases(this->data())) {
-//
-//                Matrix<T, Rows, Cols> tmp = Matrix<T, Rows, Cols>::zero(lhs.rows(), rhs.cols());
-//
-//                detail::mulmat(lhs, rhs, tmp);
-//                *this = std::move(tmp);
-//
-//            } else {
-//                
-//                if constexpr (Rows == DynamicData || Cols == DynamicData) {
-//                    if (this->rows() != expr.rows() || this->cols() != expr.cols()) {
-//                        this->resize(expr.rows(), expr.cols());
-//                    }
-//                } else {
-//                    TL_ASSERT(expr.rows() == mRows && expr.cols() == mCols, "Static matrix cannot be resized");
-//                }
-//                
-//                this->fill(0);
-//
-//                detail::mulmat(lhs, rhs, *this);
-//            }
-//
-//            return *this;
-//
-//        } else {
-//
-//            if constexpr (Rows == DynamicData || Cols == DynamicData) {
-//                if (this->rows() != expr.rows() || this->cols() != expr.cols()) {
-//                    this->resize(expr.rows(), expr.cols());
-//                }
-//            } else {
-//                TL_ASSERT(expr.rows() == mRows && expr.cols() == mCols, "Static matrix cannot be resized");
-//            }
-//
-//            if constexpr (!matrix_traits<Expr>::is_element_wise) {
-//                if (expr.aliases(this->data())) {
-//                    Matrix<T, Rows, Cols> tmp = expr;
-//                    *this = std::move(tmp);
-//                    return *this;
-//                }
-//            }
-//
-//            size_t size = mRows * mCols;
-//            size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//            if constexpr (matrix_traits<Expr>::has_contiguous_memory) {
-//                constexpr size_t packed_size = Packed<T>::size();
-//                size_t max_size = size - (size % packed_size);
-//
-//                for (; i < max_size; i += packed_size) {
-//                    Packed<T> result_packet = expr.packet(i);
-//                    result_packet.storeUnaligned(&this->data()[i]);
-//                }
-//            }
-//#endif
-//
-//            for (; i < size; ++i) {
-//                (*this)(i) = expr(i);
-//            }
-//
-//            return *this;
-//        }
     }	
 
     /*!
@@ -1658,29 +1585,7 @@ public:
         return mData[position];
     }
 
-    //auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) -> MatrixBlock<T, DynamicData, DynamicData>
-    //{
-    //    TL_ASSERT(iniRow >= 0 && endRow >= iniRow && endRow < this->rows() &&
-    //              iniCol >= 0 && endCol >= iniCol && endCol < this->cols(), "Matrix block out of range");
-
-    //    size_t blockRows = endRow - iniRow + 1;
-    //    size_t blockCols = endCol - iniCol + 1;
-
-    //    return MatrixBlock<T, DynamicData, DynamicData>(this->data(), this->cols(), iniRow, iniCol, blockRows, blockCols);
-    //}
-
-    //auto block(size_t iniRow, size_t endRow, size_t iniCol, size_t endCol) const -> const MatrixBlock<const T, DynamicData, DynamicData>
-    //{
-    //    TL_ASSERT(iniRow >= 0 && endRow >= iniRow && endRow < this->rows() &&
-    //              iniCol >= 0 && endCol >= iniCol && endCol < this->cols(), "Matrix block out of range");
-
-    //    size_t blockRows = endRow - iniRow + 1;
-    //    size_t blockCols = endCol - iniCol + 1;
-
-    //    return MatrixBlock<const T, DynamicData, DynamicData>(this->data(), this->cols(), iniRow, iniCol, blockRows, blockCols);
-    //}
-
-    auto block_(size_t startRow, size_t startCol, size_t numRows, size_t numCols) -> MatrixBlock<T, DynamicData, DynamicData>
+    auto block(size_t startRow, size_t startCol, size_t numRows, size_t numCols) -> MatrixBlock<T, DynamicData, DynamicData>
     {
         TL_ASSERT(startRow + numRows <= this->rows() &&
                   startCol + numCols <= this->cols(), "Matrix block out of range");
@@ -1689,7 +1594,7 @@ public:
         return MatrixBlock<T, DynamicData, DynamicData>(this->data(), this->cols(), startRow, startCol, numRows, numCols);
     }
 
-    auto block_(size_t startRow, size_t startCol, size_t numRows, size_t numCols) const -> const MatrixBlock<const T, DynamicData, DynamicData>
+    auto block(size_t startRow, size_t startCol, size_t numRows, size_t numCols) const -> const MatrixBlock<const T, DynamicData, DynamicData>
     {
         TL_ASSERT(startRow + numRows <= this->rows() &&
                   startCol + numCols <= this->cols(), "Matrix block out of range");

@@ -98,6 +98,7 @@ if(BUILD_TL_MATH)
                              algebra/matrix/detail/Determinant.h
                              algebra/matrix/detail/FirstMinor.h
                              algebra/matrix/detail/Inverse.h
+                             algebra/matrix/detail/MatEqual.h
                              algebra/matrix/detail/MulMat.h
                              algebra/matrix/detail/MulMatBLAS.h
                              algebra/matrix/detail/MulMatCPP.h
@@ -113,6 +114,7 @@ if(BUILD_TL_MATH)
                              algebra/vector/Vector.h
                              algebra/vector/VectorBase.h
                              algebra/vector/detail/Assing.h
+                             algebra/vector/detail/VecEqual.h
                              algebra/vector/detail/MatVecMul.h
                              algebra/vector/detail/MatVecMulCPP.h
                              algebra/vector/detail/MatVecMulSIMD.h

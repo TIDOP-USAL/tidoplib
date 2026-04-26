@@ -64,29 +64,8 @@ public:
     constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
     constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
     
-    // Añadido para Evaluator
     auto lhs() const -> const LHS & { return mLhs; }
     auto scalar() const -> Scalar { return mScalar; }
-
-	// TODO: mover a Evaluator
-    auto operator()(size_t r, size_t c) const -> value_type
-    {
-        return mLhs(r, c) * mScalar;
-    }
-
-    // TODO: mover a Evaluator
-    auto operator()(size_t i) const -> value_type
-    {
-        return mLhs(i) * mScalar;
-    }
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    // TODO: mover a Evaluator
-    auto packet(size_t i) const
-    {
-        return mLhs.packet(i) * Packed<value_type>(mScalar);
-    }
-#endif
 
     auto aliases(const void *ptr) const -> bool
     {

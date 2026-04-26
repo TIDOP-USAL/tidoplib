@@ -64,17 +64,6 @@ public:
     auto lhs() const -> const LHS & { return mLhs; }
     auto scalar() const -> Scalar { return mScalar; }
 
-    // TODO: mover a Evaluator
-    auto operator[](size_t i) const -> value_type
-    {
-        return mLhs[i] / mScalar;
-    }
-    // TODO: mover a Evaluator
-    auto packet(size_t i) const
-    {
-        return mLhs.packet(i) / Packed<value_type>(mScalar);
-    }
-
     auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr);

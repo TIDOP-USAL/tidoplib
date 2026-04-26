@@ -82,18 +82,18 @@ auto assign(Vector_t &dst, const Expr &expr) -> Vector_t &
     }
         
     // Evaluator
-    Evaluator<CleanExpr> eval = expr;
+    Evaluator<CleanExpr> eval(expr);
 
     size_t size = dst.size();
     size_t i = 0;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     if constexpr (vector_traits<CleanExpr>::has_contiguous_memory) {
-        constexpr size_t packed_size = Packed<value_type>::size();
+        constexpr size_t packed_size = PackedTraits<Packed<value_type>>::size;
         const size_t max_size = size - (size % packed_size);
 
         for (; i < max_size; i += packed_size) {
-            auto result_packet = eval.packet(i);
+            Packed<value_type> result_packet = eval.packet(i);
             result_packet.storeUnaligned(&dst[i]);
         }
     }
@@ -139,14 +139,14 @@ void assign_row(Row &dst, const Expr &expr)
             const size_t max_size = size - (size % packed_size);
 
             for (; i < max_size; i += packed_size) {
-                auto result_packet = expr.packet(i);
+                auto result_packet = eval.packet(i);
                 result_packet.storeUnaligned(&dst[i]);
             }
         }
 #endif
             
         for (; i < size; ++i) {
-            dst[i] = expr[i];
+            dst[i] = eval.coeff(i);
         }
 
     }
@@ -174,10 +174,10 @@ void assign_col(Col &dst, const Expr &expr)
 
     } else {
                 
-        Evaluator<CleanExpr> eval = expr;
+        Evaluator<CleanExpr> eval(expr);
 
         for (size_t i = 0; i < dst.size(); ++i) {
-            dst[i] = expr[i];
+            dst[i] = eval.coeff(i);
         }
     }
 }

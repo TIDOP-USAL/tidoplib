@@ -149,8 +149,12 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
 
     case MatrixConfig::Product::CPP:
     default:
-        mulmat_cpp(lhs, rhs, out);
+    {
+        decltype(auto) a = require_linear_access(lhs);
+        decltype(auto) b = require_linear_access(rhs);
+        mulmat_cpp(a, b, out);
         break;
+    }
     }
 }
 

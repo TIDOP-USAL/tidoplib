@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(matrix_by_point)
     mat_dyn_2x3_i(1, 2) = 2;
 
     Point3i point3(1, 2, 3);
-    auto vect4 = mat_dyn_2x3_i * point3;
+    Point2i vect4 = mat_dyn_2x3_i * point3;
 
     BOOST_CHECK_EQUAL(40, vect4[0]);
     BOOST_CHECK_EQUAL(27, vect4[1]);

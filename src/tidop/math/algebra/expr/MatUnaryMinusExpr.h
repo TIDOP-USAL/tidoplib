@@ -58,25 +58,6 @@ public:
 
     auto expr() const -> const Expr & { return mExpr; }
 
-    //TODO: Quitar
-    constexpr auto operator()(size_t r, size_t c) const 
-    {
-        return -mExpr(r, c);
-    }
-    //TODO: Quitar
-    constexpr auto operator()(size_t i) const
-    {
-        return -mExpr(i);
-    }
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    //TODO: Quitar
-    auto packet(size_t i) const 
-    {
-        return -mExpr.packet(i);
-    }
-#endif
-
     auto aliases(const void *ptr) const -> bool
     {
         return mExpr.aliases(ptr);
