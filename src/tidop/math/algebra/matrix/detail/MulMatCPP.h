@@ -35,15 +35,6 @@ void mulmat_cpp(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
 {
     using T = typename matrix_traits<OutMat>::value_type;
 
-    //for (size_t r = 0; r < matrix1.rows(); r++) {
-    //    for (size_t i = 0; i < matrix1.cols(); i++) {
-    //        T a = matrix1(r, i);
-    //        for (size_t c = 0; c < matrix2.cols(); c++) {
-    //            matrix(r, c) += a * matrix2(i, c);
-    //        }
-    //    }
-    //}
-    // Para no tener que inicializar la matriz de salida a 0
     for (size_t r = 0; r < matrix1.rows(); r++) {
         for (size_t c = 0; c < matrix2.cols(); c++) {
             T sum = 0;

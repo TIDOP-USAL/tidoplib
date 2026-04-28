@@ -110,11 +110,6 @@ public:
      * \param[in] values The values to initialize the vector with.
      */
     Vector(std::initializer_list<T> values);
-    //template<typename... Args, std::enable_if_t<sizeof...(Args) == Size, int> = 0>
-    //explicit Vector(Args... args)
-    //    : mData{static_cast<T>(args)...}
-    //{
-    //}
 
     /*!
      * \brief Constructs a vector from a raw pointer and size.
@@ -131,11 +126,8 @@ public:
     {
         TL_ASSERT(expr.size() == this->mData.size(), "Static vector cannot be resized");
 
-        //*this = expr;
         detail::assign(*this, expr);
     }
-	
-    //~Vector() = default;
 
     /*!
      * \brief Assignment operator for copying another vector.
@@ -157,8 +149,6 @@ public:
      * \param vector The derived vector to assign from.
      * \return A reference to this vector.
      */
-    //template<typename OtherDerived>
-    //auto operator=(const VectorBase<OtherDerived> &vector) -> Vector &;
     template<VectorExpr Expr>
     auto operator=(const Expr &expr) -> Vector&
     {
@@ -358,20 +348,6 @@ public:
     auto w() noexcept -> reference;
 
     /*!
-     * \brief Equality operator for comparing two vectors.
-     * \param vector The vector to compare with.
-     * \return True if the vectors are equal, false otherwise.
-     */
-    //bool operator == (const Vector &vector) const;
-
-    /*!
-     * \brief Inequality operator for comparing two vectors.
-     * \param vector The vector to compare with.
-     * \return True if the vectors are not equal, false otherwise.
-     */
-    //bool operator != (const Vector &vector) const;
-
-    /*!
      * \brief Less-than operator for comparing two vectors.
      * \param vector The vector to compare with.
      * \return True if this vector is less than the other, false otherwise.
@@ -551,13 +527,6 @@ Vector<T, Size>::Vector(T *data, size_t size)
 {
 }
 
-//template<typename T, size_t Size>
-//template<typename OtherDerived>
-//Vector<T, Size>::Vector(const VectorBase<OtherDerived> &other)
-//{
-//    this->set(other.derived());
-//}
-
 template<typename T, size_t Size>
 auto Vector<T, Size>::operator=(const Vector &vector) -> Vector &
 {
@@ -577,14 +546,6 @@ auto Vector<T, Size>::operator=(Vector &&vector) noexcept -> Vector &
 
     return (*this);
 }
-
-//template<typename T, size_t Size>
-//template<typename OtherDerived>
-//auto Vector<T, Size>::operator=(const VectorBase<OtherDerived> &vector) -> Vector &
-//{
-//    this->set(vector.derived());
-//    return (*this);
-//}
 
 template<typename T, size_t Size>
 void Vector<T, Size>::resize(size_t size)
@@ -768,18 +729,6 @@ auto Vector<T, Size>::w() noexcept -> reference
     return mData[3];
 }
 
-//template<typename T, size_t Size>
-//bool Vector<T, Size>::operator == (const Vector<T, Size> &vector) const
-//{
-//    return this->mData == vector.mData;
-//}
-//
-//template<typename T, size_t Size>
-//bool Vector<T, Size>::operator != (const Vector<T, Size> &vector) const
-//{
-//    return this->mData != vector.mData;
-//}
-
 template<typename T, size_t Size>
 bool Vector<T, Size>::operator <  (const Vector<T, Size> &vector) const
 {
@@ -958,7 +907,7 @@ template<typename Scalar, VectorExpr Expr>
     requires std::is_convertible_v<Scalar, typename vector_traits<Expr>::value_type>
 auto operator*(const Scalar &scalar, const Expr &expr)
 {
-    return VecMulScalarExpr(expr, scalar);
+    return expr * scalar;
 }
 
 

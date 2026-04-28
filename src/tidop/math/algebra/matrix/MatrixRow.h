@@ -96,45 +96,6 @@ public:
     {
         detail::assign_row(*this, expr);
         return *this;
-
-//        TL_ASSERT(expr.size() == size(), "Row size mismatch");
-//
-//        if (expr.aliases(matrixData)) {
-//
-//            Vector<T> tmp = expr;
-//
-//            for (size_t i = 0; i < size(); ++i) {
-//                (*this)[i] = tmp[i];
-//            }
-//
-//        } else {
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//            if constexpr (vector_traits<Expr>::has_contiguous_memory) {
-//
-//                size_t i = 0;
-//                constexpr size_t ps = Packed<T>::size();
-//                size_t max = size() - (size() % ps);
-//
-//                for (; i < max; i += ps) {
-//                    auto p = expr.packet(i);
-//                    p.storeUnaligned(&(*this)[i]);
-//                }
-//
-//                for (; i < size(); ++i) {
-//                    (*this)[i] = expr[i];
-//                }
-//
-//            } else
-//#endif
-//            {
-//                for (size_t i = 0; i < size(); ++i) {
-//                    (*this)[i] = expr[i];
-//                }
-//            }
-//        }
-//
-//        return *this;
     }
 
     auto begin() TL_NOEXCEPT->iterator;
@@ -147,13 +108,6 @@ public:
 
     auto operator[](size_t column) const -> const_reference;
     auto operator[](size_t column) -> reference;
-    //void operator=(T value);
-    //template<typename Vector_t>
-    //auto operator=(const Vector_t &vector) -> MatrixRow&;
-    //template<typename T2, size_t _size2>
-    //auto operator = (const Vector<T2, _size2> &vector) -> MatrixRow&;
-
-    //explicit operator Vector<T>();
 
     auto aliases(const void *ptr) const -> bool
     {
@@ -278,49 +232,6 @@ auto MatrixRow<T, _size_>::operator[](size_t column) -> reference
 {
     return matrixData[matrixRow * matrixCols + column];
 }
-
-//template<typename T, size_t _size_>
-//auto MatrixRow<T, _size_>::operator=(T value) -> void
-//{
-//    std::fill(begin(), end(), value);
-//}
-
-//template<typename T, size_t _size_>
-//template<typename Vector_t>
-//auto MatrixRow<T, _size_>::operator=(const Vector_t &vector) -> MatrixRow&
-//{
-//    TL_ASSERT(vector.size() == size(), "Invalid vector size");
-//    
-//    for(size_t i = 0; i < size(); i++)
-//        (*this)[i] = vector[i];
-//    
-//    return *this;
-//}
-
-//template<typename T, size_t _size_>
-//template<typename T2, size_t _size2>
-//auto MatrixRow<T, _size_>::operator=(const Vector<T2, _size2> &vector) -> MatrixRow &
-//{
-//    TL_ASSERT(this->size() == vector.size(), "A size != B size");
-//
-//    for(size_t i = 0; i < this->size(); i++) {
-//        (*this)(i) = static_cast<T>(vector(i));
-//    }
-//
-//    return *this;
-//}
-
-//template<typename T, size_t _size_>
-//MatrixRow<T, _size_>::operator Vector<T>()
-//{
-//    Vector<T> vector(this->size());
-//
-//    for(size_t i = 0; i < this->size(); i++) {
-//        vector[i] = (*this)[i];
-//    }
-//
-//    return vector;
-//}
 
 
 } // End namespace tl

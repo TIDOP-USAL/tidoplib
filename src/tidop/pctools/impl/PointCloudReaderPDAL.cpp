@@ -611,9 +611,9 @@ void PointCloudReaderPDAL::getPoints(double &x_o, double &y_o, double &z_o,
                     && crsId != mCrsId) {
                     mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, x, y, z);
                 }
-                float x_f = x - x_o;
-                float y_f = y - y_o;
-                float z_f = z - z_o;
+                float x_f = static_cast<float>(x - x_o);
+                float y_f = static_cast<float>(y - y_o);
+                float z_f = static_cast<float>(z - z_o);
                 std::vector<float> ptoCoordinates{x_f,y_f,z_f};
                 coordinates.push_back(ptoCoordinates);
                 dimensionsValues.push_back(values);

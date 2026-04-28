@@ -40,13 +40,10 @@ auto select_backend(const A &a, const B &b) -> MatrixConfig::Product
 {
     auto cfg = MatrixConfig::instance().product;
 
-    // 1. Si el usuario forzó un modo, su palabra es la ley. 
-    // Si forzó CuBLAS con enteros, el TL_ASSERT en mulmat le avisará de su error.
     if (cfg != MatrixConfig::Product::AUTO) {
         return cfg;
     }
 
-    // 2. Extraemos el tipo y comprobamos si es de coma flotante
     using T = typename matrix_traits<A>::value_type;
     constexpr bool is_float = std::floating_point<T>;
 
@@ -55,14 +52,12 @@ auto select_backend(const A &a, const B &b) -> MatrixConfig::Product
     size_t K = a.cols();
 
 #ifdef TL_HAVE_CUDA
-    // En AUTO, solo consideramos CUDA si el tipo es float/double
     if (is_float && M > 2000 && N > 2000 && K > 2000) {
         return MatrixConfig::Product::CuBLAS;
     }
 #endif
 
 #ifdef TL_HAVE_OPENBLAS
-    // En AUTO, solo consideramos BLAS si el tipo es float/double
     if (is_float && M > 32 && N > 32 && K > 32) {
         if ((M / N) < 10 && (N / M) < 10) {
             return MatrixConfig::Product::BLAS;
@@ -71,13 +66,9 @@ auto select_backend(const A &a, const B &b) -> MatrixConfig::Product
 #endif
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    // Tu implementación SIMD seguramente soporte enteros (AVX2/AVX512 tienen buenas intrucciones enteras)
-    // Así que aquí no filtramos por is_float.
-    //if (M * N > 256) {
-        return MatrixConfig::Product::SIMD;
-    //}
+    return MatrixConfig::Product::SIMD;
 #else
-        return MatrixConfig::Product::CPP;
+    return MatrixConfig::Product::CPP;
 #endif
 }
 

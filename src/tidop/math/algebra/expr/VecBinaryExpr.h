@@ -24,57 +24,58 @@
 
 #pragma once
 
-#include "tidop/math/algebra/eval/Evaluator.h"
-#include "tidop/math/algebra/expr/MatSubExpr.h"
+#include "tidop/math/base/Traits.h"
+#include "tidop/math/base/Concepts.h"
+#include "tidop/math/algebra/functors/Add.h"
+#include "tidop/math/algebra/functors/Sub.h"
+#include "tidop/math/algebra/functors/Mul.h"
+#include "tidop/math/algebra/functors/Div.h"
 
 namespace tl
 {
 
-/*! \addtogroup Algebra
- *  \{
- */
+template<typename Derived>
+class VectorBase;
 
-template<typename LHS, typename RHS>
-class Evaluator<MatSubExpr<LHS, RHS>>
+
+template<typename LHS, typename RHS, typename Op>
+class VecBinaryExpr
+  : public VectorBase<VecBinaryExpr<LHS, RHS, Op>>
 {
 
 private:
 
-    Evaluator<LHS> mLhs;
-    Evaluator<RHS> mRhs;
+    const LHS &mLhs;
+    const RHS &mRhs;
 
 public:
 
-    using value_type = typename MatSubExpr<LHS, RHS>::value_type;
+    static_assert(std::is_same_v<
+        typename vector_traits<LHS>::value_type,
+        typename vector_traits<RHS>::value_type>,
+        "Mixed types not supported");
+
+    using value_type = typename vector_traits<LHS>::value_type;
 
 public:
 
-    Evaluator(const MatSubExpr<LHS, RHS> &expr)
-      : mLhs(expr.lhs()),
-        mRhs(expr.rhs())
+    VecBinaryExpr(const LHS &lhs, const RHS &rhs)
+      : mLhs(lhs), mRhs(rhs)
     {
+        TL_ASSERT(lhs.size() == rhs.size(), "Vector sizes must match");
     }
 
-    auto coeff(size_t r, size_t c) const -> value_type
-    {
-        return mLhs.coeff(r, c) - mRhs.coeff(r, c);
-    }
+    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
 
-    auto coeff(size_t i) const -> value_type
-    {
-        return mLhs.coeff(i) - mRhs.coeff(i);
-    }
+    auto lhs() const -> const LHS & { return mLhs; }
+    auto rhs() const -> const RHS & { return mRhs; }
 
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    auto packet(size_t i) const
+    auto aliases(const void *ptr) const -> bool
     {
-        return mLhs.packet(i) - mRhs.packet(i);
+        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }
-#endif
 
 };
 
-
-/*! \} */
 
 } // End namespace tl

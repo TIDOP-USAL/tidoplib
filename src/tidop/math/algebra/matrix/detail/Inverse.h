@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/math/algebra/matrix/detail/Determinant.h"
+#include "tidop/math/algebra/decomp/lu.h"
 
 namespace tl
 {
@@ -151,17 +152,17 @@ auto inversenxn(const Matrix<T, Rows, Cols> &mat,
 {
     Matrix<T, Rows, Cols> matrix(mat);
 
-    //LuDecomposition<Matrix<T, Rows, Cols>> lu(mat);
+    LuDecomposition<Matrix<T, Rows, Cols>> lu(mat);
 
     // Por ahora lo comento hasta que renombre Matrix
-    //T det = lu.determinant();
-    T det = determinantnxn(mat);
+    T det = lu.determinant();
+    //T det = determinantnxn(mat);
     if (det != consts::zero<T>) {
 
-        //auto indentity = Matrix<T, Rows, Cols>::identity(mat.rows(), mat.cols());
-        //matrix = lu.solve(indentity);
-        matrix = adjointnxn(mat);
-        matrix /= det;
+        Matrix<T, Rows, Cols> identity = Matrix<T, Rows, Cols>::identity(mat.rows(), mat.cols());
+        matrix = lu.solve(identity);
+        //matrix = adjointnxn(mat);
+        //matrix /= det;
 
         if (invertibility != nullptr) *invertibility = true;
 

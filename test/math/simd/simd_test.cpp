@@ -161,7 +161,8 @@ BOOST_FIXTURE_TEST_CASE(size, PackedTest)
 #endif
 }
 
-
+// Esto no esta bien ya que Vector no garantiza que su memoria sea contigua, 
+// pero al menos sirve para probar las funciones de carga y almacenamiento de Packed
 BOOST_FIXTURE_TEST_CASE(load_store_aligned_float, PackedTest)
 {
     Vector<float> v3(v1.size());
@@ -3149,14 +3150,14 @@ void transpose(Matrix<double> &A, Matrix<double> &B)
     size_t cols = A.cols();
 
     Packed<double> packed_a1;
-    Packed<double> packed_a2;
-    Packed<double> packed_a3;
-    Packed<double> packed_a4;
+    //Packed<double> packed_a2;
+    //Packed<double> packed_a3;
+    //Packed<double> packed_a4;
 
-    Packed<double> packed_b1;
-    Packed<double> packed_b2;
-    Packed<double> packed_b3;
-    Packed<double> packed_b4;
+    //Packed<double> packed_b1;
+    //Packed<double> packed_b2;
+    //Packed<double> packed_b3;
+    //Packed<double> packed_b4;
 
     constexpr size_t packed_size = packed_a1.size();
     size_t max_cols = cols - cols % packed_size;

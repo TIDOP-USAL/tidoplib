@@ -45,45 +45,33 @@ if(BUILD_TL_MATH)
                              algebra/decomp/qr.h
                              algebra/decomp/svd.h
                              algebra/eval/Evaluator.h
-                             algebra/eval/MatAddEval.h
-                             algebra/eval/MatDivScalarEval.h
+                             algebra/eval/MatBinaryEval.h
                              algebra/eval/MatMulEval.h
-                             algebra/eval/MatMulScalarEval.h
                              algebra/eval/MatrixBlockEval.h
                              algebra/eval/MatrixColEval.h
                              algebra/eval/MatrixEval.h
                              algebra/eval/MatrixRowEval.h
-                             algebra/eval/MatSubEval.h
+                             algebra/eval/MatScalarEval.h
                              algebra/eval/MatUnaryMinusEval.h
                              algebra/eval/MatVecMulEval.h
                              algebra/eval/TransposeEval.h
-                             algebra/eval/VecAddEval.h
-                             algebra/eval/VecDivEval.h
-                             algebra/eval/VecDivScalarEval.h
-                             algebra/eval/VecMulEval.h
-                             algebra/eval/VecMulScalarEval.h
-                             algebra/eval/VecSubEval.h
+                             algebra/eval/VecBinaryEval.h
+                             algebra/eval/VecScalarEval.h
                              algebra/eval/VectorEval.h
                              algebra/eval/VecUnaryMinusEval.h
-                             algebra/expr/MatAddExpr.h
-                             algebra/expr/MatDivScalarExpr.h
+                             algebra/expr/MatBinaryExpr.h
                              algebra/expr/MatMulExpr.h
-                             algebra/expr/MatMulScalarExpr.h
-                             algebra/expr/MatSubExpr.h
+                             algebra/expr/MatScalarExpr.h
                              algebra/expr/MatUnaryMinusExpr.h
                              algebra/expr/MatVecMulExpr.h
                              algebra/expr/TransposeExpr.h
-                             algebra/expr/VecAddExpr.h
-                             algebra/expr/VecDivExpr.h
-                             algebra/expr/VecDivScalarExpr.h
-                             algebra/expr/VecMulExpr.h
-                             algebra/expr/VecMulScalarExpr.h
-                             algebra/expr/VecSubExpr.h
+                             algebra/expr/VecBinaryExpr.h
+                             algebra/expr/VecScalarExpr.h
                              algebra/expr/VecUnaryMinusExpr.h
-                             #algebra/matrix/base.h
-                             #algebra/matrix/block.h
-                             #algebra/matrix/col.h
-                             #algebra/matrix/row.h
+                             algebra/functors/Add.h
+                             algebra/functors/Div.h
+                             algebra/functors/Mul.h
+                             algebra/functors/Sub.h
                              algebra/matrix/Kernel.h
                              algebra/matrix/Matrix.h
                              algebra/matrix/MatrixBase.h
@@ -120,8 +108,6 @@ if(BUILD_TL_MATH)
                              algebra/vector/detail/MatVecMulSIMD.h
                              algebra/BaseExpr.h
                              algebra/matrices.h
-                             #algebra/matrix.h
-                             #algebra/vector.h
                              base/blas.h
                              base/cuda.h
                              base/Concepts.h

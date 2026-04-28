@@ -33,7 +33,7 @@ class Matrix;
 namespace detail
 {
 
-// Nota: 'matrix' se pasa por valor, por lo que ya es una copia segura de mutar
+
 template<typename T, size_t Rows, size_t Cols>
 auto matrix_row_echelon_form(Matrix<T, Rows, Cols> matrix) -> Matrix<T, Rows, Cols>
 {

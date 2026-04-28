@@ -51,7 +51,7 @@ void mulmat_simd_kernel_opt3(const LHS &A, const RHS &B, OutMat &C)
     constexpr size_t BLOCK_K = 64;
     constexpr size_t BLOCK_C = 128;
 
-    // 🔥 COLLAPSE(2): Creamos una malla 2D de tareas (Filas x Columnas)
+    // COLLAPSE(2): Creamos una malla 2D de tareas (Filas x Columnas)
     // schedule(dynamic) asegura que los hilos no se queden atascados si un bloque es más pequeño
 #pragma omp parallel for collapse(2) schedule(dynamic)
     for (long long ii = 0; ii < static_cast<long long>(rows); ii += BLOCK_R) {
@@ -158,7 +158,7 @@ void mulmat_simd3(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
     for (; r + 8 <= rows; r += 8) {
         // SIMD principal
         for (size_t c = 0; c < max_vector; c += packed_size) {
-            // 🔥 ACUMULADORES EN REGISTROS (Cero accesos a RAM en el bucle interno)
+            // ACUMULADORES EN REGISTROS (Cero accesos a RAM en el bucle interno)
             Packed<T> acc0(0), acc1(0), acc2(0), acc3(0), acc4(0), acc5(0), acc6(0), acc7(0);
 
             for (size_t i = 0; i < dim; i++) {

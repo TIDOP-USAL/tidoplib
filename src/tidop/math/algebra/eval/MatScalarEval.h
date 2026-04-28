@@ -24,53 +24,58 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
+#include "tidop/math/algebra/eval/Evaluator.h"
+#include "tidop/math/algebra/expr/MatScalarExpr.h"
 
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
+/*! \addtogroup Algebra
+ *  \{
+ */
 
-
-template<typename LHS, typename RHS>
-class VecAddExpr
-  : public VectorBase<VecAddExpr<LHS, RHS>>
+template<typename LHS, typename Scalar, typename Op>
+class Evaluator<MatScalarExpr<LHS, Scalar, Op>>
 {
 
 private:
 
-    const LHS &mLhs;
-    const RHS &mRhs;
+    Evaluator<LHS> mLhs;
+    Scalar mScalar;
+    Op mOp;
+	
+public:
+
+    using value_type = typename MatScalarExpr<LHS, Scalar, Op>::value_type;
 
 public:
 
-    static_assert(std::is_same_v<
-        typename vector_traits<LHS>::value_type,
-        typename vector_traits<RHS>::value_type>,
-        "Mixed types not supported");
-
-    using value_type = typename vector_traits<LHS>::value_type;
-
-public:
-
-    VecAddExpr(const LHS &lhs, const RHS &rhs)
-      : mLhs(lhs), mRhs(rhs)
+    Evaluator(const MatScalarExpr<LHS, Scalar, Op> &expr)
+      : mLhs(expr.lhs()),
+        mScalar(expr.scalar())
     {
-        TL_ASSERT(lhs.size() == rhs.size(), "Vector sizes must match");
     }
 
-    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
-
-    auto lhs() const -> const LHS & { return mLhs; }
-    auto rhs() const -> const RHS & { return mRhs; }
-
-    auto aliases(const void *ptr) const -> bool
+    auto coeff(size_t r, size_t c) const -> value_type
     {
-        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
+        return mOp(mLhs.coeff(r, c), mScalar);
     }
+
+    auto coeff(size_t i) const -> value_type
+    {
+        return mOp(mLhs.coeff(i), mScalar);
+    }
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    auto packet(size_t i) const
+    {
+		return mOp(mLhs.packet(i), Packed<value_type>(mScalar));
+    }
+#endif
 
 };
+
+
+/*! \} */
 
 } // End namespace tl

@@ -41,20 +41,13 @@ template<typename Expr> class MatrixDiagonal;
 template<typename T, size_t Size> class Vector;
 template<typename T> class RotationMatrix;
 
-
-template<typename LHS, typename RHS> class MatAddExpr;
-template<typename LHS, typename RHS> class MatSubExpr;
-template<typename LHS, typename RHS> class MatMulScalarExpr;
-template<typename LHS, typename RHS> class MatDivScalarExpr;
+template<typename LHS, typename RHS, typename Op> class MatBinaryExpr;
+template<typename LHS, typename Scalar, typename Op> class MatScalarExpr;
+template<typename LHS, typename RHS, typename Op> class VecBinaryExpr;
+template<typename LHS, typename Scalar, typename Op> class VecScalarExpr;
 template<typename LHS, typename RHS> class MatMulExpr;
 template<typename Expr> class MatUnaryMinusExpr;
 template<typename Expr> class TransposeExpr;
-template<typename LHS, typename RHS> class VecAddExpr;
-template<typename LHS, typename RHS> class VecSubExpr;
-template<typename LHS, typename RHS> class VecMulExpr;
-template<typename LHS, typename RHS> class VecDivExpr;
-template<typename LHS, typename RHS> class VecMulScalarExpr;
-template<typename LHS, typename RHS> class VecDivScalarExpr;
 template<typename Expr> class VecUnaryMinusExpr;
 template<typename Mat, typename Vec> class MatVecMulExpr;
 
@@ -114,8 +107,9 @@ struct matrix_traits<MatrixDiagonal<Expr>>
     static constexpr bool is_plain = false;
 };
 
-template<typename LHS, typename RHS>
-struct matrix_traits<MatAddExpr<LHS, RHS>> 
+
+template<typename LHS, typename RHS, typename Op>
+struct matrix_traits<MatBinaryExpr<LHS, RHS, Op>>
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
@@ -125,7 +119,7 @@ struct matrix_traits<MatAddExpr<LHS, RHS>>
     using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
     static constexpr size_t rows = matrix_traits<LHS>::rows;
     static constexpr size_t cols = matrix_traits<LHS>::cols;
-    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory && 
+    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory &&
                                                   matrix_traits<RHS>::has_contiguous_memory;
     static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise &&
                                             matrix_traits<RHS>::is_element_wise;
@@ -133,27 +127,8 @@ struct matrix_traits<MatAddExpr<LHS, RHS>>
     static constexpr bool is_plain = false;
 };
 
-template<typename LHS, typename RHS>
-struct matrix_traits<MatSubExpr<LHS, RHS>> 
-{
-    static_assert(std::is_same_v<
-        std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
-        std::remove_cv_t<typename matrix_traits<RHS>::value_type>>,
-        "Mixed types not supported in matrix operations");
-
-    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
-    static constexpr size_t rows = matrix_traits<LHS>::rows;
-    static constexpr size_t cols = matrix_traits<LHS>::cols;
-    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory && 
-                                                  matrix_traits<RHS>::has_contiguous_memory;
-    static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise &&
-                                            matrix_traits<RHS>::is_element_wise;
-    static constexpr bool is_expression = true;
-    static constexpr bool is_plain = false;
-};
-
-template<typename LHS, typename Scalar>
-struct matrix_traits<MatMulScalarExpr<LHS, Scalar>>
+template<typename LHS, typename Scalar, typename Op>
+struct matrix_traits<MatScalarExpr<LHS, Scalar, Op>>
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
@@ -164,24 +139,6 @@ struct matrix_traits<MatMulScalarExpr<LHS, Scalar>>
     static constexpr size_t rows = matrix_traits<LHS>::rows;
     static constexpr size_t cols = matrix_traits<LHS>::cols;
     static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory;
-    static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise;
-    static constexpr bool is_expression = true;
-    static constexpr bool is_plain = false;
-};
-
-template<typename LHS, typename Scalar>
-struct matrix_traits<MatDivScalarExpr<LHS, Scalar>>
-{
-    static_assert(std::is_same_v<
-        std::remove_cv_t<typename matrix_traits<LHS>::value_type>,
-        std::remove_cv_t<Scalar>>,
-        "Mixed types not supported in matrix operations");
-
-    using value_type = std::remove_cv_t<typename matrix_traits<LHS>::value_type>;
-    static constexpr size_t rows = matrix_traits<LHS>::rows;
-    static constexpr size_t cols = matrix_traits<LHS>::cols;
-    static constexpr bool has_contiguous_memory = matrix_traits<LHS>::has_contiguous_memory &&
-                                                  !std::is_integral_v<value_type>;
     static constexpr bool is_element_wise = matrix_traits<LHS>::is_element_wise;
     static constexpr bool is_expression = true;
     static constexpr bool is_plain = false;
@@ -293,8 +250,8 @@ struct vector_traits<MatrixCol<T, Size>>
     static constexpr bool is_plain = false;
 };
 
-template<typename LHS, typename RHS>
-struct vector_traits<VecAddExpr<LHS, RHS>>
+template<typename LHS, typename RHS, typename Op>
+struct vector_traits<VecBinaryExpr<LHS, RHS, Op>>
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename vector_traits<LHS>::value_type>,
@@ -309,56 +266,8 @@ struct vector_traits<VecAddExpr<LHS, RHS>>
     static constexpr bool is_plain = false;
 };
 
-template<typename LHS, typename RHS>
-struct vector_traits<VecSubExpr<LHS, RHS>>
-{
-    static_assert(std::is_same_v<
-        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
-        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
-        "Mixed types not supported in vector operations");
-
-    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
-    static constexpr size_t size = vector_traits<LHS>::size;
-    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
-                                                  vector_traits<RHS>::has_contiguous_memory;
-    static constexpr bool is_expression = true;
-    static constexpr bool is_plain = false;
-};
-
-template<typename LHS, typename RHS>
-struct vector_traits<VecMulExpr<LHS, RHS>>
-{
-    static_assert(std::is_same_v<
-        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
-        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
-        "Mixed types not supported in vector operations");
-
-    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
-    static constexpr size_t size = vector_traits<LHS>::size;
-    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
-                                                  vector_traits<RHS>::has_contiguous_memory;
-    static constexpr bool is_expression = true;
-    static constexpr bool is_plain = false;
-};
-
-template<typename LHS, typename RHS>
-struct vector_traits<VecDivExpr<LHS, RHS>>
-{
-    static_assert(std::is_same_v<
-        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
-        std::remove_cv_t<typename vector_traits<RHS>::value_type>>,
-        "Mixed types not supported in vector operations");
-
-    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
-    static constexpr size_t size = vector_traits<LHS>::size;
-    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
-                                                  vector_traits<RHS>::has_contiguous_memory;
-    static constexpr bool is_expression = true;
-    static constexpr bool is_plain = false;
-};
-
-template<typename LHS, typename Scalar>
-struct vector_traits<VecMulScalarExpr<LHS, Scalar>>
+template<typename LHS, typename Scalar, typename Op>
+struct vector_traits<VecScalarExpr<LHS, Scalar, Op>>
 {
     static_assert(std::is_same_v<
         std::remove_cv_t<typename vector_traits<LHS>::value_type>,
@@ -368,22 +277,6 @@ struct vector_traits<VecMulScalarExpr<LHS, Scalar>>
     using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
     static constexpr size_t size = vector_traits<LHS>::size;
     static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory;
-    static constexpr bool is_expression = true;
-    static constexpr bool is_plain = false;
-};
-
-template<typename LHS, typename Scalar>
-struct vector_traits<VecDivScalarExpr<LHS, Scalar>>
-{
-    static_assert(std::is_same_v<
-        std::remove_cv_t<typename vector_traits<LHS>::value_type>,
-        std::remove_cv_t<Scalar>>,
-        "Mixed types not supported in vector operations");
-
-    using value_type = std::remove_cv_t<typename vector_traits<LHS>::value_type>;
-    static constexpr size_t size = vector_traits<LHS>::size;
-    static constexpr bool has_contiguous_memory = vector_traits<LHS>::has_contiguous_memory &&
-                                                  !std::is_integral_v<value_type>;
     static constexpr bool is_expression = true;
     static constexpr bool is_plain = false;
 };
@@ -454,25 +347,6 @@ template<typename T>
 inline constexpr bool is_matvec_product_v = is_matvec_product<std::remove_cvref_t<T>>::value;
 
 
-
-template<typename T>
-struct is_simd_compatible : std::false_type {};
-
-template<typename T>
-inline constexpr bool is_simd_compatible_v = is_simd_compatible<std::remove_cvref_t<T>>::value;
-
-template<typename T, size_t R, size_t C>
-struct is_simd_compatible<Matrix<T, R, C>>
-  : std::bool_constant<(PackedTraits<Packed<T>>::size > 0)>
-{};
-
-template<typename LHS, typename RHS>
-struct is_simd_compatible<MatAddExpr<LHS, RHS>>
-  : std::bool_constant<is_simd_compatible_v<LHS> &&
-                       is_simd_compatible_v<RHS> &&
-                       std::is_same_v<typename LHS::value_type, 
-                                      typename RHS::value_type>> 
-{};
 
 
 template<typename T>

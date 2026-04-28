@@ -25,13 +25,11 @@
 #pragma once
 
 #include "tidop/core/base/exception.h"
-#include "tidop/math/algebra/eval/MatAddEval.h"
-#include "tidop/math/algebra/eval/MatDivScalarEval.h"
-#include "tidop/math/algebra/eval/MatMulScalarEval.h"
+#include "tidop/math/algebra/eval/MatBinaryEval.h"
+#include "tidop/math/algebra/eval/MatScalarEval.h"
 #include "tidop/math/algebra/eval/MatMulEval.h"
 #include "tidop/math/algebra/eval/MatrixEval.h"
 #include "tidop/math/algebra/eval/MatrixBlockEval.h"
-#include "tidop/math/algebra/eval/MatSubEval.h"
 #include "tidop/math/algebra/eval/MatUnaryMinusEval.h"
 #include "tidop/math/algebra/eval/TransposeEval.h"
 #include "tidop/math/algebra/matrix/detail/MulMat.h"

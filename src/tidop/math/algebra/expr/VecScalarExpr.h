@@ -27,47 +27,46 @@
 #include "tidop/math/base/Traits.h"
 #include "tidop/math/base/Concepts.h"
 
+
 namespace tl
 {
 
 template<typename Derived>
 class VectorBase;
 
-// ¿Renombrar como cwiseDiv?
-template<typename LHS, typename RHS>
-class VecDivExpr
-  : public VectorBase<VecDivExpr<LHS, RHS>>
+
+template<typename LHS, typename Scalar, typename Op>
+class VecScalarExpr
+  : public VectorBase<VecScalarExpr<LHS, Scalar, Op>>
 {
 
 private:
 
     const LHS &mLhs;
-    const RHS &mRhs;
+    Scalar mScalar;
 
 public:
 
-    static_assert(std::is_same_v<
-        typename vector_traits<LHS>::value_type,
-        typename vector_traits<RHS>::value_type>,
-        "Mixed types not supported");
+    static_assert(std::is_same_v<typename vector_traits<LHS>::value_type,
+                  Scalar>, "Mixed types not supported");
 
-    using value_type = typename vector_traits<LHS>::value_type;
+    using value_type = Scalar;
 
 public:
 
-    VecDivExpr(const LHS &lhs, const RHS &rhs)
-      : mLhs(lhs), mRhs(rhs)
-    {
-    }
+    VecScalarExpr(const LHS &lhs, Scalar scalar)
+      : mLhs(lhs), 
+        mScalar(scalar)
+    {}
 
     constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
 
     auto lhs() const -> const LHS & { return mLhs; }
-    auto rhs() const -> const RHS & { return mRhs; }
-	
+    auto scalar() const -> Scalar { return mScalar; }
+
     auto aliases(const void *ptr) const -> bool
     {
-        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
+        return mLhs.aliases(ptr);
     }
 };
 

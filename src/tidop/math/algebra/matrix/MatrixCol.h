@@ -99,24 +99,6 @@ public:
     {
         detail::assign_col(*this, expr);
         return *this;
-        //TL_ASSERT(expr.size() == size(), "Column size mismatch");
-
-        //if (expr.aliases(matrixData)) {
-
-        //    Vector<T> tmp(expr);
-
-        //    for (size_t i = 0; i < size(); ++i) {
-        //        (*this)[i] = tmp[i];
-        //    }
-
-        //} else {
-
-        //    for (size_t i = 0; i < size(); ++i) {
-        //        (*this)[i] = expr[i];
-        //    }
-        //}
-
-        //return *this;
     }
 
     auto begin() TL_NOEXCEPT -> iterator;
@@ -129,11 +111,6 @@ public:
 
     auto operator[](size_t row) const -> const_reference;
     auto operator[](size_t row) -> reference;
-/*    auto operator=(const Vector<T> &vector) -> MatrixCol&;
-    template<typename T2, size_t _size2>
-    auto operator = (const Vector<T2, _size2> &vector) -> MatrixCol&;*/   
-    
-    //explicit operator Vector<T>();
 
     auto aliases(const void *ptr) const -> bool
     {
@@ -257,47 +234,5 @@ auto MatrixCol<T, Size>::operator[](size_t row) -> reference
 {
     return matrixData[row * matrixCols + matrixCol];
 }
-
-//template<typename T, size_t Size>
-//auto MatrixCol<T, Size>::operator=(T value) -> void
-//{
-//    std::fill(begin(), end(), value);
-//}
-
-//template<typename T, size_t Size>
-//auto MatrixCol<T, Size>::operator=(const Vector<T> &vector) -> MatrixCol&
-//{
-//    TL_ASSERT(vector.size() == size(), "Invalid vector size");
-//
-//    for(size_t i = 0; i < size(); i++)
-//        (*this)[i] = vector[i];
-//
-//    return *this;
-//}
-//
-//template<typename T, size_t Size>
-//template<typename T2, size_t _size2>
-//auto MatrixCol<T, Size>::operator = (const Vector<T2, _size2> &vector) -> MatrixCol&
-//{
-//    TL_ASSERT(this->size() == vector.size(), "A size != B size");
-//
-//    for(size_t i = 0; i < this->size(); i++) {
-//        (*this)[i] = static_cast<T>(vector[i]);
-//    }
-//
-//    return *this;
-//}
-
-//template<typename T, size_t Size>
-//MatrixCol<T, Size>::operator Vector<T>()
-//{
-//    Vector<T> vector(this->size());
-//
-//    for(size_t i = 0; i < this->size(); i++) {
-//        vector[i] = (*this)[i];
-//    }
-//
-//    return vector;
-//}
 
 } // End namespace tl

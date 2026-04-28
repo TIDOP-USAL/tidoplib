@@ -229,7 +229,7 @@ public:
     /*!
      * \brief The type of each element in the SIMD packed type.
      */
-    using value_type = typename PackedTraits<Packed<T>>::value_type;
+    using value_type = std::remove_cv_t<typename PackedTraits<Packed<T>>::value_type>;
 
     /*!
      * \brief The SIMD intrinsic type used for packed operations.
@@ -287,7 +287,7 @@ public:
      *
      * \param[out] dst Memory address where to store the data.
      */
-    void store(value_type *dst);
+    void store(value_type *dst) const;
 
     /*!
      * \brief Load values from aligned memory into the SIMD packed type.
@@ -318,6 +318,20 @@ public:
      * \param[in] value The scalar value to set.
      */
     void setScalar(value_type value);
+
+    /*!
+     * \brief Extract the element at a given index.
+     * \param[in] index The index of the element to extract (0 <= index < size()).
+     * \return The extracted scalar value.
+     */
+    auto extract(size_t index) const -> value_type;
+
+    /*!
+     * \brief Insert a scalar value into the packed vector at a given index.
+     * \param[in] index The index of the element to modify (0 <= index < size()).
+     * \param[in] value The scalar value to insert.
+     */
+    void insert(size_t index, value_type value);
 
     /*!
      * \brief Assignment operator for the SIMD intrinsic type.
@@ -418,7 +432,7 @@ public:
 
 private:
 
-    bool isAligned(const void *ptr, size_t alignment)
+    static bool isAligned(const void *ptr, size_t alignment)
     {
         return (reinterpret_cast<uintptr_t>(ptr) % alignment) == 0;
     }
@@ -636,6 +650,250 @@ auto set(T data) -> std::enable_if_t<
 #endif
 }
 
+
+template<typename T>
+auto extractElement(const Packed<T> &packed, int index) -> enableIfFloat<T, typename Packed<T>::value_type>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX
+    // Para AVX extraemos la mitad de 128 bits y luego operamos sobre SSE
+    __m128 low = _mm256_extractf128_ps(v, 0);
+    __m128 high = _mm256_extractf128_ps(v, 1);
+    if (index < 4)
+        return _mm_cvtss_f32(_mm_shuffle_ps(low, low, _MM_SHUFFLE(0, 0, 0, index)));
+    else
+        return _mm_cvtss_f32(_mm_shuffle_ps(high, high, _MM_SHUFFLE(0, 0, 0, index - 4)));
+#elif defined TL_HAVE_SSE
+    // SSE: extracción con shuffle + cvt
+    return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, index)));
+#endif
+}
+
+template<typename T>
+auto extractElement(const Packed<T> &packed, int index) -> enableIfDouble<T, typename Packed<T>::value_type>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX
+    __m128d low = _mm256_extractf128_pd(v, 0);
+    __m128d high = _mm256_extractf128_pd(v, 1);
+    if (index < 2)
+        return _mm_cvtsd_f64(_mm_shuffle_pd(low, low, _MM_SHUFFLE2(0, index)));
+    else
+        return _mm_cvtsd_f64(_mm_shuffle_pd(high, high, _MM_SHUFFLE2(0, index - 2)));
+#elif defined TL_HAVE_SSE2
+    return _mm_cvtsd_f64(_mm_shuffle_pd(v, v, _MM_SHUFFLE2(0, index)));
+#endif
+}
+
+template<typename T>
+auto extractElement(const Packed<T> &packed, int index) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
+    typename Packed<T>::value_type>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return static_cast<T>(_mm256_extract_epi8(v, index));
+#elif defined TL_HAVE_SSE4_1
+    return static_cast<T>(_mm_extract_epi8(v, index));
+#else
+    alignas(16) T tmp[16];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    return tmp[index];
+#endif
+}
+
+template<typename T>
+auto extractElement(const Packed<T> &packed, int index) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    typename Packed<T>::value_type>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return static_cast<T>(_mm256_extract_epi16(v, index));
+#elif defined TL_HAVE_SSE2
+    return static_cast<T>(_mm_extract_epi16(v, index));
+#else
+    alignas(16) T tmp[8];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    return tmp[index];
+#endif
+}
+
+template<typename T>
+auto extractElement(const Packed<T> &packed, int index) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    typename Packed<T>::value_type>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return static_cast<T>(_mm256_extract_epi32(v, index));
+#elif defined TL_HAVE_SSE4_1
+    return static_cast<T>(_mm_extract_epi32(v, index));
+#else
+    alignas(16) T tmp[4];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    return tmp[index];
+#endif
+}
+
+template<typename T>
+auto extractElement(const Packed<T> &packed, int index) -> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    typename Packed<T>::value_type>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return static_cast<T>(_mm256_extract_epi64(v, index));
+#elif defined TL_HAVE_SSE4_1
+    return static_cast<T>(_mm_extract_epi64(v, index));
+#else
+    alignas(16) T tmp[2];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    return tmp[index];
+#endif
+}
+
+template<typename T>
+auto insertElement(const Packed<T> &packed, 
+                   int index, 
+                   typename Packed<T>::value_type value) -> enableIfFloat<T, Packed<T>>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX
+    __m128 low = _mm256_extractf128_ps(v, 0);
+    __m128 high = _mm256_extractf128_ps(v, 1);
+    __m128 val128 = _mm_set1_ps(value);
+    if (index < 4) {
+        // Reemplaza un elemento de la mitad baja
+        low = _mm_insert_ps(low, val128, index << 4); // SSE4.1
+    } else {
+        high = _mm_insert_ps(high, val128, (index - 4) << 4);
+    }
+    return _mm256_insertf128_ps(_mm256_insertf128_ps(v, low, 0), high, 1);
+#elif defined TL_HAVE_SSE
+#ifdef TL_HAVE_SSE4_1
+    return _mm_insert_ps(v, _mm_set_ss(value), index << 4);
+#else
+    // Respaldo genérico: almacenar, modificar, cargar
+    alignas(16) float tmp[4];
+    _mm_store_ps(tmp, v);
+    tmp[index] = value;
+    return _mm_load_ps(tmp);
+#endif
+#endif
+}
+
+template<typename T>
+auto insertElement(const Packed<T> &packed, int index, typename Packed<T>::value_type value) -> enableIfDouble<T, Packed<T>>
+{
+    typename Packed<T>::simd_type v = packed;
+    __m128d val128 = _mm_set1_pd(value);
+#ifdef TL_HAVE_AVX
+    __m128d low = _mm256_extractf128_pd(v, 0);
+    __m128d high = _mm256_extractf128_pd(v, 1);
+    if (index < 2) {
+        if (index == 0)
+            low = _mm_move_sd(low, val128);   // mezcla: val128 en parte baja, low en alta
+        else
+            low = _mm_shuffle_pd(low, val128, _MM_SHUFFLE2(1, 0));
+    } else {
+        if (index == 2)
+            high = _mm_move_sd(high, val128);
+        else
+            high = _mm_shuffle_pd(high, val128, _MM_SHUFFLE2(1, 0));
+    }
+    return _mm256_insertf128_pd(_mm256_insertf128_pd(v, low, 0), high, 1);
+#elif defined TL_HAVE_SSE2
+    if (index == 0)
+        return _mm_move_sd(v, val128);
+    else
+        return _mm_shuffle_pd(v, val128, _MM_SHUFFLE2(1, 0));
+#endif
+}
+
+template<typename T>
+auto insertElement(const Packed<T> &packed, int index, typename Packed<T>::value_type value)
+-> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
+    Packed<T>>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return _mm256_insert_epi8(v, value, index);
+#elif defined TL_HAVE_SSE4_1
+    return _mm_insert_epi8(v, value, index);
+#else
+    alignas(16) T tmp[16];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    tmp[index] = value;
+    return _mm_load_si128(reinterpret_cast<__m128i const *>(tmp));
+#endif
+}
+
+template<typename T>
+auto insertElement(const Packed<T> &packed, int index, typename Packed<T>::value_type value)
+-> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
+    Packed<T>>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return _mm256_insert_epi16(v, value, index);
+#elif defined TL_HAVE_SSE2
+    return _mm_insert_epi16(v, value, index);
+#else
+    alignas(16) T tmp[8];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    tmp[index] = value;
+    return _mm_load_si128(reinterpret_cast<__m128i const *>(tmp));
+#endif
+}
+
+template<typename T>
+auto insertElement(const Packed<T> &packed, int index, typename Packed<T>::value_type value)
+-> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
+    Packed<T>>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return _mm256_insert_epi32(v, value, index);
+#elif defined TL_HAVE_SSE4_1
+    return _mm_insert_epi32(v, value, index);
+#else
+    alignas(16) T tmp[4];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    tmp[index] = value;
+    return _mm_load_si128(reinterpret_cast<__m128i const *>(tmp));
+#endif
+}
+
+template<typename T>
+auto insertElement(const Packed<T> &packed, int index, typename Packed<T>::value_type value)
+-> std::enable_if_t<
+    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
+    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
+    Packed<T>>
+{
+    typename Packed<T>::simd_type v = packed;
+#ifdef TL_HAVE_AVX2
+    return _mm256_insert_epi64(v, value, index);
+#elif defined TL_HAVE_SSE4_1
+    return _mm_insert_epi64(v, value, index);
+#else
+    alignas(16) T tmp[2];
+    _mm_store_si128(reinterpret_cast<__m128i *>(tmp), v);
+    tmp[index] = value;
+    return _mm_load_si128(reinterpret_cast<__m128i const *>(tmp));
+#endif
+}
 
 template<typename T>
 auto setZero() -> enableIfFloat<T, typename Packed<T>::simd_type>
@@ -1940,7 +2198,8 @@ Packed<T>::Packed(value_type scalar)
 template<typename T>
 void Packed<T>::load(const value_type *src)
 {
-    if (isAligned(src, 32)) {
+    constexpr size_t alignment = alignof(simd_type);
+    if (isAligned(src, alignment)) {
         loadAligned(src);
     } else {
         loadUnaligned(src);
@@ -1960,9 +2219,10 @@ void Packed<T>::loadUnaligned(const value_type *src)
 }
 
 template<typename T>
-void Packed<T>::store(value_type *dst)
+void Packed<T>::store(value_type *dst) const
 {
-    if (isAligned(dst, 32)) {
+    constexpr size_t alignment = alignof(simd_type);
+    if (isAligned(dst, alignment)) {
         storeAligned(dst);
     } else {
         storeUnaligned(dst);
@@ -1985,6 +2245,18 @@ template<typename T>
 void Packed<T>::setScalar(value_type value)
 {
     mValue = internal::set(value);
+}
+
+template<typename T>
+auto Packed<T>::extract(size_t index) const -> value_type
+{
+    return internal::extractElement(*this, static_cast<int>(index));
+}
+
+template<typename T>
+void Packed<T>::insert(size_t index, value_type value)
+{
+    *this = internal::insertElement(*this, static_cast<int>(index), value);
 }
 
 template<typename T>

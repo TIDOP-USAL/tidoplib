@@ -24,56 +24,31 @@
 
 #pragma once
 
-#include "tidop/math/algebra/eval/Evaluator.h"
-#include "tidop/math/algebra/expr/MatAddExpr.h"
-
 namespace tl
 {
 
-/*! \addtogroup Algebra
+/*! \addtogroup Functors
  *  \{
  */
 
-template<typename LHS, typename RHS>
-class Evaluator<MatAddExpr<LHS, RHS>>
+struct MulOp
 {
 
-private:
-
-    Evaluator<LHS> mLhs;
-    Evaluator<RHS> mRhs;
-
-public:
-
-    using value_type = typename MatAddExpr<LHS, RHS>::value_type;
-
-public:
-
-    Evaluator(const MatAddExpr<LHS, RHS> &expr)
-      : mLhs(expr.lhs()),
-        mRhs(expr.rhs())
+    template<typename T>
+    constexpr T operator()(const T &a, const T &b) const
     {
-    }
-
-    auto coeff(size_t r, size_t c) const -> value_type
-    {
-        return mLhs.coeff(r, c) + mRhs.coeff(r, c);
-    }
-
-    auto coeff(size_t i) const -> value_type
-    {
-        return mLhs.coeff(i) + mRhs.coeff(i);
+        return a * b;
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    auto packet(size_t i) const
+    template<typename T>
+    auto operator()(const Packed<T> &a, const Packed<T> &b) const
     {
-        return mLhs.packet(i) + mRhs.packet(i);
+        return a * b;
     }
 #endif
 
 };
-
 
 /*! \} */
 

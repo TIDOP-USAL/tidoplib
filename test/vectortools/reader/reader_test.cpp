@@ -623,7 +623,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
             BOOST_CHECK_EQUAL(autos_points.at(i).x(), point->x());
             BOOST_CHECK_EQUAL(autos_points.at(i).y(), point->y());
 
-            point->data();
+            auto data = point->data();
 
             i++;
         }
@@ -692,7 +692,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
             BOOST_CHECK_EQUAL(autos_points.at(i).x(), point->x());
             BOOST_CHECK_EQUAL(autos_points.at(i).y(), point->y());
 
-            point->data();
+            auto data = point->data();
 
             i++;
         }

@@ -85,29 +85,6 @@ public:
         detail::assign_block(*this, expr);
 
         return *this;
-
-        //TL_ASSERT(expr.rows() == mRows && expr.cols() == mCols, "Block size mismatch in assignment");
-
-        //if (expr.aliases(mData)) {
-
-        //    Matrix<T> temp_eval(expr);
-
-        //    for (size_t r = 0; r < mRows; ++r) {
-        //        for (size_t c = 0; c < mCols; ++c) {
-        //            (*this)(r, c) = temp_eval(r, c);
-        //        }
-        //    }
-
-        //} else {
-
-        //    for (size_t r = 0; r < mRows; ++r) {
-        //        for (size_t c = 0; c < mCols; ++c) {
-        //            (*this)(r, c) = expr(r, c);
-        //        }
-        //    }
-        //}
-
-        //return *this;
     }
 
     auto operator=(const MatrixBlock &other) && -> MatrixBlock &
@@ -236,10 +213,6 @@ public:
     auto rows() const noexcept -> size_t { return mRows; }
     auto cols() const noexcept -> size_t { return mCols; }
 
-    //auto aliases(const void *ptr) const -> bool 
-    //{
-    //    return mData == ptr;
-    //}
     auto aliases(const void *ptr) const -> bool
     {
         const T *p = static_cast<const T *>(ptr);

@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/math/algebra/eval/Evaluator.h"
-#include "tidop/math/algebra/expr/VecSubExpr.h"
+#include "tidop/math/algebra/expr/VecBinaryExpr.h"
 
 namespace tl
 {
@@ -34,22 +34,23 @@ namespace tl
  *  \{
  */
 
-template<typename LHS, typename RHS>
-class Evaluator<VecSubExpr<LHS, RHS>>
+template<typename LHS, typename RHS, typename Op>
+class Evaluator<VecBinaryExpr<LHS, RHS, Op>>
 {
 
 private:
 
     Evaluator<LHS> mLhs;
     Evaluator<RHS> mRhs;
+    Op mOp;
 
 public:
 
-    using value_type = typename VecSubExpr<LHS, RHS>::value_type;
+    using value_type = typename VecBinaryExpr<LHS, RHS, Op>::value_type;
 
 public:
 
-    Evaluator(const VecSubExpr<LHS, RHS> &expr)
+    Evaluator(const VecBinaryExpr<LHS, RHS, Op> &expr)
       : mLhs(expr.lhs()),
         mRhs(expr.rhs())
     {
@@ -57,13 +58,13 @@ public:
 
     auto coeff(size_t i) const -> value_type
     {
-        return mLhs.coeff(i) - mRhs.coeff(i);
+        return mOp(mLhs.coeff(i), mRhs.coeff(i));
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const
     {
-        return mLhs.packet(i) - mRhs.packet(i);
+        return mOp(mLhs.packet(i), mRhs.packet(i));
     }
 #endif
 

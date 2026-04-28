@@ -24,51 +24,32 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
-
-
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
+/*! \addtogroup Functors
+ *  \{
+ */
 
-
-template<typename LHS, typename Scalar>
-class VecMulScalarExpr
-  : public VectorBase<VecMulScalarExpr<LHS, Scalar>>
+struct SubOp
 {
 
-private:
-
-    const LHS &mLhs;
-    Scalar mScalar;
-
-public:
-
-    static_assert(std::is_same_v<typename vector_traits<LHS>::value_type,
-                  Scalar>, "Mixed types not supported");
-
-    using value_type = Scalar;
-
-public:
-
-    VecMulScalarExpr(const LHS&lhs, Scalar scalar)
-      : mLhs(lhs), 
-        mScalar(scalar)
-    {}
-
-    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
-
-    auto lhs() const -> const LHS & { return mLhs; }
-    auto scalar() const -> Scalar { return mScalar; }
-
-    auto aliases(const void *ptr) const -> bool
+    template<typename T>
+    constexpr T operator()(const T &a, const T &b) const
     {
-        return mLhs.aliases(ptr);
+        return a - b;
     }
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    template<typename T>
+    auto operator()(const Packed<T> &a, const Packed<T> &b) const
+    {
+        return a - b;
+    }
+#endif
+
 };
 
+/*! \} */
 
 } // End namespace tl

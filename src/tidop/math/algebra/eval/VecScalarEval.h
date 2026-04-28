@@ -24,54 +24,53 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
+#include "tidop/math/algebra/eval/Evaluator.h"
+#include "tidop/math/algebra/expr/VecScalarExpr.h"
 
 namespace tl
 {
 
-template<typename Derived>
-class MatrixBase;
+/*! \addtogroup Algebra
+ *  \{
+ */
 
-
-template<typename LHS, typename RHS>
-class MatSubExpr 
-  : public MatrixBase<MatSubExpr<LHS, RHS>>
+template<typename LHS, typename Scalar, typename Op>
+class Evaluator<VecScalarExpr<LHS, Scalar, Op>>
 {
 
 private:
 
-    const LHS &mLhs;
-    const RHS &mRhs;
-
+    Evaluator<LHS> mLhs;
+    Scalar mScalar;
+    Op mOp;
+	
 public:
 
-    static_assert(std::is_same_v<
-        typename matrix_traits<LHS>::value_type,
-        typename matrix_traits<RHS>::value_type>,
-        "Mixed types not supported");
-
-    using value_type = typename matrix_traits<LHS>::value_type;
-
+    using value_type = typename VecScalarExpr<LHS, Scalar, Op>::value_type;
+    
 public:
 
-    MatSubExpr(const LHS &lhs, const RHS &rhs) 
-      : mLhs(lhs),
-        mRhs(rhs)
+    Evaluator(const VecScalarExpr<LHS, Scalar, Op> &expr)
+      : mLhs(expr.lhs()),
+        mScalar(expr.scalar())
     {
-        TL_ASSERT(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols(), "Matrix sizes must match");
     }
 
-    constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
-    constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
-
-    auto lhs() const -> const LHS & { return mLhs; }
-    auto rhs() const -> const RHS & { return mRhs; }
-
-    auto aliases(const void *ptr) const -> bool
+    auto coeff(size_t i) const -> value_type
     {
-        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
+        return mOp(mLhs.coeff(i), mScalar);
     }
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    auto packet(size_t i) const
+    {
+        return mOp(mLhs.packet(i), Packed<value_type>(mScalar));
+    }
+#endif
+
 };
+
+
+/*! \} */
 
 } // End namespace tl

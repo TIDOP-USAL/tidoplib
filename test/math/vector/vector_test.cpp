@@ -794,6 +794,9 @@ BOOST_FIXTURE_TEST_CASE(division_float, VectorExprTest)
     BOOST_CHECK_EQUAL(1.5f, v1_dyn[2]);
 }
 
+// TODO: División de enteros. Debería dar error de compilación porque el resultado no es entero.
+
+
 BOOST_FIXTURE_TEST_CASE(VectorScalar_int, VectorExprTest)
 {
     Vector<int, 3> v1 = {1, 0, 3};
@@ -975,6 +978,23 @@ BOOST_FIXTURE_TEST_CASE(division_vector_scalar, VectorExprTest)
     BOOST_CHECK_EQUAL(0.1f, v2[0]);
     BOOST_CHECK_EQUAL(0.f, v2[1]);
     BOOST_CHECK_EQUAL(0.3f, v2[2]);
+
+    Vector<int, 3> v3 = {10, 5, 3};
+    Vector<int, 3> v4 = v3 / 5;
+
+    BOOST_CHECK_EQUAL(2, v4[0]);
+    BOOST_CHECK_EQUAL(1, v4[1]);
+    BOOST_CHECK_EQUAL(0, v4[2]);
+
+    Vector<int, 6> v5 = {10, 5, 3, 0, 15, 20};
+    Vector<int, 6> v6 = v5 / 5;
+    BOOST_CHECK_EQUAL(2, v6[0]);
+    BOOST_CHECK_EQUAL(1, v6[1]);
+    BOOST_CHECK_EQUAL(0, v6[2]);
+    BOOST_CHECK_EQUAL(0, v6[3]);
+    BOOST_CHECK_EQUAL(3, v6[4]);
+    BOOST_CHECK_EQUAL(4, v6[5]);
+
 }
 
 BOOST_FIXTURE_TEST_CASE(dotProduct, VectorExprTest)

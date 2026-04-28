@@ -24,57 +24,54 @@
 
 #pragma once
 
-#include "tidop/math/algebra/eval/Evaluator.h"
-#include "tidop/math/algebra/expr/MatMulScalarExpr.h"
+#include "tidop/math/base/Traits.h"
+#include "tidop/math/base/Concepts.h"
+
 
 namespace tl
 {
 
-/*! \addtogroup Algebra
- *  \{
- */
+template<typename Derived>
+class MatrixBase;
 
-template<typename LHS, typename Scalar>
-class Evaluator<MatMulScalarExpr<LHS, Scalar>>
+
+template<typename LHS, typename Scalar, typename Op>
+class MatScalarExpr
+  : public MatrixBase<MatScalarExpr<LHS, Scalar, Op>>
 {
 
 private:
 
-    Evaluator<LHS> mLhs;
+    const LHS &mLhs;
     Scalar mScalar;
 
 public:
 
-    using value_type = typename MatMulScalarExpr<LHS, Scalar>::value_type;
+    static_assert(std::is_same_v<
+        typename matrix_traits<LHS>::value_type,
+        Scalar>,
+        "Mixed types not supported");
+
+    using value_type = typename matrix_traits<LHS>::value_type;
 
 public:
 
-    Evaluator(const MatMulScalarExpr<LHS, Scalar> &expr)
-      : mLhs(expr.lhs()),
-        mScalar(expr.scalar())
-    {
-    }
+    MatScalarExpr(const LHS &lhs, Scalar scalar)
+      : mLhs(lhs), 
+        mScalar(scalar)
+    {}
 
-    auto coeff(size_t r, size_t c) const -> value_type
-    {
-        return mLhs.coeff(r, c) * mScalar;
-    }
+    constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
+    constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
 
-    auto coeff(size_t i) const -> value_type
-    {
-        return mLhs.coeff(i) * mScalar;
-    }
+    auto lhs() const -> const LHS & { return mLhs; }
+    auto scalar() const -> Scalar { return mScalar; }
 
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    auto packet(size_t i) const
+    auto aliases(const void *ptr) const -> bool
     {
-        return mLhs.packet(i) * Packed<value_type>(mScalar);
+        return mLhs.aliases(ptr);
     }
-#endif
-
 };
 
-
-/*! \} */
 
 } // End namespace tl

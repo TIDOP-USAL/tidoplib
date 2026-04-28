@@ -24,51 +24,47 @@
 
 #pragma once
 
-#include "tidop/math/algebra/eval/Evaluator.h"
-#include "tidop/math/algebra/expr/VecMulExpr.h"
-
 namespace tl
 {
 
-/*! \addtogroup Algebra
+/*! \addtogroup Functors
  *  \{
  */
 
-template<typename LHS, typename RHS>
-class Evaluator<VecMulExpr<LHS, RHS>>
+struct DivOp
 {
 
-private:
-
-    Evaluator<LHS> mLhs;
-    Evaluator<RHS> mRhs;
-
-public:
-
-    using value_type = typename VecMulExpr<LHS, RHS>::value_type;
-
-public:
-
-    Evaluator(const VecMulExpr<LHS, RHS> &expr)
-      : mLhs(expr.lhs()),
-        mRhs(expr.rhs())
+    template<typename T>
+    constexpr T operator()(const T &a, const T &b) const
     {
-    }
-
-    auto coeff(size_t i) const -> value_type
-    {
-        return mLhs.coeff(i) * mRhs.coeff(i);
+        return a / b;
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    auto packet(size_t i) const
+    template<typename T>
+    auto operator()(const Packed<T> &a, const Packed<T> &a2) const
     {
-        return mLhs.packet(i) * mRhs.packet(i);
+        if constexpr (std::is_integral_v<T>) {
+            // SIMD no válido -> fallback escalar
+            constexpr size_t size = PackedTraits<Packed<T>>::size;
+            std::array<T, size> a_array;
+            std::array<T, size> a2_array;
+            a.store(a_array.data());
+            a2.store(a2_array.data());
+            std::array<T, size> result_array;
+            for (size_t i = 0; i < size; ++i) {
+                result_array[i] = a_array[i] / a2_array[i];
+            }
+            Packed<T> result;
+            result.load(result_array.data());
+            return result;
+        } else {
+            return a / a2;
+        }
     }
 #endif
 
 };
-
 
 /*! \} */
 

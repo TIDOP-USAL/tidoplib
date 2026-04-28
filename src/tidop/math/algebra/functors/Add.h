@@ -24,50 +24,32 @@
 
 #pragma once
 
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
-
-
 namespace tl
 {
 
-template<typename Derived>
-class VectorBase;
+/*! \addtogroup Functors
+ *  \{
+ */
 
-// Renombrar como cwiseProduct?
-template<typename LHS, typename RHS>
-class VecMulExpr 
-  : public VectorBase<VecMulExpr<LHS, RHS>>
+struct AddOp
 {
 
-private:
-
-    const LHS &mLhs;
-    const RHS &mRhs;
-
-public:
-
-    static_assert(std::is_same_v<
-        typename vector_traits<LHS>::value_type,
-        typename vector_traits<RHS>::value_type>,
-        "Mixed types not supported");
-
-    using value_type = typename vector_traits<LHS>::value_type;
-
-public:
-
-    VecMulExpr(const LHS &lhs, const RHS &rhs) : mLhs(lhs), mRhs(rhs) {}
-
-    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
-
-    auto lhs() const -> const LHS & { return mLhs; }
-    auto rhs() const -> const RHS & { return mRhs; }
-
-    auto aliases(const void *ptr) const -> bool
+    template<typename T>
+    constexpr T operator()(const T &a, const T &b) const
     {
-        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
+        return a + b;
     }
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    template<typename T>
+    auto operator()(const Packed<T> &a, const Packed<T> &b) const
+    {
+        return a + b;
+    }
+#endif
+
 };
 
+/*! \} */
 
 } // End namespace tl

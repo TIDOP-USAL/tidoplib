@@ -515,7 +515,7 @@ bool test_1(GeoTools* ptrGeoTools, std::string outputFileName, std::string& strE
         {
             std::string pointId = x.first;
             std::vector<double> point = x.second;
-            int pointSourceDimension = sourcePoints.at(nt)[pointId].size();
+            size_t pointSourceDimension = sourcePoints.at(nt)[pointId].size();
             double fcCrsSource = sourcePoints.at(nt)[pointId][0];
             double scCrsSource = sourcePoints.at(nt)[pointId][1];
             double tcCrsSource;
@@ -819,7 +819,7 @@ bool test_2(GeoTools* ptrGeoTools, std::string outputFileName, std::string& strE
             if (pointSourceDimension == 3)
                 tcCrsSource = sourcePoints.at(nt)[pointId][2];
 
-            int pointTargetDimension = targetPoints.at(nt)[pointId].size();
+            size_t pointTargetDimension = targetPoints.at(nt)[pointId].size();
             //            if(pointTargetDimension<pointSourceDimension)
             //            {
             //                pointTargetDimension=pointSourceDimension;

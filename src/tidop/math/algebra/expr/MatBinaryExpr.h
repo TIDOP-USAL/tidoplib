@@ -26,48 +26,54 @@
 
 #include "tidop/math/base/Traits.h"
 #include "tidop/math/base/Concepts.h"
-
+#include "tidop/math/algebra/functors/Add.h"
+#include "tidop/math/algebra/functors/Sub.h"
 
 namespace tl
 {
 
 template<typename Derived>
-class VectorBase;
+class MatrixBase;
 
 
-template<typename LHS, typename Scalar>
-class VecDivScalarExpr
-  : public VectorBase<VecDivScalarExpr<LHS, Scalar>>
+template<typename LHS, typename RHS, typename Op>
+class MatBinaryExpr
+  : public MatrixBase<MatBinaryExpr<LHS, RHS, Op>>
 {
 
 private:
 
     const LHS &mLhs;
-    Scalar mScalar;
+    const RHS &mRhs;
 
 public:
 
-    static_assert(std::is_same_v<typename vector_traits<LHS>::value_type,
-                  Scalar>, "Mixed types not supported");
+    static_assert(std::is_same_v<
+        typename matrix_traits<LHS>::value_type,
+        typename matrix_traits<RHS>::value_type>,
+        "Mixed types not supported");
 
-    using value_type = Scalar;
+    using value_type = typename matrix_traits<LHS>::value_type;
 
 public:
 
-    VecDivScalarExpr(const LHS &lhs, Scalar scalar)
-      : mLhs(lhs), 
-        mScalar(scalar)
-    {}
+    MatBinaryExpr(const LHS &lhs, const RHS &rhs)
+      : mLhs(lhs), mRhs(rhs)
+    {
+        TL_ASSERT(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols(), "Matrix sizes must match");
+    }
 
-    constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
+    constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
+    constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
 
     auto lhs() const -> const LHS & { return mLhs; }
-    auto scalar() const -> Scalar { return mScalar; }
+    auto rhs() const -> const RHS & { return mRhs; }
 
     auto aliases(const void *ptr) const -> bool
     {
-        return mLhs.aliases(ptr);
+        return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }
+
 };
 
 

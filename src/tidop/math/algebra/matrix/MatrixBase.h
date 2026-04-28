@@ -27,10 +27,8 @@
 #include "tidop/math/base/data.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/BaseExpr.h"
-#include "tidop/math/algebra/expr/MatAddExpr.h"
-#include "tidop/math/algebra/expr/MatSubExpr.h"
-#include "tidop/math/algebra/expr/MatMulScalarExpr.h"
-#include "tidop/math/algebra/expr/MatDivScalarExpr.h"
+#include "tidop/math/algebra/expr/MatBinaryExpr.h"
+#include "tidop/math/algebra/expr/MatScalarExpr.h"
 #include "tidop/math/algebra/expr/MatUnaryMinusExpr.h"
 #include "tidop/math/algebra/expr/MatMulExpr.h"
 #include "tidop/math/algebra/expr/TransposeExpr.h"
@@ -473,7 +471,6 @@ public:
      */
     auto frobeniusNorm() const -> value_type
     {
-        //auto &expr = this->derived();
         size_t r_count = this->rows();
         size_t c_count = this->cols();
 
@@ -503,7 +500,6 @@ public:
      */
     auto l1Norm() const -> value_type
     {
-        //auto &expr = this->derived();
         size_t r_count = this->rows();
         size_t c_count = this->cols();
 
@@ -544,40 +540,8 @@ public:
     //    return *std::max_element(w.begin(), w.end());
     //}
 
-    // Subido a BaseExpr para que esté disponible para vectores y matrices
-    //constexpr auto derived() -> derived_type&
-    //{
-    //    return static_cast<Derived &>(*this); 
-    //}
-
-    //constexpr auto derived() const -> const derived_type&
-    //{ 
-    //    return static_cast<const Derived &>(*this);
-    //}
-
     constexpr auto rows() const noexcept -> size_t { return this->derived().rows(); }
     constexpr auto cols() const noexcept -> size_t { return this->derived().cols(); }
-
-    //decltype(auto) operator()(size_t i, size_t j)
-    //{ 
-    //    return this->derived()(i, j);
-    //}
-
-    //decltype(auto) operator()(size_t i, size_t j) const
-    //{
-    //    return this->derived()(i, j);
-    //}
-
-    //decltype(auto) operator()(size_t i) { return this->derived()(i); }
-    //decltype(auto) operator()(size_t i) const { return this->derived()(i); }
-
-    //constexpr auto packet(size_t i) const
-    //    requires (matrix_traits<Derived>::has_contiguous_memory)
-    //{ 
-    //    return this->derived().packet(i);
-    //}
-
-    //auto aliases(const void *ptr) const -> bool { return derived().aliases(ptr); }
 
     /* Unary arithmetic operators */
 
@@ -596,23 +560,23 @@ public:
     template<MatrixExpr RHS>
     auto operator +(const RHS &rhs) const
     {
-        return MatAddExpr<Derived, RHS>(this->derived(), rhs);
+        return MatBinaryExpr<Derived, RHS, AddOp>(this->derived(), rhs);
     }
 
     template<MatrixExpr RHS>
     auto operator -(const RHS &rhs) const
     {
-        return MatSubExpr<Derived, RHS>(this->derived(), rhs);
+        return MatBinaryExpr<Derived, RHS, SubOp>(this->derived(), rhs);
     }
 
     auto operator *(value_type scalar) const
     {
-        return MatMulScalarExpr<Derived, value_type>(this->derived(), scalar);
+        return MatScalarExpr<Derived, value_type, MulOp>(this->derived(), scalar);
     }
 
     auto operator /(value_type scalar) const
     {
-        return MatDivScalarExpr<Derived, value_type>(this->derived(), scalar);
+        return MatScalarExpr<Derived, value_type, DivOp>(this->derived(), scalar);
     }
 
     template<MatrixExpr Expr>
@@ -667,59 +631,6 @@ public:
             return Matrix<T, R, C>(this->derived());
         }
     }
-
-    //template<typename OtherDerived>
-    //bool operator==(const MatrixBase<OtherDerived> &other) const
-    //{
-    //    const auto &self = this->derived();
-    //    const auto &rhs = other.derived();
-
-    //    if (self.rows() != rhs.rows() || self.cols() != rhs.cols()) {
-    //        return false;
-    //    }
-
-    //    size_t size = self.rows() * self.cols();
-    //    for (size_t i = 0; i < size; ++i) {
-    //        if (self(i) != rhs(i)) {
-    //            return false;
-    //        }
-    //    }
-
-    //    return true;
-    //}
-
-    //template<typename OtherDerived>
-    //bool operator!=(const MatrixBase<OtherDerived> &other) const
-    //{
-    //    return !(*this == other);
-    //}
-
-//    template<typename Scalar>
-//        requires (matrix_traits<Derived>::is_mutable &&
-//                  std::is_convertible_v<Scalar, value_type>)
-//    void fill(Scalar value)
-//    {
-//        auto &derived = this->derived();
-//        size_t size = derived.rows() * derived.cols();
-//        size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//        if (matrix_traits<Derived>::has_contiguous_memory) {
-//            Packed<value_type> packed_val(value);
-//            constexpr size_t packed_size = packed_val.size();
-//            size_t max_size = size - size % packed_size;
-//
-//            for (; i < max_size; i += packed_size) {
-//                packed_val.storeUnaligned(&derived(i));
-//            }
-//        }
-//#endif
-//
-//        for (; i < size; i++) {
-//            derived(i) = value;
-//        }
-//    }
 
 };
 

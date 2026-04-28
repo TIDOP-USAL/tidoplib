@@ -33,12 +33,8 @@
 #include "tidop/math/math.h"
 #include "tidop/math/base/data.h"
 #include "tidop/math/algebra/BaseExpr.h"
-#include "tidop/math/algebra/expr/VecAddExpr.h"
-#include "tidop/math/algebra/expr/VecDivExpr.h"
-#include "tidop/math/algebra/expr/VecDivScalarExpr.h"
-#include "tidop/math/algebra/expr/VecMulExpr.h"
-#include "tidop/math/algebra/expr/VecMulScalarExpr.h"
-#include "tidop/math/algebra/expr/VecSubExpr.h"
+#include "tidop/math/algebra/expr/VecBinaryExpr.h"
+#include "tidop/math/algebra/expr/VecScalarExpr.h"
 #include "tidop/math/algebra/expr/VecUnaryMinusExpr.h"
 #include "tidop/math/algebra/expr/MatVecMulExpr.h"
 #include "tidop/math/base/simd.h"
@@ -146,8 +142,6 @@ public:
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
         using Scalar = std::remove_cv_t<value_type>;
-        //Packed<Scalar> packed_a;
-        //Packed<Scalar> packed_b;
         Packed<Scalar> packed_result(0);
 
         constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
@@ -157,12 +151,7 @@ public:
                       vector_traits<Expr>::has_contiguous_memory) {
 
             for (; i < max_vector; i += packed_size) {
-
-                //packed_a.loadUnaligned(&eval_derived.packet(i));
-                //packed_b.loadUnaligned(&eval_expr.packet(i));
-
                 packed_result += eval_derived.packet(i) * eval_expr.packet(i);
-
             }
 
             dot += static_cast<double>(packed_result.sum());
@@ -203,16 +192,12 @@ public:
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
         using Scalar = std::remove_cv_t<value_type>;
-        //Packed<Scalar> packed_a;
-        //constexpr size_t packed_size = packed_a.size();
         constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
         size_t max_vector = (derived.size() / packed_size) * packed_size;
 
         if constexpr (vector_traits<Derived>::has_contiguous_memory) {
 
             for (; i < max_vector; i += packed_size) {
-                //packed_a.loadUnaligned(&derived[i]);
-                //summation += packed_a.sum();
                 summation += eval.packet(i).sum();
             }
 
@@ -226,15 +211,6 @@ public:
 
         return summation;
     }
-
-    //decltype(auto) operator[](size_t i) { return this->derived()[i]; }
-    //decltype(auto) operator[](size_t i) const { return this->derived()[i]; }
-
-    //constexpr auto packet(size_t i) const -> Packed<value_type>
-    //    requires (vector_traits<Derived>::has_contiguous_memory)
-    //{
-    //    return this->derived().packet(i);
-    //}
 
     /* Unary arithmetic operators */
 
@@ -266,7 +242,7 @@ public:
 	template<VectorExpr Expr>
     auto operator +(const Expr &expr) const
     {
-        return VecAddExpr<Derived, Expr>(this->derived(), expr);
+        return VecBinaryExpr<Derived, Expr, AddOp>(this->derived(), expr);
     }
     
     /*!
@@ -277,7 +253,7 @@ public:
     template<VectorExpr Expr>
     auto operator -(const Expr &expr) const
     {
-        return VecSubExpr<Derived, Expr>(this->derived(), expr);
+        return VecBinaryExpr<Derived, Expr, SubOp>(this->derived(), expr);
     }
 	
     /*!
@@ -288,7 +264,7 @@ public:
     template<VectorExpr Expr>
     auto cwiseProduct(const Expr &expr) const
     {
-        return VecMulExpr<Derived, Expr>(this->derived(), expr);
+        return VecBinaryExpr<Derived, Expr, MulOp>(this->derived(), expr);
     }
 
     /*!
@@ -299,7 +275,7 @@ public:
     template<VectorExpr Expr>
     auto cwiseDiv(const Expr &expr) const
     {
-        return VecDivExpr<Derived, Expr>(this->derived(), expr);
+        return VecBinaryExpr<Derived, Expr, DivOp>(this->derived(), expr);
     }
 
     /*!
@@ -309,7 +285,7 @@ public:
      */
     auto operator*(value_type scalar) const
     {
-        return VecMulScalarExpr<Derived, value_type>(this->derived(), scalar);
+        return VecScalarExpr<Derived, value_type, MulOp>(this->derived(), scalar);
     }
 
     /*!
@@ -319,7 +295,7 @@ public:
      */
     auto operator/(value_type scalar) const
     {
-        return VecDivScalarExpr<Derived, value_type>(this->derived(), scalar);
+        return VecScalarExpr<Derived, value_type, DivOp>(this->derived(), scalar);
     }
 
     /*!
@@ -409,59 +385,6 @@ public:
 
         return this->derived();
     }
-    //template<typename D = Derived, enable_if_vector_t<D> = 0>
-    //auto operator/=(T scalar) -> Derived&;
-	//
-    //template<typename Scalar,
-    //         typename D = Derived,
-    //         typename = std::enable_if_t<std::is_arithmetic_v<Scalar> &&is_vector<D>::value>>
-    //auto operator/=(Scalar scalar) -> Derived &;
-
-    /*!
-     * \brief Equality operator restricted to the same type.
-     */
-    //template<typename D = Derived, enable_if_vector_t<D> = 0>
-    //friend auto operator == (const Derived &lhs, const Derived &rhs) -> bool
-    //{
-    //    for (std::size_t i = 0; i < vector_traits<Derived>::size; ++i) {
-    //        if (lhs[i] != rhs[i]) {
-    //            return false;
-    //        }
-    //    }
-    //    return true;
-    //}
-    //template<typename OtherDerived>
-    //bool operator==(const VectorBase<OtherDerived> &other) const
-    //{
-    //    const auto &derived = this->derived();
-    //    const auto &rhs = other.derived();
-
-    //    if (derived.size() != rhs.size()) {
-    //        return false;
-    //    }
-
-    //    for (size_t i = 0; i < derived.size(); ++i) {
-    //        if (derived[i] != rhs[i]) {
-    //            return false;
-    //        }
-    //    }
-
-    //    return true;
-    //}
-	
-    /*!
-     * \brief Inequality operator.
-     */
-    //template<typename D = Derived, enable_if_vector_t<D> = 0>
-    //friend auto operator != (const Derived &lhs, const Derived &rhs) -> bool
-    //{
-    //    return !(lhs == rhs);
-    //}
-    //template<typename OtherDerived>
-    //bool operator!=(const VectorBase<OtherDerived> &other) const
-    //{
-    //    return !(*this == other);
-    //}
 	
     constexpr auto eval() const
     {
@@ -473,22 +396,6 @@ public:
             return Vector<T, Size>(this->derived());
         }
     }
-
-protected:
-
-    /*!
-     * \brief Sets the values of this vector to match another vector.
-     * \param[in] vector The vector to copy values from.
-     * \tparam OtherDerived The type of the other vector.
-     */
-    //template<typename OtherDerived>
-    //void set(const OtherDerived &vector);
-
-public:
-
-    // Subido a BaseExpr para que esté disponible para vectores y matrices
-    //auto derived() -> Derived&;
-    //auto derived() const -> const Derived&;
 
 };
 
@@ -504,7 +411,6 @@ public:
 template<typename Derived>
 VectorBase<Derived>::VectorBase()
 {
-    //this->properties.enable(Properties::contiguous_memory);
 }
 
 //template<typename Derived>

@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/math/algebra/eval/Evaluator.h"
-#include "tidop/math/algebra/expr/VecDivExpr.h"
+#include "tidop/math/algebra/expr/MatBinaryExpr.h"
 
 namespace tl
 {
@@ -34,36 +34,42 @@ namespace tl
  *  \{
  */
 
-template<typename LHS, typename RHS>
-class Evaluator<VecDivExpr<LHS, RHS>>
+template<typename LHS, typename RHS, typename Op>
+class Evaluator<MatBinaryExpr<LHS, RHS, Op>>
 {
 
 private:
 
     Evaluator<LHS> mLhs;
     Evaluator<RHS> mRhs;
+    Op mOp;
 
 public:
 
-    using value_type = typename VecDivExpr<LHS, RHS>::value_type;
+    using value_type = typename MatBinaryExpr<LHS, RHS, Op>::value_type;
 
 public:
 
-    Evaluator(const VecDivExpr<LHS, RHS> &expr)
+    Evaluator(const MatBinaryExpr<LHS, RHS, Op> &expr)
       : mLhs(expr.lhs()),
         mRhs(expr.rhs())
     {
     }
 
+    auto coeff(size_t r, size_t c) const -> value_type
+    {
+        return mOp(mLhs.coeff(r, c), mRhs.coeff(r, c));
+    }
+
     auto coeff(size_t i) const -> value_type
     {
-        return mLhs.coeff(i) / mRhs.coeff(i);
+        return mOp(mLhs.coeff(i), mRhs.coeff(i));
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     auto packet(size_t i) const
     {
-        return mLhs.packet(i) / mRhs.packet(i);
+        return mOp(mLhs.packet(i), mRhs.packet(i));
     }
 #endif
 
