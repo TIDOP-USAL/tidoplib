@@ -30,10 +30,6 @@
 include(TidopUtils)
 
 if (BUILD_TL_PCTOOLS)
-	
-	find_package(COPCLIB REQUIRED)
-	find_package(LAZPERF REQUIRED)
-	find_package(PDAL 2.0.0 REQUIRED CONFIG)
 
     project(PointCloudTools)
     
@@ -43,11 +39,15 @@ if (BUILD_TL_PCTOOLS)
 							 impl/PointCloudReader.cpp
 							 impl/PointCloudReaderPDAL.cpp
 							 impl/PointCloudReaderFactory.cpp
+							 impl/PlyReader.cpp
+							 impl/ply/ply.cpp
                          HEADER_FILES
 						     PointCloudToolsDefinitions.h
 						     PointCloudTools.h
                              PointCloudReader.h
-							 impl/PointCloudReaderPDAL.h)
+                             impl/PlyReader.h
+							 impl/PointCloudReaderPDAL.h
+							 impl/ply/ply.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}
@@ -66,6 +66,7 @@ if (BUILD_TL_PCTOOLS)
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core
 						  TidopLib::GeoTools
+						  TidopLib::Graphic
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
@@ -98,8 +99,8 @@ if (BUILD_TL_PCTOOLS)
     set(TL_HAVE_PCTOOLS YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
-# elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
-#
-#     message(STATUS "  TidopLib::GeoTools disabled")
+elseif(BUILD_TL_CORE AND BUILD_TL_GEOTOOLS AND BUILD_TL_GEOMETRY)
+
+     message(STATUS "  TidopLib::GeoTools disabled")
 
 endif()

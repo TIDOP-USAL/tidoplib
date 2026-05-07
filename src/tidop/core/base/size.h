@@ -22,19 +22,57 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file size.h
+ * \brief Two-dimensional size representation with arithmetic operations
+ *
+ * This module provides a generic size class for representing the dimensions of two-dimensional objects.
+ * It supports various arithmetic operations, type conversions, and validation methods.
+ *
+ * ### Classes
+ *
+ * - \ref Size<T> - Generic size implementation for type T
+ *
+ * ### Features
+ *
+ * - Type-safe size storage with arithmetic type validation
+ * - Arithmetic operations (addition, subtraction, scaling)
+ * - Type conversion between compatible size types
+ * - Dimension validation (positive, valid, empty checks)
+ * - Constexpr support for compile-time evaluation
+ * - Support for all arithmetic types (int, float, double, etc.)
+ *
+ * ### Example Usage
+ *
+ * \code{.cpp}
+ * #include "tidop/core/base/size.h"
+ *
+ * tl::Sizei screenSize(1920, 1080);
+ * tl::Sizei thumbnailSize = screenSize / 4;
+ *
+ * if (screenSize.isValid()) {
+ *     tl::Sizef normalized = static_cast<tl::Sizef>(screenSize) / 1920.0f;
+ * }
+ *
+ * tl::Sizei doubleSize = screenSize * 2;
+ * \endcode
+ *
+ * \see tl::Sizei, tl::Sizef, tl::Sized
+ */
+
 #pragma once
 
 #include <limits>
 #include <numeric>
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/window.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {
 
 
-/*! \addtogroup geometry
+/*! \addtogroup Base
  *  \{
  */
 
@@ -63,14 +101,14 @@ public:
      * Constructs a empty Size object. isValid() returns false
      * and isEmpty() return true.
      */
-    Size();
+    constexpr Size();
 
     /*!
      * \brief Constructs a size with the given width and height.
      * \param[in] width Size width
      * \param[in] height Size height
      */
-    Size(T width, T height);
+    constexpr Size(T width, T height);
 
     /*!
      * \brief Copy constructor
@@ -102,13 +140,19 @@ public:
      * \brief Check if Size object is empty
      * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
      */
-    auto isEmpty() const -> bool;
+    constexpr auto isEmpty() const -> bool;
 
     /*!
      * \brief Check if Size object is valid
      * \return Returns true if both the width and height is equal to or greater than 0; otherwise returns false.
      */
-    auto isValid() const -> bool;
+    constexpr auto isValid() const -> bool;
+
+    /*!
+     * \brief Calculates the area of the size.
+     * \return The product of width and height.
+     */
+    constexpr auto area() const -> T;
 
     /*!
      * \brief Type conversion
@@ -125,7 +169,7 @@ using Sized = Size<double>;
 
 
 template<typename T>
-Size<T>::Size()
+constexpr Size<T>::Size()
   : width{0},
     height{0}
 {
@@ -133,7 +177,7 @@ Size<T>::Size()
 }
 
 template<typename T>
-Size<T>::Size(T width, T height)
+constexpr Size<T>::Size(T width, T height)
   : width(width),
     height(height)
 {
@@ -178,15 +222,21 @@ auto Size<T>::operator = (Size &&size) TL_NOEXCEPT -> Size<T>&
 }
 
 template<typename T>
-auto Size<T>::isEmpty() const -> bool
+constexpr auto Size<T>::isEmpty() const -> bool
 {
     return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
-auto Size<T>::isValid() const -> bool
+constexpr auto Size<T>::isValid() const -> bool
 {
     return width > static_cast<T>(0) && height > static_cast<T>(0);
+}
+
+template<typename T>
+constexpr auto Size<T>::area() const -> T
+{
+    return width * height;
 }
 
 template<typename T> template<typename T2>
@@ -200,6 +250,14 @@ Size<T>::operator Size<T2>() const
     return size;
 }
 
+
+
+/*!
+ * \brief Equality comparison operator for Size objects.
+ * \param[in] size1 First size to compare
+ * \param[in] size2 Second size to compare
+ * \return True if both width and height are equal; otherwise false.
+ */
 template<typename T>
 bool operator == (const Size<T> &size1, const Size<T> &size2)
 {
@@ -207,6 +265,12 @@ bool operator == (const Size<T> &size1, const Size<T> &size2)
             size1.height == size2.height);
 }
 
+/*!
+ * \brief Inequality comparison operator for Size objects.
+ * \param[in] size1 First size to compare
+ * \param[in] size2 Second size to compare
+ * \return True if either width or height differs; otherwise false.
+ */
 template<typename T>
 bool operator != (const Size<T> &size1, const Size<T> &size2)
 {
@@ -214,6 +278,12 @@ bool operator != (const Size<T> &size1, const Size<T> &size2)
             size1.height != size2.height);
 }
 
+/*!
+ * \brief Addition assignment operator for Size objects.
+ * \param[in,out] size1 First size to modify
+ * \param[in] size2 Second size to add
+ * \return Reference to the modified size1
+ */
 template<typename T>
 Size<T> &operator += (Size<T> &size1, const Size<T> &size2)
 {
@@ -223,6 +293,12 @@ Size<T> &operator += (Size<T> &size1, const Size<T> &size2)
     return size1;
 }
 
+/*!
+ * \brief Subtraction assignment operator for Size objects.
+ * \param[in,out] size1 First size to modify
+ * \param[in] size2 Second size to subtract
+ * \return Reference to the modified size1
+ */
 template<typename T>
 Size<T> &operator -= (Size<T> &size1, const Size<T> &size2)
 {
@@ -232,6 +308,12 @@ Size<T> &operator -= (Size<T> &size1, const Size<T> &size2)
     return size1;
 }
 
+/*!
+ * \brief Addition operator for Size objects.
+ * \param[in] size1 First size
+ * \param[in] size2 Second size to add
+ * \return A new Size object with summed dimensions
+ */
 template<typename T>
 Size<T> operator + (const Size<T> &size1, const Size<T> &size2)
 {
@@ -239,6 +321,12 @@ Size<T> operator + (const Size<T> &size1, const Size<T> &size2)
                    size1.height + size2.height);
 }
 
+/*!
+ * \brief Subtraction operator for Size objects.
+ * \param[in] size1 First size
+ * \param[in] size2 Second size to subtract
+ * \return A new Size object with subtracted dimensions
+ */
 template<typename T>
 Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
 {
@@ -246,6 +334,12 @@ Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
                    size1.height - size2.height);
 }
 
+/*!
+ * \brief Scalar multiplication operator for Size objects.
+ * \param[in] size The size to scale
+ * \param[in] scalar The scalar value to multiply by
+ * \return A new Size object with scaled dimensions
+ */
 template<typename T>
 Size<T> operator * (const Size<T> &size, T scalar)
 {
@@ -253,6 +347,12 @@ Size<T> operator * (const Size<T> &size, T scalar)
                    size.height * scalar);
 }
 
+/*!
+ * \brief Scalar multiplication assignment operator for Size objects.
+ * \param[in,out] size The size to modify
+ * \param[in] scalar The scalar value to multiply by
+ * \return Reference to the modified size
+ */
 template<typename T>
 Size<T> &operator *= (Size<T> &size, T scalar)
 {
@@ -262,18 +362,40 @@ Size<T> &operator *= (Size<T> &size, T scalar)
     return size;
 }
 
+/*!
+ * \brief Scalar division assignment operator for Size objects.
+ * \param[in,out] size The size to modify
+ * \param[in] scalar The scalar value to divide by (must not be zero)
+ * \return Reference to the modified size
+ * \exception std::invalid_argument If scalar is zero
+ */
 template<typename T>
 Size<T> &operator /= (Size<T> &size, T scalar)
 {
+    if (scalar == static_cast<T>(0)) {
+        TL_THROW_EXCEPTION("Division by zero: scalar cannot be zero");
+    }
+    
     size.width /= scalar;
     size.height /= scalar;
 
     return size;
 }
 
+/*!
+ * \brief Scalar division operator for Size objects.
+ * \param[in] size The size to divide
+ * \param[in] scalar The scalar value to divide by (must not be zero)
+ * \return A new Size object with divided dimensions
+ * \exception std::invalid_argument If scalar is zero
+ */
 template<typename T>
 Size<T> operator / (const Size<T> &size, T scalar)
 {
+    if (scalar == static_cast<T>(0)) {
+        TL_THROW_EXCEPTION("Division by zero: scalar cannot be zero");
+    }
+    
     return Size<T>(size.width / scalar,
                    size.height / scalar);
 }

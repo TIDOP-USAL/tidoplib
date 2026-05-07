@@ -24,22 +24,23 @@
 
 #include "tidop/core/base/path.h"
 
-#include "tidop/core/console.h"
+#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/text_encoding.h"
+
 
 // filesystem
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
 #include <filesystem>
 #include <functional> 
 #else
 #include <boost/filesystem.hpp>
 #include <boost/functional/hash.hpp> 
 #endif
-
+#include <random>
 #include <codecvt>
 #include <ostream>
 
-
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
 namespace fs = std::filesystem;
 #else
 namespace fs = boost::filesystem;
@@ -50,44 +51,13 @@ namespace tl
 
 /// \cond
 
-namespace internal
+class Path::Impl
 {
-
-// std::string toUtf8(const std::wstring &wstr)
-// {
-//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-//     return converter.to_bytes(wstr);
-// }
-
-// std::wstring fromUtf8(const std::string &utf8str)
-// {
-//     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-//     return converter.from_bytes(utf8str);
-// }
-
-// std::string toLocal8Bit(const std::wstring &wstr)
-// {
-//     // Configurar la codificación local
-//     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
-
-//     // Convertir a std::string utilizando la codificación local
-//     return converter.to_bytes(wstr);
-// }
-
-// std::wstring fromLocal8Bit(const std::string &wstr)
-// {
-//     std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter(new std::codecvt<wchar_t, char, std::mbstate_t>(""));
-//     return converter.from_bytes(wstr);
-// }
-
-class Path
-{
-
 public:
 
-    Path() = default;
+    Impl() = default;
 
-    explicit Path(const fs::path &path)
+    explicit Impl(const fs::path &path)
         : mPath(path.native())
     {
     }
@@ -125,35 +95,30 @@ public:
 private:
 
     fs::path mPath;
-
 };
-
-} // namespace internal
 
 /// \endcond
 
 
 
 Path::Path()
-  : mPath(new internal::Path())
+  : mPath(new Impl)
 {
 }
 
-Path::Path(const std::string &path)
-  : mPath(new internal::Path(path))
-  //: mPath(new internal::Path(internal::fromUtf8(path)))  
+Path::Path(const std::string &utf8Path)
+  : mPath(new Impl(tl::fromUtf8(utf8Path)))
 {
 }
 
 Path::Path(const std::wstring &path)
-  : mPath(new internal::Path(path))
+  : mPath(new Impl(path))
 {
 }
 
 Path::Path(const Path &path)
-  : mPath(new internal::Path(*path.mPath))
+  : mPath(new Impl(*path.mPath))
 {
-
 }
 
 Path::Path(Path &&path) TL_NOEXCEPT
@@ -167,7 +132,7 @@ Path::~Path()
 
 auto Path::operator=(const Path &path)  -> Path&
 {
-    mPath = std::make_unique<internal::Path>(*path.mPath);
+    mPath = std::make_unique<Impl>(*path.mPath);
 
     return *this;
 }
@@ -179,20 +144,18 @@ auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
     return *this;
 }
 
-void Path::setPath(const std::string &path)
+void Path::setPath(const std::string &utf8Path)
 {
-    mPath = std::make_unique<internal::Path>(path);
-    //mPath = std::make_unique<internal::Path>(internal::fromUtf8(path));
+    mPath = std::make_unique<Impl>(tl::fromUtf8(utf8Path));
 }
 
 void Path::setPath(const std::wstring &path)
 {
-    mPath = std::make_unique<internal::Path>(path);
+    mPath = std::make_unique<Impl>(path);
 }
 
 auto Path::toString() const -> std::string
 {
-    //return internal::toUtf8(mPath->ref().wstring());
     return mPath->ref().string();
 }
 
@@ -201,10 +164,15 @@ auto Path::toWString() const -> std::wstring
     return mPath->ref().wstring();
 }
 
-// auto Path::toLocal8Bit() const -> std::string
-// {
-//     return internal::toLocal8Bit(mPath->ref().wstring());
-// }
+auto Path::toUtf8() const -> std::string
+{
+    return tl::toUtf8(mPath->ref().wstring());
+}
+
+auto Path::toLocal8Bit() const -> std::string
+{
+    return tl::toLocal8Bit(mPath->ref().wstring());
+}
 
 auto Path::fileName() const -> Path
 {
@@ -303,14 +271,13 @@ auto Path::list(const std::regex &filter) -> std::list<Path>
     return list;
 }
 
-auto Path::replaceFileName(const std::string &fileName) -> Path&
+auto Path::replaceFileName(const std::string &utf8FileName) -> Path&
 {
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
         _path.remove_filename();
-        //_path.append(internal::fromUtf8(fileName));
-        _path.append(fileName);
+        _path.append(tl::fromUtf8(utf8FileName));
     }
 
     return *this;
@@ -333,16 +300,15 @@ auto Path::replaceFileName(const Path &fileName) -> Path&
     return replaceFileName(fileName.toWString());
 }
 
-auto Path::replaceBaseName(const std::string &baseName) -> Path&
+auto Path::replaceBaseName(const std::string &utf8BaseName) -> Path&
 {
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
         std::string ext = _path.extension().string();
-        std::string file_name = baseName + ext;
+        std::string file_name = utf8BaseName + ext;
         _path.remove_filename();
-        //_path.append(internal::fromUtf8(file_name));
-        _path.append(file_name);
+        _path.append(tl::fromUtf8(file_name));
     }
 
     return *this;
@@ -386,8 +352,7 @@ auto Path::replaceExtension(const Path &extension) -> Path&
 
 auto Path::append(const std::string &text) -> Path&
 {
-    mPath->ref().append(text);
-    //mPath->ref().append(internal::fromUtf8(text));
+    mPath->ref().append(tl::fromUtf8(text));
     return *this;
 }
 
@@ -425,7 +390,7 @@ void Path::normalize()
 
 void Path::clear()
 {
-    mPath = std::make_unique<internal::Path>("");
+    mPath = std::make_unique<Impl>("");
 }
 
 /* Static methods */
@@ -441,27 +406,47 @@ auto Path::tempPath() -> Path
     return temp_path;
 }
 
-auto Path::tempDirectory() -> Path
+//auto Path::createTempDirectory() -> Path
+//{
+//    try {
+//        // Generate unique directory in system temp location
+//        fs::path tempDir = fs::temp_directory_path() /
+//            fs::unique_path("tidop-%%%%-%%%%-%%%%-%%%%");
+//        if (fs::create_directories(tempDir)) {
+//            return Path(tempDir.string());
+//        }
+//    } catch (const std::exception &e) {
+//        Message::warning("Failed to create temporary directory: {}", e.what());
+//    }
+//    return Path();
+//}
+auto Path::createTempDirectory() -> Path
 {
-    std::string temp_path;
+    try {
 
-#ifdef WIN32
-    temp_path = std::tmpnam(nullptr);
-#else
-    temp_path = fs::temp_directory_path().string();
-    temp_path.append("/tlXXXXXX");
-    std::vector<char> c_path(temp_path.begin(), temp_path.end());
-    c_path.push_back('\0');
-    int file_descriptor = mkstemp(c_path.data());
-    if (file_descriptor != -1) {
-        temp_path.assign(c_path.begin(), c_path.end() - 1);
-    } else {
-        temp_path = "";
-        Message::warning("Failed to create temporary directory");
+        auto generateUniquePathString = []() {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 15);
+            std::ostringstream ss;
+            const std::string pattern = "tidop-%%%%-%%%%-%%%%-%%%%";
+            for (char c : pattern) {
+                if (c == '%') ss << std::hex << dis(gen);
+                else ss << c;
+            }
+            return ss.str();
+        };
+
+        fs::path temp_dir = fs::temp_directory_path() / generateUniquePathString();
+
+        if (fs::create_directories(temp_dir)) {
+            return Path(temp_dir.string());
+        }
+    } catch (const std::exception &e) {
+        Message::warning("Failed to create temporary directory: {}", e.what());
     }
-#endif
 
-    return Path(temp_path);
+    return Path();
 }
 
 auto Path::compare(const Path &path) const -> int
@@ -519,10 +504,10 @@ auto Path::currentPath() -> Path
     return Path(fs::current_path().wstring());
 }
 
-// auto Path::fromLocal8Bit(const std::string &s) -> Path
-// {
-//     return Path(internal::fromLocal8Bit(s));
-// }
+auto Path::fromLocal8Bit(const std::string &s) -> Path
+{
+    return Path(tl::fromLocal8Bit(s));
+}
 
 /* Override operators */
 
@@ -541,7 +526,7 @@ auto Path::operator!=(const Path &path) const -> bool
 
 TemporalDir::TemporalDir(bool autoRemove)
   : bAutoRemove(autoRemove),
-    mPath(Path::tempDirectory())
+    mPath(Path::createTempDirectory())
 {
     mPath.createDirectories();
 }
@@ -561,28 +546,9 @@ auto TemporalDir::path() const -> Path
 
 std::ostream &operator<< (std::ostream &os, const Path &path)
 {
-    //os << path.toLocal8Bit() << std::flush;
-    os << path.toString() << std::flush;
+    os << path.toUtf8() << std::flush;
     return os;
 }
-
-
-
-//FileStatus::FileStatus(Path path)
-//    : path(path)
-//{
-//}
-//
-//FileStatus::~FileStatus()
-//{
-//}
-//
-//inline bool FileStatus::isBlock() const
-//{
-//#if (BOOST_VERSION_NUMBER_MAJOR > 8 && BOOST_VERSION_NUMBER_MINOR >=3)
-//    fs::is_block_file(path.toString());
-//#endif
-//}
 
 
 } // End namespace tl

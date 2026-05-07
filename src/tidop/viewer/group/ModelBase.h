@@ -7,8 +7,8 @@
 #include "tidop/viewer/opengl/buffer/VertexBuffer.h"
 #include "tidop/viewer/opengl/shader/Shader.h"
 
-#include <tidop/math/algebra/vector.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 #include <tidop/math/algebra/matrices.h>
 #include <tidop/math/algebra/rotations/axis_angle.h>
 
@@ -17,30 +17,30 @@ namespace tl
 
 class ModelBase
 {
-	GENERATE_SHARED_PTR(ModelBase)
+    GENERATE_SHARED_PTR(ModelBase)
 
 public:
-	enum class Type {
-		Mesh = GL_TRIANGLES, PointCloud = GL_POINTS, MultiLine = GL_LINES
-	};
+    enum class Type {
+        Mesh = GL_TRIANGLES, PointCloud = GL_POINTS, MultiLine = GL_LINES
+    };
 protected:
 
-	std::vector<Vertex> points;
-	std::vector<unsigned int> indices;
+    std::vector<Vertex> points;
+    std::vector<unsigned int> indices;
 
-	VertexArray::Ptr vertexArray;
-	VertexBuffer::Ptr vertexBuffer;
+    VertexArray::Ptr vertexArray;
+    VertexBuffer::Ptr vertexBuffer;
 	ShaderProgram::Ptr shaderProgram;
 
-	Type type;
+    Type type;
 
-	Matrix4x4f modelMatrix;
-	Vector3d offset;
+    Matrix4x4f modelMatrix;
+    Vector3d offset;
 
-	float pointSize;
-	float lineSize;
+    float pointSize;
+    float lineSize;
 
-	size_t length;
+    size_t length;
 
 public:
 
@@ -56,8 +56,8 @@ public:
 		vertexBuffer = VertexBuffer::New(points);
 		shaderProgram = getDefaultShaderProgram();
 
-		initLength();
-	}
+        initLength();
+    }
 
 	ModelBase(const std::vector<Vertex>& _points, const std::vector<unsigned int>& _indices, Type _type = Type::Mesh)
 		: points(_points),
@@ -72,8 +72,8 @@ public:
 		vertexBuffer = VertexBuffer::New(points, indices);
 		shaderProgram = getDefaultShaderProgram();
 
-		initLength();
-	}
+        initLength();
+    }
 
 	ModelBase(const std::vector<Vertex>& _points, const std::map<std::string, uint8_t>& attributes, Type _type = Type::PointCloud)
 		: points(_points),
@@ -102,7 +102,7 @@ public:
 		shaderProgram = getDefaultShaderProgram();
 	}
 
-	virtual ~ModelBase() = default;
+    virtual ~ModelBase() = default;
 
 	ModelBase& operator=(const ModelBase& modelBase) 
 	{
@@ -118,60 +118,62 @@ public:
 	}
 
 public:
-	
-	virtual void draw()
-	{
-		glPointSize(pointSize);
-		glLineWidth(lineSize);
+    
+    virtual void draw()
+    {
+        glPointSize(pointSize);
+        glLineWidth(lineSize);
 
-		vertexArray->bind();
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		if (!vertexBuffer->hasIndexBuffer()) glDrawArrays(static_cast<int>(type), 0, static_cast<int>(points.size()));
-		else    glDrawElements(static_cast<int>(type), static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
+        vertexArray->bind();
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        if (!vertexBuffer->hasIndexBuffer()) glDrawArrays(static_cast<int>(type), 0, static_cast<int>(points.size()));
+        else    glDrawElements(static_cast<int>(type), static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
 
-		vertexArray->unbind();
-	}
+        vertexArray->unbind();
+    }
 
 private:
 
-	void initLength()
-	{
-		switch (type)
-		{
-		case Type::Mesh:
-			length = points.size() / 3;
-			break;
-		case Type::MultiLine:
-			length = points.size() / 2;
-			break;
-		case Type::PointCloud:
-			length = points.size();
-			break;
-		}
-	}
+    void initLength()
+    {
+        switch (type)
+        {
+        case Type::Mesh:
+            length = points.size() / 3;
+            break;
+        case Type::MultiLine:
+            length = points.size() / 2;
+            break;
+        case Type::PointCloud:
+            length = points.size();
+            break;
+        }
+    }
 
 public:
 
-	void translate(float tx, float ty, float tz) {
-		modelMatrix = modelMatrix * Matrices::translate(tx, ty, tz);
-	}
+    void translate(float tx, float ty, float tz) 
+    {
+        modelMatrix = modelMatrix * Matrices::translate(tx, ty, tz);
+    }
 
-	void rotate(const tl::AxisAngle<float>& axisAngle) {
-		modelMatrix = modelMatrix * 
-		Matrices::rotationX(axisAngle.angle() * axisAngle.axis()[0]) *
-		Matrices::rotationY(axisAngle.angle() * axisAngle.axis()[1]) *
-		Matrices::rotationZ(axisAngle.angle() * axisAngle.axis()[2]);
-	}
+    void rotate(const tl::AxisAngle<float>& axisAngle) {
+        modelMatrix = modelMatrix * 
+        Matrices::rotationX(axisAngle.angle() * axisAngle.axis()[0]) *
+        Matrices::rotationY(axisAngle.angle() * axisAngle.axis()[1]) *
+        Matrices::rotationZ(axisAngle.angle() * axisAngle.axis()[2]);
+    }
 
-	void scale(float sx, float sy, float sz) {
-		modelMatrix = modelMatrix * Matrices::scale(sx, sy, sz);
-	}
+    void scale(float sx, float sy, float sz)
+    {
+        modelMatrix = modelMatrix * Matrices::scale(sx, sy, sz);
+    }
 
-	void setOffset(const Vector3d& offset)
-	{
-		this->offset = offset;
-	}
+    void setOffset(const Vector3d& offset)
+    {
+        this->offset = offset;
+    }
 
 	void setShaderProgram(const ShaderProgram::Ptr& shaderProgram) { this->shaderProgram = shaderProgram; }
 
@@ -179,18 +181,18 @@ public:
 
 	Vector3d getOffset() const { return offset; }
 
-	void setPointSize(float pointSize) { this->pointSize = pointSize; }
+    void setPointSize(float pointSize) { this->pointSize = pointSize; }
 
-	void setLineSize(float lineSize) { this->lineSize = lineSize; }
+    void setLineSize(float lineSize) { this->lineSize = lineSize; }
 
-	std::vector<Vertex> getPoints() const { return points; }
+    std::vector<Vertex> getPoints() const { return points; }
 
-	std::vector<unsigned int> getIndices() const { return indices; }
+    std::vector<unsigned int> getIndices() const { return indices; }
 
-	Type getType() const { return type; }
+    Type getType() const { return type; }
 
-	tl::Matrix4x4f getModelMatrix() { return modelMatrix; }
+    tl::Matrix4x4f getModelMatrix() { return modelMatrix; }
 
-	size_t getLength() const { return length; }
+    size_t getLength() const { return length; }
 };
 }

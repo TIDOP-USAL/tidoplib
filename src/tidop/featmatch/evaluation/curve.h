@@ -30,8 +30,8 @@
 
 #include <opencv2/features2d.hpp>
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/math/statistic/confmat.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/math/statistic/classification/confmat.h"
 
 namespace tl
 {
@@ -60,7 +60,7 @@ protected:
 
     std::vector<std::pair<T, int>> mData;
     ConfusionMatrix<T> mConfusionMatrix;
-    std::vector<Point<double>> mCurve;
+    std::vector<Point2d> mCurve;
     double mAuc;
 
 public:
@@ -99,7 +99,7 @@ public:
      * \brief Get the computed curve points.
      * \return A vector of points representing the computed curve.
      */
-    auto curve() const -> std::vector<Point<double>>;
+    auto curve() const -> std::vector<Point2d>;
     
     /*!
      * \brief Get the Area Under the Curve (AUC) value.
@@ -127,7 +127,7 @@ Curve<T>::Curve(const std::vector<std::pair<T, int>> &data)
 }
 
 template<typename T>
-auto Curve<T>::curve() const -> std::vector<Point<double>>
+auto Curve<T>::curve() const -> std::vector<Point2d>
 {
     return mCurve;
 }

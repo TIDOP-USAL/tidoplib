@@ -24,9 +24,9 @@
 
 #define BOOST_TEST_MODULE Tidop simd test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/base/simd.h>
-#include <tidop/math/algebra/vector.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/base/Simd.h>
+#include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
@@ -161,7 +161,8 @@ BOOST_FIXTURE_TEST_CASE(size, PackedTest)
 #endif
 }
 
-
+// Esto no esta bien ya que Vector no garantiza que su memoria sea contigua, 
+// pero al menos sirve para probar las funciones de carga y almacenamiento de Packed
 BOOST_FIXTURE_TEST_CASE(load_store_aligned_float, PackedTest)
 {
     Vector<float> v3(v1.size());
@@ -1545,7 +1546,7 @@ BOOST_FIXTURE_TEST_CASE(vector_div_float, PackedTest)
 {
 
     Vector<float> v3(v1.size());
-    v3 = v1 / v2;
+
     size_t max_vector = (v1.size() / packed_a.size()) * packed_a.size();
     for (size_t i = 0; i < max_vector; i += packed_a.size()) {
 
@@ -3149,14 +3150,14 @@ void transpose(Matrix<double> &A, Matrix<double> &B)
     size_t cols = A.cols();
 
     Packed<double> packed_a1;
-    Packed<double> packed_a2;
-    Packed<double> packed_a3;
-    Packed<double> packed_a4;
+    //Packed<double> packed_a2;
+    //Packed<double> packed_a3;
+    //Packed<double> packed_a4;
 
-    Packed<double> packed_b1;
-    Packed<double> packed_b2;
-    Packed<double> packed_b3;
-    Packed<double> packed_b4;
+    //Packed<double> packed_b1;
+    //Packed<double> packed_b2;
+    //Packed<double> packed_b3;
+    //Packed<double> packed_b4;
 
     constexpr size_t packed_size = packed_a1.size();
     size_t max_cols = cols - cols % packed_size;
@@ -4249,7 +4250,7 @@ BOOST_FIXTURE_TEST_CASE(mean, PackedTest)
     // Calcular la media del vector
     double mean = calculate_mean(data, 8);
 
-    BOOST_CHECK_CLOSE(7.695, mean, 0.1);
+    BOOST_CHECK_CLOSE(7.695, mean, 0.01);
 }
 
 

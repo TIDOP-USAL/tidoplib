@@ -22,6 +22,23 @@
  *                                                                        *
  **************************************************************************/
 
+
+/*!
+ * \file string_utils.h
+ * \brief String manipulation utilities
+ *
+ * This module provides utility functions for common string operations including
+ * case-insensitive comparison, whitespace trimming and substring replacement.
+ *
+ * ### Functions
+ *
+ * - \ref compareInsensitiveCase - Case-insensitive string comparison
+ * - \ref ltrim, \ref rtrim, \ref trim - Whitespace trimming functions
+ * - \ref ltrim_copy, \ref rtrim_copy, \ref trim_copy - Non-mutating trim variants
+ * - \ref replaceString - Substring replacement
+ *
+ */
+ 
 #pragma once
 
 #include "tidop/config.h"
@@ -30,11 +47,8 @@
 #include <string>
 #include <numeric>
 #include <sstream>
-#include <string>
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/exception.h"
-#include "tidop/core/base/common.h"
 
 namespace tl
 {
@@ -48,11 +62,27 @@ namespace tl
 
 /*!
  * \brief Compares two strings case-insensitively.
- * \param[in] source The first string to compare.
- * \param[in] compare The second string to compare.
- * \return True if the strings are equal ignoring case, false otherwise.
+ *
+ * Performs lexicographic comparison of two strings, ignoring case differences.
+ * This function has multiple implementations depending on available features:
+ * - If Boost is available, uses boost::iequals for optimal performance
+ * - Otherwise uses std::equal with a case-insensitive comparator (C++14+)
+ * - Fallback implementation for older standards
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * bool result = tl::compareInsensitiveCase("Hello", "HELLO");  // true
+ * bool result2 = tl::compareInsensitiveCase("abc", "def");     // false
+ * \endcode
+ *
+ * \param[in] source The first string to compare
+ * \param[in] compare The second string to compare
+ * \return True if the strings are equal ignoring case; false otherwise
+ *
+ * \note In C++17+, parameters are std::string_view for efficiency
  */
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
 TL_EXPORT bool compareInsensitiveCase(std::string_view source,
                                       std::string_view compare);
 #else
@@ -62,9 +92,23 @@ TL_EXPORT bool compareInsensitiveCase(const std::string &source,
 
 // https://stackoverflow.com/a/217605
 
+
 /*!
- * \brief Trims the leading whitespace characters from a string (in place).
- * \param[in,out] s The string to trim.
+ * \brief Trims leading whitespace characters from a string (in-place).
+ *
+ * Removes all leading whitespace characters (spaces, tabs, newlines, etc.)
+ * from the beginning of the string. The operation modifies the string in-place.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string text = "  hello world";
+ * tl::ltrim(text);  // Result: "hello world"
+ * \endcode
+ *
+ * \param[in,out] s The string to trim
+ *
+ * \see ltrim_copy, rtrim, trim
  */
 inline void ltrim(std::string &s)
 {
@@ -74,8 +118,21 @@ inline void ltrim(std::string &s)
 }
 
 /*!
- * \brief Trims the trailing whitespace characters from a string (in place).
- * \param[in,out] s The string to trim.
+ * \brief Trims trailing whitespace characters from a string (in-place).
+ *
+ * Removes all trailing whitespace characters (spaces, tabs, newlines, etc.)
+ * from the end of the string. The operation modifies the string in-place.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string text = "hello world  ";
+ * tl::rtrim(text);  // Result: "hello world"
+ * \endcode
+ *
+ * \param[in,out] s The string to trim
+ *
+ * \see rtrim_copy, ltrim, trim
  */
 inline void rtrim(std::string &s)
 {
@@ -85,8 +142,21 @@ inline void rtrim(std::string &s)
 }
 
 /*!
- * \brief Trims both leading and trailing whitespace characters from a string (in place).
- * \param[in,out] s The string to trim.
+ * \brief Trims both leading and trailing whitespace characters from a string (in-place).
+ *
+ * Removes all leading and trailing whitespace characters from both ends of the string.
+ * The operation modifies the string in-place by calling rtrim() followed by ltrim().
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string text = "  hello world  ";
+ * tl::trim(text);  // Result: "hello world"
+ * \endcode
+ *
+ * \param[in,out] s The string to trim
+ *
+ * \see trim_copy, ltrim, rtrim
  */
 inline void trim(std::string &s)
 {
@@ -95,9 +165,25 @@ inline void trim(std::string &s)
 }
 
 /*!
- * \brief Trims the leading whitespace characters from a string (returns a new string).
- * \param[in] s The string to trim.
- * \return A new string with leading whitespace removed.
+ * \brief Trims leading whitespace characters from a string (returns a new string).
+ *
+ * Returns a new string with leading whitespace removed. The original string
+ * is not modified. This function is useful when you need to preserve the
+ * original value.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string original = "  hello world";
+ * std::string result = tl::ltrim_copy(original);
+ * // original unchanged: "  hello world"
+ * // result: "hello world"
+ * \endcode
+ *
+ * \param[in] s The string to trim
+ * \return A new string with leading whitespace removed
+ *
+ * \see ltrim, rtrim_copy, trim_copy
  */
 inline auto ltrim_copy(std::string s) -> std::string
 {
@@ -106,9 +192,25 @@ inline auto ltrim_copy(std::string s) -> std::string
 }
 
 /*!
- * \brief Trims the trailing whitespace characters from a string (returns a new string).
- * \param[in] s The string to trim.
- * \return A new string with trailing whitespace removed.
+ * \brief Trims trailing whitespace characters from a string (returns a new string).
+ *
+ * Returns a new string with trailing whitespace removed. The original string
+ * is not modified. This function is useful when you need to preserve the
+ * original value.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string original = "hello world  ";
+ * std::string result = tl::rtrim_copy(original);
+ * // original unchanged: "hello world  "
+ * // result: "hello world"
+ * \endcode
+ *
+ * \param[in] s The string to trim
+ * \return A new string with trailing whitespace removed
+ *
+ * \see rtrim, ltrim_copy, trim_copy
  */
 inline auto rtrim_copy(std::string s) -> std::string
 {
@@ -118,8 +220,24 @@ inline auto rtrim_copy(std::string s) -> std::string
 
 /*!
  * \brief Trims both leading and trailing whitespace characters from a string (returns a new string).
- * \param[in] s The string to trim.
- * \return A new string with both leading and trailing whitespace removed.
+ *
+ * Returns a new string with both leading and trailing whitespace removed.
+ * The original string is not modified. This function is useful when you need
+ * to preserve the original value.
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * std::string original = "  hello world  ";
+ * std::string result = tl::trim_copy(original);
+ * // original unchanged: "  hello world  "
+ * // result: "hello world"
+ * \endcode
+ *
+ * \param[in] s The string to trim
+ * \return A new string with both leading and trailing whitespace removed
+ *
+ * \see trim, ltrim_copy, rtrim_copy
  */
 inline auto trim_copy(std::string s) -> std::string
 {
@@ -128,43 +246,29 @@ inline auto trim_copy(std::string s) -> std::string
 }
 
 /*!
- * \brief Replaces a substring with another in a string.
- * \param[in,out] str The original string.
- * \param[in] str_old The substring to be replaced.
- * \param[in] str_new The new substring to replace the old one.
- * \return None. The original string is modified.
+ * \brief Replaces all occurrences of a substring with another string.
  *
- * ### Example Usage
+ * Finds all occurrences of the substring `str_old` in the string pointed to by `str`
+ * and replaces them with `str_new`. The replacement is performed in-place and modifies
+ * the original string. The search continues from where the previous replacement ended.
+ *
+ * ### Example
+ *
  * \code{.cpp}
- * std::string str = "Hello world";
- * replaceString(&str, " ", "_");
- * // str will be "Hello_world"
+ * std::string str = "Hello world, Hello universe";
+ * tl::replaceString(&str, "Hello", "Hi");
+ * // Result: "Hi world, Hi universe"
  * \endcode
+ *
+ *
+ * \param[in,out] str Pointer to the string to modify
+ * \param[in] str_old The substring to be replaced
+ * \param[in] str_new The replacement substring
+ *
+ * \see trim, ltrim, rtrim
  */
 TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 
-/// \cond
-#ifdef TL_OS_WINDOWS
-/// \endcond
-
-/*!
- * \brief Converts a string to a wide string.
- * \param[in] string The original string.
- * \return The converted wide string.
- */
-auto stringToWString(const std::string &string) -> std::wstring;
-
-/*!
- * \brief Converts a wide string to a regular string.
- * \param[in] wideString The original wide string.
- * \return The converted regular string.
- */
-auto wstringToString(const std::wstring &wideString) -> std::string;
-
-
-/// \cond
-#endif // TL_OS_WINDOWS
-/// \endcond
 
 /*! \} */
 

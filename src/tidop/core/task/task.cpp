@@ -25,6 +25,7 @@
 
 #include "tidop/core/task/task.h"
 #include "tidop/core/task/progress.h"
+#include "tidop/core/base/exception.h"
 
 namespace tl
 {
@@ -165,6 +166,8 @@ auto TaskBase::operator=(TaskBase &&task) TL_NOEXCEPT -> TaskBase &
 
 void TaskBase::setStatus(Status status)
 {
+    std::lock_guard<std::mutex> lck(mMutex);
+
     mStatus = status;
 
     switch (mStatus) {

@@ -25,10 +25,11 @@
 #include "tidop/core/app/app.h"
 
 #include "tidop/core/console/console.h"
-#include "tidop/core/app/log.h"
+#include "tidop/core/app/logger.h"
 
 #ifdef TL_OS_LINUX
 #include <unistd.h>
+#include <cstdio>
 #endif
 
 #include <array>
@@ -49,29 +50,33 @@ auto App::instance() -> App&
 
 auto App::path() const -> Path
 {
-    static std::array<char, TL_MAX_PATH> runfile;
+    static Path cached_path;
+    static std::once_flag flag;
+
+    std::call_once(flag, [&]() {
+
+        std::array<char, TL_MAX_PATH> runfile{};
 
 #ifdef TL_OS_WINDOWS
-
-    ::GetModuleFileNameA(nullptr, runfile.data(), TL_MAX_PATH);
-    return Path(std::string(runfile.data()));
+        ::GetModuleFileNameA(nullptr, runfile.data(), static_cast<DWORD>(runfile.size()));
+        cached_path = Path(std::string(runfile.data()));
 
 #elif defined TL_OS_LINUX
+        std::array<char, 32> proc_path{};
+        snprintf(proc_path.data(), proc_path.size(), "/proc/%d/exe", getpid());
 
-    std::array<char, 32> _path{};
-    sprintf(_path.data(), "/proc/%d/exe", getpid());
-    long len = readlink(_path.data(), runfile.data(), runfile.size());
-    if (len >= 0)
-        runfile.at(static_cast<size_t>(len)) = '\0';
+        long len = readlink(proc_path.data(), runfile.data(), runfile.size() - 1);
+        if (len > 0) {
+            runfile[static_cast<size_t>(len)] = '\0';
+            cached_path = Path(std::string(runfile.data()));
+        }
 
-    return tl::Path(std::string(runfile.data()));
-
+#else
+        cached_path = Path();
 #endif
-}
+    });
 
-auto App::version() const -> std::string
-{
-    return std::string();
+    return cached_path;
 }
 
 auto App::console() -> Console&
@@ -79,9 +84,9 @@ auto App::console() -> Console&
     return Console::instance();
 }
 
-auto App::log() -> Log&
+auto App::log() -> Logger&
 {
-    return Log::instance();
+    return Logger::instance();
 }
 
 void App::init()

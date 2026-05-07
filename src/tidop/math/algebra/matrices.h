@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 
 namespace tl
 {
@@ -85,29 +85,31 @@ struct Matrices
     // Right handed look at matrix
     static auto lookAt(const Vector3f& position, const Vector3f& target, const Vector3f& up) -> Matrix4x4f
     {
-        auto dot = [&](const Vector3f& u, const Vector3f& v) {
-            return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
-        };
+        //auto dot = [&](const Vector3f& u, const Vector3f& v) {
+        //    return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
+        //};
 
-        auto cross = [&](const Vector3f& u, const Vector3f& v) {
-            return Vector3f{ u.y() * v.z() - u.z() * v.y(), -u.x() * v.z() + u.z() * v.x(), u.x() * v.y() - u.y() * v.x() };
-        };
+        //auto cross = [&](const Vector3f& u, const Vector3f& v) {
+        //    return Vector3f{ u.y() * v.z() - u.z() * v.y(), -u.x() * v.z() + u.z() * v.x(), u.x() * v.y() - u.y() * v.x() };
+        //};
 
         Vector3f zaxis = Vector3f({ position.x() - target.x(), position.y() - target.y(), position.z() - target.z()});
         zaxis.normalize();
-
-        Vector3f xaxis = cross(up, zaxis);
+        up.cross(zaxis);
+        Vector3f xaxis = up.cross(zaxis); //cross(up, zaxis);
         xaxis.normalize();
 
-        Vector3f yaxis = cross(zaxis, xaxis);
+        Vector3f yaxis = zaxis.cross(xaxis); // cross(zaxis, xaxis);
 
         return Matrix4x4f
         {
             xaxis.x() , yaxis.x(), zaxis.x(), 0.0f,
             xaxis.y(),  yaxis.y(), zaxis.y(), 0.0f,
             xaxis.z(),  yaxis.z(), zaxis.z(), 0.0f,
-            -dot(xaxis, position), -dot(yaxis, position), -dot(zaxis, position), 1.0f
+            //-dot(xaxis, position), -dot(yaxis, position), -dot(zaxis, position), 1.0f
+            -static_cast<float>(xaxis.dotProduct(position)), -static_cast<float>(yaxis.dotProduct(position)), -static_cast<float>(zaxis.dotProduct(position)), 1.0f
         }.transpose();
+        return {};
     }
 };
 

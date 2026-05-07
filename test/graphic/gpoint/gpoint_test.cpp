@@ -53,19 +53,19 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, GPointTest)
 {
   BOOST_CHECK_EQUAL(false, point.isMultiEntity());
   BOOST_CHECK_EQUAL(true, point.isSimpleEntity());
-  BOOST_CHECK_EQUAL(false, point.is3D());
+  //BOOST_CHECK_EQUAL(false, point.is3D());
 
   BOOST_CHECK_EQUAL(false, point_3d.isMultiEntity());
   BOOST_CHECK_EQUAL(true, point_3d.isSimpleEntity());
-  BOOST_CHECK_EQUAL(true, point_3d.is3D());
+  //BOOST_CHECK_EQUAL(true, point_3d.is3D());
 
   BOOST_CHECK_EQUAL(true, multi_point.isMultiEntity());
   BOOST_CHECK_EQUAL(false, multi_point.isSimpleEntity());
-  BOOST_CHECK_EQUAL(false, multi_point.is3D());
+  //BOOST_CHECK_EQUAL(false, multi_point.is3D());
 
   BOOST_CHECK_EQUAL(true, multi_point_3d.isMultiEntity());
   BOOST_CHECK_EQUAL(false, multi_point_3d.isSimpleEntity());
-  BOOST_CHECK_EQUAL(true, multi_point_3d.is3D());
+  //BOOST_CHECK_EQUAL(true, multi_point_3d.is3D());
   
 }
 

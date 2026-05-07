@@ -33,7 +33,7 @@ namespace tl
 {
 
 
-std::string formatTimeToString(const std::string &templ)
+auto formatTimeToString(const std::string &templ) -> std::string
 {
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -44,7 +44,7 @@ std::string formatTimeToString(const std::string &templ)
 }
 
 
-uint64_t tickCount()
+auto tickCount() -> uint64_t
 {
 #if defined _MSC_VER
     return GetTickCount64();
@@ -97,15 +97,9 @@ void Chrono::run()
 
 auto Chrono::stop() -> double
 {
-    //std::chrono::duration<double> time = accumulatedTime;
-
     if (status == Status::running) {
         accumulatedTime += std::chrono::steady_clock::now() - initialTime;
-    } /*else if (status == Status::pause) {
-        status = Status::stopped;
-    } else {
-        time = std::chrono::seconds::zero();
-    }*/
+    } 
 
     status = Status::stopped;
 

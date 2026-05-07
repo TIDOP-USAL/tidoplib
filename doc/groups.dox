@@ -15,8 +15,8 @@
  * - \ref AppManagement "Application Management": Provides classes and utilities for managing application-level 
  *   tasks. This includes:
  *   - App: For managing application instances and metadata.
- *   - Log: For logging messages with different levels of severity.
- *   - Licence and AppLicence: For managing licensing information for the 
+ *   - Logger: For logging messages with different levels of severity.
+ *   - License and AppLicense: For managing licensing information for the 
  *     application and third-party libraries.
  *   - Message: For emitting and managing application messages, such as debug 
  *     information, warnings, and errors.
@@ -47,6 +47,16 @@
  * file path operations. 
  */ 
  
+/*!
+ * \defgroup Macros Macros
+ * \ingroup Base
+ */ 
+ 
+/*!
+ * \defgroup meta Meta-programming utilities 
+ * \ingroup Base
+ */
+ 
 /*! 
  * \defgroup StringUtils String Utilities
  * \ingroup Base
@@ -66,6 +76,16 @@
  * - `split`: Converts a wide string to a regular string.
  * 
  */
+ 
+/*!
+ * \defgroup type_traits Template Type Utilities
+ * \ingroup Base
+ * \brief Utility aliases for constraining templates using SFINAE based on C++ type traits.
+ *
+ * This group provides convenient aliases like enableIfFloating and enableIfIntegral
+ * to conditionally enable or disable template functions and classes, making generic
+ * programming more robust and readable.
+ */ 
  
 /*!
  * \defgroup AppManagement Application Management
@@ -307,17 +327,20 @@
  * 
  * Example usage:
  * \code 
- * auto image_reader = ImageReaderFactory::create(img);
+ * #include <tidop/rastertools/io/Reader.h>
  *
- * image_reader->open();
- * if (image_reader->isOpen()) {
+ * using namespace tl;
  *
- *     Message::info("Number of bands: {}", image_reader->channels());
- *     Message::info("Color depth: {}", image_reader->depth());
- *     Message::info("Image dimensions: {}x{}", image_reader->cols(), image_reader->rows());
+ * RasterReader image_reader(img);
+ *
+ * if (image_reader.isOpen()) {
+ *
+ *     Message::info("Number of bands: {}", image_reader.channels());
+ *     Message::info("Color depth: {}", image_reader.depth());
+ *     Message::info("Image dimensions: {}x{}", image_reader.cols(), image_reader.rows());
  *     Message::info("Metadata:");
  *     
- *     auto image_metadata = image_reader->metadata();
+ *     auto image_metadata = image_reader.metadata();
  *     auto metadata = image_metadata->activeMetadata();
  *     
  *     for (auto it = metadata.begin(); it != metadata.end(); ++it) {
@@ -326,7 +349,7 @@
  *         Message::info("  {}: {}", name, value);
  *     }
  *     
- *     image_reader->close(); 
+ *     image_reader.close(); 
  * }
  * \endcode
  * 
@@ -455,6 +478,54 @@
  * vector operations, solving systems of equations, and more.
  */
  
+/*! \defgroup Functors Functors
+ *  \ingroup Algebra
+ *  \brief Operation functors for expression templates.
+ *
+ *  This group contains stateless functors that implement basic arithmetic
+ *  operations (addition, subtraction, multiplication, division) used in
+ *  vector and matrix expression templates. They support both scalar and
+ *  SIMD packet operations when available.
+ *
+ *  \see tl::AddOp, tl::SubOp, tl::MulOp, tl::DivOp
+ */
+
+/*! \defgroup Evaluators Evaluators
+ *  \ingroup Algebra
+ *  \brief Expression evaluators for lazy evaluation.
+ *
+ *  This group contains specializations of the `Evaluator` class template
+ *  for various expression types (binary, scalar, unary, transpose,
+ *  matrix multiplication, matrix–vector multiplication, diagonal matrix,
+ *  and views such as `MatrixBlock`, `MatrixRow`, `MatrixCol`).
+ *  Evaluators provide coefficient access and SIMD packet access for
+ *  efficient evaluation of expression trees without constructing temporaries.
+ *
+ *  \see tl::Evaluator, tl::make_evaluator
+ */
+
+/*! \defgroup Expressions Expressions
+ *  \ingroup Algebra
+ *  \brief Lazy expression templates for vectors and matrices.
+ *
+ *  This group contains the expression template classes that represent
+ *  operations without immediate evaluation. They are the building blocks
+ *  of the expression template system, enabling efficient chaining of
+ *  arithmetic operations and linear algebra routines.
+ *
+ *  The expressions are typically not used directly; they are returned by
+ *  operators (e.g., `+`, `-`, `*`, `transpose()`) and are automatically
+ *  evaluated when assigned to a concrete matrix or vector.
+ *
+ *  \section expr_types Expression types
+ *  - **Binary**: `MatBinaryExpr`, `VecBinaryExpr`
+ *  - **Scalar**: `MatScalarExpr`, `VecScalarExpr`
+ *  - **Unary minus**: `MatUnaryMinusExpr`, `VecUnaryMinusExpr`
+ *  - **Multiplication**: `MatMulExpr`, `MatVecMulExpr`
+ *  - **Transpose**: `TransposeExpr`
+ *  - **Diagonal**: `DiagonalMatrixExpr`
+ */
+ 
 /*!
  * \defgroup Matrix Matrix
  * \ingroup Algebra
@@ -531,7 +602,7 @@
  */
  
 /*! 
- * \defgroup Geometry Geometry
+ * \defgroup geometry Geometry
  * \ingroup MathTools
  * 
  * \brief Geometric transformations and operations.
@@ -542,7 +613,7 @@
 
 /*! 
  * \defgroup GeometricTransformations Geometric Transformations
- * \ingroup Geometry
+ * \ingroup geometry
  * 
  * \brief Transformations on geometric objects.
  * 
@@ -613,7 +684,7 @@
  * The library includes various detectors and descriptors, such as ORB, STAR, SURF, and VGG.
  * These are implemented as separate classes that follow a unified interface.
  *
- * \section feature_example Example Usage
+ * ### Example Usage
  *
  * The following example demonstrates how to detect keypoints using the STAR detector
  * and extract descriptors using the VGG descriptor.
@@ -730,6 +801,160 @@
  */ 
  
  
+ 
+
+
+ 
 /*!
- * \defgroup GeometricEntities Geometric Entities
+ * \defgroup Geometry Geometry
+ * \brief This module provides fundamental geometric entities, spatial indices, and operations.
+ */
+ 
+/*!
+ * \defgroup Primitives Geometric Primitives
+ * \ingroup Geometry
+ * \brief Fundamental geometric objects such as points, linestrings, and polygons.
+ * This module includes the core building blocks of the library. These primitives
+ * are N-dimensional and provide the base for spatial analysis and complex shapes.
+ */
+ 
+/*!
+ * \defgroup GeometricAlgorithms Geometric Algorithms
+ * \ingroup Geometry
+ * 
+ * \brief Computational geometry algorithms for spatial analysis.
+ * 
+ * This module provides algorithms for geometric computations.
+ */
+
+/*!
+ * \defgroup SpatialPredicates Spatial Predicates
+ * \ingroup GeometricAlgorithms
+ * \brief Simple Features spatial relationship predicates.
+ * These functions test boolean relationships between geometries (contains, crosses, etc.).
+ */
+ 
+/*! 
+ * \defgroup Clustering Clustering
+ * \ingroup GeometricAlgorithms
+ * \brief Clustering algorithms for geometric data (e.g., DBSCAN).
+ */
+
+/*! 
+ * \defgroup SpatialOperations Spatial Operations
+ * \ingroup GeometricAlgorithms
+ * \brief Constructive and analytic spatial operations (buffer, intersection, envelope, closest points).
+ */
+ 
+/*! 
+ * \defgroup Measurements Measurements
+ * \ingroup GeometricAlgorithms
+ * \brief Geometric measurements such as distance, area, length, and angle.
+ */
+ 
+/*!
+ * \defgroup Shapes Shapes
+ * \ingroup Geometry
+ * 
+ * \brief A set of predefined geometric shapes that extend the basic geometric entities.
+ * 
+ * The Shapes module includes common geometric figures such as circles, ellipses, 
+ * triangles, squares, and rectangles. These shapes provide specialized methods 
+ * for area computation, bounding box generation, and geometric transformations.
+ */
+ 
+/*!
+ * \defgroup SpatialIndex Spatial Indexing
+ * \ingroup Geometry
+ * \brief Data structures for efficient spatial querying (R-Tree, QuadTree).
+ */
+
+/*!
+ * \defgroup GeometryIO Input/Output
+ * \ingroup Geometry
+ * \brief Serialization and deserialization of geometric data (WKT, GeoJSON).
+ */
+
+ 
+ 
+ 
+ 
+/*!
+ * \defgroup Graphic Graphic
+ * 
+ * \brief This module provides graphical representations and visualization tools.
+ * 
+ * The Graphic module includes entities and styles used for rendering and 
+ * visualizing geometric objects. It provides support for graphical attributes 
+ * such as colors, line styles, and fills.
+ */
+
+/*!
+ * \defgroup GraphicEntities Graphic Entities
+ * \ingroup Graphic
+ * 
+ * \brief Graphical representations of geometric objects.
+ * 
+ * This module defines entities that can be displayed visually, including 
+ * vector-based graphics, annotations, and rendered objects.
+ */
+
+/*!
+ * \defgroup Styles Styles
+ * \ingroup Graphic
+ * 
+ * \brief Styling options for graphical entities.
+ * 
+ * The Styles module provides attributes for customizing the appearance of 
+ * graphical entities, including colors, line thickness, transparency, 
+ * and fill patterns.
+ */
+ 
+/*!
+ * \defgroup Color Color
+ * \ingroup Graphic
+ * 
+ * \brief Provides utilities for color representation, conversion, and manipulation.
+ * 
+ */
+ 
+/*! \defgroup ColorConversion Color conversion
+ * \ingroup Color
+ * \brief Functions to convert between different color representations.
+ */ 
+ 
+ 
+/*!
+ * \defgroup PointCloudTools Point Cloud Tools
+ * \brief Tools and utilities for reading and converting point clouds.
+ *
+ * The PointCloudTools module provides tools for managing point clouds, including:
+ * - Reading and extracting metadata and data from point cloud files.
+ * - Assigning and transforming coordinate reference systems (CRS).
+ * - Converting point clouds into COPC format for optimized storage and access.
+ *
+ */
+
+/*! 
+ * \defgroup PointCloudToolsIO Point Cloud I/O
+ * \ingroup PointCloudTools
+ * 
+ * \brief Input and Output tools for point clouds, including reading and writing operations.
  */  
+
+/*!
+ * \defgroup GeoToolsGroup Geospatial Tools
+ *
+ * \brief Provides tools for Coordinate Reference System (CRS) operations and geospatial utilities.
+ *
+ * This module defines the interface and core functionality for working with coordinate
+ * reference systems (CRSs) within the TidopLib framework. It includes the `GeoTools` singleton 
+ * class for accessing CRS tools, the abstract `CRSsTools` interface for performing CRS operations, 
+ * and the `CRSInfo` struct for holding metadata about each CRS.
+ *
+ * Features of this module include:
+ * - Transformation of 3D points and coordinate sets between CRSs
+ * - Support for ENU, projected, geographic, and vertical CRS types
+ * - CRS validation, metadata querying, and filtering (e.g., 2D-applicable or non-deprecated CRSs)
+ * - WKT-based CRS creation
+ */

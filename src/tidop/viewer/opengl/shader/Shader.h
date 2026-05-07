@@ -6,10 +6,10 @@
 
 #include <GL/glew.h>
 
-#include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
 
-#include "tidop/core/base/ptr.h"
+#include "tidop/core/base/macros/smart_ptr.h"
 
 namespace tl
 {

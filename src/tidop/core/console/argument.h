@@ -22,6 +22,33 @@
  *                                                                        *
  **************************************************************************/
 
+
+/*!
+ * \file argument.h
+ * \brief Command-line argument representation and management
+ *
+ * This module provides a type-safe system for defining and managing command-line arguments.
+ * It supports metadata (name, short name, description), type information, validation, and
+ * automatic type conversion from string input.
+ *
+ * ### Classes
+ *
+ * - \ref Argument - Abstract base class for command-line arguments
+ * - \ref Argument_<T> - Template implementation for typed arguments
+ *
+ * ### Features
+ *
+ * - Type-safe argument definition with template specialization
+ * - Configurable required/optional arguments with default values
+ * - Custom validation through Validator interface
+ * - Automatic string-to-type conversion
+ * - Support for all fundamental types and Path objects
+ * - Both long and short argument names
+ * - Comprehensive error handling and validation
+ *
+ * \see tl::Argument, tl::Argument_, tl::Validator
+ */
+ 
 #pragma once
 
 
@@ -30,12 +57,14 @@
 #include <string>
 #include <memory>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/text_encoding.h"
 #include "tidop/core/base/path.h"
 #include "tidop/core/base/type.h"
 #include "tidop/core/base/type_conversions.h"
-#include "tidop/core/console/validator.h"
 #include "tidop/core/base/exception.h"
+#include "tidop/core/base/macros/smart_ptr.h"
+#include "tidop/core/console/validator.h"
+
 
 namespace tl
 {
@@ -49,7 +78,7 @@ template <typename T> class Argument_;
 
 /*!
  * \class Argument
- * \brief Represents a command-line argument with associated metadata and validation.
+ * \brief Abstract base class representing a command-line argument
  *
  * The `Argument` class is an abstraction for command-line arguments. It allows
  * you to define arguments with a name, short name, description, type, and an optional validator.
@@ -57,12 +86,14 @@ template <typename T> class Argument_;
  * and parse their values from strings.
  *
  * ### Features
+ *
  * - **Metadata**: Name, short name, description, and type for each argument.
  * - **Validation**: Validate argument values using custom validators.
  * - **Dynamic Typing**: Supports various argument types such as integers, floating-point numbers, strings, and more.
  * - **Extensibility**: Derived classes can implement specific behavior, including mandatory checks, type names, and value parsing.
  *
  * ### %Argument Types
+ *
  * The `Type` enum defines the supported types for arguments:
  * - Boolean (`type_bool`)
  * - Integer types (`type_int8`, `type_uint8`, etc.)
@@ -83,16 +114,15 @@ template <typename T> class Argument_;
  * - `fromString()`: Parses the argument's value from a string.
  * - `isValid()`: Validates the argument's value.
  *
- * ### See Also
- * - `Validator`: For defining custom validation logic.
- * - `Argument_<T>`: Template subclass for typed arguments.
+ * \see Argument_<T>, Validator
  */
 class TL_EXPORT Argument
 {
 
 public:
 
-    using SharedPtr = std::shared_ptr<Argument>;
+    //using SharedPtr = std::shared_ptr<Argument>;
+    GENERATE_SHARED_PTR(Argument)
 
 private:
 
@@ -105,7 +135,7 @@ private:
 public:
 
     /*!
-     * \brief Constructs an Argument with a name, description, and type.
+     * \brief Constructs an a with name, description, and type.
      * \param[in] name Name of the argument.
      * \param[in] description Description of the argument, explaining its purpose.
      * \param[in] type Type of the argument, as defined in \ref Argument::Type.
@@ -114,7 +144,7 @@ public:
     Argument(std::string name, std::string description, Type type);
 
     /*!
-     * \brief Constructs an Argument with a short name, description, and type.
+     * \brief Constructs an argument with a short name, description, and type.
      * \param[in] shortName Short, single-character name for the argument.
      * \param[in] description Description of the argument, explaining its purpose.
      * \param[in] type Type of the argument, as defined in \ref Argument::Type.
@@ -148,42 +178,50 @@ public:
     virtual ~Argument() = default;
 
     /*!
-     * \brief Assignment operator
+     * \brief Copy assignment operator
+     *
+     * Assigns a copy of the argument's state to this instance.
+     *
+     * \return Reference to this object
      */
     auto operator = (const Argument &argument) -> Argument &;
 
     /*!
      * \brief Move assignment operator
+     *
+     * Moves the argument's state to this instance.
+     *
+     * \return Reference to this object
      */
     auto operator = (Argument &&argument) TL_NOEXCEPT -> Argument &;
 
     /*!
-     * \brief Returns the name of the argument
+     * \brief Returns the argument name
      * \return Name of the argument
      */
     auto name() const -> std::string;
 
     /*!
-     * \brief Sets the name of the argument
-     * \param[in] name Name of the argument
+     * \brief Sets the argument name
+     * \param[in] name New name for the argument
      */
     void setName(const std::string &name);
 
     /*!
-     * \brief Returns the description of the argument
-     * \return Description of the argument
+     * \brief Returns the argument description
+     * \return Description explaining the argument's purpose
      */
-    virtual auto description() const -> std::string;
+    auto description() const -> std::string;
 
     /*!
-     * \brief Sets the description of the argument
+     * \brief Sets the argument description
      * \param[in] description Description of the argument
      */
     void setDescription(const std::string &description);
 
     /*!
-     * \brief Returns the short name of the argument
-     * \return Short name of the argument
+     * \brief Returns the short name (single character)
+     * \return The single-character abbreviation, or '\\0' if not set
      */
     auto shortName() const -> char;
 
@@ -214,30 +252,55 @@ public:
 
     /*!
      * \brief Returns a string of text with the type of the argument
-     * \return
+     *
+     * \return Human-readable type name (e.g., "int", "float", "std::string")
+     *
+     * Must be implemented by subclasses.
      */
     virtual auto typeName() const -> std::string = 0;
 
     /*!
-     * \brief Check if the argument is mandatory
-     * \return true if mandatory
+     * \brief Checks if this argument is required (mandatory)
+     *
+     * \return `true` if the argument must be provided by the user, `false` if optional
+     *
+     * Must be implemented by subclasses.
      */
     virtual auto isRequired() const -> bool = 0;
 
     /*!
-     * \brief Sets the value of the argument from a text string
-     * \param[in] value Argument value as a text string
+     * \brief Parses the argument value from a string
+     *
+     * This method is called to set the argument's value from command-line input.
+     * The string is converted to the appropriate type using type-specific logic.
+     *
+     * \param[in] value String representation of the argument value
+     *
+     * \exception May throw if the string cannot be parsed as the target type
+     *
+     * Must be implemented by subclasses.
+     *
+     * \see isValid
      */
     virtual void fromString(const std::string &value) = 0;
 
     /*!
-     * \brief Checks if the value passed to the argument is valid
-     * \return
+     * \brief Validates the current argument value
+     *
+     * Checks if the argument's current value is valid according to:
+     * 1. The assigned validator (if any)
+     * 2. Any type-specific validation rules
+     *
+     * \return `true` if the value is valid, `false` otherwise
+     *
+     * Must be implemented by subclasses.
+     *
+     * \see validator, setValidator
      */
     virtual bool isValid() = 0;
 
     /*!
-     * \brief Creates a new argument instance.
+     * \brief Factory method for creating typed argument instances
      *
      * This static method allows the construction of an argument with the specified
      * type and parameters. It supports both required and optional arguments.
@@ -278,7 +341,38 @@ public:
 
 
 /*!
- * \brief Template class to manage different types of arguments
+ * \brief Template specialization of Argument for type-specific handling
+ *
+ * This template class provides concrete implementation of Argument for a specific type T.
+ * It manages the argument's value, handles string-to-type conversion, and validation.
+ *
+ * \tparam T The type of value this argument represents
+ *
+ * ### Supported Types
+ *
+ * - `bool` - Boolean values
+ * - Integral types: `char`, `short`, `int`, `long`, `long long`, and unsigned variants
+ * - Floating-point: `float`, `double`
+ * - `std::string` - Text strings
+ * - `Path` - File system paths (with platform-specific encoding handling)
+ *
+ * ### Required vs Optional
+ *
+ * - **Required**: Constructors without default value parameter
+ * - **Optional**: Constructors with default value parameter
+ *
+ * ### Example
+ *
+ * \code{.cpp}
+ * // Required int argument
+ * auto count = std::make_shared<Argument_<int>>("count", "Number of items");
+ *
+ * // Optional string argument with default
+ * auto name = std::make_shared<Argument_<std::string>>("name", "Name", "DefaultName");
+ *
+ * // Using the factory method
+ * auto port = Argument::make<int>("port", 'p', "Port number", 8080);
+ * \endcode
  */
 template <typename T>
 class Argument_
@@ -288,57 +382,63 @@ class Argument_
 public:
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] description Description of the argument
+     * \brief Constructor for required argument (long name only)
+     *
+     * \param[in] name Full name of the argument
+     * \param[in] description Description of the argument's purpose
      */
     Argument_(const std::string &name,
               const std::string &description);
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] value Value of the argument
+     * \brief Constructor for optional argument with default value (long name only)
+     *
+     * \param[in] name Full name of the argument
+     * \param[in] description Description of the argument's purpose
+     * \param[in] value Default value for the argument
      */
     Argument_(const std::string &name,
               const std::string &description,
               T value);
 
     /*!
-     * \brief Constructor
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
+     * \brief Constructor for required argument (short name only)
+     *
+     * \param[in] shortName Single-character name for the argument
+     * \param[in] description Description of the argument's purpose
      */
     Argument_(const char &shortName,
               const std::string &description);
 
     /*!
-     * \brief Constructor
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] value Value of the argument
+     * \brief Constructor for optional argument with default value (short name only)
+     *
+     * \param[in] shortName Single-character name for the argument
+     * \param[in] description Description of the argument's purpose
+     * \param[in] value Default value for the argument
      */
     Argument_(const char &shortName,
               const std::string &description,
               T value);
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
+     * \brief Constructor for required argument (both names)
+     *
+     * \param[in] name Full name of the argument
+     * \param[in] shortName Single-character name for the argument
+     * \param[in] description Description of the argument's purpose
      */
     Argument_(const std::string &name,
               const char &shortName,
               const std::string &description);
 
     /*!
-     * \brief Constructor
-     * \param[in] name Name of the argument
-     * \param[in] shortName Short name of the argument
-     * \param[in] description Description of the argument
-     * \param[in] value Value of the argument
+     * \brief Constructor for optional argument with default value (both names)
+     *
+     * \param[in] name Full name of the argument
+     * \param[in] shortName Single-character name for the argument
+     * \param[in] description Description of the argument's purpose
+     * \param[in] value Default value for the argument
      */
     Argument_(const std::string &name,
               const char &shortName,
@@ -358,6 +458,13 @@ public:
      */
     virtual void setValue(const T &value);
 
+    /*!
+     * \brief Gets the current value of the argument
+     *
+     * \return The current value
+     */
+    auto value() const -> T;
+	
 // Argument interface
 
 public:
@@ -365,7 +472,6 @@ public:
     auto typeName() const -> std::string override;
     auto isRequired() const -> bool override;
     void fromString(const std::string &value) override;
-    auto value() const -> T;
     auto isValid() -> bool override;
 
 private:
@@ -383,7 +489,7 @@ using ArgumentDouble = Argument_<double>;
 using ArgumentFloat = Argument_<float>;
 using ArgumentBoolean = Argument_<bool>;
 using ArgumentString = Argument_<std::string>;
-using ArgumentCharRequired = Argument_<char>;
+using ArgumentChar = Argument_<char>;
 
 
 
@@ -486,8 +592,19 @@ void Argument_<std::string>::fromString(const std::string &value)
 template<> inline
 void Argument_<Path>::fromString(const std::string &value)
 {
-    //mValue = Path::fromLocal8Bit(value);
+#ifdef TL_OS_WINDOWS
+    // Convert from local encoding (CP_ACP) to UTF-16
+    std::wstring wide = fromLocalEncoding(value);
+
+    // Convert from UTF-16 to UTF-8
+    std::string utf8 = toUtf8(wide);
+
+    mValue = Path(utf8);
+#else
+    // On Unix, std::string should already be in UTF-8
     mValue = Path(value);
+#endif
+
     bValid = true;
 }
 
@@ -525,20 +642,36 @@ auto Argument_<T>::isValid() -> bool
 namespace internal
 {
 
-
+/*!
+ * \brief Helper class for extracting typed values from Argument instances
+ *
+ * This class provides type-safe value extraction with automatic type conversion
+ * and validation. It handles conversions between compatible numeric types and
+ * validates the source type is compatible with the target type.
+ *
+ * \tparam T The target type to extract the value as
+ */
 template<typename T>
 class ArgValue
 {
 
 public:
 
-    ArgValue(/* args */) {}
+    ArgValue() = default;
 
-    T value(const Argument::SharedPtr &arg);
+    /*!
+     * \brief Extracts a value from an Argument and converts it to type T
+     *
+     * \param[in] arg The argument to extract from
+     * \return The value converted to type T
+     *
+     * \exception Exception If the argument type is incompatible with T
+     */															   
+    auto value(const Argument::Ptr &arg) -> T;
 };
 
 template<typename T>
-auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
+inline auto ArgValue<T>::value(const Argument::Ptr &arg) -> T
 {
     T value{};
 
@@ -599,7 +732,7 @@ auto ArgValue<T>::value(const Argument::SharedPtr &arg) -> T
 }
 
 template<>
-inline auto ArgValue<std::string>::value(const Argument::SharedPtr &arg) -> std::string
+inline auto ArgValue<std::string>::value(const Argument::Ptr &arg) -> std::string
 {
     std::string value;
 
@@ -630,7 +763,7 @@ inline auto ArgValue<std::string>::value(const Argument::SharedPtr &arg) -> std:
 }
 
 template<>
-inline auto ArgValue<tl::Path>::value(const Argument::SharedPtr &arg) -> tl::Path
+inline auto ArgValue<tl::Path>::value(const Argument::Ptr &arg) -> tl::Path
 {
     tl::Path value;
 

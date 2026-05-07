@@ -39,28 +39,85 @@ if(BUILD_TL_MATH)
                              math.h
                              angles.h
                              mathutils.h
-                             algebra/decomp/cholesky.h
-                             algebra/decomp/lu.h
-                             algebra/decomp/qr.h
-                             algebra/decomp/svd.h
-                             algebra/matrix/base.h
-                             algebra/matrix/block.h
-                             algebra/matrix/col.h
-                             algebra/matrix/row.h
+                             algebra/decomp/Cholesky.h
+                             algebra/decomp/Eigen.h
+                             algebra/decomp/LU.h
+                             algebra/decomp/QR.h
+                             algebra/decomp/SVD.h
+                             algebra/eval/DiagonalMatrixEval.h
+                             algebra/eval/Evaluator.h
+                             algebra/eval/MatBinaryEval.h
+                             algebra/eval/MatMulEval.h
+                             algebra/eval/MatrixBlockEval.h
+                             algebra/eval/MatrixColEval.h
+                             algebra/eval/MatrixDiagonalEval.h
+                             algebra/eval/MatrixEval.h
+                             algebra/eval/MatrixRowEval.h
+                             algebra/eval/MatScalarEval.h
+                             algebra/eval/MatUnaryMinusEval.h
+                             algebra/eval/MatVecMulEval.h
+                             algebra/eval/TransposeEval.h
+                             algebra/eval/VecBinaryEval.h
+                             algebra/eval/VecScalarEval.h
+                             algebra/eval/VectorEval.h
+                             algebra/eval/VecUnaryMinusEval.h
+                             algebra/expr/DiagonalMatrixExpr.h
+                             algebra/expr/MatBinaryExpr.h
+                             algebra/expr/MatMulExpr.h
+                             algebra/expr/MatScalarExpr.h
+                             algebra/expr/MatUnaryMinusExpr.h
+                             algebra/expr/MatVecMulExpr.h
+                             algebra/expr/TransposeExpr.h
+                             algebra/expr/VecBinaryExpr.h
+                             algebra/expr/VecScalarExpr.h
+                             algebra/expr/VecUnaryMinusExpr.h
+                             algebra/functors/Add.h
+                             algebra/functors/Div.h
+                             algebra/functors/Mul.h
+                             algebra/functors/Sub.h
+                             algebra/matrix/Matrix.h
+                             algebra/matrix/MatrixBase.h
+                             algebra/matrix/MatrixBlock.h
+                             algebra/matrix/MatrixCol.h
+                             algebra/matrix/MatrixConfig.h
+                             algebra/matrix/MatrixDiagonal.h
+                             algebra/matrix/MatrixRow.h
+                             algebra/matrix/detail/AdjugateMatrix.h
+                             algebra/matrix/detail/Assign.h
+                             algebra/matrix/detail/Cofactor.h
+                             algebra/matrix/detail/CofactorMatrix.h
+                             algebra/matrix/detail/Determinant.h
+                             algebra/matrix/detail/FirstMinor.h
+                             algebra/matrix/detail/Inverse.h
+                             algebra/matrix/detail/MatEqual.h
+                             algebra/matrix/detail/MulMat.h
+                             algebra/matrix/detail/MulMatBLAS.h
+                             algebra/matrix/detail/MulMatCPP.h
+                             algebra/matrix/detail/MulMatSIMD.h
+                             algebra/matrix/detail/ReducedRowEchelonForm.h
+                             algebra/matrix/detail/RowEchelonForm.h
                              algebra/rotations/axis_angle.h
                              algebra/rotations/euler_angles.h
                              algebra/rotations/quaternion.h
                              algebra/rotations/rotation_convert.h
                              algebra/rotations/rotation_matrix.h
                              algebra/rotations/rotations.h
-                             algebra/matrix.h
+                             algebra/vector/Vector.h
+                             algebra/vector/VectorBase.h
+                             algebra/vector/detail/Assign.h
+                             algebra/vector/detail/VecEqual.h
+                             algebra/vector/detail/MatVecMul.h
+                             algebra/vector/detail/MatVecMulCPP.h
+                             algebra/vector/detail/MatVecMulSIMD.h
+                             algebra/BaseExpr.h
                              algebra/matrices.h
-                             algebra/vector.h
-                             base/blas.h
-                             base/cuda.h
-                             base/data.h
-                             base/lapack.h
-                             base/simd.h
+                             base/Blas.h
+                             base/Cuda.h
+                             base/Concepts.h
+                             base/Data.h
+                             base/Lapack.h
+                             base/Simd.h
+                             base/Traits.h
                              geometry/affine.h
                              geometry/helmert.h
                              geometry/rotation.h
@@ -71,28 +128,30 @@ if(BUILD_TL_MATH)
                              geometry/analytic/line.h
                              geometry/analytic/plane.h
                              geometry/analytic/sphere.h
-                             statistic/algorithm.h
-                             statistic/biweightmidvariance.h
-                             statistic/cv.h
                              statistic/descriptive.h
-                             statistic/iqr.h
-                             statistic/mad.h
-                             statistic/mean.h
-                             statistic/median.h
-                             statistic/mode.h
-                             statistic/pearson.h
-                             statistic/quantile.h
-                             statistic/range.h
-                             statistic/rms.h
-                             statistic/series.h
-                             statistic/confmat.h
-		                     statistic/covariance.h
-                             statistic/skewness.h
-                             statistic/skewness.impl.h
-                             statistic/stddev.h
-                             statistic/tukeyfences.h
-                             statistic/variance.h
-                             statistic/zscore.h)
+                             statistic/association/pearson.h
+                             statistic/association/covariance.h
+                             statistic/base/algorithm.h
+                             statistic/base/series.h
+                             statistic/classification/confmat.h
+                             statistic/descriptive/mean.h
+                             statistic/descriptive/median.h
+                             statistic/descriptive/mode.h                             
+                             statistic/descriptive/quantile.h
+                             statistic/descriptive/range.h                        
+                             statistic/descriptive/stddev.h
+                             statistic/descriptive/tukeyfences.h
+                             statistic/descriptive/variance.h
+                             statistic/shape/kurtosis.h
+                             statistic/shape/kurtosis.impl.h
+                             statistic/ratios/cv.h
+                             statistic/ratios/zscore.h
+                             statistic/ratios/rms.h     
+                             statistic/robust/biweightmidvariance.h
+                             statistic/robust/iqr.h
+                             statistic/robust/mad.h
+                             statistic/shape/skewness.h
+                             statistic/shape/skewness.impl.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
@@ -106,6 +165,7 @@ if(BUILD_TL_MATH)
     endif(MSVC)
 
     target_include_directories(${PROJECT_NAME} INTERFACE 
+                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_INCLUDE_DIRS}>)
 
     target_compile_definitions(${PROJECT_NAME} INTERFACE
@@ -117,8 +177,7 @@ if(BUILD_TL_MATH)
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_LIBRARIES}>
                           $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cublas_LIBRARY}>
-                          #$<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cusolver_LIBRARY}>
-                          )
+                          $<$<BOOL:${TL_HAVE_CUDA}>:${CUDA_cusolver_LIBRARY}>)
        
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           FOLDER "modules"
@@ -147,7 +206,7 @@ if(BUILD_TL_MATH)
 elseif(BUILD_TL_CORE)
     
     message(STATUS "  TidopLib::Math disabled")
-    message(STATUS "  TidopLib::Geom disabled         [Module dependent on TidopLib::Math that is deactivated]") 
+    message(STATUS "  TidopLib::Geometry disabled         [Module dependent on TidopLib::Math that is deactivated]") 
     message(STATUS "  TidopLib::RasterTools disabled  [Module dependent on TidopLib::Math that is deactivated]") 
     message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::Math that is deactivated]") 
 

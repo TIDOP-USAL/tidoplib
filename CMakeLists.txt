@@ -58,7 +58,7 @@ include(CompilerInfo)
 include(OperatingSystemInfo)
 include(TidopLibSIMDSupport)
 include(TidopUtils)
-
+# Añadir TidopLibCXXStandarSupport
 
 ##########################################################################
 #  Architecture Configuration                                            #
@@ -75,45 +75,31 @@ endif()
 #  C++ Standard Configuration                                            #
 ##########################################################################
 
+# TODO: modificar con TidopLibCXXStandarSupport
+
 set(cxx_standard_values "")
 
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_11" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++11)
-endif()
-
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_14" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++14)
-endif()
-
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8 AND "cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++17)
-endif()
-
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-list (APPEND cxx_standard_values C++20)
+    list (APPEND cxx_standard_values C++20)
 endif()
 
-#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-#list (APPEND cxx_standard_values C++23)
-#endif()
-#
-#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-#list (APPEND cxx_standard_values C++26)
-#endif()
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    list (APPEND cxx_standard_values C++23)
+endif()
 
-set(TIDOPLIB_CXX_STANDARD "C++14" CACHE STRING "")
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    list (APPEND cxx_standard_values C++26)
+endif()
+
+set(TIDOPLIB_CXX_STANDARD "C++20" CACHE STRING "")
 set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
 
-if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++11")
-  set(CMAKE_CXX_STANDARD 11)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++14")
-  set(CMAKE_CXX_STANDARD 14)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++17")
-  set(CMAKE_CXX_STANDARD 17)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
-  set(CMAKE_CXX_STANDARD 20)
+if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
+    set(CMAKE_CXX_STANDARD 20)
 elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++23")
-  set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD 23)
+elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++26")
+    set(CMAKE_CXX_STANDARD 26)
 else()
 
 endif()
@@ -204,15 +190,12 @@ cmake_dependent_option(BUILD_TL_MATH "Include math module in TidopLib build" ON 
 cmake_dependent_option(BUILD_TL_GEOMETRY "Include geometry module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH" OFF)
 cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_RASTER_TOOLS "Include RasterTools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_GRAPHIC" OFF)
-#cmake_dependent_option(BUILD_TL_IMG "Include image module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_GRAPHIC" OFF)
-#cmake_dependent_option(BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
 cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
 cmake_dependent_option(BUILD_TL_VECTOR_TOOLS "Include VectorTools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
 cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_RASTER_TOOLS;BUILD_TL_VECTOR_TOOLS" OFF)
 cmake_dependent_option(BUILD_TL_VIEWER "Include viewer module in TidopLib build" OFF "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
-cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_RASTER_TOOLS;BUILD_TL_VECTOR_TOOLS" OFF)
-cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_RASTER_TOOLS;BUILD_TL_VECTOR_TOOLS" OFF)
-
+cmake_dependent_option(BUILD_TL_GEOTOOLS "Include geotools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY" OFF)
+cmake_dependent_option(BUILD_TL_PCTOOLS "Include pctools module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOTOOLS;BUILD_TL_GEOMETRY" OFF)
 
 # Configuración de componentes adicionales de la biblioteca
 option(BUILD_APPS                    "Build Apps"             OFF)
@@ -334,7 +317,6 @@ OPTION (WITH_CUDA     "Include CUDA"                          OFF)
 message(STATUS "\nDependency loading:\n")
 
 
-
 # fmt (REQUIRED C++ Version < 20)
 
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20 
@@ -384,6 +366,15 @@ if(CMAKE_CXX_STANDARD LESS 17 OR BUILD_TEST)
 endif()
 
 
+
+if(BUILD_TL_PCTOOLS)
+	find_package(COPCLIB REQUIRED)
+	find_package(LAZPERF REQUIRED)
+	find_package(PDAL 2.0.0 REQUIRED CONFIG)
+endif()
+
+
+
 if(BUILD_TL_VIEWER)
 
 option(USE_QT6 "Use Qt6 if available" ON)
@@ -399,57 +390,6 @@ find_package(GLEW REQUIRED)
 
 find_package(assimp REQUIRED)
 
-
-# Qt
-
-if (USE_QT6)
-
-    find_package(Qt6 REQUIRED 
-                 COMPONENTS 
-                     Core
-                     Concurrent
-                     OpenGL  
-                     Widgets
-                     OpenGLWidgets)
-
-    set(QT_VERSION 6)
-
-    if (Qt6_POSITION_INDEPENDENT_CODE)
-        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-    endif()
-
-else()
-
-   find_package(Qt5 REQUIRED 
-                COMPONENTS 
-                    Core
-                    Concurrent
-                    OpenGL  
-                    Widgets
-                    OpenGLExtensions)
-					
-    set(QT_VERSION 5)
-
-endif()
-
-set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
-
-if(QT_VERSION)
-
-    if (USE_QT6)
-        message(STATUS "  Qt version: ${Qt6_VERSION}")
-    else()
-        message(STATUS "  Qt version: ${Qt5_VERSION}")
-    endif()
-
-    set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
-    set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
-    set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
-    set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
-else()
-    message(STATUS "  Qt not found")
-endif()
-
  
 # LASLib
 set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
@@ -457,7 +397,7 @@ find_package(LASLib REQUIRED)
 set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
 endif(BUILD_TL_VIEWER)
-
+	
 
 # OpenCV  (optional)
 
@@ -570,13 +510,18 @@ endif()
 # Visual Leak Detector (optional)
 
 if(WITH_VLD)
+
     find_package(VLD)
 
     if(NOT VLD_FOUND)
         set(HAVE_VLD NO)
+        set(TL_HAVE_VLD NO)
     else()
         set(HAVE_VLD YES)
+        include_directories(${VLD_INCLUDE_DIR})
+        set(TL_HAVE_VLD YES)
     endif()
+
 endif(WITH_VLD)
 
 
@@ -589,7 +534,7 @@ if(WITH_CUDA)
 
     if(NOT CUDA_FOUND)
         set(TL_HAVE_CUDA NO)
-         message(STATUS "  Cuda not found")
+        message(STATUS "  Cuda not found")
     else()
         message(STATUS "  Cuda version: ${CUDA_VERSION}")
         include_directories(${CUDA_INCLUDE_DIRS})
@@ -598,8 +543,57 @@ if(WITH_CUDA)
 endif(WITH_CUDA)
 
 
+# Qt
 
+if (USE_QT6)
 
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(Qt6 REQUIRED 
+                 COMPONENTS 
+                     Core
+                     Concurrent
+                     OpenGL  
+                     Widgets
+                     OpenGLWidgets)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
+
+    set(QT_VERSION 6)
+
+    if (Qt6_POSITION_INDEPENDENT_CODE)
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    endif()
+
+else()
+    set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
+    find_package(Qt5 REQUIRED 
+                 COMPONENTS 
+                     Core
+                     Concurrent
+                     OpenGL  
+                     Widgets
+                     OpenGLExtensions)
+    set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")					
+    set(QT_VERSION 5)
+
+endif()
+
+set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")	
+
+if(QT_VERSION)
+
+    if (USE_QT6)
+        message(STATUS "  Qt version: ${Qt6_VERSION}")
+    else()
+        message(STATUS "  Qt version: ${Qt5_VERSION}")
+    endif()
+
+    set(CMAKE_INCLUDE_CURRENT_DIR ON) # Find includes in corresponding build directories
+    set(CMAKE_AUTOMOC ON) # Instruct CMake to run moc automatically when needed
+    set(CMAKE_AUTOUIC ON) # Create code from a list of Qt designer ui files
+    set(CMAKE_AUTORCC ON) # Create code from a list of Qt designer ui files  
+else()
+    message(STATUS "  Qt not found")
+endif()
 
 # Build documentation
 
@@ -618,7 +612,7 @@ if(NOT EXISTS ${TL_ENV_FILE})
 endif()
 
 # Read the .env file
-read_env_file(${TL_ENV_FILE})
+read_env_file(${TL_ENV_FILE} ENV_VARS_LIST)
 
 endif(MSVC)
 

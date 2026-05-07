@@ -23,9 +23,6 @@
 ##########################################################################
 
 if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
-    
-	find_package(COPCLIB REQUIRED)
-	find_package(LAZPERF REQUIRED)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     
@@ -41,8 +38,8 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     
     target_include_directories(${PROJECT_NAME} PRIVATE 
                                $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_INCLUDE_DIR}>
-							   ${PDAL_INCLUDE_DIRS}
-							   ${PDAL_INCLUDE_DIRS}/pdal)
+                               ${PDAL_INCLUDE_DIRS}
+                               ${PDAL_INCLUDE_DIRS}/pdal)
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC)
                                # $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
@@ -51,18 +48,19 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     target_link_libraries(${PROJECT_NAME} 
                           TidopLib::Core
                           # TidopLib::Math
-                          # TidopLib::Geom
+                          # TidopLib::Geometry
                           # TidopLib::Geospatial
                           TidopLib::GeoTools
-						  TidopLib::PointCloudTools
+                          TidopLib::PointCloudTools
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${TL_HAVE_PROJ}>:PROJ::proj>
-						  ${PDAL_LIBRARIES}
-						  COPCLIB::copc-lib 
-						  LAZPERF::lazperf)
+                          ${PDAL_LIBRARIES}
+                          COPCLIB::copc-lib 
+                          LAZPERF::lazperf
+                          $<$<BOOL:${TL_HAVE_VLD}>:${VLD_LIBRARY}>)
                           # $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-    					  
+
     if(HAVE_OPENCV)
         target_link_libraries(${PROJECT_NAME} 
                               ${OpenCV_LIBS})
@@ -82,5 +80,9 @@ if(TL_HAVE_PCTOOLS AND TL_HAVE_GEOTOOLS AND TL_HAVE_GDAL)
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}bin) 
+
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
+    endif(MSVC)
 
 endif()

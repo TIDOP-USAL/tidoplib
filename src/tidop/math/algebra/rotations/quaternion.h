@@ -33,7 +33,7 @@
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations/rotations.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/math/algebra/vector/Vector.h"
 
 namespace tl
 {
@@ -63,6 +63,7 @@ class Quaternion
 
 public:
 
+    TL_TODO("Ver si es mejor que herede de VectorBase")
     T x; /*!< The x coefficient of the quaternion. */
     T y; /*!< The y coefficient of the quaternion. */
     T z; /*!< The z coefficient of the quaternion. */
@@ -122,7 +123,7 @@ public:
      * \f[ q = w - xi - yj - zk \f]
      * \return The conjugated quaternion.
      */
-    auto conjugate() const->Quaternion<T>;
+    auto conjugate() const -> Quaternion<T>;
 
     /*!
      * \brief Norm
@@ -663,39 +664,37 @@ auto operator !=(const Quaternion<T>& q1, const Quaternion<T>& q2) -> bool
     return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
 }
 
-template<typename T>
-auto operator *(const Quaternion<T> &quaternion, const Point3<T> &point) -> Point3<T>
+template<typename T, VectorExpr Vec>
+auto operator*(const Quaternion<T> &q, const Vec &vector) -> Vector<T, 3>
 {
-    Quaternion<T> q1 = quaternion;
-    q1.normalize();
-    auto q3 = q1 * Quaternion<T>(point.x, point.y, point.z, consts::zero<T>) * q1.conjugate();
-    return {q3.x, q3.y, q3.z};
+    static_assert(vector_traits<Vec>::size == 3 || vector_traits<Vec>::size == DynamicData,
+        "Quaternion rotation is only defined for 3D entities.");
+
+    TL_ASSERT(vector.size() == 3, "Quaternion rotation requires a vector of size 3.");
+
+    Quaternion<T> q_norm = q;
+    q_norm.normalize();
+
+    // Rotación: q * v * q'
+    auto q_rot = q_norm * Quaternion<T>(vector[0], vector[1], vector[2], consts::zero<T>) * q_norm.conjugate();
+
+    return Vector<T, 3>{q_rot.x, q_rot.y, q_rot.z};
 }
 
-template<typename T>
-auto operator *(Quaternion<T> &&quaternion, const Point3<T> &point) -> Point3<T>
-{
-    quaternion.normalize();
-    auto q2 = quaternion * Quaternion<T>(point.x, point.y, point.z, consts::zero<T>) * quaternion.conjugate();
-    return {q2.x, q2.y, q2.z};
-}
-
-template<typename T>
-auto operator *(const Quaternion<T> &quaternion, const Vector<T, 3> &point) -> Vector<T, 3>
-{
-    Quaternion<T> q1 = quaternion;
-    q1.normalize();
-    auto q3 = q1 * Quaternion<T>(point.x(), point.y(), point.z(), consts::zero<T>) * q1.conjugate();
-    return {q3.x, q3.y, q3.z};
-}
-
-template<typename T>
-auto operator *(Quaternion<T> &&quaternion, const Vector<T, 3> &point) -> Vector<T, 3>
-{
-    quaternion.normalize();
-    auto q2 = quaternion * Quaternion<T>(point.x(), point.y(), point.z(), consts::zero<T>) * quaternion.conjugate();
-    return {q2.x, q2.y, q2.z};
-}
+//template<typename T, typename Tag>
+//auto operator*(const Quaternion<T> &q, const Point<T, Tag> &p) -> Point<T, Tag>
+//{
+//    static_assert(point_traits<Point<T, Tag>>::spatial_dims == 3,
+//        "Quaternion rotation is only defined for 3D entities.");
+//
+//    Quaternion<T> q_norm = q;
+//    q_norm.normalize();
+//
+//    // Rotación: q * v * q'
+//    auto q_rot = q_norm * Quaternion<T>(p[0], p[1], p[2], consts::zero<T>) * q_norm.conjugate();
+//
+//    return Point<T, Tag>{q_rot.x, q_rot.y, q_rot.z};
+//}
 
 template<typename T>
 auto operator<<(std::ostream& os, const Quaternion<T>& q) -> std::ostream&
@@ -721,7 +720,7 @@ auto operator<<(std::ostream& os, const Quaternion<T>* q) -> std::ostream&
 
 } // End namespace tl
 
-#if CPP_VERSION >= 20 || defined(TL_HAVE_FMT)
+#if TL_CPP_VERSION>= 20 || defined(TL_HAVE_FMT)
 
 template <typename T>
 struct FORMAT_NAMESPACE formatter<tl::Quaternion<T>> 

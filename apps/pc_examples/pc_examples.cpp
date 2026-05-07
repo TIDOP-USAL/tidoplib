@@ -17,10 +17,10 @@
 #include <ogr_srs_api.h>
 //
 #include <tidop/core/app/app.h>
-#include <tidop/core/console.h>
+#include <tidop/core/console/console.h>
 #include <tidop/core/app/message.h>
 #include <tidop/core/base/path.h>
-#include <tidop/core/app/log.h>
+#include <tidop/core/app/logger.h>
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/pctools/PointCloudTools.h>
 //#include <tidop/pctools/PointCloudFileManager.h>
@@ -34,6 +34,10 @@
 #include <pdal/stagefactory.hpp>
 #include <pdal/pipelinemanager.hpp>
 #include <pdal/util/fileutils.hpp>
+
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
 
 
 //using namespace pdal;
@@ -105,6 +109,33 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // get CPS struct test
+    try
+    {
+        // node_keys has four index, first is the level
+        // uses map container -> ordered
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > x_min_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > x_max_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > y_min_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > y_max_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, double > > > > resolution_by_node_keys;
+        std::map<int, std::map<int, std::map<int, std::map<int, int > > > > number_of_points_by_node_keys;        std::string getCOPCTestFileName = "D:/dev/pnoa_lidar_2009_crs.copc.laz";
+        PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+        ptrPointCloudTools->getCOPCStruct(getCOPCTestFileName,
+            x_min_by_node_keys,
+            x_max_by_node_keys,
+            y_min_by_node_keys,
+            x_max_by_node_keys,
+            resolution_by_node_keys,
+            number_of_points_by_node_keys);
+        int yo = 1;
+    }
+    catch (const std::exception& e) {
+        printException(e);
+        return 1;
+    }
+
+
     std::string sourceCrsId, targetCrsId;
     // ply to copc
     //inputFileName = "D:/GraphosProjects/Candado/dense/mvs/model_dense_clipped.ply";
@@ -174,6 +205,7 @@ int main(int argc, char* argv[])
     try
     {
         PointCloudTools* ptrPointCloudTools = PointCloudTools::getInstance();
+        return 0;
         ptrPointCloudTools->formatFileConversionToCOPC(inputFileName,
             outputFileName, targetCrsId, sourceCrsId);
         int yo = 1;
@@ -281,8 +313,7 @@ int main(int argc, char* argv[])
         PointCloudReader::Ptr pointCloudReader;
         pointCloudReader = PointCloudReaderFactory::create(pointCloudFileName);
         pointCloudReader->open();
-        std::vector<std::string> dimensionsNames;
-        pointCloudReader->getDimensionsNames(dimensionsNames);
+        std::vector<std::string> dimensionsNames = pointCloudReader->getDimensionsNames();
         double xmin_25830_5782, ymin_25830_5782, zmin_25830_5782;
         double xmax_25830_5782, ymax_25830_5782, zmax_25830_5782;
         pointCloudReader->getBoundingBox(xmin_25830_5782, ymin_25830_5782, zmin_25830_5782,
@@ -306,8 +337,7 @@ int main(int argc, char* argv[])
             PointCloudReader::Ptr pointCloudReaderNoCopc;
             pointCloudReaderNoCopc = PointCloudReaderFactory::create(pointCloudFileNameNoCopc);
             pointCloudReaderNoCopc->open();
-            std::vector<std::string> dimensionsNamesNoCopc;
-            pointCloudReaderNoCopc->getDimensionsNames(dimensionsNamesNoCopc);
+            std::vector<std::string> dimensionsNamesNoCopc = pointCloudReaderNoCopc->getDimensionsNames();
             double xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc;
             double xmax_25830_5782NoCopc, ymax_25830_5782NoCopc, zmax_25830_5782NoCopc;
             pointCloudReaderNoCopc->getBoundingBox(xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc,

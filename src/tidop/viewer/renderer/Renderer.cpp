@@ -29,8 +29,8 @@ void Renderer::resize(int w, int h)
 	float phi = camera->getPhi();
 	float radius = camera->getRadius();
 
-	double aspectRatio = static_cast<double>(w) / h;
-	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 0.1, 10000);
+	float aspectRatio = static_cast<float>(w) / h;
+	camera = TrackballCamera::perspectiveCamera(consts::grad_to_rad<float> * 45.0f, aspectRatio, 0.1f, 10000.f);
 
 	camera->setTheta(theta);
 	camera->setPhi(phi);

@@ -24,8 +24,10 @@
 
 #pragma once
 
-#include "tidop/core/core.h"
+#include "tidop/config.h"
 
+#include <string>
+#include <vector>
 
 namespace tl
 {

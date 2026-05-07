@@ -24,8 +24,9 @@
 
 #pragma once
 
+#include <condition_variable>
+
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
 #include "tidop/core/concurrency/queue.h"
 
 namespace tl
@@ -39,11 +40,12 @@ namespace tl
  */
  
 /*!
- * \brief Single-producer Single-consumer queue
+ * \brief Single-producer Single-consumer blocking queue
  * 
- * This class implements a thread-safe queue designed for single-producer, single-consumer (SPSC) scenarios.
- * It efficiently synchronizes the producer and consumer threads, using blocking push and pop operations.
- * 
+ * This class implements an optimized thread-safe queue designed specifically for 
+ * single-producer, single-consumer (SPSC) scenarios. It provides efficient synchronization
+ * between exactly one producer thread and one consumer thread using condition variables.
+ * Both push and pop operations block when the queue is full or empty, respectively.
  */
 template<typename T>
 class QueueSPSC
@@ -65,9 +67,11 @@ public:
   
     /*!
      * \brief Constructor with specified queue capacity
-     * \param[in] capacity Maximum capacity of the queue
+     * \param[in] capacity Maximum capacity of the queue. Must be greater than 0.
      *
      * Creates an SPSC queue with the specified capacity.
+     *
+     * \exception Exception If capacity is 0
      */
     explicit QueueSPSC(size_t capacity);
   
@@ -75,20 +79,25 @@ public:
   
     TL_DISABLE_COPY(QueueSPSC)
     TL_DISABLE_MOVE(QueueSPSC)
+
     /*!
-     * \brief Inserts an element into the queue
-     * \param[in] value Element to insert into the queue
+     * \brief Inserts an element into the queue (blocking if full)
      * 
-     * If the queue is full, the producer thread will block until space becomes available.
+     * If the queue is full, the calling thread will block until space becomes available.
+     * This operation is optimized for single-producer scenarios.
+     *
+     * \param[in] value Element to insert into the queue
      */
     void push(const T &value) override;
 
     /*!
-     * \brief Extracts the first element from the queue
-     * \param[out] value Extracted element from the queue
-     * \return Returns `true` if an element was successfully extracted; `false` if the queue is empty.
+     * \brief Extracts the first element from the queue (blocking if empty)
      *
-     * If the queue is empty, the consumer thread will block until an element becomes available.
+     * If the queue is empty, the calling thread will block until an element becomes available.
+     * This operation is optimized for single-consumer scenarios.
+     *
+     * \param[out] value Extracted element from the queue
+     * \return Always returns `true` in normal SPSC operation. Returns `false` only if the queue is empty after waking up.
      */
     auto pop(T &value) -> bool override;
 

@@ -80,7 +80,7 @@ auto Argument::operator=(const Argument &argument) -> Argument &
     if(this != &argument) {
 
         this->mName = argument.mName;
-        this->mDescription = argument.mName;
+        this->mDescription = argument.mDescription;
         this->mShortName = argument.mShortName;
         this->mType = argument.mType;
     }
@@ -93,7 +93,7 @@ auto Argument::operator = (Argument &&argument) TL_NOEXCEPT -> Argument &
     if(this != &argument) {
 
         this->mName = std::move(argument.mName);
-        this->mDescription = std::move(argument.mName);
+        this->mDescription = std::move(argument.mDescription);
         this->mShortName = argument.mShortName;
         this->mType = argument.mType;
 
@@ -109,6 +109,7 @@ auto Argument::name() const -> std::string
 
 void Argument::setName(const std::string &name)
 {
+    TL_ASSERT(!name.empty(), "Argument name cannot be empty");
     mName = name;
 }
 
@@ -147,6 +148,6 @@ void Argument::setValidator(const std::shared_ptr<Validator> &validator)
     mValidator = validator;
 }
 
-} // End mamespace tl
+} // End namespace tl
 
 

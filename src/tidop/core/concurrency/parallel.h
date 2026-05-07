@@ -22,6 +22,33 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file parallel.h
+ * \brief Parallel computation utilities and thread management
+ *
+ * This module provides utilities for parallel iteration and reduction operations
+ * with automatic thread pool management. It supports multiple parallel backends:
+ * - OpenMP (if available)
+ * - MSVC Parallel Patterns Library (PPL)
+ * - Standard C++ threads (fallback)
+ *
+ * ### Functions
+ *
+ * - \ref optimalNumberOfThreads - Detects optimal thread count for the system
+ * - \ref parallel_for - Parallel loop over index ranges
+ * - \ref parallel_reduce - Parallel reduction operation over iterators
+ * - \ref parallel_for_each - Alternative parallel iteration implementation
+ *
+ * ### Features
+ *
+ * - Automatic backend selection based on available libraries
+ * - Efficient thread pool creation and management
+ * - Load balancing across available processors
+ * - Support for lambda functions and function objects
+ *
+ * \see tl::parallel_for, tl::parallel_reduce, tl::optimalNumberOfThreads
+ */
+ 
 #pragma once
 
 #include "tidop/config.h"
@@ -34,8 +61,6 @@
 #include <future>
 #include <algorithm>
 
-#include "tidop/core/base/defs.h"
-
 namespace tl
 {
 
@@ -47,13 +72,34 @@ namespace tl
  */
 
 /*!
- * \brief Optimal number of threads
+ * \brief Determines the optimal number of threads for parallel operations.
+ *
+ * This function detects the number of hardware threads available on the system
+ * and returns the optimal number to use for parallel operations.
+ *
+ * \return Number of optimal threads (minimum: 1)
+ *
+ * \see parallel_for
  */
 TL_EXPORT uint32_t optimalNumberOfThreads();
 
 /*!
- * \brief Iterates over a range of indices and executes a function in parallel
- * 
+ * \brief Executes a function in parallel over a range of indices.
+ *
+ * This function provides a convenient way to parallelize loop operations over
+ * a range of indices. It automatically divides the work among available threads
+ * and coordinates their execution.
+ *
+ * ### Thread Safety
+ *
+ * The function object `f` must be thread-safe when accessing shared data structures.
+ * Each thread receives a unique index, so operations on independent data are safe.
+ *
+ * ### Exception Handling
+ *
+ * Exceptions thrown in function `f` are propagated to the caller. The behavior
+ * depends on the parallel backend being used.
+ *
  * ### Example Usage
  * \code{.cpp}
  * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
@@ -63,22 +109,87 @@ TL_EXPORT uint32_t optimalNumberOfThreads();
  *   aux[i] = nums[i] + 1;
  * });
  * \endcode
- * 
- * \param[in] ini Initial index
- * \param[in] end End index
- * \param[in] f Function or lambda
+ *
+ * \tparam Function Type of the function/lambda. Must be callable with size_t parameter.
+ * \param[in] ini First index to process (inclusive)
+ * \param[in] end Last index to process (exclusive)
+ * \param[in] f Function or lambda to execute for each index
  */
-TL_EXPORT void parallel_for(size_t ini, 
-                            size_t end, 
-                            std::function<void(size_t)> f);
+template<typename Function>
+void parallel_for(size_t ini,
+                  size_t end, 
+                  Function &&f)
+{
+    size_t size = end - ini;
+    if (size == 0) return;
+
+#ifdef TL_HAVE_OPENMP
+#pragma omp parallel for
+    for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
+        f(i);
+    }
+#elif defined TL_MSVS_CONCURRENCY
+    //Concurrency::cancellation_token_source cts;
+    //Concurrency::run_with_cancellation_token([ini, end, f]() {
+    //  Concurrency::parallel_for(ini, end, f);
+    //},cts.get_token());
+    Concurrency::parallel_for(ini, end, f);
+#else
+
+    auto f_aux = [&](size_t ini, size_t end) {
+        for (size_t r = ini; r < end; r++) {
+            f(r);
+        }
+    };
+
+    size_t num_threads = optimalNumberOfThreads();
+    std::vector<std::thread> threads(num_threads);
+
+    size_t block_size = size / num_threads;
+
+    size_t block_ini = ini;
+    size_t block_end = 0;
+
+    for (size_t i = 0; i < num_threads; i++) {
+
+        if (i == num_threads - 1) block_end = end;
+        else block_end = block_ini + block_size;
+
+        threads[i] = std::thread(f_aux, block_ini, block_end);
+
+        block_ini = block_end;
+    }
+
+    for (auto &_thread : threads)
+        _thread.join();
+
+#endif
+
+}
 
 
 /*!
- * \brief Iterates over a range and executes a function in parallel
- * 
+ * \brief Executes a reduction operation in parallel over a range of elements.
+ *
+ * This function provides a way to perform parallel reduction operations where each
+ * thread processes a portion of the data and then combines results. This is useful
+ * for operations like sum, product, or other aggregations.
+ *
+ * ### How It Works
+ *
+ * 1. The input range is divided into blocks, one per thread
+ * 2. Each thread gets a copy of the function object and processes its block
+ * 3. Results from all threads are combined at the end
+ *
+ * ### Requirements for Function Object
+ *
+ * The function object must:
+ * - Have a call operator: `void operator()(const T&)`
+ * - Have a `sum` member variable for combining results
+ *
  * ### Example Usage
+ *
  * \code{.cpp}
- * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
  * struct Sum
  * {
  *     void operator()(int n)
@@ -89,34 +200,44 @@ TL_EXPORT void parallel_for(size_t ini,
  *     int sum{0};
  * };
  *
- * Sum sum = parallel_for_each(nums.begin(), nums.end(), Sum());
+ * std::vector<int> nums{3, 4, 2, 8, 15, 267, 54, 60, 29, 20, 39};
+ * Sum sum = parallel_reduce(nums.begin(), nums.end(), Sum());
  * \endcode
- * 
- * \param[in] first First element
- * \param[in] last Last element
- * \param[in] f Function or lambda
+ *
+ * \tparam Iter Iterator type for the range
+ * \tparam Function Type of the function/reducer object
+ * \param[in] first Iterator to the first element
+ * \param[in] last Iterator to the past-the-end element
+ * \param[in] f Function object implementing the reduction operation
+ * \return The combined result from all threads
+ *
+ * \note Empty ranges return a copy of the input function object
+ * \see parallel_for
  */
 template<typename Iter, typename Function>
-Function parallel_for_each(Iter first,
-                           Iter last,
-                           Function f)
+auto parallel_reduce(Iter first,
+                     Iter last,
+                     Function &&f) -> std::decay_t<Function>
 {
-    auto f_aux = [&](Iter ini, Iter end) {
-        while (ini != end) {
-            f(*ini++);
-        }
-    };
+    auto size = std::distance(first, last);
+    if (size == 0) return f;
 
     size_t num_threads = optimalNumberOfThreads();
     std::vector<std::thread> threads(num_threads);
-    auto size = std::distance(first, last);
-    size_t block_size = size / num_threads;
 
+    std::vector<Function> thread_functors(num_threads, f);
+
+    size_t block_size = size / num_threads;
     Iter block_ini = first;
     Iter block_end = block_ini;
 
-    for (size_t i = 0; i < num_threads; i++) {
+    auto f_aux = [](Iter ini, Iter end, Function &local_f) {
+        while (ini != end) {
+            local_f(*ini++);
+        }
+    };
 
+    for (size_t i = 0; i < num_threads; i++) {
         if (i == num_threads - 1) {
             block_end = last;
         } else {
@@ -124,7 +245,7 @@ Function parallel_for_each(Iter first,
             std::advance(block_end, block_size);
         }
 
-        threads[i] = std::thread(f_aux, block_ini, block_end);
+        threads[i] = std::thread(f_aux, block_ini, block_end, std::ref(thread_functors[i]));
 
         block_ini = block_end;
     }
@@ -132,16 +253,20 @@ Function parallel_for_each(Iter first,
     for (auto &_thread : threads)
         _thread.join();
 
-    return f;
+    for (size_t i = 1; i < num_threads; i++) {
+        thread_functors[0].sum += thread_functors[i].sum;
+    }
+
+    return thread_functors[0];
 }
 
 /// \cond
 
 ///Pruebas basadas en C++ Concurrency in Action
 template<typename Iterator, typename Func>
-void parallel_for_each_2(Iterator first,
-                         Iterator last,
-                         Func f)
+void parallel_for_each(Iterator first,
+                       Iterator last,
+                       Func &&f)
 {
     unsigned long const length = std::distance(first, last);
     if (!length) return;
@@ -189,9 +314,9 @@ void parallel_for_each_3(Iterator first,
         std::for_each(first, last, f);
     } else {
         Iterator const mid_point = first + length / 2;
-        std::future<void> first_half = std::async(&parallel_for_each_2<Iterator, Func>,
+        std::future<void> first_half = std::async(&parallel_for_each<Iterator, Func>,
                                                   first, mid_point, f);
-        parallel_for_each_2(mid_point, last, f);
+        parallel_for_each(mid_point, last, f);
         first_half.get();
     }
 }

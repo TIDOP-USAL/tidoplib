@@ -26,6 +26,8 @@
 
 #include "tidop/config.h"
 
+#include <vector>
+
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // TL_HAVE_OPENCV
@@ -39,22 +41,28 @@
 namespace tl
 {
 
-namespace geom
-{
-class Transform;
-}
-
-/*! \addtogroup GraphicEntities
- *  \{
- */
-
 class Canvas;
 class GraphicStyle;
 
-/// TODO: Painter virtual
-/// setStyle y push_style /pop_style (patron status)
+/*! \addtogroup Graphic
+ *  \{
+ */
 
 
+/*!
+ * \class Painter
+ * \brief High-level interface for rendering vector geometries on a canvas.
+ *
+ * The `Painter` class provides a convenient API for drawing 2D geometries such as points,
+ * polylines, polygons, and text onto a `Canvas` surface. It inherits from `GraphicStyle`,
+ * so it can carry styling information (pen, brush, symbol, label) directly or through
+ * an internal style stack.
+ *
+ * This class delegates the actual drawing to the underlying canvas implementation, applying
+ * style and optional coordinate transformations.
+ *
+ * \see Canvas, GraphicStyle, Affine
+ */
 class TL_EXPORT Painter
   : public GraphicStyle
 {
@@ -62,13 +70,13 @@ class TL_EXPORT Painter
 public:
 
     /*!
-     * \brief Constructora Painter
+     * \brief Default constructor.
      */
     Painter();
 
     /*!
-     * \brief Constructor que recibe el canvas como parámetro
-     * \param[in] canvas Canvas
+     * \brief Constructs a painter for the given canvas.
+     * \param[in] canvas Canvas to draw on.
      */
     Painter(Canvas *canvas);
 
@@ -79,87 +87,110 @@ public:
 
     ~Painter();
 
-    void begin(Canvas *canvas) { unusedParameter(canvas); }
-    void end() {}
+    ///*!
+    // * \brief Begins a new drawing session on the given canvas.
+    // * \param[in] canvas Target canvas.
+    // */
+    //void begin(Canvas *canvas) { unusedParameter(canvas); }
+
+    ///*!
+    // * \brief Ends the current drawing session.
+    // */
+    //void end() {}
 
     /*!
-     * \brief Dibuja un punto en el canvas
-     * \param[in] point Punto
+     * \brief Draws a point.
+     * \param[in] point Point geometry.
      */
     void drawPoint(const GPoint &point);
+
+    /*!
+     * \brief Draws a point using raw coordinates.
+     * \param[in] point 2D point.
+     */
     void drawPoint(const Point<double> &point) const;
 
     /*!
-     * \brief Dibuja una polilinea
-     * \param[in] lineString Polilinea
+     * \brief Draws a polyline geometry.
+     * \param[in] lineString Polyline.
      */
     void drawLineString(const GLineString &lineString) const;
-    void drawLineString(const LineStringD &lineString) const;
 
     /*!
-     * \brief Dibuja un poligono
-     * \param[in] polygon Poligono
+     * \brief Draws a polyline from raw 2D points.
+     * \param[in] lineString Polyline.
+     */
+    void drawLineString(const LineString<Point2d> &lineString) const;
+
+    /*!
+     * \brief Draws a polygon geometry.
+     * \param[in] polygon Polygon.
      */
     void drawPolygon(const GPolygon &polygon) const;
-    void drawPolygon(const PolygonD &polygon) const;
 
     /*!
-     * \brief Dibuja un multipunto
-     * \param[in] multipoint Multipunto
+     * \brief Draws a polygon from raw 2D coordinates.
+     * \param[in] polygon Polygon.
+     */
+    void drawPolygon(const Polygon<Point2d> &polygon) const;
+
+    /*!
+     * \brief Draws a multipoint geometry.
+     * \param[in] multipoint Multipoint object.
      */
     void drawMultiPoint(const GMultiPoint &multipoint) const;
 
     /*!
-     * \brief Dibuja una multipolilinea
-     * \param[in] multiLineString multipolilinea
+     * \brief Draws a multilinestring geometry.
+     * \param[in] multiLineString Multi-line object.
      */
     void drawMultiLineString(const GMultiLineString &multiLineString) const;
 
     /*!
-     * \brief Dibuja un multipoligono
-     * \param[in] multiPolygon Multipoligono
+     * \brief Draws a multipolygon geometry.
+     * \param[in] multiPolygon Multi-polygon object.
      */
     void drawMultiPolygon(const GMultiPolygon &multiPolygon) const;
 
 #ifdef TL_HAVE_OPENCV
+    /*!
+     * \brief Draws a raster image onto the canvas.
+     * \param[in] bmp OpenCV image to draw.
+     */
     void drawPicture(const cv::Mat &bmp) const;
 #endif // TL_HAVE_OPENCV
 
+    /*!
+     * \brief Draws a text string at a specified position.
+     * \param[in] point Insertion point.
+     * \param[in] text Text to render.
+     */
     void drawText(const Point<double> &point, const std::string &text) const;
 
     /*!
-     * \brief Establece el canvas
-     * \param[in] canvas Canvas
+     * \brief Sets the canvas used for drawing operations.
+     *
+     * This assigns the target canvas on which all subsequent drawing commands will be rendered.
+     * The canvas must remain valid during the lifetime of the painter session.
+     *
+     * \param[in] canvas Pointer to the target canvas.
      */
     void setCanvas(Canvas *canvas);
 
-    ///*!
-    // * \brief Establece el estilo de pluma
-    // * \param[in] pen Estilo pluma
-    // */
-    //void setPen(const std::shared_ptr<Pen> &pen);
-
-    ///*!
-    // * \brief Establece el estilo de pincel
-    // * \param[in] brush Estilo pincel
-    // */
-    //void setBrush(const std::shared_ptr<Brush> &brush);
-
-    ///*!
-    // * \brief Establece el estilo de simbolo
-    // * \param[in] symbol Estilo simbolo
-    // */
-    //void setSymbol(const std::shared_ptr<Symbol> &symbol);
-
-    ///*!
-    // * \brief Establece el estilo de etiqueta
-    // * \param[in] label Estilo de etiqueta
-    // */
-    //void setLabel(const std::shared_ptr<Label> &label);
+    /*!
+     * \brief Pushes a new style onto the style stack.
+     * \param[in] style Graphic style to apply.
+     */
+    void pushStyle(const GraphicStyle &style);
 
     /*!
-     * \brief Establece la transformación que se aplica para dibujar el en canvas
-     * \param[in] trf Transformación
+     * \brief Pops the last style from the style stack.
+     */
+    void popStyle();
+
+    /*!
+     * \brief Sets the affine transform applied to all drawing operations.
+     * \param[in] affine Affine 2D transformation.
      */
     void setTransform(const Affine<double, 2> &affine);
 
@@ -170,6 +201,7 @@ protected:
 
     Affine<double, 2> mTransform;
     Canvas *mCanvas;
+    std::vector<GraphicStyle> mStyleStack;
 
 };
 

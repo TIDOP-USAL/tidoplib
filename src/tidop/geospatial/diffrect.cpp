@@ -84,24 +84,24 @@ auto DifferentialRectification::forwardProjection(const Point<double> &imagePoin
 
     try {
 
-        point.z = z;
+        point.z() = z;
 
-        double x = imagePoint.x;
-        double y = imagePoint.y;
-        double z_dif = point.z - mCameraPosition.z;
+        double x = imagePoint.x();
+        double y = imagePoint.y();
+        double z_dif = point.z() - mCameraPosition.z();
 
         double div = mRotationMatrix.at(0, 2) * x +
             mRotationMatrix.at(1, 2) * y -
             mRotationMatrix.at(2, 2) * mFocal;
 
-        point.x = mCameraPosition.x +
-            z_dif * (mRotationMatrix.at(0, 0) * imagePoint.x +
-                     mRotationMatrix.at(1, 0) * imagePoint.y -
+        point.x() = mCameraPosition.x() +
+            z_dif * (mRotationMatrix.at(0, 0) * imagePoint.x() +
+                     mRotationMatrix.at(1, 0) * imagePoint.y() -
                      mRotationMatrix.at(2, 0) * mFocal) / div;
 
-        point.y = mCameraPosition.y +
-            z_dif * (mRotationMatrix.at(0, 1) * imagePoint.x +
-                     mRotationMatrix.at(1, 1) * imagePoint.y -
+        point.y() = mCameraPosition.y() +
+            z_dif * (mRotationMatrix.at(0, 1) * imagePoint.x() +
+                     mRotationMatrix.at(1, 1) * imagePoint.y() -
                      mRotationMatrix.at(2, 1) * mFocal) / div;
 
     } catch (...) {
@@ -117,20 +117,20 @@ auto DifferentialRectification::backwardProjection(const Point3<double> &groundP
 
     try {
 
-        double dx = groundPoint.x - mCameraPosition.x;
-        double dy = groundPoint.y - mCameraPosition.y;
-        double dz = groundPoint.z - mCameraPosition.z;
+        double dx = groundPoint.x() - mCameraPosition.x();
+        double dy = groundPoint.y() - mCameraPosition.y();
+        double dz = groundPoint.z() - mCameraPosition.z();
         double div = mRotationMatrix.at(2, 0) * dx +
                      mRotationMatrix.at(2, 1) * dy +
                      mRotationMatrix.at(2, 2) * dz;
 
 
-        photo_coordinates.x = -mFocal * (mRotationMatrix.at(0, 0) * dx +
-                                         mRotationMatrix.at(0, 1) * dy +
-                                         mRotationMatrix.at(0, 2) * dz) / div;
-        photo_coordinates.y = -mFocal * (mRotationMatrix.at(1, 0) * dx +
-                                         mRotationMatrix.at(1, 1) * dy +
-                                         mRotationMatrix.at(1, 2) * dz) / div;
+        photo_coordinates.x() = -mFocal * (mRotationMatrix.at(0, 0) * dx +
+                                           mRotationMatrix.at(0, 1) * dy +
+                                           mRotationMatrix.at(0, 2) * dz) / div;
+        photo_coordinates.y() = -mFocal * (mRotationMatrix.at(1, 0) * dx +
+                                           mRotationMatrix.at(1, 1) * dy +
+                                           mRotationMatrix.at(1, 2) * dz) / div;
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");

@@ -24,18 +24,20 @@
 
 #pragma once
 
+#include <array>
 #include <vector> 
-#include <string> 
+
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/flags.h"
-#include "tidop/math/statistic/mean.h"
-#include "tidop/math/statistic/median.h"
-#include "tidop/math/statistic/mode.h"
-#include "tidop/math/statistic/quantile.h"
-#include "tidop/math/statistic/rms.h"
-#include "tidop/math/statistic/series.h"
-#include "tidop/math/statistic/skewness.h"
+#include "tidop/math/statistic/descriptive/mean.h"
+#include "tidop/math/statistic/descriptive/median.h"
+#include "tidop/math/statistic/descriptive/mode.h"
+#include "tidop/math/statistic/descriptive/quantile.h"
+#include "tidop/math/statistic/ratios/rms.h"
+#include "tidop/math/statistic/base/series.h"
+#include "tidop/math/statistic/shape/skewness.h"
+#include "tidop/math/statistic/shape/kurtosis.h"
 
 namespace tl
 {
@@ -112,6 +114,7 @@ public:
     {
         bool sample = true; ///< True for sample data, false for population data.
         SkewnessMethod skewness_method = SkewnessMethod::fisher_pearson; ///< Method for calculating skewness.
+        KurtosisMethod kurtosis_method = KurtosisMethod::pearson; ///< Method for calculating kurtosis.
     };
 
 private:
@@ -142,6 +145,7 @@ private:
     Series<T> mData;
     Config mConfig;
     std::shared_ptr<Skewness<T>> mSkewnessMethod;
+    std::shared_ptr<Kurtosis<T>> mKurtosisMethod;
     mutable T mMin{};
     mutable T mMax{};
     mutable double mMean{};
@@ -188,6 +192,13 @@ public:
      * \return The series of data
      */
     auto data() const -> Series<T>;
+
+    /*!
+     * \brief Set the dataset
+     * \param[in] data A series of data values
+     */
+    void setData(Series<T> data);
+
     /*!
      * \brief Return the smallest value in the dataset
      * \f[ \text{min} = \text{min}(x_i)_{i=1}^{n} \f]
@@ -338,6 +349,8 @@ public:
      * \return An array containing the first, second, third, and fourth quintiles.
      */
     auto quintiles() const -> std::array<double, 4>;
+
+    auto octiles() const->std::array<double, 7>;
 
     /*!
      * \brief Compute the deciles of the dataset
@@ -515,7 +528,7 @@ private:
     void computeSecondQuartile() const;
     void computeThirdQuartile() const;
     template<typename It>
-    void quantile(It &first, It &last) const;
+    void quantile(It first, It last) const;
 };
 
 /*! \} */
@@ -543,7 +556,8 @@ template<typename T>
 DescriptiveStatistics<T>::DescriptiveStatistics(const DescriptiveStatistics<T> &object)
   : mData(object.mData),
     mConfig(object.mConfig),
-    mSkewnessMethod(object.mSkewnessMethod)
+    mSkewnessMethod(object.mSkewnessMethod),
+    mKurtosisMethod(object.mKurtosisMethod)
 {
     this->configure();
 }
@@ -557,6 +571,13 @@ template<typename T>
 auto DescriptiveStatistics<T>::data() const -> Series<T>
 {
     return mData;
+}
+
+template<typename T>
+void DescriptiveStatistics<T>::setData(Series<T> data)
+{
+    mData = std::move(data);
+    mStatus.clear();
 }
 
 template<typename T>
@@ -588,6 +609,7 @@ auto DescriptiveStatistics<T>::sum() const -> T
     //  T aux{};
 
     TL_TODO("Hacer prueba de rendimiento")
+    TL_TODO("Utilizar SIMD")
         //#pragma omp parallel for reduction(+:summation) private(aux) 
         //  for (long long i = 0; i < static_cast<long long>(size()); i++) {
         //    aux = mData[static_cast<size_t>(i)];
@@ -605,11 +627,17 @@ auto DescriptiveStatistics<T>::sum() const -> T
 template<typename T>
 auto DescriptiveStatistics<T>::mean() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::mean)) {
-        computeMean();
-    }
+    try {
 
-    return mMean;
+        if (!mStatus.isEnabled(InternalStatus::mean)) {
+            computeMean();
+        }
+
+        return mMean;
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
 template<typename T>
@@ -625,11 +653,17 @@ auto DescriptiveStatistics<T>::median() const -> T
 template<typename T>
 auto DescriptiveStatistics<T>::variance() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::variance)) {
-        computeVariance();
-    }
+    try {
 
-    return mVariance;
+        if (!mStatus.isEnabled(InternalStatus::variance)) {
+            computeVariance();
+        }
+
+        return mVariance;
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
 }
 
 template<typename T>
@@ -716,6 +750,20 @@ auto DescriptiveStatistics<T>::quintiles() const -> std::array<double, 4>
 }
 
 template<typename T>
+auto DescriptiveStatistics<T>::octiles() const -> std::array<double, 7>
+{
+    double q1 = quantile(0.125);
+    double q2 = quantile(0.250);
+    double q3 = quantile(0.375);
+    double q4 = quantile(0.500);
+    double q5 = quantile(0.625);
+    double q6 = quantile(0.750);
+    double q7 = quantile(0.875);
+
+    return std::array<double, 7>{q1, q2, q3, q4, q5, q6, q7};
+}
+
+template<typename T>
 auto DescriptiveStatistics<T>::deciles() const -> std::array<double, 9>
 {
     std::array<double, 9> _deciles{};
@@ -754,7 +802,7 @@ auto DescriptiveStatistics<T>::meanAbsoluteDeviation() const -> double
         sum += std::abs(static_cast<double>(data) - _mean);
     }
 
-    return sum / n;
+    return sum / static_cast<T>(n);
 }
 
 template<typename T>
@@ -804,31 +852,7 @@ auto DescriptiveStatistics<T>::skewness() const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::kurtosis() const -> double
 {
-    size_t n = size();
-
-    if (n <= 1) return consts::zero<double>;
-
-    double _mean = mean();
-    double _kurtosis{};
-
-    for (const auto &data : mData) {
-        double dif = static_cast<double>(data) - _mean;
-        _kurtosis += std::pow(dif, 4);
-    }
-
-    double _variance = variance();
-
-    if (_variance == consts::zero<double>) return consts::zero<double>;
-
-    if (mConfig.sample) {
-        _kurtosis = n * (n + 1) * _kurtosis /
-            ((n - 1) * (n - 2) * (n - 3) * _variance * _variance);
-    } else {
-        _kurtosis = _kurtosis /
-            (n * _variance * _variance);
-    }
-
-    return _kurtosis;
+    return mKurtosisMethod->eval(*this);
 }
 
 template<typename T>
@@ -841,7 +865,7 @@ auto DescriptiveStatistics<T>::kurtosisExcess() const -> double
     double kurtosis_excess{};
 
     if (mConfig.sample) {
-        kurtosis_excess = this->kurtosis() - 3. * (n - 1) * (n - 1) / ((n - 2) * (n - 3));
+        kurtosis_excess = this->kurtosis() - 3. * static_cast<T>(n - 1) * static_cast<T>(n - 1) / (static_cast<T>(n - 2) * static_cast<T>(n - 3));
     } else {
         kurtosis_excess = this->kurtosis() - 3.;
     }
@@ -922,14 +946,14 @@ template<typename T>
 void DescriptiveStatistics<T>::configure()
 {
 
-    if (mConfig.sample) {
+    //if (mConfig.sample) {
 
-    } else {
+    //} else {
 
-    }
+    //}
 
     mSkewnessMethod = SkewnessFactory<T>::create(mConfig.skewness_method);
-
+    mKurtosisMethod = KurtosisFactory<T>::create(mConfig.kurtosis_method);
 }
 
 template<typename T>
@@ -945,13 +969,19 @@ void DescriptiveStatistics<T>::computeMinMax() const
 template<typename T>
 void DescriptiveStatistics<T>::computeMean() const
 {
+    try {
+
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    mMean = tl::mean(mData.begin(), mData.end(), true);
+        mMean = tl::mean(mData.begin(), mData.end(), true);
 #else
-    mMean = tl::mean(mData.begin(), mData.end());
+        mMean = tl::mean(mData.begin(), mData.end());
 #endif
 
-    mStatus.enable(InternalStatus::mean);
+        mStatus.enable(InternalStatus::mean);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error computing mean");
+    }
 }
 
 template<typename T>
@@ -1000,26 +1030,34 @@ void DescriptiveStatistics<T>::computeRootMeanSquare() const
 template<typename T>
 void DescriptiveStatistics<T>::computeVariance() const
 {
-    size_t n = mData.size();
-    TL_TODO("¿Devolver error?")
-    //if (n <= 1) return consts::one<T>;
+    try {
+        size_t n = mData.size();
+        TL_ASSERT(n > 0, "empty dataset");
 
-    double sum{};
-    double ep{};
-    double aux{};
+        if (mConfig.sample && n < 2) TL_THROW_EXCEPTION("computeVariance: sample variance undefined for n < 2");
 
-    double _mean = mean();
-    for (const auto &data : mData) {
-        aux = data - _mean;
-        ep += aux;
-        sum += aux * aux;
+        double sum{};
+        double ep{};
+        double aux{};
+
+        double _mean = mean();
+        for (const auto &data : mData) {
+            aux = data - _mean;
+            ep += aux;
+            sum += aux * aux;
+        }
+
+        size_t div = mConfig.sample ? n - 1 : n;
+
+        mVariance = (sum - ep * ep / static_cast<double>(n)) / static_cast<double>(div);
+
+        if (mVariance < 0 && std::abs(mVariance) < 1e-15) mVariance = 0.0;
+
+        mStatus.enable(InternalStatus::variance);
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error computing variance");
     }
-
-    size_t div = mConfig.sample ? n - 1 : n;
-
-    mVariance = (sum - ep * ep / static_cast<double>(n)) / static_cast<double>(div);
-
-    mStatus.enable(InternalStatus::variance);
 }
 
 template<typename T>
@@ -1069,11 +1107,11 @@ void DescriptiveStatistics<T>::computeThirdQuartile() const
 
 template<typename T>
 template<typename It>
-void DescriptiveStatistics<T>::quantile(It &first, It &last) const
+void DescriptiveStatistics<T>::quantile(It first, It last) const
 {
-    auto n = std::distance(first, last);
+    size_t n = std::distance(first, last);
 
-    double step = (static_cast<double>(n) + 1.) / 10.;
+    double step = 1.0 / static_cast<double>(n + 1);
     double p = 0.;
     for (size_t i = 0; i < n; i++) {
         p += step;

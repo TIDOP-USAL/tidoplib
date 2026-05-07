@@ -30,7 +30,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/geometry/entities/bbox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
@@ -62,6 +62,16 @@ GLayer::GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities)
   : mEntities(entities),
     mSelectEntity(nullptr)
 {
+}
+
+auto GLayer::name() const -> std::string
+{
+    return mName;
+}
+
+void GLayer::setName(const std::string &name)
+{
+    mName = name;
 }
 
 auto GLayer::begin() TL_NOEXCEPT -> iterator
@@ -145,16 +155,6 @@ auto GLayer::erase(const_iterator first, const_iterator last) -> iterator
     return mEntities.erase(std::move(first), std::move(last));
 }
 
-auto GLayer::name() const -> std::string
-{
-    return mName;
-}
-
-void GLayer::setName(const std::string &name)
-{
-    mName = name;
-}
-
 void GLayer::addDataField(const std::shared_ptr<TableField> &field)
 {
     mTableFields.push_back(field);
@@ -165,59 +165,35 @@ auto GLayer::tableFields() const -> std::vector<std::shared_ptr<TableField>>
     return mTableFields;
 }
 
-auto GLayer::window() const -> Window<Point<double>>
+void GLayer::draw(Painter &painter) const
 {
-    Window<Point<double>> w;
-
-    for (auto &entity : mEntities) {
-
-        GraphicEntity::Type type = entity->type();
-
-        if (type == GraphicEntity::Type::point_2d) {
-            GPoint *gpt = dynamic_cast<GPoint *>(entity.get());
-            Point<double> pt(gpt->x, gpt->y);
-            w = joinWindow(w, Window<Point<double>>(pt, pt));
-        } else if (type == GraphicEntity::Type::point_3d) {
-            GPoint3D *gpt = dynamic_cast<GPoint3D *>(entity.get());
-            Point<double> pt(gpt->x, gpt->y);
-            w = joinWindow(w, Window<Point<double>>(pt, pt));
-        } else if (type == GraphicEntity::Type::linestring_2d) {
-            w = joinWindow(w, dynamic_cast<GLineString *>(entity.get())->window());
-        } else if (type == GraphicEntity::Type::linestring_3d) {
-            auto bbox = dynamic_cast<GLineString3D *>(entity.get())->boundingBox();
-            w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
-                           Point<double>(bbox.pt2.x, bbox.pt2.y)));
-        } else if (type == GraphicEntity::Type::polygon_2d) {
-            w = joinWindow(w, dynamic_cast<GPolygon *>(entity.get())->window());
-        } else if (type == GraphicEntity::Type::polygon_3d) {
-            auto bbox = dynamic_cast<GPolygon3D *>(entity.get())->boundingBox();
-            w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
-                           Point<double>(bbox.pt2.x, bbox.pt2.y)));
-        } else if (type == GraphicEntity::Type::multipoint_2d) {
-            w = joinWindow(w, dynamic_cast<GMultiPoint *>(entity.get())->window());
-        } else if (type == GraphicEntity::Type::multipoint_3d) {
-            auto bbox = dynamic_cast<GMultiPoint3D *>(entity.get())->boundingBox();
-            w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
-                           Point<double>(bbox.pt2.x, bbox.pt2.y)));
-        } else if (type == GraphicEntity::Type::multiline_2d) {
-            w = joinWindow(w, dynamic_cast<GMultiLineString *>(entity.get())->window());
-        } else if (type == GraphicEntity::Type::multiline_3d) {
-            auto bbox = dynamic_cast<GMultiLineString3D *>(entity.get())->boundingBox();
-            w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
-                           Point<double>(bbox.pt2.x, bbox.pt2.y)));
-        } else if (type == GraphicEntity::Type::multipolygon_2d) {
-            w = joinWindow(w, dynamic_cast<GMultiPolygon *>(entity.get())->window());
-        } else if (type == GraphicEntity::Type::multipolygon_3d) {
-            auto bbox = dynamic_cast<GMultiPolygon3D *>(entity.get())->boundingBox();
-            w = joinWindow(w, Window<Point<double>>(Point<double>(bbox.pt1.x, bbox.pt1.y),
-                           Point<double>(bbox.pt2.x, bbox.pt2.y)));
-        } else {
-
+    for (const auto &entity : mEntities) {
+        if (entity) {
+            entity->draw(painter);
         }
+    }
+}
 
+auto GLayer::boundingBox() const -> BoundingBox<Point2d>
+{
+    BoundingBox<Point2d> bbox;
+
+    for (const auto &entity : mEntities) {
+        bbox = merge(bbox, entity->window());
     }
 
-    return w;
+    return bbox;
+}
+
+auto GLayer::window() const -> BoundingBox<Point2d>
+{
+    //Window<Point<double>> w;
+
+    //for (auto &entity : mEntities) {
+    //    w = joinWindow(w, entity->window());
+    //}
+
+    return boundingBox();
 }
 
 } // End namespace tl

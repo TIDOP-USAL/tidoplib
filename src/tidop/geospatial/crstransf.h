@@ -31,16 +31,11 @@
 
 #include "tidop/geospatial/crs.h"
 #include "tidop/core/base/exception.h"
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 #include "tidop/math/algebra/rotations/rotation_matrix.h"
 
 namespace tl
 {
-
-namespace geom
-{
-template<typename Point_t> class Transform3D;
-}
 
 /// \cond
 
@@ -51,9 +46,6 @@ class CoordinateTransformation;
 
 /// \endcond
 
-#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
-
-
 
 /*!
  * \addtogroup geospatial
@@ -61,6 +53,7 @@ class CoordinateTransformation;
  * \{
  */
 
+#if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
@@ -116,8 +109,8 @@ public:
      * \param[in] trfOrder Transformation order, direct (by default) or inverse
      * \see Order
      */
-    void transform(const std::vector<Point3<double>> &ptsIn,
-                   std::vector<Point3<double>> &ptsOut,
+    void transform(const std::vector<Point3d> &ptsIn,
+                   std::vector<Point3d> &ptsOut,
                    Order trfOrder = Order::direct) const;
 
     /*!
@@ -127,8 +120,8 @@ public:
      * \param[in] trfOrder Transformation order, direct (by default) or inverse
      * \see Order
      */
-    void transform(const Point3<double> &ptIn,
-                   Point3<double> &ptOut,
+    void transform(const Point3d &ptIn,
+                   Point3d &ptOut,
                    Order trfOrder = Order::direct) const;
 
     /*!
@@ -138,8 +131,8 @@ public:
      * \return Punto de salida
      * \see Transform::Order
      */
-    auto transform(const Point3<double> &ptIn,
-                   Order trfOrder = Order::direct) const -> Point3<double>;
+    auto transform(const Point3d &ptIn,
+                   Order trfOrder = Order::direct) const -> Point3d;
 
     auto isNull() const -> bool;
 
@@ -268,20 +261,20 @@ class EcefToEnu
 
 private:
 
-    Point3<double> mCenter;
+    Point3d mCenter;
     RotationMatrix<double> mRotation;
 
 public:
 
-    EcefToEnu(const Point3<double> &center,
+    EcefToEnu(const Point3d &center,
               const RotationMatrix<double> &rotation);
 
     ~EcefToEnu() = default;
 
-    auto direct(const Point3<double> &ecef) const -> Point3<double>;
-    auto inverse(const Point3<double> &enu) const -> Point3<double>;
+    auto direct(const Point3d &ecef) const -> Point3d;
+    auto inverse(const Point3d &enu) const -> Point3d;
 
-    auto center() const -> Point3<double>
+    auto center() const -> Point3d
     {
         return mCenter;
     }
@@ -295,7 +288,7 @@ public:
 auto rotationEnuToEcef(double longitude, double latitude) -> RotationMatrix<double>;
 
 
-/*! \} */ // end of geospatial
+/*! \} */
 
 } // End namespace tl
 

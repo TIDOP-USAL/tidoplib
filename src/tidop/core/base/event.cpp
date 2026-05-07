@@ -47,7 +47,7 @@ ImageChangeEvent::ImageChangeEvent()
 {
 }
 
-std::string ImageChangeEvent::image() const
+auto ImageChangeEvent::image() const -> std::string
 {
     return mImage;
 }

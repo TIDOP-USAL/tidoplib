@@ -25,7 +25,6 @@
 #include "tidop/featmatch/matching/test/geomtest.h"
 
 #include "tidop/core/base/exception.h"
-#include "tidop/core/base/common.h"
 #include "tidop/featmatch/matching/test/impl/fundamental_7_points_test.h"
 #include "tidop/featmatch/matching/test/impl/fundamental_8_points_test.h"
 #include "tidop/featmatch/matching/test/impl/fundamental_lmeds_test.h"

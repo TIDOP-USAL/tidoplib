@@ -43,7 +43,7 @@ if(TL_HAVE_FEAT_MATCH)
     target_link_libraries(${PROJECT_NAME} 
                           TidopLib::Core
                           TidopLib::Math
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           TidopLib::Geospatial
                           TidopLib::FeatureMatching
                           $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>

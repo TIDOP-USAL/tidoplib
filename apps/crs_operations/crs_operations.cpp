@@ -40,15 +40,20 @@
 #include <ogr_srs_api.h>
 
 #include <tidop/core/app/app.h>
-#include <tidop/core/console.h>
+#include <tidop/core/console/console.h>
 #include <tidop/core/app/message.h>
 #include <tidop/core/base/path.h>
-#include <tidop/core/app/log.h>
-// #include <tidop/geometry/entities/point.h>
+#include <tidop/core/app/logger.h>
+// #include <tidop/geometry/primitives/Point.h>
 // #include <tidop/geospatial/crs.h>
 // #include <tidop/geospatial/crstransf.h>
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/geotools/CRSsTools.h>
+
+#ifdef TL_HAVE_VLD
+#include "vld.h"
+#endif // TL_HAVE_VLD
+
 
 using namespace tl;
 
@@ -61,35 +66,15 @@ int main(int argc, char **argv)
     Path app_path(argv[0]);
     std::string cmd_name = app_path.baseName().toString();
 
-#ifdef TL_OS_WINDOWS
-    #if defined _DEBUG
-        Path gdal_data_path("D:/dev/libs/gdal/3.7.0/vc16/share/gdal");
-        CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
-        Path proj_data_path("D:/dev/libs/proj/9.2/vc16/share/proj");
-    #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-           CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-           CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    #   else
-            std::string s_proj = proj_data_path.toString();
-            const char* proj_data[]{ s_proj.c_str(), nullptr };
-            OSRSetPROJSearchPaths(proj_data);
-    #   endif
-    #else
-        tl::Path _path = app_path.parentPath().parentPath();
-        tl::Path gdal_data_path(_path);
-        gdal_data_path.append("gdal\\data");
-        tl::Path proj_data_path(_path);
-        proj_data_path.append("proj");
-        CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
-    #   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-            CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-            CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    #   else
-            std::string s_proj = proj_data_path.toString();
-            const char* proj_data[]{ s_proj.c_str(), nullptr };
-            OSRSetPROJSearchPaths(proj_data);
-    #   endif
-#   endif
+    std::string gdal_data_path(CPLGetConfigOption("TL_GDAL_DATA", ""));
+    std::string proj_data_path(CPLGetConfigOption("TL_PROJ_DATA", ""));
+
+    CPLSetConfigOption("GDAL_DATA", gdal_data_path.c_str());
+    CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
+
+#if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3,7,0)
+    const char *proj_data[]{proj_data_path.c_str(), nullptr};
+    OSRSetPROJSearchPaths(proj_data);
 #endif
 
             // Consola
@@ -117,7 +102,7 @@ int main(int argc, char **argv)
             //if(status == Command::Status::parse_error) {
             //    return 1;
             //} else if(status == Command::Status::show_help || 
-            //          status == Command::Status::show_licence || 
+            //          status == Command::Status::show_license || 
             //          status == Command::Status::show_version) {
             //    return 0;
             //}
@@ -126,8 +111,7 @@ int main(int argc, char **argv)
         GeoTools* ptrGeoTools = GeoTools::getInstance();
         bool ignoreDeprecatedCRSs = true;
         ptrGeoTools->initializeCRSsTools(ignoreDeprecatedCRSs);
-        std::map<std::string, CRSInfo> mapCRSsInfo;
-        ptrGeoTools->ptrCRSsTools()->getCRSsInfo(mapCRSsInfo);
+        std::map<std::string, CRSInfo> mapCRSsInfo = ptrGeoTools->ptrCRSsTools()->getCRSsInfo();
         std::string crssInfoFileName = "D:/dev/sources/tidoplib/apps/crs_operations/CRSsInfo.csv";
         ptrGeoTools->ptrCRSsTools()->dumpCRSsInfoToFile(crssInfoFileName);
         //// test getENUCrs
@@ -161,8 +145,7 @@ int main(int argc, char **argv)
         
         // test CRSsVertical
         {
-            std::map<std::string, CRSInfo> crssFor2dApplications;
-            ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications(crssFor2dApplications);
+            std::map<std::string, CRSInfo> crssFor2dApplications = ptrGeoTools->ptrCRSsTools()->getCRSsFor2dApplications();
             std::string crsId_1 = "EPSG:25830";
             std::map<std::string, CRSInfo> crssVertical_1;
             ptrGeoTools->ptrCRSsTools()->getCRSsVertical(crsId_1, crssVertical_1);
@@ -532,7 +515,7 @@ bool test_1(GeoTools* ptrGeoTools, std::string outputFileName, std::string& strE
         {
             std::string pointId = x.first;
             std::vector<double> point = x.second;
-            int pointSourceDimension = sourcePoints.at(nt)[pointId].size();
+            size_t pointSourceDimension = sourcePoints.at(nt)[pointId].size();
             double fcCrsSource = sourcePoints.at(nt)[pointId][0];
             double scCrsSource = sourcePoints.at(nt)[pointId][1];
             double tcCrsSource;
@@ -836,7 +819,7 @@ bool test_2(GeoTools* ptrGeoTools, std::string outputFileName, std::string& strE
             if (pointSourceDimension == 3)
                 tcCrsSource = sourcePoints.at(nt)[pointId][2];
 
-            int pointTargetDimension = targetPoints.at(nt)[pointId].size();
+            size_t pointTargetDimension = targetPoints.at(nt)[pointId].size();
             //            if(pointTargetDimension<pointSourceDimension)
             //            {
             //                pointTargetDimension=pointSourceDimension;

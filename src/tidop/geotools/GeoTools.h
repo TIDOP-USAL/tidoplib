@@ -22,40 +22,83 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_GEOTOOLS_INTERFACE_H
-#define GEOTOOLS_GEOTOOLS_INTERFACE_H
+#pragma once
 
 #include <vector>
 
 #include "tidop/core/base/defs.h"
 #include "GeoToolsDefinitions.h"
 
-namespace tl{
+namespace tl
+{
 
 class CRSsTools;
 
-/*!
- * \brief GeoTools class
+/*! \addtogroup GeoToolsGroup
+ *  \{
  */
-class TL_EXPORT GeoTools{
+
+/*!
+ * \class GeoTools
+ * \brief Singleton interface for accessing geospatial tools and CRS utilities.
+ *
+ * The GeoTools class provides centralized access to coordinate reference system (CRS) transformation tools 
+ * through the CRSsTools interface. It is implemented as a singleton and manages the lifecycle of the 
+ * CRS tools internally. This class offers a convenient entry point for applications that require CRS 
+ * transformations or metadata queries.
+ */
+class TL_EXPORT GeoTools
+{
+
 public:
-    static inline GeoTools* getInstance(void )
+
+    /*!
+     * \brief Retrieve the singleton instance of GeoTools.
+     * \return Pointer to the singleton instance.
+     */
+    static GeoTools* getInstance(void )
     {
-        if (mInstance==0) mInstance = new GeoTools;
-        return mInstance;
-    };
+        static GeoTools instance;
+        return &instance;
+    }
+
+    /*!
+     * \brief Destructor.
+     *
+     * Automatically cleans up any allocated CRS tools.
+     */
     ~GeoTools();
+
 public:
+
+    /*!
+     * \brief Initialize the internal CRSsTools implementation.
+     * \param ignoreDeprecatedCRSs If true, deprecated CRSs will be ignored during initialization.
+     */
     void initializeCRSsTools(bool ignoreDeprecatedCRSs = true);
+
+    /*!
+     * \brief Get a pointer to the internal CRSsTools implementation.
+     * \return Pointer to CRSsTools.
+     */
     CRSsTools* ptrCRSsTools();
+
+    TL_DISABLE_COPY(GeoTools)
+    TL_DISABLE_MOVE(GeoTools)
+
 protected:
-    inline GeoTools(){ mPtrCRSsTools =NULL;};
-    //void getCRSsInfo(std::vector<CRSInfo>&);
+
+    GeoTools(){ mPtrCRSsTools = nullptr; };
+
 private:
+
     void clear();
-    static GeoTools* mInstance;
+
+private:
+
 	CRSsTools* mPtrCRSsTools;
 };
 
+/*! \} */
+
 }
-#endif

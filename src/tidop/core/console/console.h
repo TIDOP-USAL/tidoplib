@@ -22,6 +22,32 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file console.h
+ * \brief Thread-safe console output formatter with ANSI color and text styling support.
+ *
+ * Provides utilities for:
+ * - **Color Management**: Foreground and background colors with intensity control
+ * - **Text Formatting**: Bold, italic, underline, reverse, strikethrough effects
+ * - **Message Logging**: Severity-based output (debug, info, success, warning, error)
+ * - **Unicode Support**: UTF-8 character set on Windows
+ * - **Thread Safety**: All public methods are synchronized with mutex protection
+ *
+ * ### Thread Safety Guarantee
+ *
+ * All public methods are protected by `std::mutex` and can be safely called from
+ * multiple threads concurrently. Color/formatting changes and output operations are atomic.
+ *
+ * ### ANSI Color Support
+ *
+ * The console uses ANSI escape codes for styling, supported on:
+ * - **Linux/macOS**: Native support
+ * - **Windows 10+**: Enabled via Virtual Terminal mode
+ * - **Fallback**: Text output without colors on unsupported systems
+ *
+ * \see Console, MessageHandler, EnumFlags
+ */
+ 
 #pragma once
 
 
@@ -47,8 +73,6 @@ class App;
  *  \{
  */
 
-
-
 /*!
  * \class Console
  * \brief Class for managing console configuration and output formatting.
@@ -58,6 +82,13 @@ class App;
  * and message logging. It supports both ANSI escape codes for styling and Unicode
  * for extended character sets.
  *
+ * ### Thread Safety
+ *
+ * This class is thread-safe:
+ * - All public methods use mutex protection
+ * - Color/formatting changes and output are atomic
+ * - Multiple threads can safely call methods concurrently
+ *
  * ### Example Usage
  * \code{.cpp}
  * Console &console = Console::instance();
@@ -65,7 +96,7 @@ class App;
  * Console::instance().setFontBold(true);
  * Console::success("Initialization complete: {} modules loaded", 5);
  * \endcode
- *
+ * \example Core/console.cpp
  */
 class TL_EXPORT Console
   : public MessageHandler
@@ -133,8 +164,13 @@ private:
 public:
 
     static Console &instance();
+	
+	TL_DISABLE_COPY(Console);
+	TL_DISABLE_MOVE(Console);
 
-public:
+    // ========================================================================
+    // Console Configuration
+    // ========================================================================
 
     /*!
      * \brief Sets the title of the console
@@ -161,6 +197,7 @@ public:
      * </div>
      * </div>
      *
+	 * \note Thread-safe. Internally synchronized.
      * \see Console::Color, Console::Intensity
      */
     void setBackgroundColor(Color backgroundColor,
@@ -182,7 +219,8 @@ public:
      * <div style="background-color: black; padding: 10px; color: blue; font-family: monospace;">
      * Text in bright blue
      * </div>
-     *
+	 *
+	 * \note Thread-safe. Internally synchronized.
      * \see Console::Color, Console::Intensity
      */
     void setForegroundColor(Color foregroundColor,
@@ -199,6 +237,8 @@ public:
      * Console::instance().setConsoleUnicode();
      * Console::instance() << "Unicode characters: ✓ ☺ ♥" << std::endl;
      * \endcode
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setConsoleUnicode();
     
@@ -217,6 +257,8 @@ public:
      * <div style="font-weight: bold; display: inline; font-family: monospace;">
      * Bold text example
      * </div>
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setFontBold(bool bold);
     
@@ -235,6 +277,8 @@ public:
      * <div style="opacity: 0.5; display: inline; font-family: monospace;">
      * Faint text example
      * </div>
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setFontFaint(bool faint);
 
@@ -253,6 +297,8 @@ public:
      * <div style="font-style: italic; display: inline; font-family: monospace;">
      * Italic text example
      * </div>
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setFontItalic(bool italic);
 
@@ -271,6 +317,8 @@ public:
      * <div style="text-decoration: underline; display: inline; font-family: monospace;">
      * Underlined text example
      * </div>
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setFontUnderline(bool underline);
 
@@ -291,6 +339,8 @@ public:
      * <div style="background-color: white; color: black; display: inline; font-family: monospace;">
      * Reversed text example
      * </div>
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setFontReverse(bool reverse);
 
@@ -309,13 +359,21 @@ public:
      * <div style="text-decoration: line-through; display: inline; font-family: monospace;">
      * Strikethrough text example
      * </div>
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
     void setFontStrikethrough(bool strikethrough);
 
     /*!
      * \brief Restores the initial console configuration.
+	 *
+	 * \note Thread-safe. Internally synchronized.
      */
-    void reset();
+    void clear();
+
+    // ========================================================================
+    // Stream Output
+    // ========================================================================
 
     Console &operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl);
 
@@ -327,13 +385,20 @@ public:
     template<typename T>
     Console &operator <<(T value)
     {
+		std::lock_guard<std::mutex> lck(mtx);
 	    outputStream << value;
 	    return *this;
     }
+	
+    // ========================================================================
+    // Message Level Management
+    // ========================================================================
 
     /*!
      * \brief Returns the current message level.
      * \return The active message level flags.
+	 *
+	 * \note Thread-safe. Internally synchronized.
      * \see EnumFlags
      */
     auto messageLevel() -> EnumFlags<MessageLevel>;
@@ -350,8 +415,13 @@ public:
      * \endcode
      *
      * \param[in] level Message level.
+	 * \note Thread-safe. Internally synchronized.
      */
     void setMessageLevel(MessageLevel level);
+
+    // ========================================================================
+    // Manipulator Functions
+    // ========================================================================
 
     /*!
      * \brief Set the color of the text to red.
@@ -371,6 +441,7 @@ public:
      * <div style="background-color: black; color: red; padding: 10px; font-family: monospace;">
      * Test
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto red(std::ostream &os) -> std::ostream &;
 
@@ -392,6 +463,7 @@ public:
      * <div style="background-color: black; color: green; padding: 10px; font-family: monospace;">
      * Success
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto green(std::ostream &os) -> std::ostream &;
 
@@ -413,6 +485,7 @@ public:
      * <div style="background-color: black; color: blue; padding: 10px; font-family: monospace;">
      * Information
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto blue(std::ostream &os) -> std::ostream &;
 
@@ -434,6 +507,7 @@ public:
      * <div style="background-color: black; color: cyan; padding: 10px; font-family: monospace;">
      * Note
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto cyan(std::ostream &os) -> std::ostream &;
 
@@ -455,6 +529,7 @@ public:
      * <div style="background-color: black; color: magenta; padding: 10px; font-family: monospace;">
      * Alert
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto magenta(std::ostream &os) -> std::ostream &;
 
@@ -476,6 +551,7 @@ public:
      * <div style="background-color: black; color: yellow; padding: 10px; font-family: monospace;">
      * Warning
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto yellow(std::ostream &os) -> std::ostream &;
 
@@ -498,6 +574,7 @@ public:
      * <div style="background-color: black; color: black; padding: 10px; font-family: monospace;">
      * Hidden
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto black(std::ostream &os) -> std::ostream &;
 
@@ -519,6 +596,7 @@ public:
      * <div style="background-color: black; color: white; padding: 10px; font-family: monospace;">
      * Standard
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto white(std::ostream &os) -> std::ostream &;
 
@@ -542,6 +620,7 @@ public:
      * Error
      * </div>
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_red(std::ostream &os) -> std::ostream &;
 
@@ -564,6 +643,7 @@ public:
      * <div style="display: inline; background-color: green; color: white; padding: 2px; font-family: monospace;">
      * Success
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_green(std::ostream &os) -> std::ostream &;
 
@@ -586,6 +666,7 @@ public:
      * <div style="display: inline; background-color: blue; color: white; padding: 2px; font-family: monospace;">
      * Information
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_blue(std::ostream &os) -> std::ostream &;
 
@@ -608,6 +689,7 @@ public:
      * <div style="display: inline; background-color: cyan; color: white; padding: 2px; font-family: monospace;">
      * Note
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_cyan(std::ostream &os) -> std::ostream &;
 
@@ -630,6 +712,7 @@ public:
      * <div style="display: inline; background-color: magenta; color: white; padding: 2px; font-family: monospace;">
      * Alert
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_magenta(std::ostream &os) -> std::ostream &;
 
@@ -652,6 +735,7 @@ public:
      * <div style="display: inline; background-color: yellow; color: white; padding: 2px; font-family: monospace;">
      * Warning
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_yellow(std::ostream &os) -> std::ostream &;
 
@@ -673,6 +757,7 @@ public:
      * <div style="background-color: black; color: white; padding: 10px; font-family: monospace;">
      * Hidden
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_black(std::ostream &os) -> std::ostream &;
 
@@ -695,6 +780,7 @@ public:
      * <div style="display: inline; background-color: white; color: black; padding: 2px; font-family: monospace;">
      * Standard
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bg_white(std::ostream &os) -> std::ostream &;
 
@@ -716,6 +802,7 @@ public:
      * <div style="background-color: black; color: white; padding: 10px; font-family: monospace;">
      * Bold Text
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto bold(std::ostream &os) -> std::ostream &;
 
@@ -738,6 +825,7 @@ public:
      * <div style="display: inline; color: white; opacity: 0.5; padding: 2px; font-family: monospace;">
      * Faint Text
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto faint(std::ostream &os) -> std::ostream &;
 
@@ -759,6 +847,7 @@ public:
      * <div style="background-color: black; padding: 10px; color: white; font-style: italic; font-family: monospace;">
      * Italic Text
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto italic(std::ostream &os) -> std::ostream &;
 
@@ -780,6 +869,7 @@ public:
      * <div style="background-color: black; padding: 10px; color: white; text-decoration: underline; font-family: monospace;">
      * Underlined Text
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto underline(std::ostream &os) -> std::ostream &;
 
@@ -803,6 +893,7 @@ public:
      * <div style="display: inline; background-color: yellow; color: black; padding: 2px; font-family: monospace;">
      * Reverse Text
      * </div></div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto reverse(std::ostream &os) -> std::ostream &;
 
@@ -824,6 +915,7 @@ public:
      * <div style="background-color: black; padding: 10px; color: white; text-decoration: line-through; font-family: monospace;">
      * Strikethrough Text
      * </div>
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto strikethrough(std::ostream &os) -> std::ostream &;
 
@@ -831,8 +923,13 @@ public:
      * \brief Clears the text formatting.
      * \param[in] os The output stream.
      * \return The cleared output stream.
+	 * \note Thread-safe. Internally synchronized.
      */
     static auto clear(std::ostream &os) -> std::ostream &;
+
+    // ========================================================================
+    // Logging Methods with Format Support
+    // ========================================================================
 
     /*!
      * \brief Logs a debug message.
@@ -853,6 +950,7 @@ public:
      * ```
      * Debug:   Debug message: value1 = 42, value2 = example
      * ```
+	 * \note Thread-safe.
      */
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -879,6 +977,7 @@ public:
      * ```
      * "Info:    Info message: User = Alice, ID = 1234
      * ```
+	 * \note Thread-safe.
      */
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -906,6 +1005,7 @@ public:
      * <div style="background-color: black; color: green; padding: 10px; font-family: monospace;">
      * Success: Operation successful: 15 files processed
      * </div>
+	 * \note Thread-safe.
      */
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -933,6 +1033,7 @@ public:
      * <div style="background-color: black; color: red; padding: 10px; font-family: monospace;">
      * Warning: Disk space is below 10%
      * </div>
+	 * \note Thread-safe.
      */
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
@@ -960,12 +1061,17 @@ public:
      * <div style="background-color: black; color: red; padding: 10px; font-family: monospace;">
      * Error:   File not found. Error code: 404
      * </div>
+	 * \note Thread-safe.
      */
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         Console::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
+
+    // ========================================================================
+    // User Input
+    // ========================================================================
 
     /*!
      * \brief Prompts the user for input.
@@ -975,8 +1081,9 @@ public:
     template<typename T>
     auto prompt(const std::string &question) -> T
     {
+        std::cout << question;
+		
         T answer{};
-
         std::cin >> answer;
         
         return answer;
@@ -999,20 +1106,8 @@ public:
 private:
 
     void init();
-
-    void update()
-    {
-        std::cout << static_cast<char>(0x1b) << '['
-                  << this->fontBold << ';'
-                  << this->fontFaint << ';'
-                  << this->fontItalic << ';'
-                  << this->fontUnderline << ';'
-                  << this->fontReverse << ';'
-                  << this->fontStrikethrough << ';' 
-                  << this->foregroundColor << ';' 
-                  << this->backgroundColor << 'm';
-    }
-
+    void update();
+    void reset();
     bool enableVTMode();
 
 // MessageHandler interface
@@ -1026,7 +1121,6 @@ public:
     void error(String message) override;
 
 };
-
 
 /*! \} */ 
 

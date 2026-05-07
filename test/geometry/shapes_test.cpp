@@ -24,7 +24,10 @@
  
 #define BOOST_TEST_MODULE Tidop Shapes test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/entities/shapes.h>
+#include <tidop/geometry/shapes/circle.h>
+#include <tidop/geometry/shapes/ellipse.h>
+#include <tidop/geometry/shapes/rectangle.h>
+#include <tidop/geometry/shapes/triangle.h>
 
 using namespace tl;
 
@@ -34,53 +37,46 @@ using namespace tl;
 
 BOOST_AUTO_TEST_CASE(CircleI_default_constructor)
 {
-  const CircleI circle;
-  BOOST_CHECK_EQUAL(0, circle.center.x);
-  BOOST_CHECK_EQUAL(0, circle.center.y);
-  BOOST_CHECK_EQUAL(1, circle.radius);
-  BOOST_CHECK(circle.type() == Entity::Type::circle);
-  BOOST_CHECK(false == circle.is3D());
+    Circle<int> circle;
+    BOOST_CHECK_EQUAL(0, circle.center.x());
+    BOOST_CHECK_EQUAL(0, circle.center.y());
+    BOOST_CHECK_EQUAL(1, circle.radius);
 }
 
 BOOST_AUTO_TEST_CASE(CircleD_default_constructor)
 {
-  const CircleD circle;
-  BOOST_CHECK_EQUAL(0., circle.center.x);
-  BOOST_CHECK_EQUAL(0., circle.center.y);
-  BOOST_CHECK_EQUAL(1., circle.radius);
-  BOOST_CHECK(circle.Entity::type() == Entity::Type::circle);
+    Circle<double> circle;
+    BOOST_CHECK_EQUAL(0., circle.center.x());
+    BOOST_CHECK_EQUAL(0., circle.center.y());
 }
 
 BOOST_AUTO_TEST_CASE(CircleF_default_constructor)
 {
-  const CircleF circle;
-  BOOST_CHECK_EQUAL(0.f, circle.center.x);
-  BOOST_CHECK_EQUAL(0.f, circle.center.y);
-  BOOST_CHECK_EQUAL(1.f, circle.radius);
-  BOOST_CHECK(circle.type() == Entity::Type::circle);
+    Circle<float> circle;
+    BOOST_CHECK_EQUAL(0.f, circle.center.x());
+    BOOST_CHECK_EQUAL(0.f, circle.center.y());
+    BOOST_CHECK_EQUAL(1.f, circle.radius);
 }
 
 // Constructor Centro y radio
 
 BOOST_AUTO_TEST_CASE(CircleD_copy_center_radius)
 {
-  const CircleD circle(Point<double>(50.5, 32.65), 25.);
-  BOOST_CHECK_EQUAL(50.5, circle.center.x);
-  BOOST_CHECK_EQUAL(32.65, circle.center.y);
-  BOOST_CHECK_EQUAL(25., circle.radius);
-  BOOST_CHECK(circle.type() == Entity::Type::circle);
+    Circle<double> circle(Point<double>(50.5, 32.65), 25.);
+    BOOST_CHECK_EQUAL(50.5, circle.center.x());
+    BOOST_CHECK_EQUAL(32.65, circle.center.y());
+    BOOST_CHECK_EQUAL(25., circle.radius);
 }
 
 // Constructor de copia
 
 BOOST_AUTO_TEST_CASE(CircleD_copy_constructor)
 {
-  const CircleD circle(Point<double>(50.5, 32.65), 25.);
-  CircleD circle2(circle);
-  BOOST_CHECK_EQUAL(50.5, circle2.center.x);
-  BOOST_CHECK_EQUAL(32.65, circle2.center.y);
-  BOOST_CHECK_EQUAL(25., circle2.radius);
-  BOOST_CHECK(circle2.type() == Entity::Type::circle);
+    Circle<double> circle(Point<double>(50.5, 32.65), 25.);
+    Circle<double> circle2(circle);
+    BOOST_CHECK_EQUAL(50.5, circle2.center.x());
+    BOOST_CHECK_EQUAL(32.65, circle2.center.y());
+    BOOST_CHECK_EQUAL(25., circle2.radius);
 }
 
 
@@ -88,48 +84,45 @@ BOOST_AUTO_TEST_CASE(CircleD_copy_constructor)
 
 BOOST_AUTO_TEST_CASE(CircleD_assignment)
 {
-  const CircleD circle(Point<double>(50.5, 32.65), 25.);
+    Circle<double> circle(Point<double>(50.5, 32.65), 25.);
 
-  CircleD circle2 = circle;
-  BOOST_CHECK_EQUAL(50.5, circle2.center.x);
-  BOOST_CHECK_EQUAL(32.65, circle2.center.y);
-  BOOST_CHECK_EQUAL(25., circle2.radius);
-  BOOST_CHECK(circle2.type() == Entity::Type::circle);
+    Circle<double> circle2 = circle;
+    BOOST_CHECK_EQUAL(50.5, circle2.center.x());
+    BOOST_CHECK_EQUAL(32.65, circle2.center.y());
+    BOOST_CHECK_EQUAL(25., circle2.radius);
 }
 
 /* Conversión a un tipo diferente */
 
 BOOST_AUTO_TEST_CASE(CircleD_conversion)
 {
-  {
-    CircleI circle(Point<int>(50, 32), 25);
-    CircleD circle2 = static_cast<Circle<double>>(circle);
-    BOOST_CHECK_EQUAL(50., circle2.center.x);
-    BOOST_CHECK_EQUAL(32., circle2.center.y);
-    BOOST_CHECK_EQUAL(25., circle2.radius);
-    BOOST_CHECK(circle2.type() == Entity::Type::circle);
-  }
+    {
+        Circle<int> circle(Point<int>(50, 32), 25);
+        Circle<double> circle2 = static_cast<Circle<double>>(circle);
+        BOOST_CHECK_EQUAL(50., circle2.center.x());
+        BOOST_CHECK_EQUAL(32., circle2.center.y());
+        BOOST_CHECK_EQUAL(25., circle2.radius);
+    }
 
-  {
-    CircleF circle(Point<float>(50.f, 32.f), 25.f);
-    CircleI circle2 = static_cast<CircleI>(circle);
-    BOOST_CHECK_EQUAL(50.f, circle2.center.x);
-    BOOST_CHECK_EQUAL(32.f, circle2.center.y);
-    BOOST_CHECK_EQUAL(25.f, circle2.radius);
-    BOOST_CHECK(circle2.type() == Entity::Type::circle);
-  }
+    {
+        Circle<float> circle(Point<float>(50.f, 32.f), 25.f);
+        Circle<int> circle2 = static_cast<Circle<int>>(circle);
+        BOOST_CHECK_EQUAL(50.f, circle2.center.x());
+        BOOST_CHECK_EQUAL(32.f, circle2.center.y());
+        BOOST_CHECK_EQUAL(25.f, circle2.radius);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(CircleD_area)
 {
-  CircleD circle(Point<double>(50., 50.), 25.);
-  BOOST_CHECK_CLOSE(1963.495, circle.area(), 0.1);
+    Circle<double> circle(Point<double>(50., 50.), 25.);
+    BOOST_CHECK_CLOSE(1963.495, circle.area(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(CircleD_length)
 {
-  CircleD circle(Point<double>(50., 50.), 25.);
-  BOOST_CHECK_CLOSE(157.0796, circle.length(), 0.01);
+    Circle<double> circle(Point<double>(50., 50.), 25.);
+    BOOST_CHECK_CLOSE(157.0796, circle.length(), 0.01);
 }
 
 
@@ -139,112 +132,103 @@ BOOST_AUTO_TEST_CASE(CircleD_length)
 
 BOOST_AUTO_TEST_CASE(EllipseI_DefaultConstructor)
 {
-  const EllipseI ellipse;
-  BOOST_CHECK_EQUAL(0, ellipse.center.x);
-  BOOST_CHECK_EQUAL(0, ellipse.center.y);
-  BOOST_CHECK_EQUAL(1, ellipse.a);
-  BOOST_CHECK_EQUAL(1, ellipse.b);
-  BOOST_CHECK(ellipse.type() == Entity::Type::ellipse);
-  BOOST_CHECK(false == ellipse.is3D());
+    tl::Ellipse<int> ellipse;
+    BOOST_CHECK_EQUAL(0, ellipse.center.x());
+    BOOST_CHECK_EQUAL(0, ellipse.center.y());
+    BOOST_CHECK_EQUAL(1, ellipse.a);
+    BOOST_CHECK_EQUAL(1, ellipse.b);
 }
 
 BOOST_AUTO_TEST_CASE(EllipseD_DefaultConstructor)
 {
-  const EllipseD ellipse;
-  BOOST_CHECK_EQUAL(0., ellipse.center.x);
-  BOOST_CHECK_EQUAL(0., ellipse.center.y);
-  BOOST_CHECK_EQUAL(1., ellipse.a);
-  BOOST_CHECK_EQUAL(1., ellipse.b);
-  BOOST_CHECK(ellipse.type() == Entity::Type::ellipse);
+    tl::Ellipse<double> ellipse;
+    BOOST_CHECK_EQUAL(0., ellipse.center.x());
+    BOOST_CHECK_EQUAL(0., ellipse.center.y());
+    BOOST_CHECK_EQUAL(1., ellipse.a);
+    BOOST_CHECK_EQUAL(1., ellipse.b);
 }
 
 BOOST_AUTO_TEST_CASE(EllipseF_DefaultConstructor)
 {
-  const EllipseF ellipse;
-  BOOST_CHECK_EQUAL(0.f, ellipse.center.x);
-  BOOST_CHECK_EQUAL(0.f, ellipse.center.y);
-  BOOST_CHECK_EQUAL(1.f, ellipse.a);
-  BOOST_CHECK_EQUAL(1.f, ellipse.b);
-  BOOST_CHECK(ellipse.type() == Entity::Type::ellipse);
+    tl::Ellipse<float> ellipse;
+    BOOST_CHECK_EQUAL(0.f, ellipse.center.x());
+    BOOST_CHECK_EQUAL(0.f, ellipse.center.y());
+    BOOST_CHECK_EQUAL(1.f, ellipse.a);
+    BOOST_CHECK_EQUAL(1.f, ellipse.b);
 }
 
 // Constructor Centro y semiejes
 
-BOOST_AUTO_TEST_CASE(EllipseD_Constructor) 
+BOOST_AUTO_TEST_CASE(EllipseD_Constructor)
 {
-  const EllipseD ellipse(Point<double>(50.5, 32.65), 25., 10.);
-  BOOST_CHECK_EQUAL(50.5, ellipse.center.x);
-  BOOST_CHECK_EQUAL(32.65, ellipse.center.y);
-  BOOST_CHECK_EQUAL(25., ellipse.a);
-  BOOST_CHECK_EQUAL(10., ellipse.b);
-  BOOST_CHECK(ellipse.type() == Entity::Type::ellipse);
+    tl::Ellipse<double> ellipse(Point<double>(50.5, 32.65), 25., 10.);
+    BOOST_CHECK_EQUAL(50.5, ellipse.center.x());
+    BOOST_CHECK_EQUAL(32.65, ellipse.center.y());
+    BOOST_CHECK_EQUAL(25., ellipse.a);
+    BOOST_CHECK_EQUAL(10., ellipse.b);
 }
 
 // Constructor de copia
 
-BOOST_AUTO_TEST_CASE(EllipseD_CopyConstructor) 
+BOOST_AUTO_TEST_CASE(EllipseD_CopyConstructor)
 {
-  EllipseD ellipse(Point<double>(50.5, 32.65), 25., 10.);
-  EllipseD ellipse2(ellipse);
+    tl::Ellipse<double> ellipse(Point<double>(50.5, 32.65), 25., 10.);
+    tl::Ellipse<double> ellipse2(ellipse);
 
-  BOOST_CHECK_EQUAL(50.5, ellipse2.center.x);
-  BOOST_CHECK_EQUAL(32.65, ellipse2.center.y);
-  BOOST_CHECK_EQUAL(25., ellipse2.a);
-  BOOST_CHECK_EQUAL(10., ellipse2.b);
-  BOOST_CHECK(ellipse2.type() == Entity::Type::ellipse);
+    BOOST_CHECK_EQUAL(50.5, ellipse2.center.x());
+    BOOST_CHECK_EQUAL(32.65, ellipse2.center.y());
+    BOOST_CHECK_EQUAL(25., ellipse2.a);
+    BOOST_CHECK_EQUAL(10., ellipse2.b);
 }
 
 // Operador de asignación
 BOOST_AUTO_TEST_CASE(EllipseD_assignment)
 {
-  const EllipseD ellipse(Point<double>(50.5, 32.65), 25., 10.);
+    tl::Ellipse<double> ellipse(Point<double>(50.5, 32.65), 25., 10.);
 
-  EllipseD ellipse2 = ellipse;
-  BOOST_CHECK_EQUAL(50.5, ellipse2.center.x);
-  BOOST_CHECK_EQUAL(32.65, ellipse2.center.y);
-  BOOST_CHECK_EQUAL(25., ellipse2.a);
-  BOOST_CHECK_EQUAL(10., ellipse2.b);
-  BOOST_CHECK(ellipse2.type() == Entity::Type::ellipse);
+    tl::Ellipse<double> ellipse2 = ellipse;
+    BOOST_CHECK_EQUAL(50.5, ellipse2.center.x());
+    BOOST_CHECK_EQUAL(32.65, ellipse2.center.y());
+    BOOST_CHECK_EQUAL(25., ellipse2.a);
+    BOOST_CHECK_EQUAL(10., ellipse2.b);
 }
 
 BOOST_AUTO_TEST_CASE(EllipseD_conversion)
 {
-  EllipseI ellipse(Point<int>(50, 32), 25, 10);
-  EllipseD ellipse2 = static_cast<EllipseD>(ellipse);
-  BOOST_CHECK_EQUAL(50., ellipse2.center.x);
-  BOOST_CHECK_EQUAL(32., ellipse2.center.y);
-  BOOST_CHECK_EQUAL(25., ellipse2.a);
-  BOOST_CHECK_EQUAL(10., ellipse2.b);
-  BOOST_CHECK(ellipse2.type() == Entity::Type::ellipse);
+    tl::Ellipse<int> ellipse(Point<int>(50, 32), 25, 10);
+    tl::Ellipse<double> ellipse2 = static_cast<tl::Ellipse<double>>(ellipse);
+    BOOST_CHECK_EQUAL(50., ellipse2.center.x());
+    BOOST_CHECK_EQUAL(32., ellipse2.center.y());
+    BOOST_CHECK_EQUAL(25., ellipse2.a);
+    BOOST_CHECK_EQUAL(10., ellipse2.b);
 
-  EllipseD ellipse_double(Point<double>(50., 32.), 25., 10.);
-  EllipseI ellipse_int = static_cast<EllipseI>(ellipse_double);
-  BOOST_CHECK_EQUAL(50, ellipse_int.center.x);
-  BOOST_CHECK_EQUAL(32, ellipse_int.center.y);
-  BOOST_CHECK_EQUAL(25, ellipse_int.a);
-  BOOST_CHECK_EQUAL(10, ellipse_int.b);
-  BOOST_CHECK(ellipse_int.type() == Entity::Type::ellipse);
+    tl::Ellipse<double> ellipse_double(Point<double>(50., 32.), 25., 10.);
+    tl::Ellipse<int> ellipse_int = static_cast<tl::Ellipse<int>>(ellipse_double);
+    BOOST_CHECK_EQUAL(50, ellipse_int.center.x());
+    BOOST_CHECK_EQUAL(32, ellipse_int.center.y());
+    BOOST_CHECK_EQUAL(25, ellipse_int.a);
+    BOOST_CHECK_EQUAL(10, ellipse_int.b);
 }
 
 BOOST_AUTO_TEST_CASE(EllipseD_area)
 {
-  EllipseD ellipse(Point<double>(50., 50.), 3., 2.);
-  BOOST_CHECK_CLOSE(18.85, ellipse.area(), 0.01);
+    tl::Ellipse<double> ellipse(Point<double>(50., 50.), 3., 2.);
+    BOOST_CHECK_CLOSE(18.85, ellipse.area(), 0.01);
 }
 
 BOOST_AUTO_TEST_CASE(EllipseD_length)
 {
-  EllipseD ellipse(Point<double>(50., 50.), 3., 2.);
-  BOOST_CHECK_CLOSE(15.87, ellipse.length(), 0.1);
+    tl::Ellipse<double> ellipse(Point<double>(50., 50.), 3., 2.);
+    BOOST_CHECK_CLOSE(15.87, ellipse.length(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(ellipsed_isInner)
 {
-  EllipseD ellipse(Point<double>(50., 50.), 3., 2.);
-  BOOST_CHECK(ellipse.isInner(tl::Point<double>(50., 50.)));
-  BOOST_CHECK(ellipse.isInner(tl::Point<double>(51., 51.)));
-  BOOST_CHECK(ellipse.isInner(tl::Point<double>(49., 49.)));
-  BOOST_CHECK(!ellipse.isInner(tl::Point<double>(53., 52.)));
+    tl::Ellipse<double> ellipse(Point<double>(50., 50.), 3., 2.);
+    BOOST_CHECK(ellipse.isInner(tl::Point<double>(50., 50.)));
+    BOOST_CHECK(ellipse.isInner(tl::Point<double>(51., 51.)));
+    BOOST_CHECK(ellipse.isInner(tl::Point<double>(49., 49.)));
+    BOOST_CHECK(!ellipse.isInner(tl::Point<double>(53., 52.)));
 
 }
 
@@ -254,17 +238,15 @@ BOOST_AUTO_TEST_CASE(ellipsed_isInner)
 
 BOOST_AUTO_TEST_CASE(TriangleI_DefaultConstructor)
 {
-  Triangle<int> triangle;
-  BOOST_CHECK(triangle.type() == Entity::Type::triangle);
-  BOOST_CHECK(false == triangle.is3D());
+    Triangle<int> triangle;
 
 }
 
 //BOOST_AUTO_TEST_CASE(TriangleD_DefaultConstructor)
 //{
 //  const TriangleD triangle;
-//  BOOST_CHECK_EQUAL(0., triangle.center.x);
-//  BOOST_CHECK_EQUAL(0., triangle.center.y);
+//  BOOST_CHECK_EQUAL(0., triangle.center.x());
+//  BOOST_CHECK_EQUAL(0., triangle.center.y());
 //  BOOST_CHECK_EQUAL(1., triangle.a);
 //  BOOST_CHECK_EQUAL(1., triangle.b);
 //  BOOST_CHECK(triangle.type() == Entity::Type::triangle);
@@ -273,8 +255,8 @@ BOOST_AUTO_TEST_CASE(TriangleI_DefaultConstructor)
 //BOOST_AUTO_TEST_CASE(TriangleF_DefaultConstructor)
 //{
 //  const TriangleF triangle;
-//  BOOST_CHECK_EQUAL(0.f, triangle.center.x);
-//  BOOST_CHECK_EQUAL(0.f, triangle.center.y);
+//  BOOST_CHECK_EQUAL(0.f, triangle.center.x());
+//  BOOST_CHECK_EQUAL(0.f, triangle.center.y());
 //  BOOST_CHECK_EQUAL(1.f, triangle.a);
 //  BOOST_CHECK_EQUAL(1.f, triangle.b);
 //  BOOST_CHECK(triangle.type() == Entity::Type::triangle);
@@ -285,8 +267,8 @@ BOOST_AUTO_TEST_CASE(TriangleI_DefaultConstructor)
 //BOOST_AUTO_TEST_CASE(TriangleD_Constructor) 
 //{
 //  const TriangleD triangle(Point<double>(50.5, 32.65), 25., 10.);
-//  BOOST_CHECK_EQUAL(50.5, triangle.center.x);
-//  BOOST_CHECK_EQUAL(32.65, triangle.center.y);
+//  BOOST_CHECK_EQUAL(50.5, triangle.center.x());
+//  BOOST_CHECK_EQUAL(32.65, triangle.center.y());
 //  BOOST_CHECK_EQUAL(25., triangle.a);
 //  BOOST_CHECK_EQUAL(10., triangle.b);
 //  BOOST_CHECK(triangle.type() == Entity::Type::triangle);
@@ -299,8 +281,8 @@ BOOST_AUTO_TEST_CASE(TriangleI_DefaultConstructor)
 //  TriangleD triangle(Point<double>(50.5, 32.65), 25., 10.);
 //  TriangleD triangle2(triangle);
 //
-//  BOOST_CHECK_EQUAL(50.5, triangle2.center.x);
-//  BOOST_CHECK_EQUAL(32.65, triangle2.center.y);
+//  BOOST_CHECK_EQUAL(50.5, triangle2.center.x());
+//  BOOST_CHECK_EQUAL(32.65, triangle2.center.y());
 //  BOOST_CHECK_EQUAL(25., triangle2.a);
 //  BOOST_CHECK_EQUAL(10., triangle2.b);
 //  BOOST_CHECK(triangle2.type() == Entity::Type::triangle);
@@ -312,8 +294,8 @@ BOOST_AUTO_TEST_CASE(TriangleI_DefaultConstructor)
 //  const TriangleD triangle(Point<double>(50.5, 32.65), 25., 10.);
 //
 //  TriangleD triangle2 = triangle;
-//  BOOST_CHECK_EQUAL(50.5, triangle2.center.x);
-//  BOOST_CHECK_EQUAL(32.65, triangle2.center.y);
+//  BOOST_CHECK_EQUAL(50.5, triangle2.center.x());
+//  BOOST_CHECK_EQUAL(32.65, triangle2.center.y());
 //  BOOST_CHECK_EQUAL(25., triangle2.a);
 //  BOOST_CHECK_EQUAL(10., triangle2.b);
 //  BOOST_CHECK(triangle2.type() == Entity::Type::triangle);
@@ -323,8 +305,8 @@ BOOST_AUTO_TEST_CASE(TriangleI_DefaultConstructor)
 //{
 //  TriangleI triangle(Point<int>(50, 32), 25, 10);
 //  TriangleD triangle2 = static_cast<TriangleD>(triangle);
-//  BOOST_CHECK_EQUAL(50., triangle2.center.x);
-//  BOOST_CHECK_EQUAL(32., triangle2.center.y);
+//  BOOST_CHECK_EQUAL(50., triangle2.center.x());
+//  BOOST_CHECK_EQUAL(32., triangle2.center.y());
 //  BOOST_CHECK_EQUAL(25., triangle2.a);
 //  BOOST_CHECK_EQUAL(10., triangle2.b);
 //  BOOST_CHECK(triangle2.type() == Entity::Type::triangle);

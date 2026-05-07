@@ -64,7 +64,7 @@ void Grid::draw()
 {
 	vertexArray->bind();
 	glLineWidth(lineSize);
-	glDrawArrays(static_cast<int>(type), 0, points.size());
+	glDrawArrays(static_cast<int>(type), 0, static_cast<GLsizei>(points.size()));
 	glLineWidth(1.0);
 	vertexArray->unbind();
 }

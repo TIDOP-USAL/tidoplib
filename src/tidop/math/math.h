@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <algorithm>
 
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/type.h"
 
 namespace tl
 {
@@ -277,7 +277,7 @@ constexpr enableIfFloating<T,T> grad_to_deg = static_cast<T>(0.9);
 template<typename T>
 constexpr auto clamp(const T& value, const T& min, const T& max) -> T
 {
-#if (CPP_VERSION >= 17)
+#if (TL_CPP_VERSION>= 17)
     return std::clamp(value, min, max);
 #else
     return std::max(min, std::min(max, value));
@@ -299,9 +299,12 @@ auto module(T a, T b) -> enableIfIntegral<T, double>
 {
     if (a == 0 && b == 0) return 0.;
 
-    auto result = std::minmax(std::abs(a), std::abs(b));
+    T aa = std::abs(a);
+    T bb = std::abs(b);
+    auto result = std::minmax(aa, bb);
+
     double div = static_cast<double>(result.first) /
-        static_cast<double>(result.second);
+                 static_cast<double>(result.second);
     return static_cast<double>(result.second) * sqrt(1. + div * div);
 }
 
@@ -320,7 +323,10 @@ auto module(T a, T b) -> enableIfFloating<T, T>
 {
     if (a == consts::zero<T> && b == consts::zero<T>) return consts::zero<T>;
 
-    auto result = std::minmax(std::abs(a), std::abs(b));
+    T aa = std::abs(a);
+    T bb = std::abs(b);
+    auto result = std::minmax(aa, bb);
+
     T div = static_cast<T>(result.first) / static_cast<T>(result.second);
     return result.second * std::sqrt(consts::one<T> +div * div);
 }
@@ -347,6 +353,12 @@ auto isNearlyEqual(T a, T b) -> enableIfFloating<T, bool>
     T norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
 
     return diff < std::max(std::numeric_limits<T>::min(), epsilon * norm);
+}
+
+template<typename T>
+auto isNearlyEqual(T a, T b) -> enableIfIntegral<T, bool>
+{
+    return a == b;
 }
 
 /*!
@@ -394,6 +406,11 @@ auto isNearlyZero(T value) -> enableIfFloating<T, bool>
     return isNearlyEqual(value, consts::zero<T>);
 }
 
+template<typename T>
+auto isNearlyZero(T value) -> enableIfIntegral<T, bool>
+{
+    return isZero(value);
+}
 
 /*! \} */
 

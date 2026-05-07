@@ -7,6 +7,7 @@
 
 #include "tidop/viewer/group/ModelBase.h"
 #include "tidop/viewer/group/PointCloud.h"
+#include "tidop/core/base/meta.h"
 
 
 namespace tl

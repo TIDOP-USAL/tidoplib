@@ -26,8 +26,8 @@
 
 #include "tidop/config.h"
 
-#include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/matrix/Matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/rotations/rotation_convert.h"
 
 namespace tl
@@ -89,12 +89,12 @@ public:
 
     auto inverse() const -> Transform<T, Dim>;
 
-    auto operator[](size_t position) const -> const internal::MatrixRow<const T>
+    auto operator[](size_t position) const -> const MatrixRow<const T>
     {
         return transformMatrix[position];
     }
 
-    auto operator[](size_t position) -> internal::MatrixRow<T>
+    auto operator[](size_t position) -> MatrixRow<T>
     {
         return transformMatrix[position];
     }
@@ -140,7 +140,7 @@ public:
     friend Transform<T, Dim> operator * (const Transform<T, Dim> &transform1,
                                          const Transform<T, Dim> &transform2)
     {
-        Transform<T, Dim> transform = transform1.transformMatrix * transform2.transformMatrix;
+        Transform<T, Dim> transform = (transform1.transformMatrix * transform2.transformMatrix).eval();
 
         return transform;
     }

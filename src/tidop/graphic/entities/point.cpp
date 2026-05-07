@@ -23,6 +23,9 @@
  **************************************************************************/
 
 #include "tidop/graphic/entities/point.h"
+#include "tidop/graphic/painter.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
@@ -34,25 +37,25 @@ GPoint::GPoint()
 }
 
 GPoint::GPoint(double x, double y)
-  : Point<double>(x, y),
+  : Point2d(x, y),
     GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
-GPoint::GPoint(const Point<double> &pt)
-  : Point<double>(pt),
+GPoint::GPoint(const Point2d &pt)
+  : Point2d(pt),
     GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
 GPoint::GPoint(const GPoint &pt)
-  : Point<double>(pt),
+  : Point2d(pt),
     GraphicEntity(pt)
 {
 }
 
 GPoint::GPoint(GPoint &&pt) TL_NOEXCEPT
-  : Point<double>(std::forward<Point<double>>(pt)),
+  : Point2d(std::forward<Point2d>(pt)),
     GraphicEntity(std::forward<GraphicEntity>(pt))
 {
 }
@@ -64,7 +67,7 @@ GPoint::~GPoint()
 auto GPoint::operator =(const GPoint& gPoint) -> GPoint&
 {
     if (this != &gPoint) {
-        Point<double>::operator=(gPoint);
+        Point2d::operator=(gPoint);
         GraphicEntity::operator=(gPoint);
     }
     return *this;
@@ -73,13 +76,22 @@ auto GPoint::operator =(const GPoint& gPoint) -> GPoint&
 auto GPoint::operator =(GPoint&& gPoint) TL_NOEXCEPT -> GPoint&
 {
     if (this != &gPoint) {
-        Point<double>::operator=(std::forward<Point<double>>(gPoint));
+        Point2d::operator=(std::forward<Point2d>(gPoint));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gPoint));
     }
     return *this;
 }
 
+auto GPoint::window() const -> BoundingBox<Point2d>
+{
+    Point2d pt(this->x(), this->y());
+    return {pt, pt};
+}
 
+void GPoint::draw(Painter &painter) const
+{
+    painter.drawPoint(*this);
+}
 
 
 
@@ -91,25 +103,25 @@ GPoint3D::GPoint3D()
 }
 
 GPoint3D::GPoint3D(double x, double y, double z)
-  : Point3<double>(x, y, z),
+  : Point3d(x, y, z),
     GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
-GPoint3D::GPoint3D(const Point3<double> &pt)
-  : Point3<double>(pt),
+GPoint3D::GPoint3D(const Point3d &pt)
+  : Point3d(pt),
     GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
 GPoint3D::GPoint3D(const GPoint3D &pt)
-  : Point3<double>(pt),
+  : Point3d(pt),
     GraphicEntity(pt)
 {
 }
 
 GPoint3D::GPoint3D(GPoint3D &&pt) TL_NOEXCEPT
-  : Point3<double>(std::forward<Point3<double>>(pt)),
+  : Point3d(std::forward<Point3d>(pt)),
     GraphicEntity(std::forward<GraphicEntity>(pt))
 {
 }
@@ -121,7 +133,7 @@ GPoint3D::~GPoint3D()
 auto GPoint3D::operator =(const GPoint3D &gPoint) -> GPoint3D&
 {
     if (this != &gPoint) {
-        Point3<double>::operator=(gPoint);
+        Point3d::operator=(gPoint);
         GraphicEntity::operator=(gPoint);
     }
     return *this;
@@ -130,12 +142,22 @@ auto GPoint3D::operator =(const GPoint3D &gPoint) -> GPoint3D&
 auto GPoint3D::operator =(GPoint3D &&gPoint) TL_NOEXCEPT -> GPoint3D&
 {
     if (this != &gPoint) {
-        Point3<double>::operator=(std::forward<Point3<double>>(gPoint));
+        Point3d::operator=(std::forward<Point3d>(gPoint));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gPoint));
     }
     return *this;
 }
 
+auto GPoint3D::window() const -> BoundingBox<Point2d>
+{
+    Point2d pt(this->x(), this->y());
+    return {pt, pt};
+}
+
+void GPoint3D::draw(Painter &painter) const
+{
+    painter.drawPoint(Point2d(this->x(), this->y()));
+}
 
 
 
@@ -147,25 +169,25 @@ GMultiPoint::GMultiPoint()
 }
 
 GMultiPoint::GMultiPoint(size_t size)
-  : MultiPoint<Point<double>>(size),
+  : MultiPoint<Point2d>(size),
     GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
-GMultiPoint::GMultiPoint(const MultiPoint<Point<double>> &multiPoint)
-  : MultiPoint<Point<double>>(multiPoint),
+GMultiPoint::GMultiPoint(const MultiPoint<Point2d> &multiPoint)
+  : MultiPoint<Point2d>(multiPoint),
     GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
 GMultiPoint::GMultiPoint(const GMultiPoint &gMultiPoint)
-  : MultiPoint<Point<double>>(gMultiPoint),
+  : MultiPoint<Point2d>(gMultiPoint),
     GraphicEntity(gMultiPoint)
 {
 }
 
 GMultiPoint::GMultiPoint(GMultiPoint &&gMultiPoint) TL_NOEXCEPT
-  : MultiPoint<Point<double>>(std::forward<MultiPoint<Point<double>>>(gMultiPoint)),
+  : MultiPoint<Point2d>(std::forward<MultiPoint<Point2d>>(gMultiPoint)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiPoint))
 {
 }
@@ -177,7 +199,7 @@ GMultiPoint::~GMultiPoint()
 auto GMultiPoint::operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint&
 {
     if (this != &gMultiPoint) {
-        MultiPoint<Point<double>>::operator=(gMultiPoint);
+        MultiPoint<Point2d>::operator=(gMultiPoint);
         GraphicEntity::operator=(gMultiPoint);
     }
     return *this;
@@ -186,11 +208,23 @@ auto GMultiPoint::operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint&
 auto GMultiPoint::operator=(GMultiPoint&& gMultiPoint) TL_NOEXCEPT -> GMultiPoint&
 {
     if (this != &gMultiPoint) {
-        MultiPoint<Point<double>>::operator=(std::forward<MultiPoint<Point<double>>>(gMultiPoint));
+        MultiPoint<Point2d>::operator=(std::forward<MultiPoint<Point2d>>(gMultiPoint));
         GraphicEntity::operator=(gMultiPoint);
     }
     return *this;
 }
+
+auto GMultiPoint::window() const -> BoundingBox<Point2d>
+{
+    return tl::envelope(static_cast<const MultiPoint<Point2d>&>(*this));
+}
+
+void GMultiPoint::draw(Painter &painter) const
+{
+    painter.drawMultiPoint(*this);
+}
+
+
 
 
 GMultiPoint3D::GMultiPoint3D()
@@ -199,25 +233,25 @@ GMultiPoint3D::GMultiPoint3D()
 }
 
 GMultiPoint3D::GMultiPoint3D(size_t size)
-  : MultiPoint3D<Point3<double>>(size),
+  : MultiPoint<Point3d>(size),
     GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
-GMultiPoint3D::GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint)
-  : MultiPoint3D<Point3<double>>(multiPoint),
+GMultiPoint3D::GMultiPoint3D(const MultiPoint<Point3d> &multiPoint)
+  : MultiPoint<Point3d>(multiPoint),
     GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
 GMultiPoint3D::GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D)
-  : MultiPoint3D<Point3<double>>(gMultiPoint3D),
+  : MultiPoint<Point3d>(gMultiPoint3D),
     GraphicEntity(gMultiPoint3D)
 {
 }
 
 GMultiPoint3D::GMultiPoint3D(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT
-  : MultiPoint3D<Point3<double>>(std::forward<MultiPoint3D<Point3<double>>>(gMultiPoint3D)),
+  : MultiPoint<Point3d>(std::forward<MultiPoint<Point3d>>(gMultiPoint3D)),
     GraphicEntity(std::forward<GraphicEntity>(gMultiPoint3D)){
 }
 
@@ -228,7 +262,7 @@ GMultiPoint3D::~GMultiPoint3D()
 auto GMultiPoint3D::operator =(const GMultiPoint3D &gMultiPoint3D) -> GMultiPoint3D&
 {
     if (this != &gMultiPoint3D) {
-        MultiPoint3D<Point3<double>>::operator=(gMultiPoint3D);
+        MultiPoint<Point3d>::operator=(gMultiPoint3D);
         GraphicEntity::operator=(gMultiPoint3D);
     }
     return *this;
@@ -237,11 +271,24 @@ auto GMultiPoint3D::operator =(const GMultiPoint3D &gMultiPoint3D) -> GMultiPoin
 auto GMultiPoint3D::operator=(GMultiPoint3D &&gMultiPoint3D) TL_NOEXCEPT -> GMultiPoint3D&
 {
     if (this != &gMultiPoint3D) {
-        MultiPoint3D<Point3<double>>::operator=(std::forward<MultiPoint3D<Point3<double>>>(gMultiPoint3D));
+        MultiPoint<Point3d>::operator=(std::forward<MultiPoint<Point3d>>(gMultiPoint3D));
         GraphicEntity::operator=(std::forward<GraphicEntity>(gMultiPoint3D));
     }
     return *this;
 }
 
+auto GMultiPoint3D::window() const -> BoundingBox<Point2d>
+{
+    auto bbox = tl::envelope(static_cast<const MultiPoint<Point3d>&>(*this));
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
+}
+
+void GMultiPoint3D::draw(Painter &painter) const
+{
+    GMultiPoint tmp(size());
+    for (size_t i = 0; i < size(); ++i)
+        tmp[i] = Point2d((*this)[i].x(), (*this)[i].y());
+    painter.drawMultiPoint(tmp);
+}
 
 } // End namespace tl

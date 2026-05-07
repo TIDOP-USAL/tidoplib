@@ -30,42 +30,56 @@
 #include <memory>
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/meta.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/datamodel.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {
 
+class Painter;
 
-/*! \defgroup GraphicEntities Entidades gráficas
- *  Puntos, lineas, ...
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
-
 /*!
- * \brief Datos que pueden ir asociados a una entidad.
+ * \class GData
+ * \brief Container for generic attribute data associated with a graphical entity.
+ *
+ * The `GData` class is intended to hold attribute or metadata that can be attached
+ * to a geometric or graphical entity, such as identifiers, classification codes,
+ * semantic attributes, or application-specific values.
+ *
+ * This class is currently a placeholder and may be extended to support richer data models.
+ *
+ * \note Currently not fully implemented.
  */
 class TL_EXPORT GData
 {
 public:
 
-    GData()
-    {
-    }
+    /*!
+     * \brief Default constructor.
+     */
+    GData();
 
-    GData(const GData &gData)
-    {
-        ///TODO: terminar
-        unusedParameter(gData);
-    }
+    /*!
+     * \brief Copy constructor.
+     * \param[in] gData Object to copy.
+     */
+    GData(const GData &gData);
 
-    ~GData()
-    {
-    }
+    ~GData() = default;
 
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] gData Object to copy.
+     * \return Reference to this object.
+     */
     GData &operator =(const GData &gData)
     {
         ///TODO: terminar
@@ -79,8 +93,20 @@ public:
 
 
 /*!
- * \brief Base class for graphical entities
- * \see GraphicStyle
+ * \class GraphicEntity
+ * \brief Base class for drawable graphical entities.
+ *
+ * A `GraphicEntity` represents a visual geometry that can be rendered using a `Painter`.
+ * It inherits from `GraphicStyle`, meaning each entity also carries its own visual style
+ * (pen, brush, symbol, label).
+ *
+ * This class stores the entity's geometry type and an optional pointer to attribute data
+ * (`TableRegister`), and defines a uniform interface for drawing and classification
+ * (e.g., is multi-entity or not).
+ *
+ * Derived classes are expected to implement specific geometric behavior and rendering logic.
+ *
+ * \see GraphicStyle, Painter, TableRegister
  */
 class TL_EXPORT GraphicEntity
   : public GraphicStyle
@@ -89,7 +115,11 @@ class TL_EXPORT GraphicEntity
 public:
 
     /*!
-     * \brief Types of graphical entities
+     * \enum Type
+     * \brief Enumeration of supported geometric entity types.
+     *
+     * This enum defines the different geometry types that a `GraphicEntity` can represent,
+     * such as 2D/3D points, lines, polygons, and shapes.
      */
     enum class Type
     {
@@ -120,32 +150,81 @@ protected:
 
 public:
 
+    /*!
+     * \brief Constructs a graphical entity of the given type.
+     * \param[in] type Geometry type of the entity.
+     */
     explicit GraphicEntity(Type type);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] graphicEntity Entity to copy.
+     */
     GraphicEntity(const GraphicEntity &graphicEntity);
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] graphicEntity Entity to move.
+     */
     GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
 
     ~GraphicEntity() override = default;
 
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] graphicEntity Entity to copy.
+     * \return Reference to this object.
+     */
     auto operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] graphicEntity Entity to move.
+     * \return Reference to this object.
+     */
     auto operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&;
 
     /*!
-     * \brief Returns the entity type
+     * \brief Returns the geometric type of the entity.
+     * \return Type of the entity.
      */
     auto type() const -> Type;
 
     /*!
-     * \brief Check if it is a Multi-entity
+     * \brief Checks whether the entity is a multi-geometry.
+     * \return True if the entity is a multi-geometry type.
      */
     virtual auto isMultiEntity() const -> bool = 0;
 
     /*!
-     * \brief Check if it is a simple entity
+     * \brief Checks whether the entity is a simple (non-multi) geometry.
+     * \return True if the entity is a simple geometry type.
      */
     virtual auto isSimpleEntity() const -> bool = 0;
 
-    auto data() const -> std::shared_ptr<TableRegister>;
-    void setData(const std::shared_ptr<TableRegister> &data);
+    /*!
+     * \brief Renders the entity using the given painter.
+     * \param[in] painter Painter used to draw the entity.
+     */
+    virtual void draw(Painter &painter) const = 0;
+
+    /*!
+     * \brief Returns the 2D bounding window of the entity.
+     * \return Bounding window of the entity.
+     */
+    virtual auto window() const -> BoundingBox<Point2d> = 0;
+
+    /*!
+     * \brief Returns the attribute data associated with this entity.
+     * \return Shared pointer to the attribute table entry.
+     */
+    auto attributes() const -> std::shared_ptr<TableRegister>;
+
+    /*!
+     * \brief Associates attribute data with this entity.
+     * \param[in] data Pointer to the attribute table entry.
+     */
+    void setAttributes(const std::shared_ptr<TableRegister> &attributes);
 
 };
 

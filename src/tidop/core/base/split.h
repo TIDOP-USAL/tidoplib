@@ -22,6 +22,54 @@
  *                                                                        *
  **************************************************************************/
 
+
+/*!
+ * \file split.h
+ * \brief String splitting utilities with type conversion
+ *
+ * This module provides generic string splitting functionality with automatic
+ * type conversion. Strings can be split into substrings (as std::string) or
+ * directly into numeric types (int, float, double, etc.). The template-based
+ * implementation handles type selection and conversion automatically.
+ *
+ * ### Functions
+ *
+ * - \ref split - Generic string splitting function with type conversion
+ *
+ * ### Features
+ *
+ * - Split strings into std::string or numeric types
+ * - Configurable delimiter character
+ * - Automatic type conversion using type conversion utilities
+ * - Specializations for string and arithmetic types
+ * - Exception handling for conversion errors
+ * - Efficient stringstream-based parsing
+ *
+ * ### Example Usage - String Splitting
+ *
+ * \code{.cpp}
+ * #include "tidop/core/base/split.h"
+ *
+ * std::string csv = "apple,banana,cherry";
+ * auto fruits = tl::split<std::string>(csv, ',');
+ * // Result: {"apple", "banana", "cherry"}
+ * \endcode
+ *
+ * ### Example Usage - Numeric Conversion
+ *
+ * \code{.cpp}
+ * std::string numbers = "10.5,20.3,30.7,40.1";
+ * auto values = tl::split<float>(numbers, ',');
+ * // Result: {10.5f, 20.3f, 30.7f, 40.1f}
+ *
+ * std::string integers = "100,200,300,400";
+ * auto ints = tl::split<int>(integers, ',');
+ * // Result: {100, 200, 300, 400}
+ * \endcode
+ *
+ * \see tl::split
+ */
+ 
 #pragma once
 
 #include "tidop/config.h"
@@ -68,7 +116,8 @@ auto split(const std::string& string,
            char separator = ',') -> std::enable_if_t<std::is_same<T, std::string>::value, std::vector<T>>
 {
     std::vector<T> out;
-
+    out.reserve(10); // Pre-allocate for typical use cases
+	
     std::stringstream ss(string);
     std::string  item{};
     while (std::getline(ss, item, separator)) {
@@ -87,7 +136,8 @@ auto split(const std::string& string,
 	                                                 std::vector<T>>
 {
     std::vector<T> out;
-
+    out.reserve(10);  // Pre-allocate for typical use cases
+	
     std::stringstream ss(string);
     std::string item{};
     while (std::getline(ss, item, separator)) {

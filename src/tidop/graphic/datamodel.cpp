@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/graphic/datamodel.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/meta.h"
 
 namespace tl
 {
@@ -184,11 +184,6 @@ auto DataTable::size() const -> size_t
 
 
 
-DataModel::DataModel()
-{
-}
-
-DataModel::~DataModel() = default;
 
 void DataModel::createTable(const std::string &tableName,
                             const std::vector<std::shared_ptr<TableField>> &fields)

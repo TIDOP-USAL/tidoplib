@@ -29,9 +29,11 @@
 #include <vector>
 
 #include "tidop/math/geometry/affine.h"
-#include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/decomp/svd.h"
-
+#include "tidop/math/algebra/matrix/Matrix.h"
+#include "tidop/math/algebra/decomp/SVD.h"
+#include "tidop/math/base/Traits.h"
+#include "tidop/math/base/Concepts.h"
+#include "tidop/geometry/base/Traits.h"
 
 namespace tl
 {
@@ -196,8 +198,8 @@ public:
      * \param[in] dst The destination vector of 2D points.
      * \return The estimated Helmert transformation.
      */
-    static auto estimate(const std::vector<Point<T>> &src,
-                         const std::vector<Point<T>> &dst) -> Affine<T, Dim>;
+    //static auto estimate(const std::vector<Point<T>> &src,
+    //                     const std::vector<Point<T>> &dst) -> Affine<T, Dim>;
 
     /*!
      * \brief Estimate a Helmert transformation between two sets of 3D points.
@@ -209,8 +211,12 @@ public:
      * \param[in] dst The destination vector of 3D points.
      * \return The estimated Helmert transformation.
      */
-    static auto estimate(const std::vector<Point3<T>> &src,
-                         const std::vector<Point3<T>> &dst) -> Affine<T, Dim>;
+    //static auto estimate(const std::vector<Point3<T>> &src,
+    //                     const std::vector<Point3<T>> &dst) -> Affine<T, Dim>;
+
+    template <PointConcept Point_t>
+    static auto estimate(const std::vector<Point_t> &src,
+                         const std::vector<Point_t> &dst) -> Affine<T, Dim>;
 };
 
 /*! \} */
@@ -238,46 +244,69 @@ auto HelmertEstimator<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
 }
 
 template<typename T, size_t Dim>
-auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
-                                        const std::vector<Point<T>> &dst) -> Affine<T, Dim>
+template <PointConcept Point_t>
+auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point_t> &src,
+                                        const std::vector<Point_t> &dst) -> Affine<T, Dim>
 {
-    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+    static_assert(point_traits<Point_t>::spatial_dims == Dim, "Point dimension must match Affine transformation dimension");
 
-    Matrix<T> src_mat(src.size(), 2);
-    Matrix<T> dst_mat(dst.size(), 2);
+    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+    TL_ASSERT(Dim == src[0].size(), "Point dimension must match Affine transformation dimension");
+
+    Matrix<T> src_mat(src.size(), Dim);
+    Matrix<T> dst_mat(dst.size(), Dim);
 
     for (size_t r = 0; r < src_mat.rows(); r++) {
-        src_mat[r][0] = src[r].x;
-        src_mat[r][1] = src[r].y;
-
-        dst_mat[r][0] = dst[r].x;
-        dst_mat[r][1] = dst[r].y;
+        for (size_t c = 0; c < Dim; c++) {
+            src_mat[r][c] = src[r][c];
+            dst_mat[r][c] = dst[r][c];
+        }
     }
 
     return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);
 }
 
-template<typename T, size_t Dim>
-auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point3<T>> &src, 
-                                        const std::vector<Point3<T>> &dst) -> Affine<T, Dim>
-{
-    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
-
-    Matrix<T> src_mat(src.size(), 3);
-    Matrix<T> dst_mat(dst.size(), 3);
-
-    for (size_t r = 0; r < src_mat.rows(); r++) {
-        src_mat[r][0] = src[r].x;
-        src_mat[r][1] = src[r].y;
-        src_mat[r][2] = src[r].z;
-
-        dst_mat[r][0] = dst[r].x;
-        dst_mat[r][1] = dst[r].y;
-        dst_mat[r][2] = dst[r].z;
-    }
-
-    return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);
-}
+//template<typename T, size_t Dim>
+//auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point<T>> &src, 
+//                                        const std::vector<Point<T>> &dst) -> Affine<T, Dim>
+//{
+//    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+//
+//    Matrix<T> src_mat(src.size(), 2);
+//    Matrix<T> dst_mat(dst.size(), 2);
+//
+//    for (size_t r = 0; r < src_mat.rows(); r++) {
+//        src_mat[r][0] = src[r].x();
+//        src_mat[r][1] = src[r].y();
+//
+//        dst_mat[r][0] = dst[r].x();
+//        dst_mat[r][1] = dst[r].y();
+//    }
+//
+//    return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);
+//}
+//
+//template<typename T, size_t Dim>
+//auto HelmertEstimator<T, Dim>::estimate(const std::vector<Point3<T>> &src, 
+//                                        const std::vector<Point3<T>> &dst) -> Affine<T, Dim>
+//{
+//    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
+//
+//    Matrix<T> src_mat(src.size(), 3);
+//    Matrix<T> dst_mat(dst.size(), 3);
+//
+//    for (size_t r = 0; r < src_mat.rows(); r++) {
+//        src_mat[r][0] = src[r].x();
+//        src_mat[r][1] = src[r].y();
+//        src_mat[r][2] = src[r].z();
+//
+//        dst_mat[r][0] = dst[r].x();
+//        dst_mat[r][1] = dst[r].y();
+//        dst_mat[r][2] = dst[r].z();
+//    }
+//
+//    return HelmertEstimator<T, Dim>::estimate(src_mat, dst_mat);
+//}
 
 
 } // End namespace tl

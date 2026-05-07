@@ -36,7 +36,7 @@ add_executable(${test_target}
 
 target_link_libraries(${test_target} 
                       TidopLib::Core 
-                      TidopLib::Geom 
+                      TidopLib::Geometry 
                       TidopLib::Graphic
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}

@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop Rect test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/rect.h>
+#include <tidop/graphic/rect.h>
 
 using namespace tl;
 
@@ -176,54 +176,54 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(constructor_top_left_botton_right, RectTest) 
 {
-  BOOST_CHECK_EQUAL(topLeft_integer.x, rect_constructor_integer_top_left_botton_right->x);
-  BOOST_CHECK_EQUAL(topLeft_integer.y, rect_constructor_integer_top_left_botton_right->y);
+  BOOST_CHECK_EQUAL(topLeft_integer.x(), rect_constructor_integer_top_left_botton_right->x);
+  BOOST_CHECK_EQUAL(topLeft_integer.y(), rect_constructor_integer_top_left_botton_right->y);
   BOOST_CHECK_EQUAL(100, rect_constructor_integer_top_left_botton_right->width);
   BOOST_CHECK_EQUAL(100, rect_constructor_integer_top_left_botton_right->height);
                     
-  BOOST_CHECK_EQUAL(topLeft_double.x, rect_constructor_double_top_left_botton_right->x);
-  BOOST_CHECK_EQUAL(topLeft_double.y, rect_constructor_double_top_left_botton_right->y);
+  BOOST_CHECK_EQUAL(topLeft_double.x(), rect_constructor_double_top_left_botton_right->x);
+  BOOST_CHECK_EQUAL(topLeft_double.y(), rect_constructor_double_top_left_botton_right->y);
   BOOST_CHECK_CLOSE(100.4, rect_constructor_double_top_left_botton_right->width, 0.01);
   BOOST_CHECK_CLOSE(100.2, rect_constructor_double_top_left_botton_right->height, 0.01);
                     
-  BOOST_CHECK_EQUAL(topLeft_float.x, rect_constructor_float_top_left_botton_right->x);
-  BOOST_CHECK_EQUAL(topLeft_float.y, rect_constructor_float_top_left_botton_right->y);
+  BOOST_CHECK_EQUAL(topLeft_float.x(), rect_constructor_float_top_left_botton_right->x);
+  BOOST_CHECK_EQUAL(topLeft_float.y(), rect_constructor_float_top_left_botton_right->y);
   BOOST_CHECK_CLOSE(100.4f, rect_constructor_float_top_left_botton_right->width, 0.01);
   BOOST_CHECK_CLOSE(100.2f, rect_constructor_float_top_left_botton_right->height, 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_top_left_size, RectTest) 
 {
-  BOOST_CHECK_EQUAL(topLeft_integer.x, rect_constructor_integer_top_left_size->x);
-  BOOST_CHECK_EQUAL(topLeft_integer.y, rect_constructor_integer_top_left_size->y);
+  BOOST_CHECK_EQUAL(topLeft_integer.x(), rect_constructor_integer_top_left_size->x);
+  BOOST_CHECK_EQUAL(topLeft_integer.y(), rect_constructor_integer_top_left_size->y);
   BOOST_CHECK_EQUAL(100, rect_constructor_integer_top_left_size->width);
   BOOST_CHECK_EQUAL(100, rect_constructor_integer_top_left_size->height);
                     
-  BOOST_CHECK_EQUAL(topLeft_double.x, rect_constructor_double_top_left_size->x);
-  BOOST_CHECK_EQUAL(topLeft_double.y, rect_constructor_double_top_left_size->y);
+  BOOST_CHECK_EQUAL(topLeft_double.x(), rect_constructor_double_top_left_size->x);
+  BOOST_CHECK_EQUAL(topLeft_double.y(), rect_constructor_double_top_left_size->y);
   BOOST_CHECK_EQUAL(100.4, rect_constructor_double_top_left_size->width);
   BOOST_CHECK_EQUAL(100.2, rect_constructor_double_top_left_size->height);
                     
-  BOOST_CHECK_EQUAL(topLeft_float.x, rect_constructor_float_top_left_size->x);
-  BOOST_CHECK_EQUAL(topLeft_float.y, rect_constructor_float_top_left_size->y);
+  BOOST_CHECK_EQUAL(topLeft_float.x(), rect_constructor_float_top_left_size->x);
+  BOOST_CHECK_EQUAL(topLeft_float.y(), rect_constructor_float_top_left_size->y);
   BOOST_CHECK_EQUAL(100.4f, rect_constructor_float_top_left_size->width);
   BOOST_CHECK_EQUAL(100.2f, rect_constructor_float_top_left_size->height);
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_top_left_width_height, RectTest) 
 {
-  BOOST_CHECK_EQUAL(topLeft_integer.x, rect_constructor_integer_top_left_width_height->x);
-  BOOST_CHECK_EQUAL(topLeft_integer.y, rect_constructor_integer_top_left_width_height->y);
+  BOOST_CHECK_EQUAL(topLeft_integer.x(), rect_constructor_integer_top_left_width_height->x);
+  BOOST_CHECK_EQUAL(topLeft_integer.y(), rect_constructor_integer_top_left_width_height->y);
   BOOST_CHECK_EQUAL(100, rect_constructor_integer_top_left_width_height->width);
   BOOST_CHECK_EQUAL(100, rect_constructor_integer_top_left_width_height->height);
                     
-  BOOST_CHECK_EQUAL(topLeft_double.x, rect_constructor_double_top_left_width_height->x);
-  BOOST_CHECK_EQUAL(topLeft_double.y, rect_constructor_double_top_left_width_height->y);
+  BOOST_CHECK_EQUAL(topLeft_double.x(), rect_constructor_double_top_left_width_height->x);
+  BOOST_CHECK_EQUAL(topLeft_double.y(), rect_constructor_double_top_left_width_height->y);
   BOOST_CHECK_EQUAL(100.4, rect_constructor_double_top_left_width_height->width);
   BOOST_CHECK_EQUAL(100.2, rect_constructor_double_top_left_width_height->height);
                     
-  BOOST_CHECK_EQUAL(topLeft_float.x, rect_constructor_float_top_left_width_height->x);
-  BOOST_CHECK_EQUAL(topLeft_float.y, rect_constructor_float_top_left_width_height->y);
+  BOOST_CHECK_EQUAL(topLeft_float.x(), rect_constructor_float_top_left_width_height->x);
+  BOOST_CHECK_EQUAL(topLeft_float.y(), rect_constructor_float_top_left_width_height->y);
   BOOST_CHECK_EQUAL(100.4f, rect_constructor_float_top_left_width_height->width);
   BOOST_CHECK_EQUAL(100.2f, rect_constructor_float_top_left_width_height->height);
 }
@@ -261,62 +261,62 @@ BOOST_FIXTURE_TEST_CASE(move_assignment, RectTest)
 
 BOOST_FIXTURE_TEST_CASE(topLeft, RectTest) 
 {
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topLeft().x);
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topLeft().y);
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topLeft().x());
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topLeft().y());
 
-  BOOST_CHECK_EQUAL(5, rect_integer->topLeft().x);
-  BOOST_CHECK_EQUAL(10, rect_integer->topLeft().y);
+  BOOST_CHECK_EQUAL(5, rect_integer->topLeft().x());
+  BOOST_CHECK_EQUAL(10, rect_integer->topLeft().y());
                     
-  BOOST_CHECK_CLOSE(5.5, rect_double->topLeft().x, 0.01);
-  BOOST_CHECK_CLOSE(10.6, rect_double->topLeft().y, 0.01);
+  BOOST_CHECK_CLOSE(5.5, rect_double->topLeft().x(), 0.01);
+  BOOST_CHECK_CLOSE(10.6, rect_double->topLeft().y(), 0.01);
     
-  BOOST_CHECK_CLOSE(5.5f, rect_float->topLeft().x, 0.01);
-  BOOST_CHECK_CLOSE(10.6f, rect_float->topLeft().y, 0.01);
+  BOOST_CHECK_CLOSE(5.5f, rect_float->topLeft().x(), 0.01);
+  BOOST_CHECK_CLOSE(10.6f, rect_float->topLeft().y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(topRight, RectTest) 
 {
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().x);
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().y);
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().x());
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.topRight().y());
 
-  BOOST_CHECK_EQUAL(105, rect_integer->topRight().x);
-  BOOST_CHECK_EQUAL(10, rect_integer->topRight().y);
+  BOOST_CHECK_EQUAL(105, rect_integer->topRight().x());
+  BOOST_CHECK_EQUAL(10, rect_integer->topRight().y());
                     
-  BOOST_CHECK_CLOSE(105.9, rect_double->topRight().x, 0.01);
-  BOOST_CHECK_CLOSE(10.6, rect_double->topRight().y, 0.01);
+  BOOST_CHECK_CLOSE(105.9, rect_double->topRight().x(), 0.01);
+  BOOST_CHECK_CLOSE(10.6, rect_double->topRight().y(), 0.01);
     
-  BOOST_CHECK_CLOSE(105.9f, rect_float->topRight().x, 0.01);
-  BOOST_CHECK_CLOSE(10.6f, rect_float->topRight().y, 0.01);
+  BOOST_CHECK_CLOSE(105.9f, rect_float->topRight().x(), 0.01);
+  BOOST_CHECK_CLOSE(10.6f, rect_float->topRight().y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(bottomRight, RectTest) 
 {
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().x);
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().y);
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().x());
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomRight().y());
 
-  BOOST_CHECK_EQUAL(105, rect_integer->bottomRight().x);
-  BOOST_CHECK_EQUAL(110, rect_integer->bottomRight().y);
+  BOOST_CHECK_EQUAL(105, rect_integer->bottomRight().x());
+  BOOST_CHECK_EQUAL(110, rect_integer->bottomRight().y());
                     
-  BOOST_CHECK_CLOSE(105.9, rect_double->bottomRight().x, 0.01);
-  BOOST_CHECK_CLOSE(110.8, rect_double->bottomRight().y, 0.01);
+  BOOST_CHECK_CLOSE(105.9, rect_double->bottomRight().x(), 0.01);
+  BOOST_CHECK_CLOSE(110.8, rect_double->bottomRight().y(), 0.01);
     
-  BOOST_CHECK_CLOSE(105.9f, rect_float->bottomRight().x, 0.01);
-  BOOST_CHECK_CLOSE(110.8f, rect_float->bottomRight().y, 0.01);
+  BOOST_CHECK_CLOSE(105.9f, rect_float->bottomRight().x(), 0.01);
+  BOOST_CHECK_CLOSE(110.8f, rect_float->bottomRight().y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(bottomLeft, RectTest) 
 {
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomLeft().x);
-  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomLeft().y);
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomLeft().x());
+  BOOST_CHECK_EQUAL(0, rect_default_constructor_integer.bottomLeft().y());
 
-  BOOST_CHECK_EQUAL(5, rect_integer->bottomLeft().x);
-  BOOST_CHECK_EQUAL(110, rect_integer->bottomLeft().y);
+  BOOST_CHECK_EQUAL(5, rect_integer->bottomLeft().x());
+  BOOST_CHECK_EQUAL(110, rect_integer->bottomLeft().y());
                     
-  BOOST_CHECK_CLOSE(5.5, rect_double->bottomLeft().x, 0.01);
-  BOOST_CHECK_CLOSE(110.8, rect_double->bottomLeft().y, 0.01);
+  BOOST_CHECK_CLOSE(5.5, rect_double->bottomLeft().x(), 0.01);
+  BOOST_CHECK_CLOSE(110.8, rect_double->bottomLeft().y(), 0.01);
     
-  BOOST_CHECK_CLOSE(5.5f, rect_float->bottomLeft().x, 0.01);
-  BOOST_CHECK_CLOSE(110.8f, rect_float->bottomLeft().y, 0.01);
+  BOOST_CHECK_CLOSE(5.5f, rect_float->bottomLeft().x(), 0.01);
+  BOOST_CHECK_CLOSE(110.8f, rect_float->bottomLeft().y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(size, RectTest) 

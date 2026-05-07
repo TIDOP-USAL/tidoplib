@@ -26,7 +26,7 @@
 
 #include <vector>
 
-#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {
@@ -35,10 +35,7 @@ namespace tl
 /*                        Algoritmos de trazado de lineas                             */
 /* ---------------------------------------------------------------------------------- */
 
-/*!
- * \brief Clase base virtual para algoritmos de lineas
- *
- */
+
 class TL_EXPORT LineAlgorithms
 {
 public:
@@ -52,11 +49,11 @@ public:
 protected:
 
     Type mType;
-    Point<int> mPt1;
-    Point<int> mPt2;
+    Point2i mPt1;
+    Point2i mPt2;
     int mStepX;
     int mStepY;
-    Point<int> mPos;
+    Point2i mPos;
     int dx;
     int dy;
     int mCount;
@@ -66,11 +63,11 @@ public:
     /*!
      * \brief Constructor
      */
-    LineAlgorithms(Type type, const Point<int> &pt1, const Point<int> &pt2)
+    LineAlgorithms(Type type, const Point2i &pt1, const Point2i &pt2)
         : mType(type), mPt1(pt1), mPt2(pt2)
     {
-        dx = pt2.x - pt1.x;
-        dy = pt2.y - pt1.y;
+        dx = pt2.x() - pt1.x();
+        dy = pt2.y() - pt1.y();
         mPos = pt1;
     }
 
@@ -81,12 +78,12 @@ public:
      * \param[in] id Position identifier
      * \return Current position
      */
-    virtual auto position(int id = -1) -> Point<int> = 0;
+    virtual auto position(int id = -1) -> Point2i = 0;
 
     /*!
      * \brief Returns a vector with the points of the line
      */
-    virtual auto points() -> std::vector<Point<int>> = 0;
+    virtual auto points() -> std::vector<Point2i> = 0;
 
 
 
@@ -127,10 +124,10 @@ public:
 
     /*!
      * \brief Constructor
-     * BresenhamLine lineIter1(_line.pt1, _line.pt2);
+     * BresenhamLine lineIter1(_line.min, _line.max);
      * std::vector<cv::Point> v1 = lineIter1.getPoints();
      */
-    BresenhamLine(const Point<int> &pt1, const Point<int> &pt2)
+    BresenhamLine(const Point2i &pt1, const Point2i &pt2)
         : LineAlgorithms(Type::bresenham, pt1, pt2)
     {
         init();
@@ -141,7 +138,7 @@ public:
     /*!
      * \brief Current point
      */
-    auto operator*()->Point<int> &;
+    auto operator*()->Point2i &;
 
     /*!
      * \brief Increments a position
@@ -189,7 +186,7 @@ public:
      * \param[in] id Index of the point
      * \return Current position
      */
-    auto position(int id = -1) -> Point<int> override;
+    auto position(int id = -1) -> Point2i override;
 
     /*!
      * \brief Line size
@@ -199,7 +196,7 @@ public:
     /*!
      * \brief returns a vector with the points of the line
      */
-    std::vector<Point<int>> points() override;
+    std::vector<Point2i> points() override;
 
 private:
 
@@ -248,14 +245,14 @@ private:
 
 public:
 
-    DDA(const Point<int> &pt1, const Point<int> &pt2);
+    DDA(const Point2i &pt1, const Point2i &pt2);
 
     ~DDA() override = default;
 
     /*!
      * \brief Current point
      */
-    auto operator*() -> Point<int>&;
+    auto operator*() -> Point2i&;
 
     /*!
      * \brief Increments a position
@@ -303,7 +300,7 @@ public:
      * \param[in] id Index of the point
      * \return Current position
      */
-    auto position(int id = -1) -> Point<int> override;
+    auto position(int id = -1) -> Point2i override;
 
     /*!
      * \brief Line size
@@ -313,7 +310,7 @@ public:
     /*!
      * \brief returns a vector with the points of the line
      */
-    std::vector<Point<int>> points() override;
+    std::vector<Point2i> points() override;
 
 private:
 

@@ -149,10 +149,10 @@ BOOST_FIXTURE_TEST_CASE(parameters, QuaternionTest)
 BOOST_FIXTURE_TEST_CASE(normalize, QuaternionTest)
 {
   q.normalize();
-  BOOST_CHECK_CLOSE(0.0f, q.x, 0.1);
-  BOOST_CHECK_CLOSE(0.2672612f, q.y, 0.1);
-  BOOST_CHECK_CLOSE(-0.8017837f, q.z, 0.1);
-  BOOST_CHECK_CLOSE(0.5345225f, q.w, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, q.x, 0.01);
+  BOOST_CHECK_CLOSE(0.2672612f, q.y, 0.01);
+  BOOST_CHECK_CLOSE(-0.8017837f, q.z, 0.01);
+  BOOST_CHECK_CLOSE(0.5345225f, q.w, 0.01);
 
   q_cero.normalize();
   BOOST_CHECK_EQUAL(0.f, q_cero.w);
@@ -173,22 +173,22 @@ BOOST_FIXTURE_TEST_CASE(conjugate, QuaternionTest)
 BOOST_FIXTURE_TEST_CASE(norm, QuaternionTest)
 {
   float norm = q.norm();
-  BOOST_CHECK_CLOSE(3.741657f, norm, 0.1);
+  BOOST_CHECK_CLOSE(3.741657f, norm, 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(inverse, QuaternionTest)
 {
   Quaternionf inverse = q.inverse();
-  BOOST_CHECK_CLOSE( 0.0f,          inverse.x, 0.1);
-  BOOST_CHECK_CLOSE(-0.0714285714f, inverse.y, 0.1);
-  BOOST_CHECK_CLOSE( 0.2142857142f, inverse.z, 0.1);
-  BOOST_CHECK_CLOSE( 0.1428571428f, inverse.w, 0.1);
+  BOOST_CHECK_CLOSE( 0.0f,          inverse.x, 0.01);
+  BOOST_CHECK_CLOSE(-0.0714285714f, inverse.y, 0.01);
+  BOOST_CHECK_CLOSE( 0.2142857142f, inverse.z, 0.01);
+  BOOST_CHECK_CLOSE( 0.1428571428f, inverse.w, 0.01);
 
   Quaternionf quaternion_inverse = q_cero.inverse();
-  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.x, 0.1);
-  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.y, 0.1);
-  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.z, 0.1);
-  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.w, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.x, 0.01);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.y, 0.01);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.z, 0.01);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.w, 0.01);
 
 }
 
@@ -368,19 +368,17 @@ BOOST_FIXTURE_TEST_CASE(scalar_divided_by_quaternion, QuaternionTest)
 }
 
 
-//T dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
-
 BOOST_FIXTURE_TEST_CASE(quaternion_by_point, QuaternionTest)
 {
     Point3f rotate_point = q * Point3f(1.0, 2.5, -0.5);
-    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x, 0.001);
-    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y, 0.001);
-    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z, 0.001);
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x(), 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y(), 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z(), 0.001);
 
     rotate_point = Quaternionf(0.f, 1.f, -3.f, 2.f) * Point3f(1.0, 2.5, -0.5);
-    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x, 0.001);
-    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y, 0.001);
-    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z, 0.001);
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point.x(), 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y(), 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z(), 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(quaternion_by_vector, QuaternionTest)
@@ -394,6 +392,19 @@ BOOST_FIXTURE_TEST_CASE(quaternion_by_vector, QuaternionTest)
     BOOST_CHECK_CLOSE(1.57142854, rotate_point.x(), 0.001);
     BOOST_CHECK_CLOSE(-1.35714233, rotate_point.y(), 0.001);
     BOOST_CHECK_CLOSE(-1.78571415, rotate_point.z(), 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(quaternion_by_dyn_vector, QuaternionTest)
+{
+    auto rotate_point = q * Vector<float>{1.0f, 2.5f, -0.5f};
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point[0], 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point[1], 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point[2], 0.001);
+
+    rotate_point = Quaternionf(0.f, 1.f, -3.f, 2.f) * Vector3f{ 1.0, 2.5, -0.5 };
+    BOOST_CHECK_CLOSE(1.57142854, rotate_point[0], 0.001);
+    BOOST_CHECK_CLOSE(-1.35714233, rotate_point[1], 0.001);
+    BOOST_CHECK_CLOSE(-1.78571415, rotate_point[2], 0.001);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

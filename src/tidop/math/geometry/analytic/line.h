@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/vector/Vector.h"
 
 namespace tl
 {
@@ -53,7 +53,9 @@ public:
 
     T distance(const Vector<T, 3>& point)
     {
-        T numModule = crossProduct(point - origin, direction).module();
+        //T numModule = crossProduct(point - origin, direction).module();
+        Vector<T, 3> diff = point - origin;
+        T numModule = diff.cross(direction).module();
         T directionModule = direction.module();
         return numModule / directionModule;
     }

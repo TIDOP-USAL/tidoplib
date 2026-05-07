@@ -1,5 +1,5 @@
-#include <tidop/core/console.h>
-#include <tidop/core/app/log.h>
+#include <tidop/core/console/console.h>
+#include <tidop/core/app/logger.h>
 #include <tidop/core/app/message.h>
 #include <tidop/GeoTools/GeoTools.h>
 #include <tidop/GeoTools/CRSsTools.h>
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     tl::Message::addMessageHandler(&console);
 
     // Log file
-    tl::Log& log = tl::Log::instance();
+    tl::Logger& log = tl::Logger::instance();
     log.setMessageLevel(tl::MessageLevel::all);
     tl::Message::addMessageHandler(&log);
 

@@ -22,19 +22,47 @@
  *                                                                        *
  **************************************************************************/
 
+/*!
+ * \file messagehandler.h
+ * \brief Base interface for message handlers
+ *  
+ * ### Classes
+ *
+ * - \ref tl::MessageHandler - Interface for message handlers.
+ * 
+ * ### Message Handler Architecture
+ *
+ * The Message class acts as a publisher that sends messages to registered handlers.
+ * Each handler implements this interface to handle different message levels.
+ *
+ * ### Available Handlers
+ *
+ * - \ref tl::Logger - Writes messages to a log file (thread-safe)
+ * - \ref tl::Console - (In core/console/) - Writes formatted messages to console
+ * - Custom handlers can be implemented by inheriting from this class
+ *
+ * ### Usage Pattern
+ *
+ * \code{.cpp}
+ * // Set up logging
+ * Logger::instance().open("app.log");
+ * Logger::instance().setMessageLevel(MessageLevel::msg_debug | MessageLevel::msg_error);
+ *
+ * // Publish a message (will be handled by all registered handlers)
+ * Message("Processing data").info();
+ * \endcode
+ *
+ * \see tl::Message, tl::Logger, tl::MessageLevel
+ */
+
 #pragma once
 
 
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
 #include "tidop/core/base/flags.h"
 
 #include <string>
-#if CPP_VERSION >= 20
-#include <format>
-#else
-#include <fmt/format.h>
-#endif
+
 
 namespace tl
 {
@@ -87,7 +115,7 @@ class TL_EXPORT MessageHandler
 
 public:
 
-#if CPP_VERSION >= 17
+#if TL_CPP_VERSION>= 17
     using String = std::string_view;
 #else
     using String = const std::string &;

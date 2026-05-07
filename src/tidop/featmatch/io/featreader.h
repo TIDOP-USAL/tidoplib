@@ -46,7 +46,7 @@ namespace tl
  * This abstract class defines an interface for reading keypoints and descriptors
  * from various feature file formats (XML (OpenCV), YML (OpenCV), binary (TidopLib) and text).
  *
- * #### Example Usage
+ * ### Example Usage
  *
  * The following example demonstrates how to read keypoints and descriptors from a file:
  *

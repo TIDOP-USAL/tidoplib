@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop scaling test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/geometry/scaling.h>
-#include <tidop/math/algebra/matrix.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 
 using namespace tl;
@@ -280,16 +280,16 @@ BOOST_FIXTURE_TEST_CASE(scaling_transform_point2d, ScalingTest)
 
         auto point2 = scaling.transform(src_points_utm[0]);
 
-        BOOST_CHECK_CLOSE(1039305.636, point2.x, 0.01);
-        BOOST_CHECK_CLOSE(166197.327, point2.y, 0.01);
+        BOOST_CHECK_CLOSE(1039305.636, point2.x(), 0.01);
+        BOOST_CHECK_CLOSE(166197.327, point2.y(), 0.01);
     }
 
     {
         Point<double> point(23.5, 21.1);
         auto point2 = Scaling<double, 2>(1.5, 2.0) * point;
 
-        BOOST_CHECK_CLOSE(35.25, point2.x, 0.01);
-        BOOST_CHECK_CLOSE(42.2, point2.y, 0.01);
+        BOOST_CHECK_CLOSE(35.25, point2.x(), 0.01);
+        BOOST_CHECK_CLOSE(42.2, point2.y(), 0.01);
     }
 
 }
@@ -325,39 +325,39 @@ BOOST_FIXTURE_TEST_CASE(scaling_transform_matrix, ScalingTest)
 
         auto out = scaling.transform(src_matrix_utm);
 
-        BOOST_CHECK_CLOSE(1039305.636, out[0][0], 0.1);
-        BOOST_CHECK_CLOSE(166197.327, out[0][1], 0.1);
-        BOOST_CHECK_CLOSE(1037260.834, out[1][0], 0.1);
-        BOOST_CHECK_CLOSE(172209.111, out[1][1], 0.1);
-        BOOST_CHECK_CLOSE(1043200.878, out[2][0], 0.1);
-        BOOST_CHECK_CLOSE(172585.020, out[2][1], 0.1);
-        BOOST_CHECK_CLOSE(1044287.094, out[3][0], 0.1);
-        BOOST_CHECK_CLOSE(160749.409, out[3][1], 0.1);
-        BOOST_CHECK_CLOSE(1034253.048, out[4][0], 0.1);
-        BOOST_CHECK_CLOSE(167952.007, out[4][1], 0.1);
-        BOOST_CHECK_CLOSE(1036573.182, out[5][0], 0.1);
-        BOOST_CHECK_CLOSE(166738.222, out[5][1], 0.1);
-        BOOST_CHECK_CLOSE(1034689.976, out[6][0], 0.1);
-        BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.1);
+        BOOST_CHECK_CLOSE(1039305.636, out[0][0], 0.01);
+        BOOST_CHECK_CLOSE(166197.327, out[0][1], 0.01);
+        BOOST_CHECK_CLOSE(1037260.834, out[1][0], 0.01);
+        BOOST_CHECK_CLOSE(172209.111, out[1][1], 0.01);
+        BOOST_CHECK_CLOSE(1043200.878, out[2][0], 0.01);
+        BOOST_CHECK_CLOSE(172585.020, out[2][1], 0.01);
+        BOOST_CHECK_CLOSE(1044287.094, out[3][0], 0.01);
+        BOOST_CHECK_CLOSE(160749.409, out[3][1], 0.01);
+        BOOST_CHECK_CLOSE(1034253.048, out[4][0], 0.01);
+        BOOST_CHECK_CLOSE(167952.007, out[4][1], 0.01);
+        BOOST_CHECK_CLOSE(1036573.182, out[5][0], 0.01);
+        BOOST_CHECK_CLOSE(166738.222, out[5][1], 0.01);
+        BOOST_CHECK_CLOSE(1034689.976, out[6][0], 0.01);
+        BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.01);
     }
 
     {
         auto out = Scaling<double, 2>(0.25) * src_matrix_utm;
 
-        BOOST_CHECK_CLOSE(1039305.636, out[0][0], 0.1);
-        BOOST_CHECK_CLOSE(166197.327, out[0][1], 0.1);
-        BOOST_CHECK_CLOSE(1037260.834, out[1][0], 0.1);
-        BOOST_CHECK_CLOSE(172209.111, out[1][1], 0.1);
-        BOOST_CHECK_CLOSE(1043200.878, out[2][0], 0.1);
-        BOOST_CHECK_CLOSE(172585.020, out[2][1], 0.1);
-        BOOST_CHECK_CLOSE(1044287.094, out[3][0], 0.1);
-        BOOST_CHECK_CLOSE(160749.409, out[3][1], 0.1);
-        BOOST_CHECK_CLOSE(1034253.048, out[4][0], 0.1);
-        BOOST_CHECK_CLOSE(167952.007, out[4][1], 0.1);
-        BOOST_CHECK_CLOSE(1036573.182, out[5][0], 0.1);
-        BOOST_CHECK_CLOSE(166738.222, out[5][1], 0.1);
-        BOOST_CHECK_CLOSE(1034689.976, out[6][0], 0.1);
-        BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.1);
+        BOOST_CHECK_CLOSE(1039305.636, out[0][0], 0.01);
+        BOOST_CHECK_CLOSE(166197.327, out[0][1], 0.01);
+        BOOST_CHECK_CLOSE(1037260.834, out[1][0], 0.01);
+        BOOST_CHECK_CLOSE(172209.111, out[1][1], 0.01);
+        BOOST_CHECK_CLOSE(1043200.878, out[2][0], 0.01);
+        BOOST_CHECK_CLOSE(172585.020, out[2][1], 0.01);
+        BOOST_CHECK_CLOSE(1044287.094, out[3][0], 0.01);
+        BOOST_CHECK_CLOSE(160749.409, out[3][1], 0.01);
+        BOOST_CHECK_CLOSE(1034253.048, out[4][0], 0.01);
+        BOOST_CHECK_CLOSE(167952.007, out[4][1], 0.01);
+        BOOST_CHECK_CLOSE(1036573.182, out[5][0], 0.01);
+        BOOST_CHECK_CLOSE(166738.222, out[5][1], 0.01);
+        BOOST_CHECK_CLOSE(1034689.976, out[6][0], 0.01);
+        BOOST_CHECK_CLOSE(175667.685, out[6][1], 0.01);
     }
 
 }
@@ -382,22 +382,22 @@ struct ScalingTest
     void setup()
     {
         src_points = {
-          Point<double>(4157222.543, 664789.307),
-          Point<double>(4149043.336, 688836.443),
-          Point<double>(4172803.511, 690340.078),
-          Point<double>(4177148.376, 642997.635),
-          Point<double>(4137012.190, 671808.029),
-          Point<double>(4146292.729, 666952.887),
-          Point<double>(4138759.902, 702670.738)};
+          Point2d(4157222.543, 664789.307),
+          Point2d(4149043.336, 688836.443),
+          Point2d(4172803.511, 690340.078),
+          Point2d(4177148.376, 642997.635),
+          Point2d(4137012.190, 671808.029),
+          Point2d(4146292.729, 666952.887),
+          Point2d(4138759.902, 702670.738)};
 
         dst_points = {
-          Point<double>(1039305.636,  166197.327),
-          Point<double>(1037260.834,  172209.111),
-          Point<double>(1043200.878,  172585.020),
-          Point<double>(1044287.094,  160749.409),
-          Point<double>(1034253.048,  167952.007),
-          Point<double>(1036573.182,  166738.222),
-          Point<double>(1034689.976,  175667.685)};
+          Point2d(1039305.636,  166197.327),
+          Point2d(1037260.834,  172209.111),
+          Point2d(1043200.878,  172585.020),
+          Point2d(1044287.094,  160749.409),
+          Point2d(1034253.048,  167952.007),
+          Point2d(1036573.182,  166738.222),
+          Point2d(1034689.976,  175667.685)};
 
         src_mat = {{4157222.543, 664789.307},
                    {4149043.336, 688836.443},
@@ -420,8 +420,8 @@ struct ScalingTest
     {
     }
 
-    std::vector<Point<double>> src_points;
-    std::vector<Point<double>> dst_points;
+    std::vector<Point2d> src_points;
+    std::vector<Point2d> dst_points;
     Matrix<double> src_mat;
     Matrix<double> dst_mat;
 };
@@ -431,16 +431,16 @@ BOOST_FIXTURE_TEST_CASE(estimate_points, ScalingTest)
 {
     auto scaling = ScalingEstimator<double, 2>::estimate(src_points, dst_points);
 
-    BOOST_CHECK_CLOSE(0.25, scaling.x(), 0.1);
-    BOOST_CHECK_CLOSE(0.25, scaling.y(), 0.1);
+    BOOST_CHECK_CLOSE(0.25, scaling.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.25, scaling.y(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(estimate_matrix, ScalingTest)
 {
     auto scaling = ScalingEstimator<double, 2>::estimate(src_mat, dst_mat);
 
-    BOOST_CHECK_CLOSE(0.25, scaling.x(), 0.1);
-    BOOST_CHECK_CLOSE(0.25, scaling.y(), 0.1);
+    BOOST_CHECK_CLOSE(0.25, scaling.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.25, scaling.y(), 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

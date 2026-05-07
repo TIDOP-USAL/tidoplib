@@ -45,7 +45,7 @@ namespace tl
  * including correct matches (`goodMatches`) and incorrect matches (`wrongMatches`),
  * from OpenCV (.xml and .yml) and binary (.bin) formats.
  *
- * #### Example Usage
+ * ### Example Usage
  *
  * The following example demonstrates how to read feature matches from a file:
  *

@@ -229,52 +229,52 @@ BOOST_FIXTURE_TEST_CASE(roc_curve, CurvesTest)
 {
     mROCCurve->compute(10);
     auto curve = mROCCurve->curve();
-    BOOST_CHECK_CLOSE(0., curve.at(0).x, 0.1);
-    BOOST_CHECK_CLOSE(0.05, curve.at(0).y, 0.1);
-    BOOST_CHECK_CLOSE(0., curve.at(1).x, 0.1);
-    BOOST_CHECK_CLOSE(0.05, curve.at(1).y, 0.1);
-    BOOST_CHECK_CLOSE(0., curve.at(2).x, 0.1);
-    BOOST_CHECK_CLOSE(0.125, curve.at(2).y, 0.1);
-    BOOST_CHECK_CLOSE(0.0441, curve.at(3).x, 0.1);
-    BOOST_CHECK_CLOSE(0.2, curve.at(3).y, 0.1);
-    BOOST_CHECK_CLOSE(0.1323, curve.at(4).x, 0.1);
-    BOOST_CHECK_CLOSE(0.4, curve.at(4).y, 0.1);
-    BOOST_CHECK_CLOSE(0.338, curve.at(5).x, 0.1);
-    BOOST_CHECK_CLOSE(0.738, curve.at(5).y, 0.1);
-    BOOST_CHECK_CLOSE(0.603, curve.at(6).x, 0.1);
-    BOOST_CHECK_CLOSE(0.9, curve.at(6).y, 0.1);
-    BOOST_CHECK_CLOSE(0.794, curve.at(7).x, 0.1);
-    BOOST_CHECK_CLOSE(0.988, curve.at(7).y, 0.1);
-    BOOST_CHECK_CLOSE(0.897, curve.at(8).x, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(8).y, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(9).x, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(9).y, 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(0).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.05, curve.at(0).y(), 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(1).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.05, curve.at(1).y(), 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(2).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.125, curve.at(2).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.0441, curve.at(3).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.2, curve.at(3).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.1323, curve.at(4).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.4, curve.at(4).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.338, curve.at(5).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.738, curve.at(5).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.603, curve.at(6).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.9, curve.at(6).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.794, curve.at(7).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.988, curve.at(7).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.897, curve.at(8).x(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(8).y(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(9).x(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(9).y(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(det_curve, CurvesTest)
 {
     mDETCurve->compute(10);
     auto curve = mDETCurve->curve();
-    BOOST_CHECK_CLOSE(0., curve.at(0).x, 0.1);
-    BOOST_CHECK_CLOSE(0.9499, curve.at(0).y, 0.1);
-    BOOST_CHECK_CLOSE(0., curve.at(1).x, 0.1);
-    BOOST_CHECK_CLOSE(0.9499, curve.at(1).y, 0.1);
-    BOOST_CHECK_CLOSE(0., curve.at(2).x, 0.1);
-    BOOST_CHECK_CLOSE(0.875, curve.at(2).y, 0.1);
-    BOOST_CHECK_CLOSE(0.0441, curve.at(3).x, 0.1);
-    BOOST_CHECK_CLOSE(0.800, curve.at(3).y, 0.1);
-    BOOST_CHECK_CLOSE(0.1323, curve.at(4).x, 0.1);
-    BOOST_CHECK_CLOSE(0.5999, curve.at(4).y, 0.1);
-    BOOST_CHECK_CLOSE(0.338, curve.at(5).x, 0.1);
-    BOOST_CHECK_CLOSE(0.2625, curve.at(5).y, 0.1);
-    BOOST_CHECK_CLOSE(0.603, curve.at(6).x, 0.1);
-    BOOST_CHECK_CLOSE(0.100, curve.at(6).y, 0.1);
-    BOOST_CHECK_CLOSE(0.794, curve.at(7).x, 0.1);
-    BOOST_CHECK_CLOSE(0.0125, curve.at(7).y, 0.1);
-    BOOST_CHECK_CLOSE(0.897, curve.at(8).x, 0.1);
-    BOOST_CHECK_CLOSE(0., curve.at(8).y, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(9).x, 0.1);
-    BOOST_CHECK_CLOSE(0., curve.at(9).y, 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(0).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.9499, curve.at(0).y(), 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(1).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.9499, curve.at(1).y(), 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(2).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.875, curve.at(2).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.0441, curve.at(3).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.800, curve.at(3).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.1323, curve.at(4).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.5999, curve.at(4).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.338, curve.at(5).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.2625, curve.at(5).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.603, curve.at(6).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.100, curve.at(6).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.794, curve.at(7).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.0125, curve.at(7).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.897, curve.at(8).x(), 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(8).y(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(9).x(), 0.1);
+    BOOST_CHECK_CLOSE(0., curve.at(9).y(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(pr_auc, CurvesTest)
@@ -292,26 +292,26 @@ BOOST_FIXTURE_TEST_CASE(pr_curve, CurvesTest)
 {
     mPRCurve->compute(10);
     auto curve = mPRCurve->curve();
-    BOOST_CHECK_CLOSE(0.05, curve.at(0).x, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(0).y, 0.1);
-    BOOST_CHECK_CLOSE(0.05, curve.at(1).x, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(1).y, 0.1);
-    BOOST_CHECK_CLOSE(0.125, curve.at(2).x, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(2).y, 0.1);
-    BOOST_CHECK_CLOSE(0.2, curve.at(3).x, 0.1);
-    BOOST_CHECK_CLOSE(0.8421, curve.at(3).y, 0.1);
-    BOOST_CHECK_CLOSE(0.4, curve.at(4).x, 0.1);
-    BOOST_CHECK_CLOSE(0.7804, curve.at(4).y, 0.1);
-    BOOST_CHECK_CLOSE(0.7375, curve.at(5).x, 0.1);
-    BOOST_CHECK_CLOSE(0.7195, curve.at(5).y, 0.1);
-    BOOST_CHECK_CLOSE(0.9, curve.at(6).x, 0.1);
-    BOOST_CHECK_CLOSE(0.63716, curve.at(6).y, 0.1);
-    BOOST_CHECK_CLOSE(0.9875, curve.at(7).x, 0.1);
-    BOOST_CHECK_CLOSE(0.59398, curve.at(7).y, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(8).x, 0.1);
-    BOOST_CHECK_CLOSE(0.56737, curve.at(8).y, 0.1);
-    BOOST_CHECK_CLOSE(1., curve.at(9).x, 0.1);
-    BOOST_CHECK_CLOSE(0.5405, curve.at(9).y, 0.1);
+    BOOST_CHECK_CLOSE(0.05, curve.at(0).x(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(0).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.05, curve.at(1).x(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(1).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.125, curve.at(2).x(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(2).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.2, curve.at(3).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.8421, curve.at(3).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.4, curve.at(4).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.7804, curve.at(4).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.7375, curve.at(5).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.7195, curve.at(5).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.9, curve.at(6).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.63716, curve.at(6).y(), 0.1);
+    BOOST_CHECK_CLOSE(0.9875, curve.at(7).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.59398, curve.at(7).y(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(8).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.56737, curve.at(8).y(), 0.1);
+    BOOST_CHECK_CLOSE(1., curve.at(9).x(), 0.1);
+    BOOST_CHECK_CLOSE(0.5405, curve.at(9).y(), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

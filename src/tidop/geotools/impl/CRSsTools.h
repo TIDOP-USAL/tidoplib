@@ -22,8 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef GEOTOOLS_CRSTOOLS_H
-#define GEOTOOLS_CRSTOOLS_H
+#pragma once
 
 #include <map>
 
@@ -40,7 +39,7 @@ class CRSsToolsImpl: public CRSsTools{
 public:
     CRSsToolsImpl(bool oamsTraditionalGisOrder=true,
         bool ignoreDeprecated=true);
-    ~CRSsToolsImpl();
+    ~CRSsToolsImpl() override;
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         double& fc, double& sc, double& tc) override;
     Point3d crsOperation(const std::string &crsSourceId, const std::string &crsTargetId, const Point3d &point) override;
@@ -48,18 +47,20 @@ public:
         std::map<std::string, std::vector<double> >& points, bool byPoint = false) override;
     void crsOperation(std::string crsSourceId, std::string crsTargetId,
         std::vector<std::vector<double> >& points, bool byPoint = false) override;
-    void crsOperation(std::string crsSourceId, std::string crsTargetId,
-        std::vector<Point3d> &points, bool byPoint = false) override;
-    void dumpCRSsInfoToFile(std::string fileName) override;
+    std::vector<Point3d> crsOperation(std::string crsSourceId, std::string crsTargetId,
+                                      const std::vector<Point3d> &points, bool byPoint = false) override;
+    void dumpCRSsInfoToFile(const std::string &fileName) override;
     std::string getCRSEnu(std::string crsId, double fc, double sc, double tc) override;
     std::string getCRSIdEllipsoidHeightsForPDAL(std::string crsId) override;
-    void getCRSsInfo(std::map<std::string, CRSInfo>&) override;
+    //void getCRSsInfo(std::map<std::string, CRSInfo>&) override;
+    std::map<std::string, CRSInfo> getCRSsInfo() const override;
     void getCRSPrecision(std::string crsId, int& crsPrecision, int& crsVerticalPrecision) override;
-    void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) override;
+    //void getCRSsFor2dApplications(std::map<std::string, CRSInfo>&) override;
+    std::map<std::string, CRSInfo> getCRSsFor2dApplications() const override;
     void getCRSsVertical(std::string crsId, std::map<std::string, CRSInfo>&) override;
-    bool getIsCRSEnu(std::string crsId) override;
-    bool getIsCRSGeographic(std::string crsId) override;
-    bool getIsCRSValid(std::string crsId) override;
+    bool getIsCRSEnu(const std::string &crsId) const override;
+    bool getIsCRSGeographic(const std::string &crsId) override;
+    bool getIsCRSValid(const std::string &crsId) override;
     void setCRSFromWkt(std::string wkt, std::string& crsId) override;
 
 
@@ -85,5 +86,3 @@ private:
     std::map<std::string, std::string> mCRSIdByCRSWkt;
 };
 }
-
-#endif

@@ -59,14 +59,14 @@ public:
         }
     }
 
-    auto transform(const Point3<double> &ptIn) const -> Point3<double>
+    auto transform(const Point3d &ptIn) const -> Point3d
     {
-        Point3<double> ptOut = ptIn;
+        Point3d ptOut = ptIn;
 
         try {
 
             TL_ASSERT(mTransform != nullptr, "NULL transform");
-            mTransform->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
+            mTransform->Transform(1, &ptOut.x(), &ptOut.y(), &ptOut.z());
 
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
@@ -111,8 +111,8 @@ CrsTransform::~CrsTransform()
     //OSRCleanup();
 }
 
-void CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
-                             std::vector<Point3<double>> &ptsOut,
+void CrsTransform::transform(const std::vector<Point3d> &ptsIn,
+                             std::vector<Point3d> &ptsOut,
                              Order trfOrder) const
 {
     try {
@@ -129,8 +129,8 @@ void CrsTransform::transform(const std::vector<Point3<double>> &ptsIn,
     }
 }
 
-void CrsTransform::transform(const Point3<double> &ptIn,
-                             Point3<double> &ptOut,
+void CrsTransform::transform(const Point3d &ptIn,
+                             Point3d &ptOut,
                              Order trfOrder) const
 {
 
@@ -152,10 +152,10 @@ void CrsTransform::transform(const Point3<double> &ptIn,
 }
 
 
-auto CrsTransform::transform(const Point3<double> &ptIn,
-                             Order trfOrder) const -> Point3<double>
+auto CrsTransform::transform(const Point3d &ptIn,
+                             Order trfOrder) const -> Point3d
 {
-    Point3<double> r_pt;
+    Point3d r_pt;
 
     try {
 
@@ -197,28 +197,29 @@ void CrsTransform::init()
 #endif // TL_HAVE_GDAL
 
 
-EcefToEnu::EcefToEnu(const Point3<double>& center, const RotationMatrix<double>& rotation)
+EcefToEnu::EcefToEnu(const Point3d& center, const RotationMatrix<double>& rotation)
   : mCenter(center),
     mRotation(rotation)
 {
 
 }
-auto EcefToEnu::direct(const Point3<double> &ecef) const -> Point3<double>
-{
-    Point3<double> dif = ecef - mCenter;
-    Vector<double, 3> enu = mRotation * dif.vector();
 
-    return {enu[0], enu[1], enu[2]};
+auto EcefToEnu::direct(const Point3d &ecef) const -> Point3d
+{
+    auto dif = ecef - mCenter;
+    Vector<double, 3> enu = mRotation * dif;
+
+    return Point3d(enu[0], enu[1], enu[2]);
 }
 
-auto EcefToEnu::inverse(const Point3<double> &enu) const -> Point3<double>
+auto EcefToEnu::inverse(const Point3d &enu) const -> Point3d
 {
-    Vector<double, 3> d = mRotation.transpose() * enu.vector();
+    Point3d d = mRotation.transpose() * enu;
 
-    Point3<double> ecef;
-    ecef.x = mCenter.x + d[0];
-    ecef.y = mCenter.y + d[1];
-    ecef.z = mCenter.z + d[2];
+    Point3d ecef;
+    ecef.x() = mCenter.x() + d[0];
+    ecef.y() = mCenter.y() + d[1];
+    ecef.z() = mCenter.z() + d[2];
 
     return ecef;
 }

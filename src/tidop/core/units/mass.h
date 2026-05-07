@@ -26,7 +26,7 @@
 
 
 #include "tidop/core/base/flags.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/type.h"
 
 namespace tl
 {
@@ -35,8 +35,29 @@ namespace tl
  *  \{
  */
 
+ /*!
+  * \brief Factor to convert grams to pounds.
+  *
+  * This variable template provides the multiplicative factor required to
+  * convert a mass expressed in grams to pounds.
+  *
+  * Value used: 1 gram = 0.00220462 pounds (derived from 1 lb = 453.59237 g).
+  *
+  * \tparam T Floating-point type used for the conversion factor.
+  */
 template<typename T>
 constexpr enableIfFloating<T,T> gram_to_pounds = static_cast<T>(0.00220462);
+
+/*!
+ * \brief Factor to convert pounds to grams.
+ *
+ * This variable template provides the multiplicative factor required to
+ * convert a mass expressed in pounds to grams.
+ *
+ * Value used: 1 pound = 453.59237 grams (exact by international definition).
+ *
+ * \tparam T Floating-point type used for the conversion factor.
+ */
 template<typename T>
 constexpr enableIfFloating<T,T> pound_to_grams = static_cast<T>(453.59237);
 

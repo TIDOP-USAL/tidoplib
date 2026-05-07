@@ -41,7 +41,7 @@ namespace tl
  * This class holds the configuration parameters for a FLANN-based feature descriptor matcher.
  * The parameters include the type of FLANN index to use.
  *
- * #### Example Usage
+ * ### Example Usage
  * \code{.cpp}
  * FlannMatcherProperties properties;
  * properties.setIndex("kdtree");
@@ -120,7 +120,7 @@ public:
  * This class provides an implementation of feature matching using the FLANN library.
  * It supports both one-to-one and K-nearest neighbors (KNN) matching.
  *
- * #### Example Usage
+ * ### Example Usage
  * \code{.cpp}
  * FlannMatcherProperties properties;
  * properties.setIndex("kdtree");

@@ -97,11 +97,12 @@ void ROCCurve<T>::compute(size_t steeps)
 
     T step = (max - min) / static_cast<double>(steeps);
 
+    auto it = this->mConfusionMatrix.thresholdIterator();
     T threshold = min;
-    for (size_t i = 0; i < steeps; i++) {
-        double fpr = this->mConfusionMatrix.falsePositiveRate(threshold);
-        double tpr = this->mConfusionMatrix.truePositiveRate(threshold);
-
+    for (size_t i = 0; i < steeps; ++i) {
+        it.advanceTo(threshold);
+        double fpr = it.falsePositiveRate();
+        double tpr = it.truePositiveRate();
         this->mCurve.emplace_back(fpr, tpr);
         threshold += step;
     }
@@ -112,15 +113,15 @@ void ROCCurve<T>::compute(size_t steeps)
 
     if (size > 1) {
 
-        if (this->mCurve.front().x > this->mCurve.back().x)
+        if (this->mCurve.front().x() > this->mCurve.back().x())
             std::reverse(this->mCurve.begin(), this->mCurve.end());
 
-        Point<double> point1 = this->mCurve[0];
-        Point<double> point2;
+        Point2d point1 = this->mCurve[0];
+        Point2d point2;
 
         for (size_t i = 1; i < size; i++) {
             point2 = this->mCurve[i];
-            this->mAuc += std::abs(point1.x - point2.x) * (point1.y + point2.y) / 2.;
+            this->mAuc += std::abs(point1.x() - point2.x()) * (point1.y() + point2.y()) / 2.;
             point1 = point2;
         }
 
@@ -147,15 +148,15 @@ void ROCCurve<T>::compute()
 
     if (size > 1) {
 
-        if (this->mCurve.front().x > this->mCurve.back().x)
+        if (this->mCurve.front().x() > this->mCurve.back().x())
             std::reverse(this->mCurve.begin(), this->mCurve.end());
 
-        Point<double> point1 = this->mCurve[0];
-        Point<double> point2;
+        Point2d point1 = this->mCurve[0];
+        Point2d point2;
 
         for (size_t i = 1; i < size; i++) {
             point2 = this->mCurve[i];
-            this->mAuc += std::abs(point1.x - point2.x) * (point1.y + point2.y) / 2.;
+            this->mAuc += std::abs(point1.x() - point2.x()) * (point1.y() + point2.y()) / 2.;
             point1 = point2;
         }
 

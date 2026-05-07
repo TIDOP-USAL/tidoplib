@@ -166,17 +166,19 @@ void Menu::activeOption(unsigned int currentOption) const
 {
     clearScreen();
 
-    std::cout << Console::green << "  ====================================================\n";
-    std::cout << Console::white << "    " << this->title << "\n";
-    std::cout << Console::green << "  ----------------------------------------------------\n";
-    std::cout << Console::white << "    " << this->description  << "\n";
-    std::cout << Console::green << "  ====================================================\n";
+    auto &console = Console::instance();
+
+    console << Console::green << "  ====================================================\n";
+    console << Console::white << "    " << this->title << "\n";
+    console << Console::green << "  ----------------------------------------------------\n";
+    console << Console::white << "    " << this->description  << "\n";
+    console << Console::green << "  ====================================================\n";
 
     size_t counter = 1;
 
     for (const auto& item : items) {
-        std::cout << Console::blue << "  > " << Console::green << counter << ". ";
-        std::cout << (static_cast<size_t>(currentOption) == counter ? Console::blue : Console::white) << item << "\n";
+        console << Console::blue << "  > " << Console::green << counter << ". ";
+        console << (static_cast<size_t>(currentOption) == counter ? Console::blue : Console::white) << item << "\n";
         counter++;
     }
 
@@ -229,6 +231,6 @@ void Menu::itemClick(unsigned int currentOption) const
 
 
 
-} // End mamespace tl
+} // End namespace tl
 
 

@@ -1,0 +1,375 @@
+/**************************************************************************
+ *                                                                        *
+ * Copyright (C) 2021 by Tidop Research Group                             *
+ * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ *                                                                        *
+ * This file is part of TidopLib                                          *
+ *                                                                        *
+ * TidopLib is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU Lesser General Public License as         *
+ * published by the Free Software Foundation, either version 3 of the     *
+ * License, or (at your option) any later version.                        *
+ *                                                                        *
+ * TidopLib is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ * GNU Lesser General Public License for more details.                    *
+ *                                                                        *
+ * You should have received a copy of the GNU Lesser General Public       *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ *                                                                        *
+ * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
+ *                                                                        *
+ **************************************************************************/
+
+/*! \file MatrixCol.h
+ * \brief Column view of a matrix (non‑owning).
+ *
+ * This file defines the `MatrixCol` class template, which provides a view (reference)
+ * into one column of a parent matrix. It does not copy data; instead, it stores
+ * pointers to the parent’s data and the stride information needed to access the column
+ * elements. The column behaves like a `Vector` (it inherits from `VectorBase`) and can
+ * be used in vector expressions and assignments. Assignments to a column write back
+ * directly into the parent matrix.
+ *
+ * Column views are typically obtained via `Matrix::col()` and are intended to be used
+ * as temporaries.
+ *
+ * \ingroup Matrix
+ * \see tl::Matrix, tl::MatrixRow, tl::VectorBase
+ */
+
+#pragma once
+
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/vector/detail/Assign.h"
+
+namespace tl
+{
+
+/*! \addtogroup Matrix
+ *  \{
+ */
+
+/*!
+ * \class IteratorCols
+ * \brief Forward iterator for traversing a column (or row) of a matrix.
+ *
+ * \tparam T Element type (may be const or non‑const).
+ *
+ * This iterator is used by `MatrixCol` to provide STL‑compatible iteration
+ * over the elements of a column. It steps through memory using a fixed stride
+ * (the number of columns of the parent matrix).
+ */
+template<typename T>
+class IteratorCols
+{
+
+public:
+
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T *;
+    using reference = T &;
+
+private:
+
+    pointer colPtr;
+    size_t colSize;
+
+public:
+
+    /*!
+     * \brief Constructs an iterator pointing to a given position in a column.
+     * \param[in] ptr     Pointer to the current element.
+     * \param[in] colSize Number of columns of the parent matrix (stride).
+     */
+    IteratorCols(pointer ptr, size_t colSize);
+    ~IteratorCols() = default;
+
+    /*!
+     * \brief Dereferences the iterator.
+     * \return Reference to the current element.
+     */
+    auto operator*() const -> reference;
+
+    /*!
+     * \brief Arrow operator.
+     * \return Pointer to the current element.
+     */
+    auto operator->() -> pointer;
+
+    /*!
+     * \brief Pre‑increment (move to next element in the column).
+     * \return Reference to the incremented iterator.
+     */
+    auto operator++() -> IteratorCols &;
+
+    /*!
+     * \brief Post‑increment.
+     * \return Copy of the iterator before increment.
+     */
+    auto operator++(int) -> IteratorCols;
+
+    /*!
+     * \brief Equality comparison.
+     * \param[in] other Other iterator.
+     * \return `true` if both point to the same position.
+     */
+    bool operator == (const IteratorCols &other);
+
+    /*!
+     * \brief Inequality comparison.
+     * \param[in] other Other iterator.
+     * \return `true` if they point to different positions.
+     */
+    bool operator != (const IteratorCols &other);
+
+};
+
+
+/*!
+ * \class MatrixCol
+ * \brief Non‑owning view of a single column of a matrix.
+ *
+ * \tparam T    Element type (may be const or non‑const).
+ * \tparam Size Compile‑time size of the column (default: `DynamicData`). Currently unused;
+ *              the size is determined at runtime from the parent matrix.
+ *
+ * This class provides a column view of a matrix. It inherits from `VectorBase`
+ * and can be used in vector expressions and assignments. Modifying elements of the
+ * column modifies the original matrix.
+ *
+ * ### Example
+ * \code
+ * Matrix<double, 4, 4> A;
+ * // Fill the third column (index 2) with 1.0
+ * A.col(2).fill(1.0);
+ *
+ * // Assign a vector to a column
+ * Vector<double, 4> v = {1,2,3,4};
+ * A.col(1) = v;
+ * \endcode
+ */
+template<typename T>
+class MatrixCol
+  : public VectorBase<MatrixCol<T>>
+{
+
+private:
+
+    T *matrixData;
+    size_t matrixCol;
+    size_t matrixRows;
+    size_t matrixCols;
+
+public:
+
+    using value_type = T;
+    using size_type = size_t;
+    using pointer = T *;
+    using const_pointer = const T *;
+    using reference = T &;
+    using const_reference = const T &;
+    
+    using iterator = IteratorCols<T>;
+    using const_iterator = IteratorCols<const T>;
+
+public:
+
+    /*!
+     * \brief Constructs a column view.
+     * \param[in] data  Pointer to the parent matrix data.
+     * \param[in] col   Column index (0‑based).
+     * \param[in] rows  Number of rows of the parent matrix.
+     * \param[in] cols  Number of columns of the parent matrix (stride).
+     */
+    MatrixCol(T *data, size_t col, size_t rows, size_t cols);
+
+    /*!
+     * \brief Assigns a vector expression to this column (writes back to parent matrix).
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The expression to assign.
+     * \return Reference to this column.
+     */
+    template<VectorExpr Expr>
+    auto operator=(const Expr &expr) -> MatrixCol &
+    {
+        detail::assign_col(*this, expr);
+        return *this;
+    }
+
+    /*!
+     * \brief Returns an iterator to the first element of the column.
+     */
+    auto begin() noexcept -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to the first element.
+     */
+    auto begin() const noexcept -> const_iterator;
+
+    /*!
+     * \brief Returns an iterator to one past the last element.
+     */
+    auto end() noexcept -> iterator;
+
+    /*!
+     * \brief Returns a const iterator to one past the last element.
+     */
+    auto end() const noexcept -> const_iterator;
+
+    /*!
+     * \brief Returns the number of elements in the column.
+     */
+    auto size() const noexcept -> size_t;
+    
+    /*!
+     * \brief Fills the entire column with a given value.
+     * \param[in] value Value to assign to each element.
+     */
+    void fill(T value);
+
+    /*!
+     * \brief Accesses the element at a given row (const version).
+     * \param[in] row Row index (0‑based).
+     * \return Const reference to the element.
+     */
+    auto operator[](size_t row) const -> const_reference;
+
+    /*!
+     * \brief Accesses the element at a given row (non‑const version).
+     * \param[in] row Row index.
+     * \return Reference to the element.
+     */
+    auto operator[](size_t row) -> reference;
+
+    /*!
+     * \brief Checks if the column’s data aliases a given memory address.
+     * \param[in] ptr Pointer to test.
+     * \return `true` if the column’s underlying data starts at that address.
+     */
+    auto aliases(const void *ptr) const -> bool;
+};
+
+
+
+/* IteratorRows implementation */
+
+template<typename T>
+IteratorCols<T>::IteratorCols(pointer ptr, size_t colSize)
+  : colPtr(ptr),
+    colSize(colSize)
+{
+}
+
+template<typename T>
+auto IteratorCols<T>::operator*() const -> reference
+{
+    return *colPtr;
+}
+
+template<typename T>
+auto IteratorCols<T>::operator->() -> pointer
+{
+    return colPtr;
+}
+
+template<typename T>
+auto IteratorCols<T>::operator++() -> IteratorCols&
+{
+    colPtr += colSize;
+    return *this;
+}
+
+template<typename T>
+auto IteratorCols<T>::operator++(int) -> IteratorCols
+{
+    IteratorCols it = *this;
+    ++(*this);
+    return it;
+}
+
+template<typename T>
+bool IteratorCols<T>::operator == (const IteratorCols<T> &other)
+{
+    return this->colPtr == other.colPtr;
+}
+
+template<typename T>
+bool IteratorCols<T>::operator != (const IteratorCols<T> &other)
+{
+    return this->colPtr != other.colPtr;
+}
+
+
+
+/* MatrixCol implementation */
+
+template<typename T>
+MatrixCol<T>::MatrixCol(T *data, size_t col, size_t rows, size_t cols)
+  : matrixData(data),
+    matrixCol(col),
+    matrixRows(rows),
+    matrixCols(cols)
+{
+}
+
+template<typename T>
+auto MatrixCol<T>::begin() noexcept -> iterator
+{
+    return iterator(&matrixData[matrixCol], matrixCols);
+}
+
+template<typename T>
+auto MatrixCol<T>::begin() const noexcept -> const_iterator
+{
+    return iterator(&matrixData[matrixCol], matrixCols);
+}
+
+template<typename T>
+auto MatrixCol<T>::end() noexcept -> iterator
+{
+    return iterator(&matrixData[matrixCol] + matrixRows * matrixCols, matrixCols);
+}
+
+template<typename T>
+auto MatrixCol<T>::end() const noexcept -> const_iterator
+{
+    return iterator(&matrixData[matrixCol] + matrixRows * matrixCols, matrixCols);
+}
+
+template<typename T>
+auto MatrixCol<T>::size() const noexcept -> size_t
+{
+    return matrixRows;
+}
+
+template<typename T>
+void MatrixCol<T>::fill(T value)
+{
+    std::fill(begin(), end(), value);
+}
+
+template<typename T>
+auto MatrixCol<T>::operator[](size_t row) const -> const_reference
+{
+    return matrixData[row * matrixCols + matrixCol];
+}
+
+template<typename T>
+auto MatrixCol<T>::operator[](size_t row) -> reference
+{
+    return matrixData[row * matrixCols + matrixCol];
+}
+
+template<typename T>
+auto MatrixCol<T>::aliases(const void *ptr) const -> bool
+{
+    return matrixData == ptr;
+}
+
+/*! \} */
+
+} // namespace tl

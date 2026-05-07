@@ -24,7 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop Argument test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/console.h>
+#include <tidop/core/console/argument.h>
+#include <tidop/core/console/command.h>
 
 #include <array>
 
@@ -457,10 +458,10 @@ BOOST_FIXTURE_TEST_CASE(parseVersion, CommandTest)
     BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_version);
 }
 
-BOOST_FIXTURE_TEST_CASE(parseLicence, CommandTest)
+BOOST_FIXTURE_TEST_CASE(parseLicense, CommandTest)
 {
-    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--licence")};
-    BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_licence);
+    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--license")};
+    BOOST_CHECK(cmd_arg_posix2->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_license);
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_option_ok, CommandTest)
@@ -563,6 +564,65 @@ BOOST_FIXTURE_TEST_CASE(parseTextWithHyphen, CommandTest)
 {
     std::array<char *, 3> argv{const_cast<char *>(""), const_cast<char *>("--input"), const_cast<char *>("sdfsd-sdfsdf")};
     BOOST_CHECK(cmd_arg_posix3->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
+}
+
+
+BOOST_FIXTURE_TEST_CASE(CommandUsageSignature_validation, CommandTest)
+{
+    auto prj = Argument::make<std::string>("prj", 'p', "Project file");
+    auto list = Argument::make<bool>("list", 'l', "List cameras", false);
+    auto id = Argument::make<int>("camera_id", 'c', "Show camera info", 0);
+    auto export_calib = Argument::make<std::string>("export_calib", "Calibration export file", "");
+    auto import_calib = Argument::make<std::string>("import_calib", "Calibration import file", "");
+    std::vector<std::string> formats{"OpenCV", "Pix4D", "Agisoft", "ODM"};
+    auto format_arg = tl::Argument::make<std::string>("format", 'f', "Calibration file format", formats.at(0));
+    format_arg->setValidator(std::make_shared<tl::ValuesValidator<std::string>>(formats));
+
+    cmd_arg_posix->setName("cameras");
+    cmd_arg_posix->setDescription("Cameras manager");
+
+    cmd_arg_posix->addArgument(prj);
+    cmd_arg_posix->addArgument(list);
+    cmd_arg_posix->addArgument(id);
+    cmd_arg_posix->addArgument(export_calib);
+    cmd_arg_posix->addArgument(import_calib);
+    cmd_arg_posix->addArgument(format_arg);
+
+    // Definir firmas válidas
+    cmd_arg_posix->addUsage(UsageSignature({prj, list}, {}, "List cameras"));
+    cmd_arg_posix->addUsage(UsageSignature({prj, id}, {}, "Show camera ID"));
+    cmd_arg_posix->addUsage(UsageSignature({prj, id, export_calib}, {format_arg}, "Export camera calibration"));
+    cmd_arg_posix->addUsage(UsageSignature({prj, id, import_calib}, {format_arg}, "Import camera calibration"));
+
+    std::array<char *, 2> argv{const_cast<char *>(""), const_cast<char *>("-h")};
+    BOOST_CHECK(cmd_arg_posix->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::show_help);
+
+    // Entrada válida: prj + list
+    std::array<char *, 4> argv_ok1 = {
+        const_cast<char *>(""),
+        const_cast<char *>("-p"), 
+        const_cast<char *>("project.gr"),
+        const_cast<char *>("-l")
+    };
+    BOOST_CHECK(cmd_arg_posix->parse(static_cast<int>(argv_ok1.size()), argv_ok1.data()) == Command::Status::parse_success);
+
+    // Entrada válida: prj + camera_id
+    std::array<char *, 5> argv_ok2 = {
+        const_cast<char *>(""),
+        const_cast<char *>("--prj"), 
+        const_cast<char *>("project.gr"),
+        const_cast<char *>("--camera_id"),
+        const_cast<char *>("1")
+    };
+    BOOST_CHECK(cmd_arg_posix->parse(static_cast<int>(argv_ok2.size()), argv_ok2.data()) == Command::Status::parse_success);
+
+    // Entrada inválida: solo prj
+    std::array<char *, 3> argv_invalid = {
+        const_cast<char *>(""),
+        const_cast<char *>("--prj"),
+        const_cast<char *>("project.gr")
+    };
+    BOOST_CHECK(cmd_arg_posix->parse(static_cast<int>(argv_invalid.size()), argv_invalid.data()) == Command::Status::parse_error);
 }
 
 
@@ -669,10 +729,10 @@ BOOST_FIXTURE_TEST_CASE(parseVersion, CommandListTest)
     BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::show_version);
 }
 
-BOOST_FIXTURE_TEST_CASE(parseLicence, CommandListTest)
+BOOST_FIXTURE_TEST_CASE(parseLicense, CommandListTest)
 {
-    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--licence")};
-    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_licence);
+    std::array<char *, 2> argv2{const_cast<char *>(""), const_cast<char *>("--license")};
+    BOOST_CHECK(cmd_list_transform->parse(static_cast<int>(argv2.size()), argv2.data()) == Command::Status::show_license);
 }
 
 BOOST_FIXTURE_TEST_CASE(parseCommand, CommandListTest)

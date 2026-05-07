@@ -41,9 +41,9 @@ auto BresenhamLine::operator*() -> Point<int>&
 auto BresenhamLine::operator ++() -> BresenhamLine&
 {
     if (dx > dy) {
-        _next(&mPos.x, &mPos.y, mPt2.x, mStepX, mStepY);
+        _next(&mPos.x(), &mPos.y(), mPt2.x(), mStepX, mStepY);
     } else {
-        _next(&mPos.y, &mPos.x, mPt2.y, mStepY, mStepX);
+        _next(&mPos.y(), &mPos.x(), mPt2.y(), mStepY, mStepX);
     }
     return *this;
 }
@@ -58,9 +58,9 @@ auto BresenhamLine::operator ++(int) -> BresenhamLine
 auto BresenhamLine::operator --() -> BresenhamLine&
 {
     if (dx > dy) {
-        _next(&mPos.x, &mPos.y, mPt2.x, -mStepX, -mStepY);
+        _next(&mPos.x(), &mPos.y(), mPt2.x(), -mStepX, -mStepY);
     } else {
-        _next(&mPos.y, &mPos.x, mPt2.y, -mStepY, -mStepX);
+        _next(&mPos.y(), &mPos.x(), mPt2.y(), -mStepY, -mStepX);
     }
     return *this;
 }
@@ -229,9 +229,9 @@ auto DDA::operator*() -> Point<int>&
 auto DDA::operator ++() -> DDA&
 {
     if (dx > dy) {
-        _next(&mPos.x, &mPos.y, dy, mPt2.x, mStepX);
+        _next(&mPos.x(), &mPos.y(), dy, mPt2.x(), mStepX);
     } else {
-        _next(&mPos.y, &mPos.x, dx, mPt2.y, mStepY);
+        _next(&mPos.y(), &mPos.x(), dx, mPt2.y(), mStepY);
     }
     return *this;
 }
@@ -246,9 +246,9 @@ auto DDA::operator ++(int) -> DDA
 auto DDA::operator --() -> DDA&
 {
     if (dx > dy) {
-        _next(&mPos.x, &mPos.y, dy, mPt2.x, mStepX);
+        _next(&mPos.x(), &mPos.y(), dy, mPt2.x(), mStepX);
     } else {
-        _next(&mPos.y, &mPos.x, dx, mPt2.y, mStepY);
+        _next(&mPos.y(), &mPos.x(), dx, mPt2.y(), mStepY);
     }
     return *this;
 }
@@ -289,10 +289,10 @@ void DDA::init()
 {
     if (dx > dy) {
         m = static_cast<float>(dy) / static_cast<float>(dx);
-        b = static_cast<float>(mPt1.y) - m * static_cast<float>(mPt1.x);
+        b = static_cast<float>(mPt1.y()) - m * static_cast<float>(mPt1.x());
     } else {
         m = static_cast<float>(dx) / static_cast<float>(dy);
-        b = static_cast<float>(mPt1.x) - m * static_cast<float>(mPt1.y);
+        b = static_cast<float>(mPt1.x()) - m * static_cast<float>(mPt1.y());
     }
 
     if (dy < 0) {

@@ -177,7 +177,7 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core 
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           TidopLib::Math
                           $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           ${OpenCV_LIBS})

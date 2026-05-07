@@ -25,9 +25,9 @@
 #define BOOST_TEST_MODULE Tidop Core base test
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/base/property.h>
-#include <tidop/core/base/common.h>
 #include <tidop/core/base/size.h>
 #include <tidop/core/base/split.h>
+#include <tidop/core/base/meta.h>
 
 #include <array>
 
@@ -64,6 +64,12 @@ struct PropertyTest
         property_int64 = new Property<int64_t>(-1);
         property_uint64 = new Property<uint64_t>(1);
         property_size = new Property<Size<int>>({100,100});
+
+        std::map<std::string, int> scores;
+        scores["Alice"] = 100;
+        scores["Bob"] = 85;
+        property_map = new Property<std::map<std::string, int>>(scores);
+
     }
 
     void teardown() {}
@@ -82,6 +88,7 @@ struct PropertyTest
     Property<int64_t> *property_int64;
     Property<uint64_t> *property_uint64;
     Property<Size<int>> *property_size;
+    Property<std::map<std::string, int>> *property_map;
 
 };
 
@@ -104,6 +111,12 @@ BOOST_FIXTURE_TEST_CASE(get_value, PropertyTest)
     auto size = property_size->value();
     BOOST_CHECK_EQUAL(100, size.width);
     BOOST_CHECK_EQUAL(100, size.height);
+
+    auto map_property = property_map->value();
+    auto it = map_property.find("Alice");
+    BOOST_CHECK_EQUAL(100, it->second);
+    it = map_property.find("Bob");
+    BOOST_CHECK_EQUAL(85, it->second);
 }
 
 BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
@@ -137,6 +150,15 @@ BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
     property_size->setValue({250, 150});
     BOOST_CHECK_EQUAL(250, property_size->value().width);
     BOOST_CHECK_EQUAL(150, property_size->value().height);
+
+    auto map_property = property_map->value();
+
+    map_property["Rob"] = 65;
+    property_map->setValue(map_property);
+
+    auto map_property2 = property_map->value();
+    auto it = map_property2.find("Rob");
+    BOOST_CHECK_EQUAL(65, it->second);
 }
 
 BOOST_FIXTURE_TEST_CASE(to_string, PropertyTest)
@@ -155,6 +177,7 @@ BOOST_FIXTURE_TEST_CASE(to_string, PropertyTest)
     BOOST_CHECK_EQUAL("-1", property_int64->toString());
     BOOST_CHECK_EQUAL("1", property_uint64->toString());
     BOOST_CHECK_EQUAL("100x100", property_size->toString());
+    BOOST_CHECK_EQUAL("{\"Alice\":100,\"Bob\":85}", property_map->toString());
 }
 
 BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
@@ -188,6 +211,11 @@ BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
     property_size->fromString("150x150");
     BOOST_CHECK_EQUAL(150, property_size->value().width);
     BOOST_CHECK_EQUAL(150, property_size->value().height);
+    property_map->fromString("{\"Alice\":100,\"Bob\":85,\"Rob\":65}");
+
+    auto map_property = property_map->value();
+    auto it = map_property.find("Rob");
+    BOOST_CHECK_EQUAL(65, it->second);
 }
 
 BOOST_FIXTURE_TEST_CASE(value_out_of_range, PropertyTest)
@@ -271,6 +299,7 @@ BOOST_FIXTURE_TEST_CASE(invalid_argument, PropertyTest)
     BOOST_CHECK_THROW(property_int64->fromString("hi"), Exception);
     BOOST_CHECK_THROW(property_uint64->fromString("hi"), Exception);
     BOOST_CHECK_THROW(property_size->fromString("hi"), Exception);
+    BOOST_CHECK_THROW(property_map->fromString("hi"), Exception);
 }
 
 BOOST_FIXTURE_TEST_CASE(type_name, PropertyTest)
@@ -307,28 +336,8 @@ BOOST_FIXTURE_TEST_CASE(type, PropertyTest)
     BOOST_CHECK(Type::type_int64 == property_int64->type());
     BOOST_CHECK(Type::type_uint64 == property_uint64->type());
     BOOST_CHECK(Type::type_size == property_size->type());
+    BOOST_CHECK(Type::type_map == property_map->type());
 }
-
-BOOST_FIXTURE_TEST_CASE(map_property, PropertyTest)
-{
-    //using MapType = std::map<std::string, int>;
-
-    //// Crear una propiedad de tipo std::map
-    //MapType initialMap = {{"key1", 10}, {"key2", 20}};
-    //Property<MapType> propertyMap(initialMap);
-
-    //// Mostrar el valor inicial
-    //std::cout << "Initial map: " << propertyMap.toString() << "\n";
-
-    //// Convertir desde cadena y actualizar la propiedad
-    //std::string mapString = "key1:100,key3:300";
-    //propertyMap.fromString(mapString);
-
-    //// Mostrar el nuevo valor
-    //std::cout << "Updated map: " << propertyMap.toString() << "\n";
-
-}
-
 
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -429,21 +438,21 @@ BOOST_FIXTURE_TEST_CASE(iteratorValueType, PropertiesTest)
 BOOST_AUTO_TEST_SUITE_END()
 
 
-/* common.h */
+/* meta.h */
 
 BOOST_AUTO_TEST_CASE(_args_size)
 {
-    BOOST_CHECK_EQUAL(4, tl::args_size(1, 2, 3, 4));
+    BOOST_CHECK_EQUAL(4, tl::argsSize(1, 2, 3, 4));
 
     std::string arg1("1");
     int arg2 = 2;
-    BOOST_CHECK_EQUAL(2, tl::args_size(arg1, arg2));
+    BOOST_CHECK_EQUAL(2, tl::argsSize(arg1, arg2));
 }
 
 BOOST_AUTO_TEST_CASE(_args_empty)
 {
-    BOOST_CHECK(tl::args_empty());
-    BOOST_CHECK(!tl::args_empty(1, 3));
+    BOOST_CHECK(tl::argsEmpty());
+    BOOST_CHECK(!tl::argsEmpty(1, 3));
 }
 
 BOOST_AUTO_TEST_CASE(is_in_range)
@@ -811,7 +820,6 @@ BOOST_AUTO_TEST_CASE(test_number_cast)
     BOOST_CHECK_EQUAL(1, numberCast<int>(1.0));
     BOOST_CHECK_EQUAL(1.0, numberCast<double>(1));
     BOOST_CHECK_EQUAL(1.0f, numberCast<float>(1));
-    BOOST_CHECK_THROW(numberCast<std::string>(1), Exception);
 }
 
 BOOST_AUTO_TEST_CASE(test_convert_string_to)

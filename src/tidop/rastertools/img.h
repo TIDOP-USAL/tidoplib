@@ -26,8 +26,11 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 
 #include "tidop/core/base/defs.h"
+#include "tidop/core/base/type.h"
+#include "tidop/rastertools/DataType.h"
 
 namespace tl
 {
@@ -38,36 +41,70 @@ template<typename T> class EnumFlags;
  *  \{
  */
 
+/// \cond
 
-enum class DataType : int16_t
+template <typename T, typename Enable = void>
+struct NoDataValue
 {
-    TL_8U = (1 << 0),      // Equivalente a CV_8U y GDT_Byte
-    TL_8S = (1 << 1),      // Equivalente a CV_8S
-    TL_16U = (1 << 2),     // Equivalente a CV_16U y GDT_UInt16
-    TL_16S = (1 << 3),     // Equivalente a CV_16S y GDT_Int16
-    TL_32U = (1 << 4),     // Equivalente a GDT_UInt32
-    TL_32S = (1 << 5),     // Equivalente a CV_32S y GDT_Int32
-    TL_32F = (1 << 6),     // Equivalente a CV_32F y GDT_Float32  
-    TL_64F = (1 << 7)      // Equivalente a CV_64F y GDT_Float64
+    static constexpr T value = static_cast<T>(-9999);
 };
+
+template <typename T>
+struct NoDataValue<T, typename enableIfFloating<T, T>::type>
+{
+    static constexpr T value = static_cast<T>(-9999.0L);
+};
+
+template <typename T>
+struct NoDataValue<T, typename enableIfUnsigned<T, T>::type>
+{
+    static constexpr T value = static_cast<T>(0);
+};
+
+template <>
+struct NoDataValue<signed char, void>
+{
+    static constexpr signed char value = std::numeric_limits<signed char>::min();
+};
+
+/// \endcond
+
+/*!
+ * \brief Provides a type-specific constant value to mark invalid or missing data (NoData).
+ *
+ * This constant variable template safely retrieves the most appropriate NoData value
+ * based on the underlying type T by accessing the specialized auxiliary struct 'NoDataValue<T>'.
+ *
+ * This approach ensures that the NoData marker is physically valid for the type:
+ *
+ * - **Floating-Point Types (float, double):** The value is typically set to -9999.0.
+ * - **Unsigned Integral Types (unsigned short, unsigned int):** The value is typically set to 0.
+ * - **Signed Integral Types (int, short):** The value is typically set to -9999.
+ * - **Signed Char (signed char):** Due to the limited range (-128 to 127), the value is set to **-128** to prevent overflow.
+ *
+ * \tparam T The type for which the NoData constant is requested (e.g., float, unsigned short).
+ * \return The constexpr NoData value of type T.
+ */
+template<typename T>
+constexpr T NoData = NoDataValue<T>::value;
 
 
 //TL_EXPORT std::vector<std::string> gdalValidExtensions();
-TL_EXPORT bool gdalValidExtensions(const std::string &extension);
-TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
-
-/*!
- * \brief Returns the GDAL driver name corresponding to a file extension.
- * If the extension does not match an available driver, it returns nullptr.
- * \param[in] extension File extension
- * \return GDAL driver name
- */
-TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
+//TL_EXPORT bool gdalValidExtensions(const std::string &extension);
+//TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
+//
+///*!
+// * \brief Returns the GDAL driver name corresponding to a file extension.
+// * If the extension does not match an available driver, it returns nullptr.
+// * \param[in] extension File extension
+// * \return GDAL driver name
+// */
+//TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
 
-TL_EXPORT std::vector<int> gdalBandOrder(int channels);
+//TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 
 
 

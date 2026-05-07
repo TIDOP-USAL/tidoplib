@@ -29,7 +29,7 @@
 
 include(TidopUtils)
 
-if (BUILD_TL_GEOSPATIAL)
+if (BUILD_TL_GEOSPATIAL AND TL_HAVE_RASTER_TOOLS)
 
     project(Geospatial)
     
@@ -66,7 +66,7 @@ if (BUILD_TL_GEOSPATIAL)
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           TidopLib::Core 
                           TidopLib::Math 
-                          TidopLib::Geom
+                          TidopLib::Geometry
                           TidopLib::VectorTools
                           TidopLib::RasterTools
                           TidopLib::Graphic

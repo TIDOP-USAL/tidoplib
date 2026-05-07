@@ -31,52 +31,99 @@ include(TidopUtils)
 
 if(BUILD_TL_GEOMETRY)
 
-    project(Geom)
+    project(Geometry)
   
     add_files_to_project(${PROJECT_NAME} 
-                        SOURCE_FILES 
-                            entities/segment.cpp
                         HEADER_FILES
-                            rect.h
-                            #size.h
-                            entities/bbox.h
-                            entities/entity.h
-                            entities/entities2d.h
-                            entities/entities3d.h
-                            entities/linestring.h
-                            entities/point.h
-                            entities/polygon.h
-                            entities/multipoint.h
-                            entities/multilinestring.h
-                            entities/multipolygon.h
-                            entities/segment.h
-                            entities/window.h
-                            entities/shapes.h
-                            algorithms.h
-                            algorithms/vector.h
-                            algorithms/distance.h
-                            algorithms/angle.h
+                            Operations.h
+                            algorithms/analysis/Boundary.h
+                            algorithms/analysis/Boundary.impl.h
+                            algorithms/analysis/Contains.h
+                            algorithms/analysis/Contains.impl.h
+                            algorithms/analysis/Crosses.h
+                            algorithms/analysis/Crosses.impl.h
+                            algorithms/analysis/Disjoint.h
+                            algorithms/analysis/Disjoint.impl.h
+                            algorithms/analysis/Equals.h
+                            algorithms/analysis/Equals.impl.h
+                            algorithms/analysis/EqualsExact.h
+                            algorithms/analysis/EqualsExact.impl.h
+                            algorithms/analysis/Intersects.h
+                            algorithms/analysis/Intersects.impl.h
+                            algorithms/analysis/Overlaps.h
+                            algorithms/analysis/Overlaps.impl.h
+                            algorithms/analysis/Touches.h
+                            algorithms/analysis/Touches.impl.h
+                            algorithms/analysis/Within.h
+                            algorithms/analysis/Within.impl.h
+                            algorithms/clustering/dbscan.h
+                            algorithms/measurement/Angle.h
+                            algorithms/measurement/Angle.impl.h
+                            algorithms/measurement/Area.h
+                            algorithms/measurement/Area.impl.h
+                            algorithms/measurement/Distance.h
+                            algorithms/measurement/Distance.impl.h
+                            algorithms/measurement/Length.h
+                            algorithms/measurement/Length.impl.h
+                            algorithms/spatial/Buffer.h
+                            algorithms/spatial/Buffer.impl.h
+                            algorithms/spatial/ClosestPoints.h
+                            algorithms/spatial/ClosestPoints.impl.h
+                            algorithms/spatial/ConvexHull.h
+                            algorithms/spatial/ConvexHull.impl.h
+                            algorithms/spatial/Envelope.h
+                            algorithms/spatial/Envelope.impl.h
+                            algorithms/spatial/Intersection.h
+                            algorithms/spatial/Intersection.impl.h
                             algorithms/projection.h
-                            algorithms/buffer.h
-                            algorithms/intersect.h
-							algorithms/dbscan.h)
+                            base/Concepts.h
+                            base/Dimension.h
+                            base/Geometry.h
+                            base/Geometry.impl.h
+                            base/GeometryContainer.h
+                            base/GeometryCollection.h
+                            base/PrecisionPolicy.h
+                            base/TopologyKernel.h
+                            base/Traits.h
+                            io/wkt/Writer.h
+                            io/wkt/Proxy.h
+                            primitives/LinearRing.h
+                            primitives/LineString.h
+                            primitives/Point.h
+                            primitives/Polygon.h
+                            primitives/Segment.h
+                            primitives/MultiPoint.h
+                            primitives/MultiLinestring.h
+                            primitives/MultiPolygon.h
+                            shapes/circle.h
+                            shapes/ellipse.h
+                            shapes/rectangle.h
+                            shapes/shape.h
+                            shapes/square.h
+                            shapes/triangle.h
+                            spatial/BoundingBox.h
+                            spatial/index/KdTree.h
+                            #spatial/index/KdTreeStrategies.h
+                            #spatial/index/DynamicKdTree.h
+                            #spatial/index/StaticKdTree.h
+    )
         
-    add_library(${PROJECT_NAME} ${LIB_TYPE}
+    add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}
                 ${PROJECT_HEADER_FILES})
     
     add_library(TidopLib::${PROJECT_NAME}
                 ALIAS ${PROJECT_NAME})
 
-    target_include_directories(${PROJECT_NAME} PUBLIC
+    target_include_directories(${PROJECT_NAME} INTERFACE
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
                                $<INSTALL_INTERFACE:include>)
 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC
+    target_compile_definitions(${PROJECT_NAME} INTERFACE
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
                                $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-    target_link_libraries(${PROJECT_NAME} PUBLIC
+    target_link_libraries(${PROJECT_NAME} INTERFACE
                           TidopLib::Core
                           TidopLib::Math
                           $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
@@ -104,14 +151,14 @@ if(BUILD_TL_GEOMETRY)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
   
     set(TL_HAVE_GEOMETRY YES CACHE INTERNAL "")
-    message(STATUS "  TidopLib::Geom enabled")
+    message(STATUS "  TidopLib::Geometry enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
 
-    message(STATUS "  TidopLib::Geom disabled")
-    message(STATUS "  TidopLib::RasterTools disabled      [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::Graphic disabled          [Module dependent on TidopLib::Geom that is deactivated]") 
-    message(STATUS "  TidopLib::FeatureMatching disabled  [Module dependent on TidopLib::Geom that is deactivated]")
-    message(STATUS "  TidopLib::Geospatial disabled       [Module dependent on TidopLib::Geom that is deactivated]")
+    message(STATUS "  TidopLib::Geometry disabled")
+    message(STATUS "  TidopLib::RasterTools disabled      [Module dependent on TidopLib::Geometry that is deactivated]") 
+    message(STATUS "  TidopLib::Graphic disabled          [Module dependent on TidopLib::Geometry that is deactivated]") 
+    message(STATUS "  TidopLib::FeatureMatching disabled  [Module dependent on TidopLib::Geometry that is deactivated]")
+    message(STATUS "  TidopLib::Geospatial disabled       [Module dependent on TidopLib::Geometry that is deactivated]")
 
 endif(BUILD_TL_GEOMETRY)

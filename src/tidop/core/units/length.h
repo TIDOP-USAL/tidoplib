@@ -26,7 +26,7 @@
 
 
 #include "tidop/core/base/flags.h"
-#include "tidop/core/base/common.h"
+#include "tidop/core/base/type.h"
 
 namespace tl
 {
@@ -36,8 +36,29 @@ namespace tl
  *  \{
  */
 
+/*!
+ * \brief Factor to convert metres to feet.
+ *
+ * This variable template provides the multiplicative factor required to
+ * convert a length expressed in metres to feet.
+ *
+ * Value used: 1 metre = 3.28084 feet (exact based on 1 ft = 0.3048 m).
+ *
+ * \tparam T Floating-point type used for the conversion factor.
+ */
 template<typename T>
 constexpr enableIfFloating<T,T> metre_to_feets = static_cast<T>(3.28084);
+
+/*!
+ * \brief Factor to convert feet to metres.
+ *
+ * This variable template provides the multiplicative factor required to
+ * convert a length expressed in feet to metres.
+ *
+ * Value used: 1 foot = 0.3048 metres (exact by international definition).
+ *
+ * \tparam T Floating-point type used for the conversion factor.
+ */
 template<typename T>
 constexpr enableIfFloating<T,T> foot_to_metres = static_cast<T>(0.3048);
 
