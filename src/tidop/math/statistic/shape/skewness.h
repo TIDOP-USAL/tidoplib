@@ -107,8 +107,8 @@ public:
     static auto create(SkewnessMethod method) -> std::shared_ptr<Skewness<T>>;
 };
 
-#include "tidop/math/statistic/shape/skewness.impl.h"
-
 /*! \} */
+
+#include "tidop/math/statistic/shape/skewness.impl.h"
 
 } // End namespace tl

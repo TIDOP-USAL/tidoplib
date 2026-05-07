@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Vector.h
+ * \brief Mathematical vector implementation supporting static and dynamic sizes.
+ *
+ * This file defines the `Vector` class template, which provides a flexible and efficient
+ * implementation of mathematical vectors. It supports both compile-time fixed-size vectors
+ * (using a template parameter `Size`) and runtime dynamic-size vectors (when `Size = DynamicData`).
+ * The class inherits from `VectorBase` and provides a wide range of vector operations,
+ * including element access, iterators, and conversions.
+ *
+ * \ingroup Vector
+ * \see tl::VectorBase, tl::Data
+ */
+
 #pragma once
 
 #include <vector>
@@ -31,11 +44,11 @@
 #include "tidop/core/base/exception.h"
 #include "tidop/core/base/type_conversions.h"
 #include "tidop/math/math.h"
-#include "tidop/math/base/data.h"
+#include "tidop/math/base/Data.h"
 #include "tidop/math/algebra/vector/VectorBase.h"
 #include "tidop/math/algebra/vector/detail/MatVecMul.h"
-#include "tidop/math/algebra/vector/detail/Assing.h"
-#include "tidop/math/base/simd.h"
+#include "tidop/math/algebra/vector/detail/Assign.h"
+#include "tidop/math/base/Simd.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/base/Traits.h"
 
@@ -58,6 +71,21 @@ namespace tl
  * operations for accessing, modifying, and manipulating vector data. It inherits from `VectorBase`
  * and supports both static and dynamic sizing depending on the template parameter `Size`.
  *
+ * ### Example
+ * \code
+ * // Static 3D vector of doubles
+ * Vector<double, 3> v1 = {1.0, 2.0, 3.0};
+ *
+ * // Dynamic vector of integers
+ * Vector<int> v2(5, 10);   // size 5, all elements 10
+ *
+ * // Access and modify
+ * v1.x() = 5.0;
+ * double norm = v1.norm();
+ * \endcode
+ *
+ * \note The vector elements are stored in a contiguous memory block, and the class provides
+ *       STL-compatible iterators for easy integration with standard algorithms.
  */
 template<typename T, size_t Size = DynamicData>
 class Vector
@@ -88,7 +116,7 @@ public:
 
     /*!
      * \brief Constructs a vector of a given size, initializing all elements to a specified value.
-     * \param[in] size The size of the vector.
+     * \param[in] size The size of the vector (ignored for static vectors, must match if provided).
      * \param[in] value The value to initialize each element to (default is the lowest value of `T`).
      */
     explicit Vector(size_t size, T value = std::numeric_limits<T>().lowest());
@@ -108,6 +136,7 @@ public:
     /*!
      * \brief Constructs a vector from an initializer list.
      * \param[in] values The values to initialize the vector with.
+     * \note The number of values must match the vector's size (static) or determines the size (dynamic).
      */
     Vector(std::initializer_list<T> values);
 
@@ -118,16 +147,22 @@ public:
      */
     Vector(T *data, size_t size);
 
-    //template<typename OtherDerived>
-    //Vector(const VectorBase<OtherDerived> &other);
+    /*!
+     * \brief Constructs a vector from a vector expression.
+     * \tparam Expr A type satisfying the VectorExpr concept.
+     * \param[in] expr The expression to evaluate.
+     * 
+     * ### Example
+     * \code
+     * Vector<double, 3> v1 = {1.0, 2.0, 3.0};
+     * Vector<double, 3> v2 = {4.0, 5.0, 6.0};
+     * 
+     * // The expression v1 + v2 is evaluated in the constructor
+     * Vector<double, 3> v = v1 + v2;
+     * \endcode
+     */
     template<VectorExpr Expr>
-    Vector(const Expr& expr) 
-        : mData(Data<T, Size>(expr.size()))
-    {
-        TL_ASSERT(expr.size() == this->mData.size(), "Static vector cannot be resized");
-
-        detail::assign(*this, expr);
-    }
+    Vector(const Expr &expr);
 
     /*!
      * \brief Assignment operator for copying another vector.
@@ -144,20 +179,28 @@ public:
     auto operator=(Vector &&vector) noexcept -> Vector &;
 
     /*!
-     * \brief Assignment operator for assigning a derived vector.
-     * \tparam VectorDerived The type of the derived vector.
-     * \param vector The derived vector to assign from.
-     * \return A reference to this vector.
+     * \brief Assignment operator for a vector expression.
+     * \tparam Expr A type satisfying the VectorExpr concept.
+     * \param[in] expr The expression to evaluate and assign.
+     * \return Reference to this vector.
+     *
+     * ### Example
+     * \code
+     * Vector<double, 3> v1 = {1.0, 2.0, 3.0};
+     * Vector<double, 3> v2 = {4.0, 5.0, 6.0};
+     *
+     * // The expression v1 + v2 is evaluated in the constructor
+     * Vector<double, 3> v;
+     * v = v1 + v2;
+     * \endcode
      */
     template<VectorExpr Expr>
-    auto operator=(const Expr &expr) -> Vector&
-    {
-        return detail::assign(*this, expr);
-    }
+    auto operator=(const Expr &expr) -> Vector &;
 
     /*!
      * \brief Resizes the vector to a new size.
      * \param[in] size The new size of the vector.
+     * \note Only valid for dynamic vectors. For static vectors, a compile-time error occurs.
      */
     void resize(size_t size);
 
@@ -165,12 +208,13 @@ public:
      * \brief Resizes the vector to a new size and initializes new elements to a specified value.
      * \param[in] size The new size of the vector.
      * \param[in] value The value to initialize new elements with.
+     * \note Only valid for dynamic vectors. For static vectors, a compile-time error occurs.
      */
     void resize(size_t size, T value);
 
     /*!
      * \brief Returns the size of the vector.
-     * \return The number of elements in the vector.
+     * \return The number of elements in the vector (compile-time constant for static vectors).
      */
     constexpr auto size() const noexcept -> size_t;
 
@@ -352,7 +396,7 @@ public:
      * \param vector The vector to compare with.
      * \return True if this vector is less than the other, false otherwise.
      */
-    bool operator <  (const Vector &vector) const;
+    bool operator < (const Vector &vector) const;
 
     /*!
      * \brief Less-than-or-equal operator for comparing two vectors.
@@ -366,7 +410,7 @@ public:
      * \param vector The vector to compare with.
      * \return True if this vector is greater than the other, false otherwise.
      */
-    bool operator >  (const Vector &vector) const;
+    bool operator > (const Vector &vector) const;
 
     /*!
      * \brief Greater-than-or-equal operator for comparing two vectors.
@@ -380,14 +424,18 @@ public:
      * \param size The size of the vector.
      * \return A vector with all elements initialized to zero.
      */
+    TL_DEPRECATED("zeros(size_t size = 0)", "4.0")
     static auto zero(size_t size = 0) -> Vector;
+    static auto zeros(size_t size = 0) -> Vector;
 
     /*!
      * \brief Creates a unit vector of a specified size.
      * \param size The size of the vector.
      * \return A unit vector.
      */
+    TL_DEPRECATED("ones(size_t size = 0)", "4.0")
     static auto unit(size_t size = 0) -> Vector;
+    static auto ones(size_t size = 0) -> Vector;
 
     /*!
      * \brief Creates a random vector of a specified size.
@@ -399,6 +447,7 @@ public:
     /*!
      * \brief Convert to dynamic vector.
      * Only works if this vector is static.
+     * \note This operator is only available when the current vector is static
      */
     explicit operator Vector<T, DynamicData>() const
     {
@@ -414,15 +463,18 @@ public:
     }
 
     /*!
-     * \brief Convert to static vector.
-     * For static vectors: same size only (compile-time check).
-     * For dynamic vectors: runtime size check.
+     * \brief Convert to a static vector of a given size.
+     * \tparam TargetSize The target compile-time size.
+     * \return A static vector of the specified size.
+     * \throws std::invalid_argument if this is a dynamic vector and its size does not match `TargetSize`.
+     * \note For static-to-static conversion, the sizes must match at compile time.
+     *       For dynamic-to-static, a runtime check is performed.
      */
     template<size_t TargetSize>
     explicit operator Vector<T, TargetSize>() const
     {
         if constexpr (Size != DynamicData) {
-            // Este vector es estático
+
             static_assert(Size == TargetSize,
                 "Cannot convert static vector to different static size. "
                 "Use toDynamic() first.");
@@ -431,9 +483,11 @@ public:
             for (size_t i = 0; i < TargetSize; ++i) {
                 result[i] = (*this)[i];
             }
+
             return result;
+
         } else {
-            // Este vector es dinámico
+
             static_assert(TargetSize != DynamicData,
                 "Cannot convert dynamic vector to dynamic vector.");
 
@@ -445,26 +499,33 @@ public:
             for (size_t i = 0; i < TargetSize; ++i) {
                 result[i] = (*this)[i];
             }
+
             return result;
         }
     }
 
-    auto aliases(const void *ptr) const -> bool
-    {
-        return static_cast<const void *>(this->data()) == ptr;
-    }
+    /*!
+     * \brief Checks if the vector's data aliases a given memory address.
+     * \param[in] ptr Pointer to the memory address.
+     * \return True if the vector's internal data is stored at that address; false otherwise.
+     */
+    auto aliases(const void *ptr) const -> bool;
 
-    auto packet(size_t i) const noexcept -> Packed<T>
-    {
-        Packed<T> p;
-        p.loadUnaligned(&this->data()[i]);
-        return p;
-    }
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Returns a SIMD-friendly packet of elements starting at index `i`.
+     * \param[in] i Starting index.
+     * \return A Packed<T> object containing the elements.
+     * \note This method is used internally for vectorization, but is publicly available.
+     */
+    auto packet(size_t i) const noexcept -> Packed<T>;
+#endif
 
-    void fill(T value)
-    {
-        std::fill(mData.begin(), mData.end(), value);
-    }
+    /*!
+     * \brief Fills the entire vector with a given value.
+     * \param[in] value The value to set all elements to.
+     */
+    void fill(T value);
 
 private:
 
@@ -528,6 +589,16 @@ Vector<T, Size>::Vector(T *data, size_t size)
 }
 
 template<typename T, size_t Size>
+template<VectorExpr Expr>
+Vector<T, Size>::Vector(const Expr &expr)
+  : mData(Data<T, Size>(expr.size()))
+{
+    TL_ASSERT(expr.size() == this->mData.size(), "Static vector cannot be resized");
+
+    detail::assign(*this, expr);
+}
+
+template<typename T, size_t Size>
 auto Vector<T, Size>::operator=(const Vector &vector) -> Vector &
 {
     if (this != &vector) {
@@ -545,6 +616,13 @@ auto Vector<T, Size>::operator=(Vector &&vector) noexcept -> Vector &
     }
 
     return (*this);
+}
+
+template<typename T, size_t Size>
+template<VectorExpr Expr>
+auto Vector<T, Size>::operator=(const Expr &expr) -> Vector &
+{
+    return detail::assign(*this, expr);
 }
 
 template<typename T, size_t Size>
@@ -760,7 +838,19 @@ auto Vector<T, Size>::zero(size_t size) -> Vector
 }
 
 template<typename T, size_t Size>
+auto Vector<T, Size>::zeros(size_t size) -> Vector
+{
+    return Vector<T, Size>(size, consts::zero<T>);
+}
+
+template<typename T, size_t Size>
 auto Vector<T, Size>::unit(size_t size) -> Vector
+{
+    return Vector<T, Size>(size, consts::one<T>);
+}
+
+template<typename T, size_t Size>
+auto Vector<T, Size>::ones(size_t size) -> Vector
 {
     return Vector<T, Size>(size, consts::one<T>);
 }
@@ -780,128 +870,32 @@ auto Vector<T, Size>::randon(size_t size) -> Vector
     return vector;
 }
 
+template<typename T, size_t Size>
+auto Vector<T, Size>::aliases(const void *ptr) const -> bool
+{
+    return static_cast<const void *>(this->data()) == ptr;
+}
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+template<typename T, size_t Size>
+auto Vector<T, Size>::packet(size_t i) const noexcept -> Packed<T>
+{
+    Packed<T> p;
+    p.loadUnaligned(&this->data()[i]);
+    return p;
+}
+#endif 
+
+template<typename T, size_t Size>
+void Vector<T, Size>::fill(T value)
+{
+    std::fill(mData.begin(), mData.end(), value);
+}
 
 
 
 
-/* Binary arithmetic operators */
-
-/* Addition */
-
-//template<typename PointDerived, typename VectorDerived,
-//    typename = std::enable_if_t<
-//    is_point<PointDerived>::value &&
-//    is_vector<VectorDerived>::value>>
-//auto operator+(const PointDerived &p, const VectorDerived &v) -> PointDerived
-//{
-//    PointDerived res = p;
-//    constexpr std::size_t N = vector_traits<PointDerived>::size;
-//
-//    for (std::size_t i = 0; i < N; ++i)
-//        res[i] += v[i];
-//
-//    return res;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator +(Vector<T, Size>& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector2 += vector1;
-//    return vector2;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator +(Vector<T, Size>&& vector1,
-//                const Vector<T, Size>& vector2) -> Vector<T, Size>
-//{
-//    vector1 += vector2;
-//    return vector1;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator +(Vector<T, Size>&& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector1 += vector2;
-//    return vector1;
-//}
-
-
-/* Subtraction */
-
-//template<typename T, size_t Size>
-//auto operator -(Vector<T, Size>& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector2 -= vector1;
-//    return -vector2;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator -(Vector<T, Size>&& vector1,
-//                const Vector<T, Size>& vector2) -> Vector<T, Size>
-//{
-//    vector1 -= vector2;
-//    return vector1;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator -(Vector<T, Size>&& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector1 -= vector2;
-//    return vector1;
-//}
-
-
-/* Multiplication */
-//
-//template<typename T, size_t Size>
-//auto operator *(const Vector<T, Size>& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector2 *= vector1;
-//    return vector2;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator *(Vector<T, Size>&& vector1,
-//                const Vector<T, Size>& vector2) -> Vector<T, Size>
-//{
-//    vector1 *= vector2;
-//    return vector1;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator *(Vector<T, Size>&& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector1 *= vector2;
-//    return vector1;
-//}
-
-
-/* Division */
-
-//template<typename T, size_t Size>
-//auto operator /(Vector<T, Size>&& vector1,
-//                const Vector<T, Size>& vector2) -> Vector<T, Size>
-//{
-//    vector1 /= vector2;
-//    return vector1;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator /(Vector<T, Size>&& vector1,
-//                Vector<T, Size>&& vector2) -> Vector<T, Size>
-//{
-//    vector1 /= vector2;
-//    return vector1;
-//}
-
-
-/* Multiplication vector * scalar */
+/* Scalar-vector multiplication */
 
 template<typename Scalar, VectorExpr Expr>
     requires std::is_convertible_v<Scalar, typename vector_traits<Expr>::value_type>
@@ -909,154 +903,6 @@ auto operator*(const Scalar &scalar, const Expr &expr)
 {
     return expr * scalar;
 }
-
-
-
-//template<typename T, size_t Size>
-//auto operator *(Vector<T, Size>&& vector, T scalar) -> Vector<T, Size>
-//{
-//    vector *= scalar;
-//    return vector;
-//}
-//
-//template<
-//  template<typename, size_t Size = DynamicData>
-//  class VectorDerived, typename T, size_t Size>
-//auto operator *(T scalar, const VectorDerived<T, Size> &vector) -> Vector<T, Size>
-//{
-//    Vector<T, Size> _vector = vector;
-//    _vector *= scalar;
-//    return _vector;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator *(T scalar, Vector<T, Size> &&vector) -> Vector<T, Size>
-//{
-//    vector *= scalar;
-//    return vector;
-//}
-
-
-/* Division Vector / scalar */
-
-//template<typename T, size_t Size>
-//auto operator /(Vector<T, Size>&& vector, T scalar) -> Vector<T, Size>
-//{
-//    vector /= scalar;
-//    return vector;
-//}
-
-//template<typename T, size_t Size>
-//inline Vector<T, Size> operator / (const Vector<T, Size> &vector, T scalar)
-//{
-//    vector /= scalar;
-//    return vector;
-//}
-
-
-/*!
- * \brief Computes the dot product of two vectors.
- *
- * The dot product of two vectors is the sum of the products of their corresponding components.
- * This function asserts that both vectors have the same size.
- *
- * \tparam T The type of the elements in the vectors.
- * \tparam Size The size of the vectors.
- * \param[in] v1 The first vector.
- * \param[in] v2 The second vector.
- * \return The dot product of `v1` and `v2` as a `double`.
- */
-//template<typename T, size_t Size> 
-//auto dotProduct(const Vector<T, Size>& v1,
-//                const Vector<T, Size>& v2) -> double
-//{
-//    //TL_ASSERT(v1.size() == v2.size(), "Different vector size");
-//
-//    //double dot = static_cast<double>(v1[0]) * static_cast<double>(v2[0]);
-//    //for (size_t i = 1; i < v1.size(); i++) {
-//    //    dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
-//    //}
-//    //return dot;
-//    return v1.dotProduct(v2);
-//}
-
-/*!
- * \brief Computes the cross product of two 3-dimensional vectors.
- *
- * The cross product of two vectors in three-dimensional space results in a vector that is
- * perpendicular to both of the vectors being multiplied, with a direction given by the right-hand rule.
- * This function assumes that the vectors have three components.
- *
- * \tparam T The type of the elements in the vectors.
- * \tparam Size The size of the vectors, defaulting to 3.
- * \param[in] min The first vector.
- * \param[in] max The second vector.
- * \return The cross product of `pt1` and `pt2` as a `Vector<T, Size>`.
- */
-//template<typename T, size_t Size = 3>
-//auto crossProduct(const Vector<T, Size>& pt1,
-//                  const Vector<T, Size>& pt2) -> Vector<T, Size>
-//{
-//    return Vector<T, Size>({
-//    	pt1.y() * pt2.z() - pt1.z() * pt2.y(),
-//        pt1.z() * pt2.x() - pt1.x() * pt2.z(),
-//        pt1.x() * pt2.y() - pt1.y() * pt2.x()
-//    });
-//}
-//
-//template<typename T, size_t Size>
-//auto operator<<(std::ostream& os, const Vector<T, Size>& vector) -> std::ostream&
-//{
-//    for (size_t i = 0; i < vector.size(); i++) {
-//        os << " " << vector[i] << "\n";
-//    }
-//    os << std::flush;
-//    return os;
-//}
-//
-//template<typename T, size_t Size>
-//auto operator<<(std::ostream& os, const Vector<T, Size>* vector) -> std::ostream&
-//{
-//    for (size_t i = 0; i < vector->size(); i++) {
-//        os << " " << (*vector)[i] << "\n";
-//    }
-//    os << std::flush;
-//    return os;
-//}
-
-
-/*!
- * \brief Computes the angle between two 2-dimensional vectors.
- *
- * This function calculates the angle in radians between two vectors \f$v1\f$ and \f$v2\f$.
- * If the vectors are equal, the angle is 0. If either vector has a magnitude of zero, an exception is thrown.
- * The angle is computed using the dot product and the magnitudes of the vectors, ensuring that the cosine of the angle
- * is within the range \f$[-1, 1]\f$ to account for numerical precision errors.
- *
- * \tparam T The type of the elements in the vectors.
- * \param[in] v1 The first 2-dimensional vector.
- * \param[in] v2 The second 2-dimensional vector.
- * \return The angle between `v1` and `v2` in radians.
- * \throws std::invalid_argument if either vector has a magnitude of zero.
- */
-//template<typename T>
-//T vectorAngle(const Vector<T, 2> &v1, const Vector<T, 2> &v2) 
-//{
-//    if (v1 == v2) return 0.;
-//
-//    T magV1 = v1.module();
-//    T magV2 = v2.module();
-//    
-//    if (magV1 == 0 || magV2 == 0) {
-//        throw std::invalid_argument("The angle is not defined for zero magnitude vectors.");
-//    }
-//    
-//    T cosTheta = dotProduct(v1, v2) / (magV1 * magV2);
-//    // Asegurarse de que el valor esté en el rango [-1, 1] debido a posibles errores numéricos
-//    cosTheta = tl::clamp(cosTheta, static_cast<T>(-1), static_cast<T>(1));
-//    
-//    return std::acos(cosTheta);
-//}
 
 
 /*! \} */

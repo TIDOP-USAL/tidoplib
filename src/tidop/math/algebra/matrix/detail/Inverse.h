@@ -25,7 +25,9 @@
 #pragma once
 
 #include "tidop/math/algebra/matrix/detail/Determinant.h"
-#include "tidop/math/algebra/decomp/lu.h"
+#include "tidop/math/algebra/decomp/LU.h"
+
+/// \cond
 
 namespace tl
 {
@@ -206,3 +208,5 @@ auto invert_matrix(const Matrix<T, Rows, Cols> &mat,
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

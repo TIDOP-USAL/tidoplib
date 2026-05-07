@@ -29,7 +29,7 @@
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/statistics.h"
-#include "tidop/math/algebra/decomp/svd.h"
+#include "tidop/math/algebra/decomp/SVD.h"
 #include "tidop/math/geometry/affine.h"
 
 namespace tl

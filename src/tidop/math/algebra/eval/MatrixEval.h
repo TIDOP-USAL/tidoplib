@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file MatrixEval.h
+ * \brief Evaluator specialization for dense matrices (the actual matrix class).
+ *
+ * This file provides the `Evaluator` specialization for any type satisfying the
+ * `DenseMatrix` concept (i.e., `tl::Matrix` and similar). The evaluator simply
+ * stores a reference to the matrix and forwards coefficient and packet access
+ * directly to it. No temporary storage or computation is performed.
+ *
+ * \ingroup Evaluators
+ * \see tl::Matrix, tl::Evaluator
+ */
+
 #pragma once
 
 #include "tidop/math/base/Concepts.h"
@@ -30,10 +42,20 @@
 namespace tl
 {
 
-/*! \addtogroup Algebra
+/*! \addtogroup Evaluators
  *  \{
  */
 
+/*!
+ * \brief Evaluator for dense matrix types (e.g., `Matrix<T, Rows, Cols>`).
+ *
+ * \tparam Mat A type satisfying the `DenseMatrix` concept.
+ *
+ * This evaluator provides read‑only access to the coefficients of a concrete
+ * dense matrix. It stores a reference to the matrix and forwards `coeff()` and
+ * `packet()` calls directly to the underlying matrix. It is used internally
+ * whenever a concrete matrix appears in an expression tree.
+ */
 template<DenseMatrix Mat>
 class Evaluator<Mat>
 {
@@ -48,20 +70,41 @@ public:
 	
 public:
 
+    /*!
+     * \brief Constructs the evaluator from a dense matrix.
+     * \param[in] mat The matrix.
+     */
     Evaluator(const Mat& mat) 
       : mMatrix(mat) {}
 
+    /*!
+     * \brief Returns the element at matrix position (r, c).
+     * \param[in] r Row index.
+     * \param[in] c Column index.
+     * \return The coefficient at the given position.
+     */
     auto coeff(size_t r, size_t c) const -> value_type
     {
         return mMatrix(r, c);
     }
 
+    /*!
+     * \brief Returns the element at linear index i (row‑major order).
+     * \param[in] i Linear index.
+     * \return The coefficient at the given linear position.
+     */
     auto coeff(size_t i) const -> value_type
     {
         return mMatrix(i);
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Returns a SIMD packet of coefficients starting at linear index i.
+     * \param[in] i Linear index.
+     * \return A `Packed<T>` containing the coefficients from the matrix.
+     * \note Only available when SIMD intrinsics are enabled.
+     */
     auto packet(size_t i) const
     {
         return mMatrix.packet(i);

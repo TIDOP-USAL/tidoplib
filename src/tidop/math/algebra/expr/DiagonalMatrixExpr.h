@@ -22,18 +22,16 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file VecUnaryMinusExpr.h
- * \brief Expression template for vector unary minus.
+/*! \file DiagonalMatrixExpr.h
+ * \brief Expression for constructing a diagonal matrix from a vector.
  *
- * This file defines the `VecUnaryMinusExpr` class, which represents a lazy
- * unary negation of a vector expression (i.e., `-vector`). The operation is
- * not performed immediately; instead, the expression object stores a reference
- * to the operand expression and provides metadata (size) and access to the
- * sub‑expression. Evaluation occurs only when the expression is assigned to a
- * concrete vector or forced via `.eval()`.
+ * This file defines the `DiagonalMatrixExpr` class, an expression template that
+ * represents a square diagonal matrix whose diagonal entries are taken from a
+ * vector expression. The off‑diagonal entries are zero. This expression can be
+ * used in matrix arithmetic and will be evaluated lazily.
  *
  * \ingroup Expressions
- * \see tl::VectorBase, tl::VecBinaryExpr, tl::EvaluatorVecUnaryMinusExpr
+ * \see tl::MatrixBase, tl::Vector
  */
 
 #pragma once
@@ -45,63 +43,76 @@ namespace tl
 {
 
 template<typename Derived>
-class VectorBase;
+class MatrixBase;
 
 /*! \addtogroup Expressions
  *  \{
  */
 
 /*!
- * \class VecUnaryMinusExpr
- * \brief Lazy expression for unary minus (negation) of a vector expression.
+ * \class DiagonalMatrixExpr
+ * \brief Expression representing a diagonal matrix constructed from a vector.
  *
- * \tparam Expr The vector expression type to be negated.
+ * \tparam Expr A type satisfying `VectorExpr` (the vector expression for the diagonal).
  *
- * This class represents the negation of a vector expression: `-v`.
- * The size of the result is the same as the original expression.
- * The actual negation is not performed at construction time; it is stored
- * as an expression template for later evaluation.
+ * This expression creates a square matrix where the diagonal entries are the
+ * elements of the vector expression `expr`, and all off‑diagonal entries are zero.
+ * The size of the matrix is `expr.size()` × `expr.size()`.
+ *
+ * This class is an expression; it does not store the matrix coefficients explicitly,
+ * only a reference to the vector expression. Therefore, it is lightweight and
+ * intended to be used as a temporary in expression templates. The actual matrix
+ * is materialised when evaluated (e.g., when assigned to a `Matrix` object).
  *
  * ### Example
  * \code
- * Vector<double,3> v = {1, 2, 3};
- * auto neg_expr = VecUnaryMinusExpr(v);   // lazy: -v
- * Vector<double,3> w = neg_expr;          // evaluated here ⇒ w = {-1, -2, -3}
+ * Vector<double, 3> v = {1, 2, 3};
+ * auto D = DiagonalMatrixExpr(v);  // represents diag(1,2,3)
+ * Matrix<double, 3, 3> M = D;      // evaluates to a concrete diagonal matrix
  * \endcode
  */
 template<typename Expr>
-class VecUnaryMinusExpr 
-  : public VectorBase<VecUnaryMinusExpr<Expr>>
+class DiagonalMatrixExpr 
+  : public MatrixBase<DiagonalMatrixExpr<Expr>>
 {
 
 private:
 
-    const Expr &mExpr;
+    const Expr &mExpr; /*!< Reference to the vector expression providing the diagonal. */
 
 public:
 
     using value_type = typename vector_traits<Expr>::value_type;
 
-public:
+    /*!
+     * \brief Constructor from a vector expression.
+     * \param[in] expr The vector expression for the diagonal entries.
+     */
+    DiagonalMatrixExpr(const Expr &expr)
+      : mExpr(expr)
+    {
+    }
 
     /*!
-     * \brief Constructs a unary minus expression from a vector expression.
-     * \param[in] expr The expression to negate.
+     * \brief Returns the number of rows (which equals the vector size).
      */
-    explicit VecUnaryMinusExpr(const Expr &expr)
-      : mExpr(expr) 
-    {}
+    constexpr auto rows() const noexcept -> size_t { return mExpr.size(); }
 
-    /*! \brief Returns the number of elements (same as original). */
-    constexpr auto size() const noexcept -> size_t { return mExpr.size(); }
+    /*!
+     * \brief Returns the number of columns (which equals the vector size).
+     */
+    constexpr auto cols() const noexcept -> size_t { return mExpr.size(); }
 
-    /*! \brief Returns the underlying expression. */
+    /*!
+     * \brief Returns the underlying vector expression.
+     * \return Const reference to the stored vector expression.
+     */
     auto expr() const -> const Expr & { return mExpr; }
 
     /*!
-     * \brief Checks if the underlying expression's data aliases a given memory address.
+     * \brief Checks whether the expression's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
-     * \return `true` if the expression aliases `ptr`.
+     * \return `true` if the underlying vector expression aliases `ptr`.
      */
     auto aliases(const void *ptr) const -> bool
     {

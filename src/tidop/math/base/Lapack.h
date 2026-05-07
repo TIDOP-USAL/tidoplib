@@ -78,6 +78,18 @@ enum class Transpose : char
     conjugate_transpose = 'C' /*!< Conjugate transpose operation. */
 };
 
+/*!
+ * \brief Specifies whether a matrix has a unit diagonal or not.
+ *
+ * Used in LAPACK functions to indicate if the diagonal elements
+ * of a triangular matrix are assumed to be 1.0.
+ */
+enum class Diagonal : char
+{
+    unit = 'U',    /*!< Matrix is assumed to be unit triangular (diagonal is 1.0). */
+    non_unit = 'N' /*!< Matrix is not assumed to be unit triangular. */
+};
+
 
 /*!
  * \brief LAPACK function mappings for different floating-point types.
@@ -102,12 +114,14 @@ struct LapackTraits<float>
     static constexpr auto getrs = LAPACKE_sgetrs; /*!< Solves a system using LU decomposition. */
     static constexpr auto potrf = LAPACKE_spotrf; /*!< Cholesky decomposition. */
     static constexpr auto potrs = LAPACKE_spotrs; /*!< Solves a system using Cholesky decomposition. */
+    static constexpr auto potri = LAPACKE_spotri; /*!< Inversion using Cholesky factor. */
     static constexpr auto geqrf = LAPACKE_sgeqrf; /*!< QR decomposition. */
     static constexpr auto orgqr = LAPACKE_sorgqr; /*!< Generates an orthogonal matrix from QR decomposition. */
     static constexpr auto gels = LAPACKE_sgels;   /*!< Solves linear least squares problems. */
     static constexpr auto gesvd = LAPACKE_sgesvd; /*!< Singular value decomposition (SVD). */
     static constexpr auto syev = LAPACKE_ssyev;   /*!< Computes eigenvalues and eigenvectors of a symmetric matrix. */
     static constexpr auto geev = LAPACKE_sgeev;   /*!< Computes eigenvalues and eigenvectors of a general matrix. */
+    static constexpr auto trtrs = LAPACKE_strtrs;
 };
 
 /*!
@@ -122,12 +136,14 @@ struct LapackTraits<double>
     static constexpr auto getrs = LAPACKE_dgetrs; /*!< Solves a system using LU decomposition. */
     static constexpr auto potrf = LAPACKE_dpotrf; /*!< Cholesky decomposition. */
     static constexpr auto potrs = LAPACKE_dpotrs; /*!< Solves a system using Cholesky decomposition. */
+    static constexpr auto potri = LAPACKE_dpotri; /*!< Inversion using Cholesky factor. */
     static constexpr auto geqrf = LAPACKE_dgeqrf; /*!< QR decomposition. */
     static constexpr auto orgqr = LAPACKE_dorgqr; /*!< Generates an orthogonal matrix from QR decomposition. */
     static constexpr auto gels = LAPACKE_dgels;   /*!< Solves linear least squares problems. */
     static constexpr auto gesvd = LAPACKE_dgesvd; /*!< Singular value decomposition (SVD). */
     static constexpr auto syev = LAPACKE_dsyev;   /*!< Computes eigenvalues and eigenvectors of a symmetric matrix. */
     static constexpr auto geev = LAPACKE_dgeev;   /*!< Computes eigenvalues and eigenvectors of a general matrix. */
+    static constexpr auto trtrs = LAPACKE_dtrtrs;
 };
 
 
@@ -280,6 +296,37 @@ void potrs(Order order, TriangularForm form, size_t n, size_t nrhs,
     }
 }
 
+/*!
+ * \brief Computes the inverse of a symmetric positive-definite matrix using the Cholesky factorization.
+ *
+ * This function computes the inverse of a symmetric positive-definite matrix \( A \)
+ * using the Cholesky factorization \( A = U^T U \) or \( A = L L^T \) computed by `potrf`.
+ *
+ * \tparam T The data type (must be `float` or `double`).
+ * \param[in] order The storage order of the matrix (row-major or column-major).
+ * \param[in] form Specifies whether the factor is upper (U) or lower (L).
+ * \param[in] n The order of the matrix \( A \).
+ * \param[in,out] a Pointer to the Cholesky factor. On exit, it contains the inverse matrix.
+ * \param[in] lda The leading dimension of matrix \( A \).
+ * \throws tl::Exception if an argument is invalid or if the factor is singular.
+ */
+template<typename T>
+void potri(Order order, TriangularForm form, size_t n, T *a, size_t lda)
+{
+    lapack_int info = LapackTraits<T>::potri(static_cast<int>(order),
+                                             static_cast<char>(form),
+                                             static_cast<lapack_int>(n),
+                                             a,
+                                             static_cast<lapack_int>(lda));
+
+    if (info < 0) {
+        TL_THROW_EXCEPTION("potri: Argument {} has an illegal value", -info);
+    }
+
+    if (info > 0) {
+        TL_THROW_EXCEPTION("potri: Element ({}, {}) of the factor is zero; the matrix is singular", info, info);
+    }
+}
 
 
 /*!
@@ -348,6 +395,47 @@ void orgqr(Order order, size_t m, size_t n, size_t k, T *a, size_t lda, T *tau)
 
 
 /*!
+ * \brief Solves a system of linear equations with a triangular matrix.
+ * This function solves the system A * X = B, A**T * X = B, or A**H * X = B,
+ * where A is a triangular matrix.
+ * \tparam T The data type (float or double).
+ * \param order Storage order (row-major or column-major).
+ * \param form Whether A is upper ('U') or lower ('L') triangular.
+ * \param trans Specifies the form of the system (NoTrans, Trans, ConjTrans).
+ * \param diag Whether A has unit diagonal ('U' for unit, 'N' for non-unit).
+ * \param n Order of the matrix A.
+ * \param nrhs Number of right-hand sides (columns of B).
+ * \param a Pointer to the triangular matrix A.
+ * \param lda Leading dimension of matrix A.
+ * \param b Pointer to the right-hand side matrix B. On exit, overwritten by solution X.
+ * \param ldb Leading dimension of matrix B.
+ * \return true if the matrix is singular (diagonal element is zero), false otherwise.
+ */
+template<typename T>
+auto trtrs(Order order, TriangularForm form, Transpose transpose, Diagonal diag,
+           size_t n, size_t nrhs, const T *a, size_t lda,
+           T *b, size_t ldb) -> bool
+{
+    lapack_int info = LapackTraits<T>::trtrs(static_cast<int>(order),
+                                             static_cast<char>(form),
+                                             static_cast<char>(transpose),
+                                             static_cast<char>(diag),
+                                             static_cast<lapack_int>(n),
+                                             static_cast<lapack_int>(nrhs),
+                                             a, static_cast<lapack_int>(lda),
+                                             b, static_cast<lapack_int>(ldb)
+    );
+
+    if (info < 0) {
+        TL_THROW_EXCEPTION("trtrs: Argument {} has an illegal value", -info);
+    }
+
+    // info > 0 significa que la matriz es singular (A(info,info) es exactamente cero)
+    return (info > 0);
+}
+
+
+/*!
  * \brief Solves a linear least squares problem.
  *
  * This function finds the least squares solution to an overdetermined system of linear equations:
@@ -389,7 +477,6 @@ void gels(Order order, Transpose transpose, size_t m, size_t n, size_t nrhs, T *
     }
 }
 
-//gelsd: Computes the minimum norm solution to a linear least squares problem using the singular value decomposition of A and a divide and conquer method.
 
 
 /*!

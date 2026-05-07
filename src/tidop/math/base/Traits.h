@@ -28,16 +28,16 @@
 #include <cstddef>
 
 #include "tidop/config.h"
-#include "tidop/math/base/simd.h"
+#include "tidop/math/base/Simd.h"
 
 namespace tl
 {
 
 template<typename T, size_t Rows, size_t Cols> class Matrix;
-template<typename T, size_t Rows, size_t Cols> class MatrixBlock;
-template<typename T, size_t _size> class MatrixRow;
-template<typename T, size_t _size> class MatrixCol;
-template<typename Expr> class MatrixDiagonal;
+template<typename T> class MatrixBlock;
+template<typename T> class MatrixRow;
+template<typename T> class MatrixCol;
+template<typename T> class MatrixDiagonal;
 template<typename T, size_t Size> class Vector;
 template<typename T> class RotationMatrix;
 
@@ -50,6 +50,7 @@ template<typename Expr> class MatUnaryMinusExpr;
 template<typename Expr> class TransposeExpr;
 template<typename Expr> class VecUnaryMinusExpr;
 template<typename Mat, typename Vec> class MatVecMulExpr;
+template<typename Expr> class DiagonalMatrixExpr;
 
 template<typename P> struct PackedTraits;
 template<typename T> class Packed;
@@ -78,12 +79,12 @@ struct matrix_traits<Matrix<T, R, C>>
     static constexpr bool is_plain = true;
 };
 
-template<typename T, size_t Rows, size_t Cols>
-struct matrix_traits<MatrixBlock<T, Rows, Cols>>
+template<typename T>
+struct matrix_traits<MatrixBlock<T>>
 {
     using value_type = std::remove_cv_t<T>;
-    static constexpr size_t rows = Rows;
-    static constexpr size_t cols = Cols;
+    static constexpr size_t rows = std::numeric_limits<size_t>::max();
+    static constexpr size_t cols = std::numeric_limits<size_t>::max();
     static constexpr bool is_mutable = !std::is_const_v<T>;
     static constexpr bool is_view = true;
     static constexpr bool has_contiguous_memory = false;
@@ -91,22 +92,6 @@ struct matrix_traits<MatrixBlock<T, Rows, Cols>>
     static constexpr bool is_expression = false;
     static constexpr bool is_plain = false;
 };
-
-template<typename Expr>
-struct matrix_traits<MatrixDiagonal<Expr>> 
-{
-    using value_type = std::remove_cv_t<typename matrix_traits<Expr>::value_type>;
-    static constexpr size_t rows = (matrix_traits<Expr>::rows < matrix_traits<Expr>::cols) ?
-                                    matrix_traits<Expr>::rows : matrix_traits<Expr>::cols;
-    static constexpr size_t cols = 1;
-    static constexpr bool is_view = true;
-    static constexpr bool is_mutable = matrix_traits<Expr>::is_mutable;
-    static constexpr bool has_contiguous_memory = false;
-    static constexpr bool is_element_wise = true;
-    static constexpr bool is_expression = false;
-    static constexpr bool is_plain = false;
-};
-
 
 template<typename LHS, typename RHS, typename Op>
 struct matrix_traits<MatBinaryExpr<LHS, RHS, Op>>
@@ -228,23 +213,40 @@ struct vector_traits<Vector<T, Size>>
     static constexpr bool is_plain = true;
 };
 
-template<typename T, size_t Size>
-struct vector_traits<MatrixRow<T, Size>>
+template<typename T>
+struct vector_traits<MatrixRow<T>>
 {
     using value_type = std::remove_cv_t<T>;
-    static constexpr size_t size = Size;
+    static constexpr size_t size = std::numeric_limits<size_t>::max();
+    static constexpr bool is_view = true;
     static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool is_element_wise = false;
     static constexpr bool has_contiguous_memory = true;
     static constexpr bool is_expression = false;
     static constexpr bool is_plain = false;
 };
 
-template<typename T, size_t Size>
-struct vector_traits<MatrixCol<T, Size>>
+template<typename T>
+struct vector_traits<MatrixCol<T>>
 {
     using value_type = std::remove_cv_t<T>;
-    static constexpr size_t size = Size;
+    static constexpr size_t size = std::numeric_limits<size_t>::max();
+    static constexpr bool is_view = true;
     static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool is_element_wise = false;
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = false;
+};
+
+template<typename T>
+struct vector_traits<MatrixDiagonal<T>>
+{
+    using value_type = std::remove_cv_t<T>;
+    static constexpr size_t size = std::numeric_limits<size_t>::max();
+    static constexpr bool is_view = true;
+    static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool is_element_wise = false;
     static constexpr bool has_contiguous_memory = false;
     static constexpr bool is_expression = false;
     static constexpr bool is_plain = false;
@@ -309,6 +311,20 @@ struct vector_traits<VecUnaryMinusExpr<Expr>>
     static constexpr bool is_plain = false;
 };
 
+template<typename Expr>
+struct matrix_traits<DiagonalMatrixExpr<Expr>>
+{
+    using value_type = std::remove_cv_t<typename vector_traits<Expr>::value_type>;
+
+    static constexpr size_t rows = vector_traits<Expr>::size;
+    static constexpr size_t cols = vector_traits<Expr>::size;
+
+    static constexpr bool has_contiguous_memory = false;
+    static constexpr bool is_mutable = false;
+    static constexpr bool is_element_wise = false;
+    static constexpr bool is_expression = true;
+    static constexpr bool is_plain = false;
+};
 
 template<typename D>
 struct is_vector : std::false_type {};
@@ -316,11 +332,14 @@ struct is_vector : std::false_type {};
 template<typename Scalar, size_t Size>
 struct is_vector<Vector<Scalar, Size>> : std::true_type {};
 
-template<typename T, size_t _size>
-struct is_vector<MatrixRow<T, _size>> : std::true_type {};
+template<typename T>
+struct is_vector<MatrixRow<T>> : std::true_type {};
 
-template<typename T, size_t _size>
-struct is_vector<MatrixCol<T, _size>> : std::true_type {};
+template<typename T>
+struct is_vector<MatrixCol<T>> : std::true_type {};
+
+template<typename T>
+struct is_vector<MatrixDiagonal<T>> : std::true_type {};
 
 template<typename D>
 using enable_if_vector_t = std::enable_if_t<is_vector<D>::value, int>;

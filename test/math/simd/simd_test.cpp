@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_MODULE Tidop simd test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/base/simd.h>
+#include <tidop/math/base/Simd.h>
 #include <tidop/math/algebra/vector/Vector.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
 

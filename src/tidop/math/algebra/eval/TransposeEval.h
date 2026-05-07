@@ -22,6 +22,21 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file TransposeEval.h
+ * \brief Evaluator specialization for matrix transpose expressions.
+ *
+ * This file provides the `Evaluator` specialization for `TransposeExpr`,
+ * which represents the transpose of a matrix expression. The evaluator
+ * reorders the indices when accessing coefficients: `coeff(r, c)` returns
+ * the coefficient of the original expression at position `(c, r)`, and
+ * linear indexing is adjusted accordingly. SIMD packet access is **not**
+ * supported because the transpose introduces a non‑contiguous memory access
+ * pattern that cannot be efficiently vectorised in a generic way.
+ *
+ * \ingroup Evaluators
+ * \see tl::TransposeExpr, tl::Evaluator
+ */
+
 #pragma once
 
 #include "tidop/math/algebra/eval/Evaluator.h"
@@ -30,10 +45,25 @@
 namespace tl
 {
 
-/*! \addtogroup Algebra
+/*! \addtogroup Evaluators
  *  \{
  */
 
+/*!
+ * \brief Evaluator for `TransposeExpr<Expr>`.
+ *
+ * \tparam Expr The matrix expression type being transposed.
+ *
+ * This evaluator stores an evaluator for the underlying expression and the
+ * number of columns of the transposed matrix (i.e., the original number of
+ * rows). For coefficient access, it swaps the row and column indices when
+ * forwarding to the sub‑expression. Linear indexing is converted back to
+ * 2D coordinates using the stored column count, then the indices are swapped.
+ *
+ * \note SIMD packet access is not implemented because transposed data is
+ *       not stored contiguously in memory; attempting to use `packet()` will
+ *       trigger an assertion.
+ */
 template<typename Expr>
 class Evaluator<TransposeExpr<Expr>>
 {
@@ -44,21 +74,40 @@ public:
 
 private:
 	
-    Evaluator<Expr> mExpr;
-    size_t mCols;
+    Evaluator<Expr> mExpr; /*!< Evaluator for the original expression. */
+    size_t mCols;          /*!< Number of columns of the transposed matrix = rows of the original. */
 
 public:
 
+    /*!
+     * \brief Constructs the evaluator from a `TransposeExpr`.
+     * \param[in] expr The transpose expression.
+     */
     Evaluator(const TransposeExpr<Expr>& expr)
       : mExpr(expr.expr()),
         mCols(expr.cols())
     {}
 
+    /*!
+     * \brief Returns the element at matrix position (r, c) of the transposed matrix.
+     * \param[in] r Row index in the transposed matrix.
+     * \param[in] c Column index in the transposed matrix.
+     * \return The coefficient from the original expression at position (c, r).
+     */
     auto coeff(size_t r, size_t c) const -> value_type
     {
         return mExpr.coeff(c, r);
     }
 
+    /*!
+     * \brief Returns the element at linear index i (row‑major order of the transposed matrix).
+     * \param[in] i Linear index.
+     * \return The coefficient from the original expression at the transposed position.
+     *
+     * This method computes the 2D coordinates from the linear index using the
+     * stored number of columns (`mCols`), swaps row and column, and forwards
+     * the call to the underlying evaluator.
+     */
     auto coeff(size_t i) const -> value_type
     {
         size_t c = i % mCols;
@@ -68,6 +117,15 @@ public:
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief SIMD packet access (not supported).
+     * \param[in] i Linear index.
+     * \return A dummy `Packed<value_type>`.
+     *
+     * \note This method always triggers an assertion because the data of a
+     *       transposed matrix is not stored contiguously, making efficient
+     *       vectorised access impossible in a generic way.
+     */
     auto packet(size_t i) const
     {
         TL_ASSERT(false, "SIMD packet not supported for this expression");

@@ -24,11 +24,10 @@
 
 #pragma once
 
-
+/// \cond
 
 namespace tl
 {
-
  
 namespace detail
 {
@@ -54,3 +53,5 @@ bool matrix_equal(const L &lhs, const R &rhs)
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

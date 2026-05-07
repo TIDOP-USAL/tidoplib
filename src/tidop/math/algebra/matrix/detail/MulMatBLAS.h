@@ -24,7 +24,9 @@
 
 #pragma once
 
-#include "tidop/math/base/blas.h"
+#include "tidop/math/base/Blas.h"
+
+/// \cond
 
 namespace tl
 {
@@ -117,3 +119,5 @@ void mulmat_blas(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

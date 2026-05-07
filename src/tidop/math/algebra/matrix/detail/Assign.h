@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/core/base/exception.h"
+#include "tidop/math/algebra/eval/DiagonalMatrixEval.h"
 #include "tidop/math/algebra/eval/MatBinaryEval.h"
 #include "tidop/math/algebra/eval/MatScalarEval.h"
 #include "tidop/math/algebra/eval/MatMulEval.h"
@@ -35,6 +36,8 @@
 #include "tidop/math/algebra/matrix/detail/MulMat.h"
 
 #include <type_traits>
+
+/// \cond
 
 namespace tl
 {
@@ -137,6 +140,9 @@ void assign_block(Block &dst, const Expr &expr)
     }
 }
 
+
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

@@ -24,7 +24,9 @@
 
 #pragma once
 
-#include "tidop/math/base/simd.h"
+#include "tidop/math/base/Simd.h"
+
+/// \cond
 
 namespace tl
 {
@@ -67,3 +69,4 @@ void mat_vec_mul_simd(const LHS &matrix, const RHS &vectorIn, Out &vectorOut)
 
 } // namespace tl
 
+/// \endcond

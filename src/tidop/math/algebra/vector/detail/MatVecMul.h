@@ -29,6 +29,8 @@
 #include "tidop/math/algebra/detail/Evaluator.h"
 #include "tidop/math/algebra/matrix/MatrixConfig.h"
 
+/// \cond
+
 namespace tl
 {
 
@@ -96,3 +98,4 @@ void mat_vec_mul(const Mat &matrix, const VecIn &vectorIn, VecOut &vectorOut)
 
 } // namespace tl
 
+/// \endcond

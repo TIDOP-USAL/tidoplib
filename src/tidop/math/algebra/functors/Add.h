@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Add.h
+ * \brief Functor for addition operation in expression templates.
+ *
+ * This file defines the `AddOp` functor, which performs element‑wise addition
+ * on scalar values and SIMD packets when available. It is used internally by
+ * expression templates such as `VecBinaryExpr` and `MatBinaryExpr` to represent
+ * the addition operation.
+ *
+ * \ingroup Functors
+ * \see tl::SubOp, tl::MulOp, tl::DivOp
+ */
+
 #pragma once
 
 namespace tl
@@ -31,9 +43,30 @@ namespace tl
  *  \{
  */
 
+/*!
+ * \struct AddOp
+ * \brief Functor that applies addition to its arguments.
+ *
+ * This functor is stateless and can be used with both scalar types and
+ * SIMD packet types (if `TL_HAVE_SIMD_INTRINSICS` is defined). It is a
+ * template parameter for expression classes that need to perform addition.
+ *
+ * ### Example
+ * \code
+ * AddOp add;
+ * double result = add(3.0, 4.0); // result == 7.0
+ * \endcode
+ */
 struct AddOp
 {
 
+    /*!
+     * \brief Adds two scalar values.
+     * \tparam T Arithmetic type (deduced).
+     * \param[in] a First operand.
+     * \param[in] b Second operand.
+     * \return The sum `a + b`.
+     */
     template<typename T>
     constexpr T operator()(const T &a, const T &b) const
     {
@@ -41,6 +74,14 @@ struct AddOp
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Adds two SIMD packets element‑wise.
+     * \tparam T Element type (deduced from `Packed<T>`).
+     * \param[in] a First packet.
+     * \param[in] b Second packet.
+     * \return A packet containing the element‑wise sum.
+     * \note This overload is only available when SIMD intrinsics are enabled.
+     */
     template<typename T>
     auto operator()(const Packed<T> &a, const Packed<T> &b) const
     {

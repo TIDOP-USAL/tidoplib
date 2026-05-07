@@ -22,21 +22,26 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file MatrixBlockEval.h
- * \brief Evaluator specialization for MatrixBlock (submatrix view).
+/*! \file DiagonalMatrixEval.h
+ * \brief Evaluator specialization for diagonal matrix expressions.
  *
- * This file provides the `Evaluator` specialization for `MatrixBlock<T>`, which
- * is a non‑owning view of a contiguous block within a parent matrix. The evaluator
- * simply forwards coefficient access to the underlying block; no temporary storage
- * or computation is performed.
+ * This file provides the `Evaluator` specialization for `DiagonalMatrixExpr`,
+ * which represents a diagonal matrix constructed from a vector expression.
+ * The evaluator forwards coefficient access to the underlying vector evaluator,
+ * interpreting the diagonal entries as a linear sequence. Note that this
+ * evaluator only provides 1‑D coefficient access (`coeff(size_t i)`), suitable
+ * for contexts where the diagonal matrix is used as a vector (e.g., in some
+ * internal calculations). For matrix‑style coefficient access `coeff(r,c)`,
+ * a different approach is required.
  *
  * \ingroup Evaluators
- * \see tl::MatrixBlock, tl::Evaluator
+ * \see tl::DiagonalMatrixExpr, tl::Evaluator
  */
 
 #pragma once
 
 #include "tidop/math/algebra/eval/Evaluator.h"
+#include "tidop/math/algebra/expr/DiagonalMatrixExpr.h"
 
 namespace tl
 {
@@ -46,64 +51,74 @@ namespace tl
  */
 
 /*!
- * \brief Evaluator for `MatrixBlock<T>` (block view of a matrix).
+ * \brief Evaluator for `DiagonalMatrixExpr<Expr>`.
  *
- * \tparam T Element type (may be const or non‑const).
+ * \tparam Expr The vector expression type underlying the diagonal matrix.
  *
- * This evaluator provides read‑only access to the coefficients of a matrix block.
- * Because a block is already a lightweight view, the evaluator simply stores
- * a reference to the original block and forwards `coeff()` calls. SIMD packet
- * access is not supported and triggers an assertion.
+ * This evaluator stores an evaluator for the vector expression that provides
+ * the diagonal entries. The `coeff(size_t i)` method returns the i‑th diagonal
+ * element, effectively interpreting the diagonal matrix as a vector of its
+ * diagonal entries. This is consistent with the view that a diagonal matrix can
+ * be stored compactly as a vector. SIMD packet access is not supported.
  */
-template<typename T>
-class Evaluator<MatrixBlock<T>>
+template<typename Expr>
+class Evaluator<DiagonalMatrixExpr<Expr>>
 {
 
 private:
 
-    const MatrixBlock<T> &mBlock;
+    Evaluator<Expr> mExpr; /*!< Evaluator for the underlying vector expression. */
+    size_t mCols;
 
 public:
 
-    using value_type = std::remove_cv_t<T>;
+    using value_type = typename DiagonalMatrixExpr<Expr>::value_type;
+
+public:
 
     /*!
-     * \brief Constructs the evaluator from a `MatrixBlock`.
-     * \param[in] block The block view.
+     * \brief Constructs the evaluator from a `DiagonalMatrixExpr`.
+     * \param[in] expr The diagonal matrix expression.
      */
-    Evaluator(const MatrixBlock<T> &block)
-        : mBlock(block)
-    {}
+    Evaluator(const DiagonalMatrixExpr<Expr> &expr)
+      : mExpr(expr.expr()),
+        mCols(expr.cols())
+    {
+    }
 
     /*!
-     * \brief Returns the element at matrix position (r, c).
+     * \brief Returns the element at position (r, c).
      * \param[in] r Row index.
      * \param[in] c Column index.
      * \return The coefficient at the given position.
      */
     auto coeff(size_t r, size_t c) const -> value_type
     {
-        return mBlock(r,c);
+        return (r == c) ? mExpr.coeff(r) : value_type(0);
     }
 
     /*!
-     * \brief Returns the element at linear index i (row‑major order).
-     * \param[in] i Linear index.
+     * \brief Returns the i‑th diagonal element (0‑based).
+     * \param[in] i Index of the diagonal entry.
      * \return The coefficient at the given linear position.
      */
     auto coeff(size_t i) const -> value_type
     {
-        return mBlock(i);
+        size_t row = i / mCols;
+        size_t col = i % mCols;
+
+        return (row == col) ? mExpr.coeff(row) : value_type(0);
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     /*!
-     * \brief Returns a SIMD packet of coefficients (not supported for blocks).
+     * \brief SIMD packet access (not supported).
      * \param[in] i Linear index.
      * \return A dummy `Packed<value_type>`.
      *
-     * \note SIMD packet access is currently not implemented for `MatrixBlock`.
-     *       Calling this method will trigger an assertion.
+     * \note This method always triggers an assertion because diagonal matrices
+     *       are often used in non‑contiguous contexts and vectorised access
+     *       is not implemented for this expression type.
      */
     auto packet(size_t i) const
     {
@@ -111,6 +126,7 @@ public:
         return Packed<value_type>();
     }
 #endif
+
 };
 
 

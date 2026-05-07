@@ -22,6 +22,20 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file VecBinaryEval.h
+ * \brief Evaluator specialization for vector binary expressions.
+ *
+ * This file provides the `Evaluator` specialization for `VecBinaryExpr`, which
+ * represents an element‑wise binary operation between two vector expressions
+ * (e.g., addition, subtraction, component‑wise multiplication/division).
+ * The evaluator delegates coefficient access and SIMD packet operations to
+ * the evaluators of the left‑hand side (LHS) and right‑hand side (RHS)
+ * sub‑expressions, applying the binary operation to the results.
+ *
+ * \ingroup Evaluators
+ * \see tl::VecBinaryExpr, tl::Evaluator
+ */
+
 #pragma once
 
 #include "tidop/math/algebra/eval/Evaluator.h"
@@ -30,19 +44,31 @@
 namespace tl
 {
 
-/*! \addtogroup Algebra
+/*! \addtogroup Evaluators
  *  \{
  */
 
+/*!
+ * \brief Evaluator for `VecBinaryExpr` (binary operation on two vector expressions).
+ *
+ * \tparam LHS Left‑hand side vector expression type.
+ * \tparam RHS Right‑hand side vector expression type.
+ * \tparam Op  Binary operation functor (e.g., `AddOp`, `SubOp`).
+ *
+ * This evaluator stores evaluators for both sub‑expressions and forwards
+ * `coeff()` and `packet()` calls after applying the operation `Op` to the
+ * corresponding coefficients or packets. It is used internally to evaluate
+ * vector expressions without constructing temporary vectors.
+ */
 template<typename LHS, typename RHS, typename Op>
 class Evaluator<VecBinaryExpr<LHS, RHS, Op>>
 {
 
 private:
 
-    Evaluator<LHS> mLhs;
-    Evaluator<RHS> mRhs;
-    Op mOp;
+    Evaluator<LHS> mLhs; /*!< Evaluator for the left‑hand side expression. */
+    Evaluator<RHS> mRhs; /*!< Evaluator for the right‑hand side expression. */
+    Op mOp;              /*!< Binary operation functor. */
 
 public:
 
@@ -50,18 +76,33 @@ public:
 
 public:
 
+    /*!
+     * \brief Constructs the evaluator from a `VecBinaryExpr`.
+     * \param[in] expr The source binary expression.
+     */
     Evaluator(const VecBinaryExpr<LHS, RHS, Op> &expr)
       : mLhs(expr.lhs()),
         mRhs(expr.rhs())
     {
     }
 
+    /*!
+     * \brief Returns the element at linear index i.
+     * \param[in] i Element index.
+     * \return The result of `Op(lhs[i], rhs[i])`.
+     */
     auto coeff(size_t i) const -> value_type
     {
         return mOp(mLhs.coeff(i), mRhs.coeff(i));
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Returns a SIMD packet of coefficients starting at index i.
+     * \param[in] i Linear index.
+     * \return The result of applying `Op` to the corresponding packets of LHS and RHS.
+     * \note Only available when SIMD intrinsics are enabled.
+     */
     auto packet(size_t i) const
     {
         return mOp(mLhs.packet(i), mRhs.packet(i));

@@ -26,6 +26,8 @@
 
 #include "tidop/math/math.h"
 
+/// \cond
+
 namespace tl
 {
 
@@ -90,3 +92,5 @@ auto matrix_reduced_row_echelon_form(Matrix<T, Rows, Cols> matrix) -> Matrix<T, 
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

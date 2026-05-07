@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop lu test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/decomp/lu.h>
+#include <tidop/math/algebra/decomp/LU.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
 
 using namespace tl;

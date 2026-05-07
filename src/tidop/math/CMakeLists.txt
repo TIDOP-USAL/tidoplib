@@ -39,16 +39,18 @@ if(BUILD_TL_MATH)
                              math.h
                              angles.h
                              mathutils.h
-                             algebra/decomp/cholesky.h
-                             algebra/decomp/eigen.h
-                             algebra/decomp/lu.h
-                             algebra/decomp/qr.h
-                             algebra/decomp/svd.h
+                             algebra/decomp/Cholesky.h
+                             algebra/decomp/Eigen.h
+                             algebra/decomp/LU.h
+                             algebra/decomp/QR.h
+                             algebra/decomp/SVD.h
+                             algebra/eval/DiagonalMatrixEval.h
                              algebra/eval/Evaluator.h
                              algebra/eval/MatBinaryEval.h
                              algebra/eval/MatMulEval.h
                              algebra/eval/MatrixBlockEval.h
                              algebra/eval/MatrixColEval.h
+                             algebra/eval/MatrixDiagonalEval.h
                              algebra/eval/MatrixEval.h
                              algebra/eval/MatrixRowEval.h
                              algebra/eval/MatScalarEval.h
@@ -59,6 +61,7 @@ if(BUILD_TL_MATH)
                              algebra/eval/VecScalarEval.h
                              algebra/eval/VectorEval.h
                              algebra/eval/VecUnaryMinusEval.h
+                             algebra/expr/DiagonalMatrixExpr.h
                              algebra/expr/MatBinaryExpr.h
                              algebra/expr/MatMulExpr.h
                              algebra/expr/MatScalarExpr.h
@@ -72,15 +75,15 @@ if(BUILD_TL_MATH)
                              algebra/functors/Div.h
                              algebra/functors/Mul.h
                              algebra/functors/Sub.h
-                             algebra/matrix/Kernel.h
                              algebra/matrix/Matrix.h
                              algebra/matrix/MatrixBase.h
                              algebra/matrix/MatrixBlock.h
                              algebra/matrix/MatrixCol.h
                              algebra/matrix/MatrixConfig.h
+                             algebra/matrix/MatrixDiagonal.h
                              algebra/matrix/MatrixRow.h
                              algebra/matrix/detail/AdjugateMatrix.h
-                             algebra/matrix/detail/Assing.h
+                             algebra/matrix/detail/Assign.h
                              algebra/matrix/detail/Cofactor.h
                              algebra/matrix/detail/CofactorMatrix.h
                              algebra/matrix/detail/Determinant.h
@@ -101,19 +104,19 @@ if(BUILD_TL_MATH)
                              algebra/rotations/rotations.h
                              algebra/vector/Vector.h
                              algebra/vector/VectorBase.h
-                             algebra/vector/detail/Assing.h
+                             algebra/vector/detail/Assign.h
                              algebra/vector/detail/VecEqual.h
                              algebra/vector/detail/MatVecMul.h
                              algebra/vector/detail/MatVecMulCPP.h
                              algebra/vector/detail/MatVecMulSIMD.h
                              algebra/BaseExpr.h
                              algebra/matrices.h
-                             base/blas.h
-                             base/cuda.h
+                             base/Blas.h
+                             base/Cuda.h
                              base/Concepts.h
-                             base/data.h
-                             base/lapack.h
-                             base/simd.h
+                             base/Data.h
+                             base/Lapack.h
+                             base/Simd.h
                              base/Traits.h
                              geometry/affine.h
                              geometry/helmert.h

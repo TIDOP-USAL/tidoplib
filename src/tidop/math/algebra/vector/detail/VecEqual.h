@@ -24,6 +24,7 @@
 
 #pragma once
 
+/// \cond
 
 namespace tl
 {
@@ -50,3 +51,5 @@ bool vector_equal(const L &lhs, const R &rhs)
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

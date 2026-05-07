@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file Dimensions.h
+/*! \file Dimension.h
  * \brief Dimension types and utilities for geometric entities.
  *
  * This file defines the Dimension enumeration and related utilities for

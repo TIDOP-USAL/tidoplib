@@ -24,6 +24,8 @@
 
 #pragma once
 
+/// \cond
+
 namespace tl
 {
 
@@ -164,3 +166,5 @@ auto matrix_determinant(const Matrix<T, Rows, Cols> &mat) -> T
 } // namespace detail
 
 } // End namespace tl
+
+/// \endcond

@@ -22,13 +22,29 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file LU.h
+ * \brief LU decomposition with partial or full pivoting.
+ *
+ * This file defines the `LuDecomposition` class, which performs LU decomposition
+ * of a square matrix \( A \) with optional row pivoting (partial) or row and column
+ * pivoting (full). The decomposition is stored compactly in a single matrix \( LU \)
+ * where the lower part (excluding diagonal) contains the multipliers of \( L \) and
+ * the upper part contains the elements of \( U \). The diagonal of \( L \) is implicitly 1.
+ *
+ * The class provides methods to solve linear systems, compute the determinant,
+ * inverse, rank, and to extract the \( L \) and \( U \) factors.
+ *
+ * \ingroup Decomposition
+ * \see tl::CholeskyDecomposition, tl::QRDecomposition, tl::SingularValueDecomposition
+ */
+
 #pragma once
 
 #include "tidop/math/math.h"
 #include "tidop/core/base/exception.h"
 #include "tidop/math/algebra/vector/Vector.h"
-#include "tidop/math/base/lapack.h"
-#include "tidop/math/base/cuda.h"
+#include "tidop/math/base/Lapack.h"
+#include "tidop/math/base/Cuda.h"
 
 namespace tl
 {
@@ -37,188 +53,159 @@ namespace tl
  *  \{
  */
 
- /// \cond
-
-template<typename T>
-class LuDecomposition;
-
-/// \endcond
-
-/*!
- * \brief LU Decomposition with Partial and Full Pivoting
- *
- * The LU decomposition factorizes a matrix \( A \) into a lower triangular matrix \( L \)
- * and an upper triangular matrix \( U \), optionally applying row and column pivoting.
- * This decomposition is useful for solving systems of linear equations, computing the determinant,
- * and finding the inverse of a matrix.
- *
- * The decomposition is given by:
- * \f[ P A Q = L U \f]
- * where:
- *  - \( P \) is a permutation matrix representing row swaps.
- *  - \( Q \) is a permutation matrix representing column swaps (only in full pivoting).
- *  - \( L \) is a lower triangular matrix with ones on the diagonal.
- *  - \( U \) is an upper triangular matrix.
- *
- * \tparam Matrix_t The matrix type (e.g., `Matrix`).
- * \tparam T The data type of elements in the matrix (e.g., `double`).
- * \tparam _rows The number of rows in the matrix.
- * \tparam _cols The number of columns in the matrix.
- */
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-class LuDecomposition<Matrix_t<T, _rows, _cols>>
+ /*!
+  * \class LuDecomposition
+  * \brief LU decomposition with partial or full pivoting.
+  *
+  * \tparam Mat A type satisfying the `DenseMatrix` concept (e.g., `Matrix<T, Rows, Cols>`).
+  *             The matrix must be square and have a floating‑point element type.
+  *
+  * The decomposition is \( P A Q = L U \), where:
+  * - \( P \) is a row permutation matrix (partial pivoting) or both \( P \) and \( Q \) (full pivoting).
+  * - \( L \) is lower triangular with ones on the diagonal.
+  * - \( U \) is upper triangular.
+  *
+  * The compact storage `LU` contains the strict lower part of \( L \) (the multipliers)
+  * and the whole \( U \) (including its diagonal). The diagonal of \( L \) is assumed to be 1.
+  *
+  * ### Example
+  * \code
+  * Matrix<double, 3, 3> A = {{2, -1, -2}, {-4, 6, 3}, {-4, -2, 8}};
+  * LuDecomposition<Matrix<double, 3, 3>> lu(A); // partial pivoting by default
+  * Vector<double, 3> b = {2, 2, 2};
+  * auto x = lu.solve(b);
+  * double det = lu.determinant();
+  * auto inv = lu.inverse();
+  * auto L = lu.lower();
+  * auto U = lu.upper();
+  * \endcode
+  */
+template<DenseMatrix Mat>
+class LuDecomposition
 {
 
 public:
 
-    /*!
-     * \brief Constructs an LU Decomposition of a given matrix
-     *
-     * This constructor performs the LU decomposition of matrix \( A \), storing the result
-     * in a compact form where \( L \) and \( U \) share the same storage.
-     *
-     * \param[in] a The matrix \( A \) to decompose.
-     * \param[in] fullPivot If true, full pivoting (row and column swapping) is used.
-     */
-    LuDecomposition(const Matrix_t<T, _rows, _cols> &a, bool fullPivot = false);
+    using value_type = typename matrix_traits<Mat>::value_type;
+    static constexpr size_t rows = matrix_traits<Mat>::rows;
+    static constexpr size_t cols = matrix_traits<Mat>::cols;
+
+private:
+
+    Matrix<value_type, rows, cols> LU;      /*!< Compact storage: L (strict lower) + U (upper). */
+    bool mFullPivot;                        /*!< If true, full pivoting (row+column); else partial. */
+    Vector<int, rows> mPivotIndexRow;       /*!< Row permutation indices (0‑based). */
+    Vector<int, rows> mPivotIndexCol;       /*!< Column permutation indices (full pivoting only). */
+    value_type d;                           /*!< Sign of the permutation (±1). */
+    size_t mRows;                           /*!< Number of rows (actual dimension). */
+    size_t mCols;                           /*!< Number of columns (equal to mRows for square). */
+    Vector<int, rows> mColPer;              /*!< Column permutation for solution reconstruction. */
+    bool mIsSingular;                       /*!< True if the matrix is (numerically) singular. */
+
+public:
 
     /*!
-     * \brief Solves the system of equations \( A \cdot x = b \) using the LU decomposition
-     *
-     * Using the decomposed matrix \( LU \), this method solves the system of linear equations
-     * \( A \cdot x = b \), where \( A \) is the matrix and \( b \) is the right-hand side vector.
-     *
-     * \param[in] b The right-hand side vector \( b \).
-     * \return The solution vector \( x \).
+     * \brief Constructs the LU decomposition.
+     * \param[in] a The square matrix to decompose.
+     * \param[in] fullPivot If `true`, perform full pivoting (row and column);
+     *                      otherwise, only partial (row) pivoting.
+     * \pre `a.rows() == a.cols()` (square matrix).
+     * \pre The element type must be floating‑point.
      */
-    auto solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>;
+    LuDecomposition(const Mat &a, bool fullPivot = false);
 
     /*!
-     * \brief Solves the system of equations \( A \cdot X = B \) using the LU decomposition
-     *
-     * Using the LU decomposition, this method solves the system of linear equations
-     * \( A \cdot X = B \), where \( A \) is the matrix and \( B \) is the matrix of right-hand side vectors.
-     *
-     * \param[in] b The right-hand side matrix \( B \).
-     * \return The solution matrix \( X \).
+     * \brief Solves \( A x = b \) for a single right‑hand side vector.
+     * \tparam Vec A type satisfying `VectorExpr`.
+     * \param[in] b The right‑hand side vector.
+     * \return The solution vector \( x \) of length `rows`.
+     * \pre `b.size() == rows()`.
+     * \throws `tl::Exception` if the matrix is singular or the solve fails.
      */
-    template<typename Matrix2_t>
-    auto solve(const Matrix2_t &b) const -> Matrix2_t;
+    template<VectorExpr Vec>
+    auto solve(const Vec &b) const -> Vector<value_type, rows>;
 
     /*!
-     * \brief Gets the LU decomposition matrix
-     *
-     * This method returns the matrix \( LU \), which contains both the lower triangular matrix \( L \)
-     * and the upper triangular matrix \( U \).
-     *
-     * \return The matrix \( LU \), which contains both \( L \) and \( U \).
+     * \brief Solves \( A X = B \) for multiple right‑hand sides.
+     * \tparam MatExpr A type satisfying `MatrixExpr`.
+     * \param[in] b The right‑hand side matrix (each column is a separate system).
+     * \return The solution matrix \( X \) of size `rows` × `cols(b)`.
+     * \pre `b.rows() == rows()`.
+     * \throws `tl::Exception` if the matrix is singular or the solve fails.
      */
-    auto lu() const -> Matrix_t<T, _rows, _cols>;
+    template<MatrixExpr MatExpr>
+    auto solve(const MatExpr &b) const/* -> Matrix<value_type, rows, cols>*/;
 
     /*!
-     * \brief Computes the determinant of the original matrix \( A \)
-     *
-     * The determinant is given by:
-     * \f[
-     * \det(A) = d \cdot \prod_{i} U(i, i)
-     * \f]
-     * where \( d \) accounts for row and column permutations.
-     *
-     * \return The determinant of \( A \).
+     * \brief Returns the compact LU matrix.
+     * \return The matrix `LU` containing the strict lower part of \( L \) and the whole \( U \).
      */
-    // Con Lapack no se esta calculando
-    auto determinant() const -> T;
+    auto lu() const -> Matrix<value_type, rows, cols>;
 
     /*!
-     * \brief Computes the inverse of the matrix \( A \) using LU decomposition.
-     *
-     * This method solves \( A X = I \) using LU factorization, where \( X \) is the inverse of \( A \).
-     * If the matrix is singular (non-invertible), an exception is thrown.
-     *
+     * \brief Computes the determinant of the original matrix \( A \).
+     * \return The determinant.
+     * \note The sign `d` is taken into account based on row (and column) swaps.
+     */
+    auto determinant() const -> value_type;
+
+    /*!
+     * \brief Computes the inverse of the original matrix \( A \) using the LU decomposition.
      * \return The inverse matrix \( A^{-1} \).
+     * \throws `tl::Exception` if the matrix is singular.
      */
-    auto inverse() const -> Matrix_t<T, _rows, _cols>;
+    auto inverse() const -> Matrix<value_type, rows, cols>;
 
     /*!
-     * \brief Computes the rank of the matrix \( A \).
-     *
-     * The rank is the number of nonzero pivots in the upper triangular matrix \( U \).
-     *
-     * \return The rank of \( A \).
+     * \brief Returns the rank of the original matrix.
+     * \return The rank, computed as the number of non‑zero pivots in \( U \)
+     *         (using a tolerance for near‑zero).
      */
     auto rank() const -> size_t;
 
     /*!
-     * \brief Checks if the matrix \( A \) is singular.
-     *
-     * A matrix is singular if it has a determinant of zero, or equivalently, if any diagonal element of \( U \) is zero.
-     *
-     * \return True if the matrix is singular, false otherwise.
+     * \brief Checks whether the matrix is (numerically) singular.
+     * \return `true` if any pivot is zero (within a small epsilon), `false` otherwise.
      */
     auto isSingular() const -> bool;
 
     /*!
      * \brief Extracts the lower triangular matrix \( L \).
-     *
-     * The matrix \( L \) is returned with ones on its diagonal.
-     *
-     * \return The lower triangular matrix \( L \).
+     * \return A matrix with ones on the diagonal and the multipliers from the compact `LU`.
      */
-    auto lower() const -> Matrix_t<T, _rows, _cols>;
+    auto lower() const -> Matrix<value_type, rows, cols>;
 
     /*!
      * \brief Extracts the upper triangular matrix \( U \).
-     *
-     * The matrix \( U \) is returned as an upper triangular matrix.
-     *
-     * \return The upper triangular matrix \( U \).
+     * \return The upper triangular matrix from the compact `LU`.
      */
-    auto upper() const -> Matrix_t<T, _rows, _cols>;
+    auto upper() const -> Matrix<value_type, rows, cols>;
 
 private:
 
     /*!
-     * \brief Performs the LU decomposition.
-     *
-     * This method factorizes the matrix \( A \) into \( L \) and \( U \), applying
-     * row and optionally column pivoting.
+     * \brief Performs the actual LU decomposition (partial or full pivoting).
+     * \post `LU`, `mPivotIndexRow`, `mPivotIndexCol`, `d`, and `mIsSingular` are set.
      */
     void decompose();
 
-private:
-
-    Matrix_t<T, _rows, _cols> LU;
-    bool mFullPivot;
-    Vector<int, _rows> mPivotIndexRow;
-    Vector<int, _rows> mPivotIndexCol;
-    T d;
-    size_t mRows;
-    size_t mCols;
-    Vector<int, _rows > mColPer;
-    bool mIsSingular;
 };
 
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _rows, _cols> &a, bool fullPivot)
+template<DenseMatrix Mat>
+LuDecomposition<Mat>::LuDecomposition(const Mat &a, bool fullPivot)
   : LU(a),
     mFullPivot(fullPivot),
     mPivotIndexRow(a.rows()),
     mPivotIndexCol(a.rows()),
-    d(consts::one<T>),
+    d(consts::one<value_type>),
     mRows(a.rows()),
     mCols(a.cols()),
     mColPer(mRows),
     mIsSingular(false)
 {
-    static_assert(_rows == _cols, "Non-Square Matrix");
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(rows == cols, "Non-Square Matrix");
+    static_assert(std::is_floating_point<value_type>::value, "Integral type not supported");
     TL_ASSERT(mRows == mCols, "Non-Square Matrix");
 
     for (size_t i = 0; i < mRows; i++) {
@@ -228,16 +215,14 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
     this->decompose();
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>
+template<DenseMatrix Mat>
+template<VectorExpr Vec>
+auto LuDecomposition<Mat>::solve(const Vec &b) const -> Vector<value_type, rows>
 {
     TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
     TL_ASSERT(!mIsSingular, "The matrix is singular and cannot be solved.");
 
-    Vector<T, _rows> x(b);
+    Vector<value_type, rows> x(b);
 
     try {
 
@@ -257,7 +242,7 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
 
 #endif
 
-            T sum;
+            value_type sum;
             size_t ii = 0;
 
             // 1. Sustitución hacia adelante (L * y = Pb)
@@ -271,7 +256,7 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
                     for (size_t j = ii - 1; j < i; j++) {
                         sum -= LU(i, j) * x[j];
                     }
-                } else if (sum != consts::zero<T>) {
+                } else if (sum != consts::zero<value_type>) {
                     ii = i + 1;
                 }
 
@@ -291,7 +276,7 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
 
             // 3. Si se usó pivotación completa, reordenar la solución aplicando la permutación inversa de columnas.
             if (mFullPivot) {
-                Vector<T, _rows> y = x;
+                Vector<value_type, rows> y = x;
 
                 // Reordenamos la solución aplicando la permutación de columnas: 
                 for (size_t i = 0; i < mRows; i++) {
@@ -308,17 +293,14 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b
     return x;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-template<typename Matrix2_t>
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix2_t &b) const -> Matrix2_t
+template<DenseMatrix Mat>
+template<MatrixExpr MatExpr>
+auto LuDecomposition<Mat>::solve(const MatExpr &b) const/* -> Matrix<value_type, rows, cols>*/
 {
     TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
     TL_ASSERT(!mIsSingular, "The matrix is singular and cannot be solved.");
 
-    Matrix2_t x(b);
+    Matrix<value_type> x(b);
 
     try {
 
@@ -340,7 +322,7 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix2_t &b) const
 #endif
 
             for (size_t j = 0; j < x.cols(); j++) {
-                Vector<T, _rows> temp = b.col(j);
+                Vector<value_type, rows> temp = b.col(j);
                 x.col(j) = this->solve(temp);
             }
 
@@ -355,11 +337,8 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix2_t &b) const
     return x;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
+template<DenseMatrix Mat>
+void LuDecomposition<Mat>::decompose()
 {
     try {
 #ifdef TL_HAVE_OPENBLAS 
@@ -375,14 +354,14 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
                 }
             }
 
-            this->d = (rowSwaps % 2 == 0) ? T(1) : T(-1);
+            this->d = (rowSwaps % 2 == 0) ? value_type(1) : value_type(-1);
 
         } else {
 #endif
 
             for (size_t k = 0; k < mRows; k++) {
 
-                T big = consts::zero<T>;
+                value_type big = consts::zero<value_type>;
                 size_t pivot_row = k;
                 size_t pivot_col = k;
 
@@ -390,7 +369,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
                     if (mFullPivot) {
                         for (size_t j = k; j < mRows; j++) {
-                            T temp = std::abs(LU[i][j]);
+                            value_type temp = std::abs(LU[i][j]);
                             if (temp > big) {
                                 big = temp;
                                 pivot_row = i;
@@ -398,7 +377,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
                             }
                         }
                     } else {
-                        T temp = std::abs(LU[i][k]);
+                        value_type temp = std::abs(LU[i][k]);
                         if (temp > big) {
                             big = temp;
                             pivot_row = i;
@@ -425,15 +404,15 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
                 if (isNearlyZero(LU[k][k])) {
                     mIsSingular = true;
-                    LU[k][k] = std::numeric_limits<T>::epsilon();
+                    LU[k][k] = std::numeric_limits<value_type>::epsilon();
                 }
 
-                T llkk = LU[k][k];
+                value_type llkk = LU[k][k];
 
                 // Actualización de la submatriz
                 for (size_t i = k + 1; i < mRows; i++) {
 
-                    T temp = LU[i][k];
+                    value_type temp = LU[i][k];
                     temp /= llkk;
                     LU[i][k] = temp;
 
@@ -450,22 +429,16 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     }
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const -> Matrix_t<T, _rows, _cols>
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::lu() const -> Matrix<value_type, rows, cols>
 {
     return LU;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::determinant() const -> value_type
 {
-    T det = this->d;
+    value_type det = this->d;
 
     for (size_t i = 0; i < mRows; i++)
         det *= LU(i,i);
@@ -473,21 +446,14 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
     return det;
 }
 
-
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse() const -> Matrix_t<T, _rows, _cols>
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::inverse() const -> Matrix<value_type, rows, cols>
 {
-    return solve(Matrix_t<T, _rows, _cols>::identity(mRows, mCols));
+    return solve(Matrix<value_type, rows, cols>::identity(mRows, mCols));
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::rank() const -> size_t
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::rank() const -> size_t
 {
     size_t r = 0;
     for (size_t i = 0; i < mRows; i++) {
@@ -498,22 +464,16 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::rank() const -> size_t
     return r;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::isSingular() const -> bool
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::isSingular() const -> bool
 {
     return mIsSingular;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::lower() const -> Matrix_t<T, _rows, _cols>
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::lower() const -> Matrix<value_type, rows, cols>
 {
-    Matrix_t<T, _rows, _cols> L = Matrix_t<T, _rows, _cols>::identity(mRows, mCols);
+    auto L = Matrix<value_type, rows, cols>::identity(mRows, mCols);
     for (size_t i = 0; i < mRows; i++) {
         for (size_t j = 0; j < i; j++) {
             L(i, j) = LU(i, j);
@@ -522,13 +482,10 @@ auto LuDecomposition<Matrix_t<T, _rows, _cols>>::lower() const -> Matrix_t<T, _r
     return L;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto LuDecomposition<Matrix_t<T, _rows, _cols>>::upper() const -> Matrix_t<T, _rows, _cols>
+template<DenseMatrix Mat>
+auto LuDecomposition<Mat>::upper() const -> Matrix<value_type, rows, cols>
 {
-    Matrix_t<T, _rows, _cols> U = Matrix_t<T, _rows, _cols>::zero(mRows, mCols);
+    auto U = Matrix<value_type, rows, cols>::zero(mRows, mCols);
     for (size_t i = 0; i < mRows; i++) {
         for (size_t j = i; j < mRows; j++) {
             U(i, j) = LU(i, j);

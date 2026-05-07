@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file MatUnaryMinusEval.h
+ * \brief Evaluator specialization for matrix unary minus expressions.
+ *
+ * This file provides the `Evaluator` specialization for `MatUnaryMinusExpr`,
+ * which represents the negation of a matrix expression (i.e., `-matrix`).
+ * The evaluator simply forwards coefficient access after applying the unary
+ * minus operator. Both scalar coefficient access and SIMD packet operations
+ * are supported.
+ *
+ * \ingroup Evaluators
+ * \see tl::MatUnaryMinusExpr, tl::Evaluator
+ */
+
 #pragma once
 
 #include "tidop/math/algebra/eval/Evaluator.h"
@@ -30,17 +43,26 @@
 namespace tl
 {
 
-/*! \addtogroup Algebra
+/*! \addtogroup Evaluators
  *  \{
  */
 
+/*!
+ * \brief Evaluator for `MatUnaryMinusExpr<Expr>`.
+ *
+ * \tparam Expr The matrix expression type being negated.
+ *
+ * This evaluator stores an evaluator for the underlying expression and
+ * returns the negative of its coefficients. It is a thin wrapper that
+ * transforms access to the sub‑expression by applying `operator-`.
+ */
 template<typename Expr>
 class Evaluator<MatUnaryMinusExpr<Expr>>
 {
 
 private:
 
-    Evaluator<Expr> mExpr;
+    Evaluator<Expr> mExpr; /*!< Evaluator for the operand expression. */
 
 public:
 
@@ -48,22 +70,43 @@ public:
 
 public:
 
+    /*!
+     * \brief Constructs the evaluator from a `MatUnaryMinusExpr`.
+     * \param[in] expr The source unary minus expression.
+     */
     Evaluator(const MatUnaryMinusExpr<Expr> &expr)
       : mExpr(expr.expr())
     {
     }
 
+    /*!
+     * \brief Returns the element at matrix position (r, c) after negation.
+     * \param[in] r Row index.
+     * \param[in] c Column index.
+     * \return `-coeff` of the underlying expression at the same position.
+     */
     auto coeff(size_t r, size_t c) const -> value_type
     {
         return -mExpr.coeff(r, c);
     }
 
+    /*!
+     * \brief Returns the element at linear index i after negation.
+     * \param[in] i Linear index (row‑major order).
+     * \return `-coeff` of the underlying expression at the same index.
+     */
     auto coeff(size_t i) const -> value_type
     {
         return -mExpr.coeff(i);
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Returns a SIMD packet of coefficients starting at index i, after negation.
+     * \param[in] i Linear index.
+     * \return A `Packed<T>` containing the negated coefficients.
+     * \note Only available when SIMD intrinsics are enabled.
+     */
     auto packet(size_t i) const
     {
         return -mExpr.packet(i);

@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Div.h
+ * \brief Functor for division operation in expression templates.
+ *
+ * This file defines the `DivOp` functor, which performs element‑wise division
+ * on scalar values and handles SIMD packets with a fallback for integral types
+ * where SIMD division is unavailable. It is used internally by expression
+ * templates such as `VecBinaryExpr` and `MatBinaryExpr` to represent division.
+ *
+ * \ingroup Functors
+ * \see tl::AddOp, tl::SubOp, tl::MulOp
+ */
+
 #pragma once
 
 namespace tl
@@ -31,9 +43,31 @@ namespace tl
  *  \{
  */
 
+/*!
+ * \struct DivOp
+ * \brief Functor that applies division to its arguments.
+ *
+ * This functor is stateless. For scalar types it performs direct division.
+ * For SIMD packets, when the element type is floating-point, vectorised division
+ * is used; for integral types a scalar fallback is employed because many SIMD
+ * instruction sets do not support integer division natively.
+ *
+ * ### Example
+ * \code
+ * DivOp div;
+ * double result = div(12.0, 3.0); // result == 4.0
+ * \endcode
+ */
 struct DivOp
 {
 
+    /*!
+     * \brief Divides two scalar values.
+     * \tparam T Arithmetic type (deduced).
+     * \param[in] a Numerator.
+     * \param[in] b Denominator.
+     * \return The quotient `a / b`.
+     */
     template<typename T>
     constexpr T operator()(const T &a, const T &b) const
     {
@@ -41,6 +75,17 @@ struct DivOp
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Divides two SIMD packets element‑wise (with fallback for integers).
+     * \tparam T Element type (deduced from `Packed<T>`).
+     * \param[in] a Numerator packet.
+     * \param[in] b Denominator packet.
+     * \return A packet containing the element‑wise quotient.
+     *
+     * For floating‑point types, this uses the SIMD division operator.
+     * For integral types, it falls back to scalar division on each element
+     * due to lack of native SIMD integer division in many ISAs.
+     */
     template<typename T>
     auto operator()(const Packed<T> &a, const Packed<T> &a2) const
     {

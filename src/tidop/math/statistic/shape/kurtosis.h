@@ -102,8 +102,8 @@ public:
     static auto create(KurtosisMethod method) -> std::shared_ptr<Kurtosis<T>>;
 };
 
-#include "tidop/math/statistic/shape/kurtosis.impl.h"
-
 /*! \} */ 
+
+#include "tidop/math/statistic/shape/kurtosis.impl.h"
 
 } // End namespace tl

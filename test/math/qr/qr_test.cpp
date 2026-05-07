@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop qr test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/decomp/qr.h>
+#include <tidop/math/algebra/decomp/QR.h>
 
 using namespace tl;
 
@@ -143,8 +143,8 @@ BOOST_FIXTURE_TEST_CASE(rectangular_matrix, QrTest)
     BOOST_CHECK_CLOSE(-0.0776151, q.at(0, 0), 0.01);
     BOOST_CHECK_CLOSE(-0.833052, q.at(0, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(0.5405, q.at(0, 2), 0.01);
-    BOOST_CHECK_CLOSE(-0.0885, q.at(0, 3), 0.01);
+    BOOST_CHECK_CLOSE(0.540521, q.at(0, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.088526, q.at(0, 3), 0.01);
 #else
     BOOST_CHECK_CLOSE(-0.392045, q.at(0, 2), 0.01);
     BOOST_CHECK_CLOSE(-0.382492, q.at(0, 3), 0.01);
@@ -152,8 +152,8 @@ BOOST_FIXTURE_TEST_CASE(rectangular_matrix, QrTest)
     BOOST_CHECK_CLOSE(-0.31046, q.at(1, 0), 0.01);
     BOOST_CHECK_CLOSE(-0.451237, q.at(1, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.6547, q.at(1, 2), 0.01);
-    BOOST_CHECK_CLOSE(0.5209, q.at(1, 3), 0.01);
+    BOOST_CHECK_CLOSE(-0.654711, q.at(1, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.520916, q.at(1, 3), 0.01);
 #else
     BOOST_CHECK_CLOSE(0.237634, q.at(1, 2), 0.01);
     BOOST_CHECK_CLOSE(0.802203, q.at(1, 3), 0.01);
@@ -161,8 +161,8 @@ BOOST_FIXTURE_TEST_CASE(rectangular_matrix, QrTest)
     BOOST_CHECK_CLOSE(-0.543305, q.at(2, 0), 0.01);
     BOOST_CHECK_CLOSE(-0.069421, q.at(2, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(-0.3121, q.at(2, 2), 0.01);
-    BOOST_CHECK_CLOSE(-0.7763, q.at(2, 3), 0.01);
+    BOOST_CHECK_CLOSE(-0.312114, q.at(2, 2), 0.01);
+    BOOST_CHECK_CLOSE(-0.776252, q.at(2, 3), 0.01);
 #else
     BOOST_CHECK_CLOSE(0.700868, q.at(2, 2), 0.01);
     BOOST_CHECK_CLOSE(-0.456929, q.at(2, 3), 0.01);
@@ -170,8 +170,8 @@ BOOST_FIXTURE_TEST_CASE(rectangular_matrix, QrTest)
     BOOST_CHECK_CLOSE(-0.776151, q.at(3, 0), 0.01);
     BOOST_CHECK_CLOSE(0.312395, q.at(3, 1), 0.01);
 #ifdef TL_HAVE_OPENBLAS
-    BOOST_CHECK_CLOSE(0.4263, q.at(3, 2), 0.01);
-    BOOST_CHECK_CLOSE(0.3439, q.at(3, 3), 0.01);
+    BOOST_CHECK_CLOSE(0.426331, q.at(3, 2), 0.01);
+    BOOST_CHECK_CLOSE(0.343862, q.at(3, 3), 0.01);
 #else
     BOOST_CHECK_CLOSE(-0.546457, q.at(3, 2), 0.01);
     BOOST_CHECK_CLOSE(0.0372184, q.at(3, 3), 0.01);

@@ -24,6 +24,8 @@
 
 #pragma once
 
+/// \cond
+
 namespace tl
 {
 
@@ -91,3 +93,5 @@ auto matrix_row_echelon_form(Matrix<T, Rows, Cols> matrix) -> Matrix<T, Rows, Co
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

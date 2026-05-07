@@ -2526,13 +2526,13 @@ BOOST_FIXTURE_TEST_CASE(l1norm, MatrixTest)
     BOOST_CHECK_CLOSE(4., norm2, 0.01);
 }
 
-//BOOST_FIXTURE_TEST_CASE(l2norm, MatrixTest)
-//{
-//    double norm = _mat_5x5_d.l2Norm();
-//    BOOST_CHECK_CLOSE(25.39591, norm, 0.01);
-//    double norm2 = _mat_dyn_3x3_d->l2Norm();
-//    BOOST_CHECK_CLOSE(3.827, norm2, 0.01);
-//}
+BOOST_FIXTURE_TEST_CASE(l2norm, MatrixTest)
+{
+    double norm = _mat_5x5_d.l2Norm();
+    BOOST_CHECK_CLOSE(25.39591, norm, 0.01);
+    double norm2 = _mat_dyn_3x3_d->l2Norm();
+    BOOST_CHECK_CLOSE(3.827, norm2, 0.01);
+}
 
 BOOST_FIXTURE_TEST_CASE(multiple_add, MatrixTest)
 {
@@ -3047,110 +3047,108 @@ BOOST_FIXTURE_TEST_CASE(cwise_product, MatrixRowTest)
 
 }
 
-//BOOST_FIXTURE_TEST_CASE(cwise_div, MatrixRowTest)
-//{
-//    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
-//                           {9, 6, 2, 3, 3},
-//                           {8, 3, 2, 3, 3},
-//                           {5, 3, 3, 7, 6},
-//                           {5, 5, 7, 4, 7}};
-//
-//    auto v = a[0].cwiseDiv(a[1]);
-//
-//    BOOST_CHECK_CLOSE(0.6666666, v[0], 0.01);
-//    BOOST_CHECK_CLOSE(1.3333333, v[1], 0.01);
-//    BOOST_CHECK_CLOSE(3, v[2], 0.01);
-//    BOOST_CHECK_CLOSE(2.3333333, v[3], 0.01);
-//    BOOST_CHECK_CLOSE(1, v[4], 0.01);
-//
-//    a[0].cwiseDivInPlace(a[1]);
-//
-//    BOOST_CHECK_CLOSE(0.6666666, a[0][0], 0.01);
-//    BOOST_CHECK_CLOSE(1.3333333, a[0][1], 0.01);
-//    BOOST_CHECK_CLOSE(3, a[0][2], 0.01);
-//    BOOST_CHECK_CLOSE(2.3333333, a[0][3], 0.01);
-//    BOOST_CHECK_CLOSE(1, a[0][4], 0.01);
-//}
+BOOST_FIXTURE_TEST_CASE(cwise_div, MatrixRowTest)
+{
+    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
+                           {9, 6, 2, 3, 3},
+                           {8, 3, 2, 3, 3},
+                           {5, 3, 3, 7, 6},
+                           {5, 5, 7, 4, 7}};
 
-//BOOST_FIXTURE_TEST_CASE(multiplication_row_scalar, MatrixRowTest)
-//{
-//    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
-//                        {9, 6, 2, 3, 3},
-//                        {8, 3, 2, 3, 3},
-//                        {5, 3, 3, 7, 6},
-//                        {5, 5, 7, 4, 7}};
-//
-//    Matrix<int> v = a[2] * 10;
-//
-//    BOOST_CHECK_EQUAL(80, v[0]);
-//    BOOST_CHECK_EQUAL(30, v[1]);
-//    BOOST_CHECK_EQUAL(20, v[2]);
-//    BOOST_CHECK_EQUAL(30, v[3]);
-//    BOOST_CHECK_EQUAL(30, v[4]);
-//
-//    Matrix<int> v2 = 10 * a[2];
-//
-//    BOOST_CHECK_EQUAL(80, v2[0]);
-//    BOOST_CHECK_EQUAL(30, v2[1]);
-//    BOOST_CHECK_EQUAL(20, v2[2]);
-//    BOOST_CHECK_EQUAL(30, v2[3]);
-//    BOOST_CHECK_EQUAL(30, v2[4]);
-//
-//    a[3] *= 10;
-//
-//    BOOST_CHECK_EQUAL(50, a[3][0]);
-//    BOOST_CHECK_EQUAL(30, a[3][1]);
-//    BOOST_CHECK_EQUAL(30, a[3][2]);
-//    BOOST_CHECK_EQUAL(70, a[3][3]);
-//    BOOST_CHECK_EQUAL(60, a[3][4]);
-//}
+    Vector<double, 5> v = a[0].cwiseDiv(a[1]);
 
-//BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixRowTest)
-//{
-//    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
-//                           {9, 6, 2, 3, 3},
-//                           {8, 3, 2, 3, 3},
-//                           {5, 3, 3, 7, 6},
-//                           {5, 5, 7, 4, 7}};
-//
-//    // Esto antes devolvia un fila y se accedia como un vector.
-//    // MatrixBlock no tiene asignación ni constructor para expresiones por ahora
-//    Matrix<double> v = a[2] / 10.;
-//
-//    BOOST_CHECK_CLOSE(0.8, v[0][0], 0.01);
-//    BOOST_CHECK_CLOSE(0.3, v[0][1], 0.01);
-//    BOOST_CHECK_CLOSE(0.2, v[0][2], 0.01);
-//    BOOST_CHECK_CLOSE(0.3, v[0][3], 0.01);
-//    BOOST_CHECK_CLOSE(0.3, v[0][4], 0.01);
-//
-//
-//    a[3] /= 10.;
-//
-//    BOOST_CHECK_CLOSE(0.5, a[3][0], 0.01);
-//    BOOST_CHECK_CLOSE(0.3, a[3][1], 0.01);
-//    BOOST_CHECK_CLOSE(0.3, a[3][2], 0.01);
-//    BOOST_CHECK_CLOSE(0.7, a[3][3], 0.01);
-//    BOOST_CHECK_CLOSE(0.6, a[3][4], 0.01);
-//}
+    BOOST_CHECK_CLOSE(0.6666666, v[0], 0.01);
+    BOOST_CHECK_CLOSE(1.3333333, v[1], 0.01);
+    BOOST_CHECK_CLOSE(3, v[2], 0.01);
+    BOOST_CHECK_CLOSE(2.3333333, v[3], 0.01);
+    BOOST_CHECK_CLOSE(1, v[4], 0.01);
 
-//BOOST_FIXTURE_TEST_CASE(asign_vector, MatrixRowTest)
-//{
-//    Matrix<int, 5, 5> a{{6,8,6,7,3},
-//                        {9,6,2,3,3},
-//                        {8,3,2,3,3},
-//                        {5,3,3,7,6},
-//                        {5,5,7,4,7}};
-//
-//    Vector<int> v{1, 2, 3, 4, 5};
-//
-//    a.row(0) = v;
-//
-//    BOOST_CHECK_EQUAL(1, a.row(0)[0]);
-//    BOOST_CHECK_EQUAL(2, a.row(0)[1]);
-//    BOOST_CHECK_EQUAL(3, a.row(0)[2]);
-//    BOOST_CHECK_EQUAL(4, a.row(0)[3]);
-//    BOOST_CHECK_EQUAL(5, a.row(0)[4]);
-//}
+    a[0].cwiseDivInPlace(a[1]);
+
+    BOOST_CHECK_CLOSE(0.6666666, a[0][0], 0.01);
+    BOOST_CHECK_CLOSE(1.3333333, a[0][1], 0.01);
+    BOOST_CHECK_CLOSE(3, a[0][2], 0.01);
+    BOOST_CHECK_CLOSE(2.3333333, a[0][3], 0.01);
+    BOOST_CHECK_CLOSE(1, a[0][4], 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(multiplication_row_scalar, MatrixRowTest)
+{
+    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
+                        {9, 6, 2, 3, 3},
+                        {8, 3, 2, 3, 3},
+                        {5, 3, 3, 7, 6},
+                        {5, 5, 7, 4, 7}};
+
+    Vector<int> v = a[2] * 10;
+
+    BOOST_CHECK_EQUAL(80, v[0]);
+    BOOST_CHECK_EQUAL(30, v[1]);
+    BOOST_CHECK_EQUAL(20, v[2]);
+    BOOST_CHECK_EQUAL(30, v[3]);
+    BOOST_CHECK_EQUAL(30, v[4]);
+
+    Vector<int> v2 = 10 * a[2];
+
+    BOOST_CHECK_EQUAL(80, v2[0]);
+    BOOST_CHECK_EQUAL(30, v2[1]);
+    BOOST_CHECK_EQUAL(20, v2[2]);
+    BOOST_CHECK_EQUAL(30, v2[3]);
+    BOOST_CHECK_EQUAL(30, v2[4]);
+
+    a[3] *= 10;
+
+    BOOST_CHECK_EQUAL(50, a[3][0]);
+    BOOST_CHECK_EQUAL(30, a[3][1]);
+    BOOST_CHECK_EQUAL(30, a[3][2]);
+    BOOST_CHECK_EQUAL(70, a[3][3]);
+    BOOST_CHECK_EQUAL(60, a[3][4]);
+}
+
+BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixRowTest)
+{
+    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
+                           {9, 6, 2, 3, 3},
+                           {8, 3, 2, 3, 3},
+                           {5, 3, 3, 7, 6},
+                           {5, 5, 7, 4, 7}};
+
+    Vector<double> v = a[2] / 10.;
+
+    BOOST_CHECK_CLOSE(0.8, v[0], 0.01);
+    BOOST_CHECK_CLOSE(0.3, v[1], 0.01);
+    BOOST_CHECK_CLOSE(0.2, v[2], 0.01);
+    BOOST_CHECK_CLOSE(0.3, v[3], 0.01);
+    BOOST_CHECK_CLOSE(0.3, v[4], 0.01);
+
+
+    a[3] /= 10.;
+
+    BOOST_CHECK_CLOSE(0.5, a[3][0], 0.01);
+    BOOST_CHECK_CLOSE(0.3, a[3][1], 0.01);
+    BOOST_CHECK_CLOSE(0.3, a[3][2], 0.01);
+    BOOST_CHECK_CLOSE(0.7, a[3][3], 0.01);
+    BOOST_CHECK_CLOSE(0.6, a[3][4], 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(asign_vector, MatrixRowTest)
+{
+    Matrix<int, 5, 5> a{{6,8,6,7,3},
+                        {9,6,2,3,3},
+                        {8,3,2,3,3},
+                        {5,3,3,7,6},
+                        {5,5,7,4,7}};
+
+    Vector<int> v{1, 2, 3, 4, 5};
+
+    a.row(0) = v;
+
+    BOOST_CHECK_EQUAL(1, a[0][0]);
+    BOOST_CHECK_EQUAL(2, a[0][1]);
+    BOOST_CHECK_EQUAL(3, a[0][2]);
+    BOOST_CHECK_EQUAL(4, a[0][3]);
+    BOOST_CHECK_EQUAL(5, a[0][4]);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -3209,60 +3207,60 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MatrixColTest)
 }
 
 
-//BOOST_FIXTURE_TEST_CASE(iterate, MatrixColTest)
-//{
-//    {
-//        auto c0 = _mat_3x3_d.col(0);
-//        auto it0 = c0.begin();
-//        BOOST_CHECK_EQUAL(1.5, *it0);
-//        it0++;
-//        BOOST_CHECK_EQUAL(1.0, *it0);
-//        it0++;
-//        BOOST_CHECK_EQUAL(1.3, *it0);
-//        it0++;
-//        BOOST_CHECK(it0 == c0.end());
-//
-//        auto c1 = _mat_3x3_d.col(1);
-//        auto it1 = c1.begin();
-//        BOOST_CHECK_EQUAL(0.0, *it1);
-//        it1++;
-//        BOOST_CHECK_EQUAL(1.0, *it1);
-//        it1++;
-//        BOOST_CHECK_EQUAL(2.6, *it1);
-//        it1++;
-//        BOOST_CHECK(it1 == c1.end());
-//
-//        auto c2 = _mat_3x3_d.col(2);
-//        auto it2 = c2.begin();
-//        BOOST_CHECK_EQUAL(2.5, *it2);
-//        it2++;
-//        BOOST_CHECK_EQUAL(1.2, *it2);
-//        it2++;
-//        BOOST_CHECK_EQUAL(0.3, *it2);
-//        it2++;
-//        BOOST_CHECK(it2 == c2.end());
-//
-//    }
-//
-//    {
-//        auto c0 = _mat_dyn_2x2->col(0);
-//        auto it0 = c0.begin();
-//        BOOST_CHECK_EQUAL(2., *it0);
-//        it0++;
-//        BOOST_CHECK_EQUAL(1., *it0);
-//        it0++;
-//        BOOST_CHECK(it0 == c0.end());
-//
-//        auto c1 = _mat_dyn_2x2->col(1);
-//        auto it1 = c1.begin();
-//        BOOST_CHECK_EQUAL(3.0, *it1);
-//        it1++;
-//        BOOST_CHECK_EQUAL(4.0, *it1);
-//        it1++;
-//        BOOST_CHECK(it1 == c1.end());
-//    }
-//
-//}
+BOOST_FIXTURE_TEST_CASE(iterate, MatrixColTest)
+{
+    {
+        auto c0 = _mat_3x3_d.col(0);
+        auto it0 = c0.begin();
+        BOOST_CHECK_EQUAL(1.5, *it0);
+        it0++;
+        BOOST_CHECK_EQUAL(1.0, *it0);
+        it0++;
+        BOOST_CHECK_EQUAL(1.3, *it0);
+        it0++;
+        BOOST_CHECK(it0 == c0.end());
+
+        auto c1 = _mat_3x3_d.col(1);
+        auto it1 = c1.begin();
+        BOOST_CHECK_EQUAL(0.0, *it1);
+        it1++;
+        BOOST_CHECK_EQUAL(1.0, *it1);
+        it1++;
+        BOOST_CHECK_EQUAL(2.6, *it1);
+        it1++;
+        BOOST_CHECK(it1 == c1.end());
+
+        auto c2 = _mat_3x3_d.col(2);
+        auto it2 = c2.begin();
+        BOOST_CHECK_EQUAL(2.5, *it2);
+        it2++;
+        BOOST_CHECK_EQUAL(1.2, *it2);
+        it2++;
+        BOOST_CHECK_EQUAL(0.3, *it2);
+        it2++;
+        BOOST_CHECK(it2 == c2.end());
+
+    }
+
+    {
+        auto c0 = _mat_dyn_2x2->col(0);
+        auto it0 = c0.begin();
+        BOOST_CHECK_EQUAL(2., *it0);
+        it0++;
+        BOOST_CHECK_EQUAL(1., *it0);
+        it0++;
+        BOOST_CHECK(it0 == c0.end());
+
+        auto c1 = _mat_dyn_2x2->col(1);
+        auto it1 = c1.begin();
+        BOOST_CHECK_EQUAL(3.0, *it1);
+        it1++;
+        BOOST_CHECK_EQUAL(4.0, *it1);
+        it1++;
+        BOOST_CHECK(it1 == c1.end());
+    }
+
+}
 
 BOOST_FIXTURE_TEST_CASE(size, MatrixColTest)
 {
@@ -3272,42 +3270,42 @@ BOOST_FIXTURE_TEST_CASE(size, MatrixColTest)
     BOOST_CHECK_EQUAL(3, c1.size());
 }
 
-//BOOST_FIXTURE_TEST_CASE(value_at, MatrixColTest)
-//{
-//    {
-//        auto c0 = _mat_3x3_d.col(0);
-//
-//        BOOST_CHECK_EQUAL(1.5, c0[0]);
-//        BOOST_CHECK_EQUAL(1.0, c0[1]);
-//        BOOST_CHECK_EQUAL(1.3, c0[2]);
-//
-//        auto c1 = _mat_3x3_d.col(1);
-//
-//        BOOST_CHECK_EQUAL(0.0, c1[0]);
-//        BOOST_CHECK_EQUAL(1.0, c1[1]);
-//        BOOST_CHECK_EQUAL(2.6, c1[2]);
-//
-//        auto c2 = _mat_3x3_d.col(2);
-//
-//        BOOST_CHECK_EQUAL(2.5, c2[0]);
-//        BOOST_CHECK_EQUAL(1.2, c2[1]);
-//        BOOST_CHECK_EQUAL(0.3, c2[2]);
-//
-//    }
-//
-//    {
-//        auto c0 = _mat_dyn_2x2->col(0);
-//
-//        BOOST_CHECK_EQUAL(2., c0[0]);
-//        BOOST_CHECK_EQUAL(1., c0[1]);
-//
-//        auto c1 = _mat_dyn_2x2->col(1);
-//
-//        BOOST_CHECK_EQUAL(3.0, c1[0]);
-//        BOOST_CHECK_EQUAL(4.0, c1[1]);
-//
-//    }
-//}
+BOOST_FIXTURE_TEST_CASE(value_at, MatrixColTest)
+{
+    {
+        auto c0 = _mat_3x3_d.col(0);
+
+        BOOST_CHECK_EQUAL(1.5, c0[0]);
+        BOOST_CHECK_EQUAL(1.0, c0[1]);
+        BOOST_CHECK_EQUAL(1.3, c0[2]);
+
+        auto c1 = _mat_3x3_d.col(1);
+
+        BOOST_CHECK_EQUAL(0.0, c1[0]);
+        BOOST_CHECK_EQUAL(1.0, c1[1]);
+        BOOST_CHECK_EQUAL(2.6, c1[2]);
+
+        auto c2 = _mat_3x3_d.col(2);
+
+        BOOST_CHECK_EQUAL(2.5, c2[0]);
+        BOOST_CHECK_EQUAL(1.2, c2[1]);
+        BOOST_CHECK_EQUAL(0.3, c2[2]);
+
+    }
+
+    {
+        auto c0 = _mat_dyn_2x2->col(0);
+
+        BOOST_CHECK_EQUAL(2., c0[0]);
+        BOOST_CHECK_EQUAL(1., c0[1]);
+
+        auto c1 = _mat_dyn_2x2->col(1);
+
+        BOOST_CHECK_EQUAL(3.0, c1[0]);
+        BOOST_CHECK_EQUAL(4.0, c1[1]);
+
+    }
+}
 
 BOOST_FIXTURE_TEST_CASE(asign, MatrixColTest)
 {
@@ -3351,259 +3349,247 @@ BOOST_FIXTURE_TEST_CASE(asign, MatrixColTest)
 
 }
 
-//BOOST_FIXTURE_TEST_CASE(plus, MatrixColTest)
-//{
-//    {
-//        Matrix<double> c0 = +_mat_3x3_d.col(0);
-//
-//        BOOST_CHECK_EQUAL(1.5, c0[0]);
-//        BOOST_CHECK_EQUAL(1.0, c0[1]);
-//        BOOST_CHECK_EQUAL(1.3, c0[2]);
-//
-//        Matrix<double> c1 = +_mat_3x3_d.col(1);
-//
-//        BOOST_CHECK_EQUAL(0.0, c1[0]);
-//        BOOST_CHECK_EQUAL(1.0, c1[1]);
-//        BOOST_CHECK_EQUAL(2.6, c1[2]);
-//
-//        Matrix<double> c2 = +_mat_3x3_d.col(2);
-//
-//        BOOST_CHECK_EQUAL(2.5, c2[0]);
-//        BOOST_CHECK_EQUAL(1.2, c2[1]);
-//        BOOST_CHECK_EQUAL(0.3, c2[2]);
-//
-//    }
-//
-//    {
-//        auto c0 = +_mat_dyn_2x2->col(0);
-//
-//        BOOST_CHECK_EQUAL(2., c0[0]);
-//        BOOST_CHECK_EQUAL(1., c0[1]);
-//
-//        auto c1 = +_mat_dyn_2x2->col(1);
-//
-//        BOOST_CHECK_EQUAL(3.0, c1[0]);
-//        BOOST_CHECK_EQUAL(4.0, c1[1]);
-//    }
-//}
+BOOST_FIXTURE_TEST_CASE(plus, MatrixColTest)
+{
+    {
+        Vector<double> c0 = +_mat_3x3_d.col(0);
 
-//BOOST_FIXTURE_TEST_CASE(minus, MatrixColTest)
-//{
-//    {
-//        Matrix<double> c0 = -_mat_3x3_d.col(0);
-//
-//        BOOST_CHECK_EQUAL(-1.5, c0[0]);
-//        BOOST_CHECK_EQUAL(-1.0, c0[1]);
-//        BOOST_CHECK_EQUAL(-1.3, c0[2]);
-//
-//        Matrix<double> c1 = -_mat_3x3_d.col(1);
-//
-//        BOOST_CHECK_EQUAL(-0.0, c1[0]);
-//        BOOST_CHECK_EQUAL(-1.0, c1[1]);
-//        BOOST_CHECK_EQUAL(-2.6, c1[2]);
-//
-//        Matrix<double> c2 = -_mat_3x3_d.col(2);
-//
-//        BOOST_CHECK_EQUAL(-2.5, c2[0]);
-//        BOOST_CHECK_EQUAL(-1.2, c2[1]);
-//        BOOST_CHECK_EQUAL(-0.3, c2[2]);
-//
-//    }
-//
-//    {
-//        Matrix<double> c0 = -_mat_dyn_2x2->col(0);
-//
-//        BOOST_CHECK_EQUAL(-2., c0[0]);
-//        BOOST_CHECK_EQUAL(-1., c0[1]);
-//
-//        Matrix<double> c1 = -_mat_dyn_2x2->col(1);
-//
-//        BOOST_CHECK_EQUAL(-3.0, c1[0]);
-//        BOOST_CHECK_EQUAL(-4.0, c1[1]);
-//    }
-//}
+        BOOST_CHECK_EQUAL(1.5, c0[0]);
+        BOOST_CHECK_EQUAL(1.0, c0[1]);
+        BOOST_CHECK_EQUAL(1.3, c0[2]);
 
-//BOOST_FIXTURE_TEST_CASE(addition, MatrixColTest)
-//{
-//    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
-//                        {9, 6, 2, 3, 3},
-//                        {8, 3, 2, 3, 3},
-//                        {5, 3, 3, 7, 6},
-//                        {5, 5, 7, 4, 7}};
-//
-//    Matrix<int> v = a.col(0) + a.col(1);
-//
-//    BOOST_CHECK_EQUAL(14, v[0]);
-//    BOOST_CHECK_EQUAL(15, v[1]);
-//    BOOST_CHECK_EQUAL(11, v[2]);
-//    BOOST_CHECK_EQUAL(8, v[3]);
-//    BOOST_CHECK_EQUAL(10, v[4]);
-//
-//    a.col(0) += a.col(1);
-//
-//    BOOST_CHECK_EQUAL(14, a.col(0)[0]);
-//    BOOST_CHECK_EQUAL(15, a.col(0)[1]);
-//    BOOST_CHECK_EQUAL(11, a.col(0)[2]);
-//    BOOST_CHECK_EQUAL(8, a.col(0)[3]);
-//    BOOST_CHECK_EQUAL(10, a.col(0)[4]);
-//
-//}
+        Vector<double> c1 = +_mat_3x3_d.col(1);
 
-//BOOST_FIXTURE_TEST_CASE(subtraction, MatrixColTest)
-//{
-//    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
-//                        {9, 6, 2, 3, 3},
-//                        {8, 3, 2, 3, 3},
-//                        {5, 3, 3, 7, 6},
-//                        {5, 5, 7, 4, 7}};
-//
-//    Matrix<int> v = a.col(0) - a.col(1);
-//
-//    BOOST_CHECK_EQUAL(-2, v[0]);
-//    BOOST_CHECK_EQUAL(3, v[1]);
-//    BOOST_CHECK_EQUAL(5, v[2]);
-//    BOOST_CHECK_EQUAL(2, v[3]);
-//    BOOST_CHECK_EQUAL(0, v[4]);
-//
-//    a.col(0) -= a.col(1);
-//
-//    BOOST_CHECK_EQUAL(-2, a.col(0)[0]);
-//    BOOST_CHECK_EQUAL(3, a.col(0)[1]);
-//    BOOST_CHECK_EQUAL(5, a.col(0)[2]);
-//    BOOST_CHECK_EQUAL(2, a.col(0)[3]);
-//    BOOST_CHECK_EQUAL(0, a.col(0)[4]);
-//
-//}
+        BOOST_CHECK_EQUAL(0.0, c1[0]);
+        BOOST_CHECK_EQUAL(1.0, c1[1]);
+        BOOST_CHECK_EQUAL(2.6, c1[2]);
 
-//BOOST_FIXTURE_TEST_CASE(cwise_product, MatrixColTest)
-//{
-//    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
-//                        {9, 6, 2, 3, 3},
-//                        {8, 3, 2, 3, 3},
-//                        {5, 3, 3, 7, 6},
-//                        {5, 5, 7, 4, 7}};
-//
-//    Matrix<int> v = a.col(0).cwiseProduct(a.col(1));
-//
-//    BOOST_CHECK_EQUAL(48, v[0]);
-//    BOOST_CHECK_EQUAL(54, v[1]);
-//    BOOST_CHECK_EQUAL(24, v[2]);
-//    BOOST_CHECK_EQUAL(15, v[3]);
-//    BOOST_CHECK_EQUAL(25, v[4]);
-//
-//    a.col(0).cwiseProductInPlace(a.col(1));
-//
-//    BOOST_CHECK_EQUAL(48, a.col(0)[0]);
-//    BOOST_CHECK_EQUAL(54, a.col(0)[1]);
-//    BOOST_CHECK_EQUAL(24, a.col(0)[2]);
-//    BOOST_CHECK_EQUAL(15, a.col(0)[3]);
-//    BOOST_CHECK_EQUAL(25, a.col(0)[4]);
-//
-//}
+        Vector<double> c2 = +_mat_3x3_d.col(2);
 
-//BOOST_FIXTURE_TEST_CASE(cwise_div, MatrixColTest)
-//{
-//    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
-//                           {9, 6, 2, 3, 3},
-//                           {8, 3, 2, 3, 3},
-//                           {5, 3, 3, 7, 6},
-//                           {5, 5, 7, 4, 7}};
-//
-//    auto v = a.col(0).cwiseDiv(a.col(1));
-//
-//    BOOST_CHECK_EQUAL(6 / 8., v[0]);
-//    BOOST_CHECK_EQUAL(9 / 6., v[1]);
-//    BOOST_CHECK_EQUAL(8 / 3., v[2]);
-//    BOOST_CHECK_EQUAL(5 / 3., v[3]);
-//    BOOST_CHECK_EQUAL(1, v[4]);
-//
-//    a.col(0).cwiseDivInPlace(a.col(1));
-//
-//    BOOST_CHECK_EQUAL(6 / 8., a.col(0)[0]);
-//    BOOST_CHECK_EQUAL(9 / 6., a.col(0)[1]);
-//    BOOST_CHECK_EQUAL(8 / 3., a.col(0)[2]);
-//    BOOST_CHECK_EQUAL(5 / 3., a.col(0)[3]);
-//    BOOST_CHECK_EQUAL(1, a.col(0)[4]);
-//
-//}
+        BOOST_CHECK_EQUAL(2.5, c2[0]);
+        BOOST_CHECK_EQUAL(1.2, c2[1]);
+        BOOST_CHECK_EQUAL(0.3, c2[2]);
 
-//BOOST_FIXTURE_TEST_CASE(multiplication_row_scalar, MatrixColTest)
-//{
-//    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
-//                        {9, 6, 2, 3, 3},
-//                        {8, 3, 2, 3, 3},
-//                        {5, 3, 3, 7, 6},
-//                        {5, 5, 7, 4, 7}};
-//
-//    Matrix<int> v = a.col(0) * 10;
-//
-//    BOOST_CHECK_EQUAL(60, v[0]);
-//    BOOST_CHECK_EQUAL(90, v[1]);
-//    BOOST_CHECK_EQUAL(80, v[2]);
-//    BOOST_CHECK_EQUAL(50, v[3]);
-//    BOOST_CHECK_EQUAL(50, v[4]);
-//
-//    Matrix<int> v2 = 10 * a.col(1);
-//
-//    BOOST_CHECK_EQUAL(80, v2[0]);
-//    BOOST_CHECK_EQUAL(60, v2[1]);
-//    BOOST_CHECK_EQUAL(30, v2[2]);
-//    BOOST_CHECK_EQUAL(30, v2[3]);
-//    BOOST_CHECK_EQUAL(50, v2[4]);
-//
-//    a.col(2) *= 10;
-//
-//    BOOST_CHECK_EQUAL(60, a.col(2)[0]);
-//    BOOST_CHECK_EQUAL(20, a.col(2)[1]);
-//    BOOST_CHECK_EQUAL(20, a.col(2)[2]);
-//    BOOST_CHECK_EQUAL(30, a.col(2)[3]);
-//    BOOST_CHECK_EQUAL(70, a.col(2)[4]);
-//}
+    }
+}
 
-//BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixColTest)
-//{
-//    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
-//                           {9, 6, 2, 3, 3},
-//                           {8, 3, 2, 3, 3},
-//                           {5, 3, 3, 7, 6},
-//                           {5, 5, 7, 4, 7}};
-//
-//    Matrix<double> v = a.col(0) / 10.;
-//
-//    BOOST_CHECK_EQUAL(6 / 10., v[0]);
-//    BOOST_CHECK_EQUAL(9 / 10., v[1]);
-//    BOOST_CHECK_EQUAL(8 / 10., v[2]);
-//    BOOST_CHECK_EQUAL(5 / 10., v[3]);
-//    BOOST_CHECK_EQUAL(5 / 10., v[4]);
-//
-//    a.col(1) /= 10.;
-//
-//    BOOST_CHECK_EQUAL(8 / 10., a.col(1)[0]);
-//    BOOST_CHECK_EQUAL(6 / 10., a.col(1)[1]);
-//    BOOST_CHECK_EQUAL(3 / 10., a.col(1)[2]);
-//    BOOST_CHECK_EQUAL(3 / 10., a.col(1)[3]);
-//    BOOST_CHECK_EQUAL(5 / 10., a.col(1)[4]);
-//
-//}
+BOOST_FIXTURE_TEST_CASE(minus, MatrixColTest)
+{
+    {
+        Vector<double> c0 = -_mat_3x3_d.col(0);
 
-//BOOST_FIXTURE_TEST_CASE(asign_vector, MatrixColTest)
-//{
-//    Matrix<int, 5, 5> a{{6,8,6,7,3},
-//                        {9,6,2,3,3},
-//                        {8,3,2,3,3},
-//                        {5,3,3,7,6},
-//                        {5,5,7,4,7}};
-//
-//    Vector<int> v{1, 2, 3, 4, 5};
-//
-//    a.col(0) = v;
-//
-//    BOOST_CHECK_EQUAL(1, a.col(0)[0]);
-//    BOOST_CHECK_EQUAL(2, a.col(0)[1]);
-//    BOOST_CHECK_EQUAL(3, a.col(0)[2]);
-//    BOOST_CHECK_EQUAL(4, a.col(0)[3]);
-//    BOOST_CHECK_EQUAL(5, a.col(0)[4]);
-//}
+        BOOST_CHECK_EQUAL(-1.5, c0[0]);
+        BOOST_CHECK_EQUAL(-1.0, c0[1]);
+        BOOST_CHECK_EQUAL(-1.3, c0[2]);
+
+        Vector<double> c1 = -_mat_3x3_d.col(1);
+
+        BOOST_CHECK_EQUAL(-0.0, c1[0]);
+        BOOST_CHECK_EQUAL(-1.0, c1[1]);
+        BOOST_CHECK_EQUAL(-2.6, c1[2]);
+
+        Vector<double> c2 = -_mat_3x3_d.col(2);
+
+        BOOST_CHECK_EQUAL(-2.5, c2[0]);
+        BOOST_CHECK_EQUAL(-1.2, c2[1]);
+        BOOST_CHECK_EQUAL(-0.3, c2[2]);
+
+    }
+
+    {
+        Vector<double> c0 = -_mat_dyn_2x2->col(0);
+
+        BOOST_CHECK_EQUAL(-2., c0[0]);
+        BOOST_CHECK_EQUAL(-1., c0[1]);
+
+        Vector<double> c1 = -_mat_dyn_2x2->col(1);
+
+        BOOST_CHECK_EQUAL(-3.0, c1[0]);
+        BOOST_CHECK_EQUAL(-4.0, c1[1]);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(addition, MatrixColTest)
+{
+    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
+                        {9, 6, 2, 3, 3},
+                        {8, 3, 2, 3, 3},
+                        {5, 3, 3, 7, 6},
+                        {5, 5, 7, 4, 7}};
+
+    Vector<int> v = a.col(0) + a.col(1);
+
+    BOOST_CHECK_EQUAL(14, v[0]);
+    BOOST_CHECK_EQUAL(15, v[1]);
+    BOOST_CHECK_EQUAL(11, v[2]);
+    BOOST_CHECK_EQUAL(8, v[3]);
+    BOOST_CHECK_EQUAL(10, v[4]);
+
+    a.col(0) += a.col(1);
+
+    BOOST_CHECK_EQUAL(14, a.col(0)[0]);
+    BOOST_CHECK_EQUAL(15, a.col(0)[1]);
+    BOOST_CHECK_EQUAL(11, a.col(0)[2]);
+    BOOST_CHECK_EQUAL(8, a.col(0)[3]);
+    BOOST_CHECK_EQUAL(10, a.col(0)[4]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(subtraction, MatrixColTest)
+{
+    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
+                        {9, 6, 2, 3, 3},
+                        {8, 3, 2, 3, 3},
+                        {5, 3, 3, 7, 6},
+                        {5, 5, 7, 4, 7}};
+
+    Vector<int> v = a.col(0) - a.col(1);
+
+    BOOST_CHECK_EQUAL(-2, v[0]);
+    BOOST_CHECK_EQUAL(3, v[1]);
+    BOOST_CHECK_EQUAL(5, v[2]);
+    BOOST_CHECK_EQUAL(2, v[3]);
+    BOOST_CHECK_EQUAL(0, v[4]);
+
+    a.col(0) -= a.col(1);
+
+    BOOST_CHECK_EQUAL(-2, a.col(0)[0]);
+    BOOST_CHECK_EQUAL(3, a.col(0)[1]);
+    BOOST_CHECK_EQUAL(5, a.col(0)[2]);
+    BOOST_CHECK_EQUAL(2, a.col(0)[3]);
+    BOOST_CHECK_EQUAL(0, a.col(0)[4]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(cwise_product, MatrixColTest)
+{
+    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
+                        {9, 6, 2, 3, 3},
+                        {8, 3, 2, 3, 3},
+                        {5, 3, 3, 7, 6},
+                        {5, 5, 7, 4, 7}};
+
+    Vector<int> v = a.col(0).cwiseProduct(a.col(1));
+
+    BOOST_CHECK_EQUAL(48, v[0]);
+    BOOST_CHECK_EQUAL(54, v[1]);
+    BOOST_CHECK_EQUAL(24, v[2]);
+    BOOST_CHECK_EQUAL(15, v[3]);
+    BOOST_CHECK_EQUAL(25, v[4]);
+
+    a.col(0).cwiseProductInPlace(a.col(1));
+
+    BOOST_CHECK_EQUAL(48, a.col(0)[0]);
+    BOOST_CHECK_EQUAL(54, a.col(0)[1]);
+    BOOST_CHECK_EQUAL(24, a.col(0)[2]);
+    BOOST_CHECK_EQUAL(15, a.col(0)[3]);
+    BOOST_CHECK_EQUAL(25, a.col(0)[4]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(cwise_div, MatrixColTest)
+{
+    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
+                           {9, 6, 2, 3, 3},
+                           {8, 3, 2, 3, 3},
+                           {5, 3, 3, 7, 6},
+                           {5, 5, 7, 4, 7}};
+
+    Vector<double,5> v = a.col(0).cwiseDiv(a.col(1));
+
+    BOOST_CHECK_EQUAL(6 / 8., v[0]);
+    BOOST_CHECK_EQUAL(9 / 6., v[1]);
+    BOOST_CHECK_EQUAL(8 / 3., v[2]);
+    BOOST_CHECK_EQUAL(5 / 3., v[3]);
+    BOOST_CHECK_EQUAL(1, v[4]);
+
+    a.col(0).cwiseDivInPlace(a.col(1));
+
+    BOOST_CHECK_EQUAL(6 / 8., a.col(0)[0]);
+    BOOST_CHECK_EQUAL(9 / 6., a.col(0)[1]);
+    BOOST_CHECK_EQUAL(8 / 3., a.col(0)[2]);
+    BOOST_CHECK_EQUAL(5 / 3., a.col(0)[3]);
+    BOOST_CHECK_EQUAL(1, a.col(0)[4]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(multiplication_row_scalar, MatrixColTest)
+{
+    Matrix<int, 5, 5> a{{6, 8, 6, 7, 3},
+                        {9, 6, 2, 3, 3},
+                        {8, 3, 2, 3, 3},
+                        {5, 3, 3, 7, 6},
+                        {5, 5, 7, 4, 7}};
+
+    Vector<int> v = a.col(0) * 10;
+
+    BOOST_CHECK_EQUAL(60, v[0]);
+    BOOST_CHECK_EQUAL(90, v[1]);
+    BOOST_CHECK_EQUAL(80, v[2]);
+    BOOST_CHECK_EQUAL(50, v[3]);
+    BOOST_CHECK_EQUAL(50, v[4]);
+
+    Vector<int> v2 = 10 * a.col(1);
+
+    BOOST_CHECK_EQUAL(80, v2[0]);
+    BOOST_CHECK_EQUAL(60, v2[1]);
+    BOOST_CHECK_EQUAL(30, v2[2]);
+    BOOST_CHECK_EQUAL(30, v2[3]);
+    BOOST_CHECK_EQUAL(50, v2[4]);
+
+    a.col(2) *= 10;
+
+    BOOST_CHECK_EQUAL(60, a.col(2)[0]);
+    BOOST_CHECK_EQUAL(20, a.col(2)[1]);
+    BOOST_CHECK_EQUAL(20, a.col(2)[2]);
+    BOOST_CHECK_EQUAL(30, a.col(2)[3]);
+    BOOST_CHECK_EQUAL(70, a.col(2)[4]);
+}
+
+BOOST_FIXTURE_TEST_CASE(division_row_scalar, MatrixColTest)
+{
+    Matrix<double, 5, 5> a{{6, 8, 6, 7, 3},
+                           {9, 6, 2, 3, 3},
+                           {8, 3, 2, 3, 3},
+                           {5, 3, 3, 7, 6},
+                           {5, 5, 7, 4, 7}};
+
+    Vector<double> v = a.col(0) / 10.;
+
+    BOOST_CHECK_EQUAL(6 / 10., v[0]);
+    BOOST_CHECK_EQUAL(9 / 10., v[1]);
+    BOOST_CHECK_EQUAL(8 / 10., v[2]);
+    BOOST_CHECK_EQUAL(5 / 10., v[3]);
+    BOOST_CHECK_EQUAL(5 / 10., v[4]);
+
+    a.col(1) /= 10.;
+
+    BOOST_CHECK_EQUAL(8 / 10., a.col(1)[0]);
+    BOOST_CHECK_EQUAL(6 / 10., a.col(1)[1]);
+    BOOST_CHECK_EQUAL(3 / 10., a.col(1)[2]);
+    BOOST_CHECK_EQUAL(3 / 10., a.col(1)[3]);
+    BOOST_CHECK_EQUAL(5 / 10., a.col(1)[4]);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(asign_vector, MatrixColTest)
+{
+    Matrix<int, 5, 5> a{{6,8,6,7,3},
+                        {9,6,2,3,3},
+                        {8,3,2,3,3},
+                        {5,3,3,7,6},
+                        {5,5,7,4,7}};
+
+    Vector<int> v{1, 2, 3, 4, 5};
+
+    a.col(0) = v;
+
+    BOOST_CHECK_EQUAL(1, a.col(0)[0]);
+    BOOST_CHECK_EQUAL(2, a.col(0)[1]);
+    BOOST_CHECK_EQUAL(3, a.col(0)[2]);
+    BOOST_CHECK_EQUAL(4, a.col(0)[3]);
+    BOOST_CHECK_EQUAL(5, a.col(0)[4]);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -4367,6 +4353,267 @@ BOOST_FIXTURE_TEST_CASE(div_block_matrix_scalar2, MatrixBlockTest)
 
 BOOST_AUTO_TEST_SUITE_END()
 
+
+/* MatrixDiagonalTestSuite */
+
+BOOST_AUTO_TEST_SUITE(MatrixDiagonalTestSuite)
+
+struct MatrixDiagonalTest
+{
+    MatrixDiagonalTest()
+      : _mat_dyn_3x3(new Matrix<double>(3, 3)),
+        _mat_dyn_2x4(new Matrix<double>(2, 4)), 
+        _mat_dyn_5x5(new Matrix<int>(5, 5))
+    {
+    }
+
+    ~MatrixDiagonalTest()
+    {
+        delete _mat_dyn_3x3;
+        delete _mat_dyn_2x4;
+        delete _mat_dyn_5x5;
+    }
+
+    void setup()
+    {
+        // Dynamic 3x3 matrix
+        _mat_dyn_3x3->at(0, 0) = 1.0; _mat_dyn_3x3->at(0, 1) = 2.0; _mat_dyn_3x3->at(0, 2) = 3.0;
+        _mat_dyn_3x3->at(1, 0) = 4.0; _mat_dyn_3x3->at(1, 1) = 5.0; _mat_dyn_3x3->at(1, 2) = 6.0;
+        _mat_dyn_3x3->at(2, 0) = 7.0; _mat_dyn_3x3->at(2, 1) = 8.0; _mat_dyn_3x3->at(2, 2) = 9.0;
+
+        // 2x4 matrix (diagonal has size 2)
+        _mat_dyn_2x4->at(0, 0) = 10; _mat_dyn_2x4->at(0, 1) = 11; _mat_dyn_2x4->at(0, 2) = 12; _mat_dyn_2x4->at(0, 3) = 13;
+        _mat_dyn_2x4->at(1, 0) = 14; _mat_dyn_2x4->at(1, 1) = 15; _mat_dyn_2x4->at(1, 2) = 16; _mat_dyn_2x4->at(1, 3) = 17;
+
+        // 5x5 integer matrix
+        _mat_dyn_5x5->fill(0);
+        for (int i = 0; i < 5; ++i)
+            _mat_dyn_5x5->at(i, i) = i + 1;   // diagonal: 1,2,3,4,5
+
+        // Static 3x3 matrix
+        _mat_3x3 = {{1,2,3}, {4,5,6}, {7,8,9}};
+    }
+
+    void teardown()
+    {
+    }
+
+    Matrix<double> *_mat_dyn_3x3;
+    Matrix<double> *_mat_dyn_2x4;
+    Matrix<int> *_mat_dyn_5x5;
+    Matrix<int, 3, 3> _mat_3x3;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(diagonal_size, MatrixDiagonalTest)
+{
+    auto d1 = _mat_dyn_3x3->diagonal();
+    BOOST_CHECK_EQUAL(d1.size(), 3);
+
+    auto d2 = _mat_dyn_2x4->diagonal();
+    BOOST_CHECK_EQUAL(d2.size(), 2);   // min(2,4)
+
+    auto d3 = _mat_dyn_5x5->diagonal();
+    BOOST_CHECK_EQUAL(d3.size(), 5);
+
+    auto d4 = _mat_3x3.diagonal();
+    BOOST_CHECK_EQUAL(d4.size(), 3);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_element_access, MatrixDiagonalTest)
+{
+    auto d1 = _mat_dyn_3x3->diagonal();
+    BOOST_CHECK_EQUAL(d1[0], 1.0);
+    BOOST_CHECK_EQUAL(d1[1], 5.0);
+    BOOST_CHECK_EQUAL(d1[2], 9.0);
+
+    // Modify via diagonal
+    d1[1] = 99.0;
+    BOOST_CHECK_EQUAL(d1[1], 99.0);
+    BOOST_CHECK_EQUAL(_mat_dyn_3x3->at(1, 1), 99.0);
+
+    // Const version
+    const auto d1c = _mat_dyn_3x3->diagonal();
+    BOOST_CHECK_EQUAL(d1c[1], 99.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_fill, MatrixDiagonalTest)
+{
+    auto d5 = _mat_dyn_5x5->diagonal();
+    d5.fill(100);
+    for (size_t i = 0; i < 5; ++i) {
+        BOOST_CHECK_EQUAL(_mat_dyn_5x5->at(i, i), 100);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_iteration, MatrixDiagonalTest)
+{
+    auto d = _mat_3x3.diagonal();
+    auto it = d.begin();
+    BOOST_CHECK_EQUAL(*it, 1);
+    ++it;
+    BOOST_CHECK_EQUAL(*it, 5);
+    ++it;
+    BOOST_CHECK_EQUAL(*it, 9);
+    ++it;
+    BOOST_CHECK(it == d.end());
+
+    // Modify via iterator
+    it = d.begin();
+    *it = 10;
+    BOOST_CHECK_EQUAL(d[0], 10);
+    BOOST_CHECK_EQUAL(_mat_3x3(0, 0), 10);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_assign_vector, MatrixDiagonalTest)
+{
+    Vector<int, 3> new_diag = {100, 200, 300};
+    _mat_3x3.diagonal() = new_diag;
+    BOOST_CHECK_EQUAL(_mat_3x3(0, 0), 100);
+    BOOST_CHECK_EQUAL(_mat_3x3(1, 1), 200);
+    BOOST_CHECK_EQUAL(_mat_3x3(2, 2), 300);
+    // Off-diagonal unchanged
+    BOOST_CHECK_EQUAL(_mat_3x3(0, 1), 2);
+    BOOST_CHECK_EQUAL(_mat_3x3(1, 2), 6);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_assign_expression, MatrixDiagonalTest)
+{
+    Vector<int, 3> v = {2,3,4};
+    _mat_3x3.diagonal() = v * 10;   // assign expression
+    BOOST_CHECK_EQUAL(_mat_3x3(0, 0), 20);
+    BOOST_CHECK_EQUAL(_mat_3x3(1, 1), 30);
+    BOOST_CHECK_EQUAL(_mat_3x3(2, 2), 40);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_addition, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> add = {10, 20, 30};
+    Vector<double, 3> res = d + add;
+    BOOST_CHECK_EQUAL(res[0], 11.0);
+    BOOST_CHECK_EQUAL(res[1], 25.0);
+    BOOST_CHECK_EQUAL(res[2], 39.0);
+
+    d += add;
+    BOOST_CHECK_EQUAL(d[0], 11.0);
+    BOOST_CHECK_EQUAL(d[1], 25.0);
+    BOOST_CHECK_EQUAL(d[2], 39.0);
+    // Original matrix updated
+    BOOST_CHECK_EQUAL(_mat_dyn_3x3->at(0, 0), 11.0);
+    BOOST_CHECK_EQUAL(_mat_dyn_3x3->at(1, 1), 25.0);
+    BOOST_CHECK_EQUAL(_mat_dyn_3x3->at(2, 2), 39.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_subtraction, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> sub = {1, 2, 3};
+    Vector<double, 3> res = d - sub;
+    BOOST_CHECK_EQUAL(res[0], 0.0);
+    BOOST_CHECK_EQUAL(res[1], 3.0);
+    BOOST_CHECK_EQUAL(res[2], 6.0);
+
+    d -= sub;
+    BOOST_CHECK_EQUAL(d[0], 0.0);
+    BOOST_CHECK_EQUAL(d[1], 3.0);
+    BOOST_CHECK_EQUAL(d[2], 6.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_scalar_mul, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> res = d * 2.0;
+    BOOST_CHECK_EQUAL(res[0], 2.0);
+    BOOST_CHECK_EQUAL(res[1], 10.0);
+    BOOST_CHECK_EQUAL(res[2], 18.0);
+
+    d *= 2.0;
+    BOOST_CHECK_EQUAL(d[0], 2.0);
+    BOOST_CHECK_EQUAL(d[1], 10.0);
+    BOOST_CHECK_EQUAL(d[2], 18.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_scalar_div, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> res = d / 2.0;
+    BOOST_CHECK_EQUAL(res[0], 0.5);
+    BOOST_CHECK_EQUAL(res[1], 2.5);
+    BOOST_CHECK_EQUAL(res[2], 4.5);
+
+    d /= 2.0;
+    BOOST_CHECK_EQUAL(d[0], 0.5);
+    BOOST_CHECK_EQUAL(d[1], 2.5);
+    BOOST_CHECK_EQUAL(d[2], 4.5);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_cwise_product, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> other = {2, 3, 4};
+    Vector<double, 3> prod = d.cwiseProduct(other);
+    BOOST_CHECK_EQUAL(prod[0], 2.0);   // 1*2
+    BOOST_CHECK_EQUAL(prod[1], 15.0);  // 5*3
+    BOOST_CHECK_EQUAL(prod[2], 36.0);  // 9*4
+
+    d.cwiseProductInPlace(other);
+    BOOST_CHECK_EQUAL(d[0], 2.0);
+    BOOST_CHECK_EQUAL(d[1], 15.0);
+    BOOST_CHECK_EQUAL(d[2], 36.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_cwise_div, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> other = {2, 5, 3};
+    Vector<double, 3> div = d.cwiseDiv(other);
+    BOOST_CHECK_CLOSE(div[0], 0.5, 1e-12);
+    BOOST_CHECK_CLOSE(div[1], 1.0, 1e-12);
+    BOOST_CHECK_CLOSE(div[2], 3.0, 1e-12);
+
+    d.cwiseDivInPlace(other);
+    BOOST_CHECK_CLOSE(d[0], 0.5, 1e-12);
+    BOOST_CHECK_CLOSE(d[1], 1.0, 1e-12);
+    BOOST_CHECK_CLOSE(d[2], 3.0, 1e-12);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_unary_plus, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> res = +d;
+    BOOST_CHECK_EQUAL(res[0], 1.0);
+    BOOST_CHECK_EQUAL(res[1], 5.0);
+    BOOST_CHECK_EQUAL(res[2], 9.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_unary_minus, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    Vector<double, 3> res = -d;
+    BOOST_CHECK_EQUAL(res[0], -1.0);
+    BOOST_CHECK_EQUAL(res[1], -5.0);
+    BOOST_CHECK_EQUAL(res[2], -9.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(diagonal_aliases, MatrixDiagonalTest)
+{
+    auto d = _mat_dyn_3x3->diagonal();
+    BOOST_CHECK(d.aliases(_mat_dyn_3x3->data()));
+    BOOST_CHECK(!d.aliases(nullptr));
+}
+
+// Edge cases: empty diagonal (0 rows or 0 columns)
+BOOST_FIXTURE_TEST_CASE(diagonal_empty, MatrixDiagonalTest)
+{
+    // Create 0x0 matrix
+    Matrix<double, 0, 0> empty_mat;
+    auto d = empty_mat.diagonal();
+    BOOST_CHECK_EQUAL(d.size(), 0);
+    BOOST_CHECK(d.begin() == d.end());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(test_big_matrix)
 {

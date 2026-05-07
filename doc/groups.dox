@@ -478,6 +478,54 @@
  * vector operations, solving systems of equations, and more.
  */
  
+/*! \defgroup Functors Functors
+ *  \ingroup Algebra
+ *  \brief Operation functors for expression templates.
+ *
+ *  This group contains stateless functors that implement basic arithmetic
+ *  operations (addition, subtraction, multiplication, division) used in
+ *  vector and matrix expression templates. They support both scalar and
+ *  SIMD packet operations when available.
+ *
+ *  \see tl::AddOp, tl::SubOp, tl::MulOp, tl::DivOp
+ */
+
+/*! \defgroup Evaluators Evaluators
+ *  \ingroup Algebra
+ *  \brief Expression evaluators for lazy evaluation.
+ *
+ *  This group contains specializations of the `Evaluator` class template
+ *  for various expression types (binary, scalar, unary, transpose,
+ *  matrix multiplication, matrix–vector multiplication, diagonal matrix,
+ *  and views such as `MatrixBlock`, `MatrixRow`, `MatrixCol`).
+ *  Evaluators provide coefficient access and SIMD packet access for
+ *  efficient evaluation of expression trees without constructing temporaries.
+ *
+ *  \see tl::Evaluator, tl::make_evaluator
+ */
+
+/*! \defgroup Expressions Expressions
+ *  \ingroup Algebra
+ *  \brief Lazy expression templates for vectors and matrices.
+ *
+ *  This group contains the expression template classes that represent
+ *  operations without immediate evaluation. They are the building blocks
+ *  of the expression template system, enabling efficient chaining of
+ *  arithmetic operations and linear algebra routines.
+ *
+ *  The expressions are typically not used directly; they are returned by
+ *  operators (e.g., `+`, `-`, `*`, `transpose()`) and are automatically
+ *  evaluated when assigned to a concrete matrix or vector.
+ *
+ *  \section expr_types Expression types
+ *  - **Binary**: `MatBinaryExpr`, `VecBinaryExpr`
+ *  - **Scalar**: `MatScalarExpr`, `VecScalarExpr`
+ *  - **Unary minus**: `MatUnaryMinusExpr`, `VecUnaryMinusExpr`
+ *  - **Multiplication**: `MatMulExpr`, `MatVecMulExpr`
+ *  - **Transpose**: `TransposeExpr`
+ *  - **Diagonal**: `DiagonalMatrixExpr`
+ */
+ 
 /*!
  * \defgroup Matrix Matrix
  * \ingroup Algebra

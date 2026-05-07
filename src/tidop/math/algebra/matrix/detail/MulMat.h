@@ -24,10 +24,12 @@
 
 #pragma once
 
-#include "tidop/math/base/cuda.h"
+#include "tidop/math/base/Cuda.h"
 #include "tidop/math/algebra/matrix/detail/MulMatBLAS.h"
 #include "tidop/math/algebra/matrix/detail/MulMatCPP.h"
 #include "tidop/math/algebra/matrix/detail/MulMatSIMD.h"
+
+/// \cond
 
 namespace tl
 {
@@ -152,3 +154,5 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

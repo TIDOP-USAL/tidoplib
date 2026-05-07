@@ -22,6 +22,20 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file MatMulExpr.h
+ * \brief Expression template for matrix multiplication.
+ *
+ * This file defines the `MatMulExpr` class, which represents a lazy
+ * matrix multiplication of two matrix expressions. The multiplication
+ * is not performed immediately; instead, the expression object stores
+ * references to its operands and provides metadata (rows, columns) and
+ * access to the sub‑expressions. Evaluation occurs only when the expression
+ * is assigned to a concrete matrix or forced via `.eval()`.
+ *
+ * \ingroup Expressions
+ * \see tl::MatrixBase, tl::MatBinaryExpr, tl::EvaluatorMatMulExpr
+ */
+
 #pragma once
 
 #include "tidop/math/base/Traits.h"
@@ -33,7 +47,36 @@ namespace tl
 template<typename Derived>
 class MatrixBase;
 
+/*! \addtogroup Expressions
+ *  \{
+ */
 
+/*!
+ * \class MatMulExpr
+ * \brief Lazy expression for matrix multiplication.
+ *
+ * \tparam LHS Left‑hand side matrix expression type.
+ * \tparam RHS Right‑hand side matrix expression type.
+ *
+ * This class represents the product of two matrix expressions `A * B`.
+ * The dimensions must satisfy `A.cols() == B.rows()`. The resulting
+ * expression has `A.rows()` rows and `B.cols()` columns.
+ *
+ * The actual multiplication is not performed at construction time;
+ * instead, the expression stores references to the operands. When the
+ * expression is evaluated (e.g., assigned to a `Matrix` object), the
+ * product is computed using an optimised routine (see `EvaluatorMatMulExpr`).
+ *
+ * ### Example
+ * \code
+ * Matrix<double,3,4> A;
+ * Matrix<double,4,5> B;
+ * auto C_expr = MatMulExpr(A, B);   // lazy multiplication
+ * Matrix<double,3,5> C = C_expr;    // evaluated here
+ * // This is typically done using operators (internally, `MatMulExpr` is used)
+ * // Matrix<double,3,5> C = A * B
+ * \endcode
+ */
 template<typename LHS, typename RHS>
 class MatMulExpr 
   : public MatrixBase<MatMulExpr<LHS, RHS>>
@@ -55,6 +98,11 @@ public:
 
 public:
 
+    /*!
+     * \brief Constructs a multiplication expression from two sub‑expressions.
+     * \param[in] lhs Left‑hand side expression.
+     * \param[in] rhs Right‑hand side expression.
+     */
     MatMulExpr(const LHS &lhs, const RHS &rhs)
       : mLhs(lhs), 
         mRhs(rhs)
@@ -62,12 +110,23 @@ public:
         TL_ASSERT(lhs.cols() == rhs.rows(), "Invalid dimensions for matrix multiplication");
     }
 
+    /*! \brief Returns the number of rows (same as LHS). */
     constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
+
+    /*! \brief Returns the number of columns (same as RHS). */
     constexpr auto cols() const noexcept -> size_t { return mRhs.cols(); }
 
+    /*! \brief Returns the left‑hand side expression. */
     auto lhs() const -> const LHS & { return mLhs; }
+
+    /*! \brief Returns the right‑hand side expression. */
     auto rhs() const -> const RHS & { return mRhs; }
 
+    /*!
+     * \brief Checks if either operand's data aliases a given memory address.
+     * \param[in] ptr Pointer to test.
+     * \return `true` if either LHS or RHS aliases `ptr`.
+     */
     auto aliases(const void *ptr)  const -> bool
     {
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
@@ -75,5 +134,6 @@ public:
 
 };
 
+/*! \} */
 
 } // End namespace tl

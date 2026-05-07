@@ -26,6 +26,8 @@
 
 #include "tidop/math/algebra/matrix/detail/FirstMinor.h"
 
+/// \cond
+
 namespace tl
 {
  
@@ -50,3 +52,5 @@ auto matrix_cofactor(const Matrix<T, Rows, Cols> &mat, size_t r, size_t c) -> T
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

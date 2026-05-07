@@ -22,6 +22,20 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file TransposeExpr.h
+ * \brief Expression template for matrix transpose.
+ *
+ * This file defines the `TransposeExpr` class, which represents a lazy
+ * transpose of a matrix expression (i.e., `matrix.transpose()`). The
+ * transposition is not performed immediately; instead, the expression object
+ * stores a reference to the original expression and swaps the row and column
+ * counts. Evaluation occurs only when the expression is assigned to a concrete
+ * matrix or forced via `.eval()`.
+ *
+ * \ingroup Expressions
+ * \see tl::MatrixBase, tl::MatUnaryMinusExpr, tl::EvaluatorTransposeExpr
+ */
+
 #pragma once
 
 #include "tidop/math/base/Traits.h"
@@ -33,7 +47,31 @@ namespace tl
 template<typename Derived>
 class MatrixBase;
 
+/*! \addtogroup Expressions
+ *  \{
+ */
 
+/*!
+ * \class TransposeExpr
+ * \brief Lazy expression for the transpose of a matrix expression.
+ *
+ * \tparam Expr The matrix expression type to be transposed.
+ *
+ * This class represents the transpose of a matrix expression: `A^T`.
+ * The number of rows of the result equals the number of columns of the
+ * original, and the number of columns of the result equals the number of
+ * rows of the original. The actual transposition is not performed at
+ * construction time; it is stored as an expression template for later
+ * evaluation. When the transpose is eventually assigned to a concrete matrix,
+ * the elements are copied with swapped indices.
+ *
+ * ### Example
+ * \code
+ * Matrix<double,3,4> A;
+ * auto trans_expr = TransposeExpr(A);   // lazy: A^T
+ * Matrix<double,4,3> B = trans_expr;    // evaluated here
+ * \endcode
+ */
 template<typename Expr>
 class TransposeExpr 
   : public MatrixBase<TransposeExpr<Expr>>
@@ -49,20 +87,34 @@ public:
 
 public:
 
+    /*!
+     * \brief Constructs a transpose expression from a matrix expression.
+     * \param[in] expr The expression to transpose.
+     */
     explicit TransposeExpr(const Expr &expr) 
       : mExpr(expr) 
     {}
 
+    /*! \brief Returns the number of rows of the transposed matrix (original columns). */
     constexpr auto rows() const noexcept -> size_t { return mExpr.cols(); }
-    constexpr auto cols() const noexcept -> size_t { return mExpr.rows(); }
-    
-    auto expr() const -> const Expr &{ return mExpr; }
 
+    /*! \brief Returns the number of columns of the transposed matrix (original rows). */
+    constexpr auto cols() const noexcept -> size_t { return mExpr.rows(); }
+
+    /*! \brief Returns the underlying expression. */
+    auto expr() const -> const Expr & { return mExpr; }
+
+    /*!
+     * \brief Checks if the underlying expression's data aliases a given memory address.
+     * \param[in] ptr Pointer to test.
+     * \return `true` if the expression aliases `ptr`.
+     */
     auto aliases(const void *ptr) const 
     {
         return mExpr.aliases(ptr);
     }
 };
 
+/*! \} */
 
 } // End namespace tl

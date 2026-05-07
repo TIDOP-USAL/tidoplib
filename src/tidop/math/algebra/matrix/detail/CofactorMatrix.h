@@ -26,6 +26,8 @@
 
 #include "tidop/math/algebra/matrix/detail/Cofactor.h"
 
+/// \cond
+
 namespace tl
 {
 
@@ -62,3 +64,5 @@ auto matrix_cofactor_matrix(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows,
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

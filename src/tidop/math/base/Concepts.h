@@ -72,16 +72,16 @@ concept DenseVector = VectorExpr<T> && requires(T a)
 };
 
 template<typename T>
-concept StaticMatrix = MatrixExpr<T> && (T::rows_at_compile_time != DynamicData);
+concept StaticMatrix = DenseMatrix<T> && (T::rows_at_compile_time != DynamicData);
 
 template<typename T>
-concept DynamicMatrix = MatrixExpr<T> && (T::rows_at_compile_time == DynamicData);
+concept DynamicMatrix = DenseMatrix<T> && (T::rows_at_compile_time == DynamicData);
 
 template<typename T>
-concept StaticVector = VectorExpr<T> && (T::size_at_compile_time != DynamicData);
+concept StaticVector = DenseVector<T> && (T::size_at_compile_time != DynamicData);
 
 template<typename T>
-concept DynamicVector = VectorExpr<T> && (T::size_at_compile_time == DynamicData);
+concept DynamicVector = DenseVector<T> && (T::size_at_compile_time == DynamicData);
 
 
 } // namespace tl

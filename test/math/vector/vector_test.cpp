@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop vector expr test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrix/Matrix.h>
 
 using namespace tl;
 
@@ -1045,6 +1046,48 @@ BOOST_FIXTURE_TEST_CASE(sum_elements, VectorExprTest)
     Vector<int, 4> v3{10, -5, 20, -10};
 
     BOOST_CHECK_EQUAL(v3.sum(), 15);
+}
+
+BOOST_FIXTURE_TEST_CASE(asDiagonal, VectorExprTest)
+{
+    // Vector estático a matriz diagonal estática
+    Vector<double, 3> vec = {1.0, 2.0, 3.0};
+    Matrix<double, 3, 3> mat = vec.asDiagonal();
+
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 3; ++j) {
+            if (i == j) {
+                BOOST_CHECK_EQUAL(mat(i, j), vec[i]);
+            } else {
+                BOOST_CHECK_EQUAL(mat(i, j), 0.0);
+            }
+        }
+    }
+
+    // Vector dinámico a matriz dinámica
+    Vector<double> dyn_vec = {1.0, 2.0, 3.0, 4.0};
+    Matrix<double> dyn_mat(4, 4);
+    dyn_mat = dyn_vec.asDiagonal();
+
+    for (size_t i = 0; i < 4; ++i) {
+        for (size_t j = 0; j < 4; ++j) {
+            if (i == j) {
+                BOOST_CHECK_EQUAL(dyn_mat(i, j), dyn_vec[i]);
+            } else {
+                BOOST_CHECK_EQUAL(dyn_mat(i, j), 0.0);
+            }
+        }
+    }
+
+    // Prueba con expresión vectorial: (vec * 2).asDiagonal()
+    Vector<double, 3> vec2 = {1.5, 2.5, 3.5};
+    Matrix<double, 3, 3> mat2 = (vec2 * 2.0).asDiagonal();
+    for (size_t i = 0; i < 3; ++i) {
+        BOOST_CHECK_EQUAL(mat2(i, i), vec2[i] * 2.0);
+        for (size_t j = 0; j < 3; ++j) {
+            if (i != j) BOOST_CHECK_EQUAL(mat2(i, j), 0.0);
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

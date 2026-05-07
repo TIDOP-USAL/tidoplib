@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file GeometryCollection.hpp
+/*! \file GeometryCollection.h
  * \brief Heterogeneous collection of geometries following OGC specification.
  *
  * This file defines the GeometryCollection class template, which serves as a

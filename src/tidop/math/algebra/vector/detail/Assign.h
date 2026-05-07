@@ -32,8 +32,11 @@
 #include "tidop/math/algebra/eval/VecUnaryMinusEval.h"
 #include "tidop/math/algebra/eval/MatrixColEval.h"
 #include "tidop/math/algebra/eval/MatrixRowEval.h"
+#include "tidop/math/algebra/eval/MatrixDiagonalEval.h"
 
 #include <type_traits>
+
+/// \cond
 
 namespace tl
 {
@@ -178,7 +181,38 @@ void assign_col(Col &dst, const Expr &expr)
     }
 }
 
+template<typename Diag, typename Expr>
+void assign_diagonal(Diag &dst, const Expr &expr)
+{
+    TL_ASSERT(expr.size() == dst.size(), "Diagonal size mismatch");
+
+    using CleanExpr = std::remove_cvref_t<Expr>;
+    using value_type = typename vector_traits<Diag>::value_type;
+
+    if (expr.aliases(&dst[0])) {
+        Vector<value_type> tmp = expr;
+        assign_diagonal(dst, tmp);
+        return;
+    }
+
+    if constexpr (is_matvec_product_v<CleanExpr>) {
+
+        const auto &mat = expr.lhs();
+        const auto &vec = expr.rhs();
+        detail::mat_vec_mul(mat, vec, dst);
+
+    } else {
+
+        Evaluator<CleanExpr> eval(expr);
+
+        for (size_t i = 0; i < dst.size(); ++i) {
+            dst[i] = eval.coeff(i);
+        }
+    }
+}
 
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

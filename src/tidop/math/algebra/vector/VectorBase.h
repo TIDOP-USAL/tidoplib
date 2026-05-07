@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file VectorBase.h
+ * \brief Base class for vector operations with expression templates.
+ *
+ * This file defines the `VectorBase` class, which serves as the foundation for all
+ * vector types in the library. It provides common vector operations such as
+ * addition, subtraction, scalar multiplication, dot product, cross product,
+ * normalization, and element‑wise operations. The class uses expression templates
+ * to enable lazy evaluation and avoid temporary objects, resulting in efficient code.
+ *
+ * \ingroup Vector
+ * \see tl::Vector, tl::VectorExpr, tl::BaseExpr
+ */
+
 #pragma once
 
 #include <vector>
@@ -31,13 +44,14 @@
 #include "tidop/core/base/exception.h"
 #include "tidop/core/base/type_conversions.h"
 #include "tidop/math/math.h"
-#include "tidop/math/base/data.h"
+#include "tidop/math/base/Data.h"
 #include "tidop/math/algebra/BaseExpr.h"
+#include "tidop/math/algebra/expr/DiagonalMatrixExpr.h"
 #include "tidop/math/algebra/expr/VecBinaryExpr.h"
 #include "tidop/math/algebra/expr/VecScalarExpr.h"
 #include "tidop/math/algebra/expr/VecUnaryMinusExpr.h"
 #include "tidop/math/algebra/expr/MatVecMulExpr.h"
-#include "tidop/math/base/simd.h"
+#include "tidop/math/base/Simd.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/base/Traits.h"
 #include "tidop/math/algebra/vector/detail/VecEqual.h"
@@ -60,12 +74,26 @@ class Vector;
  * \class VectorBase
  * \brief Base class for vector operations.
  *
- * \tparam VectorDerived A template parameter representing the derived vector class.
+ * \tparam Derived The derived vector type (e.g., `Vector<T, Size>`).
  *
- * The `VectorBase` class serves as a base for vector classes, defining fundamental
- * operations between vectors and between vectors and scalars. It provides a foundation
- * for creating vector types with customizable behavior.
+ * This class implements common vector arithmetic and geometric operations.
+ * It is designed as a CRTP base, so the actual vector storage is defined in
+ * the derived class (usually `Vector`). The operations are implemented using
+ * expression templates, which defer evaluation and eliminate unnecessary
+ * temporaries.
+ * 
+ * ### Example
+ * \code
+ * Vector<double, 3> v1 = {1, 2, 3};
+ * Vector<double, 3> v2 = {4, 5, 6};
+ * Vector<double, 3> sum = v1 + v2;
+ * 
+ * double dot = v1.dotProduct(v2);
+ * v1.normalize();
+ * \endcode
  *
+ * \note The derived class must provide `size()`, `operator[]`, `begin()`, `end()`,
+ *       and a `packet(i)` method for SIMD optimizations.
  */
 template<typename Derived>
 class VectorBase
@@ -91,879 +119,483 @@ public:
     VectorBase();
 
     /*!
-     * \brief Calculates the magnitude (or length) of the vector.
-     * \return The magnitude of the vector.
+     * \brief Computes the Euclidean norm (magnitude) of the vector.
+     * \return The Euclidean norm as `double`.
      */
-    auto module() const -> double
-    {
-        return sqrt(this->squaredNorm());
-    }
-
-    auto norm() const -> double
-    {
-        return this->module();
-    }
-
-    auto squaredNorm() const -> double
-    {
-        return this->dotProduct(this->derived());
-    }
+    auto module() const -> double;
 
     /*!
-     * \brief Normalizes the vector, making its magnitude equal to 1.
+     * \brief Alias for `module()`.
+     * \return The Euclidean norm as `double`.
      */
-    void normalize()
-        requires std::is_floating_point_v<value_type>
-    {
-        double m = this->module();
-        if (m > std::numeric_limits<value_type>::epsilon()) {
-            *this /= static_cast<value_type>(m);
-        }
-    }
+    auto norm() const -> double;
 
     /*!
-     * \brief Computes the dot product with another vector.
-     * \param[in] vector Another vector to compute the dot product with.
-     * \tparam OtherDerived The type of the other vector.
-     * \return The dot product as a double.
+     * \brief Computes the squared Euclidean norm.
+     * \return The squared norm (dot product with itself) as `double`.
+     */
+    auto squaredNorm() const -> double;
+
+    /*!
+     * \brief Normalizes the vector in place (makes it unit length).
+     * \note Only available for floating‑point types. If the vector is already zero,
+     *       no operation is performed.
+     */
+    void normalize() requires std::is_floating_point_v<value_type>;
+
+    /*!
+     * \brief Computes the dot product with another vector (or expression).
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector expression to dot with.
+     * \return The dot product as `double`.
+     * \throws Exception if the sizes differ.
      */
     template<VectorExpr Expr>
-    auto dotProduct(const Expr &expr) const -> double
-    {
-        auto &derived = this->derived();
+    auto dotProduct(const Expr &expr) const -> double;
 
-        TL_ASSERT(derived.size() == expr.size(), "Different vector size");
-
-        double dot = 0.0;
-        size_t i = 0;
-
-        auto eval_derived = make_evaluator(derived);
-        auto eval_expr = make_evaluator(expr);
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-        using Scalar = std::remove_cv_t<value_type>;
-        Packed<Scalar> packed_result(0);
-
-        constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
-        size_t max_vector = (derived.size() / packed_size) * packed_size;
-
-        if constexpr (vector_traits<Derived>::has_contiguous_memory &&
-                      vector_traits<Expr>::has_contiguous_memory) {
-
-            for (; i < max_vector; i += packed_size) {
-                packed_result += eval_derived.packet(i) * eval_expr.packet(i);
-            }
-
-            dot += static_cast<double>(packed_result.sum());
-        }
-#endif
-
-        for (; i < derived.size(); ++i) {
-            dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
-        }
-
-        return dot;
-    }
-
+    /*!
+     * \brief Computes the cross product of two 3‑dimensional vectors.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The other vector.
+     * \return A new `Vector<value_type, 3>` containing the cross product.
+     * \note Only defined for vectors with dimension 3.
+     */
     template<VectorExpr Expr>
-    auto cross(const Expr &expr) const -> Vector<value_type, 3>
-    {
-        static_assert(dimensions == 3, "The cross product is only defined for 3 dimensions.");
+    auto cross(const Expr &expr) const -> Vector<value_type, 3>;
 
-        Vector<value_type, 3> res{};
-        Vector<value_type, 3> a = this->derived();
-        Vector<value_type, 3> b = expr;
+    /*!
+     * \brief Computes the sum of all elements.
+     * \return The sum as `value_type`.
+     */
+    auto sum() const -> value_type;
 
-        res[0] = a[1] * b[2] - a[2] * b[1];
-        res[1] = a[2] * b[0] - a[0] * b[2];
-        res[2] = a[0] * b[1] - a[1] * b[0];
-
-        return res;
-    }
-
-    auto sum() const -> value_type
-    {
-        value_type summation{};
-
-        auto &derived = this->derived();
-        auto eval = make_evaluator(derived);
-
-        size_t i = 0;
-
-#ifdef TL_HAVE_SIMD_INTRINSICS
-        using Scalar = std::remove_cv_t<value_type>;
-        constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
-        size_t max_vector = (derived.size() / packed_size) * packed_size;
-
-        if constexpr (vector_traits<Derived>::has_contiguous_memory) {
-
-            for (; i < max_vector; i += packed_size) {
-                summation += eval.packet(i).sum();
-            }
-
-        }
-
-#endif
-
-        for (; i < derived.size(); ++i) {
-            summation += eval.coeff(i);
-        }
-
-        return summation;
-    }
+    /*!
+     * \brief Converts the vector into a diagonal matrix expression.
+     *
+     * Returns an expression that represents a square diagonal matrix whose diagonal
+     * entries are the elements of this vector. Off‑diagonal entries are zero.
+     * The expression is evaluated lazily; evaluation occurs when the expression is
+     * assigned to a concrete matrix or when `.eval()` is explicitly called.
+     *
+     * The resulting matrix has size `N x N`, where `N` is the size of the vector.
+     *
+     * \return A `DiagonalMatrixExpr<Derived>` representing the diagonal matrix.
+     *
+     * ### Example
+     * \code
+     * Vector<double, 3> v = {1.0, 2.0, 3.0};
+     * auto diag_expr = v.asDiagonal();        // expression, not evaluated yet
+     * Matrix<double, 3, 3> D = diag_expr;     // evaluated -> diag(1,2,3)
+     *
+     * // Works with dynamic vectors and expressions:
+     * Vector<double> w = {4,5,6};
+     * Matrix<double> M = (w * 2).asDiagonal(); // M = diag(8,10,12)
+     * \endcode
+     *
+     * \note The returned expression is lightweight and does not allocate memory
+     *       until evaluated. It is intended for temporary use in matrix operations.
+     */
+    auto asDiagonal() const -> DiagonalMatrixExpr<Derived>;
 
     /* Unary arithmetic operators */
 
     /*!
      * \brief Unary plus operator.
-     * \return A copy of the vector.
+     * \return A const reference to the vector itself.
      */
-    auto operator+() const noexcept -> const Derived&
-    {
-        return this->derived();
-    }
+    auto operator+() const noexcept -> const Derived&;
 
     /*!
      * \brief Unary minus operator.
-     * \return A negated copy of the vector.
+     * \return An expression representing the negated vector.
      */
-    auto operator-() const
-    {
-        return VecUnaryMinusExpr<Derived>(this->derived());
-    }
+    auto operator-() const;
 
     /* Binary arithmetic operators */
 
     /*!
-     * \brief Adds two vectors.
-     * \param[in] vector2 The vector to add.
-     * \return The sum of the vectors.
+     * \brief Vector addition.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to add.
+     * \return An expression representing the element‑wise sum.
      */
 	template<VectorExpr Expr>
-    auto operator +(const Expr &expr) const
-    {
-        return VecBinaryExpr<Derived, Expr, AddOp>(this->derived(), expr);
-    }
+    auto operator +(const Expr &expr) const;
     
     /*!
-     * \brief Subtracts one vector from another.
-     * \param[in] vector2 The vector to subtract.
-     * \return The difference of the vectors.
+     * \brief Vector subtraction.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to subtract.
+     * \return An expression representing the element‑wise difference.
      */
     template<VectorExpr Expr>
-    auto operator -(const Expr &expr) const
-    {
-        return VecBinaryExpr<Derived, Expr, SubOp>(this->derived(), expr);
-    }
+    auto operator -(const Expr &expr) const;
 	
     /*!
-     * \brief Multiplies two vectors element-wise.
-     * \param[in] vector2 The vector to multiply.
-     * \return The product of the vectors.
+     * \brief Element‑wise multiplication (Hadamard product).
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to multiply by.
+     * \return An expression representing the element‑wise product.
      */
     template<VectorExpr Expr>
-    auto cwiseProduct(const Expr &expr) const
-    {
-        return VecBinaryExpr<Derived, Expr, MulOp>(this->derived(), expr);
-    }
+    auto cwiseProduct(const Expr &expr) const;
 
     /*!
-     * \brief Divides two vectors element-wise.
-     * \param[in] vector2 The vector to divide by.
-     * \return The quotient of the vectors.
+     * \brief Element‑wise division.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to divide by.
+     * \return An expression representing the element‑wise quotient.
      */
     template<VectorExpr Expr>
-    auto cwiseDiv(const Expr &expr) const
-    {
-        return VecBinaryExpr<Derived, Expr, DivOp>(this->derived(), expr);
-    }
+    auto cwiseDiv(const Expr &expr) const;
 
     /*!
-     * \brief Multiplies the vector by a scalar.
-     * \param[in] scalar The scalar to multiply by.
-     * \return The scaled vector.
+     * \brief Scalar multiplication.
+     * \param[in] scalar The scalar value.
+     * \return An expression representing the scaled vector.
      */
-    auto operator*(value_type scalar) const
-    {
-        return VecScalarExpr<Derived, value_type, MulOp>(this->derived(), scalar);
-    }
+    auto operator*(value_type scalar) const;
 
     /*!
-     * \brief Divides the vector by a scalar.
-     * \param[in] scalar The scalar to divide by.
-     * \return The scaled vector.
+     * \brief Scalar division.
+     * \param[in] scalar The scalar divisor.
+     * \return An expression representing the vector divided by the scalar.
      */
-    auto operator/(value_type scalar) const
-    {
-        return VecScalarExpr<Derived, value_type, DivOp>(this->derived(), scalar);
-    }
+    auto operator/(value_type scalar) const;
 
     /*!
-     * \brief Adds another vector to this vector.
-     * \param[in] vector The vector to add.
-     * \tparam OtherDerived The type of the other vector.
-     * \return A reference to this vector.
+     * \brief Compound addition assignment.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to add.
+     * \return Reference to the modified derived vector.
+     * \note Only available if the derived type is mutable.
      */
     template<VectorExpr Expr>
         requires (vector_traits<Derived>::is_mutable)
-    auto operator+=(const Expr &expr)
-    {
-        std::move(this->derived()) = this->derived() + expr;
-
-        return this->derived();
-    }
+    auto operator+=(const Expr &expr);
 
     /*!
-     * \brief Subtracts another vector from this vector.
-     * \param[in] vector The vector to subtract.
-     * \tparam OtherDerived The type of the other vector.
-     * \return A reference to this vector.
+     * \brief Compound subtraction assignment.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to subtract.
+     * \return Reference to the modified derived vector.
+     * \note Only available if the derived type is mutable.
      */
     template<VectorExpr Expr>
         requires (vector_traits<Derived>::is_mutable)
-    auto operator-=(const Expr &expr) -> Derived &
-    {
-        std::move(this->derived()) = this->derived() - expr;
-
-        return this->derived();
-    }
+    auto operator-=(const Expr &expr) -> Derived &;
 	
     /*!
-     * \brief Multiplies this vector by another vector element-wise.
-     * \param[in] vector The vector to multiply by.
-     * \tparam OtherDerived The type of the other vector.
-     * \return A reference to this vector.
+     * \brief In‑place element‑wise multiplication.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to multiply by.
+     * \return Reference to the modified derived vector.
+     * \note Only available if the derived type is mutable.
      */
     template<VectorExpr Expr>
         requires (vector_traits<Derived>::is_mutable)
-    auto cwiseProductInPlace(const Expr &expr) -> Derived &
-    {
-        std::move(this->derived()) = this->derived().cwiseProduct(expr);
-        return this->derived();
-    }
+    auto cwiseProductInPlace(const Expr &expr) -> Derived &;
 
     /*!
-     * \brief Divides this vector by another vector element-wise.
-     * \param[in] vector The vector to divide by.
-     * \tparam OtherDerived The type of the other vector.
-     * \return A reference to this vector.
+     * \brief In‑place element‑wise division.
+     * \tparam Expr A type satisfying `VectorExpr`.
+     * \param[in] expr The vector to divide by.
+     * \return Reference to the modified derived vector.
+     * \note Only available if the derived type is mutable.
      */
     template<VectorExpr Expr>
         requires (vector_traits<Derived>::is_mutable)
-    auto cwiseDivInPlace(const Expr &expr) -> Derived &
-    {
-        std::move(this->derived()) = this->derived().cwiseDiv(expr);
-        return this->derived();
-    }
+    auto cwiseDivInPlace(const Expr &expr) -> Derived &;
 
     /*!
-     * \brief Multiplies the vector by a scalar.
-     * \param[in] scalar The scalar to multiply by.
-     * \return A reference to this vector.
+     * \brief Scalar multiplication assignment.
+     * \tparam Scalar Numeric type convertible to `value_type`.
+     * \param[in] scalar The scalar multiplier.
+     * \return Reference to the modified derived vector.
      */
     template<typename Scalar>
+    auto operator *=(Scalar scalar) -> Derived& 
         requires (vector_traits<Derived>::is_mutable &&
-                  std::is_convertible_v<Scalar, value_type>)
-    auto operator *=(Scalar scalar) -> Derived &
-    {
-        std::move(this->derived()) = this->derived() * scalar;
-
-        return this->derived();
-    }
+                  std::is_convertible_v<Scalar, value_type>);
 
     /*!
-     * \brief Divides the vector by a scalar.
-     * \param[in] scalar The scalar to divide by.
-     * \return A reference to this vector.
+     * \brief Scalar division assignment.
+     * \tparam Scalar Numeric type convertible to `value_type`.
+     * \param[in] scalar The scalar divisor.
+     * \return Reference to the modified derived vector.
      */
     template<typename Scalar>
-        requires (vector_traits<Derived>::is_mutable &&
-                  std::is_convertible_v<Scalar, value_type>)
     auto operator /=(Scalar scalar) -> Derived &
-    {
-        std::move(this->derived()) = this->derived() / scalar;
-
-        return this->derived();
-    }
+        requires (vector_traits<Derived>::is_mutable &&
+                  std::is_convertible_v<Scalar, value_type>);
 	
-    constexpr auto eval() const
-    {
-        if constexpr (vector_traits<Derived>::is_plain) {
-            return this->derived();
-        } else {
-            using T = std::remove_cv_t<typename vector_traits<Derived>::value_type>;
-            constexpr size_t Size = vector_traits<Derived>::size;
-            return Vector<T, Size>(this->derived());
-        }
-    }
+    /*!
+     * \brief Evaluates the expression and returns a concrete vector.
+     * \return A concrete `Vector` object (static or dynamic as appropriate).
+     */
+    constexpr auto eval() const;
 
 };
 
 
 
 
-
-/*------------------------------------------------------------------------*/
-/* VectorBase implementation                                              */
-/*------------------------------------------------------------------------*/
-
+/* VectorBase implementation */
 
 template<typename Derived>
 VectorBase<Derived>::VectorBase()
 {
 }
 
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::module() const -> double
-//{
-//    return sqrt(this->squaredNorm());
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::norm() const -> double
-//{
-//    return this->module();
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::squaredNorm() const -> double
-//{
-//    return this->dotProduct(this->derived());
-//}
-//
-//template<typename Derived>
-//template<typename D>
-//auto VectorBase<Derived>::normalize() -> std::enable_if_t<is_vector<D>::value &&
-//                                         std::is_floating_point_v<T>, void>
-//{
-//    double m = this->module();
-//    if (m > std::numeric_limits<T>::epsilon()) {
-//        *this /= static_cast<T>(m);
-//    }
-//}
-//
-//template<typename Derived>
-//template<typename OtherDerived, typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::dotProduct(const OtherDerived &vector) const -> double
-//{
-//    auto &derived = this->derived();
-//
-//    TL_ASSERT(derived.size() == vector.size(), "Different vector size");
-//
-//    double dot = 0.0;
-//    size_t i = 0;
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    using Scalar = std::remove_cv_t<T>;
-//    Packed<Scalar> packed_a;
-//    Packed<Scalar> packed_b;
-//    Packed<Scalar> packed_result(0);
-//
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
-//        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
-//
-//        for (; i < max_vector; i += packed_size) {
-//
-//            packed_a.loadUnaligned(&derived[i]);
-//            packed_b.loadUnaligned(&vector[i]);
-//
-//            packed_result += packed_a * packed_b;
-//
-//        }
-//
-//        dot += static_cast<double>(packed_result.sum());
-//    }
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        dot += static_cast<double>(derived[i]) * static_cast<double>(vector[i]);
-//    }
-//
-//    return dot;
-//}
-//
-//template<typename Derived>
-//template<typename OtherDerived, typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::cross(const OtherDerived &other) const -> result_type
-//{
-//    static_assert(dimensions == 3, "The cross product is only defined for 3 dimensions.");
-//
-//    result_type res{};
-//    const auto &a = this->derived();
-//    const auto &b = other.derived();
-//
-//    res[0] = a[1] * b[2] - a[2] * b[1];
-//    res[1] = a[2] * b[0] - a[0] * b[2];
-//    res[2] = a[0] * b[1] - a[1] * b[0];
-//
-//    return res;
-//}
-//
-//template<typename Derived>
-//auto VectorBase<Derived>::sum() const -> T
-//{
-//    T summation{};
-//
-//    auto &derived = this->derived();
-//    size_t i = 0;
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    using Scalar = std::remove_cv_t<T>;
-//    Packed<Scalar> packed_a;
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_vector = (derived.size() / packed_size) * packed_size;
-//    
-//    if (this->properties.isEnabled(Derived::Properties::contiguous_memory)) {
-//
-//        for (; i < max_vector; i += packed_size) {
-//            packed_a.loadUnaligned(&derived[i]);
-//            summation += packed_a.sum();
-//        }
-//
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        summation += derived[i];
-//    }
-//
-//    return summation;
-//}
+template<typename Derived>
+auto VectorBase<Derived>::module() const -> double
+{
+    return sqrt(this->squaredNorm());
+}
 
+template<typename Derived>
+auto VectorBase<Derived>::norm() const -> double
+{
+    return this->module();
+}
+
+template<typename Derived>
+ auto VectorBase<Derived>::squaredNorm() const -> double
+{
+    return this->dotProduct(this->derived());
+}
+
+template<typename Derived>
+void VectorBase<Derived>::normalize() requires std::is_floating_point_v<value_type>
+{
+    double m = this->module();
+    if (m > std::numeric_limits<value_type>::epsilon()) {
+        *this /= static_cast<value_type>(m);
+    }
+}
+
+template<typename Derived>
+auto VectorBase<Derived>::sum() const -> value_type
+{
+    value_type summation{};
+
+    auto &derived = this->derived();
+    auto eval = make_evaluator(derived);
+
+    size_t i = 0;
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    using Scalar = std::remove_cv_t<value_type>;
+    constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+
+    if constexpr (vector_traits<Derived>::has_contiguous_memory) {
+
+        for (; i < max_vector; i += packed_size) {
+            summation += eval.packet(i).sum();
+        }
+
+    }
+
+#endif
+
+    for (; i < derived.size(); ++i) {
+        summation += eval.coeff(i);
+    }
+
+    return summation;
+}
+
+template<typename Derived>
+auto VectorBase<Derived>::asDiagonal() const -> DiagonalMatrixExpr<Derived>
+{
+    return DiagonalMatrixExpr<Derived>(this->derived());
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
+{
+    auto &derived = this->derived();
+
+    TL_ASSERT(derived.size() == expr.size(), "Different vector size");
+
+    double dot = 0.0;
+    size_t i = 0;
+
+    auto eval_derived = make_evaluator(derived);
+    auto eval_expr = make_evaluator(expr);
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    using Scalar = std::remove_cv_t<value_type>;
+    Packed<Scalar> packed_result(0);
+
+    constexpr size_t packed_size = PackedTraits<Packed<Scalar>>::size;
+    size_t max_vector = (derived.size() / packed_size) * packed_size;
+
+    if constexpr (vector_traits<Derived>::has_contiguous_memory &&
+                  vector_traits<Expr>::has_contiguous_memory) {
+
+        for (; i < max_vector; i += packed_size) {
+            packed_result += eval_derived.packet(i) * eval_expr.packet(i);
+        }
+
+        dot += static_cast<double>(packed_result.sum());
+    }
+#endif
+
+    for (; i < derived.size(); ++i) {
+        dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
+    }
+
+    return dot;
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+auto VectorBase<Derived>::cross(const Expr &expr) const -> Vector<value_type, 3>
+{
+    static_assert(dimensions == 3, "The cross product is only defined for 3 dimensions.");
+
+    Vector<value_type, 3> res{};
+    Vector<value_type, 3> a = this->derived();
+    Vector<value_type, 3> b = expr;
+
+    res[0] = a[1] * b[2] - a[2] * b[1];
+    res[1] = a[2] * b[0] - a[0] * b[2];
+    res[2] = a[0] * b[1] - a[1] * b[0];
+
+    return res;
+}
 
 /* Unary arithmetic operators */
 
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator+() const -> Derived
-//{
-//    return this->derived();
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator-() const -> Derived
-//{
-//    static_assert(std::is_signed<T>::value, "Requires signed type");
-//
-//    using Scalar = std::remove_cv_t<T>;
-//
-//    auto result = this->derived();
-//    size_t i = 0;
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//    Packed<Scalar> packed_value;
-//    constexpr size_t packed_size = packed_value.size();
-//    size_t max_vector = (result.size() / packed_size) * packed_size;
-//
-//    if (this->properties.isEnabled(Derived::Properties::contiguous_memory)) {
-//        for (; i < max_vector; i += packed_size) {
-//            packed_value.loadUnaligned(&result[i]);
-//            packed_value = - packed_value;
-//            packed_value.storeUnaligned(&result[i]);
-//        }
-//    }
-//#endif
-//
-//    // Procesa los elementos restantes de manera escalar
-//    for (; i < result.size(); ++i) {
-//        result[i] = -result[i];
-//    }
-//
-//    return result;
-//}
-//
-///* Binary arithmetic operators */
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator+(const Derived &vector2) const -> result_type
-//{
-//    result_type vector = this->derived();
-//    vector += vector2;
-//    return vector;
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator-(const Derived &vector2) const -> result_type
-//{
-//    result_type vector = this->derived();
-//    vector -= vector2;
-//    return vector;
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::cwiseProduct(const Derived &vector) const -> result_type
-//{
-//    result_type result = this->derived();
-//    result.cwiseProductInPlace(vector);
-//    return result;
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::cwiseDiv(const Derived &vector) const -> result_type
-//{
-//    result_type result = this->derived();
-//    result.cwiseDivInPlace(vector);
-//    return result;
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator*(T scalar) const -> result_type
-//{
-//    result_type vector = this->derived();
-//    vector *= scalar;
-//    return vector;
-//}
+template<typename Derived>
+auto VectorBase<Derived>::operator+() const noexcept -> const Derived&
+{
+    return this->derived();
+}
 
-//template<typename Derived>
-//template<typename Scalar, typename>
-//auto VectorBase<Derived>::operator*(Scalar scalar) const -> result_type
-//{
-//    result_type result = this->derived();
-//    result *= scalar;
-//    return result;
-//}
+template<typename Derived>
+auto VectorBase<Derived>::operator-() const
+{
+    return VecUnaryMinusExpr<Derived>(this->derived());
+}
 
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator/(T scalar) const -> result_type
-//{
-//    result_type vector = this->derived();
-//    vector /= scalar;
-//    return vector;
-//}
-//
-//template<typename Derived>
-//template<typename OtherDerived, typename>
-//auto VectorBase<Derived>::operator+=(const OtherDerived &vector) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    TL_ASSERT(derived.size() == vector.size(), "Different size vectors");
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
-//        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
-//
-//        for (; i < max_vector; i += packed_size) {
-//
-//            packed_a.loadUnaligned(&derived[i]);
-//            packed_b.loadUnaligned(&vector[i]);
-//
-//            packed_a += packed_b;
-//            packed_a.storeUnaligned(&derived[i]);
-//
-//        }
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        derived[i] += vector[i];
-//    }
-//
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename OtherDerived, typename>
-//auto VectorBase<Derived>::operator-=(const OtherDerived &vector) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    TL_ASSERT(derived.size() == vector.size(), "");
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//
-//    constexpr size_t packed_size = packed_a.size();
-//
-//    size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
-//        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
-//
-//        for (; i < max_vector; i += packed_size) {
-//
-//            packed_a.loadUnaligned(&derived[i]);
-//            packed_b.loadUnaligned(&vector[i]);
-//            packed_a -= packed_b;
-//            packed_a.storeUnaligned(&derived[i]);
-//
-//        }
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        derived[i] -= vector[i];
-//    }
-//
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename OtherDerived, typename>
-//auto VectorBase<Derived>::cwiseProductInPlace(const OtherDerived &vector) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    TL_ASSERT(derived.size() == vector.size(), "");
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//
-//    constexpr size_t packed_size = packed_a.size();
-//
-//    if (this->properties.isEnabled(Derived::Properties::contiguous_memory) &&
-//        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
-//
-//        size_t max_vector = (derived.size() / packed_size) * packed_size;
-//        for (; i < max_vector; i += packed_size) {
-//
-//            packed_a.loadUnaligned(&derived[i]);
-//            packed_b.loadUnaligned(&vector[i]);
-//            packed_a *= packed_b;
-//            packed_a.storeUnaligned(&derived[i]);
-//
-//        }
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        derived[i] *= vector[i];
-//    }
-//
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename OtherDerived, typename>
-//auto VectorBase<Derived>::cwiseDivInPlace(const OtherDerived &vector) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    TL_ASSERT(derived.size() == vector.size(), "");
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b;
-//
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//    if (this->properties.isEnabled(Properties::contiguous_memory) &&
-//        vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
-//
-//        for (; i < max_vector; i += packed_size) {
-//
-//            packed_a.loadUnaligned(&derived[i]);
-//            packed_b.loadUnaligned(&vector[i]);
-//            packed_a /= packed_b;
-//            packed_a.storeUnaligned(&derived[i]);
-//
-//        }
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        derived[i] /= vector[i];
-//    }
-//
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename Scalar, typename D, typename>
-//auto VectorBase<Derived>::operator*=(Scalar scalar) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    for (size_t i = 0; i < derived.size(); ++i) {
-//        derived[i] = numberCast<T>(derived[i] * scalar);
-//    }
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator*=(T scalar) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    Packed<T> packed_a;
-//    Packed<T> packed_b(scalar);
-//
-//    constexpr size_t packed_size = packed_a.size();
-//    size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//    if (this->properties.isEnabled(Properties::contiguous_memory)) {
-//        for (; i < max_vector; i += packed_size) {
-//
-//            packed_a.loadUnaligned(&derived[i]);
-//            packed_a *= packed_b;
-//            packed_a.storeUnaligned(&derived[i]);
-//
-//        }
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); i++) {
-//        derived[i] *= scalar;
-//    }
-//
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename D, enable_if_vector_t<D>>
-//auto VectorBase<Derived>::operator/=(T scalar) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    TL_ASSERT(scalar != consts::zero<T>, "Division by zero");
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    if constexpr (!std::is_integral_v<T>) {
-//
-//        Packed<T> packed_a;
-//        Packed<T> packed_b(scalar);
-//
-//        constexpr size_t packed_size = packed_a.size();
-//        size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//        if (this->properties.isEnabled(Properties::contiguous_memory)) {
-//            for (; i < max_vector; i += packed_size) {
-//
-//                packed_a.loadUnaligned(&derived[i]);
-//                packed_a /= packed_b;
-//                packed_a.storeUnaligned(&derived[i]);
-//
-//            }
-//        }
-//    }
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        derived[i] /= scalar;
-//    }
-//
-//    return derived;
-//}
-//
-//template<typename Derived>
-//template<typename Scalar, typename D, typename>
-//auto VectorBase<Derived>::operator/=(Scalar scalar) -> Derived &
-//{
-//    auto &derived = this->derived();
-//
-//    for (size_t i = 0; i < derived.size(); ++i) {
-//        derived[i] = numberCast<T>(derived[i] / scalar);
-//    }
-//
-//    return derived;
-//}
+/* Binary arithmetic operators */
 
-//template<typename Derived>
-//template<typename OtherDerived>
-//void VectorBase<Derived>::set(const OtherDerived &vector)
-//{
-//    auto &derived = this->derived();
-//
-//    using OtherT = typename vector_traits<OtherDerived>::value_type;
-//
-//    if(Size == DynamicData) {
-//        derived = Derived(vector.size());
-//    }
-//
-//    TL_ASSERT(derived.size() == vector.size(), "Static vector cannot be resized");
-//
-//    size_t i{0};
-//
-//#ifdef TL_HAVE_SIMD_INTRINSICS
-//
-//    if constexpr (std::is_same_v<T, OtherT>) {
-//
-//        Packed<T> packed_a;
-//        Packed<T> packed_b;
-//
-//        constexpr size_t packed_size = packed_a.size();
-//        size_t max_vector = (derived.size() / packed_size) * packed_size;
-//
-//        if (this->properties.isEnabled(Properties::contiguous_memory) &&
-//            vector.properties.isEnabled(OtherDerived::Properties::contiguous_memory)) {
-//
-//            for (; i < max_vector; i += packed_size) {
-//
-//                packed_a.loadUnaligned(&derived[i]);
-//                packed_b.loadUnaligned(&vector[i]);
-//                packed_a = packed_b;
-//                packed_a.storeUnaligned(&derived[i]);
-//
-//            }
-//        }
-//    }
-//
-//#endif
-//
-//    for (; i < derived.size(); ++i) {
-//        derived[i] = vector[i];
-//    }
-//}
+template<typename Derived>
+template<VectorExpr Expr>
+auto VectorBase<Derived>::operator+(const Expr &expr) const
+{
+    return VecBinaryExpr<Derived, Expr, AddOp>(this->derived(), expr);
+}
 
-//template<typename Derived>
-//auto VectorBase<Derived>::derived() -> Derived &
-//{
-//    return *static_cast<Derived *>(this);
-//}
-//
-//template<typename Derived>
-//auto VectorBase<Derived>::derived() const -> const Derived &
-//{
-//    return *static_cast<const Derived *>(this);
-//}
+template<typename Derived>
+template<VectorExpr Expr>
+auto VectorBase<Derived>::operator -(const Expr &expr) const
+{
+    return VecBinaryExpr<Derived, Expr, SubOp>(this->derived(), expr);
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+auto VectorBase<Derived>::cwiseProduct(const Expr &expr) const
+{
+    return VecBinaryExpr<Derived, Expr, MulOp>(this->derived(), expr);
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+auto VectorBase<Derived>::cwiseDiv(const Expr &expr) const
+{
+    return VecBinaryExpr<Derived, Expr, DivOp>(this->derived(), expr);
+}
+
+template<typename Derived>
+auto VectorBase<Derived>::operator*(value_type scalar) const
+{
+    return VecScalarExpr<Derived, value_type, MulOp>(this->derived(), scalar);
+}
+
+template<typename Derived>
+auto VectorBase<Derived>::operator/(value_type scalar) const
+{
+    return VecScalarExpr<Derived, value_type, DivOp>(this->derived(), scalar);
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+    requires (vector_traits<Derived>::is_mutable)
+auto VectorBase<Derived>::operator+=(const Expr &expr)
+{
+    std::move(this->derived()) = this->derived() + expr;
+
+    return this->derived();
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+    requires (vector_traits<Derived>::is_mutable)
+auto VectorBase<Derived>::operator-=(const Expr &expr) -> Derived &
+{
+    std::move(this->derived()) = this->derived() - expr;
+
+    return this->derived();
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+    requires (vector_traits<Derived>::is_mutable)
+auto VectorBase<Derived>::cwiseProductInPlace(const Expr &expr) -> Derived &
+{
+    std::move(this->derived()) = this->derived().cwiseProduct(expr);
+    return this->derived();
+}
+
+template<typename Derived>
+template<VectorExpr Expr>
+    requires (vector_traits<Derived>::is_mutable)
+auto VectorBase<Derived>::cwiseDivInPlace(const Expr &expr) -> Derived &
+{
+    std::move(this->derived()) = this->derived().cwiseDiv(expr);
+    return this->derived();
+}
+
+template<typename Derived>
+template<typename Scalar>
+auto VectorBase<Derived>::operator *=(Scalar scalar) -> Derived &
+    requires (vector_traits<Derived>::is_mutable &&
+              std::is_convertible_v<Scalar, value_type>)
+{
+    std::move(this->derived()) = this->derived() * scalar;
+
+    return this->derived();
+}
+
+template<typename Derived>
+template<typename Scalar>
+auto VectorBase<Derived>::operator /=(Scalar scalar) -> Derived &
+    requires (vector_traits<Derived>::is_mutable &&
+              std::is_convertible_v<Scalar, value_type>)
+{
+    std::move(this->derived()) = this->derived() / scalar;
+
+    return this->derived();
+}
+
+template<typename Derived>
+constexpr auto VectorBase<Derived>::eval() const
+{
+    if constexpr (vector_traits<Derived>::is_plain) {
+        return this->derived();
+    } else {
+        using T = std::remove_cv_t<typename vector_traits<Derived>::value_type>;
+        constexpr size_t Size = vector_traits<Derived>::size;
+        return Vector<T, Size>(this->derived());
+    }
+}
+
 
 template<MatrixExpr LHS, VectorExpr RHS>
 auto operator*(const LHS &mat, const RHS &vec)

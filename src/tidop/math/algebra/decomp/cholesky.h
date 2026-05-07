@@ -22,12 +22,27 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Cholesky.h
+ * \brief Cholesky decomposition of symmetric positive‑definite matrices.
+ *
+ * This file defines the `CholeskyDecomposition` class, which computes the Cholesky
+ * decomposition \( A = L L^T \) of a symmetric positive‑definite matrix \( A \).
+ * The lower triangular matrix \( L \) is stored and can be used to solve linear
+ * systems, compute the inverse, or evaluate the determinant.
+ *
+ * The implementation uses LAPACK (OpenBLAS) when available; otherwise a fallback
+ * implementation is used.
+ *
+ * \ingroup Decomposition
+ * \see tl::QRDecomposition, tl::LuDecomposition, tl::SingularValueDecomposition
+ */
+
 #pragma once
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
-#include "tidop/math/base/lapack.h"
+#include "tidop/math/base/Lapack.h"
 
 
 namespace tl
@@ -38,181 +53,161 @@ namespace tl
  *  \{
  */
 
-/// \cond
-
-template<typename T>
-class CholeskyDecomposition;
-
-/// \endcond
 /*!
- * \brief Cholesky Decomposition
+ * \class CholeskyDecomposition
+ * \brief Cholesky decomposition of a symmetric positive‑definite matrix.
  *
- * This class provides an implementation of the Cholesky decomposition, which is a method
- * for decomposing a positive-definite, symmetric matrix into the product of a lower triangular
- * matrix L and its transpose, such that \( A = L L^T \).
+ * \tparam Mat A type satisfying the `DenseMatrix` concept (e.g., `Matrix<T, Rows, Cols>`).
+ *             The matrix must be square and have a floating‑point element type.
  *
- * Given a matrix \( A \), if it is symmetric and positive-definite, the Cholesky decomposition
- * can be used to find \( L \), the lower triangular matrix. The matrix \( A \) must be symmetric
- * and positive-definite for the decomposition to be applicable.
+ * This class performs the Cholesky decomposition \( A = L L^T \) on a symmetric
+ * positive‑definite matrix \( A \). The decomposition is computed at construction
+ * time and stored as the lower triangular matrix \( L \). The class provides
+ * methods to solve linear systems, compute the inverse, and obtain the determinant.
  *
- * The Cholesky decomposition is often used in numerical methods, such as solving systems of linear equations,
- * optimization, and inverting positive-definite matrices. The decomposition is numerically stable and efficient.
- *
- * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
- * \tparam T The type of the elements in the matrix (e.g., `double`).
- * \tparam _rows The number of rows in the matrix.
- * \tparam _cols The number of columns in the matrix.
+ * ### Example
+ * \code
+ * Matrix<double, 3, 3> A = {{4, 12, -16},
+ *                           {12, 37, -43},
+ *                           {-16, -43, 98}};
+ * CholeskyDecomposition<Matrix<double, 3, 3>> cholesky(A);
+ * Vector<double, 3> b = {1, 2, 3};
+ * Vector<double, 3> x = cholesky.solve(b);
+ * double det = cholesky.determinant();
+ * auto inv = cholesky.inverse();
+ * \endcode
  */
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-class CholeskyDecomposition<Matrix_t<T, _rows, _cols>>
+template<DenseMatrix Mat>
+class CholeskyDecomposition
 {
 
 public:
 
-    /*!
-     * \brief Constructs a Cholesky Decomposition from a given matrix
-     *
-     * This constructor performs the Cholesky decomposition of the given matrix \( A \) and
-     * stores the resulting lower triangular matrix \( L \).
-     *
-     * The matrix \( A \) must be symmetric and positive-definite for the decomposition to succeed.
-     * If these conditions are not met, the decomposition will fail.
-     *
-     * \param[in] a The matrix \( A \) to decompose, which must be symmetric and positive-definite.
-     */
-    CholeskyDecomposition(const Matrix_t<T, _rows, _cols> &a);
+    using value_type = typename matrix_traits<Mat>::value_type;
+    static constexpr size_t rows = matrix_traits<Mat>::rows;
+    static constexpr size_t cols = matrix_traits<Mat>::cols;
+
+protected:
+
+    Mat L;          /*!< Lower triangular matrix from the decomposition. */
+    size_t mRows;   /*!< Number of rows (equals number of columns). */
+
+public:
 
     /*!
-     * \brief Solves the system of equations \( A \cdot x = b \) using the Cholesky decomposition
-     *
-     * Using the decomposed matrix \( L \), this method solves the system of linear equations
-     * \( A \cdot x = b \), where \( A \) is the matrix and \( b \) is the right-hand side vector.
-     * The solution is obtained by first solving \( L \cdot y = b \), and then solving \( L^T \cdot x = y \).
-     *
-     * This method is more efficient than directly solving \( A \cdot x = b \) by using methods like Gaussian elimination,
-     * as it takes advantage of the Cholesky decomposition.
-     *
-     * \param[in] b The right-hand side vector \( b \).
-     * \return The solution vector \( x \).
+     * \brief Constructor that performs the Cholesky decomposition.
+     * \param[in] a The symmetric positive‑definite matrix to decompose.
+     * \pre `a.rows() == a.cols()` (square matrix).
+     * \pre The element type of `a` must be floating‑point (e.g., `float`, `double`).
+     * \throws tl::Exception if the matrix is not positive‑definite or if the
+     *         decomposition fails (e.g., due to non‑square input).
      */
-    auto solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>;
+    CholeskyDecomposition(const Mat &a);
 
     /*!
-     * \brief Solves the system of equations \( A \cdot X = B \) using the Cholesky decomposition
-     *
-     * This method solves the system of linear equations \( A \cdot X = B \), where \( A \) is the matrix
-     * and \( B \) is a matrix of right-hand side vectors. The solution is obtained by solving each column
-     * of \( B \) individually using the Cholesky decomposition.
-     *
-     * \param[in] B The matrix \( B \) of right-hand side vectors.
-     * \return The matrix \( X \) containing the solutions.
+     * \brief Solves the linear system \( A x = b \) for the vector \( b \).
+     * \tparam Vec A type satisfying `VectorExpr`.
+     * \param[in] b The right‑hand side vector.
+     * \return The solution vector \( x \) of length `rows`.
+     * \pre `b.size() == rows()`.
+     * \throws tl::Exception if the solve fails (e.g., due to a singular matrix).
      */
-    auto solve(const Matrix<T, _rows, _cols> &B) const->Matrix<T, _rows, _cols>;
+    template<VectorExpr Vec>
+    auto solve(const Vec &b) const -> Vector<value_type, rows>;
 
     /*!
-     * \brief Gets the lower triangular matrix \( L \)
-     *
-     * This method returns the lower triangular matrix \( L \) from the Cholesky decomposition,
-     * such that \( A = L L^T \).
-     *
-     * \return The lower triangular matrix \( L \).
+     * \brief Solves the linear system \( A X = B \) for the matrix \( B \).
+     * \tparam MatExpr A type satisfying `MatrixExpr`.
+     * \param[in] B The right‑hand side matrix (each column is a system).
+     * \return The solution matrix \( X \) of size `rows` × `cols(B)`.
+     * \pre `B.rows() == rows()`.
+     * \throws tl::Exception if the solve fails.
      */
-    auto lower() const -> Matrix_t<T, _rows, _cols>;
+    template<MatrixExpr MatExpr>
+    auto solve(const MatExpr &B) const -> Matrix<value_type, rows, cols>;
 
     /*!
-     * \brief Computes the inverse of the matrix using the Cholesky decomposition
-     *
-     * This method computes the inverse of the matrix \( A \) using the Cholesky decomposition.
-     * It is applicable only if \( A \) is symmetric and positive-definite.
-     *
-     * The method uses the Cholesky decomposition to solve \( A \cdot X = I \), where \( I \) is the identity matrix.
-     *
-     * \return The inverse matrix of \( A \).
+     * \brief Returns the lower triangular matrix \( L \).
+     * \return A square matrix of size `rows` containing the lower triangular factor.
      */
-    auto inverse() const -> Matrix_t<T, _rows, _cols>;
+    auto lower() const -> Matrix<value_type, rows, cols>;
 
     /*!
-     * \brief Computes the determinant of the matrix \(A\) using Cholesky decomposition.
-     *
-     * This method computes the determinant of a symmetric, positive-definite matrix \(A\)
-     * using the Cholesky decomposition \(A = L \cdot L^T\). The determinant is the square
-     * of the product of the diagonal elements of the lower triangular matrix \(L\).
-     *
-     * \return The determinant of the matrix \(A\).
+     * \brief Computes the inverse of the original matrix \( A \).
+     * \return The inverse matrix \( A^{-1} \) of size `rows` × `cols`.
+     * \note The inverse is computed using the Cholesky decomposition and is
+     *       only valid for positive‑definite matrices.
      */
-    auto determinant() const -> T;
+    auto inverse() const -> Matrix<value_type, rows, cols>;
+
+    /*!
+     * \brief Computes the determinant of the original matrix \( A \).
+     * \return The determinant (positive value).
+     * \note The determinant is computed as \( (\prod_{i} L_{ii})^2 \).
+     */
+    auto determinant() const -> value_type;
 
 private:
 
     /*!
-     * \brief Performs the Cholesky decomposition
-     *
-     * This private method decomposes the matrix \( A \) into its lower triangular matrix \( L \).
+     * \brief Internal routine that performs the Cholesky decomposition.
+     * \post The matrix `L` is overwritten with the lower triangular factor.
+     * \throws tl::Exception if the decomposition fails (non‑positive‑definite).
      */
     void decompose();
 
-protected:
-
-    Matrix_t<T, _rows, _cols> L;
-    size_t mRows;
 };
 
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::CholeskyDecomposition(const Matrix_t<T, _rows, _cols> &a)
+template<DenseMatrix Mat>
+CholeskyDecomposition<Mat>::CholeskyDecomposition(const Mat &a)
   : L(a),
     mRows(a.rows())
 {
-    static_assert(_rows == _cols, "Cholesky decomposition requires a square matrix.");
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(rows == cols, "Cholesky decomposition requires a square matrix.");
+    static_assert(std::is_floating_point<value_type>::value, "Integral type not supported");
     TL_ASSERT(a.rows() == a.cols(), "Cholesky decomposition requires a square matrix.");
 
     this->decompose();
 
     for (size_t i = 0; i < mRows; i++) {
         for (size_t j = 0; j < i; j++) {
-            L[j][i] = consts::zero<T>;
+            L[j][i] = consts::zero<value_type>;
         }
     }
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b) const -> Vector<T, _rows>
+
+
+template<DenseMatrix Mat>
+template<VectorExpr Vec>
+auto CholeskyDecomposition<Mat>::solve(const Vec &b) const -> Vector<value_type, rows>
 {
     TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
 
-    Vector<T, _rows> x(b);
+    Vector<value_type, rows> x(b);
 
     try {
 
-//#ifdef TL_HAVE_OPENBLAS 
-//
-//        size_t nrhs = 1;  // Un único vector de términos constantes b
-//        // lda y ldb son el número de filas de las matrices L y X (que es igual a mRows)
-//        size_t lda = mRows;
-//        size_t ldb = mRows;
-//
-//        lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
-//            lapack::TriangularForm::lower,     // L es triangular inferior
-//            mRows,                             // Número de filas de L
-//            nrhs,                              // Número de términos constantes (1 en este caso)
-//            L.data(),                          // Matriz L
-//            lda,                               // Paso entre filas de L
-//            x.data(),                          // La solución del sistema
-//            ldb);                              // Paso entre filas de X
-//
-//#else
+#ifdef TL_HAVE_OPENBLAS 
 
-        T sum;
+        size_t nrhs = 1;  // Un único vector de términos constantes b
+        // lda y ldb son el número de filas de las matrices L y X (que es igual a mRows)
+        size_t lda = L.cols();
+        size_t ldb = 1;
+
+        lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
+                      lapack::TriangularForm::lower,     // L es triangular inferior
+                      mRows,                             // Número de filas de L
+                      nrhs,                              // Número de términos constantes (1 en este caso)
+                      L.data(),                          // Matriz L
+                      lda,                               // Paso entre filas de L
+                      x.data(),                          // La solución del sistema
+                      ldb);                              // Paso entre filas de X
+
+#else
+
+        value_type sum;
 
         for (size_t r = 0; r < mRows; r++) {
 
@@ -236,7 +231,7 @@ auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _ro
 
         }
 
-//#endif
+#endif
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
     }
@@ -244,42 +239,42 @@ auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _ro
     return x;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T, _rows, _cols> &B) const -> Matrix<T, _rows, _cols>
+template<DenseMatrix Mat>
+template<MatrixExpr MatExpr>
+auto CholeskyDecomposition<Mat>::solve(const MatExpr &B) const -> Matrix<value_type, rows, cols>
 {
     TL_ASSERT(B.rows() == mRows, "Cholesky::solve - Bad matrix dimensions");
 
-    Matrix<T, _rows, _cols> X(B);
+    Matrix<value_type, rows, cols> X(B);
 
     try {
 
-//#ifdef TL_HAVE_OPENBLAS 
-//
-//        // Número de columnas en la matriz B (equivale a "nrhs" en LAPACK, ya que cada columna es un sistema independiente)
-//        size_t nrhs = B.cols();
-//        size_t lda = mRows;  // Leading dimension de L
-//        size_t ldb = mRows;  // Leading dimension de X
-//
-//        lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
-//                      lapack::TriangularForm::lower,     // L es triangular inferior
-//                      mRows,                             // Número de filas de L
-//                      nrhs,                              // Número de columnas de B (número de sistemas a resolver)
-//                      L.data(),                          // Matriz L
-//                      lda,                               // Leading dimension de L
-//                      X.data(),                          // Matriz X con las soluciones
-//                      ldb);                              // Leading dimension de X
-//
-//#else
+#ifdef TL_HAVE_OPENBLAS 
+
+        // Número de columnas en la matriz B (equivale a "nrhs" en LAPACK, ya que cada columna es un sistema independiente)
+        size_t nrhs = B.cols();
+        // lda: En RowMajor, es el número de columnas de la matriz L
+        size_t lda = L.cols();  // Leading dimension de L
+        // ldb: En RowMajor, es el número de columnas de la matriz X (que es MatB::cols)
+        size_t ldb = X.cols();  // Leading dimension de X
+
+        lapack::potrs(lapack::Order::row_major,          // Orden de la matriz
+                      lapack::TriangularForm::lower,     // L es triangular inferior
+                      mRows,                             // Número de filas de L
+                      nrhs,                              // Número de columnas de B (número de sistemas a resolver)
+                      L.data(),                          // Matriz L
+                      lda,                               // Leading dimension de L
+                      X.data(),                          // Matriz X con las soluciones
+                      ldb);                              // Leading dimension de X
+
+#else
 
         for (size_t j = 0; j < B.cols(); j++) {
-            Vector<T, _rows> temp = B.col(j);
+            Vector<value_type, rows> temp = B.col(j);
             X.col(j) = this->solve(temp);
         }
 
-//#endif
+#endif
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Error when trying to solve a system of linear equations");
     }
@@ -287,11 +282,8 @@ auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T, _ro
     return X;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
+template<DenseMatrix Mat>
+void CholeskyDecomposition<Mat>::decompose()
 {
     try {
 
@@ -304,7 +296,7 @@ void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
             for (size_t j = i; j < mRows; j++) {
 
-                T sum = L[i][j];
+                value_type sum = L[i][j];
 
                 for (size_t k = i; k > 0; k--) {
                     sum -= L[i][k - 1] * L[j][k - 1];
@@ -325,32 +317,49 @@ void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     }
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lower() const -> Matrix_t<T, _rows, _cols>
+template<DenseMatrix Mat>
+auto CholeskyDecomposition<Mat>::lower() const -> Matrix<value_type, rows, cols>
 {
     return L;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::inverse() const -> Matrix_t<T, _rows, _cols>
+template<DenseMatrix Mat>
+auto CholeskyDecomposition<Mat>::inverse() const -> Matrix<value_type, rows, cols>
 {
-    return solve(Matrix_t<T, _rows, _cols>::identity(mRows, mRows));
+    Matrix<value_type, rows, cols> inv = L;
+
+    try {
+#ifdef TL_HAVE_OPENBLAS
+        size_t lda = inv.cols();
+
+        lapack::potri(lapack::Order::row_major,
+                      lapack::TriangularForm::lower,
+                      mRows,
+                      inv.data(),
+                      lda);
+
+        // potri solo llena la parte triangular inferior (en este caso).
+        // Debemos reflejarla para tener la matriz completa.
+        for (size_t i = 0; i < mRows; ++i) {
+            for (size_t j = i + 1; j < mRows; ++j) {
+                inv(i, j) = inv(j, i);
+            }
+        }
+#else
+        inv = solve(Matrix<value_type, rows, cols>::identity(mRows, mRows));
+#endif
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Error computing Cholesky inverse");
+    }
+
+    return inv;
 }
 
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-auto CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const -> T
+template<DenseMatrix Mat>
+auto CholeskyDecomposition<Mat>::determinant() const -> value_type
 {
-    T det = 1;
+    value_type det = 1;
     for (size_t i = 0; i < mRows; i++) {
         det *= L[i][i];
     }

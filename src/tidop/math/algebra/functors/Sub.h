@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Sub.h
+ * \brief Functor for subtraction operation in expression templates.
+ *
+ * This file defines the `SubOp` functor, which performs element‑wise subtraction
+ * on scalar values and SIMD packets when available. It is used internally by
+ * expression templates such as `VecBinaryExpr` and `MatBinaryExpr` to represent
+ * the subtraction operation.
+ *
+ * \ingroup Functors
+ * \see tl::AddOp, tl::MulOp, tl::DivOp
+ */
+
 #pragma once
 
 namespace tl
@@ -31,9 +43,30 @@ namespace tl
  *  \{
  */
 
+/*!
+ * \struct SubOp
+ * \brief Functor that applies subtraction to its arguments.
+ *
+ * This functor is stateless and can be used with both scalar types and
+ * SIMD packet types (if `TL_HAVE_SIMD_INTRINSICS` is defined). It is a
+ * template parameter for expression classes that need to perform subtraction.
+ *
+ * ### Example
+ * \code
+ * SubOp sub;
+ * double result = sub(5.0, 3.0); // result == 2.0
+ * \endcode
+ */
 struct SubOp
 {
 
+    /*!
+     * \brief Subtracts two scalar values.
+     * \tparam T Arithmetic type (deduced).
+     * \param[in] a First operand.
+     * \param[in] b Second operand.
+     * \return The difference `a - b`.
+     */
     template<typename T>
     constexpr T operator()(const T &a, const T &b) const
     {
@@ -41,6 +74,14 @@ struct SubOp
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Subtracts two SIMD packets element‑wise.
+     * \tparam T Element type (deduced from `Packed<T>`).
+     * \param[in] a First packet.
+     * \param[in] b Second packet.
+     * \return A packet containing the element‑wise difference.
+     * \note This overload is only available when SIMD intrinsics are enabled.
+     */
     template<typename T>
     auto operator()(const Packed<T> &a, const Packed<T> &b) const
     {

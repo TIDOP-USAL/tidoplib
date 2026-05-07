@@ -22,13 +22,29 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file SVD.h
+ * \brief Singular Value Decomposition (SVD) of a matrix.
+ *
+ * This file defines the `SingularValueDecomposition` class, which factorizes a matrix
+ * \( A \) into \( A = U \Sigma V^T \), where \( U \) and \( V \) are orthogonal matrices
+ * and \( \Sigma \) is a diagonal matrix containing the singular values. The SVD is a
+ * fundamental tool for solving linear systems (including least squares), matrix
+ * approximation (compression), principal component analysis, and many other applications.
+ *
+ * The implementation can use LAPACK (OpenBLAS) when available, otherwise a built‑in
+ * Golub‑Reinsch algorithm is used.
+ *
+ * \ingroup Decomposition
+ * \see tl::QRDecomposition, tl::LuDecomposition, tl::CholeskyDecomposition
+ */
+
 #pragma once
 
 
 #include <algorithm>
 
 #include "tidop/math/algebra/vector/Vector.h"
-#include "tidop/math/base/lapack.h"
+#include "tidop/math/base/Lapack.h"
 #include "tidop/core/base/flags.h"
 
 namespace tl
@@ -37,16 +53,6 @@ namespace tl
 /*! \addtogroup Decomposition
  *  \{
  */
-
-
- /// \cond
-
-template<typename T>
-class SingularValueDecomposition;
-
-/// \endcond
-
-
 
 /*!
  * \enum ConfigSVD
@@ -101,126 +107,100 @@ constexpr unsigned int max_svg_iterations = 30;
 
 
 /*!
- * \brief Singular Value Decomposition (SVD)
+ * \class SingularValueDecomposition
+ * \brief Singular Value Decomposition of a matrix.
  *
- * In linear algebra, the Singular Value Decomposition (SVD) of a matrix \( A \) is a factorization
- * of the matrix that has many applications, such as solving linear systems, signal processing, and data
- * compression. The SVD of a matrix allows it to be expressed as a product of three matrices: an orthogonal
- * matrix \( U \), a diagonal matrix \( &Sigma; \), and the transpose of another orthogonal matrix \( V \).
+ * \tparam Mat A type satisfying the `DenseMatrix` concept (e.g., `Matrix<T, Rows, Cols>`).
+ *             The element type must be floating‑point (float, double).
  *
- * Given an \( m &times; n \) matrix \( A \), the SVD is given by:
- * \f[ A = U \cdot \Sigma \cdot V^T \f]
+ * For an \( m \times n \) matrix \( A \), the decomposition is:
+ * \f[
+ * A = U \Sigma V^T
+ * \f]
  * where:
- * - \( U \) is an orthogonal matrix of size \( m &times; m \) (or a reduced version if configured),
- * - \( &Sigma; \) is a diagonal matrix of size \( m &times; n \),
- * - \( V \) is an orthogonal matrix of size \( n &times; n \) (or a reduced version if configured).
+ * - \( U \) is \( m \times m \) (or reduced size),
+ * - \( \Sigma \) is an \( m \times n \) diagonal matrix with the singular values on the diagonal,
+ * - \( V \) is \( n \times n \) (or reduced size).
  *
- * The SVD provides a powerful tool for analyzing and solving linear systems, especially in cases
- * where the matrix is non-square or ill-conditioned.
+ * The singular values are stored in descending order. The class allows fine‑grained control
+ * over the computation of \( U \) and \( V \) via the `ConfigSVD` flags.
  *
- * This class supports computing the full or reduced versions of \( U \) and \( V \), as well as disabling
- * their computation entirely through the \ref ConfigSVD configuration flags.
- *
- * \note
- * If **LAPACK** is available (`TL_HAVE_OPENBLAS` is defined), the decomposition is performed using LAPACK's
- * optimized routines for higher efficiency and numerical stability.
- * Otherwise, the decomposition is computed using the **Golub-Reinsch algorithm**, which follows
- * an iterative bidiagonalization and QR algorithm approach.
- *
- * \tparam Matrix_t The type of the matrix (e.g., `Matrix`).
- * \tparam T The type of the elements in the matrix (e.g., `double`).
- * \tparam Rows The number of rows in the matrix.
- * \tparam Cols The number of columns in the matrix.
+ * ### Example
+ * \code
+ * Matrix<double, 4, 2> A = {{1,2},{3,4},{5,6},{7,8}};
+ * SingularValueDecomposition svd(A, ConfigSVD::full_u | ConfigSVD::full_v);
+ * auto U = svd.u();     // 4×4 orthogonal
+ * auto S = svd.w();     // singular values vector
+ * auto V = svd.v();     // 2×2 orthogonal
+ * Vector<double, 4> b = {1,1,1,1};
+ * auto x = svd.solve(b); // least‑squares solution
+ * \endcode
  */
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols>
-class SingularValueDecomposition<Matrix_t<T, Rows, Cols>>
+template<DenseMatrix Mat>
+class SingularValueDecomposition
 {
+public:
+
+    using value_type = typename matrix_traits<Mat>::value_type;
+    static constexpr size_t rows = matrix_traits<Mat>::rows;
+    static constexpr size_t cols = matrix_traits<Mat>::cols;
 
 private:
 
-    Matrix_t<T, Rows, Cols> A;
-    Matrix_t<T, DynamicData, DynamicData> U;
-    Matrix_t<T, DynamicData, DynamicData> V;
-    Vector<T, Cols> W;
-    EnumFlags<ConfigSVD> mConfig;
-    size_t mRows;
-    size_t mCols;
+    Matrix<value_type, rows, cols> A;                               /*!< Original matrix (modified during decomposition). */
+    Matrix<value_type, DynamicData, DynamicData> U;                 /*!< Left orthogonal matrix (size depends on flags). */
+    Matrix<value_type, DynamicData, DynamicData> V;                 /*!< Right orthogonal matrix (size depends on flags). */
+    Vector<value_type, cols> W;                                     /*!< Singular values (descending order). */
+    EnumFlags<ConfigSVD> mConfig;                                   /*!< Configuration flags. */
+    size_t mRows;                                                   /*!< Number of rows. */
+    size_t mCols;                                                   /*!< Number of columns. */
 
 public:
 
     /*!
-     * \brief Constructs the Singular Value Decomposition (SVD) of a matrix
+     * \brief Constructs the SVD decomposition.
+     * \param[in] a      The matrix to decompose.
+     * \param[in] config Configuration flags (default: compute reduced U and V).
      *
-     * This constructor performs the SVD of the matrix \( A \), storing the resulting orthogonal matrices
-     * \( U \) and \( V \), as well as the singular values in the vector \( W \).
-     *
-     * The computation of \( U \) and \( V \) can be controlled through the \ref ConfigSVD parameter.
-     * By default, both \( U \) and \( V \) are computed in reduced form.
-     *
-     * \param[in] a The matrix \( A \) to decompose.
-     * \param[in] config Configuration flags to control computation of \( U \) and \( V \).
+     * The decomposition is performed immediately. If LAPACK is available, it uses
+     * `gesvd`; otherwise it uses a built‑in Golub‑Reinsch algorithm.
      */
-    SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a, ConfigSVD config = static_cast<ConfigSVD>(0));
+    SingularValueDecomposition(const Mat &a, ConfigSVD config = static_cast<ConfigSVD>(0));
 
     /*!
-     * \brief Solves the system of equations \( A \cdot x = b \) using the SVD
+     * \brief Solves the linear system \( A x = b \) (or least squares).
+     * \tparam Vec A type satisfying `VectorExpr`.
+     * \param[in] B The right‑hand side vector.
+     * \return The solution vector \( x \) of length `cols()`.
+     * \pre `U` and `V` must have been computed (i.e., `ConfigSVD::no_u` and `ConfigSVD::no_v` must not be set).
+     * \throws `tl::Exception` if `U` or `V` are missing, or if the solve fails.
      *
-     * Using the SVD, this method solves the system of linear equations \( A \cdot x = b \), where \( A \)
-     * is the matrix and \( b \) is the right-hand side vector. This is done by using the properties of
-     * the matrices \( U \), \( &Sigma; \), and \( V \) from the SVD.
-     *
-     * \param[in] b The right-hand side vector \( b \).
-     * \return The solution vector \( x \).
+     * For overdetermined systems (rows > cols) this gives the least‑squares solution.
+     * For underdetermined systems it returns the minimum‑norm solution (since the SVD
+     * inverts only the non‑zero singular values).
      */
-    /*!
-     * \brief Solves the system of equations \( A \cdot x = b \) using the SVD
-     *
-     * Using the SVD, this method solves the system of linear equations \( A \cdot x = b \), where \( A \)
-     * is the matrix and \( b \) is the right-hand side vector. This is done by using the properties of
-     * the matrices \( U \), \( &Sigma; \), and \( V \) from the SVD.
-     *
-     * \throws Exception if \( U \) was not computed (ConfigSVD::no_u was enabled).
-     * \throws Exception if \( V \) was not computed (ConfigSVD::no_v was enabled).
-     *
-     * \param[in] B The right-hand side vector \( b \).
-     * \return The solution vector \( x \).
-     */
-    auto solve(const Vector<T, Rows> &b) -> Vector<T, Cols>;
+    template<VectorExpr Vec>
+    auto solve(const Vec &b) -> Vector<value_type, cols>;
 
     /*!
-     * \brief Gets the orthogonal matrix \( U \), if computed
-     *
-     * This method returns the orthogonal matrix \( U \) from the SVD decomposition.
-     * If \( U \) was disabled in the configuration, an exception is thrown.
-     *
-     * \throws Exception if \( U \) was not computed (ConfigSVD::no_u was enabled).
-     *
-     * \return The matrix \( U \), which is orthogonal.
+     * \brief Returns the left orthogonal matrix \( U \) (if computed).
+     * \return The matrix \( U \) (size depends on configuration).
+     * \throws `tl::Exception` if `ConfigSVD::no_u` was set in the constructor.
      */
-    auto u() const -> Matrix_t<T, DynamicData, DynamicData>;
+    auto u() const -> Matrix<value_type, DynamicData, DynamicData>;
 
     /*!
-     * \brief Gets the orthogonal matrix \( V \), if computed
-     *
-     * This method returns the orthogonal matrix \( V \) from the SVD decomposition.
-     * If \( V \) was disabled in the configuration, an exception is thrown.
-     *
-     * \throws Exception if \( V \) was not computed (ConfigSVD::no_v was enabled).
-     *
-     * \return The matrix \( V \), which is orthogonal.
+     * \brief Returns the right orthogonal matrix \( V \) (if computed).
+     * \return The matrix \( V \) (size depends on configuration).
+     * \throws `tl::Exception` if `ConfigSVD::no_v` was set in the constructor.
      */
-    auto v() const -> Matrix_t<T, DynamicData, DynamicData>;
+    auto v() const -> Matrix<value_type, DynamicData, DynamicData>;
 
     /*!
-     * \brief Gets the singular values as a vector \( W \)
-     *
-     * This method returns the singular values of the matrix as a vector \( W \).
-     *
-     * \return The vector of singular values \( W \).
+     * \brief Returns the singular values.
+     * \return A vector containing the singular values in descending order.
      */
-    auto w() const -> Vector<T, Cols>;
+    auto w() const -> Vector<value_type, cols>;
 
 private:
 
@@ -234,22 +214,19 @@ private:
 
 
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(const Matrix_t<T, Rows, Cols> &a,
-                                                                                ConfigSVD config)
+template<DenseMatrix Mat>
+SingularValueDecomposition<Mat>::SingularValueDecomposition(const Mat &a,
+                                                            ConfigSVD config)
   : A(a),
     mConfig(config),
     mRows(a.rows()),
     mCols(a.cols())
 {
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point<value_type>::value, "Integral type not supported");
 
-    U = Matrix_t<T, DynamicData, DynamicData>(mRows, mConfig.isEnabled(ConfigSVD::full_u) ? mRows : std::min(mRows, mCols));
-    V = Matrix_t<T, DynamicData, DynamicData>(mConfig.isEnabled(ConfigSVD::full_v) ? mCols : std::min(mRows, mCols), mCols);
-    W = Vector<T, Cols>(mCols);
+    U = Matrix<value_type, DynamicData, DynamicData>(mRows, mConfig.isEnabled(ConfigSVD::full_u) ? mRows : std::min(mRows, mCols));
+    V = Matrix<value_type, DynamicData, DynamicData>(mConfig.isEnabled(ConfigSVD::full_v) ? mCols : std::min(mRows, mCols), mCols);
+    W = Vector<value_type, cols>(mCols);
 
 #ifdef TL_HAVE_OPENBLAS
     this->lapackDecompose();
@@ -260,22 +237,20 @@ SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::SingularValueDecomposition(
 }
 
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, Rows> &B) -> Vector<T, Cols>
+template<DenseMatrix Mat>
+template<VectorExpr Vec>
+auto SingularValueDecomposition<Mat>::solve(const Vec &B) -> Vector<value_type, cols>
 {
     TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_u), "Attempted to solve the system, but matrix U was not computed. Disable ConfigSVD::no_u in the constructor.");
     TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_v), "Attempted to solve the system, but matrix V was not computed. Disable ConfigSVD::no_v in the constructor.");
 
-    Vector<T, Cols> C(mCols);
-    T tsh = consts::one_half<T> *std::sqrt(mRows + mCols + consts::one<T>) * W[0] * std::numeric_limits<T>::epsilon();
-    T s;
-    Vector<T, Cols> tmp(mCols);
+    Vector<value_type, cols> C(mCols);
+    value_type tsh = consts::one_half<value_type> *std::sqrt(mRows + mCols + consts::one<value_type>) * W[0] * std::numeric_limits<value_type>::epsilon();
+    value_type s;
+    Vector<value_type, cols> tmp(mCols);
 
     for (size_t j = 0; j < mCols; j++) {
-        s = consts::zero<T>;
+        s = consts::zero<value_type>;
         if (W[j] > tsh) {
             for (size_t i = 0; i < mRows; i++)
                 s += U[i][j] * B[i];
@@ -285,7 +260,7 @@ auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, 
     }
 
     for (size_t j = 0; j < mCols; j++) {
-        s = consts::zero<T>;
+        s = consts::zero<value_type>;
         for (size_t k = 0; k < mCols; k++)
             s += V[j][k] * tmp[k];
         C[j] = s;
@@ -295,11 +270,8 @@ auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::solve(const Vector<T, 
 }
 
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
+template<DenseMatrix Mat>
+void SingularValueDecomposition<Mat>::decompose()
 {
     try {
         if (A.cols() > U.cols())
@@ -307,13 +279,13 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
         else
             U.block(0, 0, A.rows(), A.cols()) = A;
 
-        T tol = static_cast<T>(1e-10);
+        value_type tol = static_cast<value_type>(1e-10);
 
-        Vector<T, Cols> e(mCols, 0);
+        Vector<value_type, cols> e(mCols, 0);
 
-        T g = consts::zero<T>;
-        T x = consts::zero<T>;
-        T scale = consts::zero<T>;
+        value_type g = consts::zero<value_type>;
+        value_type x = consts::zero<value_type>;
+        value_type scale = consts::zero<value_type>;
         bool with_u = mConfig.isDisabled(ConfigSVD::no_u);
         bool with_v = mConfig.isDisabled(ConfigSVD::no_v);
 
@@ -322,8 +294,8 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
         for (size_t i = 0; i < mCols; ++i) {
 
             e[i] = scale * g;
-            T s = consts::zero<T>;
-            scale = consts::zero<T>;
+            value_type s = consts::zero<value_type>;
+            scale = consts::zero<value_type>;
             size_t l = i + 1;
 
             if (i < mRows) {
@@ -339,23 +311,23 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                     }
 
                     if (s < tol) {
-                        g = consts::zero<T>;
+                        g = consts::zero<value_type>;
                     } else {
 
-                        T f = U[i][i];
+                        value_type f = U[i][i];
 
                         g = -std::copysign(sqrt(s), f);
-                        T h = f * g - s;
+                        value_type h = f * g - s;
                         U[i][i] = f - g;
 
                         for (size_t j = l; j < U.cols(); ++j) {
 
-                            s = consts::zero<T>;
+                            s = consts::zero<value_type>;
 
                             for (size_t k = i; k < U.rows(); ++k)
                                 s += U[k][i] * U[k][j];
 
-                            T f = s / h;
+                            value_type f = s / h;
 
                             for (size_t k = i; k < U.rows(); ++k)
                                 U[k][j] += f * U[k][i];
@@ -386,9 +358,9 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                         g = 0.0;
                     else {
 
-                        T f = U[i][i + 1];
+                        value_type f = U[i][i + 1];
                         g = -std::copysign(sqrt(s), f);
-                        T h = f * g - s;
+                        value_type h = f * g - s;
                         U[i][i + 1] = f - g;
 
                         for (size_t j = l; j < mCols; ++j)
@@ -425,14 +397,14 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 
                     if (g != 0.0) {
 
-                        T h = U[i][l] * g;
+                        value_type h = U[i][l] * g;
 
                         for (size_t j = l; j < mCols; ++j)
                             V[j][i] = U[i][j] / h;
 
                         for (size_t j = l; j < mCols; ++j) {
 
-                            T s = consts::zero<T>;
+                            value_type s = consts::zero<value_type>;
 
                             for (size_t k = l; k < mCols; ++k)
                                 s += U[i][k] * V[k][j];
@@ -443,10 +415,10 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                     }
 
                     for (size_t j = l; j < mCols; ++j)
-                        V[i][j] = V[j][i] = consts::zero<T>;
+                        V[i][j] = V[j][i] = consts::zero<value_type>;
                 }
 
-                V[i][i] = consts::one<T>;
+                V[i][i] = consts::one<value_type>;
                 g = e[i];
                 l = i;
             }
@@ -457,7 +429,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
             if (mConfig.isEnabled(ConfigSVD::full_u)) {
                 for (size_t i = mCols; i < mRows; ++i) {
                     for (size_t j = mCols; j < mRows; ++j) {
-                        U[i][j] = (i == j) ? consts::one<T> : consts::zero<T>;
+                        U[i][j] = (i == j) ? consts::one<value_type> : consts::zero<value_type>;
                     }
                 }
             }
@@ -472,18 +444,18 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 
                 if (g != 0.0) {
 
-                    g = consts::one<T> / g;
-                    T h = (consts::one<T> / U[i][i]) * g;
+                    g = consts::one<value_type> / g;
+                    value_type h = (consts::one<value_type> / U[i][i]) * g;
 
                     //Para matrices completas -> mRows. En ese caso U.cols() == A.rows()
                     for (size_t j = l; j < U.cols(); ++j) {
 
-                        T s = consts::zero<T>;
+                        value_type s = consts::zero<value_type>;
 
                         for (size_t k = l; k < mRows; ++k)
                             s += U[k][i] * U[k][j];
 
-                        T f = s * h;
+                        value_type f = s * h;
 
                         for (size_t k = i; k < mRows; ++k)
                             U[k][j] += f * U[k][i];
@@ -495,13 +467,13 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 
                 } else {
                     for (size_t j = i; j < mRows; ++j)
-                        U[j][i] = consts::zero<T>;
+                        U[j][i] = consts::zero<value_type>;
                 }
                 ++U[i][i];
             }
         }
 
-        T convergenge = std::numeric_limits<T>::epsilon() * x;
+        value_type convergenge = std::numeric_limits<value_type>::epsilon() * x;
 
         // Diagonalización de la forma bidiagonal
 
@@ -518,23 +490,23 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
 
                     if (std::abs(W[l - 1]) <= convergenge) {
                         // Cancellation of e[l] if l > 1
-                        T c = consts::zero<T>;
-                        T s = consts::one<T>;
+                        value_type c = consts::zero<value_type>;
+                        value_type s = consts::one<value_type>;
                         int l1 = l - 1;
                         for (int i = l; i <= k; ++i) {
-                            T f = s * e[i];
+                            value_type f = s * e[i];
                             e[i] = c * e[i];
                             if (std::abs(f) <= convergenge) break;
-                            T g = W[i];
+                            value_type g = W[i];
                             W[i] = module(f, g);
-                            T h = consts::one<T> / W[i];
+                            value_type h = consts::one<value_type> / W[i];
                             c = g * h;
                             s = -f * h;
 
                             if (with_u) {
                                 for (size_t j = 0; j < mRows; ++j) {
-                                    T y = U[j][l1];
-                                    T z = U[j][i];
+                                    value_type y = U[j][l1];
+                                    value_type z = U[j][i];
                                     U[j][l1] = y * c + z * s;
                                     U[j][i] = -y * s + z * c;
                                 }
@@ -545,9 +517,9 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                 }
 
                 // Test for convergence
-                T z = W[k];
+                value_type z = W[k];
                 if (l == k) {
-                    if (z < consts::zero<T>) {  //Singular value is made nonnegative.
+                    if (z < consts::zero<value_type>) {  //Singular value is made nonnegative.
                         W[k] = -z;
                         if (with_v) {
                             for (int j = 0; j < mCols; ++j) {
@@ -561,14 +533,14 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                 TL_ASSERT(its < max_svg_iterations, "SVD no convergence in {} iterations", max_svg_iterations);
 
                 // Shift from bottom 2x2 minor
-                T x = W[l], y = W[k - 1];
-                T g = e[k - 1], h = e[k];
-                T f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
-                g = module(f, consts::one<T>);
+                value_type x = W[l], y = W[k - 1];
+                value_type g = e[k - 1], h = e[k];
+                value_type f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
+                g = module(f, consts::one<value_type>);
                 f = ((x - z) * (x + z) + h * ((y / (f + std::copysign(g, f))) - h)) / x;
 
                 // Next QR transformation
-                T c = 1, s = 1;
+                value_type c = 1, s = 1;
                 for (int i = l + 1; i <= k; ++i) {
                     g = e[i];
                     y = W[i];
@@ -594,7 +566,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                     W[i - 1] = module(f, h);
                     //Rotation can be arbitrary if W[i - 1] = 0.
                     if (W[i - 1] != 0.) {
-                        z = consts::one<T> / W[i - 1];
+                        z = consts::one<value_type> / W[i - 1];
                         c = f * z;
                         s = h * z;
                     }
@@ -611,7 +583,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
                     }
                 }
 
-                e[l] = consts::zero<T>;
+                e[l] = consts::zero<value_type>;
                 e[k] = f;
                 W[k] = x;
 
@@ -623,11 +595,8 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::decompose()
     }
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
+template<DenseMatrix Mat>
+void SingularValueDecomposition<Mat>::reorder()
 {
     size_t inc = 1;
 
@@ -639,7 +608,7 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
     do {
         inc /= 3;
         for (size_t i = inc; i < mCols; i++) {
-            T sw = W[i];
+            value_type sw = W[i];
             size_t j = i;
             while (W[j - inc] < sw) {
                 std::swap(W[j], W[j - inc]);
@@ -658,13 +627,13 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
 
         if (with_u) {
             for (size_t r = 0; r < mRows; r++)
-                if (U[r][c] < consts::zero<T>)
+                if (U[r][c] < consts::zero<value_type>)
                     s++;
         }
 
         if (with_v) {
             for (size_t r = 0; r < mCols; r++)
-                if (V[r][c] < consts::zero<T>)
+                if (V[r][c] < consts::zero<value_type>)
                     s++;
         }
 
@@ -677,18 +646,15 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::reorder()
 
 #ifdef TL_HAVE_OPENBLAS
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackDecompose()
+template<DenseMatrix Mat>
+void SingularValueDecomposition<Mat>::lapackDecompose()
 {
     try {
 
         auto lda = mCols;
         auto ldu = mConfig.isEnabled(ConfigSVD::full_u) ? mRows : std::min(mRows, mCols);
         auto ldvt = mConfig.isEnabled(ConfigSVD::full_v) ? mCols : std::min(mRows, mCols);
-        std::vector<T> superb(std::min(mRows, mCols) - 1);
+        std::vector<value_type> superb(std::min(mRows, mCols) - 1);
 
         lapack::SVDMode jobu = lapack::SVDMode::none;
         if (mConfig.isDisabled(ConfigSVD::no_u)) {
@@ -716,11 +682,8 @@ void SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::lapackDecompose()
 
 #endif // TL_HAVE_OPENBLAS
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::u() const -> Matrix_t<T, DynamicData, DynamicData>
+template<DenseMatrix Mat>
+auto SingularValueDecomposition<Mat>::u() const -> Matrix<value_type, DynamicData, DynamicData>
 {
     TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_u), 
               "Attempted to access matrix U, but it was not computed. Disable ConfigSVD::no_u in the constructor.");
@@ -728,22 +691,16 @@ auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::u() const -> Matrix_t<
     return U;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::v() const -> Matrix_t<T, DynamicData, DynamicData>
+template<DenseMatrix Mat>
+auto SingularValueDecomposition<Mat>::v() const -> Matrix<value_type, DynamicData, DynamicData>
 {
     TL_ASSERT(mConfig.isDisabled(ConfigSVD::no_v), "Attempted to access matrix V, but it was not computed. Disable ConfigSVD::no_v in the constructor.");
 
     return V;
 }
 
-template<
-    template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t Rows, size_t Cols
->
-auto SingularValueDecomposition<Matrix_t<T, Rows, Cols>>::w() const -> Vector<T, Cols>
+template<DenseMatrix Mat>
+auto SingularValueDecomposition<Mat>::w() const -> Vector<value_type, cols>
 {
     return W;
 }

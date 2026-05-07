@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/math/base/simd.h"
+#include "tidop/math/base/Simd.h"
 
 namespace tl
 {
@@ -34,6 +34,8 @@ namespace detail
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
+TL_WARNING_PUSH
+TL_DISABLE_WARNING_MSVC(4849)
 template<MatrixExpr LHS, MatrixExpr RHS, typename OutMat>
 void mulmat_simd_kernel_opt3(const LHS &A, const RHS &B, OutMat &C)
 {
@@ -139,6 +141,8 @@ void mulmat_simd_kernel_opt3(const LHS &A, const RHS &B, OutMat &C)
         }
     }
 }
+TL_WARNING_POP
+
 
 template<MatrixExpr LHS, MatrixExpr RHS, typename OutMat>
 void mulmat_simd3(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)

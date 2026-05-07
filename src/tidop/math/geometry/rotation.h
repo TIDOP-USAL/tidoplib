@@ -28,7 +28,7 @@
 
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
-#include "tidop/math/algebra/decomp/svd.h"
+#include "tidop/math/algebra/decomp/SVD.h"
 #include "tidop/math/algebra/rotations/rotation_convert.h"
 #include "tidop/math/algebra/rotations/euler_angles.h"
 #include "tidop/math/algebra/rotations/rotation_matrix.h"

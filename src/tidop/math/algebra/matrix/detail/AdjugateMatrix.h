@@ -24,6 +24,8 @@
 
 #pragma once
 
+/// \cond
+
 namespace tl
 {
 
@@ -172,3 +174,5 @@ auto matrix_adjoint(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

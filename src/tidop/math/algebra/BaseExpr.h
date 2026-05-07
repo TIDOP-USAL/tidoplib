@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file BaseExpr.h
+ * \brief Base class for expression templates in algebraic operations.
+ *
+ * This file defines the `BaseExpr` class, which serves as the foundation for
+ * expression templates used in linear algebra operations. It provides the CRTP
+ * (Curiously Recurring Template Pattern) infrastructure to allow derived expression
+ * classes to access the underlying derived object and to perform polymorphic
+ * behavior without virtual functions.
+ *
+ * \ingroup Algebra
+ * \see tl::VectorBase, tl::VectorExpr
+ */
+
 #pragma once
 
 namespace tl
@@ -31,6 +44,10 @@ namespace tl
  *  \{
  */
 
+/*!
+ * \class BaseExpr
+ * \brief CRTP base class for expression templates.
+ */
 template<typename Derived>
 class BaseExpr
 {
@@ -41,21 +58,47 @@ public:
 
 public:
 
+    /*!
+     * \brief Casts the base object to a mutable reference of the derived type.
+     * \return Reference to the derived object.
+     */
     constexpr auto derived() -> derived_type &
     {
         return static_cast<Derived &>(*this);
     }
 
+    /*!
+     * \brief Casts the base object to a const reference of the derived type.
+     * \return Const reference to the derived object.
+     */
     constexpr auto derived() const -> const derived_type &
     {
         return static_cast<const Derived &>(*this);
     }
 
+    /*!
+     * \brief Checks whether the expression aliases a given memory address.
+     *
+     * \param[in] ptr Pointer to a memory location.
+     * \return `true` if the expression (or any of its components) uses data stored
+     *         at address `ptr`; `false` otherwise.
+     *
+     * This method is primarily used to avoid aliasing issues during in‑place
+     * operations (e.g., `v = v + w`). It delegates the check to the derived type.
+     */
     auto aliases(const void *ptr) const -> bool 
     { 
         return derived().aliases(ptr);
     }
 
+    /*!
+     * \brief Evaluates the expression and returns a concrete vector.
+     * \return The evaluated concrete vector (or a copy of a plain vector).
+     *
+     * This method triggers the evaluation of the expression template and
+     * returns a fully computed `Vector` object. For plain vectors (already
+     * concrete), it simply returns a copy.
+     */
     constexpr auto eval() const
     {
         return derived().eval();

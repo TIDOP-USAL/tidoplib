@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/debug.hpp>
 
-#include <tidop/math/algebra/decomp/svd.h>
+#include <tidop/math/algebra/decomp/SVD.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
 
 using namespace tl;

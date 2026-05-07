@@ -22,20 +22,24 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file MatrixColEval.h
- * \brief Evaluator specialization for MatrixCol (column view).
+/*! \file MatrixDiagonalEval.h
+ * \brief Evaluator specialization for MatrixDiagonal (diagonal view).
  *
- * This file provides the `Evaluator` specialization for `MatrixCol<Scalar>`,
- * which is a non‑owning view of a single column of a matrix. The evaluator
- * forwards coefficient access to the underlying column view; it does not
- * create temporary storage. SIMD packet access is currently not supported.
+ * This file provides the `Evaluator` specialization for `MatrixDiagonal<Scalar>`,
+ * which is a non‑owning view of the diagonal of a matrix. The evaluator forwards
+ * coefficient access to the underlying diagonal view. SIMD packet access is
+ * currently not supported because the diagonal elements are not necessarily
+ * stored contiguously (although in a row‑major layout they are spaced by
+ * `cols+1` entries, which may be larger than 1). Use of SIMD would require
+ * a special stride‑handling mechanism, which is not implemented.
  *
  * \ingroup Evaluators
- * \see tl::MatrixCol, tl::Evaluator
+ * \see tl::MatrixDiagonal, tl::Evaluator
  */
 
 #pragma once
 
+#include "tidop/math/base/Traits.h"
 #include "tidop/math/algebra/eval/Evaluator.h"
 
 namespace tl
@@ -46,54 +50,56 @@ namespace tl
  */
 
 /*!
- * \brief Evaluator for `MatrixCol<Scalar>` (column view of a matrix).
+ * \brief Evaluator for `MatrixDiagonal<Scalar>` (diagonal view of a matrix).
  *
  * \tparam Scalar Element type (may be const or non‑const).
  *
- * This evaluator provides read‑only access to the coefficients of a matrix column.
- * Because a column view already provides efficient indexing, the evaluator simply
- * stores a reference to the original `MatrixCol` object and forwards `coeff()` calls.
- * SIMD packet access is not supported and will trigger an assertion if enabled.
+ * This evaluator provides read‑only access to the coefficients of a matrix
+ * diagonal. It stores a reference to the `MatrixDiagonal` object and forwards
+ * `coeff()` calls to it. SIMD packet access is not supported because diagonal
+ * elements are not stored contiguously, and implementing efficient vectorised
+ * access would require special handling of stride.
  */
 template<typename Scalar>
-class Evaluator<MatrixCol<Scalar>>
+class Evaluator<MatrixDiagonal<Scalar>>
 {
 
 private:
 
-    const MatrixCol<Scalar> &mMatrixCol;
-	
+    const MatrixDiagonal<Scalar> &mMatrixDiagonal;
+
 public:
 
-    using value_type = std::remove_const_t<Scalar>;
+    using value_type = typename vector_traits<MatrixDiagonal<Scalar>>::value_type;
 	
 public:
 
     /*!
-     * \brief Constructs the evaluator from a `MatrixCol`.
-     * \param[in] col The column view.
+     * \brief Constructs the evaluator from a `MatrixDiagonal`.
+     * \param[in] diagonal The diagonal view.
      */
-    Evaluator(const MatrixCol<Scalar> &col) 
-      : mMatrixCol(col) {}
+    Evaluator(const MatrixDiagonal<Scalar> &diagonal)
+      : mMatrixDiagonal(diagonal) {}
 
     /*!
-     * \brief Returns the element at linear index i (row index within the column).
-     * \param[in] i Row index (0‑based).
-     * \return The coefficient at the given row.
+     * \brief Returns the element at index i (the i‑th diagonal element).
+     * \param[in] i Index along the diagonal.
+     * \return The diagonal element.
      */
     auto coeff(size_t i) const -> value_type
     {
-        return mMatrixCol[i];
+        return mMatrixDiagonal[i];
     }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     /*!
-     * \brief Returns a SIMD packet of coefficients (not supported for column views).
+     * \brief SIMD packet access (not supported for diagonal views).
      * \param[in] i Linear index.
      * \return A dummy `Packed<value_type>`.
      *
-     * \note SIMD packet access is currently not implemented for `MatrixCol`.
-     *       If called, this method triggers an assertion.
+     * \note This method always triggers an assertion because diagonal elements
+     *       are not stored contiguously, and stride‑aware packet access is
+     *       not implemented. Use scalar coefficient access instead.
      */
     auto packet(size_t i) const
     {
@@ -101,7 +107,6 @@ public:
         return Packed<value_type>();
     }
 #endif
-
 };
 
 

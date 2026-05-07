@@ -53,7 +53,7 @@
 #include "tidop/core/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/math/base/Traits.h"
-#include "tidop/math/base/data.h"
+#include "tidop/math/base/Data.h"
 
 namespace tl
 {

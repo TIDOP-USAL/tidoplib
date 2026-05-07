@@ -24,6 +24,8 @@
 
 #pragma once
 
+/// \cond
+
 namespace tl
 {
 
@@ -49,3 +51,5 @@ void mulmat_cpp(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

@@ -27,7 +27,7 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/meta.h"
 #include "tidop/core/base/exception.h"
-#include "tidop/math/base/simd.h"
+#include "tidop/math/base/Simd.h"
 
 namespace tl
 {

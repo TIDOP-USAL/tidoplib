@@ -26,6 +26,8 @@
 
 #include "tidop/math/algebra/matrix/detail/Determinant.h"
 
+/// \cond
+
 namespace tl
 {
 
@@ -65,3 +67,5 @@ auto matrix_first_minor(const Matrix<T, Rows, Cols> &mat, size_t row, size_t col
 } // namespace detail
 
 } // namespace tl
+
+/// \endcond

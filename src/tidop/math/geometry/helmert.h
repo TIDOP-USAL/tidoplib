@@ -30,7 +30,7 @@
 
 #include "tidop/math/geometry/affine.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
-#include "tidop/math/algebra/decomp/svd.h"
+#include "tidop/math/algebra/decomp/SVD.h"
 #include "tidop/math/base/Traits.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/geometry/base/Traits.h"

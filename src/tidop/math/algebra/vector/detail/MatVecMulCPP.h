@@ -24,6 +24,8 @@
 
 #pragma once
 
+/// \cond
+
 namespace tl
 {
 
@@ -51,3 +53,4 @@ void mat_vec_mul_cpp(const LHS &matrix, const RHS &vectorIn, Out &vectorOut)
 
 } // namespace tl
 
+/// \endcond

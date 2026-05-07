@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-/*! \file wkt_proxy.hpp
+/*! \file Proxy.hpp
  * \brief WKT (Well-Known Text) serialization proxy.
  *
  * This module provides a non-intrusive way to serialize and deserialize 
