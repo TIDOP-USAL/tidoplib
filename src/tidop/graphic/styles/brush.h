@@ -92,7 +92,7 @@ public:
         diagcross_hatch    /*!< xxxxxx */
     };
 #ifdef TL_WARNING_DEPRECATED_METHOD
-    enum class TL_DEPRECATED(Pattern, "4.0") Name : uint8_t
+    enum class TL_DEPRECATED("Pattern", "4.0") Name : uint8_t
     {
         solid,             /*!< Solid (default value when no id is provided) */
         null,              /*!< Null brush (invisible) */

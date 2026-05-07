@@ -73,7 +73,7 @@ public:
     /*!
      * \brief Pen names
      */
-    enum class TL_DEPRECATED(PredefinedPattern, "4.0") Name : uint8_t
+    enum class TL_DEPRECATED("PredefinedPattern", "4.0") Name : uint8_t
     {
         solid,             /*!< Solid (the default value when no ID is provided) */
         null,              /*!< Null pen (invisible) */

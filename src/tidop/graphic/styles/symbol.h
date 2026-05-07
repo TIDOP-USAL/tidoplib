@@ -68,7 +68,7 @@ public:
     };
 
 #ifdef TL_WARNING_DEPRECATED_METHOD
-    enum class TL_DEPRECATED(Shape, "4.0") Name
+    enum class TL_DEPRECATED("Shape", "4.0") Name
     {
         cross,             /*!< + */
         diagonal_cross,    /*!< x */
