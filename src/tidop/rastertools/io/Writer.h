@@ -37,7 +37,7 @@
 #include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"  
-#include "tidop/math/geometry/affine.h"
+#include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {

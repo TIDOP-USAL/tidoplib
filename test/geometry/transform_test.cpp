@@ -24,11 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop transform test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/geometry/transform.h>
+#include <tidop/geometry/transform/Transform.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
-
-#include <tidop/math/geometry/scaling.h>
-#include <tidop/math/geometry/umeyama.h>
 
 using namespace tl;
 

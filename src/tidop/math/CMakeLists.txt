@@ -118,13 +118,13 @@ if(BUILD_TL_MATH)
                              base/Lapack.h
                              base/Simd.h
                              base/Traits.h
-                             geometry/affine.h
-                             geometry/helmert.h
-                             geometry/rotation.h
-                             geometry/scaling.h
-                             geometry/transform.h
-                             geometry/translation.h
-                             geometry/umeyama.h
+                             #geometry/affine.h
+                             #geometry/helmert.h
+                             #geometry/rotation.h
+                             #geometry/scaling.h
+                             #geometry/transform.h
+                             #geometry/translation.h
+                             #geometry/umeyama.h
                              geometry/analytic/line.h
                              geometry/analytic/plane.h
                              geometry/analytic/sphere.h

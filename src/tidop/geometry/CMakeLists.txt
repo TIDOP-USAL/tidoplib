@@ -75,6 +75,17 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/spatial/Envelope.impl.h
                             algorithms/spatial/Intersection.h
                             algorithms/spatial/Intersection.impl.h
+                            transform/Affine.h
+                            transform/Rotation.h
+                            transform/Scaling.h
+                            transform/Transform.h
+                            transform/Translation.h
+                            transform/estimators/Affine2D.h
+                            transform/estimators/Helmert.h
+                            transform/estimators/Rotation.h
+                            transform/estimators/Scaling.h
+                            transform/estimators/Translation.h
+                            transform/estimators/Umeyama.h
                             algorithms/projection.h
                             base/Concepts.h
                             base/Dimension.h

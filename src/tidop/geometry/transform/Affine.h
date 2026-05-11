@@ -28,13 +28,10 @@
 
 #include <vector>
 
-#include "tidop/math/geometry/transform.h"
-#include "tidop/math/geometry/translation.h"
-#include "tidop/math/geometry/scaling.h"
-#include "tidop/math/geometry/rotation.h"
-#include "tidop/math/base/Traits.h"
-#include "tidop/math/base/Concepts.h"
-#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/transform/Translation.h"
+#include "tidop/geometry/transform/Scaling.h"
+#include "tidop/geometry/transform/Rotation.h"
 
 namespace tl
 {
@@ -242,23 +239,6 @@ public:
      */
     auto toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim + 1>;
 
-    /*!
-     * \brief Apply the transformation to a vector.
-     * \tparam _size The size of the vector.
-     * \param[in] vector The vector to transform.
-     * \return The transformed vector.
-     */
-    //template <typename Vector_t>
-    //template<VectorExpr Vec>
-    //auto transform(const Vec &vector) const -> Vector<T, Dim>
-    //{
-    //    TL_ASSERT(this->dimensions == vector.size(), "Dimension mismatch");
-
-    //    // Extraemos la parte lineal (bloque de Dim x Dim desde el índice 0,0)
-    //    // y multiplicamos. Esto dispara tu MulMatVecExpr automáticamente.
-    //    return this->_transform.block(0, 0, Dim, Dim) * vector;
-    //}
-
     template<typename Tag>
     auto transform(const Point<T, Tag> &point) const -> Point<T, Tag>
     {
@@ -289,20 +269,6 @@ public:
     template<size_t _row, size_t _col>
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
-    /*!
-     * \brief Apply the transformation using the multiplication operator to a Point or Vector.
-     * \tparam _size The size of the vector.
-     * \param[in] vector The vector to transform.
-     * \return The transformed vector.
-     */
-    //template <typename Vector_t>
-    //auto operator * (const Vector_t &vector) const -> Vector_t;
-    //template<VectorExpr Vec>
-    //auto operator * (const Vec &vector) const -> Vector<T, Dim>
-    //{
-    //    return this->transform(vector);
-    //}
-
     template<typename Tag>
     auto operator * (const Point<T, Tag> &point) const -> Point<T, Tag>
     {
@@ -318,19 +284,6 @@ public:
      */
     template<size_t _row, size_t _col>
     auto operator * (const Matrix<T, _row, _col> &matrix) const-> Matrix<T, _row, _col>;
-
-    /*!
-     * \brief Apply the transformation to a Point or Vector using function call syntax.
-     * \param[in] point The point to transform.
-     * \return The transformed point.
-     */
-    //template <typename Vector_t>
-    //auto operator()(const Vector_t &vector) const -> Vector_t;
-    //template<VectorExpr Vec>
-    //auto operator()(const Vec &vector) const -> Vector<T, Dim>
-    //{
-    //    return this->transform(vector);
-    //}
     
     template<typename Tag>
     auto operator()(const Point<T, Tag> &point) const -> Point<T, Tag>
@@ -355,60 +308,6 @@ public:
 /*! \} */
 
 
-/*! \addtogroup Estimators
- *  \{
- */
-
-/*!
- * \brief Estimator for 2D affine transformations.
- *
- * The `Affine2DEstimator` class provides static methods to estimate a 2D affine
- * transformation between two sets of points or matrices representing the source
- * and destination coordinates.
- *
- * \tparam T The type of the elements (e.g., float, double).
- */
-template <typename T>
-class Affine2DEstimator
-{
-
-public:
-
-    Affine2DEstimator() = default;
-    ~Affine2DEstimator() = default;
-
-    /*!
-     * \brief Estimate a 2D affine transformation between two matrices.
-     *
-     * This method estimates the affine transformation that maps points
-     * from the source matrix \p src to the destination matrix \p dst.
-     *
-     * \tparam Rows Number of rows in the matrices.
-     * \tparam Cols Number of columns in the matrices.
-     * \param[in] src The source matrix of points.
-     * \param[in] dst The destination matrix of points.
-     * \return The estimated 2D affine transformation.
-     */
-    template<size_t Rows, size_t Cols>
-    static auto estimate(const Matrix<T, Rows, Cols> &src,
-                         const Matrix<T, Rows, Cols> &dst) -> Affine<T, 2>;
-
-    /*!
-     * \brief Estimate a 2D affine transformation between two sets of points.
-     *
-     * This method estimates the affine transformation that maps points
-     * from the source vector \p src to the destination vector \p dst.
-     *
-     * \param[in] src The source vector of points.
-     * \param[in] dst The destination vector of points.
-     * \return The estimated 2D affine transformation.
-     */
-    template <PointConcept Point_t>
-    static auto estimate(const std::vector<Point_t> &src,
-                         const std::vector<Point_t> &dst) -> Affine<T, 2>;
-};
-
-/*! \} */
 
 
 /* Affine implementation */
@@ -431,13 +330,6 @@ Affine<T, Dim>::Affine(Affine &&affine) TL_NOEXCEPT
     : _transform(std::move(affine._transform))
 {
 }
-
-//template <typename T, size_t dim> inline
-//Affine<T, dim>::Affine(const Transform<T, dim> &matrix)
-//  : _transform(matrix)
-//{
-//    static_assert(dim == 2 || dim == 3, "Only 2 or 3 dimensions allowed");
-//}
 
 template <typename T, size_t Dim>
 Affine<T, Dim>::Affine(const Matrix<T, Dim, Dim + 1> &matrix)
@@ -639,27 +531,6 @@ auto Affine<T, Dim>::operator=(Affine &&affine) TL_NOEXCEPT -> Affine &
     return (*this);
 }
 
-//template<typename T, size_t Dim>
-//template<typename Vector_t>
-//auto Affine<T, Dim>::transform(const Vector_t &vector) const -> Vector_t
-//{
-//    static_assert(vector.dimensions == DynamicData || vector.dimensions == Dim, "Vector dimension must match Affine transformation dimension");
-//    TL_ASSERT(dimensions == vector.size(), "Vector dimension must match Affine transformation dimension");
-//    
-//    Vector_t result(vector);
-//
-//    for (size_t r = 0; r < Dim; ++r) {
-//        T sum = T(0);
-//        for (size_t c = 0; c < Dim; ++c) {
-//            sum += this->_transform(r, c) * vector[c];
-//        }
-//
-//        result[r] = sum + this->_transform(r, Dim);
-//    }
-//
-//    return result;
-//}
-
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
 auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
@@ -677,13 +548,6 @@ auto Affine<T, Dim>::transform(const Matrix<T, _row, _col> &matrix) const -> Mat
     return _matrix;
 }
 
-//template<typename T, size_t Dim>
-//template <typename Vector_t>
-//auto Affine<T, Dim>::operator * (const Vector_t &vector) const -> Vector_t
-//{
-//    return this->transform(vector);
-//}
-
 template<typename T, size_t Dim>
 template<size_t _row, size_t _col>
 auto Affine<T, Dim>::operator*(const Matrix<T, _row, _col>& matrix) const -> Matrix<T, _row, _col>
@@ -691,97 +555,12 @@ auto Affine<T, Dim>::operator*(const Matrix<T, _row, _col>& matrix) const -> Mat
     return this->transform(matrix);
 }
 
-//template<typename T, size_t Dim>
-//template<typename Vector_t>
-//auto Affine<T, Dim>::operator()(const Vector_t &vector) const -> Vector_t
-//{
-//    return this->transform(vector);
-//}
-
 template<typename T, size_t Dim>
 auto Affine<T, Dim>::isEmpty() const TL_NOEXCEPT -> bool
 {
     return this->_transform == Matrix<T, Dim, Dim + 1>::identity();
 }
 
-
-/* Affine2DEstimator implementation */
-
-template<typename T>
-template<size_t rows, size_t cols>
-auto Affine2DEstimator<T>::estimate(const Matrix<T, rows, cols> &src, 
-                                    const Matrix<T, rows, cols> &dst) -> Affine<T, 2>
-{
-
-    Affine<T, 2> affine;
-
-    try {
-
-        TL_ASSERT(src.cols() == 2, "Invalid matrix columns size");
-        TL_ASSERT(dst.cols() == 2, "Invalid matrix columns size");
-        TL_ASSERT(src.rows() == dst.rows(), "Different matrix sizes. Size src = {} and size dst = {}", src.rows(), dst.rows());
-        TL_ASSERT(src.rows() >= 3 , "Invalid number of points: {} < {}", src.rows(), 3);
-
-        size_t size = src.rows() * 2;
-
-        Matrix<double> A(size, 6, 0);
-        Vector<double> B(size);
-
-        for (size_t i = 0, r = 0; i < src.rows(); i++, r++) {
-            A(r, 0) = src(i, 0);
-            A(r, 1) = src(i, 1);
-            A(r, 4) = 1;
-            B[r] = dst(i,0);
-
-            r++;
-            
-            A(r, 2) = src(i, 0);
-            A(r, 3) = src(i, 1);
-            A(r, 5) = 1;
-
-            B[r] = dst(i,1);
-        }
-
-        SingularValueDecomposition<Matrix<double>> svd(A);
-        Vector<double> C = svd.solve(B);
-
-        affine(0, 0) = C[0];
-        affine(0, 1) = C[1];
-        affine(0, 2) = C[4];
-        affine(1, 0) = C[2];
-        affine(1, 1) = C[3];
-        affine(1, 2) = C[5];
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("");
-    }
-
-    return affine;
-}
-
-template<typename T>
-template <PointConcept Point_t>
-auto Affine2DEstimator<T>::estimate(const std::vector<Point_t> &src,
-                                    const std::vector<Point_t> &dst) -> Affine<T, 2>
-{
-    static_assert(point_traits<Point_t>::spatial_dims == 2, "Point dimension must match Affine transformation dimension");
-
-    TL_ASSERT(src.size() == dst.size(), "Size of origin and destination points different");
-    TL_ASSERT(src.size() >= 3, "Invalid number of points: {} < {}", src.size(), 3);
-    TL_ASSERT(2 == src[0].size(), "Point dimension must match Affine transformation dimension");
-
-    Matrix<T> src_mat(src.size(), 2);
-    Matrix<T> dst_mat(dst.size(), 2);
-    
-    for (size_t r = 0; r < src_mat.rows(); r++) {
-        src_mat[r][0] = src[r][0];
-        src_mat[r][1] = src[r][1];
-        dst_mat[r][0] = dst[r][0];
-        dst_mat[r][1] = dst[r][1];
-    }
-    
-    return Affine2DEstimator<T>::estimate(src_mat, dst_mat);
-}
 
 } // End namespace tl
 

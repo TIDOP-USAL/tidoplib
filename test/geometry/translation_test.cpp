@@ -24,7 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop translation test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/geometry/translation.h>
+#include <tidop/geometry/transform/Translation.h>
+#include <tidop/geometry/transform/estimators/Translation.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
 
 

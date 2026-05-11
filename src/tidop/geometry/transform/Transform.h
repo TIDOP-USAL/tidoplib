@@ -39,22 +39,6 @@ namespace tl
  */
 
 
-//template <typename T, size_t Dim>
-//class TransformBase
-//{
-//
-//public:
-//
-//    virtual auto transform(const Point<T> &point) const  -> Point<T> = 0;
-//    virtual auto transform(const Point3<T> &point) const  -> Point3<T> = 0;
-//
-//    virtual auto operator * (const Point<T> &point) const -> Point<T> = 0;
-//    virtual auto operator * (const Point3<T> &point) const -> Point3<T> = 0;
-//
-//    virtual auto operator() (const Point<T> &point) const -> Point<T> = 0;
-//    virtual auto operator() (const Point3<T> &point) const -> Point3<T> = 0;
-//};
-
 
 /*!
  * \brief 
@@ -77,9 +61,6 @@ public:
     Transform(const Transform<T, Dim> &matrix);
     Transform(const Matrix<T, matrix_size, matrix_size> &matrix);
     virtual ~Transform() = default;
-
-    //RotationMatrix<T> rotation() const;
-    //void setRotation(const RotationMatrix<T> &rotation);
     
     auto translation() const -> Vector<T, Dim>;
     void setTranslation(const Vector<T, Dim> &translation);
@@ -110,32 +91,6 @@ public:
     {
         return transformMatrix * src;
     }
-
-    //auto operator = (const Scaling<T,Dim> &scale) -> Transform<T, Dim>&
-    //{
-    //    this->transformMatrix = Matrix<T, Dim + 1, Dim + 1>::identity();
-
-    //    for (size_t i = 0; i < Dim; i++) {
-    //        TL_TODO("Comprobar si la escala es uniforme");
-    //        //if (scale.isUniform()){ 
-    //        this->transformMatrix(i, i) = scale;
-    //        //} else {
-    //        //this->transformMatrix(i, i) = scale[i];
-    //        //}
-    //    }
-    //    return *this;
-    //}
-
-    //auto operator = (const Translation<T, Dim> &translate) -> Transform<T, Dim> &
-    //{
-    //    this->transformMatrix = Matrix<T, Dim + 1, Dim + 1>::identity();
-
-    //    auto col = this->transformMatrix.col(Dim);
-    //    for (size_t i = 0; i < Dim; i++)
-    //        col[i] = translate[i];
-
-    //    return *this;
-    //}
 
     friend Transform<T, Dim> operator * (const Transform<T, Dim> &transform1,
                                          const Transform<T, Dim> &transform2)
@@ -170,17 +125,6 @@ Transform<T, Dim>::Transform(const Matrix<T, matrix_size, matrix_size> &matrix)
   : transformMatrix(matrix)
 {
 }
-
-//template <typename T, size_t Dim> inline
-//RotationMatrix<T> Transform<T, Dim>::rotation() const
-//{
-//  return RotationMatrix<T>();
-//}
-//
-//template <typename T, size_t Dim> inline
-//void Transform<T, Dim>::setRotation(const RotationMatrix<T> &rotation)
-//{
-//}
 
 template <typename T, size_t Dim>
 auto Transform<T, Dim>::translation() const -> Vector<T, Dim>

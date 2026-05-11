@@ -36,7 +36,7 @@
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"
-#include "tidop/math/geometry/affine.h"
+#include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {

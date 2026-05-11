@@ -60,70 +60,70 @@ namespace tl
  * over the elements of a row. It steps through consecutive memory locations
  * (stride = 1) because a row is stored contiguously.
  */
-template<typename T>
-class IteratorRows
-{
-
-public:
-
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = T;
-    using difference_type = std::ptrdiff_t;
-    using pointer = T *;
-    using reference = T &;
-
-private:
-
-    pointer rowPtr;
-
-public:
-
-    /*!
-     * \brief Constructs an iterator pointing to a given position in a row.
-     * \param[in] ptr Pointer to the current element.
-     */
-    explicit IteratorRows(pointer ptr);
-    ~IteratorRows() = default;
-
-    /*!
-     * \brief Dereferences the iterator.
-     * \return Reference to the current element.
-     */
-    auto operator*() const -> reference;
-
-    /*!
-     * \brief Arrow operator.
-     * \return Pointer to the current element.
-     */
-    auto operator->() -> pointer;
-
-    /*!
-     * \brief Pre‑increment (move to next element in the row).
-     * \return Reference to the incremented iterator.
-     */
-    auto operator++() -> IteratorRows &;
-
-    /*!
-     * \brief Post‑increment.
-     * \return Copy of the iterator before increment.
-     */
-    auto operator++(int) -> IteratorRows;
-
-    /*!
-     * \brief Equality comparison.
-     * \param[in] other Other iterator.
-     * \return `true` if both point to the same position.
-     */
-    bool operator== (const IteratorRows &other);
-
-    /*!
-     * \brief Inequality comparison.
-     * \param[in] other Other iterator.
-     * \return `true` if they point to different positions.
-     */
-    bool operator!= (const IteratorRows &other);
-
-}; 
+//template<typename T>
+//class IteratorRows
+//{
+//
+//public:
+//
+//    using iterator_category = std::forward_iterator_tag;
+//    using value_type = T;
+//    using difference_type = std::ptrdiff_t;
+//    using pointer = T *;
+//    using reference = T &;
+//
+//private:
+//
+//    pointer rowPtr;
+//
+//public:
+//
+//    /*!
+//     * \brief Constructs an iterator pointing to a given position in a row.
+//     * \param[in] ptr Pointer to the current element.
+//     */
+//    explicit IteratorRows(pointer ptr);
+//    ~IteratorRows() = default;
+//
+//    /*!
+//     * \brief Dereferences the iterator.
+//     * \return Reference to the current element.
+//     */
+//    auto operator*() const -> reference;
+//
+//    /*!
+//     * \brief Arrow operator.
+//     * \return Pointer to the current element.
+//     */
+//    auto operator->() -> pointer;
+//
+//    /*!
+//     * \brief Pre‑increment (move to next element in the row).
+//     * \return Reference to the incremented iterator.
+//     */
+//    auto operator++() -> IteratorRows &;
+//
+//    /*!
+//     * \brief Post‑increment.
+//     * \return Copy of the iterator before increment.
+//     */
+//    auto operator++(int) -> IteratorRows;
+//
+//    /*!
+//     * \brief Equality comparison.
+//     * \param[in] other Other iterator.
+//     * \return `true` if both point to the same position.
+//     */
+//    bool operator== (const IteratorRows &other);
+//
+//    /*!
+//     * \brief Inequality comparison.
+//     * \param[in] other Other iterator.
+//     * \return `true` if they point to different positions.
+//     */
+//    bool operator!= (const IteratorRows &other);
+//
+//}; 
 
 
 /*!
@@ -167,8 +167,10 @@ public:
     using reference = T &;
     using const_reference = const T &;
 
-    using iterator = IteratorRows<T>;
-    using const_iterator = IteratorRows<const T>;
+    //using iterator = IteratorRows<T>;
+    //using const_iterator = IteratorRows<const T>;
+    using iterator = T *;
+    using const_iterator = const T *;
 
 public:
 
@@ -255,50 +257,50 @@ public:
 
 /* IteratorRows implementation */
 
-template<typename T>
-IteratorRows<T>::IteratorRows(pointer ptr)
-  : rowPtr(ptr)
-{
-}
-
-template<typename T>
-auto IteratorRows<T>::operator*() const -> reference
-{
-    return *rowPtr;
-}
-
-template<typename T>
-auto IteratorRows<T>::operator->() -> pointer
-{
-    return rowPtr;
-}
-
-template<typename T>
-auto IteratorRows<T>::operator++() -> IteratorRows&
-{
-    ++rowPtr;
-    return *this;
-}
-
-template<typename T>
-auto IteratorRows<T>::operator++(int) -> IteratorRows
-{
-    IteratorRows it = *this;
-    ++(*this);
-    return it;
-}
-
-template<typename T>
-bool IteratorRows<T>::operator == (const IteratorRows<T> &other)
-{
-    return this->rowPtr == other.rowPtr;
-}
-
-template<typename T>
-bool IteratorRows<T>::operator != (const IteratorRows<T> &other)
-{
-    return this->rowPtr != other.rowPtr;
-}
+//template<typename T>
+//IteratorRows<T>::IteratorRows(pointer ptr)
+//  : rowPtr(ptr)
+//{
+//}
+//
+//template<typename T>
+//auto IteratorRows<T>::operator*() const -> reference
+//{
+//    return *rowPtr;
+//}
+//
+//template<typename T>
+//auto IteratorRows<T>::operator->() -> pointer
+//{
+//    return rowPtr;
+//}
+//
+//template<typename T>
+//auto IteratorRows<T>::operator++() -> IteratorRows&
+//{
+//    ++rowPtr;
+//    return *this;
+//}
+//
+//template<typename T>
+//auto IteratorRows<T>::operator++(int) -> IteratorRows
+//{
+//    IteratorRows it = *this;
+//    ++(*this);
+//    return it;
+//}
+//
+//template<typename T>
+//bool IteratorRows<T>::operator == (const IteratorRows<T> &other)
+//{
+//    return this->rowPtr == other.rowPtr;
+//}
+//
+//template<typename T>
+//bool IteratorRows<T>::operator != (const IteratorRows<T> &other)
+//{
+//    return this->rowPtr != other.rowPtr;
+//}
 
 
 

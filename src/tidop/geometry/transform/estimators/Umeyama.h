@@ -28,9 +28,10 @@
 
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
-#include "tidop/math/statistics.h"
 #include "tidop/math/algebra/decomp/SVD.h"
-#include "tidop/math/geometry/affine.h"
+#include "tidop/math/statistic/descriptive/mean.h"
+#include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {
@@ -152,8 +153,7 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
             }
         }
 
-        TL_TODO("Cuando se implemente Evaluator quitar el eval()");  
-        Matrix<double> sigma = (dst_demean.transpose().eval() * src_demean).eval() / static_cast<double>(size);
+        Matrix<double> sigma = dst_demean.transpose() * src_demean / static_cast<double>(size);
         SingularValueDecomposition<Matrix<double>> svd(sigma);
 
         Matrix<double, dimensions, dimensions> S = Matrix<double, dimensions, dimensions>::identity();

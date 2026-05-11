@@ -28,6 +28,7 @@
 #include "tidop/core/base/split.h"
 #include "tidop/core/base/meta.h"
 #include "tidop/core/private/gdalreg.h"
+#include "tidop/geometry/transform/estimators/Affine2D.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/private/DataTypeConverter.h"

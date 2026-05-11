@@ -38,8 +38,35 @@ namespace tl
 
 template<typename T>
 concept Arithmetic = std::integral<T> || std::floating_point<T>;
-	
-	
+
+template<typename T>
+concept SignedArithmetic = Arithmetic<T> &&
+                           std::signed_integral<T> ||
+                           std::floating_point<T>;
+
+template<typename T>
+concept Floating = std::floating_point<T>;
+
+template<typename R>
+concept NumericRange = std::ranges::input_range<R> &&
+                       Arithmetic<std::ranges::range_value_t<R>>;
+
+//template<typename R>
+//concept FloatingRange = std::ranges::input_range<R> &&
+//                        Floating<std::ranges::range_value_t<R>>;
+//
+//template<typename R>
+//concept ContiguousNumericRange = NumericRange<R> &&
+//                                 std::ranges::contiguous_range<R>;
+
+//template<typename R>
+//concept SizedNumericRange = NumericRange<R> &&
+//                            std::ranges::sized_range<R>;
+
+//template<typename R>
+//concept RandomAccessNumericRange = NumericRange<R> &&
+//                                   std::ranges::random_access_range<R>;
+
 /*! \} */
 
 }

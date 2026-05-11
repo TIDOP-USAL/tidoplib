@@ -30,7 +30,7 @@
 #include <opencv2/core.hpp>
 
 #include "tidop/rastertools/process/ImgProcess.h"
-#include "tidop/math/geometry/affine.h"
+#include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {

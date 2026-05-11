@@ -63,7 +63,6 @@ class Quaternion
 
 public:
 
-    TL_TODO("Ver si es mejor que herede de VectorBase")
     T x; /*!< The x coefficient of the quaternion. */
     T y; /*!< The y coefficient of the quaternion. */
     T z; /*!< The z coefficient of the quaternion. */
