@@ -31,8 +31,8 @@ project(${test_name} LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME} 
                ${test_filename}
-               ${CMAKE_SOURCE_DIR}/src/tidop/math/statistic/base/series.h
-               ${CMAKE_SOURCE_DIR}/src/tidop/math/statistic/descriptive.h)
+               ${CMAKE_SOURCE_DIR}/src/tidop/math/statistic/base/Series.h
+               ${CMAKE_SOURCE_DIR}/src/tidop/math/statistic/DescriptiveStatistics.h)
 
 target_link_libraries(${PROJECT_NAME}
                       TidopLib::Core

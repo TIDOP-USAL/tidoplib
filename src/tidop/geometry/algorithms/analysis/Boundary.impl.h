@@ -59,7 +59,7 @@ auto boundary_impl(const LineString<Point> &lineString,
     if (lineString.size() < 2)
         return result;
 
-    if (lineString.isClosed()) {
+    if (!lineString.isClosed()) {
         result.push_back(lineString.front());
         result.push_back(lineString.back());
     }

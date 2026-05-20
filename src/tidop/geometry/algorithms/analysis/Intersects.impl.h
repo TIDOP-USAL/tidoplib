@@ -411,8 +411,8 @@ auto intersects(const Segment<P> &seg,
     if (ring.size() < 2) return false;
 
     // 1️ - Chequear si alguno de los extremos está en el interior o en el borde
-    if (locatePointInRing(ring, seg.pt1(), policy) != Location::Exterior ||
-        locatePointInRing(ring, seg.pt2(), policy) != Location::Exterior) {
+    if (locatePointInRing(ring, seg.pt1(), policy) == Location::Boundary ||
+        locatePointInRing(ring, seg.pt2(), policy) == Location::Boundary) {
         return true;
     }
 
@@ -421,7 +421,7 @@ auto intersects(const Segment<P> &seg,
         size_t j = (i + 1) % ring.size();
         Segment<P> edge(ring[i], ring[j]);
 
-        if (intersects(seg, edge)) {
+        if (intersects(seg, edge, policy)) {
             return true;
         }
     }

@@ -264,14 +264,14 @@ auto buffer_impl(const Polygon_t &poly, double distance, polygon_tag) -> Polygon
     // 1. Buffer del anillo exterior (infla el polígono)
     // Usamos la lógica de linestring pero asegurándonos de que trate el cierre
     if (!poly.outer().isEmpty()) {
-        result.outer() = detail::buffer_ring_helper(poly.outer(), distance);
+        result.outer() = detail::buffer_ring_helper(poly.outer(), -distance);
     }
 
     // 2. Buffer de los anillos interiores (huecos)
     // Nota: Para los huecos, la distancia actúa al revés (encoge el hueco)
     for (const auto &hole : poly.inners()) {
         if (!hole.isEmpty()) {
-            auto buffered_hole = detail::buffer_ring_helper(hole, -distance);
+            auto buffered_hole = detail::buffer_ring_helper(hole, distance);
             if (!buffered_hole.isEmpty()) {
                 result.addInner(buffered_hole);
             }

@@ -383,7 +383,9 @@ private:
                      const std::unique_ptr<StaticKdTree<Point_t>> &kdtree) const -> std::vector<size_t> 
     {
         if (kdtree) {
-            return kdtree->radiusSearch(points[query_idx], m_eps);
+            auto neighbors = kdtree->radiusSearch(points[query_idx], m_eps);
+            neighbors.erase(std::remove(neighbors.begin(), neighbors.end(), query_idx), neighbors.end());
+            return neighbors;
         } else {
             return linearRegionQuery(points, query_idx);
         }

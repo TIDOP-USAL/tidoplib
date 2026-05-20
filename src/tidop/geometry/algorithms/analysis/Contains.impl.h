@@ -124,12 +124,36 @@ auto contains_impl(const Polygon1 &container,
 {
     using P1 = typename geometry_traits<Polygon1>::point_type;
     using P2 = typename geometry_traits<Polygon2>::point_type;
+    bool has_point_on_container_surface = false;
+
+    if (container.outer().size() == containee.outer().size() &&
+        container.inners().empty() &&
+        containee.inners().empty()) {
+        bool same_outer = true;
+        for (size_t i = 0; i < container.outer().size(); ++i) {
+            if (!(container.outer()[i] == containee.outer()[i])) {
+                same_outer = false;
+                break;
+            }
+        }
+
+        if (same_outer) {
+            return false;
+        }
+    }
 
     // Todos los puntos del containee deben estar dentro del container (interior)
     for (const auto &pt : containee.outer()) {
-        if (locatePointInPolygon(container, pt, policy) != Location::Interior) {
+        if (locatePointInRing(container.outer(), pt, policy) == Location::Exterior) {
             return false;
         }
+        if (locatePointInPolygon(container, pt, policy) != Location::Exterior) {
+            has_point_on_container_surface = true;
+        }
+    }
+
+    if (!has_point_on_container_surface) {
+        return false;
     }
 
     // Ningún segmento del containee intersecta los huecos del container
@@ -137,7 +161,7 @@ auto contains_impl(const Polygon1 &container,
         size_t j = (i + 1) % containee.outer().size();
         Segment<P2> seg(containee.outer()[i], containee.outer()[j]);
         for (const auto &hole : container.inners()) {
-            if (intersects(seg, hole, policy)) {
+            if (crosses(seg, hole, policy)) {
                 return false;
             }
         }
@@ -149,6 +173,48 @@ auto contains_impl(const Polygon1 &container,
             if (!pointInAnyHole(pt, container, policy) && locatePointInPolygon(container, pt, policy) != Location::Interior) {
                 return false;
             }
+        }
+    }
+
+    for (const auto &container_hole : container.inners()) {
+        bool same_hole = false;
+        for (const auto &containee_hole : containee.inners()) {
+            if (container_hole.size() != containee_hole.size()) {
+                continue;
+            }
+
+            same_hole = true;
+            for (size_t i = 0; i < container_hole.size(); ++i) {
+                if (!(container_hole[i] == containee_hole[i])) {
+                    same_hole = false;
+                    break;
+                }
+            }
+
+            if (same_hole) {
+                break;
+            }
+        }
+
+        if (same_hole || container_hole.isEmpty()) {
+            continue;
+        }
+
+        double x = 0.;
+        double y = 0.;
+        size_t count = container_hole.size();
+        if (count > 1 && container_hole.front() == container_hole.back()) {
+            --count;
+        }
+
+        for (size_t i = 0; i < count; ++i) {
+            x += container_hole[i].x();
+            y += container_hole[i].y();
+        }
+
+        P1 hole_point(x / static_cast<double>(count), y / static_cast<double>(count));
+        if (locatePointInRing(containee.outer(), hole_point, policy) == Location::Interior) {
+            return false;
         }
     }
 
@@ -404,7 +470,19 @@ auto contains_impl(const MultiPolygon<Point_t> &multiPolygon,
                    polygon_tag) -> bool
 {
     for (const auto &containerPoly : multiPolygon) {
-        if (contains(containerPoly, polygon, policy)) {
+        if (!contains(containerPoly, polygon, policy)) {
+            continue;
+        }
+
+        bool strictly_inside = true;
+        for (const auto &pt : polygon.outer()) {
+            if (locatePointInPolygon(containerPoly, pt, policy) != Location::Interior) {
+                strictly_inside = false;
+                break;
+            }
+        }
+
+        if (strictly_inside) {
             return true;
         }
     }
@@ -496,7 +574,10 @@ constexpr auto contains(const G1 &geom1,
     if (geom1.isEmpty() || geom2.isEmpty())
         return false;
 
-    if constexpr (MultiGeometryConcept<G1> && !GeometryCollectionConcept<G1>) {
+    if constexpr (std::is_same_v<geometry_tag_t<G1>, multipolygon_tag> &&
+                  std::is_same_v<geometry_tag_t<G2>, polygon_tag>) {
+        return detail::contains_impl(geom1, geom2, policy, geometry_tag_t<G1>{}, geometry_tag_t<G2>{});
+    } else if constexpr (MultiGeometryConcept<G1> && !GeometryCollectionConcept<G1>) {
         return std::any_of(geom1.begin(), geom1.end(),
             [&](const auto &part) {
                 return contains(part, geom2, policy);

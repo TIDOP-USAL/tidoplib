@@ -26,28 +26,26 @@
 #include <boost/test/unit_test.hpp>
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/algorithms/spatial/ConvexHull.h"
-//#include "tidop/geometry/algorithms/analysis/Equals.h"
 
 #include <variant>
 
 using namespace tl;
 
 
-//BOOST_AUTO_TEST_CASE(ConvexHull_Point2D)
-//{
-//    Point2d p{3.0, 4.0};
-//    
-//    auto hull = convexHull(p);
-//    
-//    // Convex hull de un punto debe ser el mismo punto
-//    BOOST_CHECK(equals(hull, p));
-//}
-//
-//BOOST_AUTO_TEST_CASE(ConvexHull_Point3D)
-//{
-//    Point3d p{1.0, 2.0, 3.0};
-//    
-//    auto hull = convexHull(p);
-//    
-//    BOOST_CHECK(equals(hull, p));
-//}
+BOOST_AUTO_TEST_CASE(ConvexHull_Point2D)
+{
+    Point2d p{3.0, 4.0};
+
+    auto hull = convexHull(p);
+
+    BOOST_CHECK(hull == p);
+}
+
+BOOST_AUTO_TEST_CASE(ConvexHull_Point3D)
+{
+    Point3d p{1.0, 2.0, 3.0};
+
+    auto hull = convexHull(p);
+
+    BOOST_CHECK(hull == p);
+}
