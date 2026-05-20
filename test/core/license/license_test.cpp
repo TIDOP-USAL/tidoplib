@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop licence test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/app/license.h>
+#include <tidop/core/app/License.h>
 
 using namespace tl;
 

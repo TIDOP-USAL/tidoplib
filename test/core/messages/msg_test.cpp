@@ -24,9 +24,9 @@
  
 #define BOOST_TEST_MODULE Tidop messages test
 #include <boost/test/unit_test.hpp>
-#include "tidop/core/app/app.h"
-#include "tidop/core/base/chrono.h"
-#include "tidop/core/app/message.h"
+#include "tidop/core/app/App.h"
+#include "tidop/core/base/Chrono.h"
+#include "tidop/core/app/Message.h"
 #include <fstream>
 #include <iostream>
 #include <vector>

@@ -24,8 +24,8 @@
 
 #include "tidop/rastertools/process/whitebalance/WhitePatch.h"
 
-#include "tidop/core/base/exception.h"
-#include "tidop/core/concurrency/parallel.h"
+#include "tidop/core/base/Exception.h"
+#include "tidop/core/concurrency/Parallel.h"
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>

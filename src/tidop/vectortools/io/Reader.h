@@ -29,7 +29,7 @@
 #include <string>
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/path.h"
+#include "tidop/core/base/Path.h"
 
 
 namespace tl

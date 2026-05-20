@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/vectortools/io/Reader.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/vectortools/io/impl/GdalReader.h"
 
 namespace tl

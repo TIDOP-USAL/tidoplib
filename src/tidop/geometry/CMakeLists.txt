@@ -106,12 +106,12 @@ if(BUILD_TL_GEOMETRY)
                             primitives/MultiPoint.h
                             primitives/MultiLinestring.h
                             primitives/MultiPolygon.h
-                            shapes/circle.h
-                            shapes/ellipse.h
-                            shapes/rectangle.h
-                            shapes/shape.h
-                            shapes/square.h
-                            shapes/triangle.h
+                            shapes/Circle.h
+                            shapes/Ellipse.h
+                            shapes/Rectangle.h
+                            shapes/Shape.h
+                            shapes/Square.h
+                            shapes/Triangle.h
                             spatial/BoundingBox.h
                             spatial/index/KdTree.h
                             #spatial/index/KdTreeStrategies.h

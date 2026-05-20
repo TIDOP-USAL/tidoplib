@@ -30,7 +30,7 @@
 
 #include "tidop/core/base/flags.h"
 #include "tidop/core/base/size.h"
-#include "tidop/core/base/property.h"
+#include "tidop/core/base/Property.h"
 
 
 namespace tl

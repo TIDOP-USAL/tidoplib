@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/process/morph/TopHat.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 #include <opencv2/highgui.hpp>
 

@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/math/math.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 namespace tl
 {

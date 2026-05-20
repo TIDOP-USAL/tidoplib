@@ -50,10 +50,10 @@ template<typename itIn, typename itOut>
 void zScore(itIn inFirst, itIn inLast, itOut outFirst)
 {
     double _mean = mean(inFirst, inLast);
-    double standar_deviation = standarDeviation(inFirst, inLast);
+    double standard_deviation = standardDeviation(inFirst, inLast);
 
     while (inFirst != inLast) {
-        *outFirst++ = (*inFirst++ - _mean) / standar_deviation;
+        *outFirst++ = (*inFirst++ - _mean) / standard_deviation;
     }
 }
 

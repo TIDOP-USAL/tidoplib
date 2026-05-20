@@ -29,7 +29,7 @@
 #include <iomanip>
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 namespace tl
 {

@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/featmatch/features/features.h"
-#include "tidop/core/base/property.h"
+#include "tidop/core/base/Property.h"
 
 namespace tl
 {

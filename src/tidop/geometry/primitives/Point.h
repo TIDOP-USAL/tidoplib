@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include "tidop/core/base/type_conversions.h"
+#include "tidop/core/base/TypeConversions.h"
 #include "tidop/core/base/Hash.h"
 #include "tidop/core/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"

@@ -25,8 +25,8 @@
 #pragma once
 
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/meta.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Meta.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/math/base/Simd.h"
 
 namespace tl

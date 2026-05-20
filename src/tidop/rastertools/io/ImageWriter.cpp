@@ -29,7 +29,7 @@
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/impl/GdalWriter.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/geometry/algorithms/spatial/Intersection.h"
 #include "tidop/rastertools/io/private/gdal.h"
 

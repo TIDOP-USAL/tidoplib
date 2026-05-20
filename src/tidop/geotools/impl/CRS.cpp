@@ -27,7 +27,7 @@
 
 #include <proj.h>
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/core/base/split.h"
 #include "tidop/geotools/GeoToolsDefinitions.h"
 #include "tidop/geotools/impl/CRSsUtils.h"

@@ -24,9 +24,9 @@
 
 #include "tidop/rastertools/io/impl/GdalReader.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/core/base/split.h"
-#include "tidop/core/base/meta.h"
+#include "tidop/core/base/Meta.h"
 #include "tidop/core/private/gdalreg.h"
 #include "tidop/geometry/transform/estimators/Affine2D.h"
 #include "tidop/rastertools/io/Metadata.h"

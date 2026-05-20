@@ -68,7 +68,7 @@ auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> 
     auto n_y = std::distance(firstY, lastY);
     if (n_x != n_y || n_x <= 1) return consts::zero<double>;
     return covariance(firstX, lastX, firstY, lastY) /
-        (standarDeviation(firstX, lastX) * standarDeviation(firstY, lastY));
+        (standardDeviation(firstX, lastX) * standardDeviation(firstY, lastY));
 }
 
 template<typename It>
@@ -81,7 +81,7 @@ auto pearsonCorrelationCoefficient(It firstX, It lastX, It firstY, It lastY) -> 
     auto n_y = std::distance(firstY, lastY);
     if (n_x != n_y || n_x <= 1) return consts::zero<T>;
     return covariance(firstX, lastX, firstY, lastY) /
-        (standarDeviation(firstX, lastX) * standarDeviation(firstY, lastY));
+        (standardDeviation(firstX, lastX) * standardDeviation(firstY, lastY));
 }
 
 

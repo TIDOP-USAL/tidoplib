@@ -32,7 +32,7 @@
 #include <tidop/geometry/primitives/MultiPoint.h>
 #include <tidop/geometry/primitives/MultiLineString.h>
 #include <tidop/geometry/primitives/MultiPolygon.h>
-#include <tidop/geometry/shapes/circle.h>
+#include <tidop/geometry/shapes/Circle.h>
 
 using namespace tl;
 

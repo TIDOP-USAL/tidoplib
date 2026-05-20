@@ -54,14 +54,18 @@ concept NumericRange = std::ranges::input_range<R> &&
 //template<typename R>
 //concept FloatingRange = std::ranges::input_range<R> &&
 //                        Floating<std::ranges::range_value_t<R>>;
-//
-//template<typename R>
-//concept ContiguousNumericRange = NumericRange<R> &&
-//                                 std::ranges::contiguous_range<R>;
 
-//template<typename R>
-//concept SizedNumericRange = NumericRange<R> &&
-//                            std::ranges::sized_range<R>;
+template<typename R>
+concept ContiguousNumericRange = NumericRange<R> &&
+                                 std::ranges::contiguous_range<R>;
+
+template<typename R>
+concept SizedNumericRange = NumericRange<R> &&
+                            std::ranges::sized_range<R>;
+
+template<typename R>
+concept SimdRange = ContiguousNumericRange<R> &&
+                    SizedNumericRange<R>;
 
 //template<typename R>
 //concept RandomAccessNumericRange = NumericRange<R> &&

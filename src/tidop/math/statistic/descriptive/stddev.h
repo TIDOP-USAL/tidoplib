@@ -52,13 +52,13 @@ namespace tl
  * This template function is overloaded for both integral and floating-point data types
  */
 template<typename It>
-auto standarDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
+auto standardDeviation(It first, It last) -> enableIfIntegral<iteratorValueType<It>, double>
 {
     return sqrt(variance(first, last));
 }
 
 template<typename It>
-auto standarDeviation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
+auto standardDeviation(It first, It last) -> enableIfFloating<iteratorValueType<It>, iteratorValueType<It>>
 {
     return sqrt(variance(first, last));
 }

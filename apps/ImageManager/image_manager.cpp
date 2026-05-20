@@ -27,13 +27,13 @@
 
 #include <cpl_conv.h>
 
-#include <tidop/core/app/app.h>
-#include <tidop/core/app/logger.h>
-#include <tidop/core/app/message.h>
-#include <tidop/core/console/console.h>
-#include <tidop/core/console/command.h>
-#include <tidop/core/base/chrono.h>
-#include <tidop/core/base/path.h>
+#include <tidop/core/app/App.h>
+#include <tidop/core/app/Logger.h>
+#include <tidop/core/app/Message.h>
+#include <tidop/core/console/Console.h>
+#include <tidop/core/console/Command.h>
+#include <tidop/core/base/Chrono.h>
+#include <tidop/core/base/Path.h>
 #include <tidop/rastertools/io/Reader.h>
 #include <tidop/rastertools/io/writer.h>
 #include <tidop/rastertools/io/Metadata.h>

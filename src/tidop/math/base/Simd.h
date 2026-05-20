@@ -422,7 +422,14 @@ public:
      * \brief Sum of the elements of the SIMD packed type.
      * \return The sum of the elements.
      */
-    auto sum() -> T;
+    TL_DEPRECATED("reduceSum()", "4.0")
+    auto sum() const -> T;
+
+    /*!
+     * \brief Horizontal sum reduction.
+     * \return Sum of all SIMD lanes.
+     */
+    auto reduceSum() const -> T;
 
     /*!
      * \brief Create a Packed object initialized with zero.
@@ -1585,7 +1592,7 @@ auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 
 #ifdef TL_HAVE_AVX2
    packed = _mm256_min_epi8(packed1, packed2);
-#elif TL_HAVE_SSE4_1
+#elif defined TL_HAVE_SSE4_1
    packed = _mm_min_epi8(packed1, packed2);
 #else  // SSE2
     __m128i signbit = _mm_set1_epi32(0x80808080);
@@ -1639,7 +1646,7 @@ auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 
 #ifdef TL_HAVE_AVX2
    packed = _mm256_min_epu16(packed1, packed2);
-#elif TL_HAVE_SSE4_1
+#elif defined TL_HAVE_SSE4_1
     packed = _mm_min_epu16(packed1, packed2);
 #else  // SSE2
     __m128i signbit = _mm_set1_epi32(0x80008000);
@@ -1662,7 +1669,7 @@ auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 
 #ifdef TL_HAVE_AVX2
     packed = _mm256_min_epi32(packed1, packed2);
-#elif TL_HAVE_SSE4_1
+#elif defined TL_HAVE_SSE4_1
     packed = _mm_min_epi32(packed1, packed2);
 #elif defined TL_HAVE_SSE2
     // Compares the 4 signed 32-bit integers in packed1 and the 4 signed 32-bit integers in packed2 for greater than.
@@ -1682,7 +1689,7 @@ auto min(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 
 #ifdef TL_HAVE_AVX2
     packed = _mm256_min_epu32(packed1, packed2);
-#elif TL_HAVE_SSE4_1
+#elif defined TL_HAVE_SSE4_1
     packed = _mm_min_epu32(packed1, packed2);
 #elif defined TL_HAVE_SSE2
     __m128i signbit = _mm_set1_epi32(0x80000000);
@@ -2357,12 +2364,18 @@ auto Packed<T>::operator--() -> Packed<T>&
 }
 
 template<typename T>
-auto Packed<T>::sum() -> T
+auto Packed<T>::sum() const -> T
 {
     return internal::horizontal_sum(*this);
 }
 
-template<typename T> 
+template<typename T>
+auto tl::Packed<T>::reduceSum() const -> T
+{
+    return internal::horizontal_sum(*this);
+}
+
+template<typename T>
 auto Packed<T>::zero() -> Packed
 {
     return internal::setZero<T>();

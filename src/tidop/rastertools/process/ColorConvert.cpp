@@ -25,8 +25,8 @@
 #include "tidop/rastertools/process/ColorConvert.h"
 
 #include "tidop/graphic/color.h"
-#include "tidop/core/concurrency/parallel.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/concurrency/Parallel.h"
+#include "tidop/core/base/Exception.h"
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>

@@ -25,9 +25,9 @@
 
 #define BOOST_TEST_MODULE Tidop path test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/base/path.h>
+#include <tidop/core/base/Path.h>
 
-#include "tidop/core/console/console.h"
+#include "tidop/core/console/Console.h"
 
 
 using namespace tl;

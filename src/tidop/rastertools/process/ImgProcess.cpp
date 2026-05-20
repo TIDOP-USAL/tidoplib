@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/process/ImgProcess.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>

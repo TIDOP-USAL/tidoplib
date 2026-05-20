@@ -29,7 +29,7 @@
 #include <opencv2/ximgproc.hpp>
 #endif // HAVE_OPENCV_XIMGPROC
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/geometry/algorithms/measurement/Angle.h"
 
 using namespace std;

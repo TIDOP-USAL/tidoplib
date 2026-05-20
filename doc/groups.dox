@@ -601,38 +601,6 @@
  * The operations supported in this module allow for the manipulation, combination, and conversion between different rotation representations.
  */
  
-/*! 
- * \defgroup geometry Geometry
- * \ingroup MathTools
- * 
- * \brief Geometric transformations and operations.
- * 
- * The `Geometry` module encompasses all geometric operations, transformations, and utilities used within the library. This includes operations on points, vectors, and transformations such as scaling, rotation, translation, and affine transformations.
- * 
- */
-
-/*! 
- * \defgroup GeometricTransformations Geometric Transformations
- * \ingroup geometry
- * 
- * \brief Transformations on geometric objects.
- * 
- * The `GeometricTransformations` module includes the fundamental operations that transform geometric objects like points, vectors, and matrices. These transformations are essential for tasks like object scaling, rotation, translation, and affine transformations. 
- * 
- * Transformations can be applied in various dimensions (2D, 3D, etc.), and they are implemented using different mathematical constructs like matrices, quaternions, and Euler angles.
- * 
- */
-
-/*! 
- * \defgroup Estimators Estimators
- * \ingroup GeometricTransformations
- * 
- * \brief Estimators for geometric transformations.
- * 
- * The `Estimators` module contains the algorithms and classes responsible for estimating transformation parameters between two sets of geometric objects. These estimators include methods for computing transformations such as scaling, rotation, translation, and affine transformations based on point correspondences.
- * 
- */
- 
 /*!
  * \defgroup MathBase Base
  * \ingroup MathTools
@@ -875,7 +843,27 @@
  * \brief Serialization and deserialization of geometric data (WKT, GeoJSON).
  */
 
- 
+/*! 
+ * \defgroup GeometricTransformations Geometric Transformations
+ * \ingroup Geometry
+ * 
+ * \brief Transformations on geometric objects.
+ * 
+ * The `GeometricTransformations` module includes the fundamental operations that transform geometric objects like points, vectors, and matrices. These transformations are essential for tasks like object scaling, rotation, translation, and affine transformations. 
+ * 
+ * Transformations can be applied in various dimensions (2D, 3D, etc.), and they are implemented using different mathematical constructs like matrices, quaternions, and Euler angles.
+ * 
+ */
+
+/*! 
+ * \defgroup Estimators Estimators
+ * \ingroup GeometricTransformations
+ * 
+ * \brief Estimators for geometric transformations.
+ * 
+ * The `Estimators` module contains the algorithms and classes responsible for estimating transformation parameters between two sets of geometric objects. These estimators include methods for computing transformations such as scaling, rotation, translation, and affine transformations based on point correspondences.
+ * 
+ */ 
  
  
  

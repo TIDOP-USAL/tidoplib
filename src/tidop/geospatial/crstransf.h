@@ -30,7 +30,7 @@
 #include <memory>
 
 #include "tidop/geospatial/crs.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/math/algebra/rotations/rotation_matrix.h"
 

@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/io/private/DataTypeConverter.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 namespace tl
 {

@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/graphic/color/hsv.h"
-#include "tidop/core/base/type_conversions.h"
+#include "tidop/core/base/TypeConversions.h"
 
 #include <array>
 #include <utility>

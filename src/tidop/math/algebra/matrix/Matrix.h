@@ -38,8 +38,8 @@
 
 #pragma once
 
-#include "tidop/core/base/exception.h"
-#include "tidop/core/concurrency/parallel.h"
+#include "tidop/core/base/Exception.h"
+#include "tidop/core/concurrency/Parallel.h"
 #include "tidop/math/math.h"
 #include "tidop/math/base/Data.h"
 #include "tidop/math/algebra/decomp/LU.h"

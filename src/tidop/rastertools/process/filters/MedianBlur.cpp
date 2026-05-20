@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/rastertools/process/filters/MedianBlur.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 #include <opencv2/imgproc.hpp>
 

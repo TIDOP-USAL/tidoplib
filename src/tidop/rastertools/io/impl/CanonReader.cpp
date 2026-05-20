@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/io/impl/CanonReader.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/rastertools/io/Metadata.h"
 
 #ifdef TL_HAVE_EDSDK

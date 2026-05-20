@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 #include "tidop/geotools/GeoTools.h"
 #include "tidop/geotools/CRSsTools.h"

@@ -24,10 +24,10 @@
  
 #define BOOST_TEST_MODULE Tidop Core base test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/base/property.h>
+#include <tidop/core/base/Property.h>
 #include <tidop/core/base/size.h>
 #include <tidop/core/base/split.h>
-#include <tidop/core/base/meta.h>
+#include <tidop/core/base/Meta.h>
 
 #include <array>
 
@@ -813,7 +813,7 @@ BOOST_AUTO_TEST_CASE(test_replace_string)
 
 
 
-/* type_conversions.h */
+/* TypeConversions.h */
 
 BOOST_AUTO_TEST_CASE(test_number_cast)
 {

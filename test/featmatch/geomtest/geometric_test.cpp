@@ -25,12 +25,12 @@
 #define BOOST_TEST_MODULE Tidop GeometricTest test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/matching/test/geomtest.h>
-#include <tidop/featmatch/matching/test/all_points.h>
-#include <tidop/featmatch/matching/test/lmeds.h>
-#include <tidop/featmatch/matching/test/ransac.h>
-#include <tidop/featmatch/matching/test/rho.h>
-#include <tidop/featmatch/matching/test/usac.h>
+#include <tidop/featmatch/matching/test/GeometricTest.h>
+#include <tidop/featmatch/matching/test/AllPoints.h>
+#include <tidop/featmatch/matching/test/LMedsTest.h>
+#include <tidop/featmatch/matching/test/RansacTest.h>
+#include <tidop/featmatch/matching/test/RHOTest.h>
+#include <tidop/featmatch/matching/test/UsacTest.h>
 
 using namespace tl;
 

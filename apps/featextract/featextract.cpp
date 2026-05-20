@@ -22,12 +22,12 @@
  *                                                                        *
  **************************************************************************/
 
-#include <tidop/core/app/app.h>
-#include <tidop/core/app/message.h>
-#include <tidop/core/base/path.h>
-#include <tidop/core/base/chrono.h>
-#include <tidop/core/console/argument.h>
-#include <tidop/core/console/command.h>
+#include <tidop/core/app/App.h>
+#include <tidop/core/app/Message.h>
+#include <tidop/core/base/Path.h>
+#include <tidop/core/base/Chrono.h>
+#include <tidop/core/console/Argument.h>
+#include <tidop/core/console/Command.h>
 #include <tidop/rastertools/io/ImageReader.h>
 #include <tidop/featmatch/features/features.h>
 #include <tidop/featmatch/features/agast.h>
@@ -46,7 +46,7 @@ using namespace tl;
 #ifdef HAVE_VLD
 #include <vld.h>
 #endif
-#include <tidop/featmatch/io/featwriter.h>
+#include <tidop/featmatch/io/FeatWriter.h>
 
 int main(int argc, char **argv)
 {

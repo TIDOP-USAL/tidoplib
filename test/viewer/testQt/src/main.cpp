@@ -1,6 +1,6 @@
-#include <tidop/core/console/console.h>
-#include <tidop/core/app/logger.h>
-#include <tidop/core/app/message.h>
+#include <tidop/core/console/Console.h>
+#include <tidop/core/app/Logger.h>
+#include <tidop/core/app/Message.h>
 #include <tidop/GeoTools/GeoTools.h>
 #include <tidop/GeoTools/CRSsTools.h>
 

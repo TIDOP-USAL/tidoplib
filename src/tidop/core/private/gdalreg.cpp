@@ -24,7 +24,7 @@
 
 #include "tidop/core/private/gdalreg.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS

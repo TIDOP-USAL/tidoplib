@@ -24,8 +24,8 @@
 
 #include "tidop/vectortools/io/impl/GdalReader.h"
 
-#include "tidop/core/base/exception.h"
-#include "tidop/core/app/message.h"
+#include "tidop/core/base/Exception.h"
+#include "tidop/core/app/Message.h"
 #include "tidop/core/private/gdalreg.h"
 #include "tidop/graphic/layer.h"
 #include "tidop/graphic/entities/point.h"

@@ -24,11 +24,11 @@
  
 #define BOOST_TEST_MODULE Tidop Concurrency test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/concurrency/parallel.h>
-#include <tidop/core/concurrency/queue_mpmc.h>
-#include <tidop/core/concurrency/queue_spsc.h>
-#include <tidop/core/concurrency/producer.h>
-#include <tidop/core/concurrency/consumer.h>
+#include <tidop/core/concurrency/Parallel.h>
+#include <tidop/core/concurrency/QueueMPMC.h>
+#include <tidop/core/concurrency/QueueSPSC.h>
+#include <tidop/core/concurrency/Producer.h>
+#include <tidop/core/concurrency/Consumer.h>
 
 #include <thread>
 

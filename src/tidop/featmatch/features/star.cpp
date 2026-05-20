@@ -24,7 +24,7 @@
 
 #include "tidop/featmatch/features/star.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 
 namespace tl

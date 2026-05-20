@@ -53,49 +53,49 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/star.cpp
                              features/surf.cpp
                              features/vgg.cpp
-                             features/filter/bysize.cpp
-                             features/filter/duplicates.cpp
-                             features/filter/nbest.cpp
-                             io/featreader.cpp
-                             io/featwriter.cpp
-                             io/matchreader.cpp
-                             io/matchwriter.cpp
-                             io/passpoints.cpp
-                             io/impl/features/binaryreader.cpp
-                             io/impl/features/binarywriter.cpp
-                             io/impl/features/opencvreader.cpp
-                             io/impl/features/opencvwriter.cpp
-                             io/impl/features/txtreader.cpp
-                             io/impl/features/txtwriter.cpp
-                             io/impl/matches/binaryreader.cpp
-                             io/impl/matches/binarywriter.cpp
-                             io/impl/matches/opencvreader.cpp
-                             io/impl/matches/opencvwriter.cpp
-                             matching/bfmatch.cpp
-                             matching/flann.cpp
-                             matching/gsm.cpp
-                             matching/robustmatch.cpp
-                             matching/test/crosstest.cpp
-                             matching/test/geomtest.cpp
-                             matching/test/ratiotest.cpp
-                             matching/test/impl/fundamental_7_points_test.cpp
-                             matching/test/impl/fundamental_8_points_test.cpp
-                             matching/test/impl/fundamental_lmeds_test.cpp
-                             matching/test/impl/fundamental_ransac_test.cpp
-                             matching/test/impl/fundamental_usac_test.cpp
-                             matching/test/impl/homography_all_points_test.cpp
-                             matching/test/impl/homography_lmeds_test.cpp
-                             matching/test/impl/homography_ransac_test.cpp
-                             matching/test/impl/homography_rho_test.cpp
-                             matching/test/impl/homography_usac_test.cpp
+                             features/filter/KeyPointsFilterBySize.cpp
+                             features/filter/KeyPointsFilterRemoveDuplicated.cpp
+                             features/filter/KeyPointsFilterNBest.cpp
+                             io/FeatReader.cpp
+                             io/FeatWriter.cpp
+                             io/MatchReader.cpp
+                             io/MatchWriter.cpp
+                             io/PassPoints.cpp
+                             io/impl/features/BinaryReader.cpp
+                             io/impl/features/BinaryWriter.cpp
+                             io/impl/features/OpenCVReader.cpp
+                             io/impl/features/OpenCVWriter.cpp
+                             io/impl/features/TxtReader.cpp
+                             io/impl/features/TxtWriter.cpp
+                             io/impl/matches/BinaryReader.cpp
+                             io/impl/matches/BinaryWriter.cpp
+                             io/impl/matches/OpenCVReader.cpp
+                             io/impl/matches/OpenCVWriter.cpp
+                             matching/BruteForceMatching.cpp
+                             matching/Flann.cpp
+                             matching/GMS.cpp
+                             matching/RobustMatching.cpp
+                             matching/test/CrossTest.cpp
+                             matching/test/GeometricTest.cpp
+                             matching/test/RatioTest.cpp
+                             matching/test/impl/Fundamental7PointsTest.cpp
+                             matching/test/impl/Fundamental8PointsTest.cpp
+                             matching/test/impl/FundamentalLMedsTest.cpp
+                             matching/test/impl/FundamentalRANSACTest.cpp
+                             matching/test/impl/FundamentalUsacTest.cpp
+                             matching/test/impl/HomographyAllPointsTest.cpp
+                             matching/test/impl/HomographyLMedsTest.cpp
+                             matching/test/impl/HomographyRANSACTest.cpp
+                             matching/test/impl/HomographyRHOTest.cpp
+                             matching/test/impl/HomographyUsacTest.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/lss/lss.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.cpp
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp
                          HEADER_FILES
-                             evaluation/curve.h
-                             evaluation/detcurve.h
-                             evaluation/prcurve.h
-                             evaluation/roccurve.h
+                             evaluation/Curve.h
+                             evaluation/DETCurve.h
+                             evaluation/PRCurve.h
+                             evaluation/ROCCurve.h
                              features/agast.h
                              features/akaze.h
                              features/boost.h
@@ -118,48 +118,48 @@ if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
                              features/star.h
                              features/surf.h
                              features/vgg.h
-                             features/filter/keypointsfilter.h
-                             features/filter/bysize.h
-                             features/filter/duplicates.h
-                             features/filter/nbest.h
-                             io/featreader.h
-                             io/featwriter.h
-                             io/matchreader.h
-                             io/matchwriter.h
-                             io/passpoints.h
-                             io/impl/features/binaryreader.h
-                             io/impl/features/binarywriter.h
-                             io/impl/features/opencvreader.h
-                             io/impl/features/opencvwriter.h
-                             io/impl/features/txtreader.h
-                             io/impl/features/txtwriter.h
-                             io/impl/matches/binaryreader.h
-                             io/impl/matches/binarywriter.h
-                             io/impl/matches/opencvreader.h
-                             io/impl/matches/opencvwriter.h
-                             matching/bfmatch.h
-                             matching/flann.h
-                             matching/gsm.h
-                             matching/matching.h
-                             matching/robustmatch.h
-                             matching/test/all_points.h
-                             matching/test/crosstest.h
-                             matching/test/geomtest.h
-                             matching/test/lmeds.h
-                             matching/test/ransac.h
-                             matching/test/ratiotest.h
-                             matching/test/rho.h
-                             matching/test/usac.h
-                             matching/test/impl/fundamental_7_points_test.h
-                             matching/test/impl/fundamental_8_points_test.h
-                             matching/test/impl/fundamental_lmeds_test.h
-                             matching/test/impl/fundamental_ransac_test.h
-                             matching/test/impl/fundamental_usac_test.h
-                             matching/test/impl/homography_all_points_test.h
-                             matching/test/impl/homography_lmeds_test.h
-                             matching/test/impl/homography_ransac_test.h
-                             matching/test/impl/homography_rho_test.h
-                             matching/test/impl/homography_usac_test.h
+                             features/filter/KeyPointsFilter.h
+                             features/filter/KeyPointsFilterBySize.h
+                             features/filter/KeyPointsFilterRemoveDuplicated.h
+                             features/filter/KeyPointsFilterNBest.h
+                             io/FeatReader.h
+                             io/FeatWriter.h
+                             io/MatchReader.h
+                             io/MatchWriter.h
+                             io/PassPoints.h
+                             io/impl/features/BinaryReader.h
+                             io/impl/features/BinaryWriter.h
+                             io/impl/features/OpenCVReader.h
+                             io/impl/features/OpenCVWriter.h
+                             io/impl/features/TxtReader.h
+                             io/impl/features/TxtWriter.h
+                             io/impl/matches/BinaryReader.h
+                             io/impl/matches/BinaryWriter.h
+                             io/impl/matches/OpenCVReader.h
+                             io/impl/matches/OpenCVWriter.h
+                             matching/BruteForceMatching.h
+                             matching/Flann.h
+                             matching/GMS.h
+                             matching/Matching.h
+                             matching/RobustMatching.h
+                             matching/test/AllPoints.h
+                             matching/test/CrossTest.h
+                             matching/test/GeometricTest.h
+                             matching/test/LMedsTest.h
+                             matching/test/RansacTest.h
+                             matching/test/RatioTest.h
+                             matching/test/RHOTest.h
+                             matching/test/UsacTest.h
+                             matching/test/impl/Fundamental7PointsTest.h
+                             matching/test/impl/Fundamental8PointsTest.h
+                             matching/test/impl/FundamentalLMedsTest.h
+                             matching/test/impl/FundamentalRANSACTest.h
+                             matching/test/impl/FundamentalUsacTest.h
+                             matching/test/impl/HomographyAllPointsTest.h
+                             matching/test/impl/HomographyLMedsTest.h
+                             matching/test/impl/HomographyRANSACTest.h
+                             matching/test/impl/HomographyRHOTest.h
+                             matching/test/impl/HomographyUsacTest.h
                              ${TidopLib_SOURCE_DIR}/third_party/lss/lss.h
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSD.h
                              ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h)

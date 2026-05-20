@@ -27,12 +27,12 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/geotools/CRSsTools.h>
-#include "tidop/core/base/path.h"
+#include "tidop/core/base/Path.h"
 
 #include <gdal.h>
 #include <cpl_conv.h>
 
-#include "tidop/core/app/app.h"
+#include "tidop/core/app/App.h"
 #include "tidop/geometry/primitives/Point.h"
 
 //#ifdef TL_HAVE_VLD

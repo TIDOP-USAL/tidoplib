@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/rastertools/io/Metadata.h"
-#include "tidop/core/app/message.h"
+#include "tidop/core/app/Message.h"
 
 namespace tl
 {

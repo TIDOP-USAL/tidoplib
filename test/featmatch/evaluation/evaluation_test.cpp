@@ -25,9 +25,9 @@
 #define BOOST_TEST_MODULE Tidop evaluation test
 #include <boost/test/unit_test.hpp>
 
-#include <tidop/featmatch/evaluation/roccurve.h>
-#include <tidop/featmatch/evaluation/detcurve.h>
-#include <tidop/featmatch/evaluation/prcurve.h>
+#include <tidop/featmatch/evaluation/ROCCurve.h>
+#include <tidop/featmatch/evaluation/DETCurve.h>
+#include <tidop/featmatch/evaluation/PRCurve.h>
 
 using namespace tl;
 

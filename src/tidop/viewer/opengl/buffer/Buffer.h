@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include "tidop/core/base/macros/smart_ptr.h"
+#include "tidop/core/base/macros/SmartPtr.h"
 
 namespace tl
 {

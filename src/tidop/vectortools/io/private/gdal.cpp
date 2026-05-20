@@ -24,8 +24,8 @@
 
 #include "tidop/vectortools/io/private/gdal.h"
 
-#include "tidop/core/base/exception.h"
-#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/Exception.h"
+#include "tidop/core/base/StringUtils.h"
 
 namespace tl
 {

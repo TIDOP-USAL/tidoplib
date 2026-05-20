@@ -28,9 +28,9 @@
 
 #include "tidop/config.h"
 #include "tidop/core/base/defs.h"
-#include "tidop/core/base/path.h"
-#include "tidop/core/base/macros/smart_ptr.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Path.h"
+#include "tidop/core/base/macros/SmartPtr.h"
+#include "tidop/core/base/Exception.h"
 
 #include <proj.h>
 #include <copc-lib/las/header.hpp>

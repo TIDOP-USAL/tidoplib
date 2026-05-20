@@ -23,7 +23,7 @@
  **************************************************************************/
 
 #include "tidop/graphic/color/color_conversion.h"
-#include "tidop/core/base/type_conversions.h"
+#include "tidop/core/base/TypeConversions.h"
 
 #include <algorithm>
 #include <array>

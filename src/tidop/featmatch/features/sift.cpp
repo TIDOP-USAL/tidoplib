@@ -24,7 +24,7 @@
  
 #include "sift.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 
 namespace tl

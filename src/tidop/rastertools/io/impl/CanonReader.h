@@ -26,7 +26,7 @@
 
 #include "tidop/config.h"
 #include "tidop/rastertools/io/ImageReader.h"
-#include "tidop/core/base/path.h"
+#include "tidop/core/base/Path.h"
 
 #ifdef TL_HAVE_EDSDK
 

@@ -24,7 +24,7 @@
 
 #include "tidop/graphic/color/color.h"
 #include "tidop/graphic/color/color_model.h"
-#include "tidop/core/base/type_conversions.h"
+#include "tidop/core/base/TypeConversions.h"
 
 #include <random>
 #include <utility>

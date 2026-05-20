@@ -34,8 +34,6 @@
 namespace tl
 {
 
-constexpr auto DynamicData = std::numeric_limits<size_t>::max();
-
 /*! \addtogroup MathBase
  *  \{
  */

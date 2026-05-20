@@ -163,11 +163,11 @@ BOOST_FIXTURE_TEST_CASE(populationVariance, StatisticsTest)
   BOOST_CHECK_CLOSE(27.666666666667, tl::populationVariance(vi2.begin(), vi2.end()), 0.01);
 }
 
-BOOST_FIXTURE_TEST_CASE(standarDeviation, StatisticsTest)
+BOOST_FIXTURE_TEST_CASE(standardDeviation, StatisticsTest)
 {
-  BOOST_CHECK_CLOSE(1.1577036657875, tl::standarDeviation(vd.begin(), vd.end()), 0.01);
-  BOOST_CHECK_CLOSE(1.0690449676497, tl::standarDeviation(vi.begin(), vi.end()), 0.01);
-  BOOST_CHECK_CLOSE(5.7619441163552, tl::standarDeviation(vi2.begin(), vi2.end()), 0.01);
+  BOOST_CHECK_CLOSE(1.1577036657875, tl::standardDeviation(vd.begin(), vd.end()), 0.01);
+  BOOST_CHECK_CLOSE(1.0690449676497, tl::standardDeviation(vi.begin(), vi.end()), 0.01);
+  BOOST_CHECK_CLOSE(5.7619441163552, tl::standardDeviation(vi2.begin(), vi2.end()), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(coefficientOfVariation, StatisticsTest)

@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_MODULE Tidop statistic test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/base/exception.h>
+#include <tidop/core/base/Exception.h>
 #include <tidop/math/statistic/descriptive.h>
 #include <tidop/math/statistic/base/series.h>
 #include <tidop/math/statistic/classification/confmat.h>
@@ -243,12 +243,12 @@ BOOST_FIXTURE_TEST_CASE(variance, DescriptiveStatisticsTest)
     BOOST_CHECK_CLOSE(1.19135802, stat_1_population.variance(), 0.01);
 }
 
-BOOST_FIXTURE_TEST_CASE(standarDeviation, DescriptiveStatisticsTest)
+BOOST_FIXTURE_TEST_CASE(standardDeviation, DescriptiveStatisticsTest)
 {
-    BOOST_CHECK_CLOSE(1.1577036657875, stat_1.standarDeviation(), 0.01);
-    BOOST_CHECK_CLOSE(1.0690449676497, stat_2.standarDeviation(), 0.01);
-    BOOST_CHECK_CLOSE(5.7619441163552, stat_3.standarDeviation(), 0.01);
-    BOOST_CHECK_CLOSE(1.09149348, stat_1_population.standarDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(1.1577036657875, stat_1.standardDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(1.0690449676497, stat_2.standardDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(5.7619441163552, stat_3.standardDeviation(), 0.01);
+    BOOST_CHECK_CLOSE(1.09149348, stat_1_population.standardDeviation(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(coefficientOfVariation, DescriptiveStatisticsTest)

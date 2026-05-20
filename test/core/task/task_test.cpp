@@ -24,9 +24,9 @@
  
 #define BOOST_TEST_MODULE Tidop task test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/task/task.h>
-#include <tidop/core/console/console.h>
-#include <tidop/core/base/exception.h>
+#include <tidop/core/task/Task.h>
+#include <tidop/core/console/Console.h>
+#include <tidop/core/base/Exception.h>
 
 using namespace tl;
 

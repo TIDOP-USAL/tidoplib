@@ -24,7 +24,7 @@
 
 
 #include "tidop/rastertools/process/Filters.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 #include <opencv2/imgproc.hpp>
 

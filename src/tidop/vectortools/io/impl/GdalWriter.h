@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/base/path.h"
+#include "tidop/core/base/Path.h"
 #include "tidop/vectortools/io/impl/VectorWriter.h"
 
 class OGRLayer;

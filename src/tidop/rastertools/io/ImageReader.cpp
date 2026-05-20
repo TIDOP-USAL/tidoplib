@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/io/ImageReader.h"
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/geometry/algorithms/spatial/Intersection.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/impl/GdalReader.h"

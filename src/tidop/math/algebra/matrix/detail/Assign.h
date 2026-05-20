@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 #include "tidop/math/algebra/eval/DiagonalMatrixEval.h"
 #include "tidop/math/algebra/eval/MatBinaryEval.h"
 #include "tidop/math/algebra/eval/MatScalarEval.h"

@@ -23,7 +23,7 @@
  **************************************************************************/
 
 /*!
- * \file messagehandler.h
+ * \file MessageHandler.h
  * \brief Base interface for message handlers
  *  
  * ### Classes

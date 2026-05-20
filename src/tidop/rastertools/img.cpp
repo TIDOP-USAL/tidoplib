@@ -25,7 +25,7 @@
 #include "tidop/rastertools/img.h"
 
 #include "tidop/core/base/flags.h"
-#include "tidop/core/base/string_utils.h"
+#include "tidop/core/base/StringUtils.h"
 
 #ifdef TL_HAVE_EDSDK
 #include "EDSDK.h"

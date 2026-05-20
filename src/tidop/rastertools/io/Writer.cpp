@@ -27,7 +27,7 @@
 #include "tidop/rastertools/io/ImageWriter.h"
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/Metadata.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/base/Exception.h"
 
 namespace tl
 {

@@ -24,10 +24,10 @@
  
 #define BOOST_TEST_MODULE Tidop Shapes test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/shapes/circle.h>
-#include <tidop/geometry/shapes/ellipse.h>
-#include <tidop/geometry/shapes/rectangle.h>
-#include <tidop/geometry/shapes/triangle.h>
+#include <tidop/geometry/shapes/Circle.h>
+#include <tidop/geometry/shapes/Ellipse.h>
+#include <tidop/geometry/shapes/Rectangle.h>
+#include <tidop/geometry/shapes/Triangle.h>
 
 using namespace tl;
 

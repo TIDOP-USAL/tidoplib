@@ -33,8 +33,8 @@
 
 
 #include "tidop/rastertools/process/Anaglyph.h"
-#include "tidop/core/concurrency/parallel.h"
-#include "tidop/core/base/exception.h"
+#include "tidop/core/concurrency/Parallel.h"
+#include "tidop/core/base/Exception.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>

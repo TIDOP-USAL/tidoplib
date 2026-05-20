@@ -27,6 +27,7 @@
 #include <concepts>
 #include <cstddef>
 
+#include "tidop/math/math.h"
 #include "tidop/math/base/Traits.h"
 #include "tidop/core/base/Concepts.h"
 

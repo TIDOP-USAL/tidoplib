@@ -24,8 +24,8 @@
  
 #define BOOST_TEST_MODULE Tidop Argument test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/console/argument.h>
-#include <tidop/core/console/command.h>
+#include <tidop/core/console/Argument.h>
+#include <tidop/core/console/Command.h>
 
 #include <array>
 

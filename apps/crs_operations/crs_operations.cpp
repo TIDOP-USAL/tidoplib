@@ -39,11 +39,11 @@
 #include <gdal.h>
 #include <ogr_srs_api.h>
 
-#include <tidop/core/app/app.h>
-#include <tidop/core/console/console.h>
-#include <tidop/core/app/message.h>
-#include <tidop/core/base/path.h>
-#include <tidop/core/app/logger.h>
+#include <tidop/core/app/App.h>
+#include <tidop/core/console/Console.h>
+#include <tidop/core/app/Message.h>
+#include <tidop/core/base/Path.h>
+#include <tidop/core/app/Logger.h>
 // #include <tidop/geometry/primitives/Point.h>
 // #include <tidop/geospatial/crs.h>
 // #include <tidop/geospatial/crstransf.h>
