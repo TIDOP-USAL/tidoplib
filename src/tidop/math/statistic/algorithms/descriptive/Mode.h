@@ -24,22 +24,10 @@
 
 #pragma once
 
-#include <vector>
+#include <ranges>
 #include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include <algorithm>
+#include "tidop/math/base/Concepts.h"
 
 namespace tl
 {
@@ -47,6 +35,31 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+template<NumericRange R>
+auto mode(R &&range) -> std::ranges::range_value_t<R>
+{
+    using T = std::remove_cv_t<std::ranges::range_value_t<R>>;
+
+    std::map<T, int> h;
+    for (auto &&value : range) {
+        h[value]++;
+    }
+
+    auto max = std::max_element(h.begin(), h.end(),
+                                [](const std::pair<T, int> &p1,
+                                const std::pair<T, int> &p2) {
+                                    return p1.second < p2.second;
+                                });
+
+    return max->first;
+}
+
+template<typename It>
+auto mode(It first, It last)
+{
+    return mode(std::ranges::subrange(first, last));
+}
 
 /*! \} */
 

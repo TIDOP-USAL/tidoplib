@@ -29,7 +29,7 @@
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/algebra/decomp/SVD.h"
-#include "tidop/math/statistic/descriptive/mean.h"
+#include "tidop/math/statistic/algorithms/descriptive/Mean.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/transform/Affine.h"
 
@@ -139,9 +139,9 @@ auto Umeyama<T, Dim>::estimate(const Matrix<T, rows, cols> &src,
 
         for (size_t c = 0; c < dimensions; c++) {
             auto src_col = src.col(c);
-            mean_src[c] = mean(src_col.begin(), src_col.end());
+            mean_src[c] = mean(src_col);
             auto dst_col = dst.col(c);
-            mean_dst[c] = mean(dst_col.begin(), dst_col.end());
+            mean_dst[c] = mean(dst_col);
         }
 
         Matrix<double> src_demean = src;

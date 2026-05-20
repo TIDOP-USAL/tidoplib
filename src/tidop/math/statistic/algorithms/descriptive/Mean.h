@@ -24,29 +24,93 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
+#include <ranges>
 
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include "tidop/core/base/defs.h"
+#include "tidop/core/base/meta.h"
+#include "tidop/core/base/exception.h"
+#include "tidop/math/base/Simd.h"
+#include "tidop/math/base/Concepts.h"
 
 namespace tl
 {
 
+namespace detail
+{
+
+template<NumericRange R>
+auto meanScalar(R &&range)
+{
+    using T = std::ranges::range_value_t<R>;
+    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+
+    TL_ASSERT(!std::ranges::empty(range), "mean: empty range");
+
+    Accumulator mean = 0;
+    size_t n = 0;
+
+    for (auto &&value : range) {
+        mean += (static_cast<Accumulator>(value) - mean) / ++n;
+    }
+
+    return mean;
+}
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+template<ContiguousNumericRange R>
+auto meanSimd(R &&range)
+{
+    using T = std::ranges::range_value_t<R>;
+    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+
+    TL_ASSERT(!std::ranges::empty(range), "mean: empty range");
+
+    constexpr size_t packed_size = Packed<T>::size();
+    const T *ptr = std::ranges::data(range);
+    size_t n = std::ranges::size(range);
+    size_t i = 0;
+    Packed<T> packed_sum(T{0});
+
+    for (; i + packed_size <= n; i += packed_size) {
+        Packed<T> pack;
+        pack.loadUnaligned(ptr + i);
+        packed_sum += pack;
+    }
+
+    Accumulator sum = static_cast<Accumulator>(packed_sum.sum());
+
+    for (; i < n; ++i) {
+        sum += static_cast<Accumulator>(ptr[i]);
+    }
+
+    return sum / static_cast<Accumulator>(n);
+}
+#endif
+
+}
+
 /*! \addtogroup Statistics
- * \{
+ *  \{
  */
+
+template<NumericRange R>
+auto mean(R &&range)
+{
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    if constexpr (ContiguousNumericRange<R>) {
+        return detail::meanSimd(std::forward<R>(range));
+    } else
+#endif
+    {
+        return detail::meanScalar(std::forward<R>(range));
+    }
+}
+
+template<typename It>
+auto mean(It first, It last)
+{
+    return mean(std::ranges::subrange(first, last));
+}
 
 /*! \} */
 

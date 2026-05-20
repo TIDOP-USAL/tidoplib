@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -24,30 +24,37 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
+#include "tidop/core/base/defs.h"
 
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
 
 namespace tl
 {
 
-/*! \addtogroup Statistics
- * \{
- */
+template<typename T> class DescriptiveStatistics;
 
-/*! \} */
+
+/// \cond
+
+namespace internal
+{
+
+
+template<typename T>
+class StatisticAlgorithm
+{
+
+public:
+
+    StatisticAlgorithm() = default;
+    virtual ~StatisticAlgorithm() = default;
+
+    virtual auto eval(const DescriptiveStatistics<T> &stat) const -> double = 0;
+
+};
+
+} // End namespace internal
+
+/// \endcond
+
 
 } // End namespace tl

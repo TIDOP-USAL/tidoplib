@@ -24,22 +24,10 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include "tidop/math/statistic/algorithms/descriptive/Mean.h"
+#include "tidop/math/base/Concepts.h"
+#include "tidop/math/statistic/base/Series.h"
+#include "tidop/core/base/Exception.h"
 
 namespace tl
 {
@@ -47,6 +35,50 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+template<typename T1, typename T2>
+using CovarianceResultType = std::conditional_t<
+    std::is_floating_point_v<T1> || std::is_floating_point_v<T2>,
+    std::common_type_t<T1, T2>,
+    double
+>;
+
+/*!
+ * \brief Covariance of two datasets
+ */
+template<NumericRange R1, NumericRange R2>
+auto covariance(R1 &&rangeX, R2 &&rangeY)
+{
+    using T1 = std::remove_cvref_t<std::ranges::range_value_t<R1>>;
+    using T2 = std::remove_cvref_t<std::ranges::range_value_t<R2>>;
+    using ResultType = CovarianceResultType<T1, T2>;
+
+    auto n_x = std::ranges::distance(rangeX);
+    auto n_y = std::ranges::distance(rangeY);
+    if (n_x != n_y || n_x <= 1) return consts::zero<ResultType>;
+
+    ResultType mean_x = tl::mean(rangeX);
+    ResultType mean_y = tl::mean(rangeY);
+    ResultType sum{};
+
+    auto itX = std::ranges::begin(rangeX);
+    auto itY = std::ranges::begin(rangeY);
+    auto endX = std::ranges::end(rangeX);
+
+    while (itX != endX) {
+        sum += (static_cast<ResultType>(*itX++) - mean_x) * (static_cast<ResultType>(*itY++) - mean_y);
+    }
+
+    return sum / n_x;
+}
+
+template<typename ItX, typename ItY>
+auto covariance(ItX firstX, ItX lastX, ItY firstY, ItY lastY)
+{
+    return covariance(std::ranges::subrange<ItX, ItX>(firstX, lastX),
+                      std::ranges::subrange<ItY, ItY>(firstY, lastY));
+}
+
 
 /*! \} */
 

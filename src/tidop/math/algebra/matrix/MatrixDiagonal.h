@@ -71,10 +71,12 @@ public:
 
 private:
 
-    pointer mPtr;      /*!< Current position in the diagonal. */
-    size_t mStride;    /*!< Stride (number of columns + 1) to advance to next diagonal element. */
+    pointer mPtr = nullptr;      /*!< Current position in the diagonal. */
+    size_t mStride = 0;    /*!< Stride (number of columns + 1) to advance to next diagonal element. */
 
 public:
+
+    IteratorDiagonal() = default;
 
     /*!
      * \brief Constructs an iterator pointing to a given position on the diagonal.
@@ -108,19 +110,14 @@ public:
      */
     auto operator++(int) -> IteratorDiagonal;
 
-    /*!
-     * \brief Equality comparison.
-     * \param[in] other Other iterator.
-     * \return `true` if both point to the same position.
-     */
-    bool operator== (const IteratorDiagonal &other);
+    bool operator== (const IteratorDiagonal &other) const;
 
     /*!
      * \brief Inequality comparison.
      * \param[in] other Other iterator.
      * \return `true` if they point to different positions.
      */
-    bool operator!= (const IteratorDiagonal &other);
+    bool operator!= (const IteratorDiagonal &other) const;
 
 }; 
 
@@ -288,13 +285,13 @@ auto IteratorDiagonal<T>::operator++(int) -> IteratorDiagonal
 }
 
 template<typename T>
-bool IteratorDiagonal<T>::operator == (const IteratorDiagonal<T> &other)
+bool IteratorDiagonal<T>::operator == (const IteratorDiagonal<T> &other) const
 {
     return this->mPtr == other.mPtr;
 }
 
 template<typename T>
-bool IteratorDiagonal<T>::operator != (const IteratorDiagonal<T> &other)
+bool IteratorDiagonal<T>::operator != (const IteratorDiagonal<T> &other) const
 {
     return this->mPtr != other.mPtr;
 }

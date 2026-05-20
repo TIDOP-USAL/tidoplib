@@ -24,22 +24,9 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
+#include <cmath>
 #include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+
 
 namespace tl
 {
@@ -47,6 +34,34 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+/*!
+ * \brief Standard Deviation
+ *
+ * The standard deviation measures the amount of variation or dispersion in a set of values.
+ * It is defined as the square root of the variance, providing insight into the average distance of the data points from the mean.
+ *
+ * The formula for the standard deviation (\f$\sigma\f$) is:
+ * \f[
+ * \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n}}
+ * \f]
+ *
+ * \param[in] range The numeric range.
+ * \return The standard deviation of the dataset.
+ */
+template<NumericRange R>
+auto standardDeviation(R &&range)
+{
+    using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
+    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+    return std::sqrt(tl::variance(std::forward<R>(range)));
+}
+
+template<typename It>
+auto standardDeviation(It first, It last)
+{
+    return standardDeviation(std::ranges::subrange<It, It>(first, last));
+}
 
 /*! \} */
 

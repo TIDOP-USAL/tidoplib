@@ -75,10 +75,12 @@ public:
 
 private:
 
-    pointer colPtr;
-    size_t colSize;
+    pointer colPtr = nullptr;
+    size_t colSize = 0;
 
 public:
+
+    IteratorCols() = default;
 
     /*!
      * \brief Constructs an iterator pointing to a given position in a column.
@@ -117,14 +119,14 @@ public:
      * \param[in] other Other iterator.
      * \return `true` if both point to the same position.
      */
-    bool operator == (const IteratorCols &other);
+    bool operator == (const IteratorCols &other) const;
 
     /*!
      * \brief Inequality comparison.
      * \param[in] other Other iterator.
      * \return `true` if they point to different positions.
      */
-    bool operator != (const IteratorCols &other);
+    bool operator != (const IteratorCols &other) const;
 
 };
 
@@ -292,13 +294,13 @@ auto IteratorCols<T>::operator++(int) -> IteratorCols
 }
 
 template<typename T>
-bool IteratorCols<T>::operator == (const IteratorCols<T> &other)
+bool IteratorCols<T>::operator == (const IteratorCols<T> &other) const
 {
     return this->colPtr == other.colPtr;
 }
 
 template<typename T>
-bool IteratorCols<T>::operator != (const IteratorCols<T> &other)
+bool IteratorCols<T>::operator != (const IteratorCols<T> &other) const
 {
     return this->colPtr != other.colPtr;
 }

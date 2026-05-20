@@ -24,29 +24,40 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include "tidop/math/base/Concepts.h"
+#include <cmath>
 
 namespace tl
 {
 
 /*! \addtogroup Statistics
- * \{
+ *  \{
  */
+
+/*!
+ * \brief Computes the Root Mean Square (RMS) of a range of values.
+ * \param[in] range The numeric range.
+ * \return The Root Mean Square (RMS) of the values in the range.
+ */
+template<NumericRange R>
+auto rootMeanSquare(R &&range) -> double
+{
+    double sum{};
+    double i{1};
+
+    for (auto &&value : range) {
+        double x = static_cast<double>(value);
+        sum += (x * x - sum) / i++;
+    }
+
+    return std::sqrt(sum);
+}
+
+template<typename It>
+auto rootMeanSquare(It first, It last) -> double
+{
+    return rootMeanSquare(std::ranges::subrange<It, It>(first, last));
+}
 
 /*! \} */
 

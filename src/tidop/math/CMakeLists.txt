@@ -118,40 +118,35 @@ if(BUILD_TL_MATH)
                              base/Lapack.h
                              base/Simd.h
                              base/Traits.h
-                             #geometry/affine.h
-                             #geometry/helmert.h
-                             #geometry/rotation.h
-                             #geometry/scaling.h
-                             #geometry/transform.h
-                             #geometry/translation.h
-                             #geometry/umeyama.h
                              geometry/analytic/line.h
                              geometry/analytic/plane.h
                              geometry/analytic/sphere.h
-                             statistic/descriptive.h
-                             statistic/association/pearson.h
-                             statistic/association/covariance.h
-                             statistic/base/algorithm.h
-                             statistic/base/series.h
-                             statistic/classification/confmat.h
-                             statistic/descriptive/mean.h
-                             statistic/descriptive/median.h
-                             statistic/descriptive/mode.h                             
-                             statistic/descriptive/quantile.h
-                             statistic/descriptive/range.h                        
-                             statistic/descriptive/stddev.h
-                             statistic/descriptive/tukeyfences.h
-                             statistic/descriptive/variance.h
-                             statistic/shape/kurtosis.h
-                             statistic/shape/kurtosis.impl.h
-                             statistic/ratios/cv.h
-                             statistic/ratios/zscore.h
-                             statistic/ratios/rms.h     
-                             statistic/robust/biweightmidvariance.h
-                             statistic/robust/iqr.h
-                             statistic/robust/mad.h
-                             statistic/shape/skewness.h
-                             statistic/shape/skewness.impl.h)
+                             statistic/DescriptiveStatistics.h
+                             statistic/algorithms/association/Covariance.h
+                             statistic/algorithms/association/Pearson.h
+                             statistic/algorithms/descriptive/Mean.h
+                             statistic/algorithms/descriptive/Median.h
+                             statistic/algorithms/descriptive/Mode.h
+                             statistic/algorithms/descriptive/Moments.h
+                             statistic/algorithms/descriptive/Quantile.h
+                             statistic/algorithms/descriptive/Range.h
+                             statistic/algorithms/descriptive/StandardDeviation.h
+                             statistic/algorithms/descriptive/TukeyFences.h
+                             statistic/algorithms/descriptive/Variance.h
+                             statistic/algorithms/ratios/CV.h
+                             statistic/algorithms/ratios/ZScore.h
+                             statistic/algorithms/ratios/RMS.h
+                             statistic/algorithms/robust/BiweightMidvariance.h
+                             statistic/algorithms/robust/IQR.h
+                             statistic/algorithms/robust/MAD.h
+                             statistic/algorithms/shape/Kurtosis.h
+                             statistic/algorithms/shape/Kurtosis.impl.h
+                             statistic/algorithms/shape/Skewness.h
+                             statistic/algorithms/shape/Skewness.impl.h
+                             statistic/base/StatisticAlgorithm.h
+                             statistic/base/CentralMoments.h
+                             statistic/base/Series.h
+                             statistic/classification/confmat.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}

@@ -24,22 +24,8 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
+#include "tidop/math/statistic/algorithms/descriptive/Mean.h"
 #include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
 
 namespace tl
 {
@@ -47,6 +33,35 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+/*!
+ * \brief Z-Score normalization
+ *
+ * The Z-score normalization is a statistical method that transforms a dataset by subtracting
+ * the mean and dividing by the standard deviation for each data point. The Z-score represents
+ * the number of standard deviations a value is from the mean.
+ *
+ * \param[in] range The input numeric range.
+ * \param[out] outFirst Output iterator to store the normalized Z-scores.
+ */
+template<NumericRange R, typename ItOut>
+auto zScore(R &&range, ItOut outFirst) -> ItOut
+{
+    double _mean = mean(range);
+    double standard_deviation = tl::standardDeviation(range);
+
+    for (auto &&value : range) {
+        *outFirst++ = (static_cast<double>(value) - _mean) / standard_deviation;
+    }
+
+    return outFirst;
+}
+
+template<typename ItIn, typename ItOut>
+void zScore(ItIn inFirst, ItIn inLast, ItOut outFirst)
+{
+    zScore(std::ranges::subrange<ItIn, ItIn>(inFirst, inLast), outFirst);
+}
 
 /*! \} */
 

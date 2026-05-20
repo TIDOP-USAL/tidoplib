@@ -24,29 +24,62 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
 #include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
 
 namespace tl
 {
 
 /*! \addtogroup Statistics
- * \{
+ *  \{
  */
+
+/*!
+ * \brief Biweight Midvariance
+ *
+ * The biweight midvariance is a robust measure of the spread of data that reduces the influence
+ * of outliers. It is calculated by weighting the squared deviations from the median and adjusting
+ * them using a biweight function.
+ *
+ * \param[in] range The numeric range.
+ * \return The biweight midvariance for the dataset.
+ */
+template<NumericRange R>
+auto biweightMidvariance(R &&range)
+{
+    using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
+    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+
+    auto n = std::ranges::distance(range);
+    if (n <= 2) return consts::zero<ResultType>;
+
+    ResultType _median = tl::median(range);
+    ResultType mad = tl::medianAbsoluteDeviation(range);
+
+    ResultType num{};
+    ResultType den{};
+    for (auto &&value : range) {
+        ResultType x = static_cast<ResultType>(value) - _median;
+        ResultType u = x / (9 * mad);
+        if (std::abs(u) < consts::one<ResultType>) {
+            ResultType u2 = u * u;
+            ResultType y = consts::one<ResultType> - u2;
+            ResultType y2 = y * y;
+            num += x * x * y2 * y2;
+            den += y * (consts::one<ResultType> - static_cast<ResultType>(5) * u2);
+        }
+    }
+
+    if (den == consts::zero<ResultType>)
+        return consts::zero<ResultType>;
+
+    return n * num / (den * den);
+}
+
+template<typename It>
+auto biweightMidvariance(It first, It last)
+{
+    return biweightMidvariance(std::ranges::subrange<It, It>(first, last));
+}
 
 /*! \} */
 

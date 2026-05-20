@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses> *
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -24,22 +24,10 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
+#include <ranges>
 
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include "tidop/math/statistic/algorithms/descriptive/Mean.h"
+#include "tidop/math/base/Concepts.h"
 
 namespace tl
 {
@@ -47,6 +35,69 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+ /*!
+  * \brief Range
+  *
+  * The range is the difference between the maximum and minimum values in the dataset.
+  * It is calculated as:
+  *
+  * \f[ R = x_{\text{max}} - x_{\text{min}} \f]
+  *
+  * \param[in] range The numeric range.
+  * \return The value of the range for the dataset.
+  *
+  * ### Example Usage
+  * \code{.cpp}
+  * std::vector<int> data = {5, 3, 9, 1, 7, 8};
+  * auto result = range(data);
+  * Message::info("Range of the dataset: {}", result);
+  *
+  * // Output: Range of the dataset: 8
+  * \endcode
+  */
+template<NumericRange R>
+auto range(R &&range)
+{
+    using T = std::ranges::range_value_t<R>;
+    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+
+    if (std::ranges::empty(range)) {
+        return T{0};
+    }
+
+    auto [min_val, max_val] = std::ranges::minmax(range);
+
+    return max_val - min_val;
+}
+
+
+/*!
+ * \brief Range
+ *
+ * The range is the difference between the maximum and minimum values in the dataset.
+ * It is calculated as:
+ *
+ * \f[ R = x_{\text{max}} - x_{\text{min}} \f]
+ *
+ * \param[in] first Iterator to the beginning of the dataset
+ * \param[in] last Iterator to the end of the dataset
+ * \return The value of the range for the dataset.
+ *
+ * ### Example Usage
+ * \code{.cpp}
+ * std::vector<int> data = {5, 3, 9, 1, 7, 8};
+ * auto result = range(data.begin(), data.end());
+ * Message::info("Range of the dataset: {}", result);
+ *
+ * // Output: Range of the dataset: 8
+ * \endcode
+ */
+template<typename It>
+auto range(It first, It last)
+{
+    return range(std::ranges::subrange(first, last));
+}
 
 /*! \} */
 

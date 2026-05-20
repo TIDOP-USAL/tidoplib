@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses> *
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -24,22 +24,9 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include <ranges>
+#include "tidop/math/statistic/algorithms/descriptive/Mean.h"
+#include "tidop/math/base/Concepts.h"
 
 namespace tl
 {
@@ -47,6 +34,64 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+template<NumericRange R>
+auto variance(R &&range)
+{
+    using T = std::ranges::range_value_t<R>;
+    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+
+    Accumulator mean = 0;
+    Accumulator M2 = 0;
+    size_t n = 0;
+
+    for (auto &&value : range) {
+        ++n;
+        Accumulator delta = static_cast<Accumulator>(value) - mean;
+        mean += delta / n;
+        Accumulator delta2 = static_cast<Accumulator>(value) - mean;
+        M2 += delta * delta2;
+    }
+
+    if (n <= 1) return static_cast<Accumulator>(1.0);
+
+    return M2 / (n - 1);
+}
+
+template<NumericRange R>
+auto populationVariance(R &&range)
+{
+    using T = std::ranges::range_value_t<R>;
+    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+
+    Accumulator mean = 0;
+    Accumulator M2 = 0;
+    size_t n = 0;
+
+    for (auto &&value : range) {
+        ++n;
+        Accumulator delta = static_cast<Accumulator>(value) - mean;
+        mean += delta / n;
+        Accumulator delta2 = static_cast<Accumulator>(value) - mean;
+        M2 += delta * delta2;
+    }
+
+    if (n <= 1) return static_cast<Accumulator>(1.0);
+
+    return M2 / n;
+}
+
+template<typename It>
+auto variance(It first, It last)
+{
+    return variance(std::ranges::subrange(first, last));
+}
+
+template<typename It>
+auto populationVariance(It first, It last)
+{
+    return populationVariance(std::ranges::subrange(first, last));
+}
 
 /*! \} */
 

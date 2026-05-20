@@ -12,11 +12,11 @@
  *                                                                        *
  * TidopLib is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ * MERCHANTABILITY or FITNESS FOR A2 PARTICULAR PURPOSE.  See the         *
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses> *
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -24,29 +24,28 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include <ranges>
+#include "tidop/math/statistic/algorithms/descriptive/Quantile.h"
+#include "tidop/math/base/Concepts.h"
 
 namespace tl
 {
 
 /*! \addtogroup Statistics
- * \{
+ *  \{
  */
+
+template<NumericRange R>
+auto median(R &&range)
+{
+    return quantile(std::forward<R>(range), 0.5);
+}
+
+template<typename It>
+auto median(It first, It last)
+{
+    return median(std::ranges::subrange(first, last));
+}
 
 /*! \} */
 

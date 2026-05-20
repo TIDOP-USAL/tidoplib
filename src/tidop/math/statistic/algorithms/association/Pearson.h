@@ -24,22 +24,8 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
 #include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
 #include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
 
 namespace tl
 {
@@ -47,6 +33,28 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
+
+template<NumericRange R1, NumericRange R2>
+auto pearsonCorrelationCoefficient(R1 &&rangeX, R2 &&rangeY)
+{
+    using T1 = std::remove_cvref_t<std::ranges::range_value_t<R1>>;
+    using T2 = std::remove_cvref_t<std::ranges::range_value_t<R2>>;
+    using ResultType = CovarianceResultType<T1, T2>;
+
+    auto n_x = std::ranges::distance(rangeX);
+    auto n_y = std::ranges::distance(rangeY);
+    if (n_x != n_y || n_x <= 1) return consts::zero<ResultType>;
+
+    return covariance(rangeX, rangeY) /
+           (standardDeviation(rangeX) * tl::standardDeviation(rangeY));
+}
+
+template<typename ItX, typename ItY>
+auto pearsonCorrelationCoefficient(ItX firstX, ItX lastX, ItY firstY, ItY lastY)
+{
+    return pearsonCorrelationCoefficient(std::ranges::subrange<ItX, ItX>(firstX, lastX),
+                                         std::ranges::subrange<ItY, ItY>(firstY, lastY));
+}
 
 /*! \} */
 
