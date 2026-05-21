@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(read_geojson)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.geojson"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("example.geojson"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) throw std::runtime_error("Vector open error");
 
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(read_gml)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.gml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("example.gml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return; // read support needs Xerces or libexpat 
 
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(read_kml)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.kml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("example.kml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return; // read support needs Expat XML Parser
 
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(read_kmz)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\example.kmz"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("example.kmz"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return; // read support needs Libkml
 
@@ -605,7 +605,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Autos.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Autos.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -636,7 +636,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Bridges.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Bridges.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -674,7 +674,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Autos.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Autos.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -705,7 +705,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Bridges.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Bridges.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -742,7 +742,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Autos.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Autos.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -774,7 +774,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Bridges.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Bridges.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -807,7 +807,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Buildings.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Buildings.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -848,7 +848,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\RoadSegments.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\RoadSegments.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -886,7 +886,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Streams.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Streams.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -927,7 +927,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\RoadSegments.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\RoadSegments.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -965,7 +965,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Streams.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Streams.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1007,7 +1007,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\RoadSegments.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\RoadSegments.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1044,7 +1044,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Streams.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Streams.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1086,7 +1086,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Forests.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Forests.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1121,7 +1121,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\BasicPolygons.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\BasicPolygons.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1154,7 +1154,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Ponds.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Ponds.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1195,7 +1195,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Buildings.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Buildings.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1232,7 +1232,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\Lakes.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\Lakes.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1278,7 +1278,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\LakesWithElevation.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\LakesWithElevation.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1331,7 +1331,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Forests.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Forests.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1369,7 +1369,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\BasicPolygons.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\BasicPolygons.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1402,7 +1402,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Ponds.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Ponds.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1442,7 +1442,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Buildings.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Buildings.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1478,7 +1478,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\Lakes.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\Lakes.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1523,7 +1523,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\LakesWithElevation.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\LakesWithElevation.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1576,7 +1576,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Forests.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Forests.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1611,7 +1611,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\BasicPolygons.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\BasicPolygons.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1643,7 +1643,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Ponds.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Ponds.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1684,7 +1684,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Buildings.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Buildings.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1722,7 +1722,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\Lakes.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\Lakes.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1767,7 +1767,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\LakesWithElevation.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\LakesWithElevation.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1821,7 +1821,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_multilinestring, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\shapefile\\DividedRoutes.shp"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\shapefile\\DividedRoutes.shp"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1863,7 +1863,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_multilinestring, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\gml\\DividedRoutes.xml"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\gml\\DividedRoutes.xml"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1905,7 +1905,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_multilinestring, VectorReaderTest)
     
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\mapinfo\\DividedRoutes.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\DividedRoutes.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 

@@ -145,6 +145,7 @@ if(BUILD_TL_MATH)
                              statistic/algorithms/shape/Skewness.impl.h
                              statistic/base/StatisticAlgorithm.h
                              statistic/base/CentralMoments.h
+                             statistic/base/DataFrame.h
                              statistic/base/Series.h
                              statistic/classification/confmat.h)
                 

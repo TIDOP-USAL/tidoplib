@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(read_png)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\raster\\terrain.png"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\raster\\terrain.png"));
 
         auto raster_reader = ImageReaderFactory::create(file);
         raster_reader->open();
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(read_tiff)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\raster\\terrain.tif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\raster\\terrain.tif"));
 
         auto raster_reader = ImageReaderFactory::create(file);
         raster_reader->open();
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(reader_png)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\raster\\terrain.png"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\raster\\terrain.png"));
 
         // Create a raster reader for the specified file
         RasterReader raster_reader(file);
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(reader_tiff)
 {
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("\\OGC_WMS_TEST\\raster\\terrain.tif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\raster\\terrain.tif"));
 
         // Create a raster reader for the specified file
         RasterReader raster_reader(file);
@@ -203,35 +203,6 @@ BOOST_AUTO_TEST_CASE(reader_tiff)
         BOOST_CHECK_EQUAL(382, image.at<uint16_t>(93, 61));
         BOOST_CHECK_EQUAL(367, image.at<uint16_t>(138, 23));
         BOOST_CHECK_EQUAL(140, image.at<uint16_t>(599, 599));
-
-        raster_reader.close();
-
-        BOOST_CHECK(!raster_reader.isOpen());
-
-    } catch (std::exception &e) {
-        tl::printException(e);
-    }
-}
-
-
-BOOST_AUTO_TEST_CASE(reader_geotiff)
-{
-    try {
-
-        //tl::Path file("C:\\Users\\Tidop\\Documents\\GRAPHOS\\Projects\\urban_ortho\\ortho\\ortho.tif");
-        tl::Path file("C:\\Users\\Tidop\\Documents\\GRAPHOS\\Projects\\Gregg1_2\\ortho\\ortho.tif");
-
-        // Create a raster reader for the specified file
-        RasterReader raster_reader(file);
-        Size<int> size(2323, 2323);
-        //auto scale_src = 0.11020457284169043;
-        auto scale_src = 0.10753054637115214;
-        Rect<int> rect_to_read(219, 219, 2455, 4);
-        BoundingBox2d terrain_window(Point<double>(356880.33150275325, 4500170.7196016246), Point<double>(356998.68577994872, 4500288.6336116809));
-        terrain_window.normalized();
-        Affine<double, 2> affine;
-        //cv::Mat image = raster_reader.read(terrain_window, scale_src, scale_src, &affine);
-        cv::Mat image = raster_reader.read(scale_src, scale_src, rect_to_read);
 
         raster_reader.close();
 
