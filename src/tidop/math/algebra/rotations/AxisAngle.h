@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -24,8 +24,11 @@
 
 #pragma once
 
+#include <type_traits>
+#include <utility>
+
 #include "tidop/math/algebra/vector/Vector.h"
-#include "tidop/math/algebra/rotations/rotations.h"
+#include "tidop/math/algebra/rotations/Rotations.h"
 
 
 namespace tl
@@ -70,7 +73,7 @@ public:
      * \brief Move constructor.
      * \param[in] axisAngle The `AxisAngle` instance to move.
      */
-    AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT;
+    AxisAngle(AxisAngle &&axisAngle) noexcept;
 
     /*!
      * \brief Constructor with angle and axis.
@@ -93,13 +96,13 @@ public:
      * \param[in] axisAngle The `AxisAngle` instance to move.
      * \return A reference to the current instance.
      */
-    auto operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle &;
+    auto operator = (AxisAngle &&axisAngle) noexcept -> AxisAngle &;
 
     /*!
      * \brief Gets the rotation angle.
      * \return The rotation angle in radians.
      */
-    auto angle() const -> T;
+    [[nodiscard]] auto angle() const -> T;
 
     /*!
      * \brief Sets the rotation angle.
@@ -111,14 +114,14 @@ public:
      * \brief Gets the rotation axis.
      * \return The axis of rotation as a 3D vector.
      */
-    auto axis() const -> Vector<T, 3>;
+    [[nodiscard]] auto axis() const -> Vector<T, 3>;
 
     /*!
      * \brief Gets a specific component of the rotation axis.
      * \param[in] i The index of the component (0, 1, or 2).
      * \return The value of the specified axis component.
      */
-    auto axis(size_t i) const -> T;
+    [[nodiscard]] auto axis(size_t i) const -> T;
 
     /*!
      * \brief Sets the rotation axis.
@@ -137,7 +140,7 @@ AxisAngle<T>::AxisAngle()
     mAngle(0),
     mAxis{1,0,0}
 {
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 }
 
 template<typename T>
@@ -146,16 +149,16 @@ AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
     mAngle(axisAngle.mAngle),
     mAxis(axisAngle.mAxis)
 {
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 }
 
 template<typename T>
-AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) TL_NOEXCEPT
-  : OrientationBase<AxisAngle<T>>(std::forward<OrientationBase<AxisAngle<T>>>(axisAngle)),
+AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) noexcept
+  : OrientationBase<AxisAngle<T>>(std::move(axisAngle)),
     mAngle(axisAngle.mAngle),
-    mAxis(std::forward<Vector<T, 3>>(axisAngle.mAxis))
+    mAxis(std::move(axisAngle.mAxis))
 {
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 }
 
 template<typename T>
@@ -164,7 +167,7 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
     mAngle(angle),
     mAxis(axis)
 {
-    static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 
     mAxis.normalize();
 }
@@ -181,11 +184,11 @@ auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngle &
 }
 
 template <typename T>
-auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) TL_NOEXCEPT -> AxisAngle &
+auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) noexcept -> AxisAngle &
 {
     if (this != &axisAngle) {
         mAngle = axisAngle.mAngle;
-        mAxis = std::forward<Vector<T, 3>>(axisAngle.mAxis);
+        mAxis = std::move(axisAngle.mAxis);
     }
 
     return *this;
@@ -224,19 +227,18 @@ void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
 }
 
 template<typename T>
-static inline bool operator == (const AxisAngle<T> &axisAngle1,
-                                const AxisAngle<T> &axisAngle2)
+inline auto operator == (const AxisAngle<T> &axisAngle1,
+                         const AxisAngle<T> &axisAngle2) -> bool
 {
-    return axisAngle1.mAxis == axisAngle2.mAxis &&
-           axisAngle1.mAngle == axisAngle2.mAngle;
+    return axisAngle1.axis() == axisAngle2.axis() &&
+           axisAngle1.angle() == axisAngle2.angle();
 }
 
 template<typename T>
-static inline bool operator != (const AxisAngle<T> &axisAngle1,
-                                const AxisAngle<T> &axisAngle2)
+inline auto operator != (const AxisAngle<T> &axisAngle1,
+                         const AxisAngle<T> &axisAngle2) -> bool
 {
-    return axisAngle1.mAxis != axisAngle2.mAxis &&
-           axisAngle1.mAngle != axisAngle2.mAngle;
+    return !(axisAngle1 == axisAngle2);
 }
 
 /*! \} */

@@ -1,7 +1,7 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O�a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -25,10 +25,10 @@
 #pragma once
 
 #include "tidop/math/math.h"
-#include "tidop/math/algebra/rotations/quaternion.h"
-#include "tidop/math/algebra/rotations/euler_angles.h"
-#include "tidop/math/algebra/rotations/rotation_matrix.h"
-#include "tidop/math/algebra/rotations/axis_angle.h"
+#include "tidop/math/algebra/rotations/Quaternion.h"
+#include "tidop/math/algebra/rotations/EulerAngles.h"
+#include "tidop/math/algebra/rotations/RotationMatrix.h"
+#include "tidop/math/algebra/rotations/AxisAngle.h"
 
 namespace tl
 {
@@ -36,7 +36,7 @@ namespace tl
 /// \cond
 
 /*!
- * \brief Clase para convertir entre diferentes sistemas de rotación
+ * \brief Clase para convertir entre diferentes sistemas de rotacion
  */
 template<typename T, int... P>
 class RotationConverter
@@ -90,15 +90,15 @@ public:
     /*!
      * \brief Converts a rotation as quaternions to a rotation matrix
      *
-     * \f[ r_{00} = 1 - 2 * y² - 2 * z \f]
+     * \f[ r_{00} = 1 - 2 * y^2 - 2 * z \f]
      * \f[ r_{01} = 2 * x * y - 2 * z * w  \f]
      * \f[ r_{02} = 2 * x * z + 2 * y * w \f]
      * \f[ r_{10} = 2 * x * y + 2 * z * w \f]
-     * \f[ r_{11} = 1 - 2 * x² - 2 * z² \f]
+     * \f[ r_{11} = 1 - 2 * x^2 - 2 * z^2 \f]
      * \f[ r_{12} = 2 * y * z - 2 * x * w \f]
      * \f[ r_{20} = 2 * x * z - 2 * y * w \f]
      * \f[ r_{21} = 2 * y * z + 2 * x * w \f]
-     * \f[ r_{22} = 1 - 2 * x² - 2 * y² \f]
+     * \f[ r_{22} = 1 - 2 * x^2 - 2 * y^2 \f]
      *
      * ### Example Usage
      * \code{.cpp}
@@ -298,7 +298,7 @@ public:
 };
 
 
-/// Implementación RotationConverter
+/// Implementacion RotationConverter
 
 
 template<typename T, int... P>

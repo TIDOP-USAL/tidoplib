@@ -10,7 +10,7 @@
 #include <tidop/math/algebra/vector/Vector.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
 #include <tidop/math/algebra/matrices.h>
-#include <tidop/math/algebra/rotations/axis_angle.h>
+#include <tidop/math/algebra/rotations/AxisAngle.h>
 
 namespace tl
 {

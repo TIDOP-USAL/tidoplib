@@ -96,12 +96,12 @@ if(BUILD_TL_MATH)
                              algebra/matrix/detail/MulMatSIMD.h
                              algebra/matrix/detail/ReducedRowEchelonForm.h
                              algebra/matrix/detail/RowEchelonForm.h
-                             algebra/rotations/axis_angle.h
-                             algebra/rotations/euler_angles.h
-                             algebra/rotations/quaternion.h
-                             algebra/rotations/rotation_convert.h
-                             algebra/rotations/rotation_matrix.h
-                             algebra/rotations/rotations.h
+                             algebra/rotations/AxisAngle.h
+                             algebra/rotations/EulerAngles.h
+                             algebra/rotations/Quaternion.h
+                             algebra/rotations/RotationConvert.h
+                             algebra/rotations/RotationMatrix.h
+                             algebra/rotations/Rotations.h
                              algebra/vector/Vector.h
                              algebra/vector/VectorBase.h
                              algebra/vector/detail/Assign.h
@@ -147,7 +147,7 @@ if(BUILD_TL_MATH)
                              statistic/base/CentralMoments.h
                              statistic/base/DataFrame.h
                              statistic/base/Series.h
-                             statistic/classification/confmat.h)
+                             statistic/classification/ConfusionMatrix.h)
                 
     add_library(${PROJECT_NAME} INTERFACE
                 ${PROJECT_SOURCE_FILES}

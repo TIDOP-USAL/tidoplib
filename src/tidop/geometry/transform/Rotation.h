@@ -29,9 +29,9 @@
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
 #include "tidop/math/algebra/decomp/SVD.h"
-#include "tidop/math/algebra/rotations/rotation_convert.h"
-#include "tidop/math/algebra/rotations/euler_angles.h"
-#include "tidop/math/algebra/rotations/rotation_matrix.h"
+#include "tidop/math/algebra/rotations/RotationConvert.h"
+#include "tidop/math/algebra/rotations/EulerAngles.h"
+#include "tidop/math/algebra/rotations/RotationMatrix.h"
 #include "tidop/geometry/primitives/Point.h"
 
 namespace tl

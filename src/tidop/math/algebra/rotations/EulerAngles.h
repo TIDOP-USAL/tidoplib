@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -24,7 +24,9 @@
 
 #pragma once
 
-#include "tidop/math/algebra/rotations/rotations.h"
+#include <utility>
+
+#include "tidop/math/algebra/rotations/Rotations.h"
 #include "tidop/math/algebra/vector/Vector.h"
 
 
@@ -117,7 +119,7 @@ public:
      * \brief Move constructor.
      * \param[in] eulerAngles The `EulerAngles` instance to move.
      */
-    EulerAngles(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT;
+    EulerAngles(EulerAngles<T, _axes> &&eulerAngles) noexcept;
 
     ~EulerAngles() override = default;
 
@@ -133,21 +135,21 @@ public:
      * \param[in] eulerAngles The `EulerAngles` instance to move.
      * \return A reference to the current instance.
      */
-    auto operator=(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT -> EulerAngles&;
+    auto operator=(EulerAngles<T, _axes> &&eulerAngles) noexcept -> EulerAngles&;
 
     /*!
      * \brief Unary plus operator.
      * Returns a copy of the `EulerAngles` object.
      * \return A copy of the current `EulerAngles` instance.
      */
-    auto operator+() -> EulerAngles<T, _axes>;
+    [[nodiscard]] auto operator+() const -> EulerAngles<T, _axes>;
 
     /*!
      * \brief Unary minus operator.
      * Negates the Euler angles.
      * \return A new `EulerAngles` instance with negated angles.
      */
-    auto operator-() -> EulerAngles<T, _axes>;
+    [[nodiscard]] auto operator-() const -> EulerAngles<T, _axes>;
 };
 
 
@@ -192,7 +194,7 @@ EulerAngles<T, _axes>::EulerAngles(const EulerAngles<T, _axes> &eulerAngles)
 }
 
 template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles(EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT
+EulerAngles<T, _axes>::EulerAngles(EulerAngles<T, _axes> &&eulerAngles) noexcept
   : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
     x(std::exchange(eulerAngles.x, 0)),
     y(std::exchange(eulerAngles.y, 0)),
@@ -213,7 +215,7 @@ auto EulerAngles<T, _axes>::operator = (const EulerAngles<T, _axes> &eulerAngles
 }
 
 template<typename T, int _axes>
-auto EulerAngles<T, _axes>::operator = (EulerAngles<T, _axes> &&eulerAngles) TL_NOEXCEPT -> EulerAngles<T, _axes>&
+auto EulerAngles<T, _axes>::operator = (EulerAngles<T, _axes> &&eulerAngles) noexcept -> EulerAngles<T, _axes>&
 {
     if (this != &eulerAngles) {
         x = std::exchange(eulerAngles.x, 0);
@@ -227,13 +229,13 @@ auto EulerAngles<T, _axes>::operator = (EulerAngles<T, _axes> &&eulerAngles) TL_
 /* Operaciones unarias */
 
 template<typename T, int _axes>
-auto EulerAngles<T, _axes>::operator+() -> EulerAngles<T, _axes>
+auto EulerAngles<T, _axes>::operator+() const -> EulerAngles<T, _axes>
 {
     return *this;
 }
 
 template <typename T, int _axes>
-auto EulerAngles<T, _axes>::operator-() -> EulerAngles<T, _axes>
+auto EulerAngles<T, _axes>::operator-() const -> EulerAngles<T, _axes>
 {
     return EulerAngles<T, _axes>(-this->x,-this->y,-this->z);
 }

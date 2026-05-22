@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -24,8 +24,10 @@
 
 #pragma once
 
+#include <utility>
+
 #include "tidop/math/algebra/matrix/Matrix.h"
-#include "tidop/math/algebra/rotations/rotations.h"
+#include "tidop/math/algebra/rotations/Rotations.h"
 
 namespace tl
 {
@@ -71,7 +73,7 @@ public:
      * \brief Move constructor
      * \param[in] rot The rotation matrix object to move.
      */
-    RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT;
+    RotationMatrix(RotationMatrix<T> &&rot) noexcept;
 
     /*!
      * \brief Constructor from a matrix
@@ -89,14 +91,14 @@ public:
      * \param[in] rot The rotation matrix object to copy.
      * \return A reference to the current rotation matrix.
      */
-    RotationMatrix &operator=(const RotationMatrix<T> &rot);
+    auto operator=(const RotationMatrix<T> &rot) -> RotationMatrix &;
 
     /*!
      * \brief Move assignment operator
      * \param[in] rot The rotation matrix object to move.
      * \return A reference to the current rotation matrix.
      */
-    RotationMatrix &operator=(RotationMatrix &&rot) TL_NOEXCEPT;
+    auto operator=(RotationMatrix &&rot) noexcept -> RotationMatrix &;
 
 };
 
@@ -116,9 +118,9 @@ RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
 }
 
 template <typename T>
-RotationMatrix<T>::RotationMatrix(RotationMatrix<T> &&rot) TL_NOEXCEPT
+RotationMatrix<T>::RotationMatrix(RotationMatrix<T> &&rot) noexcept
   : OrientationBase<RotationMatrix<T>>(Orientation::Type::rotation_matrix),
-    Matrix<T, 3, 3>(std::forward<Matrix<T, 3, 3>>(rot))
+    Matrix<T, 3, 3>(std::move(rot))
 {
 }
 
@@ -131,7 +133,7 @@ RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
 }
 
 template <typename T>
-RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix<T> &rot)
+auto RotationMatrix<T>::operator = (const RotationMatrix<T> &rot) -> RotationMatrix<T> &
 {
     if (this != &rot) {
         Matrix<T, 3, 3>::operator = (rot);
@@ -141,10 +143,10 @@ RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix<T> &rot)
 }
 
 template <typename T>
-RotationMatrix<T> &RotationMatrix<T>::operator = (RotationMatrix &&rot) TL_NOEXCEPT
+auto RotationMatrix<T>::operator = (RotationMatrix &&rot) noexcept -> RotationMatrix<T> &
 {
     if (this != &rot) {
-        Matrix<T, 3, 3>::operator = (std::forward<Matrix<T, 3, 3>>(rot));
+        Matrix<T, 3, 3>::operator = (std::move(rot));
     }
 
     return *this;

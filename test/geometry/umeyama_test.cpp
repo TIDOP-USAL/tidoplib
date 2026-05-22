@@ -26,9 +26,9 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/transform/estimators/Umeyama.h>
 #include <tidop/math/algebra/matrix/Matrix.h>
-#include <tidop/math/algebra/rotations/rotation_matrix.h>
-#include <tidop/math/algebra/rotations/euler_angles.h>
-#include <tidop/math/algebra/rotations/rotation_convert.h>
+#include <tidop/math/algebra/rotations/RotationMatrix.h>
+#include <tidop/math/algebra/rotations/EulerAngles.h>
+#include <tidop/math/algebra/rotations/RotationConvert.h>
 
 
 using namespace tl;

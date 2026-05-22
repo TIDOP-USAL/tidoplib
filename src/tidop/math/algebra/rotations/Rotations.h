@@ -1,7 +1,7 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O�a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 
 namespace tl
 {
@@ -80,7 +80,7 @@ public:
      * \see Rotation::Type
      * \return The rotation type as an enumeration value.
      */
-    virtual auto type() const->Type = 0;
+    [[nodiscard]] virtual auto type() const -> Type = 0;
 
 };
 
@@ -142,7 +142,7 @@ public:
      * \brief Move constructor
      * \param rotation The rotation object to move.
      */
-    OrientationBase(OrientationBase &&rotation) TL_NOEXCEPT;
+    OrientationBase(OrientationBase &&rotation) noexcept;
 
     /*!
      * \brief Virtual destructor
@@ -161,7 +161,7 @@ public:
      * \param rotation The rotation object to move.
      * \return A reference to this object.
      */
-    auto operator=(OrientationBase &&rotation) TL_NOEXCEPT -> OrientationBase&;
+    auto operator=(OrientationBase &&rotation) noexcept -> OrientationBase&;
 
     /*!
      * \brief Get the rotation type
@@ -170,7 +170,7 @@ public:
      *
      * \return The rotation type as an enumeration value.
      */
-    auto type() const -> Type override;
+    [[nodiscard]] auto type() const -> Type override;
 
     /*!
      * \brief Conversion operator to another orientation type
@@ -183,7 +183,7 @@ public:
     template<
         template<typename>
         class OrientationDerived2>
-    operator OrientationDerived2<T>()
+    [[nodiscard]] operator OrientationDerived2<T>()
     {
         OrientationDerived2<T> orientation;
         RotationConverter<T, P...>::convert(this->derived(), orientation);
@@ -202,7 +202,7 @@ public:
     template<
         template<typename, int... Q>
         class OrientationDerived2, int...Q>
-    operator OrientationDerived2<T, Q...>()
+    [[nodiscard]] operator OrientationDerived2<T, Q...>()
     {
         OrientationDerived2<T, Q...> orientation;
         RotationConverter<T, Q...>::convert(this->derived(), orientation);
@@ -218,7 +218,7 @@ private:
      *
      * \return A reference to the derived orientation object.
      */
-    auto derived() -> OrientationDerived<T, P...> &
+    [[nodiscard]] auto derived() -> OrientationDerived<T, P...> &
     {
         return *static_cast<OrientationDerived<T, P...> *>(this);
     }
@@ -230,7 +230,7 @@ private:
      *
      * \return A reference to the derived orientation object (const version).
      */
-    auto derived() const -> const OrientationDerived<T, P...> &
+    [[nodiscard]] auto derived() const -> const OrientationDerived<T, P...> &
     {
         return *static_cast<const OrientationDerived<T, P...> *>(this);
     }
@@ -260,7 +260,7 @@ OrientationBase<OrientationDerived<T, P...>>::OrientationBase(const OrientationB
 template<
   template<typename, int... P>
   class OrientationDerived, typename T, int... P>
-OrientationBase<OrientationDerived<T, P...>>::OrientationBase(OrientationBase &&rotation) TL_NOEXCEPT
+OrientationBase<OrientationDerived<T, P...>>::OrientationBase(OrientationBase &&rotation) noexcept
   : rotationType(rotation.rotationType)
 {
 
@@ -281,7 +281,7 @@ auto OrientationBase<OrientationDerived<T, P...>>::operator=(const OrientationBa
 template<
   template<typename, int... P>
   class OrientationDerived, typename T, int... P>
-auto OrientationBase<OrientationDerived<T, P...>>::operator=(OrientationBase &&rotation) TL_NOEXCEPT -> OrientationBase &
+auto OrientationBase<OrientationDerived<T, P...>>::operator=(OrientationBase &&rotation) noexcept -> OrientationBase &
 {
     if (this != &rotation) {
         this->rotationType = rotation.rotationType;

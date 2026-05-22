@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O�a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -31,8 +31,12 @@
 #include <format>
 #endif
 
+#include <limits>
+#include <ostream>
+#include <utility>
+
 #include "tidop/math/math.h"
-#include "tidop/math/algebra/rotations/rotations.h"
+#include "tidop/math/algebra/rotations/Rotations.h"
 #include "tidop/math/algebra/vector/Vector.h"
 
 namespace tl
@@ -95,12 +99,12 @@ public:
      * \brief Move constructor
      * \param[in] quaternion The quaternion object to move.
      */
-    Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT;
+    Quaternion(Quaternion<T> &&quaternion) noexcept;
 
     /*!
      * \brief Destructor
      */
-    ~Quaternion() override;
+    ~Quaternion() override = default;
 
     /*!
      * \brief Assignment operator
@@ -114,7 +118,7 @@ public:
      * \param[in] quaternion The quaternion object to move.
      * \return A reference to the current quaternion object.
      */
-    auto operator=(Quaternion<T> &&quaternion) TL_NOEXCEPT -> Quaternion &;
+    auto operator=(Quaternion<T> &&quaternion) noexcept -> Quaternion &;
 
     /*!
      * \brief Quaternion conjugate
@@ -122,7 +126,7 @@ public:
      * \f[ q = w - xi - yj - zk \f]
      * \return The conjugated quaternion.
      */
-    auto conjugate() const -> Quaternion<T>;
+    [[nodiscard]] auto conjugate() const -> Quaternion<T>;
 
     /*!
      * \brief Norm
@@ -130,7 +134,7 @@ public:
      * \f[ n(q) = \sqrt{w^2 + x^2 + y^2 + z^2} \f]
      * \return The norm (magnitude) of the quaternion.
      */
-    auto norm() const -> T;
+    [[nodiscard]] auto norm() const -> T;
 
     /*!
      * \brief Normalizes the quaternion.
@@ -146,7 +150,7 @@ public:
      * When the quaternion is zero, the function returns zero.
      * \return The inverse of the quaternion.
      */
-    auto inverse() const -> Quaternion;
+    [[nodiscard]] auto inverse() const -> Quaternion;
 
     /*!
      * \brief Quaternion multiplication assignment
@@ -195,42 +199,42 @@ public:
      * \f[ z = 0*i + 0*j + 0*k + 0 \f]
      * \return The zero quaternion.
      */
-    static auto zero() -> Quaternion;
+    [[nodiscard]] static auto zero() -> Quaternion;
 
     /*!
      * \brief Returns the quaternion representing the unit vector along the i-axis.
      * \f[ i = 1*i + 0*j + 0*k + 0 \f]
      * \return The quaternion representing the i-axis.
      */
-    static auto i() -> Quaternion;
+    [[nodiscard]] static auto i() -> Quaternion;
 
     /*!
      * \brief Returns the quaternion representing the unit vector along the j-axis.
      * \f[ j = 0*i + 1*j + 0*k + 0 \f]
      * \return The quaternion representing the j-axis.
      */
-    static auto j() -> Quaternion;
+    [[nodiscard]] static auto j() -> Quaternion;
 
     /*!
      * \brief Returns the quaternion representing the unit vector along the k-axis.
      * \f[ k = 0*i + 0*j + 1*k + 0 \f]
      * \return The quaternion representing the k-axis.
      */
-    static auto k() -> Quaternion;
+    [[nodiscard]] static auto k() -> Quaternion;
 
     /*!
      * \brief Returns the identity quaternion
      * \f[ 1 = 0*i + 0*j + 0*k + 1 \f]
      * \return The identity quaternion (1).
      */
-    static auto identity() -> Quaternion;
+    [[nodiscard]] static auto identity() -> Quaternion;
 
     /*!
      * \brief Normalize a quaternion
      * \param[in] quaternion The quaternion to normalize.
      * \return The normalized quaternion.
      */
-    static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
+    [[nodiscard]] static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
 
 };
 
@@ -245,10 +249,10 @@ using Quaterniond = Quaternion<double>;
 template<typename T>
 Quaternion<T>::Quaternion()
   : OrientationBase<Quaternion<T>>(Orientation::Type::quaternion),
-    x(-std::numeric_limits<T>().max()),
-    y(-std::numeric_limits<T>().max()),
-    z(-std::numeric_limits<T>().max()),
-    w(-std::numeric_limits<T>().max())
+    x(-std::numeric_limits<T>::max()),
+    y(-std::numeric_limits<T>::max()),
+    z(-std::numeric_limits<T>::max()),
+    w(-std::numeric_limits<T>::max())
 {
 }
 
@@ -273,17 +277,12 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 }
 
 template<typename T>
-Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) TL_NOEXCEPT
+Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) noexcept
   : OrientationBase<Quaternion<T>>(Orientation::Type::quaternion),
-    x(std::exchange(quaternion.x, -std::numeric_limits<T>().max())),
-    y(std::exchange(quaternion.y, -std::numeric_limits<T>().max())),
-    z(std::exchange(quaternion.z, -std::numeric_limits<T>().max())),
-    w(std::exchange(quaternion.w, -std::numeric_limits<T>().max()))
-{
-}
-
-template<typename T>
-Quaternion<T>::~Quaternion()
+    x(std::exchange(quaternion.x, -std::numeric_limits<T>::max())),
+    y(std::exchange(quaternion.y, -std::numeric_limits<T>::max())),
+    z(std::exchange(quaternion.z, -std::numeric_limits<T>::max())),
+    w(std::exchange(quaternion.w, -std::numeric_limits<T>::max()))
 {
 }
 
@@ -301,13 +300,13 @@ auto Quaternion<T>::operator = (const Quaternion &quaternion) -> Quaternion<T> &
 }
 
 template<typename T>
-auto Quaternion<T>::operator = (Quaternion &&quaternion) TL_NOEXCEPT -> Quaternion<T> &
+auto Quaternion<T>::operator = (Quaternion &&quaternion) noexcept -> Quaternion<T> &
 {
     if (this != &quaternion) {
-        this->x = std::exchange(quaternion.x, -std::numeric_limits<T>().max());
-        this->y = std::exchange(quaternion.y, -std::numeric_limits<T>().max());
-        this->z = std::exchange(quaternion.z, -std::numeric_limits<T>().max());
-        this->w = std::exchange(quaternion.w, -std::numeric_limits<T>().max());
+        this->x = std::exchange(quaternion.x, -std::numeric_limits<T>::max());
+        this->y = std::exchange(quaternion.y, -std::numeric_limits<T>::max());
+        this->z = std::exchange(quaternion.z, -std::numeric_limits<T>::max());
+        this->w = std::exchange(quaternion.w, -std::numeric_limits<T>::max());
     }
 
     return *this;
@@ -395,7 +394,6 @@ auto Quaternion<T>::operator /= (T scalar) -> Quaternion &
         this->operator*=(consts::one<T> / scalar);
 
     } else {
-        //¿Devolver excepción?
         this->x = consts::zero<T>;
         this->y = consts::zero<T>;
         this->z = consts::zero<T>;
@@ -674,26 +672,11 @@ auto operator*(const Quaternion<T> &q, const Vec &vector) -> Vector<T, 3>
     Quaternion<T> q_norm = q;
     q_norm.normalize();
 
-    // Rotación: q * v * q'
+    // Rotacion: q * v * q'
     auto q_rot = q_norm * Quaternion<T>(vector[0], vector[1], vector[2], consts::zero<T>) * q_norm.conjugate();
 
     return Vector<T, 3>{q_rot.x, q_rot.y, q_rot.z};
 }
-
-//template<typename T, typename Tag>
-//auto operator*(const Quaternion<T> &q, const Point<T, Tag> &p) -> Point<T, Tag>
-//{
-//    static_assert(point_traits<Point<T, Tag>>::spatial_dims == 3,
-//        "Quaternion rotation is only defined for 3D entities.");
-//
-//    Quaternion<T> q_norm = q;
-//    q_norm.normalize();
-//
-//    // Rotación: q * v * q'
-//    auto q_rot = q_norm * Quaternion<T>(p[0], p[1], p[2], consts::zero<T>) * q_norm.conjugate();
-//
-//    return Point<T, Tag>{q_rot.x, q_rot.y, q_rot.z};
-//}
 
 template<typename T>
 auto operator<<(std::ostream& os, const Quaternion<T>& q) -> std::ostream&

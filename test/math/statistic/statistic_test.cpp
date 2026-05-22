@@ -27,7 +27,7 @@
 #include <tidop/core/base/Exception.h>
 #include <tidop/math/statistic/DescriptiveStatistics.h>
 #include <tidop/math/statistic/base/Series.h>
-#include <tidop/math/statistic/classification/confmat.h>
+#include <tidop/math/statistic/classification/ConfusionMatrix.h>
 #include <tidop/math/statistic/algorithms/association/Covariance.h>
 #include <tidop/math/statistic/algorithms/association/Pearson.h>
 #include <tidop/math/statistic/algorithms/descriptive/TukeyFences.h>

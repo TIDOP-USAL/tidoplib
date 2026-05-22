@@ -29,7 +29,7 @@
 #include "tidop/core/base/defs.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/Polygon.h"
-#include "tidop/math/algebra/rotations/rotation_matrix.h"
+#include "tidop/math/algebra/rotations/RotationMatrix.h"
 
 namespace tl
 {

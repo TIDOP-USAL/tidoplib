@@ -31,7 +31,7 @@
 #include <opencv2/features2d.hpp>
 
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/math/statistic/classification/confmat.h"
+#include "tidop/math/statistic/classification/ConfusionMatrix.h"
 
 namespace tl
 {

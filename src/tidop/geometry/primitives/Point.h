@@ -47,7 +47,7 @@
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/math/algebra/vector/Vector.h"
-#include "tidop/math/algebra/rotations/quaternion.h"
+#include "tidop/math/algebra/rotations/Quaternion.h"
 
 #include <array>
 #include <typeindex>
