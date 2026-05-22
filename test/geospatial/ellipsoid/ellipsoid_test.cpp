@@ -26,6 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/geospatial/util.h>
 #include <tidop/geospatial/ellipsoid.h>
+#include <tidop/math/geometry/angles/Degrees.h>
 
 using namespace tl;
 

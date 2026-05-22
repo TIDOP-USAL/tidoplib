@@ -32,7 +32,7 @@
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/private/DataTypeConverter.h"
-#include "tidop/math/angles.h"
+#include "tidop/math/geometry/angles/Degrees.h"
 
 #include <gdalwarper.h>
 

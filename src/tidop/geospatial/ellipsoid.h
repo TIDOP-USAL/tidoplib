@@ -29,8 +29,6 @@
 
 #include <string>
 
-#include "tidop/math/angles.h"
-
 namespace tl
 {
 

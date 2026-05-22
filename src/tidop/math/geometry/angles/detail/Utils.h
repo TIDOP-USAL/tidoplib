@@ -24,76 +24,29 @@
 
 #pragma once
 
-#include <concepts>
-#include <cstddef>
+
+#include <utility>
 
 #include "tidop/math/math.h"
-#include "tidop/math/base/Traits.h"
-#include "tidop/core/base/Concepts.h"
 
 namespace tl
 {
 
-template<typename T>
-concept LinearExpr = requires(const T & a) 
+namespace detail
 {
-    typename T::value_type;
-};
-
+	
+/*!
+ * \brief Determines if a value is negative.
+ * \tparam T The type of the value.
+ * \param t The value to check.
+ * \return -1 if the value is negative, 1 otherwise.
+ */
 template<typename T>
-concept MatrixExpr = LinearExpr<T> && 
-                     requires(const T &a, size_t i, size_t j) 
+constexpr auto isNegative(T t) -> int
 {
-    { a.rows() } noexcept -> std::same_as<size_t>;
-    { a.cols() } noexcept -> std::same_as<size_t>;
-    //{ a(i, j) } -> std::convertible_to<typename T::value_type>;
-    typename Evaluator<std::remove_cvref_t<T>>;
-};
+    return t < 0 ? -1 : 1;
+}
 
-template<typename T>
-concept VectorExpr = LinearExpr<T> && 
-                     requires(const T & a, size_t i) 
-{
-    { a.size() } noexcept -> std::same_as<size_t>;
-    //{ a[i] } -> std::convertible_to<typename T::value_type>;
-    typename T::is_vector_expr_tag;
-    typename Evaluator<std::remove_cvref_t<T>>;
-};
-
-template<typename T>
-concept DenseMatrix = MatrixExpr<T> && requires(T a)
-{
-    { a.data() };
-};
-
-template<typename T>
-concept DenseVector = VectorExpr<T> && requires(T a)
-{
-    { a.data() };
-};
-
-template<typename T>
-concept StaticMatrix = DenseMatrix<T> && (T::rows_at_compile_time != DynamicData);
-
-template<typename T>
-concept DynamicMatrix = DenseMatrix<T> && (T::rows_at_compile_time == DynamicData);
-
-template<typename T>
-concept StaticVector = DenseVector<T> && (T::size_at_compile_time != DynamicData);
-
-template<typename T>
-concept DynamicVector = DenseVector<T> && (T::size_at_compile_time == DynamicData);
-
-
-template<typename D>
-concept IsAngle = requires(D a)
-{
-    typename D::value_type;
-    { a.value() } -> std::convertible_to<typename D::value_type>;
-    //{ a.unit() }  -> std::same_as<AngleUnit>;
-    { a.normalize() };
-    { a.normalizePositive() };
-};
-
+} // namespace detail
 
 } // namespace tl

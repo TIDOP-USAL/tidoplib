@@ -37,7 +37,6 @@ if(BUILD_TL_MATH)
     add_files_to_project(${PROJECT_NAME} 
                          HEADER_FILES
                              math.h
-                             angles.h
                              mathutils.h
                              algebra/decomp/Cholesky.h
                              algebra/decomp/Eigen.h
@@ -121,6 +120,12 @@ if(BUILD_TL_MATH)
                              geometry/analytic/line.h
                              geometry/analytic/plane.h
                              geometry/analytic/sphere.h
+                             geometry/angles/AngleBase.h
+                             geometry/angles/Degrees.h
+                             geometry/angles/Gradians.h
+                             geometry/angles/Radians.h
+                             geometry/angles/detail/AngleConverter.h
+                             geometry/angles/detail/Utils.h
                              statistic/DescriptiveStatistics.h
                              statistic/algorithms/association/Covariance.h
                              statistic/algorithms/association/Pearson.h
