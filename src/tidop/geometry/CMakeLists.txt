@@ -56,6 +56,7 @@ if(BUILD_TL_GEOMETRY)
                             algorithms/analysis/Touches.impl.h
                             algorithms/analysis/Within.h
                             algorithms/analysis/Within.impl.h
+                            algorithms/fitting/LineFitter.h
                             algorithms/clustering/dbscan.h
                             algorithms/measurement/Angle.h
                             algorithms/measurement/Angle.impl.h
@@ -113,6 +114,7 @@ if(BUILD_TL_GEOMETRY)
                             shapes/Square.h
                             shapes/Triangle.h
                             spatial/BoundingBox.h
+                            spatial/Line.h
                             spatial/index/KdTree.h
                             #spatial/index/KdTreeStrategies.h
                             #spatial/index/DynamicKdTree.h

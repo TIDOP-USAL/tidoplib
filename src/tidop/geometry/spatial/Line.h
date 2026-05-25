@@ -25,44 +25,61 @@
 #pragma once
 
 #include "tidop/config.h"
+#include "tidop/core/base/Concepts.h"
 #include "tidop/math/algebra/vector/Vector.h"
 
 namespace tl
 {
 
-template <typename T>
+/*! \addtogroup Geometry
+ *  \{
+ */
+ 
+template <Floating T, size_t Dim = 3>
 class Line
 {
+	
+    static_assert(Dim == 2 || Dim == 3, "Only 2 or 3 dimensions allowed");
+
+
 private:
-    Vector<T, 3> origin;
-    Vector<T, 3> direction;
+
+    using PointType = Point<T, typename tag_for_dim<Dim>::type>;
+    PointType origin;
+    Vector<T, Dim> direction;
 
 public:
-    Line(const Vector<T, 3>& _origin, const Vector<T, 3>& _direction)
-        : origin(_origin), direction(_direction) {
+
+    Line(const PointType &_origin, const Vector<T, Dim>& _direction)
+      : origin(_origin), 
+        direction(_direction) 
+    {
     }
 
     Line() = default;
     ~Line() = default;
 
-public:
-    Vector<T, 3> evaluate(T lambda)
+    auto evaluate(T lambda) const -> Vector<T, Dim>
     {
         return origin + direction * lambda;
     }
 
-    T distance(const Vector<T, 3>& point)
+    auto distance(const PointType &point) const -> T
     {
-        //T numModule = crossProduct(point - origin, direction).module();
-        Vector<T, 3> diff = point - origin;
-        T numModule = diff.cross(direction).module();
+        Vector<T, Dim> diff = point - origin;
         T directionModule = direction.module();
-        return numModule / directionModule;
+
+        if constexpr (Dim == 2) {
+            T cross = diff.x() * direction.y() - diff.y() * direction.x();
+            return std::abs(cross) / directionModule;
+        } else {
+            T numModule = diff.cross(direction).module();
+            return numModule / directionModule;
+        }
     }
 
-public:
-    Vector<T, 3> getOrigin() const { return origin; }
-    Vector<T, 3> getDirection() const { return direction; }
+    auto getOrigin() const -> PointType { return origin; }
+    auto getDirection() const -> Vector<T, Dim> { return direction; }
 
 };
 

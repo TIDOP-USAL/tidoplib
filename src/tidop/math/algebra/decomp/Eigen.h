@@ -286,26 +286,8 @@ void EigenDecomposition<Mat>::computeSymmetric()
             mEigenvaluesImag = Vector<value_type, rows>::zero(mSize); // No hay parte imaginaria en matrices simétricas
             mEigenvectors = V;
 
-            // Ordenar por selección (ascendente) para coincidir con LAPACK/Eigen
-            //for (size_t i = 0; i < mSize - 1; ++i) {
-            //    size_t k = i;
-            //    for (size_t j = i + 1; j < mSize; ++j) {
-            //        if (mEigenvaluesReal[j] < mEigenvaluesReal[k]) {
-            //            k = j;
-            //        }
-            //    }
-            //    if (k != i) {
-            //        // Intercambiar autovalores
-            //        std::swap(mEigenvaluesReal[i], mEigenvaluesReal[k]);
-            //        // Intercambiar las columnas correspondientes en la matriz de autovectores
-            //        for (size_t row = 0; row < mSize; ++row) {
-            //            std::swap(mEigenvectors(row, i), mEigenvectors(row, k));
-            //        }
-            //    }
-            //}
-
-
         } else {
+
             constexpr size_t maxIterations = 100;
             constexpr value_type tolerance = static_cast<value_type>(1e-10);
 
@@ -349,6 +331,24 @@ void EigenDecomposition<Mat>::computeSymmetric()
             }
 
             mEigenvaluesImag = Vector<value_type, rows>::zero(mSize); // No hay parte imaginaria
+        }
+
+        // Ordenar por selección (ascendente) para coincidir con LAPACK/Eigen
+        for (size_t i = 0; i < mSize - 1; ++i) {
+            size_t k = i;
+            for (size_t j = i + 1; j < mSize; ++j) {
+                if (mEigenvaluesReal[j] < mEigenvaluesReal[k]) {
+                    k = j;
+                }
+            }
+            if (k != i) {
+                // Intercambiar autovalores
+                std::swap(mEigenvaluesReal[i], mEigenvaluesReal[k]);
+                // Intercambiar las columnas correspondientes en la matriz de autovectores
+                for (size_t row = 0; row < mSize; ++row) {
+                    std::swap(mEigenvectors(row, i), mEigenvectors(row, k));
+                }
+            }
         }
 #endif
     } catch (...) {

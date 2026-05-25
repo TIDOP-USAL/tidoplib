@@ -74,8 +74,7 @@ namespace tl
  */
 template<typename T, typename Tag = xy_tag>
 class Point
-  : public Geometry<Point<T, Tag>>/*,
-    public VectorBase<Point<T, Tag>>*/
+  : public Geometry<Point<T, Tag>>
 {
 
     static_assert(Arithmetic<T>,
@@ -88,17 +87,12 @@ public:
     using const_reference = const T &;
     using pointer = T *;
     using const_pointer = const T *;
-    //using iterator = typename std::array<T, Tag::storage_size>::iterator;
-    //using const_iterator = typename std::array<T, Tag::storage_size>::const_iterator;
-    //using reverse_iterator = typename std::array<T, Tag::storage_size>::reverse_iterator;
-    //using const_reverse_iterator = typename std::array<T, Tag::storage_size>::const_reverse_iterator;
 
 private:
 
     static constexpr size_t storage_size = Tag::storage_size;
     static constexpr size_t spatial_dims = Tag::spatial_dims;
 
-    //std::array<T, storage_size> mData;
     Vector<T, storage_size> mData;
 
 public:
@@ -155,22 +149,8 @@ public:
     }
 
     template<VectorExpr Expr>
-    Point(const Expr &expr) {
-        //if constexpr (is_static_matrix_v<Expr>) {
-        //    // Si la matriz/expresión era estática, fallamos en COMPILACIÓN si no cuadra
-        //    static_assert(Expr::Rows == point_traits<Point>::spatial_dims,
-        //        "El número de filas de la matriz no coincide con la dimensión del punto.");
-        //} else {
-        //    // Si la matriz era dinámica, fallamos en EJECUCIÓN si no cuadra
-        //    assert(expr.rows() == point_traits<Point>::spatial_dims &&
-        //        "Dimension mismatch at runtime when evaluating matrix into point.");
-        //}
-
-        //// 2. Evaluación de los datos
-        //// Aquí extraes los datos evaluados de la expresión a x, y, z
-        //for (size_t i = 0; i < point_traits<Point>::spatial_dims; ++i) {
-        //    this->operator[](i) = expr(i, 0); // Asumiendo que expr se evalúa como vector columna
-        //}
+    Point(const Expr &expr) 
+    {
         this->mData = expr;
     }
 
@@ -270,18 +250,6 @@ public:
      */
     [[nodiscard]]
     constexpr auto w() noexcept -> reference;
-
-    // Iterators
-    //[[nodiscard]] constexpr auto begin() noexcept -> iterator { return mData.begin(); }
-    //[[nodiscard]] constexpr auto begin() const noexcept -> const_iterator { return mData.begin(); }
-    //[[nodiscard]] constexpr auto end() noexcept -> iterator { return mData.end(); }
-    //[[nodiscard]] constexpr auto end() const noexcept -> const_iterator { return mData.end(); }
-    //[[nodiscard]] constexpr auto cbegin() const noexcept -> const_iterator { return mData.cbegin(); }
-    //[[nodiscard]] constexpr auto cend() const noexcept -> const_iterator { return mData.cend(); }
-    //[[nodiscard]] constexpr auto rbegin() noexcept -> reverse_iterator { return mData.rbegin(); }
-    //[[nodiscard]] constexpr auto rbegin() const noexcept -> const_reverse_iterator { return mData.rbegin(); }
-    //[[nodiscard]] constexpr auto rend() noexcept -> reverse_iterator { return mData.rend(); }
-    //[[nodiscard]] constexpr auto rend() const noexcept -> const_reverse_iterator { return mData.rend(); }
 
     [[nodiscard]] 
     constexpr auto operator[](std::size_t position) noexcept -> reference;
@@ -608,25 +576,6 @@ Point<T, Tag>::operator Point<U, Tag2>() const
 }
 
 
-/*!
- * \brief Subtract two points to get the vector between them.
- *
- * \tparam T Coordinate type.
- * \tparam D Dimension.
- *
- * \param[in] a First point.
- * \param[in] b Second point.
- *
- * \return Vector from point b to point a.
- */
-//template<typename T, typename Tag>
-//auto operator-(const Point<T, Tag> &a, const Point<T, Tag> &b) -> typename VectorTraits<Point<T, Tag>>::difference_type
-//{
-//    typename VectorTraits<Point<T, Tag>>::difference_type v;
-//    for (size_t i = 0; i < v.size(); ++i)
-//        v[i] = a[i] - b[i];
-//    return v;
-//}
 
 template<typename T, typename Tag>
 auto operator*(T scalar, const Point<T, Tag> &p) -> Point<T, Tag>
@@ -660,11 +609,6 @@ auto operator / (const Vec &vec, const P &p) -> P
     return p / vec;
 }
 
-//template<MatrixExpr Mat, PointConcept P>
-//auto operator*(const Mat &mat, const P &p) -> P
-//{
-//    return p * mat;
-//}
 template<MatrixExpr Mat, PointConcept P>
 auto operator*(const Mat &mat, const P &p)
 {
@@ -737,18 +681,4 @@ private:
 
 /*! \} */
 
-} // End namespace tl
-
-
-//namespace std
-//{
-//template<>
-//struct hash<tl::Point2d>
-//{
-//    size_t operator()(const tl::Point2d &p) const noexcept
-//    {
-//        return tl::Hash<tl::Point2d>{}(p);
-//    }
-//};
-//
-//}
+} // namespace tl

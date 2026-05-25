@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/process/Fourier.h"
 
-#include "tidop/math/mathutils.h"
+#include "tidop/geometry/algorithms/fitting/LineFitter.h"
 
 #ifdef TL_HAVE_OPENCV
 #include <opencv2/imgproc.hpp>

@@ -62,6 +62,11 @@ if(TL_HAVE_GEOMETRY)
 	
     add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 	
+    if(MSVC)
+        set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
+        set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+    endif(MSVC)
+
   ENDMACRO()
 
   file(GLOB_RECURSE cpp_test RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)

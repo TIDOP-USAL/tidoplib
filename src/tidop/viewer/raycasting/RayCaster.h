@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tidop/math/algebra/vector/Vector.h"
-#include "tidop/math/geometry/analytic/line.h"
+#include "tidop/geometry/spatial/Line.h"
 #include "tidop/viewer/renderer/Camera.h"
 
 namespace tl

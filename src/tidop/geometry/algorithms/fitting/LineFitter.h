@@ -24,26 +24,135 @@
 
 #pragma once
 
+#include <optional>
 
-#include <vector>
-#include <array>
-
+#include "tidop/geometry/base/Traits.h"
+#include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/spatial/Line.h"
+#include "tidop/math/algebra/decomp/Eigen.h"
 #include "tidop/math/algebra/matrix/Matrix.h"
+#include "tidop/math/algebra/vector/Vector.h"
+
 
 namespace tl
 {
+	
+// se podría unificar fitLine3D y fitLine2D
 
-/*!
- * \addtogroup MathTools
- *
- * \{
- */
+template<typename PointContainer>
+    requires Point3DConcept<typename PointContainer::value_type>
+auto fitLine3D(const PointContainer &points, double tolerance = 1e-8) -> std::optional<Line<typename point_traits<typename PointContainer::value_type>::value_type>>
+{
+    using point_type = typename PointContainer::value_type;
+    using T = typename point_traits<point_type>::value_type;
 
+    if (points.size() < 2) return std::nullopt;
 
-/* ---------------------------------------------------------------------------------- */
-/*           AJUSTES DE PUNTOS A GEOMETRIAS (LINEAS, PLANOS, ...)                     */
-/* ---------------------------------------------------------------------------------- */
+    // Centroide
+    auto centroid = Vector<T, 3>::zeros();
+    for (const auto &point : points) {
+        centroid += point.vector();
+    }
+    centroid /= points.size();
 
+    // Matriz de covarianza
+    auto cov = Matrix<T, 3, 3>::zeros();
+    for (const auto &point : points) {
+        Matrix<T, 3, 1> v;
+        v.col(0) = point.vector() - centroid;
+        cov += v * v.transpose();
+    }
+
+    EigenDecomposition<Matrix<T, 3, 3>> eig(cov);
+    auto eigen_values = eig.eigenvaluesReal();
+    auto eigen_vectors = eig.eigenvectors();
+
+    if (eigen_values[2] < tolerance) return std::nullopt;
+
+    Vector<T, 3> direction = eigen_vectors.col(2);
+    direction.normalize();
+
+    return Line<T>(centroid, direction);
+}
+
+                        
+template<typename PointContainer>
+    requires Point2DConcept<typename PointContainer::value_type>
+auto fitLine2D(const PointContainer &points, double tolerance = 1e-8) -> std::optional<Line<typename point_traits<typename PointContainer::value_type>::value_type, 2>>
+{
+    using point_type = typename PointContainer::value_type;
+    using T = typename point_traits<point_type>::value_type;
+
+    if (points.size() < 2) return std::nullopt;
+
+    // Centroide
+    auto centroid = Vector<T, 2>::zeros();
+    for (const auto &point : points) {
+        centroid += point.vector();
+    }
+    centroid /= points.size();
+    
+    // Matriz de covarianza
+    auto cov = Matrix<T, 2, 2>::zeros();
+    for (const auto &point : points) {
+        Matrix<T, 2, 1> v;
+        v.col(0) = point.vector() - centroid;
+        cov += v * v.transpose();
+    }
+
+    EigenDecomposition<Matrix<T, 2, 2>> eig(cov);
+    auto eigen_values = eig.eigenvaluesReal();
+    auto eigen_vectors = eig.eigenvectors();
+
+    if (eigen_values[1] < tolerance) return std::nullopt;
+
+    Vector<T, 2> direction = eigen_vectors.col(1);
+    direction.normalize();
+
+    return Line<T, 2>(centroid, direction);
+}
+
+template<typename PointContainer>
+    requires requires { typename PointContainer::value_type; } &&
+                        Point2DConcept<typename PointContainer::value_type>
+auto fitLine2DSVD(const PointContainer &points, double tolerance = 1e-8) -> std::optional<Line<typename point_traits<typename PointContainer::value_type>::value_type, 2>>
+{
+    using point_type = typename PointContainer::value_type;
+    using T = typename point_traits<point_type>::value_type;
+
+    size_t n = points.size();
+    if (n < 2) return std::nullopt;
+
+    auto centroid = Vector<T, 2>::zeros();
+    for (const auto &point : points) {
+        centroid += point.vector();
+    }
+    centroid /= points.size();
+
+    Matrix<T> A(n, 2);
+    for (size_t i = 0; i < n; ++i) {
+        //A(i, 0) = points[i].x() - cx;
+        //A(i, 1) = points[i].y() - cy;
+        A[i] = points[i].vector() - centroid;
+    }
+
+    auto svd = SingularValueDecomposition<Matrix<T>>(A);
+    auto V = svd.v();
+    auto S = svd.w();
+
+    if (S[0] < tolerance) return std::nullopt;
+
+    Vector<T, 2> direction = V.col(0);
+    direction.normalize();
+    //T dx = V(0, idx);
+    //T dy = V(1, idx);
+    //T norm = std::sqrt(dx * dx + dy * dy);
+    //dx /= norm; dy /= norm;
+
+    return Line<T, 2>(centroid, direction);
+}
+
+// TODO: marcar como deprecated
 
 /*!
  * \brief Linear regression line of Y on X
@@ -140,42 +249,4 @@ auto regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b) -
     return(corr);
 }
 
-
-
-
-/*!
- * \brief Obtains the equation of a plane passing through three points
- *
- * \f$ A*x + B*y + C*z + D = 0\f$
- *
- * \param[in] points Points defining the plane
- * \param[out] plane Parameters of the general equation of the plane (A, B, C, D)
- * \param[in] normalize If true, normalizes the plane equation
- * \return Normal to the plane
- */
-template<typename T> 
-auto threePointsPlane(const std::array<T, 3>& points, 
-                      std::array<double, 4>& plane,
-                      bool normalize = false) -> double
-{
-    T v1 = points[1] - points[0];
-    T v2 = points[2] - points[0];
-    plane[0] = v1.y * v2.z - v1.z * v2.y;
-    plane[1] = v1.z * v2.x - v1.x * v2.z;
-    plane[2] = v1.x * v2.y - v2.x * v1.y;
-    plane[3] = -plane[0] * points[0].x - plane[1] * points[0].y - plane[2] * points[0].z;
-    double N = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
-    if (N != 0. && normalize) {
-        plane[0] /= N;
-        plane[1] /= N;
-        plane[2] /= N;
-        plane[3] /= N;
-    }
-    return N;
-}
-
-
-/*! \} */
-
 } // End namespace tl
-

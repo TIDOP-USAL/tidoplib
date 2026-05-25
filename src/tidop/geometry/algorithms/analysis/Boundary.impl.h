@@ -155,7 +155,6 @@ auto boundary_impl(const GeometryCollection<Point> &geometryCollection,
 
 
 template<GeometryConcept G>
-[[nodiscard]]
 auto boundary(const G &geometry)
 {
     return detail::boundary_impl(geometry, geometry_tag_t<G>{});

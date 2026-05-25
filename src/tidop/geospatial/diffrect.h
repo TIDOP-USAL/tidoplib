@@ -27,7 +27,7 @@
 
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/math/algebra/rotations/RotationMatrix.h"
-#include "tidop/math/mathutils.h"
+#include "tidop/geometry/algorithms/fitting/LineFitter.h"
 
 namespace tl
 {
