@@ -24,12 +24,63 @@
 
 #pragma once
 
-#include "tidop/math/base/lapack/Types.h"
-#include "tidop/math/base/lapack/Traits.h"
-#include "tidop/math/base/lapack/Cholesky.h"
-#include "tidop/math/base/lapack/Eigen.h"
-#include "tidop/math/base/lapack/LeastSquares.h"
-#include "tidop/math/base/lapack/Lu.h"
-#include "tidop/math/base/lapack/Qr.h"
-#include "tidop/math/base/lapack/Svd.h"
-#include "tidop/math/base/lapack/Triangular.h"
+/// \cond
+#ifdef TL_HAVE_OPENBLAS
+/// \endcond
+
+#include "tidop/math/base/blas/Types.h"
+
+namespace tl
+{
+
+/*! \addtogroup MathBase
+ *  \{
+ */
+
+namespace blas
+{
+
+/*!
+ * \brief Traits class to map floating point types to BLAS functions.
+ *
+ * This structure provides static mappings to the appropriate BLAS functions for
+ * single and double precision floating point types.
+ *
+ * \tparam T The floating point type (float or double).
+ */
+template <typename T>
+struct BlasTraits;
+
+/*!
+ * \brief Specialization of BlasTraits for float type.
+ */
+template <>
+struct BlasTraits<float>
+{
+    static constexpr auto gemm = cblas_sgemm; /**< Single precision GEMM function. */
+    static constexpr auto gemv = cblas_sgemv; /**< Single precision GEMV function. */
+    static constexpr auto symm = cblas_ssymm; /**< Single precision SYMM function. */
+    static constexpr auto trmm = cblas_strmm; /**< Single precision TRMM function. */
+};
+
+/*!
+ * \brief Specialization of BlasTraits for double type.
+ */
+template <>
+struct BlasTraits<double>
+{
+    static constexpr auto gemm = cblas_dgemm; /**< Double precision GEMM function. */
+    static constexpr auto gemv = cblas_dgemv; /**< Double precision GEMV function. */
+    static constexpr auto symm = cblas_dsymm; /**< Double precision SYMM function. */
+    static constexpr auto trmm = cblas_dtrmm; /**< Double precision TRMM function. */
+};
+
+} // End namespace blas
+
+/*! \} */
+
+} // End namespace tl
+
+/// \cond
+#endif // TL_HAVE_OPENBLAS
+/// \endcond

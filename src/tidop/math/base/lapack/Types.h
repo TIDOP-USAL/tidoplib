@@ -24,12 +24,77 @@
 
 #pragma once
 
-#include "tidop/math/base/lapack/Types.h"
-#include "tidop/math/base/lapack/Traits.h"
-#include "tidop/math/base/lapack/Cholesky.h"
-#include "tidop/math/base/lapack/Eigen.h"
-#include "tidop/math/base/lapack/LeastSquares.h"
-#include "tidop/math/base/lapack/Lu.h"
-#include "tidop/math/base/lapack/Qr.h"
-#include "tidop/math/base/lapack/Svd.h"
-#include "tidop/math/base/lapack/Triangular.h"
+/// \cond
+#ifdef TL_HAVE_OPENBLAS
+/// \endcond
+
+#include "tidop/core/base/defs.h"
+
+#include <lapacke.h>
+
+namespace tl
+{
+
+/*! \addtogroup MathBase
+ *  \{
+ */
+
+namespace lapack
+{
+
+/*!
+ * \brief Specifies the storage order for matrices.
+ *
+ * Defines whether matrices are stored in row-major or column-major order,
+ * compatible with LAPACK conventions.
+ */
+enum class Order
+{
+    row_major = LAPACK_ROW_MAJOR, /*!< Row-major storage order. */
+    col_major = LAPACK_COL_MAJOR  /*!< Column-major storage order. */
+};
+
+/*!
+ * \brief Specifies whether a matrix is upper or lower triangular.
+ *
+ * Used in LAPACK functions that require information about triangular matrices.
+ */
+enum class TriangularForm : char
+{
+    upper = 'U', /*!< Upper triangular matrix. */
+    lower = 'L'  /*!< Lower triangular matrix. */
+};
+
+/*!
+ * \brief Specifies matrix transposition modes.
+ *
+ * Defines whether a matrix is transposed or conjugate transposed before operations.
+ */
+enum class Transpose : char
+{
+    no_trans = 'N',             /*!< No transposition. */
+    transpose = 'T',            /*!< Transpose operation. */
+    conjugate_transpose = 'C'   /*!< Conjugate transpose operation. */
+};
+
+/*!
+ * \brief Specifies whether a matrix has a unit diagonal or not.
+ *
+ * Used in LAPACK functions to indicate if the diagonal elements
+ * of a triangular matrix are assumed to be 1.0.
+ */
+enum class Diagonal : char
+{
+    unit = 'U',    /*!< Matrix is assumed to be unit triangular (diagonal is 1.0). */
+    non_unit = 'N' /*!< Matrix is not assumed to be unit triangular. */
+};
+
+} // End namespace lapack
+
+/*! \} */
+
+} // End namespace tl
+
+/// \cond
+#endif // TL_HAVE_OPENBLAS
+/// \endcond

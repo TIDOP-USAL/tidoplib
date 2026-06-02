@@ -110,11 +110,31 @@ if(BUILD_TL_MATH)
                              algebra/BaseExpr.h
                              algebra/matrices.h
                              base/Blas.h
+                             base/blas/Gemm.h
+                             base/blas/Gemv.h
+                             base/blas/Symm.h
+                             base/blas/Traits.h
+                             base/blas/Trmm.h
+                             base/blas/Types.h
                              base/Cuda.h
+                             base/cuda/CublasTraits.h
+                             base/cuda/CusolverTraits.h
+                             base/cuda/Gemm.h
+                             base/cuda/Gemv.h
+                             base/cuda/Lu.h
                              base/Concepts.h
                              base/Constants.h
                              base/Data.h
                              base/Lapack.h
+                             base/lapack/Cholesky.h
+                             base/lapack/Eigen.h
+                             base/lapack/LeastSquares.h
+                             base/lapack/Lu.h
+                             base/lapack/Qr.h
+                             base/lapack/Svd.h
+                             base/lapack/Traits.h
+                             base/lapack/Triangular.h
+                             base/lapack/Types.h
                              base/Simd.h
                              base/Traits.h
                              base/simd/Compare.h

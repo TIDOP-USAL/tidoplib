@@ -24,12 +24,48 @@
 
 #pragma once
 
-#include "tidop/math/base/lapack/Types.h"
-#include "tidop/math/base/lapack/Traits.h"
-#include "tidop/math/base/lapack/Cholesky.h"
-#include "tidop/math/base/lapack/Eigen.h"
-#include "tidop/math/base/lapack/LeastSquares.h"
-#include "tidop/math/base/lapack/Lu.h"
-#include "tidop/math/base/lapack/Qr.h"
-#include "tidop/math/base/lapack/Svd.h"
-#include "tidop/math/base/lapack/Triangular.h"
+/// \cond
+#ifdef TL_HAVE_CUDA
+/// \endcond
+
+#include <cusolverDn.h>
+
+namespace tl
+{
+
+/*! \addtogroup MathBase
+ *  \{
+ */
+
+namespace cuda
+{
+
+template <typename T>
+struct CusolverTraits;
+
+template <>
+struct CusolverTraits<float>
+{
+    static constexpr auto getrf_bufferSize = cusolverDnSgetrf_bufferSize;
+    static constexpr auto getrf = cusolverDnSgetrf;
+    static constexpr auto getrs = cusolverDnSgetrs;
+};
+
+template <>
+struct CusolverTraits<double>
+{
+    static constexpr auto getrf_bufferSize = cusolverDnDgetrf_bufferSize;
+    static constexpr auto getrf = cusolverDnDgetrf;
+    static constexpr auto getrs = cusolverDnDgetrs;
+};
+
+
+} // End namespace cuda
+
+/*! \} */
+
+} // End namespace tl
+
+/// \cond
+#endif // TL_HAVE_CUDA
+/// \endcond

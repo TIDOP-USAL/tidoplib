@@ -76,12 +76,14 @@ template<typename T>
 class Packed
 {
 
+    static_assert(Arithmetic<T>, "Packed requires an Arithmetic type");
+
 public:
 
     /*!
      * \brief The type of each element in the SIMD packed type.
      */
-    using value_type = std::remove_cv_t<typename PackedTraits<Packed<T>>::value_type>;
+    using value_type = std::remove_cvref_t<typename PackedTraits<Packed<T>>::value_type>;
 
     /*!
      * \brief The SIMD intrinsic type used for packed operations.
@@ -197,13 +199,13 @@ public:
      * \brief Type cast operator to convert to SIMD intrinsic type.
      * \return The SIMD intrinsic value.
      */
-    operator simd_type() const;
+    operator simd_type() const noexcept;
 
     /*!
      * \brief Get the size of the SIMD packed type.
      * \return The number of elements in the SIMD packed type.
      */
-    static constexpr size_t size();
+    static constexpr size_t size() noexcept;
 
     /*!
      * \brief Assignment operator for copy assignment.
@@ -224,28 +226,28 @@ public:
      * \param[in] rhs The Packed object to add.
      * \return Reference to the updated Packed object.
      */
-    auto operator+=(const Packed<T> &rhs) -> Packed<T>&;
+    auto operator+=(const Packed<T> &rhs) noexcept -> Packed<T>&;
 
     /*!
      * \brief Compound subtraction assignment operator.
      * \param[in] rhs The Packed object to subtract.
      * \return Reference to the updated Packed object.
      */
-    auto operator-=(const Packed<T> &rhs) -> Packed<T>&;
+    auto operator-=(const Packed<T> &rhs) noexcept -> Packed<T>&;
 
     /*!
      * \brief Compound multiplication assignment operator.
      * \param[in] rhs The Packed object to multiply.
      * \return Reference to the updated Packed object.
      */
-    auto operator*=(const Packed<T> &rhs) -> Packed<T>&;
+    auto operator*=(const Packed<T> &rhs) noexcept -> Packed<T>&;
 
     /*!
      * \brief Compound division assignment operator.
      * \param[in] rhs The Packed object to divide.
      * \return Reference to the updated Packed object.
      */
-    auto operator/=(const Packed<T> &rhs) -> Packed<T>&;
+    auto operator/=(const Packed<T> &rhs) noexcept -> Packed<T>&;
 
     /*!
      * \brief Compound bitwise AND assignment operator.
@@ -272,25 +274,25 @@ public:
      * \brief Post-increment operator.
      * \return The Packed object before incrementing.
      */
-    auto operator++(int) -> Packed<T>;
+    auto operator++(int) noexcept -> Packed<T>;
 
     /*!
      * \brief Pre-increment operator.
      * \return Reference to the updated Packed object.
      */
-    auto operator++() -> Packed<T>&;
+    auto operator++() noexcept -> Packed<T>&;
 
     /*!
      * \brief Post-decrement operator.
      * \return The Packed object before decrementing.
      */
-    auto operator--(int) -> Packed<T>;
+    auto operator--(int) noexcept -> Packed<T>;
 
     /*!
      * \brief Pre-decrement operator.
      * \return Reference to the updated Packed object.
      */
-    auto operator--() -> Packed<T>&;
+    auto operator--() noexcept -> Packed<T>&;
 
     /*!
      * \brief Sum of the elements of the SIMD packed type.
@@ -311,7 +313,7 @@ public:
      * \brief Create a Packed object initialized with zero.
      * \return A Packed object with all elements set to zero.
      */
-    static auto zero() -> Packed;
+    [[nodiscard]] static auto zero() noexcept -> Packed;
 
 private:
 
@@ -375,7 +377,7 @@ auto max(const P &packed1, const P &packed2) -> P
  * The implementation uses the appropriate `movemask` intrinsic for the type
  * (e.g., `_mm256_movemask_ps` for `float`, `_mm256_movemask_epi8` for integers).
  */
-template<Arithmetic T>
+template<typename T>
 [[nodiscard]]
 auto all(const Packed<T> &mask) -> bool
 {
@@ -388,7 +390,7 @@ auto all(const Packed<T> &mask) -> bool
  * \param[in] mask A `Packed<T>` interpreted as a mask.
  * \return `true` if all elements are zero; `false` otherwise.
  */
-template<Arithmetic T>
+template<typename T>
 [[nodiscard]]
 auto none(const Packed<T> &mask) -> bool
 {
@@ -403,7 +405,7 @@ auto none(const Packed<T> &mask) -> bool
  *
  * Equivalent to `!none(mask)`.
  */
-template<Arithmetic T>
+template<typename T>
 [[nodiscard]]
 bool any(const Packed<T> &mask)
 {
@@ -482,7 +484,7 @@ Packed<T>::Packed(value_type scalar)
 }
 
 template<typename T>
-void Packed<T>::load(const value_type *src)
+void Packed<T>::load(const value_type *src) 
 {
     constexpr size_t alignment = alignof(simd_type);
     if (isAligned(src, alignment)) {
@@ -553,13 +555,13 @@ auto Packed<T>::operator=(simd_type packed) -> Packed<T>&
 }
 
 template<typename T>
-constexpr auto Packed<T>::size() -> size_t
+constexpr auto Packed<T>::size() noexcept -> size_t
 {
     return PackedTraits<Packed<T>>::size;
 }
 
 template<typename T>
-Packed<T>::operator simd_type() const
+Packed<T>::operator simd_type() const noexcept
 {
     return mValue;
 }
@@ -585,28 +587,28 @@ auto Packed<T>::operator=(Packed<T> &&rhs) noexcept -> Packed<T>&
 }
 
 template<typename T>
-auto Packed<T>::operator+=(const Packed<T> &rhs) -> Packed<T>&
+auto Packed<T>::operator+=(const Packed<T> &rhs) noexcept -> Packed<T>&
 {
     *this = *this + rhs;
     return *this;
 }
 
 template<typename T>
-auto Packed<T>::operator-=(const Packed<T> &rhs) -> Packed<T>&
+auto Packed<T>::operator-=(const Packed<T> &rhs) noexcept -> Packed<T>&
 {
     *this = *this - rhs;
     return *this;
 }
 
 template<typename T>
-auto Packed<T>::operator*=(const Packed<T> &rhs) -> Packed<T>&
+auto Packed<T>::operator*=(const Packed<T> &rhs) noexcept -> Packed<T>&
 {
     *this = *this * rhs;
     return *this;
 }
 
 template<typename T>
-auto Packed<T>::operator/=(const Packed<T> &rhs) -> Packed<T>&
+auto Packed<T>::operator/=(const Packed<T> &rhs) noexcept -> Packed<T>&
 {
     *this = *this / rhs;
     return *this;
@@ -635,7 +637,7 @@ auto Packed<T>::operator^=(const Packed<T> &rhs) noexcept -> Packed<T> &
 
 
 template<typename T>
-auto Packed<T>::operator++(int) -> Packed<T>
+auto Packed<T>::operator++(int) noexcept -> Packed<T>
 {
     Packed<T> packet = *this;
     *this += consts::one<T>;
@@ -643,14 +645,14 @@ auto Packed<T>::operator++(int) -> Packed<T>
 }
 
 template<typename T>
-auto Packed<T>::operator++() -> Packed<T>&
+auto Packed<T>::operator++() noexcept -> Packed<T>&
 {
     *this += consts::one<T>;
     return *this;
 }
 
 template<typename T>
-auto Packed<T>::operator--(int) -> Packed<T>
+auto Packed<T>::operator--(int) noexcept -> Packed<T>
 {
     Packed<T> packet = *this;
     *this -= consts::one<T>;
@@ -658,7 +660,7 @@ auto Packed<T>::operator--(int) -> Packed<T>
 }
 
 template<typename T>
-auto Packed<T>::operator--() -> Packed<T>&
+auto Packed<T>::operator--() noexcept -> Packed<T>&
 {
     *this -= consts::one<T>;
     return *this;
@@ -677,7 +679,7 @@ auto Packed<T>::reduceSum() const -> T
 }
 
 template<typename T>
-auto Packed<T>::zero() -> Packed
+auto Packed<T>::zero() noexcept ->  Packed
 {
     return detail::setZero<T>();
 }
@@ -686,82 +688,94 @@ auto Packed<T>::zero() -> Packed
 /* Packed overload operators */
 
 template<typename T>
+[[nodiscard]]
 auto operator -(const Packed<T> &packet) -> Packed<T>
 {
     return detail::changeSign(packet);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator+(const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+               const Packed<T> &packed2) -> Packed<T>
 {
     return detail::add(packed1, packed2);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator+(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed + Packed<T>(scalar);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator+(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) + packed;
 }
 
 template<typename T>
-auto operator-(const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator-(const Packed<T> &packed1, const Packed<T> &packed2) -> Packed<T>
 {
     return detail::sub(packed1, packed2);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator-(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed - Packed<T>(scalar);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator-(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) - packed;
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator*(const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+               const Packed<T> &packed2) -> Packed<T>
 {
     return detail::mul(packed1, packed2);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator*(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed * Packed<T>(scalar);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator*(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) * packed;
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator/(const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+               const Packed<T> &packed2) -> Packed<T>
 {
     return detail::div(packed1, packed2);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator/(const Packed<T> &packed, T scalar) -> Packed<T>
 {
     return packed / Packed<T>(scalar);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator/(T scalar, const Packed<T> &packed) -> Packed<T>
 {
     return Packed<T>(scalar) / packed;
@@ -770,43 +784,49 @@ auto operator/(T scalar, const Packed<T> &packed) -> Packed<T>
 /* Comparison Operators */
 
 template<typename T>
-static auto operator ==(const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator ==(const Packed<T> &packed1,
+                 const Packed<T> &packed2) -> Packed<T>
 {
     return compare<CompareOp::eq>(packed1, packed2);
 }
 
 template<typename T>
-static auto operator !=(const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator !=(const Packed<T> &packed1,
+                 const Packed<T> &packed2) -> Packed<T>
 {
     return compare<CompareOp::ne>(packed1, packed2);
 }
 
 template<typename T>
-static auto operator > (const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator > (const Packed<T> &packed1,
+                 const Packed<T> &packed2) -> Packed<T>
 {
     return compare<CompareOp::gt>(packed1, packed2);
 }
 
 template<typename T>
-static auto operator < (const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator < (const Packed<T> &packed1,
+                 const Packed<T> &packed2) -> Packed<T>
 {
     return compare<CompareOp::lt>(packed1, packed2);
 }
 
 template<typename T>
-static auto operator >= (const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator >= (const Packed<T> &packed1,
+                  const Packed<T> &packed2) -> Packed<T>
 {
     return compare<CompareOp::ge>(packed1, packed2);
 }
 
 template<typename T>
-static auto operator <= (const Packed<T> &packed1,
-    const Packed<T> &packed2) -> Packed<T>
+[[nodiscard]]
+auto operator <= (const Packed<T> &packed1,
+                  const Packed<T> &packed2) -> Packed<T>
 {
     return compare<CompareOp::le>(packed1, packed2);
 }
@@ -815,24 +835,28 @@ static auto operator <= (const Packed<T> &packed1,
 /* Bitwise Operators */
 
 template<typename T>
+[[nodiscard]]
 auto operator~(const Packed<T> &a) -> Packed<T>
 {
     return detail::bitwiseNot(a);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator&(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 {
     return detail::bitwiseAnd(a, b);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator|(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 {
     return detail::bitwiseOr(a, b);
 }
 
 template<typename T>
+[[nodiscard]]
 auto operator^(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 {
     return detail::bitwiseXor(a, b);
@@ -841,12 +865,11 @@ auto operator^(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 /* Transpose */
 
 template<typename T>
-auto transposeMatrix4x4(Packed<T> &r1,
+requires std::same_as<float, std::remove_cvref_t<T>>
+void transposeMatrix4x4(Packed<T> &r1,
                         Packed<T> &r2,
                         Packed<T> &r3,
-                        Packed<T> &r4) -> std::enable_if_t<
-    std::is_same<float, std::remove_cv_t<T>>::value,
-    void>
+                        Packed<T> &r4)
 {
     __m128 tmp1 = _mm_unpacklo_ps(r1, r2);
     __m128 tmp2 = _mm_unpackhi_ps(r1, r2);
@@ -881,3 +904,4 @@ auto transposeMatrix4x4(Packed<T> &r1,
 /// \cond
 #endif // TL_HAVE_SIMD_INTRINSICS
 /// \endcond
+

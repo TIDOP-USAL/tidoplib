@@ -126,7 +126,7 @@ public:
      * \brief Move constructor.
      * \param[in] matrix The data object to move from.
      */
-    Data(Data &&matrix) TL_NOEXCEPT;
+    Data(Data &&matrix) noexcept;
 
     /*!
      * \brief Constructor from an initializer list.
@@ -155,7 +155,7 @@ public:
      * \param[in] matrix The data object to move from.
      * \return A reference to the moved data object.
      */
-    auto operator = (Data &&matrix) TL_NOEXCEPT -> Data &;
+    auto operator = (Data &&matrix) noexcept -> Data &;
 
     /*!
      * \brief Accesses an element at a given position with bounds checking.
@@ -178,14 +178,14 @@ public:
      * \param[in] position The position of the element to access.
      * \return A reference to the element at the specified position.
      */
-    auto operator[](size_t position) TL_NOEXCEPT -> reference;
+    auto operator[](size_t position) noexcept -> reference;
 
     /*!
      * \brief Accesses an element at a given position without bounds checking (const version).
      * \param[in] position The position of the element to access.
      * \return A const reference to the element at the specified position.
      */
-    auto operator[](size_t position) const TL_NOEXCEPT -> const_reference;
+    auto operator[](size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Assigns a value to all elements in the data container.
@@ -240,67 +240,67 @@ public:
      * \brief Accesses the first element in the data container.
      * \return A reference to the first element.
      */
-    auto front() TL_NOEXCEPT -> reference;
+    auto front() noexcept -> reference;
 
     /*!
      * \brief Accesses the first element in the data container (const version).
      * \return A const reference to the first element.
      */
-    auto front() const TL_NOEXCEPT -> const_reference;
+    auto front() const noexcept -> const_reference;
 
     /*!
      * \brief Accesses the last element in the data container.
      * \return A reference to the last element.
      */
-    auto back() TL_NOEXCEPT -> reference;
+    auto back() noexcept -> reference;
 
     /*!
      * \brief Accesses the last element in the data container (const version).
      * \return A const reference to the last element.
      */
-    auto back() const TL_NOEXCEPT -> const_reference;
+    auto back() const noexcept -> const_reference;
 
     /*!
      * \brief Returns an iterator to the beginning of the data container.
      * \return An iterator to the beginning.
      */
-    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the beginning of the data container.
      * \return A const iterator to the beginning.
      */
-    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns an iterator to the end of the data container.
      * \return An iterator to the end.
      */
-    auto end() TL_NOEXCEPT -> iterator;
+    auto end() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the end of the data container.
      * \return A const iterator to the end.
      */
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns a pointer to the underlying data.
      * \return A pointer to the data.
      */
-    auto data() TL_NOEXCEPT -> pointer;
+    auto data() noexcept -> pointer;
 
     /*!
      * \brief Returns a const pointer to the underlying data.
      * \return A const pointer to the data.
      */
-    auto data() const TL_NOEXCEPT -> const_pointer;
+    auto data() const noexcept -> const_pointer;
 
     /*!
      * \brief Gets the size of the data container.
      * \return The size of the data container.
      */
-    auto size() const TL_NOEXCEPT -> size_t { return mData.size(); }
+    auto size() const noexcept -> size_t { return mData.size(); }
 
     void fill(T value) 
     {
@@ -373,7 +373,7 @@ public:
      * \brief Move constructor that transfers ownership of data from another container.
      * \param[in] matrix The data container from which the data is moved.
      */
-    Data(Data &&matrix) TL_NOEXCEPT;
+    Data(Data &&matrix) noexcept;
 
     /*!
      * \brief Constructor that initializes the data container from an initializer list.
@@ -402,7 +402,7 @@ public:
      * \param[in] matrix The data container from which to move data.
      * \return A reference to the modified data container.
      */
-    auto operator = (Data &&matrix) TL_NOEXCEPT -> Data &;
+    auto operator = (Data &&matrix) noexcept -> Data &;
 
     /*!
      * \brief Accesses an element at the specified position with bounds checking.
@@ -425,14 +425,14 @@ public:
      * \param[in] position The position of the element to access.
      * \return A reference to the element at the specified position.
      */
-    auto operator[](size_t position) TL_NOEXCEPT -> reference;
+    auto operator[](size_t position) noexcept -> reference;
 
     /*!
      * \brief Accesses an element at the specified position without bounds checking (const version).
      * \param[in] position The position of the element to access.
      * \return A constant reference to the element at the specified position.
      */
-    auto operator[](size_t position) const TL_NOEXCEPT -> const_reference;
+    auto operator[](size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Assigns a single value to all elements in the data container.
@@ -444,67 +444,67 @@ public:
      * \brief Accesses the first element of the data container.
      * \return A reference to the first element.
      */
-    auto front() TL_NOEXCEPT -> reference;
+    auto front() noexcept -> reference;
 
     /*!
      * \brief Accesses the first element of the data container (const version).
      * \return A constant reference to the first element.
      */
-    auto front() const TL_NOEXCEPT -> const_reference;
+    auto front() const noexcept -> const_reference;
 
     /*!
      * \brief Accesses the last element of the data container.
      * \return A reference to the last element.
      */
-    auto back() TL_NOEXCEPT -> reference;
+    auto back() noexcept -> reference;
 
     /*!
      * \brief Accesses the last element of the data container (const version).
      * \return A constant reference to the last element.
      */
-    auto back() const TL_NOEXCEPT -> const_reference;
+    auto back() const noexcept -> const_reference;
 
     /*!
      * \brief Returns an iterator to the beginning of the data container.
      * \return An iterator to the first element.
      */
-    auto begin() TL_NOEXCEPT -> iterator;
+    auto begin() noexcept -> iterator;
 
     /*!
      * \brief Returns a constant iterator to the beginning of the data container.
      * \return A constant iterator to the first element.
      */
-    auto begin() const TL_NOEXCEPT -> const_iterator;
+    auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns an iterator to the end of the data container.
      * \return An iterator to the last element.
      */
-    auto end() TL_NOEXCEPT -> iterator;
+    auto end() noexcept -> iterator;
 
     /*!
      * \brief Returns a constant iterator to the end of the data container.
      * \return A constant iterator to the last element.
      */
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns a pointer to the underlying data.
      * \return A pointer to the data.
      */
-    auto data() TL_NOEXCEPT -> pointer;
+    auto data() noexcept -> pointer;
 
     /*!
      * \brief Returns a constant pointer to the underlying data.
      * \return A constant pointer to the data.
      */
-    auto data() const TL_NOEXCEPT -> const_pointer;
+    auto data() const noexcept -> const_pointer;
 
     /*!
      * \brief Returns the size of the data container.
      * \return The size of the data container.
      */
-    auto size() const TL_NOEXCEPT -> size_t { return mData.size(); }
+    auto size() const noexcept -> size_t { return mData.size(); }
 
     void resize(size_t newSize)
     {
@@ -557,7 +557,7 @@ Data<T, _size>::Data(const Data &matrix)
 }
 
 template<typename T, size_t _size>
-Data<T, _size>::Data(Data &&matrix) TL_NOEXCEPT
+Data<T, _size>::Data(Data &&matrix) noexcept
     : mData(std::move(matrix.mData))
 {
 }
@@ -593,7 +593,7 @@ auto Data<T, _size>::operator = (const Data &matrix) -> Data &
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::operator = (Data &&matrix) TL_NOEXCEPT -> Data &
+auto Data<T, _size>::operator = (Data &&matrix) noexcept -> Data &
 {
     if (this != &matrix) {
         this->mData = std::move(matrix.mData);
@@ -614,13 +614,13 @@ auto Data<T, _size>::at(size_t position) const -> const_reference
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::operator[](size_t position) TL_NOEXCEPT -> reference
+auto Data<T, _size>::operator[](size_t position) noexcept -> reference
 {
     return mData[position];
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::operator[](size_t position) const TL_NOEXCEPT -> const_reference
+auto Data<T, _size>::operator[](size_t position) const noexcept -> const_reference
 {
     return mData[position];
 }
@@ -669,61 +669,61 @@ auto Data<T, _size>::operator >= (const Data &data) const -> bool
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::front() TL_NOEXCEPT -> reference
+auto Data<T, _size>::front() noexcept -> reference
 {
     return mData.front();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::front() const TL_NOEXCEPT -> const_reference
+auto Data<T, _size>::front() const noexcept -> const_reference
 {
     return mData.front();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::back() TL_NOEXCEPT -> reference
+auto Data<T, _size>::back() noexcept -> reference
 {
     return mData.back();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::back() const TL_NOEXCEPT -> const_reference
+auto Data<T, _size>::back() const noexcept -> const_reference
 {
     return mData.back();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::begin() TL_NOEXCEPT -> iterator
+auto Data<T, _size>::begin() noexcept -> iterator
 {
     return mData.begin();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::begin() const TL_NOEXCEPT -> const_iterator
+auto Data<T, _size>::begin() const noexcept -> const_iterator
 {
     return mData.begin();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::end() TL_NOEXCEPT -> iterator
+auto Data<T, _size>::end() noexcept -> iterator
 {
     return mData.end();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::end() const TL_NOEXCEPT -> const_iterator
+auto Data<T, _size>::end() const noexcept -> const_iterator
 {
     return mData.end();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::data() TL_NOEXCEPT -> pointer
+auto Data<T, _size>::data() noexcept -> pointer
 {
     return mData.data();
 }
 
 template<typename T, size_t _size>
-auto Data<T, _size>::data() const TL_NOEXCEPT -> const_pointer
+auto Data<T, _size>::data() const noexcept -> const_pointer
 {
     return mData.data();
 }
@@ -751,7 +751,7 @@ Data<T, DynamicData>::Data(const Data &matrix)
 }
 
 template<typename T>
-Data<T, DynamicData>::Data(Data &&matrix) TL_NOEXCEPT
+Data<T, DynamicData>::Data(Data &&matrix) noexcept
   : mData(std::move(matrix.mData))
 {
 }
@@ -780,7 +780,7 @@ auto Data<T, DynamicData>::operator = (const Data<T, DynamicData> &matrix) -> Da
 }
 
 template<typename T>
-auto Data<T, DynamicData>::operator = (Data<T, DynamicData> &&matrix) TL_NOEXCEPT -> Data &
+auto Data<T, DynamicData>::operator = (Data<T, DynamicData> &&matrix) noexcept -> Data &
 {
     if (this != &matrix) {
         this->mData = std::move(matrix.mData);
@@ -801,13 +801,13 @@ auto Data<T, DynamicData>::at(size_t position) const -> const_reference
 }
 
 template<typename T>
-auto Data<T, DynamicData>::operator[](size_t position) TL_NOEXCEPT -> reference
+auto Data<T, DynamicData>::operator[](size_t position) noexcept -> reference
 {
     return mData[position];
 }
 
 template<typename T>
-auto Data<T, DynamicData>::operator[](size_t position) const TL_NOEXCEPT -> const_reference
+auto Data<T, DynamicData>::operator[](size_t position) const noexcept -> const_reference
 {
     return mData[position];
 }
@@ -819,61 +819,61 @@ void Data<T, DynamicData>::operator=(T value)
 }
 
 template<typename T>
-auto Data<T, DynamicData>::front() TL_NOEXCEPT -> reference
+auto Data<T, DynamicData>::front() noexcept -> reference
 {
     return mData.front();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::front() const TL_NOEXCEPT -> const_reference
+auto Data<T, DynamicData>::front() const noexcept -> const_reference
 {
     return mData.front();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::back() TL_NOEXCEPT -> reference
+auto Data<T, DynamicData>::back() noexcept -> reference
 {
     return mData.back();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::back() const TL_NOEXCEPT -> const_reference
+auto Data<T, DynamicData>::back() const noexcept -> const_reference
 {
     return mData.back();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::begin() TL_NOEXCEPT  -> iterator
+auto Data<T, DynamicData>::begin() noexcept  -> iterator
 {
     return mData.begin();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::begin() const TL_NOEXCEPT-> const_iterator
+auto Data<T, DynamicData>::begin() const noexcept-> const_iterator
 {
     return mData.begin();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::end() TL_NOEXCEPT -> iterator
+auto Data<T, DynamicData>::end() noexcept -> iterator
 {
     return mData.end();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::end() const TL_NOEXCEPT -> const_iterator
+auto Data<T, DynamicData>::end() const noexcept -> const_iterator
 {
     return mData.end();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::data() TL_NOEXCEPT -> pointer
+auto Data<T, DynamicData>::data() noexcept -> pointer
 {
     return mData.data();
 }
 
 template<typename T>
-auto Data<T, DynamicData>::data() const TL_NOEXCEPT -> const_pointer
+auto Data<T, DynamicData>::data() const noexcept -> const_pointer
 {
     return mData.data();
 }

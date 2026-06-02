@@ -24,12 +24,51 @@
 
 #pragma once
 
-#include "tidop/math/base/lapack/Types.h"
-#include "tidop/math/base/lapack/Traits.h"
-#include "tidop/math/base/lapack/Cholesky.h"
-#include "tidop/math/base/lapack/Eigen.h"
-#include "tidop/math/base/lapack/LeastSquares.h"
-#include "tidop/math/base/lapack/Lu.h"
-#include "tidop/math/base/lapack/Qr.h"
-#include "tidop/math/base/lapack/Svd.h"
-#include "tidop/math/base/lapack/Triangular.h"
+/// \cond
+#ifdef TL_HAVE_CUDA
+/// \endcond
+
+#include <cublas_v2.h>
+
+namespace tl
+{
+
+/*! \addtogroup MathBase
+ *  \{
+ */
+
+namespace cuda
+{
+
+/// \cond
+
+template <typename T>
+struct CublasTraits;
+
+template <>
+struct CublasTraits<float>
+{
+    static constexpr auto gemm = cublasSgemm;
+    static constexpr auto gemv = cublasSgemv;
+    static constexpr auto op = CUBLAS_OP_T;
+};
+
+template <>
+struct CublasTraits<double>
+{
+    static constexpr auto gemm = cublasDgemm;
+    static constexpr auto gemv = cublasDgemv;
+    static constexpr auto op = CUBLAS_OP_T;
+};
+
+/// \endcond
+
+} // End namespace cuda
+
+/*! \} */
+
+} // End namespace tl
+
+/// \cond
+#endif // TL_HAVE_CUDA
+/// \endcond
