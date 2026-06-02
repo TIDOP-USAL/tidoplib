@@ -35,7 +35,6 @@
 #include <ostream>
 #include <utility>
 
-#include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations/Rotations.h"
 #include "tidop/math/algebra/vector/Vector.h"
 

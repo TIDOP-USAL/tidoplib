@@ -32,8 +32,6 @@
 #include "tidop/core/base/Exception.h"
 #include "tidop/geometry/algorithms/measurement/Angle.h"
 
-using namespace std;
-
 namespace tl
 {
 
@@ -104,7 +102,7 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
     std::vector<cv::Vec4i> linesaux;
     try {
         HoughLinesP(image, linesaux, 1., consts::deg_to_rad<double>, mThreshold, mMinLineLength, mMaxLineGap);
-    } catch (exception &e) {
+    } catch (std::exception &e) {
         printException(e);
         return LineDetector::Exit::FAILURE;
     }
@@ -221,14 +219,14 @@ template<typename T>
 bool _getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::Mat &fht, float minWeight, int maxCount)
 {
 #ifdef HAVE_OPENCV_XIMGPROC
-    std::vector<pair<T, cv::Point> > weightedPoints;
+    std::vector<std::pair<T, cv::Point> > weightedPoints;
     for (int y = 0; y < fht.rows; ++y) {
         if (weightedPoints.size() > MAX_LEN)
             break;
 
-        T const *pLine = (T *)fht.ptr(max(y - 1, 0));
+        T const *pLine = (T *)fht.ptr(std::max(y - 1, 0));
         T const *cLine = (T *)fht.ptr(y);
-        T const *nLine = (T *)fht.ptr(min(y + 1, fht.rows - 1));
+        T const *nLine = (T *)fht.ptr(std::min(y + 1, fht.rows - 1));
 
         for (int x = 0; x < fht.cols; ++x) {
             if (weightedPoints.size() > MAX_LEN)
@@ -237,7 +235,7 @@ bool _getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::
             T const value = cLine[x];
             if (value >= minWeight) {
                 int isLocalMax = 0;
-                for (int xx = max(x - 1, 0); xx <= min(x + 1, fht.cols - 1); ++xx) {
+                for (int xx = std::max(x - 1, 0); xx <= std::min(x + 1, fht.cols - 1); ++xx) {
                     if (!incIfGreater(value, pLine[xx], &isLocalMax) ||
                         !incIfGreater(value, cLine[xx], &isLocalMax) ||
                         !incIfGreater(value, nLine[xx], &isLocalMax)) {
@@ -246,7 +244,7 @@ bool _getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::
                     }
                 }
                 if (isLocalMax > 0)
-                    weightedPoints.push_back(make_pair(value, cv::Point(x, y)));
+                    weightedPoints.push_back(std::make_pair(value, cv::Point(x, y)));
             }
         }
     }
@@ -255,7 +253,7 @@ bool _getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::
         return true;
 
     std::sort(weightedPoints.begin(), weightedPoints.end(), &rel<T>);
-    weightedPoints.resize(min(static_cast<int>(weightedPoints.size()), maxCount));
+    weightedPoints.resize(std::min(static_cast<int>(weightedPoints.size()), maxCount));
 
     for (size_t i = 0; i < weightedPoints.size(); ++i) {
         lines.push_back(cv::ximgproc::HoughPoint2Line(weightedPoints[i].second, src));
@@ -293,11 +291,11 @@ LineDetector::Exit ldLSD::run(cv::Mat &image)
 {
     double angle = 0.0;
     mLines.clear();
-    vector<cv::Vec4i> linesaux;
+    std::vector<cv::Vec4i> linesaux;
 
     try {
         lineSegmentDetector->detect(image, linesaux/*, mWidth, mPrec, nfa*/);
-    } catch (exception &e) {
+    } catch (std::exception &e) {
         printException(e);
         return LineDetector::Exit::FAILURE;
     }

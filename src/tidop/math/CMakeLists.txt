@@ -36,7 +36,7 @@ if(BUILD_TL_MATH)
     
     add_files_to_project(${PROJECT_NAME} 
                          HEADER_FILES
-                             math.h
+                             #math.h
                              algebra/decomp/Cholesky.h
                              algebra/decomp/Eigen.h
                              algebra/decomp/LU.h
@@ -112,16 +112,44 @@ if(BUILD_TL_MATH)
                              base/Blas.h
                              base/Cuda.h
                              base/Concepts.h
+                             base/Constants.h
                              base/Data.h
                              base/Lapack.h
                              base/Simd.h
                              base/Traits.h
+                             base/simd/Compare.h
+                             base/simd/Intrinsics.h
+                             base/simd/Packed.h
+                             base/simd/Traits.h
+                             base/simd/detail/BitwiseAnd.h
+                             base/simd/detail/BitwiseAndNot.h
+                             base/simd/detail/BitwiseNot.h
+                             base/simd/detail/BitwiseOr.h
+                             base/simd/detail/BitwiseXor.h
+                             base/simd/detail/ChangeSign.h
+                             base/simd/detail/EqualTo.h
+                             base/simd/detail/GreaterThan.h
+                             base/simd/detail/HorizontalSum.h
+                             base/simd/detail/LoadPacked.h
+                             base/simd/detail/MaskOp.h
+                             base/simd/detail/Max.h
+                             base/simd/detail/Min.h
+                             base/simd/detail/PackedAdd.h
+                             base/simd/detail/PackedDiv.h
+                             base/simd/detail/PackedMul.h
+                             base/simd/detail/PackedSub.h
+                             base/simd/detail/SetPacked.h
+                             base/simd/detail/SetZero.h
+                             base/simd/detail/SignBias.h
+                             base/simd/detail/StorePacked.h
                              geometry/angles/AngleBase.h
                              geometry/angles/Degrees.h
                              geometry/angles/Gradians.h
                              geometry/angles/Radians.h
                              geometry/angles/detail/AngleConverter.h
                              geometry/angles/detail/Utils.h
+                             numeric/Arithmetic.h
+                             numeric/Comparison.h
                              statistic/DescriptiveStatistics.h
                              statistic/algorithms/association/Covariance.h
                              statistic/algorithms/association/Pearson.h

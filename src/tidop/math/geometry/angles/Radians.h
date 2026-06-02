@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/core/base/Concepts.h"
+#include "tidop/math/base/Constants.h"
 #include "tidop/math/geometry/angles/AngleBase.h"
 
 namespace tl

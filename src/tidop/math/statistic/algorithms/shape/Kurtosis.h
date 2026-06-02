@@ -24,9 +24,10 @@
 
 #pragma once
 
-#include "tidop/math/statistic/base/StatisticAlgorithm.h"
-
 #include <cmath>
+
+#include "tidop/math/numeric/Comparison.h"
+#include "tidop/math/statistic/base/StatisticAlgorithm.h"
 
 namespace tl
 {

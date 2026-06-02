@@ -574,13 +574,13 @@ BOOST_FIXTURE_TEST_CASE(normalize, DegreesTest)
     BOOST_CHECK_EQUAL(-30., angle_minus_30.value());
 
     angle_180.normalize();
-    BOOST_CHECK_EQUAL(180., angle_180.value());
+    BOOST_CHECK_EQUAL(-180., angle_180.value());
 
     angle_360.normalize();
     BOOST_CHECK_EQUAL(0., angle_360.value());
 
     angle_540.normalize();
-    BOOST_CHECK_EQUAL(180., angle_540.value());
+    BOOST_CHECK_EQUAL(-180., angle_540.value());
 
     angle_720.normalize();
     BOOST_CHECK_EQUAL(0., angle_720.value());
@@ -589,13 +589,13 @@ BOOST_FIXTURE_TEST_CASE(normalize, DegreesTest)
     BOOST_CHECK_EQUAL(-90., angle_minus_90.value());
 
     angle_minus_180.normalize();
-    BOOST_CHECK_EQUAL(180., angle_minus_180.value());
+    BOOST_CHECK_EQUAL(-180., angle_minus_180.value());
 
     angle_minus_360.normalize();
     BOOST_CHECK_EQUAL(0., angle_minus_360.value());
 
     angle_minus_540.normalize();
-    BOOST_CHECK_EQUAL(180, angle_minus_540.value());
+    BOOST_CHECK_EQUAL(-180, angle_minus_540.value());
 
     angle_minus_720.normalize();
     BOOST_CHECK_EQUAL(0., angle_minus_720.value());

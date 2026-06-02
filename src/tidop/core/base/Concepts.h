@@ -37,15 +37,25 @@ namespace tl
  */
 
 template<typename T>
-concept Arithmetic = std::integral<T> || std::floating_point<T>;
+concept Integral = std::integral<T>;
 
 template<typename T>
-concept SignedArithmetic = Arithmetic<T> &&
-                           std::signed_integral<T> ||
-                           std::floating_point<T>;
+concept SignedIntegral = std::signed_integral<T>;
+
+template<typename T>
+concept UnsignedIntegral = std::unsigned_integral<T>;
 
 template<typename T>
 concept Floating = std::floating_point<T>;
+
+template<typename T>
+concept Arithmetic = Integral<T> || Floating<T>;
+
+template<typename T>
+concept SignedArithmetic = SignedIntegral<T> ||
+                           Floating<T>;
+
+
 
 template<typename R>
 concept NumericRange = std::ranges::input_range<R> &&

@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations/Quaternion.h"
 #include "tidop/math/algebra/rotations/EulerAngles.h"
 #include "tidop/math/algebra/rotations/RotationMatrix.h"

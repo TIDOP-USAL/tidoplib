@@ -25,8 +25,10 @@
 #pragma once
 
 #include "tidop/core/base/Concepts.h"
+#include "tidop/math/base/Constants.h"
 #include "tidop/math/geometry/angles/AngleBase.h"
 #include "tidop/math/geometry/angles/detail/Utils.h"
+#include "tidop/math/numeric/Arithmetic.h"
 
 namespace tl
 {
@@ -58,44 +60,21 @@ public:
      *
      * Constructs a `Degrees` object with a default angle value of zero.
      */
-    constexpr Degrees()
-      : AngleBase<Degrees<T>, T>(AngleUnit::degrees)
-    {}
+    constexpr Degrees();
 
     /*!
      * \brief Constructor with an initial angle value.
-     * \param value The initial angle value in degrees.
+     * \param[in] value The initial angle value in degrees.
      */
-    constexpr Degrees(T value)
-      : AngleBase<Degrees<T>, T>(AngleUnit::degrees, value) 
-    {}
-
-    /*!
-     * \brief Copy constructor.
-     * \param degrees The `Degrees` object to copy from.
-     */
-    //Degrees(const Degrees &degrees);
-
-    /*!
-     * \brief Move constructor.
-     * \param degrees The `Degrees` object to move from.
-     */
-    //Degrees(Degrees &&degrees) noexcept;
+    constexpr Degrees(T value);
 
     /*!
      * \brief Constructor with degrees, minutes, and seconds components.
-     * \param degrees The degree component.
-     * \param minutes The minute component.
-     * \param seconds The second component.
+     * \param[in] degrees The degree component.
+     * \param[in] minutes The minute component.
+     * \param[in] seconds The second component.
      */
-    constexpr Degrees(int degrees, int minutes, T seconds)
-      : AngleBase<Degrees<T>, T>(AngleUnit::degrees)
-    {
-        this->setValue(detail::isNegative(degrees) *
-            (std::abs(degrees) +
-                minutes / static_cast<T>(consts::degrees_to_minutes) +
-                seconds / static_cast<T>(consts::degrees_to_seconds)));
-    }
+    constexpr Degrees(int degrees, int minutes, T seconds);
 
     /*!
      * \brief Destructor.
@@ -107,96 +86,53 @@ public:
      *
      * Adjusts the angle value to ensure it is within the standard range for degrees.
      */
-    constexpr void normalize()
-    {
-        T val = std::fmod(this->value(), static_cast<T>(360));
-        if (val > 180) val -= 360;
-        else if (val <= -180) val += 360;
-        this->setValue(val);
-    }
+    constexpr void normalize();
 
     /*!
      * \brief Normalize the angle to the range \f$[0, 360]\f$.
      *
      * Adjusts the angle value to be positive and within a full circle in degrees.
      */
-    constexpr void normalizePositive()
-    {
-        T val = std::fmod(this->value(), static_cast<T>(360));
-        if (val < 0) val += 360;
-        this->setValue(val);
-    }
+    constexpr void normalizePositive();
 
     /*!
      * \brief Get the degree component of the angle.
      * \return The degree component, as an integer.
      */
-    //auto degrees() const -> int;
-    [[nodiscard]] constexpr auto degrees() const -> int
-    {
-        return static_cast<int>(this->value());
-    }
+    [[nodiscard]] 
+    constexpr auto degrees() const -> int;
 
     /*!
      * \brief Set the degree component of the angle.
-     * \param degrees The degree value to set.
+     * \param[in] degrees The degree value to set.
      */
-    //void setDegrees(int degrees);
-    constexpr void setDegrees(int degrees)
-    {
-        *this = Degrees(degrees, minutes(), seconds());
-    }
+    constexpr void setDegrees(int degrees);
 
     /*!
      * \brief Get the minute component of the angle.
      * \return The minute component, as an integer.
      */
-    //auto minutes() const -> int;
-    [[nodiscard]] constexpr auto minutes() const -> int
-    {
-        int seconds = static_cast<int>(std::round(this->value() * consts::degrees_to_seconds));
-        seconds = std::abs(seconds % consts::degrees_to_seconds);
-        return seconds / consts::minutes_to_seconds;
-    }
+    [[nodiscard]] 
+    constexpr auto minutes() const -> int;
 
     /*!
      * \brief Set the minute component of the angle.
-     * \param minutes The minute value to set.
+     * \param[in] minutes The minute value to set.
      */
-    constexpr void setMinutes(int minutes)
-    {
-        T value = detail::isNegative(this->degrees()) * (std::abs(this->degrees()) +
-            minutes / static_cast<T>(consts::degrees_to_minutes) +
-            this->seconds() / static_cast<T>(consts::degrees_to_seconds));
-
-        this->setValue(value);
-    }
+    constexpr void setMinutes(int minutes);
 
     /*!
      * \brief Get the second component of the angle.
      * \return The second component, as a value of type `T`.
      */
-    //auto seconds() const->T;
-    [[nodiscard]] constexpr auto seconds() const -> T
-    {
-        //T total_seconds = std::abs(this->value() * static_cast<T>(3600));
-        //return std::fmod(total_seconds, static_cast<T>(60));
-        double min = fabs(this->value() - this->degrees()) * consts::degrees_to_minutes;
-        return fabs(min - this->minutes()) * consts::minutes_to_seconds;
-    }
+    [[nodiscard]] 
+    constexpr auto seconds() const -> T;
 
     /*!
      * \brief Set the second component of the angle.
      * \param seconds The second value to set.
      */
-    constexpr void setSeconds(T seconds)
-    {
-        T value = detail::isNegative(this->degrees()) *
-            (std::abs(this->degrees()) +
-                std::abs(this->value() - this->degrees()) +
-                seconds / static_cast<T>(consts::degrees_to_seconds));
-        this->setValue(value);
-    }
+    constexpr void setSeconds(T seconds);
 
 };
 
@@ -204,134 +140,86 @@ public:
 
 /* Degrees implementation */
 
-//template<typename T>
-//Degrees<T>::Degrees(const Degrees &degrees)
-//  : AngleBase<Degrees<T>>(degrees)
-//{
-//}
-//
-//template<typename T>
-//Degrees<T>::Degrees(Degrees &&degrees) noexcept
-//  : AngleBase<Degrees<T>>(std::forward<AngleBase<Degrees<T>>>(degrees))
-//{
-//}
+template<Floating T>
+constexpr Degrees<T>::Degrees()
+  : AngleBase<Degrees<T>, T>(AngleUnit::degrees)
+{
+}
 
-//template<typename T>
-//Degrees<T>::Degrees(int degrees, int minutes, T seconds)
-//  : AngleBase<Degrees<T>>(Angle::Unit::degrees)
-//{
-//    this->setValue(detail::isNegative(degrees) *
-//                   (std::abs(degrees) +
-//                   minutes / static_cast<T>(consts::degrees_to_minutes) +
-//                   seconds / static_cast<T>(consts::degrees_to_seconds)));
-//}
+template<Floating T>
+constexpr Degrees<T>::Degrees(T value)
+  : AngleBase<Degrees<T>, T>(AngleUnit::degrees, value)
+{
+}
 
-//template<typename T>
-//auto Degrees<T>::operator=(const Degrees &degrees) -> Degrees<T>&
-//{
-//    if (this != &degrees) {
-//        AngleBase<Degrees<T>>::operator=(degrees);
-//    }
-//
-//    return (*this);
-//}
-//
-//template<typename T>
-//auto Degrees<T>::operator=(Degrees &&degrees) noexcept -> Degrees<T>&
-//{
-//    if (this != &degrees) {
-//        AngleBase<Degrees<T>>::operator=(std::forward<AngleBase<Degrees<T>>>(degrees));
-//    }
-//
-//    return (*this);
-//}
+template<Floating T>
+constexpr Degrees<T>::Degrees(int degrees, int minutes, T seconds)
+  : AngleBase<Degrees<T>, T>(AngleUnit::degrees)
+{
+    this->setValue(detail::isNegative(degrees) *
+        (std::abs(degrees) +
+            minutes / static_cast<T>(consts::degrees_to_minutes) +
+            seconds / static_cast<T>(consts::degrees_to_seconds)));
+}
 
-//template<typename T>
-//void Degrees<T>::normalize()
-//{
-//    T value = this->value();
-//
-//    if (value <= -static_cast<T>(consts::half_circle_deg) ||
-//        value > static_cast<T>(consts::half_circle_deg)) {
-//
-//        value = fmod(value + static_cast<T>(consts::half_circle_deg),
-//                     static_cast<T>(consts::full_circle_deg));
-//
-//        if (value <= consts::zero<T>)
-//            value += static_cast<T>(consts::half_circle_deg);
-//        else
-//            value -= static_cast<T>(consts::half_circle_deg);
-//
-//        this->setValue(value);
-//    }
-//}
+template<Floating T>
+constexpr void Degrees<T>::normalize()
+{
+    this->setValue(wrap(this->value(), T(-180), T(180)));
+}
 
-//template<typename T>
-//void Degrees<T>::normalizePositive()
-//{
-//    T value = this->value();
-//
-//    if (value < consts::zero<T> ||
-//        value >= static_cast<T>(consts::full_circle_deg)) {
-//
-//        value = fmod(value, static_cast<T>(consts::full_circle_deg));
-//
-//        if (value < consts::zero<T>)
-//            value += static_cast<T>(consts::full_circle_deg);
-//
-//        this->setValue(value);
-//    }
-//}
+template<Floating T>
+constexpr void Degrees<T>::normalizePositive()
+{
+    this->setValue(wrap(this->value(), T(0), T(360)));
+}
 
-//template<typename T>
-//auto Degrees<T>::degrees() const -> int
-//{
-//    return static_cast<int>(this->value());
-//}
+template<Floating T>
+constexpr auto Degrees<T>::degrees() const -> int
+{
+    return static_cast<int>(this->value());
+}
 
-//template<typename T>
-//void Degrees<T>::setDegrees(int degrees)
-//{
-//    T value = detail::isNegative(degrees) * (std::abs(degrees) +
-//              this->minutes() / static_cast<T>(consts::degrees_to_minutes) +
-//              this->seconds() / static_cast<T>(consts::degrees_to_seconds));
-//    this->setValue(value);
-//}
+template<Floating T>
+constexpr void Degrees<T>::setDegrees(int degrees)
+{
+    *this = Degrees(degrees, minutes(), seconds());
+}
 
-//template<typename T>
-//auto Degrees<T>::minutes() const -> int
-//{
-//    int seconds = static_cast<int>(std::round(this->value() * consts::degrees_to_seconds));
-//    seconds = std::abs(seconds % consts::degrees_to_seconds);
-//    return seconds / consts::minutes_to_seconds;
-//}
+template<Floating T>
+constexpr auto Degrees<T>::minutes() const -> int
+{
+    int seconds = static_cast<int>(std::round(this->value() * consts::degrees_to_seconds));
+    seconds = std::abs(seconds % consts::degrees_to_seconds);
+    return seconds / consts::minutes_to_seconds;
+}
 
-//template<typename T>
-//void Degrees<T>::setMinutes(int minutes)
-//{
-//    T value = detail::isNegative(this->degrees()) * (std::abs(this->degrees()) +
-//                                             minutes / static_cast<T>(consts::degrees_to_minutes) +
-//                                             this->seconds() / static_cast<T>(consts::degrees_to_seconds));
-//
-//    this->setValue(value);
-//}
+template<Floating T>
+constexpr void Degrees<T>::setMinutes(int minutes)
+{
+    T value = detail::isNegative(this->degrees()) * (std::abs(this->degrees()) +
+        minutes / static_cast<T>(consts::degrees_to_minutes) +
+        this->seconds() / static_cast<T>(consts::degrees_to_seconds));
 
-//template<typename T>
-//auto Degrees<T>::seconds() const -> T
-//{
-//    double min = fabs(this->value() - this->degrees()) * consts::degrees_to_minutes;
-//    return fabs(min - this->minutes()) * consts::minutes_to_seconds;
-//}
+    this->setValue(value);
+}
 
-//template<typename T>
-//void Degrees<T>::setSeconds(T seconds)
-//{
-//    T value = detail::isNegative(this->degrees()) *
-//              (std::abs(this->degrees()) +
-//              std::abs(this->value() - this->degrees()) +
-//              seconds / static_cast<T>(consts::degrees_to_seconds));
-//    this->setValue(value);
-//}
+template<Floating T>
+constexpr auto Degrees<T>::seconds() const -> T
+{
+    double min = fabs(this->value() - this->degrees()) * consts::degrees_to_minutes;
+    return fabs(min - this->minutes()) * consts::minutes_to_seconds;
+}
+
+template<Floating T>
+constexpr void Degrees<T>::setSeconds(T seconds)
+{
+    T value = detail::isNegative(this->degrees()) *
+        (std::abs(this->degrees()) +
+            std::abs(this->value() - this->degrees()) +
+            seconds / static_cast<T>(consts::degrees_to_seconds));
+    this->setValue(value);
+}
 
 namespace literals
 {
@@ -350,5 +238,6 @@ constexpr auto operator"" _deg(unsigned long long val)
 
 
 /*! \} */
+
 
 } // namespace tl

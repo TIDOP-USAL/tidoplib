@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include "tidop/math/numeric/Comparison.h"
+
 /// \cond
 
 namespace tl

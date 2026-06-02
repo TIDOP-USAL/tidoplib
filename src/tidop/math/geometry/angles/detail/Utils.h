@@ -24,11 +24,6 @@
 
 #pragma once
 
-
-#include <utility>
-
-#include "tidop/math/math.h"
-
 namespace tl
 {
 

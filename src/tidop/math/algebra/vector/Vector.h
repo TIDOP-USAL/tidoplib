@@ -43,7 +43,6 @@
 
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/base/TypeConversions.h"
-#include "tidop/math/math.h"
 #include "tidop/math/base/Data.h"
 #include "tidop/math/algebra/vector/VectorBase.h"
 #include "tidop/math/algebra/vector/detail/MatVecMul.h"

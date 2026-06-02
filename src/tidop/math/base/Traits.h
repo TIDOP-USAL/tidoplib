@@ -28,10 +28,17 @@
 #include <cstddef>
 
 #include "tidop/config.h"
-#include "tidop/math/base/Simd.h"
 
 namespace tl
 {
+
+/*!
+ * \brief Constant used to signify that the size of a structure (Matrix, Vector)
+ * is determined at runtime rather than at compile-time.
+ */
+constexpr std::size_t DynamicData = std::numeric_limits<std::size_t>::max();
+
+
 
 template<typename T, size_t Rows, size_t Cols> class Matrix;
 template<typename T> class MatrixBlock;
@@ -393,5 +400,11 @@ struct is_cublas_compatible<Matrix<T, R, C>>
 template<typename T>
 inline constexpr bool is_cublas_compatible_v = is_cublas_compatible<std::remove_cvref_t<T>>::value;
 
+
+template<typename T>
+struct is_packed : std::false_type {};
+
+template<typename T>
+struct is_packed<Packed<T>> : std::true_type {};
 
 }

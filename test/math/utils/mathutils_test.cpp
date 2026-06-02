@@ -24,11 +24,10 @@
 
 #define BOOST_TEST_MODULE Tidop math utils test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/math.h>
+#include <tidop/math/numeric/Arithmetic.h>
+#include <tidop/math/numeric/Comparison.h>
 
 using namespace tl;
-
-
 
 BOOST_AUTO_TEST_CASE(tl_math_clamp)
 {
@@ -75,8 +74,8 @@ BOOST_AUTO_TEST_CASE(floats_nearly_zero)
     BOOST_CHECK_EQUAL(true, isNearlyZero(0.000000000000000000000000000000000000000000001f));
     BOOST_CHECK_EQUAL(true, isNearlyZero(0.00000000000000000000000000000000000001f));
     BOOST_CHECK_EQUAL(false, isNearlyZero(0.0000000000000000000000000000000000001f));
-    BOOST_CHECK_EQUAL(false, isNearlyZero(std::numeric_limits<float>::min()));
-    BOOST_CHECK_EQUAL(false, isNearlyZero(std::numeric_limits<double>::min()));
+    BOOST_CHECK_EQUAL(true, isNearlyZero(std::numeric_limits<float>::min()));
+    BOOST_CHECK_EQUAL(true, isNearlyZero(std::numeric_limits<double>::min()));
 }
 
 BOOST_AUTO_TEST_CASE(positive_large_numbers)

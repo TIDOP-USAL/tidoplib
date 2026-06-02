@@ -28,8 +28,8 @@
 #include <vector>
 #include <array>
 
-#include "tidop/math/math.h"
-
+#include "tidop/math/base/Traits.h"
+#include "tidop/math/base/Constants.h"
 
 namespace tl
 {

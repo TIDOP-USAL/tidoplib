@@ -25,8 +25,6 @@
 #pragma once
 
 
-#include "tidop/math/math.h"
-
 /// \cond
 #ifdef TL_HAVE_CUDA
 /// \endcond

@@ -29,7 +29,6 @@
 /// \endcond
 
 #include "tidop/core/base/defs.h"
-#include "tidop/math/math.h"
 
 #include <lapacke.h>
 

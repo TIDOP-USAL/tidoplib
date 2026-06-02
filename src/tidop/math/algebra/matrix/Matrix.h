@@ -40,7 +40,6 @@
 
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/concurrency/Parallel.h"
-#include "tidop/math/math.h"
 #include "tidop/math/base/Data.h"
 #include "tidop/math/algebra/decomp/LU.h"
 #include "tidop/math/algebra/decomp/SVD.h"

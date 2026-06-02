@@ -482,6 +482,10 @@ constexpr Type getTypeId()
     return TypeTraits<T>::id_type;
 }
 
+
+template<typename>
+inline constexpr bool always_false_v = false;
+
 /*! \} */
 
 

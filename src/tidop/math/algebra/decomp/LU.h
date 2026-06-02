@@ -40,11 +40,11 @@
 
 #pragma once
 
-#include "tidop/math/math.h"
 #include "tidop/core/base/Exception.h"
-#include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/base/Lapack.h"
 #include "tidop/math/base/Cuda.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/numeric/Comparison.h"
 
 namespace tl
 {

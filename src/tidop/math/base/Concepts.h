@@ -27,7 +27,6 @@
 #include <concepts>
 #include <cstddef>
 
-#include "tidop/math/math.h"
 #include "tidop/math/base/Traits.h"
 #include "tidop/core/base/Concepts.h"
 
@@ -94,6 +93,11 @@ concept IsAngle = requires(D a)
     { a.normalize() };
     { a.normalizePositive() };
 };
+
+
+template<typename T>
+concept PackedConcept = is_packed<std::remove_cvref_t<T>>::value &&
+                        Arithmetic<typename std::remove_cvref_t<T>::value_type>;
 
 
 } // namespace tl

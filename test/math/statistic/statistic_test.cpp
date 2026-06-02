@@ -36,7 +36,12 @@
 #include <tidop/math/statistic/algorithms/descriptive/Mode.h>
 #include <tidop/math/statistic/algorithms/descriptive/Quantile.h>
 #include <tidop/math/statistic/algorithms/descriptive/Variance.h>
-#include <tidop/math/statistics.h>
+#include <tidop/math/statistic/algorithms/descriptive/Range.h>
+#include <tidop/math/statistic/algorithms/robust/IQR.h>
+#include <tidop/math/statistic/algorithms/ratios/CV.h>
+#include <tidop/math/statistic/algorithms/ratios/ZScore.h>
+#include <tidop/math/statistic/algorithms/robust/MAD.h>
+#include <tidop/math/statistic/algorithms/robust/BiweightMidvariance.h>
 #include <tidop/math/algebra/vector/Vector.h>
 #include <array>
 #include <list>

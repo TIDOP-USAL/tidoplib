@@ -24,30 +24,88 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
+#include "tidop/config.h"
 
-#include "tidop/math/math.h"
-#include "tidop/math/statistic/algorithms/descriptive/Mode.h"
-#include "tidop/math/statistic/algorithms/association/Covariance.h"
-#include "tidop/math/statistic/algorithms/association/Pearson.h"
-#include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
-#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
-#include "tidop/math/statistic/algorithms/descriptive/Range.h"
-#include "tidop/math/statistic/algorithms/robust/MAD.h"
-#include "tidop/math/statistic/algorithms/robust/IQR.h"
-#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
-#include "tidop/math/statistic/algorithms/ratios/CV.h"
-#include "tidop/math/statistic/algorithms/ratios/ZScore.h"
-#include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#ifdef TL_HAVE_SIMD_INTRINSICS
+
+#include "tidop/math/base/simd/Intrinsics.h"
+#include "tidop/math/base/Concepts.h"
+
+/// \cond
 
 namespace tl
 {
 
-/*! \addtogroup Statistics
- * \{
- */
+template<typename T>
+class Packed;
 
-/*! \} */
+namespace detail
+{
 
-} // End namespace tl
+template<typename T>
+struct simd_bias;
+
+template<>
+struct simd_bias<uint8_t>
+{
+    static constexpr uint8_t value = static_cast<uint8_t>(0x80);
+};
+
+template<>
+struct simd_bias<uint16_t>
+{
+    static constexpr uint16_t value = static_cast<uint16_t>(0x8000);
+};
+
+template<>
+struct simd_bias<uint32_t>
+{
+    static constexpr uint32_t value = static_cast<uint32_t>(0x80000000);
+};
+
+template<>
+struct simd_bias<uint64_t>
+{
+    static constexpr uint64_t value = static_cast<uint64_t>(0x8000000000000000ULL);
+};
+
+
+template<UnsignedIntegral T>
+[[nodiscard]]
+auto signBias() noexcept -> typename Packed<T>
+{
+    auto bit_mask = simd_bias<T>::value;
+
+#ifdef TL_HAVE_AVX2
+
+    if constexpr (sizeof(T) == 1) {
+        return _mm256_set1_epi8(bit_mask);
+    } else if constexpr (sizeof(T) == 2) {
+        return _mm256_set1_epi16(bit_mask);
+    } else if constexpr (sizeof(T) == 4) {
+        return _mm256_set1_epi32(bit_mask);
+    } else {
+        return _mm256_set1_epi64x(bit_mask);
+    }
+
+#elif defined(TL_HAVE_SSE2)
+
+    if constexpr (sizeof(T) == 1) {
+        return _mm_set1_epi8(bit_mask);
+    } else if constexpr (sizeof(T) == 2) {
+        return _mm_set1_epi16(bit_mask);
+    } else if constexpr (sizeof(T) == 4) {
+        return _mm_set1_epi32(bit_mask);
+    } else {
+        return _mm_set1_epi64x(bit_mask);
+    }
+
+#endif
+}
+
+} // namespace detail 
+
+} // namespace tl
+
+#endif // TL_HAVE_SIMD_INTRINSICS
+/// \endcond

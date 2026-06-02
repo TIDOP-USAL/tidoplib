@@ -62,6 +62,7 @@
 #include "tidop/math/base/Data.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/BaseExpr.h"
+#include "tidop/math/numeric/Comparison.h"
 #include "tidop/math/algebra/expr/MatBinaryExpr.h"
 #include "tidop/math/algebra/expr/MatScalarExpr.h"
 #include "tidop/math/algebra/expr/MatUnaryMinusExpr.h"

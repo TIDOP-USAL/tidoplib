@@ -25,7 +25,6 @@
 #pragma once
 
 #include "tidop/core/base/Concepts.h"
-#include "tidop/math/math.h"
 
 namespace tl
 {
