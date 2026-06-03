@@ -313,7 +313,8 @@ public:
      * \brief Create a Packed object initialized with zero.
      * \return A Packed object with all elements set to zero.
      */
-    [[nodiscard]] static auto zero() noexcept -> Packed;
+    [[nodiscard]] 
+    static auto zero() noexcept -> Packed;
 
 private:
 

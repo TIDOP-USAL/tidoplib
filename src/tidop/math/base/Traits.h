@@ -348,9 +348,6 @@ struct is_vector<MatrixCol<T>> : std::true_type {};
 template<typename T>
 struct is_vector<MatrixDiagonal<T>> : std::true_type {};
 
-template<typename D>
-using enable_if_vector_t = std::enable_if_t<is_vector<D>::value, int>;
-
 
 
 template<typename T>

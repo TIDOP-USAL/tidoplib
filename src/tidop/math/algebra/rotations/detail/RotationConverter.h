@@ -24,13 +24,23 @@
 
 #pragma once
 
-#include "tidop/math/algebra/rotations/Quaternion.h"
-#include "tidop/math/algebra/rotations/EulerAngles.h"
-#include "tidop/math/algebra/rotations/RotationMatrix.h"
-#include "tidop/math/algebra/rotations/AxisAngle.h"
+#include <cmath>
+#include <algorithm>
+
+#include "tidop/math/numeric/Arithmetic.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/rotations/EulerAnglesAxis.h"
+//#include "tidop/math/algebra/rotations/Rotations.h"
 
 namespace tl
 {
+
+
+template<typename T> class Quaternion;
+template<typename T> class RotationMatrix;
+template<typename T> class AxisAngle;
+template<typename T, int _axes> class EulerAngles;
+
 
 /// \cond
 
@@ -806,10 +816,9 @@ void RotationConverter<T, P...>::convert(const EulerAngles<T, P...> &eulerAngles
     }
 }
 
-
 template<typename T, int... P>
-void RotationConverter<T , P...>::convert(const Quaternion<T> &quaternion,
-                                          EulerAngles<T, P...> &eulerAngles)
+void RotationConverter<T, P...>::convert(const Quaternion<T> &quaternion,
+                                         EulerAngles<T, P...> &eulerAngles)
 {
     RotationMatrix<T> rotationMatrix;
     convert(quaternion, rotationMatrix);
@@ -817,8 +826,8 @@ void RotationConverter<T , P...>::convert(const Quaternion<T> &quaternion,
 }
 
 template<typename T, int... P>
-void RotationConverter<T , P...>::convert(const EulerAngles<T, P...> &eulerAngles,
-                                   Quaternion<T> &quaternion)
+void RotationConverter<T, P...>::convert(const EulerAngles<T, P...> &eulerAngles,
+                                         Quaternion<T> &quaternion)
 {
     //typename EulerAngles<T>::Axes axes = eulerAngles.axes;
 

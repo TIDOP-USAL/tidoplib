@@ -26,42 +26,19 @@
 
 #include <utility>
 
+#include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/rotations/Rotations.h"
+#include "tidop/math/algebra/rotations/EulerAnglesAxis.h"
 #include "tidop/math/algebra/vector/Vector.h"
 
 
 namespace tl
 {
 
+
 /*! \addtogroup Rotations
  *  \{
  */
-
- /*!
-  * \brief Enum representing different rotation conventions for Euler angles.
-  *
-  * The `Axes` enum defines the various conventions for Euler angles,
-  * including both Euler angles and Tait-Bryan angles. These conventions
-  * describe the sequence of axes used for rotations.
-  */
-enum Axes
-{
-    // Euler angles
-    zxz, /*!< Rotation around the Z axis, then X, then Z again. */
-    xyx, /*!< Rotation around the X axis, then Y, then X again. */
-    yzy, /*!< Rotation around the Y axis, then Z, then Y again. */
-    zyz, /*!< Rotation around the Z axis, then Y, then Z again. */
-    xzx, /*!< Rotation around the X axis, then Z, then X again. */
-    yxy, /*!< Rotation around the Y axis, then X, then Y again. */
-
-    // Tait-Bryan angles
-    xyz, /*!< Rotation around X, then Y, then Z. */
-    yzx, /*!< Rotation around Y, then Z, then X. */
-    zxy, /*!< Rotation around Z, then X, then Y. */
-    xzy, /*!< Rotation around X, then Z, then Y. */
-    zyx, /*!< Rotation around Z, then Y, then X. */
-    yxz  /*!< Rotation around Y, then X, then Z. */
-};
 
 
 /*!
@@ -80,11 +57,13 @@ class EulerAngles
     : public OrientationBase<EulerAngles<T, _axes>>
 {
 
+    static_assert(Floating<T>, "Integral type not supported");
+
 public:
 
-    double x;  /*!< The first Euler angle (corresponding to the first axis in the rotation sequence). */
-    double y;  /*!< The second Euler angle (corresponding to the second axis in the rotation sequence). */
-    double z;  /*!< The third Euler angle (corresponding to the third axis in the rotation sequence). */
+    T x;  /*!< The first Euler angle (corresponding to the first axis in the rotation sequence). */
+    T y;  /*!< The second Euler angle (corresponding to the second axis in the rotation sequence). */
+    T z;  /*!< The third Euler angle (corresponding to the third axis in the rotation sequence). */
     Axes axes; /*!< The rotation axes convention being used (e.g., `Axes::xyz`). */
 
 public:
@@ -101,7 +80,7 @@ public:
      * \param[in] y The second Euler angle.
      * \param[in] z The third Euler angle.
      */
-    EulerAngles(double x, double y, double z);
+    EulerAngles(T x, T y, T z);
 
     /*!
      * \brief Constructor with a vector of Euler angles.
@@ -121,7 +100,7 @@ public:
      */
     EulerAngles(EulerAngles<T, _axes> &&eulerAngles) noexcept;
 
-    ~EulerAngles() override = default;
+    ~EulerAngles() = default;
 
     /*!
      * \brief Copy assignment operator.
@@ -142,21 +121,22 @@ public:
      * Returns a copy of the `EulerAngles` object.
      * \return A copy of the current `EulerAngles` instance.
      */
-    [[nodiscard]] auto operator+() const -> EulerAngles<T, _axes>;
+    [[nodiscard]] 
+    auto operator+() const -> EulerAngles<T, _axes>;
 
     /*!
      * \brief Unary minus operator.
      * Negates the Euler angles.
      * \return A new `EulerAngles` instance with negated angles.
      */
-    [[nodiscard]] auto operator-() const -> EulerAngles<T, _axes>;
+    [[nodiscard]] 
+    auto operator-() const -> EulerAngles<T, _axes>;
 };
 
 
 template<typename T, int _axes>
 EulerAngles<T, _axes>::EulerAngles()
-  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
-    x{0},
+  : x{0},
     y{0},
     z{0},
     axes(static_cast<Axes>(_axes))
@@ -164,9 +144,8 @@ EulerAngles<T, _axes>::EulerAngles()
 }
 
 template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles(double x, double y, double z)
-  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
-    x(x),
+EulerAngles<T, _axes>::EulerAngles(T x, T y, T z)
+  : x(x),
     y(y),
     z(z),
     axes(static_cast<Axes>(_axes))
@@ -175,8 +154,7 @@ EulerAngles<T, _axes>::EulerAngles(double x, double y, double z)
 
 template<typename T, int _axes>
 EulerAngles<T, _axes>::EulerAngles(const Vector<T, 3> &angles)
-  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
-    x(angles[0]),
+  : x(angles[0]),
     y(angles[1]),
     z(angles[2]),
     axes(static_cast<Axes>(_axes))
@@ -185,8 +163,7 @@ EulerAngles<T, _axes>::EulerAngles(const Vector<T, 3> &angles)
 
 template<typename T, int _axes>
 EulerAngles<T, _axes>::EulerAngles(const EulerAngles<T, _axes> &eulerAngles)
-  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
-    x(eulerAngles.x),
+  : x(eulerAngles.x),
     y(eulerAngles.y),
     z(eulerAngles.z),
     axes(static_cast<Axes>(_axes))
@@ -195,8 +172,7 @@ EulerAngles<T, _axes>::EulerAngles(const EulerAngles<T, _axes> &eulerAngles)
 
 template<typename T, int _axes>
 EulerAngles<T, _axes>::EulerAngles(EulerAngles<T, _axes> &&eulerAngles) noexcept
-  : OrientationBase<EulerAngles<T, _axes>>(Orientation::Type::euler_angles),
-    x(std::exchange(eulerAngles.x, 0)),
+  : x(std::exchange(eulerAngles.x, 0)),
     y(std::exchange(eulerAngles.y, 0)),
     z(std::exchange(eulerAngles.z, 0)),
     axes(static_cast<Axes>(_axes))

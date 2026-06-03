@@ -24,9 +24,14 @@
 
 #define BOOST_TEST_MODULE Tidop rotation converter test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/rotations/RotationConvert.h>
+#include "tidop/math/algebra/rotations/Quaternion.h"
+#include "tidop/math/algebra/rotations/EulerAngles.h"
+#include "tidop/math/algebra/rotations/RotationMatrix.h"
+#include "tidop/math/algebra/rotations/AxisAngle.h"
+
 
 using namespace tl;
+using namespace tl::detail;
 
 BOOST_AUTO_TEST_SUITE(RotationConverterTestSuite)
 

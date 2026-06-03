@@ -90,7 +90,6 @@ struct RadiansTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, RadiansTest)
 {
-  BOOST_CHECK(AngleUnit::radians == angle.unit());
   BOOST_CHECK_EQUAL(0.0, angle.value());
 }
 
@@ -258,7 +257,6 @@ struct GradiansTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, GradiansTest)
 {
-    BOOST_CHECK(AngleUnit::gradians == angle.unit());
     BOOST_CHECK_EQUAL(0.0, angle.value());
     BOOST_CHECK_EQUAL(0, angle.degrees());
     BOOST_CHECK_EQUAL(0, angle.minutes());
@@ -303,13 +301,13 @@ BOOST_FIXTURE_TEST_CASE(normalize, GradiansTest)
     BOOST_CHECK_EQUAL(-30., angle_minus_30.value());
 
     angle_200.normalize();
-    BOOST_CHECK_EQUAL(200., angle_200.value());
+    BOOST_CHECK_EQUAL(-200., angle_200.value());
 
     angle_400.normalize();
     BOOST_CHECK_EQUAL(0., angle_400.value());
 
     angle_600.normalize();
-    BOOST_CHECK_EQUAL(200., angle_600.value());
+    BOOST_CHECK_EQUAL(-200., angle_600.value());
 
     angle_800.normalize();
     BOOST_CHECK_EQUAL(0., angle_800.value());
@@ -318,13 +316,13 @@ BOOST_FIXTURE_TEST_CASE(normalize, GradiansTest)
     BOOST_CHECK_EQUAL(-100., angle_minus_100.value());
 
     angle_minus_200.normalize();
-    BOOST_CHECK_EQUAL(200., angle_minus_200.value());
+    BOOST_CHECK_EQUAL(-200., angle_minus_200.value());
 
     angle_minus_400.normalize();
     BOOST_CHECK_EQUAL(0., angle_minus_400.value());
 
     angle_minus_600.normalize();
-    BOOST_CHECK_EQUAL(200, angle_minus_600.value());
+    BOOST_CHECK_EQUAL(-200, angle_minus_600.value());
 
     angle_minus_800.normalize();
     BOOST_CHECK_EQUAL(0., angle_minus_800.value());
@@ -510,7 +508,6 @@ struct DegreesTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, DegreesTest)
 {
-    BOOST_CHECK_EQUAL(true, AngleUnit::degrees == angle.unit());
     BOOST_CHECK_EQUAL(0.0, angle.value());
     BOOST_CHECK_EQUAL(0, angle.degrees());
     BOOST_CHECK_EQUAL(0, angle.minutes());
@@ -521,7 +518,6 @@ BOOST_FIXTURE_TEST_CASE(constructor_degrees_minutes_seconds, DegreesTest)
 {
     Degrees<double> degrees_minutes_seconds(43, 2, 1.9604);
 
-    BOOST_CHECK(AngleUnit::degrees == degrees_minutes_seconds.unit());
     BOOST_CHECK_CLOSE(43.0338778888889, degrees_minutes_seconds.value(), 0.01);
     BOOST_CHECK_EQUAL(43, degrees_minutes_seconds.degrees());
     BOOST_CHECK_EQUAL(2, degrees_minutes_seconds.minutes());
@@ -529,7 +525,6 @@ BOOST_FIXTURE_TEST_CASE(constructor_degrees_minutes_seconds, DegreesTest)
 
     Degrees<double> degrees_minutes_seconds_neg(-43, 2, 1.9604);
 
-    BOOST_CHECK(AngleUnit::degrees == degrees_minutes_seconds_neg.unit());
     BOOST_CHECK_CLOSE(-43.0338778888889, degrees_minutes_seconds_neg.value(), 0.01);
     BOOST_CHECK_EQUAL(-43, degrees_minutes_seconds_neg.degrees());
     BOOST_CHECK_EQUAL(2, degrees_minutes_seconds_neg.minutes());

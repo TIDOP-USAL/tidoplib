@@ -96,10 +96,11 @@ if(BUILD_TL_MATH)
                              algebra/matrix/detail/RowEchelonForm.h
                              algebra/rotations/AxisAngle.h
                              algebra/rotations/EulerAngles.h
+                             algebra/rotations/EulerAnglesAxis.h
                              algebra/rotations/Quaternion.h
-                             algebra/rotations/RotationConvert.h
                              algebra/rotations/RotationMatrix.h
                              algebra/rotations/Rotations.h
+                             algebra/rotations/detail/RotationConverter.h
                              algebra/vector/Vector.h
                              algebra/vector/VectorBase.h
                              algebra/vector/detail/Assign.h

@@ -96,13 +96,13 @@ public:
 
 template<Floating T>
 constexpr Radians<T>::Radians()
-  : AngleBase<Radians<T>, T>(AngleUnit::radians)
+  : AngleBase<Radians<T>, T>()
 {
 }
 
 template<Floating T>
 constexpr Radians<T>::Radians(T value)
-  : AngleBase<Radians<T>, T>(AngleUnit::radians, value)
+  : AngleBase<Radians<T>, T>(value)
 {
 }
 

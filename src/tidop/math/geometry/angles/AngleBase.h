@@ -37,17 +37,6 @@ namespace tl
 
 
 /*!
- * \brief Enumeration of supported angle units.
- */
-enum class AngleUnit 
-{
-    radians, /*!< Angle in radians. */
-    degrees, /*!< Angle in degrees. */
-    gradians /*!< Angle in gradians. */
-};
-
-
-/*!
  * \brief Template class for base angle representation and conversion.
  *
  * This class provides a common base for angle representation in various units
@@ -66,23 +55,17 @@ public:
 
 private:
 
-    AngleUnit mUnit; /*!< The unit of the angle (e.g., radians, degrees). */
     T mValue;        /*!< The value of the angle. */
 
 public:
 
-    /*!
-     * \brief Construct an angle with a specific unit.
-     * \param[in] unit The unit of the angle.
-     */
-    explicit constexpr AngleBase(AngleUnit unit);
+    constexpr AngleBase();
 
     /*!
-     * \brief Construct an angle with a specific unit and value.
-     * \param[in] unit The unit of the angle.
+     * \brief Construct an angle with a value.
      * \param[in] value The value of the angle.
      */
-    constexpr AngleBase(AngleUnit unit, T value);
+    explicit constexpr AngleBase(T value);
 
     /*!
      * \brief Copy constructor.
@@ -119,13 +102,8 @@ public:
      * \brief Get the value of the angle.
      * \return The value of the angle.
      */
-    [[nodiscard]] constexpr auto value() const noexcept -> T { return mValue; }
-
-    /*!
-     * \brief Get the unit of the angle.
-     * \return The unit of the angle.
-     */
-    [[nodiscard]] constexpr auto unit() const noexcept -> AngleUnit { return mUnit; }
+    [[nodiscard]] 
+    constexpr auto value() const noexcept -> T { return mValue; }
 
     /*!
      * \brief Conversion operator to another derived angle type.
@@ -156,13 +134,15 @@ private:
      * \brief Get a reference to the derived class instance.
      * \return A reference to the derived class instance.
      */
-    [[nodiscard]] constexpr auto derived() -> Derived &;
+    [[nodiscard]] 
+    constexpr auto derived() -> Derived &;
 
     /*!
      * \brief Get a constant reference to the derived class instance.
      * \return A constant reference to the derived class instance.
      */
-    [[nodiscard]] constexpr auto derived() const -> const Derived &;
+    [[nodiscard]] 
+    constexpr auto derived() const -> const Derived &;
 
     friend class detail::AngleConverter<T>;
 
@@ -180,15 +160,14 @@ protected:
 /* AngleBase implementation */
 
 template<typename Derived, Floating T>
-constexpr AngleBase<Derived, T>::AngleBase(AngleUnit unit)
-    : mUnit(unit),
-    mValue(static_cast<T>(0))
+constexpr AngleBase<Derived, T>::AngleBase()
+    : mValue(static_cast<T>(0))
 {
 }
 
 template<typename Derived, Floating T>
-constexpr AngleBase<Derived, T>::AngleBase(AngleUnit unit, T value)
-    : mUnit(unit), mValue(value)
+constexpr AngleBase<Derived, T>::AngleBase(T value)
+    : mValue(value)
 {
 }
 

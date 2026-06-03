@@ -28,7 +28,6 @@
 #include <tidop/math/algebra/matrix/Matrix.h>
 #include <tidop/math/algebra/rotations/RotationMatrix.h>
 #include <tidop/math/algebra/rotations/EulerAngles.h>
-#include <tidop/math/algebra/rotations/RotationConvert.h>
 
 
 using namespace tl;

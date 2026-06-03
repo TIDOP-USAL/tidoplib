@@ -28,6 +28,7 @@
 #include "tidop/math/base/Constants.h"
 #include "tidop/math/geometry/angles/AngleBase.h"
 #include "tidop/math/geometry/angles/detail/Utils.h"
+#include "tidop/math/numeric/Arithmetic.h"
 
 namespace tl
 {
@@ -93,7 +94,8 @@ public:
      * \brief Get the degree component of the angle.
      * \return The degree component, as an integer.
      */
-    [[nodiscard]] constexpr auto degrees() const -> int
+    [[nodiscard]] 
+    constexpr auto degrees() const -> int
     {
         return static_cast<int>(this->value());
     }
@@ -108,7 +110,8 @@ public:
      * \brief Get the minute component of the angle.
      * \return The minute component, as an integer.
      */
-    [[nodiscard]] constexpr auto minutes() const -> int;
+    [[nodiscard]] 
+    constexpr auto minutes() const -> int;
 
     /*!
      * \brief Set the minute component of the angle.
@@ -120,7 +123,8 @@ public:
      * \brief Get the second component of the angle.
      * \return The second component, as a value of type `T`.
      */
-    [[nodiscard]] constexpr auto seconds() const -> T;
+    [[nodiscard]] 
+    constexpr auto seconds() const -> T;
 
     /*!
      * \brief Set the second component of the angle.
@@ -136,29 +140,31 @@ public:
 
 template<Floating T>
 constexpr Gradians<T>::Gradians()
-    : AngleBase<Gradians<T>, T>(AngleUnit::gradians)
+    : AngleBase<Gradians<T>, T>()
 {}
 
 template<Floating T>
 constexpr Gradians<T>::Gradians(T value)
-    : AngleBase<Gradians<T>, T>(AngleUnit::gradians, value) 
+    : AngleBase<Gradians<T>, T>(value) 
 {}
 
 template<Floating T>
 constexpr void Gradians<T>::normalize()
 {
-    T val = std::fmod(this->value(), static_cast<T>(400));
-    if (val > 200) val -= 400;
-    else if (val <= -200) val += 400;
-    this->setValue(val);
+    //T val = std::fmod(this->value(), static_cast<T>(400));
+    //if (val > 200) val -= 400;
+    //else if (val <= -200) val += 400;
+    //this->setValue(val);
+    this->setValue(wrap(this->value(), T(-200), T(200)));
 }
 
 template<Floating T>
 constexpr void Gradians<T>::normalizePositive()
 {
-    T val = std::fmod(this->value(), static_cast<T>(400));
-    if (val < 0) val += 400;
-    this->setValue(val);
+    //T val = std::fmod(this->value(), static_cast<T>(400));
+    //if (val < 0) val += 400;
+    //this->setValue(val);
+    this->setValue(wrap(this->value(), T(0), T(400)));
 }
 
 template<Floating T>

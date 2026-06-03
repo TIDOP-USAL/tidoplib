@@ -27,6 +27,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/rotations/Rotations.h"
 
@@ -50,6 +51,8 @@ template<typename T>
 class AxisAngle
   : public OrientationBase<AxisAngle<T>>
 {
+
+    static_assert(Floating<T>, "Integral type not supported");
 
 private:
 
@@ -82,7 +85,7 @@ public:
      */
     AxisAngle(T angle, const Vector<T, 3> &axis);
 
-    ~AxisAngle() override = default;
+    ~AxisAngle() = default;
 
     /*!
      * \brief Copy assignment operator.
@@ -102,7 +105,8 @@ public:
      * \brief Gets the rotation angle.
      * \return The rotation angle in radians.
      */
-    [[nodiscard]] auto angle() const -> T;
+    [[nodiscard]] 
+    auto angle() const -> T;
 
     /*!
      * \brief Sets the rotation angle.
@@ -114,14 +118,16 @@ public:
      * \brief Gets the rotation axis.
      * \return The axis of rotation as a 3D vector.
      */
-    [[nodiscard]] auto axis() const -> Vector<T, 3>;
+    [[nodiscard]] 
+    auto axis() const -> Vector<T, 3>;
 
     /*!
      * \brief Gets a specific component of the rotation axis.
      * \param[in] i The index of the component (0, 1, or 2).
      * \return The value of the specified axis component.
      */
-    [[nodiscard]] auto axis(size_t i) const -> T;
+    [[nodiscard]]
+    auto axis(size_t i) const -> T;
 
     /*!
      * \brief Sets the rotation axis.
@@ -136,39 +142,30 @@ public:
 
 template<typename T>
 AxisAngle<T>::AxisAngle()
-  : OrientationBase<AxisAngle<T>>(Orientation::Type::axis_angle),
-    mAngle(0),
+  : mAngle(0),
     mAxis{1,0,0}
 {
-    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
-  : OrientationBase<AxisAngle<T>>(Orientation::Type::axis_angle),
-    mAngle(axisAngle.mAngle),
+  : mAngle(axisAngle.mAngle),
     mAxis(axisAngle.mAxis)
 {
-    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) noexcept
-  : OrientationBase<AxisAngle<T>>(std::move(axisAngle)),
-    mAngle(axisAngle.mAngle),
+  : mAngle(axisAngle.mAngle),
     mAxis(std::move(axisAngle.mAxis))
 {
-    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
-  : OrientationBase<AxisAngle<T>>(Orientation::Type::axis_angle),
-    mAngle(angle),
+  : mAngle(angle),
     mAxis(axis)
 {
-    static_assert(std::is_floating_point_v<T>, "Integral type not supported");
-
     mAxis.normalize();
 }
 

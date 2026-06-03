@@ -51,6 +51,8 @@ class RotationMatrix
     public Matrix<T, 3, 3>
 {
 
+    static_assert(Floating<T>, "Integral type not supported");
+
 public:
 
     using value_type = T;
@@ -84,7 +86,7 @@ public:
     /*!
      * \brief Destructor
      */
-    ~RotationMatrix() override = default;
+    ~RotationMatrix() = default;
 
     /*!
      * \brief Assignment operator
@@ -105,29 +107,25 @@ public:
 
 template <typename T>
 RotationMatrix<T>::RotationMatrix()
-  : OrientationBase<RotationMatrix<T>>(Orientation::Type::rotation_matrix),
-    Matrix<T, 3, 3>()
+  : Matrix<T, 3, 3>()
 {
 }
 
 template <typename T>
 RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
-  : OrientationBase<RotationMatrix<T>>(Orientation::Type::rotation_matrix),
-    Matrix<T, 3, 3>(rot)
+  : Matrix<T, 3, 3>(rot)
 {
 }
 
 template <typename T>
 RotationMatrix<T>::RotationMatrix(RotationMatrix<T> &&rot) noexcept
-  : OrientationBase<RotationMatrix<T>>(Orientation::Type::rotation_matrix),
-    Matrix<T, 3, 3>(std::move(rot))
+  : Matrix<T, 3, 3>(std::move(rot))
 {
 }
 
 template <typename T>
 RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
-  : OrientationBase<RotationMatrix<T>>(Orientation::Type::rotation_matrix),
-    Matrix<T, 3, 3>(rot)
+  : Matrix<T, 3, 3>(rot)
 {
 
 }

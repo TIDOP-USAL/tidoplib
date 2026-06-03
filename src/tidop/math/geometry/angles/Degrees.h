@@ -142,19 +142,19 @@ public:
 
 template<Floating T>
 constexpr Degrees<T>::Degrees()
-  : AngleBase<Degrees<T>, T>(AngleUnit::degrees)
+  : AngleBase<Degrees<T>, T>()
 {
 }
 
 template<Floating T>
 constexpr Degrees<T>::Degrees(T value)
-  : AngleBase<Degrees<T>, T>(AngleUnit::degrees, value)
+  : AngleBase<Degrees<T>, T>(value)
 {
 }
 
 template<Floating T>
 constexpr Degrees<T>::Degrees(int degrees, int minutes, T seconds)
-  : AngleBase<Degrees<T>, T>(AngleUnit::degrees)
+  : AngleBase<Degrees<T>, T>()
 {
     this->setValue(detail::isNegative(degrees) *
         (std::abs(degrees) +

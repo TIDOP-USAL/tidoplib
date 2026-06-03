@@ -24,68 +24,36 @@
 
 #pragma once
 
-#include <concepts>
-#include <cstddef>
-
-#include "tidop/math/base/Traits.h"
-#include "tidop/core/base/Concepts.h"
-
 namespace tl
 {
 
-template<typename T>
-concept LinearExpr = requires(const T & a) 
+/*! \addtogroup Rotations
+ *  \{
+ */
+
+ /*!
+  * \brief Enum representing different rotation conventions for Euler angles.
+  */
+enum Axes
 {
-    typename T::value_type;
+    // Euler angles
+    zxz, /*!< Rotation around the Z axis, then X, then Z again. */
+    xyx, /*!< Rotation around the X axis, then Y, then X again. */
+    yzy, /*!< Rotation around the Y axis, then Z, then Y again. */
+    zyz, /*!< Rotation around the Z axis, then Y, then Z again. */
+    xzx, /*!< Rotation around the X axis, then Z, then X again. */
+    yxy, /*!< Rotation around the Y axis, then X, then Y again. */
+
+    // Tait-Bryan angles
+    xyz, /*!< Rotation around X, then Y, then Z. */
+    yzx, /*!< Rotation around Y, then Z, then X. */
+    zxy, /*!< Rotation around Z, then X, then Y. */
+    xzy, /*!< Rotation around X, then Z, then Y. */
+    zyx, /*!< Rotation around Z, then Y, then X. */
+    yxz  /*!< Rotation around Y, then X, then Z. */
 };
 
-template<typename T>
-concept MatrixExpr = LinearExpr<T> && 
-                     requires(const T &a, size_t i, size_t j) 
-{
-    { a.rows() } noexcept -> std::same_as<size_t>;
-    { a.cols() } noexcept -> std::same_as<size_t>;
-    //{ a(i, j) } -> std::convertible_to<typename T::value_type>;
-    typename Evaluator<std::remove_cvref_t<T>>;
-};
+/*! \} */
 
-template<typename T>
-concept VectorExpr = LinearExpr<T> && 
-                     requires(const T & a, size_t i) 
-{
-    { a.size() } noexcept -> std::same_as<size_t>;
-    //{ a[i] } -> std::convertible_to<typename T::value_type>;
-    typename T::is_vector_expr_tag;
-    typename Evaluator<std::remove_cvref_t<T>>;
-};
+} // End namespace tl
 
-template<typename T>
-concept DenseMatrix = MatrixExpr<T> && requires(T a)
-{
-    { a.data() };
-};
-
-template<typename T>
-concept DenseVector = VectorExpr<T> && requires(T a)
-{
-    { a.data() };
-};
-
-
-template<typename D>
-concept IsAngle = requires(D a)
-{
-    typename D::value_type;
-    { a.value() } -> std::convertible_to<typename D::value_type>;
-    //{ a.unit() }  -> std::same_as<AngleUnit>;
-    { a.normalize() };
-    { a.normalizePositive() };
-};
-
-
-template<typename T>
-concept PackedConcept = is_packed<std::remove_cvref_t<T>>::value &&
-                        Arithmetic<typename std::remove_cvref_t<T>::value_type>;
-
-
-} // namespace tl
