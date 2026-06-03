@@ -25,7 +25,7 @@
 #pragma once
 
 #include <array>
-#include <vector> 
+#include <vector>
 #include <type_traits>
 #include <cmath>
 #include <algorithm>
@@ -36,11 +36,14 @@
 #include "tidop/math/statistic/algorithms/descriptive/Median.h"
 #include "tidop/math/statistic/algorithms/descriptive/Mode.h"
 #include "tidop/math/statistic/algorithms/descriptive/Quantile.h"
+#include "tidop/math/statistic/algorithms/descriptive/Variance.h"
+#include "tidop/math/statistic/algorithms/descriptive/Moments.h"
 #include "tidop/math/statistic/algorithms/ratios/RMS.h"
+#include "tidop/math/statistic/algorithms/robust/MAD.h"
+#include "tidop/math/statistic/algorithms/robust/BiweightMidvariance.h"
 #include "tidop/math/statistic/base/Series.h"
 #include "tidop/math/statistic/algorithms/shape/Skewness.h"
 #include "tidop/math/statistic/algorithms/shape/Kurtosis.h"
-#include "tidop/math/statistic/algorithms/descriptive/Moments.h"
 
 namespace tl
 {
@@ -102,12 +105,6 @@ public:
 
     using moments_type = CentralMoments<std::conditional_t<std::is_integral_v<T>, double, T>>;
 
-    //enum class Config
-    //{
-    //  sample,
-    //  population
-    //};
-
     /*!
      * \brief Configuration struct
      *
@@ -131,18 +128,12 @@ private:
      */
     enum class InternalStatus
     {
-        min = (1 << 0),               ///< Minimum value computed
-        max = (1 << 1),               ///< Maximum value computed
-        median = (1 << 3),            ///< Median computed
-        mode = (1 << 4),              ///< Mode computed
-        range = (1 << 5),             ///< Range computed
-        first_quartile = (1 << 6),    ///< First quartile computed
-        second_quartile = (1 << 7),   ///< Second quartile computed
-        third_quartile = (1 << 8),    ///< Third quartile computed
-        rms = (1 << 10),              ///< Root mean square computed
-        standard_deviation = (1 << 12), ///< Standard deviation computed
-        central_moments = (1 << 13),   ///< Central moments computed
-        sorted = (1 << 14)            ///< Data sorted in cache
+        min             = (1 << 0),  ///< Minimum value computed
+        max             = (1 << 1),  ///< Maximum value computed
+        mode            = (1 << 2),  ///< Mode computed
+        rms             = (1 << 3),  ///< Root mean square computed
+        central_moments = (1 << 4),  ///< Central moments computed
+        sorted          = (1 << 5)   ///< Data sorted in cache
     };
 
     mutable tl::EnumFlags<InternalStatus> mStatus;
@@ -152,13 +143,7 @@ private:
     std::shared_ptr<Kurtosis<T>> mKurtosisMethod;
     mutable T mMin{};
     mutable T mMax{};
-    mutable T mMedian{};
     mutable T mMode{};
-    mutable T mRange{};
-    mutable double mStandardDeviation{};
-    mutable double mQ1{};
-    mutable double mQ2{};
-    mutable double mQ3{};
     mutable double mRootMeanSquare{};
     mutable moments_type mCentralMoments;
     mutable std::vector<T> mSortedData;
@@ -228,11 +213,7 @@ public:
      * \return Sum of the dataset
      */
     auto sum() const -> T;
-    /*!
-     * \brief Return the arithmetic mean of the dataset
-     * \f[ \mu = \frac{\sum_{i=1}^{n}x_i}{n} \f]
-     * \return Mean of the dataset
-     */
+
     /*!
      * \brief Return the arithmetic mean of the dataset
      * 
@@ -261,7 +242,7 @@ public:
      * distribution.
      * \return Median value
      */
-    auto median() const -> T;
+    auto median() const -> double;
 
     /*!
      * \brief Return the variance of the dataset
@@ -337,14 +318,14 @@ public:
     auto secondQuartile() const -> double;
 
     /*!
-     * \brief thirdQuartile
-     * \return
+     * \brief Return the third quartile (Q3)
+     * \return The third quartile value
      */
     auto thirdQuartile() const -> double;
 
     /*!
-     * \brief Return the third quartile (Q3)
-     * \return The third quartile value
+     * \brief Return the first, second and third quartile
+     * \return An array containing Q1, Q2, Q3
      */
     auto quartiles() const -> std::array<double, 3>;
 
@@ -359,7 +340,7 @@ public:
      */
     auto quintiles() const -> std::array<double, 4>;
 
-    auto octiles() const->std::array<double, 7>;
+    auto octiles() const -> std::array<double, 7>;
 
     /*!
      * \brief Compute the deciles of the dataset
@@ -527,17 +508,13 @@ private:
 
     void computeMinMax() const;
     void computeRootMeanSquare() const;
-    void computeStandardDeviation() const;
     void computeMode() const;
-    void computeRange() const;
-    void computeFirstQuartile() const;
-    void computeSecondQuartile() const;
-    void computeThirdQuartile() const;
-    template<typename It>
-    void quantile(It first, It last) const;
-    
+
     void ensureSorted() const;
     auto sortedQuantile(double p) const -> double;
+
+    template<typename It>
+    void fillQuantiles(It first, It last) const;
 };
 
 /*! \} */
@@ -630,22 +607,11 @@ auto DescriptiveStatistics<T>::sum() const -> T
 {
     T summation{};
 
-    //#ifdef TL_HAVE_OPENMP
-    //
-    //  T aux{};
-
     TL_TODO("Hacer prueba de rendimiento")
     TL_TODO("Utilizar SIMD")
-        //#pragma omp parallel for reduction(+:summation) private(aux) 
-        //  for (long long i = 0; i < static_cast<long long>(size()); i++) {
-        //    aux = mData[static_cast<size_t>(i)];
-        //    summation += aux;
-        //  }
-        //#else
         for (const auto &data : mData) {
             summation += data;
         }
-    //#endif
 
     return summation;
 }
@@ -662,13 +628,9 @@ auto DescriptiveStatistics<T>::mean() const -> double
 }
 
 template<typename T>
-auto DescriptiveStatistics<T>::median() const -> T
+auto DescriptiveStatistics<T>::median() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::median)) {
-        computeSecondQuartile();
-    }
-
-    return mMedian;
+    return sortedQuantile(0.5);
 }
 
 template<typename T>
@@ -697,11 +659,7 @@ auto DescriptiveStatistics<T>::variance() const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::standardDeviation() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::standard_deviation)) {
-        computeStandardDeviation();
-    }
-
-    return mStandardDeviation;
+    return std::sqrt(variance());
 }
 
 template<typename T>
@@ -711,17 +669,13 @@ auto DescriptiveStatistics<T>::mode() const -> double
         computeMode();
     }
 
-    return mMode;
+    return static_cast<double>(mMode);
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::range() const -> T
 {
-    if (!mStatus.isEnabled(InternalStatus::range)) {
-        computeRange();
-    }
-
-    return mRange;
+    return max() - min();
 }
 
 template<typename T>
@@ -733,31 +687,19 @@ auto DescriptiveStatistics<T>::quantile(double p) const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::firstQuartile() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::first_quartile)) {
-        computeFirstQuartile();
-    }
-
-    return mQ1;
+    return sortedQuantile(0.25);
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::secondQuartile() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::second_quartile)) {
-        computeSecondQuartile();
-    }
-
-    return mQ2;
+    return sortedQuantile(0.5);
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::thirdQuartile() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::third_quartile)) {
-        computeThirdQuartile();
-    }
-
-    return mQ3;
+    return sortedQuantile(0.75);
 }
 
 template<typename T>
@@ -769,35 +711,33 @@ auto DescriptiveStatistics<T>::quartiles() const -> std::array<double, 3>
 template<typename T>
 auto DescriptiveStatistics<T>::quintiles() const -> std::array<double, 4>
 {
-    double q1 = quantile(0.2);
-    double q2 = quantile(0.4);
-    double q3 = quantile(0.6);
-    double q4 = quantile(0.8);
-    
-    return std::array<double, 4>{q1, q2, q3, q4};
+    return std::array<double, 4>{
+        sortedQuantile(0.2),
+        sortedQuantile(0.4),
+        sortedQuantile(0.6),
+        sortedQuantile(0.8)
+    };
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::octiles() const -> std::array<double, 7>
 {
-    double q1 = quantile(0.125);
-    double q2 = quantile(0.250);
-    double q3 = quantile(0.375);
-    double q4 = quantile(0.500);
-    double q5 = quantile(0.625);
-    double q6 = quantile(0.750);
-    double q7 = quantile(0.875);
-
-    return std::array<double, 7>{q1, q2, q3, q4, q5, q6, q7};
+    return std::array<double, 7>{
+        sortedQuantile(0.125),
+        sortedQuantile(0.250),
+        sortedQuantile(0.375),
+        sortedQuantile(0.500),
+        sortedQuantile(0.625),
+        sortedQuantile(0.750),
+        sortedQuantile(0.875)
+    };
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::deciles() const -> std::array<double, 9>
 {
     std::array<double, 9> _deciles{};
-
-    quantile(_deciles.begin(), _deciles.end());
-
+    fillQuantiles(_deciles.begin(), _deciles.end());
     return _deciles;
 }
 
@@ -805,9 +745,7 @@ template<typename T>
 auto DescriptiveStatistics<T>::percentiles() const -> std::array<double, 99>
 {
     std::array<double, 99> _percentiles{};
-
-    quantile(_percentiles.begin(), _percentiles.end());
-
+    fillQuantiles(_percentiles.begin(), _percentiles.end());
     return _percentiles;
 }
 
@@ -820,35 +758,13 @@ auto DescriptiveStatistics<T>::interquartileRange() const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::meanAbsoluteDeviation() const -> double
 {
-    size_t n = size();
-    if (n <= 1) return consts::zero<double>;
-
-    double _mean = mean();
-    double sum{};
-
-    for (const auto &data : mData) {
-        sum += std::abs(static_cast<double>(data) - _mean);
-    }
-
-    return sum / static_cast<T>(n);
+    return tl::meanAbsoluteDeviation(mData);
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::medianAbsoluteDeviation() const -> double
 {
-    size_t n = size();
-    if (n <= 1) return consts::zero<double>;
-
-    double _median = median();
-
-    std::vector<double> x(n);
-    auto x_it = x.begin();
-
-    for (const auto &data : mData) {
-        *x_it++ = std::abs(static_cast<double>(data) - _median);
-    }
-
-    return tl::median(x.begin(), x.end());
+    return tl::medianAbsoluteDeviation(mData);
 }
 
 template<typename T>
@@ -922,30 +838,7 @@ auto DescriptiveStatistics<T>::quartileDeviation() const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::biweightMidvariance() const -> double
 {
-    size_t n = this->size();
-    if (n <= 2) return consts::zero<double>;
-
-    double median = this->median();
-    double mad = this->medianAbsoluteDeviation();
-
-    double num{};
-    double den{};
-    for (const auto data : mData) {
-        double x = static_cast<double>(data) - median;
-        double u = x / (9 * mad);
-        if (std::abs(u) < consts::one<double>) {
-            double u2 = u * u;
-            double y = consts::one<double> -u2;
-            double y2 = y * y;
-            num += x * x * y2 * y2;
-            den += y * (consts::one<double> -5. * u2);
-        }
-    }
-
-    if (den == consts::zero<double>)
-        return consts::zero<double>;
-
-    return n * num / (den * den);
+    return tl::biweightMidvariance(mData);
 }
 
 
@@ -970,13 +863,6 @@ bool DescriptiveStatistics<T>::isPopulation() const
 template<typename T>
 void DescriptiveStatistics<T>::configure()
 {
-
-    //if (mConfig.sample) {
-
-    //} else {
-
-    //}
-
     mSkewnessMethod = SkewnessFactory<T>::create(mConfig.skewness_method);
     mKurtosisMethod = KurtosisFactory<T>::create(mConfig.kurtosis_method);
 }
@@ -1000,15 +886,7 @@ template<typename T>
 void DescriptiveStatistics<T>::computeRootMeanSquare() const
 {
     mRootMeanSquare = tl::rootMeanSquare(mData);
-
     mStatus.enable(InternalStatus::rms);
-}
-
-template<typename T>
-void DescriptiveStatistics<T>::computeStandardDeviation() const
-{
-    mStandardDeviation = sqrt(variance());
-    mStatus.enable(InternalStatus::standard_deviation);
 }
 
 template<typename T>
@@ -1016,51 +894,6 @@ void DescriptiveStatistics<T>::computeMode() const
 {
     mMode = tl::mode(mData.begin(), mData.end());
     mStatus.enable(InternalStatus::mode);
-}
-
-template<typename T>
-void DescriptiveStatistics<T>::computeRange() const
-{
-    mRange = max() - min();
-    mStatus.enable(InternalStatus::range);
-}
-
-template<typename T>
-void DescriptiveStatistics<T>::computeFirstQuartile() const
-{
-    mQ1 = sortedQuantile(0.25);
-    mStatus.enable(InternalStatus::first_quartile);
-}
-
-template<typename T>
-void DescriptiveStatistics<T>::computeSecondQuartile() const
-{
-    mQ2 = sortedQuantile(0.5);
-    mMedian = static_cast<T>(mQ2);
-    mStatus.enable(InternalStatus::second_quartile);
-    mStatus.enable(InternalStatus::median);
-}
-
-template<typename T>
-void DescriptiveStatistics<T>::computeThirdQuartile() const
-{
-    mQ3 = sortedQuantile(0.75);
-    mStatus.enable(InternalStatus::third_quartile);
-}
-
-
-template<typename T>
-template<typename It>
-void DescriptiveStatistics<T>::quantile(It first, It last) const
-{
-    size_t n = std::distance(first, last);
-
-    double step = 1.0 / static_cast<double>(n + 1);
-    double p = 0.;
-    for (size_t i = 0; i < n; i++) {
-        p += step;
-        *first++ = quantile(p);
-    }
 }
 
 template<typename T>
@@ -1094,6 +927,20 @@ auto DescriptiveStatistics<T>::sortedQuantile(double p) const -> double
     return (i + 1 < n)
         ? static_cast<double>(mSortedData[i] + f * (static_cast<double>(mSortedData[i + 1]) - static_cast<double>(mSortedData[i])))
         : static_cast<double>(mSortedData[i]);
+}
+
+template<typename T>
+template<typename It>
+void DescriptiveStatistics<T>::fillQuantiles(It first, It last) const
+{
+    size_t n = std::distance(first, last);
+
+    double step = 1.0 / static_cast<double>(n + 1);
+    double p = 0.;
+    for (size_t i = 0; i < n; i++) {
+        p += step;
+        *first++ = sortedQuantile(p);
+    }
 }
 
 
