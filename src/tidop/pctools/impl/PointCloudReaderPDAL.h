@@ -38,10 +38,12 @@
 #include "tidop/geotools/GeoTools.h"
 #include "tidop/pctools/PointCloudReader.h"
 
+TL_DISABLE_WARNINGS
 #include <pdal/Dimension.hpp>
 #include <pdal/PointView.hpp>
 #include <pdal/PointTable.hpp>
 #include <pdal/Options.hpp>
+TL_DEFAULT_WARNINGS
 
 namespace copc
 {

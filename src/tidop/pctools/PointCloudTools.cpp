@@ -27,6 +27,7 @@
 #include "tidop/geotools/GeoTools.h"
 #include "tidop/geotools/CRSsTools.h"
 
+TL_DISABLE_WARNINGS
 #include <proj.h>
 #include <copc-lib/las/header.hpp>
 #include <lazperf/readers.hpp>
@@ -52,6 +53,7 @@
 #include <pdal/StageFactory.hpp>
 #include <pdal/PipelineManager.hpp>
 #include <pdal/util/FileUtils.hpp>
+TL_DEFAULT_WARNINGS
 
 #include "PointCloudTools.h"
 

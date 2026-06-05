@@ -42,6 +42,7 @@ namespace detail
 {
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int8_t>::value,
     Packed<T>>
@@ -66,6 +67,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, uint8_t>::value,
     Packed<T>>
@@ -84,6 +86,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int16_t>::value,
     Packed<T>>
@@ -102,6 +105,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, uint16_t>::value,
     Packed<T>>
@@ -127,6 +131,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 
 // Compare packed signed 32-bit integers in packed1 and packed2, and return packed minimum values
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int32_t>::value,
     Packed<T>>
@@ -149,6 +154,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, uint32_t>::value,
     Packed<T>>
@@ -171,6 +177,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int64_t>::value,
     Packed<T>>
@@ -201,6 +208,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<typename T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, uint64_t>::value,
     Packed<T>>
@@ -263,6 +271,7 @@ auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable
 }
 
 template<Floating T>
+[[nodiscard]]
 auto min_impl(const Packed<T> &packed1, const Packed<T> &packed2) -> Packed<T>
 {
 #if defined(TL_HAVE_AVX512)

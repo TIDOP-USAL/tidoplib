@@ -80,7 +80,7 @@ public:
      * \brief Constructs the evaluator from a `MatScalarExpr`.
      * \param[in] expr The source scalar expression.
      */
-    Evaluator(const MatScalarExpr<LHS, Scalar, Op> &expr)
+    constexpr Evaluator(const MatScalarExpr<LHS, Scalar, Op> &expr)
       : mLhs(expr.lhs()),
         mScalar(expr.scalar())
     {
@@ -92,7 +92,8 @@ public:
      * \param[in] c Column index.
      * \return The result of `Op(lhs(r,c), scalar)`.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return mOp(mLhs.coeff(r, c), mScalar);
     }
@@ -102,7 +103,8 @@ public:
      * \param[in] i Linear index.
      * \return The result of `Op(lhs(i), scalar)`.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mOp(mLhs.coeff(i), mScalar);
     }
@@ -115,6 +117,7 @@ public:
      *         `Op` to the LHS packet.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
 		return mOp(mLhs.packet(i), Packed<value_type>(mScalar));

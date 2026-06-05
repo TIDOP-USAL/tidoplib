@@ -41,76 +41,57 @@ class Packed;
 namespace detail
 {
 
-template<typename T>
-auto set(T data) -> enableIfFloat<T, typename Packed<T>::simd_type>
+template<Arithmetic T>
+[[nodiscard]]
+auto set_impl(T data) noexcept -> Packed<T>
 {
+    if constexpr (Floating<T>) {
+
 #ifdef TL_HAVE_AVX
-    return _mm256_set1_ps(data);
-#elif defined TL_HAVE_SSE
-    return _mm_set1_ps(data);
-#endif
-}
 
-template<typename T>
-auto set(T data) -> enableIfDouble<T, typename Packed<T>::simd_type>
-{
-#ifdef TL_HAVE_AVX
-    return _mm256_set1_pd(data);
-#elif defined TL_HAVE_SSE2
-    return _mm_set1_pd(data);
-#endif
-}
+        if constexpr (std::same_as<T, float>) {
+            return _mm256_set1_ps(data);
+        } else {
+            return _mm256_set1_pd(data);
+        }
 
-template<typename T>
-auto set(T data) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
-    typename Packed<T>::simd_type>
-{
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm_set1_ps(data);
+        } else {
+            return _mm_set1_pd(data);
+        }
+#endif
+
+    } else {
+
 #ifdef TL_HAVE_AVX2
-    return _mm256_set1_epi8(data);
-#elif defined TL_HAVE_SSE2
-    return _mm_set1_epi8(data);
-#endif
-}
 
-template<typename T>
-auto set(T data) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
-    typename Packed<T>::simd_type>
-{
-#ifdef TL_HAVE_AVX2
-    return _mm256_set1_epi16(data);
-#elif defined TL_HAVE_SSE2
-    return _mm_set1_epi16(data);
-#endif
-}
+        if constexpr (sizeof(T) == 1) {
+            return _mm256_set1_epi8(data);
+        } else if constexpr (sizeof(T) == 2) {
+            return _mm256_set1_epi16(data);
+        } else if constexpr (sizeof(T) == 4) {
+            return _mm256_set1_epi32(data);
+        } else {
+            return _mm256_set1_epi64x(data);
+        }
 
-template<typename T>
-auto set(T data) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
-    typename Packed<T>::simd_type>
-{
-#ifdef TL_HAVE_AVX2
-    return _mm256_set1_epi32(data);
-#elif defined TL_HAVE_SSE2
-    return _mm_set1_epi32(data);
-#endif
-}
+#elif defined(TL_HAVE_SSE2)
 
-template<typename T>
-auto set(T data) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
-    typename Packed<T>::simd_type>
-{
-#ifdef TL_HAVE_AVX2
-    return _mm256_set1_epi64x(data);
-#elif defined TL_HAVE_SSE2
-    return _mm_set1_epi64x(data);
+        if constexpr (sizeof(T) == 1) {
+            return _mm_set1_epi8(a);
+        } else if constexpr (sizeof(T) == 2) {
+            return _mm_set1_epi16(a);
+        } else if constexpr (sizeof(T) == 4) {
+            return _mm_set1_epi32(a);
+        } else {
+            return _mm_set1_epi64x(a);
+        }
+
 #endif
+    }
 }
 
 } // namespace detail 

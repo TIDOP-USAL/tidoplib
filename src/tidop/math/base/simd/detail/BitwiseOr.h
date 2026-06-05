@@ -45,7 +45,7 @@ namespace detail
 // A | B
 template<typename T>
 [[nodiscard]]
-auto bitwiseOr(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
+auto bitwise_or_impl(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_or_si256(a, b);

@@ -111,40 +111,40 @@ public:
     /*!
      * \brief Default constructor. Initializes an empty vector.
      */
-    Vector();
+    constexpr Vector();
 
     /*!
      * \brief Constructs a vector of a given size, initializing all elements to a specified value.
      * \param[in] size The size of the vector (ignored for static vectors, must match if provided).
      * \param[in] value The value to initialize each element to (default is the lowest value of `T`).
      */
-    explicit Vector(size_t size, T value = std::numeric_limits<T>().lowest());
+    constexpr explicit Vector(size_t size, T value = std::numeric_limits<T>().lowest());
 
     /*!
      * \brief Copy constructor.
      * \param[in] vector The vector to copy.
      */
-    Vector(const Vector &vector);
+    constexpr Vector(const Vector &vector);
 
     /*!
      * \brief Move constructor.
      * \param[in] vector The vector to move.
      */
-    Vector(Vector &&vector) noexcept;
+    constexpr Vector(Vector &&vector) noexcept;
 
     /*!
      * \brief Constructs a vector from an initializer list.
      * \param[in] values The values to initialize the vector with.
      * \note The number of values must match the vector's size (static) or determines the size (dynamic).
      */
-    Vector(std::initializer_list<T> values);
+    constexpr Vector(std::initializer_list<T> values);
 
     /*!
      * \brief Constructs a vector from a raw pointer and size.
      * \param[in] data Pointer to the data.
      * \param[in] size The size of the vector.
      */
-    Vector(T *data, size_t size);
+    constexpr Vector(T *data, size_t size);
 
     /*!
      * \brief Constructs a vector from a vector expression.
@@ -161,21 +161,21 @@ public:
      * \endcode
      */
     template<VectorExpr Expr>
-    Vector(const Expr &expr);
+    constexpr Vector(const Expr &expr);
 
     /*!
      * \brief Assignment operator for copying another vector.
      * \param vector The vector to copy from.
      * \return A reference to this vector.
      */
-    auto operator=(const Vector &vector) -> Vector &;
+    constexpr auto operator=(const Vector &vector) -> Vector &;
 
     /*!
      * \brief Move assignment operator.
      * \param vector The vector to move from.
      * \return A reference to this vector.
      */
-    auto operator=(Vector &&vector) noexcept -> Vector &;
+    constexpr auto operator=(Vector &&vector) noexcept -> Vector &;
 
     /*!
      * \brief Assignment operator for a vector expression.
@@ -194,7 +194,7 @@ public:
      * \endcode
      */
     template<VectorExpr Expr>
-    auto operator=(const Expr &expr) -> Vector &;
+    constexpr auto operator=(const Expr &expr) -> Vector &;
 
     /*!
      * \brief Resizes the vector to a new size.
@@ -215,6 +215,7 @@ public:
      * \brief Returns the size of the vector.
      * \return The number of elements in the vector (compile-time constant for static vectors).
      */
+    [[nodiscard]]
     constexpr auto size() const noexcept -> size_t;
 
     /*!
@@ -224,7 +225,8 @@ public:
      * \return A reference to the element at the specified position.
      * \throws std::out_of_range if the position is out of bounds.
      */
-    auto at(size_t position) -> reference;
+    [[nodiscard]]
+    constexpr auto at(size_t position) -> reference;
 
     /*!
      * \brief Accesses the element at the specified position with bounds checking (const version).
@@ -233,7 +235,8 @@ public:
      * \return A const reference to the element at the specified position.
      * \throws std::out_of_range if the position is out of bounds.
      */
-    auto at(size_t position) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto at(size_t position) const -> const_reference;
 
     /*!
      * \brief Accesses the element at the specified position with bounds checking.
@@ -242,7 +245,8 @@ public:
      * \return A reference to the element at the specified position.
      * \throws std::out_of_range if the position is out of bounds.
      */
-    auto operator()(size_t position) -> reference;
+    [[nodiscard]]
+    constexpr auto operator()(size_t position) -> reference;
 
     /*!
      * \brief Accesses the element at the specified position with bounds checking (const version).
@@ -251,7 +255,8 @@ public:
      * \return A const reference to the element at the specified position.
      * \throws std::out_of_range if the position is out of bounds.
      */
-    auto operator()(size_t position) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator()(size_t position) const -> const_reference;
 
     /*!
      * \brief Accesses the element at the specified position without bounds checking.
@@ -261,7 +266,8 @@ public:
      * \note No bounds checking is performed, so accessing an invalid position
      *       may result in undefined behavior.
      */
-    auto operator[](size_t position) noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t position) noexcept -> reference;
 
     /*!
      * \brief Accesses the element at the specified position without bounds checking (const version).
@@ -271,152 +277,171 @@ public:
      * \note No bounds checking is performed, so accessing an invalid position
      *       may result in undefined behavior.
      */
-    auto operator[](size_t position) const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Access the first element in the vector.
      * \return A reference to the first element.
      */
-    auto front() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto front() noexcept -> reference;
 
     /*!
      * \brief Access the first element in the vector (const version).
      * \return A const reference to the first element.
      */
-    auto front() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto front() const noexcept -> const_reference;
 
     /*!
      * \brief Access the last element in the vector.
      * \return A reference to the last element.
      */
-    auto back() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto back() noexcept -> reference;
 
     /*!
      * \brief Access the last element in the vector (const version).
      * \return A const reference to the last element.
      * \throws std::out_of_range if the vector is empty.
      */
-    auto back() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto back() const noexcept -> const_reference;
 
     /*!
      * \brief Returns an iterator to the beginning of the vector.
      * \return An iterator to the beginning of the vector.
      */
-    auto begin() noexcept -> iterator;
+    [[nodiscard]]
+    constexpr auto begin() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the beginning of the vector.
      * \return A const iterator to the beginning of the vector.
      */
-    auto begin() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns an iterator to the end of the vector.
      * \return An iterator to the end of the vector.
      */
-    auto end() noexcept -> iterator;
+    [[nodiscard]]
+    constexpr auto end() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the end of the vector.
      * \return A const iterator to the end of the vector.
      */
-    auto end() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns a pointer to the data array of the vector.
      * \return A pointer to the data array.
      */
-    auto data() noexcept -> pointer;
+    [[nodiscard]]
+    constexpr auto data() noexcept -> pointer;
 
     /*!
      * \brief Returns a const pointer to the data array of the vector.
      * \return A const pointer to the data array.
      */
-    auto data() const noexcept -> const_pointer;
+    [[nodiscard]]
+    constexpr auto data() const noexcept -> const_pointer;
 
     /*!
      * \brief Access the x-component of the vector.
      * \return A const reference to the x-component.
      * \note Only valid for vectors with size at least 1.
      */
-    auto x() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto x() const noexcept -> const_reference;
 
     /*!
      * \brief Access the y-component of the vector.
      * \return A const reference to the y-component.
      * \note Only valid for vectors with size at least 2.
      */
-    auto y() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto y() const noexcept -> const_reference;
 
     /*!
      * \brief Access the z-component of the vector.
      * \return A const reference to the z-component.
      * \note Only valid for vectors with size at least 3.
      */
-    auto z() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto z() const noexcept -> const_reference;
 
     /*!
      * \brief Access the w-component of the vector.
      * \return A const reference to the w-component.
      * \note Only valid for vectors with size at least 4.
      */
-    auto w() const noexcept -> const_reference;
+    [[nodiscard]]
+    constexpr auto w() const noexcept -> const_reference;
 
     /*!
      * \brief Access the x-component of the vector (non-const version).
      * \return A reference to the x-component.
      * \note Only valid for vectors with size at least 1.
      */
-    auto x() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto x() noexcept -> reference;
 
     /*!
      * \brief Access the y-component of the vector (non-const version).
      * \return A reference to the y-component.
      * \note Only valid for vectors with size at least 2.
      */
-    auto y() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto y() noexcept -> reference;
 
     /*!
      * \brief Access the z-component of the vector (non-const version).
      * \return A reference to the z-component.
      * \note Only valid for vectors with size at least 3.
      */
-    auto z() noexcept-> reference;
+    [[nodiscard]]
+    constexpr auto z() noexcept-> reference;
 
     /*!
      * \brief Access the w-component of the vector (non-const version).
      * \return A reference to the w-component.
      * \note Only valid for vectors with size at least 4.
      */
-    auto w() noexcept -> reference;
+    [[nodiscard]]
+    constexpr auto w() noexcept -> reference;
 
-    /*!
-     * \brief Less-than operator for comparing two vectors.
-     * \param vector The vector to compare with.
-     * \return True if this vector is less than the other, false otherwise.
-     */
-    bool operator < (const Vector &vector) const;
+    ///*!
+    // * \brief Less-than operator for comparing two vectors.
+    // * \param vector The vector to compare with.
+    // * \return True if this vector is less than the other, false otherwise.
+    // */
+    //bool operator < (const Vector &vector) const;
 
-    /*!
-     * \brief Less-than-or-equal operator for comparing two vectors.
-     * \param vector The vector to compare with.
-     * \return True if this vector is less than or equal to the other, false otherwise.
-     */
-    bool operator <= (const Vector &vector) const;
+    ///*!
+    // * \brief Less-than-or-equal operator for comparing two vectors.
+    // * \param vector The vector to compare with.
+    // * \return True if this vector is less than or equal to the other, false otherwise.
+    // */
+    //bool operator <= (const Vector &vector) const;
 
-    /*!
-     * \brief Greater-than operator for comparing two vectors.
-     * \param vector The vector to compare with.
-     * \return True if this vector is greater than the other, false otherwise.
-     */
-    bool operator > (const Vector &vector) const;
+    ///*!
+    // * \brief Greater-than operator for comparing two vectors.
+    // * \param vector The vector to compare with.
+    // * \return True if this vector is greater than the other, false otherwise.
+    // */
+    //bool operator > (const Vector &vector) const;
 
-    /*!
-     * \brief Greater-than-or-equal operator for comparing two vectors.
-     * \param vector The vector to compare with.
-     * \return True if this vector is greater than or equal to the other, false otherwise.
-     */
-    bool operator >= (const Vector &vector) const;
+    ///*!
+    // * \brief Greater-than-or-equal operator for comparing two vectors.
+    // * \param vector The vector to compare with.
+    // * \return True if this vector is greater than or equal to the other, false otherwise.
+    // */
+    //bool operator >= (const Vector &vector) const;
 
     /*!
      * \brief Creates a zero vector of a specified size.
@@ -424,8 +449,10 @@ public:
      * \return A vector with all elements initialized to zero.
      */
     TL_DEPRECATED("zeros(size_t size = 0)", "4.0")
-    static auto zero(size_t size = 0) -> Vector;
-    static auto zeros(size_t size = 0) -> Vector;
+    [[nodiscard]]
+    static constexpr auto zero(size_t size = 0) -> Vector;
+    [[nodiscard]]
+    static constexpr auto zeros(size_t size = 0) -> Vector;
 
     /*!
      * \brief Creates a unit vector of a specified size.
@@ -433,8 +460,10 @@ public:
      * \return A unit vector.
      */
     TL_DEPRECATED("ones(size_t size = 0)", "4.0")
-    static auto unit(size_t size = 0) -> Vector;
-    static auto ones(size_t size = 0) -> Vector;
+    [[nodiscard]]
+    static constexpr auto unit(size_t size = 0) -> Vector;
+    [[nodiscard]]
+    static constexpr auto ones(size_t size = 0) -> Vector;
 
     /*!
      * \brief Creates a random vector of a specified size.
@@ -508,7 +537,7 @@ public:
      * \param[in] ptr Pointer to the memory address.
      * \return True if the vector's internal data is stored at that address; false otherwise.
      */
-    auto aliases(const void *ptr) const -> bool;
+    constexpr auto aliases(const void *ptr) const -> bool;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     /*!
@@ -524,7 +553,7 @@ public:
      * \brief Fills the entire vector with a given value.
      * \param[in] value The value to set all elements to.
      */
-    void fill(T value);
+    constexpr void fill(T value);
 
 private:
 
@@ -552,44 +581,44 @@ using Vector4f = Vector<float, 4>;
 /* Vector implementation */
 
 template<typename T, size_t Size>
-Vector<T, Size>::Vector()
+constexpr Vector<T, Size>::Vector()
   : mData(Data<T, Size>())
 {
 }
 
 template<typename T, size_t Size>
-Vector<T, Size>::Vector(size_t size, T value)
+constexpr Vector<T, Size>::Vector(size_t size, T value)
   : mData(Data<T, Size>(size, value))
 {
 }
 
 template<typename T, size_t Size>
-Vector<T, Size>::Vector(const Vector &vector)
+constexpr Vector<T, Size>::Vector(const Vector &vector)
   : mData(vector.mData)
 {
 }
 
 template<typename T, size_t Size>
-Vector<T, Size>::Vector(Vector &&vector) noexcept
+constexpr Vector<T, Size>::Vector(Vector &&vector) noexcept
   : mData(std::move(vector.mData))
 {
 }
 
 template<typename T, size_t Size>
-Vector<T, Size>::Vector(std::initializer_list<T> values)
+constexpr Vector<T, Size>::Vector(std::initializer_list<T> values)
   : mData(Data<T, Size>(values))
 {
 }
 
 template<typename T, size_t Size>
-Vector<T, Size>::Vector(T *data, size_t size)
+constexpr Vector<T, Size>::Vector(T *data, size_t size)
     : mData(Data<T, Size>(data, size))
 {
 }
 
 template<typename T, size_t Size>
 template<VectorExpr Expr>
-Vector<T, Size>::Vector(const Expr &expr)
+constexpr Vector<T, Size>::Vector(const Expr &expr)
   : mData(Data<T, Size>(expr.size()))
 {
     TL_ASSERT(expr.size() == this->mData.size(), "Static vector cannot be resized");
@@ -598,7 +627,7 @@ Vector<T, Size>::Vector(const Expr &expr)
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::operator=(const Vector &vector) -> Vector &
+constexpr auto Vector<T, Size>::operator=(const Vector &vector) -> Vector &
 {
     if (this != &vector) {
         this->mData = vector.mData;
@@ -608,7 +637,7 @@ auto Vector<T, Size>::operator=(const Vector &vector) -> Vector &
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::operator=(Vector &&vector) noexcept -> Vector &
+constexpr auto Vector<T, Size>::operator=(Vector &&vector) noexcept -> Vector &
 {
     if (this != &vector) {
         this->mData = std::forward<Data<T, Size>>(vector.mData);
@@ -619,7 +648,7 @@ auto Vector<T, Size>::operator=(Vector &&vector) noexcept -> Vector &
 
 template<typename T, size_t Size>
 template<VectorExpr Expr>
-auto Vector<T, Size>::operator=(const Expr &expr) -> Vector &
+constexpr auto Vector<T, Size>::operator=(const Expr &expr) -> Vector &
 {
     return detail::assign(*this, expr);
 }
@@ -647,103 +676,103 @@ constexpr auto Vector<T, Size>::size() const noexcept -> size_t
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::at(size_type position) -> reference
+constexpr auto Vector<T, Size>::at(size_type position) -> reference
 {
     return mData.at(position);
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::at(size_type position) const -> const_reference
+constexpr auto Vector<T, Size>::at(size_type position) const -> const_reference
 {
     return mData.at(position);
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::operator()(size_type position) -> reference
+constexpr auto Vector<T, Size>::operator()(size_type position) -> reference
 {
     return mData.at(position);
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::operator()(size_type position) const -> const_reference
+constexpr auto Vector<T, Size>::operator()(size_type position) const -> const_reference
 {
     return mData.at(position);
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::operator[](size_t position) noexcept -> reference
+constexpr auto Vector<T, Size>::operator[](size_t position) noexcept -> reference
 {
     return mData[position];
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::operator[](size_t position) const noexcept -> const_reference
+constexpr auto Vector<T, Size>::operator[](size_t position) const noexcept -> const_reference
 {
     return mData[position];
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::front() noexcept -> reference
+constexpr auto Vector<T, Size>::front() noexcept -> reference
 {
     return mData.front();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::front() const noexcept -> const_reference
+constexpr auto Vector<T, Size>::front() const noexcept -> const_reference
 {
     return mData.front();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::back() noexcept -> reference
+constexpr auto Vector<T, Size>::back() noexcept -> reference
 {
     return mData.back();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::back() const noexcept -> const_reference
+constexpr auto Vector<T, Size>::back() const noexcept -> const_reference
 {
     return mData.back();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::begin() noexcept -> iterator
+constexpr auto Vector<T, Size>::begin() noexcept -> iterator
 {
     return mData.begin();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::begin() const noexcept -> const_iterator
+constexpr auto Vector<T, Size>::begin() const noexcept -> const_iterator
 {
     return mData.begin();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::end() noexcept -> iterator
+constexpr auto Vector<T, Size>::end() noexcept -> iterator
 {
     return mData.end();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::end() const noexcept -> const_iterator
+constexpr auto Vector<T, Size>::end() const noexcept -> const_iterator
 {
     return mData.end();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::data() noexcept -> pointer
+constexpr auto Vector<T, Size>::data() noexcept -> pointer
 {
     return mData.data();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::data() const noexcept -> const_pointer
+constexpr auto Vector<T, Size>::data() const noexcept -> const_pointer
 {
     return mData.data();
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::x() const noexcept -> const_reference
+constexpr auto Vector<T, Size>::x() const noexcept -> const_reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size >= 2 && Size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -751,7 +780,7 @@ auto Vector<T, Size>::x() const noexcept -> const_reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::y() const noexcept -> const_reference
+constexpr auto Vector<T, Size>::y() const noexcept -> const_reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size >= 2 && Size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -759,7 +788,7 @@ auto Vector<T, Size>::y() const noexcept -> const_reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::z() const noexcept -> const_reference
+constexpr auto Vector<T, Size>::z() const noexcept -> const_reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size > 2 && Size <= 4, "Method only supported for 3 or 4 element vectors");
@@ -767,7 +796,7 @@ auto Vector<T, Size>::z() const noexcept -> const_reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::w() const noexcept -> const_reference
+constexpr auto Vector<T, Size>::w() const noexcept -> const_reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size == 4, "Method only supported for 4 element vectors");
@@ -775,7 +804,7 @@ auto Vector<T, Size>::w() const noexcept -> const_reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::x() noexcept -> reference
+constexpr auto Vector<T, Size>::x() noexcept -> reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size >= 2 && Size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -783,7 +812,7 @@ auto Vector<T, Size>::x() noexcept -> reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::y() noexcept -> reference
+constexpr auto Vector<T, Size>::y() noexcept -> reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size >= 2 && Size <= 4, "Method only supported for 2, 3 or 4 element vectors");
@@ -791,7 +820,7 @@ auto Vector<T, Size>::y() noexcept -> reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::z() noexcept -> reference
+constexpr auto Vector<T, Size>::z() noexcept -> reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size > 2 && Size <= 4, "Method only supported for 3 or 4 element vectors");
@@ -799,57 +828,57 @@ auto Vector<T, Size>::z() noexcept -> reference
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::w() noexcept -> reference
+constexpr auto Vector<T, Size>::w() noexcept -> reference
 {
     static_assert(Size != DynamicData, "Unsupported method for dynamic vectors");
     static_assert(Size == 4, "Method only supported for 4 element vectors");
     return mData[3];
 }
 
-template<typename T, size_t Size>
-bool Vector<T, Size>::operator <  (const Vector<T, Size> &vector) const
-{
-    return this->mData < vector.mData;
-}
+//template<typename T, size_t Size>
+//bool Vector<T, Size>::operator <  (const Vector<T, Size> &vector) const
+//{
+//    return this->mData < vector.mData;
+//}
+//
+//template<typename T, size_t Size>
+//bool Vector<T, Size>::operator <= (const Vector<T, Size> &vector) const
+//{
+//    return this->mData <= vector.mData;
+//}
+//
+//template<typename T, size_t Size>
+//bool Vector<T, Size>::operator >  (const Vector<T, Size> &vector) const
+//{
+//    return this->mData > vector.mData;
+//}
+//
+//template<typename T, size_t Size>
+//bool Vector<T, Size>::operator >= (const Vector<T, Size> &vector) const
+//{
+//    return this->mData >= vector.mData;
+//}
 
 template<typename T, size_t Size>
-bool Vector<T, Size>::operator <= (const Vector<T, Size> &vector) const
-{
-    return this->mData <= vector.mData;
-}
-
-template<typename T, size_t Size>
-bool Vector<T, Size>::operator >  (const Vector<T, Size> &vector) const
-{
-    return this->mData > vector.mData;
-}
-
-template<typename T, size_t Size>
-bool Vector<T, Size>::operator >= (const Vector<T, Size> &vector) const
-{
-    return this->mData >= vector.mData;
-}
-
-template<typename T, size_t Size>
-auto Vector<T, Size>::zero(size_t size) -> Vector
-{
-    return Vector<T, Size>(size, consts::zero<T>);
-}
-
-template<typename T, size_t Size>
-auto Vector<T, Size>::zeros(size_t size) -> Vector
+constexpr auto Vector<T, Size>::zero(size_t size) -> Vector
 {
     return Vector<T, Size>(size, consts::zero<T>);
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::unit(size_t size) -> Vector
+constexpr auto Vector<T, Size>::zeros(size_t size) -> Vector
+{
+    return Vector<T, Size>(size, consts::zero<T>);
+}
+
+template<typename T, size_t Size>
+constexpr auto Vector<T, Size>::unit(size_t size) -> Vector
 {
     return Vector<T, Size>(size, consts::one<T>);
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::ones(size_t size) -> Vector
+constexpr auto Vector<T, Size>::ones(size_t size) -> Vector
 {
     return Vector<T, Size>(size, consts::one<T>);
 }
@@ -870,7 +899,7 @@ auto Vector<T, Size>::randon(size_t size) -> Vector
 }
 
 template<typename T, size_t Size>
-auto Vector<T, Size>::aliases(const void *ptr) const -> bool
+constexpr auto Vector<T, Size>::aliases(const void *ptr) const -> bool
 {
     return static_cast<const void *>(this->data()) == ptr;
 }
@@ -886,7 +915,7 @@ auto Vector<T, Size>::packet(size_t i) const noexcept -> Packed<T>
 #endif 
 
 template<typename T, size_t Size>
-void Vector<T, Size>::fill(T value)
+constexpr void Vector<T, Size>::fill(T value)
 {
     std::fill(mData.begin(), mData.end(), value);
 }

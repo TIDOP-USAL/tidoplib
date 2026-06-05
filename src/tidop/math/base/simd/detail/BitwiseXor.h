@@ -44,7 +44,7 @@ namespace detail
 
 template<typename T>
 [[nodiscard]]
-auto bitwiseXor(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
+auto bitwise_xor_impl(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
 {
 #ifdef TL_HAVE_AVX2
     return _mm256_xor_si256(a, b);

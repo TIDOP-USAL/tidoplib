@@ -64,7 +64,7 @@ public:
      * \brief Constructs the evaluator from a dense vector.
      * \param[in] vector The vector.
      */
-    Evaluator(const Vec &vector)
+    constexpr Evaluator(const Vec &vector)
       : mVector(vector) {}
 
     /*!
@@ -72,7 +72,8 @@ public:
      * \param[in] i Element index.
      * \return The coefficient at the given position.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mVector(i);
     }
@@ -84,6 +85,7 @@ public:
      * \return A `Packed<T>` containing the coefficients from the vector.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mVector.packet(i);

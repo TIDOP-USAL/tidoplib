@@ -115,25 +115,28 @@ public:
     /*!
      * \brief Default constructor.
      */
-    VectorBase();
+    constexpr VectorBase() = default;
 
     /*!
      * \brief Computes the Euclidean norm (magnitude) of the vector.
      * \return The Euclidean norm as `double`.
      */
+    [[nodiscard]]
     auto module() const -> double;
 
     /*!
      * \brief Alias for `module()`.
      * \return The Euclidean norm as `double`.
      */
+    [[nodiscard]]
     auto norm() const -> double;
 
     /*!
      * \brief Computes the squared Euclidean norm.
      * \return The squared norm (dot product with itself) as `double`.
      */
-    auto squaredNorm() const -> double;
+    [[nodiscard]]
+    constexpr auto squaredNorm() const -> double;
 
     /*!
      * \brief Normalizes the vector in place (makes it unit length).
@@ -150,7 +153,8 @@ public:
      * \throws Exception if the sizes differ.
      */
     template<VectorExpr Expr>
-    auto dotProduct(const Expr &expr) const -> double;
+    [[nodiscard]]
+    constexpr auto dotProduct(const Expr &expr) const -> double;
 
     /*!
      * \brief Computes the cross product of two 3‑dimensional vectors.
@@ -160,13 +164,15 @@ public:
      * \note Only defined for vectors with dimension 3.
      */
     template<VectorExpr Expr>
-    auto cross(const Expr &expr) const -> Vector<value_type, 3>;
+    [[nodiscard]]
+    constexpr auto cross(const Expr &expr) const -> Vector<value_type, 3>;
 
     /*!
      * \brief Computes the sum of all elements.
      * \return The sum as `value_type`.
      */
-    auto sum() const -> value_type;
+    [[nodiscard]]
+    constexpr auto sum() const -> value_type;
 
     /*!
      * \brief Converts the vector into a diagonal matrix expression.
@@ -194,7 +200,8 @@ public:
      * \note The returned expression is lightweight and does not allocate memory
      *       until evaluated. It is intended for temporary use in matrix operations.
      */
-    auto asDiagonal() const -> DiagonalMatrixExpr<Derived>;
+    [[nodiscard]]
+    constexpr auto asDiagonal() const -> DiagonalMatrixExpr<Derived>;
 
     /* Unary arithmetic operators */
 
@@ -202,13 +209,15 @@ public:
      * \brief Unary plus operator.
      * \return A const reference to the vector itself.
      */
-    auto operator+() const noexcept -> const Derived&;
+    [[nodiscard]]
+    constexpr auto operator+() const noexcept -> const Derived&;
 
     /*!
      * \brief Unary minus operator.
      * \return An expression representing the negated vector.
      */
-    auto operator-() const;
+    [[nodiscard]]
+    constexpr auto operator-() const;
 
     /* Binary arithmetic operators */
 
@@ -219,7 +228,8 @@ public:
      * \return An expression representing the element‑wise sum.
      */
 	template<VectorExpr Expr>
-    auto operator +(const Expr &expr) const;
+    [[nodiscard]]
+    constexpr auto operator +(const Expr &expr) const;
     
     /*!
      * \brief Vector subtraction.
@@ -228,7 +238,8 @@ public:
      * \return An expression representing the element‑wise difference.
      */
     template<VectorExpr Expr>
-    auto operator -(const Expr &expr) const;
+    [[nodiscard]]
+    constexpr auto operator -(const Expr &expr) const;
 	
     /*!
      * \brief Element‑wise multiplication (Hadamard product).
@@ -237,7 +248,8 @@ public:
      * \return An expression representing the element‑wise product.
      */
     template<VectorExpr Expr>
-    auto cwiseProduct(const Expr &expr) const;
+    [[nodiscard]]
+    constexpr auto cwiseProduct(const Expr &expr) const;
 
     /*!
      * \brief Element‑wise division.
@@ -246,21 +258,24 @@ public:
      * \return An expression representing the element‑wise quotient.
      */
     template<VectorExpr Expr>
-    auto cwiseDiv(const Expr &expr) const;
+    [[nodiscard]]
+    constexpr auto cwiseDiv(const Expr &expr) const;
 
     /*!
      * \brief Scalar multiplication.
      * \param[in] scalar The scalar value.
      * \return An expression representing the scaled vector.
      */
-    auto operator*(value_type scalar) const;
+    [[nodiscard]]
+    constexpr auto operator*(value_type scalar) const;
 
     /*!
      * \brief Scalar division.
      * \param[in] scalar The scalar divisor.
      * \return An expression representing the vector divided by the scalar.
      */
-    auto operator/(value_type scalar) const;
+    [[nodiscard]]
+    constexpr auto operator/(value_type scalar) const;
 
     /*!
      * \brief Compound addition assignment.
@@ -342,11 +357,6 @@ public:
 /* VectorBase implementation */
 
 template<typename Derived>
-VectorBase<Derived>::VectorBase()
-{
-}
-
-template<typename Derived>
 auto VectorBase<Derived>::module() const -> double
 {
     return sqrt(this->squaredNorm());
@@ -359,7 +369,7 @@ auto VectorBase<Derived>::norm() const -> double
 }
 
 template<typename Derived>
- auto VectorBase<Derived>::squaredNorm() const -> double
+constexpr auto VectorBase<Derived>::squaredNorm() const -> double
 {
     return this->dotProduct(this->derived());
 }
@@ -374,7 +384,7 @@ void VectorBase<Derived>::normalize() requires std::is_floating_point_v<value_ty
 }
 
 template<typename Derived>
-auto VectorBase<Derived>::sum() const -> value_type
+constexpr auto VectorBase<Derived>::sum() const -> value_type
 {
     value_type summation{};
 
@@ -382,6 +392,18 @@ auto VectorBase<Derived>::sum() const -> value_type
     auto eval = make_evaluator(derived);
 
     size_t i = 0;
+
+    auto run_scalar_loop = [&]() constexpr {
+        for (; i < derived.size(); ++i) {
+            summation += eval.coeff(i);
+        }
+    };
+
+    // Tiempo de compilación
+    if (std::is_constant_evaluated()) {
+        run_scalar_loop();
+        return summation;
+    }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     using Scalar = std::remove_cv_t<value_type>;
@@ -398,22 +420,20 @@ auto VectorBase<Derived>::sum() const -> value_type
 
 #endif
 
-    for (; i < derived.size(); ++i) {
-        summation += eval.coeff(i);
-    }
+    run_scalar_loop();
 
     return summation;
 }
 
 template<typename Derived>
-auto VectorBase<Derived>::asDiagonal() const -> DiagonalMatrixExpr<Derived>
+constexpr auto VectorBase<Derived>::asDiagonal() const -> DiagonalMatrixExpr<Derived>
 {
     return DiagonalMatrixExpr<Derived>(this->derived());
 }
 
 template<typename Derived>
 template<VectorExpr Expr>
-auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
+constexpr auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
 {
     auto &derived = this->derived();
 
@@ -424,6 +444,18 @@ auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
 
     auto eval_derived = make_evaluator(derived);
     auto eval_expr = make_evaluator(expr);
+
+    auto run_scalar_loop = [&]() constexpr {
+        for (; i < derived.size(); ++i) {
+            dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
+        }
+    };
+
+    // Tiempo de compilación
+    if (std::is_constant_evaluated()) {
+        run_scalar_loop();
+        return dot;
+    }
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     using Scalar = std::remove_cv_t<value_type>;
@@ -443,16 +475,17 @@ auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
     }
 #endif
 
-    for (; i < derived.size(); ++i) {
-        dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
-    }
+    //for (; i < derived.size(); ++i) {
+    //    dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
+    //}
+    run_scalar_loop();
 
     return dot;
 }
 
 template<typename Derived>
 template<VectorExpr Expr>
-auto VectorBase<Derived>::cross(const Expr &expr) const -> Vector<value_type, 3>
+constexpr auto VectorBase<Derived>::cross(const Expr &expr) const -> Vector<value_type, 3>
 {
     static_assert(dimensions == 3, "The cross product is only defined for 3 dimensions.");
 
@@ -470,13 +503,13 @@ auto VectorBase<Derived>::cross(const Expr &expr) const -> Vector<value_type, 3>
 /* Unary arithmetic operators */
 
 template<typename Derived>
-auto VectorBase<Derived>::operator+() const noexcept -> const Derived&
+constexpr auto VectorBase<Derived>::operator+() const noexcept -> const Derived&
 {
     return this->derived();
 }
 
 template<typename Derived>
-auto VectorBase<Derived>::operator-() const
+constexpr auto VectorBase<Derived>::operator-() const
 {
     return VecUnaryMinusExpr<Derived>(this->derived());
 }
@@ -485,40 +518,40 @@ auto VectorBase<Derived>::operator-() const
 
 template<typename Derived>
 template<VectorExpr Expr>
-auto VectorBase<Derived>::operator+(const Expr &expr) const
+constexpr auto VectorBase<Derived>::operator+(const Expr &expr) const
 {
     return VecBinaryExpr<Derived, Expr, AddOp>(this->derived(), expr);
 }
 
 template<typename Derived>
 template<VectorExpr Expr>
-auto VectorBase<Derived>::operator -(const Expr &expr) const
+constexpr auto VectorBase<Derived>::operator -(const Expr &expr) const
 {
     return VecBinaryExpr<Derived, Expr, SubOp>(this->derived(), expr);
 }
 
 template<typename Derived>
 template<VectorExpr Expr>
-auto VectorBase<Derived>::cwiseProduct(const Expr &expr) const
+constexpr auto VectorBase<Derived>::cwiseProduct(const Expr &expr) const
 {
     return VecBinaryExpr<Derived, Expr, MulOp>(this->derived(), expr);
 }
 
 template<typename Derived>
 template<VectorExpr Expr>
-auto VectorBase<Derived>::cwiseDiv(const Expr &expr) const
+constexpr auto VectorBase<Derived>::cwiseDiv(const Expr &expr) const
 {
     return VecBinaryExpr<Derived, Expr, DivOp>(this->derived(), expr);
 }
 
 template<typename Derived>
-auto VectorBase<Derived>::operator*(value_type scalar) const
+constexpr auto VectorBase<Derived>::operator*(value_type scalar) const
 {
     return VecScalarExpr<Derived, value_type, MulOp>(this->derived(), scalar);
 }
 
 template<typename Derived>
-auto VectorBase<Derived>::operator/(value_type scalar) const
+constexpr auto VectorBase<Derived>::operator/(value_type scalar) const
 {
     return VecScalarExpr<Derived, value_type, DivOp>(this->derived(), scalar);
 }
@@ -597,21 +630,24 @@ constexpr auto VectorBase<Derived>::eval() const
 
 
 template<MatrixExpr LHS, VectorExpr RHS>
-auto operator*(const LHS &mat, const RHS &vec)
+[[nodiscard]]
+constexpr auto operator*(const LHS &mat, const RHS &vec)
 {
     return MatVecMulExpr<LHS, RHS>(mat, vec);
 }
 
 template<VectorExpr RHS, MatrixExpr LHS>
-auto operator*(const RHS &vec, const LHS &mat)
+[[nodiscard]]
+constexpr auto operator*(const RHS &vec, const LHS &mat)
 {
     return MatVecMulExpr<LHS, RHS>(mat, vec);
 }
 
 
 template<typename DerivedL, typename DerivedR>
-auto operator==(const VectorBase<DerivedL> &lhs,
-                const VectorBase<DerivedR> &rhs) -> bool
+[[nodiscard]]
+constexpr auto operator==(const VectorBase<DerivedL> &lhs,
+                          const VectorBase<DerivedR> &rhs) -> bool
 {
     static_assert(!vector_traits<DerivedL>::is_expression &&
         !vector_traits<DerivedR>::is_expression,
@@ -621,8 +657,9 @@ auto operator==(const VectorBase<DerivedL> &lhs,
 }
 
 template<typename DerivedL, typename DerivedR>
-auto operator!=(const VectorBase<DerivedL> &lhs,
-                const VectorBase<DerivedR> &rhs) -> bool
+[[nodiscard]]
+constexpr auto operator!=(const VectorBase<DerivedL> &lhs,
+                          const VectorBase<DerivedR> &rhs) -> bool
 {
     return !(lhs == rhs);
 }

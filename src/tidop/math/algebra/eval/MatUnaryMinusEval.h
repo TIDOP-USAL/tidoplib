@@ -74,7 +74,7 @@ public:
      * \brief Constructs the evaluator from a `MatUnaryMinusExpr`.
      * \param[in] expr The source unary minus expression.
      */
-    Evaluator(const MatUnaryMinusExpr<Expr> &expr)
+    constexpr Evaluator(const MatUnaryMinusExpr<Expr> &expr)
       : mExpr(expr.expr())
     {
     }
@@ -85,7 +85,8 @@ public:
      * \param[in] c Column index.
      * \return `-coeff` of the underlying expression at the same position.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return -mExpr.coeff(r, c);
     }
@@ -95,7 +96,8 @@ public:
      * \param[in] i Linear index (row‑major order).
      * \return `-coeff` of the underlying expression at the same index.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return -mExpr.coeff(i);
     }
@@ -107,6 +109,7 @@ public:
      * \return A `Packed<T>` containing the negated coefficients.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return -mExpr.packet(i);

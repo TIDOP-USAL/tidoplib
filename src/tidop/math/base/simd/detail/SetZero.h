@@ -41,38 +41,37 @@ class Packed;
 namespace detail
 {
 
-template<typename T>
-auto setZero() -> enableIfFloat<T, typename Packed<T>::simd_type>
+template<Arithmetic T>
+[[nodiscard]]
+auto set_zero_impl() -> typename Packed<T>::simd_type
 {
-#ifdef TL_HAVE_AVX
-    return _mm256_setzero_ps();
-#elif defined TL_HAVE_SSE
-    return _mm_setzero_ps();
-#endif
-}
+    if constexpr (Floating<T>) {
 
-template<typename T>
-auto setZero() -> enableIfDouble<T, typename Packed<T>::simd_type>
-{
 #ifdef TL_HAVE_AVX
-    return _mm256_setzero_pd();
-#elif defined TL_HAVE_SSE2
-    return _mm_setzero_pd();
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm256_setzero_ps();
+        } else {
+            return _mm256_setzero_pd();
+        }
+
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm_setzero_ps();
+        } else {
+            return _mm_setzero_ps();
+        }
+#endif
+
+    } else {
+
+#ifdef TL_HAVE_AVX
+        return _mm256_setzero_si256();
 #else
-    //...
+        return _mm_setzero_si128();
 #endif
-}
-
-
-template<typename T>
-auto setZero() -> enableIfIntegral<T, void>
-{
-
-#ifdef TL_HAVE_AVX
-    return _mm256_setzero_si256();
-#elif defined TL_HAVE_SSE2
-    return _mm_setzero_si128();
-#endif
+    }
 }
 
 } // namespace detail 

@@ -43,6 +43,7 @@ namespace detail
 
 
 template<typename T>
+[[nodiscard]]
 auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
 {
     Packed<T> packed;
@@ -57,6 +58,7 @@ auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T,
 }
 
 template<typename T>
+[[nodiscard]]
 auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
 {
     Packed<T> packed;
@@ -72,6 +74,7 @@ auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T
 
 
 template<typename T>
+[[nodiscard]]
 auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int8_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint8_t>::value,
@@ -115,6 +118,7 @@ auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 }
 
 template<typename T>
+[[nodiscard]]
 auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int16_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint16_t>::value,
@@ -132,6 +136,7 @@ auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 }
 
 template<typename T>
+[[nodiscard]]
 auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int32_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint32_t>::value,
@@ -163,6 +168,7 @@ auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t
 }
 
 template<typename T>
+[[nodiscard]]
 auto mul(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int64_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint64_t>::value,

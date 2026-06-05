@@ -71,7 +71,7 @@ public:
      * \brief Constructs the evaluator from a `MatrixBlock`.
      * \param[in] block The block view.
      */
-    Evaluator(const MatrixBlock<T> &block)
+    constexpr Evaluator(const MatrixBlock<T> &block)
         : mBlock(block)
     {}
 
@@ -81,7 +81,8 @@ public:
      * \param[in] c Column index.
      * \return The coefficient at the given position.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return mBlock(r,c);
     }
@@ -91,7 +92,8 @@ public:
      * \param[in] i Linear index.
      * \return The coefficient at the given linear position.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mBlock(i);
     }
@@ -105,7 +107,8 @@ public:
      * \note SIMD packet access is currently not implemented for `MatrixBlock`.
      *       Calling this method will trigger an assertion.
      */
-    auto packet(size_t i) const
+    [[nodiscard]]
+    constexpr auto packet(size_t i) const
     {
         TL_ASSERT(false, "SIMD packet not supported for this expression");
         return Packed<value_type>();

@@ -82,7 +82,7 @@ public:
      * \brief Constructs an evaluator from a `MatBinaryExpr`.
      * \param[in] expr The source binary expression.
      */
-    Evaluator(const MatBinaryExpr<LHS, RHS, Op> &expr)
+    constexpr Evaluator(const MatBinaryExpr<LHS, RHS, Op> &expr)
       : mLhs(expr.lhs()),
         mRhs(expr.rhs())
     {
@@ -94,7 +94,8 @@ public:
      * \param[in] c Column index.
      * \return The result of `Op(lhs(r,c), rhs(r,c))`.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return mOp(mLhs.coeff(r, c), mRhs.coeff(r, c));
     }
@@ -104,7 +105,8 @@ public:
      * \param[in] i Linear index.
      * \return The result of `Op(lhs(i), rhs(i))`.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mOp(mLhs.coeff(i), mRhs.coeff(i));
     }
@@ -116,6 +118,7 @@ public:
      * \return The result of `Op(lhs.packet(i), rhs.packet(i))` as a `Packed<T>`.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mOp(mLhs.packet(i), mRhs.packet(i));

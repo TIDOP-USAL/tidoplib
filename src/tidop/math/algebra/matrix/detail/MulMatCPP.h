@@ -33,7 +33,7 @@ namespace detail
 {
 
 template<MatrixExpr LHS, MatrixExpr RHS, typename OutMat>
-void mulmat_cpp(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
+constexpr void mulmat_cpp(const LHS &matrix1, const RHS &matrix2, OutMat &matrix)
 {
     using T = typename matrix_traits<OutMat>::value_type;
 

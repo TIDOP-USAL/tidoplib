@@ -74,7 +74,7 @@ public:
      * \brief Constructs the evaluator from a dense matrix.
      * \param[in] mat The matrix.
      */
-    Evaluator(const Mat& mat) 
+    constexpr Evaluator(const Mat& mat)
       : mMatrix(mat) {}
 
     /*!
@@ -83,7 +83,8 @@ public:
      * \param[in] c Column index.
      * \return The coefficient at the given position.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return mMatrix(r, c);
     }
@@ -93,7 +94,8 @@ public:
      * \param[in] i Linear index.
      * \return The coefficient at the given linear position.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mMatrix(i);
     }
@@ -105,6 +107,7 @@ public:
      * \return A `Packed<T>` containing the coefficients from the matrix.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mMatrix.packet(i);

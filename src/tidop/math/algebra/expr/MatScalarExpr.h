@@ -94,29 +94,34 @@ public:
      * \param[in] lhs    The matrix expression.
      * \param[in] scalar The scalar value.
      */
-    MatScalarExpr(const LHS &lhs, Scalar scalar)
+    constexpr MatScalarExpr(const LHS &lhs, Scalar scalar)
       : mLhs(lhs), 
         mScalar(scalar)
     {}
 
     /*! \brief Returns the number of rows (same as LHS). */
+    [[nodiscard]]
     constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
 
     /*! \brief Returns the number of columns (same as LHS). */
+    [[nodiscard]]
     constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
 
     /*! \brief Returns the left‑hand side matrix expression. */
-    auto lhs() const -> const LHS & { return mLhs; }
+    [[nodiscard]]
+    constexpr auto lhs() const -> const LHS & { return mLhs; }
 
     /*! \brief Returns the scalar value. */
-    auto scalar() const -> Scalar { return mScalar; }
+    [[nodiscard]]
+    constexpr auto scalar() const -> Scalar { return mScalar; }
 
     /*!
      * \brief Checks if the left‑hand side expression's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if the LHS expression aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr);
     }

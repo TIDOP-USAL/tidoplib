@@ -88,7 +88,7 @@ public:
      * \brief Constructor from a vector expression.
      * \param[in] expr The vector expression for the diagonal entries.
      */
-    DiagonalMatrixExpr(const Expr &expr)
+    constexpr DiagonalMatrixExpr(const Expr &expr)
       : mExpr(expr)
     {
     }
@@ -96,25 +96,29 @@ public:
     /*!
      * \brief Returns the number of rows (which equals the vector size).
      */
+    [[nodiscard]]
     constexpr auto rows() const noexcept -> size_t { return mExpr.size(); }
 
     /*!
      * \brief Returns the number of columns (which equals the vector size).
      */
+    [[nodiscard]]
     constexpr auto cols() const noexcept -> size_t { return mExpr.size(); }
 
     /*!
      * \brief Returns the underlying vector expression.
      * \return Const reference to the stored vector expression.
      */
-    auto expr() const -> const Expr & { return mExpr; }
+    [[nodiscard]] 
+    constexpr auto expr() const -> const Expr & { return mExpr; }
 
     /*!
      * \brief Checks whether the expression's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if the underlying vector expression aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mExpr.aliases(ptr);
     }

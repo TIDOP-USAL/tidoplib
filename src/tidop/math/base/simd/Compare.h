@@ -169,16 +169,16 @@ auto compare_integral(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
         return detail::greaterThan(b, a);       // a < b  ⇔ b > a
     } else if constexpr (Op == CompareOp::le) {
         // a <= b  ⇔ !(a > b)
-        return bitwiseNot(detail::greaterThan(a, b));
+        return bitwise_not_impl(detail::greaterThan(a, b));
     } else if constexpr (Op == CompareOp::gt) {
         return detail::greaterThan(a, b);
     } else if constexpr (Op == CompareOp::ge) {
         // a >= b  ⇔ !(b > a)
-        return bitwiseNot(detail::greaterThan(b, a));
+        return bitwise_not_impl(detail::greaterThan(b, a));
     } else if constexpr (Op == CompareOp::eq) {
         return detail::equalTo(a, b);
     } else if constexpr (Op == CompareOp::ne) {
-        return bitwiseNot(detail::equalTo(a, b));
+        return bitwise_not_impl(detail::equalTo(a, b));
     } else {
         static_assert(always_false_v<Op>, "Unsupported comparison operation");
     }

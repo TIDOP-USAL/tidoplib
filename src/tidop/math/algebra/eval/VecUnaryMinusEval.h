@@ -74,7 +74,7 @@ public:
      * \brief Constructs the evaluator from a `VecUnaryMinusExpr`.
      * \param[in] expr The source unary minus expression.
      */
-    Evaluator(const VecUnaryMinusExpr<Expr> &expr)
+    constexpr Evaluator(const VecUnaryMinusExpr<Expr> &expr)
       : mExpr(expr.expr())
     {
     }
@@ -84,7 +84,8 @@ public:
      * \param[in] i Element index.
      * \return `-coeff` of the underlying expression at the same index.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return -mExpr.coeff(i);
     }
@@ -96,6 +97,7 @@ public:
      * \return A `Packed<T>` containing the negated coefficients.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return -mExpr.packet(i);

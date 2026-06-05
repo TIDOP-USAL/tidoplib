@@ -199,7 +199,7 @@ public:
      * \brief Type cast operator to convert to SIMD intrinsic type.
      * \return The SIMD intrinsic value.
      */
-    operator simd_type() const noexcept;
+    constexpr operator simd_type() const noexcept;
 
     /*!
      * \brief Get the size of the SIMD packed type.
@@ -423,7 +423,7 @@ namespace internal
 
 template<typename T>
 [[nodiscard]]
-auto extractElement(const Packed<T> &packed, size_t index) -> typename Packed<T>::value_type
+auto extract_impl(const Packed<T> &packed, size_t index) -> typename Packed<T>::value_type
 {
     using Traits = PackedTraits<Packed<T>>;
 
@@ -438,7 +438,7 @@ auto extractElement(const Packed<T> &packed, size_t index) -> typename Packed<T>
 }
 
 template<typename T>
-auto insertElement(const Packed<T> &v, size_t index, T value) -> Packed<T>
+auto insert_impl(const Packed<T> &v, size_t index, T value) -> Packed<T>
 {
     using Traits = PackedTraits<Packed<T>>;
 
@@ -480,7 +480,7 @@ Packed<T>::Packed(simd_type packed)
 
 template<typename T>
 Packed<T>::Packed(value_type scalar)
-    : mValue(detail::set(scalar))
+    : mValue(detail::set_impl(scalar))
 {
 }
 
@@ -498,13 +498,13 @@ void Packed<T>::load(const value_type *src)
 template<typename T>
 void Packed<T>::loadAligned(const value_type *src)
 {
-    mValue = detail::loadPackedAligned(src);
+    mValue = detail::load_aligned_impl(src);
 }
 
 template<typename T>
 void Packed<T>::loadUnaligned(const value_type *src)
 {
-    mValue = detail::loadPackedUnaligned(src);
+    mValue = detail::load_unaligned_impl(src);
 }
 
 template<typename T>
@@ -521,31 +521,31 @@ void Packed<T>::store(value_type *dst) const
 template<typename T>
 void Packed<T>::storeAligned(value_type *dst) const
 {
-    detail::storePackedAligned(dst, mValue);
+    detail::store_aligned_impl(dst, mValue);
 }
 
 template<typename T>
 void Packed<T>::storeUnaligned(value_type *dst) const
 {
-    detail::storePackedUnaligned(dst, mValue);
+    detail::store_unaligned_impl(dst, mValue);
 }
 
 template<typename T>
 void Packed<T>::setScalar(value_type value)
 {
-    mValue = detail::set(value);
+    mValue = detail::set_impl(value);
 }
 
 template<typename T>
 auto Packed<T>::extract(size_t index) const -> value_type
 {
-    return internal::extractElement(*this, static_cast<int>(index));
+    return internal::extract_impl(*this, static_cast<int>(index));
 }
 
 template<typename T>
 void Packed<T>::insert(size_t index, value_type value)
 {
-    *this = internal::insertElement(*this, static_cast<int>(index), value);
+    *this = internal::insert_impl(*this, static_cast<int>(index), value);
 }
 
 template<typename T>
@@ -562,7 +562,7 @@ constexpr auto Packed<T>::size() noexcept -> size_t
 }
 
 template<typename T>
-Packed<T>::operator simd_type() const noexcept
+constexpr Packed<T>::operator simd_type() const noexcept
 {
     return mValue;
 }
@@ -670,19 +670,19 @@ auto Packed<T>::operator--() noexcept -> Packed<T>&
 template<typename T>
 auto Packed<T>::sum() const -> T
 {
-    return detail::horizontal_sum(*this);
+    return detail::horizontal_sum_impl(*this);
 }
 
 template<typename T>
 auto Packed<T>::reduceSum() const -> T
 {
-    return detail::horizontal_sum(*this);
+    return detail::horizontal_sum_impl(*this);
 }
 
 template<typename T>
 auto Packed<T>::zero() noexcept ->  Packed
 {
-    return detail::setZero<T>();
+    return detail::set_zero_impl<T>();
 }
 
 
@@ -692,7 +692,7 @@ template<typename T>
 [[nodiscard]]
 auto operator -(const Packed<T> &packet) -> Packed<T>
 {
-    return detail::changeSign(packet);
+    return detail::change_sign_impl(packet);
 }
 
 template<typename T>
@@ -700,7 +700,7 @@ template<typename T>
 auto operator+(const Packed<T> &packed1,
                const Packed<T> &packed2) -> Packed<T>
 {
-    return detail::add(packed1, packed2);
+    return detail::add_impl(packed1, packed2);
 }
 
 template<typename T>
@@ -721,7 +721,7 @@ template<typename T>
 [[nodiscard]]
 auto operator-(const Packed<T> &packed1, const Packed<T> &packed2) -> Packed<T>
 {
-    return detail::sub(packed1, packed2);
+    return detail::sub_impl(packed1, packed2);
 }
 
 template<typename T>
@@ -765,7 +765,7 @@ template<typename T>
 auto operator/(const Packed<T> &packed1,
                const Packed<T> &packed2) -> Packed<T>
 {
-    return detail::div(packed1, packed2);
+    return detail::div_impl(packed1, packed2);
 }
 
 template<typename T>
@@ -839,28 +839,28 @@ template<typename T>
 [[nodiscard]]
 auto operator~(const Packed<T> &a) -> Packed<T>
 {
-    return detail::bitwiseNot(a);
+    return detail::bitwise_not_impl(a);
 }
 
 template<typename T>
 [[nodiscard]]
 auto operator&(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 {
-    return detail::bitwiseAnd(a, b);
+    return detail::bitwise_and_impl(a, b);
 }
 
 template<typename T>
 [[nodiscard]]
 auto operator|(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 {
-    return detail::bitwiseOr(a, b);
+    return detail::bitwise_or_impl(a, b);
 }
 
 template<typename T>
 [[nodiscard]]
 auto operator^(const Packed<T> &a, const Packed<T> &b) -> Packed<T>
 {
-    return detail::bitwiseXor(a, b);
+    return detail::bitwise_xor_impl(a, b);
 }
 
 /* Transpose */

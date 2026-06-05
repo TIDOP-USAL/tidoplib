@@ -94,7 +94,8 @@ class Evaluator
  * \endcode
  */
 template<typename Expr>
-auto make_evaluator(const Expr &expr)
+[[nodiscard]]
+constexpr auto make_evaluator(const Expr &expr)
 {
     return Evaluator<std::remove_cvref_t<Expr>>(expr);
 }

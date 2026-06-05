@@ -36,13 +36,15 @@ namespace detail
 {
 
 template<typename T, size_t Rows, size_t Cols>
-auto determinant2x2(const Matrix<T, Rows, Cols> &mat) -> T
+[[nodiscard]]
+constexpr auto determinant2x2(const Matrix<T, Rows, Cols> &mat) -> T
 {
     return mat(0, 0) * mat(1, 1) - mat(0, 1) * mat(1, 0);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto determinant3x3(const Matrix<T, Rows, Cols> &mat) -> T
+[[nodiscard]]
+constexpr auto determinant3x3(const Matrix<T, Rows, Cols> &mat) -> T
 {
     T m00 = mat(0, 0); 
     T m01 = mat(0, 1); 
@@ -62,7 +64,8 @@ auto determinant3x3(const Matrix<T, Rows, Cols> &mat) -> T
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto determinant4x4(const Matrix<T, Rows, Cols> &mat) -> T
+[[nodiscard]]
+constexpr auto determinant4x4(const Matrix<T, Rows, Cols> &mat) -> T
 {
     T m00 = mat(0, 0);
     T m01 = mat(0, 1);
@@ -99,19 +102,23 @@ auto determinant4x4(const Matrix<T, Rows, Cols> &mat) -> T
 
 
 template<typename T, size_t Rows, size_t Cols>
-auto determinantnxn(const Matrix<T, Rows, Cols> &mat) -> T
+[[nodiscard]]
+constexpr auto determinantnxn(const Matrix<T, Rows, Cols> &mat) -> T
 {
     T d = consts::one<T>;
     size_t rows = mat.rows();
     size_t cols = mat.cols();
 
-    Matrix<T, DynamicData, DynamicData> matrix = mat;
+    // Lambda local para un abs portable en constexpr
+    auto constexpr_abs = [](T val) constexpr { return val < 0 ? -val : val; };
+
+    Matrix<T, Rows, Cols> matrix = mat;
 
     for (size_t i = 0; i < rows; ++i) {
         T pivotElement = matrix(i, i);
         size_t pivotRow = i;
         for (size_t r = i + 1; r < rows; ++r) {
-            if (std::abs(matrix(r, i)) > std::abs(pivotElement)) {
+            if (constexpr_abs(matrix(r, i)) > constexpr_abs(pivotElement)) {
                 pivotElement = matrix(r, i);
                 pivotRow = r;
             }
@@ -140,7 +147,8 @@ auto determinantnxn(const Matrix<T, Rows, Cols> &mat) -> T
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto matrix_determinant(const Matrix<T, Rows, Cols> &mat) -> T
+[[nodiscard]]
+constexpr auto matrix_determinant(const Matrix<T, Rows, Cols> &mat) -> T
 {
     static_assert(Rows == DynamicData || Cols == DynamicData || Rows == Cols,
         "Static matrices must be square");

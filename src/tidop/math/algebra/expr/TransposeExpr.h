@@ -91,25 +91,29 @@ public:
      * \brief Constructs a transpose expression from a matrix expression.
      * \param[in] expr The expression to transpose.
      */
-    explicit TransposeExpr(const Expr &expr) 
+    constexpr TransposeExpr(const Expr &expr)
       : mExpr(expr) 
     {}
 
     /*! \brief Returns the number of rows of the transposed matrix (original columns). */
+    [[nodiscard]] 
     constexpr auto rows() const noexcept -> size_t { return mExpr.cols(); }
 
     /*! \brief Returns the number of columns of the transposed matrix (original rows). */
+    [[nodiscard]] 
     constexpr auto cols() const noexcept -> size_t { return mExpr.rows(); }
 
     /*! \brief Returns the underlying expression. */
-    auto expr() const -> const Expr & { return mExpr; }
+    [[nodiscard]]
+    constexpr auto expr() const -> const Expr & { return mExpr; }
 
     /*!
      * \brief Checks if the underlying expression's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if the expression aliases `ptr`.
      */
-    auto aliases(const void *ptr) const 
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const
     {
         return mExpr.aliases(ptr);
     }

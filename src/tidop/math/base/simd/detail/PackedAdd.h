@@ -41,77 +41,59 @@ class Packed;
 namespace detail
 {
 
-template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+template<Arithmetic T>
+[[nodiscard]]
+auto add_impl(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
 {
+    if constexpr (Floating<T>) {
+
 #ifdef TL_HAVE_AVX
-    return _mm256_add_ps(packed1, packed2);
-#elif defined TL_HAVE_SSE
-    return _mm_add_ps(packed1, packed2);
-#endif
-}
 
-template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
-{
-#ifdef TL_HAVE_AVX
-    return _mm256_add_pd(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    return _mm_add_pd(packed1, packed2);
-#endif
-}
+        if constexpr (std::same_as<T, float>) {
+            return _mm256_add_ps(a, b);
+        } else {
+            return _mm256_add_pd(a, b);
+        }
 
-template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int8_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint8_t>::value,
-    Packed<T>>
-{
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm_add_ps(a, b);
+        } else {
+            return _mm_add_pd(a, b);
+        }
+#endif
+
+    } else {
+
 #ifdef TL_HAVE_AVX2
-    return _mm256_add_epi8(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    return _mm_add_epi8(packed1, packed2);
+
+        if constexpr (sizeof(T) == 1) {
+            return _mm256_add_epi8(a, b);
+        } else if constexpr (sizeof(T) == 2) {
+            return _mm256_add_epi16(a, b);
+        } else if constexpr (sizeof(T) == 4) {
+            return _mm256_add_epi32(a, b);
+        } else {
+            return _mm256_add_epi64(a, b);
+        }
+
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (sizeof(T) == 1) {
+            return _mm_add_epi8(a, b);
+        } else if constexpr (sizeof(T) == 2) {
+            return _mm_add_epi16(a, b);
+        } else if constexpr (sizeof(T) == 4) {
+            return _mm_add_epi32(a, b);
+        } else {
+            return _mm_add_epi64(a, b);
+        }
+
 #endif
+    }
 }
 
-template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int16_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint16_t>::value,
-    Packed<T>>
-{
-#ifdef TL_HAVE_AVX2
-    return _mm256_add_epi16(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    return _mm_add_epi16(packed1, packed2);
-#endif
-}
-
-template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int32_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint32_t>::value,
-    Packed<T>>
-{
-#ifdef TL_HAVE_AVX2
-    return _mm256_add_epi32(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    return _mm_add_epi32(packed1, packed2);
-#endif
-}
-
-template<typename T>
-auto add(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int64_t>::value ||
-    std::is_same<std::remove_cv_t<T>, uint64_t>::value,
-    Packed<T>>
-{
-#ifdef TL_HAVE_AVX2
-    return _mm256_add_epi64(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    return _mm_add_epi64(packed1, packed2);
-#endif
-}
 
 } // namespace detail 
 

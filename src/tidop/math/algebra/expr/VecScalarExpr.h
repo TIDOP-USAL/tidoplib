@@ -106,26 +106,30 @@ public:
      * \param[in] lhs    The vector expression.
      * \param[in] scalar The scalar value.
      */
-    VecScalarExpr(const LHS &lhs, Scalar scalar)
+    constexpr VecScalarExpr(const LHS &lhs, Scalar scalar)
       : mLhs(lhs), 
         mScalar(scalar)
     {}
 
     /*! \brief Returns the number of elements (same as LHS). */
+    [[nodiscard]]
     constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
 
     /*! \brief Returns the left‑hand side vector expression. */
-    auto lhs() const -> const LHS & { return mLhs; }
+    [[nodiscard]]
+    constexpr auto lhs() const -> const LHS & { return mLhs; }
 
     /*! \brief Returns the scalar value. */
-    auto scalar() const -> Scalar { return mScalar; }
+    [[nodiscard]]
+    constexpr auto scalar() const -> Scalar { return mScalar; }
 
     /*!
      * \brief Checks if the left‑hand side expression's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if the LHS expression aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr);
     }

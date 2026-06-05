@@ -36,7 +36,8 @@ namespace detail
 {
 
 template<typename T, size_t Rows, size_t Cols>
-auto adjoint2x2(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
+[[nodiscard]]
+constexpr auto adjoint2x2(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 {
     Matrix<T, Rows, Cols> result;
     if constexpr (Rows == DynamicData || Cols == DynamicData) {
@@ -53,7 +54,8 @@ auto adjoint2x2(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 
 
 template<typename T, size_t Rows, size_t Cols>
-auto adjoint3x3(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
+[[nodiscard]]
+constexpr auto adjoint3x3(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 {
     Matrix<T, Rows, Cols> result;
     if constexpr (Rows == DynamicData || Cols == DynamicData) {
@@ -84,7 +86,8 @@ auto adjoint3x3(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto adjoint4x4(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
+[[nodiscard]]
+constexpr auto adjoint4x4(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 {
     Matrix<T, Rows, Cols> result;
     if constexpr (Rows == DynamicData || Cols == DynamicData) {
@@ -142,14 +145,16 @@ auto adjoint4x4(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto adjointnxn(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
+[[nodiscard]]
+constexpr auto adjointnxn(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 {
     Matrix<T, Rows, Cols> result = mat.cofactorMatrix();
-    return result.transpose();
+    return result.transpose().eval();
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto matrix_adjoint(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
+[[nodiscard]]
+constexpr auto matrix_adjoint(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 {
     static_assert(Rows == DynamicData || Cols == DynamicData || Rows == Cols,
         "Static matrices must be square");

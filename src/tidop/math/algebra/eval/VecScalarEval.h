@@ -80,7 +80,7 @@ public:
      * \brief Constructs the evaluator from a `VecScalarExpr`.
      * \param[in] expr The source scalar expression.
      */
-    Evaluator(const VecScalarExpr<LHS, Scalar, Op> &expr)
+    constexpr Evaluator(const VecScalarExpr<LHS, Scalar, Op> &expr)
       : mLhs(expr.lhs()),
         mScalar(expr.scalar())
     {
@@ -91,7 +91,8 @@ public:
      * \param[in] i Element index.
      * \return The result of `Op(lhs[i], scalar)`.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mOp(mLhs.coeff(i), mScalar);
     }
@@ -104,6 +105,7 @@ public:
      *         `Op` to the LHS packet.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mOp(mLhs.packet(i), Packed<value_type>(mScalar));

@@ -36,7 +36,7 @@ namespace detail
 {
 
 template<typename T, size_t Rows, size_t Cols>
-auto matrix_reduced_row_echelon_form(Matrix<T, Rows, Cols> matrix) -> Matrix<T, Rows, Cols>
+constexpr auto matrix_reduced_row_echelon_form(Matrix<T, Rows, Cols> matrix) -> Matrix<T, Rows, Cols>
 {
     size_t rows = matrix.rows();
     size_t cols = matrix.cols();

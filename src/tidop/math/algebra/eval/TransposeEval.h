@@ -83,7 +83,7 @@ public:
      * \brief Constructs the evaluator from a `TransposeExpr`.
      * \param[in] expr The transpose expression.
      */
-    Evaluator(const TransposeExpr<Expr>& expr)
+    constexpr Evaluator(const TransposeExpr<Expr>& expr)
       : mExpr(expr.expr()),
         mCols(expr.cols())
     {}
@@ -94,7 +94,8 @@ public:
      * \param[in] c Column index in the transposed matrix.
      * \return The coefficient from the original expression at position (c, r).
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return mExpr.coeff(c, r);
     }
@@ -108,7 +109,8 @@ public:
      * stored number of columns (`mCols`), swaps row and column, and forwards
      * the call to the underlying evaluator.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         size_t c = i % mCols;
         size_t r = i / mCols;
@@ -126,7 +128,8 @@ public:
      *       transposed matrix is not stored contiguously, making efficient
      *       vectorised access impossible in a generic way.
      */
-    auto packet(size_t i) const
+    [[nodiscard]]
+    constexpr auto packet(size_t i) const
     {
         TL_ASSERT(false, "SIMD packet not supported for this expression");
         return Packed<value_type>();

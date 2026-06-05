@@ -46,7 +46,7 @@ namespace detail
 {
 
 template<typename Matrix_t, MatrixExpr Expr>
-auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
+constexpr auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
 {
     using CleanExpr = std::remove_cvref_t<Expr>;
     using value_type = typename Matrix_t::value_type;
@@ -72,35 +72,55 @@ auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
     if constexpr (is_matrix_product_v<CleanExpr>) {
         const auto &lhs = expr.lhs();
         const auto &rhs = expr.rhs();
-        //dst.fill(0);
-        mulmat(lhs, rhs, dst);
+        
+        if (std::is_constant_evaluated()) {
+            decltype(auto) a = require_linear_access(lhs);
+            decltype(auto) b = require_linear_access(rhs);
+            mulmat_cpp(a, b, dst);
+        } else {
+            mulmat(lhs, rhs, dst);
+        }
+
         return dst;
     }
 
-    // Evaluator
-    Evaluator<CleanExpr> eval(expr);
+    if (std::is_constant_evaluated()) {
 
-    size_t size = dst.rows() * dst.cols();
-    size_t i = 0;
+        Evaluator<CleanExpr> eval(expr);
 
-    // SIMD
-#ifdef TL_HAVE_SIMD_INTRINSICS
-    if constexpr (matrix_traits<CleanExpr>::has_contiguous_memory) {
-        constexpr size_t packed_size = PackedTraits<Packed<value_type>>::size;
-        const size_t max_size = size - (size % packed_size);
-
-        for (; i < max_size; i += packed_size) {
-            Packed<value_type> result_packet = eval.packet(i);
-            result_packet.storeUnaligned(&dst.data()[i]);
+        size_t size = dst.rows() * dst.cols();
+        for (size_t i = 0; i < size; ++i) {
+            dst(i) = eval.coeff(i);
         }
-    }
+
+        return dst;
+    } else {
+
+        // Evaluator
+        Evaluator<CleanExpr> eval(expr);
+
+        size_t size = dst.rows() * dst.cols();
+        size_t i = 0;
+
+        // SIMD
+#ifdef TL_HAVE_SIMD_INTRINSICS
+        if constexpr (matrix_traits<CleanExpr>::has_contiguous_memory) {
+            constexpr size_t packed_size = PackedTraits<Packed<value_type>>::size;
+            const size_t max_size = size - (size % packed_size);
+
+            for (; i < max_size; i += packed_size) {
+                Packed<value_type> result_packet = eval.packet(i);
+                result_packet.storeUnaligned(&dst.data()[i]);
+            }
+        }
 #endif
 
-    for (; i < size; ++i) {
-        dst(i) = eval.coeff(i);
-    }
+        for (; i < size; ++i) {
+            dst(i) = eval.coeff(i);
+        }
 
-    return dst;
+        return dst;
+    }
 }
 
 

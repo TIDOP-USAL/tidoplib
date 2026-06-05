@@ -73,7 +73,7 @@ public:
      * \brief Constructs the evaluator from a `MatrixCol`.
      * \param[in] col The column view.
      */
-    Evaluator(const MatrixCol<Scalar> &col) 
+    constexpr Evaluator(const MatrixCol<Scalar> &col)
       : mMatrixCol(col) {}
 
     /*!
@@ -81,7 +81,8 @@ public:
      * \param[in] i Row index (0‑based).
      * \return The coefficient at the given row.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mMatrixCol[i];
     }
@@ -95,7 +96,8 @@ public:
      * \note SIMD packet access is currently not implemented for `MatrixCol`.
      *       If called, this method triggers an assertion.
      */
-    auto packet(size_t i) const
+    [[nodiscard]]
+    constexpr auto packet(size_t i) const
     {
         TL_ASSERT(false, "SIMD packet not supported for this expression");
         return Packed<value_type>();

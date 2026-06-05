@@ -22,27 +22,27 @@
  *                                                                        *
  **************************************************************************/
 
-#include <map>
-#include <string>
-#include <memory>
-
 #include "tidop/config.h"
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/macros/SmartPtr.h"
 #include "tidop/core/base/Exception.h"
+#include "tidop/geotools/GeoTools.h"
+#include "tidop/pctools/PointCloudReader.h"
+#include "tidop/pctools/impl/PointCloudReaderPDAL.h"
+#include "tidop/pctools/impl/PlyReader.h"
 
+TL_DISABLE_WARNINGS
 #include <proj.h>
 #include <copc-lib/las/header.hpp>
 #include <lazperf/readers.hpp>
 #include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
+TL_DEFAULT_WARNINGS
 
-
-#include "tidop/geotools/GeoTools.h"
-#include "tidop/pctools/PointCloudReader.h"
-#include "tidop/pctools/impl/PointCloudReaderPDAL.h"
-#include "tidop/pctools/impl/PlyReader.h"
+#include <map>
+#include <string>
+#include <memory>
 
 namespace tl
 {

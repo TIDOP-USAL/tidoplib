@@ -68,7 +68,8 @@ struct AddOp
      * \return The sum `a + b`.
      */
     template<typename T>
-    constexpr T operator()(const T &a, const T &b) const
+    [[nodiscard]]
+    constexpr auto operator()(const T &a, const T &b) const noexcept -> T
     {
         return a + b;
     }
@@ -83,7 +84,8 @@ struct AddOp
      * \note This overload is only available when SIMD intrinsics are enabled.
      */
     template<typename T>
-    auto operator()(const Packed<T> &a, const Packed<T> &b) const
+    [[nodiscard]]
+    auto operator()(const Packed<T> &a, const Packed<T> &b) const noexcept -> Packed<T>
     {
         return a + b;
     }

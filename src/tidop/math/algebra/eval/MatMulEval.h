@@ -94,7 +94,7 @@ public:
      * (`expr.rows()`, `expr.cols()`). The actual multiplication is performed
      * by calling `detail::mulmat` on the evaluated left and right operands.
      */
-    Evaluator(const MatMulExpr<LHS,RHS> &expr)
+    constexpr Evaluator(const MatMulExpr<LHS,RHS> &expr)
       : mTemp(expr.rows(), expr.cols())
     {
         detail::mulmat(expr.lhs(), expr.rhs(), mTemp);
@@ -106,7 +106,8 @@ public:
      * \param[in] c Column index.
      * \return The product coefficient.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return mTemp(r,c);
     }
@@ -116,7 +117,8 @@ public:
      * \param[in] i Linear index.
      * \return The product coefficient.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mTemp(i);
     }
@@ -128,6 +130,7 @@ public:
      * \return A `Packed<T>` containing the coefficients from the temporary matrix.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mTemp.packet(i);

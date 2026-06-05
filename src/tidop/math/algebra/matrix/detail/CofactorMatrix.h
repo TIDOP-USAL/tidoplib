@@ -38,7 +38,7 @@ namespace detail
 {
 
 template<typename T, size_t Rows, size_t Cols>
-auto matrix_cofactor_matrix(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
+constexpr auto matrix_cofactor_matrix(const Matrix<T, Rows, Cols> &mat) -> Matrix<T, Rows, Cols>
 {
     static_assert(Rows == Cols, "Matrices must be square");
 

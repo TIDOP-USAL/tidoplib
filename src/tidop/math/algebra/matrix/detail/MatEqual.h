@@ -33,7 +33,8 @@ namespace detail
 {
 
 template<typename L, typename R>
-bool matrix_equal(const L &lhs, const R &rhs) 
+[[nodiscard]]
+constexpr auto matrix_equal(const L &lhs, const R &rhs) -> bool
 {
     if (lhs.rows() != rhs.rows() || lhs.cols() != rhs.cols()) {
         return false;

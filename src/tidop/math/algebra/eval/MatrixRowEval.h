@@ -75,7 +75,7 @@ public:
      * \brief Constructs the evaluator from a `MatrixRow`.
      * \param[in] row The row view.
      */
-    Evaluator(const MatrixRow<Scalar> &row) 
+    constexpr Evaluator(const MatrixRow<Scalar> &row)
       : mMatrixRow(row) {}
 
     /*!
@@ -83,7 +83,8 @@ public:
      * \param[in] i Column index (0‑based).
      * \return The coefficient at the given column.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mMatrixRow[i];
     }
@@ -95,6 +96,7 @@ public:
      * \return A `Packed<T>` containing the coefficients from the row.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mMatrixRow.packet(i);

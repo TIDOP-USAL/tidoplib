@@ -88,22 +88,25 @@ public:
      * \brief Constructs a unary minus expression from a vector expression.
      * \param[in] expr The expression to negate.
      */
-    explicit VecUnaryMinusExpr(const Expr &expr)
+    constexpr VecUnaryMinusExpr(const Expr &expr)
       : mExpr(expr) 
     {}
 
     /*! \brief Returns the number of elements (same as original). */
+    [[nodiscard]]
     constexpr auto size() const noexcept -> size_t { return mExpr.size(); }
 
     /*! \brief Returns the underlying expression. */
-    auto expr() const -> const Expr & { return mExpr; }
+    [[nodiscard]]
+    constexpr auto expr() const -> const Expr & { return mExpr; }
 
     /*!
      * \brief Checks if the underlying expression's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if the expression aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mExpr.aliases(ptr);
     }

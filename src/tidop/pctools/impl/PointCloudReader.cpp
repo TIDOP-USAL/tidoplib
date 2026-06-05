@@ -34,13 +34,14 @@
 
 #include "tidop/pctools/PointCloudReader.h"
 
+TL_DISABLE_WARNINGS
 #include <proj.h>
 
 #include <copc-lib/las/header.hpp>
 #include <lazperf/readers.hpp>
 #include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
-
+TL_DEFAULT_WARNINGS
 
 namespace tl
 {

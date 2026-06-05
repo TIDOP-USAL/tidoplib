@@ -26,6 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/matrix/Matrix.h>
 #include <tidop/math/algebra/vector/Vector.h>
+#include <tidop/math/algebra/matrices.h>
 
 using namespace tl;
 
@@ -4638,3 +4639,18 @@ BOOST_AUTO_TEST_CASE(test_big_matrix)
 }
 
 ///TODO: probar con expresiones más complejas, como A*B + C*D, etc.
+
+
+// Tiempo de compilación
+
+BOOST_AUTO_TEST_CASE(compile_time_test)
+{
+    constexpr Matrix4x4f t = Matrices::scale(1.5f, 1.5f, 1.5f) * Matrices::translate(10.f, 45.f, 5.f);
+
+    BOOST_CHECK_EQUAL(1.5f, t[0][0]);
+    BOOST_CHECK_EQUAL(1.5f, t[1][1]);
+    BOOST_CHECK_EQUAL(1.5f, t[2][2]);
+    BOOST_CHECK_EQUAL(1.5f * 10.f, t[0][3]);
+    BOOST_CHECK_EQUAL(1.5f * 45.f, t[1][3]);
+    BOOST_CHECK_EQUAL(1.5f * 5.f, t[2][3]);
+}

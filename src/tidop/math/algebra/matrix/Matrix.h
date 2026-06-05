@@ -125,7 +125,7 @@ public:
      * For static matrices, elements are default‑initialized.
      * For dynamic matrices, creates an empty matrix (0×0).
      */
-    Matrix();
+    constexpr Matrix();
 
     /*!
      * \brief Constructs a matrix with given number of rows and columns.
@@ -133,7 +133,7 @@ public:
      * \param[in] cols Number of columns (ignored for static matrices).
      * Elements are default‑initialized (no values set).
      */
-    Matrix(size_t rows, size_t cols);
+    constexpr Matrix(size_t rows, size_t cols);
 
     /*!
      * \brief Constructs a matrix with given dimensions and initializes all elements to a value.
@@ -141,19 +141,19 @@ public:
      * \param[in] cols Number of columns (ignored for static matrices).
      * \param[in] value Value to fill the matrix with.
      */
-    Matrix(size_t rows, size_t cols, T value);
+    constexpr Matrix(size_t rows, size_t cols, T value);
 
     /*!
      * \brief Copy constructor.
      * \param[in] mat Matrix to copy.
      */
-    Matrix(const Matrix &mat);
+    constexpr Matrix(const Matrix &mat);
 
     /*!
      * \brief Move constructor.
      * \param[in] mat Matrix to move.
      */
-    Matrix(Matrix &&mat) noexcept;
+    constexpr Matrix(Matrix &&mat) noexcept;
 
     /*!
      * \brief Constructs a matrix from a flat initializer list (row‑major order).
@@ -163,14 +163,14 @@ public:
      * a column vector (number of rows = size, columns = 1) unless the shape is
      * provided otherwise (use the 2D initializer list overload).
      */
-    Matrix(std::initializer_list<T> values);
+    constexpr Matrix(std::initializer_list<T> values);
 
     /*!
      * \brief Constructs a matrix from a 2D initializer list.
      * \param[in] values List of rows, each row being a list of values.
      * Example: `{{1,2},{3,4}}` creates a 2×2 matrix.
      */
-    Matrix(std::initializer_list<std::initializer_list<T>> values);
+    constexpr Matrix(std::initializer_list<std::initializer_list<T>> values);
 
     /*!
      * \brief Constructs a matrix from raw data.
@@ -178,7 +178,7 @@ public:
      * \param[in] rows Number of rows.
      * \param[in] cols Number of columns.
      */
-    Matrix(const T *data, size_t rows, size_t cols);
+    constexpr Matrix(const T *data, size_t rows, size_t cols);
 
     /*!
      * \brief Constructs a matrix from a matrix expression.
@@ -186,21 +186,21 @@ public:
      * \param[in] expr The expression to evaluate.
      */
     template<MatrixExpr Expr>
-    Matrix(const Expr &expr);
+    constexpr Matrix(const Expr &expr);
 	
     /*!
      * \brief Copy assignment operator
      * \param[in] matrix Object being copied
      * \return Reference to the assigned object
      */
-    auto operator=(const Matrix &matrix) -> Matrix &;
+    constexpr auto operator=(const Matrix &matrix) -> Matrix &;
 
     /*!
      * \brief Move assignment operator
      * \param[in] matrix Object being moved
      * \return Reference to the assigned object
      */
-    auto operator=(Matrix &&matrix) noexcept -> Matrix &;
+    constexpr auto operator=(Matrix &&matrix) noexcept -> Matrix &;
 
     /*!
      * \brief Assignment from a matrix expression.
@@ -209,7 +209,7 @@ public:
      * \return Reference to `*this`.
      */
     template<MatrixExpr Expr>
-    auto operator=(const Expr &expr) -> Matrix& 
+    constexpr auto operator=(const Expr &expr) -> Matrix&
     {
         return detail::assign(*this, expr);
     }	
@@ -218,12 +218,14 @@ public:
      * \brief Number of rows.
      * \return Number of rows (compile‑time constant for static matrices).
      */
+    [[nodiscard]]
     constexpr auto rows() const noexcept -> size_t { return mRows; }
 
     /*!
      * \brief Number of columns.
      * \return Number of columns (compile‑time constant for static matrices).
      */
+    [[nodiscard]]
     constexpr auto cols() const noexcept -> size_t { return mCols; }
 
     /*!
@@ -238,7 +240,8 @@ public:
      * double value = matrix.at(0, 0);
      * \endcode
      */
-    auto at(size_t r, size_t c) -> reference { return mData.at(r * mCols + c); }
+    [[nodiscard]]
+    constexpr auto at(size_t r, size_t c) -> reference { return mData.at(r * mCols + c); }
 
     /*!
      * \brief Constant reference to the element at position (r, c)
@@ -250,7 +253,8 @@ public:
      * double value = matrix.at(0, 0);
      * \endcode
      */
-    auto at(size_t r, size_t c) const -> const_reference { return mData.at(r * mCols + c); }
+    [[nodiscard]]
+    constexpr auto at(size_t r, size_t c) const -> const_reference { return mData.at(r * mCols + c); }
 
     /*!
      * \brief Reference to the element at position (r, c)
@@ -264,7 +268,8 @@ public:
      * double value = matrix(0, 0);
      * \endcode
      */
-    auto operator()(size_t r, size_t c) noexcept -> reference { return mData[r * mCols + c]; }
+    [[nodiscard]]
+    constexpr auto operator()(size_t r, size_t c) noexcept -> reference { return mData[r * mCols + c]; }
 
     /*!
      * \brief Constant reference to the element at position (r, c)
@@ -276,7 +281,8 @@ public:
      * double value = matrix(0, 0);
      * \endcode
      */
-    auto operator()(size_t r, size_t c) const noexcept -> const_reference { return mData[r * mCols + c]; }
+    [[nodiscard]]
+    constexpr auto operator()(size_t r, size_t c) const noexcept -> const_reference { return mData[r * mCols + c]; }
 
     /*!
      * \brief Reference to the element
@@ -291,7 +297,8 @@ public:
      * double value = matrix(4); // value == 1.5
      * \endcode
      */
-    auto operator()(size_t position) noexcept -> reference { return mData[position]; }
+    [[nodiscard]]
+    constexpr auto operator()(size_t position) noexcept -> reference { return mData[position]; }
 
     /*!
      * \brief Constant reference to the element
@@ -306,21 +313,24 @@ public:
      * double value = matrix(4); // value == 1.5
      * \endcode
      */
-    auto operator()(size_t position) const noexcept -> const_reference { return mData[position]; }
+    [[nodiscard]]
+    constexpr auto operator()(size_t position) const noexcept -> const_reference { return mData[position]; }
 
     /*!
      * \brief Row access using subscript operator (returns a row view).
      * \param[in] r Row index.
      * \return `MatrixRow` object (mutable).
      */
-    auto operator[](size_t r) -> MatrixRow<T> { return row(r); }
+    [[nodiscard]]
+    constexpr auto operator[](size_t r) -> MatrixRow<T> { return row(r); }
 
     /*!
      * \brief Const row access using subscript operator.
      * \param[in] r Row index.
      * \return Const `MatrixRow` object.
      */
-    auto operator[](size_t r) const -> const MatrixRow<const T> { return row(r); }
+    [[nodiscard]]
+    constexpr auto operator[](size_t r) const -> const MatrixRow<const T> { return row(r); }
 
     /*!
      * \brief Returns a mutable block (submatrix) view.
@@ -398,7 +408,8 @@ public:
      * A.diagonal() *= 2;
      * \endcode
      */
-    auto diagonal() -> MatrixDiagonal<T>;
+    [[nodiscard]]
+    constexpr auto diagonal() -> MatrixDiagonal<T>;
 
     /*!
      * \brief Returns a const view of the matrix diagonal.
@@ -417,27 +428,28 @@ public:
      * // diag[0] = 5.0;          // error: read‑only view
      * \endcode
      */
-    auto diagonal() const -> MatrixDiagonal<const T>;
+    [[nodiscard]]
+    constexpr auto diagonal() const -> MatrixDiagonal<const T>;
 
     /*!
      * \brief Swap two rows
      * \param[in] i First row to swap
      * \param[in] j Second row to swap
      */
-    void swapRows(size_t i, size_t j);
+    constexpr void swapRows(size_t i, size_t j);
 
     /*!
      *\brief Swap two cols
      *\param[in] i First cols to swap
      *\param[in] j Second cols to swap
      */
-    void swapCols(size_t i, size_t j);
+    constexpr void swapCols(size_t i, size_t j);
 
     /*!
      * \brief Fills all elements with a given value.
      * \param[in] value Value to fill.
      */
-    void fill(T value);
+    constexpr void fill(T value);
 
     /* Factory methods */
 
@@ -457,8 +469,10 @@ public:
      * \return Zero matrix.
      */
     TL_DEPRECATED("zeros(size_t rows = 0, size_t cols = 0)", "4.0")
-    static auto zero(size_t rows = 0, size_t cols = 0) -> Matrix;
-    static auto zeros(size_t rows = 0, size_t cols = 0) -> Matrix;
+    [[nodiscard]]
+    static constexpr auto zero(size_t rows = 0, size_t cols = 0) -> Matrix;
+    [[nodiscard]]
+    static constexpr auto zeros(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     /*!
      * \brief Creates a matrix of ones.
@@ -475,7 +489,8 @@ public:
      * \param[in] cols Number of columns.
      * \return Matrix with all elements set to 1.
      */
-    static auto ones(size_t rows = 0, size_t cols = 0) -> Matrix;
+    [[nodiscard]]
+    static constexpr auto ones(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     /*!
      * \brief Creates an identity matrix.
@@ -492,7 +507,8 @@ public:
      *                 but still has ones on the main diagonal up to min(rows, cols)).
      * \return Identity matrix.
      */
-    static auto identity(size_t rows = 0, size_t cols = 0) -> Matrix;
+    [[nodiscard]]
+    static constexpr auto identity(size_t rows = 0, size_t cols = 0) -> Matrix;
 
     /*!
      * \brief Creates a matrix with random values uniformly distributed in [0,1].
@@ -506,20 +522,23 @@ public:
      * \brief Returns a pointer to the underlying data.
      * \return Mutable pointer.
      */
-    auto data() noexcept -> pointer { return mData.data(); }
+    [[nodiscard]]
+    constexpr auto data() noexcept -> pointer { return mData.data(); }
 
     /*!
      * \brief Returns a const pointer to the underlying data.
      * \return Const pointer.
      */
-    auto data() const noexcept -> const_pointer { return mData.data(); }
+    [[nodiscard]]
+    constexpr auto data() const noexcept -> const_pointer { return mData.data(); }
 
     /*!
      * \brief Checks if the matrix’s data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if internal storage uses that address.
      */
-	auto aliases(const void* ptr) const -> bool;
+    [[nodiscard]]
+    constexpr auto aliases(const void* ptr) const -> bool;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
     /*!
@@ -536,7 +555,7 @@ public:
      * \param[in] cols New number of columns.
      * \note Existing data is lost; elements are default‑initialized.
      */
-    void resize(size_t rows, size_t cols)
+    constexpr void resize(size_t rows, size_t cols)
         requires (Rows == DynamicData || Cols == DynamicData);
 
 private:
@@ -563,7 +582,7 @@ using Matrix4x4d = Matrix<double, 4, 4>;
 /* Matrix implementation */
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix()
+constexpr Matrix<T, Rows, Cols>::Matrix()
   : mData(Data<T, data::size>()),
     mRows(Rows == DynamicData ? 0 : Rows),
     mCols(Cols == DynamicData ? 0 : Cols)
@@ -572,7 +591,7 @@ Matrix<T, Rows, Cols>::Matrix()
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols)
+constexpr Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols)
   : mData(Data<T, data::size>(rows * cols)),
     mRows(Rows == DynamicData ? rows : Rows),
     mCols(Cols == DynamicData ? cols : Cols)
@@ -580,7 +599,7 @@ Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols, T value)
+constexpr Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols, T value)
   : mData(Data<T, data::size>(rows *cols, value)),
     mRows(Rows == DynamicData ? rows : Rows),
     mCols(Cols == DynamicData ? cols : Cols)
@@ -588,7 +607,7 @@ Matrix<T, Rows, Cols>::Matrix(size_t rows, size_t cols, T value)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(const Matrix &mat)
+constexpr Matrix<T, Rows, Cols>::Matrix(const Matrix &mat)
   : mData(mat.mData),
     mRows(mat.mRows),
     mCols(mat.mCols)
@@ -596,7 +615,7 @@ Matrix<T, Rows, Cols>::Matrix(const Matrix &mat)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(Matrix &&mat) noexcept
+constexpr Matrix<T, Rows, Cols>::Matrix(Matrix &&mat) noexcept
   : mData(std::move(mat.mData)),
     mRows(std::move(mat.mRows)),
     mCols(std::move(mat.mCols))
@@ -604,7 +623,7 @@ Matrix<T, Rows, Cols>::Matrix(Matrix &&mat) noexcept
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(std::initializer_list<T> values)
+constexpr Matrix<T, Rows, Cols>::Matrix(std::initializer_list<T> values)
 {
     if (Rows == DynamicData && Cols == DynamicData) {
 
@@ -632,7 +651,7 @@ Matrix<T, Rows, Cols>::Matrix(std::initializer_list<T> values)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(std::initializer_list<std::initializer_list<T>> values)
+constexpr Matrix<T, Rows, Cols>::Matrix(std::initializer_list<std::initializer_list<T>> values)
 {
     if (Rows == DynamicData && Cols == DynamicData) {
 
@@ -683,7 +702,7 @@ Matrix<T, Rows, Cols>::Matrix(std::initializer_list<std::initializer_list<T>> va
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(const T *data, size_t rows, size_t cols)
+constexpr Matrix<T, Rows, Cols>::Matrix(const T *data, size_t rows, size_t cols)
   : mData(Data<T, data::size>(data, rows *cols)),
     mRows(Rows == DynamicData ? rows : Rows),
     mCols(Cols == DynamicData ? cols : Cols)
@@ -692,7 +711,7 @@ Matrix<T, Rows, Cols>::Matrix(const T *data, size_t rows, size_t cols)
 
 template<typename T, size_t Rows, size_t Cols>
 template<MatrixExpr Expr>
-Matrix<T, Rows, Cols>::Matrix(const Expr &expr)
+constexpr Matrix<T, Rows, Cols>::Matrix(const Expr &expr)
   : mData(Data<T, data::size>(expr.rows() *expr.cols())),
     mRows(Rows == DynamicData ? expr.rows() : Rows),
     mCols(Cols == DynamicData ? expr.cols() : Cols)
@@ -705,7 +724,7 @@ Matrix<T, Rows, Cols>::Matrix(const Expr &expr)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::operator=(const Matrix &matrix) -> Matrix &
+constexpr auto Matrix<T, Rows, Cols>::operator=(const Matrix &matrix) -> Matrix &
 {
     if (this != &matrix) {
         this->mData = matrix.mData;
@@ -717,7 +736,7 @@ auto Matrix<T, Rows, Cols>::operator=(const Matrix &matrix) -> Matrix &
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::operator=(Matrix &&matrix) noexcept -> Matrix &
+constexpr auto Matrix<T, Rows, Cols>::operator=(Matrix &&matrix) noexcept -> Matrix &
 {
     if (this != &matrix) {
         this->mData = std::move(matrix.mData);
@@ -729,7 +748,7 @@ auto Matrix<T, Rows, Cols>::operator=(Matrix &&matrix) noexcept -> Matrix &
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::swapRows(size_t i, size_t j)
+constexpr void Matrix<T, Rows, Cols>::swapRows(size_t i, size_t j)
 {
     for (size_t c = 0; c < mCols; c++) {
         std::swap(mData[i * mCols + c], mData[j * mCols + c]);
@@ -737,7 +756,7 @@ void Matrix<T, Rows, Cols>::swapRows(size_t i, size_t j)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::swapCols(size_t i, size_t j)
+constexpr void Matrix<T, Rows, Cols>::swapCols(size_t i, size_t j)
 {
     for (size_t r = 0; r < mRows; r++) {
         std::swap(mData[r * mCols + i], mData[r * mCols + j]);
@@ -787,37 +806,37 @@ auto Matrix<T, Rows, Cols>::col(size_t c) const -> const MatrixCol<const T>
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::diagonal() -> MatrixDiagonal<T>
+constexpr auto Matrix<T, Rows, Cols>::diagonal() -> MatrixDiagonal<T>
 {
     return MatrixDiagonal<T>(this->data(), this->rows(), this->cols());
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::diagonal() const -> MatrixDiagonal<const T>
+constexpr auto Matrix<T, Rows, Cols>::diagonal() const -> MatrixDiagonal<const T>
 {
     return MatrixDiagonal<const T>(this->data(), this->rows(), this->cols());
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::zero(size_t rows, size_t cols) -> Matrix
+constexpr auto Matrix<T, Rows, Cols>::zero(size_t rows, size_t cols) -> Matrix
 {
     return Matrix<T, Rows, Cols>(rows == 0 ? Rows : rows, cols == 0 ? Cols : cols, consts::zero<T>);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::zeros(size_t rows, size_t cols) -> Matrix
+constexpr auto Matrix<T, Rows, Cols>::zeros(size_t rows, size_t cols) -> Matrix
 {
     return Matrix<T, Rows, Cols>(rows == 0 ? Rows : rows, cols == 0 ? Cols : cols, consts::zero<T>);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::ones(size_t rows, size_t cols) -> Matrix
+constexpr auto Matrix<T, Rows, Cols>::ones(size_t rows, size_t cols) -> Matrix
 {
     return Matrix<T, Rows, Cols>(rows == 0 ? Rows : rows, cols == 0 ? Cols : cols, consts::one<T>);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::identity(size_t rows, size_t cols) -> Matrix
+constexpr auto Matrix<T, Rows, Cols>::identity(size_t rows, size_t cols) -> Matrix
 {
     Matrix<T, Rows, Cols> matrix(rows, cols);
 
@@ -852,7 +871,7 @@ auto Matrix<T, Rows, Cols>::randon(size_t rows, size_t cols) -> Matrix
 }
 
 template<typename T, size_t Rows, size_t Cols>
-auto Matrix<T, Rows, Cols>::aliases(const void *ptr) const -> bool
+constexpr auto Matrix<T, Rows, Cols>::aliases(const void *ptr) const -> bool
 {
     return static_cast<const void *>(this->data()) == ptr;
 }
@@ -868,7 +887,7 @@ auto Matrix<T, Rows, Cols>::packet(size_t i) const noexcept -> Packed<T>
 #endif
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::resize(size_t rows, size_t cols)
+constexpr void Matrix<T, Rows, Cols>::resize(size_t rows, size_t cols)
     requires (Rows == DynamicData || Cols == DynamicData)
 {
     if (mRows == rows && mCols == cols) {
@@ -882,7 +901,7 @@ void Matrix<T, Rows, Cols>::resize(size_t rows, size_t cols)
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::fill(T value)
+constexpr void Matrix<T, Rows, Cols>::fill(T value)
 {
     std::fill(mData.begin(), mData.end(), value);
 }

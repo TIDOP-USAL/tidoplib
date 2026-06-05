@@ -41,37 +41,35 @@ class Packed;
 namespace detail
 {
 
-
-template<typename T>
-auto div(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+template<Arithmetic T>
+[[nodiscard]]
+auto div_impl(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
 {
-    Packed<T> packed;
+    if constexpr (Floating<T>) {
 
 #ifdef TL_HAVE_AVX
-    packed = _mm256_div_ps(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_div_ps(packed1, packed2);
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm256_div_ps(a, b);
+        } else {
+            return _mm256_div_pd(a, b);
+        }
+
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm256_div_pd(a, b);
+        } else {
+            return _mm_div_pd(a, b);
+        }
 #endif
 
-    return packed;
+    } else {
+
+        TL_ASSERT(false, "Division of integers is not permitted");
+
+    }
 }
-
-template<typename T>
-auto div(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
-{
-    Packed<T> packed;
-
-#ifdef TL_HAVE_AVX
-    packed = _mm256_div_pd(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_div_pd(packed1, packed2);
-#endif
-
-    return packed;
-}
-
-/// División entre enteros no permitida
-
 
 } // namespace detail 
 

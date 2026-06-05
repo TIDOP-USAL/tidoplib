@@ -76,48 +76,50 @@ private:
 
 public:
 
-    IteratorDiagonal() = default;
+    constexpr IteratorDiagonal() = default;
 
     /*!
      * \brief Constructs an iterator pointing to a given position on the diagonal.
      * \param[in] ptr    Pointer to the current diagonal element.
      * \param[in] stride Number of columns of the parent matrix (plus one) to move to the next diagonal element.
      */
-    explicit IteratorDiagonal(pointer ptr, size_t stride);
+    constexpr IteratorDiagonal(pointer ptr, size_t stride);
     ~IteratorDiagonal() = default;
 
     /*!
      * \brief Dereferences the iterator.
      * \return Reference to the current diagonal element.
      */
-    auto operator*() const -> reference;
+    constexpr auto operator*() const -> reference;
 
     /*!
      * \brief Arrow operator.
      * \return Pointer to the current diagonal element.
      */
-    auto operator->() -> pointer;
+    constexpr auto operator->() const -> pointer;
 
     /*!
      * \brief Pre‑increment (move to next diagonal element).
      * \return Reference to the incremented iterator.
      */
-    auto operator++() -> IteratorDiagonal &;
+    constexpr auto operator++() -> IteratorDiagonal &;
 
     /*!
      * \brief Post‑increment.
      * \return Copy of the iterator before increment.
      */
-    auto operator++(int) -> IteratorDiagonal;
+    constexpr auto operator++(int) -> IteratorDiagonal;
 
-    bool operator== (const IteratorDiagonal &other) const;
+    [[nodiscard]]
+    constexpr auto operator== (const IteratorDiagonal &other) const noexcept -> bool;
 
     /*!
      * \brief Inequality comparison.
      * \param[in] other Other iterator.
      * \return `true` if they point to different positions.
      */
-    bool operator!= (const IteratorDiagonal &other) const;
+    [[nodiscard]]
+    constexpr auto operator!= (const IteratorDiagonal &other) const noexcept -> bool;
 
 }; 
 
@@ -177,7 +179,7 @@ public:
      * \param[in] rows  Number of rows of the parent matrix.
      * \param[in] cols  Number of columns of the parent matrix (stride).
      */
-    MatrixDiagonal(T *data, size_t row, size_t cols);
+    constexpr MatrixDiagonal(T *data, size_t row, size_t cols);
 
     /*!
      * \brief Assigns a vector expression to this diagonal (writes back to parent matrix).
@@ -186,7 +188,7 @@ public:
      * \return Reference to this diagonal.
      */
     template<VectorExpr Expr>
-    auto operator=(const Expr &expr) -> MatrixDiagonal &
+    constexpr auto operator=(const Expr &expr) -> MatrixDiagonal &
     {
         detail::assign_diagonal(*this, expr);
         return *this;
@@ -195,54 +197,62 @@ public:
     /*!
      * \brief Returns an iterator to the first diagonal element.
      */
-    auto begin() noexcept -> iterator;
+    [[nodiscard]]
+    constexpr auto begin() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the first diagonal element.
      */
-    auto begin() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns an iterator to one past the last diagonal element.
      */
-    auto end() noexcept -> iterator;
+    [[nodiscard]]
+    constexpr auto end() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to one past the last diagonal element.
      */
-    auto end() const noexcept -> const_iterator;
+    [[nodiscard]]
+    constexpr auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns the number of diagonal elements (min(rows, cols)).
      */
-    auto size() const noexcept -> size_t;
+    [[nodiscard]]
+    constexpr auto size() const noexcept -> size_t;
 
     /*!
      * \brief Fills the entire diagonal with a given value.
      * \param[in] value Value to assign to each diagonal element.
      */
-    void fill(T value);
+    constexpr void fill(T value);
 
     /*!
      * \brief Accesses the element at a given diagonal index (const version).
      * \param[in] index Index along the diagonal (0‑based).
      * \return Const reference to the element.
      */
-    auto operator[](size_t index) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t index) const -> const_reference;
 
     /*!
      * \brief Accesses the element at a given diagonal index (non‑const version).
      * \param[in] index Index along the diagonal.
      * \return Reference to the element.
      */
-    auto operator[](size_t index) -> reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t index) -> reference;
 
     /*!
      * \brief Checks if the diagonal’s data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if the diagonal’s underlying data starts at that address.
      */
-    auto aliases(const void *ptr) const -> bool;
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool;
 
 };
 
@@ -251,33 +261,33 @@ public:
 /* IteratorDiagonal implementation */
 
 template<typename T>
-IteratorDiagonal<T>::IteratorDiagonal(pointer ptr, size_t stride)
+constexpr IteratorDiagonal<T>::IteratorDiagonal(pointer ptr, size_t stride)
   : mPtr(ptr), 
     mStride(stride)
 {
 }
 
 template<typename T>
-auto IteratorDiagonal<T>::operator*() const -> reference
+constexpr auto IteratorDiagonal<T>::operator*() const -> reference
 {
     return *mPtr;
 }
 
 template<typename T>
-auto IteratorDiagonal<T>::operator->() -> pointer
+constexpr auto IteratorDiagonal<T>::operator->() const -> pointer
 {
     return mPtr;
 }
 
 template<typename T>
-auto IteratorDiagonal<T>::operator++() -> IteratorDiagonal&
+constexpr auto IteratorDiagonal<T>::operator++() -> IteratorDiagonal&
 {
     mPtr += mStride;
     return *this;
 }
 
 template<typename T>
-auto IteratorDiagonal<T>::operator++(int) -> IteratorDiagonal
+constexpr auto IteratorDiagonal<T>::operator++(int) -> IteratorDiagonal
 {
     IteratorDiagonal it = *this;
     ++(*this);
@@ -285,13 +295,13 @@ auto IteratorDiagonal<T>::operator++(int) -> IteratorDiagonal
 }
 
 template<typename T>
-bool IteratorDiagonal<T>::operator == (const IteratorDiagonal<T> &other) const
+constexpr auto IteratorDiagonal<T>::operator == (const IteratorDiagonal<T> &other) const noexcept -> bool
 {
     return this->mPtr == other.mPtr;
 }
 
 template<typename T>
-bool IteratorDiagonal<T>::operator != (const IteratorDiagonal<T> &other) const
+constexpr auto IteratorDiagonal<T>::operator != (const IteratorDiagonal<T> &other) const noexcept -> bool
 {
     return this->mPtr != other.mPtr;
 }
@@ -300,7 +310,7 @@ bool IteratorDiagonal<T>::operator != (const IteratorDiagonal<T> &other) const
 /* MatrixDiagonal implementation */
 
 template<typename T>
-MatrixDiagonal<T>::MatrixDiagonal(T *data, size_t row, size_t cols)
+constexpr MatrixDiagonal<T>::MatrixDiagonal(T *data, size_t row, size_t cols)
   : matrixData(data),
     mRows(row),
     mCols(cols)
@@ -308,49 +318,49 @@ MatrixDiagonal<T>::MatrixDiagonal(T *data, size_t row, size_t cols)
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::begin() noexcept -> iterator
+constexpr auto MatrixDiagonal<T>::begin() noexcept -> iterator
 {
     return iterator(matrixData, mCols + 1);
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::begin() const noexcept -> const_iterator
+constexpr auto MatrixDiagonal<T>::begin() const noexcept -> const_iterator
 {
     return iterator(matrixData, mCols + 1);
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::end() noexcept -> iterator
+constexpr auto MatrixDiagonal<T>::end() noexcept -> iterator
 {
     return iterator(matrixData + size() * (mCols + 1), mCols + 1);
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::end() const noexcept -> const_iterator
+constexpr auto MatrixDiagonal<T>::end() const noexcept -> const_iterator
 {
   return iterator(matrixData + size() * (mCols + 1), mCols + 1);
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::size() const noexcept -> size_t
+constexpr auto MatrixDiagonal<T>::size() const noexcept -> size_t
 {
     return std::min(mRows, mCols);
 }
 
 template<typename T>
-void MatrixDiagonal<T>::fill(T value)
+constexpr void MatrixDiagonal<T>::fill(T value)
 {
     std::fill(begin(), end(), value);
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::operator[](size_t i) const -> const_reference
+constexpr auto MatrixDiagonal<T>::operator[](size_t i) const -> const_reference
 {
     return matrixData[i * (mCols + 1)];
 }
 
 template<typename T>
-auto MatrixDiagonal<T>::operator[](size_t i) -> reference
+constexpr auto MatrixDiagonal<T>::operator[](size_t i) -> reference
 {
     return matrixData[i * (mCols + 1)];
 }
@@ -361,7 +371,7 @@ auto MatrixDiagonal<T>::operator[](size_t i) -> reference
 * \return `true` if the diagonal’s underlying data starts at that address.
 */
 template<typename T>
-auto MatrixDiagonal<T>::aliases(const void *ptr) const -> bool
+constexpr auto MatrixDiagonal<T>::aliases(const void *ptr) const -> bool
 {
     return matrixData == ptr;
 }

@@ -35,7 +35,8 @@ namespace detail
 {
 
 template<typename L, typename R>
-bool vector_equal(const L &lhs, const R &rhs)
+[[nodiscard]]
+constexpr auto vector_equal(const L &lhs, const R &rhs) -> bool
 {
     if (lhs.size() != rhs.size()) {
         return false;

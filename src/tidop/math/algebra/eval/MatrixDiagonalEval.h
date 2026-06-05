@@ -78,7 +78,7 @@ public:
      * \brief Constructs the evaluator from a `MatrixDiagonal`.
      * \param[in] diagonal The diagonal view.
      */
-    Evaluator(const MatrixDiagonal<Scalar> &diagonal)
+    constexpr Evaluator(const MatrixDiagonal<Scalar> &diagonal)
       : mMatrixDiagonal(diagonal) {}
 
     /*!
@@ -86,7 +86,8 @@ public:
      * \param[in] i Index along the diagonal.
      * \return The diagonal element.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mMatrixDiagonal[i];
     }
@@ -101,7 +102,8 @@ public:
      *       are not stored contiguously, and stride‑aware packet access is
      *       not implemented. Use scalar coefficient access instead.
      */
-    auto packet(size_t i) const
+    [[nodiscard]]
+    constexpr auto packet(size_t i) const
     {
         TL_ASSERT(false, "SIMD packet not supported for this expression");
         return Packed<value_type>();

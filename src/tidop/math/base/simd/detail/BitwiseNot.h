@@ -44,9 +44,9 @@ namespace detail
 
 template<typename T>
 [[nodiscard]]
-auto bitwiseNot(const Packed<T> &a) noexcept -> Packed<T>
+auto bitwise_not_impl(const Packed<T> &a) noexcept -> Packed<T>
 {
-    return bitwiseXor(a, Packed<T>(-1));
+    return bitwise_xor_impl(a, Packed<T>(-1));
 }
 
 } // namespace detail 

@@ -33,7 +33,7 @@ namespace detail
 {
 
 template<typename LHS, typename RHS, typename Out>
-void mat_vec_mul_cpp(const LHS &matrix, const RHS &vectorIn, Out &vectorOut)
+constexpr void mat_vec_mul_cpp(const LHS &matrix, const RHS &vectorIn, Out &vectorOut)
 {
     using T = typename matrix_traits<LHS>::value_type;
 

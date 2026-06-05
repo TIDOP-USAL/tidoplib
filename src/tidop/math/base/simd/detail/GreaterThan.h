@@ -80,6 +80,7 @@ namespace detail
 //}
 
 template<typename T>
+[[nodiscard]]
 auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> enableIfFloat<T, Packed<T>>
 {
 #ifdef TL_HAVE_AVX512
@@ -93,6 +94,7 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> enableIfFloat<T, Pac
 }
 
 template<typename T>
+[[nodiscard]]
 auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> enableIfDouble<T, Packed<T>>
 {
 #ifdef TL_HAVE_AVX512
@@ -106,6 +108,7 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> enableIfDouble<T, Pa
 }
 
 template<typename T>
+[[nodiscard]]
 auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int8_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint8_t>::value,
@@ -123,8 +126,8 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
         return _mm256_cmpgt_epi8(a, b);
     } else {
         auto bias = signBias<T>();
-        auto a_s = bitwiseXor(a, bias);
-        auto b_s = bitwiseXor(b, bias);
+        auto a_s = bitwise_xor_impl(a, bias);
+        auto b_s = bitwise_xor_impl(b, bias);
         return _mm256_cmpgt_epi8(a_s, b_s);
     }
 #else // TL_HAVE_SSE2
@@ -140,6 +143,7 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
 }
 
 template<typename T>
+[[nodiscard]]
 auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int16_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint16_t>::value,
@@ -157,8 +161,8 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
         return _mm256_cmpgt_epi16(a, b);
     } else {
         auto bias = signBias<T>();
-        auto a_s = bitwiseXor(a, bias);
-        auto b_s = bitwiseXor(b, bias);
+        auto a_s = bitwise_xor_impl(a, bias);
+        auto b_s = bitwise_xor_impl(b, bias);
         return _mm256_cmpgt_epi16(a_s, b_s);
     }
 #else // TL_HAVE_SSE2
@@ -174,6 +178,7 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
 }
 
 template<typename T>
+[[nodiscard]]
 auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int32_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint32_t>::value,
@@ -191,8 +196,8 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
         return _mm256_cmpgt_epi32(a, b);
     } else {
         auto bias = signBias<T>();
-        auto a_s = bitwiseXor(a, bias);
-        auto b_s = bitwiseXor(b, bias);
+        auto a_s = bitwise_xor_impl(a, bias);
+        auto b_s = bitwise_xor_impl(b, bias);
         return _mm256_cmpgt_epi32(a_s, b_s);
     }
 #else // TL_HAVE_SSE2
@@ -208,6 +213,7 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
 }
 
 template<typename T>
+[[nodiscard]]
 auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int64_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint64_t>::value,
@@ -225,8 +231,8 @@ auto greaterThan(const Packed<T> &a, const Packed<T> &b) -> std::enable_if_t<
         return _mm256_cmpgt_epi64(a, b);
     } else {
         auto bias = signBias<T>();
-        auto a_s = bitwiseXor(a, bias);
-        auto b_s = bitwiseXor(b, bias);
+        auto a_s = bitwise_xor_impl(a, bias);
+        auto b_s = bitwise_xor_impl(b, bias);
         return _mm256_cmpgt_epi64(a_s, b_s);
     }
 #else

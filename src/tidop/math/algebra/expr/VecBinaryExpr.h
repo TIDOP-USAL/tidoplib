@@ -109,27 +109,31 @@ public:
      * \param[in] lhs Left‑hand side expression.
      * \param[in] rhs Right‑hand side expression.
      */
-    VecBinaryExpr(const LHS &lhs, const RHS &rhs)
+    constexpr VecBinaryExpr(const LHS &lhs, const RHS &rhs)
       : mLhs(lhs), mRhs(rhs)
     {
         TL_ASSERT(lhs.size() == rhs.size(), "Vector sizes must match");
     }
 
     /*! \brief Returns the number of elements (same as both operands). */
+    [[nodiscard]]
     constexpr auto size() const noexcept -> size_t { return mLhs.size(); }
 
     /*! \brief Returns the left‑hand side expression. */
-    auto lhs() const -> const LHS & { return mLhs; }
+    [[nodiscard]]
+    constexpr auto lhs() const -> const LHS & { return mLhs; }
 
     /*! \brief Returns the right‑hand side expression. */
-    auto rhs() const -> const RHS & { return mRhs; }
+    [[nodiscard]]
+    constexpr auto rhs() const -> const RHS & { return mRhs; }
 
     /*!
      * \brief Checks if either operand's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if either LHS or RHS aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }

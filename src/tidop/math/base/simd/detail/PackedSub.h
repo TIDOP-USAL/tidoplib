@@ -41,99 +41,58 @@ class Packed;
 namespace detail
 {
 
-
-template<typename T>
-auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfFloat<T, Packed<T>>
+template<Arithmetic T>
+[[nodiscard]]
+auto sub_impl(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
 {
-    Packed<T> packed;
+    if constexpr (Floating<T>) {
 
 #ifdef TL_HAVE_AVX
-    packed = _mm256_sub_ps(packed1, packed2);
-#elif defined TL_HAVE_SSE
-    packed = _mm_sub_ps(packed1, packed2);
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm256_sub_ps(a, b);
+        } else {
+            return _mm256_sub_pd(a, b);
+        }
+
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (std::same_as<T, float>) {
+            return _mm_sub_ps(a, b);
+        } else {
+            return _mm_sub_pd(a, b);
+        }
 #endif
 
-    return packed;
-}
-
-template<typename T>
-auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> enableIfDouble<T, Packed<T>>
-{
-    Packed<T> packed;
-
-#ifdef TL_HAVE_AVX
-    packed = _mm256_sub_pd(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_sub_pd(packed1, packed2);
-#endif
-
-    return packed;
-}
-
-template<typename T>
-auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int8_t>::value,
-    Packed<T>>
-{
-    Packed<T> packed;
+    } else {
 
 #ifdef TL_HAVE_AVX2
-    packed = _mm256_sub_epi8(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_sub_epi8(packed1, packed2);
+
+        if constexpr (sizeof(T) == 1) {
+            return _mm256_sub_epi8(a, b);
+        } else if constexpr (sizeof(T) == 2) {
+            return _mm256_sub_epi16(a, b);
+        } else if constexpr (sizeof(T) == 4) {
+            return _mm256_sub_epi32(a, b);
+        } else {
+            return _mm256_sub_epi64(a, b);
+        }
+
+#elif defined(TL_HAVE_SSE2)
+
+        if constexpr (sizeof(T) == 1) {
+            return _mm_sub_epi8(a, b);
+        } else if constexpr (sizeof(T) == 2) {
+            return _mm_sub_epi16(a, b);
+        } else if constexpr (sizeof(T) == 4) {
+            return _mm_sub_epi32(a, b);
+        } else {
+            return _mm_sub_epi64(a, b);
+        }
+
 #endif
-
-    return packed;
+    }
 }
-
-template<typename T>
-auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int16_t>::value,
-    Packed<T>>
-{
-    Packed<T> packed;
-
-#ifdef TL_HAVE_AVX2
-    packed = _mm256_sub_epi16(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_sub_epi16(packed1, packed2);
-#endif
-
-    return packed;
-}
-
-template<typename T>
-auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int32_t>::value,
-    Packed<T>>
-{
-    Packed<T> packed;
-
-#ifdef TL_HAVE_AVX2
-    packed = _mm256_sub_epi32(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_sub_epi32(packed1, packed2);
-#endif
-
-    return packed;
-}
-
-template<typename T>
-auto sub(const Packed<T> &packed1, const Packed<T> &packed2) -> std::enable_if_t<
-    std::is_same<std::remove_cv_t<T>, int64_t>::value,
-    Packed<T>>
-{
-    Packed<T> packed;
-
-#ifdef TL_HAVE_AVX2
-    packed = _mm256_sub_epi64(packed1, packed2);
-#elif defined TL_HAVE_SSE2
-    packed = _mm_sub_epi64(packed1, packed2);
-#endif
-
-    return packed;
-}
-
 
 } // namespace detail 
 

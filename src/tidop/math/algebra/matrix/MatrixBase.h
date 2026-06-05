@@ -140,6 +140,11 @@ public:
 public:
 
     /*!
+     * \brief Default constructor.
+     */
+    constexpr MatrixBase() = default;
+
+    /*!
      * \brief Computes the inverse of the matrix.
      *
      * Only square and invertible matrices have an inverse. This function
@@ -188,6 +193,7 @@ public:
      *
      * \return A `TransposeExpr` representing the transpose.
      */
+    [[nodiscard]]
     constexpr auto transpose() const;
 
     /*!
@@ -196,7 +202,8 @@ public:
      * \return The determinant as `value_type`.
      * \throws std::invalid_argument if the matrix is not square.
      */
-    auto determinant() const;
+    [[nodiscard]]
+    constexpr auto determinant() const;
 
     /*!
      * \brief Computes the adjugate (classical adjoint) matrix (concrete result).
@@ -206,13 +213,15 @@ public:
      *
      * \return The adjugate as a concrete matrix.
      */
-    auto adjugate() const;
+    [[nodiscard]]
+    constexpr auto adjugate() const;
 
     /*!
      * \brief Calculates the cofactor matrix (concrete result).
      * \return The cofactor matrix
      */
-    auto cofactorMatrix() const;
+    [[nodiscard]]
+    constexpr auto cofactorMatrix() const;
 
     /*!
      * \brief Computes the cofactor of a specific element (scalar result).
@@ -221,7 +230,8 @@ public:
      * \param[in] c Column index.
      * \return The cofactor value.
      */
-    auto cofactor(size_t r, size_t c) const -> value_type;
+    [[nodiscard]]
+    constexpr auto cofactor(size_t r, size_t c) const -> value_type;
 
     /*!
      * \brief Computes the trace.
@@ -229,37 +239,43 @@ public:
      * \f[ tr(A) = a_{11} + ... +  a_{nn} \f]
      * \return The trace.
      */
-    auto trace() const -> value_type;
+    [[nodiscard]]
+    constexpr auto trace() const -> value_type;
 
     /*!
      * \brief Checks whether the matrix is invertible.
      * \return `true` if square and determinant non‑zero.
      */
-    auto isInvertible() const -> bool;
+    [[nodiscard]]
+    constexpr auto isInvertible() const -> bool;
 
     /*!
      * \brief Checks whether the matrix is singular.
      * \return `true` if square and determinant zero.
      */
-    auto isSingular() const -> bool;
+    [[nodiscard]]
+    constexpr auto isSingular() const -> bool;
 
     /*!
      * \brief Checks whether the matrix is square.
      * \return `true` if rows == cols.
      */
+    [[nodiscard]]
     constexpr auto isSquare() const -> bool;
 
     /*!
      * \brief Checks whether the matrix is symmetric.
      * \return `true` if square and \f$ A = A^T \f$.
      */
-    auto isSymmetric() const -> bool;
+    [[nodiscard]]
+    constexpr auto isSymmetric() const -> bool;
 
     /*!
      * \brief Checks whether the matrix is diagonal.
      * \return `true` if all off‑diagonal elements are zero.
      */
-    auto isDiagonal() const -> bool;
+    [[nodiscard]]
+    constexpr auto isDiagonal() const -> bool;
 
     /*!
      * \brief Checks if the matrix is an identity matrix.
@@ -269,7 +285,8 @@ public:
      *
      * \return true if the matrix is an identity matrix, false otherwise.
      */
-    auto isIdentity() const -> bool;
+    [[nodiscard]]
+    constexpr auto isIdentity() const -> bool;
 
     /*!
      * \brief Checks if the matrix is upper triangular.
@@ -278,7 +295,8 @@ public:
      *
      * \return true if the matrix is upper triangular, false otherwise.
      */
-    auto isUpperTriangular() const -> bool;
+    [[nodiscard]]
+    constexpr auto isUpperTriangular() const -> bool;
 
     /*!
      * \brief Checks if the matrix is lower triangular.
@@ -287,7 +305,8 @@ public:
      *
      * \return true if the matrix is lower triangular, false otherwise.
      */
-    auto isLowerTriangular() const -> bool;
+    [[nodiscard]]
+    constexpr auto isLowerTriangular() const -> bool;
 
     /*!
      * \brief Checks if the matrix is triangular.
@@ -302,7 +321,8 @@ public:
      *
      * \return true if the matrix is triangular (upper or lower), false otherwise.
      */
-    auto isTriangular() const -> bool;
+    [[nodiscard]]
+    constexpr auto isTriangular() const -> bool;
 
     /*!
      * \brief Computes the first minor
@@ -323,7 +343,8 @@ public:
      *
      * \return The determinant of the submatrix obtained by removing row `r` and column `c`.
      */
-    auto firstMinor(size_t r, size_t c) const;
+    [[nodiscard]]
+    constexpr auto firstMinor(size_t r, size_t c) const;
 
     /*!
      * \brief Computes the row echelon form (REF) (concrete result).
@@ -390,11 +411,13 @@ public:
     /*!
      * \brief Returns the number of rows.
      */
+    [[nodiscard]]
     constexpr auto rows() const noexcept -> size_t { return this->derived().rows(); }
 
     /*!
      * \brief Returns the number of columns.
      */
+    [[nodiscard]]
     constexpr auto cols() const noexcept -> size_t { return this->derived().cols(); }
 
     /* Unary arithmetic operators */
@@ -403,13 +426,15 @@ public:
      * \brief Unary plus (identity).
      * \return Const reference to the matrix itself.
      */
-    auto operator+() const noexcept -> const Derived & { return this->derived(); }
+    [[nodiscard]]
+    constexpr auto operator+() const noexcept -> const Derived & { return this->derived(); }
 
     /*!
      * \brief Unary minus (negation) – returns an expression.
      * \return A `MatUnaryMinusExpr` representing the negated matrix.
      */
-    auto operator-() const { return MatUnaryMinusExpr<Derived>(this->derived()); }
+    [[nodiscard]]
+    constexpr auto operator-() const { return MatUnaryMinusExpr<Derived>(this->derived()); }
 
     /* Binary arithmetic operators */
 
@@ -420,7 +445,8 @@ public:
      * \return A `MatBinaryExpr` representing the sum.
      */
     template<MatrixExpr RHS>
-    auto operator +(const RHS &rhs) const;
+    [[nodiscard]]
+    constexpr auto operator +(const RHS &rhs) const;
 
     /*!
      * \brief Matrix subtraction (returns expression).
@@ -429,21 +455,24 @@ public:
      * \return A `MatBinaryExpr` representing the difference.
      */
     template<MatrixExpr RHS>
-    auto operator -(const RHS &rhs) const;
+    [[nodiscard]]
+    constexpr auto operator -(const RHS &rhs) const;
 
     /*!
      * \brief Scalar multiplication (returns expression).
      * \param[in] scalar The scalar value.
      * \return A `MatScalarExpr` representing the scaled matrix.
      */
-    auto operator *(value_type scalar) const;
+    [[nodiscard]]
+    constexpr auto operator *(value_type scalar) const;
 
     /*!
      * \brief Scalar division (returns expression).
      * \param[in] scalar The scalar divisor.
      * \return A `MatScalarExpr` representing the matrix divided by the scalar.
      */
-    auto operator /(value_type scalar) const;
+    [[nodiscard]]
+    constexpr auto operator /(value_type scalar) const;
 
     /* Compound assignment operators */
 
@@ -520,35 +549,35 @@ constexpr auto MatrixBase<Derived>::transpose() const
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::determinant() const
+constexpr auto MatrixBase<Derived>::determinant() const
 {
     auto evaluated_mat = this->eval();
     return detail::matrix_determinant(evaluated_mat);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::adjugate() const
+constexpr auto MatrixBase<Derived>::adjugate() const
 {
     auto evaluated_mat = this->eval();
     return detail::matrix_adjoint(evaluated_mat);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::cofactorMatrix() const
+constexpr auto MatrixBase<Derived>::cofactorMatrix() const
 {
     auto evaluated_mat = this->eval();
     return detail::matrix_cofactor_matrix(evaluated_mat);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::cofactor(size_t r, size_t c) const -> value_type
+constexpr auto MatrixBase<Derived>::cofactor(size_t r, size_t c) const -> value_type
 {
     auto evaluated_mat = this->eval();
     return detail::matrix_cofactor(evaluated_mat, r, c);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::trace() const -> value_type
+constexpr auto MatrixBase<Derived>::trace() const -> value_type
 {
     static_assert(matrix_traits<Derived>::rows == DynamicData ||
         matrix_traits<Derived>::cols == DynamicData ||
@@ -570,13 +599,13 @@ auto MatrixBase<Derived>::trace() const -> value_type
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isInvertible() const -> bool
+constexpr auto MatrixBase<Derived>::isInvertible() const -> bool
 {
     return (this->determinant() != consts::zero<value_type>);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isSingular() const -> bool
+constexpr auto MatrixBase<Derived>::isSingular() const -> bool
 {
     return (this->determinant() == consts::zero<value_type>);
 }
@@ -588,7 +617,7 @@ constexpr auto MatrixBase<Derived>::isSquare() const -> bool
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isSymmetric() const -> bool
+constexpr auto MatrixBase<Derived>::isSymmetric() const -> bool
 {
     if (!this->isSquare()) return false;
 
@@ -606,25 +635,26 @@ auto MatrixBase<Derived>::isSymmetric() const -> bool
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isDiagonal() const -> bool
+constexpr auto MatrixBase<Derived>::isDiagonal() const -> bool
 {
-    if (!this->isSquare()) return false;
+    //if (!this->isSquare()) return false;
 
-    auto eval = make_evaluator(this->derived());
-    size_t r = this->rows();
+    //auto eval = make_evaluator(this->derived());
+    //size_t r = this->rows();
 
-    for (size_t i = 0; i < r; ++i) {
-        for (size_t j = 0; j < r; ++j) {
-            if (i != j && !isNearlyZero(eval.coeff(i, j))) {
-                return false;
-            }
-        }
-    }
-    return true;
+    //for (size_t i = 0; i < r; ++i) {
+    //    for (size_t j = 0; j < r; ++j) {
+    //        if (i != j && !isNearlyZero(eval.coeff(i, j))) {
+    //            return false;
+    //        }
+    //    }
+    //}
+    //return true;
+    return this->isUpperTriangular() && this->isLowerTriangular();
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isIdentity() const -> bool
+constexpr auto MatrixBase<Derived>::isIdentity() const -> bool
 {
     if (!this->isSquare()) return false;
 
@@ -648,7 +678,7 @@ auto MatrixBase<Derived>::isIdentity() const -> bool
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isUpperTriangular() const -> bool
+constexpr auto MatrixBase<Derived>::isUpperTriangular() const -> bool
 {
     if (!this->isSquare()) return false;
 
@@ -666,7 +696,7 @@ auto MatrixBase<Derived>::isUpperTriangular() const -> bool
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isLowerTriangular() const -> bool
+constexpr auto MatrixBase<Derived>::isLowerTriangular() const -> bool
 {
     if (!this->isSquare()) return false;
 
@@ -684,13 +714,13 @@ auto MatrixBase<Derived>::isLowerTriangular() const -> bool
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::isTriangular() const -> bool
+constexpr auto MatrixBase<Derived>::isTriangular() const -> bool
 {
     return this->isUpperTriangular() || this->isLowerTriangular();
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::firstMinor(size_t r, size_t c) const
+constexpr auto MatrixBase<Derived>::firstMinor(size_t r, size_t c) const
 {
     auto evaluated_mat = this->eval();
     return detail::matrix_first_minor(evaluated_mat, r, c);
@@ -803,26 +833,26 @@ auto MatrixBase<Derived>::l2Norm() const -> value_type
 
 template<typename Derived>
 template<MatrixExpr RHS>
-auto MatrixBase<Derived>::operator +(const RHS &rhs) const
+constexpr auto MatrixBase<Derived>::operator +(const RHS &rhs) const
 {
     return MatBinaryExpr<Derived, RHS, AddOp>(this->derived(), rhs);
 }
 
 template<typename Derived>
 template<MatrixExpr RHS>
-auto MatrixBase<Derived>::operator -(const RHS &rhs) const
+constexpr auto MatrixBase<Derived>::operator -(const RHS &rhs) const
 {
     return MatBinaryExpr<Derived, RHS, SubOp>(this->derived(), rhs);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::operator *(value_type scalar) const
+constexpr auto MatrixBase<Derived>::operator *(value_type scalar) const
 {
     return MatScalarExpr<Derived, value_type, MulOp>(this->derived(), scalar);
 }
 
 template<typename Derived>
-auto MatrixBase<Derived>::operator /(value_type scalar) const
+constexpr auto MatrixBase<Derived>::operator /(value_type scalar) const
 {
     return MatScalarExpr<Derived, value_type, DivOp>(this->derived(), scalar);
 }
@@ -885,7 +915,8 @@ constexpr auto MatrixBase<Derived>::eval() const
 }
 
 template<typename DerivedL, typename DerivedR>
-auto operator==(const MatrixBase<DerivedL> &lhs, 
+[[nodiscard]]
+constexpr auto operator==(const MatrixBase<DerivedL> &lhs,
                 const MatrixBase<DerivedR> &rhs) -> bool
 {
     static_assert(!matrix_traits<DerivedL>::is_expression &&
@@ -896,7 +927,8 @@ auto operator==(const MatrixBase<DerivedL> &lhs,
 }
 
 template<typename DerivedL, typename DerivedR>
-auto operator!=(const MatrixBase<DerivedL> &lhs,
+[[nodiscard]]
+constexpr auto operator!=(const MatrixBase<DerivedL> &lhs,
                 const MatrixBase<DerivedR> &rhs) -> bool
 {
     return !(lhs == rhs);
@@ -905,13 +937,15 @@ auto operator!=(const MatrixBase<DerivedL> &lhs,
 
 template<typename Scalar, MatrixExpr Expr>
     requires std::is_convertible_v<Scalar, typename matrix_traits<Expr>::value_type>
-auto operator*(const Scalar &scalar, const Expr &expr)
+[[nodiscard]]
+constexpr auto operator*(const Scalar &scalar, const Expr &expr)
 {
     return expr * scalar;
 }
 
 template<MatrixExpr LHS, MatrixExpr RHS>
-auto operator*(const LHS &lhs, const RHS &rhs)
+[[nodiscard]]
+constexpr auto operator*(const LHS &lhs, const RHS &rhs)
 {
     return MatMulExpr<LHS, RHS>(lhs, rhs);
 }

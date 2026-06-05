@@ -105,7 +105,7 @@ public:
      * \param[in] rhs Right‑hand side expression.
      * \pre `lhs.rows() == rhs.rows()` and `lhs.cols() == rhs.cols()`.
      */
-    MatBinaryExpr(const LHS &lhs, const RHS &rhs)
+    constexpr MatBinaryExpr(const LHS &lhs, const RHS &rhs)
       : mLhs(lhs), mRhs(rhs)
     {
         TL_ASSERT(lhs.rows() == rhs.rows() && lhs.cols() == rhs.cols(), "Matrix sizes must match");
@@ -114,25 +114,30 @@ public:
     /*! 
      * \brief Returns the number of rows 
      */
+    [[nodiscard]]
     constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
 
     /*!
      * \brief Returns the number of columns 
      */
+    [[nodiscard]]
     constexpr auto cols() const noexcept -> size_t { return mLhs.cols(); }
 
     /*! \brief Returns the left‑hand side expression. */
-    auto lhs() const -> const LHS & { return mLhs; }
+    [[nodiscard]]
+    constexpr auto lhs() const -> const LHS & { return mLhs; }
 
     /*! \brief Returns the right‑hand side expression. */
-    auto rhs() const -> const RHS & { return mRhs; }
+    [[nodiscard]]
+    constexpr auto rhs() const -> const RHS & { return mRhs; }
 
     /*!
      * \brief Checks if either operand's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if either LHS or RHS aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }

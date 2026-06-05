@@ -80,7 +80,7 @@ public:
      * \brief Constructs the evaluator from a `DiagonalMatrixExpr`.
      * \param[in] expr The diagonal matrix expression.
      */
-    Evaluator(const DiagonalMatrixExpr<Expr> &expr)
+    constexpr Evaluator(const DiagonalMatrixExpr<Expr> &expr)
       : mExpr(expr.expr()),
         mCols(expr.cols())
     {
@@ -92,7 +92,8 @@ public:
      * \param[in] c Column index.
      * \return The coefficient at the given position.
      */
-    auto coeff(size_t r, size_t c) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t r, size_t c) const -> value_type
     {
         return (r == c) ? mExpr.coeff(r) : value_type(0);
     }
@@ -102,7 +103,8 @@ public:
      * \param[in] i Index of the diagonal entry.
      * \return The coefficient at the given linear position.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]] 
+    constexpr auto coeff(size_t i) const -> value_type
     {
         size_t row = i / mCols;
         size_t col = i % mCols;
@@ -120,7 +122,8 @@ public:
      *       are often used in non‑contiguous contexts and vectorised access
      *       is not implemented for this expression type.
      */
-    auto packet(size_t i) const
+    [[nodiscard]]
+    constexpr auto packet(size_t i) const
     {
         TL_ASSERT(false, "SIMD packet not supported for this expression");
         return Packed<value_type>();

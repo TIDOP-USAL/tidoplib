@@ -8,7 +8,8 @@ namespace tl
 struct Matrices 
 {
 
-    static auto scale(float sx, float sy, float sz) -> Matrix4x4f
+    [[nodiscard]]
+    static constexpr auto scale(float sx, float sy, float sz) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -19,7 +20,8 @@ struct Matrices
         };
     }
 
-    static auto translate(float tx, float ty, float tz) -> Matrix4x4f
+    [[nodiscard]]
+    static constexpr auto translate(float tx, float ty, float tz) -> Matrix4x4f
     {
         return Matrix4x4f
         {
@@ -95,7 +97,6 @@ struct Matrices
 
         Vector3f zaxis = Vector3f({ position.x() - target.x(), position.y() - target.y(), position.z() - target.z()});
         zaxis.normalize();
-        up.cross(zaxis);
         Vector3f xaxis = up.cross(zaxis); //cross(up, zaxis);
         xaxis.normalize();
 

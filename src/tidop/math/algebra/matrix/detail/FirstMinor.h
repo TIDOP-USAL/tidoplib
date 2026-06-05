@@ -38,7 +38,8 @@ namespace detail
 {
 
 template<typename T, size_t Rows, size_t Cols>
-auto matrix_first_minor(const Matrix<T, Rows, Cols> &mat, size_t row, size_t col) -> T
+[[nodiscard]]
+constexpr auto matrix_first_minor(const Matrix<T, Rows, Cols> &mat, size_t row, size_t col) -> T
 {
     static_assert(Rows == Cols, "Matrices must be square");
     size_t rows = mat.rows();
@@ -48,6 +49,8 @@ auto matrix_first_minor(const Matrix<T, Rows, Cols> &mat, size_t row, size_t col
     size_t i = 0;
     size_t j = 0;
 
+    // TODO: esto debería ser una vista o una expresión
+    // Primero habría que modificar estas funciones para que admitan MatExpr en lugar de una matriz
     Matrix<T> matrix(rows - 1, cols - 1);
     for (size_t r = 0; r < rows; r++) {
         for (size_t c = 0; c < cols; c++) {

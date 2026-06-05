@@ -34,6 +34,7 @@
 #include "tidop/core/base/macros/SmartPtr.h"
 #include "tidop/core/base/Exception.h"
 
+TL_DISABLE_WARNINGS
 #include <proj.h>
 #include <copc-lib/las/header.hpp>
 #include <lazperf/readers.hpp>
@@ -50,6 +51,7 @@
 #include <pdal/SrsBounds.hpp>
 #include <pdal/util/FileUtils.hpp>
 #include <pdal/private/gdal/GDALUtils.hpp>
+TL_DEFAULT_WARNINGS
 
 #include "tidop/geotools/GeoTools.h"
 #include "tidop/geotools/CRSsTools.h"

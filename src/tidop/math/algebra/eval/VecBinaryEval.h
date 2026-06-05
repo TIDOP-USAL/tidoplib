@@ -80,7 +80,7 @@ public:
      * \brief Constructs the evaluator from a `VecBinaryExpr`.
      * \param[in] expr The source binary expression.
      */
-    Evaluator(const VecBinaryExpr<LHS, RHS, Op> &expr)
+    constexpr Evaluator(const VecBinaryExpr<LHS, RHS, Op> &expr)
       : mLhs(expr.lhs()),
         mRhs(expr.rhs())
     {
@@ -91,7 +91,8 @@ public:
      * \param[in] i Element index.
      * \return The result of `Op(lhs[i], rhs[i])`.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mOp(mLhs.coeff(i), mRhs.coeff(i));
     }
@@ -103,6 +104,7 @@ public:
      * \return The result of applying `Op` to the corresponding packets of LHS and RHS.
      * \note Only available when SIMD intrinsics are enabled.
      */
+    [[nodiscard]]
     auto packet(size_t i) const
     {
         return mOp(mLhs.packet(i), mRhs.packet(i));

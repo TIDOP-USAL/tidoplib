@@ -103,7 +103,7 @@ public:
      * \param[in] lhs Left‑hand side expression.
      * \param[in] rhs Right‑hand side expression.
      */
-    MatMulExpr(const LHS &lhs, const RHS &rhs)
+    constexpr MatMulExpr(const LHS &lhs, const RHS &rhs)
       : mLhs(lhs), 
         mRhs(rhs)
     {
@@ -111,23 +111,28 @@ public:
     }
 
     /*! \brief Returns the number of rows (same as LHS). */
+    [[nodiscard]]
     constexpr auto rows() const noexcept -> size_t { return mLhs.rows(); }
 
     /*! \brief Returns the number of columns (same as RHS). */
+    [[nodiscard]]
     constexpr auto cols() const noexcept -> size_t { return mRhs.cols(); }
 
     /*! \brief Returns the left‑hand side expression. */
-    auto lhs() const -> const LHS & { return mLhs; }
+    [[nodiscard]]
+    constexpr auto lhs() const -> const LHS & { return mLhs; }
 
     /*! \brief Returns the right‑hand side expression. */
-    auto rhs() const -> const RHS & { return mRhs; }
+    [[nodiscard]]
+    constexpr auto rhs() const -> const RHS & { return mRhs; }
 
     /*!
      * \brief Checks if either operand's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if either LHS or RHS aliases `ptr`.
      */
-    auto aliases(const void *ptr)  const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr)  const -> bool
     {
         return mLhs.aliases(ptr) || mRhs.aliases(ptr);
     }

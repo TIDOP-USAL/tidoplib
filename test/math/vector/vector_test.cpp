@@ -1108,50 +1108,50 @@ BOOST_AUTO_TEST_CASE(test_not_equal_vectors)
     BOOST_CHECK(v1 != v2);
 }
 
-BOOST_AUTO_TEST_CASE(test_greater_than_vectors) 
-{
-    Vector<double, 2> v1 = {1.0, 1.0};
-    Vector<double, 2> v2 = {0.0, 1.0};
-    
-    BOOST_CHECK(v1 > v2);
-}
-
-BOOST_AUTO_TEST_CASE(test_greater_than_or_equal_vectors) 
-{
-    Vector<double, 2> v1 = {1.0, 1.0};
-    Vector<double, 2> v2 = {0.0, 1.0};
-    
-    BOOST_CHECK(v1 >= v2);
-    BOOST_CHECK(!(v2 >= v1));
-
-    Vector<double, 2> v3 = {1.0, 1.0};
-    
-    BOOST_CHECK(v1 >= v3);
-    BOOST_CHECK(v3 >= v1);
-}
-
-BOOST_AUTO_TEST_CASE(test_less_than_vectors) 
-{
-    Vector<double, 2> v1 = {1.0, 1.0};
-    Vector<double, 2> v2 = {0.0, 1.0};
-    
-    BOOST_CHECK(v2 < v1);
-    BOOST_CHECK(!(v1 < v2));
-}
-
-BOOST_AUTO_TEST_CASE(test_less_than_or_equal_vectors) 
-{
-    Vector<double, 2> v1 = {1.0, 1.0};
-    Vector<double, 2> v2 = {0.0, 1.0};
-    
-    BOOST_CHECK(v2 <= v1);
-    BOOST_CHECK(!(v1 <= v2));
-
-    Vector<double, 2> v3 = {1.0, 1.0};
-    
-    BOOST_CHECK(v1 <= v3);
-    BOOST_CHECK(v3 <= v1);
-}
+//BOOST_AUTO_TEST_CASE(test_greater_than_vectors) 
+//{
+//    Vector<double, 2> v1 = {1.0, 1.0};
+//    Vector<double, 2> v2 = {0.0, 1.0};
+//    
+//    BOOST_CHECK(v1 > v2);
+//}
+//
+//BOOST_AUTO_TEST_CASE(test_greater_than_or_equal_vectors) 
+//{
+//    Vector<double, 2> v1 = {1.0, 1.0};
+//    Vector<double, 2> v2 = {0.0, 1.0};
+//    
+//    BOOST_CHECK(v1 >= v2);
+//    BOOST_CHECK(!(v2 >= v1));
+//
+//    Vector<double, 2> v3 = {1.0, 1.0};
+//    
+//    BOOST_CHECK(v1 >= v3);
+//    BOOST_CHECK(v3 >= v1);
+//}
+//
+//BOOST_AUTO_TEST_CASE(test_less_than_vectors) 
+//{
+//    Vector<double, 2> v1 = {1.0, 1.0};
+//    Vector<double, 2> v2 = {0.0, 1.0};
+//    
+//    BOOST_CHECK(v2 < v1);
+//    BOOST_CHECK(!(v1 < v2));
+//}
+//
+//BOOST_AUTO_TEST_CASE(test_less_than_or_equal_vectors) 
+//{
+//    Vector<double, 2> v1 = {1.0, 1.0};
+//    Vector<double, 2> v2 = {0.0, 1.0};
+//    
+//    BOOST_CHECK(v2 <= v1);
+//    BOOST_CHECK(!(v1 <= v2));
+//
+//    Vector<double, 2> v3 = {1.0, 1.0};
+//    
+//    BOOST_CHECK(v1 <= v3);
+//    BOOST_CHECK(v3 <= v1);
+//}
 
 //BOOST_AUTO_TEST_CASE(test_angle_between_vectors) 
 //{

@@ -43,7 +43,7 @@ namespace detail
 
 template<Arithmetic T>
 [[nodiscard]]
-auto loadPackedAligned(const T *data) -> typename Packed<T>::simd_type
+auto load_aligned_impl(const T *data) -> typename Packed<T>::simd_type
 {
     if constexpr (Floating<T>) {
 #ifdef TL_HAVE_AVX
@@ -70,7 +70,7 @@ auto loadPackedAligned(const T *data) -> typename Packed<T>::simd_type
 
 template<Arithmetic T>
 [[nodiscard]]
-auto loadPackedUnaligned(const T *data) -> typename Packed<T>::simd_type
+auto load_unaligned_impl(const T *data) -> typename Packed<T>::simd_type
 {
     if constexpr (Floating<T>){
 #ifdef TL_HAVE_AVX

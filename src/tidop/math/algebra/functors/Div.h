@@ -69,7 +69,8 @@ struct DivOp
      * \return The quotient `a / b`.
      */
     template<typename T>
-    constexpr T operator()(const T &a, const T &b) const
+    [[nodiscard]]
+    constexpr auto operator()(const T &a, const T &b) const -> T
     {
         return a / b;
     }
@@ -87,7 +88,8 @@ struct DivOp
      * due to lack of native SIMD integer division in many ISAs.
      */
     template<typename T>
-    auto operator()(const Packed<T> &a, const Packed<T> &a2) const
+    [[nodiscard]]
+    auto operator()(const Packed<T> &a, const Packed<T> &a2) const -> Packed<T>
     {
         if constexpr (std::is_integral_v<T>) {
             // SIMD no válido -> fallback escalar

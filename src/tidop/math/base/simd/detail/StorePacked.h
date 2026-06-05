@@ -43,7 +43,7 @@ namespace detail
 
 template<Arithmetic T, typename U>
 [[nodiscard]]
-void storePackedAligned(T *data, U &result)
+void store_aligned_impl(T *data, U &result)
 {
     if constexpr (Floating<T>) {
 #ifdef TL_HAVE_AVX
@@ -70,7 +70,7 @@ void storePackedAligned(T *data, U &result)
 
 template<Arithmetic T, typename U>
 [[nodiscard]]
-void storePackedUnaligned(T *data, U &result)
+void store_unaligned_impl(T *data, U &result)
 {
     if constexpr (Floating<T>) {
 #ifdef TL_HAVE_AVX

@@ -91,7 +91,7 @@ public:
      * The temporary vector is allocated to the size of the result (`expr.size()`).
      * The actual multiplication is performed by calling `detail::mat_vec_mul`.
      */
-    Evaluator(const MatVecMulExpr<LHS, RHS> &expr)
+    constexpr Evaluator(const MatVecMulExpr<LHS, RHS> &expr)
       : mTemp(expr.size())
     {
         detail::mat_vec_mul(expr.lhs(), expr.rhs(), mTemp);
@@ -102,7 +102,8 @@ public:
      * \param[in] i Element index (0‑based).
      * \return The i‑th component of the product vector.
      */
-    auto coeff(size_t i) const -> value_type
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
     {
         return mTemp[i];
     }

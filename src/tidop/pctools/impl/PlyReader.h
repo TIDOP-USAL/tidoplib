@@ -29,10 +29,13 @@
 #include "tidop/core/base/macros/SmartPtr.h"
 #include "tidop/pctools/PointCloudReader.h"
 
+TL_DISABLE_WARNINGS
 #include <pdal/io/PlyReader.hpp>
 #include <pdal/PointView.hpp>
 #include <pdal/PointTable.hpp>
 #include <pdal/Options.hpp>
+TL_DEFAULT_WARNINGS
+
 #include <stdexcept>
 #include <vector>
 #include <string>

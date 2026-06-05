@@ -30,7 +30,6 @@
 #include "tidop/math/numeric/Arithmetic.h"
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/algebra/rotations/EulerAnglesAxis.h"
-//#include "tidop/math/algebra/rotations/Rotations.h"
 
 namespace tl
 {

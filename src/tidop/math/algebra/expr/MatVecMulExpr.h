@@ -96,7 +96,7 @@ public:
      * \param[in] vec The vector expression (right operand).
      * \pre `mat.cols() == vec.size()`.
      */
-    MatVecMulExpr(const LHS &mat, const RHS &vec)
+    constexpr MatVecMulExpr(const LHS &mat, const RHS &vec)
       : mMat(mat), 
         mVec(vec)
     {
@@ -104,20 +104,24 @@ public:
     }
 
     /*! \brief Returns the number of elements in the result vector ( = mat.rows() ). */
+    [[nodiscard]]
     constexpr auto size() const noexcept -> size_t { return mMat.rows(); }
 
     /*! \brief Returns the left‑hand side matrix expression. */
-    auto lhs() const -> const LHS & { return mMat; }
+    [[nodiscard]]
+    constexpr auto lhs() const -> const LHS & { return mMat; }
 
     /*! \brief Returns the right‑hand side vector expression. */
-    auto rhs() const -> const RHS & { return mVec; }
+    [[nodiscard]]
+    constexpr auto rhs() const -> const RHS & { return mVec; }
 
     /*!
      * \brief Checks if either operand's data aliases a given memory address.
      * \param[in] ptr Pointer to test.
      * \return `true` if either the matrix or the vector expression aliases `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool
     {
         return mMat.aliases(ptr) || mVec.aliases(ptr);
     }

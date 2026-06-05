@@ -57,7 +57,7 @@ namespace detail
 
 template<SignedArithmetic T>
 [[nodiscard]]
-auto changeSign(const Packed<T> &packet) noexcept -> Packed<T>
+auto change_sign_impl(const Packed<T> &packet) noexcept -> Packed<T>
 {
     if constexpr (Floating<T>) {
 

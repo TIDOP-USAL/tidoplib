@@ -45,7 +45,7 @@ namespace detail
 {
 
 template<typename Vector_t, VectorExpr Expr>
-auto assign(Vector_t &dst, const Expr &expr) -> Vector_t &
+constexpr auto assign(Vector_t &dst, const Expr &expr) -> Vector_t &
 {
     using CleanExpr = std::remove_cvref_t<Expr>;
     using value_type = typename vector_traits<Vector_t>::value_type;
@@ -76,33 +76,52 @@ auto assign(Vector_t &dst, const Expr &expr) -> Vector_t &
         const auto &mat = expr.lhs();
         const auto &vec = expr.rhs();
 
-        detail::mat_vec_mul(mat, vec, dst);
+        if (std::is_constant_evaluated()) {
+            decltype(auto) a = require_linear_access(mat);
+            decltype(auto) b = require_linear_access(vec);
+            mat_vec_mul_cpp(a, b, dst);
+        } else {
+            mat_vec_mul(mat, vec, dst);
+        }
         return dst;
     }
         
-    // Evaluator
-    Evaluator<CleanExpr> eval(expr);
+    if (std::is_constant_evaluated()) {
 
-    size_t size = dst.size();
-    size_t i = 0;
+        Evaluator<CleanExpr> eval(expr);
+
+        for (size_t i = 0; i < dst.size(); ++i) {
+            dst[i] = eval.coeff(i);
+        }
+
+        return dst;
+
+    } else {
+
+        // Evaluator
+        Evaluator<CleanExpr> eval(expr);
+
+        size_t size = dst.size();
+        size_t i = 0;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-    if constexpr (vector_traits<CleanExpr>::has_contiguous_memory) {
-        constexpr size_t packed_size = PackedTraits<Packed<value_type>>::size;
-        const size_t max_size = size - (size % packed_size);
+        if constexpr (vector_traits<CleanExpr>::has_contiguous_memory) {
+            constexpr size_t packed_size = PackedTraits<Packed<value_type>>::size;
+            const size_t max_size = size - (size % packed_size);
 
-        for (; i < max_size; i += packed_size) {
-            Packed<value_type> result_packet = eval.packet(i);
-            result_packet.storeUnaligned(&dst[i]);
+            for (; i < max_size; i += packed_size) {
+                Packed<value_type> result_packet = eval.packet(i);
+                result_packet.storeUnaligned(&dst[i]);
+            }
         }
-    }
 #endif
 
-    for (; i < size; ++i) {
-        dst[i] = eval.coeff(i);
-    }
+        for (; i < size; ++i) {
+            dst[i] = eval.coeff(i);
+        }
 
-    return dst;
+        return dst;
+    }
 }
 
 template<typename Row, typename Expr>
@@ -182,7 +201,7 @@ void assign_col(Col &dst, const Expr &expr)
 }
 
 template<typename Diag, typename Expr>
-void assign_diagonal(Diag &dst, const Expr &expr)
+constexpr void assign_diagonal(Diag &dst, const Expr &expr)
 {
     TL_ASSERT(expr.size() == dst.size(), "Diagonal size mismatch");
 

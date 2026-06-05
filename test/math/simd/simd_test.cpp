@@ -1614,7 +1614,7 @@ BOOST_FIXTURE_TEST_CASE(vector_div_double, PackedTest)
 
 
 ///TODO: Añadir test
-// - horizontal_sum
+// - horizontal_sum_impl
 // - operator -
 // - operator+(const Packed<T> &packed, T scalar)
 // - operator+(T scalar, const Packed<T> &packed)

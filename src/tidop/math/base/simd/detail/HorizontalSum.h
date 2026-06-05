@@ -42,7 +42,8 @@ namespace detail
 {
 
 template<typename T>
-auto horizontal_sum(const Packed<T> &packed) -> enableIfFloat<T, T>
+[[nodiscard]]
+auto horizontal_sum_impl(const Packed<T> &packed) -> enableIfFloat<T, T>
 {
     T sum{};
 
@@ -74,7 +75,8 @@ auto horizontal_sum(const Packed<T> &packed) -> enableIfFloat<T, T>
 
 
 template<typename T>
-auto horizontal_sum(const Packed<T> &packed) -> enableIfDouble<T, T>
+[[nodiscard]]
+auto horizontal_sum_impl(const Packed<T> &packed) -> enableIfDouble<T, T>
 {
     T sum{};
 
@@ -103,7 +105,8 @@ auto horizontal_sum(const Packed<T> &packed) -> enableIfDouble<T, T>
 }
 
 template<typename T>
-auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
+[[nodiscard]]
+auto horizontal_sum_impl(const Packed<T> &packed) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int8_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint8_t>::value,
     T>
@@ -133,7 +136,8 @@ auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
 }
 
 template<typename T>
-auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
+[[nodiscard]]
+auto horizontal_sum_impl(const Packed<T> &packed) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int16_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint16_t>::value,
     T>
@@ -172,7 +176,8 @@ auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
 }
 
 template<typename T>
-auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
+[[nodiscard]]
+auto horizontal_sum_impl(const Packed<T> &packed) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int32_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint32_t>::value,
     T>
@@ -208,7 +213,8 @@ auto horizontal_sum(const Packed<T> &packed) -> std::enable_if_t<
 }
 
 template<typename T>
-auto horizontal_sum(const Packed<T>& packed) -> std::enable_if_t<
+[[nodiscard]]
+auto horizontal_sum_impl(const Packed<T>& packed) -> std::enable_if_t<
     std::is_same<std::remove_cv_t<T>, int64_t>::value ||
     std::is_same<std::remove_cv_t<T>, uint64_t>::value,
     T>
