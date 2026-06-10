@@ -83,8 +83,8 @@ auto tukeyFences(R &&range, TukeyFencesK k = TukeyFencesK::outlier) -> std::vect
         break;
     }
 
-    value_type q1 = tl::quantile(range, 0.25);
-    value_type q3 = tl::quantile(range, 0.75);
+    value_type q1 = quantile(range, 0.25);
+    value_type q3 = quantile(range, 0.75);
     value_type iqr = q3 - q1;
 
     value_type el1 = q1 - iqr * _k;

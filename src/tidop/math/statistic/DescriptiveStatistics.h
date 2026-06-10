@@ -29,6 +29,7 @@
 #include <type_traits>
 #include <cmath>
 #include <algorithm>
+#include <optional>
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/flags.h"
@@ -101,6 +102,8 @@ template<typename T>
 class DescriptiveStatistics
 {
 
+    static_assert(Arithmetic<T>, "DescriptiveStatistics requires an arithmetic type (integral or floating-point)");
+
 public:
 
     using moments_type = CentralMoments<std::conditional_t<std::is_integral_v<T>, double, T>>;
@@ -128,22 +131,22 @@ private:
      */
     enum class InternalStatus
     {
-        min             = (1 << 0),  ///< Minimum value computed
-        max             = (1 << 1),  ///< Maximum value computed
-        mode            = (1 << 2),  ///< Mode computed
-        rms             = (1 << 3),  ///< Root mean square computed
-        central_moments = (1 << 4),  ///< Central moments computed
-        sorted          = (1 << 5)   ///< Data sorted in cache
+        rms             = (1 << 0),  ///< Root mean square computed
+        central_moments = (1 << 1),  ///< Central moments computed
+        sorted          = (1 << 2)   ///< Data sorted in cache
     };
 
     mutable tl::EnumFlags<InternalStatus> mStatus;
-    Series<T> mData;
+    std::vector<T> mData;
     Config mConfig;
-    std::shared_ptr<Skewness<T>> mSkewnessMethod;
-    std::shared_ptr<Kurtosis<T>> mKurtosisMethod;
-    mutable T mMin{};
-    mutable T mMax{};
-    mutable T mMode{};
+
+    mutable std::shared_ptr<Skewness<T>> mSkewnessMethod;
+    mutable std::shared_ptr<Kurtosis<T>> mKurtosisMethod;
+
+    mutable std::optional<T> mMin;
+    mutable std::optional<T> mMax;
+    mutable std::optional<T> mMode;
+    
     mutable double mRootMeanSquare{};
     mutable moments_type mCentralMoments;
     mutable std::vector<T> mSortedData;
@@ -157,29 +160,24 @@ public:
      */
     DescriptiveStatistics(Config config = Config());
 
-    /*!
-     * \brief Constructor with data
-     * \param[in] data A series of data values
-     * \param[in] config Configuration settings
-     */
-    DescriptiveStatistics(Series<T> data, Config config = Config());
-
-    /*!
-     * \brief Copy constructor
-     * \param object An existing DescriptiveStatistics object
-     */
-    DescriptiveStatistics(const DescriptiveStatistics<T> &object);
+    template <typename R>
+        requires std::ranges::contiguous_range<R> && std::same_as<std::ranges::range_value_t<R>, T>
+    DescriptiveStatistics(const R &container, Config config = Config())
+        : mConfig(config)
+    {
+        mData.assign(std::ranges::begin(container), std::ranges::end(container));
+    }
 
     /*!
      * \brief Destructor
      */
-    ~DescriptiveStatistics();
+    ~DescriptiveStatistics() = default;
 
     /*!
      * \brief Get the dataset
      * \return The series of data
      */
-    auto data() const -> Series<T>;
+    //auto data() const -> Series<T>;
 
     /*!
      * \brief Get computed central moments
@@ -191,7 +189,7 @@ public:
      * \brief Set the dataset
      * \param[in] data A series of data values
      */
-    void setData(Series<T> data);
+    //void setData(Series<T> data);
 
     /*!
      * \brief Return the smallest value in the dataset
@@ -504,8 +502,6 @@ public:
 
 private:
 
-    void configure();
-
     void computeMinMax() const;
     void computeRootMeanSquare() const;
     void computeMode() const;
@@ -526,45 +522,6 @@ template<typename T>
 DescriptiveStatistics<T>::DescriptiveStatistics(Config config)
   : mConfig(std::move(config))
 {
-    this->configure();
-}
-
-template<typename T>
-DescriptiveStatistics<T>::DescriptiveStatistics(Series<T> data,
-                                                Config config)
-  : mData(std::move(data)),
-    mConfig(std::move(config))
-{
-    this->configure();
-}
-
-template<typename T>
-DescriptiveStatistics<T>::DescriptiveStatistics(const DescriptiveStatistics<T> &object)
-  : mData(object.mData),
-    mConfig(object.mConfig),
-    mSkewnessMethod(object.mSkewnessMethod),
-    mKurtosisMethod(object.mKurtosisMethod)
-{
-    this->configure();
-}
-
-template<typename T>
-DescriptiveStatistics<T>::~DescriptiveStatistics()
-{
-}
-
-template<typename T>
-auto DescriptiveStatistics<T>::data() const -> Series<T>
-{
-    return mData;
-}
-
-template<typename T>
-void DescriptiveStatistics<T>::setData(Series<T> data)
-{
-    mData = std::move(data);
-    mSortedData.clear();
-    mStatus.clear();
 }
 
 template<typename T>
@@ -574,32 +531,22 @@ auto DescriptiveStatistics<T>::centralMoments() const -> const moments_type &
         mCentralMoments = tl::moments(mData);
         mStatus.enable(InternalStatus::central_moments);
     }
+
     return mCentralMoments;
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::min() const -> T
 {
-    if (mStatus.isEnabled(InternalStatus::sorted)) {
-        return mSortedData.front();
-    }
-    if (!mStatus.isEnabled(InternalStatus::min)) {
-        computeMinMax();
-    }
-
-    return mMin;
+    if (!mMin) computeMinMax();
+    return *mMin;
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::max() const -> T
 {
-    if (mStatus.isEnabled(InternalStatus::sorted)) {
-        return mSortedData.back();
-    }
-    if (!mStatus.isEnabled(InternalStatus::max)) {
-        computeMinMax();
-    }
-    return mMax;
+    if (!mMax) computeMinMax();
+    return *mMax;
 }
 
 template<typename T>
@@ -609,9 +556,9 @@ auto DescriptiveStatistics<T>::sum() const -> T
 
     TL_TODO("Hacer prueba de rendimiento")
     TL_TODO("Utilizar SIMD")
-        for (const auto &data : mData) {
-            summation += data;
-        }
+    for (const auto &data : mData) {
+        summation += data;
+    }
 
     return summation;
 }
@@ -665,11 +612,8 @@ auto DescriptiveStatistics<T>::standardDeviation() const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::mode() const -> double
 {
-    if (!mStatus.isEnabled(InternalStatus::mode)) {
-        computeMode();
-    }
-
-    return static_cast<double>(mMode);
+    if (!mMode) computeMode();
+    return static_cast<double>(*mMode);
 }
 
 template<typename T>
@@ -787,12 +731,18 @@ auto DescriptiveStatistics<T>::rootMeanSquare() const -> double
 template<typename T>
 auto DescriptiveStatistics<T>::skewness() const -> double
 {
+    if (!mSkewnessMethod)
+        mSkewnessMethod = SkewnessFactory<T>::create(mConfig.skewness_method);
+
     return mSkewnessMethod->eval(*this);
 }
 
 template<typename T>
 auto DescriptiveStatistics<T>::kurtosis() const -> double
 {
+    if (!mKurtosisMethod)
+        mKurtosisMethod = KurtosisFactory<T>::create(mConfig.kurtosis_method);
+
     return mKurtosisMethod->eval(*this);
 }
 
@@ -861,25 +811,16 @@ bool DescriptiveStatistics<T>::isPopulation() const
 }
 
 template<typename T>
-void DescriptiveStatistics<T>::configure()
-{
-    mSkewnessMethod = SkewnessFactory<T>::create(mConfig.skewness_method);
-    mKurtosisMethod = KurtosisFactory<T>::create(mConfig.kurtosis_method);
-}
-
-template<typename T>
 void DescriptiveStatistics<T>::computeMinMax() const
 {
     if (mStatus.isEnabled(InternalStatus::sorted)) {
         mMin = mSortedData.front();
         mMax = mSortedData.back();
     } else {
-        auto min_max = std::minmax_element(mData.begin(), mData.end());
-        mMin = *min_max.first;
-        mMax = *min_max.second;
+        auto [_min, _max] = std::minmax_element(mData.begin(), mData.end());
+        mMin = *_min;
+        mMax = *_max;
     }
-    mStatus.enable(InternalStatus::min);
-    mStatus.enable(InternalStatus::max);
 }
 
 template<typename T>
@@ -893,7 +834,7 @@ template<typename T>
 void DescriptiveStatistics<T>::computeMode() const
 {
     mMode = tl::mode(mData.begin(), mData.end());
-    mStatus.enable(InternalStatus::mode);
+    //mStatus.enable(InternalStatus::mode);
 }
 
 template<typename T>

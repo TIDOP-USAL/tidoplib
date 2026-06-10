@@ -78,7 +78,7 @@ public:
         return mCount;
     }
 
-    auto empty() const noexcept
+    constexpr auto empty() const noexcept
     {
         return mCount == 0;
     }

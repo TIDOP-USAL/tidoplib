@@ -30,6 +30,7 @@
 #include <tidop/core/base/Meta.h>
 
 #include <array>
+#include <map>
 
 using namespace tl;
 
@@ -317,7 +318,7 @@ BOOST_FIXTURE_TEST_CASE(type_name, PropertyTest)
     BOOST_CHECK_EQUAL("uint", property_uint32->typeName());
     BOOST_CHECK_EQUAL("int64", property_int64->typeName());
     BOOST_CHECK_EQUAL("uint64", property_uint64->typeName());
-    BOOST_CHECK_EQUAL("Size", property_size->typeName());
+    BOOST_CHECK_EQUAL("tl::Size", property_size->typeName());
 }
 
 BOOST_FIXTURE_TEST_CASE(type, PropertyTest)
@@ -866,3 +867,111 @@ BOOST_AUTO_TEST_CASE(test_to_string_with_precision)
     BOOST_CHECK_EQUAL("1.234567890", toStringWithPrecision(1.23456789, 9));
 }
 
+
+/* Type.h */
+
+BOOST_AUTO_TEST_CASE(get_type_id)
+{
+    BOOST_CHECK(Type::type_bool == getTypeId<bool>());
+    BOOST_CHECK(Type::type_int8 == getTypeId<signed char>());
+    BOOST_CHECK(Type::type_uint8 == getTypeId<unsigned char>());
+    BOOST_CHECK(Type::type_int16 == getTypeId<short>());
+    BOOST_CHECK(Type::type_uint16 == getTypeId<unsigned short>());
+    BOOST_CHECK(Type::type_int32 == getTypeId<int>());
+    BOOST_CHECK(Type::type_uint32 == getTypeId<unsigned int>());
+    BOOST_CHECK(Type::type_int64 == getTypeId<long long>());
+    BOOST_CHECK(Type::type_uint64 == getTypeId<unsigned long long>());
+    BOOST_CHECK(Type::type_float32 == getTypeId<float>());
+    BOOST_CHECK(Type::type_float64 == getTypeId<double>());
+    BOOST_CHECK(Type::type_string == getTypeId<std::string>());
+    BOOST_CHECK(Type::type_wstring == getTypeId<std::wstring>());
+    BOOST_CHECK(Type::type_path == getTypeId<tl::Path>());
+    BOOST_CHECK(Type::type_size == getTypeId<Size<int>>());
+    auto type = getTypeId<std::map<int, std::string>>();
+    BOOST_CHECK(Type::type_map == type);
+    BOOST_CHECK(Type::type_schar == getTypeId<signed char>());
+    BOOST_CHECK(Type::type_uchar == getTypeId<unsigned char>());
+    BOOST_CHECK(Type::type_short == getTypeId<short>());
+    BOOST_CHECK(Type::type_ushort == getTypeId<unsigned short>());
+    BOOST_CHECK(Type::type_int == getTypeId<int>());
+    BOOST_CHECK(Type::type_uint == getTypeId<unsigned int>());
+    BOOST_CHECK(Type::type_float == getTypeId<float>());
+    BOOST_CHECK(Type::type_double == getTypeId<double>());
+}
+
+BOOST_AUTO_TEST_CASE(get_type_name)
+{
+    BOOST_CHECK_EQUAL("bool", getTypeName<bool>());
+    BOOST_CHECK_EQUAL("int8", getTypeName<signed char>());
+    BOOST_CHECK_EQUAL("uint8", getTypeName<unsigned char>());
+    BOOST_CHECK_EQUAL("int16", getTypeName<short>());
+    BOOST_CHECK_EQUAL("uint16", getTypeName<unsigned short>());
+    BOOST_CHECK_EQUAL("int", getTypeName<int>());
+    BOOST_CHECK_EQUAL("uint", getTypeName<unsigned int>());
+    BOOST_CHECK_EQUAL("int64", getTypeName<long long>());
+    BOOST_CHECK_EQUAL("uint64", getTypeName<unsigned long long>());
+    BOOST_CHECK_EQUAL("float", getTypeName<float>());
+    BOOST_CHECK_EQUAL("double", getTypeName<double>());
+    BOOST_CHECK_EQUAL("std::string", getTypeName<std::string>());
+    BOOST_CHECK_EQUAL("std::wstring", getTypeName<std::wstring>());
+    BOOST_CHECK_EQUAL("tl::Path", getTypeName<tl::Path>());
+    BOOST_CHECK_EQUAL("tl::Size", getTypeName<Size<int>>());
+    auto name = getTypeName<std::map<int, std::string>>();
+    BOOST_CHECK_EQUAL("std::map", name);
+    BOOST_CHECK_EQUAL("int8", getTypeName<signed char>());
+    BOOST_CHECK_EQUAL("uint8", getTypeName<unsigned char>());
+    BOOST_CHECK_EQUAL("int16", getTypeName<short>());
+    BOOST_CHECK_EQUAL("uint16", getTypeName<unsigned short>());
+    BOOST_CHECK_EQUAL("int", getTypeName<int>());
+    BOOST_CHECK_EQUAL("uint", getTypeName<unsigned int>());
+    BOOST_CHECK_EQUAL("float", getTypeName<float>());
+    BOOST_CHECK_EQUAL("double", getTypeName<double>());
+}
+
+BOOST_AUTO_TEST_CASE(type_to_string)
+{
+    BOOST_CHECK_EQUAL("bool", typeToString(Type::type_bool));
+    BOOST_CHECK_EQUAL("int8", typeToString(Type::type_int8));
+    BOOST_CHECK_EQUAL("uint8", typeToString(Type::type_uint8));
+    BOOST_CHECK_EQUAL("int16", typeToString(Type::type_int16));
+    BOOST_CHECK_EQUAL("uint16", typeToString(Type::type_uint16));
+    BOOST_CHECK_EQUAL("int", typeToString(Type::type_int));
+    BOOST_CHECK_EQUAL("uint", typeToString(Type::type_uint));
+    BOOST_CHECK_EQUAL("int64", typeToString(Type::type_int64));
+    BOOST_CHECK_EQUAL("uint64", typeToString(Type::type_uint64));
+    BOOST_CHECK_EQUAL("float", typeToString(Type::type_float32));
+    BOOST_CHECK_EQUAL("double", typeToString(Type::type_float64));
+    BOOST_CHECK_EQUAL("std::string", typeToString(Type::type_string));
+    BOOST_CHECK_EQUAL("std::wstring", typeToString(Type::type_wstring));
+    BOOST_CHECK_EQUAL("tl::Path", typeToString(Type::type_path));
+    BOOST_CHECK_EQUAL("tl::Size", typeToString(Type::type_size));
+    BOOST_CHECK_EQUAL("std::map", typeToString(Type::type_map));
+    BOOST_CHECK_EQUAL("int8", typeToString(Type::type_schar));
+    BOOST_CHECK_EQUAL("uint8", typeToString(Type::type_uchar));
+    BOOST_CHECK_EQUAL("int16", typeToString(Type::type_short));
+    BOOST_CHECK_EQUAL("uint16", typeToString(Type::type_ushort));
+    BOOST_CHECK_EQUAL("int", typeToString(Type::type_int));
+    BOOST_CHECK_EQUAL("uint", typeToString(Type::type_uint));
+    BOOST_CHECK_EQUAL("float", typeToString(Type::type_float));
+    BOOST_CHECK_EQUAL("double", typeToString(Type::type_double));
+}
+
+BOOST_AUTO_TEST_CASE(string_to_type)
+{
+    BOOST_CHECK(Type::type_bool == stringToType("bool"));
+    BOOST_CHECK(Type::type_int8 == stringToType("int8"));
+    BOOST_CHECK(Type::type_uint8 == stringToType("uint8"));
+    BOOST_CHECK(Type::type_int16 == stringToType("int16"));
+    BOOST_CHECK(Type::type_uint16 == stringToType("uint16"));
+    BOOST_CHECK(Type::type_int == stringToType("int"));
+    BOOST_CHECK(Type::type_uint == stringToType("uint"));
+    BOOST_CHECK(Type::type_int64 == stringToType("int64"));
+    BOOST_CHECK(Type::type_uint64 == stringToType("uint64"));
+    BOOST_CHECK(Type::type_float == stringToType("float"));
+    BOOST_CHECK(Type::type_double == stringToType("double"));
+    BOOST_CHECK(Type::type_string == stringToType("std::string"));
+    BOOST_CHECK(Type::type_wstring == stringToType("std::wstring"));
+    BOOST_CHECK(Type::type_path == stringToType("tl::Path"));
+    BOOST_CHECK(Type::type_size == stringToType("tl::Size"));
+    BOOST_CHECK(Type::type_map == stringToType("std::map"));
+}

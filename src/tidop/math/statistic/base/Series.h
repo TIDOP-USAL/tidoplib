@@ -27,9 +27,11 @@
 #include <vector> 
 #include <string> 
 #include <iomanip>
+#include <charconv>
 
 #include "tidop/core/base/defs.h"
 #include "tidop/core/base/Exception.h"
+#include "tidop/core/base/Concepts.h"
 
 namespace tl
 {
@@ -83,6 +85,8 @@ namespace tl
 template<typename T>
 class Series
 {
+    static_assert(Arithmetic<T>, "Series requires an arithmetic type (integral or floating-point)");
+    static_assert(!std::is_const_v<T>, "Series cannot hold const types. Use 'const Series<T>' instead.");
 
 public:
 
@@ -100,7 +104,6 @@ public:
 
 private:
 
-    std::vector<size_t> mIndex;
     std::vector<std::string> mStringIndex;
     std::vector<T> mData;
     template<typename Scalar> friend  std::ostream& operator<<(std::ostream&, const Series<Scalar>&);
@@ -111,6 +114,18 @@ public:
      * \brief Default constructor.
      */
     Series() = default;
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] series The series to copy from.
+     */
+    Series(const Series<T> &series) = default;
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] series The series to move from.
+     */
+    Series(Series<T> &&series) noexcept = default;
 
     /*!
      * \brief Constructs a series from an initializer list of values.
@@ -131,154 +146,157 @@ public:
     Series(std::initializer_list<std::pair<size_t, T>> data);
 
     /*!
-     * \brief Copy constructor.
-     * \param[in] series The series to copy from.
-     */
-    Series(const Series<T> &series);
-
-    /*!
-     * \brief Move constructor.
-     * \param[in] series The series to move from.
-     */
-    Series(Series<T> &&series) TL_NOEXCEPT;
-
-    /*!
      * \brief Destructor.
      */
-    ~Series();
+    ~Series() = default;
 
     /*!
      * \brief Copy assignment operator.
      * \param[in] series The series to copy from.
      */
-    auto operator = (const Series<T> &series) -> Series &;
+    auto operator = (const Series<T> &series) -> Series & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] series The series to move from.
      */
-    auto operator = (Series<T> &&series) TL_NOEXCEPT -> Series &;
+    auto operator = (Series<T> &&series) noexcept -> Series & = default;
 
     /*!
      * \brief Returns the size of the series.
      * \return The number of elements in the series.
      */
-    auto size() const -> size_t;
+    [[nodiscard]]
+    constexpr auto size() const noexcept -> size_t;
 
     /*!
-     * \brief Access element by index.
-     * \param[in] idx The index of the element.
-     * \return Reference to the element at the specified index.
+     * \brief Access element by position.
+     * \param[in] pos The position of the element.
+     * \return Reference to the element at the specified position.
      */
-    auto operator[](size_t idx) -> reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t pos) -> reference;
 
     /*!
-     * \brief Access element by index (const version).
-     * \param[in] idx The index of the element.
-     * \return Const reference to the element at the specified index.
+     * \brief Access element by position (const version).
+     * \param[in] pos The position of the element.
+     * \return Const reference to the element at the specified position.
      */
-    auto operator[](size_t idx) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t pos) const -> const_reference;
 
     /*!
      * \brief Access element by string key.
      * \param[in] idx The string key of the element.
      * \return The element associated with the given key.
      */
-    auto operator[](const std::string &idx) -> T;
+    [[nodiscard]]
+    auto operator[](std::string_view idx) -> reference;
+
+    [[nodiscard]]
+    auto operator[](std::string_view idx) const -> const_reference;
 
     auto push_back(const T &value) -> void
     {
         mData.push_back(value);
     }
 
-    auto push_back(const std::pair<std::string, T> &value) -> void
+    void push_back(std::string_view key, T value)
     {
-        mStringIndex.push_back(value.first);
-        mData.push_back(value.second);
+        mStringIndex.emplace_back(key);
+        mData.push_back(value);
     }
-
-    auto push_back(const std::pair<size_t, T> &value) -> void
-    {
-        mIndex.push_back(value.first);
-        mData.push_back(value.second);
-    }
-
-    //void setData(std::initializer_list<T> data);
-    //void setData(std::initializer_list<std::pair<std::string, T>> data);
-    //void setData(std::initializer_list<std::pair<size_t, T>> data);
 
     /*!
      * \brief Access element by string key.
      * \param idx The string key of the element.
      * \return The element associated with the given key.
      */
-    auto front() -> reference;
+    [[nodiscard]]
+    constexpr auto front() noexcept -> reference;
 
     /*!
      * \brief Returns a const reference to the first element in the series.
      * \return Const reference to the first element.
      */
-    auto front() const -> const_reference;
+    [[nodiscard]]
+    constexpr auto front() const noexcept -> const_reference;
 
     /*!
      * \brief Returns a reference to the last element in the series.
      * \return Reference to the last element.
      */
-    auto back()  -> reference;
+    [[nodiscard]]
+    constexpr auto back() noexcept -> reference;
 
     /*!
      * \brief Returns a const reference to the last element in the series.
      * \return Const reference to the last element.
      */
-    auto back() const -> const_reference;
+    [[nodiscard]]
+    constexpr auto back() const noexcept -> const_reference;
 
     /*!
      * \brief Returns an iterator to the beginning of the series.
      * \return Iterator to the beginning.
      */
-    auto begin() TL_NOEXCEPT -> iterator;
+    [[nodiscard]]
+    constexpr auto begin() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the beginning of the series.
      * \return Const iterator to the beginning.
      */
-    auto begin() const TL_NOEXCEPT -> const_iterator;
+    [[nodiscard]]
+    constexpr auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns an iterator to the end of the series.
      * \return Iterator to the end.
      */
-    auto end() TL_NOEXCEPT -> iterator;
+    [[nodiscard]]
+    constexpr auto end() noexcept -> iterator;
 
     /*!
      * \brief Returns a const iterator to the end of the series.
      * \return Const iterator to the end.
      */
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    [[nodiscard]]
+    constexpr auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Returns a reverse iterator to the beginning of the reversed series.
      * \return Reverse iterator to the beginning of the reversed series.
      */
-    auto rbegin() TL_NOEXCEPT -> reverse_iterator;
+    [[nodiscard]]
+    constexpr auto rbegin() noexcept -> reverse_iterator;
 
     /*!
      * \brief Returns a const reverse iterator to the beginning of the reversed series.
      * \return Const reverse iterator to the beginning of the reversed series.
      */
-    auto rbegin() const TL_NOEXCEPT -> const_reverse_iterator;
+    [[nodiscard]]
+    constexpr auto rbegin() const noexcept -> const_reverse_iterator;
 
     /*!
      * \brief Returns a reverse iterator to the end of the reversed series.
      * \return Reverse iterator to the end of the reversed series.
      */
-    auto rend() TL_NOEXCEPT -> reverse_iterator;
+    [[nodiscard]]
+    constexpr auto rend() noexcept -> reverse_iterator;
 
     /*!
      * \brief Returns a const reverse iterator to the end of the reversed series.
      * \return Const reverse iterator to the end of the reversed series.
      */
-    auto rend() const TL_NOEXCEPT -> const_reverse_iterator;
+    [[nodiscard]]
+    constexpr auto rend() const noexcept -> const_reverse_iterator;
+
+    [[nodiscard]]
+    constexpr auto data() noexcept -> pointer { return mData.data(); }
+    
+    [[nodiscard]]
+    constexpr auto data() const noexcept -> const_pointer { return mData.data(); }
 
 };
 
@@ -292,251 +310,151 @@ Series<T>::Series(std::initializer_list<T> data)
 template<typename T> inline
 Series<T>::Series(std::initializer_list<std::pair<std::string, T>> data)
 {
-    TL_TODO("En c++ 17 se puede utilizar tuple")
+    mStringIndex.reserve(data.size());
+    mData.reserve(data.size());
 
-    size_t n = data.size();
-    mStringIndex.reserve(n);
-    mData.reserve(n);
-    for (const auto &pair : data) {
-        mStringIndex.push_back(pair.first);
-        mData.push_back(pair.second);
+    for (const auto &[key, val] : data) {
+        mStringIndex.push_back(key);
+        mData.push_back(val);
     }
 }
 
 template<typename T> inline
 Series<T>::Series(std::initializer_list<std::pair<size_t, T>> data)
 {
-    TL_TODO("En c++ 17 se puede utilizar tuple")
+    mData.reserve(data.size());
+    mStringIndex.reserve(data.size());
 
-    size_t n = data.size();
-    mIndex.reserve(n);
-    mData.reserve(n);
-
-    for (const auto &pair : data) {
-        mIndex.push_back(pair.first);
-        mData.push_back(pair.second);
+    for (const auto &[key, val] : data) {
+        mStringIndex.push_back(std::to_string(key));
+        mData.push_back(val);
     }
 }
 
 template<typename T> inline
-Series<T>::Series(const Series<T> &series)
-  : mIndex(series.mIndex),
-    mStringIndex(series.mStringIndex),
-    mData(series.mData)
-{
-}
-
-template<typename T> inline
-Series<T>::Series(Series<T> &&series) TL_NOEXCEPT
-  : mIndex(std::forward<std::vector<size_t>>(series.mIndex)),
-    mStringIndex(std::forward<std::vector<std::string>>(series.mStringIndex)),
-    mData(std::forward<std::vector<T>>(series.mData))
-{
-}
-
-template<typename T> inline
-Series<T>::~Series()
-{
-}
-
-template<typename T> inline
-auto Series<T>::operator = (const Series &series) -> Series&
-{
-    if (this != &series) {
-        this->mIndex = series.mIndex;
-        this->mStringIndex = series.mStringIndex;
-        this->mData = series.mData;
-    }
-    return *this;
-}
-
-template<typename T> inline
-auto Series<T>::operator = (Series &&series) TL_NOEXCEPT -> Series&
-{
-    if (this != &series) {
-        this->mIndex = std::forward<std::vector<size_t>>(series.mIndex);
-        this->mStringIndex = std::forward<std::vector<std::string>>(series.mStringIndex);
-        this->mData = std::forward<std::vector<T>>(series.mData);
-    }
-    return *this;
-}
-
-
-template<typename T> inline
-auto Series<T>::size() const -> size_t
+constexpr auto Series<T>::size() const noexcept -> size_t
 {
     return mData.size();
 }
 
 template<typename T>
-auto Series<T>::operator[](size_t idx) -> reference
+constexpr auto Series<T>::operator[](size_t pos) -> reference
 {
-    if (mIndex.empty()) {
-        return mData[idx];
-    } else {
-        for (size_t i = 0; i < mIndex.size(); i++) {
-            if (idx == mIndex[i]) {
-                return mData[i];
-            }
-        }
-    }
-
-    TL_THROW_EXCEPTION("");
+    TL_ASSERT(pos < mData.size(), "Series: Index out of bounds");
+    return mData[pos];
 }
 
 template<typename T>
-auto Series<T>::operator[](size_t idx) const -> const_reference
+constexpr auto Series<T>::operator[](size_t pos) const -> const_reference
 {
-    if (mIndex.empty()) {
-        return mData[idx];
-    } else {
-        for (size_t i = 0; i < mIndex.size(); i++) {
-            if (idx == mIndex[i]) {
-                return mData[i];
-            }
-        }
-    }
-
-    TL_THROW_EXCEPTION("");
+    TL_ASSERT(pos < mData.size(), "Series: Index out of bounds");
+    return mData[pos];
 }
 
 template<typename T>
-auto Series<T>::operator[](const std::string &idx) -> T
+auto Series<T>::operator[](std::string_view idx) -> reference
 {
-    T value{};
-
-    if (mStringIndex.empty()) {
-
-        try {
-
-            size_t integer_idx = std::stoull(idx);
-            if (mIndex.empty()) {
-                value = mData[integer_idx];
-            } else {
-                for (size_t i = 0; i < mIndex.size(); i++) {
-                    if (integer_idx == mIndex[i]) {
-                        value = mData[i];
-                        break;
-                    }
-                }
-            }
-
-        } catch (const std::invalid_argument &e) {
-            printException(e);
+    if (!mStringIndex.empty()) {
+        if (auto it = std::ranges::find(mStringIndex, idx); it != mStringIndex.end()) {
+            return mData[std::distance(mStringIndex.begin(), it)];
         }
-
     } else {
-
-        for (size_t i = 0; i < mStringIndex.size(); i++) {
-            if (mStringIndex[i] == idx) {
-                value = mData[i];
-                break;
-            }
+        // Si no hay etiquetas de texto, intentamos parsear el string como posición física
+        size_t pos{0};
+        auto [ptr, ec] = std::from_chars(idx.data(), idx.data() + idx.size(), pos);
+        if (ec == std::errc{} && pos < mData.size()) {
+            return mData[pos];
         }
-        TL_TODO("Devolver excepción si no se encuentra el indice??")
     }
-
-    return value;
+    TL_THROW_EXCEPTION("Series: Label or index not found");
 }
 
-//template<typename T> inline
-//void Series<T>::setData(std::initializer_list<T> data)
-//{
-//  mData = data;
-//}
-//
-//template<typename T> inline
-//void Series<T>::setData(std::initializer_list<std::pair<std::string, T>> data)
-//{ 
-//  size_t n = data.size();
-//  mStringIndex.reserve(n);
-//  mData.reserve(n);
-//  for (auto it = data.begin(); it != data.end(); it++) {
-//    mStringIndex.push_back(it->first);
-//    mData.push_back(it->second);
-//  }
-//}
-//
-//template<typename T> inline
-//void Series<T>::setData(std::initializer_list<std::pair<size_t, T>> data)
-//{
-//  size_t n = data.size();
-//  mIndex.reserve(n);
-//  mData.reserve(n);
-//  for (auto it = data.begin(); it != data.end(); it++) {
-//    mIndex.push_back(it->first);
-//    mData.push_back(it->second);
-//  }
-//}
+template<typename T>
+auto Series<T>::operator[](std::string_view idx) const -> const_reference
+{
+    if (!mStringIndex.empty()) {
+        if (auto it = std::ranges::find(mStringIndex, idx); it != mStringIndex.end()) {
+            return mData[std::distance(mStringIndex.begin(), it)];
+        }
+    } else {
+        // Si no hay etiquetas de texto, intentamos parsear el string como posición física
+        size_t pos{0};
+        auto [ptr, ec] = std::from_chars(idx.data(), idx.data() + idx.size(), pos);
+        if (ec == std::errc{} && pos < mData.size()) {
+            return mData[pos];
+        }
+    }
+    TL_THROW_EXCEPTION("Series: Label or index not found");
+}
 
-template<typename T> inline
-auto Series<T>::front() -> reference
+template<typename T>
+constexpr auto Series<T>::front() noexcept -> reference
 {
     return mData.front();
 }
 
-template<typename T> inline
-auto Series<T>::front() const -> const_reference
+template<typename T>
+constexpr auto Series<T>::front() const noexcept -> const_reference
 {
     return mData.front();
 }
 
-template<typename T> inline
-auto Series<T>::back() -> reference
+template<typename T>
+constexpr auto Series<T>::back() noexcept -> reference
 {
     return mData.back();
 }
 
-template<typename T> inline
-auto Series<T>::back() const -> const_reference
+template<typename T>
+constexpr auto Series<T>::back() const noexcept -> const_reference
 {
     return mData.back();
 }
 
-template<typename T> inline
-auto Series<T>::begin() TL_NOEXCEPT -> iterator
+template<typename T>
+constexpr auto Series<T>::begin() noexcept -> iterator
 {
     return mData.begin();
 }
 
-template<typename T> inline
-auto Series<T>::begin() const TL_NOEXCEPT -> const_iterator
+template<typename T>
+constexpr auto Series<T>::begin() const noexcept -> const_iterator
 {
     return mData.begin();
 }
 
-template<typename T> inline
-auto Series<T>::end() TL_NOEXCEPT -> iterator
+template<typename T>
+constexpr auto Series<T>::end() noexcept -> iterator
 {
     return mData.end();
 }
 
-template<typename T> inline
-auto Series<T>::end() const TL_NOEXCEPT -> const_iterator
+template<typename T>
+constexpr auto Series<T>::end() const noexcept -> const_iterator
 {
     return mData.end();
 }
 
-template<typename T> inline
-auto Series<T>::rbegin() TL_NOEXCEPT -> reverse_iterator
+template<typename T>
+constexpr auto Series<T>::rbegin() noexcept -> reverse_iterator
 {
     return mData.rbegin();
 }
 
-template<typename T> inline
-auto Series<T>::rbegin() const TL_NOEXCEPT -> const_reverse_iterator
+template<typename T>
+constexpr auto Series<T>::rbegin() const noexcept -> const_reverse_iterator
 {
     return mData.rbegin();
 }
 
-template<typename T> inline
-auto Series<T>::rend() TL_NOEXCEPT -> reverse_iterator
+template<typename T>
+constexpr auto Series<T>::rend() noexcept -> reverse_iterator
 {
     return mData.rend();
 }
 
-template<typename T> inline
-auto Series<T>::rend() const TL_NOEXCEPT -> const_reverse_iterator
+template<typename T>
+constexpr auto Series<T>::rend() const noexcept -> const_reverse_iterator
 {
     return mData.rend();
 }
@@ -551,9 +469,7 @@ std::ostream &operator<< (std::ostream &os, const Series<Scalar> &serie)
     //os << "---------------------\n";
     for (size_t i = 0; i < serie.mData.size(); i++) {
         os << std::left << std::setw(16);
-        if (!serie.mIndex.empty())
-            os << serie.mIndex[i];
-        else if (!serie.mStringIndex.empty())
+        if (!serie.mStringIndex.empty())
             os << serie.mStringIndex[i];
         else
             os << i;

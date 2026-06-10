@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  *                                                                        *
  * Copyright (C) 2026 by Tidop Research Group                             *
  *                                                                        *
@@ -21,477 +21,463 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file DataFrame.h
+ * \brief In‑memory tabular data structure (data frame).
+ *
+ * This file defines the `DataFrame` class, which stores columns of homogeneous
+ * data types (similar to a spreadsheet or a database table). Each column has a
+ * name and contains a sequence of values of a single type. Columns can be added
+ * dynamically, and data can be accessed as `std::span` for efficient read‑only
+ * access. The class is move‑only (copy is disabled) to avoid expensive copies.
+ *
+ * \ingroup Data
+ * \see tl::Series, tl::Column
+ */
+
 #pragma once
 
 #include <vector>
 #include <string>
-#include <tuple>
-#include <iostream>
-#include <iomanip>
-#include <stdexcept>
-#include <utility>
-#include <fstream>
-#include <sstream>
-#include <charconv>
+#include <string_view>
+#include <unordered_map>
+#include <span>
+#include <memory>
 
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/Exception.h"
+#include "tidop/core/base/Concepts.h"
+#include "tidop/core/base/type.h"
+#include "tidop/math/statistic/base/Series.h"
 
 namespace tl
 {
 
+class DataFrame;
+
 namespace detail
 {
 
-// Split a line by delimiter, preserving empty fields.
-inline std::vector<std::string> split_line(const std::string &line, char delimiter)
+class Column
 {
-    std::vector<std::string> fields;
-    std::string token;
-    std::istringstream ss(line);
-    while (std::getline(ss, token, delimiter)) {
-        fields.push_back(token);
-    }
-    // Handle trailing delimiter (empty field at end)
-    if (!line.empty() && line.back() == delimiter) {
-        fields.emplace_back();
-    }
-    return fields;
-}
 
-// Convert a string token to a value of type T.
-
-/// TODO: Reemplazar por convertStringTo
-template <typename T>
-T convert_token(const std::string &token)
-{
-    if constexpr (std::is_integral_v<T>) {
-        T value{};
-        auto [ptr, ec] = std::from_chars(token.data(), token.data() + token.size(), value);
-        TL_ASSERT(ec == std::errc(), "Failed to convert token to integral: {}", token);
-        return value;
-    } else if constexpr (std::is_floating_point_v<T>) {
-        double tmp{};
-        auto [ptr, ec] = std::from_chars(token.data(), token.data() + token.size(), tmp);
-        TL_ASSERT(ec == std::errc(), "Failed to convert token to floating point: {}", token);
-        return static_cast<T>(tmp);
-    } else {
-        return token; // Assume std::string or compatible type.
-    }
-}
-
-// Load CSV/TSV file into column vectors.
-// Columns types are given by template parameter pack Columns.
-// Returns a tuple of vectors in the same order as Columns.
-template <typename... Columns>
-std::tuple<std::vector<Columns>...> load_file(const std::string &path,
-    char delimiter,
-    bool has_header,
-    const std::vector<std::string> &user_col_names)
-{
-    std::ifstream infile(path);
-    TL_ASSERT(infile.is_open(), "Cannot open file: {}", path);
-
-    std::vector<std::string> col_names = user_col_names;
-    std::string line;
-    if (has_header) {
-        TL_ASSERT(std::getline(infile, line), "File is empty, cannot read header.");
-        col_names = detail::split_line(line, delimiter);
-    }
-    // Prepare containers for each column.
-    std::tuple<std::vector<Columns>...> columns_data;
-    size_t expected_fields = sizeof...(Columns);
-    TL_ASSERT(!col_names.empty() && col_names.size() == expected_fields, "Header column count does not match template columns.");
-
-    size_t row_index = 0;
-    while (std::getline(infile, line)) {
-        auto fields = detail::split_line(line, delimiter);
-        TL_ASSERT(fields.size() == expected_fields, "Row {} has {} fields; expected {}", std::to_string(row_index), std::to_string(fields.size()), std::to_string(expected_fields));
-        // Fill each column.
-        std::size_t idx = 0;
-        (void)std::initializer_list<int>{
-            ((std::get<std::vector<Columns>>(columns_data).push_back(detail::convert_token<Columns>(fields[idx++])), 0))...
-        };
-        ++row_index;
-    }
-    return columns_data;
-}
-
-}
-
-/*! \addtogroup MathBase
- *  \{
- */
-
-/*!
- * \class DataFrame
- * \brief Estructura de datos tabular orientada a columnas, similar a Pandas.
- *
- * Utiliza características de C++17 y C++20 para una implementación eficiente
- * y segura de tipos mediante variadic templates y fold expressions.
- *
- * \tparam Columns Tipos de datos de cada columna.
- */
-template <typename... Columns>
-class DataFrame
-{
 public:
-    /*!
-     * \brief DataFrame a partir de filas de datos.
-     * \param[in] columns Nombres de las columnas
-     * \param[in] data Datos estructurados por filas (tuplas)
-     *
-     * <h4>Ejemplo</h4>
-     * \code
-     *   DataFrame<int, double, std::string> data_frame({"col1", "col2", "col3"},
-     *                                                  { {1, 1.1, "text1"},
-     *                                                    {2, 2.2, "text2"},
-     *                                                    {3, 3.3, "text3"} });
-     *   std::cout << data_frame << std::endl;
-     * \endcode
-     */
-    DataFrame(const std::vector<std::string> &columns,
-              std::initializer_list<std::tuple<Columns...>> data)
-        : mCols(columns)
-    {
-        for (const auto& row : data) {
-            append_row(row, std::index_sequence_for<Columns...>{});
-        }
-    }
 
-    /*!
-     * \brief DataFrame a partir de vectores (columnas).
-     * \param[in] columns Nombres de las columnas
-     * \param[in] data Resto de argumentos: vectores que representan las columnas.
-     *
-     * <h4>Ejemplo</h4>
-     * \code
-     *   std::vector<std::string> columns{"col1", "col2", "col3"};
-     *   std::vector<int> v1{1, 2, 3};
-     *   std::vector<double> v2{ 1.1, 2.2, 3.3 };
-     *   std::vector<std::string> v3{"text1", "text2", "text3"};
-     *   DataFrame<int, double, std::string> data_frame(columns, v1, v2, v3);
-     *   std::cout << data_frame << std::endl;
-     * \endcode
-     */
-    DataFrame(const std::vector<std::string> &columns,
-              const std::vector<Columns>&... data)
-        : mCols(columns), mData(data...)
-    {
-        check_sizes();
-    }
+    virtual ~Column() = default;
+    virtual size_t size() const noexcept = 0;
+    virtual Type type() const noexcept = 0;
+    virtual const void *data() const noexcept = 0;
+};
 
-    /*!
-     * \brief DataFrame a partir de initializer_list de columnas.
-     * \param[in] columns Nombres de las columnas
-     * \param[in] data Listas de inicialización para cada columna.
-     *
-     * <h4>Ejemplo</h4>
-     * \code
-     *   DataFrame<int, double, std::string> data_frame({ "col1", "col2", "col3" },
-     *                                                  { 1, 2, 3 },
-     *                                                  { 1.1, 2.2, 3.3 },
-     *                                                  { "text1", "text2", "text3" });
-     *   std::cout << data_frame << std::endl;
-     * \endcode
-     */
-    DataFrame(const std::vector<std::string> &columns,
-              std::initializer_list<Columns>... data)
-        : mCols(columns), mData(data...)
-    {
-        check_sizes();
-    }
-
-    /*!
-     * \brief DataFrame a partir de pares {Nombre, initializer_list}.
-     * \param[in] data Pares que contienen el nombre de la columna y sus datos.
-     *
-     * <h4>Ejemplo</h4>
-     * \code
-     *   DataFrame<int, double, std::string> data_frame({"col1", {1, 2, 3}},
-     *                                                  {"col2", {1.1, 2.2, 3.3}},
-     *                                                  {"col3", {"text1", "text2", "text3"}});
-     *   std::cout << data_frame << std::endl;
-     * \endcode
-     */
-    DataFrame(std::pair<std::string, std::initializer_list<Columns>>... data)
-        : mCols{data.first...}, mData(data.second...)
-    {
-        check_sizes();
-    }
-
-    ~DataFrame() = default;
-    
-    // -----------------------------------------------------------------
-    // Static factories for loading from delimited files
-    // -----------------------------------------------------------------
-    /** 
-     * @brief Load a DataFrame from a delimited text file (CSV/TSV).
-     * @param path Path to the file.
-     * @param delimiter Field delimiter (default ',').
-     * @param has_header True if first line contains column names.
-     * @param col_names Column names to use when has_header is false.
-     * @throws DataFrameParseError on I/O or format errors.
-     */
-    static DataFrame fromFile(const Path &path,
-                               char delimiter = ',',
-                               bool has_header = true,
-                               const std::vector<std::string>& col_names = {}) {
-        std::ifstream file(path.toString());
-        TL_ASSERT(file.is_open(), "Cannot open file: {}", path.toString());
-        
-        std::vector<std::string> column_names = col_names;
-        std::string line;
-        if (has_header) {
-            TL_ASSERT(std::getline(file, line), "Empty file, cannot read header.");
-            column_names = detail::split_line(line, delimiter);
-        }
-        // Load column data (without rereading header)
-        auto column_vectors = detail::load_file<Columns...>(path.toString(),
-                                                       delimiter,
-                                                       has_header,
-                                                       column_names);
-        return DataFrame(column_names,
-                         std::get<std::vector<Columns>>(column_vectors)...);
-    }
-
-    /** 
-     * @brief Placeholder for type‑inferred loading (not implemented).
-     */
-    static DataFrame from_file_infer(const std::string& /*path*/,
-                                    char /*delimiter*/ = ',',
-                                    bool /*has_header*/ = true) {
-        TL_THROW_EXCEPTION("from_file_infer not implemented – explicit types required.");
-    }
-
-    /*!
-     * \brief Número de columnas
-     * \return El número total de columnas.
-     */
-    size_t cols() const 
-    { 
-        return sizeof...(Columns); 
-    }
-
-    /*!
-     * \brief Número de filas
-     * \return El número total de filas.
-     */
-    size_t rows() const 
-    {
-        if constexpr (sizeof...(Columns) > 0) {
-            return std::get<0>(mData).size();
-        }
-        return 0;
-    }
-
-    /*!
-     * \brief Acceso a los nombres de columna
-     * \param[in] columnId Indice de columna
-     * \return Nombre de la columna
-     */
-    std::string &column(size_t columnId) 
-    { 
-        return mCols.at(columnId); 
-    }
-    
-    const std::string &column(size_t columnId) const 
-    { 
-        return mCols.at(columnId); 
-    }
-
-    /*!
-     * \brief Listado con los nombres de las columnas
-     * \return Un vector con los nombres.
-     */
-    std::vector<std::string> columns() const 
-    { 
-        return mCols; 
-    }
-
-    /*!
-     * \brief Obtener una fila (registro) en un índice específico
-     * \param idx Índice de la fila.
-     * \return Una tupla con los valores de la fila en ese índice.
-     */
-    std::tuple<Columns...> reg(size_t idx) const 
-    {
-        if (idx >= rows()) {
-            throw std::out_of_range("Index out of bounds for DataFrame row");
-        }
-        return get_row_impl(idx, std::index_sequence_for<Columns...>{});
-    }
-
-    /*!
-     * \brief Acceso directo al vector de una columna por su índice en la plantilla.
-     */
-    template <size_t I>
-    std::vector<std::tuple_element_t<I, std::tuple<Columns...>>>& getColumnData() 
-    { 
-        return std::get<I>(mData); 
-    }
-
-    template <size_t I>
-    const std::vector<std::tuple_element_t<I, std::tuple<Columns...>>>& getColumnData() const 
-    { 
-        return std::get<I>(mData); 
-    }
-
-    /*!
-     * \brief Imprime el DataFrame por salida estándar.
-     */
-    friend std::ostream &operator<<(std::ostream &os, const DataFrame &dataframe)
-    {
-        os << "   ";
-        for (size_t c = 0; c < dataframe.cols(); c++) {
-            os << std::left << std::setw(10) << dataframe.column(c);
-        }
-        os << "\n";
-
-        for (size_t r = 0; r < dataframe.rows(); r++) {
-            os << std::left << std::setw(3) << r + 1;
-            auto reg = dataframe.reg(r);
-            std::apply([&os](const auto&... args) {
-                ((os << std::left << std::setw(10) << args), ...);
-            }, reg);
-            os << "\n";
-        }
-
-        os << std::flush;
-        return os;
-    }
+template<typename T>
+class TypedColumn
+  : public Column
+{
 
 private:
-    /*!
-     * \brief Verifica que todas las columnas tengan el mismo tamaño (número de filas).
-     */
-    void check_sizes() const 
+
+    std::vector<T> mData;
+
+public:
+
+    TypedColumn(std::vector<T> &&data)
+        : mData(std::move(data))
     {
-        if constexpr (sizeof...(Columns) > 0) {
-            size_t expected_size = std::get<0>(mData).size();
-            auto check = [&](const auto& vec) {
-                if (vec.size() != expected_size) {
-                    throw std::invalid_argument("DataFrame: All columns must have the same size.");
-                }
-            };
-            std::apply([&](const auto&... args) { (check(args), ...); }, mData);
-        }
     }
 
-    template<std::size_t... Is>
-    std::tuple<Columns...> get_row_impl(size_t idx, std::index_sequence<Is...>) const 
+    [[nodiscard]]
+    constexpr auto size() const noexcept -> size_t override { return mData.size(); }
+
+    [[nodiscard]]
+    auto type() const noexcept -> Type override 
     {
-        return std::make_tuple(std::get<Is>(mData)[idx]...);
+        return TypeTraits<T>::id_type;
     }
 
-    template<std::size_t... Is>
-    void append_row(const std::tuple<Columns...>& row, std::index_sequence<Is...>) 
+    [[nodiscard]]
+    auto data() const noexcept -> const void *override
     {
-        (std::get<Is>(mData).push_back(std::get<Is>(row)), ...);
+        return mData.data();
     }
+
+};
+
+} // namespace detail
+
+
+struct ColumnInfo
+{
+    std::string name;
+    Type type;
+    size_t size;
+};
+
+
+class RowView
+{
 
 private:
-    std::vector<std::string> mCols;
-    std::tuple<std::vector<Columns>...> mData;
+
+    const DataFrame &mDf;
+    size_t mRowIndex;
+
+public:
+
+    RowView(const DataFrame &df, size_t rowIndex)
+      : mDf(df),
+        mRowIndex(rowIndex)
+    {
+    }
+
+    // Acceso por nombre de columna: row["Precios"]
+    template <typename T>
+    auto get(std::string_view col_name) const -> const T &;
+
+    // Acceso por índice numérico de columna: row[0]
+    template <typename T>
+    auto get(size_t col_index) const -> const T &;
+
+    auto index() const noexcept -> size_t { return mRowIndex; }
+};
+
+class RowIterator
+{
+
+private:
+
+    const DataFrame &mDf;
+    size_t mCurrentRow;
+
+public:
+
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = RowView;
+    using difference_type = std::ptrdiff_t;
+    using pointer = RowView *;
+    using reference = RowView; // Devuelve por valor porque RowView es una vista ligera
+
+    RowIterator(const DataFrame &df, size_t row)
+      : mDf(df),
+        mCurrentRow(row)
+    {
+    }
+
+    auto operator*() const -> RowView 
+    {
+        return RowView(mDf, mCurrentRow); 
+    }
+
+    auto operator++() -> RowIterator &
+    {
+        ++mCurrentRow;
+        return *this;
+    }
+
+    auto operator++(int) -> RowIterator
+    {
+        RowIterator tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+
+    auto operator==(const RowIterator &other) const -> bool
+    {
+        return mCurrentRow == other.mCurrentRow;
+    }
+};
+
+
+// Objeto ayudante para soportar la sintaxis range-based for: df.rows()
+class RowRange
+{
+
+private:
+
+    const DataFrame &mDf;
+
+public:
+
+    RowRange(const DataFrame &df);
+    auto begin() const -> RowIterator;
+    auto end() const -> RowIterator;
 };
 
 
 
 
-// -----------------------------------------------------------------
-// Dynamic schema support (when a single Schema type with static member `Columns` is provided)
-// -----------------------------------------------------------------
+/*!
+ * \class DataFrame
+ * \brief Tabular data structure with named columns of possibly different types.
+ *
+ * A `DataFrame` stores a collection of columns. Each column has a unique name
+ * and contains a sequence of values of a single type. Columns are added using
+ * `insert()`, and data can be retrieved as a `std::span<const T>` using the
+ * `column()` method.
+ *
+ * The class is move‑only (copy constructor and copy assignment are deleted)
+ * to prevent accidental expensive copies. All columns have the same length
+ * (number of rows), which is determined when the first column is inserted.
+ * Subsequent columns must match that length.
+ *
+ * ### Example
+ * \code
+ * DataFrame df;
+ * std::vector<int> ages = {25, 30, 35};
+ * df.insert("age", ages);
+ *
+ * std::vector<double> scores = {85.5, 92.0, 78.3};
+ * df.insert("score", scores);
+ *
+ * auto age_col = df.column<int>("age");
+ * for (int a : age_col) std::cout << a << "\n";
+ * \endcode
+ */
+class DataFrame
+{
+
+private:
+
+    std::vector<std::string> mColNames;                           /*!< Column names in insertion order. */
+    std::vector<std::unique_ptr<detail::Column>> mColumns;        /*!< Pointers to typed column objects. */
+    std::unordered_map<std::string, size_t> mColIndex;            /*!< Name → index map. */
+
+public:
+
+    DataFrame() = default;
+    DataFrame(DataFrame &&) noexcept = default;
+    DataFrame &operator=(DataFrame &&) noexcept = default;
+
+    DataFrame(const DataFrame &) = delete;
+    DataFrame &operator=(const DataFrame &) = delete;
+
+    ~DataFrame() = default;
+
+    /*!
+     * \brief Inserts a new column into the data frame.
+     * \tparam R A type satisfying `ColumnInput` (an input range).
+     * \param[in] name The name of the column (must be unique).
+     * \param[in] range The range of values to fill the column.
+     * \throws `tl::Exception` if a column with the same name already exists,
+     *         or if the range length does not match the existing number of rows.
+     *
+     * The column’s type is deduced from the range’s value type (`std::ranges::range_value_t<R>`).
+     * If the data frame is empty, the length of the first column determines the number of rows.
+     * Subsequent columns must have exactly the same number of rows.
+     */
+    template<typename R>
+        requires(std::ranges::input_range<R>)
+    void insert(std::string_view name, R &&range);
+
+    /*!
+     * \brief Retrieves a column as a read‑only span.
+     * \tparam T The expected element type of the column.
+     * \param[in] name The column name.
+     * \return A `std::span<const T>` containing the column data.
+     * \throws `tl::Exception` if the column does not exist or if the type `T`
+     *         does not match the stored column type.
+     *
+     * The span provides contiguous, read‑only access to the column elements.
+     * The data remains owned by the `DataFrame`; the span is valid as long as
+     * the `DataFrame` is not moved or destroyed.
+     */
+    template <typename T>
+    [[nodiscard]]
+    auto column(std::string_view name) const -> std::span<const T>;
+
+    template <typename T>
+    [[nodiscard]]
+    auto column(size_t index) const -> std::span<const T>;
+
+    /*!
+     * \brief Returns the number of columns.
+     * \return Number of columns.
+     */
+    [[nodiscard]]
+    auto cols() const noexcept -> size_t;
+
+    /*!
+     * \brief Returns the number of rows (length of each column).
+     * \return Number of rows (0 if no columns).
+     */
+    [[nodiscard]]
+    auto size() const noexcept -> size_t;
+
+    /*!
+     * \brief Returns the list of column names in insertion order.
+     * \return Const reference to a vector of column names.
+     */
+    [[nodiscard]]
+    auto columns() const noexcept -> const std::vector<std::string> &;
+
+    [[nodiscard]]
+    auto row(size_t i) const -> RowView;
+
+    // Permite la sintaxis: for (auto row : df.rows())
+    [[nodiscard]]
+    auto rows() const -> RowRange;
 
 
-//struct DynamicSchema
-//{
-//    static constexpr std::size_t Id = 1;                 // ejemplo: id del esquema
-//    static constexpr std::size_t Columns = 0;            // 0 → “desconocido” (lo determinará el CSV)
-//};
+    auto columnType(size_t index) const -> Type
+    {
+        TL_ASSERT(index < mColumns.size(), "Column index {} out of bounds", index);
 
-//
-//// Helper to detect a schema type that defines `static constexpr size_t Columns`.
-//namespace tl {
-//    template <class, class = void>
-//    struct has_columns : std::false_type {};
-//    template <class T>
-//    struct has_columns<T, std::void_t<decltype(T::Columns)>> : std::true_type {};
-//}
-//
-//// Partial specialization for a single template argument that satisfies `has_columns`.
-//// This specialization treats the DataFrame as a dynamic, column‑oriented container of strings.
-//// It is selected only when the provided type has a static member `Columns`.
-//
-//template <class Schema,
-//          std::enable_if_t<tl::has_columns<Schema>::value, int> = 0>
-//class DataFrame<Schema>
-//{
-//public:
-//    // Row stores each cell as a string (raw text from CSV).
-//    using Row = std::vector<std::string>;
-//
-//    DataFrame() = default;
-//    explicit DataFrame(const std::string &csv_path) { load(csv_path); }
-//
-//    // -----------------------------------------------------------------
-//    // API pública (compatible con la versión estática cuando sea posible)
-//    // -----------------------------------------------------------------
-//    const std::vector<Row> &rows() const noexcept { return data_; }
-//    std::size_t column_count() const noexcept { return ncols_; }
-//
-//    // -----------------------------------------------------------------
-//    // Carga de CSV (delimitador ',' por defecto)
-//    // -----------------------------------------------------------------
-//    void load(const std::string &csv_path)
-//    {
-//        std::ifstream file(csv_path);
-//        if (!file) {
-//            throw std::runtime_error("Cannot open file: " + csv_path);
-//        }
-//
-//        std::string line;
-//        bool first = true;
-//        while (std::getline(file, line)) {
-//            std::istringstream ss(line);
-//            std::string cell;
-//            Row row;
-//            while (std::getline(ss, cell, ',')) {
-//                row.emplace_back(std::move(cell));
-//            }
-//            // Si la línea termina en delimitador, añadimos celda vacía
-//            if (!line.empty() && line.back() == ',') {
-//                row.emplace_back();
-//            }
-//
-//            if (first) {
-//                first = false;
-//                if constexpr (Schema::Columns == 0) {
-//                    ncols_ = row.size();
-//                } else {
-//                    ncols_ = Schema::Columns;
-//                }
-//            }
-//            data_.emplace_back(std::move(row));
-//        }
-//    }
-//
-//    // -----------------------------------------------------------------
-//    // Acceso a una celda (devuelve std::string_view para evitar copias)
-//    // -----------------------------------------------------------------
-//    std::string_view get(std::size_t row, std::size_t col) const {
-//        if (row >= data_.size() || col >= ncols_) {
-//            throw std::out_of_range("Index out of range");
-//        }
-//        return data_[row][col];
-//    }
-//
-//private:
-//    std::vector<Row> data_;      // filas leídas del CSV
-//    std::size_t       ncols_{0}; // número de columnas determinado en tiempo de carga
-//};
+        return mColumns[index]->type();
+    }
 
-// End of dynamic‑schema specialization
+    auto columnType(std::string_view name) const -> Type
+    {
+        auto it = mColIndex.find(std::string(name));
+        return this->columnType(it->second);
+    }
+
+    auto info() const -> std::vector<ColumnInfo>
+    {
+        std::vector<ColumnInfo> result;
+        result.reserve(cols());
+
+        for (size_t i = 0; i < cols(); ++i) {
+            result.push_back({
+                mColNames[i],
+                mColumns[i]->type(),
+                mColumns[i]->size()
+                });
+        }
+
+        return result;
+    }
+};
+
 
 /*! \} */
+
+template<typename R>
+    requires(std::ranges::input_range<R>)
+inline void DataFrame::insert(std::string_view name, R &&range)
+{
+    using T = std::ranges::range_value_t<R>;
+
+    std::string col_name(name);
+
+    TL_ASSERT(!mColIndex.contains(col_name), "DataFrame: Column '{}' already exists", name);
+
+    std::vector<T> data;
+    if constexpr (std::ranges::sized_range<R>) {
+        data.reserve(std::ranges::size(range));
+    }
+
+    for (auto &&v : range)
+        data.emplace_back(static_cast<T>(v));
+
+    if (!mColumns.empty()) {
+        TL_ASSERT(data.size() == size(), "DataFrame: Length mismatch. Expected {}, got {}", size(), data.size());
+    }
+
+    mColNames.emplace_back(col_name);
+    mColumns.push_back(std::make_unique<detail::TypedColumn<T>>(std::move(data)));
+    mColIndex[col_name] = mColumns.size() - 1;
+}
+
+template<typename T>
+inline auto DataFrame::column(std::string_view name) const -> std::span<const T>
+{
+    auto it = mColIndex.find(std::string(name));
+
+    TL_ASSERT(it != mColIndex.end(), "Column not found");
+
+    return column<T>(it->second);
+}
+
+template<typename T>
+inline auto DataFrame::column(size_t index) const -> std::span<const T>
+{
+    TL_ASSERT(index < mColumns.size(), "Column index {} out of bounds", index);
+
+    const auto &col = mColumns[index];
+
+    TL_ASSERT(col->type() == TypeTraits<T>::id_type, "Type mismatch");
+
+    return std::span<const T>(static_cast<const T *>(col->data()), col->size());
+}
+
+inline auto DataFrame::cols() const noexcept -> size_t
+{
+    return mColumns.size();
+}
+
+inline auto DataFrame::size() const noexcept -> size_t
+{
+    return mColumns.empty() ? 0 : mColumns[0]->size();
+}
+
+inline auto DataFrame::columns() const noexcept -> const std::vector<std::string> &
+{
+    return mColNames;
+}
+
+inline auto DataFrame::row(size_t i) const -> RowView
+{
+    TL_ASSERT(i < size(), "DataFrame: Row index {} out of bounds", i);
+    return RowView(*this, i);
+}
+
+inline auto DataFrame::rows() const -> RowRange
+{
+    return RowRange(*this);
+}
+
+
+template<typename T>
+inline auto RowView::get(std::string_view col_name) const -> const T &
+{
+    auto span = mDf.column<T>(col_name);
+    TL_ASSERT(mRowIndex < span.size(), "RowView: Index out of bounds");
+    return span[mRowIndex];
+}
+
+template<typename T>
+inline auto RowView::get(size_t col_index) const -> const T &
+{
+    auto span = mDf.column<T>(col_index);
+    TL_ASSERT(mRowIndex < span.size(), "RowView: Index out of bounds");
+    return span[mRowIndex];
+}
+
+
+RowRange::RowRange(const DataFrame &df) 
+  : mDf(df)
+{}
+
+inline auto RowRange::begin() const -> RowIterator 
+{ 
+    return RowIterator(mDf, 0);
+}
+
+inline auto RowRange::end() const -> RowIterator
+{ 
+    return RowIterator(mDf, mDf.size());
+}
+
+
+
+//
+//inline auto operator<<(std::ostream &os, const DataFrame &df) -> std::ostream &
+//{
+//    os << "DataFrame\n";
+//    os << "Rows: " << df.size() << '\n';
+//    os << "Columns: " << df.cols() << '\n';
+//
+//    os << "\nName\tType\tSize\n";
+//
+//    for (const auto &col : df.info()) {
+//        os << col.name
+//            << '\t'
+//            << typeToString(col.type)
+//            << '\t'
+//            << col.size
+//            << '\n';
+//    }
+//
+//    return os;
+//}
+
 
 } // namespace tl

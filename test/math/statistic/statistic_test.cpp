@@ -27,6 +27,7 @@
 #include <tidop/core/base/Exception.h>
 #include <tidop/math/statistic/DescriptiveStatistics.h>
 #include <tidop/math/statistic/base/Series.h>
+#include <tidop/math/statistic/base/DataFrame.h>
 #include <tidop/math/statistic/classification/ConfusionMatrix.h>
 #include <tidop/math/statistic/algorithms/association/Covariance.h>
 #include <tidop/math/statistic/algorithms/association/Pearson.h>
@@ -61,7 +62,6 @@ struct SeriesTest
         s = Series<int>({1, 2, 2, 3, 3, 3, 4, 4, 4, 4});
         s2 = Series<double>({{"A", 2.}, {"B", 5.}});
         s3 = Series<double>({{3, 2.}, {7, 3.}});
-
     }
 
     void teardown()
@@ -92,8 +92,8 @@ BOOST_FIXTURE_TEST_CASE(constructor, SeriesTest)
     BOOST_CHECK_EQUAL(2., s2["A"]);
     BOOST_CHECK_EQUAL(5., s2["B"]);
 
-    BOOST_CHECK_EQUAL(2., s3[3]);
-    BOOST_CHECK_EQUAL(3., s3[7]);
+    BOOST_CHECK_EQUAL(2., s3[0]);
+    BOOST_CHECK_EQUAL(3., s3[1]);
     BOOST_CHECK_EQUAL(2., s3["3"]);
     BOOST_CHECK_EQUAL(3., s3["7"]);
 }
@@ -105,6 +105,116 @@ BOOST_FIXTURE_TEST_CASE(size, SeriesTest)
     BOOST_CHECK_EQUAL(2, s3.size());
 }
 
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(DataFrameSuite)
+
+struct DataFrameTest
+{
+
+    DataFrameTest() {}
+    ~DataFrameTest() {}
+
+    void setup()
+    {
+        data_price = {10.5, 22.1, 45.0};
+        data_sede = {"Ávila", "Madrid", "Barcelona"};
+
+        df.insert("Precios", data_price);
+        df.insert("Sede", data_sede);
+    }
+
+    void teardown()
+    {
+
+    }
+
+    DataFrame df;
+    Series<double> data_price;
+    std::vector<std::string> data_sede;
+
+};
+
+BOOST_FIXTURE_TEST_CASE(constructor, DataFrameTest)
+{
+
+}
+
+BOOST_FIXTURE_TEST_CASE(size, DataFrameTest)
+{
+    BOOST_CHECK_EQUAL(2, df.cols());
+    BOOST_CHECK_EQUAL(3, df.size());
+}
+
+BOOST_FIXTURE_TEST_CASE(columns, DataFrameTest)
+{
+    auto &columns = df.columns();
+    BOOST_CHECK_EQUAL("Precios", columns.at(0));
+    BOOST_CHECK_EQUAL("Sede", columns.at(1));
+}
+
+BOOST_FIXTURE_TEST_CASE(get_data, DataFrameTest)
+{
+    auto precios = df.column<double>("Precios");
+    auto sede = df.column<std::string>("Sede");
+
+    BOOST_CHECK_EQUAL(3, precios.size());
+    BOOST_CHECK_EQUAL(3, sede.size());
+
+    double amplitud = tl::range(precios);
+    BOOST_CHECK_EQUAL(34.5, amplitud);
+
+    BOOST_CHECK_EQUAL("Madrid", sede[1]);
+}
+
+BOOST_FIXTURE_TEST_CASE(get_row, DataFrameTest)
+{
+    auto first_row = df.row(0);
+    BOOST_CHECK_EQUAL("Ávila", first_row.get<std::string>("Sede"));
+    BOOST_CHECK_EQUAL(10.5, first_row.get<double>("Precios"));
+}
+
+BOOST_FIXTURE_TEST_CASE(iterator_rows, DataFrameTest)
+{
+    size_t i = 0;
+
+    for (auto row : df.rows()) {
+
+        BOOST_CHECK_EQUAL(data_sede[i], row.get<std::string>("Sede"));
+        BOOST_CHECK_EQUAL(data_price[i], row.get<double>("Precios"));
+
+        BOOST_CHECK_EQUAL(data_price[i], row.get<double>(0));
+        BOOST_CHECK_EQUAL(data_sede[i], row.get<std::string>(1));
+
+        i++;
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(descriptive_statistics_data_frame, DataFrameTest)
+{
+    DescriptiveStatistics<double> stat(df.column<double>("Precios"));
+    auto mean = stat.mean();
+    auto median = stat.median();
+
+    BOOST_CHECK_CLOSE(25.8666, mean, 0.01);
+    BOOST_CHECK_CLOSE(22.1, median, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(column_type, DataFrameTest)
+{
+    BOOST_CHECK(df.columnType("Precios") == Type::type_double);
+    BOOST_CHECK(df.columnType("Sede") == Type::type_string);
+}
+
+BOOST_FIXTURE_TEST_CASE(info, DataFrameTest)
+{
+    auto column_info = df.info();
+    BOOST_CHECK_EQUAL("Precios", column_info[0].name);
+    BOOST_CHECK_EQUAL(3, column_info[0].size);
+    BOOST_CHECK(Type::type_double == column_info[0].type);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

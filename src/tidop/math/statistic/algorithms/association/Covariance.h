@@ -57,8 +57,8 @@ auto covariance(R1 &&rangeX, R2 &&rangeY)
     auto n_y = std::ranges::distance(rangeY);
     if (n_x != n_y || n_x <= 1) return consts::zero<ResultType>;
 
-    ResultType mean_x = tl::mean(rangeX);
-    ResultType mean_y = tl::mean(rangeY);
+    ResultType mean_x = mean(rangeX);
+    ResultType mean_y = mean(rangeY);
     ResultType sum{};
 
     auto itX = std::ranges::begin(rangeX);

@@ -56,6 +56,8 @@
 #include <iterator>
 #include <stdexcept>
 #include <map>
+#include <array>
+#include <string_view>
 
 namespace tl
 {
@@ -443,7 +445,7 @@ struct TypeTraits<Size<T>>
 {
     using value_type = Size<T>;
     static constexpr auto id_type = Type::type_size;
-    static constexpr auto name_type = "Size";
+    static constexpr auto name_type = "tl::Size";
 };
 
 template <typename Key, typename Value>
@@ -477,11 +479,64 @@ struct TypeTraits<std::map<Key, Value>>
  * \see TypeTraits, Type
  */
 template<typename T>
-constexpr Type getTypeId()
+constexpr auto getTypeId() -> Type
 {
     return TypeTraits<T>::id_type;
 }
 
+template<typename T>
+constexpr auto getTypeName() -> std::string
+{
+    return TypeTraits<T>::name_type;
+}
+
+namespace detail
+{
+
+struct TypeInfo
+{
+    Type id;
+    std::string_view name;
+};
+
+constexpr std::array<TypeInfo, 16> gTypeInfo = {{
+    {Type::type_bool, TypeTraits<bool>::name_type},
+    {Type::type_float, TypeTraits<float>::name_type},
+    {Type::type_double, TypeTraits<double>::name_type},
+    {Type::type_int8, TypeTraits<signed char>::name_type},
+    {Type::type_uint8, TypeTraits<unsigned char>::name_type},
+    {Type::type_int16, TypeTraits<short>::name_type},
+    {Type::type_uint16, TypeTraits<unsigned short>::name_type},
+    {Type::type_int32, TypeTraits<int>::name_type},
+    {Type::type_uint32, TypeTraits<unsigned int>::name_type},
+    {Type::type_int64, TypeTraits<long long>::name_type},
+    {Type::type_uint64, TypeTraits<unsigned long long>::name_type},
+    {Type::type_string, TypeTraits<std::string>::name_type},
+    {Type::type_wstring, TypeTraits<std::wstring>::name_type},
+    {Type::type_path, TypeTraits<tl::Path>::name_type},
+    {Type::type_size, "tl::Size"},
+    {Type::type_map, "std::map"},
+}};
+
+} // namespace detail
+
+constexpr auto typeToString(Type type) noexcept -> std::string_view
+{
+    for (auto const &info : detail::gTypeInfo) {
+        if (info.id == type)
+            return info.name;
+    }
+    return "unknown";
+}
+
+constexpr auto stringToType(std::string_view name) noexcept -> Type
+{
+    for (auto const &info : detail::gTypeInfo) {
+        if (info.name == name)
+            return info.id;
+    }
+    return Type::type_unknown;
+}
 
 template<typename>
 inline constexpr bool always_false_v = false;
