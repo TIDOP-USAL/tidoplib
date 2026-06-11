@@ -29,6 +29,7 @@
 
 #include "tidop/core/base/Concepts.h"
 #include "tidop/core/base/macros/Deprecation.h"
+#include "tidop/math/numeric/detail/CompileTime.h"
 
 namespace tl
 {
@@ -65,10 +66,13 @@ constexpr auto clamp(const T &value, const T &min, const T &max) -> T
  */
 template<Arithmetic T>
 [[nodiscard]]
-TL_DEPRECATED("void std::hypot", "4.0")
 constexpr auto module(T a, T b) noexcept
 {
-    return std::hypot(a, b);
+    if (std::is_constant_evaluated()) {
+        return detail::hypot_compile_time(a, b);
+    } else {
+        return std::hypot(a, b);
+    }
 }
 
 
@@ -92,6 +96,27 @@ template<typename T>
 constexpr auto cube(T x) noexcept -> T
 { 
     return x * x * x;
+}
+
+template<typename T>
+[[nodiscard]] 
+constexpr auto abs(T val) noexcept -> T
+{
+    if (std::is_constant_evaluated()) {
+        return detail::abs_compile_time(val);
+    } else {
+        return std::abs(val);
+    }
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto sqrt(T x) noexcept
+{
+    if (std::is_constant_evaluated()) {
+        return detail::sqrt_compile_time(x); // (Newton-Raphson)
+    } else {
+        return std::sqrt(x);
+    }
 }
 
 /*!

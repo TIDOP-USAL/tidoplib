@@ -39,12 +39,77 @@ BOOST_AUTO_TEST_CASE(tl_math_clamp)
     BOOST_CHECK_EQUAL(20, tl::clamp(21, 11, 20));
 }
 
+BOOST_AUTO_TEST_CASE(tl_math_clamp_compile_time)
+{
+    constexpr auto a = tl::clamp(10, 1, 20);
+    BOOST_CHECK_EQUAL(a, 10);
+    constexpr auto b = tl::clamp(0, 1, 20);
+    BOOST_CHECK_EQUAL(b, 1);
+    constexpr auto c = tl::clamp(10, 10, 20);
+    BOOST_CHECK_EQUAL(c, 10);
+    constexpr auto d = tl::clamp(10, 11, 20);
+    BOOST_CHECK_EQUAL(d, 11);
+    constexpr auto e = tl::clamp(20, 11, 20);
+    BOOST_CHECK_EQUAL(e, 20);
+    constexpr auto f = tl::clamp(21, 11, 20);
+    BOOST_CHECK_EQUAL(f, 20);
+}
+
 BOOST_AUTO_TEST_CASE(tl_math_module)
 {
     BOOST_CHECK_EQUAL(0, module(0, 0));
     BOOST_CHECK_EQUAL(10, module(10, 0));
     BOOST_CHECK_EQUAL(10, module(0, 10));
     BOOST_CHECK_CLOSE(14.142135623730, module(10, 10), 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(tl_math_module_compile_time)
+{
+    constexpr auto a = module(0, 0);
+    BOOST_CHECK_EQUAL(0, a);
+    constexpr auto b = module(10, 0);
+    BOOST_CHECK_EQUAL(10, b);
+    constexpr auto c = module(0, 10);
+    BOOST_CHECK_EQUAL(10, c);
+    constexpr auto d = module(10, 10);
+    BOOST_CHECK_CLOSE(14.142135623730, d, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(tl_math_abs)
+{
+    BOOST_CHECK_EQUAL(0, tl::abs(0));
+    BOOST_CHECK_EQUAL(10, tl::abs(-10));
+    BOOST_CHECK_EQUAL(10, tl::abs(10));
+}
+
+BOOST_AUTO_TEST_CASE(tl_math_abs_compile_time)
+{
+    constexpr auto a = tl::abs(0);
+    BOOST_CHECK_EQUAL(0, a);
+    constexpr auto b = tl::abs(-10);
+    BOOST_CHECK_EQUAL(10, b);
+    constexpr auto c = tl::abs(10);
+    BOOST_CHECK_EQUAL(10, c);
+}
+
+BOOST_AUTO_TEST_CASE(tl_math_sqrt)
+{
+    BOOST_CHECK_EQUAL(0, tl::sqrt(0));
+    BOOST_CHECK_EQUAL(3, tl::sqrt(9));
+    BOOST_CHECK_EQUAL(8, tl::sqrt(64));
+    BOOST_CHECK_CLOSE(9.486832, tl::sqrt(90), 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(tl_math_sqrt_compile_time)
+{
+    constexpr auto a = tl::sqrt(0);
+    BOOST_CHECK_EQUAL(0, a);
+    constexpr auto b = tl::sqrt(9);
+    BOOST_CHECK_EQUAL(3, b);
+    constexpr auto c = tl::sqrt(64);
+    BOOST_CHECK_EQUAL(8, c);
+    constexpr auto d = tl::sqrt(90);
+    BOOST_CHECK_CLOSE(9.486832, d, 0.01);
 }
 
 BOOST_AUTO_TEST_CASE(scalar_is_zero)
