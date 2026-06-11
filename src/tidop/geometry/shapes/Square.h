@@ -64,7 +64,7 @@ public:
      *
      * Creates a square with side length 0.
      */
-    Square();
+    constexpr Square() = default;
 
     /*!
      * \brief Constructor with parameter
@@ -72,7 +72,14 @@ public:
      *
      * Creates a square with the specified side length.
      */
-    Square(T side);
+    constexpr Square(T side);
+
+    constexpr Square(const Square<T> &square) = default;
+    constexpr Square(Square<T> &&square) noexcept = default;
+
+    constexpr auto operator=(const Square<T> &square) -> Square<T> & = default;
+    constexpr auto operator=(Square<T> &&square) noexcept -> Square<T> & = default;
+
 
     /*!
      * \brief Get the area of the square
@@ -80,49 +87,51 @@ public:
      *
      * The area of a square is simply the side length squared.
      */
-    auto area() const -> double override;
+    [[nodiscard]]
+    constexpr auto area() const noexcept -> double override;
 
     /*!
      * \brief Set the side length
      * \param[in] side The length of the square's side
      */
-    void setSide(T side);
+    constexpr void setSide(T side);
 
     /*!
      * \brief Get the side length
      * \return The length of the square's side
      */
-    auto getSide() const -> T;
+    [[nodiscard]]
+    constexpr auto getSide() const noexcept  -> T;
 };
 
 
 
-template<typename T>
-Square<T>::Square()
-  : side(0)
-{
-}
+//template<typename T>
+//Square<T>::Square()
+//  : side(0)
+//{
+//}
 
 template<typename T>
-Square<T>::Square(T side)
+constexpr Square<T>::Square(T side)
   : side(side)
 {
 }
 
 template<typename T>
-auto Square<T>::area() const -> double
+constexpr auto Square<T>::area() const noexcept -> double
 {
     return static_cast<double>(side * side);
 }
 
 template<typename T>
-void Square<T>::setSide(T side)
+constexpr void Square<T>::setSide(T side)
 {
     this->side = side;
 }
 
 template<typename T>
-auto Square<T>::getSide() const -> T 
+constexpr auto Square<T>::getSide() const noexcept -> T
 {
     return side;
 }

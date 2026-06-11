@@ -27,6 +27,7 @@
 #include "tidop/geometry/shapes/Shape.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/graphic/rect.h"
+#include "tidop/math/numeric/Arithmetic.h"
 
 namespace tl
 {
@@ -75,7 +76,7 @@ public:
     /*!
      * \brief Default constructor
      */
-    Ellipse();
+    constexpr Ellipse() = default;
 
     /*!
      * \brief Constructor
@@ -83,19 +84,19 @@ public:
      * \param[in] a Semi-major axis
      * \param[in] b Semi-minor axis
      */
-    Ellipse(const Point<T> &center, T a, T b);
+    constexpr Ellipse(const Point<T> &center, T a, T b);
 
     /*!
      * \brief Copy constructor
      * \param[in] ellipse Ellipse object to copy
      */
-    Ellipse(const Ellipse<T> &ellipse);
+    constexpr Ellipse(const Ellipse<T> &ellipse) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] ellipse Ellipse object to move
      */
-    Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT;
+    constexpr Ellipse(Ellipse<T> &&ellipse) noexcept = default;
 
     /*!
      * \brief Destructor
@@ -107,14 +108,14 @@ public:
      * \param[in] ellipse Ellipse object to copy
      * \return Reference to the assigned object
      */
-    auto operator=(const Ellipse<T> &ellipse) -> Ellipse<T> &;
+    constexpr auto operator=(const Ellipse<T> &ellipse) -> Ellipse<T> & = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] ellipse Ellipse object to move
      * \return Reference to the assigned object
      */
-    auto operator=(Ellipse<T> &&ellipse) TL_NOEXCEPT -> Ellipse<T> &;
+    constexpr auto operator=(Ellipse<T> &&ellipse) TL_NOEXCEPT -> Ellipse<T> & = default;
 
     /*!
      * \brief Converts the ellipse to a different type
@@ -127,47 +128,52 @@ public:
      * \brief Computes the area of the ellipse
      * \return The computed area
      */
-    auto area() const -> double override;
+    [[nodiscard]]
+    constexpr auto area() const noexcept -> double override;
 
     /*!
      * \brief Computes the approximate circumference of the ellipse
      * \return The computed circumference
      */
-    auto length() const -> double;
+    [[nodiscard]]
+    constexpr auto length() const noexcept -> double;
 
     /*!
      * \brief Computes the bounding rectangle of the ellipse (axis-aligned)
      * \return A rectangle that bounds the ellipse
      */
-    auto rect() const -> Rect<T>;
+    [[nodiscard]]
+    constexpr auto rect() const -> Rect<T>;
 
     /*!
      * \brief Checks if a point is inside the ellipse
      * \param[in] point The point to check
      * \return True if the point is inside, false otherwise
      */
-    auto isInner(const Point<T> &point) const -> bool;
+    [[nodiscard]]
+    constexpr auto isInner(const Point<T> &point) const -> bool;
 
     /*!
      * \brief Equality comparison operator
      * \param[in] other The ellipse to compare with
      * \return True if ellipses are equal, false otherwise
      */
-    auto operator==(const Ellipse &other) const -> bool;
+    [[nodiscard]]
+    constexpr auto operator==(const Ellipse &other) const -> bool;
 };
 
 
 
-template<typename T>
-Ellipse<T>::Ellipse()
-  : center(Point<T>()),
-    a(static_cast<T>(1)),
-    b(static_cast<T>(1))
-{
-}
+//template<typename T>
+//Ellipse<T>::Ellipse()
+//  : center(Point<T>()),
+//    a(static_cast<T>(1)),
+//    b(static_cast<T>(1))
+//{
+//}
 
 template<typename T>
-Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
+constexpr Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
   : center(center),
     a(a),
     b(b)
@@ -179,45 +185,45 @@ Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
     }
 }
 
-template<typename T>
-Ellipse<T>::Ellipse(const Ellipse<T> &ellipse)
-  : center(ellipse.center),
-    a(ellipse.a),
-    b(ellipse.b)
-{
-}
+//template<typename T>
+//Ellipse<T>::Ellipse(const Ellipse<T> &ellipse)
+//  : center(ellipse.center),
+//    a(ellipse.a),
+//    b(ellipse.b)
+//{
+//}
+//
+//template<typename T>
+//Ellipse<T>::Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT
+//  : center(std::move(ellipse.center)),
+//    a(ellipse.a),
+//    b(ellipse.b)
+//{
+//}
 
-template<typename T>
-Ellipse<T>::Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT
-  : center(std::move(ellipse.center)),
-    a(ellipse.a),
-    b(ellipse.b)
-{
-}
-
-template<typename T>
-auto Ellipse<T>::operator = (const Ellipse &ellipse) -> Ellipse<T> &
-{
-    if (this != &ellipse) {
-        this->center = ellipse.center;
-        this->a = ellipse.a;
-        this->b = ellipse.b;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT -> Ellipse<T> &
-{
-    if (this != &ellipse) {
-        this->center = std::move(ellipse.center);
-        this->a = ellipse.a;
-        this->b = ellipse.b;
-    }
-
-    return *this;
-}
+//template<typename T>
+//auto Ellipse<T>::operator = (const Ellipse &ellipse) -> Ellipse<T> &
+//{
+//    if (this != &ellipse) {
+//        this->center = ellipse.center;
+//        this->a = ellipse.a;
+//        this->b = ellipse.b;
+//    }
+//
+//    return *this;
+//}
+//
+//template<typename T>
+//auto Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT -> Ellipse<T> &
+//{
+//    if (this != &ellipse) {
+//        this->center = std::move(ellipse.center);
+//        this->a = ellipse.a;
+//        this->b = ellipse.b;
+//    }
+//
+//    return *this;
+//}
 
 template<typename T> template<typename T2>
 Ellipse<T>::operator Ellipse<T2>() const
@@ -228,42 +234,37 @@ Ellipse<T>::operator Ellipse<T2>() const
 }
 
 template<typename T>
-auto Ellipse<T>::area() const -> double
+constexpr auto Ellipse<T>::area() const noexcept -> double
 {
     return consts::pi<double> * a * b;
 }
 
 template<typename T>
-auto Ellipse<T>::length() const -> double
+constexpr auto Ellipse<T>::length() const noexcept -> double
 {
-    return consts::pi<double> * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
+    return consts::pi<double> * (3 * (a + b) - tl::sqrt((3 * a + b)*(a + 3 * b)));
 }
 
 template<typename T>
-auto Ellipse<T>::rect() const -> Rect<T>
+constexpr auto Ellipse<T>::rect() const -> Rect<T>
 {
     return Rect<T>(tl::Point<T>(center.x() - a, center.y() - b), a * 2., b * 2.);
 }
 
 template<typename T>
-auto Ellipse<T>::isInner(const Point<T> &point) const -> bool
+constexpr auto Ellipse<T>::isInner(const Point<T> &point) const -> bool
 {
     if (!this->rect().contains(point)) return false;
     
     auto v = point - center;
 
-    //T x = (point.x - this->center.x);
-    //T y = (point.y - this->center.y);
     T check = (v.x() * v.x()) / (this->a * this->a) + (v.y() * v.y()) / (this->b * this->b);
-    //if (check <= 1) return true; // the point is inner
-    //else if (check == 1) return true; // the point is on the boundary of the region
-    //else return false;
 
     return check <= 1;
 }
 
 template<typename T>
-auto Ellipse<T>::operator==(const Ellipse &other) const -> bool
+constexpr auto Ellipse<T>::operator==(const Ellipse &other) const -> bool
 {
     return center == other.center && a == other.a && b == other.b;
 }

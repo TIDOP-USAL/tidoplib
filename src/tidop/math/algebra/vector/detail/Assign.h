@@ -125,7 +125,7 @@ constexpr auto assign(Vector_t &dst, const Expr &expr) -> Vector_t &
 }
 
 template<typename Row, typename Expr>
-void assign_row(Row &dst, const Expr &expr)
+constexpr void assign_row(Row &dst, const Expr &expr)
 {
     TL_ASSERT(expr.size() == dst.size(), "Row size mismatch");
 
@@ -142,36 +142,53 @@ void assign_row(Row &dst, const Expr &expr)
 
         const auto &mat = expr.lhs();
         const auto &vec = expr.rhs();
-        detail::mat_vec_mul(mat, vec, dst);
+        //detail::mat_vec_mul(mat, vec, dst);
+
+        if (std::is_constant_evaluated()) {
+            decltype(auto) a = require_linear_access(mat);
+            decltype(auto) b = require_linear_access(vec);
+            mat_vec_mul_cpp(a, b, dst);
+        } else {
+            mat_vec_mul(mat, vec, dst);
+        }
 
     } else {
 
-        Evaluator<CleanExpr> eval(expr);
-        size_t size = dst.size();
-        size_t i = 0;
+        if (std::is_constant_evaluated()) {
+
+            Evaluator<CleanExpr> eval(expr);
+            for (size_t i = 0; i < dst.size(); ++i) {
+                dst[i] = eval.coeff(i);
+            }
+
+        } else {
+
+            Evaluator<CleanExpr> eval(expr);
+            size_t size = dst.size();
+            size_t i = 0;
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
-        if constexpr (vector_traits<Expr>::has_contiguous_memory) {
+            if constexpr (vector_traits<Expr>::has_contiguous_memory) {
 
-            constexpr size_t packed_size = Packed<value_type>::size();
-            const size_t max_size = size - (size % packed_size);
+                constexpr size_t packed_size = Packed<value_type>::size();
+                const size_t max_size = size - (size % packed_size);
 
-            for (; i < max_size; i += packed_size) {
-                auto result_packet = eval.packet(i);
-                result_packet.storeUnaligned(&dst[i]);
+                for (; i < max_size; i += packed_size) {
+                    auto result_packet = eval.packet(i);
+                    result_packet.storeUnaligned(&dst[i]);
+                }
+            }
+#endif
+
+            for (; i < size; ++i) {
+                dst[i] = eval.coeff(i);
             }
         }
-#endif
-            
-        for (; i < size; ++i) {
-            dst[i] = eval.coeff(i);
-        }
-
     }
 }
 
 template<typename Col, typename Expr>
-void assign_col(Col &dst, const Expr &expr)
+constexpr void assign_col(Col &dst, const Expr &expr)
 {
     TL_ASSERT(expr.size() == dst.size(), "Column size mismatch");
 
@@ -188,7 +205,14 @@ void assign_col(Col &dst, const Expr &expr)
 
         const auto &mat = expr.lhs();
         const auto &vec = expr.rhs();
-        detail::mat_vec_mul(mat, vec, dst);
+        
+        if (std::is_constant_evaluated()) {
+            decltype(auto) a = require_linear_access(mat);
+            decltype(auto) b = require_linear_access(vec);
+            mat_vec_mul_cpp(a, b, dst);
+        } else {
+            mat_vec_mul(mat, vec, dst);
+        }
 
     } else {
                 
@@ -218,7 +242,14 @@ constexpr void assign_diagonal(Diag &dst, const Expr &expr)
 
         const auto &mat = expr.lhs();
         const auto &vec = expr.rhs();
-        detail::mat_vec_mul(mat, vec, dst);
+
+        if (std::is_constant_evaluated()) {
+            decltype(auto) a = require_linear_access(mat);
+            decltype(auto) b = require_linear_access(vec);
+            mat_vec_mul_cpp(a, b, dst);
+        } else {
+            mat_vec_mul(mat, vec, dst);
+        }
 
     } else {
 

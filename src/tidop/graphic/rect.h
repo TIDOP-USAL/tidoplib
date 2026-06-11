@@ -63,7 +63,7 @@ public:
      * Constructs a empty Rect object. isValid() returns false
      * and isEmpty() return true.
      */
-    Rect();
+    constexpr Rect();
     
     /*!
      * \brief Constructs a rectangle with top-left corner (x, y) and width and height
@@ -72,23 +72,23 @@ public:
      * \param[in] width Rectangle width
      * \param[in] height Rectangle height
      */
-    Rect(T x, T y, T width, T height);
+    constexpr Rect(T x, T y, T width, T height);
     
     /*!
      * \brief Constructs a rectangle with top-left and bottom-right corners
      * \param[in] topLeft Rectangle top-left corner
      * \param[in] bottomRight Rectangle bottom-right corner
      */
-    Rect(const Point<T> &topLeft, 
-         const Point<T> &bottomRight);
+    constexpr Rect(const Point<T> &topLeft,
+                   const Point<T> &bottomRight);
     
     /*!
      * \brief Constructs a rectangle with top-left corner and size (width==height)
      * \param[in] topLeft Rectangle top-left corner
      * \param[in] size Rectangle width and height size
      */
-    Rect(const Point<T> &topLeft,
-         const Size<T> &size);
+    constexpr Rect(const Point<T> &topLeft,
+                   const Size<T> &size);
     
     /*!
      * \brief Constructs a rectangle with top-left corner and dimensions (width and height)
@@ -96,21 +96,21 @@ public:
      * \param[in] width Rectangle width
      * \param[in] height Rectangle height
      */
-    Rect(const Point<T> &topLeft, 
-         T width, 
-         T height);
+    constexpr Rect(const Point<T> &topLeft,
+                   T width, 
+                   T height);
     
     /*!
      * \brief Copy constructor
      * \param[in] rect Rect object to copy
      */
-    Rect(const Rect &rect);
+    constexpr Rect(const Rect &rect) = default;
     
     /*!
      * \brief Move constructor
      * \param[in] rect Rect object to move
      */
-    Rect(Rect &&rect) TL_NOEXCEPT;
+    constexpr Rect(Rect &&rect) noexcept = default;
 
     ~Rect() = default;
 
@@ -118,13 +118,13 @@ public:
      * \brief Copy assignment operator
      * \param[in] rect Rect object to copy
      */
-    auto operator = (const Rect &rect) -> Rect &;
+    constexpr auto operator = (const Rect &rect) -> Rect & = default;
     
     /*!
      * \brief Move assignment operator
      * \param[in] rect Rect object to move
      */
-    auto operator = (Rect &&rect) TL_NOEXCEPT -> Rect&;
+    constexpr auto operator = (Rect &&rect) noexcept -> Rect& = default;
     
     /*!
      * \brief Return top-left corner
@@ -168,7 +168,8 @@ public:
      * \param[in] pt Point to check if is contained.
      * \return Returns true if the rectangle contains the point.
     */
-    auto contains(const Point<T> &pt) const -> bool;
+    [[nodiscard]]
+    constexpr auto contains(const Point<T> &pt) const -> bool;
     
     /*!
      * \brief Transform a Rect object to a BoundingBox object
@@ -195,7 +196,7 @@ using Rectd = Rect<double>;
 
 
 template<typename T> 
-Rect<T>::Rect()
+constexpr Rect<T>::Rect()
   : x{0},
     y{0},
     width{0},
@@ -204,7 +205,7 @@ Rect<T>::Rect()
 }
 
 template<typename T> 
-Rect<T>::Rect(T x, T y, T width, T height)
+constexpr Rect<T>::Rect(T x, T y, T width, T height)
   : x(x), 
     y(y), 
     width(width), 
@@ -213,8 +214,8 @@ Rect<T>::Rect(T x, T y, T width, T height)
 }
 
 template<typename T> 
-Rect<T>::Rect(const Point<T> &topLeft,
-              const Point<T> &bottomRight)
+constexpr Rect<T>::Rect(const Point<T> &topLeft,
+                        const Point<T> &bottomRight)
   : x(topLeft.x()), 
     y(topLeft.y()), 
     width(bottomRight.x() - topLeft.x()),
@@ -223,8 +224,8 @@ Rect<T>::Rect(const Point<T> &topLeft,
 }
 
 template<typename T> 
-Rect<T>::Rect(const Point<T> &topLeft, 
-              const Size<T> &size)
+constexpr Rect<T>::Rect(const Point<T> &topLeft,
+                        const Size<T> &size)
   : x(topLeft.x()), 
     y(topLeft.y()), 
     width(size.width), 
@@ -233,8 +234,8 @@ Rect<T>::Rect(const Point<T> &topLeft,
 }
 
 template<typename T> 
-Rect<T>::Rect(const Point<T> &topLeft,
-              T width, T height)
+constexpr Rect<T>::Rect(const Point<T> &topLeft,
+                        T width, T height)
   : x(topLeft.x()), 
     y(topLeft.y()), 
     width(width), 
@@ -242,49 +243,49 @@ Rect<T>::Rect(const Point<T> &topLeft,
 {
 }
 
-template<typename T> 
-Rect<T>::Rect(const Rect &rect)
-  : x(rect.x), 
-    y(rect.y), 
-    width(rect.width), 
-    height(rect.height)
-{
-}
-
-template<typename T> 
-Rect<T>::Rect(Rect &&rect) TL_NOEXCEPT
-  : x(rect.x), 
-    y(rect.y), 
-    width(rect.width), 
-    height(rect.height)
-{
-}
-
-template<typename T>
-auto Rect<T>::operator = (const Rect &rect) -> Rect<T>&
-{
-    if (this != &rect) {
-        this->x = rect.x;
-        this->y = rect.y;
-        this->width = rect.width;
-        this->height = rect.height;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT -> Rect<T>&
-{
-    if (this != &rect) {
-        this->x = rect.x;
-        this->y = rect.y;
-        this->width = rect.width;
-        this->height = rect.height;
-    }
-
-    return *this;
-}
+//template<typename T> 
+//Rect<T>::Rect(const Rect &rect)
+//  : x(rect.x), 
+//    y(rect.y), 
+//    width(rect.width), 
+//    height(rect.height)
+//{
+//}
+//
+//template<typename T> 
+//Rect<T>::Rect(Rect &&rect) TL_NOEXCEPT
+//  : x(rect.x), 
+//    y(rect.y), 
+//    width(rect.width), 
+//    height(rect.height)
+//{
+//}
+//
+//template<typename T>
+//auto Rect<T>::operator = (const Rect &rect) -> Rect<T>&
+//{
+//    if (this != &rect) {
+//        this->x = rect.x;
+//        this->y = rect.y;
+//        this->width = rect.width;
+//        this->height = rect.height;
+//    }
+//
+//    return *this;
+//}
+//
+//template<typename T>
+//auto Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT -> Rect<T>&
+//{
+//    if (this != &rect) {
+//        this->x = rect.x;
+//        this->y = rect.y;
+//        this->width = rect.width;
+//        this->height = rect.height;
+//    }
+//
+//    return *this;
+//}
 
 template<typename T>
 auto Rect<T>::topLeft() const -> Point<T>
@@ -330,7 +331,7 @@ auto tl::Rect<T>::isValid() const -> bool
 }
 
 template<typename T>
-auto Rect<T>::contains(const Point<T> &pt) const -> bool
+constexpr auto Rect<T>::contains(const Point<T> &pt) const -> bool
 {
     return (this->x <= pt.x() &&
             pt.x() < this->x + this->width &&

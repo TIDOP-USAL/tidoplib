@@ -26,7 +26,9 @@
 
 #include "tidop/geometry/shapes/Shape.h"
 #include "tidop/geometry/primitives/Point.h"
+#include "tidop/geometry/algorithms/measurement/Distance.h"
 #include "tidop/graphic/rect.h"
+#include "tidop/math/numeric/Arithmetic.h"
 
 namespace tl
 {
@@ -61,7 +63,7 @@ public:
     /*!
      * \brief Default constructor
      */
-    Triangle();
+    constexpr Triangle() = default;
 
     /*!
      * \brief Constructor with three points
@@ -69,19 +71,19 @@ public:
      * \param[in] max Second vertex
      * \param[in] pt3 Third vertex
      */
-    explicit Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
+    explicit constexpr Triangle(const Point<T> &pt1, const Point<T> &pt2, const Point<T> &pt3);
 
     /*!
      * \brief Copy constructor
      * \param[in] triangle Triangle object to copy
      */
-    Triangle(const Triangle<T> &triangle);
+    constexpr Triangle(const Triangle<T> &triangle) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] triangle Triangle object to move
      */
-    Triangle(Triangle<T> &&triangle) TL_NOEXCEPT;
+    constexpr Triangle(Triangle<T> &&triangle) noexcept = default;
 
     /*!
      * \brief Destructor
@@ -93,148 +95,156 @@ public:
      * \param[in] triangle Triangle object to copy
      * \return Reference to the assigned object
      */
-    auto operator=(const Triangle<T> &triangle)->Triangle<T> &;
+    constexpr auto operator=(const Triangle<T> &triangle)->Triangle<T> & = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] triangle Triangle object to move
      * \return Reference to the assigned object
      */
-    auto operator=(Triangle<T> &&triangle) TL_NOEXCEPT->Triangle<T> &;
+    constexpr auto operator=(Triangle<T> &&triangle)  noexcept -> Triangle<T> & = default;
 
     /*!
      * \brief Computes the area of the triangle using the determinant formula
      * \return The computed area
      */
-    auto area() const -> double override;
+    [[nodiscard]]
+    constexpr auto area() const noexcept -> double override;
 
     /*!
      * \brief Computes the perimeter of the triangle
      * \return The sum of the three side lengths
      */
-    auto perimeter() const -> double;
+    [[nodiscard]]
+    constexpr auto perimeter() const noexcept -> double;
 
     /*!
      * \brief Checks if the triangle is valid (not degenerate)
      * \return True if the triangle is valid, false otherwise
      */
-    auto isValid() const -> bool;
+    [[nodiscard]]
+    constexpr auto isValid() const noexcept -> bool;
 
     /*!
      * \brief Computes the centroid (barycenter) of the triangle
      * \return The centroid as a `Point<T>`
      */
-    auto centroid() const -> Point<T>;
+    [[nodiscard]]
+    constexpr auto centroid() const -> Point<T>;
 
     /*!
      * \brief Equality comparison operator
      * \param[in] other The triangle to compare with
      * \return True if triangles are equal, false otherwise
      */
-    auto operator==(const Triangle &other) const -> bool;
+    [[nodiscard]]
+    constexpr auto operator==(const Triangle &other) const -> bool;
 
-    auto pt1() const -> Point<T> { return mPt1; }
-    auto pt2() const -> Point<T> { return mPt2; }
-    auto pt3() const -> Point<T> { return mPt3; }
+    [[nodiscard]]
+    constexpr auto pt1() const -> Point<T> { return mPt1; }
+    [[nodiscard]]
+    constexpr auto pt2() const -> Point<T> { return mPt2; }
+    [[nodiscard]]
+    constexpr auto pt3() const -> Point<T> { return mPt3; }
 };
 
 
 
-template<typename T>
-Triangle<T>::Triangle()
-  : mPt1(),
-    mPt2(),
-    mPt3()
-{
-}
+//template<typename T>
+//Triangle<T>::Triangle()
+//  : mPt1(),
+//    mPt2(),
+//    mPt3()
+//{
+//}
 
 template<typename T>
-Triangle<T>::Triangle(const Point<T> &pt1, 
-                      const Point<T> &pt2, 
-                      const Point<T> &pt3)
+constexpr Triangle<T>::Triangle(const Point<T> &pt1,
+                                const Point<T> &pt2, 
+                                const Point<T> &pt3)
   : mPt1(pt1),
     mPt2(pt2),
     mPt3(pt3)
 {
 }
 
-template<typename T>
-Triangle<T>::Triangle(const Triangle<T> &triangle)
-  : mPt1(triangle.mPt1),
-    mPt2(triangle.mPt2),
-    mPt3(triangle.mPt3)
-{
-}
+//template<typename T>
+//Triangle<T>::Triangle(const Triangle<T> &triangle)
+//  : mPt1(triangle.mPt1),
+//    mPt2(triangle.mPt2),
+//    mPt3(triangle.mPt3)
+//{
+//}
+//
+//template<typename T>
+//Triangle<T>::Triangle(Triangle<T> &&triangle) TL_NOEXCEPT
+//  : mPt1(std::move(triangle.mPt1)),
+//    mPt2(std::move(triangle.mPt2)),
+//    mPt3(std::move(triangle.mPt3))
+//{
+//}
+//
+//template<typename T>
+//auto Triangle<T>::operator = (const Triangle &triangle) -> Triangle<T> &
+//{
+//    if (this != &triangle) {
+//        this->mPt1 = triangle.mPt1;
+//        this->mPt2 = triangle.mPt2;
+//        this->mPt3 = triangle.mPt3;
+//    }
+//
+//    return *this;
+//}
+//
+//template<typename T>
+//auto Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT -> Triangle<T> &
+//{
+//    if (this != &triangle) {
+//        this->mPt1 = std::move(triangle.mPt1);
+//        this->mPt2 = std::move(triangle.mPt2);
+//        this->mPt3 = std::move(triangle.mPt3);
+//    }
+//
+//    return *this;
+//}
 
 template<typename T>
-Triangle<T>::Triangle(Triangle<T> &&triangle) TL_NOEXCEPT
-  : mPt1(std::move(triangle.mPt1)),
-    mPt2(std::move(triangle.mPt2)),
-    mPt3(std::move(triangle.mPt3))
+constexpr auto Triangle<T>::area() const noexcept-> double
 {
-}
-
-template<typename T>
-auto Triangle<T>::operator = (const Triangle &triangle) -> Triangle<T> &
-{
-    if (this != &triangle) {
-        this->mPt1 = triangle.mPt1;
-        this->mPt2 = triangle.mPt2;
-        this->mPt3 = triangle.mPt3;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Triangle<T>::operator = (Triangle &&triangle) TL_NOEXCEPT -> Triangle<T> &
-{
-    if (this != &triangle) {
-        this->mPt1 = std::move(triangle.mPt1);
-        this->mPt2 = std::move(triangle.mPt2);
-        this->mPt3 = std::move(triangle.mPt3);
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Triangle<T>::area() const -> double
-{
-    return 0.5 * std::abs(
+    return 0.5 * tl::abs(
         mPt1.x() * (mPt2.y() - mPt3.y()) +
         mPt2.x() * (mPt3.y() - mPt1.y()) +
         mPt3.x() * (mPt1.y() - mPt2.y()));
 }
 
 template<typename T>
-auto Triangle<T>::perimeter() const -> double
+constexpr auto Triangle<T>::perimeter() const noexcept-> double
 {
-    double side1 = mPt1.distanceTo(mPt2);
-    double side2 = mPt2.distanceTo(mPt3);
-    double side3 = mPt3.distanceTo(mPt1);
+    double side1 = distance(mPt1, mPt2);
+    double side2 = distance(mPt2, mPt3);
+    double side3 = distance(mPt3, mPt1);
     return side1 + side2 + side3;
 }
 
 template<typename T>
-auto Triangle<T>::isValid() const -> bool
+constexpr auto Triangle<T>::isValid() const noexcept -> bool
 {
-    double side1 = mPt1.distanceTo(mPt2);
-    double side2 = mPt2.distanceTo(mPt3);
-    double side3 = mPt3.distanceTo(mPt1);
+    double side1 = distance(mPt1, mPt2);
+    double side2 = distance(mPt2, mPt3);
+    double side3 = distance(mPt3, mPt1);
     return (side1 + side2 > side3) &&
            (side2 + side3 > side1) &&
            (side3 + side1 > side2);
 }
 
 template<typename T>
-auto Triangle<T>::centroid() const -> Point<T>
+constexpr auto Triangle<T>::centroid() const -> Point<T>
 {
     return Point<T>((mPt1.x() + mPt2.x() + mPt3.x()) / 3.0, (mPt1.y() + mPt2.y() + mPt3.y()) / 3.0);
 }
 
 template<typename T>
-auto Triangle<T>::operator==(const Triangle &other) const -> bool
+constexpr auto Triangle<T>::operator==(const Triangle &other) const -> bool
 {
     return mPt1 == other.mPt1 && mPt2 == other.mPt2 && mPt3 == other.mPt3;
 }

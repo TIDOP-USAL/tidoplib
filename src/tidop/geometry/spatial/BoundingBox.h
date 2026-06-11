@@ -88,7 +88,7 @@ public:
      * \brief Default constructor.
      * Creates an empty/invalid bounding box.
      */
-    BoundingBox();
+    constexpr BoundingBox();
 
     /*!
      * \brief Constructor that defines the bounding box using two corner points.
@@ -147,51 +147,58 @@ public:
      * \brief Access the first corner point (non-const version).
      * \return Reference to the first corner point.
      */
-    auto min() noexcept -> Point_t &;
+    [[nodiscard]]
+    constexpr auto min() noexcept -> Point_t &;
 
     /*!
      * \brief Access the first corner point (const version).
      * \return Const reference to the first corner point.
      */
-    auto min() const noexcept -> const Point_t &;
+    [[nodiscard]]
+    constexpr auto min() const noexcept -> const Point_t &;
 
     /*!
      * \brief Access the second corner point (non-const version).
      * \return Reference to the second corner point.
      */
-    auto max() noexcept -> Point_t &;
+    [[nodiscard]]
+    constexpr auto max() noexcept -> Point_t &;
 
     /*!
      * \brief Access the second corner point (const version).
      * \return Const reference to the second corner point.
      */
-    auto max() const noexcept -> const Point_t &;
+    [[nodiscard]]
+    constexpr auto max() const noexcept -> const Point_t &;
 
     /*!
      * \brief Computes the width of the bounding box (x-axis extent).
      * \return Width as scalar type T.
      */
-    auto width() const -> T;
+    [[nodiscard]]
+    constexpr auto width() const noexcept  -> T;
 
     /*!
      * \brief Computes the height of the bounding box (y-axis extent).
      * \return Height as scalar type T.
      */
-    auto height() const -> T;
+    [[nodiscard]]
+    constexpr auto height() const noexcept  -> T;
 
     /*!
      * \brief Computes the depth of the bounding box (z-axis extent).
      * \return Depth as scalar type T.
      * \note Only valid for 3D bounding boxes.
      */
-    auto depth() const -> T;
+    [[nodiscard]]
+    constexpr auto depth() const noexcept -> T;
 
     /*!
      * \brief Expands the bounding box to include a point.
      * \param[in] pt Point to add to the bounding box.
      * If the point is outside the current bounds, the bounding box is expanded.
      */
-    void add(const Point_t &pt);
+    constexpr void add(const Point_t &pt);
 
     /*!
      * \brief Normalizes the bounding box.
@@ -203,32 +210,36 @@ public:
      * \brief Computes the center point of the bounding box.
      * \return Center point of the bounding box.
      */
-    auto center() const->Point_t;
+    [[nodiscard]]
+    constexpr auto center() const -> Point_t;
 
     /*!
      * \brief Returns all vertices (corner points) of the bounding box.
      * \return Vector containing all 2^D corner points of the bounding box.
      */
-    auto vertices() const->std::vector<Point_t>;
+    [[nodiscard]]
+    constexpr auto vertices() const -> std::vector<Point_t>;
 
     /*!
      * \brief Expands this bounding box to include another bounding box.
      * \param[in] other Another bounding box to include.
      * The result is the union of both bounding boxes.
      */
-    void extend(const BoundingBox<Point_t> &other);
+    constexpr void extend(const BoundingBox<Point_t> &other);
 
     /*!
      * \brief Checks if the bounding box is empty.
      * \return true if the bounding box has zero volume, false otherwise.
      */
-    auto isEmpty() const -> bool;
+    [[nodiscard]]
+    constexpr auto isEmpty() const noexcept -> bool;
 
     /*!
      * \brief Checks if the bounding box is valid.
      * \return true if the bounding box is normalized and has positive extent, false otherwise.
      */
-    auto isValid() const -> bool;
+    [[nodiscard]]
+    constexpr auto isValid() const noexcept -> bool;
 
 };
 
@@ -256,7 +267,7 @@ using BoundingBox3d = BoundingBox<Point3d>;
 
 
 template<typename Point_t>
-BoundingBox<Point_t>::BoundingBox()
+constexpr BoundingBox<Point_t>::BoundingBox()
 {
     for (size_t i = 0; i < dimensions; ++i) {
         mPoints[0][i] = std::numeric_limits<T>::max();
@@ -344,44 +355,44 @@ BoundingBox<Point_t>::BoundingBox(const BoundingBox<OtherPoint_t> &other)
 
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::min() noexcept -> Point_t &
+constexpr auto BoundingBox<Point_t>::min() noexcept -> Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::min() const noexcept -> const Point_t &
+constexpr auto BoundingBox<Point_t>::min() const noexcept -> const Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::max() noexcept -> Point_t &
+constexpr auto BoundingBox<Point_t>::max() noexcept -> Point_t &
 { 
     return mPoints[1];
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::max() const noexcept -> const Point_t &
+constexpr auto BoundingBox<Point_t>::max() const noexcept -> const Point_t &
 { 
     return mPoints[1];
 }
 
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::width() const -> T
+constexpr auto BoundingBox<Point_t>::width() const noexcept -> T
 {
     return this->isEmpty() ? consts::zero<T> : mPoints[1].x() - mPoints[0].x();
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::height() const -> T
+constexpr auto BoundingBox<Point_t>::height() const noexcept -> T
 {
     return this->isEmpty() ? consts::zero<T> : mPoints[1].y() - mPoints[0].y();
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::depth() const -> T
+constexpr auto BoundingBox<Point_t>::depth() const noexcept -> T
 {
     static_assert(!is_2d_v<BoundingBox<Point_t>>, "Method only supported for 3 or 4 dimensions");
 
@@ -389,7 +400,7 @@ auto BoundingBox<Point_t>::depth() const -> T
 }
 
 template<typename Point_t>
-void BoundingBox<Point_t>::add(const Point_t &pt)
+constexpr void BoundingBox<Point_t>::add(const Point_t &pt)
 {
     if (!isValid()) {
         mPoints[0] = mPoints[1] = pt;
@@ -412,7 +423,7 @@ void BoundingBox<Point_t>::normalized()
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::center() const -> Point_t
+constexpr auto BoundingBox<Point_t>::center() const -> Point_t
 {
     Point_t center{};
     if (!this->isEmpty()) {
@@ -426,7 +437,7 @@ auto BoundingBox<Point_t>::center() const -> Point_t
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::vertices() const -> std::vector<Point_t>
+constexpr auto BoundingBox<Point_t>::vertices() const -> std::vector<Point_t>
 {
     if constexpr (dimensions == 2) {
         // 4 vértices en sentido horario/antihorario
@@ -465,19 +476,19 @@ auto BoundingBox<Point_t>::vertices() const -> std::vector<Point_t>
 }
 
 template<typename Point_t>
-void BoundingBox<Point_t>::extend(const BoundingBox<Point_t> &other)
+constexpr void BoundingBox<Point_t>::extend(const BoundingBox<Point_t> &other)
 {
     *this = merge(*this, other);
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::isEmpty() const -> bool
+constexpr auto BoundingBox<Point_t>::isEmpty() const noexcept -> bool
 {
     return mPoints[0][0] == std::numeric_limits<T>::max();
 }
 
 template<typename Point_t>
-auto BoundingBox<Point_t>::isValid() const -> bool
+constexpr auto BoundingBox<Point_t>::isValid() const noexcept -> bool
 {
     for (size_t i = 0; i < dimensions; ++i) {
         if (mPoints[0][i] > mPoints[1][i]) return false;
@@ -489,7 +500,7 @@ auto BoundingBox<Point_t>::isValid() const -> bool
 
 
 template<typename Point_t>
-auto merge(const BoundingBox<Point_t> &b1, const BoundingBox<Point_t> &b2) -> BoundingBox<Point_t>
+constexpr auto merge(const BoundingBox<Point_t> &b1, const BoundingBox<Point_t> &b2) -> BoundingBox<Point_t>
 {
     if (!b1.isValid()) return b2;
     if (!b2.isValid()) return b1;

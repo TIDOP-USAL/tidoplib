@@ -86,7 +86,7 @@ namespace tl
  */
 template<Geometry2DConcept G1, Geometry2DConcept G2>
 [[nodiscard]]
-constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool;
+auto disjoint(const G1 &geom1, const G2 &geom2) -> bool;
 
 
 /*!
@@ -124,9 +124,10 @@ constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool;
  * \endcode
  */
 template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
-constexpr auto disjoint(const G1 &geom1,
-                        const G2 &geom2,
-                        const Policy &policy) -> bool;
+[[nodiscard]] 
+auto disjoint(const G1 &geom1,
+              const G2 &geom2,
+              const Policy &policy) -> bool;
 
 
 /*! \} */ 

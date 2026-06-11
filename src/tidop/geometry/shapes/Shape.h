@@ -33,6 +33,7 @@ namespace tl
  *  \{
  */
 
+//TODO: esto no debería ser virtual. Mejor CRTP
 
 /*!
  * \brief Shape interface
@@ -58,7 +59,7 @@ public:
      * \brief Compute the area of the shape
      * \return The computed area
      */
-    virtual auto area() const -> double = 0;
+    virtual constexpr auto area() const noexcept -> double = 0;
 
 };
 

@@ -86,6 +86,7 @@ public:
      * \return The estimated similarity transformation represented as an Affine object.
      */
     template<size_t rows, size_t cols>
+    [[nodiscard]]
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>;
 
@@ -97,6 +98,7 @@ public:
      * \param[in] dst The destination set of 3D points.
      * \return The estimated similarity transformation represented as an Affine object.
      */
+    [[nodiscard]]
     static auto estimate(const std::vector<Point3<T>> &src,
                          const std::vector<Point3<T>> &dst) -> Affine<T, Dim>;
 
@@ -108,6 +110,7 @@ public:
      * \param[in] dst The destination set of 2D points.
      * \return The estimated similarity transformation represented as an Affine object.
      */
+    [[nodiscard]]
     static auto estimate(const std::vector<Point<T>> &src,
                          const std::vector<Point<T>> &dst) -> Affine<T, Dim>;
 };

@@ -538,50 +538,6 @@ template<typename P1, typename P2>
 using common_point_without_measure_t = typename common_point_without_measure<P1, P2>::type;
 
 
-
 /*! \} */ 
-
-//template<typename T, typename Tag>
-//struct VectorTraits<Point<T, Tag>>
-//{
-//    using value_type = T;
-//    static constexpr size_t size = point_traits<Point<T, Tag>>::spatial_dims;
-//    using result_type = Point<T, Tag>;
-//    using difference_type = Vector<T, size>;
-//};
-//
-//template<typename T, typename Tag>
-//struct is_point<Point<T, Tag>> : std::true_type {};
-
-
-//template<typename OldTag, size_t Rows>
-//struct rebind_point_tag;
-//
-//// XY -> 2D sin medida
-//template<> struct rebind_point_tag<xy_tag, 2> { using type = xy_tag; };
-//template<> struct rebind_point_tag<xy_tag, 3> { using type = xyz_tag; };
-//template<> struct rebind_point_tag<xy_tag, 4> { using type = xyzw_tag; };
-//
-//// XYZ
-//template<> struct rebind_point_tag<xyz_tag, 2> { using type = xy_tag; };
-//template<> struct rebind_point_tag<xyz_tag, 3> { using type = xyz_tag; };
-//template<> struct rebind_point_tag<xyz_tag, 4> { using type = xyzw_tag; };
-//
-//// XYM
-//template<> struct rebind_point_tag<xym_tag, 2> { using type = xy_tag; };
-//template<> struct rebind_point_tag<xym_tag, 3> { using type = xyz_tag; };
-//template<> struct rebind_point_tag<xym_tag, 4> { using type = xyzw_tag; };
-//
-//// XYZM
-//template<> struct rebind_point_tag<xyzm_tag, 2> { using type = xy_tag; };
-//template<> struct rebind_point_tag<xyzm_tag, 3> { using type = xyz_tag; };
-//template<> struct rebind_point_tag<xyzm_tag, 4> { using type = xyzw_tag; };
-//
-//// XYZW
-//template<> struct rebind_point_tag<xyzw_tag, 2> { using type = xy_tag; };
-//template<> struct rebind_point_tag<xyzw_tag, 3> { using type = xyz_tag; };
-//template<> struct rebind_point_tag<xyzw_tag, 4> { using type = xyzw_tag; };
-
-
 
 } // End namespace tl

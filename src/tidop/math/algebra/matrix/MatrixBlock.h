@@ -114,12 +114,12 @@ public:
      * \param[in] blockRows  Number of rows of the block.
      * \param[in] blockCols  Number of columns of the block.
      */
-    MatrixBlock(T *data, 
-                size_t parentCols, 
-                size_t iniRow, 
-                size_t iniCol, 
-                size_t blockRows, 
-                size_t blockCols);
+    constexpr MatrixBlock(T *data, 
+                          size_t parentCols, 
+                          size_t iniRow, 
+                          size_t iniCol, 
+                          size_t blockRows, 
+                          size_t blockCols);
 
     /*!
      * \brief Assigns a matrix expression to this block (rvalue‑only).
@@ -134,14 +134,14 @@ public:
      * \throws tl::Exception if the expression dimensions do not match the block.
      */
     template<MatrixExpr Expr>
-    auto operator=(const Expr &expr) && -> MatrixBlock &;
+    constexpr auto operator=(const Expr &expr) && -> MatrixBlock &;
 
     /*!
      * \brief Assigns another block to this block (rvalue‑only).
      * \param[in] other The source block.
      * \return Reference to this block.
      */
-    auto operator=(const MatrixBlock &other) && ->MatrixBlock &;
+    constexpr auto operator=(const MatrixBlock &other) && ->MatrixBlock &;
 
     /*!
      * \brief Accesses the element at (row, col) with bounds checking.
@@ -150,7 +150,8 @@ public:
      * \return Reference to the element.
      * \throws std::out_of_range if indices are invalid.
      */
-    auto at(size_t row, size_t col) -> reference;
+    [[nodiscard]]
+    constexpr auto at(size_t row, size_t col) -> reference;
     
     /*!
      * \brief Accesses the element at (row, col) with bounds checking (const version).
@@ -159,7 +160,8 @@ public:
      * \return Const reference to the element.
      * \throws std::out_of_range if indices are invalid.
      */
-    auto at(size_t row, size_t col) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto at(size_t row, size_t col) const -> const_reference;
 
     /*!
      * \brief Accesses the element at (row, col) without bounds checking.
@@ -167,7 +169,8 @@ public:
      * \param[in] col Column index.
      * \return Reference to the element.
      */
-    auto operator()(size_t row, size_t col) -> reference;
+    [[nodiscard]]
+    constexpr auto operator()(size_t row, size_t col) -> reference;
 
     /*!
      * \brief Accesses the element at (row, col) without bounds checking (const version).
@@ -175,59 +178,67 @@ public:
      * \param[in] col Column index.
      * \return Const reference to the element.
      */
-    auto operator()(size_t row, size_t col) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator()(size_t row, size_t col) const -> const_reference;
     
     /*!
      * \brief Accesses the element at a linear index (row‑major order) without bounds checking.
      * \param[in] position Linear index = row * cols + col.
      * \return Reference to the element.
      */
-    auto operator()(size_t position) -> reference;
+    [[nodiscard]]
+    constexpr auto operator()(size_t position) -> reference;
 
     /*!
      * \brief Accesses the element at a linear index (const version).
      * \param[in] position Linear index.
      * \return Const reference to the element.
      */
-    auto operator()(size_t position) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator()(size_t position) const -> const_reference;
 
     /*!
      * \brief Subscript operator (linear index, no bounds checking).
      * \param[in] position Linear index.
      * \return Reference to the element.
      */
-    auto operator[](size_t position) -> reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t position) -> reference;
 
     /*!
      * \brief Subscript operator (const version).
      * \param[in] position Linear index.
      * \return Const reference to the element.
      */
-    auto operator[](size_t position) const -> const_reference;
+    [[nodiscard]]
+    constexpr auto operator[](size_t position) const -> const_reference;
 
     /*!
      * \brief Returns the number of rows of the block.
      */
-    auto rows() const noexcept -> size_t { return mRows; }
+    [[nodiscard]]
+    constexpr auto rows() const noexcept -> size_t { return mRows; }
 
     /*!
      * \brief Returns the number of columns of the block.
      */
-    auto cols() const noexcept -> size_t { return mCols; }
+    [[nodiscard]]
+    constexpr auto cols() const noexcept -> size_t { return mCols; }
 
     /*!
      * \brief Checks whether the block’s data aliases a given memory address.
      * \param[in] ptr The pointer to test.
      * \return `true` if the data of this block overlaps the address `ptr`.
      */
-    auto aliases(const void *ptr) const -> bool;
+    [[nodiscard]]
+    constexpr auto aliases(const void *ptr) const -> bool;
 
     /*!
      * \brief Fills the entire block with a given value.
      * \tparam Scalar Type of the value (must be convertible to `value_type`).
      * \param[in] value The value to set.
      */
-    void fill(value_type value);
+    constexpr void fill(value_type value);
 
 };
 
@@ -237,12 +248,12 @@ public:
 
 
 template<typename T>
-MatrixBlock<T>::MatrixBlock(T *data, 
-                            size_t parentCols, 
-                            size_t iniRow, 
-                            size_t iniCol, 
-                            size_t blockRows, 
-                            size_t blockCols)
+constexpr MatrixBlock<T>::MatrixBlock(T *data,
+                                      size_t parentCols, 
+                                      size_t iniRow, 
+                                      size_t iniCol, 
+                                      size_t blockRows, 
+                                      size_t blockCols)
   : mData(data),
     mParentCols(parentCols),
     mIniRow(iniRow),
@@ -254,7 +265,7 @@ MatrixBlock<T>::MatrixBlock(T *data,
 
 template<typename T>
 template<MatrixExpr Expr>
-auto MatrixBlock<T>::operator=(const Expr &expr) && -> MatrixBlock &
+constexpr auto MatrixBlock<T>::operator=(const Expr &expr) && -> MatrixBlock &
 {
     TL_ASSERT(expr.rows() == mRows && expr.cols() == mCols, "Block size mismatch in assignment");
 
@@ -264,13 +275,13 @@ auto MatrixBlock<T>::operator=(const Expr &expr) && -> MatrixBlock &
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator=(const MatrixBlock &other) && -> MatrixBlock &
+constexpr auto MatrixBlock<T>::operator=(const MatrixBlock &other) && -> MatrixBlock &
 {
     return std::move(*this).template operator=<MatrixBlock>(other);
 }
 
 template<typename T>
-auto MatrixBlock<T>::at(size_t row, size_t col) -> reference
+constexpr auto MatrixBlock<T>::at(size_t row, size_t col) -> reference
 {
     TL_ASSERT(row < mRows && col < mCols, "Matrix block out of range");
 
@@ -278,7 +289,7 @@ auto MatrixBlock<T>::at(size_t row, size_t col) -> reference
 }
 
 template<typename T>
-auto MatrixBlock<T>::at(size_t row, size_t col) const -> const_reference
+constexpr auto MatrixBlock<T>::at(size_t row, size_t col) const -> const_reference
 {
     TL_ASSERT(row < mRows && col < mCols, "Matrix block out of range");
 
@@ -286,19 +297,19 @@ auto MatrixBlock<T>::at(size_t row, size_t col) const -> const_reference
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator()(size_t row, size_t col) -> reference
+constexpr auto MatrixBlock<T>::operator()(size_t row, size_t col) -> reference
 {
     return mData[(mIniRow + row) * mParentCols + (mIniCol + col)];
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator()(size_t row, size_t col) const -> const_reference
+constexpr auto MatrixBlock<T>::operator()(size_t row, size_t col) const -> const_reference
 {
     return mData[(mIniRow + row) * mParentCols + (mIniCol + col)];
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator()(size_t position) -> reference
+constexpr auto MatrixBlock<T>::operator()(size_t position) -> reference
 {
     size_t r = position / mCols;
     size_t c = position % mCols;
@@ -306,7 +317,7 @@ auto MatrixBlock<T>::operator()(size_t position) -> reference
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator()(size_t position) const -> const_reference
+constexpr auto MatrixBlock<T>::operator()(size_t position) const -> const_reference
 {
     size_t r = position / mCols;
     size_t c = position % mCols;
@@ -314,19 +325,19 @@ auto MatrixBlock<T>::operator()(size_t position) const -> const_reference
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator[](size_t position) -> reference
+constexpr auto MatrixBlock<T>::operator[](size_t position) -> reference
 {
     return (*this)(position);
 }
 
 template<typename T>
-auto MatrixBlock<T>::operator[](size_t position) const -> const_reference
+constexpr auto MatrixBlock<T>::operator[](size_t position) const -> const_reference
 {
     return (*this)(position);
 }
 
 template<typename T>
-auto MatrixBlock<T>::aliases(const void *ptr) const -> bool
+constexpr auto MatrixBlock<T>::aliases(const void *ptr) const -> bool
 {
     const T *p = static_cast<const T *>(ptr);
 
@@ -342,7 +353,7 @@ auto MatrixBlock<T>::aliases(const void *ptr) const -> bool
 }
 
 template<typename T>
-void MatrixBlock<T>::fill(value_type value)
+constexpr void MatrixBlock<T>::fill(value_type value)
 {
     size_t size = mRows * mCols;
     size_t i{0};

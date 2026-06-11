@@ -546,7 +546,6 @@ constexpr auto contains_impl(const G1 &, const G2 &, const Policy_t &, Tag1, Tag
 
 
 template<Geometry2DConcept G1, Geometry2DConcept G2>
-[[nodiscard]]
 auto contains(const G1 &geom1, const G2 &geom2) -> bool
 {
     using P = typename geometry_traits<G1>::point_type;
@@ -559,7 +558,6 @@ auto contains(const G1 &geom1, const G2 &geom2) -> bool
 
 
 template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
-[[nodiscard]]
 constexpr auto contains(const G1 &geom1,
                         const G2 &geom2,
                         const Policy &policy) -> bool

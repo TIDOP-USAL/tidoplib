@@ -40,17 +40,12 @@
 
 #pragma once
 
-//#include "tidop/geometry/base/Traits.h"
-//#include "tidop/geometry/base/Concepts.h"
-//#include "tidop/geometry/base/PrecisionPolicy.h"
-
 namespace tl
 {
 
 
 template<Geometry2DConcept G1, Geometry2DConcept G2>
-[[nodiscard]]
-constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool
+auto disjoint(const G1 &geom1, const G2 &geom2) -> bool
 {
     using P = typename geometry_traits<G1>::point_type;
     using Scalar = typename point_traits<P>::value_type;
@@ -62,8 +57,7 @@ constexpr auto disjoint(const G1 &geom1, const G2 &geom2) -> bool
 
 
 template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
-[[nodiscard]]
-constexpr auto disjoint(const G1 &geom1,
+auto disjoint(const G1 &geom1,
                         const G2 &geom2,
                         const Policy &policy) -> bool
 {

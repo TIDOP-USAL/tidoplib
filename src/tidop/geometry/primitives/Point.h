@@ -265,7 +265,7 @@ public:
      * \throws std::out_of_range if the position is out of bounds.
      */
     [[nodiscard]] 
-    auto at(size_t position) -> reference;
+    constexpr auto at(size_t position) -> reference;
 
     /*!
      * \brief Accesses the element at the specified position with bounds checking (const version).
@@ -275,7 +275,7 @@ public:
      * \throws std::out_of_range if the position is out of bounds.
      */
     [[nodiscard]] 
-    auto at(size_t position) const -> const_reference;
+    constexpr auto at(size_t position) const -> const_reference;
 
     /*!
      * \brief Returns the spatial dimension of the point.
@@ -320,18 +320,20 @@ public:
     explicit operator Point<U, Tag2>() const;
 
     [[nodiscard]]
-    auto isEmpty() const -> bool
+    constexpr auto isEmpty() const noexcept -> bool
     {
         return false;
     }
 
-    auto operator-(const Point &other) const -> Vector<T, storage_size>
+    [[nodiscard]]
+    constexpr auto operator-(const Point &other) const -> Vector<T, storage_size>
     {
         return this->mData - other.mData;
     }
 
     template<VectorExpr Vec>
-    auto operator+(const Vec &vec) const -> Point
+    [[nodiscard]]
+    constexpr auto operator+(const Vec &vec) const -> Point
     {
         Point res;
         res.mData = this->mData + vec;
@@ -339,7 +341,8 @@ public:
     }
 
     template<VectorExpr Vec>
-    auto operator-(const Vec &vec) const -> Point
+    [[nodiscard]]
+    constexpr auto operator-(const Vec &vec) const -> Point
     {
         Point res;
         res.mData = this->mData - vec;
@@ -347,7 +350,8 @@ public:
     }
 
     template<VectorExpr Vec>
-    auto operator * (const Vec &vec) const -> Point
+    [[nodiscard]]
+    constexpr auto operator * (const Vec &vec) const -> Point
     {
         Point res;
         res.mData = this->mData.cwiseProduct(vec);
@@ -355,21 +359,24 @@ public:
     }
 
     template<VectorExpr Vec>
-    auto operator / (const Vec &vec) const -> Point
+    [[nodiscard]]
+    constexpr auto operator / (const Vec &vec) const -> Point
     {
         Point res;
         res.mData = this->mData.cwiseDiv(vec);
         return res;
     }
 
-    auto operator*(T scalar) const -> Point
+    [[nodiscard]]
+    constexpr auto operator*(T scalar) const -> Point
     {
         Point res;
         res.mCoords = this->mCoords * scalar;
         return res;
     }
 
-    auto operator/(T scalar) const -> Point
+    [[nodiscard]]
+    constexpr auto operator/(T scalar) const -> Point
     {
         Point res;
         res.mCoords = this->mCoords / scalar;
@@ -377,7 +384,8 @@ public:
     }
 
     template<MatrixExpr Mat>
-    auto operator*(const Mat &matrix) const -> Point
+    [[nodiscard]]
+    constexpr auto operator*(const Mat &matrix) const -> Point
     {
         Point res;
         res.mData = this->mData * matrix;
@@ -517,7 +525,7 @@ constexpr auto Point<T, Tag>::operator[](std::size_t position) const noexcept ->
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::at(size_t position) -> reference
+constexpr auto Point<T, Tag>::at(size_t position) -> reference
 {
     if (position >= spatial_dims)
         throw std::out_of_range("Point spatial index out of range");
@@ -525,7 +533,7 @@ auto Point<T, Tag>::at(size_t position) -> reference
 }
 
 template<typename T, typename Tag>
-auto Point<T, Tag>::at(size_t position) const -> const_reference
+constexpr auto Point<T, Tag>::at(size_t position) const -> const_reference
 {
     if (position >= spatial_dims)
         throw std::out_of_range("Point spatial index out of range");

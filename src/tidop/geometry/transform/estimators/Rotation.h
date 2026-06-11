@@ -87,6 +87,7 @@ public:
      * \return The estimated rotation.
      */
     template<size_t rows, size_t cols>
+    [[nodiscard]]
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Rotation<T, Dim>;
 
@@ -102,6 +103,7 @@ public:
      * \return The estimated rotation.
      */
     template <Point2DConcept Point>
+    [[nodiscard]]
     static auto estimate(const std::vector<Point> &src,
                          const std::vector<Point> &dst) -> Rotation<T, Dim>;
 

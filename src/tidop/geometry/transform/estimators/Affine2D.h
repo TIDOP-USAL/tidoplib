@@ -71,6 +71,7 @@ public:
      * \return The estimated 2D affine transformation.
      */
     template<size_t Rows, size_t Cols>
+    [[nodiscard]]
     static auto estimate(const Matrix<T, Rows, Cols> &src,
                          const Matrix<T, Rows, Cols> &dst) -> Affine<T, 2>;
 
@@ -85,6 +86,7 @@ public:
      * \return The estimated 2D affine transformation.
      */
     template <Point2DConcept Point>
+    [[nodiscard]]
     static auto estimate(const std::vector<Point> &src,
                          const std::vector<Point> &dst) -> Affine<T, 2>;
 };

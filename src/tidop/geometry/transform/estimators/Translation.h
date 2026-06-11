@@ -80,6 +80,7 @@ public:
      * \return The estimated translation transformation.
      */
     template<size_t rows, size_t cols>
+    [[nodiscard]]
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Translation<T, dimensions>;
 
@@ -92,6 +93,7 @@ public:
      * \return The estimated translation transformation.
      */
     template <Point2DConcept Point>
+    [[nodiscard]]
     static auto estimate(const std::vector<Point> &src,
                          const std::vector<Point> &dst) -> Translation<T, dimensions>;
 

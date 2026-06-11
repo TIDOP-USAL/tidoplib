@@ -123,7 +123,7 @@ public:
     /*!
      * \brief Move constructor.
      */
-    Scaling(Scaling &&scaling) TL_NOEXCEPT;
+    Scaling(Scaling &&scaling) noexcept;
 
     /*!
      * \brief Default destructor.
@@ -138,56 +138,64 @@ public:
     /*!
      * \brief Move assignment operator.
      */
-    auto operator=(Scaling &&scaling) TL_NOEXCEPT -> Scaling &;
+    auto operator=(Scaling &&scaling) noexcept -> Scaling &;
 
      /*!
      * \brief Convert the scaling transformation to a vector.
      * 
      * \return A vector containing the scaling factors.
      */
-    auto toVector() const TL_NOEXCEPT -> Vector<T, Dim>;
+    [[nodiscard]]
+    auto toVector() const noexcept -> Vector<T, Dim>;
 
     /*!
      * \brief Access the scaling factor along the x-axis.
      * \return The scaling factor along the x-axis.
      */
-    auto x() const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto x() const noexcept -> const_reference;
 
     /*!
      * \brief Access the scaling factor along the x-axis (non-const version).
      * \return A reference to the scaling factor along the x-axis.
      */
-    auto x() TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto x() noexcept -> reference;
 
     /*!
      * \brief Access the scaling factor along the y-axis.
      * \return The scaling factor along the y-axis.
      */
-    auto y() const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto y() const noexcept -> const_reference;
 
     /*!
      * \brief Access the scaling factor along the y-axis (non-const version).
      * \return A reference to the scaling factor along the y-axis.
      */
-    auto y() TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto y() noexcept -> reference;
 
     /*!
      * \brief Access the scaling factor along the z-axis.
      * \return The scaling factor along the z-axis.
      */
-    auto z() const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto z() const noexcept -> const_reference;
 
     /*!
      * \brief Access the scaling factor along the z-axis (non-const version).
      * \return A reference to the scaling factor along the z-axis.
      */
-    auto z() TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto z() noexcept -> reference;
 
     /*!
      * \brief Access the scaling factor at a given position.
      * \param[in] position The position of the scaling factor.
      * \return A reference to the scaling factor at the given position.
      */
+    [[nodiscard]]
     auto at(size_type position) -> reference;
 
     /*!
@@ -195,6 +203,7 @@ public:
      * \param[in] position The position of the scaling factor.
      * \return A constant reference to the scaling factor at the given position.
      */
+    [[nodiscard]]
     auto at(size_type position) const -> const_reference;
 
     /*!
@@ -202,20 +211,23 @@ public:
      * \param[in] position The position of the scaling factor.
      * \return A reference to the scaling factor at the given position.
      */
-    auto operator[](size_t position) TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto operator[](size_t position) noexcept -> reference;
 
     /*!
      * \brief Access the scaling factor at a given position using array indexing (const version).
      * \param[in] position The position of the scaling factor.
      * \return A constant reference to the scaling factor at the given position.
      */
-    auto operator[](size_t position) const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto operator[](size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Compute the inverse scaling transformation.
      * 
      * \return The inverse of the scaling transformation.
      */
+    [[nodiscard]]
     auto inverse() const -> Scaling;
 
     /*!
@@ -225,9 +237,11 @@ public:
      * \return The transformed vector.
      */
     template<VectorExpr Vector_t>
+    [[nodiscard]] 
     auto transform(const Vector_t &vector) const -> Vector_t;
 
     template<typename Tag>
+    [[nodiscard]] 
     auto transform(const Point<T, Tag> &point) const -> Point<T, Tag>;
 
     /*!
@@ -237,6 +251,7 @@ public:
      * \return The transformed matrix.
      */
     template<size_t _row, size_t _col>
+    [[nodiscard]] 
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
@@ -245,9 +260,11 @@ public:
      * \return The scaled vector.
      */
     template <VectorExpr Vector_t>
+    [[nodiscard]] 
     auto operator * (const Vector_t &vector) const -> Vector_t;
 
     template<typename Tag>
+    [[nodiscard]] 
     auto operator * (const Point<T, Tag> &point) const -> Point<T, Tag>;
 
     /*!
@@ -256,6 +273,7 @@ public:
      * \return The scaled matrix.
      */
     template<size_t _row, size_t _col>
+    [[nodiscard]] 
     auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
@@ -264,9 +282,11 @@ public:
      * \return The scaled point.
      */
     template <VectorExpr Vector_t>
+    [[nodiscard]] 
     auto operator()(const Vector_t &vector) const -> Vector_t;
 
     template<typename Tag>
+    [[nodiscard]] 
     auto operator()(const Point<T, Tag> &point) const -> Point<T, Tag>;
 
     /*!
@@ -274,6 +294,7 @@ public:
      * \param[in] scaling The scaling transformation to apply.
      * \return The combined scaling transformation.
      */
+    [[nodiscard]]
     auto operator * (const Scaling<T, Dim> &scaling) const -> Scaling<T, Dim>;
 };
 
@@ -326,7 +347,7 @@ Scaling<T, Dim>::Scaling(const Scaling &scaling)
 }
 
 template<typename T, size_t Dim>
-Scaling<T, Dim>::Scaling(Scaling &&scaling) TL_NOEXCEPT
+Scaling<T, Dim>::Scaling(Scaling &&scaling) noexcept
     : scale(std::move(scaling.scale))
 {
 }
@@ -342,7 +363,7 @@ auto Scaling<T, Dim>::operator=(const Scaling &scaling) -> Scaling&
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::operator=(Scaling &&scaling) TL_NOEXCEPT -> Scaling &
+auto Scaling<T, Dim>::operator=(Scaling &&scaling) noexcept -> Scaling &
 {
     if (this != &scaling) {
         this->scale = std::move(scaling.scale);
@@ -352,44 +373,44 @@ auto Scaling<T, Dim>::operator=(Scaling &&scaling) TL_NOEXCEPT -> Scaling &
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::toVector() const TL_NOEXCEPT -> Vector<T, Dim>
+auto Scaling<T, Dim>::toVector() const noexcept -> Vector<T, Dim>
 {
     return this->scale;
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::x() const TL_NOEXCEPT -> const_reference
+auto Scaling<T, Dim>::x() const noexcept -> const_reference
 {
     return this->scale[0];
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::x() TL_NOEXCEPT -> reference
+auto Scaling<T, Dim>::x() noexcept -> reference
 {
     return this->scale[0];
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::y() const TL_NOEXCEPT -> const_reference
+auto Scaling<T, Dim>::y() const noexcept -> const_reference
 {
     return this->scale[1];
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::y() TL_NOEXCEPT -> reference
+auto Scaling<T, Dim>::y() noexcept -> reference
 {
     return this->scale[1];
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::z() const TL_NOEXCEPT -> const_reference
+auto Scaling<T, Dim>::z() const noexcept -> const_reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D Scaling");
     return this->scale[2];
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::z() TL_NOEXCEPT -> reference
+auto Scaling<T, Dim>::z() noexcept -> reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D Scaling");
     return this->scale[2];
@@ -408,13 +429,13 @@ auto Scaling<T, Dim>::at(size_type position) const -> const_reference
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::operator[](size_t position) TL_NOEXCEPT -> reference
+auto Scaling<T, Dim>::operator[](size_t position) noexcept -> reference
 {
     return this->scale[position];
 }
 
 template<typename T, size_t Dim>
-auto Scaling<T, Dim>::operator[](size_t position) const TL_NOEXCEPT -> const_reference
+auto Scaling<T, Dim>::operator[](size_t position) const noexcept -> const_reference
 {
     return this->scale[position];
 }

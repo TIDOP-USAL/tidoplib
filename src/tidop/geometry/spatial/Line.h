@@ -50,36 +50,45 @@ private:
 
 public:
 
-    Line(const PointType &_origin, const Vector<T, Dim>& _direction)
+    constexpr Line(const PointType &_origin, const Vector<T, Dim>& _direction)
       : origin(_origin), 
         direction(_direction) 
     {
     }
 
-    Line() = default;
+    constexpr Line() = default;
+    constexpr Line(const Line &line) = default;
+    constexpr Line(Line &&line) noexcept = default;
     ~Line() = default;
 
-    auto evaluate(T lambda) const -> Vector<T, Dim>
+    constexpr auto operator=(const Line &line) -> Line & = default;
+    constexpr auto operator=(Line &&line) noexcept -> Line & = default;
+
+    [[nodiscard]]
+    constexpr auto evaluate(T lambda) const -> Vector<T, Dim>
     {
         return origin + direction * lambda;
     }
 
-    auto distance(const PointType &point) const -> T
+    [[nodiscard]]
+    constexpr auto distance(const PointType &point) const -> T
     {
         Vector<T, Dim> diff = point - origin;
         T directionModule = direction.module();
 
         if constexpr (Dim == 2) {
             T cross = diff.x() * direction.y() - diff.y() * direction.x();
-            return std::abs(cross) / directionModule;
+            return tl::abs(cross) / directionModule;
         } else {
             T numModule = diff.cross(direction).module();
             return numModule / directionModule;
         }
     }
 
-    auto getOrigin() const -> PointType { return origin; }
-    auto getDirection() const -> Vector<T, Dim> { return direction; }
+    [[nodiscard]]
+    constexpr auto getOrigin() const -> PointType { return origin; }
+    [[nodiscard]]
+    constexpr auto getDirection() const -> Vector<T, Dim> { return direction; }
 
 };
 

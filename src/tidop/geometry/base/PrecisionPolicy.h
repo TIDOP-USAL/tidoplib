@@ -132,6 +132,7 @@ public:
     }
 
     template<Dimension Dim, typename Point_t>
+    [[nodiscard]]
     constexpr auto toKernelPoint(const Point_t &p) const noexcept
     {
         if constexpr (Dim == Dimension::dim2) {
@@ -142,6 +143,7 @@ public:
     }
 
     template<Dimension Dim, LinearGeometryConcept LS>
+    [[nodiscard]]
     constexpr auto toKernelLineString(const LS &lineString) const noexcept
     {
         using KP = Point<calc_type, typename tag_for_dim<dimension_value(Dim)>::type>;
@@ -156,6 +158,7 @@ public:
     }
 
     template<Dimension Dim, PolygonConcept Polygon>
+    [[nodiscard]]
     constexpr auto toKernelPolygon(const Polygon &polygon) const noexcept
     {
         using KP = Point<calc_type, typename tag_for_dim<dimension_value(Dim)>::type>;
@@ -177,13 +180,15 @@ public:
 private:
 
     template<typename Point_t>
-    static auto to_kernel_point_2d(const Point_t &p) -> Point<calc_type, xy_tag>
+    [[nodiscard]]
+    static constexpr auto to_kernel_point_2d(const Point_t &p) -> Point<calc_type, xy_tag>
     {
         return static_cast<Point<calc_type, xy_tag>>(p);
     }
 
     template<typename Point_t>
-    static auto to_kernel_point_3d(const Point_t &p) -> Point<calc_type, xyz_tag>
+    [[nodiscard]]
+    static constexpr auto to_kernel_point_3d(const Point_t &p) -> Point<calc_type, xyz_tag>
     {
         return static_cast<Point<calc_type, xyz_tag>>(p);
     }
@@ -241,6 +246,7 @@ public:
      * \param[in] v Input value.
      * \return Integer value representing \p v at the fixed resolution.
      */
+    [[nodiscard]]
     constexpr auto snap(Scalar v) const noexcept -> calc_type
     {
         if constexpr (std::is_integral_v<Scalar>) {
@@ -251,6 +257,7 @@ public:
     }
 
     template<Dimension Dim, PointConcept Point>
+    [[nodiscard]]
     constexpr auto toKernelPoint(const Point &point) const noexcept
     {
         if constexpr (Dim == Dimension::dim2) {
@@ -261,6 +268,7 @@ public:
     }
 
     template<Dimension Dim, LinearGeometryConcept LS>
+    [[nodiscard]]
     constexpr auto toKernelLineString(const LS &lineString) const noexcept
     {
         using KP = Point<calc_type, typename tag_for_dim<dimension_value(Dim)>::type>;
@@ -275,6 +283,7 @@ public:
     }
 
     template<Dimension Dim, PolygonConcept Polygon>
+    [[nodiscard]]
     constexpr auto toKernelPolygon(const Polygon &polygon) const noexcept
     {
         using KP = Point<calc_type, typename tag_for_dim<dimension_value(Dim)>::type>;
@@ -296,14 +305,16 @@ public:
 private:
 
     template<PointConcept P>
-    auto toKernelPoint2d(const P &point) const -> KernelPoint2D
+    [[nodiscard]]
+    constexpr auto toKernelPoint2d(const P &point) const -> KernelPoint2D
     {
         return KernelPoint2D(snap(point.x()),
                              snap(point.y()));
     }
 
     template<PointConcept P>
-    auto toKernelPoint3d(const P &point) const -> KernelPoint3D
+    [[nodiscard]]
+    constexpr auto toKernelPoint3d(const P &point) const -> KernelPoint3D
     {
         return KernelPoint3D(snap(point.x()),
                              snap(point.y()),

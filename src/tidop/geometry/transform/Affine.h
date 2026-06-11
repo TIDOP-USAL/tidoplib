@@ -113,7 +113,7 @@ public:
      * \brief Move constructor.
      * \param[in] affine The Affine object to move.
      */
-    Affine(Affine &&affine) TL_NOEXCEPT;
+    Affine(Affine &&affine) noexcept;
 
     /*!
      * \brief Constructor from a matrix.
@@ -191,7 +191,7 @@ public:
      * \param[in] affine The Affine object to move.
      * \return Reference to this object.
      */
-    auto operator=(Affine &&affine) TL_NOEXCEPT -> Affine &;
+    auto operator=(Affine &&affine) noexcept -> Affine &;
 
     /*!
      * \brief Access element at row r, column c.
@@ -199,7 +199,8 @@ public:
      * \param[in] c Column index.
      * \return Reference to the element.
      */
-    auto operator()(size_t r, size_t c) TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto operator()(size_t r, size_t c) noexcept -> reference;
 
     /*!
      * \brief Access element at row r, column c (const version).
@@ -207,39 +208,46 @@ public:
      * \param[in] c Column index.
      * \return Const reference to the element.
      */
-    auto operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto operator()(size_t r, size_t c) const noexcept -> const_reference;
 
     /*!
      * \brief Get the scaling transformation.
      * \return The scaling transformation.
      */
+    [[nodiscard]]
     auto scale() const -> Scaling<T, Dim>;
 
     /*!
      * \brief Get the translation transformation.
      * \return The translation transformation.
      */
+    [[nodiscard]]
     auto translation() const -> Translation<T, Dim>;
 
     /*!
      * \brief Get the rotation transformation.
      * \return The rotation transformation.
      */
+    [[nodiscard]]
     auto rotation() const -> Rotation<T, Dim>;
 
     /*!
      * \brief Compute the inverse of the affine transformation.
      * \return The inverse transformation.
      */
+    [[nodiscard]]
     auto inverse() const -> Affine<T, Dim>;
 
     /*!
      * \brief Convert the affine transformation to a matrix.
      * \return The transformation matrix.
      */
-    auto toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim + 1>;
+    [[nodiscard]]
+    auto toMatrix() const noexcept -> Matrix<T, Dim, Dim + 1>;
 
     template<typename Tag>
+    [[nodiscard]]
     auto transform(const Point<T, Tag> &point) const -> Point<T, Tag>
     {
         //Point<T, Tag> transformed_coords = (this->_transform.block(0, 0, Dim, Dim) * point) +
@@ -267,6 +275,7 @@ public:
       * \return The transformed matrix.
       */
     template<size_t _row, size_t _col>
+    [[nodiscard]]
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     template<typename Tag>
@@ -283,7 +292,8 @@ public:
      * \return The transformed matrix.
      */
     template<size_t _row, size_t _col>
-    auto operator * (const Matrix<T, _row, _col> &matrix) const-> Matrix<T, _row, _col>;
+    [[nodiscard]]
+    auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
     
     template<typename Tag>
     auto operator()(const Point<T, Tag> &point) const -> Point<T, Tag>
@@ -292,6 +302,7 @@ public:
     }
 
     template<size_t _row, size_t _col>
+    [[nodiscard]]
     auto operator()(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>
     {
         return this->transform(matrix);
@@ -301,7 +312,8 @@ public:
      * \brief Check if the affine transformation is empty (i.e., identity).
      * \return `true` if the transformation is empty, otherwise `false`.
      */
-    auto isEmpty() const TL_NOEXCEPT -> bool;
+    [[nodiscard]]
+    auto isEmpty() const noexcept -> bool;
 
 };
 
@@ -326,7 +338,7 @@ Affine<T, Dim>::Affine(const Affine &affine)
 }
 
 template<typename T, size_t Dim>
-Affine<T, Dim>::Affine(Affine &&affine) TL_NOEXCEPT
+Affine<T, Dim>::Affine(Affine &&affine) noexcept
     : _transform(std::move(affine._transform))
 {
 }
@@ -443,13 +455,13 @@ auto Affine<T, Dim>::operator=(const Affine &affine) -> Affine&
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::operator()(size_t r, size_t c) TL_NOEXCEPT -> reference
+auto Affine<T, Dim>::operator()(size_t r, size_t c) noexcept -> reference
 {
     return this->_transform(r, c);
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference
+auto Affine<T, Dim>::operator()(size_t r, size_t c) const noexcept -> const_reference
 {
     return this->_transform(r, c);
 }
@@ -515,14 +527,14 @@ auto Affine<T, Dim>::inverse() const -> Affine<T, Dim>
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim + 1>
+auto Affine<T, Dim>::toMatrix() const noexcept -> Matrix<T, Dim, Dim + 1>
 {
     return this->_transform;
 }
 
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::operator=(Affine &&affine) TL_NOEXCEPT -> Affine &
+auto Affine<T, Dim>::operator=(Affine &&affine) noexcept -> Affine &
 {
     if (this != &affine) {
         this->_transform = std::move(affine._transform);
@@ -556,7 +568,7 @@ auto Affine<T, Dim>::operator*(const Matrix<T, _row, _col>& matrix) const -> Mat
 }
 
 template<typename T, size_t Dim>
-auto Affine<T, Dim>::isEmpty() const TL_NOEXCEPT -> bool
+auto Affine<T, Dim>::isEmpty() const noexcept -> bool
 {
     return this->_transform == Matrix<T, Dim, Dim + 1>::identity();
 }

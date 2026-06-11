@@ -54,6 +54,7 @@
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/base/Traits.h"
 #include "tidop/math/algebra/vector/detail/VecEqual.h"
+#include "tidop/math/numeric/Arithmetic.h"
 
 namespace tl
 {
@@ -122,14 +123,14 @@ public:
      * \return The Euclidean norm as `double`.
      */
     [[nodiscard]]
-    auto module() const -> double;
+    constexpr auto module() const -> double;
 
     /*!
      * \brief Alias for `module()`.
      * \return The Euclidean norm as `double`.
      */
     [[nodiscard]]
-    auto norm() const -> double;
+    constexpr auto norm() const -> double;
 
     /*!
      * \brief Computes the squared Euclidean norm.
@@ -143,7 +144,7 @@ public:
      * \note Only available for floating‑point types. If the vector is already zero,
      *       no operation is performed.
      */
-    void normalize() requires std::is_floating_point_v<value_type>;
+    constexpr void normalize() requires std::is_floating_point_v<value_type>;
 
     /*!
      * \brief Computes the dot product with another vector (or expression).
@@ -357,13 +358,13 @@ public:
 /* VectorBase implementation */
 
 template<typename Derived>
-auto VectorBase<Derived>::module() const -> double
+constexpr auto VectorBase<Derived>::module() const -> double
 {
-    return sqrt(this->squaredNorm());
+    return tl::sqrt(this->squaredNorm());
 }
 
 template<typename Derived>
-auto VectorBase<Derived>::norm() const -> double
+constexpr auto VectorBase<Derived>::norm() const -> double
 {
     return this->module();
 }
@@ -375,7 +376,7 @@ constexpr auto VectorBase<Derived>::squaredNorm() const -> double
 }
 
 template<typename Derived>
-void VectorBase<Derived>::normalize() requires std::is_floating_point_v<value_type>
+constexpr void VectorBase<Derived>::normalize() requires std::is_floating_point_v<value_type>
 {
     double m = this->module();
     if (m > std::numeric_limits<value_type>::epsilon()) {

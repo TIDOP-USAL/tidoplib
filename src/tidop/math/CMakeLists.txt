@@ -171,6 +171,7 @@ if(BUILD_TL_MATH)
                              geometry/angles/detail/Utils.h
                              numeric/Arithmetic.h
                              numeric/Comparison.h
+                             numeric/detail/CompileTime.h
                              statistic/DescriptiveStatistics.h
                              statistic/algorithms/association/Covariance.h
                              statistic/algorithms/association/Pearson.h

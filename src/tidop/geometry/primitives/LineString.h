@@ -46,7 +46,6 @@
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/primitives/LinearRing.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
-//#include "tidop/geometry/algorithms/measurement/Length.h"
 
 namespace tl
 {
@@ -83,7 +82,8 @@ public:
      * A polyline is considered closed if the first and last points are equal.
      * \return true if the polyline is closed, false otherwise.
      */
-    auto isClosed() const -> bool;
+    [[nodiscard]]
+    constexpr auto isClosed() const -> bool;
 
     /*!
      * \brief Computes the total length of the polyline.
@@ -144,17 +144,11 @@ using LineString3dm = LineString<Point3dm>;
 // METHOD IMPLEMENTATIONS
 
 template<typename Point_t>
-auto LineString<Point_t>::isClosed() const -> bool
+constexpr auto LineString<Point_t>::isClosed() const -> bool
 {
     if (this->size() < 2) return false;
     return this->front() == this->back();
 }
-
-//template<typename Point_t>
-//auto LineString<Point_t>::length() const -> double
-//{
-//    return tl::length(*this);
-//}
 
 
 /*! \} */

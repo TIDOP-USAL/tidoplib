@@ -66,26 +66,26 @@ public:
     /*!
      * \brief Default constructor
      */
-    Circle();
+    constexpr Circle() = default;
 
     /*!
      * \brief Constructs a circle with a given center and radius
      * \param[in] center The center point of the circle
      * \param[in] radius The radius of the circle
      */
-    explicit Circle(const Point<T> &center, T radius);
+    explicit constexpr Circle(const Point<T> &center, T radius);
 
     /*!
      * \brief Copy constructor
      * \param[in] circle The circle to copy
      */
-    Circle(const Circle<T> &circle);
+    constexpr Circle(const Circle<T> &circle) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] circle The circle to move
      */
-    Circle(Circle<T> &&circle) TL_NOEXCEPT;
+    constexpr Circle(Circle<T> &&circle) noexcept = default;
 
     /*!
      * \brief Destructor
@@ -97,14 +97,14 @@ public:
      * \param[in] circle The circle to copy
      * \return Reference to the assigned object
      */
-    auto operator=(const Circle<T> &circle) -> Circle<T> &;
+    constexpr auto operator=(const Circle<T> &circle) -> Circle<T> & = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] circle The circle to move
      * \return Reference to the assigned object
      */
-    auto operator=(Circle<T> &&circle) TL_NOEXCEPT -> Circle<T> &;
+    constexpr auto operator=(Circle<T> &&circle) noexcept -> Circle<T> & = default;
 
     /*!
      * \brief Converts the circle to a different type
@@ -117,81 +117,85 @@ public:
      * \brief Computes the area of the circle
      * \return The computed area
      */
-    auto area() const -> double override;
+    [[nodiscard]]
+    constexpr auto area() const noexcept -> double override;
 
     /*!
      * \brief Computes the circumference (perimeter) of the circle
      * \return The computed circumference
      */
-    auto length() const -> double;
+    [[nodiscard]]
+    constexpr auto length() const noexcept -> double;
 
     /*!
      * \brief Computes the bounding rectangle of the circle
      * \return A rectangle that bounds the circle
      */
-    auto rect() const -> Rect<T>;
+    [[nodiscard]]
+    constexpr auto rect() const -> Rect<T>;
 
     /*!
      * \brief Equality comparison operator
      * \param[in] other The circle to compare with
      * \return True if circles are equal, false otherwise
      */
-    bool operator==(const Circle &other) const;
+    [[nodiscard]]
+    constexpr bool operator==(const Circle &other) const;
 
 };
 
 
 
 
-template<typename T>
-Circle<T>::Circle()
-  : center(Point<T>()),
-    radius(static_cast<T>(1))
-{
-}
+//template<typename T>
+//Circle<T>::Circle()
+//  : center(Point<T>()),
+//    radius(static_cast<T>(1))
+//{
+//}
 
 template<typename T>
-Circle<T>::Circle(const Point<T> &center, T radius)
+constexpr Circle<T>::Circle(const Point<T> &center, T radius)
   : center(center),
     radius(radius)
 {
 }
 
-template<typename T>
-Circle<T>::Circle(const Circle<T> &circle)
-  : center(circle.center),
-    radius(circle.radius)
-{
-}
-
-template<typename T>
-Circle<T>::Circle(Circle<T> &&circle) TL_NOEXCEPT
-  : center(std::move(circle.center)),
-    radius(circle.radius)
-{
-}
-
-template<typename T>
-auto Circle<T>::operator = (const Circle &circle) -> Circle<T> &
-{
-    if (this != &circle) {
-        this->center = circle.center;
-        this->radius = circle.radius;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT -> Circle<T> &
-{
-    if (this != &circle) {
-        this->center = std::move(circle.center);
-        this->radius = circle.radius;
-    }
-
-    return *this;
-}
+//template<typename T>
+//Circle<T>::Circle(const Circle<T> &circle)
+//  : center(circle.center),
+//    radius(circle.radius)
+//{
+//}
+//
+//template<typename T>
+//Circle<T>::Circle(Circle<T> &&circle) TL_NOEXCEPT
+//  : center(std::move(circle.center)),
+//    radius(circle.radius)
+//{
+//}
+//
+//template<typename T>
+//auto Circle<T>::operator = (const Circle &circle) -> Circle<T> &
+//{
+//    if (this != &circle) {
+//        this->center = circle.center;
+//        this->radius = circle.radius;
+//    }
+//
+//    return *this;
+//}
+//
+//template<typename T>
+//auto Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT -> Circle<T> &
+//{
+//    if (this != &circle) {
+//        this->center = std::move(circle.center);
+//        this->radius = circle.radius;
+//    }
+//
+//    return *this;
+//}
 
 template<typename T> template<typename T2>
 Circle<T>::operator Circle<T2>() const
@@ -201,25 +205,25 @@ Circle<T>::operator Circle<T2>() const
 }
 
 template<typename T>
-auto Circle<T>::area() const -> double
+constexpr auto Circle<T>::area() const noexcept -> double
 {
     return consts::pi<double> * radius * radius;
 }
 
 template<typename T>
-auto Circle<T>::length() const -> double
+constexpr auto Circle<T>::length() const noexcept -> double
 {
     return consts::two_pi<double> * radius;
 }
 
 template<typename T>
-auto Circle<T>::rect() const -> Rect<T>
+constexpr auto Circle<T>::rect() const -> Rect<T>
 {
     return Rect<T>(Point<T>(center.x - radius, center.y - radius), radius * 2., radius * 2.);
 }
 
 template<typename T>
-bool Circle<T>::operator==(const Circle &other) const
+constexpr bool Circle<T>::operator==(const Circle &other) const
 {
     return center == other.center && radius == other.radius;
 }

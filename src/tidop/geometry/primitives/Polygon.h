@@ -84,82 +84,89 @@ public:
     /*!
      * \brief Default constructor.
      */
-    Polygon() = default;
+    constexpr Polygon() = default;
 
     /*!
      * \brief Constructs a polygon from a vector of points (outer ring only).
      * \param[in] points Points forming the outer ring.
      */
-    explicit Polygon(const std::vector<Point_t> &points);
+    explicit constexpr Polygon(const std::vector<Point_t> &points);
 
     /*!
      * \brief Constructs a polygon with specified outer and inner rings.
      * \param[in] outer Outer ring of the polygon.
      * \param[in] inners Inner rings (holes) of the polygon.
      */
-    Polygon(LinearRing<Point_t> outer, std::vector<LinearRing<Point_t>> inners = {});
+    constexpr Polygon(LinearRing<Point_t> outer, std::vector<LinearRing<Point_t>> inners = {});
 
     /*!
      * \brief Constructs a polygon from an initializer list (outer ring only).
      * \param[in] list Initializer list of points for the outer ring.
      */
-    Polygon(std::initializer_list<Point_t> list);
+    constexpr Polygon(std::initializer_list<Point_t> list);
 
     /*!
      * \brief Constructs a polygon with a pre-allocated outer ring size.
      * \param[in] size Number of points in the outer ring.
      */
-    explicit Polygon(size_t size);
+    explicit constexpr Polygon(size_t size);
 
     /*!
      * \brief Returns a const reference to the outer ring.
      * \return Const reference to the outer ring.
      */
-    auto outer() const -> const LinearRing<Point_t> &;
+    [[nodiscard]]
+    constexpr auto outer() const -> const LinearRing<Point_t> &;
 
     /*!
      * \brief Returns a reference to the outer ring.
      * \return Reference to the outer ring.
      */
-    auto outer() -> LinearRing<Point_t> &;
+    [[nodiscard]]
+    constexpr auto outer() -> LinearRing<Point_t> &;
     
     /*!
      * \brief Returns a const reference to the vector of inner rings.
      * \return Const reference to the inner rings.
      */
-    auto inners() const -> const std::vector<LinearRing<Point_t>> &;
+    [[nodiscard]]
+    constexpr auto inners() const -> const std::vector<LinearRing<Point_t>> &;
 
     /*!
      * \brief Returns a reference to the vector of inner rings.
      * \return Reference to the inner rings.
      */
-    auto inners() -> std::vector<LinearRing<Point_t>> &;
+    [[nodiscard]]
+    constexpr auto inners() -> std::vector<LinearRing<Point_t>> &;
 
     /*!
      * \brief Adds an inner ring (hole) to the polygon.
      * \param[in] hole Inner ring to add.
      */
-    void addInner(const LinearRing<Point_t> &hole);
+    constexpr void addInner(const LinearRing<Point_t> &hole);
 
     /*!
      * \brief Returns a const reference to a specific inner ring.
      * \param[in] i Index of the inner ring.
      * \return Const reference to the i-th inner ring.
      */
-    auto inner(std::size_t i) const -> const LinearRing<Point_t> &;
+    [[nodiscard]]
+    constexpr auto inner(std::size_t i) const -> const LinearRing<Point_t> &;
 
     /*!
      * \brief Returns a reference to a specific inner ring.
      * \param[in] i Index of the inner ring.
      * \return Reference to the i-th inner ring.
      */
-    auto inner(std::size_t i) -> LinearRing<Point_t> &;
+    [[nodiscard]]
+    constexpr auto inner(std::size_t i) -> LinearRing<Point_t> &;
 
     /*!
      * \brief Returns the number of inner rings.
      * \return Number of inner rings (holes).
      */
-    auto numInners() const->size_t;
+    [[nodiscard]]
+    constexpr auto numInners() const noexcept -> size_t;
 
     /*!
      * \brief Computes the perimeter of the polygon.
@@ -167,10 +174,8 @@ public:
      */
     //auto perimeter() const -> double;
 
-    auto isEmpty() const -> bool
-    {
-        return mOuter.isEmpty();
-    }
+    [[nodiscard]]
+    constexpr auto isEmpty() const noexcept -> bool;
 };
 
 // TYPE ALIASES FOR POLYGON
@@ -197,82 +202,83 @@ using Polygon3f = Polygon<Point3<float>>;
 // METHOD IMPLEMENTATIONS
 
 template<typename Point_t>
-Polygon<Point_t>::Polygon(const std::vector<Point_t> &points)
-    : mOuter(points) {
+constexpr Polygon<Point_t>::Polygon(const std::vector<Point_t> &points)
+  : mOuter(points) {
 }
 
 template<typename Point_t>
-Polygon<Point_t>::Polygon(LinearRing<Point_t> outer,
-                          std::vector<LinearRing<Point_t>> inners)
+constexpr Polygon<Point_t>::Polygon(LinearRing<Point_t> outer,
+                                    std::vector<LinearRing<Point_t>> inners)
   : mOuter(std::move(outer)),
     mInners(std::move(inners)) {
 }
 
 template<typename Point_t>
-Polygon<Point_t>::Polygon(std::initializer_list<Point_t> list) 
+constexpr Polygon<Point_t>::Polygon(std::initializer_list<Point_t> list)
   : mOuter(list) 
 {
 }
 
 template<typename Point_t>
-Polygon<Point_t>::Polygon(size_t size)
+constexpr Polygon<Point_t>::Polygon(size_t size)
 {
     mOuter.reserve(size);
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::outer() const -> const LinearRing<Point_t> &
+constexpr auto Polygon<Point_t>::outer() const -> const LinearRing<Point_t> &
 { 
     return mOuter;
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::outer() -> LinearRing<Point_t> &
+constexpr auto Polygon<Point_t>::outer() -> LinearRing<Point_t> &
 { 
     return mOuter; 
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::inners() const -> const std::vector<LinearRing<Point_t>> &
+constexpr auto Polygon<Point_t>::inners() const -> const std::vector<LinearRing<Point_t>> &
 { 
     return mInners; 
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::inners() -> std::vector<LinearRing<Point_t>> &
+constexpr auto Polygon<Point_t>::inners() -> std::vector<LinearRing<Point_t>> &
 { 
     return mInners; 
 }
 
 template<typename Point_t>
-void Polygon<Point_t>::addInner(const LinearRing<Point_t> &hole) 
+constexpr void Polygon<Point_t>::addInner(const LinearRing<Point_t> &hole)
 { 
     mInners.push_back(hole); 
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::inner(std::size_t i) const -> const LinearRing<Point_t> &
+constexpr auto Polygon<Point_t>::inner(std::size_t i) const -> const LinearRing<Point_t> &
 { 
     return mInners[i]; 
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::inner(std::size_t i) -> LinearRing<Point_t> &
+constexpr auto Polygon<Point_t>::inner(std::size_t i) -> LinearRing<Point_t> &
 { 
     return mInners[i];
 }
 
 template<typename Point_t>
-auto Polygon<Point_t>::numInners() const -> size_t 
+constexpr auto Polygon<Point_t>::numInners() const noexcept -> size_t
 {
     return mInners.size();
 }
 
-//template<typename Point_t>
-//auto Polygon<Point_t>::perimeter() const -> double
-//{
-//    return length(*this);
-//}
+template<typename Point_t>
+[[nodiscard]]
+constexpr auto Polygon<Point_t>::isEmpty() const noexcept -> bool
+{
+    return mOuter.isEmpty();
+}
 
 
 /*! \} */

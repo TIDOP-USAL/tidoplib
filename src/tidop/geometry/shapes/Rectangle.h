@@ -63,7 +63,13 @@ public:
      *
      * Creates a rectangle with width and height equal to 0.
      */
-    Rectangle();
+    constexpr Rectangle() = default;
+
+    constexpr Rectangle(const Rectangle<T> &rect) = default;
+    constexpr Rectangle(Rectangle<T> &&rect) noexcept = default;
+
+    constexpr auto operator=(const Rectangle<T> &rect) -> Rectangle<T> & = default;
+    constexpr auto operator=(Rectangle<T> &&rect) noexcept -> Rectangle<T> & = default;
 
     /*!
      * \brief Constructor with parameters
@@ -72,7 +78,7 @@ public:
      *
      * Creates a rectangle with the specified width and height.
      */
-    Rectangle(T width, T height);
+    constexpr Rectangle(T width, T height);
 
     /*!
      * \brief Get the area of the rectangle
@@ -80,76 +86,79 @@ public:
      *
      * The area of a rectangle is calculated by multiplying its width by its height.
      */
-    auto area() const -> double override;
+    [[nodiscard]]
+    constexpr auto area() const noexcept -> double override;
 
     /*!
      * \brief Set the width of the rectangle
      * \param[in] width The width of the rectangle
      */
-    void setWidth(T width);
+    constexpr void setWidth(T width);
 
     /*!
      * \brief Get the width of the rectangle
      * \return The width of the rectangle
      */
-    auto getWidth() const->T;
+    [[nodiscard]]
+    constexpr auto getWidth() const noexcept -> T;
 
     /*!
      * \brief Set the height of the rectangle
      * \param[in] height The height of the rectangle
      */
-    void setHeight(T height);
+    constexpr void setHeight(T height);
 
     /*!
      * \brief Get the height of the rectangle
      * \return The height of the rectangle
      */
-    auto getHeight() const->T;
+    [[nodiscard]]
+    constexpr auto getHeight() const noexcept -> T;
 };
 
 
 
-template<typename T>
-Rectangle<T>::Rectangle()
-  : width(0), 
-    height(0)
-{
-}
+//template<typename T>
+//Rectangle<T>::Rectangle()
+//  : width(0), 
+//    height(0)
+//{
+//}
 
 
 template<typename T>
-Rectangle<T>::Rectangle(T width, T height)
+constexpr Rectangle<T>::Rectangle(T width, T height)
   : width(width),
     height(height)
 {
 }
 
 template<typename T>
-auto Rectangle<T>::area() const -> double
+constexpr auto Rectangle<T>::area() const noexcept -> double
 {
     return static_cast<double>(width * height);
 }
 
 template<typename T>
-void Rectangle<T>::setWidth(T width)
+constexpr void Rectangle<T>::setWidth(T width)
 {
     this->width = width;
 }
 
 template<typename T>
-auto Rectangle<T>::getWidth() const -> T
+constexpr auto Rectangle<T>::getWidth() const noexcept -> T
 {
     return width;
 }
 
 template<typename T>
-void Rectangle<T>::setHeight(T height)
+constexpr void Rectangle<T>::setHeight(T height)
 {
     this->height = height;
 }
 
 template<typename T>
-auto Rectangle<T>::getHeight() const -> T
+constexpr auto Rectangle<T>::getHeight() const noexcept -> T
 {
     return height;
 }

@@ -113,7 +113,7 @@ public:
      * \brief Move constructor.
      * \param[in] translate The translation object to move.
      */
-    Translation(Translation &&translate) TL_NOEXCEPT;
+    Translation(Translation &&translate) noexcept;
 
     /*!
      * \brief Destructor.
@@ -132,55 +132,63 @@ public:
      * \param[in] translate The translation object to move.
      * \return A reference to this translation object.
      */
-    auto operator=(Translation &&translate) TL_NOEXCEPT -> Translation&;
+    auto operator=(Translation &&translate) noexcept -> Translation&;
 
     /*!
      * \brief Converts the translation to a vector.
      * \return The translation vector.
      */
-    auto toVector() const TL_NOEXCEPT -> Vector<T, Dim>;
+    [[nodiscard]]
+    auto toVector() const noexcept -> Vector<T, Dim>;
 
     /*!
      * \brief Access the x-component of the translation.
      * \return The x-component.
      */
-    auto x() const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto x() const noexcept -> const_reference;
 
     /*!
      * \brief Access the x-component of the translation (non-const version).
      * \return A reference to the x-component.
      */
-    auto x() TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto x() noexcept -> reference;
 
     /*!
      * \brief Access the y-component of the translation.
      * \return The y-component.
      */
-    auto y() const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto y() const noexcept -> const_reference;
 
     /*!
      * \brief Access the y-component of the translation (non-const version).
      * \return A reference to the y-component.
      */
-    auto y() TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto y() noexcept -> reference;
 
     /*!
      * \brief Access the z-component of the translation.
      * \return The z-component.
      */
-    auto z() const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto z() const noexcept -> const_reference;
 
     /*!
      * \brief Access the z-component of the translation (non-const version).
      * \return A reference to the z-component.
      */
-    auto z() TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto z() noexcept -> reference;
 
     /*!
      * \brief Access a specific component of the translation by position.
      * \param[in] position The index of the component to access.
      * \return A reference to the translation component at the specified position.
      */
+    [[nodiscard]]
     auto at(size_type position) -> reference;
 
     /*!
@@ -188,6 +196,7 @@ public:
      * \param[in] position The index of the component to access.
      * \return A constant reference to the translation component at the specified position.
      */
+    [[nodiscard]]
     auto at(size_type position) const -> const_reference;
 
     /*!
@@ -195,19 +204,22 @@ public:
      * \param[in] position The index of the component to access.
      * \return A reference to the translation component at the specified position.
      */
-    auto operator[](size_t position) TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto operator[](size_t position) noexcept -> reference;
 
     /*!
      * \brief Access a specific component of the translation using the subscript operator (const version).
      * \param[in] position The index of the component to access.
      * \return A constant reference to the translation component at the specified position.
      */
-    auto operator[](size_t position) const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto operator[](size_t position) const noexcept -> const_reference;
 
     /*!
      * \brief Compute the inverse of the translation.
      * \return A translation representing the inverse of the current translation.
      */
+    [[nodiscard]]
     auto inverse() const -> Translation;
 
     /*!
@@ -216,8 +228,8 @@ public:
      * \param[in] point The point to transform.
      * \return The transformed vector.
      */
-    //template <typename Vector_t>
     template<typename Tag>
+    [[nodiscard]]
     auto transform(const Point<T, Tag> &point) const -> Point<T, Tag>;
 
     /*!
@@ -228,6 +240,7 @@ public:
      * \return The transformed matrix.
      */
     template<size_t _row, size_t _col>
+    [[nodiscard]]
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
@@ -236,8 +249,8 @@ public:
      * \param[in] point The point to apply the translation to.
      * \return The translated point .
      */
-    //template <typename Vector_t>
     template<typename Tag>
+    [[nodiscard]]
     auto operator * (const Point<T, Tag> &point) const -> Point<T, Tag>;
 
     /*!
@@ -248,6 +261,7 @@ public:
      * \return The translated matrix.
      */
     template<size_t _row, size_t _col>
+    [[nodiscard]]
     auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
@@ -255,6 +269,7 @@ public:
      * \param[in] translation The translation to apply.
      * \return The resulting translation.
      */
+    [[nodiscard]]
     auto operator * (const Translation<T, Dim> &translation) const -> Translation<T, Dim>;
 };
 
@@ -303,7 +318,7 @@ Translation<T, Dim>::Translation(const Translation &translate)
 }
 
 template<typename T, size_t Dim>
-Translation<T, Dim>::Translation(Translation &&translate) TL_NOEXCEPT
+Translation<T, Dim>::Translation(Translation &&translate) noexcept
     : translation(std::move(translate.translation))
 {
 }
@@ -319,7 +334,7 @@ auto Translation<T, Dim>::operator=(const Translation &translate) -> Translation
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT -> Translation &
+auto Translation<T, Dim>::operator=(Translation &&translate) noexcept -> Translation &
 {
     if (this != &translate) {
         this->translation = std::move(translate.translation);
@@ -329,44 +344,44 @@ auto Translation<T, Dim>::operator=(Translation &&translate) TL_NOEXCEPT -> Tran
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::toVector() const TL_NOEXCEPT -> Vector<T, Dim>
+auto Translation<T, Dim>::toVector() const noexcept -> Vector<T, Dim>
 {
     return this->translation;
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::x() const TL_NOEXCEPT -> const_reference
+auto Translation<T, Dim>::x() const noexcept -> const_reference
 {
     return this->translation[0];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::x() TL_NOEXCEPT -> T&
+auto Translation<T, Dim>::x() noexcept -> T&
 {
     return this->translation[0];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::y() const TL_NOEXCEPT -> const_reference
+auto Translation<T, Dim>::y() const noexcept -> const_reference
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::y() TL_NOEXCEPT -> reference
+auto Translation<T, Dim>::y() noexcept -> reference
 {
     return this->translation[1];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::z() const TL_NOEXCEPT -> const_reference
+auto Translation<T, Dim>::z() const noexcept -> const_reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::z() TL_NOEXCEPT -> reference
+auto Translation<T, Dim>::z() noexcept -> reference
 {
     static_assert(dimensions == 3, "Method not valid for 2D translations");
     return this->translation[2];
@@ -385,13 +400,13 @@ auto Translation<T, Dim>::at(size_type position) const -> const_reference
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator[](size_t position) TL_NOEXCEPT -> reference
+auto Translation<T, Dim>::operator[](size_t position) noexcept -> reference
 {
     return this->translation[position];
 }
 
 template<typename T, size_t Dim>
-auto Translation<T, Dim>::operator[](size_t position) const TL_NOEXCEPT -> const_reference
+auto Translation<T, Dim>::operator[](size_t position) const noexcept -> const_reference
 {
     return this->translation[position];
 }

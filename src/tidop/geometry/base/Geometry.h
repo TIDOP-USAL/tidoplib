@@ -41,7 +41,6 @@
 #include "tidop/geometry/base/Concepts.h"
 #include "tidop/geometry/base/Dimension.h"
 #include "tidop/geometry/base/Traits.h"
-//#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {

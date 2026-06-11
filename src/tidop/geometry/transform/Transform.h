@@ -68,30 +68,36 @@ public:
     auto scale() const -> Vector<T, Dim>;
     void setScale(T scale);
 
+    [[nodiscard]]
     auto inverse() const -> Transform<T, Dim>;
 
+    [[nodiscard]]
     auto operator[](size_t position) const -> const MatrixRow<const T>
     {
         return transformMatrix[position];
     }
 
+    [[nodiscard]]
     auto operator[](size_t position) -> MatrixRow<T>
     {
         return transformMatrix[position];
     }
 
     template<size_t rows, size_t cols>
+    [[nodiscard]] 
     auto transform(const Matrix<T, rows, cols> &src) -> Matrix<T, rows, cols>
     {
         TL_ASSERT(src.cols() == dimensions, "Invalid dimensions");
         return src * transformMatrix;
     }
-        
+    
+    [[nodiscard]]
     auto transform(const Vector<T, Dim> &src) -> Vector<T, Dim>
     {
         return transformMatrix * src;
     }
 
+    [[nodiscard]]
     friend Transform<T, Dim> operator * (const Transform<T, Dim> &transform1,
                                          const Transform<T, Dim> &transform2)
     {

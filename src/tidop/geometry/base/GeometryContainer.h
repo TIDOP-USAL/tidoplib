@@ -94,39 +94,39 @@ public:
      * \brief Default constructor
      * Initializes an empty entity container.
      */
-    GeometryContainer() = default;
+    constexpr GeometryContainer() = default;
 
     /*!
      * \brief Constructs an entity container with a predefined size.
      * \param[in] size Number of entities to allocate space for.
      * The container is initialized with the given size but does not necessarily populate entities.
      */
-    explicit GeometryContainer(size_t size);
+    explicit constexpr GeometryContainer(size_t size);
 
     /*!
      * \brief Copy constructor
      * \param[in] entity Another GeometryContainer to copy.
      */
-    GeometryContainer(const GeometryContainer &entity) = default;
+    constexpr GeometryContainer(const GeometryContainer &entity) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] entity Another GeometryContainer to move.
      */
-    GeometryContainer(GeometryContainer &&entity) noexcept = default;
+    constexpr GeometryContainer(GeometryContainer &&entity) noexcept = default;
 
     /*!
      * \brief Constructs an entity container from a vector of entities.
      * \param[in] entities A vector containing Geometry_t objects.
      * Initializes the container with the provided entities.
      */
-    explicit GeometryContainer(std::vector<Geometry_t> entities);
+    constexpr explicit GeometryContainer(std::vector<Geometry_t> entities);
 
     /*!
      * \brief Constructs an entity container from an initializer list.
      * \param[in] entities An initializer list containing Geometry_t objects.
      */
-    GeometryContainer(std::initializer_list<Geometry_t> entities);
+    constexpr GeometryContainer(std::initializer_list<Geometry_t> entities);
    
     /*!
      * \brief Constructs a GeometryContainer from a range defined by iterators.
@@ -184,14 +184,14 @@ public:
      * \param[in] entity Another GeometryContainer to copy.
      * \return Reference to this container.
      */
-    auto operator=(const GeometryContainer<Geometry_t> &entity) -> GeometryContainer<Geometry_t> & = default;
+    constexpr auto operator=(const GeometryContainer<Geometry_t> &entity) -> GeometryContainer<Geometry_t> & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] entity Another GeometryContainer to move.
      * \return Reference to this container.
      */
-    auto operator=(GeometryContainer<Geometry_t> &&entity) noexcept -> GeometryContainer<Geometry_t> & = default;
+    constexpr auto operator=(GeometryContainer<Geometry_t> &&entity) noexcept -> GeometryContainer<Geometry_t> & = default;
 
     /*!
      * \brief Returns an iterator to the beginning.
@@ -253,13 +253,13 @@ public:
      * \brief Adds an entity to the end.
      * \param[in] entity Entity to add.
      */
-    void push_back(const Geometry_t &entity);
+    constexpr void push_back(const Geometry_t &entity);
 
     /*!
      * \brief Adds an entity to the end (move version).
      * \param[in] entity Entity to move.
      */
-    void push_back(Geometry_t &&entity);
+    constexpr void push_back(Geometry_t &&entity);
 
     /*!
      * \brief Constructs an entity in-place at the end.
@@ -268,7 +268,7 @@ public:
      */
 	template<typename... Args>
     requires std::constructible_from<Geometry_t, Args...>
-    void emplace_back(Args&&... args)
+    constexpr void emplace_back(Args&&... args)
     {
         mEntities.emplace_back(std::forward<Args>(args)...);
     }
@@ -278,14 +278,14 @@ public:
      * return Constant reference to the element
      */
     [[nodiscard]]
-    auto at(size_t position) const -> const_reference;
+    constexpr auto at(size_t position) const -> const_reference;
     
     /*!
      * \brief Returns a reference to the element at the specified position.
      * return Reference to the element
      */
     [[nodiscard]]
-    auto at(size_t position) -> reference;
+    constexpr auto at(size_t position) -> reference;
     
     /*!
      * \brief Removes the elements from the container
@@ -296,14 +296,14 @@ public:
      * \brief Check if the container is empty
      * \return true if the container is empty, false otherwise
      */
-    [[nodiscard]] 
-    auto isEmpty() const -> bool;
+    [[nodiscard]]
+    constexpr auto isEmpty() const noexcept -> bool;
     
     /*!
      * \brief Sets the size of the container
      * \param[in] size Size of the container
      */
-    void reserve(size_t size);
+    constexpr void reserve(size_t size);
     
     /*!
      * \brief Resizing of the container
@@ -311,7 +311,7 @@ public:
      * size is greater than count the container is truncated to the specified number of elements.
      * \param[in] count New container size
      */
-    void resize(size_t count);
+    constexpr void resize(size_t count);
     
     /*!
      * \brief Resizing of the container
@@ -320,7 +320,7 @@ public:
      * \param[in] count New container size
      * \param[in] value Value to be assigned to the new elements
      */
-    void resize(size_t count, const Geometry_t &value);
+    constexpr void resize(size_t count, const Geometry_t &value);
     
     /*!
      * \brief Returns the number of elements in the container.
@@ -342,7 +342,7 @@ public:
      * return Constant reference to the element
      */
     [[nodiscard]] 
-    auto operator[](size_t position) const -> const_reference;
+    constexpr auto operator[](size_t position) const -> const_reference;
     
     /*!
      * \brief Returns a reference to the element at the specified position.
@@ -350,7 +350,7 @@ public:
      * return Reference to the element
      */
     [[nodiscard]] 
-    auto operator[](size_t position) -> reference;
+    constexpr auto operator[](size_t position) -> reference;
     
     /*!
      * \brief Erases elements in the specified range.
@@ -399,7 +399,7 @@ public:
      * \return true if containers are equal, false otherwise.
      */
     [[nodiscard]] 
-    auto operator==(const GeometryContainer &other) const -> bool
+    constexpr auto operator==(const GeometryContainer &other) const -> bool
     {
         return mEntities == other.mEntities;
     }
@@ -410,7 +410,7 @@ public:
      * \return true if containers are not equal, false otherwise.
      */
     [[nodiscard]] 
-    auto operator!=(const GeometryContainer &other) const -> bool
+    constexpr auto operator!=(const GeometryContainer &other) const -> bool
     {
         return !(*this == other);
     }
@@ -419,19 +419,19 @@ public:
 
 
 template<typename Geometry_t>
-GeometryContainer<Geometry_t>::GeometryContainer(size_t size)
+constexpr GeometryContainer<Geometry_t>::GeometryContainer(size_t size)
   : mEntities(size)
 {
 }
 
 template<typename Geometry_t>
-GeometryContainer<Geometry_t>::GeometryContainer(std::vector<Geometry_t> entities)
+constexpr GeometryContainer<Geometry_t>::GeometryContainer(std::vector<Geometry_t> entities)
   : mEntities(std::move(entities))
 {
 }
 
 template<typename Geometry_t>
-GeometryContainer<Geometry_t>::GeometryContainer(std::initializer_list<Geometry_t> entities)
+constexpr GeometryContainer<Geometry_t>::GeometryContainer(std::initializer_list<Geometry_t> entities)
   : mEntities(entities)
 {
 }
@@ -509,25 +509,25 @@ constexpr auto GeometryContainer<Geometry_t>::back() const noexcept -> const_ref
 }
 
 template<typename Geometry_t>
-void GeometryContainer<Geometry_t>::push_back(const Geometry_t &entity)
+constexpr void GeometryContainer<Geometry_t>::push_back(const Geometry_t &entity)
 {
     mEntities.push_back(entity);
 }
 
 template<typename Geometry_t>
-void GeometryContainer<Geometry_t>::push_back(Geometry_t &&entity)
+constexpr void GeometryContainer<Geometry_t>::push_back(Geometry_t &&entity)
 {
     mEntities.push_back(std::forward<Geometry_t>(entity));
 }
 
 template<typename Geometry_t>
-auto GeometryContainer<Geometry_t>::at(size_t position) const -> const_reference 
+constexpr auto GeometryContainer<Geometry_t>::at(size_t position) const -> const_reference
 {
     return mEntities.at(position);
 }
 
 template<typename Geometry_t>
-auto GeometryContainer<Geometry_t>::at(size_t position) -> reference 
+constexpr auto GeometryContainer<Geometry_t>::at(size_t position) -> reference
 {
     return mEntities.at(position);
 }
@@ -539,25 +539,25 @@ constexpr void GeometryContainer<Geometry_t>::clear() noexcept
 }
 
 template<typename Geometry_t>
-auto GeometryContainer<Geometry_t>::isEmpty() const -> bool
+constexpr auto GeometryContainer<Geometry_t>::isEmpty() const noexcept -> bool
 {
     return mEntities.empty();
 }
 
 template<typename Geometry_t>
-void GeometryContainer<Geometry_t>::reserve(size_t size)
+constexpr void GeometryContainer<Geometry_t>::reserve(size_t size)
 {
     mEntities.reserve(size);
 }
 
 template<typename Geometry_t>
-void GeometryContainer<Geometry_t>::resize(size_t count)
+constexpr void GeometryContainer<Geometry_t>::resize(size_t count)
 {
     mEntities.resize(count);
 }
 
 template<typename Geometry_t>
-void GeometryContainer<Geometry_t>::resize(size_t count, const Geometry_t &value)
+constexpr void GeometryContainer<Geometry_t>::resize(size_t count, const Geometry_t &value)
 {
     mEntities.resize(count, value);
 }
@@ -575,13 +575,13 @@ constexpr auto GeometryContainer<Geometry_t>::capacity() const noexcept -> size_
 }
 
 template<typename Geometry_t>
-auto GeometryContainer<Geometry_t>::operator[](size_t position) const -> const_reference 
+constexpr auto GeometryContainer<Geometry_t>::operator[](size_t position) const -> const_reference
 {
     return mEntities[position];
 }
   
 template<typename Geometry_t>
-auto GeometryContainer<Geometry_t>::operator[](size_t position) -> reference 
+constexpr auto GeometryContainer<Geometry_t>::operator[](size_t position) -> reference
 {
     return mEntities[position];
 }

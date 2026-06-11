@@ -125,7 +125,7 @@ constexpr auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
 
 
 template<typename Block, typename Expr>
-void assign_block(Block &dst, const Expr &expr)
+constexpr void assign_block(Block &dst, const Expr &expr)
 {
     using CleanExpr = std::remove_cvref_t<Expr>;
 
@@ -144,7 +144,14 @@ void assign_block(Block &dst, const Expr &expr)
         // TODO: Aqui no siempre se necesita un temporal, solo cuando hay alias
         Matrix<typename matrix_traits<Block>::value_type> tmp(lhs.rows(), rhs.cols());
 
-        detail::mulmat(lhs, rhs, tmp);
+        //detail::mulmat(lhs, rhs, tmp);
+        if (std::is_constant_evaluated()) {
+            decltype(auto) a = require_linear_access(lhs);
+            decltype(auto) b = require_linear_access(rhs);
+            mulmat_cpp(a, b, tmp);
+        } else {
+            mulmat(lhs, rhs, tmp);
+        }
 
         assign_block(dst, tmp);
 

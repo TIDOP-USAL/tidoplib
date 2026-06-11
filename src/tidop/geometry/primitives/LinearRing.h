@@ -31,8 +31,6 @@
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/base/GeometryContainer.h"
 #include "tidop/geometry/primitives/Point.h"
-//#include "tidop/geometry/algorithms/measurement/Length.h"
-//#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -62,13 +60,15 @@ public:
      * \brief Checks if the ring is closed.
      * \return true if the ring is closed (first and last points are equal), false otherwise.
      */
-    auto isClosed() const -> bool;
+    [[nodiscard]]
+    constexpr auto isClosed() const -> bool;
 
     /*!
      * \brief Checks if the ring is valid.
      * \return true if the ring is closed and has at least 3 points, false otherwise.
      */
-    auto isValid() const -> bool;
+    [[nodiscard]]
+    constexpr auto isValid() const -> bool;
 };
 
 // TYPE ALIASES FOR LINEARRING
@@ -95,7 +95,7 @@ using LinearRing3f = LinearRing<Point3f>;
 // METHOD IMPLEMENTATIONS
 
 template<typename Point_t>
-auto LinearRing<Point_t>::isClosed() const -> bool
+constexpr auto LinearRing<Point_t>::isClosed() const -> bool
 {
     if (this->size() < 3) {
         return false;
@@ -104,7 +104,7 @@ auto LinearRing<Point_t>::isClosed() const -> bool
 }
 
 template<typename Point_t>
-auto LinearRing<Point_t>::isValid() const -> bool
+constexpr auto LinearRing<Point_t>::isValid() const -> bool
 {
     return isClosed();
 }

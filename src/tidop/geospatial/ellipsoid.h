@@ -51,7 +51,7 @@ private:
 
 public:
 
-    Ellipsoid(std::string ellipsoidName,
+    constexpr Ellipsoid(std::string ellipsoidName,
               double semiMajorAxis,
               double inverseFlattening)
       : name(std::move(ellipsoidName)),
@@ -64,18 +64,21 @@ public:
     /*!
      * \brief Equatorial radius
      */
-    auto semiMajorAxis() const -> double;
+    [[nodiscard]]
+    constexpr auto semiMajorAxis() const noexcept  -> double;
 
     /*!
      * \brief Polar radius
      */
-    auto semiMinorAxis() const -> double;
+    [[nodiscard]]
+    constexpr auto semiMinorAxis() const noexcept  -> double;
 
     /*!
      * \brief Flattening
      * \f[ f = \frac{a - b}{a} \f]
      */
-    auto flattening() const -> double;
+    [[nodiscard]]
+    constexpr auto flattening() const noexcept-> double;
 
     /*!
      * \brief Inverse flattening
@@ -92,36 +95,42 @@ public:
      * 1/f is infinite. In this document if the earth model is a sphere 
      * <inverse flattening> shall be given an artificial value of zero.
      */
-    auto inverseFlattening() const -> double;
+    [[nodiscard]]
+    constexpr auto inverseFlattening() const noexcept -> double;
 
     /*!
      * \brief Second flattening
      * \f[ e^{'} = \frac{a - b}{b} \f]
      */
-    auto secondFlattening() const -> double;
+    [[nodiscard]]
+    constexpr auto secondFlattening() const -> double;
 
     /*!
      * \brief Third flattening
      * \f[ n = \frac{a - b}{a + b} \f]
      */
-    auto thirdFlattening() const -> double;
+    [[nodiscard]]
+    constexpr auto thirdFlattening() const -> double;
 
     /*!
      * \brief Eccentricity
      * \f[ e = \sqrt{\frac{a^2 - b^2}{a^2}} \f]
      */
+    [[nodiscard]]
     auto eccentricity() const -> double;
 
     /*!
      * \brief Second eccentricity
      * \f[ e^{'} = \sqrt{\frac{a^2 - b^2}{b^2}} \f]
      */
+    [[nodiscard]]
     auto secondEccentricity() const -> double;
 
     /*!
      * \brief Third eccentricity
      * \f[ e^{''} = \sqrt{\frac{a^2 - b^2}{a^2 + b^2}} \f]
      */
+    [[nodiscard]]
     auto thirdEccentricity() const -> double;
 
     /*!
@@ -131,6 +140,7 @@ public:
      * \f[ E = \sqrt{a^2 - b^2} \f]
      *
      */
+    [[nodiscard]]
     auto linearEccentricity() const -> double;
 
     /*!
@@ -170,33 +180,33 @@ const auto WGS84 = Ellipsoid("WGS 84", 6378137., 298.257222101);
 
 
 
-inline auto Ellipsoid::semiMajorAxis() const -> double
+constexpr auto Ellipsoid::semiMajorAxis() const noexcept -> double
 {
     return a;
 }
 
-inline auto Ellipsoid::semiMinorAxis() const -> double
+constexpr auto Ellipsoid::semiMinorAxis() const noexcept -> double
 {
     return b;
 }
 
-inline auto Ellipsoid::flattening() const -> double
+constexpr auto Ellipsoid::flattening() const noexcept -> double
 {
     return f;
 }
 
-inline auto Ellipsoid::inverseFlattening() const -> double
+constexpr auto Ellipsoid::inverseFlattening() const noexcept -> double
 {
     if (f == 0.) return 0.;
     return 1. / f;
 }
 
-inline auto Ellipsoid::secondFlattening() const -> double
+constexpr auto Ellipsoid::secondFlattening() const -> double
 {
     return (a - b) / b;
 }
 
-inline auto Ellipsoid::thirdFlattening() const -> double
+constexpr auto Ellipsoid::thirdFlattening() const -> double
 {
     return f / (consts::two<double> - f);
 }

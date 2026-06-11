@@ -43,7 +43,6 @@
 #include "tidop/geometry/base/Geometry.h"
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/primitives/Point.h"
-//#include "tidop/geometry/algorithms/measurement/Length.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
@@ -84,26 +83,26 @@ public:
      *
      * Creates a segment with uninitialized endpoints.
      */
-    Segment();
+    constexpr Segment();
 
     /*!
      * \brief Copy constructor.
      * \param[in] segment The segment to copy.
      */
-    Segment(const Segment &segment) = default;;
+    constexpr Segment(const Segment &segment) = default;
 
     /*!
      * \brief Move constructor.
      * \param[in] segment The segment to move.
      */
-    Segment(Segment &&segment) noexcept = default;
+    constexpr Segment(Segment &&segment) noexcept = default;
 
     /*!
      * \brief Constructs a segment from two given points.
      * \param[in] _pt1 First endpoint.
      * \param[in] _pt2 Second endpoint.
      */
-    Segment(Point_t _pt1, Point_t _pt2);
+    constexpr Segment(Point_t _pt1, Point_t _pt2);
 
     /*!
      * \brief Constructs a segment from a starting point, angle, and length.
@@ -115,27 +114,27 @@ public:
      * If `bCenter` is true, the segment is created symmetrically around `pt`.
      * Otherwise, the segment starts at `pt` and extends in the direction given by `angle`.
      */
-    Segment(const Point_t &pt, double angle, double length, bool bCenter = true);
+    constexpr Segment(const Point_t &pt, double angle, double length, bool bCenter = true);
 
     /*!
      * \brief Constructor from segment with different dimension.
      */
     template<typename OtherPoint_t>
-    explicit Segment(const Segment<OtherPoint_t> &other);
+    explicit constexpr Segment(const Segment<OtherPoint_t> &other);
 	
     /*!
      * \brief Copy assignment operator.
      * \param[in] segment The segment to copy.
      * \return Reference to the modified segment.
      */
-    auto operator = (const Segment &segment) -> Segment & = default;
+    constexpr auto operator = (const Segment &segment) -> Segment & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] segment The segment to move.
      * \return Reference to the modified segment.
      */
-    auto operator = (Segment &&segment) noexcept -> Segment & = default;
+    constexpr auto operator = (Segment &&segment) noexcept -> Segment & = default;
     
     ~Segment() = default;
     
@@ -151,80 +150,73 @@ public:
      * \return Reference to the first endpoint.
      */
     [[nodiscard]]
-    auto pt1() noexcept -> Point_t &;
+    constexpr auto pt1() noexcept -> Point_t &;
 
     /*!
      * \brief Access the first endpoint (const version).
      * \return Const reference to the first endpoint.
      */
     [[nodiscard]]
-    auto pt1() const noexcept -> const Point_t &;
+    constexpr auto pt1() const noexcept -> const Point_t &;
     
     /*!
      * \brief Access the second endpoint (non-const version).
      * \return Reference to the second endpoint.
      */
     [[nodiscard]]
-    auto pt2() noexcept -> Point_t &;
+    constexpr auto pt2() noexcept -> Point_t &;
 
     /*!
      * \brief Access the second endpoint (const version).
      * \return Const reference to the second endpoint.
      */
     [[nodiscard]]
-    auto pt2() const noexcept -> const Point_t &;
+    constexpr auto pt2() const noexcept -> const Point_t &;
 	
     /*!
      * \brief Access the start point (non-const version).
      * \return Reference to the start point (same as min).
      */
     [[nodiscard]]
-    auto start() noexcept -> Point_t &;
+    constexpr auto start() noexcept -> Point_t &;
 
     /*!
      * \brief Access the start point (const version).
      * \return Const reference to the start point (same as min).
      */
     [[nodiscard]]
-    auto start() const noexcept -> const Point_t &;
+    constexpr auto start() const noexcept -> const Point_t &;
     
     /*!
      * \brief Access the end point (non-const version).
      * \return Reference to the end point (same as max).
      */
     [[nodiscard]]
-    auto end() noexcept -> Point_t &;
+    constexpr auto end() noexcept -> Point_t &;
 
     /*!
      * \brief Access the end point (const version).
      * \return Const reference to the end point (same as max).
      */
     [[nodiscard]]
-    auto end() const noexcept -> const Point_t &;
+    constexpr auto end() const noexcept -> const Point_t &;
 
     /*!
      * \brief Checks if the segment is empty (i.e., both endpoints are identical).
      * \return True if the segment is empty, false otherwise.
      */
     [[nodiscard]]
-    auto isEmpty() const -> bool;
+    constexpr auto isEmpty() const noexcept -> bool;
 
-    /*!
-     * \brief Computes the length of the segment.
-     * \return The Euclidean distance between `pt1` and `pt2`.
-     */
-    //[[nodiscard]]
-    //auto length() const -> double;
-    
     /*!
      * \brief Computes the directional vector of the segment.
      * \return A point representing the vector from `pt1` to `pt2`.
      */
     [[nodiscard]]
-    auto vector() const noexcept;
+    constexpr auto vector() const noexcept;
 
     [[nodiscard]]
-    auto midPoint() const noexcept
+    constexpr auto midPoint() const noexcept
     {
         remove_measure_t<Point_t> mid{};
 
@@ -299,21 +291,21 @@ using Segment3fm = Segment<Point3fm>;
 // METHOD IMPLEMENTATIONS
 
 template<typename Point_t>
-Segment<Point_t>::Segment()
+constexpr Segment<Point_t>::Segment()
 {
 }
 
 template<typename Point_t>
-Segment<Point_t>::Segment(Point_t _pt1, Point_t _pt2)
+constexpr Segment<Point_t>::Segment(Point_t _pt1, Point_t _pt2)
   : mPoints{_pt1, _pt2}
 {
 }
 
 template<typename Point_t>
-Segment<Point_t>::Segment(const Point_t &point,
-                          double angle,
-                          double length,
-                          bool bCenter)
+constexpr Segment<Point_t>::Segment(const Point_t &point,
+                                    double angle,
+                                    double length,
+                                    bool bCenter)
 {
 
     static_assert(point_traits<Point_t>::spatial_dims == 2, "This constructor only supports 2D points");
@@ -335,7 +327,7 @@ Segment<Point_t>::Segment(const Point_t &point,
 
 template<typename Point_t>
 template<typename OtherPoint_t>
-Segment<Point_t>::Segment(const Segment<OtherPoint_t> &other)
+constexpr Segment<Point_t>::Segment(const Segment<OtherPoint_t> &other)
 {
     mPoints[0] = static_cast<Point_t>(other.pt1());
     mPoints[1] = static_cast<Point_t>(other.pt2());
@@ -355,71 +347,61 @@ Segment<Point_t>::operator Segment<OtherPoint_t>() const
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::pt1() noexcept -> Point_t &
+constexpr auto Segment<Point_t>::pt1() noexcept -> Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::pt1() const noexcept -> const Point_t &
+constexpr auto Segment<Point_t>::pt1() const noexcept -> const Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::pt2() noexcept -> Point_t &
+constexpr auto Segment<Point_t>::pt2() noexcept -> Point_t &
 { 
     return mPoints[1];
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::pt2() const noexcept -> const Point_t &
+constexpr auto Segment<Point_t>::pt2() const noexcept -> const Point_t &
 { 
     return mPoints[1]; 
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::start() noexcept -> Point_t &
+constexpr auto Segment<Point_t>::start() noexcept -> Point_t &
 { 
     return mPoints[0]; 
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::start() const noexcept -> const Point_t &
+constexpr auto Segment<Point_t>::start() const noexcept -> const Point_t &
 { 
     return mPoints[0];
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::end() noexcept -> Point_t &
+constexpr auto Segment<Point_t>::end() noexcept -> Point_t &
 { 
     return mPoints[1];
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::end() const noexcept -> const Point_t &
+constexpr auto Segment<Point_t>::end() const noexcept -> const Point_t &
 { 
     return mPoints[1]; 
 }
 
 template<typename Point_t>
-auto Segment<Point_t>::isEmpty() const -> bool
+constexpr auto Segment<Point_t>::isEmpty() const noexcept -> bool
 {
     return false;
 }
 
-//template<typename Point_t>
-//auto Segment<Point_t>::length() const -> double
-//{ 
-//    return tl::length(*this);
-//}
-
-/*!
-* \brief Computes the directional vector of the segment.
-* \return A point representing the vector from `pt1` to `pt2`.
-*/
 template<typename Point_t>
-auto Segment<Point_t>::vector() const noexcept
+constexpr auto Segment<Point_t>::vector() const noexcept
 {
     return mPoints[1] - mPoints[0];
 }

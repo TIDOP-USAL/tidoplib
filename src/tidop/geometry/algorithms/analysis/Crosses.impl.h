@@ -417,7 +417,6 @@ auto crosses_impl(const Geometry &geom,
 } // namespace detail
 
 template<Geometry2DConcept G1, Geometry2DConcept G2>
-[[nodiscard]]
 constexpr auto crosses(const G1 &geom1, const G2 &geom2) -> bool
 {
     using P = typename geometry_traits<G1>::point_type;
@@ -429,7 +428,6 @@ constexpr auto crosses(const G1 &geom1, const G2 &geom2) -> bool
 }
 
 template<Geometry2DConcept G1, Geometry2DConcept G2, PrecisionPolicyConcept Policy>
-[[nodiscard]]
 constexpr auto crosses(const G1 &geom1, 
                        const G2 &geom2,
                        const Policy &policy) -> bool
@@ -460,7 +458,6 @@ constexpr auto crosses(const G1 &geom1,
 }
 
 template<PointConcept P, PrecisionPolicyConcept Policy>
-[[nodiscard]]
 auto crosses(const Segment<P> &segment,
              const LinearRing<P> &ring,
              const Policy &policy) -> bool
@@ -469,7 +466,6 @@ auto crosses(const Segment<P> &segment,
 }
 
 template<PointConcept P>
-[[nodiscard]]
 auto crosses(const Segment<P> &segment,
              const LinearRing<P> &ring) -> bool
 {

@@ -134,7 +134,7 @@ public:
      *
      * \param[in] rotation The rotation to move.
      */
-    Rotation(Rotation &&rotation) TL_NOEXCEPT;
+    Rotation(Rotation &&rotation) noexcept;
 
     /*!
      * \brief Default destructor.
@@ -155,20 +155,22 @@ public:
      * \param[in] rotation The rotation to move.
      * \return A reference to the moved rotation.
      */
-    auto operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation&;
+    auto operator=(Rotation &&rotation) noexcept -> Rotation&;
 
     /*!
      * \brief Get the angle of the rotation (for 2D rotations).
      * 
      * \return The angle of rotation in radians.
      */
-    auto angle() const TL_NOEXCEPT -> T;
+    [[nodiscard]]
+    auto angle() const noexcept -> T;
 
     /*!
      * \brief Convert the rotation to Euler angles.
      * 
      * \return The Euler angles representing the rotation.
      */
+    [[nodiscard]]
     auto toEulerAngles() const -> EulerAngles<T, xyz>;
 
     /*!
@@ -176,6 +178,7 @@ public:
      * 
      * \return The quaternion representing the rotation.
      */
+    [[nodiscard]]
     auto toQuaternions() const -> Quaternion<T>;
 
     /*!
@@ -183,7 +186,8 @@ public:
      * 
      * \return The rotation matrix.
      */
-    auto toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim>;
+    [[nodiscard]]
+    auto toMatrix() const noexcept -> Matrix<T, Dim, Dim>;
 
     /*!
      * \brief Access the element at the specified row and column (non-const version).
@@ -192,7 +196,8 @@ public:
      * \param[in] c The column index.
      * \return A reference to the element at the specified position.
      */
-    auto operator()(size_t r, size_t c) TL_NOEXCEPT -> reference;
+    [[nodiscard]]
+    auto operator()(size_t r, size_t c) noexcept -> reference;
 
     /*!
      * \brief Access the element at the specified row and column (const version).
@@ -201,13 +206,15 @@ public:
      * \param[in] c The column index.
      * \return A const reference to the element at the specified position.
      */
-    auto operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference;
+    [[nodiscard]]
+    auto operator()(size_t r, size_t c) const noexcept -> const_reference;
 
     /*!
      * \brief Compute the inverse of the rotation.
      *
      * \return The inverse rotation.
      */
+    [[nodiscard]]
     auto inverse() const -> Rotation;
 
     /*!
@@ -216,6 +223,7 @@ public:
      * \param[in] point The 2D point to transform.
      * \return The transformed 2D point.
      */
+    [[nodiscard]]
     auto transform(const Point<T> &point) const -> Point<T>;
 
     /*!
@@ -224,6 +232,7 @@ public:
      * \param[in] point The 3D point to transform.
      * \return The transformed 3D point.
      */
+    [[nodiscard]]
     auto transform(const Point3<T> &point) const -> Point3<T>;
 
     /*!
@@ -234,6 +243,7 @@ public:
      * \return The transformed vector.
      */
     template<size_t _size>
+    [[nodiscard]]
     auto transform(const Vector<T, _size> &vector) const -> Vector<T, Dim>;
 
     /*!
@@ -245,6 +255,7 @@ public:
      * \return The transformed matrix.
      */
     template<size_t _row, size_t _col>
+    [[nodiscard]]
     auto transform(const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
@@ -253,6 +264,7 @@ public:
      * \param[in] point The 2D point to transform.
      * \return The transformed 2D point.
      */
+    [[nodiscard]]
     auto operator * (const Point<T> &point) const -> Point<T>;
 
     /*!
@@ -261,6 +273,7 @@ public:
      * \param[in] point The 3D point to transform.
      * \return The transformed 3D point.
      */
+    [[nodiscard]]
     auto operator * (const Point3<T> &point) const -> Point3<T>;
 
     /*!
@@ -271,6 +284,7 @@ public:
      * \return The transformed vector.
      */
     template<size_t _size>
+    [[nodiscard]]
     auto operator * (const Vector<T, _size> &vector) const -> Vector<T, _size>;
 
     /*!
@@ -282,6 +296,7 @@ public:
      * \return The transformed matrix.
      */
     template<size_t _row, size_t _col>
+    [[nodiscard]]
     auto operator * (const Matrix<T, _row, _col> &matrix) const -> Matrix<T, _row, _col>;
 
     /*!
@@ -290,6 +305,7 @@ public:
      * \param[in] point The 2D point to transform.
      * \return The transformed 2D point.
      */
+    [[nodiscard]]
     auto operator() (const Point<T> &point) const -> Point<T>;
 
     /*!
@@ -298,6 +314,7 @@ public:
      * \param[in] point The 3D point to transform.
      * \return The transformed 3D point.
      */
+    [[nodiscard]]
     auto operator() (const Point3<T> &point) const -> Point3<T>;
 
     /*!
@@ -306,6 +323,7 @@ public:
      * \param[in] rotation The other rotation to combine with.
      * \return The combined rotation.
      */
+    [[nodiscard]]
     auto operator * (const Rotation<T, Dim> &rotation) const -> Rotation<T, Dim>;
 };
 
@@ -382,7 +400,7 @@ Rotation<T, Dim>::Rotation(const Quaternion<T> &quaternion)
 }
 
 template<typename T, size_t Dim>
-Rotation<T, Dim>::Rotation(Rotation &&rotation) TL_NOEXCEPT
+Rotation<T, Dim>::Rotation(Rotation &&rotation) noexcept
     : rotation(std::move(rotation.rotation))
 {
 }
@@ -398,7 +416,7 @@ auto Rotation<T, Dim>::operator=(const Rotation &rotation) -> Rotation &
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation &
+auto Rotation<T, Dim>::operator=(Rotation &&rotation) noexcept -> Rotation &
 {
     if (this != &rotation) {
         this->rotation = std::move(rotation.rotation);
@@ -408,7 +426,7 @@ auto Rotation<T, Dim>::operator=(Rotation &&rotation) TL_NOEXCEPT -> Rotation &
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::angle() const TL_NOEXCEPT -> T
+auto Rotation<T, Dim>::angle() const noexcept -> T
 {
     static_assert(dimensions == 2, "Method valid only for 2D.");
 
@@ -429,19 +447,19 @@ auto Rotation<T, Dim>::toQuaternions() const -> Quaternion<T>
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::toMatrix() const TL_NOEXCEPT -> Matrix<T, Dim, Dim>
+auto Rotation<T, Dim>::toMatrix() const noexcept -> Matrix<T, Dim, Dim>
 {
     return this->rotation;
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator()(size_t r, size_t c) TL_NOEXCEPT -> reference
+auto Rotation<T, Dim>::operator()(size_t r, size_t c) noexcept -> reference
 {
     return this->rotation.at(r, c);
 }
 
 template<typename T, size_t Dim>
-auto Rotation<T, Dim>::operator()(size_t r, size_t c) const TL_NOEXCEPT -> const_reference
+auto Rotation<T, Dim>::operator()(size_t r, size_t c) const noexcept -> const_reference
 {
     return this->rotation.at(r, c);
 }

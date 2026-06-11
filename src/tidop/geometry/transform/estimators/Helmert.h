@@ -47,6 +47,7 @@ namespace internal
 {
 
 template<typename T, size_t rows, size_t cols>
+[[nodiscard]]
 void helmert(const Matrix<T, rows, cols> &src,
              const Matrix<T, rows, cols> &dst, Affine<T, 2> &affine)
 {
@@ -91,6 +92,7 @@ void helmert(const Matrix<T, rows, cols> &src,
 }
 
 template<typename T, size_t rows, size_t cols>
+[[nodiscard]]
 void helmert(const Matrix<T, rows, cols> &src,
              const Matrix<T, rows, cols> &dst, Affine<T, 3> &affine)
 {
@@ -182,6 +184,7 @@ public:
      * \return The estimated Helmert transformation.
      */
     template<size_t rows, size_t cols>
+    [[nodiscard]]
     static auto estimate(const Matrix<T, rows, cols> &src,
                          const Matrix<T, rows, cols> &dst) -> Affine<T, Dim>;
 
@@ -196,6 +199,7 @@ public:
      * \return The estimated Helmert transformation.
      */
     template <PointConcept Point>
+    [[nodiscard]]
     static auto estimate(const std::vector<Point> &src,
                          const std::vector<Point> &dst) -> Affine<T, Dim>;
 };
